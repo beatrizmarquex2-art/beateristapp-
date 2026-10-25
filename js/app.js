@@ -34,6 +34,7 @@ import * as arquivos from './views/arquivos.js';
 import * as bateristas from './views/bateristas.js';
 import * as treinos from './views/treinos.js';
 import * as toque from './views/toque.js';
+import * as rudimentos from './views/rudimentos.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -159,6 +160,7 @@ function shell() {
       case 'bateristas': c = bateristas.mount(view, r.parts); break;
       case 'treinos': c = treinos.mount(view, r.parts); break;
       case 'toque': c = toque.mount(view); break;
+      case 'rudimentos': c = rudimentos.mount(view); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));

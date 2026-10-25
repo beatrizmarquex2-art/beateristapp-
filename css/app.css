@@ -1168,3 +1168,12 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .tk-panel { display: grid; gap: 10px; } .tk-line { gap: 10px; align-items: center; flex-wrap: wrap; }
 .tk-rec .tk-dot { display: block; width: 22px; height: 22px; border-radius: 50%; background: #b5162b; }
 .tk-take { display: grid; gap: 8px; } .tk-take .cb-bar { background: #fffdf8; color: #1b1818; border: 1px solid var(--line); padding: 4px; } .tk-actions { gap: 8px; flex-wrap: wrap; }
+
+/* Rudimentos */
+.rd-card { display: grid; gap: 10px; } .rd-input { width: 100%; font: 700 20px var(--type); letter-spacing: .08em; }
+.rd-toggles { gap: 6px; flex-wrap: wrap; }
+.rd-score { background: #fffdf8; color: #1b1818; border: 1px solid var(--line); padding: 4px; margin: 8px 0 0; }
+.rd-stick { display: grid; gap: 0; padding: 4px calc(4px + 2.9%) 8px calc(4px + 15.3%); background: #fffdf8; border: 1px solid var(--line); border-top: 0; font: 700 13px var(--body); text-align: center; color: #1b1818; }
+.rd-stick span { padding: 2px 0; } .rd-stick span.acc { color: #b5162b; font-size: 15px; } .rd-stick span.ghost { color: #8d847b; font-size: 10px; font-weight: 400; } .rd-stick span.kick { color: #1f6b3f; }
+.rd-stick span.beat { box-shadow: inset 1px 0 0 rgb(27 24 24 / .2); } .rd-stick span.now { background: #1b1818; color: #fff; }
+.rd-log { display: grid; gap: 8px; } .rd-log p { margin: 0; } .rd-hist { margin: 0; padding-left: 18px; }

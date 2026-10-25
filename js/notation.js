@@ -44,6 +44,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
           const y = posY(POS[id]);
           if (POS[id] <= -2) ops.push({ t: 'line', x1: x - 9, y1: lineY(0) - GAP, x2: x + 9, y2: lineY(0) - GAP, w: 1 }); // linha suplementar do prato
           ops.push({ t: 'head', x, y, kind: X_HEAD.has(id) ? 'x' : 'n', c: tint(id) });
+          if (id === 'sn' && beat.ghost && beat.ghost[i]) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
           if (id === 'ho') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // "o" = chimbal aberto
           if (id === 'cr' && color) ops.push({ t: 'circle', x, y, r: 7, c: tint(id), ring: true });
         }
