@@ -98,5 +98,12 @@ export function scheduler(next, { onEnd } = {}) {
   return { stop, get running() { return !stopped; } };
 }
 
+/** Converte um instante do relógio da tela (event.timeStamp / performance.now) pro relógio do som que está SAINDO no alto-falante. */
+export function perfToCtx(perfMs) {
+  const c = audio(); const ts = c.getOutputTimestamp && c.getOutputTimestamp();
+  if (ts && ts.performanceTime) return ts.contextTime + (perfMs - ts.performanceTime) / 1000;
+  return c.currentTime - (c.outputLatency || 0) - (c.baseLatency || 0) - (performance.now() - perfMs) / 1000;
+}
+
 /** Vibração só onde o navegador suporta (iPhone Safari não suporta: a interface avisa). */
 export const canVibrate = () => typeof navigator.vibrate === 'function';

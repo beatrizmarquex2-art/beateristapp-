@@ -3,7 +3,7 @@
 // Escuta (ditado): o app toca um compasso e você escolhe qual das 4 partituras foi.
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
-import { audio, click, snare } from '../audio.js';
+import { audio, click, snare, perfToCtx } from '../audio.js';
 import { toSVG } from '../notation.js';
 import { LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm } from '../reading.js';
 import { banner, toast, stars } from '../ui.js';
@@ -27,9 +27,6 @@ function score(bar4s, marks = []) {
   return box;
 }
 const chunk = (beats) => { const out = []; for (let i = 0; i < beats.length; i += 4) out.push(beats.slice(i, i + 4)); return out; };
-const outLat = (c) => (c.outputLatency || 0) + (c.baseLatency || 0);
-// relógio da tela (performance.now / event.timeStamp) <-> relógio do som que está SAINDO no alto-falante
-const toCtx = (c, perfMs) => { const ts = c.getOutputTimestamp && c.getOutputTimestamp(); return ts && ts.performanceTime ? ts.contextTime + (perfMs - ts.performanceTime) / 1000 : c.currentTime - outLat(c) - (performance.now() - perfMs) / 1000; };
 
 
 /** Agenda contagem (4 cliques) + cliques nos tempos (+ caixa, se `play`). Devolve o instante do 1º tempo (relógio do áudio). */
@@ -75,11 +72,11 @@ function leitura(host) {
       stop(); const ac = audio(); const q = 60 / c.bpm;
       const t0 = schedule(beats, c.bpm);
       const taps = [];
-      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); taps.push(toCtx(ac, e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
+      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
       pad.addEventListener('pointerdown', onTap); document.addEventListener('keydown', onTap);
       const off = () => { pad.removeEventListener('pointerdown', onTap); document.removeEventListener('keydown', onTap); };
       // segundos desde o 1º tempo, no relógio do som (para quem testa tocando por script)
-      pad.clock = () => toCtx(ac, performance.now()) - t0; pad.dataset.onsets = JSON.stringify(expected.map((e) => e.t));
+      pad.clock = () => perfToCtx(performance.now()) - t0; pad.dataset.onsets = JSON.stringify(expected.map((e) => e.t));
       pad.classList.add('live'); status.textContent = 'conta: 1, 2, 3, 4…';
       const end = (t0 - ac.currentTime + beats.length * q + 0.4) * 1000;
       run = { pad, off, timer: setTimeout(async () => {
