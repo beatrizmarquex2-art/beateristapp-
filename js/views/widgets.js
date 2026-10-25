@@ -5,7 +5,6 @@ import * as lib from '../lib.js';
 import * as M from '../music.js';
 import * as S from '../students-logic.js';
 import { audio, click, scheduler } from '../audio.js';
-import { sprint } from './feed.js';
 import { weekStats, bars, WD_LETTER } from '../charts.js';
 import { todayKey, weekdayOf } from '../util.js';
 
@@ -26,19 +25,6 @@ export function studyWidget() {
   };
   draw(); lib.loadIndex().then(draw).catch(() => {});
   el.unsub = store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
-  return el;
-}
-
-export function feedWidget() {
-  const el = box('w-feed', '3 vídeos de hoje', '#/feed', 'feed');
-  const draw = () => {
-    const sp = sprint(store.list('post'));
-    el.replaceChildren(el.head, sp.length
-      ? h('ol', { class: 'lab-list' }, sp.map((p) => h('li', {}, h('a', { href: '#/feed' }, p.data.title), h('small', {}, ` · ${p.data.stage}`))))
-      : h('p', { class: 'hand muted' }, 'nenhum vídeo na fila. anota os que já estão gravados?'));
-  };
-  draw();
-  el.unsub = store.subscribe((i) => { if (!i.kind || i.kind === 'post') draw(); });
   return el;
 }
 

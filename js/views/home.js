@@ -8,7 +8,7 @@ import { sortedFavs, favChip } from './favs.js';
 import { toast } from '../ui.js';
 import { getLayout, LAYOUT_KEY } from '../layout.js';
 import { todayRoll } from './students.js';
-import { studyWidget, feedWidget, metroWidget, focusWidget } from './widgets.js';
+import { studyWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
 import { factFor } from '../music-facts.js';
 import { HERO_KEY, heroSub } from '../hero-text.js';
@@ -142,7 +142,7 @@ export function mount(host) {
   }
 
   const roll = todayRoll({ compact: true });
-  const widgets = { estudar: studyWidget(), feed3: feedWidget(), metro: metroWidget(), foco: focusWidget() };
+  const widgets = { estudar: studyWidget(), metro: metroWidget(), foco: focusWidget() };
   const parts = {
     aulas: roll,
     ...widgets,

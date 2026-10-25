@@ -1250,3 +1250,8 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
   .sp-p-item .sp-score > :only-child { grid-column: 1 / -1; max-width: 150mm; }
   .sp-p-note { margin: 1mm 0; font-size: 10.5pt; } .sp-p-src { margin: 1mm 0 0; font: 8pt var(--type); color: #8a1a26; } .sp-p-check { margin: 2mm 0 0; font: 10pt var(--type); color: #333; }
 }
+
+/* Feed: links publicados */
+.fd-justposted { display: grid; gap: 8px; } .fd-justposted .tag { margin: 0; }
+.fd-posted { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 10px 6px; } .fd-plink { font: 700 12px var(--body); color: var(--accent); text-decoration: none; border: 1px solid currentColor; padding: 3px 8px; }
+.fd-plink.n-youtube { color: #c4302b; } .fd-plink.n-instagram { color: #c13584; } .fd-plink.n-tiktok { color: #1b1818; }

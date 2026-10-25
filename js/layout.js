@@ -6,7 +6,6 @@ export const SECTIONS = [
   { id: 'hoje', label: 'Checklist de hoje' },
   { id: 'nota', label: 'Nota fixa' },
   { id: 'estudar', label: 'Widget: continuar estudando' },
-  { id: 'feed3', label: 'Widget: 3 vídeos de hoje' },
   { id: 'metro', label: 'Widget: metrônomo rápido', off: true },
   { id: 'foco', label: 'Widget: cronômetro de foco', off: true },
   { id: 'favoritos', label: 'Favoritos' },
