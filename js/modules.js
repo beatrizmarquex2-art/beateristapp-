@@ -4,6 +4,7 @@ export const MODULES = [
   { slug: 'ouvido', label: 'Estúdio de Ouvido', icon: 'mic', route: '#/ouvido' },
   { slug: 'tempo', label: 'Juiz de Tempo', icon: 'timer', route: '#/tempo' },
   { slug: 'transcritor', label: 'Transcritor de Ritmo', icon: 'staff', route: '#/tempo/transcritor' },
+  { slug: 'cartas', label: 'Cartas de Groove', icon: 'staff', route: 'cartas/' },
   { slug: 'setlist', label: 'Setlist', icon: 'note', route: '#/setlist' },
   { slug: 'metronomo', label: 'Metrônomo', icon: 'metro', route: '#/metronomo' },
   { slug: 'acentuacao', label: 'Acentuação 4×4', icon: 'staff', route: '#/acentuacao' },
