@@ -116,6 +116,8 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
       case 'flag': { const d = o.down ? -1 : 1; g.strokeStyle = ink; g.lineWidth = 2; g.moveTo(o.x, o.y); g.bezierCurveTo(o.x + 2, o.y + 5 * d, o.x + 9, o.y + 6 * d, o.x + 7, o.y + 14 * d); g.stroke(); break; }
       case 'acc': g.strokeStyle = ink; g.lineWidth = 1.8; g.moveTo(o.x - 5, o.y - 4); g.lineTo(o.x + 5, o.y); g.lineTo(o.x - 5, o.y + 4); g.stroke(); break;
       case 'rest8': g.fillStyle = ink; g.arc(o.x - 2, o.y - 4, 2.6, 0, Math.PI * 2); g.fill(); g.beginPath(); g.strokeStyle = ink; g.lineWidth = 1.6; g.moveTo(o.x - 2, o.y - 2); g.quadraticCurveTo(o.x + 2, o.y - 1, o.x + 4, o.y - 5); g.lineTo(o.x - 1, o.y + 8); g.stroke(); break;
+      case 'rest16': g.fillStyle = ink; g.arc(o.x - 2, o.y - 6, 2.4, 0, Math.PI * 2); g.fill(); g.beginPath(); g.arc(o.x - 4, o.y + 1, 2.4, 0, Math.PI * 2); g.fill(); g.beginPath(); g.strokeStyle = ink; g.lineWidth = 1.5; g.moveTo(o.x - 2, o.y - 4); g.quadraticCurveTo(o.x + 2, o.y - 3, o.x + 4, o.y - 7); g.moveTo(o.x - 4, o.y + 3); g.quadraticCurveTo(o.x, o.y + 4, o.x + 2, o.y); g.moveTo(o.x + 4, o.y - 7); g.lineTo(o.x - 1, o.y + 11); g.stroke(); break;
+      case 'dot': g.fillStyle = ink; g.arc(o.x, o.y, 2.2, 0, Math.PI * 2); g.fill(); break;
       case 'rest': g.strokeStyle = ink; g.lineWidth = 2.2; g.moveTo(o.x - 2, o.y - 12); g.lineTo(o.x + 4, o.y - 5); g.lineTo(o.x - 1, o.y); g.lineTo(o.x + 5, o.y + 8); g.bezierCurveTo(o.x, o.y + 5, o.x - 3, o.y + 8, o.x + 1, o.y + 12); g.stroke(); break;
       case 'text': g.fillStyle = o.color === 'accent' ? accent : ink; g.font = `${o.weight || 400} ${o.size}px "Hanken Grotesk", sans-serif`; g.fillText(o.s, o.x, o.y); break;
       default: break;
