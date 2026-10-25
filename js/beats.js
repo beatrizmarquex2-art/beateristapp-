@@ -72,6 +72,8 @@ export const PRESETS = [
   beat('Virada Descendo nos Toms', 'Viradas', 95, 16, { cr: on(16, [0]), sn: on(16, [1, 2, 3]), tt: on(16, [4, 5, 6, 7]), mt: on(16, [8, 9, 10, 11]), ft: on(16, [12, 13, 14, 15]), bd: on(16, [0]) }, 'virada'),
   beat('Virada de Tercinas', 'Viradas', 90, 12, { sn: on(12, [0, 1, 2, 9, 10, 11]), tt: on(12, [3, 4, 5]), ft: on(12, [6, 7, 8]), bd: on(12, [0]) }, 'virada'),
   beat('Virada Mão-Mão-Pé', 'Viradas', 85, 16, { sn: on(16, [0, 1, 3, 4, 6, 7, 9, 10, 12, 13]), ft: on(16, [15]), bd: on(16, [2, 5, 8, 11, 14]) }, 'virada'),
+  { ...beat('Virada com Acentos 3-3-2', 'Viradas', 90, 16, { sn: all(16), bd: on(16, [0]) }, 'virada'), acc: on(16, [0, 3, 6, 8, 11, 14]) },
+  beat('Virada Um Tom', 'Viradas', 90, 16, { hh: on(16, [0, 2, 4, 6]), sn: on(16, [4, 8, 9, 10, 11]), tt: on(16, [12, 13, 14, 15]), bd: on(16, [0]) }, 'virada'),
   beat('Virada Sincopada (com espaço)', 'Viradas', 95, 16, { hh: on(16, [0, 2, 4]), sn: on(16, [6, 7]), tt: on(16, [10, 11]), ft: on(16, [14]), bd: on(16, [0, 8, 15]) }, 'virada'),
 ];
 

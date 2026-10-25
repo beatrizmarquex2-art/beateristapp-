@@ -16,8 +16,8 @@ const emptyBar = (steps = 16) => ({ steps, rows: Object.fromEntries(B.ROWS.map((
 
 /* ---------- tocar a partitura inteira ---------- */
 let run = null;
-function stopAll() { if (run) { run.stop(); run = null; } }
-function playDoc(doc, { loop, withClick, onBar, onEnd }) {
+export function stopAll() { if (run) { run.stop(); run = null; } }
+export function playDoc(doc, { loop, withClick, onBar, onEnd }) {
   stopAll(); stopBeat(); audio();
   const evs = []; let t = 0;
   doc.bars.forEach((bar, bi) => {

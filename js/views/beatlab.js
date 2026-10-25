@@ -7,6 +7,7 @@ import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
 import { audio, click, snare, kick, hihat, tom, cymbal, scheduler } from '../audio.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
+import { mountCombo } from './combo.js';
 
 const KEY = 'setting-beatlab';
 const FAV = 'setting-beatfav';
@@ -113,7 +114,7 @@ function exportImage(beat, color = false) {
 
 function tabsEl(on) {
   return h('nav', { class: 'chips lib-tabs bl-tabs', 'aria-label': 'Beat Lab' },
-    [['groove', 'Groove', '#/beatlab'], ['viradas', 'Viradas', '#/beatlab/viradas'], ['meus', 'Meus ritmos', '#/beatlab/meus'], ['biblioteca', 'Biblioteca', '#/beatlab/biblioteca']]
+    [['groove', 'Groove', '#/beatlab'], ['viradas', 'Viradas', '#/beatlab/viradas'], ['combo', 'Groove + Virada', '#/beatlab/combo'], ['meus', 'Meus ritmos', '#/beatlab/meus'], ['biblioteca', 'Biblioteca', '#/beatlab/biblioteca']]
       .map(([k, t, href]) => h('a', { class: `lib-tab${on === k ? ' on' : ''}`, href, 'aria-current': on === k ? 'page' : null }, t)));
 }
 
@@ -262,5 +263,6 @@ export function mount(host, parts) {
   const [k] = parts || [];
   if (k === 'biblioteca') return mountLibrary(host);
   if (k === 'meus') return mountMine(host);
+  if (k === 'combo') { stopBeat(); host.append(banner('Beat Lab', 'crie, toque, estude.'), tabsEl('combo')); return mountCombo(host); }
   return mountEditor(host, k === 'viradas' ? 'viradas' : 'groove');
 }

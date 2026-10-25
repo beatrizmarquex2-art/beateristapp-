@@ -1145,3 +1145,12 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .tr-opt > b { font: 400 22px var(--display); width: 20px; } .tr-opt .tr-score { flex: 1; padding: 0; min-width: 0; }
 .tr-opt.ok { border-color: #1f9d4a; box-shadow: inset 6px 0 0 #1f9d4a; } .tr-opt.no { border-color: #c8102e; box-shadow: inset 6px 0 0 #c8102e; }
 .tr-hist ul { margin: 6px 0 0; padding-left: 18px; } .tr-hist li { margin: 2px 0; }
+
+/* Groove + Virada */
+.cb-card { display: grid; gap: 10px; } .cb-field select { width: 100%; } .cb-row { gap: 10px; align-items: center; flex-wrap: wrap; }
+.cb-score { display: grid; gap: 10px; padding: 6px 16px; }
+.cb-lane { position: relative; background: #fffdf8; color: #1b1818; border: 1px solid var(--line, rgb(0 0 0 / .12)); padding: 6px; }
+.cb-bar { margin: 0; } .cb-tag { display: block; text-align: right; padding-right: 4px; font-weight: 700; color: var(--accent, #b5162b); }
+.cb-dots { display: flex; gap: 6px; justify-content: center; padding: 2px 0 4px; } .cb-dots i { width: 10px; height: 10px; border: 1.5px solid #1b1818; display: block; }
+.cb-dots i.on { background: var(--accent, #b5162b); border-color: var(--accent, #b5162b); }
+.cb-actions { padding-top: 6px; padding-bottom: 6px; }
