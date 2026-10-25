@@ -122,7 +122,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 /* ---------- topo ---------- */
 .topwrap { position: sticky; top: 0; z-index: 20; padding-top: var(--safe-t); background: linear-gradient(var(--bg) 78%, rgb(0 0 0 / 0)); }
 .top { display: flex; align-items: center; gap: 8px; padding: 8px 12px 4px 16px; }
-.brand img { width: 40px; height: 40px; border-radius: 50%; display: block; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--gold); }
+.brand img { width: 40px; height: 40px; display: block; image-rendering: pixelated; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--gold); } /* tambor pixel: quadrado de propósito */
 .ws { flex: 1; min-width: 0; display: flex; gap: 2px; background: rgb(var(--on-rgb) / .12); border: 1px solid var(--on-line); border-radius: 999px; padding: 3px; max-width: 210px; margin: 0 auto; }
 .ws a { flex: 1; text-align: center; text-decoration: none; font: 600 14px/1 var(--body); color: var(--on-bg); padding: 0 10px; border-radius: 999px; min-height: 36px; display: grid; place-items: center; opacity: .85; }
 .ws a.on { background: var(--card); color: var(--ink); opacity: 1; box-shadow: 0 2px 6px rgb(var(--shadow-rgb) / .35); }
@@ -485,7 +485,7 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 
 /* ---------- nada arredondado (pedido da Bea): tudo reto, só o selo do logo continua redondo ---------- */
 *, *::before, *::after { border-radius: 0 !important; }
-.brand img, .hero-logo, .login-logo, .login-logo img { border-radius: 50% !important; }
+.hero-logo, .login-logo, .login-logo img { border-radius: 50% !important; }
 
 /* ---------- metrônomo ---------- */
 .met-main { display: grid; gap: 14px; }
