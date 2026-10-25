@@ -1,14 +1,8 @@
 import * as store from './store.js';
 
+// Por enquanto só o Rabisco (a Bea pediu para tirar os outros; novos temas voltam depois).
 export const THEMES = [
   { id: 'rabisco', nome: 'Rabisco', desc: 'papel claro, pincel vermelho, estrelas e baquetas', sw: ['#f1ebe1', '#fbf8f2', '#b5162b', '#1b1818'] },
-  { id: 'zine', nome: 'Zine colado', desc: 'vinho, papel rasgado, fita e as suas fotos', sw: ['#521622', '#f3e2c4', '#a93a2b', '#d9a441'] },
-  { id: 'backstage', nome: 'Backstage', desc: 'preto de palco, crachás e dourado', sw: ['#141010', '#f7ebdc', '#d9a441', '#a93a2b'] },
-  { id: 'cereja', nome: 'Cereja', desc: 'vermelho profundo, aquarela rosa e dourado', sw: ['#8e1b22', '#fff7f3', '#e88ba4', '#e3a82f'] },
-  { id: 'tapete', nome: 'Tapete', desc: 'vinho e terracota, como o tapete do estúdio', sw: ['#521622', '#f7ebdc', '#c4572f', '#d9a441'] },
-  { id: 'noite', nome: 'Noite estrelada', desc: 'azul-petróleo pintado à mão', sw: ['#0e5560', '#f3f1e2', '#3fa3a0', '#e6c84f'] },
-  { id: 'vitrine', nome: 'Vitrine', desc: 'papel claro, azul-noite e vermelho', sw: ['#ece6d9', '#fffcf6', '#2f4a5e', '#a32a24'] },
-  { id: 'palco', nome: 'Palco', desc: 'azul-marinho e dourado, modo escuro', sw: ['#0e1522', '#19233a', '#2b3f66', '#c9a45c'] },
 ];
 export const FONTS = [
   { id: 'marcador', nome: 'Marcador', desc: 'escrita de canetão, cara de zine', family: 'Permanent Marker' },

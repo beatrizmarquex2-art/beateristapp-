@@ -8,10 +8,10 @@ import { sortedFavs, favChip } from './favs.js';
 import { toast } from '../ui.js';
 import { getLayout, LAYOUT_KEY } from '../layout.js';
 import { todayRoll } from './students.js';
-import { studyWidget, feedWidget, metroWidget, focusWidget, weekWidget } from './widgets.js';
+import { studyWidget, feedWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
-import { lessonsOn } from '../students-logic.js';
-import { weekdayOf } from '../util.js';
+import { factFor } from '../music-facts.js';
+import { HERO_KEY, heroSub } from '../hero-text.js';
 
 const ORDER_KEY = 'setting-shortcuts';
 
@@ -33,26 +33,28 @@ function hero() {
   return h('section', { class: 'hero' },
     spk('s1'), spk('s2'), spk('s3'),
     h('figure', { class: 'hero-photo', role: 'button', tabindex: '0', 'aria-label': 'Trocar a foto da capa', onclick: openCover, onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCover(); } } },
-      h('img', { src: 'assets/zine/bea-rock.webp', alt: '', width: 160, height: 200, decoding: 'async' }), h('figcaption', {}, 'bora tocar')),
+      h('img', { src: 'assets/zine/bea-rock.webp', alt: '', width: 160, height: 200, decoding: 'async' }), h('figcaption', {}, 'bora tocar'),
+      h('span', { class: 'hero-photo-edit', 'aria-hidden': 'true' }, icon('photo', 16))),
     h('div', { class: 'hero-top' },
       h('div', { class: 'hero-title' },
         h('p', { class: 'hello' }, 'oi, bea!'),
         h('h1', { class: 'brand-word' }, 'Beaterista'),
         swash()),
       h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
-    h('p', { class: 'hero-sub' }, 'seu estúdio na palma da mão'),
+    h('p', { class: 'hero-sub' }, heroSub()),
     h('p', { class: 'date-line' }, longDate()),
     heroNote());
 }
 
-/** Bilhete colado do tema Rabisco: a data e o recado do dia (aula ou estudo). */
+/** Bilhete colado do início: uma curiosidade de música ou o sentido de uma canção (muda todo dia; toque para ver outra). */
 function heroNote() {
-  const day = todayKey();
-  const n = lessonsOn(store.list('student'), day, weekdayOf(day), store.list('makeup')).length;
-  const wd = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-  return h('div', { class: 'hero-note', 'aria-hidden': 'true' },
-    h('span', { class: 'hero-note-date' }, wd),
-    h('span', { class: 'hero-note-msg' }, n ? 'hoje tem aula!' : 'dia de estudar!'),
+  let k = 0;
+  const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
+  const paint = () => { const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text; };
+  paint();
+  return h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { k++; paint(); } },
+    kicker, msg,
+    h('small', { class: 'hero-note-more' }, 'toque pra ver outra'),
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
@@ -140,7 +142,7 @@ export function mount(host) {
   }
 
   const roll = todayRoll({ compact: true });
-  const widgets = { semana: weekWidget(), estudar: studyWidget(), feed3: feedWidget(), metro: metroWidget(), foco: focusWidget() };
+  const widgets = { estudar: studyWidget(), feed3: feedWidget(), metro: metroWidget(), foco: focusWidget() };
   const parts = {
     aulas: roll,
     ...widgets,
@@ -166,6 +168,7 @@ export function mount(host) {
     if (!i.kind || (i.kind === 'setting' && i.id === ORDER_KEY)) drawGrid();
     if (!i.kind || (i.kind === 'setting' && i.id === LAYOUT_KEY)) drawLayout();
     if (!i.kind || i.id === COVER_KEY) paintCover(fig);
+    if (!i.kind || i.id === HERO_KEY) top.querySelector('.hero-sub').textContent = heroSub();
     if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
   });
   return () => { off(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };

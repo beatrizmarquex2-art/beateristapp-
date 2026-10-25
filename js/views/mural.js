@@ -121,7 +121,8 @@ export function mount(host) {
       syncHandles(el, rec.id);
     }
     empty.hidden = list.length > 0;
-    count.textContent = list.length ? `${list.length} pôster${list.length > 1 ? 'es' : ''} na parede · as fotos ficam só neste aparelho` : '';
+    wall.classList.toggle('editing', !!sel);
+    count.textContent = list.length ? `${list.length} item${list.length > 1 ? 's' : ''} na parede` : '';
     drawTray();
   }
   function syncHandles(el, id) {
@@ -143,15 +144,48 @@ export function mount(host) {
   const rec = () => (sel ? store.get(sel) : null);
 
   /* ---------- gestos ---------- */
+  // pinça: dois dedos na parede aumentam/diminuem e giram o pôster escolhido
+  const fingers = new Map(); let pinch = null;
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+  wall.addEventListener('pointerdown', (e) => {
+    fingers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (fingers.size === 2 && sel && store.get(sel)) {
+      const [a, b] = [...fingers.values()]; const d0 = store.get(sel).data;
+      pinch = { id: sel, d0, dist: dist(a, b), ang: ang(a, b), w: d0.w, rot: d0.rot || 0 };
+    }
+  }, true);
+  wall.addEventListener('pointermove', (e) => {
+    if (!fingers.has(e.pointerId)) return;
+    fingers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (!pinch || fingers.size < 2) return;
+    const [a, b] = [...fingers.values()]; const el = els.get(pinch.id); if (!el) return;
+    const d0 = pinch.d0; const cx = d0.x + d0.w / 2, cy = d0.y + (d0.w * d0.ratio) / 2;
+    pinch.w = clamp(d0.w * dist(a, b) / (pinch.dist || 1), 100, 1100);
+    let rot = (d0.rot || 0) + ang(a, b) - pinch.ang; rot = ((rot + 180) % 360 + 360) % 360 - 180; if (Math.abs(rot) < 3) rot = 0; pinch.rot = rot;
+    place(el, { ...d0, w: pinch.w, rot, x: cx - pinch.w / 2, y: cy - (pinch.w * d0.ratio) / 2 });
+  }, true);
+  const lift = (e) => {
+    fingers.delete(e.pointerId);
+    if (pinch && fingers.size < 2) {
+      const { id, d0, w, rot } = pinch; pinch = null;
+      const cx = d0.x + d0.w / 2, cy = d0.y + (d0.w * d0.ratio) / 2;
+      store.upsert('poster', id, { w: Math.round(w), rot: Math.round(rot * 10) / 10, x: Math.round(cx - w / 2), y: Math.round(cy - (w * d0.ratio) / 2) });
+    }
+  };
+  wall.addEventListener('pointerup', lift, true); wall.addEventListener('pointercancel', lift, true);
+
   function bindDrag(el, id) {
     el.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.handle')) return;
+      if (fingers.size > 1) return; // segundo dedo: é pinça, não arrasto
       e.preventDefault();
       const r0 = store.get(id); if (!r0) return;
       if (sel !== id) select(id);
       el.setPointerCapture(e.pointerId);
       const sx = e.clientX, sy = e.clientY, ox = r0.data.x, oy = r0.data.y, k = scale(); let moved = false, nx = ox, ny = oy;
       const move = (ev) => {
+        if (pinch) { moved = false; return; } // durante a pinça o pôster não anda
         const dx = ev.clientX - sx, dy = ev.clientY - sy;
         if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
         const w = r0.data.w, hh = w * r0.data.ratio;
@@ -191,7 +225,7 @@ export function mount(host) {
       hd.addEventListener('pointermove', move); hd.addEventListener('pointerup', up); hd.addEventListener('pointercancel', up);
     });
   }
-  wall.addEventListener('pointerdown', (e) => { if (e.target === wall || e.target === empty || e.target.classList.contains('we-card')) { sel = null; sync(); } });
+  wall.addEventListener('pointerdown', (e) => { if (fingers.size > 1) return; if (e.target === wall || e.target === empty || e.target.classList.contains('we-card')) { sel = null; sync(); } });
 
   /* ---------- bandeja de edição ---------- */
   let capInput = null;
@@ -223,6 +257,7 @@ export function mount(host) {
     tray.replaceChildren(
       h('h3', {}, 'Moldura'),
       h('div', { class: 'tray-row' }, ...FRAMES.map(([k, nome]) => h('button', { class: 'frame-opt', type: 'button', 'aria-pressed': String((d.frame || 'rasgado') === k), onclick: () => patch({ frame: k }) }, h('span', { class: `fs f-${k}` }), nome))),
+      h('div', { class: 'tray-row' }, h('button', { class: 'chip-btn', type: 'button', onclick: () => frameAll(d.frame || 'rasgado') }, icon('repeat', 18), 'Usar esta moldura em todos')),
       h('h3', {}, 'Formato'),
       h('div', { class: 'tray-row' }, ...RATIOS.map(([nome, v]) => h('button', { class: 'chip-btn', type: 'button', 'aria-pressed': String(Math.abs(d.ratio - v) < 0.01), onclick: () => patch({ ratio: v }) }, nome))),
       capInput ? h('label', { class: 'field' }, h('span', {}, 'Legenda'), capInput) : null,
@@ -230,6 +265,56 @@ export function mount(host) {
         h('button', { class: 'chip-btn', type: 'button', onclick: () => openCrop(id) }, icon('crop', 18), 'Recortar'),
         h('button', { class: 'chip-btn', type: 'button', onclick: async () => { const b = await pickImage(); if (b) { patch({ imgId: await saveImage(b), zoom: 1, ox: 0, oy: 0 }); toast('Foto trocada.'); } } }, icon('photo', 18), 'Trocar foto'),
         ...common));
+  }
+
+  /* ---------- moldura em vários de uma vez ---------- */
+  async function frameAll(frame, ids = posters().filter((r) => !r.data.sticker).map((r) => r.id)) {
+    for (const id of ids) { const r = store.get(id); if (r && !r.data.sticker && r.data.frame !== frame) await store.upsert('poster', id, { frame }); }
+    toast(`moldura ${(FRAMES.find((f) => f[0] === frame) || [])[1] || frame} em ${ids.length} pôster${ids.length === 1 ? '' : 'es'}.`);
+  }
+
+  /* ---------- camadas: lista de tudo que está na parede, de cima para baixo ---------- */
+  function openLayers() {
+    const picked = new Set();
+    sheet('Camadas', (close) => {
+      const list = h('ol', { class: 'layers' });
+      const bulk = h('div', { class: 'layers-bulk' });
+      const name = (r) => r.data.sticker ? (STICKERS.find((x) => x[0] === r.data.sticker) || [])[1] || 'Adesivo' : (r.data.caption || 'Pôster');
+      const ordered = () => posters().sort((a, b) => (b.data.z || 0) - (a.data.z || 0));
+      const swap = async (i, dir) => { // troca de lugar com a camada vizinha
+        const o = ordered(); const j = i + dir; if (j < 0 || j >= o.length) return;
+        const za = o[i].data.z || 0, zb = o[j].data.z || 0;
+        await store.upsert('poster', o[i].id, { z: zb === za ? zb + (dir < 0 ? 1 : -1) : zb }); await store.upsert('poster', o[j].id, { z: za });
+      };
+      const draw = () => {
+        const o = ordered();
+        list.replaceChildren(...o.map((r, i) => {
+          const thumb = h('span', { class: 'ly-thumb' });
+          if (r.data.sticker) thumb.append(h('img', { src: `assets/mural/${r.data.sticker}.svg`, alt: '' }));
+          else imageUrl(r.data.imgId).then((u) => { if (u) thumb.append(h('img', { src: u, alt: '' })); });
+          const box = h('input', { type: 'checkbox', checked: picked.has(r.id), 'aria-label': `Selecionar ${name(r)}`, onchange: (e) => { if (e.target.checked) picked.add(r.id); else picked.delete(r.id); drawBulk(); } });
+          return h('li', { class: `ly${sel === r.id ? ' on' : ''}` }, box, thumb,
+            h('button', { class: 'ly-name', type: 'button', onclick: () => { close(); select(r.id); ensureVisible(r.id); } }, h('strong', {}, name(r)), h('small', {}, r.data.sticker ? 'elemento' : `moldura ${(FRAMES.find((f) => f[0] === (r.data.frame || 'rasgado')) || [])[1]}`)),
+            h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Subir ${name(r)}`, disabled: i === 0, onclick: () => swap(i, -1) }, icon('up', 18)),
+            h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Descer ${name(r)}`, disabled: i === o.length - 1, onclick: () => swap(i, 1) }, icon('down', 18)));
+        }));
+        drawBulk();
+      };
+      const drawBulk = () => {
+        const ids = [...picked].filter((id) => store.get(id) && !store.get(id).data.sticker);
+        bulk.replaceChildren(
+          h('div', { class: 'row' },
+            h('button', { class: 'btn small', type: 'button', onclick: () => { posters().forEach((r) => picked.add(r.id)); draw(); } }, 'selecionar todos'),
+            h('button', { class: 'btn small ghost', type: 'button', onclick: () => { picked.clear(); draw(); } }, 'limpar seleção')),
+          h('p', { class: 'muted' }, ids.length ? `moldura para os ${ids.length} pôster(es) selecionados:` : 'marque as camadas para trocar a moldura de várias de uma vez.'),
+          ids.length ? h('div', { class: 'tray-row' }, ...FRAMES.map(([k, nome]) => h('button', { class: 'frame-opt', type: 'button', onclick: () => frameAll(k, ids) }, h('span', { class: `fs f-${k}` }), nome))) : null);
+      };
+      const off = store.subscribe((i) => { if (!i.kind || i.kind === 'poster') draw(); });
+      const obs = new MutationObserver(() => { if (!document.body.contains(list)) { off(); obs.disconnect(); } });
+      obs.observe(document.getElementById('overlay'), { childList: true, subtree: true });
+      draw();
+      return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'de cima (na frente) para baixo (atrás). toque no nome para editar; use as setas para mudar a ordem.'), list, bulk);
+    });
   }
 
   /* ---------- recorte: arrastar a foto dentro da moldura + zoom (slider ou pinça) ---------- */
@@ -308,10 +393,11 @@ export function mount(host) {
   wall.append(empty);
   host.append(
     banner('Mural de Artistas', 'a parede dos artistas que você ama'),
-    h('p', { class: 'muted pad-x' }, 'Toque num pôster para editar. Arraste para mover, puxe a bolinha de baixo para aumentar e a de cima para girar.'),
+    h('p', { class: 'muted pad-x' }, 'Toque num pôster para editar. Arraste para mover; com dois dedos você aumenta, diminui e gira (ou use as bolinhas).'),
     h('div', { class: 'row pad-x', style: { margin: '6px 0 8px' } },
       h('button', { class: 'btn primary', type: 'button', onclick: add }, icon('plus', 20), 'Adicionar pôster'),
-      h('button', { class: 'btn', type: 'button', onclick: openStickers }, icon('star', 20), 'Adicionar elemento')),
+      h('button', { class: 'btn', type: 'button', onclick: openStickers }, icon('star', 20), 'Adicionar elemento'),
+      h('button', { class: 'btn', type: 'button', onclick: openLayers }, icon('front', 20), 'Camadas')),
     wallRow, wall, count, spacer, tray);
   drawWallRow(); sync();
   const off = store.subscribe((i) => { if (!i.kind || i.kind === 'poster') sync(); if (!i.kind || (i.kind === 'setting' && i.id === WALL_KEY)) drawWallRow(); });

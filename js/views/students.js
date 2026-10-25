@@ -6,6 +6,7 @@ import { banner, sheet, toast, stamp, confirmSheet } from '../ui.js';
 import * as S from '../students-logic.js';
 import { pickImages, saveImage, imageUrl } from './mural.js';
 import { partnerStrip } from './home.js';
+import { weekWidget } from './widgets.js';
 
 const students = () => store.list('student').sort((a, b) => a.data.name.localeCompare(b.data.name));
 const lessons = () => store.list('lesson');
@@ -189,6 +190,7 @@ function mountStudent(host, id) {
 function mountList(host) {
   let q = '', showArchived = false, inst = '';
   const roll = todayRoll();
+  const week = weekWidget();
   const list = h('div', { class: 'st-list' });
   const chips = h('div', { class: 'chips lib-tabs st-chips' });
   const search = h('input', { type: 'search', placeholder: 'buscar aluno…', 'aria-label': 'Buscar aluno', enterkeyhint: 'search' });
@@ -213,6 +215,7 @@ function mountList(host) {
   host.append(
     banner('Alunos', 'aulas, presença e histórico'),
     roll,
+    week,
     h('div', { class: 'card pad' }, search,
       h('div', { class: 'seg' }, ...[['ativos', false], ['arquivados', true]].map(([t, v]) => h('button', { type: 'button', class: v === showArchived ? 'on' : '', onclick: (e) => { showArchived = v; e.currentTarget.parentNode.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === e.currentTarget)); draw(); } }, t)))),
     h('nav', { class: 'st-tools', 'aria-label': 'Ferramentas para usar em aula' }, h('span', { class: 'lib-kicker' }, 'usar em aula'),
@@ -224,7 +227,7 @@ function mountList(host) {
     partnerStrip());
   draw();
   const off = store.subscribe((i) => { if (!i.kind || ['student', 'lesson'].includes(i.kind)) draw(); });
-  return () => { off(); roll.unsub(); };
+  return () => { off(); roll.unsub(); week.unsub(); };
 }
 
 export function mount(host, parts) {

@@ -36,7 +36,6 @@ const NAV = [
   ['#/beaterista', 'drummer', 'Alunos'],
   ['#/beatlab', 'kit', 'Beat Lab'],
   ['#/estudos', 'study', 'Estudos'],
-  ['#/feed', 'mural', 'Feed'],
 ];
 
 function route() {
