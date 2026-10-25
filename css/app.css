@@ -1286,3 +1286,92 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .kd-foods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 520px; }
 .kd-food { display: grid; gap: 2px; justify-items: center; padding: 8px 4px; border: 3px solid #1b1818; background: #fffdf8; color: #1b1818; cursor: pointer; font: 700 14px var(--body); } .kd-food small { font-size: 10px; font-weight: 400; color: #5f5752; }
 .kd-food:disabled { opacity: .45; } .kd-food .kd-emoji, .kd-slot .kd-emoji { font-size: 30px; }
+
+/* ============ The Listening Club: revista independente (identidade própria, só dentro de .lc) ============ */
+.lc { --lc-paper: #F5F0E8; --lc-red: #9E1725; --lc-ink: #171719; --lc-navy: #23384E; --lc-ochre: #C5A15D; --lc-gray: #77736F;
+  --lc-serif: 'Abril Fatface', 'Bodoni Moda', Georgia, serif; --lc-ital: 'Bodoni Moda', Georgia, serif; --lc-cond: 'Anton', 'Arial Narrow', sans-serif; --lc-type: 'Special Elite', 'Courier New', monospace; --lc-hand: 'Gochi Hand', 'Permanent Marker', cursive;
+  position: relative; margin: 0 0 18px; padding: 14px 16px 22px; background: var(--lc-paper) var(--grain); color: var(--lc-ink); box-shadow: 0 1px 0 rgb(0 0 0 / .06); overflow: hidden; }
+.lc a { color: inherit; }
+.lc-kick { margin: 0; font: 400 13px/1 var(--lc-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--lc-red); }
+.lc-hand { font: 400 22px/1.2 var(--lc-hand); color: var(--lc-navy); margin: 6px 0; }
+.lc-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; background: var(--lc-ink); color: var(--lc-paper) !important; border: 0; font: 400 15px var(--lc-cond); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+.lc-btn.ghost { background: transparent; color: var(--lc-ink) !important; box-shadow: inset 0 0 0 2px var(--lc-ink); } .lc-btn.small { padding: 6px 10px; font-size: 18px; }
+.lc-link { font: 400 13px var(--lc-type); text-decoration: underline; }
+/* cabeçalho */
+.lc-mast { text-align: center; border-bottom: 3px double var(--lc-ink); padding-bottom: 10px; margin-bottom: 16px; }
+.lc-issue { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 4px; font: 11px var(--lc-type); text-transform: uppercase; letter-spacing: .06em; color: var(--lc-gray); border-bottom: 1px solid var(--lc-ink); padding-bottom: 4px; }
+.lc-logo { display: block; text-decoration: none; line-height: .82; margin: 6px 0 2px; }
+.lc-logo span { display: block; font: 400 clamp(46px, 15vw, 96px) var(--lc-serif); letter-spacing: -.02em; color: var(--lc-ink); }
+.lc-logo .lc-the { font: italic 400 clamp(20px, 6vw, 34px) var(--lc-ital); color: var(--lc-red); margin-bottom: -2px; }
+.lc-mast.small .lc-logo span { font-size: clamp(34px, 10vw, 60px); } .lc-mast.small .lc-logo .lc-the { font-size: 18px; }
+.lc-tag { margin: 4px 0 8px; font: 400 19px var(--lc-hand); color: var(--lc-navy); transform: rotate(-1.5deg); }
+.lc-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font: 400 14px var(--lc-cond); letter-spacing: .1em; text-transform: uppercase; }
+.lc-nav a, .lc-nav button { background: none; border: 0; padding: 4px 0; color: var(--lc-ink); font: inherit; letter-spacing: inherit; text-transform: inherit; text-decoration: none; cursor: pointer; }
+.lc-nav .lc-surprise { color: var(--lc-red); }
+/* matéria de capa */
+.lc-img { position: relative; display: block; overflow: hidden; background: var(--lc-ink); }
+.lc-img img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(.35) contrast(1.08) sepia(.12); }
+.lc-img .art-ph { width: 100%; height: 100%; }
+.lc-vinyl { position: absolute; inset: 12%; border-radius: 50%; background: radial-gradient(circle, var(--lc-red) 0 14%, var(--lc-paper) 14.5% 16%, var(--lc-ink) 16.5%), repeating-radial-gradient(circle, #222 0 2px, #111 2px 4px); background-blend-mode: normal; box-shadow: 0 0 0 2px #000; }
+.lc-cover { position: relative; display: block; text-decoration: none; margin: 0 -4px 22px; }
+.lc-cover .lc-img { aspect-ratio: 4 / 5; max-height: 560px; }
+.lc-cover::before, .lc-cover::after { content: ""; position: absolute; z-index: 2; width: 84px; height: 24px; background: rgb(235 228 210 / .85); box-shadow: 0 1px 2px rgb(0 0 0 / .2); }
+.lc-cover::before { top: -8px; left: 18px; transform: rotate(-6deg); } .lc-cover::after { top: -6px; right: 22px; transform: rotate(5deg); }
+.lc-stamp { position: absolute; z-index: 2; top: 16px; right: 12px; padding: 3px 8px; border: 2px solid var(--lc-paper); color: var(--lc-paper); font: 400 13px var(--lc-cond); letter-spacing: .14em; text-transform: uppercase; transform: rotate(3deg); background: rgb(158 23 37 / .85); }
+.lc-head { position: relative; z-index: 2; display: grid; gap: 4px; margin: -64px 14px 0 0; padding: 12px 14px 12px 12px; background: var(--lc-paper); box-shadow: 6px 6px 0 var(--lc-red); }
+.lc-head b { font: 400 clamp(30px, 9vw, 52px)/.98 var(--lc-serif); color: var(--lc-ink); }
+.lc-head em { font: italic 400 17px var(--lc-ital); color: var(--lc-navy); }
+.lc-note { position: absolute; z-index: 3; right: 6px; bottom: -24px; font: 400 20px var(--lc-hand); color: var(--lc-red); transform: rotate(-4deg); }
+/* índice */
+.lc-index { margin: 34px 0 20px; } .lc-index ol { list-style: none; margin: 8px 0 0; padding: 0; }
+.lc-index li a { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--lc-gray); text-decoration: none; }
+.lc-n { font: 400 30px var(--lc-serif); color: var(--lc-red); } .lc-t b { display: block; font: 400 20px/1.15 var(--lc-serif); } .lc-t small { font: 12px var(--lc-type); color: var(--lc-gray); text-transform: uppercase; }
+/* seções (fichas de arquivo coloridas) */
+.lc-secs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0 22px; }
+.lc-sec { position: relative; display: grid; gap: 4px; align-content: start; text-align: left; padding: 12px 12px 26px; min-height: 120px; border: 0; color: var(--lc-paper); cursor: pointer; font: inherit; clip-path: polygon(0 6px, 38% 6px, 44% 0, 100% 0, 100% 100%, 0 100%); }
+.lc-sec b { font: 400 17px/1.05 var(--lc-cond); letter-spacing: .06em; text-transform: uppercase; } .lc-sec small { font-size: 12px; line-height: 1.3; opacity: .9; }
+.lc-sec i { position: absolute; right: 10px; bottom: 4px; font: 400 26px var(--lc-serif); font-style: normal; }
+.s-album { background: var(--lc-navy); } .s-anatomia { background: var(--lc-red); } .s-historias { background: var(--lc-ochre); color: var(--lc-ink); } .s-dna { background: var(--lc-ink); } .s-versoes { background: var(--lc-gray); } .s-caderno { background: #fffdf8; color: var(--lc-ink); box-shadow: inset 0 0 0 2px var(--lc-ink); }
+.lc-sec.on { outline: 3px solid var(--lc-ochre); outline-offset: 2px; }
+/* mais matérias (cards diferentes) */
+.lc-more { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 10px 0 22px; }
+.lc-card { display: grid; gap: 6px; align-content: start; padding: 10px; text-decoration: none; }
+.lc-card b { font: 400 18px/1.1 var(--lc-serif); } .lc-card small { font-size: 13px; color: #3a3836; }
+.lc-card.polaroid { background: #fff; padding: 8px 8px 14px; box-shadow: 0 8px 16px -8px rgb(0 0 0 / .45); transform: rotate(-1.5deg); } .lc-card.polaroid .lc-img { aspect-ratio: 1; } .lc-card.polaroid b { font: 400 19px var(--lc-hand); }
+.lc-card.clip { background: #efe7d6; clip-path: polygon(0 2%, 8% 0, 22% 3%, 40% 0, 60% 2%, 78% 0, 100% 3%, 98% 98%, 80% 100%, 55% 97%, 30% 100%, 6% 97%); transform: rotate(1deg); }
+.lc-card.tape { background: var(--lc-ink); color: var(--lc-paper); border-top: 10px solid var(--lc-ochre); } .lc-card.tape .lc-kick { color: var(--lc-ochre); } .lc-card.tape small { color: #d8d0c4; }
+/* estante */
+.lc-shelf { margin: 10px 0 18px; } .lc-sleeves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.lc-sleeves.lc-wall { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.lc-sleeve { position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; background: var(--lc-navy); color: var(--lc-paper); text-decoration: none; overflow: hidden; box-shadow: 3px 3px 0 var(--lc-ink); cursor: pointer; font: inherit; }
+.lc-sleeve:nth-child(3n+2) { background: var(--lc-red); } .lc-sleeve:nth-child(3n) { background: var(--lc-ochre); color: var(--lc-ink); }
+.lc-sleeve img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.lc-sl-txt { position: absolute; inset: 0; display: grid; align-content: end; gap: 2px; padding: 8px; text-align: left; } .lc-sl-txt b { font: 400 15px/1.05 var(--lc-serif); } .lc-sl-txt small { font: 10px var(--lc-type); }
+.lc-sleeve.fav::after { content: "♥"; position: absolute; z-index: 2; top: 4px; right: 6px; color: #fff; text-shadow: 0 0 3px #000; }
+.lc-st { position: absolute; z-index: 2; left: 0; bottom: 0; padding: 2px 6px; font: 400 10px var(--lc-cond); letter-spacing: .08em; text-transform: uppercase; background: var(--lc-paper); color: var(--lc-ink); }
+.lc-st.st-ouvindo { background: var(--lc-red); color: #fff; }
+.lc-find { margin: 0 0 18px; } .lc-search { gap: 8px; margin-top: 8px; } .lc-search input { flex: 1; min-width: 0; }
+.lc-results { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; } .lc-results li { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: center; padding: 6px; background: #fffdf8; border: 1px solid rgb(0 0 0 / .12); }
+.lc-thumb { width: 52px; height: 52px; background: var(--lc-navy); overflow: hidden; } .lc-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lc-r-t { min-width: 0; display: grid; } .lc-r-t b { font: 400 16px var(--lc-serif); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lc-r-t small { font: 11px var(--lc-type); color: var(--lc-gray); }
+.lc-manual { margin-top: 10px; } .lc-manual summary { cursor: pointer; font: 13px var(--lc-type); }
+.lc-filter { margin-top: 8px; }
+.lc-alb-top { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: start; } .lc-alb-top b { font-size: 18px; }
+.lc-rate { display: flex; gap: 2px; margin: 6px 0; } .lc-rate button { background: none; border: 0; font-size: 26px; color: #cfc6b8; cursor: pointer; padding: 0 2px; } .lc-rate button.on { color: #C5A15D; }
+.lc-drafts ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
+.lc-empty { text-align: center; padding: 30px 10px; } .lc-empty p { margin: 6px 0 12px; }
+.lc-foot { margin: 18px 0 0; font: 11px var(--lc-type); color: var(--lc-gray); text-align: center; }
+/* matéria */
+.lc-article { padding-top: 12px; } .lc-back { display: inline-block; margin-bottom: 14px; font: 400 13px var(--lc-cond); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; }
+.lc-arch { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; } .lc-arch span { padding: 2px 7px; border: 1.5px solid var(--lc-ink); font: 400 12px var(--lc-cond); letter-spacing: .12em; text-transform: uppercase; } .lc-arch span:first-child { background: var(--lc-red); color: var(--lc-paper); border-color: var(--lc-red); }
+.lc-title { margin: 0; font: 400 clamp(34px, 10vw, 60px)/.98 var(--lc-serif); letter-spacing: -.01em; }
+.lc-dek { margin: 8px 0 14px; font: italic 400 20px var(--lc-ital); color: var(--lc-navy); }
+.lc-fig { position: relative; margin: 0 0 22px; padding: 8px 8px 30px; background: #fff; box-shadow: 0 10px 20px -10px rgb(0 0 0 / .5); transform: rotate(-1deg); }
+.lc-fig .lc-img { aspect-ratio: 4 / 3; } .lc-fig figcaption { position: absolute; left: 12px; bottom: 4px; font: 400 18px var(--lc-hand); color: var(--lc-navy); }
+.lc-fig::before { content: ""; position: absolute; z-index: 2; top: -10px; left: 50%; width: 90px; height: 24px; transform: translateX(-50%) rotate(-3deg); background: rgb(235 228 210 / .85); }
+.lc-body { font: 17.5px/1.68 var(--body); } .lc-body > p:first-of-type::first-letter { float: left; margin: 6px 8px 0 0; font: 400 62px/.8 var(--lc-serif); color: var(--lc-red); }
+.lc-body h2, .lc-body h3 { font: 400 26px/1.1 var(--lc-serif); margin: 26px 0 8px; } .lc-body h3 { font-size: 21px; }
+.lc-body blockquote { margin: 22px 0; padding: 4px 0 4px 18px; border-left: 4px solid var(--lc-red); font: italic 400 22px/1.35 var(--lc-ital); color: var(--lc-navy); }
+.lc-body strong { background: linear-gradient(transparent 60%, rgb(197 161 93 / .45) 60%); }
+.lc-src { margin: 26px 0 0; padding: 12px; background: #efe7d6; } .lc-src ol { margin: 8px 0 0; padding-left: 22px; font: 13px/1.5 var(--lc-type); overflow-wrap: anywhere; }
+.lc-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
