@@ -9,6 +9,7 @@ import { banner, toast, confirmSheet, sheet } from '../ui.js';
 const FILE = 'file', FOLDER = 'folder';
 const KIND_ICON = { pdf: 'book', imagem: 'photo', audio: 'mic', video: 'photo', partitura: 'staff', doc: 'note', planilha: 'check', outro: 'folder' };
 const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short' }).format(new Date(ts));
+const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // replaceChildren(null) escreveria "null"
 const field = (label, input) => h('label', { class: 'field' }, h('span', {}, label), input);
 
 // pastas iniciais com id fixo: dois aparelhos criando ao mesmo tempo não duplicam, e pasta apagada não volta
@@ -118,7 +119,7 @@ export function mount(host, parts = []) {
     }
     if (!folderId) {
       const recent = [...all].sort(sortNew).slice(0, 4);
-      body.replaceChildren(
+      put(body,
         h('div', { class: 'ar-grid' }, ...folderList(folders, all).map((f) => h('a', { class: 'ar-folder', href: `#/arquivos/${f.id}` }, icon('folder', 26), h('b', {}, f.name), h('small', { class: 'muted' }, f.n === 1 ? '1 arquivo' : `${f.n} arquivos`))),
           h('button', { class: 'ar-folder ar-new', type: 'button', onclick: () => folderSheet(null) }, icon('plus', 26), h('b', {}, 'nova pasta'))),
         recent.length ? h('h3', { class: 'pad-x ar-h' }, 'mais recentes') : null, recent.length ? h('ul', { class: 'ar-list' }, ...recent.map(row)) : null);

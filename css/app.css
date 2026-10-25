@@ -1104,3 +1104,26 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .k-pdf .ar-ico { background: #b5162b; } .k-imagem .ar-ico, .k-video .ar-ico { background: #7b3fb8; } .k-audio .ar-ico { background: #1f6fd1; } .k-partitura .ar-ico { background: #1f9d4a; }
 .ar-name { min-width: 0; display: grid; } .ar-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; } .ar-name small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ar-preview { display: grid; gap: 10px; justify-items: center; } .ar-preview img, .ar-preview video { max-width: 100%; max-height: 60vh; } .ar-preview audio { width: 100%; }
+
+/* Bateristas & Links */
+.bt-tabs { padding: 8px 16px 0; } .bt-tabs a { text-decoration: none; }
+.bt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; padding: 12px 16px; }
+.bt-card { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 12px 8px; background: var(--card, #fff); border: 1.5px solid var(--line, rgb(0 0 0 / .15)); color: inherit; text-decoration: none; }
+.bt-card.fav { box-shadow: inset 0 4px 0 #e0a100; } .bt-card b { margin-top: 8px; overflow-wrap: anywhere; } .bt-card small { font-size: 12px; }
+.art-ph.bt-ph-s { width: 84px; height: 100px; } .art-ph.bt-ph { width: 120px; height: 146px; }
+.bt-hero { display: flex; gap: 16px; align-items: flex-start; margin: 10px 0 4px; } .bt-hero-txt { min-width: 0; flex: 1; }
+.bt-hero h2 { margin: 0 0 4px; font-size: 22px; overflow-wrap: anywhere; } .bt-style { margin: 0; font-weight: 600; color: var(--accent); } .bt-why { margin: 6px 0; }
+.bt-hero-act { gap: 6px; flex-wrap: wrap; }
+.bt-form { display: grid; gap: 8px; margin-top: 10px; }
+.bt-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.bt-link { display: grid; gap: 6px; padding: 10px; background: var(--card, #fff); border: 1px solid var(--line, rgb(0 0 0 / .12)); }
+.bt-link-main { display: grid; gap: 2px; min-width: 0; } .bt-link-main a { font-weight: 600; overflow-wrap: anywhere; }
+.bt-type { font: 700 10px var(--body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.t-youtube .bt-type { color: #c4302b; } .t-instagram .bt-type { color: #c13584; } .t-spotify .bt-type { color: #1a8f45; }
+.bt-link-act { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .bt-link-act .icon-btn { margin-left: auto; }
+.bt-player iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; display: block; }
+.bt-search { margin-top: 10px; }
+.bt-sugg { margin: 10px 0; } .bt-sugg summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.bt-sugg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.bt-sugg li { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line, rgb(0 0 0 / .15)); }
+.bt-sugg li p { margin: 2px 0 0; font-size: 13px; }
