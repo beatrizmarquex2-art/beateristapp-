@@ -10,6 +10,9 @@ import { pickImages, saveImage, imageUrl } from './mural.js';
 import { artPhoto } from './artist-photo.js';
 import { WIKI } from '../catalog.js';
 import { STATUS, mbSearchUrl, coverUrl, parseMB, albumLine, shelfSort } from '../albums-logic.js';
+import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchUrl, wikiSummaryUrl, pickWikiTitle } from '../musicdata.js';
+import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
+import { readZip } from '../zip.js';
 
 export const SECTIONS = [
   { id: 'album', label: 'Álbum por Dentro', pt: 'um disco aberto faixa por faixa: história, créditos e gravação' },
@@ -79,6 +82,84 @@ function surprise() {
   location.hash = pool[Math.floor(Math.random() * pool.length)];
 }
 
+/* ---------- ficha técnica (MusicBrainz) e resumo (Wikipedia) ---------- */
+const getJson = async (u) => { const r = await fetch(u, { headers: { Accept: 'application/json' } }); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); };
+async function fetchSheet(rgid) {
+  const rid = pickRelease(await getJson(releasesUrl(rgid))); if (!rid) return null;
+  await new Promise((ok) => setTimeout(ok, 1100)); // o MusicBrainz pede no máximo 1 pedido por segundo
+  return { ...parseRelease(await getJson(releaseUrl(rid))), at: Date.now() };
+}
+async function fetchWiki(album, artist) {
+  for (const lang of ['pt', 'en']) {
+    try {
+      const t = pickWikiTitle(await getJson(wikiSearchUrl(lang, `${album} ${artist} álbum`)), album); if (!t) continue;
+      const sm = await getJson(wikiSummaryUrl(lang, t));
+      if (sm && sm.extract) return { lang, title: sm.title || t, extract: sm.extract, url: (sm.content_urls && sm.content_urls.desktop && sm.content_urls.desktop.page) || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t)}` };
+    } catch { /* tenta a próxima língua */ }
+  }
+  return null;
+}
+/** Bloco da ficha técnica. `save(patch)` guarda no registro (disco ou matéria) pra não buscar de novo. */
+function fichaEl(d, save) {
+  const box = h('section', { class: 'lc-ficha' });
+  const draw = (busy, err) => {
+    const f = d.sheet; const w = d.wiki;
+    box.replaceChildren(...[
+      h('div', { class: 'row between' }, h('h2', { class: 'lc-kick' }, 'ficha técnica'), d.mbid ? h('button', { class: 'lc-btn small2', type: 'button', disabled: busy, onclick: load }, busy ? 'buscando…' : f ? 'atualizar' : 'trazer ficha técnica') : null),
+      !d.mbid ? h('p', { class: 'muted' }, 'esse texto não está ligado a um disco. escreva a partir de “meus álbuns” pra ter a ficha automática.') : null,
+      err ? h('p', { class: 'muted' }, 'não consegui buscar agora (sem internet?). tenta de novo depois.') : null,
+      f ? h('div', { class: 'lc-ficha-grid' },
+        h('div', {}, h('h3', {}, 'faixas'), f.tracks.length ? h('ol', { class: 'lc-tracks' }, ...f.tracks.map((t) => h('li', {}, h('span', {}, t.title), h('small', {}, t.len)))) : h('p', { class: 'muted' }, 'sem faixas na fonte.')),
+        h('div', {}, h('h3', {}, 'quem tocou e quem fez'), f.people.length ? h('ul', { class: 'lc-people' }, ...f.people.map((x) => h('li', {}, h('b', {}, x.name), ` · ${x.roles.join(', ')}`))) : h('p', { class: 'muted' }, 'a fonte ainda não tem os créditos dos músicos desse disco.'),
+          f.writers.length ? [h('h3', {}, 'composição'), h('ul', { class: 'lc-people' }, ...f.writers.map((x) => h('li', {}, h('b', {}, x.name), ` · ${x.roles.join(', ')}`)))] : null,
+          f.studios.length || f.label || f.date ? h('p', { class: 'lc-meta' }, [f.studios.length ? `gravado em ${f.studios.join(', ')}` : '', f.label ? `selo ${f.label}` : '', f.date ? `lançado em ${f.date.split('-').reverse().join('/')}` : ''].filter(Boolean).join(' · ')) : null)) : null,
+      w ? h('div', { class: 'lc-wiki' }, h('h3', {}, 'resumo'), h('p', {}, w.extract), h('small', {}, 'fonte: ', h('a', { href: w.url, target: '_blank', rel: 'noopener noreferrer' }, `Wikipedia (${w.lang === 'pt' ? 'português' : 'inglês'}) · ${w.title}`))) : null,
+      f ? h('small', { class: 'lc-cred' }, 'dados: ', h('a', { href: mbPage(d.mbid), target: '_blank', rel: 'noopener noreferrer' }, 'MusicBrainz'), ' (enciclopédia aberta feita por fãs; pode estar incompleta).') : null,
+    ].filter(Boolean));
+  };
+  async function load() {
+    draw(true);
+    try { const sheet = await fetchSheet(d.mbid); const wiki = await fetchWiki(d.album || d.title, d.artist || ''); Object.assign(d, { sheet, wiki }); await save({ sheet, wiki }); draw(false); }
+    catch { draw(false, true); }
+  }
+  draw(false);
+  return box;
+}
+
+/* ---------- importar textos (.zip, .md, .txt, .docx) ---------- */
+async function importTexts(files) {
+  const found = [];
+  const docx = async (bytes) => { const e = (await readZip(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength))).find((x) => x.name === 'word/document.xml'); return e ? docxToMarkdown(new TextDecoder().decode(await e.read())) : ''; };
+  for (const f of files) {
+    const n = f.name;
+    if (/\.zip$/i.test(n)) {
+      for (const e of await readZip(await f.arrayBuffer())) {
+        if (isText(e.name)) found.push(parseTextFile(e.name, new TextDecoder().decode(await e.read())));
+        else if (isDocx(e.name)) found.push(parseTextFile(e.name, await docx(await e.read())));
+      }
+    } else if (isText(n)) found.push(parseTextFile(n, await f.text()));
+    else if (isDocx(n)) found.push(parseTextFile(n, await docx(new Uint8Array(await f.arrayBuffer()))));
+  }
+  const albs = albums();
+  for (const t of found) {
+    // se o disco já está na estante, liga o texto a ele (capa e ficha técnica automáticas)
+    const a = albs.find((r) => r.data.mbid && t.album && r.data.title.toLowerCase() === t.album.toLowerCase());
+    await store.upsert('clubpost', null, { ...t, cover: null, mbid: a ? a.data.mbid : null, status: 'rascunho', date: Date.now() });
+  }
+  return found.length;
+}
+function pickTexts() {
+  const input = h('input', { type: 'file', multiple: true, accept: '.zip,.md,.markdown,.txt,.docx', style: { display: 'none' } });
+  document.body.append(input);
+  input.addEventListener('change', async () => {
+    const list = [...input.files]; input.remove(); if (!list.length) return;
+    toast('lendo os textos…', { id: 'lc-imp', ms: 30000 });
+    try { const n = await importTexts(list); toast(n ? `${n} texto(s) na gaveta ✓ revisa e publica` : 'não achei textos (.md, .txt ou .docx) aí dentro', { id: 'lc-imp', ms: 3000 }); }
+    catch (e) { toast(`não consegui ler: ${e.message || 'arquivo estranho'}`, { id: 'lc-imp', ms: 4000 }); }
+  });
+  input.click();
+}
+
 /* ---------- cabeçalho de revista ---------- */
 function masthead(small) {
   const n = posts().filter((p) => p.data.status === 'publicado').length;
@@ -88,7 +169,7 @@ function masthead(small) {
     h('p', { class: 'lc-tag' }, 'meu clube de escuta, ouvido por dentro'),
     h('nav', { class: 'lc-nav', 'aria-label': 'Listening Club' },
       h('a', { href: '#/estudos/club' }, 'capa'), h('a', { href: '#/estudos/club/discos' }, 'meus álbuns'),
-      h('button', { type: 'button', onclick: () => newPost() }, '+ escrever'), h('button', { type: 'button', class: 'lc-surprise', onclick: surprise }, 'me surpreenda ✦')));
+      h('button', { type: 'button', onclick: () => newPost() }, '+ escrever'), h('button', { type: 'button', onclick: pickTexts }, 'importar textos'), h('button', { type: 'button', class: 'lc-surprise', onclick: surprise }, 'me surpreenda ✦')));
 }
 
 export function mountClub(host, tabs) {
@@ -118,7 +199,9 @@ export function mountClub(host, tabs) {
       })) : null,
       h('section', { class: 'lc-shelf' }, h('div', { class: 'row between' }, h('h2', { class: 'lc-kick' }, 'na minha estante'), h('a', { class: 'lc-link', href: '#/estudos/club/discos' }, 'ver todos →')),
         shelf.length ? h('div', { class: 'lc-sleeves' }, ...shelf.map((a) => sleeve(a))) : h('p', { class: 'lc-hand' }, 'nenhum disco ainda. busca o primeiro em “meus álbuns”.')),
-      drafts.length ? h('section', { class: 'lc-drafts' }, h('h2', { class: 'lc-kick' }, 'na gaveta (rascunhos)'), h('ul', {}, ...drafts.map((p) => h('li', {}, h('a', { href: `#/estudos/club/${p.id}` }, p.data.title), h('small', {}, ` · ${sec(p.data.section).label}`))))) : null,
+      drafts.length ? h('section', { class: 'lc-drafts' }, h('div', { class: 'row between' }, h('h2', { class: 'lc-kick' }, `na gaveta (${drafts.length} rascunho${drafts.length > 1 ? 's' : ''})`),
+          h('button', { class: 'lc-btn small2', type: 'button', onclick: async () => { if (!(await confirmSheet('Publicar tudo da gaveta?', `${drafts.length} texto(s) vão pra revista.`, 'Publicar'))) return; for (const p of drafts) await store.upsert('clubpost', p.id, { status: 'publicado' }); toast('publicados ✓'); } }, 'publicar todos')),
+        h('ul', {}, ...drafts.map((p) => h('li', {}, h('a', { href: `#/estudos/club/${p.id}` }, p.data.title), h('small', {}, ` · ${sec(p.data.section).label}${p.data.artist ? ` · ${p.data.artist}` : ''}`))))) : null,
       h('p', { class: 'lc-foot' }, 'privado: só você vê. dados de discos: MusicBrainz e Cover Art Archive (abertos). fato com fonte, opinião marcada.')].filter(Boolean));
   };
   host.append(tabs, box);
@@ -143,6 +226,7 @@ export function mountPost(host, id, tabs) {
       d.artist || d.album ? h('p', { class: 'lc-dek' }, [d.artist, d.album].filter(Boolean).join(' · ')) : null,
       h('figure', { class: 'lc-fig' }, cover(d, 'big'), h('figcaption', {}, d.album || d.artist || s.label)),
       bodyEl,
+      d.mbid || d.section === 'album' ? fichaEl({ ...d }, (patch) => store.upsert('clubpost', rec.id, patch)) : null,
       srcs.length ? h('section', { class: 'lc-src' }, h('h2', { class: 'lc-kick' }, 'fontes'), h('ol', {}, ...srcs.map((x) => h('li', {}, /^https?:\/\//.test(x) ? h('a', { href: x, target: '_blank', rel: 'noopener noreferrer' }, x.replace(/^https?:\/\/(www\.)?/, '')) : x)))) : null,
       h('div', { class: 'lc-tools' }, h('button', { class: 'lc-btn', type: 'button', onclick: () => sheet('Editar texto', (close) => editor(rec, close)) }, 'editar'),
         ls ? h('a', { class: 'lc-btn ghost', href: `#/estudos/a/${ls}` }, `${d.artist} no Laboratório`) : null),
@@ -174,6 +258,7 @@ function albumSheet(r) {
         h('button', { type: 'button', class: `btn small${fav ? ' st-paid' : ''}`, 'aria-pressed': String(fav), onclick: () => { fav = !fav; draw(); } }, fav ? '♥ favorito' : '♡ favoritar'))),
       h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Status' }, ...STATUS.map(([k, t]) => h('button', { type: 'button', class: `lib-tab${status === k ? ' on' : ''}`, role: 'radio', 'aria-checked': String(status === k), onclick: () => { status = k; draw(); } }, t))),
       h('label', { class: 'field' }, h('span', {}, 'notas'), notes),
+      a.mbid ? fichaEl({ ...a }, (patch) => store.upsert('album', r.id, patch)) : null,
       h('div', { class: 'row end' },
         h('button', { class: 'btn ghost danger-txt', type: 'button', onclick: async () => { if (await confirmSheet('Tirar da estante?', a.title, 'Tirar')) { await store.remove(r.id); close(); } } }, 'tirar'),
         h('button', { class: 'btn', type: 'button', onclick: async () => { await store.upsert('album', r.id, { status, rating, fav, notes: notes.value.trim() }); close(); newPost({ section: 'album', artist: a.artist, album: a.title, mbid: a.mbid || null, title: `${a.title}, por dentro` }); } }, 'escrever sobre ele'),

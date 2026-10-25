@@ -1375,3 +1375,21 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .lc-body strong { background: linear-gradient(transparent 60%, rgb(197 161 93 / .45) 60%); }
 .lc-src { margin: 26px 0 0; padding: 12px; background: #efe7d6; } .lc-src ol { margin: 8px 0 0; padding-left: 22px; font: 13px/1.5 var(--lc-type); overflow-wrap: anywhere; }
 .lc-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+/* Listening Club: ficha técnica */
+.lc-ficha { margin: 24px 0 0; padding: 14px; background: #fffdf8; border: 2px solid var(--lc-ink, #171719); box-shadow: 5px 5px 0 var(--lc-navy, #23384E); }
+.lc-ficha h3 { margin: 12px 0 6px; font: 400 15px var(--lc-cond, 'Anton', sans-serif); letter-spacing: .1em; text-transform: uppercase; color: var(--lc-navy, #23384E); }
+.lc-ficha-grid { display: grid; gap: 4px 18px; } @media (min-width: 640px) { .lc-ficha-grid { grid-template-columns: 1fr 1fr; } }
+.lc-tracks { margin: 0; padding-left: 22px; font-size: 14.5px; } .lc-tracks li { padding: 2px 0; border-bottom: 1px dotted #c9c0b2; } .lc-tracks li span { display: inline-block; max-width: 78%; } .lc-tracks small { float: right; font: 12px var(--lc-type, monospace); color: #77736F; }
+.lc-people { list-style: none; margin: 0; padding: 0; font-size: 14px; display: grid; gap: 3px; }
+.lc-meta, .lc-cred { display: block; margin: 10px 0 0; font: 12px var(--lc-type, monospace); color: #77736F; }
+.lc-wiki p { margin: 0 0 6px; font: italic 400 16px/1.5 var(--lc-ital, Georgia, serif); }
+.lc-btn.small2 { padding: 5px 10px; font-size: 13px; } .lc-btn:disabled { opacity: .6; }
+.sheet .lc-ficha { box-shadow: none; }
+
+/* a janelinha do disco abre fora da revista: leva as mesmas cores e letras */
+.lc-alb { --lc-paper: #F5F0E8; --lc-red: #9E1725; --lc-ink: #171719; --lc-navy: #23384E; --lc-ochre: #C5A15D; --lc-gray: #77736F;
+  --lc-serif: 'Abril Fatface', 'Bodoni Moda', Georgia, serif; --lc-ital: 'Bodoni Moda', Georgia, serif; --lc-cond: 'Anton', 'Arial Narrow', sans-serif; --lc-type: 'Special Elite', 'Courier New', monospace; --lc-hand: 'Gochi Hand', cursive; }
+.lc-alb .lc-kick { margin: 0; font: 400 13px/1 var(--lc-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--lc-red); }
+.lc-alb .lc-btn { display: inline-flex; align-items: center; padding: 5px 10px; background: var(--lc-ink); color: var(--lc-paper); border: 0; font: 400 13px var(--lc-cond); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.lc-alb-top .lc-sleeve { width: 120px; }
