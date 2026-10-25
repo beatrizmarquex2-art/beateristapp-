@@ -1255,3 +1255,34 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .fd-justposted { display: grid; gap: 8px; } .fd-justposted .tag { margin: 0; }
 .fd-posted { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 10px 6px; } .fd-plink { font: 700 12px var(--body); color: var(--accent); text-decoration: none; border: 1px solid currentColor; padding: 3px 8px; }
 .fd-plink.n-youtube { color: #c4302b; } .fd-plink.n-instagram { color: #c13584; } .fd-plink.n-tiktok { color: #1b1818; }
+
+/* Beaterista Kids */
+.kd-stars { font: 700 20px var(--body); }
+.kd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px; }
+.kd-card { display: grid; gap: 4px; justify-items: center; text-align: center; padding: 16px 10px; background: #fffdf8; border: 3px solid #1b1818; box-shadow: 4px 4px 0 #b5162b; color: #1b1818; text-decoration: none; }
+.kd-card:nth-child(3n+2) { box-shadow: 4px 4px 0 #1f6fd1; } .kd-card:nth-child(3n) { box-shadow: 4px 4px 0 #1f9d4a; }
+.kd-card b { font: 400 20px/1.05 var(--display); } .kd-card small { font-size: 12px; color: #5f5752; } .kd-emoji { font-size: 38px; line-height: 1; }
+.kd-game { display: grid; gap: 12px; padding: 8px 16px 16px; justify-items: center; text-align: center; }
+.kd-kit, .kd-staff, .kd-score { width: 100%; max-width: 520px; background: #fffdf8; border: 3px solid #1b1818; } .kd-kit svg, .kd-staff svg, .kd-score svg { display: block; width: 100%; height: auto; }
+.kd-kit { touch-action: manipulation; user-select: none; -webkit-user-select: none; } .kd-kit .kp { cursor: pointer; transition: transform .12s; transform-box: fill-box; transform-origin: center; }
+.kd-kit .kp.hl { animation: kd-pulse .9s ease-in-out infinite; } .kd-kit .kp.hl rect, .kd-kit .kp.hl circle:first-child, .kd-kit .kp.hl ellipse { stroke: #b5162b; stroke-width: 6; }
+@keyframes kd-pulse { 50% { transform: scale(1.06); } }
+.kd-big { margin: 0; font: 400 34px var(--display); color: #b5162b; min-height: 1.2em; } .kd-q { margin: 0; font: 700 20px var(--body); }
+.kd-modes { gap: 8px; flex-wrap: wrap; justify-content: center; }
+.kd-chip { padding: 8px 14px; border: 2px solid #1b1818; background: #fff; font: 700 15px var(--body); color: #1b1818; cursor: pointer; } .kd-chip.on { background: #1b1818; color: #fff; }
+.kd-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 520px; } .kd-nums { grid-template-columns: repeat(3, 1fr); }
+.kd-btn { min-height: 60px; padding: 10px 14px; border: 3px solid #1b1818; background: #fffdf8; color: #1b1818; font: 700 20px var(--body); box-shadow: 4px 4px 0 var(--c, #1b1818); cursor: pointer; touch-action: manipulation; }
+.kd-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--c, #1b1818); } .kd-nums .kd-btn { font-size: 34px; } .kd-listen { background: #b5162b; color: #fff; }
+.kd-btn.shake { animation: kd-shake .35s; } @keyframes kd-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.kd-fb { margin: 0; min-height: 1.4em; font: 700 20px var(--body); } .kd-fb.ok { color: #1f6b3f; } .kd-fb.no { color: #b5162b; }
+.kd-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 420px; }
+.kd-fig { display: grid; gap: 4px; justify-items: center; padding: 10px; background: #fffdf8; border: 3px solid #1b1818; cursor: pointer; font: 700 16px var(--body); color: #1b1818; } .kd-fig.right { border-color: #1f6b3f; box-shadow: inset 0 0 0 3px #1f6b3f; }
+.kd-fig-svg { width: 90px; } .kd-fig-mini { width: 34px; display: inline-block; vertical-align: middle; } .kd-tree { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; text-align: left; }
+.kd-help { width: 100%; max-width: 520px; text-align: left; } .kd-help summary { cursor: pointer; font-weight: 700; }
+.kd-all { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .kd-all figure { margin: 0; background: #fffdf8; border: 1px solid var(--line); } .kd-all figcaption { text-align: center; font-size: 13px; }
+.kd-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 520px; }
+.kd-slot { min-height: 84px; display: grid; place-items: center; align-content: center; gap: 2px; border: 3px dashed #8d847b; background: #fff; color: #8d847b; font: 700 14px var(--body); cursor: pointer; }
+.kd-slot.full { border-style: solid; border-color: #1b1818; color: #1b1818; } .kd-slot.now { background: #ffe08a; }
+.kd-foods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 520px; }
+.kd-food { display: grid; gap: 2px; justify-items: center; padding: 8px 4px; border: 3px solid #1b1818; background: #fffdf8; color: #1b1818; cursor: pointer; font: 700 14px var(--body); } .kd-food small { font-size: 10px; font-weight: 400; color: #5f5752; }
+.kd-food:disabled { opacity: .45; } .kd-food .kd-emoji, .kd-slot .kd-emoji { font-size: 30px; }

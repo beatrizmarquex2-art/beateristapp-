@@ -104,7 +104,8 @@ function mountEdit(host, id) {
     const p = P(); const pr = progress(p); const sts = students();
     const num = (it, k, label) => { const i = h('input', { type: 'number', min: 20, max: 300, inputmode: 'numeric', value: it[k] || '', placeholder: '—', 'aria-label': `${label}: ${it.title}` }); i.addEventListener('change', () => setItem(it.id, { [k]: Number(i.value) || null })); return h('label', { class: 'sp-num' }, h('span', {}, label), i); };
     const txt = (it, k, label, ph) => { const i = h('input', { type: 'text', maxlength: 160, value: it[k] || '', placeholder: ph, 'aria-label': `${label}: ${it.title}` }); i.addEventListener('change', () => setItem(it.id, { [k]: i.value.trim() })); return i; };
-    const move = (i, d) => { const items = p.items.slice(); const j = i + d; if (j < 0 || j >= items.length) return; [items[i], items[j]] = [items[j], items[i]]; save({ items }); };
+    // mover e tirar usam sempre a versão salva (com o que acabou de ser digitado)
+    const move = (i, d) => { const items = P().items.slice(); const j = i + d; if (j < 0 || j >= items.length) return; [items[i], items[j]] = [items[j], items[i]]; save({ items }); };
     const title = h('input', { type: 'text', maxlength: 80, value: p.title || '', 'aria-label': 'Título do plano' }); title.addEventListener('change', () => save({ title: title.value.trim() || 'Plano de estudo' }));
     const goal = h('textarea', { rows: 2, maxlength: 400, placeholder: 'ex.: tocar o Rock 2 com a virada sem acelerar', 'aria-label': 'Objetivo' }); goal.value = p.goal || ''; goal.addEventListener('change', () => save({ goal: goal.value.trim() }));
     const start = h('input', { type: 'date', value: p.start || todayKey(), 'aria-label': 'Começa em' }); start.addEventListener('change', () => save({ start: start.value }));
@@ -124,7 +125,7 @@ function mountEdit(host, id) {
             h('div', { class: 'row sp-tools' },
               h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Subir ${it.title}`, onclick: () => move(i, -1), disabled: i === 0 }, icon('up', 16)),
               h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Descer ${it.title}`, onclick: () => move(i, 1), disabled: i === p.items.length - 1 }, icon('down', 16)),
-              h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Tirar ${it.title}`, onclick: () => save({ items: p.items.filter((x) => x.id !== it.id) }) }, icon('trash', 16)))),
+              h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Tirar ${it.title}`, onclick: () => save({ items: P().items.filter((x) => x.id !== it.id) }) }, icon('trash', 16)))),
           it.src ? h('small', { class: 'rd-src' }, it.src) : null,
           itemScore(it),
           h('div', { class: 'row sp-nums' }, it.kind === 'treino' || it.kind === 'livre' ? null : num(it, 'bpm', 'BPM'), num(it, 'target', 'meta'), txt(it, 'freq', 'Frequência', 'ex.: 10 min por dia')),
@@ -150,8 +151,11 @@ function mountEdit(host, id) {
   };
   host.append(banner('Plano do Aluno', 'tarefa de casa no papel'), body);
   draw();
-  // só redesenha quando muda a lista (não a cada letra digitada, que salva no "change")
-  return store.subscribe((i) => { if (i.id === id || !i.kind) draw(); });
+  // só redesenha quando muda a estrutura (itens, ordem, conseguiu, papel, tipo, aluno). campos digitados não redesenham,
+  // senão o foco pula no meio do preenchimento
+  const sig = () => { const r = store.get(id); if (!r) return ''; const d = r.data; return JSON.stringify([d.items.map((x) => [x.id, !!x.done]), d.paper, d.type, d.studentId]); };
+  let last = sig();
+  return store.subscribe((i) => { if ((i.id === id || !i.kind) && sig() !== last) { last = sig(); draw(); } });
 }
 
 export async function newPlan(student) {

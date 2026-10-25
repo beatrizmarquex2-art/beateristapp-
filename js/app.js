@@ -38,6 +38,7 @@ import * as rudimentos from './views/rudimentos.js';
 import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
 import * as planos from './views/planos.js';
+import * as kids from './views/kids.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -167,6 +168,7 @@ function shell() {
       case 'plano': c = plano.mount(view); break;
       case 'ambiente': c = ambiente.mount(view); break;
       case 'planos': c = planos.mount(view, r.parts); break;
+      case 'kids': c = kids.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
