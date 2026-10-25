@@ -43,6 +43,7 @@ export const db = {
   clearRecords: () => run('records', 'readwrite', (s) => wrap(s.clear())),
   metaGet: (key) => run('meta', 'readonly', (s) => wrap(s.get(key))).then((r) => (r ? r.value : undefined)),
   metaSet: (key, value) => run('meta', 'readwrite', (s) => wrap(s.put({ key, value }))),
+  metaKeys: (prefix) => run('meta', 'readonly', (s) => wrap(s.getAllKeys())).then((ks) => ks.filter((k) => typeof k === 'string' && k.startsWith(prefix))),
   metaDel: (key) => run('meta', 'readwrite', (s) => wrap(s.delete(key))),
   clearMeta: () => run('meta', 'readwrite', (s) => wrap(s.clear())),
 };

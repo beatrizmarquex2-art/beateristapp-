@@ -2,6 +2,7 @@ import { h, icon, debounce, reducedMotion } from '../util.js';
 import * as store from '../store.js';
 import { db } from '../db.js';
 import { banner, sheet, toast, confirmSheet } from '../ui.js';
+import * as photos from '../photos-sync.js';
 
 // A parede tem 1000 x 1480 "unidades"; tudo é guardado nelas e escala sozinho para qualquer tela.
 const W = 1000, H = 1480;
@@ -18,7 +19,7 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const urls = new Map();
 export async function imageUrl(imgId) {
   if (urls.has(imgId)) return urls.get(imgId);
-  const blob = await db.metaGet(`img:${imgId}`);
+  const blob = (await db.metaGet(`img:${imgId}`)) || (await photos.download(imgId)); // outro aparelho: busca na nuvem
   if (!blob) return null;
   const u = URL.createObjectURL(blob); urls.set(imgId, u); return u;
 }
@@ -53,6 +54,7 @@ const stickerRatio = (name) => new Promise((ok) => { const i = new Image(); i.on
 export async function saveImage(blob) {
   const imgId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
   await db.metaSet(`img:${imgId}`, blob);
+  photos.schedule(); // sobe para a nuvem em segundo plano
   return imgId;
 }
 

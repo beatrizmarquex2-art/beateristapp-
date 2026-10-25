@@ -964,3 +964,6 @@ html[data-mic="on"] .statusbar::after { content: "🎙 microfone ligado"; positi
 [data-theme="zine"] .top-back, [data-theme="backstage"] .top-back { color: var(--on-bg); }
 .swipe-back { position: fixed; left: 0; top: 50%; z-index: 60; width: 44px; height: 44px; display: grid; place-items: center; background: var(--card); color: var(--ink); border: 2px solid var(--ink); border-radius: 50% !important; transform: translate(-60px, -50%); transition: transform .18s, background .15s; pointer-events: none; box-shadow: 0 6px 14px rgb(0 0 0 / .25); }
 .swipe-back.ready { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* a foto da capa fica sempre por cima do subtítulo inclinado (senão ele "rouba" o toque) */
+[data-theme="rabisco"] .hero-photo { z-index: 3; }
+[data-theme="rabisco"] .hero-sub { position: relative; z-index: 1; pointer-events: none; }

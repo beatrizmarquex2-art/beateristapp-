@@ -12,6 +12,7 @@ import * as favs from './views/favs.js';
 import * as settings from './views/settings.js';
 import { mountSoon } from './views/misc.js';
 import { openCapture } from './views/capture.js';
+import * as photos from './photos-sync.js';
 import { initTheme } from './theme.js';
 import { openPersonalize } from './views/personalize.js';
 import * as mural from './views/mural.js';
@@ -160,7 +161,7 @@ function showLogin() {
 
 function startApp() {
   shell();
-  if (!started) { started = true; sync.start(); } else sync.schedule(100);
+  if (!started) { started = true; sync.start(); photos.start(); } else { sync.schedule(100); photos.schedule(300); }
 }
 
 async function boot() {
