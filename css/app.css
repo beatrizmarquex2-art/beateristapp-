@@ -1200,3 +1200,20 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .pl-tips summary { cursor: pointer; font-weight: 700; } .pl-tips ol { margin: 10px 0 0; padding-left: 22px; display: grid; gap: 6px; }
 .pl-tips li { display: flex; gap: 6px; align-items: flex-start; justify-content: space-between; font-size: 14.5px; } .pl-tips .icon-btn.on { color: #e0a100; }
 .pl-log { display: grid; gap: 10px; } .pl-two { gap: 10px; } .pl-two .field { flex: 1; } .pl-two input { width: 100%; }
+
+/* Estúdio de Ambiente */
+.amb-main { display: grid; gap: 12px; } .amb-top { gap: 12px; align-items: center; } .amb-now { margin: 0; font-weight: 700; }
+.amb-mixes { flex-wrap: wrap; } .amb-mixes small { font-weight: 400; }
+.amb-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+.amb-ch { display: grid; gap: 2px; font-size: 13px; color: var(--muted); } .amb-ch.on { color: var(--ink); font-weight: 700; } .amb-ch input { width: 100%; accent-color: var(--accent); }
+.amb-yt-card h3 { margin: 0; } .amb-links { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.amb-links li { display: flex; gap: 8px; align-items: center; } .amb-links li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .amb-links li.on span { font-weight: 700; color: var(--accent); }
+.amb-dock { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 40; display: grid; gap: 6px; justify-items: end; width: min(260px, calc(100vw - 20px)); pointer-events: none; }
+.amb-dock > * { pointer-events: auto; } .amb-dock[hidden], .amb-dock > [hidden] { display: none !important; }
+.amb-yt { width: 100%; background: #1b1818; color: #fff; box-shadow: 0 10px 24px -10px rgb(0 0 0 / .6); }
+.amb-yt-bar { display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 10px; font: 12px var(--type); } .amb-yt-bar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.amb-yt iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; } .amb-yt.min iframe { height: 1px; aspect-ratio: auto; opacity: 0; }
+.amb-x { background: none; border: 0; color: inherit; font: 700 16px var(--body); width: 32px; height: 28px; cursor: pointer; }
+.amb-pill { display: flex; align-items: center; gap: 4px; background: #b5162b; color: #fff; padding: 2px 4px 2px 12px; box-shadow: 3px 3px 0 #1b1818; font: 700 13px var(--body); }
+.amb-pill a { color: #fff !important; text-decoration: none; } .amb-pill small { font-weight: 400; color: #fff !important; opacity: .9; }
+html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; }
