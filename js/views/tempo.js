@@ -10,6 +10,7 @@ import { OnsetCore } from '../onset-core.js';
 import { audio, click } from '../audio.js';
 import { banner, sheet, toast, stars } from '../ui.js';
 import { playBeat, stopBeat } from './beatlab.js';
+import { xrayTab } from './xray-tab.js';
 
 const SET = 'setting-tempo';
 const cfg = () => ({ bpm: 80, sub: 2, bars: 4, fone: false, steps: 8, who: '', lat: {}, ...(store.get(SET) ? store.get(SET).data : {}) });
@@ -295,19 +296,22 @@ function transcribeTab(mic, listen) {
   return el;
 }
 
+export const parts = { cfg, save, latOf, when, students, svgEl, tend, clicks, pulse, chips, line, bpmRow, clampBpm, calibrate };
+
 /* ---------- tela ---------- */
 export function mount(host, parts) {
   let mic = null, pane = null, gone = false, handler = null;
-  const tab = parts && parts[0] === 'transcritor' ? 'transcritor' : 'juiz';
+  const tab = parts && ['transcritor', 'raiox'].includes(parts[0]) ? parts[0] : 'juiz';
   const listen = (fn) => { handler = fn; };
   const body = h('div');
   const tabs = h('nav', { class: 'chips lib-tabs bl-tabs', 'aria-label': 'Juiz de tempo' },
     h('a', { class: `lib-tab${tab === 'juiz' ? ' on' : ''}`, href: '#/tempo', 'aria-current': tab === 'juiz' ? 'page' : null }, 'juiz de tempo'),
-    h('a', { class: `lib-tab${tab === 'transcritor' ? ' on' : ''}`, href: '#/tempo/transcritor', 'aria-current': tab === 'transcritor' ? 'page' : null }, 'transcritor'));
+    h('a', { class: `lib-tab${tab === 'transcritor' ? ' on' : ''}`, href: '#/tempo/transcritor', 'aria-current': tab === 'transcritor' ? 'page' : null }, 'transcritor'),
+    h('a', { class: `lib-tab${tab === 'raiox' ? ' on' : ''}`, href: '#/tempo/raiox', 'aria-current': tab === 'raiox' ? 'page' : null }, 'raio-x'));
   const ask = () => body.replaceChildren(h('section', { class: 'card pad ov-ask' },
     h('img', { class: 'ov-ask-art', src: 'assets/mural/drum.svg', alt: '' }),
     h('h2', { class: 'tag' }, 'por que o microfone?'),
-    h('p', {}, tab === 'juiz' ? 'pra ouvir cada batida sua e medir, em milissegundos, se ela caiu antes ou depois do tempo.' : 'pra ouvir a frase que você bater e transformar em grade e partitura.'),
+    h('p', {}, tab === 'juiz' ? 'pra ouvir cada batida sua e medir, em milissegundos, se ela caiu antes ou depois do tempo.' : tab === 'raiox' ? 'pra ouvir você tocando por mais tempo e mostrar se correu, se arrastou e onde cada batida costuma cair.' : 'pra ouvir a frase que você bater e transformar em grade e partitura.'),
     h('p', {}, 'o som é analisado aqui no celular, ao vivo: só os instantes das batidas viram números. nada é gravado em arquivo nem enviado pra internet.'),
     h('p', { class: 'muted' }, 'funciona melhor em lugar quieto. o microfone desliga sozinho quando você sai desta tela.'),
     h('button', { class: 'btn primary wide', type: 'button', onclick: start }, 'ligar o microfone e o som')));
@@ -317,7 +321,7 @@ export function mount(host, parts) {
       mic = await openOnsets((ev) => handler && handler(ev));
       if (gone) { mic.stop(); return; }
       body.dataset.mode = mic.mode; // worklet (preciso) ou script (plano B)
-      pane = tab === 'juiz' ? judgeTab(mic, listen) : transcribeTab(mic, listen);
+      pane = tab === 'juiz' ? judgeTab(mic, listen) : tab === 'raiox' ? xrayTab(mic, listen) : transcribeTab(mic, listen);
       body.replaceChildren(pane);
     } catch (e) {
       const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
@@ -326,7 +330,7 @@ export function mount(host, parts) {
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
     }
   }
-  host.append(banner('Juiz de Tempo', tab === 'juiz' ? 'adiantou ou atrasou? em milissegundos' : 'bate na mesa, vira partitura'), tabs, body);
+  host.append(banner('Juiz de Tempo', tab === 'juiz' ? 'adiantou ou atrasou? em milissegundos' : tab === 'raiox' ? 'raio-x do seu groove' : 'bate na mesa, vira partitura'), tabs, body);
   ask();
   return () => { gone = true; pane && pane.stop && pane.stop(); if (mic) mic.stop(); mic = null; };
 }
