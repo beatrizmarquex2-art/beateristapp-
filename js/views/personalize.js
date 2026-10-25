@@ -40,7 +40,8 @@ export function openPersonalize() {
     function drawSecs() {
       const { order, hidden } = getLayout();
       const label = Object.fromEntries(SECTIONS.map((s) => [s.id, s.label]));
-      const move = (i, d) => { const o = [...order]; const j = i + d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; saveLayout(o, hidden); };
+      // pula as seções ocultas: o movimento sempre aparece na tela
+      const move = (i, d) => { const o = [...order]; let j = i + d; while (j > 0 && j < o.length - 1 && hidden.includes(o[j])) j += d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; saveLayout(o, hidden); };
       secs.replaceChildren(...order.map((id, i) => {
         const off = hidden.includes(id);
         return h('div', { class: `sec-row${off ? ' off' : ''}` },

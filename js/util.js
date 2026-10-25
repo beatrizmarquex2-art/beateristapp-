@@ -94,6 +94,11 @@ const ICONS = {
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M8 21h8"/>',
   play: '<path d="M8 5l11 7-11 7z" fill="currentColor"/>',
   stop: '<rect x="7" y="7" width="10" height="10" fill="currentColor"/>',
+  menu: '<path d="M4 6.5h16M4 12h16M4 17.5h16"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/>',
+  book: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',
+  news: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6M7 12h10M7 15h10"/><rect x="14.5" y="8" width="3" height="2" rx=".5"/>',
+  id: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M15 10h3M15 13h3"/>',
   kit: '<ellipse cx="12" cy="10" rx="7" ry="2.5"/><path d="M5 10v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6"/><path d="M3.5 3l5.5 5.5M20.5 3L15 8.5"/>',
 };
 export function icon(name, size = 24) {

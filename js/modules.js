@@ -16,6 +16,11 @@ export const MODULES = [
   { slug: 'ideias', label: 'Caixa de Ideias', icon: 'bulb', phase: null },
   { slug: 'foco', label: 'Cronômetro de Foco', icon: 'timer', route: '#/foco' },
   { slug: 'alunos', label: 'Alunos', icon: 'drummer', route: '#/beaterista' },
+  { slug: 'links', label: 'Meus Links', icon: 'link', route: '#/kit/links' },
+  { slug: 'ebooks', label: 'Meus Ebooks', icon: 'book', route: '#/kit/ebooks' },
+  { slug: 'midia', label: 'Na Mídia', icon: 'news', route: '#/kit/midia' },
+  { slug: 'fotospro', label: 'Fotos Profissionais', icon: 'photo', route: '#/kit/fotos' },
+  { slug: 'dados', label: 'Meus Dados', icon: 'id', route: '#/kit/dados' },
 ];
 export const bySlug = Object.fromEntries(MODULES.map((m) => [m.slug, m]));
 
@@ -32,6 +37,11 @@ export const TOOL_TARGETS = [
   { label: 'Cronômetro de Foco', href: '#/foco' },
   { label: 'Alunos', href: '#/beaterista' },
   { label: 'Feed Beaterista', href: '#/feed' },
+  { label: 'Meus Links', href: '#/kit/links' },
+  { label: 'Meus Ebooks', href: '#/kit/ebooks' },
+  { label: 'Na Mídia', href: '#/kit/midia' },
+  { label: 'Fotos Profissionais', href: '#/kit/fotos' },
+  { label: 'Meus Dados', href: '#/kit/dados' },
   { label: 'Ajustes e backup', href: '#/ajustes' },
 ];
 

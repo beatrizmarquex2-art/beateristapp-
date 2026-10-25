@@ -25,6 +25,9 @@ import * as feed from './views/feed.js';
 import * as collages from './views/collages.js';
 import * as beatlab from './views/beatlab.js';
 import * as ouvido from './views/ouvido.js';
+import * as kit from './views/kit.js';
+import { openMenu } from './views/menu.js';
+import { startScroller } from './scroller.js';
 
 const app = document.getElementById('app');
 let cleanup = null;
@@ -94,6 +97,7 @@ function shell() {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'aria-label': 'Navegação principal' });
   const head = h('header', { class: 'top' },
+    h('button', { type: 'button', class: 'icon-btn top-menu', 'aria-label': 'Menu: todas as atividades', 'aria-haspopup': 'dialog', onclick: openMenu }, icon('menu', 26)),
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
     h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
@@ -138,6 +142,7 @@ function shell() {
       case 'foco': c = focus.mount(view); break;
       case 'ouvido': c = ouvido.mount(view); break;
       case 'beatlab': c = beatlab.mount(view, r.parts); break;
+      case 'kit': c = kit.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
@@ -160,7 +165,7 @@ function showLogin() {
 
 function startApp() {
   shell();
-  if (!started) { started = true; sync.start(); photos.start(); } else { sync.schedule(100); photos.schedule(300); }
+  if (!started) { started = true; sync.start(); photos.start(); startScroller(); } else { sync.schedule(100); photos.schedule(300); }
 }
 
 async function boot() {
