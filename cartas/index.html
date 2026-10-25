@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'"><meta name="theme-color" content="#081A30"><link rel="icon" href="../assets/icons/icon-192.png"><style>@font-face{font-family:'Anton';font-weight:400;font-display:swap;src:url(../assets/fonts/Anton-latin.woff2) format('woff2')}@font-face{font-family:'Permanent Marker';font-weight:400;font-display:swap;src:url(../assets/fonts/PermanentMarker-latin.woff2) format('woff2')}@font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(../assets/fonts/SpecialElite-latin.woff2) format('woff2')}@font-face{font-family:'Hanken Grotesk';font-weight:100 900;font-display:swap;src:url(../assets/fonts/HankenGrotesk-latin.woff2) format('woff2')}</style><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Cartas de Groove</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'"><meta name="theme-color" content="#f1ebe1"><link rel="icon" href="../assets/icons/icon-192.png"><style>@font-face{font-family:'Anton';font-weight:400;font-display:swap;src:url(../assets/fonts/Anton-latin.woff2) format('woff2')}@font-face{font-family:'Permanent Marker';font-weight:400;font-display:swap;src:url(../assets/fonts/PermanentMarker-latin.woff2) format('woff2')}@font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(../assets/fonts/SpecialElite-latin.woff2) format('woff2')}@font-face{font-family:'Hanken Grotesk';font-weight:100 900;font-display:swap;src:url(../assets/fonts/HankenGrotesk-latin.woff2) format('woff2')}</style><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Cartas de Groove</title>
 <style>
 /* Layout: mesa de trabalho azul-marinho com cartas de papel coladas (fita prateada, carimbos, rabiscos); um baralho por tela no celular, cartas + controles lado a lado no computador. Visual único (escuro), por escolha. */
 :root {
@@ -196,8 +196,49 @@ html.printing body::after, html.printing body::before { display: none; }
 .pc.mem .mf-illus { width: 44mm; } .pc.mem .mf-text b { font-size: 15pt; } .pc.mem .mf-text small { font-size: 7pt; } .pc.mem .mf-stick { font-size: 12pt; } .pc.mem .mf-score { width: 46mm; }
 .mc-id { position: absolute; bottom: 1.3mm; left: 0; right: 0; text-align: center; font: 5.5pt var(--type); color: #8a8f94; }
 .sheet.cover { display: grid; align-content: center; gap: 6mm; padding: 30mm; } .cover h1 { margin: 0; font: 54pt/.9 var(--display); color: #142B46; text-transform: uppercase; } .cover h2 { margin: 0; font: 22pt var(--display); text-transform: uppercase; color: #141414; } .cover p { margin: 0; font: 11pt/1.5 var(--body); color: #333; max-width: 140mm; } .cover .cv-brand { font: 9pt var(--type); color: #8a6a24; }
+/* Cartas de Groove no tema "rabisco" do Beaterista (só na versão de dentro do site): papel claro, vermelho e preto. */
+:root {
+  --navy: #f1ebe1; --navy2: #1b1818; --gold: #b5162b; --paper: #fbf8f2; --red: #b5162b; --silver: #8d847b;
+  --muted-on-navy: #5f5752; --surface: #fbf8f2; --text: #1b1818; color-scheme: light;
+}
+html, body { background: #f1ebe1; } body { color: var(--text); }
+body::before { background: #f1ebe1; } body::after { opacity: .5; mix-blend-mode: multiply; background-image: var(--grain-soft); }
+.topbar { background: linear-gradient(#f1ebe1 82%, rgb(241 235 225 / 0)); }
+.bm-2, .h1a, .lede, .deckhead h1, .hud b, .bpm output, .minilist li button, .collection button span, .game b { color: var(--text); }
+.h1b { color: #fff; background: #1b1818; box-shadow: 4px 5px 0 var(--red); }
+.chip { background: #fff; color: var(--text); border-color: rgb(27 24 24 / .35); }
+.chip.on { background: var(--red); border-color: var(--red); color: #fff; } .chip.fav.on { background: #1b1818; color: #fff; border-color: #1b1818; }
+.beatdot { background: rgb(27 24 24 / .25); } .beatdot.b1, .beatdot.b2, .beatdot.b3 { background: #1b1818; }
+.dno { color: #fff; background: var(--red); } .back { color: var(--red); }
+.seg { border-color: rgb(27 24 24 / .3); } .seg button { color: var(--text); border-right-color: rgb(27 24 24 / .2); } .seg button.on { background: #1b1818; color: #fff; }
+.pile-under { background: #fff; } .pile-no, .gcard-no, .fan-no, .g-no { color: var(--red); }
+.pile-memo { background: #fbf8f2; border-color: rgb(181 22 43 / .55); } .pile-memo .pile-name { color: var(--text); }
+.memo-grid i { background: #1b1818 repeating-linear-gradient(45deg, rgb(181 22 43 / .35) 0 2px, transparent 2px 9px); border-color: #1b1818; }
+.memo-grid i.up { background: #fff; }
+.minilist { background: #fbf8f2; border-top-color: var(--red); box-shadow: 0 10px 20px -14px rgb(60 40 30 / .5); }
+.minilist li button { border-bottom-color: rgb(27 24 24 / .1); } .bar { background: rgb(27 24 24 / .12); }
+.gcard::before { background: #1b1818; }
+.draw { color: #fff; background: var(--red); box-shadow: 4px 5px 0 #1b1818; } .draw:active { box-shadow: 2px 3px 0 #1b1818; }
+.draw-stack i { background: #1b1818; border-color: #fff; }
+.player { background: #fbf8f2; border-left-color: var(--red); box-shadow: 0 10px 20px -14px rgb(60 40 30 / .5); }
+.play { background: #1b1818; color: #fff; box-shadow: 0 0 0 4px rgb(181 22 43 / .35); } .play.on { background: var(--red); }
+.bpm input { accent-color: var(--red); }
+.collection button { background: #fff; border-color: rgb(27 24 24 / .18); } .collection button b { color: var(--red); }
+.collection button.seen { border-color: rgb(181 22 43 / .5); } .collection button.cur { background: #1b1818; color: #fff; } .collection button.cur span, .collection button.cur small { color: #fff; }
+.facedown, .mc-back { background: #1b1818 repeating-linear-gradient(45deg, rgb(181 22 43 / .3) 0 2px, transparent 2px 12px); border-color: #1b1818; }
+.fd-logo, .mc-back span { color: #f1ebe1; } .fd-logo b, .mc-back b { color: #fff; }
+.game { box-shadow: 0 10px 20px -12px rgb(60 40 30 / .55); }
+.win { background: rgb(241 235 225 / .8); } .win-card { box-shadow: 8px 10px 0 var(--red); } .win-star { color: var(--red); }
+.win-card .chip.on { background: #1b1818; color: #fff; border-color: #1b1818; }
+.sitefoot { border-top-color: rgb(27 24 24 / .15); }
+:focus-visible { outline-color: var(--red); }
+.handflash.D { background: #1b1818; } .handflash.E { background: var(--red); }
+.stamp.lv2 { color: #1b1818; }
+/* volta pro app: fica no topo, fora do caminho dos botões */
+.to-app { position: static !important; display: inline-block; margin: 8px 0 0 max(16px, env(safe-area-inset-left)); font: 13px "Special Elite", monospace; color: #b5162b !important; background: none !important; box-shadow: none !important; padding: 6px 0 !important; text-decoration: none; }
+.d-star { color: #1b1818; } .d-crown { color: var(--red); }
 </style>
-<div id="root"></div><a class="to-app" href="../#/inicio">‹ voltar pro Beaterista</a><style>.to-app{position:fixed;left:max(10px,env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;font:13px "Special Elite",monospace;color:#081A30;background:#C5A052;padding:8px 12px;text-decoration:none;box-shadow:3px 3px 0 #F3F0E8}html.printing .to-app{display:none}</style>
+<a class="to-app" href="../#/inicio">‹ voltar pro Beaterista</a><style>html.printing .to-app{display:none}</style><div id="root"></div>
 <script src="vendor/react.production.min.js"></script>
 <script src="vendor/react-dom.production.min.js"></script>
 <script src="vendor/htm.umd.js"></script>
