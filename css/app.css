@@ -1057,3 +1057,24 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .xr-cell { min-height: 22px; display: grid; place-items: center; color: #fff; font-size: 9.5px; font-weight: 800; text-shadow: 0 0 2px rgb(0 0 0 / .4); }
 .xr-artbox { margin: 0; display: grid; gap: 4px; justify-items: center; } .xr-art { width: min(320px, 100%); height: auto; border: 1.5px solid rgb(27 24 24 / .15); }
 .xr-artbox figcaption { font-size: 12px; color: var(--muted); text-align: left; }
+
+/* ---------- montar partitura ---------- */
+.pt-head { display: grid; gap: 8px; padding: 12px 14px; } .pt-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 10px; } .pt-ctrl .tp-bpm { flex: 1; max-width: 260px; }
+.pt-badge { margin: 0; font: 600 12.5px var(--body); color: var(--muted); } .pt-badge b { color: #b5162b; } .pt-badge b.ok { color: #1f9d4a; }
+.pt-tg { display: flex; flex-wrap: wrap; gap: 6px; }
+.pt-bars { display: grid; gap: 8px; padding: 0 14px; } @media (min-width: 640px) { .pt-bars { grid-template-columns: 1fr 1fr; } }
+.pt-bar { position: relative; display: block; width: 100%; padding: 4px 4px 2px 22px; background: #fff; border: 1.5px solid rgb(27 24 24 / .15); color: #1b1818; cursor: pointer; text-align: left; }
+.pt-bar.sel { border-color: #b5162b; box-shadow: 0 0 0 2px #b5162b; } .pt-bar.now { background: #fff6d6; }
+.pt-n { position: absolute; left: 6px; top: 4px; font: 700 12px var(--body); color: #7a6f66; } .pt-bar-svg { margin: 0; } .pt-bar-svg svg { display: block; }
+.pt-add { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.pt-edit { display: grid; gap: 10px; padding: 12px 14px; }
+.bl-cell.acc { font: 800 13px var(--body); color: #fff; } .bl-cell.acc.on { background: #1b1818; border-color: #1b1818; }
+.pt-pick { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 60dvh; overflow: auto; } .pt-pick button { width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 10px 2px; font: 600 15px var(--body); color: var(--ink); cursor: pointer; } .pt-pick small { color: var(--muted); font-weight: 500; }
+.bl-lvl.metodo { background: #1b1818; }
+.pt-print { display: none; }
+@media print {
+  html.printing-pt body > *:not(.pt-print) { display: none !important; }
+  html.printing-pt .pt-print { display: block; color: #000; background: #fff; font-family: var(--body); }
+  .pt-print h1 { font: 700 26px var(--body); margin: 0 0 4px; } .pt-print p { margin: 0 0 12px; font-size: 13px; }
+  .pt-print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; } .pt-print-grid > div { break-inside: avoid; } .pt-print small { font-size: 10px; color: #555; } .pt-print svg { width: 100%; }
+}

@@ -94,6 +94,7 @@ export const clear = (b) => ({ ...clone(b), rows: Object.fromEntries(ROWS.map((r
 export function resize(b, steps) {
   if (!GRIDS[steps] || steps === b.steps) return clone(b);
   const n = { ...clone(b), steps };
+  if (b.acc) { const out = Array(steps).fill(0); if (b.steps !== 12 && steps !== 12) b.acc.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; }); n.acc = out; }
   for (const r of ROWS) {
     const src = b.rows[r.id] || []; const out = Array(steps).fill(0);
     if (b.steps !== 12 && steps !== 12) src.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; });
@@ -114,5 +115,8 @@ export function countLabels(steps) {
 export const isEmpty = (b) => ROWS.every((r) => !(b.rows[r.id] || []).some(Boolean));
 /** Peças usadas: as vazias somem da grade compacta (Tom e Surdo só aparecem quando a virada usa). */
 export const usedRows = (b, full = false) => ROWS.filter((r) => full || r.basic || (b.rows[r.id] || []).some(Boolean));
+/** Acento no passo i (linha extra opcional `acc`, usada nos exercícios do método e no Montar Partitura). */
+export const isAcc = (b, i) => !!(b.acc && b.acc[i]);
+export function toggleAcc(b, i) { const n = clone(b); n.acc = n.acc ? n.acc.slice() : Array(b.steps).fill(0); n.acc[i] = n.acc[i] ? 0 : 1; return n; }
 /** Valor de uma célula (0 para peça que o ritmo ainda não tinha). */
 export const cell = (b, row, i) => ((b.rows[row] || [])[i] ? 1 : 0);

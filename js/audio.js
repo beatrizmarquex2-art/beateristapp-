@@ -49,6 +49,7 @@ export function kick(t, vel = 1) {
 
 /** Chimbal fechado (ou aberto com `open`): ruído agudo bem curto. */
 export function hihat(t, vel = 1, open = false) {
+  vel = Math.min(vel, 1.2);
   const c = audio(); const n = c.createBufferSource(); n.buffer = noiseBuf;
   const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 7000;
   const g = c.createGain(); const len = open ? 0.22 : 0.045;

@@ -14,8 +14,10 @@ const FILL0 = B.PRESETS.find((p) => p.kind === 'virada');
 const cfg = () => ({ beat: B.clone(B.PRESETS[0]), fill: B.clone(FILL0), click: false, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (patch) => store.upsert('setting', KEY, patch);
 const favs = () => (store.get(FAV) ? store.get(FAV).data.ids || [] : []);
-const mine = () => store.list('beat').sort((a, b) => b.updated_at - a.updated_at);
-const VOICE = { cr: (t) => cymbal(t), rd: (t) => cymbal(t, true), hh: (t) => hihat(t, 0.9), ho: (t) => hihat(t, 0.9, true), sn: (t) => snare(t, 0.9), tt: (t) => tom(t, 210), mt: (t) => tom(t, 160), ft: (t) => tom(t, 110), bd: (t) => kick(t), hf: (t) => hihat(t, 0.45) };
+const mine = () => store.list('beat').filter((r) => !r.data.metodo).sort((a, b) => b.updated_at - a.updated_at);
+export const VOICE = { cr: (t, v = 1) => cymbal(t, false, v), rd: (t, v = 1) => cymbal(t, true, v), hh: (t, v = 1) => hihat(t, 0.9 * v), ho: (t, v = 1) => hihat(t, 0.9 * v, true), sn: (t, v = 1) => snare(t, 0.9 * v), tt: (t, v = 1) => tom(t, 210, v), mt: (t, v = 1) => tom(t, 160, v), ft: (t, v = 1) => tom(t, 110, v), bd: (t, v = 1) => kick(t, v), hf: (t, v = 1) => hihat(t, 0.45 * v) };
+/** Volume da nota: com acentos no compasso, o acento sai cheio e o resto mais baixo. */
+export const velOf = (beat, i) => (beat.acc && beat.acc.some(Boolean) ? (B.isAcc(beat, i) ? 1.1 : 0.55) : 1);
 
 /* ---------- tocador único (só um ritmo toca por vez) ---------- */
 let player = null;
@@ -25,7 +27,7 @@ export function playBeat(beat, { withClick = false, onStep, onStop } = {}) {
   const dur = B.stepSec(clampBpm(beat.bpm), beat.steps); const per = B.GRIDS[beat.steps].perBeat;
   const run = scheduler((i) => ({
     at: i * dur,
-    play: (t) => { B.hitsAt(beat, i).forEach((r) => VOICE[r](t)); if (withClick && i % per === 0) click(t, i % beat.steps === 0 ? 2 : 1, 0.6); },
+    play: (t) => { B.hitsAt(beat, i).forEach((r) => VOICE[r](t, velOf(beat, i % beat.steps))); if (withClick && i % per === 0) click(t, i % beat.steps === 0 ? 2 : 1, 0.6); },
     ui: () => onStep && onStep(i % beat.steps),
   }));
   player = { run, onStop, beat };
@@ -36,7 +38,7 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
-function gridEl(beat, onToggle, { full = false, color = false } = {}) {
+export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null } = {}) {
   const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat; const n = perLine(beat.steps);
   const box = h('div', { class: 'bl-lines' });
   for (let a = 0; a < beat.steps; a += n) {
@@ -45,6 +47,10 @@ function gridEl(beat, onToggle, { full = false, color = false } = {}) {
     for (const r of B.usedRows(beat, full)) {
       wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader', style: color ? { color: B.COLORS[r.id] } : null, title: r.label }, r.short || r.label));
       for (let i = a; i < a + n; i++) { const v = B.cell(beat, r.id, i); wrap.append(h('button', { type: 'button', style: color && v ? { background: B.COLORS[r.id], borderColor: B.COLORS[r.id] } : null, class: `bl-cell${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'data-step': i, role: 'gridcell', 'aria-pressed': String(!!v), 'aria-label': `${r.label}, ${labels[i]} (passo ${i + 1})`, onclick: () => onToggle(r.id, i) })); }
+    }
+    if (accent) { // linha de acentos (>)
+      wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader' }, 'Acento'));
+      for (let i = a; i < a + n; i++) { const v = B.isAcc(beat, i); wrap.append(h('button', { type: 'button', class: `bl-cell acc${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'aria-pressed': String(v), 'aria-label': `Acento, ${labels[i]} (passo ${i + 1})`, onclick: () => onAccent(i) }, v ? '>' : '')); }
     }
     wrap.append(h('span', { 'aria-hidden': 'true' }), ...labels.slice(a, a + n).map((l, k) => h('span', { class: `bl-count${(a + k) % per === 0 ? ' beat' : ''}`, 'aria-hidden': 'true' }, l)));
     box.append(wrap);
@@ -195,7 +201,7 @@ function beatRow(b, { fav, onFav, onOpen, onDelete, mini, withClick }, repaint) 
   return h('div', { class: `bl-item${playing ? ' playing' : ''}` },
     playing ? h('span', { class: 'eq', 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i')) : null,
     h('button', { class: `bl-play small${playing ? ' on' : ''}`, type: 'button', 'aria-label': `${playing ? 'Parar' : 'Tocar'} ${b.name}`, onclick: () => { if (playing) stopBeat(); else playBeat(b, { onStop: repaint, withClick: !!withClick }); repaint(); } }, icon(playing ? 'stop' : 'play', 20)),
-    h('button', { class: 'bl-item-main', type: 'button', onclick: onOpen }, h('strong', {}, b.name), h('small', {}, `${b.kind === 'virada' ? '1 compasso' : B.GRIDS[b.steps].name} · ${b.bpm} BPM`, onFav ? h('span', { class: `bl-lvl l${B.levelOf(b)}` }, B.LEVELS[B.levelOf(b)]) : null), mini ? miniScore(b) : null),
+    h('button', { class: 'bl-item-main', type: 'button', onclick: onOpen }, h('strong', {}, b.name), h('small', {}, `${b.kind === 'virada' ? '1 compasso' : B.GRIDS[b.steps].name} · ${b.bpm} BPM`, onFav ? (b.style === 'Método Beaterista' ? h('span', { class: 'bl-lvl metodo' }, b.review ? 'método · a revisar' : 'método ✓') : h('span', { class: `bl-lvl l${B.levelOf(b)}` }, B.LEVELS[B.levelOf(b)])) : null), mini ? miniScore(b) : null),
     onFav ? h('button', { class: `bl-fav${fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${b.name}`, onclick: onFav }, fav ? '♥' : '♡') : null,
     onDelete ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${b.name}`, onclick: onDelete }, icon('x', 18)) : null,
     h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Abrir ${b.name} no editor`, onclick: onOpen }, h('span', { style: { display: 'inline-flex', transform: 'scaleX(-1)' } }, icon('back', 18))));
@@ -211,14 +217,16 @@ function mountLibrary(host) {
   const tools = h('div', { class: 'bl-libtools' });
   const list = h('div', { class: 'card bl-list' });
   const draw = () => {
-    chips.replaceChildren(...[['', 'Todos'], ['fav', '♥ favoritos'], ...B.STYLES.map((s) => [s, s])].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${style === k ? ' on' : ''}`, 'aria-pressed': String(style === k), onclick: () => { style = k; draw(); } }, t)));
+    chips.replaceChildren(...[['', 'Todos'], ['fav', '♥ favoritos'], ...(store.list('beat').some((r) => r.data.metodo) ? [['Método Beaterista', 'Método Beaterista']] : []), ...B.STYLES.map((s) => [s, s])].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${style === k ? ' on' : ''}`, 'aria-pressed': String(style === k), onclick: () => { style = k; draw(); } }, t)));
     lvl.replaceChildren(...[[0, 'todo nível'], [1, 'iniciante'], [2, 'intermed.'], [3, 'avançado']].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${level === k ? ' on' : ''}`, 'aria-pressed': String(level === k), onclick: () => { level = k; draw(); } }, t)));
     const o = opt();
     tools.replaceChildren(
       h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(o.click), onclick: () => save({ libClick: !o.click }) }, o.click ? 'tocar junto: com clique ✓' : 'tocar junto: sem clique'),
       h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(o.mini), onclick: () => save({ libMini: !o.mini }) }, o.mini ? 'partitura ✓' : 'partitura'));
     const f = favs();
-    const shown = B.PRESETS.filter((b) => (!style || (style === 'fav' ? f.includes(b.id) : b.style === style)) && (!level || B.levelOf(b) === level) && (!q || b.name.toLowerCase().includes(q)));
+    // ritmos do método Beaterista: privados (registros da conta da Bea), entram na frente da biblioteca
+    const metodo = store.list('beat').filter((r) => r.data.metodo).sort((a, b) => (a.data.order || 0) - (b.data.order || 0)).map((r) => ({ ...r.data.beat, id: r.id, style: 'Método Beaterista', level: 1, review: r.data.review }));
+    const shown = [...metodo, ...B.PRESETS].filter((b) => (!style || (style === 'fav' ? f.includes(b.id) : b.style === style)) && (!level || B.levelOf(b) === level) && (!q || b.name.toLowerCase().includes(q)));
     list.replaceChildren(...(shown.length ? shown.map((b) => beatRow(b, {
       fav: f.includes(b.id),
       onFav: () => store.upsert('setting', FAV, { ids: f.includes(b.id) ? f.filter((x) => x !== b.id) : [...f, b.id] }),

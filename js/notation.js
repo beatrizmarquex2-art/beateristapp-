@@ -3,7 +3,7 @@
 // Gera uma lista de traços que vira SVG na tela e desenho no canvas na exportação, então as duas saídas são idênticas.
 // Simplificação honesta: nota sozinha no começo do tempo vira semínima; tempo que começa vazio ganha uma pausa antes da 1ª nota;
 // fora isso, cada tempo é escrito na subdivisão da grade (sem pausas no meio do tempo).
-import { GRIDS, ROWS, COLORS, cell } from './beats.js';
+import { GRIDS, ROWS, COLORS, cell, isAcc } from './beats.js';
 
 // altura de cada peça (0 = linha de cima, cada 1 = meio espaço). Padrão de notação de bateria (PAS/Weinberg).
 export const POS = { cr: -3, rd: 0, hh: -1, ho: -1, tt: 1, mt: 2, sn: 3, ft: 5, bd: 7, hf: 9 };
@@ -14,7 +14,7 @@ const GAP = 10; // distância entre as linhas da pauta
 /** Desenha a grade como pauta. `color` pinta cada peça com a sua cor. Devolve { w, h, ops }. */
 export function layout(beat, { width = 360, title = '', color = false, full = true } = {}) {
   const per = GRIDS[beat.steps].perBeat;
-  const top = (title ? 54 : 22) + 14, left = 52, right = 10;
+  const top = (title ? 54 : 22) + 14 + (beat.acc && beat.acc.some(Boolean) ? 14 : 0), left = 52, right = 10; // acento precisa de espaço em cima
   const lineY = (i) => top + i * GAP;
   const posY = (p) => top + (p * GAP) / 2;
   const sw = (width - left - right) / beat.steps;
@@ -62,6 +62,8 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
       if (per === 3 && v.up && stems.length > 1) ops.push({ t: 'text', x: (stems[0] + stems[stems.length - 1]) / 2 - 4, y: upTop - 5, s: '3', size: 12, weight: 700 });
     }
   }
+  // acentos (>) em cima de tudo, na coluna do passo
+  for (let i = 0; i < beat.steps; i++) if (isAcc(beat, i)) ops.push({ t: 'acc', x: xOf(i), y: upTop - (per === 3 ? 20 : 10) });
   return { w: width, h: full ? downBot + 10 : lineY(4) + 26, ops };
 }
 
@@ -83,6 +85,7 @@ export function toSVG({ w, h, ops }) {
         : `<ellipse cx="${o.x}" cy="${o.y}" rx="5.8" ry="4.2" transform="rotate(-20 ${o.x} ${o.y})" fill="${ink(o)}"/>`;
       case 'beam': return `<rect x="${o.x1 - 0.8}" y="${o.y}" width="${o.x2 - o.x1 + 1.6}" height="4" fill="currentColor"/>`;
       case 'flag': return `<path d="M${o.x} ${o.y}c2 ${o.down ? -5 : 5} 9 ${o.down ? -6 : 6} 7 ${o.down ? -14 : 14}" stroke="currentColor" stroke-width="2" fill="none"/>`;
+      case 'acc': return `<path d="M${o.x - 5} ${o.y - 4}L${o.x + 5} ${o.y}L${o.x - 5} ${o.y + 4}" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="miter" class="acc"/>`;
       case 'rest8': return `<circle cx="${o.x - 2}" cy="${o.y - 4}" r="2.6" fill="currentColor"/><path d="M${o.x - 2} ${o.y - 2}q4 1 6-3l-5 13" stroke="currentColor" stroke-width="1.6" fill="none"/>`;
       case 'rest': return `<path d="M${o.x - 2} ${o.y - 12}l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`;
       case 'text': return `<text x="${o.x}" y="${o.y}" font-size="${o.size}" font-weight="${o.weight || 400}" font-family="Hanken Grotesk, sans-serif" fill="${o.color === 'accent' ? 'var(--accent, #b5162b)' : 'currentColor'}">${esc(o.s)}</text>`;
@@ -108,6 +111,7 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
         break;
       case 'beam': g.fillStyle = ink; g.fillRect(o.x1 - 0.8, o.y, o.x2 - o.x1 + 1.6, 4); break;
       case 'flag': { const d = o.down ? -1 : 1; g.strokeStyle = ink; g.lineWidth = 2; g.moveTo(o.x, o.y); g.bezierCurveTo(o.x + 2, o.y + 5 * d, o.x + 9, o.y + 6 * d, o.x + 7, o.y + 14 * d); g.stroke(); break; }
+      case 'acc': g.strokeStyle = ink; g.lineWidth = 1.8; g.moveTo(o.x - 5, o.y - 4); g.lineTo(o.x + 5, o.y); g.lineTo(o.x - 5, o.y + 4); g.stroke(); break;
       case 'rest8': g.fillStyle = ink; g.arc(o.x - 2, o.y - 4, 2.6, 0, Math.PI * 2); g.fill(); g.beginPath(); g.strokeStyle = ink; g.lineWidth = 1.6; g.moveTo(o.x - 2, o.y - 2); g.quadraticCurveTo(o.x + 2, o.y - 1, o.x + 4, o.y - 5); g.lineTo(o.x - 1, o.y + 8); g.stroke(); break;
       case 'rest': g.strokeStyle = ink; g.lineWidth = 2.2; g.moveTo(o.x - 2, o.y - 12); g.lineTo(o.x + 4, o.y - 5); g.lineTo(o.x - 1, o.y); g.lineTo(o.x + 5, o.y + 8); g.bezierCurveTo(o.x, o.y + 5, o.x - 3, o.y + 8, o.x + 1, o.y + 12); g.stroke(); break;
       case 'text': g.fillStyle = o.color === 'accent' ? accent : ink; g.font = `${o.weight || 400} ${o.size}px "Hanken Grotesk", sans-serif`; g.fillText(o.s, o.x, o.y); break;
