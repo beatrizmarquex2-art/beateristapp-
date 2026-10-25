@@ -30,6 +30,7 @@ import * as tempo from './views/tempo.js';
 import * as setlist from './views/setlist.js';
 import * as partitura from './views/partitura.js';
 import * as ideias from './views/ideias.js';
+import * as arquivos from './views/arquivos.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -151,6 +152,7 @@ function shell() {
       case 'setlist': c = setlist.mount(view, r.parts); break;
       case 'partitura': c = partitura.mount(view, r.parts); break;
       case 'ideias': c = ideias.mount(view); break;
+      case 'arquivos': c = arquivos.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));

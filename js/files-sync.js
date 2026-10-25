@@ -1,8 +1,9 @@
-// Ebooks e PDFs: o arquivo fica no aparelho (IndexedDB, "file:<id>") e numa pasta PRIVADA da nuvem
+// Ebooks e Meus Arquivos: o arquivo fica no aparelho (IndexedDB, "file:<id>") e numa pasta PRIVADA da nuvem
 // (bucket "arquivos", caminho <user_id>/<id>). Abrir usa um link assinado que vale 1 hora; sem internet, abre a cópia do aparelho.
 import { CONFIG } from './config.js';
 import * as auth from './auth.js';
 import { db } from './db.js';
+import { cloudType } from './files-logic.js';
 
 const BUCKET = 'arquivos';
 export const MAX_MB = 50; // limite do plano gratuito do Supabase por arquivo
@@ -17,7 +18,7 @@ async function headers(extra = {}) {
 }
 
 export async function upload(id, blob) {
-  const r = await fetch(`${CONFIG.SUPABASE_URL}/storage/v1/object/${path(id)}`, { method: 'POST', headers: await headers({ 'Content-Type': blob.type || 'application/pdf', 'x-upsert': 'true' }), body: blob });
+  const r = await fetch(`${CONFIG.SUPABASE_URL}/storage/v1/object/${path(id)}`, { method: 'POST', headers: await headers({ 'Content-Type': cloudType(blob.type), 'x-upsert': 'true' }), body: blob });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   await db.metaSet(UP(id), 1);
 }
@@ -56,4 +57,16 @@ export async function openUrl(id) {
   }
   const blob = await db.metaGet(`file:${id}`);
   return blob ? URL.createObjectURL(blob) : null;
+}
+
+/** O arquivo em si (pra ver dentro do app): cópia do aparelho, ou baixa da nuvem e guarda aqui. */
+export async function getBlob(id) {
+  const local = await db.metaGet(`file:${id}`);
+  if (local) return local;
+  if (!navigator.onLine) return null;
+  const u = await openUrl(id); if (!u) return null;
+  const r = await fetch(u); if (!r.ok) return null;
+  const blob = await r.blob();
+  await db.metaSet(`file:${id}`, blob); await db.metaSet(UP(id), 1);
+  return blob;
 }

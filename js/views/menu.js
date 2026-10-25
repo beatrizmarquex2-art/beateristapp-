@@ -4,7 +4,7 @@ import { TABS } from './kit.js';
 
 const SECTIONS = [
   ['tocar e estudar', [['#/beatlab', 'kit', 'Beat Lab'], ['#/partitura', 'staff', 'Montar Partitura'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/tempo', 'timer', 'Juiz de Tempo'], ['#/tempo/transcritor', 'staff', 'Transcritor de Ritmo'], ['#/tempo/raiox', 'timer', 'Raio-x do Groove'], ['#/metronomo', 'metro', 'Metrônomo'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/foco', 'timer', 'Cronômetro de Foco'], ['#/estudos', 'study', 'Meus Estudos'], ['cartas/', 'staff', 'Cartas de Groove']]],
-  ['organizar', [['#/inicio', 'home', 'Início'], ['#/beaterista', 'drummer', 'Alunos'], ['#/setlist', 'note', 'Setlist'], ['#/ideias', 'bulb', 'Caixa de Ideias'], ['#/checklist', 'check', 'Checklist'], ['#/notas', 'note', 'Não Esquecer'], ['#/favoritos', 'star', 'Favoritos'], ['#/mural', 'photo', 'Mural de Artistas']]],
+  ['organizar', [['#/inicio', 'home', 'Início'], ['#/beaterista', 'drummer', 'Alunos'], ['#/setlist', 'note', 'Setlist'], ['#/ideias', 'bulb', 'Caixa de Ideias'], ['#/arquivos', 'folder', 'Meus Arquivos'], ['#/checklist', 'check', 'Checklist'], ['#/notas', 'note', 'Não Esquecer'], ['#/favoritos', 'star', 'Favoritos'], ['#/mural', 'photo', 'Mural de Artistas']]],
   ['conteúdo', [['#/feed', 'mural', 'Feed Beaterista'], ['#/feed/colagens', 'photo', 'Colagens']]],
   ['meu kit', TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t])],
   ['', [['#/ajustes', 'gear', 'Ajustes e backup']]],
