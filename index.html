@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Beaterista</title>
+  <meta name="description" content="Beaterista — seu estúdio na palma da mão.">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- mesma política do _headers do Netlify; no GitHub Pages (sem cabeçalhos próprios) vale esta -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://upload.wikimedia.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.supabase.co https://en.wikipedia.org https://commons.wikimedia.org; media-src 'self' blob:; frame-src https://www.youtube.com https://open.spotify.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#521622">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Beaterista">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
+  <script src="js/theme-boot.js"></script>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="decor" aria-hidden="true"><span class="wash w1"></span><span class="wash w2"></span><span class="wash w3"></span></div>
+  <div id="app" aria-live="off"><p class="boot">carregando…</p></div>
+  <div id="overlay"></div>
+  <div id="toasts" aria-live="polite"></div>
+  <noscript><p style="padding:24px">O Beaterista precisa de JavaScript para funcionar.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

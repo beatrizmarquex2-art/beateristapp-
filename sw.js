@@ -1,0 +1,40 @@
+// Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
+const VERSION = 'beaterista-v16';
+const SHELL = [
+  './', 'index.html', 'manifest.webmanifest', 'css/app.css',
+  'js/app.js', 'js/util.js', 'js/db.js', 'js/store.js', 'js/auth.js', 'js/sync.js', 'js/config.js',
+  'js/ui.js', 'js/modules.js', 'js/tasks-logic.js', 'js/theme.js', 'js/theme-boot.js', 'js/layout.js',
+  'js/views/home.js', 'js/views/tasks.js', 'js/views/notes.js', 'js/views/favs.js', 'js/views/settings.js',
+  'js/views/misc.js', 'js/views/personalize.js', 'js/views/mural.js', 'js/views/login.js', 'js/views/capture.js',
+  'js/views/library.js', 'js/lib.js', 'js/md.js', 'js/zip.js',
+  'js/music.js', 'js/audio.js', 'js/views/metronome.js', 'js/views/accent.js',
+  'js/students-logic.js', 'js/views/students.js', 'js/views/focus.js', 'js/views/feed.js', 'js/views/widgets.js', 'js/views/cover.js', 'js/views/collages.js', 'js/catalog.js', 'js/views/artist-photo.js', 'js/views/club.js', 'js/beats.js', 'js/charts.js', 'js/views/beatlab.js', 'js/pitch.js', 'js/views/ouvido.js', 'css/fonts.css',
+  'assets/fonts/BodoniModa-latin-ext.woff2', 'assets/fonts/BodoniModa-latin.woff2', 'assets/fonts/HankenGrotesk-latin-ext.woff2', 'assets/fonts/HankenGrotesk-latin.woff2', 'assets/fonts/SpecialElite-latin-ext.woff2', 'assets/fonts/SpecialElite-latin.woff2', 'assets/fonts/Anton-latin.woff2', 'assets/fonts/Anton-latin-ext.woff2', 'assets/fonts/PermanentMarker-latin.woff2', 'assets/fonts/AbrilFatface-latin.woff2', 'assets/fonts/AbrilFatface-latin-ext.woff2', 'assets/fonts/GochiHand-latin.woff2',
+  'assets/zine/bea-casaco.webp', 'assets/zine/bea-rock.webp', 'assets/zine/circulo-creme.webp', 'assets/zine/circulo-terracota.webp', 'assets/zine/cursor-mao.webp', 'assets/zine/cursor-seta.webp', 'assets/zine/explosao-creme.webp', 'assets/zine/explosao-ouro.webp', 'assets/zine/fita-1.webp', 'assets/zine/fita-2.webp', 'assets/zine/fita-3.webp', 'assets/zine/fita-4.webp', 'assets/zine/gotas-ouro.webp', 'assets/zine/kraft-4.webp', 'assets/zine/nota-creme.webp', 'assets/zine/nota-ouro.webp', 'assets/zine/notas-terracota.webp', 'assets/zine/papel-preto-brilho.webp', 'assets/zine/papel-preto-faixa.webp', 'assets/zine/papel-preto-onda.webp', 'assets/zine/papel-vermelho-3.webp', 'assets/zine/seta-creme.webp', 'assets/zine/seta-tinta.webp', 'assets/zine/sombra-retangulo.webp', 'assets/zine/textura-fundo-creme.webp', 'assets/zine/textura-fundo-tinta.webp',
+  'assets/logo-512.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',
+  'assets/parceiros.png', 'assets/wash/a.png', 'assets/wash/b.png', 'assets/wash/c.png', 'assets/wash/d.png',
+];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return; // Supabase, YouTube etc.: sempre rede, nunca cache
+  // Rede primeiro para o código (pega atualizações); cache como reserva offline.
+  e.respondWith(
+    fetch(req).then((res) => {
+      if (res.ok && !url.pathname.includes('/originals/papel_') && !url.pathname.endsWith('.pdf')) {
+        const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy));
+      }
+      return res;
+    }).catch(() => caches.match(req).then((m) => m || (req.mode === 'navigate' ? caches.match('index.html') : Response.error()))),
+  );
+});

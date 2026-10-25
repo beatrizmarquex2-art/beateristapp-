@@ -1,0 +1,172 @@
+import { h, icon, debounce, todayKey, longDate, sparkle } from '../util.js';
+import * as store from '../store.js';
+import { MODULES } from '../modules.js';
+import { visibleOn } from '../tasks-logic.js';
+import { toggleTask } from './tasks.js';
+import { homeNoteId, setHomeNote, HOME_NOTE_KEY } from './notes.js';
+import { sortedFavs, favChip } from './favs.js';
+import { toast } from '../ui.js';
+import { getLayout, LAYOUT_KEY } from '../layout.js';
+import { todayRoll } from './students.js';
+import { studyWidget, feedWidget, metroWidget, focusWidget, weekWidget } from './widgets.js';
+import { COVER_KEY, paintCover, openCover } from './cover.js';
+import { lessonsOn } from '../students-logic.js';
+import { weekdayOf } from '../util.js';
+
+const ORDER_KEY = 'setting-shortcuts';
+
+/** Faixa de parceiros: imagem montada pela Bea com os logos originais (Pad Gorilla, Spark, Nagano) sobre preto. */
+export function partnerStrip() {
+  return h('aside', { class: 'partners', 'aria-label': 'Parceiros' },
+    h('span', { class: 'partners-label' }, 'parceiros'),
+    h('img', { class: 'partners-img', src: 'assets/parceiros.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }));
+}
+
+function swash() {
+  const w = document.createElement('span');
+  w.innerHTML = '<svg class="swash" viewBox="0 0 300 20" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M3 14 C 48 3, 112 19, 184 8 S 268 5, 296 12"/></svg>';
+  return w.firstChild;
+}
+const spk = (cls) => h('span', { class: `spk ${cls}`, 'aria-hidden': 'true' }, sparkle());
+
+function hero() {
+  return h('section', { class: 'hero' },
+    spk('s1'), spk('s2'), spk('s3'),
+    h('figure', { class: 'hero-photo', role: 'button', tabindex: '0', 'aria-label': 'Trocar a foto da capa', onclick: openCover, onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCover(); } } },
+      h('img', { src: 'assets/zine/bea-rock.webp', alt: '', width: 160, height: 200, decoding: 'async' }), h('figcaption', {}, 'bora tocar')),
+    h('div', { class: 'hero-top' },
+      h('div', { class: 'hero-title' },
+        h('p', { class: 'hello' }, 'oi, bea!'),
+        h('h1', { class: 'brand-word' }, 'Beaterista'),
+        swash()),
+      h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
+    h('p', { class: 'hero-sub' }, 'seu estúdio na palma da mão'),
+    h('p', { class: 'date-line' }, longDate()),
+    heroNote());
+}
+
+/** Bilhete colado do tema Rabisco: a data e o recado do dia (aula ou estudo). */
+function heroNote() {
+  const day = todayKey();
+  const n = lessonsOn(store.list('student'), day, weekdayOf(day), store.list('makeup')).length;
+  const wd = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  return h('div', { class: 'hero-note', 'aria-hidden': 'true' },
+    h('span', { class: 'hero-note-date' }, wd),
+    h('span', { class: 'hero-note-msg' }, n ? 'hoje tem aula!' : 'dia de estudar!'),
+    h('img', { class: 'hero-note-smile', src: 'assets/mural/smile.svg', alt: '' }),
+    h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
+    h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
+}
+
+function slogan() {
+  return h('section', { class: 'slogan' }, h('div', { class: 'orn' }), h('p', {}, 'menos burocracia, mais música.'), h('div', { class: 'orn' }));
+}
+
+function orderedModules() {
+  const rec = store.get(ORDER_KEY);
+  const saved = rec ? rec.data.order || [] : [];
+  const bySlug = new Map(MODULES.map((m) => [m.slug, m]));
+  const out = saved.filter((s) => bySlug.has(s)).map((s) => bySlug.get(s));
+  MODULES.forEach((m) => { if (!out.includes(m)) out.push(m); });
+  return out;
+}
+
+function stickyNote() {
+  const wrap = h('section', { class: 'sticky-wrap', 'aria-label': 'Nota fixada' });
+  let id = homeNoteId();
+  const rec = id ? store.get(id) : null;
+  const ta = h('textarea', { class: 'sticky-text hand', rows: 3, maxlength: 600, placeholder: 'toque aqui e escreva o que não pode esquecer…', 'aria-label': 'Nota fixada na home. Salva sozinha.' }, rec ? rec.data.body || '' : '');
+  const state = h('small', { class: 'sticky-state', 'aria-live': 'polite' }, '');
+  const save = debounce(async () => {
+    if (!id && !ta.value.trim()) return;
+    if (!id) {
+      const n = await store.upsert('note', null, { title: '', body: ta.value, pinned: true, archived: false });
+      id = n.id; await setHomeNote(id);
+    } else await store.upsert('note', id, { body: ta.value });
+    state.textContent = 'salvo ✓';
+  }, 500);
+  ta.addEventListener('input', () => { state.textContent = 'salvando…'; save(); });
+  ta.addEventListener('blur', () => save.flush());
+  addEventListener('pagehide', () => save.flush());
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save.flush(); });
+  wrap.append(h('span', { class: 'tape', 'aria-hidden': 'true' }), ta, state);
+  // atualização vinda de outro aparelho: só aplica se a pessoa não estiver digitando
+  wrap.refresh = () => {
+    const nid = homeNoteId(); const r = nid ? store.get(nid) : null;
+    if (nid) id = nid;
+    if (r && document.activeElement !== ta && r.data.body !== ta.value) ta.value = r.data.body || '';
+  };
+  return wrap;
+}
+
+export function mount(host) {
+  let organizing = false;
+  const note = stickyNote();
+  const mini = h('section', { class: 'card pad mini-list' });
+  const favRow = h('section', { class: 'fav-row-home' });
+  const grid = h('nav', { class: 'shortcuts', 'aria-label': 'Atalhos' });
+  const orgBtn = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { organizing = !organizing; drawGrid(); } });
+
+  function drawMini() {
+    const items = visibleOn(store.list('task'), todayKey());
+    const pending = items.filter((x) => !x.done);
+    const show = [...pending, ...items.filter((x) => x.done)].slice(0, 4);
+    mini.replaceChildren(
+      h('div', { class: 'row between' }, h('h2', { class: 'tag' }, 'hoje'), h('a', { class: 'link', href: '#/checklist' }, items.length ? `${items.length - pending.length}/${items.length} · ver tudo` : 'ver checklist')),
+      ...(show.length ? show.map((it) => h('div', { class: `task mini${it.done ? ' done' : ''}` },
+        h('button', { class: `check${it.done ? ' on' : ''}`, type: 'button', role: 'checkbox', 'aria-checked': String(it.done), 'aria-label': `${it.done ? 'Desmarcar' : 'Concluir'}: ${it.rec.data.title}`, onclick: (e) => toggleTask(it.rec, e.currentTarget) }, it.done ? icon('tick', 18) : null),
+        h('span', { class: 'task-title' }, it.rec.data.title)))
+        : [h('p', { class: 'hand muted' }, 'dia livre. bora criar algo?')]));
+  }
+  function drawFavs() {
+    const f = sortedFavs().slice(0, 6);
+    favRow.hidden = !f.length;
+    favRow.replaceChildren(h('div', { class: 'chips' }, ...f.map(favChip)));
+  }
+  async function saveOrder(slugs) { await store.upsert('setting', ORDER_KEY, { order: slugs }); }
+  function drawGrid() {
+    const mods = orderedModules();
+    orgBtn.textContent = organizing ? 'concluir' : 'organizar';
+    grid.replaceChildren(...mods.map((m, i) => {
+      const inner = [h('span', { class: 'sc-ico' }, icon(m.icon, 26)), h('span', { class: 'sc-label' }, m.label), !m.route ? h('span', { class: 'soon' }, 'em breve') : null];
+      if (organizing) {
+        return h('div', { class: 'shortcut org' }, ...inner,
+          h('span', { class: 'sc-move' },
+            h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Mover ${m.label} para antes`, disabled: i === 0, onclick: () => { const s = mods.map((x) => x.slug); [s[i - 1], s[i]] = [s[i], s[i - 1]]; saveOrder(s); } }, icon('back', 18)),
+            h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Mover ${m.label} para depois`, disabled: i === mods.length - 1, onclick: () => { const s = mods.map((x) => x.slug); [s[i + 1], s[i]] = [s[i], s[i + 1]]; saveOrder(s); } }, h('span', { style: { display: 'inline-flex', transform: 'scaleX(-1)' } }, icon('back', 18)))));
+      }
+      return h('a', { class: `shortcut${m.route ? '' : ' locked'}`, href: m.route || `#/em-breve/${m.slug}` }, ...inner);
+    }));
+  }
+
+  const roll = todayRoll({ compact: true });
+  const widgets = { semana: weekWidget(), estudar: studyWidget(), feed3: feedWidget(), metro: metroWidget(), foco: focusWidget() };
+  const parts = {
+    aulas: roll,
+    ...widgets,
+    nota: note,
+    hoje: mini,
+    favoritos: favRow,
+    atalhos: h('section', { class: 'home-sec' }, h('div', { class: 'row between pad-x' }, h('h2', { class: 'tag' }, 'atalhos'), orgBtn), grid),
+    frase: slogan(),
+    parceiros: partnerStrip(),
+  };
+  const top = hero();
+  const fig = top.querySelector('.hero-photo');
+  paintCover(fig);
+  function drawLayout() {
+    const { order, hidden } = getLayout();
+    host.replaceChildren(top, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
+  }
+  drawLayout();
+  drawMini(); drawFavs(); drawGrid();
+  const off = store.subscribe((i) => {
+    if (!i.kind || i.kind === 'task') drawMini();
+    if (!i.kind || i.kind === 'fav') drawFavs();
+    if (!i.kind || (i.kind === 'setting' && i.id === ORDER_KEY)) drawGrid();
+    if (!i.kind || (i.kind === 'setting' && i.id === LAYOUT_KEY)) drawLayout();
+    if (!i.kind || i.id === COVER_KEY) paintCover(fig);
+    if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
+  });
+  return () => { off(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
+}
