@@ -87,6 +87,8 @@ export function toSVG({ w, h, ops }) {
       case 'flag': return `<path d="M${o.x} ${o.y}c2 ${o.down ? -5 : 5} 9 ${o.down ? -6 : 6} 7 ${o.down ? -14 : 14}" stroke="currentColor" stroke-width="2" fill="none"/>`;
       case 'acc': return `<path d="M${o.x - 5} ${o.y - 4}L${o.x + 5} ${o.y}L${o.x - 5} ${o.y + 4}" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="miter" class="acc"/>`;
       case 'rest8': return `<circle cx="${o.x - 2}" cy="${o.y - 4}" r="2.6" fill="currentColor"/><path d="M${o.x - 2} ${o.y - 2}q4 1 6-3l-5 13" stroke="currentColor" stroke-width="1.6" fill="none"/>`;
+      case 'rest16': return `<circle cx="${o.x - 2}" cy="${o.y - 6}" r="2.4" fill="currentColor"/><circle cx="${o.x - 4}" cy="${o.y + 1}" r="2.4" fill="currentColor"/><path d="M${o.x - 2} ${o.y - 4}q4 1 6-3M${o.x - 4} ${o.y + 3}q4 1 6-3M${o.x + 4} ${o.y - 7}l-5 18" stroke="currentColor" stroke-width="1.5" fill="none"/>`;
+      case 'dot': return `<circle cx="${o.x}" cy="${o.y}" r="2.2" fill="currentColor"/>`;
       case 'rest': return `<path d="M${o.x - 2} ${o.y - 12}l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`;
       case 'text': return `<text x="${o.x}" y="${o.y}" font-size="${o.size}" font-weight="${o.weight || 400}" font-family="Hanken Grotesk, sans-serif" fill="${o.color === 'accent' ? 'var(--accent, #b5162b)' : 'currentColor'}">${esc(o.s)}</text>`;
       default: return '';

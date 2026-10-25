@@ -1127,3 +1127,21 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .bt-sugg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .bt-sugg li { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line, rgb(0 0 0 / .15)); }
 .bt-sugg li p { margin: 2px 0 0; font-size: 13px; }
+
+/* Treinos de leitura e escuta */
+.tr-ctrl { display: grid; gap: 8px; } .tr-lvname { margin: -4px 0 0; font-size: 13px; }
+.tr-score { display: grid; gap: 4px; padding: 6px 16px; } .tr-bar { margin: 0; background: #fffdf8; color: #1b1818; border: 1px solid var(--line, rgb(0 0 0 / .12)); padding: 4px 6px; }
+.tr-actions { gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 16px; }
+.tr-status { padding: 0 16px; margin: 4px 0; font-weight: 600; min-height: 1.4em; } .tr-status.good { color: #1f9d4a; } .tr-status.bad { color: #c8102e; }
+.tr-pad { display: grid; place-items: center; gap: 2px; width: calc(100% - 32px); margin: 6px 16px 14px; min-height: 150px; border: 2px dashed var(--line, rgb(0 0 0 / .25)); background: transparent; color: inherit; font: 700 22px var(--body); touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: pointer; }
+.tr-pad small { font: 400 12px var(--body); color: var(--muted); } .tr-pad.live { border-style: solid; border-color: var(--accent); }
+.tr-pad.hit { animation: tr-hit .12s ease-out; } @keyframes tr-hit { from { background: rgb(181 22 43 / .25); } to { background: transparent; } }
+.tr-res { display: grid; gap: 4px; } .tr-res p { margin: 0; }
+.tr-big { display: flex; align-items: baseline; gap: 6px; } .tr-big b { font: 400 44px/1 var(--display); color: var(--accent); }
+.tr-legend { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 13px; } .tr-legend i { display: inline-block; width: 10px; height: 10px; margin-left: 6px; }
+.tr-count { font-weight: 600; }
+.tr-opts { display: grid; gap: 8px; padding: 4px 16px 12px; }
+.tr-opt { display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; background: var(--card, #fff); border: 2px solid var(--line, rgb(0 0 0 / .15)); color: inherit; cursor: pointer; text-align: left; }
+.tr-opt > b { font: 400 22px var(--display); width: 20px; } .tr-opt .tr-score { flex: 1; padding: 0; min-width: 0; }
+.tr-opt.ok { border-color: #1f9d4a; box-shadow: inset 6px 0 0 #1f9d4a; } .tr-opt.no { border-color: #c8102e; box-shadow: inset 6px 0 0 #c8102e; }
+.tr-hist ul { margin: 6px 0 0; padding-left: 18px; } .tr-hist li { margin: 2px 0; }

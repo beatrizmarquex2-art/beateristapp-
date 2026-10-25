@@ -32,6 +32,7 @@ import * as partitura from './views/partitura.js';
 import * as ideias from './views/ideias.js';
 import * as arquivos from './views/arquivos.js';
 import * as bateristas from './views/bateristas.js';
+import * as treinos from './views/treinos.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -155,6 +156,7 @@ function shell() {
       case 'ideias': c = ideias.mount(view); break;
       case 'arquivos': c = arquivos.mount(view, r.parts); break;
       case 'bateristas': c = bateristas.mount(view, r.parts); break;
+      case 'treinos': c = treinos.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
