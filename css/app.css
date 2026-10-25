@@ -1177,3 +1177,4 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .rd-stick span { padding: 2px 0; } .rd-stick span.acc { color: #b5162b; font-size: 15px; } .rd-stick span.ghost { color: #8d847b; font-size: 10px; font-weight: 400; } .rd-stick span.kick { color: #1f6b3f; }
 .rd-stick span.beat { box-shadow: inset 1px 0 0 rgb(27 24 24 / .2); } .rd-stick span.now { background: #1b1818; color: #fff; }
 .rd-log { display: grid; gap: 8px; } .rd-log p { margin: 0; } .rd-hist { margin: 0; padding-left: 18px; }
+.rd-staff + .rd-staff { margin-top: 8px; } .rd-src { margin: 8px 0 0; font: 12px var(--type); color: #b5162b; }

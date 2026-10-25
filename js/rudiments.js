@@ -36,6 +36,14 @@ export function toBar(notes, sub = 4, offset = 0) {
   return { steps, rows, acc, ghost, seq };
 }
 
+/** Quantos compassos até o padrão fechar o ciclo (ex.: 3 notas em semicolcheia = 3 compassos). Máximo `max`. */
+export function barsFor(len, sub = 4, max = 8) {
+  const steps = sub * 4; if (!len) return 1;
+  const g = (a, b) => (b ? g(b, a % b) : a);
+  return Math.min(max, len / g(len, steps));
+}
+
+// Exercícios genéricos (domínio comum). Os do método Beaterista (Ebook 2) ficam só no Supabase privado da Bia.
 export const PRESETS = [
   { id: 'simples', name: 'Toque simples', stick: 'dede dede dede dede', sub: 4, lv: 1 },
   { id: 'duplo', name: 'Toque duplo', stick: 'ddee ddee ddee ddee', sub: 4, lv: 1 },
@@ -43,10 +51,9 @@ export const PRESETS = [
   { id: 'paradiddle', name: 'Paradiddle', stick: 'Dedd Edee', sub: 4, lv: 2 },
   { id: 'paradiddle-inv', name: 'Paradiddle invertido', stick: 'ddEd eeDe', sub: 4, lv: 2 },
   { id: 'dentro', name: 'Paradiddle de dentro pra fora', stick: 'deed edde', sub: 4, lv: 2 },
-  { id: 'duplo-paradiddle', name: 'Duplo paradiddle', stick: 'Dededd Ededee', sub: 3, lv: 2 },
-  { id: 'paradiddle-diddle', name: 'Paradiddle-diddle', stick: 'Deddee', sub: 3, lv: 2 },
-  { id: 'triplo', name: 'Toque triplo', stick: 'ddd eee', sub: 3, lv: 2 },
+  { id: 'duplo-paradiddle', name: 'Duplo paradiddle', stick: 'Dededd Ededee', sub: 4, lv: 2 },
+  { id: 'paradiddle-diddle', name: 'Paradiddle-diddle', stick: 'Deddee', sub: 4, lv: 2 },
   { id: 'fantasma', name: 'Acento + fantasma', stick: 'D(e)(d)(e) E(d)(e)(d)', sub: 4, lv: 3 },
-  { id: 'mao-mao-pe', name: 'Mão-mão-pé', stick: 'deb', sub: 3, lv: 2 },
-  { id: 'mao-pe', name: 'Mão-mão-pé-pé', stick: 'debb', sub: 4, lv: 3 },
+  { id: 'mao-pe', name: 'Mãos + bumbo no final (DEDB)', stick: 'dedb', sub: 4, lv: 2 },
+  { id: 'mao-pe-pe', name: 'Mãos + dois bumbos (DEBB)', stick: 'debb', sub: 4, lv: 3 },
 ];
