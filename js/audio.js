@@ -55,6 +55,16 @@ export function hihat(t, vel = 1, open = false) {
   n.connect(hp).connect(g).connect(master); n.start(t); n.stop(t + len + 0.02);
 }
 
+/** Prato de ataque (crash) ou condução (ride): ruído agudo com cauda longa. */
+export function cymbal(t, ride = false, vel = 1) {
+  const c = audio(); const n = c.createBufferSource(); n.buffer = noiseBuf; n.loop = true; // o ruído base tem 0,25 s; o prato soa mais
+  const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = ride ? 5200 : 3800;
+  const g = c.createGain(); const len = ride ? 0.38 : 1.1; const peak = ride ? 0.16 : 0.3;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak * vel, t + 0.003); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  n.connect(hp).connect(g).connect(master); n.start(t); n.stop(t + len + 0.02);
+  if (ride) { const o = c.createOscillator(); const og = c.createGain(); o.type = 'triangle'; o.frequency.value = 3150; og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.05 * vel, t + 0.002); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.3); o.connect(og).connect(master); o.start(t); o.stop(t + 0.32); }
+}
+
 /** Tom (agudo) ou surdo (grave): seno com queda curta de afinação. */
 export function tom(t, freq = 180, vel = 1) {
   const c = audio(); const o = c.createOscillator(); const g = c.createGain();

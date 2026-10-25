@@ -17,12 +17,18 @@ export const TABS = [
 const DADOS = 'setting-meus-dados';
 const GROUPS = [['redes', 'redes sociais'], ['site', 'site e Google'], ['contato', 'WhatsApp'], ['outros', 'outros']];
 
+/** Copia sem mostrar o conteúdo na tela: só um aviso curtinho, que substitui o anterior. */
 export async function copy(text, what = 'copiado') {
-  try { await navigator.clipboard.writeText(text); toast(`${what} ✓`); }
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
   catch {
-    const ta = h('textarea', { style: { position: 'fixed', opacity: '0' } }, text); document.body.append(ta); ta.select();
-    try { document.execCommand('copy'); toast(`${what} ✓`); } catch { toast(text); } ta.remove();
+    // plano B (iPhone antigo): campo invisível fora da tela, só pra seleção
+    const ta = h('textarea', { readonly: true, 'aria-hidden': 'true', style: { position: 'fixed', top: '-1000px', left: '0', opacity: '0', fontSize: '16px' } });
+    ta.value = text; document.body.append(ta); ta.focus({ preventScroll: true }); ta.setSelectionRange(0, text.length);
+    try { ok = document.execCommand('copy'); } catch { ok = false; }
+    ta.remove();
   }
+  toast(ok ? `${what} ✓` : 'não consegui copiar', { ms: 1300, id: 'copy' });
 }
 const safeUrl = (u) => (/^(https?:|mailto:|tel:)/i.test(u || '') ? u : '');
 const host = (u) => { try { return new URL(u).host.replace(/^www\./, ''); } catch { return ''; } };

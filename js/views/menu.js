@@ -3,9 +3,9 @@ import { h, icon, reducedMotion } from '../util.js';
 import { TABS } from './kit.js';
 
 const SECTIONS = [
-  ['tocar', [['#/beatlab', 'kit', 'Beat Lab'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/metronomo', 'metro', 'Metrônomo'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/foco', 'timer', 'Cronômetro de Foco']]],
-  ['estudar', [['#/estudos', 'study', 'Meus Estudos'], ['#/feed', 'mural', 'Feed Beaterista'], ['#/feed/colagens', 'photo', 'Colagens']]],
+  ['tocar e estudar', [['#/beatlab', 'kit', 'Beat Lab'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/metronomo', 'metro', 'Metrônomo'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/foco', 'timer', 'Cronômetro de Foco'], ['#/estudos', 'study', 'Meus Estudos']]],
   ['organizar', [['#/inicio', 'home', 'Início'], ['#/beaterista', 'drummer', 'Alunos'], ['#/checklist', 'check', 'Checklist'], ['#/notas', 'note', 'Não Esquecer'], ['#/favoritos', 'star', 'Favoritos'], ['#/mural', 'photo', 'Mural de Artistas']]],
+  ['conteúdo', [['#/feed', 'mural', 'Feed Beaterista'], ['#/feed/colagens', 'photo', 'Colagens']]],
   ['meu kit', TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t])],
   ['', [['#/ajustes', 'gear', 'Ajustes e backup']]],
 ];

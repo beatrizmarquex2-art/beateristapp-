@@ -5,7 +5,7 @@ import * as store from '../store.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
-import { audio, click, snare, kick, hihat, tom, scheduler } from '../audio.js';
+import { audio, click, snare, kick, hihat, tom, cymbal, scheduler } from '../audio.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 
 const KEY = 'setting-beatlab';
@@ -15,7 +15,7 @@ const cfg = () => ({ beat: B.clone(B.PRESETS[0]), fill: B.clone(FILL0), click: f
 const save = (patch) => store.upsert('setting', KEY, patch);
 const favs = () => (store.get(FAV) ? store.get(FAV).data.ids || [] : []);
 const mine = () => store.list('beat').sort((a, b) => b.updated_at - a.updated_at);
-const VOICE = { hh: (t) => hihat(t, 0.9), sn: (t) => snare(t, 0.9), tt: (t) => tom(t, 210), ft: (t) => tom(t, 110), bd: (t) => kick(t) };
+const VOICE = { cr: (t) => cymbal(t), rd: (t) => cymbal(t, true), hh: (t) => hihat(t, 0.9), ho: (t) => hihat(t, 0.9, true), sn: (t) => snare(t, 0.9), tt: (t) => tom(t, 210), mt: (t) => tom(t, 160), ft: (t) => tom(t, 110), bd: (t) => kick(t), hf: (t) => hihat(t, 0.45) };
 
 /* ---------- tocador único (só um ritmo toca por vez) ---------- */
 let player = null;
@@ -36,15 +36,15 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
-function gridEl(beat, onToggle) {
+function gridEl(beat, onToggle, { full = false, color = false } = {}) {
   const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat; const n = perLine(beat.steps);
   const box = h('div', { class: 'bl-lines' });
   for (let a = 0; a < beat.steps; a += n) {
     const wrap = h('div', { class: 'bl-grid', role: 'grid', 'aria-label': beat.steps > n ? `Grade, tempos ${a / per + 1} a ${(a + n) / per}` : `Grade de ${beat.steps} passos` });
     wrap.style.setProperty('--steps', n);
-    for (const r of B.usedRows(beat)) {
-      wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader' }, r.label));
-      for (let i = a; i < a + n; i++) { const v = beat.rows[r.id][i]; wrap.append(h('button', { type: 'button', class: `bl-cell${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'data-step': i, role: 'gridcell', 'aria-pressed': String(!!v), 'aria-label': `${r.label}, ${labels[i]} (passo ${i + 1})`, onclick: () => onToggle(r.id, i) })); }
+    for (const r of B.usedRows(beat, full)) {
+      wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader', style: color ? { color: B.COLORS[r.id] } : null, title: r.label }, r.short || r.label));
+      for (let i = a; i < a + n; i++) { const v = B.cell(beat, r.id, i); wrap.append(h('button', { type: 'button', style: color && v ? { background: B.COLORS[r.id], borderColor: B.COLORS[r.id] } : null, class: `bl-cell${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'data-step': i, role: 'gridcell', 'aria-pressed': String(!!v), 'aria-label': `${r.label}, ${labels[i]} (passo ${i + 1})`, onclick: () => onToggle(r.id, i) })); }
     }
     wrap.append(h('span', { 'aria-hidden': 'true' }), ...labels.slice(a, a + n).map((l, k) => h('span', { class: `bl-count${(a + k) % per === 0 ? ' beat' : ''}`, 'aria-hidden': 'true' }, l)));
     box.append(wrap);
@@ -53,19 +53,26 @@ function gridEl(beat, onToggle) {
 }
 
 /** Partitura simplificada (mesmos dados da grade). */
-function scoreEl(beat) {
+function legendEl(beat) {
+  return h('div', { class: 'bl-legend' }, ...N.legend(beat).map(([t, c]) => h('span', {}, h('i', { style: { background: c } }), t)));
+}
+function scoreEl(beat, color, full) {
   const el = h('figure', { class: 'bl-score', 'aria-label': `Partitura de ${beat.name}` });
-  el.innerHTML = N.toSVG(N.layout(beat, { width: 360 })); // gerado por nós a partir de números; texto escapado
+  el.innerHTML = N.toSVG(N.layout(beat, { width: 360, color, full })); // gerado por nós a partir de números; texto escapado
   return el;
 }
-function exportScore(beat) {
-  const W = 720, L = N.layout(beat, { width: W / 2, title: beat.name.toUpperCase() });
-  const c = document.createElement('canvas'); c.width = W + 80; c.height = L.h * 2 + 110;
+function exportScore(beat, color, full) {
+  const W = 720, L = N.layout(beat, { width: W / 2, title: beat.name.toUpperCase(), color, full });
+  const leg = color ? N.legend(beat) : [];
+  const c = document.createElement('canvas'); c.width = W + 80; c.height = L.h * 2 + 110 + (leg.length ? 50 : 0);
   const g = c.getContext('2d'); g.fillStyle = '#f4eee4'; g.fillRect(0, 0, c.width, c.height);
   g.translate(40, 30); N.draw(g, L, { scale: 2 }); g.setTransform(1, 0, 0, 1, 0, 0);
-  g.fillStyle = '#1b1b1b'; g.font = '600 20px "Hanken Grotesk", sans-serif';
-  g.fillText(`4/4 · ${beat.bpm} BPM · notação simplificada · Beat Lab Beaterista`, 40, c.height - 34);
-  shareCanvas(c, `${beat.name} partitura`);
+  g.font = '600 20px "Hanken Grotesk", sans-serif';
+  let x = 40; const ly = L.h * 2 + 70;
+  for (const [t, col] of leg) { g.fillStyle = col; g.fillRect(x, ly - 16, 18, 18); g.fillStyle = '#1b1b1b'; g.fillText(t, x + 26, ly); x += 40 + g.measureText(t).width; if (x > c.width - 140) break; }
+  g.fillStyle = '#1b1b1b';
+  g.fillText(`4/4 · ${beat.bpm} BPM · Beat Lab Beaterista`, 40, c.height - 34);
+  shareCanvas(c, `${beat.name} partitura${color ? ' colorida' : ''}`);
 }
 function shareCanvas(c, title) {
   c.toBlob(async (blob) => {
@@ -77,7 +84,7 @@ function shareCanvas(c, title) {
 }
 
 /** Imagem PNG da grade (para mandar pro aluno ou postar). */
-function exportImage(beat) {
+function exportImage(beat, color = false) {
   const rows = B.usedRows(beat); const cell = 46, lab = 130, pad = 40, top = 130;
   const c = document.createElement('canvas'); c.width = pad * 2 + lab + cell * beat.steps; c.height = top + rows.length * cell + 90;
   const g = c.getContext('2d');
@@ -87,9 +94,9 @@ function exportImage(beat) {
   const per = B.GRIDS[beat.steps].perBeat; const labels = B.countLabels(beat.steps);
   rows.forEach((r, y) => {
     g.fillStyle = '#1b1b1b'; g.font = '600 24px "Hanken Grotesk", sans-serif'; g.fillText(r.label, pad, top + y * cell + 31);
-    beat.rows[r.id].forEach((v, x) => {
+    (beat.rows[r.id] || []).forEach((v, x) => {
       const X = pad + lab + x * cell, Y = top + y * cell;
-      g.fillStyle = v ? '#b5162b' : '#ffffff'; g.fillRect(X + 3, Y + 3, cell - 6, cell - 6);
+      g.fillStyle = v ? (color ? B.COLORS[r.id] : '#b5162b') : '#ffffff'; g.fillRect(X + 3, Y + 3, cell - 6, cell - 6);
       g.strokeStyle = x % per === 0 ? '#1b1b1b' : '#9a948a'; g.lineWidth = 2; g.strokeRect(X + 3, Y + 3, cell - 6, cell - 6);
     });
   });
@@ -118,6 +125,8 @@ function mountEditor(host, kind) {
   const scoreBox = h('div', { class: 'bl-score-wrap' });
   const resBox = h('div', { class: 'chips bl-res', role: 'radiogroup', 'aria-label': 'Resolução' });
   const clickBtn = h('button', { class: 'btn small', type: 'button' });
+  const modeTabs = h('div', { class: 'chips lib-tabs bl-mode', role: 'radiogroup', 'aria-label': 'Grade e partitura' });
+  const colorBtn = h('button', { class: 'btn small', type: 'button', onclick: async () => { await save({ color: !cfg().color }); draw(); } });
   const persist = () => save({ [slot]: beat });
   const isPlaying = () => player && player.owner === 'editor';
   const paintPlay = () => { const on = isPlaying(); playBtn.replaceChildren(icon(on ? 'stop' : 'play', 28)); playBtn.setAttribute('aria-label', on ? 'Parar' : 'Tocar'); playBtn.classList.toggle('on', on); };
@@ -129,8 +138,12 @@ function mountEditor(host, kind) {
   function draw() {
     nameEl.textContent = beat.name;
     bpmEl.textContent = String(beat.bpm);
-    gridBox.replaceChildren(gridEl(beat, (r, i) => { beat = { ...B.toggle(beat, r, i), mine: true }; persist(); draw(); restartIfPlaying(); }));
-    scoreBox.replaceChildren(h('small', { class: 'bl-score-label' }, 'partitura (simplificada)'), scoreEl(beat));
+    const { full, color } = cfg();
+    gridBox.replaceChildren(gridEl(beat, (r, i) => { beat = { ...B.toggle(beat, r, i), mine: true }; persist(); draw(); restartIfPlaying(); }, { full, color }));
+    modeTabs.replaceChildren(...[[false, 'simples'], [true, 'completa']].map(([v, t]) => h('button', { type: 'button', class: `lib-tab${!!full === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(!!full === v), onclick: async () => { await save({ full: v }); draw(); } }, t)),
+      h('small', { class: 'bl-mode-hint' }, full ? 'kit inteiro · mãos ↑ pés ↓' : 'chimbal, caixa, bumbo · tudo ↑'));
+    colorBtn.textContent = color ? 'colorido ✓' : 'colorido'; colorBtn.setAttribute('aria-pressed', String(!!color));
+    scoreBox.replaceChildren(h('div', { class: 'row between' }, h('small', { class: 'bl-score-label' }, 'partitura'), colorBtn), ...[scoreEl(beat, color, !!full), color && legendEl(beat)].filter(Boolean));
     resBox.replaceChildren(...Object.entries(B.GRIDS).map(([n, g]) => h('button', { type: 'button', class: `lib-tab${beat.steps === Number(n) ? ' on' : ''}`, role: 'radio', 'aria-checked': String(beat.steps === Number(n)), onclick: () => { beat = { ...B.resize(beat, Number(n)), mine: true }; persist(); draw(); restartIfPlaying(); } }, g.name)));
     clickBtn.textContent = cfg().click ? 'tocar junto: com clique ✓' : 'tocar junto: sem clique';
     clickBtn.setAttribute('aria-pressed', String(!!cfg().click));
@@ -161,14 +174,14 @@ function mountEditor(host, kind) {
       h('div', { class: 'bl-tempo' },
         h('button', { class: 'bl-step', type: 'button', 'aria-label': 'menos 5 BPM', onclick: () => setBpm(beat.bpm - 5) }, '−'), bpmEl,
         h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => setBpm(beat.bpm + 5) }, '+'), playBtn),
-      gridBox, resBox,
+      modeTabs, gridBox, resBox,
       h('div', { class: 'bl-actions' }, clickBtn,
         h('button', { class: 'btn small', type: 'button', onclick: () => { beat = { ...B.clear(beat), name: 'Meu ritmo', mine: true, recId: null, id: 'novo' }; persist(); draw(); } }, 'limpar'),
         h('button', { class: 'btn small primary', type: 'button', onclick: saveMine }, 'salvar'),
-        h('button', { class: 'btn small', type: 'button', onclick: () => exportScore(beat) }, 'exportar partitura'),
-        h('button', { class: 'btn small', type: 'button', onclick: () => exportImage(beat) }, 'exportar grade')),
+        h('button', { class: 'btn small', type: 'button', onclick: () => exportScore(beat, cfg().color, !!cfg().full) }, 'exportar partitura'),
+        h('button', { class: 'btn small', type: 'button', onclick: () => exportImage(beat, cfg().color) }, 'exportar grade')),
       scoreBox),
-    h('p', { class: 'pad-x lib-note' }, 'toque nos quadradinhos para ligar e desligar as notas. dá pra mudar enquanto toca. “salvar” guarda o ritmo editável na pasta Meus ritmos (sincroniza com a nuvem); a partitura é gerada da grade.'));
+    h('p', { class: 'pad-x lib-note' }, 'toque nos quadradinhos para ligar e desligar as notas. dá pra mudar enquanto toca. “salvar” guarda o ritmo editável na pasta Meus ritmos (sincroniza com a nuvem); a partitura é gerada da grade: “simples” é tudo numa voz; “completa” mostra o kit inteiro com mãos pra cima e pés pra baixo. “colorido” pinta cada peça, na tela e na exportação.'));
   draw();
   return () => { if (isPlaying()) stopBeat(); };
 }

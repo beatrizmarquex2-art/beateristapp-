@@ -3,9 +3,10 @@ import { h, icon, reducedMotion } from './util.js';
 const root = () => document.getElementById('overlay');
 
 /** Aviso tipo "papel que desliza". Aceita ação (ex.: desfazer). */
-export function toast(msg, { action, onAction, ms = 4500 } = {}) {
+export function toast(msg, { action, onAction, ms = 4500, id } = {}) {
   const host = document.getElementById('toasts');
-  const t = h('div', { class: 'toast', role: 'status' }, h('span', {}, msg));
+  if (id) host.querySelectorAll(`[data-id="${id}"]`).forEach((x) => x.remove()); // o aviso novo substitui o anterior do mesmo tipo
+  const t = h('div', { class: `toast${id ? ' mini' : ''}`, role: 'status', 'data-id': id || null }, h('span', {}, msg));
   if (action) {
     t.append(h('button', { class: 'toast-act', type: 'button', onclick: () => { onAction && onAction(); t.remove(); } }, action));
   }
