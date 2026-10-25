@@ -7,6 +7,7 @@ import * as S from '../students-logic.js';
 import { pickImages, saveImage, imageUrl } from './mural.js';
 import { partnerStrip } from './home.js';
 import { weekWidget } from './widgets.js';
+import { studentPlans } from './planos.js';
 
 const students = () => store.list('student').sort((a, b) => a.data.name.localeCompare(b.data.name));
 const lessons = () => store.list('lesson');
@@ -168,6 +169,7 @@ function mountStudent(host, id) {
         h('div', { class: 'row' },
           h('button', { class: 'btn primary', type: 'button', onclick: () => sheet(last ? 'Continuar de onde paramos' : 'Registrar aula', (close) => lessonEditor(st, null, close)) }, last ? 'continuar de onde paramos' : 'registrar aula'),
           h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('Reposição', (close) => makeupEditor(st, close)) }, 'marcar reposição'))),
+      studentPlans(st),
       h('section', { class: 'card pad' },
         h('div', { class: 'row between' }, h('h2', { class: 'tag' }, `pagamento de ${monthBR(mk)}`),
           h('button', { class: `btn small${paid ? ' st-paid' : ''}`, type: 'button', 'aria-pressed': String(paid), onclick: () => store.upsert('student', id, { payments: { ...(d.payments || {}), [mk]: !paid } }) }, paid ? 'pago ✓' : 'pendente')),
@@ -183,7 +185,7 @@ function mountStudent(host, id) {
         h('button', { class: 'btn small ghost danger-txt', type: 'button', onclick: async () => { if (await confirmSheet('Apagar aluno?', `A ficha de ${d.name} sai do app. O histórico de aulas fica guardado.`, 'Apagar')) { await store.remove(id); location.hash = '#/beaterista'; } } }, 'apagar'))].filter(Boolean));
   };
   draw();
-  return store.subscribe((i) => { if (!i.kind || ['student', 'lesson'].includes(i.kind)) draw(); });
+  return store.subscribe((i) => { if (!i.kind || ['student', 'lesson', 'studentplan'].includes(i.kind)) draw(); });
 }
 
 /* ---------- lista + agenda ---------- */
