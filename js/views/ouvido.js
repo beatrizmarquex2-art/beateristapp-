@@ -6,6 +6,7 @@ import * as store from '../store.js';
 import * as P from '../pitch.js';
 import { audio } from '../audio.js';
 import { banner, toast } from '../ui.js';
+import { guideTab } from './tuneguide.js';
 
 const TUNE = 'tuning';
 const SET = 'setting-ouvido';
@@ -210,12 +211,12 @@ export function mount(host) {
   let mic = null, raf = 0, pane = null, gone = false;
   const body = h('div');
   const tabs = h('nav', { class: 'chips lib-tabs bl-tabs', 'aria-label': 'Estúdio de ouvido' });
-  const TABS = [['afinador', 'afinador'], ['bpm', 'contador de BPM'], ['cantarolar', 'cantarolou → nota']];
+  const TABS = [['afinador', 'afinador'], ['guia', 'guia de afinação'], ['bpm', 'contador de BPM'], ['cantarolar', 'cantarolou → nota']];
   const show = (id) => {
     store.upsert('setting', SET, { tab: id });
     tabs.replaceChildren(...TABS.map(([k, t]) => h('button', { type: 'button', class: `lib-tab${k === id ? ' on' : ''}`, 'aria-pressed': String(k === id), onclick: () => show(k) }, t)));
     if (!mic) return;
-    pane = id === 'afinador' ? tunerTab(mic) : id === 'bpm' ? bpmTab(mic) : humTab(mic);
+    pane = id === 'afinador' ? tunerTab(mic) : id === 'guia' ? guideTab(mic) : id === 'bpm' ? bpmTab(mic) : humTab(mic);
     body.replaceChildren(pane);
   };
   const loop = () => { if (gone || !mic) return; const buf = mic.read(); pane && pane.frame && pane.frame(buf, mic.ctx.currentTime, mic.sr); raf = requestAnimationFrame(loop); };
@@ -238,7 +239,7 @@ export function mount(host) {
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
     }
   }
-  host.append(banner('Estúdio de Ouvido', 'um microfone, três ferramentas'), tabs, body);
+  host.append(banner('Estúdio de Ouvido', 'um microfone, quatro ferramentas'), tabs, body);
   show(cfg().tab); ask();
   return () => { gone = true; cancelAnimationFrame(raf); if (mic) mic.stop(); mic = null; };
 }

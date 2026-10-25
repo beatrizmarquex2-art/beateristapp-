@@ -16,7 +16,8 @@ export const ROWS = [
 export const COLORS = { cr: '#d4a017', rd: '#0e9aa7', hh: '#1f6fd1', ho: '#5aa2ff', sn: '#d1182e', tt: '#ef7d10', mt: '#b85c00', ft: '#7b3fb8', bd: '#1f9d4a', hf: '#2c4a8a' };
 /** Resoluções: passos por compasso de 4/4 e quantos passos cabem num tempo. */
 export const GRIDS = { 8: { perBeat: 2, name: 'colcheias' }, 12: { perBeat: 3, name: 'tercinas' }, 16: { perBeat: 4, name: 'semicolcheias' } };
-export const STYLES = ['Rock', 'Pop', 'Funk', 'Shuffle', 'Brasil', 'Viradas'];
+export const STYLES = ['Rock', 'Pop', 'Funk', 'Gospel', 'Shuffle', 'Brasil', 'Viradas'];
+export const LEVELS = { 1: 'iniciante', 2: 'intermediário', 3: 'avançado' };
 
 const on = (n, steps) => Array.from({ length: n }, (_, i) => (steps.includes(i) ? 1 : 0));
 const all = (n, every = 1, from = 0) => Array.from({ length: n }, (_, i) => (i >= from && (i - from) % every === 0 ? 1 : 0));
@@ -47,6 +48,11 @@ export const PRESETS = [
   beat('Funk Linear', 'Funk', 95, 16, { hh: on(16, [1, 2, 5, 7, 8, 9, 11, 13, 14, 15]), sn: on(16, [4, 12]), bd: on(16, [0, 3, 6, 10]) }),
   beat('Funk Rock', 'Funk', 100, 16, { hh: all(16, 2), sn: on(16, [4, 12, 15]), bd: on(16, [0, 3, 8, 10, 11]) }),
   beat('Funk Carioca (base)', 'Funk', 130, 16, { hh: all(16, 2), sn: on(16, [4, 12]), bd: on(16, [0, 3, 7, 10]) }),
+  beat('Louvor 4/4 (pop worship)', 'Gospel', 72, 16, { hh: all(16, 2), sn: on(16, [4, 12]), bd: on(16, [0, 6, 8]) }),
+  beat('Louvor Balada 6/8', 'Gospel', 60, 12, { rd: all(12), sn: on(12, [6]), bd: on(12, [0, 5]) }),
+  beat('Gospel Groove (ghost na caixa)', 'Gospel', 88, 16, { hh: all(16, 2), sn: on(16, [3, 4, 9, 12, 14]), bd: on(16, [0, 7, 10]) }),
+  beat('Gospel Shuffle', 'Gospel', 105, 12, { hh: on(12, [0, 2, 3, 5, 6, 8, 9, 11]), sn: on(12, [3, 5, 9, 11]), bd: on(12, [0, 2, 6, 8]) }),
+  beat('Gospel Up (semicolcheias)', 'Gospel', 120, 16, { hh: all(16), sn: on(16, [4, 12]), bd: on(16, [0, 3, 6, 8, 10]) }),
   beat('Shuffle', 'Shuffle', 120, 12, { hh: on(12, [0, 2, 3, 5, 6, 8, 9, 11]), sn: on(12, [3, 9]), bd: on(12, [0, 6]) }),
   beat('Shuffle Meio-tempo (estilo Purdie)', 'Shuffle', 80, 12, { hh: on(12, [0, 2, 3, 5, 6, 8, 9, 11]), sn: on(12, [1, 4, 6, 7, 10]), bd: on(12, [0, 8]) }),
   beat('Blues Shuffle (bumbo nos 4)', 'Shuffle', 110, 12, { hh: on(12, [0, 2, 3, 5, 6, 8, 9, 11]), sn: on(12, [3, 9]), bd: all(12, 3) }),
@@ -68,6 +74,11 @@ export const PRESETS = [
   beat('Virada Mão-Mão-Pé', 'Viradas', 85, 16, { sn: on(16, [0, 1, 3, 4, 6, 7, 9, 10, 12, 13]), ft: on(16, [15]), bd: on(16, [2, 5, 8, 11, 14]) }, 'virada'),
   beat('Virada Sincopada (com espaço)', 'Viradas', 95, 16, { hh: on(16, [0, 2, 4]), sn: on(16, [6, 7]), tt: on(16, [10, 11]), ft: on(16, [14]), bd: on(16, [0, 8, 15]) }, 'virada'),
 ];
+
+/** Nível de cada ritmo pronto (o que a Bea ensina primeiro = 1). */
+const HARD = ['funk-estilo-james-brown', 'funk-com-ghost-notes', 'funk-linear', 'shuffle-meio-tempo-estilo-purdie', 'frevo', 'maracatu', 'gospel-groove-ghost-na-caixa', 'gospel-shuffle', 'gospel-up-semicolcheias', 'virada-mao-mao-pe', 'virada-sincopada-com-espaco', 'jazz-swing-conducao', 'samba-reggae'];
+const EASY = ['rock-basico', 'rock-2', 'pop-1', 'pop-2', 'rock-balada', 'pop-balada', 'motown-caixa-nos-4', 'punk-skank-beat', 'rock-meio-tempo-pesado', 'virada-simples', 'virada-de-colcheias-iniciante', 'louvor-4-4-pop-worship', 'disco-4-no-chao', 'balada-12-8', 'tercinas-cheias'];
+export const levelOf = (b) => b.level || (EASY.includes(b.id) ? 1 : HARD.includes(b.id) ? 3 : 2);
 
 export const emptyBeat = (steps = 8) => beat('Meu ritmo', '', 100, steps, {});
 export const clone = (b) => JSON.parse(JSON.stringify(b));

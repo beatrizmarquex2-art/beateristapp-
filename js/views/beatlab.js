@@ -187,12 +187,15 @@ function mountEditor(host, kind) {
 }
 
 /* ---------- lista (biblioteca e meus ritmos) ---------- */
-function beatRow(b, { fav, onFav, onOpen, onDelete }, repaint) {
+function miniScore(b) {
+  const f = h('span', { class: 'bl-mini', 'aria-hidden': 'true' }); f.innerHTML = N.toSVG(N.layout(b, { width: 300, full: false })); return f;
+}
+function beatRow(b, { fav, onFav, onOpen, onDelete, mini, withClick }, repaint) {
   const playing = playingId() === b.id;
   return h('div', { class: `bl-item${playing ? ' playing' : ''}` },
     playing ? h('span', { class: 'eq', 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i')) : null,
-    h('button', { class: `bl-play small${playing ? ' on' : ''}`, type: 'button', 'aria-label': `${playing ? 'Parar' : 'Tocar'} ${b.name}`, onclick: () => { if (playing) stopBeat(); else playBeat(b, { onStop: repaint }); repaint(); } }, icon(playing ? 'stop' : 'play', 20)),
-    h('button', { class: 'bl-item-main', type: 'button', onclick: onOpen }, h('strong', {}, b.name), h('small', {}, b.kind === 'virada' ? `1 compasso · ${b.bpm} BPM` : `4/4 · ${b.bpm} BPM · ${B.GRIDS[b.steps].name}`)),
+    h('button', { class: `bl-play small${playing ? ' on' : ''}`, type: 'button', 'aria-label': `${playing ? 'Parar' : 'Tocar'} ${b.name}`, onclick: () => { if (playing) stopBeat(); else playBeat(b, { onStop: repaint, withClick: !!withClick }); repaint(); } }, icon(playing ? 'stop' : 'play', 20)),
+    h('button', { class: 'bl-item-main', type: 'button', onclick: onOpen }, h('strong', {}, b.name), h('small', {}, `${b.kind === 'virada' ? '1 compasso' : B.GRIDS[b.steps].name} · ${b.bpm} BPM`, onFav ? h('span', { class: `bl-lvl l${B.levelOf(b)}` }, B.LEVELS[B.levelOf(b)]) : null), mini ? miniScore(b) : null),
     onFav ? h('button', { class: `bl-fav${fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${b.name}`, onclick: onFav }, fav ? '♥' : '♡') : null,
     onDelete ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${b.name}`, onclick: onDelete }, icon('x', 18)) : null,
     h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Abrir ${b.name} no editor`, onclick: onOpen }, h('span', { style: { display: 'inline-flex', transform: 'scaleX(-1)' } }, icon('back', 18))));
@@ -200,26 +203,34 @@ function beatRow(b, { fav, onFav, onOpen, onDelete }, repaint) {
 const openInEditor = async (b) => { stopBeat(); const fill = b.kind === 'virada'; await save({ [fill ? 'fill' : 'beat']: B.clone(b) }); location.hash = fill ? '#/beatlab/viradas' : '#/beatlab'; };
 
 function mountLibrary(host) {
-  let style = '', q = '';
+  let style = '', q = '', level = 0;
+  const opt = () => ({ mini: true, click: false, ...(store.get(KEY) ? { mini: store.get(KEY).data.libMini !== false, click: !!store.get(KEY).data.libClick } : {}) });
   const search = h('input', { type: 'search', placeholder: 'buscar ritmo…', 'aria-label': 'Buscar ritmo', enterkeyhint: 'search' });
   const chips = h('div', { class: 'chips lib-tabs' });
+  const lvl = h('div', { class: 'chips lib-tabs bl-lvls' });
+  const tools = h('div', { class: 'bl-libtools' });
   const list = h('div', { class: 'card bl-list' });
   const draw = () => {
     chips.replaceChildren(...[['', 'Todos'], ['fav', '♥ favoritos'], ...B.STYLES.map((s) => [s, s])].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${style === k ? ' on' : ''}`, 'aria-pressed': String(style === k), onclick: () => { style = k; draw(); } }, t)));
+    lvl.replaceChildren(...[[0, 'todo nível'], [1, 'iniciante'], [2, 'intermed.'], [3, 'avançado']].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${level === k ? ' on' : ''}`, 'aria-pressed': String(level === k), onclick: () => { level = k; draw(); } }, t)));
+    const o = opt();
+    tools.replaceChildren(
+      h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(o.click), onclick: () => save({ libClick: !o.click }) }, o.click ? 'tocar junto: com clique ✓' : 'tocar junto: sem clique'),
+      h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(o.mini), onclick: () => save({ libMini: !o.mini }) }, o.mini ? 'partitura ✓' : 'partitura'));
     const f = favs();
-    const shown = B.PRESETS.filter((b) => (!style || (style === 'fav' ? f.includes(b.id) : b.style === style)) && (!q || b.name.toLowerCase().includes(q)));
+    const shown = B.PRESETS.filter((b) => (!style || (style === 'fav' ? f.includes(b.id) : b.style === style)) && (!level || B.levelOf(b) === level) && (!q || b.name.toLowerCase().includes(q)));
     list.replaceChildren(...(shown.length ? shown.map((b) => beatRow(b, {
       fav: f.includes(b.id),
       onFav: () => store.upsert('setting', FAV, { ids: f.includes(b.id) ? f.filter((x) => x !== b.id) : [...f, b.id] }),
-      onOpen: () => openInEditor(b),
+      onOpen: () => openInEditor(b), mini: o.mini, withClick: o.click,
     }, draw)) : [h('p', { class: 'muted pad' }, 'nenhum ritmo com esse filtro.')]));
   };
   search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); draw(); });
   host.append(banner('Biblioteca de Ritmos', 'toque, favorite e abra no editor'), tabsEl('biblioteca'),
-    h('div', { class: 'card pad' }, search), chips, list,
-    h('p', { class: 'pad-x lib-note' }, 'grooves de referência para começar. os 22 ritmos do método Beaterista entram aqui depois que você revisar as transcrições.'));
+    h('div', { class: 'card pad' }, search), chips, lvl, tools, list,
+    h('p', { class: 'pad-x lib-note' }, 'padrões genéricos de cada estilo (nenhuma transcrição de música de ninguém). os 22 ritmos do método Beaterista entram aqui depois que você revisar. os seus e os do transcritor ficam em Meus ritmos.'));
   draw();
-  const off = store.subscribe((i) => { if (!i.kind || i.id === FAV) draw(); });
+  const off = store.subscribe((i) => { if (!i.kind || i.id === FAV || i.id === KEY) draw(); });
   return () => { off(); stopBeat(); };
 }
 
