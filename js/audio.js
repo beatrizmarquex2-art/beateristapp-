@@ -22,6 +22,7 @@ export function click(t, level = 1, vol = 1) {
   const peak = (level === 0 ? 0.18 : level === 2 ? 0.5 : 0.35) * vol;
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
   o.connect(g).connect(master); o.start(t); o.stop(t + 0.06);
+  return o; // quem agendou muitos cliques de uma vez consegue cancelar
 }
 
 /** Caixa sintetizada; `vel` 0–1 (acento = 1, nota fantasma ≈ 0.4). */

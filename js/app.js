@@ -26,6 +26,7 @@ import * as collages from './views/collages.js';
 import * as beatlab from './views/beatlab.js';
 import * as ouvido from './views/ouvido.js';
 import * as kit from './views/kit.js';
+import * as tempo from './views/tempo.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -143,6 +144,7 @@ function shell() {
       case 'ouvido': c = ouvido.mount(view); break;
       case 'beatlab': c = beatlab.mount(view, r.parts); break;
       case 'kit': c = kit.mount(view, r.parts); break;
+      case 'tempo': c = tempo.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));

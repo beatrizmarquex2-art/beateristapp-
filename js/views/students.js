@@ -219,7 +219,7 @@ function mountList(host) {
     h('div', { class: 'card pad' }, search,
       h('div', { class: 'seg' }, ...[['ativos', false], ['arquivados', true]].map(([t, v]) => h('button', { type: 'button', class: v === showArchived ? 'on' : '', onclick: (e) => { showArchived = v; e.currentTarget.parentNode.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === e.currentTarget)); draw(); } }, t)))),
     h('nav', { class: 'st-tools', 'aria-label': 'Ferramentas para usar em aula' }, h('span', { class: 'lib-kicker' }, 'usar em aula'),
-      h('a', { class: 'chip-link', href: '#/ouvido' }, icon('mic', 16), ' estúdio de ouvido'), h('a', { class: 'chip-link', href: '#/beatlab' }, icon('kit', 16), ' beat lab'), h('a', { class: 'chip-link', href: '#/metronomo' }, icon('metro', 16), ' metrônomo')),
+      h('a', { class: 'chip-link', href: '#/ouvido' }, icon('mic', 16), ' estúdio de ouvido'), h('a', { class: 'chip-link', href: '#/tempo' }, icon('timer', 16), ' juiz de tempo'), h('a', { class: 'chip-link', href: '#/beatlab' }, icon('kit', 16), ' beat lab'), h('a', { class: 'chip-link', href: '#/metronomo' }, icon('metro', 16), ' metrônomo')),
     chips,
     list,
     h('button', { class: 'btn primary wide', type: 'button', onclick: () => sheet('Novo aluno', (close) => studentEditor(null, close)) }, '+ novo aluno'),

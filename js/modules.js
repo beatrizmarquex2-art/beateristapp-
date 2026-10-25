@@ -2,6 +2,8 @@
 export const MODULES = [
   { slug: 'beatlab', label: 'Beat Lab', icon: 'kit', route: '#/beatlab' },
   { slug: 'ouvido', label: 'Estúdio de Ouvido', icon: 'mic', route: '#/ouvido' },
+  { slug: 'tempo', label: 'Juiz de Tempo', icon: 'timer', route: '#/tempo' },
+  { slug: 'transcritor', label: 'Transcritor de Ritmo', icon: 'staff', route: '#/tempo/transcritor' },
   { slug: 'metronomo', label: 'Metrônomo', icon: 'metro', route: '#/metronomo' },
   { slug: 'acentuacao', label: 'Acentuação 4×4', icon: 'staff', route: '#/acentuacao' },
   { slug: 'estudos', label: 'Meus Estudos', icon: 'study', route: '#/estudos' },
@@ -32,6 +34,8 @@ export const TOOL_TARGETS = [
   { label: 'Meus Estudos', href: '#/estudos' },
   { label: 'Beat Lab', href: '#/beatlab' },
   { label: 'Estúdio de Ouvido', href: '#/ouvido' },
+  { label: 'Juiz de Tempo', href: '#/tempo' },
+  { label: 'Transcritor de Ritmo', href: '#/tempo/transcritor' },
   { label: 'Metrônomo', href: '#/metronomo' },
   { label: 'Acentuação 4×4', href: '#/acentuacao' },
   { label: 'Cronômetro de Foco', href: '#/foco' },
