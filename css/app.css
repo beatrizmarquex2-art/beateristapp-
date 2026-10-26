@@ -1393,3 +1393,18 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .lc-alb .lc-kick { margin: 0; font: 400 13px/1 var(--lc-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--lc-red); }
 .lc-alb .lc-btn { display: inline-flex; align-items: center; padding: 5px 10px; background: var(--lc-ink); color: var(--lc-paper); border: 0; font: 400 13px var(--lc-cond); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .lc-alb-top .lc-sleeve { width: 120px; }
+
+/* Listening Club na identidade do Beaterista (papel, vermelho e preto, letras do app) — a Bia preferiu assim */
+.lc, .lc-alb { --lc-paper: #fbf8f2; --lc-red: #b5162b; --lc-ink: #1b1818; --lc-navy: #1b1818; --lc-ochre: #e3d9c8; --lc-gray: #5f5752;
+  --lc-serif: var(--display); --lc-ital: var(--body); --lc-hand: var(--hand-font, 'Gochi Hand', cursive); }
+.lc { background: var(--lc-paper) var(--grain); }
+.lc-logo span { letter-spacing: 0; text-transform: uppercase; } .lc-logo .lc-the { text-transform: none; }
+.lc-head b, .lc-title, .lc-n, .lc-t b, .lc-card b, .lc-sl-txt b, .lc-body h2, .lc-body h3 { text-transform: none; }
+.lc-dek, .lc-head em { font-style: italic; }
+.s-album { background: #1b1818; } .s-anatomia { background: #b5162b; } .s-historias { background: #e3d9c8; color: #1b1818; } .s-dna { background: #1b1818; } .s-versoes { background: #7d0f1e; } .s-caderno { background: #fff; color: #1b1818; box-shadow: inset 0 0 0 2px #1b1818; }
+.lc-sleeve { background: #1b1818; } .lc-sleeve:nth-child(3n+2) { background: #b5162b; } .lc-sleeve:nth-child(3n) { background: #e3d9c8; color: #1b1818; }
+.lc-thumb { background: #1b1818; }
+.lc-ficha { box-shadow: 5px 5px 0 #b5162b; } .lc-ficha h3 { color: #b5162b; }
+.lc-card.tape { border-top-color: #b5162b; } .lc-card.tape .lc-kick { color: #f0a3ad; }
+.lc-src { background: #f1ebe1; } .lc-card.clip { background: #f1ebe1; }
+.lc-rate button.on { color: #b5162b; }
