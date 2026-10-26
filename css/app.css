@@ -1342,3 +1342,4 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .rp-groove { display: grid; gap: 6px; padding: 8px; border: 1.5px dashed rgb(0 0 0 / .25); }
 .rp-groove.on { border-style: solid; border-color: var(--accent); }
 .rp-src { font-size: .85rem; }
+.kd-ext-t { margin: 8px 0 0; }

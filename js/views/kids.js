@@ -176,6 +176,9 @@ function bumbos(box) {
 
 const RUN = { explorar, pecas, pauta, figuras, ritmo, bumbos };
 
+/** Jogos do site da Bia (jogosdemusica.com.br): abrem em outra aba. */
+const EXTERNAL = [['https://jogosdemusica.com.br/JOGOS/Ditado_ritmico/jogo/', 'Ditado rítmico', 'ouvir e escrever o ritmo', '🎧']];
+
 export function mount(host, parts = []) {
   const game = parts[0] && RUN[parts[0]] ? parts[0] : null;
   const starEl = h('span', { class: 'kd-stars', 'aria-live': 'polite' });
@@ -183,6 +186,8 @@ export function mount(host, parts = []) {
   if (!game) {
     host.append(banner('Beaterista Kids', 'aprender brincando'), h('div', { class: 'row between pad-x' }, h('small', { class: 'muted' }, 'estrelas da turma'), starEl),
       h('div', { class: 'kd-grid' }, ...GAMES.map(([k, t, s, e]) => h('a', { class: 'kd-card', href: `#/kids/${k}` }, h('span', { class: 'kd-emoji' }, e), h('b', {}, t), h('small', {}, s)))),
+      h('h2', { class: 'tag pad-x kd-ext-t' }, 'mais jogos (abre em outra aba)'),
+      h('div', { class: 'kd-grid kd-ext' }, ...EXTERNAL.map(([url, t, s, e]) => h('a', { class: 'kd-card', href: url, target: '_blank', rel: 'noopener noreferrer' }, h('span', { class: 'kd-emoji' }, e), h('b', {}, t, ' ↗'), h('small', {}, s)))),
       h('p', { class: 'pad-x lib-note' }, 'pra usar junto com a criança na aula. cada acerto vale uma estrela. o som sai daqui do aparelho, sem internet.'),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => store.upsert('setting', KEY, { stars: 0 }) }, 'zerar estrelas'));
   } else {
