@@ -1321,3 +1321,24 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .cl-meta dt { font-weight: 700; text-transform: lowercase; opacity: .75; }
 .cl-meta dd { margin: 0; overflow-wrap: anywhere; }
 .cl-tracks { margin: 8px 0 0; padding-left: 1.8em; display: grid; gap: 4px; }
+/* Repertório */
+.rp-actions { gap: 8px; margin: 10px 0; }
+.rp-search { gap: 8px; margin-bottom: 8px; }
+.rp-search input { flex: 1; min-width: 0; }
+.rp-prog { margin: 4px 0 8px; }
+.rp-list, .rp-five { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 2px; }
+.rp-row, .rp-five li { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed rgb(0 0 0 / .18); }
+.rp-t { display: grid; text-align: left; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; min-width: 0; }
+.rp-t strong { overflow-wrap: anywhere; }
+.rp-t small { opacity: .7; }
+.rp-noplay { width: 44px; }
+.rp-stage { font: inherit; font-size: .75rem; padding: 4px 8px; border: 1.5px solid currentColor; background: transparent; color: inherit; cursor: pointer; white-space: nowrap; opacity: .55; }
+.rp-stage.s-quero { opacity: 1; }
+.rp-stage.s-estudando { opacity: 1; background: var(--gold); color: #1b1818; border-color: #1b1818; }
+.rp-stage.s-toco { opacity: 1; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.rp-gmini { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.rp-gmini .bl-mini { flex: 1 1 140px; max-width: 220px; }
+.rp-grooves { display: grid; gap: 10px; }
+.rp-groove { display: grid; gap: 6px; padding: 8px; border: 1.5px dashed rgb(0 0 0 / .25); }
+.rp-groove.on { border-style: solid; border-color: var(--accent); }
+.rp-src { font-size: .85rem; }
