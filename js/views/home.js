@@ -12,6 +12,7 @@ import { studyWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
 import { factFor } from '../music-facts.js';
 import { HERO_KEY, heroSub } from '../hero-text.js';
+import { homeStrip } from './lembretes.js';
 
 const ORDER_KEY = 'setting-shortcuts';
 
@@ -141,6 +142,7 @@ export function mount(host) {
     }));
   }
 
+  const remStrip = homeStrip();
   const roll = todayRoll({ compact: true });
   const widgets = { estudar: studyWidget(), metro: metroWidget(), foco: focusWidget() };
   const parts = {
@@ -158,7 +160,7 @@ export function mount(host) {
   paintCover(fig);
   function drawLayout() {
     const { order, hidden } = getLayout();
-    host.replaceChildren(top, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
+    host.replaceChildren(top, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
   }
   drawLayout();
   drawMini(); drawFavs(); drawGrid();
@@ -171,5 +173,5 @@ export function mount(host) {
     if (!i.kind || i.id === HERO_KEY) top.querySelector('.hero-sub').textContent = heroSub();
     if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
   });
-  return () => { off(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
+  return () => { off(); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
 }

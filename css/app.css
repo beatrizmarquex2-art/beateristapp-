@@ -1358,3 +1358,18 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .tr-pal:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1b1818; }
 .tr-cell { display: block; width: 100%; }
 .tr-cell svg { display: block; width: 100%; height: auto; }
+/* Lembretes */
+.rm-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 2px; }
+.rm-item { display: grid; grid-template-columns: 3.2em 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgb(0 0 0 / .18); }
+.rm-time { font-weight: 700; font-variant-numeric: tabular-nums; }
+.rm-t { display: grid; color: inherit; text-decoration: none; min-width: 0; }
+.rm-t strong { overflow-wrap: anywhere; }
+.rm-t small { opacity: .7; }
+.rm-strip { border-left: 5px solid var(--accent); }
+.rm-opt { display: grid; gap: 6px; padding: 8px 0; border-bottom: 1px dashed rgb(0 0 0 / .15); }
+.rm-sw { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; }
+.rm-sw input { width: 22px; height: 22px; accent-color: var(--accent); }
+.rm-inline { gap: 8px; flex-wrap: wrap; align-items: center; }
+.rm-num { width: 4.5em; }
+.rm-note { font-size: .85rem; margin-top: 8px; }
+.rm-form { display: grid; gap: 8px; }

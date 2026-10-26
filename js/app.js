@@ -40,6 +40,8 @@ import * as ambiente from './views/ambiente.js';
 import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
 import * as repertorio from './views/repertorio.js';
+import * as lembretes from './views/lembretes.js';
+import * as notify from './notify.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -171,6 +173,7 @@ function shell() {
       case 'planos': c = planos.mount(view, r.parts); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
+      case 'lembretes': c = lembretes.mount(view); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
@@ -193,7 +196,7 @@ function showLogin() {
 
 function startApp() {
   shell();
-  if (!started) { started = true; sync.start(); photos.start(); startScroller(); } else { sync.schedule(100); photos.schedule(300); }
+  if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); } else { sync.schedule(100); photos.schedule(300); }
 }
 
 async function boot() {
