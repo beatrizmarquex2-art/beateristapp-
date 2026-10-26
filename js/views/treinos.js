@@ -1,11 +1,12 @@
 // Treinos de leitura e de escuta.
 // Leitura: o app mostra um compasso, conta 4 e você toca na tela o que está escrito; cada nota volta pintada (no tempo, cedo/tarde, faltou).
 // Escuta (ditado): o app toca um compasso e você escolhe qual das 4 partituras foi.
+// Montar (ditado de células): o app toca 4 tempos e você monta o compasso tocando nas células; 5 vidas e recorde.
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import { audio, click, snare, perfToCtx } from '../audio.js';
 import { toSVG } from '../notation.js';
-import { LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm } from '../reading.js';
+import { LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm, cellsFor, checkCells } from '../reading.js';
 import { banner, toast, stars } from '../ui.js';
 import { parts } from './tempo.js';
 
@@ -150,11 +151,52 @@ function escuta(host) {
   return () => {};
 }
 
+/* ---------- montar (ditado de células) ---------- */
+const LIVES = 5;
+function cellSvg(p) { const f = h('span', { class: 'tr-cell', 'aria-hidden': 'true' }); f.innerHTML = toSVG(layoutRhythm([p], { width: 92, count: false, clef: false })); return f; }
+function montar(host) {
+  let ans = null, guess = [], lives = LIVES, pts = 0, marks = null, over = false;
+  const body = h('div');
+  const hi = () => (store.get(KEY) && store.get(KEY).data.hiMontar) || 0;
+  const fresh = () => { ans = genBar(cfg().lv); guess = [null, null, null, null]; marks = null; };
+  const play = () => schedule(ans, cfg().bpm, { play: true });
+  const conferir = async () => {
+    if (guess.some((g) => g == null)) { toast('complete os 4 tempos'); return; }
+    marks = checkCells(ans, guess);
+    if (marks.every(Boolean)) { pts++; stars(body.querySelector('.tr-slots')); setTimeout(() => { fresh(); draw(); play(); }, 1100); }
+    else { lives--; if (lives <= 0) { over = true; if (pts > hi()) await save({ hiMontar: pts }); await store.upsert(KIND, null, { mode: 'montar', lv: cfg().lv, bpm: cfg().bpm, score: pts, at: Date.now() }); } }
+    draw();
+  };
+  const draw = (reset) => {
+    const c = cfg();
+    if (reset) { lives = LIVES; pts = 0; over = false; fresh(); }
+    const firstEmpty = guess.indexOf(null);
+    const slots = guess.map((g, i) => h('button', { type: 'button', class: `tr-slot${g ? ' full' : ''}${marks ? (marks[i] ? ' ok' : ' no') : ''}`, 'aria-label': g ? `Tempo ${i + 1}: tirar` : `Tempo ${i + 1}: vazio`,
+      onclick: () => { if (over || !g) return; guess[i] = null; marks = null; draw(); } }, g ? cellSvg(g) : h('b', {}, '?')));
+    const pal = cellsFor(c.lv).map((cell) => h('button', { type: 'button', class: 'tr-pal', 'aria-label': cell.name, title: cell.name,
+      onclick: () => { if (over) return; const i = guess.indexOf(null); if (i < 0) return; guess[i] = cell.p; marks = null; draw(); } }, cellSvg(cell.p)));
+    const hearts = h('span', { class: 'tr-lives', 'aria-label': `${lives} vidas` }, '♥'.repeat(lives), h('span', { class: 'off' }, '♥'.repeat(LIVES - lives)));
+    body.replaceChildren(...[controls(c, () => draw(true), { bars: false }),
+      h('div', { class: 'row between pad-x tr-hud' }, hearts, h('span', { class: 'tr-count' }, `pontos ${pts} · recorde ${Math.max(hi(), pts)}`)),
+      h('div', { class: 'tr-slots' }, ...slots),
+      over ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, `fim de jogo: ${pts} ponto${pts === 1 ? '' : 's'}`), h('p', { class: 'muted' }, 'era assim:'), score([ans]), h('button', { class: 'btn primary', type: 'button', onclick: () => draw(true) }, 'jogar de novo'))
+        : h('div', { class: 'row tr-actions' },
+          h('button', { class: 'bl-play tr-go', type: 'button', 'aria-label': 'Ouvir o ditado', onclick: play }, icon('play', 26)),
+          h('button', { class: 'btn', type: 'button', 'aria-label': 'Desfazer', onclick: () => { const k = firstEmpty < 0 ? 3 : firstEmpty - 1; if (k >= 0) { guess[k] = null; marks = null; draw(); } } }, '↺'),
+          h('button', { class: 'btn primary', type: 'button', onclick: conferir }, 'conferir')),
+      over ? null : h('p', { class: `tr-status${marks ? (marks.every(Boolean) ? ' good' : ' bad') : ''}`, 'aria-live': 'polite' }, marks ? (marks.every(Boolean) ? 'isso! ✓ lá vem o próximo' : 'os vermelhos estão errados: ouve de novo e troca') : 'aperte ▶, ouça (pode repetir) e monte os 4 tempos tocando nas células.'),
+      over ? null : h('div', { class: 'tr-palette' }, ...pal), history('montar')].filter(Boolean));
+  };
+  host.append(body); draw(true);
+  return () => {};
+}
+
 export function mount(host, parts = []) {
-  const tab = parts[0] === 'escuta' ? 'escuta' : 'leitura';
-  host.append(banner('Treinos', tab === 'leitura' ? 'ler e tocar na hora' : 'ouvir e reconhecer'),
+  const tab = ['escuta', 'montar'].includes(parts[0]) ? parts[0] : 'leitura';
+  host.append(banner('Treinos', { leitura: 'ler e tocar na hora', escuta: 'ouvir e reconhecer', montar: 'ouvir e montar o ritmo' }[tab]),
     h('div', { class: 'chips lib-tabs bt-tabs' },
       h('a', { class: `lib-tab${tab === 'leitura' ? ' on' : ''}`, href: '#/treinos' }, 'leitura'),
-      h('a', { class: `lib-tab${tab === 'escuta' ? ' on' : ''}`, href: '#/treinos/escuta' }, 'escuta (ditado)')));
-  return tab === 'leitura' ? leitura(host) : escuta(host);
+      h('a', { class: `lib-tab${tab === 'escuta' ? ' on' : ''}`, href: '#/treinos/escuta' }, 'escuta (ditado)'),
+      h('a', { class: `lib-tab${tab === 'montar' ? ' on' : ''}`, href: '#/treinos/montar' }, 'montar (ditado)')));
+  return tab === 'leitura' ? leitura(host) : tab === 'escuta' ? escuta(host) : montar(host);
 }

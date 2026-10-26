@@ -1343,3 +1343,18 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .rp-groove.on { border-style: solid; border-color: var(--accent); }
 .rp-src { font-size: .85rem; }
 .kd-ext-t { margin: 8px 0 0; }
+/* Treinos: montar (ditado de células) */
+.tr-hud { margin: 8px 0; align-items: center; }
+.tr-lives { color: var(--accent); font-size: 1.3rem; letter-spacing: 2px; }
+.tr-lives .off { opacity: .2; }
+.tr-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 16px; margin: 6px 0 10px; }
+.tr-slot { min-height: 76px; display: grid; place-items: center; background: var(--gold); color: #1b1818; border: 2px solid #1b1818; cursor: pointer; font: inherit; padding: 2px; }
+.tr-slot b { font-size: 2rem; }
+.tr-slot.full { background: #fff; }
+.tr-slot.ok { background: #d8f0dc; border-color: #1f9d4a; }
+.tr-slot.no { background: #f6d5d9; border-color: var(--accent); }
+.tr-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; padding: 0 16px; margin: 10px 0; }
+.tr-pal { background: #fff; border: 2px solid #1b1818; cursor: pointer; padding: 2px; min-height: 64px; box-shadow: 3px 3px 0 #1b1818; }
+.tr-pal:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1b1818; }
+.tr-cell { display: block; width: 100%; }
+.tr-cell svg { display: block; width: 100%; height: auto; }

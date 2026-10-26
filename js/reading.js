@@ -67,6 +67,9 @@ export function evaluate(taps, expected, bpm) {
   return { notes: res, extra, score, hits: res.filter((r) => r.st !== 'faltou').length, total: expected.length };
 }
 
+/** Ditado de montar: confere tempo a tempo (null = espaço ainda vazio). */
+export const checkCells = (ans, guess) => ans.map((p, i) => guess[i] === p);
+
 /** 3 compassos diferentes do certo (mudando 1 ou 2 tempos) pro ditado de escolha. */
 export function distractors(bar, lv, rnd = Math.random, k = 3) {
   const pool = cellsFor(lv).map((c) => c.p); const seen = new Set([bar.join()]); const out = [];
@@ -85,11 +88,11 @@ const COUNT = ['', 'e', '&', 'a'];
  * Desenho numa linha (percussão sem altura): hastes pra cima, barras por tempo, pausas, ponto de aumento e contagem embaixo.
  * `marks[i]` pinta a nota i (ordem de `onsets`) com uma cor; `count` mostra "1 e & a".
  */
-export function layoutRhythm(bars, { width = 360, marks = [], count = true } = {}) {
-  const left = 40, right = 10, line = 46, top = 12; const ops = [];
+export function layoutRhythm(bars, { width = 360, marks = [], count = true, clef = true } = {}) {
+  const left = clef ? 40 : 8, right = 10, line = 46, top = 12; const ops = [];
   const beats = bars.length; const bw = (width - left - right) / beats; const sw = bw / 4;
   ops.push({ t: 'line', x1: 6, y1: line, x2: width - right, y2: line, w: 1.2 });
-  ops.push({ t: 'rect', x: 12, y: line - 10, w: 3.5, h: 20 }, { t: 'rect', x: 18, y: line - 10, w: 3.5, h: 20 }); // clave de percussão
+  if (clef) ops.push({ t: 'rect', x: 12, y: line - 10, w: 3.5, h: 20 }, { t: 'rect', x: 18, y: line - 10, w: 3.5, h: 20 }); // clave de percussão
   for (let b = 4; b < beats; b += 4) ops.push({ t: 'line', x1: left + b * bw - sw * 0.6, y1: line - 12, x2: left + b * bw - sw * 0.6, y2: line + 12, w: 1.4 });
   ops.push({ t: 'line', x1: width - right, y1: line - 12, x2: width - right, y2: line + 12, w: 2 });
   const stemTop = top + 2; let idx = 0;
