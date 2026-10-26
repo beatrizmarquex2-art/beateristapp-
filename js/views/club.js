@@ -13,6 +13,7 @@ import { STATUS, mbSearchUrl, coverUrl, parseMB, albumLine, shelfSort } from '..
 import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchUrl, wikiSummaryUrl, pickWikiTitle } from '../musicdata.js';
 import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
 import { readZip } from '../zip.js';
+import { isCollection, collectionName, parseArsenal, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
 
 export const SECTIONS = [
   { id: 'album', label: 'Álbum por Dentro', pt: 'um disco aberto faixa por faixa: história, créditos e gravação' },
@@ -131,7 +132,9 @@ async function importTexts(files) {
   for (const f of files) {
     const n = f.name;
     if (/\.zip$/i.test(n)) {
-      for (const e of await readZip(await f.arrayBuffer())) {
+      const entries = await readZip(await f.arrayBuffer());
+      if (isCollection(entries.map((e) => e.name))) { found.col = (found.col || 0) + (await importCollection(entries)); continue; }
+      for (const e of entries) {
         if (isText(e.name)) found.push(parseTextFile(e.name, new TextDecoder().decode(await e.read())));
         else if (isDocx(e.name)) found.push(parseTextFile(e.name, await docx(await e.read())));
       }
@@ -144,7 +147,28 @@ async function importTexts(files) {
     const a = albs.find((r) => r.data.mbid && t.album && r.data.title.toLowerCase() === t.album.toLowerCase());
     await store.upsert('clubpost', null, { ...t, cover: null, mbid: a ? a.data.mbid : null, status: 'rascunho', date: Date.now() });
   }
-  return found.length;
+  return { n: found.length, col: found.col || 0 };
+}
+/** Pacote de pesquisa (álbuns + fichas de faixa + guias) → registros "clubref" com id fixo. Não vira rascunho. */
+async function importCollection(entries) {
+  const txt = entries.filter((e) => /\.txt$/i.test(e.name) && !/(^|\/)(__MACOSX|\.)/.test(e.name));
+  const readme = txt.find((e) => /(^|\/)00_LEIA/i.test(e.name));
+  const col = collectionName(readme ? new TextDecoder().decode(await readme.read()) : '', entries[0].name.split('/')[0]);
+  let n = 0;
+  for (const e of txt) {
+    if (e === readme) continue;
+    const r = parseArsenal(e.name, new TextDecoder().decode(await e.read()), col);
+    await store.upsert('clubref', r.id, r.data); n++;
+    if (n % 25 === 0) toast(`importando ${col}… ${n}/${txt.length - 1}`, { id: 'lc-imp', ms: 30000 });
+  }
+  return n;
+}
+const refs = () => store.list('clubref');
+const colSlug = (c) => slugify(c);
+function collections() {
+  const m = new Map();
+  for (const r of refs()) { const k = r.data.col; if (!m.has(k)) m.set(k, { name: k, n: { album: 0, faixa: 0, lancamento: 0, guia: 0 } }); m.get(k).n[r.data.kind]++; }
+  return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
 function pickTexts() {
   const input = h('input', { type: 'file', multiple: true, accept: '.zip,.md,.markdown,.txt,.docx', style: { display: 'none' } });
@@ -152,7 +176,10 @@ function pickTexts() {
   input.addEventListener('change', async () => {
     const list = [...input.files]; input.remove(); if (!list.length) return;
     toast('lendo os textos…', { id: 'lc-imp', ms: 30000 });
-    try { const n = await importTexts(list); toast(n ? `${n} texto(s) nos rascunhos ✓ revisa e publica` : 'não achei textos (.md, .txt ou .docx) aí dentro', { id: 'lc-imp', ms: 3000 }); }
+    try {
+      const { n: t, col: c } = await importTexts(list);
+      toast(c ? `coleção importada ✓ ${c} fichas${t ? ` + ${t} texto(s) nos rascunhos` : ''}` : t ? `${t} texto(s) nos rascunhos ✓ revisa e publica` : 'não achei textos (.md, .txt ou .docx) aí dentro', { id: 'lc-imp', ms: 3000 });
+    }
     catch (e) { toast(`não consegui ler: ${e.message || 'arquivo estranho'}`, { id: 'lc-imp', ms: 4000 }); }
   });
   input.click();
@@ -183,6 +210,9 @@ export function mountClub(host, tabs) {
       rest.length ? h('div', { class: 'club-grid' }, rest.map((p, i) => h('a', { class: `club-item tilt${i % 3}`, href: `#/estudos/club/${p.id}` }, cover(p.data),
         h('span', { class: 'lib-kicker' }, sec(p.data.section).label), h('strong', {}, p.data.title)))) : null,
       !pub.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, filter ? 'nada publicado nessa seção ainda.' : 'o clube está esperando o primeiro texto.'), h('p', { class: 'muted' }, 'escolhe uma música que você ouviu hoje e começa pelo Caderno de Escuta: três frases já valem.')) : null,
+      ...collections().map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
+        h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
+        h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · ')))),
       h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('h2', { class: 'tag' }, 'na minha estante'), h('a', { class: 'link', href: '#/estudos/club/discos' }, 'ver todos')),
         shelf.length ? h('div', { class: 'cl-sleeves' }, ...shelf.map((a) => sleeve(a))) : h('p', { class: 'muted' }, 'nenhum disco ainda. busca o primeiro em “meus álbuns”.')),
       drafts.length ? h('section', { class: 'card pad cl-drafts' }, h('div', { class: 'row between' }, h('h2', { class: 'tag' }, `rascunhos (${drafts.length})`),
@@ -193,11 +223,13 @@ export function mountClub(host, tabs) {
   clubTop(host, tabs); host.append(box);
   lib.loadIndex().catch(() => {});
   draw();
-  return store.subscribe((i) => { if (!i.kind || i.kind === 'clubpost' || i.kind === 'album') draw(); });
+  return store.subscribe((i) => { if (!i.kind || i.kind === 'clubpost' || i.kind === 'album' || i.kind === 'clubref') draw(); });
 }
 
 export function mountPost(host, id, tabs) {
   if (id === 'discos') return mountShelf(host, tabs);
+  if (id.startsWith('c:')) return mountCollection(host, id.slice(2), tabs);
+  if (id.startsWith('r:')) return mountRef(host, id.slice(2), tabs);
   const box = h('article', { class: 'reader' });
   const draw = () => {
     const rec = store.get(id);
@@ -221,6 +253,68 @@ export function mountPost(host, id, tabs) {
   host.append(tabs, box);
   draw();
   return store.subscribe((i) => { if (!i.kind || i.id === id) draw(); });
+}
+
+/* ---------- coleções (pacotes de pesquisa importados) ---------- */
+const refLink = (r, extra) => h('li', {}, h('a', { href: `#/estudos/club/r:${r.id}` }, r.data.title), extra || (r.data.date ? h('small', {}, ` · ${r.data.date.slice(0, 4)}`) : null));
+function mountCollection(host, cs, tabs) {
+  let q = '';
+  const box = h('article', { class: 'reader' }); const results = h('div');
+  const search = h('input', { type: 'search', placeholder: 'buscar música, álbum, pessoa, técnica…', 'aria-label': 'Buscar na coleção' });
+  const mine = () => refs().filter((r) => colSlug(r.data.col) === cs);
+  const drawResults = () => {
+    const hits = searchRefs(mine(), q).slice(0, 40);
+    results.replaceChildren(...(q.trim() ? [h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, `achei ${hits.length}${hits.length === 40 ? '+' : ''}`),
+      hits.length ? h('ul', { class: 'lab-list' }, ...hits.map((r) => refLink(r, h('small', {}, ` · ${KIND_LABEL[r.data.kind]}`)))) : h('p', { class: 'muted' }, 'nada com isso.'))] : []));
+  };
+  search.addEventListener('input', () => { q = search.value; drawResults(); });
+  const draw = () => {
+    const list = mine().sort(sortRefs); const name = list[0] ? list[0].data.col : 'Coleção';
+    const of = (k) => list.filter((r) => r.data.kind === k);
+    const albs = of('album');
+    box.replaceChildren(...[
+      h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/club' }, '← The Listening Club'),
+        h('p', { class: 'lib-kicker' }, 'coleção'), h('h1', { class: 'reader-title' }, name),
+        list.length ? h('label', { class: 'field' }, search) : null),
+      !list.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'essa coleção ainda não foi importada.'), h('p', { class: 'muted' }, 'toque em “importar textos” no clube e escolha o .zip.')) : null,
+      results,
+      albs.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'álbuns'),
+        h('ol', { class: 'cl-col-albs' }, ...albs.map((r) => h('li', {}, h('a', { href: `#/estudos/club/r:${r.id}` }, h('strong', {}, r.data.title), h('small', {}, [r.data.date.slice(0, 4), r.data.tracks.length && `${r.data.tracks.length} faixas`].filter(Boolean).join(' · '))))))) : null,
+      of('lancamento').length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'outros lançamentos'), h('ul', { class: 'lab-list' }, ...of('lancamento').map((r) => refLink(r)))) : null,
+      of('guia').length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'guias'), h('ul', { class: 'lab-list' }, ...of('guia').map((r) => refLink(r, h('span')))) ) : null,
+      of('faixa').length ? h('details', { class: 'card pad' }, h('summary', {}, `todas as faixas (${of('faixa').length})`), h('ul', { class: 'lab-list' }, ...of('faixa').map((r) => refLink(r)))) : null,
+    ].filter(Boolean));
+  };
+  host.append(tabs, box); draw();
+  let sig = ''; const re = () => { const k = String(mine().length); if (k !== sig) { sig = k; draw(); drawResults(); } };
+  sig = String(mine().length);
+  return store.subscribe((i) => { if (!i.kind || i.kind === 'clubref') re(); });
+}
+function mountRef(host, rid, tabs) {
+  const box = h('article', { class: 'reader' });
+  const draw = () => {
+    const rec = store.get(rid);
+    if (!rec || rec.deleted) { box.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'essa ficha não está aqui.'), h('a', { class: 'btn primary', href: '#/estudos/club' }, 'voltar ao clube'))); return; }
+    const d = rec.data; const all = refs().filter((r) => r.data.col === d.col);
+    const inAlbums = d.kind === 'faixa' ? all.filter((r) => r.data.kind === 'album' && (r.data.tracks || []).some((t) => t.ref === rec.id)).sort(sortRefs) : [];
+    const srcs = (d.sources || '').split('\n').map((x) => x.trim()).filter(Boolean);
+    const meta = Object.entries(d.meta || {}).filter(([k]) => !/^(id|idioma do texto)$/i.test(k));
+    box.replaceChildren(...[
+      h('header', { class: 'reader-head' },
+        h('a', { class: 'link', href: `#/estudos/club/c:${colSlug(d.col)}` }, `← ${d.col}`),
+        h('p', { class: 'lib-kicker' }, KIND_LABEL[d.kind], d.date ? ` · ${d.date.split('-').reverse().join('/')}` : ''),
+        h('h1', { class: 'reader-title' }, d.title),
+        inAlbums.length ? h('p', { class: 'reader-sum' }, 'aparece em ', ...inAlbums.flatMap((a, i) => [i ? ', ' : '', h('a', { class: 'link', href: `#/estudos/club/r:${a.id}` }, a.data.title)])) : null,
+        h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => newPost({ section: d.kind === 'album' ? 'album' : 'anatomia', artist: d.col, album: d.kind === 'album' ? d.title : (inAlbums[0] ? inAlbums[0].data.title : ''), title: d.title }) }, 'escrever minha análise'))),
+      meta.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'ficha'), h('dl', { class: 'cl-meta' }, ...meta.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]))) : null,
+      d.tracks && d.tracks.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'faixas'),
+        h('ol', { class: 'cl-tracks' }, ...d.tracks.map((t) => h('li', { value: String(t.n) }, store.get(t.ref) ? h('a', { href: `#/estudos/club/r:${t.ref}` }, t.title) : t.title)))) : null,
+      d.body ? h('div', { class: 'reader-body' }, renderMarkdown(d.body).nodes) : null,
+      srcs.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'fontes'), h('ul', { class: 'lab-list' }, ...srcs.map((x) => { const u = /https?:\/\/\S+/.exec(x); return h('li', {}, u ? h('a', { href: u[0], target: '_blank', rel: 'noopener noreferrer' }, x) : x); }))) : null,
+    ].filter(Boolean));
+  };
+  host.append(tabs, box); draw();
+  return store.subscribe((i) => { if (!i.kind || i.id === rid) draw(); });
 }
 
 /* ---------- Meus Álbuns ---------- */

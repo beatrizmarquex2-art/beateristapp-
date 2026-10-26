@@ -1309,3 +1309,15 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .cl-tracks { margin: 0; padding-left: 22px; font-size: 14.5px; } .cl-tracks li { padding: 2px 0; border-bottom: 1px dotted var(--line-strong); } .cl-tracks li span { display: inline-block; max-width: 78%; } .cl-tracks small { float: right; color: var(--muted); }
 .cl-people { list-style: none; margin: 0; padding: 0; font-size: 14px; display: grid; gap: 3px; }
 .cl-meta { display: block; margin: 10px 0 0; font-size: 12px; } .cl-wiki p { margin: 0 0 6px; font-size: 15px; line-height: 1.5; }
+/* Listening Club: coleções */
+.cl-col { display: grid; gap: 2px; text-decoration: none; color: inherit; border-left: 4px solid var(--accent, currentColor); }
+.cl-col strong { font-size: 1.25rem; }
+.cl-col-albs { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; counter-reset: alb; }
+.cl-col-albs li { counter-increment: alb; }
+.cl-col-albs a { display: grid; grid-template-columns: 2.2em 1fr; column-gap: 8px; text-decoration: none; color: inherit; padding: 6px 0; border-bottom: 1px dashed currentColor; }
+.cl-col-albs a::before { content: counter(alb, decimal-leading-zero); grid-row: span 2; opacity: .5; font-weight: 700; }
+.cl-col-albs small { opacity: .7; }
+.cl-meta { display: grid; grid-template-columns: minmax(90px, 38%) 1fr; gap: 6px 12px; margin: 8px 0 0; }
+.cl-meta dt { font-weight: 700; text-transform: lowercase; opacity: .75; }
+.cl-meta dd { margin: 0; overflow-wrap: anywhere; }
+.cl-tracks { margin: 8px 0 0; padding-left: 1.8em; display: grid; gap: 4px; }
