@@ -51,14 +51,25 @@ function hero() {
 function heroNote() {
   let k = 0;
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
-  const paint = () => { const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text; };
+  const links = h('div', { class: 'hero-note-links' });
+  // música citada no bilhete (“Título” (Artista, ano)): atalho pra ouvir/estudar no YouTube ou no Spotify
+  const queryOf = (text) => { const m = /“([^”]+)”\s*\(([^),]+)/.exec(text) || /“([^”]+)”/.exec(text); return m ? `${m[1]} ${m[2] || ''}`.trim() : ''; };
+  const paint = () => {
+    const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text;
+    const q = queryOf(text); const enc = encodeURIComponent(q);
+    links.replaceChildren(...(q ? [
+      h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ouvir no YouTube'),
+      h('a', { class: 'hero-note-link', href: `https://open.spotify.com/search/${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '♫ Spotify'),
+    ] : [h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${text.split(/[.:]/)[0].slice(0, 70)} bateria`)}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ver mais sobre isso')]));
+  };
   paint();
-  return h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { k++; paint(); } },
+  const note = h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { k++; paint(); } },
     kicker, msg,
     h('small', { class: 'hero-note-more' }, 'toque pra ver outra'),
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
+  return h('div', { class: 'hero-note-wrap' }, note, links);
 }
 
 function slogan() {

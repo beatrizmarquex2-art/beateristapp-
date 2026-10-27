@@ -1664,3 +1664,6 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .login-wordmark { display: grid; justify-items: center; line-height: 0; } .login-wordmark img { width: 210px; height: auto; max-width: 70vw; }
 .drawer-brand { display: inline-flex; align-items: center; } .drawer-brand img { height: 30px; width: auto; display: block; }
 .login-paul { width: 128px; margin: -2px 0 -4px; } .login-paul-name { margin: 0; text-align: center; font: var(--dstyle) var(--dw) 17px var(--display); color: #a31d30; }
+
+/* bilhete do início: atalhos pra ouvir a música citada */
+.hero-note-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 4px 0; } .hero-note-link { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 2px solid #1b1818; border-radius: 999px; background: #fff; color: #1b1818; font: 700 13.5px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; } .hero-note-link:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #1b1818; }
