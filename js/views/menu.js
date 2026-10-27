@@ -14,6 +14,7 @@ const TABS_MENU = [
     ['tempo', [['#/tempo', 'timer', 'Juiz de Tempo'], ['#/tempo/transcritor', 'staff', 'Transcritor de Ritmo'], ['#/tempo/raiox', 'timer', 'Raio-x do Groove']]],
   ]],
   ['estudar', 'estudar', [
+    ['conceitos musicais (Mente Musical)', [['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
     ['', [['#/estudos', 'study', 'Meus Estudos'], ['#/estudos/club', 'note', 'The Listening Club'], ['#/bateristas', 'drummer', 'Bateristas & Links'], ['#/mural', 'photo', 'Mural de Artistas'], ['cartas/', 'staff', 'Cartas de Groove']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
@@ -28,7 +29,7 @@ const TABS_MENU = [
     ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/ajustes', 'gear', 'Ajustes e backup']]],
   ]],
 ];
-const ALL = TABS_MENU.flatMap(([id, , groups]) => groups.flatMap(([, items]) => items.map((it) => [id, ...it])));
+const ALL = TABS_MENU.flatMap(([id, , groups]) => groups.flatMap(([g, items]) => items.map((it) => [id, ...it, g])));
 const LAST = 'bt-menu-tab';
 const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
@@ -58,7 +59,7 @@ export function openMenu() {
     tabs.replaceChildren(...TABS_MENU.map(([id, label]) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === id), class: `lib-tab${tab === id ? ' on' : ''}`, onclick: () => { tab = id; try { localStorage.setItem(LAST, id); } catch { /* sem armazenamento */ } draw(); } }, label)));
     if (q.trim()) {
       const t = norm(q.trim()); const seen = new Set();
-      const hits = ALL.filter((x) => norm(x[3]).includes(t) && !seen.has(x[1]) && seen.add(x[1]));
+      const hits = ALL.filter((x) => (norm(x[3]).includes(t) || norm(x[4] || '').includes(t)) && !seen.has(x[1]) && seen.add(x[1]));
       list.replaceChildren(h('section', { class: 'drawer-sec' }, ...(hits.length ? hits.map((x) => item(x.slice(1))) : [h('p', { class: 'muted drawer-sub' }, 'nada com esse nome')])));
       return;
     }
