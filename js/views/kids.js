@@ -76,17 +76,24 @@ const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'exp
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
 
+/** Fundo rabiscado do cartão: moldura tracejada, rabiscos nos 4 cantos e tracinhos em volta do ícone (cores vêm do cartão). */
+const BG = '<svg class="kx-bgd" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+  + '<rect x="4" y="4" width="92" height="112" rx="9" style="stroke:var(--s1)" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>'
+  + '<path d="M9 22l7-13 2 9 7-12 2 9 6-9" style="stroke:var(--s2)" stroke-width="3.6"/><path d="M91 10l-8 11 9-1-7 11" style="stroke:var(--s1)" stroke-width="3.6"/>'
+  + '<path d="M9 104l10-5-7-1 9-6" style="stroke:var(--s3)" stroke-width="3.6"/><path d="M80 112l5-9 3 6 5-11" style="stroke:var(--s4)" stroke-width="3.6"/>'
+  + '<g style="stroke:var(--s3)" stroke-width="2.6"><path d="M50 14v-6M33 20l-3-5M67 20l3-5M22 38l-5-2M78 38l5-2"/></g></svg>';
+const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
 /** Cartão de jogo: cartaz de cor chapada com ícone grande, nome em marker, descrição e andamento. */
 function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {}) {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
-  const a = h('a', { class: `kx-g${on ? ' on' : ''}`, href }, ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
+  const a = h('a', { class: `kx-g${on ? ' on' : ''}`, href }, cardBg(), ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
   if (pct != null) a.append(h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct}%` })));
   if (meta) a.append(h('span', { class: 'kx-gm' }, meta));
   return a;
 }
 const wideCard = (id, title, sub, onclick, href) => {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
-  const kids = [ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
+  const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
   return href ? h('a', { class: 'kx-g wide', href }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick }, ...kids);
 };
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'KIDS')), right || null);
