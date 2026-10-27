@@ -74,7 +74,7 @@ export async function renderPages(p) {
   return pages;
 }
 
-const toJpeg = (c) => new Promise((ok) => c.toBlob((b) => b.arrayBuffer().then((a) => ok(new Uint8Array(a))), 'image/jpeg', 0.86));
+export const toJpeg = (c) => new Promise((ok) => c.toBlob((b) => b.arrayBuffer().then((a) => ok(new Uint8Array(a))), 'image/jpeg', 0.86));
 
 /** Gera o PDF e entrega: no iPhone abre o compartilhar (salvar em Arquivos, WhatsApp…); no computador baixa. */
 export async function downloadPdf(p) {
@@ -82,11 +82,16 @@ export async function downloadPdf(p) {
   const jpegs = await Promise.all(pages.map(toJpeg));
   const pdf = jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `${p.title} - ${p.studentName || ''}` });
   const name = fileName(p.title || 'Plano', p.studentName, dateBR(p.start).replace(/\//g, '-'));
+  return { ...(await savePdf(pdf, name)), pages: pages.length };
+}
+
+/** Entrega um PDF pronto: no iPhone abre o compartilhar; no computador baixa. */
+export async function savePdf(pdf, name) {
   const file = new File([pdf], name, { type: 'application/pdf' });
   if (navigator.canShare && navigator.canShare({ files: [file] }) && matchMedia('(pointer: coarse)').matches) {
-    try { await navigator.share({ files: [file], title: name }); return { name, pages: pages.length, shared: true }; } catch { /* cancelou: cai no download */ }
+    try { await navigator.share({ files: [file], title: name }); return { name, shared: true }; } catch { /* cancelou: cai no download */ }
   }
   const url = URL.createObjectURL(file); const a = document.createElement('a'); a.href = url; a.download = name; document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
-  return { name, pages: pages.length };
+  return { name };
 }

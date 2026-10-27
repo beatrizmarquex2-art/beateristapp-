@@ -14,6 +14,10 @@ export function audio() {
   return ctx;
 }
 export const now = () => (ctx ? ctx.currentTime : 0);
+/** Saída principal (pra outros sintetizadores, ex.: o groovebox). */
+export const out = () => { audio(); return master; };
+/** Ruído branco curto (0,25 s) já pronto. */
+export const noise = () => { audio(); return noiseBuf; };
 
 /** Clique de metrônomo. level 2 = tempo 1 (agudo), 1 = tempo, 0 = subdivisão (baixo). */
 export function click(t, level = 1, vol = 1) {
