@@ -86,7 +86,7 @@ function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {})
 }
 const wideCard = (id, title, sub, onclick, href) => {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
-  const kids = [ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, sub)];
+  const kids = [ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
   return href ? h('a', { class: 'kx-g wide', href }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick }, ...kids);
 };
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'KIDS')), right || null);
@@ -140,14 +140,14 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'jogos'),
     h('div', { class: 'kx-cards' }, ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
-      return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top}/10 · ★ ${s.stars} · ${s.pct}%` : 'novo · ainda não jogou', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
+      return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
-    wideCard('album', 'Álbum de figurinhas', `${Album.owned(me.id).length} de ${Album.total()} · bateristas, guitarristas e vocalistas`, null, '#/kids/album'),
-    wideCard('relatorio', 'Relatório em PDF', 'acertos, erros e uma tabelinha pra decorar', (e) => reportFor(me, e.currentTarget)),
+    h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
+      wideCard('relatorio', 'Relatório', 'pdf pra decorar', (e) => reportFor(me, e.currentTarget))),
     h('h2', { class: 'kx-h' }, 'livres'),
-    h('div', { class: 'kx-cards kx-mini' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
+    h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
     h('h2', { class: 'kx-h' }, 'mais jogos'),
-    h('div', { class: 'kx-cards kx-mini' }, ...EXTERNAL.map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
+    h('div', { class: 'kx-cards' }, ...EXTERNAL.map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
