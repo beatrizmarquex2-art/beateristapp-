@@ -189,7 +189,7 @@ function pickTexts() {
 
 /* ---------- topo: título do app + ações ---------- */
 function clubTop(host, tabs, sub) {
-  host.append(banner(sub ? 'Meus Álbuns' : 'The Listening Club', sub ? 'minha estante de discos' : 'meu clube de escuta'), tabs,
+  host.append(banner(sub ? 'Meus discos' : 'Álbuns', sub ? 'minha estante de discos' : 'álbuns por dentro, faixa por faixa'), tabs,
     h('div', { class: 'chips lib-tabs cl-nav' }, h('a', { class: `lib-tab${sub ? '' : ' on'}`, href: '#/estudos/club' }, 'textos'), h('a', { class: `lib-tab${sub ? ' on' : ''}`, href: '#/estudos/club/discos' }, 'meus álbuns')),
     h('div', { class: 'row pad-x club-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => newPost() }, '+ escrever'), h('button', { class: 'btn', type: 'button', onclick: pickTexts }, 'importar textos'), h('button', { class: 'btn ghost', type: 'button', onclick: surprise }, 'me surpreenda')));
 }
@@ -240,7 +240,7 @@ export function mountPost(host, id, tabs) {
     const srcs = (d.sources || '').split('\n').map((x) => x.trim()).filter(Boolean);
     box.replaceChildren(...[
       h('header', { class: 'reader-head' },
-        h('a', { class: 'link', href: '#/estudos/club' }, '← The Listening Club'),
+        h('a', { class: 'link', href: '#/estudos/club' }, '← Álbuns'),
         cover(d, 'big'),
         h('p', { class: 'lib-kicker' }, s.label, ' · ', d.status === 'publicado' ? when(d.date || rec.updated_at) : 'rascunho'),
         h('h1', { class: 'reader-title' }, d.title),
@@ -279,7 +279,7 @@ function mountCollection(host, cs, tabs) {
     const byArtist = new Map(); for (const r of albs) { const k = r.data.artist || '—'; if (!byArtist.has(k)) byArtist.set(k, []); byArtist.get(k).push(r); }
     const multi = byArtist.size > 1; // pacote com vários artistas: agrupa por artista
     box.replaceChildren(...[
-      h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/club' }, '← The Listening Club'),
+      h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/club' }, '← Álbuns'),
         h('p', { class: 'lib-kicker' }, 'coleção'), h('h1', { class: 'reader-title' }, name),
         list.length ? h('label', { class: 'field' }, search) : null),
       !list.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'essa coleção ainda não foi importada.'), h('p', { class: 'muted' }, 'toque em “importar textos” no clube e escolha o .zip.')) : null,

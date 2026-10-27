@@ -48,7 +48,7 @@ export function mount(host) {
             h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { const f = await G.pickFolder('Mover anotação pra…', d.folder || G.GERAL); if (f) { await G.moveTo(parts.map((p) => p.id), f); } } }, '📁 mover'),
             h('button', { class: 'btn small ghost danger-txt', type: 'button', onclick: async () => { await G.removeGrifo(rec); toast('anotação removida', { ms: 1500 }); } }, 'tirar')));
       })) : h('div', { class: 'empty' }, h('p', { class: 'hand' }, everything.length ? 'nada nessa pasta ou busca.' : 'nada grifado ainda.'),
-        h('p', { class: 'muted' }, 'abre qualquer texto de estudo (fichas do Listening Club, artigos da biblioteca), seleciona um trecho com o dedo e escolhe uma cor. ele vem pra cá, na pasta que você escolher.')),
+        h('p', { class: 'muted' }, 'abre qualquer texto de estudo (fichas de Álbuns, artigos da biblioteca), seleciona um trecho com o dedo e escolhe uma cor. ele vem pra cá, na pasta que você escolher.')),
     ].filter(Boolean));
   };
   host.append(banner('Minhas anotações', 'o que eu grifei pra estudar'), box); draw();

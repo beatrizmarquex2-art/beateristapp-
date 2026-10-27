@@ -16,9 +16,12 @@ const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_P
 const pct = (p) => `${Math.round((p || 0) * 100)}%`;
 
 function tabs(on) {
-  const items = [['#/estudos', 'início'], ['#/estudos/club', 'listening club'], ['#/estudos/cat/bateristas', 'bateristas'], ['#/estudos/conexoes', 'conexões'], ['#/estudos/lab', 'meu laboratório'], ['#/estudos/favoritos', 'favoritos']];
-  return h('nav', { class: 'lib-tabs chips', 'aria-label': 'Seções de Meus Estudos' },
-    items.map(([href, t]) => h('a', { href, class: `lib-tab${on === href ? ' on' : ''}`, 'aria-current': on === href ? 'page' : null }, t)));
+  // três seções, nomes simples: conceitos, álbuns, artistas / bateristas
+  const items = [['#/estudos', 'conceitos', 'study'], ['#/estudos/club', 'álbuns', 'note'], ['#/estudos/artistas', 'artistas / bateristas', 'drummer']];
+  const art = ['#/estudos/artistas', '#/estudos/cat/bateristas', '#/estudos/conexoes', '#/estudos/lab'].includes(on);
+  const cur = (href) => (href === '#/estudos/artistas' ? art : href === '#/estudos' ? !art && on !== '#/estudos/club' : on === href);
+  return h('nav', { class: 'lib-tabs chips', 'aria-label': 'Seções de Estudos' },
+    items.map(([href, t, ic]) => h('a', { href, class: `lib-tab drawer-tab${cur(href) ? ' on' : ''}`, 'aria-current': cur(href) ? 'page' : null }, icon(ic, 16), t)));
 }
 
 const isArtist = (a) => a.collection === 'laboratorio-de-artistas';
@@ -81,8 +84,6 @@ function mountHome(host) {
         h('button', { class: 'btn primary', type: 'button', onclick: () => { const pool = idx.filter((a) => !lib.getState(a.slug).done); const pick = (pool.length ? pool : idx)[Math.floor(Math.random() * (pool.length || idx.length))]; go(`#/estudos/a/${pick.slug}`); } }, 'sortear um texto')) : null,
       reading.length ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'continuar lendo'), h('div', { class: 'lib-list' }, reading.map((a) => card(a)))) : null,
       discovery ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'descoberta do dia'), h('div', { class: 'lib-list' }, card(discovery))) : null,
-      h('a', { class: 'card pad club-teaser', href: '#/estudos/club' }, h('span', { class: 'lib-kicker' }, 'blog privado'), h('strong', { class: 'lib-title' }, 'The Listening Club'), h('span', { class: 'lib-sum' }, 'seus textos de escuta: álbuns por dentro, histórias, DNA musical e o caderno do dia.')),
-      h('section', {}, h('h2', { class: 'tag pad-x' }, 'artistas'), h('div', { class: 'cat-grid' }, CATEGORIES.filter((c) => c.kind === 'artist').map((c) => catCard(c, idx)))),
       h('section', {}, h('h2', { class: 'tag pad-x' }, 'temas'), h('div', { class: 'lib-list' }, CATEGORIES.filter((c) => c.kind === 'topic').map((c) => catCard(c, idx)))),
       recent.length ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'estudados recentemente'), h('div', { class: 'lib-list' }, recent.map((a) => card(a)))) : null,
       importer(async () => { lib.resetIndex(); await lib.loadIndex(); draw(); })].filter(Boolean));
@@ -93,7 +94,8 @@ function mountHome(host) {
     results.replaceChildren(...(v ? lib.search(v).map((r) => card(r.a, r)) : []));
     if (v && !results.children.length) results.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nada achado.')));
   }, 150));
-  host.append(banner('Meus Estudos', 'mente musical, artistas e o seu laboratório'), tabs('#/estudos'),
+  host.append(banner('Conceitos', 'o que a ciência diz sobre música, ritmo e estudo'), tabs('#/estudos'),
+    h('div', { class: 'row pad-x lib-quick' }, h('a', { class: 'btn small ghost', href: '#/anotacoes' }, '✎ minhas anotações'), h('a', { class: 'btn small ghost', href: '#/estudos/favoritos' }, '★ favoritos'), h('a', { class: 'btn small ghost', href: '#/dicionario' }, 'dicionário')),
     h('div', { class: 'card pad' }, h('label', { class: 'field tight' }, h('span', {}, 'buscar'), q)), results, body);
   lib.loadIndex().then(() => { draw(); lib.prefetch().catch(() => {}); });
   return store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
@@ -137,7 +139,7 @@ function mountCategory(host, id) {
       : c.kind === 'artist' ? h('div', { class: 'art-grid' }, shown.map((a, i) => h('a', { class: `art-card tilt${i % 3}`, href: `#/estudos/a/${a.slug}` }, artPhoto(a.slug, a.title, 'art-ph big'), h('strong', {}, a.title), h('small', {}, QUESTION[a.slug] || ''))))
         : h('div', { class: 'lib-list' }, shown.map((a) => card(a))));
   };
-  host.append(banner(c.label, c.blurb), tabs(c.kind === 'artist' && id === 'bateristas' ? '#/estudos/cat/bateristas' : ''), chips, filters, list);
+  host.append(banner(c.label, c.blurb), tabs(c.kind === 'artist' ? '#/estudos/artistas' : '#/estudos'), chips, filters, list);
   lib.loadIndex().then(draw);
   return store.subscribe((i) => { if (!i.kind || i.kind === 'study' || i.id === ART_KEY) draw(); });
 }
@@ -334,8 +336,25 @@ async function flashcard() {
   });
 }
 
+/* ---------- artistas / bateristas ---------- */
+function mountArtistas(host) {
+  const body = h('div');
+  const draw = () => {
+    const idx = lib.items();
+    body.replaceChildren(
+      h('section', {}, h('h2', { class: 'tag pad-x' }, 'perfis'), h('div', { class: 'cat-grid' }, CATEGORIES.filter((c) => c.kind === 'artist').map((c) => catCard(c, idx)))),
+      h('section', {}, h('h2', { class: 'tag pad-x' }, 'mais sobre artistas'), h('div', { class: 'hub-grid' },
+        ...[['#/bateristas', 'drummer', 'Bateristas & Links', 'vídeos e links de quem inspira'], ['#/estudos/conexoes', 'link', 'Artista e conceito', 'qual conceito aparece em qual artista'], ['#/estudos/lab', 'study', 'Laboratório', 'experimentos pra testar na bateria'], ['#/mural', 'photo', 'Mural de Artistas', 'sua parede de fotos']]
+          .map(([href, ic, t, d]) => h('a', { class: 'hub-card', href }, h('span', { class: 'hub-ic' }, icon(ic, 26)), h('b', {}, t), h('small', {}, d))))));
+  };
+  host.append(banner('Artistas / bateristas', 'quem pensa a música, e o que aprender com eles'), tabs('#/estudos/artistas'), body);
+  lib.loadIndex().then(draw); draw();
+  return store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
+}
+
 export function mount(host, parts) {
   const [kind, arg] = parts;
+  if (kind === 'artistas') return mountArtistas(host);
   if (kind === 'c') return mountCollection(host, arg);
   if (kind === 'cat' && arg) return mountCategory(host, arg);
   if (kind === 'club') return arg ? mountPost(host, arg, tabs('#/estudos/club')) : mountClub(host, tabs('#/estudos/club'));

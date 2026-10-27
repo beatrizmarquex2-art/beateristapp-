@@ -36,6 +36,7 @@ import * as treinos from './views/treinos.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as anotacoes from './views/anotacoes.js';
+import * as hub from './views/hub.js';
 import * as rudimentos from './views/rudimentos.js';
 import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
@@ -190,6 +191,7 @@ function shell() {
       case 'toque': c = toque.mount(view); break;
       case 'piano': c = piano.mount(view); break;
       case 'anotacoes': c = anotacoes.mount(view); break;
+      case 'hub': c = hub.mount(view, r.parts); break;
       case 'rudimentos': c = rudimentos.mount(view); break;
       case 'plano': c = plano.mount(view); break;
       case 'ambiente': c = ambiente.mount(view); break;
