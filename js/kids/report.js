@@ -7,7 +7,7 @@ import * as Album from './album.js';
 import { CARDS } from './album-data.js';
 import { roboStandalone, tierOf } from './robo.js';
 import { AGES } from './levels.js';
-import { INSTRUMENTS, nameOf as instName } from './instruments.js';
+import { INSTRUMENTS, nameOf as instName, artColored } from './instruments.js';
 import { FIGURES, PIECES, BUMBO_SPOTS, nameOf as pieceName } from '../kids-logic.js';
 import { figureMarkup } from './art.js';
 import { ROW_NAME } from './groove.js';
@@ -18,13 +18,13 @@ export const TITLES = { pecas: 'Que peça é essa?', pauta: 'Onde mora na pauta?
 const ORDER = Object.keys(TITLES);
 
 const WHY = {
-  pecas: 'Conhecer cada peça é o alfabeto da bateria: sem saber o nome e o som de cada uma, não dá pra ler partitura nem seguir o que o professor pede.',
-  pauta: 'Saber onde cada peça mora na pauta liga o que se vê ao que se toca. É o primeiro passo pra ler partitura de bateria.',
-  figuras: 'As figuras dizem quanto cada nota dura. Entender duração é entender ritmo: é a base pra contar e tocar no tempo.',
-  bumbos: 'O bumbo é o coração do groove. Contar bumbos de ouvido treina a atenção aos sons graves e ao desenho do ritmo.',
-  memoria: 'Reconhecer instrumentos pelo som e pela imagem treina a escuta e a memória musical, essenciais pra tocar em banda.',
-  detetive: 'Ouvir o que mudou, escrever o que escutou e depois tocar é o ciclo completo do estudo musical: escuta, leitura e execução.',
-  eco: 'Repetir um ritmo logo depois de ouvir treina a memória rítmica e a coordenação: tocar o que se escuta.',
+  pecas: 'Conhecer cada peça é o alfabeto da bateria.',
+  pauta: 'Saber onde cada peça mora na pauta é o primeiro passo pra ler partitura.',
+  figuras: 'As figuras dizem quanto cada nota dura: a base pra contar e tocar no tempo.',
+  bumbos: 'O bumbo é o coração do groove: contar de ouvido treina a atenção.',
+  memoria: 'Reconhecer instrumentos pelo som e pela imagem treina a escuta.',
+  detetive: 'Ouvir, escrever e tocar: o ciclo completo do estudo musical.',
+  eco: 'Repetir um ritmo logo depois de ouvir treina a memória rítmica.',
 };
 const HOME = {
   pecas: 'Em casa: olhe uma foto de bateria e diga o nome de cada peça em voz alta, depois toque cada uma e escute o som.',
@@ -103,43 +103,30 @@ export async function renderReport(profile) {
   if (rob) pg.g.drawImage(rob, W - SIDE - 150, pg.top - 30, 130, 152);
   pg.text(`Relatório do ${profile.name}`, { size: 54, weight: 700, maxW: pg.CW - 170 });
   pg.text(`Beaterista Kids · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555', maxW: pg.CW - 170 });
-  pg.gap(24);
-  pg.table([{ label: 'Resumo', w: 0.5 }, { label: '', w: 0.5 }], [
-    ['Estrelas conquistadas', `${total} ⭐`], ['Acerto geral', pctAll == null ? 'ainda não jogou' : `${pctAll}% (${allR} certas de ${allR + allW})`],
-    ['Figurinhas no álbum', `${Album.owned(profile.id).length} de ${CARDS.length}`], ['Fases jogadas', String(p.log.length)]]);
+  pg.gap(18);
+  pg.text(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${Album.owned(profile.id).length} de ${CARDS.length} figurinhas`, { size: 30, weight: 700 });
+  if (!played.length) { pg.gap(10); pg.text('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 }); return pg.pages; }
 
-  if (!played.length) { pg.text('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 }); return pg.pages; }
-
-  // ---- por jogo ----
-  pg.h2('Onde acertou');
-  pg.table([{ label: 'Jogo', w: 0.4 }, { label: 'Fases com ⭐', w: 0.2 }, { label: 'Estrelas', w: 0.18 }, { label: 'Acerto', w: 0.22 }],
-    played.map((g) => { const s = P.summary(profile.id, g); const lv = Object.entries(p.lv).filter(([k, v]) => k.startsWith(`${g}:`) && v.s >= 1).length; return [TITLES[g], `${lv} de 11`, `${s.stars} de ${s.maxStars}`, s.pct == null ? '—' : `${s.pct}%`]; }));
-  const strong = played.filter((g) => (P.summary(profile.id, g).pct || 0) >= 85);
-  if (strong.length) pg.text(`Está indo muito bem em: ${strong.map((g) => TITLES[g]).join(', ')}. 👏`, { size: 26, weight: 600, color: '#1f6f3a' });
-
-  // ---- onde errou ----
-  const misses = Object.entries(p.miss).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  pg.h2('Onde errou (pra treinar mais)');
-  if (misses.length) pg.table([{ label: 'O que treinar', w: 0.78 }, { label: 'Erros', w: 0.22 }], misses.map(([k, n]) => { const [g, ...rest] = k.split(':'); return [MISS(g, rest.join(':')), `${n}×`]; }));
-  else pg.text('Nenhum erro registrado ainda. Continue assim!', { size: 26 });
-
-  // ---- últimas fases ----
-  const recent = [...p.log].reverse().slice(0, 8);
-  if (recent.length) { pg.h2('Últimas fases'); pg.table([{ label: 'Dia', w: 0.14 }, { label: 'Jogo', w: 0.46 }, { label: 'Fase', w: 0.12 }, { label: 'Acerto', w: 0.28 }], recent.map((e) => [dateBR(e.t), TITLES[e.game] || e.game, String(e.level), `${e.right} de ${e.total} (${e.total ? Math.round((e.right / e.total) * 100) : 0}%) · ${'★'.repeat(e.s)}${'☆'.repeat(3 - e.s)}`])); }
+  pg.gap(14);
+  pg.table([{ label: 'Jogo', w: 0.55 }, { label: 'Estrelas', w: 0.22 }, { label: 'Acerto', w: 0.23 }],
+    played.map((g) => { const s = P.summary(profile.id, g); return [TITLES[g], `${s.stars} de ${s.maxStars}`, s.pct == null ? '—' : `${s.pct}%`]; }));
+  const misses = Object.entries(p.miss).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  pg.h2('Pra treinar mais');
+  if (misses.length) misses.forEach(([k]) => { const [g, ...rest] = k.split(':'); pg.text(`•  ${MISS(g, rest.join(':'))}`, { size: 27 }); });
+  else pg.text('Nenhum erro registrado ainda. Continue assim! 👏', { size: 27 });
 
   // ---- por que importa + tabelinhas ----
-  pg.newPage(); pg.text('Por que cada exercício importa', { size: 44, weight: 700 }); pg.text('E uma tabelinha pra ver em casa e decorar.', { size: 26, color: '#555' });
+  pg.h2('Pra decorar em casa');
   for (const g of played) {
-    pg.gap(10); pg.h2(TITLES[g]); pg.text(WHY[g], { size: 26 }); pg.gap(6);
+    pg.gap(8); pg.text(TITLES[g], { size: 32, weight: 700, color: '#111' }); pg.text(WHY[g], { size: 22, color: '#555' }); pg.gap(4);
     if (g === 'pecas') pg.table([{ label: 'Peça', w: 0.28 }, { label: 'Pra que serve', w: 0.72 }], PIECES.map((x) => [x.name, PIECE_ROLE[x.id]]));
     if (g === 'pauta') pg.table([{ label: 'Peça', w: 0.4 }, { label: 'Onde mora na pauta', w: 0.6 }], PIECES.map((x) => [x.name, PIECE_STAFF[x.id]]));
     if (g === 'figuras') { const imgs = await Promise.all(FIGURES.map((f) => svgImg(figureMarkup(f.id)))); pg.table([{ label: 'Figura', w: 0.2 }, { label: 'Nome', w: 0.26 }, { label: 'Dura', w: 0.22 }, { label: 'Conta com', w: 0.32 }],
       FIGURES.map((f, i) => [imgs[i] ? { img: imgs[i], w: 62, h: 76 } : '', f.name, f.beats >= 1 ? `${f.beats} tempo${f.beats > 1 ? 's' : ''}` : f.beats === 0.5 ? 'meio tempo' : '¼ de tempo', { semibreve: '1-2-3-4', minima: '1-2', seminima: 'pão', colcheia: 'bo-lo', semicolcheia: 'cho-co-la-te' }[f.id]])); }
     if (g === 'bumbos') pg.table([{ label: 'Bumbos', w: 0.2 }, { label: 'Onde caem (no compasso de 4 tempos)', w: 0.8 }], [1, 2, 3, 4, 5].map((n) => [String(n), BUMBO_SPOTS[n].map(stepName).join(' · ')]));
-    if (g === 'memoria') { const imgs = await Promise.all(INSTRUMENTS.map((x) => svgImg(x.art))); pg.table([{ label: 'Instrumento', w: 0.22 }, { label: 'Nome', w: 0.28 }, { label: 'Família', w: 0.5 }], INSTRUMENTS.map((x, i) => [imgs[i] ? { img: imgs[i], w: 70, h: 70 } : '', x.name, FAMILY[x.name] || FAMILY[x.id]])); }
+    if (g === 'memoria') { const imgs = await Promise.all(INSTRUMENTS.map((x) => svgImg(artColored(x.id, '#1b1818', '#b5162b')))); pg.table([{ label: 'Instrumento', w: 0.22 }, { label: 'Nome', w: 0.28 }, { label: 'Família', w: 0.5 }], INSTRUMENTS.map((x, i) => [imgs[i] ? { img: imgs[i], w: 70, h: 70 } : '', x.name, FAMILY[x.name] || FAMILY[x.id]])); }
     if (g === 'detetive') pg.table([{ label: 'Estrela', w: 0.2 }, { label: 'O que fazer', w: 0.8 }], [['⭐', 'Clicar: ouvir os grooves A e B e dizer o que mudou.'], ['⭐⭐', 'Escrever: marcar na grade (chimbal, caixa e bumbo) o que ouviu.'], ['⭐⭐⭐', 'Tocar: tocar a linha pedida no tempo certo, na tela ou no pad/bateria.']]);
     if (g === 'eco') pg.table([{ label: 'Palavra', w: 0.3 }, { label: 'Batidas no tempo', w: 0.3 }, { label: 'Quantas', w: 0.4 }], [['pão', '● ○ ○ ○', '1 batida'], ['bo-lo', '● ○ ● ○', '2 batidas'], ['cho-co-la-te', '● ● ● ●', '4 batidas'], ['shhh', '○ ○ ○ ○', 'silêncio (pausa)']]);
-    pg.text(HOME[g], { size: 24, weight: 600, color: '#8a1a26' });
   }
   return pg.pages;
 }

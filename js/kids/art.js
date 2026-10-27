@@ -5,13 +5,13 @@ import * as N from '../notation.js';
 import { audio } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { FIGURES } from '../kids-logic.js';
-import { kitSvg } from './illus.js';
+import { kitSvg } from './icons.js';
 
 export const play = (id) => { const c = audio(); VOICE[id](c.currentTime + 0.01, 1); };
 export const svgEl = (markup, cls) => { const d = h('div', { class: cls }); d.innerHTML = markup; return d; };
 
 /* ---------- desenhos ---------- */
-export function kitMarkup(hl, hide) { return kitSvg(hl, hide, (id) => B.COLORS[id]); }
+export function kitMarkup(hl, hide) { return kitSvg(hl, hide); }
 /** Pauta com uma nota na casinha da peça (cabeça em x nos pratos e no chimbal). */
 export function staffMarkup(id) {
   const top = 40, gap = 16, x = 170; const y = top + (N.POS[id] * gap) / 2; const xh = ['cr', 'rd', 'hh', 'ho', 'hf'].includes(id);

@@ -1,7 +1,7 @@
 // Instrumentos do jogo da memória: desenho (SVG nosso) e som (sintetizado aqui, sem amostras) de cada um.
 import { audio, out, kick, snare, hihat, cymbal, tom } from '../audio.js';
 import { bass, epiano, guitar, voice } from '../synth.js';
-import { ART } from './illus.js';
+import { instrumentIcon } from './icons.js';
 
 const S = '#1b1818';
 const stand = (x, y, h) => `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + h}" stroke="${S}" stroke-width="3"/>`;
@@ -19,7 +19,9 @@ export const INSTRUMENTS = [
   { id: 'voz', name: 'voz', color: '#d92031', art: null, play: (t) => voice(t, 64, 0.6) },
   { id: 'cordas', name: 'violino', color: '#a8502a', art: null, play: (t) => strings(t, 69) },
 ];
-for (const x of INSTRUMENTS) x.art = ART[x.id];
+for (const x of INSTRUMENTS) x.art = instrumentIcon(x.id);
+/** O desenho com cores escolhidas (o PDF usa cores escuras). */
+export const artColored = (id, a, b) => instrumentIcon(id, a, b);
 export const byId = Object.fromEntries(INSTRUMENTS.map((x) => [x.id, x]));
 export const nameOf = (id) => (byId[id] || {}).name || id;
 

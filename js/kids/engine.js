@@ -15,9 +15,10 @@ function beep(ok) {
     notes.forEach((f, i) => { const o = c.createOscillator(); const g = c.createGain(); o.type = ok ? 'triangle' : 'sawtooth'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t + i * 0.11); g.gain.exponentialRampToValueAtTime(ok ? 0.25 : 0.14, t + i * 0.11 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.11 + 0.18); o.connect(c.destination); o.start(t + i * 0.11); o.stop(t + i * 0.11 + 0.2); });
   } catch { /* sem áudio */ }
 }
-const countUp = (el, to, ms = 700, suffix = '%') => {
-  if (reduced() || !to) { el.textContent = `${to}${suffix}`; return; }
-  const t0 = performance.now(); const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = `${Math.round(to * (1 - (1 - k) ** 3))}${suffix}`; if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+const countUp = (el, to, ms = 700) => {
+  const n = el.querySelector('.n') || el;
+  if (reduced() || !to) { n.textContent = String(to); return; }
+  const t0 = performance.now(); const step = (t) => { const k = Math.min(1, (t - t0) / ms); n.textContent = String(Math.round(to * (1 - (1 - k) ** 3))); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
 };
 
 /**
@@ -89,7 +90,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
   const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
   const next$ = level < 10 && stars >= 1;
   bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? 'perfeito!' : stars >= 1 ? 'muito bem!' : 'quase! tenta de novo');
-  const pctEl = h('b', { class: 'kx-pct' }, '0%');
+  const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));
   const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));
   const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
   stage.replaceChildren(h('div', { class: 'kx-result' },

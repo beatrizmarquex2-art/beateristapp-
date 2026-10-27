@@ -7,6 +7,7 @@ import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
 import { pieceQ, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
 import { ROW_NAME } from './groove.js';
+import { KIT_COLORS } from './icons.js';
 import { kitMarkup, staffMarkup, figureMarkup, svgEl, play, tone } from './art.js';
 import { runMemory } from './memory.js';
 import { runEco } from './eco.js';
@@ -14,7 +15,7 @@ import { runDetetive } from './detetive.js';
 import { nameOf as instName } from './instruments.js';
 
 const BEATS = { semibreve: 4, minima: 2, seminima: 1, colcheia: 0.5, semicolcheia: 0.25 };
-const colorOf = (id) => B.COLORS[id];
+const colorOf = (id) => (KIT_COLORS[id] || B.COLORS[id]);
 const withColor = (q) => ({ ...q, options: q.options.map((o) => ({ ...o, color: colorOf(o.id) })) });
 
 export const GAMES = {

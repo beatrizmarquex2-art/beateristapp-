@@ -12,8 +12,9 @@ import { ROWS, ROW_NAME, STEP_LABEL, baseGroove, changed, cellsMatch, emptyGroov
 import { capture } from './capture.js';
 import { runLevel, beep } from './engine.js';
 import { svgEl } from './art.js';
+import { KIT_COLORS } from './icons.js';
 
-const colorOf = (id) => B.COLORS[id];
+const colorOf = (id) => (KIT_COLORS[id] || B.COLORS[id]);
 function playGroove(g, bpm, bars = 2, accent = null) {
   const c = audio(); const dt = 60 / bpm / 2; const t0 = c.currentTime + 0.15;
   for (let b = 0; b < bars; b++) for (let i = 0; i < 8; i++) for (const r of ROWS) if (g.rows[r][i]) VOICE[r](t0 + (b * 8 + i) * dt, r === 'hh' ? (accent === 'hh' ? 0.9 : 0.55) : 1);
