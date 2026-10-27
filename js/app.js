@@ -111,7 +111,7 @@ function swipeMenu() {
   }, { passive: true });
   addEventListener('touchend', (e) => {
     if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
-    if (!(Math.abs(dx) > 80 && Math.abs(dy) < 45 && Math.abs(dx) > 2.2 * Math.abs(dy) && Date.now() - t0 < 800)) return;
+    if (!(Math.abs(dx) > 60 && Math.abs(dy) < 70 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 900)) return;
     const name = route().name;
     if (name === 'inicio' && dx > 0) { openMenu(); return; } // no início, arrastar pra direita abre o menu ☰
     // nas 4 abas de baixo: arrastar pra esquerda vai pra próxima, pra direita volta pra anterior
