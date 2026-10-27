@@ -106,12 +106,17 @@ function swipeMenu() {
   let x0 = 0, y0 = 0, t0 = 0, on = false;
   const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
   addEventListener('touchstart', (e) => {
-    on = route().name === 'inicio' && e.touches.length === 1 && !document.querySelector('.drawer, #overlay .sheet') && !hScroll(e.target);
+    on = e.touches.length === 1 && e.touches[0].clientX >= 26 && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && !hScroll(e.target) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
     const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
   }, { passive: true });
   addEventListener('touchend', (e) => {
     if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
-    if (Math.abs(dx) > 70 && Math.abs(dy) < 45 && Math.abs(dx) > 2.2 * Math.abs(dy) && Date.now() - t0 < 800) openMenu();
+    if (!(Math.abs(dx) > 80 && Math.abs(dy) < 45 && Math.abs(dx) > 2.2 * Math.abs(dy) && Date.now() - t0 < 800)) return;
+    const name = route().name;
+    if (name === 'inicio' && dx > 0) { openMenu(); return; } // no início, arrastar pra direita abre o menu ☰
+    // nas 4 abas de baixo: arrastar pra esquerda vai pra próxima, pra direita volta pra anterior
+    const i = NAV.findIndex((n) => n && n[0] === `#/${name}`); if (i < 0) return;
+    const j = i + (dx < 0 ? 1 : -1); if (j >= 0 && j < NAV.length && NAV[j]) { location.hash = NAV[j][0]; window.scrollTo(0, 0); }
   }, { passive: true });
   addEventListener('touchcancel', () => { on = false; }, { passive: true });
 }
