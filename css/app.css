@@ -1653,3 +1653,10 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 /* teclado aberto: some o que fica grudado embaixo da tela */
 html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html.kb-open .amb-dock, html.kb-open .tray { display: none !important; }
 html.kb-open #view { padding-bottom: 24px; }
+
+/* Paul e rabiscos soltos nos cabeçalhos das telas */
+.banner-wrap.has-paul { padding-right: 112px; min-height: 104px; }
+.bn-paul { position: absolute; right: 14px; top: 6px; height: 92px; width: auto; max-width: 96px; object-fit: contain; mix-blend-mode: multiply; pointer-events: none; user-select: none; }
+.bn-doodle { position: absolute; width: 26px; height: 26px; object-fit: contain; pointer-events: none; opacity: .92; } .bn-doodle.d1 { right: 104px; top: 10px; transform: rotate(-14deg); } .bn-doodle.d2 { right: 8px; top: 92px; transform: rotate(12deg); width: 22px; height: 22px; }
+.empty::after { content: ""; display: block; height: 0; }
+.banner-wrap.has-paul .banner { font-size: clamp(24px, 7.2vw, 33px); }

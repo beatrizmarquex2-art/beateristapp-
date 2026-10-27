@@ -76,8 +76,24 @@ export function stars(originEl) {
   setTimeout(() => layer.remove(), 1100);
 }
 
+// Paul de cada ferramenta: o humor combina com o assunto da tela (pelo título do banner)
+const PAUL_BY_TITLE = [
+  [/metr|tap|bpm|tempo|cron|juiz|contar|compass/i, 'e19'], [/beat lab|groovebox|toque|rudiment|roleta|play-along|loop|ritmos?\b|jogos/i, 'e19'],
+  [/ouvido|ambiente|piano|repert|setlist|artistas|bateristas|mural|colagens|club|álbuns|albuns/i, 'e15'], [/ideia/i, 'e29'], [/lembrete|checklist|esquecer|foco/i, 'e13'],
+  [/arquivos|anota|conceitos|bibliotec|dicion|folhas|partitura|estudo|laborat/i, 'e24'], [/alunos?|plano/i, 'e20'], [/feed/i, 'e03'], [/favorit/i, 'e26'],
+  [/desafio/i, 'e14'], [/ferrament|conex|mapa/i, 'e07'], [/ops|não achei/i, 'e28'],
+];
+const DOODLES = ['note', 'heart', 'burst', 'bolt2', 'ulstar', 'stars', 'notered', 'cymbal', 'boltgold', 'heartfill'];
+const hashOf = (t) => [...String(t)].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 7);
+/** Cabeçalho das telas: título, subtítulo, o Paul do assunto e dois rabiscos soltos. */
 export function banner(text, sub) {
-  return h('div', { class: 'banner-wrap' },
+  const hit = PAUL_BY_TITLE.find(([re]) => re.test(text)); const n = hashOf(text);
+  const paul = `e${String(hit ? hit[1].slice(1) : [2, 30, 20, 3][n % 4]).padStart(2, '0')}`;
+  const d1 = DOODLES[n % DOODLES.length], d2 = DOODLES[(n >>> 3) % DOODLES.length];
+  return h('div', { class: 'banner-wrap has-paul' },
     h('h1', { class: 'banner' }, text),
-    sub ? h('p', { class: 'banner-sub' }, sub) : null);
+    sub ? h('p', { class: 'banner-sub' }, sub) : null,
+    h('img', { class: 'bn-paul', src: `assets/paul/${paul}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }),
+    h('img', { class: 'bn-doodle d1', src: `assets/paul/d-${d1}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }),
+    h('img', { class: 'bn-doodle d2', src: `assets/paul/d-${d2}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }));
 }
