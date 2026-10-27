@@ -127,7 +127,7 @@ export function openMenu() {
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });
   const panel = h('nav', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Menu' },
-    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 36, height: 36 }), h('strong', {}, 'Beaterista'), editBtn,
+    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', height: 30 })), editBtn,
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar menu', onclick: close }, icon('x', 22))),
     h('div', { class: 'drawer-search' }, search), tabs, list);
   draw();

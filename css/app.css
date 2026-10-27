@@ -1660,3 +1660,7 @@ html.kb-open #view { padding-bottom: 24px; }
 .bn-doodle { position: absolute; width: 26px; height: 26px; object-fit: contain; pointer-events: none; opacity: .92; } .bn-doodle.d1 { right: 104px; top: 10px; transform: rotate(-14deg); } .bn-doodle.d2 { right: 8px; top: 92px; transform: rotate(12deg); width: 22px; height: 22px; }
 .empty::after { content: ""; display: block; height: 0; }
 .banner-wrap.has-paul .banner { font-size: clamp(24px, 7.2vw, 33px); }
+
+/* logotipo (nome) na entrada e no menu */
+.login-wordmark { display: grid; justify-items: center; line-height: 0; } .login-wordmark img { width: 210px; height: auto; max-width: 70vw; }
+.drawer-brand { display: inline-flex; align-items: center; } .drawer-brand img { height: 30px; width: auto; display: block; }
