@@ -9,6 +9,8 @@ import { INSTRUMENTS, byId, nameOf, playInstrument } from './instruments.js';
 import { frame, showResult, introBox, beep } from './engine.js';
 import { gameIcon } from './icons.js';
 
+import { pickDoodle } from './doodles.js';
+const doodle = (i) => { const e = h('span', { class: 'kx-mem-back', 'aria-hidden': 'true', style: `--r:${((i * 37) % 11) - 5}deg` }); e.innerHTML = pickDoodle(i * 5 + (i >> 1)); return e; };
 const ico = (name, cls, a, b) => { const e = h('span', { class: cls, 'aria-hidden': 'true' }); e.innerHTML = gameIcon(name, a, b); return e; };
 const PAIRS = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8];
 const cols = (n) => (n <= 6 ? 3 : n === 10 ? 5 : 4);
@@ -33,9 +35,9 @@ export function runMemory(game, ctx) {
     bot.set('think', 'onde será?');
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const bar = totalSecs ? h('div', { class: 'kx-time', style: `--secs:${totalSecs}s` }, h('i')) : null;
-    const board = h('div', { class: 'kx-board', style: `--cols:${cols(deck.length)}` }, ...deck.map((c) => {
+    const board = h('div', { class: 'kx-board', style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
       const b = h('button', { type: 'button', class: 'kx-mem', 'aria-label': 'carta virada para baixo', onclick: () => flip(b, c) },
-        h('span', { class: 'kx-mem-in' }, ico('figuras', 'kx-mem-back'),
+        h('span', { class: 'kx-mem-in' }, doodle(i),
           h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, c.kind === 'sound' ? [ico('eco', 'kx-snd', '#a31d30', '#1b1818'), h('small', {}, 'som')] : [svgBox(c.id), h('small', {}, nameOf(c.id))])));
       b._c = c; return b;
     }));

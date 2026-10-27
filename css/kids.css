@@ -104,3 +104,4 @@
 .kx-card-fig .art-ph.big, .kx-card-fig .kx-ph { aspect-ratio: 1 / 1; padding: 4px; } .kx-card-fig .kx-q { font-size: 34px; } .kx-card-fig .art-ph b { font-size: 34px; }
 .kx-card-fig b.kx-n, .kx-card-fig .kx-name { font-size: 11px; }
 @media (min-width: 560px) { .kx-arc .kx-board { max-width: 420px; } }
+.kx-mem-back .kx-doodle { width: 62%; height: auto; transform: rotate(var(--r, 0deg)); filter: drop-shadow(1px 2px 0 rgb(0 0 0 / .4)); }
