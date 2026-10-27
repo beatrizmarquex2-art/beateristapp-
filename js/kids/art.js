@@ -5,19 +5,13 @@ import * as N from '../notation.js';
 import { audio } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { FIGURES } from '../kids-logic.js';
+import { kitSvg } from './illus.js';
 
 export const play = (id) => { const c = audio(); VOICE[id](c.currentTime + 0.01, 1); };
 export const svgEl = (markup, cls) => { const d = h('div', { class: cls }); d.innerHTML = markup; return d; };
 
 /* ---------- desenhos ---------- */
-export function kitMarkup(hl, hide) {
-  const c = (id) => (hide ? '#d9d2c7' : B.COLORS[id]); const on = (id) => (hl === id ? ' hl' : '');
-  const drum = (id, x, y, w, hh) => `<g class="kp${on(id)}" data-p="${id}"><rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="${c(id)}" stroke="#1b1818" stroke-width="3"/><ellipse cx="${x + w / 2}" cy="${y}" rx="${w / 2}" ry="${hh / 5}" fill="#fffdf8" stroke="#1b1818" stroke-width="3"/></g>`;
-  const cym = (id, x, y, rx, two) => `<g class="kp${on(id)}" data-p="${id}"><line x1="${x}" y1="${y}" x2="${x}" y2="${y + 120}" stroke="#1b1818" stroke-width="3"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx / 5}" fill="${c(id)}" stroke="#1b1818" stroke-width="3"/>${two ? `<ellipse cx="${x}" cy="${y + 10}" rx="${rx}" ry="${rx / 5}" fill="${c(id)}" stroke="#1b1818" stroke-width="3"/>` : ''}</g>`;
-  return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria">${cym('cr', 85, 45, 62)}${cym('rd', 340, 55, 66)}${cym('hh', 42, 120, 40, true)}
-    ${drum('tt', 140, 95, 64, 44)}${drum('mt', 222, 95, 64, 44)}${drum('sn', 80, 175, 86, 38)}${drum('ft', 300, 165, 90, 90)}
-    <g class="kp${on('bd')}" data-p="bd"><circle cx="210" cy="215" r="74" fill="${c('bd')}" stroke="#1b1818" stroke-width="3"/><circle cx="210" cy="215" r="58" fill="#fffdf8" stroke="#1b1818" stroke-width="2"/><text x="210" y="223" text-anchor="middle" font-family="Permanent Marker, cursive" font-size="22" fill="#b5162b">Beaterista</text></g></svg>`;
-}
+export function kitMarkup(hl, hide) { return kitSvg(hl, hide, (id) => B.COLORS[id]); }
 /** Pauta com uma nota na casinha da peça (cabeça em x nos pratos e no chimbal). */
 export function staffMarkup(id) {
   const top = 40, gap = 16, x = 170; const y = top + (N.POS[id] * gap) / 2; const xh = ['cr', 'rd', 'hh', 'ho', 'hf'].includes(id);

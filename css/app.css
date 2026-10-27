@@ -1265,7 +1265,7 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .kd-game { display: grid; gap: 12px; padding: 8px 16px 16px; justify-items: center; text-align: center; }
 .kd-kit, .kd-staff, .kd-score { width: 100%; max-width: 520px; background: #fffdf8; border: 3px solid #1b1818; } .kd-kit svg, .kd-staff svg, .kd-score svg { display: block; width: 100%; height: auto; }
 .kd-kit { touch-action: manipulation; user-select: none; -webkit-user-select: none; } .kd-kit .kp { cursor: pointer; transition: transform .12s; transform-box: fill-box; transform-origin: center; }
-.kd-kit .kp.hl { animation: kd-pulse .9s ease-in-out infinite; } .kd-kit .kp.hl rect, .kd-kit .kp.hl circle:first-child, .kd-kit .kp.hl ellipse { stroke: #b5162b; stroke-width: 6; }
+.kd-kit .kp.hl { animation: kd-pulse .9s ease-in-out infinite; filter: drop-shadow(0 0 5px #b5162b) drop-shadow(0 0 2px #b5162b); }
 @keyframes kd-pulse { 50% { transform: scale(1.06); } }
 .kd-big { margin: 0; font: 400 34px var(--display); color: #b5162b; min-height: 1.2em; } .kd-q { margin: 0; font: 700 20px var(--body); }
 .kd-modes { gap: 8px; flex-wrap: wrap; justify-content: center; }
@@ -1642,3 +1642,5 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 .kx-cell { aspect-ratio: 1; min-height: 36px; border: 3px solid #1b1818; background: #fffdf8; border-radius: 8px; padding: 0; cursor: pointer; } .kx-cell.on { background: var(--c); } .kx-cell.wrong { outline: 4px solid #b5162b; outline-offset: -1px; }
 .kx-target { display: grid; grid-template-columns: repeat(8, 1fr); text-align: center; font: 700 28px/1 var(--body); gap: 2px; margin: 8px 0; } .kx-target span.on { color: #b5162b; } .kx-target small { grid-column: 1 / -1; font: 600 12px var(--body); letter-spacing: .5em; color: #5f5752; word-spacing: .2em; }
 .kx-ladder { font-size: 13px; }
+
+.fav-head { align-items: center; padding-bottom: 2px; } .fav-title { display: inline-flex; align-items: center; gap: 6px; font: 700 20px var(--body); color: inherit; text-decoration: none; min-height: 44px; } .fav-title svg { color: var(--gold); } .fav-empty { margin: 0 0 8px; }

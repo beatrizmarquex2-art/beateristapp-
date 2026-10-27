@@ -123,8 +123,10 @@ export function mount(host) {
   }
   function drawFavs() {
     const f = sortedFavs().slice(0, 6);
-    favRow.hidden = !f.length;
-    favRow.replaceChildren(h('div', { class: 'chips' }, ...f.map(favChip)));
+    // sempre aparece no início: título que abre os Favoritos gerais + os atalhos (ou uma dica quando ainda não tem nenhum)
+    favRow.hidden = false;
+    favRow.replaceChildren(h('div', { class: 'row between fav-head' }, h('a', { class: 'fav-title', href: '#/favoritos' }, icon('star', 18), ' Favoritos'), h('a', { class: 'link', href: '#/favoritos' }, f.length ? 'ver todos' : 'abrir')),
+      f.length ? h('div', { class: 'chips' }, ...f.map(favChip)) : h('p', { class: 'muted fav-empty' }, 'toque na ★ de qualquer tela, texto ou ferramenta pra guardar aqui.'));
   }
   async function saveOrder(slugs) { await store.upsert('setting', ORDER_KEY, { order: slugs }); }
   function drawGrid() {
