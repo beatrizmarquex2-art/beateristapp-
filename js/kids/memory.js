@@ -11,7 +11,7 @@ import { gameIcon } from './icons.js';
 
 const ico = (name, cls, a, b) => { const e = h('span', { class: cls, 'aria-hidden': 'true' }); e.innerHTML = gameIcon(name, a, b); return e; };
 const PAIRS = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8];
-const cols = (n) => (n <= 4 ? 2 : n <= 6 ? 3 : n === 10 ? 5 : 4);
+const cols = (n) => (n <= 6 ? 3 : n === 10 ? 5 : 4);
 const starsMem = (pct) => (pct >= 85 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0);
 
 export function runMemory(game, ctx) {
@@ -36,7 +36,7 @@ export function runMemory(game, ctx) {
     const board = h('div', { class: 'kx-board', style: `--cols:${cols(deck.length)}` }, ...deck.map((c) => {
       const b = h('button', { type: 'button', class: 'kx-mem', 'aria-label': 'carta virada para baixo', onclick: () => flip(b, c) },
         h('span', { class: 'kx-mem-in' }, ico('robo', 'kx-mem-back'),
-          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, c.kind === 'sound' ? [ico('eco', 'kx-snd', '#d92031', '#1b1818'), h('small', {}, 'som')] : [svgBox(c.id), h('small', {}, nameOf(c.id))])));
+          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, c.kind === 'sound' ? [ico('eco', 'kx-snd', '#a31d30', '#1b1818'), h('small', {}, 'som')] : [svgBox(c.id), h('small', {}, nameOf(c.id))])));
       b._c = c; return b;
     }));
     const paint = () => { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`; };
