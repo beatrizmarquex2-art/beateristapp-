@@ -6,6 +6,7 @@ import * as store from './store.js';
 import { db } from './db.js';
 import { parseFrontmatter, slugify } from './md.js';
 import { readZip } from './zip.js';
+import { withPt } from './catalog.js';
 
 export const COLLECTIONS = {
   'mente-musical': { label: 'Mente Musical', short: 'Mente musical', blurb: 'como o cérebro percebe, prevê e aprende música' },
@@ -31,11 +32,11 @@ export async function loadIndex() {
   if (index) return index;
   try {
     const rows = await (await api('articles?select=slug,collection,title,meta,updated_at&order=title.asc')).json();
-    index = rows; status.source = 'net'; status.error = '';
+    index = rows.map(withPt); status.source = 'net'; status.error = '';
     await db.metaSet('lib:index', rows);
   } catch (e) {
     const cached = await db.metaGet('lib:index');
-    if (cached) { index = cached; status.source = 'cache'; } else { index = []; status.source = 'none'; status.error = e.code === 'auth' ? 'auth' : 'offline'; }
+    if (cached) { index = cached.map(withPt); status.source = 'cache'; } else { index = []; status.source = 'none'; status.error = e.code === 'auth' ? 'auth' : 'offline'; }
   }
   return index;
 }
@@ -46,7 +47,7 @@ export async function loadBody(slug) {
     const rows = await (await api(`articles?slug=eq.${encodeURIComponent(slug)}&select=slug,collection,title,meta,body`)).json();
     row = rows[0] || null; if (row) await db.metaSet(`lib:a:${slug}`, row);
   } catch { row = (await db.metaGet(`lib:a:${slug}`)) || null; }
-  if (row) bodies.set(slug, row);
+  if (row) { row = withPt(row); bodies.set(slug, row); }
   return row;
 }
 /** Baixa em segundo plano todos os textos para leitura offline e busca no conteúdo. */
@@ -57,7 +58,7 @@ export function search(q) {
   const terms = norm(q).split(/\s+/).filter(Boolean); if (!terms.length) return [];
   const out = [];
   for (const a of index || []) {
-    const head = norm(`${a.title} ${a.meta.summary || ''} ${(a.meta.tags || []).join(' ')}`);
+    const head = norm(`${a.title} ${a.titleEn || ''} ${a.meta.summary || ''} ${(a.meta.tags || []).join(' ')}`);
     const body = bodies.has(a.slug) ? norm(bodies.get(a.slug).body) : '';
     if (!terms.every((t) => head.includes(t) || body.includes(t))) continue;
     let snippet = '';
@@ -73,7 +74,7 @@ export const getState = (slug) => (store.get(sid(slug)) ? store.get(sid(slug)).d
 export const patchState = (slug, patch) => store.upsert('study', sid(slug), { slug, ...patch });
 export const allStates = () => store.list('study').map((r) => ({ slug: r.data.slug || r.id.replace(/^study-/, ''), ...r.data }));
 export const bySlug = (slug) => (index || []).find((a) => a.slug === slug);
-export const relatedOf = (a) => (a.meta.related_articles || []).map((t) => ({ title: t, hit: (index || []).find((x) => x.slug === slugify(t) || norm(x.title) === norm(t)) || null }));
+export const relatedOf = (a) => (a.meta.related_articles || []).map((t) => ({ title: t, hit: (index || []).find((x) => x.slug === slugify(t) || norm(x.title) === norm(t) || norm(x.titleEn || '') === norm(t)) || null }));
 
 /* ---------- importação (.md soltos ou .zip) ---------- */
 export async function importFiles(files, onProgress = () => {}) {

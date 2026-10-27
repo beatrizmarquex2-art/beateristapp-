@@ -82,6 +82,57 @@ export const PT = {
 };
 
 /** A pergunta central de cada perfil (do índice do Laboratório de Artistas). */
+/** Título em português dos temas da Mente Musical (o original em inglês aparece pequeno embaixo). */
+export const TITLE_PT = {
+  'audiation-voluntary-musical-imagery': 'Audiação: ouvir a música por dentro',
+  'auditory-prediction-temporal-attention': 'Previsão auditiva e atenção no tempo',
+  'auditory-scene-analysis': 'Análise da cena auditiva',
+  'automaticity-skilled-performance': 'Automatismo na performance',
+  'beat-deafness': 'Surdez de pulso',
+  'beat-perception-beat-finding': 'Perceber e achar o pulso',
+  'categorical-perception-musicians': 'Percepção categórica nos músicos',
+  'choking-under-pressure': 'Travar sob pressão',
+  'congenital-amusia': 'Amusia congênita',
+  'contextual-interference-interleaved-practice': 'Interferência contextual e prática intercalada',
+  'curse-of-knowledge-music-teaching': 'A maldição do conhecimento no ensino de música',
+  'development-evolution-beat': 'Como a percepção do pulso nasce e evolui',
+  'dopamine-and-music': 'Dopamina e música: o que se sabe de verdade',
+  'embodied-cognition': 'Cognição incorporada: o corpo também pensa',
+  'entrainment': 'Sincronização com o ritmo',
+  'error-based-motor-learning': 'Aprender o movimento pelo erro',
+  'expertise-changes-hearing': 'Como a experiência muda o que o músico ouve',
+  'experts-forget-beginner': 'Por que quem sabe esquece como era ser iniciante',
+  'explicit-monitoring-automated-skills': 'Vigiar demais o que já é automático',
+  'flow-musical-performance': 'Estado de fluxo na performance',
+  'groove-inverted-u': 'Groove e o "U invertido" da complexidade rítmica',
+  'inter-brain-synchrony-music': 'Cérebros em sincronia tocando juntos',
+  'involuntary-musical-imagery-earworms': 'Música chiclete: a que gruda na cabeça',
+  'mental-vs-physical-practice': 'Prática mental x prática física',
+  'microtiming': 'Microtempo',
+  'motor-chunking': 'Agrupar movimentos em blocos',
+  'multisensory-rhythm-perception': 'Perceber o ritmo com vários sentidos',
+  'musical-expectations': 'Expectativas musicais',
+  'musical-pleasure-reward': 'Prazer musical e o sistema de recompensa',
+  'musical-skill-executive-functions': 'Habilidade musical e funções executivas',
+  'p-centers-perceived-timing': 'Centro perceptivo da nota e o tempo que a gente sente',
+  'prediction-error-musical-reward': 'Erro de previsão e recompensa musical',
+  'predictive-coding-in-music': 'Codificação preditiva na música',
+  'procedural-memory-musicians': 'Memória procedural nos músicos',
+  'production-effect-learning': 'Efeito de produção: falar e tocar pra aprender',
+  'retrieval-practice-music': 'Prática de recordar aplicada à música',
+  'selective-musical-attention': 'Atenção musical seletiva',
+  'sensorimotor-integration': 'Integração sensório-motora',
+  'sensorimotor-synchronization': 'Sincronização sensório-motora',
+  'social-entrainment-musicians': 'Sincronia entre músicos',
+  'specific-musical-anhedonia': 'Anedonia musical específica',
+  'statistical-learning-music': 'Aprendizado estatístico na música',
+  'syncopation-urge-to-move': 'Síncope e a vontade de mexer',
+  'tacit-knowledge': 'Conhecimento tácito',
+  'vibrotactile-beat-perception': 'Sentir o pulso pela vibração',
+};
+/** Aplica o título em português e guarda o original em `titleEn`. */
+export const withPt = (a) => (a && TITLE_PT[a.slug] && !a.titleEn ? { ...a, title: TITLE_PT[a.slug], titleEn: a.title } : a);
+
 export const QUESTION = {
   'travis-barker': 'como marching, jazz, punk e hip-hop viram uma linguagem só, sem soar como colagem?',
   'eloy-casagrande': 'técnica extrema a serviço de uma imagem sonora interna, não de demonstração',

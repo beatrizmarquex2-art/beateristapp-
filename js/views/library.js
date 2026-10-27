@@ -28,6 +28,7 @@ function card(a, { snippet } = {}) {
     isArtist(a) ? artPhoto(a.slug, a.title) : null,
     h('span', { class: 'lib-kicker' }, cat ? cat.label : a.collection, a.meta.difficulty ? ` · ${lib.DIFF[a.meta.difficulty] || a.meta.difficulty}` : '', a.meta.estimated_read_time ? ` · ${a.meta.estimated_read_time}` : ''),
     h('strong', { class: 'lib-title' }, a.title, st.fav ? h('span', { class: 'lib-fav', 'aria-label': 'favorito' }, ' ★') : null),
+    a.titleEn ? h('small', { class: 'lib-en', lang: 'en' }, a.titleEn) : null,
     h('span', { class: 'lib-sum' }, line),
     st.progress ? h('span', { class: 'lib-bar', role: 'progressbar', 'aria-valuenow': Math.round(st.progress * 100), 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': 'progresso de leitura' }, h('i', { style: { width: pct(st.progress) } })) : null);
 }
@@ -225,6 +226,7 @@ function mountArticle(host, slug) {
         isArtist(a) ? artHero(slug, a.title) : null,
         h('p', { class: 'lib-kicker' }, (category(categoryOf(a)) || {}).label || ''),
         h('h1', { class: 'reader-title' }, a.title),
+        a.titleEn ? h('p', { class: 'lib-en', lang: 'en' }, a.titleEn) : null,
         PT[slug] ? h('p', { class: 'reader-pt' }, PT[slug]) : null,
         isArtist(a) && QUESTION[slug] ? h('p', { class: 'reader-pt' }, QUESTION[slug]) : (a.meta.summary ? h('p', { class: 'reader-sum' }, a.meta.summary) : null),
         h('p', { class: 'lib-kicker' }, [a.meta.difficulty && (lib.DIFF[a.meta.difficulty] || a.meta.difficulty), a.meta.estimated_read_time, a.meta.source_count && `${a.meta.source_count} fontes`, a.meta.last_researched && `pesquisa ${a.meta.last_researched}`].filter(Boolean).join(' · ')),

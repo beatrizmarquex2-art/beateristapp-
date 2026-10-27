@@ -42,6 +42,7 @@ import * as kids from './views/kids.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
+import * as dicionario from './views/dicionario.js';
 import * as notify from './notify.js';
 import { silence } from './audio.js';
 import { openMenu } from './views/menu.js';
@@ -178,6 +179,7 @@ function shell() {
       case 'repertorio': c = repertorio.mount(view); break;
       case 'lembretes': c = lembretes.mount(view); break;
       case 'ferramentas': c = ferramentas.mount(view, r.parts); break;
+      case 'dicionario': c = dicionario.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
