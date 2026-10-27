@@ -13,6 +13,7 @@ import { STATUS, mbSearchUrl, coverUrl, parseMB, albumLine, shelfSort } from '..
 import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchUrl, wikiSummaryUrl, pickWikiTitle } from '../musicdata.js';
 import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
 import { readZip } from '../zip.js';
+import { attach as attachGrifos } from '../highlights.js';
 import { isCollection, collectionName, parseArsenal, skipSheet, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
 
 export const SECTIONS = [
@@ -253,7 +254,9 @@ export function mountPost(host, id, tabs) {
   };
   host.append(tabs, box);
   draw();
-  return store.subscribe((i) => { if (!i.kind || i.id === id) draw(); });
+  const hl = attachGrifos(box, () => { const r = store.get(id); const d = r ? r.data : {}; return { id: `post:${id}`, title: [d.artist, d.title].filter(Boolean).join(' — ') || 'texto', href: `#/estudos/club/${id}` }; }); hl.apply();
+  const off = store.subscribe((i) => { if (!i.kind || i.id === id) { draw(); hl.apply(); } });
+  return () => { off(); hl.off(); };
 }
 
 /* ---------- coleções (pacotes de pesquisa importados) ---------- */
@@ -321,7 +324,9 @@ function mountRef(host, rid, tabs) {
     ].filter(Boolean));
   };
   host.append(tabs, box); draw();
-  return store.subscribe((i) => { if (!i.kind || i.id === rid) draw(); });
+  const hl = attachGrifos(box, () => { const r = store.get(rid); const d = r ? r.data : {}; return { id: `ref:${rid}`, title: [d.artist, d.title].filter(Boolean).join(' — ') || 'ficha', href: `#/estudos/club/r:${rid}` }; }); hl.apply();
+  const off = store.subscribe((i) => { if (!i.kind || i.id === rid) { draw(); hl.apply(); } });
+  return () => { off(); hl.off(); };
 }
 
 /* ---------- Meus Álbuns ---------- */

@@ -16,7 +16,7 @@ const TABS_MENU = [
   ]],
   ['estudar', 'estudar', [
     ['conceitos musicais (Mente Musical)', [['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
-    ['', [['#/estudos', 'study', 'Meus Estudos'], ['#/estudos/club', 'note', 'The Listening Club'], ['#/bateristas', 'drummer', 'Bateristas & Links'], ['#/mural', 'photo', 'Mural de Artistas'], ['cartas/', 'staff', 'Cartas de Groove']]],
+    ['', [['#/estudos', 'study', 'Meus Estudos'], ['#/anotacoes', 'note', 'Minhas anotações'], ['#/estudos/club', 'note', 'The Listening Club'], ['#/bateristas', 'drummer', 'Bateristas & Links'], ['#/mural', 'photo', 'Mural de Artistas'], ['cartas/', 'staff', 'Cartas de Groove']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['aulas', 'aulas', [

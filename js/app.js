@@ -35,6 +35,7 @@ import * as bateristas from './views/bateristas.js';
 import * as treinos from './views/treinos.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
+import * as anotacoes from './views/anotacoes.js';
 import * as rudimentos from './views/rudimentos.js';
 import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
@@ -98,6 +99,20 @@ function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
 function goBack() {
   if (trail.length > 1) history.back();
   else location.hash = parentOf(route());
+}
+/* ---------- início: arrastar pro lado abre o menu ☰ ---------- */
+function swipeMenu() {
+  let x0 = 0, y0 = 0, t0 = 0, on = false;
+  const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
+  addEventListener('touchstart', (e) => {
+    on = route().name === 'inicio' && e.touches.length === 1 && !document.querySelector('.drawer, #overlay .sheet') && !hScroll(e.target);
+    const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
+  }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 45 && Math.abs(dx) > 2.2 * Math.abs(dy) && Date.now() - t0 < 800) openMenu();
+  }, { passive: true });
+  addEventListener('touchcancel', () => { on = false; }, { passive: true });
 }
 function swipeBack() {
   const tip = h('div', { class: 'swipe-back', 'aria-hidden': 'true' }, icon('back', 22));
@@ -174,6 +189,7 @@ function shell() {
       case 'treinos': c = treinos.mount(view, r.parts); break;
       case 'toque': c = toque.mount(view); break;
       case 'piano': c = piano.mount(view); break;
+      case 'anotacoes': c = anotacoes.mount(view); break;
       case 'rudimentos': c = rudimentos.mount(view); break;
       case 'plano': c = plano.mount(view); break;
       case 'ambiente': c = ambiente.mount(view); break;
@@ -202,7 +218,7 @@ function shell() {
   removeEventListener('hashchange', shell.go);
   shell.go = go;
   addEventListener('hashchange', go);
-  if (!shell.swipe) { shell.swipe = true; swipeBack(); }
+  if (!shell.swipe) { shell.swipe = true; swipeBack(); swipeMenu(); }
   go();
 }
 

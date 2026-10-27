@@ -8,6 +8,7 @@ import { banner, sheet, toast, stamp, stars } from '../ui.js';
 import { CATEGORIES, categoryOf, category, PT, QUESTION } from '../catalog.js';
 import { artPhoto, credit, changePhoto, resetPhoto, ART_KEY } from './artist-photo.js';
 import { mountClub, mountPost } from './club.js';
+import { attach as attachGrifos } from '../highlights.js';
 import { ring } from '../charts.js';
 
 const go = (hash) => { location.hash = hash; };
@@ -178,7 +179,7 @@ function artHero(slug, name) {
 function mountArticle(host, slug) {
   const wrap = h('article', { class: 'reader' }, h('p', { class: 'lib-note pad-x' }, 'abrindo…'));
   host.append(wrap);
-  let offScroll = () => {};
+  let offScroll = () => {}; let offHl = () => {};
   (async () => {
     await lib.loadIndex();
     const row = await lib.loadBody(slug);
@@ -235,6 +236,8 @@ function mountArticle(host, slug) {
       related.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'relacionados'), h('div', { class: 'lib-rel' }, related.map((r) => r.hit ? h('a', { class: 'chip-link', href: `#/estudos/a/${r.hit.slug}` }, r.title) : h('span', { class: 'chip-link off', title: 'ainda não está na biblioteca' }, r.title)))) : null,
       h('div', { class: 'row pad-x reader-foot' }, h('a', { class: 'btn small ghost', href: '#/estudos' }, 'voltar à biblioteca'))].filter(Boolean));
 
+    const hl = attachGrifos(wrap, () => ({ id: `art:${slug}`, title: a.title, href: `#/estudos/a/${slug}` })); hl.apply(); offHl = hl.off;
+
     // progresso de leitura pelo scroll (guarda o máximo)
     let best = st0.progress || 0;
     const saveProg = debounce(() => lib.patchState(slug, { progress: best }), 800);
@@ -246,7 +249,7 @@ function mountArticle(host, slug) {
     addEventListener('scroll', onScroll, { passive: true });
     offScroll = () => { removeEventListener('scroll', onScroll); saveProg.flush(); };
   })();
-  return () => offScroll();
+  return () => { offScroll(); offHl(); };
 }
 
 /* ---------- favoritos ---------- */
