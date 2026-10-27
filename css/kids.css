@@ -24,15 +24,23 @@
 .kx-arc .rb-say { background: var(--kcard2); color: var(--kink); border: 3px solid var(--kink); border-radius: 14px; font: 700 15px var(--body); box-shadow: 3px 3px 0 var(--red); } .kx-arc .rb-say::before { border-right-color: var(--kink); }
 .kx-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 8px; font: 400 16px var(--khand); letter-spacing: .04em; color: var(--red); } .kx-h::after { content: ""; flex: 1; border-top: 3px dashed var(--kink); opacity: .35; }
 
-/* cartões dos jogos: moldes desenhados pela Bea (Paul espiando, rabiscos nos cantos) com o texto na parte clara */
-.kx-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; padding: 4px 2px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.kx-g { --ia: #1b1818; --ib: #a31d30; position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); align-content: start; align-items: center; gap: 3px 8px; aspect-ratio: 244 / 254; padding: 49% 15% 9% 13%; background: var(--bgi) center / 100% 100% no-repeat; border: 0; border-radius: 14px; box-shadow: 0 3px 0 rgb(27 24 24 / .85); text-align: left; transition: transform .12s; filter: drop-shadow(0 1px 0 rgb(0 0 0 / .08)); }
-.kx-g:active { transform: translateY(2px) scale(.98); }
-.kx-gi { display: grid; place-items: center; width: 30px; height: 30px; } .kx-gi .kx-ico { width: 30px; height: 30px; }
-.kx-arc .kx-g .kx-gt { color: #1b1818; font: 400 14.5px/1.05 var(--khand); letter-spacing: .01em; } .kx-gd { display: none; }
-.kx-arc .kx-g .kx-gm { grid-column: 1 / -1; color: #a31d30; font: 700 10.5px var(--kmono); }
-.kx-bar { grid-column: 1 / -1; height: 4px; background: rgb(27 24 24 / .14); border-radius: 3px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: #a31d30; }
-.kx-g.on .kx-gm::before { content: "★ "; color: #c98a10; }
+/* cartões dos jogos: um fundo rabiscado por jogo (navy, creme, vinho, preto) com cantos riscados e tracinhos */
+.kx-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 4px 2px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.kx-g { --bgc: #14284b; --fg: #f3eee4; --ia: #f3eee4; --ib: #e3a82f; --s1: #f3eee4; --s2: #e3a82f; --s3: #e3a82f; --s4: #f3eee4; position: relative; display: grid; justify-items: center; align-content: center; gap: 5px; min-height: 150px; padding: 26px 10px 14px; text-align: center; background: var(--bgc); border: 2px solid #1b1818; border-radius: 16px; box-shadow: 0 4px 0 #1b1818; transition: transform .12s, box-shadow .12s; }
+.kx-cards > .kx-g:nth-child(4n+2) { --bgc: #f3eee4; --fg: #1b1818; --ia: #1b1818; --ib: #a31d30; --s1: #a31d30; --s2: #1b1818; --s3: #e3a82f; --s4: #14284b; }
+.kx-cards > .kx-g:nth-child(4n+3) { --bgc: #6e1423; --s2: #f3eee4; --s3: #e3a82f; }
+.kx-cards > .kx-g:nth-child(4n) { --bgc: #141010; --s1: #d8394d; --s2: #f3eee4; --s3: #e3a82f; --s4: #d8394d; }
+.kx-cards > .kx-g:nth-child(4n+1):nth-child(n+5) { --bgc: #f3eee4; --fg: #1b1818; --ia: #1b1818; --ib: #a31d30; --s1: #a31d30; --s2: #1b1818; --s3: #e3a82f; --s4: #14284b; }
+.kx-bgd { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; clip-path: inset(0 round 14px); }
+.kx-g::before { content: ""; position: absolute; z-index: 2; top: -11px; left: 50%; width: 64px; height: 21px; margin-left: -32px; background: repeating-linear-gradient(135deg, rgb(243 238 228 / .94) 0 6px, rgb(229 220 202 / .94) 6px 12px); transform: rotate(-4deg); box-shadow: 0 1px 2px rgb(0 0 0 / .4); clip-path: polygon(0 10%, 5% 0, 10% 12%, 15% 0, 85% 0, 90% 12%, 95% 0, 100% 10%, 100% 90%, 95% 100%, 90% 88%, 85% 100%, 15% 100%, 10% 88%, 5% 100%, 0 90%); }
+.kx-cards > .kx-g:nth-child(even)::before { left: 34%; transform: rotate(5deg); background: repeating-linear-gradient(135deg, rgb(227 168 47 / .94) 0 6px, rgb(207 148 30 / .94) 6px 12px); } .kx-cards > .kx-g:nth-child(3n)::before { left: 68%; transform: rotate(-9deg); }
+.kx-cards > .kx-g:nth-child(4n+2)::before { background: repeating-linear-gradient(135deg, rgb(163 29 48 / .92) 0 6px, rgb(140 22 40 / .92) 6px 12px); }
+.kx-g:active { transform: translateY(3px); box-shadow: 0 1px 0 #1b1818; }
+.kx-gi { display: grid; place-items: center; width: 64px; height: 62px; position: relative; z-index: 1; } .kx-gi .kx-ico { width: 58px; height: 58px; filter: drop-shadow(2px 2px 0 rgb(0 0 0 / .3)); }
+.kx-arc .kx-g .kx-gt { position: relative; z-index: 1; color: var(--fg); font: 400 16px/1.1 var(--khand); letter-spacing: .02em; } .kx-gd { display: none; }
+.kx-arc .kx-g .kx-gm { position: relative; z-index: 1; color: var(--s3); font: 700 10.5px var(--kmono); } .kx-cards > .kx-g:nth-child(4n+2) .kx-gm, .kx-cards > .kx-g:nth-child(4n+1):nth-child(n+5) .kx-gm { color: #a31d30; }
+.kx-bar { position: relative; z-index: 1; width: 60%; height: 5px; background: rgb(128 128 128 / .3); border-radius: 3px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: var(--s3); }
+.kx-g.on .kx-gm::before { content: "★ "; }
 .kx-g.wide { width: 100%; font: inherit; cursor: pointer; }
 
 /* escolher fase */

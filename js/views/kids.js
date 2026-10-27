@@ -82,21 +82,19 @@ const BG = '<svg class="kx-bgd" viewBox="0 0 100 120" preserveAspectRatio="xMidY
   + '<path d="M9 22l7-13 2 9 7-12 2 9 6-9" style="stroke:var(--s2)" stroke-width="3.6"/><path d="M91 10l-8 11 9-1-7 11" style="stroke:var(--s1)" stroke-width="3.6"/>'
   + '<path d="M9 104l10-5-7-1 9-6" style="stroke:var(--s3)" stroke-width="3.6"/><path d="M80 112l5-9 3 6 5-11" style="stroke:var(--s4)" stroke-width="3.6"/>'
   + '<g style="stroke:var(--s3)" stroke-width="2.6"><path d="M50 14v-6M33 20l-3-5M67 20l3-5M22 38l-5-2M78 38l5-2"/></g></svg>';
-let tplN = 0; // molde de cartão (assets/cards/gNN.webp): cada jogo da lista ganha um, sempre na mesma ordem
-const tplStyle = () => `--bgi:url(../assets/cards/g${String((tplN++ % 12) + 1).padStart(2, '0')}.webp)`;
 const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
 /** Cartão de jogo: cartaz de cor chapada com ícone grande, nome em marker, descrição e andamento. */
 function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {}) {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
-  const a = h('a', { class: `kx-g${on ? ' on' : ''}`, href, style: tplStyle() }, ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
+  const a = h('a', { class: `kx-g${on ? ' on' : ''}`, href }, cardBg(), ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
   if (pct != null) a.append(h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct}%` })));
   if (meta) a.append(h('span', { class: 'kx-gm' }, meta));
   return a;
 }
 const wideCard = (id, title, sub, onclick, href) => {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
-  const kids = [ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
-  return href ? h('a', { class: 'kx-g wide', href, style: tplStyle() }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick, style: tplStyle() }, ...kids);
+  const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
+  return href ? h('a', { class: 'kx-g wide', href }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick }, ...kids);
 };
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'KIDS')), right || null);
 
@@ -134,7 +132,6 @@ async function reportFor(me, btn) {
 
 /* ---------- telas ---------- */
 function homeScreen(host, rerender) {
-  tplN = 0;
   const me = P.active();
   if (!me) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
