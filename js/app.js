@@ -142,7 +142,7 @@ function keyboardGuard() {
   const typing = (el) => el && el.matches && el.matches('textarea, select, [contenteditable="true"], input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]):not([type=file])');
   const root = document.documentElement; let t = 0;
   document.addEventListener('focusin', (e) => { clearTimeout(t); if (typing(e.target)) root.classList.add('kb-open'); });
-  document.addEventListener('focusout', () => { clearTimeout(t); t = setTimeout(() => { if (!typing(document.activeElement)) root.classList.remove('kb-open'); }, 120); });
+  document.addEventListener('focusout', () => { clearTimeout(t); t = setTimeout(() => { if (!typing(document.activeElement)) root.classList.remove('kb-open'); }, 450); });
 }
 
 function shell() {

@@ -1652,7 +1652,6 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 
 /* teclado aberto: some o que fica grudado embaixo da tela */
 html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html.kb-open .amb-dock, html.kb-open .tray { display: none !important; }
-html.kb-open #view { padding-bottom: 24px; }
 
 /* Paul e rabiscos soltos nos cabeçalhos das telas */
 .banner-wrap.has-paul { padding-right: 112px; min-height: 104px; }
@@ -1664,3 +1663,4 @@ html.kb-open #view { padding-bottom: 24px; }
 /* logotipo (nome) na entrada e no menu */
 .login-wordmark { display: grid; justify-items: center; line-height: 0; } .login-wordmark img { width: 210px; height: auto; max-width: 70vw; }
 .drawer-brand { display: inline-flex; align-items: center; } .drawer-brand img { height: 30px; width: auto; display: block; }
+.login-paul { width: 128px; margin: -2px 0 -4px; } .login-paul-name { margin: 0; text-align: center; font: var(--dstyle) var(--dw) 17px var(--display); color: #a31d30; }
