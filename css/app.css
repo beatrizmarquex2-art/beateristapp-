@@ -1678,3 +1678,4 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .fx-doodle { position: absolute; pointer-events: none; object-fit: contain; z-index: 1; } .fx-doodle.bolt { width: 30px; animation: dd-wiggle 1.6s ease-in-out infinite; } .fx-doodle.phones { width: 34px; animation: dd-pop 2.2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .bn-paul, .bn-doodle, .fx-doodle { animation: none !important; } }
 .login .login-fx-a { top: 18px; left: 14px; } .login .login-fx-b { top: 40px; right: 14px; } .login .login-fx-c { bottom: 160px; left: 18px; } .login .login-fx-d { bottom: 190px; right: 20px; }
+.login-paul { width: min(250px, 72%); margin: 0 0 -2px; }
