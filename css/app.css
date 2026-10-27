@@ -1645,3 +1645,7 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 .empty::before { content: ""; display: block; width: 104px; height: 100px; margin: 0 auto 6px; background: url(../assets/paul/e05.webp) center / contain no-repeat; mix-blend-mode: multiply; }
 .boot::before { content: ""; display: block; width: 110px; height: 110px; margin: 0 auto 6px; background: url(../assets/paul/e15.webp) center / contain no-repeat; mix-blend-mode: multiply; }
 .login-paul { display: block; justify-self: center; width: 104px; height: auto; margin: -4px 0 -6px; mix-blend-mode: multiply; pointer-events: none; }
+
+/* Caixa de Ideias: anexos */
+.id-attach { gap: 8px; flex-wrap: wrap; } .id-picked { display: flex; flex-wrap: wrap; gap: 6px; } .id-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 4px 4px 10px; border: 1.5px solid currentColor; border-radius: 999px; font-size: 13px; background: var(--card); } .id-chip button { border: 0; background: none; font-size: 18px; line-height: 1; padding: 0 6px; cursor: pointer; color: inherit; }
+.id-files { display: flex; flex-wrap: wrap; gap: 8px; } .id-img { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; border: 2px solid #1b1818; cursor: zoom-in; background: #e9dcc3; } .id-doc { max-width: 100%; }
