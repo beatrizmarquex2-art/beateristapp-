@@ -1460,3 +1460,13 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .dz-title { font: 700 1.8rem var(--display); margin: 4px 0 0; }
 .dz-bpm { font: 700 2.4rem var(--display); color: var(--accent); margin: 0; }
 .dz-twist { font-family: "Gochi Hand", cursive; font-size: 1.4rem; margin: 6px 0 0; }
+/* Partitura: tocar e escrever */
+.pt-rec-pads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pt-rec-pads .tk-pad { aspect-ratio: 1; min-height: 0; }
+.pt-mode { margin-bottom: 6px; }
+/* Menu em abas */
+.drawer-search { margin: 4px 14px 8px; }
+.drawer-search input { width: 100%; }
+.drawer-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 14px 8px; }
+.drawer-tabs .lib-tab { justify-content: center; text-align: center; padding-left: 4px; padding-right: 4px; white-space: nowrap; }
+.drawer-sub { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin: 10px 18px 2px; }

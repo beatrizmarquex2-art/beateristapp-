@@ -43,6 +43,7 @@ import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
 import * as notify from './notify.js';
+import { silence } from './audio.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
 
@@ -138,6 +139,7 @@ function shell() {
 
   function go() {
     cleanup && cleanup(); cleanup = null;
+    silence(); // trocou de tela: nada da tela anterior continua tocando (o ambiente e o YouTube do mini-player seguem)
     view.replaceChildren();
     const r0 = route(); view.dataset.page = r0.name; view.dataset.sub = r0.arg || ''; // cada tela ganha o seu desenho
     const r = route();
@@ -182,6 +184,14 @@ function shell() {
     }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
+  }
+  // jogos e treinos calam quando o app vai pro fundo (metrônomo, Beat Lab e ambiente podem seguir tocando)
+  if (!shell.hideHooked) {
+    shell.hideHooked = true;
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) return; const n = route().name;
+      if (['treinos', 'kids', 'ferramentas', 'ouvido', 'tempo'].includes(n)) { silence(); shell.go && shell.go(); }
+    });
   }
   removeEventListener('hashchange', shell.go);
   shell.go = go;

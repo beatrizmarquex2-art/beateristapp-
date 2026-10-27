@@ -5,8 +5,9 @@ import { h, icon, todayKey } from '../util.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
-import { audio, click, scheduler } from '../audio.js';
-import { banner, sheet, toast, confirmSheet } from '../ui.js';
+import { audio, click, scheduler, perfToCtx } from '../audio.js';
+import { quantize } from '../touchkit.js';
+import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 import { gridEl, VOICE, velOf, stopBeat } from './beatlab.js';
 import { renderWav } from '../wav.js';
 
@@ -70,6 +71,49 @@ function printDoc(doc) {
   setTimeout(() => { if (area.isConnected && !matchMedia('print').matches) done(); }, 60000);
 }
 
+/* ---------- escrever tocando (chimbal, caixa e bumbo) ---------- */
+const QKEY = 'setting-partitura';
+const quick = () => (store.get(QKEY) ? store.get(QKEY).data.quick !== false : true);
+const REC_PADS = [['hh', 'chimbal', 'j'], ['sn', 'caixa', 'f'], ['bd', 'bumbo', ' ']];
+/** Folha com 3 pads grandes: conta 4, você toca 1 compasso e o app escreve (arredonda pra semicolcheia). */
+function recordSheet(bpm0, onUse, label) {
+  let pct = 1; let rec = null; let take = null; let metro = [];
+  sheet('Tocar e escrever', (close) => {
+    const body = h('div', { class: 'sheet-body pt-rec' });
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, 'aperte gravar: conta 4 e você toca 1 compasso.');
+    const hit = (id, perfMs) => {
+      const c = audio(); VOICE[id](c.currentTime, 1);
+      const el = body.querySelector(`[data-pad="${id}"]`); if (el) { el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+      if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id });
+    };
+    const onKey = (e) => { const p = REC_PADS.find((x) => x[2] === e.key.toLowerCase()); if (!p || e.repeat) return; e.preventDefault(); hit(p[0], e.timeStamp); };
+    document.addEventListener('keydown', onKey);
+    const pads = h('div', { class: 'pt-rec-pads' }, ...REC_PADS.map(([id, name]) => { const b = h('button', { type: 'button', class: `tk-pad p-${id}`, 'data-pad': id, 'aria-label': name }, h('span', {}, name)); b.style.setProperty('--c', B.COLORS[id]); b.addEventListener('pointerdown', (e) => { e.preventDefault(); hit(id, e.timeStamp || performance.now()); }); return b; }));
+    const go = () => {
+      metro.forEach((o) => { try { o.stop(); } catch { /* já parou */ } }); metro = [];
+      const bpm = Math.round(bpm0 * pct); const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.3 + 4 * q;
+      for (let i = 0; i < 4; i++) metro.push(click(t0 - (4 - i) * q, i === 0 ? 2 : 1));
+      for (let b = 0; b < 4; b++) metro.push(click(t0 + b * q, b === 0 ? 2 : 1, 0.6));
+      rec = { t0, hits: [], bpm }; take = null; body.clock = () => perfToCtx(performance.now()) - t0;
+      status.textContent = 'conta 4… e toca!'; draw();
+      rec.timer = setTimeout(() => { const r = rec; rec = null; take = quantize(r.hits, { bpm: r.bpm, bars: 1 }); status.textContent = take.dropped ? `${take.dropped} toque(s) longe da grade ficaram de fora.` : 'pronto! confere aí embaixo.'; draw(); }, (t0 - c.currentTime + 4 * q + 0.35) * 1000);
+    };
+    const draw = () => {
+      const prev = take ? h('figure', { class: 'cb-bar' }) : null; if (prev) prev.innerHTML = N.toSVG(N.layout(take.bars[0], { width: 340, full: false }));
+      body.replaceChildren(
+        h('div', { class: 'tr-line' }, h('span', { class: 'tp-lab' }, 'andamento'), h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Andamento da gravação' },
+          ...[[1, `${bpm0} (o da partitura)`], [0.75, `${Math.round(bpm0 * 0.75)}`], [0.5, `${Math.round(bpm0 * 0.5)}`]].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(pct === v), class: `lib-tab${pct === v ? ' on' : ''}`, onclick: () => { pct = v; draw(); } }, t)))),
+        pads, status,
+        h('div', { class: 'row ft-row' }, rec ? h('button', { class: 'bl-play on', type: 'button', 'aria-label': 'Gravando', disabled: true }, icon('stop', 24)) : h('button', { class: 'bl-play tk-rec', type: 'button', 'aria-label': 'Gravar', onclick: go }, h('i', { class: 'tk-dot' }))),
+        prev, take ? h('div', { class: 'row ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: (e) => { stars(e.currentTarget); onUse(take.bars[0]); close(); } }, label), h('button', { class: 'btn', type: 'button', onclick: go }, 'gravar de novo')) : null,
+        h('p', { class: 'muted' }, 'o app arredonda pra semicolcheia mais perto: é um rascunho, ajusta na grade se precisar. no computador: J chimbal, F caixa, espaço bumbo.'));
+    };
+    draw();
+    body.cleanup = () => { document.removeEventListener('keydown', onKey); if (rec) clearTimeout(rec.timer); metro.forEach((o) => { try { o.stop(); } catch { /* já parou */ } }); };
+    return body;
+  }, { onClose: () => { const b = document.querySelector('.pt-rec'); if (b && b.cleanup) b.cleanup(); } });
+}
+
 /* ---------- editor ---------- */
 function mountEdit(host, id) {
   if (!store.get(id)) { host.append(banner('Partitura'), h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'partitura não encontrada.'), h('a', { class: 'btn primary', href: '#/partitura' }, 'voltar'))); return null; }
@@ -109,7 +153,8 @@ function mountEdit(host, id) {
       h('span', { class: 'pt-n' }, String(i + 1)), barSvg(bar, i))),
       h('div', { class: 'pt-add' },
         h('button', { class: 'btn small', type: 'button', onclick: () => { setBars([...d.bars, emptyBar(16)]); sel = d.bars.length; } }, '+ compasso vazio'),
-        h('button', { class: 'btn small', type: 'button', onclick: pickRhythm }, '+ de um ritmo')));
+        h('button', { class: 'btn small', type: 'button', onclick: pickRhythm }, '+ de um ritmo'),
+        h('button', { class: 'btn small', type: 'button', onclick: () => recordSheet(d.bpm, (nb) => { const dd = doc(); setBars([...dd.bars, nb]); sel = dd.bars.length; }, 'adicionar compasso') }, '+ tocando')));
   }
   function drawEditor() {
     const d = doc();
@@ -119,7 +164,10 @@ function mountEdit(host, id) {
     editor.replaceChildren(h('section', { class: 'card pad pt-edit' },
       h('div', { class: 'row between' }, h('strong', {}, `compasso ${sel + 1}`),
         h('div', { class: 'chips lib-tabs tp-chips' }, ...[[8, 'colch.'], [12, 'terc.'], [16, 'semic.']].map(([n, t]) => h('button', { type: 'button', class: `lib-tab${bar.steps === n ? ' on' : ''}`, onclick: () => upd(B.resize(bar, n)) }, t)))),
-      gridEl(bar, (r, i) => upd(B.toggle(bar, r, i)), { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }),
+      h('div', { class: 'chips lib-tabs pt-mode', role: 'radiogroup', 'aria-label': 'Peças na grade' },
+        ...[[true, 'chimbal, caixa e bumbo'], [false, 'pauta completa']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(quick() === v), class: `lib-tab${quick() === v ? ' on' : ''}`, onclick: () => store.upsert('setting', QKEY, { quick: v }).then(drawEditor) }, t))),
+      gridEl(bar, (r, i) => upd(B.toggle(bar, r, i)), quick() ? { full: false } : { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }),
+      h('button', { class: 'btn small', type: 'button', onclick: () => recordSheet(d.bpm, (nb) => upd(nb), `usar no compasso ${sel + 1}`) }, '✋ tocar e escrever neste compasso'),
       h('div', { class: 'bl-actions' },
         h('button', { class: 'btn small', type: 'button', disabled: sel === 0, onclick: () => { const b = d.bars.slice(); [b[sel - 1], b[sel]] = [b[sel], b[sel - 1]]; sel--; setBars(b); } }, '← mover'),
         h('button', { class: 'btn small', type: 'button', disabled: sel === d.bars.length - 1, onclick: () => { const b = d.bars.slice(); [b[sel + 1], b[sel]] = [b[sel], b[sel + 1]]; sel++; setBars(b); } }, 'mover →'),

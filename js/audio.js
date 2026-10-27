@@ -83,6 +83,7 @@ export function tom(t, freq = 180, vel = 1) {
  * Agendador genérico. `next(i)` devolve {at: segundos desde o início, play(t), ui()} para o evento i, ou null para parar.
  * ui() roda quando o som acontece de verdade (playhead visual sincronizado ao áudio).
  */
+const running = new Set();
 export function scheduler(next, { onEnd } = {}) {
   const c = audio(); const t0 = c.currentTime + 0.12; let i = 0, timer = null, stopped = false; const visuals = [];
   let raf = 0;
@@ -97,9 +98,23 @@ export function scheduler(next, { onEnd } = {}) {
     while (visuals.length && visuals[0][0] <= c.currentTime) visuals.shift()[1]();
     if (!stopped) raf = requestAnimationFrame(draw);
   };
-  function stop() { stopped = true; clearInterval(timer); cancelAnimationFrame(raf); }
+  const handle = { stop, get running() { return !stopped; } };
+  function stop() { stopped = true; clearInterval(timer); cancelAnimationFrame(raf); running.delete(handle); }
+  running.add(handle);
   tick(); timer = setInterval(tick, 25); raf = requestAnimationFrame(draw);
-  return { stop, get running() { return !stopped; } };
+  return handle;
+}
+
+/**
+ * Cala tudo que a tela deixou tocando: para os agendadores e troca a saída principal por uma nova
+ * (o que já estava agendado na saída velha some junto). O estúdio de ambiente tem saída própria e continua.
+ */
+export function silence() {
+  for (const r of [...running]) r.stop();
+  if (!ctx || !master) return;
+  const old = master; const t = ctx.currentTime;
+  old.gain.setTargetAtTime(0, t, 0.01); setTimeout(() => { try { old.disconnect(); } catch { /* já saiu */ } }, 80);
+  master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
 }
 
 /** Converte um instante do relógio da tela (event.timeStamp / performance.now) pro relógio do som que está SAINDO no alto-falante. */
