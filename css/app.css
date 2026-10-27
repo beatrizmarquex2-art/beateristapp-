@@ -1679,3 +1679,4 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 @media (prefers-reduced-motion: reduce) { .bn-paul, .bn-doodle, .fx-doodle { animation: none !important; } }
 .login .login-fx-a { top: 18px; left: 14px; } .login .login-fx-b { top: 40px; right: 14px; } .login .login-fx-c { bottom: 160px; left: 18px; } .login .login-fx-d { bottom: 190px; right: 20px; }
 .login-paul { width: min(250px, 72%); margin: 0 0 -2px; }
+.bn-doodle.d1 { right: 122px; top: 4px; width: 22px; height: 22px; } .banner-wrap.has-paul .bn-doodle.d2 { display: none; }
