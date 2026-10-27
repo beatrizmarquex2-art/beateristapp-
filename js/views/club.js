@@ -13,7 +13,7 @@ import { STATUS, mbSearchUrl, coverUrl, parseMB, albumLine, shelfSort } from '..
 import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchUrl, wikiSummaryUrl, pickWikiTitle } from '../musicdata.js';
 import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
 import { readZip } from '../zip.js';
-import { isCollection, collectionName, parseArsenal, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
+import { isCollection, collectionName, parseArsenal, skipSheet, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
 
 export const SECTIONS = [
   { id: 'album', label: 'Álbum por Dentro', pt: 'um disco aberto faixa por faixa: história, créditos e gravação' },
@@ -154,13 +154,14 @@ async function importCollection(entries) {
   const txt = entries.filter((e) => /\.txt$/i.test(e.name) && !/(^|\/)(__MACOSX|\.)/.test(e.name));
   const readme = txt.find((e) => /(^|\/)00_LEIA/i.test(e.name));
   const col = collectionName(readme ? new TextDecoder().decode(await readme.read()) : '', entries[0].name.split('/')[0]);
-  let n = 0;
-  for (const e of txt) {
-    if (e === readme) continue;
+  const rows = []; const todo = txt.filter((e) => e !== readme && !skipSheet(e.name)); const when = Date.now();
+  for (const e of todo) {
     const r = parseArsenal(e.name, new TextDecoder().decode(await e.read()), col);
-    await store.upsert('clubref', r.id, r.data); n++;
-    if (n % 25 === 0) toast(`importando ${col}… ${n}/${txt.length - 1}`, { id: 'lc-imp', ms: 30000 });
+    rows.push({ id: r.id, kind: 'clubref', data: r.data, updated_at: when + rows.length });
+    if (rows.length % 200 === 0) toast(`lendo ${col}… ${rows.length}/${todo.length}`, { id: 'lc-imp', ms: 30000 });
   }
+  toast(`guardando ${rows.length} fichas…`, { id: 'lc-imp', ms: 60000 });
+  const n = await store.importBackup(rows); // um lote só: grava local de uma vez e a sincronização cuida do resto
   return n;
 }
 const refs = () => store.list('clubref');
@@ -265,24 +266,30 @@ function mountCollection(host, cs, tabs) {
   const drawResults = () => {
     const hits = searchRefs(mine(), q).slice(0, 40);
     results.replaceChildren(...(q.trim() ? [h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, `achei ${hits.length}${hits.length === 40 ? '+' : ''}`),
-      hits.length ? h('ul', { class: 'lab-list' }, ...hits.map((r) => refLink(r, h('small', {}, ` · ${KIND_LABEL[r.data.kind]}`)))) : h('p', { class: 'muted' }, 'nada com isso.'))] : []));
+      hits.length ? h('ul', { class: 'lab-list' }, ...hits.map((r) => refLink(r, h('small', {}, ` · ${KIND_LABEL[r.data.kind]}${r.data.artist && r.data.kind !== 'album' ? ` · ${r.data.artist}` : ''}${r.data.kind === 'album' && r.data.artist ? ` · ${r.data.artist}` : ''}`)))) : h('p', { class: 'muted' }, 'nada com isso.'))] : []));
   };
   search.addEventListener('input', () => { q = search.value; drawResults(); });
   const draw = () => {
     const list = mine().sort(sortRefs); const name = list[0] ? list[0].data.col : 'Coleção';
     const of = (k) => list.filter((r) => r.data.kind === k);
     const albs = of('album');
+    const byArtist = new Map(); for (const r of albs) { const k = r.data.artist || '—'; if (!byArtist.has(k)) byArtist.set(k, []); byArtist.get(k).push(r); }
+    const multi = byArtist.size > 1; // pacote com vários artistas: agrupa por artista
     box.replaceChildren(...[
       h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/club' }, '← The Listening Club'),
         h('p', { class: 'lib-kicker' }, 'coleção'), h('h1', { class: 'reader-title' }, name),
         list.length ? h('label', { class: 'field' }, search) : null),
       !list.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'essa coleção ainda não foi importada.'), h('p', { class: 'muted' }, 'toque em “importar textos” no clube e escolha o .zip.')) : null,
       results,
-      albs.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'álbuns'),
+      multi ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, `artistas (${byArtist.size})`),
+        ...[...byArtist.entries()].sort((x, y) => x[0].localeCompare(y[0], 'pt-BR')).map(([name, list]) => h('details', { class: 'cl-artist' },
+          h('summary', {}, h('strong', {}, name), h('small', { class: 'muted' }, ` · ${list.length} ${list.length === 1 ? 'álbum' : 'álbuns'}`)),
+          h('ol', { class: 'cl-col-albs' }, ...list.sort(sortRefs).map((r) => h('li', {}, h('a', { href: `#/estudos/club/r:${r.id}` }, h('strong', {}, r.data.title), h('small', {}, [r.data.date.slice(0, 4), r.data.tracks.length && `${r.data.tracks.length} faixas`].filter(Boolean).join(' · '))))))))) : null,
+      !multi && albs.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'álbuns'),
         h('ol', { class: 'cl-col-albs' }, ...albs.map((r) => h('li', {}, h('a', { href: `#/estudos/club/r:${r.id}` }, h('strong', {}, r.data.title), h('small', {}, [r.data.date.slice(0, 4), r.data.tracks.length && `${r.data.tracks.length} faixas`].filter(Boolean).join(' · '))))))) : null,
       of('lancamento').length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'outros lançamentos'), h('ul', { class: 'lab-list' }, ...of('lancamento').map((r) => refLink(r)))) : null,
       of('guia').length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'guias'), h('ul', { class: 'lab-list' }, ...of('guia').map((r) => refLink(r, h('span')))) ) : null,
-      of('faixa').length ? h('details', { class: 'card pad' }, h('summary', {}, `todas as faixas (${of('faixa').length})`), h('ul', { class: 'lab-list' }, ...of('faixa').map((r) => refLink(r)))) : null,
+      of('faixa').length && of('faixa').length <= 400 ? h('details', { class: 'card pad' }, h('summary', {}, `todas as faixas (${of('faixa').length})`), h('ul', { class: 'lab-list' }, ...of('faixa').map((r) => refLink(r)))) : null,
     ].filter(Boolean));
   };
   host.append(tabs, box); draw();
@@ -298,14 +305,14 @@ function mountRef(host, rid, tabs) {
     const d = rec.data; const all = refs().filter((r) => r.data.col === d.col);
     const inAlbums = d.kind === 'faixa' ? all.filter((r) => r.data.kind === 'album' && (r.data.tracks || []).some((t) => t.ref === rec.id)).sort(sortRefs) : [];
     const srcs = (d.sources || '').split('\n').map((x) => x.trim()).filter(Boolean);
-    const meta = Object.entries(d.meta || {}).filter(([k]) => !/^(id|idioma do texto)$/i.test(k));
+    const meta = Object.entries(d.meta || {}).filter(([k]) => !/^(id|id de registro|idioma do texto)$/i.test(k));
     box.replaceChildren(...[
       h('header', { class: 'reader-head' },
         h('a', { class: 'link', href: `#/estudos/club/c:${colSlug(d.col)}` }, `← ${d.col}`),
         h('p', { class: 'lib-kicker' }, KIND_LABEL[d.kind], d.date ? ` · ${d.date.split('-').reverse().join('/')}` : ''),
         h('h1', { class: 'reader-title' }, d.title),
         inAlbums.length ? h('p', { class: 'reader-sum' }, 'aparece em ', ...inAlbums.flatMap((a, i) => [i ? ', ' : '', h('a', { class: 'link', href: `#/estudos/club/r:${a.id}` }, a.data.title)])) : null,
-        h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => newPost({ section: d.kind === 'album' ? 'album' : 'anatomia', artist: d.col, album: d.kind === 'album' ? d.title : (inAlbums[0] ? inAlbums[0].data.title : ''), title: d.title }) }, 'escrever minha análise'))),
+        h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => newPost({ section: d.kind === 'album' ? 'album' : 'anatomia', artist: d.artist || d.col, album: d.kind === 'album' ? d.title : (inAlbums[0] ? inAlbums[0].data.title : ''), title: d.title }) }, 'escrever minha análise'))),
       meta.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'ficha'), h('dl', { class: 'cl-meta' }, ...meta.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]))) : null,
       d.tracks && d.tracks.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'faixas'),
         h('ol', { class: 'cl-tracks' }, ...d.tracks.map((t) => h('li', { value: String(t.n) }, store.get(t.ref) ? h('a', { href: `#/estudos/club/r:${t.ref}` }, t.title) : t.title)))) : null,

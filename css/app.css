@@ -1549,3 +1549,5 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 /* rabisco: a frase do topo quebra linha em vez de ficar atrás da foto; a carinha do bilhete fica parada */
 [data-theme="rabisco"] .hero-sub { padding-right: calc(var(--cs, 82px) + 26px); }
 [data-theme="rabisco"] .hero-note-smile { animation: none; }
+.cl-artist { border-top: 1px dashed rgb(0 0 0 / .18); padding: 6px 0; } .cl-artist summary { cursor: pointer; min-height: 40px; display: flex; align-items: center; gap: 6px; }
+.cl-artist .cl-col-albs { margin: 4px 0 8px; }
