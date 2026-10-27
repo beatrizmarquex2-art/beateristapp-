@@ -28,13 +28,13 @@ const D = {
   voz: `<g transform="rotate(-18 32 32)"><circle class="af" cx="32" cy="17" r="12"/><path class="b" d="M22 13h20M21 19h22M26 8v18M38 8v18"/><path class="a" d="M25 29h14l-3 28q-4 4-8 0z"/><path class="b" d="M30 38h4"/></g><path class="b" d="M52 20q6 8 0 16M57 14q10 14 0 28"/>`,
   cordas: `<g transform="rotate(-18 32 32)"><path class="a" d="M32 3v18"/><path class="af" d="M32 18c-9 0-12 5-9 10 3 3 1 6-1 9-4 6-1 14 6 17 3 1 7 1 10 0 7-3 10-11 6-17-2-3-4-6-1-9 3-5 0-10-9-10z"/><path class="b" d="M26 30c2 4 2 8 0 12M38 30c-2 4-2 8 0 12"/><path class="b" d="M32 22v26"/></g><path class="a" d="M8 58L58 14"/>`,
 };
-export const gameIcon = (id, a = 'var(--vio)', b = 'var(--mint)', label = '') => svg(D[id] || D.pecas, a, b, label);
+export const gameIcon = (id, a = 'var(--ia, #1b1818)', b = 'var(--ib, #d92031)', label = '') => svg(D[id] || D.pecas, a, b, label);
 export const instrumentIcon = gameIcon;
 
 /* ---- bateria completa (jogo "que peça é essa?"): cada peça é um <g class="kp" data-p> clicável ---- */
-export const KIT_COLORS = { bd: '#b57cff', sn: '#ff5fa8', hh: '#ffcf5a', tt: '#6cf0c2', mt: '#7cf0ff', ft: '#9b8cff', cr: '#ffcf5a', rd: '#ffa95a' };
+export const KIT_COLORS = { bd: '#d92031', sn: '#e3a82f', hh: '#1b1818', tt: '#1f6fd1', mt: '#1f8f4e', ft: '#7a3fb0', cr: '#b8860b', rd: '#8a5a14' };
 export function kitSvg(hl, hide) {
-  const col = (id) => (hide ? '#6d6280' : KIT_COLORS[id]); const on = (id) => (hl === id ? ' hl' : '');
+  const col = (id) => (hide ? '#bfb5a4' : KIT_COLORS[id]); const on = (id) => (hl === id ? ' hl' : '');
   const sw = 'fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
   const drum = (id, x, y, w, h, nl) => { const rx = w / 2; const c = col(id); return `<g class="kp${on(id)}" data-p="${id}" style="--c:${c}"><path d="M${x} ${y} V${y + h} A${rx} ${h * 0.2} 0 0 0 ${x + w} ${y + h} V${y}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".14"/><ellipse cx="${x + rx}" cy="${y}" rx="${rx}" ry="${h * 0.22}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".1"/>${Array.from({ length: nl }, (_, i) => `<path d="M${(x + 9 + ((w - 18) * i) / (nl - 1)).toFixed(1)} ${y + h * 0.28}V${y + h * 0.78}" stroke="${c}" stroke-width="2" stroke-linecap="round" opacity=".55"/>`).join('')}</g>`; };
   const cym = (id, x, y, rx, tilt, two) => { const c = col(id); return `<g class="kp${on(id)}" data-p="${id}" style="--c:${c}"><path d="M${x} ${y + 6}V${y + (two ? 150 : 130)}" ${sw} stroke="${c}" opacity=".7"/><g transform="rotate(${tilt} ${x} ${y})">${two ? `<ellipse cx="${x}" cy="${y + 12}" rx="${rx}" ry="${rx / 5}" ${sw} stroke="${c}" opacity=".7"/>` : ''}<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx / 5}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".14"/><ellipse cx="${x}" cy="${y - 1}" rx="${rx * 0.18}" ry="${rx * 0.06}" stroke="${c}" stroke-width="2" fill="none"/></g></g>`; };
@@ -42,5 +42,5 @@ export function kitSvg(hl, hide) {
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria">
     ${cym('cr', 85, 45, 64, -8)}${cym('rd', 340, 55, 68, 6)}${cym('hh', 40, 128, 40, 0, true)}
     ${drum('tt', 138, 95, 66, 46, 4)}${drum('mt', 218, 95, 66, 46, 4)}${drum('ft', 300, 165, 92, 92, 5)}${drum('sn', 72, 178, 92, 40, 5)}
-    <g class="kp${on('bd')}" data-p="bd" style="--c:${bc}"><circle cx="210" cy="218" r="76" ${sw} stroke="${bc}" fill="${bc}" fill-opacity=".1"/><circle cx="210" cy="218" r="58" ${sw} stroke="${bc}" stroke-width="2.4" opacity=".8"/>${Array.from({ length: 12 }, (_, i) => `<path d="M210 146v-8" stroke="${bc}" stroke-width="3" stroke-linecap="round" transform="rotate(${i * 30} 210 218)"/>`).join('')}<text x="210" y="226" text-anchor="middle" font-family="Silkscreen, monospace" font-size="20" fill="${bc}">BEATERISTA</text></g></svg>`;
+    <g class="kp${on('bd')}" data-p="bd" style="--c:${bc}"><circle cx="210" cy="218" r="76" ${sw} stroke="${bc}" fill="${bc}" fill-opacity=".1"/><circle cx="210" cy="218" r="58" ${sw} stroke="${bc}" stroke-width="2.4" opacity=".8"/>${Array.from({ length: 12 }, (_, i) => `<path d="M210 146v-8" stroke="${bc}" stroke-width="3" stroke-linecap="round" transform="rotate(${i * 30} 210 218)"/>`).join('')}<text x="210" y="226" text-anchor="middle" font-family="Permanent Marker, cursive" font-size="26" fill="${bc}">Beaterista</text></g></svg>`;
 }

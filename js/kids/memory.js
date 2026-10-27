@@ -36,7 +36,7 @@ export function runMemory(game, ctx) {
     const board = h('div', { class: 'kx-board', style: `--cols:${cols(deck.length)}` }, ...deck.map((c) => {
       const b = h('button', { type: 'button', class: 'kx-mem', 'aria-label': 'carta virada para baixo', onclick: () => flip(b, c) },
         h('span', { class: 'kx-mem-in' }, ico('robo', 'kx-mem-back'),
-          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, c.kind === 'sound' ? [ico('eco', 'kx-snd', 'var(--cyan)', 'var(--vio)'), h('small', {}, 'som')] : [svgBox(c.id), h('small', {}, nameOf(c.id))])));
+          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, c.kind === 'sound' ? [ico('eco', 'kx-snd', '#d92031', '#1b1818'), h('small', {}, 'som')] : [svgBox(c.id), h('small', {}, nameOf(c.id))])));
       b._c = c; return b;
     }));
     const paint = () => { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`; };
