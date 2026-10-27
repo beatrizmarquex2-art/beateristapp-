@@ -127,7 +127,7 @@ async function reportFor(me, btn) {
 function homeScreen(host, rerender) {
   const me = P.active();
   if (!me) {
-    const r = robo({ mood: 'happy', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
+    const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
     host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
       h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))));
     return;
@@ -154,7 +154,7 @@ function homeScreen(host, rerender) {
 function albumScreen(host, role) {
   const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
   const have = new Set(Album.owned(me.id)); const tier = tierOf(P.totalStars(me.id));
-  const r = robo({ mood: have.size ? 'cheer' : 'happy', tier, size: 84, say: have.size ? `${have.size} de ${Album.total()} figurinhas!` : 'ganha figurinhas passando de fase!' });
+  const r = robo({ mood: have.size ? 'cheer' : 'selfie', tier, size: 84, say: have.size ? `${have.size} de ${Album.total()} figurinhas!` : 'ganha figurinhas passando de fase!' });
   const filter = ROLES[role] ? role : '';
   const list = CARDS.filter((c) => !filter || c.role === filter).sort((x, y) => (have.has(y.id) ? 1 : 0) - (have.has(x.id) ? 1 : 0)); // as que já tem vêm primeiro
   const open = (c) => sheet(c.name, () => h('div', { class: 'sheet-body kx-big' }, Album.cardEl(c), h('p', { class: 'kx-fact' }, c.fact), credit(`album-${c.id}`, c.wiki)));

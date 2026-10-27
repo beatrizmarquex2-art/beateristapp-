@@ -2,12 +2,12 @@
 // Com mais estrelas ganha adesivos (estrela, estrelas, coroa).
 import { h } from '../util.js';
 
-export const MOODS = ['happy', 'cheer', 'think', 'oops', 'sleep', 'love', 'wave', 'wow', 'idea', 'laptop', 'coffee', 'music', 'crown', 'read', 'cool', 'sad', 'tired'];
+export const MOODS = ['happy', 'cheer', 'think', 'oops', 'sleep', 'love', 'wave', 'wow', 'idea', 'laptop', 'coffee', 'music', 'crown', 'read', 'cool', 'sad', 'tired', 'point', 'peace', 'run', 'kit', 'drum', 'skate', 'walk', 'guitar', 'selfie', 'peek', 'cat', 'sit', 'drink', 'book', 'rest'];
 /** Enfeite pela quantidade de estrelas: 0 nada, 1 estrela (10), 2 duas (40), 3 coroa (100). */
 export const tierOf = (stars) => (stars >= 100 ? 3 : stars >= 40 ? 2 : stars >= 10 ? 1 : 0);
 
 // Paul: desenhos da Bea (rabisco de caneta), recortados da folha de expressões em assets/paul/eNN.webp
-const IMG = { happy: 'e02', cheer: 'e20', think: 'e05', oops: 'e25', sleep: 'e08', love: 'e26', wave: 'e30', wow: 'e09', idea: 'e29', laptop: 'e22', coffee: 'e15', music: 'e03', crown: 'e01', read: 'e24', cool: 'e07', sad: 'e17', tired: 'e28', hero: 'e01' };
+const IMG = { happy: 'e02', cheer: 'e20', think: 'e05', oops: 'e25', sleep: 'e08', love: 'e26', wave: 'e30', wow: 'e09', idea: 'e29', laptop: 'e22', coffee: 'e15', music: 'e03', crown: 'e01', read: 'e24', cool: 'e07', sad: 'e17', tired: 'e28', hero: 'e01', point: 'p-point', peace: 'p-peace', run: 'p-run', kit: 'p-kit', drum: 'p-drum2', skate: 'p-skate', walk: 'p-walk', guitar: 'p-guitar', selfie: 'p-selfie', peek: 'p-peek', cat: 'p-cat', sit: 'p-sit', drink: 'p-drink', book: 'p-book', rest: 'p-rest' };
 const STICKER = [
   '',
   '<path d="M16 3l3.8 8 8.7 1.1-6.4 6 1.7 8.7L16 22.5 8.2 26.8l1.7-8.7-6.4-6 8.7-1.1z" fill="#e3a82f" stroke="#1b1818" stroke-width="2" stroke-linejoin="round"/>',
