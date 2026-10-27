@@ -60,6 +60,7 @@ export function robo({ mood = 'happy', tier = 0, size = 96, say = '' } = {}) {
   box.append(fig, bubble);
   const api = { el: box, set(m, text) { fig.innerHTML = roboMarkup(m, tier); if (text != null) { bubble.textContent = text; bubble.hidden = !text; } } };
   api.set(mood, say);
+  fig.addEventListener('click', () => { bubble.textContent = 'meu nome é Paul! 🤘'; bubble.hidden = false; }); // o nome de verdade, só pra quem perguntar
   return api;
 }
 
