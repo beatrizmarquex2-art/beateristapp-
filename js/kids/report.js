@@ -5,7 +5,7 @@ import { toJpeg, savePdf } from '../views/plan-pdf.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
 import { CARDS } from './album-data.js';
-import { roboStandalone, tierOf } from './robo.js';
+import { roboSrc, tierOf } from './robo.js';
 import { AGES } from './levels.js';
 import { INSTRUMENTS, nameOf as instName, artColored } from './instruments.js';
 import { FIGURES, PIECES, BUMBO_SPOTS, nameOf as pieceName } from '../kids-logic.js';
@@ -99,8 +99,8 @@ export async function renderReport(profile) {
   const allR = Object.values(p.st).reduce((a, x) => a + x.r, 0); const allW = Object.values(p.st).reduce((a, x) => a + x.w, 0); const pctAll = allR + allW ? Math.round((allR / (allR + allW)) * 100) : null;
 
   // ---- cabeçalho ----
-  const rob = await svgImg(roboStandalone(total ? 'cheer' : 'happy', tier));
-  if (rob) pg.g.drawImage(rob, W - SIDE - 150, pg.top - 30, 130, 152);
+  const rob = await loadImg(roboSrc(total ? 'cheer' : 'happy'));
+  if (rob) { const bw = 150; const bh = Math.round(bw * rob.height / rob.width); pg.g.drawImage(rob, W - SIDE - bw, pg.top - 30, bw, bh); }
   pg.text(`Relatório do ${profile.name}`, { size: 54, weight: 700, maxW: pg.CW - 170 });
   pg.text(`Beaterista Kids · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555', maxW: pg.CW - 170 });
   pg.gap(18);

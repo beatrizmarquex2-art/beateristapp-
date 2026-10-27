@@ -1581,19 +1581,14 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 .hub-card .hub-ic { grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; background: #1b1818; color: #fff; border-radius: 50%; } .hub-card b { font: 700 18px var(--body); } .hub-card small { color: #5f5752; }
 
 /* Kids: Robôterista, fases 0 a 10, % de acerto e estrelas */
-.rb-wrap { display: flex; align-items: center; gap: 10px; } .rb-fig { width: var(--rb, 96px); flex: none; } .rb-fig svg { width: 100%; height: auto; display: block; overflow: visible; }
+.rb-wrap { display: flex; align-items: center; gap: 10px; } .rb-fig { width: var(--rb, 120px); flex: none; }
+.rb { position: relative; display: block; } .rb-img { display: block; width: 100%; height: auto; mix-blend-mode: multiply; -webkit-user-drag: none; user-select: none; }
+.rb-sticker { position: absolute; right: -4px; bottom: 2px; width: 34%; height: auto; transform: rotate(8deg); } .rb-sticker.t3 { right: auto; left: 2px; top: -8px; bottom: auto; width: 40%; transform: rotate(-12deg); }
 .rb-say { margin: 0; padding: 8px 12px; background: #fffdf8; color: #1b1818; border: 3px solid #1b1818; border-radius: 14px; font: 700 15px var(--body); position: relative; max-width: 220px; }
 .rb-say::before { content: ""; position: absolute; left: -10px; top: 14px; border: 6px solid transparent; border-right: 8px solid #1b1818; }
-.rb .rb-eye { fill: #7cf0ff; } .rb .rb-line { fill: none; stroke: #7cf0ff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; } .rb .rb-fill { fill: #7cf0ff; }
-.rb .rb-limb { stroke: #1b1818; stroke-width: 6; stroke-linecap: round; fill: none; } .rb .rb-stick { stroke: #e3a82f; stroke-width: 5; stroke-linecap: round; fill: none; }
-.rb-body { transform-origin: 60px 130px; animation: rb-bob 2.6s ease-in-out infinite; } .rb .rb-eye { transform-box: fill-box; transform-origin: center; animation: rb-blink 4s infinite; }
-.mood-cheer .rb-body { animation: rb-jump .6s ease-in-out infinite; } .mood-oops .rb-body { animation: rb-shake .45s ease-in-out 2; } .mood-sleep .rb-body { animation: rb-bob 5s ease-in-out infinite; }
-.mood-cheer .rb-arm.l { transform-origin: 38px 90px; animation: rb-wave .5s ease-in-out infinite alternate; } .mood-cheer .rb-arm.r { transform-origin: 82px 90px; animation: rb-wave .5s ease-in-out infinite alternate-reverse; }
-.rb .rb-led { animation: rb-led 1.4s ease-in-out infinite; } .rb .rb-z { animation: rb-z 2.4s ease-in-out infinite; } .rb .rb-z.z2 { animation-delay: .8s; } .rb .rb-spark { animation: rb-led 1s ease-in-out infinite; }
-@keyframes rb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } } @keyframes rb-jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-10px) scale(.98, 1.03); } }
+.rb-img { animation: rb-bob 2.8s ease-in-out infinite; transform-origin: 50% 100%; } .mood-cheer .rb-img { animation: rb-jump .6s ease-in-out infinite; } .mood-oops .rb-img { animation: rb-shake .45s ease-in-out 2; } .mood-sleep .rb-img { animation: rb-bob 5s ease-in-out infinite; }
+@keyframes rb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } } @keyframes rb-jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-8px) scale(.97, 1.03); } }
 @keyframes rb-shake { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-5px) rotate(-4deg); } 75% { transform: translateX(5px) rotate(4deg); } }
-@keyframes rb-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } } @keyframes rb-wave { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
-@keyframes rb-led { 0%, 100% { opacity: 1; } 50% { opacity: .45; } } @keyframes rb-z { 0%, 100% { opacity: .2; transform: translateY(2px); } 50% { opacity: 1; transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .rb *, .rb { animation: none !important; } }
 .kx-hello { display: flex; justify-content: center; padding: 6px 16px; } .kx-me { display: flex; align-items: center; gap: 10px; padding: 8px 16px; flex-wrap: wrap; }
 .kx-av { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #b5162b; color: #fff; font: 700 20px var(--body); }

@@ -24,19 +24,22 @@
 .kx-arc .rb-say { background: var(--kcard2); color: var(--kink); border: 3px solid var(--kink); border-radius: 14px; font: 700 15px var(--body); box-shadow: 3px 3px 0 var(--red); } .kx-arc .rb-say::before { border-right-color: var(--kink); }
 .kx-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 8px; font: 400 16px var(--khand); letter-spacing: .04em; color: var(--red); } .kx-h::after { content: ""; flex: 1; border-top: 3px dashed var(--kink); opacity: .35; }
 
-/* cartões dos jogos: zine/street, papel colado com fita, estrela e rabisco */
-.kx-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; padding-top: 8px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.kx-g { --tape: rgb(227 168 47 / .8); --ia: #1b1818; --ib: #d92031; position: relative; display: grid; justify-items: center; align-content: center; gap: 4px; min-height: 124px; padding: 18px 8px 12px; text-align: center; background: var(--kcard); border: 2px solid var(--kink); border-radius: 4px 10px 5px 9px; box-shadow: 4px 4px 0 var(--kink); transform: rotate(-1.4deg); transition: transform .12s, box-shadow .12s; }
-.kx-cards > .kx-g:nth-child(even) { transform: rotate(1.2deg); --tape: rgb(217 32 49 / .75); } .kx-cards > .kx-g:nth-child(3n) { transform: rotate(-.6deg); --tape: rgb(27 24 24 / .72); }
-.kx-g::before { content: ""; position: absolute; top: -11px; left: 50%; width: 58px; height: 18px; margin-left: -29px; background: var(--tape); transform: rotate(-3deg); clip-path: polygon(0 8%, 6% 0, 12% 10%, 18% 0, 82% 0, 88% 10%, 94% 0, 100% 8%, 100% 92%, 94% 100%, 88% 90%, 82% 100%, 18% 100%, 12% 90%, 6% 100%, 0 92%); }
-.kx-g::after { content: "★"; position: absolute; top: 5px; right: 8px; font: 400 20px/1 var(--body); color: var(--kink); -webkit-text-stroke: 1.5px var(--kink); paint-order: stroke; transform: rotate(14deg); opacity: .25; }
+/* cartões dos jogos: azulejos de mancha rosa/pêssego com ícone, rabisco e nome em caixa alta */
+.kx-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; padding-top: 4px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.kx-g { --blob: #f6c9c9; --ia: #1b1818; --ib: #d92031; position: relative; display: grid; justify-items: center; align-content: start; gap: 6px; padding: 0 2px; text-align: center; background: none; border: 0; transition: transform .12s; }
+.kx-cards > .kx-g:nth-child(3n+2) { --blob: #f7d9b4; } .kx-cards > .kx-g:nth-child(3n) { --blob: #f3d2c2; }
+.kx-g:active { transform: scale(.94); }
+.kx-gi { position: relative; display: grid; place-items: center; width: 84px; height: 76px; background: var(--blob); border-radius: 46% 54% 50% 50% / 56% 48% 52% 44%; transform: rotate(-3deg); }
+.kx-cards > .kx-g:nth-child(even) .kx-gi { border-radius: 52% 48% 44% 56% / 48% 54% 46% 52%; transform: rotate(3deg); }
+.kx-gi .kx-ico { width: 56px; height: 56px; }
+.kx-g::before, .kx-g::after { position: absolute; font: 400 14px/1 var(--body); color: var(--red); pointer-events: none; }
+.kx-g::before { content: "✦"; top: -2px; left: 4px; } .kx-g::after { content: "★"; top: 2px; right: 2px; font-size: 16px; color: var(--kink); opacity: .22; transform: rotate(14deg); }
+.kx-cards > .kx-g:nth-child(3n+2)::before { content: "♡"; left: auto; right: 6px; top: 30px; } .kx-cards > .kx-g:nth-child(3n)::before { content: "✧"; top: 36px; left: 0; }
 .kx-g.on::after { color: var(--gold); opacity: 1; }
-.kx-g:active { transform: translate(3px, 3px) rotate(0); box-shadow: 1px 1px 0 var(--kink); }
 .kx-arc .kx-g .kx-gt { color: var(--kink); } .kx-arc .kx-g .kx-gm { color: var(--red); }
-.kx-gi { display: grid; place-items: center; width: 52px; height: 52px; } .kx-gi .kx-ico { width: 48px; height: 48px; }
-.kx-gt { font: 400 16px/1.1 var(--khand); letter-spacing: .01em; } .kx-gd { display: none; }
-.kx-bar { width: 72%; height: 6px; background: transparent; border: 1.5px solid var(--kink); border-radius: 4px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: var(--red); }
-.kx-gm { font: 700 11px var(--kmono); }
+.kx-gt { font: 700 11.5px/1.2 var(--body); text-transform: uppercase; letter-spacing: .05em; } .kx-gd { display: none; }
+.kx-bar { width: 60%; height: 4px; margin: -2px auto 0; background: rgb(27 24 24 / .12); border-radius: 3px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: var(--red); }
+.kx-gm { font: 600 10.5px var(--kmono); margin-top: -3px; }
 .kx-g.on .kx-gm::before { content: "★ "; color: var(--gold); }
 .kx-g.wide { width: 100%; font: inherit; cursor: pointer; }
 

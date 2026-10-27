@@ -127,7 +127,7 @@ async function reportFor(me, btn) {
 function homeScreen(host, rerender) {
   const me = P.active();
   if (!me) {
-    const r = robo({ mood: 'happy', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
+    const r = robo({ mood: 'happy', size: 110, say: 'oi! eu sou o Paul. qual é o seu nome?' });
     host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
       h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))));
     return;
