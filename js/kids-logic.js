@@ -41,7 +41,7 @@ export function figurePair(rnd = Math.random) {
 }
 
 /** Compasso com N bumbos (1 a 3) sobre chimbal em colcheias e caixa no 2 e no 4 (grade de 8). */
-export const BUMBO_SPOTS = { 1: [0], 2: [0, 4], 3: [0, 4, 5] };
+export const BUMBO_SPOTS = { 1: [0], 2: [0, 4], 3: [0, 4, 5], 4: [0, 1, 4, 5], 5: [0, 1, 3, 4, 5] };
 export function bumboBar(n) {
   const on = (idx) => Array.from({ length: 8 }, (_, i) => (idx.includes(i) ? 1 : 0));
   return { steps: 8, rows: { hh: on([0, 1, 2, 3, 4, 5, 6, 7]), sn: on([2, 6]), bd: on(BUMBO_SPOTS[n]) } };
