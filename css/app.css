@@ -1546,3 +1546,6 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 .cv-sliders { display: grid; gap: 4px; margin: 6px 0; } .cv-slide input[type=range] { width: 100%; } .cv-slide output { font-weight: 700; }
 .hpi { isolation: isolate; }
 [data-theme="rabisco"] .hero-photo .hpi { clip-path: circle(50%); }
+/* rabisco: a frase do topo quebra linha em vez de ficar atrás da foto; a carinha do bilhete fica parada */
+[data-theme="rabisco"] .hero-sub { padding-right: calc(var(--cs, 82px) + 26px); }
+[data-theme="rabisco"] .hero-note-smile { animation: none; }
