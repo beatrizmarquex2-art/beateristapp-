@@ -149,3 +149,8 @@ body.rz-lock{overscroll-behavior:none}
 .bmr-mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .bmr-mlist{display:grid;gap:6px}
 @media (min-width:700px){.bmr-modal{align-items:center}.bmr-sheet{border-top:0;border-left:3px solid #D92031}}
+
+/* celular: lista longa só desenha o que está na tela; toque sem zoom de duplo toque, sem menu de pressionar e segurar nos botões */
+.bmr .rz-li{content-visibility:auto;contain-intrinsic-size:auto 64px}
+.bmr button,.bmr .rz-song{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.bmr input.field{-webkit-user-select:text;user-select:text}

@@ -956,7 +956,7 @@ html { scrollbar-width: thin; scrollbar-color: #b5162b transparent; }
 .tp-bpm { grid-template-columns: 40px 1fr 40px 40px; gap: 6px; } .tp-bpm .bl-step, .tp-bpm .bl-bpm { height: 40px; font-size: 22px; } .tp-unit { font: 700 14px var(--body); color: var(--muted); }
 .tp-hint { font-size: 12.5px; color: var(--muted); margin: 0; }
 .tp-line { display: grid; grid-template-columns: 74px 1fr; align-items: center; gap: 6px; } .tp-lab { font: 700 12px var(--body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.tp-line select { min-height: 34px; font-size: 14px; width: 100%; }
+.tp-line select { min-height: 34px; font-size: 16px; width: 100%; } /* 16px: abaixo disso o iPhone dá zoom ao focar */
 .tp-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .tp-cal { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; padding: 6px 0; font: 600 13px var(--body); color: var(--ink); text-decoration: underline; cursor: pointer; }
 .tp-go { width: 58px; height: 58px; flex: none; }
@@ -1565,3 +1565,8 @@ mark.hl-y, .hl-dot.hl-y { background: #ffe27a; } mark.hl-p, .hl-dot.hl-p { backg
 .an-card.hl-p { border-left-color: #ffb3c7; background: #fffdf8; } .an-card.hl-g { border-left-color: #b8e6b0; background: #fffdf8; } .an-card.hl-b { border-left-color: #a9d4ff; background: #fffdf8; } .an-card.hl-y { background: #fffdf8; }
 .an-card blockquote { margin: 0 0 8px; } .an-card blockquote p { margin: 0 0 6px; font-size: 17px; line-height: 1.45; }
 .an-meta { font-size: 13px; } .an-act { gap: 6px; margin-top: 6px; } .an-folders { padding-bottom: 6px; }
+
+/* celular: sem zoom de duplo toque nem atraso em botões, links e campos (a pinça continua funcionando) */
+a, button, summary, label, select, input, textarea, [role="button"], [role="tab"], [role="radio"], .nav-item, .fab { touch-action: manipulation; }
+button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callout: none; }
+.ar-list, .an-list, .lab-list, .rz-songs, .lib-list { content-visibility: auto; contain-intrinsic-size: auto 400px; }
