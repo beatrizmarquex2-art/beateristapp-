@@ -11,6 +11,7 @@ const TABS_MENU = [
   ['treinar', 'treinar', [
     ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
     ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Ditado de montar'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1'], ['#/ferramentas/forma', 'staff', 'Contar compassos']]],
+    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids', 'kit', 'Beaterista Kids']]],
     ['tempo', [['#/tempo', 'timer', 'Juiz de Tempo'], ['#/tempo/transcritor', 'staff', 'Transcritor de Ritmo'], ['#/tempo/raiox', 'timer', 'Raio-x do Groove']]],
   ]],
   ['estudar', 'estudar', [

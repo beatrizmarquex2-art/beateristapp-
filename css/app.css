@@ -47,8 +47,8 @@ body {
   overflow-x: hidden; overscroll-behavior-y: none; transition: background-color .4s;
 }
 img { max-width: 100%; }
-a { color: inherit; }
-button, input, select, textarea { font: inherit; color: inherit; }
+a:where(:not(.bmr *)) { color: inherit; }
+:is(button, input, select, textarea):where(:not(.bmr *)) { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
 [hidden] { display: none !important; }
 html, body { max-width: 100%; overflow-x: hidden; }
@@ -129,12 +129,12 @@ main { display: block; outline: none; animation: viewin .3s ease both; }
 /* ---------- formulários ---------- */
 .field { display: block; } .field > span { display: block; font: 600 13px/1.2 var(--body); margin: 0 0 6px; color: var(--muted); }
 .field small { display: block; margin-top: 4px; } .field.tight > span { display: none; }
-input, select, textarea { width: 100%; min-height: 48px; padding: 10px 14px; font-size: 16px; background: var(--field); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 10px; }
-input::placeholder, textarea::placeholder { color: var(--muted); opacity: .8; }
-input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: transparent; }
+:is(input, select, textarea):where(:not(.bmr *)) { width: 100%; min-height: 48px; padding: 10px 14px; font-size: 16px; background: var(--field); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 10px; }
+:is(input, textarea):where(:not(.bmr *))::placeholder { color: var(--muted); opacity: .8; }
+:is(input, select, textarea):where(:not(.bmr *)):focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: transparent; }
 textarea { resize: vertical; line-height: 1.4; }
-input[type=range] { padding: 0; min-height: 36px; accent-color: var(--accent); background: transparent; border: 0; }
-input[type=file] { display: none; }
+input[type=range]:where(:not(.bmr *)) { padding: 0; min-height: 36px; accent-color: var(--accent); background: transparent; border: 0; }
+input[type=file]:where(:not(.bmr *)) { display: none; }
 .form-err { color: var(--bad); font-weight: 700; margin: 0; min-height: 1em; }
 .saved { color: var(--ok); font-weight: 600; min-height: 1.2em; }
 
@@ -373,8 +373,8 @@ input[type=file] { display: none; }
 .stk-opt { display: grid; gap: 6px; justify-items: center; padding: 8px 6px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--card-soft); font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; min-height: 44px; }
 .stk-prev { width: 100%; height: 66px; display: grid; place-items: center; background: #d9d2c3; border-radius: 8px; } .stk-prev img { max-width: 82%; max-height: 54px; }
 
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { :where(:not(.bmr *)), :where(:not(.bmr *))::before, :where(:not(.bmr *))::after { animation: none !important; transition: none !important; } }
+html[data-motion="off"] :where(:not(.bmr *)), html[data-motion="off"] :where(:not(.bmr *))::before, html[data-motion="off"] :where(:not(.bmr *))::after { animation: none !important; transition: none !important; }
 @media (max-width: 360px) { .shortcuts { grid-template-columns: repeat(3, 1fr); } }
 
 /* ---------- Meus Estudos (revista + arquivo de pesquisa) ---------- */
@@ -427,7 +427,7 @@ html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="
 .reader-foot { margin-top: 12px; }
 
 /* ---------- nada arredondado (pedido da Bea): tudo reto, só o selo do logo continua redondo ---------- */
-*, *::before, *::after { border-radius: 0 !important; }
+:where(:not(.bmr, .bmr *)), :where(:not(.bmr, .bmr *))::before, :where(:not(.bmr, .bmr *))::after { border-radius: 0 !important; }
 .hero-logo, .login-logo, .login-logo img { border-radius: 50% !important; }
 
 /* ---------- metrônomo ---------- */
@@ -1483,3 +1483,15 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .dc-more { display: grid; gap: 8px; margin-top: 8px; }
 .dc-tip { background: rgb(227 168 47 / .18); padding: 8px 10px; border-left: 4px solid var(--gold); }
 .dc-see .link { background: none; border: 0; padding: 0; font: inherit; color: var(--link); text-decoration: underline; cursor: pointer; }
+
+/* Jogos de ritmo (pacote beater rhythm games): cores da identidade e área do jogo sem rolagem */
+#jogos.bmr, #jogos .bmr { --red: #b5162b; --char: #1b1818; --ivory: #f3eee4; --char-2: #2a2424; --char-3: #3a3434; --char-4: #4d4545; }
+#view > .rg-host, #view > :has(> .rg-host) { animation: none; }
+.rg-top { align-items: center; margin: 4px 0 8px; }
+.rg-xp { font: 700 1.1rem var(--display); color: var(--accent); }
+.rg-host { position: relative; margin: 0 8px; height: var(--rg-h, 70dvh); overflow: hidden; overscroll-behavior: contain; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.rg-host > #jogos { height: 100%; width: 100%; }
+.rg-host canvas { touch-action: none; }
+.rg-host .rg-wait { padding: 16px; }
+html.rg-on, html.rg-on body { overscroll-behavior: none; }
+html.rg-on .fab { display: none; }

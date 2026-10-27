@@ -177,7 +177,7 @@ function bumbos(box) {
 const RUN = { explorar, pecas, pauta, figuras, ritmo, bumbos };
 
 /** Mais jogos: os do app e os do site jogosdemusica.com.br (esses abrem em outra aba). */
-const EXTERNAL = [['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', '🧩'], ['https://jogosdemusica.com.br/JOGOS/Ditado_ritmico/jogo/', 'Ditado rítmico', 'ouvir e escrever o ritmo', '🎧']];
+const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', '🥁'], ['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', '🧩'], ['https://jogosdemusica.com.br/JOGOS/Ditado_ritmico/jogo/', 'Ditado rítmico', 'ouvir e escrever o ritmo', '🎧']];
 
 export function mount(host, parts = []) {
   const game = parts[0] && RUN[parts[0]] ? parts[0] : null;
