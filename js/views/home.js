@@ -11,7 +11,7 @@ import { todayRoll } from './students.js';
 import { studyWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
 import { factFor } from '../music-facts.js';
-import { HERO_KEY, heroSub } from '../hero-text.js';
+import { heroSub } from '../hero-text.js';
 import { homeStrip } from './lembretes.js';
 
 const ORDER_KEY = 'setting-shortcuts';
@@ -170,8 +170,10 @@ export function mount(host) {
     if (!i.kind || (i.kind === 'setting' && i.id === ORDER_KEY)) drawGrid();
     if (!i.kind || (i.kind === 'setting' && i.id === LAYOUT_KEY)) drawLayout();
     if (!i.kind || i.id === COVER_KEY) paintCover(fig);
-    if (!i.kind || i.id === HERO_KEY) top.querySelector('.hero-sub').textContent = heroSub();
     if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
   });
-  return () => { off(); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
+  // a frase do topo troca sozinha a cada 8 horas: confere a cada minuto (e quando o app volta pra tela)
+  const subEl = top.querySelector('.hero-sub'); const tickSub = () => { const t = heroSub(); if (subEl.textContent !== t) subEl.textContent = t; };
+  const subTimer = setInterval(tickSub, 60000); document.addEventListener('visibilitychange', tickSub);
+  return () => { off(); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
 }
