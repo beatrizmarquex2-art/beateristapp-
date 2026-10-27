@@ -102,6 +102,7 @@ function goBack() {
   else location.hash = parentOf(route());
 }
 /* ---------- início: arrastar pro lado abre o menu ☰ ---------- */
+let lastTab = 0; // última aba de baixo visitada (pra saber qual é a próxima quando se está numa tela de fora)
 function swipeMenu() {
   let x0 = 0, y0 = 0, t0 = 0, on = false;
   const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
@@ -114,9 +115,10 @@ function swipeMenu() {
     if (!(Math.abs(dx) > 60 && Math.abs(dy) < 70 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 900)) return;
     const name = route().name;
     if (name === 'inicio' && dx > 0) { openMenu(); return; } // no início, arrastar pra direita abre o menu ☰
-    // nas 4 abas de baixo: arrastar pra esquerda vai pra próxima, pra direita volta pra anterior
-    const i = NAV.findIndex((n) => n && n[0] === `#/${name}`); if (i < 0) return;
-    const j = i + (dx < 0 ? 1 : -1); if (j >= 0 && j < NAV.length && NAV[j]) { location.hash = NAV[j][0]; window.scrollTo(0, 0); }
+    // da direita pra esquerda: próxima aba de baixo (nas outras telas, a seguinte à última aba visitada)
+    if (dx > 0) return;
+    const at = NAV.findIndex((n) => n && n[0] === `#/${name}`); const i = at >= 0 ? at : lastTab;
+    const j = (i + 1) % NAV.length; if (NAV[j]) { location.hash = NAV[j][0]; window.scrollTo(0, 0); }
   }, { passive: true });
   addEventListener('touchcancel', () => { on = false; }, { passive: true });
 }
@@ -177,6 +179,7 @@ function shell() {
     const r = route();
     const here = location.hash || '#/inicio';
     if (trail.length > 1 && trail[trail.length - 2] === here) trail.pop(); else if (trail[trail.length - 1] !== here) trail.push(here);
+    { const ti = NAV.findIndex((n) => n && n[0] === `#/${r.name}`); if (ti >= 0) lastTab = ti; }
     drawChrome(r);
     let c;
     switch (r.name) {
