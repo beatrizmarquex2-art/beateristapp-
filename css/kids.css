@@ -24,24 +24,25 @@
 .kx-arc .rb-say { background: var(--kcard2); color: var(--kink); border: 3px solid var(--kink); border-radius: 14px; font: 700 15px var(--body); box-shadow: 3px 3px 0 var(--red); } .kx-arc .rb-say::before { border-right-color: var(--kink); }
 .kx-h { display: flex; align-items: center; gap: 10px; margin: 22px 0 10px; font: 400 20px var(--khand); letter-spacing: .04em; color: var(--red); } .kx-h::after { content: ""; flex: 1; border-top: 3px dashed var(--kink); opacity: .35; }
 
-/* cartões dos jogos: "telinha" preta dentro do papel */
-.kx-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } @media (min-width: 560px) { .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.kx-gcard { --sh: var(--red); display: grid; gap: 6px; padding: 10px 10px 12px; background: var(--kcard); border: 3px solid var(--kink); border-radius: 18px; box-shadow: 5px 5px 0 var(--sh); transition: transform .12s, box-shadow .12s; color: var(--kink); }
-.kx-gcard:nth-child(3n+2) { --sh: var(--blue); } .kx-gcard:nth-child(3n) { --sh: var(--green); }
-.kx-gcard:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0 var(--sh); } .kx-gcard:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--sh); }
-.kx-screen { --ia: #f3eee4; --ib: #ff6b78; position: relative; display: grid; place-items: center; height: 116px; border-radius: 11px; overflow: hidden; background: radial-gradient(120% 90% at 50% 40%, #2d2626, #141010 72%); border: 2px solid var(--kink); }
-.kx-screen::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgb(255 255 255 / .05) 0 1px, transparent 1px 4px); pointer-events: none; z-index: 2; }
-.kx-screen::after { content: ""; position: absolute; left: -10%; right: -10%; bottom: 0; height: 42%; background: repeating-linear-gradient(90deg, rgb(255 80 96 / .5) 0 1px, transparent 1px 22px), repeating-linear-gradient(0deg, rgb(255 80 96 / .4) 0 1px, transparent 1px 11px);
-  transform: perspective(160px) rotateX(58deg); transform-origin: bottom; opacity: .7; mask-image: linear-gradient(0deg, #000 30%, transparent); -webkit-mask-image: linear-gradient(0deg, #000 30%, transparent); }
-.kx-screen .kx-ico { position: relative; z-index: 1; width: 66px; height: 66px; filter: drop-shadow(0 0 4px rgb(255 80 96 / .45)); }
-.kx-led { position: absolute; z-index: 3; top: 9px; left: 11px; width: 8px; height: 8px; border-radius: 50%; background: #ff4d5d; box-shadow: 0 0 8px #ff4d5d; animation: kx-blink 2.2s ease-in-out infinite; } .kx-led.off { background: #5b5252; box-shadow: none; animation: none; } @keyframes kx-blink { 50% { opacity: .35; } }
-.kx-medal { position: absolute; z-index: 3; top: 6px; right: 9px; font: 700 17px var(--body); color: #5b5252; } .kx-medal.on { color: var(--gold); text-shadow: 0 0 8px rgb(227 168 47 / .8); }
-.kx-gt { font: var(--dstyle, normal) var(--dw, 400) 20px/1.05 var(--display); padding: 4px 4px 0; color: var(--kink); } .kx-gd { color: var(--kmut); font-size: 13.5px; line-height: 1.3; padding: 0 4px; min-height: 2.6em; }
-.kx-gm { font: 600 12px var(--kmono); color: var(--kink); padding: 2px 4px 0; opacity: .8; }
-.kx-bar { height: 7px; background: var(--ksoft); border: 2px solid var(--kink); border-radius: 6px; overflow: hidden; margin: 2px 4px 0; } .kx-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--red), var(--gold)); }
-.kx-wide { display: flex; align-items: center; gap: 14px; padding: 12px; background: var(--kcard); border: 3px solid var(--kink); border-radius: 18px; margin-bottom: 12px; color: var(--kink); width: 100%; font: inherit; text-align: left; cursor: pointer; box-shadow: 5px 5px 0 var(--red); }
-.kx-wide .kx-screen { width: 84px; height: 84px; flex: none; } .kx-wide .kx-screen .kx-ico { width: 48px; height: 48px; } .kx-wide .kx-gt { padding: 0; font-size: 20px; } .kx-wide:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--red); }
-.kx-mini { grid-template-columns: 1fr; } .kx-mini .kx-gcard { grid-template-columns: 58px 1fr; align-items: center; gap: 4px 12px; padding: 10px; box-shadow: 4px 4px 0 var(--sh); } .kx-mini .kx-screen { height: 58px; width: 58px; grid-row: 1 / span 2; } .kx-mini .kx-screen .kx-ico { width: 36px; height: 36px; } .kx-mini .kx-screen::after, .kx-mini .kx-medal, .kx-mini .kx-led, .kx-wide .kx-medal { display: none; } .kx-mini .kx-gt { font-size: 17px; padding: 0; } .kx-mini .kx-gd { min-height: 0; font-size: 12.5px; grid-column: 2; padding: 0; }
+/* cartões dos jogos: cartaz de cor chapada, ícone grande, título em marker */
+.kx-cards { display: grid; grid-template-columns: 1fr; gap: 16px; } @media (min-width: 620px) { .kx-cards:not(.kx-mini) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kx-g { --bg: var(--red); --fg: #fff7e8; --ia: #fff7e8; --ib: #ffd86b; position: relative; overflow: hidden; display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: center; gap: 4px 16px; padding: 16px; background: var(--bg); color: var(--fg); border: 3px solid var(--kink); border-radius: 22px; box-shadow: 6px 6px 0 var(--kink); transition: transform .12s, box-shadow .12s; }
+.kx-g::before { content: ""; position: absolute; right: -34px; top: -34px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(rgb(255 255 255 / .16) 1.5px, transparent 2px) 0 0 / 9px 9px; pointer-events: none; }
+.kx-arc .kx-g, .kx-arc .kx-g .kx-gt, .kx-arc .kx-g .kx-gd, .kx-arc .kx-g .kx-gm { color: var(--fg); }
+.kx-cards > .kx-g:nth-child(5n+2) { --bg: var(--kink); --ib: #ff6b78; }
+.kx-cards > .kx-g:nth-child(5n+3) { --bg: var(--blue); --ib: #ffd86b; }
+.kx-cards > .kx-g:nth-child(5n+4) { --bg: var(--green); --ib: #ffd86b; }
+.kx-cards > .kx-g:nth-child(5n) { --bg: var(--gold); --fg: var(--kink); --ia: var(--kink); --ib: var(--red); }
+.kx-g:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--kink); }
+.kx-gi { grid-row: 1 / span 4; display: grid; place-items: center; width: 88px; height: 88px; border-radius: 20px; background: rgb(0 0 0 / .22); border: 2px solid rgb(255 255 255 / .28); } .kx-cards > .kx-g:nth-child(5n) .kx-gi { background: rgb(255 255 255 / .35); border-color: rgb(0 0 0 / .25); }
+.kx-gi .kx-ico { width: 60px; height: 60px; }
+.kx-gt { font: 400 24px/1.05 var(--khand); letter-spacing: .02em; } .kx-gd { font-size: 14px; line-height: 1.3; opacity: .92; }
+.kx-bar { height: 8px; margin-top: 6px; background: rgb(0 0 0 / .3); border: 2px solid var(--kink); border-radius: 6px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: #fff7e8; }
+.kx-gm { margin-top: 4px; font: 700 12px var(--kmono); letter-spacing: .02em; opacity: .95; }
+.kx-g.on .kx-gm::before { content: "★ "; }
+.kx-g.wide { margin-bottom: 14px; width: 100%; font: inherit; text-align: left; cursor: pointer; }
+.kx-mini .kx-g { grid-template-columns: 56px minmax(0, 1fr); padding: 11px 14px; gap: 2px 12px; box-shadow: 4px 4px 0 var(--kink); border-radius: 16px; }
+.kx-mini .kx-gi { width: 56px; height: 56px; border-radius: 14px; grid-row: 1 / span 2; } .kx-mini .kx-gi .kx-ico { width: 36px; height: 36px; } .kx-mini .kx-gt { font-size: 19px; } .kx-mini .kx-gd { font-size: 13px; }
 
 /* escolher fase */
 .kx-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 10px 0; }

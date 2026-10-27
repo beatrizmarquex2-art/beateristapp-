@@ -76,19 +76,18 @@ const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'exp
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
 
-/** Cartão de jogo: "telinha" de fliperama com ícone neon, nome em pixel, descrição e andamento. */
-function gameCard(href, id, title, blurb, meta, { on = false, pct = null, led = true } = {}) {
-  const screen = h('span', { class: 'kx-screen' }, h('i', { class: `kx-led${led ? '' : ' off'}` }), h('span', { class: `kx-medal${on ? ' on' : ''}`, 'aria-hidden': 'true' }, '★'));
-  screen.insertAdjacentHTML('beforeend', gameIcon(id));
-  const a = h('a', { class: 'kx-gcard', href }, screen, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
+/** Cartão de jogo: cartaz de cor chapada com ícone grande, nome em marker, descrição e andamento. */
+function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {}) {
+  const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
+  const a = h('a', { class: `kx-g${on ? ' on' : ''}`, href }, ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, blurb));
   if (pct != null) a.append(h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct}%` })));
   if (meta) a.append(h('span', { class: 'kx-gm' }, meta));
   return a;
 }
 const wideCard = (id, title, sub, onclick, href) => {
-  const screen = h('span', { class: 'kx-screen' }, h('i', { class: 'kx-led' })); screen.insertAdjacentHTML('beforeend', gameIcon(id));
-  const kids = [screen, h('span', {}, h('b', { class: 'kx-gt' }, title), h('br'), h('span', { class: 'kx-gd' }, sub))];
-  return href ? h('a', { class: 'kx-wide', href }, ...kids) : h('button', { class: 'kx-wide', type: 'button', onclick }, ...kids);
+  const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
+  const kids = [ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gd' }, sub)];
+  return href ? h('a', { class: 'kx-g wide', href }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick }, ...kids);
 };
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'KIDS')), right || null);
 
