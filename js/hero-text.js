@@ -3,18 +3,22 @@ import * as store from './store.js';
 
 export const HERO_KEY = 'setting-hero';
 export const HERO_SUBS = [
-  'seu estúdio na palma da mão',
-  'menos burocracia, mais música',
-  'baqueta na mão, cabeça no lugar',
-  'tudo no compasso',
-  'do ensaio ao palco',
-  'onde o groove vira rotina',
-  'estudar, ensinar, tocar',
-  'a escola cabe no bolso',
-  'meu caderno de ritmo',
-  'groove, aula e ideia num lugar só',
-  'no tempo certo',
-  'feito por quem toca',
+  'prosperar é o meu padrão',
+  'meu valor não está em promoção',
+  'quem lidera não pede licença',
+  'empresária do meu próprio ritmo',
+  'poder é saber o próprio preço',
+  'o que é raro vale mais',
+  'agenda cheia, vaga é privilégio',
+  'escassez cria desejo, valor cria fila',
+  'dinheiro segue quem entrega valor',
+  'cobrar bem é respeitar meu talento',
+  'presença é poder',
+  'liderar é decidir e sustentar',
+  'minha arte é meu negócio',
+  'eu valho o que eu entrego',
+  'abundância começa na decisão',
+  'faço dinheiro fazendo o que amo',
 ];
 export const heroSub = () => { const r = store.get(HERO_KEY); return (r && r.data.sub) || HERO_SUBS[0]; };
 export const setHeroSub = (sub) => store.upsert('setting', HERO_KEY, { sub });

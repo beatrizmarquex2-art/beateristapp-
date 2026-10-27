@@ -1534,3 +1534,15 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 .ar-pick { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 2px solid currentColor; border-radius: 50%; font: 700 13px var(--body); }
 .ar-pick.on { background: #1b1818; color: #fff; border-color: #1b1818; }
 .ar-file.picked { outline: 2px solid #b5162b; outline-offset: -2px; }
+
+/* capa: zoom, posição e tamanho escolhidos pela Bea (variáveis --cz --cx --cy --cs --cf no <figure>) */
+.hpi { display: block; overflow: hidden; border-radius: inherit; }
+.hero-photo img, .cover-preview img { object-position: var(--cx, 50%) var(--cy, 20%); transform: scale(var(--cz, 1)); transform-origin: var(--cx, 50%) var(--cy, 20%); }
+.hero-photo img { height: calc(150px * var(--cf, 1)); }
+[data-theme="rabisco"] .hero-photo { width: var(--cs, 82px); height: var(--cs, 82px); }
+[data-theme="rabisco"] .hero-photo .hpi { width: 100%; height: 100%; border-radius: 50%; }
+[data-theme="rabisco"] .hero-photo img { height: 100%; }
+[data-theme="rabisco"] .hero-top { padding-right: calc(var(--cs, 82px) + 26px); }
+.cv-sliders { display: grid; gap: 4px; margin: 6px 0; } .cv-slide input[type=range] { width: 100%; } .cv-slide output { font-weight: 700; }
+.hpi { isolation: isolate; }
+[data-theme="rabisco"] .hero-photo .hpi { clip-path: circle(50%); }

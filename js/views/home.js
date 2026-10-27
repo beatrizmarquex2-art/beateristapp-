@@ -34,7 +34,7 @@ function hero() {
   return h('section', { class: 'hero' },
     spk('s1'), spk('s2'), spk('s3'),
     h('figure', { class: 'hero-photo', role: 'button', tabindex: '0', 'aria-label': 'Trocar a foto da capa', onclick: openCover, onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCover(); } } },
-      h('img', { src: 'assets/zine/bea-rock.webp', alt: '', width: 160, height: 200, decoding: 'async' }), h('figcaption', {}, 'bora tocar'),
+      h('span', { class: 'hpi' }, h('img', { src: 'assets/zine/bea-rock.webp', alt: '', width: 160, height: 200, decoding: 'async' })), h('figcaption', {}, 'bora tocar'),
       h('span', { class: 'hero-photo-edit', 'aria-hidden': 'true' }, icon('photo', 16))),
     h('div', { class: 'hero-top' },
       h('div', { class: 'hero-title' },
