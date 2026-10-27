@@ -108,7 +108,7 @@ export function mount(host) {
   loadPackage().then((BR) => {
     if (gone) return;
     box.replaceChildren();
-    BR.mount('#jogos', { storageKey: 'beaterista-ritmo', songs: importedSongs(), onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    BR.mount('#jogos', { storageKey: 'beaterista-ritmo', midiImport: false, songs: importedSongs(), onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;

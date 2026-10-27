@@ -105,3 +105,13 @@ body.rz-lock{overscroll-behavior:none}
 .rz-stage canvas{touch-action:none}
 @media (max-height:520px){.rz-stage{height:calc(100dvh - 110px)!important}.rz-pads{display:none}}
 @media (max-width:520px){.rz-hud{font-size:12px;gap:4px 10px}.rz-hud .btn{padding:6px 10px;min-height:34px}}
+/* v1.1 (patch Beaterista): importar MIDI na aba Importados */
+.bmr .rz-imp{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bmr .rz-li{display:flex;gap:4px;align-items:stretch}
+.bmr .rz-li .rz-song{flex:1;min-width:0}
+.bmr .rz-mdel{flex:none;width:48px;border:0;cursor:pointer;font:700 22px/1 var(--f-body);color:var(--ivory-3);background:var(--char-2)}
+.bmr .rz-mdel:hover{color:var(--ivory)}
+/* v1.1: no celular os estilos quebram linha (a aba Importados não some pra fora da tela) e os jogos ficam em 2 colunas */
+.bmr .rz-styles{flex-wrap:wrap}
+.bmr .rz-st{flex:1 1 30%;padding:0 8px;white-space:nowrap}
+@media(max-width:759px){.bmr .rz-games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}

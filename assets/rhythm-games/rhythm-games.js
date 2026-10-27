@@ -5,7 +5,7 @@
    Não depende de nenhum outro script. Gerado do app bm. */
 (function(global){'use strict';
 var ROOT=null,ACTIVE=false,MODE='rz',OPTS={};
-var setSongs=function(list){IMP=(list||[]).filter(function(x){return x&&x.arr&&x.arr.mel&&x.arr.drums});if(ROOT&&typeof RZ!=='undefined'&&RZ.phase==='menu'&&MODE==='rz') rzRe()};
+var setSongs=function(list){MEXT=(list||[]).filter(function(x){return x&&x.arr&&x.arr.mel&&x.arr.drums});if(typeof mergeImp==='function') mergeImp()};
 /* patch Beaterista: RM (movimento reduzido) era usado no acerto do Palco sem estar definido no pacote */
 var RM=(global.matchMedia&&global.matchMedia('(prefers-reduced-motion: reduce)'))||{matches:false};
 var $=function(s){return ROOT?ROOT.querySelector(s):null},$$=function(s){return ROOT?Array.prototype.slice.call(ROOT.querySelectorAll(s)):[]};
@@ -363,10 +363,12 @@ function rzMenu(){const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game)
   if(RZ.game==='tiles') h+='<section class="panel rz-how"><b>Como funciona</b><ol><li>Os blocos pretos descem. Cada bloco é uma nota da música.</li><li>Toque na coluna do bloco quando a base dele encostar na <b style="color:#2fc4e8">linha azul</b>.</li><li>Bloco comprido: segure o dedo até acabar. Deixou passar: perde um ♥ (são 3).</li></ol><button type="button" class="btn btn-sm" data-act="rz-how">Ver com desenho</button></section>';
   h+='<div class="rz-row"><div class="segtabs rz-big-tabs" role="group" aria-label="Dificuldade">'+Object.entries(RZ_WIN).map(([k,v])=>'<button type="button" data-act="rz-diff" data-v="'+k+'" aria-pressed="'+(RZ.diff===k)+'">'+v.n+'</button>').join('')+'</div></div>';
   h+='<div class="rz-row rz-styles">'+RS_STYLES.map(([k,l,c])=>'<button type="button" class="rz-st'+(RZ.style===k?' on':'')+'" style="--sc:'+c+'" data-act="rz-style" data-v="'+k+'">'+l+'</button>').join('')+'</div>';
+  if(RZ.style==='imp'&&midiOn()) h+='<div class="rz-row rz-imp"><button type="button" class="btn btn-sm btn-red" data-act="rz-midi">+ importar MIDI</button><span class="small muted">.mid, .midi ou um .zip com vários</span></div>';
   h+='<label class="sr-only" for="rz-q">Buscar música</label><input class="field rz-q" id="rz-q" type="search" placeholder="buscar música…" value="'+esc(RZ.q)+'">';
-  h+='<ol class="rz-songs">'+songs.map(s=>{const b=R.best[[RZ.game,RZ.game==='hero'?rzInstKey():'',RZ.diff,s.id].join('|')];return '<li><button type="button" class="rz-song" data-act="rz-play" data-v="'+s.i+'"><span class="rz-n">'+(s.i+1)+'</span><b>'+esc(s.name)+'</b><span class="small muted">'+s.bpm+' bpm · '+(s.minor?'menor':'maior')+'</span>'+(b?'<span class="rz-b">'+(RZ.game==='beat'?'★'.repeat(b.stars||0):b.grade)+'</span>':'')+'</button></li>'}).join('')+'</ol>'+(RZ.style==='imp'&&!songs.length?'<p class="small muted rz-empty">'+(IMP.length?'nenhuma música com esse nome.':'nenhuma música importada ainda.')+'</p>':'');
+  h+='<ol class="rz-songs">'+songs.map(s=>{const b=R.best[[RZ.game,RZ.game==='hero'?rzInstKey():'',RZ.diff,s.id].join('|')];return '<li class="rz-li"><button type="button" class="rz-song" data-act="rz-play" data-v="'+s.i+'"><span class="rz-n">'+(s.i+1)+'</span><b>'+esc(s.name)+'</b><span class="small muted">'+s.bpm+' bpm · '+(s.minor?'menor':'maior')+'</span>'+(b?'<span class="rz-b">'+(RZ.game==='beat'?'★'.repeat(b.stars||0):b.grade)+'</span>':'')+'</button>'+(s.local?'<button type="button" class="rz-mdel" data-act="rz-mdel" data-v="'+esc(s.id)+'" aria-label="Apagar '+esc(s.name)+'">×</button>':'')+'</li>'}).join('')+'</ol>'+(RZ.style==='imp'&&!songs.length?'<p class="small muted rz-empty">'+(IMP.length?'nenhuma música com esse nome.':'nenhuma música importada ainda.')+'</p>':'');
   if(RZ.cal) h+=rzCalHTML();
   h+='<details class="panel"><summary class="small">Calibrar atraso do som</summary><div class="rz-calrow"><button type="button" class="btn btn-sm btn-red" data-act="rz-cal">Calibrar tocando (10 s)</button><span class="small muted">Toque junto com 8 cliques e eu acerto o atraso pra você.</span></div><div class="ctl-row"><input class="range" type="range" id="rz-off" min="-150" max="150" step="5" value="'+(ensureHero().offset||0)+'"><span class="est" id="rz-off-v">'+(ensureHero().offset||0)+' ms</span></div><p class="small muted">Se você acerta sempre um pouco atrasada, aumente. Fones bluetooth costumam pedir de 60 a 140 ms.</p></details>';
+  if(RZ.style==='imp') h+='<p class="small muted">Importados: arquivos MIDI seus. '+(midiOn()?'Ficam guardados só neste navegador (não vão pra internet).':'O site guarda as suas músicas.')+' Use só arquivos que você tem direito de usar.</p>';
   h+='<p class="small muted">As 300 músicas são composições originais criadas pelo bm em cada estilo (sem direito autoral de terceiros). Teclado: '+(RZ.game==='hero'?rzL().map(l=>l[1]).join(' '):RZ.game==='beat'?'J K L (segure a tecla para notas longas; setas para deslizar)':RZ.game==='setas'?'setas ou A S W D':'A S D F')+' · espaço pausa. No toque, vale tocar em qualquer lugar da pista.</p>';return h}
 function rzPlayView(){const L=RZ.game==='hero'?rzL():RZ.game==='beat'?[['#ff6ad5','J'],['#ffd84a','K'],['#5ee0ff','L']]:RZ.game==='setas'?RZ_ARROW.map(a=>[a[1],a[0]]):[];
   let pads='';if(RZ.game==='hero') pads='<div class="rz-pads rz-'+RZ.inst+' rz-n'+L.length+'" style="--n:'+L.length+'">'+L.map((l,i)=>'<button type="button" class="rz-pad" data-rl="'+i+'" style="--c:'+l[0]+'"><span>'+(l[2]||'')+'</span></button>').join('')+'</div>';
@@ -406,7 +408,7 @@ function rzEndView(){const S=RZ.stats;const G=RZ_GAMES.find(x=>x[0]===RZ.game);r
 function viewRitmo(){const G=RZ_GAMES.find(x=>x[0]===RZ.game);const playing=RZ.phase==='play'||RZ.phase==='pause';return '<div class="view rzv rz-'+RZ.game+'-v'+(playing?' rz-playing':'')+'">'+(RZ.phase==='menu'?rzMenu():RZ.phase==='howto'?rzTilesHowto():RZ.phase==='end'?rzEndView():rzPlayView())+'</div>'}
 function rzRe(){if(route()!=='ritmo') return;const y=window.scrollY;VIEW().innerHTML=viewRitmo();setPlaying();if(RZ.phase==='play'||RZ.phase==='pause'){rzBind();rzHud()}else window.scrollTo(0,y)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&RZ.phase==='play') rzPause();else if(!document.hidden&&(RZ.phase==='play'||RZ.phase==='pause')) rzWake(true)});
-document.addEventListener('click',ev=>{const a=ev.target.closest('[data-act^="rz-"]');if(!a||route()!=='ritmo') return;const act=a.dataset.act;if(act==='rz-fig'){showFiguras();return}
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-act^="rz-"]');if(!a||route()!=='ritmo') return;const act=a.dataset.act;if(act==='rz-fig'){showFiguras();return}if(act==='rz-midi'){mPick();return}if(act==='rz-mdel'){mDel(a.dataset.v);return}
   if(act==='rz-game'){RZ.game=a.dataset.v}else if(act==='rz-inst'){RZ.inst=a.dataset.v}else if(act==='rz-kn'){RZ.kn[RZ.inst]=+a.dataset.v;const R=ensureRitmo();R.kn=Object.assign({},RZ.kn);saveSoon()}
   else if(act==='rz-how'){RZ.howFrom='menu';RZ.phase='howto'}else if(act==='rz-go'){const R=ensureRitmo();R.tilesSeen=1;save();rzStart(RZ.song);return}
   else if(act==='rz-cal'){rzCalStart();return}else if(act==='rz-calx'){clearTimeout(RZ.calT);RZ.cal=null}else if(act==='rz-diff'){RZ.diff=a.dataset.v}else if(act==='rz-style'){RZ.style=a.dataset.v}
@@ -725,13 +727,241 @@ function fgStore(){return {load:function(){return ensureRitmo().fig||{}},save:fu
 function showFiguras(){rzStop(true);MODE='fg';ROOT.classList.remove('bmr-playing');var st=VIEW();st.innerHTML='<div class="bmr-fgbar"><button type="button" class="btn btn-sm btn-ghost" data-bmr="back">← jogos de ritmo</button></div><div class="bmr-fgbox"></div>';
   try{RhythmFigures.mount(st.querySelector('.bmr-fgbox'),{audio:fgAudio(),store:fgStore(),onXp:function(n,w){xpGain(n,w||'figuras rítmicas')}})}catch(e){st.querySelector('.bmr-fgbox').textContent='erro: '+e.message}}
 function showRZ(game){MODE='rz';if(game) RZ.game=game;RZ.phase='menu';rzRe()}
+/* ===== MIDI (gerado por tools/rhythm_midi_patch.py — não editar aqui) ===== */
+var BMR_MIDI=(function(){
+// Leitor mínimo de .zip (stored/deflate) usando DecompressionStream do navegador. Sem dependências.
+async function inflate(data) {
+  const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function readZip(buffer) {
+  if (typeof DecompressionStream === 'undefined') throw new Error('Este navegador não abre .zip. Envie os arquivos .md soltos.');
+  const u8 = new Uint8Array(buffer), dv = new DataView(buffer);
+  let e = u8.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('Esse arquivo não parece um .zip válido.');
+  const count = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const out = [];
+  for (let i = 0; i < count; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), lho = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nlen));
+    p += 46 + nlen + xlen + clen;
+    if (name.endsWith('/') || name.startsWith('__MACOSX') || name.split('/').pop().startsWith('._')) continue;
+    const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+    const data = u8.subarray(start, start + csize);
+    out.push({ name, read: async () => new Uint8Array(method === 0 ? data : await inflate(data)) });
+  }
+  return out;
+}
+
+// Leitor de arquivo MIDI (SMF formato 0 e 1): mapa de andamento, faixas, canais e notas em segundos.
+// Puro (só bytes → objetos), testado em tests/midi.test.mjs. Nada sai do aparelho.
+
+/** Lê um MIDI. Devolve { format, ppq, bpm (o primeiro andamento), tempos:[{tick, us}], tracks:[{name, notes:[{t, d, m, v, ch}], programs:{ch: prog}}], dur }. */
+function parseMidi(bytes) {
+  const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  let p = 0;
+  const str = (n) => { let s = ''; for (let i = 0; i < n; i++) s += String.fromCharCode(b[p + i]); p += n; return s; };
+  const u32 = () => { const v = (b[p] << 24 | b[p + 1] << 16 | b[p + 2] << 8 | b[p + 3]) >>> 0; p += 4; return v; };
+  const u16 = () => { const v = b[p] << 8 | b[p + 1]; p += 2; return v; };
+  const vlq = () => { let v = 0, c; do { c = b[p++]; v = (v << 7) | (c & 0x7f); } while (c & 0x80 && p < b.length); return v; };
+  if (str(4) !== 'MThd') throw new Error('não é um arquivo MIDI');
+  const hl = u32(); const format = u16(); const ntr = u16(); const div = u16(); p += hl - 6;
+  if (div & 0x8000) throw new Error('MIDI com tempo SMPTE não é suportado');
+  const ppq = div || 480;
+  const raw = []; const tempos = [];
+  for (let k = 0; k < ntr && p < b.length; k++) {
+    // pula pedaços desconhecidos até achar uma faixa
+    while (p + 8 <= b.length && String.fromCharCode(b[p], b[p + 1], b[p + 2], b[p + 3]) !== 'MTrk') { p += 4; const len = u32(); p += len; }
+    if (p + 8 > b.length) break;
+    p += 4; const len = u32(); const end = Math.min(b.length, p + len);
+    let tick = 0, status = 0; const ev = []; let name = ''; const programs = {};
+    while (p < end) {
+      tick += vlq();
+      let st = b[p];
+      if (st & 0x80) p++; else st = status; // running status
+      if (st === 0xff) {
+        const type = b[p++]; const l = vlq(); const at = p; p += l;
+        if (type === 0x51 && l === 3) tempos.push({ tick, us: (b[at] << 16) | (b[at + 1] << 8) | b[at + 2] });
+        else if (type === 0x03 && !name) { let s = ''; for (let i = 0; i < l; i++) s += String.fromCharCode(b[at + i]); name = s.trim(); }
+        else if (type === 0x2f) break;
+        continue;
+      }
+      if (st === 0xf0 || st === 0xf7) { const l = vlq(); p += l; continue; }
+      status = st; const hi = st & 0xf0, ch = st & 0x0f;
+      if (hi === 0x90 || hi === 0x80) { const m = b[p++], v = b[p++]; ev.push({ tick, on: hi === 0x90 && v > 0, m, v, ch }); }
+      else if (hi === 0xc0) { programs[ch] = b[p++]; }
+      else if (hi === 0xd0) p += 1;
+      else p += 2; // a0, b0, e0
+    }
+    p = end; raw.push({ name, ev, programs });
+  }
+  tempos.sort((x, y) => x.tick - y.tick);
+  if (!tempos.length || tempos[0].tick > 0) tempos.unshift({ tick: 0, us: 500000 });
+  // tick → segundos pelo mapa de andamento
+  const segs = []; let sec = 0;
+  tempos.forEach((tp, i) => { if (i) sec += ((tp.tick - tempos[i - 1].tick) * tempos[i - 1].us) / ppq / 1e6; segs.push({ tick: tp.tick, sec, us: tp.us }); });
+  const toSec = (tick) => { let s = segs[0]; for (const x of segs) { if (x.tick <= tick) s = x; else break; } return s.sec + ((tick - s.tick) * s.us) / ppq / 1e6; };
+  let dur = 0;
+  const tracks = raw.map((tr) => {
+    const open = new Map(); const notes = [];
+    for (const e of tr.ev) {
+      const key = e.ch * 128 + e.m;
+      if (e.on) { if (!open.has(key)) open.set(key, []); open.get(key).push(e); }
+      else { const q = open.get(key); const s = q && q.shift(); if (s) { const t = toSec(s.tick); const d = Math.max(0.02, toSec(e.tick) - t); notes.push({ t, d, m: e.m, v: s.v, ch: e.ch }); dur = Math.max(dur, t + d); } }
+    }
+    // notas sem "desligar": duram um pouquinho
+    for (const q of open.values()) for (const s of q) { const t = toSec(s.tick); notes.push({ t, d: 0.2, m: s.m, v: s.v, ch: s.ch }); dur = Math.max(dur, t + 0.2); }
+    notes.sort((x, y) => x.t - y.t || x.m - y.m);
+    return { name: tr.name, notes, programs: tr.programs };
+  });
+  return { format, ppq, bpm: Math.round((60e6 / tempos[0].us) * 100) / 100, tempos, tracks, dur };
+}
+
+// MIDI → fase dos jogos de ritmo (o mesmo "arranjo" que o pacote gera pras músicas dele):
+// bateria do canal 10 vira as pistas do Palco/bateria, a faixa de melodia vira as notas da guitarra, do teclado,
+// do Piano Tiles, do Beatstar e das Setinhas; baixo e acordes tocam no fundo. Puro, testado em tests/midi.test.mjs.
+
+/** Bateria General MIDI → som e pista do pacote (0 bumbo, 1 caixa, 2 chimbal/pratos, 3 tons). */
+const GM_DRUM = {
+  35: 'kick', 36: 'kick', 37: 'snare', 38: 'snare', 39: 'snare', 40: 'snare',
+  42: 'hhc', 44: 'hhc', 46: 'hho', 49: 'crash', 52: 'crash', 55: 'crash', 57: 'crash', 51: 'ride', 53: 'ride', 59: 'ride',
+  48: 'tom1', 50: 'tom1', 45: 'tom2', 47: 'tom2', 41: 'floor', 43: 'floor',
+};
+const LANE = { kick: 0, snare: 1, hhc: 2, hho: 2, ride: 2, crash: 2, tom1: 3, tom2: 3, floor: 3 };
+const MAJ = [0, 2, 4, 5, 7, 9, 11], MIN = [0, 2, 3, 5, 7, 8, 10];
+// perfis de Krumhansl pra achar o tom
+const KMAJ = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
+const KMIN = [6.33, 2.68, 3.52, 5.38, 2.6, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
+
+/** Andamento que mais dura no arquivo (o primeiro às vezes é só um "120" padrão antes do de verdade). */
+function mainBpm(midi) {
+  const t = midi.tempos; if (!t.length) return 120;
+  // tempo de cada trecho em segundos (o último vai até o fim da música)
+  let sec = 0; const spans = t.map((x, i) => { const start = sec; if (i + 1 < t.length) sec += ((t[i + 1].tick - x.tick) * x.us) / midi.ppq / 1e6; return { us: x.us, start }; });
+  spans.forEach((x, i) => { x.len = (i + 1 < spans.length ? spans[i + 1].start : Math.max(midi.dur, x.start)) - x.start; });
+  const best = spans.reduce((a, b2) => (b2.len > a.len ? b2 : a));
+  return Math.round((60e6 / best.us) * 10) / 10;
+}
+
+/** Tom (root como classe 0–11 e menor/maior) pelos pesos de duração das notas. */
+function findKey(notes) {
+  const w = Array(12).fill(0); notes.forEach((n) => { w[n.m % 12] += Math.min(n.d, 2); });
+  const corr = (prof, r) => { const xs = prof.map((_, i) => w[(i + r) % 12]); const mx = xs.reduce((a, b) => a + b, 0) / 12, mp = prof.reduce((a, b) => a + b, 0) / 12;
+    let n = 0, dx = 0, dp = 0; xs.forEach((x, i) => { n += (x - mx) * (prof[i] - mp); dx += (x - mx) ** 2; dp += (prof[i] - mp) ** 2; }); return dx && dp ? n / Math.sqrt(dx * dp) : 0; };
+  let best = { root: 0, minor: false, c: -2 };
+  for (let r = 0; r < 12; r++) { const a = corr(KMAJ, r), b2 = corr(KMIN, r); if (a > best.c) best = { root: r, minor: false, c: a }; if (b2 > best.c) best = { root: r, minor: true, c: b2 }; }
+  return best;
+}
+
+/** Faixa de melodia: a mais "cantável" (monofônica, no meio do teclado, com nome de voz/melodia ganha bônus). */
+function pickMelody(midi) {
+  let best = null;
+  midi.tracks.forEach((tr, i) => {
+    const ns = tr.notes.filter((n) => n.ch !== 9); if (ns.length < 8) return;
+    const avg = ns.reduce((s, n) => s + n.m, 0) / ns.length; if (avg < 50) return; // baixo
+    let poly = 0; for (let k = 1; k < ns.length; k++) if (Math.abs(ns[k].t - ns[k - 1].t) < 0.03) poly++;
+    const mono = 1 - poly / ns.length;
+    const named = /voc|voz|vox|melod|lead|sing|canto|main/i.test(tr.name) ? 1.6 : 1;
+    const score = Math.min(ns.length, 600) * (0.3 + mono) * (avg >= 55 && avg <= 84 ? 1 : 0.6) * named;
+    if (!best || score > best.score) best = { i, score };
+  });
+  return best ? best.i : -1;
+}
+
+/** Uma nota por vez (a mais aguda quando batem juntas) e sem sobrepor a próxima. */
+function skyline(notes) {
+  const out = [];
+  for (const n of notes) {
+    const last = out[out.length - 1];
+    if (last && Math.abs(n.t - last.t) < 0.03) { if (n.m > last.m) out[out.length - 1] = { ...n }; continue; }
+    if (last && last.t + last.d > n.t) last.d = Math.max(0.05, n.t - last.t);
+    out.push({ ...n });
+  }
+  return out;
+}
+
+const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
+
+/**
+ * Monta a fase. Devolve { song, report } ou lança erro se não der pra jogar (sem bateria e sem melodia).
+ * song = { id, style: 'imp', name, bpm, root, minor, seed, imported: true, arr: { st, mel, drums, ev, chords, dur, bars, lead } }.
+ */
+function toChart(midi, name = 'MIDI') {
+  const bpm = Math.max(40, Math.min(240, mainBpm(midi)));
+  const st = 60 / bpm / 4, barLen = 16 * st, lead = 1;
+  const all = midi.tracks.flatMap((tr) => tr.notes);
+  const drumsRaw = all.filter((n) => n.ch === 9 && GM_DRUM[n.m]);
+  const mi = pickMelody(midi);
+  const melRaw = mi >= 0 ? skyline(midi.tracks[mi].notes.filter((n) => n.ch !== 9)) : [];
+  if (!drumsRaw.length && melRaw.length < 8) throw new Error('sem bateria (canal 10) e sem melodia');
+  const pitched = all.filter((n) => n.ch !== 9);
+  const key = findKey(pitched.length ? pitched : melRaw);
+  // alinha: o compasso da primeira nota começa depois de 1 compasso de contagem
+  const first = Math.min(...[...drumsRaw, ...melRaw, ...pitched].map((n) => n.t));
+  const shift = lead * barLen - Math.floor(first / barLen + 1e-6) * barLen;
+  const at = (t) => t + shift;
+  const barOf = (t) => Math.floor((t + 1e-6) / barLen) - lead;
+  const stepOf = (t) => Math.round(((t + 1e-6) % barLen) / st) % 16;
+  const scale = key.minor ? MIN : MAJ; const root = 48 + key.root;
+  const idxOf = (m) => { const rel = m - (root + 12); const oct = Math.floor(rel / 12); const pc = ((rel % 12) + 12) % 12;
+    let bi = 0, bd = 99; scale.forEach((s, i) => { const d = Math.abs(s - pc); if (d < bd) { bd = d; bi = i; } }); return oct * 7 + bi; };
+  const drums = drumsRaw.map((n) => { const snd = GM_DRUM[n.m]; const t = at(n.t); return { t, lane: LANE[snd], snd, v: Math.max(0.3, n.v / 127), bar: barOf(t), kind: 'verso' }; });
+  // tira duplicata de pista no mesmo instante (ex.: duas caixas juntas)
+  const seen = new Set(); const drumsU = drums.filter((d) => { const k = `${d.snd}|${Math.round(d.t * 200)}`; if (seen.has(k)) return false; seen.add(k); return true; });
+  const mel = melRaw.map((n) => { const t = at(n.t); const ds = Math.max(1, Math.min(16, Math.round(n.d / st))); return { t, m: n.m, idx: idxOf(n.m), d: n.d, ds, bar: barOf(t), step: stepOf(t), kind: 'verso' }; });
+  // fundo: baixo e o resto das notas (acordes agrupados) — limite pra não pesar no celular
+  const ev = [];
+  const others = midi.tracks.flatMap((tr, i) => (i === mi ? [] : tr.notes.filter((n) => n.ch !== 9)));
+  const bassNotes = others.filter((n) => n.m < 52); const restNotes = others.filter((n) => n.m >= 52);
+  bassNotes.slice(0, 3000).forEach((n) => ev.push({ t: at(n.t), k: 'bass', m: n.m, d: Math.min(n.d, 2) }));
+  const groups = []; restNotes.slice(0, 6000).forEach((n) => { const g = groups[groups.length - 1]; if (g && Math.abs(g.t - n.t) < 0.03) { if (g.ms.length < 5 && !g.ms.includes(n.m)) g.ms.push(n.m); g.d = Math.max(g.d, n.d); } else groups.push({ t: n.t, ms: [n.m], d: n.d }); });
+  groups.sort((a, b2) => a.t - b2.t).slice(0, 2500).forEach((g) => ev.push({ t: at(g.t), k: 'chord', ms: g.ms, d: Math.min(g.d, 3), sty: 'pop' }));
+  ev.sort((a, b2) => a.t - b2.t);
+  const pre = []; for (let s = 0; s < 4; s++) pre.push({ t: s * 4 * st, k: 'click', v: s ? 0.6 : 1 });
+  const end = Math.max(...[...drumsU, ...mel].map((n) => n.t + (n.d || 0.1)), ...ev.map((e) => e.t + (e.d || 0.1)));
+  const bars = Math.max(1, Math.ceil(end / barLen) - lead);
+  mel.sort((a, b2) => a.t - b2.t); drumsU.sort((a, b2) => a.t - b2.t);
+  const song = {
+    id: `imp-${hash(`${name}|${midi.tracks.length}|${all.length}|${Math.round(midi.dur)}`)}`, style: 'imp', name, bpm: Math.round(bpm), root, minor: key.minor, seed: 0, imported: true,
+    arr: { st, mel, drums: drumsU, ev: pre.concat(ev), chords: [], dur: end + 1.5, bars, lead },
+  };
+  return { song, report: { drums: drumsU.length, melody: mel.length, bpm: Math.round(bpm), seconds: Math.round(end - lead * barLen), melodyTrack: mi >= 0 ? midi.tracks[mi].name || `faixa ${mi + 1}` : '' } };
+}
+
+/** Nome bonito a partir do arquivo ("01 - Artista - Música_drums.mid" → "Artista - Música"). */
+const nameFromFile = (file) => String(file).split('/').pop().replace(/\.(mid|midi|kar)$/i, '').replace(/^\d+\s*[-_.]\s*/, '').replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim() || 'MIDI';
+
+return { readZip: readZip, parseMidi: parseMidi, toChart: toChart, nameFromFile: nameFromFile };
+})();
+var readZip=BMR_MIDI.readZip,parseMidi=BMR_MIDI.parseMidi,toChart=BMR_MIDI.toChart,nameFromFile=BMR_MIDI.nameFromFile;
+/* ===== fim MIDI ===== */
+/* patch Beaterista v1.1: importar MIDI dentro do pacote. Guarda no IndexedDB do navegador, separado por storageKey.
+   opts.midiImport:false desliga (o site guarda do jeito dele e passa as músicas por opts.songs / setSongs). */
+var MEXT=[],MLOCAL=[],MDB=null;
+function midiOn(){return OPTS.midiImport!==false}
+function mergeImp(){var seen={};IMP=MEXT.concat(MLOCAL).filter(function(x){if(seen[x.id]) return false;seen[x.id]=1;return true}).sort(function(a,b){return String(a.name).localeCompare(String(b.name),'pt-BR')});if(ROOT&&MODE==='rz'&&RZ.phase==='menu') rzRe()}
+function mdb(){if(MDB) return MDB;MDB=new Promise(function(ok,no){if(!global.indexedDB) return no(new Error('sem IndexedDB'));var r=indexedDB.open('bmr-midi',1);r.onupgradeneeded=function(){r.result.createObjectStore('songs',{keyPath:'id'}).createIndex('site','site')};r.onsuccess=function(){ok(r.result)};r.onerror=function(){no(r.error)}});return MDB}
+function mreq(r){return new Promise(function(ok,no){r.onsuccess=function(){ok(r.result)};r.onerror=function(){no(r.error)}})}
+function mstore(mode){return mdb().then(function(db){return db.transaction('songs',mode).objectStore('songs')})}
+function mLoad(){if(!midiOn()){MLOCAL=[];return Promise.resolve()}return mstore('readonly').then(function(st){return mreq(st.index('site').getAll(SKEY))}).then(function(rows){MLOCAL=rows.map(function(r){try{var c=toChart(parseMidi(new Uint8Array(r.bytes)),r.name).song;c.id=r.id;c.name=r.name;c.local=1;return c}catch(e){return null}}).filter(Boolean);mergeImp()}).catch(function(){})}
+function mImport(files){var items=[],ok=[],bad=[];
+  return Array.prototype.reduce.call(files,function(p,f){return p.then(function(){
+    if(/\.zip$/i.test(f.name)) return f.arrayBuffer().then(readZip).then(function(es){es.forEach(function(e){if(/\.(mid|midi|kar)$/i.test(e.name)) items.push({name:e.name,read:e.read})})});
+    if(/\.(mid|midi|kar)$/i.test(f.name)) items.push({name:f.name,read:function(){return f.arrayBuffer().then(function(b){return new Uint8Array(b)})}})})},Promise.resolve())
+  .then(function(){return items.reduce(function(p,it){return p.then(function(){var name=nameFromFile(it.name);return it.read().then(function(bytes){if(bytes.length>2097152) throw new Error('arquivo grande demais');var r=toChart(parseMidi(bytes),name);
+      return mstore('readwrite').then(function(st){return mreq(st.put({id:SKEY+'|'+r.song.id,site:SKEY,name:name,file:it.name.split('/').pop(),bytes:bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),added:Date.now()}))}).then(function(){ok.push(Object.assign({name:name},r.report))})}).catch(function(e){bad.push({name:name,why:e.message||'não consegui ler'})})})},Promise.resolve())})
+  .then(function(){return mLoad()}).then(function(){var nd=ok.filter(function(x){return !x.drums}).length;toast(ok.length?ok.length+' música(s) em Importados ✓'+(nd?' · '+nd+' sem bateria':'')+(bad.length?' · '+bad.length+' não deu':''):'nenhum MIDI deu certo'+(bad.length?': '+bad[0].why:''));if(OPTS.onImport) try{OPTS.onImport({ok:ok,bad:bad})}catch(e){}return {ok:ok,bad:bad}})}
+function mPick(){var i=document.createElement('input');i.type='file';i.multiple=true;i.accept='.mid,.midi,.kar,.zip,audio/midi,audio/x-midi,application/zip';i.style.display='none';i.className='rz-midi-input';(ROOT||document.body).appendChild(i);i.addEventListener('change',function(){var fs=Array.prototype.slice.call(i.files);i.remove();if(fs.length){toast('lendo os MIDIs…');mImport(fs)}});i.click()}
+function mDel(id){if(!global.confirm('Apagar esta música importada?')) return;mstore('readwrite').then(function(st){return mreq(st.delete(id))}).then(mLoad).catch(function(){})}
 function bindRoot(){ROOT.addEventListener('click',function(ev){var b=ev.target.closest('[data-bmr="back"]');if(b){showRZ()}})}
 function setPlaying(){if(ROOT) ROOT.classList.toggle('bmr-playing',MODE==='rz'&&(RZ.phase==='play'||RZ.phase==='pause'))}
 function mount(el,opts){if(typeof el==='string') el=document.querySelector(el);if(!el) throw new Error('BeaterRhythm.mount: elemento não encontrado');
   if(ACTIVE) unmount();OPTS=opts||{};if(OPTS.storageKey) SKEY=OPTS.storageKey;load();ROOT=el;ROOT.classList.add('bmr');ROOT.innerHTML='<div class="bmr-stage"></div>';if(!ROOT._bmr){ROOT._bmr=1;bindRoot()}
   ACTIVE=true;MODE='rz';var R=ensureRitmo();if(R.kn) Object.assign(RZ.kn,R.kn);RZ.phase='menu';
-  /* patch Beaterista */ if(OPTS.songs) IMP=OPTS.songs.filter(function(x){return x&&x.arr&&x.arr.mel&&x.arr.drums});if(OPTS.style&&RS_STYLES.some(function(x){return x[0]===OPTS.style})) RZ.style=OPTS.style;
+  /* patch Beaterista */ MEXT=(OPTS.songs||[]).filter(function(x){return x&&x.arr&&x.arr.mel&&x.arr.drums});MLOCAL=[];IMP=MEXT.slice();mLoad();if(OPTS.style&&RS_STYLES.some(function(x){return x[0]===OPTS.style})) RZ.style=OPTS.style;
   if(OPTS.game==='figuras') showFiguras();else{if(OPTS.game&&RZ_GAMES.some(function(g){return g[0]===OPTS.game})) RZ.game=OPTS.game;rzRe()}}
 function unmount(){if(!ROOT) return;try{rzStop(true)}catch(e){}ACTIVE=false;ROOT.classList.remove('bmr','bmr-playing');ROOT.innerHTML='';ROOT=null}
-global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,version:'1.0',games:['hero','tiles','beat','setas','figuras']};
+global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,version:'1.1',importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
 })(typeof window!=='undefined'?window:this);
