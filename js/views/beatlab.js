@@ -137,7 +137,7 @@ function mountEditor(host, kind) {
   const persist = () => save({ [slot]: beat });
   const isPlaying = () => player && player.owner === 'editor';
   const paintPlay = () => { const on = isPlaying(); playBtn.replaceChildren(icon(on ? 'stop' : 'play', 28)); playBtn.setAttribute('aria-label', on ? 'Parar' : 'Tocar'); playBtn.classList.toggle('on', on); };
-  const drum = h('span', { class: 'bl-drum', 'aria-hidden': 'true' }, h('img', { class: 'bl-sticks', src: 'assets/mural/sticks.svg', alt: '' }), h('img', { class: 'bl-drum-img', src: 'assets/mural/drum.svg', alt: '' }));
+  let drum = { classList: { add() {}, remove() {} }, offsetWidth: 0 }; // vira o Paul do título (pula junto com caixa e bumbo)
   const hit = (i) => { if (i < 0 || !B.hitsAt(beat, i).some((r) => r !== 'hh')) return; drum.classList.remove('hit'); void drum.offsetWidth; drum.classList.add('hit'); };
   const mark = (i) => { hit(i); cur = i; gridBox.querySelectorAll('.bl-cell').forEach((c) => c.classList.toggle('now', Number(c.dataset.step) === i)); };
   const start = () => { const p = playBeat(beat, { withClick: cfg().click, onStep: mark, onStop: () => { mark(-1); paintPlay(); } }); p.owner = 'editor'; paintPlay(); };
@@ -172,7 +172,7 @@ function mountEditor(host, kind) {
       } }, 'salvar')));
   });
 
-  const head = banner('Beat Lab', 'crie, toque, estude.'); head.append(drum); // o tambor do título pula junto com caixa e bumbo
+  const head = banner('Beat Lab', 'crie, toque, estude.'); drum = head.querySelector('.bn-paul') || drum; // o Paul do título pula junto com caixa e bumbo
   host.append(head, tabsEl(kind === 'viradas' ? 'viradas' : 'groove'),
     h('section', { class: 'card pad bl-card' },
       h('div', { class: 'bl-head' },

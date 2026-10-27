@@ -21,6 +21,7 @@ export function mountLogin(host, onDone) {
     h('label', { class: 'field' }, h('span', {}, 'senha'), pass),
     err, btn,
     h('p', { class: 'muted center' }, 'Acesso privado. O primeiro login precisa de internet.'));
-  host.append(h('main', { class: 'login' }, form));
+  const fx = (cls, name, pos) => h('img', { class: `fx-doodle ${cls} ${pos}`, src: `assets/paul/d-${name}.webp`, alt: '', 'aria-hidden': 'true' });
+  host.append(h('main', { class: 'login' }, form, fx('bolt', 'bolt2', 'login-fx-a'), fx('phones', 'phones', 'login-fx-b'), fx('phones', 'phones', 'login-fx-c'), fx('bolt', 'boltgold', 'login-fx-d')));
   if (!auth.configured()) btn.disabled = true;
 }

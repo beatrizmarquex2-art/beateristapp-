@@ -83,7 +83,7 @@ const PAUL_BY_TITLE = [
   [/arquivos|anota|conceitos|bibliotec|dicion|folhas|partitura|estudo|laborat/i, 'e24'], [/alunos?|plano/i, 'e20'], [/feed/i, 'e03'], [/favorit/i, 'e26'],
   [/desafio/i, 'e14'], [/ferrament|conex|mapa/i, 'e07'], [/ops|não achei/i, 'e28'],
 ];
-const DOODLES = ['note', 'heart', 'burst', 'bolt2', 'ulstar', 'stars', 'notered', 'cymbal', 'boltgold', 'heartfill'];
+const DOODLES = ['note', 'phones', 'bolt2', 'burst', 'phones', 'boltgold', 'ulstar', 'bolt2', 'notered', 'phones', 'stars', 'boltgold'];
 const hashOf = (t) => [...String(t)].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 7);
 /** Cabeçalho das telas: título, subtítulo, o Paul do assunto e dois rabiscos soltos. */
 export function banner(text, sub) {

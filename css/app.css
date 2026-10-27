@@ -1667,3 +1667,14 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 
 /* bilhete do início: atalhos pra ouvir a música citada */
 .hero-note-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 4px 0; } .hero-note-link { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 2px solid #1b1818; border-radius: 999px; background: #fff; color: #1b1818; font: 700 13.5px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; } .hero-note-link:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #1b1818; }
+
+/* o Paul manda: some o desenho antigo do canto e os rabiscos mexem */
+[data-theme="rabisco"] #view .banner-wrap.has-paul::after { display: none !important; }
+.bn-paul { animation: bob 3s ease-in-out infinite; transform-origin: 50% 100%; } .bn-paul.hit { animation: paul-hit .2s ease-out; }
+@keyframes paul-hit { 0% { transform: scale(1); } 40% { transform: scale(.92, 1.08) translateY(-4px); } 100% { transform: scale(1); } }
+.bn-doodle.d1 { animation: dd-wiggle 2.4s ease-in-out infinite; } .bn-doodle.d2 { animation: dd-pop 2.8s ease-in-out infinite; }
+@keyframes dd-wiggle { 0%, 100% { transform: rotate(-14deg) scale(1); } 50% { transform: rotate(8deg) scale(1.15); } }
+@keyframes dd-pop { 0%, 100% { transform: rotate(12deg) scale(1); opacity: .92; } 50% { transform: rotate(-6deg) scale(1.2); opacity: 1; } }
+.fx-doodle { position: absolute; pointer-events: none; object-fit: contain; z-index: 1; } .fx-doodle.bolt { width: 30px; animation: dd-wiggle 1.6s ease-in-out infinite; } .fx-doodle.phones { width: 34px; animation: dd-pop 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .bn-paul, .bn-doodle, .fx-doodle { animation: none !important; } }
+.login .login-fx-a { top: 18px; left: 14px; } .login .login-fx-b { top: 40px; right: 14px; } .login .login-fx-c { bottom: 160px; left: 18px; } .login .login-fx-d { bottom: 190px; right: 20px; }
