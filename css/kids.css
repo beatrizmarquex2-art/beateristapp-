@@ -104,3 +104,5 @@
 .kx-card-fig .art-ph.big, .kx-card-fig .kx-ph { aspect-ratio: 1 / 1; padding: 4px; } .kx-card-fig .kx-q { font-size: 34px; } .kx-card-fig .art-ph b { font-size: 34px; }
 .kx-card-fig b.kx-n, .kx-card-fig .kx-name { font-size: 11px; }
 @media (min-width: 560px) { .kx-arc .kx-board { max-width: 420px; } }
+
+.kx-arc .kx-mem-back img { border-radius: 50% !important; width: 72%; height: auto; padding: 4px; background: #f3eee4; border-radius: 50%; aspect-ratio: 1; object-fit: contain; }
