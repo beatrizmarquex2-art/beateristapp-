@@ -1484,14 +1484,23 @@ html.printing .amb-dock, html.printing-pt .amb-dock { display: none !important; 
 .dc-tip { background: rgb(227 168 47 / .18); padding: 8px 10px; border-left: 4px solid var(--gold); }
 .dc-see .link { background: none; border: 0; padding: 0; font: inherit; color: var(--link); text-decoration: underline; cursor: pointer; }
 
-/* Jogos de ritmo (pacote beater rhythm games): cores da identidade e área do jogo sem rolagem */
-#jogos.bmr, #jogos .bmr { --red: #b5162b; --char: #1b1818; --ivory: #f3eee4; --char-2: #2a2424; --char-3: #3a3434; --char-4: #4d4545; }
-#view > .rg-host, #view > :has(> .rg-host) { animation: none; }
+/* Jogos de ritmo (pacote beater rhythm games): cores da identidade; menu rola normal, jogando vira tela cheia */
+#jogos.bmr, #jogos .bmr { --red: #b5162b; --red-2: #8f1122; --char: #1b1818; --ivory: #f3eee4; --char-2: #2a2424; --char-3: #3a3434; --char-4: #4d4545; }
+#view > .rg-host { animation: none; }
 .rg-top { align-items: center; margin: 4px 0 8px; }
 .rg-xp { font: 700 1.1rem var(--display); color: var(--accent); }
-.rg-host { position: relative; margin: 0 8px; height: var(--rg-h, 70dvh); overflow: hidden; overscroll-behavior: contain; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
-.rg-host > #jogos { height: 100%; width: 100%; }
-.rg-host canvas { touch-action: none; }
-.rg-host .rg-wait { padding: 16px; }
+.rg-host { margin: 0 8px; padding: 12px; background: #1b1818; color: #f3eee4; }
+.rg-host .rg-wait { padding: 16px; color: #d9ccb6; }
+.rg-host .empty { background: transparent; color: #f3eee4; }
+body.rz-lock .rg-host { position: fixed; inset: 0; z-index: 90; margin: 0; overflow: hidden; overscroll-behavior: none; touch-action: none;
+  padding: calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px); }
 html.rg-on, html.rg-on body { overscroll-behavior: none; }
 html.rg-on .fab { display: none; }
+body.rz-lock { overflow: hidden; }
+/* jogando: some o que é do app (topo, barra de baixo, mini-player) pra tela ficar só do jogo */
+body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab) { visibility: hidden; }
+/* menu dos jogos no celular: cards em 2 colunas e estilos quebrando linha (o pacote só arruma a partir de 760 px) */
+@media (max-width: 759px) { #jogos.bmr .rz-games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+#jogos.bmr .rz-g { min-height: 72px; }
+#jogos.bmr .rz-styles { flex-wrap: wrap; }
+#jogos.bmr .rz-st { flex: 1 1 30%; padding: 0 8px; white-space: nowrap; }

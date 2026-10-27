@@ -35,34 +35,22 @@ export function loadPackage() {
 export function mount(host) {
   let mounted = false; let gone = false;
   const xpOut = h('output', { class: 'rg-xp', 'aria-live': 'polite' }, `${xpTotal()} XP`);
-  // .rg-host controla o tamanho; #jogos (onde o pacote monta) só preenche: o css do pacote pode mexer no #jogos à vontade
+  // #jogos fica sem altura fixa (o pacote mede a tela com 100dvh); durante o jogo o .rg-host vira tela cheia (ver app.css)
   const box = h('div', { id: 'jogos' }, h('p', { class: 'muted rg-wait' }, 'carregando os jogos…'));
   const frame = h('div', { class: 'rg-host' }, box);
-  // a área do jogo ocupa o que sobra da tela (sem rolar a página enquanto joga)
-  const fit = () => {
-    const top = frame.getBoundingClientRect().top + window.scrollY; const nav = document.querySelector('.bottom-nav'); const nb = nav ? window.innerHeight - nav.getBoundingClientRect().top : 0;
-    let hgt = Math.max(320, window.innerHeight - top - nb - 8); frame.style.setProperty('--rg-h', `${hgt}px`);
-    // o que ainda sobrar de rolagem (respiro do fim da página) sai da altura do jogo
-    const extra = document.documentElement.scrollHeight - window.innerHeight;
-    if (extra > 0) { hgt = Math.max(320, hgt - extra); frame.style.setProperty('--rg-h', `${hgt}px`); }
-    window.scrollTo(0, 0);
-  };
   host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), frame);
   document.documentElement.classList.add('rg-on');
-  requestAnimationFrame(fit); window.addEventListener('resize', fit);
-  // mede de novo depois que as fontes e o banner assentam (no celular a primeira medida sai curta ou comprida)
-  const t1 = setTimeout(fit, 350), t2 = setTimeout(fit, 1200); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!gone) fit(); });
   loadPackage().then((BR) => {
     if (gone) return;
     box.replaceChildren();
     BR.mount('#jogos', { storageKey: 'beaterista-ritmo', onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
-    mounted = true; fit();
+    mounted = true;
   }).catch((e) => {
     if (gone) return;
     box.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'os jogos ainda não foram instalados.'), h('p', { class: 'muted' }, `faltam os arquivos rhythm-games.js e rhythm-games.css em ${BASE} (${e.message}).`)));
   });
   return () => {
-    gone = true; clearTimeout(t1); clearTimeout(t2); window.removeEventListener('resize', fit); document.documentElement.classList.remove('rg-on');
+    gone = true; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }
   };
 }
