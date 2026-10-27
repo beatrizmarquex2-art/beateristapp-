@@ -1649,3 +1649,7 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 /* Caixa de Ideias: anexos */
 .id-attach { gap: 8px; flex-wrap: wrap; } .id-picked { display: flex; flex-wrap: wrap; gap: 6px; } .id-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 4px 4px 10px; border: 1.5px solid currentColor; border-radius: 999px; font-size: 13px; background: var(--card); } .id-chip button { border: 0; background: none; font-size: 18px; line-height: 1; padding: 0 6px; cursor: pointer; color: inherit; }
 .id-files { display: flex; flex-wrap: wrap; gap: 8px; } .id-img { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; border: 2px solid #1b1818; cursor: zoom-in; background: #e9dcc3; } .id-doc { max-width: 100%; }
+
+/* teclado aberto: some o que fica grudado embaixo da tela */
+html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html.kb-open .amb-dock, html.kb-open .tray { display: none !important; }
+html.kb-open #view { padding-bottom: 24px; }

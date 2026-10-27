@@ -120,7 +120,7 @@ function swipeBack() {
   document.body.append(tip);
   let x0 = 0, y0 = 0, dx = 0, on = false;
   const blocked = () => route().name === 'inicio' || document.querySelector('#overlay .sheet');
-  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = t.clientX < 26 && !blocked(); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
+  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = t.clientX < 26 && !blocked() && !(e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) && !document.documentElement.classList.contains('kb-open'); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (!on) return; const t = e.touches[0]; dx = t.clientX - x0; const dy = Math.abs(t.clientY - y0);
     if (dy > Math.abs(dx) && dy > 12) { on = false; tip.style.transform = ''; return; }
@@ -128,6 +128,14 @@ function swipeBack() {
   }, { passive: true });
   const end = () => { if (on && dx > 80) goBack(); on = false; tip.style.transition = ''; tip.style.transform = ''; tip.classList.remove('ready'); };
   addEventListener('touchend', end, { passive: true }); addEventListener('touchcancel', () => { on = false; tip.style.transform = ''; }, { passive: true });
+}
+
+/* teclado aberto: esconde a barra de baixo e os botões flutuantes (o iPhone os empurra pra cima do teclado e a tela pula) */
+function keyboardGuard() {
+  const typing = (el) => el && el.matches && el.matches('textarea, select, [contenteditable="true"], input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]):not([type=file])');
+  const root = document.documentElement; let t = 0;
+  document.addEventListener('focusin', (e) => { clearTimeout(t); if (typing(e.target)) root.classList.add('kb-open'); });
+  document.addEventListener('focusout', () => { clearTimeout(t); t = setTimeout(() => { if (!typing(document.activeElement)) root.classList.remove('kb-open'); }, 120); });
 }
 
 function shell() {
@@ -220,7 +228,7 @@ function shell() {
   removeEventListener('hashchange', shell.go);
   shell.go = go;
   addEventListener('hashchange', go);
-  if (!shell.swipe) { shell.swipe = true; swipeBack(); swipeMenu(); }
+  if (!shell.swipe) { shell.swipe = true; swipeBack(); swipeMenu(); keyboardGuard(); }
   go();
 }
 
