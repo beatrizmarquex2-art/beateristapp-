@@ -24,18 +24,19 @@
 .kx-arc .rb-say { background: var(--kcard2); color: var(--kink); border: 3px solid var(--kink); border-radius: 14px; font: 700 15px var(--body); box-shadow: 3px 3px 0 var(--red); } .kx-arc .rb-say::before { border-right-color: var(--kink); }
 .kx-h { display: flex; align-items: center; gap: 10px; margin: 16px 0 8px; font: 400 16px var(--khand); letter-spacing: .04em; color: var(--red); } .kx-h::after { content: ""; flex: 1; border-top: 3px dashed var(--kink); opacity: .35; }
 
-/* cartões dos jogos: fichas pequenas (vinho, azul marinho, preto) com pauta, notas e ícone creme */
-.kx-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.kx-g { --bgc: #6e1423; --ia: #f3eee4; --ib: #e3a82f; position: relative; display: grid; justify-items: center; align-content: center; gap: 4px; min-height: 104px; padding: 12px 4px 10px; text-align: center; overflow: hidden; background: var(--bgc); border: 2px solid var(--kink); border-radius: 16px; box-shadow: 0 3px 0 var(--kink); transition: transform .12s, box-shadow .12s; }
-.kx-cards > .kx-g:nth-child(3n+2) { --bgc: #14284b; } .kx-cards > .kx-g:nth-child(3n) { --bgc: #1b1818; }
-.kx-g::before { content: ""; position: absolute; left: 0; right: 0; bottom: 14px; height: 24px; opacity: .13; background: repeating-linear-gradient(0deg, #f3eee4 0 1.5px, transparent 1.5px 6px); pointer-events: none; }
-.kx-g::after { content: "♪"; position: absolute; top: 4px; right: 8px; font: 400 16px/1 var(--body); color: #f3eee4; opacity: .35; transform: rotate(10deg); pointer-events: none; }
-.kx-cards > .kx-g:nth-child(2n)::after { content: "♫"; left: 8px; right: auto; transform: rotate(-8deg); } .kx-cards > .kx-g:nth-child(3n)::after { content: "𝄞"; }
-.kx-g:active { transform: translateY(3px); box-shadow: 0 0 0 var(--kink); }
-.kx-gi { display: grid; place-items: center; width: 52px; height: 52px; position: relative; z-index: 1; } .kx-gi .kx-ico { width: 46px; height: 46px; }
-.kx-arc .kx-g .kx-gt { position: relative; z-index: 1; color: #f3eee4; font: 700 10.5px/1.2 var(--body); text-transform: uppercase; letter-spacing: .06em; } .kx-gd { display: none; }
-.kx-arc .kx-g .kx-gm { position: relative; z-index: 1; color: var(--gold); font: 600 10px var(--kmono); }
-.kx-bar { position: relative; z-index: 1; width: 56%; height: 4px; background: rgb(243 238 228 / .22); border-radius: 3px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: var(--gold); }
+/* cartões dos jogos: papel escuro colado com fita, rabisco e nota, tortinho e solto */
+.kx-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; padding: 10px 2px 4px; } @media (min-width: 620px) { .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.kx-g { --bgc: #6e1423; --bgd: #8a1a2e; --ia: #f3eee4; --ib: #e3a82f; --rot: -2deg; position: relative; display: grid; justify-items: center; align-content: center; gap: 5px; min-height: 124px; padding: 20px 8px 12px; text-align: center; background: radial-gradient(rgb(243 238 228 / .1) 1.2px, transparent 1.6px) 0 0 / 9px 9px, linear-gradient(160deg, var(--bgd), var(--bgc)); border: 2px solid #1b1818; border-radius: 6px 22px 8px 20px; box-shadow: 4px 5px 0 #1b1818; transform: rotate(var(--rot)); transition: transform .12s, box-shadow .12s; }
+.kx-cards > .kx-g:nth-child(4n+2) { --bgc: #14284b; --bgd: #1d3a6b; --rot: 1.6deg; border-radius: 20px 7px 22px 8px; } .kx-cards > .kx-g:nth-child(4n+3) { --bgc: #141010; --bgd: #2b2323; --rot: 1deg; border-radius: 8px 20px 6px 24px; } .kx-cards > .kx-g:nth-child(4n) { --bgc: #14284b; --bgd: #1d3a6b; --rot: -1.4deg; } .kx-cards > .kx-g:nth-child(4n+1):nth-child(n+5) { --bgc: #141010; --bgd: #2b2323; }
+.kx-g::before { content: ""; position: absolute; top: -11px; left: 50%; width: 62px; height: 20px; margin-left: -31px; background: repeating-linear-gradient(135deg, rgb(243 238 228 / .92) 0 6px, rgb(232 224 207 / .92) 6px 12px); transform: rotate(-4deg); box-shadow: 0 1px 2px rgb(0 0 0 / .35); clip-path: polygon(0 10%, 5% 0, 10% 12%, 15% 0, 85% 0, 90% 12%, 95% 0, 100% 10%, 100% 90%, 95% 100%, 90% 88%, 85% 100%, 15% 100%, 10% 88%, 5% 100%, 0 90%); opacity: .95; }
+.kx-cards > .kx-g:nth-child(even)::before { transform: rotate(5deg); left: 34%; background: repeating-linear-gradient(135deg, rgb(227 168 47 / .9) 0 6px, rgb(207 148 30 / .9) 6px 12px); } .kx-cards > .kx-g:nth-child(3n)::before { left: 66%; transform: rotate(-9deg); }
+.kx-g::after { content: "♪"; position: absolute; top: 12px; right: 9px; font: 400 18px/1 var(--body); color: #f3eee4; opacity: .4; transform: rotate(12deg); pointer-events: none; }
+.kx-cards > .kx-g:nth-child(2n)::after { content: "★"; color: #e3a82f; opacity: .85; top: 14px; } .kx-cards > .kx-g:nth-child(3n)::after { content: "♫"; left: 10px; right: auto; transform: rotate(-10deg); opacity: .4; color: #f3eee4; }
+.kx-g:active { transform: translate(3px, 4px) rotate(0); box-shadow: 1px 1px 0 #1b1818; }
+.kx-gi { display: grid; place-items: center; width: 60px; height: 58px; position: relative; z-index: 1; } .kx-gi .kx-ico { width: 54px; height: 54px; filter: drop-shadow(2px 2px 0 rgb(0 0 0 / .45)); }
+.kx-arc .kx-g .kx-gt { position: relative; z-index: 1; color: #f3eee4; font: 400 15px/1.1 var(--khand); letter-spacing: .02em; } .kx-gd { display: none; }
+.kx-arc .kx-g .kx-gm { position: relative; z-index: 1; color: #e3a82f; font: 700 10.5px var(--kmono); }
+.kx-bar { position: relative; z-index: 1; width: 60%; height: 5px; background: rgb(243 238 228 / .2); border-radius: 3px; overflow: hidden; } .kx-bar i { display: block; height: 100%; background: #e3a82f; }
 .kx-g.on .kx-gm::before { content: "★ "; }
 .kx-g.wide { width: 100%; font: inherit; cursor: pointer; }
 

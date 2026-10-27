@@ -1582,11 +1582,11 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 
 /* Kids: Robôterista, fases 0 a 10, % de acerto e estrelas */
 .rb-wrap { display: flex; align-items: center; gap: 10px; } .rb-fig { width: var(--rb, 120px); flex: none; }
-.rb { position: relative; display: block; } .rb-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.rb { position: relative; display: block; } .rb-img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(var(--rb, 120px) * 1.05); mix-blend-mode: multiply; -webkit-user-drag: none; user-select: none; }
 .rb-sticker { position: absolute; right: -4px; bottom: 2px; width: 34%; height: auto; transform: rotate(8deg); } .rb-sticker.t3 { right: auto; left: 2px; top: -8px; bottom: auto; width: 40%; transform: rotate(-12deg); }
 .rb-say { margin: 0; padding: 8px 12px; background: #fffdf8; color: #1b1818; border: 3px solid #1b1818; border-radius: 14px; font: 700 15px var(--body); position: relative; max-width: 220px; }
 .rb-say::before { content: ""; position: absolute; left: -10px; top: 14px; border: 6px solid transparent; border-right: 8px solid #1b1818; }
-.rb-svg { animation: rb-bob 2.8s ease-in-out infinite; transform-origin: 50% 100%; } .mood-cheer .rb-svg { animation: rb-jump .6s ease-in-out infinite; } .mood-oops .rb-svg { animation: rb-shake .45s ease-in-out 2; } .mood-sleep .rb-svg { animation: rb-bob 5s ease-in-out infinite; }
+.rb-img { animation: rb-bob 2.8s ease-in-out infinite; transform-origin: 50% 100%; } .mood-cheer .rb-img { animation: rb-jump .6s ease-in-out infinite; } .mood-oops .rb-img { animation: rb-shake .45s ease-in-out 2; } .mood-sleep .rb-img { animation: rb-bob 5s ease-in-out infinite; }
 .rb .rb-z { animation: rb-z 2.4s ease-in-out infinite; } .rb .rb-z.z2 { animation-delay: .8s; } @keyframes rb-z { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
 @keyframes rb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } } @keyframes rb-jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-8px) scale(.97, 1.03); } }
 @keyframes rb-shake { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-5px) rotate(-4deg); } 75% { transform: translateX(5px) rotate(4deg); } }
@@ -1640,3 +1640,8 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 .kx-ladder { font-size: 13px; }
 
 .fav-head { align-items: center; padding-bottom: 2px; } .fav-title { display: inline-flex; align-items: center; gap: 6px; font: 700 20px var(--body); color: inherit; text-decoration: none; min-height: 44px; } .fav-title svg { color: var(--gold); } .fav-empty { margin: 0 0 8px; }
+
+/* Paul pelo app: estados vazios, tela de entrada e carregando */
+.empty::before { content: ""; display: block; width: 104px; height: 100px; margin: 0 auto 6px; background: url(../assets/paul/e05.webp) center / contain no-repeat; mix-blend-mode: multiply; }
+.boot::before { content: ""; display: block; width: 110px; height: 110px; margin: 0 auto 6px; background: url(../assets/paul/e15.webp) center / contain no-repeat; mix-blend-mode: multiply; }
+.login-paul { display: block; justify-self: center; width: 104px; height: auto; margin: -4px 0 -6px; mix-blend-mode: multiply; pointer-events: none; }

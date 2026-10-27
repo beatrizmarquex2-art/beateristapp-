@@ -14,6 +14,7 @@ export function mountLogin(host, onDone) {
     h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 132, height: 132 }),
     h('h1', { class: 'login-title' }, 'Beaterista'),
     h('p', { class: 'muted center' }, 'seu estúdio na palma da mão'),
+    h('img', { class: 'login-paul', src: 'assets/paul/e30.webp', alt: '', 'aria-hidden': 'true' }),
     auth.configured() ? null : h('p', { class: 'form-err', role: 'alert' }, 'O servidor de login ainda não foi configurado neste app (js/config.js). Sem ele não é possível entrar.'),
     h('label', { class: 'field' }, h('span', {}, 'e-mail'), email),
     h('label', { class: 'field' }, h('span', {}, 'senha'), pass),
