@@ -1510,3 +1510,20 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 .rg-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
 .rg-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgb(0 0 0 / .15); }
 .rg-list li span { min-width: 0; overflow-wrap: anywhere; }
+
+/* piano de referência */
+.pn-now { display: block; margin: 6px 16px; padding: 10px 14px; font: 700 20px var(--body); background: #1b1818; color: #f3e7d4; text-align: center; letter-spacing: .02em; }
+.pn-kb { position: relative; display: flex; height: clamp(190px, 38vh, 320px); margin: 8px 16px; padding-bottom: 6px; background: #1b1818; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.pn-w { flex: 1 1 0; min-width: 0; margin: 0 1px; padding: 0; border: 0; border-radius: 0 0 6px 6px; background: linear-gradient(#fffdf8, #ece3d2); color: #5f5752; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; touch-action: none; font: 600 clamp(9px, 2.4vw, 14px) var(--body); box-shadow: inset 0 -5px 0 rgb(0 0 0 / .08); }
+.pn-w span { padding-bottom: 10px; pointer-events: none; }
+.pn-w.c { color: #b5162b; }
+.pn-b { position: absolute; top: 0; height: 60%; z-index: 2; padding: 0; border: 0; border-radius: 0 0 5px 5px; background: linear-gradient(#2b2626, #000); cursor: pointer; touch-action: none; box-shadow: 0 3px 4px rgb(0 0 0 / .5); }
+.pn-w.on { background: linear-gradient(#f6c9cf, #e8848f); transform: translateY(1px); }
+.pn-b.on { background: linear-gradient(#b5162b, #6d0d19); }
+.pn-take { margin: 6px 16px; min-height: 1.4em; overflow-wrap: anywhere; }
+.pn-octs .pn-oct { min-width: 90px; text-align: center; font: 700 16px var(--body); }
+
+.pn-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pn-chip { min-height: 40px; padding: 0 14px; border: 1px solid #d9ccb6; background: #fffdf8; color: #1b1818; font: 600 14px var(--body); cursor: pointer; }
+.pn-chip.on { background: #1b1818; color: #fff; border-color: #1b1818; }
+.pn-octs { flex-wrap: wrap; }

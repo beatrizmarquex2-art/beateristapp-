@@ -5,7 +5,7 @@ import { TABS } from './kit.js';
 // Abas do menu: cada aba com grupinhos curtos (antes era uma lista só, comprida demais).
 const TABS_MENU = [
   ['tocar', 'tocar', [
-    ['', [['#/beatlab', 'kit', 'Beat Lab'], ['#/toque', 'kit', 'Bateria de Toque'], ['#/partitura', 'staff', 'Montar Partitura'], ['#/metronomo', 'metro', 'Metrônomo'], ['#/repertorio', 'note', 'Repertório']]],
+    ['', [['#/beatlab', 'kit', 'Beat Lab'], ['#/toque', 'kit', 'Bateria de Toque'], ['#/piano', 'note', 'Piano'], ['#/partitura', 'staff', 'Montar Partitura'], ['#/metronomo', 'metro', 'Metrônomo'], ['#/repertorio', 'note', 'Repertório']]],
     ['ferramentas', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/ferramentas/groovebox', 'kit', 'Groovebox'], ['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música'], ['#/ferramentas/tap', 'metro', 'Tap tempo']]],
   ]],
   ['treinar', 'treinar', [

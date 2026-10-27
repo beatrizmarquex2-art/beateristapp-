@@ -143,7 +143,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .g-no { grid-row: 1 / span 3; font: 44px/1 var(--display); color: var(--navy2); } .game b { font: 24px/1.05 var(--display); text-transform: uppercase; } .game small { font: 13px var(--type); color: #5b5650; } .game em { font-style: normal; font-size: 13px; color: var(--red); font-weight: 700; }
 .hud { display: flex; gap: 12px; margin-left: auto; font-size: 14px; color: var(--muted-on-navy); } .hud b { font: 22px var(--display); color: var(--paper); font-variant-numeric: tabular-nums; }
 .board { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 8px; max-width: 760px; margin: 10px auto; }
-@media (min-width: 760px) { .board.n12, .board.n16 { --cols: 6 !important; max-width: 1000px; } .board.n16 { --cols: 8 !important; } }
+/* cards maiores: celular com menos colunas, tablet (iPad) em 4 colunas, só tela larga usa 6 e 8 */
+@media (max-width: 759px) { .board.n8 { --cols: 2 !important; max-width: 340px; gap: 10px; } .board.n12 { --cols: 3 !important; gap: 10px; } .board.n16 { --cols: 4 !important; gap: 6px; } }
+@media (min-width: 760px) { .board.n8, .board.n12, .board.n16 { --cols: 4 !important; max-width: 880px; gap: 14px; } }
+@media (min-width: 1100px) { .board.n12 { --cols: 6 !important; max-width: 1100px; } .board.n16 { --cols: 8 !important; max-width: 1180px; } }
+@media (min-width: 760px) { .mc-back span { font-size: 16px; } .mc-back b { font-size: 32px; } .mf-text b { font-size: 26px; } .mf-text small { font-size: 14px; } .mf-stick { font-size: 24px; } .mc-front { padding: 10px; } }
+@media (min-width: 1100px) { .mc-back span { font-size: 13px; } .mc-back b { font-size: 26px; } .mf-text b { font-size: 21px; } .mf-text small { font-size: 12px; } .mf-stick { font-size: 19px; } .mc-front { padding: 6px; } }
 .mcard { aspect-ratio: 3/4; padding: 0; border: 0; background: none; perspective: 900px; min-width: 0; }
 .mc-in { position: relative; display: block; width: 100%; height: 100%; transition: transform .42s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
 .mcard.up .mc-in { transform: rotateY(180deg); }
