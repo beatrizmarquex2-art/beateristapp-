@@ -56,7 +56,7 @@ function heroNote() {
   return h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { k++; paint(); } },
     kicker, msg,
     h('small', { class: 'hero-note-more' }, 'toque pra ver outra'),
-    h('img', { class: 'hero-note-smile', src: 'assets/mural/smile.svg', alt: '' }),
+    h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
 }

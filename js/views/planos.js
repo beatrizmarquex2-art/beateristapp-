@@ -6,7 +6,8 @@ import * as B from '../beats.js';
 import * as N from '../notation.js';
 import { banner, toast, sheet, confirmSheet, stars } from '../ui.js';
 import { PRESETS as RUDS } from '../rudiments.js';
-import { downloadPdf } from './plan-pdf.js';
+import { downloadPdf, renderPages } from './plan-pdf.js';
+import { sendCanvases } from '../send-folder.js';
 import { TYPES, TREINOS, fromBeat, fromRudiment, fromPartitura, fromTreino, fromText, fullBar, copyFor, metaLine, progress } from '../studentplan.js';
 
 const KIND = 'studentplan';
@@ -146,6 +147,7 @@ function mountEdit(host, id) {
             btn.disabled = false; btn.textContent = 'baixar PDF';
           } }, 'baixar PDF'),
           h('button', { class: 'btn', type: 'button', onclick: () => { if (!p.items.length) { toast('adiciona pelo menos uma atividade'); return; } printPlan(P()); } }, 'imprimir'),
+          h('button', { class: 'btn', type: 'button', onclick: async (e) => { if (!p.items.length) { toast('adiciona pelo menos uma atividade'); return; } const btn = e.currentTarget; btn.disabled = true; try { const pl = P(); await sendCanvases(await renderPages(pl), `${pl.title || 'Plano'}${pl.studentName ? ` - ${pl.studentName}` : ''}`); } catch { toast('não consegui enviar pra pasta.'); } btn.disabled = false; } }, '📁 enviar pra pasta'),
           h('button', { class: 'btn', type: 'button', onclick: () => sheet('Copiar pra outro aluno', (close) => h('div', { class: 'sheet-body' }, h('ul', { class: 'sp-list' }, ...students().filter((s) => s.id !== p.studentId).map((s) => h('li', {}, h('button', { type: 'button', class: 'sp-opt', onclick: async () => { const rec = await store.upsert(KIND, null, copyFor(P(), { id: s.id, name: s.data.name })); close(); toast(`copiado pra ${s.data.name} ✓`); location.hash = `#/planos/${rec.id}`; } }, h('b', {}, s.data.name))))))) }, 'copiar pra outro aluno'),
           h('button', { class: 'btn ghost danger-txt', type: 'button', onclick: async () => { if (await confirmSheet('Apagar plano?', p.title, 'Apagar')) { await store.remove(id); location.hash = '#/planos'; } } }, 'apagar'))));
   };

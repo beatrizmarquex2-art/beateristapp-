@@ -1527,3 +1527,10 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 .pn-chip { min-height: 40px; padding: 0 14px; border: 1px solid #d9ccb6; background: #fffdf8; color: #1b1818; font: 600 14px var(--body); cursor: pointer; }
 .pn-chip.on { background: #1b1818; color: #fff; border-color: #1b1818; }
 .pn-octs { flex-wrap: wrap; }
+
+/* selecionar itens da pasta pra juntar em PDF */
+.ar-tools { gap: 8px; flex-wrap: wrap; }
+.ar-selbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 8px; padding-bottom: 8px; position: sticky; top: 0; z-index: 3; background: var(--bg, #8a1a26); }
+.ar-pick { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 2px solid currentColor; border-radius: 50%; font: 700 13px var(--body); }
+.ar-pick.on { background: #1b1818; color: #fff; border-color: #1b1818; }
+.ar-file.picked { outline: 2px solid #b5162b; outline-offset: -2px; }

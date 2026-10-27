@@ -10,6 +10,7 @@ import { quantize } from '../touchkit.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 import { gridEl, VOICE, velOf, stopBeat } from './beatlab.js';
 import { renderWav } from '../wav.js';
+import { sendCanvases } from '../send-folder.js';
 
 const KIND = 'partitura';
 const docs = () => store.list(KIND).sort((a, b) => (b.data.metodo ? 0 : 1) - (a.data.metodo ? 0 : 1) || b.updated_at - a.updated_at);
@@ -47,7 +48,7 @@ function shareBlob(blob, name, title) {
     const a = h('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); a.remove();
   })();
 }
-function exportPng(doc) {
+function partituraCanvas(doc) {
   const W = 1240, cols = 2, cw = (W - 120) / cols; const L = N.layout(doc.bars[0], { width: cw / 2, full: true }); const ch = L.h * 2 + 40;
   const rows = Math.ceil(doc.bars.length / cols); const c = document.createElement('canvas'); c.width = W; c.height = 190 + rows * ch + 60;
   const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
@@ -59,6 +60,10 @@ function exportPng(doc) {
     g.save(); g.translate(x + 10, y + 10); N.draw(g, N.layout(bar, { width: cw / 2 - 10, full: true }), { scale: 2 }); g.restore();
   });
   g.fillStyle = '#7a6f66'; g.font = '600 18px "Hanken Grotesk", sans-serif'; g.fillText('Beaterista', W - 170, c.height - 24);
+  return c;
+}
+function exportPng(doc) {
+  const c = partituraCanvas(doc);
   c.toBlob((b) => shareBlob(b, `${doc.title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura'}.png`, doc.title), 'image/png');
 }
 function printDoc(doc) {
@@ -186,6 +191,7 @@ function mountEdit(host, id) {
     h('button', { class: 'btn', type: 'button', onclick: () => exportPng(doc()) }, icon('photo', 16), ' imagem'),
     h('button', { class: 'btn', type: 'button', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'gerando…'; try { const d = doc(); shareBlob(await renderWav(d), `${d.title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura'}.wav`, d.title); } catch { toast('não consegui gerar o áudio neste aparelho.'); } b.disabled = false; b.textContent = 'áudio (WAV)'; } }, 'áudio (WAV)'),
     h('button', { class: 'btn', type: 'button', onclick: () => printDoc(doc()) }, 'imprimir / PDF'),
+    h('button', { class: 'btn', type: 'button', onclick: () => sendCanvases([partituraCanvas(doc())], doc().title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura') }, '📁 enviar pra pasta'),
     h('button', { class: 'btn', type: 'button', onclick: async () => { const r = await store.upsert(KIND, null, { ...B.clone(doc()), title: `${doc().title} (cópia)`, metodo: false, review: false }); location.hash = `#/partitura/${r.id}`; } }, 'fazer uma cópia'),
     h('button', { class: 'btn ghost danger', type: 'button', onclick: async () => { if (await confirmSheet('Apagar partitura?', doc().title, 'Apagar')) { stopAll(); await store.remove(id); location.hash = '#/partitura'; } } }, 'apagar'));
   host.append(banner('Montar Partitura', 'compasso por compasso'), head, barsBox, editor, foot);

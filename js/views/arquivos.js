@@ -5,10 +5,14 @@ import * as store from '../store.js';
 import * as files from '../files-sync.js';
 import { KINDS, kindOf, previewable, folderList, inFolder, search, nameTaken, mb, extOf, DEFAULT_FOLDERS, GERAL } from '../files-logic.js';
 import { banner, toast, confirmSheet, sheet } from '../ui.js';
+import { buildPdf, savePdf } from '../folder-pdf.js';
+import { fileName } from '../pdf.js';
 
 const FILE = 'file', FOLDER = 'folder';
 const KIND_ICON = { pdf: 'book', imagem: 'photo', audio: 'mic', video: 'photo', partitura: 'staff', doc: 'note', planilha: 'check', outro: 'folder' };
 const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short' }).format(new Date(ts));
+const SEL = { on: false, ids: [], redraw: () => {} }; // modo "selecionar": a ordem dos toques vira a ordem das páginas do PDF
+const toggle = (id) => { const i = SEL.ids.indexOf(id); if (i >= 0) SEL.ids.splice(i, 1); else SEL.ids.push(id); SEL.redraw(); };
 const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // replaceChildren(null) escreveria "null"
 const field = (label, input) => h('label', { class: 'field' }, h('span', {}, label), input);
 
@@ -93,19 +97,41 @@ function folderSheet(f) {
   });
 }
 
+function selectBar(list, folderName) {
+  const byId = new Map(list.map((r) => [r.id, r]));
+  const go = async (e) => {
+    const picked = SEL.ids.map((id) => byId.get(id)).filter(Boolean); if (!picked.length) { toast('toca nos itens pra escolher a ordem das páginas', { ms: 2500 }); return; }
+    const btn = e.currentTarget; btn.disabled = true; toast('montando o PDF…', { id: 'ar-pdf', ms: 60000 });
+    try {
+      const date = new Date().toISOString().slice(0, 10).split('-').reverse().join('-');
+      const name = fileName(folderName, '', date) + '.pdf';
+      const { pdf, pages, skipped } = await buildPdf(picked, folderName);
+      if (!pdf) { toast(skipped ? 'só consigo juntar imagens e exercícios por enquanto (PDF enviado ainda não entra).' : 'nada pra juntar', { id: 'ar-pdf', ms: 4500 }); btn.disabled = false; return; }
+      await savePdf(pdf, name);
+      toast(`PDF com ${pages} página(s) pronto ✓${skipped ? ` · ${skipped} item(ns) ficaram de fora (só imagens entram)` : ''}`, { id: 'ar-pdf', ms: 5000 });
+    } catch (err) { toast(`não consegui gerar o PDF: ${err.message || 'erro'}`, { id: 'ar-pdf', ms: 4000 }); }
+    btn.disabled = false;
+  };
+  return h('div', { class: 'pad-x ar-selbar' }, h('b', {}, `${SEL.ids.length} selecionado(s)`), h('small', { class: 'muted' }, ' · a ordem dos toques é a ordem das páginas'),
+    h('button', { class: 'btn primary', type: 'button', onclick: go }, 'juntar em PDF'),
+    h('button', { class: 'btn ghost', type: 'button', onclick: () => { SEL.ids = list.filter((r) => (r.data.kind || '') === 'imagem').sort((a, b) => (a.data.created || 0) - (b.data.created || 0)).map((r) => r.id); draw0(); } }, 'marcar todas as imagens'));
+}
+const draw0 = () => SEL.redraw();
 function row(r) {
   const k = r.data.kind || kindOf(r.data.name, r.data.mime);
   const cloud = h('small', { class: 'muted' });
   files.isUp(r.data.fileId).then((up) => { cloud.textContent = up ? ' · nuvem ✓' : ' · só aqui'; });
-  return h('li', { class: `ar-file k-${k}` },
-    h('button', { class: 'ar-open', type: 'button', 'aria-label': `Abrir ${r.data.name}`, onclick: () => open(r) },
-      h('span', { class: 'ar-ico' }, icon(KIND_ICON[k] || 'folder', 20)),
+  const nth = SEL.ids.indexOf(r.id) + 1;
+  return h('li', { class: `ar-file k-${k}${SEL.on && nth ? ' picked' : ''}` },
+    h('button', { class: 'ar-open', type: 'button', 'aria-label': SEL.on ? `Selecionar ${r.data.name}` : `Abrir ${r.data.name}`, onclick: () => (SEL.on ? toggle(r.id) : open(r)) },
+      h('span', { class: 'ar-ico' }, SEL.on ? h('b', { class: `ar-pick${nth ? ' on' : ''}` }, nth ? String(nth) : '') : icon(KIND_ICON[k] || 'folder', 20)),
       h('span', { class: 'ar-name' }, h('b', {}, r.data.name), h('small', { class: 'muted' }, `${KINDS[k]} · ${mb(r.data.size || 0)} · ${when(r.data.created || r.updated_at)}`, cloud))),
-    h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Opções de ${r.data.name}`, onclick: () => actions(r) }, icon('edit', 18)));
+    SEL.on ? null : h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Opções de ${r.data.name}`, onclick: () => actions(r) }, icon('edit', 18)));
 }
 
 export function mount(host, parts = []) {
   const folderId = parts[0] || null; let q = '';
+  SEL.on = false; SEL.ids = [];
   ensureDefaults();
   const body = h('div', { class: 'ar-body' });
   const searchEl = h('input', { type: 'search', placeholder: 'buscar em todos os arquivos…', 'aria-label': 'Buscar arquivo' });
@@ -131,9 +157,12 @@ export function mount(host, parts = []) {
     body.replaceChildren(
       h('div', { class: 'row between pad-x ar-top' }, h('a', { class: 'btn small ghost', href: '#/arquivos' }, '‹ pastas'), h('h2', { class: 'ar-title' }, f ? f.data.name : 'Geral'),
         f ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Renomear ou apagar pasta', onclick: () => folderSheet(f) }, icon('edit', 18)) : h('span')),
-      h('div', { class: 'pad-x' }, h('button', { class: 'btn primary ar-add', type: 'button', onclick: () => pick(folderId) }, icon('plus', 18), ' enviar arquivos')),
+      h('div', { class: 'pad-x row ar-tools' }, SEL.on ? null : h('button', { class: 'btn primary ar-add', type: 'button', onclick: () => pick(folderId) }, icon('plus', 18), ' enviar arquivos'),
+        list.length ? h('button', { class: 'btn', type: 'button', 'aria-pressed': String(SEL.on), onclick: () => { SEL.on = !SEL.on; SEL.ids = []; draw(); } }, SEL.on ? 'cancelar seleção' : '☑ selecionar pra PDF') : null),
+      SEL.on ? selectBar(list, f ? f.data.name : 'Geral') : null,
       list.length ? h('ul', { class: 'ar-list' }, ...list.map(row)) : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'pasta vazia.'), h('p', { class: 'muted' }, 'pdf, foto, áudio, vídeo curto, documento… até 50 MB cada.')));
   };
+  SEL.redraw = draw;
   searchEl.addEventListener('input', () => { q = searchEl.value; draw(); });
   host.append(banner('Meus Arquivos', 'tudo num lugar só'), h('div', { class: 'pad-x' }, searchEl), body,
     h('p', { class: 'pad-x lib-note' }, `até ${files.MAX_MB} MB por arquivo. fica numa pasta privada da sua nuvem (só você abre) e uma cópia neste aparelho.`));

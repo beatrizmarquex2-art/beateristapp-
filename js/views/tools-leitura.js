@@ -8,6 +8,7 @@ import { jpegPdf, fileName } from '../pdf.js';
 import { toJpeg, savePdf } from './plan-pdf.js';
 import { banner, toast } from '../ui.js';
 import { back } from './tools-common.js';
+import { sendCanvases } from '../send-folder.js';
 
 const KEY = 'setting-folhas';
 const W = 1240, H = 1754, MM = W / 210;
@@ -72,9 +73,14 @@ export function mountLeitura(host) {
     } catch (err) { toast(`não consegui gerar: ${err.message || 'erro'}`, { id: 'ft-pdf', ms: 4000 }); }
     btn.disabled = false;
   };
+  const toFolder = async (e) => {
+    const btn = e.currentTarget; btn.disabled = true;
+    try { const c = conf(); const pages = await render(c, seed, student.value.trim()); await sendCanvases(pages, fileName(c.title || 'Leitura', student.value.trim(), `nivel ${c.lv} - ${seed}`)); } catch (err) { toast(`não consegui enviar: ${err.message || 'erro'}`, { ms: 3500 }); }
+    btn.disabled = false;
+  };
   host.append(banner('Folhas de leitura', 'leitura nova toda vez, pronta pra imprimir'), back(),
     h('section', { class: 'card pad tr-ctrl' }, opts, h('label', { class: 'field' }, h('span', {}, 'aluno'), student), h('label', { class: 'field' }, h('span', {}, 'código da folha'), code)),
-    h('div', { class: 'row pad-x ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: pdf }, 'baixar PDF'), h('button', { class: 'btn', type: 'button', onclick: () => { seed = Math.floor(Math.random() * 90000) + 10000; code.value = String(seed); draw(); } }, 'outra folha')),
+    h('div', { class: 'row pad-x ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: pdf }, 'baixar PDF'), h('button', { class: 'btn', type: 'button', onclick: toFolder }, '📁 enviar pra pasta'), h('button', { class: 'btn', type: 'button', onclick: () => { seed = Math.floor(Math.random() * 90000) + 10000; code.value = String(seed); draw(); } }, 'outra folha')),
     h('section', { class: 'card pad' }, prev),
     h('p', { class: 'pad-x lib-note' }, 'o mesmo código gera a mesma folha: anota o código pra repetir a leitura com outro aluno ou conferir a correção.'));
   draw();
