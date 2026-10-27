@@ -6,6 +6,7 @@ import { robo, tierOf } from './robo.js';
 import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
+import { downloadReport } from './report.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 function beep(ok) {
@@ -76,25 +77,39 @@ export function runLevel(game, ctx) {
     stage.replaceChildren(h('div', { class: 'kx-restart' }, h('h2', {}, '💥 errou!'), h('p', {}, 'a fase recomeça do zero.'), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { misses = misses.slice(); start(); } }, 'tentar de novo')));
   };
 
-  const finish = async () => {
-    const total = spec.rounds; const stars = starsFor(right, total); const pct = pctOf(right, total);
-    const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
-    const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
-    const next$ = level < 10 && stars >= 1;
-    bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? 'perfeito!' : stars >= 1 ? 'muito bem!' : 'quase! tenta de novo');
-    const pctEl = h('b', { class: 'kx-pct' }, '0%');
-    const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));
-    const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
-    stage.replaceChildren(h('div', { class: 'kx-result' },
-      h('h2', {}, stars >= 1 ? 'Fase concluída!' : 'Quase lá!'), pctEl, h('p', { class: 'muted' }, `${right} de ${total} certas${restarts ? ` · recomeçou ${restarts}×` : ''}`), starsEl,
-      won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
-      missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.slice(0, 4).map((t) => h('li', {}, t)))) : null,
-      h('div', { class: 'row kx-act' },
-        next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
-        h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level) }, 'jogar de novo'),
-        h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'))));
-    countUp(pctEl, pct); if (stars >= 1) setTimeout(() => sparkle(starsEl), 400);
-  };
+  const finish = () => (ctx.onFinish ? ctx.onFinish({ right, total: spec.rounds, stars: starsFor(right, spec.rounds), misses, restarts, bot, stage, spec }) : showResult({ game, ctx, bot, stage, spec, right, total: spec.rounds, stars: starsFor(right, spec.rounds), misses, mode, restarts }));
   intro();
   return () => { gone = true; clear(); };
 }
+
+/** Tela de resultado: % de acerto, estrelas, figurinha de prêmio, o que treinar e os botões. Serve pra qualquer jogo. */
+export async function showResult({ game, ctx, bot, stage, spec, right, total, stars, misses, mode = '', restarts = 0, pct: pctIn, note = '' }) {
+  const { level, profile } = ctx; const pct = pctIn != null ? pctIn : pctOf(right, total);
+  const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
+  const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
+  const next$ = level < 10 && stars >= 1;
+  bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? 'perfeito!' : stars >= 1 ? 'muito bem!' : 'quase! tenta de novo');
+  const pctEl = h('b', { class: 'kx-pct' }, '0%');
+  const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));
+  const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
+  stage.replaceChildren(h('div', { class: 'kx-result' },
+    h('h2', {}, stars >= 1 ? 'Fase concluída!' : 'Quase lá!'), pctEl, h('p', { class: 'muted' }, note || `${right} de ${total} certas${restarts ? ` · recomeçou ${restarts}×` : ''}`), starsEl,
+    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+    missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.slice(0, 4).map((t) => h('li', {}, t)))) : null,
+    h('div', { class: 'row kx-act' },
+      next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
+      h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level) }, 'jogar de novo'),
+      h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'),
+      h('button', { class: 'kd-chip', type: 'button', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; try { await downloadReport(profile); } catch { /* sem PDF agora */ } b.disabled = false; } }, '📄 relatório em PDF'))));
+  countUp(pctEl, pct); if (stars >= 1) setTimeout(() => { if (starsEl.isConnected) sparkle(starsEl); }, 400);
+}
+/** Cabeçalho comum das fases: robô, título e pontinhos. */
+export function frame(game, ctx, spec) {
+  const tier = tierOf(P.totalStars(ctx.profile.id)); const bot = robo({ mood: 'happy', tier, size: 92 });
+  const stage = h('div', { class: 'kx-stage' });
+  const head = h('div', { class: 'kx-head' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctx.onBack() }, '‹ fases'), h('b', {}, `${game.title} · fase ${ctx.level}`), h('small', { class: 'muted' }, levelTag(spec)));
+  ctx.host.replaceChildren(h('div', { class: 'kx-run' }, head, h('div', { class: 'kx-botrow' }, bot.el), stage));
+  return { bot, stage };
+}
+export const introBox = (spec, extra) => h('div', { class: 'kx-intro' }, h('h2', {}, spec.level === 0 ? 'Aquecimento' : `Fase ${spec.level}`), h('p', { class: 'kx-tag' }, levelTag(spec)), ...extra);
+export { beep };

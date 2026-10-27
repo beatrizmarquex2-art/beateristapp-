@@ -6,7 +6,12 @@ import { audio } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
 import { pieceQ, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
+import { ROW_NAME } from './groove.js';
 import { kitMarkup, staffMarkup, figureMarkup, svgEl, play, tone } from './art.js';
+import { runMemory } from './memory.js';
+import { runEco } from './eco.js';
+import { runDetetive } from './detetive.js';
+import { nameOf as instName } from './instruments.js';
 
 const BEATS = { semibreve: 4, minima: 2, seminima: 1, colcheia: 0.5, semicolcheia: 0.25 };
 const colorOf = (id) => B.COLORS[id];
@@ -56,4 +61,9 @@ function playBumbos(q) {
   const bar = bumboBar(q.n); const c = audio(); const dt = 60 / q.bpm / 2; const t0 = c.currentTime + 0.15;
   for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) for (const p of ['hh', 'sn', 'bd']) if (bar.rows[p][i]) VOICE[p](t0 + (r * 8 + i) * dt, p === 'hh' ? 0.6 : 1);
 }
-export const ORDER = ['pecas', 'pauta', 'figuras', 'bumbos'];
+GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som + imagem ou imagem + imagem', emoji: '🧠', ages: 'a partir de 4 anos',
+  modes: [['som', '🔊 som + imagem'], ['imagem', '🖼 imagem + imagem']], mode: 'som', run: runMemory, hint: (k) => `treinar: ${instName(k)}` };
+GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: '⭐ clicar · ⭐⭐ escrever · ⭐⭐⭐ tocar', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
+GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no pad', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🥁 no pad / bateria']], mode: 'tela', run: runEco,
+  hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
+export const ORDER = ['pecas', 'pauta', 'figuras', 'bumbos', 'memoria', 'detetive', 'eco'];

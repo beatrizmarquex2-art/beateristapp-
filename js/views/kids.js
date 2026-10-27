@@ -19,6 +19,7 @@ import { GAMES, ORDER } from '../kids/games.js';
 import * as Album from '../kids/album.js';
 import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
+import { downloadReport } from '../kids/report.js';
 
 const FREE = [
   ['explorar', 'Explorar a bateria', 'toca e descobre o nome', '🥁'],
@@ -72,6 +73,11 @@ const RUN = { explorar, ritmo };
 const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', '🥁'], ['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', '🧩'], ['https://jogosdemusica.com.br/JOGOS/Ditado_ritmico/jogo/', 'Ditado rítmico', 'ouvir e escrever o ritmo', '🎧']];
 
 
+async function reportFor(me, btn) {
+  btn.disabled = true; toast('montando o PDF…', { id: 'kx-pdf', ms: 30000 });
+  try { const r = await downloadReport(me); toast(r.shared ? 'PDF pronto ✓' : `baixado: ${r.name}`, { id: 'kx-pdf', ms: 2800 }); } catch (e) { toast(`não consegui gerar: ${e.message || 'erro'}`, { id: 'kx-pdf', ms: 4000 }); }
+  btn.disabled = false;
+}
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 
 /* ---------- jogador ---------- */
@@ -121,6 +127,7 @@ function homeScreen(host, rerender) {
         h('span', { class: 'kx-meter' }, h('i', { style: `width:${Math.round((s.stars / s.maxStars) * 100)}%` })),
         h('small', { class: 'kx-nums' }, `★ ${s.stars}/${s.maxStars}`, s.pct != null ? ` · ${s.pct}% de acerto` : ' · ainda não jogou')); })),
     h('a', { class: 'kx-albumcard', href: '#/kids/album' }, h('span', { class: 'kd-emoji' }, '🃏'), h('div', {}, h('b', {}, 'Álbum de figurinhas'), h('small', {}, `${Album.owned(me.id).length} de ${Album.total()} · bateristas, guitarristas e vocalistas`))),
+    h('button', { class: 'kx-albumcard kx-report', type: 'button', onclick: (e) => reportFor(me, e.currentTarget) }, h('span', { class: 'kd-emoji' }, '📄'), h('div', {}, h('b', {}, 'Relatório em PDF'), h('small', {}, 'acertos, erros, por que cada exercício importa e uma tabelinha pra decorar'))),
     h('h2', { class: 'tag pad-x kd-ext-t' }, 'jogos livres'),
     h('div', { class: 'kd-grid kd-ext' }, ...FREE.map(([k, t, s, e]) => h('a', { class: 'kd-card', href: `#/kids/${k}` }, h('span', { class: 'kd-emoji' }, e), h('b', {}, t), h('small', {}, s)))),
     h('h2', { class: 'tag pad-x kd-ext-t' }, 'mais jogos'),
@@ -176,7 +183,7 @@ export function mount(host, parts = []) {
       if (level === null) { levelsScreen(host, first, mode, null); return; }
       if (!P.unlocked(me.id, first, level)) { location.hash = `#/kids/${first}`; return; }
       const box = h('div'); host.append(banner(GAMES[first].title, GAMES[first].blurb), box);
-      off = runLevel(GAMES[first], { host: box, level, profile: me, mode: mode || GAMES[first].mode || '', onBack: () => { location.hash = `#/kids/${first}${mode ? `/-/${mode}` : ''}`; }, onLevel: (n) => { location.hash = `#/kids/${first}/${n}${mode ? `/${mode}` : ''}`; if (n === level) rerender(); } });
+      off = (GAMES[first].run || runLevel)(GAMES[first], { host: box, level, profile: me, mode: mode || GAMES[first].mode || '', onBack: () => { location.hash = `#/kids/${first}${mode ? `/-/${mode}` : ''}`; }, onLevel: (n) => { location.hash = `#/kids/${first}/${n}${mode ? `/${mode}` : ''}`; if (n === level) rerender(); } });
       return;
     }
     homeScreen(host, rerender);

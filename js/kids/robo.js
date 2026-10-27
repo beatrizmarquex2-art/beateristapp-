@@ -59,3 +59,9 @@ export function robo({ mood = 'happy', tier = 0, size = 96, say = '' } = {}) {
   api.set(mood, say);
   return api;
 }
+
+/** O robô como arquivo SVG independente (com os estilos dentro), pra desenhar no PDF. */
+export function roboStandalone(mood = 'happy', tier = 0) {
+  const css = '.rb-eye{fill:#7cf0ff}.rb-line{fill:none;stroke:#7cf0ff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.rb-fill{fill:#7cf0ff}.rb-limb{stroke:#1b1818;stroke-width:6;stroke-linecap:round;fill:none}.rb-stick{stroke:#e3a82f;stroke-width:5;stroke-linecap:round;fill:none}';
+  return roboMarkup(mood, tier).replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="280" `).replace('<g class="rb-body">', `<style>${css}</style><g class="rb-body">`);
+}
