@@ -107,7 +107,10 @@ function swipeMenu() {
   let x0 = 0, y0 = 0, t0 = 0, on = false;
   const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
   addEventListener('touchstart', (e) => {
-    on = e.touches.length === 1 && e.touches[0].clientX >= 26 && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && !hScroll(e.target) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
+    const home = route().name === 'inicio';
+    // no início o menu abre arrastando em qualquer ponto da tela (até pela borda e por cima de listas que já estão no começo)
+    const leftEdge = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4 && n.scrollLeft > 2) return false; } return true; };
+    on = e.touches.length === 1 && (home || e.touches[0].clientX >= 26) && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && (home ? leftEdge(e.target) : !hScroll(e.target)) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
     const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
   }, { passive: true });
   addEventListener('touchend', (e) => {
