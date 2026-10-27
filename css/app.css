@@ -1504,3 +1504,9 @@ body.rz-lock :is(.topwrap, header.top, .statusbar, .bottom-nav, .amb-dock, .fab)
 #jogos.bmr .rz-g { min-height: 72px; }
 #jogos.bmr .rz-styles { flex-wrap: wrap; }
 #jogos.bmr .rz-st { flex: 1 1 30%; padding: 0 8px; white-space: nowrap; }
+.rg-tools { gap: 10px; align-items: center; margin: 0 0 8px; }
+.rg-manage { margin-top: 12px; }
+.rg-manage summary { cursor: pointer; font-weight: 600; }
+.rg-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+.rg-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgb(0 0 0 / .15); }
+.rg-list li span { min-width: 0; overflow-wrap: anywhere; }
