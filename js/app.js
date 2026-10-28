@@ -42,6 +42,7 @@ import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
 import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
+import { remember } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
@@ -194,6 +195,7 @@ function shell() {
     saveTrail();
     { const ti = NAV.findIndex((n) => n && n[0] === `#/${r.name}`); if (ti >= 0) lastTab = ti; }
     drawChrome(r);
+    remember(here);
     let c;
     switch (r.name) {
       case 'inicio': c = home.mount(view); break;

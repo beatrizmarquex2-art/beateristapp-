@@ -12,6 +12,7 @@ import { studyWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
 import { factFor } from '../music-facts.js';
 import { heroSub } from '../hero-text.js';
+import { recents } from '../recent.js';
 import { homeStrip } from './lembretes.js';
 
 const ORDER_KEY = 'setting-shortcuts';
@@ -168,12 +169,15 @@ export function mount(host) {
     frase: slogan(),
     parceiros: partnerStrip(),
   };
+  const recentBox = h('section', { class: 'home-recent', 'aria-label': 'Abertos recentemente' });
+  const drawRecent = () => { const l = recents(); recentBox.hidden = !l.length; recentBox.replaceChildren(h('h2', { class: 'tag' }, 'continuar de onde parou'), h('div', { class: 'home-recent-row' }, ...l.map((x) => h('a', { class: 'home-recent-chip', href: x.h }, x.t)))); };
+  drawRecent(); document.addEventListener('recents-changed', drawRecent);
   const top = hero();
   const fig = top.querySelector('.hero-photo');
   paintCover(fig);
   function drawLayout() {
     const { order, hidden } = getLayout();
-    host.replaceChildren(top, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
+    host.replaceChildren(top, recentBox, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
   }
   drawLayout();
   drawMini(); drawFavs(); drawGrid();
@@ -188,5 +192,5 @@ export function mount(host) {
   // a frase do topo troca sozinha a cada 8 horas: confere a cada minuto (e quando o app volta pra tela)
   const subEl = top.querySelector('.hero-sub'); const tickSub = () => { const t = heroSub(); if (subEl.textContent !== t) subEl.textContent = t; };
   const subTimer = setInterval(tickSub, 60000); document.addEventListener('visibilitychange', tickSub);
-  return () => { off(); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
+  return () => { off(); document.removeEventListener('recents-changed', drawRecent); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
 }
