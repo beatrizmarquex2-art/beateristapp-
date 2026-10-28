@@ -1684,3 +1684,5 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 /* recentes */
 .home-recent { padding: 4px 16px 2px; } .home-recent-row { display: flex; gap: 8px; overflow-x: auto; padding: 6px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; } .home-recent-row::-webkit-scrollbar { display: none; }
 .home-recent-chip { flex: none; display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 2px solid #1b1818; border-radius: 999px; background: #fff; color: #1b1818; font: 700 13.5px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; white-space: nowrap; } .home-recent-chip:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #1b1818; }
+
+.gb-rec[aria-pressed="true"] { background: #a31d30; color: #fff; border-color: #a31d30; } .gb-help p { margin: 0 0 10px; line-height: 1.4; }
