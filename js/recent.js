@@ -1,5 +1,5 @@
 // Recentes: as últimas telas que você abriu (guardado só neste aparelho), pra voltar sem procurar de novo.
-const KEY = 'beaterista-recent'; const MAX = 8;
+const KEY = 'beaterista-recent'; const MAX = 3;
 export function recents() { try { const l = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(l) ? l.filter((x) => x && x.h && x.t) : []; } catch { return []; } }
 /** Guarda a tela atual. O título vem do cabeçalho da tela (espera ela desenhar). */
 export function remember(hash) {

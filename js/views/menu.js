@@ -119,7 +119,7 @@ export function openMenu() {
     const cur = eff.find((x) => x.id === tab);
     const note = editing ? h('div', { class: 'drawer-editnote' }, h('p', { class: 'muted' }, 'esconda o que não usa, mude de aba ou suba e desça. nada é apagado: dá pra mostrar de novo.'),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => savePrefs({ hidden: [], moved: {}, order: [] }).then(() => toast('menu voltou ao padrão ✓', { ms: 1800 })) }, 'voltar ao padrão')) : null;
-    const rec = recents().slice(0, 5);
+    const rec = recents().slice(0, 3);
     const recSec = !editing && !search.value.trim() && rec.length ? h('section', { class: 'drawer-sec' }, h('h2', { class: 'drawer-sub' }, icon('timer', 15), 'recentes'), ...rec.map((x) => h('a', { href: x.h, class: 'drawer-item', onclick: close }, icon('timer', 22), h('span', {}, x.t)))) : null;
     list.replaceChildren(...[recSec, note, ...cur.groups.map((g) => {
       const items = editing ? g.items : g.items.filter((it) => !p.hidden.includes(it[0]));
