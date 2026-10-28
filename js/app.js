@@ -96,10 +96,18 @@ function statusBar() {
 
 /* ---------- voltar: botão no topo + arrastar da borda esquerda ---------- */
 const trail = []; // telas visitadas nesta sessão (para saber se dá pra voltar pelo histórico)
+try { const t = JSON.parse(sessionStorage.getItem('bt-trail') || '[]'); if (Array.isArray(t)) trail.push(...t.slice(-30)); } catch { /* sem armazenamento: segue só em memória */ }
+const saveTrail = () => { try { sessionStorage.setItem('bt-trail', JSON.stringify(trail.slice(-30))); } catch { /* ok */ } };
+const scrolls = new Map(); // posição da rolagem de cada tela, pra voltar exatamente onde estava
+let cameBack = false;
+addEventListener('scroll', () => { scrolls.set(location.hash || '#/inicio', window.scrollY); }, { passive: true });
 function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
 function goBack() {
-  if (trail.length > 1) history.back();
-  else location.hash = parentOf(route());
+  if (trail.length > 1) {
+    const before = location.hash; history.back();
+    // se o navegador não tinha histórico (app reaberto), vai direto pra tela anterior da trilha
+    setTimeout(() => { if (location.hash === before && trail.length > 1) location.hash = trail[trail.length - 2]; }, 350);
+  } else location.hash = parentOf(route());
 }
 /* ---------- início: arrastar pro lado abre o menu ☰ ---------- */
 let lastTab = 0; // última aba de baixo visitada (pra saber qual é a próxima quando se está numa tela de fora)
@@ -121,7 +129,7 @@ function swipeMenu() {
     // da direita pra esquerda: próxima aba de baixo (nas outras telas, a seguinte à última aba visitada)
     if (dx > 0) return;
     const at = NAV.findIndex((n) => n && n[0] === `#/${name}`); const i = at >= 0 ? at : lastTab;
-    const j = (i + 1) % NAV.length; if (NAV[j]) { location.hash = NAV[j][0]; window.scrollTo(0, 0); }
+    const j = (i + 1) % NAV.length; if (NAV[j]) { location.hash = NAV[j][0]; }
   }, { passive: true });
   addEventListener('touchcancel', () => { on = false; }, { passive: true });
 }
@@ -181,7 +189,9 @@ function shell() {
     const r0 = route(); view.dataset.page = r0.name; view.dataset.sub = r0.arg || ''; // cada tela ganha o seu desenho
     const r = route();
     const here = location.hash || '#/inicio';
-    if (trail.length > 1 && trail[trail.length - 2] === here) trail.pop(); else if (trail[trail.length - 1] !== here) trail.push(here);
+    cameBack = false;
+    if (trail.length > 1 && trail[trail.length - 2] === here) { trail.pop(); cameBack = true; } else if (trail[trail.length - 1] !== here) trail.push(here);
+    saveTrail();
     { const ti = NAV.findIndex((n) => n && n[0] === `#/${r.name}`); if (ti >= 0) lastTab = ti; }
     drawChrome(r);
     let c;
@@ -227,6 +237,9 @@ function shell() {
     }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
+    // voltou pra uma tela que já tinha visto: devolve a rolagem de onde parou (o conteúdo pode chegar um pouco depois)
+    const y = cameBack ? scrolls.get(here) : 0;
+    if (y > 0) [60, 250, 700].forEach((ms) => setTimeout(() => { if ((location.hash || '#/inicio') === here && Math.abs(window.scrollY) < 5) window.scrollTo(0, y); }, ms));
   }
   // jogos e treinos calam quando o app vai pro fundo (metrônomo, Beat Lab e ambiente podem seguir tocando)
   if (!shell.hideHooked) {
