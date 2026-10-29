@@ -198,3 +198,15 @@
 @keyframes jgx-wiggle{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
 @media (prefers-reduced-motion:reduce){.jgx-editing .jgx-cell .jg-card{animation:none}}
 .jgx-ctl{justify-content:center}.jgx-ctl button{flex:0 1 60%}
+
+/* identidade: letra de cartaz nos títulos, papel com rabiscos nos cantos, Paul na abertura e comemorando */
+.jg-game .jg-h,.jg-game .jg-title,.jg-game .jg-result h3{font-family:var(--display);font-weight:400;font-style:normal;letter-spacing:.01em}
+.jg-game .jg-h{font-size:34px;text-transform:uppercase}
+.jg-game{position:relative;background-image:url(../assets/mural/bolt-red.svg);background-repeat:no-repeat;background-position:left -8px top 44%;background-size:30px}
+.jg-game>*{position:relative;z-index:1}
+.jg-paul-idle{position:absolute!important;right:8px;bottom:10px;width:92px;height:auto;z-index:0!important;pointer-events:none;animation:jg-bob 2.6s ease-in-out infinite alternate;transform-origin:50% 100%}
+.jg-paul-react{position:fixed!important;left:50%;bottom:calc(84px + var(--safe-b,0px));width:min(40vw,160px);height:auto;z-index:60!important;pointer-events:none;transform:translateX(-50%);animation:jg-paul-in .45s cubic-bezier(.2,1.4,.4,1) both;filter:drop-shadow(0 6px 10px rgb(0 0 0 / .35))}
+.jg-paul-react.out{opacity:0;transition:opacity .35s,transform .35s;transform:translateX(-50%) translateY(30px)}
+@keyframes jg-bob{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(3deg) translateY(-4px)}}
+@keyframes jg-paul-in{from{transform:translateX(-50%) translateY(120px) scale(.6);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.jg-paul-idle,.jg-paul-react{animation:none}}

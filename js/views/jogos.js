@@ -3,6 +3,7 @@ import { h } from '../util.js';
 import { banner, toast } from '../ui.js';
 import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
+import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import * as domino from '../jogos/domino.js';
 import * as cartas from '../jogos/cartas.js';
@@ -111,11 +112,13 @@ function game(host, entry) {
     setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇';
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
-  host.replaceChildren(h('div', { class: 'jg jg-wrap' },
+  const wrap = h('div', { class: 'jg jg-wrap jg-game' },
     h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
-    body));
-  return () => ctl.destroy();
+    body);
+  host.replaceChildren(wrap);
+  const offFesta = attachFesta(wrap, body);
+  return () => { offFesta(); ctl.destroy(); };
 }
 
 export function mount(host, parts = []) {

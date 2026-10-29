@@ -23,6 +23,7 @@ export function setGame(id, patch) { const s = read(); s.games[id] = { ...getGam
 
 /** Sons curtos sintetizados; só depois de um toque (chamados a partir de cliques) e só se o som estiver ligado. */
 export function sfx(kind) {
+  try { document.dispatchEvent(new CustomEvent('jg-sfx', { detail: kind })); } catch { /* sem DOM */ } // a tela reage (Paul) mesmo com o som desligado
   if (!soundOn()) return;
   try {
     const c = audio(); const t0 = c.currentTime + 0.01;
