@@ -97,3 +97,25 @@ body.aluno .login-logo { box-shadow: none; }
 .al-foot .partners-label { color: rgb(var(--ink-rgb)); font-size: 18px; }
 .al-foot .partners-img { max-width: 360px; }
 .al-tiktok { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; color: #141212; text-decoration: none; font: 800 24px/1 var(--body); letter-spacing: -.02em; }
+
+/* ---------- entrada do aluno: logo Robôterista, Paul animado, vitrine de jogos e redes em círculo ---------- */
+.al-logo { margin: 0; justify-self: center; width: min(100%, 330px); }
+.al-logo img { display: block; width: 100%; height: auto; }
+.al-paul img.al-paul-img { width: 112px; height: auto; transform-origin: 50% 100%; animation: alDance 1.3s ease-in-out infinite; }
+.al-bubble { margin: 0 0 40px; }
+@keyframes alDance { 0%, 100% { transform: translateY(0) rotate(-3deg); } 25% { transform: translateY(-9px) rotate(2deg); } 50% { transform: translateY(0) rotate(3deg); } 75% { transform: translateY(-6px) rotate(-2deg); } }
+.al-entry { display: grid; gap: 14px; align-content: start; padding-bottom: 40px; }
+.al-games { display: grid; gap: 8px; padding: 6px 4px 0; }
+.al-h { margin: 0; text-align: center; font: var(--dstyle) var(--dw) 22px/1.1 var(--display); color: rgb(var(--ink-rgb)); }
+.al-gamegrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; max-width: 420px; margin: 0 auto; width: 100%; }
+.al-game { margin: 0; display: grid; justify-items: center; gap: 2px; animation: alFloat 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * -.55s); }
+.al-game img { width: 76px; height: auto; }
+.al-game figcaption { font: 700 12.5px/1.1 var(--body); text-align: center; color: rgb(var(--ink-rgb)); }
+@keyframes alFloat { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
+@media (min-width: 700px) { .al-game img { width: 96px; } .al-gamegrid { grid-template-columns: repeat(6, 1fr); max-width: 640px; } }
+/* redes: círculos vermelhos, fáceis de tocar */
+.al-social { gap: 16px; }
+.al-soc { width: 56px; height: 56px; border: 0 !important; border-radius: 50% !important; background: var(--accent, #b5162b); color: #fff; box-shadow: 0 4px 0 rgb(0 0 0 / .28), 0 8px 14px -6px rgb(0 0 0 / .4); transition: transform .12s, box-shadow .12s; }
+.al-soc:active { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .28); }
+.al-soc svg { width: 28px; height: 28px; }
+@media (prefers-reduced-motion: reduce) { .al-paul img.al-paul-img, .al-game { animation: none !important; } }
