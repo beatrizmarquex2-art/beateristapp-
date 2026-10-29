@@ -54,7 +54,7 @@ function heroNote() {
   let k = 0;
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
   const links = h('div', { class: 'hero-note-links' }); const study = h('span', { class: 'hero-note-study' }); let seq = 0;
-  // música citada no bilhete (“Título” (Artista, ano)): atalho pra ouvir/estudar no YouTube ou no Spotify
+  // música citada no bilhete (“Título” (Artista, ano)): atalho pra ouvir no YouTube (Spotify fica pra depois)
   const queryOf = (text) => { const m = /“([^”]+)”\s*\(([^),]+)/.exec(text) || /“([^”]+)”/.exec(text); return m ? `${m[1]} ${m[2] || ''}`.trim() : ''; };
   const paint = () => {
     const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text;
@@ -65,7 +65,6 @@ function heroNote() {
     else { const bm = /“([^”]+)”/.exec(text); if (bm) findStudy(bm[1], '').then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link', type: 'button', onclick: () => openStudy(st) }, st.label)); }); }
     links.replaceChildren(...(q ? [
       h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ouvir no YouTube'),
-      h('a', { class: 'hero-note-link', href: `https://open.spotify.com/search/${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '♫ Spotify'),
     ] : [h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${text.split(/[.:]/)[0].slice(0, 70)} bateria`)}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ver mais sobre isso')]));
   };
   paint();

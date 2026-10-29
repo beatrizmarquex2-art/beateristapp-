@@ -192,3 +192,9 @@
 .jgx-ctl{gap:1px}.jgx-ctl button{min-width:0;flex:1;padding:0 2px;min-height:32px;font-size:11px}
 
 .jgx-ctl{align-items:center}.jgx-ctl .jgx-grip{flex:2;touch-action:none;cursor:grab;font-size:18px;background:var(--jg-navy);color:#fff;user-select:none;-webkit-user-select:none}
+
+.jgx-editing .jgx-cell{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:grab}
+.jgx-editing .jgx-cell .jg-card{animation:jgx-wiggle .5s ease-in-out infinite alternate}
+@keyframes jgx-wiggle{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
+@media (prefers-reduced-motion:reduce){.jgx-editing .jgx-cell .jg-card{animation:none}}
+.jgx-ctl{justify-content:center}.jgx-ctl button{flex:0 1 60%}

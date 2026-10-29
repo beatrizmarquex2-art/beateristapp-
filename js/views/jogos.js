@@ -79,19 +79,19 @@ function catalog(host) {
       h('button', { type: 'button', class: `jgx-chip${onlyFav ? '' : ' on'}`, onclick: () => { onlyFav = false; draw(); } }, 'todos'),
       h('button', { type: 'button', class: `jgx-chip${onlyFav ? ' on' : ''}`, onclick: () => { onlyFav = true; draw(); } }, `★ favoritos (${p.fav.filter((k) => keys.includes(k)).length})`),
       aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
+    grid.classList.toggle('jgx-editing', editing);
     grid.replaceChildren(...(shown.length ? shown.map((x) => {
       const k = keyOf(x); const fav = p.fav.includes(k); const off = p.hidden.includes(k);
       return h('div', { class: `jgx-cell${off ? ' off' : ''}`, 'data-key': k }, card(x, editing),
         h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => savePrefs({ ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }) }, fav ? '★' : '☆'),
         editing ? h('div', { class: 'jgx-ctl' },
-          h('button', { type: 'button', class: 'jgx-grip', 'aria-label': `Arrastar ${x[1]} pra mudar de lugar` }, '⠿'),
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => savePrefs({ ...p, hidden: off ? p.hidden.filter((y) => y !== k) : [...p.hidden, k] }) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
   draw();
-  // arrastar pela alça ⠿: a nova ordem dos que estão na tela entra no lugar deles na ordem completa
-  const offDrag = dragSort(grid, { itemSel: '.jgx-cell', handleSel: '.jgx-grip', onDone: (newKeys) => {
+  // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
+  const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
     const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && x[6] === 'bea')).map(keyOf);
     const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
     const full = all.map((k, i) => [k, i]).sort((a, c) => rank(a[0]) - rank(c[0]) || a[1] - c[1]).map((x) => x[0]);
