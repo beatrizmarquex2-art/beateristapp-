@@ -7,6 +7,8 @@ import { ROWS } from '../beats.js';
 import * as R from '../repertoire.js';
 import { banner, sheet, toast, confirmSheet } from '../ui.js';
 import { playBeat, stopBeat, playingId } from './beatlab.js';
+import { newScoreSheet } from './partitura.js';
+import { tipBox } from '../tipbox.js';
 
 const songs = () => store.list('song');
 // as linhas que faltam (ex.: groove sem chimbal) viram linhas vazias: a grade e a pauta esperam todas
@@ -59,6 +61,20 @@ function songSheet(rec) {
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => stopBeat() }, '■'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => { close(); openInBeatLab(b, bpm.value); } }, 'abrir no Beat Lab')))));
     drawGrooves();
+    // partituras da música: cria uma (com detalhes por compasso: intro, virada, dica…) ou liga uma que já existe
+    const scores = h('div', { class: 'rp-scores' });
+    const drawScores = () => {
+      if (!rec) { scores.replaceChildren(h('p', { class: 'muted' }, 'salva a música primeiro: aí dá pra criar a partitura dela.')); return; }
+      const mine = store.list('partitura').filter((x) => x.data.songId === rec.id); const free = store.list('partitura').filter((x) => !x.data.songId);
+      const pick = h('select', { 'aria-label': 'Ligar uma partitura que já existe' }, h('option', { value: '' }, 'ligar uma que já existe…'), ...free.map((x) => h('option', { value: x.id }, x.data.title)));
+      pick.addEventListener('change', async () => { if (pick.value) { await store.upsert('partitura', pick.value, { songId: rec.id }); drawScores(); } });
+      scores.replaceChildren(
+        ...mine.map((x) => { const notes = (x.data.bars || []).map((b, i) => (b.note ? `${i + 1}: ${b.note}` : null)).filter(Boolean);
+          return h('div', { class: 'rp-score' }, h('a', { class: 'link', href: `#/partitura/${x.id}`, onclick: () => close() }, h('strong', {}, x.data.title), ` · ${(x.data.bars || []).length} compassos`), notes.length ? h('small', { class: 'muted' }, `detalhes — ${notes.join(' · ')}`) : h('small', { class: 'muted' }, 'sem detalhes ainda: abre e escreve embaixo de cada compasso'),
+            h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Desligar da música', onclick: async () => { await store.upsert('partitura', x.id, { songId: null }); drawScores(); } }, icon('x', 16))); }),
+        h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => { close(); newScoreSheet({ title: d.title, songId: rec.id }); } }, '+ criar partitura'), free.length ? pick : null));
+    };
+    drawScores();
     const save = async () => {
       const t = title.value.trim(); if (!t) { toast('dá um nome pra música'); return; }
       const patch = { title: t, artist: artist.value.trim(), bpm: Number(bpm.value) || '', link: link.value.trim(), notes: notes.value.trim(), stage, groove };
@@ -76,6 +92,7 @@ function songSheet(rec) {
         h('button', { class: 'btn small', type: 'button', onclick: () => { close(); metronome(bpm.value); } }, `metrônomo em ${Number(bpm.value) || '–'} BPM`),
         h('a', { class: 'btn small ghost', href: R.listenUrl({ ...d, title: title.value, artist: artist.value, link: link.value.trim() }), target: '_blank', rel: 'noopener noreferrer' }, link.value.trim() ? 'ouvir a original' : 'buscar no YouTube')),
       f('link', link), f('anotações', notes),
+      h('div', { class: 'field' }, h('span', {}, 'partitura e detalhes'), scores),
       h('div', { class: 'row between' },
         rec && !d.metodo ? h('button', { class: 'btn ghost', type: 'button', onclick: async () => { if (await confirmSheet('Apagar música?', d.title, 'Apagar')) { await store.remove(rec.id); close(); } } }, 'apagar') : h('span'),
         h('button', { class: 'btn primary', type: 'button', onclick: save }, 'salvar')));
@@ -133,7 +150,7 @@ export function mount(host) {
       h('button', { class: 'btn', type: 'button', onclick: () => { const pool = R.filterSongs(songs(), st); if (!pool.length) { toast('nenhuma música nesse filtro'); return; } fiveSheet(pool); } }, 'treino de 5')),
     h('div', { class: 'row pad-x rp-search' }, q, sortSel), top, body,
     h('p', { class: 'pad-x lib-note' }, 'as músicas do método são privadas (só você vê). o groove é o padrão de estudo da aula, não a transcrição da gravação. toque no selo pra mudar o estágio.'));
-  draw();
+  draw(); tipBox(host, 'repertorio');
   const off = store.subscribe((i) => { if (!i.kind || i.kind === 'song' || i.kind === 'beat') draw(); });
   return () => { off(); stopBeat(); };
 }

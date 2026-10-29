@@ -97,6 +97,7 @@ export function resize(b, steps) {
   if (!GRIDS[steps] || steps === b.steps) return clone(b);
   const n = { ...clone(b), steps };
   if (b.acc) { const out = Array(steps).fill(0); if (b.steps !== 12 && steps !== 12) b.acc.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; }); n.acc = out; }
+  if (b.hands) { const out = Array(steps).fill(''); if (b.steps !== 12 && steps !== 12) b.hands.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = v; }); n.hands = out; }
   for (const r of ROWS) {
     const src = b.rows[r.id] || []; const out = Array(steps).fill(0);
     if (b.steps !== 12 && steps !== 12) src.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; });

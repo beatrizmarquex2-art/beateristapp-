@@ -7,6 +7,7 @@ import { banner, toast, confirmSheet, sheet } from '../ui.js';
 import { parseMidi } from '../midi.js';
 import { toChart, nameFromFile } from '../midi-chart.js';
 import { readZip, writeZip } from '../zip.js';
+import * as FB from '../feedback.js';
 
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
@@ -210,6 +211,8 @@ export function mount(host) {
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
   host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), tools, frame, manage);
   document.documentElement.classList.add('rg-on');
+  // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
+  window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
   loadPackage().then((BR) => {
     if (gone) return;
     box.replaceChildren();
@@ -222,7 +225,7 @@ export function mount(host) {
   // MIDI importado em outro aparelho chega pela sincronização
   const off = store.subscribe((i) => { if ((!i.kind || i.kind === KIND || i.kind === 'setting') && mounted && !document.body.classList.contains('rz-lock')) refresh(); });
   return () => {
-    off(); gone = true; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
+    off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }
   };
 }

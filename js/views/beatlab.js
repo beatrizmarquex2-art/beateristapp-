@@ -1,5 +1,6 @@
 // Beat Lab: grade de bateria para criar e tocar grooves e viradas, biblioteca de ritmos prontos e "meus ritmos".
 // O som sai dos mesmos dados da grade (sintetizado, funciona offline).
+import { tipBox } from '../tipbox.js';
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
@@ -39,7 +40,7 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
-export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null } = {}) {
+export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null, hands = false, onHand = null } = {}) {
   const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat; const n = perLine(beat.steps);
   const box = h('div', { class: 'bl-lines' });
   for (let a = 0; a < beat.steps; a += n) {
@@ -52,6 +53,10 @@ export function gridEl(beat, onToggle, { full = false, color = false, accent = f
     if (accent) { // linha de acentos (>)
       wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader' }, 'Acento'));
       for (let i = a; i < a + n; i++) { const v = B.isAcc(beat, i); wrap.append(h('button', { type: 'button', class: `bl-cell acc${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'aria-pressed': String(v), 'aria-label': `Acento, ${labels[i]} (passo ${i + 1})`, onclick: () => onAccent(i) }, v ? '>' : '')); }
+    }
+    if (hands) { // linha das mãos (D direita · E esquerda · B bumbo): toca pra trocar
+      wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader', title: 'Mão: D direita, E esquerda, B bumbo' }, 'Mão'));
+      for (let i = a; i < a + n; i++) { const v = (beat.hands && beat.hands[i]) || ''; wrap.append(h('button', { type: 'button', class: `bl-cell hand${v ? ` on h-${v}` : ''}${i % per === 0 ? ' beat' : ''}`, 'aria-label': `Mão, ${labels[i]} (passo ${i + 1}): ${v || 'vazio'}`, onclick: () => onHand(i) }, v)); }
     }
     wrap.append(h('span', { 'aria-hidden': 'true' }), ...labels.slice(a, a + n).map((l, k) => h('span', { class: `bl-count${(a + k) % per === 0 ? ' beat' : ''}`, 'aria-hidden': 'true' }, l)));
     box.append(wrap);
@@ -261,8 +266,11 @@ function mountMine(host) {
 
 export function mount(host, parts) {
   const [k] = parts || [];
-  if (k === 'biblioteca') return mountLibrary(host);
-  if (k === 'meus') return mountMine(host);
-  if (k === 'combo') { stopBeat(); host.append(banner('Beat Lab', 'crie, toque, estude.'), tabsEl('combo')); return mountCombo(host); }
-  return mountEditor(host, k === 'viradas' ? 'viradas' : 'groove');
+  let off;
+  if (k === 'biblioteca') off = mountLibrary(host);
+  else if (k === 'meus') off = mountMine(host);
+  else if (k === 'combo') { stopBeat(); host.append(banner('Beat Lab', 'crie, toque, estude.'), tabsEl('combo')); off = mountCombo(host); }
+  else off = mountEditor(host, k === 'viradas' ? 'viradas' : 'groove');
+  tipBox(host, 'beatlab');
+  return off;
 }

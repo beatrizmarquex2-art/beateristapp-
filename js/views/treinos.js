@@ -9,6 +9,10 @@ import { toSVG } from '../notation.js';
 import { LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm, cellsFor, checkCells } from '../reading.js';
 import { banner, toast, stars } from '../ui.js';
 import { parts } from './tempo.js';
+import * as FB from '../feedback.js';
+import { mountRitmo } from '../kids/ritmo.js';
+import { aprender } from './figuras-aprender.js';
+import { tipBox } from '../tipbox.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
 const KEY = 'setting-treinos', KIND = 'treino';
@@ -84,8 +88,9 @@ function leitura(host) {
         off(); run = null;
         lastResult = evaluate(taps, expected, c.bpm);
         await store.upsert(KIND, null, { mode: 'leitura', lv: c.lv, bpm: c.bpm, bars: c.bars, score: lastResult.score, at: Date.now() });
-        if (lastResult.score >= 90) stars(pad);
         draw(false);
+        const tgt = body.querySelector('.tr-res') || body;
+        if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
       }, end) };
       setTimeout(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
     };
@@ -124,13 +129,14 @@ function escuta(host) {
     const play = () => schedule(q.ans, c.bpm, { play: true });
     const pick = async (i) => {
       if (q.picked != null) return;
-      q.picked = i; n++; if (i === q.okIdx) right++;
+      q.picked = i; n++; const hit = i === q.okIdx; if (hit) right++;
       if (n >= QUESTIONS) {
         const sc = Math.round((right / QUESTIONS) * 100);
         await store.upsert(KIND, null, { mode: 'escuta', lv: c.lv, bpm: c.bpm, score: sc, at: Date.now() });
         toast(`rodada fechada: ${right}/${QUESTIONS} ✓`);
       }
       draw(false);
+      const btn = body.querySelectorAll('.tr-opt')[i]; FB.result(hit, btn || body);
     };
     const done = q.picked != null;
     const opts = q.opts.map((b, i) => {
@@ -163,9 +169,9 @@ function montar(host) {
   const conferir = async () => {
     if (guess.some((g) => g == null)) { toast('complete os 4 tempos'); return; }
     marks = checkCells(ans, guess);
-    if (marks.every(Boolean)) { pts++; stars(body.querySelector('.tr-slots')); setTimeout(() => { fresh(); draw(); play(); }, 1100); }
+    if (marks.every(Boolean)) { pts++; setTimeout(() => { fresh(); draw(); play(); }, 1500); }
     else { lives--; if (lives <= 0) { over = true; if (pts > hi()) await save({ hiMontar: pts }); await store.upsert(KIND, null, { mode: 'montar', lv: cfg().lv, bpm: cfg().bpm, score: pts, at: Date.now() }); } }
-    draw();
+    draw(); (marks.every(Boolean) ? FB.win : FB.lose)(body.querySelector('.tr-slots'));
   };
   const draw = (reset) => {
     const c = cfg();
@@ -191,12 +197,28 @@ function montar(host) {
   return () => {};
 }
 
+/* ---------- figuras rítmicas: o ditado de montar (normal), a versão com imagens (monte seu ritmo) e o "aprender" ---------- */
+function figuras(host, sub) {
+  const subs = [['', 'normal'], ['imagens', 'com imagens'], ['aprender', 'aprender']];
+  host.append(h('div', { class: 'chips lib-tabs bt-tabs bt-sub', role: 'tablist', 'aria-label': 'Versão' },
+    ...subs.map(([k, t]) => h('a', { class: `lib-tab${sub === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(sub === k), href: k ? `#/treinos/montar/${k}` : '#/treinos/montar' }, t))));
+  if (sub === 'imagens') {
+    const box = h('div', { class: 'kx-arc kx-embed kd-game' }); host.append(h('p', { class: 'pad-x lib-note' }, 'a versão simples: cada tempo é uma palavrinha com imagem (pão, bolo, chocolate…). a palavra mostra quantas notas tem o tempo.'), box);
+    return mountRitmo(box);
+  }
+  if (sub === 'aprender') return aprender(host);
+  return montar(host);
+}
+
 export function mount(host, parts = []) {
-  const tab = ['escuta', 'montar'].includes(parts[0]) ? parts[0] : 'leitura';
-  host.append(banner('Treinos', { leitura: 'ler e tocar na hora', escuta: 'ouvir e reconhecer', montar: 'ouvir e montar o ritmo' }[tab]),
+  const tab = ['escuta', 'montar', 'figuras'].includes(parts[0]) ? (parts[0] === 'figuras' ? 'montar' : parts[0]) : 'leitura';
+  const sub = tab === 'montar' && ['imagens', 'aprender'].includes(parts[1]) ? parts[1] : '';
+  host.append(banner(tab === 'montar' ? 'Figuras rítmicas' : 'Treinos', { leitura: 'ler e tocar na hora', escuta: 'ouvir e reconhecer', montar: 'ouvir, montar e aprender cada figura' }[tab]),
     h('div', { class: 'chips lib-tabs bt-tabs' },
       h('a', { class: `lib-tab${tab === 'leitura' ? ' on' : ''}`, href: '#/treinos' }, 'leitura'),
       h('a', { class: `lib-tab${tab === 'escuta' ? ' on' : ''}`, href: '#/treinos/escuta' }, 'escuta (ditado)'),
-      h('a', { class: `lib-tab${tab === 'montar' ? ' on' : ''}`, href: '#/treinos/montar' }, 'montar (ditado)')));
-  return tab === 'leitura' ? leitura(host) : tab === 'escuta' ? escuta(host) : montar(host);
+      h('a', { class: `lib-tab${tab === 'montar' ? ' on' : ''}`, href: '#/treinos/montar' }, 'figuras rítmicas')));
+  const off = tab === 'leitura' ? leitura(host) : tab === 'escuta' ? escuta(host) : figuras(host, sub);
+  tipBox(host, 'treinos');
+  return off;
 }

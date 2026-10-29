@@ -11,10 +11,14 @@ import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 import { gridEl, VOICE, velOf, stopBeat } from './beatlab.js';
 import { renderWav } from '../wav.js';
 import { sendCanvases } from '../send-folder.js';
+import { tipBox } from '../tipbox.js';
 
 const KIND = 'partitura';
 const docs = () => store.list(KIND).sort((a, b) => (b.data.metodo ? 0 : 1) - (a.data.metodo ? 0 : 1) || b.updated_at - a.updated_at);
-const emptyBar = (steps = 16) => ({ steps, rows: Object.fromEntries(B.ROWS.map((r) => [r.id, Array(steps).fill(0)])), acc: Array(steps).fill(0) });
+const emptyBar = (steps = 16) => ({ steps, rows: Object.fromEntries(B.ROWS.map((r) => [r.id, Array(steps).fill(0)])), acc: Array(steps).fill(0), hands: Array(steps).fill(''), note: '' });
+const HANDS = ['', 'D', 'E', 'B']; // mão direita, esquerda, bumbo
+const NOTE_CHIPS = ['intro', 'verso', 'refrão', 'ponte', 'virada', 'pausa', 'prato', 'ghost', 'só pé', 'mais forte', 'mais fraco'];
+const safeName = (t) => String(t || '').replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura';
 
 /* ---------- tocar a partitura inteira ---------- */
 let run = null;
@@ -37,8 +41,8 @@ export function playDoc(doc, { loop, withClick, onBar, onEnd }) {
 }
 
 /* ---------- desenho ---------- */
-function barSvg(bar, n, width = 340) {
-  const f = h('figure', { class: 'pt-bar-svg' }); f.innerHTML = N.toSVG(N.layout(bar, { width, full: true })); // números nossos, sem texto de usuário
+function barSvg(bar, n, width = 340, color = false) {
+  const f = h('figure', { class: 'pt-bar-svg' }); f.innerHTML = N.toSVG(N.layout(bar, { width, full: true, color })); // números nossos, sem texto de usuário
   return f;
 }
 function shareBlob(blob, name, title) {
@@ -49,7 +53,7 @@ function shareBlob(blob, name, title) {
   })();
 }
 function partituraCanvas(doc) {
-  const W = 1240, cols = 2, cw = (W - 120) / cols; const L = N.layout(doc.bars[0], { width: cw / 2, full: true }); const ch = L.h * 2 + 40;
+  const W = 1240, cols = 2, cw = (W - 120) / cols; const L = N.layout(doc.bars.reduce((m, b) => (N.layout(b, { width: cw / 2, full: true }).h > N.layout(m, { width: cw / 2, full: true }).h ? b : m), doc.bars[0]), { width: cw / 2, full: true }); const ch = L.h * 2 + 52;
   const rows = Math.ceil(doc.bars.length / cols); const c = document.createElement('canvas'); c.width = W; c.height = 190 + rows * ch + 60;
   const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
   g.fillStyle = '#b5162b'; g.font = '700 46px "Permanent Marker", "Hanken Grotesk", sans-serif'; g.fillText(doc.title.toUpperCase(), 60, 90);
@@ -57,18 +61,19 @@ function partituraCanvas(doc) {
   doc.bars.forEach((bar, i) => {
     const x = 60 + (i % cols) * cw, y = 170 + Math.floor(i / cols) * ch;
     g.fillStyle = '#7a6f66'; g.font = '600 18px "Hanken Grotesk", sans-serif'; g.fillText(String(i + 1), x, y + 16);
-    g.save(); g.translate(x + 10, y + 10); N.draw(g, N.layout(bar, { width: cw / 2 - 10, full: true }), { scale: 2 }); g.restore();
+    g.save(); g.translate(x + 10, y + 10); N.draw(g, N.layout(bar, { width: cw / 2 - 10, full: true, color: !!doc.color }), { scale: 2 }); g.restore();
+    if (bar.note) { g.fillStyle = '#a31d30'; g.font = '700 20px "Hanken Grotesk", sans-serif'; g.fillText(String(bar.note).slice(0, 48), x + 10, y + 10 + L.h * 2 + 22); }
   });
   g.fillStyle = '#7a6f66'; g.font = '600 18px "Hanken Grotesk", sans-serif'; g.fillText('Beaterista', W - 170, c.height - 24);
   return c;
 }
 function exportPng(doc) {
   const c = partituraCanvas(doc);
-  c.toBlob((b) => shareBlob(b, `${doc.title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura'}.png`, doc.title), 'image/png');
+  c.toBlob((b) => shareBlob(b, `${safeName(doc.title)}.png`, doc.title), 'image/png');
 }
 function printDoc(doc) {
   const area = h('div', { class: 'pt-print' }, h('h1', {}, doc.title), h('p', {}, `♩ = ${doc.bpm} · ${doc.bars.length} compassos${doc.metodo ? ` · baseado no método Beaterista (${doc.source || ''})` : ''}`),
-    h('div', { class: 'pt-print-grid' }, ...doc.bars.map((b, i) => h('div', {}, h('small', {}, String(i + 1)), barSvg(b, i, 360)))));
+    h('div', { class: 'pt-print-grid' }, ...doc.bars.map((b, i) => h('div', {}, h('small', {}, String(i + 1)), barSvg(b, i, 360, !!doc.color), b.note ? h('small', { class: 'pt-note' }, b.note) : null))));
   document.body.append(area); document.documentElement.classList.add('printing-pt');
   const done = () => { area.remove(); document.documentElement.classList.remove('printing-pt'); removeEventListener('afterprint', done); };
   addEventListener('afterprint', done);
@@ -119,6 +124,24 @@ function recordSheet(bpm0, onUse, label) {
   }, { onClose: () => { const b = document.querySelector('.pt-rec'); if (b && b.cleanup) b.cleanup(); } });
 }
 
+/** Letras sugeridas: bumbo = B, o resto alterna D e E (começando na direita). Dá pra trocar uma a uma. */
+function autoHands(bar) {
+  let right = true; const out = Array(bar.steps).fill('');
+  for (let i = 0; i < bar.steps; i++) {
+    const on = B.hitsAt(bar, i); if (!on.length) continue;
+    if (on.includes('bd') && on.length === 1) { out[i] = 'B'; continue; }
+    out[i] = right ? 'D' : 'E'; right = !right;
+  }
+  return out;
+}
+/** Detalhe do compasso (intro, virada, dica…): texto curto que aparece embaixo dele na tela, na imagem e na impressão. */
+function noteField(bar, onSave) {
+  const input = h('input', { type: 'text', maxlength: 60, value: bar.note || '', placeholder: 'detalhe deste compasso (ex.: virada nos toms)', 'aria-label': 'Detalhe do compasso' });
+  input.addEventListener('change', () => onSave(input.value.trim()));
+  return h('div', { class: 'pt-notefield' }, h('span', { class: 'tp-lab' }, 'detalhe'), input,
+    h('div', { class: 'chips lib-tabs' }, ...NOTE_CHIPS.map((t) => h('button', { type: 'button', class: 'lib-tab', onclick: () => onSave(bar.note === t ? '' : t) }, t))));
+}
+
 /* ---------- editor ---------- */
 function mountEdit(host, id) {
   if (!store.get(id)) { host.append(banner('Partitura'), h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'partitura não encontrada.'), h('a', { class: 'btn primary', href: '#/partitura' }, 'voltar'))); return null; }
@@ -138,6 +161,7 @@ function mountEdit(host, id) {
   function drawHead() {
     const d = doc();
     head.replaceChildren(h('section', { class: 'card pad pt-head' },
+      d.songId && store.get(d.songId) ? h('p', { class: 'pt-badge' }, '♪ partitura da música ', h('a', { class: 'link', href: '#/repertorio' }, store.get(d.songId).data.title)) : null,
       d.metodo ? h('p', { class: 'pt-badge' }, `baseado no método Beaterista · ${d.source || ''}`, d.review ? h('b', {}, ' · a revisar') : h('b', { class: 'ok' }, ' · conferido ✓')) : null,
       h('input', { class: 'sl-name', type: 'text', maxlength: 80, value: d.title, 'aria-label': 'Título da partitura', onchange: (e) => save({ title: e.target.value.trim() || 'partitura' }) }),
       h('div', { class: 'pt-ctrl' },
@@ -149,13 +173,14 @@ function mountEdit(host, id) {
       h('div', { class: 'toggles pt-tg' },
         h('button', { class: `btn small${loop ? ' primary' : ''}`, type: 'button', 'aria-pressed': String(loop), onclick: () => { loop = !loop; drawHead(); } }, loop ? '↻ loop ✓' : '↻ loop'),
         h('button', { class: `btn small${withClick ? ' primary' : ''}`, type: 'button', 'aria-pressed': String(withClick), onclick: () => { withClick = !withClick; drawHead(); } }, withClick ? 'clique ✓' : 'clique'),
+        h('div', { class: 'chips lib-tabs pt-look', role: 'radiogroup', 'aria-label': 'Aparência da partitura' }, ...[[false, 'normal'], [true, 'colorido']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(!!d.color === v), class: `lib-tab${!!d.color === v ? ' on' : ''}`, onclick: () => save({ color: v }) }, t))),
         d.metodo && d.review ? h('button', { class: 'btn small', type: 'button', onclick: () => save({ review: false }) }, 'marcar como conferido') : null)));
     paintPlay();
   }
   function drawBars() {
     const d = doc();
     barsBox.replaceChildren(...d.bars.map((bar, i) => h('button', { class: `pt-bar${sel === i ? ' sel' : ''}${playingBar === i ? ' now' : ''}`, type: 'button', 'aria-label': `Compasso ${i + 1}${sel === i ? ' (editando)' : ''}`, onclick: () => { sel = sel === i ? null : i; drawBars(); drawEditor(); } },
-      h('span', { class: 'pt-n' }, String(i + 1)), barSvg(bar, i))),
+      h('span', { class: 'pt-n' }, String(i + 1)), barSvg(bar, i, 340, !!d.color), bar.note ? h('small', { class: 'pt-note' }, bar.note) : null)),
       h('div', { class: 'pt-add' },
         h('button', { class: 'btn small', type: 'button', onclick: () => { setBars([...d.bars, emptyBar(16)]); sel = d.bars.length; } }, '+ compasso vazio'),
         h('button', { class: 'btn small', type: 'button', onclick: pickRhythm }, '+ de um ritmo'),
@@ -171,7 +196,11 @@ function mountEdit(host, id) {
         h('div', { class: 'chips lib-tabs tp-chips' }, ...[[8, 'colch.'], [12, 'terc.'], [16, 'semic.']].map(([n, t]) => h('button', { type: 'button', class: `lib-tab${bar.steps === n ? ' on' : ''}`, onclick: () => upd(B.resize(bar, n)) }, t)))),
       h('div', { class: 'chips lib-tabs pt-mode', role: 'radiogroup', 'aria-label': 'Peças na grade' },
         ...[[true, 'chimbal, caixa e bumbo'], [false, 'pauta completa']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(quick() === v), class: `lib-tab${quick() === v ? ' on' : ''}`, onclick: () => store.upsert('setting', QKEY, { quick: v }).then(drawEditor) }, t))),
-      gridEl(bar, (r, i) => upd(B.toggle(bar, r, i)), quick() ? { full: false } : { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }),
+      gridEl(bar, (r, i) => upd(B.toggle(bar, r, i)), { ...(quick() ? { full: false } : { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }), color: !!d.color, hands: true, onHand: (i) => { const hs = (bar.hands || Array(bar.steps).fill('')).slice(); hs[i] = HANDS[(HANDS.indexOf(hs[i] || '') + 1) % HANDS.length]; upd({ ...bar, hands: hs }); } }),
+      h('div', { class: 'row pt-hands' }, h('small', { class: 'muted' }, 'letras em cima das notas: toque na linha “Mão” (D direita · E esquerda · B bumbo)'),
+        h('button', { class: 'btn small', type: 'button', onclick: () => upd({ ...bar, hands: autoHands(bar) }) }, 'preencher sozinho'),
+        h('button', { class: 'btn small ghost', type: 'button', onclick: () => upd({ ...bar, hands: Array(bar.steps).fill('') }) }, 'limpar letras')),
+      noteField(bar, (note) => upd({ ...bar, note })),
       h('button', { class: 'btn small', type: 'button', onclick: () => recordSheet(d.bpm, (nb) => upd(nb), `usar no compasso ${sel + 1}`) }, '✋ tocar e escrever neste compasso'),
       h('div', { class: 'bl-actions' },
         h('button', { class: 'btn small', type: 'button', disabled: sel === 0, onclick: () => { const b = d.bars.slice(); [b[sel - 1], b[sel]] = [b[sel], b[sel - 1]]; sel--; setBars(b); } }, '← mover'),
@@ -189,9 +218,9 @@ function mountEdit(host, id) {
   }
   const foot = h('div', { class: 'bl-actions pad-x' },
     h('button', { class: 'btn', type: 'button', onclick: () => exportPng(doc()) }, icon('photo', 16), ' imagem'),
-    h('button', { class: 'btn', type: 'button', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'gerando…'; try { const d = doc(); shareBlob(await renderWav(d), `${d.title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura'}.wav`, d.title); } catch { toast('não consegui gerar o áudio neste aparelho.'); } b.disabled = false; b.textContent = 'áudio (WAV)'; } }, 'áudio (WAV)'),
+    h('button', { class: 'btn', type: 'button', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'gerando…'; try { const d = doc(); shareBlob(await renderWav(d), `${safeName(d.title)}.wav`, d.title); } catch { toast('não consegui gerar o áudio neste aparelho.'); } b.disabled = false; b.textContent = 'áudio (WAV)'; } }, 'áudio (WAV)'),
     h('button', { class: 'btn', type: 'button', onclick: () => printDoc(doc()) }, 'imprimir / PDF'),
-    h('button', { class: 'btn', type: 'button', onclick: () => sendCanvases([partituraCanvas(doc())], doc().title.replace(/[^\wÀ-ú -]/g, '').trim() || 'partitura') }, '📁 enviar pra pasta'),
+    h('button', { class: 'btn', type: 'button', onclick: () => sendCanvases([partituraCanvas(doc())], safeName(doc().title)) }, '📁 enviar pra pasta'),
     h('button', { class: 'btn', type: 'button', onclick: async () => { const r = await store.upsert(KIND, null, { ...B.clone(doc()), title: `${doc().title} (cópia)`, metodo: false, review: false }); location.hash = `#/partitura/${r.id}`; } }, 'fazer uma cópia'),
     h('button', { class: 'btn ghost danger', type: 'button', onclick: async () => { if (await confirmSheet('Apagar partitura?', doc().title, 'Apagar')) { stopAll(); await store.remove(id); location.hash = '#/partitura'; } } }, 'apagar'));
   host.append(banner('Montar Partitura', 'compasso por compasso'), head, barsBox, editor, foot);
@@ -200,18 +229,41 @@ function mountEdit(host, id) {
   return () => { off(); stopAll(); };
 }
 
+/** Nova partitura na hora: nome, andamento, quantos compassos e a figura (colcheias, tercinas ou semicolcheias). */
+export function newScoreSheet({ title = '', songId = null, onCreated } = {}) {
+  sheet('Nova partitura', (close) => {
+    let steps = 16; let n = 4; let color = false;
+    const name = h('input', { type: 'text', maxlength: 80, value: title || `exercício ${todayKey().split('-').reverse().slice(0, 2).join('/')}`, 'aria-label': 'Nome da partitura' });
+    const bpm = h('input', { type: 'number', inputmode: 'numeric', min: 40, max: 220, value: '80', 'aria-label': 'BPM' });
+    const chips = (key, list, get, set) => h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': key }, ...list.map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(get() === v), class: `lib-tab${get() === v ? ' on' : ''}`, onclick: (e) => { set(v); [...e.currentTarget.parentElement.children].forEach((b) => { const on = b === e.currentTarget; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); } }, t)));
+    return h('div', { class: 'sheet-body' },
+      h('label', { class: 'field' }, h('span', {}, 'nome'), name),
+      h('div', { class: 'sl-2' }, h('label', { class: 'field' }, h('span', {}, 'BPM'), bpm)),
+      h('div', { class: 'field' }, h('span', {}, 'quantos compassos'), chips('Compassos', [1, 2, 4, 8].map((x) => [x, String(x)]), () => n, (v) => { n = v; })),
+      h('div', { class: 'field' }, h('span', {}, 'figura'), chips('Figura', [[8, 'colcheias'], [12, 'tercinas'], [16, 'semicolcheias']], () => steps, (v) => { steps = v; })),
+      h('div', { class: 'field' }, h('span', {}, 'aparência'), chips('Aparência', [[false, 'normal'], [true, 'colorido']], () => color, (v) => { color = v; })),
+      h('button', { class: 'btn primary', type: 'button', onclick: async () => {
+        const doc = { title: name.value.trim() || 'partitura', bpm: Math.max(40, Math.min(220, Number(bpm.value) || 80)), bars: Array.from({ length: n }, () => emptyBar(steps)), color, created: Date.now() };
+        if (songId) doc.songId = songId;
+        const r = await store.upsert(KIND, null, doc); close();
+        if (onCreated) onCreated(r); else location.hash = `#/partitura/${r.id}`;
+      } }, 'criar'));
+  });
+}
+
 function mountList(host) {
   const box = h('div');
   const draw = () => {
     const all = docs();
-    box.replaceChildren(all.length ? h('section', { class: 'card sl-index' }, ...all.map((r) => h('a', { class: 'sl-item', href: `#/partitura/${r.id}` },
-      h('strong', {}, r.data.title), h('small', {}, `${r.data.bars.length} compassos · ♩ ${r.data.bpm}${r.data.metodo ? ` · método Beaterista${r.data.review ? ' · a revisar' : ' · conferido ✓'}` : ''}`))))
-      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma partitura ainda.'), h('p', { class: 'muted' }, 'monta um exercício compasso por compasso: grade, acentos, tocar, imprimir.')));
+    box.replaceChildren(all.length ? h('section', { class: 'card sl-index pt-index' }, ...all.map((r) => h('div', { class: 'pt-row' }, h('a', { class: 'sl-item', href: `#/partitura/${r.id}` },
+      h('strong', {}, r.data.title), h('small', {}, `${r.data.bars.length} compassos · ♩ ${r.data.bpm}${r.data.color ? ' · colorido' : ''}${r.data.metodo ? ` · método Beaterista${r.data.review ? ' · a revisar' : ' · conferido ✓'}` : ''}`)),
+      h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${r.data.title}`, onclick: async () => { if (await confirmSheet('Apagar partitura?', r.data.title, 'Apagar')) { await store.remove(r.id); toast('partitura apagada', { ms: 1500 }); } } }, icon('trash', 18)))))
+      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma partitura ainda.'), h('p', { class: 'muted' }, 'cria uma na hora: escolhe os compassos, a figura e escreve na grade.')));
   };
   host.append(banner('Montar Partitura', 'compasso por compasso'), h('div', { class: 'bl-actions pad-x' },
-    h('button', { class: 'btn primary', type: 'button', onclick: async () => { const r = await store.upsert(KIND, null, { title: `exercício ${todayKey().split('-').reverse().slice(0, 2).join('/')}`, bpm: 80, bars: [emptyBar(16)] }); location.hash = `#/partitura/${r.id}`; } }, '+ nova partitura')), box);
+    h('button', { class: 'btn primary', type: 'button', onclick: () => newScoreSheet() }, '+ nova partitura')), box);
   draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === KIND) draw(); });
 }
 
-export function mount(host, parts) { const off = parts && parts[0] ? mountEdit(host, parts[0]) : mountList(host); return () => { off && off(); stopAll(); }; }
+export function mount(host, parts) { const off = parts && parts[0] ? mountEdit(host, parts[0]) : mountList(host); tipBox(host, 'partitura'); return () => { off && off(); stopAll(); }; }

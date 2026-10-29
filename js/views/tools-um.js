@@ -8,6 +8,7 @@ import { audio, click, perfToCtx, scheduler } from '../audio.js';
 import { VOICE, velOf } from './beatlab.js';
 import { banner, stars } from '../ui.js';
 import { back } from './tools-common.js';
+import * as FB from '../feedback.js';
 
 const KEY = 'setting-achar1';
 const BARS = 4, ROUNDS = 5;
@@ -41,7 +42,7 @@ export function mountUm(host) {
     const good = res.hits >= 2 && res.total - res.hits <= 1; if (good) pts++;
     round++;
     if (round >= ROUNDS) { const c = conf(); if (pts > (c.best || 0)) store.upsert('setting', KEY, { best: pts }); }
-    draw(); if (good) stars(body.querySelector('.um-res'));
+    draw(); FB.result(good, body.querySelector('.um-res') || body);
   };
   const where = () => { const per = q.g.steps / 4; const beat = Math.floor(q.offset / per) + 1; const sub = q.offset % per; return sub === 0 ? `no tempo ${beat}` : `no "${['', 'e', '&', 'a'][per === 4 ? sub : sub * 2]}" do ${beat}`; };
   const draw = () => {

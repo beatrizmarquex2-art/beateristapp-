@@ -7,6 +7,7 @@ import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
 import { downloadReport } from './report.js';
+import * as FB from '../feedback.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 function beep(ok) {
@@ -65,9 +66,9 @@ export function runLevel(game, ctx) {
     stage.querySelectorAll('.kd-opt').forEach((b) => { b.disabled = true; if (b.dataset.id === q.ans) b.classList.add('right'); });
     if (game.picked) game.picked(q, id);
     beep(ok);
-    if (ok) { right++; bot.set('cheer', 'isso!'); fb.className = 'kd-fb kx-fb ok'; fb.textContent = game.okText ? game.okText(q) : 'acertou! ⭐'; if (btn) sparkle(btn); }
+    if (ok) { right++; bot.set('cheer', FB.line('win')); fb.className = 'kd-fb kx-fb ok'; fb.textContent = game.okText ? game.okText(q) : 'acertou! ⭐'; if (btn) { sparkle(btn); btn.classList.add('fb-pop'); } }
     else {
-      misses.push(q.key || q.ans); bot.set('oops', id === null ? 'o tempo acabou!' : 'ops!'); fb.className = 'kd-fb kx-fb no';
+      misses.push(q.key || q.ans); bot.set('oops', id === null ? 'o tempo acabou!' : FB.line('lose')); fb.className = 'kd-fb kx-fb no';
       fb.textContent = id === null ? `acabou o tempo! ${game.noText ? game.noText(q) : ''}` : (game.noText ? game.noText(q) : 'quase!'); if (btn) btn.classList.add('shake');
     }
     if (!ok && spec.sudden) { timer = setTimeout(restart, 1500); return; }
@@ -89,7 +90,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
   const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
   const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
   const next$ = level < 10 && stars >= 1;
-  bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? 'perfeito!' : stars >= 1 ? 'muito bem!' : 'quase! tenta de novo');
+  bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? FB.line('great') : stars >= 1 ? FB.line('win') : FB.line('lose'));
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));
   const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));
   const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);

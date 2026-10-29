@@ -11,6 +11,7 @@ import { levelSpec } from './levels.js';
 import { ROWS, ROW_NAME, STEP_LABEL, baseGroove, changed, cellsMatch, emptyGroove, rowToPlay, rowTimes, judgeHits, roundOk, windowFor } from './groove.js';
 import { capture } from './capture.js';
 import { runLevel, beep } from './engine.js';
+import * as FB from '../feedback.js';
 import { svgEl } from './art.js';
 import { KIT_COLORS } from './icons.js';
 
@@ -60,7 +61,7 @@ export function runDetetive(game, ctx) {
 
   // ---- escada de estrelas ----
   const ladder = (bot, stage, step, ok, won, restarts = 0) => {
-    bot.set(ok ? 'cheer' : 'oops', ok ? (step === 3 ? 'detetive perfeito!' : 'achou a pista!') : 'quase! tenta de novo');
+    bot.set(ok ? 'cheer' : 'oops', ok ? (step === 3 ? 'detetive perfeito!' : 'achou a pista!') : FB.line('lose'));
     const have = Math.max(parts, ok ? step : 0); const label = ['clicar', 'escrever na partitura', 'tocar'];
     stage.replaceChildren(h('div', { class: 'kx-result' },
       h('h2', {}, ok ? (step === 3 ? 'Detetive completo!' : `Estrela ${step} ganha!`) : 'Quase lá!'),

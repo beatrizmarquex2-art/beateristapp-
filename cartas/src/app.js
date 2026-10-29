@@ -112,12 +112,12 @@
     </button>`;
   }
   function Home(p) {
-    var st = S.get();
+    var st = S.get(); var leitura = p.mode === 'leitura';
     return html`<main className="home">
       <section className="hero">
-        <p className="eyebrow">Beaterista — Escola de Música</p>
+        <p className="eyebrow">${leitura ? html`<a href="../#/kids/cartas" className="kidslink">‹ kids</a> · ` : null}Beaterista — Escola de Música</p>
         <h1><span className="h1a">Cartas</span><span className="h1b">de Groove</span></h1>
-        <p className="lede">três baralhos pra ler, tocar e sortear em aula, e cinco jogos da memória pra fixar.</p>
+        <p className="lede">${leitura ? 'três baralhos de leitura pra ler, tocar e sortear em aula.' : 'três baralhos pra ler, tocar e sortear em aula, e cinco jogos da memória pra fixar.'}</p>
         <${Doodle} k="crown" className="d-crown"/><${Doodle} k="star" className="d-star" fill=${true}/><${Doodle} k="scribble" className="d-scr"/>
         <div className="fan" aria-hidden="true">
           ${[['figuras', 30], ['rockpop', 12], ['rudimentos', 8]].map(function (x, i) { var c = M.DECKS[x[0]].cards[x[1]]; return html`<div key=${i} className=${'fan-card f' + i}><${Tape} className="t1"/><span className="fan-no">${M.DECKS[x[0]].no}</span><span className="fan-t">${cardTitle(c)}</span><${Score} card=${c} forceWide=${true}/></div>`; })}
@@ -125,11 +125,11 @@
       </section>
       <section className="piles" aria-label="Baralhos">
         <${Pile} deck="figuras" go=${p.go}/><${Pile} deck="rockpop" go=${p.go}/><${Pile} deck="rudimentos" go=${p.go}/>
-        <button className="pile pile-memo" onClick=${function () { p.go('memoria'); }} aria-label="Abrir jogos da memória">
+        ${leitura ? null : html`<button className="pile pile-memo" onClick=${function () { p.go('memoria'); }} aria-label="Abrir jogos da memória">
           <span className="memo-grid" aria-hidden="true">${[0, 1, 2, 3, 4, 5].map(function (i) { return html`<i key=${i} className=${i === 4 ? 'up' : ''}>${i === 4 ? html`<span dangerouslySetInnerHTML=${{ __html: I.svg('agogo') }}></span>` : null}</i>`; })}</span>
           <span className="pile-name">Memória de Groove</span>
           <span className="pile-meta">5 jogos · ${Object.keys(st.best).length ? Object.keys(st.best).length + ' recordes' : 'sem recordes ainda'}</span>
-        </button>
+        </button>`}
       </section>
       <section className="shelf">
         <${MiniList} title="favoritas" ids=${st.favs} empty="toca no ♥ de uma carta pra guardar aqui." go=${p.go}/>
@@ -190,7 +190,7 @@
     var fav = card && S.isFav(card.id);
     return html`<main className=${'deckview deck-' + p.deck}>
       <div className="deckhead">
-        <button className="back" onClick=${function () { A.stop(); p.go('home'); }} aria-label="Voltar ao início">‹ baralhos</button>
+        <button className="back" onClick=${function () { A.stop(); p.go('leitura'); }} aria-label="Voltar aos baralhos">‹ baralhos</button>
         <h1><span className="dno">${deck.no}</span>${deck.title}</h1>
         <div className="seg" role="radiogroup" aria-label="Nível">
           ${[0].concat(DECK_LEVELS[p.deck]).map(function (l) { return html`<button key=${l} role="radio" aria-checked=${level === l} className=${level === l ? 'on' : ''} onClick=${function () { lvS[1](l); }}>${l ? LV[l] : 'todos'}</button>`; })}
@@ -282,7 +282,7 @@
     var mmss = function (s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
     if (!board[0]) {
       return html`<main className="memo">
-        <div className="deckhead"><button className="back" onClick=${function () { p.go('home'); }}>‹ baralhos</button><h1><span className="dno">04</span>Memória de Groove</h1></div>
+        <div className="deckhead"><button className="back" onClick=${function () { A.stop(); window.location.href = '../#/kids/cartas'; }}>‹ kids</button><h1><span className="dno">04</span>Memória de Groove</h1></div>
         <p className="lede small">vira duas cartas e acha o par. em alguns jogos o par não é igual: é uma associação musical.</p>
         <div className="seg" role="radiogroup" aria-label="Dificuldade">${[1, 2, 3].map(function (l) { return html`<button key=${l} role="radio" aria-checked=${lS[0] === l} className=${lS[0] === l ? 'on' : ''} onClick=${function () { lS[1](l); }}>${M.MEM_LEVELS[l].name} · ${M.MEM_LEVELS[l].pairs} pares</button>`; })}</div>
         <ul className="games">${M.MEMORY.map(function (g, i) {
@@ -324,12 +324,12 @@
   }
 
   /* ---------- app ---------- */
-  var ROUTES = ['home', 'figuras', 'rockpop', 'rudimentos', 'memoria'];
+  var ROUTES = ['home', 'leitura', 'figuras', 'rockpop', 'rudimentos', 'memoria'];
   function App() {
     var init = (location.hash || '').slice(1); var r = useState(ROUTES.indexOf(init) >= 0 ? init : 'home'); var cid = useState(null); var turn = useState(0);
     useEffect(function () { return S.subscribe(function () { turn[1](function (x) { return x + 1; }); }); }, []);
     function go(to, cardId) { A.stop(); r[1](to); cid[1](cardId || null); try { history.replaceState(null, '', to === 'home' ? location.pathname : '#' + to); } catch (e) { /* o visualizador não deixa mudar o endereço */ } window.scrollTo(0, 0); }
-    var page = r[0] === 'home' ? html`<${Home} go=${go}/>` : r[0] === 'memoria' ? html`<${Memory} go=${go}/>` : html`<${Deck} deck=${r[0]} cardId=${cid[0]} go=${go} key=${r[0] + (cid[0] || '')}/>`;
+    var page = r[0] === 'home' || r[0] === 'leitura' ? html`<${Home} go=${go} mode=${r[0]}/>` : r[0] === 'memoria' ? html`<${Memory} go=${go}/>` : html`<${Deck} deck=${r[0]} cardId=${cid[0]} go=${go} key=${r[0] + (cid[0] || '')}/>`;
     return html`<div className=${'app route-' + r[0]}><${TopBar} go=${go}/><div className="page" key=${r[0]}>${page}</div>
       <footer className="sitefoot"><span>Cartas de Groove</span><span>Beaterista — Escola de Música</span><span>progresso salvo só neste aparelho</span></footer></div>`;
   }

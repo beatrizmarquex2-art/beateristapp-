@@ -10,11 +10,13 @@ export const POS = { cr: -3, rd: 0, hh: -1, ho: -1, tt: 1, mt: 2, sn: 3, ft: 5, 
 const X_HEAD = new Set(['cr', 'rd', 'hh', 'ho', 'hf']);
 const FEET = new Set(['bd', 'hf']);
 const GAP = 10; // distância entre as linhas da pauta
+const HAND_COLOR = { D: '#1f6fd1', E: '#d1182e', B: '#1f9d4a' };
 
 /** Desenha a grade como pauta. `color` pinta cada peça com a sua cor. Devolve { w, h, ops }. */
 export function layout(beat, { width = 360, title = '', color = false, full = true } = {}) {
   const per = GRIDS[beat.steps].perBeat;
-  const top = (title ? 54 : 22) + 14 + (beat.acc && beat.acc.some(Boolean) ? 14 : 0), left = 52, right = 10; // acento precisa de espaço em cima
+  const hasHands = !!(beat.hands && beat.hands.some(Boolean)); // D / E / B em cima das notas (mão direita, esquerda, bumbo)
+  const top = (title ? 54 : 22) + 14 + (beat.acc && beat.acc.some(Boolean) ? 14 : 0) + (hasHands ? 16 : 0), left = 52, right = 10; // acento e letras precisam de espaço em cima
   const lineY = (i) => top + i * GAP;
   const posY = (p) => top + (p * GAP) / 2;
   const sw = (width - left - right) / beat.steps;
@@ -63,6 +65,8 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
       if (per === 3 && v.up && stems.length > 1) ops.push({ t: 'text', x: (stems[0] + stems[stems.length - 1]) / 2 - 4, y: upTop - 5, s: '3', size: 12, weight: 700 });
     }
   }
+  // letras da mão (D, E, B) em cima de cada nota
+  if (hasHands) for (let i = 0; i < beat.steps; i++) { const w = beat.hands[i]; if (w) ops.push({ t: 'text', x: xOf(i) - 4, y: upTop - (beat.acc && beat.acc.some(Boolean) ? 24 : 8), s: w, size: 13, weight: 800, fill: color ? HAND_COLOR[w] : null }); }
   // acentos (>) em cima de tudo, na coluna do passo
   for (let i = 0; i < beat.steps; i++) if (isAcc(beat, i)) ops.push({ t: 'acc', x: xOf(i), y: upTop - (per === 3 ? 20 : 10) });
   return { w: width, h: full ? downBot + 10 : lineY(4) + 26, ops };
@@ -91,7 +95,7 @@ export function toSVG({ w, h, ops }) {
       case 'rest16': return `<circle cx="${o.x - 2}" cy="${o.y - 6}" r="2.4" fill="currentColor"/><circle cx="${o.x - 4}" cy="${o.y + 1}" r="2.4" fill="currentColor"/><path d="M${o.x - 2} ${o.y - 4}q4 1 6-3M${o.x - 4} ${o.y + 3}q4 1 6-3M${o.x + 4} ${o.y - 7}l-5 18" stroke="currentColor" stroke-width="1.5" fill="none"/>`;
       case 'dot': return `<circle cx="${o.x}" cy="${o.y}" r="2.2" fill="currentColor"/>`;
       case 'rest': return `<path d="M${o.x - 2} ${o.y - 12}l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`;
-      case 'text': return `<text x="${o.x}" y="${o.y}" font-size="${o.size}" font-weight="${o.weight || 400}" font-family="Hanken Grotesk, sans-serif" fill="${o.color === 'accent' ? 'var(--accent, #b5162b)' : 'currentColor'}">${esc(o.s)}</text>`;
+      case 'text': return `<text x="${o.x}" y="${o.y}" font-size="${o.size}" font-weight="${o.weight || 400}" font-family="Hanken Grotesk, sans-serif" fill="${o.fill || (o.color === 'accent' ? 'var(--accent, #b5162b)' : 'currentColor')}">${esc(o.s)}</text>`;
       default: return '';
     }
   });
@@ -119,7 +123,7 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
       case 'rest16': g.fillStyle = ink; g.arc(o.x - 2, o.y - 6, 2.4, 0, Math.PI * 2); g.fill(); g.beginPath(); g.arc(o.x - 4, o.y + 1, 2.4, 0, Math.PI * 2); g.fill(); g.beginPath(); g.strokeStyle = ink; g.lineWidth = 1.5; g.moveTo(o.x - 2, o.y - 4); g.quadraticCurveTo(o.x + 2, o.y - 3, o.x + 4, o.y - 7); g.moveTo(o.x - 4, o.y + 3); g.quadraticCurveTo(o.x, o.y + 4, o.x + 2, o.y); g.moveTo(o.x + 4, o.y - 7); g.lineTo(o.x - 1, o.y + 11); g.stroke(); break;
       case 'dot': g.fillStyle = ink; g.arc(o.x, o.y, 2.2, 0, Math.PI * 2); g.fill(); break;
       case 'rest': g.strokeStyle = ink; g.lineWidth = 2.2; g.moveTo(o.x - 2, o.y - 12); g.lineTo(o.x + 4, o.y - 5); g.lineTo(o.x - 1, o.y); g.lineTo(o.x + 5, o.y + 8); g.bezierCurveTo(o.x, o.y + 5, o.x - 3, o.y + 8, o.x + 1, o.y + 12); g.stroke(); break;
-      case 'text': g.fillStyle = o.color === 'accent' ? accent : ink; g.font = `${o.weight || 400} ${o.size}px "Hanken Grotesk", sans-serif`; g.fillText(o.s, o.x, o.y); break;
+      case 'text': g.fillStyle = o.fill || (o.color === 'accent' ? accent : ink); g.font = `${o.weight || 400} ${o.size}px "Hanken Grotesk", sans-serif`; g.fillText(o.s, o.x, o.y); break;
       default: break;
     }
   }

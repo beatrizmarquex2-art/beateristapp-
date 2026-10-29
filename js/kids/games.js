@@ -5,7 +5,7 @@ import * as N from '../notation.js';
 import { audio } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
-import { pieceQ, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
+import { pieceQ, pautaQ, pairName, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
 import { ROW_NAME } from './groove.js';
 import { KIT_COLORS } from './icons.js';
 import { kitMarkup, staffMarkup, figureMarkup, svgEl, play, tone } from './art.js';
@@ -31,10 +31,10 @@ export const GAMES = {
   },
   pauta: {
     id: 'pauta', title: 'Onde mora na pauta?', blurb: 'cada peça tem a sua casinha', emoji: '🎼', ages: 'a partir de 7 anos',
-    makeQuestion: (rnd, d) => withColor(pieceQ(rnd, d)),
-    render: (q) => h('div', { class: 'kx-q' }, svgEl(staffMarkup(q.ans), 'kd-staff'), h('p', { class: 'kd-q' }, 'quem mora nessa casinha?')),
-    picked: (q, id) => { if (id) play(id); },
-    okText: (q) => `isso! ${nameOf(q.ans)} ⭐`, noText: (q) => `essa casinha é do ${nameOf(q.ans)}`, hint: (k) => hintOf('pauta', k),
+    makeQuestion: (rnd, d) => withColor(pautaQ(rnd, d)),
+    render: (q) => h('div', { class: 'kx-q' }, svgEl(staffMarkup(q.ids), 'kd-staff'), h('p', { class: 'kd-q' }, q.ids.length > 1 ? 'quem toca nessas duas casinhas juntas?' : 'quem mora nessa casinha?')),
+    picked: (q, id) => { if (id) String(id).split('+').forEach((x) => play(x)); },
+    okText: (q) => `isso! ${pairName(q.ans)} ⭐`, noText: (q) => (q.ids.length > 1 ? `eram ${pairName(q.ans)} juntos` : `essa casinha é do ${nameOf(q.ans)}`), hint: (k) => hintOf('pauta', k),
   },
   figuras: {
     id: 'figuras', title: 'Figuras rítmicas', blurb: 'semibreve, mínima, semínima…', emoji: '⏳', ages: 'a partir de 6 anos',
@@ -67,4 +67,4 @@ GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som
 GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clica, escreve e toca o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
 GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no pad', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🥁 no pad / bateria']], mode: 'tela', run: runEco,
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
-export const ORDER = ['pauta', 'figuras', 'memoria', 'eco']; // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)
+export const ORDER = ['pauta', 'figuras', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos e detetive saíram da lista // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)

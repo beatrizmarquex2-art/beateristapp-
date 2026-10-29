@@ -13,14 +13,14 @@ const TABS_MENU = [
   ]],
   ['treinar', 'treinar', [
     ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
-    ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Ditado de montar'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
-    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids', 'kit', 'Beaterista Kids']]],
+    ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids', 'kit', 'Beaterista Kids'], ['#/kids/cartas', 'staff', 'Cartas de Groove (Kids)'], ['#/kids/memoria', 'star', 'Jogo da memória'], ['#/dicas', 'bulb', 'Jogos das dicas']]],
   ]],
   ['estudar', 'estudar', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
     ['álbuns', [['#/estudos/club', 'note', 'Álbuns']]],
     ['artistas / bateristas', [['#/estudos/artistas', 'drummer', 'Artistas e bateristas'], ['#/mural', 'photo', 'Mural de Artistas']]],
-    ['', [['#/anotacoes', 'note', 'Minhas anotações'], ['cartas/', 'staff', 'Cartas de Groove']]],
+    ['', [['#/anotacoes', 'note', 'Minhas anotações']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['aulas', 'aulas', [

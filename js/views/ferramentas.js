@@ -6,7 +6,9 @@ import * as store from '../store.js';
 import * as T from '../tools-logic.js';
 import * as B from '../beats.js';
 import { PRESETS as RUDS } from '../rudiments.js';
-import { audio } from '../audio.js';
+import { audio, click } from '../audio.js';
+import * as FB from '../feedback.js';
+import { tipBox } from '../tipbox.js';
 import { banner, toast } from '../ui.js';
 import { metroAt, back } from './tools-common.js';
 import { mountLeitura } from './tools-leitura.js';
@@ -121,6 +123,25 @@ function roleta(host) {
     return conf().custom.split('\n').map((s) => s.trim()).filter(Boolean).map((t) => ({ t }));
   };
   const show = h('div', { class: 'ft-wheel', 'aria-live': 'polite' }, h('b', {}, '?'));
+  const SZ = 300; const cv = h('canvas', { class: 'ft-roda', width: SZ * 2, height: SZ * 2, role: 'img', 'aria-label': 'Roleta da aula' });
+  const wheel = h('div', { class: 'ft-rodawrap' }, cv, h('i', { class: 'ft-ponteiro', 'aria-hidden': 'true' }));
+  const COLORS = ['#a31d30', '#e3a82f', '#14284b', '#fbf7ee', '#6e1423', '#2f7d5b'];
+  let segs = []; let rot = 0; // graus; 0 = primeira fatia começa na direita, o ponteiro fica em cima (270°)
+  const drawWheel = () => {
+    const g = cv.getContext('2d'); const R = SZ; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, R * 2, R * 2);
+    g.translate(R, R); g.rotate((rot * Math.PI) / 180);
+    const n = segs.length || 1; const a = (Math.PI * 2) / n;
+    for (let i = 0; i < n; i++) {
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R - 8, i * a, (i + 1) * a); g.closePath();
+      const col = COLORS[i % COLORS.length]; g.fillStyle = col; g.fill(); g.lineWidth = 4; g.strokeStyle = '#1b1818'; g.stroke();
+      if (segs[i]) { g.save(); g.rotate(i * a + a / 2); g.fillStyle = /fbf7ee|e3a82f/.test(col) ? '#1b1818' : '#fff'; g.textAlign = 'right'; g.textBaseline = 'middle';
+        let t = segs[i].t; if (t.length > 30) t = `${t.slice(0, 29)}…`;
+        let sz = n > 8 ? 26 : 32; g.font = `800 ${sz}px "Hanken Grotesk", sans-serif`; while (g.measureText(t).width > R - 36 - 52 && sz > 15) { sz -= 1; g.font = `800 ${sz}px "Hanken Grotesk", sans-serif`; }
+        g.fillText(t, R - 36, 0); g.restore(); }
+    }
+    g.beginPath(); g.arc(0, 0, 34, 0, Math.PI * 2); g.fillStyle = '#fbf7ee'; g.fill(); g.lineWidth = 5; g.strokeStyle = '#1b1818'; g.stroke();
+  };
+  const under = () => { const n = segs.length || 1; const ang = (((270 - rot) % 360) + 360) % 360; return Math.floor(ang / (360 / n)) % n; }; // fatia sob o ponteiro
   const open = h('div', { class: 'row ft-row' });
   const custom = h('textarea', { rows: 5, 'aria-label': 'Minha lista', placeholder: 'um item por linha\nex.: 2 minutos de toque simples a 80\nex.: groove com a mão fraca' }, conf().custom);
   custom.addEventListener('input', () => save({ custom: custom.value }));
@@ -132,32 +153,43 @@ function roleta(host) {
     custom.parentElement && (custom.parentElement.hidden = c.src !== 'minha');
     hist.replaceChildren(...(c.last || []).slice(0, 5).map((t) => h('li', {}, t)));
   };
-  let spinning = false; let lastItem = null;
+  let spinning = false; let lastItem = null; let raf = 0;
   const go = () => {
     if (spinning) return; const items = itemsOf(conf().src);
     if (!items.length) { toast(conf().src === 'minha' ? 'escreve sua lista primeiro' : 'nada pra sortear aqui ainda'); return; }
-    spinning = true; open.replaceChildren(); const pick = T.spin(items, lastItem); let k = 0; const steps = 18;
-    const roll = () => {
-      const it = k < steps ? items[Math.floor(Math.random() * items.length)] : pick;
-      show.replaceChildren(h('b', {}, it.t)); show.classList.toggle('done', k >= steps);
-      if (k++ < steps) { setTimeout(roll, 40 + k * k * 1.2); return; }
-      spinning = false; lastItem = pick;
+    spinning = true; open.replaceChildren(); audio(); const pick = T.spin(items, lastItem);
+    // a roda mostra até 12 fatias: a sorteada + outras, embaralhadas (se tem poucos itens, repete pra a roda não ficar vazia)
+    const others = T.spin ? items.filter((x) => x !== pick).sort(() => Math.random() - 0.5) : [];
+    let pool = [pick, ...others].slice(0, 12); while (pool.length < 6) pool = [...pool, ...pool.slice(0, 6 - pool.length)];
+    segs = pool.sort(() => Math.random() - 0.5); const wi = segs.indexOf(pick);
+    const n = segs.length; const seg = 360 / n; show.classList.remove('done'); show.replaceChildren(h('b', {}, 'girando…'));
+    // ponto final: o centro da fatia sorteada (com um tantinho de folga) cai sob o ponteiro, depois de várias voltas
+    const jitter = (Math.random() - 0.5) * seg * 0.6; const end = rot - (rot % 360) + 360 * (5 + Math.floor(Math.random() * 3)) + (((270 - (wi + 0.5) * seg - jitter) % 360) + 360) % 360;
+    const from = rot; const dur = 4800; const t0 = performance.now(); let lastSeg = under();
+    const frame = (now) => {
+      const k = Math.min(1, (now - t0) / dur); const e = 1 - (1 - k) ** 4; rot = from + (end - from) * e; drawWheel();
+      const u = under(); if (u !== lastSeg) { lastSeg = u; click(audio().currentTime + 0.005, 0, 1.4); wheel.classList.remove('tick'); void wheel.offsetWidth; wheel.classList.add('tick'); }
+      if (k < 1) { raf = requestAnimationFrame(frame); return; }
+      spinning = false; lastItem = pick; raf = 0;
+      show.replaceChildren(h('b', {}, pick.t)); show.classList.add('done'); FB.great(show, { msg: `${FB.line('win')}` });
       save({ last: [pick.t, ...(conf().last || [])].slice(0, 5) }).then(draw);
       if (pick.go) open.replaceChildren(h('button', { class: 'btn', type: 'button', onclick: pick.go }, 'abrir'));
     };
-    roll();
+    raf = requestAnimationFrame(frame);
   };
   host.append(banner('Roleta da aula', 'deixa a sorte escolher o próximo'), back(),
-    h('section', { class: 'card pad ft-center' }, chips, h('label', { class: 'field ft-custom' }, h('span', {}, 'minha lista'), custom), show,
+    h('section', { class: 'card pad ft-center' }, chips, h('label', { class: 'field ft-custom' }, h('span', {}, 'minha lista'), custom), wheel, show,
       h('div', { class: 'row ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: go }, 'girar'), open)),
     h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'últimos'), hist));
-  draw();
-  return () => {};
+  draw(); segs = Array.from({ length: 8 }, (_, i) => ({ t: ['groove', 'rudimento', 'música', 'virada', 'leitura', 'escuta', 'ghost', 'desafio'][i] })); drawWheel();
+  return () => { if (raf) cancelAnimationFrame(raf); };
 }
 
 export function mount(host, parts = []) {
   const id = parts[0] || '';
   const map = { tap, bpm: bpmMic, roleta, leitura: mountLeitura, mapa: mountMapa, loop: mountLoop, um: mountUm, groovebox: mountGroovebox, desafio: mountDesafio };
-  if (!map[id]) { hub(host); return null; }
-  return map[id](host);
+  if (!map[id]) { hub(host); tipBox(host, 'ferramentas'); return null; }
+  const off = map[id](host);
+  if (id === 'leitura') tipBox(host, 'folhas');
+  return off;
 }

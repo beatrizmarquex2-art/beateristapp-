@@ -285,7 +285,7 @@ function rzEnd(lost){rzWake(false);document.body.classList.remove('rz-lock');cle
   S.grade=lost?'—':acc>=.96&&!S.miss?'S':acc>=.9?'A':acc>=.78?'B':acc>=.6?'C':'D';S.stars=RZ.game==='beat'?(acc>=.97?5:acc>=.9?4:acc>=.8?3:acc>=.65?2:acc>=.45?1:0):0;
   const R=ensureRitmo();const k=rzKey();const prev=R.best[k];const val=S.score;S.record=!lost&&(!prev||val>prev.score);if(S.record) R.best[k]={score:val,acc:Math.round(acc*100),grade:S.grade,stars:S.stars,at:nowIso()};R.plays++;save();
   S.hallKey=rzKey();S.hallQ=false;S.hallDone=false;if(!lost&&OPTS.hallTop){var ht=OPTS.hallTop(S.hallKey)||[];S.hallQ=S.score>0&&(ht.length<5||S.score>ht[ht.length-1].score)}
-  try{sfx(lost||acc<.6?'lose':'win')}catch(e){}try{xpGain(Math.round(4+acc*16),'jogo de ritmo')}catch(e){}rzRe()}
+  try{sfx(lost||acc<.6?'lose':'win')}catch(e){}try{window.__bfb&&window.__bfb(lost||acc<.6?'lose':acc>=.9?'great':'win')}catch(e){}try{xpGain(Math.round(4+acc*16),'jogo de ritmo')}catch(e){}rzRe()}
 /* ---------- desenho ---------- */
 function rzBind(){const cv=$('#rz-cv');RZ.cv=cv;if(!cv) return;const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);RZ.dpr=dpr;rzDraw();}
 function rzDraw(){const cv=RZ.cv;if(!cv||!document.contains(cv)) return;const g=cv.getContext('2d');({hero:rzDrawHero,beat:rzDrawBeat,setas:rzDrawSetas,tiles:rzDrawTiles}[RZ.game])(g,cv.width,cv.height,RZ.dpr)}
@@ -631,6 +631,7 @@ document.addEventListener('keyup',ev=>{if(route()!=='ritmo') return;let lane=RZ_
       paint();
     }
     function after(ok) {
+      if (window.__bfb) window.__bfb(ok ? 'win' : 'lose', true);
       if (!ok) S.lives--;
       paint();
       later(function () { if (S.lives <= 0) finish(); else newQ(); }, ok ? 1100 : 2200);

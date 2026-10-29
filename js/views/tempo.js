@@ -10,6 +10,7 @@ import { OnsetCore } from '../onset-core.js';
 import { audio, click } from '../audio.js';
 import { banner, sheet, toast, stars } from '../ui.js';
 import { playBeat, stopBeat } from './beatlab.js';
+import * as FB from '../feedback.js';
 import { xrayTab } from './xray-tab.js';
 
 const SET = 'setting-tempo';
@@ -165,7 +166,7 @@ function judgeTab(mic, listen) {
         !d.calibrated ? h('p', { class: 'tp-hint' }, 'sem calibração: o número inclui o atraso do aparelho. calibra pra ficar justo.') : null,
         h('div', { class: 'bl-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: draw }, 'de novo'))),
       history());
-    if (record) stars(scoreEl);
+    if (record) FB.great(scoreEl); else if (d.score >= 70) FB.win(scoreEl); else FB.lose(scoreEl);
   }
   function history() {
     const all = store.list('timing').sort((a, b) => b.data.at - a.data.at);

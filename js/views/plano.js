@@ -134,7 +134,7 @@ export function mount(host) {
         h('p', { class: 'muted pl-total' }, `${wk.total} min nos últimos 7 dias`),
         lastLogs(logs)),
       tip ? h('section', { class: 'card pad pl-tip' }, h('p', { class: 'pl-tip-n' }, `dica ${tip.data.n} de 30`), h('p', { class: 'pl-tip-t' }, tip.data.text), h('small', { class: 'muted' }, tip.data.source)) : null,
-      tips.length ? h('details', { class: 'card pad pl-tips' }, h('summary', {}, 'as 30 dicas'),
+      tips.length ? h('details', { class: 'card pad pl-tips' }, h('summary', {}, 'as 30 dicas'), h('p', {}, h('a', { class: 'btn small', href: '#/dicas' }, '🎮 jogar com as dicas')),
         h('ol', {}, ...tips.map((t) => { const fav = c.favTips.includes(t.data.n); return h('li', { value: String(t.data.n) }, h('span', {}, t.data.text),
           h('button', { class: `icon-btn${fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(fav), 'aria-label': fav ? 'Tirar dos favoritos' : 'Favoritar dica', onclick: () => setConf({ favTips: fav ? c.favTips.filter((n) => n !== t.data.n) : [...c.favTips, t.data.n] }).then(draw) }, icon('star', 16))); }))) : null,
       metro ? h('details', { class: 'card pad pl-tips' }, h('summary', {}, metro.data.title), h('p', {}, metro.data.text), h('small', { class: 'muted' }, metro.data.source)) : null,

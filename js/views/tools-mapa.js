@@ -8,6 +8,7 @@ import { audio, click, cymbal, scheduler } from '../audio.js';
 import { VOICE } from './beatlab.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 import { back } from './tools-common.js';
+import * as FB from '../feedback.js';
 
 const METERS = ['4/4', '3/4', '6/8', '2/4'];
 const maps = () => store.list('songmap').sort((a, b) => (a.data.name || '').localeCompare(b.data.name || '', 'pt-BR'));
@@ -144,7 +145,7 @@ export function mountForma(host) {
   const answer = async (v) => {
     if (picked != null) return; picked = v; const s = score(); const ok = v === q.right;
     await store.upsert('setting', KEYF, { ok: s.ok + (ok ? 1 : 0), n: s.n + 1 });
-    if (ok) stars(body.querySelector('.mp-opts')); draw();
+    draw(); FB.result(ok, body.querySelector('.mp-opts') || body);
   };
   const draw = () => {
     const s = score();

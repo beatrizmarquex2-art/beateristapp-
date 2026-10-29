@@ -14,14 +14,19 @@ export const FIGURES = [
   { id: 'colcheia', name: 'colcheia', beats: 0.5 }, { id: 'semicolcheia', name: 'semicolcheia', beats: 0.25 },
 ];
 
-/** Cartas do "monte seu ritmo": cada uma é um tempo. */
+/** Cartas do "monte seu ritmo": cada uma é um tempo. Cada figura tem várias palavras com o mesmo ritmo (a sílaba cai em cada nota). */
+const f = (id, word, syl, cell, fig, emoji) => ({ id, word, syl, cell, fig, emoji });
 export const FOODS = [
-  { id: 'pao', word: 'pão', syl: ['pão'], cell: '1000', fig: 'semínima' },
-  { id: 'bolo', word: 'bolo', syl: ['bo', 'lo'], cell: '1010', fig: '2 colcheias' },
-  { id: 'chocolate', word: 'chocolate', syl: ['cho', 'co', 'la', 'te'], cell: '1111', fig: '4 semicolcheias' },
-  { id: 'shh', word: 'shhh', syl: ['shh'], cell: '0000', fig: 'pausa' },
+  f('pao', 'pão', ['pão'], '1000', 'semínima', '🍞'), f('ceu', 'céu', ['céu'], '1000', 'semínima', '☁️'), f('mao', 'mão', ['mão'], '1000', 'semínima', '✋'), f('cao', 'cão', ['cão'], '1000', 'semínima', '🐶'),
+  f('bolo', 'bolo', ['bo', 'lo'], '1010', '2 colcheias', '🎂'), f('bola', 'bola', ['bo', 'la'], '1010', '2 colcheias', '⚽'), f('corpo', 'corpo', ['cor', 'po'], '1010', '2 colcheias', '🧍'), f('pato', 'pato', ['pa', 'to'], '1010', '2 colcheias', '🦆'),
+  f('chocolate', 'chocolate', ['cho', 'co', 'la', 'te'], '1111', '4 semicolcheias', '🍫'), f('bicicleta', 'bicicleta', ['bi', 'ci', 'cle', 'ta'], '1111', '4 semicolcheias', '🚲'),
+  f('esqueleto', 'esqueleto', ['es', 'que', 'le', 'to'], '1111', '4 semicolcheias', '💀'), f('borboleta', 'borboleta', ['bor', 'bo', 'le', 'ta'], '1111', '4 semicolcheias', '🦋'),
+  f('shh', 'shhh', ['shh'], '0000', 'pausa', '🤫'),
 ];
-export const cellOf = (id) => (FOODS.find((f) => f.id === id) || FOODS[3]).cell;
+/** As figuras do jogo, com as palavras de cada uma (na ordem da paleta). */
+export const FOOD_GROUPS = [['1000', 'semínima · 1 tempo'], ['1010', '2 colcheias · bo-lo'], ['1111', '4 semicolcheias · cho-co-la-te'], ['0000', 'pausa · silêncio']].map(([cell, title]) => ({ cell, title, foods: FOODS.filter((x) => x.cell === cell) }));
+export const cellOf = (id) => (FOODS.find((x) => x.id === id) || FOODS[FOODS.length - 1]).cell;
+export const foodOf = (id) => FOODS.find((x) => x.id === id) || FOODS[FOODS.length - 1];
 
 export function shuffle(a, rnd = Math.random) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 
@@ -47,11 +52,12 @@ export function bumboBar(n) {
   return { steps: 8, rows: { hh: on([0, 1, 2, 3, 4, 5, 6, 7]), sn: on([2, 6]), bd: on(BUMBO_SPOTS[n]) } };
 }
 
-/** Ritmo aleatório de 4 cartas pro "adivinha" (começa com som, no máximo um "shhh"). */
+/** Ritmo aleatório de 4 cartas pro "adivinha" (começa com som, no máximo um "shhh"); a palavra de cada figura é sorteada. */
 export function randomFoods(rnd = Math.random, level = 1) {
-  const pool = level === 1 ? ['pao', 'bolo', 'shh'] : ['pao', 'bolo', 'chocolate', 'shh'];
+  const cells = level === 1 ? ['1000', '1010', '0000'] : ['1000', '1010', '1111', '0000'];
+  const word = (cell) => { const w = FOODS.filter((x) => x.cell === cell); return w[Math.floor(rnd() * w.length)].id; };
   for (;;) {
-    const r = Array.from({ length: 4 }, () => pool[Math.floor(rnd() * pool.length)]);
+    const r = Array.from({ length: 4 }, () => word(cells[Math.floor(rnd() * cells.length)]));
     if (r[0] !== 'shh' && r.filter((x) => x === 'shh').length <= 1) return r;
   }
 }

@@ -45,9 +45,24 @@ export function bumboQ(rnd, d) {
   return { key: 'bumbos', n, bpm: d >= 7 ? 90 : 70, ans: String(n), options: Array.from({ length: max }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })) };
 }
 
+/** "Onde mora na pauta?": nas fases mais difíceis aparecem duas peças juntas (chimbal + bumbo, chimbal + caixa…). */
+const PAIRS = [['hh', 'bd'], ['hh', 'sn']]; const PAIRS_HARD = [...PAIRS, ['cr', 'bd']];
+const joinName = (ids) => ids.map(nameOf).join(' + ');
+export const pairName = (key) => joinName(String(key).split('+'));
+export function pautaQ(rnd, d) {
+  const chance = d < 6 ? 0 : d === 6 ? 0.4 : d === 7 ? 0.5 : d === 8 ? 0.65 : d === 9 ? 0.8 : 1;
+  if (rnd() >= chance) { const q = pieceQ(rnd, d); return { ...q, ids: [q.ans] }; }
+  const pool = d >= 9 ? PAIRS_HARD : PAIRS; const ids = pool[Math.floor(rnd() * pool.length)]; const ans = ids.join('+');
+  const wrongPairs = [...pool.filter((p) => p.join('+') !== ans), ['sn', 'bd']].map((p) => p.join('+'));
+  const singles = ids.map((x) => x); // a peça sozinha também é uma pegadinha
+  const wrong = shuffle([...wrongPairs, ...singles], rnd).slice(0, Math.max(3, NOPTS[d] - 1));
+  const options = shuffle([ans, ...wrong], rnd).map((id) => ({ id, label: pairName(id) }));
+  return { ans, ids, key: ans, options };
+}
+
 /** O que cada erro quer dizer (vira dica no resultado e no PDF). */
 export const hintOf = (game, key) => {
-  if (game === 'pecas' || game === 'pauta') return `treinar: ${nameOf(key)}`;
+  if (game === 'pecas' || game === 'pauta') return `treinar: ${pairName(key)}`;
   if (game === 'figuras') return key === 'dura' ? 'comparar a duração das figuras' : key === 'tempos' ? 'quantos tempos cada figura dura' : 'o nome de cada figura';
   if (game === 'bumbos') return 'contar os bumbos escutando';
   return '';

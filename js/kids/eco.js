@@ -9,6 +9,7 @@ import { levelSpec, starsFor } from './levels.js';
 import { ecoPattern, ecoTimes, judgeHits, roundOk, windowFor } from './groove.js';
 import { capture } from './capture.js';
 import { frame, showResult, introBox, beep } from './engine.js';
+import * as FB from '../feedback.js';
 import { svgEl } from './art.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -76,7 +77,7 @@ export function runEco(game, ctx) {
     };
     const outcome = (ok, text) => {
       beep(ok); status.className = `kd-fb kx-fb ${ok ? 'ok' : 'no'}`; status.textContent = `${ok ? 'isso! ' : ''}${text}`;
-      if (ok) { right++; bot.set('cheer', 'mandou bem!'); sparkle(status); } else { misses.push(p.key); bot.set('oops', 'quase!'); }
+      if (ok) { right++; bot.set('cheer', FB.line('win')); sparkle(status); } else { misses.push(p.key); bot.set('oops', FB.line('lose')); }
       if (!ok && spec.sudden) { setTimeout(restart, 1600); return; }
       i++; setTimeout(next, ok ? 1100 : 1900);
     };

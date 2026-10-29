@@ -25,35 +25,36 @@ export const flatten = (notes) => (notes.some((n) => n.dyn === 'acc') && notes.e
 
 /** Um compasso de 4/4 repetindo o padrão (se não fechar, continua o ciclo no próximo compasso). */
 export function toBar(notes, sub = 4, offset = 0) {
-  const steps = sub * 4; const rows = { sn: Array(steps).fill(0), bd: Array(steps).fill(0) }; const acc = Array(steps).fill(0); const ghost = Array(steps).fill(0); const seq = [];
-  if (!notes.length) return { steps, rows, acc, ghost, seq };
+  const steps = sub * 4; const rows = { sn: Array(steps).fill(0), bd: Array(steps).fill(0) }; const acc = Array(steps).fill(0); const ghost = Array(steps).fill(0); const hands = Array(steps).fill(''); const seq = [];
+  if (!notes.length) return { steps, rows, acc, ghost, hands, seq };
   for (let i = 0; i < steps; i++) {
     const n = notes[(offset + i) % notes.length]; seq.push(n);
     if (n.who === 'B') rows.bd[i] = 1; else rows.sn[i] = 1;
+    hands[i] = n.who;
     if (n.dyn === 'acc') acc[i] = 1;
     if (n.dyn === 'ghost' && n.who !== 'B') ghost[i] = 1;
   }
-  return { steps, rows, acc, ghost, seq };
+  return { steps, rows, acc, ghost, hands, seq };
 }
 
 /** Quantos compassos até o padrão fechar o ciclo (ex.: 3 notas em semicolcheia = 3 compassos). Máximo `max`. */
-export function barsFor(len, sub = 4, max = 8) {
+export function barsFor(len, sub = 4, max = 9) {
   const steps = sub * 4; if (!len) return 1;
   const g = (a, b) => (b ? g(b, a % b) : a);
   return Math.min(max, len / g(len, steps));
 }
 
-// Exercícios genéricos (domínio comum). Os do método Beaterista (Ebook 2) ficam só no Supabase privado da Bia.
+// Os rudimentos prontos do app (domínio comum). Os exercícios do método Beaterista (Ebook 2) ficam só no Supabase privado da Bia.
+// Escrita: D/E = mãos, MAIÚSCULA = acento. Os rulos (5, 7 e 9 toques) são escritos como duplos alternados e fecham na nota acentuada.
 export const PRESETS = [
   { id: 'simples', name: 'Toque simples', stick: 'dede dede dede dede', sub: 4, lv: 1 },
   { id: 'duplo', name: 'Toque duplo', stick: 'ddee ddee ddee ddee', sub: 4, lv: 1 },
-  { id: 'acento-1', name: 'Acento no 1 (Dede)', stick: 'Dede Dede Dede Dede', sub: 4, lv: 1 },
   { id: 'paradiddle', name: 'Paradiddle', stick: 'Dedd Edee', sub: 4, lv: 2 },
   { id: 'paradiddle-inv', name: 'Paradiddle invertido', stick: 'ddEd eeDe', sub: 4, lv: 2 },
-  { id: 'dentro', name: 'Paradiddle de dentro pra fora', stick: 'deed edde', sub: 4, lv: 2 },
-  { id: 'duplo-paradiddle', name: 'Duplo paradiddle', stick: 'Dededd Ededee', sub: 4, lv: 2 },
+  { id: 'duplo-paradiddle', name: 'Paradiddle duplo', stick: 'Dededd Ededee', sub: 4, lv: 2 },
+  { id: 'triplo-paradiddle', name: 'Paradiddle triplo', stick: 'Dedededd Edededee', sub: 4, lv: 2 },
   { id: 'paradiddle-diddle', name: 'Paradiddle-diddle', stick: 'Deddee', sub: 4, lv: 2 },
-  { id: 'fantasma', name: 'Acento + fantasma', stick: 'D(e)(d)(e) E(d)(e)(d)', sub: 4, lv: 3 },
-  { id: 'mao-pe', name: 'Mãos + bumbo no final (DEDB)', stick: 'dedb', sub: 4, lv: 2 },
-  { id: 'mao-pe-pe', name: 'Mãos + dois bumbos (DEBB)', stick: 'debb', sub: 4, lv: 3 },
+  { id: 'five-stroke', name: 'Five stroke roll', stick: 'ddeeD eeddE', sub: 4, lv: 2 },
+  { id: 'seven-stroke', name: 'Seven stroke roll', stick: 'ddeeddE eeddeeD', sub: 4, lv: 3 },
+  { id: 'nine-stroke', name: 'Nine stroke roll', stick: 'ddeeddeeD eeddeeddE', sub: 4, lv: 3 },
 ];

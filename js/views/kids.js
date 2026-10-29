@@ -8,7 +8,9 @@ import { audio, click } from '../audio.js';
 import { stars as sparkle, sheet, toast, confirmSheet } from '../ui.js';
 import { VOICE } from './beatlab.js';
 import { layoutRhythm } from '../reading.js';
-import { PIECES, FOODS, nameOf, randomFoods, sameRhythm, cellOf } from '../kids-logic.js';
+import { PIECES, nameOf } from '../kids-logic.js';
+import { mountRitmo } from '../kids/ritmo.js';
+import { mountMemoria } from '../kids/memoria.js';
 import { kitMarkup, svgEl, play } from '../kids/art.js';
 import { robo, tierOf } from '../kids/robo.js';
 import { AGES, MAX_LEVEL, levelSpec, levelTag } from '../kids/levels.js';
@@ -22,56 +24,38 @@ import { downloadReport } from '../kids/report.js';
 import { gameIcon } from '../kids/icons.js';
 
 const FREE = [
-  ['explorar', 'Explorar a bateria', 'toca e descobre o nome', 'explorar'],
-  ['ritmo', 'Monte seu ritmo', 'pão, bo-lo, cho-co-la-te', 'ritmo'],
+  ['explorar', 'Explorar a bateria', 'toca livre e descobre os nomes', 'explorar'],
+  ['memoria', 'Jogo da memória', '4, 8 ou 12 pares · 4 temas', 'memoria'],
+  ['ritmo', 'Monte seu ritmo', 'pão, bolo, chocolate, céu, bola, pato…', 'ritmo'],
 ];
-const EMOJI = { pao: '🍞', bolo: '🎂', chocolate: '🍫', shh: '🤫' };
-function feedback(el, ok, text) { el.className = `kd-fb ${ok ? 'ok' : 'no'}`; el.textContent = text; }
 
+/** Explorar a bateria: aba "tocar" (toca cada peça do jeito que quiser, vários dedos) e aba "nomes" (toca e aparece o nome da peça). */
 function explorar(box) {
-  const name = h('p', { class: 'kd-big' }, 'toca numa peça!');
-  const kit = svgEl(kitMarkup(), 'kd-kit');
-  kit.addEventListener('pointerdown', (e) => { const g = e.target.closest('[data-p]'); if (!g) return; const id = g.dataset.p; play(id); name.textContent = nameOf(id);
-    kit.querySelectorAll('.kp').forEach((x) => x.classList.toggle('hl', x.dataset.p === id)); });
-  box.replaceChildren(kit, name);
+  let tab = 'tocar'; let timer = 0;
+  const draw = () => {
+    const name = h('p', { class: `kd-big kd-name${tab === 'tocar' ? ' off' : ''}`, 'aria-live': 'polite' }, tab === 'nomes' ? 'toca numa peça!' : '');
+    const kit = svgEl(kitMarkup(), 'kd-kit kd-kit-free');
+    kit.addEventListener('pointerdown', (e) => { // cada dedo vale um toque, então dá pra tocar com os dois ao mesmo tempo
+      const g = e.target.closest('[data-p]'); if (!g) return; e.preventDefault(); const id = g.dataset.p; play(id);
+      g.classList.remove('hit'); void g.getBoundingClientRect(); g.classList.add('hit'); setTimeout(() => g.classList.remove('hit'), 260);
+      if (tab === 'nomes') { name.textContent = nameOf(id); name.classList.remove('pop'); void name.offsetWidth; name.classList.add('pop'); kit.querySelectorAll('.kp').forEach((x) => x.classList.toggle('hl', x.dataset.p === id)); clearTimeout(timer); timer = setTimeout(() => kit.querySelectorAll('.kp.hl').forEach((x) => x.classList.remove('hl')), 1400); }
+    });
+    box.replaceChildren(
+      h('div', { class: 'row kd-modes' }, ...[['tocar', '🥁 tocar livre'], ['nomes', '🔤 nomes das peças']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${tab === k ? ' on' : ''}`, onclick: () => { tab = k; draw(); } }, t))),
+      h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toca em qualquer peça, do jeito que quiser!' : 'toca numa peça pra ver o nome dela'),
+      kit, name);
+  };
+  draw();
+  return () => clearTimeout(timer);
 }
 
 const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // replaceChildren(null) escreveria "null"
-function ritmo(box) {
-  let mode = 'criar'; let slots = []; let secret = null; let cur = -1;
-  const fb = h('p', { class: 'kd-fb' });
-  const playBar = (ids, mark) => {
-    const c = audio(); const q = 60 / 80; const t0 = c.currentTime + 0.15 + q * 4;
-    for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1, 0.5);
-    ids.forEach((id, b) => { [...cellOf(id)].forEach((x, k) => { if (x === '1') VOICE.sn(t0 + b * q + (k * q) / 4, 0.85); }); click(t0 + b * q, b === 0 ? 2 : 1, 0.35);
-      if (mark) setTimeout(() => { cur = b; mark(); }, (t0 + b * q - c.currentTime) * 1000); });
-    if (mark) setTimeout(() => { cur = -1; mark(); }, (t0 + 4 * q - c.currentTime) * 1000);
-  };
-  const draw = () => {
-    const full = slots.length === 4;
-    const score = full ? svgEl(N.toSVG(layoutRhythm(slots.map(cellOf), { width: 360 })), 'kd-score') : null;
-    const slotEls = Array.from({ length: 4 }, (_, i) => { const id = slots[i]; const f = FOODS.find((x) => x.id === id);
-      return h('button', { type: 'button', class: `kd-slot${cur === i ? ' now' : ''}${id ? ' full' : ''}`, 'aria-label': id ? `Tirar ${f.word}` : `Tempo ${i + 1} vazio`, onclick: () => { if (id) { slots = slots.slice(0, i); draw(); } } },
-        id ? [h('span', { class: 'kd-emoji' }, EMOJI[id]), h('small', {}, f.syl.join('-'))] : h('small', {}, String(i + 1))); });
-    put(box,
-      h('div', { class: 'row kd-modes' }, ...[['criar', '🎨 criar'], ['adivinha', '🕵️ adivinha']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { mode = k; slots = []; secret = k === 'adivinha' ? randomFoods() : null; fb.textContent = ''; draw(); } }, t))),
-      mode === 'adivinha' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBar(secret) }, '▶ ouvir o ritmo secreto') : h('p', { class: 'kd-q' }, 'monta 4 tempos e toca!'),
-      h('div', { class: 'kd-slots' }, ...slotEls),
-      h('div', { class: 'kd-foods' }, ...FOODS.map((f) => h('button', { type: 'button', class: 'kd-food', disabled: full, onclick: () => { if (slots.length < 4) { slots = [...slots, f.id]; draw(); } } }, h('span', { class: 'kd-emoji' }, EMOJI[f.id]), h('b', {}, f.syl.join('-')), h('small', {}, f.fig)))),
-      score,
-      h('div', { class: 'row kd-modes' },
-        full ? h('button', { class: 'kd-btn', type: 'button', onclick: () => playBar(slots, () => box.querySelectorAll('.kd-slot').forEach((s, i) => s.classList.toggle('now', i === cur))) }, '▶ tocar') : null,
-        mode === 'adivinha' && full ? h('button', { class: 'kd-btn', type: 'button', onclick: (e) => { if (sameRhythm(slots, secret)) { feedback(fb, true, 'acertou o ritmo secreto! ⭐'); sparkle(e.currentTarget); secret = randomFoods(Math.random, 2); slots = []; setTimeout(draw, 1500); } else feedback(fb, false, 'quase! ouve de novo e troca uma carta'); } }, 'conferir') : null,
-        slots.length ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { slots = []; draw(); } }, 'limpar') : null),
-      fb);
-  };
-  draw();
-}
+function ritmo(box) { return mountRitmo(box); }
 
-const RUN = { explorar, ritmo };
+const RUN = { explorar, ritmo, memoria: mountMemoria };
 
 /** Mais jogos (dentro do app). */
-const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', 'pauta']];
+const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Figuras rítmicas', 'ouvir, montar e aprender cada figura', 'figuras']];
 
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
@@ -130,13 +114,21 @@ async function reportFor(me, btn) {
   btn.disabled = false;
 }
 
+/** Cartas de Groove: separadas em "cartas de leitura" (baralhos pra ler e tocar) e "memória de groove" (os jogos da memória). */
+const cartasCards = () => h('div', { class: 'kx-cards' }, wideCard('pauta', 'Cartas de leitura', 'figuras, grooves e rudimentos pra ler e tocar', null, 'cartas/#leitura'), wideCard('memoria', 'Memória de groove', '5 jogos da memória com as cartas', null, 'cartas/#memoria'));
+function cartasScreen(host) {
+  const r = robo({ mood: 'cool', size: 84, say: 'escolhe: ler as cartas ou jogar a memória!' });
+  host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Cartas de Groove'), h('div', { class: 'kx-hello' }, r.el), cartasCards());
+}
+
 /* ---------- telas ---------- */
 function homeScreen(host, rerender) {
   const me = P.active();
   if (!me) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
     host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
-      h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))));
+      h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))),
+      h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards());
     return;
   }
   const total = P.totalStars(me.id); const tier = tierOf(total);
@@ -153,6 +145,7 @@ function homeScreen(host, rerender) {
       wideCard('relatorio', 'Relatório', 'pdf pra decorar', (e) => reportFor(me, e.currentTarget))),
     h('h2', { class: 'kx-h' }, 'livres'),
     h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
+    h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards(),
     h('h2', { class: 'kx-h' }, 'mais jogos'),
     h('div', { class: 'kx-cards' }, ...EXTERNAL.map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
@@ -198,9 +191,10 @@ export function mount(host, parts = []) {
     const free = first && RUN[first] ? first : null;
     if (free) {
       const g = FREE.find((x) => x[0] === free); const box = h('div', { class: 'kd-game' });
-      host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); RUN[free](box); return;
+      host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; return;
     }
     if (first === 'album') { albumScreen(host, lv); return; }
+    if (first === 'cartas') { cartasScreen(host); return; }
     if (first && GAMES[first]) {
       const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
       const level = lv !== undefined && lv !== '-' && !Number.isNaN(Number(lv)) ? Math.max(0, Math.min(MAX_LEVEL, Number(lv))) : null;

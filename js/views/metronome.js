@@ -1,4 +1,5 @@
 // Metrônomo: BPM, tap, compasso, subdivisão, acento no 1, contagem, modo progressivo e compassos mudos.
+import { tipBox } from '../tipbox.js';
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import { banner } from '../ui.js';
@@ -76,5 +77,6 @@ export function mount(host) {
       sw('compassos mudos', 'mute', h('div', { class: 'grid2' }, num('toca', 'playBars', 1, 16), num('fica mudo', 'muteBars', 1, 16)))),
     h('p', { class: 'pad-x muted met-note' }, canVibrate() ? 'dica: com a tela bloqueada o navegador pode pausar o som.' : 'no iPhone o navegador não vibra e pode pausar o som com a tela bloqueada: deixe o app aberto enquanto estuda.'));
   drawDots();
+  tipBox(host, 'metronomo');
   return () => stop();
 }
