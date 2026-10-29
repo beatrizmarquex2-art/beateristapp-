@@ -23,7 +23,7 @@ const MENU_BEA = [
   ['estudar', 'estudos', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
     ['álbuns', [['#/estudos/club/arsenal', 'note', 'Arsenal discos'], ['#/estudos/club', 'note', 'Álbuns']]],
-    ['artistas / bateristas', [['#/estudos/artistas', 'drummer', 'Artistas e bateristas'], ['#/mural', 'photo', 'Mural de Artistas']]],
+    ['artistas', [['#/estudos/artistas', 'drummer', 'Artistas'], ['#/mural', 'photo', 'Mural de Artistas']]],
     ['', [['#/anotacoes', 'note', 'Minhas anotações']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
@@ -68,7 +68,7 @@ const MENU_B = [
 ];
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance
 const TAB_ICON = { fav: 'star', ritmo: 'kit', tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
-const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
+const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', artistas: 'drummer', foco: 'timer', 'conteúdo': 'mural' };
 // tocar de novo na aba que já está aberta abre a página principal dela (o primeiro toque só mostra os itens, pra não sair da tela sem querer)
 const TAB_HOME = { jogos: '#/jogos', ritmo: '#/ritmo', estudar: '#/estudos' };
 const TAB_HOME_B = { jogos: '#/jogos', ritmo: '#/ritmo', tocar: '#/ferramentas' };
