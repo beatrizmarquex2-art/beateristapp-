@@ -82,3 +82,11 @@ html { touch-action: manipulation; }
 .al-rank li.me { background: color-mix(in srgb, var(--gold) 30%, transparent); font-weight: 700; }
 .al-pos { font: 700 14px var(--type); } .al-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .al-card { text-decoration: none; display: block; }
+.al-paul { display: flex; align-items: flex-end; gap: 8px; justify-content: center; }
+.al-paul img { height: auto; mix-blend-mode: multiply; }
+.al-bubble { position: relative; margin: 0 0 28px; padding: 10px 14px; max-width: 190px; border: 2px solid #1b1818; border-radius: 16px 16px 16px 4px; background: #fffdf8; color: #1b1818; font: 700 15px/1.25 var(--body); }
+.al-foot { display: grid; gap: 6px; padding: 18px 16px 8px; }
+.al-social { display: flex; gap: 14px; justify-content: center; }
+.al-soc { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 2px solid currentColor; color: var(--accent); text-decoration: none; background: var(--card); }
+.al-soc:active { transform: scale(.94); }
+select { min-height: 44px; }
