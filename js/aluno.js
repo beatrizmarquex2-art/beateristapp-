@@ -166,7 +166,7 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
-    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking (use só o primeiro nome ou apelido). a escola registra nome e data de entrada.'));
+    h('p', { class: 'muted center al-note' }, 'use só o primeiro nome ou apelido · aparece no ranking e a escola registra a entrada'));
   app.replaceChildren(h('main', { class: 'login al-entry' }, form, gamesStrip(), footerBlock()));
   setTimeout(() => input.focus(), 100);
 }
