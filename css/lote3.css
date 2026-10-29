@@ -214,3 +214,23 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
   url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
   url(../assets/mural/shard-red.svg) right -60px top 300px / 110px no-repeat; }
 @media (min-width: 700px) { .al-gamegrid { grid-template-columns: repeat(6, 1fr); max-width: 640px; } .al-game img { width: 80px; } }
+
+/* entrada numa tela só (iPhone): jogos pequenos, "siga a Bea" em cima, logos dos parceiros numa linha só com "parceiros da Bea" embaixo */
+.al-entry.login { gap: 8px; padding-top: 10px; padding-bottom: 8px; }
+.al-games { gap: 2px; padding: 0; }
+.al-h { font-size: 13px; }
+.al-gamegrid { grid-template-columns: repeat(6, 1fr); gap: 0 2px; max-width: 340px; }
+.al-game img { width: 40px; }
+.al-game figcaption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.al-foot { gap: 6px; padding: 0 10px; }
+.al-foot > .muted { font-size: 12px; }
+.al-social { gap: 12px; }
+.al-soc { width: 40px; height: 40px; box-shadow: 0 3px 0 rgb(0 0 0 / .28); } .al-soc svg { width: 20px; height: 20px; }
+.al-foot .partners { margin: 4px 0 0; display: grid; gap: 2px; justify-items: center; }
+.al-logos { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.al-logos .partners-img { flex: 0 1 262px; width: 262px; max-width: 70%; height: auto; }
+.al-logos .al-tiktok { margin: 0; font-size: 14px; gap: 3px; flex: none; } .al-logos .al-tiktok svg { width: 20px; height: 20px; }
+.al-foot .partners-label { font-size: 12px; }
+@media (min-width: 700px) { .al-game img { width: 60px; } .al-gamegrid { max-width: 520px; } .al-logos .partners-img { flex-basis: 360px; width: 360px; } .al-logos .al-tiktok { font-size: 20px; } .al-logos .al-tiktok svg { width: 28px; height: 28px; } .al-soc { width: 48px; height: 48px; } }
+.al-logos .partners-img { margin-right: -10px; }
+.al-game img { width: 44px; }

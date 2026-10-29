@@ -57,9 +57,11 @@ function footerBlock() {
   return h('div', { class: 'al-foot' },
     h('p', { class: 'muted center' }, 'siga a Bea'),
     h('div', { class: 'al-social' }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n)))),
-    h('aside', { class: 'partners', 'aria-label': 'Parceiros da Bea' }, h('span', { class: 'partners-label' }, 'parceiros da Bea'),
-      h('img', { class: 'partners-img', src: 'assets/parceiros-preto.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }),
-      tiktokMark()));
+    h('aside', { class: 'partners', 'aria-label': 'Parceiros da Bea' },
+      h('div', { class: 'al-logos' },
+        h('img', { class: 'partners-img', src: 'assets/parceiros-preto.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }),
+        tiktokMark()),
+      h('span', { class: 'partners-label' }, 'parceiros da Bea')));
 }
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
