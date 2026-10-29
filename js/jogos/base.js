@@ -1,5 +1,5 @@
 // Base compartilhada dos jogos musicais: armazenamento local versionado (cai pra memória se faltar), som opcional e figuras rítmicas em SVG.
-import { audio } from '../audio.js';
+import { audio, out } from '../audio.js';
 
 const KEY = 'beaterista-jogos';
 const SCHEMA = 1;
@@ -31,7 +31,7 @@ export function sfx(kind) {
       const o = c.createOscillator(); const g = c.createGain();
       o.type = 'triangle'; o.frequency.value = f;
       g.gain.setValueAtTime(0.0001, t0 + d); g.gain.exponentialRampToValueAtTime(0.2, t0 + d + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + len);
-      o.connect(g); g.connect(c.destination); o.start(t0 + d); o.stop(t0 + d + len + 0.02);
+      o.connect(g); g.connect(out()); // pela saída principal: trocar de tela/jogo (silence) corta o que ficou o.start(t0 + d); o.stop(t0 + d + len + 0.02);
     });
   } catch { /* sem áudio */ }
 }
