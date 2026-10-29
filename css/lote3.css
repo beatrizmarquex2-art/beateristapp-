@@ -391,3 +391,16 @@ body.rz-lock .pt-think { display: none; }
 .drawer-pin { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; border: 2px solid #1b1818; border-radius: 12px; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; }
 .drawer-pin svg { color: #b5162b; }
 .drawer-b .drawer-pin { background: #ffd166; color: #14284b; border-color: #fbf7ee; box-shadow: 2px 2px 0 #fbf7ee; } .drawer-b .drawer-pin svg { color: #14284b; }
+
+/* Beaterista (fundo azul): tudo legível */
+.drawer.drawer-b .drawer-tab, .drawer.drawer-b .lib-tab { background: transparent; color: #fbf7ee; border: 2px solid #fbf7ee; box-shadow: none; }
+.drawer.drawer-b .drawer-tab svg { color: #ffd166; }
+.drawer.drawer-b .drawer-tab.on, .drawer.drawer-b .lib-tab.on { background: #ffd166; color: #14284b; border-color: #ffd166; font-weight: 800; } .drawer.drawer-b .drawer-tab.on svg { color: #14284b; }
+.drawer.drawer-b .drawer-search input { background: #fbf7ee; color: #14284b; } .drawer.drawer-b .drawer-search input::placeholder { color: #5b6784; }
+.drawer.drawer-b .drawer-edit, .drawer.drawer-b .de-name { color: #fbf7ee; } .drawer.drawer-b .drawer-edit .btn { background: transparent; color: #fbf7ee; border-color: #fbf7ee; } .drawer.drawer-b .drawer-edit .icon-btn { color: #fbf7ee; }
+.drawer.drawer-b .icon-btn { color: #fbf7ee; }
+/* Bea (fundo claro): abas e atalhos com contraste */
+.drawer:not(.drawer-b) .drawer-tab:not(.on) { color: #1b1818; }
+.drawer.drawer-b .icon-btn[aria-pressed="true"] { background: #ffd166; color: #14284b; }
+.drawer.drawer-b .drawer-sub svg { color: #ffd166; }
+.drawer.drawer-b .drawer-edit .icon-btn:not(:disabled) { color: #ffd166; }
