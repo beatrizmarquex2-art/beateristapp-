@@ -9,14 +9,15 @@ import * as ritmo from './views/jogos-ritmo.js';
 import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
+import * as jogos from './views/jogos.js';
 import { banner } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/ritmo', 'play', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/kids', 'study', 'Kids'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar' }; // telas que acendem outra aba
+const NAV = [['#/ritmo', 'play', 'Ritmo'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/kids', 'study', 'Jogos'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', jogos: 'kids' }; // telas que acendem outra aba
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -90,6 +91,7 @@ function shell(name) {
     let c;
     if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
+    else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);

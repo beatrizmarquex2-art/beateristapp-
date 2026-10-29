@@ -51,6 +51,7 @@ import * as ferramentas from './views/ferramentas.js';
 import * as dicionario from './views/dicionario.js';
 import * as jogosRitmo from './views/jogos-ritmo.js';
 import * as dicas from './views/dicas.js';
+import * as jogos from './views/jogos.js';
 import * as notify from './notify.js';
 import { silence } from './audio.js';
 import { openMenu } from './views/menu.js';
@@ -257,6 +258,7 @@ function shell() {
       case 'dicionario': c = dicionario.mount(view, r.parts); break;
       case 'ritmo': c = jogosRitmo.mount(view); break;
       case 'dicas': c = dicas.mount(view, r.parts); break;
+      case 'jogos': c = jogos.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
