@@ -5,8 +5,8 @@ import * as store from './store.js';
 import { sheet, toast, confirmSheet } from './ui.js';
 
 export const KIND = 'grifo', CFG = 'setting-grifos', GERAL = 'Geral';
-export const COLORS = [['y', 'amarelo'], ['p', 'rosa'], ['g', 'verde'], ['b', 'azul']];
-const cfg = () => ({ folder: GERAL, folders: [], color: 'y', ...(store.get(CFG) ? store.get(CFG).data : {}) });
+export const COLORS = [['w', 'vinho'], ['y', 'amarelo'], ['m', 'azul-marinho']]; // grifos antigos (rosa, verde, azul claro) continuam aparecendo; só não entram mais na barra
+const cfg = () => ({ folder: GERAL, folders: [], color: 'w', ...(store.get(CFG) ? store.get(CFG).data : {}) });
 const setCfg = (p) => store.upsert('setting', CFG, p);
 export const all = () => store.list(KIND);
 const byDate = (a, b) => (b.data.created || 0) - (a.data.created || 0);
