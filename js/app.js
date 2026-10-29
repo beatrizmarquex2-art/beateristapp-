@@ -173,6 +173,11 @@ function keyboardGuard() {
   const root = document.documentElement; let t = 0;
   document.addEventListener('focusin', (e) => { clearTimeout(t); if (typing(e.target)) root.classList.add('kb-open'); });
   document.addEventListener('focusout', () => { clearTimeout(t); t = setTimeout(() => { if (!typing(document.activeElement)) root.classList.remove('kb-open'); }, 450); });
+  // o iPhone às vezes não avisa que o teclado fechou e a barra de baixo ficava escondida: destrava ao tocar fora, ao trocar de tela e quando o teclado some
+  const unstick = () => { if (!typing(document.activeElement)) root.classList.remove('kb-open'); };
+  document.addEventListener('pointerdown', (e) => { if (!typing(e.target)) setTimeout(unstick, 50); }, { passive: true });
+  addEventListener('hashchange', unstick); document.addEventListener('visibilitychange', unstick);
+  if (window.visualViewport) visualViewport.addEventListener('resize', () => { if (visualViewport.height > innerHeight * 0.85) unstick(); });
 }
 
 function shell() {
