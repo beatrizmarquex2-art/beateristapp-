@@ -2,8 +2,30 @@
 // Agendamento pelo relógio do AudioContext (olha 120 ms à frente a cada 25 ms) — nunca setInterval tocando som direto.
 let ctx = null, master = null, noiseBuf = null;
 
+// iPhone: o Web Audio fica mudo com o botão de silencioso ligado. Tocar um <audio> mudo em loop (e pedir sessão 'playback') faz o som sair mesmo assim.
+let keep = null;
+function playbackMode() {
+  try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
+  try {
+    if (!keep) {
+      const n = 800, b = new DataView(new ArrayBuffer(44 + n * 2));
+      const w = (o, t) => { for (let i = 0; i < t.length; i++) b.setUint8(o + i, t.charCodeAt(i)); };
+      w(0, 'RIFF'); b.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); b.setUint32(16, 16, true); b.setUint16(20, 1, true); b.setUint16(22, 1, true);
+      b.setUint32(24, 8000, true); b.setUint32(28, 16000, true); b.setUint16(32, 2, true); b.setUint16(34, 16, true); w(36, 'data'); b.setUint32(40, n * 2, true);
+      keep = new Audio(URL.createObjectURL(new Blob([b.buffer], { type: 'audio/wav' })));
+      keep.loop = true; keep.setAttribute('playsinline', ''); keep.volume = 0.01;
+    }
+    if (keep.paused) keep.play().catch(() => {});
+  } catch (e) {}
+}
+if (typeof document !== 'undefined') {
+  const go = () => { playbackMode(); audio(); };
+  ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, go, { capture: true, passive: true }));
+}
+
 export function audio() {
   if (!ctx) {
+    playbackMode();
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({ latencyHint: 'interactive' });
     master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);

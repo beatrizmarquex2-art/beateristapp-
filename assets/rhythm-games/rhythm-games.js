@@ -54,6 +54,7 @@ const AE={
   running(){return !!this.ctx&&this.ctx.state==='running'},
   unlock(){
     try{if(navigator.audioSession&&navigator.audioSession.type!=='playback') navigator.audioSession.type='playback'}catch(e){}
+    try{if(!this._keep){const n=800,b=new DataView(new ArrayBuffer(44+n*2)),w=(o,t)=>{for(let i=0;i<t.length;i++)b.setUint8(o+i,t.charCodeAt(i))};w(0,'RIFF');b.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');b.setUint32(16,16,true);b.setUint16(20,1,true);b.setUint16(22,1,true);b.setUint32(24,8000,true);b.setUint32(28,16000,true);b.setUint16(32,2,true);b.setUint16(34,16,true);w(36,'data');b.setUint32(40,n*2,true);this._keep=new Audio(URL.createObjectURL(new Blob([b.buffer],{type:'audio/wav'})));this._keep.loop=true;this._keep.volume=.01}if(this._keep.paused)this._keep.play().catch(()=>{})}catch(e){}
     const c=this.get();
     if(c.state!=='running') c.resume().catch(()=>{});
     if(!this._primed){try{const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);s.start(0);this._primed=true}catch(e){}}
