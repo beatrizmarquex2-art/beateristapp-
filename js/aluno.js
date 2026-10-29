@@ -38,13 +38,6 @@ const SVG = {
   YouTube: '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l5-2.8z" fill="currentColor" stroke="none"/>',
 };
 const TIKTOK_PATH = 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z';
-const GAMES_STRIP = [['domino', 'dominó'], ['cartas', 'última nota'], ['bingo', 'bingo'], ['velha', 'jogo da velha'], ['quebra-cabeca', 'quebra-cabeça'], ['cara-a-cara', 'cara a cara']];
-/** Vitrine dos jogos na entrada (os mesmos ícones desenhados do catálogo). */
-function gamesStrip() {
-  return h('section', { class: 'al-games', 'aria-label': 'O que tem por aqui' },
-    h('h2', { class: 'al-h' }, 'jogos, ritmo e muita música'),
-    h('div', { class: 'al-gamegrid' }, ...GAMES_STRIP.map(([img, t], i) => h('figure', { class: 'al-game', style: `--i:${i}` }, h('img', { src: `assets/aluno/${img}.webp`, alt: '', width: 96, height: 112, loading: 'lazy', draggable: 'false' }), h('figcaption', {}, t)))));
-}
 /** Logo do TikTok (nota + nome), em preto, pra fila dos parceiros. */
 function tiktokMark() {
   const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '34'); s.setAttribute('height', '34'); s.setAttribute('aria-hidden', 'true');
@@ -55,11 +48,11 @@ function tiktokMark() {
 function footerBlock() {
   const svg = (n) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '28'); s.setAttribute('height', '28'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = SVG[n]; return s; };
   return h('div', { class: 'al-foot' },
-    h('p', { class: 'muted center' }, 'siga a Bea'),
-    h('div', { class: 'al-social' }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n)))),
     h('aside', { class: 'partners', 'aria-label': 'Parceiros da Bea' }, h('span', { class: 'partners-label' }, 'parceiros da Bea'),
       h('img', { class: 'partners-img', src: 'assets/parceiros-preto.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }),
-      tiktokMark()));
+      tiktokMark()),
+    h('p', { class: 'muted center' }, 'siga a Bea'),
+    h('div', { class: 'al-social' }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n)))));
 }
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
@@ -162,12 +155,12 @@ function askName() {
       h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 96, height: 127 }),
       h('div', { class: 'al-hero-txt' },
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
-        h('p', { class: 'al-bubble' }, 'oi! sou o assistente da bea, vamos jogar juntos e aprender!'))),
+        h('p', { class: 'al-bubble' }, 'oi! sou o assistente da bea,', h('br'), 'vamos jogar juntos e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center al-note' }, 'use só o primeiro nome ou apelido · aparece no ranking e a escola registra a entrada'));
-  app.replaceChildren(h('main', { class: 'login al-entry' }, form, gamesStrip(), footerBlock()));
+  app.replaceChildren(h('main', { class: 'login al-entry' }, form, footerBlock()));
   setTimeout(() => input.focus(), 100);
 }
 
