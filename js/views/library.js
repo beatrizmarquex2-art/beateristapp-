@@ -7,7 +7,7 @@ import { renderMarkdown, slugify } from '../md.js';
 import { banner, sheet, toast, stamp, stars } from '../ui.js';
 import { CATEGORIES, categoryOf, category, PT, QUESTION } from '../catalog.js';
 import { artPhoto, credit, changePhoto, resetPhoto, ART_KEY } from './artist-photo.js';
-import { mountPost } from './club.js';
+import { mountPost, collectionsSection } from './club.js';
 import { attach as attachGrifos } from '../highlights.js';
 import * as G from '../highlights.js';
 import { openStory } from './story.js';
@@ -362,7 +362,7 @@ async function flashcard() {
 
 /* ---------- artistas / bateristas ---------- */
 function mountArtistas(host) {
-  const body = h('div');
+  const body = h('div'); const cols = collectionsSection();
   const draw = () => {
     const idx = lib.items();
     body.replaceChildren(
@@ -372,8 +372,10 @@ function mountArtistas(host) {
           .map(([href, ic, t, d]) => h('a', { class: 'hub-card', href }, h('span', { class: 'hub-ic' }, icon(ic, 26)), h('b', {}, t), h('small', {}, d))))));
   };
   host.append(banner('Artistas', 'quem pensa a música, e o que aprender com eles'), tabs('#/estudos/artistas'), body);
+  host.append(cols);
   lib.loadIndex().then(draw); draw();
-  return store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
+  const off = store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
+  return () => { off(); cols.cleanup(); };
 }
 
 export function mount(host, parts) {
@@ -381,7 +383,7 @@ export function mount(host, parts) {
   if (kind === 'artistas') return mountArtistas(host);
   if (kind === 'c') return mountCollection(host, arg);
   if (kind === 'cat' && arg) return mountCategory(host, arg);
-  if (kind === 'club') return mountPost(host, arg || 'arsenal', tabs('#/estudos/club')); // Álbuns abre direto no Arsenal de discos
+  if (kind === 'club') return mountPost(host, arg || 'arsenal', tabs(/^[cr]:/.test(arg || '') ? '#/estudos/artistas' : '#/estudos/club')); // Álbuns abre direto no Arsenal de discos
   if (kind === 'a' && arg) return mountArticle(host, arg);
   if (kind === 'favoritos') return mountFavs(host);
   if (kind === 'conexoes') return mountConnections(host);
