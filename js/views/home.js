@@ -55,12 +55,17 @@ function paulPop() {
   const msg = h('span', { class: 'pp-msg' });
   const el = h('button', { class: 'paul-pop', type: 'button', 'aria-label': 'Paul, com uma palavra de incentivo. Toque para ver outra.' }, h('span', { class: 'pp-bubble' }, msg), img);
   const hide = () => { clearTimeout(hideT); el.classList.remove('on'); };
-  const show = (stay = 7000) => {
+  // no máximo uma aparição sozinha a cada 10 minutos (entrar e sair do Início toda hora não faz ele aparecer toda hora); tocar nele sempre responde
+  const LAST = 'bt-paul-last';
+  const recente = () => { try { return Date.now() - Number(localStorage.getItem(LAST) || 0) < 600000; } catch (e) { return false; } };
+  const show = (stay = 7000, forca = false) => {
     if (document.querySelector('.drawer, #overlay .sheet') || document.documentElement.classList.contains('kb-open')) return;
+    if (!forca && recente()) return;
+    try { localStorage.setItem(LAST, String(Date.now())); } catch (e) { /* sem armazenamento */ }
     const c = incentiveFor(Date.now(), n++); msg.textContent = c.text; img.src = `assets/paul/${c.face}.webp`;
     el.classList.add('on'); clearTimeout(hideT); hideT = setTimeout(hide, stay);
   };
-  el.addEventListener('click', () => show(9000));
+  el.addEventListener('click', () => show(9000, true));
   document.body.append(el);
   showT = setTimeout(() => show(), 1800);
   loopT = setInterval(() => { if (document.visibilityState === 'visible') show(); }, 150000);
