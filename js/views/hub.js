@@ -29,6 +29,6 @@ export function mount(host, parts = []) {
   const hub = HUBS[parts[0]];
   if (!hub) { host.append(banner('Não achei', 'essa página não existe'), h('p', { class: 'pad-x' }, h('a', { class: 'btn', href: '#/inicio' }, 'voltar ao início'))); return () => {}; }
   host.append(banner(hub.title, hub.blurb),
-    h('div', { class: 'hub-grid' }, ...hub.items.map(([href, ic, label, desc]) => h('a', { class: 'hub-card', href }, h('span', { class: 'hub-ic' }, icon(ic, 26)), h('b', {}, label), h('small', {}, desc)))));
+    h('div', { class: 'hub-grid' }, ...hub.items.map(([href, ic, label, desc], i) => h('a', { class: `hub-card hc-${i % 4}`, href }, h('span', { class: 'hub-ic' }, icon(ic, 30)), h('b', {}, label), h('small', {}, desc)))));
   return () => {};
 }
