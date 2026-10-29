@@ -24,7 +24,7 @@ export const TOOLS = [
   ['bpm', 'BPM pelo microfone', 'toca a música perto e ele estima', '🎙'],
   ['mapa', 'Mapa da música', 'intro, verso, refrão: o app avisa a troca', '🗺'],
   ['loop', 'Play-along em loop', 'trecho do YouTube repetindo e mais lento', '🔁'],
-  ['groovebox', 'Groovebox', '16 pads com baixo e acordes', '🎛'],
+  ['groovebox', 'Groovebox', '12 pads de bateria e percussão', '🎛'],
   ['um', 'Achar o 1', 'o groove começa no meio: toque no 1', '1️⃣'],
   ['leitura', 'Folhas de leitura', 'leitura nova por nível, em PDF', '📄'],
   ['roleta', 'Roleta da aula', 'sorteia exercício, groove ou música', '🎡'],

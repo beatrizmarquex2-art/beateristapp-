@@ -6,7 +6,7 @@ export const HUBS = {
   ritmo: { title: 'Criar ritmos', ic: 'kit', blurb: 'montar, tocar e escrever ritmo', items: [
     ['#/beatlab', 'kit', 'Beat Lab', 'monta o ritmo numa grade e escuta'],
     ['#/toque', 'kit', 'Bateria de Toque', 'toca na tela e grava o que você tocou'],
-    ['#/ferramentas/groovebox', 'kit', 'Groovebox', 'pads, baixo, piano e sequência'],
+    ['#/ferramentas/groovebox', 'kit', 'Groovebox', 'pads de bateria e percussão'],
     ['#/partitura', 'staff', 'Montar Partitura', 'escreve compasso por compasso'],
   ] },
   tempo: { title: 'Tempo', ic: 'timer', blurb: 'pulso, andamento e precisão', items: [
