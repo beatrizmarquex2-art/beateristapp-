@@ -7,6 +7,7 @@ import { robo, tierOf } from './robo.js';
 import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
+import { openPack } from './pack.js';
 import * as FB from '../feedback.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -110,7 +111,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
   const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
   stage.replaceChildren(h('div', { class: 'kx-result' },
     h('h2', {}, stars >= 1 ? 'Fase concluída!' : 'Quase lá!'), pctEl, h('p', { class: 'muted' }, note || `${right} de ${total} certas${restarts ? ` · recomeçou ${restarts}×` : ''}`), starsEl,
-    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('button', { class: 'kd-btn', type: 'button', onclick: () => openPack(won, { onPaste: () => { location.hash = '#/kids/album'; } }) }, 'abrir pacotinho')) : null,
     missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.slice(0, 4).map((t) => h('li', {}, t)))) : null,
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,

@@ -1,6 +1,6 @@
 // Área Kids: visual arcade/neon. Jogadores com idade, fases de 0 a 10 (normal, com tempo, "sem errar"), % de acerto, estrelas,
 // figurinhas e o robô Robôterista. Livres: explorar a bateria e "monte seu ritmo" (pão, bo-lo, cho-co-la-te).
-import { h, icon } from '../util.js';
+import { h, icon, reducedMotion } from '../util.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
@@ -18,7 +18,8 @@ import * as P from '../kids/progress.js';
 import { runLevel } from '../kids/engine.js';
 import { GAMES, ORDER } from '../kids/games.js';
 import * as Album from '../kids/album.js';
-import { CARDS, ROLES } from '../kids/album-data.js';
+import { CARDS, ROLES, byId } from '../kids/album-data.js';
+import { openPack } from '../kids/pack.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
@@ -133,15 +134,39 @@ function homeScreen(host, rerender) {
 
 function albumScreen(host, role) {
   const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
-  const have = new Set(Album.owned(me.id)); const tier = tierOf(P.totalStars(me.id));
-  const r = robo({ mood: have.size ? 'cheer' : 'selfie', tier, size: 84, say: have.size ? `${have.size} de ${Album.total()} figurinhas!` : 'ganha figurinhas passando de fase!' });
+  const rerender = () => { host.replaceChildren(); albumScreen(host, role); };
+  const pasted = new Set(Album.pasted(me.id)); const trayIds = Album.tray(me.id); const tier = tierOf(P.totalStars(me.id));
+  const r = robo({ mood: pasted.size ? 'cheer' : 'selfie', tier, size: 84, say: trayIds.length ? `${trayIds.length} pra colar!` : pasted.size ? `${pasted.size} de ${Album.total()} coladas!` : 'ganha figurinhas passando de fase!' });
   const filter = ROLES[role] ? role : '';
-  const list = CARDS.filter((c) => !filter || c.role === filter).sort((x, y) => (have.has(y.id) ? 1 : 0) - (have.has(x.id) ? 1 : 0)); // as que já tem vêm primeiro
+  const slots = new Map(CARDS.map((c, i) => [c.id, i + 1]));
+  const list = CARDS.filter((c) => !filter || c.role === filter);
   const open = (c) => sheet(c.name, () => h('div', { class: 'sheet-body kx-big' }, Album.cardEl(c), h('p', { class: 'kx-fact' }, c.fact), credit(`album-${c.id}`, c.wiki)));
+  const grid = h('div', { class: 'kx-album' }, ...list.map((c) => (pasted.has(c.id) ? Album.cardEl(c, { onclick: () => open(c), slot: slots.get(c.id) }) : Album.cardEl(c, { locked: true, slot: slots.get(c.id) }))));
+  let busy = false;
+  const stick = async (id, btn) => {
+    if (busy) return; busy = true; const c = byId[id];
+    if (filter && c.role !== filter) { location.hash = '#/kids/album'; busy = false; return; } // a carta é de outra categoria: mostra todas
+    const slot = grid.querySelector(`[data-id="${id}"]`); if (!slot) { busy = false; return; }
+    slot.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' }); await new Promise((ok) => setTimeout(ok, reducedMotion() ? 0 : 380));
+    const from = btn.getBoundingClientRect(); const to = slot.getBoundingClientRect();
+    const fly = Album.cardEl(c, { fresh: false }); fly.classList.add('kx-fly'); Object.assign(fly.style, { left: `${from.left}px`, top: `${from.top}px`, width: `${from.width}px` });
+    document.body.append(fly); btn.classList.add('gone');
+    const dx = to.left - from.left; const dy = to.top - from.top; const k = to.width / from.width;
+    const anim = fly.animate(reducedMotion() ? [{ opacity: 1 }, { opacity: 1 }] : [
+      { transform: 'translate(0,0) scale(1) rotate(-6deg)', offset: 0 }, { transform: `translate(${dx * .5}px,${dy * .5 - 60}px) scale(${(1 + k) / 2 + .25}) rotate(8deg)`, offset: .55 },
+      { transform: `translate(${dx}px,${dy}px) scale(${k * 1.12}) rotate(0)`, offset: .85 }, { transform: `translate(${dx}px,${dy}px) scale(${k})`, offset: 1 }], { duration: reducedMotion() ? 50 : 750, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'forwards' });
+    await anim.finished.catch(() => {}); fly.remove();
+    await Album.paste(me.id, id); const done = Album.cardEl(c, { onclick: () => open(c), slot: slots.get(id) }); done.classList.add('kx-stuck'); slot.replaceWith(done);
+    setTimeout(() => { busy = false; if (!Album.tray(me.id).length) rerender(); }, reducedMotion() ? 0 : 700);
+  };
+  const trayEl = trayIds.length ? h('div', { class: 'kx-tray' }, h('p', { class: 'kx-tray-t' }, `folha de colar · ${trayIds.length} figurinha${trayIds.length > 1 ? 's' : ''}`),
+    h('div', { class: 'kx-tray-row' }, ...trayIds.map((id) => { const b = Album.cardEl(byId[id], { onclick: () => stick(id, b) }); b.classList.add('kx-peel'); return b; })), h('small', { class: 'kx-tray-h' }, 'toque na figurinha para colar no lugar dela')) : null;
+  // PACOTINHO DE TESTE: enquanto as regras do jogo não estão definidas, dá pra abrir um pacote aqui. Tirar quando as regras entrarem.
+  const test = h('button', { class: 'kd-chip', type: 'button', onclick: async () => { const won = Album.grant(me.id, 5); if (!won.length) { toast('álbum completo!'); return; } await openPack(won, { onPaste: () => { location.hash = '#/kids/album'; } }); rerender(); } }, '🎁 pacotinho de teste (5)');
   host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Álbum'), h('div', { class: 'kx-hello' }, r.el),
     h('div', { class: 'row kd-modes' }, h('a', { class: `kd-chip${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas'), ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kd-chip${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t}`))),
-    h('div', { class: 'kx-album' }, ...list.map((c) => (have.has(c.id) ? Album.cardEl(c, { onclick: () => open(c) }) : Album.cardEl(c, { locked: true })))),
-    h('p', { class: 'lib-note' }, 'cada vez que você melhora as estrelas de uma fase, ganha uma figurinha nova. as fotos vêm do Wikimedia Commons (licenças livres, com crédito); sem foto livre, aparece a inicial.'));
+    h('div', { class: 'row' }, test), ...(trayEl ? [trayEl] : []), grid,
+    h('p', { class: 'lib-note' }, 'cada vez que você melhora as estrelas de uma fase, ganha um pacotinho de figurinhas. as artes são desenhos feitos para o app; quando existe foto livre no Wikimedia Commons (com crédito), ela aparece por cima.'));
 }
 
 function levelsScreen(host, gameId, mode) {
