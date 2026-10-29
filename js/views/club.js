@@ -14,7 +14,7 @@ import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchU
 import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
 import { readZip } from '../zip.js';
 import { attach as attachGrifos } from '../highlights.js';
-import { mountArsenal } from './arsenal.js';
+import { mountArsenal, mountArsenalAlbum } from './arsenal.js';
 import { isCollection, collectionName, parseArsenal, skipSheet, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
 
 export const SECTIONS = [
@@ -211,6 +211,7 @@ export function mountClub(host, tabs) {
 export function mountPost(host, id, tabs) {
   if (id === 'discos') return mountShelf(host, tabs);
   if (id === 'arsenal') return mountArsenal(host, tabs);
+  if (id.startsWith('arsenal:')) return mountArsenalAlbum(host, id.slice(8), tabs);
   if (id.startsWith('c:')) return mountCollection(host, id.slice(2), tabs);
   if (id.startsWith('r:')) return mountRef(host, id.slice(2), tabs);
   const box = h('article', { class: 'reader' });

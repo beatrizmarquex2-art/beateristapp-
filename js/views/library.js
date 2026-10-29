@@ -242,6 +242,8 @@ function mountArticle(host, slug) {
 
     // progresso de leitura pelo scroll (guarda o máximo)
     let best = st0.progress || 0;
+    // volta de onde parou (se já leu parte e não terminou)
+    if (best > 0.05 && best < 0.97 && !st0.done) setTimeout(() => { const r = content.getBoundingClientRect(); const total = r.height - innerHeight * 0.6; if (total > 0) { scrollTo(0, scrollY + r.top + best * total); toast('voltei de onde você parou', { ms: 1600 }); } }, 300);
     const saveProg = debounce(() => lib.patchState(slug, { progress: best }), 800);
     const onScroll = () => {
       const r = content.getBoundingClientRect(); const total = r.height - innerHeight * 0.6;

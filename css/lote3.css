@@ -355,10 +355,11 @@ body.rz-lock .pt-think { display: none; }
 
 /* Arsenal discos */
 .ar-art { margin: 14px 0 4px; }
-.ar-alb { border-top: 1px dashed rgb(0 0 0 / .18); padding: 4px 0; }
-.ar-alb summary { cursor: pointer; min-height: 44px; display: grid; align-content: center; gap: 2px; }
-.ar-hit { font-size: .85rem; opacity: .75; }
-.ar-body { padding: 4px 0 12px; display: grid; gap: 10px; }
+.ar-alb { display: grid; gap: 4px; padding: 8px 0; min-height: 44px; border-top: 1px dashed rgb(0 0 0 / .18); text-decoration: none; color: inherit; }
+.ar-alb.done strong { opacity: .6; } .ar-ok { color: #2f7d5b; }
+.ar-main { display: grid; gap: 2px; } .ar-hit { font-size: .85rem; opacity: .75; }
+.ar-prog { display: grid; gap: 4px; margin: 6px 0; } .lib-bar.big { height: 8px; }
+.ar-list h2.tag { margin-top: 10px; }
 
 /* recentes bem menores: uma linha de chips pequenos, no menu e no início */
 .drawer-recent { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 6px 8px; }
@@ -384,3 +385,9 @@ body.rz-lock .pt-think { display: none; }
 .drawer-b .lib-tab { color: #fbf7ee; border-color: #fbf7ee; } .drawer-b .lib-tab.on { background: #ffd166; color: #14284b; border-color: #ffd166; }
 .drawer-b .muted, .drawer-b .drawer-editnote p { color: #b9c4dd; }
 .drawer-b .drawer-head strong img { background: #fbf7ee; border-radius: 8px; padding: 2px 8px; }
+
+/* atalhos fixos no alto do menu (Criar ritmos, Tempo) */
+.drawer-pins { display: flex; gap: 8px; padding: 8px 0 2px; }
+.drawer-pin { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; border: 2px solid #1b1818; border-radius: 12px; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; }
+.drawer-pin svg { color: #b5162b; }
+.drawer-b .drawer-pin { background: #ffd166; color: #14284b; border-color: #fbf7ee; box-shadow: 2px 2px 0 #fbf7ee; } .drawer-b .drawer-pin svg { color: #14284b; }
