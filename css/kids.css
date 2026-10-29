@@ -161,3 +161,14 @@
 .kx-card-fig:not(.locked) .kx-role { background: var(--rc); border-color: #fff3c8; top: -2px; right: -2px; border-radius: 0 9px 0 9px; }
 .kx-card-fig.role-baterista:not(.locked) .kx-role { background: #1b1818; }
 .kx-tray-row .kx-card-fig { flex-basis: 112px; width: 112px; }
+
+/* espaço do álbum (vazio) e folha de colar */
+.kx-card-fig.locked { background: #fff6e6; border: 2px dashed #c8202f; border-radius: 12px; box-shadow: inset 0 0 0 3px #fff6e6, inset 0 0 0 4px rgb(200 32 47 / .25); opacity: 1; padding: 8px 6px 9px; }
+.kx-card-fig.locked .kx-ph { border: 2px dashed rgb(200 32 47 / .45); border-radius: 8px; background: radial-gradient(circle at 50% 40%, #ffe6e0, #f6cdc6); display: grid; place-items: center; }
+.kx-card-fig.locked .kx-q { font-size: 30px; opacity: .35; filter: grayscale(1) sepia(1) hue-rotate(310deg) saturate(2.5); } .kx-card-fig.locked .kx-nm { color: #8c1224; font-size: 14px; } .kx-card-fig.locked .kx-bd { color: #b9788a; }
+.kx-card-fig.locked .kx-num { color: #fff; background: #c8202f; border-radius: 0 0 8px 0; left: 0; top: 0; padding: 1px 6px 2px; font-size: 10px; } .kx-card-fig.locked .kx-role { display: none; }
+.kx-tray { position: relative; background: linear-gradient(160deg, #fffaf0, #ffe9b8); border: 3px solid #1b1818; border-radius: 16px; padding: 14px 10px 10px; margin: 10px 0 14px; box-shadow: 4px 4px 0 #1b1818; }
+.kx-tray::before { content: ''; position: absolute; left: 14px; right: 14px; top: 5px; border-top: 3px dotted #c8202f; opacity: .7; }
+.kx-tray-t { display: inline-block; background: #c8202f; color: #fff3c8; font: 400 18px var(--khand); margin: 0 0 8px; padding: 2px 12px; border-radius: 8px; border: 2px solid #1b1818; transform: rotate(-2deg); box-shadow: 2px 2px 0 #1b1818; }
+.kx-tray-row { padding: 6px 4px 12px; } .kx-tray-h { display: block; text-align: center; color: #8c1224; font: 700 11px var(--kmono); }
+.kx-tray-row .kx-card-fig { box-shadow: 0 6px 0 rgb(27 24 24 / .25), 0 3px 0 #1b1818; }

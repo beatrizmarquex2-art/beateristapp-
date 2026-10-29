@@ -36,7 +36,7 @@ export function grant(pid, n) {
 export function cardEl(card, { fresh = false, locked = false, onclick, slot } = {}) {
   const [, emoji] = ROLES[card.role]; const rar = rarityOf(card.id);
   const ph = h('span', { class: 'kx-ph' });
-  if (locked) ph.append(h('b', { class: 'kx-q' }, '?'));
+  if (locked) ph.append(h('b', { class: 'kx-q' }, ROLES[card.role][1]));
   else {
     ph.innerHTML = cardSvg(card);
     const addPhoto = (src, onFail) => { const img = h('img', { class: 'kx-photo', src, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' }); img.addEventListener('load', () => ph.isConnected && ph.append(img)); img.addEventListener('error', onFail); };
