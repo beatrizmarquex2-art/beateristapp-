@@ -83,3 +83,10 @@
 .dc-kw { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; } .dc-kw li { display: grid; grid-template-columns: 24px 1fr; gap: 4px 8px; align-items: center; } .dc-kw select { grid-column: 2; } .dc-kwt { font-size: 13px; color: #5f5752; }
 
 .dc-box > * { min-width: 0; } .dc-clues input { box-sizing: border-box; letter-spacing: .18em; } .dc-clues { padding-right: 4px; }
+
+/* cartas desenhadas: a imagem é a carta inteira */
+.kx-arc .mem-board .kx-mem.mem-photo { aspect-ratio: 3 / 4; } .mem-photo .kx-mem-front { padding: 0 !important; background: #fbf7ee; overflow: hidden; border: 0 !important; border-radius: 8px; } .mem-card-img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
+.mem-photo.ok .kx-mem-front { box-shadow: 0 0 0 3px #1f9d4a; } .mem-photo.no .kx-mem-front { box-shadow: 0 0 0 3px #a31d30; } .mem-photo .kx-mem-back { border-radius: 8px; }
+.mem-paul { display: block; width: 120px; margin: 0 auto -6px; }
+.mem-stage { display: grid; gap: 10px; } .kx-arc .mem-board { width: 100%; max-width: 400px; margin: 0 auto; } .mem-stage .kx-memstat, .mem-stage .mem-top { justify-self: center; }
+.mem-stage { width: 100%; }

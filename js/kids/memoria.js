@@ -1,10 +1,9 @@
 // Jogo da memória, só com imagens: escolhe o tema e quantos pares (4, 8 ou 12) e joga. Sem fases: o que vale é achar tudo com poucas tentativas.
 import { h } from '../util.js';
 import * as store from '../store.js';
-import { artPhoto } from '../views/artist-photo.js';
 import { shuffle } from '../kids-logic.js';
 import { robo } from './robo.js';
-import { THEMES, SIZES, themeById, loadExtras } from './memory-themes.js';
+import { THEMES, SIZES, themeById } from './memory-themes.js';
 import * as FB from '../feedback.js';
 
 const KEY = 'setting-memoria';
@@ -12,13 +11,8 @@ const conf = () => ({ theme: 'instrumentos', pairs: 8, best: {}, ...(store.get(K
 const save = (p) => store.upsert('setting', KEY, p);
 const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 
-function face(f, name) {
-  const box = h('span', { class: 'kx-mem-art mem-img' });
-  if (f.svg) box.innerHTML = f.svg;
-  else if (f.img) box.append(h('img', { src: f.img, alt: name, draggable: 'false' }));
-  else if (f.photo) box.append(artPhoto(`album-${f.photo.id}`, f.photo.name, 'art-ph', f.photo.wiki));
-  return box;
-}
+/** A carta inteira (a imagem já traz o desenho, o nome e a borda). */
+const face = (it) => h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' });
 
 export function mountMemoria(host) {
   let gone = false; const timers = [];
@@ -26,12 +20,14 @@ export function mountMemoria(host) {
   const bot = robo({ mood: 'happy', size: 84, say: 'escolhe o tema e quantos pares!' });
   const stage = h('div', { class: 'mem-stage' });
   host.replaceChildren(h('div', { class: 'kx-botrow' }, bot.el), stage);
+  const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
 
   const setup = () => {
     const c = conf(); const th = themeById[c.theme] || THEMES[0];
-    const maxPairs = th.items.length;
+    const maxPairs = th.items.length; preload(th);
     const pairs = SIZES.includes(c.pairs) ? c.pairs : 8;
     stage.replaceChildren(
+      h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
       h('div', { class: 'mem-themes' }, ...THEMES.map((t) => h('button', { type: 'button', class: `mem-theme${t.id === th.id ? ' on' : ''}`, 'aria-pressed': String(t.id === th.id), onclick: () => save({ theme: t.id }).then(setup) },
         h('span', { class: 'mem-emoji', 'aria-hidden': 'true' }, t.emoji), h('b', {}, t.title), h('small', {}, t.blurb)))),
@@ -45,14 +41,15 @@ export function mountMemoria(host) {
   const play = (th, pairs) => {
     const picks = shuffle(th.items, Math.random).slice(0, pairs);
     const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), Math.random).map((c, i) => ({ ...c, key: i }));
+    const verso = th.verso ? `url(../${th.verso})` : null;
     let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0;
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`; };
     const board = h('div', { class: `kx-board mem-board n${pairs}`, style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
-      const f = c.side === 'b' && c.it.b ? c.it.b : c.it.a;
-      const b = h('button', { type: 'button', class: 'kx-mem', 'aria-label': 'carta virada para baixo', onclick: () => flip(b) },
-        h('span', { class: 'kx-mem-in' }, h('span', { class: 'kx-mem-back', 'aria-hidden': 'true', style: `--bi:url(../assets/cards/b${String((i * 7 + (i >> 1)) % 10 + 1).padStart(2, '0')}.webp)` }),
-          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, face(f, c.it.name))));
+      const bi = verso || `url(../assets/cards/b${String((i * 7 + (i >> 1)) % 10 + 1).padStart(2, '0')}.webp)`;
+      const b = h('button', { type: 'button', class: 'kx-mem mem-photo', 'aria-label': 'carta virada para baixo', onclick: () => flip(b) },
+        h('span', { class: 'kx-mem-in' }, h('span', { class: 'kx-mem-back', 'aria-hidden': 'true', style: `--bi:${bi}` }),
+          h('span', { class: 'kx-mem-front', 'aria-hidden': 'true' }, face(c.it))));
       b._c = c; return b;
     }));
     const flip = (btn) => {
@@ -87,6 +84,6 @@ export function mountMemoria(host) {
     stage.replaceChildren(h('div', { class: 'row kd-modes mem-top' }, h('b', {}, th.title), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar')), status, board);
   };
 
-  loadExtras().then(() => { if (!gone) setup(); });
+  setup();
   return () => { gone = true; timers.forEach(clearTimeout); };
 }
