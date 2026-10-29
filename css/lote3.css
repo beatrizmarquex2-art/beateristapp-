@@ -183,8 +183,6 @@ body.aluno .login-logo { box-shadow: none; }
 .al-entry .al-note { font-size: 10px; }
 #app:has(.al-entry) { min-height: 0; padding-bottom: 0; }
 /* entrada sem moldura de cartão; parceiros logo abaixo do formulário, depois as redes */
-.al-entry .login-card { background: none; box-shadow: none; border-radius: 0; }
-.al-entry .login-card::before { display: none; }
 .al-entry.login { gap: 10px; padding-top: 14px; }
 .al-foot { gap: 6px; padding-top: 6px; }
 .al-foot .partners-label { font-size: 15px; }
@@ -196,6 +194,4 @@ body.aluno:has(.al-entry) .wash.w2 { display: none; }
 html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background:
   url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
   url(../assets/mural/shard-red.svg) right -60px top 46% / 120px no-repeat,
-  url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat,
-  url(../assets/mural/star-spray.svg) right -6px bottom 160px / 70px no-repeat,
-  url(../assets/mural/bolt-red.svg) left 4px top 62% / 34px no-repeat; }
+  url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat; }
