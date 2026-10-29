@@ -514,3 +514,19 @@ html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
 .hero-note-wrap { width: 100%; }
 .hero-paul { margin-top: 10px; padding-right: 0; }
 [data-theme="rabisco"] .hero-top { min-height: calc(var(--cs, 82px) + 4px); }
+
+/* ações (YouTube e estudo) só ícone, lado a lado; Paul pequeno no cantinho da direita */
+.hero-note-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.hero-note-acts { display: flex; align-items: center; gap: 8px; flex: none; }
+.hero-note-links, .hero-note-study { display: contents; padding: 0; }
+.hero-note-link.ico { min-height: 32px; width: 32px; padding: 0; justify-content: center; font-size: 13px; border-width: 1.5px; box-shadow: 2px 2px 0 #1b1818; }
+.hero-note-bar .hero-paul { flex: 1; min-width: 0; width: auto; margin: 0; padding: 0; flex-direction: row-reverse; justify-content: flex-start; gap: 4px; }
+.hero-note-bar .hp-img { width: 52px; height: 52px; }
+.hero-note-bar .hp-bubble { padding: 4px 8px; border-width: 1.5px; border-radius: 12px 12px 3px 12px; box-shadow: 1px 1px 0 #1b1818; }
+.hero-note-bar .hp-msg { font-size: 13px; line-height: 1.15; }
+/* estudar: menor */
+.w-study { padding: 12px 14px; } .w-study .tag { font-size: 16px; }
+.w-study .w-line { min-height: 0; padding: 6px 0; } .w-study .w-line strong { font-size: 15px; }
+.w-pick { display: flex; align-items: center; gap: 8px; padding-top: 6px; }
+.w-pick-link { flex: 1; min-width: 0; display: grid; gap: 1px; color: inherit; text-decoration: none; } .w-pick-link small { font: 600 11px var(--body); opacity: .65; } .w-pick-link strong { font: 600 15px/1.2 var(--body); }
+.w-dice { flex: none; width: 38px; height: 38px; border: 2px solid #1b1818; border-radius: 50%; background: #fff; font-size: 18px; cursor: pointer; }

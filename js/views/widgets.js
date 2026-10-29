@@ -15,14 +15,26 @@ const box = (cls, title, href, linkText) => {
 };
 
 export function studyWidget() {
-  const el = box('w-study', 'continuar estudando', '#/estudos', 'biblioteca');
+  const el = box('w-study', 'estudar', '#/estudos', 'biblioteca');
+  let pickSlug = '';
+  // sorteia um texto que a Bea ainda não abriu (se já abriu todos, vale qualquer um), diferente do que está na tela
+  const sortear = () => {
+    const seen = new Set(lib.allStates().filter((x) => x.lastRead).map((x) => x.slug));
+    const all = lib.items(); let pool = all.filter((a) => !seen.has(a.slug) && a.slug !== pickSlug);
+    if (!pool.length) pool = all.filter((a) => a.slug !== pickSlug);
+    pickSlug = pool.length ? pool[Math.floor(Math.random() * pool.length)].slug : '';
+  };
   const draw = () => {
-    // tudo o que a Bea começou a estudar e ainda não terminou, com a barrinha de quanto já leu (os 4 mais recentes)
+    // o que a Bea começou e não terminou, com a barrinha (os 3 mais recentes) + um sorteio de tema novo
     const rows = lib.allStates().filter((x) => x.lastRead && !x.done).sort((x, y) => y.lastRead - x.lastRead)
-      .map((x) => [x, lib.bySlug(x.slug)]).filter(([, art]) => art).slice(0, 4);
-    el.replaceChildren(el.head, ...(rows.length
-      ? rows.map(([x, art]) => { const pct = Math.round((x.progress || 0) * 100); return h('a', { class: 'w-line w-study-row', href: `#/estudos/a/${art.slug}` }, h('strong', {}, art.title), h('span', { class: 'w-study-pct' }, `${pct}%`), h('span', { class: 'lib-bar' }, h('i', { style: { width: `${pct}%` } }))); })
-      : [h('a', { class: 'w-line', href: '#/estudos' }, h('strong', {}, 'estudar agora'), h('small', {}, 'sorteio um texto da biblioteca'))]));
+      .map((x) => [x, lib.bySlug(x.slug)]).filter(([, art]) => art).slice(0, 3);
+    if (!pickSlug || !lib.bySlug(pickSlug)) sortear();
+    const pk = lib.bySlug(pickSlug);
+    el.replaceChildren(el.head, ...rows.map(([x, art]) => { const pct = Math.round((x.progress || 0) * 100); return h('a', { class: 'w-line w-study-row', href: `#/estudos/a/${art.slug}` }, h('strong', {}, art.title), h('span', { class: 'w-study-pct' }, `${pct}%`), h('span', { class: 'lib-bar' }, h('i', { style: { width: `${pct}%` } }))); }),
+      pk ? h('div', { class: 'w-pick' },
+        h('a', { class: 'w-pick-link', href: `#/estudos/a/${pk.slug}` }, h('small', {}, 'sorteado pra você'), h('strong', {}, pk.title)),
+        h('button', { class: 'w-dice', type: 'button', 'aria-label': 'Sortear outro tema', title: 'sortear outro', onclick: () => { sortear(); draw(); } }, '🎲'))
+        : h('a', { class: 'w-line', href: '#/estudos' }, h('strong', {}, 'abrir a biblioteca')));
   };
   draw(); lib.loadIndex().then(draw).catch(() => {});
   el.unsub = store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });

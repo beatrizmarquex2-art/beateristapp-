@@ -45,8 +45,7 @@ function hero() {
         swash()),
       h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
     h('p', { class: 'date-line' }, longDate()),
-    heroNote(),
-    paulCheer());
+    heroNote(paulCheer()));
 }
 
 /** Paul dá uma palavra de incentivo (muda a cada 8 horas; toque no balão pra ver outra). */
@@ -62,7 +61,7 @@ function paulCheer() {
 }
 
 /** Bilhete colado do início: uma curiosidade de música ou o sentido de uma canção (muda todo dia; toque para ver outra). */
-function heroNote() {
+function heroNote(cheer) {
   const picker = factPicker(todayKey());
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
   const links = h('div', { class: 'hero-note-links' }); const study = h('span', { class: 'hero-note-study' }); let seq = 0;
@@ -74,11 +73,11 @@ function heroNote() {
     const q = queryOf(text); const enc = encodeURIComponent(q);
     const mine = ++seq; study.replaceChildren();
     const sm = /“([^”]+)”\s*\(([^),]+)/.exec(text);
-    if (sm) findStudy(sm[1], sm[2]).then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link', type: 'button', onclick: () => openStudy(st) }, st.label)); });
-    else { const bm = /“([^”]+)”/.exec(text); if (bm) findStudy(bm[1], '').then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link', type: 'button', onclick: () => openStudy(st) }, st.label)); }); }
+    if (sm) findStudy(sm[1], sm[2]).then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link ico', type: 'button', title: st.label, 'aria-label': st.label, onclick: () => openStudy(st) }, '📖')); });
+    else { const bm = /“([^”]+)”/.exec(text); if (bm) findStudy(bm[1], '').then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link ico', type: 'button', title: st.label, 'aria-label': st.label, onclick: () => openStudy(st) }, '📖')); }); }
     links.replaceChildren(...(q ? [
-      h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ouvir no YouTube'),
-    ] : [h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${text.split(/[.:]/)[0].slice(0, 70)} bateria`)}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ver mais sobre isso')]));
+      h('a', { class: 'hero-note-link ico', href: `https://www.youtube.com/results?search_query=${enc}`, target: '_blank', rel: 'noopener noreferrer', title: 'ouvir no YouTube', 'aria-label': 'ouvir no YouTube' }, '▶'),
+    ] : [h('a', { class: 'hero-note-link ico', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${text.split(/[.:]/)[0].slice(0, 70)} bateria`)}`, target: '_blank', rel: 'noopener noreferrer', title: 'ver mais sobre isso', 'aria-label': 'ver mais sobre isso' }, '▶')]));
   };
   paint();
   const note = h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { cur = picker.next(); paint(); } },
@@ -87,7 +86,7 @@ function heroNote() {
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
-  return h('div', { class: 'hero-note-wrap' }, note, links, study);
+  return h('div', { class: 'hero-note-wrap' }, note, h('div', { class: 'hero-note-bar' }, h('div', { class: 'hero-note-acts' }, links, study), cheer));
 }
 
 function slogan() {
