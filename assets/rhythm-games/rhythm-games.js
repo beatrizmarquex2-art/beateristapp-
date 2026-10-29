@@ -206,7 +206,7 @@ function rzPlayEv(e,at,mute){switch(e.k){case 'click':AE.drum('click',at,e.v);br
 /* ===== jogos ===== */
 /* ================= jogos de ritmo: Palco (guitarra, bateria, piano), Beatstar e Setinhas ================= */
 const RZ={game:'beat',mode:'ritmo',modeEff:'ritmo',keys:4,maxLen:120,inst:'guitarra',diff:'medio',style:'imp',song:null,phase:'menu',chart:[],bg:[],A:null,t0:0,ptr:0,iv:0,raf:0,cv:null,dpr:1,stats:null,held:new Set(),press:new Map(),fx:[],pops:[],flash:{},pauseS:0,health:.5,q:'',fold:'',sel:null,vis:[],tl:null,kn:{bateria:4,piano:7},lives:3,badf:{},cal:null,howFrom:'menu'};
-const RZ_GAMES=[['beat','Ritmo & Melodia','Beatstar com Guitar Hero: 3, 4 ou 5 teclas, ritmo ou melodia','#b48bff'],['tiles','Piano Tiles','toque nos blocos pretos, no ritmo da música','#9fd0c7'],['setas','Setinhas','batalha de setas: repita depois do rival','#7fe7ff']];
+const RZ_GAMES=[['beat','Ritmo & Melodia','Beatstar com Guitar Hero: 3, 4 ou 5 teclas, ritmo ou melodia','#7a1226'],['tiles','Piano Tiles','toque nos blocos pretos, no ritmo da música','#1f5a63'],['setas','Setinhas','batalha de setas: repita depois do rival','#14284b']];
 const RZ_GTR=[['#5fbf6a','A'],['#e2554f','S'],['#f2c14e','D'],['#5b8dd6','F'],['#ff9d4a','G']];
 const RZ_KITS={3:[['#e2554f','D','bumbo'],['#f2c14e','F','caixa'],['#5b8dd6','J','chimbal']],
   4:[['#e2554f','D','bumbo'],['#f2c14e','F','caixa'],['#5b8dd6','J','chimbal'],['#b48bff','K','tom']],
@@ -219,7 +219,7 @@ const RZ_SOL=['dó','dó♯','ré','mi♭','mi','fá','fá♯','sol','lá♭','l
 const RZ_INST={guitarra:{n:'Guitarra'},bateria:{n:'Bateria'},piano:{n:'Teclado'}};
 /* temas visuais (colagem, vinil, pôster): cores do fundo e da pista de cada jogo. O tema escolhido fica neste aparelho (bt-rz-theme). */
 const RZ_THEMES={
-  colagem:{n:'Colagem',bg:['#FFD66B','#FFC94D'],hw:['rgba(29,58,107,.62)','rgba(29,58,107,.97)'],line:'rgba(255,255,255,.34)',beat:'rgba(255,255,255,.5)',beat2:'rgba(255,255,255,.2)',txt:'#142036',lane:['rgba(20,32,54,.10)','rgba(20,32,54,.17)'],hit:'#142036',floor:'#1d3a6b',tile:'#fff3c4',dots:'rgba(20,32,54,.15)'},
+  colagem:{n:'Colagem',bg:['#f1e6d2','#e8d9bf'],hw:['rgba(122,18,38,.62)','rgba(122,18,38,.97)'],line:'rgba(255,255,255,.34)',beat:'rgba(255,255,255,.5)',beat2:'rgba(255,255,255,.2)',txt:'#142036',lane:['rgba(20,32,54,.10)','rgba(20,32,54,.17)'],hit:'#142036',floor:'#7a1226',tile:'#fbf3e6',dots:'rgba(20,32,54,.15)'},
   vinil:{n:'Vinil',bg:['#14121a','#221d2a'],hw:['rgba(44,40,58,.55)','rgba(52,46,66,.97)'],line:'rgba(92,200,255,.34)',beat:'rgba(243,231,212,.22)',beat2:'rgba(243,231,212,.08)',txt:'#f3e7d4',lane:['rgba(255,255,255,.035)','rgba(255,255,255,.055)'],hit:'rgba(255,255,255,.75)',floor:'#1b1620',tile:'#e8e3ef',dots:'rgba(255,255,255,.045)',vinyl:true},
   poster:{n:'Pôster',bg:['#14284b','#0d1b36'],hw:['rgba(8,16,38,.5)','rgba(10,22,52,.97)'],line:'rgba(255,209,102,.4)',beat:'rgba(255,209,102,.3)',beat2:'rgba(255,209,102,.12)',txt:'#fff3d6',lane:['rgba(255,255,255,.04)','rgba(255,209,102,.07)'],hit:'rgba(255,255,255,.8)',floor:'#0d1b36',tile:'#ffe7a8',dots:'rgba(255,209,102,.2)',bands:true}
 };
@@ -434,7 +434,7 @@ function rzOptsHTML(){const seg=(act,cur,arr)=>'<div class="segtabs rz-big-tabs"
    +'<div class="rz-row rz-countrow"><span class="rz-lbl">Duração</span>'+seg('rz-len',RZ.maxLen,[[60,'1 min'],[90,'1:30'],[120,'2 min'],[0,'toda']])+'<p class="small muted rz-lanes">músicas longas são cortadas. pra escolher o trecho, use “cortar” na música.</p></div>'}
 function rzThemeRow(){const cur=rzThemeId();return '<div class="rz-row rz-countrow rz-themes"><span class="rz-lbl">Tema</span><div class="segtabs rz-big-tabs" role="group" aria-label="Tema visual">'+Object.entries(RZ_THEMES).map(([k,v])=>'<button type="button" data-act="rz-theme" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+v.n+'</button>').join('')+'</div></div>'}
 function rzMenu(){const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game);const songs=rsAll(RZ.style).filter(s=>!RZ.q||normTxt(s.name).includes(normTxt(RZ.q))).filter(s=>RZ.style!=='imp'||!OPTS.onAddFolder||!RZ.fold||(RZ.fold==='__none__'?!s.folder:s.folder===RZ.fold));
-  let h='<div class="rz-games" role="group" aria-label="Jogo">'+RZ_GAMES.map(([k,t,d,c])=>'<button type="button" class="rz-g'+(RZ.game===k?' on':'')+'" style="--gc:'+c+'" data-act="rz-game" data-v="'+k+'"><b>'+t+'</b><span>'+d+'</span></button>').join('')+'<button type="button" class="rz-g" style="--gc:#e8c07a" data-act="rz-fig"><b>Figuras rítmicas</b><span>ouça e identifique a figura, ditado de 4 tempos</span></button></div>';
+  let h='<div class="rz-games" role="group" aria-label="Jogo">'+RZ_GAMES.map(([k,t,d,c])=>'<button type="button" class="rz-g'+(RZ.game===k?' on':'')+'" style="--gc:'+c+'" data-act="rz-game" data-v="'+k+'"><b>'+t+'</b><span>'+d+'</span></button>').join('')+'<button type="button" class="rz-g" style="--gc:#4a0a16" data-act="rz-fig"><b>Figuras rítmicas</b><span>ouça e identifique a figura, ditado de 4 tempos</span></button></div>';
   h+=rzThemeRow();
   if(RZ.game==='beat') h+=rzOptsHTML();
   if(RZ.game==='hero'){h+='<div class="rz-row"><div class="segtabs rz-big-tabs" role="group" aria-label="Instrumento">'+Object.entries(RZ_INST).map(([k,v])=>'<button type="button" data-act="rz-inst" data-v="'+k+'" aria-pressed="'+(RZ.inst===k)+'">'+v.n+'</button>').join('')+'</div></div>';

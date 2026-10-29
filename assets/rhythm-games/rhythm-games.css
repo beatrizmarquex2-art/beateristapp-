@@ -159,12 +159,12 @@ body.rz-lock{overscroll-behavior:none}
 
 /* ===== temas visuais dos jogos de ritmo: colagem, vinil e pôster (o seletor fica no menu) ===== */
 .rz-themes{margin-top:2px}
-/* --- colagem: papel amarelo, cartões brancos, azul-marinho --- */
-.rg-host[data-rz-theme="colagem"]{background:#FFD66B url(../zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;color:#142036;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
-.rg-host[data-rz-theme="colagem"] #jogos.bmr,.rg-host[data-rz-theme="colagem"] .bmr{--char:#fffdf7;--char-2:#fffdf7;--char-3:#fff1c4;--char-4:#e6d6a4;--ink:#142036;--ivory:#142036;--ivory-2:#2c3550;--ivory-3:#4d5468;--brass:#7a4a10;--red:#1d3a6b;--red-2:#142a52;--neon1:#1d3a6b;--neon3:#7a4a10;color:#142036}
+/* --- colagem: papel creme, cartões brancos, vinho --- */
+.rg-host[data-rz-theme="colagem"]{background:#efe3cf url(../zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;color:#142036;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
+.rg-host[data-rz-theme="colagem"] #jogos.bmr,.rg-host[data-rz-theme="colagem"] .bmr{--char:#fffdf7;--char-2:#fffdf7;--char-3:#f6ebd9;--char-4:#e3cdb4;--ink:#142036;--ivory:#142036;--ivory-2:#2c3550;--ivory-3:#4d5468;--brass:#7a4a10;--red:#7a1226;--red-2:#4a0a16;--neon1:#7a1226;--neon3:#7a4a10;color:#142036}
 .rg-host[data-rz-theme="colagem"] .rz-g,.rg-host[data-rz-theme="colagem"] .rz-song,.rg-host[data-rz-theme="colagem"] .rz-st,.rg-host[data-rz-theme="colagem"] .field,.rg-host[data-rz-theme="colagem"] .panel{border:2.5px solid #142036;border-radius:12px 16px 10px 15px/15px 10px 16px 12px;box-shadow:3px 3px 0 #142036}
-.rg-host[data-rz-theme="colagem"] .rz-g{box-shadow:3px 3px 0 var(--gc)}.rg-host[data-rz-theme="colagem"] .rz-g.on{background:var(--gc);box-shadow:3px 3px 0 #142036}.rg-host[data-rz-theme="colagem"] .rz-g.on span{color:#142036}
-.rg-host[data-rz-theme="colagem"] .segtabs{border:2.5px solid #142036;box-shadow:none;background:#fffdf7;border-radius:12px}.rg-host[data-rz-theme="colagem"] .segtabs button{color:#4d5468}.rg-host[data-rz-theme="colagem"] .segtabs button[aria-pressed="true"]{background:#142036;color:#ffd166}
+.rg-host[data-rz-theme="colagem"] .rz-g{box-shadow:3px 3px 0 var(--gc)}.rg-host[data-rz-theme="colagem"] .rz-g.on{background:var(--gc);color:#fbf3e6;box-shadow:3px 3px 0 #142036}.rg-host[data-rz-theme="colagem"] .rz-g.on span,.rg-host[data-rz-theme="colagem"] .rz-g.on b{color:#fbf3e6}
+.rg-host[data-rz-theme="colagem"] .segtabs{border:2.5px solid #142036;box-shadow:none;background:#fffdf7;border-radius:12px}.rg-host[data-rz-theme="colagem"] .segtabs button{color:#4d5468}.rg-host[data-rz-theme="colagem"] .segtabs button[aria-pressed="true"]{background:#7a1226;color:#fbf3e6}
 .rg-host[data-rz-theme="colagem"] .rz-st.on{background:var(--sc);color:#142036}
 .rg-host[data-rz-theme="colagem"] .btn{border:2.5px solid #142036;border-radius:12px 16px 10px 15px;box-shadow:3px 3px 0 #142036;background:#fffdf7;color:#142036}.rg-host[data-rz-theme="colagem"] .btn-red{background:#1d3a6b;color:#fff}
 .rg-host[data-rz-theme="colagem"] .rz-stage{border:3px solid #142036;border-radius:8px;box-shadow:5px 6px 0 rgba(20,32,54,.35);background:transparent}
