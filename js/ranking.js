@@ -33,3 +33,10 @@ export async function add(board, name, score, acc = null, grade = null) {
     const k = cache.get(board); if (k) k.at = 0; return r.ok;
   } catch { return false; }
 }
+
+/** Registra o acesso do aluno (id aleatório guardado no aparelho + nome). `novo` = conta uma visita nova. Falha em silêncio. */
+export async function visit(id, name, novo) {
+  try {
+    await fetch(url('aluno_visit'), { method: 'POST', headers: head, body: JSON.stringify({ p_id: id, p_name: name || '', p_ua: (navigator.userAgent || '').slice(0, 160), p_new: !!novo }) });
+  } catch { /* sem internet: tenta na próxima */ }
+}
