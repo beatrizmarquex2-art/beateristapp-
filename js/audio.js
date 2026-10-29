@@ -33,12 +33,31 @@ if (typeof document !== 'undefined') {
   ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, go, { capture: true, passive: true }));
 }
 
-// saiu do app / bloqueou a tela: solta o áudio mudo de fundo, senão o iPhone mostra o app como "tocando" na ilha dinâmica
-if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'hidden') return;
+// saiu do app / bloqueou a tela: se tem som tocando de verdade (metrônomo, groove, play-along) ele continua; se não tem, solta o áudio mudo de fundo,
+// senão o iPhone mostra o app como "tocando" na ilha dinâmica
+let ana = null, lastSound = 0, watch = 0;
+const otherMedia = () => [...document.querySelectorAll('audio, video')].some((m) => m !== keep && !m.paused && !m.ended);
+const soundNow = () => {
+  if (otherMedia()) return true;
+  if (!ana) return false;
+  const d = new Uint8Array(ana.fftSize); ana.getByteTimeDomainData(d);
+  let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i] - 128));
+  if (peak > 1) lastSound = Date.now();
+  return Date.now() - lastSound < 4000;
+};
+const release = () => {
   try { if (keep && !keep.paused) keep.pause(); } catch (e) {}
   try { if (navigator.audioSession && navigator.audioSession.type !== 'auto') navigator.audioSession.type = 'auto'; } catch (e) {}
-});
+};
+if (typeof document !== 'undefined') {
+  setInterval(soundNow, 500); // só registra quando foi o último som
+  document.addEventListener('visibilitychange', () => {
+    clearInterval(watch);
+    if (document.visibilityState !== 'hidden') return;
+    if (!soundNow()) { release(); return; }
+    watch = setInterval(() => { if (!soundNow()) { clearInterval(watch); release(); } }, 2000); // parou de tocar em segundo plano: solta
+  });
+}
 
 export function audio() {
   if (!ctx) {
@@ -46,6 +65,7 @@ export function audio() {
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({ latencyHint: 'interactive' });
     master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ctx.destination);
+    ana = ctx.createAnalyser(); ana.fftSize = 256; master.connect(ana);
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
