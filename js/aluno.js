@@ -155,8 +155,12 @@ function askName() {
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
-    h('h1', { class: 'al-logo' }, h('img', { src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 })),
-    h('div', { class: 'al-paul' }, h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 150, height: 198 }), h('p', { class: 'al-bubble' }, 'oi! sou paul, robôterista', h('br'), 'assistente da bea')),
+    h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 132, height: 132 }),
+    h('h1', { class: 'login-title login-wordmark' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista, escola de música', width: 220, height: 74 })),
+    h('div', { class: 'al-paul' },
+      h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 112, height: 148 }),
+      h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 })),
+    h('p', { class: 'al-bubble' }, 'oi! sou o assistente da bea, vamos jogar juntos e aprender!'),
     h('p', { class: 'center' }, 'qual é o seu nome?'),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
