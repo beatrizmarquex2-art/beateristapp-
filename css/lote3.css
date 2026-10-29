@@ -119,3 +119,8 @@ body.aluno .login-logo { box-shadow: none; }
 .al-soc:active { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .28); }
 .al-soc svg { width: 28px; height: 28px; }
 @media (prefers-reduced-motion: reduce) { .al-paul img.al-paul-img, .al-game { animation: none !important; } }
+
+/* entrada: logo da escola (sem anel), Paul + Robôterista lado a lado e a frase embaixo */
+.al-paul { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.al-robo { width: 52%; max-width: 210px; height: auto; }
+.al-bubble { margin: 0; text-align: center; font: 700 17px/1.25 var(--hand); color: rgb(var(--ink-rgb)); }
