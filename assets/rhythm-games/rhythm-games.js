@@ -221,7 +221,7 @@ const RZ_INST={guitarra:{n:'Guitarra'},bateria:{n:'Bateria'},piano:{n:'Teclado'}
 const RZ_THEMES={
   colagem:{n:'Colagem',bg:['#f1e6d2','#e8d9bf'],hw:['rgba(122,18,38,.62)','rgba(122,18,38,.97)'],line:'rgba(255,255,255,.34)',beat:'rgba(255,255,255,.5)',beat2:'rgba(255,255,255,.2)',txt:'#142036',lane:['rgba(20,32,54,.10)','rgba(20,32,54,.17)'],hit:'#142036',floor:'#7a1226',tile:'#fbf3e6',dots:'rgba(20,32,54,.15)'},
   vinil:{n:'Vinil',bg:['#14121a','#221d2a'],hw:['rgba(44,40,58,.55)','rgba(52,46,66,.97)'],line:'rgba(92,200,255,.34)',beat:'rgba(243,231,212,.22)',beat2:'rgba(243,231,212,.08)',txt:'#f3e7d4',lane:['rgba(255,255,255,.035)','rgba(255,255,255,.055)'],hit:'rgba(255,255,255,.75)',floor:'#1b1620',tile:'#e8e3ef',dots:'rgba(255,255,255,.045)',vinyl:true},
-  poster:{n:'Pôster',bg:['#14284b','#0d1b36'],hw:['rgba(8,16,38,.5)','rgba(10,22,52,.97)'],line:'rgba(255,209,102,.4)',beat:'rgba(255,209,102,.3)',beat2:'rgba(255,209,102,.12)',txt:'#fff3d6',lane:['rgba(255,255,255,.04)','rgba(255,209,102,.07)'],hit:'rgba(255,255,255,.8)',floor:'#0d1b36',tile:'#ffe7a8',dots:'rgba(255,209,102,.2)',bands:true}
+  poster:{n:'Pôster',bg:['#14284b','#0d1b36'],hw:['rgba(8,16,38,.5)','rgba(10,22,52,.97)'],line:'rgba(251,243,230,.4)',beat:'rgba(251,243,230,.3)',beat2:'rgba(251,243,230,.12)',txt:'#fff3d6',lane:['rgba(255,255,255,.04)','rgba(251,243,230,.07)'],hit:'rgba(255,255,255,.8)',floor:'#0d1b36',tile:'#fbf3e6',dots:'rgba(251,243,230,.2)',bands:true}
 };
 const RZ_THEME_KEY='bt-rz-theme';
 function rzThemeId(){try{const t=localStorage.getItem(RZ_THEME_KEY);return RZ_THEMES[t]?t:'colagem'}catch(e){return 'colagem'}}
