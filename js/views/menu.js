@@ -155,6 +155,7 @@ export function openMenu() {
     if (!eff.some((t) => t.id === tab)) tab = TABS_MENU[0][0];
     tabs.hidden = !!q.trim();
     tabs.replaceChildren(...eff.map((t) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === t.id), class: `lib-tab drawer-tab${tab === t.id ? ' on' : ''}`, onclick: () => { const again = tab === t.id; tab = t.id; try { localStorage.setItem(LAST, t.id); } catch { /* sem armazenamento */ } const go = (SP === 'beaterista' ? TAB_HOME_B : TAB_HOME)[t.id]; if (again && go && (location.hash || '') !== go) { close(); location.hash = go; return; } draw(); } }, icon(TAB_ICON[t.id] || 'folder', 16), t.label)));
+    requestAnimationFrame(() => { const onTab = tabs.querySelector('.on'); if (onTab) tabs.scrollLeft += onTab.getBoundingClientRect().left - tabs.getBoundingClientRect().left - 24; }); // aba aberta sempre à vista
     if (q.trim()) {
       const t = norm(q.trim()); const seen = new Set();
       const hits = searchable(eff).filter((x) => (norm(x.label).includes(t) || norm(x.group || '').includes(t) || norm(x.desc || '').includes(t)) && !seen.has(x.href) && seen.add(x.href));

@@ -489,3 +489,4 @@ html:has(.drawer), body:has(.drawer) { overflow: hidden; }
 .sb-right { align-items: center; } .sb-right .top-snd { min-width: 30px; min-height: 22px; width: 30px; height: 22px; margin: -4px -6px -4px 0; color: inherit; } .sb-right .top-snd svg { width: 18px; height: 18px; }
 .drawer:not(.drawer-b) .drawer-head strong img { background: none; padding: 0; border-radius: 0; height: 56px; width: auto; }
 .drawer:not(.drawer-b) .drawer-head strong { transform: none; }
+html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
