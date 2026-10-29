@@ -99,7 +99,7 @@ export function buildSections(profile) {
   const T = (text, o = {}) => ({ t: 'text', text, ...o });
   const secs = [];
   secs.push({ id: 'resumo', title: 'Cabeçalho e resumo', on: true, blocks: [
-    T(`Relatório do ${profile.name}`, { size: 54, weight: 700 }), T(`Beaterista Kids · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555' }),
+    T(`Relatório do ${profile.name}`, { size: 54, weight: 700 }), T(`Jogos Beaterista · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555' }),
     T(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${Album.owned(profile.id).length} de ${CARDS.length} figurinhas`, { size: 30, weight: 700 })] });
   if (!played.length) { secs.push({ id: 'vazio', title: 'Observação', on: true, blocks: [T('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 })] }); }
   else {
@@ -156,6 +156,6 @@ export async function renderReport(profile) { return renderSections(profile, bui
 /** Gera o PDF e entrega (compartilhar no celular, baixar no computador). */
 export async function downloadReport(profile, sections) {
   const pages = sections ? await renderSections(profile, sections) : await renderReport(profile); const jpegs = await Promise.all(pages.map(toJpeg));
-  const name = fileName('Relatorio Kids', profile.name, todayBR().replace(/\//g, '-'));
-  return { ...(await savePdf(jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `Relatório Kids - ${profile.name}` }), name)), pages: pages.length };
+  const name = fileName('Relatorio Jogos', profile.name, todayBR().replace(/\//g, '-'));
+  return { ...(await savePdf(jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `Relatório de jogos - ${profile.name}` }), name)), pages: pages.length };
 }

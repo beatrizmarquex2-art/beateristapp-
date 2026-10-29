@@ -6,16 +6,28 @@ import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as kids from './views/kids.js';
 import * as ritmo from './views/jogos-ritmo.js';
+import * as beatlab from './views/beatlab.js';
+import * as toque from './views/toque.js';
+import * as piano from './views/piano.js';
+import * as jogos from './views/jogos.js';
 import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/ritmo', 'kit', 'Ritmo'], ['#/kids', 'drummer', 'Kids'], ['#/ranking', 'star', 'Ranking']];
+const NAV = [['#/ritmo', 'play', 'Ritmo'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/kids', 'study', 'Jogos'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', jogos: 'kids' }; // telas que acendem outra aba
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
+const ID_KEY = 'beaterista-aluno-id';
+const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = crypto.randomUUID(); localStorage.setItem(ID_KEY, v); } return v; } catch { return crypto.randomUUID(); } };
+/** Conta 1 visita por sessão; atualiza o nome quando ele muda. */
+function logVisit(name) {
+  let novo = true; try { novo = !sessionStorage.getItem('bt-aluno-visita'); sessionStorage.setItem('bt-aluno-visita', '1'); } catch { /* ok */ }
+  RK.visit(visitorId(), name, novo);
+}
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
 const route = () => { const [, a, ...rest] = (location.hash || '#/ritmo').split('/'); return { name: a || 'ritmo', parts: rest.filter(Boolean).map(decodeURIComponent) }; };
@@ -27,7 +39,7 @@ async function ensureKidsPlayer(name) {
   await P.addProfile(name, 'b');
 }
 
-/** Manda as estrelas do Kids e o XP dos jogos pro ranking (só sobe se for maior que o anterior). */
+/** Manda as estrelas dos jogos e o XP dos jogos pro ranking (só sobe se for maior que o anterior). */
 let sendT = 0;
 function sendScores() {
   clearTimeout(sendT);
@@ -51,14 +63,21 @@ function rankingView(view) {
   };
   view.append(banner('Ranking', 'os melhores da escola'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      box('estrelas no Kids', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
+      box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
       box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
       h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));
 }
 
+function tocarView(view) {
+  const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
+  view.append(banner('Tocar', 'bateria, pad e piano na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    card('#/toque', 'Bateria e pad', 'toque nas peças com vários dedos, grave um ritmo e salve no Beat Lab'),
+    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
+}
+
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(3, 1fr)', 'aria-label': 'Navegação' });
+  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(5, 1fr)', 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
@@ -68,10 +87,15 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + r.name) === href ? ' on' : ''}`, 'aria-current': ('#/' + r.name) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
+    nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
     if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
+    else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
+    else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
+    else if (r.name === 'toque') c = toque.mount(view);
+    else if (r.name === 'piano') c = piano.mount(view);
+    else if (r.name === 'tocar') tocarView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
     else { location.hash = '#/ritmo'; return; }
     cleanup = typeof c === 'function' ? c : null;
@@ -87,6 +111,7 @@ function askName() {
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
+    logVisit(n);
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
@@ -95,7 +120,7 @@ function askName() {
     h('p', { class: 'center' }, 'qual é o seu nome?'),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input), err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
-    h('p', { class: 'muted center' }, 'seu nome aparece no ranking que todo mundo vê. use só o primeiro nome ou um apelido, sem sobrenome.'));
+    h('p', { class: 'muted center' }, 'seu nome aparece no ranking que todo mundo vê. use só o primeiro nome ou um apelido, sem sobrenome. a escola registra o nome e quando você entra.'));
   app.replaceChildren(h('main', { class: 'login' }, form));
   setTimeout(() => input.focus(), 100);
 }
@@ -104,6 +129,7 @@ async function start() {
   const name = getName() || window.__alunoNome || '';
   if (!name) { askName(); return; }
   await ensureKidsPlayer(name);
+  logVisit(name);
   shell(name);
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });

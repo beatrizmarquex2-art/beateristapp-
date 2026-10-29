@@ -1,7 +1,7 @@
 {
   "name": "Beaterista · Alunos",
   "short_name": "Beaterista",
-  "description": "Jogos de ritmo e Kids da Escola de Música Beaterista.",
+  "description": "Jogos, Beat Lab e instrumentos da Escola de Música Beaterista.",
   "start_url": "aluno.html",
   "scope": "./",
   "display": "standalone",
