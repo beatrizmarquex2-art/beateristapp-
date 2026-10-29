@@ -195,3 +195,22 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
   url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
   url(../assets/mural/shard-red.svg) right -60px top 46% / 120px no-repeat,
   url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat; }
+
+/* entrada final: cartão, vitrine de jogos, redes e parceiros com respiro; fundo sem o recorte preto */
+.al-entry.login { gap: 20px; padding-top: 14px; padding-bottom: 20px; }
+.al-games { gap: 6px; padding-top: 6px; }
+.al-h { font-size: 17px; }
+.al-gamegrid { grid-template-columns: repeat(3, 1fr); gap: 8px 6px; max-width: 360px; }
+.al-game img { width: 64px; }
+.al-game figcaption { font-size: 12px; }
+.al-foot { gap: 8px; padding: 0 16px; }
+.al-foot > .muted { font-size: 12px; }
+.al-foot .partners { margin-top: 10px; }
+.al-foot .partners-label { font-size: 15px; }
+.al-foot .partners-img { max-width: 280px; }
+.al-soc { width: 50px; height: 50px; } .al-soc svg { width: 24px; height: 24px; }
+.al-tiktok { font-size: 20px; margin-top: 4px; } .al-tiktok svg { width: 26px; height: 26px; }
+html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background:
+  url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
+  url(../assets/mural/shard-red.svg) right -60px top 300px / 110px no-repeat; }
+@media (min-width: 700px) { .al-gamegrid { grid-template-columns: repeat(6, 1fr); max-width: 640px; } .al-game img { width: 80px; } }
