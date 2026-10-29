@@ -15,7 +15,7 @@ const STICKERS = [
   ['baq', 'rabiscos/baquetas-terracota.png', 0.939], ['notas', 'zine/notas-terracota.webp', 0.7], ['pfaixa', 'zine/papel-preto-faixa.webp', 4.167, 2.2], ['pvermelho', 'zine/papel-vermelho-3.webp', 1.706, 2.2],
 ].map(([k, p, r, s]) => ({ k, src: A + p, r, s: s || 1 }));
 const FONTS = [['Bodoni Moda', 'italic 600', 'Bodoni'], ['Anton', '400', 'Cartaz'], ['Special Elite', '400', 'Máquina'], ['Permanent Marker', '400', 'Marca-texto'], ['Hanken Grotesk', '800', 'Limpa']];
-const COLS = [['#f1ebe1', 'creme'], ['#ffffff', 'branco'], ['#cfc3b0', 'areia'], ['#e3a82f', 'dourado'], ['#b5162b', 'vermelho'], ['#6e1219', 'vinho'], ['#1d2b4a', 'marinho'], ['#1b1818', 'tinta']];
+const COLS = [['#f1ebe1', 'creme'], ['#ffffff', 'branco'], ['#cfc3b0', 'areia'], ['#e3a82f', 'dourado'], ['#b5162b', 'vermelho'], ['#6e1219', 'vinho'], ['#0e5568', 'petróleo'], ['#1b1818', 'tinta']];
 const TEXS = [['tx1', 'liso'], ['tx2', 'meio-tom'], ['tx3', 'kraft'], ['tx4', 'rasgado'], ['tx5', 'caderno'], ['tx6', 'pauta']];
 const TEXT_COLORS = ['#1b1818', '#f1ebe1', '#b5162b'];
 const PREF = 'story-pref';
