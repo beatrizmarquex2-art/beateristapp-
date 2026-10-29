@@ -45,23 +45,30 @@ function hero() {
         swash()),
       h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
     h('p', { class: 'date-line' }, longDate()),
-    heroNote(paulCheer()));
+    heroNote());
 }
 
-/** Paul dá uma palavra de incentivo (muda a cada 8 horas; toque no balão pra ver outra). */
-function paulCheer() {
-  let off = 0;
-  const img = h('img', { class: 'hp-img', alt: '', width: 64, height: 64, decoding: 'async', draggable: 'false' });
-  const msg = h('span', { class: 'hp-msg' });
-  const paint = () => { const c = incentiveFor(Date.now(), off); msg.textContent = c.text; img.src = `assets/paul/${c.face}.webp`; return c.slot; };
-  let slot = paint();
-  const el = h('button', { class: 'hero-paul', type: 'button', 'aria-label': 'Palavra de incentivo do Paul. Toque para ver outra.', onclick: () => { off++; paint(); } }, img, h('span', { class: 'hp-bubble' }, msg));
-  el.tick = () => { const now = incentiveFor(Date.now(), 0).slot; if (now !== slot) { off = 0; slot = paint(); } };
-  return el;
+/** Paul aparece no cantinho de baixo, fala uma palavra de incentivo e some. Volta de tempos em tempos (e ao tocar nele, fala outra). Devolve a função que desfaz tudo. */
+function paulPop() {
+  let n = 0; let hideT = 0; let showT = 0; let loopT = 0;
+  const img = h('img', { class: 'pp-img', alt: '', width: 72, height: 72, decoding: 'async', draggable: 'false' });
+  const msg = h('span', { class: 'pp-msg' });
+  const el = h('button', { class: 'paul-pop', type: 'button', 'aria-label': 'Paul, com uma palavra de incentivo. Toque para ver outra.' }, h('span', { class: 'pp-bubble' }, msg), img);
+  const hide = () => { clearTimeout(hideT); el.classList.remove('on'); };
+  const show = (stay = 7000) => {
+    if (document.querySelector('.drawer, #overlay .sheet') || document.documentElement.classList.contains('kb-open')) return;
+    const c = incentiveFor(Date.now(), n++); msg.textContent = c.text; img.src = `assets/paul/${c.face}.webp`;
+    el.classList.add('on'); clearTimeout(hideT); hideT = setTimeout(hide, stay);
+  };
+  el.addEventListener('click', () => show(9000));
+  document.body.append(el);
+  showT = setTimeout(() => show(), 1800);
+  loopT = setInterval(() => { if (document.visibilityState === 'visible') show(); }, 150000);
+  return () => { clearTimeout(showT); clearTimeout(hideT); clearInterval(loopT); el.remove(); };
 }
 
 /** Bilhete colado do início: uma curiosidade de música ou o sentido de uma canção (muda todo dia; toque para ver outra). */
-function heroNote(cheer) {
+function heroNote() {
   const picker = factPicker(todayKey());
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
   const links = h('div', { class: 'hero-note-links' }); const study = h('span', { class: 'hero-note-study' }); let seq = 0;
@@ -86,7 +93,7 @@ function heroNote(cheer) {
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
-  return h('div', { class: 'hero-note-wrap' }, note, h('div', { class: 'hero-note-bar' }, h('div', { class: 'hero-note-acts' }, links, study), cheer));
+  return h('div', { class: 'hero-note-wrap' }, note, h('div', { class: 'hero-note-bar' }, h('div', { class: 'hero-note-acts' }, links, study)));
 }
 
 function slogan() {
@@ -210,8 +217,6 @@ export function mount(host) {
     if (!i.kind || i.id === COVER_KEY) paintCover(fig);
     if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
   });
-  // a frase do topo troca sozinha a cada 8 horas: confere a cada minuto (e quando o app volta pra tela)
-  const cheer = top.querySelector('.hero-paul'); const tickSub = () => cheer.tick();
-  const subTimer = setInterval(tickSub, 60000); document.addEventListener('visibilitychange', tickSub);
-  return () => { off(); document.removeEventListener('recents-changed', drawRecent); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); note.unsub(); };
+  const stopPaul = paulPop();
+  return () => { off(); document.removeEventListener('recents-changed', drawRecent); stopPaul(); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); note.unsub(); };
 }
