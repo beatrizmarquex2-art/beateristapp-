@@ -7,7 +7,7 @@ import { renderMarkdown, slugify } from '../md.js';
 import { banner, sheet, toast, stamp, stars } from '../ui.js';
 import { CATEGORIES, categoryOf, category, PT, QUESTION } from '../catalog.js';
 import { artPhoto, credit, changePhoto, resetPhoto, ART_KEY } from './artist-photo.js';
-import { mountClub, mountPost } from './club.js';
+import { mountPost } from './club.js';
 import { attach as attachGrifos } from '../highlights.js';
 import * as G from '../highlights.js';
 import { openStory } from './story.js';
@@ -381,7 +381,7 @@ export function mount(host, parts) {
   if (kind === 'artistas') return mountArtistas(host);
   if (kind === 'c') return mountCollection(host, arg);
   if (kind === 'cat' && arg) return mountCategory(host, arg);
-  if (kind === 'club') return arg ? mountPost(host, arg, tabs('#/estudos/club')) : mountClub(host, tabs('#/estudos/club'));
+  if (kind === 'club') return mountPost(host, arg || 'arsenal', tabs('#/estudos/club')); // Álbuns abre direto no Arsenal de discos
   if (kind === 'a' && arg) return mountArticle(host, arg);
   if (kind === 'favoritos') return mountFavs(host);
   if (kind === 'conexoes') return mountConnections(host);

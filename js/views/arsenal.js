@@ -70,7 +70,7 @@ export function mountArsenal(host, tabs) {
     list.replaceChildren(...(frag.length ? frag : [h('p', { class: 'muted' }, 'nada com isso.')]));
   };
   search.addEventListener('input', () => { q = search.value; draw(); });
-  host.append(tabs, banner('Arsenal discos', 'todos os álbuns, de A a Z'), h('div', { class: 'pad-x' }, h('a', { class: 'link', href: '#/estudos/club' }, '← Álbuns'), prog, h('label', { class: 'field' }, search), chips, count), resume, list);
+  host.append(tabs, banner('Arsenal discos', 'todos os álbuns, de A a Z'), h('div', { class: 'pad-x' }, prog, h('label', { class: 'field' }, search), chips, count), resume, list);
   const refresh = () => { load().then((b) => { all = merge(b, imported()); draw(); }).catch(() => { count.textContent = 'não consegui abrir os discos agora. tenta de novo com internet.'; }); };
   refresh();
   return store.subscribe((i) => { if (all.length && (!i.kind || i.kind === 'clubref' || i.kind === 'arsenal')) refresh(); });
