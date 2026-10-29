@@ -180,7 +180,7 @@ function shell() {
   const head = h('header', { class: 'top' },
     h('button', { type: 'button', class: 'icon-btn top-menu', 'aria-label': 'Menu: todas as atividades', 'aria-haspopup': 'dialog', onclick: openMenu }, icon('menu', 26)),
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
-    h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 40, height: 40 })),
+    h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
     h('button', { type: 'button', class: 'icon-btn top-add', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 24)),
     h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Personalizar: tema e organização do início', onclick: openPersonalize }, icon('palette', 22)),

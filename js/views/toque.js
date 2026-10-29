@@ -15,6 +15,7 @@ import { kitMarkup, svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
+import { kitTheme, putLogo, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
 
 const KEY = 'setting-toque';
 const conf = () => ({ bpm: 80, bars: 2, left: false, ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -29,18 +30,18 @@ export function mount(host) {
   const status = h('p', { class: 'tr-status', 'aria-live': 'polite' });
 
   const hit = (id, perfMs) => {
-    const c = audio(); VOICE[id](c.currentTime, 1);
-    const el = kit.querySelector(`[data-p="${id}"]`) || kit.querySelector(`[data-pad="${id}"]`); if (el) { el.classList.remove('hit'); void el.getBoundingClientRect(); el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 200); }
+    const c = audio(); VOICE[id](c.currentTime, 1); // o som primeiro: nada pode atrasar a batida
+    flash(kit.querySelector(`[data-p="${id}"]`));
     if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id });
   };
   // a bateria é o mesmo desenho do "explorar a bateria": cada dedo vale um toque, então dá pra tocar com vários ao mesmo tempo
   const drawKit = () => {
     const c = conf();
     kit.classList.toggle('left', !!c.left);
-    const art = svgEl(kitMarkup(), 'tk-art');
-    art.addEventListener('pointerdown', (e) => { const g = e.target.closest('[data-p]'); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now()); });
-    const open = h('button', { type: 'button', class: 'tk-open', 'data-pad': 'ho', 'aria-label': 'Chimbal aberto', onpointerdown: (e) => { e.preventDefault(); hit('ho', e.timeStamp || performance.now()); } }, 'chimbal aberto', h('small', {}, 'H'));
-    kit.replaceChildren(art, open);
+    const art = svgEl(kitMarkup(), 'tk-art'); putLogo(art);
+    kit.dataset.kitTheme = kitTheme();
+    art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now()); });
+    kit.replaceChildren(art, themeRow(drawKit));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;

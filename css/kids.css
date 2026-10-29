@@ -117,30 +117,33 @@
 
 /* ===== bateria do "explorar" nos três temas (os mesmos dos Jogos de ritmo) ===== */
 .kd-themes{align-items:center;gap:6px}.kd-themes small{opacity:.8}
-[data-kit-theme] .kd-kit.kd-kit-free{position:relative;max-width:780px;padding:14px;border:0}
-[data-kit-theme] .kd-kit.kd-kit-free .kp{transition:filter .12s,transform .12s}
-[data-kit-theme] .kd-kit.kd-kit-free .kp.hit{transform:scale(1.04);transform-box:fill-box;transform-origin:center}
+[data-kit-theme] :is(.kd-kit.kd-kit-free,.tk-art){position:relative;max-width:780px;padding:14px;border:0}
+[data-kit-theme] :is(.kd-kit.kd-kit-free,.tk-art) .kp{transition:filter .12s,transform .12s}
+[data-kit-theme] :is(.kd-kit.kd-kit-free,.tk-art) .kp.hit{transform:scale(1.04);transform-box:fill-box;transform-origin:center}
 /* colagem: papel amarelo, contorno grosso e cores chapadas, como adesivo */
-[data-kit-theme="colagem"] .kd-kit.kd-kit-free{background:#ffd66b url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
-[data-kit-theme="colagem"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
-[data-kit-theme="colagem"] .kd-kit-free .kp [stroke]{stroke:#1b1818}
-[data-kit-theme="colagem"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#fffdf7}
-[data-kit-theme="colagem"] .kd-kit-free .kp [stroke-width="3"]{stroke-width:5}
-[data-kit-theme="colagem"] .kd-kit-free .kp{filter:drop-shadow(3px 4px 0 rgba(20,32,54,.45))}
-[data-kit-theme="colagem"] .kd-kit-free .kp.hit{filter:drop-shadow(0 0 0 #ffd166) drop-shadow(3px 4px 0 rgba(20,32,54,.45)) brightness(1.15)}
+[data-kit-theme="colagem"] :is(.kd-kit.kd-kit-free,.tk-art){background:#ffd66b url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
+[data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
+[data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp [stroke]{stroke:#1b1818}
+[data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp ellipse[fill-opacity]{fill:#fffdf7}
+[data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp [stroke-width="3"]{stroke-width:5}
 /* vinil: grafite com disco, peças cheias e pratos dourados */
-[data-kit-theme="vinil"] .kd-kit.kd-kit-free{background:#1c1a22 url(../assets/zine/textura-fundo-tinta.webp) center/cover;background-blend-mode:screen;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35);overflow:hidden}
-[data-kit-theme="vinil"] .kd-kit-free svg{position:relative}
-[data-kit-theme="vinil"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:.92}
-[data-kit-theme="vinil"] .kd-kit-free .kp [stroke]{stroke:#fff3d6}
-[data-kit-theme="vinil"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#ffe9ad}
-[data-kit-theme="vinil"] .kd-kit-free .kp{filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))}
-[data-kit-theme="vinil"] .kd-kit-free .kp.hit{filter:drop-shadow(0 0 10px #ffd166) brightness(1.2)}
+[data-kit-theme="vinil"] :is(.kd-kit.kd-kit-free,.tk-art){background:#1c1a22 url(../assets/zine/textura-fundo-tinta.webp) center/cover;background-blend-mode:screen;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35);overflow:hidden}
+[data-kit-theme="vinil"] :is(.kd-kit-free,.tk-art) svg{position:relative}
+[data-kit-theme="vinil"] :is(.kd-kit-free,.tk-art) .kp [fill-opacity]{fill:var(--c);fill-opacity:.92}
+[data-kit-theme="vinil"] :is(.kd-kit-free,.tk-art) .kp [stroke]{stroke:#fff3d6}
+[data-kit-theme="vinil"] :is(.kd-kit-free,.tk-art) .kp ellipse[fill-opacity]{fill:#ffe9ad}
 /* pôster: azul-marinho com pontinhos, peças coloridas e contorno preto */
-[data-kit-theme="poster"] .kd-kit.kd-kit-free{background:#14284b radial-gradient(rgba(255,209,102,.26) 1.6px,transparent 1.8px) 0 0/14px 14px;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35)}
-[data-kit-theme="poster"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
-[data-kit-theme="poster"] .kd-kit-free .kp [stroke]{stroke:#000}
-[data-kit-theme="poster"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#ffe7a8}
-[data-kit-theme="poster"] .kd-kit-free .kp [stroke-width="3"]{stroke-width:5}
-[data-kit-theme="poster"] .kd-kit-free .kp{filter:drop-shadow(3px 4px 0 #d92031)}
-[data-kit-theme="poster"] .kd-kit-free .kp.hit{filter:drop-shadow(3px 4px 0 #ffd166) brightness(1.2)}
+[data-kit-theme="poster"] :is(.kd-kit.kd-kit-free,.tk-art){background:#14284b radial-gradient(rgba(255,209,102,.26) 1.6px,transparent 1.8px) 0 0/14px 14px;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35)}
+[data-kit-theme="poster"] :is(.kd-kit-free,.tk-art) .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
+[data-kit-theme="poster"] :is(.kd-kit-free,.tk-art) .kp [stroke]{stroke:#000}
+[data-kit-theme="poster"] :is(.kd-kit-free,.tk-art) .kp ellipse[fill-opacity]{fill:#ffe7a8}
+[data-kit-theme="poster"] :is(.kd-kit-free,.tk-art) .kp [stroke-width="3"]{stroke-width:5}
+
+/* toque leve: a peça dá um "pulinho" e o contorno acende; sem filtro (filtro pesava no iPhone) */
+[data-kit-theme] :is(.kd-kit-free,.tk-art) .kp{pointer-events:all}
+[data-kit-theme] :is(.kd-kit-free,.tk-art) .kp :is(path,ellipse,circle,rect){pointer-events:all}
+[data-kit-theme] :is(.kd-kit-free,.tk-art) .kp.hit{animation:none;filter:none;transform:scale(1.035);transform-box:fill-box;transform-origin:center}
+[data-kit-theme] :is(.kd-kit-free,.tk-art) .kp.hit [stroke]{stroke:#ffd166}
+[data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp.hit [stroke]{stroke:#d92031}
+[data-kit-theme] .tk-art .kp.hit :is(path,ellipse,circle){fill-opacity:1}
+.tk-svgkit .kd-themes{justify-content:center}

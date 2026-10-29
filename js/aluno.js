@@ -113,7 +113,7 @@ function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(4, 1fr)', 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
-    h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 40, height: 40 }),
+    h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
     h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
