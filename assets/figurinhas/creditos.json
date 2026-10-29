@@ -16,5 +16,59 @@
   "licenca": "CC BY-SA 4.0",
   "pagina": "https://commons.wikimedia.org/wiki/File:Travis_Barker_2019_by_Glenn_Francis_%28tighter_portrait_crop%29.jpg",
   "rosto": true
+ },
+ "ringo-starr": {
+  "autor": "dearMoon",
+  "licenca": "CC BY 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:ARTIST_INTERVIEW_-_Ringo_Starr_%28Former_the_Beatles%29_exclusive_interview_0-14_screenshot_%28portrait_crop%29.jpg",
+  "rosto": true
+ },
+ "phil-collins": {
+  "autor": "Will Ireland, Courtesy of Concord",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Phil_Collins%2C_2025_for_%22Eras%22_%28cropped%29.jpg",
+  "rosto": true
+ },
+ "neil-peart": {
+  "autor": "Matt Becker",
+  "licenca": "CC BY 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:NeilPeart_%28cropped2%29.JPG",
+  "rosto": true
+ },
+ "sheila-e": {
+  "autor": "Justin Higuchi from Los Angeles, CA, USA",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Sheila_E._2014.jpg",
+  "rosto": true
+ },
+ "karen-carpenter": {
+  "autor": "White House photo by Knudsen, Robert L.",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Karen_Carpenter_in_1972_White_House.png",
+  "rosto": true
+ },
+ "nandi-bushell": {
+  "autor": "John Bushell",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Nandi_Bushell_Dec_2022.jpg",
+  "rosto": true
+ },
+ "vinnie-colaiuta": {
+  "autor": "Mandy Hall",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vinnie_Colaiuta_crop.jpg",
+  "rosto": true
+ },
+ "zac-farro": {
+  "autor": "Raph_PH",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:ParamoreO2200423_%2854_of_88%29_%2852834070266%29_Cropped.jpg",
+  "rosto": false
+ },
+ "questlove": {
+  "autor": "Bryan Berlin",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Questlove_France_v_Paraguay_4_July_2026-077.jpg",
+  "rosto": false
  }
 }
