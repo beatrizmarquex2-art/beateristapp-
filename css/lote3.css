@@ -82,3 +82,116 @@ html { touch-action: manipulation; }
 .al-rank li.me { background: color-mix(in srgb, var(--gold) 30%, transparent); font-weight: 700; }
 .al-pos { font: 700 14px var(--type); } .al-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .al-card { text-decoration: none; display: block; }
+.al-paul { display: flex; align-items: flex-end; gap: 8px; justify-content: center; }
+.al-paul img { height: auto; mix-blend-mode: multiply; }
+.al-bubble { margin: 0 0 30px; font: 700 16px/1.25 var(--hand); color: rgb(var(--ink-rgb)); text-align: left; }
+.al-foot { display: grid; gap: 6px; padding: 18px 16px 8px; }
+.al-social { display: flex; gap: 14px; justify-content: center; }
+.al-soc { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 2px solid currentColor; color: var(--accent); text-decoration: none; background: var(--card); }
+.al-soc:active { transform: scale(.94); }
+select { min-height: 44px; }
+
+/* entrada do aluno: sem o anel em volta do logo; parceiros em preto, sem fundo */
+body.aluno .login-logo { box-shadow: none; }
+.al-foot .partners { background: transparent; box-shadow: none; padding: 4px 0 0; margin: 12px 0 0; text-align: center; }
+.al-foot .partners-label { color: rgb(var(--ink-rgb)); font-size: 18px; }
+.al-foot .partners-img { max-width: 360px; }
+.al-tiktok { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; color: #141212; text-decoration: none; font: 800 24px/1 var(--body); letter-spacing: -.02em; }
+
+/* ---------- entrada do aluno: logo Robôterista, Paul animado, vitrine de jogos e redes em círculo ---------- */
+.al-logo { margin: 0; justify-self: center; width: min(100%, 330px); }
+.al-logo img { display: block; width: 100%; height: auto; }
+.al-paul img.al-paul-img { width: 112px; height: auto; transform-origin: 50% 100%; animation: alDance 1.3s ease-in-out infinite; }
+.al-bubble { margin: 0 0 40px; }
+@keyframes alDance { 0%, 100% { transform: translateY(0) rotate(-3deg); } 25% { transform: translateY(-9px) rotate(2deg); } 50% { transform: translateY(0) rotate(3deg); } 75% { transform: translateY(-6px) rotate(-2deg); } }
+.al-entry { display: grid; gap: 14px; align-content: start; padding-bottom: 40px; }
+.al-games { display: grid; gap: 8px; padding: 6px 4px 0; }
+.al-h { margin: 0; text-align: center; font: var(--dstyle) var(--dw) 22px/1.1 var(--display); color: rgb(var(--ink-rgb)); }
+.al-gamegrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; max-width: 420px; margin: 0 auto; width: 100%; }
+.al-game { margin: 0; display: grid; justify-items: center; gap: 2px; animation: alFloat 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * -.55s); }
+.al-game img { width: 76px; height: auto; }
+.al-game figcaption { font: 700 12.5px/1.1 var(--body); text-align: center; color: rgb(var(--ink-rgb)); }
+@keyframes alFloat { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
+@media (min-width: 700px) { .al-game img { width: 96px; } .al-gamegrid { grid-template-columns: repeat(6, 1fr); max-width: 640px; } }
+/* redes: círculos vermelhos, fáceis de tocar */
+.al-social { gap: 16px; }
+.al-soc { width: 56px; height: 56px; border: 0 !important; border-radius: 50% !important; background: var(--accent, #b5162b); color: #fff; box-shadow: 0 4px 0 rgb(0 0 0 / .28), 0 8px 14px -6px rgb(0 0 0 / .4); transition: transform .12s, box-shadow .12s; }
+.al-soc:active { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .28); }
+.al-soc svg { width: 28px; height: 28px; }
+@media (prefers-reduced-motion: reduce) { .al-paul img.al-paul-img, .al-game { animation: none !important; } }
+
+/* entrada: logo da escola (sem anel), Paul + Robôterista lado a lado e a frase embaixo */
+.al-paul { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.al-robo { width: 52%; max-width: 210px; height: auto; }
+.al-bubble { margin: 0; text-align: center; font: 700 17px/1.25 var(--hand); color: rgb(var(--ink-rgb)); }
+
+/* entrada compacta: tudo (marca, Paul, nome, origem e botão) cabe na primeira tela do celular */
+.al-entry .login-card { padding: 14px 18px 14px; gap: 8px; }
+.al-brand { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.al-brand .login-logo { width: 76px; height: 76px; }
+.al-brand .login-title { margin: 0; }
+.al-brand .login-title img { width: 176px; height: auto; display: block; }
+.al-hero { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 8px; }
+.al-hero .al-paul-img { width: 96px; height: auto; }
+.al-hero-txt { display: grid; gap: 2px; justify-items: start; }
+.al-hero-txt .al-robo { width: 100%; max-width: 200px; }
+.al-hero-txt .al-bubble { text-align: left; font-size: 14px; line-height: 1.2; }
+.al-entry .field { gap: 2px; } .al-entry .field > span { font-size: 12px; }
+.al-entry .field input, .al-entry .field select { min-height: 42px; }
+.al-entry .form-err:empty { display: none; }
+.al-entry .al-note { font-size: 11.5px; line-height: 1.25; }
+.al-entry .btn.wide { min-height: 46px; }
+
+/* versão enxuta: marca, Paul, formulário, jogos, redes e parceiros numa tela só */
+.al-entry { gap: 8px; padding-bottom: 12px; }
+.al-entry .login-card { padding: 10px 16px 10px; gap: 6px; }
+.al-brand .login-logo { width: 52px; height: 52px; }
+.al-brand .login-title img { width: 128px; }
+.al-hero { grid-template-columns: 74px 1fr; gap: 6px; }
+.al-hero .al-paul-img { width: 74px; }
+.al-hero-txt .al-robo { max-width: 150px; }
+.al-hero-txt .al-bubble { font-size: 12.5px; }
+.al-entry .field input, .al-entry .field select { min-height: 38px; font-size: 15px; }
+.al-entry .field > span { font-size: 11.5px; }
+.al-entry .btn.wide { min-height: 42px; }
+.al-entry .al-note { font-size: 10.5px; }
+.al-games { gap: 2px; padding-top: 0; }
+.al-h { font-size: 15px; }
+.al-gamegrid { grid-template-columns: repeat(6, 1fr); gap: 2px 4px; max-width: 380px; }
+.al-game img { width: 48px; }
+.al-game figcaption { font-size: 9.5px; }
+.al-foot { padding: 4px 16px 0; gap: 2px; }
+.al-foot > .muted { font-size: 11px; margin: 0; }
+.al-social { gap: 12px; }
+.al-soc { width: 42px; height: 42px; box-shadow: 0 3px 0 rgb(0 0 0 / .28); }
+.al-soc svg { width: 22px; height: 22px; }
+.al-foot .partners { margin: 4px 0 0; padding: 0; }
+.al-foot .partners-label { font-size: 13px; }
+.al-foot .partners-img { max-width: 250px; }
+.al-tiktok { margin-top: 2px; font-size: 18px; gap: 6px; } .al-tiktok svg { width: 22px; height: 22px; }
+@media (min-width: 700px) { .al-game img { width: 72px; } .al-game figcaption { font-size: 12px; } .al-soc { width: 52px; height: 52px; } .al-foot .partners-img { max-width: 340px; } }
+
+/* ainda mais enxuto: rótulos viram placeholder (continuam lidos por leitores de tela) */
+.al-entry .field > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.al-entry.login { padding-top: 10px; padding-bottom: 6px; gap: 4px; }
+#app:has(.al-entry) { padding-bottom: 12px; }
+.al-hero { grid-template-columns: 66px 1fr; } .al-hero .al-paul-img { width: 66px; }
+.al-game img { width: 42px; }
+.al-foot .partners-img { max-width: 230px; }
+.al-foot .al-social { margin-top: 0; }
+.al-entry.login { min-height: 0; }
+.al-entry .al-note { font-size: 10px; }
+#app:has(.al-entry) { min-height: 0; padding-bottom: 0; }
+/* entrada sem moldura de cartão; parceiros logo abaixo do formulário, depois as redes */
+.al-entry.login { gap: 10px; padding-top: 14px; }
+.al-foot { gap: 6px; padding-top: 6px; }
+.al-foot .partners-label { font-size: 15px; }
+.al-foot .partners-img { max-width: 300px; }
+.al-tiktok { font-size: 20px; margin-top: 4px; } .al-tiktok svg { width: 26px; height: 26px; }
+.al-soc { width: 48px; height: 48px; } .al-soc svg { width: 24px; height: 24px; }
+body.aluno:has(.al-entry) .wash.w2 { display: none; }
+/* entrada: fundo decorativo só com as peças vermelhas e estrelas (o recorte preto atrapalhava os logos dos parceiros) */
+html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background:
+  url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
+  url(../assets/mural/shard-red.svg) right -60px top 46% / 120px no-repeat,
+  url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat; }

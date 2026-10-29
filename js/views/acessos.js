@@ -27,7 +27,7 @@ export function mount(host) {
       body.replaceChildren(
         h('section', { class: 'card pad' }, h('b', {}, `${rows.length} aparelho(s) já entraram · ${hoje} hoje`), h('p', { class: 'muted' }, sem ? `${sem} abriu o link mas ainda não escolheu o nome.` : 'todos escolheram um nome.')),
         rows.length ? h('ul', { class: 'al-rank' }, ...rows.map((x) => h('li', { style: 'grid-template-columns: 1fr auto' },
-          h('span', {}, h('b', {}, x.name || '(sem nome)'), h('br'), h('small', { class: 'muted' }, `${device(x.ua)} · primeira vez ${when(x.first_seen)}`)),
+          h('span', {}, h('b', {}, x.name || '(sem nome)'), h('br'), h('small', { class: 'muted' }, `${x.origem ? `${x.origem} · ` : ''}${device(x.ua)} · primeira vez ${when(x.first_seen)}`)),
           h('span', { style: 'text-align:right' }, h('b', {}, `${x.visits}×`), h('br'), h('small', { class: 'muted' }, `última ${when(x.last_seen)}`)))))
           : h('p', { class: 'muted' }, 'ninguém entrou ainda.'),
         h('button', { class: 'btn small', type: 'button', onclick: draw }, 'atualizar'));
