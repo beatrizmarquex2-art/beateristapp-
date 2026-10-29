@@ -81,3 +81,4 @@ html { touch-action: manipulation; }
 .al-rank li { display: grid; grid-template-columns: 38px 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: rgb(var(--ink-rgb) / .05); }
 .al-rank li.me { background: color-mix(in srgb, var(--gold) 30%, transparent); font-weight: 700; }
 .al-pos { font: 700 14px var(--type); } .al-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.al-card { text-decoration: none; display: block; }

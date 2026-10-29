@@ -108,7 +108,7 @@ export function mount(host) {
             const r = await store.upsert('beat', null, { beat }); await store.upsert('beat', r.id, { beat: { ...beat, id: r.id, recId: r.id } });
             stars(btn); toast('salvo em Meus ritmos ✓', { action: 'abrir', onAction: () => { location.hash = '#/beatlab/meus'; } });
           } }, 'salvar em meus ritmos') : null,
-          h('button', { class: 'btn primary', type: 'button', onclick: async () => { stopAll(); const r = await store.upsert('partitura', null, { ...doc, created: Date.now() }); location.hash = `#/partitura/${r.id}`; } }, 'abrir na partitura'))) : null,
+          document.documentElement.classList.contains('aluno-on') ? null : h('button', { class: 'btn primary', type: 'button', onclick: async () => { stopAll(); const r = await store.upsert('partitura', null, { ...doc, created: Date.now() }); location.hash = `#/partitura/${r.id}`; } }, 'abrir na partitura'))) : null,
     ].filter(Boolean));
   };
 
