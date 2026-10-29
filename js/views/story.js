@@ -2,6 +2,8 @@
 // arrasta, gira e dá zoom. O rodapé "beaterista app" é fixo. "Salvar imagem" desenha tudo num canvas 1080×1920.
 import { h, icon } from '../util.js';
 import { sheet, toast } from '../ui.js';
+import * as store from '../store.js';
+import { saveImage } from './mural.js';
 
 const W = 230, H = 409, K = 1080 / W; // tamanho do quadro na tela e fator para a imagem final
 const A = 'assets/';
@@ -195,6 +197,18 @@ export function openStory({ text = '', src = '' } = {}) {
     const lh = e.size * 1.15; const w = Math.max(...lines.map((l) => ctx.measureText(l).width), 1);
     return { lines, lh, w, h: lines.length * lh };
   }
+  /** A arte vai pro Feed Beaterista (privado, só da Bea) como "pronto"; salvar de novo atualiza o mesmo item. Compartilhar nunca marca como publicado. */
+  let feedId = null;
+  async function toFeed(blob) {
+    try {
+      const first = els.find((e) => e.type === 'txt');
+      const frase = (first ? first.text : 'arte pros stories').replace(/\s+/g, ' ').trim();
+      const thumbId = await saveImage(blob);
+      const rec = await store.upsert('post', feedId, { title: frase.slice(0, 60) || 'arte pros stories', stage: 'pronto', brand: 'Pessoal', targets: ['instagram'], captions: {}, status: {}, links: {}, caption: frase, hashtags: '', script: '', file: '', due: '', thumbId, fromStory: true });
+      feedId = (rec && rec.id) || feedId;
+      toast('guardada no Feed Beaterista (só você vê)');
+    } catch (err) { console.error(err); }
+  }
   async function exportImage() {
     await Promise.all(FONTS.map(([f, st]) => document.fonts.load(`${st} 20px '${f}'`).catch(() => {})));
     const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1920; const ctx = cv.getContext('2d');
@@ -220,6 +234,7 @@ export function openStory({ text = '', src = '' } = {}) {
     ctx.fillStyle = lk.ff; ctx.font = `700 ${13 * K}px 'Hanken Grotesk'`; ctx.textBaseline = 'middle'; ctx.fillText('beaterista app', 16 * K + bs * 0.705 + 8 * K, 1920 - fh / 2 + 1);
     const blob = await new Promise((ok) => cv.toBlob(ok, 'image/png'));
     if (!blob) throw new Error('canvas vazio');
+    await toFeed(blob);
     const file = new File([blob], 'beaterista-story.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); toast('arte pronta ✓'); return; } catch (err) { if (err && err.name === 'AbortError') return; } }
     const a = h('a', { href: URL.createObjectURL(blob), download: 'beaterista-story.png' }); document.body.append(a); a.click(); a.remove();

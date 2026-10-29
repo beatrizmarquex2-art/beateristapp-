@@ -101,8 +101,10 @@ function mountHome(host) {
             h('button', { class: 'h-link', type: 'button', onclick: () => { const p = pool.length ? pool : idx; go(`#/estudos/a/${p[Math.floor(Math.random() * p.length)].slug}`); } }, 'sortear outro')))));
     }
     kids.push(h('div', { class: 'h-stickers' },
-      h('a', { class: 'h-pill ink', href: '#/dicionario' }, 'A–Z ', h('small', {}, 'dicionário')),
-      h('a', { class: 'h-pill gold', href: '#/estudos/favoritos' }, '★ ', h('small', {}, `favoritos ${favN}`))));
+      h('a', { class: 'h-pill ink', href: '#/anotacoes' }, 'anotações'),
+      h('a', { class: 'h-pill red', href: '#/dicionario' }, 'dicionário'),
+      h('a', { class: 'h-pill gold', href: '#/estudos/favoritos' }, '★ ', h('small', {}, String(favN))),
+      h('button', { class: 'h-pill ink', type: 'button', onclick: () => openStory({ text: '', src: '' }) }, '✎ criar')));
     if (reading.length) kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'continuar'), reading.map(row)));
     if (idx.length) {
       kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.flatMap((g, gi) => g.cats.map((c) => {

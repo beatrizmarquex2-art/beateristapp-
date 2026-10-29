@@ -34,8 +34,9 @@
 .hoje .h-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .hoje .h-link { appearance: none; background: none; border: 0; color: #fff7f3; font: 600 13px var(--body); text-decoration: underline; cursor: pointer; min-height: 44px; padding: 0 6px; }
 
-.hoje .h-stickers { display: flex; gap: 8px; flex-wrap: wrap; }
-.hoje .h-pill { position: relative; display: inline-flex; align-items: center; gap: 5px; flex: none; min-height: 40px; padding: 0 14px; border-radius: 99px; font: 700 14px var(--body); box-shadow: 0 2px 0 rgb(27 24 24 / .25); }
+.hoje .h-stickers { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.hoje .h-stickers::-webkit-scrollbar { display: none; }
+.hoje .h-pill { position: relative; display: inline-flex; align-items: center; gap: 5px; flex: none; min-height: 38px; padding: 0 12px; border: 0; cursor: pointer; border-radius: 99px; font: 700 13px var(--body); white-space: nowrap; box-shadow: 0 2px 0 rgb(27 24 24 / .25); }
 .hoje .h-pill small { font: 12px "Special Elite", monospace; font-weight: 400; opacity: .9; }
 .hoje .h-pill.red { background: var(--red); color: #fff7f3; }
 .hoje .h-pill.ink { background: var(--ink); color: var(--paper); }
