@@ -115,7 +115,7 @@ body.aluno .login-logo { box-shadow: none; }
 @media (min-width: 700px) { .al-game img { width: 96px; } .al-gamegrid { grid-template-columns: repeat(6, 1fr); max-width: 640px; } }
 /* redes: círculos vermelhos, fáceis de tocar */
 .al-social { gap: 16px; }
-.al-soc { width: 56px; height: 56px; border: 0 !important; border-radius: 50% !important; background: var(--accent, #b5162b); color: #fff; box-shadow: 0 4px 0 rgb(0 0 0 / .28), 0 8px 14px -6px rgb(0 0 0 / .4); transition: transform .12s, box-shadow .12s; }
+.al-soc { width: 56px; height: 56px; border: 0 !important; border-radius: 50% !important; background: var(--accent, var(--accent)); color: #fff; box-shadow: 0 4px 0 rgb(0 0 0 / .28), 0 8px 14px -6px rgb(0 0 0 / .4); transition: transform .12s, box-shadow .12s; }
 .al-soc:active { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .28); }
 .al-soc svg { width: 28px; height: 28px; }
 @media (prefers-reduced-motion: reduce) { .al-paul img.al-paul-img, .al-game { animation: none !important; } }
@@ -347,8 +347,8 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .pt-face { width: 40px; height: auto; mix-blend-mode: multiply; flex: none; }
 .pt-dot { display: block; border-radius: 50%; background: #fffdf8; border: 2px solid #1b1818; align-self: flex-end; margin-bottom: 14px; }
 .pt-dot.d1 { width: 7px; height: 7px; } .pt-dot.d2 { width: 11px; height: 11px; margin-bottom: 20px; }
-.pt-cloud { pointer-events: auto; max-width: min(78vw, 300px); padding: 10px 16px; border: 2px solid #1b1818; border-radius: 22px 22px 22px 8px; background: #fffdf8; color: #1b1818; font: 400 17px/1.15 'Gochi Hand', var(--hand); text-decoration: none; box-shadow: 3px 3px 0 #b5162b; }
-a.pt-cloud { text-decoration: underline; text-decoration-color: #b5162b; text-underline-offset: 3px; }
+.pt-cloud { pointer-events: auto; max-width: min(78vw, 300px); padding: 10px 16px; border: 2px solid #1b1818; border-radius: 22px 22px 22px 8px; background: #fffdf8; color: #1b1818; font: 400 17px/1.15 'Gochi Hand', var(--hand); text-decoration: none; box-shadow: 3px 3px 0 var(--accent); }
+a.pt-cloud { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 body.rz-lock .pt-think { display: none; }
 @media (prefers-reduced-motion: reduce) { .pt-think { transition: none; } .pt-tap { animation: none; } }
 .pt-dot { border-radius: 50% !important; } .pt-cloud { border-radius: 22px 22px 22px 8px !important; }
@@ -379,7 +379,7 @@ body.rz-lock .pt-think { display: none; }
 .drawer-b .drawer-item { color: #fbf7ee; }
 .drawer-b .drawer-item svg { color: #ffd166; }
 .drawer-b .drawer-item:hover, .drawer-b .drawer-item:focus-visible { background: rgb(255 209 102 / .14); }
-.drawer-b .drawer-item.on { background: #fbf7ee; color: #14284b; } .drawer-b .drawer-item.on svg { color: #b5162b; }
+.drawer-b .drawer-item.on { background: #fbf7ee; color: #14284b; } .drawer-b .drawer-item.on svg { color: var(--accent); }
 .drawer-b .drawer-recent a { background: #fbf7ee; border-color: #fbf7ee; color: #14284b; }
 .drawer-b .drawer-search input, .drawer-b select { background: #fbf7ee; color: #14284b; }
 .drawer-b .lib-tab { color: #fbf7ee; border-color: #fbf7ee; } .drawer-b .lib-tab.on { background: #ffd166; color: #14284b; border-color: #ffd166; }
@@ -389,7 +389,7 @@ body.rz-lock .pt-think { display: none; }
 /* atalhos fixos no alto do menu (Criar ritmos, Tempo) */
 .drawer-pins { display: flex; gap: 8px; padding: 8px 0 2px; }
 .drawer-pin { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; border: 2px solid #1b1818; border-radius: 12px; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; box-shadow: 2px 2px 0 #1b1818; }
-.drawer-pin svg { color: #b5162b; }
+.drawer-pin svg { color: var(--accent); }
 .drawer-b .drawer-pin { background: #ffd166; color: #14284b; border-color: #fbf7ee; box-shadow: 2px 2px 0 #fbf7ee; } .drawer-b .drawer-pin svg { color: #14284b; }
 
 /* Beaterista (fundo azul): tudo legível */
@@ -408,12 +408,10 @@ body.rz-lock .pt-think { display: none; }
 /* ===== cores por espaço: Bea = vinho; Beaterista = azul-marinho e amarelo (data-space vem do app.js) ===== */
 html[data-space="beaterista"] {
   --sp-dark: #14284b; --sp-main: #1d3a6b; --sp-hi: #ffd166; --sp-on: #fbf7ee; --sp-on-hi: #14284b; --sp-brush: url(../assets/mural/brush-navy.svg);
-  --bg: #e8edf6; --bg-deep: #d5deee; --card: #f8faff; --card-soft: #eaeff8; --note: #fff1c4;
   --accent: #1d3a6b; --link: #1d3a6b; --gold: #e0a800; --wash1: #1d3a6b; --meta-color: #14284b;
 }
 html[data-space="bea"] {
   --sp-dark: #5e0f2a; --sp-main: #7a1632; --sp-hi: #ffc9d6; --sp-on: #fff4f6; --sp-on-hi: #5e0f2a; --sp-brush: url(../assets/mural/brush-wine.svg);
-  --bg: #f4e9ea; --bg-deep: #e6d3d6; --card: #fcf6f6; --card-soft: #f4e8e9; --note: #f3dfc9;
   --accent: #7a1632; --link: #7a1632; --gold: #7a1632; --wash1: #7a1632; --meta-color: #5e0f2a;
 }
 html[data-space] .topwrap { background: var(--sp-dark); --on-bg: var(--sp-on); --on-muted: var(--sp-on); --on-line: rgb(255 255 255 / .25); color: var(--sp-on); }
@@ -448,6 +446,4 @@ html[data-space] { scrollbar-color: var(--sp-main) transparent; } html[data-spac
 .drawer:not(.drawer-b) .icon-btn[aria-pressed="true"] { background: #ffc9d6; color: #5e0f2a; }
 .drawer:not(.drawer-b) .drawer-edit .btn { background: transparent; color: #fff4f6; border-color: #fff4f6; }
 .drawer:not(.drawer-b) .muted, .drawer:not(.drawer-b) .drawer-editnote p { color: #f2b9c7; }
-html[data-space="beaterista"] #decor::before { filter: hue-rotate(232deg) saturate(.85); }
-html[data-space="bea"] #decor::before { filter: hue-rotate(-6deg) brightness(.82); }
 html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selected="true"].on { background: var(--sp-dark); border-color: var(--sp-dark); color: var(--sp-on); }
