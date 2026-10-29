@@ -172,3 +172,13 @@
 .kx-tray-t { display: inline-block; background: #c8202f; color: #fff3c8; font: 400 18px var(--khand); margin: 0 0 8px; padding: 2px 12px; border-radius: 8px; border: 2px solid #1b1818; transform: rotate(-2deg); box-shadow: 2px 2px 0 #1b1818; }
 .kx-tray-row { padding: 6px 4px 12px; } .kx-tray-h { display: block; text-align: center; color: #8c1224; font: 700 11px var(--kmono); }
 .kx-tray-row .kx-card-fig { box-shadow: 0 6px 0 rgb(27 24 24 / .25), 0 3px 0 #1b1818; }
+
+/* página do álbum: fundo azul marinho e categorias em abas */
+#view.kx-arc.kx-albumpg { --kbg: #0f1f3d; background: #0f1f3d radial-gradient(rgb(255 255 255 / .07) 1px, transparent 1px) 0 0 / 22px 22px; color: #fff3c8; }
+.kx-albumpg .kx-pagetitle { color: #ffd34d; text-shadow: 2px 2px 0 #c8202f; } .kx-albumpg .lib-note { color: #b8c4e0; }
+.kx-albumpg .kx-hello .kx-say, .kx-albumpg .kx-hello [class*="bubble"] { color: #1b1818; }
+.kx-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; margin: 6px -4px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; } .kx-tabs::-webkit-scrollbar { display: none; }
+.kx-tab { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: rgb(255 255 255 / .08); color: #dfe6f7; border: 1.5px solid rgb(255 255 255 / .22); font: 700 13px var(--body); text-decoration: none; white-space: nowrap; }
+.kx-tab small { font: 700 10px var(--kmono); background: rgb(255 255 255 / .14); padding: 2px 6px; border-radius: 999px; } .kx-tab.on { background: #c8202f; color: #fff3c8; border-color: #ffd34d; box-shadow: 0 0 0 2px rgb(255 211 77 / .25); } .kx-tab.on small { background: rgb(0 0 0 / .25); }
+.kx-albumpg .kx-back { background: rgb(255 255 255 / .1); color: #fff3c8; border: 1.5px solid rgb(255 255 255 / .3); border-radius: 999px; box-shadow: none; }
+.kx-albumpg .kx-hello .rb, .kx-albumpg .kx-hello svg, .kx-albumpg .kx-hello img { filter: drop-shadow(0 0 6px #fff3c8) drop-shadow(0 0 2px #fff3c8); }

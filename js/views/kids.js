@@ -164,7 +164,8 @@ function albumScreen(host, role) {
   // PACOTINHO DE TESTE: enquanto as regras do jogo não estão definidas, dá pra abrir um pacote aqui. Tirar quando as regras entrarem.
   const test = h('button', { class: 'kd-chip', type: 'button', onclick: async () => { const won = Album.grant(me.id, Album.PACK_SIZE); if (!won.length) { toast('álbum completo!'); return; } await openPack(won, { onPaste: () => { location.hash = '#/kids/album'; } }); rerender(); } }, `🎁 pacotinho de teste (${Album.PACK_SIZE})`);
   host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Álbum'), h('div', { class: 'kx-hello' }, r.el),
-    h('div', { class: 'row kd-modes' }, h('a', { class: `kd-chip${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas'), ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kd-chip${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t}`))),
+    h('nav', { class: 'kx-tabs', 'aria-label': 'Categorias' }, h('a', { class: `kx-tab${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas', h('small', {}, `${pasted.size}/${CARDS.length}`)),
+      ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kx-tab${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t.replace('vocalistas mulheres pop', 'mulheres pop').replace('vocalistas pop', 'vocalistas')}`, h('small', {}, `${CARDS.filter((c) => c.role === k && pasted.has(c.id)).length}/${CARDS.filter((c) => c.role === k).length}`)))),
     h('div', { class: 'row' }, test), ...(trayEl ? [trayEl] : []), grid,
     h('p', { class: 'lib-note' }, 'cada vez que você melhora as estrelas de uma fase, ganha um pacotinho de figurinhas. as artes são desenhos feitos para o app; quando existe foto livre no Wikimedia Commons (com crédito), ela aparece por cima.'));
 }
@@ -193,6 +194,7 @@ export function mount(host, parts = []) {
   host.classList.add('kx-arc'); document.documentElement.classList.add('kx-on');
   const rerender = () => { off(); off = () => {}; host.replaceChildren(); mount2(); };
   const mount2 = () => {
+    host.classList.toggle('kx-albumpg', first === 'album');
     const free = first && RUN[first] ? first : null;
     if (free) {
       const g = FREE.find((x) => x[0] === free); const box = h('div', { class: 'kd-game' });
@@ -213,5 +215,5 @@ export function mount(host, parts = []) {
   };
   mount2();
   const unsub = store.subscribe((i) => { if (i.remote && !first) rerender(); });
-  return () => { off(); unsub(); host.classList.remove('kx-arc'); document.documentElement.classList.remove('kx-on'); };
+  return () => { off(); unsub(); host.classList.remove('kx-arc', 'kx-albumpg'); document.documentElement.classList.remove('kx-on'); };
 }
