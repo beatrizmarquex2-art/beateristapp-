@@ -100,18 +100,16 @@ function mountHome(host) {
           h('div', { class: 'h-row' }, h('a', { class: 'h-btn', href: `#/estudos/a/${today.slug}` }, st.progress ? 'continuar' : 'ler agora'),
             h('button', { class: 'h-link', type: 'button', onclick: () => { const p = pool.length ? pool : idx; go(`#/estudos/a/${p[Math.floor(Math.random() * p.length)].slug}`); } }, 'sortear outro')))));
     }
-    kids.push(h('div', { class: 'h-trio' },
-      tile('#/anotacoes', 'clip', String(G.all().length), 'caderno', 'notas e grifos'),
-      tile('#/dicionario', 'sticks', 'A–Z', 'dicionário da bateria', 'palavras e termos'),
-      tile('#/estudos/favoritos', 'star-red', String(favN), 'favoritos', 'conceitos')));
+    kids.push(h('div', { class: 'h-stickers' },
+      h('a', { class: 'h-pill ink', href: '#/dicionario' }, 'A–Z ', h('small', {}, 'dicionário')),
+      h('a', { class: 'h-pill gold', href: '#/estudos/favoritos' }, '★ ', h('small', {}, `favoritos ${favN}`))));
     if (reading.length) kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'continuar'), reading.map(row)));
     if (idx.length) {
-      kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.map((g) => {
-        const items = idx.filter((a) => g.cats.includes(categoryOf(a))); const n = items.filter((a) => doneSet.has(a.slug)).length; const pc = items.length ? Math.round(n / items.length * 100) : 0;
-        return h('div', { class: 'h-group' }, h('a', { class: 'h-gt', href: `#/estudos/cat/${g.cats[0]}` }, h('b', {}, g.title), h('small', {}, `${n}/${items.length} lidos`)),
-          h('span', { class: 'h-bar', role: 'progressbar', 'aria-valuenow': pc, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${g.title}` }, h('i', { style: { width: `${pc}%` } })),
-          h('div', { class: 'h-sub' }, g.cats.map((c) => h('a', { href: `#/estudos/cat/${c}` }, category(c).label.split(' & ')[0]))));
-      }))));
+      kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.flatMap((g, gi) => g.cats.map((c) => {
+        const items = idx.filter((a) => categoryOf(a) === c); const n = items.filter((a) => doneSet.has(a.slug)).length; const pc = items.length ? Math.round(n / items.length * 100) : 0;
+        return h('a', { class: `h-pill big ${['red', 'ink', 'gold'][gi]}`, href: `#/estudos/cat/${c}` }, category(c).label.split(' & ')[0], h('small', {}, `${n}/${items.length}`),
+          h('span', { class: 'h-pbar2', role: 'progressbar', 'aria-valuenow': pc, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${category(c).label}` }, h('i', { style: { width: `${pc}%` } })));
+      })))));
       kids.push(h('div', { class: 'h-more' }, h('a', { href: '#/estudos/club' }, 'álbuns'), h('a', { href: '#/estudos/artistas' }, 'artistas e bateristas'), h('a', { href: '#/mural' }, 'mural de artistas')));
     }
     body.replaceChildren(...kids.filter(Boolean));
