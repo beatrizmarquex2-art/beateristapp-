@@ -352,3 +352,10 @@ a.pt-cloud { text-decoration: underline; text-decoration-color: #b5162b; text-un
 body.rz-lock .pt-think { display: none; }
 @media (prefers-reduced-motion: reduce) { .pt-think { transition: none; } .pt-tap { animation: none; } }
 .pt-dot { border-radius: 50% !important; } .pt-cloud { border-radius: 22px 22px 22px 8px !important; }
+
+/* Arsenal discos */
+.ar-art { margin: 14px 0 4px; }
+.ar-alb { border-top: 1px dashed rgb(0 0 0 / .18); padding: 4px 0; }
+.ar-alb summary { cursor: pointer; min-height: 44px; display: grid; align-content: center; gap: 2px; }
+.ar-hit { font-size: .85rem; opacity: .75; }
+.ar-body { padding: 4px 0 12px; display: grid; gap: 10px; }

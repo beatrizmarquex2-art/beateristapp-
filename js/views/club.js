@@ -14,6 +14,7 @@ import { releasesUrl, releaseUrl, pickRelease, parseRelease, mbPage, wikiSearchU
 import { parseTextFile, docxToMarkdown, isText, isDocx } from '../textimport.js';
 import { readZip } from '../zip.js';
 import { attach as attachGrifos } from '../highlights.js';
+import { mountArsenal } from './arsenal.js';
 import { isCollection, collectionName, parseArsenal, skipSheet, sortRefs, searchRefs, KIND_LABEL } from '../collection.js';
 
 export const SECTIONS = [
@@ -197,7 +198,7 @@ export function mountClub(host, tabs) {
   const box = h('div');
   const draw = () => {
     const cols = collections();
-    box.replaceChildren(...(cols.length ? cols.map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
+    box.replaceChildren(h('a', { class: 'card pad cl-col', href: '#/estudos/club/arsenal' }, h('span', { class: 'lib-kicker' }, 'novo'), h('strong', {}, 'Arsenal discos'), h('small', { class: 'muted' }, 'todos os álbuns de A a Z, com busca')), ...(cols.length ? cols.map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
       h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
       h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · '))))
       : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma coleção ainda.'), h('p', { class: 'muted' }, 'importa um pacote de textos (.zip) pra ele aparecer aqui.'))]));
@@ -209,6 +210,7 @@ export function mountClub(host, tabs) {
 
 export function mountPost(host, id, tabs) {
   if (id === 'discos') return mountShelf(host, tabs);
+  if (id === 'arsenal') return mountArsenal(host, tabs);
   if (id.startsWith('c:')) return mountCollection(host, id.slice(2), tabs);
   if (id.startsWith('r:')) return mountRef(host, id.slice(2), tabs);
   const box = h('article', { class: 'reader' });
