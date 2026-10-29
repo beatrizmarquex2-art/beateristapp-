@@ -155,7 +155,7 @@ function askName() {
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
-    h('h1', { class: 'al-logo' }, h('img', { src: 'assets/robo-logo.png', alt: 'Robôterista, escola de música', width: 900, height: 326 })),
+    h('h1', { class: 'al-logo' }, h('img', { src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 })),
     h('div', { class: 'al-paul' }, h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 150, height: 198 }), h('p', { class: 'al-bubble' }, 'oi! sou paul, robôterista', h('br'), 'assistente da bea')),
     h('p', { class: 'center' }, 'qual é o seu nome?'),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
