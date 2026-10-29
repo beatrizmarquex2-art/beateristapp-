@@ -26,7 +26,25 @@ const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { 
 /** Conta 1 visita por sessão; atualiza o nome quando ele muda. */
 function logVisit(name) {
   let novo = true; try { novo = !sessionStorage.getItem('bt-aluno-visita'); sessionStorage.setItem('bt-aluno-visita', '1'); } catch { /* ok */ }
-  RK.visit(visitorId(), name, novo);
+  RK.visit(visitorId(), name, novo, getOrigem());
+}
+const ORIGEM_KEY = 'beaterista-aluno-origem';
+const ORIGENS = [['aluno beaterista', 'aluno Beaterista'], ['aluno on-line', 'aluno on-line'], ['tik tok live', 'TikTok live'], ['youtube/instagram', 'YouTube/Instagram'], ['outro', 'outro']];
+const getOrigem = () => { try { return localStorage.getItem(ORIGEM_KEY) || ''; } catch { return window.__alunoOrigem || ''; } };
+const LINKS = [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista'], ['YouTube', 'https://www.youtube.com/@beateristadrummer']];
+const SVG = {
+  Instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',
+  TikTok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2 4.3 5 4.5"/>',
+  YouTube: '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l5-2.8z" fill="currentColor" stroke="none"/>',
+};
+/** Redes da Bea (ícones clicáveis) e marcas parceiras, pro rodapé. */
+function footerBlock() {
+  const svg = (n) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '28'); s.setAttribute('height', '28'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = SVG[n]; return s; };
+  return h('div', { class: 'al-foot' },
+    h('p', { class: 'muted center' }, 'siga a Bea'),
+    h('div', { class: 'al-social' }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n)))),
+    h('aside', { class: 'partners', 'aria-label': 'Parceiros' }, h('span', { class: 'partners-label' }, 'parceiros'),
+      h('img', { class: 'partners-img', src: 'assets/parceiros.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' })));
 }
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
@@ -65,6 +83,7 @@ function rankingView(view) {
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
       box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
       box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
+      footerBlock(),
       h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));
 }
 
@@ -108,20 +127,28 @@ function shell(name) {
 function askName() {
   const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome ou apelido' });
   const err = h('p', { class: 'form-err', role: 'alert' });
+  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
+  const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
+  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
+    if (!sel.value) { err.textContent = 'escolha como você chegou aqui.'; return; }
+    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value;
+    try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n);
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
     h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 132, height: 132 }),
     h('h1', { class: 'login-title login-wordmark' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', width: 220, height: 74 })),
+    h('div', { class: 'al-paul' }, h('img', { src: 'assets/paul/p-wave.webp', alt: 'Robôterista Paul', width: 110 }), h('p', { class: 'al-bubble' }, 'oi! sou paul, robôterista assistente da bea')),
     h('p', { class: 'center' }, 'qual é o seu nome?'),
-    h('label', { class: 'field' }, h('span', {}, 'nome'), input), err,
+    h('label', { class: 'field' }, h('span', {}, 'nome'), input),
+    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center' }, 'seu nome aparece no ranking que todo mundo vê. use só o primeiro nome ou um apelido, sem sobrenome. a escola registra o nome e quando você entra.'));
-  app.replaceChildren(h('main', { class: 'login' }, form));
+  app.replaceChildren(h('main', { class: 'login' }, form, footerBlock()));
   setTimeout(() => input.focus(), 100);
 }
 

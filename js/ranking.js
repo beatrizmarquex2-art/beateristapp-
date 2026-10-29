@@ -34,9 +34,12 @@ export async function add(board, name, score, acc = null, grade = null) {
   } catch { return false; }
 }
 
-/** Registra o acesso do aluno (id aleatório guardado no aparelho + nome). `novo` = conta uma visita nova. Falha em silêncio. */
-export async function visit(id, name, novo) {
+/** Registra o acesso do aluno (id aleatório guardado no aparelho + nome + de onde veio). `novo` = conta uma visita nova. Falha em silêncio. */
+export async function visit(id, name, novo, origem = '') {
+  const body = { p_id: id, p_name: name || '', p_ua: (navigator.userAgent || '').slice(0, 160), p_new: !!novo };
   try {
-    await fetch(url('aluno_visit'), { method: 'POST', headers: head, body: JSON.stringify({ p_id: id, p_name: name || '', p_ua: (navigator.userAgent || '').slice(0, 160), p_new: !!novo }) });
+    let r = await fetch(url('aluno_visit'), { method: 'POST', headers: head, body: JSON.stringify({ ...body, p_origem: origem || '' }) });
+    // banco ainda sem a coluna "origem": registra do jeito antigo
+    if (!r.ok) r = await fetch(url('aluno_visit'), { method: 'POST', headers: head, body: JSON.stringify(body) });
   } catch { /* sem internet: tenta na próxima */ }
 }
