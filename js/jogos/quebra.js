@@ -5,18 +5,23 @@ import * as Q from './quebra-logic.js';
 import { getGame, setGame, sfx, reduced } from './base.js';
 
 const ID = 'quebra';
-const SRC = 'assets/jogos/palco.webp';
+// Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
+export const IMAGES = [
+  { id: 'palco', src: 'assets/jogos/palco.webp', nome: 'Paul no palco' },
+];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
 
 export function mount(host) {
   let gone = false; let tick = 0;
   const saved = getGame(ID);
   const prefs = { diff: [6, 12, 24].includes(saved.diff) ? saved.diff : 6, free: saved.free === true };
+  const pick = (id) => IMAGES.find((x) => x.id === id) || IMAGES[0];
+  let imgId = pick(saved.img).id; const SRC = () => pick(imgId).src; const NOME = () => pick(imgId).nome;
   let best = saved.best && typeof saved.best === 'object' ? saved.best : {};
   let g = null; let selected = null; let hintCell = null; let msg = ''; let img = null; let paused = false; let viewing = false; let zoom = false; let last = 0; let record = false;
   let timeEl = null;
   const root = h('div', { class: 'jg jg-quebra' }); host.replaceChildren(root);
-  const persist = () => setGame(ID, { ...prefs, best, game: g && !g.over ? g : null });
+  const persist = () => setGame(ID, { ...prefs, img: imgId, best, game: g && !g.over ? g : null, gameImg: g && !g.over ? imgId : null });
   const running = () => g && !g.free && g.started && !g.over && !document.hidden && !paused;
 
   /* ---------- relógio: soma só o tempo em que a partida está rodando ---------- */
@@ -34,7 +39,7 @@ export function mount(host) {
     const im = new Image();
     im.onload = () => { if (gone) return; img = { w: im.naturalWidth, h: im.naturalHeight }; done(); };
     im.onerror = () => { if (gone) return; root.replaceChildren(h('p', { class: 'jg-msg', role: 'alert' }, 'não consegui carregar a imagem do quebra-cabeça.'), h('button', { class: 'btn primary', type: 'button', onclick: () => load(done) }, 'tentar de novo')); };
-    im.src = SRC;
+    im.src = SRC();
   }
 
   function intro() {
@@ -43,18 +48,19 @@ export function mount(host) {
     const seg = h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'dificuldade' }, ...SIZES.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.diff === v), class: prefs.diff === v ? 'on' : '', onclick: () => { prefs.diff = v; setGame(ID, { diff: v }); intro(); } }, l)));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC, alt: 'cena do Paul no palco, a imagem que você vai montar' }),
+      h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
+      IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: imgId === im.id ? 'on' : '', onclick: () => { imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
       h('p', { class: 'jg-lab' }, 'tamanho'), seg,
       h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', checked: prefs.free ? true : null, onchange: (e) => { prefs.free = e.target.checked; setGame(ID, { free: prefs.free }); } }), ' modo livre (sem tempo)'),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro (no computador, pode arrastar).'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'))),
       bests.length ? h('p', { class: 'jg-p muted' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
-      h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => load(() => begin(resume)) }, 'continuar partida') : null,
+      h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => load(() => begin(Q.newGame(prefs))) }, resume ? 'nova partida' : 'iniciar')),
     ].filter(Boolean));
   }
   function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = false; record = false; persist(); draw(); startClock(); }
 
-  const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
+  const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };
 
   function draw() {
@@ -75,7 +81,7 @@ export function mount(host) {
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.over ? '' : msg),
       h('div', { class: `jg-boardwrap${zoom ? ' zoom' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
       g.over ? result() : h('div', { class: 'jg-tray', role: 'group', 'aria-label': 'bandeja de peças, role para os lados' }, ...tray),
-      viewing ? h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'imagem de referência' }, h('img', { src: SRC, alt: 'cena do Paul no palco' }), h('button', { class: 'btn primary', type: 'button', onclick: () => { viewing = false; draw(); } }, 'fechar')) : null,
+      viewing ? h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'imagem de referência' }, h('img', { src: SRC(), alt: NOME() }), h('button', { class: 'btn primary', type: 'button', onclick: () => { viewing = false; draw(); } }, 'fechar')) : null,
     ].filter(Boolean));
   }
 
