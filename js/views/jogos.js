@@ -4,16 +4,21 @@ import { banner } from '../ui.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import * as domino from '../jogos/domino.js';
 import * as cartas from '../jogos/cartas.js';
+import * as velha from '../jogos/velha.js';
+import * as bingo from '../jogos/bingo.js';
+import * as cara from '../jogos/cara.js';
+import * as quebra from '../jogos/quebra.js';
+import * as stop from '../jogos/stop.js';
 
 const IMG = 'assets/jogos/icones/';
 const GAMES = [
   ['domino', 'dominó', 'domino', domino],
   ['cartas', 'última nota', 'cartas', cartas, 'números e figuras'],
-  ['bingo', 'bingo', 'bingo', null],
-  ['velha', 'jogo da velha', 'velha', null],
-  ['quebra', 'quebra-cabeça', 'quebra-cabeca', null],
-  ['cara', 'cara a cara', 'cara-a-cara', null],
-  ['stop', 'stop', 'stop', null],
+  ['bingo', 'bingo', 'bingo', bingo],
+  ['velha', 'jogo da velha', 'velha', velha],
+  ['quebra', 'quebra-cabeça', 'quebra-cabeca', quebra],
+  ['cara', 'cara a cara', 'cara-a-cara', cara],
+  ['stop', 'stop', 'stop', stop],
 ];
 
 function catalog(host) {
@@ -21,7 +26,7 @@ function catalog(host) {
     h('div', { class: 'jg-grid' }, ...GAMES.map(([id, title, img, mod, sub]) => {
       const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}.webp`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), sub ? h('small', {}, sub) : null];
       return mod ? h('a', { class: 'jg-card', href: `#/jogos/${id}` }, ...kids)
-        : h('span', { class: 'jg-card soon', role: 'link', 'aria-disabled': 'true', tabindex: '0', 'aria-label': `${title}: em breve` }, ...kids, h('i', { class: 'jg-soon' }, 'em breve'));
+        : h('span', { class: 'jg-card wait', role: 'link', 'aria-disabled': 'true', tabindex: '0', 'aria-label': `${title}: em breve` }, ...kids, h('i', { class: 'jg-soon' }, 'em breve'));
     }))));
 }
 
