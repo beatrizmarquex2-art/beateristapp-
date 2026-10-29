@@ -22,7 +22,7 @@ const MENU_BEA = [
   ]],
   ['estudar', 'estudos', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
-    ['álbuns', [['#/estudos/club/arsenal', 'note', 'Arsenal discos'], ['#/estudos/club', 'note', 'Álbuns']]],
+    ['álbuns', [['#/estudos/club', 'note', 'Arsenal discos']]],
     ['artistas', [['#/estudos/artistas', 'drummer', 'Artistas'], ['#/mural', 'photo', 'Mural de Artistas']]],
     ['', [['#/anotacoes', 'note', 'Minhas anotações']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
