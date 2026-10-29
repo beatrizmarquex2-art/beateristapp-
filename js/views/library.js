@@ -72,9 +72,6 @@ const GROUPS = [
 const MURAL = (n) => `url(assets/mural/${n}.svg)`;
 const dayKey = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
 const dayLabel = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'short' }).format(new Date()).replace('.', '');
-const TODO = ['ler', 'anotar', 'postar'];
-const readTodo = () => { try { return JSON.parse(localStorage.getItem(`estudos-hoje-${dayKey()}`)) || []; } catch { return []; } };
-const saveTodo = (v) => { try { localStorage.setItem(`estudos-hoje-${dayKey()}`, JSON.stringify(v)); } catch { /* sem armazenamento: segue sem lembrar */ } };
 const searchIcon = () => { const n = 'http://www.w3.org/2000/svg'; const s = document.createElementNS(n, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', 18); s.setAttribute('height', 18); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', 2); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.5-4.5"/>'; return s; };
 
 function mountHome(host) {
@@ -91,7 +88,6 @@ function mountHome(host) {
     const pool = idx.filter((a) => !doneSet.has(a.slug)); const daySeed = Number(dayKey().replace(/-/g, ''));
     const today = (pool.length ? pool : idx)[daySeed % (pool.length || idx.length || 1)] || null;
     const favN = states.filter((s) => s.fav && lib.bySlug(s.slug)).length;
-    const todo = readTodo();
     const kids = [statusNote()];
     if (today) {
       const st = lib.getState(today.slug);
@@ -109,7 +105,6 @@ function mountHome(host) {
       tile('#/dicionario', 'sticks', 'A–Z', 'dicionário da bateria', 'palavras e termos'),
       tile('#/estudos/favoritos', 'star-red', String(favN), 'favoritos', 'conceitos')));
     if (reading.length) kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'continuar'), reading.map(row)));
-    kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'de hoje'), h('div', { class: 'h-chips' }, TODO.map((t, i) => { const cb = h('input', { type: 'checkbox', checked: !!todo[i] }); cb.addEventListener('change', () => { const v = readTodo(); v[i] = cb.checked; saveTodo(v); }); return h('label', {}, cb, t); }))));
     if (idx.length) {
       kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.map((g) => {
         const items = idx.filter((a) => g.cats.includes(categoryOf(a))); const n = items.filter((a) => doneSet.has(a.slug)).length; const pc = items.length ? Math.round(n / items.length * 100) : 0;
