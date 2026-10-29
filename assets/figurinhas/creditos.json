@@ -1,0 +1,20 @@
+{
+ "john-bonham": {
+  "autor": "Dina Regine",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:John_Bonham_1975.jpg",
+  "rosto": true
+ },
+ "dave-grohl": {
+  "autor": "Raph_PH",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:FoosDublin210819-6_%2848620330261%29_%28cropped%29.jpg",
+  "rosto": true
+ },
+ "travis-barker": {
+  "autor": "Toglenn",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Travis_Barker_2019_by_Glenn_Francis_%28tighter_portrait_crop%29.jpg",
+  "rosto": true
+ }
+}
