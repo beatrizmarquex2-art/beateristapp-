@@ -124,7 +124,9 @@ function stickyNote() {
 export function mount(host) {
   let organizing = false;
   const note = stickyNote();
-  const mini = h('section', { class: 'card pad mini-list' });
+  const mini = h('section', { class: 'card pad mini-list', role: 'link', tabindex: '0', 'aria-label': 'Abrir o checklist para editar' });
+  mini.addEventListener('click', (e) => { if (!e.target.closest('.check, a')) location.hash = '#/checklist'; });
+  mini.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === mini) location.hash = '#/checklist'; });
   const favRow = h('section', { class: 'fav-row-home' });
   const grid = h('nav', { class: 'shortcuts', 'aria-label': 'Atalhos' });
   const orgBtn = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { organizing = !organizing; drawGrid(); } });
