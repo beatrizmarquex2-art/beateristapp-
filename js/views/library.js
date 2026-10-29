@@ -17,8 +17,8 @@ const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_P
 const pct = (p) => `${Math.round((p || 0) * 100)}%`;
 
 function tabs(on) {
-  // três seções, nomes simples: conceitos, álbuns, artistas / bateristas
-  const items = [['#/estudos', 'conceitos', 'study'], ['#/estudos/club', 'álbuns', 'note'], ['#/estudos/artistas', 'artistas / bateristas', 'drummer']];
+  // três seções, nomes simples: conceitos, álbuns, artistas
+  const items = [['#/estudos', 'conceitos', 'study'], ['#/estudos/club', 'álbuns', 'note'], ['#/estudos/artistas', 'artistas', 'drummer']];
   const art = ['#/estudos/artistas', '#/estudos/cat/bateristas', '#/estudos/conexoes', '#/estudos/lab'].includes(on);
   const cur = (href) => (href === '#/estudos/artistas' ? art : href === '#/estudos' ? !art && on !== '#/estudos/club' : on === href);
   return h('nav', { class: 'lib-tabs chips', 'aria-label': 'Seções de Estudos' },
@@ -112,7 +112,7 @@ function mountHome(host) {
         return h('a', { class: `h-pill big ${['red', 'ink', 'gold'][gi]}`, href: `#/estudos/cat/${c}` }, category(c).label.split(' & ')[0], h('small', {}, `${n}/${items.length}`),
           h('span', { class: 'h-pbar2', role: 'progressbar', 'aria-valuenow': pc, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${category(c).label}` }, h('i', { style: { width: `${pc}%` } })));
       })))));
-      kids.push(h('div', { class: 'h-more' }, h('a', { href: '#/estudos/club' }, 'álbuns'), h('a', { href: '#/estudos/artistas' }, 'artistas e bateristas'), h('a', { href: '#/mural' }, 'mural de artistas')));
+      kids.push(h('div', { class: 'h-more' }, h('a', { href: '#/estudos/club' }, 'álbuns'), h('a', { href: '#/estudos/artistas' }, 'artistas'), h('a', { href: '#/mural' }, 'mural de artistas')));
     }
     body.replaceChildren(...kids.filter(Boolean));
   };
@@ -371,7 +371,7 @@ function mountArtistas(host) {
         ...[['#/estudos/conexoes', 'link', 'Artista e conceito', 'qual conceito aparece em qual artista'], ['#/estudos/lab', 'study', 'Laboratório', 'experimentos pra testar na bateria'], ['#/mural', 'photo', 'Mural de Artistas', 'sua parede de fotos']]
           .map(([href, ic, t, d]) => h('a', { class: 'hub-card', href }, h('span', { class: 'hub-ic' }, icon(ic, 26)), h('b', {}, t), h('small', {}, d))))));
   };
-  host.append(banner('Artistas / bateristas', 'quem pensa a música, e o que aprender com eles'), tabs('#/estudos/artistas'), body);
+  host.append(banner('Artistas', 'quem pensa a música, e o que aprender com eles'), tabs('#/estudos/artistas'), body);
   lib.loadIndex().then(draw); draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
 }
