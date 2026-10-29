@@ -16,10 +16,12 @@ function imported() {
     return { a: d.artist || (/beatles/i.test(d.col) ? 'The Beatles' : d.col), t: d.title, d: d.date || '', g: m['gênero(s) indicados'] || '', s: m['selo(s)'] || '', p: m['produção geral do álbum'] || '', r: m['período de gravação'] || '', k: (d.tracks || []).map((x) => x.title), b: d.body || '', ref: r.id };
   });
 }
+/** chave de ordem do artista: sem acento e sem o "The" do começo (The Beatles fica no B). */
+export const artistKey = (a) => norm(a).replace(/^the\s+/, '');
 export function merge(bundled, extra) {
   const seen = new Set(bundled.map((x) => norm(`${x.a}|${x.t}`)));
   return [...bundled, ...extra.filter((x) => !seen.has(norm(`${x.a}|${x.t}`)))]
-    .sort((x, y) => norm(x.a).localeCompare(norm(y.a), 'pt-BR') || x.d.localeCompare(y.d) || x.t.localeCompare(y.t));
+    .sort((x, y) => artistKey(x.a).localeCompare(artistKey(y.a), 'pt-BR') || x.d.localeCompare(y.d) || x.t.localeCompare(y.t));
 }
 
 function card(x, q) {
