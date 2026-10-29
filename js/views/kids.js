@@ -162,7 +162,7 @@ function albumScreen(host, role) {
   const trayEl = trayIds.length ? h('div', { class: 'kx-tray' }, h('p', { class: 'kx-tray-t' }, `folha de colar · ${trayIds.length} figurinha${trayIds.length > 1 ? 's' : ''}`),
     h('div', { class: 'kx-tray-row' }, ...trayIds.map((id) => { const b = Album.cardEl(byId[id], { onclick: () => stick(id, b) }); b.classList.add('kx-peel'); return b; })), h('small', { class: 'kx-tray-h' }, 'toque na figurinha para colar no lugar dela')) : null;
   // PACOTINHO DE TESTE: enquanto as regras do jogo não estão definidas, dá pra abrir um pacote aqui. Tirar quando as regras entrarem.
-  const test = h('button', { class: 'kd-chip', type: 'button', onclick: async () => { const won = Album.grant(me.id, 5); if (!won.length) { toast('álbum completo!'); return; } await openPack(won, { onPaste: () => { location.hash = '#/kids/album'; } }); rerender(); } }, '🎁 pacotinho de teste (5)');
+  const test = h('button', { class: 'kd-chip', type: 'button', onclick: async () => { const won = Album.grant(me.id, Album.PACK_SIZE); if (!won.length) { toast('álbum completo!'); return; } await openPack(won, { onPaste: () => { location.hash = '#/kids/album'; } }); rerender(); } }, `🎁 pacotinho de teste (${Album.PACK_SIZE})`);
   host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Álbum'), h('div', { class: 'kx-hello' }, r.el),
     h('div', { class: 'row kd-modes' }, h('a', { class: `kd-chip${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas'), ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kd-chip${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t}`))),
     h('div', { class: 'row' }, test), ...(trayEl ? [trayEl] : []), grid,

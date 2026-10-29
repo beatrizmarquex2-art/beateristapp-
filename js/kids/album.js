@@ -7,6 +7,7 @@ import { cardSvg, rarityOf, RARITY } from './card-art.js';
 import { photoOf } from '../views/artist-photo.js';
 
 const SIZE = {}; for (const x of CARDS) SIZE[x.role] = (SIZE[x.role] || 0) + 1;
+export const PACK_SIZE = 2; // figurinhas por pacotinho
 export const total = () => CARDS.length;
 export const owned = (pid) => (P.progOf(pid).album || []).filter((id) => byId[id]);
 /** coladas no álbum; quem já tinha figurinhas antes da folha de colar conta como colada */
@@ -38,11 +39,9 @@ export function cardEl(card, { fresh = false, locked = false, onclick, slot } = 
   if (locked) ph.append(h('b', { class: 'kx-q' }, '?'));
   else {
     ph.innerHTML = cardSvg(card);
-    photoOf(`album-${card.id}`, card.wiki).then((p) => {
-      if (!p || !ph.isConnected) return;
-      const img = h('img', { class: 'kx-photo', src: p.src, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' });
-      img.addEventListener('load', () => ph.append(img)); img.addEventListener('error', () => img.remove());
-    }).catch(() => {});
+    const addPhoto = (src, onFail) => { const img = h('img', { class: 'kx-photo', src, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' }); img.addEventListener('load', () => ph.isConnected && ph.append(img)); img.addEventListener('error', onFail); };
+    // foto guardada no app (assets/figurinhas/<id>.webp) vale para todos; se não houver, tenta uma foto livre do Commons
+    addPhoto(`assets/figurinhas/${card.id}.webp`, () => photoOf(`album-${card.id}`, card.wiki).then((p) => { if (p && ph.isConnected) addPhoto(p.src, () => {}); }).catch(() => {}));
   }
   return h(onclick ? 'button' : 'div', { class: `kx-card-fig role-${card.role} rar-${rar}${locked ? ' locked' : ''}${fresh ? ' fresh' : ''}`, 'data-id': card.id, type: onclick ? 'button' : null, 'aria-label': locked ? `Espaço da figurinha ${slot || ''} ${card.name}, ainda não colada` : `${card.name}, ${ROLES[card.role][0]}, ${RARITY[rar]}`, onclick: onclick || null },
     slot ? h('i', { class: 'kx-num' }, String(slot).padStart(3, '0')) : null,

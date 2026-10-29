@@ -36,17 +36,17 @@ function person(cx, top, s, face, hair, ink, kind, bg) {
 
 /** String SVG (200×200) da carta. */
 export function cardSvg(card) {
-  const [c1, c2, c3] = PAL[card.role] || PAL.baterista; const R = rng(hash(card.id));
+  const [c1, c2, c3] = PAL[card.role] || PAL.baterista; const RED = ['#e63946', '#8c1224']; const R = rng(hash(card.id));
   const ink = '#1b1818'; const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI * 2; return `${100 + Math.cos(a) * 160},${100 + Math.sin(a) * 160}`; });
-  let body = rays.map((p, i) => (i % 2 ? '' : `<path d="M100 100 L${p} L${rays[(i + 1) % 12]} Z" fill="${c2}" opacity=".22"/>`)).join('');
-  const dots = Array.from({ length: 14 }, () => `<circle cx="${(R() * 200) | 0}" cy="${(R() * 200) | 0}" r="${(1.5 + R() * 3).toFixed(1)}" fill="${c3}" opacity=".5"/>`).join('');
+  let body = rays.map((p, i) => (i % 2 ? '' : `<path d="M100 100 L${p} L${rays[(i + 1) % 12]} Z" fill="#ffd9a0" opacity=".2"/>`)).join('');
+  const dots = Array.from({ length: 14 }, () => `<circle cx="${(R() * 200) | 0}" cy="${(R() * 200) | 0}" r="${(1.5 + R() * 3).toFixed(1)}" fill="#fff3c8" opacity=".45"/>`).join('');
   if (card.role === 'kpop') {
     const f = [0, 1, 2].map(() => FACES[(R() * FACES.length) | 0]);
     body += person(52, 62, .62, f[0], c2, ink, 4, c1) + person(148, 62, .62, f[1], c3, ink, 0, c1) + person(100, 40, .78, f[2], c2, ink, 3, c1);
   } else {
     body += person(100, 40, 1, FACES[(R() * FACES.length) | 0], [ink, c2, '#7a3b1d', '#f3eee4', c1][(R() * 5) | 0], ink, (R() * 6) | 0, c1);
   }
-  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g-${card.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c3}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>`
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g-${card.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${RED[0]}"/><stop offset="1" stop-color="${RED[1]}"/></linearGradient></defs>`
     + `<rect width="200" height="200" fill="url(#g-${card.id})"/>${body}${dots}`
     + `<circle cx="168" cy="168" r="22" fill="${c1}" stroke="${ink}" stroke-width="3"/><text x="168" y="177" font-size="24" text-anchor="middle">${ROLES[card.role][1]}</text></svg>`;
 }
