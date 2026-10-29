@@ -302,7 +302,7 @@ export const parts = { cfg, save, latOf, when, students, svgEl, tend, clicks, pu
 
 /* ---------- tela ---------- */
 export function mount(host, parts) {
-  let mic = null, pane = null, gone = false, handler = null;
+  let mic = null, pane = null, gone = false, handler = null, opening = false;
   const tab = parts && ['transcritor', 'raiox'].includes(parts[0]) ? parts[0] : 'juiz';
   const listen = (fn) => { handler = fn; };
   const body = h('div');
@@ -318,17 +318,20 @@ export function mount(host, parts) {
     h('p', { class: 'muted' }, 'funciona melhor em lugar quieto. o microfone desliga sozinho quando você sai desta tela.'),
     h('button', { class: 'btn primary wide', type: 'button', onclick: start }, 'ligar o microfone e o som')));
   async function start() {
+    if (opening || mic) return; opening = true; // dois toques seguidos não abrem dois microfones
     try {
-      mic = await openOnsets((ev) => handler && handler(ev));
-      if (gone) { mic.stop(); return; }
+      const m = await openOnsets((ev) => handler && handler(ev));
+      if (gone) { m.stop(); return; }
+      mic = m;
       body.dataset.mode = mic.mode; // worklet (preciso) ou script (plano B)
       pane = tab === 'juiz' ? judgeTab(mic, listen) : tab === 'raiox' ? xrayTab(mic, listen) : transcribeTab(mic, listen);
       body.replaceChildren(pane);
     } catch (e) {
+      if (gone) return;
       const [t, why] = micMessage(e);
       body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, t), h('p', { class: 'muted' }, why),
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
-    }
+    } finally { opening = false; }
   }
   host.append(banner('Juiz de Tempo', tab === 'juiz' ? 'adiantou ou atrasou? em milissegundos' : tab === 'raiox' ? 'raio-x do seu groove' : 'bate na mesa, vira partitura'), tabs, body);
   ask();

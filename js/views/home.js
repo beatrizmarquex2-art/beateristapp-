@@ -102,8 +102,11 @@ function stickyNote() {
   }, 500);
   ta.addEventListener('input', () => { state.textContent = 'salvando…'; save(); });
   ta.addEventListener('blur', () => save.flush());
-  addEventListener('pagehide', () => save.flush());
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save.flush(); });
+  // as escutas de window/document precisam sair junto com a tela (antes cada visita ao Início deixava mais uma: dezenas de gravações a cada bloqueio de tela)
+  const onHide = () => save.flush();
+  const onVis = () => { if (document.visibilityState === 'hidden') save.flush(); };
+  addEventListener('pagehide', onHide); document.addEventListener('visibilitychange', onVis);
+  wrap.unsub = () => { removeEventListener('pagehide', onHide); document.removeEventListener('visibilitychange', onVis); if (state.textContent === 'salvando…') save.flush(); };
   wrap.append(h('span', { class: 'tape', 'aria-hidden': 'true' }), ta, state);
   // atualização vinda de outro aparelho: só aplica se a pessoa não estiver digitando
   wrap.refresh = () => {
@@ -192,5 +195,5 @@ export function mount(host) {
   // a frase do topo troca sozinha a cada 8 horas: confere a cada minuto (e quando o app volta pra tela)
   const subEl = top.querySelector('.hero-sub'); const tickSub = () => { const t = heroSub(); if (subEl.textContent !== t) subEl.textContent = t; };
   const subTimer = setInterval(tickSub, 60000); document.addEventListener('visibilitychange', tickSub);
-  return () => { off(); document.removeEventListener('recents-changed', drawRecent); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); };
+  return () => { off(); document.removeEventListener('recents-changed', drawRecent); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); note.unsub(); };
 }

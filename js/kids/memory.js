@@ -2,6 +2,7 @@
 // Fases 0 a 10 pelo número de pares; com tempo total e "poucos erros" nas fases especiais.
 import { h } from '../util.js';
 import { audio } from '../audio.js';
+import { session } from '../session.js';
 import { stars as sparkle } from '../ui.js';
 import { levelSpec } from './levels.js';
 import { shuffle } from '../kids-logic.js';
@@ -18,8 +19,9 @@ const starsMem = (pct) => (pct >= 85 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0);
 export function runMemory(game, ctx) {
   const { level, profile, mode = 'som' } = ctx; const spec = levelSpec(level, profile.age); const pairs = PAIRS[spec.d]; const { bot, stage } = frame(game, ctx, spec);
   const totalSecs = spec.secs ? Math.round(pairs * spec.secs * 1.4) : 0; const maxMiss = spec.sudden ? Math.max(2, Math.ceil(pairs / 2)) : Infinity;
-  let gone = false; let timer = 0; let tick = 0; let open = []; let lock = false; let matched = 0; let tries = 0; let miss = 0; let restarts = 0; let misses = []; let left = 0;
-  const clear = () => { clearTimeout(timer); clearInterval(tick); timer = 0; tick = 0; };
+  const S = session(); // cada rodada (start) é uma "fase" da sessão: virar a carta, o tempo total e os sons de uma rodada antiga não valem na nova
+  let gone = false; let open = []; let lock = false; let matched = 0; let tries = 0; let miss = 0; let restarts = 0; let misses = []; let finished = false;
+  const clear = () => S.reset();
 
   const intro = () => {
     bot.set('happy', mode === 'som' ? 'ouve o som e acha o desenho!' : 'acha os pares iguais!');
@@ -28,7 +30,7 @@ export function runMemory(game, ctx) {
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };
   const start = () => {
-    clear(); matched = 0; tries = 0; miss = 0; open = []; lock = false; misses = [];
+    clear(); matched = 0; tries = 0; miss = 0; open = []; lock = false; misses = []; finished = false;
     const picks = shuffle(INSTRUMENTS, Math.random).slice(0, pairs);
     const deck = shuffle(picks.flatMap((x) => (mode === 'som' ? [{ id: x.id, kind: 'sound' }, { id: x.id, kind: 'img' }] : [{ id: x.id, kind: 'img' }, { id: x.id, kind: 'img' }])), Math.random).map((c, i) => ({ ...c, key: i }));
     bot.set('think', 'onde será?');
@@ -42,7 +44,7 @@ export function runMemory(game, ctx) {
     }));
     const paint = () => { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`; };
     stage.replaceChildren(...[bar, status, board].filter(Boolean)); stage._paint = paint; stage._board = board; paint();
-    if (totalSecs) timer = setTimeout(timeUp, totalSecs * 1000);
+    if (totalSecs) S.later(timeUp, totalSecs * 1000);
   };
   const svgBox = (id) => { const d = h('span', { class: 'kx-mem-art' }); d.innerHTML = byId[id].art; return d; };
   const flip = (btn, c) => {
@@ -51,15 +53,14 @@ export function runMemory(game, ctx) {
     if (c.kind === 'sound') playInstrument(c.id); // a figura só mostra; o som fica na carta do som
     open.push(btn); if (open.length < 2) return;
     lock = true; tries++; const [a, b] = open; const same = a._c.id === b._c.id && (mode === 'som' ? a._c.kind !== b._c.kind : true);
-    setTimeout(() => {
-      if (gone) return;
+    S.later(() => {
       if (same) {
         a.classList.add('ok'); b.classList.add('ok'); matched++; beep(true); bot.set('cheer', 'isso!'); sparkle(b); if (mode === 'som') playInstrument(a._c.id);
         open = []; lock = false; stage._paint();
-        if (matched === pairs) { clear(); finishUp(false); }
+        if (matched === pairs) { S.reset(false); finishUp(false); }
       } else {
         beep(false); miss++; misses.push(a._c.id, b._c.id); a.classList.add('no'); b.classList.add('no'); bot.set('oops', 'ops, tenta de novo');
-        setTimeout(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; stage._paint(); if (miss > maxMiss) restart(); }, 700);
+        S.later(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; stage._paint(); if (miss > maxMiss) restart(); }, 700);
       }
     }, 650);
   };
@@ -69,10 +70,11 @@ export function runMemory(game, ctx) {
   };
   const timeUp = () => { if (gone) return; clear(); lock = true; finishUp(true); };
   const finishUp = (timedOut) => {
+    if (finished) return; finished = true; // o resultado (e o progresso) só é gravado uma vez por rodada
     const t = Math.max(tries, 1); const pct = Math.round((matched / t) * 100);
     const stars = timedOut ? 0 : starsMem(pct);
     showResult({ game, ctx, bot, stage, spec, right: matched, total: t, stars, misses, mode, restarts, pct, note: timedOut ? `acabou o tempo! ${matched} de ${pairs} pares` : `${pairs} pares em ${tries} tentativas${restarts ? ` · recomeçou ${restarts}×` : ''}` });
   };
   intro();
-  return () => { gone = true; clear(); };
+  return () => { gone = true; S.dispose(); };
 }

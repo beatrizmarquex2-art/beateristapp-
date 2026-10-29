@@ -10,7 +10,7 @@ import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
-import { banner } from './ui.js';
+import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 
@@ -121,7 +121,7 @@ function shell(name) {
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
-    cleanup && cleanup(); cleanup = null; silence(); view.replaceChildren();
+    cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;

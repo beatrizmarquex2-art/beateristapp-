@@ -2,7 +2,8 @@
 import { h } from '../util.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
-import { audio, click } from '../audio.js';
+import { audio, click, later } from '../audio.js';
+import { session } from '../session.js';
 import { stars as sparkle } from '../ui.js';
 import { VOICE } from '../views/beatlab.js';
 import * as P from './progress.js';
@@ -37,7 +38,7 @@ function clickGame(base) {
     say: () => 'o que mudou do A pro B?',
     render: (q) => h('div', { class: 'kx-q' }, h('div', { class: 'row kx-ab' }, h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playGroove(q.A, q.bpm, 2) }, '▶ A'), h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playGroove(q.B, q.bpm, 2) }, '▶ B')),
       h('p', { class: 'kd-q' }, q.byStep ? 'em que tempo o B mudou?' : 'qual peça mudou do A pro B?')),
-    onShow: (q) => { const ms = playGroove(q.A, q.bpm, 1); setTimeout(() => playGroove(q.B, q.bpm, 1), ms + 150); },
+    onShow: (q) => { const ms = playGroove(q.A, q.bpm, 1); later(() => playGroove(q.B, q.bpm, 1), ms + 150); },
     okText: (q) => `isso! ${q.change.op === 'pôs' ? 'pôs' : 'tirou'} ${ROW_NAME[q.change.row]} no "${STEP_LABEL[q.change.step]}" ⭐`,
     noText: (q) => `mudou o ${ROW_NAME[q.change.row]} (no "${STEP_LABEL[q.change.step]}")`,
     hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}`,
@@ -46,6 +47,7 @@ function clickGame(base) {
 
 export function runDetetive(game, ctx) {
   const { level, profile } = ctx; const spec = levelSpec(level, profile.age); const d = spec.d; let gone = false; let parts = (P.starsAt(profile.id, 'detetive', level) || 0); let cap = null; let mode = 'tela';
+  const S = session(); // timers das partes 2 e 3 (a parte 1 usa o motor de fases, que tem a sessão dele)
   const done = []; // % de cada parte nesta sessão
   const rec = async (stars, right, total, misses, m) => { const { gain } = await P.record(profile.id, { game: 'detetive', level, right, total, stars, misses, mode: m }); return Album.grant(profile.id, gain); };
 
@@ -75,7 +77,7 @@ export function runDetetive(game, ctx) {
         ok && step === 3 && level < 10 ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
         ok && step < 3 && have >= 1 && level < 10 ? h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
         h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onLevel(level) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'))));
-    if (ok) setTimeout(() => { const el = stage.querySelector('.kx-stars'); if (el && el.isConnected) sparkle(el); }, 350);
+    if (ok) S.later(() => { const el = stage.querySelector('.kx-stars'); if (el && el.isConnected) sparkle(el); }, 350);
   };
 
   // ---- parte 2: escrever na partitura ----
@@ -99,7 +101,7 @@ export function runDetetive(game, ctx) {
       stage.append(h('div', { class: 'row kx-act' }, scoreSvg(g)), h('button', { class: 'kd-btn', type: 'button', onclick: () => ladder(bot, stage, 2, ok, won) }, ok ? 'continuar' : 'ver as estrelas'));
     } }, '✔ conferir');
     stage.replaceChildren(h('p', { class: 'kd-q' }, 'toca nas casinhas e escreve o groove que você ouviu'), listen, grid, check, fb);
-    draw(); setTimeout(() => playGroove(g, bpm, 2), 400);
+    S.reset(); draw(); S.later(() => playGroove(g, bpm, 2), 400);
   };
 
   // ---- parte 3: tocar ----
@@ -119,12 +121,12 @@ export function runDetetive(game, ctx) {
       const j = judgeHits(res.onsets, rowTimes(g, row, bpm, 2, 0), windowFor(d, mode === 'mic')); const ok = roundOk(j); done[2] = Math.round((j.hits / Math.max(1, j.total)) * 100);
       beep(ok); fb.className = `kd-fb kx-fb ${ok ? 'ok' : 'no'}`; fb.textContent = `${ok ? 'isso! ' : ''}${j.hits} de ${j.total} batidas${j.extras ? ` · ${j.extras} a mais` : ''}`;
       const won = await rec(ok ? 3 : parts, j.hits, j.total, ok ? [] : [row], mode === 'mic' ? 'tocar-mic' : 'tocar-tela'); if (ok) parts = 3;
-      setTimeout(() => ladder(bot, stage, 3, ok, won), 1400);
+      S.later(() => ladder(bot, stage, 3, ok, won), 1400);
     } }, '🎯 minha vez');
     stage.replaceChildren(h('p', { class: 'kd-q' }, `toca só o ${ROW_NAME[row]}, no tempo certo`), dots, chips, h('div', { class: 'row kx-act' }, hear, go), padBox, fb);
-    setTimeout(() => playGroove(g, bpm, 2, row), 400);
+    S.reset(); S.later(() => playGroove(g, bpm, 2, row), 400);
   };
 
   part1();
-  return () => { gone = true; cleanup(); if (cap) cap.cancel(); };
+  return () => { gone = true; cleanup(); S.dispose(); if (cap) cap.cancel(); };
 }

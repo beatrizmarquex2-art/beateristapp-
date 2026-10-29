@@ -14,29 +14,61 @@ export function toast(msg, { action, onAction, ms = 4500, id } = {}) {
   setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, ms);
 }
 
+const sheets = []; // folhas abertas, da de baixo pra de cima (só a de cima reage ao Esc e ao Tab)
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+/** Enquanto houver folha aberta: a página de trás não rola nem recebe foco (e volta ao normal quando a última fecha). */
+function lockPage(on) {
+  document.documentElement.classList.toggle('sheet-open', on);
+  const app = document.getElementById('app'); if (app) { if (on) app.setAttribute('inert', ''); else app.removeAttribute('inert'); }
+}
+/** Fecha todas as folhas abertas (trocou de tela: folha de uma tela antiga não pode ficar por cima da nova). */
+export function closeSheets() { [...sheets].reverse().forEach((s) => s.close()); }
+
 let lastFocus = null;
-/** Bottom sheet acessível. `build(close)` devolve o conteúdo. */
+/**
+ * Bottom sheet acessível. `build(close)` devolve o conteúdo (se o elemento tiver `.cleanup`, ele roda quando a folha fecha por qualquer caminho).
+ * O foco fica preso dentro da folha, Esc fecha só a de cima e a rolagem da página de trás fica travada enquanto ela existe.
+ */
 export function sheet(title, build, { onClose } = {}) {
-  lastFocus = document.activeElement;
+  const prevFocus = document.activeElement; if (!sheets.length) lastFocus = prevFocus;
   const back = h('div', { class: 'sheet-back' });
-  const box = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title });
+  const box = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title, tabindex: '-1' });
+  let closed = false; let content = null;
+  const entry = { close: () => {} };
   const close = () => {
+    if (closed) return; closed = true; // toque duplo no X / fundo não fecha (nem chama onClose) duas vezes
     document.removeEventListener('keydown', onKey);
+    const i = sheets.indexOf(entry); if (i >= 0) sheets.splice(i, 1);
+    if (!sheets.length) lockPage(false);
+    try { content && content.cleanup && content.cleanup(); } catch (e) { console.error(e); }
     box.classList.add('out'); back.classList.add('out');
-    setTimeout(() => { back.remove(); lastFocus && lastFocus.focus && lastFocus.focus(); onClose && onClose(); }, reducedMotion() ? 0 : 200);
+    setTimeout(() => { back.remove(); if (!sheets.length && lastFocus && lastFocus.isConnected && lastFocus.focus) lastFocus.focus(); onClose && onClose(); }, reducedMotion() ? 0 : 200);
   };
-  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  entry.close = close;
+  const onKey = (e) => {
+    if (sheets[sheets.length - 1] !== entry) return;
+    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const items = [...box.querySelectorAll(FOCUSABLE)].filter((x) => x.offsetParent !== null || x === document.activeElement);
+    if (!items.length) { e.preventDefault(); box.focus(); return; }
+    const first = items[0]; const last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === box)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    else if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  };
   back.addEventListener('click', (e) => { if (e.target === back) close(); });
   document.addEventListener('keydown', onKey);
+  sheets.push(entry); lockPage(true);
+  content = build(close);
   box.append(
     h('div', { class: 'sheet-grip', 'aria-hidden': 'true' }),
     h('div', { class: 'sheet-head' }, h('h2', {}, title), h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar', onclick: close }, icon('x', 20))),
-    build(close),
+    content,
   );
   back.append(box);
   root().append(back);
   const first = box.querySelector('input,textarea,select,button.primary');
-  if (first && !matchMedia('(pointer: coarse)').matches) first.focus();
+  if (first && !matchMedia('(pointer: coarse)').matches) first.focus(); else box.focus({ preventScroll: true });
   return close;
 }
 

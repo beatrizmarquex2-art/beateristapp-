@@ -62,7 +62,7 @@ function tap(host) {
 /* ---------- BPM pelo microfone ---------- */
 const LISTEN = 15; // segundos
 function bpmMic(host) {
-  let stream = null, timer = 0, est = 0, startAt = 0; let frames = []; let result = null; let factor = 1;
+  let stream = null, src = null, timer = 0, est = 0, startAt = 0; let frames = []; let result = null; let factor = 1; let opening = false; let gone = false;
   const out = h('output', { class: 'ft-big', 'aria-live': 'polite' }, '—');
   const sub = h('p', { class: 'muted ft-sub' }, 'coloca a música pra tocar perto do celular e aperta ouvir.');
   const bar = h('div', { class: 'ft-prog' }, h('i'));
@@ -80,14 +80,21 @@ function bpmMic(host) {
   };
   const stop = () => {
     clearInterval(timer); clearInterval(est); timer = est = 0;
+    if (src) { try { src.disconnect(); } catch { /* já solto */ } src = null; }
     if (stream) { stream.getTracks().forEach((t) => t.stop()); stream = null; }
+    if (gone) return;
     go.textContent = 'ouvir de novo'; go.classList.remove('on'); bar.firstChild.style.width = '0%'; estimate(); paint();
   };
   const start = async () => {
     if (stream) { stop(); return; }
-    try { stream = await getMic(); }
-    catch (e) { toast(micToast(e)); return; }
-    const c = audio(); const src = c.createMediaStreamSource(stream); const an = c.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0; src.connect(an);
+    if (opening) return; opening = true; // dois toques seguidos em "ouvir" abriam dois microfones e o primeiro ficava ligado pra sempre
+    let got;
+    try { got = await getMic(); }
+    catch (e) { opening = false; if (!gone) toast(micToast(e)); return; }
+    opening = false;
+    if (gone) { got.getTracks().forEach((t) => t.stop()); return; } // saiu da tela enquanto o microfone abria
+    stream = got;
+    const c = audio(); src = c.createMediaStreamSource(stream); const an = c.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0; src.connect(an);
     const spec = new Float32Array(an.frequencyBinCount); let prev = null; frames = []; result = null; factor = 1; startAt = c.currentTime;
     // fluxo espectral: quanto a energia subiu de um quadro pro outro (ataques de bateria, palhetada, sílaba)
     timer = setInterval(() => {
@@ -107,7 +114,7 @@ function bpmMic(host) {
       h('div', { class: 'row ft-row' }, go, use),
       h('div', { class: 'row ft-row' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { factor /= 2; paint(); } }, '÷2 (tá rápido demais)'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { factor *= 2; paint(); } }, '×2 (tá lento demais)'))),
     h('p', { class: 'pad-x lib-note' }, 'o som não sai do celular: o app só mede onde estão os ataques. músicas com bateria marcada dão resultado melhor. em dúvida, confirma no tap tempo.'));
-  return stop;
+  return () => { gone = true; stop(); };
 }
 
 /* ---------- roleta da aula ---------- */

@@ -22,11 +22,13 @@ export function noteEditor(rec, close) {
   [title, body].forEach((el) => el.addEventListener('input', () => { status.textContent = 'salvando…'; save(); }));
   const onHide = () => save.flush();
   addEventListener('pagehide', onHide);
-  return h('div', { class: 'sheet-body' },
+  const box = h('div', { class: 'sheet-body' },
     h('label', { class: 'field' }, h('span', {}, 'título'), title),
     h('label', { class: 'field' }, h('span', {}, 'nota'), body),
     status,
-    h('div', { class: 'row end' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { save.flush(); removeEventListener('pagehide', onHide); close(); } }, 'Pronto')));
+    h('div', { class: 'row end' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { save.flush(); close(); } }, 'Pronto')));
+  box.cleanup = () => { save.flush(); removeEventListener('pagehide', onHide); }; // roda em qualquer jeito de fechar (Pronto, X, Esc, toque fora, trocar de tela)
+  return box;
 }
 
 const titleOf = (d) => (d.title && d.title.trim()) || (d.body || '').trim().split('\n')[0].slice(0, 60) || 'sem título';

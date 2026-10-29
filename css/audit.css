@@ -1,0 +1,27 @@
+/* ===== Auditoria: ajustes de robustez (gestos, rolagem, modais, viewport) — não muda a identidade visual ===== */
+
+/* viewport: onde não há dvh (iOS < 15.4, navegadores antigos) cai no vh de antes */
+#app, .login { min-height: 100vh; }
+@supports (min-height: 100dvh) { #app, .login { min-height: 100dvh; } }
+
+/* folha aberta: a página de trás não rola (a folha em si rola, e a rolagem dela não "vaza" pra página) */
+html.sheet-open { overflow: hidden; }
+.sheet-back, .sheet { overscroll-behavior: contain; }
+
+/* explorar a bateria (Kids): arrastar/tocar no kit não rola a página nem dá zoom; cada dedo é um toque.
+   É só nessa superfície: o resto do app continua com rolagem e pinça normais. */
+.kd-kit-free { touch-action: none; }
+
+/* superfícies de jogo: segurar o dedo não seleciona texto/imagem nem abre o menu de "salvar imagem" */
+.kx-run, .kx-board, .kx-mem, .kd-opts, .kx-pad, .kx-grid8, .kd-slots, .kd-foods, .kx-stage, .mem-board, .pn-kb, .tk-kit, .gb-pad, .ft-pad, .um-tap, .tr-pad, .sl-grip {
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+.kx-run img, .kx-board img, .mem-board img, .kx-album img { -webkit-user-drag: none; user-drag: none; }
+
+/* telas bem estreitas (iPhone SE/mini, 320px): os quatro botões de passo do metrônomo + o BPM grande cabiam só em 360px+ */
+@media (max-width: 359px) {
+  .met-top { gap: 3px; }
+  .met-step { min-width: 40px; padding: 6px 4px; }
+  .met-bpm { font-size: 48px; }
+  .met-read { min-width: 0; }
+}

@@ -1,6 +1,7 @@
 // Eco rítmico: a criança ouve um ritmo de 4 tempos e repete, na tela ou no pad / bateria de verdade (microfone).
 import { h } from '../util.js';
 import { audio, click } from '../audio.js';
+import { session } from '../session.js';
 import { stars as sparkle } from '../ui.js';
 import * as N from '../notation.js';
 import { layoutRhythm } from '../reading.js';
@@ -29,8 +30,9 @@ function playPattern(p) {
 export function runEco(game, ctx) {
   const { level, profile } = ctx; let mode = ctx.mode === 'mic' ? 'mic' : 'tela';
   const spec = levelSpec(level, profile.age); const { bot, stage } = frame(game, ctx, spec);
-  let gone = false; let i = 0; let right = 0; let restarts = 0; let misses = []; let cap = null; let barTimer = 0;
-  const clear = () => { clearTimeout(barTimer); if (cap) { cap.cancel(); cap = null; } };
+  const S = session(); // a rodada em curso: ouvir, contagem, tempo da vez e próxima rodada. Virou a rodada, recomeçou ou saiu: S.reset()/dispose() cancela tudo e cala o som.
+  let gone = false; let i = 0; let right = 0; let restarts = 0; let misses = []; let cap = null; let finished = false;
+  const clear = () => { S.reset(); if (cap) { cap.cancel(); cap = null; } };
 
   const intro = () => {
     bot.set('kit', 'ouve e repete!');
@@ -38,8 +40,8 @@ export function runEco(game, ctx) {
       spec.secs ? h('p', { class: 'muted' }, `⏱ você tem ${spec.secs} segundos depois de ouvir.`) : null, spec.sudden ? h('p', { class: 'muted' }, '💥 se errar um ritmo, a fase recomeça.') : null,
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };
-  const start = () => { i = 0; right = 0; next(); };
-  const next = () => { if (gone) return; if (i >= spec.rounds) { finish(); return; } round(ecoPattern(spec.d, Math.random)); };
+  const start = () => { clear(); i = 0; right = 0; finished = false; next(); };
+  const next = () => { if (gone) return; clear(); if (i >= spec.rounds) { finish(); return; } round(ecoPattern(spec.d, Math.random)); };
 
   const round = (p) => {
     const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' }, ...Array.from({ length: spec.rounds }, (_, k) => h('i', { class: k < i ? 'done' : k === i ? 'now' : '' })));
@@ -55,13 +57,13 @@ export function runEco(game, ctx) {
     const listen = () => {
       if (spec.secs && listened >= 1) return; listened++; hear.disabled = true; turn.disabled = true; status.textContent = '🎧 ouvindo…';
       const ms = playPattern(p);
-      setTimeout(() => { if (gone) return; status.textContent = ''; turn.disabled = false; hear.disabled = !!spec.secs; bot.set('happy', 'sua vez!');
-        if (spec.secs) { bar.hidden = false; barTimer = setTimeout(() => { if (!turn.disabled) { turn.disabled = true; outcome(false, 'acabou o tempo!'); } }, spec.secs * 1000); } }, ms);
+      S.later(() => { status.textContent = ''; turn.disabled = false; hear.disabled = !!spec.secs; bot.set('happy', 'sua vez!');
+        if (spec.secs) { bar.hidden = false; S.later(() => { if (!turn.disabled) { turn.disabled = true; outcome(false, 'acabou o tempo!'); } }, spec.secs * 1000); } }, ms);
     };
-    setTimeout(listen, 350);
+    S.later(listen, 350);
 
     const go = async () => {
-      clearTimeout(barTimer); turn.disabled = true; hear.disabled = true; if (bar) bar.hidden = true;
+      turn.disabled = true; hear.disabled = true; if (bar) bar.hidden = true;
       const pad = mode === 'tela' ? h('button', { class: 'kx-pad', type: 'button' }, 'toca aqui!') : h('div', { class: 'kx-pad mic' }, '🎙 escutando…');
       padBox.replaceChildren(pad);
       cap = capture({ mode, pad: mode === 'tela' ? pad : null, bpm: p.bpm, beats: p.beats, onCount: (n) => { status.textContent = n < 4 ? `contando… ${n + 1}` : '🎯 agora!'; } });
@@ -78,12 +80,12 @@ export function runEco(game, ctx) {
     const outcome = (ok, text) => {
       beep(ok); status.className = `kd-fb kx-fb ${ok ? 'ok' : 'no'}`; status.textContent = `${ok ? 'isso! ' : ''}${text}`;
       if (ok) { right++; bot.set('cheer', FB.line('win')); sparkle(status); } else { misses.push(p.key); bot.set('oops', FB.line('lose')); }
-      if (!ok && spec.sudden) { setTimeout(restart, 1600); return; }
-      i++; setTimeout(next, ok ? 1100 : 1900);
+      if (!ok && spec.sudden) { S.later(restart, 1600); return; }
+      i++; S.later(next, ok ? 1100 : 1900);
     };
   };
-  const restart = () => { if (gone) return; restarts++; bot.set('oops', 'recomeçando…'); stage.replaceChildren(h('div', { class: 'kx-restart' }, h('h2', {}, '💥 errou!'), h('p', {}, 'a fase recomeça do zero.'), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: start }, 'tentar de novo'))); };
-  const finish = () => showResult({ game, ctx, bot, stage, spec, right, total: spec.rounds, stars: starsFor(right, spec.rounds), misses, mode, restarts });
+  const restart = () => { if (gone) return; clear(); restarts++; bot.set('oops', 'recomeçando…'); stage.replaceChildren(h('div', { class: 'kx-restart' }, h('h2', {}, '💥 errou!'), h('p', {}, 'a fase recomeça do zero.'), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: start }, 'tentar de novo'))); };
+  const finish = () => { if (finished) return; finished = true; showResult({ game, ctx, bot, stage, spec, right, total: spec.rounds, stars: starsFor(right, spec.rounds), misses, mode, restarts }); };
   intro();
-  return () => { gone = true; clear(); };
+  return () => { gone = true; clear(); S.dispose(); };
 }

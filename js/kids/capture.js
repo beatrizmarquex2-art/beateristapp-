@@ -16,8 +16,9 @@ export function capture({ mode, pad, bpm, beats, countIn = 4, tail = 0.4, onCoun
   const t0 = c.currentTime + 0.4 + countIn * q;
   const cleanup = () => { timers.forEach(clearTimeout); oscs.forEach((o) => { try { o.stop(); } catch { /* já tocou */ } }); if (mic) mic.stop(); if (pad && onTap) pad.removeEventListener('pointerdown', onTap); };
   const done = (async () => {
-    if (mode === 'mic') { const lat = micLatency(); mic = await openMic((ev) => hits.push(ev.t - lat)); }
+    if (mode === 'mic') { const lat = micLatency(); const m = await openMic((ev) => hits.push(ev.t - lat)); if (cancelled) { m.stop(); return { onsets: [], t0 }; } mic = m; } // saiu enquanto o microfone abria: desliga na hora e não agenda nada
     else if (pad) { onTap = (e) => { hits.push(perfToCtx(e.timeStamp || performance.now())); }; pad.addEventListener('pointerdown', onTap); }
+    if (cancelled) return { onsets: [], t0 };
     for (let i = 0; i < countIn; i++) oscs.push(click(t0 - (countIn - i) * q, i === 0 ? 2 : 1, 0.9));
     for (let b = 0; b < beats; b++) oscs.push(click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.3));
     if (onCount) for (let i = 0; i <= countIn; i++) timers.push(setTimeout(() => !cancelled && onCount(i), Math.max(0, (t0 - (countIn - i) * q - c.currentTime) * 1000)));

@@ -111,7 +111,7 @@ export function mount(host) {
     ghost.style.left = `${e.clientX - ghost.offsetWidth / 2}px`; ghost.style.top = `${e.clientY - ghost.offsetHeight / 2}px`;
   }
   function dragEnd(e) {
-    removeEventListener('pointermove', dragMove); removeEventListener('pointercancel', dragEnd);
+    removeEventListener('pointermove', dragMove); removeEventListener('pointercancel', dragEnd); removeEventListener('pointerup', dragEnd);
     if (ghost) { ghost.remove(); ghost = null; }
     if (drag && dragMoved && e.type === 'pointerup') { const t = document.elementFromPoint(e.clientX, e.clientY); const cell = t && t.closest && t.closest('[data-pos]'); if (cell) { selected = drag.p; put(Number(cell.dataset.pos)); } }
     drag = null; setTimeout(() => { dragMoved = false; }, 0);
@@ -123,6 +123,6 @@ export function mount(host) {
   return {
     inProgress: () => !!(g && !g.over && g.started),
     restart: async () => { if (g && !g.over && g.started && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },
-    destroy() { gone = true; stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); void reduced; },
+    destroy() { gone = true; stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd); void reduced; },
   };
 }
