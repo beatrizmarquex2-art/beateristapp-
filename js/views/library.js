@@ -111,13 +111,12 @@ function mountHome(host) {
     if (reading.length) kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'continuar'), reading.map(row)));
     kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'de hoje'), h('div', { class: 'h-chips' }, TODO.map((t, i) => { const cb = h('input', { type: 'checkbox', checked: !!todo[i] }); cb.addEventListener('change', () => { const v = readTodo(); v[i] = cb.checked; saveTodo(v); }); return h('label', {}, cb, t); }))));
     if (idx.length) {
-      kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), GROUPS.map((g) => {
-        const items = idx.filter((a) => g.cats.includes(categoryOf(a))); const n = items.filter((a) => doneSet.has(a.slug)).length;
-        return h('div', { class: 'h-group' }, h('i', { style: { backgroundImage: MURAL(g.deco) } }), h('h4', {}, g.title), h('p', {}, g.blurb),
-          h('div', { class: 'h-sub' }, g.cats.map((c) => h('a', { href: `#/estudos/cat/${c}` }, `${category(c).label} · ${idx.filter((a) => categoryOf(a) === c).length}`))),
-          h('span', { class: 'h-bar', role: 'progressbar', 'aria-valuenow': items.length ? Math.round(n / items.length * 100) : 0, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${g.title}` }, h('i', { style: { width: items.length ? `${Math.round(n / items.length * 100)}%` : '0%' } })),
-          h('span', { class: 'h-n' }, `${n} de ${items.length} lidos`));
-      })));
+      kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.map((g) => {
+        const items = idx.filter((a) => g.cats.includes(categoryOf(a))); const n = items.filter((a) => doneSet.has(a.slug)).length; const pc = items.length ? Math.round(n / items.length * 100) : 0;
+        return h('div', { class: 'h-group' }, h('a', { class: 'h-gt', href: `#/estudos/cat/${g.cats[0]}` }, h('b', {}, g.title), h('small', {}, `${n}/${items.length} lidos`)),
+          h('span', { class: 'h-bar', role: 'progressbar', 'aria-valuenow': pc, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${g.title}` }, h('i', { style: { width: `${pc}%` } })),
+          h('div', { class: 'h-sub' }, g.cats.map((c) => h('a', { href: `#/estudos/cat/${c}` }, category(c).label.split(' & ')[0]))));
+      }))));
       kids.push(h('div', { class: 'h-more' }, h('a', { href: '#/estudos/club' }, 'álbuns'), h('a', { href: '#/estudos/artistas' }, 'artistas e bateristas'), h('a', { href: '#/mural' }, 'mural de artistas')));
     }
     body.replaceChildren(...kids.filter(Boolean));

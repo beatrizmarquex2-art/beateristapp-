@@ -16,8 +16,8 @@
 .hoje .h-found small { font: 11px "Special Elite", monospace; color: var(--red); white-space: nowrap; }
 .hoje .h-note { margin: 0; font: 13px "Special Elite", monospace; color: var(--ink2); text-align: center; }
 
-.hoje .h-hero { position: relative; margin: 6px 0 10px; }
-.hoje .h-paper { position: relative; background: var(--red) url(../assets/zine/papel-vermelho-3.webp) center/cover; color: #fff7f3; padding: 26px 20px 20px; display: grid; gap: 8px;
+.hoje .h-hero { position: relative; margin: 6px 0 4px; }
+.hoje .h-paper { position: relative; background: var(--red) url(../assets/zine/papel-vermelho-3.webp) center/cover; color: #fff7f3; padding: 24px 18px 14px; display: grid; gap: 6px;
   clip-path: polygon(0 4%,5% 1%,11% 3%,19% 0,27% 2%,36% 0,46% 3%,55% 1%,65% 3%,74% 0,84% 2%,93% 0,100% 3%,99% 30%,100% 52%,98% 74%,100% 96%,92% 100%,83% 98%,73% 100%,62% 97%,52% 100%,42% 98%,31% 100%,21% 97%,11% 100%,3% 98%,0 100%,1% 76%,0 52%,2% 28%); }
 .hoje .h-paper::before { content: ""; position: absolute; inset: 0; background: rgb(142 18 30 / .55); }
 .hoje .h-paper > * { position: relative; }
@@ -34,14 +34,14 @@
 .hoje .h-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .hoje .h-link { appearance: none; background: none; border: 0; color: #fff7f3; font: 600 13px var(--body); text-decoration: underline; cursor: pointer; min-height: 44px; padding: 0 6px; }
 
-.hoje .h-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.hoje .h-tile { position: relative; background: var(--paper2); border: 1.5px solid var(--ink); border-radius: 3px 12px 4px 12px; padding: 12px 10px 10px; text-align: left; display: grid; gap: 3px; min-width: 0; align-content: start; }
+.hoje .h-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.hoje .h-tile { position: relative; background: var(--paper2); border: 1.5px solid var(--ink); border-radius: 3px 12px 4px 12px; padding: 10px 8px 8px; text-align: left; display: grid; gap: 1px; min-width: 0; align-content: start; }
 .hoje .h-tile b { font: italic 600 22px/1 var(--hd); color: var(--red); }
 .hoje .h-tile span { font-size: 12px; line-height: 1.25; font-weight: 700; }
-.hoje .h-tile small { font: 11px "Special Elite", monospace; color: var(--ink2); }
+.hoje .h-tile small { display: none; }
 .hoje .h-tile i { position: absolute; right: 4px; top: -12px; width: 30px; height: 30px; background-repeat: no-repeat; background-size: contain; background-position: center; pointer-events: none; }
 
-.hoje .h-sec { display: grid; gap: 4px; }
+.hoje .h-sec { display: grid; gap: 4px; margin-top: 6px; }
 .hoje .h-sec h3 { margin: 0 0 4px; font: 13px "Special Elite", monospace; letter-spacing: .05em; color: var(--red); display: flex; align-items: center; gap: 8px; font-weight: 400; text-transform: lowercase; }
 .hoje .h-sec h3::after { content: ""; flex: 1; height: 8px; background: url(../assets/mural/underline.svg) center/100% 100% no-repeat; opacity: .8; }
 .hoje .h-item { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--hline); }
@@ -51,18 +51,19 @@
 .hoje .h-bar i { display: block; height: 100%; background: var(--red); border-radius: 99px; }
 .hoje .h-star { appearance: none; border: 0; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: rgb(27 24 24 / .3); min-width: 44px; min-height: 44px; }
 .hoje .h-star[aria-pressed="true"] { color: var(--red); }
-.hoje .h-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.hoje .h-chips label { display: flex; align-items: center; gap: 6px; font-size: 13px; background: var(--paper2); border: 1px solid var(--ink); border-radius: 99px; padding: 8px 12px 8px 9px; cursor: pointer; min-height: 40px; box-sizing: border-box; }
+.hoje .h-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.hoje .h-chips label { display: flex; align-items: center; gap: 6px; font-size: 13px; background: var(--paper2); border: 1px solid var(--ink); border-radius: 99px; padding: 6px 11px 6px 8px; cursor: pointer; min-height: 40px; flex: none; white-space: nowrap; box-sizing: border-box; }
 .hoje .h-chips input { accent-color: var(--red); margin: 0; width: 18px; height: 18px; }
 .hoje .h-chips label:has(input:checked) { background: var(--red); color: #fff; border-color: var(--red); text-decoration: line-through; }
-.hoje .h-group { grid-template-columns: minmax(0, 1fr); position: relative; background: var(--paper2); border: 1.5px solid var(--ink); border-radius: 4px 14px 5px 14px; padding: 16px 14px 14px; display: grid; gap: 8px; }
-.hoje .h-group h4 { margin: 0; font: italic 600 22px/1.1 var(--hd); }
-.hoje .h-group p { margin: 0; font-size: 13px; color: var(--ink2); line-height: 1.4; }
-.hoje .h-group .h-sub { display: flex; flex-wrap: wrap; gap: 6px; }
-.hoje .h-group .h-sub a { font-size: 12.5px; border: 1px solid var(--ink); border-radius: 99px; padding: 8px 12px; min-height: 36px; box-sizing: border-box; display: inline-flex; align-items: center; }
+.hoje .h-swipe { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 6px; scroll-snap-type: x proximity; scrollbar-width: none; margin: 0 -2px; }
+.hoje .h-swipe::-webkit-scrollbar { display: none; }
+.hoje .h-group { flex: none; width: 168px; scroll-snap-align: start; background: var(--paper2); border: 1.5px solid var(--ink); border-radius: 4px 14px 5px 14px; padding: 10px 12px 10px; display: grid; gap: 6px; }
+.hoje .h-gt { display: grid; gap: 1px; }
+.hoje .h-gt b { font: italic 600 18px/1.1 var(--hd); }
+.hoje .h-gt small { font: 11px "Special Elite", monospace; color: var(--ink2); }
 .hoje .h-group .h-bar { grid-column: auto; }
-.hoje .h-group .h-n { font: 11.5px "Special Elite", monospace; color: var(--ink2); }
-.hoje .h-group > i { position: absolute; right: 8px; top: -14px; width: 44px; height: 44px; background-repeat: no-repeat; background-size: contain; background-position: center; pointer-events: none; }
+.hoje .h-group .h-sub { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.hoje .h-group .h-sub a { font-size: 12px; color: var(--red); text-decoration: underline; padding: 6px 0; min-height: 32px; box-sizing: border-box; display: inline-flex; align-items: center; }
 .hoje .h-more { display: flex; gap: 10px; flex-wrap: wrap; }
 .hoje .h-more a { font: 700 13px var(--body); border-bottom: 2px solid var(--red); padding: 8px 0; }
 .hoje .card { margin: 0; }
