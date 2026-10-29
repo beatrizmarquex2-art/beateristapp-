@@ -20,9 +20,11 @@ import { GAMES, ORDER } from '../kids/games.js';
 import * as Album from '../kids/album.js';
 import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
-import { downloadReport } from '../kids/report.js';
+import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
 
+/** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
+const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const FREE = [
   ['explorar', 'Explorar a bateria', 'toca livre e descobre os nomes', 'explorar'],
   ['memoria', 'Jogo da memória', '4, 8 ou 12 pares · 4 temas', 'memoria'],
@@ -55,7 +57,7 @@ function ritmo(box) { return mountRitmo(box); }
 const RUN = { explorar, ritmo, memoria: mountMemoria };
 
 /** Mais jogos (dentro do app). */
-const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Figuras rítmicas', 'ouvir, montar e aprender cada figura', 'figuras']];
+const EXTERNAL = [['#/jogos', 'Jogos musicais', 'dominó, última nota e mais: contra o Paul ou em dois', 'memoria'], ['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Figuras rítmicas', 'ouvir, montar e aprender cada figura', 'figuras']];
 
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
@@ -80,7 +82,7 @@ const wideCard = (id, title, sub, onclick, href) => {
   const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, title), h('span', { class: 'kx-gm' }, sub)];
   return href ? h('a', { class: 'kx-g wide', href }, ...kids) : h('button', { class: 'kx-g wide', type: 'button', onclick }, ...kids);
 };
-const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'KIDS'), h('img', { class: 'fx-doodle bolt kx-fx-a', src: 'assets/paul/d-bolt2.webp', alt: '', 'aria-hidden': 'true' }), h('img', { class: 'fx-doodle phones kx-fx-b', src: 'assets/paul/d-phones.webp', alt: '', 'aria-hidden': 'true' })), right || null);
+const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'JOGOS'), h('img', { class: 'fx-doodle bolt kx-fx-a', src: 'assets/paul/d-bolt2.webp', alt: '', 'aria-hidden': 'true' }), h('img', { class: 'fx-doodle phones kx-fx-b', src: 'assets/paul/d-phones.webp', alt: '', 'aria-hidden': 'true' })), right || null);
 
 /* ---------- jogador ---------- */
 function newPlayer(onDone) {
@@ -108,11 +110,6 @@ function switchPlayer(onDone) {
     return h('div', { class: 'sheet-body' }, list, h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); newPlayer(onDone); } }, '+ novo jogador'));
   });
 }
-async function reportFor(me, btn) {
-  btn.disabled = true; toast('montando o PDF…', { id: 'kx-pdf', ms: 30000 });
-  try { const r = await downloadReport(me); toast(r.shared ? 'PDF pronto ✓' : `baixado: ${r.name}`, { id: 'kx-pdf', ms: 2800 }); } catch (e) { toast(`não consegui gerar: ${e.message || 'erro'}`, { id: 'kx-pdf', ms: 4000 }); }
-  btn.disabled = false;
-}
 
 /** Cartas de Groove: separadas em "cartas de leitura" (baralhos pra ler e tocar) e "memória de groove" (os jogos da memória). */
 const cartasCards = () => h('div', { class: 'kx-cards' }, wideCard('pauta', 'Cartas de leitura', 'figuras, grooves e rudimentos pra ler e tocar', null, 'cartas/#leitura'), wideCard('memoria', 'Memória de groove', '5 jogos da memória com as cartas', null, 'cartas/#memoria'));
@@ -128,7 +125,7 @@ function homeScreen(host, rerender) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
     host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
       h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))),
-      h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards());
+      ...(ALUNO() ? [] : [h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards()]));
     return;
   }
   const total = P.totalStars(me.id); const tier = tierOf(total);
@@ -142,12 +139,12 @@ function homeScreen(host, rerender) {
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
-      wideCard('relatorio', 'Relatório', 'pdf pra decorar', (e) => reportFor(me, e.currentTarget))),
+      ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('h2', { class: 'kx-h' }, 'livres'),
     h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
-    h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards(),
+    ...(ALUNO() ? [] : [h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards()]),
     h('h2', { class: 'kx-h' }, 'mais jogos'),
-    h('div', { class: 'kx-cards' }, ...EXTERNAL.map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
+    h('div', { class: 'kx-cards' }, ...EXTERNAL.filter((x) => !ALUNO() || x[0] === '#/ritmo' || x[0] === '#/jogos').map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
@@ -194,6 +191,7 @@ export function mount(host, parts = []) {
       host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; return;
     }
     if (first === 'album') { albumScreen(host, lv); return; }
+    if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }
     if (first === 'cartas') { cartasScreen(host); return; }
     if (first && GAMES[first]) {
       const me = P.active(); if (!me) { location.hash = '#/kids'; return; }

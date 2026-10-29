@@ -23,7 +23,7 @@ function linkRow(l, { onStudy, onDel }) {
   const play = v ? h('button', { class: 'btn small', type: 'button', onclick: () => {
     if (slot.firstChild) { slot.replaceChildren(); return; }
     slot.replaceChildren(h('iframe', { src: embedUrl(v), title: l.label || 'vídeo', allow: 'encrypted-media; picture-in-picture; fullscreen', referrerpolicy: 'strict-origin-when-cross-origin', loading: 'lazy' }));
-  } }, icon('play', 14), ' ver aqui') : null;
+  } }, icon('play', 14), ' ver aqui (pode ter anúncio)') : null;
   return h('li', { class: `bt-link t-${t}` },
     h('div', { class: 'bt-link-main' },
       h('span', { class: 'bt-type' }, TYPE_LABEL[t]),

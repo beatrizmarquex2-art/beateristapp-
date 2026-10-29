@@ -48,6 +48,7 @@ export function mount(host) {
         }) }, 'salvar esta mistura')),
       h('section', { class: 'card pad amb-yt-card' },
         h('h3', {}, 'YouTube'), h('p', { class: 'muted' }, 'precisa de internet. toca num mini-player que continua enquanto você usa o app; com a tela bloqueada o iPhone pode pausar.'),
+        h('p', { class: 'muted yt-prem' }, '▶ anúncio no player daqui? o login do YouTube Premium não passa pra dentro de players embutidos. toque no ↗ do player (ou em “abrir no app”) pra ver no app do YouTube, onde o Premium vale e não tem anúncio.'),
         h('div', { class: 'bt-form' }, url, title, h('button', { class: 'btn primary', type: 'button', onclick: async () => {
           if (!ytEmbed(url.value)) { toast('esse link não é de vídeo ou playlist do YouTube'); return; }
           await store.upsert('ytlink', null, { url: url.value.trim(), title: title.value.trim() || 'YouTube', created: Date.now() }); url.value = ''; title.value = '';
@@ -55,6 +56,7 @@ export function mount(host) {
         links.length ? h('ul', { class: 'amb-links' }, ...links.map((r) => h('li', { class: st.yt && st.yt.url === r.data.url ? 'on' : '' },
           h('button', { class: 'btn small', type: 'button', 'aria-label': `Tocar ${r.data.title}`, onclick: () => A.playYT(r.data.url, r.data.title) }, icon('play', 14)),
           h('span', {}, r.data.title),
+          h('a', { class: 'btn small ghost', href: /^https?:/.test(r.data.url) ? r.data.url : `https://${r.data.url}`, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `Abrir ${r.data.title} no app do YouTube` }, 'abrir no app'),
           h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${r.data.title}`, onclick: async () => { if (await confirmSheet('Apagar link?', r.data.title, 'Apagar')) { if (st.yt && st.yt.url === r.data.url) A.closeYT(); store.remove(r.id); } } }, icon('trash', 16))))) : h('p', { class: 'muted' }, 'nenhum link ainda. guarda aqui suas playlists de lo-fi, jazz, bossa…')),
       h('p', { class: 'pad-x lib-note' }, 'os sons de ambiente são gerados aqui no aparelho (nada é baixado de outros sites). misturas prontas: toque pra tocar; nas suas, segure pra apagar. o timer pra dormir abaixa o som devagar nos últimos 20 segundos.'));
   };

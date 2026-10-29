@@ -14,7 +14,7 @@ const TABS_MENU = [
   ['treinar', 'treinar', [
     ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
     ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
-    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos', 'star', 'Jogos musicais'], ['#/kids', 'kit', 'Beaterista Kids'], ['#/kids/cartas', 'staff', 'Cartas de Groove (Kids)'], ['#/kids/memoria', 'star', 'Jogo da memória'], ['#/dicas', 'bulb', 'Jogos das dicas']]],
+    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos', 'star', 'Jogos musicais'], ['#/kids', 'kit', 'Jogos Beaterista'], ['#/kids/cartas', 'staff', 'Cartas de Groove'], ['#/kids/memoria', 'star', 'Jogo da memória'], ['#/dicas', 'bulb', 'Jogos das dicas']]],
   ]],
   ['estudar', 'estudar', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
@@ -24,7 +24,7 @@ const TABS_MENU = [
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/kids', 'kit', 'Beaterista Kids'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/kids', 'kit', 'Jogos Beaterista'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
   ]],
   ['organizar', 'organizar', [
     ['', [['#/inicio', 'home', 'Início'], ['#/hub/anotar', 'note', 'Anotar'], ['#/arquivos', 'folder', 'Meus Arquivos']]],

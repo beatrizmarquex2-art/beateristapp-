@@ -11,6 +11,7 @@ import { audio, click } from '../audio.js';
 import { banner, sheet, toast, stars } from '../ui.js';
 import { playBeat, stopBeat } from './beatlab.js';
 import * as FB from '../feedback.js';
+import { getMic, micMessage } from '../mic-access.js';
 import { xrayTab } from './xray-tab.js';
 
 const SET = 'setting-tempo';
@@ -25,8 +26,8 @@ const tend = (ms) => (Math.abs(ms) < 4 ? 'no tempo' : ms < 0 ? `adianta ${-ms} m
 
 /* ---------- microfone → ataques ---------- */
 async function openOnsets(onHit) {
+  const stream = await getMic();
   const ctx = audio();
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
   const src = ctx.createMediaStreamSource(stream);
   let node, mode;
   try {
@@ -318,16 +319,14 @@ export function mount(host, parts) {
     h('button', { class: 'btn primary wide', type: 'button', onclick: start }, 'ligar o microfone e o som')));
   async function start() {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('sem'), { name: 'NotSupported' });
       mic = await openOnsets((ev) => handler && handler(ev));
       if (gone) { mic.stop(); return; }
       body.dataset.mode = mic.mode; // worklet (preciso) ou script (plano B)
       pane = tab === 'juiz' ? judgeTab(mic, listen) : tab === 'raiox' ? xrayTab(mic, listen) : transcribeTab(mic, listen);
       body.replaceChildren(pane);
     } catch (e) {
-      const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
-      body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, denied ? 'sem permissão pro microfone.' : 'não consegui abrir o microfone.'),
-        h('p', { class: 'muted' }, denied ? 'tudo bem! se quiser usar, no iPhone vá em Ajustes › Safari › Microfone (ou no app instalado: Ajustes › Beaterista) e permita. depois volte aqui.' : 'este navegador não deu acesso ao microfone. no iPhone, abra pelo Safari ou pelo app instalado na tela inicial.'),
+      const [t, why] = micMessage(e);
+      body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, t), h('p', { class: 'muted' }, why),
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
     }
   }

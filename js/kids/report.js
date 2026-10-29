@@ -89,51 +89,73 @@ class Pager {
 const dateBR = (ts) => { const d = new Date(ts); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`; };
 const todayBR = () => new Date().toLocaleDateString('pt-BR');
 
-export async function renderReport(profile) {
-  if (document.fonts && document.fonts.ready) await document.fonts.ready;
-  const paper = await loadImg('assets/papel-timbrado.png'); const pg = new Pager(paper);
-  const p = P.progOf(profile.id); const total = P.totalStars(profile.id); const tier = tierOf(total);
+/** Monta as partes do relatório (cada uma pode ser ligada/desligada e editada antes do PDF). */
+export function buildSections(profile) {
+  const p = P.progOf(profile.id); const total = P.totalStars(profile.id);
   const ageTxt = (AGES.find((a) => a[0] === profile.age) || AGES[1])[1];
   const answered = (g) => { const s = p.st[g] || { r: 0, w: 0 }; return s.r + s.w; };
   const played = ORDER.filter((g) => answered(g) > 0 || P.summary(profile.id, g).stars > 0);
   const allR = Object.values(p.st).reduce((a, x) => a + x.r, 0); const allW = Object.values(p.st).reduce((a, x) => a + x.w, 0); const pctAll = allR + allW ? Math.round((allR / (allR + allW)) * 100) : null;
-
-  // ---- cabeçalho ----
-  const rob = await loadImg(roboSrc(total ? 'cheer' : 'happy'));
-  if (rob) { const bw = 150; const bh = Math.round(bw * rob.height / rob.width); pg.g.drawImage(rob, W - SIDE - bw, pg.top - 30, bw, bh); }
-  pg.text(`Relatório do ${profile.name}`, { size: 54, weight: 700, maxW: pg.CW - 170 });
-  pg.text(`Beaterista Kids · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555', maxW: pg.CW - 170 });
-  pg.gap(18);
-  pg.text(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${Album.owned(profile.id).length} de ${CARDS.length} figurinhas`, { size: 30, weight: 700 });
-  if (!played.length) { pg.gap(10); pg.text('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 }); return pg.pages; }
-
-  pg.gap(14);
-  pg.table([{ label: 'Jogo', w: 0.55 }, { label: 'Estrelas', w: 0.22 }, { label: 'Acerto', w: 0.23 }],
-    played.map((g) => { const s = P.summary(profile.id, g); return [TITLES[g], `${s.stars} de ${s.maxStars}`, s.pct == null ? '—' : `${s.pct}%`]; }));
-  const misses = Object.entries(p.miss).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  pg.h2('Pra treinar mais');
-  if (misses.length) misses.forEach(([k]) => { const [g, ...rest] = k.split(':'); pg.text(`•  ${MISS(g, rest.join(':'))}`, { size: 27 }); });
-  else pg.text('Nenhum erro registrado ainda. Continue assim! 👏', { size: 27 });
-
-  // ---- por que importa + tabelinhas ----
-  pg.h2('Pra decorar em casa');
+  const T = (text, o = {}) => ({ t: 'text', text, ...o });
+  const secs = [];
+  secs.push({ id: 'resumo', title: 'Cabeçalho e resumo', on: true, blocks: [
+    T(`Relatório do ${profile.name}`, { size: 54, weight: 700 }), T(`Jogos Beaterista · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555' }),
+    T(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${Album.owned(profile.id).length} de ${CARDS.length} figurinhas`, { size: 30, weight: 700 })] });
+  if (!played.length) { secs.push({ id: 'vazio', title: 'Observação', on: true, blocks: [T('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 })] }); }
+  else {
+    secs.push({ id: 'jogos', title: 'Jogos', on: true, blocks: [{ t: 'table', cols: [{ label: 'Jogo', w: 0.55 }, { label: 'Estrelas', w: 0.22 }, { label: 'Acerto', w: 0.23 }],
+      rows: played.map((g) => { const s = P.summary(profile.id, g); return [TITLES[g], `${s.stars} de ${s.maxStars}`, s.pct == null ? '—' : `${s.pct}%`]; }) }] });
+    const misses = Object.entries(p.miss).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    secs.push({ id: 'treinar', title: 'Pra treinar mais', on: true, blocks: [T(misses.length ? misses.map(([k]) => { const [g, ...rest] = k.split(':'); return `•  ${MISS(g, rest.join(':'))}`; }).join('\n') : 'Nenhum erro registrado ainda. Continue assim! 👏', { size: 27 })] });
+  }
   for (const g of played) {
-    pg.gap(8); pg.text(TITLES[g], { size: 32, weight: 700, color: '#111' }); pg.text(WHY[g], { size: 22, color: '#555' }); pg.gap(4);
-    if (g === 'pecas') pg.table([{ label: 'Peça', w: 0.28 }, { label: 'Pra que serve', w: 0.72 }], PIECES.map((x) => [x.name, PIECE_ROLE[x.id]]));
-    if (g === 'pauta') pg.table([{ label: 'Peça', w: 0.4 }, { label: 'Onde mora na pauta', w: 0.6 }], PIECES.map((x) => [x.name, PIECE_STAFF[x.id]]));
-    if (g === 'figuras') { const imgs = await Promise.all(FIGURES.map((f) => svgImg(figureMarkup(f.id)))); pg.table([{ label: 'Figura', w: 0.2 }, { label: 'Nome', w: 0.26 }, { label: 'Dura', w: 0.22 }, { label: 'Conta com', w: 0.32 }],
-      FIGURES.map((f, i) => [imgs[i] ? { img: imgs[i], w: 62, h: 76 } : '', f.name, f.beats >= 1 ? `${f.beats} tempo${f.beats > 1 ? 's' : ''}` : f.beats === 0.5 ? 'meio tempo' : '¼ de tempo', { semibreve: '1-2-3-4', minima: '1-2', seminima: 'pão', colcheia: 'bo-lo', semicolcheia: 'cho-co-la-te' }[f.id]])); }
-    if (g === 'bumbos') pg.table([{ label: 'Bumbos', w: 0.2 }, { label: 'Onde caem (no compasso de 4 tempos)', w: 0.8 }], [1, 2, 3, 4, 5].map((n) => [String(n), BUMBO_SPOTS[n].map(stepName).join(' · ')]));
-    if (g === 'memoria') { const imgs = await Promise.all(INSTRUMENTS.map((x) => svgImg(artColored(x.id, '#1b1818', '#b5162b')))); pg.table([{ label: 'Instrumento', w: 0.22 }, { label: 'Nome', w: 0.28 }, { label: 'Família', w: 0.5 }], INSTRUMENTS.map((x, i) => [imgs[i] ? { img: imgs[i], w: 70, h: 70 } : '', x.name, FAMILY[x.name] || FAMILY[x.id]])); }
-    if (g === 'detetive') pg.table([{ label: 'Estrela', w: 0.2 }, { label: 'O que fazer', w: 0.8 }], [['⭐', 'Clicar: ouvir os grooves A e B e dizer o que mudou.'], ['⭐⭐', 'Escrever: marcar na grade (chimbal, caixa e bumbo) o que ouviu.'], ['⭐⭐⭐', 'Tocar: tocar a linha pedida no tempo certo, na tela ou no pad/bateria.']]);
-    if (g === 'eco') pg.table([{ label: 'Palavra', w: 0.3 }, { label: 'Batidas no tempo', w: 0.3 }, { label: 'Quantas', w: 0.4 }], [['pão', '● ○ ○ ○', '1 batida'], ['bo-lo', '● ○ ● ○', '2 batidas'], ['cho-co-la-te', '● ● ● ●', '4 batidas'], ['shhh', '○ ○ ○ ○', 'silêncio (pausa)']]);
+    const blocks = [T(WHY[g], { size: 22, color: '#555' })];
+    if (g === 'pecas') blocks.push({ t: 'table', cols: [{ label: 'Peça', w: 0.28 }, { label: 'Pra que serve', w: 0.72 }], rows: PIECES.map((x) => [x.name, PIECE_ROLE[x.id]]) });
+    if (g === 'pauta') blocks.push({ t: 'table', cols: [{ label: 'Peça', w: 0.4 }, { label: 'Onde mora na pauta', w: 0.6 }], rows: PIECES.map((x) => [x.name, PIECE_STAFF[x.id]]) });
+    if (g === 'figuras') blocks.push({ t: 'table', cols: [{ label: 'Figura', w: 0.2 }, { label: 'Nome', w: 0.26 }, { label: 'Dura', w: 0.22 }, { label: 'Conta com', w: 0.32 }],
+      rows: FIGURES.map((f) => [{ fig: f.id }, f.name, f.beats >= 1 ? `${f.beats} tempo${f.beats > 1 ? 's' : ''}` : f.beats === 0.5 ? 'meio tempo' : '¼ de tempo', { semibreve: '1-2-3-4', minima: '1-2', seminima: 'pão', colcheia: 'bo-lo', semicolcheia: 'cho-co-la-te' }[f.id]]) });
+    if (g === 'bumbos') blocks.push({ t: 'table', cols: [{ label: 'Bumbos', w: 0.2 }, { label: 'Onde caem (no compasso de 4 tempos)', w: 0.8 }], rows: [1, 2, 3, 4, 5].map((n) => [String(n), BUMBO_SPOTS[n].map(stepName).join(' · ')]) });
+    if (g === 'memoria') blocks.push({ t: 'table', cols: [{ label: 'Instrumento', w: 0.22 }, { label: 'Nome', w: 0.28 }, { label: 'Família', w: 0.5 }], rows: INSTRUMENTS.map((x) => [{ ins: x.id }, x.name, FAMILY[x.name] || FAMILY[x.id]]) });
+    if (g === 'detetive') blocks.push({ t: 'table', cols: [{ label: 'Estrela', w: 0.2 }, { label: 'O que fazer', w: 0.8 }], rows: [['⭐', 'Clicar: ouvir os grooves A e B e dizer o que mudou.'], ['⭐⭐', 'Escrever: marcar na grade (chimbal, caixa e bumbo) o que ouviu.'], ['⭐⭐⭐', 'Tocar: tocar a linha pedida no tempo certo, na tela ou no pad/bateria.']] });
+    if (g === 'eco') blocks.push({ t: 'table', cols: [{ label: 'Palavra', w: 0.3 }, { label: 'Batidas no tempo', w: 0.3 }, { label: 'Quantas', w: 0.4 }], rows: [['pão', '● ○ ○ ○', '1 batida'], ['bo-lo', '● ○ ● ○', '2 batidas'], ['cho-co-la-te', '● ● ● ●', '4 batidas'], ['shhh', '○ ○ ○ ○', 'silêncio (pausa)']] });
+    blocks.push(T(HOME[g], { size: 22, color: '#555' }));
+    secs.push({ id: `g-${g}`, title: TITLES[g], on: true, blocks });
+  }
+  secs.push({ id: 'recado', title: 'Recado da professora', on: true, blocks: [T('', { size: 26 })] });
+  return secs;
+}
+
+/** Desenha só as partes ligadas. `sections` pode ter sido editado. */
+export async function renderSections(profile, sections) {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const paper = await loadImg('assets/papel-timbrado.png'); const pg = new Pager(paper);
+  const total = P.totalStars(profile.id);
+  for (const s of sections.filter((x) => x.on !== false)) {
+    const has = s.blocks.some((b) => (b.t === 'text' ? String(b.text || '').trim() : b.rows.length));
+    if (!has) continue;
+    if (s.id === 'resumo') { const rob = await loadImg(roboSrc(total ? 'cheer' : 'happy')); if (rob) { const bw = 150; const bh = Math.round(bw * rob.height / rob.width); pg.g.drawImage(rob, W - SIDE - bw, pg.top - 30, bw, bh); } }
+    else { pg.gap(8); pg.ensure(120); pg.text(s.title, { size: 34, weight: 700, color: '#b5162b' }); pg.gap(4); }
+    for (const b of s.blocks) {
+      if (b.t === 'text') { for (const line of String(b.text || '').split('\n')) if (line.trim()) pg.text(line, { size: b.size || 26, weight: b.weight || 400, color: b.color || '#111', maxW: s.id === 'resumo' ? pg.CW - 170 : pg.CW }); pg.gap(6); }
+      else if (b.rows.length) {
+        const rows = [];
+        for (const r of b.rows) rows.push(await Promise.all(r.map(async (c) => {
+          if (c && c.fig) { const im = await svgImg(figureMarkup(c.fig)); return im ? { img: im, w: 62, h: 76 } : ''; }
+          if (c && c.ins) { const im = await svgImg(artColored(c.ins, '#1b1818', '#b5162b')); return im ? { img: im, w: 70, h: 70 } : ''; }
+          return c;
+        })));
+        pg.table(b.cols, rows);
+      }
+    }
   }
   return pg.pages;
 }
 
+export async function renderReport(profile) { return renderSections(profile, buildSections(profile)); }
+
 /** Gera o PDF e entrega (compartilhar no celular, baixar no computador). */
-export async function downloadReport(profile) {
-  const pages = await renderReport(profile); const jpegs = await Promise.all(pages.map(toJpeg));
-  const name = fileName('Relatorio Kids', profile.name, todayBR().replace(/\//g, '-'));
-  return { ...(await savePdf(jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `Relatório Kids - ${profile.name}` }), name)), pages: pages.length };
+export async function downloadReport(profile, sections) {
+  const pages = sections ? await renderSections(profile, sections) : await renderReport(profile); const jpegs = await Promise.all(pages.map(toJpeg));
+  const name = fileName('Relatorio Jogos', profile.name, todayBR().replace(/\//g, '-'));
+  return { ...(await savePdf(jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `Relatório de jogos - ${profile.name}` }), name)), pages: pages.length };
 }

@@ -37,9 +37,16 @@ export async function renderPages(p) {
 
   newPage();
   text(p.title || 'Plano de estudo', { size: 52, weight: 700 });
-  y += 6; text(`${p.studentName || ''} · ${(TYPES.find((t) => t[0] === p.type) || TYPES[0])[1]}${p.start ? ` · a partir de ${dateBR(p.start)}` : ''}`, { size: 26, weight: 600 });
+  y += 6; text(p.subtitle != null ? p.subtitle : `${p.studentName || ''} · ${(TYPES.find((t) => t[0] === p.type) || TYPES[0])[1]}${p.start ? ` · a partir de ${dateBR(p.start)}` : ''}`, { size: 26, weight: 600 });
   if (p.goal) text(`objetivo: ${p.goal}`, { size: 24 });
   y += 10;
+  // blocos de texto antes das atividades (ata de reunião): título + texto
+  for (const s of p.sections || []) {
+    if (!s.text || !String(s.text).trim()) continue;
+    if (y + measure(s.title || '', 30, 700) + measure(s.text, 24) + 40 > BOTTOM && y > TOP + 10) newPage();
+    y += 14; if (s.title) text(s.title, { size: 30, weight: 700, color: '#b5162b' });
+    for (const para of String(s.text).split(/\n+/)) { if (y + measure(para, 24) + 10 > BOTTOM) newPage(); text(para, { size: 24 }); y += 4; }
+  }
 
   p.items.forEach((it, i) => {
     // altura do item: título, meta, partituras (2 por linha), observação, fonte e linha de "consegui"
@@ -68,7 +75,7 @@ export async function renderPages(p) {
     if (lays.length) y += rowH + 4;
     if (it.note) text(it.note, { size: 24 });
     if (it.src) text(it.src, { size: 18, font: TYPE, color: '#8a1a26' });
-    text('☐ consegui     BPM: ______     data: ___/___', { size: 22, font: TYPE, color: '#333' });
+    if (!p.noCheck) text('☐ consegui     BPM: ______     data: ___/___', { size: 22, font: TYPE, color: '#333' });
   });
   if (p.notes) { if (y + measure(p.notes, 24) + 40 > BOTTOM) newPage(); y += 20; text(p.notes, { size: 24 }); }
   return pages;
@@ -81,7 +88,7 @@ export async function downloadPdf(p) {
   const pages = await renderPages(p);
   const jpegs = await Promise.all(pages.map(toJpeg));
   const pdf = jpegPdf(jpegs.map((jpeg) => ({ jpeg, w: W, h: H })), { title: `${p.title} - ${p.studentName || ''}` });
-  const name = fileName(p.title || 'Plano', p.studentName, dateBR(p.start).replace(/\//g, '-'));
+  const name = fileName(p.title || 'Plano', p.studentName, dateBR(p.start || p.date).replace(/\//g, '-'));
   return { ...(await savePdf(pdf, name)), pages: pages.length };
 }
 

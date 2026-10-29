@@ -7,6 +7,8 @@ export const GM_DRUM = {
   35: 'kick', 36: 'kick', 37: 'snare', 38: 'snare', 39: 'snare', 40: 'snare',
   42: 'hhc', 44: 'hhc', 46: 'hho', 49: 'crash', 52: 'crash', 55: 'crash', 57: 'crash', 51: 'ride', 53: 'ride', 59: 'ride',
   48: 'tom1', 50: 'tom1', 45: 'tom2', 47: 'tom2', 41: 'floor', 43: 'floor',
+  // percussão extra que aparece em MIDIs de pop/latino: vira a peça mais parecida
+  54: 'hhc', 56: 'hhc', 58: 'crash', 60: 'tom1', 61: 'tom1', 62: 'tom2', 63: 'tom2', 64: 'floor', 65: 'tom1', 66: 'tom2', 67: 'snare', 68: 'snare', 69: 'hhc', 70: 'hhc', 75: 'hhc', 76: 'snare', 77: 'snare',
 };
 const LANE = { kick: 0, snare: 1, hhc: 2, hho: 2, ride: 2, crash: 2, tom1: 3, tom2: 3, floor: 3 };
 const MAJ = [0, 2, 4, 5, 7, 9, 11], MIN = [0, 2, 3, 5, 7, 8, 10];
@@ -72,7 +74,9 @@ export function toChart(midi, name = 'MIDI') {
   const st = 60 / bpm / 4, barLen = 16 * st, lead = 1;
   const all = midi.tracks.flatMap((tr) => tr.notes);
   const drumsRaw = all.filter((n) => n.ch === 9 && GM_DRUM[n.m]);
-  const mi = pickMelody(midi);
+  let mi = pickMelody(midi);
+  // sem faixa "cantável" clara: usa a faixa com mais notas (menos o canal da bateria) como melodia
+  if (mi < 0) { let best = 0; midi.tracks.forEach((tr, i) => { const c = tr.notes.filter((n) => n.ch !== 9).length; if (c > best && c >= 8) { best = c; mi = i; } }); }
   const melRaw = mi >= 0 ? skyline(midi.tracks[mi].notes.filter((n) => n.ch !== 9)) : [];
   if (!drumsRaw.length && melRaw.length < 8) throw new Error('sem bateria (canal 10) e sem melodia');
   const pitched = all.filter((n) => n.ch !== 9);
@@ -86,8 +90,27 @@ export function toChart(midi, name = 'MIDI') {
   const scale = key.minor ? MIN : MAJ; const root = 48 + key.root;
   const idxOf = (m) => { const rel = m - (root + 12); const oct = Math.floor(rel / 12); const pc = ((rel % 12) + 12) % 12;
     let bi = 0, bd = 99; scale.forEach((s, i) => { const d = Math.abs(s - pc); if (d < bd) { bd = d; bi = i; } }); return oct * 7 + bi; };
-  const drums = drumsRaw.map((n) => { const snd = GM_DRUM[n.m]; const t = at(n.t); return { t, lane: LANE[snd], snd, v: Math.max(0.3, n.v / 127), bar: barOf(t), kind: 'verso' }; });
+  let drums = drumsRaw.map((n) => { const snd = GM_DRUM[n.m]; const t = at(n.t); return { t, lane: LANE[snd], snd, v: Math.max(0.3, n.v / 127), bar: barOf(t), kind: 'verso' }; });
   // tira duplicata de pista no mesmo instante (ex.: duas caixas juntas)
+  // sem bateria no arquivo: cria um ritmo em cima da música (bumbo nos graves e nos tempos 1 e 3, caixa nos 2 e 4, chimbal nas colcheias)
+  let synthDrums = false;
+  if (drums.length < 8) {
+    synthDrums = true; drums = [];
+    const e0 = Math.max(...melRaw.map((n) => at(n.t) + n.d), ...pitched.map((n) => at(n.t) + n.d), 0);
+    const bass = pitched.filter((n) => n.m < 52).map((n) => at(n.t)).sort((a, b2) => a - b2);
+    const active = new Set(pitched.concat(melRaw).map((n) => Math.floor(at(n.t) / barLen)));
+    for (let b0 = lead; b0 * barLen < e0; b0++) {
+      if (!active.has(b0)) continue; const t0 = b0 * barLen;
+      for (let s = 0; s < 16; s += 2) {
+        const t = t0 + s * st; const q = s % 8 === 0 ? 'kick' : s % 8 === 4 ? 'snare' : 'hhc';
+        if (s % 8 === 0 && s % 16 === 8 && !bass.some((x) => Math.abs(x - t) < 0.06) && b0 % 2) continue;
+        drums.push({ t, lane: LANE[q], snd: q, v: s % 8 === 0 ? 0.9 : 0.75, bar: b0 - lead, kind: 'verso' });
+        if (s % 4 === 2) drums.push({ t, lane: LANE.hhc, snd: 'hhc', v: 0.45, bar: b0 - lead, kind: 'verso' });
+      }
+      // bumbo extra onde o baixo toca fora do tempo forte
+      bass.filter((x) => x >= t0 && x < t0 + barLen).forEach((x) => { const s = Math.round((x - t0) / st); if (s % 4 !== 0 && !drums.some((d) => d.snd === 'kick' && Math.abs(d.t - x) < 0.1)) drums.push({ t: x, lane: 0, snd: 'kick', v: 0.8, bar: b0 - lead, kind: 'verso' }); });
+    }
+  }
   const seen = new Set(); const drumsU = drums.filter((d) => { const k = `${d.snd}|${Math.round(d.t * 200)}`; if (seen.has(k)) return false; seen.add(k); return true; });
   const mel = melRaw.map((n) => { const t = at(n.t); const ds = Math.max(1, Math.min(16, Math.round(n.d / st))); return { t, m: n.m, idx: idxOf(n.m), d: n.d, ds, bar: barOf(t), step: stepOf(t), kind: 'verso' }; });
   // fundo: baixo e o resto das notas (acordes agrupados) — limite pra não pesar no celular
@@ -104,9 +127,9 @@ export function toChart(midi, name = 'MIDI') {
   mel.sort((a, b2) => a.t - b2.t); drumsU.sort((a, b2) => a.t - b2.t);
   const song = {
     id: `imp-${hash(`${name}|${midi.tracks.length}|${all.length}|${Math.round(midi.dur)}`)}`, style: 'imp', name, bpm: Math.round(bpm), root, minor: key.minor, seed: 0, imported: true,
-    arr: { st, mel, drums: drumsU, ev: pre.concat(ev), chords: [], dur: end + 1.5, bars, lead },
+    arr: { st, mel, drums: drumsU, ev: pre.concat(ev), chords: [], dur: end + 1.5, bars, lead, synthDrums },
   };
-  return { song, report: { drums: drumsU.length, melody: mel.length, bpm: Math.round(bpm), seconds: Math.round(end - lead * barLen), melodyTrack: mi >= 0 ? midi.tracks[mi].name || `faixa ${mi + 1}` : '' } };
+  return { song, report: { drums: synthDrums ? 0 : drumsU.length, synthDrums, melody: mel.length, bpm: Math.round(bpm), seconds: Math.round(end - lead * barLen), melodyTrack: mi >= 0 ? midi.tracks[mi].name || `faixa ${mi + 1}` : '' } };
 }
 
 /** Nome bonito a partir do arquivo ("01 - Artista - Música_drums.mid" → "Artista - Música"). */
