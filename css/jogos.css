@@ -306,3 +306,16 @@ html[data-space="bea"] .jg-dark .jg-hbtn.fit{background:rgb(255 255 255 / .22)}
 .jg-hbtn:disabled{opacity:.92}
 .jg-dark .jg-back i{background:#FFD66B}
 .jg-dark .jg-score :is(svg,img){background:#fffdf7;border-radius:50%;padding:3px}
+
+/* iPad: folha, tabuleiro e cartas maiores; estrela de favorito com área de toque confortável */
+.jgx-star{width:40px;height:40px;font-size:21px}
+@media (min-width:760px){
+  .jg-wrap{max-width:760px}
+  .jg-board{max-width:480px}
+  .jg-card-u{width:92px;height:132px}.jg-card-u.sm{width:72px;height:104px}
+  .jg-tile .jg-half{width:72px;height:92px}.jg-fig{height:44px}.jg-fig.semibreve{height:22px}
+  .jg-hand{gap:12px}.jg-chain{min-height:140px}
+  .jg-flat{grid-template-columns:repeat(5,minmax(0,1fr))}.jg-flat .jg-card b{font-size:13px}
+  .jg-game .jg-title{font-size:20px}
+  .jg-game .jg-seg button,.jg-game .btn{min-height:48px;font-size:16px}
+}

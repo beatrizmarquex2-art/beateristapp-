@@ -154,3 +154,5 @@ body.rz-lock{overscroll-behavior:none}
 .bmr .rz-li{content-visibility:auto;contain-intrinsic-size:auto 64px}
 .bmr button,.bmr .rz-song{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .bmr input.field{-webkit-user-select:text;user-select:text}
+/* iPad: a escolha do jogo em grade de quatro, com botões do mesmo tamanho */
+@media(min-width:760px){.bmr .rz-games{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.bmr .rz-games .rz-g{width:100%;min-height:92px}}

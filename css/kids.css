@@ -112,3 +112,5 @@
 /* memória: costas desenhadas pela Bea */
 .kx-arc .kx-mem { aspect-ratio: 5 / 8; } .kx-mem-back { background: var(--bi) center / cover no-repeat !important; border: 0 !important; border-radius: 10px; box-shadow: 0 2px 0 rgb(27 24 24 / .8); } .kx-mem-front { border-radius: 10px; }
 .kx-title { position: relative; } .kx-fx-a { right: -42px; top: -2px; } .kx-fx-b { right: -86px; top: 18px; }
+/* iPad: kit, partitura e cartela dos jogos grandes ocupam mais da tela */
+@media (min-width: 760px) { .kx-arc .kd-kit, .kx-arc .kd-staff, .kx-arc .kd-score { max-width: 720px; } .kx-arc .kd-kit.kd-kit-free { max-width: 780px; } }
