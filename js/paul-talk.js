@@ -5,7 +5,7 @@ import { audio } from './audio.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer';
 // Link da avaliação no Google: quando a Bea mandar o endereço, é só colocar aqui (vazio = a nuvem aparece sem link).
-export const GOOGLE_REVIEW = '';
+export const GOOGLE_REVIEW = 'https://g.page/r/CS34GVfs3jjqEAE/review';
 export const THOUGHTS = [
   ['já estudou hoje?'],
   ['siga a Bea nas redes!', IG],
