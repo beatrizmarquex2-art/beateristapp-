@@ -1643,7 +1643,7 @@ button, [role="button"], .nav-item, .fab, .icon-btn, .btn { -webkit-touch-callou
 
 /* Paul pelo app: estados vazios, tela de entrada e carregando */
 .empty::before { content: ""; display: block; width: 104px; height: 100px; margin: 0 auto 6px; background: url(../assets/paul/e05.webp) center / contain no-repeat; mix-blend-mode: multiply; }
-.boot::before { content: ""; display: block; width: 110px; height: 110px; margin: 0 auto 6px; background: url(../assets/paul/e15.webp) center / contain no-repeat; mix-blend-mode: multiply; }
+.boot::before { content: ""; display: block; width: 110px; height: 110px; margin: 0 auto 6px; background: url(../assets/paul/e03.webp) center / contain no-repeat; mix-blend-mode: multiply; }
 .login-paul { display: block; justify-self: center; width: 104px; height: auto; margin: -4px 0 -6px; mix-blend-mode: multiply; pointer-events: none; }
 
 /* Caixa de Ideias: anexos */

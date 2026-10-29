@@ -8,7 +8,7 @@ export const WIN_LINES = ['isso aí! 🤘', 'mandou bem!', 'na veia!', 'perfeito
 export const LOSE_LINES = ['quase! tenta de novo', 'sem stress, errar faz parte', 'ouve de novo, você chega lá', 'respira e tenta outra vez', 'tudo bem! bora de novo', 'está pertinho!', 'o erro ensina, continua!', 'calma, vai no seu tempo'];
 export const GREAT_LINES = ['rodada incrível! 🏆', 'você está voando!', 'que evolução!', 'nota máxima de atitude!'];
 // qual desenho do Paul aparece em cada reação (assets/paul/…)
-const PAUL = { win: ['e20', 'e02', 'e26', 'e07'], lose: ['e25', 'e17', 'e05'], great: ['e01', 'e20', 'e09'] };
+const PAUL = { win: ['e20', 'e02', 'e26', 'e03'], lose: ['e25', 'e17', 'e05'], great: ['e26', 'e20', 'e09'] };
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 
 let last = '';

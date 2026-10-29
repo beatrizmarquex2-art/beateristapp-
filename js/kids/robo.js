@@ -7,7 +7,7 @@ export const MOODS = ['happy', 'cheer', 'think', 'oops', 'sleep', 'love', 'wave'
 export const tierOf = (stars) => (stars >= 100 ? 3 : stars >= 40 ? 2 : stars >= 10 ? 1 : 0);
 
 // Paul: desenhos da Bea (rabisco de caneta), recortados da folha de expressões em assets/paul/eNN.webp
-const IMG = { happy: 'e02', cheer: 'e20', think: 'e05', oops: 'e25', sleep: 'e08', love: 'e26', wave: 'e30', wow: 'e09', idea: 'e29', laptop: 'e22', coffee: 'e15', music: 'e03', crown: 'e01', read: 'e24', cool: 'e07', sad: 'e17', tired: 'e28', hero: 'e01', point: 'p-point', peace: 'p-peace', run: 'p-run', kit: 'p-kit', drum: 'p-drum2', skate: 'p-skate', walk: 'p-walk', guitar: 'p-guitar', selfie: 'p-selfie', peek: 'p-peek', cat: 'p-cat', sit: 'p-sit', drink: 'p-drink', book: 'p-book', rest: 'p-rest' };
+const IMG = { happy: 'e02', cheer: 'e20', think: 'e05', oops: 'e25', sleep: 'e08', love: 'e26', wave: 'e20', wow: 'e09', idea: 'e13', laptop: 'e13', coffee: 'e10', music: 'e03', crown: 'e20', read: 'e06', cool: 'e27', sad: 'e17', tired: 'e28', hero: 'e20', point: 'p-point', peace: 'p-peace', run: 'p-run', kit: 'p-kit', drum: 'p-drum2', skate: 'p-skate', walk: 'p-walk', guitar: 'p-guitar', selfie: 'p-selfie', peek: 'p-peek', cat: 'p-cat', sit: 'p-sit', drink: 'p-drink', book: 'p-book', rest: 'p-rest' };
 const STICKER = [
   '',
   '<path d="M16 3l3.8 8 8.7 1.1-6.4 6 1.7 8.7L16 22.5 8.2 26.8l1.7-8.7-6.4-6 8.7-1.1z" fill="#e3a82f" stroke="#1b1818" stroke-width="2" stroke-linejoin="round"/>',
