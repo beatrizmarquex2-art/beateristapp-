@@ -235,12 +235,13 @@ function mountArticle(host, slug) {
 
     // links de "conexões"/relacionados que apontam para textos da biblioteca abrem dentro do app
     const related = lib.relatedOf(a);
-    const favBtn = h('button', { class: `icon-btn${st0.fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(!!st0.fav), 'aria-label': 'Favoritar texto', onclick: async () => { const f = !lib.getState(slug).fav; await lib.patchState(slug, { fav: f }); favBtn.classList.toggle('on', f); favBtn.setAttribute('aria-pressed', String(f)); toast(f ? 'nos favoritos ★' : 'removido dos favoritos'); } }, icon('star', 22));
-    const tocBtn = headings.length > 3 ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('Índice', (close) => h('div', { class: 'sheet-body toc' }, headings.filter((x) => x.level === 2).map((x) => h('a', { href: `#s-${x.id}`, onclick: (e) => { e.preventDefault(); close(); document.getElementById(x.id).scrollIntoView({ behavior: 'smooth' }); } }, x.text)))) }, 'índice') : null;
-    const storyBtn = h('button', { class: 'btn small', type: 'button', onclick: () => { const picked = (String(getSelection()).replace(/\s+/g, ' ').trim()) || lastSel; openStory({ text: picked.length > 8 ? picked : (PT[slug] || a.meta.summary || a.title), src: a.title }); } }, '↗ stories');
+    const favBtn = h('button', { class: 'rd-pill gold', type: 'button', 'aria-pressed': String(!!st0.fav), onclick: async () => { const f = !lib.getState(slug).fav; await lib.patchState(slug, { fav: f }); paintFav(); toast(f ? 'nos favoritos ★' : 'removido dos favoritos'); } });
+    const paintFav = () => { const f = !!lib.getState(slug).fav; favBtn.textContent = f ? '★ favorito' : '☆ favoritar'; favBtn.setAttribute('aria-pressed', String(f)); favBtn.classList.toggle('on', f); }; paintFav();
+    const tocBtn = headings.length > 3 ? h('button', { class: 'rd-pill ink', type: 'button', onclick: () => sheet('Índice', (close) => h('div', { class: 'sheet-body toc' }, headings.filter((x) => x.level === 2).map((x) => h('a', { href: `#s-${x.id}`, onclick: (e) => { e.preventDefault(); close(); document.getElementById(x.id).scrollIntoView({ behavior: 'smooth' }); } }, x.text)))) }, 'índice') : null;
+    const storyBtn = h('button', { class: 'rd-pill navy', type: 'button', onclick: () => { const picked = (String(getSelection()).replace(/\s+/g, ' ').trim()) || lastSel; openStory({ text: picked.length > 8 ? picked : (PT[slug] || a.meta.summary || a.title), src: a.title }); } }, '↗ stories');
     const onSel = () => { const t = String(getSelection()).replace(/\s+/g, ' ').trim(); const n = getSelection().anchorNode; if (t && n && content.contains(n.nodeType === 1 ? n : n.parentNode)) lastSel = t; };
     document.addEventListener('selectionchange', onSel); offSel = () => document.removeEventListener('selectionchange', onSel);
-    const readBtn = h('button', { class: 'btn small', type: 'button' });
+    const readBtn = h('button', { class: 'rd-pill red', type: 'button' });
     const paintRead = () => { const d = lib.getState(slug).done; readBtn.textContent = d ? 'lido ✓' : 'marcar como lido'; readBtn.classList.toggle('on', !!d); };
     readBtn.addEventListener('click', async () => { const d = !lib.getState(slug).done; await lib.patchState(slug, { done: d, progress: d ? 1 : lib.getState(slug).progress }); if (d) { stamp(readBtn); stars(readBtn); } paintRead(); });
     paintRead();
@@ -255,7 +256,7 @@ function mountArticle(host, slug) {
         PT[slug] ? h('p', { class: 'reader-pt' }, PT[slug]) : null,
         isArtist(a) && QUESTION[slug] ? h('p', { class: 'reader-pt' }, QUESTION[slug]) : (a.meta.summary ? h('p', { class: 'reader-sum' }, a.meta.summary) : null),
         h('p', { class: 'lib-kicker' }, [a.meta.difficulty && (lib.DIFF[a.meta.difficulty] || a.meta.difficulty), a.meta.estimated_read_time, a.meta.source_count && `${a.meta.source_count} fontes`, a.meta.last_researched && `pesquisa ${a.meta.last_researched}`].filter(Boolean).join(' · ')),
-        h('div', { class: 'row' }, favBtn, tocBtn, readBtn, storyBtn)),
+        h('div', { class: 'rd-pills' }, favBtn, tocBtn, readBtn, storyBtn)),
       content,
       related.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'relacionados'), h('div', { class: 'lib-rel' }, related.map((r) => r.hit ? h('a', { class: 'chip-link', href: `#/estudos/a/${r.hit.slug}` }, r.title) : h('span', { class: 'chip-link off', title: 'ainda não está na biblioteca' }, r.title)))) : null,
       h('div', { class: 'row pad-x reader-foot' }, h('a', { class: 'btn small ghost', href: '#/estudos' }, 'voltar à biblioteca'))].filter(Boolean));

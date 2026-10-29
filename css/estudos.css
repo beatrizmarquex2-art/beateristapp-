@@ -119,3 +119,22 @@
 html[data-theme="rabisco"] body:has(#app [data-page="estudos"]) #decor::before { background:
   url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat,
   url(../assets/mural/shard-red.svg) right -76px top 46% / 100px no-repeat; opacity: .5; }
+
+/* leitura: botões pequenos e coloridos lado a lado, e uns destaques pra facilitar a leitura */
+.rd-pills { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.rd-pills::-webkit-scrollbar { display: none; }
+.rd-pill { appearance: none; border: 0; cursor: pointer; flex: none; min-height: 38px; padding: 0 12px; border-radius: 99px; font: 700 13px var(--body); white-space: nowrap; box-shadow: 0 2px 0 rgb(27 24 24 / .25); display: inline-flex; align-items: center; text-decoration: none; }
+.rd-pill.gold { background: #e3a82f; color: #1b1818; } .rd-pill.ink { background: #1b1818; color: #f1ebe1; } .rd-pill.red { background: #b5162b; color: #fff7f3; } .rd-pill.navy { background: #1d2b4a; color: #f1ebe1; }
+.rd-pill.red.on { background: #fff7f3; color: #b5162b; box-shadow: inset 0 0 0 2px #b5162b, 0 2px 0 rgb(27 24 24 / .25); }
+.rd-pill.gold.on { box-shadow: inset 0 0 0 2px #1b1818, 0 2px 0 rgb(27 24 24 / .25); }
+.rd-pills .rd-pill:nth-child(odd) { transform: rotate(-1.2deg); } .rd-pills .rd-pill:nth-child(even) { transform: rotate(1.2deg); }
+.reader-head { position: relative; }
+.reader-head::before { content: ""; position: absolute; top: -9px; left: 22px; width: 92px; height: 24px; background: url(../assets/mural/tape-wide.svg) center / 100% 100% no-repeat; transform: rotate(-4deg); pointer-events: none; }
+.reader-body h2::before { content: ""; display: inline-block; width: 22px; height: 22px; margin-right: 8px; vertical-align: -3px; background: url(../assets/mural/star-red.svg) center / contain no-repeat; }
+.reader-body h2 + p { font-size: 18.5px; line-height: 1.6; font-weight: 500; }
+.reader-body strong { background: linear-gradient(transparent 60%, rgb(181 22 43 / .2) 60%); font-weight: 700; padding: 0 1px; }
+.reader-body li::marker { color: #b5162b; font-weight: 700; }
+.reader-body blockquote { position: relative; margin: 20px 4px; padding: 18px 16px 14px 18px; background: #fff0da; border: 0; border-left: 0; color: #1b1818; font: italic 600 19px/1.35 "Bodoni Moda", Georgia, serif; transform: rotate(-.6deg); box-shadow: 2px 3px 0 rgb(27 24 24 / .12);
+  clip-path: polygon(0 3%, 6% 0, 15% 2%, 28% 0, 42% 2%, 58% 0, 73% 2%, 88% 0, 100% 2%, 99% 40%, 100% 70%, 98% 100%, 85% 98%, 66% 100%, 48% 98%, 30% 100%, 12% 98%, 0 100%, 1% 60%); }
+.reader-body blockquote::before { content: ""; position: absolute; top: 5px; right: 16px; width: 64px; height: 18px; background: url(../assets/mural/tape-wide.svg) center / 100% 100% no-repeat; transform: rotate(5deg); }
+.reader-body blockquote p { margin: 0; color: inherit; font: inherit; }
