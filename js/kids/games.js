@@ -65,6 +65,6 @@ function playBumbos(q) {
 GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som + imagem ou imagem + imagem', emoji: '🧠', ages: 'a partir de 4 anos',
   modes: [['som', '🔊 som + imagem'], ['imagem', '🖼 imagem + imagem']], mode: 'som', run: runMemory, hint: (k) => `treinar: ${instName(k)}` };
 GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clica, escreve e toca o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
-GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no pad', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🥁 no pad / bateria']], mode: 'tela', run: runEco,
+GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no seu pad / bateria (o microfone escuta)', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runEco,
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
 export const ORDER = ['pauta', 'figuras', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos e detetive saíram da lista // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)

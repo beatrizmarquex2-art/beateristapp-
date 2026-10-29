@@ -109,7 +109,7 @@ export function runDetetive(game, ctx) {
     const g = baseGroove(d, Math.random); const row = rowToPlay(d); const bpm = 70; const beats = 8; bot.set('think', `toca o ${ROW_NAME[row]}!`);
     const fb = h('p', { class: 'kd-fb kx-fb', 'aria-live': 'polite' }); const padBox = h('div', { class: 'kx-padbox' });
     const dots = h('div', { class: 'kx-target' }, ...Array.from({ length: 8 }, (_, i) => h('span', { class: g.rows[row][i] ? 'on' : '' }, g.rows[row][i] ? '●' : '·')), h('small', {}, STEP_LABEL.join(' ')));
-    const chips = h('div', { class: 'row kd-modes' }, ...[['tela', '📱 na tela'], ['mic', '🥁 no pad / bateria']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { mode = k; chips.querySelectorAll('.kd-chip').forEach((b, i) => b.classList.toggle('on', ['tela', 'mic'][i] === mode)); } }, t)));
+    const chips = h('div', { class: 'row kd-modes' }, ...[['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { mode = k; chips.querySelectorAll('.kd-chip').forEach((b, i) => b.classList.toggle('on', ['tela', 'mic'][i] === mode)); } }, t)));
     const hear = h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playGroove(g, bpm, 2, row) }, '▶ ouvir o groove');
     const go = h('button', { class: 'kd-btn', type: 'button', onclick: async () => {
       go.disabled = true; hear.disabled = true;

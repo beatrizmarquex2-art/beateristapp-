@@ -36,7 +36,7 @@ export function runEco(game, ctx) {
 
   const intro = () => {
     bot.set('kit', 'ouve e repete!');
-    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${spec.rounds} ritmos · ${mode === 'mic' ? '🥁 toca no seu pad ou na bateria (o microfone escuta)' : '📱 toca na tela'}`),
+    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${spec.rounds} ritmos · ${mode === 'mic' ? '🎙 toca no seu pad de estudo ou na bateria de verdade (o microfone escuta; sem tocar na tela)' : '📱 toca na tela'}`),
       spec.secs ? h('p', { class: 'muted' }, `⏱ você tem ${spec.secs} segundos depois de ouvir.`) : null, spec.sudden ? h('p', { class: 'muted' }, '💥 se errar um ritmo, a fase recomeça.') : null,
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };
