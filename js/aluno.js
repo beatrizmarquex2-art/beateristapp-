@@ -131,7 +131,7 @@ function shell(name) {
 }
 
 function askName() {
-  const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome ou apelido' });
+  const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const err = h('p', { class: 'form-err', role: 'alert' });
   const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
@@ -147,14 +147,14 @@ function askName() {
     start();
   } },
     h('div', { class: 'al-hero' },
-      h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 96, height: 127 }),
+      h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 120, height: 158 }),
       h('div', { class: 'al-hero-txt' },
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
-        h('p', { class: 'al-bubble' }, 'oi! sou o assistente', h('br'), 'da bea, vamos jogar', h('br'), 'juntos e aprender!'))),
+        h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
-    h('p', { class: 'muted center al-note' }, 'use só o primeiro nome ou apelido · aparece no ranking e a escola registra a entrada'));
+    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
   setTimeout(() => input.focus(), 100);

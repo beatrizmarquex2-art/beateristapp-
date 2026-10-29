@@ -286,3 +286,8 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .al-entry .al-foot .partners-img { width: 330px; max-width: 94%; }
 .al-entry.login { gap: 20px; }
 .al-entry .al-foot .partners-label { font-size: 14px; }
+/* Paul maior e animado na entrada */
+.al-entry .al-hero { grid-template-columns: 118px 1fr; gap: 14px; }
+.al-entry .al-hero .al-paul-img { width: 118px; height: auto; transform-origin: 50% 100%; animation: alDance 1.2s ease-in-out infinite; }
+.al-entry .al-hero-txt .al-bubble { font-size: 17.5px; }
+@media (prefers-reduced-motion: reduce) { .al-entry .al-hero .al-paul-img { animation: none !important; } }
