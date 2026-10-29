@@ -1689,3 +1689,6 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 
 /* iPad: o kit do "explorar a bateria" e as partituras ocupam mais da tela */
 @media (min-width:760px){ .kd-kit.kd-kit-free{max-width:760px}.kd-staff,.kd-score{max-width:640px} }
+
+.top-snd { flex: none; }
+@media (max-width: 380px) { .top { gap: 4px; } .top .icon-btn { min-width: 38px; } }

@@ -28,12 +28,13 @@ function xpGain(n,why){if(OPTS.onXp) OPTS.onXp(n,why)}
 function sfx(){}
 
 /* ===== áudio ===== */
+function rzMuted(){try{return localStorage.getItem('bt-mute')==='1'}catch(e){return false}}
 const AE={
   ctx:null,master:null,rev:null,noise:null,wave:null,voices:new Map(),sustained:new Set(),sustain:false,plucks:new Map(),openHat:null,comp:null,ir:null,timers:new Set(),all:new Set(),
   get(){if(!this.ctx){this.ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});this.build()}return this.ctx},
   build(){
     const c=this.ctx;const comp=c.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=8;comp.ratio.value=4;comp.attack.value=.003;comp.release.value=.2;
-    comp.connect(c.destination);this.comp=comp;
+    const og=c.createGain();og.gain.value=rzMuted()?0:1;og.connect(c.destination);comp.connect(og);this.outG=og;this.comp=comp;window.addEventListener('bt-mute',()=>{og.gain.value=rzMuted()?0:1});
     const len=Math.floor(c.sampleRate*2.2),ir=c.createBuffer(2,len,c.sampleRate);
     for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2)}
     this.ir=ir;this.bus();
