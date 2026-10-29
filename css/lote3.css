@@ -316,3 +316,15 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .rb-fig::before { top: -6px; left: -6px; background-image: url(../assets/paul/el/estrela-ouro.webp); animation: alTwinkle 2.2s ease-in-out infinite; }
 .rb-fig::after { top: -2px; right: -4px; width: 18px; height: 18px; background-image: url(../assets/paul/el/nota-vermelha.webp); animation: alFloat 2.8s ease-in-out -.8s infinite; }
 @media (prefers-reduced-motion: reduce) { .rb-fig::before, .rb-fig::after { animation: none !important; } }
+
+/* Paul de reação (acertou/errou): parado; as estrelas, notas e raios em volta é que se mexem */
+.fb-paul img, .fb-paul.win img, .fb-paul.great img, .fb-paul.lose img { animation: none !important; }
+.fb-paul::before, .fb-paul::after { content: ""; position: absolute; background: center / contain no-repeat; pointer-events: none; }
+.fb-paul::before { width: 26px; height: 26px; top: -14px; right: 2px; background-image: url(../assets/paul/el/estrela-ouro.webp); animation: alTwinkle 1.6s ease-in-out infinite; }
+.fb-paul::after { width: 22px; height: 22px; top: -8px; right: 66px; background-image: url(../assets/paul/el/nota-vermelha.webp); animation: alFloat 1.9s ease-in-out -.5s infinite; }
+.fb-paul.win::after, .fb-paul.great::after { background-image: url(../assets/paul/el/coracao.webp); animation-name: alPulse; }
+.fb-paul.lose::before { background-image: url(../assets/paul/el/raio.webp); animation-name: alFlicker; }
+.fb-paul.lose::after { background-image: url(../assets/paul/el/estrela-azul-p.webp); animation-name: alTwinkle; }
+@media (prefers-reduced-motion: reduce) { .fb-paul::before, .fb-paul::after { animation: none !important; } }
+/* cabeçalho de cada tela: Paul parado, rabiscos em volta animados (os do cabeçalho já mexiam) */
+.bn-doodle.d1 { animation: dd-wiggle 2.2s ease-in-out infinite; }
