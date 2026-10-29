@@ -7,10 +7,6 @@ import { HUBS } from './hub.js';
 
 // Abas do menu: cada aba com grupinhos curtos. Ferramentas parecidas ficam juntas numa página só (Criar ritmos, Tempo, Anotar).
 const TABS_MENU = [
-  ['tocar', 'tocar', [
-    ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/piano', 'note', 'Piano'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
-    ['ferramentas', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
-  ]],
   ['treinar', 'treinar', [
     ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
     ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
@@ -23,12 +19,16 @@ const TABS_MENU = [
     ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
   ]],
-  ['estudar', 'estudar', [
+  ['estudar', 'estudos', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
     ['álbuns', [['#/estudos/club', 'note', 'Álbuns']]],
     ['artistas / bateristas', [['#/estudos/artistas', 'drummer', 'Artistas e bateristas'], ['#/mural', 'photo', 'Mural de Artistas']]],
     ['', [['#/anotacoes', 'note', 'Minhas anotações']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
+  ]],
+  ['tocar', 'tocar', [
+    ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/piano', 'note', 'Piano'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
+    ['ferramentas', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],
   ['aulas', 'aulas', [
     ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
@@ -87,8 +87,8 @@ export function openMenu() {
   // aba inicial: a da tela atual; senão a última aberta
   const flat = first.flatMap((t) => t.groups.flatMap((g) => g.items.map((it) => [t.id, ...it])));
   const mine = flat.filter((x) => x[1] === here).map((x) => x[0])[0] || flat.filter((x) => x[1] !== '#/inicio' && here.startsWith(x[1])).map((x) => x[0])[0];
-  let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || 'tocar';
-  if (!TABS_MENU.some((t) => t[0] === tab)) tab = 'tocar';
+  let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || 'treinar';
+  if (!TABS_MENU.some((t) => t[0] === tab)) tab = 'treinar';
   let q = '';
   const item = ([href, ic, label]) => h('a', { href, class: `drawer-item${here === href ? ' on' : ''}`, 'aria-current': here === href ? 'page' : null, onclick: close }, icon(ic, 22), h('span', {}, label));
   const tabs = h('div', { class: 'drawer-tabs chips lib-tabs', role: 'tablist', 'aria-label': 'Seções do menu' });
@@ -114,7 +114,7 @@ export function openMenu() {
 
   const draw = () => {
     const p = prefs(); const eff = effective(p);
-    if (!eff.some((t) => t.id === tab)) tab = 'tocar';
+    if (!eff.some((t) => t.id === tab)) tab = 'treinar';
     tabs.hidden = !!q.trim();
     tabs.replaceChildren(...eff.map((t) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === t.id), class: `lib-tab drawer-tab${tab === t.id ? ' on' : ''}`, onclick: () => { tab = t.id; try { localStorage.setItem(LAST, t.id); } catch { /* sem armazenamento */ } draw(); } }, icon(TAB_ICON[t.id] || 'folder', 16), t.label)));
     if (q.trim()) {

@@ -160,7 +160,7 @@ function swipeBack() {
   const tip = h('div', { class: 'swipe-back', 'aria-hidden': 'true' }, icon('back', 22));
   document.body.append(tip);
   let x0 = 0, y0 = 0, dx = 0, on = false;
-  const blocked = (e) => route().name === 'inicio' || noGesture(e) || inBottom(e.touches[0]) || hScrollAt(e.target);
+  const blocked = (e) => route().name === 'inicio' || e.touches[0].clientX > 28 || noGesture(e) || inBottom(e.touches[0]) || hScrollAt(e.target);
   addEventListener('touchstart', (e) => { const t = e.touches[0]; on = e.touches.length === 1 && !blocked(e); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (!on) return; const t = e.touches[0]; dx = t.clientX - x0; const dy = Math.abs(t.clientY - y0);
@@ -168,7 +168,7 @@ function swipeBack() {
     if (dx < 12) return;
     tip.style.transition = 'none'; tip.style.transform = `translate(${Math.min(Math.max(dx, 0), 110) - 56}px, -50%)`; tip.classList.toggle('ready', dx > 90);
   }, { passive: true });
-  const end = () => { if (on && dx > 90) goBack(); on = false; tip.style.transition = ''; tip.style.transform = ''; tip.classList.remove('ready'); };
+  const end = () => { if (on && dx > 90 && !isTabRoot(location.hash || '#/inicio')) goBack(); on = false; tip.style.transition = ''; tip.style.transform = ''; tip.classList.remove('ready'); };
   addEventListener('touchend', end, { passive: true }); addEventListener('touchcancel', () => { on = false; tip.style.transform = ''; }, { passive: true });
 }
 
