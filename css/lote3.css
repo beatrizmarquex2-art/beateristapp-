@@ -411,8 +411,8 @@ html[data-space="beaterista"] {
   --accent: #1d3a6b; --link: #1d3a6b; --gold: #e0a800; --wash1: #1d3a6b; --meta-color: #14284b;
 }
 html[data-space="bea"] {
-  --sp-dark: #5e0f2a; --sp-main: #7a1632; --sp-hi: #ffc9d6; --sp-on: #fff4f6; --sp-on-hi: #5e0f2a; --sp-brush: url(../assets/mural/brush-wine.svg);
-  --accent: #7a1632; --link: #7a1632; --gold: #7a1632; --wash1: #7a1632; --meta-color: #5e0f2a;
+  --sp-dark: #7a1226; --sp-main: #a01a30; --sp-hi: #ffc9d6; --sp-on: #fff4f6; --sp-on-hi: #7a1226; --sp-brush: url(../assets/mural/brush-wine.svg);
+  --accent: #a01a30; --link: #a01a30; --gold: #a01a30; --wash1: #a01a30; --meta-color: #7a1226;
 }
 html[data-space] .topwrap { background: var(--sp-dark); --on-bg: var(--sp-on); --on-muted: var(--sp-on); --on-line: rgb(255 255 255 / .25); color: var(--sp-on); }
 html[data-space] .topwrap .statusbar, html[data-space] .topwrap .sb-time, html[data-space] .topwrap .sb-sync { color: var(--sp-on); }
@@ -430,20 +430,20 @@ html[data-space] .hero-sub::after { color: var(--sp-main); }
 html[data-space] .link { color: var(--sp-main); }
 html[data-space] { scrollbar-color: var(--sp-main) transparent; } html[data-space] ::-webkit-scrollbar-thumb, html[data-space] .scroll-thumb { background: var(--sp-main); }
 /* menu ☰ da Bea em vinho (o do Beaterista já é azul) */
-.drawer:not(.drawer-b) { background: var(--sp-dark, #5e0f2a); color: #fff4f6; }
+.drawer:not(.drawer-b) { background: var(--sp-dark, #7a1226); color: #fff4f6; }
 .drawer:not(.drawer-b) .drawer-head { border-bottom-color: #fff4f6; } .drawer:not(.drawer-b) .drawer-head strong img { background: #fff4f6; border-radius: 8px; padding: 2px 8px; }
 .drawer:not(.drawer-b) .drawer-sec + .drawer-sec { border-top-color: rgb(255 244 246 / .3); }
 .drawer:not(.drawer-b) .drawer-sec h2, .drawer:not(.drawer-b) .drawer-recent small { color: #f2b9c7; }
 .drawer:not(.drawer-b) .drawer-item { color: #fff4f6; } .drawer:not(.drawer-b) .drawer-item svg { color: #ffc9d6; }
 .drawer:not(.drawer-b) .drawer-item:hover, .drawer:not(.drawer-b) .drawer-item:focus-visible { background: rgb(255 201 214 / .14); }
-.drawer:not(.drawer-b) .drawer-item.on { background: #fff4f6; color: #5e0f2a; } .drawer:not(.drawer-b) .drawer-item.on svg { color: #7a1632; }
+.drawer:not(.drawer-b) .drawer-item.on { background: #fff4f6; color: #7a1226; } .drawer:not(.drawer-b) .drawer-item.on svg { color: #a01a30; }
 .drawer:not(.drawer-b) .drawer-tab, .drawer:not(.drawer-b) .lib-tab { background: transparent; color: #fff4f6; border: 2px solid #fff4f6; box-shadow: none; }
 .drawer:not(.drawer-b) .drawer-tab svg { color: #ffc9d6; }
-.drawer:not(.drawer-b) .drawer-tab.on, .drawer:not(.drawer-b) .lib-tab.on { background: #ffc9d6; color: #5e0f2a; border-color: #ffc9d6; font-weight: 800; } .drawer:not(.drawer-b) .drawer-tab.on svg { color: #5e0f2a; }
-.drawer:not(.drawer-b) .drawer-pin { background: #ffc9d6; color: #5e0f2a; border-color: #fff4f6; box-shadow: 2px 2px 0 #fff4f6; } .drawer:not(.drawer-b) .drawer-pin svg { color: #5e0f2a; }
-.drawer:not(.drawer-b) .drawer-recent a { background: #fff4f6; border-color: #fff4f6; color: #5e0f2a; }
+.drawer:not(.drawer-b) .drawer-tab.on, .drawer:not(.drawer-b) .lib-tab.on { background: #ffc9d6; color: #7a1226; border-color: #ffc9d6; font-weight: 800; } .drawer:not(.drawer-b) .drawer-tab.on svg { color: #7a1226; }
+.drawer:not(.drawer-b) .drawer-pin { background: #ffc9d6; color: #7a1226; border-color: #fff4f6; box-shadow: 2px 2px 0 #fff4f6; } .drawer:not(.drawer-b) .drawer-pin svg { color: #7a1226; }
+.drawer:not(.drawer-b) .drawer-recent a { background: #fff4f6; border-color: #fff4f6; color: #7a1226; }
 .drawer:not(.drawer-b) .icon-btn, .drawer:not(.drawer-b) .drawer-edit, .drawer:not(.drawer-b) .de-name { color: #fff4f6; }
-.drawer:not(.drawer-b) .icon-btn[aria-pressed="true"] { background: #ffc9d6; color: #5e0f2a; }
+.drawer:not(.drawer-b) .icon-btn[aria-pressed="true"] { background: #ffc9d6; color: #7a1226; }
 .drawer:not(.drawer-b) .drawer-edit .btn { background: transparent; color: #fff4f6; border-color: #fff4f6; }
 .drawer:not(.drawer-b) .muted, .drawer:not(.drawer-b) .drawer-editnote p { color: #f2b9c7; }
 html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selected="true"].on { background: var(--sp-dark); border-color: var(--sp-dark); color: var(--sp-on); }
