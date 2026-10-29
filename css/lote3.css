@@ -539,7 +539,8 @@ html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
 html.kb-open .paul-pop { display: none; }
 @media (prefers-reduced-motion: reduce) { .paul-pop { transition: opacity .2s; transform: none; } }
 /* "hoje" colorido */
-html[data-theme] .card.mini-list { background: #ffd36b; border: 2px solid #1b1818; box-shadow: 3px 3px 0 #1b1818; color: #1b1818; }
-.mini-list .tag { color: #7a1226; } .mini-list .link { color: #7a1226; } .mini-list .check { background: #fff; border-color: #1b1818; }
-.mini-list .check.on { background: #1d3a6b; border-color: #1d3a6b; color: #fff; }
-.mini-list .muted { color: #5a4a2a; }
+html[data-theme] .card.mini-list { background: #1f5a63; border: 2px solid #123a41; box-shadow: 3px 3px 0 #123a41; color: #fbf3e6; }
+.mini-list .tag { color: #fbf3e6; } .mini-list .link { color: #f3dfb0; } .mini-list .check { background: #fbf3e6; border-color: #fbf3e6; }
+.mini-list .check.on { background: #f3dfb0; border-color: #f3dfb0; color: #123a41; }
+.mini-list .muted, .mini-list .task-title { color: #fbf3e6; }
+html[data-theme] .card.mini-list .link, html[data-space] .card.mini-list .link { color: #f3dfb0; }
