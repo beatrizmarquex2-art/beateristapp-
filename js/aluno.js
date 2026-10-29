@@ -1,6 +1,7 @@
 // Área do aluno (aluno.html): sem login. O aluno escolhe um nome, joga os Jogos de ritmo e o Kids e aparece no ranking que todos veem.
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
 import { h, icon } from './util.js';
+import { soundButton } from './sound-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
@@ -115,6 +116,7 @@ function shell(name) {
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
+    soundButton(),
     h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 

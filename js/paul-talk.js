@@ -29,7 +29,7 @@ export function chirp() {
       const t = t0 + i * 0.085; const o = c.createOscillator(); const g = c.createGain();
       o.type = i % 2 ? 'triangle' : 'square'; o.frequency.setValueAtTime(base * m, t); o.frequency.exponentialRampToValueAtTime(base * m * 1.18, t + 0.07);
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-      o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.1);
+      if (localStorage.getItem('bt-mute') !== '1') o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.1);
     });
   } catch { /* sem áudio */ }
 }

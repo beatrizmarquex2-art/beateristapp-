@@ -3,6 +3,16 @@
 let ctx = null, master = null, noiseBuf = null;
 
 // iPhone: o Web Audio fica mudo com o botão de silencioso ligado. Tocar um <audio> mudo em loop (e pedir sessão 'playback') faz o som sair mesmo assim.
+let muted = false;
+try { muted = localStorage.getItem('bt-mute') === '1'; } catch (e) {}
+/** Som do app ligado/desligado (ícone do alto-falante no topo). */
+export const isMuted = () => muted;
+export function setMuted(v) {
+  muted = !!v;
+  try { localStorage.setItem('bt-mute', muted ? '1' : '0'); } catch (e) {}
+  if (master) master.gain.value = muted ? 0 : 0.9;
+  window.dispatchEvent(new CustomEvent('bt-mute', { detail: muted }));
+}
 let keep = null;
 function playbackMode() {
   try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
@@ -28,7 +38,7 @@ export function audio() {
     playbackMode();
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({ latencyHint: 'interactive' });
-    master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ctx.destination);
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
