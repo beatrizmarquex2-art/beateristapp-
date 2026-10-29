@@ -8,6 +8,7 @@ import { parseMidi } from '../midi.js';
 import { toChart, nameFromFile } from '../midi-chart.js';
 import { readZip, writeZip } from '../zip.js';
 import * as FB from '../feedback.js';
+import * as RK from '../ranking.js';
 
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
@@ -177,8 +178,12 @@ export function loadPackage() {
   return loading;
 }
 
-export function mount(host) {
+/** opts.student: área do aluno (sem importar MIDI; músicas originais do app; ranking compartilhado com o nome do aluno). */
+export function mount(host, opts = {}) {
+  const student = !!opts.student;
   let mounted = false; let gone = false;
+  const studentTop = (key) => RK.cached(`ritmo|${key}`);
+  const studentAdd = (key, e) => { RK.add(`ritmo|${key}`, e.name, e.score, e.acc, e.grade).then(() => RK.top(`ritmo|${key}`, { fresh: true })).then(() => window.BeaterRhythm && window.BeaterRhythm.refresh && window.BeaterRhythm.refresh()); };
   const xpOut = h('output', { class: 'rg-xp', 'aria-live': 'polite' }, `${xpTotal()} XP`);
   // #jogos fica sem altura fixa (o pacote mede a tela com 100dvh); durante o jogo o .rg-host vira tela cheia (ver app.css)
   const box = h('div', { id: 'jogos' }, h('p', { class: 'muted rg-wait' }, 'carregando os jogos…'));
@@ -209,14 +214,15 @@ export function mount(host) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), tools, frame, manage);
+  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage]));
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
   loadPackage().then((BR) => {
     if (gone) return;
     box.replaceChildren();
-    BR.mount('#jogos', { storageKey: 'beaterista-ritmo', midiImport: false, songs: importedSongs(), folders: folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    const studentOpts = student ? { builtin: true, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
+    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? [] : importedSongs(), folders: student ? () => [] : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;

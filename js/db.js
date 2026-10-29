@@ -1,5 +1,5 @@
 // IndexedDB — armazenamento local estruturado (offline-first).
-const NAME = 'beaterista';
+const NAME = window.__BT_ALUNO ? 'beaterista-aluno' : 'beaterista';
 const VERSION = 1;
 let dbp;
 
