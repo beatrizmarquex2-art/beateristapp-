@@ -249,9 +249,8 @@ button.jg-leg{border:0;background:transparent;font:inherit;color:inherit;cursor:
 button.jg-leg:active{transform:scale(.95)}
 
 /* ===== cores por tema (menos bege) e alinhamento ===== */
-.jg{--jg-paper:#BFD7F2;--jg-board:#17365B;--jg-fit:#EBA332}
-html[data-space="beaterista"] .jg{--jg-paper:#FFD66B;--jg-board:#1d3a6b;--jg-fit:#1d3a6b}
-html[data-space="bea"] .jg{--jg-paper:#F4B9C0;--jg-board:#8e1b30;--jg-fit:#FFD66B}
+.jg{--jg-paper:#FFD66B;--jg-board:#1d3a6b;--jg-fit:#1d3a6b;--jg-navy:var(--sp-dark,#14284b)}
+html[data-space="bea"] .jg{--jg-board:#FFF1D6;--jg-fit:#a01a30}
 .jg-game::before,.jg-cat::before{background:var(--jg-paper) url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply}
 .jg-game .jg-board,.jg-game .jg-chain,.jg-game .jg-bingo .jg-bcard,.jg-game .jg-cgrid,.jg-game .jg-tray{background:var(--jg-board) url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;box-shadow:inset 0 0 0 2px rgb(255 255 255 / .45),3px 4px 0 rgb(20 32 54 / .3);color:#fff}
 .jg-game .jg-chain .jg-empty,.jg-game .jg-chain p{color:#fff;opacity:1}
@@ -274,7 +273,7 @@ html[data-space="bea"] .jg{--jg-paper:#F4B9C0;--jg-board:#8e1b30;--jg-fit:#FFD66
 
 /* ===== fundo escuro: alguns jogos e, na Bea, todos (vinho bem fechado) ===== */
 html .jg.jg-dark,html .jg.jg-dark .jg{--jg-paper:#10203d;--jg-board:#27498a;--jg-fit:#FFD66B;color:#fbf7ee}
-html[data-space="bea"] .jg.jg-dark,html[data-space="bea"] .jg.jg-dark .jg{--jg-paper:#4a0c19;--jg-board:#a01a30;--jg-fit:#FFC9D6}
+html[data-space="bea"] .jg.jg-dark,html[data-space="bea"] .jg.jg-dark .jg{--jg-paper:#6b0f22;--jg-board:#FFF1D6;--jg-fit:#a01a30}
 .jg-dark .muted,.jg-dark small.muted{color:rgb(251 247 238 / .78)}
 .jg-dark .jg-title{color:#14284b!important;text-shadow:none;background-image:url(../assets/mural/brush-gold.svg)}
 .jg-dark .jg-h{color:#fff}
@@ -288,3 +287,35 @@ html[data-space="bea"] .jg.jg-dark,html[data-space="bea"] .jg.jg-dark .jg{--jg-p
 .jg-game.jg-dark::after,.jg-cat.jg-dark::after{background:rgb(0 0 0 / .4)}
 .jg-dark :is(.jg-call,.jg-cell,.jg-cover,.jg-pboard,.jg-q,.jg-rule-box,.jg-tile,.jg-chip,.jg-bcell,.jg-ccell,.jg-cbtn,.jg-qbtn,.jg-stopbtn,.jg-field input){color:#142036}
 .jg-dark .jg-cover .muted,.jg-dark .jg-rule-box .muted{color:#4a4f5c}
+
+/* Bea: tabuleiro e mesa em creme (texto escuro); Beaterista e alunos: tabuleiro azul com texto claro */
+html[data-space="bea"] .jg-game .jg-board,html[data-space="bea"] .jg-game .jg-chain,html[data-space="bea"] .jg-game .jg-bingo .jg-bcard,html[data-space="bea"] .jg-game .jg-cgrid,html[data-space="bea"] .jg-game .jg-tray{color:#142036;box-shadow:inset 0 0 0 2px rgb(20 32 54 / .35),3px 4px 0 rgb(0 0 0 / .35)}
+html[data-space="bea"] .jg-game .jg-chain .jg-empty,html[data-space="bea"] .jg-game .jg-chain p{color:#142036}
+html[data-space="bea"] .jg-dark .jg-hbtn.fit{background:rgb(255 255 255 / .22)}
+
+/* ===== legibilidade: nada de texto apagado ===== */
+.jg small{color:inherit;opacity:.88}
+.jg-dark small{opacity:.92}
+.jg .jg-zero{color:#6a7385}
+.jg .jg-num{color:#9b1229;font-size:12px}
+.jg .btn:disabled,.jg button.btn[disabled]{opacity:1;color:#5b6272;background:#ece5d4;border-color:#8b8f9a;box-shadow:2px 2px 0 #8b8f9a;cursor:default}
+.jg-game .btn:disabled,.jg-game .btn[disabled]{color:#5b6272;background:#ece5d4;border-color:#8b8f9a;box-shadow:2px 2px 0 #8b8f9a}
+.jg-deck:disabled{opacity:.85}.jg-deck small{opacity:1}
+.jg-card-u.back b{color:#FFD66B}
+.jg-dark .jg-deck small{color:#fbf7ee}
+.jg-hbtn:disabled{opacity:.92}
+.jg-dark .jg-back i{background:#FFD66B}
+.jg-dark .jg-score :is(svg,img){background:#fffdf7;border-radius:50%;padding:3px}
+
+/* iPad: folha, tabuleiro e cartas maiores; estrela de favorito com área de toque confortável */
+.jgx-star{width:40px;height:40px;font-size:21px}
+@media (min-width:760px){
+  .jg-wrap{max-width:760px}
+  .jg-board{max-width:480px}
+  .jg-card-u{width:92px;height:132px}.jg-card-u.sm{width:72px;height:104px}
+  .jg-tile .jg-half{width:72px;height:92px}.jg-fig{height:44px}.jg-fig.semibreve{height:22px}
+  .jg-hand{gap:12px}.jg-chain{min-height:140px}
+  .jg-flat{grid-template-columns:repeat(5,minmax(0,1fr))}.jg-flat .jg-card b{font-size:13px}
+  .jg-game .jg-title{font-size:20px}
+  .jg-game .jg-seg button,.jg-game .btn{min-height:48px;font-size:16px}
+}

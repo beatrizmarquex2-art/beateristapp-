@@ -112,3 +112,35 @@
 /* memória: costas desenhadas pela Bea */
 .kx-arc .kx-mem { aspect-ratio: 5 / 8; } .kx-mem-back { background: var(--bi) center / cover no-repeat !important; border: 0 !important; border-radius: 10px; box-shadow: 0 2px 0 rgb(27 24 24 / .8); } .kx-mem-front { border-radius: 10px; }
 .kx-title { position: relative; } .kx-fx-a { right: -42px; top: -2px; } .kx-fx-b { right: -86px; top: 18px; }
+/* iPad: kit, partitura e cartela dos jogos grandes ocupam mais da tela */
+@media (min-width: 760px) { .kx-arc .kd-kit, .kx-arc .kd-staff, .kx-arc .kd-score { max-width: 720px; } .kx-arc .kd-kit.kd-kit-free { max-width: 780px; } }
+
+/* ===== bateria do "explorar" nos três temas (os mesmos dos Jogos de ritmo) ===== */
+.kd-themes{align-items:center;gap:6px}.kd-themes small{opacity:.8}
+[data-kit-theme] .kd-kit.kd-kit-free{position:relative;max-width:780px;padding:14px;border:0}
+[data-kit-theme] .kd-kit.kd-kit-free .kp{transition:filter .12s,transform .12s}
+[data-kit-theme] .kd-kit.kd-kit-free .kp.hit{transform:scale(1.04);transform-box:fill-box;transform-origin:center}
+/* colagem: papel amarelo, contorno grosso e cores chapadas, como adesivo */
+[data-kit-theme="colagem"] .kd-kit.kd-kit-free{background:#ffd66b url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
+[data-kit-theme="colagem"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
+[data-kit-theme="colagem"] .kd-kit-free .kp [stroke]{stroke:#1b1818}
+[data-kit-theme="colagem"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#fffdf7}
+[data-kit-theme="colagem"] .kd-kit-free .kp [stroke-width="3"]{stroke-width:5}
+[data-kit-theme="colagem"] .kd-kit-free .kp{filter:drop-shadow(3px 4px 0 rgba(20,32,54,.45))}
+[data-kit-theme="colagem"] .kd-kit-free .kp.hit{filter:drop-shadow(0 0 0 #ffd166) drop-shadow(3px 4px 0 rgba(20,32,54,.45)) brightness(1.15)}
+/* vinil: grafite com disco, peças cheias e pratos dourados */
+[data-kit-theme="vinil"] .kd-kit.kd-kit-free{background:#1c1a22 url(../assets/zine/textura-fundo-tinta.webp) center/cover;background-blend-mode:screen;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35);overflow:hidden}
+[data-kit-theme="vinil"] .kd-kit-free svg{position:relative}
+[data-kit-theme="vinil"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:.92}
+[data-kit-theme="vinil"] .kd-kit-free .kp [stroke]{stroke:#fff3d6}
+[data-kit-theme="vinil"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#ffe9ad}
+[data-kit-theme="vinil"] .kd-kit-free .kp{filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))}
+[data-kit-theme="vinil"] .kd-kit-free .kp.hit{filter:drop-shadow(0 0 10px #ffd166) brightness(1.2)}
+/* pôster: azul-marinho com pontinhos, peças coloridas e contorno preto */
+[data-kit-theme="poster"] .kd-kit.kd-kit-free{background:#14284b radial-gradient(rgba(255,209,102,.26) 1.6px,transparent 1.8px) 0 0/14px 14px;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35)}
+[data-kit-theme="poster"] .kd-kit-free .kp [fill-opacity]{fill:var(--c);fill-opacity:1}
+[data-kit-theme="poster"] .kd-kit-free .kp [stroke]{stroke:#000}
+[data-kit-theme="poster"] .kd-kit-free .kp ellipse[fill-opacity]{fill:#ffe7a8}
+[data-kit-theme="poster"] .kd-kit-free .kp [stroke-width="3"]{stroke-width:5}
+[data-kit-theme="poster"] .kd-kit-free .kp{filter:drop-shadow(3px 4px 0 #d92031)}
+[data-kit-theme="poster"] .kd-kit-free .kp.hit{filter:drop-shadow(3px 4px 0 #ffd166) brightness(1.2)}

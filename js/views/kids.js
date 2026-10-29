@@ -32,11 +32,18 @@ const FREE = [
 ];
 
 /** Explorar a bateria: aba "tocar" (toca cada peça do jeito que quiser, vários dedos) e aba "nomes" (toca e aparece o nome da peça). */
+// tema visual compartilhado com os Jogos de ritmo (colagem, vinil, pôster)
+const KIT_THEMES = [['colagem', 'colagem'], ['vinil', 'vinil'], ['poster', 'pôster']];
+const kitTheme = () => { try { const t = localStorage.getItem('bt-rz-theme'); return KIT_THEMES.some((x) => x[0] === t) ? t : 'colagem'; } catch { return 'colagem'; } };
 function explorar(box) {
   let tab = 'tocar'; let timer = 0;
   const draw = () => {
     const name = h('p', { class: `kd-big kd-name${tab === 'tocar' ? ' off' : ''}`, 'aria-live': 'polite' }, tab === 'nomes' ? 'toca numa peça!' : '');
     const kit = svgEl(kitMarkup(), 'kd-kit kd-kit-free');
+    { // o logo do Beaterista no bumbo (no lugar da palavra); não pega toque: tocar nele continua tocando o bumbo
+      const bd = kit.querySelector('[data-p="bd"]'); const tx = bd && bd.querySelector('text'); if (tx) tx.remove();
+      if (bd) { const im = document.createElementNS('http://www.w3.org/2000/svg', 'image'); im.setAttribute('href', 'assets/logo-menu-beaterista.webp'); im.setAttribute('x', '160'); im.setAttribute('y', '192'); im.setAttribute('width', '100'); im.setAttribute('height', '51'); im.setAttribute('pointer-events', 'none'); im.setAttribute('preserveAspectRatio', 'xMidYMid meet'); bd.append(im); }
+    }
     kit.addEventListener('pointerdown', (e) => { // cada dedo vale um toque, então dá pra tocar com os dois ao mesmo tempo
       const g = e.target.closest('[data-p]'); if (!g) return; e.preventDefault(); const id = g.dataset.p; play(id);
       g.classList.remove('hit'); void g.getBoundingClientRect(); g.classList.add('hit'); setTimeout(() => g.classList.remove('hit'), 260);
@@ -45,7 +52,9 @@ function explorar(box) {
     box.replaceChildren(
       h('div', { class: 'row kd-modes' }, ...[['tocar', '🥁 tocar livre'], ['nomes', '🔤 nomes das peças']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${tab === k ? ' on' : ''}`, onclick: () => { tab = k; draw(); } }, t))),
       h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toca em qualquer peça, do jeito que quiser!' : 'toca numa peça pra ver o nome dela'),
-      kit, name);
+      kit, name,
+      h('div', { class: 'row kd-modes kd-themes', role: 'group', 'aria-label': 'Tema da bateria' }, h('small', {}, 'tema'), ...KIT_THEMES.map(([k, t]) => h('button', { type: 'button', class: `kd-chip${kitTheme() === k ? ' on' : ''}`, 'aria-pressed': String(kitTheme() === k), onclick: () => { try { localStorage.setItem('bt-rz-theme', k); } catch { /* sem armazenamento */ } draw(); } }, t))));
+    box.dataset.kitTheme = kitTheme(); // o mesmo tema dos jogos de ritmo
   };
   draw();
   return () => clearTimeout(timer);
