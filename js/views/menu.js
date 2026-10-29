@@ -5,6 +5,7 @@ import * as store from '../store.js';
 import { TABS } from './kit.js';
 import { HUBS } from './hub.js';
 import { getSpace } from '../space.js';
+import { dragSort } from '../dragsort.js';
 
 // Dois menus: o da Bea (pouca coisa, o dela) e o do Beaterista (a área das aulas e dos alunos, com fundo de outra cor).
 // Cada aba com grupinhos curtos. Ferramentas parecidas ficam juntas numa página só (Criar ritmos, Tempo, Anotar).
@@ -108,7 +109,7 @@ export function openMenu() {
   let editing = false;
   let offStore = () => {};
   const close = () => {
-    document.removeEventListener('keydown', onKey); offStore();
+    document.removeEventListener('keydown', onKey); offStore(); dragOffs.splice(0).forEach((f) => f());
     back.classList.add('out'); setTimeout(() => back.remove(), reducedMotion() ? 0 : 200);
     btn && btn.focus && btn.focus();
   };
@@ -134,19 +135,19 @@ export function openMenu() {
   /** Linha do modo personalizar: subir, descer, esconder e mudar de aba. */
   const editRow = (t, g, it, i, p) => {
     const off = p.hidden.includes(it[0]);
-    const swap = (d) => { const cur = g.items.map((x) => x[0]); const j = i + d; if (j < 0 || j >= cur.length) return; [cur[i], cur[j]] = [cur[j], cur[i]]; savePrefs({ order: [...cur, ...p.order.filter((x) => !cur.includes(x))] }); };
     const sel = h('select', { 'aria-label': `Aba de ${it[2]}` }, ...TABS_MENU.map(([id, label]) => h('option', { value: id, selected: id === t.id }, label)));
     sel.addEventListener('change', () => { const moved = { ...p.moved, [it[0]]: sel.value }; const orig = TABS_MENU.find((x) => x[2].some(([, items]) => items.some((y) => y[0] === it[0]))); if (orig && orig[0] === sel.value) delete moved[it[0]]; savePrefs({ moved }); });
-    return h('div', { class: `drawer-edit${off ? ' off' : ''}` },
+    return h('div', { class: `drawer-edit${off ? ' off' : ''}`, 'data-key': it[0] },
+      h('button', { type: 'button', class: 'de-grip', 'aria-label': `Arrastar ${it[2]} pra mudar de lugar` }, '⠿'),
       h('span', { class: 'de-name' }, icon(it[1], 20), h('span', {}, it[2])),
       h('div', { class: 'de-act' },
-        h('button', { type: 'button', class: 'icon-btn', 'aria-label': `Subir ${it[2]}`, disabled: i === 0, onclick: () => swap(-1) }, icon('up', 18)),
-        h('button', { type: 'button', class: 'icon-btn', 'aria-label': `Descer ${it[2]}`, disabled: i === g.items.length - 1, onclick: () => swap(1) }, icon('down', 18)),
         h('button', { type: 'button', class: `btn small${off ? '' : ' ghost'}`, 'aria-pressed': String(off), onclick: () => savePrefs({ hidden: off ? p.hidden.filter((x) => x !== it[0]) : [...p.hidden, it[0]] }) }, off ? 'mostrar' : 'esconder'),
         sel));
   };
 
+  const dragOffs = [];
   const draw = () => {
+    dragOffs.splice(0).forEach((f) => f());
     const p = prefs(); const eff = effective(p, TABS_MENU);
     if (!eff.some((t) => t.id === tab)) tab = TABS_MENU[0][0];
     tabs.hidden = !!q.trim();
@@ -166,8 +167,10 @@ export function openMenu() {
     list.replaceChildren(...[recSec, note, ...cur.groups.map((g) => {
       const items = editing && cur.id !== 'fav' ? g.items : g.items.filter((it) => !p.hidden.includes(it[0]));
       if (!items.length) return null;
-      return h('section', { class: 'drawer-sec' }, g.title ? h('h2', { class: 'drawer-sub' }, icon(GROUP_ICON[g.title] || 'folder', 15), g.title) : null,
+      const secEl = h('section', { class: 'drawer-sec' }, g.title ? h('h2', { class: 'drawer-sub' }, icon(GROUP_ICON[g.title] || 'folder', 15), g.title) : null,
         ...(editing && cur.id !== 'fav' ? g.items.map((it, i) => editRow(cur, g, it, i, p)) : items.map(item)));
+      if (editing && cur.id !== 'fav') dragOffs.push(dragSort(secEl, { itemSel: '.drawer-edit', handleSel: '.de-grip', axis: 'y', onDone: (keys) => savePrefs({ ...p, order: [...keys, ...p.order.filter((x) => !keys.includes(x))] }) }));
+      return secEl;
     })].filter(Boolean));
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });

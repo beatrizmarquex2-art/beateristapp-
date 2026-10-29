@@ -455,3 +455,8 @@ html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selecte
 .drawer-star { flex: none; width: 44px; height: 44px; border: 0; background: transparent; font-size: 20px; line-height: 1; color: #7a6f66; cursor: pointer; }
 .drawer-star.on { color: #e0a800; }
 .drawer.drawer-b .drawer-star, .drawer:not(.drawer-b) .drawer-star { color: rgb(255 255 255 / .6); } .drawer .drawer-star.on { color: #ffd166; }
+
+/* alça de arrastar (modo editar do menu) */
+.de-grip { flex: none; width: 36px; height: 40px; border: 0; background: transparent; color: inherit; font-size: 20px; opacity: .7; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.drawer-edit { align-items: center; }
+.drawer-edit { grid-template-columns: 36px 1fr; } .drawer-edit .de-act { grid-column: 1 / -1; }

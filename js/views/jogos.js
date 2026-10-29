@@ -2,6 +2,7 @@
 import { h } from '../util.js';
 import { banner } from '../ui.js';
 import * as store from '../store.js';
+import { dragSort } from '../dragsort.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import * as domino from '../jogos/domino.js';
 import * as cartas from '../jogos/cartas.js';
@@ -62,9 +63,9 @@ const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
 function catalog(host) {
   const aluno = ALUNO();
   let editing = false; let onlyFav = false;
-  const card = (x) => {
+  const card = (x, edit) => {
     const [id, title, img, , , href] = x;
-    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}` }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
+    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}`, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
   };
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
   const draw = () => {
@@ -74,24 +75,31 @@ function catalog(host) {
     const list = all.map((x, i) => [x, i]).sort((a, c) => rank(keyOf(a[0])) - rank(keyOf(c[0])) || a[1] - c[1]).map((x) => x[0]);
     const shown = list.filter((x) => (editing || !p.hidden.includes(keyOf(x))) && (!onlyFav || p.fav.includes(keyOf(x))));
     const keys = list.map(keyOf);
-    const move = (k, d) => { const cur = [...keys]; const i = cur.indexOf(k); const j = i + d; if (i < 0 || j < 0 || j >= cur.length) return; [cur[i], cur[j]] = [cur[j], cur[i]]; savePrefs({ ...p, order: cur }); };
     bar.replaceChildren(
       h('button', { type: 'button', class: `jgx-chip${onlyFav ? '' : ' on'}`, onclick: () => { onlyFav = false; draw(); } }, 'todos'),
       h('button', { type: 'button', class: `jgx-chip${onlyFav ? ' on' : ''}`, onclick: () => { onlyFav = true; draw(); } }, `★ favoritos (${p.fav.filter((k) => keys.includes(k)).length})`),
       aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
     grid.replaceChildren(...(shown.length ? shown.map((x) => {
       const k = keyOf(x); const fav = p.fav.includes(k); const off = p.hidden.includes(k);
-      return h('div', { class: `jgx-cell${off ? ' off' : ''}` }, card(x),
+      return h('div', { class: `jgx-cell${off ? ' off' : ''}`, 'data-key': k }, card(x, editing),
         h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => savePrefs({ ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }) }, fav ? '★' : '☆'),
         editing ? h('div', { class: 'jgx-ctl' },
-          h('button', { type: 'button', 'aria-label': `Mover ${x[1]} pra trás`, onclick: () => move(k, -1) }, '‹'),
-          h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => savePrefs({ ...p, hidden: off ? p.hidden.filter((y) => y !== k) : [...p.hidden, k] }) }, off ? '↺' : '✕'),
-          h('button', { type: 'button', 'aria-label': `Mover ${x[1]} pra frente`, onclick: () => move(k, 1) }, '›')) : null);
+          h('button', { type: 'button', class: 'jgx-grip', 'aria-label': `Arrastar ${x[1]} pra mudar de lugar` }, '⠿'),
+          h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => savePrefs({ ...p, hidden: off ? p.hidden.filter((y) => y !== k) : [...p.hidden, k] }) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
   draw();
-  return store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
+  // arrastar pela alça ⠿: a nova ordem dos que estão na tela entra no lugar deles na ordem completa
+  const offDrag = dragSort(grid, { itemSel: '.jgx-cell', handleSel: '.jgx-grip', onDone: (newKeys) => {
+    const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && x[6] === 'bea')).map(keyOf);
+    const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
+    const full = all.map((k, i) => [k, i]).sort((a, c) => rank(a[0]) - rank(c[0]) || a[1] - c[1]).map((x) => x[0]);
+    const set = new Set(newKeys); let n = 0;
+    savePrefs({ ...p, order: full.map((k) => (set.has(k) ? newKeys[n++] : k)) });
+  } });
+  const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
+  return () => { offStore(); offDrag(); };
 }
 
 function game(host, entry) {

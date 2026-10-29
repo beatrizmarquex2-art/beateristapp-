@@ -190,3 +190,5 @@
 .jg-flat{grid-template-columns:repeat(4,minmax(0,1fr))}.jgx-cell{min-width:0}.jgx-cell .jg-card{min-width:0;width:100%}
 @media (max-width:339px){.jg-flat{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .jgx-ctl{gap:1px}.jgx-ctl button{min-width:0;flex:1;padding:0 2px;min-height:32px;font-size:11px}
+
+.jgx-ctl{align-items:center}.jgx-ctl .jgx-grip{flex:2;touch-action:none;cursor:grab;font-size:18px;background:var(--jg-navy);color:#fff;user-select:none;-webkit-user-select:none}
