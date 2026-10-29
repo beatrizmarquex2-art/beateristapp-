@@ -293,3 +293,26 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 @media (prefers-reduced-motion: reduce) { .al-entry .al-hero .al-paul-img { animation: none !important; } }
 /* Paul parado na entrada */
 .al-entry .al-hero .al-paul-img, .al-paul img.al-paul-img { animation: none !important; transform: none; }
+
+/* ===== Paul parado; os rabiscos em volta dele é que se mexem ===== */
+.al-paulbox { position: relative; width: 118px; }
+.al-paulbox .al-paul-img { display: block; width: 118px; height: auto; animation: none !important; }
+.al-el { position: absolute; pointer-events: none; user-select: none; height: auto; }
+.el-a { width: 30px; top: -6px; left: -12px; animation: alTwinkle 2.2s ease-in-out infinite; }
+.el-b { width: 24px; top: 0; right: -12px; animation: alFloat 2.8s ease-in-out -.6s infinite; }
+.el-c { width: 24px; bottom: 34px; left: -14px; animation: alPulse 1.6s ease-in-out -.3s infinite; }
+.el-d { width: 22px; bottom: 6px; right: -10px; animation: alFlicker 2.4s steps(1, end) infinite; }
+.el-e { width: 17px; top: 46%; right: -14px; animation: alTwinkle 1.9s ease-in-out -.9s infinite; }
+.el-f { width: 20px; top: -10px; left: 48%; animation: alFloat 3.2s ease-in-out -1.4s infinite; }
+@keyframes alTwinkle { 0%, 100% { transform: scale(.75) rotate(-8deg); opacity: .65; } 50% { transform: scale(1.15) rotate(10deg); opacity: 1; } }
+@keyframes alFloat { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-7px) rotate(6deg); } }
+@keyframes alPulse { 0%, 100% { transform: scale(.85); } 50% { transform: scale(1.2); } }
+@keyframes alFlicker { 0%, 100% { opacity: 1; } 45% { opacity: .25; } 55% { opacity: 1; } 75% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .al-el { animation: none !important; } }
+/* no app todo: o Paul não se mexe; os rabiscos em volta (e o brilho) é que ganham vida */
+.rb .rb-img, .bn-paul, .bn-paul.hit { animation: none !important; }
+.rb-fig { position: relative; }
+.rb-fig::before, .rb-fig::after { content: ""; position: absolute; width: 20px; height: 20px; background: center / contain no-repeat; pointer-events: none; }
+.rb-fig::before { top: -6px; left: -6px; background-image: url(../assets/paul/el/estrela-ouro.webp); animation: alTwinkle 2.2s ease-in-out infinite; }
+.rb-fig::after { top: -2px; right: -4px; width: 18px; height: 18px; background-image: url(../assets/paul/el/nota-vermelha.webp); animation: alFloat 2.8s ease-in-out -.8s infinite; }
+@media (prefers-reduced-motion: reduce) { .rb-fig::before, .rb-fig::after { animation: none !important; } }

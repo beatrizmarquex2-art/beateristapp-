@@ -147,7 +147,10 @@ function askName() {
     start();
   } },
     h('div', { class: 'al-hero' },
-      h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 120, height: 158 }),
+      h('div', { class: 'al-paulbox' },
+        h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista', width: 120, height: 158 }),
+        // o Paul fica parado; o que se mexe são os rabiscos em volta dele
+        ...[['estrela-ouro', 'a'], ['nota-vermelha', 'b'], ['coracao', 'c'], ['raio', 'd'], ['estrela-azul-p', 'e'], ['nota-preta', 'f']].map(([n, k]) => h('img', { class: `al-el el-${k}`, src: `assets/paul/el/${n}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
       h('div', { class: 'al-hero-txt' },
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
