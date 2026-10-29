@@ -3,6 +3,7 @@ import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as G from './domino-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
+import { ouvirPeca, ouvirValor } from './ouvir.js';
 
 const ID = 'domino';
 const PLAYER = (mode, p) => (mode === 'paul' ? (p === 0 ? 'você' : 'Paul') : `jogador ${p + 1}`);
@@ -21,7 +22,7 @@ const tileEl = (l, r, opts) => h('span', { class: `jg-tile${l === r ? ' dbl' : '
 export function mount(host) {
   let gone = false; let timer = 0;
   const saved = getGame(ID);
-  const prefs = { mode: saved.mode === 'local' ? 'local' : 'paul', level: saved.level === 'desafio' ? 'desafio' : 'iniciante' };
+  const prefs = { mode: saved.mode === 'local' ? 'local' : 'paul', level: saved.level === 'desafio' ? 'desafio' : 'iniciante', hint: saved.hint === 'sem' ? 'sem' : 'com' };
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let g = null; let selected = null; let msg = ''; let hidden = false; let names = false; let recorded = false;
   const root = h('div', { class: 'jg jg-domino' });
@@ -40,13 +41,14 @@ export function mount(host) {
     const seg = (key, opts) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...opts.map(([val, label]) => h('button', {
       type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === val), class: prefs[key] === val ? 'on' : '', onclick: () => { prefs[key] = val; setGame(ID, { [key]: val }); intro(); },
     }, label)));
-    const legend = h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda das durações' }, ...[0, 1, 2, 3, 4, 5, 6].map((v) => h('div', { class: 'jg-leg', role: 'listitem', 'aria-label': G.valueName(v) }, half(v, {}), h('small', {}, v === 0 ? 'zero' : G.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')))));
+    const legend = h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda das durações' }, ...[0, 1, 2, 3, 4, 5, 6].map((v) => h('button', { type: 'button', class: 'jg-leg', role: 'listitem', 'aria-label': `${G.valueName(v)} (toque para ouvir)`, onclick: () => { sfx('tap'); ouvirValor(v, (x) => G.FIGS[x]); } }, half(v, {}), h('small', {}, v === 0 ? 'zero' : G.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')))));
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'dominó'),
       h('p', { class: 'jg-p' }, 'neste jogo, a semínima vale 1 tempo. encaixe pelo valor total da metade, somando as durações.'),
-      legend,
+      legend, h('p', { class: 'jg-p muted' }, '🔊 toque numa figura da legenda (ou numa peça no jogo) pra ouvir.'),
       h('p', { class: 'jg-lab' }, 'contra quem?'), seg('mode', [['paul', 'contra o paul'], ['local', 'dois no aparelho']]),
       h('p', { class: 'jg-lab' }, 'nível'), seg('level', [['iniciante', 'iniciante · com números'], ['desafio', 'desafio · sem números']]),
+      h('p', { class: 'jg-lab' }, 'dicas'), seg('hint', [['com', 'com dica'], ['sem', 'sem dica']]),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'),
         h('ul', {}, h('li', {}, 'cada um começa com 7 peças; o monte guarda as outras 14.'), h('li', {}, 'começa quem tem o maior duplo (sem duplo, a maior soma). quem começa abre com qualquer peça.'),
           h('li', {}, 'toque numa peça da mão e depois na ponta onde ela encaixa. o valor da metade precisa ser igual ao da ponta.'),
@@ -66,6 +68,7 @@ export function mount(host) {
 
   /* ---------- mesa ---------- */
   const opts = () => ({ hideNum: prefs.level === 'desafio' });
+  const dica = () => prefs.hint !== 'sem'; // com dica: peças que servem ficam destacadas e as pontas mostram o valor
 
   function paint() {
     if (!g) return;
@@ -80,15 +83,15 @@ export function mount(host) {
       g.chain.length ? g.chain.map((c) => h('div', { class: 'jg-slot', role: 'img', 'aria-label': tileLabel(c.l, c.r) }, tileEl(c.l, c.r, opts()))) : h('p', { class: 'jg-empty' }, 'mesa vazia: abra com qualquer peça'));
     const endBtn = (side) => {
       const ok = sides.includes(side) && g.chain.length > 0 && canMove;
-      return h('button', { type: 'button', class: `jg-end${ok ? ' go' : ''}`, disabled: !ok, 'aria-label': `encaixar na ponta ${side === 'L' ? 'esquerda' : 'direita'}${e ? ` (valor ${e[side]})` : ''}`, onclick: () => play(side) },
-        side === 'L' ? '◀' : null, h('b', {}, e ? String(e[side]) : '–'), side === 'R' ? '▶' : null);
+      return h('button', { type: 'button', class: `jg-end${ok ? ' go' : ''}`, disabled: !ok, 'aria-label': `encaixar na ponta ${side === 'L' ? 'esquerda' : 'direita'}${e && dica() ? ` (valor ${e[side]})` : ''}`, onclick: () => play(side) },
+        side === 'L' ? '◀' : null, h('b', {}, e && dica() ? String(e[side]) : '–'), side === 'R' ? '▶' : null);
     };
     const canD = human() && !hidden && G.canDraw(g); const canP = human() && !hidden && G.canPass(g);
 
     const handStrip = h('div', { class: 'jg-hand', role: 'group', 'aria-label': hidden ? 'mão oculta' : 'sua mão' }, hidden ? h('p', { class: 'jg-empty' }, 'mão oculta') : hand.map((t) => {
       const fits = G.sidesFor(t, g.chain).length > 0;
       return h('div', { class: 'jg-hcell' },
-        h('button', { type: 'button', class: `jg-hbtn${t.id === selected ? ' sel' : ''}${canMove && fits ? ' fit' : ''}`, 'aria-pressed': String(t.id === selected), 'aria-label': tileLabel(t.a, t.b), disabled: !canMove, onclick: () => pick(t) }, tileEl(t.a, t.b, opts())),
+        h('button', { type: 'button', class: `jg-hbtn${t.id === selected ? ' sel' : ''}${canMove && fits && dica() ? ' fit' : ''}`, 'aria-pressed': String(t.id === selected), 'aria-label': tileLabel(t.a, t.b), disabled: !canMove, onclick: () => pick(t) }, tileEl(t.a, t.b, opts())),
         names ? h('small', { class: 'jg-nm' }, [t.a, t.b].map((v) => (v === 0 ? 'zero' : G.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join('+'))).join(' | ')) : null);
     }));
 
@@ -96,14 +99,14 @@ export function mount(host) {
       h('div', { class: 'jg-bar' },
         h('div', { class: 'jg-who' }, h('b', {}, g.mode === 'paul' ? 'paul' : `jogador ${opp + 1}`), h('span', {}, `${g.hands[opp].length} peça${g.hands[opp].length === 1 ? '' : 's'}`), h('span', { class: 'jg-back', 'aria-hidden': 'true' }, ...g.hands[opp].slice(0, 7).map(() => h('i', {})))),
         h('div', { class: 'jg-who' }, h('b', {}, 'monte'), h('span', {}, `${g.stock.length}`)),
-        h('div', { class: 'jg-who' }, h('b', {}, 'pontas'), h('span', {}, e ? `${e.L} e ${e.R}` : '—'))),
+        h('div', { class: 'jg-who' }, h('b', {}, 'pontas'), h('span', {}, e && dica() ? `${e.L} e ${e.R}` : '—'))),
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, status),
       h('div', { class: 'jg-table' }, endBtn('L'), chain, endBtn('R')),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
       g.over ? result() : h('div', { class: 'jg-actions row' },
         h('button', { class: 'btn small', type: 'button', disabled: !canD, onclick: draw1 }, 'comprar'),
         h('button', { class: 'btn small', type: 'button', disabled: !canP, onclick: pass1 }, 'passar'),
-        sel && canMove && g.chain.length && sides.length === 2 ? h('small', { class: 'muted' }, 'serve nas duas pontas: escolha uma') : null,
+        sel && canMove && g.chain.length && sides.length === 2 && dica() ? h('small', { class: 'muted' }, 'serve nas duas pontas: escolha uma') : null,
         prefs.level === 'desafio' && !hidden ? h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(names), onclick: () => { names = !names; draw(); } }, names ? 'esconder nomes' : 'ver nomes') : null),
       handStrip);
     const ch = root.querySelector('.jg-chain'); if (ch && g.chain.length) ch.scrollLeft = ch.scrollWidth; // mostra a jogada mais recente
@@ -111,9 +114,9 @@ export function mount(host) {
 
   function pick(t) {
     if (!human() || hidden) return;
-    sfx('tap');
+    sfx('tap'); ouvirPeca(t.a, t.b, (v) => G.FIGS[v]); // ouve o que está na peça
     const sides = G.sidesFor(t, g.chain);
-    if (!sides.length) { selected = null; const e = G.ends(g.chain); say(`essa peça não encaixa: as pontas valem ${e.L} e ${e.R}`); sfx('bad'); draw(); return; }
+    if (!sides.length) { selected = null; const e = G.ends(g.chain); say(dica() ? `essa peça não encaixa: as pontas valem ${e.L} e ${e.R}` : 'essa peça não encaixa'); sfx('bad'); draw(); return; }
     selected = t.id; say('');
     if (sides.length === 1) { play(sides[0]); return; }
     say('escolha a ponta: ◀ ou ▶'); draw();

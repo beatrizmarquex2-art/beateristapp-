@@ -3,6 +3,7 @@ import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as C from './cartas-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
+import { ouvirValor } from './ouvir.js';
 
 const ID = 'cartas';
 const PLAYER = (mode, p) => (mode === 'paul' ? (p === 0 ? 'você' : 'Paul') : `jogador ${p + 1}`);
@@ -36,7 +37,8 @@ const isNum = C.isNum;
 export function mount(host) {
   let gone = false; let timer = 0;
   const saved = getGame(ID);
-  const prefs = { mode: saved.mode === 'local' ? 'local' : 'paul' };
+  const prefs = { mode: saved.mode === 'local' ? 'local' : 'paul', hint: saved.hint === 'sem' ? 'sem' : 'com' };
+  const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let g = null; let hidden = false; let picking = null; let recorded = false;
   const root = h('div', { class: 'jg jg-cartas' }); host.replaceChildren(root);
@@ -51,8 +53,10 @@ export function mount(host) {
     const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['paul', 'contra o paul'], ['local', 'dois no aparelho']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; setGame(ID, { mode: v }); intro(); } }, l)));
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'última nota'), h('p', { class: 'jg-p' }, 'números e figuras. neste jogo, a semínima vale 1 tempo: cada número é a soma das durações da carta.'),
-      h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda dos números' }, ...[1, 2, 3, 4, 5, 6].map((v) => h('div', { class: 'jg-leg', role: 'listitem', 'aria-label': `${v}: ${C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')}` }, face({ color: 'azul', kind: 'num', value: v }, true), h('small', {}, C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + '))))),
+      h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda dos números' }, ...[1, 2, 3, 4, 5, 6].map((v) => h('button', { type: 'button', class: 'jg-leg', role: 'listitem', onclick: () => { sfx('tap'); ouvirValor(v, (x) => C.FIGS[x]); }, 'aria-label': `${v} (toque para ouvir): ${C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')}` }, face({ color: 'azul', kind: 'num', value: v }, true), h('small', {}, C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + '))))),
+      h('p', { class: 'jg-p muted' }, '🔊 toque numa carta da legenda (ou numa carta no jogo) pra ouvir.'),
       h('p', { class: 'jg-lab' }, 'contra quem?'), seg,
+      h('p', { class: 'jg-lab' }, 'dicas'), h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['com', 'com dica'], ['sem', 'sem dica']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.hint === v), class: prefs.hint === v ? 'on' : '', onclick: () => { prefs.hint = v; setGame(ID, { hint: v }); intro(); } }, l))),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor, do mesmo número ou da mesma ação que a do descarte.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma. se servir, jogue ou passe; se não servir, passa sozinho.'),
@@ -70,7 +74,7 @@ export function mount(host) {
   function paint() {
     const me = g.mode === 'paul' ? 0 : g.turn; const opp = 1 - me; const hand = g.hands[me];
     const top = C.topOf(g); const canMove = human() && !hidden;
-    const legal = new Set(canMove ? C.legalCards(g, me).map((c) => c.id) : []);
+    const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
     const status = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : 'vez do paul…') : `vez do ${PLAYER(g.mode, g.turn)}`;
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const colorTxt = `cor ativa: ${C.COLOR_NAME[g.color]} (${C.COLOR_SYMBOL[g.color]})`;
@@ -80,7 +84,7 @@ export function mount(host) {
         h('div', { class: 'jg-who' }, h('b', {}, 'monte'), h('span', {}, String(C.available(g))))),
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, status),
       h('div', { class: 'jg-pile' },
-        h('button', { type: 'button', class: `jg-deck${canD ? ' fit' : ''}`, disabled: !canD, 'aria-label': 'comprar uma carta', onclick: draw1 }, h('span', { class: 'jg-card-u back', 'aria-hidden': 'true' }, h('b', {}, '♪')), h('small', {}, 'comprar')),
+        h('button', { type: 'button', class: `jg-deck${canD && dica() ? ' fit' : ''}`, disabled: !canD, 'aria-label': 'comprar uma carta', onclick: draw1 }, h('span', { class: 'jg-card-u back', 'aria-hidden': 'true' }, h('b', {}, '♪')), h('small', {}, 'comprar')),
         h('div', { class: 'jg-top', role: 'img', 'aria-label': `descarte: ${C.cardName(top)}` }, face(top)),
         h('div', { class: `jg-active c-${g.color}` }, svg(SYM[g.color], 'jg-cs'), h('b', {}, colorTxt))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.note), last ? h('p', { class: 'jg-last', role: 'status' }, last) : null,
@@ -99,8 +103,8 @@ export function mount(host) {
   }
 
   function pick(c) {
-    if (!human() || hidden) return; sfx('tap');
-    if (!C.legalCards(g, g.turn).some((x) => x.id === c.id)) { g = { ...g, note: g.drawn ? 'só a carta comprada pode ser jogada' : `essa carta não serve: o descarte é ${C.cardName(C.topOf(g))}` }; sfx('bad'); paint(); return; }
+    if (!human() || hidden) return; sfx('tap'); if (C.FIGS[c.value]) ouvirValor(c.value, (v) => C.FIGS[v]); // ouve o que está na carta
+    if (!C.legalCards(g, g.turn).some((x) => x.id === c.id)) { g = { ...g, note: g.drawn ? 'só a carta comprada pode ser jogada' : dica() ? `essa carta não serve: o descarte é ${C.cardName(C.topOf(g))}` : 'essa carta não serve' }; sfx('bad'); paint(); return; }
     if (C.isWild(c)) { picking = c.id; paint(); return; }
     play(c.id);
   }

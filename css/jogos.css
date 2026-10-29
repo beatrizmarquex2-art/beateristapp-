@@ -244,3 +244,30 @@
 .jg-game .jg-top .btn.small{padding:0 10px;font-size:12px;min-height:38px}.jg-game .jg-snd{min-width:38px;min-height:38px;padding:0}
 .jg-game .jg-link{padding:0 8px}
 .jg-cat .jgx-bar{position:relative;z-index:4;padding-top:24px}
+/* legenda tocável (ouvir a figura) */
+button.jg-leg{border:0;background:transparent;font:inherit;color:inherit;cursor:pointer;padding:2px;border-radius:12px;min-height:44px}
+button.jg-leg:active{transform:scale(.95)}
+
+/* ===== cores por tema (menos bege) e alinhamento ===== */
+.jg{--jg-paper:#BFD7F2;--jg-board:#17365B;--jg-fit:#EBA332}
+html[data-space="beaterista"] .jg{--jg-paper:#FFD66B;--jg-board:#1d3a6b;--jg-fit:#1d3a6b}
+html[data-space="bea"] .jg{--jg-paper:#F4B9C0;--jg-board:#8e1b30;--jg-fit:#FFD66B}
+.jg-game::before,.jg-cat::before{background:var(--jg-paper) url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply}
+.jg-game .jg-board,.jg-game .jg-chain,.jg-game .jg-bingo .jg-bcard,.jg-game .jg-cgrid,.jg-game .jg-tray{background:var(--jg-board) url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;box-shadow:inset 0 0 0 2px rgb(255 255 255 / .45),3px 4px 0 rgb(20 32 54 / .3);color:#fff}
+.jg-game .jg-chain .jg-empty,.jg-game .jg-chain p{color:#fff;opacity:1}
+.jg-game .jg-hbtn.fit{border-color:var(--jg-fit);background:rgb(255 255 255 / .6)}
+.jg-game .jg-msg{color:var(--sp-dark,#17365B);font-weight:700}
+.jg-game .jg-link{color:var(--sp-dark,#17365B)}
+.jg-game .jg-result{background:#fffdf7;transform:none}
+.jg-game .jg-title{transform:rotate(-1deg)}
+/* tudo reto e alinhado: sem inclinar botões, casas e cartões */
+.jg-game .jg-seg button:nth-child(odd),.jg-game .jg-seg button:nth-child(even),.jg-game .jg-cell:nth-child(3n+1),.jg-game .jg-cell:nth-child(3n+2),.jg-cat .jgx-cell:nth-child(odd) .jg-card,.jg-cat .jgx-cell:nth-child(even) .jg-card{transform:none}
+.jg-game .jg-top,.jg-cat .jg-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;column-gap:6px;padding:14px 20px 8px}
+.jg-game .jg-title{justify-self:start;max-width:100%;font-size:17px}
+.jg-game .jg-body{padding:0 20px 34px}
+.jg-game .jg-seg{margin:2px 0 4px}.jg-game .jg-seg button{min-height:44px}
+.jg-game .jg-bar{align-items:flex-start}
+.jg-game .jg-board{margin:16px auto}
+.jg-cat .jg-grid{padding:8px 16px 18px;gap:12px 10px}
+.jg-cat .jgx-bar{padding:24px 16px 0}
+.jg-game .jg-title{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.05;font-size:16px;padding:6px 14px 8px 12px;min-width:0}
