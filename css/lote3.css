@@ -384,7 +384,7 @@ body.rz-lock .pt-think { display: none; }
 .drawer-b .drawer-search input, .drawer-b select { background: #fbf7ee; color: #14284b; }
 .drawer-b .lib-tab { color: #fbf7ee; border-color: #fbf7ee; } .drawer-b .lib-tab.on { background: #ffd166; color: #14284b; border-color: #ffd166; }
 .drawer-b .muted, .drawer-b .drawer-editnote p { color: #b9c4dd; }
-.drawer-b .drawer-head strong img { background: #fbf7ee; border-radius: 8px; padding: 2px 8px; }
+.drawer-b .drawer-head strong img { height: 52px; width: auto; max-width: 100%; display: block; }
 
 /* atalhos fixos no alto do menu (Criar ritmos, Tempo) */
 .drawer-pins { display: flex; gap: 8px; padding: 8px 0 2px; }

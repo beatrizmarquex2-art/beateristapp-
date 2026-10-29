@@ -164,7 +164,7 @@ export function openMenu() {
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });
   const panel = h('nav', { class: `drawer${SP === 'beaterista' ? ' drawer-b' : ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Menu' },
-    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', height: 30 })), editBtn,
+    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, SP === 'beaterista' ? h('img', { src: 'assets/logo-menu-beaterista.webp', alt: 'Beaterista', height: 52 }) : h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', height: 30 })), editBtn,
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar menu', onclick: close }, icon('x', 22))),
     h('div', { class: 'drawer-search' }, search),
     h('div', { class: 'drawer-pins' }, ...[['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/hub/tempo', 'timer', 'Tempo']].map(([href, ic, label]) => h('a', { href, class: 'drawer-pin', onclick: close }, icon(ic, 18), label))),
