@@ -46,7 +46,7 @@ export function openPersonalize() {
       motion.replaceChildren(h('span', {}, h('span', {}, 'Animações leves'), h('small', { style: { display: 'block', fontWeight: 400 } }, 'o iPhone em “Reduzir movimento” sempre desliga')),
         sw(motionOn(), 'Animações leves', () => setMotion(!motionOn())));
     }
-    const draw = () => { drawThemes(); drawFonts(); drawSecs(); drawMotion(); };
+    const draw = () => { drawThemes(); drawSecs(); drawMotion(); };
     draw();
     const off = store.subscribe((i) => { if (!i.kind || i.kind === 'setting') draw(); });
     const obs = new MutationObserver(() => { if (!document.body.contains(secs)) { off(); obs.disconnect(); } });
@@ -54,7 +54,6 @@ export function openPersonalize() {
 
     return h('div', { class: 'sheet-body' },
       THEMES.length > 1 ? h('h3', { class: 'sec-title' }, 'Tema') : null, THEMES.length > 1 ? themes : null,
-      h('h3', { class: 'sec-title' }, 'Fonte dos títulos'), fonts,
       h('h3', { class: 'sec-title' }, 'Frase do topo'), h('p', { class: 'muted' }, 'muda sozinha a cada 8 horas, com insights de valor, liderança, poder, dinheiro e prosperidade.'),
       h('h3', { class: 'sec-title' }, 'Foto da capa'),
       h('button', { class: 'btn ghost small', type: 'button', onclick: openCover }, 'Trocar foto da capa'),
