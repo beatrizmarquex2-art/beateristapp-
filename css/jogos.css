@@ -171,3 +171,9 @@
 .dc-wrap .dc-c{border-color:var(--jg-navy);border-radius:4px}
 .dc-wrap .dc-explain{border-left-color:var(--jg-mus)}
 @media (prefers-reduced-motion:reduce){.dc-pick.on{transform:none}}
+/* hub: tudo numa grade só, ícones menores com o nome embaixo */
+.jg-flat{grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 8px 14px}
+.jg-flat .jg-card{padding:4px 2px 6px;border-radius:12px}
+.jg-flat .jg-card b{font-size:11px}
+.jg-flat .jg-ico{aspect-ratio:1/1}
+@media (max-width:339px){.jg-flat{grid-template-columns:repeat(3,1fr)}}

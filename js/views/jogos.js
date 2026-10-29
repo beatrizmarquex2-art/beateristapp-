@@ -55,14 +55,11 @@ const SECTIONS = [
 function catalog(host) {
   const aluno = ALUNO();
   const card = ([id, title, img, mod, sub, href]) => {
-    const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), sub ? h('small', {}, sub) : null];
+    const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), null];
     return h('a', { class: 'jg-card', href: href || `#/jogos/${id}` }, ...kids);
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' },
-    ...SECTIONS.map(([title, list]) => {
-      const shown = list.filter((x) => !(aluno && x[6] === 'bea'));
-      return shown.length ? h('section', { class: 'jg-sec' }, h('h2', { class: 'jg-sech hand' }, title), h('div', { class: 'jg-grid' }, ...shown.map(card))) : null;
-    }).filter(Boolean)));
+    h('div', { class: 'jg-grid jg-flat' }, ...SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && x[6] === 'bea')).map(card))));
 }
 
 function game(host, entry) {
