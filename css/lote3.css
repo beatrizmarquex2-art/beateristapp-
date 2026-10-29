@@ -271,3 +271,18 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .al-entry[data-op="3"] .login-card { order: 0; } .al-entry[data-op="3"] .al-games { order: 2; } .al-entry[data-op="3"] .al-foot { order: 3; }
 .al-hero-txt .al-bubble { font-family: 'Gochi Hand', var(--hand); font-weight: 400; font-size: 19px; line-height: 1.15; letter-spacing: .01em; }
 .al-hero-txt .al-bubble { font-size: 15.5px; } .al-entry[data-op="1"] .al-hero-txt .al-bubble { font-size: 16px; }
+
+/* ===== entrada final (opção 2): cabeçalho com marca + redes, cartão com Paul e formulário, parceiros embaixo ===== */
+.al-entry .al-top { display: flex; align-items: center; justify-content: space-between; order: -1; padding: 0 4px; }
+.al-entry .al-top .login-logo { width: 46px; height: 46px; } .al-entry .al-top .login-title img { width: 132px; }
+.al-entry .al-top .al-mini { gap: 10px; } .al-entry .al-top .al-soc { width: 40px; height: 40px; } .al-entry .al-top .al-soc svg { width: 20px; height: 20px; }
+.al-entry.login { gap: 14px; padding-top: 12px; padding-bottom: 10px; }
+.al-entry .al-hero-txt .al-bubble { font-size: 17px; line-height: 1.12; padding-bottom: 8px; }
+.al-entry .al-foot { padding: 6px 10px 0; }
+.al-entry .al-foot .partners { display: grid; justify-items: center; gap: 4px; margin: 0; }
+.al-entry .al-foot .partners-img { width: 280px; max-width: 86%; height: auto; margin: 0; }
+.al-entry .al-foot .partners-label { font-size: 13px; }
+@media (min-width: 700px) { .al-entry .al-top .al-soc { width: 48px; height: 48px; } .al-entry .al-foot .partners-img { width: 360px; } }
+.al-entry .al-foot .partners-img { width: 330px; max-width: 94%; }
+.al-entry.login { gap: 20px; }
+.al-entry .al-foot .partners-label { font-size: 14px; }
