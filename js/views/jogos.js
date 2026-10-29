@@ -3,11 +3,12 @@ import { h } from '../util.js';
 import { banner } from '../ui.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import * as domino from '../jogos/domino.js';
+import * as cartas from '../jogos/cartas.js';
 
 const IMG = 'assets/jogos/icones/';
 const GAMES = [
   ['domino', 'dominó', 'domino', domino],
-  ['cartas', 'última nota', 'cartas', null, 'números e figuras'],
+  ['cartas', 'última nota', 'cartas', cartas, 'números e figuras'],
   ['bingo', 'bingo', 'bingo', null],
   ['velha', 'jogo da velha', 'velha', null],
   ['quebra', 'quebra-cabeça', 'quebra-cabeca', null],
