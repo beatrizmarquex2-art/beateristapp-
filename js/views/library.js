@@ -72,7 +72,7 @@ const GROUPS = [
 const MURAL = (n) => `url(assets/mural/${n}.svg)`;
 const dayKey = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
 const dayLabel = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'short' }).format(new Date()).replace('.', '');
-const TODO = ['ler 1', 'anotar 1 ideia', 'postar 1 arte'];
+const TODO = ['ler', 'anotar', 'postar'];
 const readTodo = () => { try { return JSON.parse(localStorage.getItem(`estudos-hoje-${dayKey()}`)) || []; } catch { return []; } };
 const saveTodo = (v) => { try { localStorage.setItem(`estudos-hoje-${dayKey()}`, JSON.stringify(v)); } catch { /* sem armazenamento: segue sem lembrar */ } };
 const searchIcon = () => { const n = 'http://www.w3.org/2000/svg'; const s = document.createElementNS(n, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', 18); s.setAttribute('height', 18); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', 2); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.5-4.5"/>'; return s; };

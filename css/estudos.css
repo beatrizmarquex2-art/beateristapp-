@@ -51,10 +51,14 @@
 .hoje .h-bar i { display: block; height: 100%; background: var(--red); border-radius: 99px; }
 .hoje .h-star { appearance: none; border: 0; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: rgb(27 24 24 / .3); min-width: 44px; min-height: 44px; }
 .hoje .h-star[aria-pressed="true"] { color: var(--red); }
-.hoje .h-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-.hoje .h-chips label { display: flex; align-items: center; gap: 6px; font-size: 13px; background: var(--paper2); border: 1px solid var(--ink); border-radius: 99px; padding: 6px 11px 6px 8px; cursor: pointer; min-height: 40px; flex: none; white-space: nowrap; box-sizing: border-box; }
-.hoje .h-chips input { accent-color: var(--red); margin: 0; width: 18px; height: 18px; }
-.hoje .h-chips label:has(input:checked) { background: var(--red); color: #fff; border-color: var(--red); text-decoration: line-through; }
+.hoje .h-chips { display: flex; gap: 22px; align-items: center; padding: 2px 4px; }
+.hoje .h-chips label { display: inline-flex; align-items: center; gap: 8px; font: 15px "Special Elite", "Courier New", monospace; color: var(--ink); cursor: pointer; min-height: 44px; }
+.hoje .h-chips input[type="checkbox"] { appearance: none; -webkit-appearance: none; margin: 0; padding: 0; min-height: 0; min-width: 0; box-shadow: none; width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 50% !important; display: grid; place-content: center; cursor: pointer; background: transparent; flex: none; }
+.hoje .h-chips input[type="checkbox"]::after { content: "✓"; font: 700 15px/1 var(--body); color: #fff; transform: scale(0); transition: transform .12s; }
+.hoje .h-chips input[type="checkbox"]:checked { background: var(--red); border-color: var(--red); }
+.hoje .h-chips input[type="checkbox"]:checked::after { transform: scale(1); }
+.hoje .h-chips label:has(input:checked) { color: var(--red); }
+.hoje .h-chips input[type="checkbox"]:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 .hoje .h-swipe { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 6px; scroll-snap-type: x proximity; scrollbar-width: none; margin: 0 -2px; }
 .hoje .h-swipe::-webkit-scrollbar { display: none; }
 .hoje .h-group { flex: none; width: 168px; scroll-snap-align: start; background: var(--paper2); border: 1.5px solid var(--ink); border-radius: 4px 14px 5px 14px; padding: 10px 12px 10px; display: grid; gap: 6px; }
