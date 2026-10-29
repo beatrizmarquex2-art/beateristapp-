@@ -1,0 +1,36 @@
+// Bateria de toque: grava até 30 s e toca em loop (parar / recomeçar).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+const page = await ctx.newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
+await page.goto(`${url}/aluno.html#/toque`); await sleep(1500);
+const box = await page.locator('.tk-art svg').boundingBox();
+const tap = (fx, fy) => page.mouse.click(box.x + box.width * fx, box.y + box.height * fy);
+const started = () => page.evaluate(() => window.__ac.started);
+const status = () => page.locator('.tr-status').innerText();
+const btn = (t) => page.locator(`.tk-panel button:has-text("${t}")`).first();
+// sem contagem e sem clique, pra ir direto
+await btn('contagem').click(); await sleep(200); await btn('clique').click(); await sleep(200);
+await btn('gravar').click(); await sleep(500);
+check('gravando: mostra o tempo', /gravando/.test(await status()), await status());
+await tap(.5, .65); await sleep(400); await tap(.2, .3); await sleep(400); await tap(.8, .7); await sleep(300);
+await btn('parar').click(); await sleep(600);
+check('ao parar, entra em loop', /em loop/.test(await status()), await status());
+check('botões parar e recomeçar aparecem', (await btn('parar').count()) === 1 && (await btn('recomeçar').count()) === 1);
+const s0 = await started(); await sleep(7000); const s1 = await started();
+check('o loop repete (soa de novo sozinho)', s1 - s0 >= 6, `${s1 - s0} sons em 7 s`);
+await btn('parar').click(); await sleep(500);
+const s2 = await started(); await sleep(4500); const s3 = await started();
+check('parar silencia o loop', s3 - s2 <= 1, `${s3 - s2} sons depois de parar`);
+check('dá pra tocar o loop de novo', (await btn('tocar em loop').count()) === 1);
+await btn('recomeçar').click(); await sleep(500);
+check('recomeçar volta a gravar', /gravando/.test(await status()), await status());
+await tap(.5, .65);
+await sleep(30500);
+check('para sozinho em 30 s e entra em loop', /em loop/.test(await status()), await status());
+const m = (await status()).match(/em loop · (\d+):(\d+)/); const secs = m ? +m[1] * 60 + +m[2] : 99;
+check('o loop não passa de 30 s', secs <= 30, `${secs} s`);
+check('sem erros de JS na página', errs.length === 0, errs.slice(0, 3).join(' | '));
+const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);

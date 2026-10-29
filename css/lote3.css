@@ -460,3 +460,8 @@ html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selecte
 .de-grip { flex: none; width: 36px; height: 40px; border: 0; background: transparent; color: inherit; font-size: 20px; opacity: .7; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .drawer-edit { align-items: center; }
 .drawer-edit { grid-template-columns: 36px 1fr; } .drawer-edit .de-act { grid-column: 1 / -1; }
+
+/* bateria de toque: gravar em loop */
+.tk-ctrls{display:flex;gap:8px;flex-wrap:wrap}.tk-big{min-height:52px;font-size:16px;flex:1 1 140px}
+.tk-progress{height:12px;border:2px solid #1b1818;border-radius:7px;overflow:hidden;background:#fffdf7;margin:6px 0}.tk-prog{display:block;height:100%;width:0;background:var(--accent)}
+.tk-opts{margin:6px 0;flex-wrap:wrap}
