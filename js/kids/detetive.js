@@ -114,7 +114,7 @@ export function runDetetive(game, ctx) {
     const go = h('button', { class: 'kd-btn', type: 'button', onclick: async () => {
       go.disabled = true; hear.disabled = true;
       const pad = mode === 'tela' ? h('button', { class: 'kx-pad', type: 'button' }, `toca o ${ROW_NAME[row]}!`) : h('div', { class: 'kx-pad mic' }, '🎙 escutando…'); padBox.replaceChildren(pad);
-      cap = capture({ mode, pad: mode === 'tela' ? pad : null, bpm, beats, onCount: (n) => { fb.className = 'kd-fb kx-fb'; fb.textContent = n < 4 ? `contando… ${n + 1}` : '🎯 agora!'; } });
+      cap = capture({ mode, pad: mode === 'tela' ? pad : null, bpm, beats, tapSound: () => VOICE[row](audio().currentTime, 0.9), onCount: (n) => { fb.className = 'kd-fb kx-fb'; fb.textContent = n < 4 ? `contando… ${n + 1}` : '🎯 agora!'; } });
       if (window.__kidsTest) window.__kidsTest.expected = rowTimes(g, row, bpm, 2, 0);
       let res; try { res = await cap.done; } catch (e) { cap = null; mode = 'tela'; padBox.replaceChildren(); go.disabled = false; hear.disabled = false; fb.className = 'kd-fb kx-fb no'; fb.textContent = 'não consegui abrir o microfone. vou usar a tela!'; return; }
       cap = null; if (gone) return; padBox.replaceChildren();

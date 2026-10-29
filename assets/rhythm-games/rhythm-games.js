@@ -215,7 +215,7 @@ const RZ_KIT_N=[3,4,5],RZ_PIANO_N=[3,4,5,7,8];
 const RZ_PKEYS=['A','S','D','F','G','H','J','K'];
 const RZ_SOL=['dó','dó♯','ré','mi♭','mi','fá','fá♯','sol','lá♭','lá','si♭','si'];
 const RZ_INST={guitarra:{n:'Guitarra'},bateria:{n:'Bateria'},piano:{n:'Teclado'}};
-const RZ_WIN={facil:{pf:.085,gd:.19,spd:.6,n:'Fácil'},medio:{pf:.06,gd:.13,spd:.85,n:'Médio'},dificil:{pf:.045,gd:.1,spd:1.12,n:'Difícil'}};
+const RZ_WIN={facil:{pf:.11,gd:.24,spd:.6,k:1.4,n:'Fácil'},medio:{pf:.08,gd:.16,k:1.22,spd:.85,n:'Médio'},dificil:{pf:.045,gd:.1,spd:1.12,k:1,n:'Difícil'}};
 /* teclado com 3, 4, 5, 7 ou 8 teclas: 3 a 5 viram acorde/pentatônica, 7 é a escala, 8 fecha a oitava */
 function rzPSemis(k,minor){const sc=minor?RS_MIN:RS_MAJ;if(k===7) return sc.slice();if(k===8) return sc.concat([12]);
   return k===3?(minor?[0,3,7]:[0,4,7]):k===4?(minor?[0,3,7,10]:[0,4,7,9]):(minor?[0,3,5,7,10]:[0,2,4,7,9])}
@@ -294,28 +294,31 @@ function rzMult(){return RZ.game==='hero'?Math.min(4,1+Math.floor(RZ.stats.combo
 function rzJudge(n,res){const S=RZ.stats;n.res=res;n.at=performance.now();n.hit=res!=='miss';if(res==='miss'){S.miss++;S.combo=0;if(RZ.game==='setas') RZ.health=Math.max(0,RZ.health-.07);if(RZ.game==='tiles') RZ.lives=Math.max(0,RZ.lives-1)}
   else{S[res]++;S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);const base={pp:100,perfect:90,great:60,good:40}[res];S.score+=base*rzMult()+(RZ.game==='beat'?Math.min(50,S.combo):0);if(RZ.game==='setas') RZ.health=Math.min(1,RZ.health+(res==='good'?.012:.025))}
   const txt={pp:'PERFEITO+',perfect:'Perfeito',great:'Ótimo',good:'Bom',miss:'Errou'}[res];RZ.pops.push({lane:n.lane,txt,res,t:performance.now()});if(RZ.pops.length>10) RZ.pops.shift()}
-function rzTier(d){const W=RZ_WIN[RZ.diff];if(RZ.game==='beat'){if(d<=.025) return 'pp';if(d<=.05) return 'perfect';if(d<=.09) return 'great';if(d<=.13) return 'good';return null}if(d<=W.pf) return 'perfect';if(d<=W.gd) return 'good';return null}
+function rzTier(d){const W=RZ_WIN[RZ.diff];if(RZ.game==='beat'){const k=W.k||1;if(d<=.025*k) return 'pp';if(d<=.05*k) return 'perfect';if(d<=.09*k) return 'great';if(d<=.13*k) return 'good';return null}if(d<=W.pf) return 'perfect';if(d<=W.gd) return 'good';return null}
+/* toque fora do tempo (ou sem nota): ainda assim soa, uma nota da escala da música na pista tocada (silêncio faz a pessoa perder o fio) */
+function rzStray(lane){try{if(!AE.ctx) return;const S=RZ.song||{};const sem=(S.minor?[0,3,5,7,10,12,15,17]:[0,2,4,7,9,12,14,16])[lane%8];const m=(S.root||60)+12+sem;AE.noteOn(m,.5);AE.later(()=>AE.noteOff(m),200)}catch(e){}}
 function rzHitSound(n,lane){const c=AE.ctx;
+  if(!n&&!(RZ.game==='hero'&&(RZ.inst==='bateria'||RZ.inst==='piano'))&&RZ.game!=='beat'){rzStray(lane);return}
   if(RZ.game==='hero'){
     if(RZ.inst==='bateria') AE.drum(n&&n.snd?n.snd:(RZ_KIT_SND[RZ.kn.bateria]||RZ_KIT_SND[4])[lane],c.currentTime,.95);
     else if(RZ.inst==='piano'){const m=n?n.m:RZ.song.root+12+rzPSemis(RZ.kn.piano,RZ.song.minor)[lane];AE.noteOn(m,.7);AE.later(()=>AE.noteOff(m),n&&n.sus?n.sus*1000:260)}
     else if(n) rzGuitar(n.m,c.currentTime,n.sus||n.d||.25,.6,RZ.song.style!=='rock')}
   else if(RZ.game==='tiles'){if(n){const m=n.m;AE.noteOn(m,.75);AE.later(()=>AE.noteOff(m),n.sus?n.sus*1000:320)}}
   else if(RZ.game==='setas'&&n) rzVoice(n.m,c.currentTime,Math.max(.12,n.sus||.15),.6,.5);else if(RZ.game==='beat'){if(n&&n.snd) AE.drum(n.snd,c.currentTime,.95);else if(n&&n.m!=null){const m=n.m;AE.noteOn(m,.75);AE.later(()=>AE.noteOff(m),n.sus?n.sus*1000:300)}else if(!n) AE.drum('wood',c.currentTime,.3)}}
-function rzHit(lane,dir){if(RZ.phase!=='play') return;const s=rzTime();const W=RZ.game==='beat'?.13:RZ_WIN[RZ.diff].gd;
+function rzHit(lane,dir){if(RZ.phase!=='play') return;const s=rzTime();const W=RZ.game==='beat'?.13*(RZ_WIN[RZ.diff].k||1):RZ_WIN[RZ.diff].gd;
   let best=null,bd=9;for(const n of RZ.chart){if(n.res||n.cpu||n.lane!==lane) continue;const d=Math.abs(n.t-s);if(d<bd){bd=d;best=n}if(n.t>s+W) break}
   const tier=best&&bd<=W?rzTier(bd):null;
-  if(best&&tier&&best.sw&&dir!==best.sw){RZ.flash[lane]=performance.now();return}
-  if(best&&tier&&best.sw&&!dir) return;
+  if(best&&tier&&best.sw&&dir!==best.sw){RZ.flash[lane]=performance.now();rzStray(lane);return}
+  if(best&&tier&&best.sw&&!dir){rzStray(lane);return}
   if(tier){rzJudge(best,tier);if(best.sus){best.holding=true;best.hold0=best.t}rzHitSound(best,lane);const col=rzLaneCol(lane);if(!RM.matches) for(let i=0;i<12;i++) RZ.fx.push({lane,vx:(Math.random()-.5)*5,vy:-2-Math.random()*5,x:0,y:0,life:1,c:col});
     if(RZ.game==='hero'&&RZ.inst==='guitarra') RZ.chart.forEach(o=>{if(o!==best&&!o.res&&o.chord&&Math.abs(o.t-best.t)<.001){}})}
-  else{if(RZ.game==='tiles'){if(best&&best.t>s+W&&best.t-s<.55){RZ.flash[lane]=performance.now();return}RZ.stats.stray++;RZ.stats.combo=0;RZ.badf[lane]=performance.now();if(RZ.diff==='dificil') RZ.lives=Math.max(0,RZ.lives-1);rzHud();return}
+  else{if(RZ.game==='tiles'){if(best&&best.t>s+W&&best.t-s<.55){RZ.flash[lane]=performance.now();rzStray(lane);return}RZ.stats.stray++;RZ.stats.combo=0;RZ.badf[lane]=performance.now();if(RZ.diff==='dificil') RZ.lives=Math.max(0,RZ.lives-1);rzStray(lane);rzHud();return}
     RZ.stats.stray++;if(RZ.diff==='dificil'&&RZ.game==='hero') RZ.stats.combo=0;if(RZ.game==='setas') RZ.health=Math.max(0,RZ.health-.02);rzHitSound(null,lane)}
   RZ.flash[lane]=performance.now();rzHud()}
 function rzRelease(lane){RZ.chart.forEach(n=>{if(n.holding&&n.lane===lane){n.holding=false}})}
 function rzLaneCol(l){if(RZ.game==='hero') return rzL()[l][0];if(RZ.game==='tiles') return '#2fc4e8';if(RZ.game==='setas') return RZ_ARROW[l][1];if(RZ.game==='beat') return rzBeatLanes()[l][0];return '#141015'}
 function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase==='play'){
-    {const s=rzTime(),W=RZ.game==='beat'?.13:RZ_WIN[RZ.diff].gd;let ch=false;
+    {const s=rzTime(),W=RZ.game==='beat'?.13*(RZ_WIN[RZ.diff].k||1):RZ_WIN[RZ.diff].gd;let ch=false;
       for(const n of RZ.chart){if(n.res){if(n.holding){if(s<n.t+n.sus){RZ.stats.score+=2*rzMult();RZ.stats.hold++}else{n.holding=false}}continue}if(n.cpu){if(n.t<=s){n.res='cpu';RZ.flash['c'+n.lane]=performance.now()}continue}if(n.t<s-W){rzJudge(n,'miss');ch=true}else if(n.t>s+1) break}
       if(ch) rzHud();if((RZ.game==='setas'&&RZ.health<=0)||(RZ.game==='tiles'&&RZ.lives<=0)){rzEnd(true);return}if(s>RZ.A.dur){rzEnd();return}}}
   rzDraw();RZ.raf=requestAnimationFrame(rzFrame)}
