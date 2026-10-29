@@ -328,3 +328,7 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 @media (prefers-reduced-motion: reduce) { .fb-paul::before, .fb-paul::after { animation: none !important; } }
 /* cabeçalho de cada tela: Paul parado, rabiscos em volta animados (os do cabeçalho já mexiam) */
 .bn-doodle.d1 { animation: dd-wiggle 2.2s ease-in-out infinite; }
+/* pose do Paul (sinal de paz) é mais larga: ganha mais largura pra aparecer maior */
+.al-entry .al-hero { grid-template-columns: 148px 1fr; gap: 10px; }
+.al-entry .al-paulbox, .al-entry .al-paulbox .al-paul-img { width: 148px; }
+.al-entry .al-hero-txt .al-bubble { font-size: 16.5px; }
