@@ -43,8 +43,11 @@ const GAMES_STRIP = [['domino', 'dominó'], ['cartas', 'última nota'], ['bingo'
 function gamesStrip() {
   return h('section', { class: 'al-games', 'aria-label': 'O que tem por aqui' },
     h('h2', { class: 'al-h' }, 'jogos, ritmo e muita música'),
-    h('div', { class: 'al-gamegrid' }, ...GAMES_STRIP.map(([img, t], i) => h('figure', { class: 'al-game', style: `--i:${i}` }, h('img', { src: `assets/aluno/${img}.webp`, alt: '', width: 96, height: 112, loading: 'lazy', draggable: 'false' }), h('figcaption', {}, t)))));
+    h('div', { class: 'al-gamegrid' }, ...GAMES_STRIP.slice(0, 3).map(([img, t], i) => h('figure', { class: 'al-game', style: `--i:${i}` }, h('img', { src: `assets/aluno/${img}.webp`, alt: '', width: 96, height: 112, loading: 'lazy', draggable: 'false' }), h('figcaption', {}, t)))));
 }
+const brandEl = (cls = '') => h('div', { class: `al-brand ${cls}`.trim() },
+  h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 76, height: 76 }),
+  h('h1', { class: 'login-title login-wordmark' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista, escola de música', width: 176, height: 59 })));
 /** Logo do TikTok (nota + nome), em preto, pra fila dos parceiros. */
 function tiktokMark() {
   const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '34'); s.setAttribute('height', '34'); s.setAttribute('aria-hidden', 'true');
@@ -52,11 +55,15 @@ function tiktokMark() {
   return h('a', { class: 'al-tiktok', href: 'https://www.tiktok.com/@beaterista', target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'TikTok' }, s, h('b', {}, 'TikTok'));
 }
 /** Redes da Bea (ícones clicáveis) e marcas parceiras, pro rodapé. */
+function socialRow(cls = '') {
+  const svg = (n) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '28'); s.setAttribute('height', '28'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = SVG[n]; return s; };
+  return h('div', { class: `al-social ${cls}`.trim() }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n))));
+}
 function footerBlock() {
   const svg = (n) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '28'); s.setAttribute('height', '28'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = SVG[n]; return s; };
   return h('div', { class: 'al-foot' },
     h('p', { class: 'muted center' }, 'siga a Bea'),
-    h('div', { class: 'al-social' }, ...LINKS.map(([n, href]) => h('a', { class: 'al-soc', href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': n }, svg(n)))),
+    socialRow(),
     h('aside', { class: 'partners', 'aria-label': 'Parceiros da Bea' },
       h('div', { class: 'al-logos' },
         h('img', { class: 'partners-img', src: 'assets/parceiros-preto.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }),
@@ -157,9 +164,7 @@ function askName() {
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
-    h('div', { class: 'al-brand' },
-      h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 76, height: 76 }),
-      h('h1', { class: 'login-title login-wordmark' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista, escola de música', width: 176, height: 59 }))),
+    brandEl('al-brand-in'),
     h('div', { class: 'al-hero' },
       h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista, dançando', width: 96, height: 127 }),
       h('div', { class: 'al-hero-txt' },
@@ -169,7 +174,9 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center al-note' }, 'use só o primeiro nome ou apelido · aparece no ranking e a escola registra a entrada'));
-  app.replaceChildren(h('main', { class: 'login al-entry' }, form, gamesStrip(), footerBlock()));
+  const op = new URLSearchParams(location.search).get('opcao') || '0';
+  app.replaceChildren(h('main', { class: 'login al-entry', 'data-op': op },
+    h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, brandEl('al-brand2'), gamesStrip(), footerBlock()));
   setTimeout(() => input.focus(), 100);
 }
 

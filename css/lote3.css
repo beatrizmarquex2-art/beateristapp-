@@ -234,3 +234,40 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 @media (min-width: 700px) { .al-game img { width: 60px; } .al-gamegrid { max-width: 520px; } .al-logos .partners-img { flex-basis: 360px; width: 360px; } .al-logos .al-tiktok { font-size: 20px; } .al-logos .al-tiktok svg { width: 28px; height: 28px; } .al-soc { width: 48px; height: 48px; } }
 .al-logos .partners-img { margin-right: -10px; }
 .al-game img { width: 44px; }
+
+/* ===== entrada: texto do Paul em letra de mão, 3 cartas sem nome e as opções de layout (?opcao=1|2|3) ===== */
+.al-entry .al-top, .al-entry .al-brand2 { display: none; }
+.al-hero { grid-template-columns: 76px 1fr; gap: 20px; }
+.al-hero-txt { gap: 4px; padding-left: 4px; }
+.al-hero-txt .al-bubble { font: 700 16px/1.2 var(--hand); color: rgb(var(--ink-rgb)); transform: rotate(-2deg); transform-origin: left center; padding-bottom: 9px; margin-left: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='8'%3E%3Cpath d='M1 5 Q8 0 15 5 T29 5 T43 5 T59 4' fill='none' stroke='%23b5162b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") left bottom / auto 7px repeat-x; }
+.al-gamegrid { grid-template-columns: repeat(3, auto); justify-content: center; gap: 0 22px; max-width: none; }
+.al-game img { width: 54px; }
+
+/* opção 1: Paul grande, marca da escola logo abaixo do cartão */
+.al-entry[data-op="1"] .al-brand-in { display: none; }
+.al-entry[data-op="1"] .al-brand2 { display: flex; order: 2; }
+.al-entry[data-op="1"] .login-card { order: 1; }
+.al-entry[data-op="1"] .al-games { order: 3; } .al-entry[data-op="1"] .al-foot { order: 4; }
+.al-entry[data-op="1"] .al-hero { grid-template-columns: 104px 1fr; }
+.al-entry[data-op="1"] .al-hero .al-paul-img { width: 104px; }
+.al-entry[data-op="1"] .al-brand2 .login-logo { width: 44px; height: 44px; } .al-entry[data-op="1"] .al-brand2 .login-title img { width: 120px; }
+
+/* opção 2: cabeçalho com a marca à esquerda e as redes à direita */
+.al-entry[data-op="2"] .al-top { display: flex; align-items: center; justify-content: space-between; order: -1; padding: 0 4px; }
+.al-entry[data-op="2"] .al-brand-in { display: none; }
+.al-entry[data-op="2"] .al-top .login-logo { width: 40px; height: 40px; } .al-entry[data-op="2"] .al-top .login-title img { width: 112px; }
+.al-entry[data-op="2"] .al-mini { gap: 8px; } .al-entry[data-op="2"] .al-mini .al-soc { width: 34px; height: 34px; } .al-entry[data-op="2"] .al-mini .al-soc svg { width: 17px; height: 17px; }
+.al-entry[data-op="2"] .al-foot > .muted, .al-entry[data-op="2"] .al-foot > .al-social { display: none; }
+
+/* opção 3: Paul à direita e a marca da escola como assinatura no rodapé */
+.al-entry[data-op="3"] .al-brand-in { display: none; }
+.al-entry[data-op="3"] .al-brand2 { display: flex; order: 5; }
+.al-entry[data-op="3"] .al-brand2 .login-logo { width: 44px; height: 44px; } .al-entry[data-op="3"] .al-brand2 .login-title img { width: 120px; }
+.al-entry[data-op="3"] .al-hero { grid-template-columns: 1fr 88px; }
+.al-entry[data-op="3"] .al-hero .al-paul-img { order: 2; width: 88px; }
+.al-entry[data-op="3"] .al-hero-txt { justify-items: end; text-align: right; padding: 0 0 0 4px; }
+.al-entry[data-op="3"] .al-hero-txt .al-bubble { text-align: right; transform: rotate(2deg); transform-origin: right center; }
+.al-entry[data-op="3"] .login-card { order: 0; } .al-entry[data-op="3"] .al-games { order: 2; } .al-entry[data-op="3"] .al-foot { order: 3; }
+.al-hero-txt .al-bubble { font-family: 'Gochi Hand', var(--hand); font-weight: 400; font-size: 19px; line-height: 1.15; letter-spacing: .01em; }
+.al-hero-txt .al-bubble { font-size: 15.5px; } .al-entry[data-op="1"] .al-hero-txt .al-bubble { font-size: 16px; }
