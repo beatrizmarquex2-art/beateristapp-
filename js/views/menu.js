@@ -6,6 +6,7 @@ import { TABS } from './kit.js';
 import { HUBS } from './hub.js';
 import { getSpace } from '../space.js';
 import { dragSort } from '../dragsort.js';
+import { toast } from '../ui.js';
 
 // Dois menus: o da Bea (pouca coisa, o dela) e o do Beaterista (a área das aulas e dos alunos, com fundo de outra cor).
 // Cada aba com grupinhos curtos. Ferramentas parecidas ficam juntas numa página só (Criar ritmos, Tempo, Anotar).
@@ -68,7 +69,7 @@ const MENU_B = [
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance
 const TAB_ICON = { fav: 'star', ritmo: 'kit', tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
 const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
-// ao tocar na aba, abre a página principal dela (o menu continua aberto pra ir pros itens ao lado)
+// tocar de novo na aba que já está aberta abre a página principal dela (o primeiro toque só mostra os itens, pra não sair da tela sem querer)
 const TAB_HOME = { jogos: '#/jogos', ritmo: '#/ritmo', estudar: '#/estudos' };
 const TAB_HOME_B = { jogos: '#/jogos', ritmo: '#/ritmo', tocar: '#/ferramentas' };
 const prefKey = (sp) => (sp === 'beaterista' ? 'setting-menu-beaterista' : 'setting-menu'); // { hidden: [href], moved: { href: abaId }, order: [href] }
@@ -122,7 +123,9 @@ export function openMenu() {
   let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || TABS_MENU[0][0];
   if (tab !== 'fav' && !TABS_MENU.some((t) => t[0] === tab)) tab = TABS_MENU[0][0];
   let q = '';
-  const toggleFav = (href) => { const p = prefs(); const on = p.fav.includes(href); savePrefs({ ...p, fav: on ? p.fav.filter((x) => x !== href) : [...p.fav, href] }); };
+  // toda mudança de ordem/esconder/favorito mostra "desfazer" por uns segundos
+  const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
+  const toggleFav = (href) => { const p = prefs(); const on = p.fav.includes(href); const next = { ...p, fav: on ? p.fav.filter((x) => x !== href) : [...p.fav, href] }; if (on) change(next, 'tirado dos favoritos'); else savePrefs(next); };
   const item = ([href, ic, label]) => { const fav = prefs().fav.includes(href); return h('div', { class: 'drawer-row' },
     h('a', { href, class: `drawer-item${here === href ? ' on' : ''}`, 'aria-current': here === href ? 'page' : null, onclick: close }, icon(ic, 22), h('span', {}, label)),
     h('button', { type: 'button', class: `drawer-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${label}`, onclick: () => toggleFav(href) }, fav ? '★' : '☆')); };
@@ -141,7 +144,7 @@ export function openMenu() {
       h('button', { type: 'button', class: 'de-grip', 'aria-label': `Arrastar ${it[2]} pra mudar de lugar` }, '⠿'),
       h('span', { class: 'de-name' }, icon(it[1], 20), h('span', {}, it[2])),
       h('div', { class: 'de-act' },
-        h('button', { type: 'button', class: `btn small${off ? '' : ' ghost'}`, 'aria-pressed': String(off), onclick: () => savePrefs({ hidden: off ? p.hidden.filter((x) => x !== it[0]) : [...p.hidden, it[0]] }) }, off ? 'mostrar' : 'esconder'),
+        h('button', { type: 'button', class: `btn small${off ? '' : ' ghost'}`, 'aria-pressed': String(off), onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((x) => x !== it[0]) }) : change({ ...p, hidden: [...p.hidden, it[0]] }, `${it[2]} escondido`)) }, off ? 'mostrar' : 'esconder'),
         sel));
   };
 
@@ -151,7 +154,7 @@ export function openMenu() {
     const p = prefs(); const eff = effective(p, TABS_MENU);
     if (!eff.some((t) => t.id === tab)) tab = TABS_MENU[0][0];
     tabs.hidden = !!q.trim();
-    tabs.replaceChildren(...eff.map((t) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === t.id), class: `lib-tab drawer-tab${tab === t.id ? ' on' : ''}`, onclick: () => { tab = t.id; try { localStorage.setItem(LAST, t.id); } catch { /* sem armazenamento */ } const go = (SP === 'beaterista' ? TAB_HOME_B : TAB_HOME)[t.id]; if (go && (location.hash || '') !== go) location.hash = go; draw(); } }, icon(TAB_ICON[t.id] || 'folder', 16), t.label)));
+    tabs.replaceChildren(...eff.map((t) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === t.id), class: `lib-tab drawer-tab${tab === t.id ? ' on' : ''}`, onclick: () => { const again = tab === t.id; tab = t.id; try { localStorage.setItem(LAST, t.id); } catch { /* sem armazenamento */ } const go = (SP === 'beaterista' ? TAB_HOME_B : TAB_HOME)[t.id]; if (again && go && (location.hash || '') !== go) { close(); location.hash = go; return; } draw(); } }, icon(TAB_ICON[t.id] || 'folder', 16), t.label)));
     if (q.trim()) {
       const t = norm(q.trim()); const seen = new Set();
       const hits = searchable(eff).filter((x) => (norm(x.label).includes(t) || norm(x.group || '').includes(t) || norm(x.desc || '').includes(t)) && !seen.has(x.href) && seen.add(x.href));
@@ -161,7 +164,7 @@ export function openMenu() {
     const cur = eff.find((x) => x.id === tab);
     const favEmpty = cur.id === 'fav' && !cur.groups[0].items.length;
     const note = cur.id === 'fav' ? (favEmpty ? h('p', { class: 'muted drawer-sub' }, 'toque na ☆ de qualquer item do menu pra ele ficar aqui.') : null) : editing ? h('div', { class: 'drawer-editnote' }, h('p', { class: 'muted' }, 'esconda o que não usa, mude de aba ou suba e desça. nada é apagado: dá pra mostrar de novo.'),
-      h('button', { class: 'btn small ghost', type: 'button', onclick: () => savePrefs({ hidden: [], moved: {}, order: [] }).then(() => toast('menu voltou ao padrão ✓', { ms: 1800 })) }, 'voltar ao padrão')) : null;
+      h('button', { class: 'btn small ghost', type: 'button', onclick: () => { const prev = prefs(); savePrefs({ hidden: [], moved: {}, order: [], fav: prev.fav }).then(() => toast('menu voltou ao padrão', { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 })); } }, 'voltar ao padrão')) : null;
     const rec = recents().slice(0, 3);
     const recSec = !editing && !search.value.trim() && rec.length ? h('div', { class: 'drawer-recent', 'aria-label': 'Recentes' }, h('small', {}, 'recentes'), ...rec.map((x) => h('a', { href: x.h, onclick: close }, x.t))) : null;
     list.replaceChildren(...[recSec, note, ...cur.groups.map((g) => {
@@ -169,7 +172,7 @@ export function openMenu() {
       if (!items.length) return null;
       const secEl = h('section', { class: 'drawer-sec' }, g.title ? h('h2', { class: 'drawer-sub' }, icon(GROUP_ICON[g.title] || 'folder', 15), g.title) : null,
         ...(editing && cur.id !== 'fav' ? g.items.map((it, i) => editRow(cur, g, it, i, p)) : items.map(item)));
-      if (editing && cur.id !== 'fav') dragOffs.push(dragSort(secEl, { itemSel: '.drawer-edit', handleSel: '.de-grip', axis: 'y', onDone: (keys) => savePrefs({ ...p, order: [...keys, ...p.order.filter((x) => !keys.includes(x))] }) }));
+      if (editing && cur.id !== 'fav') dragOffs.push(dragSort(secEl, { itemSel: '.drawer-edit', handleSel: '.de-grip', axis: 'y', onDone: (keys) => change({ ...p, order: [...keys, ...p.order.filter((x) => !keys.includes(x))] }, 'ordem mudou') }));
       return secEl;
     })].filter(Boolean));
   };

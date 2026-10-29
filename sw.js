@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v163';
+const VERSION = 'beaterista-v164';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css', 'css/kids.css', 'css/lote2.css', 'css/lote3.css', 'css/audit.css', 'js/session.js', 'css/jogos.css', 'js/jogos/velha.js', 'js/jogos/velha-logic.js', 'js/jogos/velha-data.js', 'js/jogos/bingo.js', 'js/jogos/bingo-logic.js', 'js/jogos/bingo-art.js', 'js/jogos/cara.js', 'js/jogos/cara-logic.js', 'js/jogos/cara-data.js', 'js/jogos/quebra.js', 'js/jogos/quebra-logic.js', 'js/jogos/stop.js', 'js/jogos/stop-logic.js', 'assets/jogos/palco.webp', 'js/views/jogos.js', 'js/views/jogos-relatorio.js', 'js/jogos/base.js', 'js/jogos/domino.js', 'js/jogos/domino-logic.js', 'js/jogos/cartas.js', 'js/jogos/cartas-logic.js', 'aluno.html', 'js/aluno.js', 'js/aluno-boot.js', 'js/ranking.js', 'js/paul-talk.js', 'js/views/acessos.js', 'manifest-aluno.webmanifest', 'js/mic-access.js', 'js/views/ata.js', 'js/views/kids-relatorio.js', 'js/feedback.js', 'js/tips.js', 'js/tipbox.js', 'js/views/dicas.js', 'js/views/figuras-aprender.js', 'js/kids/ritmo.js', 'js/kids/memoria.js', 'js/kids/memory-themes.js',
   'js/app.js', 'js/util.js', 'js/db.js', 'js/store.js', 'js/auth.js', 'js/sync.js', 'js/config.js',
@@ -28,15 +28,19 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return; // Supabase, YouTube etc.: sempre rede, nunca cache
-  // Rede primeiro para o código (pega atualizações); cache como reserva offline.
-  e.respondWith(
-    fetch(req).then((res) => {
-      if (res.ok && !url.pathname.includes('/originals/papel_') && !url.pathname.endsWith('.pdf')) {
-        const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy));
-      }
+  if (req.headers.has('range')) return; // áudio/vídeo em pedaços: deixa o navegador cuidar
+  // Cópia salva primeiro (abre na hora, mesmo com sinal fraco) e atualiza por trás. A cada versão nova o app baixa tudo de novo (VERSION),
+  // então a cópia nunca fica velha por mais de uma abertura.
+  e.respondWith((async () => {
+    const cache = await caches.open(VERSION);
+    const hit = await cache.match(req, { ignoreSearch: req.mode === 'navigate' });
+    const net = fetch(req).then((res) => {
+      if (res.ok && res.status === 200 && !url.pathname.includes('/originals/papel_') && !url.pathname.endsWith('.pdf')) cache.put(req, res.clone()).catch(() => {});
       return res;
-    }).catch(() => caches.match(req).then((m) => m || (req.mode === 'navigate' ? caches.match('index.html') : Response.error()))),
-  );
+    });
+    if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
+    try { return await net; } catch { return (req.mode === 'navigate' && (await caches.match('index.html'))) || Response.error(); }
+  })());
 });
 
 // Toque na notificação de lembrete: abre (ou foca) o app na tela certa.

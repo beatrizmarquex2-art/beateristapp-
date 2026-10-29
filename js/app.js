@@ -44,7 +44,7 @@ import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
 import * as ata from './views/ata.js';
 import * as acessos from './views/acessos.js';
-import { remember, recents } from './recent.js';
+import { remember } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
@@ -114,19 +114,9 @@ addEventListener('scroll', () => { scrolls.set(location.hash || '#/inicio', wind
 function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
 /** Uma aba de baixo "pura" (Início, Alunos, Beat Lab, Estudos), sem tela aberta dentro dela. */
 const isTabRoot = (hash) => { const r = hash.replace(/^#\/?/, '').split('/').filter(Boolean); return !r.length || NAV.some((n) => n[0] === `#/${r.join('/')}`); };
-/** A última atividade em que você estava (jogo, ferramenta, ficha…), pulando abas de baixo, início e ajustes. */
-function lastActivity() {
-  const here = location.hash || '#/inicio';
-  const ok = (x) => x && x !== here && !isTabRoot(x) && !/^#\/(ajustes|em-breve)/.test(x);
-  for (let i = trail.length - 1; i >= 0; i--) if (ok(trail[i])) return trail[i];
-  const r = recents().find((x) => ok(x.h)); return r ? r.h : null;
-}
 function goBack() {
-  // numa aba de baixo: voltar leva pra última atividade (e não pra outra aba). Pra trocar de aba, arraste no meio da tela.
-  if (isTabRoot(location.hash || '#/inicio')) {
-    const t = lastActivity();
-    if (t) { const rc = recents().find((x) => x.h === t); toast(`voltando pra ${rc ? rc.t : 'última atividade'}`, { id: 'bt-back', ms: 1400 }); location.hash = t; return; }
-  }
+  // numa aba de baixo: voltar leva pro início (e não pra uma tela que você nem estava vendo)
+  if (isTabRoot(location.hash || '#/inicio')) { if ((location.hash || '#/inicio') !== '#/inicio') location.hash = '#/inicio'; return; }
   if (trail.length > 1) {
     const before = location.hash; history.back();
     // se o navegador não tinha histórico (app reaberto), vai direto pra tela anterior da trilha
@@ -137,7 +127,7 @@ function goBack() {
 let lastTab = 0; // última aba de baixo visitada (pra saber qual é a próxima quando se está numa tela de fora)
 /** Jogando (Palco, Beatstar, Setinhas…): nenhum arrastar pode trocar de tela. */
 const playing = (el) => document.body.classList.contains('rz-lock') || !!document.querySelector('#jogos.bmr-playing, .bmr-playing') || !!(el && el.closest && el.closest('[data-noswipe], .bmr-stage canvas, #rz-cv'));
-const BOTTOM_ZONE = 140; // faixa de baixo da tela (onde fica a barra de abas): arrastar ali troca de aba
+const BOTTOM_ZONE = 96; // faixa de baixo da tela (onde fica a barra de abas): arrastar ali troca de aba
 const inBottom = (t) => t.clientY >= innerHeight - BOTTOM_ZONE;
 const hScrollAt = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
 const noGesture = (e) => document.querySelector('.drawer, #overlay .sheet') || document.documentElement.classList.contains('kb-open') || playing(e.target) || (e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
@@ -152,7 +142,7 @@ function swipeMenu() {
   }, { passive: true });
   addEventListener('touchend', (e) => {
     if (!mode) return; const m = mode; mode = ''; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
-    if (!(Math.abs(dx) > 60 && Math.abs(dy) < 70 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 900)) return;
+    if (!(Math.abs(dx) > 90 && Math.abs(dy) < 60 && Math.abs(dx) > 2 * Math.abs(dy) && Date.now() - t0 < 900)) return;
     if (m === 'menu') { if (dx > 0) openMenu(); return; }
     const at = NAV.findIndex((n) => n && navOn(n[0], route())); const i = at >= 0 ? at : lastTab;
     const j = (i + (dx < 0 ? 1 : -1) + NAV.length) % NAV.length; if (NAV[j]) location.hash = NAV[j][0];
