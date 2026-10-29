@@ -70,8 +70,8 @@ function ritmo(box) {
 
 const RUN = { explorar, ritmo };
 
-/** Mais jogos: os do app e os do site jogosdemusica.com.br (esses abrem em outra aba). */
-const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', 'pauta'], ['https://jogosdemusica.com.br/JOGOS/Ditado_ritmico/jogo/', 'Ditado rítmico', 'ouvir e escrever o ritmo', 'eco']];
+/** Mais jogos (dentro do app). */
+const EXTERNAL = [['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Monte o ditado', 'ouvir e montar com as células', 'pauta']];
 
 const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);

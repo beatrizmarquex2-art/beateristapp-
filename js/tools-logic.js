@@ -117,9 +117,11 @@ export function weekChallenge(wk, pools, salt = 0) {
 export function ytId(url) {
   const m = /(?:youtu\.be\/|v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/.exec(String(url || '')); return m ? m[1] : null;
 }
-/** "1:23", "83" ou "1:02:03" → segundos. */
+/** "1:23", "123" (= 1:23, minutagem comum) ou "1:02:03" → segundos. Até 99 vale como segundos. */
 export function parseTime(s) {
-  const p = String(s || '').trim().split(':').map(Number); if (!p.length || p.some((x) => Number.isNaN(x))) return null;
+  const t = String(s || '').trim();
+  if (/^\d{3,}$/.test(t)) return Number(t.slice(0, -2)) * 60 + Number(t.slice(-2));
+  const p = t.split(':').map(Number); if (!p.length || p.some((x) => Number.isNaN(x))) return null;
   return p.reduce((a, x) => a * 60 + x, 0);
 }
 export const fmtTime = (s) => { s = Math.max(0, Math.floor(s || 0)); const m = Math.floor(s / 60); return `${m}:${String(s % 60).padStart(2, '0')}`; };

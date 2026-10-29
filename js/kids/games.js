@@ -67,4 +67,4 @@ GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som
 GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clica, escreve e toca o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
 GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no pad', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🥁 no pad / bateria']], mode: 'tela', run: runEco,
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
-export const ORDER = ['pecas', 'pauta', 'figuras', 'bumbos', 'memoria', 'detetive', 'eco'];
+export const ORDER = ['pauta', 'figuras', 'memoria', 'eco']; // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)

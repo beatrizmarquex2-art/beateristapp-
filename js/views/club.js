@@ -189,43 +189,22 @@ function pickTexts() {
 
 /* ---------- topo: título do app + ações ---------- */
 function clubTop(host, tabs, sub) {
-  host.append(banner(sub ? 'Meus discos' : 'Álbuns', sub ? 'minha estante de discos' : 'álbuns por dentro, faixa por faixa'), tabs,
-    h('div', { class: 'chips lib-tabs cl-nav' }, h('a', { class: `lib-tab${sub ? '' : ' on'}`, href: '#/estudos/club' }, 'textos'), h('a', { class: `lib-tab${sub ? ' on' : ''}`, href: '#/estudos/club/discos' }, 'meus álbuns')),
-    h('div', { class: 'row pad-x club-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => newPost() }, '+ escrever'), h('button', { class: 'btn', type: 'button', onclick: pickTexts }, 'importar textos'), h('button', { class: 'btn ghost', type: 'button', onclick: surprise }, 'me surpreenda')));
+  host.append(banner(sub ? 'Meus discos' : 'Álbuns', sub ? 'o que já está na estante' : 'o que já tem aqui'), tabs);
+  if (!sub) host.append(h('div', { class: 'row pad-x club-actions' }, h('button', { class: 'btn', type: 'button', onclick: pickTexts }, 'importar textos')));
 }
 
 export function mountClub(host, tabs) {
-  let filter = '';
   const box = h('div');
   const draw = () => {
-    const all = posts().sort((a, b) => (b.data.date || b.updated_at) - (a.data.date || a.updated_at));
-    const pub = all.filter((p) => p.data.status === 'publicado' && (!filter || p.data.section === filter));
-    const drafts = all.filter((p) => p.data.status !== 'publicado');
-    const [top, ...rest] = pub; const shelf = albums().slice(0, 6);
-    box.replaceChildren(...[
-      h('section', { class: 'card pad club-secs' }, h('h2', { class: 'tag' }, 'seções'),
-        h('ul', { class: 'club-sec-list' }, SECTIONS.map((s) => h('li', {},
-          h('button', { type: 'button', class: `club-sec${filter === s.id ? ' on' : ''}`, 'aria-pressed': String(filter === s.id), onclick: () => { filter = filter === s.id ? '' : s.id; draw(); } },
-            h('strong', {}, s.label), h('small', {}, s.pt), h('em', {}, String(all.filter((p) => p.data.status === 'publicado' && p.data.section === s.id).length))))))),
-      top ? h('a', { class: 'club-feature', href: `#/estudos/club/${top.id}` }, cover(top.data, 'big'),
-        h('span', { class: 'club-meta' }, h('span', { class: 'lib-kicker' }, sec(top.data.section).label, ' · ', when(top.data.date || top.updated_at)), h('strong', {}, top.data.title), top.data.artist ? h('small', {}, [top.data.artist, top.data.album].filter(Boolean).join(' · ')) : null)) : null,
-      rest.length ? h('div', { class: 'club-grid' }, rest.map((p, i) => h('a', { class: `club-item tilt${i % 3}`, href: `#/estudos/club/${p.id}` }, cover(p.data),
-        h('span', { class: 'lib-kicker' }, sec(p.data.section).label), h('strong', {}, p.data.title)))) : null,
-      !pub.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, filter ? 'nada publicado nessa seção ainda.' : 'o clube está esperando o primeiro texto.'), h('p', { class: 'muted' }, 'escolhe uma música que você ouviu hoje e começa pelo Caderno de Escuta: três frases já valem.')) : null,
-      ...collections().map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
-        h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
-        h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · ')))),
-      h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('h2', { class: 'tag' }, 'na minha estante'), h('a', { class: 'link', href: '#/estudos/club/discos' }, 'ver todos')),
-        shelf.length ? h('div', { class: 'cl-sleeves' }, ...shelf.map((a) => sleeve(a))) : h('p', { class: 'muted' }, 'nenhum disco ainda. busca o primeiro em “meus álbuns”.')),
-      drafts.length ? h('section', { class: 'card pad cl-drafts' }, h('div', { class: 'row between' }, h('h2', { class: 'tag' }, `rascunhos (${drafts.length})`),
-          h('button', { class: 'btn small', type: 'button', onclick: async () => { if (!(await confirmSheet('Publicar todos os rascunhos?', `${drafts.length} texto(s) vão pro clube.`, 'Publicar'))) return; for (const p of drafts) await store.upsert('clubpost', p.id, { status: 'publicado' }); toast('publicados ✓'); } }, 'publicar todos')),
-        h('ul', { class: 'lab-list' }, ...drafts.map((p) => h('li', {}, h('a', { href: `#/estudos/club/${p.id}` }, p.data.title), h('small', {}, ` · ${sec(p.data.section).label}${p.data.artist ? ` · ${p.data.artist}` : ''}`))))) : null,
-      h('p', { class: 'pad-x lib-note' }, 'privado: só você vê. dados dos discos: MusicBrainz e Cover Art Archive (abertos). fato com fonte, opinião marcada como opinião.')].filter(Boolean));
+    const cols = collections();
+    box.replaceChildren(...(cols.length ? cols.map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
+      h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
+      h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · '))))
+      : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma coleção ainda.'), h('p', { class: 'muted' }, 'importa um pacote de textos (.zip) pra ele aparecer aqui.'))]));
   };
   clubTop(host, tabs); host.append(box);
-  lib.loadIndex().catch(() => {});
   draw();
-  return store.subscribe((i) => { if (!i.kind || i.kind === 'clubpost' || i.kind === 'album' || i.kind === 'clubref') draw(); });
+  return store.subscribe((i) => { if (!i.kind || i.kind === 'clubref') draw(); });
 }
 
 export function mountPost(host, id, tabs) {
@@ -361,38 +340,16 @@ function albumSheet(r) {
 }
 
 function mountShelf(host, tabs) {
-  let filter = ''; let results = null; let busy = false;
+  let filter = '';
   const box = h('div');
-  const q = h('input', { type: 'search', placeholder: 'buscar disco: nome, artista…', 'aria-label': 'Buscar disco', enterkeyhint: 'search' });
-  const search = async () => {
-    const term = q.value.trim(); if (term.length < 2 || busy) return; busy = true; results = 'loading'; draw();
-    try { const r = await fetch(mbSearchUrl(term), { headers: { Accept: 'application/json' } }); results = r.ok ? parseMB(await r.json()) : 'erro'; } catch { results = 'erro'; }
-    busy = false; draw();
-  };
-  q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); search(); } });
-  const add = async (a, btn) => {
-    if (albums().some((r) => r.data.mbid && r.data.mbid === a.mbid)) { toast('esse já tá na estante'); return; }
-    await store.upsert('album', null, { ...a, status: 'quero', rating: 0, fav: false, notes: '', added: Date.now() }); stars(btn); toast(`${a.title} na estante ✓`, { ms: 1400 });
-  };
   const draw = () => {
     const all = albums(); const shown = all.filter((r) => !filter || r.data.status === filter);
-    box.replaceChildren(...[
-      h('section', { class: 'card pad cl-find' }, h('h2', { class: 'tag' }, 'adicionar disco'), h('div', { class: 'row cl-search' }, q, h('button', { class: 'btn primary', type: 'button', onclick: search }, 'buscar')),
-        results === 'loading' ? h('p', { class: 'hand' }, 'procurando…') : null,
-        results === 'erro' ? h('p', { class: 'muted' }, 'a busca não respondeu (sem internet?). dá pra adicionar à mão abaixo.') : null,
-        Array.isArray(results) ? (results.length ? h('ul', { class: 'cl-results' }, ...results.map((a) => h('li', {},
-          h('span', { class: 'cl-thumb' }, (() => { const i = h('img', { src: coverUrl(a.mbid), alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' }); i.addEventListener('error', () => i.remove()); return i; })()),
-          h('span', { class: 'cl-r-t' }, h('b', {}, a.title), h('small', { class: 'muted' }, [albumLine(a), a.type && a.type !== 'Album' ? a.type.toLowerCase() : ''].filter(Boolean).join(' · '))),
-          h('button', { class: 'btn small', type: 'button', 'aria-label': `Pôr ${a.title} na estante`, onclick: (e) => add(a, e.currentTarget) }, '+')))) : h('p', { class: 'muted' }, 'não achei. confere o nome ou adiciona à mão.')) : null,
-        h('details', { class: 'cl-manual' }, h('summary', {}, 'adicionar à mão'), (() => {
-          const t = h('input', { type: 'text', maxlength: 100, placeholder: 'nome do disco', 'aria-label': 'Nome do disco' }); const ar = h('input', { type: 'text', maxlength: 80, placeholder: 'artista', 'aria-label': 'Artista do disco' }); const y = h('input', { type: 'text', inputmode: 'numeric', maxlength: 4, placeholder: 'ano', 'aria-label': 'Ano' });
-          return h('div', { class: 'bt-form' }, t, ar, y, h('button', { class: 'btn primary', type: 'button', onclick: (e) => { if (!t.value.trim()) return; add({ mbid: null, title: t.value.trim(), artist: ar.value.trim(), year: y.value.trim(), type: 'Album' }, e.currentTarget); t.value = ''; ar.value = ''; y.value = ''; } }, '+ estante'));
-        })())),
+    box.replaceChildren(...(all.length ? [
       h('section', { class: 'card pad' },
         h('h2', { class: 'tag' }, `minha estante · ${all.length}`),
         h('div', { class: 'chips lib-tabs cl-filter' }, ...[['', 'todos'], ...STATUS].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${filter === k ? ' on' : ''}`, 'aria-pressed': String(filter === k), onclick: () => { filter = k; draw(); } }, t))),
-        shown.length ? h('div', { class: 'cl-sleeves cl-wall' }, ...shown.map((r) => sleeve(r, () => albumSheet(r)))) : h('p', { class: 'hand' }, 'estante vazia por aqui.')),
-      h('p', { class: 'pad-x lib-note' }, 'dados dos discos: MusicBrainz (aberto, feito por fãs) e capas do Cover Art Archive. se algo estiver errado, edite à mão.')].filter(Boolean));
+        shown.length ? h('div', { class: 'cl-sleeves cl-wall' }, ...shown.map((r) => sleeve(r, () => albumSheet(r)))) : h('p', { class: 'hand' }, 'nada por aqui.'))]
+      : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhum disco guardado.'))]));
   };
   clubTop(host, tabs, true); host.append(box);
   draw();

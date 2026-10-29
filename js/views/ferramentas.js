@@ -10,7 +10,7 @@ import { audio } from '../audio.js';
 import { banner, toast } from '../ui.js';
 import { metroAt, back } from './tools-common.js';
 import { mountLeitura } from './tools-leitura.js';
-import { mountMapa, mountForma } from './tools-mapa.js';
+import { mountMapa } from './tools-mapa.js';
 import { mountLoop } from './tools-loop.js';
 import { mountUm } from './tools-um.js';
 import { mountGroovebox } from './tools-groovebox.js';
@@ -23,7 +23,6 @@ export const TOOLS = [
   ['loop', 'Play-along em loop', 'trecho do YouTube repetindo e mais lento', '🔁'],
   ['groovebox', 'Groovebox', '16 pads com baixo e acordes', '🎛'],
   ['um', 'Achar o 1', 'o groove começa no meio: toque no 1', '1️⃣'],
-  ['forma', 'Contar compassos', 'quantos compassos tem cada parte?', '🔢'],
   ['leitura', 'Folhas de leitura', 'leitura nova por nível, em PDF', '📄'],
   ['roleta', 'Roleta da aula', 'sorteia exercício, groove ou música', '🎡'],
   ['desafio', 'Desafio da semana', 'um desafio novo + card pra postar', '🏆'],
@@ -158,7 +157,7 @@ function roleta(host) {
 
 export function mount(host, parts = []) {
   const id = parts[0] || '';
-  const map = { tap, bpm: bpmMic, roleta, leitura: mountLeitura, mapa: mountMapa, forma: mountForma, loop: mountLoop, um: mountUm, groovebox: mountGroovebox, desafio: mountDesafio };
+  const map = { tap, bpm: bpmMic, roleta, leitura: mountLeitura, mapa: mountMapa, loop: mountLoop, um: mountUm, groovebox: mountGroovebox, desafio: mountDesafio };
   if (!map[id]) { hub(host); return null; }
   return map[id](host);
 }

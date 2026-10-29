@@ -344,7 +344,7 @@ function mountArtistas(host) {
     body.replaceChildren(
       h('section', {}, h('h2', { class: 'tag pad-x' }, 'perfis'), h('div', { class: 'cat-grid' }, CATEGORIES.filter((c) => c.kind === 'artist').map((c) => catCard(c, idx)))),
       h('section', {}, h('h2', { class: 'tag pad-x' }, 'mais sobre artistas'), h('div', { class: 'hub-grid' },
-        ...[['#/bateristas', 'drummer', 'Bateristas & Links', 'vídeos e links de quem inspira'], ['#/estudos/conexoes', 'link', 'Artista e conceito', 'qual conceito aparece em qual artista'], ['#/estudos/lab', 'study', 'Laboratório', 'experimentos pra testar na bateria'], ['#/mural', 'photo', 'Mural de Artistas', 'sua parede de fotos']]
+        ...[['#/estudos/conexoes', 'link', 'Artista e conceito', 'qual conceito aparece em qual artista'], ['#/estudos/lab', 'study', 'Laboratório', 'experimentos pra testar na bateria'], ['#/mural', 'photo', 'Mural de Artistas', 'sua parede de fotos']]
           .map(([href, ic, t, d]) => h('a', { class: 'hub-card', href }, h('span', { class: 'hub-ic' }, icon(ic, 26)), h('b', {}, t), h('small', {}, d))))));
   };
   host.append(banner('Artistas / bateristas', 'quem pensa a música, e o que aprender com eles'), tabs('#/estudos/artistas'), body);
