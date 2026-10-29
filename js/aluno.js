@@ -13,9 +13,12 @@ import * as jogos from './views/jogos.js';
 import { banner } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
+import { AGES } from './kids/levels.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
+const AGE_KEY = 'beaterista-aluno-faixa';
+const getAge = () => { try { const a = localStorage.getItem(AGE_KEY); return AGES.some((x) => x[0] === a) ? a : 'b'; } catch { return 'b'; } };
 const NAV = [['#/ritmo', 'play', 'Ritmo'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/kids', 'study', 'Jogos'], ['#/ranking', 'star', 'Ranking']];
 const TAB_OF = { toque: 'tocar', piano: 'tocar', jogos: 'kids' }; // telas que acendem outra aba
 let cleanup = null;
@@ -36,10 +39,10 @@ const route = () => { const [, a, ...rest] = (location.hash || '#/ritmo').split(
 async function ensureKidsPlayer(name) {
   const mine = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase());
   if (mine) { if (P.active() && P.active().id !== mine.id) await P.setActive(mine.id); return; }
-  await P.addProfile(name, 'b');
+  await P.addProfile(name, getAge());
 }
 
-/** Manda as estrelas do Kids e o XP dos jogos pro ranking (só sobe se for maior que o anterior). */
+/** Manda as estrelas dos jogos e o XP dos jogos pro ranking (só sobe se for maior que o anterior). */
 let sendT = 0;
 function sendScores() {
   clearTimeout(sendT);
@@ -63,7 +66,7 @@ function rankingView(view) {
   };
   view.append(banner('Ranking', 'os melhores da escola'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      box('estrelas no Kids', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
+      box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
       box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
       h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));
 }
@@ -108,17 +111,20 @@ function shell(name) {
 function askName() {
   const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome ou apelido' });
   const err = h('p', { class: 'form-err', role: 'alert' });
+  const age = h('select', { 'aria-label': 'Sua idade' }, ...AGES.map(([k, t]) => h('option', { value: k, selected: k === 'b' }, t)));
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
     logVisit(n);
+    try { localStorage.setItem(AGE_KEY, age.value); } catch { /* ok */ }
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
     h('img', { class: 'login-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 132, height: 132 }),
     h('h1', { class: 'login-title login-wordmark' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', width: 220, height: 74 })),
     h('p', { class: 'center' }, 'qual é o seu nome?'),
-    h('label', { class: 'field' }, h('span', {}, 'nome'), input), err,
+    h('label', { class: 'field' }, h('span', {}, 'nome'), input),
+    h('label', { class: 'field' }, h('span', {}, 'sua idade (ajusta a dificuldade dos jogos)'), age), err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center' }, 'seu nome aparece no ranking que todo mundo vê. use só o primeiro nome ou um apelido, sem sobrenome. a escola registra o nome e quando você entra.'));
   app.replaceChildren(h('main', { class: 'login' }, form));
