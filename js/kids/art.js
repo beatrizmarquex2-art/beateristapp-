@@ -2,7 +2,7 @@
 import { h } from '../util.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
-import { audio } from '../audio.js';
+import { audio, out } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { FIGURES } from '../kids-logic.js';
 import { kitSvg } from './icons.js';
@@ -58,5 +58,5 @@ export function symbolMarkup(id) {
 }
 export const tone = (beats, bpm = 60) => { const c = audio(); const o = c.createOscillator(); const g = c.createGain(); const t = c.currentTime + 0.02; const d = (60 / bpm) * beats;
   o.type = 'triangle'; o.frequency.value = 523; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3, t + 0.02); g.gain.setValueAtTime(0.3, t + d - 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-  o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + 0.05); };
+  o.connect(g).connect(out()); o.start(t); o.stop(t + d + 0.05); };
 

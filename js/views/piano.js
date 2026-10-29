@@ -43,7 +43,7 @@ function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
 
 export function mount(host) {
   const live = new Map(); // id (ponteiro/tecla) -> { midi, v, t0 }
-  let take = []; let recording = false; let rt0 = 0; let timers = [];
+  let take = []; let recording = false; let rt0 = 0; let timers = []; const playing = new Set(); // vozes da gravação em reprodução
   const kb = h('div', { class: 'pn-kb', role: 'group', 'aria-label': 'Teclado do piano' });
   const shown = h('output', { class: 'pn-now', 'aria-live': 'polite' }, '— toque uma tecla —');
   const panel = h('div');
@@ -94,12 +94,17 @@ export function mount(host) {
   const onKeyUp = (e) => up(`k${e.key.toLowerCase()}`);
   document.addEventListener('keydown', onKey); document.addEventListener('keyup', onKeyUp);
 
-  const stopPlay = () => { timers.forEach(clearTimeout); timers = []; };
+  // sem isso, parar a reprodução no meio de uma nota cancelava o "soltar" e a nota (órgão, cordas…) ficava ligada pra sempre
+  const stopPlay = () => { timers.forEach(clearTimeout); timers = []; playing.forEach((v) => v.off(false)); playing.clear(); document.querySelectorAll('.pn-kb .on').forEach((e) => { if (![...live.values()].some((x) => keyEl(x.midi) === e)) e.classList.remove('on'); }); };
+  // o dedo saiu da tela sem soltar (bloqueou a tela, chamada, trocou de app): solta todas as teclas
+  const releaseAll = () => { for (const id of [...live.keys()]) up(id); };
+  const onHide = () => { if (document.hidden) releaseAll(); };
+  document.addEventListener('visibilitychange', onHide); window.addEventListener('blur', releaseAll);
   const play = () => {
     stopPlay(); if (!take.length) return; const c = conf();
     take.forEach((n) => timers.push(setTimeout(() => {
-      const v = voice(n.midi, c.sound); const el = keyEl(n.midi); if (el) el.classList.add('on');
-      timers.push(setTimeout(() => { v.off(c.pedal); if (el) el.classList.remove('on'); }, n.len * 1000));
+      const v = voice(n.midi, c.sound); playing.add(v); const el = keyEl(n.midi); if (el) el.classList.add('on');
+      timers.push(setTimeout(() => { v.off(c.pedal); playing.delete(v); if (el) el.classList.remove('on'); }, n.len * 1000));
       shown.textContent = nameOf(n.midi, 'pt');
     }, n.at * 1000)));
   };
@@ -131,5 +136,5 @@ export function mount(host) {
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawPanel(); drawTake();
   const onResize = () => {}; window.addEventListener('resize', onResize);
-  return () => { stopPlay(); for (const id of [...live.keys()]) up(id); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); };
+  return () => { stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); };
 }

@@ -3,7 +3,7 @@ import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
 import * as sync from './sync.js';
-import { banner, toast } from './ui.js';
+import { banner, toast, closeSheets } from './ui.js';
 import { mountLogin } from './views/login.js';
 import * as home from './views/home.js';
 import * as tasks from './views/tasks.js';
@@ -205,6 +205,7 @@ function shell() {
 
   function go() {
     cleanup && cleanup(); cleanup = null;
+    closeSheets(); // folha de uma tela antiga não fica por cima da nova
     silence(); // trocou de tela: nada da tela anterior continua tocando (o ambiente e o YouTube do mini-player seguem)
     view.replaceChildren();
     const r0 = route(); view.dataset.page = r0.name; view.dataset.sub = r0.arg || ''; // cada tela ganha o seu desenho
@@ -265,12 +266,16 @@ function shell() {
     const y = cameBack ? scrolls.get(here) : 0;
     if (y > 0) [60, 250, 700].forEach((ms) => setTimeout(() => { if ((location.hash || '#/inicio') === here && Math.abs(window.scrollY) < 5) window.scrollTo(0, y); }, ms));
   }
-  // jogos e treinos calam quando o app vai pro fundo (metrônomo, Beat Lab e ambiente podem seguir tocando)
+  // jogos e treinos calam quando o app vai pro fundo (metrônomo, Beat Lab e ambiente podem seguir tocando).
+  // Só as telas que seguram o MICROFONE são refeitas (o iOS derruba a captura de qualquer jeito); as outras só calam,
+  // pra bloquear a tela ou atender uma chamada não zerar a fase em que a pessoa estava.
   if (!shell.hideHooked) {
     shell.hideHooked = true;
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) return; const n = route().name;
-      if (['treinos', 'kids', 'ferramentas', 'ouvido', 'tempo'].includes(n)) { silence(); shell.go && shell.go(); }
+      if (!document.hidden) return; const r = route(); const n = r.name;
+      const mic = n === 'ouvido' || n === 'tempo' || (n === 'ferramentas' && r.arg === 'bpm');
+      if (mic) { silence(); shell.go && shell.go(); }
+      else if (['treinos', 'kids', 'ferramentas'].includes(n)) silence();
     });
   }
   removeEventListener('hashchange', shell.go);

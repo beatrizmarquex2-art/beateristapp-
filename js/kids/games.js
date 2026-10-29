@@ -2,7 +2,7 @@
 import { h } from '../util.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
-import { audio } from '../audio.js';
+import { audio, later } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
 import { pieceQ, pautaQ, pairName, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
@@ -25,7 +25,7 @@ export const GAMES = {
     makeQuestion: (rnd, d, i, { mode }) => ({ ...withColor(pieceQ(rnd, d)), mode }),
     render: (q) => h('div', { class: 'kx-q' }, svgEl(kitMarkup(q.mode === 'ver' ? q.ans : null, q.mode === 'ouvir'), 'kd-kit'),
       q.mode === 'ouvir' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => play(q.ans) }, '▶ ouvir de novo') : h('p', { class: 'kd-q' }, 'qual é a peça pintada?')),
-    onShow: (q) => { if (q.mode === 'ouvir') setTimeout(() => play(q.ans), 250); },
+    onShow: (q) => { if (q.mode === 'ouvir') later(() => play(q.ans), 250); },
     picked: (q, id) => { if (id) play(id); },
     okText: (q) => `isso! é ${nameOf(q.ans)} ⭐`, noText: (q) => `era ${nameOf(q.ans)}`, hint: (k) => hintOf('pecas', k),
   },
@@ -54,7 +54,7 @@ export const GAMES = {
     id: 'bumbos', title: 'Quantos bumbos?', blurb: 'escuta e conta', emoji: '👂', ages: 'a partir de 5 anos',
     makeQuestion: (rnd, d) => bumboQ(rnd, d),
     render: (q) => h('div', { class: 'kx-q' }, h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBumbos(q) }, '▶ ouvir de novo'), h('p', { class: 'kd-q' }, 'quantos bumbos tem em cada compasso?')),
-    onShow: (q) => setTimeout(() => playBumbos(q), 250),
+    onShow: (q) => later(() => playBumbos(q), 250),
     okText: (q) => `isso! ${q.n} bumbo${q.n > 1 ? 's' : ''} ⭐`, noText: (q) => `eram ${q.n} bumbo${q.n > 1 ? 's' : ''}!`, hint: (k) => hintOf('bumbos', k),
   },
 };

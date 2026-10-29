@@ -10,7 +10,7 @@ export function audio() {
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
-  if (ctx.state === 'suspended') ctx.resume(); // iPhone: só destrava dentro de um toque
+  if (ctx.state !== 'running') ctx.resume().catch(() => {}); // iPhone: só destrava dentro de um toque ('suspended' ou 'interrupted' depois de bloquear a tela/receber chamada)
   return ctx;
 }
 export const now = () => (ctx ? ctx.currentTime : 0);
@@ -106,10 +106,27 @@ export function scheduler(next, { onEnd } = {}) {
 }
 
 /**
+ * Geração do som: sobe a cada silence(). Quem agenda algo pra "depois" guarda o valor e confere antes de tocar
+ * (uma fase antiga não pode mais disparar som na fase nova).
+ */
+let epoch = 0;
+export const audioEpoch = () => epoch;
+/** setTimeout de som: morre junto com o silence() (troca de tela, de fase ou de rodada). Ex.: "toca o exemplo 250 ms depois de mostrar a pergunta". */
+const pending = new Set();
+export function later(fn, ms) {
+  const id = setTimeout(() => { pending.delete(id); fn(); }, ms);
+  pending.add(id); return id;
+}
+export function cancelLater(id) { clearTimeout(id); pending.delete(id); }
+
+/**
  * Cala tudo que a tela deixou tocando: para os agendadores e troca a saída principal por uma nova
  * (o que já estava agendado na saída velha some junto). O estúdio de ambiente tem saída própria e continua.
  */
 export function silence() {
+  epoch++;
+  for (const id of pending) clearTimeout(id);
+  pending.clear();
   for (const r of [...running]) r.stop();
   if (!ctx || !master) return;
   const old = master; const t = ctx.currentTime;

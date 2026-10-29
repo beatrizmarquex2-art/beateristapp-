@@ -13,6 +13,7 @@ import * as FB from '../feedback.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
+import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
 const KEY = 'setting-treinos', KIND = 'treino';
@@ -65,7 +66,8 @@ function controls(c, draw, { bars = true } = {}) {
 function leitura(host) {
   let beats = null; let run = null; let lastResult = null;
   const body = h('div');
-  const stop = () => { if (run) { clearTimeout(run.timer); run.off(); run.pad.classList.remove('live'); run = null; } };
+  const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
+  const stop = () => { S.reset(); if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
     stop(); const c = cfg();
     if (fresh || !beats || beats.length !== c.bars * 4) { beats = [...genBar(c.lv), ...(c.bars > 1 ? genBar(c.lv) : [])]; lastResult = null; }
@@ -84,15 +86,16 @@ function leitura(host) {
       pad.clock = () => perfToCtx(performance.now()) - t0; pad.dataset.onsets = JSON.stringify(expected.map((e) => e.t));
       pad.classList.add('live'); status.textContent = 'conta: 1, 2, 3, 4…';
       const end = (t0 - ac.currentTime + beats.length * q + 0.4) * 1000;
-      run = { pad, off, timer: setTimeout(async () => {
-        off(); run = null;
+      run = { pad, off, timer: S.later(async () => {
+        const g = S.gen; off(); run = null;
         lastResult = evaluate(taps, expected, c.bpm);
         await store.upsert(KIND, null, { mode: 'leitura', lv: c.lv, bpm: c.bpm, bars: c.bars, score: lastResult.score, at: Date.now() });
+        if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
         draw(false);
         const tgt = body.querySelector('.tr-res') || body;
         if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
       }, end) };
-      setTimeout(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
+      S.later(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
     };
     const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); };
     let summary = null;
@@ -114,19 +117,20 @@ function leitura(host) {
       status, pad, summary, history('leitura')].filter(Boolean));
   };
   host.append(body); draw(true);
-  return stop;
+  return () => { stop(); S.dispose(); };
 }
 
 /* ---------- escuta (ditado rítmico) ---------- */
 function escuta(host) {
   let q = null; let n = 0, right = 0;
   const body = h('div');
-  const next = () => { const c = cfg(); const ans = genBar(c.lv); const opts = shuffle([ans, ...distractors(ans, c.lv)]); q = { ans, opts, picked: null, okIdx: opts.indexOf(ans) }; };
+  const S = session(); // o ditado em execução: trocar de pergunta ou apertar ▶ de novo corta o anterior (antes os dois tocavam juntos)
+  const next = () => { S.reset(); const c = cfg(); const ans = genBar(c.lv); const opts = shuffle([ans, ...distractors(ans, c.lv)]); q = { ans, opts, picked: null, okIdx: opts.indexOf(ans) }; };
   const draw = (reset) => {
     const c = cfg();
     if (reset) { n = 0; right = 0; next(); }
     if (!q) next();
-    const play = () => schedule(q.ans, c.bpm, { play: true });
+    const play = () => { S.reset(); schedule(q.ans, c.bpm, { play: true }); };
     const pick = async (i) => {
       if (q.picked != null) return;
       q.picked = i; n++; const hit = i === q.okIdx; if (hit) right++;
@@ -154,7 +158,7 @@ function escuta(host) {
       feedback, h('div', { class: 'tr-opts' }, ...opts), history('escuta')].filter(Boolean));
   };
   host.append(body); draw(true);
-  return () => {};
+  return () => S.dispose();
 }
 
 /* ---------- montar (ditado de células) ---------- */
@@ -163,19 +167,21 @@ function cellSvg(p) { const f = h('span', { class: 'tr-cell', 'aria-hidden': 'tr
 function montar(host) {
   let ans = null, guess = [], lives = LIVES, pts = 0, marks = null, over = false;
   const body = h('div');
+  const S = session(); // o ditado e a espera da próxima pergunta
   const hi = () => (store.get(KEY) && store.get(KEY).data.hiMontar) || 0;
   const fresh = () => { ans = genBar(cfg().lv); guess = [null, null, null, null]; marks = null; };
-  const play = () => schedule(ans, cfg().bpm, { play: true });
+  const play = () => { S.reset(); schedule(ans, cfg().bpm, { play: true }); };
   const conferir = async () => {
+    if (marks) return; // já conferido e nada mudou desde então: tocar de novo em "conferir" não soma ponto nem tira outra vida (editar uma casinha limpa as marcas)
     if (guess.some((g) => g == null)) { toast('complete os 4 tempos'); return; }
     marks = checkCells(ans, guess);
-    if (marks.every(Boolean)) { pts++; setTimeout(() => { fresh(); draw(); play(); }, 1500); }
+    if (marks.every(Boolean)) { pts++; S.later(() => { fresh(); draw(); play(); }, 1500); }
     else { lives--; if (lives <= 0) { over = true; if (pts > hi()) await save({ hiMontar: pts }); await store.upsert(KIND, null, { mode: 'montar', lv: cfg().lv, bpm: cfg().bpm, score: pts, at: Date.now() }); } }
     draw(); (marks.every(Boolean) ? FB.win : FB.lose)(body.querySelector('.tr-slots'));
   };
   const draw = (reset) => {
     const c = cfg();
-    if (reset) { lives = LIVES; pts = 0; over = false; fresh(); }
+    if (reset) { S.reset(); lives = LIVES; pts = 0; over = false; fresh(); }
     const firstEmpty = guess.indexOf(null);
     const slots = guess.map((g, i) => h('button', { type: 'button', class: `tr-slot${g ? ' full' : ''}${marks ? (marks[i] ? ' ok' : ' no') : ''}`, 'aria-label': g ? `Tempo ${i + 1}: tirar` : `Tempo ${i + 1}: vazio`,
       onclick: () => { if (over || !g) return; guess[i] = null; marks = null; draw(); } }, g ? cellSvg(g) : h('b', {}, '?')));
@@ -194,7 +200,7 @@ function montar(host) {
       over ? null : h('div', { class: 'tr-palette' }, ...pal), history('montar')].filter(Boolean));
   };
   host.append(body); draw(true);
-  return () => {};
+  return () => S.dispose();
 }
 
 /* ---------- figuras rítmicas: o ditado de montar (normal), a versão com imagens (monte seu ritmo) e o "aprender" ---------- */

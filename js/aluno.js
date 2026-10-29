@@ -6,7 +6,7 @@ import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as kids from './views/kids.js';
 import * as ritmo from './views/jogos-ritmo.js';
-import { banner } from './ui.js';
+import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 
@@ -66,7 +66,7 @@ function shell(name) {
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
-    cleanup && cleanup(); cleanup = null; silence(); view.replaceChildren();
+    cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + r.name) === href ? ' on' : ''}`, 'aria-current': ('#/' + r.name) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;

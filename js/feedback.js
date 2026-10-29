@@ -1,7 +1,7 @@
 // Feedback dos jogos e exercícios: barulhinho, animação e uma frase de incentivo, com o Paul aparecendo por perto.
 // Um só lugar pra todos: `win(el)` quando acerta, `lose(el)` quando erra, `great(el)` pra uma rodada fechada.
 import { h, reducedMotion } from './util.js';
-import { audio } from './audio.js';
+import { audio, out } from './audio.js';
 import { stars as sparkle } from './ui.js';
 
 export const WIN_LINES = ['isso aí! 🤘', 'mandou bem!', 'na veia!', 'perfeito!', 'arrasou!', 'é assim que se faz!', 'você é fera!', 'boa! continua assim!', 'que groove!', 'acertou em cheio!'];
@@ -28,7 +28,7 @@ export function sound(kind = 'win') {
       const o = c.createOscillator(); const g = c.createGain(); const ok = kind !== 'lose';
       o.type = ok ? 'triangle' : 'sawtooth'; o.frequency.value = f;
       g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(ok ? 0.24 : 0.12, t + d + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d + (ok ? 0.22 : 0.3));
-      o.connect(c.destination); o.start(t + d); o.stop(t + d + 0.34);
+      o.connect(g).connect(out()); o.start(t + d); o.stop(t + d + 0.34);
     });
   } catch { /* sem áudio */ }
 }

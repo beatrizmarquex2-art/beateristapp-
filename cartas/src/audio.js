@@ -48,7 +48,10 @@
 
   /* ---------- tocador: agenda à frente no relógio do áudio (nunca setInterval tocando som direto) ---------- */
   var current = null;
-  function stop() { if (current) { current.stopped = true; clearInterval(current.timer); cancelAnimationFrame(current.raf); var c = current; current = null; c.onStop && c.onStop(); } }
+  // parar também derruba o que já estava agendado (até 0,2 s à frente + a cauda dos pratos): troca a saída por uma nova e solta a velha
+  function hush() { if (!ctx || !master) return; var old = master, t = ctx.currentTime; try { old.gain.cancelScheduledValues(t); old.gain.setValueAtTime(old.gain.value, t); old.gain.linearRampToValueAtTime(0, t + 0.025); } catch (e) { /* ok */ }
+    setTimeout(function () { try { old.disconnect(); } catch (e) { /* já saiu */ } }, 80); master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination); }
+  function stop() { if (current) { current.stopped = true; clearInterval(current.timer); cancelAnimationFrame(current.raf); var c = current; current = null; hush(); c.onStop && c.onStop(); } }
   function play(card, opts) {
     opts = opts || {}; stop(); if (!ensure()) return null;
     var evs = eventsOf(card); var bpm = opts.bpm || card.bpm; var loop = !!opts.loop; var clickOn = !!opts.click;

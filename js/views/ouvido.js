@@ -4,7 +4,7 @@
 import { h } from '../util.js';
 import * as store from '../store.js';
 import * as P from '../pitch.js';
-import { audio } from '../audio.js';
+import { audio, out as mainOut } from '../audio.js';
 import { banner, toast } from '../ui.js';
 import { guideTab } from './tuneguide.js';
 import { getMic, micMessage } from '../mic-access.js';
@@ -158,7 +158,7 @@ function humTab(mic) {
     const ctx = audio(); let at = ctx.currentTime + 0.1;
     notes.forEach((n) => { const o = ctx.createOscillator(); const g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = P.freqOf(n.midi);
       const d = Math.max(0.15, Math.min(1.2, n.dur)); g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.3, at + 0.02); g.gain.setValueAtTime(0.3, at + d - 0.05); g.gain.exponentialRampToValueAtTime(0.0001, at + d);
-      o.connect(g).connect(ctx.destination); o.start(at); o.stop(at + d + 0.02); at += d + 0.04; });
+      o.connect(g).connect(mainOut()); o.start(at); o.stop(at + d + 0.02); at += d + 0.04; });
   }
   function exportImage() {
     const svg = staffSvg(notes, { shift: shift() }); const vb = svg.getAttribute('viewBox').split(' ').map(Number);
@@ -209,7 +209,7 @@ function humTab(mic) {
 
 /* ---------- tela ---------- */
 export function mount(host) {
-  let mic = null, raf = 0, pane = null, gone = false;
+  let mic = null, raf = 0, pane = null, gone = false, opening = false;
   const body = h('div');
   const tabs = h('nav', { class: 'chips lib-tabs bl-tabs', 'aria-label': 'Estúdio de ouvido' });
   const TABS = [['afinador', 'afinador'], ['guia', 'guia de afinação'], ['bpm', 'contador de BPM'], ['cantarolar', 'cantarolou → nota']];
@@ -228,15 +228,18 @@ export function mount(host) {
     h('p', { class: 'muted' }, 'o microfone desliga sozinho quando você sai desta tela.'),
     h('button', { class: 'btn primary wide', type: 'button', onclick: start }, 'ligar o microfone e o som')));
   async function start() {
+    if (opening || mic) return; opening = true; // dois toques seguidos não abrem dois microfones
     try {
-      mic = await openMic();
-      if (gone) { mic.stop(); return; }
-      show(cfg().tab); raf = requestAnimationFrame(loop);
+      const m = await openMic();
+      if (gone) { m.stop(); return; }
+      mic = m;
+      show(cfg().tab); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
     } catch (e) {
+      if (gone) return;
       const [t, why] = micMessage(e);
       body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, t), h('p', { class: 'muted' }, why),
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
-    }
+    } finally { opening = false; }
   }
   host.append(banner('Estúdio de Ouvido', 'um microfone, quatro ferramentas'), tabs, body);
   show(cfg().tab); ask();
