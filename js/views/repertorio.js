@@ -130,7 +130,7 @@ export function mount(host) {
     const all = songs(); const groups = R.groupsOf(all); const p = R.progress(all);
     const shown = R.sortSongs(R.filterSongs(all, st), st.by);
     top.replaceChildren(
-      all.length ? h('p', { class: 'pad-x rp-prog' }, h('strong', {}, String(p.toco)), ' já toco · ', h('strong', {}, String(p.estudando)), ' estudando · ', h('strong', {}, String(p.quero)), ` quero aprender · ${p.total} no total`) : null,
+      ...(all.length ? [h('p', { class: 'pad-x rp-prog' }, h('strong', {}, String(p.toco)), ' já toco · ', h('strong', {}, String(p.estudando)), ' estudando · ', h('strong', {}, String(p.quero)), ` quero aprender · ${p.total} no total`)] : []),
       h('div', { class: 'chips lib-tabs pad-x' }, ...[['', 'todas'], ...groups.map((g) => [g, g])].map(([g, t]) => h('button', { type: 'button', class: `lib-tab${st.group === g ? ' on' : ''}`, 'aria-pressed': String(st.group === g), onclick: () => { st.group = g; draw(); } }, t))),
       h('div', { class: 'chips lib-tabs pad-x' }, ...[[null, 'qualquer estágio'], ...R.STAGES.filter((s) => s.id).map((s) => [s.id, s.label])].map(([s, t]) => h('button', { type: 'button', class: `lib-tab${st.stage === s ? ' on' : ''}`, 'aria-pressed': String(st.stage === s), onclick: () => { st.stage = s; draw(); } }, t))));
     if (!all.length) { body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma música ainda.'), h('p', { class: 'muted' }, 'as do método aparecem aqui quando sincronizar. dá pra adicionar as suas em “+ música”.'))); return; }

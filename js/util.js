@@ -9,6 +9,17 @@ export function uid() {
 }
 
 /** Hyperscript seguro: texto sempre vira nó de texto (nunca innerHTML com dados do usuário). */
+// append / prepend / replaceChildren com null, undefined ou false (ex.: `cond ? bloco : null`) escreviam a palavra "null" na tela; agora são ignorados
+if (typeof Element !== 'undefined' && !Element.prototype.__semNulo) {
+  for (const m of ['append', 'prepend', 'replaceChildren']) {
+    for (const C of [Element, DocumentFragment]) {
+      const orig = C.prototype[m];
+      C.prototype[m] = function (...a) { return orig.apply(this, a.filter((x) => x != null && x !== false)); };
+    }
+  }
+  Element.prototype.__semNulo = true;
+}
+
 export function h(tag, attrs, ...kids) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
