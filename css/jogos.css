@@ -271,3 +271,20 @@ html[data-space="bea"] .jg{--jg-paper:#F4B9C0;--jg-board:#8e1b30;--jg-fit:#FFD66
 .jg-cat .jg-grid{padding:8px 16px 18px;gap:12px 10px}
 .jg-cat .jgx-bar{padding:24px 16px 0}
 .jg-game .jg-title{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.05;font-size:16px;padding:6px 14px 8px 12px;min-width:0}
+
+/* ===== fundo escuro: alguns jogos e, na Bea, todos (vinho bem fechado) ===== */
+html .jg.jg-dark,html .jg.jg-dark .jg{--jg-paper:#10203d;--jg-board:#27498a;--jg-fit:#FFD66B;color:#fbf7ee}
+html[data-space="bea"] .jg.jg-dark,html[data-space="bea"] .jg.jg-dark .jg{--jg-paper:#4a0c19;--jg-board:#a01a30;--jg-fit:#FFC9D6}
+.jg-dark .muted,.jg-dark small.muted{color:rgb(251 247 238 / .78)}
+.jg-dark .jg-title{color:#14284b!important;text-shadow:none;background-image:url(../assets/mural/brush-gold.svg)}
+.jg-dark .jg-h{color:#fff}
+.jg-dark .jg-msg{color:#FFD66B}
+.jg-dark .jg-seg button.on{background:#FFD66B;color:#14284b;box-shadow:3px 3px 0 #fbf7ee}
+.jg-dark .jg-end{color:#fbf7ee;border-color:rgb(251 247 238 / .5)}.jg-dark .jg-end.go{color:#fff}
+.jg-dark .jg-result{color:#142036}.jg-dark .jg-result .muted{color:#4a4f5c}
+.jg-dark .jgx-chip.on{background:#FFD66B;color:#14284b;box-shadow:2px 2px 0 #fbf7ee}
+.jg-dark .jg-hbtn.fit{background:rgb(255 255 255 / .18)}
+.jg-dark .jg-rules ul,.jg-dark .jg-rules summary{color:#fbf7ee}
+.jg-game.jg-dark::after,.jg-cat.jg-dark::after{background:rgb(0 0 0 / .4)}
+.jg-dark :is(.jg-call,.jg-cell,.jg-cover,.jg-pboard,.jg-q,.jg-rule-box,.jg-tile,.jg-chip,.jg-bcell,.jg-ccell,.jg-cbtn,.jg-qbtn,.jg-stopbtn,.jg-field input){color:#142036}
+.jg-dark .jg-cover .muted,.jg-dark .jg-rule-box .muted{color:#4a4f5c}

@@ -62,6 +62,9 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 /** salva e mostra "desfazer" por uns segundos */
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
+// fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
+const DARK = new Set(['bingo', 'cara', 'quebra']);
+const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
 function catalog(host) {
   const aluno = ALUNO();
@@ -92,7 +95,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), catWrap = h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
@@ -114,7 +117,7 @@ function game(host, entry) {
     setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇';
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
-  const wrap = h('div', { class: 'jg jg-wrap jg-game' },
+  const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
     h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
     body);
