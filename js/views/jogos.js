@@ -70,6 +70,7 @@ function catalog(host) {
     const [id, title, img, , , href] = x;
     return h('a', { class: 'jg-card', href: href || `#/jogos/${id}`, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
   };
+  let catWrap;
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
   const draw = () => {
     const p = prefs();
@@ -91,7 +92,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), catWrap = h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
@@ -102,7 +103,8 @@ function catalog(host) {
     change({ ...p, order: full.map((k) => (set.has(k) ? newKeys[n++] : k)) }, 'ordem mudou');
   } });
   const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
-  return () => { offStore(); offDrag(); };
+  const offFesta = attachFesta(catWrap, { paul: false }); // a faixa de título já tem o Paul
+  return () => { offStore(); offDrag(); offFesta(); };
 }
 
 function game(host, entry) {
@@ -117,7 +119,7 @@ function game(host, entry) {
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
     body);
   host.replaceChildren(wrap);
-  const offFesta = attachFesta(wrap, body);
+  const offFesta = attachFesta(wrap);
   return () => { offFesta(); ctl.destroy(); };
 }
 
