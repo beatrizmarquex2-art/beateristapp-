@@ -8,6 +8,7 @@ import * as B from '../beats.js';
 import { PRESETS as RUDS } from '../rudiments.js';
 import { audio, click } from '../audio.js';
 import * as FB from '../feedback.js';
+import { getMic, micToast } from '../mic-access.js';
 import { tipBox } from '../tipbox.js';
 import { banner, toast } from '../ui.js';
 import { metroAt, back } from './tools-common.js';
@@ -84,9 +85,8 @@ function bpmMic(host) {
   };
   const start = async () => {
     if (stream) { stop(); return; }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast('esse navegador não libera o microfone'); return; }
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
-    catch { toast('sem permissão pro microfone. dá pra liberar nos ajustes do iPhone.'); return; }
+    try { stream = await getMic(); }
+    catch (e) { toast(micToast(e)); return; }
     const c = audio(); const src = c.createMediaStreamSource(stream); const an = c.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0; src.connect(an);
     const spec = new Float32Array(an.frequencyBinCount); let prev = null; frames = []; result = null; factor = 1; startAt = c.currentTime;
     // fluxo espectral: quanto a energia subiu de um quadro pro outro (ataques de bateria, palhetada, sílaba)

@@ -1,12 +1,12 @@
 // Microfone → batidas (pra "tocar no pad / na bateria de verdade"). Mesmo detector do Juiz de Tempo. Nada de áudio sai do aparelho.
 import { audio } from '../audio.js';
 import { OnsetCore } from '../onset-core.js';
+import { getMic } from '../mic-access.js';
 
 /** Abre o microfone e chama onHit({ t, level }) a cada ataque (t = relógio do som). Devolve { stop, mode }. Lança se não puder abrir. */
 export async function openMic(onHit) {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('sem microfone'), { name: 'NotSupported' });
+  const stream = await getMic();
   const ctx = audio();
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
   const src = ctx.createMediaStreamSource(stream); let node; let mode;
   try {
     if (!ctx.audioWorklet) throw new Error('sem worklet');

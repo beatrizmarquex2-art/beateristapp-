@@ -3,7 +3,7 @@ import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
 import * as sync from './sync.js';
-import { banner } from './ui.js';
+import { banner, toast } from './ui.js';
 import { mountLogin } from './views/login.js';
 import * as home from './views/home.js';
 import * as tasks from './views/tasks.js';
@@ -42,7 +42,8 @@ import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
 import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
-import { remember } from './recent.js';
+import * as ata from './views/ata.js';
+import { remember, recents } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
@@ -104,7 +105,21 @@ const scrolls = new Map(); // posição da rolagem de cada tela, pra voltar exat
 let cameBack = false;
 addEventListener('scroll', () => { scrolls.set(location.hash || '#/inicio', window.scrollY); }, { passive: true });
 function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
+/** Uma aba de baixo "pura" (Início, Alunos, Beat Lab, Estudos), sem tela aberta dentro dela. */
+const isTabRoot = (hash) => { const r = hash.replace(/^#\/?/, '').split('/').filter(Boolean); return r.length <= 1 && (r[0] === undefined || r[0] === 'inicio' || NAV.some((n) => n[0] === `#/${r[0]}`)); };
+/** A última atividade em que você estava (jogo, ferramenta, ficha…), pulando abas de baixo, início e ajustes. */
+function lastActivity() {
+  const here = location.hash || '#/inicio';
+  const ok = (x) => x && x !== here && !isTabRoot(x) && !/^#\/(ajustes|em-breve)/.test(x);
+  for (let i = trail.length - 1; i >= 0; i--) if (ok(trail[i])) return trail[i];
+  const r = recents().find((x) => ok(x.h)); return r ? r.h : null;
+}
 function goBack() {
+  // numa aba de baixo: voltar leva pra última atividade (e não pra outra aba). Pra trocar de aba, arraste no meio da tela.
+  if (isTabRoot(location.hash || '#/inicio')) {
+    const t = lastActivity();
+    if (t) { const rc = recents().find((x) => x.h === t); toast(`voltando pra ${rc ? rc.t : 'última atividade'}`, { id: 'bt-back', ms: 1400 }); location.hash = t; return; }
+  }
   if (trail.length > 1) {
     const before = location.hash; history.back();
     // se o navegador não tinha histórico (app reaberto), vai direto pra tela anterior da trilha
@@ -113,40 +128,44 @@ function goBack() {
 }
 /* ---------- início: arrastar pro lado abre o menu ☰ ---------- */
 let lastTab = 0; // última aba de baixo visitada (pra saber qual é a próxima quando se está numa tela de fora)
+/** Jogando (Palco, Beatstar, Setinhas…): nenhum arrastar pode trocar de tela. */
+const playing = (el) => document.body.classList.contains('rz-lock') || !!document.querySelector('#jogos.bmr-playing, .bmr-playing') || !!(el && el.closest && el.closest('[data-noswipe], .bmr-stage canvas, #rz-cv'));
+const BOTTOM_ZONE = 140; // faixa de baixo da tela (onde fica a barra de abas): arrastar ali troca de aba
+const inBottom = (t) => t.clientY >= innerHeight - BOTTOM_ZONE;
+const hScrollAt = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
+const noGesture = (e) => document.querySelector('.drawer, #overlay .sheet') || document.documentElement.classList.contains('kb-open') || playing(e.target) || (e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
+/* arrastar na faixa de baixo: troca de aba (direita→esquerda = próxima, esquerda→direita = anterior); no início, fora dessa faixa, abre o menu ☰ */
 function swipeMenu() {
-  let x0 = 0, y0 = 0, t0 = 0, on = false;
-  const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
+  let x0 = 0, y0 = 0, t0 = 0, mode = '';
   addEventListener('touchstart', (e) => {
-    const home = route().name === 'inicio';
-    // no início o menu abre arrastando em qualquer ponto da tela (até pela borda e por cima de listas que já estão no começo)
-    const leftEdge = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4 && n.scrollLeft > 2) return false; } return true; };
-    on = e.touches.length === 1 && (home || e.touches[0].clientX >= 26) && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && (home ? leftEdge(e.target) : !hScroll(e.target)) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
+    mode = ''; if (e.touches.length !== 1 || noGesture(e)) return;
     const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
+    if (inBottom(t)) mode = 'tab';
+    else if (route().name === 'inicio' && !hScrollAt(e.target)) mode = 'menu';
   }, { passive: true });
   addEventListener('touchend', (e) => {
-    if (!on) return; on = false; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
+    if (!mode) return; const m = mode; mode = ''; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
     if (!(Math.abs(dx) > 60 && Math.abs(dy) < 70 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 900)) return;
-    const name = route().name;
-    if (name === 'inicio' && dx > 0) { openMenu(); return; } // no início, arrastar pra direita abre o menu ☰
-    // da direita pra esquerda: próxima aba de baixo (nas outras telas, a seguinte à última aba visitada)
-    if (dx > 0) return;
-    const at = NAV.findIndex((n) => n && n[0] === `#/${name}`); const i = at >= 0 ? at : lastTab;
-    const j = (i + 1) % NAV.length; if (NAV[j]) { location.hash = NAV[j][0]; }
+    if (m === 'menu') { if (dx > 0) openMenu(); return; }
+    const name = route().name; const at = NAV.findIndex((n) => n && n[0] === `#/${name}`); const i = at >= 0 ? at : lastTab;
+    const j = (i + (dx < 0 ? 1 : -1) + NAV.length) % NAV.length; if (NAV[j]) location.hash = NAV[j][0];
   }, { passive: true });
-  addEventListener('touchcancel', () => { on = false; }, { passive: true });
+  addEventListener('touchcancel', () => { mode = ''; }, { passive: true });
 }
+/* arrastar da esquerda pra direita no meio da tela = voltar (em aba de baixo, volta pra última atividade) */
 function swipeBack() {
   const tip = h('div', { class: 'swipe-back', 'aria-hidden': 'true' }, icon('back', 22));
   document.body.append(tip);
   let x0 = 0, y0 = 0, dx = 0, on = false;
-  const blocked = () => route().name === 'inicio' || document.querySelector('#overlay .sheet');
-  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = t.clientX < 26 && !blocked() && !(e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) && !document.documentElement.classList.contains('kb-open'); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
+  const blocked = (e) => route().name === 'inicio' || noGesture(e) || inBottom(e.touches[0]) || hScrollAt(e.target);
+  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = e.touches.length === 1 && !blocked(e); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (!on) return; const t = e.touches[0]; dx = t.clientX - x0; const dy = Math.abs(t.clientY - y0);
     if (dy > Math.abs(dx) && dy > 12) { on = false; tip.style.transform = ''; return; }
-    tip.style.transition = 'none'; tip.style.transform = `translate(${Math.min(Math.max(dx, 0), 110) - 56}px, -50%)`; tip.classList.toggle('ready', dx > 80);
+    if (dx < 12) return;
+    tip.style.transition = 'none'; tip.style.transform = `translate(${Math.min(Math.max(dx, 0), 110) - 56}px, -50%)`; tip.classList.toggle('ready', dx > 90);
   }, { passive: true });
-  const end = () => { if (on && dx > 80) goBack(); on = false; tip.style.transition = ''; tip.style.transform = ''; tip.classList.remove('ready'); };
+  const end = () => { if (on && dx > 90) goBack(); on = false; tip.style.transition = ''; tip.style.transform = ''; tip.classList.remove('ready'); };
   addEventListener('touchend', end, { passive: true }); addEventListener('touchcancel', () => { on = false; tip.style.transform = ''; }, { passive: true });
 }
 
@@ -228,6 +247,7 @@ function shell() {
       case 'plano': c = plano.mount(view); break;
       case 'ambiente': c = ambiente.mount(view); break;
       case 'planos': c = planos.mount(view, r.parts); break;
+      case 'ata': c = ata.mount(view, r.parts); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
       case 'lembretes': c = lembretes.mount(view); break;

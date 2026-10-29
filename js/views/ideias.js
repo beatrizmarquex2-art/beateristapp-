@@ -8,6 +8,7 @@ import { db } from '../db.js';
 import { banner, toast, confirmSheet, sheet, stars } from '../ui.js';
 import * as files from '../files-sync.js';
 import { kindOf, mb } from '../files-logic.js';
+import { getMic, micToast } from '../mic-access.js';
 
 const KIND = 'idea';
 export const TAGS = [['musica', 'música'], ['aula', 'aula'], ['conteudo', 'conteúdo'], ['show', 'show'], ['negocio', 'negócio'], ['outra', 'outra']];
@@ -23,7 +24,7 @@ function recorder(onDone) {
   btn.addEventListener('click', async () => {
     if (rec && rec.state === 'recording') { rec.stop(); return; }
     if (!window.MediaRecorder || !navigator.mediaDevices) { toast('este navegador não grava áudio. escreve a ideia mesmo :)'); return; }
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast('sem permissão pro microfone. dá pra liberar nos ajustes do iPhone.'); return; }
+    try { stream = await getMic({ plain: true }); } catch (e) { toast(micToast(e)); return; }
     document.documentElement.dataset.mic = 'on';
     chunks = []; rec = new MediaRecorder(stream); rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
     rec.onstop = () => { stopAll(); btn.setAttribute('aria-pressed', 'false'); btn.replaceChildren(icon('mic', 16), ' gravar de novo'); const blob = new Blob(chunks, { type: rec.mimeType || 'audio/mp4' }); onDone(blob, Math.round((Date.now() - t0) / 1000)); };

@@ -7,6 +7,7 @@ import * as P from '../pitch.js';
 import { audio } from '../audio.js';
 import { banner, toast } from '../ui.js';
 import { guideTab } from './tuneguide.js';
+import { getMic, micMessage } from '../mic-access.js';
 
 const TUNE = 'tuning';
 const SET = 'setting-ouvido';
@@ -16,8 +17,8 @@ const svgEl = (tag, attrs = {}) => { const e = document.createElementNS('http://
 
 /* ---------- microfone ---------- */
 async function openMic() {
+  const stream = await getMic();
   const ctx = audio();
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
   const src = ctx.createMediaStreamSource(stream);
   const an = ctx.createAnalyser(); an.fftSize = 8192; an.smoothingTimeConstant = 0;
   src.connect(an);
@@ -228,14 +229,12 @@ export function mount(host) {
     h('button', { class: 'btn primary wide', type: 'button', onclick: start }, 'ligar o microfone e o som')));
   async function start() {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('sem'), { name: 'NotSupported' });
       mic = await openMic();
       if (gone) { mic.stop(); return; }
       show(cfg().tab); raf = requestAnimationFrame(loop);
     } catch (e) {
-      const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
-      body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, denied ? 'sem permissão pro microfone.' : 'não consegui abrir o microfone.'),
-        h('p', { class: 'muted' }, denied ? 'tudo bem! se quiser usar, no iPhone vá em Ajustes › Safari › Microfone (ou no app instalado: Ajustes › Beaterista) e permita. depois volte aqui.' : 'este navegador não deu acesso ao microfone. no iPhone, abra pelo Safari ou pelo app instalado na tela inicial.'),
+      const [t, why] = micMessage(e);
+      body.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, t), h('p', { class: 'muted' }, why),
         h('button', { class: 'btn', type: 'button', onclick: start }, 'tentar de novo')));
     }
   }

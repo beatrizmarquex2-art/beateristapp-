@@ -27,7 +27,7 @@ export function importedSongs() {
   for (const r of store.list(KIND)) {
     const k = `${r.id}|${r.updated_at}`;
     if (!cache.has(k)) { try { cache.set(k, toChart(parseMidi(fromB64(r.data.b64)), r.data.name).song); } catch { cache.set(k, null); } }
-    const sg = cache.get(k); if (sg) out.push({ ...sg, id: r.id, name: r.data.name, folder: r.data.folder || '', hid: 1 });
+    const sg = cache.get(k); if (sg) out.push({ ...sg, id: r.id, name: r.data.name, folder: r.data.folder || '', trim: r.data.trim && r.data.trim.b > r.data.trim.a ? r.data.trim : null, hid: 1 });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
@@ -195,7 +195,7 @@ export function mount(host) {
     const recs = store.list(KIND).sort((a, b) => a.data.name.localeCompare(b.data.name, 'pt-BR'));
     manage.hidden = !recs.length;
     manage.replaceChildren(h('summary', {}, `músicas importadas (${recs.length})`),
-      h('ul', { class: 'rg-list' }, ...recs.map((r) => h('li', {}, h('span', {}, h('b', {}, r.data.name), h('small', { class: 'muted' }, ` · ${r.data.bpm} bpm${r.data.drums ? ` · ${r.data.drums} notas de bateria` : ' · sem bateria'}`)),
+      h('ul', { class: 'rg-list' }, ...recs.map((r) => h('li', {}, h('span', {}, h('b', {}, r.data.name), h('small', { class: 'muted' }, ` · ${r.data.bpm} bpm${r.data.drums ? ` · ${r.data.drums} notas de bateria` : ' · sem bateria (ritmo criado)'}${r.data.trim ? ' · ✂ cortada' : ''}`)),
         h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `Apagar ${r.data.name}`, onclick: async () => { if (await confirmSheet('Apagar música importada?', r.data.name, 'Apagar')) { await store.remove(r.id); refresh(); } } }, 'apagar')))));
   };
   input.addEventListener('change', async () => {
@@ -204,7 +204,7 @@ export function mount(host) {
     try {
       const { ok, bad } = await importMidis(list);
       const noDrums = ok.filter((x) => !x.drums).length;
-      toast(ok.length ? `${ok.length} música(s) em "Importados" ✓${noDrums ? ` · ${noDrums} sem bateria (só melodia)` : ''}${bad.length ? ` · ${bad.length} não deu` : ''}` : `nenhum MIDI deu certo${bad.length ? `: ${bad[0].why}` : ''}`, { id: 'rg-imp', ms: 5000 });
+      toast(ok.length ? `${ok.length} música(s) em "Importados" ✓${noDrums ? ` · ${noDrums} sem bateria (o app cria um ritmo)` : ''}${bad.length ? ` · ${bad.length} não deu` : ''}` : `nenhum MIDI deu certo${bad.length ? `: ${bad[0].why}` : ''}`, { id: 'rg-imp', ms: 5000 });
       refresh(ok.length > 0);
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
@@ -216,7 +216,7 @@ export function mount(host) {
   loadPackage().then((BR) => {
     if (gone) return;
     box.replaceChildren();
-    BR.mount('#jogos', { storageKey: 'beaterista-ritmo', midiImport: false, songs: importedSongs(), folders: folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    BR.mount('#jogos', { storageKey: 'beaterista-ritmo', midiImport: false, songs: importedSongs(), folders: folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;

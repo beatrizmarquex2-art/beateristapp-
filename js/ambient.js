@@ -86,13 +86,14 @@ export function setSleep(min) {
 
 /* ---------- dock: mini-player que fica fora da tela que troca ---------- */
 // O iframe do YouTube é colocado UMA vez no dock e nunca mais movido (mover um iframe faz ele recarregar e parar).
-let dock = null, ytBox = null, ytTitle = null, ytMin = null, pill = null;
+let dock = null, ytBox = null, ytTitle = null, ytMin = null, ytOpen = null, pill = null;
 function el(tag, attrs = {}, ...kids) { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids.filter(Boolean)); return e; }
 function ensureDock() {
   if (dock) return;
   ytTitle = el('span', {});
   ytMin = el('button', { type: 'button', class: 'amb-x', onclick: () => { if (yt) { yt.min = !yt.min; drawDock(); } } });
-  ytBox = el('div', { class: 'amb-yt' }, el('div', { class: 'amb-yt-bar' }, ytTitle, ytMin, el('button', { type: 'button', class: 'amb-x', 'aria-label': 'Fechar vídeo', onclick: () => closeYT() }, '×')));
+  ytOpen = el('a', { class: 'amb-x amb-open', target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Abrir no app do YouTube (com Premium, sem anúncios)', title: 'abrir no app do YouTube' }, '↗');
+  ytBox = el('div', { class: 'amb-yt' }, el('div', { class: 'amb-yt-bar' }, ytTitle, ytOpen, ytMin, el('button', { type: 'button', class: 'amb-x', 'aria-label': 'Fechar vídeo', onclick: () => closeYT() }, '×')));
   pill = el('div', { class: 'amb-pill' });
   dock = el('div', { class: 'amb-dock', role: 'region', 'aria-label': 'Player de ambiente' }, ytBox, pill);
   document.body.append(dock);
@@ -101,7 +102,7 @@ function drawDock() {
   if (!dock && !yt && !playing) return;
   ensureDock();
   ytBox.hidden = !yt;
-  if (yt) { ytTitle.textContent = yt.title || 'YouTube'; ytBox.classList.toggle('min', !!yt.min); ytMin.textContent = yt.min ? '▢' : '–'; ytMin.setAttribute('aria-label', yt.min ? 'Mostrar vídeo' : 'Esconder vídeo'); }
+  if (yt) { ytOpen.href = /^https?:/.test(yt.url || '') ? yt.url : `https://${yt.url || 'www.youtube.com'}`; ytTitle.textContent = yt.title || 'YouTube'; ytBox.classList.toggle('min', !!yt.min); ytMin.textContent = yt.min ? '▢' : '–'; ytMin.setAttribute('aria-label', yt.min ? 'Mostrar vídeo' : 'Esconder vídeo'); }
   pill.hidden = !playing;
   if (playing) pill.replaceChildren(el('a', { href: '#/ambiente', 'aria-label': 'Abrir estúdio de ambiente' }, '♪ ambiente', sleepAt ? el('small', {}, ` · dorme em ${Math.ceil(sleepLeft(sleepAt) / 60000)} min`) : null),
     el('button', { type: 'button', class: 'amb-x', 'aria-label': 'Parar ambiente', onclick: () => stop() }, '■'));
