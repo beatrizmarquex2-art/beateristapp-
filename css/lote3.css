@@ -368,3 +368,19 @@ body.rz-lock .pt-think { display: none; }
 .home-recent h2 { display: none; }
 .home-recent-row { gap: 6px; padding: 2px 0; }
 .home-recent-chip { min-height: 28px; padding: 0 10px; font-size: 12px; border-width: 1.5px; box-shadow: none; }
+
+/* menu do Beaterista: fundo azul-marinho, pra saber de cara em qual espaço está */
+.drawer-b { background: #14284b; color: #fbf7ee; }
+.drawer-b .drawer-head { border-bottom-color: #fbf7ee; }
+.drawer-b .drawer-head strong { color: #ffd166; }
+.drawer-b .drawer-sec + .drawer-sec { border-top-color: rgb(251 247 238 / .3); }
+.drawer-b .drawer-sec h2, .drawer-b .drawer-recent small { color: #b9c4dd; }
+.drawer-b .drawer-item { color: #fbf7ee; }
+.drawer-b .drawer-item svg { color: #ffd166; }
+.drawer-b .drawer-item:hover, .drawer-b .drawer-item:focus-visible { background: rgb(255 209 102 / .14); }
+.drawer-b .drawer-item.on { background: #fbf7ee; color: #14284b; } .drawer-b .drawer-item.on svg { color: #b5162b; }
+.drawer-b .drawer-recent a { background: #fbf7ee; border-color: #fbf7ee; color: #14284b; }
+.drawer-b .drawer-search input, .drawer-b select { background: #fbf7ee; color: #14284b; }
+.drawer-b .lib-tab { color: #fbf7ee; border-color: #fbf7ee; } .drawer-b .lib-tab.on { background: #ffd166; color: #14284b; border-color: #ffd166; }
+.drawer-b .muted, .drawer-b .drawer-editnote p { color: #b9c4dd; }
+.drawer-b .drawer-head strong img { background: #fbf7ee; border-radius: 8px; padding: 2px 8px; }

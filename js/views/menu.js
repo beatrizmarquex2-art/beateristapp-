@@ -4,34 +4,30 @@ import { h, icon, reducedMotion } from '../util.js';
 import * as store from '../store.js';
 import { TABS } from './kit.js';
 import { HUBS } from './hub.js';
+import { getSpace } from '../space.js';
 
-// Abas do menu: cada aba com grupinhos curtos. Ferramentas parecidas ficam juntas numa página só (Criar ritmos, Tempo, Anotar).
-const TABS_MENU = [
+// Dois menus: o da Bea (pouca coisa, o dela) e o do Beaterista (a área das aulas e dos alunos, com fundo de outra cor).
+// Cada aba com grupinhos curtos. Ferramentas parecidas ficam juntas numa página só (Criar ritmos, Tempo, Anotar).
+const MENU_BEA = [
   ['treinar', 'treinar', [
-    ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
-    ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['', [['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido']]],
   ]],
   ['jogos', 'jogos', [
-    ['', [['#/jogos', 'star', 'Todos os jogos']]],
-    ['ritmo e bateria', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids/ritmo', 'kit', 'Monte seu ritmo'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico']]],
-    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/kids/pauta', 'staff', 'Onde mora na pauta?']]],
-    ['cartas e tabuleiro', [['#/kids/memoria', 'star', 'Jogo da memória'], ['#/jogos/domino', 'star', 'Dominó'], ['#/jogos/cartas', 'star', 'Última nota'], ['#/jogos/bingo', 'star', 'Bingo'], ['#/jogos/velha', 'star', 'Jogo da velha'], ['#/jogos/quebra', 'star', 'Quebra-cabeça'], ['#/jogos/cara', 'star', 'Cara a cara'], ['#/jogos/stop', 'star', 'Stop']]],
-    ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
-    ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
+    ['', [['#/jogos', 'star', 'Todos os jogos'], ['#/ritmo', 'kit', 'Jogos de ritmo']]],
   ]],
   ['estudar', 'estudos', [
-    ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
-    ['álbuns', [['#/estudos/club', 'note', 'Álbuns']]],
+    ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
+    ['álbuns', [['#/estudos/club/arsenal', 'note', 'Arsenal discos'], ['#/estudos/club', 'note', 'Álbuns']]],
     ['artistas / bateristas', [['#/estudos/artistas', 'drummer', 'Artistas e bateristas'], ['#/mural', 'photo', 'Mural de Artistas']]],
     ['', [['#/anotacoes', 'note', 'Minhas anotações']]],
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['tocar', 'tocar', [
     ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/piano', 'note', 'Piano'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
-    ['ferramentas', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
+    ['ferramentas', [['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura']]],
   ]],
   ['organizar', 'organizar', [
     ['', [['#/inicio', 'home', 'Início'], ['#/hub/anotar', 'note', 'Anotar'], ['#/arquivos', 'folder', 'Meus Arquivos']]],
@@ -41,17 +37,36 @@ const TABS_MENU = [
     ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/ajustes', 'gear', 'Ajustes e backup']]],
   ]],
 ];
+const MENU_B = [
+  ['treinar', 'treinar', [
+    ['', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana'], ['#/treinos', 'study', 'Leitura e Escuta']]],
+  ]],
+  ['jogos', 'jogos', [
+    ['', [['#/jogos', 'star', 'Todos os jogos']]],
+    ['ritmo e bateria', [['#/kids/ritmo', 'kit', 'Monte seu ritmo'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/kids/pauta', 'staff', 'Onde mora na pauta?']]],
+    ['cartas e tabuleiro', [['#/kids/memoria', 'star', 'Jogo da memória'], ['#/jogos/domino', 'star', 'Dominó'], ['#/jogos/cartas', 'star', 'Última nota'], ['#/jogos/bingo', 'star', 'Bingo'], ['#/jogos/velha', 'star', 'Jogo da velha'], ['#/jogos/quebra', 'star', 'Quebra-cabeça'], ['#/jogos/cara', 'star', 'Cara a cara'], ['#/jogos/stop', 'star', 'Stop']]],
+    ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
+    ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
+  ]],
+  ['estudar', 'estudos', [
+    ['', [['#/dicionario', 'book', 'Dicionário da bateria']]],
+  ]],
+  ['tocar', 'tocar', [
+    ['', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/hub/tempo', 'timer', 'Tempo']]],
+  ]],
+  ['aulas', 'aulas', [
+    ['', [['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
+  ]],
+];
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance
 const TAB_ICON = { tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
 const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
-const LAST = 'bt-menu-tab';
-const PREF = 'setting-menu'; // { hidden: [href], moved: { href: abaId }, order: [href] }
-const prefs = () => ({ hidden: [], moved: {}, order: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });
-const savePrefs = (p) => store.upsert('setting', PREF, p);
+const prefKey = (sp) => (sp === 'beaterista' ? 'setting-menu-beaterista' : 'setting-menu'); // { hidden: [href], moved: { href: abaId }, order: [href] }
 const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** O menu como a Bea deixou: itens movidos de aba, reordenados; os escondidos só aparecem ao personalizar. */
-function effective(p) {
+function effective(p, TABS_MENU) {
   const tabs = TABS_MENU.map(([id, label, groups]) => ({ id, label, groups: groups.map(([title, items]) => ({ title, items: [...items] })) }));
   const byId = new Map(tabs.map((t) => [t.id, t]));
   for (const t of tabs) for (const g of t.groups) g.items = g.items.filter((it) => {
@@ -72,6 +87,10 @@ const searchable = (tabs) => [
 
 export function openMenu() {
   if (document.querySelector('.drawer')) return;
+  const SP = getSpace(); const TABS_MENU = SP === 'beaterista' ? MENU_B : MENU_BEA;
+  const PREF = prefKey(SP); const LAST = `bt-menu-tab-${SP}`;
+  const prefs = () => ({ hidden: [], moved: {}, order: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });
+  const savePrefs = (p) => store.upsert('setting', PREF, p);
   const here = location.hash || '#/inicio';
   const back = h('div', { class: 'drawer-back' });
   let editing = false;
@@ -83,12 +102,12 @@ export function openMenu() {
   };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   const btn = document.activeElement;
-  const first = effective(prefs());
+  const first = effective(prefs(), TABS_MENU);
   // aba inicial: a da tela atual; senão a última aberta
   const flat = first.flatMap((t) => t.groups.flatMap((g) => g.items.map((it) => [t.id, ...it])));
   const mine = flat.filter((x) => x[1] === here).map((x) => x[0])[0] || flat.filter((x) => x[1] !== '#/inicio' && here.startsWith(x[1])).map((x) => x[0])[0];
-  let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || 'treinar';
-  if (!TABS_MENU.some((t) => t[0] === tab)) tab = 'treinar';
+  let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || TABS_MENU[0][0];
+  if (!TABS_MENU.some((t) => t[0] === tab)) tab = TABS_MENU[0][0];
   let q = '';
   const item = ([href, ic, label]) => h('a', { href, class: `drawer-item${here === href ? ' on' : ''}`, 'aria-current': here === href ? 'page' : null, onclick: close }, icon(ic, 22), h('span', {}, label));
   const tabs = h('div', { class: 'drawer-tabs chips lib-tabs', role: 'tablist', 'aria-label': 'Seções do menu' });
@@ -113,8 +132,8 @@ export function openMenu() {
   };
 
   const draw = () => {
-    const p = prefs(); const eff = effective(p);
-    if (!eff.some((t) => t.id === tab)) tab = 'treinar';
+    const p = prefs(); const eff = effective(p, TABS_MENU);
+    if (!eff.some((t) => t.id === tab)) tab = TABS_MENU[0][0];
     tabs.hidden = !!q.trim();
     tabs.replaceChildren(...eff.map((t) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === t.id), class: `lib-tab drawer-tab${tab === t.id ? ' on' : ''}`, onclick: () => { tab = t.id; try { localStorage.setItem(LAST, t.id); } catch { /* sem armazenamento */ } draw(); } }, icon(TAB_ICON[t.id] || 'folder', 16), t.label)));
     if (q.trim()) {
@@ -136,7 +155,7 @@ export function openMenu() {
     })].filter(Boolean));
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });
-  const panel = h('nav', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Menu' },
+  const panel = h('nav', { class: `drawer${SP === 'beaterista' ? ' drawer-b' : ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Menu' },
     h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', height: 30 })), editBtn,
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar menu', onclick: close }, icon('x', 22))),
     h('div', { class: 'drawer-search' }, search), tabs, list);

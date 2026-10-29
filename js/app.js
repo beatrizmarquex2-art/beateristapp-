@@ -55,6 +55,7 @@ import * as jogos from './views/jogos.js';
 import * as notify from './notify.js';
 import { silence } from './audio.js';
 import { openMenu } from './views/menu.js';
+import { getSpace, setSpace } from './space.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
 
@@ -195,8 +196,9 @@ function shell() {
 
   function drawChrome(r) {
     const ws = head.querySelector('.ws');
-    const inB = r.name === 'beaterista';
     const home = r.name === 'inicio';
+    if (r.name === 'beaterista') setSpace('beaterista'); else if (home) setSpace('bea'); else document.documentElement.dataset.space = getSpace();
+    const inB = getSpace() === 'beaterista';
     head.querySelector('.top-back').hidden = home; head.querySelector('.brand').hidden = !home; // fora do início, o logo vira "voltar"
     ws.replaceChildren(
       h('a', { href: '#/inicio', role: 'tab', 'aria-selected': String(!inB), class: !inB ? 'on' : '' }, 'Bea'),
