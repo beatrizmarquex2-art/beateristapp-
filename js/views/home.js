@@ -44,9 +44,9 @@ function hero() {
         h('h1', { class: 'brand-word' }, 'Beaterista'),
         swash()),
       h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
-    paulCheer(),
     h('p', { class: 'date-line' }, longDate()),
-    heroNote());
+    heroNote(),
+    paulCheer());
 }
 
 /** Paul dá uma palavra de incentivo (muda a cada 8 horas; toque no balão pra ver outra). */
