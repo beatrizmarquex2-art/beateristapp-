@@ -1,0 +1,31 @@
+// Groovebox (aba dos pads): grava o que você toca nos pads (até 30 s) e toca em loop; parar / recomeçar.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+const page = await ctx.newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+// o Groovebox é do app da Bea: entra com uma sessão de teste (só local) e abre a ferramenta
+await page.goto(`${url}/index.html`); await sleep(600);
+await page.evaluate(async () => { const { db } = await import('/js/db.js'); await db.metaSet('session', { access_token: 'x', refresh_token: 'x', expires_at: Date.now() + 1e10, user: { id: 'u', email: 'a@b.c' } }); });
+await page.goto(`${url}/index.html#/ferramentas/groovebox`); await page.reload(); await sleep(2500);
+const started = () => page.evaluate(() => window.__ac.started);
+const status = () => page.locator('.gb-looper .tr-status').innerText();
+const btn = (t) => page.locator(`.gb-looper button:has-text("${t}")`).first();
+const pad = (n) => page.locator('.gb-pad').nth(n);
+await btn('contagem').click(); await sleep(150); await btn('clique').click(); await sleep(150);
+await btn('gravar nos pads').click(); await sleep(500);
+check('gravando: mostra o tempo', /gravando/.test(await status()), await status());
+await pad(0).click(); await sleep(350); await pad(2).click(); await sleep(350); await pad(4).click(); await sleep(300);
+await btn('parar').click(); await sleep(600);
+check('ao parar, entra em loop', /em loop/.test(await status()), await status());
+check('botões parar e recomeçar aparecem', (await btn('parar').count()) === 1 && (await btn('recomeçar').count()) === 1);
+const s0 = await started(); await sleep(7000); const s1 = await started();
+check('o loop repete sozinho', s1 - s0 >= 6, `${s1 - s0} sons em 7 s`);
+await btn('parar').click(); await sleep(500);
+const s2 = await started(); await sleep(4500); const s3 = await started();
+check('parar silencia o loop', s3 - s2 <= 1, `${s3 - s2} sons depois de parar`);
+check('dá pra tocar o loop de novo', (await btn('tocar em loop').count()) === 1);
+await btn('recomeçar').click(); await sleep(500);
+check('recomeçar volta a gravar', /gravando/.test(await status()), await status());
+check('sem erros de JS na página', errs.length === 0, errs.slice(0, 3).join(' | '));
+const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);
