@@ -147,3 +147,5 @@
 [data-kit-theme="colagem"] :is(.kd-kit-free,.tk-art) .kp.hit [stroke]{stroke:#d92031}
 [data-kit-theme] .tk-art .kp.hit :is(path,ellipse,circle){fill-opacity:1}
 .tk-svgkit .kd-themes{justify-content:center}
+/* "Onde mora na pauta?" com desenho: a bateria pintada vira o botão */
+.kx-opt-kit { display: block; width: min(150px, 100%); margin: 0 auto; } .kx-opt-kit svg { width: 100%; height: auto; display: block; }

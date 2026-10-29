@@ -37,7 +37,8 @@ export const instrumentIcon = gameIcon;
 export const KIT_COLORS = { bd: '#a31d30', sn: '#e3a82f', hh: '#1b1818', tt: '#14284b', mt: '#4a6a9c', ft: '#6e1423', cr: '#b8860b', rd: '#8a5a14' };
 /** `only`: pinta só essa peça e deixa o resto cinza (cartas da memória). */
 export function kitSvg(hl, hide, only) {
-  const col = (id) => (hide || (only && only !== id) ? '#cfc6b6' : KIT_COLORS[id]); const on = (id) => (hl === id ? ' hl' : '');
+  const set = only ? String(only).split('+') : null; // `only` pode ser mais de uma peça ("hh+bd")
+  const col = (id) => (hide || (set && !set.includes(id)) ? '#cfc6b6' : KIT_COLORS[id]); const on = (id) => (hl === id ? ' hl' : '');
   const sw = 'fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
   const drum = (id, x, y, w, h, nl) => { const rx = w / 2; const c = col(id); return `<g class="kp${on(id)}" data-p="${id}" style="--c:${c}"><path d="M${x} ${y} V${y + h} A${rx} ${h * 0.2} 0 0 0 ${x + w} ${y + h} V${y}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".14"/><ellipse cx="${x + rx}" cy="${y}" rx="${rx}" ry="${h * 0.22}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".1"/>${Array.from({ length: nl }, (_, i) => `<path d="M${(x + 9 + ((w - 18) * i) / (nl - 1)).toFixed(1)} ${y + h * 0.28}V${y + h * 0.78}" stroke="${c}" stroke-width="2" stroke-linecap="round" opacity=".55"/>`).join('')}</g>`; };
   const cym = (id, x, y, rx, tilt, two) => { const c = col(id); return `<g class="kp${on(id)}" data-p="${id}" style="--c:${c}"><path d="M${x} ${y + 6}V${y + (two ? 150 : 130)}" ${sw} stroke="${c}" opacity=".7"/><g transform="rotate(${tilt} ${x} ${y})">${two ? `<ellipse cx="${x}" cy="${y + 12}" rx="${rx}" ry="${rx / 5}" ${sw} stroke="${c}" opacity=".7"/>` : ''}<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx / 5}" ${sw} stroke="${c}" fill="${c}" fill-opacity=".14"/><ellipse cx="${x}" cy="${y - 1}" rx="${rx * 0.18}" ry="${rx * 0.06}" stroke="${c}" stroke-width="2" fill="none"/></g></g>`; };

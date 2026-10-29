@@ -31,7 +31,10 @@ export const GAMES = {
   },
   pauta: {
     id: 'pauta', title: 'Onde mora na pauta?', blurb: 'cada peça tem a sua casinha', emoji: '🎼', ages: 'a partir de 7 anos',
-    makeQuestion: (rnd, d) => withColor(pautaQ(rnd, d)),
+    modes: [['nomes', '🔤 com nomes'], ['desenho', '🖼 com desenho']], mode: 'nomes',
+    makeQuestion: (rnd, d, i, { mode }) => ({ ...withColor(pautaQ(rnd, d)), mode }),
+    // com desenho: as respostas são a bateria pintada (pra quem ainda não lê os nomes das peças)
+    optionLabel: (q, o) => (q.mode === 'desenho' ? h('span', { class: 'kx-opt-kit', 'aria-label': o.label }, svgEl(kitMarkup(null, false, o.id), 'kx-kit-op')) : o.label),
     render: (q) => h('div', { class: 'kx-q' }, svgEl(staffMarkup(q.ids), 'kd-staff'), h('p', { class: 'kd-q' }, q.ids.length > 1 ? 'quem toca nessas duas casinhas juntas?' : 'quem mora nessa casinha?')),
     picked: (q, id) => { if (id) String(id).split('+').forEach((x) => play(x)); },
     okText: (q) => `isso! ${pairName(q.ans)} ⭐`, noText: (q) => (q.ids.length > 1 ? `eram ${pairName(q.ans)} juntos` : `essa casinha é do ${nameOf(q.ans)}`), hint: (k) => hintOf('pauta', k),
