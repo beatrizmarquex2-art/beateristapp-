@@ -59,7 +59,7 @@ const RUN = { explorar, ritmo, memoria: mountMemoria };
 /** Mais jogos (dentro do app). */
 const EXTERNAL = [['#/jogos', 'Jogos musicais', 'dominó, última nota e mais: contra o Paul ou em dois', 'memoria'], ['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Figuras rítmicas', 'ouvir, montar e aprender cada figura', 'figuras']];
 
-const ageLabel = (a) => (AGES.find((x) => x[0] === a) || AGES[1])[1];
+const ageLabel = (a) => (ALUNO() ? 'jogador' : (AGES.find((x) => x[0] === a) || AGES[1])[1]);
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
 
 /** Fundo rabiscado do cartão: moldura tracejada, rabiscos nos 4 cantos e tracinhos em volta do ícone (cores vêm do cartão). */
@@ -166,7 +166,7 @@ function levelsScreen(host, gameId, mode) {
     h('div', { class: 'kx-hello' }, r.el),
     g.modes ? h('div', { class: 'row kd-modes' }, ...g.modes.map(([k, t]) => h('a', { class: `kd-chip${m === k ? ' on' : ''}`, href: `#/kids/${gameId}/-/${k}` }, t))) : null,
     h('div', { class: 'kx-levels' }, ...Array.from({ length: MAX_LEVEL + 1 }, (_, l) => lv(l))),
-    h('p', { class: 'lib-note' }, `${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`));
+    h('p', { class: 'lib-note' }, `${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. ${ALUNO() ? '' : `a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`}`));
   host.querySelector('.kx-gico').innerHTML = gameIcon(g.icon || gameId);
 }
 
