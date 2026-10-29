@@ -9,25 +9,60 @@ import * as bingo from '../jogos/bingo.js';
 import * as cara from '../jogos/cara.js';
 import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
+import { relatorio } from './jogos-relatorio.js';
 
 const IMG = 'assets/jogos/icones/';
+const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['domino', 'dominó', 'domino', domino],
-  ['cartas', 'última nota', 'cartas', cartas, 'números e figuras'],
-  ['bingo', 'bingo', 'bingo', bingo],
-  ['velha', 'jogo da velha', 'velha', velha],
-  ['quebra', 'quebra-cabeça', 'quebra-cabeca', quebra],
-  ['cara', 'cara a cara', 'cara-a-cara', cara],
-  ['stop', 'stop', 'stop', stop],
+  ['domino', 'dominó', 'domino.webp', domino],
+  ['cartas', 'última nota', 'cartas.webp', cartas, 'números e figuras'],
+  ['bingo', 'bingo', 'bingo.webp', bingo],
+  ['velha', 'jogo da velha', 'velha.webp', velha],
+  ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
+  ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
+  ['stop', 'stop', 'stop.webp', stop],
+];
+const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
+const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
+// Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
+const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
+const SECTIONS = [
+  ['ritmo e bateria', [
+    link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
+    link('#/kids/ritmo', 'monte seu ritmo', 'monte.svg', 'pão, bolo, chocolate…'),
+    link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
+    link('#/kids/eco', 'eco rítmico', 'eco.svg', 'ouve e repete'),
+  ]],
+  ['leitura musical', [
+    link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
+    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.svg', 'cada peça tem a sua casinha'),
+  ]],
+  ['cartas e tabuleiro', [
+    link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares'),
+    ...['domino', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+  ]],
+  ['jogos das dicas', [
+    link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
+    link('#/dicas/caca', 'caça-palavras', 'caca.svg', null, 'bea'),
+    link('#/dicas/cruzadinha', 'cruzadinha', 'cruza.svg', null, 'bea'),
+  ]],
+  ['fases e relatório', [
+    link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
+    link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
+  ]],
 ];
 
 function catalog(host) {
-  host.replaceChildren(banner('jogos musicais', 'escolha um jogo'), h('div', { class: 'jg jg-wrap jg-cat' },
-    h('div', { class: 'jg-grid' }, ...GAMES.map(([id, title, img, mod, sub]) => {
-      const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}.webp`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), sub ? h('small', {}, sub) : null];
-      return mod ? h('a', { class: 'jg-card', href: `#/jogos/${id}` }, ...kids)
-        : h('span', { class: 'jg-card wait', role: 'link', 'aria-disabled': 'true', tabindex: '0', 'aria-label': `${title}: em breve` }, ...kids, h('i', { class: 'jg-soon' }, 'em breve'));
-    }))));
+  const aluno = ALUNO();
+  const card = ([id, title, img, mod, sub, href]) => {
+    const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), sub ? h('small', {}, sub) : null];
+    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}` }, ...kids);
+  };
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' },
+    ...SECTIONS.map(([title, list]) => {
+      const shown = list.filter((x) => !(aluno && x[6] === 'bea'));
+      return shown.length ? h('section', { class: 'jg-sec' }, h('h2', { class: 'jg-sech hand' }, title), h('div', { class: 'jg-grid' }, ...shown.map(card))) : null;
+    }).filter(Boolean)));
 }
 
 function game(host, entry) {
@@ -45,6 +80,7 @@ function game(host, entry) {
 }
 
 export function mount(host, parts = []) {
+  if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) { catalog(host); return null; }
   return game(host, entry);

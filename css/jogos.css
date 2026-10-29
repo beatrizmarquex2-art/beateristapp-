@@ -136,3 +136,38 @@
 .jg-seg.sm button{min-height:44px;padding:6px 10px;font-size:13px}
 .jg-edit{display:grid;gap:6px}
 .jg-tbl{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.jg-tbl th,.jg-tbl td{border:1px solid var(--jg-line);padding:6px;text-align:left;overflow-wrap:anywhere}.jg-tbl tr.tot td{font-weight:800}
+/* hub: seções */
+.jg-sec{padding:6px 0 0}.jg-sech{margin:8px 12px 0;font-size:22px;color:var(--jg-red)}
+.jg-cat .jg-grid{padding-top:6px}
+.jg-card:active{transform:translateY(1px)}
+/* relatório (documento) */
+.jg-doc{padding:0 0 8px}
+.rel-actions{display:flex;align-items:center;justify-content:space-between;padding:6px 12px}
+.rel-page{padding:4px 16px 16px;line-height:1.45}
+.rel-title h1{font-size:30px;margin:4px 0 0}.rel-title p{margin:2px 0 10px}
+.rel-intro{margin:0 0 6px}
+.rel-grp h2{font-size:22px;margin:16px 0 6px;color:var(--jg-red);border-bottom:2px dashed var(--jg-line);padding-bottom:2px}
+.rel-game{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--jg-line);break-inside:avoid}
+.rel-ico{width:72px;height:auto;display:block}
+.rel-body h3{margin:0 0 2px;font-size:17px}.rel-body p{margin:3px 0}.rel-body ul{margin:2px 0;padding-left:18px}
+.rel-what{font-style:italic}.rel-k{margin-top:6px!important;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--jg-navy)}
+@media print{
+  .topwrap,.bottom-nav,.rel-actions,#decor,.banner-wrap,.statusbar,.fab,.swipe-back{display:none!important}
+  body,.jg-wrap{background:#fff!important}.jg-wrap{border:0!important;max-width:none;width:100%;margin:0}
+}
+/* jogos das dicas: mesmo papel dos jogos musicais, com os três jogos como cartões de ícone */
+.dc-wrap .dc-box{padding:0 12px 20px}
+.dc-picks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px 10px 12px}
+.dc-pick{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 4px 8px;background:var(--jg-bg);border:2px solid var(--jg-navy);border-radius:14px;color:var(--jg-ink);text-decoration:none;text-align:center;min-height:44px}
+.dc-pick img{width:100%;aspect-ratio:1/1.1;object-fit:contain;display:block}
+.dc-pick b{font-size:13px;line-height:1.15}.dc-pick small{font-size:11px;opacity:.75}
+.dc-pick.on{background:#ffe9b5;border-color:var(--jg-red);box-shadow:3px 3px 0 var(--jg-red);transform:translateY(-2px)}
+.dc-pick:focus-visible{outline:3px solid var(--jg-mus);outline-offset:2px}
+.dc-wrap .card{background:#fffdf7;color:var(--jg-ink);border:2px solid var(--jg-navy);border-radius:14px;box-shadow:3px 3px 0 var(--jg-line)}
+.dc-wrap .dc-q .tr-count{font-weight:800;color:var(--jg-red);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.dc-wrap .dc-clue{font-family:var(--display, inherit)}
+.dc-wrap .dc-opt{border:2px solid var(--jg-navy);border-radius:12px;background:#fff;color:var(--jg-ink);box-shadow:2px 2px 0 var(--jg-navy)}
+.dc-wrap .dc-opt:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--jg-navy)}
+.dc-wrap .dc-c{border-color:var(--jg-navy);border-radius:4px}
+.dc-wrap .dc-explain{border-left-color:var(--jg-mus)}
+@media (prefers-reduced-motion:reduce){.dc-pick.on{transform:none}}

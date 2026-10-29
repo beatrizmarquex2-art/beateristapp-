@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 297" width="256" height="297"><defs><filter id="r" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter></defs><g filter="url(#r)">
+ <g transform="translate(44 64) rotate(-25)" stroke="#d02a3a" stroke-width="6" stroke-linecap="round"><path d="M0 0l-10 -26"/><path d="M14 4l8 -22"/><path d="M26 16l22 -10"/></g><g transform="translate(214 56) rotate(25)" stroke="#f2b134" stroke-width="6" stroke-linecap="round"><path d="M0 0l-10 -26"/><path d="M14 4l8 -22"/><path d="M26 16l22 -10"/></g>
+ <path d="M68 62h120v48q0 50-60 60-60-10-60-60z" fill="#f2b134" stroke="#1c1917" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+ <path d="M68 76H34q0 52 36 62M188 76h34q0 52-36 62" fill="none" stroke="#1c1917" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+ <path d="M128 170v34M92 246h72M104 204h48v42h-48z" stroke="#1c1917" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" fill="#f2b134"/>
+ <path transform="translate(128 108) scale(1.1)" d="M0 -20l6 13 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2z" fill="#d02a3a" stroke="#1c1917" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M60 258h136" stroke="#1c1917" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"/></g></svg>

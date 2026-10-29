@@ -56,9 +56,6 @@ function ritmo(box) { return mountRitmo(box); }
 
 const RUN = { explorar, ritmo, memoria: mountMemoria };
 
-/** Mais jogos (dentro do app). */
-const EXTERNAL = [['#/jogos', 'Jogos musicais', 'dominó, última nota e mais: contra o Paul ou em dois', 'memoria'], ['#/ritmo', 'Jogos de ritmo', 'toca no tempo e ganha XP', 'explorar'], ['#/treinos/montar', 'Figuras rítmicas', 'ouvir, montar e aprender cada figura', 'figuras']];
-
 const ageLabel = (a) => (ALUNO() ? 'jogador' : (AGES.find((x) => x[0] === a) || AGES[1])[1]);
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
 
@@ -116,25 +113,21 @@ function homeScreen(host, rerender) {
   const me = P.active();
   if (!me) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
-    host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
-      h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))));    return;
+    host.append(topBar('#/jogos'), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'));
+    return;
   }
   const total = P.totalStars(me.id); const tier = tierOf(total);
   const r = robo({ mood: 'happy', tier, size: 96, say: total ? `oi, ${me.name}! já temos ${total} estrelas!` : `oi, ${me.name}! vamos jogar?` });
-  host.append(topBar(),
+  host.append(topBar('#/jogos'),
     h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), h('small', {}, ageLabel(me.age))),
       h('span', { class: 'kd-stars' }, `★ ${total}`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
-    h('h2', { class: 'kx-h' }, 'jogos'),
+    h('h2', { class: 'kx-h' }, 'fases'),
     h('div', { class: 'kx-cards' }, ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
       ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
-    h('h2', { class: 'kx-h' }, 'livres'),
-    h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
-    h('h2', { class: 'kx-h' }, 'mais jogos'),
-    h('div', { class: 'kx-cards' }, ...EXTERNAL.filter((x) => !ALUNO() || x[0] === '#/ritmo' || x[0] === '#/jogos').map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
@@ -161,7 +154,7 @@ function levelsScreen(host, gameId, mode) {
     const body = [h('b', { class: 'kx-n' }, String(l)), h('small', {}, levelTag(spec)), h('span', { class: 'kx-st' }, ...[1, 2, 3].map((n) => h('i', { class: n <= st ? 'on' : '' }, '★'))), best != null ? h('small', { class: 'kx-best' }, `${best}%`) : null];
     return open ? h('a', { class: `kx-lv${st ? ' done' : ''}${spec.sudden ? ' boss' : ''}`, href: `#/kids/${gameId}/${l}${m ? `/${m}` : ''}` }, ...body)
       : h('button', { type: 'button', class: 'kx-lv locked', 'aria-label': `Fase ${l} trancada`, onclick: () => toast('ganha 1 estrela na fase anterior pra abrir', { ms: 2200 }) }, h('b', { class: 'kx-n' }, '🔒'), h('small', {}, `fase ${l}`)); };
-  host.append(topBar('#/kids', h('span', { class: 'kd-stars kx-stars-top' }, `★ ${s.stars}/${s.maxStars}`)),
+  host.append(topBar('#/jogos', h('span', { class: 'kd-stars kx-stars-top' }, `★ ${s.stars}/${s.maxStars}`)),
     h('div', { class: 'kx-gtitle' }, h('span', { class: 'kx-gico' }), h('div', {}, h('h1', { class: 'kx-pix kx-pagetitle' }, g.title), h('p', { class: 'kx-gd' }, g.blurb))),
     h('div', { class: 'kx-hello' }, r.el),
     g.modes ? h('div', { class: 'row kd-modes' }, ...g.modes.map(([k, t]) => h('a', { class: `kd-chip${m === k ? ' on' : ''}`, href: `#/kids/${gameId}/-/${k}` }, t))) : null,
@@ -178,7 +171,7 @@ export function mount(host, parts = []) {
     const free = first && RUN[first] ? first : null;
     if (free) {
       const g = FREE.find((x) => x[0] === free); const box = h('div', { class: 'kd-game' });
-      host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; return;
+      host.append(topBar('#/jogos'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; return;
     }
     if (first === 'album') { albumScreen(host, lv); return; }
     if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }

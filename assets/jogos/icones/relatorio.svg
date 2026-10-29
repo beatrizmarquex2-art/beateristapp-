@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 297" width="256" height="297"><defs><filter id="r" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter></defs><g filter="url(#r)">
+ <g transform="translate(44 64) rotate(-25)" stroke="#d02a3a" stroke-width="6" stroke-linecap="round"><path d="M0 0l-10 -26"/><path d="M14 4l8 -22"/><path d="M26 16l22 -10"/></g><path transform="translate(216 64) scale(0.9)" d="M0 -20l6 13 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2z" fill="#f2b134" stroke="#1c1917" stroke-width="4" stroke-linejoin="round"/>
+ <rect x="54" y="56" width="148" height="196" rx="14" fill="#fffaf0" stroke="#1c1917" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+ <rect x="94" y="40" width="68" height="34" rx="10" fill="#1f3f6e" stroke="#1c1917" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+ <path d="M76 110h104M76 140h104M76 170h70" stroke="#1c1917" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+ <path d="M76 208l16 16 30-34" fill="none" stroke="#d02a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+ <path d="M170 218l54-54" stroke="#1c1917" stroke-width="18" stroke-linecap="round"/><path d="M170 218l54-54" stroke="#f2b134" stroke-width="8" stroke-linecap="round"/><path d="M164 236l6-18 12 12z" fill="#1c1917"/></g></svg>

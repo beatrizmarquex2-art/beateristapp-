@@ -14,7 +14,14 @@ const TABS_MENU = [
   ['treinar', 'treinar', [
     ['técnica', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana']]],
     ['leitura e ouvido', [['#/treinos', 'study', 'Leitura e Escuta'], ['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
-    ['jogos', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos', 'star', 'Jogos musicais'], ['#/kids', 'kit', 'Jogos Beaterista'], ['#/kids/memoria', 'star', 'Jogo da memória'], ['#/dicas', 'bulb', 'Jogos das dicas']]],
+  ]],
+  ['jogos', 'jogos', [
+    ['', [['#/jogos', 'star', 'Todos os jogos']]],
+    ['ritmo e bateria', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids/ritmo', 'kit', 'Monte seu ritmo'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico']]],
+    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/kids/pauta', 'staff', 'Onde mora na pauta?']]],
+    ['cartas e tabuleiro', [['#/kids/memoria', 'star', 'Jogo da memória'], ['#/jogos/domino', 'star', 'Dominó'], ['#/jogos/cartas', 'star', 'Última nota'], ['#/jogos/bingo', 'star', 'Bingo'], ['#/jogos/velha', 'star', 'Jogo da velha'], ['#/jogos/quebra', 'star', 'Quebra-cabeça'], ['#/jogos/cara', 'star', 'Cara a cara'], ['#/jogos/stop', 'star', 'Stop']]],
+    ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
+    ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
   ]],
   ['estudar', 'estudar', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/dicionario', 'book', 'Dicionário da bateria'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
@@ -24,7 +31,7 @@ const TABS_MENU = [
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/kids', 'kit', 'Jogos Beaterista'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
   ]],
   ['organizar', 'organizar', [
     ['', [['#/inicio', 'home', 'Início'], ['#/hub/anotar', 'note', 'Anotar'], ['#/arquivos', 'folder', 'Meus Arquivos']]],
@@ -35,8 +42,8 @@ const TABS_MENU = [
   ]],
 ];
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance
-const TAB_ICON = { tocar: 'kit', treinar: 'timer', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
-const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
+const TAB_ICON = { tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
+const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
 const LAST = 'bt-menu-tab';
 const PREF = 'setting-menu'; // { hidden: [href], moved: { href: abaId }, order: [href] }
 const prefs = () => ({ hidden: [], moved: {}, order: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });

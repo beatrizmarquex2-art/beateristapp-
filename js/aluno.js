@@ -17,8 +17,8 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/ritmo', 'play', 'Ritmo'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/kids', 'study', 'Jogos'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', jogos: 'kids' }; // telas que acendem outra aba
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -62,7 +62,7 @@ function pickPose() {
 }
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
-const route = () => { const [, a, ...rest] = (location.hash || '#/ritmo').split('/'); return { name: a || 'ritmo', parts: rest.filter(Boolean).map(decodeURIComponent) }; };
+const route = () => { const [, a, ...rest] = (location.hash || '#/jogos').split('/'); return { name: a || 'jogos', parts: rest.filter(Boolean).map(decodeURIComponent) }; };
 
 /** O Kids guarda o progresso por "jogador": cria/seleciona um com o nome do aluno. */
 async function ensureKidsPlayer(name) {
@@ -111,7 +111,7 @@ function tocarView(view) {
 
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(5, 1fr)', 'aria-label': 'Navegação' });
+  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(4, 1fr)', 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-96.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
@@ -131,7 +131,7 @@ function shell(name) {
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'tocar') tocarView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
-    else { location.hash = '#/ritmo'; return; }
+    else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }

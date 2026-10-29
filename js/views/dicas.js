@@ -1,4 +1,4 @@
-// Jogos das 30 dicas: quiz, caça-palavras, cruzadinha e um "misturado". Quando a palavra é achada, aparece a explicação (a dica inteira).
+// Jogos das 30 dicas: quiz, caça-palavras e cruzadinha. Quando a palavra é achada, aparece a explicação (a dica inteira).
 // Os textos vêm dos registros privados "tip" (os mesmos do Plano de Estudo); sem eles os jogos avisam em vez de inventar texto.
 import { h } from '../util.js';
 import * as store from '../store.js';
@@ -11,13 +11,13 @@ const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data
 const save = (p) => store.upsert('setting', KEY, p);
 import { tipList } from '../tipbox.js';
 const items = () => T.keywords(tipList(), conf().kw);
-const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha'], ['misturado', 'misturado'], ['palavras', 'palavras']];
+const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha']];
 const total = () => Math.max(30, tipList().length);
 
 /** A dica inteira, pra quando a palavra é achada. */
 const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' }, h('p', { class: 'dc-n' }, `dica ${it.n} de ${total()} · a palavra é ${it.shown}`), h('p', { class: 'dc-text' }, it.text));
 
-/* ---------- quiz (e o misturado: também embaralhada) ---------- */
+/* ---------- quiz ---------- */
 function quiz(box, kinds, key) {
   const its = items(); const ROUNDS = Math.min(10, its.length);
   let i = 0; let score = 0; let q = null; let answered = false; let picked = [];
@@ -31,16 +31,8 @@ function quiz(box, kinds, key) {
   const done = (ok, el) => { answered = true; if (ok) score++; draw(); FB.result(ok, el && el.isConnected ? el : box.querySelector('.dc-q'), { live: null }); };
   function draw() {
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
-    let body;
-    if (q.kind === 'embaralhada') {
-      const word = picked.map((p) => q.letters[p]).join('');
-      const tiles = q.letters.map((l, k) => h('button', { type: 'button', class: `dc-tile${picked.includes(k) ? ' used' : ''}`, disabled: answered || picked.includes(k), onclick: () => { picked.push(k); if (picked.length === q.ans.length) { const ok = picked.map((p) => q.letters[p]).join('') === q.ans; done(ok); } else draw(); } }, l));
-      body = [h('p', { class: 'dc-clue' }, q.clue), h('p', { class: 'muted' }, q.prompt), h('div', { class: 'dc-word' }, ...[...q.ans].map((_, k) => h('span', { class: word[k] ? 'on' : '' }, word[k] || ''))), h('div', { class: 'dc-tiles' }, ...tiles),
-        h('button', { class: 'btn small ghost', type: 'button', disabled: answered || !picked.length, onclick: () => { picked.pop(); draw(); } }, '↺ apagar a última')];
-    } else {
-      body = [h(q.kind === 'blank' ? 'p' : 'h3', { class: q.kind === 'blank' ? 'dc-clue' : 'dc-ask' }, q.prompt), q.kind === 'blank' ? h('p', { class: 'muted' }, 'qual palavra completa a dica?') : null,
+    const body = [h(q.kind === 'blank' ? 'p' : 'h3', { class: q.kind === 'blank' ? 'dc-clue' : 'dc-ask' }, q.prompt), q.kind === 'blank' ? h('p', { class: 'muted' }, 'qual palavra completa a dica?') : null,
         h('div', { class: `dc-opts${q.kind === 'match' ? ' long' : ''}` }, ...q.options.map((o) => h('button', { type: 'button', class: `tr-pal dc-opt${answered ? (o.id === q.ans ? ' ok' : '') : ''}`, disabled: answered, onclick: (e) => { const btn = e.currentTarget; done(o.id === q.ans, btn); if (o.id !== q.ans) btn.classList.add('no'); } }, o.label)))];
-    }
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, head, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
       answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? 'ver o resultado' : 'próxima') : null].filter(Boolean));
@@ -103,23 +95,22 @@ function cruzadinha(box) {
   draw();
 }
 
-/* ---------- palavras: dá pra trocar a palavra-chave de cada dica ---------- */
-function palavras(box) {
-  const its = items();
-  box.replaceChildren(h('p', { class: 'pad-x lib-note' }, 'cada dica vira uma palavra nos jogos. se a escolha automática não ficou boa, troca aqui.'),
-    h('section', { class: 'card pad' }, h('ul', { class: 'dc-kw' }, ...its.map((it) => h('li', {}, h('b', {}, `${it.n}`), h('span', { class: 'dc-kwt' }, it.text.length > 80 ? `${it.text.slice(0, 78)}…` : it.text),
-      h('select', { 'aria-label': `Palavra da dica ${it.n}`, onchange: (e) => save({ kw: { ...conf().kw, [it.n]: e.target.value } }) }, ...it.cands.map((c) => h('option', { value: c.w, selected: c.w === it.w }, c.shown))))))));
-}
+const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg' };
+const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas' };
 
 export function mount(host, parts = []) {
   const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : 'quiz';
   const box = h('div', { class: 'dc-box' });
   host.append(banner('Jogos das dicas', 'quiz, caça-palavras e cruzadinha com as 30 dicas'),
-    h('div', { class: 'chips lib-tabs bt-tabs', role: 'tablist' }, ...TABS.map(([k, t]) => h('a', { class: `lib-tab${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` }, t))), box);
+    h('div', { class: 'jg jg-wrap dc-wrap' },
+      h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos')),
+      h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
+        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, t), h('small', {}, SUB[k])))),
+      box));
   const run = () => {
     box.replaceChildren(); const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
-    ({ quiz: () => quiz(box, ['blank', 'match'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box), misturado: () => quiz(box, ['blank', 'match', 'embaralhada'], 'misturado'), palavras: () => palavras(box) })[tab]();
+    ({ quiz: () => quiz(box, ['blank', 'match'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };
   run();
   const off = store.subscribe((i) => { if (i.kind === 'tip' && !box.children.length) run(); });

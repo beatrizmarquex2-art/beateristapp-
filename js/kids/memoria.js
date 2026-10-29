@@ -12,6 +12,11 @@ const save = (p) => store.upsert('setting', KEY, p);
 const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 
 /** A carta inteira (a imagem já traz o desenho, o nome e a borda). */
+/** O verso da carta é o botão do tema; "tudo misturado" não tem verso próprio, então mostra um leque de três. */
+const MIX = ['rock', 'percussao', 'figuras'].map((k) => `assets/memoria/${k}/verso.webp`);
+const verso = (t) => (t.verso
+  ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
+  : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
 const face = (it) => h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' });
 
 export function mountMemoria(host) {
@@ -29,11 +34,12 @@ export function mountMemoria(host) {
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
-      h('div', { class: 'mem-themes' }, ...THEMES.map((t) => h('button', { type: 'button', class: `mem-theme${t.id === th.id ? ' on' : ''}`, 'aria-pressed': String(t.id === th.id), onclick: () => save({ theme: t.id }).then(setup) },
-        h('span', { class: 'mem-emoji', 'aria-hidden': 'true' }, t.emoji), h('b', {}, t.title), h('small', {}, t.blurb)))),
+      h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Tema do jogo' }, ...THEMES.map((t) => h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}: ${t.blurb}`, onclick: () => save({ theme: t.id }).then(setup) },
+        verso(t), h('b', {}, t.title)))),
+      h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
       h('h2', { class: 'kx-h' }, 'quantos pares?'),
       h('div', { class: 'row kd-modes' }, ...SIZES.map((n) => h('button', { type: 'button', class: `kd-chip${pairs === n ? ' on' : ''}`, disabled: n > maxPairs, onclick: () => save({ pairs: n }).then(setup) }, `${n} pares`))),
-      (() => { const b = c.best[`${th.id}:${pairs}`]; return b ? h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`) : null; })(),
+      ...(() => { const b = c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs)) }, 'jogar'));
     bot.set('happy', 'escolhe o tema e quantos pares!');
   };
