@@ -607,7 +607,6 @@ input.switch:checked { background: var(--accent); border-color: transparent; } i
   url(../assets/mural/star-ink.svg) left -18px top 120px / 64px no-repeat,
   url(../assets/mural/shard-red.svg) right -60px top 46% / 120px no-repeat,
   url(../assets/mural/star-red.svg) right 6px top 210px / 40px no-repeat,
-  url(../assets/mural/shard-black.svg) left -70px bottom 110px / 150px no-repeat,
   url(../assets/mural/star-spray.svg) right -6px bottom 160px / 70px no-repeat,
   url(../assets/mural/bolt-red.svg) left 4px top 62% / 34px no-repeat;
   opacity: .9; }
