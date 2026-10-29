@@ -231,7 +231,7 @@ function rzBackdrop(g,W,H,dpr){const id=rzThemeId(),k=id+'|'+W+'|'+H;
     const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,T.bg[0]);bg.addColorStop(1,T.bg[1]);x.fillStyle=bg;x.fillRect(0,0,W,H);
     if(T.dots){x.fillStyle=T.dots;const st=16*dpr;for(let y=st/2,r=0;y<H;y+=st,r++)for(let xx=(r%2?st:st/2);xx<W;xx+=st){x.beginPath();x.arc(xx,y,1.4*dpr,0,7);x.fill()}}
     if(T.vinyl){const cx=W*.84,cy=H*.9,R=Math.min(W,H)*.62;for(let i=0;i<9;i++){x.strokeStyle='rgba(255,255,255,'+(.05+(i%2)*.035)+')';x.lineWidth=dpr;x.beginPath();x.arc(cx,cy,R*(.32+i*.08),0,7);x.stroke()}x.fillStyle='rgba(217,32,49,.55)';x.beginPath();x.arc(cx,cy,R*.2,0,7);x.fill();x.fillStyle='rgba(243,231,212,.5)';x.beginPath();x.arc(cx,cy,R*.025,0,7);x.fill()}
-    if(T.bands){x.fillStyle='rgba(255,209,102,.1)';x.beginPath();x.moveTo(W*.22,0);x.lineTo(W*.36,0);x.lineTo(W*.1,H);x.lineTo(-W*.04,H);x.fill();x.fillStyle='rgba(255,90,110,.1)';x.beginPath();x.moveTo(W*.64,0);x.lineTo(W*.7,0);x.lineTo(W*.52,H);x.lineTo(W*.46,H);x.fill()}
+    if(T.bands){x.fillStyle='rgba(255,209,102,.1)';x.beginPath();x.moveTo(W*.22,0);x.lineTo(W*.36,0);x.lineTo(W*.1,H);x.lineTo(-W*.04,H);x.fill();x.fillStyle='rgba(217,32,49,.14)';x.beginPath();x.moveTo(W*.64,0);x.lineTo(W*.7,0);x.lineTo(W*.52,H);x.lineTo(W*.46,H);x.fill()}
     RZ._bgc=c;RZ._bgk=k}
   g.drawImage(RZ._bgc,0,0)}
 const RZ_WIN={facil:{pf:.11,gd:.24,spd:.6,k:1.4,n:'Fácil'},medio:{pf:.08,gd:.16,k:1.22,spd:.85,n:'Médio'},dificil:{pf:.045,gd:.1,spd:1.12,k:1,n:'Difícil'}};
