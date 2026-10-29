@@ -32,6 +32,9 @@ const FREE = [
 ];
 
 /** Explorar a bateria: aba "tocar" (toca cada peça do jeito que quiser, vários dedos) e aba "nomes" (toca e aparece o nome da peça). */
+// tema visual compartilhado com os Jogos de ritmo (colagem, vinil, pôster)
+const KIT_THEMES = [['colagem', 'colagem'], ['vinil', 'vinil'], ['poster', 'pôster']];
+const kitTheme = () => { try { const t = localStorage.getItem('bt-rz-theme'); return KIT_THEMES.some((x) => x[0] === t) ? t : 'colagem'; } catch { return 'colagem'; } };
 function explorar(box) {
   let tab = 'tocar'; let timer = 0;
   const draw = () => {
@@ -45,7 +48,9 @@ function explorar(box) {
     box.replaceChildren(
       h('div', { class: 'row kd-modes' }, ...[['tocar', '🥁 tocar livre'], ['nomes', '🔤 nomes das peças']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${tab === k ? ' on' : ''}`, onclick: () => { tab = k; draw(); } }, t))),
       h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toca em qualquer peça, do jeito que quiser!' : 'toca numa peça pra ver o nome dela'),
-      kit, name);
+      kit, name,
+      h('div', { class: 'row kd-modes kd-themes', role: 'group', 'aria-label': 'Tema da bateria' }, h('small', {}, 'tema'), ...KIT_THEMES.map(([k, t]) => h('button', { type: 'button', class: `kd-chip${kitTheme() === k ? ' on' : ''}`, 'aria-pressed': String(kitTheme() === k), onclick: () => { try { localStorage.setItem('bt-rz-theme', k); } catch { /* sem armazenamento */ } draw(); } }, t))));
+    box.dataset.kitTheme = kitTheme(); // o mesmo tema dos jogos de ritmo
   };
   draw();
   return () => clearTimeout(timer);

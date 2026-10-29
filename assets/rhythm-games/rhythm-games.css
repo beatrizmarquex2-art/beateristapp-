@@ -156,3 +156,43 @@ body.rz-lock{overscroll-behavior:none}
 .bmr input.field{-webkit-user-select:text;user-select:text}
 /* iPad: a escolha do jogo em grade de quatro, com botões do mesmo tamanho */
 @media(min-width:760px){.bmr .rz-games{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.bmr .rz-games .rz-g{width:100%;min-height:92px}}
+
+/* ===== temas visuais dos jogos de ritmo: colagem, vinil e pôster (o seletor fica no menu) ===== */
+.rz-themes{margin-top:2px}
+/* --- colagem: papel amarelo, cartões brancos, azul-marinho --- */
+.rg-host[data-rz-theme="colagem"]{background:#FFD66B url(../zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply;color:#142036;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(20,32,54,.35)}
+.rg-host[data-rz-theme="colagem"] #jogos.bmr,.rg-host[data-rz-theme="colagem"] .bmr{--char:#fffdf7;--char-2:#fffdf7;--char-3:#fff1c4;--char-4:#e6d6a4;--ink:#142036;--ivory:#142036;--ivory-2:#2c3550;--ivory-3:#4d5468;--brass:#7a4a10;--red:#1d3a6b;--red-2:#142a52;--neon1:#1d3a6b;--neon3:#7a4a10;color:#142036}
+.rg-host[data-rz-theme="colagem"] .rz-g,.rg-host[data-rz-theme="colagem"] .rz-song,.rg-host[data-rz-theme="colagem"] .rz-st,.rg-host[data-rz-theme="colagem"] .field,.rg-host[data-rz-theme="colagem"] .panel{border:2.5px solid #142036;border-radius:12px 16px 10px 15px/15px 10px 16px 12px;box-shadow:3px 3px 0 #142036}
+.rg-host[data-rz-theme="colagem"] .rz-g{box-shadow:3px 3px 0 var(--gc)}.rg-host[data-rz-theme="colagem"] .rz-g.on{background:var(--gc);box-shadow:3px 3px 0 #142036}.rg-host[data-rz-theme="colagem"] .rz-g.on span{color:#142036}
+.rg-host[data-rz-theme="colagem"] .segtabs{border:2.5px solid #142036;box-shadow:none;background:#fffdf7;border-radius:12px}.rg-host[data-rz-theme="colagem"] .segtabs button{color:#4d5468}.rg-host[data-rz-theme="colagem"] .segtabs button[aria-pressed="true"]{background:#142036;color:#ffd166}
+.rg-host[data-rz-theme="colagem"] .rz-st.on{background:var(--sc);color:#142036}
+.rg-host[data-rz-theme="colagem"] .btn{border:2.5px solid #142036;border-radius:12px 16px 10px 15px;box-shadow:3px 3px 0 #142036;background:#fffdf7;color:#142036}.rg-host[data-rz-theme="colagem"] .btn-red{background:#1d3a6b;color:#fff}
+.rg-host[data-rz-theme="colagem"] .rz-stage{border:3px solid #142036;border-radius:8px;box-shadow:5px 6px 0 rgba(20,32,54,.35);background:transparent}
+.rg-host[data-rz-theme="colagem"] .rz-pad{border:3px solid #142036;border-radius:50%;box-shadow:0 4px 0 rgba(20,32,54,.45);opacity:1}
+.rg-host[data-rz-theme="colagem"] .rz-hud b{color:#142036}
+/* --- vinil: grafite, discos, destaque azul-claro --- */
+.rg-host[data-rz-theme="vinil"]{background:#1c1a22 url(../zine/textura-fundo-tinta.webp) center/cover;background-blend-mode:screen;color:#f3eee4;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35);position:relative;overflow:hidden}
+.rg-host[data-rz-theme="vinil"]::after{content:"";position:absolute;right:-96px;top:-104px;width:190px;height:190px;background:url(../mural/vinyl.svg) center/contain no-repeat;opacity:.85;pointer-events:none}
+body.rz-lock .rg-host[data-rz-theme="vinil"]::after{display:none}
+.rg-host[data-rz-theme="vinil"] #jogos.bmr,.rg-host[data-rz-theme="vinil"] .bmr{--char:#2a2630;--char-2:#2a2630;--char-3:#383344;--char-4:#4a4458;--ivory:#f3eee4;--ivory-3:#b3abc3;--red:#5cc8ff;--red-2:#2f9fd4;--neon1:#5cc8ff;--neon3:#ffd166}
+.rg-host[data-rz-theme="vinil"] .rz-g,.rg-host[data-rz-theme="vinil"] .rz-song,.rg-host[data-rz-theme="vinil"] .rz-st{border:2px solid #ffd166;border-radius:12px;box-shadow:none}
+.rg-host[data-rz-theme="vinil"] .rz-g.on{background:#ffd166;color:#1c1a22}.rg-host[data-rz-theme="vinil"] .rz-g.on span,.rg-host[data-rz-theme="vinil"] .rz-g.on b{color:#1c1a22}
+.rg-host[data-rz-theme="vinil"] .segtabs{border:2px solid #5cc8ff;box-shadow:none;border-radius:12px}.rg-host[data-rz-theme="vinil"] .segtabs button[aria-pressed="true"]{background:#5cc8ff;color:#1c1a22}
+.rg-host[data-rz-theme="vinil"] .rz-st.on{color:#1c1a22}.rg-host[data-rz-theme="vinil"] .btn-red{background:#5cc8ff;color:#1c1a22;box-shadow:none}
+.rg-host[data-rz-theme="vinil"] .rz-stage{border:2px solid #5cc8ff;border-radius:10px;background:transparent}
+.rg-host[data-rz-theme="vinil"] .rz-pad{border:3px solid #fff;border-radius:50%;opacity:1}
+/* --- pôster: azul-marinho com pontinhos, cartões brancos com sombra rosa --- */
+.rg-host[data-rz-theme="poster"]{background:#14284b radial-gradient(rgba(255,209,102,.26) 1.6px,transparent 1.8px) 0 0/14px 14px;color:#fffdf7;border-radius:6px 14px 8px 16px;box-shadow:5px 6px 0 rgba(0,0,0,.35)}
+.rg-host[data-rz-theme="poster"] #jogos.bmr,.rg-host[data-rz-theme="poster"] .bmr{--char:#fffdf7;--char-2:#fffdf7;--char-3:#fff1c4;--char-4:#e6d6a4;--ivory:#fffdf7;--ivory-3:#c9d2e8;--brass:#ffd166;--red:#14284b;--red-2:#0d1b36;--neon1:#ffd166;--neon3:#ffd166}
+.rg-host[data-rz-theme="poster"] .rz-g,.rg-host[data-rz-theme="poster"] .rz-song,.rg-host[data-rz-theme="poster"] .rz-st,.rg-host[data-rz-theme="poster"] .panel{color:#14284b;border:2.5px solid #000;border-radius:12px;box-shadow:3px 3px 0 #ff5a6e}
+.rg-host[data-rz-theme="poster"] .rz-g span,.rg-host[data-rz-theme="poster"] .rz-song .small,.rg-host[data-rz-theme="poster"] .panel .muted{color:#4d5468}.rg-host[data-rz-theme="poster"] .rz-song .rz-n{color:#a51a28}
+.rg-host[data-rz-theme="poster"] .rz-g.on{background:#ff5a6e;color:#fff}.rg-host[data-rz-theme="poster"] .rz-g.on span,.rg-host[data-rz-theme="poster"] .rz-g.on b{color:#fff}
+.rg-host[data-rz-theme="poster"] .segtabs{background:#fffdf7;border:2.5px solid #000;box-shadow:none;border-radius:12px}.rg-host[data-rz-theme="poster"] .segtabs button{color:#4d5468}.rg-host[data-rz-theme="poster"] .segtabs button[aria-pressed="true"]{background:#14284b;color:#ffd166}
+.rg-host[data-rz-theme="poster"] .rz-st.on{color:#14284b}.rg-host[data-rz-theme="poster"] .field{background:#fffdf7;color:#14284b;border:2.5px solid #000;border-radius:12px}
+.rg-host[data-rz-theme="poster"] .btn{border:2.5px solid #000;border-radius:12px;box-shadow:3px 3px 0 #ff5a6e;background:#fffdf7;color:#14284b}.rg-host[data-rz-theme="poster"] .btn-red{background:#ffd166;color:#14284b}
+.rg-host[data-rz-theme="poster"] .rz-stage{border:3px solid #ffd166;border-radius:6px;background:transparent}
+.rg-host[data-rz-theme="poster"] .rz-pad{border:3px solid #000;border-radius:50%;opacity:1}
+/* fita adesiva e faixa só no menu (some quando o jogo vira tela cheia) */
+body:not(.rz-lock) .rg-host[data-rz-theme="colagem"]::before{content:"";position:absolute;left:-12px;top:-14px;width:70px;height:40px;background:url(../zine/fita-1.webp) center/contain no-repeat;transform:rotate(-12deg);pointer-events:none;z-index:3}
+body:not(.rz-lock) .rg-host[data-rz-theme="colagem"]::after{content:"";position:absolute;right:-12px;top:-12px;width:64px;height:40px;background:url(../zine/fita-3.webp) center/contain no-repeat;transform:scaleX(-1) rotate(-8deg);pointer-events:none;z-index:3}
+.rg-host[data-rz-theme]{position:relative}
