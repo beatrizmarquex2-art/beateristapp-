@@ -177,3 +177,16 @@
 .jg-flat .jg-card b{font-size:11px}
 .jg-flat .jg-ico{aspect-ratio:1/1}
 @media (max-width:339px){.jg-flat{grid-template-columns:repeat(3,1fr)}}
+
+/* favoritos e editar do catálogo */
+.jgx-bar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 10px 0}
+.jgx-chip{min-height:36px;padding:0 12px;border:2px solid var(--jg-navy);border-radius:999px;background:#fff;color:var(--jg-ink);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer}
+.jgx-chip.on{background:var(--jg-navy);color:#fff}.jgx-edit{margin-left:auto}
+.jgx-cell{position:relative;display:grid}.jgx-cell.off{opacity:.45}
+.jgx-star{position:absolute;top:2px;left:2px;width:32px;height:32px;border:0;background:rgb(255 245 227 / .85);border-radius:50%;font-size:18px;line-height:1;color:var(--jg-ink);cursor:pointer}
+.jgx-star.on{color:#e0a800}
+.jgx-ctl{display:flex;gap:2px;justify-content:center;margin-top:3px}
+.jgx-ctl button{min-width:36px;min-height:34px;border:2px solid var(--jg-navy);border-radius:10px;background:#fff;color:var(--jg-ink);font-weight:700;font-size:12px;font-family:inherit;cursor:pointer;padding:0 6px}
+.jg-flat{grid-template-columns:repeat(4,minmax(0,1fr))}.jgx-cell{min-width:0}.jgx-cell .jg-card{min-width:0;width:100%}
+@media (max-width:339px){.jg-flat{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.jgx-ctl{gap:1px}.jgx-ctl button{min-width:0;flex:1;padding:0 2px;min-height:32px;font-size:11px}

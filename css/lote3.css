@@ -449,3 +449,9 @@ html[data-space] { scrollbar-color: var(--sp-main) transparent; } html[data-spac
 html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selected="true"].on { background: var(--sp-dark); border-color: var(--sp-dark); color: var(--sp-on); }
 .hero-note-study { display: block; padding: 6px 4px 0; } .hero-note-study:empty { display: none; }
 .hero-note-study .hero-note-link { cursor: pointer; background: #fff; font-family: inherit; }
+
+/* estrela de favorito em cada item do menu */
+.drawer-row { display: flex; align-items: center; gap: 2px; } .drawer-row .drawer-item { flex: 1; min-width: 0; }
+.drawer-star { flex: none; width: 44px; height: 44px; border: 0; background: transparent; font-size: 20px; line-height: 1; color: #7a6f66; cursor: pointer; }
+.drawer-star.on { color: #e0a800; }
+.drawer.drawer-b .drawer-star, .drawer:not(.drawer-b) .drawer-star { color: rgb(255 255 255 / .6); } .drawer .drawer-star.on { color: #ffd166; }

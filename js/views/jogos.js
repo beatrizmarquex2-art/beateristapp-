@@ -1,6 +1,7 @@
 // Jogos musicais: catálogo (3 por fileira) e cada jogo dentro da mesma moldura (voltar, som, nova partida).
 import { h } from '../util.js';
 import { banner } from '../ui.js';
+import * as store from '../store.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import * as domino from '../jogos/domino.js';
 import * as cartas from '../jogos/cartas.js';
@@ -52,14 +53,45 @@ const SECTIONS = [
   ]],
 ];
 
+// ordem, jogos escondidos e favoritos: da Bea (e de cada aparelho). Só a Bea edita a ordem; os alunos só favoritam.
+const PK = 'setting-jogos';
+const prefs = () => ({ order: [], hidden: [], fav: [], ...(store.get(PK) ? store.get(PK).data : {}) });
+const savePrefs = (p) => store.upsert('setting', PK, p);
+const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
+
 function catalog(host) {
   const aluno = ALUNO();
-  const card = ([id, title, img, mod, sub, href]) => {
-    const kids = [h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), null];
-    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}` }, ...kids);
+  let editing = false; let onlyFav = false;
+  const card = (x) => {
+    const [id, title, img, , , href] = x;
+    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}` }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' },
-    h('div', { class: 'jg-grid jg-flat' }, ...SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && x[6] === 'bea')).map(card))));
+  const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
+  const draw = () => {
+    const p = prefs();
+    const all = SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && x[6] === 'bea'));
+    const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
+    const list = all.map((x, i) => [x, i]).sort((a, c) => rank(keyOf(a[0])) - rank(keyOf(c[0])) || a[1] - c[1]).map((x) => x[0]);
+    const shown = list.filter((x) => (editing || !p.hidden.includes(keyOf(x))) && (!onlyFav || p.fav.includes(keyOf(x))));
+    const keys = list.map(keyOf);
+    const move = (k, d) => { const cur = [...keys]; const i = cur.indexOf(k); const j = i + d; if (i < 0 || j < 0 || j >= cur.length) return; [cur[i], cur[j]] = [cur[j], cur[i]]; savePrefs({ ...p, order: cur }); };
+    bar.replaceChildren(
+      h('button', { type: 'button', class: `jgx-chip${onlyFav ? '' : ' on'}`, onclick: () => { onlyFav = false; draw(); } }, 'todos'),
+      h('button', { type: 'button', class: `jgx-chip${onlyFav ? ' on' : ''}`, onclick: () => { onlyFav = true; draw(); } }, `★ favoritos (${p.fav.filter((k) => keys.includes(k)).length})`),
+      aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
+    grid.replaceChildren(...(shown.length ? shown.map((x) => {
+      const k = keyOf(x); const fav = p.fav.includes(k); const off = p.hidden.includes(k);
+      return h('div', { class: `jgx-cell${off ? ' off' : ''}` }, card(x),
+        h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => savePrefs({ ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }) }, fav ? '★' : '☆'),
+        editing ? h('div', { class: 'jgx-ctl' },
+          h('button', { type: 'button', 'aria-label': `Mover ${x[1]} pra trás`, onclick: () => move(k, -1) }, '‹'),
+          h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => savePrefs({ ...p, hidden: off ? p.hidden.filter((y) => y !== k) : [...p.hidden, k] }) }, off ? '↺' : '✕'),
+          h('button', { type: 'button', 'aria-label': `Mover ${x[1]} pra frente`, onclick: () => move(k, 1) }, '›')) : null);
+    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
+  };
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), h('div', { class: 'jg jg-wrap jg-cat' }, bar, grid));
+  draw();
+  return store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
 }
 
 function game(host, entry) {
@@ -79,6 +111,6 @@ function game(host, entry) {
 export function mount(host, parts = []) {
   if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
-  if (!entry) { catalog(host); return null; }
+  if (!entry) return catalog(host);
   return game(host, entry);
 }

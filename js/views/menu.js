@@ -65,7 +65,7 @@ const MENU_B = [
   ]],
 ];
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance
-const TAB_ICON = { ritmo: 'kit', tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
+const TAB_ICON = { fav: 'star', ritmo: 'kit', tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
 const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', 'artistas / bateristas': 'drummer', foco: 'timer', 'conteúdo': 'mural' };
 // ao tocar na aba, abre a página principal dela (o menu continua aberto pra ir pros itens ao lado)
 const TAB_HOME = { jogos: '#/jogos', ritmo: '#/ritmo', estudar: '#/estudos' };
@@ -75,6 +75,7 @@ const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** O menu como a Bea deixou: itens movidos de aba, reordenados; os escondidos só aparecem ao personalizar. */
 function effective(p, TABS_MENU) {
+  const all = new Map();
   const tabs = TABS_MENU.map(([id, label, groups]) => ({ id, label, groups: groups.map(([title, items]) => ({ title, items: [...items] })) }));
   const byId = new Map(tabs.map((t) => [t.id, t]));
   for (const t of tabs) for (const g of t.groups) g.items = g.items.filter((it) => {
@@ -85,6 +86,9 @@ function effective(p, TABS_MENU) {
   });
   const rank = (href) => { const i = p.order.indexOf(href); return i < 0 ? 1e6 : i; };
   for (const t of tabs) for (const g of t.groups) g.items = g.items.map((it, k) => [it, k]).sort((a, b) => rank(a[0][0]) - rank(b[0][0]) || a[1] - b[1]).map((x) => x[0]);
+  for (const t of tabs) for (const g of t.groups) for (const it of g.items) if (!all.has(it[0])) all.set(it[0], it);
+  const favItems = (p.fav || []).map((h2) => all.get(h2)).filter(Boolean);
+  tabs.unshift({ id: 'fav', label: 'favoritos', groups: [{ title: '', items: favItems }] });
   return tabs;
 }
 /** Tudo o que dá pra achar na busca, inclusive as ferramentas dentro das páginas juntas. */
@@ -97,7 +101,7 @@ export function openMenu() {
   if (document.querySelector('.drawer')) return;
   const SP = getSpace(); const TABS_MENU = SP === 'beaterista' ? MENU_B : MENU_BEA;
   const PREF = prefKey(SP); const LAST = `bt-menu-tab-${SP}`;
-  const prefs = () => ({ hidden: [], moved: {}, order: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });
+  const prefs = () => ({ hidden: [], moved: {}, order: [], fav: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });
   const savePrefs = (p) => store.upsert('setting', PREF, p);
   const here = location.hash || '#/inicio';
   const back = h('div', { class: 'drawer-back' });
@@ -112,12 +116,15 @@ export function openMenu() {
   const btn = document.activeElement;
   const first = effective(prefs(), TABS_MENU);
   // aba inicial: a da tela atual; senão a última aberta
-  const flat = first.flatMap((t) => t.groups.flatMap((g) => g.items.map((it) => [t.id, ...it])));
+  const flat = first.filter((t) => t.id !== 'fav').flatMap((t) => t.groups.flatMap((g) => g.items.map((it) => [t.id, ...it])));
   const mine = flat.filter((x) => x[1] === here).map((x) => x[0])[0] || flat.filter((x) => x[1] !== '#/inicio' && here.startsWith(x[1])).map((x) => x[0])[0];
   let tab = mine || (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() || TABS_MENU[0][0];
-  if (!TABS_MENU.some((t) => t[0] === tab)) tab = TABS_MENU[0][0];
+  if (tab !== 'fav' && !TABS_MENU.some((t) => t[0] === tab)) tab = TABS_MENU[0][0];
   let q = '';
-  const item = ([href, ic, label]) => h('a', { href, class: `drawer-item${here === href ? ' on' : ''}`, 'aria-current': here === href ? 'page' : null, onclick: close }, icon(ic, 22), h('span', {}, label));
+  const toggleFav = (href) => { const p = prefs(); const on = p.fav.includes(href); savePrefs({ ...p, fav: on ? p.fav.filter((x) => x !== href) : [...p.fav, href] }); };
+  const item = ([href, ic, label]) => { const fav = prefs().fav.includes(href); return h('div', { class: 'drawer-row' },
+    h('a', { href, class: `drawer-item${here === href ? ' on' : ''}`, 'aria-current': here === href ? 'page' : null, onclick: close }, icon(ic, 22), h('span', {}, label)),
+    h('button', { type: 'button', class: `drawer-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${label}`, onclick: () => toggleFav(href) }, fav ? '★' : '☆')); };
   const tabs = h('div', { class: 'drawer-tabs chips lib-tabs', role: 'tablist', 'aria-label': 'Seções do menu' });
   const list = h('div', { class: 'drawer-list' });
   const search = h('input', { type: 'search', placeholder: 'buscar no menu', 'aria-label': 'Buscar no menu' });
@@ -151,15 +158,16 @@ export function openMenu() {
       return;
     }
     const cur = eff.find((x) => x.id === tab);
-    const note = editing ? h('div', { class: 'drawer-editnote' }, h('p', { class: 'muted' }, 'esconda o que não usa, mude de aba ou suba e desça. nada é apagado: dá pra mostrar de novo.'),
+    const favEmpty = cur.id === 'fav' && !cur.groups[0].items.length;
+    const note = cur.id === 'fav' ? (favEmpty ? h('p', { class: 'muted drawer-sub' }, 'toque na ☆ de qualquer item do menu pra ele ficar aqui.') : null) : editing ? h('div', { class: 'drawer-editnote' }, h('p', { class: 'muted' }, 'esconda o que não usa, mude de aba ou suba e desça. nada é apagado: dá pra mostrar de novo.'),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => savePrefs({ hidden: [], moved: {}, order: [] }).then(() => toast('menu voltou ao padrão ✓', { ms: 1800 })) }, 'voltar ao padrão')) : null;
     const rec = recents().slice(0, 3);
     const recSec = !editing && !search.value.trim() && rec.length ? h('div', { class: 'drawer-recent', 'aria-label': 'Recentes' }, h('small', {}, 'recentes'), ...rec.map((x) => h('a', { href: x.h, onclick: close }, x.t))) : null;
     list.replaceChildren(...[recSec, note, ...cur.groups.map((g) => {
-      const items = editing ? g.items : g.items.filter((it) => !p.hidden.includes(it[0]));
+      const items = editing && cur.id !== 'fav' ? g.items : g.items.filter((it) => !p.hidden.includes(it[0]));
       if (!items.length) return null;
       return h('section', { class: 'drawer-sec' }, g.title ? h('h2', { class: 'drawer-sub' }, icon(GROUP_ICON[g.title] || 'folder', 15), g.title) : null,
-        ...(editing ? g.items.map((it, i) => editRow(cur, g, it, i, p)) : items.map(item)));
+        ...(editing && cur.id !== 'fav' ? g.items.map((it, i) => editRow(cur, g, it, i, p)) : items.map(item)));
     })].filter(Boolean));
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });

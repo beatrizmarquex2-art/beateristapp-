@@ -66,10 +66,13 @@ let started = false;
 
 const NAV = [
   ['#/inicio', 'home', 'Início'],
-  ['#/beaterista', 'drummer', 'Alunos'],
-  ['#/beatlab', 'kit', 'Beat Lab'],
+  ['#/hub/ritmo', 'kit', 'Criar ritmos'],
   ['#/estudos', 'study', 'Estudos'],
+  ['#/jogos', 'star', 'Jogos'],
 ];
+const RITMO = ['beatlab', 'toque', 'partitura', 'groovebox'];
+/** A aba de baixo "acesa" pra tela atual: Criar ritmos vale também pro Beat Lab, Bateria de Toque etc. */
+const navOn = (href, r) => (href === '#/hub/ritmo' ? (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name) : `#/${r.name}` === href);
 
 function route() {
   const hash = location.hash || '#/inicio';
@@ -110,7 +113,7 @@ let cameBack = false;
 addEventListener('scroll', () => { scrolls.set(location.hash || '#/inicio', window.scrollY); }, { passive: true });
 function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
 /** Uma aba de baixo "pura" (Início, Alunos, Beat Lab, Estudos), sem tela aberta dentro dela. */
-const isTabRoot = (hash) => { const r = hash.replace(/^#\/?/, '').split('/').filter(Boolean); return r.length <= 1 && (r[0] === undefined || r[0] === 'inicio' || NAV.some((n) => n[0] === `#/${r[0]}`)); };
+const isTabRoot = (hash) => { const r = hash.replace(/^#\/?/, '').split('/').filter(Boolean); return !r.length || NAV.some((n) => n[0] === `#/${r.join('/')}`); };
 /** A última atividade em que você estava (jogo, ferramenta, ficha…), pulando abas de baixo, início e ajustes. */
 function lastActivity() {
   const here = location.hash || '#/inicio';
@@ -151,7 +154,7 @@ function swipeMenu() {
     if (!mode) return; const m = mode; mode = ''; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
     if (!(Math.abs(dx) > 60 && Math.abs(dy) < 70 && Math.abs(dx) > 1.5 * Math.abs(dy) && Date.now() - t0 < 900)) return;
     if (m === 'menu') { if (dx > 0) openMenu(); return; }
-    const name = route().name; const at = NAV.findIndex((n) => n && n[0] === `#/${name}`); const i = at >= 0 ? at : lastTab;
+    const at = NAV.findIndex((n) => n && navOn(n[0], route())); const i = at >= 0 ? at : lastTab;
     const j = (i + (dx < 0 ? 1 : -1) + NAV.length) % NAV.length; if (NAV[j]) location.hash = NAV[j][0];
   }, { passive: true });
   addEventListener('touchcancel', () => { mode = ''; }, { passive: true });
@@ -204,7 +207,7 @@ function shell() {
       h('a', { href: '#/inicio', role: 'tab', 'aria-selected': String(!inB), class: !inB ? 'on' : '' }, 'Bea'),
       h('a', { href: '#/beaterista', role: 'tab', 'aria-selected': String(inB), class: inB ? 'on' : '' }, 'Beaterista'));
     nav.replaceChildren(...NAV.map((n) => n
-      ? h('a', { href: n[0], class: `nav-item${('#/' + r.name) === n[0] ? ' on' : ''}`, 'aria-current': ('#/' + r.name) === n[0] ? 'page' : null }, icon(n[1], 24), h('span', {}, n[2]))
+      ? h('a', { href: n[0], class: `nav-item${navOn(n[0], r) ? ' on' : ''}`, 'aria-current': navOn(n[0], r) ? 'page' : null }, icon(n[1], 24), h('span', {}, n[2]))
       : h('button', { class: 'fab', type: 'button', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 30))));
   }
 
@@ -219,7 +222,7 @@ function shell() {
     cameBack = false;
     if (trail.length > 1 && trail[trail.length - 2] === here) { trail.pop(); cameBack = true; } else if (trail[trail.length - 1] !== here) trail.push(here);
     saveTrail();
-    { const ti = NAV.findIndex((n) => n && n[0] === `#/${r.name}`); if (ti >= 0) lastTab = ti; }
+    { const ti = NAV.findIndex((n) => n && navOn(n[0], r)); if (ti >= 0) lastTab = ti; }
     drawChrome(r);
     remember(here);
     let c;
