@@ -165,7 +165,7 @@ export function openMenu() {
     const favEmpty = cur.id === 'fav' && !cur.groups[0].items.length;
     const note = cur.id === 'fav' ? (favEmpty ? h('p', { class: 'muted drawer-sub' }, 'toque na ☆ de qualquer item do menu pra ele ficar aqui.') : null) : editing ? h('div', { class: 'drawer-editnote' }, h('p', { class: 'muted' }, 'esconda o que não usa, mude de aba ou suba e desça. nada é apagado: dá pra mostrar de novo.'),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => { const prev = prefs(); savePrefs({ hidden: [], moved: {}, order: [], fav: prev.fav }).then(() => toast('menu voltou ao padrão', { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 })); } }, 'voltar ao padrão')) : null;
-    const rec = recents().slice(0, 3);
+    const rec = recents().slice(0, 2);
     const recSec = !editing && !search.value.trim() && rec.length ? h('div', { class: 'drawer-recent', 'aria-label': 'Recentes' }, h('small', {}, 'recentes'), ...rec.map((x) => h('a', { href: x.h, onclick: close }, x.t))) : null;
     list.replaceChildren(...[recSec, note, ...cur.groups.map((g) => {
       const items = editing && cur.id !== 'fav' ? g.items : g.items.filter((it) => !p.hidden.includes(it[0]));
@@ -178,7 +178,7 @@ export function openMenu() {
   };
   offStore = store.subscribe((i) => { if (!i.kind || i.id === PREF) draw(); });
   const panel = h('nav', { class: `drawer${SP === 'beaterista' ? ' drawer-b' : ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Menu' },
-    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, SP === 'beaterista' ? h('img', { src: 'assets/logo-menu-beaterista.webp', alt: 'Beaterista', height: 52 }) : h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', height: 30 })), editBtn,
+    h('div', { class: 'drawer-head' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 36, height: 36 }), h('strong', { class: 'drawer-brand' }, SP === 'beaterista' ? h('img', { src: 'assets/logo-menu-beaterista.webp', alt: 'Beaterista', height: 52 }) : h('img', { src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', height: 56 })), editBtn,
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar menu', onclick: close }, icon('x', 22))),
     h('div', { class: 'drawer-search' }, search),
     h('div', { class: 'drawer-pins' }, ...[['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/hub/tempo', 'timer', 'Tempo']].map(([href, ic, label]) => h('a', { href, class: 'drawer-pin', onclick: close }, icon(ic, 18), label))),

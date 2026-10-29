@@ -476,3 +476,16 @@ html[data-space] #view .lib-tab.on, html[data-space] #view .lib-tab[aria-selecte
 html:has(.drawer), body:has(.drawer) { overflow: hidden; }
 /* o "hoje" do início abre o checklist ao tocar */
 .mini-list { cursor: pointer; }
+
+/* menu ☰ sem retângulos vazados: abas são só texto com sublinhado, atalhos são pílulas cheias */
+.drawer .drawer-tab, .drawer .lib-tab, .drawer.drawer-b .drawer-tab, .drawer.drawer-b .lib-tab, .drawer:not(.drawer-b) .drawer-tab, .drawer:not(.drawer-b) .lib-tab { background: transparent; border: 0; border-bottom: 3px solid transparent; border-radius: 0; box-shadow: none; padding: 4px 6px; min-height: 34px; font-size: 15px; font-weight: 600; opacity: .75; }
+.drawer .drawer-tab svg { display: none; }
+.drawer .drawer-tab.on, .drawer .lib-tab.on, .drawer.drawer-b .drawer-tab.on, .drawer:not(.drawer-b) .drawer-tab.on, .drawer:not(.drawer-b) .lib-tab.on { background: transparent; opacity: 1; font-weight: 800; border-bottom-color: #f3dfb0; color: #fbf3e6; }
+.drawer.drawer-b .drawer-tab.on, .drawer.drawer-b .lib-tab.on { border-bottom-color: #ffd166; color: #fbf7ee; }
+.drawer-tabs { gap: 10px; border-bottom: 1px solid rgb(255 255 255 / .2); margin-bottom: 6px; }
+.drawer .drawer-pin, .drawer:not(.drawer-b) .drawer-pin, .drawer.drawer-b .drawer-pin { border: 0; box-shadow: none; border-radius: 999px; }
+.drawer-recent a { border: 0; }
+/* som no canto da barra de estado (não disputa lugar com as abas Bea / Beaterista) */
+.sb-right { align-items: center; } .sb-right .top-snd { min-width: 30px; min-height: 22px; width: 30px; height: 22px; margin: -4px -6px -4px 0; color: inherit; } .sb-right .top-snd svg { width: 18px; height: 18px; }
+.drawer:not(.drawer-b) .drawer-head strong img { background: none; padding: 0; border-radius: 0; height: 56px; width: auto; }
+.drawer:not(.drawer-b) .drawer-head strong { transform: none; }

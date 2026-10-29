@@ -102,7 +102,7 @@ function statusBar() {
   clearInterval(ticker); ticker = setInterval(tick, 1000);
   sync.onSync(draw); store.subscribe(draw);
   addEventListener('online', draw); addEventListener('offline', draw);
-  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, time, h('span', { class: 'sb-right' }, net, syn));
+  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, time, h('span', { class: 'sb-right' }, net, syn, soundButton()));
 }
 
 /* ---------- voltar: botão no topo + arrastar da borda esquerda ---------- */
@@ -188,7 +188,6 @@ function shell() {
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
     h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
-    soundButton(),
     h('button', { type: 'button', class: 'icon-btn top-add', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 24)),
     h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Personalizar: tema e organização do início', onclick: openPersonalize }, icon('palette', 22)),
     h('a', { href: '#/ajustes', class: 'icon-btn gear', 'aria-label': 'Ajustes' }, icon('gear', 22)));

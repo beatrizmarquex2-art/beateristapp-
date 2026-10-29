@@ -33,6 +33,13 @@ if (typeof document !== 'undefined') {
   ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, go, { capture: true, passive: true }));
 }
 
+// saiu do app / bloqueou a tela: solta o áudio mudo de fundo, senão o iPhone mostra o app como "tocando" na ilha dinâmica
+if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'hidden') return;
+  try { if (keep && !keep.paused) keep.pause(); } catch (e) {}
+  try { if (navigator.audioSession && navigator.audioSession.type !== 'auto') navigator.audioSession.type = 'auto'; } catch (e) {}
+});
+
 export function audio() {
   if (!ctx) {
     playbackMode();
