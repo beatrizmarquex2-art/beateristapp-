@@ -56,6 +56,7 @@ import * as notify from './notify.js';
 import { silence } from './audio.js';
 import { openMenu } from './views/menu.js';
 import { startScroller } from './scroller.js';
+import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 let cleanup = null;
@@ -297,7 +298,7 @@ function showLogin() {
 
 function startApp() {
   shell();
-  if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); } else { sync.schedule(100); photos.schedule(300); }
+  if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); startPaul({ allowed: () => /^#\/(ritmo|jogos|kids)/.test(location.hash) }); } else { sync.schedule(100); photos.schedule(300); }
 }
 
 async function boot() {

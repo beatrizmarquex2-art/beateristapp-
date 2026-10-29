@@ -13,6 +13,7 @@ import * as jogos from './views/jogos.js';
 import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
+import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -188,5 +189,6 @@ async function start() {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
   startScroller();
+  startPaul({ first: 7000 });
   start();
 })();
