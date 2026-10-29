@@ -26,6 +26,8 @@ export function merge(bundled, extra) {
   return [...bundled, ...extra.filter((x) => !seen.has(norm(`${x.a}|${x.t}`)))]
     .sort((x, y) => artistKey(x.a).localeCompare(artistKey(y.a), 'pt-BR') || x.d.localeCompare(y.d) || x.t.localeCompare(y.t));
 }
+/** Todos os álbuns (do arquivo + os já importados), em ordem. Usado também pelo bilhete do início. */
+export const loadDiscos = () => load().then((b) => merge(b, imported()));
 const sid = (slug) => `arsenal-${slug}`;
 const state = (slug) => (store.get(sid(slug)) ? store.get(sid(slug)).data : {});
 const patch = (slug, p) => store.upsert('arsenal', sid(slug), { slug, ...p });
@@ -50,6 +52,7 @@ export function mountArsenal(host, tabs) {
   const search = h('input', { type: 'search', placeholder: 'buscar artista, álbum ou música…', 'aria-label': 'Buscar nos discos' });
   const chips = h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Filtro' });
   let all = []; let q = ''; let fil = 'todos';
+  try { const pre = sessionStorage.getItem('ar-q'); if (pre) { q = pre; search.value = pre; sessionStorage.removeItem('ar-q'); } } catch { /* sem armazenamento */ }
   const draw = () => {
     const t = norm(q.trim());
     const done = all.filter((x) => state(albumSlug(x)).done).length;

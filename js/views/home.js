@@ -13,6 +13,7 @@ import { COVER_KEY, paintCover, openCover } from './cover.js';
 import { factFor } from '../music-facts.js';
 import { heroSub } from '../hero-text.js';
 import { recents } from '../recent.js';
+import { findStudy, openStudy } from '../study-link.js';
 import { homeStrip } from './lembretes.js';
 
 const ORDER_KEY = 'setting-shortcuts';
@@ -52,12 +53,16 @@ function hero() {
 function heroNote() {
   let k = 0;
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
-  const links = h('div', { class: 'hero-note-links' });
+  const links = h('div', { class: 'hero-note-links' }); const study = h('span', { class: 'hero-note-study' }); let seq = 0;
   // música citada no bilhete (“Título” (Artista, ano)): atalho pra ouvir/estudar no YouTube ou no Spotify
   const queryOf = (text) => { const m = /“([^”]+)”\s*\(([^),]+)/.exec(text) || /“([^”]+)”/.exec(text); return m ? `${m[1]} ${m[2] || ''}`.trim() : ''; };
   const paint = () => {
     const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text;
     const q = queryOf(text); const enc = encodeURIComponent(q);
+    const mine = ++seq; study.replaceChildren();
+    const sm = /“([^”]+)”\s*\(([^),]+)/.exec(text);
+    if (sm) findStudy(sm[1], sm[2]).then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link', type: 'button', onclick: () => openStudy(st) }, st.label)); });
+    else { const bm = /“([^”]+)”/.exec(text); if (bm) findStudy(bm[1], '').then((st) => { if (st && mine === seq) study.replaceChildren(h('button', { class: 'hero-note-link', type: 'button', onclick: () => openStudy(st) }, st.label)); }); }
     links.replaceChildren(...(q ? [
       h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ouvir no YouTube'),
       h('a', { class: 'hero-note-link', href: `https://open.spotify.com/search/${enc}`, target: '_blank', rel: 'noopener noreferrer' }, '♫ Spotify'),
@@ -70,7 +75,7 @@ function heroNote() {
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
     h('img', { class: 'hero-note-bolt', src: 'assets/mural/bolt-red.svg', alt: '' }),
     h('img', { class: 'hero-note-star', src: 'assets/mural/star-ink.svg', alt: '' }));
-  return h('div', { class: 'hero-note-wrap' }, note, links);
+  return h('div', { class: 'hero-note-wrap' }, note, links, study);
 }
 
 function slogan() {
