@@ -5,6 +5,8 @@ import * as store from '../store.js';
 import * as T from '../tools-logic.js';
 import { PADS } from '../synth.js';
 import { scheduler, audio } from '../audio.js';
+import { createLooper } from '../looper.js';
+import { flash } from '../kids/kit-theme.js';
 import { banner, sheet, toast, confirmSheet } from '../ui.js';
 import { back } from './tools-common.js';
 import { grooveToMidi } from '../midi-write.js';
@@ -20,7 +22,7 @@ const conf = () => {
 const save = (p) => store.upsert('setting', KEY, p);
 
 export function mountGroovebox(host) {
-  let run = null, step = -1, bar = 0, rec = false, stepAt = 0;
+  let run = null, step = -1, bar = 0, stepAt = 0;
   let st = conf(); // estado local (salva com folga, sem redesenhar tudo)
   let saveT = 0; const persist = () => { clearTimeout(saveT); saveT = setTimeout(() => save({ bpm: st.bpm, prog: st.prog, sel: st.sel, steps: st.steps }), 400); };
   const chordOf = (b) => T.chord(T.PROGRESSIONS[st.prog][b % 4]);
@@ -37,7 +39,7 @@ export function mountGroovebox(host) {
   };
   const paintPads = () => padsEl.replaceChildren(...PADS.map(([id, name, fam, fn]) => h('button', {
     type: 'button', class: `gb-pad f-${fam}${st.sel === id ? ' sel' : ''}${st.steps[id].some(Boolean) ? ' has' : ''}`, 'data-id': id, 'aria-label': `${name}${st.sel === id ? ' (escolhido)' : ''}`,
-    onpointerdown: (e) => { e.preventDefault(); fn(audio().currentTime + 0.005, chordOf(run ? bar : 0)); if (rec && run) recordHit(id); const el = e.currentTarget; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); if (st.sel !== id) { st.sel = id; persist(); paintPads(); paintSteps(); } },
+    onpointerdown: (e) => { e.preventDefault(); fn(audio().currentTime + 0.005, chordOf(run ? bar : 0)); looper.hit(id, e.timeStamp || performance.now()); flash(e.currentTarget); if (st.sel !== id) { st.sel = id; persist(); paintPads(); paintSteps(); } },
   }, h('span', {}, name))));
   const paintSteps = () => {
     selName.textContent = (PADS.find((p) => p[0] === st.sel) || PADS[0])[1];
@@ -53,18 +55,30 @@ export function mountGroovebox(host) {
     });
     paintHead();
   }
-  function stop() { if (rec) { rec = false; recBtn.setAttribute('aria-pressed', 'false'); recBtn.textContent = '● gravar loop'; } if (run) run.stop(); run = null; step = -1; bar = 0; moveHead(); paintHead(); }
-  // gravar um loop tocando nos pads (quantiza no passo mais próximo) e exportar tudo em MIDI
-  const recBtn = h('button', { class: 'btn small gb-rec', type: 'button', 'aria-pressed': 'false', onclick: () => {
-    rec = !rec; recBtn.setAttribute('aria-pressed', String(rec)); recBtn.textContent = rec ? '● gravando · toque nos pads' : '● gravar loop';
-    if (rec && !run) start();
-    if (rec) toast('toque nos pads no ritmo: cada toque entra no passo mais próximo', { ms: 2600 });
-  } }, '● gravar loop');
-  function recordHit(id) {
-    if (step < 0) return;
-    const fr = (performance.now() - stepAt) / (60000 / st.bpm / 4); // quanto do passo atual já passou
-    const s = (fr > 0.5 ? step + 1 : step) % 16;
-    st.steps[id][s] = 1; persist(); paintPads(); if (st.sel === id) paintSteps();
+  function stop() { if (run) run.stop(); run = null; step = -1; bar = 0; moveHead(); paintHead(); }
+  // gravar o que você toca nos pads (até 30 s) e deixar em loop; exportar a batida dos passos em MIDI
+  const lopts = () => { try { return { count: true, click: true, grid: true, ...JSON.parse(localStorage.getItem('bt-gb-looper') || '{}') }; } catch { return { count: true, click: true, grid: true }; } };
+  const setLopt = (k) => { const o = lopts(); o[k] = !o[k]; try { localStorage.setItem('bt-gb-looper', JSON.stringify(o)); } catch { /* sem armazenamento */ } paintLooper(); };
+  const lstatus = h('p', { class: 'tr-status', 'aria-live': 'polite' });
+  const lprog = h('i', { class: 'tk-prog' }); const lbar = h('div', { class: 'tk-progress', 'aria-hidden': 'true' }, lprog);
+  const lbox = h('div', { class: 'gb-looper' });
+  const looper = createLooper({
+    max: 30, bpm: () => st.bpm, opts: lopts,
+    play: (id, t) => { const p = PADS.find((x) => x[0] === id); if (p) p[3](t, chordOf(0)); },
+    flash: (id) => flash(padsEl.querySelector(`[data-id="${id}"]`)),
+    onChange: () => paintLooper(),
+    status: (text, kind) => { lstatus.textContent = text; lstatus.className = `tr-status${kind === 'count' ? ' tk-count' : ''}`; },
+  });
+  looper.onProg = (p) => { lprog.style.width = `${Math.round(p * 100)}%`; };
+  const startRec = () => { if (run) stop(); looper.record(); };
+  function paintLooper() {
+    const o = lopts(); const sState = looper.state; const chip = (k, label) => h('button', { type: 'button', class: `lib-tab${o[k] ? ' on' : ''}`, 'aria-pressed': String(!!o[k]), onclick: () => setLopt(k) }, label);
+    const main = sState === 'rec' ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: () => looper.finish() }, icon('stop', 16), ' parar'), h('button', { class: 'btn', type: 'button', onclick: () => looper.cancel() }, 'cancelar')]
+      : sState === 'loop' ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: () => looper.stop() }, icon('stop', 16), ' parar'), h('button', { class: 'btn tk-big', type: 'button', onclick: startRec }, '↺ recomeçar')]
+      : sState === 'stopped' ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: () => looper.start() }, icon('play', 16), ' tocar em loop'), h('button', { class: 'btn tk-big', type: 'button', onclick: startRec }, '↺ recomeçar')]
+      : [h('button', { class: 'btn primary tk-big tk-rec', type: 'button', onclick: startRec }, h('i', { class: 'tk-dot' }), ` gravar nos pads (até ${looper.max} s)`)];
+    lbox.replaceChildren(...[h('div', { class: 'row tk-line tk-ctrls' }, ...main), sState === 'rec' || sState === 'loop' ? lbar : null,
+      h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', 'contagem'), chip('click', 'clique'), chip('grid', 'ao compasso')), lstatus].filter(Boolean));
   }
   const exportMidi = () => {
     if (!PADS.some(([id]) => st.steps[id].some(Boolean))) { toast('a batida está vazia. grave ou ligue alguns passos primeiro.'); return; }
@@ -80,7 +94,7 @@ export function mountGroovebox(host) {
     h('p', {}, h('b', {}, 'cada pad tem a sua linha: '), 'escolha o Bumbo e ligue passos, depois a Caixa e ligue outros, e assim por diante. tudo toca junto.'),
     h('p', {}, h('b', {}, 'baixo, piano, guitarra e voz: '), 'também têm a sua linha de passos, mas tocam notas, não só barulho. as notas vêm dos acordes lá embaixo.'),
     h('p', {}, h('b', {}, 'acordes: '), 'são 4 acordes, um por compasso. o baixo toca a nota principal do acorde. piano e guitarra tocam o acorde inteiro. a voz toca a nota mais aguda. depois dos 4 compassos o loop volta pro começo.'),
-    h('p', {}, h('b', {}, 'gravar loop: '), 'aperte “gravar loop”, ouça a batida rodando e toque nos pads no ritmo. cada toque entra no passo mais próximo, como uma gravação de verdade. depois você ajusta nos passos.'),
+    h('p', {}, h('b', {}, 'gravar nos pads: '), 'aperte “gravar nos pads”, conte 4 e toque nos pads livremente por até 30 segundos. ao parar (ou aos 30 s) o que você tocou fica em loop do jeitinho que foi tocado. “parar” silencia; “recomeçar” grava de novo. “ao compasso” fecha o loop em compassos inteiros.'),
     h('p', {}, h('b', {}, 'exportar MIDI: '), 'gera um arquivo .mid com os 4 compassos. a bateria vai num canal só dela e cada instrumento vira uma faixa. dá pra abrir no GarageBand, Logic, Ableton ou qualquer programa de música.')));
   const progSel = h('select', { 'aria-label': 'Acordes', onchange: (e) => { st.prog = Number(e.target.value); persist(); paintHead(); } }, ...T.PROGRESSIONS.map((p, i) => h('option', { value: String(i), selected: i === st.prog }, p.join(' – '))));
   const patterns = () => store.list('gbpattern').sort((a, b) => (a.data.name || '').localeCompare(b.data.name || '', 'pt-BR'));
@@ -106,10 +120,11 @@ export function mountGroovebox(host) {
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.steps[st.sel] = Array(16).fill(0); persist(); paintSteps(); paintPads(); } }, 'limpar')),
       stepsEl,
       h('div', { class: 'tr-line' }, h('span', { class: 'tp-lab' }, 'acordes'), progSel),
-      h('div', { class: 'row ft-row' }, recBtn, h('button', { class: 'btn small', type: 'button', onclick: exportMidi }, 'exportar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: help }, 'como funciona?')),
+      lbox,
+      h('div', { class: 'row ft-row' }, h('button', { class: 'btn small', type: 'button', onclick: exportMidi }, 'exportar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: help }, 'como funciona?')),
       h('div', { class: 'row ft-row' }, h('button', { class: 'btn', type: 'button', onclick: savePat }, 'salvar batida'), h('button', { class: 'btn ghost', type: 'button', onclick: openPats }, 'minhas batidas'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { st.steps = empty(); persist(); paintPads(); paintSteps(); } }, 'zerar tudo'))),
     h('p', { class: 'pad-x lib-note' }, 'todos os sons são gerados aqui no aparelho. o baixo segue a nota do acorde; piano, guitarra e voz tocam o acorde do compasso.'));
-  paintHead(); paintPads(); paintSteps();
-  return () => { stop(); clearTimeout(saveT); save({ bpm: st.bpm, prog: st.prog, sel: st.sel, steps: st.steps }); };
+  paintHead(); paintPads(); paintSteps(); paintLooper();
+  return () => { looper.dispose(); stop(); clearTimeout(saveT); save({ bpm: st.bpm, prog: st.prog, sel: st.sel, steps: st.steps }); };
 }
