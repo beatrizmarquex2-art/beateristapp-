@@ -6,7 +6,6 @@ import { robo, tierOf } from './robo.js';
 import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
-import { downloadReport } from './report.js';
 import * as FB from '../feedback.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -101,8 +100,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
       h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level) }, 'jogar de novo'),
-      h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'),
-      h('button', { class: 'kd-chip', type: 'button', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; try { await downloadReport(profile); } catch { /* sem PDF agora */ } b.disabled = false; } }, '📄 relatório em PDF'))));
+      h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'))));
   countUp(pctEl, pct); if (stars >= 1) setTimeout(() => { if (starsEl.isConnected) sparkle(starsEl); }, 400);
 }
 /** Cabeçalho comum das fases: robô, título e pontinhos. */

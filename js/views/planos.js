@@ -17,7 +17,7 @@ const dateBR = (k) => (k ? k.split('-').reverse().join('/') : '');
 const field = (label, input) => h('label', { class: 'field' }, h('span', {}, label), input);
 
 /** Partitura de um item (um SVG por compasso; rudimento ganha as letras embaixo). Só números nossos viram SVG. */
-function itemScore(it, width = 340) {
+export function itemScore(it, width = 340) {
   if (!it.bars || !it.bars.length) return null;
   const hasFeet = it.bars.some((b) => (b.rows.bd || []).some(Boolean) || (b.rows.hf || []).some(Boolean));
   return h('div', { class: 'sp-score' }, ...it.bars.map((b) => {
@@ -28,13 +28,13 @@ function itemScore(it, width = 340) {
 }
 
 /* ---------- escolher atividade ---------- */
-function addSheet(onAdd) {
-  sheet('Adicionar atividade', (close) => {
-    let tab = 'beat'; const box = h('div', { class: 'sp-pick' }); const tabs = h('div', { class: 'chips lib-tabs', role: 'tablist' });
+export function addSheet(onAdd, { tabs: only, title = 'Adicionar atividade' } = {}) {
+  sheet(title, (close) => {
+    let tab = only ? only[0] : 'beat'; const box = h('div', { class: 'sp-pick' }); const tabs = h('div', { class: 'chips lib-tabs', role: 'tablist' });
     const add = (it) => { onAdd(it); toast(`“${it.title}” entrou no plano ✓`, { ms: 1200, id: 'sp-add' }); };
     const row = (title, sub, fn) => h('li', {}, h('button', { type: 'button', class: 'sp-opt', onclick: fn }, h('b', {}, title), sub ? h('small', { class: 'muted' }, sub) : null, h('span', { class: 'sp-plus', 'aria-hidden': 'true' }, '+')));
     const draw = () => {
-      tabs.replaceChildren(...[['beat', 'Beat Lab'], ['rud', 'Rudimentos'], ['partitura', 'Partituras'], ['treino', 'Treinos'], ['livre', 'Texto livre']].map(([k, t]) => h('button', { type: 'button', role: 'tab', class: `lib-tab${tab === k ? ' on' : ''}`, 'aria-selected': String(tab === k), onclick: () => { tab = k; draw(); } }, t)));
+      tabs.replaceChildren(...[['beat', 'Beat Lab'], ['rud', 'Rudimentos'], ['partitura', 'Partituras'], ['treino', 'Treinos'], ['livre', 'Texto livre']].filter(([k]) => !only || only.includes(k)).map(([k, t]) => h('button', { type: 'button', role: 'tab', class: `lib-tab${tab === k ? ' on' : ''}`, 'aria-selected': String(tab === k), onclick: () => { tab = k; draw(); } }, t)));
       if (tab === 'beat') {
         const met = store.list('beat').filter((r) => r.data.metodo && r.data.beat).sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
         const mine = store.list('beat').filter((r) => !r.data.metodo && r.data.beat);

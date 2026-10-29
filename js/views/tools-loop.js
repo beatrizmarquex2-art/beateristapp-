@@ -88,7 +88,8 @@ export function mountLoop(host) {
       h('div', { class: 'tr-line' }, h('span', { class: 'tp-lab' }, 'velocidade'), speeds),
       h('div', { class: 'chips lib-tabs' }, loopBtn, preBtn, h('button', { type: 'button', class: 'lib-tab', onclick: saveLoop }, 'salvar trecho'))),
     saved,
-    h('p', { class: 'pad-x lib-note' }, 'precisa de internet. a velocidade muda sem mudar o tom (é o próprio YouTube). no iPhone, toque no play do vídeo na primeira vez.'));
+    h('p', { class: 'pad-x lib-note' }, 'precisa de internet. a velocidade muda sem mudar o tom (é o próprio YouTube). no iPhone, toque no play do vídeo na primeira vez.'),
+    h('p', { class: 'pad-x lib-note' }, 'anúncio aqui? o Premium só vale no app do YouTube (o login não passa pro player embutido).  ', h('a', { class: 'link', href: 'https://www.youtube.com/', target: '_blank', rel: 'noopener noreferrer', onclick: (e) => { if (id) e.currentTarget.href = `https://www.youtube.com/watch?v=${id}`; } }, 'abrir esse vídeo no app ↗')));
   paint(); drawSaved();
   const off = store.subscribe((i) => { if (!i.kind || i.kind === 'ytloop' || i.kind === 'song') drawSaved(); });
   const tick = setInterval(paint, 500);

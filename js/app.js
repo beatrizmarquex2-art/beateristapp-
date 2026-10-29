@@ -3,7 +3,7 @@ import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
 import * as sync from './sync.js';
-import { banner } from './ui.js';
+import { banner, toast } from './ui.js';
 import { mountLogin } from './views/login.js';
 import * as home from './views/home.js';
 import * as tasks from './views/tasks.js';
@@ -42,7 +42,8 @@ import * as plano from './views/plano.js';
 import * as ambiente from './views/ambiente.js';
 import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
-import { remember } from './recent.js';
+import * as ata from './views/ata.js';
+import { remember, recents } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
 import * as ferramentas from './views/ferramentas.js';
@@ -104,7 +105,21 @@ const scrolls = new Map(); // posição da rolagem de cada tela, pra voltar exat
 let cameBack = false;
 addEventListener('scroll', () => { scrolls.set(location.hash || '#/inicio', window.scrollY); }, { passive: true });
 function parentOf(r) { return r.parts.length ? `#/${r.name}` : '#/inicio'; }
+/** Uma aba de baixo "pura" (Início, Alunos, Beat Lab, Estudos), sem tela aberta dentro dela. */
+const isTabRoot = (hash) => { const r = hash.replace(/^#\/?/, '').split('/').filter(Boolean); return r.length <= 1 && (r[0] === undefined || r[0] === 'inicio' || NAV.some((n) => n[0] === `#/${r[0]}`)); };
+/** A última atividade em que você estava (jogo, ferramenta, ficha…), pulando abas de baixo, início e ajustes. */
+function lastActivity() {
+  const here = location.hash || '#/inicio';
+  const ok = (x) => x && x !== here && !isTabRoot(x) && !/^#\/(ajustes|em-breve)/.test(x);
+  for (let i = trail.length - 1; i >= 0; i--) if (ok(trail[i])) return trail[i];
+  const r = recents().find((x) => ok(x.h)); return r ? r.h : null;
+}
 function goBack() {
+  // numa aba de baixo: voltar leva pra última atividade (e não pra outra aba). Pra trocar de aba, arraste no meio da tela.
+  if (isTabRoot(location.hash || '#/inicio')) {
+    const t = lastActivity();
+    if (t) { const rc = recents().find((x) => x.h === t); toast(`voltando pra ${rc ? rc.t : 'última atividade'}`, { id: 'bt-back', ms: 1400 }); location.hash = t; return; }
+  }
   if (trail.length > 1) {
     const before = location.hash; history.back();
     // se o navegador não tinha histórico (app reaberto), vai direto pra tela anterior da trilha
@@ -113,6 +128,8 @@ function goBack() {
 }
 /* ---------- início: arrastar pro lado abre o menu ☰ ---------- */
 let lastTab = 0; // última aba de baixo visitada (pra saber qual é a próxima quando se está numa tela de fora)
+/** Jogando (Palco, Beatstar, Setinhas…): nenhum arrastar pode trocar de tela. */
+const playing = (el) => document.body.classList.contains('rz-lock') || !!document.querySelector('#jogos.bmr-playing, .bmr-playing') || !!(el && el.closest && el.closest('[data-noswipe], .bmr-stage canvas, #rz-cv'));
 function swipeMenu() {
   let x0 = 0, y0 = 0, t0 = 0, on = false;
   const hScroll = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
@@ -120,7 +137,7 @@ function swipeMenu() {
     const home = route().name === 'inicio';
     // no início o menu abre arrastando em qualquer ponto da tela (até pela borda e por cima de listas que já estão no começo)
     const leftEdge = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4 && n.scrollLeft > 2) return false; } return true; };
-    on = e.touches.length === 1 && (home || e.touches[0].clientX >= 26) && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && (home ? leftEdge(e.target) : !hScroll(e.target)) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
+    on = e.touches.length === 1 && !playing(e.target) && (home || e.touches[0].clientX >= 26) && !document.querySelector('.drawer, #overlay .sheet') && !document.documentElement.classList.contains('kb-open') && (home ? leftEdge(e.target) : !hScroll(e.target)) && !(e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
     const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
   }, { passive: true });
   addEventListener('touchend', (e) => {
@@ -139,8 +156,8 @@ function swipeBack() {
   const tip = h('div', { class: 'swipe-back', 'aria-hidden': 'true' }, icon('back', 22));
   document.body.append(tip);
   let x0 = 0, y0 = 0, dx = 0, on = false;
-  const blocked = () => route().name === 'inicio' || document.querySelector('#overlay .sheet');
-  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = t.clientX < 26 && !blocked() && !(e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) && !document.documentElement.classList.contains('kb-open'); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
+  const blocked = (el) => route().name === 'inicio' || document.querySelector('#overlay .sheet') || playing(el);
+  addEventListener('touchstart', (e) => { const t = e.touches[0]; on = t.clientX < (matchMedia('(pointer: coarse)').matches ? 32 : 26) && !blocked(e.target) && !(e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) && !document.documentElement.classList.contains('kb-open'); x0 = t.clientX; y0 = t.clientY; dx = 0; }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (!on) return; const t = e.touches[0]; dx = t.clientX - x0; const dy = Math.abs(t.clientY - y0);
     if (dy > Math.abs(dx) && dy > 12) { on = false; tip.style.transform = ''; return; }
@@ -228,6 +245,7 @@ function shell() {
       case 'plano': c = plano.mount(view); break;
       case 'ambiente': c = ambiente.mount(view); break;
       case 'planos': c = planos.mount(view, r.parts); break;
+      case 'ata': c = ata.mount(view, r.parts); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
       case 'lembretes': c = lembretes.mount(view); break;

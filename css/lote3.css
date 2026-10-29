@@ -1,0 +1,77 @@
+/* ===== Lote 3: iPad, jogo unificado, ata, relatório, prévia de MIDI ===== */
+
+/* toque mais direto (sem esperar o "duplo toque" pra dar zoom) */
+html { touch-action: manipulation; }
+
+/* ---------- iPad / telas grandes: usa a largura em vez de uma coluna de celular ---------- */
+.amb-open { display: inline-grid; place-items: center; text-decoration: none; }
+@media (min-width: 700px) {
+  #app { max-width: 880px; padding-bottom: calc(128px + var(--safe-b)); }
+  .bottom-nav, .tray { max-width: 620px; }
+  .scroll-track { right: calc(50% - 440px); } .to-top { right: calc(50% - 420px); }
+  .shortcuts { grid-template-columns: repeat(6, 1fr); gap: 12px; padding-left: 20px; padding-right: 20px; }
+  .sheet { max-width: 640px; }
+  .toast { max-width: 520px; }
+  .drawer { width: min(440px, 52vw); }
+  .banner-wrap { padding-left: 24px; padding-right: 24px; }
+  .pad-x { padding-left: 24px; padding-right: 24px; }
+  .roadmap { grid-template-columns: repeat(2, 1fr); }
+  /* listas longas em duas colunas (cada cartão continua inteiro) */
+  :where(.ar-list, .sp-list, .sl-songs, .kit-list, .amb-links, .cl-list) { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+  .kx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rg-host { margin: 0 16px; }
+}
+@media (min-width: 700px) and (pointer: coarse) {
+  /* o que mais pesa no iPad: camadas enormes com mistura de cor e aquarelas se mexendo o tempo todo */
+  #decor::after { mix-blend-mode: normal; opacity: .12; }
+  .wash { animation: none !important; will-change: auto; }
+  .fab::after { animation: none; }
+  .sheet-back { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .bottom-nav { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  #view > * { animation-duration: .2s; }
+}
+/* iPad em pé/deitado com o app instalado: respeita as bordas (barra de status e indicador de início) */
+@media (display-mode: standalone) { .topwrap { padding-top: max(var(--safe-t), 6px); } }
+
+/* ---------- jogo em tela cheia no iPad: o palco fica do tamanho de um celular, no meio ---------- */
+@media (min-width: 700px) {
+  body.rz-lock .rg-host > #jogos { width: min(100%, 560px); height: 100%; margin: 0 auto; }
+  body.rz-lock .rg-host { display: flex; justify-content: center; background: #0d0b0d; }
+}
+
+/* ---------- jogo unificado (ritmo/melodia, 3-4-5 teclas) ---------- */
+.rz-opts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; align-items: center; }
+.rz-opts .rz-lab { font: 700 12px var(--body); letter-spacing: .06em; text-transform: uppercase; color: #d9ccb6; min-width: 64px; }
+.rz-opt { min-height: 44px; padding: 0 14px; border: 0; cursor: pointer; font: 700 15px var(--body); color: #f3eee4; background: #2a2424; box-shadow: inset 0 -3px 0 #4d4545; }
+.rz-opt.on { background: #d92031; box-shadow: inset 0 -3px 0 #8f1122; }
+.rz-opt small { display: block; font-weight: 400; font-size: 11px; color: inherit; opacity: .8; }
+.rz-hint { margin: 2px 0 8px; font-size: 13px; color: #d9ccb6; }
+/* prévia de áudio nas músicas importadas */
+.bmr .rz-prev { flex: none; width: 48px; }
+.rz-songrow { display: grid; grid-template-columns: 46px 1fr; gap: 4px; align-items: stretch; }
+.rz-prev { border: 0; cursor: pointer; font: 700 18px var(--body); color: #f3eee4; background: #3a3434; box-shadow: inset 0 -3px 0 #4d4545; min-height: 48px; }
+.rz-prev.on { background: #d92031; }
+.rz-trim { display: grid; gap: 8px; padding: 10px; background: #2a2424; margin: 8px 0; }
+.rz-trim label { display: grid; gap: 4px; font-size: 13px; color: #d9ccb6; }
+.rz-trim input[type=range] { width: 100%; }
+
+/* ---------- ata de reunião ---------- */
+.ata-top { align-items: center; gap: 8px; margin: 4px 0 8px; flex-wrap: wrap; }
+.ata-form { display: grid; gap: 10px; }
+.ata-sec { display: grid; gap: 6px; }
+.ata-sec textarea { min-height: 84px; }
+.ata-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ata-item { padding: 10px; border: 1px dashed var(--line-strong); border-radius: 10px; display: grid; gap: 6px; }
+.ata-out { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---------- relatório editável ---------- */
+.rel-sec { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; background: var(--card); }
+.rel-sec.off { opacity: .55; }
+.rel-head { display: flex; align-items: center; gap: 10px; }
+.rel-head input[type=checkbox] { width: 24px; height: 24px; flex: none; accent-color: var(--accent); }
+.rel-head input[type=text] { flex: 1; min-width: 0; font-weight: 700; }
+.rel-sec textarea { min-height: 72px; width: 100%; }
+.rel-tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rel-tbl th, .rel-tbl td { border: 1px solid var(--line-strong); padding: 6px 8px; text-align: left; vertical-align: top; }
+.rel-tbl th { background: rgb(var(--ink-rgb) / .08); }
+.rel-tbl td[contenteditable] { min-width: 60px; outline-offset: -2px; }
