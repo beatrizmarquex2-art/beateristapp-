@@ -141,3 +141,44 @@ body.aluno .login-logo { box-shadow: none; }
 .al-entry .form-err:empty { display: none; }
 .al-entry .al-note { font-size: 11.5px; line-height: 1.25; }
 .al-entry .btn.wide { min-height: 46px; }
+
+/* versão enxuta: marca, Paul, formulário, jogos, redes e parceiros numa tela só */
+.al-entry { gap: 8px; padding-bottom: 12px; }
+.al-entry .login-card { padding: 10px 16px 10px; gap: 6px; }
+.al-brand .login-logo { width: 52px; height: 52px; }
+.al-brand .login-title img { width: 128px; }
+.al-hero { grid-template-columns: 74px 1fr; gap: 6px; }
+.al-hero .al-paul-img { width: 74px; }
+.al-hero-txt .al-robo { max-width: 150px; }
+.al-hero-txt .al-bubble { font-size: 12.5px; }
+.al-entry .field input, .al-entry .field select { min-height: 38px; font-size: 15px; }
+.al-entry .field > span { font-size: 11.5px; }
+.al-entry .btn.wide { min-height: 42px; }
+.al-entry .al-note { font-size: 10.5px; }
+.al-games { gap: 2px; padding-top: 0; }
+.al-h { font-size: 15px; }
+.al-gamegrid { grid-template-columns: repeat(6, 1fr); gap: 2px 4px; max-width: 380px; }
+.al-game img { width: 48px; }
+.al-game figcaption { font-size: 9.5px; }
+.al-foot { padding: 4px 16px 0; gap: 2px; }
+.al-foot > .muted { font-size: 11px; margin: 0; }
+.al-social { gap: 12px; }
+.al-soc { width: 42px; height: 42px; box-shadow: 0 3px 0 rgb(0 0 0 / .28); }
+.al-soc svg { width: 22px; height: 22px; }
+.al-foot .partners { margin: 4px 0 0; padding: 0; }
+.al-foot .partners-label { font-size: 13px; }
+.al-foot .partners-img { max-width: 250px; }
+.al-tiktok { margin-top: 2px; font-size: 18px; gap: 6px; } .al-tiktok svg { width: 22px; height: 22px; }
+@media (min-width: 700px) { .al-game img { width: 72px; } .al-game figcaption { font-size: 12px; } .al-soc { width: 52px; height: 52px; } .al-foot .partners-img { max-width: 340px; } }
+
+/* ainda mais enxuto: rótulos viram placeholder (continuam lidos por leitores de tela) */
+.al-entry .field > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.al-entry.login { padding-top: 10px; padding-bottom: 6px; gap: 4px; }
+#app:has(.al-entry) { padding-bottom: 12px; }
+.al-hero { grid-template-columns: 66px 1fr; } .al-hero .al-paul-img { width: 66px; }
+.al-game img { width: 42px; }
+.al-foot .partners-img { max-width: 230px; }
+.al-foot .al-social { margin-top: 0; }
+.al-entry.login { min-height: 0; }
+.al-entry .al-note { font-size: 10px; }
+#app:has(.al-entry) { min-height: 0; padding-bottom: 0; }
