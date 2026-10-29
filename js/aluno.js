@@ -148,7 +148,7 @@ function askName() {
   } },
     h('div', { class: 'al-hero' },
       h('div', { class: 'al-paulbox' },
-        h('img', { class: 'al-paul-img', src: 'assets/aluno/paul.webp', alt: 'Paul, o robôterista', width: 120, height: 158 }),
+        h('img', { class: 'al-paul-img', src: 'assets/aluno/paul-paz.webp', alt: 'Paul, o robôterista, fazendo sinal de paz', width: 120, height: 158 }),
         // o Paul fica parado; o que se mexe são os rabiscos em volta dele
         ...[['estrela-ouro', 'a'], ['nota-vermelha', 'b'], ['coracao', 'c'], ['raio', 'd'], ['estrela-azul-p', 'e'], ['nota-preta', 'f']].map(([n, k]) => h('img', { class: `al-el el-${k}`, src: `assets/paul/el/${n}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
       h('div', { class: 'al-hero-txt' },
