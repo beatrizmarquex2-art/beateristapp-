@@ -9,7 +9,8 @@ import { CATEGORIES, categoryOf, category, PT, QUESTION } from '../catalog.js';
 import { artPhoto, credit, changePhoto, resetPhoto, ART_KEY } from './artist-photo.js';
 import { mountClub, mountPost } from './club.js';
 import { attach as attachGrifos } from '../highlights.js';
-import { ring } from '../charts.js';
+import * as G from '../highlights.js';
+import { openStory } from './story.js';
 
 const go = (hash) => { location.hash = hash; };
 const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short' }).format(new Date(ts));
@@ -62,55 +63,71 @@ function importer(onDone) {
     h('label', { class: 'btn small' }, input, 'escolher arquivos'), out);
 }
 
-/* ---------- início da biblioteca ---------- */
+/* ---------- início da biblioteca ("Hoje") ---------- */
+const GROUPS = [
+  { title: 'Ritmo & corpo', blurb: 'pulso, groove, microtempo e como o corpo aprende e fixa o que você treina.', cats: ['ritmo', 'pratica'], deco: 'sticks' },
+  { title: 'Ouvido & emoção', blurb: 'o que o cérebro prevê, separa e sente: por que a música arrepia.', cats: ['escuta', 'prazer'], deco: 'note' },
+  { title: 'Palco & ensino', blurb: 'pressão, fluxo e a arte de explicar o óbvio.', cats: ['palco'], deco: 'bolt-red' },
+];
+const MURAL = (n) => `url(assets/mural/${n}.svg)`;
+const dayKey = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+const dayLabel = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'short' }).format(new Date()).replace('.', '');
+const searchIcon = () => { const n = 'http://www.w3.org/2000/svg'; const s = document.createElementNS(n, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', 18); s.setAttribute('height', 18); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', 2); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.5-4.5"/>'; return s; };
+
 function mountHome(host) {
-  const results = h('div', { class: 'lib-list' });
-  const q = h('input', { type: 'search', placeholder: 'buscar artista, conceito, tag…', 'aria-label': 'Buscar na biblioteca', enterkeyhint: 'search' });
-  const body = h('div');
+  const found = h('div', { class: 'h-found', hidden: true });
+  const q = h('input', { type: 'search', placeholder: 'buscar conceito, artista ou tag', 'aria-label': 'Buscar na biblioteca', enterkeyhint: 'search' });
+  const body = h('div', { class: 'hoje-body' });
+  const tile = (href, ic, big, label, sub) => h('a', { class: 'h-tile', href }, h('i', { style: { backgroundImage: MURAL(ic) } }), h('b', {}, big), h('span', {}, label), h('small', {}, sub));
+  const starBtn = (a) => { const b = h('button', { class: 'h-star', type: 'button', 'aria-label': 'Favoritar', 'aria-pressed': String(!!lib.getState(a.slug).fav) }, '★'); b.addEventListener('click', async (e) => { e.preventDefault(); e.stopPropagation(); const f = !lib.getState(a.slug).fav; await lib.patchState(a.slug, { fav: f }); toast(f ? 'nos favoritos ★' : 'removido dos favoritos'); }); return b; };
+  const row = (a) => { const st = lib.getState(a.slug); return h('a', { class: 'h-item', href: `#/estudos/a/${a.slug}` }, h('b', {}, a.title), starBtn(a), h('span', { class: 'h-bar', role: 'progressbar', 'aria-valuenow': Math.round((st.progress || 0) * 100), 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': 'progresso de leitura' }, h('i', { style: { width: pct(st.progress) } })), h('small', {}, `${pct(st.progress)} lido · ${(category(categoryOf(a)) || {}).label || ''}`)); };
   const draw = () => {
-    const idx = lib.items();
-    const states = lib.allStates();
+    const idx = lib.items(); const states = lib.allStates();
+    const doneSet = new Set(states.filter((s) => s.done).map((s) => s.slug));
     const reading = states.filter((s) => s.lastRead && !s.done).sort((a, b) => b.lastRead - a.lastRead).map((s) => lib.bySlug(s.slug)).filter(Boolean).slice(0, 3);
-    const recent = states.filter((s) => s.lastRead).sort((a, b) => b.lastRead - a.lastRead).map((s) => lib.bySlug(s.slug)).filter(Boolean).slice(0, 4);
-    const daySeed = Number(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    const discovery = idx.length ? idx[daySeed % idx.length] : null;
-    const done = states.filter((s) => s.done).length;
-    body.replaceChildren(...[
-      statusNote(),
-      idx.length ? progressCard(idx, states) : null,
-      idx.length ? h('div', { class: 'card pad lib-now' },
-        h('div', { class: 'row between' }, h('h2', { class: 'tag' }, 'estudar agora'), h('small', {}, `${done}/${idx.length} lidos`)),
-        h('p', { class: 'muted' }, 'sorteio um texto que você ainda não terminou.'),
-        h('button', { class: 'btn primary', type: 'button', onclick: () => { const pool = idx.filter((a) => !lib.getState(a.slug).done); const pick = (pool.length ? pool : idx)[Math.floor(Math.random() * (pool.length || idx.length))]; go(`#/estudos/a/${pick.slug}`); } }, 'sortear um texto')) : null,
-      reading.length ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'continuar lendo'), h('div', { class: 'lib-list' }, reading.map((a) => card(a)))) : null,
-      discovery ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'descoberta do dia'), h('div', { class: 'lib-list' }, card(discovery))) : null,
-      h('section', {}, h('h2', { class: 'tag pad-x' }, 'temas'), h('div', { class: 'lib-list' }, CATEGORIES.filter((c) => c.kind === 'topic').map((c) => catCard(c, idx)))),
-      recent.length ? h('section', {}, h('h2', { class: 'tag pad-x' }, 'estudados recentemente'), h('div', { class: 'lib-list' }, recent.map((a) => card(a)))) : null,
-      importer(async () => { lib.resetIndex(); await lib.loadIndex(); draw(); })].filter(Boolean));
+    const pool = idx.filter((a) => !doneSet.has(a.slug)); const daySeed = Number(dayKey().replace(/-/g, ''));
+    const today = (pool.length ? pool : idx)[daySeed % (pool.length || idx.length || 1)] || null;
+    const favN = states.filter((s) => s.fav && lib.bySlug(s.slug)).length;
+    const kids = [statusNote()];
+    if (today) {
+      const st = lib.getState(today.slug);
+      kids.push(h('div', { class: 'h-hero' }, h('i', { class: 'h-tape a' }), h('i', { class: 'h-tape b' }), h('i', { class: 'h-star' }),
+        h('div', { class: 'h-paper' },
+          h('span', { class: 'h-kick' }, `estudo do dia${today.meta.estimated_read_time ? ` · ${today.meta.estimated_read_time}` : ''}`),
+          h('h3', {}, today.title),
+          h('p', {}, (isArtist(today) ? QUESTION[today.slug] : PT[today.slug]) || today.meta.summary || ''),
+          st.progress ? h('div', { class: 'h-pbar', role: 'progressbar', 'aria-valuenow': Math.round(st.progress * 100), 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': 'progresso de leitura' }, h('i', { style: { width: pct(st.progress) } })) : null,
+          h('div', { class: 'h-row' }, h('a', { class: 'h-btn', href: `#/estudos/a/${today.slug}` }, st.progress ? 'continuar' : 'ler agora'),
+            h('button', { class: 'h-link', type: 'button', onclick: () => { const p = pool.length ? pool : idx; go(`#/estudos/a/${p[Math.floor(Math.random() * p.length)].slug}`); } }, 'sortear outro')))));
+    }
+    kids.push(h('div', { class: 'h-stickers' },
+      h('a', { class: 'h-pill ink', href: '#/dicionario' }, 'A–Z ', h('small', {}, 'dicionário')),
+      h('a', { class: 'h-pill gold', href: '#/estudos/favoritos' }, '★ ', h('small', {}, `favoritos ${favN}`))));
+    if (reading.length) kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'continuar'), reading.map(row)));
+    if (idx.length) {
+      kids.push(h('section', { class: 'h-sec' }, h('h3', {}, 'temas'), h('div', { class: 'h-swipe' }, GROUPS.flatMap((g, gi) => g.cats.map((c) => {
+        const items = idx.filter((a) => categoryOf(a) === c); const n = items.filter((a) => doneSet.has(a.slug)).length; const pc = items.length ? Math.round(n / items.length * 100) : 0;
+        return h('a', { class: `h-pill big ${['red', 'ink', 'gold'][gi]}`, href: `#/estudos/cat/${c}` }, category(c).label.split(' & ')[0], h('small', {}, `${n}/${items.length}`),
+          h('span', { class: 'h-pbar2', role: 'progressbar', 'aria-valuenow': pc, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': `progresso em ${category(c).label}` }, h('i', { style: { width: `${pc}%` } })));
+      })))));
+      kids.push(h('div', { class: 'h-more' }, h('a', { href: '#/estudos/club' }, 'álbuns'), h('a', { href: '#/estudos/artistas' }, 'artistas e bateristas'), h('a', { href: '#/mural' }, 'mural de artistas')));
+    }
+    body.replaceChildren(...kids.filter(Boolean));
   };
   q.addEventListener('input', debounce(() => {
     const v = q.value.trim();
-    body.hidden = !!v;
-    results.replaceChildren(...(v ? lib.search(v).map((r) => card(r.a, r)) : []));
-    if (v && !results.children.length) results.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nada achado.')));
+    body.hidden = !!v; found.hidden = !v;
+    if (!v) return;
+    const r = lib.search(v).slice(0, 8);
+    found.replaceChildren(...(r.length ? r.map(({ a }) => h('a', { href: `#/estudos/a/${a.slug}` }, a.title, h('small', {}, (category(categoryOf(a)) || {}).label || ''))) : [h('p', { class: 'h-note' }, 'nada achado. tente outra palavra.')]));
   }, 150));
-  host.append(banner('Conceitos', 'o que a ciência diz sobre música, ritmo e estudo'), tabs('#/estudos'),
-    h('div', { class: 'row pad-x lib-quick' }, h('a', { class: 'btn small ghost', href: '#/anotacoes' }, '✎ minhas anotações'), h('a', { class: 'btn small ghost', href: '#/estudos/favoritos' }, '★ favoritos'), h('a', { class: 'btn small ghost', href: '#/dicionario' }, 'dicionário')),
-    h('div', { class: 'card pad' }, h('label', { class: 'field tight' }, h('span', {}, 'buscar'), q)), results, body);
+  const hoje = h('div', { class: 'hoje' },
+    h('div', { class: 'h-head' }, h('h2', {}, 'Hoje'), h('div', { class: 'h-date' }, dayLabel())),
+    h('div', { class: 'h-search' }, searchIcon(), q, found), body);
+  host.append(banner('Conceitos', 'o que a ciência diz sobre música, ritmo e estudo'), tabs('#/estudos'), hoje,
+    importer(async () => { lib.resetIndex(); await lib.loadIndex(); draw(); }));
   lib.loadIndex().then(() => { draw(); lib.prefetch().catch(() => {}); });
-  return store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });
-}
-
-/** Anel de textos lidos + uma barra por categoria (lidos de quantos). */
-function progressCard(idx, states) {
-  const done = new Set(states.filter((s) => s.done).map((s) => s.slug));
-  const rows = CATEGORIES.map((c) => { const items = idx.filter((a) => categoryOf(a) === c.id); return { c, total: items.length, n: items.filter((a) => done.has(a.slug)).length }; }).filter((r) => r.total);
-  return h('section', { class: 'card pad lib-prog' },
-    h('h2', { class: 'tag' }, 'seu progresso'),
-    h('div', { class: 'lib-prog-in' }, ring(done.size, idx.length, { caption: 'textos lidos' }),
-      h('ul', { class: 'hbars', 'aria-label': 'Textos lidos por categoria' }, rows.map((r) => h('li', { title: `${r.c.label}: ${r.n} de ${r.total} lidos` },
-        h('a', { href: `#/estudos/cat/${r.c.id}` }, h('span', { class: 'hb-lab' }, r.c.label), h('span', { class: 'hb-n' }, `${r.n}/${r.total}`)),
-        h('span', { class: 'hb-track', 'aria-hidden': 'true' }, h('i', { style: { width: `${Math.round(r.n / r.total * 100)}%` } })))))));
+  return store.subscribe((i) => { if (!i.kind || i.kind === 'study' || i.kind === G.KIND) draw(); });
 }
 
 function catCard(c, idx) {
@@ -181,7 +198,7 @@ function artHero(slug, name) {
 function mountArticle(host, slug) {
   const wrap = h('article', { class: 'reader' }, h('p', { class: 'lib-note pad-x' }, 'abrindo…'));
   host.append(wrap);
-  let offScroll = () => {}; let offHl = () => {};
+  let offScroll = () => {}; let offHl = () => {}; let offSel = () => {}; let lastSel = '';
   (async () => {
     await lib.loadIndex();
     const row = await lib.loadBody(slug);
@@ -218,6 +235,9 @@ function mountArticle(host, slug) {
     const related = lib.relatedOf(a);
     const favBtn = h('button', { class: `icon-btn${st0.fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(!!st0.fav), 'aria-label': 'Favoritar texto', onclick: async () => { const f = !lib.getState(slug).fav; await lib.patchState(slug, { fav: f }); favBtn.classList.toggle('on', f); favBtn.setAttribute('aria-pressed', String(f)); toast(f ? 'nos favoritos ★' : 'removido dos favoritos'); } }, icon('star', 22));
     const tocBtn = headings.length > 3 ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('Índice', (close) => h('div', { class: 'sheet-body toc' }, headings.filter((x) => x.level === 2).map((x) => h('a', { href: `#s-${x.id}`, onclick: (e) => { e.preventDefault(); close(); document.getElementById(x.id).scrollIntoView({ behavior: 'smooth' }); } }, x.text)))) }, 'índice') : null;
+    const storyBtn = h('button', { class: 'btn small', type: 'button', onclick: () => { const picked = (String(getSelection()).replace(/\s+/g, ' ').trim()) || lastSel; openStory({ text: picked.length > 8 ? picked : (PT[slug] || a.meta.summary || a.title), src: a.title }); } }, '↗ stories');
+    const onSel = () => { const t = String(getSelection()).replace(/\s+/g, ' ').trim(); const n = getSelection().anchorNode; if (t && n && content.contains(n.nodeType === 1 ? n : n.parentNode)) lastSel = t; };
+    document.addEventListener('selectionchange', onSel); offSel = () => document.removeEventListener('selectionchange', onSel);
     const readBtn = h('button', { class: 'btn small', type: 'button' });
     const paintRead = () => { const d = lib.getState(slug).done; readBtn.textContent = d ? 'lido ✓' : 'marcar como lido'; readBtn.classList.toggle('on', !!d); };
     readBtn.addEventListener('click', async () => { const d = !lib.getState(slug).done; await lib.patchState(slug, { done: d, progress: d ? 1 : lib.getState(slug).progress }); if (d) { stamp(readBtn); stars(readBtn); } paintRead(); });
@@ -233,7 +253,7 @@ function mountArticle(host, slug) {
         PT[slug] ? h('p', { class: 'reader-pt' }, PT[slug]) : null,
         isArtist(a) && QUESTION[slug] ? h('p', { class: 'reader-pt' }, QUESTION[slug]) : (a.meta.summary ? h('p', { class: 'reader-sum' }, a.meta.summary) : null),
         h('p', { class: 'lib-kicker' }, [a.meta.difficulty && (lib.DIFF[a.meta.difficulty] || a.meta.difficulty), a.meta.estimated_read_time, a.meta.source_count && `${a.meta.source_count} fontes`, a.meta.last_researched && `pesquisa ${a.meta.last_researched}`].filter(Boolean).join(' · ')),
-        h('div', { class: 'row' }, favBtn, tocBtn, readBtn)),
+        h('div', { class: 'row' }, favBtn, tocBtn, readBtn, storyBtn)),
       content,
       related.length ? h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'relacionados'), h('div', { class: 'lib-rel' }, related.map((r) => r.hit ? h('a', { class: 'chip-link', href: `#/estudos/a/${r.hit.slug}` }, r.title) : h('span', { class: 'chip-link off', title: 'ainda não está na biblioteca' }, r.title)))) : null,
       h('div', { class: 'row pad-x reader-foot' }, h('a', { class: 'btn small ghost', href: '#/estudos' }, 'voltar à biblioteca'))].filter(Boolean));
@@ -253,7 +273,7 @@ function mountArticle(host, slug) {
     addEventListener('scroll', onScroll, { passive: true });
     offScroll = () => { removeEventListener('scroll', onScroll); saveProg.flush(); };
   })();
-  return () => { offScroll(); offHl(); };
+  return () => { offScroll(); offHl(); offSel(); };
 }
 
 /* ---------- favoritos ---------- */
