@@ -359,3 +359,12 @@ body.rz-lock .pt-think { display: none; }
 .ar-alb summary { cursor: pointer; min-height: 44px; display: grid; align-content: center; gap: 2px; }
 .ar-hit { font-size: .85rem; opacity: .75; }
 .ar-body { padding: 4px 0 12px; display: grid; gap: 10px; }
+
+/* recentes bem menores: uma linha de chips pequenos, no menu e no início */
+.drawer-recent { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 6px 8px; }
+.drawer-recent small { font: 600 11px var(--body); text-transform: uppercase; letter-spacing: .1em; color: #7a6f66; }
+.drawer-recent a { padding: 3px 10px; border: 1.5px solid #1b1818; border-radius: 999px; background: #fff; color: #1b1818; font: 600 12px var(--body); text-decoration: none; max-width: 46%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-recent { padding: 2px 16px 0; }
+.home-recent h2 { display: none; }
+.home-recent-row { gap: 6px; padding: 2px 0; }
+.home-recent-chip { min-height: 28px; padding: 0 10px; font-size: 12px; border-width: 1.5px; box-shadow: none; }
