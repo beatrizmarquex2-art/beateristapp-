@@ -120,7 +120,7 @@ const hashOf = (t) => [...String(t)].reduce((n, c) => (n * 31 + c.charCodeAt(0))
 /** Cabeçalho das telas: título, subtítulo, o Paul do assunto e dois rabiscos soltos. */
 export function banner(text, sub) {
   const hit = PAUL_BY_TITLE.find(([re]) => re.test(text)); const n = hashOf(text);
-  const paul = /^alunos?$/i.test(text.trim()) ? 'bateria' : `e${String(hit ? hit[1].slice(1) : [2, 30, 20, 3][n % 4]).padStart(2, '0')}`;
+  const paul = /^alunos?$/i.test(text.trim()) ? 'bateria' : `e${String(hit ? hit[1].slice(1) : [2, 26, 20, 3][n % 4]).padStart(2, '0')}`;
   const d1 = DOODLES[n % DOODLES.length];
   return h('div', { class: 'banner-wrap has-paul' },
     h('h1', { class: 'banner' }, text),

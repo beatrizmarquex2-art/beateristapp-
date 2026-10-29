@@ -29,28 +29,26 @@ function playbackMode() {
   } catch (e) {}
 }
 if (typeof document !== 'undefined') {
-  const go = () => { playbackMode(); audio(); };
+  const go = () => { playbackMode(); audio(false); };
   ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, go, { capture: true, passive: true }));
 }
 
 // saiu do app / bloqueou a tela: se tem som tocando de verdade (metrônomo, groove, play-along) ele continua; se não tem, solta o áudio mudo de fundo,
 // senão o iPhone mostra o app como "tocando" na ilha dinâmica
-let ana = null, lastSound = 0, watch = 0;
+let ana = null, lastUse = 0, watch = 0;
 const otherMedia = () => [...document.querySelectorAll('audio, video')].some((m) => m !== keep && !m.paused && !m.ended);
 const soundNow = () => {
-  if (otherMedia()) return true;
+  if (otherMedia() || Date.now() - lastUse < 4000) return true; // lastUse: última vez que algo pediu som (cada clique/batida chama audio())
   if (!ana) return false;
   const d = new Uint8Array(ana.fftSize); ana.getByteTimeDomainData(d);
-  let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i] - 128));
-  if (peak > 1) lastSound = Date.now();
-  return Date.now() - lastSound < 4000;
+  for (let i = 0; i < d.length; i++) if (Math.abs(d[i] - 128) > 1) return true;
+  return false;
 };
 const release = () => {
   try { if (keep && !keep.paused) keep.pause(); } catch (e) {}
   try { if (navigator.audioSession && navigator.audioSession.type !== 'auto') navigator.audioSession.type = 'auto'; } catch (e) {}
 };
 if (typeof document !== 'undefined') {
-  setInterval(soundNow, 500); // só registra quando foi o último som
   document.addEventListener('visibilitychange', () => {
     clearInterval(watch);
     if (document.visibilityState !== 'hidden') return;
@@ -59,7 +57,8 @@ if (typeof document !== 'undefined') {
   });
 }
 
-export function audio() {
+export function audio(mark = true) {
+  if (mark) lastUse = Date.now();
   if (!ctx) {
     playbackMode();
     const AC = window.AudioContext || window.webkitAudioContext;
