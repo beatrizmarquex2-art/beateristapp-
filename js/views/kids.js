@@ -23,6 +23,8 @@ import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
 
+/** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
+const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const FREE = [
   ['explorar', 'Explorar a bateria', 'toca livre e descobre os nomes', 'explorar'],
   ['memoria', 'Jogo da memória', '4, 8 ou 12 pares · 4 temas', 'memoria'],
@@ -123,7 +125,7 @@ function homeScreen(host, rerender) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Robôterista. qual é o seu nome?' });
     host.append(topBar(), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'),
       h('h2', { class: 'kx-h' }, 'jogos livres'), h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, 'sem fases'))),
-      h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards());
+      ...(ALUNO() ? [] : [h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards()]));
     return;
   }
   const total = P.totalStars(me.id); const tier = tierOf(total);
@@ -137,12 +139,12 @@ function homeScreen(host, rerender) {
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
-      wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')),
+      ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('h2', { class: 'kx-h' }, 'livres'),
     h('div', { class: 'kx-cards' }, ...FREE.map(([k, t, s, ic]) => gameCard(`#/kids/${k}`, ic, t, s, null))),
-    h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards(),
+    ...(ALUNO() ? [] : [h('h2', { class: 'kx-h' }, 'cartas de groove'), cartasCards()]),
     h('h2', { class: 'kx-h' }, 'mais jogos'),
-    h('div', { class: 'kx-cards' }, ...EXTERNAL.map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
+    h('div', { class: 'kx-cards' }, ...EXTERNAL.filter((x) => !ALUNO() || x[0] === '#/ritmo').map(([url, t, s, ic]) => { const c = gameCard(url, ic, t, s, null); if (/^https?:/.test(url)) { c.target = '_blank'; c.rel = 'noopener noreferrer'; } return c; })),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
