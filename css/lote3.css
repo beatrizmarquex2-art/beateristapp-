@@ -291,3 +291,5 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .al-entry .al-hero .al-paul-img { width: 118px; height: auto; transform-origin: 50% 100%; animation: alDance 1.2s ease-in-out infinite; }
 .al-entry .al-hero-txt .al-bubble { font-size: 17.5px; }
 @media (prefers-reduced-motion: reduce) { .al-entry .al-hero .al-paul-img { animation: none !important; } }
+/* Paul parado na entrada */
+.al-entry .al-hero .al-paul-img, .al-paul img.al-paul-img { animation: none !important; transform: none; }
