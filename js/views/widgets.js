@@ -17,11 +17,12 @@ const box = (cls, title, href, linkText) => {
 export function studyWidget() {
   const el = box('w-study', 'continuar estudando', '#/estudos', 'biblioteca');
   const draw = () => {
-    const last = lib.allStates().filter((s) => s.lastRead && !s.done).sort((a, b) => b.lastRead - a.lastRead)[0];
-    const a = last && lib.bySlug(last.slug);
-    el.replaceChildren(el.head, a
-      ? h('a', { class: 'w-line', href: `#/estudos/a/${a.slug}` }, h('strong', {}, a.title), h('span', { class: 'lib-bar' }, h('i', { style: { width: `${Math.round((last.progress || 0) * 100)}%` } })))
-      : h('a', { class: 'w-line', href: '#/estudos' }, h('strong', {}, 'estudar agora'), h('small', {}, 'sorteio um texto da biblioteca')));
+    // tudo o que a Bea começou a estudar e ainda não terminou, com a barrinha de quanto já leu (os 4 mais recentes)
+    const rows = lib.allStates().filter((x) => x.lastRead && !x.done).sort((x, y) => y.lastRead - x.lastRead)
+      .map((x) => [x, lib.bySlug(x.slug)]).filter(([, art]) => art).slice(0, 4);
+    el.replaceChildren(el.head, ...(rows.length
+      ? rows.map(([x, art]) => { const pct = Math.round((x.progress || 0) * 100); return h('a', { class: 'w-line w-study-row', href: `#/estudos/a/${art.slug}` }, h('strong', {}, art.title), h('span', { class: 'w-study-pct' }, `${pct}%`), h('span', { class: 'lib-bar' }, h('i', { style: { width: `${pct}%` } }))); })
+      : [h('a', { class: 'w-line', href: '#/estudos' }, h('strong', {}, 'estudar agora'), h('small', {}, 'sorteio um texto da biblioteca'))]));
   };
   draw(); lib.loadIndex().then(draw).catch(() => {});
   el.unsub = store.subscribe((i) => { if (!i.kind || i.kind === 'study') draw(); });

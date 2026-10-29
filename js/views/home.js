@@ -10,8 +10,8 @@ import { getLayout, LAYOUT_KEY } from '../layout.js';
 import { todayRoll } from './students.js';
 import { studyWidget, metroWidget, focusWidget } from './widgets.js';
 import { COVER_KEY, paintCover, openCover } from './cover.js';
-import { factFor } from '../music-facts.js';
-import { heroSub } from '../hero-text.js';
+import { factPicker } from '../music-facts.js';
+import { incentiveFor } from '../hero-text.js';
 import { recents } from '../recent.js';
 import { findStudy, openStudy } from '../study-link.js';
 import { homeStrip } from './lembretes.js';
@@ -44,20 +44,33 @@ function hero() {
         h('h1', { class: 'brand-word' }, 'Beaterista'),
         swash()),
       h('img', { class: 'hero-logo', src: 'assets/logo-512.png', alt: 'Escola de Música Beaterista', width: 62, height: 62 })),
-    h('p', { class: 'hero-sub' }, heroSub()),
+    paulCheer(),
     h('p', { class: 'date-line' }, longDate()),
     heroNote());
 }
 
+/** Paul dá uma palavra de incentivo (muda a cada 8 horas; toque no balão pra ver outra). */
+function paulCheer() {
+  let off = 0;
+  const img = h('img', { class: 'hp-img', alt: '', width: 64, height: 64, decoding: 'async', draggable: 'false' });
+  const msg = h('span', { class: 'hp-msg' });
+  const paint = () => { const c = incentiveFor(Date.now(), off); msg.textContent = c.text; img.src = `assets/paul/${c.face}.webp`; return c.slot; };
+  let slot = paint();
+  const el = h('button', { class: 'hero-paul', type: 'button', 'aria-label': 'Palavra de incentivo do Paul. Toque para ver outra.', onclick: () => { off++; paint(); } }, img, h('span', { class: 'hp-bubble' }, msg));
+  el.tick = () => { const now = incentiveFor(Date.now(), 0).slot; if (now !== slot) { off = 0; slot = paint(); } };
+  return el;
+}
+
 /** Bilhete colado do início: uma curiosidade de música ou o sentido de uma canção (muda todo dia; toque para ver outra). */
 function heroNote() {
-  let k = 0;
+  const picker = factPicker(todayKey());
   const kicker = h('span', { class: 'hero-note-date' }); const msg = h('span', { class: 'hero-note-msg' });
   const links = h('div', { class: 'hero-note-links' }); const study = h('span', { class: 'hero-note-study' }); let seq = 0;
   // música citada no bilhete (“Título” (Artista, ano)): atalho pra ouvir no YouTube (Spotify fica pra depois)
   const queryOf = (text) => { const m = /“([^”]+)”\s*\(([^),]+)/.exec(text) || /“([^”]+)”/.exec(text); return m ? `${m[1]} ${m[2] || ''}`.trim() : ''; };
+  let cur = picker.current();
   const paint = () => {
-    const [label, text] = factFor(todayKey(), k); kicker.textContent = label; msg.textContent = text;
+    const [label, text] = cur; kicker.textContent = label; msg.textContent = text;
     const q = queryOf(text); const enc = encodeURIComponent(q);
     const mine = ++seq; study.replaceChildren();
     const sm = /“([^”]+)”\s*\(([^),]+)/.exec(text);
@@ -68,7 +81,7 @@ function heroNote() {
     ] : [h('a', { class: 'hero-note-link', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${text.split(/[.:]/)[0].slice(0, 70)} bateria`)}`, target: '_blank', rel: 'noopener noreferrer' }, '▶ ver mais sobre isso')]));
   };
   paint();
-  const note = h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { k++; paint(); } },
+  const note = h('button', { class: 'hero-note', type: 'button', 'aria-label': 'Curiosidade de música. Toque para ver outra.', onclick: () => { cur = picker.next(); paint(); } },
     kicker, msg,
     h('small', { class: 'hero-note-more' }, 'toque pra ver outra'),
     h('img', { class: 'hero-note-smile', src: 'assets/mural/smile-face.svg', alt: '' }),
@@ -199,7 +212,7 @@ export function mount(host) {
     if (i.remote || i.wiped || i.imported || i.kind === 'note' || i.id === HOME_NOTE_KEY) note.refresh();
   });
   // a frase do topo troca sozinha a cada 8 horas: confere a cada minuto (e quando o app volta pra tela)
-  const subEl = top.querySelector('.hero-sub'); const tickSub = () => { const t = heroSub(); if (subEl.textContent !== t) subEl.textContent = t; };
+  const cheer = top.querySelector('.hero-paul'); const tickSub = () => cheer.tick();
   const subTimer = setInterval(tickSub, 60000); document.addEventListener('visibilitychange', tickSub);
   return () => { off(); document.removeEventListener('recents-changed', drawRecent); clearInterval(subTimer); document.removeEventListener('visibilitychange', tickSub); remStrip.unsub(); roll.unsub(); Object.values(widgets).forEach((w) => w.unsub && w.unsub()); note.unsub(); };
 }

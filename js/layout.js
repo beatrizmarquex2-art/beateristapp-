@@ -2,7 +2,7 @@ import * as store from './store.js';
 
 export const LAYOUT_KEY = 'setting-home-layout';
 export const SECTIONS = [
-  { id: 'aulas', label: 'Aulas de hoje' },
+  { id: 'aulas', label: 'Aulas de hoje', off: true },
   { id: 'hoje', label: 'Checklist de hoje' },
   { id: 'nota', label: 'Nota fixa' },
   { id: 'estudar', label: 'Widget: continuar estudando' },
@@ -26,8 +26,14 @@ export function getLayout() {
   const hidden = (d.hidden || []).filter((x) => ids.includes(x));
   // v3: as atividades foram pro menu ☰; os atalhos saem do início (menos rolagem). religa em Personalizar.
   if ((d.v || 0) < 3 && !hidden.includes('atalhos')) hidden.push('atalhos');
+  // v4: aulas de hoje fica desligada até a Bea atualizar os alunos; o que ela estuda (com barrinha de progresso) sobe pro início
+  if ((d.v || 0) < 4) {
+    if (!hidden.includes('aulas')) hidden.push('aulas');
+    const hi = hidden.indexOf('estudar'); if (hi >= 0) hidden.splice(hi, 1);
+    const o = order.indexOf('estudar'); if (o >= 0) { order.splice(o, 1); order.splice(order.includes('hoje') ? order.indexOf('hoje') + 1 : 0, 0, 'estudar'); }
+  }
   SECTIONS.forEach((s) => { if (s.off && !known.includes(s.id) && !hidden.includes(s.id)) hidden.push(s.id); });
   return { order, hidden };
 }
-export const saveLayout = (order, hidden) => store.upsert('setting', LAYOUT_KEY, { order, hidden, known: SECTIONS.map((s) => s.id), v: 3 });
-export const resetLayout = () => store.upsert('setting', LAYOUT_KEY, { order: SECTIONS.map((s) => s.id), hidden: SECTIONS.filter((s) => s.off).map((s) => s.id), known: SECTIONS.map((s) => s.id), v: 3 });
+export const saveLayout = (order, hidden) => store.upsert('setting', LAYOUT_KEY, { order, hidden, known: SECTIONS.map((s) => s.id), v: 4 });
+export const resetLayout = () => store.upsert('setting', LAYOUT_KEY, { order: SECTIONS.map((s) => s.id), hidden: SECTIONS.filter((s) => s.off).map((s) => s.id), known: SECTIONS.map((s) => s.id), v: 4 });

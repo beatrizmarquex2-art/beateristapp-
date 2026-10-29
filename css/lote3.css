@@ -490,3 +490,19 @@ html:has(.drawer), body:has(.drawer) { overflow: hidden; }
 .drawer:not(.drawer-b) .drawer-head strong img { background: none; padding: 0; border-radius: 0; height: 56px; width: auto; }
 .drawer:not(.drawer-b) .drawer-head strong { transform: none; }
 html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
+
+/* início: bilhete da música menor */
+[data-theme="rabisco"] .hero-note { width: min(64%, 230px); padding: 8px 36px 8px 12px; margin: 12px 0 4px 2px; }
+[data-theme="rabisco"] .hero-note .hero-note-msg { font-size: 14px; line-height: 1.18; }
+.hero-note-date { font-size: 11px; } .hero-note-more { font-size: 10px; margin-top: 2px; }
+.hero-note-smile { width: 34px; right: -12px; }
+[data-theme="rabisco"] .hero-note-bolt, [data-theme="rabisco"] .hero-note-star { display: none; }
+.hero-note-link { min-height: 34px; padding: 0 12px; font-size: 12.5px; }
+/* Paul com palavra de incentivo no lugar da frase do topo */
+.hero-paul { display: flex; align-items: center; gap: 8px; width: 100%; margin: 6px 0 0; padding: 0 calc(var(--cs, 82px) + 8px) 0 0; border: 0; background: none; text-align: left; font: inherit; cursor: pointer; color: #1b1818; }
+.hp-img { width: 74px; height: 74px; object-fit: contain; flex: none; mix-blend-mode: multiply; }
+.hp-bubble { position: relative; flex: 1; padding: 6px 10px; border: 2px solid #1b1818; border-radius: 14px 14px 14px 4px; background: #fffdf7; box-shadow: 2px 2px 0 #1b1818; }
+.hp-msg { font: 16px/1.15 "Gochi Hand", var(--hand); display: block; }
+/* continuar estudando: lista com barra de progresso */
+.w-study-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; padding: 8px 0; }
+.w-study-row .lib-bar { grid-column: 1 / -1; } .w-study-pct { font: 700 12px var(--body); opacity: .7; }
