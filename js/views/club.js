@@ -194,6 +194,24 @@ function clubTop(host, tabs, sub) {
   if (!sub) host.append(h('div', { class: 'row pad-x club-actions' }, h('button', { class: 'btn', type: 'button', onclick: pickTexts }, 'importar textos')));
 }
 
+/** Seção "coleções" (Beatles etc.) para a aba Artistas: cada pacote importado vira um cartão; "importar textos" fica aqui. O elemento devolvido tem .cleanup. */
+export function collectionsSection() {
+  const list = h('div', { class: 'lib-list' });
+  const draw = () => {
+    const cols = collections();
+    list.replaceChildren(...(cols.length ? cols.map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
+      h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
+      h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · '))))
+      : [h('p', { class: 'muted pad-x' }, 'nenhuma coleção ainda. importe um pacote de textos (.zip) pra ele aparecer aqui.')]));
+  };
+  const el = h('section', {}, h('h2', { class: 'tag pad-x' }, 'coleções'), list,
+    h('div', { class: 'row pad-x club-actions' }, h('button', { class: 'btn small', type: 'button', onclick: pickTexts }, 'importar textos')));
+  draw();
+  const off = store.subscribe((i) => { if (!i.kind || i.kind === 'clubref') draw(); });
+  el.cleanup = off;
+  return el;
+}
+
 export function mountClub(host, tabs) {
   const box = h('div');
   const draw = () => {
@@ -261,7 +279,7 @@ function mountCollection(host, cs, tabs) {
     const byArtist = new Map(); for (const r of albs) { const k = r.data.artist || '—'; if (!byArtist.has(k)) byArtist.set(k, []); byArtist.get(k).push(r); }
     const multi = byArtist.size > 1; // pacote com vários artistas: agrupa por artista
     box.replaceChildren(...[
-      h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/club' }, '← Álbuns'),
+      h('header', { class: 'reader-head' }, h('a', { class: 'link', href: '#/estudos/artistas' }, '← Artistas'),
         h('p', { class: 'lib-kicker' }, 'coleção'), h('h1', { class: 'reader-title' }, name),
         list.length ? h('label', { class: 'field' }, search) : null),
       !list.length ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'essa coleção ainda não foi importada.'), h('p', { class: 'muted' }, 'toque em “importar textos” no clube e escolha o .zip.')) : null,
