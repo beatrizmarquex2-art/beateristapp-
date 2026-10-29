@@ -197,3 +197,6 @@ body:not(.rz-lock) .rg-host[data-rz-theme="colagem"]::after{content:"";position:
 
 body:not(.rz-lock) .rg-host[data-rz-theme="colagem"]{padding-top:30px}
 .rz-pad{border-radius:14px}
+/* colagem: nada preto em cima do papel creme (busca, calibrar, prévia) */
+.rg-host[data-rz-theme="colagem"] .bmr input[type=search], .rg-host[data-rz-theme="colagem"] .bmr input[type=text], .rg-host[data-rz-theme="colagem"] .bmr details.panel { background: #fffdf7; color: #142036; }
+.rg-host[data-rz-theme="colagem"] .bmr .rz-prev { background: #7a1226; color: #fbf3e6; border-color: #4a0a16; }

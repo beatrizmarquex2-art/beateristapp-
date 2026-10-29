@@ -554,3 +554,10 @@ html[data-theme] .card.mini-list { background: #7a1226; border-color: #4a0a16; b
 .hub-card .hub-ic { width: 38px; height: 38px; background: #fbf3e6; color: #1b1818; border-radius: 12px; margin-bottom: 2px; } .hub-card .hub-ic svg { width: 22px; height: 22px; }
 .hub-card b { font: 400 16px/1.05 var(--display); text-transform: uppercase; color: #fbf3e6; }
 .hub-card small { color: #e9d9c4; font-size: 11.5px; line-height: 1.2; }
+/* músicas importadas: marcar quais os alunos veem */
+.rg-pubnote { margin: 6px 0; font-size: 13px; } .rg-mfilter { width: 100%; margin: 4px 0 8px; }
+.rg-pubbar { gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.rg-pubck { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: pointer; }
+.rg-pubck input { width: 24px; height: 24px; flex: none; accent-color: #7a1226; }
+.rg-pubck small { display: block; }
+.rg-list { max-height: 60vh; overflow-y: auto; }
