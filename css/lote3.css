@@ -332,3 +332,7 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .al-entry .al-hero { grid-template-columns: 148px 1fr; gap: 10px; }
 .al-entry .al-paulbox, .al-entry .al-paulbox .al-paul-img { width: 148px; }
 .al-entry .al-hero-txt .al-bubble { font-size: 16.5px; }
+/* poses de tamanhos diferentes: altura fixa, largura acompanha a pose */
+.al-entry .al-hero { grid-template-columns: auto 1fr; gap: 12px; }
+.al-entry .al-paulbox { width: auto; height: 120px; min-width: 96px; display: grid; align-items: end; }
+.al-entry .al-paulbox .al-paul-img { width: auto; height: 120px; max-width: 150px; object-fit: contain; }

@@ -51,6 +51,14 @@ function footerBlock() {
       h('img', { class: 'partners-img', src: 'assets/parceiros-preto.png', alt: 'Pad Gorilla, Spark Cajons e Nagano Drums', width: 988, height: 237, decoding: 'async' }),
       h('span', { class: 'partners-label' }, 'parceiros da Bea')));
 }
+/** Poses do Paul: a cada vez que o app abre, sorteia uma (sem repetir a anterior). */
+const POSES = [['paz', 'fazendo sinal de paz'], ['apontando', 'apontando'], ['bateria', 'tocando bateria'], ['skate', 'andando de skate'], ['violao', 'indo tocar violão'], ['selfie', 'tirando selfie']];
+function pickPose() {
+  let last = -1; try { last = Number(sessionStorage.getItem('bt-aluno-pose') ?? localStorage.getItem('beaterista-aluno-pose') ?? -1); } catch { /* ok */ }
+  let i = Math.floor(Math.random() * POSES.length); if (POSES.length > 1 && i === last) i = (i + 1 + Math.floor(Math.random() * (POSES.length - 1))) % POSES.length;
+  try { localStorage.setItem('beaterista-aluno-pose', String(i)); } catch { /* ok */ }
+  return POSES[i];
+}
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
 const route = () => { const [, a, ...rest] = (location.hash || '#/ritmo').split('/'); return { name: a || 'ritmo', parts: rest.filter(Boolean).map(decodeURIComponent) }; };
@@ -132,6 +140,7 @@ function shell(name) {
 
 function askName() {
   const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
+  const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
   const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
@@ -148,7 +157,7 @@ function askName() {
   } },
     h('div', { class: 'al-hero' },
       h('div', { class: 'al-paulbox' },
-        h('img', { class: 'al-paul-img', src: 'assets/aluno/paul-paz.webp', alt: 'Paul, o robôterista, fazendo sinal de paz', width: 120, height: 158 }),
+        h('img', { class: 'al-paul-img', src: `assets/aluno/paul-${pose[0]}.webp`, alt: `Paul, o robôterista, ${pose[1]}` }),
         // o Paul fica parado; o que se mexe são os rabiscos em volta dele
         ...[['estrela-ouro', 'a'], ['nota-vermelha', 'b'], ['coracao', 'c'], ['raio', 'd'], ['estrela-azul-p', 'e'], ['nota-preta', 'f']].map(([n, k]) => h('img', { class: `al-el el-${k}`, src: `assets/paul/el/${n}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
       h('div', { class: 'al-hero-txt' },
