@@ -64,4 +64,14 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Nunca "Kids" nos textos visíveis (adultos também jogam). Sem faixa de idade.
 - Tudo na entrada dos alunos deve caber numa tela só no iPhone.
 - Paul sem animação própria; animar só os elementos em volta.
-- Pendente: tirar o corte dos 7 Pauls antigos (precisa das imagens novas); jogos novos da outra sessão ligarem na aba Jogos dos alunos.
+- Pendente (antigo): jogos novos da outra sessão ligarem na aba Jogos dos alunos. Os 7 Pauls cortados já foram removidos (se vierem imagens novas inteiras, voltam).
+
+## Pendências (a Bea leva pra o chat novo)
+1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Da professora". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
+2. **MIDIs pros alunos**: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.
+3. **Quebra-cabeça**: 5 imagens novas do Paul (tocando outros instrumentos/cenários), 1536×1024. O jogo já aceita várias (`IMAGES` em `js/jogos/quebra.js` + `sw.js`); falta ela mandar as imagens (ou decidir um botão de subir imagem dentro do app: só ficaria no aparelho dela, não chegaria nos alunos).
+4. **Aba Beaterista** (a Bea deixou pra depois): revisar visual como fizemos na Bea.
+5. **Ferramentas**: metrônomo com vazio no meio; Juiz de Tempo e Estúdio de Ouvido abrem com o aviso do microfone ocupando a tela toda.
+6. **Estudos**: conferir no celular o sorteio de tema e as barras de progresso (não deu pra testar sem a biblioteca). Layout do Estudos no iPhone SE (320px) tem 3 elementos vazando (já existia antes).
+7. **Sem internet**: não consegui testar o modo offline no computador; ela confere no celular (avião).
+8. Telas da Bea que usam paletas próprias (Bateria de Toque, Groovebox, Piano) ficaram como estavam.
