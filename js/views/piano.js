@@ -4,6 +4,8 @@ import { h } from '../util.js';
 import * as store from '../store.js';
 import { audio, out } from '../audio.js';
 import { banner, toast } from '../ui.js';
+import { backing } from '../instruments.js';
+import { tocarTabs, backingBar } from './tocar-nav.js';
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
 
 const KEY = 'setting-piano';
@@ -132,9 +134,9 @@ export function mount(host) {
         h('button', { class: 'btn ghost', type: 'button', disabled: !take.length, onclick: () => { stopPlay(); take = []; recording = false; drawTake(); drawPanel(); } }, 'limpar'))));
   };
 
-  host.append(banner('Piano', 'pra tirar melodia e conferir a nota'), shown, kb, takeBox, panel,
+  host.append(banner('Piano', 'pra tirar melodia e conferir a nota'), tocarTabs('piano'), shown, kb, takeBox, panel, backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawPanel(); drawTake();
   const onResize = () => {}; window.addEventListener('resize', onResize);
-  return () => { stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); };
+  return () => { stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
 }

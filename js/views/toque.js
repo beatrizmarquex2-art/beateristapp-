@@ -8,7 +8,8 @@ import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
 import { audio, click, perfToCtx } from '../audio.js';
 import { banner, toast, stars } from '../ui.js';
-import { VOICE } from './beatlab.js';
+import { DRUM, velAt, backing } from '../instruments.js';
+import { tocarTabs, backingBar } from './tocar-nav.js';
 import { playDoc, stopAll } from './partitura.js';
 import { quantize, countNotes } from '../touchkit.js';
 import { kitMarkup, svgEl } from '../kids/art.js';
@@ -29,10 +30,23 @@ export function mount(host) {
   const panel = h('div');
   const status = h('p', { class: 'tr-status', 'aria-live': 'polite' });
 
-  const hit = (id, perfMs) => {
-    const c = audio(); VOICE[id](c.currentTime, 1); // o som primeiro: nada pode atrasar a batida
-    flash(kit.querySelector(`[data-p="${id}"]`));
-    if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id });
+  /** `dr` = onde o dedo caiu na peça (0 = no meio, 1 = na borda): no meio bate mais forte; na borda da caixa vira aro; no meio da condução, sino. */
+  const hit = (id, perfMs, dr = 0.3, pt) => {
+    const c = audio(); const v = velAt(dr); if (DRUM[id]) DRUM[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
+    const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (pt) spark(pt.x, pt.y, el);
+    if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id, v, dr });
+  };
+  /** Onda que sai do ponto do toque, na cor da peça. */
+  const spark = (x, y, el) => {
+    const r = kit.getBoundingClientRect(); const d = h('i', { class: 'ti-rip' }); d.style.left = `${x - r.left}px`; d.style.top = `${y - r.top}px`; d.style.borderColor = (el && el.style.getPropertyValue('--c')) || '#b5162b'; kit.append(d);
+    const a = d.animate([{ transform: 'scale(.6)', opacity: 0.8 }, { transform: 'scale(3.4)', opacity: 0 }], { duration: 440, easing: 'ease-out' }); a.onfinish = () => d.remove();
+  };
+  /** Distância do toque ao centro da peça (pelo desenho do "tampo": elipse da pele ou do prato). */
+  const drOf = (g, e) => {
+    const t = g.querySelector('ellipse[fill-opacity], circle[fill-opacity]'); if (!t) return 0.4;
+    const r = t.getBoundingClientRect(); if (!r.width || !r.height) return 0.4;
+    const q = Math.hypot((e.clientX - (r.left + r.width / 2)) / (r.width / 2), (e.clientY - (r.top + r.height / 2)) / (r.height / 2));
+    return q > 1.15 ? 0.55 : Math.min(1, q); // fora do tampo (no casco ou no pé) vale como toque médio
   };
   // a bateria é o mesmo desenho do "explorar a bateria": cada dedo vale um toque, então dá pra tocar com vários ao mesmo tempo
   const drawKit = () => {
@@ -40,13 +54,13 @@ export function mount(host) {
     kit.classList.toggle('left', !!c.left);
     const art = svgEl(kitMarkup(), 'tk-art'); putLogo(art);
     kit.dataset.kitTheme = kitTheme();
-    art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now()); });
+    art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     kit.replaceChildren(art, themeRow(drawKit));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
     const id = KEYS[e.key.toLowerCase()]; if (!id) return;
-    e.preventDefault(); hit(id, e.timeStamp || performance.now());
+    e.preventDefault(); hit(id, e.timeStamp || performance.now(), 0.15);
   };
   document.addEventListener('keydown', onKey);
 
@@ -95,10 +109,10 @@ export function mount(host) {
   const startLoop = () => {
     if (!last) return; stopLoop(); stopAll(); stopTempo(); listening = false;
     const c = conf(); const ac = audio(); const q = 60 / c.bpm; const { len, hits } = last;
-    const evs = hits.map((x) => ({ t: x.t, id: x.id }));
+    const evs = hits.map((x) => ({ t: x.t, id: x.id, v: x.v, dr: x.dr }));
     if (c.click) for (let b = 0; b * q < len - 0.01; b++) evs.push({ t: b * q, click: b % 4 === 0 ? 2 : 1 });
     evs.sort((x, y) => x.t - y.t); const n = evs.length; const start = ac.currentTime + 0.12;
-    const run = scheduler((i) => { const e = evs[i % n]; return { at: Math.floor(i / n) * len + e.t, play: (t) => { if (e.click) click(t, e.click, 0.5); else VOICE[e.id](t, 1); }, ui: e.id ? () => flash(kit.querySelector(`[data-p="${e.id}"]`)) : undefined }; });
+    const run = scheduler((i) => { const e = evs[i % n]; return { at: Math.floor(i / n) * len + e.t, play: (t) => { if (e.click) click(t, e.click, 0.5); else if (DRUM[e.id]) DRUM[e.id](t, e.v ?? 1, e.dr ?? 0.3); }, ui: e.id ? () => flash(kit.querySelector(`[data-p="${e.id}"]`)) : undefined }; });
     loop = { run, len, raf: 0 };
     const frame = () => { if (!loop) return; prog.style.width = `${((((ac.currentTime - start) % len) + len) % len / len) * 100}%`; loop.raf = requestAnimationFrame(frame); }; frame();
     status.className = 'tr-status'; status.textContent = `em loop · ${fmt(len)} · ${hits.length} toques`;
@@ -150,8 +164,8 @@ export function mount(host) {
     ].filter(Boolean));
   };
 
-  host.append(banner('Bateria de Toque', 'toca com os dedos'), kit, panel,
+  host.append(banner('Bateria de Toque', 'toca com os dedos'), tocarTabs('toque'), kit, panel, backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “ouvir o tempo” liga o clique no andamento escolhido; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
   drawKit(); drawPanel(); tipBox(host, 'toque');
-  return () => { cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); };
+  return () => { cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };
 }

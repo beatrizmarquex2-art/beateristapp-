@@ -111,7 +111,7 @@ export function stars(originEl) {
 // Paul de cada ferramenta: o humor combina com o assunto da tela (pelo título do banner)
 const PAUL_BY_TITLE = [
   [/metr|tap|bpm|tempo|cron|juiz|contar|compass/i, 'e19'], [/beat lab|groovebox|toque|rudiment|roleta|play-along|loop|ritmos?\b|jogos/i, 'e19'],
-  [/ouvido|ambiente|piano|repert|setlist|artistas|bateristas|mural|colagens|club|álbuns|albuns/i, 'e03'], [/ideia/i, 'e13'], [/lembrete|checklist|esquecer|foco/i, 'e13'],
+  [/ouvido|ambiente|piano|viol[aã]o|xilofone|repert|setlist|artistas|bateristas|mural|colagens|club|álbuns|albuns/i, 'e03'], [/ideia/i, 'e13'], [/lembrete|checklist|esquecer|foco/i, 'e13'],
   [/arquivos|anota|conceitos|bibliotec|dicion|folhas|partitura|estudo|laborat/i, 'e06'], [/alunos?|plano/i, 'e20'], [/feed/i, 'e03'], [/favorit/i, 'e26'],
   [/desafio/i, 'e14'], [/ferrament|conex|mapa/i, 'e27'], [/ops|não achei/i, 'e28'],
 ];
