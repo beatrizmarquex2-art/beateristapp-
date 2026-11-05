@@ -417,3 +417,4 @@ html.lite .st-notes{display:none}html.lite .st-stop,html.lite .st-play{animation
 .jg-toca .kx-embed>*{min-width:0;max-width:100%}.jg-toca .kd-slots,.jg-toca .kd-foods{max-width:100%}
 .jg-toca .kd-bpm{margin-left:0}.jg-toca .kd-slot{min-height:72px}
 .jg-toca .tr-ctrl .chips,.tr-ctrl .chips{flex-wrap:wrap;overflow:visible;row-gap:6px}
+.tr-path{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.tr-path .lib-tab{min-height:44px;min-width:64px}.tr-path .lib-tab:disabled{opacity:.55}

@@ -16,6 +16,16 @@ export const CELLS = [
   { p: '0111', lv: 3, name: 'pausa de semi + três semis' },
 ];
 export const LEVEL_NAMES = { 1: 'nível 1 · semínima e colcheia', 2: 'nível 2 · semicolcheias', 3: 'nível 3 · pontuadas e síncopes' };
+/** Caminho da leitura: 2 exercícios por nível, subindo aos poucos. Cada um só abre depois de tirar PASS_SCORE no anterior. */
+export const PATH = [
+  { lv: 1, n: 1, bar: ['1000', '1000', '1000', '1000'] },
+  { lv: 1, n: 2, bar: ['1000', '1010', '1000', '1010'] },
+  { lv: 2, n: 1, bar: ['1010', '1111', '1010', '1000'] },
+  { lv: 2, n: 2, bar: ['1111', '1011', '1110', '1000'] },
+  { lv: 3, n: 1, bar: ['1001', '1000', '1100', '1000'] },
+  { lv: 3, n: 2, bar: ['1101', '1001', '0111', '1000'] },
+];
+export const PASS_SCORE = 70;
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
 /** Notas de uma célula: [{ pos, dur }] em semicolcheias (a última vai até o fim do tempo). */
