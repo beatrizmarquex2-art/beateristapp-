@@ -1,5 +1,5 @@
 /* Modo Aventura: escolha de modo, briefing, resultado e medalhas. Mesmo mundo do mapa (vinil + pixel art). */
-.av { --mp-night: #0b1a30; --mp-deep: #12284a; --mp-purple: #1f6f78; --mp-wine: #8e1f4a; --mp-pink: #ff4fa3; --mp-yellow: #ffd23f; --mp-cyan: #4fd2ff; --mp-cream: #fff4e0; --pix: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; position: relative; color: var(--mp-cream); font-family: var(--pix); }
+.av { --mp-night: var(--avp-bg); --mp-deep: var(--avp-card); --mp-purple: var(--avp-line); --mp-wine: var(--avp-accent-dk); --mp-pink: var(--avp-accent); --mp-yellow: var(--avp-gold); --mp-cyan: var(--avp-soft); --mp-cream: var(--avp-text); --pix: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; position: relative; color: var(--mp-cream); font-family: var(--pix); }
 .av, .av * { box-sizing: border-box; }
 .av-bar { display: flex; align-items: center; gap: 8px; padding: 8px 0; } .av-bt { flex: 1; min-width: 0; font: 400 12px/1.25 var(--pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); overflow-wrap: anywhere; } /* quebra em 2 linhas: nunca corta o título com "…" */
 .av-back, .av-snd { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0 10px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 12px var(--pix); text-decoration: none; box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; } .av-snd { font-size: 18px; }
@@ -17,7 +17,7 @@
 .av-card { display: grid; gap: 8px; padding: 16px; background: var(--mp-deep); border: 4px solid var(--mp-cream); box-shadow: 5px 5px 0 var(--mp-pink); } .av-kick { color: var(--mp-cyan); font: 400 10px var(--pix); }
 .av-goal { margin: 0; font: 400 14px/1.45 var(--pix); } .av-list { margin: 0; padding-left: 18px; font: 400 12px/1.5 var(--pix); } .av-s { color: var(--mp-yellow); }
 .av-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; } .av-actions.row { align-items: center; }
-.av .kd-btn, .av .kd-chip { min-height: 48px; padding: 8px 16px; font: 700 13px var(--pix); border: 3px solid var(--mp-cream); background: var(--mp-pink); color: var(--mp-night); box-shadow: 3px 3px 0 var(--mp-night); cursor: pointer; } .av .kd-chip { background: var(--mp-deep); color: var(--mp-cream); }
+.av .kd-btn, .av .kd-chip { min-height: 48px; padding: 8px 16px; font: 700 13px var(--pix); border: 3px solid var(--mp-cream); background: var(--mp-pink); color: var(--avp-accent-ink); box-shadow: 3px 3px 0 var(--avp-shadow); cursor: pointer; } .av .kd-chip { background: var(--mp-deep); color: var(--mp-cream); }
 .av .btn { min-height: 44px; }
 .av-bot { display: flex; justify-content: center; margin-top: 10px; }
 .av-objective { margin: 0 0 8px;  padding: 8px 10px; background: var(--mp-night); border: 3px solid var(--mp-purple); font: 400 12px/1.35 var(--pix); }

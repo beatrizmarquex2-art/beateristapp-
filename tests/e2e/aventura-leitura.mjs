@@ -19,7 +19,7 @@ const audit = () => {
 };
 for (const w of [390, 320]) {
   const page = await ctx.newPage(); await page.setViewportSize({ width: w, height: 800 });
-  await page.addInitScript(() => localStorage.setItem('beaterista-aluno-nome', 'Teste'));
+  await page.addInitScript((t) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-av-tema', t); }, process.env.AV_TEMA || 'escuro'); // AV_TEMA=claro testa o modo claro
   for (const [id, hash] of GAMES) {
     await page.goto(url + '/aluno.html' + hash); await page.waitForSelector('.mp-node', { timeout: 8000 }).catch(() => {}); await sleep(1400);
     const H = await page.evaluate(() => (document.querySelector('.mp-world') || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height);

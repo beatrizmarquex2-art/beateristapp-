@@ -1,6 +1,6 @@
 /* Mapa de fases "Turnê do Vinil": pixel art fofo (8/16-bit) + universo do vinil. Cores no topo: troque aqui pra mudar o mundo todo. */
 .mp {
-  --mp-night: #0b1a30; --mp-deep: #12284a; --mp-purple: #1f6f78; --mp-wine: #8e1f4a; --mp-pink: #ff4fa3; --mp-yellow: #ffd23f; --mp-cyan: #4fd2ff; --mp-cream: #fff4e0;
+  --mp-night: var(--avp-bg); --mp-deep: var(--avp-card); --mp-purple: var(--avp-line); --mp-wine: var(--avp-accent-dk); --mp-pink: var(--avp-accent); --mp-yellow: var(--avp-gold); --mp-cyan: var(--avp-soft); --mp-cream: var(--avp-text);
   --mp-pix: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   position: relative; margin: 0 -16px; padding: 0 0 calc(110px + env(safe-area-inset-bottom)); background: var(--mp-night); color: var(--mp-cream);
   overflow-x: clip; overscroll-behavior-x: none; touch-action: pan-y; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
