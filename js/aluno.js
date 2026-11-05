@@ -15,10 +15,14 @@ import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import * as Acesso from './acesso.js';
+import * as Cloud from './kids/album-cloud.js';
+import { normCode } from './kids/savegame-logic.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
+// quem não tem código liberado vê só Jogos, Tocar e Ranking; com código liberado entra também o Beat Lab
+const navItems = () => [['#/jogos', 'study', 'Jogos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
 const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
@@ -112,7 +116,7 @@ function tocarView(view) {
 
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(4, 1fr)', 'aria-label': 'Navegação' });
+  const nav = h('nav', { class: 'bottom-nav', 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
@@ -123,8 +127,11 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    const NAV = navItems(); nav.style.gridTemplateColumns = `repeat(${NAV.length}, 1fr)`;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
+    const travado = { beatlab: 'beatlab', ritmo: 'ritmo' }[r.name];
+    if (travado && Acesso.bloqueado(travado)) { location.replace('#/jogos'); Acesso.promptCode(r.name === 'ritmo' ? 'Beat Hero e Piano Hero' : 'o Beat Lab'); return; }
     if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
@@ -138,6 +145,7 @@ function shell(name) {
     window.scrollTo(0, 0);
   }
   addEventListener('hashchange', go);
+  addEventListener('acesso', go); // código liberado (ou tirado): refaz a barra e a tela
   go();
 }
 
@@ -169,10 +177,34 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
+    h('button', { class: 'btn ghost wide', type: 'button', onclick: askCode }, 'já tenho meu código BEA'),
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
   setTimeout(() => input.focus(), 100);
+}
+
+/** Entrar com o código BEA-0000: traz o nome, o álbum e (se a Bea liberou) abre o resto. */
+function askCode() {
+  const inp = h('input', { class: 'field', type: 'text', inputmode: 'numeric', maxlength: 8, autocomplete: 'off', 'aria-label': 'Seu código', placeholder: 'BEA-0000' });
+  const err = h('p', { class: 'form-err', role: 'alert' });
+  const form = h('form', { class: 'login-card', onsubmit: async (e) => {
+    e.preventDefault(); const c = normCode(inp.value); if (!c) { err.textContent = 'digite os 4 números do código.'; return; }
+    err.textContent = 'procurando…';
+    let snap; try { snap = await Cloud.peek(c); } catch { err.textContent = 'sem internet. tente de novo.'; return; }
+    if (!snap) { err.textContent = 'não achei esse código. confere os números.'; return; }
+    const n = cleanName(snap.n) || 'Aluno';
+    try { localStorage.setItem(ORIGEM_KEY, 'entrou com código'); } catch { window.__alunoOrigem = 'entrou com código'; }
+    try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; }
+    await ensureKidsPlayer(n); const me = P.active(); if (me) await Cloud.adopt(me, c, snap);
+    await Acesso.refresh(); start();
+  } },
+    h('h1', { class: 'login-title' }, 'entrar com meu código'), h('label', { class: 'field' }, h('span', {}, 'código'), inp), err,
+    h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
+    h('button', { class: 'btn ghost wide', type: 'button', onclick: askName }, '‹ voltar'),
+    h('p', { class: 'muted center al-note' }, 'o código guarda seu álbum e seu ranking em qualquer celular. alunos da Bea abrem mais coisas com ele.'));
+  app.replaceChildren(h('main', { class: 'login al-entry' }, h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
+  setTimeout(() => inp.focus(), 100);
 }
 
 async function start() {
@@ -180,6 +212,7 @@ async function start() {
   if (!name) { askName(); return; }
   await ensureKidsPlayer(name);
   logVisit(name);
+  Acesso.refresh(); // confere no servidor se o código desse aluno está liberado (refaz as abas se mudar)
   shell(name);
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });

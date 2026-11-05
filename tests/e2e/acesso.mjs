@@ -1,0 +1,45 @@
+// Área dos alunos: sem código só Jogos/Tocar/Ranking e cadeados; com código liberado abre tudo.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+let liberado = false;
+await ctx.route('**/rest/v1/rpc/**', async (route) => {
+  const req = route.request(); const fn = req.url().split('/').pop();
+  const ok = (j) => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(j) });
+  if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } });
+  if (fn === 'album_ler') return ok({ n: 'Teste', a: [], l: {}, r: [0, 0] });
+  if (fn === 'acesso_ler') return ok(liberado);
+  if (fn === 'album_guardar') return ok([{ code: 'BEA-0042', dados: {} }]);
+  return ok(null);
+});
+const page = await ctx.newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
+await page.goto(url + '/aluno.html#/jogos');
+await page.waitForSelector('.jg-card'); await sleep(500);
+const navs = () => page.$$eval('.bottom-nav a', (a) => a.map((x) => x.textContent.trim()));
+const cards = () => page.$$eval('.jg-card', (a) => a.map((x) => ({ t: x.textContent.replace('🔒', '').trim(), lock: !!x.querySelector('.ac-lock') })));
+check('abas: só Jogos, Tocar e Ranking', JSON.stringify(await navs()) === JSON.stringify(['Jogos', 'Tocar', 'Ranking']), JSON.stringify(await navs()));
+let c = await cards();
+check('explorar a bateria saiu dos jogos', !c.some((x) => /explorar/i.test(x.t)));
+check('jogos de ritmo com cadeado', c.find((x) => /jogos de ritmo/i.test(x.t))?.lock === true);
+check('jogos das dicas (3 em 1) com cadeado', c.find((x) => /jogos das dicas/i.test(x.t))?.lock === true);
+check('quiz/caça/cruzadinha não aparecem separados', !c.some((x) => /^(quiz|caça-palavras|cruzadinha)$/i.test(x.t)));
+check('Toca Aqui livre', c.find((x) => /toca aqui/i.test(x.t))?.lock === false);
+await page.evaluate(() => { location.hash = '#/beatlab'; }); await sleep(500);
+check('Beat Lab sem código volta pros jogos', /#\/jogos/.test(await page.evaluate(() => location.hash)));
+await sleep(300); await page.keyboard.press('Escape'); await sleep(400);
+await page.evaluate(() => { location.hash = '#/jogos/stop'; }); await sleep(500);
+await page.click('#view button:text-is("JOGAR")'); await page.waitForSelector('.jg-seg'); check('STOP: modo sala de aula com cadeado', /🔒 sala de aula/.test(await page.textContent('#view')), (await page.textContent('.jg-seg')).slice(0, 80));
+await page.evaluate(() => { location.hash = '#/jogos'; }); await sleep(500);
+// libera: abre o cadeado, digita o código
+liberado = true;
+await page.click('.jg-card.locked'); await sleep(500);
+await page.fill('.sheet input', '0042'); await page.click('.sheet button:text-is("liberar")'); await sleep(1200);
+check('depois do código: 4 abas com Beat Lab', JSON.stringify(await navs()) === JSON.stringify(['Jogos', 'Beat Lab', 'Tocar', 'Ranking']), JSON.stringify(await navs()));
+c = await cards();
+check('cadeados somem', !c.some((x) => x.lock));
+await page.reload(); await page.waitForSelector('.jg-card'); await sleep(900);
+check('continua liberado depois de recarregar', (await navs()).includes('Beat Lab'));
+check('sem erros de JS', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close && srv.close(); done();

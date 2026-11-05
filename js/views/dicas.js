@@ -116,3 +116,21 @@ export function mount(host, parts = []) {
   const off = store.subscribe((i) => { if (i.kind === 'tip' && !box.children.length) run(); });
   return off;
 }
+
+/** Os três jogos num só, dentro da moldura de Jogos (abas por botão, sem mudar o endereço). */
+export const embedded = {
+  mount(host) {
+    let tab = 'quiz'; let gone = false;
+    const box = h('div', { class: 'dc-box' }); const picks = h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' });
+    const run = () => {
+      picks.replaceChildren(...TABS.map(([k, t]) => h('button', { type: 'button', class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), onclick: () => { tab = k; run(); } },
+        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, t), h('small', {}, SUB[k]))));
+      box.replaceChildren();
+      if (items().length < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do Plano de Estudo da Bea quando sincronizar.'))); return; }
+      ({ quiz: () => quiz(box, ['blank', 'match'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
+    };
+    host.append(h('div', { class: 'dc-wrap' }, picks, box)); run();
+    const off = store.subscribe((i) => { if (!gone && i.kind === 'tip' && !box.children.length) run(); });
+    return { restart: () => { if (!gone) run(); }, destroy() { gone = true; off(); } };
+  },
+};

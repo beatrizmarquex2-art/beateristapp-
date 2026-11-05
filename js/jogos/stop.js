@@ -1,5 +1,6 @@
 // STOP musical Beaterista: tela. Regras em stop-logic.js, banco/validação em stop-valid.js, sons em stop-sfx.js.
 // Texto digitado só entra na tela como texto (textContent / value), nunca como HTML.
+import * as Acesso from '../acesso.js';
 import { h } from '../util.js';
 import { confirmSheet, sheet, stars, toast } from '../ui.js';
 import * as S from './stop-logic.js';
@@ -68,7 +69,7 @@ export function mount(host) {
   function setup() {
     nextToken(); leave(); view = 'setup'; g = null; FX.startMusic();
     const eligible = S.lettersFor(prefs.cats); const okCats = S.catsOk(prefs.cats); const resume = S.validMatch(saved.match) && saved.match.stage !== 'done' ? saved.match : null;
-    const seg = (list, cur, on, label) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': label }, ...list.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), class: cur === v ? 'on' : '', onclick: () => { FX.play('tap'); on(v); } }, l)));
+    const seg = (list, cur, on, label) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': label }, ...list.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), class: cur === v ? 'on' : '', onclick: () => { FX.play('tap'); if (v === 'sala' && Acesso.bloqueado('aula')) { Acesso.promptCode('o modo aula'); return; } on(v); } }, v === 'sala' && Acesso.bloqueado('aula') ? `🔒 ${l}` : l)));
     const toggle = (id) => {
       const has = prefs.cats.includes(id);
       if (!has && prefs.cats.length >= S.MAX_CATS) { toast(`no máximo ${S.MAX_CATS} categorias`, { id: 'stop-cats' }); return; }

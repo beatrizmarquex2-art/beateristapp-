@@ -13,11 +13,14 @@ import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
+import * as dicas from './dicas.js';
+import * as Acesso from '../acesso.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'toca.svg', toca, 'ler, ouvir, repetir · microfone'],
+  ['dicas', 'jogos das dicas', 'quiz.svg', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -33,7 +36,6 @@ const SECTIONS = [
   ['ritmo e bateria', [
     link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
-    link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
   ]],
   ['leitura musical', [
     link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
@@ -43,11 +45,7 @@ const SECTIONS = [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
-  ['jogos das dicas', [
-    link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
-    link('#/dicas/caca', 'caça-palavras', 'caca.svg', null, 'bea'),
-    link('#/dicas/cruzadinha', 'cruzadinha', 'cruza.svg', null, 'bea'),
-  ]],
+  ['jogos das dicas', [inner('dicas')]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
@@ -61,6 +59,8 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 /** salva e mostra "desfazer" por uns segundos */
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
+const LOCK_OF = { '#/ritmo': 'ritmo', '#/jogos/dicas': 'dicas' }; // cartões com 🔒 pra quem não tem código liberado
+const lockedKey = (k) => Acesso.bloqueado(LOCK_OF[k]);
 // fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
 const DARK = new Set(['bingo', 'cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
@@ -70,7 +70,8 @@ function catalog(host) {
   let editing = false; let onlyFav = false;
   const card = (x, edit) => {
     const [id, title, img, , , href] = x;
-    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}`, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
+    const lock = aluno && lockedKey(keyOf(x));
+    return h('a', { class: `jg-card${lock ? ' locked' : ''}`, href: href || `#/jogos/${id}`, 'aria-label': lock ? `${title}, só pra alunos` : null, onclick: edit ? (e) => e.preventDefault() : lock ? (e) => { e.preventDefault(); Acesso.promptCode(title); } : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title), lock ? Acesso.cadeado() : null);
   };
   let catWrap;
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
@@ -105,8 +106,9 @@ function catalog(host) {
     change({ ...p, order: full.map((k) => (set.has(k) ? newKeys[n++] : k)) }, 'ordem mudou');
   } });
   const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
+  const onAcesso = () => draw(); window.addEventListener('acesso', onAcesso);
   const offFesta = attachFesta(catWrap, { paul: false }); // a faixa de título já tem o Paul
-  return () => { offStore(); offDrag(); offFesta(); };
+  return () => { offStore(); offDrag(); offFesta(); window.removeEventListener('acesso', onAcesso); };
 }
 
 function game(host, entry) {
@@ -129,5 +131,6 @@ export function mount(host, parts = []) {
   if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) return catalog(host);
+  if (ALUNO() && lockedKey(`#/jogos/${entry[0]}`)) { location.replace('#/jogos'); Acesso.promptCode(entry[1]); return catalog(host); }
   return game(host, entry);
 }

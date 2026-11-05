@@ -1,4 +1,5 @@
 // Bingo musical: tela (solo, dupla e modo professor). Regras em bingo-logic.js.
+import * as Acesso from '../acesso.js';
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as B from './bingo-logic.js';
@@ -23,7 +24,7 @@ export function mount(host) {
   function intro() {
     stop(); auto = false; g = null;
     const resume = B.validGame(saved.game) && !saved.game.over ? saved.game : null;
-    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), class: prefs[key] === v ? 'on' : '', onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, l)));
+    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), class: prefs[key] === v ? 'on' : '', onclick: () => { if (v === 'prof' && Acesso.bloqueado('aula')) { Acesso.promptCode('o modo aula'); return; } prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, v === 'prof' && Acesso.bloqueado('aula') ? `🔒 ${l}` : l)));
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'bingo'), h('p', { class: 'jg-p' }, 'sorteie um item, marque na cartela e grite “bingo!”. os sons são só feedback, não são os instrumentos de verdade.'),
       h('p', { class: 'jg-lab' }, 'modo'), seg('mode', MODES),
