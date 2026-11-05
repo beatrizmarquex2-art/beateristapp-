@@ -18,7 +18,7 @@ const MENU_BEA = [
     ['', [['#/jogos', 'star', 'Todos os jogos'], ['#/figurinhas', 'star', 'Álbum de figurinhas'], ['#/cartinha', 'photo', 'Criar cartinha']]],
   ]],
   ['ritmo', 'ritmo', [
-    ['', [['#/ritmo', 'kit', 'Jogos de ritmo']]],
+    ['', [['#/ritmo', 'kit', 'Beat Hero']]],
   ]],
   ['estudar', 'estudos', [
     ['conceitos', [['#/estudos', 'study', 'Conceitos'], ['#/estudos/cat/ritmo', 'study', 'Ritmo & groove'], ['#/estudos/cat/pratica', 'study', 'Estudo & prática'], ['#/estudos/cat/escuta', 'study', 'Ouvido & teoria da escuta'], ['#/estudos/cat/prazer', 'study', 'Prazer & emoção'], ['#/estudos/cat/palco', 'study', 'Palco & ensino']]],
@@ -54,7 +54,7 @@ const MENU_B = [
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
   ]],
   ['ritmo', 'ritmo', [
-    ['', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['', [['#/ritmo', 'kit', 'Beat Hero'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
   ]],
   ['estudar', 'estudos', [
     ['', [['#/dicionario', 'book', 'Dicionário da bateria']]],

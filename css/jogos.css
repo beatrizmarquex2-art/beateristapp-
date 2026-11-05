@@ -666,3 +666,7 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 .jg-velha .jg-big{color:var(--jg-ink,#142036);opacity:1;font-weight:600;font-size:21px;line-height:1.35;margin:10px 0;padding-left:26px}.jg-velha .jg-big li{margin:8px 0}.jg-velha p.jg-big{padding-left:0}.jg-velha .jg-lab.big{color:var(--jg-ink,#142036);font-size:20px;margin:16px 0 6px}
 .jg-velha .jg-seg button{font-size:17px;min-height:48px}
 .jg-move{margin:8px 0;text-align:center}.jg-move .btn{min-height:44px;font-size:16px}.jg-move.on{padding:10px;border:2px dashed currentColor;border-radius:12px;font-size:17px}.jg-movenote{margin:6px 0;font-size:14px;opacity:.8}
+
+/* aventura do Beat Hero: escolha ritmo (bateria) ou melodia (piano) */
+.nr-escolha{display:flex;flex-direction:column;gap:12px;padding:16px;text-align:center}.nr-esc-t{font-size:26px;margin:0}
+.nr-esc-b{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:96px;padding:14px;font-size:18px}.nr-esc-i{font-size:34px}.nr-esc-b b{font-size:22px;text-transform:uppercase}.nr-esc-b small{font-size:15px;opacity:.85}

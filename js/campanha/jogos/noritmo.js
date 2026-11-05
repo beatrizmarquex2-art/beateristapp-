@@ -84,14 +84,29 @@ export function mount(body, opts) {
   const m = opts.mission; const p = m.params; let gone = false; let BRref = null;
   const root = document.createElement('div'); root.className = 'rg-host'; const box = document.createElement('div'); box.id = 'jogos';
   const wait = document.createElement('p'); wait.className = 'muted rg-wait'; wait.textContent = 'carregando o jogo…'; box.append(wait); root.append(box); body.append(root);
+  const nativo = p.game; // o jogo original da missão: a Bea pediu que a pessoa escolha, então p.game muda conforme a escolha (evaluate lê o mesmo objeto) e volta ao sair
+  const KEY = 'beaterista-noritmo-modo';
+  const lembrado = () => { try { const v = localStorage.getItem(KEY); return v === 'beat' || v === 'tiles' ? v : nativo; } catch { return nativo; } };
+  const escolher = () => new Promise((resolve) => {
+    box.replaceChildren(); const w = document.createElement('div'); w.className = 'nr-escolha';
+    const t = document.createElement('p'); t.className = 'hand nr-esc-t'; t.textContent = 'como você quer jogar?'; w.append(t);
+    const last = lembrado();
+    for (const [g, ico, nome, sub] of [['beat', '🥁', 'ritmo', 'bateria: toque no tempo das batidas'], ['tiles', '🎹', 'melodia', 'piano: toque a melodia da música']]) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = `btn nr-esc-b${g === last ? ' primary' : ''}`; b.dataset.nrModo = g;
+      b.innerHTML = `<span class="nr-esc-i">${ico}</span><b>${nome}</b><small>${sub}</small>`;
+      b.addEventListener('click', () => { try { localStorage.setItem(KEY, g); } catch { /* ok */ } resolve(g); }); w.append(b);
+    }
+    box.append(w);
+  });
   (async () => {
     try {
-      // aluno sem código liberado não joga Beat Hero (nem na aventura): a trava de acesso da professora vale aqui também
+      const escolhido = await escolher(); if (gone) return; p.game = escolhido;
+      box.replaceChildren(); box.append(wait);
       if (document.documentElement.classList.contains('aluno-on') && p.game === 'beat') {
         const C = await import('../../codigo.js'); const ok = await C.revalidar().catch(() => false); if (gone) return;
         if (!ok) {
           box.replaceChildren(); const lock = document.createElement('div'); lock.className = 'empty';
-          lock.innerHTML = '<p class="hand">🔒 só pra alunos da Beaterista</p><p class="muted">este desafio usa o Beat Hero. digite o código que a sua professora deu em “Jogos de ritmo” e volte aqui.</p><a class="btn primary" href="#/ritmo">ir para os Jogos de ritmo</a>';
+          lock.innerHTML = '<p class="hand">🔒 só pra alunos da Beaterista</p><p class="muted">este desafio usa o Beat Hero (bateria). a melodia no piano abre sem código. digite o código que a sua professora deu em “Beat Hero” e volte aqui.</p><a class="btn primary" href="#/ritmo">ir para o Beat Hero</a>';
           box.append(lock); return;
         }
       }
@@ -108,7 +123,7 @@ export function mount(body, opts) {
   return {
     inProgress: () => !gone && document.body.classList.contains('rz-lock'),
     destroy() {
-      gone = true;
+      gone = true; p.game = nativo;
       try { if (BRref && BRref.unmount) BRref.unmount(); } catch { /* ok */ }
       document.body.classList.remove('rz-lock'); document.documentElement.classList.remove('rg-on');
       root.remove();

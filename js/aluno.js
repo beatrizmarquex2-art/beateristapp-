@@ -141,7 +141,7 @@ function lockView(view, what) {
   view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
-const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
+const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));

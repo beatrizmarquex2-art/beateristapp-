@@ -57,14 +57,14 @@ check('abrir a missão 0 não a conclui', (await states())[0] === 'current' && (
 check('abrir não gravou progresso', await page.evaluate(() => { const r = localStorage.getItem('beaterista-aluno-ritmo'); return true; }));
 
 const startMission = async (i, songIdx = 0) => {
-  await go(`#/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go');
+  await go(`#/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.click('.nr-esc-b.primary');
   await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
   await page.locator('.rz-mmenu .rz-jogar').nth(songIdx).click();
   if (await page.locator('[data-act="rz-go"]').count()) await page.click('[data-act="rz-go"]');
   await page.waitForSelector('#rz-cv', { timeout: 5000 });
 };
 // missão 0: menu da missão sem opções do modo livre
-await go('#/ritmo/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
+await go('#/ritmo/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.click('.nr-esc-b.primary'); await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
 check('missão 0: menu simples (sem abas de jogo/ajustes/importar do modo livre)', (await page.locator('[data-act="rz-game"], [data-act="rz-diff"], [data-act="rz-len"]').count()) === 0 && (await page.locator('.rz-mmenu .tag').textContent()).includes('3 teclas'));
 check('missão 0: botão JOGAR grande', (await page.locator('.rz-mmenu .rz-jogar').first().boundingBox()).height >= 44);
 for (const w of [320, 430]) { await page.setViewportSize({ width: w, height: 700 }); await sleep(250); check(`menu da missão sem rolagem horizontal em ${w}px`, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), await page.evaluate(() => document.documentElement.scrollWidth + '>' + window.innerWidth)); }
