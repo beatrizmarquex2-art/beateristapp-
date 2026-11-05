@@ -1,4 +1,4 @@
-// Modo Aventura do Uno Musical: dez partidas contra o computador, com adversários de estilos diferentes (todos com as regras reais do jogo).
+// Modo Aventura do Uno Musical: dez partidas de 2 jogadores contra o computador, com adversários de estilos diferentes (todos com as regras reais do jogo).
 // A partida de cada missão usa uma SEMENTE fixa (mesmas cartas toda vez); o que muda é o que o jogador decide. Quem mede: cartas-logic.js (track/matchResult).
 import * as G from '../../jogos/cartas.js';
 
@@ -21,23 +21,23 @@ export const OPP = {
 
 // [id, título, tag, estilo, dica, semente, meta (1★), meta 2★, meta 3★, objetivo]
 const DEF = [
-  ['Aquecimento', 'vs distraído', 'distraido', true, 1, {}, { maxDraws: 3 }, { maxDraws: 1 }],
-  ['Combinando cores', 'vs distraído', 'distraido', true, 1, {}, { minSpecials: 2 }, { minSpecials: 3, maxDraws: 2 }],
+  ['Aquecimento', 'vs distraído', 'distraido', true, 1, {}, { maxDraws: 4 }, { maxDraws: 2 }],
+  ['Combinando cores', 'vs distraído', 'distraido', true, 1, {}, { minSpecials: 3 }, { minSpecials: 4, maxDraws: 3 }],
   ['O Paul de sempre', 'vs Paul', 'paul', true, 1, {}, { maxDraws: 4 }, { maxDraws: 2 }],
   ['Guarda-costas', 'vs guardião', 'guardiao', true, 1, {}, { maxRounds: 12 }, { maxRounds: 9 }],
   ['Cor única', 'vs pintor', 'pintor', true, 1, {}, { maxDraws: 3 }, { maxDraws: 1 }],
-  ['Mãos especiais', '3 especiais', 'paul', true, 1, { minSpecials: 3 }, { minSpecials: 4 }, { minSpecials: 5 }],
+  ['Mãos especiais', 'especiais', 'paul', true, 1, { minSpecials: 4 }, { minSpecials: 5 }, { minSpecials: 6 }],
   ['Relâmpago', 'rápido', 'guardiao', true, 1, { maxRounds: 11 }, { maxRounds: 9 }, { maxRounds: 7 }],
   ['Sem comprar', 'poucas compras', 'pintor', false, 1, { maxDraws: 2 }, { maxDraws: 1 }, { maxDraws: 0 }],
   ['O estrategista', 'sem dica', 'esperto', false, 1, {}, { maxDraws: 4 }, { minSpecials: 2, maxDraws: 2 }],
-  ['Final da turnê', 'desafio final', 'esperto', false, 1, { maxDraws: 3, minSpecials: 2 }, { maxDraws: 2, minSpecials: 3 }, { maxDraws: 1, minSpecials: 3, maxRounds: 10 }],
+  ['Final da turnê', 'desafio final', 'esperto', false, 1, { maxDraws: 3, minSpecials: 3 }, { maxDraws: 2, minSpecials: 4 }, { maxDraws: 1, minSpecials: 4, maxRounds: 10 }],
 ];
-export const SEEDS = [260, 61, 242, 213, 103, 23, 232, 12, 279, 154]; // escolhidas por simulação (ver tests/campanha-cartas.test.mjs): partida viável e com as metas de 2★/3★ alcançáveis
+export const SEEDS = [63, 188, 48, 235, 144, 170, 87, 209, 237, 118]; // escolhidas por simulação (ver tests/campanha-cartas.test.mjs): partida viável e com as metas de 2★/3★ alcançáveis
 
 const mission = ([title, tag, style, hint, , l1, l2, l3], i) => {
   const o = OPP[style]; const L1 = lim(l1), L2 = { ...L1, ...lim(l2) }, L3 = { ...L2, ...lim(l3) };
   const goal = [`vença o ${o.name}`, ...extras(L1)].join(', ');
-  const rules = [`adversário: ${o.name} — ${o.how}`, hint ? 'as cartas que servem ficam destacadas.' : 'sem dica: você precisa achar sozinho as cartas que servem.', 'as regras são as do Uno Musical de sempre: 7 cartas cada, vence quem esvaziar a mão.', 'a partida é a mesma a cada tentativa (mesmas cartas): quem pensa melhor, ganha.'];
+  const rules = [`adversário: ${o.name} — ${o.how}`, hint ? 'as cartas que servem ficam destacadas.' : 'sem dica: você precisa achar sozinho as cartas que servem.', 'as regras são as do Uno Musical de sempre: 7 cartas cada, vence quem esvaziar a mão. ficou com uma carta? aperte UNO! (esquecer custa 2 cartas).', 'o +4 só vale se você não tiver a cor da mesa.', 'a partida é a mesma a cada tentativa (mesmas cartas): quem pensa melhor, ganha.'];
   return {
     id: `cartas-${String(i).padStart(2, '0')}`, title, goal, tag, rules,
     stars: [limText(L1), `${limText(L2)}`, `${limText(L3)}`],
@@ -45,7 +45,7 @@ const mission = ([title, tag, style, hint, , l1, l2, l3], i) => {
     evaluate(r) {
       const won = !!r && !!r.won; const ok = meets(r, L1); const stars = !ok ? 0 : meets(r, L3) ? 3 : meets(r, L2) ? 2 : 1;
       const summary = [!r ? 'sem resultado' : won ? 'você venceu a partida!' : r.tie ? 'empate (jogo travado)' : `o ${o.name} venceu`];
-      if (r) { summary.push(`rodadas: ${r.rounds} · compras: ${r.draws} · cartas especiais jogadas: ${r.specials}`); if (won && !ok) summary.push(`venceu, mas faltou a meta: ${limText(L1)}`); }
+      if (r) { summary.push(`rodadas: ${r.rounds} · compras: ${r.draws} · cartas especiais jogadas: ${r.specials}`); if (r.caught) summary.push(`esqueceu o UNO ${r.caught} ${plural(r.caught, 'vez', 'vezes')} (+2 cartas cada)`); if (won && !ok) summary.push(`venceu, mas faltou a meta: ${limText(L1)}`); }
       return { done: ok, stars, summary, label: ok ? `${r.rounds} rodadas · ${r.draws} compras` : undefined };
     },
   };

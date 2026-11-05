@@ -17,28 +17,30 @@ const states = () => page.evaluate(() => [...document.querySelectorAll('.mp-node
 const ls = (k) => page.evaluate((key) => localStorage.getItem(key), k);
 const noHScroll = (w) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 
-/** Calcula, com as regras reais e a semente da missão, uma partida do jogador 0 (política com "erros" sorteados) e devolve as ações como cliques (índice na mão). */
+/** Calcula, com as regras reais e a semente da missão, uma partida do jogador 0 (política com "erros" sorteados): devolve as ações (cartas por id, UNO) para refazer na tela. */
 function plan(m, want) {
   for (let k = 0; k < 4000; k++) {
-    const nr = C.seededRnd(k * 104729 + 7); const eps = want === 'loss' ? 1 : 0.2; const acts = [];
+    const nr = C.seededRnd(k * 104729 + 7); const eps = want === 'loss' ? 1 : 0.2;
     const pol = (g, rnd) => {
-      const legal = C.legalCards(g, 0); let mv;
-      if (legal.length > 1 && nr() < eps) { const c = legal[Math.floor(nr() * legal.length)]; mv = { type: 'play', id: c.id, color: C.isWild(c) ? C.COLORS[Math.floor(nr() * 4)] : undefined }; } else mv = C.aiMove(g, 0, k % 2 ? 'paul' : 'esperto', rnd);
-      acts.push({ type: mv.type, idx: mv.type === 'play' ? g.hands[0].findIndex((c) => c.id === mv.id) : -1, color: mv.color }); return mv;
+      const legal = C.legalCards(g, 0);
+      if (legal.length > 1 && nr() < eps) { const c = legal[Math.floor(nr() * legal.length)]; return { type: 'play', id: c.id, color: C.isWild(c) ? C.COLORS[Math.floor(nr() * 4)] : undefined }; }
+      return C.aiMove(g, 0, k % 2 ? 'paul' : 'esperto', rnd);
     };
     const r = C.simulate(m.params, pol); if (!r) continue;
-    if (want === 'win3' && meets(r, m.params.limits[2])) return { acts, r }; if (want === 'win1' && r.won) return { acts, r }; if (want === 'loss' && r.lost) return { acts, r };
+    if (want === 'win3' && meets(r, m.params.limits[2])) return { acts: r.acts, r }; if (want === 'win1' && r.won) return { acts: r.acts, r }; if (want === 'loss' && r.lost) return { acts: r.acts, r };
   }
   throw new Error('sem plano');
 }
-async function myTurn() { // espera a vez da pessoa (ou o fim)
-  for (let i = 0; i < 80; i++) { if (await page.locator('.jg-result').count()) return false; const t = await page.locator('.jg-turn').textContent().catch(() => ''); if (t.includes('sua vez') && !(await page.locator('.jg-hbtn').first().isDisabled().catch(() => true))) return true; await sleep(100); } throw new Error('vez não chegou'); }
+const handOff = () => page.locator('.cx-hc.off').count();
+async function myTurn() { // espera a vez da pessoa (ou o fim da partida); o botão UNO não conta como vez
+  for (let i = 0; i < 400; i++) { if (await page.locator('.cx-result').count()) return false; if ((await page.locator('.cx-hc').count()) && !(await handOff()) && (await page.locator('.cx-turn.mine').count())) return true; await sleep(100); } throw new Error('vez não chegou'); }
 async function playPlan(acts) {
   for (const a of acts) {
+    if (a.type === 'uno') { await page.waitForSelector('.cx-uno'); await page.evaluate(() => document.querySelector('.cx-uno').click()); await sleep(80); continue; } // o botão pulsa: clique direto
     if (!(await myTurn())) return;
-    if (a.type === 'play') { await page.locator('.jg-hbtn').nth(a.idx).click(); if (a.color) { await page.locator(`.jg-pc.c-${a.color}`).click(); } }
-    else if (a.type === 'draw') await page.click('.jg-deck'); else await page.click('.jg-actions button:has-text("passar")');
-    await sleep(60);
+    if (a.type === 'play') { await page.locator(`.cx-hc[data-id="${a.id}"]`).click(); if (a.color) { await page.locator(`.cx-pc.c-${a.color}`).click(); } }
+    else if (a.type === 'draw') await page.click('.cx-deck'); else await page.click('.cx-btns button:has-text("passar")');
+    await sleep(80);
   }
 }
 
@@ -61,8 +63,8 @@ check('abrir a missão 0 não a conclui', (await states())[0] === 'current' && (
 
 // ---- missão 0: primeiro uma DERROTA de verdade, depois a vitória ----
 const m0 = spec.missions[0];
-await go('#/jogos/cartas/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.jg-hand');
-check('missão monta direto na partida (sem menus de modo/dica), 7 cartas, adversário no painel', (await page.locator('.jg-seg, .jg-legend').count()) === 0 && (await page.locator('.jg-hbtn').count()) === 7 && (await page.locator('.jg-cartas').textContent()).includes('adversário: Paul distraído'));
+await go('#/jogos/cartas/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.cx-hc');
+check('missão monta direto na partida (sem menus de modo/dica), 7 cartas, 1 adversário, painel com o estilo', (await page.locator('.jg-seg, .cx-legend').count()) === 0 && (await page.locator('.cx-hc').count()) === 7 && (await page.locator('.cx-seat').count()) === 1 && (await page.locator('.cx-advinfo').textContent()).includes('adversário: Paul distraído'));
 check('partida sem rolagem horizontal (390px)', await noHScroll());
 await page.setViewportSize({ width: 320, height: 640 }); await sleep(200); check('partida sem rolagem horizontal (320px)', await noHScroll()); await page.setViewportSize({ width: 390, height: 844 });
 const pl = plan(m0, 'loss'); await playPlan(pl.acts);
@@ -72,7 +74,7 @@ await page.click('.av-res button:has-text("ver o mapa")'); await page.waitForSel
 st = await states(); check('mapa após derrota: 0 ainda atual, 1 trancada', st[0] === 'current' && st[1] === 'locked', st.join());
 check('tentativa contada no progresso, sem estrela', await page.evaluate(async () => { const S = await import('/js/campanha/store.js'); const g = S.gameOf(S.playerId(), 'cartas'); return g.m['cartas-00'] && g.m['cartas-00'].n === 1 && g.m['cartas-00'].s === 0; }));
 
-await go('#/jogos/cartas/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.jg-hand');
+await go('#/jogos/cartas/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.cx-hc');
 const pw = plan(m0, 'win3'); await playPlan(pw.acts);
 await page.waitForSelector('.av-res', { timeout: 20000 });
 check('vitória: missão concluída com 3 estrelas (conforme a medição)', (await page.locator('.av-res h2').textContent()).includes('concluída') && (await page.locator('.av-rstar.on').count()) === m0.evaluate(pw.r).stars, `${m0.evaluate(pw.r).stars}★ ${await page.locator('.av-sum').textContent()}`);
@@ -85,16 +87,16 @@ await page.reload(); await page.waitForSelector('.mp-node'); await sleep(800);
 st = await states(); check('recarregar mantém o progresso', st[0] === 'done' && st[1] === 'current', st.join());
 
 // ---- missão 1 e sair no meio: sem timers do Paul depois de sair ----
-await go('#/jogos/cartas/aventura/1'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.jg-hand');
+await go('#/jogos/cartas/aventura/1'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.cx-hc');
 await go('#/jogos/cartas/aventura'); await page.waitForSelector('.mp-node'); await sleep(1500);
 check('sair no meio da partida não conclui nada nem gera erro', (await states())[1] === 'current' && errs.length === 0, errs.join('|'));
 
 // ---- Modo Livre intacto e separado ----
 await go('#/jogos/cartas/livre'); await page.waitForSelector('.jg-seg'); await sleep(300);
-check('modo livre: tela de opções de sempre (contra quem, dicas, regras) com o recorde salvo', (await page.locator('.jg-seg').count()) === 2 && (await page.locator('.jg-cartas').textContent()).includes('5 vitórias · 2 derrotas · 1 empate'));
-check('modo livre guarda as preferências antigas (sem dica)', await page.evaluate(() => document.querySelector('.jg-seg:nth-of-type(2) .on, .jg-seg + .jg-lab + .jg-seg .on') ? true : [...document.querySelectorAll('.jg-seg button.on')].some((b) => b.textContent === 'sem dica')));
-await page.click('.jg-actions button.primary'); await page.waitForSelector('.jg-hand .jg-hbtn'); await sleep(300);
-check('modo livre joga normal (7 cartas, Paul)', (await page.locator('.jg-hbtn').count()) === 7 && (await page.locator('.jg-cartas').textContent()).includes('paul'));
+check('modo livre: tela de opções de sempre (modo, adversários, dicas, ajuda) com o recorde salvo', (await page.locator('.jg-seg').count()) === 4 && (await page.locator('.cx-legend .cx-leg').count()) === 10 && (await page.locator('.jg-cartas').textContent()).includes('5 vitórias · 2 derrotas · 1 empate'));
+check('modo livre guarda as preferências antigas (sem dica)', await page.evaluate(() => [...document.querySelectorAll('.jg-seg button.on')].some((b) => b.textContent === 'sem dica')));
+await page.click('.jg-actions button.primary'); await page.waitForSelector('.cx-hc'); await sleep(300);
+check('modo livre joga normal (7 cartas, Paul)', (await page.locator('.cx-hc').count()) === 7 && (await page.locator('.cx-seat').count()) === 1 && (await page.locator('.cx-seat').textContent()).includes('paul') && (await page.locator('.cx-advinfo').count()) === 0);
 const free = JSON.parse(await ls('beaterista-jogos')).games.cartas;
 check('partida livre foi salva só no livre; progresso da aventura intocado', free.game && free.rec.w === 5 && (await page.evaluate(async () => { const S = await import('/js/campanha/store.js'); const g = S.gameOf(S.playerId(), 'cartas'); return Object.keys(g.m).length === 1 && g.m['cartas-00'].s >= 1; })));
 await go('#/jogos/cartas/aventura'); await page.waitForSelector('.mp-node'); await sleep(600);
