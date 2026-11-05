@@ -249,3 +249,4 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - Posts e stories (4 modelos) agora trazem no rodapé o site, a escola e as **redes da Beaterista**: Instagram @beaterista_, TikTok @beaterista, YouTube @beateristadrummer (constante `REDES` em `postar.js`, a mesma de `LINKS` em `aluno.js`; se mudar um, mude o outro).
 - **Deploy dos alunos feito (05/11/2026, cache v270)** a partir da `main` 9f92e3e: posts/stories com as redes da Beaterista no rodapé + minha coleção.
 - Escolha visual do modelo de post: `share-ui.js` mostra miniaturas (colagem, palco, retrô, limpo) já com a cartinha daquele modelo, para post e story; vale pra cartinhas do álbum e, principalmente, pras que a pessoa cria (Perfil / Criar cartinha).
+- Rodapé dos posts/stories: a linha da escola agora é `beaterista escola de música · beaterista.com.br` (`ESCOLA_LINHA` em `postar.js`; encolhe pra caber). Além de `jogos.beaterista.com.br` e das 3 redes.

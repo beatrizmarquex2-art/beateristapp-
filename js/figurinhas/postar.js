@@ -9,7 +9,8 @@ import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
 
-export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música';
+export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música', SITE_ESCOLA = 'beaterista.com.br';
+const ESCOLA_LINHA = `${ESCOLA} · ${SITE_ESCOLA}`;
 // redes da Beaterista (as mesmas dos links do app): Instagram, TikTok e YouTube
 export const REDES = [['ig', '@beaterista_'], ['tt', '@beaterista'], ['yt', '@beateristadrummer']];
 export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920], perfil: [1080, 1425] };
@@ -98,6 +99,8 @@ async function logoCanvas(claro) {
   if (claro) { lc.globalCompositeOperation = 'source-in'; lc.fillStyle = '#f6ecd5'; lc.fillRect(0, 0, 900, 175); }
   return lg;
 }
+/** Como fitText, mas com peso de letra (ex.: 800) e a fonte Hanken: devolve o tamanho usado e já deixa ctx.font pronto. */
+const fitPeso = (ctx, txt, maxW, size, peso = 800) => { let fs = size; ctx.font = `${peso} ${fs}px ${HANKEN}`; while (ctx.measureText(txt).width > maxW && fs > 16) { fs -= 1; ctx.font = `${peso} ${fs}px ${HANKEN}`; } return fs; };
 const fitText = (ctx, txt, maxW, size, fam) => { let fs = size; ctx.font = `${fs}px ${fam}`; while (ctx.measureText(txt).width > maxW && fs > 18) { fs -= 2; ctx.font = `${fs}px ${fam}`; } return fs; };
 const ANTON = "'Anton', Impact, sans-serif", HANKEN = "'Hanken Grotesk', sans-serif";
 /** Linha com as redes sociais (ícone desenhado + @), centralizada em (cx, y) e encolhida pra caber em maxW. */
@@ -136,7 +139,7 @@ async function desenharColagem(e, formato, carta) {
   ctx.closePath(); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.textAlign = 'center';
   ctx.fillStyle = '#17224a'; fitText(ctx, SITE, fw - 70, story ? 70 : 64, ANTON); ctx.fillText(SITE, 0, -fh * 0.2);
   ctx.fillStyle = '#c4182c'; ctx.fillRect(-fw * 0.36, -fh * 0.05, fw * 0.72, 4);
-  ctx.fillStyle = '#17130f'; ctx.font = `800 ${story ? 34 : 32}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, 0, fh * 0.17); redesLinha(ctx, 0, fh * 0.37, fw - 80, '#17224a', story ? 32 : 30); ctx.restore();
+  ctx.fillStyle = '#17130f'; fitPeso(ctx, `— ${ESCOLA_LINHA} —`, fw - 70, story ? 34 : 32); ctx.fillText(`— ${ESCOLA_LINHA} —`, 0, fh * 0.17); redesLinha(ctx, 0, fh * 0.37, fw - 80, '#17224a', story ? 32 : 30); ctx.restore();
   return c;
 }
 
@@ -157,7 +160,7 @@ async function desenharPalco(e, formato, carta) {
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = '#35b4ff'; ctx.shadowBlur = 70; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = '#ff3d81'; ctx.shadowBlur = 50; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   const fw = W - 120, fh = story ? 240 : 204, fy = story ? H - 410 : H - 246;
   ctx.save(); ctx.fillStyle = 'rgba(14,10,30,.88)'; rr(ctx, 60, fy, fw, fh, 36); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#ffe94d'; ctx.shadowColor = '#ffe94d'; ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffe94d'; fitText(ctx, SITE, fw - 80, story ? 68 : 62, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.36); ctx.fillStyle = '#efe2c6'; ctx.font = `800 ${story ? 32 : 30}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.6); redesLinha(ctx, W / 2, fy + fh * 0.82, fw - 90, '#ffe94d', story ? 30 : 28); ctx.restore();
+  ctx.fillStyle = '#ffe94d'; fitText(ctx, SITE, fw - 80, story ? 68 : 62, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.36); ctx.fillStyle = '#efe2c6'; fitPeso(ctx, `— ${ESCOLA_LINHA} —`, fw - 70, story ? 32 : 30); ctx.fillText(`— ${ESCOLA_LINHA} —`, W / 2, fy + fh * 0.6); redesLinha(ctx, W / 2, fy + fh * 0.82, fw - 90, '#ffe94d', story ? 30 : 28); ctx.restore();
   return c;
 }
 
@@ -174,7 +177,7 @@ async function desenharRetro(e, formato, carta) {
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = 'rgba(23,34,74,.55)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18; ctx.fillStyle = '#fbf4e2'; rr(ctx, -cw / 2 - 22, -ch / 2 - 22, cw + 44, ch + 44, 40); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   const fw = W - 100, fh = story ? 240 : 204, fy = story ? H - 410 : H - 246;
   ctx.save(); ctx.fillStyle = '#17224a'; ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 8; rr(ctx, 50, fy, fw, fh, 30); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.fillStyle = '#e9b824'; ctx.fillRect(50, fy + fh - 22, fw, 8); ctx.fillStyle = '#c4182c'; ctx.fillRect(50, fy + fh - 12, fw, 8); ctx.textAlign = 'center';
-  ctx.fillStyle = '#fbf4e2'; fitText(ctx, SITE, fw - 80, story ? 68 : 62, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.33); ctx.fillStyle = '#e9b824'; ctx.font = `800 ${story ? 32 : 30}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.54); redesLinha(ctx, W / 2, fy + fh * 0.74, fw - 90, '#fbf4e2', story ? 30 : 27); ctx.restore();
+  ctx.fillStyle = '#fbf4e2'; fitText(ctx, SITE, fw - 80, story ? 68 : 62, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.33); ctx.fillStyle = '#e9b824'; fitPeso(ctx, `— ${ESCOLA_LINHA} —`, fw - 70, story ? 32 : 30); ctx.fillText(`— ${ESCOLA_LINHA} —`, W / 2, fy + fh * 0.54); redesLinha(ctx, W / 2, fy + fh * 0.74, fw - 90, '#fbf4e2', story ? 30 : 27); ctx.restore();
   return c;
 }
 
@@ -188,7 +191,7 @@ async function desenharLimpo(e, formato, carta) {
   ctx.fillStyle = t.realce; ctx.fillRect(W / 2 - 70, story ? 280 : 148, 140, 6);
   const cw = story ? 700 : 560, ch = (cw * H2) / W2, cy = story ? H * 0.5 + 10 : H * 0.5 - 6;
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
-  const by = story ? H - 400 : H - 232; ctx.fillStyle = ink; fitText(ctx, SITE, W - 140, story ? 74 : 66, ANTON); ctx.fillText(SITE, W / 2, by); ctx.fillStyle = t.realce; ctx.font = `800 ${story ? 32 : 28}px ${HANKEN}`; ctx.fillText(ESCOLA.toUpperCase(), W / 2, by + (story ? 56 : 50));
+  const by = story ? H - 400 : H - 232; ctx.fillStyle = ink; fitText(ctx, SITE, W - 140, story ? 74 : 66, ANTON); ctx.fillText(SITE, W / 2, by); ctx.fillStyle = t.realce; fitPeso(ctx, ESCOLA_LINHA.toUpperCase(), W - 120, story ? 32 : 28); ctx.fillText(ESCOLA_LINHA.toUpperCase(), W / 2, by + (story ? 56 : 50));
   redesLinha(ctx, W / 2, by + (story ? 112 : 100), W - 140, ink, story ? 32 : 30);
   const lg = await logoCanvas(!claro), lw = 240, lh = (lw * 175) / 900; ctx.globalAlpha = 0.9; ctx.drawImage(lg, (W - lw) / 2, by + (story ? 146 : 130), lw, lh); ctx.globalAlpha = 1;
   return c;
