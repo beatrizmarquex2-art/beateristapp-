@@ -16,6 +16,41 @@ export const THOUGHTS = [
   ['semínima vale 1 tempo'],
   ['qual música tá na sua cabeça?'],
   ['avalie a escola no Google ⭐', GOOGLE_REVIEW],
+  // dicas de estudo (didática e hábito)
+  ['10 minutos todo dia vencem 1 hora no sábado'],
+  ['devagar e certo: o metrônomo é seu amigo'],
+  ['errou? ótimo, o cérebro aprende com o erro'],
+  ['dorme bem: é dormindo que a mão decora o ritmo'],
+  ['toca com as mãos e conta com a boca!'],
+  ['primeiro devagar, depois rápido, nunca ao contrário'],
+  ['gravou seu treino hoje? se ouvir, você evolui'],
+  ['estuda um pedacinho de cada vez'],
+  ['a pausa também é música'],
+  ['respira fundo antes de começar a tocar'],
+  ['ombros soltos, baqueta leve!'],
+  ['qual rudimento você treinou hoje?'],
+  // curiosidades
+  ['o bumbo marca o chão, a caixa marca o meio'],
+  ['a mínima vale 2 tempos'],
+  ['a semibreve vale 4 tempos'],
+  ['4 por 4: quatro tempos em cada compasso'],
+  ['o hi-hat é o relógio do groove'],
+  ['bpm é quantas batidas cabem em um minuto'],
+  ['tem música nova pra aprender hoje?'],
+  // incentivo e brincadeira
+  ['você está indo muito bem! 🤘'],
+  ['bora tocar um pouquinho?'],
+  ['hoje é dia de groove!'],
+  ['cada estrela conta, continua!'],
+  ['será que eu tenho ritmo? tenho sim!'],
+  ['psiu… já passou na aba jogos?'],
+  ['tum tá tum tum tá!'],
+  ['bateristas nunca chegam atrasados, chegam no tempo'],
+  ['eu sou só um robozinho, mas sei contar até 4'],
+  ['tem jogo novo no mapa, vai lá!'],
+  ['beba água, baterista também se hidrata'],
+  ['que tal ensinar um ritmo pra um amigo?'],
+  ['música boa é a que você toca com vontade'],
 ];
 
 /** Barulhinho de robô: dois a quatro "blips" rápidos, cada vez um diferente. Só toca depois de um toque. */
@@ -34,8 +69,16 @@ export function chirp() {
   } catch { /* sem áudio */ }
 }
 
-let box = null, hideT = 0, last = -1;
-function pick() { let i = Math.floor(Math.random() * THOUGHTS.length); if (THOUGHTS.length > 1 && i === last) i = (i + 1) % THOUGHTS.length; last = i; return THOUGHTS[i]; }
+let box = null, hideT = 0, last = -1, bag = [];
+/** Sorteia sem repetir: embaralha todas as falas e só recomeça quando todas já apareceram (a primeira nova nunca é a última antiga). */
+function pick() {
+  if (!bag.length) {
+    bag = THOUGHTS.map((_, i) => i);
+    for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+    if (bag.length > 1 && bag[bag.length - 1] === last) [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
+  }
+  last = bag.pop(); return THOUGHTS[last];
+}
 function busy() { return document.hidden || document.body.classList.contains('rz-lock') || document.querySelector('#overlay .sheet, #overlay .drawer'); }
 
 /** Mostra uma nuvem de pensamento (some sozinha). */
