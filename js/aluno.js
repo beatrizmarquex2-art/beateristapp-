@@ -10,7 +10,6 @@ import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
-import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as violao from './views/violao.js';
@@ -24,7 +23,7 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
 const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', kids: 'jogos', ritmo: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
@@ -112,7 +111,7 @@ function rankingView(view) {
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
   view.append(banner('Tocar', 'bateria, piano, violão e xilofone na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    card('#/toque', 'Bateria e pad', 'toque nas peças com vários dedos, grave um ritmo e salve no Beat Lab'),
+    card('#/toque', 'Bateria', 'toque nas peças com vários dedos e grave um ritmo'),
     card('#/piano', 'Piano', 'teclado na tela, com notas e acordes'),
     card('#/violao', 'Violão e guitarra', 'escolha o acorde e passe o dedo nas cordas'),
     card('#/xilofone', 'Xilofone', 'barras coloridas: nenhuma nota soa errada na pentatônica')));
@@ -138,7 +137,6 @@ function shell(name) {
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
-    else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
