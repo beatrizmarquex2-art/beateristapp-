@@ -6,9 +6,10 @@ import * as auth from './auth.js';
 const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
 const anon = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
 
-/** Aluno: as músicas que a Bea publicou ([{ id, name, folder, corte, b64 }]). Lança erro se estiver sem internet. */
-export async function lista() {
-  const r = await fetch(`${base}/rpc/midis_publicos_lista`, { method: 'POST', headers: anon, body: '{}' });
+/** Aluno: as músicas que a Bea publicou ([{ id, name, folder, corte, b64 }]). Só com código de aluno válido. Lança erro se estiver sem internet. */
+export async function lista(code) {
+  if (!code) return [];
+  const r = await fetch(`${base}/rpc/midis_publicos_lista`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: code }) });
   if (!r.ok) throw new Error(String(r.status));
   return r.json();
 }

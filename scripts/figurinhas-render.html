@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><base href="/"><title>render figurinhas</title>
+<link rel="stylesheet" href="css/fonts.css">
+<style>html,body{margin:0;background:transparent}#out{display:inline-block;line-height:0}#out svg{width:var(--w,600px);height:var(--h,900px);display:block}</style></head>
+<body><div id="out"></div>
+<script type="module">
+import { cardSVG } from './js/figurinhas/card.js';
+window.__cardSVG = cardSVG;
+await Promise.all(['40px "Gochi Hand"', '800 28px "Hanken Grotesk"', '700 15px "Hanken Grotesk"'].map((f) => document.fonts.load(f)));
+window.__ready = true;
+</script></body></html>
