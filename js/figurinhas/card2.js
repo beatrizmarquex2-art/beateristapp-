@@ -1,5 +1,6 @@
 // Figurinha no estilo dos 8 modelos novos (M1..M8): a arte do modelo é uma imagem; a foto original entra INTEIRA dentro da janela
 // (maior tamanho que cabe na forma, sem cortar) e o nome vai no rótulo. Coordenadas: 360 x 475.
+import { seloTeamSVG } from './selo-team.js';
 import { MODELOS2 } from './modelos2-data.js';
 
 export const W2 = 360, H2 = 475;
@@ -111,5 +112,5 @@ export function cardSVG2(e, { url = null, aspect = null } = {}) {
   const code = e.codigo ? `${e.codigo}${e.colecao && e.colecao !== 'Geral' ? ` · ${e.colecao.toUpperCase()}` : ''}` : '';
   const pill = code ? `<g><rect x="9" y="8" width="${n1(code.length * 6.4 + 12)}" height="17" rx="8.5" fill="#000" fill-opacity=".62"/><text x="15" y="20" font-family="${SANS}" font-weight="800" font-size="9.5" letter-spacing="1.2" fill="#f6ecd4">${esc(code)}</text></g>` : '';
   const label = e.codigo ? `${name}, figurinha ${e.codigo}, ${e.raridade}` : (e.semSelo ? `Modelo ${id}` : `Modelo ${id}, ${m.raridade}`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="${esc(label)}" data-modelo="${id}"><image href="assets/figurinhas/modelos2/${e.semSelo ? 'limpo/' : ''}${id}.webp" width="${W2}" height="${H2}"/>${photo}<g transform="translate(${r.centro[0]} ${r.centro[1]}) rotate(${r.angulo})"><text text-anchor="middle" font-family="${FONT}" font-size="${fit.size}" letter-spacing=".4" fill="${ink}"${e.codigo ? '' : ' fill-opacity=".45"'}>${text}</text></g>${pill}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="${esc(label)}" data-modelo="${id}"><image href="assets/figurinhas/modelos2/${e.semSelo ? 'limpo/' : ''}${id}.webp" width="${W2}" height="${H2}"/>${photo}${e.semSelo ? seloTeamSVG(id) : ''}<g transform="translate(${r.centro[0]} ${r.centro[1]}) rotate(${r.angulo})"><text text-anchor="middle" font-family="${FONT}" font-size="${fit.size}" letter-spacing=".4" fill="${ink}"${e.codigo ? '' : ' fill-opacity=".45"'}>${text}</text></g>${pill}</svg>`;
 }

@@ -13,11 +13,17 @@ const gravaLista = (l) => D.metaGravar(LISTA, l);
 const blob = (c) => new Promise((ok, no) => c.toBlob((b) => (b ? ok(b) : no(new Error('png'))), 'image/png'));
 const imgDe = (b) => new Promise((ok, no) => { const u = URL.createObjectURL(b), i = new Image(); i.onload = () => ok({ i, u }); i.onerror = () => no(new Error('imagem')); i.src = u; });
 
+/** Impressão digital da imagem pronta: duas cartinhas iguais dão a mesma. */
+async function assinatura(b) {
+  try { const buf = await b.arrayBuffer(); if (crypto && crypto.subtle) return [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map((x) => x.toString(16).padStart(2, '0')).join(''); const a = new Uint8Array(buf); let h = 2166136261; for (let i = 0; i < a.length; i += 7) h = Math.imul(h ^ a[i], 16777619); return `${a.length}-${h >>> 0}`; } catch { return ''; }
+}
 /** Guarda a cartinha (já montada) na coleção. Devolve o item, ou lança erro se a coleção está cheia. */
 export async function guardar(entry) {
   const l = await listar(); if (l.length >= MAX) throw new Error('cheia');
-  const c = await cartaCanvas(entry, { escala: 2 }), b = await blob(c), id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-  await db.metaSet(IMG(id), b); const item = { id, nome: String(entry.artista_banda || '').slice(0, 24), modelo: entry.modelo2, em: Date.now() };
+  const c = await cartaCanvas(entry, { escala: 2 }), b = await blob(c), sig = await assinatura(b);
+  if (l.some((x) => x.sig && x.sig === sig)) throw new Error('repetida'); // a mesma figurinha (mesma foto, modelo, nome e enquadramento) não entra duas vezes
+  const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  await db.metaSet(IMG(id), b); const item = { id, sig, nome: String(entry.artista_banda || '').slice(0, 24), modelo: entry.modelo2, em: Date.now() };
   await gravaLista([item, ...l]); return item;
 }
 export async function apagar(id) { await gravaLista((await listar()).filter((x) => x.id !== id)); try { await db.metaDel(IMG(id)); } catch { /* ok */ } }

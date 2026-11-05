@@ -51,7 +51,7 @@ export function mount(host) {
 
   /* ---- a minha figurinha ---- */
   const mc = Minhas.colecao({ titulo: 'minha coleção' });
-  cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : 'não consegui guardar agora.'); } } }); const area = cri.el;
+  cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); return true; } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : err.message === 'repetida' ? 'essa figurinha já está na sua coleção. mude a foto, o modelo ou o nome pra criar outra.' : 'não consegui guardar agora.'); return err.message === 'repetida'; } } }); const area = cri.el;
   body.append(topo, area, mc.el);
   (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
   return () => { alive = false; cri.cleanup(); mc.cleanup(); };

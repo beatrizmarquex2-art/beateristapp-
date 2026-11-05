@@ -5,6 +5,7 @@
 // Quatro modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70) e limpo.
 // A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!').
 // A figurinha também pode ser feita pelo aluno: { modelo2, artista_banda: nome, fotoImg, ajuste: {zoom, ox, oy} } (aba Perfil).
+import { selosTeamCanvas } from './selo-team.js';
 import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
@@ -55,6 +56,7 @@ export async function cartaCanvas(e, { escala = 3, codigo = false } = {}) {
   ctx.font = `${fit.size}px 'Anton', Impact, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = r.escuro ? '#17130f' : '#f1e3c6';
   fit.lines.forEach((l, i) => ctx.fillText(l, 0, (i - (fit.lines.length - 1) / 2) * lh + fit.size * 0.36));
   ctx.restore();
+  if (e.semSelo) { ctx.save(); ctx.scale(escala, escala); selosTeamCanvas(ctx, e.modelo2); ctx.restore(); } // BEATERISTA TEAM no lugar de comum/rara/exclusiva
   if (codigo && e.codigo) {
     const t = `${e.codigo}${e.secao === 'Beatlemania' ? ' · BEATLEMANIA' : ''}`; ctx.save(); ctx.scale(escala, escala); ctx.font = "800 9.5px 'Hanken Grotesk', sans-serif";
     const w = ctx.measureText(t).width + 14; ctx.fillStyle = 'rgba(0,0,0,.62)'; rr(ctx, 9, 8, w, 17, 8.5); ctx.fill(); ctx.fillStyle = '#f6ecd5'; ctx.fillText(t, 16, 20); ctx.restore();
