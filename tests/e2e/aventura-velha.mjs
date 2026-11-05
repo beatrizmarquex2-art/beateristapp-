@@ -64,14 +64,16 @@ st = await states(); check('recarregar mantém o progresso', st[0] === 'done' &&
 
 // missão 1: desafio infantil — responde perguntas aprovadas pelo texto
 await open(1);
-check('missão 1: tabuleiro de perguntas (toque abre pergunta infantil)', true);
+await page.locator('.jg-cell').first().click(); await page.waitForSelector('.jg-qt');
+check('missão 1: tocar numa casa abre pergunta de 3 alternativas (infantil)', (await page.locator('.jg-opt').count()) === 3);
+await page.click('button:has-text("voltar ao tabuleiro")');
 await playSeries(); await page.waitForSelector('.av-res', { timeout: 15000 });
 const t1 = await page.locator('.av-sum').textContent();
 check('missão 1 (desafio infantil): resultado mostra perguntas certas', /perguntas certas/.test(t1), t1);
 
 // missão 6 (clássico × estratégico): libera por progresso salvo e joga o minimax -> todas as rodadas empatam, 3 estrelas
 await go('#/jogos/velha/aventura'); await sleep(300);
-await page.evaluate(async () => { const S = await import('/js/campanha/store.js'); const E = await import('/js/campanha/engine.js'); const { spec } = await import('/js/campanha/jogos/velha.js'); let g = S.gameOf(S.playerId(), 'velha'); for (const id of ['velha-02', 'velha-03', 'velha-04', 'velha-05']) g = E.applyResult(g, spec, id, { outcomes: id === 'velha-02' ? 'WWWWL'.split('') : 'WWW'.split('') }).g; await S.saveGame(S.playerId(), 'velha', g); });
+await page.evaluate(async () => { const S = await import('/js/campanha/store.js'); const E = await import('/js/campanha/engine.js'); const { spec } = await import('/js/campanha/jogos/velha.js'); let g = S.gameOf(S.playerId(), 'velha'); for (const id of ['velha-02', 'velha-03', 'velha-04', 'velha-05']) g = E.applyResult(g, spec, id, { outcomes: 'W'.repeat(spec.missions.find((m) => m.id === id).params.rounds).split('') }).g; await S.saveGame(S.playerId(), 'velha', g); });
 await open(6); await playSeries(); await page.waitForSelector('.av-res', { timeout: 15000 });
 check('Paul estratégico: jogando bem as 4 rodadas empatam e dá 3 estrelas', (await page.locator('.av-rstar.on').count()) === 3 && /0 vitórias, 4 empates, 0 derrotas/.test(await page.locator('.av-sum').textContent()), await page.locator('.av-sum').textContent());
 check('medalha de sequência apareceu (progresso real)', (await page.locator('.av-newm .av-chip').count()) >= 1);
@@ -80,7 +82,7 @@ check('medalha de sequência apareceu (progresso real)', (await page.locator('.a
 await go('#/jogos/velha/livre'); await page.waitForSelector('.jg-seg'); await sleep(300);
 check('modo livre: opções (quem joga, variante) e iniciar', (await page.locator('.jg-seg').count()) >= 2 && (await page.locator('button:has-text("iniciar")').count()) === 1);
 await page.click('button:has-text("iniciar")'); await page.waitForSelector('.jg-cell');
-check('modo livre: 9 casas, "rodada 1" sem "de N"', (await page.locator('.jg-cell').count()) === 9 && !(await page.locator('.jg-turn').textContent()).includes(' de '), await page.locator('.jg-turn').textContent());
+check('modo livre: 9 casas, "rodada 1" sem "de N"', (await page.locator('.jg-cell').count()) === 9 && !/rodada \d+ de \d/.test(await page.locator('.jg-turn').textContent()), await page.locator('.jg-turn').textContent());
 await go('#/jogos/velha/aventura'); await page.waitForSelector('.mp-node'); await sleep(600);
 st = await states(); check('progresso da aventura independe do livre', st[0] === 'done' && st[6] === 'done', st.join());
 await go('#/jogos'); await sleep(400);

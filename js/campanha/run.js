@@ -10,6 +10,7 @@ import { themeOf } from './themes.js';
 import * as E from './engine.js';
 import * as CS from './store.js';
 import * as P from '../kids/progress.js';
+import { pontuacaoEl } from './pontuacao.js';
 
 const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 
@@ -21,6 +22,7 @@ export function modeChooser(host, { gameId, spec, hrefLivre, hrefAventura, title
     h('h2', { class: 'av-h' }, title), blurb ? h('p', { class: 'av-p' }, blurb) : null, h('p', { class: 'av-q' }, 'como você quer jogar?'),
     card('livre', hrefLivre, 'Modo Livre', 'do jeito de sempre: sem bloqueios, quantas vezes quiser.', null),
     card('aventura', hrefAventura, 'Modo Aventura', 'missões, estrelas e medalhas num mapa só desse jogo.', `${E.doneIdx(spec, g)}/${n} missões · ★ ${E.totalStars(spec, g)}/${n * 3}`),
+    pontuacaoEl(gameId, 'livre'), pontuacaoEl(gameId, 'aventura'),
     h('p', { class: 'av-note' }, 'o progresso de cada modo é independente: trocar de um pro outro não apaga nada.')));
   return () => {};
 }
@@ -49,7 +51,7 @@ export function mountAdventure(host, cfg) {
     const g = cur(); const n = spec.missions.length; const st = E.statusOf(spec, g);
     const top = h('div', {}); const med = h('div', { class: 'av' });
     const bar = h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: backHref }, '‹ voltar'), h('b', { class: 'av-bt' }, spec.title), snd());
-    host.replaceChildren(h('div', { class: 'av' }, bar, h('p', { class: 'av-sub' }, `${theme.name} · modo aventura`)), top, h('div', { class: 'av av-meds' }, h('h3', { class: 'av-h3' }, 'medalhas'), medalsEl(spec, g)));
+    host.replaceChildren(h('div', { class: 'av' }, bar, h('p', { class: 'av-sub' }, `${theme.name} · modo aventura`)), top, h('div', { class: 'av av-meds' }, pontuacaoEl(gameId, 'aventura', { open: false }), h('h3', { class: 'av-h3' }, 'medalhas'), medalsEl(spec, g)));
     const levels = spec.missions.map((m, i) => ({ id: m.id, index: i, label: String(i), tag: m.tag || '', boss: i === n - 1 }));
     off = mountProgressionMap(top, {
       gameId: `av-${gameId}`, levels, tier, profileId: pid, theme, unitName: 'Missão', lockedMsg: 'complete a missão anterior pra abrir',

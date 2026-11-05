@@ -36,3 +36,9 @@
 .av-medal-i { font-size: 22px; } .av-medal b { font: 400 11px var(--pix); } .av-medal small { font: 400 9px/1.3 var(--pix); color: var(--mp-cyan); }
 .av-root .mp { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .av *, .av-res, .av-res * { animation: none !important; transition: none !important; } }
+/* como pontuar */
+.pt-box { margin: 12px 0; border: 3px solid #6a2c91; background: #231545; color: #fff4e0; font: 400 12px/1.5 'Silkscreen', 'Courier New', monospace; }
+.pt-box summary { min-height: 44px; display: flex; align-items: center; padding: 0 12px; cursor: pointer; font-weight: 700; color: #ffd23f; list-style: none; } .pt-box summary::-webkit-details-marker { display: none; } .pt-box summary::before { content: "▸ "; margin-right: 6px; } .pt-box[open] summary::before { content: "▾ "; }
+.pt-pontos, .pt-med { margin: 0; padding: 0 12px 8px; } .pt-list { list-style: none; margin: 0; padding: 0 12px 12px; display: grid; gap: 8px; }
+.pt-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px; background: #140d26; border-left: 4px solid #4a3a6a; } .pt-row.sim { border-left-color: #4fd2ff; } .pt-row.nao { opacity: .8; } .pt-row b { color: #fff4e0; display: block; } .pt-row.sim b { color: #4fd2ff; } .pt-i { font-size: 18px; }
+.kx-arc .pt-box { box-shadow: 3px 3px 0 #1b1818; }

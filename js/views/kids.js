@@ -25,6 +25,7 @@ import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { loadAdventure } from '../campanha/registry.js';
+import { pontuacaoEl } from '../campanha/pontuacao.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
@@ -164,7 +165,7 @@ function levelsScreen(host, gameId, mode) {
   host.append(topBar('#/jogos', h('span', { class: 'kd-stars kx-stars-top' }, `★ ${s.stars}/${s.maxStars}`)),
     h('div', { class: 'kx-gtitle' }, h('span', { class: 'kx-gico' }), h('div', {}, h('h1', { class: 'kx-pix kx-pagetitle' }, g.title), h('p', { class: 'kx-gd' }, g.blurb))),
     g.modes ? h('div', { class: 'row kd-modes' }, ...g.modes.map(([k, t]) => h('a', { class: `kd-chip${m === k ? ' on' : ''}`, href: `#/kids/${gameId}/-/${k}` }, t))) : null,
-    top,
+    top, pontuacaoEl(gameId, 'fases'),
     h('p', { class: 'lib-note' }, `${s.pct != null ? `${s.pct}% de acerto até agora. ` : ''}${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. ${ALUNO() ? '' : `a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`}`));
   host.querySelector('.kx-gico').innerHTML = gameIcon(g.icon || gameId);
   return mountProgressionMap(top, {

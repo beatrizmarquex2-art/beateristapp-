@@ -32,7 +32,7 @@ const DEF = [
   ['O estrategista', 'sem dica', 'esperto', false, 1, {}, { maxDraws: 4 }, { minSpecials: 2, maxDraws: 2 }],
   ['Final da turnê', 'desafio final', 'esperto', false, 1, { maxDraws: 3, minSpecials: 2 }, { maxDraws: 2, minSpecials: 3 }, { maxDraws: 1, minSpecials: 3, maxRounds: 10 }],
 ];
-export const SEEDS = [232, 237, 103, 296, 212, 275, 59, 90, 5, 169]; // escolhidas por simulação (ver tests/campanha-cartas.test.mjs): partida viável e com as metas de 2★/3★ alcançáveis
+export const SEEDS = [260, 61, 242, 213, 103, 23, 232, 12, 279, 154]; // escolhidas por simulação (ver tests/campanha-cartas.test.mjs): partida viável e com as metas de 2★/3★ alcançáveis
 
 const mission = ([title, tag, style, hint, , l1, l2, l3], i) => {
   const o = OPP[style]; const L1 = lim(l1), L2 = { ...L1, ...lim(l2) }, L3 = { ...L2, ...lim(l3) };
