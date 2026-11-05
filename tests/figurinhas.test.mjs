@@ -48,20 +48,23 @@ test('raridade das figurinhas sorteadas respeita o catálogo (não existem códi
 
 /* ---------- modelos novos (M1..M8): foto cabe inteira na janela ---------- */
 import { MODELOS2 } from '../js/figurinhas/modelos2-data.js';
-import { fitWindow, fitLabel } from '../js/figurinhas/card2.js';
+import { planoFoto, caixaRostos, fitLabel } from '../js/figurinhas/card2.js';
 test('modelo novo combina com a raridade (M1-M4 Comum, M5-M6 Rara, M7-M8 Exclusiva)', () => {
   for (const c of cat) assert.equal(MODELOS2[c.modelo2].raridade, c.raridade, c.codigo);
   assert.equal(Object.keys(MODELOS2).length, 8);
   for (const id of Object.keys(MODELOS2)) assert.ok(fs.existsSync(new URL(`assets/figurinhas/modelos2/${id}.webp`, root)), id);
 });
-test('a foto cabe inteira dentro da janela, sem cortar, em qualquer proporção do catálogo', () => {
+test('zoom: a foto mantém a proporção, preenche a janela quando dá e nunca corta rosto nem a área de ação', () => {
   const inPoly = (p, x, y) => { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; };
+  let cobre = 0;
   for (const c of cat) {
-    const f = fitWindow(c.modelo2, c.largura_px / c.altura_px), a = (f.ang * Math.PI) / 180;
-    assert.ok(Math.abs(f.w / f.h - c.largura_px / c.altura_px) < 0.02, `${c.codigo} proporção preservada`);
-    assert.ok(f.h > 80, `${c.codigo} tamanho útil`);
-    for (const [u, v] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) assert.ok(inPoly(MODELOS2[c.modelo2].janela.poly, f.cx + (u * f.w / 2) * Math.cos(a) - (v * f.h / 2) * Math.sin(a), f.cy + (u * f.w / 2) * Math.sin(a) + (v * f.h / 2) * Math.cos(a)), `${c.codigo} canto dentro da janela`);
+    assert.ok(Array.isArray(c.rostos) && c.foco?.length === 4, `${c.codigo} tem rostos/foco`);
+    const p = planoFoto(c, c.modelo2), F = caixaRostos(c.rostos, c.foco);
+    assert.ok(Math.abs(p.w / p.h - c.largura_px / c.altura_px) < 0.01, `${c.codigo} proporção preservada (sem esticar)`);
+    for (const [u, v] of [[F.x0, F.y0], [F.x1, F.y0], [F.x1, F.y1], [F.x0, F.y1]]) assert.ok(inPoly(p.poly, p.x + u * p.w, p.y + v * p.h), `${c.codigo} rosto/ação inteiros na janela`);
+    if (p.cobre) cobre++;
   }
+  assert.ok(cobre > 15, `pelo menos parte das fotos preenche a janela (${cobre})`);
 });
 test('nome sempre cabe no rótulo, inclusive os longos (sem truncar)', () => {
   for (const c of cat) { const r = MODELOS2[c.modelo2].rotulo, f = fitLabel(c.artista_banda, r.largura * 0.97); assert.equal(f.lines.join(' ').replace(/\s+/g, ' '), c.artista_banda.toUpperCase().replace(/\s+/g, ' '), c.codigo); assert.ok(f.size >= 10); }

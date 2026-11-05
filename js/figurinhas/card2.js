@@ -37,6 +37,43 @@ export function fitWindow(id, aspect) {
   cache.set(key, r); return r;
 }
 
+
+/* ---------- zoom inteligente: a foto preenche a janela, sem cortar rosto ---------- */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const localCache = new Map();
+/** Janela no sistema "sem inclinação" (o grupo da foto gira depois, junto com o modelo). */
+function local(id) {
+  if (localCache.has(id)) return localCache.get(id);
+  const { poly, centro: [cx, cy], angulo } = MODELOS2[id].janela, a = (-angulo * Math.PI) / 180, ca = Math.cos(a), sa = Math.sin(a);
+  const p = poly.map(([x, y]) => [cx + (x - cx) * ca - (y - cy) * sa, cy + (x - cx) * sa + (y - cy) * ca]);
+  const xs = p.map((q) => q[0]), ys = p.map((q) => q[1]);
+  const r = { poly: p, bb: { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }, cx, cy, ang: angulo };
+  localCache.set(id, r); return r;
+}
+/** Caixa que precisa ficar visível: rostos achados (com folga de cabelo e queixo) + a área onde está a ação da foto. */
+export function caixaRostos(rostos, foco) {
+  // da área de ação só o miolo (60%) é protegido: o resto pode ficar de fora pra foto preencher a janela
+  let u = foco ? { x0: foco[0] + (foco[2] - foco[0]) * 0.2, y0: foco[1] + (foco[3] - foco[1]) * 0.2, x1: foco[2] - (foco[2] - foco[0]) * 0.2, y1: foco[3] - (foco[3] - foco[1]) * 0.2 } : { x0: 1, y0: 1, x1: 0, y1: 0 };
+  for (const [x, y, w, h] of rostos || []) u = { x0: Math.min(u.x0, x - w * 0.45), y0: Math.min(u.y0, y - h * 0.8), x1: Math.max(u.x1, x + w * 1.45), y1: Math.max(u.y1, y + h * 1.35) };
+  if (!rostos?.length && foco) u.y0 = 0; // sem rosto confirmado: nunca corta o topo (cabeças ficam no alto)
+  if (u.x1 <= u.x0 || u.y1 <= u.y0) return { x0: 0.2, y0: 0.15, x1: 0.8, y1: 0.85 };
+  return { x0: clamp(u.x0, 0, 1), y0: clamp(u.y0, 0, 1), x1: clamp(u.x1, 0, 1), y1: clamp(u.y1, 0, 1) };
+}
+const planCache = new Map();
+/** Onde e em que tamanho a foto entra na janela: o maior zoom (preenchendo a janela) em que rostos e "ação" continuam inteiros. */
+export function planoFoto(e, id) {
+  const key = `${e.codigo}|${id}`; if (e.codigo && planCache.has(key)) return planCache.get(key);
+  const L = local(id), pw = e.largura_px, ph = e.altura_px, F = caixaRostos(e.rostos, e.foco), { x0, y0, x1, y1 } = L.bb;
+  const bw = x1 - x0, bh = y1 - y0, cover = Math.max(bw / pw, bh / ph), contain = Math.min(bw / pw, bh / ph);
+  const axis = (v, size, lo, hi) => (size >= hi - lo ? clamp(v, hi - size, lo) : lo + (hi - lo - size) / 2);
+  const place = (sc) => { const W = pw * sc, H = ph * sc; return { W, H, x: axis((x0 + x1) / 2 - ((F.x0 + F.x1) / 2) * W, W, x0, x1), y: axis((y0 + y1) / 2 - ((F.y0 + F.y1) / 2) * H, H, y0, y1) }; };
+  const ok = (p) => [[F.x0, F.y0], [F.x1, F.y0], [F.x1, F.y1], [F.x0, F.y1]].every(([u, v]) => inPoly(L.poly, p.x + u * p.W, p.y + v * p.H));
+  let sc = cover, p = place(sc);
+  for (let i = 1; i <= 60 && !ok(p); i++) { sc = cover * Math.pow((contain * 0.5) / cover, i / 60); p = place(sc); }
+  const r = { x: n1(p.x), y: n1(p.y), w: n1(p.W), h: n1(p.H), escala: sc, cobre: sc >= cover - 1e-9, poly: L.poly, cx: L.cx, cy: L.cy, ang: L.ang, foco: F };
+  if (e.codigo) planCache.set(key, r); return r;
+}
+
 /* ---------- nome no rótulo ---------- */
 let mctx;
 const measure = (t, size) => { if (typeof document === 'undefined') return t.length * size * 0.42; mctx ||= document.createElement('canvas').getContext('2d'); mctx.font = `${size}px ${FONT}`; return mctx.measureText(t).width; };
@@ -64,8 +101,8 @@ export function cardSVG2(e, { url = null, aspect = null } = {}) {
   const text = fit.lines.map((l, i) => `<tspan x="0" y="${n1((i - (fit.lines.length - 1) / 2) * lh + fit.size * 0.36)}">${esc(l)}</tspan>`).join('');
   let photo = '';
   if (url) {
-    const f = fitWindow(id, asp);
-    photo = `<g transform="rotate(${f.ang} ${f.cx} ${f.cy})"><image href="${esc(url)}" x="${n1(f.cx - f.w / 2)}" y="${n1(f.cy - f.h / 2)}" width="${f.w}" height="${f.h}" preserveAspectRatio="xMidYMid meet"/><rect x="${n1(f.cx - f.w / 2)}" y="${n1(f.cy - f.h / 2)}" width="${f.w}" height="${f.h}" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1"/></g>`;
+    const pw = e.largura_px || 1000, ph = e.altura_px || pw / asp, f = planoFoto({ ...e, largura_px: pw, altura_px: ph }, id), cid = `pc${id}${e.codigo || ''}`;
+    photo = `<g transform="rotate(${f.ang} ${f.cx} ${f.cy})"><clipPath id="${cid}"><polygon points="${f.poly.map((q) => `${n1(q[0])},${n1(q[1])}`).join(' ')}"/></clipPath><image href="${esc(url)}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" preserveAspectRatio="none" clip-path="url(#${cid})"/></g>`;
   }
   const code = e.codigo ? `${e.codigo}${e.colecao && e.colecao !== 'Geral' ? ` · ${e.colecao.toUpperCase()}` : ''}` : '';
   const pill = code ? `<g><rect x="9" y="8" width="${n1(code.length * 6.4 + 12)}" height="17" rx="8.5" fill="#000" fill-opacity=".62"/><text x="15" y="20" font-family="${SANS}" font-weight="800" font-size="9.5" letter-spacing="1.2" fill="#f6ecd4">${esc(code)}</text></g>` : '';

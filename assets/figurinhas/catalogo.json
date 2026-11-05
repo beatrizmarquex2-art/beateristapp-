@@ -12,7 +12,21 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F001.jpeg",
-  "modelo2": "M7"
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.4733,
+    0.0783,
+    0.0656,
+    0.0983
+   ]
+  ],
+  "foco": [
+   0.128,
+   0.16,
+   0.867,
+   0.888
+  ]
  },
  {
   "codigo": "F004",
@@ -27,7 +41,21 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F004.jpeg",
-  "modelo2": "M8"
+  "modelo2": "M8",
+  "rostos": [
+   [
+    0.2075,
+    0.1789,
+    0.1561,
+    0.0878
+   ]
+  ],
+  "foco": [
+   0.168,
+   0.169,
+   0.799,
+   0.907
+  ]
  },
  {
   "codigo": "F005",
@@ -42,7 +70,14 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F005.jpeg",
-  "modelo2": "M7"
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.127,
+   0.178,
+   0.829,
+   0.806
+  ]
  },
  {
   "codigo": "F010",
@@ -57,7 +92,21 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F010.jpeg",
-  "modelo2": "M8"
+  "modelo2": "M8",
+  "rostos": [
+   [
+    0.4348,
+    0.1689,
+    0.1976,
+    0.1111
+   ]
+  ],
+  "foco": [
+   0.253,
+   0.176,
+   0.781,
+   0.911
+  ]
  },
  {
   "codigo": "F011",
@@ -72,7 +121,21 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F011.jpeg",
-  "modelo2": "M7"
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.3518,
+    0.1589,
+    0.4111,
+    0.2311
+   ]
+  ],
+  "foco": [
+   0.142,
+   0.267,
+   0.848,
+   0.921
+  ]
  },
  {
   "codigo": "F012",
@@ -87,7 +150,14 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F012.jpeg",
-  "modelo2": "M8"
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.136,
+   0.183,
+   0.889,
+   0.962
+  ]
  },
  {
   "codigo": "F013",
@@ -102,7 +172,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F013.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.3736,
+    0.1444,
+    0.2181,
+    0.1744
+   ],
+   [
+    0.65,
+    0.1067,
+    0.2111,
+    0.1689
+   ],
+   [
+    0.1444,
+    0.1067,
+    0.175,
+    0.14
+   ]
+  ],
+  "foco": [
+   0.133,
+   0.158,
+   0.859,
+   0.894
+  ]
  },
  {
   "codigo": "F014",
@@ -117,7 +213,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F014.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [],
+  "foco": [
+   0.079,
+   0.236,
+   0.933,
+   0.88
+  ]
  },
  {
   "codigo": "F015",
@@ -132,7 +235,27 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F015.jpeg",
-  "modelo2": "M7"
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.48,
+    0.6222,
+    0.1985,
+    0.1489
+   ],
+   [
+    0.4904,
+    0.4489,
+    0.1585,
+    0.1189
+   ]
+  ],
+  "foco": [
+   0.103,
+   0.142,
+   0.786,
+   0.878
+  ]
  },
  {
   "codigo": "F016",
@@ -147,7 +270,14 @@
   "nota": "Foto conjunta de Justin Bieber e Billie Eilish; não separar em artistas diferentes",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F016.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [],
+  "foco": [
+   0.102,
+   0.103,
+   0.824,
+   0.846
+  ]
  },
  {
   "codigo": "F017",
@@ -162,7 +292,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F017.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.4467,
+    0.1836,
+    0.15,
+    0.2254
+   ]
+  ],
+  "foco": [
+   0.098,
+   0.075,
+   0.926,
+   0.943
+  ]
  },
  {
   "codigo": "F018",
@@ -177,7 +321,21 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F018.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [
+   [
+    0.4422,
+    0.1617,
+    0.13,
+    0.195
+   ]
+  ],
+  "foco": [
+   0.078,
+   0.167,
+   0.94,
+   0.935
+  ]
  },
  {
   "codigo": "F020",
@@ -192,7 +350,33 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F020.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [
+   [
+    0.1683,
+    0.1422,
+    0.195,
+    0.13
+   ],
+   [
+    0.5267,
+    0.2222,
+    0.1067,
+    0.0711
+   ],
+   [
+    0.68,
+    0.2589,
+    0.09,
+    0.06
+   ]
+  ],
+  "foco": [
+   0.178,
+   0.128,
+   0.788,
+   0.754
+  ]
  },
  {
   "codigo": "F021",
@@ -207,7 +391,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F021.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.6458,
+    0.2867,
+    0.1694,
+    0.1356
+   ],
+   [
+    0.1667,
+    0.2756,
+    0.1472,
+    0.1178
+   ],
+   [
+    0.5306,
+    0.2322,
+    0.1361,
+    0.1089
+   ],
+   [
+    0.3528,
+    0.2833,
+    0.1083,
+    0.0867
+   ],
+   [
+    0.7431,
+    0.3089,
+    0.0736,
+    0.0589
+   ]
+  ],
+  "foco": [
+   0.13,
+   0.146,
+   0.911,
+   0.884
+  ]
  },
  {
   "codigo": "F022",
@@ -222,7 +444,21 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F022.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [
+   [
+    0.2939,
+    0.1211,
+    0.1486,
+    0.1467
+   ]
+  ],
+  "foco": [
+   0.128,
+   0.274,
+   0.904,
+   0.919
+  ]
  },
  {
   "codigo": "F023",
@@ -237,7 +473,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F023.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.6172,
+    0.3456,
+    0.2413,
+    0.1933
+   ],
+   [
+    0.0277,
+    0.3456,
+    0.2344,
+    0.1878
+   ],
+   [
+    0.2302,
+    0.3456,
+    0.1914,
+    0.1533
+   ],
+   [
+    0.8114,
+    0.3978,
+    0.1761,
+    0.1411
+   ]
+  ],
+  "foco": [
+   0.132,
+   0.113,
+   0.922,
+   0.892
+  ]
  },
  {
   "codigo": "F024",
@@ -252,7 +520,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F024.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.4211,
+    0.2178,
+    0.1956,
+    0.3721
+   ],
+   [
+    0.0967,
+    0.1459,
+    0.1533,
+    0.2918
+   ],
+   [
+    0.7033,
+    0.1374,
+    0.1233,
+    0.2347
+   ],
+   [
+    0.3,
+    0.1268,
+    0.0767,
+    0.1459
+   ]
+  ],
+  "foco": [
+   0.132,
+   0.15,
+   0.862,
+   0.916
+  ]
  },
  {
   "codigo": "F025",
@@ -267,7 +567,21 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F025.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [
+   [
+    0.3698,
+    0.1844,
+    0.2465,
+    0.1778
+   ]
+  ],
+  "foco": [
+   0.055,
+   0.156,
+   0.84,
+   0.928
+  ]
  },
  {
   "codigo": "F026",
@@ -282,7 +596,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F026.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.2615,
+    0.2256,
+    0.4803,
+    0.3122
+   ]
+  ],
+  "foco": [
+   0.119,
+   0.132,
+   0.878,
+   0.92
+  ]
  },
  {
   "codigo": "F027",
@@ -297,7 +625,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F027.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.4867,
+    0.5244,
+    0.0783,
+    0.0522
+   ],
+   [
+    0.74,
+    0.6667,
+    0.0733,
+    0.0489
+   ],
+   [
+    0.24,
+    0.6389,
+    0.0617,
+    0.0411
+   ]
+  ],
+  "foco": [
+   0.087,
+   0.116,
+   0.927,
+   0.97
+  ]
  },
  {
   "codigo": "F028",
@@ -312,7 +666,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F028.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.34,
+    0.2,
+    0.3333,
+    0.2222
+   ]
+  ],
+  "foco": [
+   0.15,
+   0.274,
+   0.9,
+   0.918
+  ]
  },
  {
   "codigo": "F029",
@@ -327,7 +695,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F029.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [],
+  "foco": [
+   0.15,
+   0.208,
+   0.925,
+   0.893
+  ]
  },
  {
   "codigo": "F030",
@@ -342,7 +717,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F030.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.4717,
+    0.3189,
+    0.1417,
+    0.0944
+   ],
+   [
+    0.055,
+    0.2633,
+    0.1283,
+    0.0856
+   ],
+   [
+    0.8117,
+    0.1622,
+    0.1217,
+    0.0811
+   ],
+   [
+    0.3583,
+    0.1822,
+    0.1183,
+    0.0789
+   ],
+   [
+    0.5483,
+    0.1178,
+    0.115,
+    0.0767
+   ]
+  ],
+  "foco": [
+   0.088,
+   0.098,
+   0.892,
+   0.868
+  ]
  },
  {
   "codigo": "F031",
@@ -357,7 +770,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F031.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.314,
+   0.16,
+   0.926,
+   0.864
+  ]
  },
  {
   "codigo": "F032",
@@ -372,7 +792,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F032.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.188,
+   0.261,
+   0.917,
+   0.884
+  ]
  },
  {
   "codigo": "F033",
@@ -387,7 +814,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F033.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.2583,
+    0.1867,
+    0.5183,
+    0.3456
+   ]
+  ],
+  "foco": [
+   0.1,
+   0.108,
+   0.847,
+   0.899
+  ]
  },
  {
   "codigo": "F034",
@@ -402,7 +843,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F034.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.5238,
+    0.2167,
+    0.1633,
+    0.1333
+   ]
+  ],
+  "foco": [
+   0.178,
+   0.128,
+   0.857,
+   0.898
+  ]
  },
  {
   "codigo": "F035",
@@ -417,7 +872,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F035.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.2771,
+    0.1689,
+    0.2755,
+    0.1922
+   ],
+   [
+    0.6369,
+    0.1844,
+    0.2054,
+    0.1433
+   ],
+   [
+    0.4889,
+    0.0111,
+    0.2038,
+    0.1422
+   ],
+   [
+    0.8025,
+    0.1178,
+    0.1863,
+    0.13
+   ]
+  ],
+  "foco": [
+   0.099,
+   0.11,
+   0.869,
+   0.854
+  ]
  },
  {
   "codigo": "F036",
@@ -432,7 +919,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F036.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.8575,
+    0.0267,
+    0.1079,
+    0.0867
+   ]
+  ],
+  "foco": [
+   0.144,
+   0.147,
+   0.857,
+   0.949
+  ]
  },
  {
   "codigo": "F037",
@@ -447,7 +948,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F037.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.0861,
+    0.29,
+    0.1472,
+    0.1178
+   ],
+   [
+    0.7333,
+    0.2311,
+    0.1236,
+    0.0989
+   ]
+  ],
+  "foco": [
+   0.121,
+   0.207,
+   0.893,
+   0.813
+  ]
  },
  {
   "codigo": "F038",
@@ -462,7 +983,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F038.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [],
+  "foco": [
+   0.13,
+   0.224,
+   0.803,
+   0.913
+  ]
  },
  {
   "codigo": "F039",
@@ -477,7 +1005,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F039.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.4207,
+    0.1444,
+    0.2978,
+    0.2233
+   ],
+   [
+    0.4993,
+    0.5456,
+    0.0859,
+    0.0644
+   ]
+  ],
+  "foco": [
+   0.14,
+   0.234,
+   0.852,
+   0.899
+  ]
  },
  {
   "codigo": "F040",
@@ -492,7 +1040,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F040.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.3444,
+    0.0978,
+    0.1033,
+    0.1378
+   ],
+   [
+    0.1422,
+    0.0874,
+    0.0911,
+    0.1215
+   ],
+   [
+    0.7967,
+    0.0489,
+    0.0833,
+    0.1111
+   ],
+   [
+    0.6378,
+    0.0756,
+    0.0778,
+    0.1037
+   ],
+   [
+    0.26,
+    0.1304,
+    0.0756,
+    0.1007
+   ]
+  ],
+  "foco": [
+   0.112,
+   0.129,
+   0.886,
+   0.843
+  ]
  },
  {
   "codigo": "F041",
@@ -507,7 +1093,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F041.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.3047,
+    0.1478,
+    0.1991,
+    0.1467
+   ],
+   [
+    0.0181,
+    0.2467,
+    0.1795,
+    0.1322
+   ],
+   [
+    0.7949,
+    0.1044,
+    0.1689,
+    0.1244
+   ],
+   [
+    0.1629,
+    0.2544,
+    0.1659,
+    0.1222
+   ],
+   [
+    0.6214,
+    0.1422,
+    0.1312,
+    0.0967
+   ]
+  ],
+  "foco": [
+   0.143,
+   0.139,
+   0.927,
+   0.937
+  ]
  },
  {
   "codigo": "F042",
@@ -522,7 +1146,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F042.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.1917,
+    0.5322,
+    0.1364,
+    0.0767
+   ],
+   [
+    0.251,
+    0.3822,
+    0.085,
+    0.0478
+   ]
+  ],
+  "foco": [
+   0.158,
+   0.179,
+   0.848,
+   0.923
+  ]
  },
  {
   "codigo": "F043",
@@ -537,7 +1181,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F043.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.135,
+   0.214,
+   0.867,
+   0.932
+  ]
  },
  {
   "codigo": "F044",
@@ -552,7 +1203,14 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F044.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [],
+  "foco": [
+   0.104,
+   0.146,
+   0.783,
+   0.886
+  ]
  },
  {
   "codigo": "F045",
@@ -567,7 +1225,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F045.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.7317,
+    0.0744,
+    0.1933,
+    0.1289
+   ],
+   [
+    0.0133,
+    0.1056,
+    0.1683,
+    0.1122
+   ],
+   [
+    0.24,
+    0.0967,
+    0.16,
+    0.1067
+   ],
+   [
+    0.455,
+    0.1689,
+    0.14,
+    0.0933
+   ]
+  ],
+  "foco": [
+   0.08,
+   0.153,
+   0.903,
+   0.92
+  ]
  },
  {
   "codigo": "F046",
@@ -582,7 +1272,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F046.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.0702,
+    0.2189,
+    0.1242,
+    0.1022
+   ],
+   [
+    0.776,
+    0.2056,
+    0.108,
+    0.0889
+   ],
+   [
+    0.3428,
+    0.2311,
+    0.1053,
+    0.0867
+   ]
+  ],
+  "foco": [
+   0.101,
+   0.184,
+   0.882,
+   0.853
+  ]
  },
  {
   "codigo": "F047",
@@ -597,7 +1313,27 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F047.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [
+   [
+    0.0623,
+    0.5,
+    0.2022,
+    0.1622
+   ],
+   [
+    0.223,
+    0.2278,
+    0.1787,
+    0.1433
+   ]
+  ],
+  "foco": [
+   0.09,
+   0.212,
+   0.905,
+   0.86
+  ]
  },
  {
   "codigo": "F048",
@@ -612,7 +1348,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F048.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.6088,
+    0.19,
+    0.1015,
+    0.0767
+   ]
+  ],
+  "foco": [
+   0.092,
+   0.176,
+   0.881,
+   0.882
+  ]
  },
  {
   "codigo": "F049",
@@ -627,7 +1377,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F049.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.2095,
+    0.17,
+    0.1818,
+    0.1022
+   ],
+   [
+    0.5237,
+    0.2711,
+    0.1542,
+    0.0867
+   ],
+   [
+    0.0988,
+    0.4156,
+    0.1166,
+    0.0656
+   ]
+  ],
+  "foco": [
+   0.073,
+   0.188,
+   0.878,
+   0.869
+  ]
  },
  {
   "codigo": "F050",
@@ -642,7 +1418,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F050.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.3963,
+    0.1022,
+    0.1393,
+    0.1
+   ],
+   [
+    0.5217,
+    0.1133,
+    0.1378,
+    0.0989
+   ],
+   [
+    0.2771,
+    0.0533,
+    0.1378,
+    0.0989
+   ],
+   [
+    0.0759,
+    0.1078,
+    0.1347,
+    0.0967
+   ],
+   [
+    0.743,
+    0.1044,
+    0.082,
+    0.0589
+   ]
+  ],
+  "foco": [
+   0.095,
+   0.126,
+   0.9,
+   0.92
+  ]
  },
  {
   "codigo": "F051",
@@ -657,7 +1471,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F051.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.2972,
+    0.13,
+    0.1208,
+    0.0967
+   ],
+   [
+    0.5222,
+    0.0867,
+    0.1042,
+    0.0833
+   ],
+   [
+    0.1139,
+    0.1944,
+    0.0875,
+    0.07
+   ]
+  ],
+  "foco": [
+   0.131,
+   0.178,
+   0.908,
+   0.82
+  ]
  },
  {
   "codigo": "F052",
@@ -672,7 +1512,14 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F052.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [],
+  "foco": [
+   0.13,
+   0.184,
+   0.871,
+   0.908
+  ]
  },
  {
   "codigo": "F053",
@@ -687,7 +1534,21 @@
   "nota": "Campo não visível no print; legenda original da própria fotografia indica AC/DC, Angus Young e Brian Johnson",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F053.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.2146,
+    0.1656,
+    0.2801,
+    0.2044
+   ]
+  ],
+  "foco": [
+   0.116,
+   0.174,
+   0.867,
+   0.924
+  ]
  },
  {
   "codigo": "F054",
@@ -702,7 +1563,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F054.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.7235,
+    0.1489,
+    0.1058,
+    0.0889
+   ],
+   [
+    0.5489,
+    0.1589,
+    0.1032,
+    0.0867
+   ],
+   [
+    0.373,
+    0.1111,
+    0.1005,
+    0.0844
+   ]
+  ],
+  "foco": [
+   0.096,
+   0.109,
+   0.89,
+   0.907
+  ]
  },
  {
   "codigo": "F055",
@@ -717,7 +1604,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F055.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.041,
+    0.1478,
+    0.2527,
+    0.2056
+   ],
+   [
+    0.7623,
+    0.1011,
+    0.2022,
+    0.1644
+   ],
+   [
+    0.3866,
+    0.5489,
+    0.0779,
+    0.0633
+   ]
+  ],
+  "foco": [
+   0.079,
+   0.218,
+   0.874,
+   0.921
+  ]
  },
  {
   "codigo": "F056",
@@ -732,7 +1645,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F056.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.2733,
+    0.2522,
+    0.2717,
+    0.1811
+   ],
+   [
+    0.1383,
+    0.3311,
+    0.2467,
+    0.1644
+   ]
+  ],
+  "foco": [
+   0.102,
+   0.112,
+   0.872,
+   0.896
+  ]
  },
  {
   "codigo": "F057",
@@ -747,7 +1680,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F057.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.2079,
+    0.1333,
+    0.1549,
+    0.1267
+   ],
+   [
+    0.4307,
+    0.57,
+    0.1522,
+    0.1244
+   ],
+   [
+    0.5584,
+    0.1456,
+    0.1427,
+    0.1167
+   ]
+  ],
+  "foco": [
+   0.023,
+   0.083,
+   0.989,
+   0.926
+  ]
  },
  {
   "codigo": "F058",
@@ -762,7 +1721,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F058.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.108,
+   0.163,
+   0.88,
+   0.883
+  ]
  },
  {
   "codigo": "F059",
@@ -777,7 +1743,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F059.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.69,
+    0.0617,
+    0.1267,
+    0.1327
+   ],
+   [
+    0.4222,
+    0.1048,
+    0.1178,
+    0.1234
+   ],
+   [
+    0.1167,
+    0.142,
+    0.1078,
+    0.1129
+   ]
+  ],
+  "foco": [
+   0.106,
+   0.138,
+   0.891,
+   0.86
+  ]
  },
  {
   "codigo": "F060",
@@ -792,7 +1784,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F060.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.4171,
+    0.6133,
+    0.2238,
+    0.1544
+   ],
+   [
+    0.3881,
+    0.2289,
+    0.1965,
+    0.1356
+   ],
+   [
+    0.62,
+    0.3656,
+    0.1836,
+    0.1267
+   ],
+   [
+    0.1755,
+    0.3811,
+    0.1465,
+    0.1011
+   ]
+  ],
+  "foco": [
+   0.168,
+   0.251,
+   0.843,
+   0.897
+  ]
  },
  {
   "codigo": "F061",
@@ -807,7 +1831,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F061.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.7432,
+    0.1689,
+    0.0981,
+    0.0844
+   ],
+   [
+    0.1587,
+    0.1667,
+    0.0865,
+    0.0744
+   ],
+   [
+    0.3523,
+    0.1478,
+    0.0839,
+    0.0722
+   ],
+   [
+    0.6232,
+    0.1578,
+    0.0839,
+    0.0722
+   ]
+  ],
+  "foco": [
+   0.153,
+   0.199,
+   0.824,
+   0.866
+  ]
  },
  {
   "codigo": "F062",
@@ -822,7 +1878,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F062.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.4694,
+    0.3556,
+    0.2,
+    0.16
+   ],
+   [
+    0.1667,
+    0.3178,
+    0.1833,
+    0.1467
+   ],
+   [
+    0.6569,
+    0.4122,
+    0.1542,
+    0.1233
+   ],
+   [
+    0.4125,
+    0.38,
+    0.0833,
+    0.0667
+   ]
+  ],
+  "foco": [
+   0.11,
+   0.273,
+   0.888,
+   0.912
+  ]
  },
  {
   "codigo": "F063",
@@ -837,7 +1925,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F063.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.6736,
+    0.2811,
+    0.2042,
+    0.1744
+   ],
+   [
+    0.0208,
+    0.2956,
+    0.1704,
+    0.1456
+   ],
+   [
+    0.6853,
+    0.0522,
+    0.1183,
+    0.1011
+   ],
+   [
+    0.4226,
+    0.26,
+    0.104,
+    0.0889
+   ],
+   [
+    0.0195,
+    0.6522,
+    0.0741,
+    0.0633
+   ]
+  ],
+  "foco": [
+   0.112,
+   0.221,
+   0.871,
+   0.903
+  ]
  },
  {
   "codigo": "F064",
@@ -852,7 +1978,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F064.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.0444,
+    0.4422,
+    0.2039,
+    0.1378
+   ],
+   [
+    0.75,
+    0.45,
+    0.1776,
+    0.12
+   ],
+   [
+    0.3174,
+    0.4778,
+    0.1776,
+    0.12
+   ],
+   [
+    0.5312,
+    0.4644,
+    0.1562,
+    0.1056
+   ]
+  ],
+  "foco": [
+   0.107,
+   0.14,
+   0.903,
+   0.9
+  ]
  },
  {
   "codigo": "F065",
@@ -867,7 +2025,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F065.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.7117,
+    0.5322,
+    0.2674,
+    0.2133
+   ],
+   [
+    0.1922,
+    0.43,
+    0.2354,
+    0.1878
+   ],
+   [
+    0.124,
+    0.1056,
+    0.2284,
+    0.1822
+   ],
+   [
+    0.6518,
+    0.0978,
+    0.2061,
+    0.1644
+   ]
+  ],
+  "foco": [
+   0.094,
+   0.092,
+   0.889,
+   0.852
+  ]
  },
  {
   "codigo": "F066",
@@ -882,7 +2072,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F066.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.7929,
+    0.4644,
+    0.0986,
+    0.0556
+   ],
+   [
+    0.4813,
+    0.4833,
+    0.0868,
+    0.0489
+   ],
+   [
+    0.288,
+    0.5467,
+    0.0848,
+    0.0478
+   ]
+  ],
+  "foco": [
+   0.102,
+   0.36,
+   0.927,
+   0.941
+  ]
  },
  {
   "codigo": "F067",
@@ -897,7 +2113,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F067.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.1433,
+    0.3189,
+    0.0983,
+    0.0656
+   ],
+   [
+    0.7683,
+    0.2878,
+    0.0917,
+    0.0611
+   ],
+   [
+    0.5267,
+    0.3111,
+    0.09,
+    0.06
+   ]
+  ],
+  "foco": [
+   0.102,
+   0.061,
+   0.9,
+   0.878
+  ]
  },
  {
   "codigo": "F068",
@@ -912,7 +2154,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F068.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.0561,
+    0.19,
+    0.1568,
+    0.1056
+   ],
+   [
+    0.4653,
+    0.3389,
+    0.1221,
+    0.0822
+   ],
+   [
+    0.8878,
+    0.2067,
+    0.1023,
+    0.0689
+   ]
+  ],
+  "foco": [
+   0.081,
+   0.179,
+   0.939,
+   0.912
+  ]
  },
  {
   "codigo": "F069",
@@ -927,7 +2195,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F069.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.7016,
+    0.0111,
+    0.1062,
+    0.0756
+   ],
+   [
+    0.2609,
+    0.3067,
+    0.0922,
+    0.0656
+   ],
+   [
+    0.2812,
+    0.0367,
+    0.0859,
+    0.0611
+   ]
+  ],
+  "foco": [
+   0.072,
+   0.078,
+   0.925,
+   0.959
+  ]
  },
  {
   "codigo": "F070",
@@ -942,7 +2236,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F070.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3478,
+    0.3033,
+    0.1431,
+    0.0878
+   ],
+   [
+    0.5127,
+    0.3467,
+    0.1413,
+    0.0867
+   ],
+   [
+    0.2246,
+    0.3156,
+    0.1395,
+    0.0856
+   ],
+   [
+    0.6449,
+    0.3222,
+    0.1268,
+    0.0778
+   ],
+   [
+    0.4167,
+    0.34,
+    0.0924,
+    0.0567
+   ]
+  ],
+  "foco": [
+   0.104,
+   0.064,
+   0.856,
+   0.831
+  ]
  },
  {
   "codigo": "F071",
@@ -957,7 +2289,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F071.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.089,
+   0.279,
+   0.921,
+   0.776
+  ]
  },
  {
   "codigo": "F072",
@@ -972,7 +2311,27 @@
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F072.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.1047,
+    0.7278,
+    0.2668,
+    0.15
+   ],
+   [
+    0.4249,
+    0.3133,
+    0.1581,
+    0.0889
+   ]
+  ],
+  "foco": [
+   0.114,
+   0.166,
+   0.864,
+   0.913
+  ]
  },
  {
   "codigo": "F073",
@@ -987,7 +2346,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F073.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.0508,
+    0.7444,
+    0.1525,
+    0.1
+   ],
+   [
+    0.7898,
+    0.5989,
+    0.0966,
+    0.0633
+   ]
+  ],
+  "foco": [
+   0.075,
+   0.141,
+   0.811,
+   0.911
+  ]
  },
  {
   "codigo": "F074",
@@ -1002,7 +2381,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F074.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3467,
+    0.5589,
+    0.155,
+    0.1033
+   ],
+   [
+    0.4817,
+    0.43,
+    0.1333,
+    0.0889
+   ],
+   [
+    0.3083,
+    0.4511,
+    0.1167,
+    0.0778
+   ]
+  ],
+  "foco": [
+   0.088,
+   0.181,
+   0.917,
+   0.878
+  ]
  },
  {
   "codigo": "F075",
@@ -1017,7 +2422,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F075.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.1478,
+    0.5167,
+    0.0511,
+    0.0511
+   ]
+  ],
+  "foco": [
+   0.136,
+   0.116,
+   0.909,
+   0.878
+  ]
  },
  {
   "codigo": "F076",
@@ -1032,7 +2451,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F076.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.7021,
+    0.3189,
+    0.1356,
+    0.1133
+   ],
+   [
+    0.3551,
+    0.1778,
+    0.0824,
+    0.0689
+   ],
+   [
+    0.2234,
+    0.2311,
+    0.0745,
+    0.0622
+   ]
+  ],
+  "foco": [
+   0.127,
+   0.138,
+   0.901,
+   0.85
+  ]
  },
  {
   "codigo": "F077",
@@ -1047,7 +2492,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F077.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.6833,
+    0.0878,
+    0.1554,
+    0.1144
+   ],
+   [
+    0.3379,
+    0.1789,
+    0.1146,
+    0.0844
+   ]
+  ],
+  "foco": [
+   0.077,
+   0.138,
+   0.838,
+   0.878
+  ]
  },
  {
   "codigo": "F078",
@@ -1062,7 +2527,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F078.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3667,
+    0.4111,
+    0.2317,
+    0.1544
+   ],
+   [
+    0.665,
+    0.1811,
+    0.1733,
+    0.1156
+   ],
+   [
+    0.0967,
+    0.3333,
+    0.155,
+    0.1033
+   ],
+   [
+    0.885,
+    0.0889,
+    0.0767,
+    0.0511
+   ]
+  ],
+  "foco": [
+   0.092,
+   0.114,
+   0.922,
+   0.916
+  ]
  },
  {
   "codigo": "F079",
@@ -1077,7 +2574,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F079.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.8124,
+    0.1867,
+    0.1194,
+    0.0856
+   ],
+   [
+    0.5736,
+    0.2733,
+    0.0961,
+    0.0689
+   ]
+  ],
+  "foco": [
+   0.1,
+   0.147,
+   0.918,
+   0.938
+  ]
  },
  {
   "codigo": "F080",
@@ -1092,7 +2609,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F080.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.5042,
+    0.1356,
+    0.2042,
+    0.1633
+   ],
+   [
+    0.1417,
+    0.2389,
+    0.1542,
+    0.1233
+   ],
+   [
+    0.2903,
+    0.2456,
+    0.1542,
+    0.1233
+   ],
+   [
+    0.6736,
+    0.2033,
+    0.1472,
+    0.1178
+   ]
+  ],
+  "foco": [
+   0.095,
+   0.109,
+   0.915,
+   0.903
+  ]
  },
  {
   "codigo": "F081",
@@ -1107,7 +2656,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F081.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.3556,
+    0.1056,
+    0.1956,
+    0.2444
+   ],
+   [
+    0.2467,
+    0.2347,
+    0.1233,
+    0.1542
+   ],
+   [
+    0.8778,
+    0.1694,
+    0.1156,
+    0.1444
+   ],
+   [
+    0.6756,
+    0.2167,
+    0.1022,
+    0.1278
+   ]
+  ],
+  "foco": [
+   0.108,
+   0.116,
+   0.891,
+   0.905
+  ]
  },
  {
   "codigo": "F082",
@@ -1122,7 +2703,45 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F082.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.6978,
+    0.2333,
+    0.14,
+    0.14
+   ],
+   [
+    0.2633,
+    0.3222,
+    0.13,
+    0.13
+   ],
+   [
+    0.5233,
+    0.2722,
+    0.1211,
+    0.1211
+   ],
+   [
+    0.1256,
+    0.2567,
+    0.1178,
+    0.1178
+   ],
+   [
+    0.3533,
+    0.2322,
+    0.0978,
+    0.0978
+   ]
+  ],
+  "foco": [
+   0.111,
+   0.239,
+   0.867,
+   0.93
+  ]
  },
  {
   "codigo": "F083",
@@ -1137,7 +2756,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F083.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.2411,
+    0.3467,
+    0.253,
+    0.1422
+   ],
+   [
+    0.0257,
+    0.3056,
+    0.2411,
+    0.1356
+   ]
+  ],
+  "foco": [
+   0.089,
+   0.344,
+   0.884,
+   0.95
+  ]
  },
  {
   "codigo": "F084",
@@ -1152,7 +2791,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F084.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.6144,
+    0.4344,
+    0.1077,
+    0.0978
+   ],
+   [
+    0.328,
+    0.3178,
+    0.0967,
+    0.0878
+   ],
+   [
+    0.5349,
+    0.12,
+    0.0942,
+    0.0856
+   ]
+  ],
+  "foco": [
+   0.177,
+   0.198,
+   0.819,
+   0.933
+  ]
  },
  {
   "codigo": "F085",
@@ -1167,7 +2832,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F085.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.613,
+    0.3111,
+    0.0929,
+    0.0744
+   ],
+   [
+    0.1193,
+    0.3033,
+    0.0763,
+    0.0611
+   ],
+   [
+    0.7698,
+    0.3044,
+    0.0652,
+    0.0522
+   ]
+  ],
+  "foco": [
+   0.113,
+   0.252,
+   0.875,
+   0.828
+  ]
  },
  {
   "codigo": "F086",
@@ -1182,7 +2873,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F086.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.2139,
+    0.3044,
+    0.2208,
+    0.1767
+   ],
+   [
+    0.3944,
+    0.3022,
+    0.1375,
+    0.11
+   ]
+  ],
+  "foco": [
+   0.108,
+   0.249,
+   0.779,
+   0.953
+  ]
  },
  {
   "codigo": "F087",
@@ -1197,7 +2908,14 @@
   "nota": "Dupla John e Paul; inclusão na coleção Beatles",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F087.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [],
+  "foco": [
+   0.126,
+   0.123,
+   0.909,
+   0.906
+  ]
  },
  {
   "codigo": "F088",
@@ -1212,7 +2930,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F088.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.5034,
+    0.3822,
+    0.1051,
+    0.1044
+   ],
+   [
+    0.3356,
+    0.4022,
+    0.0794,
+    0.0789
+   ],
+   [
+    0.1913,
+    0.3578,
+    0.0783,
+    0.0778
+   ]
+  ],
+  "foco": [
+   0.073,
+   0.196,
+   0.898,
+   0.922
+  ]
  },
  {
   "codigo": "F089",
@@ -1227,7 +2971,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F089.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [],
+  "foco": [
+   0.078,
+   0.067,
+   0.905,
+   0.956
+  ]
  },
  {
   "codigo": "F090",
@@ -1242,7 +2993,21 @@
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F090.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.3278,
+    0.1522,
+    0.1895,
+    0.1522
+   ]
+  ],
+  "foco": [
+   0.11,
+   0.138,
+   0.871,
+   0.879
+  ]
  },
  {
   "codigo": "F091",
@@ -1257,7 +3022,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F091.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.078,
+   0.079,
+   0.917,
+   0.913
+  ]
  },
  {
   "codigo": "F092",
@@ -1272,7 +3044,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F092.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.6288,
+    0.1511,
+    0.111,
+    0.09
+   ],
+   [
+    0.2356,
+    0.2156,
+    0.1,
+    0.0811
+   ]
+  ],
+  "foco": [
+   0.114,
+   0.069,
+   0.894,
+   0.836
+  ]
  },
  {
   "codigo": "F093",
@@ -1287,7 +3079,14 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F093.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [],
+  "foco": [
+   0.265,
+   0.317,
+   0.727,
+   0.941
+  ]
  },
  {
   "codigo": "F094",
@@ -1302,7 +3101,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F094.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.35,
+    0.35,
+    0.1361,
+    0.1089
+   ]
+  ],
+  "foco": [
+   0.101,
+   0.084,
+   0.908,
+   0.872
+  ]
  },
  {
   "codigo": "F095",
@@ -1317,7 +3130,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F095.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [],
+  "foco": [
+   0.108,
+   0.12,
+   0.903,
+   0.896
+  ]
  },
  {
   "codigo": "F096",
@@ -1332,7 +3152,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F096.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.053,
+   0.138,
+   0.782,
+   0.95
+  ]
  },
  {
   "codigo": "F097",
@@ -1347,7 +3174,14 @@
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F097.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.104,
+   0.286,
+   0.884,
+   0.8
+  ]
  },
  {
   "codigo": "F098",
@@ -1362,7 +3196,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F098.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [],
+  "foco": [
+   0.095,
+   0.126,
+   0.886,
+   0.97
+  ]
  },
  {
   "codigo": "F099",
@@ -1377,7 +3218,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F099.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [],
+  "foco": [
+   0.126,
+   0.196,
+   0.879,
+   0.914
+  ]
  },
  {
   "codigo": "F100",
@@ -1392,7 +3240,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F100.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3494,
+    0.1267,
+    0.2146,
+    0.1433
+   ]
+  ],
+  "foco": [
+   0.168,
+   0.177,
+   0.835,
+   0.944
+  ]
  },
  {
   "codigo": "F101",
@@ -1407,7 +3269,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F101.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.5403,
+    0.2622,
+    0.2347,
+    0.1878
+   ]
+  ],
+  "foco": [
+   0.151,
+   0.209,
+   0.844,
+   0.842
+  ]
  },
  {
   "codigo": "F102",
@@ -1422,7 +3298,21 @@
   "nota": "Identificação confirmada pela usuária em 05/11/2026.",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F102.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.3724,
+    0.1989,
+    0.1902,
+    0.13
+   ]
+  ],
+  "foco": [
+   0.097,
+   0.108,
+   0.869,
+   0.851
+  ]
  },
  {
   "codigo": "F103",
@@ -1437,7 +3327,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F103.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.4793,
+    0.7878,
+    0.1381,
+    0.0778
+   ]
+  ],
+  "foco": [
+   0.077,
+   0.082,
+   0.902,
+   0.916
+  ]
  },
  {
   "codigo": "F104",
@@ -1452,7 +3356,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F104.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.5183,
+    0.2489,
+    0.1533,
+    0.1022
+   ],
+   [
+    0.0267,
+    0.15,
+    0.1433,
+    0.0956
+   ]
+  ],
+  "foco": [
+   0.167,
+   0.176,
+   0.885,
+   0.822
+  ]
  },
  {
   "codigo": "F105",
@@ -1467,7 +3391,39 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F105.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.4711,
+    0.5134,
+    0.2444,
+    0.2455
+   ],
+   [
+    0.0744,
+    0.567,
+    0.1756,
+    0.1763
+   ],
+   [
+    0.2533,
+    0.558,
+    0.1267,
+    0.1272
+   ],
+   [
+    0.6056,
+    0.6317,
+    0.07,
+    0.0703
+   ]
+  ],
+  "foco": [
+   0.079,
+   0.355,
+   0.908,
+   0.858
+  ]
  },
  {
   "codigo": "F106",
@@ -1482,7 +3438,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F106.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.3203,
+    0.4278,
+    0.0848,
+    0.06
+   ]
+  ],
+  "foco": [
+   0.094,
+   0.104,
+   0.917,
+   0.797
+  ]
  },
  {
   "codigo": "F107",
@@ -1497,7 +3467,21 @@
   "nota": "Rótulo escrito como Dave Groll Nirvana; grafia padronizada para Dave Grohl",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F107.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [
+   [
+    0.732,
+    0.22,
+    0.1367,
+    0.11
+   ]
+  ],
+  "foco": [
+   0.101,
+   0.168,
+   0.942,
+   0.93
+  ]
  },
  {
   "codigo": "F108",
@@ -1512,7 +3496,14 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F108.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [],
+  "foco": [
+   0.216,
+   0.19,
+   0.936,
+   0.852
+  ]
  },
  {
   "codigo": "F109",
@@ -1527,7 +3518,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F109.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.4,
+    0.1189,
+    0.2456,
+    0.2456
+   ],
+   [
+    0.6011,
+    0.6744,
+    0.0689,
+    0.0689
+   ]
+  ],
+  "foco": [
+   0.239,
+   0.168,
+   0.782,
+   0.97
+  ]
  },
  {
   "codigo": "F110",
@@ -1542,7 +3553,33 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F110.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.6482,
+    0.2522,
+    0.1245,
+    0.07
+   ],
+   [
+    0.3794,
+    0.3033,
+    0.1186,
+    0.0667
+   ],
+   [
+    0.1502,
+    0.3278,
+    0.1146,
+    0.0644
+   ]
+  ],
+  "foco": [
+   0.11,
+   0.193,
+   0.882,
+   0.894
+  ]
  },
  {
   "codigo": "F111",
@@ -1557,7 +3594,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F111.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.152,
+   0.169,
+   0.918,
+   0.937
+  ]
  },
  {
   "codigo": "F112",
@@ -1572,7 +3616,27 @@
   "nota": "A usuária marcou esta foto como RARA: Paul e Michael juntos, uma única figurinha",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F112.jpeg",
-  "modelo2": "M5"
+  "modelo2": "M5",
+  "rostos": [
+   [
+    0.5133,
+    0.1759,
+    0.1567,
+    0.2431
+   ],
+   [
+    0.3378,
+    0.2397,
+    0.09,
+    0.1397
+   ]
+  ],
+  "foco": [
+   0.12,
+   0.11,
+   0.922,
+   0.916
+  ]
  },
  {
   "codigo": "F113",
@@ -1587,7 +3651,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F113.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.2425,
+    0.2,
+    0.3819,
+    0.2678
+   ]
+  ],
+  "foco": [
+   0.178,
+   0.18,
+   0.892,
+   0.938
+  ]
  },
  {
   "codigo": "F114",
@@ -1602,7 +3680,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F114.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.3576,
+    0.13,
+    0.2355,
+    0.2122
+   ]
+  ],
+  "foco": [
+   0.097,
+   0.1,
+   0.903,
+   0.919
+  ]
  },
  {
   "codigo": "F115",
@@ -1617,7 +3709,21 @@
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F115.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3555,
+    0.1478,
+    0.3023,
+    0.2022
+   ]
+  ],
+  "foco": [
+   0.161,
+   0.083,
+   0.899,
+   0.841
+  ]
  },
  {
   "codigo": "F116",
@@ -1632,7 +3738,14 @@
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F116.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.151,
+   0.237,
+   0.854,
+   0.886
+  ]
  },
  {
   "codigo": "F117",
@@ -1647,7 +3760,21 @@
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F117.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.2744,
+    0.2144,
+    0.2456,
+    0.2456
+   ]
+  ],
+  "foco": [
+   0.133,
+   0.156,
+   0.846,
+   0.889
+  ]
  },
  {
   "codigo": "F118",
@@ -1662,7 +3789,27 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F118.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.1236,
+    0.0833,
+    0.6013,
+    0.4056
+   ],
+   [
+    0.3756,
+    0.8156,
+    0.173,
+    0.1167
+   ]
+  ],
+  "foco": [
+   0.168,
+   0.111,
+   0.864,
+   0.892
+  ]
  },
  {
   "codigo": "F119",
@@ -1677,7 +3824,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F119.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [
+   [
+    0.3307,
+    0.2144,
+    0.1599,
+    0.1144
+   ]
+  ],
+  "foco": [
+   0.071,
+   0.189,
+   0.932,
+   0.862
+  ]
  },
  {
   "codigo": "F120",
@@ -1692,7 +3853,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F120.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.3764,
+    0.2889,
+    0.2806,
+    0.2244
+   ]
+  ],
+  "foco": [
+   0.085,
+   0.179,
+   0.922,
+   0.897
+  ]
  },
  {
   "codigo": "F121",
@@ -1707,7 +3882,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F121.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [
+   [
+    0.3533,
+    0.0678,
+    0.3417,
+    0.2278
+   ]
+  ],
+  "foco": [
+   0.085,
+   0.152,
+   0.838,
+   0.924
+  ]
  },
  {
   "codigo": "F122",
@@ -1722,7 +3911,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F122.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [],
+  "foco": [
+   0.241,
+   0.23,
+   0.786,
+   0.893
+  ]
  },
  {
   "codigo": "F123",
@@ -1737,7 +3933,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F123.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.116,
+   0.391,
+   0.849,
+   0.93
+  ]
  },
  {
   "codigo": "F124",
@@ -1752,7 +3955,14 @@
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
   "foto": "assets/figurinhas/fotos/F124.jpeg",
-  "modelo2": "M6"
+  "modelo2": "M6",
+  "rostos": [],
+  "foco": [
+   0.204,
+   0.226,
+   0.781,
+   0.902
+  ]
  },
  {
   "codigo": "F125",
@@ -1767,7 +3977,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F125.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [
+   [
+    0.735,
+    0.19,
+    0.11,
+    0.0733
+   ]
+  ],
+  "foco": [
+   0.142,
+   0.201,
+   0.887,
+   0.87
+  ]
  },
  {
   "codigo": "F126",
@@ -1782,7 +4006,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F126.jpeg",
-  "modelo2": "M2"
+  "modelo2": "M2",
+  "rostos": [],
+  "foco": [
+   0.153,
+   0.126,
+   0.867,
+   0.883
+  ]
  },
  {
   "codigo": "F127",
@@ -1797,7 +4028,21 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F127.jpeg",
-  "modelo2": "M3"
+  "modelo2": "M3",
+  "rostos": [
+   [
+    0.3084,
+    0.1922,
+    0.3967,
+    0.2944
+   ]
+  ],
+  "foco": [
+   0.147,
+   0.224,
+   0.804,
+   0.938
+  ]
  },
  {
   "codigo": "F128",
@@ -1812,7 +4057,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F128.jpeg",
-  "modelo2": "M4"
+  "modelo2": "M4",
+  "rostos": [],
+  "foco": [
+   0.152,
+   0.15,
+   0.898,
+   0.864
+  ]
  },
  {
   "codigo": "F129",
@@ -1827,7 +4079,21 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F129.jpeg",
-  "modelo2": "M8"
+  "modelo2": "M8",
+  "rostos": [
+   [
+    0.4489,
+    0.5867,
+    0.1022,
+    0.1363
+   ]
+  ],
+  "foco": [
+   0.17,
+   0.087,
+   0.946,
+   0.799
+  ]
  },
  {
   "codigo": "F130",
@@ -1842,7 +4108,14 @@
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
   "foto": "assets/figurinhas/fotos/F130.jpeg",
-  "modelo2": "M1"
+  "modelo2": "M1",
+  "rostos": [],
+  "foco": [
+   0.115,
+   0.141,
+   0.874,
+   0.921
+  ]
  },
  {
   "codigo": "F131",
@@ -1857,7 +4130,14 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F131.jpeg",
-  "modelo2": "M7"
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.151,
+   0.112,
+   0.956,
+   0.93
+  ]
  },
  {
   "codigo": "F132",
@@ -1872,6 +4152,13 @@
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
   "foto": "assets/figurinhas/fotos/F132.jpeg",
-  "modelo2": "M8"
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.108,
+   0.18,
+   0.861,
+   0.903
+  ]
  }
 ]
