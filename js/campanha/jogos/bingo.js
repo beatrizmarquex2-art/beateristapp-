@@ -3,8 +3,8 @@
 // o objetivo é sempre alcançável: `need` = menor nº de sorteios em que a combinação já é possível (calculado pelo motor, conferido nos testes).
 // Conclusão = o motor confirma a combinação com casas realmente MARCADAS e já SORTEADAS (evaluate refaz a conferência a partir das marcas do resultado).
 // Erro = tocar num item que ainda não saiu OU gritar "bingo!" sem a combinação pronta. Limitação: só existem 3 grupos legítimos de itens e a cartela é sempre 4×4.
-import { mount as mountGame } from '../../jogos/bingo.js';
-import * as B from '../../jogos/bingo-logic.js';
+import { mount as mountGame } from '../../jogos/bingo1.js';
+import * as B from '../../jogos/bingo1-logic.js';
 
 const pad = (i) => String(i).padStart(2, '0');
 const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
