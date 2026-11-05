@@ -180,6 +180,22 @@ function keyboardGuard() {
   if (window.visualViewport) visualViewport.addEventListener('resize', () => { if (visualViewport.height > innerHeight * 0.85) unstick(); });
 }
 
+/* ---------- desfazer / refazer: vale pra tarefas, notas, partituras, ideias, alunos... (tudo que salva no app) ---------- */
+async function doUndo() { if (await store.undo()) toast('Desfeito ↶', { action: 'refazer', onAction: doRedo }); else toast('Nada pra desfazer.'); }
+async function doRedo() { if (await store.redo()) toast('Refeito ↷'); }
+function undoUi() {
+  const sync = () => {
+    const u = document.querySelector('.top-undo'), r = document.querySelector('.top-redo');
+    if (u) u.disabled = !store.canUndo(); if (r) r.hidden = !store.canRedo();
+  };
+  store.subscribe((i) => { if (i && i.history) sync(); });
+  document.addEventListener('keydown', (e) => {
+    if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'z' || noGesture({ target: e.target })) return;
+    e.preventDefault(); (e.shiftKey ? doRedo : doUndo)();
+  });
+  addEventListener('hashchange', () => setTimeout(sync, 0)); sync();
+}
+
 function shell() {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'aria-label': 'Navegação principal' });
@@ -188,6 +204,8 @@ function shell() {
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
     h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
+    h('button', { type: 'button', class: 'icon-btn top-undo', 'aria-label': 'Desfazer a última mudança', title: 'Desfazer', disabled: true, onclick: doUndo }, icon('undo', 22)),
+    h('button', { type: 'button', class: 'icon-btn top-redo', 'aria-label': 'Refazer', title: 'Refazer', hidden: true, onclick: doRedo }, icon('redo', 22)),
     h('button', { type: 'button', class: 'icon-btn top-add', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 24)),
     h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Personalizar: tema e organização do início', onclick: openPersonalize }, icon('palette', 22)),
     h('a', { href: '#/ajustes', class: 'icon-btn gear', 'aria-label': 'Ajustes' }, icon('gear', 22)));
@@ -299,7 +317,7 @@ function showLogin() {
 }
 
 function startApp() {
-  shell();
+  shell(); undoUi();
   if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); startPaul({ allowed: () => /^#\/(ritmo|jogos|kids)/.test(location.hash) }); } else { sync.schedule(100); photos.schedule(300); }
 }
 
