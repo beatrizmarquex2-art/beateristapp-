@@ -276,3 +276,5 @@ html.kb-open .rz-jogar{bottom:8px}
 .rg-codes .row{display:flex;gap:6px;flex-wrap:wrap}
 .rg-mfilter{min-height:44px}
 .rg-codes input.rg-mfilter{flex:1;min-width:0}
+.rz-lock-code{font:900 34px/1.1 ui-monospace,Menlo,monospace;letter-spacing:.2em;padding:10px 14px;border:3px dashed currentColor;border-radius:14px;user-select:all}
+.rz-lock-tell{margin:0;font-size:18px}.rz-lock-have{width:100%;max-width:340px}.rz-lock-have summary{cursor:pointer;padding:6px 0}

@@ -16,7 +16,7 @@ export function mount(host) {
   const tableBox = h('div', {});
   host.append(banner('Importar código de aluno', 'quem tem código usa o Beat Hero e as Músicas MIDI'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      h('section', { class: 'card pad' }, h('b', {}, 'importar'), h('p', { class: 'muted' }, 'cole a lista (de uma planilha também): nome e código separados por tab, ; ou vírgula. quem vier só com o nome ganha um código aleatório.'), ta,
+      h('section', { class: 'card pad' }, h('b', {}, 'importar'), h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. cole aqui "nome ; código" (de uma planilha também) e ele é liberado sozinho. quem vier só com o nome ganha um código aleatório.'), ta,
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doImport }, 'importar'), h('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = ''; } }, 'limpar'))),
       h('section', { class: 'card pad' }, h('b', {}, 'gerar códigos novos'), h('p', { class: 'muted' }, 'sem lista: eu crio códigos aleatórios sem nome (você dá o nome depois, se quiser).'),
         h('div', { class: 'row' }, qtd, h('button', { class: 'btn', type: 'button', onclick: doGen }, 'gerar'))),
