@@ -10,7 +10,7 @@
 .fig-filter { width: 100%; min-height: 44px; margin: 0 0 12px; font: inherit; border-radius: 10px; padding: 0 10px; }
 .fig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 @media (min-width: 560px) { .fig-grid { grid-template-columns: repeat(4, 1fr); } }
-.fig-slot { position: relative; aspect-ratio: 2 / 3; padding: 0; border: 2px dashed color-mix(in srgb, currentColor 35%, transparent); border-radius: 10px; background: color-mix(in srgb, currentColor 6%, transparent); color: inherit; cursor: pointer; display: grid; place-items: center; overflow: hidden; touch-action: manipulation; }
+.fig-slot { position: relative; aspect-ratio: 360 / 475; padding: 0; border: 2px dashed color-mix(in srgb, currentColor 35%, transparent); border-radius: 10px; background: color-mix(in srgb, currentColor 6%, transparent); color: inherit; cursor: pointer; display: grid; place-items: center; overflow: hidden; touch-action: manipulation; }
 .fig-slot.got { border: 0; background: none; }
 .fig-slot.hand { border-color: #c4182c; border-style: solid; }
 .fig-slot svg, .fig-flip svg, .fig-zoom svg { display: block; width: 100%; height: auto; }
@@ -27,7 +27,7 @@
 .fig-chip em { font-style: normal; opacity: .7; }
 .fig-opt { display: flex; gap: 8px; align-items: center; margin-top: 18px; min-height: 44px; font-size: 14px; }
 .fig-reveal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 14px; }
-.fig-flip { position: relative; aspect-ratio: 2 / 3; padding: 0; border: 0; background: none; perspective: 600px; cursor: pointer; }
+.fig-flip { position: relative; aspect-ratio: 360 / 475; padding: 0; border: 0; background: none; perspective: 600px; cursor: pointer; }
 .fig-flip .back, .fig-flip .front { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; transition: transform .5s; overflow: hidden; }
 .fig-flip .back { background: linear-gradient(160deg, #5b1424, #c4182c); color: #efe2c6; display: grid; place-items: center; font-size: 15px; }
 .fig-flip .front { transform: rotateY(180deg); }

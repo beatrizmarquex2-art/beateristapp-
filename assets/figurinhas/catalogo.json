@@ -11,7 +11,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F001.jpeg"
+  "foto": "assets/figurinhas/fotos/F001.jpeg",
+  "modelo2": "M7"
  },
  {
   "codigo": "F004",
@@ -25,7 +26,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F004.jpeg"
+  "foto": "assets/figurinhas/fotos/F004.jpeg",
+  "modelo2": "M8"
  },
  {
   "codigo": "F005",
@@ -39,7 +41,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F005.jpeg"
+  "foto": "assets/figurinhas/fotos/F005.jpeg",
+  "modelo2": "M7"
  },
  {
   "codigo": "F010",
@@ -53,7 +56,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F010.jpeg"
+  "foto": "assets/figurinhas/fotos/F010.jpeg",
+  "modelo2": "M8"
  },
  {
   "codigo": "F011",
@@ -67,7 +71,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F011.jpeg"
+  "foto": "assets/figurinhas/fotos/F011.jpeg",
+  "modelo2": "M7"
  },
  {
   "codigo": "F012",
@@ -81,7 +86,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F012.jpeg"
+  "foto": "assets/figurinhas/fotos/F012.jpeg",
+  "modelo2": "M8"
  },
  {
   "codigo": "F013",
@@ -95,7 +101,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F013.jpeg"
+  "foto": "assets/figurinhas/fotos/F013.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F014",
@@ -109,7 +116,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F014.jpeg"
+  "foto": "assets/figurinhas/fotos/F014.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F015",
@@ -123,7 +131,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F015.jpeg"
+  "foto": "assets/figurinhas/fotos/F015.jpeg",
+  "modelo2": "M7"
  },
  {
   "codigo": "F016",
@@ -137,7 +146,8 @@
   "status": "identificado",
   "nota": "Foto conjunta de Justin Bieber e Billie Eilish; não separar em artistas diferentes",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F016.jpeg"
+  "foto": "assets/figurinhas/fotos/F016.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F017",
@@ -151,7 +161,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F017.jpeg"
+  "foto": "assets/figurinhas/fotos/F017.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F018",
@@ -165,7 +176,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F018.jpeg"
+  "foto": "assets/figurinhas/fotos/F018.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F020",
@@ -179,7 +191,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F020.jpeg"
+  "foto": "assets/figurinhas/fotos/F020.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F021",
@@ -193,7 +206,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F021.jpeg"
+  "foto": "assets/figurinhas/fotos/F021.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F022",
@@ -207,7 +221,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F022.jpeg"
+  "foto": "assets/figurinhas/fotos/F022.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F023",
@@ -221,7 +236,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F023.jpeg"
+  "foto": "assets/figurinhas/fotos/F023.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F024",
@@ -235,7 +251,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F024.jpeg"
+  "foto": "assets/figurinhas/fotos/F024.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F025",
@@ -249,7 +266,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F025.jpeg"
+  "foto": "assets/figurinhas/fotos/F025.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F026",
@@ -263,7 +281,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F026.jpeg"
+  "foto": "assets/figurinhas/fotos/F026.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F027",
@@ -277,7 +296,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F027.jpeg"
+  "foto": "assets/figurinhas/fotos/F027.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F028",
@@ -291,7 +311,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F028.jpeg"
+  "foto": "assets/figurinhas/fotos/F028.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F029",
@@ -305,7 +326,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F029.jpeg"
+  "foto": "assets/figurinhas/fotos/F029.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F030",
@@ -319,7 +341,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F030.jpeg"
+  "foto": "assets/figurinhas/fotos/F030.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F031",
@@ -333,7 +356,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F031.jpeg"
+  "foto": "assets/figurinhas/fotos/F031.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F032",
@@ -347,7 +371,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F032.jpeg"
+  "foto": "assets/figurinhas/fotos/F032.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F033",
@@ -361,7 +386,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F033.jpeg"
+  "foto": "assets/figurinhas/fotos/F033.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F034",
@@ -375,7 +401,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F034.jpeg"
+  "foto": "assets/figurinhas/fotos/F034.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F035",
@@ -389,7 +416,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F035.jpeg"
+  "foto": "assets/figurinhas/fotos/F035.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F036",
@@ -403,7 +431,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F036.jpeg"
+  "foto": "assets/figurinhas/fotos/F036.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F037",
@@ -417,7 +446,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F037.jpeg"
+  "foto": "assets/figurinhas/fotos/F037.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F038",
@@ -431,7 +461,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F038.jpeg"
+  "foto": "assets/figurinhas/fotos/F038.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F039",
@@ -445,7 +476,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F039.jpeg"
+  "foto": "assets/figurinhas/fotos/F039.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F040",
@@ -459,7 +491,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F040.jpeg"
+  "foto": "assets/figurinhas/fotos/F040.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F041",
@@ -473,7 +506,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F041.jpeg"
+  "foto": "assets/figurinhas/fotos/F041.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F042",
@@ -487,7 +521,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F042.jpeg"
+  "foto": "assets/figurinhas/fotos/F042.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F043",
@@ -501,7 +536,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F043.jpeg"
+  "foto": "assets/figurinhas/fotos/F043.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F044",
@@ -515,7 +551,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F044.jpeg"
+  "foto": "assets/figurinhas/fotos/F044.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F045",
@@ -529,7 +566,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F045.jpeg"
+  "foto": "assets/figurinhas/fotos/F045.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F046",
@@ -543,7 +581,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F046.jpeg"
+  "foto": "assets/figurinhas/fotos/F046.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F047",
@@ -557,7 +596,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F047.jpeg"
+  "foto": "assets/figurinhas/fotos/F047.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F048",
@@ -571,7 +611,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F048.jpeg"
+  "foto": "assets/figurinhas/fotos/F048.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F049",
@@ -585,7 +626,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F049.jpeg"
+  "foto": "assets/figurinhas/fotos/F049.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F050",
@@ -599,7 +641,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F050.jpeg"
+  "foto": "assets/figurinhas/fotos/F050.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F051",
@@ -613,7 +656,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F051.jpeg"
+  "foto": "assets/figurinhas/fotos/F051.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F052",
@@ -627,7 +671,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F052.jpeg"
+  "foto": "assets/figurinhas/fotos/F052.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F053",
@@ -641,7 +686,8 @@
   "status": "identificado",
   "nota": "Campo não visível no print; legenda original da própria fotografia indica AC/DC, Angus Young e Brian Johnson",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F053.jpeg"
+  "foto": "assets/figurinhas/fotos/F053.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F054",
@@ -655,7 +701,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F054.jpeg"
+  "foto": "assets/figurinhas/fotos/F054.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F055",
@@ -669,7 +716,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F055.jpeg"
+  "foto": "assets/figurinhas/fotos/F055.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F056",
@@ -683,7 +731,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F056.jpeg"
+  "foto": "assets/figurinhas/fotos/F056.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F057",
@@ -697,7 +746,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F057.jpeg"
+  "foto": "assets/figurinhas/fotos/F057.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F058",
@@ -711,7 +761,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F058.jpeg"
+  "foto": "assets/figurinhas/fotos/F058.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F059",
@@ -725,7 +776,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F059.jpeg"
+  "foto": "assets/figurinhas/fotos/F059.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F060",
@@ -739,7 +791,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F060.jpeg"
+  "foto": "assets/figurinhas/fotos/F060.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F061",
@@ -753,7 +806,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F061.jpeg"
+  "foto": "assets/figurinhas/fotos/F061.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F062",
@@ -767,7 +821,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F062.jpeg"
+  "foto": "assets/figurinhas/fotos/F062.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F063",
@@ -781,7 +836,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F063.jpeg"
+  "foto": "assets/figurinhas/fotos/F063.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F064",
@@ -795,7 +851,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F064.jpeg"
+  "foto": "assets/figurinhas/fotos/F064.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F065",
@@ -809,7 +866,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F065.jpeg"
+  "foto": "assets/figurinhas/fotos/F065.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F066",
@@ -823,7 +881,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F066.jpeg"
+  "foto": "assets/figurinhas/fotos/F066.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F067",
@@ -837,7 +896,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F067.jpeg"
+  "foto": "assets/figurinhas/fotos/F067.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F068",
@@ -851,7 +911,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F068.jpeg"
+  "foto": "assets/figurinhas/fotos/F068.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F069",
@@ -865,7 +926,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F069.jpeg"
+  "foto": "assets/figurinhas/fotos/F069.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F070",
@@ -879,7 +941,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F070.jpeg"
+  "foto": "assets/figurinhas/fotos/F070.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F071",
@@ -893,7 +956,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F071.jpeg"
+  "foto": "assets/figurinhas/fotos/F071.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F072",
@@ -907,7 +971,8 @@
   "status": "identificado",
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F072.jpeg"
+  "foto": "assets/figurinhas/fotos/F072.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F073",
@@ -921,7 +986,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F073.jpeg"
+  "foto": "assets/figurinhas/fotos/F073.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F074",
@@ -935,7 +1001,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F074.jpeg"
+  "foto": "assets/figurinhas/fotos/F074.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F075",
@@ -949,7 +1016,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F075.jpeg"
+  "foto": "assets/figurinhas/fotos/F075.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F076",
@@ -963,7 +1031,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F076.jpeg"
+  "foto": "assets/figurinhas/fotos/F076.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F077",
@@ -977,7 +1046,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F077.jpeg"
+  "foto": "assets/figurinhas/fotos/F077.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F078",
@@ -991,7 +1061,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F078.jpeg"
+  "foto": "assets/figurinhas/fotos/F078.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F079",
@@ -1005,7 +1076,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F079.jpeg"
+  "foto": "assets/figurinhas/fotos/F079.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F080",
@@ -1019,7 +1091,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F080.jpeg"
+  "foto": "assets/figurinhas/fotos/F080.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F081",
@@ -1033,7 +1106,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F081.jpeg"
+  "foto": "assets/figurinhas/fotos/F081.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F082",
@@ -1047,7 +1121,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F082.jpeg"
+  "foto": "assets/figurinhas/fotos/F082.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F083",
@@ -1061,7 +1136,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F083.jpeg"
+  "foto": "assets/figurinhas/fotos/F083.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F084",
@@ -1075,7 +1151,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F084.jpeg"
+  "foto": "assets/figurinhas/fotos/F084.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F085",
@@ -1089,7 +1166,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F085.jpeg"
+  "foto": "assets/figurinhas/fotos/F085.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F086",
@@ -1103,7 +1181,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F086.jpeg"
+  "foto": "assets/figurinhas/fotos/F086.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F087",
@@ -1117,7 +1196,8 @@
   "status": "identificado",
   "nota": "Dupla John e Paul; inclusão na coleção Beatles",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F087.jpeg"
+  "foto": "assets/figurinhas/fotos/F087.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F088",
@@ -1131,7 +1211,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F088.jpeg"
+  "foto": "assets/figurinhas/fotos/F088.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F089",
@@ -1145,7 +1226,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F089.jpeg"
+  "foto": "assets/figurinhas/fotos/F089.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F090",
@@ -1159,7 +1241,8 @@
   "status": "identificado",
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F090.jpeg"
+  "foto": "assets/figurinhas/fotos/F090.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F091",
@@ -1173,7 +1256,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F091.jpeg"
+  "foto": "assets/figurinhas/fotos/F091.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F092",
@@ -1187,7 +1271,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F092.jpeg"
+  "foto": "assets/figurinhas/fotos/F092.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F093",
@@ -1201,7 +1286,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F093.jpeg"
+  "foto": "assets/figurinhas/fotos/F093.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F094",
@@ -1215,7 +1301,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F094.jpeg"
+  "foto": "assets/figurinhas/fotos/F094.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F095",
@@ -1229,7 +1316,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F095.jpeg"
+  "foto": "assets/figurinhas/fotos/F095.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F096",
@@ -1243,7 +1331,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F096.jpeg"
+  "foto": "assets/figurinhas/fotos/F096.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F097",
@@ -1257,7 +1346,8 @@
   "status": "identificado",
   "nota": "Membro dos Beatles; inclusão na coleção Beatles",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F097.jpeg"
+  "foto": "assets/figurinhas/fotos/F097.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F098",
@@ -1271,7 +1361,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F098.jpeg"
+  "foto": "assets/figurinhas/fotos/F098.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F099",
@@ -1285,7 +1376,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F099.jpeg"
+  "foto": "assets/figurinhas/fotos/F099.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F100",
@@ -1299,7 +1391,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F100.jpeg"
+  "foto": "assets/figurinhas/fotos/F100.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F101",
@@ -1313,7 +1406,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F101.jpeg"
+  "foto": "assets/figurinhas/fotos/F101.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F102",
@@ -1327,7 +1421,8 @@
   "status": "identificado",
   "nota": "Identificação confirmada pela usuária em 05/11/2026.",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F102.jpeg"
+  "foto": "assets/figurinhas/fotos/F102.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F103",
@@ -1341,7 +1436,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F103.jpeg"
+  "foto": "assets/figurinhas/fotos/F103.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F104",
@@ -1355,7 +1451,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F104.jpeg"
+  "foto": "assets/figurinhas/fotos/F104.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F105",
@@ -1369,7 +1466,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F105.jpeg"
+  "foto": "assets/figurinhas/fotos/F105.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F106",
@@ -1383,7 +1481,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F106.jpeg"
+  "foto": "assets/figurinhas/fotos/F106.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F107",
@@ -1397,7 +1496,8 @@
   "status": "identificado",
   "nota": "Rótulo escrito como Dave Groll Nirvana; grafia padronizada para Dave Grohl",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F107.jpeg"
+  "foto": "assets/figurinhas/fotos/F107.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F108",
@@ -1411,7 +1511,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F108.jpeg"
+  "foto": "assets/figurinhas/fotos/F108.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F109",
@@ -1425,7 +1526,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F109.jpeg"
+  "foto": "assets/figurinhas/fotos/F109.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F110",
@@ -1439,7 +1541,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F110.jpeg"
+  "foto": "assets/figurinhas/fotos/F110.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F111",
@@ -1453,7 +1556,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F111.jpeg"
+  "foto": "assets/figurinhas/fotos/F111.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F112",
@@ -1467,7 +1571,8 @@
   "status": "identificado",
   "nota": "A usuária marcou esta foto como RARA: Paul e Michael juntos, uma única figurinha",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F112.jpeg"
+  "foto": "assets/figurinhas/fotos/F112.jpeg",
+  "modelo2": "M5"
  },
  {
   "codigo": "F113",
@@ -1481,7 +1586,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F113.jpeg"
+  "foto": "assets/figurinhas/fotos/F113.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F114",
@@ -1495,7 +1601,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F114.jpeg"
+  "foto": "assets/figurinhas/fotos/F114.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F115",
@@ -1509,7 +1616,8 @@
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F115.jpeg"
+  "foto": "assets/figurinhas/fotos/F115.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F116",
@@ -1523,7 +1631,8 @@
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F116.jpeg"
+  "foto": "assets/figurinhas/fotos/F116.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F117",
@@ -1537,7 +1646,8 @@
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F117.jpeg"
+  "foto": "assets/figurinhas/fotos/F117.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F118",
@@ -1551,7 +1661,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F118.jpeg"
+  "foto": "assets/figurinhas/fotos/F118.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F119",
@@ -1565,7 +1676,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F119.jpeg"
+  "foto": "assets/figurinhas/fotos/F119.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F120",
@@ -1579,7 +1691,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F120.jpeg"
+  "foto": "assets/figurinhas/fotos/F120.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F121",
@@ -1593,7 +1706,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F121.jpeg"
+  "foto": "assets/figurinhas/fotos/F121.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F122",
@@ -1607,7 +1721,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F122.jpeg"
+  "foto": "assets/figurinhas/fotos/F122.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F123",
@@ -1621,7 +1736,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F123.jpeg"
+  "foto": "assets/figurinhas/fotos/F123.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F124",
@@ -1635,7 +1751,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Seleção expressa de rara da usuária",
-  "foto": "assets/figurinhas/fotos/F124.jpeg"
+  "foto": "assets/figurinhas/fotos/F124.jpeg",
+  "modelo2": "M6"
  },
  {
   "codigo": "F125",
@@ -1649,7 +1766,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F125.jpeg"
+  "foto": "assets/figurinhas/fotos/F125.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F126",
@@ -1663,7 +1781,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F126.jpeg"
+  "foto": "assets/figurinhas/fotos/F126.jpeg",
+  "modelo2": "M2"
  },
  {
   "codigo": "F127",
@@ -1677,7 +1796,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F127.jpeg"
+  "foto": "assets/figurinhas/fotos/F127.jpeg",
+  "modelo2": "M3"
  },
  {
   "codigo": "F128",
@@ -1691,7 +1811,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F128.jpeg"
+  "foto": "assets/figurinhas/fotos/F128.jpeg",
+  "modelo2": "M4"
  },
  {
   "codigo": "F129",
@@ -1705,7 +1826,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F129.jpeg"
+  "foto": "assets/figurinhas/fotos/F129.jpeg",
+  "modelo2": "M8"
  },
  {
   "codigo": "F130",
@@ -1719,7 +1841,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
-  "foto": "assets/figurinhas/fotos/F130.jpeg"
+  "foto": "assets/figurinhas/fotos/F130.jpeg",
+  "modelo2": "M1"
  },
  {
   "codigo": "F131",
@@ -1733,7 +1856,8 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F131.jpeg"
+  "foto": "assets/figurinhas/fotos/F131.jpeg",
+  "modelo2": "M7"
  },
  {
   "codigo": "F132",
@@ -1747,6 +1871,7 @@
   "status": "identificado",
   "nota": "",
   "criterio_raridade": "Fotos da própria Beaterista: exclusivas (instrução expressa)",
-  "foto": "assets/figurinhas/fotos/F132.jpeg"
+  "foto": "assets/figurinhas/fotos/F132.jpeg",
+  "modelo2": "M8"
  }
 ]

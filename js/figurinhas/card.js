@@ -1,6 +1,7 @@
 // Desenha uma figurinha (cartão 600 x 900) em SVG a partir de um registro do catálogo.
 // A foto original entra INTEIRA (preserveAspectRatio "meet"): nunca é cortada, filtrada ou refeita — só ganha moldura em volta.
 import * as O from './ornaments.js';
+import { cardSVG2, hasModelo2 } from './card2.js';
 const { C } = O;
 
 export const W = 600, H = 900;
@@ -181,7 +182,8 @@ function TPL(t, k, P, o) {
 }
 
 /** SVG completo da figurinha. `e` = registro do catálogo; sem `url` desenha o modelo vazio (template). */
-export function cardSVG(e, { url = null, aspect = null, uid = '' } = {}) {
+/** Estilo clássico (SVG desenhado aqui, modelos C01..E04). */
+export function cardSVGClassic(e, { url = null, aspect = null, uid = '' } = {}) {
   const t = e.modelo, meta = TEMPLATES[t], k = uid || t + (e.codigo || 'x');
   const P = fitPhoto(aspect || (e.largura_px && e.altura_px ? e.largura_px / e.altura_px : 0.86));
   const d = TPL(t, k, P), dark = meta.dark;
@@ -192,4 +194,9 @@ export function cardSVG(e, { url = null, aspect = null, uid = '' } = {}) {
 ${photoLayer(k, P, url, t)}${d.front || ''}${nameStrip(k, name, 300 + (d.shift || 0), d.maxW || 380, t, d.under)}${d.front2 || ''}${d.over || ''}${seal(k, meta.raridade, d.seal, t)}${codeText({ ...e, codigo: e.codigo || 'F000' }, dark)}
 <rect width="${W}" height="${H}" filter="url(#gr${k})" opacity="${dark ? 0.35 : 0.28}" style="mix-blend-mode:multiply" pointer-events="none"/></g>
 <rect x="1.5" y="1.5" width="${W - 3}" height="${H - 3}" rx="39" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="3"/></svg>`;
+}
+
+/** Figurinha pronta: estilo novo (modelos M1..M8 enviados pela Bea) por padrão; `estilo: 'classico'` usa os primeiros modelos. */
+export function cardSVG(e, opts = {}) {
+  return (opts.estilo || 'novo') === 'novo' && hasModelo2(e.modelo2) ? cardSVG2(e, opts) : cardSVGClassic(e, opts);
 }
