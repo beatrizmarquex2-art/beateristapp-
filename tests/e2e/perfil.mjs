@@ -25,8 +25,9 @@ const carta = await baixar('só a cartinha'); check('baixa a minha figurinha 108
 const post = await baixar('post (feed)'); check('baixa post 1080x1350', post.w === 1080 && post.h === 1350, JSON.stringify(post));
 await page.getByRole('radio', { name: 'Retrô' }).click(); const story = await baixar('story'); check('story no modelo retrô 1080x1920', story.w === 1080 && story.h === 1920 && /retro/.test(story.nome), JSON.stringify(story));
 await page.getByRole('radio', { name: 'foto de perfil' }).click(); await sleep(600);
-check('foto de perfil: some a escolha de modelo de post', await page.locator('.fig-share .fig-chips').nth(1).isHidden());
-const perfil = await baixar('foto de perfil'); check('baixa a foto de perfil quadrada 1080x1080', perfil.w === 1080 && perfil.h === 1080 && /^MINHA_ANA_CLARA_perfil\.png$/.test(perfil.nome), JSON.stringify(perfil));
+check('foto de perfil: some a escolha de modelo de post e aparecem as cores de fundo', await page.locator('.fig-share .fig-chips').nth(1).isHidden() && (await page.locator('.fig-share .fig-chips').nth(2).locator('button').count()) === 8);
+await page.getByRole('radio', { name: 'prata' }).click(); await sleep(300);
+const perfil = await baixar('foto de perfil'); check('baixa a foto de perfil no formato da figurinha 1080x1425', perfil.w === 1080 && perfil.h === 1425 && /^MINHA_ANA_CLARA_perfil\.png$/.test(perfil.nome), JSON.stringify(perfil));
 await page.reload(); await page.waitForSelector('.pf-avatar img', { timeout: 10000 });
 check('foto e escolhas continuam depois de recarregar', (await page.locator('.pf-q.on').getAttribute('data-id')) === 'M7' && (await page.inputValue('.pf-top input.field')) === 'Ana Clara');
 await page.click('text=tirar foto'); await sleep(400);

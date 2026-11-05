@@ -1,17 +1,17 @@
 // Baixar / compartilhar a figurinha: gera o PNG no próprio aparelho (nada sobe pra servidor).
 //   carta: a figurinha sozinha (1080 x 1425, cantos transparentes)
 //   post : feed do Instagram (1080 x 1350, 4:5)        story: 1080 x 1920 (9:16, com folga em cima e embaixo)
-// Formato 'perfil': foto de perfil quadrada (1080 x 1080) com a cartinha no meio, que sobrevive ao corte redondo do Instagram/WhatsApp.
-// Cinco modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70), limpo e épico (dourado com raios).
-// A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!'; no épico, 'CARTA ÉPICA').
+// Formato 'perfil': a própria figurinha (1080 x 1425) sobre um fundo à escolha (prata, branco, preto, rosa, vermelho, creme, azul ou transparente).
+// Quatro modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70) e limpo.
+// A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!').
 // A figurinha também pode ser feita pelo aluno: { modelo2, artista_banda: nome, fotoImg, ajuste: {zoom, ox, oy} } (aba Perfil).
 import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
 
 export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música';
-export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920], perfil: [1080, 1080] };
-export const MODELOS_POST = [['colagem', 'Colagem'], ['palco', 'Palco'], ['retro', 'Retrô'], ['limpo', 'Limpo'], ['epico', 'Épico']];
+export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920], perfil: [1080, 1425] };
+export const MODELOS_POST = [['colagem', 'Colagem'], ['palco', 'Palco'], ['retro', 'Retrô'], ['limpo', 'Limpo']];
 const FONTS = ["40px 'Anton'", "800 24px 'Hanken Grotesk'", "40px 'Gochi Hand'", "40px 'Abril Fatface'"];
 const cache = new Map();
 const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(`imagem: ${src}`)); i.src = src; });
@@ -175,101 +175,39 @@ async function desenharLimpo(e, formato, carta) {
   return c;
 }
 
-/** Adesivo com borda branca (estilo sticker de celular): silhueta branca espalhada em volta + sombra + o desenho. */
-function adesivo(ctx, im, x, y, w, rot, plano = false) {
-  const h = (w * im.naturalHeight) / im.naturalWidth, b = Math.max(5, w * (plano ? 0.03 : 0.045)), sil = canvas(Math.ceil(w + b * 4), Math.ceil(h + b * 4)), sc = sil.getContext('2d');
-  sc.drawImage(im, b * 2, b * 2, w, h); sc.globalCompositeOperation = 'source-in'; sc.fillStyle = '#fff'; sc.fillRect(0, 0, sil.width, sil.height);
-  ctx.save(); ctx.translate(x, y); ctx.rotate((rot * Math.PI) / 180); ctx.shadowColor = plano ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.45)'; ctx.shadowBlur = plano ? 6 : 24; ctx.shadowOffsetY = plano ? 3 : 12;
-  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; ctx.drawImage(sil, -sil.width / 2 + Math.cos(a) * b, -sil.height / 2 + Math.sin(a) * b); }
-  ctx.shadowColor = 'transparent'; ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore();
+/* ---------- foto de perfil: a própria figurinha (formato de cartinha, não redondo) sobre um fundo à escolha ---------- */
+export const FUNDOS_PERFIL = [['prata', 'prata'], ['branco', 'branco'], ['preto', 'preto'], ['rosa', 'rosa'], ['vermelho', 'vermelho'], ['creme', 'creme'], ['azul', 'azul'], ['nenhum', 'sem fundo']];
+function pintaFundoPerfil(ctx, W, H, k) {
+  if (k === 'nenhum') return;
+  if (k === 'prata') { // metal escovado: degradê diagonal com reflexos
+    const g = ctx.createLinearGradient(0, 0, W, H); [[0, '#f7f8fb'], [0.22, '#b9bfcb'], [0.45, '#eef0f5'], [0.68, '#9aa1b0'], [1, '#e9ecf2']].forEach(([o, c]) => g.addColorStop(o, c)); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 0.14; ctx.fillStyle = '#fff'; for (let i = -H; i < W; i += 34) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + 14, 0); ctx.lineTo(i + 14 + H * 0.5, H); ctx.lineTo(i + H * 0.5, H); ctx.fill(); } ctx.globalAlpha = 1; return;
+  }
+  const cor = { branco: '#ffffff', preto: '#101014', rosa: '#ff9ec7', vermelho: '#c4182c', creme: '#ecdfc2', azul: '#17224a' }[k] || '#ffffff';
+  ctx.fillStyle = cor; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, H * 0.45, 40, W / 2, H * 0.45, Math.hypot(W, H) * 0.6); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(1, 'rgba(0,0,0,.18)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
-const ADESIVOS = ['carinha', 'coracao', 'estrela'];
-const adesivos = () => Promise.all(ADESIVOS.map((n) => img(`assets/figurinhas/adesivos/${n}.webp`)));
-
-/* ---------- modelo 5: épico (raios, luz, brilhos) com paleta dourada ou rosa e vermelho ---------- */
-const PALETAS = {
-  dourado: { centro: '#6a3a08', meio: '#3a1a06', borda: '#150a0e', fim: '#050308', raio: '255,214,102', raio2: '255,170,40', halo: '255,226,140', glow: '#ffb020', glow2: '#ffe08a', glint: '#fff3c4', bokeh: ['255,200,90', '255,160,40', '255,236,170'],
-    metal: ['#fff0b0', '#d9a63c', '#8a5a12', '#f6d77a'], titulo: ['#fff7d0', '#f4c64e', '#a8680f'], contorno: '#2a1204', placa: 'rgba(14,8,6,.92)', site: '#f6d77a', tinta: '#efe2c6', enfeite: '#ffd566' },
-  rosa: { centro: '#a3124d', meio: '#52092b', borda: '#1c0510', fim: '#07020a', raio: '255,110,170', raio2: '255,45,80', halo: '255,150,196', glow: '#ff2f7d', glow2: '#ff9ec7', glint: '#ffe3f0', bokeh: ['255,95,160', '255,50,90', '255,190,215'],
-    metal: ['#ffe3ee', '#ff6aa6', '#c4182c', '#ffb4d2'], titulo: ['#ffffff', '#ff9ec7', '#e11d5a'], contorno: '#3a0618', placa: 'rgba(30,5,16,.92)', site: '#ffc2dc', tinta: '#ffe9f2', enfeite: '#ff8fbd' },
-};
-const TITULOS = { dourado: ['#fff7d0', '#f4c64e', '#a8680f'], prata: ['#ffffff', '#cfd5e2', '#7b8396'] };
-async function desenharEpico(e, formato, carta) {
-  const { W, H, story } = geo(formato), plano = e.tema === 'rosa', P = PALETAS[e.tema] || PALETAS.dourado, [lg, stk] = await Promise.all([logoCanvas(true), e.tema === 'rosa' ? adesivos() : Promise.resolve(null)]), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
-  const cx = W / 2, cy = story ? H * 0.52 : H * 0.5, R = O.rng(O.hashSeed(`${e.artista_banda || 'epico'}${e.tema || ''}`)), diag = Math.hypot(W, H);
-  const bg = ctx.createRadialGradient(cx, cy, 30, cx, cy, diag * 0.62); bg.addColorStop(0, P.centro); bg.addColorStop(0.24, P.meio); bg.addColorStop(0.58, P.borda); bg.addColorStop(1, P.fim); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-  // duas camadas de raios girando em sentidos diferentes (mais profundidade)
-  [[44, 0.03, 0.62, P.raio, 0.5, 1], [28, 0.08, 0.35, P.raio2, 0.34, -1]].forEach(([n, off, larg, cor, alfa, sentido]) => {
-    ctx.save(); ctx.translate(cx, cy);
-    for (let i = 0; i < n; i++) { const a = sentido * ((i * Math.PI * 2) / n + off), b2 = a + sentido * (Math.PI / n) * (larg + (i % 3) * 0.1), r = diag; const g = ctx.createLinearGradient(0, 0, Math.cos(a) * r, Math.sin(a) * r);
-      g.addColorStop(0, `rgba(${cor},${alfa})`); g.addColorStop(0.55, `rgba(${cor},${alfa * 0.28})`); g.addColorStop(1, `rgba(${cor},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.lineTo(Math.cos(b2) * r, Math.sin(b2) * r); ctx.closePath(); ctx.fill(); }
-    ctx.restore(); });
-  const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, W * 0.66); halo.addColorStop(0, `rgba(${P.halo},.6)`); halo.addColorStop(0.45, `rgba(${P.raio2},.2)`); halo.addColorStop(1, `rgba(${P.raio2},0)`); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
-  // bokeh: bolas de luz desfocadas em volta
-  ctx.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 26; i++) { const x = R() * W, y = R() * H, r = 26 + R() * 90, cor = P.bokeh[i % 3]; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${cor},${0.16 + R() * 0.16})`); g.addColorStop(0.7, `rgba(${cor},${0.07})`); g.addColorStop(1, `rgba(${cor},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
-  ctx.globalCompositeOperation = 'source-over';
-  // brasas
-  for (let i = 0; i < 110; i++) { const x = R() * W, y = R() * H, r = 1.4 + R() * 5, a = 0.25 + R() * 0.7; ctx.fillStyle = `rgba(${P.bokeh[i % 3]},${a})`; ctx.shadowColor = P.glow; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); } ctx.shadowBlur = 0;
-  // brilhos de 4 pontas (glints)
-  const glint = (x, y, r, rot) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = P.glint; ctx.shadowColor = P.glow2; ctx.shadowBlur = 26; ctx.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * 0.14 : r, a = (i * Math.PI) / 4; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); ctx.restore(); };
-  [[0.11, 0.26, 50], [0.91, 0.3, 38], [0.08, 0.6, 32], [0.93, 0.66, 54], [0.15, 0.87, 40], [0.85, 0.91, 32], [0.5, 0.135, 26]].forEach(([x, y, r], i) => glint(x * W, y * H, r, i * 0.4));
-  // vinheta
-  const vg = ctx.createRadialGradient(cx, cy, W * 0.42, cx, cy, diag * 0.58); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.72)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-  // moldura de metal (dupla) com cantos
-  const metal = ctx.createLinearGradient(0, 0, W, H); P.metal.forEach((cor, i) => metal.addColorStop(i / (P.metal.length - 1), cor));
-  ctx.lineWidth = 12; ctx.strokeStyle = metal; rr(ctx, 26, 26, W - 52, H - 52, 44); ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = `rgba(${P.halo},.7)`; rr(ctx, 46, 46, W - 92, H - 92, 32); ctx.stroke();
-  [[60, 60, 1, 1], [W - 60, 60, -1, 1], [60, H - 60, 1, -1], [W - 60, H - 60, -1, -1]].forEach(([x, y, sx, sy]) => { ctx.save(); ctx.translate(x, y); ctx.scale(sx, sy); ctx.strokeStyle = metal; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0, 56); ctx.quadraticCurveTo(0, 0, 56, 0); ctx.stroke(); ctx.fillStyle = P.glint; ctx.beginPath(); ctx.arc(10, 10, 6, 0, 7); ctx.fill(); ctx.restore(); });
-  // logo + título em faixa
-  const lw = story ? 500 : 410, lh = (lw * 175) / 900, ly = story ? 132 : 66; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
-  const TIT = titulo(e, 'CARTA ÉPICA'), ty = ly + lh + (story ? 176 : 132);
-  ctx.save(); ctx.textAlign = 'center'; const fs = fitText(ctx, TIT, W - 170, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - fs * 0.85, 0, ty + 6); const TC = e.tituloCor && TITULOS[e.tituloCor] ? TITULOS[e.tituloCor] : (e.tema === 'rosa' ? TITULOS.dourado : P.titulo); gr.addColorStop(0, TC[0]); gr.addColorStop(0.5, TC[1]); gr.addColorStop(1, TC[2]);
-  ctx.shadowColor = P.glow; ctx.shadowBlur = plano ? 22 : 54; ctx.lineWidth = plano ? 16 : 20; ctx.lineJoin = 'round'; ctx.strokeStyle = P.contorno; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty);
-  ctx.globalCompositeOperation = 'lighter'; const re = ctx.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0); re.addColorStop(0.4, 'rgba(255,255,255,0)'); re.addColorStop(0.5, 'rgba(255,255,255,.28)'); re.addColorStop(0.6, 'rgba(255,255,255,0)'); ctx.fillStyle = re; ctx.fillText(TIT, W / 2, ty); ctx.restore();
-  // ornamento sob o título: linha com estrela no meio
-  const oy = ty + (story ? 46 : 38); ctx.save(); ctx.strokeStyle = metal; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(W / 2 - 250, oy); ctx.lineTo(W / 2 - 40, oy); ctx.moveTo(W / 2 + 40, oy); ctx.lineTo(W / 2 + 250, oy); ctx.stroke(); glint(W / 2, oy, 22, 0); ctx.restore();
-  // cartinha com aura, sombra no chão e brilho passando
-  const cw = story ? 760 : 590, ch = (cw * H2) / W2, cyc = story ? H * 0.52 + 52 : H * 0.5 + 40;
-  ctx.save(); ctx.translate(cx, cyc + ch / 2 + 26); ctx.scale(1, 0.12); const chao = ctx.createRadialGradient(0, 0, 10, 0, 0, cw * 0.55); chao.addColorStop(0, 'rgba(0,0,0,.6)'); chao.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = chao; ctx.beginPath(); ctx.arc(0, 0, cw * 0.55, 0, 7); ctx.fill(); ctx.restore();
-  ctx.save(); ctx.translate(cx, cyc); ctx.rotate(((plano ? 0 : -1.6) * Math.PI) / 180); ctx.shadowColor = P.glow; ctx.shadowBlur = plano ? 46 : 120; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = P.glow2; ctx.shadowBlur = plano ? 8 : 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
-  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.36, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, plano ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.3)'); brilho.addColorStop(0.64, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill();
-  if (!plano) { glint(-cw / 2 + 24, -ch / 2 + 24, 44, 0.3); glint(cw / 2 - 20, ch / 2 - 40, 34, 0.7); } ctx.restore();
-  // adesivos (tema rosa): carinha apaixonada, corações e estrelas colados em volta da cartinha
-  if (stk) { const [car, cor, est] = stk, L = cx - cw / 2, Rr = cx + cw / 2, T = cyc - ch / 2, B = cyc + ch / 2;
-    adesivo(ctx, est, L + 10, T + 34, cw * 0.15, -12, true); adesivo(ctx, car, Rr - 10, T + 18, cw * 0.17, 8, true); adesivo(ctx, cor, L + 14, B - 62, cw * 0.17, -10, true); adesivo(ctx, est, Rr - 6, B - 70, cw * 0.1, 14, true); }
-  // rodapé em placa com moldura de metal
-  const fw = W - 130, fh = story ? 190 : 150, fy = story ? H - 360 : H - 200;
-  ctx.save(); ctx.fillStyle = P.placa; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = metal; ctx.shadowColor = P.glow; ctx.shadowBlur = 26; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
-  ctx.fillStyle = P.site; fitText(ctx, SITE, fw - 80, story ? 66 : 60, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.5); ctx.fillStyle = P.tinta; ctx.font = `800 ${story ? 32 : 28}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.8); ctx.restore();
-  // grão de filme por cima (dá cara de foto de capa, esconde faixas de gradiente)
-  const gran = canvas(256, 256), gc = gran.getContext('2d'), id = gc.createImageData(256, 256), RG = O.rng(11); for (let i = 0; i < id.data.length; i += 4) { const v = 120 + Math.floor(RG() * 135); id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 22; } gc.putImageData(id, 0, 0);
-  ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = ctx.createPattern(gran, 'repeat'); ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over';
-  return c;
-}
-/* ---------- foto de perfil (quadrada; o corte redondo das redes não pega a cartinha) ---------- */
 async function desenharPerfil(e, formato, carta) {
-  const { W, H } = geo('perfil'), t = temaDe(e), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
-  const fundo = await svgImg(fundoColagem(t, W, H, e.codigo || e.artista_banda || 'perfil')); ctx.drawImage(fundo, 0, 0);
-  const ch = 700, cw = (ch * W2) / H2; // cabe inteira no círculo inscrito (raio 540): a diagonal da carta fica em ~700
-  ctx.save(); ctx.translate(W / 2, H / 2); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
-  ctx.lineWidth = 14; ctx.strokeStyle = t.realce; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(W / 2, H / 2, W / 2 - 26, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
+  const { W, H } = geo('perfil'), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  pintaFundoPerfil(ctx, W, H, e.fundoPerfil || 'prata');
+  const cw = W * 0.86, ch = (cw * H2) / W2; // a cartinha inteira, com margem pro fundo aparecer
+  ctx.save(); ctx.translate(W / 2, H / 2); if (e.fundoPerfil !== 'nenhum') { ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12; } ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   return c;
 }
-/** Mockup de como a foto de perfil fica no perfil de uma rede social (círculo + nome + números de exemplo). */
-export function mockupPerfil(canvasQuadrado, nome) {
+/** Mockup de como a figurinha fica de foto de perfil (no formato da cartinha, não redondo). */
+export function mockupPerfil(canvasCarta, nome) {
   const W = 600, H = 600, c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   ctx.fillStyle = '#f2f2f4'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; rr(ctx, 40, 40, W - 80, H - 80, 36); ctx.fill();
-  ctx.save(); ctx.beginPath(); ctx.arc(150, 170, 80, 0, 7); ctx.clip(); ctx.drawImage(canvasQuadrado, 70, 90, 160, 160); ctx.restore();
-  ctx.lineWidth = 5; ctx.strokeStyle = '#d6336c'; ctx.beginPath(); ctx.arc(150, 170, 88, 0, 7); ctx.stroke();
-  ctx.textAlign = 'left'; ctx.fillStyle = '#16161a'; ctx.font = "800 34px 'Hanken Grotesk', sans-serif"; const n = String(nome || 'seu nome').slice(0, 20); ctx.fillText(n, 270, 140);
-  ctx.fillStyle = '#8a8a93'; ctx.font = "600 22px 'Hanken Grotesk', sans-serif"; ctx.fillText('aluno(a) · Beaterista', 270, 178);
-  [['12', 'posts'], ['345', 'seguidores'], ['98', 'seguindo']].forEach(([a, b], i) => { ctx.fillStyle = '#16161a'; ctx.font = "800 30px 'Hanken Grotesk', sans-serif"; ctx.fillText(a, 270 + i * 112, 232); ctx.fillStyle = '#8a8a93'; ctx.font = "600 17px 'Hanken Grotesk', sans-serif"; ctx.fillText(b, 270 + i * 112, 256); });
-  ctx.fillStyle = '#ececef'; rr(ctx, 80, 296, W - 160, 56, 16); ctx.fill(); ctx.fillStyle = '#16161a'; ctx.font = "800 22px 'Hanken Grotesk', sans-serif"; ctx.textAlign = 'center'; ctx.fillText('Editar perfil', W / 2, 332);
-  for (let i = 0; i < 3; i++) { ctx.fillStyle = ['#ffd6e6', '#ffe9c2', '#d6e6ff'][i]; rr(ctx, 80 + i * 142, 384, 128, 128, 14); ctx.fill(); }
-  ctx.fillStyle = '#8a8a93'; ctx.font = "600 16px 'Hanken Grotesk', sans-serif"; ctx.fillText('exemplo de como fica no perfil', W / 2, 548);
+  const aw = 128, ah = Math.round((aw * canvasCarta.height) / canvasCarta.width);
+  ctx.save(); rr(ctx, 76, 84, aw, ah, 16); ctx.clip(); ctx.drawImage(canvasCarta, 76, 84, aw, ah); ctx.restore(); ctx.lineWidth = 4; ctx.strokeStyle = '#d6336c'; rr(ctx, 74, 82, aw + 4, ah + 4, 18); ctx.stroke();
+  ctx.textAlign = 'left'; ctx.fillStyle = '#16161a'; ctx.font = "800 34px 'Hanken Grotesk', sans-serif"; ctx.fillText(String(nome || 'seu nome').slice(0, 18), 232, 128);
+  ctx.fillStyle = '#8a8a93'; ctx.font = "600 22px 'Hanken Grotesk', sans-serif"; ctx.fillText('aluno(a) · Beaterista', 232, 166);
+  [['12', 'posts'], ['345', 'seguidores'], ['98', 'seguindo']].forEach(([a, b], i) => { ctx.fillStyle = '#16161a'; ctx.font = "800 30px 'Hanken Grotesk', sans-serif"; ctx.fillText(a, 232 + i * 112, 222); ctx.fillStyle = '#8a8a93'; ctx.font = "600 17px 'Hanken Grotesk', sans-serif"; ctx.fillText(b, 232 + i * 112, 246); });
+  ctx.fillStyle = '#ececef'; rr(ctx, 80, 84 + ah + 22, W - 160, 52, 16); ctx.fill(); ctx.fillStyle = '#16161a'; ctx.font = "800 22px 'Hanken Grotesk', sans-serif"; ctx.textAlign = 'center'; ctx.fillText('Editar perfil', W / 2, 84 + ah + 56);
+  for (let i = 0; i < 3; i++) { ctx.fillStyle = ['#ffd6e6', '#ffe9c2', '#d6e6ff'][i]; rr(ctx, 80 + i * 142, 84 + ah + 96, 128, 110, 14); ctx.fill(); }
   return c;
 }
-const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo, epico: desenharEpico };
+const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo };
 
 /** Post (4:5) ou story (9:16) no modelo escolhido. */
 export async function postCanvas(e, formato = 'post', modelo = 'colagem') {

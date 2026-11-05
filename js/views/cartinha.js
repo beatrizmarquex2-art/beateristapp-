@@ -1,5 +1,5 @@
 // "Criar cartinha" (app da Bea): sobe uma foto, escolhe o modelo (os 8 designs), escreve o nome e baixa pronta pra postar
-// (cartinha, post, story, nos 5 modelos de post, inclusive o Épico). A foto fica só neste aparelho.
+// (cartinha, post, story e foto de perfil, nos 4 modelos de post). A foto fica só neste aparelho.
 import { h } from '../util.js';
 import { db } from '../db.js';
 import { banner, toast } from '../ui.js';
@@ -8,7 +8,7 @@ import { criador } from '../figurinhas/criador.js';
 const CFG = 'beaterista-cartinha-cfg', FOTO = 'cartinha-foto';
 const ls = (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ok */ } };
-const load = () => { try { return { modelo: 'M7', zoom: 1, ox: 0, oy: 0, nome: '', frase: '', tema: 'dourado', tituloCor: '', ...JSON.parse(ls(CFG) || '{}') }; } catch { return { modelo: 'M7', zoom: 1, ox: 0, oy: 0, nome: '', frase: '', tema: 'dourado', tituloCor: '' }; } };
+const load = () => { try { return { modelo: 'M7', zoom: 1, ox: 0, oy: 0, nome: '', frase: '', ...JSON.parse(ls(CFG) || '{}') }; } catch { return { modelo: 'M7', zoom: 1, ox: 0, oy: 0, nome: '', frase: '' }; } };
 async function reduzir(file) {
   const url = URL.createObjectURL(file);
   try {
@@ -24,15 +24,13 @@ export function mount(host) {
   const cfg = load(); let alive = true, fotoBlob = null, thumb = null;
   const salvar = () => lsSet(CFG, JSON.stringify(cfg));
   host.append(banner('Criar cartinha', 'suba uma foto e escolha o design'));
-  const cri = criador({ cfg, salvar, nome: () => cfg.nome, titulo: 'a cartinha', tituloShare: 'baixar pra postar', extra: () => ({ tituloPost: cfg.frase || '', tema: cfg.tema || 'dourado', tituloCor: cfg.tituloCor || '' }) });
+  const cri = criador({ cfg, salvar, nome: () => cfg.nome, titulo: 'a cartinha', tituloShare: 'baixar pra postar', extra: () => ({ tituloPost: cfg.frase || '' }) });
   const input = (k, label, ph, max) => h('label', { class: 'cr-campo' }, h('span', { class: 'muted' }, label), h('input', { class: 'field', type: 'text', maxlength: max, placeholder: ph, value: cfg[k] || '', autocomplete: 'off', oninput: (ev) => { cfg[k] = ev.target.value; salvar(); cri.refresh(); } }));
   const arq = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return; try { fotoBlob = await reduzir(f); const img = await blobImg(fotoBlob); await db.metaSet(FOTO, fotoBlob); cri.setFoto(img); desenhaThumb(); toast('foto carregada'); } catch { toast('não consegui abrir essa foto, tente outra'); } } });
-  const temas = h('div', { class: 'fig-chips cr-tema', role: 'radiogroup', 'aria-label': 'Cor do modelo Épico' }, [['dourado', 'épico dourado'], ['rosa', 'épico rosa e vermelho']].map(([k, nome]) => h('button', { type: 'button', role: 'radio', class: `chip-btn${(cfg.tema || 'dourado') === k ? ' on' : ''}`, 'aria-checked': String((cfg.tema || 'dourado') === k), 'data-k': k, onclick: (ev) => { cfg.tema = k; salvar(); ev.currentTarget.parentNode.querySelectorAll('button').forEach((b) => { const on = b.dataset.k === k; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); cri.refresh(); } }, nome)));
-  const tcor = h('div', { class: 'fig-chips cr-tema', role: 'radiogroup', 'aria-label': 'Cor do título do Épico' }, [['', 'título do tema'], ['dourado', 'título dourado'], ['prata', 'título prata']].map(([k, nome]) => h('button', { type: 'button', role: 'radio', class: `chip-btn${(cfg.tituloCor || '') === k ? ' on' : ''}`, 'aria-checked': String((cfg.tituloCor || '') === k), 'data-k': k, onclick: (ev) => { cfg.tituloCor = k; salvar(); ev.currentTarget.parentNode.querySelectorAll('button').forEach((b) => { const on = b.dataset.k === k; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); cri.refresh(); } }, nome)));
   const bot = h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn primary', onclick: () => arq.click() }, 'subir foto'), h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { fotoBlob = null; try { await db.metaDel(FOTO); } catch { /* ok */ } cri.setFoto(null); desenhaThumb(); } }, 'tirar foto'));
   const tn = h('div', { class: 'cr-thumb', 'aria-hidden': 'true' });
   function desenhaThumb() { tn.replaceChildren(); if (thumb) { URL.revokeObjectURL(thumb); thumb = null; } if (fotoBlob) { thumb = URL.createObjectURL(fotoBlob); tn.append(h('img', { src: thumb, alt: '' })); } }
-  const topo = h('section', { class: 'card pad cr-topo' }, tn, h('div', { class: 'cr-campos' }, input('nome', 'nome na cartinha', 'ex.: BeLê', 24), input('frase', 'frase do post (opcional)', 'ex.: CARTA ÉPICA', 24), h('span', { class: 'muted' }, 'cor do post Épico'), temas, tcor, bot, h('p', { class: 'muted pf-priv' }, 'a foto fica só neste aparelho. no post, escolha o modelo "Épico" pro visual dourado.')), arq);
+  const topo = h('section', { class: 'card pad cr-topo' }, tn, h('div', { class: 'cr-campos' }, input('nome', 'nome na cartinha', 'ex.: BeLê', 24), input('frase', 'frase do post (opcional)', 'ex.: BELÊ NO PALCO', 24), bot, h('p', { class: 'muted pf-priv' }, 'a foto fica só neste aparelho. escolha "foto de perfil" pra usar a figurinha de perfil.')), arq);
   host.append(topo, cri.el);
   (async () => { try { const b = await db.metaGet(FOTO); if (b && alive) { fotoBlob = b; const img = await blobImg(b); cri.setFoto(img, { resetar: false }); desenhaThumb(); return; } } catch { /* ok */ } if (alive) cri.setFoto(null); })();
   return () => { alive = false; cri.cleanup(); if (thumb) URL.revokeObjectURL(thumb); };
