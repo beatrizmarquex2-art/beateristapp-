@@ -70,7 +70,8 @@ export function planoFoto(e, id) {
   const ok = (p) => [[F.x0, F.y0], [F.x1, F.y0], [F.x1, F.y1], [F.x0, F.y1]].every(([u, v]) => inPoly(L.poly, p.x + u * p.W, p.y + v * p.H));
   let sc = cover, p = place(sc);
   for (let i = 1; i <= 60 && !ok(p); i++) { sc = cover * Math.pow((contain * 0.5) / cover, i / 60); p = place(sc); }
-  const r = { x: n1(p.x), y: n1(p.y), w: n1(p.W), h: n1(p.H), escala: sc, cobre: sc >= cover - 1e-9, poly: L.poly, cx: L.cx, cy: L.cy, ang: L.ang, foco: F };
+  const bg = place(cover * 1.18);
+  const r = { fundo: { x: n1(bg.x), y: n1(bg.y), w: n1(bg.W), h: n1(bg.H) }, x: n1(p.x), y: n1(p.y), w: n1(p.W), h: n1(p.H), escala: sc, cobre: sc >= cover - 1e-9, poly: L.poly, cx: L.cx, cy: L.cy, ang: L.ang, foco: F };
   if (e.codigo) planCache.set(key, r); return r;
 }
 
@@ -102,7 +103,8 @@ export function cardSVG2(e, { url = null, aspect = null } = {}) {
   let photo = '';
   if (url) {
     const pw = e.largura_px || 1000, ph = e.altura_px || pw / asp, f = planoFoto({ ...e, largura_px: pw, altura_px: ph }, id), cid = `pc${id}${e.codigo || ''}`;
-    photo = `<g transform="rotate(${f.ang} ${f.cx} ${f.cy})"><clipPath id="${cid}"><polygon points="${f.poly.map((q) => `${n1(q[0])},${n1(q[1])}`).join(' ')}"/></clipPath><image href="${esc(url)}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" preserveAspectRatio="none" clip-path="url(#${cid})"/></g>`;
+    const fundo = f.cobre ? '' : `<g clip-path="url(#${cid})"><image href="${esc(url)}" x="${f.fundo.x}" y="${f.fundo.y}" width="${f.fundo.w}" height="${f.fundo.h}" preserveAspectRatio="none" filter="url(#bl${cid})"/><rect x="0" y="0" width="360" height="475" fill="#0c0a10" fill-opacity=".42"/></g>`;
+    photo = `<defs><filter id="bl${cid}" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="7"/></filter></defs><g transform="rotate(${f.ang} ${f.cx} ${f.cy})"><clipPath id="${cid}"><polygon points="${f.poly.map((q) => `${n1(q[0])},${n1(q[1])}`).join(' ')}"/></clipPath>${fundo}<image href="${esc(url)}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" preserveAspectRatio="none" clip-path="url(#${cid})"/></g>`;
   }
   const code = e.codigo ? `${e.codigo}${e.colecao && e.colecao !== 'Geral' ? ` · ${e.colecao.toUpperCase()}` : ''}` : '';
   const pill = code ? `<g><rect x="9" y="8" width="${n1(code.length * 6.4 + 12)}" height="17" rx="8.5" fill="#000" fill-opacity=".62"/><text x="15" y="20" font-family="${SANS}" font-weight="800" font-size="9.5" letter-spacing="1.2" fill="#f6ecd4">${esc(code)}</text></g>` : '';

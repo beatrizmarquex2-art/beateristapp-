@@ -5,6 +5,7 @@ import { banner, sheet, toast } from '../ui.js';
 import * as store from '../store.js';
 import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
+import { createBook } from '../figurinhas/livro.js';
 
 const ID = 'figurinhas-album';
 const TABS = [...L.COLECOES, 'Pacotes'];
@@ -20,7 +21,7 @@ export function mount(host, parts = []) {
   host.append(banner('Figurinhas', 'cole todas no álbum'), wrap);
   let state = { ...L.emptyState(), ...(store.get(ID)?.data || {}) };
   let tab = TABS.includes(parts[0]) ? parts[0] : 'Geral', artist = '';
-  let alive = true; let io = null;
+  let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); draw(); };
   load();
@@ -36,7 +37,6 @@ export function mount(host, parts = []) {
 
   function draw() {
     if (!catalog) return;
-    io?.disconnect();
     const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
     const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
       const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
@@ -45,32 +45,27 @@ export function mount(host, parts = []) {
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
       tabs, tab === 'Pacotes' ? packsView() : collectionView());
-    if (!io) return;
+    if (tab !== 'Pacotes') requestAnimationFrame(() => { const b = books[tab]; if (b) b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
-  /* ---------- coleção ---------- */
+  /* ---------- coleção: o livro ---------- */
+  const books = {};
   function collectionView() {
     const list = catalog.filter((c) => c.colecao === tab), st = L.stats(state, catalog, tab);
-    const shown = artist ? list.filter((c) => c.artista_banda === artist) : list;
-    const sel = h('select', { class: 'fig-filter', 'aria-label': 'Filtrar por artista', onchange: (e) => { artist = e.target.value; draw(); } },
-      h('option', { value: '' }, `todos os artistas (${list.length})`), L.artistsOf(catalog, tab).map((a) => h('option', { value: a, selected: a === artist }, a)));
+    let bk = books[tab];
+    if (!bk) bk = books[tab] = createBook({ catalog, colecao: tab, state, onPaste: doPaste, onDetail: detail, reduzir: wantsLess(state) });
+    else bk.update(state, justPasted);
+    justPasted = null;
+    const sel = h('select', { class: 'fig-filter', 'aria-label': 'Ir para um artista', onchange: (e) => { const i = bk.pageOfArtist(e.target.value); if (i >= 0) bk.go(i); e.target.value = ''; } },
+      h('option', { value: '' }, 'ir para um artista…'), L.artistsOf(catalog, tab).map((a) => h('option', { value: a }, a)));
     const pct = Math.round((st.got / st.total) * 100);
-    const grid = h('div', { class: 'fig-grid' });
-    io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; io.unobserve(el); el.innerHTML = svgOf(el.__e, `a${el.__e.codigo}`); }), { rootMargin: '300px' }) : null;
-    for (const e of shown) {
-      const n = L.slotNumber(catalog, e), pasted = !!state.pasted[e.codigo], inHand = L.canPaste(state, e.codigo);
-      const slot = h('button', { type: 'button', class: `fig-slot${pasted ? ' got' : ''}${inHand ? ' hand' : ''}`, 'aria-label': pasted ? `${e.artista_banda}, número ${n}, colada. Abrir detalhe` : inHand ? `Número ${n}, está na sua mão. Colar` : `Número ${n}, ainda falta`, onclick: () => (pasted ? detail(e) : inHand ? doPaste(e) : toast(`falta a nº ${n} — abra pacotes pra achar.`)) });
-      if (pasted) { slot.__e = e; if (io) { slot.append(h('span', { class: 'fig-ph' })); io.observe(slot); } else slot.innerHTML = svgOf(e, `a${e.codigo}`); }
-      else slot.append(h('span', { class: 'fig-n' }, String(n).padStart(2, '0')), h('span', { class: 'fig-q' }, inHand ? 'colar!' : '?'));
-      grid.append(slot);
-    }
     return h('section', { class: 'fig-col' },
-      h('p', { class: 'fig-note' }, NOTE[tab]),
       h('div', { class: 'fig-prog' }, h('div', { class: 'fig-bar', role: 'progressbar', 'aria-valuenow': pct, 'aria-valuemin': 0, 'aria-valuemax': 100 }, h('i', { style: { width: `${pct}%` } })), h('span', {}, `${st.got} de ${st.total} · faltam ${st.missing}`)),
-      sel, shown.length ? grid : h('p', { class: 'fig-note' }, 'nenhuma figurinha nesse filtro.'));
+      sel, bk.el, h('p', { class: 'fig-note' }, NOTE[tab]));
   }
 
   function doPaste(e) {
+    justPasted = e.codigo;
     save(L.paste(state, e.codigo));
     toast(`${e.artista_banda} colada no álbum`);
   }
@@ -125,5 +120,5 @@ export function mount(host, parts = []) {
     });
   }
 
-  return () => { alive = false; io?.disconnect(); };
+  return () => { alive = false; };
 }
