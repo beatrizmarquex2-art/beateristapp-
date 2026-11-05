@@ -1,0 +1,22 @@
+// Álbum na área do aluno: aba "Álbum" embaixo, trancada por código (conferido no Supabase; aqui a resposta é simulada).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+let versao = 1; const calls = [];
+await ctx.route('**/rest/v1/rpc/album_codigo_ok', async (r) => { const b = JSON.parse(r.request().postData() || '{}'); calls.push(b.p_codigo); await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(String(b.p_codigo).trim().toLowerCase() === 'turma2026') }); });
+await ctx.route('**/rest/v1/rpc/album_codigo_versao', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: String(versao) }));
+await ctx.route('**/*.supabase.co/**', (r) => (r.request().url().includes('album_codigo') ? r.fallback() : r.abort()));
+await ctx.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Ana'); localStorage.setItem('beaterista-aluno-origem', 'aluno beaterista'); } catch { /* ok */ } });
+await page.goto(url + '/aluno.html#/album'); await page.waitForSelector('.fig-gate', { timeout: 10000 });
+check('aba Álbum aparece embaixo', (await page.locator('nav a', { hasText: 'Álbum' }).count()) >= 1);
+check('trancado: pede o código e não mostra figurinha', (await page.locator('.fig-gate-form input').count()) === 1 && (await page.locator('.lv, .fig-tabs').count()) === 0);
+await page.fill('.fig-gate-form input', 'errado'); await page.click('.fig-gate-form button'); await sleep(1000);
+check('código errado: avisa e continua trancado', (await page.textContent('.fig-gate-msg')).includes('não confere') && (await page.locator('.fig-tabs').count()) === 0);
+await page.fill('.fig-gate-form input', '  TURMA2026 '); await page.click('.fig-gate-form button'); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
+check('código certo (sem ligar pra maiúscula/espaço): abre o álbum', (await page.locator('.lv').count()) === 1 && calls.length === 2, calls.join('|'));
+await page.reload(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
+check('lembra neste aparelho (não pede de novo)', (await page.locator('.fig-gate').count()) === 0);
+versao = 2; await page.reload(); await page.waitForSelector('.fig-gate', { timeout: 10000 });
+check('a Bea trocou o código: tranca de novo', (await page.textContent('.fig-gate-msg')).includes('mudou'));
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

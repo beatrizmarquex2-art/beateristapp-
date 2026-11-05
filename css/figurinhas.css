@@ -114,3 +114,10 @@
 
 .lv-indice { overflow-y: auto; overscroll-behavior: contain; }
 .cv-beatles .cv-logo, .cv-bea .cv-logo, .cv-esp .cv-logo { filter: brightness(0) invert(.94) drop-shadow(0 2px 0 #0006); }
+
+/* porta do álbum (área do aluno) */
+.fig-gate-card { max-width: 420px; margin: 8px auto; text-align: center; display: grid; gap: 12px; justify-items: center; }
+.fig-gate-lock { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: #5b1424; color: #efe2c6; box-shadow: 0 5px 0 #0003; }
+.fig-gate-form { display: grid; gap: 10px; width: 100%; }
+.fig-gate-form .field { text-align: center; font-size: 18px; min-height: 52px; }
+.fig-gate-msg { min-height: 20px; margin: 0; font-size: 14px; color: #c4182c; font-weight: 700; }
