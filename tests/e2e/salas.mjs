@@ -28,17 +28,17 @@ async function pair(game) {
 }
 // --- uno
 {
-  const [a, b, code] = await pair('cartas');
+  const [a, b, code] = await pair('cartas'); await sleep(2800); // embaralha e distribui nos dois
   check('[uno] código com 5 caracteres', code.length === 5, code);
-  check('[uno] os dois veem a mesa', (await a.locator('.jg-hand button').count()) === 7 && (await b.locator('.jg-hand button').count()) === 7);
-  const vezA = (await a.locator('.jg-turn').textContent()).includes('sua vez'); const [vez, esp] = vezA ? [a, b] : [b, a];
-  check('[uno] só um tem a vez', (await esp.locator('.jg-turn').textContent()).includes('vez do outro'));
-  const n0 = await esp.locator('.jg-bar .jg-who span').first().textContent();
-  const play = vez.locator('.jg-hbtn.fit').first();
-  if (await play.count()) { await play.click(); await sleep(200); if (await vez.locator('.jg-pick').count()) await vez.locator('.jg-pc').first().click(); }
-  else { await vez.locator('.jg-deck').click(); }
-  await sleep(2600);
-  check('[uno] a jogada chegou no outro celular', (await esp.locator('.jg-turn').textContent()).includes('sua vez') || (await vez.locator('.jg-turn').textContent()).includes('sua vez'), n0);
+  check('[uno] os dois veem a mesa', (await a.locator('.cx-hc').count()) === 7 && (await b.locator('.cx-hc').count()) === 7);
+  const vezA = (await a.locator('.cx-turn').textContent()).includes('sua vez'); const [vez, esp] = vezA ? [a, b] : [b, a];
+  check('[uno] só um tem a vez', (await esp.locator('.cx-turn').textContent()).includes('vez do outro'));
+  const n0 = await esp.locator('.cx-seat .cx-sname em').textContent();
+  const play = vez.locator('.cx-hc.fit').first();
+  if (await play.count()) { await play.click({ position: { x: 6, y: 30 }, force: true }); await sleep(250); if (await vez.locator('.cx-pick').count()) await vez.locator('.cx-pc').first().click({ force: true }); }
+  else { await vez.locator('.cx-deck').click(); }
+  await sleep(3200);
+  check('[uno] a jogada chegou no outro celular', (await esp.locator('.cx-turn').textContent()).includes('sua vez') || (await vez.locator('.cx-turn').textContent()).includes('sua vez'), n0);
   check('[uno] sem erros de JS', !a.errs.length && !b.errs.length, [...a.errs, ...b.errs].join('|'));
 }
 // --- velha

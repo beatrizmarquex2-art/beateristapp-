@@ -1,86 +1,132 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as C from '../js/jogos/cartas-logic.js';
+import { SYMS, SYM_SVG, SYM_NAME } from '../js/jogos/cartas-simbolos.js';
 
 const seeded = (s) => () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 2 ** 32; };
 let uid = 1000;
-const card = (color, kind, value = 0) => ({ id: `t${uid++}`, color, kind, value });
-const num = (color, v) => card(color, 'num', v);
-const base = (o) => ({ v: 1, mode: 'local', hands: [[], []], draw: [], discard: [num('vermelho', 3)], color: 'vermelho', turn: 0, drawn: null, passes: 0, over: false, result: null, note: '', last: null, ...o });
+const card = (color, kind, sym = null) => ({ id: `t${uid++}`, color, kind, sym });
+const fig = (color, sym) => card(color, 'fig', sym);
+const base = (o = {}) => ({ v: 2, mode: 'local', n: 2, dir: 1, hands: [[], []], draw: [], discard: [fig('vermelho', 'seminima')], color: 'vermelho', turn: 0, drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: null, ...o });
+const padHand = (n) => Array.from({ length: n }, () => fig('azul', 'fusa'));
 
-test('baralho: 76 cartas, ids únicos, 18 por cor + 4 curingas, sem +4', () => {
-  const d = C.makeDeck(); assert.equal(d.length, 76); assert.equal(new Set(d.map((c) => c.id)).size, 76);
+test('as 10 figuras existem, têm nome e desenho vetorial', () => {
+  assert.equal(SYMS.length, 10);
+  assert.deepEqual(SYMS, ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'fantasma']);
+  for (const s of SYMS) { assert.ok(SYM_NAME[s]); assert.match(SYM_SVG[s], /<(path|ellipse|circle)/); }
+});
+test('baralho: 112 cartas, ids únicos, 26 por cor (10 figuras × 2 + 3 ações × 2), 4 curingas e 4 +4', () => {
+  const d = C.makeDeck(); assert.equal(d.length, 112); assert.equal(new Set(d.map((c) => c.id)).size, 112);
+  assert.deepEqual(C.COLORS, ['vermelho', 'amarelo', 'azul', 'verde']);
   for (const k of C.COLORS) {
-    const cs = d.filter((c) => c.color === k); assert.equal(cs.length, 18);
-    for (let v = 1; v <= 6; v++) assert.equal(cs.filter((c) => c.kind === 'num' && c.value === v).length, 2);
+    const cs = d.filter((c) => c.color === k); assert.equal(cs.length, 26);
+    for (const s of SYMS) assert.equal(cs.filter((c) => c.kind === 'fig' && c.sym === s).length, 2);
     for (const a of C.ACTIONS) assert.equal(cs.filter((c) => c.kind === a).length, 2);
   }
-  assert.equal(d.filter(C.isWild).length, 4);
+  assert.equal(d.filter((c) => c.kind === 'curinga').length, 4); assert.equal(d.filter((c) => c.kind === 'mais4').length, 4);
 });
-test('figuras somam o valor do número', () => { for (let v = 1; v <= 6; v++) assert.equal(C.beatsOf(C.FIGS[v]), v); });
-test('distribuição: 7 + 7, descarte começa com número, 76 conservadas', () => {
-  for (let s = 1; s <= 80; s++) {
-    const g = C.newGame({ rnd: seeded(s) }); assert.equal(g.hands[0].length, 7); assert.equal(g.hands[1].length, 7);
-    assert.ok(C.isNum(g.discard[0])); assert.equal(g.color, g.discard[0].color); assert.ok(C.validGame(g));
+test('distribuição: 7 por jogador (2 a 4), descarte começa com figura, 112 conservadas', () => {
+  for (const players of [2, 3, 4]) for (let s = 1; s <= 40; s++) {
+    const g = C.newGame({ mode: 'paul', players, rnd: seeded(s) }); assert.equal(g.n, players); assert.equal(g.hands.length, players);
+    g.hands.forEach((h) => assert.equal(h.length, 7)); assert.ok(C.isFig(g.discard[0])); assert.equal(g.color, g.discard[0].color); assert.ok(C.validGame(g));
   }
+  assert.equal(C.newGame({ mode: 'local', players: 4 }).n, 2); assert.equal(C.newGame({ mode: 'online' }).n, 2);
 });
-test('jogabilidade: cor, número, ação, curinga; topo curinga só vale pela cor', () => {
-  const top = num('vermelho', 3);
-  assert.ok(C.playable(num('vermelho', 6), top, 'vermelho')); assert.ok(C.playable(num('azul', 3), top, 'vermelho'));
-  assert.ok(!C.playable(num('azul', 4), top, 'vermelho')); assert.ok(C.playable(card(null, 'curinga'), top, 'vermelho'));
-  const sk = card('azul', 'pular'); assert.ok(C.playable(card('mostarda', 'pular'), sk, 'azul')); assert.ok(!C.playable(num('mostarda', 3), sk, 'azul'));
-  const w = card(null, 'curinga'); assert.ok(!C.playable(num('mostarda', 3), w, 'azul')); assert.ok(C.playable(num('azul', 1), w, 'azul'));
+test('jogabilidade: mesma cor ou mesma figura; ação só com mesma ação; topo curinga só pela cor', () => {
+  const top = fig('vermelho', 'colcheia');
+  assert.ok(C.playable(fig('vermelho', 'fusa'), top, 'vermelho')); assert.ok(C.playable(fig('azul', 'colcheia'), top, 'vermelho'));
+  assert.ok(!C.playable(fig('azul', 'fusa'), top, 'vermelho')); assert.ok(!C.playable(fig('azul', 'p_colcheia'), top, 'vermelho'));
+  assert.ok(C.playable(card(null, 'curinga'), top, 'vermelho'));
+  const sk = card('azul', 'pular'); assert.ok(C.playable(card('amarelo', 'pular'), sk, 'azul')); assert.ok(!C.playable(fig('amarelo', 'colcheia'), sk, 'azul')); assert.ok(C.playable(fig('azul', 'fusa'), sk, 'azul'));
+  const w = card(null, 'curinga'); assert.ok(!C.playable(fig('amarelo', 'acento'), w, 'azul')); assert.ok(C.playable(fig('azul', 'acento'), w, 'azul'));
+  // acento e nota fantasma são categorias normais: casam entre si, não com as outras
+  assert.ok(C.playable(fig('verde', 'acento'), fig('azul', 'acento'), 'azul')); assert.ok(!C.playable(fig('verde', 'fantasma'), fig('azul', 'acento'), 'azul'));
+});
+test('+4 só vale sem carta da cor ativa na mão', () => {
+  const w4 = card(null, 'mais4'); const top = fig('vermelho', 'colcheia');
+  assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('vermelho', 'fusa')])); assert.ok(C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa')]));
+  const g = base({ hands: [[w4, fig('vermelho', 'fusa')], padHand(3)] });
+  assert.throws(() => C.applyPlay(g, 0, w4.id, 'azul'), /serve/); assert.equal(C.legalCards(g, 0).length, 1);
 });
 test('curinga exige cor e muda a cor sem pular a vez', () => {
-  const w = card(null, 'curinga'); const g = base({ hands: [[w, num('azul', 1)], [num('azul', 2)]] });
+  const w = card(null, 'curinga'); const g = base({ hands: [[w, fig('azul', 'fusa')], [fig('azul', 'fusa')]] });
   assert.throws(() => C.applyPlay(g, 0, w.id)); const r = C.applyPlay(g, 0, w.id, 'azul');
-  assert.equal(r.color, 'azul'); assert.equal(r.turn, 1);
+  assert.equal(r.color, 'azul'); assert.equal(r.turn, 1); assert.equal(r.ev.t, 'play');
+});
+test('pular, +2 e +4 fazem o próximo perder a vez; +2/+4 compram', () => {
+  const sk = card('vermelho', 'pular'); const m2 = card('vermelho', 'mais2'); const w4 = card(null, 'mais4');
+  const mk = (c) => base({ n: 3, hands: [[c, fig('azul', 'fusa')], padHand(2), padHand(2)], draw: padHand(8) });
+  let r = C.applyPlay(mk(sk), 0, sk.id); assert.equal(r.turn, 2); assert.equal(r.ev.victim, 1);
+  r = C.applyPlay(mk(m2), 0, m2.id); assert.equal(r.hands[1].length, 4); assert.equal(r.turn, 2); assert.equal(r.ev.n, 2);
+  r = C.applyPlay(mk(w4), 0, w4.id, 'verde'); assert.equal(r.hands[1].length, 6); assert.equal(r.turn, 2); assert.equal(r.color, 'verde');
+});
+test('inverter: com 3+ jogadores muda o sentido; com 2 vale como pular', () => {
+  const inv = card('vermelho', 'inverter');
+  let r = C.applyPlay(base({ n: 3, hands: [[inv, fig('azul', 'fusa')], padHand(2), padHand(2)] }), 0, inv.id); assert.equal(r.dir, -1); assert.equal(r.turn, 2);
+  r = C.applyPlay(r.hands && base({ n: 3, dir: -1, turn: 2, hands: [padHand(2), padHand(2), [inv, fig('azul', 'fusa')]] }), 2, inv.id); assert.equal(r.dir, 1); assert.equal(r.turn, 0);
+  r = C.applyPlay(base({ hands: [[inv, fig('azul', 'fusa')], padHand(2)] }), 0, inv.id); assert.equal(r.turn, 0);
+});
+test('ordem de jogo respeita o sentido', () => {
+  const g = base({ n: 4, hands: [[], [], [], []], dir: -1 }); assert.equal(C.adv(g, 0), 3); assert.equal(C.adv(g, 0, 2), 2); assert.equal(C.adv({ ...g, dir: 1 }, 3), 0);
 });
 test('com carta válida não compra; compra uma só; serve → joga ou passa; não serve → passa sozinho', () => {
-  const ok = base({ hands: [[num('vermelho', 1)], [num('azul', 2)]], draw: [num('azul', 5)] });
-  assert.equal(C.canDraw(ok), false); assert.throws(() => C.applyDraw(ok, 0));
-  const stuck = base({ hands: [[num('azul', 4), num('azul', 5)], [num('azul', 2)]], draw: [num('mostarda', 6), num('vermelho', 2)] });
-  assert.equal(C.canDraw(stuck), true); let g = C.applyDraw(stuck, 0); // compra vermelho 2: serve
-  assert.equal(g.turn, 0); assert.ok(g.drawn); assert.equal(C.canDraw(g), false); assert.throws(() => C.applyDraw(g, 0));
-  assert.deepEqual(C.legalCards(g, 0).map((c) => c.id), [g.drawn]); assert.equal(C.canPass(g), true);
-  assert.equal(C.applyPass(g, 0).turn, 1);
-  const s2 = base({ hands: [[num('azul', 4)], [num('azul', 2)]], draw: [num('mostarda', 6)] });
-  g = C.applyDraw(s2, 0); assert.equal(g.turn, 1); assert.equal(g.hands[0].length, 2);
+  const ok = base({ hands: [[fig('vermelho', 'fusa')], padHand(2)], draw: [fig('azul', 'acento')] });
+  assert.ok(!C.canDraw(ok)); assert.throws(() => C.applyDraw(ok, 0));
+  const nok = base({ hands: [[fig('azul', 'acento')], padHand(2)], draw: [fig('amarelo', 'fantasma')] });
+  assert.ok(C.canDraw(nok)); let r = C.applyDraw(nok, 0); assert.equal(r.hands[0].length, 2); assert.equal(r.turn, 1); assert.equal(r.drawn, null); assert.equal(r.ev.fits, false);
+  const fits = base({ hands: [[fig('azul', 'acento')], padHand(2)], draw: [fig('vermelho', 'fusa')] });
+  r = C.applyDraw(fits, 0); assert.equal(r.turn, 0); assert.ok(r.drawn); assert.ok(!C.canDraw(r)); assert.ok(C.canPass(r));
+  assert.throws(() => C.applyPlay(r, 0, r.hands[0][0].id), /comprada/);
+  r = C.applyPass(r, 0); assert.equal(r.turn, 1); assert.equal(r.drawn, null);
 });
-test('+2: adversário compra 2 e perde a vez, sem empilhar; pular e inverter também pulam (2 jogadores)', () => {
-  const d2 = card('vermelho', 'mais2'); const g = base({ hands: [[d2, num('azul', 1)], [card('vermelho', 'mais2'), num('azul', 2)]], draw: [num('azul', 4), num('azul', 5), num('azul', 6)] });
-  const r = C.applyPlay(g, 0, d2.id); assert.equal(r.hands[1].length, 4); assert.equal(r.turn, 0);
-  for (const k of ['pular', 'inverter']) { const c = card('vermelho', k); const x = C.applyPlay(base({ hands: [[c, num('azul', 1)], [num('azul', 2)]] }), 0, c.id); assert.equal(x.turn, 0); assert.equal(x.hands[1].length, 1); }
+test('monte vazio recicla o descarte (sem o topo) e conta o embaralhamento', () => {
+  const g = base({ hands: [[fig('azul', 'acento')], padHand(2)], draw: [], discard: [fig('verde', 'fusa'), fig('verde', 'colcheia'), fig('vermelho', 'seminima')] });
+  assert.equal(C.available(g), 2); const r = C.applyDraw(g, 0); assert.equal(r.discard.length, 1); assert.equal(r.shuf, 1);
 });
-test('vitória com ação resolve o +2 antes do resultado', () => {
-  const d2 = card('vermelho', 'mais2'); const g = base({ hands: [[d2], [num('azul', 2)]], draw: [num('azul', 4), num('azul', 5)] });
-  const r = C.applyPlay(g, 0, d2.id); assert.ok(r.over); assert.equal(r.result.winner, 0); assert.equal(r.hands[1].length, 3);
+test('não é possível jogar fora da vez nem carta que não está na mão', () => {
+  const g = base({ hands: [[fig('vermelho', 'fusa')], [fig('vermelho', 'fusa'), fig('azul', 'fusa')]] });
+  assert.throws(() => C.applyPlay(g, 1, g.hands[1][0].id), /vez/); assert.throws(() => C.applyPlay(g, 0, 'nada'), /mão/);
+  assert.throws(() => C.applyPlay({ ...g, hands: [[fig('azul', 'acento'), fig('azul', 'fusa')], g.hands[1]] }, 0, 'x'));
 });
-test('reciclagem: monte vazio embaralha o descarte mantendo topo e cor', () => {
-  const top = num('vermelho', 3); const g = base({ hands: [[num('azul', 4)], [num('azul', 2)]], draw: [], discard: [num('mostarda', 1), num('mostarda', 2), top] });
-  assert.equal(C.canDraw(g), true); const r = C.applyDraw(g, 0, seeded(2));
-  assert.equal(C.topOf(r).id, top.id); assert.equal(r.color, 'vermelho'); assert.equal(r.discard.length, 1); assert.equal(r.draw.length + r.hands[0].length, 3);
+test('vitória: esvaziar a mão termina a partida', () => {
+  const c = fig('vermelho', 'fusa'); const r = C.applyPlay(base({ hands: [[c], padHand(3)] }), 0, c.id);
+  assert.ok(r.over); assert.equal(r.result.winner, 0); assert.equal(r.result.reason, 'mao-vazia'); assert.ok(!C.canDraw(r));
 });
-test('última nota! marcada ao ficar com uma carta', () => {
-  const a = num('vermelho', 6); const g = base({ hands: [[a, num('azul', 1)], [num('azul', 2)]] }); assert.equal(C.applyPlay(g, 0, a.id).last, 0);
+test('UNO: sobrou uma carta → precisa avisar; avisar limpa; esquecer e ser pego compra 2', () => {
+  const a = fig('vermelho', 'fusa'); const b = fig('azul', 'fusa');
+  let g = C.applyPlay(base({ hands: [[a, b], padHand(3)], draw: padHand(6) }), 0, a.id);
+  assert.equal(g.unoPending, 0); assert.ok(C.mustUno(g, 0)); assert.ok(!C.mustUno(g, 1));
+  const said = C.callUno(g, 0); assert.equal(said.unoPending, null); assert.equal(said.unoSaid, 0); assert.ok(!C.mustUno(said, 0)); assert.throws(() => C.callUno(said, 0));
+  const caught = C.catchUno(g, 0); assert.equal(caught.hands[0].length, 3); assert.equal(caught.unoPending, null); assert.equal(caught.ev.t, 'catch');
+  assert.throws(() => C.catchUno(caught, 0));
 });
-test('bloqueio: sem compra possível, duas passagens; menos cartas vence; igualdade empata', () => {
-  const g = base({ hands: [[num('azul', 4)], [num('azul', 2), num('azul', 5)]], draw: [], discard: [num('vermelho', 3)] });
-  assert.equal(C.canPass(g), true); const a = C.applyPass(g, 0); assert.equal(a.over, false); const b = C.applyPass(a, 1);
-  assert.deepEqual([b.over, b.result.reason, b.result.winner], [true, 'bloqueio', 0]);
-  const e = base({ hands: [[num('azul', 4)], [num('azul', 2)]] }); assert.equal(C.applyPass(C.applyPass(e, 0), 1).result.winner, null);
+test('bloqueio: ninguém joga nem compra → todos passam; menos cartas vence; igualdade empata', () => {
+  let g = base({ n: 3, hands: [[fig('azul', 'acento')], [fig('azul', 'acento'), fig('azul', 'fusa')], [fig('azul', 'acento'), fig('azul', 'fusa')]], draw: [] });
+  g = C.applyPass(g, 0); g = C.applyPass(g, 1); assert.ok(!g.over); g = C.applyPass(g, 2); assert.ok(g.over); assert.equal(g.result.reason, 'bloqueio'); assert.equal(g.result.winner, 0);
+  let t = base({ hands: [[fig('azul', 'acento')], [fig('azul', 'acento')]], draw: [] }); t = C.applyPass(C.applyPass(t, 0), 1); assert.equal(t.result.winner, null);
 });
-test('invariantes: 300 partidas Paul × Paul terminam e conservam 76 cartas', () => {
-  for (let s = 1; s <= 300; s++) {
-    const rnd = seeded(s); let g = C.newGame({ rnd }); let n = 0;
-    while (!g.over && n++ < 2000) {
-      const mv = C.paulMove(g, g.turn, rnd);
-      g = mv.type === 'play' ? C.applyPlay(g, g.turn, mv.id, mv.color, rnd) : mv.type === 'draw' ? C.applyDraw(g, g.turn, rnd) : C.applyPass(g, g.turn);
-      assert.equal(g.hands[0].length + g.hands[1].length + g.draw.length + g.discard.length, 76);
-    }
-    assert.ok(g.over, `semente ${s}`); assert.ok(C.validGame(g));
+test('o computador só joga cartas legais e escolhe cor válida', () => {
+  for (let s = 1; s <= 200; s++) {
+    const rnd = seeded(s); const g = C.newGame({ mode: 'paul', players: 3, rnd }); g.turn = 1;
+    const mv = C.paulMove(g, 1, rnd);
+    if (mv.type === 'play') { assert.ok(C.legalCards(g, 1).some((c) => c.id === mv.id)); const c = g.hands[1].find((x) => x.id === mv.id); if (C.isWild(c)) assert.ok(C.COLORS.includes(mv.color)); }
+    else if (mv.type === 'draw') assert.ok(C.canDraw(g)); else assert.ok(C.canPass(g));
   }
 });
-test('validGame recusa dados ruins', () => {
-  const g = C.newGame({ rnd: seeded(4) }); for (const bad of [null, {}, { ...g, color: 'rosa' }, { ...g, draw: g.draw.slice(1) }, { ...g, hands: [[...g.hands[0], g.hands[1][0]], g.hands[1]] }]) assert.equal(C.validGame(bad), false);
+test('invariantes: 300 partidas de 2, 3 e 4 jogadores (computador × computador) terminam e conservam 112 cartas', () => {
+  for (const players of [2, 3, 4]) for (let s = 1; s <= 100; s++) {
+    const rnd = seeded(s * 7 + players); let g = C.newGame({ mode: 'paul', players, rnd }); let steps = 0;
+    while (!g.over && steps++ < 3000) {
+      const p = g.turn; const mv = C.paulMove(g, p, rnd);
+      g = mv.type === 'play' ? C.applyPlay(g, p, mv.id, mv.color, rnd) : mv.type === 'draw' ? C.applyDraw(g, p, rnd) : C.applyPass(g, p);
+      if (g.unoPending != null && C.mustUno(g, g.unoPending)) g = C.callUno(g, g.unoPending);
+      assert.equal([...g.hands.flat(), ...g.draw, ...g.discard].length, 112); assert.equal(new Set([...g.hands.flat(), ...g.draw, ...g.discard].map((c) => c.id)).size, 112);
+    }
+    assert.ok(g.over, `partida ${players}p/${s} não terminou`); assert.ok(C.validGame(g));
+  }
+});
+test('validGame rejeita estados quebrados e partidas do formato antigo', () => {
+  const g = C.newGame({ mode: 'paul' }); assert.ok(C.validGame(JSON.parse(JSON.stringify(g))));
+  assert.ok(!C.validGame({ ...g, v: 1 })); assert.ok(!C.validGame({ ...g, hands: [g.hands[0]] })); assert.ok(!C.validGame({ ...g, color: 'mostarda' }));
+  assert.ok(!C.validGame({ ...g, draw: g.draw.slice(1) })); assert.ok(!C.validGame(null));
 });

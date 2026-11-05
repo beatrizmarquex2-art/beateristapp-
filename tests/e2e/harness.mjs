@@ -87,6 +87,13 @@ export async function launch({ viewport = { width: 390, height: 844 }, hasTouch 
   return { browser, ctx };
 }
 
+/** Mais um contexto no mesmo navegador (outro tamanho de tela, movimento reduzido…), já com o medidor de áudio. */
+export async function context(browser, opts = {}) {
+  const ctx = await browser.newContext({ hasTouch: true, isMobile: true, permissions: ['microphone'], serviceWorkers: 'block', ...opts });
+  await ctx.addInitScript(TAP);
+  return ctx;
+}
+
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0; const results = [];
 export function check(name, ok, detail = '') { results.push({ name, ok: !!ok, detail }); if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); }
