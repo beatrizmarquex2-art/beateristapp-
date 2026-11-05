@@ -42,7 +42,7 @@ export function buildToday(weekday, total, pool, { seed = '', over = {} } = {}) 
   const hands = pool.rudiments.filter((r) => !r.hasKick); const feet = pool.rudiments.filter((r) => r.hasKick);
   const warm = pool.rudiments.find((r) => /^toque simples/i.test(r.name)) || hands[0] || null;
   const tec = {
-    leitura: { item: 'leitura rítmica (nível do dia)', tool: { label: 'treino de leitura', href: '#/treinos' } },
+    leitura: { item: 'leitura rítmica (nível do dia)', tool: { label: 'treino de leitura', href: '#/partitura/leitura' } },
     escuta: { item: 'ditado rítmico: ouvir e reconhecer', tool: { label: 'treino de escuta', href: '#/treinos/escuta' } },
     rudimento: (() => { const r = pick(hands, rnd); return r && { item: r.name, tool: { label: 'rudimentos', href: '#/rudimentos', open: { rud: r.key } } }; })(),
     coordenacao: (() => { const r = pick(feet, rnd) || pick(hands, rnd); return r && { item: r.name, tool: { label: 'rudimentos', href: '#/rudimentos', open: { rud: r.key } } }; })(),

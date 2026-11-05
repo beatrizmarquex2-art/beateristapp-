@@ -11,11 +11,13 @@ import * as bingo from '../jogos/bingo.js';
 import * as cara from '../jogos/cara.js';
 import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
+import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
+  ['toca', 'Toca Aqui', 'toca.svg', toca, 'figuras e versão com imagens'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'números e figuras · 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -30,7 +32,7 @@ const link = (href, title, img, sub, only) => [href, title, img, null, sub, href
 const SECTIONS = [
   ['ritmo e bateria', [
     link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
-    link('#/kids/ritmo', 'monte seu ritmo', 'monte.svg', 'pão, bolo, chocolate…'),
+    inner('toca'),
     link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
     link('#/kids/eco', 'eco rítmico', 'eco.svg', 'ouve e repete'),
   ]],

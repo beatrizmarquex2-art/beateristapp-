@@ -44,7 +44,7 @@ const MENU_BEA = [
 ];
 const MENU_B = [
   ['treinar', 'treinar', [
-    ['', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana'], ['#/treinos', 'study', 'Leitura e Escuta']]],
+    ['', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana'], ['#/partitura/leitura', 'study', 'Leitura rítmica'], ['#/treinos', 'study', 'Escuta (ditado)']]],
   ]],
   ['jogos', 'jogos', [
     ['', [['#/jogos', 'star', 'Todos os jogos']]],
@@ -54,7 +54,7 @@ const MENU_B = [
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
   ]],
   ['ritmo', 'ritmo', [
-    ['', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/kids/ritmo', 'kit', 'Monte seu ritmo'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
   ]],
   ['estudar', 'estudos', [
     ['', [['#/dicionario', 'book', 'Dicionário da bateria']]],

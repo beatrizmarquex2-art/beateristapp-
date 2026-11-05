@@ -18,7 +18,7 @@ export const FIGURES = [
 const f = (id, word, syl, cell, fig, emoji) => ({ id, word, syl, cell, fig, emoji });
 export const FOODS = [
   f('pao', 'pão', ['pão'], '1000', 'semínima', '🍞'), f('ceu', 'céu', ['céu'], '1000', 'semínima', '☁️'), f('mao', 'mão', ['mão'], '1000', 'semínima', '✋'), f('cao', 'cão', ['cão'], '1000', 'semínima', '🐶'),
-  f('bolo', 'bolo', ['bo', 'lo'], '1010', '2 colcheias', '🎂'), f('bola', 'bola', ['bo', 'la'], '1010', '2 colcheias', '⚽'), f('corpo', 'corpo', ['cor', 'po'], '1010', '2 colcheias', '🧍'), f('pato', 'pato', ['pa', 'to'], '1010', '2 colcheias', '🦆'),
+  f('bolo', 'bolo', ['bo', 'lo'], '1010', '2 colcheias', '🎂'), f('bola', 'bola', ['bo', 'la'], '1010', '2 colcheias', '⚽'), f('braco', 'braço', ['bra', 'ço'], '1010', '2 colcheias', '💪'), f('pato', 'pato', ['pa', 'to'], '1010', '2 colcheias', '🦆'),
   f('chocolate', 'chocolate', ['cho', 'co', 'la', 'te'], '1111', '4 semicolcheias', '🍫'), f('bicicleta', 'bicicleta', ['bi', 'ci', 'cle', 'ta'], '1111', '4 semicolcheias', '🚲'),
   f('esqueleto', 'esqueleto', ['es', 'que', 'le', 'to'], '1111', '4 semicolcheias', '💀'), f('borboleta', 'borboleta', ['bor', 'bo', 'le', 'ta'], '1111', '4 semicolcheias', '🦋'),
   f('shh', 'shhh', ['shh'], '0000', 'pausa', '🤫'),

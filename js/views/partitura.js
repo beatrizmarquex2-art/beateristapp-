@@ -12,6 +12,7 @@ import { gridEl, VOICE, velOf, stopBeat } from './beatlab.js';
 import { renderWav } from '../wav.js';
 import { sendCanvases } from '../send-folder.js';
 import { tipBox } from '../tipbox.js';
+import { leitura } from './treinos.js';
 
 const KIND = 'partitura';
 const docs = () => store.list(KIND).sort((a, b) => (b.data.metodo ? 0 : 1) - (a.data.metodo ? 0 : 1) || b.updated_at - a.updated_at);
@@ -251,6 +252,15 @@ export function newScoreSheet({ title = '', songId = null, onCreated } = {}) {
   });
 }
 
+/** Abas da Partitura: as partituras e o jogo de leitura rítmica (ler a figura e tocar na hora). */
+const ptTabs = (on) => h('div', { class: 'chips lib-tabs bt-tabs' },
+  h('a', { class: `lib-tab${on === 'partituras' ? ' on' : ''}`, href: '#/partitura' }, 'minhas partituras'),
+  h('a', { class: `lib-tab${on === 'leitura' ? ' on' : ''}`, href: '#/partitura/leitura' }, 'leitura rítmica'));
+function mountLeitura(host) {
+  host.append(banner('Leitura rítmica', 'ler a figura e tocar na hora'), ptTabs('leitura'));
+  return leitura(host);
+}
+
 function mountList(host) {
   const box = h('div');
   const draw = () => {
@@ -260,10 +270,10 @@ function mountList(host) {
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${r.data.title}`, onclick: async () => { if (await confirmSheet('Apagar partitura?', r.data.title, 'Apagar')) { await store.remove(r.id); toast('partitura apagada', { ms: 1500 }); } } }, icon('trash', 18)))))
       : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma partitura ainda.'), h('p', { class: 'muted' }, 'cria uma na hora: escolhe os compassos, a figura e escreve na grade.')));
   };
-  host.append(banner('Montar Partitura', 'compasso por compasso'), h('div', { class: 'bl-actions pad-x' },
+  host.append(banner('Montar Partitura', 'compasso por compasso'), ptTabs('partituras'), h('div', { class: 'bl-actions pad-x' },
     h('button', { class: 'btn primary', type: 'button', onclick: () => newScoreSheet() }, '+ nova partitura')), box);
   draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === KIND) draw(); });
 }
 
-export function mount(host, parts) { const off = parts && parts[0] ? mountEdit(host, parts[0]) : mountList(host); tipBox(host, 'partitura'); return () => { off && off(); stopAll(); }; }
+export function mount(host, parts) { const off = parts && parts[0] === 'leitura' ? mountLeitura(host) : parts && parts[0] ? mountEdit(host, parts[0]) : mountList(host); tipBox(host, 'partitura'); return () => { off && off(); stopAll(); }; }
