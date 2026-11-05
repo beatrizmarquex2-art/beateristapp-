@@ -34,7 +34,7 @@ test('mesas: tamanhos 6/12 (kids) e 12/20 (clássico), sem entidade repetida, co
   }
 });
 test('banda com várias fotos (Beatles) nunca aparece duas vezes na mesma rodada', () => {
-  for (let s = 1; s <= 300; s++) { const mesa = R.novaMesa({ modo: 'classico', tamanho: 20, rnd: seeded(s) }); const beatles = mesa.cartas.filter((c) => BY_ID[c.id].fotos.length > 5); assert.ok(beatles.length <= 1); }
+  for (let s = 1; s <= 300; s++) { const mesa = R.novaMesa({ modo: 'classico', tamanho: 20, rnd: seeded(s) }); const ids = mesa.cartas.map((c) => c.id); assert.equal(new Set(ids).size, ids.length); assert.ok(mesa.cartas.filter((c) => c.id === 'the-beatles').length <= 1); }
 });
 test('pergunta com atributo null nunca é oferecida nem respondida', () => {
   const nulo = ENTIDADES.find((e) => e.attrs.punk === null); const outras = ENTIDADES.filter((e) => e.id !== nulo.id && e.attrs.punk !== null).slice(0, 5);

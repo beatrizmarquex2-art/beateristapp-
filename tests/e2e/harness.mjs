@@ -80,17 +80,25 @@ const TAP = `(() => {
   window.cancelAnimationFrame = (id) => { window.__ac.raf.delete(id); return cq(id); };
 })();`;
 
-export async function launch({ viewport = { width: 390, height: 844 }, hasTouch = true, isMobile = true, ua } = {}) {
+/** Aluno COM código liberado (como a Bea dá): a conferência no servidor responde "true" e o código fica no aparelho. Sem isso o aluno só vê o Modo Livre. */
+export async function alunoComCodigo(ctx) {
+  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+  await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  await ctx.addInitScript(() => { try { if (!localStorage.getItem('beaterista-aluno-codigo')) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) { /* ok */ } });
+}
+export async function launch({ viewport = { width: 390, height: 844 }, hasTouch = true, isMobile = true, ua, codigo = true } = {}) {
   const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--no-sandbox'] });
   const ctx = await browser.newContext({ viewport, hasTouch, isMobile, userAgent: ua, permissions: ['microphone'], serviceWorkers: 'block' });
   await ctx.addInitScript(TAP);
+  if (codigo) await alunoComCodigo(ctx); // por padrão o aluno dos testes já tem código; use { codigo: false } pra testar o aluno sem código
   return { browser, ctx };
 }
 
 /** Mais um contexto no mesmo navegador (outro tamanho de tela, movimento reduzido…), já com o medidor de áudio. */
 export async function context(browser, opts = {}) {
-  const ctx = await browser.newContext({ hasTouch: true, isMobile: true, permissions: ['microphone'], serviceWorkers: 'block', ...opts });
+  const { codigo: _c, ...rest } = opts; const ctx = await browser.newContext({ hasTouch: true, isMobile: true, permissions: ['microphone'], serviceWorkers: 'block', ...rest });
   await ctx.addInitScript(TAP);
+  if (opts.codigo !== false) await alunoComCodigo(ctx);
   return ctx;
 }
 

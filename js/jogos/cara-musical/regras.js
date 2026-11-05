@@ -3,6 +3,7 @@
 // (3) toda mesa tem solução: qualquer par de cartas se separa por alguma pergunta disponível; (4) o bot só usa respostas recebidas, nunca o segredo.
 import { ENTIDADES, BY_ID, FOTOS } from './elenco.js';
 import { PERGUNTAS, BY_Q } from './perguntas.js';
+import { chaveDuvida, emDuvida } from './contestar.js';
 
 export const TAMANHOS = { kids: [6, 12], classico: [12, 20] };
 const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -11,6 +12,7 @@ export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); fo
 /** true / false / null da pergunta para uma carta da mesa ({ id, foto }). */
 export function respostaDe(q, carta) {
   const v = q.de === 'foto' ? (FOTOS[carta.foto] || {})[q.attr] : (BY_ID[carta.id] || { attrs: {} }).attrs[q.attr];
+  if (emDuvida(chaveDuvida(q, carta))) return null; // contestado neste aparelho: não vira resposta até a Bea revisar
   return v === true ? true : v === false ? false : null;
 }
 const cartasOf = (mesa) => mesa.cartas;
@@ -24,8 +26,9 @@ export function mesaTemSolucao(cartas, modo) {
   for (let i = 0; i < cartas.length; i++) for (let j = i + 1; j < cartas.length; j++) if (!qs.some((q) => respostaDe(q, cartas[i]) !== respostaDe(q, cartas[j]))) return false;
   return true;
 }
-function fotoDe(ent, rnd) { // prefere uma foto com preto_e_branco verificado (assim a pergunta da cor não some à toa)
-  const ok = ent.fotos.filter((f) => (FOTOS[f] || {}).preto_e_branco !== null); const pool = ok.length ? ok : ent.fotos; return pool[Math.floor(rnd() * pool.length)];
+function fotoDe(ent, rnd) { // prefere uma foto com todos os atributos da foto verificados (assim as perguntas da foto não somem à toa)
+  const qf = PERGUNTAS.filter((q) => q.de === 'foto'); const todas = (f) => qf.every((q) => (FOTOS[f] || {})[q.attr] !== null && (FOTOS[f] || {})[q.attr] !== undefined);
+  const completas = ent.fotos.filter(todas); const ok = ent.fotos.filter((f) => (FOTOS[f] || {}).preto_e_branco !== null); const pool = completas.length ? completas : ok.length ? ok : ent.fotos; return pool[Math.floor(rnd() * pool.length)];
 }
 /** Mesa nova: `tamanho` entidades DIFERENTES, uma foto por entidade, com solução garantida. `evitar` = ids que não podem entrar. */
 export function novaMesa({ modo = 'classico', tamanho = 12, rnd = Math.random, evitar = [] } = {}) {
