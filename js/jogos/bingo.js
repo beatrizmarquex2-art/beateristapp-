@@ -7,7 +7,7 @@ import { getGame, setGame, sfx, reduced } from './base.js';
 
 const ID = 'bingo';
 const MODES = [['solo', 'solo · 1 cartela'], ['dupla', 'dupla · 2 cartelas'], ['prof', 'professor · só o sorteador']];
-const GOALS = [['linha', 'linha, coluna ou diagonal'], ['cheia', 'cartela cheia']];
+const GOALS = [['linha', 'linha ou coluna'], ['cheia', 'cartela cheia']];
 const AUTO_MS = 6000;
 const pic = (it, cls = 'jg-bpic') => h('span', { class: cls, 'aria-hidden': 'true' }, it.img ? h('img', { src: `assets/jogos/instrumentos/${it.img}.webp`, alt: '', draggable: 'false', decoding: 'async' }) : artEl(it.id));
 

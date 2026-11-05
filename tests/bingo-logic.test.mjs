@@ -16,8 +16,8 @@ test('cartela: 16 itens únicos de 24, para várias sementes', () => {
 test('24 sorteios sem repetição e o 25º é recusado', () => {
   let g = B.newGame({ rnd: seeded(3) }); g = drawAll(g, 24); assert.equal(new Set(B.calledIds(g)).size, 24); assert.equal(B.remaining(g), 0); assert.throws(() => B.drawNext(g));
 });
-test('as 10 combinações (4 linhas, 4 colunas, 2 diagonais) vencem; 3 de 4 não', () => {
-  assert.equal(B.LINES.length, 10);
+test('as 8 combinações (4 linhas, 4 colunas; sem diagonal) vencem; 3 de 4 não', () => {
+  assert.equal(B.LINES.length, 8);
   for (const line of B.LINES) {
     let g = B.newGame({ rnd: seeded(5) }); g = drawAll(g, 24);
     g = markAll(g, 0, line.slice(0, 3)); assert.equal(B.winning(g, 0), null); assert.equal(B.declare(g, 0).ok, false);

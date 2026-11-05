@@ -31,10 +31,9 @@ export const SIZE = 4;
 export const LINES = (() => {
   const l = []; for (let r = 0; r < SIZE; r++) l.push(Array.from({ length: SIZE }, (_, c) => r * SIZE + c));
   for (let c = 0; c < SIZE; c++) l.push(Array.from({ length: SIZE }, (_, r) => r * SIZE + c));
-  l.push(Array.from({ length: SIZE }, (_, i) => i * SIZE + i), Array.from({ length: SIZE }, (_, i) => i * SIZE + (SIZE - 1 - i)));
   return l;
 })();
-export const GOALS = { linha: 'linha, coluna ou diagonal', cheia: 'cartela cheia' };
+export const GOALS = { linha: 'linha ou coluna', cheia: 'cartela cheia' };
 
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const makeCard = (rnd = Math.random) => shuffle(ITEMS.map((i) => i.id), rnd).slice(0, SIZE * SIZE);

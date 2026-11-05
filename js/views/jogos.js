@@ -5,7 +5,6 @@ import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
-import * as domino from '../jogos/domino.js';
 import * as cartas from '../jogos/cartas.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
@@ -17,8 +16,7 @@ import { relatorio } from './jogos-relatorio.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['domino', 'dominó', 'domino.webp', domino],
-  ['cartas', 'última nota', 'cartas.webp', cartas, 'números e figuras'],
+  ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'números e figuras · 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
@@ -41,8 +39,8 @@ const SECTIONS = [
     link('#/kids/pauta', 'onde mora na pauta?', 'pauta.svg', 'cada peça tem a sua casinha'),
   ]],
   ['cartas e tabuleiro', [
-    link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares'),
-    ...['domino', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+    link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
+    ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['jogos das dicas', [
     link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
