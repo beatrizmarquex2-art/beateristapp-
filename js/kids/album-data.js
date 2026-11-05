@@ -47,3 +47,9 @@ export const CARDS = [
   c('adele', 'vocalista', 'Adele', 'solo', 'Adele', 'cantora britânica de voz forte e músicas emocionantes.'),
 ];
 export const byId = Object.fromEntries(CARDS.map((x) => [x.id, x]));
+
+export const STARS_PER_CARD = 5;
+/** Quantas figurinhas ainda são devidas: ★ acumuladas de ritmo ÷ 5, menos as já entregues. */
+export const owedByStars = (totalStars, paid = 0, per = STARS_PER_CARD) => Math.max(0, Math.floor((totalStars || 0) / per) - (paid || 0));
+/** Quantas ★ faltam pra próxima figurinha de ritmo. */
+export const starsToNext = (totalStars, per = STARS_PER_CARD) => per - ((totalStars || 0) % per);

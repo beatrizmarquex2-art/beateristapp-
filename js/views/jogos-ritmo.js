@@ -10,6 +10,8 @@ import { readZip, writeZip } from '../zip.js';
 import * as FB from '../feedback.js';
 import * as RK from '../ranking.js';
 import * as PUB from '../midis-publicos.js';
+import * as P from '../kids/progress.js';
+import * as Album from '../kids/album.js';
 
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
@@ -279,8 +281,12 @@ export function mount(host, opts = {}) {
   Promise.all([loadPackage(), student ? publicadasParaAluno().catch(() => []) : Promise.resolve([])]).then(([BR, pubSongs]) => {
     if (gone) return;
     box.replaceChildren();
+    // ★ de música longa → figurinha do álbum (a cada 5 ★), pro jogador ativo dos Kids
+    const onStars = ({ total }) => { const me = P.active(); if (!me) return; const won = Album.grantByStars(me.id, total);
+      if (won.length) sheet(won.length === 1 ? '🎁 figurinha nova!' : `🎁 ${won.length} figurinhas novas!`, () => h('div', { class: 'sheet-body kx-big' }, h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true }))), h('a', { class: 'kd-btn', href: '#/kids/album' }, 'ver o álbum')));
+      else toast(`★ ${Album.starsToNext(total)} pra próxima figurinha`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = student ? { builtin: true, impLabel: 'Músicas MIDI', autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
-    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;

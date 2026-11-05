@@ -1,15 +1,15 @@
 // Álbum de figurinhas da área Kids: ganha figurinha nova cada vez que melhora as estrelas de uma fase.
 import { h } from '../util.js';
 import * as P from './progress.js';
-import { CARDS, ROLES, byId } from './album-data.js';
+import { CARDS, ROLES, byId, STARS_PER_CARD, owedByStars, starsToNext } from './album-data.js';
 import { artPhoto } from '../views/artist-photo.js';
 
 export const total = () => CARDS.length;
 export const owned = (pid) => (P.progOf(pid).album || []).filter((id) => byId[id]);
 
 /** Sorteia `n` figurinhas que ainda faltam, misturando as três categorias. Salva e devolve as cartas. */
-export function grant(pid, n) {
-  if (!n || n < 1) return [];
+export function grant(pid, n, extra = {}) {
+  if (!n || n < 1) { if (Object.keys(extra).length) P.patch(pid, extra); return []; }
   const have = new Set(owned(pid)); const won = [];
   for (let k = 0; k < n; k++) {
     const missing = CARDS.filter((x) => !have.has(x.id)); if (!missing.length) break;
@@ -19,8 +19,15 @@ export function grant(pid, n) {
     const pool = missing.filter((x) => x.role === roles[0]); const pick = pool[Math.floor(Math.random() * pool.length)];
     have.add(pick.id); won.push(pick);
   }
-  if (won.length) P.patch(pid, { album: [...have] });
+  if (won.length || Object.keys(extra).length) P.patch(pid, { ...(won.length ? { album: [...have] } : {}), ...extra });
   return won;
+}
+
+/* ---- ★ dos jogos de ritmo (músicas longas) também valem figurinha: a cada 5 ★ ganha 1 ---- */
+export { STARS_PER_CARD, owedByStars, starsToNext };
+export function grantByStars(pid, totalStars) {
+  const prog = P.progOf(pid); const n = owedByStars(totalStars, prog.ritmoPaid);
+  return grant(pid, n, { ritmoStars: totalStars, ritmoPaid: (prog.ritmoPaid || 0) + n });
 }
 
 /** A figurinha: foto (ou inicial), nome, banda e papel. `locked` = ainda não ganhou. */
