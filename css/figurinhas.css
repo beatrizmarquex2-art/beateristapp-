@@ -173,3 +173,10 @@
 .mc-item { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; display: grid; gap: 4px; text-align: center; touch-action: manipulation; }
 .mc-item img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px #0004; }
 .mc-item span { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+
+/* escolha visual do modelo de post (miniaturas) */
+.fig-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; }
+.fig-th { display: grid; gap: 4px; justify-items: center; align-content: start; padding: 6px 4px 8px; border: 2.5px solid transparent; border-radius: 12px; background: color-mix(in srgb, currentColor 7%, transparent); color: inherit; font: inherit; cursor: pointer; touch-action: manipulation; }
+.fig-th img { display: block; width: 100%; max-width: 84px; height: auto; min-height: 64px; border-radius: 8px; background: #0002; object-fit: cover; }
+.fig-th span { font-size: 12.5px; font-weight: 700; }
+.fig-th.on { border-color: #c4182c; background: #c4182c1f; }
