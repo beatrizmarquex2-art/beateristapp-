@@ -83,7 +83,7 @@ async function finishPhase(ctx, res, spec) {
   // mesmo molde dos outros jogos do Kids: estrelas por fase entram no total do jogador (Paul ganha adesivos) e rendem figurinhas
   const kst = S.starsFor(res.right, res.total);
   const { gain } = free ? { gain: 0 } : await P.record(profile.id, { game: `pl-${world}-${mode}`, level: n, right: res.right, total: res.total, stars: kst, misses: res.misses, mode });
-  const won = free ? [] : Album.grant(profile.id, gain);
+  const won = free ? 0 : await Album.grantPacks(profile.id, gain); // estrelas viram pacotes do álbum novo
   const pct = res.total ? Math.round((res.right / res.total) * 100) : 0; const stars = out.stars;
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
@@ -102,7 +102,7 @@ async function finishPhase(ctx, res, spec) {
     free ? h('p', { class: 'pl-livre', role: 'status' }, '🔓 modo livre: valeu treinar! pontos, estrelas e figurinhas só contam com o seu código de acesso.') : null,
     !out.passed ? h('p', { class: 'pl-need' }, spec.sudden ? 'nessa fase precisa acertar todas.' : `precisa de ${Math.round(spec.need * 100)}% pra passar.`) : null,
     free ? null : out.ptsGain > 0 ? h('p', { class: 'pl-pts' }, `+${out.ptsGain} pontos · total ${out.pts}`) : h('p', { class: 'muted' }, 'sem pontos novos: pontos valem uma vez por melhor desempenho.'),
-    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+    won ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won === 1 ? 'pacote novo de figurinhas!' : `${won} pacotes novos de figurinhas!`}`), h('a', { class: 'kd-btn', href: Album.albumHref('Pacotes') }, 'abrir agora')) : null,
     ...(free ? [] : gainedTitle).map((t) => h('div', { class: 'pl-newtitle' }, h('small', {}, 'novo título!'), h('b', {}, t.name), h('span', {}, `${profile.name} · ${t.name}`))),
     worldEv && !free ? h('div', { class: 'pl-unlock' }, `🏅 ${WORLDS[world].name} concluído! +${world === 'duel' ? 200 : 100} pontos`, h('br'), h('a', { href: `${BASE}/aula/${world}` }, '📖 abrir a aulinha do Paul')) : null,
     duelOpen && !free ? h('div', { class: 'pl-unlock' }, '⚔️ o Duelo das Claves foi liberado!') : null,

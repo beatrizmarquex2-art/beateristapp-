@@ -5,6 +5,7 @@
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import { audio, click, snare, perfToCtx } from '../audio.js';
+import { voz, getSom, setSom, SONS, VELOCIDADES, BPM_MAX, velocidadeDe } from '../toca-som.js';
 import { toSVG } from '../notation.js';
 import { PATH, TIERS, PASS_SCORE, LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm, cellsFor, checkCells } from '../reading.js';
 import { banner, toast, stars } from '../ui.js';
@@ -18,7 +19,7 @@ import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
 const KEY = 'setting-treinos', KIND = 'treino';
-const cfg = () => ({ lv: 1, bpm: 70, bars: 1, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const cfg = () => ({ lv: 1, bpm: 90, bars: 1, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (patch) => store.upsert('setting', KEY, patch);
 export const MARK = { ok: '#1f9d4a', cedo: '#d98a00', tarde: '#d98a00', faltou: '#c8102e' };
 const QUESTIONS = 10;
@@ -41,7 +42,7 @@ export function schedule(beats, bpm, { play = false, clickAll = true } = {}) {
   const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
   for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
   if (clickAll) for (let b = 0; b < beats.length; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.6);
-  if (play) for (const e of onsets(beats, bpm)) snare(t0 + e.t, 0.8);
+  if (play) for (const e of onsets(beats, bpm)) voz(t0 + e.t, 0.8);
   return t0;
 }
 
@@ -59,7 +60,9 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
   return h('section', { class: 'card pad tr-ctrl' },
     line('nível', chips([[1, '1'], [2, '2'], [3, '3']], c.lv, (v) => save({ lv: v }).then(() => draw(true)), 'Nível')),
     h('p', { class: 'muted tr-lvname' }, LEVEL_NAMES[c.lv]),
-    line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(160, v)) }).then(() => draw(false)))),
+    line('velocidade', chips(VELOCIDADES.map(([k, v]) => [k, k]), velocidadeDe(c.bpm), (k) => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)), 'Velocidade')),
+    line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
+    line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque')),
     bars ? line('compassos', chips(barList.map((v) => [v, String(v)]), Math.min(c.bars, barList[barList.length - 1]), (v) => save({ bars: v }).then(() => draw(true)), 'Compassos por fase')) : null,
     input ? line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')) : null);
 }
@@ -113,7 +116,7 @@ export function leitura(host) {
       }
       const t0 = schedule(beats, c.bpm);
       const taps = [];
-      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); snare(audio().currentTime, 0.7); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
+      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); voz(audio().currentTime, 0.7); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
       pad.addEventListener('pointerdown', onTap); document.addEventListener('keydown', onTap);
       const off = () => { pad.removeEventListener('pointerdown', onTap); document.removeEventListener('keydown', onTap); };
       // segundos desde o 1º tempo, no relógio do som (para quem testa tocando por script)
@@ -148,7 +151,9 @@ export function leitura(host) {
           onclick: () => (livre ? save({ lv: t.lv }) : save({ pstep: PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) >= 0 ? PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) : first })).then(() => { lastResult = null; draw(true); }) }, open ? t.name : `🔒 ${t.name}`); }))),
       livre ? null : h('div', { class: 'tr-path', role: 'group', 'aria-label': 'Exercícios do caminho' }, ...PATH.map((st, i) => (st.tier !== PATH[step].tier ? null : (() => { const open = unlocked(c, i); const sc = bestOf(c)[i]; return h('button', { type: 'button', class: `lib-tab${i === step ? ' on' : ''}`, disabled: !open, 'aria-label': `Exercício ${st.n} de ${st.of}${open ? '' : ' (fechado)'}`, onclick: () => save({ pstep: i }).then(() => { lastResult = null; draw(true); }) }, open ? `${st.n}${sc >= PASS_SCORE ? ' ✓' : ''}` : `🔒 ${st.n}`); })()))),
       h('p', { class: 'muted tr-lvname' }, livre ? `${TIERS[c.lv - 1].name} · ${TIERS[c.lv - 1].about}` : `${PATH[step].tier === 'ini' ? 'iniciante' : PATH[step].tier === 'int' ? 'intermediário' : 'avançado'} · exercício ${PATH[step].n} de ${PATH[step].of}${(bestOf(c)[step] || 0) ? ` · melhor: ${bestOf(c)[step]}%` : ''}`),
-      line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(160, v)) }).then(() => draw(false)))),
+      line('velocidade', chips(VELOCIDADES.map(([k, v]) => [k, k]), velocidadeDe(c.bpm), (k) => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)), 'Velocidade')),
+    line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
+    line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque')),
       line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')));
     body.replaceChildren(...[ctl, score(chunk(beats), marks),
       micBlocked && c.input === 'mic' ? h('p', { class: 'tr-status bad' }, 'microfone indisponível agora: usando a tela.') : null,

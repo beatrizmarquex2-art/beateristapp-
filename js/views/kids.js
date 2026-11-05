@@ -20,7 +20,7 @@ import * as P from '../kids/progress.js';
 import { runLevel } from '../kids/engine.js';
 import { GAMES, ORDER } from '../kids/games.js';
 import * as Album from '../kids/album.js';
-import { CARDS, ROLES } from '../kids/album-data.js';
+import * as FR from '../figurinhas/rewards.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
@@ -137,7 +137,7 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-cards' }, paultaCard(me.id), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
-    h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
+    h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${FR.pastedCount()} de 125 figurinhas${FR.pending() ? ` · ${FR.pending()} pacote${FR.pending() > 1 ? 's' : ''} pra abrir` : ''}`, null, Album.albumHref()),
       ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
@@ -146,19 +146,6 @@ function homeScreen(host, rerender) {
 function paultaCard(pid) {
   const m = PL.meta(pid); const c = gameCard('#/paulta', 'pauta', 'pauLta', 'leitura musical', m, { on: m !== 'novo', pct: PL.pct(pid) });
   c.querySelector('.kx-gt').innerHTML = 'pau<span class="pl-L">L</span>ta'; return c;
-}
-
-function albumScreen(host, role) {
-  const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
-  const have = new Set(Album.owned(me.id)); const tier = tierOf(P.totalStars(me.id));
-  const r = robo({ mood: have.size ? 'cheer' : 'selfie', tier, size: 84, say: have.size ? `${have.size} de ${Album.total()} figurinhas!` : 'ganha figurinhas passando de fase!' });
-  const filter = ROLES[role] ? role : '';
-  const list = CARDS.filter((c) => !filter || c.role === filter).sort((x, y) => (have.has(y.id) ? 1 : 0) - (have.has(x.id) ? 1 : 0)); // as que já tem vêm primeiro
-  const open = (c) => sheet(c.name, () => h('div', { class: 'sheet-body kx-big' }, Album.cardEl(c), h('p', { class: 'kx-fact' }, c.fact), credit(`album-${c.id}`, c.wiki)));
-  host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Álbum'), h('div', { class: 'kx-hello' }, r.el),
-    h('div', { class: 'row kd-modes' }, h('a', { class: `kd-chip${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas'), ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kd-chip${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t}`))),
-    h('div', { class: 'kx-album' }, ...list.map((c) => (have.has(c.id) ? Album.cardEl(c, { onclick: () => open(c) }) : Album.cardEl(c, { locked: true })))),
-    h('p', { class: 'lib-note' }, 'cada vez que você melhora as estrelas de uma fase, ganha uma figurinha nova. as fotos vêm do Wikimedia Commons (licenças livres, com crédito); sem foto livre, aparece a inicial.'));
 }
 
 /** Tela de fases: mapa "Turnê do Vinil". As regras (fases 0 a 10, 1 estrela libera a próxima) continuam as de progress.js/levels.js. */
@@ -203,7 +190,7 @@ export function mount(host, parts = []) {
       }).catch((e) => { console.warn('aventura indisponível, abrindo o modo livre', e); if (!gone) { wrap.remove(); runFree(); } });
       return;
     }
-    if (first === 'album') { albumScreen(host, lv); return; }
+    if (first === 'album') { location.replace(Album.albumHref()); return; } // o álbum antigo saiu: vai pro álbum novo
     if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }
     if (first === 'figuras' && lv === 'aula') { const box = h('div', { class: 'kd-game' }); host.append(topBar('#/kids/figuras'), box); off = aulaFiguras(box) || off; return; }
     if (first && GAMES[first]) {

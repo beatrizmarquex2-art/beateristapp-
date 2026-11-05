@@ -163,3 +163,5 @@
 .au-name{text-align:center;min-height:1.4em}.au-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .au-nav{justify-content:center;gap:8px}
 .au-cell{width:110px;flex:none}.au-cell svg{width:100%;height:auto}.kx-opt-cell{width:100%}.kx-opt-cell svg{width:100%;height:auto}
+.kx-arc .kd-lab { font: 700 12px var(--body); letter-spacing: .06em; text-transform: uppercase; opacity: .75; align-self: center; margin-right: 4px; }
+.kx-arc .kd-vel, .kx-arc .kd-som { flex-wrap: wrap; gap: 6px; }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { owedByStars, starsToNext, STARS_PER_CARD, CARDS } from '../js/kids/album-data.js';
+import { owedByStars, starsToNext, STARS_PER_CARD } from '../js/kids/pacotes-logic.js';
 
 test('a cada 5 estrelas de ritmo, 1 figurinha', () => {
   assert.equal(STARS_PER_CARD, 5);
@@ -15,4 +15,3 @@ test('faltam quantas estrelas pra próxima', () => {
   assert.equal(starsToNext(3), 2);
   assert.equal(starsToNext(5), 5);
 });
-test('álbum tem cartas', () => assert.ok(CARDS.length > 20));

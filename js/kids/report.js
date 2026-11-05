@@ -3,8 +3,7 @@
 import { jpegPdf, fileName } from '../pdf.js';
 import { toJpeg, savePdf } from '../views/plan-pdf.js';
 import * as P from './progress.js';
-import * as Album from './album.js';
-import { CARDS } from './album-data.js';
+import * as FR from '../figurinhas/rewards.js';
 import { roboSrc, tierOf } from './robo.js';
 import { AGES } from './levels.js';
 import { INSTRUMENTS, nameOf as instName, artColored } from './instruments.js';
@@ -103,7 +102,7 @@ export function buildSections(profile) {
   const secs = [];
   secs.push({ id: 'resumo', title: 'Cabeçalho e resumo', on: true, blocks: [
     T(`Relatório do ${profile.name}`, { size: 54, weight: 700 }), T(`Jogos Beaterista · ${ageTxt} · ${todayBR()}`, { size: 26, weight: 600, color: '#555' }),
-    T(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${Album.owned(profile.id).length} de ${CARDS.length} figurinhas`, { size: 30, weight: 700 })] });
+    T(`${total} estrelas · ${pctAll == null ? 'ainda não jogou' : `${pctAll}% de acerto`} · ${FR.pastedCount()} de 125 figurinhas`, { size: 30, weight: 700 })] });
   if (!played.length) { secs.push({ id: 'vazio', title: 'Observação', on: true, blocks: [T('Ainda não há jogos registrados. Depois de algumas fases, este relatório mostra onde foi bem e o que treinar.', { size: 26 })] }); }
   else {
     secs.push({ id: 'jogos', title: 'Jogos', on: true, blocks: [{ t: 'table', cols: [{ label: 'Jogo', w: 0.55 }, { label: 'Estrelas', w: 0.22 }, { label: 'Acerto', w: 0.23 }],
