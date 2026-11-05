@@ -93,3 +93,13 @@ test('troca de lugar: 1 vez por jogador em cada rodada', () => {
   assert.throws(() => V.moveMark(g, 8, 2));
   assert.deepEqual(V.nextRound(g).moved, [false, false]);
 });
+
+test('perguntas não repetem de uma rodada pra outra; zera só quando sobram poucas', () => {
+  let g = V.newMatch({ variant: 'desafio', level: 'facil' }); const vistas = new Set();
+  for (let r = 0; r < 8; r++) {
+    for (let i = 0; i < 3; i++) { const n = V.nextQuestion(g.asked, g.level, seeded(r * 10 + i + 1)); assert.ok(!vistas.has(n.q.id), `repetiu na rodada ${r + 1}`); vistas.add(n.q.id); g = { ...g, asked: n.asked }; }
+    g = V.nextRound(g); assert.equal(g.asked.length, vistas.size);
+  }
+  let h = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }) }; h = { ...h, asked: V.poolFor('infantil').slice(0, 4).map((q) => q.id) };
+  assert.deepEqual(V.nextRound(h).asked, []); // sobram só 3 (< 5): recomeça o ciclo
+});

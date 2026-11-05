@@ -57,7 +57,8 @@ export function newMatch({ mode = 'local', variant = 'classico', level = 'facil'
   return { v: 1, mode, variant, level: LEVEL_IDS.includes(level) ? level : 'facil', round: 1, scores: [0, 0], draws: 0, starter: 0, errors: 0, nextOffer: ERROR_OFFER, offer: false, asked: [], ...freshBoard(0) };
 }
 function freshBoard(starter) { return { board: Array(9).fill(null), turn: starter, over: false, result: null, pending: null, held: null, last: null, moved: [false, false] }; }
-export const nextRound = (g) => { const starter = 1 - g.starter; return { ...g, round: g.round + 1, starter, asked: [], ...freshBoard(starter) }; };
+/** Perguntas já feitas passam pra próxima rodada (não repete de rodada em rodada); só zera quando sobram poucas no nível. */
+export const nextRound = (g) => { const starter = 1 - g.starter; const sobram = poolFor(g.level).filter((q) => !(g.asked || []).includes(q.id)).length; return { ...g, round: g.round + 1, starter, asked: sobram >= 5 ? g.asked || [] : [], ...freshBoard(starter) }; };
 const clone = (g) => JSON.parse(JSON.stringify(g));
 export const isPaulTurn = (g) => (g.mode === 'facil' || g.mode === 'estrategico') && g.turn === 1;
 
