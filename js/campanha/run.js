@@ -50,7 +50,7 @@ export function mountAdventure(host, cfg) {
   function mapScreen() {
     const g = cur(); const n = spec.missions.length; const st = E.statusOf(spec, g);
     const top = h('div', {}); const med = h('div', { class: 'av' });
-    const bar = h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: backHref }, '‹ voltar'), h('b', { class: 'av-bt' }, spec.title), snd());
+    const bar = h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: backHref }, '‹ voltar'), h('b', { class: 'av-bt' }, spec.title)); // o botão de som fica só no cabeçalho do mapa (um só)
     host.replaceChildren(h('div', { class: 'av' }, bar, h('p', { class: 'av-sub' }, `${theme.name} · modo aventura`)), top, h('div', { class: 'av av-meds' }, pontuacaoEl(gameId, 'aventura', { open: false }), h('h3', { class: 'av-h3' }, 'medalhas'), medalsEl(spec, g)));
     const levels = spec.missions.map((m, i) => ({ id: m.id, index: i, label: String(i), tag: m.tag || '', boss: i === n - 1 }));
     off = mountProgressionMap(top, {
@@ -77,8 +77,8 @@ export function mountAdventure(host, cfg) {
     };
     let finished = false;
     const play = () => {
-      clean(); finished = false; const body = h('div', { class: 'av-play' });
-      stage = h('div', { class: 'av' }, bar(snd()), h('p', { class: 'av-objective', role: 'status' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), m.goal), body,
+      clean(); finished = false; const body = h('div', { class: `av-play ${cfg.playClass || ''}`.trim() });
+      stage = h('div', { class: 'av av-stage' }, bar(snd()), h('p', { class: 'av-objective', role: 'status' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), m.goal), body,
         h('div', { class: 'av-actions row' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (!ctl || !ctl.inProgress || !ctl.inProgress() || await confirmSheet('tentar de novo?', 'a partida atual será perdida.', 'recomeçar')) play(); } }, 'recomeçar missão')));
       host.replaceChildren(stage);
       ctl = adv.mount(body, { mission: { id: m.id, index, title: m.title, goal: m.goal, params: m.params || {} }, onResult: (r) => { if (finished) return; finished = true; S.later(() => settle(r), motion ? (r && r.delay != null ? r.delay : 900) : 0); } });

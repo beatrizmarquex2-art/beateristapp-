@@ -79,7 +79,7 @@ function pick() {
   }
   last = bag.pop(); return THOUGHTS[last];
 }
-function busy() { return document.hidden || document.body.classList.contains('rz-lock') || document.querySelector('#overlay .sheet, #overlay .drawer'); }
+function busy() { return document.hidden || document.querySelector('.av-play') || /* durante uma missão a nuvem não cobre o jogo */ document.body.classList.contains('rz-lock') || document.querySelector('#overlay .sheet, #overlay .drawer'); }
 
 /** Mostra uma nuvem de pensamento (some sozinha). */
 export function think(item, ms = 6500) {

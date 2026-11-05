@@ -189,7 +189,7 @@ export function mount(host, parts = []) {
       let gone = false; const wrap = h('div', { class: 'av-root' }); host.append(wrap); off = () => { gone = true; };
       loadAdventure(advId).then((adv) => {
         if (gone) return; const base = `#/kids/${free}/aventura`;
-        if (lv === 'aventura') { const n = mode !== undefined && /^\d+$/.test(mode) ? Number(mode) : null; off = mountAdventure(wrap, { gameId: advId, spec: adv.spec, adv, base, mission: n, backHref: `#/kids/${free}`, nav: (hash) => { location.hash = hash; } }); return; }
+        if (lv === 'aventura') { const n = mode !== undefined && /^\d+$/.test(mode) ? Number(mode) : null; off = mountAdventure(wrap, { gameId: advId, spec: adv.spec, adv, base, mission: n, playClass: 'kd-game', backHref: `#/kids/${free}`, nav: (hash) => { location.hash = hash; } }); return; }
         wrap.append(h('a', { class: 'av-back', href: '#/jogos', style: 'margin-bottom:8px' }, '‹ jogos')); off = modeChooser(wrap, { gameId: advId, spec: adv.spec, title: g[1], blurb: g[2], hrefLivre: `#/kids/${free}/livre`, hrefAventura: base });
       }).catch((e) => { console.warn('aventura indisponível, abrindo o modo livre', e); if (!gone) { wrap.remove(); runFree(); } });
       return;

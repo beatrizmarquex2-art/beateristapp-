@@ -6,11 +6,11 @@
   overflow-x: clip; overscroll-behavior-x: none; touch-action: pan-y; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
 }
 .mp * { box-sizing: border-box; }
-.mp-head { position: sticky; top: 0; z-index: 19; display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); background: linear-gradient(var(--mp-night) 70%, rgba(20, 13, 38, 0)); font-family: var(--mp-pix); }
+.mp-head { position: sticky; top: 0; z-index: 19; display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); background: var(--mp-night); border-bottom: 3px solid var(--mp-purple); font-family: var(--mp-pix); } /* fundo opaco: o que rola por baixo não aparece atrás do texto */
 .mp-back, .mp-snd { min-width: 44px; min-height: 44px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 12px var(--mp-pix); box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; }
 .mp-back:active, .mp-snd:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mp-pink); }
 .mp-snd { margin-left: auto; font-size: 18px; } .mp-snd[aria-pressed="true"] { opacity: .65; }
-.mp-reg { display: grid; line-height: 1.1; min-width: 0; flex: 1; } .mp-reg b { font: 400 13px var(--mp-pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .mp-reg small { font: 400 9px var(--mp-pix); color: var(--mp-cyan); opacity: .9; }
+.mp-reg { display: grid; line-height: 1.1; min-width: 0; flex: 1; } .mp-reg b { font: 400 13px var(--mp-pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); letter-spacing: .02em; overflow-wrap: anywhere; } .mp-reg small { font: 400 9px var(--mp-pix); color: var(--mp-cyan); opacity: .9; }
 .mp-prog { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 2px solid var(--mp-purple); background: var(--mp-deep); font: 400 10px var(--mp-pix); white-space: nowrap; } .mp-prog.star { color: var(--mp-yellow); }
 .mp-vinyl-ico { width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle, var(--mp-pink) 0 22%, var(--mp-night) 24% 100%); border: 1px solid var(--mp-cream); }
 .mp-reg.flip b { animation: mp-reveal .45s steps(7, end); }
@@ -29,6 +29,7 @@
 [data-r="palco"] { --b0: #5a1a47; --b1: #8e1f4a; --bt: #ffd23f; --bd: #ffd23f; }
 .mp-sign { position: absolute; left: 50%; transform: translateX(-50%); z-index: 3; display: grid; justify-items: center; padding: 1.8cqw 4cqw; background: var(--mp-night); border: 0.9cqw solid var(--mp-cream); box-shadow: 1.2cqw 1.2cqw 0 var(--mp-pink); text-align: center; font-family: var(--mp-pix); white-space: nowrap; }
 .mp-sign small { font-size: 2.6cqw; color: var(--mp-cyan); } .mp-sign b { font-size: 4.6cqw; font-weight: 400; color: var(--mp-yellow); }
+.mp-anim .mp-deco { animation: mp-bob 3.2s ease-in-out infinite; } .mp-anim .mp-deco.b { animation-delay: -1.4s; } @keyframes mp-bob { 50% { transform: translateY(calc(-50% - 1.2cqw)); } }
 .mp-deco { position: absolute; z-index: 1; width: 11cqw; transform: translateY(-50%); opacity: .95; } .mp-deco.l { left: 3cqw; } .mp-deco.r { right: 3cqw; } .mp-deco.b { width: 13cqw; }
 .mp-spr { display: block; width: 100%; height: auto; image-rendering: pixelated; }
 
@@ -80,6 +81,7 @@
 .mp-say { position: absolute; bottom: 100%; left: 50%; transform: translateX(-30%); margin-bottom: 1.4cqw; padding: 1cqw 2.2cqw; background: var(--mp-yellow); color: var(--mp-night); border: 0.7cqw solid var(--mp-night); font: 400 3cqw var(--mp-pix); white-space: nowrap; animation: mp-bubble .3s ease-out; } .mp-say[hidden] { display: none; }
 @keyframes mp-hop { 50% { transform: translateY(-1.2cqw); } } @keyframes mp-bubble { from { opacity: 0; transform: translateX(-30%) translateY(1cqw); } }
 
+@media (max-width: 359px) { .mp-head { gap: 5px; padding-left: 8px; padding-right: 8px; } .mp-prog { padding: 3px 4px; font-size: 9px; } .mp-reg b { font-size: 11px; } .mp-reg small { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .mp *, .mp *::before, .mp *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .mp-anim .mp-lit { stroke-dashoffset: 0; }

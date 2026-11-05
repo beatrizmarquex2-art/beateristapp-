@@ -1,7 +1,7 @@
 /* Modo Aventura: escolha de modo, briefing, resultado e medalhas. Mesmo mundo do mapa (vinil + pixel art). */
 .av { --mp-night: #140d26; --mp-deep: #231545; --mp-purple: #6a2c91; --mp-wine: #8e1f4a; --mp-pink: #ff4fa3; --mp-yellow: #ffd23f; --mp-cyan: #4fd2ff; --mp-cream: #fff4e0; --pix: 'Silkscreen', 'Courier New', monospace; position: relative; color: var(--mp-cream); font-family: var(--pix); }
-.av, .av * { box-sizing: border-box; border-radius: 0 !important; } .av .bmr, .av .rb, .av .rb * { border-radius: revert !important; }
-.av-bar { display: flex; align-items: center; gap: 8px; padding: 8px 0; } .av-bt { flex: 1; min-width: 0; font: 400 12px var(--pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.av, .av * { box-sizing: border-box; }
+.av-bar { display: flex; align-items: center; gap: 8px; padding: 8px 0; } .av-bt { flex: 1; min-width: 0; font: 400 12px/1.25 var(--pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); overflow-wrap: anywhere; } /* quebra em 2 linhas: nunca corta o título com "…" */
 .av-back, .av-snd { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0 10px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 12px var(--pix); text-decoration: none; box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; } .av-snd { font-size: 18px; }
 .av-back:active, .av-snd:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mp-pink); }
 .av-sub { margin: 0 0 4px; font: 400 10px var(--pix); color: var(--mp-cyan); }
@@ -20,8 +20,11 @@
 .av .kd-btn, .av .kd-chip { min-height: 48px; padding: 8px 16px; font: 700 13px var(--pix); border: 3px solid var(--mp-cream); background: var(--mp-pink); color: var(--mp-night); box-shadow: 3px 3px 0 var(--mp-night); cursor: pointer; } .av .kd-chip { background: var(--mp-deep); color: var(--mp-cream); }
 .av .btn { min-height: 44px; }
 .av-bot { display: flex; justify-content: center; margin-top: 10px; }
-.av-objective { position: sticky; top: 0; z-index: 3; margin: 0 0 8px; padding: 8px 10px; background: var(--mp-night); border: 3px solid var(--mp-purple); font: 400 12px/1.35 var(--pix); }
-.av-play { min-height: 200px; }
+.av-objective { margin: 0 0 8px;  padding: 8px 10px; background: var(--mp-night); border: 3px solid var(--mp-purple); font: 400 12px/1.35 var(--pix); }
+.av-play { min-height: 200px; padding: 10px; font-family: var(--body, system-ui, sans-serif); color: var(--ink, #1b1818); }
+/* o jogo aparece como no Modo Livre: claro (cartão creme) ou escuro (jg-dark), nunca texto escuro em fundo escuro */
+.av-play:not(.jg-dark) { background: var(--bg, #f3ede2); border: 3px solid var(--mp-cream); }
+.av-stage { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
 /* resultado */
 .av-res { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(20, 13, 38, .88); animation: av-fade .25s ease-out; }
 .av-res-in { width: min(100%, 420px); max-height: 100%; overflow: auto; display: grid; gap: 10px; padding: 18px; background: var(--mp-deep); border: 4px solid var(--mp-yellow); box-shadow: 6px 6px 0 var(--mp-pink); text-align: center; animation: av-pop .35s cubic-bezier(.2, 1.4, .4, 1); }
@@ -44,5 +47,13 @@
 .kx-arc .pt-box { box-shadow: 3px 3px 0 #1b1818; }
 /* fundo escuro próprio: as telas de aventura aparecem em páginas claras (aluno) e escuras (Bea), então não dependem da página */
 .av { background: var(--mp-night); padding-left: 14px; padding-right: 14px; }
-.av-root { margin: 0; } .av-root .mp { margin: 0 -14px; padding-bottom: 16px; }
+.av-root { margin: 0; } .av-root .mp { margin: 0; padding-bottom: 16px; }
 .av-h, .av-mode-t { text-shadow: 2px 2px 0 var(--mp-wine); }
+
+/* animações de entrada (só transform e opacity) */
+.av-mode, .av-card, .av-medal, .pt-box { animation: av-rise .45s cubic-bezier(.2, 1.1, .4, 1) both; }
+.av-mode:nth-of-type(2) { animation-delay: .08s; } .av-card { animation-delay: .05s; } .av-medal:nth-child(2) { animation-delay: .06s; } .av-medal:nth-child(3) { animation-delay: .12s; } .av-medal:nth-child(4) { animation-delay: .18s; } .av-medal:nth-child(n+5) { animation-delay: .24s; }
+@keyframes av-rise { from { opacity: 0; transform: translateY(14px); } }
+.av-go { animation: av-nudge 1.8s ease-in-out 1s infinite; } @keyframes av-nudge { 0%, 88%, 100% { transform: none; } 94% { transform: translateY(-3px) scale(1.04); } }
+.av-res-in::before { content: ""; position: absolute; left: 50%; top: 30%; width: 6px; height: 6px; background: var(--mp-yellow); box-shadow: -60px -20px 0 var(--mp-pink), 60px -30px 0 var(--mp-cyan), -90px 10px 0 var(--mp-yellow), 90px 0 0 var(--mp-pink), -30px -50px 0 var(--mp-cyan), 30px -55px 0 var(--mp-yellow); animation: av-confetti .9s ease-out both; pointer-events: none; }
+.av-res-in { position: relative; } @keyframes av-confetti { from { transform: scale(.2); opacity: 1; } to { transform: scale(2.4) translateY(-14px); opacity: 0; } }

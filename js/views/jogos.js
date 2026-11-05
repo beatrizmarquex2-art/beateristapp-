@@ -136,7 +136,7 @@ function withModes(host, entry, [id, mode, mission]) {
     if (gone) return; const base = `#/jogos/${id}/aventura`; const spec = adv.spec;
     if (mode === 'aventura') {
       const n = mission !== undefined && /^\d+$/.test(mission) ? Number(mission) : null;
-      off = mountAdventure(wrap, { gameId: id, spec, adv, base, mission: n, backHref: `#/jogos/${id}`, nav: (hash) => { location.hash = hash; } }); return;
+      off = mountAdventure(wrap, { gameId: id, spec, adv, base, mission: n, playClass: `jg jg-wrap jg-game${darkOn(id) ? ' jg-dark' : ''}`, backHref: `#/jogos/${id}`, nav: (hash) => { location.hash = hash; } }); return;
     }
     off = modeChooser(wrap, { gameId: id, spec, title: entry[1], hrefLivre: `#/jogos/${id}/livre`, hrefAventura: base });
     wrap.prepend(h('a', { class: 'av-back', href: '#/jogos', style: 'margin-bottom:8px' }, '‹ jogos'));
