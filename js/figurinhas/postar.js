@@ -1,7 +1,8 @@
 // Baixar / compartilhar a figurinha: gera o PNG no próprio aparelho (nada sobe pra servidor).
 //   carta: a figurinha sozinha (1080 x 1425, cantos transparentes)
 //   post : feed do Instagram (1080 x 1350, 4:5)        story: 1080 x 1920 (9:16, com folga em cima e embaixo)
-// Quatro modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70) e limpo.
+// Cinco modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70), limpo e épico (dourado com raios).
+// A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!'; no épico, 'CARTA ÉPICA').
 // A figurinha também pode ser feita pelo aluno: { modelo2, artista_banda: nome, fotoImg, ajuste: {zoom, ox, oy} } (aba Perfil).
 import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
@@ -9,7 +10,7 @@ import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
 
 export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música';
 export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920] };
-export const MODELOS_POST = [['colagem', 'Colagem'], ['palco', 'Palco'], ['retro', 'Retrô'], ['limpo', 'Limpo']];
+export const MODELOS_POST = [['colagem', 'Colagem'], ['palco', 'Palco'], ['retro', 'Retrô'], ['limpo', 'Limpo'], ['epico', 'Épico']];
 const FONTS = ["40px 'Anton'", "800 24px 'Hanken Grotesk'", "40px 'Gochi Hand'", "40px 'Abril Fatface'"];
 const cache = new Map();
 const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(`imagem: ${src}`)); i.src = src; });
@@ -95,6 +96,7 @@ async function logoCanvas(claro) {
 }
 const fitText = (ctx, txt, maxW, size, fam) => { let fs = size; ctx.font = `${fs}px ${fam}`; while (ctx.measureText(txt).width > maxW && fs > 18) { fs -= 2; ctx.font = `${fs}px ${fam}`; } return fs; };
 const ANTON = "'Anton', Impact, sans-serif", HANKEN = "'Hanken Grotesk', sans-serif";
+const titulo = (e, pad = 'NOVA FIGURINHA!') => String(e.tituloPost || pad).toUpperCase();
 const geo = (formato) => { const [W, H] = FORMATOS[formato]; return { W, H, story: formato === 'story' }; };
 
 /* ---------- modelo 1: colagem ---------- */
@@ -104,8 +106,8 @@ async function desenharColagem(e, formato, carta) {
   const c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high'; ctx.drawImage(fundo, 0, 0);
   const lw = story ? 520 : 440, lh = (lw * 175) / 900, ly = story ? 200 : 62; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
   const ty = ly + lh + (story ? 84 : 74);
-  ctx.save(); ctx.translate(W / 2, ty); ctx.rotate((-2 * Math.PI) / 180); ctx.font = `${story ? 92 : 72}px ${ANTON}`; ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#14111a'; ctx.strokeText('NOVA FIGURINHA!', 0, 0);
-  ctx.fillStyle = ['#c4182c', '#e9b824', '#ffe94d', '#d9a63c'].includes(t.realce) ? '#fbf6ea' : t.tinta; ctx.fillText('NOVA FIGURINHA!', 0, 0); ctx.restore();
+  const TIT = titulo(e); ctx.save(); ctx.translate(W / 2, ty); ctx.rotate((-2 * Math.PI) / 180); fitText(ctx, TIT, W - 120, story ? 92 : 72, ANTON); ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#14111a'; ctx.strokeText(TIT, 0, 0);
+  ctx.fillStyle = ['#c4182c', '#e9b824', '#ffe94d', '#d9a63c'].includes(t.realce) ? '#fbf6ea' : t.tinta; ctx.fillText(TIT, 0, 0); ctx.restore();
   const cw = story ? 790 : 620, ch = (cw * H2) / W2, cy = story ? H * 0.52 : H * 0.5 + 8;
   ctx.save(); ctx.translate(W / 2, cy); ctx.rotate((-3.2 * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 38; ctx.shadowOffsetY = 20; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
   fita(ctx, -cw / 2 - 26, -ch / 2 - 6, 150, 46, -34, '#e9d9a8'); fita(ctx, cw / 2 - 120, ch / 2 - 40, 150, 46, -34, '#e9d9a8'); ctx.restore();
@@ -131,7 +133,7 @@ async function desenharPalco(e, formato, carta) {
   for (let y = baseY; y < H; y += 30) for (let x = ((y / 30) % 2) * 15; x < W; x += 30) { const r = Math.max(0.5, ((y - baseY) / (H - baseY)) * 9); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
   const lw = story ? 480 : 400, lh = (lw * 175) / 900, ly = story ? 210 : 70; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
   const ty = ly + lh + (story ? 100 : 80);
-  ctx.save(); ctx.textAlign = 'center'; ctx.font = `${story ? 96 : 78}px ${ANTON}`; ctx.shadowColor = '#ff3d81'; ctx.shadowBlur = 36; ctx.fillStyle = '#ffe94d'; ctx.fillText('NOVA FIGURINHA!', W / 2, ty); ctx.shadowBlur = 0; ctx.lineWidth = 3; ctx.strokeStyle = '#fff7c8'; ctx.strokeText('NOVA FIGURINHA!', W / 2, ty); ctx.restore();
+  const TIT = titulo(e); ctx.save(); ctx.textAlign = 'center'; fitText(ctx, TIT, W - 120, story ? 96 : 78, ANTON); ctx.shadowColor = '#ff3d81'; ctx.shadowBlur = 36; ctx.fillStyle = '#ffe94d'; ctx.fillText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.lineWidth = 3; ctx.strokeStyle = '#fff7c8'; ctx.strokeText(TIT, W / 2, ty); ctx.restore();
   const cw = story ? 740 : 600, ch = (cw * H2) / W2, cy = story ? H * 0.5 + 40 : H * 0.5 + 14;
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = '#35b4ff'; ctx.shadowBlur = 70; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = '#ff3d81'; ctx.shadowBlur = 50; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   const fw = W - 120, fh = story ? 190 : 150, fy = story ? H - 360 : H - 196;
@@ -148,7 +150,7 @@ async function desenharRetro(e, formato, carta) {
   ctx.fillStyle = '#e9b824'; ctx.beginPath(); ctx.arc(-W * 0.02, H * 0.2, W * 0.17, 0, 7); ctx.fill(); ctx.fillStyle = '#e9701f'; ctx.beginPath(); ctx.arc(-W * 0.02, H * 0.2, W * 0.11, 0, 7); ctx.fill();
   const sy = story ? H * 0.49 : H * 0.47; ctx.fillStyle = '#fff1c4'; ctx.beginPath(); ctx.arc(W / 2, sy, W * 0.43, 0, 7); ctx.fill(); // sol atrás da figurinha
   const lw = story ? 470 : 380, lh = (lw * 175) / 900, ly = story ? 205 : 56, lg = await logoCanvas(false); ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
-  const ty = ly + lh + (story ? 92 : 76); ctx.save(); ctx.textAlign = 'center'; ctx.font = `${story ? 100 : 82}px 'Abril Fatface', ${ANTON}`; ctx.fillStyle = '#c4182c'; ctx.fillText('Nova figurinha!', W / 2 + 5, ty + 5); ctx.fillStyle = '#17224a'; ctx.fillText('Nova figurinha!', W / 2, ty); ctx.restore();
+  const ty = ly + lh + (story ? 92 : 76); const TIT = e.tituloPost || 'Nova figurinha!'; ctx.save(); ctx.textAlign = 'center'; fitText(ctx, TIT, W - 120, story ? 100 : 82, "'Abril Fatface', " + ANTON); ctx.fillStyle = '#c4182c'; ctx.fillText(TIT, W / 2 + 5, ty + 5); ctx.fillStyle = '#17224a'; ctx.fillText(TIT, W / 2, ty); ctx.restore();
   const cw = story ? 700 : 560, ch = (cw * H2) / W2, cy = sy + (story ? 30 : 36);
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = 'rgba(23,34,74,.55)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18; ctx.fillStyle = '#fbf4e2'; rr(ctx, -cw / 2 - 22, -ch / 2 - 22, cw + 44, ch + 44, 40); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   const fw = W - 100, fh = story ? 190 : 150, fy = story ? H - 360 : H - 190;
@@ -163,7 +165,7 @@ async function desenharLimpo(e, formato, carta) {
   const claro = !t.logoClaro; ctx.fillStyle = t.rays ? '#14111a' : t.bg; ctx.fillRect(0, 0, W, H);
   const gr = ctx.createRadialGradient(W / 2, H * 0.48, 80, W / 2, H * 0.48, W * 0.8); gr.addColorStop(0, claro ? '#ffffff55' : '#ffffff22'); gr.addColorStop(1, '#00000000'); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
   const ink = claro ? '#17224a' : '#f1e6cf';
-  ctx.textAlign = 'center'; ctx.fillStyle = ink; ctx.font = `800 ${story ? 36 : 32}px ${HANKEN}`; ctx.save(); ctx.letterSpacing = '12px'; ctx.fillText('NOVA FIGURINHA NO ÁLBUM', W / 2 + 6, story ? 250 : 120); ctx.restore();
+  ctx.textAlign = 'center'; ctx.fillStyle = ink; ctx.font = `800 ${story ? 36 : 32}px ${HANKEN}`; ctx.save(); ctx.letterSpacing = '12px'; ctx.fillText((e.tituloPost || 'NOVA FIGURINHA NO ÁLBUM').toUpperCase(), W / 2 + 6, story ? 250 : 120); ctx.restore();
   ctx.fillStyle = t.realce; ctx.fillRect(W / 2 - 70, story ? 280 : 148, 140, 6);
   const cw = story ? 780 : 640, ch = (cw * H2) / W2, cy = story ? H * 0.5 + 10 : H * 0.5 + 6;
   ctx.save(); ctx.translate(W / 2, cy); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
@@ -171,7 +173,43 @@ async function desenharLimpo(e, formato, carta) {
   const lg = await logoCanvas(!claro), lw = 260, lh = (lw * 175) / 900; ctx.globalAlpha = 0.9; ctx.drawImage(lg, (W - lw) / 2, by + (story ? 86 : 74), lw, lh); ctx.globalAlpha = 1;
   return c;
 }
-const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo };
+/* ---------- modelo 5: épico (dourado, raios, brilhos) ---------- */
+async function desenharEpico(e, formato, carta) {
+  const { W, H, story } = geo(formato), lg = await logoCanvas(true), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  const cx = W / 2, cy = story ? H * 0.5 : H * 0.49, R = O.rng(O.hashSeed(e.artista_banda || 'epico'));
+  const bg = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.hypot(W, H) * 0.62); bg.addColorStop(0, '#6a3a08'); bg.addColorStop(0.22, '#3a1a06'); bg.addColorStop(0.55, '#150a0e'); bg.addColorStop(1, '#050308'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  // raios dourados (sunburst)
+  ctx.save(); ctx.translate(cx, cy);
+  for (let i = 0; i < 44; i++) { const a = (i * Math.PI * 2) / 44 + 0.03, b = a + Math.PI / 44 * (0.55 + (i % 3) * 0.12), r = Math.hypot(W, H);
+    const g = ctx.createLinearGradient(0, 0, Math.cos(a) * r, Math.sin(a) * r); g.addColorStop(0, 'rgba(255,214,102,.55)'); g.addColorStop(0.6, 'rgba(255,170,40,.16)'); g.addColorStop(1, 'rgba(255,170,40,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.lineTo(Math.cos(b) * r, Math.sin(b) * r); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+  const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, W * 0.62); halo.addColorStop(0, 'rgba(255,226,140,.55)'); halo.addColorStop(0.5, 'rgba(255,170,40,.18)'); halo.addColorStop(1, 'rgba(255,170,40,0)'); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+  // brasas / brilhos
+  for (let i = 0; i < 90; i++) { const x = R() * W, y = R() * H, r = 1.5 + R() * 5.5, a = 0.25 + R() * 0.7; ctx.fillStyle = `rgba(255,${200 + Math.floor(R() * 50)},${90 + Math.floor(R() * 90)},${a})`; ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); } ctx.shadowBlur = 0;
+  const estrela = (x, y, r, rot) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = '#fff3c4'; ctx.shadowColor = '#ffcf4a'; ctx.shadowBlur = 24; ctx.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * 0.16 : r, a = (i * Math.PI) / 4; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); ctx.restore(); };
+  [[0.11, 0.24, 46], [0.9, 0.3, 36], [0.08, 0.62, 30], [0.93, 0.66, 50], [0.16, 0.86, 38], [0.84, 0.9, 30]].forEach(([x, y, r], i) => estrela(x * W, y * H, r, i));
+  // vinheta
+  const vg = ctx.createRadialGradient(cx, cy, W * 0.4, cx, cy, Math.hypot(W, H) * 0.58); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  // moldura dourada
+  const gold = ctx.createLinearGradient(0, 0, W, H); gold.addColorStop(0, '#fff0b0'); gold.addColorStop(0.35, '#d9a63c'); gold.addColorStop(0.65, '#8a5a12'); gold.addColorStop(1, '#f6d77a');
+  ctx.lineWidth = 12; ctx.strokeStyle = gold; rr(ctx, 26, 26, W - 52, H - 52, 44); ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,240,176,.65)'; rr(ctx, 46, 46, W - 92, H - 92, 32); ctx.stroke();
+  // logo + título
+  const lw = story ? 500 : 410, lh = (lw * 175) / 900, ly = story ? 140 : 70; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
+  const TIT = titulo(e, 'CARTA ÉPICA'), ty = ly + lh + (story ? 168 : 128);
+  ctx.save(); ctx.textAlign = 'center'; fitText(ctx, TIT, W - 150, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - 120, 0, ty + 10); gr.addColorStop(0, '#fff7d0'); gr.addColorStop(0.5, '#f4c64e'); gr.addColorStop(1, '#a8680f');
+  ctx.shadowColor = 'rgba(255,170,40,.95)'; ctx.shadowBlur = 48; ctx.lineWidth = 18; ctx.lineJoin = 'round'; ctx.strokeStyle = '#2a1204'; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty); ctx.restore();
+  // cartinha com brilho dourado
+  const cw = story ? 770 : 600, ch = (cw * H2) / W2, cyc = story ? H * 0.52 + 30 : H * 0.5 + 24;
+  ctx.save(); ctx.translate(cx, cyc); ctx.rotate((-1.6 * Math.PI) / 180); ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 110; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = '#ffe08a'; ctx.shadowBlur = 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
+  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.38, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, 'rgba(255,255,255,.28)'); brilho.addColorStop(0.62, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill(); ctx.restore();
+  // rodapé em placa dourada
+  const fw = W - 130, fh = story ? 190 : 150, fy = story ? H - 360 : H - 200;
+  ctx.save(); ctx.fillStyle = 'rgba(14,8,6,.92)'; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = gold; ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 24; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
+  ctx.fillStyle = '#f6d77a'; fitText(ctx, SITE, fw - 80, story ? 66 : 60, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.5); ctx.fillStyle = '#efe2c6'; ctx.font = `800 ${story ? 32 : 28}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.8); ctx.restore();
+  return c;
+}
+const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo, epico: desenharEpico };
 
 /** Post (4:5) ou story (9:16) no modelo escolhido. */
 export async function postCanvas(e, formato = 'post', modelo = 'colagem') {

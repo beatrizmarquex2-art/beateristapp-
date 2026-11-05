@@ -1,0 +1,20 @@
+// "Criar cartinha" no app da Bea: sobe uma foto, escreve o nome, escolhe modelo, baixa no modelo Épico (story). Tudo no aparelho.
+import { serve, launch, sleep, check, done, fakeLogin } from './harness.mjs';
+import fs from 'node:fs'; import path from 'node:path';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 900 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await fakeLogin(ctx, page, url);
+await page.evaluate(() => { location.hash = '#/cartinha'; }); await page.waitForSelector('.cr-topo', { timeout: 10000 });
+check('sem foto: avisa e não mostra o botão de baixar', (await page.locator('.pf-vazio:visible').count()) === 1 && (await page.locator('.fig-share').count()) === 0);
+await page.fill('.cr-campos label:nth-child(1) input', 'BeLê');
+await page.setInputFiles('.cr-topo input[type=file]', path.resolve('assets/figurinhas/fotos/F015.jpeg')); await page.waitForSelector('.fig-share .fig-prev[src^="data:"]', { timeout: 20000 });
+check('foto sobe e a cartinha aparece', (await page.locator('.cr-thumb img').count()) === 1 && (await page.locator('.pf-vazio:visible').count()) === 0);
+await page.locator('.pf-q[data-id="M7"]').click(); await sleep(400);
+check('5 modelos de post, incluindo o Épico', (await page.getByRole('radio', { name: 'Épico' }).count()) === 1 && (await page.locator('.fig-chips').nth(1).locator('button').count()) === 5);
+await page.getByRole('radio', { name: 'story' }).click(); await page.getByRole('radio', { name: 'Épico' }).click(); await sleep(500);
+const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 40000 }), page.getByRole('button', { name: 'baixar / compartilhar' }).click()]); const b = fs.readFileSync(await dl.path());
+check('baixa o story épico 1080x1920', b.readUInt32BE(16) === 1080 && b.readUInt32BE(20) === 1920 && /^MINHA_BELE_story_epico\.png$/.test(dl.suggestedFilename()), dl.suggestedFilename());
+await page.reload(); await page.waitForSelector('.cr-thumb img', { timeout: 10000 });
+check('foto, nome e modelo continuam depois de recarregar', (await page.inputValue('.cr-campos label:nth-child(1) input')) === 'BeLê' && (await page.locator('.pf-q.on').getAttribute('data-id')) === 'M7');
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

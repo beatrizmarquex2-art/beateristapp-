@@ -15,7 +15,7 @@ const MENU_BEA = [
     ['', [['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido']]],
   ]],
   ['jogos', 'jogos', [
-    ['', [['#/jogos', 'star', 'Todos os jogos'], ['#/figurinhas', 'star', 'Álbum de figurinhas']]],
+    ['', [['#/jogos', 'star', 'Todos os jogos'], ['#/figurinhas', 'star', 'Álbum de figurinhas'], ['#/cartinha', 'photo', 'Criar cartinha']]],
   ]],
   ['ritmo', 'ritmo', [
     ['', [['#/ritmo', 'kit', 'Jogos de ritmo']]],

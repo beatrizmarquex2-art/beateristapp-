@@ -3,7 +3,8 @@ import { h } from '../util.js';
 import * as P from './postar.js';
 
 const FORM = [['post', 'post (feed)'], ['story', 'story'], ['carta', 'só a cartinha']];
-export function shareUI(entry, { titulo = 'baixar pra postar' } = {}) {
+export function shareUI(entry0, { titulo = 'baixar pra postar' } = {}) {
+  let entry = entry0;
   let modelo = 'colagem', formato = 'post', seq = 0, alive = true;
   const prev = h('img', { class: 'fig-prev', alt: 'Prévia da imagem', width: 240, height: 300 });
   const msg = h('p', { class: 'fig-note', 'aria-live': 'polite' });
@@ -27,7 +28,7 @@ export function shareUI(entry, { titulo = 'baixar pra postar' } = {}) {
     bt.disabled = false; } }, 'baixar / compartilhar');
   const el = h('div', { class: 'fig-share' }, h('b', {}, titulo), formatos, modelos, h('div', { class: 'fig-prev-box' }, prev), bt, msg);
   el.cleanup = () => { alive = false; clearTimeout(t); };
-  el.refresh = desenhar; // a figurinha mudou (nome, foto, modelo): refaz a prévia
+  el.refresh = (novo) => { if (novo) entry = novo; desenhar(); }; // a figurinha mudou (nome, foto, modelo): refaz a prévia
   desenhar();
   return el;
 }
