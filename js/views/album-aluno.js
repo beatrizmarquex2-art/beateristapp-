@@ -1,4 +1,4 @@
-// Aba "Álbum" da área do aluno: pede o código da turma; certo, abre o álbum de figurinhas.
+// Aba "Álbum" da área do aluno: pede o código BEA-0000 do aluno; liberado pela Bea, abre o álbum (e o progresso passa a ficar salvo no Supabase).
 import { h, icon } from '../util.js';
 import { banner } from '../ui.js';
 import * as A from '../figurinhas/acesso.js';
@@ -6,27 +6,30 @@ import * as fig from './figurinhas.js';
 
 export function mount(host, parts = []) {
   let inner = null, alive = true;
-  const open = () => { box.remove(); if (alive) inner = fig.mount(host, parts); };
+  const open = (r) => { box.remove(); if (alive) inner = fig.mount(host, parts, { estado: r.estado, salvar: (st) => A.salvar(r.code, st), codigo: r.code, nome: r.nome }); };
   const msg = h('p', { class: 'fig-gate-msg', role: 'alert' });
-  const input = h('input', { class: 'field', type: 'text', autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false', 'aria-label': 'Código da turma', placeholder: 'código da turma', maxlength: 40 });
+  const input = h('input', { class: 'field', type: 'text', inputmode: 'text', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Seu código BEA', placeholder: 'BEA-0000', maxlength: 12 });
   const btn = h('button', { type: 'submit', class: 'btn primary wide' }, 'entrar');
-  const form = h('form', { class: 'fig-gate-form', onsubmit: async (e) => {
-    e.preventDefault(); const v = input.value.trim(); if (!v) { msg.textContent = 'digite o código'; return; }
+  const tentar = async (codigo, silencioso = false) => {
     btn.disabled = true; msg.textContent = 'conferindo…';
-    try { if (await A.entrar(v)) { open(); return; } msg.textContent = 'esse código não confere. confira com a sua professora.'; }
-    catch { msg.textContent = 'não consegui conferir agora. veja a internet e tente de novo.'; }
-    btn.disabled = false; input.select();
-  } }, input, btn, msg);
+    try {
+      const r = await A.entrar(codigo);
+      if (r.ok) { open(r); return true; }
+      A.esquecer();
+      msg.textContent = r.motivo === 'nao_liberado' ? 'seu código ainda não foi liberado pela professora. já avisei ela, tente de novo mais tarde!' : 'não achei esse código. confira com a sua professora (é no formato BEA-0000).';
+    } catch { msg.textContent = silencioso ? '' : 'não consegui conferir agora. veja a internet e tente de novo.'; if (silencioso) return 'offline'; }
+    btn.disabled = false; if (!silencioso) input.select(); return false;
+  };
+  const form = h('form', { class: 'fig-gate-form', onsubmit: (e) => { e.preventDefault(); const v = input.value.trim(); if (!v) { msg.textContent = 'digite o seu código'; return; } tentar(v); } }, input, btn, msg);
   const box = h('div', { class: 'fig-gate' }, banner('Álbum', 'só pra alunos da Beaterista'),
     h('div', { class: 'card pad fig-gate-card' }, h('div', { class: 'fig-gate-lock', 'aria-hidden': 'true' }, icon('lock', 40)),
-      h('p', {}, 'o álbum de figurinhas é exclusivo da turma. digite o código que a sua professora passou.'), form));
+      h('p', {}, 'o álbum de figurinhas é exclusivo da turma. digite o seu código BEA (a professora libera pra você).'), form));
   host.append(box);
   (async () => {
     const mem = A.lembrado(); if (!mem) { setTimeout(() => input.focus({ preventScroll: true }), 50); return; }
-    const v = await A.versao();
-    if (!alive) return;
-    if (v === null || v === mem.versao) { open(); return; } // sem internet: segue liberado; com internet, só se o código não mudou
-    A.esquecer(); msg.textContent = 'o código mudou. digite o novo.';
+    input.value = mem;
+    const r = await tentar(mem, true);
+    if (r === 'offline') { open({ code: mem, estado: null, nome: '' }); } // sem internet: abre com o que o aparelho já tem
   })();
   return () => { alive = false; if (typeof inner === 'function') inner(); };
 }

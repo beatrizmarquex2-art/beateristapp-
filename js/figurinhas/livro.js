@@ -38,6 +38,30 @@ const COVER = {
   Especial: { titulo: 'Especial', sub: 'duplas e colaborações', cls: 'cv-esp' },
 };
 
+
+/** Capa psicodélica dos Beatles: raios coloridos, o tambor da banda (desenhado aqui), margaridas e estrelas. */
+function beatlesArt(got, total) {
+  const rays = Array.from({ length: 28 }, (_, i) => { const a1 = (i * 360) / 28, a2 = ((i + 1) * 360) / 28, p = (a) => `${(180 + 520 * Math.cos((a * Math.PI) / 180)).toFixed(1)},${(335 + 520 * Math.sin((a * Math.PI) / 180)).toFixed(1)}`; return `<polygon points="180,335 ${p(a1)} ${p(a2)}" fill="${['#ff3d81', '#ffb02e', '#ffe94d', '#3ddc97', '#35b4ff', '#9b5cff', '#ff7a3d'][i % 7]}"/>`; }).join('');
+  const waves = [150, 190, 235, 290].map((r, i) => `<circle cx="180" cy="335" r="${r}" fill="none" stroke="${['#ffffff', '#14111a', '#ffffff', '#14111a'][i]}" stroke-opacity=".22" stroke-width="${7 - i}" stroke-dasharray="${10 + i * 6} ${8 + i * 3}"/>`).join('');
+  const daisy = (x, y, r, c, k = 8) => `<g transform="translate(${x} ${y})">${Array.from({ length: k }, (_, i) => `<ellipse cx="0" cy="${-r * 0.62}" rx="${r * 0.28}" ry="${r * 0.46}" fill="${c}" stroke="#14111a" stroke-width="2" transform="rotate(${(360 / k) * i})"/>`).join('')}<circle r="${r * 0.3}" fill="#ffe94d" stroke="#14111a" stroke-width="2.4"/></g>`;
+  const flowers = [[44, 520, 24, '#ff3d81'], [92, 560, 20, '#ffffff'], [150, 546, 26, '#35b4ff'], [214, 562, 21, '#ff7a3d'], [270, 540, 26, '#ffffff'], [322, 566, 22, '#9b5cff'], [22, 585, 18, '#ffe94d'], [338, 520, 22, '#ff3d81']].map(([x, y, r, c]) => daisy(x, y, r, c)).join('');
+  const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="335" x2="180" y2="203" stroke="${i % 2 ? '#c4182c' : '#fbf6ea'}" stroke-width="9.5" stroke-linecap="butt" transform="rotate(${i * 10} 180 335)"/>`).join('');
+  return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect width="360" height="610" fill="#14111a"/>${rays}${waves}
+  <circle cx="180" cy="335" r="146" fill="#14111a" opacity=".35" transform="translate(5 8)"/>
+  <circle cx="180" cy="335" r="140" fill="#fbf6ea" stroke="#14111a" stroke-width="4"/>${rim}
+  <circle cx="180" cy="335" r="118" fill="#e9b824" stroke="#14111a" stroke-width="4"/><circle cx="180" cy="335" r="105" fill="#fbf6ea" stroke="#14111a" stroke-width="3"/>
+  <circle cx="180" cy="335" r="70" fill="none" stroke="#c4182c" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round"/>
+  <path id="bt-top" d="M 94 335 A 86 86 0 0 1 266 335" fill="none"/><path id="bt-bot" d="M 80 335 A 100 100 0 0 0 280 335" fill="none"/>
+  <text font-family="'Abril Fatface',serif" font-size="21" letter-spacing="2.5" fill="#14111a" text-anchor="middle"><textPath href="#bt-top" startOffset="50%">THE BEATLES</textPath></text>
+  <text font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="4" fill="#c4182c" text-anchor="middle"><textPath href="#bt-bot" startOffset="50%">★ BEATERISTA ★</textPath></text>
+  <g transform="translate(180 333)"><circle r="46" fill="#17224a" stroke="#14111a" stroke-width="3"/><text y="-2" font-family="'Anton',sans-serif" font-size="38" fill="#fbf6ea" text-anchor="middle">${got}</text><text y="19" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="12" fill="#fbf6ea" text-anchor="middle" letter-spacing="1">de ${total}</text></g>
+  ${flowers}
+  <g fill="#fbf6ea" stroke="#14111a" stroke-width="2.4" stroke-linejoin="round">${[[34, 150, 18], [330, 186, 15], [58, 262, 11], [312, 300, 12]].map(([x, y, r]) => `<path transform="translate(${x} ${y})" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`).join('')}</g>
+  <text x="180" y="62" font-family="'Abril Fatface',serif" font-size="46" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="7" paint-order="stroke" stroke-linejoin="round">THE BEATLES</text>
+  <text x="180" y="94" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="6" text-anchor="middle" fill="#14111a">EDIÇÃO PSICODÉLICA</text></svg>`;
+}
+
 export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir }) {
   const { pages, cards } = pagesOf(catalog, colecao);
   const track = h('div', { class: 'lv-track', tabindex: '0', 'aria-label': `Álbum ${colecao}: deslize para folhear` });
@@ -67,6 +91,7 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
     if (p.tipo === 'capa') {
       const cv = COVER[colecao];
       node.className = `lv-page lv-capa ${cv.cls}`;
+      if (colecao === 'Beatles') { node.innerHTML = `${beatlesArt(tot.got, tot.total)}<small class="cv-hint">deslize pra folhear ›</small>`; return; }
       node.innerHTML = `<div class="cv-in"><img class="cv-logo" src="assets/logo-nome.png" alt="Beaterista" width="200" height="57"><h2>${cv.titulo}</h2><p>${cv.sub}</p><div class="cv-ring" style="--p:${Math.round((tot.got / tot.total) * 100)}"><b>${tot.got}</b><span>de ${tot.total}</span></div><small>deslize pra folhear ›</small></div>${deco(colecao)}`;
       return;
     }

@@ -121,3 +121,19 @@
 .fig-gate-form { display: grid; gap: 10px; width: 100%; }
 .fig-gate-form .field { text-align: center; font-size: 18px; min-height: 52px; }
 .fig-gate-msg { min-height: 20px; margin: 0; font-size: 14px; color: #c4182c; font-weight: 700; }
+
+/* relatório do álbum (app da Bea) */
+.al-h { margin: 6px 0 8px; font-size: 16px; }
+.al-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.al-rep { display: grid; gap: 4px; padding: 12px; border-radius: 12px; background: color-mix(in srgb, currentColor 6%, transparent); }
+.al-rep-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .al-rep-top b { font-size: 17px; }
+.al-code { font-size: 15px; font-weight: 800; letter-spacing: 1px; padding: 2px 8px; border-radius: 8px; background: #17130f; color: #efe2c6; }
+.al-rep-btn { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; } .al-rep-btn .btn { min-height: 44px; }
+.cv-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv-hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; z-index: 3; color: #fbf6ea; font-size: 13px; text-shadow: 0 1px 3px #000; animation: lv-nudge 1.6s ease-in-out infinite; }
+.cv-beatles.lv-capa { padding: 0; }
+
+/* telas grandes (iPad, paisagem): o livro fica do tamanho de um álbum de verdade, centralizado */
+.fig-col, .fig-packs { max-width: 440px; margin-left: auto; margin-right: auto; }
+.fig-tabs { justify-content: safe center; }
+@media (min-width: 700px) { .fig-total { text-align: center; } .fig { padding-bottom: 110px; } }

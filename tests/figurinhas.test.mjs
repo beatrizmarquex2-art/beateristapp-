@@ -69,3 +69,15 @@ test('zoom: a foto mantém a proporção, preenche a janela quando dá e nunca c
 test('nome sempre cabe no rótulo, inclusive os longos (sem truncar)', () => {
   for (const c of cat) { const r = MODELOS2[c.modelo2].rotulo, f = fitLabel(c.artista_banda, r.largura * 0.97); assert.equal(f.lines.join(' ').replace(/\s+/g, ' '), c.artista_banda.toUpperCase().replace(/\s+/g, ' '), c.codigo); assert.ok(f.size >= 10); }
 });
+
+test('juntar progresso de dois aparelhos: união, sem perder nada, e a mão é recalculada', () => {
+  let a = L.grantPack(L.emptyState(), 'p1'); a = L.openPack(a, cat, 'p1').state; a = L.pasteAll(a);
+  let b = L.grantPack(L.emptyState(), 'p2'); b = L.openPack(b, cat, 'p2').state;
+  const m = L.mergeStates(a, b);
+  for (const c of Object.keys(a.pasted)) assert.ok(m.pasted[c]);
+  assert.ok(m.opened.p1 && m.opened.p2);
+  assert.deepEqual(L.mergeStates(m, a), m, 'juntar de novo é idempotente');
+  assert.deepEqual(L.mergeStates(a, b), L.mergeStates(b, a), 'ordem não importa');
+  const total = Object.values(m.inv).reduce((x, y) => x + y, 0) + Object.keys(m.pasted).length;
+  assert.equal(total, 10, 'nenhuma figurinha some nem aparece do nada (2 pacotes x 5)');
+});

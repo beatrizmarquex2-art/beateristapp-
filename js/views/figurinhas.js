@@ -16,14 +16,17 @@ const aspectOf = (e) => e.largura_px / e.altura_px;
 const svgOf = (e, uid) => cardSVG(e, { url: e.foto, aspect: aspectOf(e), uid });
 const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function mount(host, parts = []) {
+export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
-  host.append(banner('Figurinhas', 'cole todas no álbum'), wrap);
+  host.append(banner('Álbum', 'cole todas as figurinhas'), wrap);
   let state = { ...L.emptyState(), ...(store.get(ID)?.data || {}) };
+  const nuvem = typeof opts.salvar === 'function'; let tSave = null;
+  const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
+  if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
   let tab = TABS.includes(parts[0]) ? parts[0] : 'Geral', artist = '';
   let alive = true; let io = null; let justPasted = null;
 
-  const save = (next) => { state = next; store.upsert('figurinhas', ID, state); draw(); };
+  const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
   load();
   async function load() {
     wrap.append(h('p', { class: 'fig-note' }, 'carregando álbum…'));
@@ -32,6 +35,7 @@ export function mount(host, parts = []) {
     // pacotes de presente: 1 de boas-vindas e 1 por dia. Cada um tem id próprio, então abrir o app de novo não entrega em dobro.
     let s = L.grantPack(state, L.WELCOME_PACK); s = L.grantPack(s, L.dailyPackId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
+    if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
     draw();
   }
 
@@ -120,5 +124,5 @@ export function mount(host, parts = []) {
     });
   }
 
-  return () => { alive = false; };
+  return () => { alive = false; clearTimeout(tSave); if (nuvem) opts.salvar(state); };
 }

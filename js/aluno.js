@@ -113,7 +113,7 @@ function tocarView(view) {
 
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(4, 1fr)', 'aria-label': 'Navegação' });
+  const nav = h('nav', { class: 'bottom-nav', style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
