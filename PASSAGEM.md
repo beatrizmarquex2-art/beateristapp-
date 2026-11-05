@@ -129,5 +129,5 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 ## Cara a Cara Musical (branch `cara-musical`)
 - Tema novo dentro do jogo "cara a cara" (alternar em "tema"; missões do Aventura seguem com instrumentos). Código em `js/jogos/cara-musical/` (regras puras, elenco, perguntas, falas do Paul, tela) + `css/cara-musical.css`.
 - Elenco: 86 entidades do ELENCO (125 fotos); mesma entidade nunca repete na mesa. Atributos `true/false/null`: null nunca vira resposta e a pergunta some se algum card da mesa for null. Os null estão em `revisar` de cada entidade (revisão manual da Bea).
-- Não dá figurinha/pacote/recompensa e não mexe em ranking. Dupla online NÃO implementada (precisaria de protocolo de segredo no backend de salas); só dupla no mesmo aparelho com tela de passe.
+- Não dá figurinha/pacote/recompensa e não mexe em ranking. Dupla: no mesmo aparelho (tela de passe) OU em 2 celulares por código de sala (usa as funções sala_* já existentes, sem SQL novo). Online: segredo fica só no aparelho, a sala guarda só um selo SHA-256; revelação no fim confere selo e honestidade das respostas. Testes: tests/cara-musical-online.test.mjs e tests/e2e/cara-musical-online.mjs.
 - Testes: `node --test tests/cara-musical.test.mjs`, `node tests/e2e/cara-musical.mjs`.

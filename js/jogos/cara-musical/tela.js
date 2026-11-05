@@ -9,21 +9,18 @@ import { BY_Q, textoDe } from './perguntas.js';
 import * as R from './regras.js';
 import { falador } from './falas.js';
 import { fatosDe } from './fichas.js';
+import { lobby, reenter } from '../online.js';
+import * as O from './online-regras.js';
+import { mountOnline, ULTIMA } from './online-tela.js';
 
 const GID = 'cara';
-const mini = (c) => `assets/figurinhas/mini/${c}.webp`;
-const grande = (c) => `assets/figurinhas/fotos/${c}.jpeg`;
-let CATALOGO = null; const loadCat = async () => { if (!CATALOGO) { try { CATALOGO = Object.fromEntries((await (await fetch('assets/figurinhas/catalogo.json')).json()).map((c) => [c.codigo, c])); } catch { CATALOGO = {}; } } return CATALOGO; };
-/** Recorte inteligente: centraliza o corte no rosto (ou no foco) detectado no catálogo do álbum. A original nunca é alterada. */
-const posOf = (code) => { const c = (CATALOGO || {})[code]; if (!c) return '50% 30%'; const r = c.rostos && c.rostos.length ? c.rostos : null;
-  if (r) { const cx = r.reduce((s, b) => s + b[0] + b[2] / 2, 0) / r.length; const cy = r.reduce((s, b) => s + b[1] + b[3] / 2, 0) / r.length; return `${Math.round(cx * 100)}% ${Math.round(cy * 100)}%`; }
-  if (c.foco) return `${Math.round(((c.foco[0] + c.foco[2]) / 2) * 100)}% ${Math.round(((c.foco[1] + c.foco[3]) / 2) * 100)}%`; return '50% 30%'; };
+import { mini, grande, loadCat, posOf } from './midia.js';
 
 export function mountMusical(host, { onTema } = {}) {
   const fala = falador(); const timers = new Set(); let gone = false;
   const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); if (!gone) fn(); }, ms); timers.add(t); return t; };
   const saved = getGame(GID).musical || {};
-  const cfg = { modo: saved.modo === 'classico' ? 'classico' : 'kids', jogo: ['solo', 'paul', 'dupla'].includes(saved.jogo) ? saved.jogo : 'solo', tamanho: saved.tamanho || 0, nivel: saved.nivel === 'desafio' ? 'desafio' : 'iniciante', auto: saved.auto !== false, tutorialVisto: saved.tutorialVisto === true };
+  const cfg = { modo: saved.modo === 'classico' ? 'classico' : 'kids', jogo: ['solo', 'paul', 'dupla', 'online'].includes(saved.jogo) ? saved.jogo : 'solo', tamanho: saved.tamanho || 0, nivel: saved.nivel === 'desafio' ? 'desafio' : 'iniciante', auto: saved.auto !== false, tutorialVisto: saved.tutorialVisto === true };
   const salvar = () => setGame(GID, { musical: { ...cfg } });
   let st = null; // partida
   const root = h('div', { class: 'jg jg-cara cm-root' }); host.replaceChildren(root);
@@ -46,13 +43,28 @@ export function mountMusical(host, { onTema } = {}) {
       h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), h('p', { class: 'jg-lab' }, 'tema'), temaRow(),
       h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
       h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
-      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
+      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
       h('p', { class: 'jg-lab' }, 'cartas na mesa'), seg(R.TAMANHOS[cfg.modo].map((n) => [n, `${n} cartas`]), tam, (v) => { cfg.tamanho = v; salvar(); menu(); }, 'tamanho'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
       kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar')),
       h('p', { class: 'jg-p muted' }, kids ? `kids: perguntas prontas num toque, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, todas as perguntas, 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: iniciar }, 'jogar'), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
     ].filter(Boolean));
+  }
+
+  /* ---------------- 2 celulares (sala com código) ---------------- */
+  let online = null;
+  const iniciarOnline = async (conn, estado) => { if (gone) { conn.close(); return; } online = await mountOnline(root, { conn, estado, sair: (limpar) => { if (limpar) { try { localStorage.removeItem(ULTIMA); } catch { /* */ } } online = null; menu(); } }); };
+  async function salaOnline() {
+    await loadCat(); if (gone) return; const modo = cfg.modo; const tam = tamanhoPadrao();
+    const lob = lobby({ jogo: 'cara-musical', makeState: () => O.novoEstado({ modo, mesa: R.novaMesa({ modo, tamanho: tam }) }), onStart: iniciarOnline });
+    root.replaceChildren(h('h2', { class: 'jg-h hand' }, '2 celulares'), h('p', { class: 'jg-p muted' }, `quem cria a sala escolhe o modo (${modo === 'kids' ? 'kids' : 'clássico'}, ${tam} cartas). a sua carta secreta fica só no seu celular.`), lob.el, h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => { lob.close(); menu(); } }, 'voltar')));
+  }
+  /** botão pra voltar a uma sala em que este celular já estava (caiu a internet ou fechou o app) */
+  function voltarSala() {
+    let ult = null; try { ult = JSON.parse(localStorage.getItem(ULTIMA)); } catch { /* */ }
+    if (!ult || cfg.jogo !== 'online') return null;
+    return h('button', { class: 'btn', type: 'button', onclick: async (ev) => { ev.target.disabled = true; try { const r = await reenter(ult.code, ult.me); if (!r) { try { localStorage.removeItem(ULTIMA); } catch { /* */ } ev.target.textContent = 'a sala não existe mais'; return; } await loadCat(); iniciarOnline(r.conn, r.estado); } catch { ev.target.disabled = false; ev.target.textContent = 'sem internet, tente de novo'; } } }, `voltar pra sala ${ult.code}`);
   }
 
   /* ---------------- tutorial (Kids, ~25 s, perguntas visuais) ---------------- */
@@ -212,6 +224,6 @@ export function mountMusical(host, { onTema } = {}) {
   return {
     inProgress: () => !!(st && st.lados && st.lados.some((l) => l.perguntas.length || l.erros.length) && !st.lados.every((l) => l.terminou)),
     restart: async () => { if (st && st.lados && st.lados.some((l) => l.perguntas.length) && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'recomeçar'))) return; menu(); },
-    destroy() { gone = true; for (const t of timers) clearTimeout(t); timers.clear(); },
+    destroy() { gone = true; if (online) online.destroy(); for (const t of timers) clearTimeout(t); timers.clear(); },
   };
 }
