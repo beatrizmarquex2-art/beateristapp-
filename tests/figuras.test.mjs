@@ -36,3 +36,11 @@ test('perguntas de figuras: resposta entre as opções, sem opção repetida, ti
   assert.ok(!figKinds(0).includes('pausa') && figKinds(5).includes('pausa') && figKinds(8).includes('grupo'));
   assert.equal(figCount(0), 3); assert.equal(figCount(10), 7);
 });
+import { toquePattern, ecoTimes } from '../js/kids/groove.js';
+test('toque as figuras: padrões válidos em todas as fases (4 ou 8 tempos, começa tocando, 3+ batidas)', () => {
+  for (let d = 0; d <= 10; d++) for (let s = 1; s < 40; s++) {
+    const p = toquePattern(d, seeded(d * 100 + s * 31)); assert.equal(p.cells.length, p.beats); assert.ok(p.beats === (d >= 9 ? 8 : 4));
+    assert.notEqual(p.cells[0], '0000'); assert.ok(ecoTimes(p, 0).length >= 3);
+    if (d <= 1) assert.ok(p.cells.every((c) => ['1000', '0000'].includes(c)));
+  }
+});
