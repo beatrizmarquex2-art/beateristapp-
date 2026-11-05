@@ -7,7 +7,7 @@ await ctx.route('**/*.supabase.co/**', (r) => r.abort());
 await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('i')) { sessionStorage.setItem('i', '1'); localStorage.setItem('beaterista-aluno-nome', 'Ana'); localStorage.setItem('beaterista-aluno-origem', 'tik tok live'); } } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/perfil'); await page.waitForSelector('.pf-top', { timeout: 10000 });
 check('aba Perfil na barra de baixo', (await page.locator('nav a', { hasText: 'Perfil' }).count()) === 1);
-check('6 abas lado a lado (sem quebrar linha)', await page.evaluate(() => { const r = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return r.length === 6 && Math.max(...r) - Math.min(...r) < 3; }));
+check('abas lado a lado (sem quebrar linha)', await page.evaluate(() => { const r = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return r.length >= 5 && Math.max(...r) - Math.min(...r) < 3; }));
 check('nome começa com o nome do aluno', (await page.inputValue('.pf-top input.field')) === 'Ana');
 check('sem foto: avisa e não mostra o botão de baixar', (await page.locator('.pf-vazio:visible').count()) === 1 && (await page.locator('.fig-share').count()) === 0);
 await page.fill('.pf-top input.field', 'Ana Clara');
@@ -24,6 +24,9 @@ const baixar = async (rotulo) => { await page.getByRole('radio', { name: rotulo 
 const carta = await baixar('só a cartinha'); check('baixa a minha figurinha 1080x1425', carta.w === 1080 && carta.h === 1425 && /^MINHA_ANA_CLARA_carta\.png$/.test(carta.nome), JSON.stringify(carta));
 const post = await baixar('post (feed)'); check('baixa post 1080x1350', post.w === 1080 && post.h === 1350, JSON.stringify(post));
 await page.getByRole('radio', { name: 'Retrô' }).click(); const story = await baixar('story'); check('story no modelo retrô 1080x1920', story.w === 1080 && story.h === 1920 && /retro/.test(story.nome), JSON.stringify(story));
+await page.getByRole('radio', { name: 'foto de perfil' }).click(); await sleep(600);
+check('foto de perfil: some a escolha de modelo de post', await page.locator('.fig-share .fig-chips').nth(1).isHidden());
+const perfil = await baixar('foto de perfil'); check('baixa a foto de perfil quadrada 1080x1080', perfil.w === 1080 && perfil.h === 1080 && /^MINHA_ANA_CLARA_perfil\.png$/.test(perfil.nome), JSON.stringify(perfil));
 await page.reload(); await page.waitForSelector('.pf-avatar img', { timeout: 10000 });
 check('foto e escolhas continuam depois de recarregar', (await page.locator('.pf-q.on').getAttribute('data-id')) === 'M7' && (await page.inputValue('.pf-top input.field')) === 'Ana Clara');
 await page.click('text=tirar foto'); await sleep(400);

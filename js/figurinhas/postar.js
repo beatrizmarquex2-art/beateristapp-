@@ -1,6 +1,7 @@
 // Baixar / compartilhar a figurinha: gera o PNG no próprio aparelho (nada sobe pra servidor).
 //   carta: a figurinha sozinha (1080 x 1425, cantos transparentes)
 //   post : feed do Instagram (1080 x 1350, 4:5)        story: 1080 x 1920 (9:16, com folga em cima e embaixo)
+// Formato 'perfil': foto de perfil quadrada (1080 x 1080) com a cartinha no meio, que sobrevive ao corte redondo do Instagram/WhatsApp.
 // Cinco modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70), limpo e épico (dourado com raios).
 // A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!'; no épico, 'CARTA ÉPICA').
 // A figurinha também pode ser feita pelo aluno: { modelo2, artista_banda: nome, fotoImg, ajuste: {zoom, ox, oy} } (aba Perfil).
@@ -9,7 +10,7 @@ import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
 
 export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música';
-export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920] };
+export const FORMATOS = { carta: [1080, 1425], post: [1080, 1350], story: [1080, 1920], perfil: [1080, 1080] };
 export const MODELOS_POST = [['colagem', 'Colagem'], ['palco', 'Palco'], ['retro', 'Retrô'], ['limpo', 'Limpo'], ['epico', 'Épico']];
 const FONTS = ["40px 'Anton'", "800 24px 'Hanken Grotesk'", "40px 'Gochi Hand'", "40px 'Abril Fatface'"];
 const cache = new Map();
@@ -245,6 +246,29 @@ async function desenharEpico(e, formato, carta) {
   ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = ctx.createPattern(gran, 'repeat'); ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over';
   return c;
 }
+/* ---------- foto de perfil (quadrada; o corte redondo das redes não pega a cartinha) ---------- */
+async function desenharPerfil(e, formato, carta) {
+  const { W, H } = geo('perfil'), t = temaDe(e), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  const fundo = await svgImg(fundoColagem(t, W, H, e.codigo || e.artista_banda || 'perfil')); ctx.drawImage(fundo, 0, 0);
+  const ch = 700, cw = (ch * W2) / H2; // cabe inteira no círculo inscrito (raio 540): a diagonal da carta fica em ~700
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
+  ctx.lineWidth = 14; ctx.strokeStyle = t.realce; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(W / 2, H / 2, W / 2 - 26, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
+  return c;
+}
+/** Mockup de como a foto de perfil fica no perfil de uma rede social (círculo + nome + números de exemplo). */
+export function mockupPerfil(canvasQuadrado, nome) {
+  const W = 600, H = 600, c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  ctx.fillStyle = '#f2f2f4'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; rr(ctx, 40, 40, W - 80, H - 80, 36); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(150, 170, 80, 0, 7); ctx.clip(); ctx.drawImage(canvasQuadrado, 70, 90, 160, 160); ctx.restore();
+  ctx.lineWidth = 5; ctx.strokeStyle = '#d6336c'; ctx.beginPath(); ctx.arc(150, 170, 88, 0, 7); ctx.stroke();
+  ctx.textAlign = 'left'; ctx.fillStyle = '#16161a'; ctx.font = "800 34px 'Hanken Grotesk', sans-serif"; const n = String(nome || 'seu nome').slice(0, 20); ctx.fillText(n, 270, 140);
+  ctx.fillStyle = '#8a8a93'; ctx.font = "600 22px 'Hanken Grotesk', sans-serif"; ctx.fillText('aluno(a) · Beaterista', 270, 178);
+  [['12', 'posts'], ['345', 'seguidores'], ['98', 'seguindo']].forEach(([a, b], i) => { ctx.fillStyle = '#16161a'; ctx.font = "800 30px 'Hanken Grotesk', sans-serif"; ctx.fillText(a, 270 + i * 112, 232); ctx.fillStyle = '#8a8a93'; ctx.font = "600 17px 'Hanken Grotesk', sans-serif"; ctx.fillText(b, 270 + i * 112, 256); });
+  ctx.fillStyle = '#ececef'; rr(ctx, 80, 296, W - 160, 56, 16); ctx.fill(); ctx.fillStyle = '#16161a'; ctx.font = "800 22px 'Hanken Grotesk', sans-serif"; ctx.textAlign = 'center'; ctx.fillText('Editar perfil', W / 2, 332);
+  for (let i = 0; i < 3; i++) { ctx.fillStyle = ['#ffd6e6', '#ffe9c2', '#d6e6ff'][i]; rr(ctx, 80 + i * 142, 384, 128, 128, 14); ctx.fill(); }
+  ctx.fillStyle = '#8a8a93'; ctx.font = "600 16px 'Hanken Grotesk', sans-serif"; ctx.fillText('exemplo de como fica no perfil', W / 2, 548);
+  return c;
+}
 const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo, epico: desenharEpico };
 
 /** Post (4:5) ou story (9:16) no modelo escolhido. */
@@ -252,9 +276,13 @@ export async function postCanvas(e, formato = 'post', modelo = 'colagem') {
   const carta = await cartaCanvas(e, { escala: 3 }); return (DESENHOS[modelo] || desenharColagem)(e, formato, carta);
 }
 const blob = (c) => new Promise((ok, no) => c.toBlob((b) => (b ? ok(b) : no(new Error('png'))), 'image/png'));
-export const nomeArquivo = (e, formato, modelo = 'colagem') => `${e.codigo || 'MINHA'}_${String(e.artista_banda || 'figurinha').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').toUpperCase().slice(0, 40)}_${formato}${formato === 'carta' || modelo === 'colagem' ? '' : `_${modelo}`}.png`;
+export const nomeArquivo = (e, formato, modelo = 'colagem') => `${e.codigo || 'MINHA'}_${String(e.artista_banda || 'figurinha').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').toUpperCase().slice(0, 40)}_${formato}${formato === 'carta' || formato === 'perfil' || modelo === 'colagem' ? '' : `_${modelo}`}.png`;
 /** Canvas do formato/modelo pedido (formato 'carta' = só a figurinha). */
-export const desenhar = (e, formato, modelo) => (formato === 'carta' ? cartaCanvas(e, { escala: 3 }) : postCanvas(e, formato, modelo));
+export async function desenhar(e, formato, modelo) {
+  if (formato === 'carta') return cartaCanvas(e, { escala: 3 });
+  if (formato === 'perfil') return desenharPerfil(e, formato, await cartaCanvas(e, { escala: 3 }));
+  return postCanvas(e, formato, modelo);
+}
 export async function gerar(e, formato, modelo) { return blob(await desenhar(e, formato, modelo)); }
 /** Celular: abre a folha de compartilhar (Instagram, WhatsApp, Fotos…). Senão baixa o arquivo. Devolve 'compartilhado' | 'baixado' | 'cancelado'. */
 export async function compartilhar(e, formato, modelo = 'colagem') {

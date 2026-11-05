@@ -2,7 +2,7 @@
 import { h } from '../util.js';
 import * as P from './postar.js';
 
-const FORM = [['post', 'post (feed)'], ['story', 'story'], ['carta', 'só a cartinha']];
+const FORM = [['post', 'post (feed)'], ['story', 'story'], ['perfil', 'foto de perfil'], ['carta', 'só a cartinha']];
 export function shareUI(entry0, { titulo = 'baixar pra postar' } = {}) {
   let entry = entry0;
   let modelo = 'colagem', formato = 'post', seq = 0, alive = true;
@@ -10,13 +10,14 @@ export function shareUI(entry0, { titulo = 'baixar pra postar' } = {}) {
   const msg = h('p', { class: 'fig-note', 'aria-live': 'polite' });
   const chips = (lista, atual, set) => h('div', { class: 'fig-chips', role: 'radiogroup' }, lista.map(([k, nome]) => h('button', { type: 'button', role: 'radio', class: `chip-btn${atual() === k ? ' on' : ''}`, 'aria-checked': String(atual() === k), 'data-k': k, onclick: (ev) => { set(k); ev.currentTarget.parentNode.querySelectorAll('button').forEach((b) => { const on = b.dataset.k === k; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); desenhar(); } }, nome)));
   const modelos = chips(P.MODELOS_POST, () => modelo, (k) => { modelo = k; });
-  const formatos = chips(FORM, () => formato, (k) => { formato = k; modelos.hidden = k === 'carta'; });
+  const formatos = chips(FORM, () => formato, (k) => { formato = k; modelos.hidden = k === 'carta' || k === 'perfil'; });
   let t = null;
   function desenhar() {
     clearTimeout(t); const n = ++seq; prev.classList.add('carregando');
     t = setTimeout(async () => {
       try {
-        const c = await P.desenhar(entry, formato, modelo); if (!alive || n !== seq) return;
+        let c = await P.desenhar(entry, formato, modelo); if (!alive || n !== seq) return;
+        if (formato === 'perfil') c = P.mockupPerfil(c, entry.artista_banda); // prévia: como fica no perfil da rede social
         const k = 300 / c.height, s = document.createElement('canvas'); s.width = Math.round(c.width * k); s.height = 300; const g = s.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(c, 0, 0, s.width, s.height);
         prev.src = s.toDataURL('image/jpeg', 0.82); prev.width = s.width; prev.classList.remove('carregando');
       } catch { if (alive && n === seq) { msg.textContent = 'não consegui montar a prévia.'; prev.classList.remove('carregando'); } }

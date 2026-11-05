@@ -235,3 +235,4 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 
 - **Bingo antigo (4×4) preservado**: `js/jogos/bingo1.js` + `bingo1-logic.js` só alimentam as missões do Modo Aventura (`js/campanha/jogos/bingo.js`). O Bingo novo (`bingo.js`/`bingo-logic.js`) é o modo livre (`#/jogos/bingo/livre`; convite `?sala=` abre direto o livre).
 - **Pendente (nov/2026)**: aplicar `supabase/009_bingo_salas.sql` no Supabase (a aprovação do chat expirou); sem isso o Bingo online mostra aviso de serviço indisponível, e os outros modos funcionam. Publicado: `main` e alunos (cache v266).
+- Foto de perfil (`postar.js: desenharPerfil` + `mockupPerfil`): no detalhe da figurinha e na aba Perfil, formato "foto de perfil" = PNG quadrado 1080x1080 com a cartinha inteira dentro do corte redondo das redes; a prévia é um mockup de perfil (círculo, nome e números de exemplo). Perfil é livre pra todos os alunos (não entra em `AC.trancado`).
