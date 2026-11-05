@@ -19,7 +19,7 @@ export function mount(host) {
     root.replaceChildren(
       h('h2', { class: 'jg-h hand' }, 'toca aqui'),
       h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'versão' }, ...VERSIONS.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(ver === v), class: ver === v ? 'on' : '', onclick: () => { ver = v; setGame('toca', { ver }); draw(); } }, l))),
-      h('p', { class: 'jg-p' }, ver === 'kids' ? 'cada tempo é uma palavrinha com imagem: monte o ritmo, ouça e toque. escolha o BPM.' : 'leia a figura na pauta e toque no tempo. ouça antes ou vá direto pra sua vez. escolha o BPM.'),
+      h('p', { class: 'jg-p' }, ver === 'kids' ? 'cada tempo é uma palavrinha com imagem: monte o ritmo, ouça e toque. escolha o andamento (BPM).' : 'leia a figura na pauta e toque no tempo. ouça antes ou vá direto pra sua vez. escolha o BPM.'),
       stage);
     stage.replaceChildren();
     if (ver === 'kids') { const box = h('div', { class: 'kx-arc kx-embed kd-game' }); stage.append(box); off = mountRitmo(box); }

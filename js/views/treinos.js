@@ -60,21 +60,20 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
     line('nível', chips([[1, '1'], [2, '2'], [3, '3']], c.lv, (v) => save({ lv: v }).then(() => draw(true)), 'Nível')),
     h('p', { class: 'muted tr-lvname' }, LEVEL_NAMES[c.lv]),
     line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(160, v)) }).then(() => draw(false)))),
-    speeds ? line('velocidades', chips([60, 70, 80, 90, 100, 120, 140, 160].map((v) => [v, String(v)]), c.bpm, (v) => save({ bpm: v }).then(() => draw(false)), 'Velocidades prontas em BPM')) : null,
     bars ? line('compassos', chips(barList.map((v) => [v, String(v)]), Math.min(c.bars, barList[barList.length - 1]), (v) => save({ bars: v }).then(() => draw(true)), 'Compassos por fase')) : null,
     input ? line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')) : null);
 }
 
 /* ---------- leitura (Toca Aqui, versão normal) ---------- */
 // Dois jeitos de tocar: na tela (cada toque soa) ou no microfone (pad de estudo / bateria de verdade; o app escuta e confere).
-// Dois jeitos de começar: "tocar direto" ou "ouvir e depois tocar". Até 3 compassos por fase, vários BPM, e a precisão no fim.
+// Dois jeitos de começar: "tocar direto" ou "ouvir e depois tocar". 1 compasso por vez, nível livre, BPM à escolha e a precisão no fim.
 export function leitura(host) {
   let beats = null; let run = null; let lastResult = null; let micBlocked = false;
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   const stop = () => { S.reset(); if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
-    stop(); const c = cfg(); const nb = Math.min(3, c.bars);
+    stop(); const c = cfg(); const nb = 1; // sempre 1 compasso, sem exigir acertar sequências pra passar de nível: o nível é livre
     const useMic = c.input === 'mic' && !micBlocked;
     if (fresh || !beats || beats.length !== nb * 4) { beats = []; for (let k = 0; k < nb; k++) beats.push(...genBar(c.lv)); lastResult = null; }
     const expected = onsets(beats, c.bpm);
@@ -131,7 +130,7 @@ export function leitura(host) {
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip));
     }
-    body.replaceChildren(...[controls(c, draw, { barList: [1, 2, 3], speeds: true, input: true }), score(chunk(beats), marks),
+    body.replaceChildren(...[controls(c, draw, { bars: false, input: true }), score(chunk(beats), marks),
       micBlocked && c.input === 'mic' ? h('p', { class: 'tr-status bad' }, 'microfone indisponível agora: usando a tela.') : null,
       h('div', { class: 'row tr-actions' },
         h('button', { class: 'btn primary', type: 'button', onclick: start }, '▶ tocar direto'),
