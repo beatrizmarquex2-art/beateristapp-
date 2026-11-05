@@ -1,0 +1,129 @@
+// Álbum de figurinhas da Beaterista: coleções, espaços numerados, pacotes, colar, detalhe com zoom.
+// Progresso salvo no registro 'figurinhas-album' do app (IndexedDB; sincroniza pela conta como o resto, quando há login).
+import { h, todayKey } from '../util.js';
+import { banner, sheet, toast } from '../ui.js';
+import * as store from '../store.js';
+import { cardSVG } from '../figurinhas/card.js';
+import * as L from '../figurinhas/album-logic.js';
+
+const ID = 'figurinhas-album';
+const TABS = [...L.COLECOES, 'Pacotes'];
+const NOTE = { Geral: 'o mundo da música: bandas, bateristas e ídolos', Beatles: 'edição especial psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Beatriz — todas exclusivas', Especial: 'colaborações: dois artistas na mesma foto' };
+let catalog = null;
+const loadCatalog = async () => (catalog ||= await (await fetch('assets/figurinhas/catalogo.json')).json());
+const aspectOf = (e) => e.largura_px / e.altura_px;
+const svgOf = (e, uid) => cardSVG(e, { url: e.foto, aspect: aspectOf(e), uid });
+const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+export function mount(host, parts = []) {
+  const wrap = h('div', { class: 'fig' });
+  host.append(banner('Figurinhas', 'cole todas no álbum'), wrap);
+  let state = { ...L.emptyState(), ...(store.get(ID)?.data || {}) };
+  let tab = TABS.includes(parts[0]) ? parts[0] : 'Geral', artist = '';
+  let alive = true; let io = null;
+
+  const save = (next) => { state = next; store.upsert('figurinhas', ID, state); draw(); };
+  load();
+  async function load() {
+    wrap.append(h('p', { class: 'fig-note' }, 'carregando álbum…'));
+    try { await loadCatalog(); } catch { wrap.replaceChildren(h('p', { class: 'fig-note' }, 'não consegui abrir o catálogo agora. tente de novo com internet.')); return; }
+    if (!alive) return;
+    // pacotes de presente: 1 de boas-vindas e 1 por dia. Cada um tem id próprio, então abrir o app de novo não entrega em dobro.
+    let s = L.grantPack(state, L.WELCOME_PACK); s = L.grantPack(s, L.dailyPackId(todayKey()));
+    if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
+    draw();
+  }
+
+  function draw() {
+    if (!catalog) return;
+    io?.disconnect();
+    const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
+    const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
+      const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
+      return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
+    }));
+    wrap.replaceChildren(
+      h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
+      tabs, tab === 'Pacotes' ? packsView() : collectionView());
+    if (!io) return;
+  }
+
+  /* ---------- coleção ---------- */
+  function collectionView() {
+    const list = catalog.filter((c) => c.colecao === tab), st = L.stats(state, catalog, tab);
+    const shown = artist ? list.filter((c) => c.artista_banda === artist) : list;
+    const sel = h('select', { class: 'fig-filter', 'aria-label': 'Filtrar por artista', onchange: (e) => { artist = e.target.value; draw(); } },
+      h('option', { value: '' }, `todos os artistas (${list.length})`), L.artistsOf(catalog, tab).map((a) => h('option', { value: a, selected: a === artist }, a)));
+    const pct = Math.round((st.got / st.total) * 100);
+    const grid = h('div', { class: 'fig-grid' });
+    io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; io.unobserve(el); el.innerHTML = svgOf(el.__e, `a${el.__e.codigo}`); }), { rootMargin: '300px' }) : null;
+    for (const e of shown) {
+      const n = L.slotNumber(catalog, e), pasted = !!state.pasted[e.codigo], inHand = L.canPaste(state, e.codigo);
+      const slot = h('button', { type: 'button', class: `fig-slot${pasted ? ' got' : ''}${inHand ? ' hand' : ''}`, 'aria-label': pasted ? `${e.artista_banda}, número ${n}, colada. Abrir detalhe` : inHand ? `Número ${n}, está na sua mão. Colar` : `Número ${n}, ainda falta`, onclick: () => (pasted ? detail(e) : inHand ? doPaste(e) : toast(`falta a nº ${n} — abra pacotes pra achar.`)) });
+      if (pasted) { slot.__e = e; if (io) { slot.append(h('span', { class: 'fig-ph' })); io.observe(slot); } else slot.innerHTML = svgOf(e, `a${e.codigo}`); }
+      else slot.append(h('span', { class: 'fig-n' }, String(n).padStart(2, '0')), h('span', { class: 'fig-q' }, inHand ? 'colar!' : '?'));
+      grid.append(slot);
+    }
+    return h('section', { class: 'fig-col' },
+      h('p', { class: 'fig-note' }, NOTE[tab]),
+      h('div', { class: 'fig-prog' }, h('div', { class: 'fig-bar', role: 'progressbar', 'aria-valuenow': pct, 'aria-valuemin': 0, 'aria-valuemax': 100 }, h('i', { style: { width: `${pct}%` } })), h('span', {}, `${st.got} de ${st.total} · faltam ${st.missing}`)),
+      sel, shown.length ? grid : h('p', { class: 'fig-note' }, 'nenhuma figurinha nesse filtro.'));
+  }
+
+  function doPaste(e) {
+    save(L.paste(state, e.codigo));
+    toast(`${e.artista_banda} colada no álbum`);
+  }
+
+  /* ---------- pacotes ---------- */
+  function packsView() {
+    const pend = L.pendingPacks(state), hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
+    const pastable = hand.filter((e) => L.canPaste(state, e.codigo));
+    const rep = L.repeated(state);
+    return h('section', { class: 'fig-packs' },
+      h('div', { class: 'fig-pack-card' },
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, 'beaterista'), h('span', {}, `${L.PACK_SIZE} figurinhas`)),
+        h('p', {}, pend.length ? `${pend.length} pacote${pend.length > 1 ? 's' : ''} pra abrir` : 'nenhum pacote agora — volte amanhã, tem um novo todo dia.'),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, 'abrir pacote')),
+      h('div', { class: 'fig-hand' },
+        h('h2', {}, `na mão (${L.inHand(state)})`),
+        h('p', { class: 'fig-note' }, `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}`),
+        pastable.length ? h('button', { type: 'button', class: 'btn primary', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo (${pastable.length})`) : null,
+        h('div', { class: 'fig-hand-list' }, hand.map((e) => h('button', { type: 'button', class: 'fig-chip', onclick: () => (L.canPaste(state, e.codigo) ? doPaste(e) : detail(e)) }, h('b', {}, e.codigo), ` ${e.artista_banda}`, h('em', {}, state.pasted[e.codigo] ? ' · repetida' : ' · colar'))))),
+      h('label', { class: 'fig-opt' }, h('input', { type: 'checkbox', checked: state.reduzir ? true : null, onchange: (e) => save({ ...state, reduzir: e.target.checked }) }), ' animações reduzidas (sem giros ao abrir pacote)'));
+  }
+
+  function openIt(packId) {
+    const r = L.openPack(state, catalog, packId); if (!r.fresh) return;
+    save(r.state);
+    const less = wantsLess(state);
+    sheet('seu pacote', (close) => {
+      const cards = r.codes.map((c) => catalog.find((x) => x.codigo === c));
+      const seen = new Set(); let shown = 0;
+      const row = h('div', { class: 'fig-reveal' });
+      const live = h('p', { class: 'fig-note', 'aria-live': 'polite' }, less ? '' : 'toque em cada carta pra virar');
+      cards.forEach((e, i) => {
+        const dup = state.pasted[e.codigo] || cards.findIndex((x) => x.codigo === e.codigo) < i;
+        const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, 'aria-label': less ? `${e.artista_banda}, ${e.raridade}` : `carta ${i + 1}, virar` });
+        el.innerHTML = `<span class="back"><b>beaterista</b></span><span class="front">${svgOf(e, `o${i}${e.codigo}`)}</span>`;
+        const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${e.raridade}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${e.raridade}${dup ? ' · repetida' : ' · nova'}`; shown++; };
+        el.addEventListener('click', flip); row.append(el);
+      });
+      return h('div', { class: 'fig-open' }, live, row,
+        h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
+        h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
+    });
+  }
+
+  /* ---------- detalhe com zoom ---------- */
+  function detail(e) {
+    sheet(`${e.codigo} · ${e.artista_banda}`, () => {
+      let big = false;
+      const view = h('div', { class: 'fig-zoom' }); view.innerHTML = svgOf(e, `d${e.codigo}`);
+      const btn = h('button', { type: 'button', class: 'btn', 'aria-pressed': 'false', onclick: () => { big = !big; view.classList.toggle('big', big); btn.setAttribute('aria-pressed', String(big)); btn.textContent = big ? 'diminuir' : 'ampliar'; } }, 'ampliar');
+      return h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · coleção ${e.colecao} · nº ${L.slotNumber(catalog, e)}`), btn);
+    });
+  }
+
+  return () => { alive = false; io?.disconnect(); };
+}

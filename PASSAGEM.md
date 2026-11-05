@@ -36,7 +36,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - `js/aluno.js`: entrada (nome + origem), abas Ritmo / Beat Lab / Tocar / Jogos / Ranking, rodapé com redes e parceiros.
 - `js/paul-talk.js`: clique no Paul faz barulhinho; nuvens de pensamento (frases e links, incluindo o link do Google).
 - `assets/rhythm-games/rhythm-games.js` + `js/views/jogos-ritmo.js`: jogos de ritmo (um jogo unificado Ritmo/Melodia com 3-5 teclas, Piano Tiles, Setinhas, Figuras). Na área dos alunos entram as músicas prontas (`builtin: true`); no app da Bea, só os MIDIs importados.
-- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [antes última nota], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
+- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [reformulado em nov/2026, ver seção abaixo], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
 - `js/kids/*` + `js/views/kids.js`: jogos de perguntas (fases por estrelas). Na área dos alunos o nome visível é "Jogos"; os endereços internos continuam `#/kids`.
 - `js/views/ata.js` (ata de reunião em PDF), `js/views/kids-relatorio.js` (relatório editável), `js/mic-access.js` (microfone único), `js/ranking.js`.
 - `css/lote3.css`: estilos dos lotes recentes (entrada do aluno, Paul, iPad).
@@ -65,6 +65,18 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Tudo na entrada dos alunos deve caber numa tela só no iPhone.
 - Paul sem animação própria; animar só os elementos em volta.
 - Pendente (antigo): jogos novos da outra sessão ligarem na aba Jogos dos alunos. Os 7 Pauls cortados já foram removidos (se vierem imagens novas inteiras, voltam).
+
+## Uno Musical reformulado (nov/2026)
+- Arquivos: `js/jogos/cartas.js` (tela, animações), `cartas-logic.js` (regras puras), `cartas-simbolos.js` (10 figuras + ícones das especiais em SVG), `cartas-sfx.js` (sons), bloco `cx-` no fim de `css/jogos.css`.
+- Baralho de 112 cartas: 4 cores (vermelho, amarelo, azul, verde) × (10 figuras × 2 + pular/inverter/+2 × 2) + 4 curingas + 4 curingas +4. As figuras são só **categorias** (cor ou figura): semínima, colcheia, semicolcheia, fusa, as 4 pausas, acento (>), nota fantasma.
+- 2 a 4 jogadores com sentido de jogo (inverter com 2 vale como pular). Contra o computador: 1 a 3 adversários (paul, lia, teo). Modos: contra o computador, dois no aparelho, 2 celulares (código, mesmas salas de antes; o estado agora é `v: 2`, partidas salvas do formato antigo são descartadas).
+- Regras decididas: +4 só sem a cor da mesa na mão; botão UNO (contra o computador esquecer custa 2 cartas; nos outros modos o botão não tem penalidade); compra só se não tiver carta que sirva; não empilha +2.
+- Sons: só ruído filtrado (papel, estalo, baralho, "uóip", UNO, vitória), **nenhuma nota**. Botão de som próprio na mesa (junto do botão global da moldura). `S.stopAll()` ao sair.
+- Ajuda de nomes: segurar a carta (ou mouse parado) mostra o nome sem jogar; botão "?" mostra o nome da carta da mesa.
+- Animações só com transform/opacity (WAAPI com `translate/scale/rotate`); travadas durante a animação (`busy`) pra não duplicar jogada. Respeita "reduzir movimento".
+- Testes: `node --test tests/cartas-logic.test.mjs`, e2e `tests/e2e/cartas.mjs` (partida completa, UNO, +2, +4, jogada inválida), `cartas-aparelhos.mjs` (iPhone/iPad/Android emulados), `salas.mjs`, `jogos-som.mjs`.
+- Limite conhecido: sem Safari/iPhone de verdade aqui; conferir som (botão de silencioso) e toque no aparelho. Em celular deitado pequeno a mesa passa um pouco da altura da tela.
+- Publicado: `main` (app da Bea) e área dos alunos (Netlify `beaterista-alunos`, https://jogos.beaterista.com.br) em nov/2026, cache v242.
 
 ## Jogos em 2 celulares (nov/2026)
 - Uno Musical, jogo da velha e stop têm modo **2 celulares (código)**: `js/jogos/online.js` + `supabase/006_salas.sql` (tabela `salas`, funções `sala_criar/entrar/ler/enviar`, sondagem a cada 1,2 s). **O SQL precisa estar aplicado no Supabase** (colar no SQL Editor se a aprovação do chat expirar). Teste: `tests/e2e/salas.mjs` (Supabase simulado).
@@ -97,3 +109,19 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 6. **Estudos**: conferir no celular o sorteio de tema e as barras de progresso (não deu pra testar sem a biblioteca). Layout do Estudos no iPhone SE (320px) tem 3 elementos vazando (já existia antes).
 7. **Sem internet**: não consegui testar o modo offline no computador; ela confere no celular (avião).
 8. Telas da Bea que usam paletas próprias (Bateria de Toque, Groovebox, Piano) ficaram como estavam.
+
+## Toca Aqui e Figuras rítmicas (sessão de ritmo)
+- **Toca Aqui** (`js/jogos/toca.js`, aba Jogos): "normal (figuras)" = leitura na pauta (`leitura()` em `js/views/treinos.js`, também na aba Partitura em `#/partitura/leitura`); "com imagens" = palavrinhas (`js/kids/ritmo.js`). Leitura tem modo **caminho** (6 exercícios fixos em `PATH` de `js/reading.js`, abre o próximo com 70%) e **livre** (aleatório), tocar na tela ou no **microfone** (eco rítmico entrou aqui), "tocar direto" / "ouvir e depois tocar", precisão no fim. 1 compasso sempre.
+- **Figuras rítmicas** (`#/kids/figuras`): **aulinha do Paul** em `#/kids/figuras/aula` (`js/kids/aula-figuras.js`: pulso, escadinha das 7 figuras, montar o desenho, pausas, tercina e sextina) + jogos com fases (inclui **variações da semicolcheia** em 1 tempo: 9 combinações em `VARIACOES` de `figs.js`, ver o desenho ou ouvir): quanto vale, qual vale mais, nome, desenho, montar o desenho, pausas, tercina/sextina. Dados em `js/kids/figs.js` (semibreve a semifusa), perguntas em `js/kids/quiz.js` (`figureQ`), desenhos em `js/kids/art.js`. Testes em `tests/figuras.test.mjs`.
+- **Velha**: 68 perguntas aprovadas em `js/jogos/velha-data.js` (3 níveis), 17 fotos de artistas em `assets/jogos/artistas/` (aparecem só depois da resposta).
+- **Deploy dos alunos pendente**: a Bea pediu pra juntar tudo numa atualização maior e gastar menos deploy do Netlify. O site dos alunos está no cache v236; o app da Bea (GitHub Pages) já está atualizado.
+- **Toque as figuras** (`js/kids/toque.js`, `#/kids/toque`): jogo com fases em que o app mostra a partitura (semínima, colcheias, semicolcheias, pausas e variações; `toquePattern` em `groove.js`) e a Bea/aluno lê e toca na **tela ou no microfone**, com BPM ajustável, "ouvir antes" e média de ms no fim.
+- **Modos do Toca Aqui (normal)**: iniciante (8 exercícios), intermediário (6) e avançado (6) em `TIERS`/`PATH` de `js/reading.js`; cada exercício abre com 70% no anterior (o intermediário só abre depois de terminar o iniciante, de propósito: as crianças ficam mais na primeira parte). No modo livre dá pra escolher o nível direto. O jogo `Toque as figuras` das fases mostra o mesmo rótulo (fases 0–3 iniciante, 4–7 intermediário, 8–10 avançado).
+
+## Álbum de figurinhas (branch `figurinhas-album`, só no app da Bea)
+- Rota `#/figurinhas` (menu → jogos → Álbum de figurinhas). Código: `js/views/figurinhas.js` (tela), `js/figurinhas/card2.js` (estilo NOVO, padrão: os 8 modelos M1–M8 enviados pela Bea em `assets/figurinhas/modelos2/`; a foto entra inteira na janela, nome no rótulo; gerados por `scripts/build-modelos2.py` a partir de `PAINEL_FONTE.png`) e `js/figurinhas/card.js` (estilo clássico em SVG, C01–E04, `estilo: 'classico'`), `js/figurinhas/ornaments.js` (adesivos desenhados à mão em SVG), `js/figurinhas/album-logic.js` (pacotes, sorteio, colar; idempotente), `css/figurinhas.css`.
+- Dados: `assets/figurinhas/catalogo.json` (fonte da verdade: nome, coleção, raridade, modelo) e `assets/figurinhas/fotos/F###.jpeg` (125 originais, mesmos bytes/SHA256 do ZIP). **Não mexer nas fotos nem nas raridades.** Fotos de terceiros: manter privado até checar direitos; por isso **não** entra na área dos alunos (`build-aluno.sh` não copia) e não deve ir pra `main`/Pages público sem decisão da Bea.
+- Progresso: registro `figurinhas-album` (store → IndexedDB; sincroniza com a conta como o resto quando há login). Pacotes de presente: `welcome:1` e `daily:AAAA-MM-DD`, cada id entrega/abre uma vez só. Não mexe nas recompensas dos outros jogos.
+- PNGs: `node scripts/export-figurinhas.mjs` gera `exports/figurinhas/` (125 PNGs 1080x1425; `--classico` gera 1200x1800 do estilo clássico, 8 modelos vazios, folha dos 8, painel de amostra, catálogo final JSON/CSV). `exports/` está no .gitignore.
+- Testes: `node --test tests/figurinhas.test.mjs` e `node tests/e2e/figurinhas.mjs`. (`tests/e2e/layout.mjs` já tinha 1 falha antes: iPhone SE #/estudos.)
+- Zoom da foto: `scripts/detect-rostos.py` guarda no catálogo `rostos` (caixas, OpenCV Haar) e `foco` (área de ação); `planoFoto` em `card2.js` amplia a foto pra preencher a janela (recortada pela forma dela) e nunca corta rosto nem o topo quando não há rosto confirmado. Não identifica ninguém, só acha onde há rosto.

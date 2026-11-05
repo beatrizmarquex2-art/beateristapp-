@@ -55,6 +55,22 @@ export function ecoPattern(d, rnd = Math.random) {
 }
 export const ecoTimes = ({ cells, bpm }, t0 = 0) => { const q = 60 / bpm; const out = []; cells.forEach((c, b) => [...c].forEach((x, k) => { if (x === '1') out.push(t0 + b * q + (k * q) / 4); })); return out; };
 
+/* ---------- Toque as figuras: o app mostra a partitura e a criança LÊ e toca (na tela ou no microfone) ---------- */
+const T1 = ['1000', '1000', '0000'];
+const T2 = ['1000', '1010', '1000', '0000'];
+const T3 = ['1000', '1010', '1111', '1000', '0000'];
+const T4 = ['1000', '1010', '1111', '1011', '1110', '1101', '0000'];
+const T5 = ['1000', '1010', '1111', '1011', '1110', '1101', '1001', '1100', '0111', '0011', '0101', '0000'];
+export function toquePattern(d, rnd = Math.random) {
+  const pool = d <= 1 ? T1 : d <= 3 ? T2 : d <= 5 ? T3 : d <= 7 ? T4 : T5; const beats = d >= 9 ? 8 : 4;
+  for (;;) {
+    const cells = Array.from({ length: beats }, () => pick(pool, rnd));
+    const hits = cells.reduce((n, c) => n + [...c].filter((x) => x === '1').length, 0);
+    const fresh = d >= 4 ? cells.some((c) => !T2.includes(c)) : true; // fases altas: pelo menos uma figura "nova"
+    if (cells[0] !== '0000' && hits >= 3 && cells.filter((c) => c === '0000').length <= 1 && fresh) return { cells, beats, bpm: 56 + d * 4, key: d <= 3 ? 'figuras' : 'variacoes' };
+  }
+}
+
 /** Compara os toques com as batidas esperadas. `win` = janela (s). */
 export function judgeHits(onsets, expected, win) {
   const used = new Set(); let hits = 0; const devs = [];

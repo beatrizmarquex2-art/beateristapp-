@@ -10,6 +10,7 @@ import { VOICE } from './beatlab.js';
 import { layoutRhythm } from '../reading.js';
 import { PIECES, nameOf } from '../kids-logic.js';
 import { mountRitmo } from '../kids/ritmo.js';
+import { aulaFiguras } from '../kids/aula-figuras.js';
 import { mountMemoria } from '../kids/memoria.js';
 import { kitMarkup, svgEl, play } from '../kids/art.js';
 import { kitTheme, putLogo, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
@@ -161,6 +162,7 @@ function levelsScreen(host, gameId, mode) {
   host.append(topBar('#/jogos', h('span', { class: 'kd-stars kx-stars-top' }, `★ ${s.stars}/${s.maxStars}`)),
     h('div', { class: 'kx-gtitle' }, h('span', { class: 'kx-gico' }), h('div', {}, h('h1', { class: 'kx-pix kx-pagetitle' }, g.title), h('p', { class: 'kx-gd' }, g.blurb))),
     h('div', { class: 'kx-hello' }, r.el),
+    gameId === 'figuras' ? h('a', { class: 'kd-btn kx-go', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul (comece por aqui)') : null,
     g.modes ? h('div', { class: 'row kd-modes' }, ...g.modes.map(([k, t]) => h('a', { class: `kd-chip${m === k ? ' on' : ''}`, href: `#/kids/${gameId}/-/${k}` }, t))) : null,
     h('div', { class: 'kx-levels' }, ...Array.from({ length: MAX_LEVEL + 1 }, (_, l) => lv(l))),
     h('p', { class: 'lib-note' }, `${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. ${ALUNO() ? '' : `a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`}`));
@@ -179,6 +181,7 @@ export function mount(host, parts = []) {
     }
     if (first === 'album') { albumScreen(host, lv); return; }
     if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }
+    if (first === 'figuras' && lv === 'aula') { const box = h('div', { class: 'kd-game' }); host.append(topBar('#/kids/figuras'), box); off = aulaFiguras(box) || off; return; }
     if (first && GAMES[first]) {
       const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
       const level = lv !== undefined && lv !== '-' && !Number.isNaN(Number(lv)) ? Math.max(0, Math.min(MAX_LEVEL, Number(lv))) : null;

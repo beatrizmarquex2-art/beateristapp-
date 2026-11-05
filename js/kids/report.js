@@ -14,7 +14,7 @@ import { ROW_NAME } from './groove.js';
 
 const W = 1240, H = 1754, MM = W / 210; const SIDE = Math.round(16 * MM);
 const FONT = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
-export const TITLES = { pecas: 'Que peça é essa?', pauta: 'Onde mora na pauta?', figuras: 'Figuras rítmicas', bumbos: 'Quantos bumbos?', memoria: 'Memória dos instrumentos', detetive: 'Detetive do groove', eco: 'Eco rítmico' };
+export const TITLES = { pecas: 'Que peça é essa?', pauta: 'Onde mora na pauta?', figuras: 'Figuras rítmicas', bumbos: 'Quantos bumbos?', memoria: 'Memória dos instrumentos', detetive: 'Detetive do groove', eco: 'Eco rítmico', toque: 'Toque as figuras' };
 const ORDER = Object.keys(TITLES);
 
 const WHY = {
@@ -25,6 +25,7 @@ const WHY = {
   memoria: 'Reconhecer instrumentos pelo som e pela imagem treina a escuta.',
   detetive: 'Ouvir, escrever e tocar: o ciclo completo do estudo musical.',
   eco: 'Repetir um ritmo logo depois de ouvir treina a memória rítmica.',
+  toque: 'Ler a partitura e tocar no tempo junta teoria e prática: é o que um músico faz de verdade.',
 };
 const HOME = {
   pecas: 'Em casa: olhe uma foto de bateria e diga o nome de cada peça em voz alta, depois toque cada uma e escute o som.',
@@ -34,6 +35,7 @@ const HOME = {
   memoria: 'Em casa: ouça uma música e tente descobrir quais instrumentos da tabela estão tocando.',
   detetive: 'Em casa: peça pra alguém tocar dois ritmos quase iguais e descubra o que mudou.',
   eco: 'Em casa: escute um ritmo de 4 tempos, espere, e repita batendo na mesa.',
+  toque: 'Em casa: leia um compasso em voz alta (1 e & a) e bata palmas junto com o metrônomo.',
 };
 const PIECE_ROLE = { bd: 'o som grave que marca o pulso', sn: 'o estalo do 2 e do 4 (o "tá" do groove)', hh: 'mantém o tempo corrido, tipo um relógio', tt: 'viradas agudas', mt: 'viradas médias', ft: 'viradas graves, fecham a frase', cr: 'acento forte, marca começos e finais', rd: 'pulso aberto nas partes fortes da música' };
 const PIECE_STAFF = { bd: '1º espaço (embaixo)', ft: '2º espaço', sn: '3º espaço', mt: '4ª linha', tt: '4º espaço', rd: '5ª linha (a de cima)', hh: 'logo acima da pauta (x)', cr: 'linha suplementar, bem acima (x)' };
@@ -45,6 +47,7 @@ const MISS = (game, key) => {
   if (game === 'bumbos') return `${TITLES[game]}: contar os bumbos`;
   if (game === 'memoria') return `${TITLES[game]}: ${instName(key)}`;
   if (game === 'detetive') return `${TITLES[game]}: ouvir o ${ROW_NAME[key] || key}`;
+  if (game === 'toque') return `${TITLES[game]}: ${key === 'figuras' ? 'ler e tocar semínima, colcheias e pausas' : 'ler e tocar semicolcheias e variações'}`;
   if (game === 'eco') return `${TITLES[game]}: ${key === 'figuras' ? 'ritmos com pão, bo-lo e cho-co-la-te' : 'ritmos com contratempo'}`;
   return `${TITLES[game] || game}`;
 };
