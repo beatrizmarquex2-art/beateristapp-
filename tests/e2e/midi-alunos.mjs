@@ -1,4 +1,4 @@
-// Código do aluno: Beat Hero e "Músicas MIDI" só com código. Piano Hero e músicas prontas seguem abertos. O Supabase é simulado.
+// Código do aluno: todos os jogos de ritmo só com código. O Supabase é simulado.
 import fs from 'node:fs';
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const b64 = fs.readFileSync(process.env.MID_FILE).toString('base64');
@@ -15,14 +15,11 @@ async function phone(saved) {
 // 1) sem código
 {
   const { p, errs, ctx } = await phone('');
-  check('sem código: abre no Piano Hero (aberto)', (await p.locator('.rz-g.on b').textContent()) === 'Piano Hero');
-  check('o Beat Hero mostra o cadeado', (await p.locator('.rz-g[data-v="beat"] span').textContent()).includes('🔒'));
-  await p.locator('.rz-g[data-v="beat"]').click(); await sleep(300);
-  check('Beat Hero pede o código (sem JOGAR)', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
+  check('sem código: pede o código na hora (sem JOGAR)', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
+  check('os dois jogos mostram o cadeado', (await p.locator('.rz-g span').allTextContents()).every((t) => t.includes('🔒')));
   await p.locator('.rz-g[data-v="tiles"]').click(); await sleep(300);
-  check('Piano Hero joga sem código (músicas prontas)', (await p.locator('.rz-jogar').count()) === 1);
-  await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click(); await sleep(200); await p.locator('.rz-st[data-v="imp"]').click(); await sleep(300);
-  check('aba "Músicas MIDI" também pede o código', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-song').count()) === 0);
+  check('Piano Hero também pede o código', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
+  check('nenhuma música aparece sem código', (await p.locator('.rz-song').count()) === 0);
   check('nenhuma lista de MIDI foi baixada sem código', state.listCalls.length === 0, JSON.stringify(state.listCalls));
   // código errado
   await p.locator('#rz-code').fill('ZZZ999'); await p.locator('[data-act="rz-code"]').click(); await sleep(600);
@@ -32,6 +29,7 @@ async function phone(saved) {
   check('código certo libera e guarda no aparelho', await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo')) === 'ABC123');
   check('a lista de MIDIs só foi pedida com o código', state.listCalls.length >= 1 && state.listCalls.every((c) => c === 'ABC123'), JSON.stringify(state.listCalls));
   await p.locator('.rz-g[data-v="beat"]').click(); await sleep(300);
+  await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click(); await sleep(200); await p.locator('.rz-st[data-v="imp"]').click(); await sleep(400);
   check('Beat Hero liberado (sem cadeado, com a música MIDI na lista)', (await p.locator('#rz-code').count()) === 0 && (await p.locator('.rz-song').count()) === 1);
   check('sem erros de JS', errs.length === 0, errs.join('|')); await ctx.close();
 }

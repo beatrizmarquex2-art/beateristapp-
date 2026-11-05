@@ -143,3 +143,7 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - **Figuras rítmicas** e **Toque as figuras**: aulinha do Paul, 7 figuras, variações da semicolcheia, jogo de tocar a partitura.
 - **Álbum de figurinhas**: 125 figurinhas, livro com capa/sumário/colagem, aba Álbum dos alunos trancada por código, relatório da Bea.
 - **Código de aluno**: CÓDIGO DE ACESSO na primeira tela, vale 1 ano, painel e importação de códigos.
+
+### Ajuste (05/11/2026, cache v249)
+- **Todo o ritmo só com código de aluno** (Beat Hero, Piano Hero, músicas prontas e Músicas MIDI): sem código a tela já abre pedindo o código.
+- **Toque as figuras saiu** da lista de jogos (é o mesmo que o Toca Aqui). Os arquivos `js/kids/toque.js` e `toquePattern` ficaram no código sem uso.
