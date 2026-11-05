@@ -6,7 +6,9 @@ import { VOICE } from '../views/beatlab.js';
 import { session } from '../session.js';
 import { robo } from './robo.js';
 import { noteMarkup, figureMarkup, restMarkup, groupMarkup, svgEl } from './art.js';
-import { FIGS, GROUPS, beatsLabel, figBySpec } from './figs.js';
+import { FIGS, GROUPS, VARIACOES, contaOf, beatsLabel, figBySpec } from './figs.js';
+import * as N from '../notation.js';
+import { layoutRhythm } from '../reading.js';
 
 const Q = 1; // 60 BPM: 1 tempo = 1 segundo (fácil de sentir)
 const t0now = () => audio().currentTime + 0.12;
@@ -65,6 +67,12 @@ export function aulaFiguras(host, { onPlay } = {}) {
       ...FIGS.map((f) => h('div', { class: 'au-row' }, svgEl(figureMarkup(f.id), 'au-fig sm'), svgEl(restMarkup(f.id), 'au-fig sm'), h('div', { class: 'au-info' }, h('b', {}, `pausa de ${f.name}`), h('small', {}, `silêncio de ${beatsLabel(f.beats)}`)),
         h('button', { type: 'button', class: 'kd-chip', 'aria-label': `Ouvir a pausa de ${f.name}`, onclick: () => { S.reset(); hearFig(f, 'pausa'); } }, '🤫'))),
       h('p', { class: 'muted' }, 'o 🤫 toca um som, fica em silêncio pelo tempo da pausa e toca de novo. o pulso continua andando!')) },
+    { mood: 'music', say: 'a semicolcheia tem várias combinações dentro de um tempo! contando 1 e & a, cada casinha pode ter nota ou silêncio.', make: () => {
+      const hearCell = (p) => { const t0 = t0now(); for (let b = 0; b < 2; b++) { click(t0 + b * Q, b === 0 ? 2 : 1, 0.4); [...p].forEach((x, k) => { if (x === '1') VOICE.sn(t0 + b * Q + (k * Q) / 4, 0.85); }); } };
+      return h('div', { class: 'au-box' }, h('p', {}, 'um tempo = 4 casinhas: ', h('b', {}, '1 e & a'), '. o que está entre parênteses é silêncio.'),
+        ...VARIACOES.map((v) => h('div', { class: 'au-row' }, svgEl(N.toSVG(layoutRhythm([v.p], { width: 110, count: false, clef: false })), 'au-cell'),
+          h('div', { class: 'au-info' }, h('b', {}, v.name), h('small', {}, `conta: ${contaOf(v.p)}`)), h('button', { type: 'button', class: 'kd-chip', 'aria-label': `Ouvir ${v.name}`, onclick: () => { S.reset(); hearCell(v.p); } }, '▶'))),
+        h('p', { class: 'muted' }, 'a colcheia pontuada vale 3 casinhas (colcheia + metade); por isso depois dela só cabe 1 semicolcheia.')); } },
     { mood: 'wow', say: 'agora o mais legal: tercina e sextina! elas dividem o tempo em partes diferentes.', make: () => h('div', { class: 'au-box' },
       ...GROUPS.map((g) => h('div', { class: 'au-group' }, svgEl(groupMarkup(g.id), 'au-grp'), h('div', { class: 'au-info' }, h('b', {}, g.name), h('small', {}, g.text), btn(`▶ ouvir a ${g.name}`, () => { S.reset(); hearSplit(g.n); }, 'kd-chip')))),
       h('p', {}, 'compare como um tempo pode ser dividido:'), h('div', { class: 'row kd-modes' }, ...[[1, 'semínima'], [2, '2 colcheias'], [3, 'tercina'], [4, '4 semicolcheias'], [6, 'sextina']].map(([n, t]) => h('button', { type: 'button', class: 'kd-chip', onclick: () => { S.reset(); hearSplit(n); } }, `▶ ${t}`))),

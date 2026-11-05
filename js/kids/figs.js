@@ -20,6 +20,22 @@ export const GROUPS = [
   { id: 'sextina', name: 'sextina', n: 6, normal: 4, flags: 2, text: '6 semicolcheias no tempo de 4: o tempo é dividido em 6 partes iguais' },
 ];
 
+/** Variações da semicolcheia dentro de UM tempo (4 casinhas: 1 e & a). p: 1 = tem nota, 0 = silêncio. */
+export const VARIACOES = [
+  { id: 'v1111', p: '1111', name: 'quatro semicolcheias' },
+  { id: 'v1011', p: '1011', name: 'colcheia + duas semicolcheias' },
+  { id: 'v1110', p: '1110', name: 'duas semicolcheias + colcheia' },
+  { id: 'v1101', p: '1101', name: 'semicolcheia + colcheia + semicolcheia' },
+  { id: 'v1001', p: '1001', name: 'colcheia pontuada + semicolcheia' },
+  { id: 'v1100', p: '1100', name: 'semicolcheia + colcheia pontuada' },
+  { id: 'v0111', p: '0111', name: 'pausa de semicolcheia + três semicolcheias' },
+  { id: 'v0011', p: '0011', name: 'pausa de colcheia + duas semicolcheias' },
+  { id: 'v0101', p: '0101', name: 'pausa, semicolcheia, pausa, semicolcheia' },
+];
+export const VAR_BY = Object.fromEntries(VARIACOES.map((v) => [v.id, v]));
+/** Como se conta a variação: "1 e & a" com as casinhas silenciosas entre parênteses. */
+export const contaOf = (p) => [...p].map((c, i) => { const w = ['1', 'e', '&', 'a'][i]; return c === '1' ? w : `(${w})`; }).join(' ');
+
 /** Qual figura é esse desenho (cabeça vazia/cheia, haste, bandeirinhas)? undefined se não existe. */
 export const figBySpec = ({ open, stem, flags }) => FIGS.find((f) => f.open === !!open && f.stem === !!stem && f.flags === flags);
 /** Código do desenho montado (cabeça vazia=1/cheia=0, haste, bandeirinhas) e o contrário. */

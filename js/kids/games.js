@@ -6,7 +6,9 @@ import { audio, later } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
 import { pieceQ, pautaQ, pairName, figureQ, bumboQ, hintOf } from './quiz.js';
-import { FIGS, FIG_NAME, FIG_BY, GROUPS, beatsLabel, specOf } from './figs.js';
+import { FIGS, FIG_NAME, FIG_BY, GROUPS, VAR_BY, beatsLabel, specOf, contaOf } from './figs.js';
+import { layoutRhythm } from '../reading.js';
+import { click } from '../audio.js';
 import { ROW_NAME } from './groove.js';
 import { KIT_COLORS } from './icons.js';
 import { kitMarkup, staffMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
@@ -54,16 +56,19 @@ export const GAMES = {
         case 'montar': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual desenho está montado certinho para a ${FIG_NAME[q.fig]}?`), h('p', { class: 'muted' }, 'olha a cabeça (vazia ou cheia), a haste e as bandeirinhas.'));
         case 'pausa': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, 'qual é o nome dessa pausa?'));
         case 'pausaValor': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, `quanto tempo de silêncio vale a pausa de ${FIG_NAME[q.fig]}?`));
+        case 'variacao': return h('div', { class: 'kx-q' }, svgEl(N.toSVG(layoutRhythm([q.cell], { width: 220, count: true, clef: false })), 'kd-score'), h('p', { class: 'kd-q' }, 'como se chama esse tempo?'));
+        case 'variacaoSom': return h('div', { class: 'kx-q' }, h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playCell(q.cell) }, '▶ ouvir de novo'), h('p', { class: 'kd-q' }, 'qual é o ritmo que você ouviu?'));
         case 'grupo': return h('div', { class: 'kx-q' }, big(groupMarkup(q.group)), h('p', { class: 'kd-q' }, 'que grupo de notas é esse?'));
         default: return h('div', { class: 'kx-q' }, big(groupMarkup(q.group)), h('p', { class: 'kd-q' }, `quantas notas tem a ${GROUPS.find((x) => x.id === q.group).name}?`));
       }
     },
     // comparar e desenhar: os botões são os próprios desenhos (comparar também toca a duração ao escolher)
-    optionLabel: (q, o) => (q.kind === 'dura' || q.kind === 'desenho' ? svgEl(figureMarkup(o.id), 'kd-fig-svg kx-opt-fig') : q.kind === 'montar' ? svgEl(noteMarkup(specOf(o.id), 'desenho montado'), 'kd-fig-svg kx-opt-fig') : o.label),
+    onShow: (q) => { if (q.kind === 'variacaoSom') later(() => playCell(q.cell), 250); },
+    optionLabel: (q, o) => (q.kind === 'variacaoSom' ? svgEl(N.toSVG(layoutRhythm([VAR_BY[o.id].p], { width: 120, count: false, clef: false })), 'kd-score kx-opt-cell') : q.kind === 'dura' || q.kind === 'desenho' ? svgEl(figureMarkup(o.id), 'kd-fig-svg kx-opt-fig') : q.kind === 'montar' ? svgEl(noteMarkup(specOf(o.id), 'desenho montado'), 'kd-fig-svg kx-opt-fig') : o.label),
     picked: (q, id) => { if (q.kind === 'dura' && id) tone(BEATS[id]); },
     okText: (q) => { const f = FIG_BY[q.fig]; switch (q.kind) {
       case 'dura': return `isso! ${FIG_NAME[q.ans]} dura mais ⭐`; case 'tempos': return `isso! ${f.name} = ${beatsLabel(f.beats)} ⭐`; case 'nome': return `isso! é ${FIG_NAME[q.ans]} ⭐`;
-      case 'montar': return 'isso! montou certinho ⭐'; case 'pausa': return `isso! pausa de ${FIG_NAME[q.ans]} ⭐`; case 'pausaValor': return `isso! silêncio de ${beatsLabel(f.beats)} ⭐`; default: return 'isso! ⭐'; } },
+      case 'montar': return 'isso! montou certinho ⭐'; case 'variacao': case 'variacaoSom': return `isso! ${contaOf(VAR_BY[q.ans].p)} ⭐`; case 'pausa': return `isso! pausa de ${FIG_NAME[q.ans]} ⭐`; case 'pausaValor': return `isso! silêncio de ${beatsLabel(f.beats)} ⭐`; default: return 'isso! ⭐'; } },
     noText: (q) => { const f = FIG_BY[q.fig];
       switch (q.kind) {
         case 'dura': return `a ${FIG_NAME[q.ans]} dura mais!`;
@@ -71,6 +76,7 @@ export const GAMES = {
         case 'montar': return `a ${f.name} tem ${f.open ? 'cabeça vazia' : 'cabeça cheia'}, ${f.stem ? 'haste' : 'sem haste'}${f.flags ? ` e ${f.flags} bandeirinha${f.flags > 1 ? 's' : ''}` : ''}`;
         case 'grupo': return `era ${q.ans === 'tercina' ? 'a tercina (3 notas)' : q.ans === 'sextina' ? 'a sextina (6 notas)' : 'outro grupo'}`;
         case 'grupoN': return `são ${q.ans} notas`;
+        case 'variacao': case 'variacaoSom': return `era ${VAR_BY[q.ans].name} (${contaOf(VAR_BY[q.ans].p)})`;
         default: return `era ${FIG_NAME[q.ans]}`;
       } },
     hint: (k) => hintOf('figuras', k),
@@ -83,6 +89,8 @@ export const GAMES = {
     okText: (q) => `isso! ${q.n} bumbo${q.n > 1 ? 's' : ''} ⭐`, noText: (q) => `eram ${q.n} bumbo${q.n > 1 ? 's' : ''}!`, hint: (k) => hintOf('bumbos', k),
   },
 };
+/** Toca a variação (1 tempo) duas vezes a 80 BPM, com o pulso por baixo. */
+function playCell(p) { const c = audio(); const q = 60 / 80; const t0 = c.currentTime + 0.1; for (let b = 0; b < 2; b++) { click(t0 + b * q, b === 0 ? 2 : 1, 0.4); [...p].forEach((x, k) => { if (x === '1') VOICE.sn(t0 + b * q + (k * q) / 4, 0.85); }); } }
 function playBumbos(q) {
   const bar = bumboBar(q.n); const c = audio(); const dt = 60 / q.bpm / 2; const t0 = c.currentTime + 0.15;
   for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) for (const p of ['hh', 'sn', 'bd']) if (bar.rows[p][i]) VOICE[p](t0 + (r * 8 + i) * dt, p === 'hh' ? 0.6 : 1);
