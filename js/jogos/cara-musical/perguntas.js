@@ -1,3 +1,4 @@
+import './dados-extra.js'; // completa o elenco com os atributos novos (cantor, ativo, grande, anos80_90, varias, instrumento)
 // Perguntas do Cara a Cara Musical. Cada pergunta olha UM atributo (da entidade ou da foto) e só vale quando o atributo está verificado (true/false) em TODOS os alvos da mesa.
 // kids: texto curtinho com ícone (modo Kids); classico: texto normal. `por_que` aparece depois da resposta (fala do Paul).
 export const PERGUNTAS = [
@@ -17,7 +18,13 @@ export const PERGUNTAS = [
   { id: 'antes1980', de: 'entidade', attr: 'antes1980', kids: 'É bem antigo?', classico: 'a carreira começou antes de 1980?', icone: '📻', kidsOk: false, porque: 'conta o ano em que o artista ou a banda começou.' },
   { id: 'depois2000', de: 'entidade', attr: 'depois2000', kids: 'É bem novo?', classico: 'a carreira começou depois de 2000?', icone: '📱', kidsOk: false, porque: 'conta o ano em que o artista ou a banda começou.' },
   { id: 'beatles', de: 'entidade', attr: 'beatles', kids: 'É dos Beatles?', classico: 'é dos Beatles?', icone: '🪲', kidsOk: true, porque: 'os Beatles são a banda de Liverpool; entram a banda e os integrantes.' },
+  { id: 'cantor', de: 'entidade', attr: 'cantor', kids: 'É cantor ou cantora?', classico: 'é cantor ou cantora (uma pessoa conhecida pela voz)?', icone: '🎤', kidsOk: false, porque: 'cantor ou cantora é a pessoa conhecida principalmente pela voz; bandas e instrumentistas não entram.' },
+  { id: 'ativo', de: 'entidade', attr: 'ativo', kids: 'Ainda faz música hoje?', classico: 'ainda está em atividade?', icone: '🎶', kidsOk: true, porque: 'quem já morreu ou a banda que acabou não está em atividade.' },
+  { id: 'grande', de: 'entidade', attr: 'grande', kids: 'Tem mais de 3 pessoas?', classico: 'tem mais de 3 integrantes?', icone: '👨‍👩‍👧‍👦', kidsOk: true, porque: 'conta quantas pessoas formam o grupo; artista solo e dupla nunca passam de 2.' },
+  { id: 'anos80_90', de: 'entidade', attr: 'anos80_90', kids: 'Começou nos anos 80 ou 90?', classico: 'a carreira começou entre 1980 e 1999?', icone: '📼', kidsOk: false, porque: 'nem antes de 1980, nem depois de 2000: no meio.' },
   { id: 'pb', de: 'foto', attr: 'preto_e_branco', kids: 'A foto é preto e branco?', classico: 'a foto é preto e branco?', icone: '⬛', kidsOk: true, porque: 'olha só a foto: sem cores, só tons de cinza.' },
+  { id: 'varias', de: 'foto', attr: 'varias', kids: 'Tem mais de uma pessoa na foto?', classico: 'aparece mais de uma pessoa na foto?', icone: '👥', kidsOk: true, porque: 'olha só a foto e conta as pessoas que aparecem.' },
+  { id: 'instrumento', de: 'foto', attr: 'instrumento', kids: 'Aparece um instrumento na foto?', classico: 'aparece um instrumento na foto (guitarra, baixo, bateria, baquetas)?', icone: '🥁', kidsOk: true, porque: 'olha a foto: tem guitarra, baixo, bateria ou baquetas aparecendo?' },
 ];
 export const BY_Q = Object.fromEntries(PERGUNTAS.map((p) => [p.id, p]));
 export const textoDe = (q, modo) => (modo === 'kids' ? q.kids : q.classico);

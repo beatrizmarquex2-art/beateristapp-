@@ -36,3 +36,9 @@
 .cm-card small.long{font-size:12px;letter-spacing:-.2px;overflow-wrap:break-word}
 .cm-vez{color:#ffd9a0}
 .cm-root .jg-link-badge{color:#fff7e0;margin:2px 0}.cm-root .jg-link-badge.off{color:#ffd9a0}
+
+/* contestar uma resposta do Paul */
+.cm-contesta{margin-left:6px;padding:4px 10px;min-height:32px;border:2px solid currentColor;border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:.85}
+.cm-contesta:active{opacity:1}
+.cm-contesta-sheet .field{width:100%;margin:8px 0}.cm-contesta-lista{margin:8px 0;padding-left:20px;display:grid;gap:8px}
+.cm-contesta-item{width:100%;text-align:left;min-height:44px;padding:8px 12px;border:2px solid var(--jg-navy,#13213f);border-radius:12px;background:#fff;color:var(--jg-ink,#17202e);font:inherit;cursor:pointer}

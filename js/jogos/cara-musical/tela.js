@@ -2,7 +2,7 @@
 // Fluxo: menu (Kids ou Clássico, Solo com Paul / Contra Paul / Dupla) → (tutorial Kids) → partida → ficha da rodada → placar (melhor de 3 nos duelos).
 // Não dá figurinha, pacote nem recompensa; não mexe em ranking nem estrelas.
 import { h } from '../../util.js';
-import { sheet, confirmSheet } from '../../ui.js';
+import { sheet, confirmSheet, toast } from '../../ui.js';
 import { getGame, setGame, sfx } from '../base.js';
 import { BY_ID } from './elenco.js';
 import { BY_Q, textoDe } from './perguntas.js';
@@ -12,6 +12,7 @@ import { fatosDe } from './fichas.js';
 import { lobby, reenter } from '../online.js';
 import * as O from './online-regras.js';
 import { mountOnline, ULTIMA } from './online-tela.js';
+import * as Contestar from './contestar.js';
 
 const GID = 'cara';
 import { mini, grande, loadCat, posOf } from './midia.js';
@@ -35,6 +36,31 @@ export function mountMusical(host, { onTema } = {}) {
     const e = BY_ID[carta.id]; sheet(e.curto, () => h('div', { class: 'sheet-body cm-zoom' }, h('img', { src: grande(carta.foto), alt: `foto de ${e.curto}`, onerror: (ev) => { ev.target.src = mini(carta.foto); } }), h('b', {}, e.curto), h('small', {}, 'toque fora pra fechar. a ficha completa aparece no fim da rodada.')));
   }
 
+  /* ---------------- contestar uma resposta do Paul ---------------- */
+  function contestar(q, a, segredoId) {
+    const carta = st.mesa.cartas.find((c) => c.id === segredoId); const nome = BY_ID[segredoId].curto; const texto = textoDe(q, cfg.modo);
+    sheet('contestar resposta', (close) => {
+      const nota = h('input', { class: 'field', type: 'text', maxlength: '140', placeholder: 'quer explicar? (opcional)', 'aria-label': 'explicação' });
+      const enviar = (parecer) => { Contestar.registrar({ q, carta, nomeCarta: nome, texto, resposta: a.sim, parecer, nota: nota.value }); close(); sfx('tap'); toast('anotado! essa pergunta some dessa carta neste aparelho até a Bea revisar.', { ms: 3600 }); };
+      return h('div', { class: 'sheet-body cm-contesta-sheet' }, h('p', {}, `a carta secreta é ${nome}. você perguntou "${texto}" e o Paul respondeu `, h('b', {}, a.sim ? 'SIM' : 'NÃO'), '.'),
+        h('p', { class: 'muted' }, 'o que você acha dessa resposta?'), nota,
+        h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => enviar('errado') }, 'acho que está errado'), h('button', { class: 'btn', type: 'button', onclick: () => enviar('duvida') }, 'não tenho certeza')));
+    });
+  }
+  /** Todas as respostas da rodada, pra contestar depois que ela acabou. */
+  function contestarDaRodada() {
+    const itens = st.lados.flatMap((l) => l.perguntas.map((a) => ({ a, segredo: l.segredo })));
+    sheet('contestar uma resposta', (close) => h('div', { class: 'sheet-body cm-contesta-sheet' }, h('p', { class: 'muted' }, 'toque na resposta que você acha que está errada.'),
+      h('ol', { class: 'cm-contesta-lista' }, ...itens.map(({ a, segredo }) => h('li', {}, h('button', { class: 'cm-contesta-item', type: 'button', onclick: () => { close(); contestar(BY_Q[a.id], a, segredo); } }, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('small', {}, `(${BY_ID[segredo].curto})`)))))));
+  }
+  function contestacoes() {
+    const lista = Contestar.listar();
+    sheet(`respostas contestadas (${lista.length})`, (close) => h('div', { class: 'sheet-body cm-contesta-sheet' },
+      lista.length ? h('ol', { class: 'cm-contesta-lista' }, ...lista.map((r) => h('li', {}, h('b', {}, r.carta), ` · "${r.pergunta}" · Paul: ${r.paul} · ${r.parecer === 'errado' ? 'acho errado' : 'em dúvida'}`, r.nota ? h('small', {}, ` (${r.nota})`) : null))) : h('p', { class: 'muted' }, 'nenhuma por enquanto.'),
+      h('div', { class: 'jg-actions' }, lista.length ? h('button', { class: 'btn', type: 'button', onclick: async () => { const t = Contestar.textoParaCopiar(); try { await navigator.clipboard.writeText(t); toast('copiado! manda pra Bea.', { ms: 2200 }); } catch { toast('não deu pra copiar neste aparelho.', { ms: 2600 }); } } }, 'copiar a lista pra Bea') : null,
+        lista.length ? h('button', { class: 'btn ghost', type: 'button', onclick: async () => { if (await confirmSheet('limpar a lista?', 'as respostas voltam a valer neste aparelho.', 'limpar')) { Contestar.limpar(); close(); menu(); } } }, 'limpar') : null)));
+  }
+
   /* ---------------- menu ---------------- */
   function menu() {
     st = null;
@@ -49,6 +75,7 @@ export function mountMusical(host, { onTema } = {}) {
       kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar')),
       h('p', { class: 'jg-p muted' }, kids ? `kids: perguntas prontas num toque, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, todas as perguntas, 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
+      Contestar.listar().length ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn small ghost', type: 'button', onclick: contestacoes }, `respostas contestadas (${Contestar.listar().length})`)) : null,
     ].filter(Boolean));
   }
 
@@ -143,7 +170,7 @@ export function mountMusical(host, { onTema } = {}) {
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
         !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
       h('div', { class: 'cm-acoes' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) menu(); } }, 'Sair')),
-      lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)}`)))) : null,
+      lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => contestar(BY_Q[a.id], a, lado.segredo) }, '⚑ contestar'))))) : null,
     ].filter(Boolean));
   }
   function perguntasUI(lado, sug, todas, semPergunta) {
@@ -210,7 +237,7 @@ export function mountMusical(host, { onTema } = {}) {
       h('h3', { class: 'hand' }, titulo), paulFala(fala$),
       !solo ? h('div', { class: 'cm-placar' }, h('b', {}, `${nomeJ(0)} ${serie.vitorias[0]} × ${serie.vitorias[1]} ${nomeJ(1)}`), res ? h('small', {}, `${res.motivo} (${res.perguntas[0]} × ${res.perguntas[1]} perguntas)`) : null, serie.empates ? h('small', {}, `${serie.empates} empate${serie.empates > 1 ? 's' : ''}`) : null) : null,
       h('div', { class: 'cm-fichas' }, ...fichas),
-      h('div', { class: 'jg-actions row' }, proxima ? h('button', { class: 'btn primary', type: 'button', onclick: proximaRodada }, 'próxima rodada') : h('button', { class: 'btn primary', type: 'button', onclick: () => { iniciar(); } }, solo ? 'jogar de novo' : 'novo duelo'), h('button', { class: 'btn ghost', type: 'button', onclick: menu }, 'voltar às opções')),
+      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn small ghost', type: 'button', onclick: contestarDaRodada }, '⚑ contestar uma resposta'), proxima ? h('button', { class: 'btn primary', type: 'button', onclick: proximaRodada }, 'próxima rodada') : h('button', { class: 'btn primary', type: 'button', onclick: () => { iniciar(); } }, solo ? 'jogar de novo' : 'novo duelo'), h('button', { class: 'btn ghost', type: 'button', onclick: menu }, 'voltar às opções')),
     ].filter(Boolean));
   }
   function proximaRodada() {

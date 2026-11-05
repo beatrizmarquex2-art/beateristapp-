@@ -235,3 +235,8 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 
 - **Bingo antigo (4×4) preservado**: `js/jogos/bingo1.js` + `bingo1-logic.js` só alimentam as missões do Modo Aventura (`js/campanha/jogos/bingo.js`). O Bingo novo (`bingo.js`/`bingo-logic.js`) é o modo livre (`#/jogos/bingo/livre`; convite `?sala=` abre direto o livre).
 - **Pendente (nov/2026)**: aplicar `supabase/009_bingo_salas.sql` no Supabase (a aprovação do chat expirou); sem isso o Bingo online mostra aviso de serviço indisponível, e os outros modos funcionam. Publicado: `main` e alunos (cache v266).
+
+## Cara a Cara Musical: perguntas novas e contestar (05/11/2026)
+- Perguntas novas: **cantor**, **ainda em atividade**, **mais de 3 integrantes**, **carreira entre 1980 e 1999** (derivada) e, da foto, **mais de uma pessoa** e **instrumento aparecendo** (marcadas olhando as 125 fotos; `js/jogos/cara-musical/dados-extra.js`, null = não dá pra afirmar). Total: 23 perguntas.
+- **Contestar**: ⚑ em cada resposta do Paul (durante a rodada e no fim). Anota neste aparelho (`js/jogos/cara-musical/contestar.js`), tira a pergunta daquela carta neste aparelho até a Bea revisar e dá pra copiar a lista no menu ("respostas contestadas"). Não vai pro servidor: a Bea recebe a lista copiada. Teste: `tests/cara-musical-extra.test.mjs`.
+- Os dados novos foram escritos de memória (artistas) e olhando as fotos: revisar com as contestações.
