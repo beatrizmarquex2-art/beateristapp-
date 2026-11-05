@@ -23,9 +23,15 @@ check('abas: só Jogos, Tocar e Ranking', JSON.stringify(await navs()) === JSON.
 let c = await cards();
 check('explorar a bateria saiu dos jogos', !c.some((x) => /explorar/i.test(x.t)));
 check('jogos de ritmo com cadeado', c.find((x) => /jogos de ritmo/i.test(x.t))?.lock === true);
-check('jogos das dicas (3 em 1) com cadeado', c.find((x) => /jogos das dicas/i.test(x.t))?.lock === true);
+check('quiz e letras (3 em 1) com cadeado', c.find((x) => /quiz e letras/i.test(x.t))?.lock === true);
 check('quiz/caça/cruzadinha não aparecem separados', !c.some((x) => /^(quiz|caça-palavras|cruzadinha)$/i.test(x.t)));
+check('fases e estrelas saiu da lista dos alunos', !c.some((x) => /fases e estrelas/i.test(x.t)));
+check('toque as figuras está na lista e livre', c.find((x) => /toque as figuras/i.test(x.t))?.lock === false);
 check('Toca Aqui livre', c.find((x) => /toca aqui/i.test(x.t))?.lock === false);
+await page.evaluate(() => { location.hash = '#/ranking'; }); await sleep(500);
+check('Ranking leva ao álbum', await page.$('a[href="#/kids"]') !== null);
+await page.evaluate(() => { location.hash = '#/kids/album'; }); await sleep(600);
+check('álbum acende a aba Ranking', /Ranking/.test(await page.textContent('.bottom-nav a.on')));
 await page.evaluate(() => { location.hash = '#/beatlab'; }); await sleep(500);
 check('Beat Lab sem código volta pros jogos', /#\/jogos/.test(await page.evaluate(() => location.hash)));
 await sleep(300); await page.keyboard.press('Escape'); await sleep(400);

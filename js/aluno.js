@@ -100,6 +100,7 @@ function rankingView(view) {
   };
   view.append(banner('Ranking', 'os melhores da escola'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+      h('a', { class: 'card pad al-card', href: '#/kids' }, h('h2', { class: 'tag' }, '⭐ meu álbum e minhas estrelas'), h('p', { class: 'muted' }, 'fases, figurinhas e o código BEA pra guardar tudo')),
       box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
       box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
       socialRow(),
@@ -127,8 +128,10 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    // fases, estrelas e álbum moram na aba Ranking; os jogos das fases continuam na aba Jogos
+    const tab = r.name === 'kids' && (!r.parts[0] || r.parts[0] === 'album') ? 'ranking' : (TAB_OF[r.name] || r.name);
     const NAV = navItems(); nav.style.gridTemplateColumns = `repeat(${NAV.length}, 1fr)`;
-    nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
+    nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + tab) === href ? ' on' : ''}`, 'aria-current': ('#/' + tab) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
     const travado = { beatlab: 'beatlab', ritmo: 'ritmo' }[r.name];
     if (travado && Acesso.bloqueado(travado)) { location.replace('#/jogos'); Acesso.promptCode(r.name === 'ritmo' ? 'Beat Hero e Piano Hero' : 'o Beat Lab'); return; }

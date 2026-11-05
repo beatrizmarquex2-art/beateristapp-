@@ -20,7 +20,7 @@ const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'paul.webp', toca, 'ler, ouvir, repetir · microfone'],
-  ['dicas', 'jogos das dicas', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
+  ['dicas', 'quiz e letras', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -40,6 +40,7 @@ const SECTIONS = [
   ['leitura musical', [
     link('#/kids/figuras', 'figuras rítmicas', 'figuras.webp', 'semibreve, mínima…'),
     link('#/kids/pauta', 'onde mora na pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
+    link('#/kids/toque', 'toque as figuras', 'toque.webp', 'lê a partitura e toca na tela ou no microfone'),
   ]],
   ['cartas e tabuleiro', [
     link('#/kids/memoria', 'jogo da memória', 'cara-a-cara.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
@@ -47,7 +48,7 @@ const SECTIONS = [
   ]],
   ['jogos das dicas', [inner('dicas')]],
   ['fases e relatório', [
-    link('#/kids', 'fases e estrelas', 'rabiscos.webp', 'jogadores, álbum e coleção'),
+    link('#/kids', 'fases e estrelas', 'rabiscos.webp', 'jogadores, álbum e coleção', 'noaluno'), // pros alunos, fases/estrelas/álbum moram na aba Ranking
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
   ]],
 ];
@@ -77,7 +78,7 @@ function catalog(host) {
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
   const draw = () => {
     const p = prefs();
-    const all = SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && x[6] === 'bea'));
+    const all = SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && (x[6] === 'bea' || x[6] === 'noaluno')));
     const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
     const list = all.map((x, i) => [x, i]).sort((a, c) => rank(keyOf(a[0])) - rank(keyOf(c[0])) || a[1] - c[1]).map((x) => x[0]);
     const shown = list.filter((x) => (editing || !p.hidden.includes(keyOf(x))) && (!onlyFav || p.fav.includes(keyOf(x))));
@@ -99,7 +100,7 @@ function catalog(host) {
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
-    const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && x[6] === 'bea')).map(keyOf);
+    const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && (x[6] === 'bea' || x[6] === 'noaluno'))).map(keyOf);
     const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
     const full = all.map((k, i) => [k, i]).sort((a, c) => rank(a[0]) - rank(c[0]) || a[1] - c[1]).map((x) => x[0]);
     const set = new Set(newKeys); let n = 0;
