@@ -173,40 +173,60 @@ async function desenharLimpo(e, formato, carta) {
   const lg = await logoCanvas(!claro), lw = 260, lh = (lw * 175) / 900; ctx.globalAlpha = 0.9; ctx.drawImage(lg, (W - lw) / 2, by + (story ? 86 : 74), lw, lh); ctx.globalAlpha = 1;
   return c;
 }
-/* ---------- modelo 5: épico (dourado, raios, brilhos) ---------- */
+/* ---------- modelo 5: épico (raios, luz, brilhos) com paleta dourada ou rosa e vermelho ---------- */
+const PALETAS = {
+  dourado: { centro: '#6a3a08', meio: '#3a1a06', borda: '#150a0e', fim: '#050308', raio: '255,214,102', raio2: '255,170,40', halo: '255,226,140', glow: '#ffb020', glow2: '#ffe08a', glint: '#fff3c4', bokeh: ['255,200,90', '255,160,40', '255,236,170'],
+    metal: ['#fff0b0', '#d9a63c', '#8a5a12', '#f6d77a'], titulo: ['#fff7d0', '#f4c64e', '#a8680f'], contorno: '#2a1204', placa: 'rgba(14,8,6,.92)', site: '#f6d77a', tinta: '#efe2c6', enfeite: '#ffd566' },
+  rosa: { centro: '#a3124d', meio: '#52092b', borda: '#1c0510', fim: '#07020a', raio: '255,110,170', raio2: '255,45,80', halo: '255,150,196', glow: '#ff2f7d', glow2: '#ff9ec7', glint: '#ffe3f0', bokeh: ['255,95,160', '255,50,90', '255,190,215'],
+    metal: ['#ffe3ee', '#ff6aa6', '#c4182c', '#ffb4d2'], titulo: ['#ffffff', '#ff9ec7', '#e11d5a'], contorno: '#3a0618', placa: 'rgba(30,5,16,.92)', site: '#ffc2dc', tinta: '#ffe9f2', enfeite: '#ff8fbd' },
+};
 async function desenharEpico(e, formato, carta) {
-  const { W, H, story } = geo(formato), lg = await logoCanvas(true), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
-  const cx = W / 2, cy = story ? H * 0.5 : H * 0.49, R = O.rng(O.hashSeed(e.artista_banda || 'epico'));
-  const bg = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.hypot(W, H) * 0.62); bg.addColorStop(0, '#6a3a08'); bg.addColorStop(0.22, '#3a1a06'); bg.addColorStop(0.55, '#150a0e'); bg.addColorStop(1, '#050308'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-  // raios dourados (sunburst)
-  ctx.save(); ctx.translate(cx, cy);
-  for (let i = 0; i < 44; i++) { const a = (i * Math.PI * 2) / 44 + 0.03, b = a + Math.PI / 44 * (0.55 + (i % 3) * 0.12), r = Math.hypot(W, H);
-    const g = ctx.createLinearGradient(0, 0, Math.cos(a) * r, Math.sin(a) * r); g.addColorStop(0, 'rgba(255,214,102,.55)'); g.addColorStop(0.6, 'rgba(255,170,40,.16)'); g.addColorStop(1, 'rgba(255,170,40,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.lineTo(Math.cos(b) * r, Math.sin(b) * r); ctx.closePath(); ctx.fill(); }
-  ctx.restore();
-  const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, W * 0.62); halo.addColorStop(0, 'rgba(255,226,140,.55)'); halo.addColorStop(0.5, 'rgba(255,170,40,.18)'); halo.addColorStop(1, 'rgba(255,170,40,0)'); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
-  // brasas / brilhos
-  for (let i = 0; i < 90; i++) { const x = R() * W, y = R() * H, r = 1.5 + R() * 5.5, a = 0.25 + R() * 0.7; ctx.fillStyle = `rgba(255,${200 + Math.floor(R() * 50)},${90 + Math.floor(R() * 90)},${a})`; ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); } ctx.shadowBlur = 0;
-  const estrela = (x, y, r, rot) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = '#fff3c4'; ctx.shadowColor = '#ffcf4a'; ctx.shadowBlur = 24; ctx.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * 0.16 : r, a = (i * Math.PI) / 4; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); ctx.restore(); };
-  [[0.11, 0.24, 46], [0.9, 0.3, 36], [0.08, 0.62, 30], [0.93, 0.66, 50], [0.16, 0.86, 38], [0.84, 0.9, 30]].forEach(([x, y, r], i) => estrela(x * W, y * H, r, i));
+  const { W, H, story } = geo(formato), P = PALETAS[e.tema] || PALETAS.dourado, lg = await logoCanvas(true), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  const cx = W / 2, cy = story ? H * 0.52 : H * 0.5, R = O.rng(O.hashSeed(`${e.artista_banda || 'epico'}${e.tema || ''}`)), diag = Math.hypot(W, H);
+  const bg = ctx.createRadialGradient(cx, cy, 30, cx, cy, diag * 0.62); bg.addColorStop(0, P.centro); bg.addColorStop(0.24, P.meio); bg.addColorStop(0.58, P.borda); bg.addColorStop(1, P.fim); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  // duas camadas de raios girando em sentidos diferentes (mais profundidade)
+  [[44, 0.03, 0.62, P.raio, 0.5, 1], [28, 0.08, 0.35, P.raio2, 0.34, -1]].forEach(([n, off, larg, cor, alfa, sentido]) => {
+    ctx.save(); ctx.translate(cx, cy);
+    for (let i = 0; i < n; i++) { const a = sentido * ((i * Math.PI * 2) / n + off), b2 = a + sentido * (Math.PI / n) * (larg + (i % 3) * 0.1), r = diag; const g = ctx.createLinearGradient(0, 0, Math.cos(a) * r, Math.sin(a) * r);
+      g.addColorStop(0, `rgba(${cor},${alfa})`); g.addColorStop(0.55, `rgba(${cor},${alfa * 0.28})`); g.addColorStop(1, `rgba(${cor},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.lineTo(Math.cos(b2) * r, Math.sin(b2) * r); ctx.closePath(); ctx.fill(); }
+    ctx.restore(); });
+  const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, W * 0.66); halo.addColorStop(0, `rgba(${P.halo},.6)`); halo.addColorStop(0.45, `rgba(${P.raio2},.2)`); halo.addColorStop(1, `rgba(${P.raio2},0)`); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+  // bokeh: bolas de luz desfocadas em volta
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 26; i++) { const x = R() * W, y = R() * H, r = 26 + R() * 90, cor = P.bokeh[i % 3]; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${cor},${0.16 + R() * 0.16})`); g.addColorStop(0.7, `rgba(${cor},${0.07})`); g.addColorStop(1, `rgba(${cor},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
+  ctx.globalCompositeOperation = 'source-over';
+  // brasas
+  for (let i = 0; i < 110; i++) { const x = R() * W, y = R() * H, r = 1.4 + R() * 5, a = 0.25 + R() * 0.7; ctx.fillStyle = `rgba(${P.bokeh[i % 3]},${a})`; ctx.shadowColor = P.glow; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); } ctx.shadowBlur = 0;
+  // brilhos de 4 pontas (glints)
+  const glint = (x, y, r, rot) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = P.glint; ctx.shadowColor = P.glow2; ctx.shadowBlur = 26; ctx.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * 0.14 : r, a = (i * Math.PI) / 4; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); ctx.restore(); };
+  [[0.11, 0.26, 50], [0.91, 0.3, 38], [0.08, 0.6, 32], [0.93, 0.66, 54], [0.15, 0.87, 40], [0.85, 0.91, 32], [0.5, 0.135, 26]].forEach(([x, y, r], i) => glint(x * W, y * H, r, i * 0.4));
   // vinheta
-  const vg = ctx.createRadialGradient(cx, cy, W * 0.4, cx, cy, Math.hypot(W, H) * 0.58); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-  // moldura dourada
-  const gold = ctx.createLinearGradient(0, 0, W, H); gold.addColorStop(0, '#fff0b0'); gold.addColorStop(0.35, '#d9a63c'); gold.addColorStop(0.65, '#8a5a12'); gold.addColorStop(1, '#f6d77a');
-  ctx.lineWidth = 12; ctx.strokeStyle = gold; rr(ctx, 26, 26, W - 52, H - 52, 44); ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,240,176,.65)'; rr(ctx, 46, 46, W - 92, H - 92, 32); ctx.stroke();
-  // logo + título
-  const lw = story ? 500 : 410, lh = (lw * 175) / 900, ly = story ? 140 : 70; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
-  const TIT = titulo(e, 'CARTA ÉPICA'), ty = ly + lh + (story ? 168 : 128);
-  ctx.save(); ctx.textAlign = 'center'; fitText(ctx, TIT, W - 150, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - 120, 0, ty + 10); gr.addColorStop(0, '#fff7d0'); gr.addColorStop(0.5, '#f4c64e'); gr.addColorStop(1, '#a8680f');
-  ctx.shadowColor = 'rgba(255,170,40,.95)'; ctx.shadowBlur = 48; ctx.lineWidth = 18; ctx.lineJoin = 'round'; ctx.strokeStyle = '#2a1204'; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty); ctx.restore();
-  // cartinha com brilho dourado
-  const cw = story ? 770 : 600, ch = (cw * H2) / W2, cyc = story ? H * 0.52 + 30 : H * 0.5 + 24;
-  ctx.save(); ctx.translate(cx, cyc); ctx.rotate((-1.6 * Math.PI) / 180); ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 110; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = '#ffe08a'; ctx.shadowBlur = 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
-  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.38, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, 'rgba(255,255,255,.28)'); brilho.addColorStop(0.62, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill(); ctx.restore();
-  // rodapé em placa dourada
+  const vg = ctx.createRadialGradient(cx, cy, W * 0.42, cx, cy, diag * 0.58); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.72)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  // moldura de metal (dupla) com cantos
+  const metal = ctx.createLinearGradient(0, 0, W, H); P.metal.forEach((cor, i) => metal.addColorStop(i / (P.metal.length - 1), cor));
+  ctx.lineWidth = 12; ctx.strokeStyle = metal; rr(ctx, 26, 26, W - 52, H - 52, 44); ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = `rgba(${P.halo},.7)`; rr(ctx, 46, 46, W - 92, H - 92, 32); ctx.stroke();
+  [[60, 60, 1, 1], [W - 60, 60, -1, 1], [60, H - 60, 1, -1], [W - 60, H - 60, -1, -1]].forEach(([x, y, sx, sy]) => { ctx.save(); ctx.translate(x, y); ctx.scale(sx, sy); ctx.strokeStyle = metal; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0, 56); ctx.quadraticCurveTo(0, 0, 56, 0); ctx.stroke(); ctx.fillStyle = P.glint; ctx.beginPath(); ctx.arc(10, 10, 6, 0, 7); ctx.fill(); ctx.restore(); });
+  // logo + título em faixa
+  const lw = story ? 500 : 410, lh = (lw * 175) / 900, ly = story ? 132 : 66; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
+  const TIT = titulo(e, 'CARTA ÉPICA'), ty = ly + lh + (story ? 176 : 132);
+  ctx.save(); ctx.textAlign = 'center'; const fs = fitText(ctx, TIT, W - 170, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - fs * 0.85, 0, ty + 6); gr.addColorStop(0, P.titulo[0]); gr.addColorStop(0.5, P.titulo[1]); gr.addColorStop(1, P.titulo[2]);
+  ctx.shadowColor = P.glow; ctx.shadowBlur = 54; ctx.lineWidth = 20; ctx.lineJoin = 'round'; ctx.strokeStyle = P.contorno; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty);
+  ctx.globalCompositeOperation = 'lighter'; const re = ctx.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0); re.addColorStop(0.4, 'rgba(255,255,255,0)'); re.addColorStop(0.5, 'rgba(255,255,255,.28)'); re.addColorStop(0.6, 'rgba(255,255,255,0)'); ctx.fillStyle = re; ctx.fillText(TIT, W / 2, ty); ctx.restore();
+  // ornamento sob o título: linha com estrela no meio
+  const oy = ty + (story ? 46 : 38); ctx.save(); ctx.strokeStyle = metal; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(W / 2 - 250, oy); ctx.lineTo(W / 2 - 40, oy); ctx.moveTo(W / 2 + 40, oy); ctx.lineTo(W / 2 + 250, oy); ctx.stroke(); glint(W / 2, oy, 22, 0); ctx.restore();
+  // cartinha com aura, sombra no chão e brilho passando
+  const cw = story ? 760 : 590, ch = (cw * H2) / W2, cyc = story ? H * 0.52 + 52 : H * 0.5 + 40;
+  ctx.save(); ctx.translate(cx, cyc + ch / 2 + 26); ctx.scale(1, 0.12); const chao = ctx.createRadialGradient(0, 0, 10, 0, 0, cw * 0.55); chao.addColorStop(0, 'rgba(0,0,0,.6)'); chao.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = chao; ctx.beginPath(); ctx.arc(0, 0, cw * 0.55, 0, 7); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(cx, cyc); ctx.rotate((-1.6 * Math.PI) / 180); ctx.shadowColor = P.glow; ctx.shadowBlur = 120; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = P.glow2; ctx.shadowBlur = 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
+  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.36, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, 'rgba(255,255,255,.3)'); brilho.addColorStop(0.64, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill();
+  glint(-cw / 2 + 24, -ch / 2 + 24, 44, 0.3); glint(cw / 2 - 20, ch / 2 - 40, 34, 0.7); ctx.restore();
+  // rodapé em placa com moldura de metal
   const fw = W - 130, fh = story ? 190 : 150, fy = story ? H - 360 : H - 200;
-  ctx.save(); ctx.fillStyle = 'rgba(14,8,6,.92)'; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = gold; ctx.shadowColor = '#ffb020'; ctx.shadowBlur = 24; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
-  ctx.fillStyle = '#f6d77a'; fitText(ctx, SITE, fw - 80, story ? 66 : 60, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.5); ctx.fillStyle = '#efe2c6'; ctx.font = `800 ${story ? 32 : 28}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.8); ctx.restore();
+  ctx.save(); ctx.fillStyle = P.placa; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = metal; ctx.shadowColor = P.glow; ctx.shadowBlur = 26; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
+  ctx.fillStyle = P.site; fitText(ctx, SITE, fw - 80, story ? 66 : 60, ANTON); ctx.fillText(SITE, W / 2, fy + fh * 0.5); ctx.fillStyle = P.tinta; ctx.font = `800 ${story ? 32 : 28}px ${HANKEN}`; ctx.fillText(`— ${ESCOLA} —`, W / 2, fy + fh * 0.8); ctx.restore();
+  // grão de filme por cima (dá cara de foto de capa, esconde faixas de gradiente)
+  const gran = canvas(256, 256), gc = gran.getContext('2d'), id = gc.createImageData(256, 256), RG = O.rng(11); for (let i = 0; i < id.data.length; i += 4) { const v = 120 + Math.floor(RG() * 135); id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 22; } gc.putImageData(id, 0, 0);
+  ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = ctx.createPattern(gran, 'repeat'); ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over';
   return c;
 }
 const DESENHOS = { colagem: desenharColagem, palco: desenharPalco, retro: desenharRetro, limpo: desenharLimpo, epico: desenharEpico };
