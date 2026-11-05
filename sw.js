@@ -1,6 +1,7 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v260';
+const VERSION = 'beaterista-v262';
 const SHELL = [
+  'js/figurinhas/share-ui.js', 'js/views/perfil.js', 'js/acesso.js',
   'css/cara-musical.css', 'js/jogos/cara-musical/tela.js', 'js/jogos/cara-musical/regras.js', 'js/jogos/cara-musical/elenco.js', 'js/jogos/cara-musical/perguntas.js', 'js/jogos/cara-musical/falas.js', 'js/jogos/cara-musical/fichas.js', 'js/jogos/cara-musical/midia.js', 'js/jogos/cara-musical/online-regras.js', 'js/jogos/cara-musical/online-tela.js',
   'css/aventura-tema.css', 'js/campanha/tema.js', 'js/campanha/jogos/toca.js', 'js/campanha/jogos/toca-spec.js', 'js/views/leitura-missao.js',
   'css/mapa.css', 'css/aventura.css', 'js/kids/mapa.js', 'js/kids/mapa-logic.js', 'js/kids/mapa-art.js', 'js/kids/mapa-sfx.js', 'js/kids/ritmo-missao.js', 'js/campanha/engine.js', 'js/campanha/pontuacao.js', 'js/campanha/registry.js', 'js/campanha/run.js', 'js/campanha/store.js', 'js/campanha/themes.js', 'js/campanha/jogos/bingo.js', 'js/campanha/jogos/cara.js', 'js/campanha/jogos/cartas.js', 'js/campanha/jogos/memoria-logic.js', 'js/campanha/jogos/memoria-spec.js', 'js/campanha/jogos/memoria.js', 'js/campanha/jogos/monte-logic.js', 'js/campanha/jogos/monte-spec.js', 'js/campanha/jogos/monte.js', 'js/campanha/jogos/noritmo.js', 'js/campanha/jogos/quebra.js', 'js/campanha/jogos/stop.js', 'js/campanha/jogos/velha.js',

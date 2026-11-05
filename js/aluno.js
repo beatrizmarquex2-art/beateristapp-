@@ -6,6 +6,8 @@ import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as CODE from './codigo.js';
+import * as AC from './acesso.js';
+import * as dicionario from './views/dicionario.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import * as PL from './paulta/save.js';
@@ -15,6 +17,7 @@ import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
+import * as perfil from './views/perfil.js';
 import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
@@ -22,8 +25,8 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -107,6 +110,38 @@ function rankingView(view) {
       h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));
 }
 
+/** Tela de uma parte que só vale com código: gerar o código, contar pra professora e liberar sozinho. */
+function lockView(view, what) {
+  let timer = 0; let gone = false;
+  const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
+  const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
+  const done = () => { AC.definir(true); go(); };
+  const check = async (quiet) => {
+    if (!CODE.pendente()) return;
+    if (!quiet) msg.textContent = 'conferindo…';
+    try { if (await CODE.conferirPedido()) return done(); if (!quiet) msg.textContent = 'ainda não liberou. fala o código pra professora Bea.'; } catch { if (!quiet) msg.textContent = 'sem internet agora. tente de novo.'; }
+  };
+  const enter = async () => {
+    msg.textContent = 'conferindo…';
+    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = 'não achei esse código. confira com a sua professora.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+  };
+  const box = h('section', { class: 'card pad al-lock' });
+  const draw = () => {
+    const pend = CODE.pendente();
+    box.replaceChildren(h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🔒'), h('h2', { class: 'hand' }, `${what} é pra alunos da Beaterista`),
+      h('p', { class: 'muted' }, 'sem código você joga o modo livre dos jogos e usa a aba Tocar.'),
+      ...(pend ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code', role: 'status', 'aria-label': `seu código ${pend.split('').join(' ')}` }, pend), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'quando ela cadastrar o seu código, isto libera sozinho.'), h('button', { class: 'btn', type: 'button', onclick: () => check(false) }, 'já liberou? conferir')]
+        : [h('button', { class: 'btn primary wide', type: 'button', onclick: () => { CODE.pedir(); draw(); start(); } }, 'gerar meu código')]),
+      msg, h('details', { class: 'al-lock-have' }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))));
+  };
+  const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
+  draw(); start();
+  view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
+  return () => { gone = true; clearInterval(timer); };
+}
+const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria' };
+
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
   view.append(banner('Tocar', 'bateria, pad e piano na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
@@ -116,7 +151,7 @@ function tocarView(view) {
 
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
+  const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
@@ -127,13 +162,16 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
+    nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (r.name === 'kids') c = kids.mount(view, r.parts);
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || 'esta parte');
+    else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
+    else if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
+    else if (r.name === 'perfil') c = perfil.mount(view);
     else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
@@ -144,6 +182,7 @@ function shell(name) {
     window.scrollTo(0, 0);
   }
   addEventListener('hashchange', go);
+  document.addEventListener('aluno-acesso', () => go());
   go();
 }
 
@@ -153,19 +192,26 @@ function askName() {
   const err = h('p', { class: 'form-err', role: 'alert' });
   const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
-  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO', hidden: true });
-  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; cod.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!cod.hidden) cod.focus(); });
+  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
+  const pedido = h('div', { class: 'al-pedido', role: 'status' });
+  const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
+  const codBox = h('div', { class: 'al-codbox', hidden: true }, cod, gen, pedido);
+  function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  drawPedido();
+  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; codBox.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!codBox.hidden && !cod.hidden) cod.focus(); });
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
     if (!sel.value) { err.textContent = 'escolha como você chegou aqui.'; return; }
     if (sel.value === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
-      if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso.'; return; }
-      err.textContent = 'conferindo o código…';
-      try { if (!(await CODE.entrar(cod.value))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+      if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
+        if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
+        err.textContent = 'conferindo o código…';
+        try { if (!(await CODE.entrar(cod.value))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+      }
       err.textContent = '';
     }
-    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value === 'codigo' ? 'aluno beaterista (código de acesso)' : sel.value;
+    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : sel.value;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n);
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
@@ -180,7 +226,7 @@ function askName() {
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, cod, err,
+    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, codBox, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },
@@ -188,11 +234,17 @@ function askName() {
   setTimeout(() => input.focus(), 100);
 }
 
+/** Ao abrir: o código guardado (ou o pedido que a professora já cadastrou) ainda vale? */
+async function refreshAccess() {
+  try { let ok = await CODE.revalidar(); if (!ok && CODE.pendente()) ok = await CODE.conferirPedido().catch(() => false); AC.definir(ok); } catch { AC.definir(false); }
+}
+
 async function start() {
   const name = getName() || window.__alunoNome || '';
   if (!name) { askName(); return; }
   await ensureKidsPlayer(name);
   logVisit(name);
+  await refreshAccess();
   shell(name);
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
