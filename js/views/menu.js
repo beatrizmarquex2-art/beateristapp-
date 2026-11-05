@@ -48,7 +48,7 @@ const MENU_B = [
   ]],
   ['jogos', 'jogos', [
     ['', [['#/jogos', 'star', 'Todos os jogos']]],
-    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/kids/pauta', 'staff', 'Onde mora na pauta?']]],
+    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/paulta', 'staff', 'pauLta']]],
     ['cartas e tabuleiro', [['#/kids/memoria', 'star', 'Jogo da memória'], ['#/jogos/cartas', 'star', 'Uno Musical'], ['#/jogos/bingo', 'star', 'Bingo'], ['#/jogos/velha', 'star', 'Jogo da velha'], ['#/jogos/quebra', 'star', 'Quebra-cabeça'], ['#/jogos/cara', 'star', 'Cara a cara'], ['#/jogos/stop', 'star', 'Stop']]],
     ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],

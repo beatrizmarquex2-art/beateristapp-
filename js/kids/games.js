@@ -103,4 +103,4 @@ GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
 GAMES.toque = { id: 'toque', title: 'Toque as figuras', blurb: 'lê a partitura e toca na tela ou no pad / bateria', emoji: '🥁', icon: 'ritmo', ages: 'a partir de 6 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runToque,
   hint: (k) => (k === 'figuras' ? 'ler e tocar semínima, colcheias e pausas' : 'ler e tocar semicolcheias e suas variações') };
-export const ORDER = ['pauta', 'figuras', 'toque', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos e detetive saíram da lista // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)
+export const ORDER = ['figuras', 'toque', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos e detetive saíram da lista // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)

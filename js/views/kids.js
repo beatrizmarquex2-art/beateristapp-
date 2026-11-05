@@ -24,6 +24,7 @@ import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
+import * as PL from '../paulta/save.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -87,7 +88,7 @@ const wideCard = (id, title, sub, onclick, href) => {
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'JOGOS'), h('img', { class: 'fx-doodle bolt kx-fx-a', src: 'assets/paul/d-bolt2.webp', alt: '', 'aria-hidden': 'true' }), h('img', { class: 'fx-doodle phones kx-fx-b', src: 'assets/paul/d-phones.webp', alt: '', 'aria-hidden': 'true' })), right || null);
 
 /* ---------- jogador ---------- */
-function newPlayer(onDone) {
+export function newPlayer(onDone) {
   sheet('Quem vai jogar?', (close) => {
     let age = 'b';
     const name = h('input', { type: 'text', maxlength: 24, placeholder: 'nome ou apelido', 'aria-label': 'Nome do jogador' });
@@ -100,13 +101,13 @@ function newPlayer(onDone) {
       h('button', { class: 'btn primary', type: 'button', onclick: go }, 'começar'));
   });
 }
-function switchPlayer(onDone) {
+export function switchPlayer(onDone) {
   sheet('Jogadores', (close) => {
     const list = h('div', { style: 'display:grid;gap:8px' });
     const draw = () => {
       const cur = P.active();
       list.replaceChildren(...P.profiles().map((p) => h('div', { class: 'row kx-pl' },
-        h('button', { class: `btn${cur && cur.id === p.id ? '' : ' ghost'}`, type: 'button', onclick: async () => { await P.setActive(p.id); close(); onDone && onDone(); } }, `${p.name} · ${ageLabel(p.age)}`),
+        h('button', { class: `btn${cur && cur.id === p.id ? '' : ' ghost'}`, type: 'button', onclick: async () => { await P.setActive(p.id); close(); onDone && onDone(); } }, `${PL.label(p)} · ${ageLabel(p.age)}`),
         h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${p.name}`, onclick: async () => { if (await confirmSheet('Apagar jogador?', `${p.name} perde estrelas e figurinhas.`, 'Apagar')) { await P.removeProfile(p.id); close(); onDone && onDone(); } } }, icon('trash', 18))))); };
     draw();
     return h('div', { class: 'sheet-body' }, list, h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); newPlayer(onDone); } }, '+ novo jogador'));
@@ -124,11 +125,11 @@ function homeScreen(host, rerender) {
   const total = P.totalStars(me.id); const tier = tierOf(total);
   const r = robo({ mood: 'happy', tier, size: 96, say: total ? `oi, ${me.name}! já temos ${total} estrelas!` : `oi, ${me.name}! vamos jogar?` });
   host.append(topBar('#/jogos'),
-    h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), h('small', {}, ageLabel(me.age))),
+    h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), h('small', {}, [PL.titleOf(me.id), ageLabel(me.age)].filter(Boolean).join(' · '))),
       h('span', { class: 'kd-stars' }, `★ ${total}`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'fases'),
-    h('div', { class: 'kx-cards' }, ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
+    h('div', { class: 'kx-cards' }, wideCard('pauta', 'pauLta', 'o jogo da leitura musical: bateria, sol e fá', null, '#/paulta'), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),

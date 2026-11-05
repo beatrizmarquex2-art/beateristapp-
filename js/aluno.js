@@ -6,6 +6,8 @@ import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as kids from './views/kids.js';
+import * as paulta from './paulta/view.js';
+import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
@@ -19,7 +21,7 @@ import { startPaul } from './paul-talk.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -115,7 +117,7 @@ function shell(name) {
   const nav = h('nav', { class: 'bottom-nav', style: 'grid-template-columns: repeat(4, 1fr)', 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
     h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
@@ -126,6 +128,7 @@ function shell(name) {
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
     if (r.name === 'kids') c = kids.mount(view, r.parts);
+    else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
