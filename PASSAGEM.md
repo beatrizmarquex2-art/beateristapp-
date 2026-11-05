@@ -165,3 +165,4 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - **Código BEA-0000 guarda o álbum de 125** (campo `f` do save: coladas, repetidas, pacotes entregues e abertos; `figSnap`/`mergeFig` em `savegame-logic.js`). `supabase/010_album_juntar_figurinhas.sql` (**aplicado**): `album_juntar` também junta o `f` (união; maior nº de repetidas) e o limite do save subiu pra 60 KB. A tela de salvar/recuperar saiu de `kids.js` pra `js/kids/save-ui.js` e também aparece dentro do álbum (botão "guardar meu álbum com o código BEA").
 - As abas do álbum quebram linha na área dos alunos (a aba "pacotes" ficava escondida pela rolagem lateral).
 - Testes: `tests/e2e/album-alunos.mjs` (12), `savegame.mjs`, `acesso.mjs`; unitários em `tests/savegame.test.mjs`.
+- **Publicado** (nov/2026): deploy `6aec9834c647f1f37f848487` em jogos.beaterista.com.br (cache v263, com as 125 fotos). Ainda não está na `main` (app da Bea no GitHub Pages).
