@@ -276,3 +276,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Jogos > Memória de Artistas (js/jogos/memoria-artistas.js): 4 a 12 pares de artistas distintos, filtros, dica, recordes locais. NÃO dá figurinha.
 - Adaptador compartilhado: js/jogos/artistas-logic.js (usa ENTIDADES do Cara a Cara + catalogo.json).
 - Ritmo: máx 3 estrelas, só músicas >=105 bpm valem, conta a melhor por música+nível; aventura do ritmo só com músicas rápidas.
+
+- iPad (cache v284): js/ipad-fit.js trava o viewport/pinch em telas de toque, touch-action pan-x pan-y, coluna maior no iPad deitado. Teste: tests/e2e/ipad-zoom.mjs

@@ -38,6 +38,7 @@ import * as piano from './views/piano.js';
 import * as violao from './views/violao.js';
 import * as xilofone from './views/xilofone.js';
 import * as roleta from './views/roleta.js';
+import './ipad-fit.js';
 import * as anotacoes from './views/anotacoes.js';
 import * as hub from './views/hub.js';
 import * as rudimentos from './views/rudimentos.js';

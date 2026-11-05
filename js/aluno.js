@@ -19,6 +19,7 @@ import * as piano from './views/piano.js';
 import * as violao from './views/violao.js';
 import * as xilofone from './views/xilofone.js';
 import * as roleta from './views/roleta.js';
+import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import * as perfil from './views/perfil.js';

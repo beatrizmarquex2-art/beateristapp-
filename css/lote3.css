@@ -1,7 +1,7 @@
 /* ===== Lote 3: iPad, jogo unificado, ata, relatório, prévia de MIDI ===== */
 
 /* toque mais direto (sem esperar o "duplo toque" pra dar zoom) */
-html { touch-action: manipulation; }
+html { touch-action: pan-x pan-y; } /* sem zoom por beliscão nem duplo toque: o zoom acidental deixava a tela rolando em volta */
 
 /* ---------- iPad / telas grandes: usa a largura em vez de uma coluna de celular ---------- */
 .amb-open { display: inline-grid; place-items: center; text-decoration: none; }
@@ -679,3 +679,9 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .rl-chk{display:flex;gap:8px;align-items:center;min-height:44px;margin:6px 0}.rl-chk input{width:22px;height:22px;flex:none}
 .rl-filtros{margin:8px 0}
 .rl-frase{font-family:var(--display,inherit)!important;font-weight:800}
+
+/* iPad deitado / telas grandes de toque: coluna mais larga pra não abrir pequeno */
+@media (min-width: 1000px) and (pointer: coarse) {
+  #app { max-width: 1040px; } .bottom-nav, .tray { max-width: 720px; }
+  .scroll-track { right: calc(50% - 520px); } .to-top { right: calc(50% - 500px); }
+}
