@@ -1,0 +1,45 @@
+/* Tema da Aventura e dos mapas: cores da escola (mostarda/dourado, azul-cinza e branco), em dois modos: escuro (padrão) e claro.
+   html[data-av="escuro"|"claro"] é escolhido pelo botão ☀/🌙 do cabeçalho (js/campanha/tema.js). Tudo aqui usa os tokens --avp-*: mude as cores só neste arquivo. */
+:root, html[data-av="escuro"] {
+  --avp-bg: #1d2a3a; --avp-card: #2b3d52; --avp-line: #5d7189; --avp-text: #ffffff; --avp-soft: #b8c6d6;
+  --avp-accent: #c99a2e; --avp-accent-dk: #8f6a14; --avp-accent-ink: #1d2a3a; --avp-gold: #e2b84a; --avp-shadow: #141d29;
+  --avp-sky0: #2d3f55; --avp-sky1: #223144; --avp-sky2: #26384d; --avp-sky3: #1f2f42; --avp-dots: rgba(184, 198, 214, .35); --avp-edge: #5d7189;
+  --avp-vinyl-a: #17212e; --avp-vinyl-b: #2a3b4f; --avp-locked: #3a4d63; --avp-overlay: rgba(20, 29, 41, .9); --avp-tagbg: rgba(20, 29, 41, .85); --avp-star-off: #5d7189;
+}
+html[data-av="claro"] {
+  --avp-bg: #eef2f6; --avp-card: #ffffff; --avp-line: #b8c6d6; --avp-text: #2b3a4d; --avp-soft: #5d7189;
+  --avp-accent: #c99a2e; --avp-accent-dk: #8f6a14; --avp-accent-ink: #1d2a3a; --avp-gold: #8f6a14; --avp-shadow: #8fa6bf;
+  --avp-sky0: #e3eaf1; --avp-sky1: #d5dfe9; --avp-sky2: #dde6ee; --avp-sky3: #cfdae6; --avp-dots: rgba(93, 113, 137, .35); --avp-edge: #b8c6d6;
+  --avp-vinyl-a: #c9d5e2; --avp-vinyl-b: #aebfd1; --avp-locked: #c4d0dd; --avp-overlay: rgba(238, 242, 246, .92); --avp-tagbg: rgba(255, 255, 255, .9); --avp-star-off: #b8c6d6;
+}
+/* base */
+.av, .mp { background: var(--avp-bg); color: var(--avp-text); }
+.av-card, .pt-box { background: var(--avp-card); color: var(--avp-text); border-color: var(--avp-line); }
+.av-res { background: var(--avp-overlay); }
+.av-res-in { background: var(--avp-card); color: var(--avp-text); }
+.av-h, .av-bt, .av-mode-t, .mp-reg b { color: var(--avp-gold); text-shadow: none; }
+.av-sub, .av-q, .av-kick, .av-medal small, .mp-reg small, .av-unlock { color: var(--avp-soft); }
+.av .kd-chip { background: var(--avp-card); color: var(--avp-text); border-color: var(--avp-line); box-shadow: 3px 3px 0 var(--avp-shadow); }
+.av .kd-btn { box-shadow: 3px 3px 0 var(--avp-accent-dk); }
+.av-back, .av-snd, .mp-back, .mp-snd { background: var(--avp-card); color: var(--avp-text); border-color: var(--avp-line); box-shadow: 3px 3px 0 var(--avp-shadow); }
+.av-tema { min-width: 44px; min-height: 44px; padding: 0 8px; font: 800 18px/1 var(--pix, system-ui); background: var(--avp-accent); color: var(--avp-accent-ink); border: 3px solid var(--avp-text); box-shadow: 3px 3px 0 var(--avp-shadow); cursor: pointer; }
+.mp-head { background: var(--avp-bg); border-bottom-color: var(--avp-line); }
+.mp-prog { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); } .mp-prog.star { color: var(--avp-gold); }
+/* mapa: faixas, caminho, discos (nas cores da escola, sem roxo) */
+.mp-band, .mp .mp-band[data-r] { --b0: var(--avp-sky0); --b1: var(--avp-sky1); --bt: var(--avp-edge); --bd: var(--avp-dots); }
+.mp .mp-band[data-i="1"] { --b0: var(--avp-sky2); --b1: var(--avp-sky3); } .mp .mp-band[data-i="2"] { --b0: var(--avp-sky1); --b1: var(--avp-sky0); } .mp .mp-band[data-i="3"] { --b0: var(--avp-sky3); --b1: var(--avp-sky2); }
+.mp-sign { background: var(--avp-card); border-color: var(--avp-text); box-shadow: 1.2cqw 1.2cqw 0 var(--avp-accent); } .mp-sign small { color: var(--avp-soft); } .mp-sign b { color: var(--avp-gold); }
+.mp-disc { background: repeating-radial-gradient(circle, var(--avp-vinyl-a) 0 1.2cqw, var(--avp-vinyl-b) 1.2cqw 2.4cqw); border-color: var(--avp-text); box-shadow: 1.2cqw 1.2cqw 0 var(--avp-shadow), 0 0 0 0.9cqw var(--avp-bg); }
+.mp-disc::before { border-color: var(--avp-bg); }
+.mp-lab { color: var(--avp-accent-ink); text-shadow: none; } .st-locked .mp-lab { color: var(--avp-text); }
+.st-open { --lab: var(--avp-soft); } .st-open .mp-disc { border-color: var(--avp-soft); }
+.st-done { --lab: var(--avp-accent-dk); } .st-done .mp-lab { color: #fff; } .st-done .mp-disc { border-color: var(--avp-gold); box-shadow: 1.2cqw 1.2cqw 0 var(--avp-shadow), 0 0 3cqw var(--avp-accent); }
+.st-current { --lab: var(--avp-accent); } .st-current .mp-disc { border-color: var(--avp-gold); box-shadow: 1.2cqw 1.2cqw 0 var(--avp-shadow), 0 0 4cqw var(--avp-gold); }
+.st-locked { --lab: var(--avp-locked); } .st-locked .mp-disc { border-color: var(--avp-line); filter: none; opacity: .85; }
+.mp-tag { background: var(--avp-tagbg); color: var(--avp-text); }
+.mp-stars i { color: var(--avp-star-off); text-shadow: none; } .mp-stars i.on { color: var(--avp-gold); }
+.mp-say { background: var(--avp-text); color: var(--avp-bg); border-color: var(--avp-bg); }
+.pt-box summary { color: var(--avp-text); }
+.av-objective { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
+.av-medal { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
+.av-mode { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); } .av-mode.aventura { background: var(--avp-card); border-color: var(--avp-accent); } .av-mode-d { color: var(--avp-text); } .av-mode-m { color: var(--avp-soft); }
