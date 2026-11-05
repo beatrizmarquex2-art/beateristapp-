@@ -5,7 +5,7 @@ const { browser } = await launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
 await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-jogos', JSON.stringify({ v: 1, sound: true, games: { stop: { mode: 'solo', cats: ['instrumento', 'percussao', 'estilo', 'banda', 'musica', 'marca'], seconds: 30, rounds: 3 } } })); });
-await p.goto(`${url}/aluno.html#/jogos/stop`); await sleep(1200);
+await p.goto(`${url}/aluno.html#/jogos/stop/livre`); await sleep(1200);
 check('abertura com STOP e botão JOGAR', (await p.locator('.st-title').count()) === 1 && (await p.locator('button:has-text("JOGAR")').count()) === 1);
 await p.locator('button:has-text("JOGAR")').click(); await sleep(400);
 check('12 categorias oficiais', (await p.locator('.st-cat').count()) === 12);

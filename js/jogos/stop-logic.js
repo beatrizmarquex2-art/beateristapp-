@@ -37,16 +37,17 @@ export function drawLetters(count, used = [], rnd = Math.random, eligible = LETT
 
 /* ---------- partida ---------- */
 const nPlayers = (mode, names) => (mode === 'solo' ? 1 : names.length);
-export function newMatch({ mode = 'solo', cats, seconds = 60, rounds = 3, players, used = [], rnd = Math.random } = {}) {
+// `free` (só o Modo Aventura): libera tempo 10–600 s e 1–20 rodadas, como na sala de aula. `letters` (só o Modo Aventura): restringe o sorteio a estas letras (dentre as elegíveis).
+export function newMatch({ mode = 'solo', cats, seconds = 60, rounds = 3, players, used = [], rnd = Math.random, free = false, letters: only = null } = {}) {
   if (!MODES.includes(mode)) throw new Error('modo inválido');
   if (!catsOk(cats)) throw new Error('escolha de 5 a 8 categorias');
-  const custom = mode === 'sala'; // só o professor tem tempo/rodadas livres
+  const custom = mode === 'sala' || free === true; // só o professor (e as missões) têm tempo/rodadas livres
   if (!(SECONDS.includes(seconds) || (custom && Number.isInteger(seconds) && seconds >= 10 && seconds <= 600))) throw new Error('tempo inválido');
   if (!(ROUNDS.includes(rounds) || (custom && Number.isInteger(rounds) && rounds >= 1 && rounds <= 20))) throw new Error('rodadas inválidas');
   const names = mode === 'solo' ? [String((players && players[0]) || 'você')] : (players || []).map((n, i) => String(n || `jogador ${i + 1}`).trim().slice(0, 20) || `jogador ${i + 1}`);
   if (mode === 'dupla' && names.length !== 2) throw new Error('a dupla tem 2 jogadores');
   if (mode === 'sala' && (names.length < 2 || names.length > MAX_PLAYERS)) throw new Error('sala: de 2 a 12 participantes');
-  const eligible = lettersFor(cats); if (!eligible.length) throw new Error('sem-letra');
+  let eligible = lettersFor(cats); if (Array.isArray(only)) eligible = eligible.filter((l) => only.includes(l)); if (!eligible.length) throw new Error('sem-letra');
   const { letters, cycle } = drawLetters(rounds, used, rnd, eligible);
   return { v: 2, mode, cats: cats.slice(), seconds, rounds, players: names, letters, cycle, round: 0, totals: Array(nPlayers(mode, names)).fill(0), history: [], stage: 'play', turn: 0, cur: freshRound(cats.length, names.length), at: Date.now() };
 }
@@ -129,5 +130,18 @@ export function validMatch(g) {
     return !!g && g.v === 2 && MODES.includes(g.mode) && catsOk(g.cats) && g.letters.length === g.rounds && g.letters.every((l) => LETTERS.includes(l)) && ['play', 'review', 'done'].includes(g.stage)
       && g.cur.answers.length === g.players.length && g.cur.answers.every((r) => r.length === g.cats.length) && Number.isInteger(g.round) && g.round < g.rounds;
   } catch { return false; }
+}
+/**
+ * Resumo PURO de uma partida individual terminada (usado pelo Modo Aventura; não muda a partida).
+ * Só usa o que o jogo já calculou: `g.totals` (pontos confirmados), `history[].points` (null = pendente) e `perfect`.
+ * Pendente deixada na revisão vale 0 e NÃO é erro nem acerto: aparece só em `pendentes`.
+ */
+export function matchSummary(g) {
+  const flat = g.history.flatMap((x) => x.points[0]);
+  return {
+    pontos: g.totals[0], rodadas: g.history.length, rounds: g.rounds, cats: g.cats.slice(), seconds: g.seconds, letras: g.history.map((x) => x.letter),
+    max: g.rounds * g.cats.length * POINTS.unique, acertos: flat.filter((x) => x > 0).length, pendentes: flat.filter((x) => x === null).length,
+    perfeitas: g.history.filter((x) => x.perfect[0]).length, porRodada: g.history.map((x) => x.sums[0]),
+  };
 }
 export { keyOf };

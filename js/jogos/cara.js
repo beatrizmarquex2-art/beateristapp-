@@ -2,18 +2,20 @@
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
-import { INSTRUMENTS, BY_ID, QUESTIONS } from './cara-data.js';
+import { BY_ID, QUESTIONS } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
 
 const ID = 'cara';
 
-export function mount(host) {
+/** opts (opcional): { mission: { params: { pool, manual } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
+export function mount(host, opts) {
+  const mission = opts && opts.mission ? opts : null; const MP = mission ? (mission.mission.params || {}) : null; let reported = false;
   let gone = false;
-  const saved = getGame(ID);
-  const prefs = { manual: saved.manual === true };
+  const saved = mission ? {} : getGame(ID);
+  const prefs = { manual: mission ? MP.manual === true : saved.manual === true };
   let g = null; let picked = null; let msg = '';
-  const root = h('div', { class: 'jg jg-cara' }); host.replaceChildren(root);
-  const persist = () => setGame(ID, { ...prefs, game: g && !g.over ? g : null, best: saved.best });
+  const root = h('div', { class: `jg jg-cara${mission ? ' jg-game jg-dark' : ''}` }); host.replaceChildren(root);
+  const persist = () => mission || setGame(ID, { ...prefs, game: g && !g.over ? g : null, best: saved.best });
 
   function intro() {
     g = null; picked = null;
@@ -43,7 +45,7 @@ export function mount(host) {
     const left = K.candidates(g).length;
     root.replaceChildren(...[
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(g.asked.length))), h('div', { class: 'jg-who' }, h('b', {}, 'chutes'), h('span', { 'aria-label': `${g.lives} de 3` }, '♥'.repeat(g.lives) + '♡'.repeat(K.LIVES - g.lives))), h('div', { class: 'jg-who' }, h('b', {}, 'em jogo'), h('span', {}, String(left)))),
-      h('div', { class: 'jg-cgrid', role: 'group', 'aria-label': 'instrumentos' }, ...INSTRUMENTS.map(card)),
+      h('div', { class: 'jg-cgrid', role: 'group', 'aria-label': 'instrumentos' }, ...K.boardOf(g).map(card)),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
       g.over ? result() : picked ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar chute' }, h('b', {}, `é o ${BY_ID[picked].name}?`), h('button', { class: 'btn small primary', type: 'button', onclick: () => doGuess(picked) }, 'sim, chutar'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { picked = null; draw(); } }, 'cancelar')) : null,
       !g.over ? h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...QUESTIONS.map((q) => h('button', { type: 'button', class: 'jg-qbtn', disabled: K.alreadyAsked(g, q.id), onclick: () => ask(q.id) }, q.text))) : null,
@@ -60,15 +62,16 @@ export function mount(host) {
     if (ok) { msg = ''; sfx('win'); } else { msg = g.over ? '' : `não era o ${BY_ID[id].name}. ele sai do jogo.`; sfx(g.over ? 'lose' : 'bad'); }
     if (g.over && g.result.win && (!saved.best || g.asked.length < saved.best)) saved.best = g.asked.length;
     persist(); draw();
+    if (mission && g.over && !reported) { reported = true; mission.onResult({ win: g.result.win, questions: g.result.questions, wrong: g.result.wrong, lives: g.lives, manual: g.manual, size: K.boardOf(g).length, secret: g.secret }); }
   }
   function result() {
     const s = BY_ID[g.secret]; const r = g.result;
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, r.win ? 'acertou! 🤘' : 'acabaram os chutes'),
       h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${s.img}.webp`, alt: s.name }),
       h('p', {}, `o paul tinha escolhido: ${s.name}`), h('p', { class: 'muted' }, `${r.questions} pergunta${r.questions === 1 ? '' : 's'} · ${r.wrong} chute${r.wrong === 1 ? '' : 's'} errado${r.wrong === 1 ? '' : 's'}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      mission ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
-  intro();
+  if (mission) begin(K.newGame({ manual: prefs.manual, pool: Array.isArray(MP.pool) ? MP.pool : null })); else intro();
   return {
     inProgress: () => !!(g && !g.over && (g.asked.length || g.wrong.length)),
     restart: async () => { if (g && !g.over && (g.asked.length || g.wrong.length) && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },
