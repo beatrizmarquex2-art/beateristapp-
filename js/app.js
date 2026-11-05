@@ -35,6 +35,8 @@ import * as bateristas from './views/bateristas.js';
 import * as treinos from './views/treinos.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
+import * as violao from './views/violao.js';
+import * as xilofone from './views/xilofone.js';
 import * as anotacoes from './views/anotacoes.js';
 import * as hub from './views/hub.js';
 import * as rudimentos from './views/rudimentos.js';
@@ -296,6 +298,8 @@ function shell() {
       case 'treinos': c = treinos.mount(view, r.parts); break;
       case 'toque': c = toque.mount(view); break;
       case 'piano': c = piano.mount(view); break;
+      case 'violao': c = violao.mount(view); break;
+      case 'xilofone': c = xilofone.mount(view); break;
       case 'anotacoes': c = anotacoes.mount(view); break;
       case 'hub': c = hub.mount(view, r.parts); break;
       case 'rudimentos': c = rudimentos.mount(view); break;

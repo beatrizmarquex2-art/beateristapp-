@@ -16,6 +16,8 @@ import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
+import * as violao from './views/violao.js';
+import * as xilofone from './views/xilofone.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import * as perfil from './views/perfil.js';
@@ -27,7 +29,7 @@ import { startPaul } from './paul-talk.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'study', 'Jogos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos', dicas: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos', dicas: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -145,9 +147,11 @@ const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
-  view.append(banner('Tocar', 'bateria, pad e piano na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    card('#/toque', 'Bateria e pad', 'toque nas peças com vários dedos e grave o seu ritmo'),
-    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
+  view.append(banner('Tocar', 'bateria, piano, violão e xilofone na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    card('#/toque', 'Bateria', 'toque nas peças com vários dedos e grave um ritmo'),
+    card('#/violao', 'Violão e guitarra', 'escolha o acorde e passe o dedo nas cordas'),
+    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes'),
+    card('#/xilofone', 'Xilofone', 'barras coloridas: nenhuma nota soa errada na pentatônica')));
 }
 
 function shell(name) {
@@ -180,6 +184,8 @@ function shell(name) {
     else if (r.name === 'perfil') c = perfil.mount(view);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
+    else if (r.name === 'violao') c = violao.mount(view);
+    else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'tocar') tocarView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }

@@ -604,3 +604,48 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .al-codbox{display:grid;gap:8px;margin:4px 0}.al-pedido .al-lock-code{font-size:30px;text-align:center}.al-pedido{display:grid;gap:4px;justify-items:center;text-align:center}
 .bottom-nav .nav-item{position:relative}.bottom-nav .nav-lock{position:absolute;top:2px;right:calc(50% - 22px);font-size:11px;font-style:normal}
 .bottom-nav .nav-item.locked{opacity:.72}
+/* ===== aba Tocar: abas de instrumento, violão, xilofone, batida de fundo ===== */
+.ti-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 16px 10px; }
+.ti-tab { display: grid; place-items: center; min-height: 44px; border: 2px solid #1b1818; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; }
+.ti-tab.on { background: #1b1818; color: #fff; }
+.ti-tab:focus-visible { outline: 3px solid #b5162b; outline-offset: 2px; }
+.tk-kit { position: relative; }
+.ti-rip { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50% !important; border: 3px solid #b5162b; pointer-events: none; z-index: 6; }
+.ti-stage { position: relative; margin: 8px 16px; padding: 14px; border-radius: 6px 14px 8px 16px; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overflow: hidden; }
+.ti-stage[data-kit-theme="colagem"] { background: #ffd66b url(../assets/zine/textura-fundo-creme.webp) center/cover; background-blend-mode: multiply; box-shadow: 5px 6px 0 rgba(20, 32, 54, .35); }
+.ti-stage[data-kit-theme="vinil"] { background: #1c1a22 url(../assets/zine/textura-fundo-tinta.webp) center/cover; background-blend-mode: screen; box-shadow: 5px 6px 0 rgba(0, 0, 0, .35); }
+.ti-stage[data-kit-theme="poster"] { background: #14284b radial-gradient(rgba(255, 209, 102, .26) 1.6px, transparent 1.8px) 0 0/14px 14px; box-shadow: 5px 6px 0 rgba(0, 0, 0, .35); }
+.ti-panel, .ti-backing { display: grid; gap: 10px; }
+.ti-paul { height: 84px; width: auto; margin-left: auto; pointer-events: none; }
+.ti-styles { display: flex; flex-wrap: wrap; gap: 8px; }
+.ti-go[aria-pressed="true"] { background: #1b1818; color: #fff; }
+.ti-hint { margin: 0; font-size: 13px; }
+
+/* violão */
+.ti-chords { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.ti-chord { min-height: 54px; border: 3px solid #1b1818; background: #fffdf7; color: #1b1818; font: 400 25px Anton, Impact, sans-serif; letter-spacing: .03em; box-shadow: 3px 3px 0 rgba(0, 0, 0, .35); cursor: pointer; touch-action: manipulation; }
+.ti-chord[aria-pressed="true"] { background: #b5162b; color: #fff; transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0, 0, 0, .35); }
+.ti-neck { position: relative; display: grid; grid-template-columns: 44px 1fr; border: 3px solid #1b1818; border-radius: 6px; overflow: hidden; background: #521622; box-shadow: 3px 3px 0 rgba(0, 0, 0, .35); }
+.ti-neck::before { content: ""; position: absolute; inset: 0 0 0 44px; background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 3px), rgba(245, 234, 210, .3) calc(25% - 3px) 25%); pointer-events: none; }
+.ti-gnotes { display: grid; background: #1b1818; border-right: 3px solid #1b1818; }
+.ti-gnote { display: grid; place-items: center; height: 46px; font: 700 12px var(--body); color: #f5ead2; }
+.ti-gstr { display: grid; touch-action: none; cursor: pointer; }
+.ti-str { position: relative; height: 46px; display: grid; align-items: center; pointer-events: none; }
+.ti-str i { display: block; width: 100%; height: var(--w); background: linear-gradient(#fffdf7, #b9b2a2); box-shadow: 0 2px 3px rgba(0, 0, 0, .55); }
+.ti-str.wound i { background: repeating-linear-gradient(90deg, #efe6d2 0 3px, #9d927c 3px 6px); }
+.ti-str.off i { opacity: .28; }
+
+/* xilofone */
+.ti-xy { display: flex; align-items: center; gap: 5px; height: clamp(250px, 46vh, 400px); }
+.ti-bar { flex: 1 1 0; min-width: 0; border: 3px solid #1b1818; border-radius: 10px; background: var(--bc); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 9px 0; font: 700 clamp(9px, 2.6vw, 13px) var(--body); box-shadow: 3px 4px 0 rgba(0, 0, 0, .4), inset 0 3px 0 rgba(255, 255, 255, .3); cursor: pointer; touch-action: none; will-change: transform; }
+.ti-bar.light { color: #1b1818; }
+.ti-bar::before, .ti-bar::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: rgba(0, 0, 0, .4); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4); }
+.ti-bar span { pointer-events: none; text-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+.ti-bar.light span { text-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .ti-rip { display: none; } }
+.ti-staff { margin: 0; background: #fffdf8; color: #1b1818; border: 1px solid var(--line); padding: 4px; }
+.ti-staff svg { width: 100%; height: auto; display: block; }
+.ti-lab { margin: 0; font: 700 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ti-names { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font: 700 14px var(--body); }
+.ti-names li { display: flex; align-items: center; gap: 6px; }
+.ti-names i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #1b1818; }
