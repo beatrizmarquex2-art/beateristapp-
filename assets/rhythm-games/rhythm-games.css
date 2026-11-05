@@ -260,3 +260,6 @@ html.lite .rz-jogar{animation:none}
 .rz-tier .rz-pbar{width:78%;margin-top:2px}
 .rz-song .rz-pbar{grid-column:2/4;margin-top:6px}
 .rz-song.played{box-shadow:inset 4px 0 0 #3fae5a}
+/* JOGAR sempre à vista: fica colado em cima da barra de baixo enquanto a pessoa mexe nas opções */
+.rz-jogar{position:sticky;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:6}
+html.kb-open .rz-jogar{bottom:8px}

@@ -36,7 +36,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - `js/aluno.js`: entrada (nome + origem), abas Ritmo / Beat Lab / Tocar / Jogos / Ranking, rodapé com redes e parceiros.
 - `js/paul-talk.js`: clique no Paul faz barulhinho; nuvens de pensamento (frases e links, incluindo o link do Google).
 - `assets/rhythm-games/rhythm-games.js` + `js/views/jogos-ritmo.js`: jogos de ritmo (um jogo unificado Ritmo/Melodia com 3-5 teclas, Piano Tiles, Setinhas, Figuras). Na área dos alunos entram as músicas prontas (`builtin: true`); no app da Bea, só os MIDIs importados.
-- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [antes última nota], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
+- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [reformulado em nov/2026, ver seção abaixo], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
 - `js/kids/*` + `js/views/kids.js`: jogos de perguntas (fases por estrelas). Na área dos alunos o nome visível é "Jogos"; os endereços internos continuam `#/kids`.
 - `js/views/ata.js` (ata de reunião em PDF), `js/views/kids-relatorio.js` (relatório editável), `js/mic-access.js` (microfone único), `js/ranking.js`.
 - `css/lote3.css`: estilos dos lotes recentes (entrada do aluno, Paul, iPad).
@@ -66,6 +66,18 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Paul sem animação própria; animar só os elementos em volta.
 - Pendente (antigo): jogos novos da outra sessão ligarem na aba Jogos dos alunos. Os 7 Pauls cortados já foram removidos (se vierem imagens novas inteiras, voltam).
 
+## Uno Musical reformulado (nov/2026)
+- Arquivos: `js/jogos/cartas.js` (tela, animações), `cartas-logic.js` (regras puras), `cartas-simbolos.js` (10 figuras + ícones das especiais em SVG), `cartas-sfx.js` (sons), bloco `cx-` no fim de `css/jogos.css`.
+- Baralho de 112 cartas: 4 cores (vermelho, amarelo, azul, verde) × (10 figuras × 2 + pular/inverter/+2 × 2) + 4 curingas + 4 curingas +4. As figuras são só **categorias** (cor ou figura): semínima, colcheia, semicolcheia, fusa, as 4 pausas, acento (>), nota fantasma.
+- 2 a 4 jogadores com sentido de jogo (inverter com 2 vale como pular). Contra o computador: 1 a 3 adversários (paul, lia, teo). Modos: contra o computador, dois no aparelho, 2 celulares (código, mesmas salas de antes; o estado agora é `v: 2`, partidas salvas do formato antigo são descartadas).
+- Regras decididas: +4 só sem a cor da mesa na mão; botão UNO (contra o computador esquecer custa 2 cartas; nos outros modos o botão não tem penalidade); compra só se não tiver carta que sirva; não empilha +2.
+- Sons: só ruído filtrado (papel, estalo, baralho, "uóip", UNO, vitória), **nenhuma nota**. Botão de som próprio na mesa (junto do botão global da moldura). `S.stopAll()` ao sair.
+- Ajuda de nomes: segurar a carta (ou mouse parado) mostra o nome sem jogar; botão "?" mostra o nome da carta da mesa.
+- Animações só com transform/opacity (WAAPI com `translate/scale/rotate`); travadas durante a animação (`busy`) pra não duplicar jogada. Respeita "reduzir movimento".
+- Testes: `node --test tests/cartas-logic.test.mjs`, e2e `tests/e2e/cartas.mjs` (partida completa, UNO, +2, +4, jogada inválida), `cartas-aparelhos.mjs` (iPhone/iPad/Android emulados), `salas.mjs`, `jogos-som.mjs`.
+- Limite conhecido: sem Safari/iPhone de verdade aqui; conferir som (botão de silencioso) e toque no aparelho. Em celular deitado pequeno a mesa passa um pouco da altura da tela.
+- Publicado: `main` (app da Bea) e área dos alunos (Netlify `beaterista-alunos`, https://jogos.beaterista.com.br) em nov/2026, cache v242.
+
 ## Jogos em 2 celulares (nov/2026)
 - Uno Musical, jogo da velha e stop têm modo **2 celulares (código)**: `js/jogos/online.js` + `supabase/006_salas.sql` (tabela `salas`, funções `sala_criar/entrar/ler/enviar`, sondagem a cada 1,2 s). **O SQL precisa estar aplicado no Supabase** (colar no SQL Editor se a aprovação do chat expirar). Teste: `tests/e2e/salas.mjs` (Supabase simulado).
 - Dominó removido. Bingo só linha/coluna/cheia. Memória: 1 ou 2 jogadores, "acerta joga de novo" sim/não.
@@ -79,12 +91,29 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 
 - Ritmo, mais: pausa → **Continuar** conta 4 tempos no bpm da música (notas paradas na tela) e volta de onde parou; música tocada ganha **barrinha verde** (melhor precisão) nos cartões e na lista; **fade out** nos últimos ~2 s; **modo especial**: de vez em quando cai uma nota-estrela (≥12 s entre elas, `rzStars`), acertou = pontos ×2 por 3 compassos, moldura dourada pulsando no tempo + faíscas (`rzSpecialFx`). Teste: `tests/e2e/ritmo-especial.mjs`.
 
+- Teste em aparelhos: `tests/e2e/aparelhos.mjs` (iPhone 13/SE, iPad, iPad Pro, Galaxy S9+/S8/Tab S4, Pixel 5; emulação do Chromium, não são aparelhos de verdade). O botão JOGAR do ritmo fica colado acima da barra de baixo (sticky).
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
 - Modos: individual, dupla (turnos), sala de aula (2 a 12, tempo/rodadas livres), 2 celulares (turnos; ver salas). **Não existe** partida simultânea online, cronômetro sincronizado, painel do professor remoto nem reconexão: precisam de hora do servidor e escrita por jogador (hoje a sala guarda o estado inteiro).
 - Pendente = amarelo pedido, mas na área dos alunos o papel já é amarelo, então o pendente usa âmbar queimado com listras. A decisão antiga "sem amarelo" continua valendo pro resto.
 - Testes: `node --test tests/*.test.mjs`, e2e `tests/e2e/stop.mjs` e `salas.mjs`.
+
+## Mapas e Modo Aventura (nov/2026)
+**Mapa "Turnê do Vinil"** (vinil + pixel art fofo): discos numerados num caminho luminoso, regiões com cenário, Paul de adesivo ao lado da fase atual, estrelas/cadeados/partículas, sons curtos (botão 🔊 próprio, vale também o mudo geral), `prefers-reduced-motion` respeitado. Abre já na fase atual e, ao voltar de uma fase, centraliza a que foi aberta por último.
+- Componente: `js/kids/mapa.js` (`mountProgressionMap`; recebe fases, progresso por funções, tema, `onOpen`), `mapa-logic.js` (puro: estados, regiões, posições), `mapa-art.js` (sprites pixel em SVG), `mapa-sfx.js` (sons, sem notas aleatórias), `css/mapa.css` (cores no topo). Kids com fases (Pauta, Figuras, Eco, 0 a 10) usam o mapa direto em `levelsScreen` (`js/views/kids.js`); progresso é o de sempre (`setting-kids2`, id `jogo:fase`).
+- **Cores**: o mapa usa rosa e amarelo (pedido da Bea para o mapa). A regra "sem rosa e sem amarelo" continua valendo para o resto do app.
+- **Paul no mapa**: só os arquivos oficiais, num adesivo creme (o desenho tem fundo branco e some em fundo escuro).
+
+**Modo Aventura** (9 jogos, cada um com mapa próprio, missões, estrelas e medalhas; o **Modo Livre** continua igual). Rotas: `#/jogos/<jogo>` escolhe o modo; `/livre` = como sempre; `/aventura` = mapa; `/aventura/<n>` = missão. Kids: `#/kids/memoria` e `#/kids/ritmo` (Monte seu ritmo) idem; ritmo: `#/ritmo/aventura` (botão "Modo Aventura" na tela de ritmo).
+- Motor: `js/campanha/` — `engine.js` (puro: spec, `applyResult`, desbloqueio = ≥1★ na missão anterior, medalhas gerais), `store.js` (`setting-aventura`, por jogador e por jogo; jogador = perfil ativo dos jogos, senão "local"), `run.js` (escolha de modo, mapa, briefing, partida, resultado), `themes.js` (um cenário por jogo), `registry.js` (carrega cada jogo sob demanda; se faltar módulo, abre o livre), `pontuacao.js` (textos "como pontuar": estrela/XP/figurinha), `css/aventura.css`.
+- Cada jogo: `js/campanha/jogos/<id>.js` com `spec` (missões com `id` ESTÁVEL, `goal`, `stars`, `params`, `evaluate(result)` puro) e `mount(body, opts)`. O módulo do jogo aceita `opts.mission` (monta pelos params, não lê/grava o livre, chama `onResult` UMA vez no fim real). Concluir exige resultado real; abrir/iniciar nunca conclui.
+- Missões e cenários: **Uno** `cartas` (cidade arcade de cartas), **Bingo** `bingo` (salão retrô, 10 missões, cartela e sorteio por semente), **STOP** `stop` (biblioteca musical, 11, metas de pontos; pendente não conta), **Velha** `velha` (arena de duelos, 10; o Paul estratégico não perde, então pedem "não perder"), **Quebra-cabeça** `quebra` (galeria de arte, 11; só existe 1 imagem, `palco`), **Cara a Cara** `cara` (cidade dos personagens, 10; guitarra e baixo têm respostas iguais), **Memória** `memoria` (museu dos instrumentos, 11), **Monte seu ritmo** `monte` (fábrica de ritmos, 11, validação por estrutura rítmica), **No Ritmo** `noritmo` (estúdio e palco, 11, nenhuma música bloqueada, XP normal; MIDI importado não entra).
+- **Pontuação, de forma simples**: estrelas e figurinha só nas fases do Kids (60/80/100% = 1/2/3★; cada ★ nova = 1 figurinha). XP só no ritmo (4 a 20 por música, dobro com 2 min). **Aventura não dá figurinha** (decisão da Bea pendente). O Livre só guarda recorde/placar (exceto ritmo).
+- Texto/leitura: cada tela de aventura é checada por `tests/e2e/aventura-leitura.mjs` (sem texto sobreposto ou cortado em 390 e 320 px). Contraste foi conferido só olhando os prints.
+- Testes: `node --test tests/*.test.mjs`; e2e por jogo `tests/e2e/aventura-<jogo>.mjs`, `mapa.mjs` (mapa do Kids). Cuidado: testes que abriam `#/jogos/<jogo>` agora precisam de `/livre`.
+- Ao criar um jogo novo com aventura: criar `js/campanha/jogos/<id>.js`, registrar em `registry.js`, tema em `themes.js`, texto em `pontuacao.js`, listar no `sw.js` e subir o `VERSION`.
 
 ## Pendências (a Bea leva pra o chat novo)
 1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Músicas MIDI". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
@@ -95,3 +124,13 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 6. **Estudos**: conferir no celular o sorteio de tema e as barras de progresso (não deu pra testar sem a biblioteca). Layout do Estudos no iPhone SE (320px) tem 3 elementos vazando (já existia antes).
 7. **Sem internet**: não consegui testar o modo offline no computador; ela confere no celular (avião).
 8. Telas da Bea que usam paletas próprias (Bateria de Toque, Groovebox, Piano) ficaram como estavam.
+
+## Toca Aqui e Figuras rítmicas (sessão de ritmo)
+- **Toca Aqui** (`js/jogos/toca.js`, aba Jogos): "normal (figuras)" = leitura na pauta (`leitura()` em `js/views/treinos.js`, também na aba Partitura em `#/partitura/leitura`); "com imagens" = palavrinhas (`js/kids/ritmo.js`). Leitura tem modo **caminho** (6 exercícios fixos em `PATH` de `js/reading.js`, abre o próximo com 70%) e **livre** (aleatório), tocar na tela ou no **microfone** (eco rítmico entrou aqui), "tocar direto" / "ouvir e depois tocar", precisão no fim. 1 compasso sempre.
+- **Figuras rítmicas** (`#/kids/figuras`): **aulinha do Paul** em `#/kids/figuras/aula` (`js/kids/aula-figuras.js`: pulso, escadinha das 7 figuras, montar o desenho, pausas, tercina e sextina) + jogos com fases (inclui **variações da semicolcheia** em 1 tempo: 9 combinações em `VARIACOES` de `figs.js`, ver o desenho ou ouvir): quanto vale, qual vale mais, nome, desenho, montar o desenho, pausas, tercina/sextina. Dados em `js/kids/figs.js` (semibreve a semifusa), perguntas em `js/kids/quiz.js` (`figureQ`), desenhos em `js/kids/art.js`. Testes em `tests/figuras.test.mjs`.
+- **Velha**: 68 perguntas aprovadas em `js/jogos/velha-data.js` (3 níveis), 17 fotos de artistas em `assets/jogos/artistas/` (aparecem só depois da resposta).
+- **Deploy dos alunos pendente**: a Bea pediu pra juntar tudo numa atualização maior e gastar menos deploy do Netlify. O site dos alunos está no cache v236; o app da Bea (GitHub Pages) já está atualizado.
+- **Toque as figuras** (`js/kids/toque.js`, `#/kids/toque`): jogo com fases em que o app mostra a partitura (semínima, colcheias, semicolcheias, pausas e variações; `toquePattern` em `groove.js`) e a Bea/aluno lê e toca na **tela ou no microfone**, com BPM ajustável, "ouvir antes" e média de ms no fim.
+- **Modos do Toca Aqui (normal)**: iniciante (8 exercícios), intermediário (6) e avançado (6) em `TIERS`/`PATH` de `js/reading.js`; cada exercício abre com 70% no anterior (o intermediário só abre depois de terminar o iniciante, de propósito: as crianças ficam mais na primeira parte). No modo livre dá pra escolher o nível direto. O jogo `Toque as figuras` das fases mostra o mesmo rótulo (fases 0–3 iniciante, 4–7 intermediário, 8–10 avançado).
+- **Sem mapa ainda** (vieram da main depois do mapa): **Toque as figuras** (`#/kids/toque`, tem fases) e **Toca Aqui** (modos iniciante/intermediário/avançado com trava sequencial). Podem ganhar o mesmo mapa se a Bea quiser.
+- **Aventura**: decidir se cada ★ nova dá figurinha; mais imagens pro Quebra-cabeça abrem variedade nas missões (`img` nos `params`); testar em iPhone/Android de verdade (só testado no Chromium emulado).
