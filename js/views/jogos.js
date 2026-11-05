@@ -34,7 +34,7 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
   ['ritmo e bateria', [
-    link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
+    link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
     link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
   ]],

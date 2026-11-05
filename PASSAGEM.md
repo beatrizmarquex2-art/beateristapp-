@@ -259,3 +259,11 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - **Tocar com 4 instrumentos** (branch `prototipo-tocar-instrumentos`, agora no main): bateria, violão/guitarra, piano e xilofone, com batida de fundo.
 - **Figuras rítmicas** saiu da lista de jogos e virou a 3ª opção do **Toca Aqui** (`js/jogos/toca.js`, abre `#/kids/figuras` e a aulinha). 
 - **Perfil**: código de acesso do aluno embaixo da foto (pra decorar) e botão × pra excluir cada cartinha da coleção (+ "excluir todas"; com código, "ver no álbum" leva à aba Minhas).
+
+## Sessão nov/2026 (velha, Beat Hero, códigos, perfil) — deploy dos alunos v278
+- **Velha**: troca de lugar (1 vez por jogador por rodada, `moveMark`/`canMove` em `velha-logic.js`) e instruções grandes na entrada.
+- **Beat Hero**: "Jogos de ritmo" virou "Beat Hero" nos textos. Na aventura (`campanha/jogos/noritmo.js`) cada missão pergunta ritmo (bateria) ou melodia (piano); `p.game` muda na escolha e volta ao sair.
+- **Cara a cara**: 5 perguntas na tela (as que mais dividem) + "mais perguntas"; o banco inteiro continua. Lista em `perguntas-cara-a-cara.txt`.
+- **Códigos**: "trocar nome" no app do aluno tira o código do aparelho; importar "nome ; código" com nome diferente do cadastrado gera código novo (o antigo fica ativo, desativar à mão).
+- **Perfil**: foto, ajuste e "minha coleção" são por nome (`js/figurinhas/dono.js`); modelos do criador sem selo COMUM/RARA em `assets/figurinhas/modelos2/limpo/` (só o criador usa, flag `semSelo`).
+- Deploy dos alunos: `scripts/build-aluno.sh` + `deploy-site` do Netlify (siteId `ccdb0392-...`) rodando o `npx @netlify/mcp` na pasta de saída.

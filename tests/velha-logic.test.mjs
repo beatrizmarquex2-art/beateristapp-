@@ -80,3 +80,16 @@ test('rodadas alternam quem começa; placar acumula', () => {
   let g = V.newMatch(); assert.equal(g.starter, 0); g = V.nextRound(g); assert.equal(g.starter, 1); assert.equal(g.turn, 1); g = V.nextRound(g); assert.equal(g.starter, 0); assert.equal(g.round, 3);
 });
 test('validMatch recusa lixo', () => { assert.ok(V.validMatch(V.newMatch())); for (const b of [null, {}, { ...V.newMatch(), board: [1] }, { ...V.newMatch(), mode: 'x' }]) assert.ok(!V.validMatch(b)); });
+
+
+test('troca de lugar: 1 vez por jogador em cada rodada', () => {
+  let g = V.newMatch({ variant: 'classico' });
+  g = V.applyMark(g, 0); g = V.applyMark(g, 4);
+  assert.ok(V.canMove(g));
+  g = V.moveMark(g, 0, 8); // jogador 0 muda a marca da casa 0 para a 8
+  assert.equal(g.board[0], null); assert.equal(g.board[8], 0); assert.equal(g.turn, 1); assert.equal(g.moved[0], true);
+  g = V.applyMark(g, 1); // jogador 1 joga normal
+  assert.equal(V.canMove(g), false); // jogador 0 já usou
+  assert.throws(() => V.moveMark(g, 8, 2));
+  assert.deepEqual(V.nextRound(g).moved, [false, false]);
+});

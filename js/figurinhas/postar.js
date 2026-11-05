@@ -5,6 +5,7 @@
 // Quatro modelos de post: colagem (a de sempre, muda de cor pela raridade), palco (neon), retrô (anos 70) e limpo.
 // A frase do título vem de e.tituloPost (padrão 'NOVA FIGURINHA!').
 // A figurinha também pode ser feita pelo aluno: { modelo2, artista_banda: nome, fotoImg, ajuste: {zoom, ox, oy} } (aba Perfil).
+import { selosTeamCanvas } from './selo-team.js';
 import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
@@ -35,7 +36,7 @@ function blurDraw(ctx, im, x, y, w, h) {
 export async function cartaCanvas(e, { escala = 3, codigo = false } = {}) {
   if (e.cartaPronta) { const c = canvas(Math.round(W2 * escala), Math.round(H2 * escala)), g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(e.cartaPronta, 0, 0, c.width, c.height); return c; } // cartinha já guardada na coleção
   await Promise.all(FONTS.map((f) => document.fonts.load(f)));
-  const m = MODELOS2[e.modelo2], [tpl, foto] = await Promise.all([img(`assets/figurinhas/modelos2/${e.modelo2}.webp`), e.fotoImg ? Promise.resolve(e.fotoImg) : img(e.foto)]);
+  const m = MODELOS2[e.modelo2], [tpl, foto] = await Promise.all([img(`assets/figurinhas/modelos2/${e.semSelo ? 'limpo/' : ''}${e.modelo2}.webp`), e.fotoImg ? Promise.resolve(e.fotoImg) : img(e.foto)]);
   const pw = foto.naturalWidth || foto.width, ph = foto.naturalHeight || foto.height;
   const c = canvas(Math.round(W2 * escala), Math.round(H2 * escala)), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(tpl, 0, 0, c.width, c.height);
@@ -55,6 +56,7 @@ export async function cartaCanvas(e, { escala = 3, codigo = false } = {}) {
   ctx.font = `${fit.size}px 'Anton', Impact, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = r.escuro ? '#17130f' : '#f1e3c6';
   fit.lines.forEach((l, i) => ctx.fillText(l, 0, (i - (fit.lines.length - 1) / 2) * lh + fit.size * 0.36));
   ctx.restore();
+  if (e.semSelo) { ctx.save(); ctx.scale(escala, escala); selosTeamCanvas(ctx, e.modelo2); ctx.restore(); } // BEATERISTA TEAM no lugar de comum/rara/exclusiva
   if (codigo && e.codigo) {
     const t = `${e.codigo}${e.secao === 'Beatlemania' ? ' · BEATLEMANIA' : ''}`; ctx.save(); ctx.scale(escala, escala); ctx.font = "800 9.5px 'Hanken Grotesk', sans-serif";
     const w = ctx.measureText(t).width + 14; ctx.fillStyle = 'rgba(0,0,0,.62)'; rr(ctx, 9, 8, w, 17, 8.5); ctx.fill(); ctx.fillStyle = '#f6ecd5'; ctx.fillText(t, 16, 20); ctx.restore();

@@ -162,7 +162,7 @@ test('medalhas de sequência são calculadas do progresso real', () => {
 
 test('Modo Livre: funções puras existentes continuam iguais', () => {
   const g = V.newMatch({ mode: 'facil', variant: 'desafio', level: 'infantil' });
-  assert.deepEqual(Object.keys(g).sort(), ['asked', 'board', 'draws', 'errors', 'held', 'last', 'level', 'mode', 'nextOffer', 'offer', 'over', 'pending', 'result', 'round', 'scores', 'starter', 'turn', 'v', 'variant']);
+  assert.deepEqual(Object.keys(g).sort(), ['asked', 'board', 'draws', 'errors', 'held', 'last', 'level', 'mode', 'moved', 'nextOffer', 'offer', 'over', 'pending', 'result', 'round', 'scores', 'starter', 'turn', 'v', 'variant']);
   assert.ok(V.validMatch(g)); assert.equal(V.isPaulTurn({ ...g, turn: 1 }), true); assert.equal(V.isPaulTurn({ ...g, mode: 'local', turn: 1 }), false);
   assert.equal(V.easyMove(empty(), () => 0), 0); assert.equal(V.bestMove([0, null, null, null, 1, null, null, null, 0], 1, () => 0) != null, true);
   assert.equal(V.ERROR_OFFER, 12); assert.deepEqual(V.poolFor('infantil').map((q) => q.level), Array(7).fill('infantil'));
