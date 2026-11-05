@@ -24,9 +24,23 @@ test('restaurar junta e nunca tira', () => {
   assert.equal(m.lv['figuras:0'].s, 3); assert.equal(m.lv['figuras:0'].n, 3);
   assert.equal(m.ritmoStars, 7); assert.equal(m.ritmoPaid, 1);
 });
-import { normCode, resumo } from '../js/kids/savegame-logic.js';
+import { normCode, resumo, figSnap, mergeFig } from '../js/kids/savegame-logic.js';
 test('código BEA-0000 aceita jeitos diferentes de digitar', () => {
   assert.equal(normCode('BEA-0042'), 'BEA-0042'); assert.equal(normCode(' bea 42x '), ''); assert.equal(normCode('bea 0042'), 'BEA-0042');
   assert.equal(normCode('0042'), 'BEA-0042'); assert.equal(normCode('123'), ''); assert.equal(normCode('12345'), '');
 });
 test('resumo pra confirmar', () => assert.deepEqual(resumo({ n: 'Ana', a: ['x', 'y'], l: { f: [3, 1, 1], g: [2, 1, 1] } }), { nome: 'Ana', figurinhas: 2, estrelas: 5 }));
+
+test('álbum de 125: salva e junta sem perder nada', () => {
+  const a = { pasted: { F001: true }, inv: { F002: 1 }, granted: ['welcome:1', 'daily:1'], opened: { 'welcome:1': ['F001'] } };
+  const snap = figSnap(a);
+  assert.deepEqual(snap, { p: ['F001'], i: { F002: 1 }, g: ['welcome:1', 'daily:1'], o: ['welcome:1'] });
+  const novo = { pasted: { F009: true }, inv: { F002: 3 }, granted: ['daily:2'], opened: {} };
+  const m = mergeFig(novo, snap);
+  assert.deepEqual(Object.keys(m.pasted).sort(), ['F001', 'F009']);
+  assert.equal(m.inv.F002, 3);
+  assert.deepEqual(new Set(m.granted), new Set(['daily:2', 'welcome:1', 'daily:1']));
+  assert.ok(m.opened['welcome:1'] && !m.opened['daily:2']); // pacote já aberto no outro celular não é entregue de novo
+  assert.equal(mergeFig(novo, null), novo);
+});
+test('resumo conta as coladas do álbum de 125', () => assert.equal(resumo({ n: 'Ana', a: [], l: {}, f: { p: ['F1', 'F2', 'F3'] } }).figurinhas, 3));

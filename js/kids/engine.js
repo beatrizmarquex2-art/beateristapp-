@@ -102,7 +102,7 @@ export function runLevel(game, ctx) {
 export async function showResult({ game, ctx, bot, stage, spec, right, total, stars, misses, mode = '', restarts = 0, pct: pctIn, note = '' }) {
   const { level, profile } = ctx; const pct = pctIn != null ? pctIn : pctOf(right, total);
   const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
-  const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
+  const won = await Album.grantPacks(profile.id, gain); // pacotes de figurinhas (1 por estrela nova)
   const next$ = level < 10 && stars >= 1;
   bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? FB.line('great') : stars >= 1 ? FB.line('win') : FB.line('lose'));
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));
@@ -110,7 +110,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
   const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
   stage.replaceChildren(h('div', { class: 'kx-result' },
     h('h2', {}, stars >= 1 ? 'Fase concluída!' : 'Quase lá!'), pctEl, h('p', { class: 'muted' }, note || `${right} de ${total} certas${restarts ? ` · recomeçou ${restarts}×` : ''}`), starsEl,
-    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+    won ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won === 1 ? 'pacote novo de figurinhas!' : `${won} pacotes novos de figurinhas!`}`), h('a', { class: 'kd-btn', href: '#/figurinhas/Pacotes' }, 'abrir agora')) : null,
     missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.slice(0, 4).map((t) => h('li', {}, t)))) : null,
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,

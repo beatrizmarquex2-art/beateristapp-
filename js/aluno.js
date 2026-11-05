@@ -12,6 +12,7 @@ import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
 import * as dicionario from './views/dicionario.js';
+import * as figurinhas from './views/figurinhas.js';
 import * as dicasLista from './views/dicas-lista.js';
 import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
@@ -25,7 +26,7 @@ const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 // quem não tem código liberado vê só Jogos, Tocar e Ranking; com código liberado entra também o Beat Lab
 const navItems = () => [['#/jogos', 'gamepad', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', figurinhas: 'ranking' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -102,7 +103,8 @@ function rankingView(view) {
   };
   view.append(banner('Ranking', 'os melhores da escola'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      h('a', { class: 'card pad al-card', href: '#/kids' }, h('h2', { class: 'tag' }, '⭐ meu álbum e minhas estrelas'), h('p', { class: 'muted' }, 'fases, figurinhas e o código BEA pra guardar tudo')),
+      h('a', { class: 'card pad al-card', href: '#/figurinhas' }, h('h2', { class: 'tag' }, '⭐ meu álbum de figurinhas'), h('p', { class: 'muted' }, 'pacotes, 125 figurinhas pra colar e o código BEA pra guardar tudo')),
+      h('a', { class: 'card pad al-card', href: '#/kids' }, h('h2', { class: 'tag' }, 'minhas fases e estrelas'), h('p', { class: 'muted' }, 'cada estrela nova ganha um pacote de figurinhas')),
       box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
       box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
       socialRow(),
@@ -162,6 +164,7 @@ function shell(name) {
     else if (r.name === 'tocar') tocarView(view);
     else if (r.name === 'estudos') c = r.parts[0] === 'dicas' ? dicasLista.mount(view) : estudosView(view);
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
+    else if (r.name === 'figurinhas') c = figurinhas.mount(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;

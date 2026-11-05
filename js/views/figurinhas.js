@@ -5,6 +5,8 @@ import { banner, sheet, toast } from '../ui.js';
 import * as store from '../store.js';
 import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
+import * as P from '../kids/progress.js';
+import { saveSheet } from '../kids/save-ui.js';
 
 const ID = 'figurinhas-album';
 const TABS = [...L.COLECOES, 'Pacotes'];
@@ -44,7 +46,8 @@ export function mount(host, parts = []) {
     }));
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
-      tabs, tab === 'Pacotes' ? packsView() : collectionView());
+      tabs, tab === 'Pacotes' ? packsView() : collectionView(),
+      document.documentElement.classList.contains('aluno-on') && P.active() ? h('button', { type: 'button', class: 'btn wide', onclick: () => saveSheet(P.active(), () => draw()) }, '💾 guardar meu álbum com o código BEA') : null);
     if (!io) return;
   }
 

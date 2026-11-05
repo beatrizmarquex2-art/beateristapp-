@@ -9,9 +9,20 @@ const hash = (s) => { let x = 2166136261; for (let i = 0; i < s.length; i++) { x
 async function pipe(u8, T) { const s = new Blob([u8]).stream().pipeThrough(new T('deflate-raw')); return new Uint8Array(await new Response(s).arrayBuffer()); }
 
 /** Só o que importa guardar: nome, figurinhas, estrelas por fase e contadores do ritmo. */
-export function snapshot(name, prog) {
+export function snapshot(name, prog, fig = null) {
   const lv = {}; for (const [k, x] of Object.entries(prog.lv || {})) lv[k] = [x.s || 0, x.p || 0, x.n || 0];
-  return { n: String(name || '').slice(0, 24), a: (prog.album || []).filter((id) => byId[id]), l: lv, r: [prog.ritmoStars || 0, prog.ritmoPaid || 0] };
+  return { n: String(name || '').slice(0, 24), a: (prog.album || []).filter((id) => byId[id]), l: lv, r: [prog.ritmoStars || 0, prog.ritmoPaid || 0], ...(fig ? { f: figSnap(fig) } : {}) };
+}
+/** Álbum de 125: só o que precisa pra recuperar (coladas, repetidas na mão, pacotes entregues e abertos). */
+export const figSnap = (st) => ({ p: Object.keys(st.pasted || {}), i: { ...(st.inv || {}) }, g: [...(st.granted || [])], o: Object.keys(st.opened || {}) });
+/** Junta o save do álbum de 125 no estado atual, sem tirar nada. */
+export function mergeFig(st, f) {
+  if (!f) return st;
+  const pasted = { ...(st.pasted || {}) }; for (const c of f.p || []) pasted[c] = true;
+  const inv = { ...(st.inv || {}) }; for (const [c, n] of Object.entries(f.i || {})) inv[c] = Math.max(inv[c] || 0, n | 0);
+  const granted = [...new Set([...(st.granted || []), ...(f.g || [])])];
+  const opened = { ...(st.opened || {}) }; for (const id of f.o || []) if (!opened[id]) opened[id] = true;
+  return { ...st, pasted, inv, granted, opened };
 }
 /** Junta o save no progresso atual sem perder nada. Devolve só os pedaços que mudam. */
 export function mergeSnap(prog, snap) {
@@ -44,4 +55,4 @@ export function normCode(v) {
   return d.length === 4 ? `BEA-${d}` : '';
 }
 /** Resumo pra confirmar "é esse álbum?" */
-export const resumo = (snap) => ({ nome: snap.n || 'sem nome', figurinhas: (snap.a || []).length, estrelas: Object.values(snap.l || {}).reduce((t, x) => t + (x[0] || 0), 0) });
+export const resumo = (snap) => ({ nome: snap.n || 'sem nome', figurinhas: snap.f ? (snap.f.p || []).length : (snap.a || []).length, estrelas: Object.values(snap.l || {}).reduce((t, x) => t + (x[0] || 0), 0) });

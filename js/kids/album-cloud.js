@@ -2,7 +2,9 @@
 // Sem login. O código fica no progresso da criança (campo "codigo"); depois de criado, salva sozinho (junta, nunca apaga).
 import { CONFIG } from '../config.js';
 import * as P from './progress.js';
-import { snapshot, mergeSnap } from './savegame-logic.js';
+import * as store from '../store.js';
+import { snapshot, mergeSnap, mergeFig } from './savegame-logic.js';
+import * as FR from '../figurinhas/rewards.js';
 
 const head = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
 async function rpc(fn, body) {
@@ -11,7 +13,7 @@ async function rpc(fn, body) {
   return r.json();
 }
 export const codeOf = (pid) => P.progOf(pid).codigo || '';
-const snapOf = (me, nome) => snapshot(nome || P.progOf(me.id).nomeAlbum || me.name, P.progOf(me.id));
+const snapOf = (me, nome) => snapshot(nome || P.progOf(me.id).nomeAlbum || me.name, P.progOf(me.id), FR.stateOf());
 
 /** Cria o código (ou salva de novo se já tem). Devolve o código. Lança erro sem internet / sem a tabela. */
 export async function create(me, nome) {
@@ -24,7 +26,11 @@ export async function create(me, nome) {
 /** Lê o álbum de um código (sem mudar nada). null = código não existe. */
 export async function peek(code) { const d = await rpc('album_ler', { p_code: code }); return d && typeof d === 'object' ? d : null; }
 /** Traz o álbum do código pra esse jogador (junta com o que já tem) e passa a usar esse código. */
-export async function adopt(me, code, snap) { await P.patch(me.id, { ...mergeSnap(P.progOf(me.id), snap), codigo: code }); return create(me); }
+export async function adopt(me, code, snap) {
+  await P.patch(me.id, { ...mergeSnap(P.progOf(me.id), snap), codigo: code });
+  if (snap.f) await store.upsert('figurinhas', FR.ID, mergeFig(FR.stateOf(), snap.f));
+  return create(me);
+}
 
 /** Salva sozinho uns segundos depois de ganhar figurinha/estrela (só se a criança já tem código). Falha em silêncio. */
 const timers = new Map();

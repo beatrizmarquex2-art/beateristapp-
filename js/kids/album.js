@@ -4,6 +4,7 @@ import * as P from './progress.js';
 import { CARDS, ROLES, byId, STARS_PER_CARD, owedByStars, starsToNext } from './album-data.js';
 import { artPhoto } from '../views/artist-photo.js';
 import * as Cloud from './album-cloud.js';
+import * as FR from '../figurinhas/rewards.js';
 
 export const total = () => CARDS.length;
 export const owned = (pid) => (P.progOf(pid).album || []).filter((id) => byId[id]);
@@ -27,16 +28,20 @@ export function grant(pid, n, extra = {}) {
 
 /* ---- ★ dos jogos de ritmo (músicas longas) também valem figurinha: a cada 5 ★ ganha 1 ---- */
 export { STARS_PER_CARD, owedByStars, starsToNext };
-export function grantByStars(pid, totalStars) {
-  const prog = P.progOf(pid); const n = owedByStars(totalStars, prog.ritmoPaid);
-  return grant(pid, n, { ritmoStars: totalStars, ritmoPaid: (prog.ritmoPaid || 0) + n });
+/** ★ do ritmo → pacotes do álbum de 125 (a cada 5 ★, 1 pacote; id fixo por lote, nunca repete). Devolve quantos pacotes novos. */
+export async function grantByStars(pid, totalStars) {
+  const prog = P.progOf(pid); const paid = prog.ritmoPaid || 0; const n = owedByStars(totalStars, paid);
+  const ids = Array.from({ length: n }, (_, k) => `ritmo:${pid}:${paid + k + 1}`);
+  const got = await FR.grantPacks(ids);
+  await P.patch(pid, { ritmoStars: totalStars, ritmoPaid: paid + n });
+  if (got) Cloud.soon(pid);
+  return got;
 }
-
-/** A figurinha: foto (ou inicial), nome, banda e papel. `locked` = ainda não ganhou. */
-export function cardEl(card, { fresh = false, locked = false, onclick } = {}) {
-  const [, emoji] = ROLES[card.role];
-  const el = h(onclick ? 'button' : 'div', { class: `kx-card-fig role-${card.role}${locked ? ' locked' : ''}${fresh ? ' fresh' : ''}`, type: onclick ? 'button' : null, 'aria-label': locked ? `Figurinha de ${ROLES[card.role][0].slice(0, -1)} ainda não ganhou` : `${card.name}, ${card.role}`, onclick: onclick || null },
-    h('span', { class: 'kx-ph' }, locked ? h('b', { class: 'kx-q' }, '?') : artPhoto(`album-${card.id}`, card.name, 'art-ph', card.wiki)),
-    h('span', { class: 'kx-nm' }, locked ? '???' : card.name), h('small', { class: 'kx-bd' }, locked ? ROLES[card.role][0].slice(0, -1) : card.band), h('span', { class: 'kx-role', 'aria-hidden': 'true' }, emoji));
-  return el;
+/** Estrelas novas nas fases dos Kids → 1 pacote por estrela nova. Devolve quantos pacotes novos. */
+export async function grantPacks(pid, n) {
+  if (!n || n < 1) return 0;
+  const t = Date.now().toString(36);
+  const got = await FR.grantPacks(Array.from({ length: n }, (_, k) => `kids:${pid}:${t}:${k}`));
+  if (got) Cloud.soon(pid);
+  return got;
 }
