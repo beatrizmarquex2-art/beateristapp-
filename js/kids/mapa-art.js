@@ -1,5 +1,5 @@
 // Pixel art do mapa: sprites desenhados em grades de letras (cada letra = uma cor). SVG com bordas retas, nada de imagem nova.
-const PAL = { k: '#140d26', a: '#2a1b4d', b: '#6a2c91', c: '#8e1f4a', d: '#ff4fa3', e: '#ffd23f', f: '#1c2a5c', g: '#4fd2ff', w: '#fff4e0', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a', r: '#e63946', o: '#ff9f43', p: '#ffb3d9', s: '#c9c3d9' };
+const PAL = { k: '#0b1a30', a: '#0f2a47', b: '#1f6f78', c: '#8e1f4a', d: '#ff4fa3', e: '#ffd23f', f: '#1c2a5c', g: '#4fd2ff', w: '#fff4e0', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a', r: '#e63946', o: '#ff9f43', p: '#ffb3d9', s: '#c9c3d9' };
 const SPR = {
   amp: ['kkkkkkkkkk', 'kffffffffk', 'kfdfdfdffk', 'kffffffffk', 'kkkkkkkkkk', 'kffggggffk', 'kfgkkkkgfk', 'kfgkwwkgfk', 'kfgkkkkgfk', 'kffggggffk', 'kkkkkkkkkk'],
   tape: ['kkkkkkkkkkkk', 'kddddddddddk', 'kdwwwddwwwdk', 'kdwkwddwkwdk', 'kdwwwddwwwdk', 'kddddddddddk', 'kkdkkkkkkdkk', 'kkkkkkkkkkkk'],
