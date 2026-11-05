@@ -570,3 +570,16 @@ html[data-theme] .card.mini-list { background: #7a1226; border-color: #4a0a16; b
 .cod-tbl tr.off td{opacity:.5}.cod-act{white-space:nowrap}
 .cod-new{border:2px solid var(--accent)}
 .al-cod{text-align:center;letter-spacing:.18em;font:800 20px ui-monospace,Menlo,monospace;text-transform:uppercase}
+
+/* acesso do aluno: cadeado, código gerado, telas trancadas */
+.al-lock{display:grid;justify-items:center;gap:8px;text-align:center;padding:22px 14px}
+.al-lock-i{font-size:44px;line-height:1}
+.al-lock h2{margin:0;font-size:22px}
+.al-lock-l,.al-lock-t{margin:0;font-weight:800}.al-lock-t{font-size:18px;color:var(--accent)}
+.al-lock-code{font:900 38px/1.1 ui-monospace,Menlo,monospace;letter-spacing:.2em;padding:12px 16px;border:3px dashed currentColor;border-radius:14px;user-select:all}
+.al-lock-msg{min-height:1.4em;font-weight:700;margin:0}
+.al-lock-have{width:100%;max-width:340px;margin-top:6px}.al-lock-have summary{cursor:pointer;padding:8px 0}
+.al-lock-row{display:flex;gap:8px;margin-top:6px}.al-lock-row .field{flex:1;min-width:0}
+.al-codbox{display:grid;gap:8px;margin:4px 0}.al-pedido .al-lock-code{font-size:30px;text-align:center}.al-pedido{display:grid;gap:4px;justify-items:center;text-align:center}
+.bottom-nav .nav-item{position:relative}.bottom-nav .nav-lock{position:absolute;top:2px;right:calc(50% - 22px);font-size:11px;font-style:normal}
+.bottom-nav .nav-item.locked{opacity:.72}

@@ -11,6 +11,7 @@ import * as FB from '../feedback.js';
 import * as RK from '../ranking.js';
 import * as PUB from '../midis-publicos.js';
 import * as CODE from '../codigo.js';
+import * as AC from '../acesso.js';
 
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
@@ -298,11 +299,13 @@ export function mount(host, opts = {}) {
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
   let unlocked = false; let BRref = null;
-  const gate = { ok: () => unlocked, check: async (c) => { const ok = await CODE.entrar(c); if (ok) { unlocked = true; await loadPub(); } return ok; } };
+  const gate = { ok: () => unlocked || AC.liberado(), pedir: () => CODE.pedir(), pendente: () => CODE.pendente(),
+    check: async (c) => { const ok = await CODE.entrar(c); if (ok) { unlocked = true; AC.definir(true); await loadPub(); } return ok; },
+    conferir: async () => { const ok = await CODE.conferirPedido(); if (ok) { unlocked = true; AC.definir(true); await loadPub(); } return ok; } };
   async function loadPub() { // com código: baixa as músicas liberadas e avisa o pacote
     try { const songs = await publicadasParaAluno(CODE.saved()); if (BRref && BRref.setSongs) { BRref.setSongs(songs); if (BRref.refresh) BRref.refresh(); } return songs; } catch { return []; }
   }
-  Promise.all([loadPackage(), student ? CODE.revalidar().then(async (ok) => { unlocked = ok; return ok ? publicadasParaAluno(CODE.saved()).catch(() => []) : []; }) : Promise.resolve([])]).then(([BR, pubSongs]) => {
+  Promise.all([loadPackage(), student ? CODE.revalidar().then(async (ok) => { if (!ok && CODE.pendente()) ok = await CODE.conferirPedido().catch(() => false); unlocked = ok; if (ok) AC.definir(true); return ok ? publicadasParaAluno(CODE.saved()).catch(() => []) : []; }) : Promise.resolve([])]).then(([BR, pubSongs]) => {
     if (gone) return;
     BRref = BR;
     box.replaceChildren();

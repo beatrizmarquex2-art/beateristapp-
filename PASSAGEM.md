@@ -98,6 +98,11 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Código vale **1 ano** (`expira_em`, SQL 008 aplicado; botão "+1 ano" no painel) e fica salvo 1 ano no aparelho. Primeira tela do aluno: nome + "escolha uma opção" com **CÓDIGO DE ACESSO** (campo aparece ao escolher; confere no servidor; origem registrada como "aluno beaterista (código de acesso)"). Teste: `tests/e2e/entrada-codigo.mjs`. Código da Bea: BEA0404 (hífen é ignorado).
 - SQL 007 aplicado (nov/2026). Menu (Bea e Beaterista) → aulas → **Importar código de aluno** (`#/codigos`, `js/views/codigos.js`): cola "nome ; código" (só nome = gera código aleatório), gera códigos, tabela atualizada com copiar. Código de teste `BEA2026`. Testes: `tests/codigo.test.mjs`, `tests/e2e/codigos.mjs`.
 
+## Acesso do aluno: modo livre x código (nov/2026)
+- `js/acesso.js` (regras) + `js/codigo.js` (código/pedido). **Sem código**: jogos livres (explorar, memória, monte seu ritmo, uno, velha, stop, bingo, quebra-cabeça, cara a cara, Piano Hero com músicas prontas), aba Tocar e **Jogos Ensinam** (relatório, antes "relatório" só da Bea). **Com código**: tudo, incluindo Beat Hero + Músicas MIDI, fases e estrelas (modo aventura), Álbum, Ranking, Beat Lab, Dicionário da bateria e Aulas do Paul (`#/kids/figuras/aula`).
+- **Gerar meu código**: o aluno gera um código local (`beaterista-aluno-codigo-pendente`), vê "informe a professora Bea", ela cadastra em Importar código de aluno, e o app libera sozinho (confere ao abrir, no botão "já liberou?" e a cada 8 s na tela trancada). Nada vai pro servidor até ela cadastrar.
+- Ainda NÃO existem na área do aluno: os jogos das 30 dicas (quiz/caça-palavras/cruzadinha usam os registros privados "tip" da Bea). Testes: `tests/e2e/acesso.mjs`, `entrada-codigo.mjs`.
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.

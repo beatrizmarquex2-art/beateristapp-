@@ -528,3 +528,5 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 /* abertura do STOP em telas baixas (iPhone SE e parecidos): o JOGAR tem que aparecer sem rolar */
 @media (max-height:760px){.st-intro{min-height:0;padding:14px 8px 10px;gap:4px}.st-title{font-size:clamp(54px,18vw,84px)}.st-paul{height:84px}.st-sticks{height:40px;width:90px}}
 @media (max-height:620px){.st-paul{height:58px}.st-sticks{display:none}.st-intro{padding-top:8px}}
+.jg-card .jg-ico{position:relative}.jg-lock{position:absolute;top:-4px;right:-4px;font-size:16px;font-style:normal;background:#fffdf7;border:2px solid var(--jg-navy);border-radius:50%;width:26px;height:26px;display:grid;place-items:center;line-height:1}
+.jg-card.locked img{opacity:.55}

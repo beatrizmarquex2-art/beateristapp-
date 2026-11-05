@@ -25,6 +25,7 @@ async function phone(saved) {
   check('aba "Músicas MIDI" também pede o código', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-song').count()) === 0);
   check('nenhuma lista de MIDI foi baixada sem código', state.listCalls.length === 0, JSON.stringify(state.listCalls));
   // código errado
+  await p.locator('.rz-lock-have summary').click(); // "já tenho um código"
   await p.locator('#rz-code').fill('ZZZ999'); await p.locator('[data-act="rz-code"]').click(); await sleep(600);
   check('código errado: avisa e continua trancado', (await p.locator('#rz-code-msg').textContent()).includes('não achei') && (await p.locator('#rz-code').count()) === 1);
   // código certo (minúsculas e com espaço)
@@ -32,7 +33,7 @@ async function phone(saved) {
   check('código certo libera e guarda no aparelho', await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo')) === 'ABC123');
   check('a lista de MIDIs só foi pedida com o código', state.listCalls.length >= 1 && state.listCalls.every((c) => c === 'ABC123'), JSON.stringify(state.listCalls));
   await p.locator('.rz-g[data-v="beat"]').click(); await sleep(300);
-  check('Beat Hero liberado (sem cadeado, com a música MIDI na lista)', (await p.locator('#rz-code').count()) === 0 && (await p.locator('.rz-song').count()) === 1);
+  check('Beat Hero liberado (sem cadeado, com o JOGAR)', (await p.locator('#rz-code').count()) === 0 && (await p.locator('.rz-jogar').count()) === 1);
   check('sem erros de JS', errs.length === 0, errs.join('|')); await ctx.close();
 }
 // 2) com código guardado: já abre liberado, MIDI na lista, sem botões de editar, e joga
