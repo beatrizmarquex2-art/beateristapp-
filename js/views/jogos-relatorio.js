@@ -34,7 +34,7 @@ const GROUPS = [
     ['Uno Musical', 'cartas.webp', 'Jogo de cartas com números e figuras: descartar combinando soma de durações, cor ou tipo, até sobrar uma carta.',
       ['soma e comparação de durações', 'planejamento e tomada de decisão', 'atenção às regras'],
       'Reforça a equivalência entre número e figura e exige olhar a jogada do outro. Boa para turma: gera conversa e comparação entre estratégias.'],
-    ['Bingo', 'bingo.webp', 'Bingo musical: sorteia um item, o aluno marca na cartela e grita “bingo!”. Solo, dupla ou modo professor.',
+    ['Bingo', 'bingo.webp', 'Bingo musical: cartela 3×3 de instrumentos, peças da bateria, figuras rítmicas, símbolos ou artistas; o Paul sorteia (manual ou automático) e vence quem fecha 3 em linha. Sozinho, online por código, 2 no mesmo aparelho ou sala de aula (com cartelas para imprimir).',
       ['reconhecimento de instrumentos e símbolos', 'atenção auditiva e visual', 'espera e autocontrole'],
       'No modo professor serve de revisão coletiva: o professor sorteia e a turma reconhece. Repetir o reconhecimento em contexto leve consolida o vocabulário.'],
     ['Jogo da velha', 'velha.webp', 'Três em linha, baquetas contra palheta, com variante de desafio musical em que se responde para jogar.',
@@ -50,7 +50,7 @@ const GROUPS = [
       ['repertório e cultura musical', 'recuperação rápida da memória', 'escrita e ortografia sob tempo'],
       'Cada resposta é uma busca rápida na memória de longo prazo, o que fortalece o repertório. Na dupla, ver as respostas do colega amplia as referências.'],
   ]],
-  ['Jogos das dicas', [
+  ['Quiz e Letras', [
     ['Quiz das dicas', 'quiz.svg', 'Perguntas de completar e de ligar sobre as 30 dicas do método.',
       ['retenção do conteúdo do método', 'leitura atenta', 'autoavaliação'],
       'Testar-se é uma das formas de estudo que mais fixam o conteúdo. Depois de cada resposta a dica inteira aparece, e o erro vira explicação.'],

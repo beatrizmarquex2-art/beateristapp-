@@ -85,10 +85,10 @@ check('missão estrita: um erro encerra e mostra "Ainda não deu"', (await page.
 check('derrota não libera a missão seguinte', await page.evaluate(async () => { const S = await import('/js/campanha/store.js'); const g = S.gameOf(S.playerId(), 'bingo'); return !g.m['bingo-04'] || g.m['bingo-04'].s === 0; }));
 
 // modo livre: continua com menus, sem estado compartilhado
-await go('#/jogos/bingo/livre'); await page.waitForSelector('.jg-seg'); await sleep(300);
-check('modo livre: opções de modo e vitória por linha/cheia', (await page.locator('.jg-seg button').count()) >= 5 && (await page.locator('button:has-text("iniciar")').count()) === 1);
-await page.click('button:has-text("iniciar")'); await page.waitForSelector('.jg-bcell');
-check('modo livre: 16 casas, sorteio automático, sem barra de missão', (await page.locator('.jg-bcell').count()) === 16 && (await page.locator('button:has-text("automático")').count()) === 1 && (await page.locator('.jg-mbar').count()) === 0);
+await go('#/jogos/bingo/livre'); await page.waitForSelector('.bg-root'); await sleep(300);
+check('modo livre (Bingo novo): 5 temas, modos de jogo e condições de vitória', (await page.locator('.bg-poster').count()) === 5 && (await page.locator('.bg-seg button').count()) >= 10 && (await page.locator('.bg-bigbtn:has-text("Jogar")').count()) === 1);
+await page.click('.bg-bigbtn:has-text("Jogar")'); await page.waitForSelector('.bg-cell');
+check('modo livre: 9 casas (3×3), botão AUTO, sem barra de missão', (await page.locator('.bg-cell').count()) === 9 && (await page.locator('button:has-text("AUTO")').count()) === 1 && (await page.locator('.jg-mbar').count()) === 0);
 await go('#/jogos/bingo/aventura'); await page.waitForSelector('.mp-node'); await sleep(600);
 st = await states(); check('progresso da aventura independe do livre', st[0] === 'done', st.join());
 await go('#/jogos'); await sleep(300);

@@ -28,6 +28,7 @@ export const PONTOS = {
   stop: { livre: { ...LIVRE_SEM, pontos: 'resposta válida e só sua = 10 pontos. válida e igual à de outro jogador = 5. errada, vazia ou pendente = 0.' }, aventura: { ...AV, estrelas: SIM('cumprir a meta de pontos da missão = 1 ★. quanto mais pontos, mais ★ (a meta de 2 ★ e 3 ★ aparece na missão). o tempo não muda as estrelas.') } },
   memoria: { livre: { ...LIVRE_SEM, pontos: 'guarda o seu melhor número de tentativas por tema e tamanho.' }, aventura: AV },
   monte: { livre: { ...LIVRE_SEM, pontos: 'não tem pontos: o ritmo está certo ou não.' }, aventura: AV },
+  toca: { livre: { ...LIVRE_SEM, pontos: 'mostra a precisão (%) e a média de ms de cada compasso; o caminho abre cada exercício com 70%.' }, aventura: { ...AV, estrelas: SIM('70% de precisão = 1 ★, 85% = 2 ★, 95% = 3 ★. a meta aparece em cada missão.') } },
   noritmo: {
     livre: {
       pontos: 'ganha pontos, precisão (%) e combo a cada música.',

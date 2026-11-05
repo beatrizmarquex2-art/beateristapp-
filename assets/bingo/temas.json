@@ -1,0 +1,278 @@
+{
+ "instrumentos": {
+  "nome": "Instrumentos",
+  "itens": [
+   {
+    "id": "bateria",
+    "nome": "Bateria"
+   },
+   {
+    "id": "violao",
+    "nome": "Violão"
+   },
+   {
+    "id": "guitarra",
+    "nome": "Guitarra"
+   },
+   {
+    "id": "baixo",
+    "nome": "Baixo elétrico"
+   },
+   {
+    "id": "teclado",
+    "nome": "Teclado"
+   },
+   {
+    "id": "piano",
+    "nome": "Piano"
+   },
+   {
+    "id": "pandeiro",
+    "nome": "Pandeiro"
+   },
+   {
+    "id": "cajon",
+    "nome": "Cajón"
+   },
+   {
+    "id": "triangulo",
+    "nome": "Triângulo"
+   },
+   {
+    "id": "tamborim",
+    "nome": "Tamborim"
+   },
+   {
+    "id": "agogô",
+    "nome": "Agogô"
+   },
+   {
+    "id": "saxofone",
+    "nome": "Saxofone"
+   },
+   {
+    "id": "trompete",
+    "nome": "Trompete"
+   },
+   {
+    "id": "flauta",
+    "nome": "Flauta transversal"
+   },
+   {
+    "id": "violino",
+    "nome": "Violino"
+   },
+   {
+    "id": "ukulele",
+    "nome": "Ukulele"
+   }
+  ]
+ },
+ "pecas": {
+  "nome": "Peças da bateria",
+  "itens": [
+   {
+    "id": "bumbo",
+    "nome": "Bumbo"
+   },
+   {
+    "id": "caixa",
+    "nome": "Caixa"
+   },
+   {
+    "id": "chimbal",
+    "nome": "Chimbal"
+   },
+   {
+    "id": "tom1",
+    "nome": "Tom 1"
+   },
+   {
+    "id": "tom2",
+    "nome": "Tom 2"
+   },
+   {
+    "id": "surdo",
+    "nome": "Surdo"
+   },
+   {
+    "id": "ride",
+    "nome": "Prato de condução (ride)"
+   },
+   {
+    "id": "crash",
+    "nome": "Prato de ataque (crash)"
+   },
+   {
+    "id": "pedal_bumbo",
+    "nome": "Pedal de bumbo"
+   },
+   {
+    "id": "pedal_chimbal",
+    "nome": "Pedal de chimbal"
+   },
+   {
+    "id": "baquetas",
+    "nome": "Baquetas"
+   },
+   {
+    "id": "banco",
+    "nome": "Banco de bateria"
+   },
+   {
+    "id": "maquina_chimbal",
+    "nome": "Máquina de chimbal"
+   },
+   {
+    "id": "estante_prato",
+    "nome": "Estante de prato"
+   },
+   {
+    "id": "pele",
+    "nome": "Pele de tambor"
+   },
+   {
+    "id": "aro",
+    "nome": "Aro de tambor"
+   }
+  ]
+ },
+ "figuras": {
+  "nome": "Figuras rítmicas",
+  "itens": [
+   {
+    "id": "semibreve",
+    "nome": "Semibreve"
+   },
+   {
+    "id": "minima",
+    "nome": "Mínima"
+   },
+   {
+    "id": "seminima",
+    "nome": "Semínima"
+   },
+   {
+    "id": "colcheia",
+    "nome": "Colcheia"
+   },
+   {
+    "id": "semicolcheia",
+    "nome": "Semicolcheia"
+   },
+   {
+    "id": "pausa_semibreve",
+    "nome": "Pausa de semibreve"
+   },
+   {
+    "id": "pausa_minima",
+    "nome": "Pausa de mínima"
+   },
+   {
+    "id": "pausa_seminima",
+    "nome": "Pausa de semínima"
+   },
+   {
+    "id": "pausa_colcheia",
+    "nome": "Pausa de colcheia"
+   },
+   {
+    "id": "pausa_semicolcheia",
+    "nome": "Pausa de semicolcheia"
+   },
+   {
+    "id": "duas_colcheias",
+    "nome": "Duas colcheias ligadas por barra"
+   },
+   {
+    "id": "quatro_semicolcheias",
+    "nome": "Quatro semicolcheias agrupadas"
+   },
+   {
+    "id": "minima_pontuada",
+    "nome": "Mínima pontuada"
+   },
+   {
+    "id": "seminima_pontuada",
+    "nome": "Semínima pontuada"
+   },
+   {
+    "id": "colcheia_pontuada",
+    "nome": "Colcheia pontuada"
+   },
+   {
+    "id": "duas_semicolcheias",
+    "nome": "Duas semicolcheias agrupadas"
+   }
+  ]
+ },
+ "simbolos": {
+  "nome": "Símbolos musicais",
+  "itens": [
+   {
+    "id": "clave_sol",
+    "nome": "Clave de sol"
+   },
+   {
+    "id": "clave_fa",
+    "nome": "Clave de fá"
+   },
+   {
+    "id": "sustenido",
+    "nome": "Sustenido"
+   },
+   {
+    "id": "bemol",
+    "nome": "Bemol"
+   },
+   {
+    "id": "bequadro",
+    "nome": "Bequadro"
+   },
+   {
+    "id": "fermata",
+    "nome": "Fermata"
+   },
+   {
+    "id": "ponto_aumento",
+    "nome": "Ponto de aumento"
+   },
+   {
+    "id": "ligadura_prolongamento",
+    "nome": "Ligadura de prolongamento"
+   },
+   {
+    "id": "staccato",
+    "nome": "Staccato"
+   },
+   {
+    "id": "acento",
+    "nome": "Acento"
+   },
+   {
+    "id": "crescendo",
+    "nome": "Crescendo"
+   },
+   {
+    "id": "decrescendo",
+    "nome": "Decrescendo"
+   },
+   {
+    "id": "barra_dupla",
+    "nome": "Barra dupla"
+   },
+   {
+    "id": "ritornello",
+    "nome": "Ritornelo"
+   },
+   {
+    "id": "compasso_3_4",
+    "nome": "Indicação de compasso 3/4"
+   },
+   {
+    "id": "compasso_4_4",
+    "nome": "Indicação de compasso 4/4"
+   }
+  ]
+ }
+}

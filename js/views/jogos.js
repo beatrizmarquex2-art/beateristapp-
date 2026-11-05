@@ -46,10 +46,8 @@ const SECTIONS = [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
-  ['jogos das dicas', [
-    link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
-    link('#/dicas/caca', 'caça-palavras', 'caca.svg', null, 'bea'),
-    link('#/dicas/cruzadinha', 'cruzadinha', 'cruza.svg', null, 'bea'),
+  ['quiz e letras (com código)', [
+    link('#/dicas/quiz', 'Quiz e Letras', 'quiz.svg', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
   ]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
@@ -69,7 +67,7 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
 // fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
-const DARK = new Set(['bingo', 'cara', 'quebra']);
+const DARK = new Set(['cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
 function catalog(host) {
@@ -152,7 +150,9 @@ function withModes(host, entry, [id, mode, mission]) {
 
 export function mount(host, parts = []) {
   if (parts[0] === 'relatorio') return relatorio(host);
-  const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
+  const first = String(parts[0] || '').split('?')[0];
+  const entry = GAMES.find((g) => g[0] === first && g[3]);
   if (!entry) return catalog(host);
+  if (/[?&]sala=/.test(String(parts[0] || ''))) return game(host, entry); // link de convite do bingo online: abre direto o jogo livre
   return hasAdventure(entry[0]) ? withModes(host, entry, parts) : game(host, entry);
 }

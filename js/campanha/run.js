@@ -12,6 +12,7 @@ import * as CS from './store.js';
 import * as P from '../kids/progress.js';
 import * as AC from '../acesso.js';
 import { pontuacaoEl } from './pontuacao.js';
+import { temaButton, applyTema } from './tema.js';
 
 const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 
@@ -21,6 +22,7 @@ export function modeChooser(host, { gameId, spec, hrefLivre, hrefAventura, title
   const lockedAdv = document.documentElement.classList.contains('aluno-on') && !AC.liberado(); // aluno sem código: só o Modo Livre
   const card = (cls, href, name, text, meta) => h('a', { class: `av-mode ${cls}`, href }, h('b', { class: 'av-mode-t' }, name), h('span', { class: 'av-mode-d' }, text), meta ? h('small', { class: 'av-mode-m' }, meta) : null);
   host.replaceChildren(h('div', { class: 'av av-choose' },
+    h('div', { class: 'av-bar' }, h('span', { style: 'flex:1' }), temaButton()),
     h('h2', { class: 'av-h' }, title), blurb ? h('p', { class: 'av-p' }, blurb) : null, h('p', { class: 'av-q' }, 'como você quer jogar?'),
     card('livre', hrefLivre, 'Modo Livre', 'do jeito de sempre: sem bloqueios, quantas vezes quiser.', null),
     card('aventura', hrefAventura, `${lockedAdv ? '🔒 ' : ''}Modo Aventura`, lockedAdv ? 'precisa do código da professora (a professora te dá, ou gere o seu na entrada).' : 'missões, estrelas e medalhas num mapa só desse jogo.', lockedAdv ? null : `${E.doneIdx(spec, g)}/${n} missões · ★ ${E.totalStars(spec, g)}/${n * 3}`),
@@ -67,7 +69,7 @@ export function mountAdventure(host, cfg) {
   function missionScreen(index) {
     const m = spec.missions[index]; const g = cur();
     if (!m || !E.isUnlocked(spec, g, index)) { nav(base); return; }
-    const bar = (extra) => h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: base }, '‹ mapa'), h('b', { class: 'av-bt' }, `missão ${index} · ${m.title}`), extra || null);
+    const bar = (extra) => h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: base }, '‹ mapa'), h('b', { class: 'av-bt' }, `missão ${index} · ${m.title}`), temaButton(), extra || null);
     const briefing = () => {
       clean(); const bot = robo({ mood: 'happy', tier, size: 84, say: index === 0 ? 'vamos começar a turnê!' : 'bora nessa missão!' });
       host.replaceChildren(h('div', { class: 'av av-brief' }, bar(),

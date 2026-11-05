@@ -24,11 +24,11 @@ import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
+import * as PL from '../paulta/save.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { loadAdventure } from '../campanha/registry.js';
 import { pontuacaoEl } from '../campanha/pontuacao.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
-import * as PL from '../paulta/save.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');

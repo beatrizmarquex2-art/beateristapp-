@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import * as B from '../js/jogos/bingo-logic.js';
+import * as B from '../js/jogos/bingo1-logic.js';
 import * as E from '../js/campanha/engine.js';
 import adv, { spec } from '../js/campanha/jogos/bingo.js';
 

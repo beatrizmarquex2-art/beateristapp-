@@ -1,5 +1,6 @@
 // pauLta: mapa de fases no mesmo desenho do Modo Aventura do Toca Aqui (discos de vinil, Escola do Ritmo, escuro/claro).
 // Usa o componente js/kids/mapa.js; aqui só dizemos quais são as fases, as regiões de cada mundo e o progresso do jogador.
+import { livre } from './livre.js';
 import { h } from '../util.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import * as S from './score.js';
@@ -7,12 +8,12 @@ import { phaseSpec, WORLDS } from './worlds.js';
 
 const BASE = '#/paulta';
 const R = (id, name, sub, decor) => ({ id, name, sub, decor });
-/** Regiões de cada mundo (só visual: o mapa reparte as fases entre elas). */
+/** Regiões de cada mundo (só visual: o mapa reparte as fases entre elas). O enfeite é só planta, como nos mapas do Mario World. */
 const REGIOES = {
-  drum: [R('bumbo', 'Sala do Bumbo', 'peças e sons', [['drum', 'l', 0.3], ['lamp', 'r', 0.6]]), R('pratos', 'Corredor dos Pratos', 'brilho e ataque', [['sticks', 'r', 0.3], ['drum', 'l', 0.6]]), R('palcob', 'Palco da Bateria', 'tudo junto', [['curtain', 'l', 0.3], ['trophy', 'r', 0.5], ['star', 'l', 0.85]])],
-  sol: [R('agudas', 'Sala das Agudas', 'linhas e espaços', [['school', 'l', 0.3], ['lamp', 'r', 0.6]]), R('pauta', 'Corredor da Pauta', 'nota por nota', [['book', 'r', 0.3], ['piano', 'l', 0.6]]), R('palcos', 'Palco da Clave de Sol', 'ler sem pensar', [['curtain', 'l', 0.3], ['trophy', 'r', 0.5], ['star', 'l', 0.85]])],
-  fa: [R('graves', 'Sala das Graves', 'o chão da música', [['school', 'l', 0.3], ['lamp', 'r', 0.6]]), R('baixo', 'Corredor do Baixo', 'notas profundas', [['book', 'r', 0.3], ['guitar', 'l', 0.6]]), R('palcof', 'Palco da Clave de Fá', 'ler sem pensar', [['curtain', 'l', 0.3], ['trophy', 'r', 0.5], ['star', 'l', 0.85]])],
-  duel: [R('arena', 'Arena das Claves', 'sol contra fá', [['sticks', 'l', 0.4], ['lamp', 'r', 0.7]]), R('final', 'Palco Final', 'só uma vence', [['trophy', 'l', 0.4], ['star', 'r', 0.8]])],
+  drum: [R('bumbo', 'Sala do Bumbo', 'peças e sons', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.24], ['sprout', 'l', 0.41], ['vaso', 'r', 0.48], ['flower', 'r', 0.59], ['vaso', 'l', 0.76], ['bush', 'r', 0.83], ['bush', 'r', 0.94]]), R('pratos', 'Corredor dos Pratos', 'brilho e ataque', [['flower', 'r', 0.06], ['cactus', 'l', 0.13], ['vaso', 'l', 0.24], ['bush', 'r', 0.41], ['sprout', 'l', 0.48], ['cactus', 'l', 0.59], ['sprout', 'r', 0.76], ['flower', 'l', 0.83], ['flower', 'l', 0.94]]), R('palcob', 'Palco da Bateria', 'tudo junto', [['cactus', 'l', 0.06], ['vaso', 'r', 0.13], ['sprout', 'r', 0.24], ['flower', 'l', 0.41], ['bush', 'r', 0.48], ['vaso', 'r', 0.59], ['bush', 'l', 0.76], ['cactus', 'r', 0.83], ['cactus', 'r', 0.94]])],
+  sol: [R('agudas', 'Sala das Agudas', 'linhas e espaços', [['vaso', 'r', 0.06], ['sprout', 'l', 0.13], ['bush', 'l', 0.28], ['cactus', 'r', 0.5], ['flower', 'l', 0.57], ['sprout', 'l', 0.72], ['flower', 'r', 0.94], ['vaso', 'l', 0.97]]), R('pauta', 'Corredor da Pauta', 'nota por nota', [['sprout', 'l', 0.06], ['bush', 'r', 0.13], ['flower', 'r', 0.28], ['vaso', 'l', 0.5], ['cactus', 'r', 0.57], ['bush', 'r', 0.72], ['cactus', 'l', 0.94], ['sprout', 'r', 0.97]]), R('palcos', 'Palco da Clave de Sol', 'ler sem pensar', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.28], ['sprout', 'l', 0.5], ['vaso', 'r', 0.57], ['flower', 'r', 0.72], ['vaso', 'l', 0.94], ['bush', 'r', 0.97]])],
+  fa: [R('graves', 'Sala das Graves', 'o chão da música', [['flower', 'r', 0.06], ['cactus', 'l', 0.13], ['vaso', 'l', 0.28], ['bush', 'r', 0.5], ['sprout', 'l', 0.57], ['cactus', 'l', 0.72], ['sprout', 'r', 0.94], ['flower', 'l', 0.97]]), R('baixo', 'Corredor do Baixo', 'notas profundas', [['cactus', 'l', 0.06], ['vaso', 'r', 0.13], ['sprout', 'r', 0.28], ['flower', 'l', 0.5], ['bush', 'r', 0.57], ['vaso', 'r', 0.72], ['bush', 'l', 0.94], ['cactus', 'r', 0.97]]), R('palcof', 'Palco da Clave de Fá', 'ler sem pensar', [['vaso', 'r', 0.06], ['sprout', 'l', 0.13], ['bush', 'l', 0.28], ['cactus', 'r', 0.5], ['flower', 'l', 0.57], ['sprout', 'l', 0.72], ['flower', 'r', 0.94], ['vaso', 'l', 0.97]])],
+  duel: [R('arena', 'Arena das Claves', 'sol contra fá', [['sprout', 'l', 0.06], ['bush', 'r', 0.13], ['flower', 'r', 0.35], ['vaso', 'l', 0.65], ['cactus', 'r', 0.72], ['bush', 'r', 0.94]]), R('final', 'Palco Final', 'só uma vence', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.35], ['sprout', 'l', 0.65], ['vaso', 'r', 0.72], ['flower', 'r', 0.94]])],
 };
 const curto = (t) => (t.length > 26 ? `${t.slice(0, 24).trim()}…` : t);
 
@@ -26,7 +27,7 @@ export function worldMap(host, { w, p, mode, me, stars }) {
   const dispose = mountProgressionMap(host, {
     gameId: `paulta-${w}`, levels, profileId: me.id, unitName: 'Fase', tier: 0, stars: { have: stars, max: n * 3 },
     theme: { id: `paulta-${w}`, name: W.name, regions: REGIOES[w] },
-    starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => S.unlocked(p, w, idOf(id)),
+    starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => livre() || S.unlocked(p, w, idOf(id)),
     lockedMsg: 'conclua a fase anterior pra abrir o caminho',
     onBack: () => { location.hash = BASE; }, onOpen: (lv) => { location.hash = `${BASE}/${w}/${idOf(lv.id)}/${mode}`; },
   });

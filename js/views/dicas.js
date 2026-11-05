@@ -101,7 +101,7 @@ const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preen
 export function mount(host, parts = []) {
   const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : 'quiz';
   const box = h('div', { class: 'dc-box' });
-  host.append(banner('Jogos das dicas', 'quiz, caça-palavras e cruzadinha com as 30 dicas'),
+  host.append(banner('Quiz e Letras', 'quiz, caça-palavras e cruzadinha com as 30 dicas'),
     h('div', { class: 'jg jg-wrap dc-wrap' },
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos')),
       h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },

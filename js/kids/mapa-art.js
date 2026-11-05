@@ -30,6 +30,11 @@ const SPR = {
   spot: ['kkkk....', 'kfffk...', 'kfeeek..', 'kfeeeek.', 'kkfeeeek', '..kkfeek', '....kkkk'],
   sax: ['.kkk..', 'keek..', '.kek..', '.kek..', '.kek..', '.keek.', 'kekeek', 'keeeek', '.kkkk.'],
   heart: ['.kk.kk.', 'kddkddk', 'kdddddk', 'kdddddk', '.kdddk.', '..kdk..', '...k...'],
+  bush: ['..kkkkk..kkk.', '.knnnnnkknnnk', 'knnmnnnnnnmnk', 'knnnnnmnnnnnk', 'knmnnnnnnmnnk', 'kkkkkkkkkkkkk'],
+  flower: ['.kkkkk.', 'kwwwwwk', 'kwwdwwk', 'kwwwwwk', '.kkkkk.', '..knk..', '.knnk..', 'knnkk..'],
+  cactus: ['...kkk...', '..knnnk..', '..knmnk..', 'k.knnnk.k', 'knknnnknk', 'knknmnknk', 'kkknnnkkk', '..knnnk..', '..knnnk..', '.kkkkkkk.'],
+  vaso: ['..k..k...', '.knk.knk.', 'knnmknnnk', '.knnnnnk.', '..kmnmk..', '.kbbbbbk.', '..kbbbk..', '..kkkkk..'],
+  sprout: ['.kk.kk.', 'knnknnk', 'kmnnnmk', '.kknkk.', '...kn..', '...kn..', '..kkkk.'],
   table: ['kkkkkkkkkkkk', 'kbbbbbbbbbbk', 'kbkkkkkbdbbk', 'kbkaakkbbbbk', 'kbkkkkkbbbbk', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk'],
 };
 /** SVG de um sprite (`px` = tamanho de cada quadradinho em unidades do viewBox; o tamanho final vem do CSS). */

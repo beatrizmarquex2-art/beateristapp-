@@ -1,7 +1,7 @@
 // Leitura das telas de aventura: nada de texto sobreposto ou cortado pela tela (texto só pra leitor de tela fica de fora), em 390 e 320 px, nos 9 jogos (mapa, briefing e missão).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } });
-const GAMES = [['cartas', '#/jogos/cartas/aventura'], ['bingo', '#/jogos/bingo/aventura'], ['stop', '#/jogos/stop/aventura'], ['velha', '#/jogos/velha/aventura'], ['quebra', '#/jogos/quebra/aventura'], ['cara', '#/jogos/cara/aventura'], ['memoria', '#/kids/memoria/aventura'], ['monte', '#/kids/ritmo/aventura'], ['noritmo', '#/ritmo/aventura']];
+const GAMES = [['toca', '#/jogos/toca/aventura'], ['cartas', '#/jogos/cartas/aventura'], ['bingo', '#/jogos/bingo/aventura'], ['stop', '#/jogos/stop/aventura'], ['velha', '#/jogos/velha/aventura'], ['quebra', '#/jogos/quebra/aventura'], ['cara', '#/jogos/cara/aventura'], ['memoria', '#/kids/memoria/aventura'], ['monte', '#/kids/ritmo/aventura'], ['noritmo', '#/ritmo/aventura']];
 const audit = () => {
   const out = []; const vis = (e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && +s.opacity > 0.3; };
   const inScroller = (e) => { for (let n = e.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth) return true; } return false; };
@@ -19,7 +19,7 @@ const audit = () => {
 };
 for (const w of [390, 320]) {
   const page = await ctx.newPage(); await page.setViewportSize({ width: w, height: 800 });
-  await page.addInitScript(() => localStorage.setItem('beaterista-aluno-nome', 'Teste'));
+  await page.addInitScript((t) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-av-tema', t); }, process.env.AV_TEMA || 'escuro'); // AV_TEMA=claro testa o modo claro
   for (const [id, hash] of GAMES) {
     await page.goto(url + '/aluno.html' + hash); await page.waitForSelector('.mp-node', { timeout: 8000 }).catch(() => {}); await sleep(1400);
     const H = await page.evaluate(() => (document.querySelector('.mp-world') || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height);
