@@ -5,6 +5,7 @@ import { soundButton } from './sound-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
+import * as ESTRELAS from './figurinhas/estrelas.js';
 import * as CODE from './codigo.js';
 import * as AC from './acesso.js';
 import * as dicas from './views/dicas.js';
@@ -95,7 +96,7 @@ function sendScores() {
   sendT = setTimeout(() => {
     const name = getName(); if (!name) return;
     const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase());
-    if (me) RK.add('kids|estrelas', name, P.totalStars(me.id));
+    if (me) RK.add('kids|estrelas', name, ESTRELAS.estrelasTotais(me.id)); // Kids + ritmo + aventura (tudo que vale roleta)
     const xp = store.get('setting-xp'); if (xp && xp.data.total) RK.add('xp', name, xp.data.total);
   }, 3000);
 }

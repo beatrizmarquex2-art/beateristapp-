@@ -5,7 +5,7 @@ async function open(w = 390, h = 844, hash = '#/jogos/memart', file = 'aluno.htm
   const ctx = await context(browser, { viewport: { width: w, height: h }, isMobile: true });
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
-  await p.goto(`${url}/${file}${hash}`); await p.waitForSelector('.jg-memart .ma-go', { timeout: 15000 }); p.errs = errs; p.ctx = ctx; return p;
+  await p.goto(`${url}/${file}${hash}`); await p.waitForSelector('.ma-esc', { timeout: 15000 }); await p.locator('.ma-esc button').click(); await p.waitForSelector('.jg-memart .ma-go'); p.errs = errs; p.ctx = ctx; return p;
 }
 const cartas = (p) => p.evaluate(() => [...document.querySelectorAll('.ma-card')].map((b) => b.querySelector('.ma-cap').textContent));
 const nao = (p) => p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);

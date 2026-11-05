@@ -21,14 +21,14 @@ import * as AC from '../acesso.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca.svg', toca, 'ler, ouvir, repetir · microfone'],
+  ['toca', 'Toca Aqui', 'toca2.svg', toca, 'ler, ouvir, repetir · microfone'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
   ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
   ['stop', 'stop', 'stop.webp', stop],
-  ['memart', 'memória de artistas', 'memoria.svg', memart, 'pares de artistas e bandas · sem figurinhas'],
+  ['memart', 'jogo da memória', 'memoria.svg', memart, 'figuras e instrumentos ou artistas e bandas'],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
@@ -38,13 +38,11 @@ const SECTIONS = [
   ['ritmo e bateria', [
     link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
-    link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
   ]],
   ['leitura musical', [
     link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
   ['cartas e tabuleiro', [
-    link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     inner('memart'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],

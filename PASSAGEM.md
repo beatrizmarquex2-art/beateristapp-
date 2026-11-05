@@ -278,3 +278,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Ritmo: máx 3 estrelas, só músicas >=105 bpm valem, conta a melhor por música+nível; aventura do ritmo só com músicas rápidas.
 
 - iPad (cache v284): js/ipad-fit.js trava o viewport/pinch em telas de toque, touch-action pan-x pan-y, coluna maior no iPad deitado. Teste: tests/e2e/ipad-zoom.mjs
+
+- Jogos (cache v287): saiu "explorar a bateria" da lista; Toca Aqui com ícone novo (toca2.svg); "jogo da memória" é uma entrada só (escolhe figuras e instrumentos OU artistas, sem modo misturado); Uno Musical mostra o nome da figura em cada carta + "modo aprender" (pausa a cada figura jogada); ranking de estrelas usa o total (Kids+ritmo+aventura).

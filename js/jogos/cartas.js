@@ -3,7 +3,7 @@
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as C from './cartas-logic.js';
-import { SYMS, SYM_NAME, symbolEl, actionEl } from './cartas-simbolos.js';
+import { SYMS, SYM_NAME, SYM_SHORT, SYM_LEARN, symbolEl, actionEl } from './cartas-simbolos.js';
 import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
 import { lobby, linkBadge } from './online.js';
@@ -39,7 +39,7 @@ function miniOf(c) {
 /** Carta virada pra cima: cantos pequenos, figura grande e centralizada num oval branco. */
 export function cardEl(c) {
   return h('span', { class: `cx-card c-${c.color || 'curinga'}${c.kind === 'fig' ? '' : ' act'}`, 'data-id': c.id, 'aria-hidden': 'true' },
-    h('i', { class: 'cx-co tl' }, miniOf(c)), h('span', { class: 'cx-oval' }, bigOf(c)), h('i', { class: 'cx-co br' }, miniOf(c)));
+    h('i', { class: 'cx-co tl' }, miniOf(c)), h('span', { class: 'cx-oval' }, bigOf(c)), c.kind === 'fig' ? h('b', { class: 'cx-lbl' }, SYM_SHORT[c.sym]) : null, h('i', { class: 'cx-co br' }, miniOf(c)));
 }
 export const backEl = () => h('span', { class: 'cx-card back', 'aria-hidden': 'true' }, h('span', { class: 'cx-oval' }, symbolEl('colcheia', 'cx-sym')));
 
@@ -53,7 +53,7 @@ export function mount(host, opts) {
   const saved = adv ? {} : getGame(ID);
   const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
-    hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false,
+    hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false, learn: saved.learn === true,
   };
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
@@ -146,6 +146,7 @@ export function mount(host, opts) {
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       h('p', { class: 'jg-lab' }, 'dicas'), seg('dicas', [['com', 'cartas que servem brilham'], ['sem', 'sem dica']], prefs.hint, (v) => { prefs.hint = v; keepPrefs(); }),
       h('p', { class: 'jg-lab' }, 'ajuda dos nomes'), seg('ajuda', [['on', 'mostrar o nome da carta da mesa'], ['off', 'desligada']], prefs.help ? 'on' : 'off', (v) => { prefs.help = v === 'on'; keepPrefs(); }),
+      h('p', { class: 'jg-lab' }, 'modo aprender'), seg('aprender', [['off', 'jogo normal'], ['on', 'pausar a cada figura jogada']], prefs.learn ? 'on' : 'off', (v) => { prefs.learn = v === 'on'; keepPrefs(); }),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
@@ -365,7 +366,18 @@ export function mount(host, opts) {
   function commit(next, { fromBusy = false } = {}) {
     if (busy && !fromBusy) return;
     const prev = g; const rects = grab(); g = next; picking = null; busy = true;
-    persist(); sync(); runEvent(prev, rects);
+    persist(); sync();
+    const t0 = C.topOf(prev); const t1 = C.topOf(next);
+    if (prefs.learn && !adv && prefs.mode !== 'online' && t1 && t1.kind === 'fig' && (!t0 || t0.id !== t1.id)) aprender(t1, () => { if (!gone) runEvent(prev, rects); });
+    else runEvent(prev, rects);
+  }
+  /** Modo aprender: o jogo PAUSA (busy) e mostra a figura jogada, o nome e o que ela significa, até a pessoa tocar em "entendi". */
+  function aprender(c, done) {
+    const old = root.querySelector('.cx-learn'); if (old) old.remove();
+    const ok = h('button', { type: 'button', class: 'btn primary wide', onclick: () => { box.remove(); done(); } }, 'entendi, continuar');
+    const box = h('div', { class: 'cx-learn', role: 'dialog', 'aria-label': `figura jogada: ${SYM_NAME[c.sym]}` },
+      h('div', { class: 'cx-learn-in' }, h('p', { class: 'jg-lab' }, 'figura jogada'), h('div', { class: 'cx-learn-card' }, cardEl(c)), h('h3', { class: 'hand' }, c.sym === 'fantasma' ? 'nota fantasma' : c.sym === 'acento' ? 'acento' : SYM_NAME[c.sym]), h('p', {}, SYM_LEARN[c.sym]), ok));
+    root.append(box); try { ok.focus(); } catch { /* sem foco */ }
   }
   function grab() {
     const out = { cards: {} }; if (!handEl) return out;

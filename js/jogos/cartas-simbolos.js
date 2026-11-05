@@ -9,6 +9,21 @@ export const SYM_NAME = {
   acento: 'acento (>)', fantasma: 'nota fantasma (entre parênteses)',
 };
 
+/** Nome curto (cabe em 2 linhas na carta) e o que a figura significa (tela de aprender). */
+export const SYM_SHORT = { seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semi-colcheia', fusa: 'fusa', p_seminima: 'pausa semínima', p_colcheia: 'pausa colcheia', p_semicolcheia: 'pausa semi-colcheia', p_fusa: 'pausa fusa', acento: 'acento', fantasma: 'fantasma' };
+export const SYM_LEARN = {
+  seminima: 'dura 1 tempo. é a nota que a gente conta: 1, 2, 3, 4.',
+  colcheia: 'dura meio tempo: duas colcheias cabem em 1 tempo ("1 e").',
+  semicolcheia: 'dura um quarto de tempo: quatro semicolcheias cabem em 1 tempo.',
+  fusa: 'dura um oitavo de tempo: oito fusas cabem em 1 tempo. são rapidinhas!',
+  p_seminima: 'é um silêncio que dura 1 tempo, igual à semínima. a gente conta, mas não toca.',
+  p_colcheia: 'é um silêncio de meio tempo, igual à colcheia.',
+  p_semicolcheia: 'é um silêncio de um quarto de tempo, igual à semicolcheia.',
+  p_fusa: 'é um silêncio de um oitavo de tempo, igual à fusa.',
+  acento: 'o sinal ">" quer dizer: toque essa nota mais forte!',
+  fantasma: 'nota fantasma (entre parênteses): toque bem baixinho, quase sem som.',
+};
+
 const f1 = (n) => Math.round(n * 10) / 10;
 
 /** Cabeça preenchida + haste (+ bandeirolas). `x` é o centro da cabeça; flags = 0..3. */

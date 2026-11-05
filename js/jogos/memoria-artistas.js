@@ -1,3 +1,4 @@
+// Jogo da memória (entrada única): escolha entre FIGURAS E INSTRUMENTOS (o jogo dos Kids, #/kids/memoria) e ARTISTAS (este). Não existe modo misturado.
 // Memória de Artistas: pares de ARTISTAS/BANDAS sorteados do catálogo de fotos (1 artista = 1 par, nunca repete entidade).
 // Jogo livre: NÃO concede figurinhas, pacotes, moedas nem prêmios. Recordes ficam só neste aparelho (localStorage).
 import { h } from '../util.js';
@@ -27,6 +28,14 @@ export function mount(host) {
     return img;
   };
 
+  /* ---------- entrada: dois jogos separados (sem modo misturado) ---------- */
+  const inicio = () => {
+    stopTick(); G = null;
+    root.replaceChildren(h('h2', { class: 'jg-h hand' }, 'jogo da memória'), h('p', { class: 'jg-p' }, 'escolha com o que você quer jogar:'),
+      h('div', { class: 'ma-esc' },
+        h('a', { class: 'ma-esc-b', href: '#/kids/memoria' }, h('span', { class: 'ma-esc-i', 'aria-hidden': 'true' }, '🥁'), h('b', {}, 'figuras e instrumentos'), h('small', {}, '4, 8 ou 12 pares · 1 ou 2 jogadores')),
+        h('button', { type: 'button', class: 'ma-esc-b', onclick: menu }, h('span', { class: 'ma-esc-i', 'aria-hidden': 'true' }, '🎤'), h('b', {}, 'artistas e bandas'), h('small', {}, '4 a 12 pares · sorteia artistas novos a cada partida'))));
+  };
   /* ---------- seleção ---------- */
   const menu = () => {
     stopTick(); G = null;
@@ -34,7 +43,7 @@ export function mount(host) {
     const falta = pool.length < lvl[2];
     const chip = (on, label, fn, dis, extra) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(on), class: on ? 'on' : '', disabled: dis || null, onclick: fn }, label, extra || null);
     root.replaceChildren(
-      h('h2', { class: 'jg-h hand' }, 'memória de artistas'),
+      h('button', { type: 'button', class: 'btn small ghost', onclick: inicio }, '‹ outro jogo da memória'), h('h2', { class: 'jg-h hand' }, 'memória de artistas'),
       h('p', { class: 'jg-p' }, 'ache os dois cartões do mesmo artista ou banda. a cada partida os artistas são sorteados de novo. não ganha figurinha: é só pra se divertir!'),
       h('div', { class: 'ma-sec' }, h('b', {}, 'dificuldade'), h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'dificuldade' },
         ...NIVEIS.map(([v, l, n]) => chip(nivel === v, `${l} · ${n} pares`, () => { nivel = v; setGame('memart', { nivel }); menu(); })))),
@@ -126,11 +135,11 @@ export function mount(host) {
     let cat = []; try { cat = await (await fetch('assets/figurinhas/catalogo.json')).json(); await loadCat(); } catch { /* sem catálogo: lista vazia */ }
     if (gone) return; const r = agrupar(ENTIDADES, cat); artistas = r.artistas; faltando = r.faltando; if (faltando.length) console.warn('memória de artistas: fotos fora do catálogo', faltando);
     if (!artistas.length) { root.replaceChildren(h('p', { class: 'ma-aviso' }, 'não consegui carregar os artistas agora. tente de novo mais tarde.')); return; }
-    menu();
+    inicio();
   })();
   return {
     inProgress: () => !!(G && !G.fim && G.achados.size > 0),
-    restart: () => { if (gone || !artistas.length) return; if (G) iniciar(G.n); else menu(); },
+    restart: () => { if (gone || !artistas.length) return; if (G) iniciar(G.n); else inicio(); },
     destroy() { gone = true; stopTick(); for (const id of timers) clearTimeout(id); timers.clear(); },
   };
 }
