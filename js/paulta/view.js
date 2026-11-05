@@ -3,7 +3,7 @@ import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import * as P from '../kids/progress.js';
 import * as RK from '../ranking.js';
-import { robo, tierOf, roboMarkup } from '../kids/robo.js';
+import { robo, tierOf } from '../kids/robo.js';
 import { stars as sparkle, toast, confirmSheet } from '../ui.js';
 import { svgEl } from '../kids/art.js';
 import { silence } from '../audio.js';
@@ -57,45 +57,6 @@ function homeScreen(host, rerender) {
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }
 
-
-/* ---------- trilha de aventura: cada mundo é um caminho sinuoso, o Paul fica na fase atual ---------- */
-const TRAIL_DOODLES = { drum: ['d-cymbal', 'd-bolt2', 'd-note'], sol: ['d-note', 'd-stars', 'd-heart'], fa: ['d-notered', 'd-stars', 'd-ulstar'], duel: ['d-burst', 'd-bolt2', 'd-stars'] };
-const PITCH = 132; const TOP = 70;
-const xOf = (i) => Math.round(50 + 27 * Math.sin(i * 1.15));
-function trail(w, p, mode, me) {
-  const W = WORLDS[w]; const n = W.count; const H = TOP + n * PITCH + 130;
-  const pos = Array.from({ length: n + 1 }, (_, i) => ({ x: i === n ? 50 : xOf(i), y: TOP + i * PITCH }));
-  const dn = (k) => !!p.done[`${w}:${k}`]; let cur = 0; for (let k = 1; k <= n; k++) if (!dn(k)) { cur = k; break; } // 0 = tudo concluído
-  const full = cur === 0; const stage = h('div', { class: 'pl-trail', 'data-world': w, style: `height:${H}px;--wc:${W.color}` });
-  const seg = []; for (let i = 0; i < n; i++) { const a = pos[i]; const b = pos[i + 1]; const my = (a.y + b.y) / 2; seg.push(`<path class="${dn(i + 1) ? 'on' : ''}" d="M${a.x} ${a.y} C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}"/>`); }
-  const road = h('div', { class: 'pl-road' }); road.innerHTML = `<svg viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">${seg.join('')}</svg>`;
-  stage.append(road);
-  (TRAIL_DOODLES[w] || []).forEach((d, k) => { for (let y = 180 + k * 150; y < H - 120; y += 450) stage.append(h('img', { class: 'pl-doodle', src: `assets/paul/${d}.webp`, alt: '', 'aria-hidden': 'true', style: `top:${y}px;${(y / 150 + k) % 2 < 1 ? 'left:3%' : 'right:3%'}` })); });
-  stage.append(h('div', { class: 'pl-flag', style: `top:${TOP - 58}px;left:${pos[0].x}%` }, '🚩 início'));
-  for (let k = 1; k <= n; k++) {
-    const sp = phaseSpec(w, k); const ph = p.ph[S.phKey(w, k, mode)]; const st = ph ? ph.s : 0; const open = S.unlocked(p, w, k); const done = dn(k);
-    const boss = sp.sudden || k === n; const c = pos[k - 1];
-    const badge = [sp.secs ? '⏱' : '', sp.sudden ? '💥' : ''].filter(Boolean).join('');
-    const body = [h('b', { class: 'pl-nn' }, open ? (done ? '✓' : String(k)) : '🔒'), badge ? h('i', { class: 'pl-bd' }, badge) : null, boss ? h('i', { class: 'pl-crown' }, k === n ? '👑' : '⚔️') : null];
-    const meta = h('span', { class: 'pl-ntag' }, h('span', { class: 'pl-nst' }, ...[1, 2, 3].map((q) => h('i', { class: q <= st ? 'on' : '' }, '★'))), h('small', {}, open || k === cur ? sp.title : `fase ${k}`));
-    const cls = `pl-node${done ? ' done' : ''}${open && !done ? ' now' : ''}${open ? '' : ' locked'}${boss ? ' boss' : ''}`;
-    const el = open ? h('a', { class: cls, href: `${BASE}/${w}/${k}/${mode}`, 'aria-label': `Fase ${k}: ${sp.title}`, style: `left:${c.x}%;top:${c.y}px` }, ...body, meta)
-      : h('button', { type: 'button', class: cls, 'aria-label': `Fase ${k} trancada`, style: `left:${c.x}%;top:${c.y}px`, onclick: () => toast('conclua a fase anterior pra abrir o caminho', { ms: 2200 }) }, ...body, meta);
-    stage.append(el);
-  }
-  const fin = pos[n]; const lesson = full ? h('a', { class: 'pl-goal on', href: `${BASE}/aula/${w}`, style: `left:${fin.x}%;top:${fin.y}px` }, h('b', {}, '🏆'), h('small', {}, 'mundo concluído · aulinha do Paul'))
-    : h('div', { class: 'pl-goal', style: `left:${fin.x}%;top:${fin.y}px` }, h('b', {}, '🏰'), h('small', {}, 'fim do mundo'));
-  stage.append(lesson);
-  // Paul fica na fase atual (anda do lugar onde estava da última vez)
-  const target = full ? pos[n] : pos[cur - 1]; let from = target; try { const sv = JSON.parse(sessionStorage.getItem(`pl-pos-${me.id}-${w}`) || 'null'); if (sv && sv.k && sv.k !== (full ? n + 1 : cur) && pos[sv.k - 1]) from = pos[sv.k - 1]; } catch { /* ok */ }
-  const pl = h('div', { class: `pl-paul${target.x < 50 ? ' r' : ''}`, style: `left:${from.x}%;top:${from.y}px`, 'aria-hidden': 'true' }); pl.innerHTML = roboMarkup(full ? 'cheer' : 'walk', 0); stage.append(pl);
-  requestAnimationFrame(() => requestAnimationFrame(() => { pl.style.left = `${target.x}%`; pl.style.top = `${target.y}px`; }));
-  try { sessionStorage.setItem(`pl-pos-${me.id}-${w}`, JSON.stringify({ k: full ? n + 1 : cur })); } catch { /* ok */ }
-  setTimeout(() => { if (stage.isConnected) { const t = stage.querySelector('.pl-node.now, .pl-goal.on'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } }, 350);
-  return stage;
-}
-
-
 /* ---------- mapa de fases de um mundo ---------- */
 function worldScreen(host, w, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
@@ -103,14 +64,21 @@ function worldScreen(host, w, modeArg) {
   if (w === 'duel' && !S.duelUnlocked(p)) { location.hash = BASE; return () => {}; }
   const done = S.worldProgress(p, w); const full = S.worldDone(p, w);
   const r = robo({ mood: full ? 'crown' : 'happy', tier: tierOf(P.totalStars(me.id)), size: 84, say: full ? `mundo concluído! a aulinha está liberada, ${me.name}!` : w === 'duel' ? 'aqui as claves se enfrentam. atenção na clave!' : `${W.blurb}. escolhe uma fase!` });
+  const lv = (n) => {
+    const sp = phaseSpec(w, n); const ph = p.ph[S.phKey(w, n, mode)]; const st = ph ? ph.s : 0; const open = S.unlocked(p, w, n); const dn = !!p.done[`${w}:${n}`];
+    const tag = [sp.secs ? `⏱ ${sp.secs}s` : sp.optSecs ? `⏱ opcional` : '', sp.sudden ? '💥' : '', `${sp.rounds} rod.`].filter(Boolean).join(' ');
+    const body = [h('b', { class: 'kx-n' }, String(n)), h('small', {}, tag), h('span', { class: 'kx-st' }, ...[1, 2, 3].map((k) => h('i', { class: k <= st ? 'on' : '' }, '★'))), dn ? h('small', { class: 'pl-ok' }, '✓') : null];
+    return open ? h('a', { class: `kx-lv${dn ? ' done' : ''}${sp.sudden ? ' boss' : ''}`, href: `${BASE}/${w}/${n}/${mode}`, title: sp.title }, ...body)
+      : h('button', { type: 'button', class: 'kx-lv locked', 'aria-label': `Fase ${n} trancada`, onclick: () => toast('conclua a fase anterior pra abrir', { ms: 2200 }) }, h('b', { class: 'kx-n' }, '🔒'), h('small', {}, `fase ${n}`));
+  };
   host.append(topBar(BASE, h('span', { class: 'kd-stars' }, `${done}/${W.count}`)),
     gtitle(worldIcon(w), W.name, W.blurb),
     h('div', { class: 'kx-hello' }, r.el), bar((done / W.count) * 100, 'big'),
     h('div', { class: 'row kd-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))),
     h('p', { class: 'lib-note' }, mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'),
     full ? h('a', { class: 'kd-btn kx-go', href: `${BASE}/aula/${w}` }, '📖 aulinha do Paul (liberada!)') : h('p', { class: 'lib-note' }, '📖 a aulinha do Paul abre quando você concluir o mundo.'),
-    trail(w, p, mode, me),
-    h('p', { class: 'lib-note' }, '⏱ = com tempo · 💥 = errou, recomeça · ⚔️ = fase de desafio · 👑 = chefão do mundo. as estrelas são do modo que está aberto.'));
+    h('div', { class: 'kx-levels pl-levels', 'data-world': w }, ...Array.from({ length: W.count }, (_, k) => lv(k + 1))),
+    h('p', { class: 'lib-note' }, '⏱ = com tempo · 💥 = errou, recomeça. as estrelas são do modo que está aberto.'));
   return () => {};
 }
 

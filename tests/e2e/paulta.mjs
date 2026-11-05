@@ -16,8 +16,8 @@ const txt = () => page.evaluate(() => document.querySelector('#view').innerText)
 
 check('nome do jogo aparece como pauLta (L maiúsculo)', (await txt()).includes('pauLta'));
 check('4 regiões: bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 4 && !!(await page.$('.kx-g.pl-locked')));
-for (const [w, n] of [['drum', 18], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.pl-trail .pl-node')).length === n); }
-await go('#/paulta/drum/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.pl-trail')).length === 1);
+for (const [w, n] of [['drum', 18], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.pl-levels .kx-lv')).length === n); }
+await go('#/paulta/drum/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.pl-levels')).length === 1);
 
 // errar mostra explicação específica e exige "entendi"
 await go('#/paulta/drum/1/nomes'); await click('.kx-go'); await sleep(250);
@@ -47,7 +47,7 @@ await page.evaluate(async () => {
 await page.reload(); await page.waitForSelector('.kx-cards .kx-g');
 check('depois de recarregar o título persiste (Explorador)', /Explorador da pauLta/.test(await txt()));
 check('nome do aluno aparece com o título no topo', await page.evaluate(() => /Teste · Explorador da pauLta/.test(document.querySelector('.ws').innerText)));
-await go('#/paulta/drum'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.pl-trail a.pl-node')).length === 6);
+await go('#/paulta/drum'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.pl-levels a.kx-lv')).length === 6);
 await go('#/paulta/perfil'); check('perfil mostra o título e os pontos', /Explorador/.test(await txt()) && /pts/.test(await txt()));
 await go('#/paulta/ranking'); check('ranking local lista o aluno', /Teste/.test(await txt()));
 await go('#/paulta/legenda'); check('legenda de bateria tem 13 símbolos', (await page.$$('.pl-legend .pl-card')).length >= 13);
