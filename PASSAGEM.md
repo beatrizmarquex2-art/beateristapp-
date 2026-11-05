@@ -107,6 +107,8 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - **Quiz e Letras** = quiz, caça-palavras e cruzadinha das 30 dicas (`#/dicas/...`, `js/views/dicas.js`). As 30 dicas já estão no Supabase (`dicas_publicas`: n, texto); aluno lê por `dicas_lista(p_code)` (SQL 009, só com código ativo e dentro da validade) via `js/dicas-aluno.js`, que grava como registros "tip" locais. **Trancado sem código**; no app da Bea usa os registros dela como antes. A função `dicas_ler` (outra sessão, usa `album_codigos`) continua lá sem uso.
 - **pauLta em modo livre** (aluno sem código): abre todas as fases e joga normal, mas **não conta** pontos, estrelas, títulos, ranking, reforço nem figurinhas (`js/paulta/livre.js`). Com código (ou no app da Bea) conta tudo. Testes: `tests/e2e/paulta-livre.mjs`, `acesso.mjs`.
 
+- **Beat Lab não existe na área do aluno** (nem com código): sem aba, `#/beatlab` volta pra Jogos, e o botão "salvar em meus ritmos" do Tocar some pro aluno. Continua no app da Bea.
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
