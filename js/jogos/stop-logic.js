@@ -1,6 +1,8 @@
 // Stop musical: regras puras. A checagem automática vale SÓ para preenchimento e inicial; o resto é revisão manual.
-export const CATEGORIES = ['nome', 'banda', 'música', 'instrumento/peça'];
-export const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'J', 'L', 'M', 'P', 'R', 'S', 'T', 'V'];
+export const CATEGORIES = ['instrumento', 'estilo ou marca', 'cantor(a)', 'banda ou grupo', 'música', 'acessório/peça'];
+export const NCAT = CATEGORIES.length;
+// só estas letras (sem I, H, K, O, Q, U, W, X, Y, Z): todas têm resposta fácil em qualquer categoria
+export const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'J', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V'];
 export const SECONDS = [60, 90, 120, 0]; // 0 = sem limite
 export const ROUNDS = [3, 5, 10];
 export const DECISIONS = ['valida', 'invalida', 'repetida'];
@@ -18,12 +20,24 @@ export function autoCheck(text, letter) {
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const players = (mode) => (mode === 'dupla' ? 2 : 1);
 
-export function newMatch({ mode = 'solo', seconds = 90, rounds = 3, rnd = Math.random } = {}) {
-  if (!ROUNDS.includes(rounds) || !SECONDS.includes(seconds) || !['solo', 'dupla'].includes(mode)) throw new Error('configuração inválida');
-  const letters = shuffle(LETTERS, rnd).slice(0, rounds);
-  return { v: 1, mode, seconds, rounds, letters, round: 0, totals: Array(players(mode)).fill(0), history: [], stage: 'play', turn: 0, cur: freshRound(mode), remaining: seconds };
+/** Sorteia `count` letras sem repetir até todas saírem; acabou o ciclo, recomeça sozinho. `used` = letras já sorteadas no ciclo atual. */
+export function drawLetters(count, used = [], rnd = Math.random) {
+  let cycle = used.filter((l) => LETTERS.includes(l)); if (cycle.length >= LETTERS.length) cycle = [];
+  const out = [];
+  while (out.length < count) {
+    let pool = LETTERS.filter((l) => !cycle.includes(l) && !out.includes(l));
+    if (!pool.length) { cycle = []; pool = LETTERS.filter((l) => !out.includes(l)); }
+    const l = pool[Math.floor(rnd() * pool.length)]; out.push(l); cycle.push(l);
+  }
+  return { letters: out, cycle: cycle.length >= LETTERS.length ? [] : cycle };
 }
-function freshRound(mode) { const n = players(mode); return { answers: Array.from({ length: n }, () => Array(4).fill('')), decisions: null, equiv: Array(4).fill(false), corrections: Array.from({ length: n }, () => Array(4).fill(null)) }; }
+
+export function newMatch({ mode = 'solo', seconds = 90, rounds = 3, used = [], rnd = Math.random } = {}) {
+  if (!ROUNDS.includes(rounds) || !SECONDS.includes(seconds) || !['solo', 'dupla'].includes(mode)) throw new Error('configuração inválida');
+  const { letters, cycle } = drawLetters(rounds, used, rnd);
+  return { v: 1, mode, seconds, rounds, letters, cycle, round: 0, totals: Array(players(mode)).fill(0), history: [], stage: 'play', turn: 0, cur: freshRound(mode), remaining: seconds };
+}
+function freshRound(mode) { const n = players(mode); return { answers: Array.from({ length: n }, () => Array(NCAT).fill('')), decisions: null, equiv: Array(NCAT).fill(false), corrections: Array.from({ length: n }, () => Array(NCAT).fill(null)) }; }
 export const letterOf = (g) => g.letters[g.round];
 /** Texto que vale na pontuação: a correção justificada, se houver; o original fica no registro. */
 export const effective = (g, p, c) => { const k = g.cur.corrections[p][c]; return k ? k.text : g.cur.answers[p][c]; };
@@ -57,8 +71,8 @@ export const warnings = (g) => g.cur.decisions.flatMap((row, p) => row.map((d, c
 
 /** Pontuação da rodada. Solo: 10 por válida. Dupla: 10 exclusiva (inclui diferentes), 5 se equivalentes. */
 export function scoreRound(g) {
-  const n = players(g.mode); const { decisions, equiv } = g.cur; const rows = Array.from({ length: n }, () => Array(4).fill(0));
-  for (let c = 0; c < 4; c++) {
+  const n = players(g.mode); const { decisions, equiv } = g.cur; const rows = Array.from({ length: n }, () => Array(NCAT).fill(0));
+  for (let c = 0; c < NCAT; c++) {
     const ok = Array.from({ length: n }, (_, p) => decisions[p][c] === 'valida' && autoCheck(effective(g, p, c), letterOf(g)) !== 'vazia');
     if (n === 1) { rows[0][c] = ok[0] ? 10 : 0; continue; }
     if (ok[0] && ok[1]) { const same = equiv[c] || normalize(effective(g, 0, c)) === normalize(effective(g, 1, c)); rows[0][c] = rows[1][c] = same ? 5 : 10; } else { rows[0][c] = ok[0] ? 10 : 0; rows[1][c] = ok[1] ? 10 : 0; }
@@ -76,5 +90,5 @@ export function confirmRound(g0) {
 }
 export const winner = (g) => { if (g.totals.length === 1) return null; const [a, b] = g.totals; return a === b ? 'empate' : a > b ? 0 : 1; };
 export function validMatch(g) {
-  try { return !!g && g.v === 1 && ['solo', 'dupla'].includes(g.mode) && g.letters.length === g.rounds && new Set(g.letters).size === g.rounds && g.letters.every((l) => LETTERS.includes(l)) && ['play', 'review', 'done'].includes(g.stage) && g.cur.answers.length === players(g.mode) && g.cur.answers.every((r) => r.length === 4) && (g.stage !== 'review' || !!g.cur.decisions); } catch { return false; }
+  try { return !!g && g.v === 1 && ['solo', 'dupla'].includes(g.mode) && g.letters.length === g.rounds && new Set(g.letters).size === g.rounds && g.letters.every((l) => LETTERS.includes(l)) && ['play', 'review', 'done'].includes(g.stage) && g.cur.answers.length === players(g.mode) && g.cur.answers.every((r) => r.length === NCAT) && (g.stage !== 'review' || !!g.cur.decisions); } catch { return false; }
 }

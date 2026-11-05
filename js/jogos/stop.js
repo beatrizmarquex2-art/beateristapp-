@@ -31,19 +31,20 @@ export function mount(host) {
     const resume = S.validMatch(saved.match) && saved.match.stage !== 'done' ? saved.match : null;
     const seg = (key, list, fmt) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map((v) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), class: prefs[key] === v ? 'on' : '', onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, fmt(v))));
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'stop'), h('p', { class: 'jg-p' }, 'quatro categorias: nome (de pessoa ou artista), banda, música e instrumento/peça (caixa, bumbo, chimbal…).'),
+      h('h2', { class: 'jg-h hand' }, 'stop'), h('p', { class: 'jg-p' }, 'seis categorias: instrumento, estilo ou marca, cantor(a), banda ou grupo, música e acessório/peça. a letra é sorteada e só repete depois que todas já saíram.'),
       h('p', { class: 'jg-lab' }, 'quem joga?'), h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['solo', 'solo · treino'], ['dupla', 'dois no aparelho'], ['online', '2 celulares (código)']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; setGame(ID, { mode: v }); intro(); } }, l))),
       prefs.mode !== 'solo' ? h('p', { class: 'jg-p muted' }, prefs.mode === 'online' ? 'cada um joga no seu celular, um depois do outro, com a mesma letra. quem criou a sala revisa as respostas no fim de cada rodada.' : 'é uma adaptação por turnos: cada um joga com a mesma letra e o mesmo tempo, um depois do outro. o tempo do primeiro não diminui o do segundo.') : null,
       h('p', { class: 'jg-lab' }, 'tempo por jogador'), seg('seconds', S.SECONDS, secLabel),
       h('p', { class: 'jg-lab' }, 'rodadas'), seg('rounds', S.ROUNDS, String),
       h('div', { class: 'jg-rule-box' }, h('b', {}, 'regra da inicial'), h('p', {}, 'o jogo só confere se o campo está preenchido e se o primeiro caractere alfabético começa com a letra (sem acento e sem diferença de maiúscula). “the beatles” vale T e “beatles” vale B. se existe a banda ou a música de verdade, quem decide é a revisão manual.')),
-      h('details', { class: 'jg-rules' }, h('summary', {}, 'pontuação'), h('ul', {}, h('li', {}, 'solo: 10 por resposta válida (máximo 40 por rodada).'), h('li', {}, 'dupla: 10 por resposta válida que só um tem ou que é diferente; 5 para cada uma se as respostas forem equivalentes.'), h('li', {}, 'no fim de cada rodada, você ou o professor marca cada resposta como válida, inválida ou repetida.'))),
+      h('details', { class: 'jg-rules' }, h('summary', {}, 'pontuação'), h('ul', {}, h('li', {}, 'solo: 10 por resposta válida (máximo 60 por rodada).'), h('li', {}, 'dupla: 10 por resposta válida que só um tem ou que é diferente; 5 para cada uma se as respostas forem equivalentes.'), h('li', {}, 'no fim de cada rodada, você ou o professor marca cada resposta como válida, inválida ou repetida.'))),
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: newOnline, onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => resumeMatch(resume) }, 'continuar partida') : null,
-          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => start(S.newMatch(prefs)) }, resume ? 'nova partida' : 'iniciar')),
+          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => start(fresh()) }, resume ? 'nova partida' : 'iniciar')),
     ].filter(Boolean));
   }
-  const newOnline = () => ({ ...S.newMatch({ ...prefs, mode: 'dupla' }), online: true });
+  const fresh = (extra = {}) => { const m = S.newMatch({ ...prefs, used: getGame(ID).cycle || [], ...extra }); setGame(ID, { cycle: m.cycle }); return m; }; // ciclo de letras guardado no aparelho
+  const newOnline = () => ({ ...fresh({ mode: 'dupla' }), online: true });
   function startOnline(c, state) {
     conn = c; lob = null; badge.set(true); c.on.link = (v) => badge.set(v);
     c.on.state = (st) => { g = st; route(); };
@@ -157,7 +158,7 @@ export function mount(host) {
     root.replaceChildren(g.online ? badge.el : null, h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, g.mode === 'solo' ? `total: ${g.totals[0]} pontos` : w === 'empate' ? 'empate!' : `${pname(g, w)} venceu!`),
       h('p', {}, g.totals.map((t, p) => `${pname(g, p)}: ${t}`).join(' · '))),
       h('h3', { class: 'hand' }, 'histórico'), ...g.history.map((x) => h('details', { class: 'jg-rules' }, h('summary', {}, `letra ${x.letter} · ${x.sums.join(' x ')}`), table(x))),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => (g.online ? (g = newOnline(), sync(), route()) : start(S.newMatch(prefs))) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => (g.online ? (g = newOnline(), sync(), route()) : start(fresh())) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   const onVis = () => { if (document.hidden) { if (view === 'play' && !frozen) pauseNow(); } else showPaused(); };

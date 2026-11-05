@@ -46,7 +46,7 @@ const GROUPS = [
     ['Cara a cara', 'cara-a-cara.webp', 'O Paul escolhe um instrumento em segredo; o aluno faz perguntas de sim ou não para descobrir qual é.',
       ['conhecimento das famílias e características dos instrumentos', 'raciocínio por eliminação', 'formular boas perguntas'],
       'Para perguntar bem o aluno precisa saber como cada instrumento soa e é tocado. Ensina a pensar por categorias (cordas, sopro, percussão), base da escuta analítica.'],
-    ['Stop', 'stop.webp', 'Com uma letra sorteada, escrever artista, banda, música e instrumento/peça antes do tempo acabar.',
+    ['Stop', 'stop.webp', 'Com uma letra sorteada, escrever instrumento, estilo ou marca, cantor(a), banda ou grupo, música e acessório/peça antes do tempo acabar.',
       ['repertório e cultura musical', 'recuperação rápida da memória', 'escrita e ortografia sob tempo'],
       'Cada resposta é uma busca rápida na memória de longo prazo, o que fortalece o repertório. Na dupla, ver as respostas do colega amplia as referências.'],
   ]],
