@@ -1,4 +1,4 @@
-// Código do aluno: Beat Hero e "Músicas MIDI" só com código. Piano Hero e músicas prontas seguem abertos. O Supabase é simulado.
+// Código do aluno: todos os jogos de ritmo só com código; com código as músicas MIDI aparecem. O Supabase é simulado.
 import fs from 'node:fs';
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const b64 = fs.readFileSync(process.env.MID_FILE).toString('base64');
@@ -12,28 +12,18 @@ async function phone(saved) {
   await p.addInitScript((c) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', c); }, saved || '');
   await p.goto(`${url}/aluno.html#/ritmo`); await sleep(2500); return { p, errs, ctx };
 }
-// 1) sem código
+// 1) sem código: o ritmo todo fica trancado (tela de "gerar meu código"); digitando o código certo libera
 {
   const { p, errs, ctx } = await phone('');
-  check('sem código: abre no Piano Hero (aberto)', (await p.locator('.rz-g.on b').textContent()) === 'Piano Hero');
-  check('o Beat Hero mostra o cadeado', (await p.locator('.rz-g[data-v="beat"] span').textContent()).includes('🔒'));
-  await p.locator('.rz-g[data-v="beat"]').click(); await sleep(300);
-  check('Beat Hero pede o código (sem JOGAR)', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
-  await p.locator('.rz-g[data-v="tiles"]').click(); await sleep(300);
-  check('Piano Hero joga sem código (músicas prontas)', (await p.locator('.rz-jogar').count()) === 1);
-  await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click(); await sleep(200); await p.locator('.rz-st[data-v="imp"]').click(); await sleep(300);
-  check('aba "Músicas MIDI" também pede o código', (await p.locator('#rz-code').count()) === 1 && (await p.locator('.rz-song').count()) === 0);
+  check('sem código: o ritmo pede o código na hora (sem JOGAR)', (await p.locator('.al-lock').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
   check('nenhuma lista de MIDI foi baixada sem código', state.listCalls.length === 0, JSON.stringify(state.listCalls));
-  // código errado
-  await p.locator('.rz-lock-have summary').click(); // "já tenho um código"
-  await p.locator('#rz-code').fill('ZZZ999'); await p.locator('[data-act="rz-code"]').click(); await sleep(600);
-  check('código errado: avisa e continua trancado', (await p.locator('#rz-code-msg').textContent()).includes('não achei') && (await p.locator('#rz-code').count()) === 1);
-  // código certo (minúsculas e com espaço)
-  await p.locator('#rz-code').fill('abc 123'); await p.locator('[data-act="rz-code"]').click(); await sleep(1500);
+  await p.locator('.al-lock-have summary').click();
+  await p.locator('.al-lock-have input').fill('ZZZ999'); await p.locator('.al-lock-have button').click(); await sleep(700);
+  check('código errado: avisa e continua trancado', (await p.locator('.al-lock-msg').textContent()).includes('não achei') && (await p.locator('.al-lock').count()) === 1);
+  await p.locator('.al-lock-have input').fill('abc 123'); await p.locator('.al-lock-have button').click(); await sleep(2500);
   check('código certo libera e guarda no aparelho', await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo')) === 'ABC123');
   check('a lista de MIDIs só foi pedida com o código', state.listCalls.length >= 1 && state.listCalls.every((c) => c === 'ABC123'), JSON.stringify(state.listCalls));
-  await p.locator('.rz-g[data-v="beat"]').click(); await sleep(300);
-  check('Beat Hero liberado (sem cadeado, com o JOGAR)', (await p.locator('#rz-code').count()) === 0 && (await p.locator('.rz-jogar').count()) === 1);
+  check('o ritmo abre liberado (JOGAR, sem cadeado)', (await p.locator('.al-lock').count()) === 0 && (await p.locator('.rz-jogar').count()) === 1);
   check('sem erros de JS', errs.length === 0, errs.join('|')); await ctx.close();
 }
 // 2) com código guardado: já abre liberado, MIDI na lista, sem botões de editar, e joga
@@ -51,7 +41,7 @@ async function phone(saved) {
 {
   state.valid.delete('ABC123'); state.listCalls.length = 0;
   const { p, errs, ctx } = await phone('ABC123');
-  check('código desativado: volta a trancar e apaga o código guardado', (await p.locator('.rz-g[data-v="beat"] span').textContent()).includes('🔒') && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === null);
+  check('código desativado: volta a trancar e apaga o código guardado', (await p.locator('.al-lock').count()) === 1 && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === null);
   check('desativado não baixa lista nenhuma', state.listCalls.length === 0);
   await ctx.close();
 }

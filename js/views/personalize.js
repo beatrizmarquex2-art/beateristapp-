@@ -3,6 +3,8 @@ import { sheet, toast } from '../ui.js';
 import * as store from '../store.js';
 import { THEMES, FONTS, currentTheme, setTheme, currentFont, setFont, motionOn, setMotion } from '../theme.js';
 import { openCover } from './cover.js';
+import { openNavEditor } from '../navbar.js';
+import { handsOn, setHands } from '../hands.js';
 import { SECTIONS, LAYOUT_KEY, getLayout, saveLayout, resetLayout } from '../layout.js';
 
 const sw = (on, label, onToggle) => h('button', { class: 'switch', type: 'button', role: 'switch', 'aria-checked': String(on), 'aria-label': label, onclick: onToggle });
@@ -59,6 +61,13 @@ export function openPersonalize() {
       h('button', { class: 'btn ghost small', type: 'button', onclick: openCover }, 'Trocar foto da capa'),
       h('h3', { class: 'sec-title' }, 'Início: o que aparece e em que ordem'), secs,
       h('button', { class: 'btn ghost small', type: 'button', onclick: async () => { await resetLayout(); toast('Início voltou à ordem original.'); } }, 'Restaurar ordem do início'),
+      h('h3', { class: 'sec-title' }, 'Barra de baixo'),
+      h('button', { class: 'btn ghost small', type: 'button', onclick: openNavEditor }, 'Escolher os 4 atalhos'),
+      h('h3', { class: 'sec-title' }, 'Modo mão ocupada'),
+      h('div', { class: 'sec-row' }, h('span', {}, h('span', {}, 'Botões grandes'), h('small', { style: { display: 'block', fontWeight: 400 } }, 'voltar, desfazer e próxima ferramenta, pra usar tocando')),
+        (() => { const b = sw(handsOn(), 'Modo mão ocupada', () => { setHands(!handsOn()); b.setAttribute('aria-checked', String(handsOn())); }); return b; })()),
+      h('h3', { class: 'sec-title' }, 'Lixeira'),
+      h('a', { class: 'btn ghost small', href: '#/lixeira' }, 'Ver o que apaguei (30 dias)'),
       h('h3', { class: 'sec-title' }, 'Movimento'), motion,
       h('p', { class: 'muted' }, 'Os atalhos você reorganiza na própria tela inicial, no botão “organizar”.'));
   });

@@ -9,6 +9,8 @@ import * as CODE from './codigo.js';
 import * as AC from './acesso.js';
 import * as dicionario from './views/dicionario.js';
 import * as kids from './views/kids.js';
+import * as paulta from './paulta/view.js';
+import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
@@ -23,7 +25,7 @@ import { startPaul } from './paul-talk.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -137,7 +139,7 @@ function lockView(view, what) {
   view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
-const NOMES_TELA = { ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria' };
+const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria' };
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
@@ -151,7 +153,7 @@ function shell(name) {
   const nav = h('nav', { class: 'bottom-nav', style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
     h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
@@ -164,6 +166,7 @@ function shell(name) {
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || 'esta parte');
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'kids') c = kids.mount(view, r.parts);
+    else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);

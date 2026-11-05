@@ -38,7 +38,7 @@ const SECTIONS = [
   ]],
   ['leitura musical', [
     link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
-    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.svg', 'cada peça tem a sua casinha'),
+    link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
   ['cartas e tabuleiro', [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),

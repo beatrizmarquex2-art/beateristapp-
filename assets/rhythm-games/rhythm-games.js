@@ -483,14 +483,14 @@ function rzThemeRow(){const cur=rzThemeId();return '<div class="rz-cores" role="
 /* seção que abre e fecha pela setinha (menos espaço na tela) */
 /* barrinha das músicas já tocadas: o quanto da precisão você já tem */
 function rzPBar(b){return b?'<span class="rz-pbar" role="img" aria-label="já tocada, melhor precisão '+(b.acc||0)+'%"><i style="width:'+Math.max(8,Math.min(100,b.acc||0))+'%"></i></span>':''}
-/* trava de aluno: sem código, Beat Hero e Músicas MIDI ficam fechados */
+/* trava de aluno: sem código, os jogos de ritmo (Beat Hero, Piano Hero e músicas) ficam fechados */
 function rzLocked(){return !!(OPTS.gate&&!OPTS.gate.ok())}
 function rzLockHTML(){var pend=OPTS.gate&&OPTS.gate.pendente?OPTS.gate.pendente():'';
   return '<section class="rz-lock" aria-live="polite"><span class="rz-lock-i" aria-hidden="true">🔒</span><h2 class="h2">Só pra alunos da Beaterista</h2>'
    +(pend?'<p class="small">seu código</p><div class="rz-lock-code" role="status" aria-label="seu código '+pend.split('').join(' ')+'">'+pend+'</div><p class="rz-lock-tell"><b>informe a professora Bea</b></p><p class="small muted">quando ela cadastrar o seu código, isto libera sozinho.</p><button type="button" class="btn" data-act="rz-code-check">já liberou? conferir</button>'
      :'<button type="button" class="btn btn-red" data-act="rz-code-gen">gerar meu código</button>')
    +'<details class="rz-lock-have"><summary class="small">já tenho um código</summary><div class="rz-lock-row"><input class="field" id="rz-code" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CÓDIGO" aria-label="Código do aluno"><button type="button" class="btn btn-red" data-act="rz-code">liberar</button></div></details>'
-   +'<p class="small rz-lock-msg" id="rz-code-msg" role="status"></p><p class="small muted">sem código você joga o Piano Hero com as músicas prontas.</p></section>'}
+   +'<p class="small rz-lock-msg" id="rz-code-msg" role="status"></p><p class="small muted">sem código os jogos de ritmo ficam trancados, mas os outros jogos livres abrem.</p></section>'}
 function rzLockPoll(){clearInterval(RZ.lockT);RZ.lockT=0;if(!(OPTS.gate&&OPTS.gate.pendente&&OPTS.gate.pendente()&&rzLocked())) return;
   RZ.lockT=setInterval(function(){if(!ACTIVE||document.hidden||!rzLocked()){if(!rzLocked()||!ACTIVE){clearInterval(RZ.lockT);RZ.lockT=0}return}OPTS.gate.conferir().then(function(ok){if(ok){clearInterval(RZ.lockT);RZ.lockT=0;toast('liberado! 🎉');rzRe()}}).catch(function(){})},8000)}
 function rzCodeSubmit(){var inp=$('#rz-code'),msg=$('#rz-code-msg');var v=inp?inp.value.toUpperCase().replace(/[^A-Z0-9]/g,''):'';if(v.length<4){if(msg) msg.textContent='o código tem de 4 a 12 letras ou números';return}
@@ -505,8 +505,8 @@ function rzAjustesBody(){const seg=(act,cur,arr)=>'<div class="segtabs rz-big-ta
 function rzStyleLabel(){const x=RS_STYLES.filter(function(y){return y[0]===RZ.style})[0];return x?x[1]:''}
 function rzMenu(){const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game)||RZ_GAMES[0];const songs=RZ.style==='imp'?rsAll('imp').filter(s=>!RZ.q||normTxt(s.name).includes(normTxt(RZ.q))).filter(s=>!OPTS.onAddFolder||!RZ.fold||(RZ.fold==='__none__'?!s.folder:s.folder===RZ.fold)):[];
   const styles=RS_STYLES.filter(function(x){return x[0]!=='imp'||IMP.length||OPTS.impLabel});const builtin=RZ.style!=='imp'&&RS_BUILTIN.some(function(b){return b[0]===RZ.style});
-  let h='<div class="rz-games rz-two" role="group" aria-label="Jogo">'+RZ_GAMES.map(([k,t,d,c])=>'<button type="button" class="rz-g'+(RZ.game===k?' on':'')+'" style="--gc:'+c+'" data-act="rz-game" data-v="'+k+'" aria-pressed="'+(RZ.game===k)+'"><i class="rz-gi" aria-hidden="true">'+(k==='beat'?'🥁':'🎹')+'</i><b>'+t+'</b><span>'+(k==='beat'&&rzLocked()?'🔒 com código de aluno':d)+'</span></button>').join('')+'</div>';
-  if(RZ.game==='beat'&&rzLocked()) return h+rzLockHTML();
+  let h='<div class="rz-games rz-two" role="group" aria-label="Jogo">'+RZ_GAMES.map(([k,t,d,c])=>'<button type="button" class="rz-g'+(RZ.game===k?' on':'')+'" style="--gc:'+c+'" data-act="rz-game" data-v="'+k+'" aria-pressed="'+(RZ.game===k)+'"><i class="rz-gi" aria-hidden="true">'+(k==='beat'?'🥁':'🎹')+'</i><b>'+t+'</b><span>'+(rzLocked()?'🔒 com código de aluno':d)+'</span></button>').join('')+'</div>';
+  if(rzLocked()) return h+rzLockHTML();
   if(styles.length>1){const cur=builtin?(RS_TIER_N[RZ.tier]+' · '+rsSong(RZ.style,RZ.tier).bpm+' bpm'):'escolha a música na lista';
     h+=rzAcc('ritmo','🎶','Ritmo: '+esc(rzStyleLabel()),cur,'<div class="rz-styles">'+styles.map(([k,l,c])=>'<button type="button" class="rz-st'+(RZ.style===k?' on':'')+'" style="--sc:'+c+'" data-act="rz-style" data-v="'+k+'">'+esc(l)+'</button>').join('')+'</div>'
       +(builtin?'<p class="small muted rz-tierhint">começa devagar e vai ficando mais rápido:</p><div class="rz-tiers">'+[0,1,2].map(function(k){var sg=rsSong(RZ.style,k);var bk=[RZ.game,(RZ.game==='beat')?rzInstKey():'',RZ.diff,sg.id].join('|');var b=R.best[bk];return '<button type="button" class="rz-tier'+(RZ.tier===k?' on':'')+'" data-act="rz-tier" data-v="'+k+'"><span class="rz-lv" aria-hidden="true">'+'▮'.repeat(k+1)+'<i>'+'▮'.repeat(2-k)+'</i></span><b>'+RS_TIER_N[k]+'</b><span class="small">'+sg.bpm+' bpm</span>'+rzPBar(b)+(b?'<span class="rz-b">'+(RZ.game==='beat'?'★'.repeat(b.stars||0):b.grade)+'</span>':'')+'</button>'}).join('')+'</div>':''))}

@@ -39,7 +39,7 @@ const MENU_BEA = [
     ['conteúdo', [['#/feed', 'mural', 'Feed Beaterista'], ['#/feed/colagens', 'photo', 'Colagens']]],
   ]],
   ['kit', 'meu kit', [
-    ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/ajustes', 'gear', 'Ajustes e backup']]],
+    ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/lixeira', 'trash', 'Lixeira'], ['#/ajustes', 'gear', 'Ajustes e backup']]],
   ]],
 ];
 const MENU_B = [
@@ -48,7 +48,7 @@ const MENU_B = [
   ]],
   ['jogos', 'jogos', [
     ['', [['#/jogos', 'star', 'Todos os jogos']]],
-    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/kids/pauta', 'staff', 'Onde mora na pauta?']]],
+    ['leitura musical', [['#/kids/figuras', 'staff', 'Figuras rítmicas'], ['#/paulta', 'staff', 'pauLta']]],
     ['cartas e tabuleiro', [['#/kids/memoria', 'star', 'Jogo da memória'], ['#/jogos/cartas', 'star', 'Uno Musical'], ['#/jogos/bingo', 'star', 'Bingo'], ['#/jogos/velha', 'star', 'Jogo da velha'], ['#/jogos/quebra', 'star', 'Quebra-cabeça'], ['#/jogos/cara', 'star', 'Cara a cara'], ['#/jogos/stop', 'star', 'Stop']]],
     ['dicas', [['#/dicas/quiz', 'bulb', 'Quiz das dicas'], ['#/dicas/caca', 'bulb', 'Caça-palavras'], ['#/dicas/cruzadinha', 'bulb', 'Cruzadinha']]],
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
@@ -193,4 +193,11 @@ export function openMenu() {
   document.addEventListener('keydown', onKey);
   back.append(panel); document.getElementById('overlay').append(back);
   const firstItem = panel.querySelector('.drawer-item.on, .drawer-item'); if (firstItem) firstItem.focus({ preventScroll: true });
+}
+
+/** Todas as atividades do menu (href, nome), sem repetir — usado na busca geral. */
+export function menuItems() {
+  const seen = new Map();
+  for (const M of [MENU_BEA, MENU_B]) for (const [, , groups] of M) for (const [, items] of groups) for (const [href, , label] of items) if (!seen.has(href)) seen.set(href, label);
+  return [...seen];
 }

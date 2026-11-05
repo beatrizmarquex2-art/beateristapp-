@@ -16,8 +16,8 @@ const trancada = (p) => p.locator('.al-lock').count();
 {
   const { ctx, p, errs } = await phone('', ''); await p.goto(`${url}/aluno.html#/jogos`); await sleep(1800);
   check('abas com cadeado: Beat Lab, Álbum e Ranking (Jogos e Tocar abertos)', (await p.locator('.nav-item.locked').count()) === 3, String(await p.locator('.nav-item.locked').count()));
-  for (const h of ['#/ranking', '#/album', '#/beatlab', '#/kids', '#/kids/figuras', '#/kids/pauta', '#/dicionario']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
-  for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/cartas', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio', '#/ritmo']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
+  for (const h of ['#/ranking', '#/album', '#/beatlab', '#/ritmo', '#/kids', '#/kids/figuras', '#/kids/eco', '#/dicionario']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
+  for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/cartas', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
   check('no catálogo, as fases/estudos têm cadeado e os jogos livres não', locked.some((t) => /fases e estrelas/.test(t)) && locked.some((t) => /dicionário/.test(t)) && !locked.some((t) => /memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
@@ -34,7 +34,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await p.locator('button:has-text("já liberou")').click(); await sleep(1500);
   check('depois que a professora cadastra, libera (sem cadeado nas abas)', (await trancada(p)) === 0 && (await p.locator('.nav-item.locked').count()) === 0);
   check('o código fica guardado e o pedido some', (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === code && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo-pendente'))) === null);
-  for (const h of ['#/ranking', '#/album', '#/beatlab', '#/kids', '#/dicionario']) { await go(p, h); check(`com código: ${h} abre`, (await trancada(p)) === 0); }
+  for (const h of ['#/ranking', '#/album', '#/beatlab', '#/ritmo', '#/kids', '#/dicionario']) { await go(p, h); check(`com código: ${h} abre`, (await trancada(p)) === 0); }
   check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join('|')); await ctx.close();
 }
 // 2) pedido pendente + a professora cadastra enquanto o aluno está na tela: libera sozinho (sem apertar nada)

@@ -20,6 +20,35 @@ export function list(kind) {
   for (const r of cache.values()) if (r.kind === kind && !r.deleted) out.push(r);
   return out;
 }
+
+/* ---------- desfazer / refazer (global) ---------- */
+// cada entrada = lista de [id, kind, estado antes (null = não existia)]. Mudanças em até 700 ms viram um passo só.
+const NO_UNDO = new Set(['setting']);
+const undoSt = []; const redoSt = []; let lastAt = 0; let replaying = false;
+const snap = (r) => (r && !r.deleted ? { kind: r.kind, data: r.data } : null);
+function track(id, kind, before) {
+  if (replaying || NO_UNDO.has(kind)) return;
+  const now = Date.now();
+  if (undoSt.length && now - lastAt < 700) { const g = undoSt[undoSt.length - 1]; if (!g.some((x) => x[0] === id)) g.push([id, kind, before]); }
+  else { undoSt.push([[id, kind, before]]); if (undoSt.length > 60) undoSt.shift(); }
+  lastAt = now; redoSt.length = 0; emit({ history: true });
+}
+export const canUndo = () => undoSt.length > 0;
+export const canRedo = () => redoSt.length > 0;
+async function step(from, to) {
+  const g = from.pop(); if (!g) return false;
+  replaying = true; const inv = [];
+  try {
+    for (const [id, kind, before] of g.slice().reverse()) {
+      inv.push([id, kind, snap(cache.get(id))]);
+      if (before) await upsertRaw(kind, id, before.data); else await removeRaw(id);
+    }
+  } finally { replaying = false; }
+  to.push(inv); emit({ history: true }); return true;
+}
+export const undo = () => step(undoSt, redoSt);
+export const redo = () => step(redoSt, undoSt);
+
 export const get = (id) => { const r = cache.get(id); return r && !r.deleted ? r : null; };
 export const pendingCount = () => { let n = 0; for (const r of cache.values()) if (r.dirty) n++; return n; };
 export const allRaw = () => [...cache.values()];
@@ -28,6 +57,12 @@ const nextStamp = (prev) => Math.max(Date.now(), (prev || 0) + 1);
 
 /** Cria ou atualiza (merge raso de `patch` em data). */
 export async function upsert(kind, id, patch) {
+  const prev0 = id ? cache.get(id) : null;
+  const rec = await upsertRaw(kind, id, patch);
+  track(rec.id, kind, snap(prev0));
+  return rec;
+}
+async function upsertRaw(kind, id, patch) {
   const prev = id ? cache.get(id) : null;
   const rec = {
     id: id || uid(),
@@ -44,12 +79,18 @@ export async function upsert(kind, id, patch) {
   return rec;
 }
 
-/** Exclusão lógica (tombstone) — o conteúdo é apagado do registro; devolve snapshot para "desfazer". */
+/** Exclusão lógica: vai pra lixeira (o conteúdo fica 30 dias); devolve snapshot para "desfazer". */
 export async function remove(id) {
+  const prev0 = cache.get(id);
+  const sn = await removeRaw(id);
+  if (sn) track(id, prev0.kind, snap(prev0));
+  return sn;
+}
+async function removeRaw(id) {
   const prev = cache.get(id);
   if (!prev || prev.deleted) return null;
   const snapshot = { kind: prev.kind, data: prev.data };
-  const rec = { id, kind: prev.kind, data: {}, updated_at: nextStamp(prev.updated_at), deleted: true, dirty: 1 };
+  const rec = { id, kind: prev.kind, data: prev.data, updated_at: nextStamp(prev.updated_at), deleted: true, dirty: 1 }; // o conteúdo fica guardado na lixeira (30 dias)
   cache.set(id, rec);
   await db.putRecord(rec);
   emit({ kind: rec.kind, id });
@@ -57,6 +98,28 @@ export async function remove(id) {
   return snapshot;
 }
 export const restore = (id, snapshot) => upsert(snapshot.kind, id, snapshot.data);
+
+/* ---------- lixeira: tudo que foi apagado fica 30 dias e pode voltar ---------- */
+export const TRASH_DAYS = 30;
+export function trashList() {
+  const out = [];
+  for (const r of cache.values()) if (r.deleted && r.kind !== 'setting' && r.data && Object.keys(r.data).length) out.push(r);
+  return out.sort((a, b) => b.updated_at - a.updated_at);
+}
+export const restoreFromTrash = (id) => { const r = cache.get(id); return r && r.deleted ? upsert(r.kind, id, r.data) : null; };
+/** Apaga de vez o conteúdo (id) ou tudo da lixeira (sem id). Os mais velhos que 30 dias vão sozinhos. */
+export async function purgeTrash(id, olderThanDays) {
+  const cut = olderThanDays ? Date.now() - olderThanDays * 864e5 : Infinity;
+  const hit = [];
+  for (const r of cache.values()) {
+    if (!r.deleted || !r.data || !Object.keys(r.data).length || r.kind === 'setting') continue;
+    if ((id && r.id !== id) || (olderThanDays && r.updated_at > cut)) continue;
+    const rec = { id: r.id, kind: r.kind, data: {}, updated_at: nextStamp(r.updated_at), deleted: true, dirty: 1 };
+    cache.set(r.id, rec); hit.push(rec);
+  }
+  if (hit.length) { await db.putRecords(hit); emit({ trash: true }); syncHook(); }
+  return hit.length;
+}
 
 /** Aplica registros vindos do servidor. Last-writer-wins por updated_at; local mais novo permanece pendente. */
 export async function applyRemote(rows) {
@@ -88,6 +151,7 @@ export async function markSynced(sent) {
 }
 
 export async function wipe() {
+  undoSt.length = 0; redoSt.length = 0;
   cache.clear();
   await db.clearRecords();
   await db.metaDel('cursor'); // sem isso, o próximo login não rebaixaria os dados
