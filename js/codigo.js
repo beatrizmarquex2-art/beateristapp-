@@ -28,6 +28,8 @@ export async function revalidar() {
   try { const ok = await verificar(c); if (!ok) remember(''); else remember(c); return ok; } catch { return recentlyOk(); }
 }
 export const sair = () => remember('');
+/** Guarda um código já conferido (troca de aluno no mesmo aparelho). */
+export const guardar = (c) => remember(norm(c));
 
 /* ---------- pedido de código: a criança gera o código dela, conta pra professora, a professora cadastra, e o app libera sozinho ---------- */
 const PEND = 'beaterista-aluno-codigo-pendente';

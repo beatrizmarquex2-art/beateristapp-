@@ -19,7 +19,9 @@ import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import * as perfil from './views/perfil.js';
-import { banner, closeSheets, confirmSheet } from './ui.js';
+import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
+import * as CONTAS from './contas.js';
+import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
@@ -150,6 +152,36 @@ function tocarView(view) {
     card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
 }
 
+/** Trocar de aluno no mesmo aparelho: voltar a uma conta já conectada, conectar outro código ou entrar com outro nome. */
+function trocarAluno() {
+  CONTAS.guardarAtual(); const atual = CONTAS.atual();
+  sheet('trocar de aluno', (close) => {
+    const err = h('p', { class: 'muted', role: 'status' });
+    const nome = h('input', { class: 'field', type: 'text', maxlength: 20, placeholder: 'nome do aluno', autocomplete: 'off', 'aria-label': 'Nome do aluno' });
+    const cod = h('input', { class: 'field', type: 'text', maxlength: 12, placeholder: 'código', autocapitalize: 'characters', autocomplete: 'off', spellcheck: 'false', 'aria-label': 'Código do aluno' });
+    const ir = (c) => { CONTAS.ativar(c); close(); location.reload(); };
+    const contas = CONTAS.lista().filter((x) => x.code !== CODE.norm(atual.code || ''));
+    async function conectar(ev) {
+      const b = ev.currentTarget; const n = nome.value.replace(/\s+/g, ' ').trim(), c = CODE.norm(cod.value);
+      if (!n) { err.textContent = 'escreva o nome do aluno.'; return; } if (c.length < 4) { err.textContent = 'escreva o código.'; return; }
+      b.disabled = true; err.textContent = 'conferindo…';
+      try {
+        if (!(await CODE.verificar(c))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; }
+        CONTAS.ativar({ nome: n, code: c }); try { await ALBUMACESSO.entrar(c); } catch { /* o álbum confere de novo na próxima vez */ }
+        CONTAS.guardarConta({ nome: n, code: c }); toast(`${n} conectado`); close(); location.reload();
+      } catch { err.textContent = 'sem internet agora. tente de novo.'; } finally { b.disabled = false; }
+    }
+    return h('div', { class: 'sheet-body' },
+      atual.nome ? h('p', { class: 'muted' }, `agora: ${atual.nome}`) : null,
+      contas.length ? h('div', {}, h('b', {}, 'voltar pra'), ...contas.map((c) => h('div', { class: 'row', style: 'gap:8px;margin:6px 0' },
+        h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => ir(c) }, c.nome),
+        h('button', { type: 'button', class: 'btn small ghost', 'aria-label': `Tirar ${c.nome} da lista`, onclick: async (ev) => { if (await confirmSheet('tirar da lista?', `${c.nome} some daqui; o código dele continua valendo.`, 'tirar')) { CONTAS.esquecer(c.code); ev.target.closest('.row').remove(); } } }, '✕')))) : null,
+      h('b', {}, 'conectar outro código'), h('p', { class: 'muted' }, 'um aluno novo neste aparelho: nome e código. cada um fica com as suas figurinhas e a sua foto.'), nome, cod,
+      h('button', { type: 'button', class: 'btn primary wide', onclick: conectar }, 'conectar'), err,
+      h('button', { type: 'button', class: 'btn ghost wide', onclick: async () => { if (!(await confirmSheet('entrar com outro nome?', 'o código deste aparelho sai e quem entrar precisa pedir um código. dá pra voltar pra este aluno depois pela lista.', 'continuar'))) return; CONTAS.semConta(); close(); location.reload(); } }, 'entrar com outro nome (ainda sem código)'));
+  });
+}
+
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
@@ -157,12 +189,7 @@ function shell(name) {
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
-    h('button', { type: 'button', class: 'btn small ghost', onclick: async () => {
-      if (!(await confirmSheet('trocar de nome?', 'quem entra com outro nome precisa de um código novo, só dele. o código deste aparelho sai agora.', 'trocar'))) return;
-      try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ }
-      CODE.sair(); try { ['beaterista-album-code', 'beaterista-aluno-codigo-pendente'].forEach((k) => localStorage.removeItem(k)); } catch { /* ok */ } window.__alunoCodigo = ''; window.__alunoCodigoPend = '';
-      location.reload();
-    } }, 'trocar nome'));
+    h('button', { type: 'button', class: 'btn small ghost', onclick: trocarAluno }, 'trocar aluno'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
