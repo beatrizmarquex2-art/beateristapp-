@@ -62,7 +62,7 @@ const GROUPS = [
       'Os cruzamentos funcionam como confirmação: se uma letra não encaixa, o aluno revê a resposta. Boa para fixar termos de estudo e técnica.'],
   ]],
   ['Fases e estrelas', [
-    ['Fases e estrelas', 'fases.webp', 'Jogadores com progresso: cada fase vale até 3 estrelas pela porcentagem de acerto, e as estrelas liberam as próximas fases e figurinhas.',
+    ['Fases e estrelas', 'rabiscos.webp', 'Jogadores com progresso: cada fase vale até 3 estrelas pela porcentagem de acerto, e as estrelas liberam as próximas fases e figurinhas.',
       ['persistência e meta pessoal', 'prática espaçada (voltar para melhorar as estrelas)', 'autoestima por progresso visível'],
       'O progresso por estrelas mostra o avanço sem comparar com os outros. Fases trancadas incentivam completar a anterior antes de seguir, na ordem em que o conteúdo se constrói.'],
   ]],

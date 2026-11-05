@@ -47,7 +47,7 @@ const SECTIONS = [
   ]],
   ['jogos das dicas', [inner('dicas')]],
   ['fases e relatório', [
-    link('#/kids', 'fases e estrelas', 'fases.webp', 'jogadores, álbum e coleção'),
+    link('#/kids', 'fases e estrelas', 'rabiscos.webp', 'jogadores, álbum e coleção'),
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
   ]],
 ];
