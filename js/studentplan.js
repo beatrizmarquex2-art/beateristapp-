@@ -4,7 +4,7 @@
 import { parse, flatten, toBar, barsFor } from './rudiments.js';
 
 export const TYPES = [['semana', 'tarefa da semana'], ['mes', 'objetivos do mês']];
-export const TREINOS = [['leitura-1', 'Leitura rítmica · nível 1 (semínima e colcheia)', '#/treinos'], ['leitura-2', 'Leitura rítmica · nível 2 (semicolcheias)', '#/treinos'], ['leitura-3', 'Leitura rítmica · nível 3 (pontuadas e síncopes)', '#/treinos'], ['escuta', 'Ditado rítmico (ouvir e reconhecer)', '#/treinos/escuta'], ['toque', 'Tocar na bateria de toque e conferir a partitura', '#/toque']];
+export const TREINOS = [['leitura-1', 'Leitura rítmica · nível 1 (semínima e colcheia)', '#/partitura/leitura'], ['leitura-2', 'Leitura rítmica · nível 2 (semicolcheias)', '#/partitura/leitura'], ['leitura-3', 'Leitura rítmica · nível 3 (pontuadas e síncopes)', '#/partitura/leitura'], ['escuta', 'Ditado rítmico (ouvir e reconhecer)', '#/treinos/escuta'], ['toque', 'Tocar na bateria de toque e conferir a partitura', '#/toque']];
 const id = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 const slimBar = (b) => ({ steps: b.steps, rows: Object.fromEntries(Object.entries(b.rows || {}).filter(([, r]) => r && r.some(Boolean))), ...(b.acc && b.acc.some(Boolean) ? { acc: b.acc.slice() } : {}), ...(b.ghost && b.ghost.some(Boolean) ? { ghost: b.ghost.slice() } : {}) });
 

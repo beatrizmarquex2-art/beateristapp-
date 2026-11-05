@@ -39,6 +39,7 @@
 
 /* monte seu ritmo: paleta por figura */
 .kd-group { width: 100%; max-width: 520px; display: grid; gap: 4px; } .kd-glabel { margin: 6px 0 0; font: 700 13px var(--body); text-transform: uppercase; letter-spacing: .06em; color: #6b6258; }
+.kd-bpmv{align-self:center;font-weight:800;min-width:64px;text-align:center}
 .kd-bpm { margin-left: auto; display: inline-flex; gap: 6px; } .kd-bpm .kd-chip { padding: 6px 10px; }
 
 /* jogo da memória: temas e cartas com imagem */

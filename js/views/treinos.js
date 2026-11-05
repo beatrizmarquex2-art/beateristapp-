@@ -63,7 +63,7 @@ function controls(c, draw, { bars = true } = {}) {
 }
 
 /* ---------- leitura ---------- */
-function leitura(host) {
+export function leitura(host) {
   let beats = null; let run = null; let lastResult = null;
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
@@ -74,12 +74,12 @@ function leitura(host) {
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('span', {}, 'toque aqui'), h('small', {}, 'ou aperte qualquer tecla'));
-    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : 'leia, aperte ▶ e toque junto depois do “4” da contagem.');
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
     const start = () => {
       stop(); const ac = audio(); const q = 60 / c.bpm;
       const t0 = schedule(beats, c.bpm);
       const taps = [];
-      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
+      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); snare(audio().currentTime, 0.7); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
       pad.addEventListener('pointerdown', onTap); document.addEventListener('keydown', onTap);
       const off = () => { pad.removeEventListener('pointerdown', onTap); document.removeEventListener('keydown', onTap); };
       // segundos desde o 1º tempo, no relógio do som (para quem testa tocando por script)
@@ -97,7 +97,9 @@ function leitura(host) {
       }, end) };
       S.later(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
     };
-    const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); };
+    const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); status.textContent = 'ouvindo como é…'; };
+    // ouvir primeiro e, quando acabar, já entra a vez da Bea (contagem + clique + o som de cada toque)
+    const listenThenPlay = () => { stop(); const q = 60 / c.bpm; schedule(beats, c.bpm, { play: true }); status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
     let summary = null;
     if (lastResult) {
       const r = lastResult; const devs = r.notes.filter((n) => n.ms != null).map((n) => n.ms);
@@ -111,8 +113,9 @@ function leitura(host) {
     }
     body.replaceChildren(...[controls(c, draw), score(chunk(beats), marks),
       h('div', { class: 'row tr-actions' },
-        h('button', { class: 'bl-play tr-go', type: 'button', 'aria-label': 'Começar leitura', onclick: start }, icon('play', 26)),
-        h('button', { class: 'btn', type: 'button', onclick: listen }, 'ouvir como é'),
+        h('button', { class: 'btn primary', type: 'button', onclick: start }, '▶ tocar direto'),
+        h('button', { class: 'btn', type: 'button', onclick: listenThenPlay }, 'ouvir e depois tocar'),
+        h('button', { class: 'btn', type: 'button', onclick: listen }, 'só ouvir'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, 'outro compasso')),
       status, pad, summary, history('leitura')].filter(Boolean));
   };
@@ -217,14 +220,14 @@ function figuras(host, sub) {
 }
 
 export function mount(host, parts = []) {
-  const tab = ['escuta', 'montar', 'figuras'].includes(parts[0]) ? (parts[0] === 'figuras' ? 'montar' : parts[0]) : 'leitura';
+  if (parts[0] === 'leitura') { location.replace('#/partitura/leitura'); return null; } // a leitura rítmica mora na aba Partitura
+  const tab = ['escuta', 'montar', 'figuras'].includes(parts[0]) ? (parts[0] === 'figuras' ? 'montar' : parts[0]) : 'escuta';
   const sub = tab === 'montar' && ['imagens', 'aprender'].includes(parts[1]) ? parts[1] : '';
-  host.append(banner(tab === 'montar' ? 'Figuras rítmicas' : 'Treinos', { leitura: 'ler e tocar na hora', escuta: 'ouvir e reconhecer', montar: 'ouvir, montar e aprender cada figura' }[tab]),
+  host.append(banner(tab === 'montar' ? 'Figuras rítmicas' : 'Treinos', { escuta: 'ouvir e reconhecer', montar: 'ouvir, montar e aprender cada figura' }[tab]),
     h('div', { class: 'chips lib-tabs bt-tabs' },
-      h('a', { class: `lib-tab${tab === 'leitura' ? ' on' : ''}`, href: '#/treinos' }, 'leitura'),
-      h('a', { class: `lib-tab${tab === 'escuta' ? ' on' : ''}`, href: '#/treinos/escuta' }, 'escuta (ditado)'),
+      h('a', { class: `lib-tab${tab === 'escuta' ? ' on' : ''}`, href: '#/treinos' }, 'escuta (ditado)'),
       h('a', { class: `lib-tab${tab === 'montar' ? ' on' : ''}`, href: '#/treinos/montar' }, 'figuras rítmicas')));
-  const off = tab === 'leitura' ? leitura(host) : tab === 'escuta' ? escuta(host) : figuras(host, sub);
+  const off = tab === 'escuta' ? escuta(host) : figuras(host, sub);
   tipBox(host, 'treinos');
   return off;
 }

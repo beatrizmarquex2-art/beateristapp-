@@ -44,7 +44,7 @@ const MENU_BEA = [
 ];
 const MENU_B = [
   ['treinar', 'treinar', [
-    ['', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana'], ['#/treinos', 'study', 'Leitura e Escuta']]],
+    ['', [['#/plano', 'study', 'Plano de Estudo'], ['#/rudimentos', 'drummer', 'Rudimentos'], ['#/acentuacao', 'staff', 'Acentuação 4×4'], ['#/ferramentas/desafio', 'star', 'Desafio da semana'], ['#/partitura/leitura', 'study', 'Leitura rítmica'], ['#/treinos', 'study', 'Escuta (ditado)']]],
   ]],
   ['jogos', 'jogos', [
     ['', [['#/jogos', 'star', 'Todos os jogos']]],
