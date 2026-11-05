@@ -7,7 +7,7 @@ const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/paulta');
-await page.waitForSelector('.pl-world');
+await page.waitForSelector('.kx-cards .kx-g');
 const go = async (h) => { await page.evaluate((x) => { location.hash = x; }, h); await sleep(350); };
 const click = (sel) => page.evaluate((s) => { const e = document.querySelector(s); if (e && !e.disabled) { e.click(); return true; } return false; }, sel);
 const peak = (ms) => page.evaluate((m) => window.__peak(m), ms);
@@ -15,7 +15,7 @@ const timers = () => page.evaluate(() => ({ i: window.__ac.intervals.size, r: wi
 const txt = () => page.evaluate(() => document.querySelector('#view').innerText);
 
 check('nome do jogo aparece como pauLta (L maiúsculo)', (await txt()).includes('pauLta'));
-check('4 regiões: bateria, sol, fá e duelo (trancado)', (await page.$$('.pl-world')).length === 4 && !!(await page.$('.pl-world.locked')));
+check('4 regiões: bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 4 && !!(await page.$('.kx-g.pl-locked')));
 for (const [w, n] of [['drum', 18], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.pl-levels .kx-lv')).length === n); }
 await go('#/paulta/drum/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.pl-levels')).length === 1);
 
@@ -44,7 +44,7 @@ await page.evaluate(async () => {
   const me = P.active();
   await V.commit(me.id, (c) => { let p = c; for (let n = 1; n <= 5; n++) p = S.applyRun(p, { world: 'drum', n, mode: 'nomes', right: 3, total: 3 }).p; return p; });
 });
-await page.reload(); await page.waitForSelector('.pl-world');
+await page.reload(); await page.waitForSelector('.kx-cards .kx-g');
 check('depois de recarregar o título persiste (Explorador)', /Explorador da pauLta/.test(await txt()));
 check('nome do aluno aparece com o título no topo', await page.evaluate(() => /Teste · Explorador da pauLta/.test(document.querySelector('.ws').innerText)));
 await go('#/paulta/drum'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.pl-levels a.kx-lv')).length === 6);
