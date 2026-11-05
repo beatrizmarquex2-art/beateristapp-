@@ -1,8 +1,9 @@
 // Pista dos jogos de ritmo: 3 músicas por estilo, nada de semicolcheia seguida na mesma linha, 2 min nas músicas prontas e começo sem espera.
 import { serve, launch, sleep, check, done } from "./harness.mjs";
 const { srv, url } = await serve(); const { browser } = await launch();
-const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); const p = await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
-await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'T'); });
+const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' })); await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+const p = await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
+await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'T'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); });
 await p.goto(`${url}/aluno.html#/ritmo`); await sleep(2500);
 await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click(); await sleep(200);
 check('3 músicas no estilo', (await p.locator('.rz-tier').count()) === 3, String(await p.locator('.rz-tier').count()));

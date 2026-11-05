@@ -9,8 +9,9 @@ const browser = await chromium.launch();
 const LIST = [['iPhone 13', 'apple'], ['iPhone SE', 'apple'], ['iPad (gen 7)', 'apple'], ['iPad Pro 11', 'apple'], ['Galaxy S9+', 'lite'], ['Galaxy S8', 'lite'], ['Galaxy Tab S4', 'lite'], ['Pixel 5', 'lite']];
 const ROUTES = ['#/jogos', '#/ritmo', '#/jogos/stop', '#/jogos/velha', '#/jogos/cartas', '#/jogos/bingo', '#/kids/memoria', '#/ranking'];
 for (const [name, mode] of LIST) {
-  const d = devices[name]; const ctx = await browser.newContext({ ...d }); const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
-  await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
+  const d = devices[name]; const ctx = await browser.newContext({ ...d }); await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' })); await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
+  await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); });
   await p.goto(`${url}/aluno.html#/jogos`); await sleep(1300);
   const cls = await p.evaluate(() => document.documentElement.classList.contains('apple') ? 'apple' : document.documentElement.classList.contains('lite') ? 'lite' : '?');
   check(`[${name}] modo ${mode}`, cls === mode, cls);

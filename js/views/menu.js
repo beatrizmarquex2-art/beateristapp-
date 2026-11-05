@@ -15,7 +15,7 @@ const MENU_BEA = [
     ['', [['#/treinos/montar', 'staff', 'Figuras rítmicas'], ['#/ouvido', 'mic', 'Estúdio de Ouvido']]],
   ]],
   ['jogos', 'jogos', [
-    ['', [['#/jogos', 'star', 'Todos os jogos']]],
+    ['', [['#/jogos', 'star', 'Todos os jogos'], ['#/figurinhas', 'star', 'Álbum de figurinhas']]],
   ]],
   ['ritmo', 'ritmo', [
     ['', [['#/ritmo', 'kit', 'Jogos de ritmo']]],
@@ -32,7 +32,7 @@ const MENU_BEA = [
     ['ferramentas', [['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/codigos', 'drummer', 'Importar código de aluno'], ['#/album-alunos', 'photo', 'Álbum dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura']]],
   ]],
   ['organizar', 'organizar', [
     ['', [['#/inicio', 'home', 'Início'], ['#/hub/anotar', 'note', 'Anotar'], ['#/arquivos', 'folder', 'Meus Arquivos']]],
@@ -63,7 +63,7 @@ const MENU_B = [
     ['', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/hub/tempo', 'timer', 'Tempo']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/codigos', 'drummer', 'Importar código de aluno'], ['#/planos', 'study', 'Planos dos Alunos'], ['#/ata', 'note', 'Ata de reunião'], ['#/ferramentas/roleta', 'star', 'Roleta da aula'], ['#/setlist', 'note', 'Setlist']]],
   ]],
 ];
 // ícones pequenos nas abas e nas pastinhas, pra reconhecer de relance

@@ -86,6 +86,15 @@ export function mount(body, opts) {
   const wait = document.createElement('p'); wait.className = 'muted rg-wait'; wait.textContent = 'carregando o jogo…'; box.append(wait); root.append(box); body.append(root);
   (async () => {
     try {
+      // aluno sem código liberado não joga Beat Hero (nem na aventura): a trava de acesso da professora vale aqui também
+      if (document.documentElement.classList.contains('aluno-on') && p.game === 'beat') {
+        const C = await import('../../codigo.js'); const ok = await C.revalidar().catch(() => false); if (gone) return;
+        if (!ok) {
+          box.replaceChildren(); const lock = document.createElement('div'); lock.className = 'empty';
+          lock.innerHTML = '<p class="hand">🔒 só pra alunos da Beaterista</p><p class="muted">este desafio usa o Beat Hero. digite o código que a sua professora deu em “Jogos de ritmo” e volte aqui.</p><a class="btn primary" href="#/ritmo">ir para os Jogos de ritmo</a>';
+          box.append(lock); return;
+        }
+      }
       const J = await import('../../views/jogos-ritmo.js'); const BR = await J.loadPackage(); if (gone) return;
       box.replaceChildren(); BRref = BR; document.documentElement.classList.add('rg-on');
       BR.mount(box, {

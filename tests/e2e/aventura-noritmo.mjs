@@ -25,9 +25,11 @@ await ctx.addInitScript(() => { // relógio de áudio virtual (só liga quando w
     });
   } catch (e) { console.log('init', e); }
 });
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' })); // aluno com código (Beat Hero liberado)
+await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e))); page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|ERR_INTERNET|ERR_FAILED|Failed to load resource/.test(m.text())) errs.push(m.text()); });
-await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
 const go = (x) => page.evaluate((v) => { location.hash = v; }, x);
 const hash = () => page.evaluate(() => location.hash);
 const states = () => page.evaluate(() => [...document.querySelectorAll('.mp-node')].map((n) => n.className.match(/st-(\w+)/)[1]));
@@ -126,4 +128,11 @@ check('armazenamento do livre idêntico depois da campanha toda', (await ls('bea
 await go('#/jogos'); await sleep(500);
 check('sair não deixa som nem corpo travado', await page.evaluate(() => !document.body.classList.contains('rz-lock') && !document.documentElement.classList.contains('rg-on')));
 check('sem erros de console', errs.length === 0, errs.slice(0, 3).join(' | '));
+// trava de acesso: aluno sem código NÃO joga Beat Hero na aventura (e Piano Hero continua liberado)
+const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+await ctx2.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
+const p2 = await ctx2.newPage(); await p2.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste2'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
+await p2.goto(url + '/aluno.html#/ritmo/aventura/0'); await p2.waitForSelector('.av-go', { timeout: 10000 }); await p2.click('.av-go'); await sleep(2500);
+check('sem código: missão de Beat Hero mostra a trava e não abre o jogo', await p2.evaluate(() => /só pra alunos da Beaterista/.test(document.body.innerText) && !document.querySelector('.rz-mmenu .rz-jogar')));
+await ctx2.close();
 const f = done(); await browser.close(); srv.close(); process.exit(f ? 1 : 0);

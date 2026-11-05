@@ -263,3 +263,16 @@ html.lite .rz-jogar{animation:none}
 /* JOGAR sempre à vista: fica colado em cima da barra de baixo enquanto a pessoa mexe nas opções */
 .rz-jogar{position:sticky;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:6}
 html.kb-open .rz-jogar{bottom:8px}
+
+/* trava de aluno (código) */
+.rz-lock{display:grid;justify-items:center;gap:8px;text-align:center;margin:12px 0;padding:20px 14px;border-radius:18px;background:var(--char-2);box-shadow:0 0 0 1px rgba(255,255,255,.1)}
+.rz-lock-i{font-size:42px;line-height:1}
+.rz-lock .h2{margin:0;font-size:20px}
+.rz-lock-row{display:flex;gap:8px;width:100%;max-width:340px}
+.rz-lock-row .field{text-align:center;letter-spacing:.25em;font:800 22px ui-monospace,Menlo,monospace;text-transform:uppercase;min-height:52px}
+.rz-lock-msg{min-height:1.4em;font-weight:700}
+.rg-code{font:800 16px ui-monospace,Menlo,monospace;letter-spacing:.12em}
+.rg-codes .rg-list li{align-items:flex-start;flex-wrap:wrap}
+.rg-codes .row{display:flex;gap:6px;flex-wrap:wrap}
+.rg-mfilter{min-height:44px}
+.rg-codes input.rg-mfilter{flex:1;min-width:0}
