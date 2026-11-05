@@ -12,6 +12,8 @@ for (const [id, start, play] of [
 ]) {
   await page.goto(`${url}/aluno.html#/jogos/${id}`); await sleep(1200);
   const ini = page.locator(start).first(); if (await ini.count()) await ini.click(); await sleep(id === 'cartas' ? 4200 : 600); // o Uno embaralha e distribui antes de aceitar toque
+  if (id === 'cartas') await page.waitForSelector('.cx-turn.mine', { timeout: 15000 }).catch(() => {}); // pode começar o computador
+  await sleep(id === 'cartas' ? 700 : 0);
   const s0 = await started();
   const alvo = page.locator(play).first();
   if (await alvo.count()) await alvo.click(id === 'cartas' ? { position: { x: 6, y: 30 }, force: true } : {}).catch(() => {});
