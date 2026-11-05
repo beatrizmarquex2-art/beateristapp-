@@ -13,6 +13,7 @@ import * as FB from '../feedback.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
+import { capture } from '../kids/capture.js';
 import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
@@ -54,29 +55,53 @@ function history(mode) {
       new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(r.data.at))))));
 }
 
-function controls(c, draw, { bars = true } = {}) {
+function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, input = false } = {}) {
   return h('section', { class: 'card pad tr-ctrl' },
     line('nível', chips([[1, '1'], [2, '2'], [3, '3']], c.lv, (v) => save({ lv: v }).then(() => draw(true)), 'Nível')),
     h('p', { class: 'muted tr-lvname' }, LEVEL_NAMES[c.lv]),
     line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(160, v)) }).then(() => draw(false)))),
-    bars ? line('compassos', chips([[1, '1'], [2, '2']], c.bars, (v) => save({ bars: v }).then(() => draw(true)), 'Compassos')) : null);
+    bars ? line('compassos', chips(barList.map((v) => [v, String(v)]), Math.min(c.bars, barList[barList.length - 1]), (v) => save({ bars: v }).then(() => draw(true)), 'Compassos por fase')) : null,
+    input ? line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')) : null);
 }
 
-/* ---------- leitura ---------- */
+/* ---------- leitura (Toca Aqui, versão normal) ---------- */
+// Dois jeitos de tocar: na tela (cada toque soa) ou no microfone (pad de estudo / bateria de verdade; o app escuta e confere).
+// Dois jeitos de começar: "tocar direto" ou "ouvir e depois tocar". 1 compasso por vez, nível livre, BPM à escolha e a precisão no fim.
 export function leitura(host) {
-  let beats = null; let run = null; let lastResult = null;
+  let beats = null; let run = null; let lastResult = null; let micBlocked = false;
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   const stop = () => { S.reset(); if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
-    stop(); const c = cfg();
-    if (fresh || !beats || beats.length !== c.bars * 4) { beats = [...genBar(c.lv), ...(c.bars > 1 ? genBar(c.lv) : [])]; lastResult = null; }
+    stop(); const c = cfg(); const nb = 1; // sempre 1 compasso, sem exigir acertar sequências pra passar de nível: o nível é livre
+    const useMic = c.input === 'mic' && !micBlocked;
+    if (fresh || !beats || beats.length !== nb * 4) { beats = []; for (let k = 0; k < nb; k++) beats.push(...genBar(c.lv)); lastResult = null; }
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
-    const pad = h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('span', {}, 'toque aqui'), h('small', {}, 'ou aperte qualquer tecla'));
+    const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
+      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('span', {}, 'toque aqui'), h('small', {}, 'ou aperte qualquer tecla'));
     const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
+    const conclude = async (taps) => {
+      const g = S.gen; run = null;
+      lastResult = evaluate(taps, expected, c.bpm, { mic: useMic });
+      await store.upsert(KIND, null, { mode: 'leitura', lv: c.lv, bpm: c.bpm, bars: nb, score: lastResult.score, at: Date.now() });
+      if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
+      draw(false);
+      const tgt = body.querySelector('.tr-res') || body;
+      if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
+    };
     const start = () => {
       stop(); const ac = audio(); const q = 60 / c.bpm;
+      if (useMic) {
+        const cap = capture({ mode: 'mic', pad: null, bpm: c.bpm, beats: beats.length, clickBeats: false, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
+        pad.classList.add('live'); status.textContent = 'abrindo o microfone…';
+        run = { pad, off: () => cap.cancel() };
+        const g = S.gen;
+        cap.done.then((r) => { if (!S.alive || g !== S.gen) return; conclude(r.onsets); }, (e) => {
+          if (!S.alive || g !== S.gen) return; run = null; micBlocked = true; toast(e && e.name === 'NotAllowedError' ? 'sem permissão pro microfone: vou usar a tela' : 'não consegui abrir o microfone: vou usar a tela'); draw(false);
+        });
+        return;
+      }
       const t0 = schedule(beats, c.bpm);
       const taps = [];
       const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); snare(audio().currentTime, 0.7); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
@@ -86,15 +111,7 @@ export function leitura(host) {
       pad.clock = () => perfToCtx(performance.now()) - t0; pad.dataset.onsets = JSON.stringify(expected.map((e) => e.t));
       pad.classList.add('live'); status.textContent = 'conta: 1, 2, 3, 4…';
       const end = (t0 - ac.currentTime + beats.length * q + 0.4) * 1000;
-      run = { pad, off, timer: S.later(async () => {
-        const g = S.gen; off(); run = null;
-        lastResult = evaluate(taps, expected, c.bpm);
-        await store.upsert(KIND, null, { mode: 'leitura', lv: c.lv, bpm: c.bpm, bars: c.bars, score: lastResult.score, at: Date.now() });
-        if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
-        draw(false);
-        const tgt = body.querySelector('.tr-res') || body;
-        if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
-      }, end) };
+      run = { pad, off, timer: S.later(() => { off(); conclude(taps); }, end) };
       S.later(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
     };
     const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); status.textContent = 'ouvindo como é…'; };
@@ -104,14 +121,17 @@ export function leitura(host) {
     if (lastResult) {
       const r = lastResult; const devs = r.notes.filter((n) => n.ms != null).map((n) => n.ms);
       const avg = devs.length ? Math.round(devs.reduce((s, x) => s + x, 0) / devs.length) : 0;
+      const spread = devs.length ? Math.round(Math.sqrt(devs.reduce((s, x) => s + (x - avg) ** 2, 0) / devs.length)) : 0;
       const tip = r.hits < r.total ? 'faltaram notas: leia o compasso em voz alta (“1 e & a”) antes de tocar.' : Math.abs(avg) > 25 ? (avg < 0 ? `você está adiantando (${avg} ms em média). respira e espera o clique.` : `você está atrasando (+${avg} ms em média). toque mais junto do clique.`) : r.extra ? 'cuidado com toques a mais nas pausas.' : 'leitura limpa! sobe 5 BPM ou passa de nível.';
       summary = h('section', { class: 'card pad tr-res' },
-        h('div', { class: 'tr-big' }, h('b', {}, String(r.score)), h('span', {}, 'nota')),
+        h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão')),
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}`),
+        devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip));
     }
-    body.replaceChildren(...[controls(c, draw), score(chunk(beats), marks),
+    body.replaceChildren(...[controls(c, draw, { bars: false, input: true }), score(chunk(beats), marks),
+      micBlocked && c.input === 'mic' ? h('p', { class: 'tr-status bad' }, 'microfone indisponível agora: usando a tela.') : null,
       h('div', { class: 'row tr-actions' },
         h('button', { class: 'btn primary', type: 'button', onclick: start }, '▶ tocar direto'),
         h('button', { class: 'btn', type: 'button', onclick: listenThenPlay }, 'ouvir e depois tocar'),
