@@ -1,16 +1,16 @@
 // Toca Aqui: o jogo de ler a figura rítmica e tocar no tempo. Duas versões na mesma tela:
-//  • versão kids: cada tempo é uma palavrinha com imagem (pão, bolo, braço…): monte e toque (BPM ajustável).
-//  • versão normal: a pauta de verdade (níveis 1 a 3): ouvir e/ou tocar direto, cada toque soa e volta pintado.
+//  • versão com imagens: cada tempo é uma palavrinha com imagem (pão, bolo, braço…): monte e toque (BPM ajustável).
+//  • versão normal (figuras): a pauta de verdade (níveis 1 a 3): ouvir e/ou tocar direto, cada toque soa e volta pintado.
 import { h } from '../util.js';
 import { getGame, setGame } from './base.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { leitura } from '../views/treinos.js';
 
-const VERSIONS = [['kids', 'versão kids'], ['normal', 'versão normal']];
+const VERSIONS = [['normal', 'versão normal (figuras)'], ['kids', 'versão com imagens']];
 
 export function mount(host) {
   const saved = getGame('toca');
-  let ver = VERSIONS.some((v) => v[0] === saved.ver) ? saved.ver : 'kids';
+  let ver = VERSIONS.some((v) => v[0] === saved.ver) ? saved.ver : 'normal';
   let off = null; let gone = false;
   const root = h('div', { class: 'jg jg-toca' }); host.replaceChildren(root);
   const stage = h('div', { class: 'jg-toca-stage' });

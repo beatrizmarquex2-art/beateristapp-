@@ -17,7 +17,7 @@ import { relatorio } from './jogos-relatorio.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca.svg', toca, 'versão kids e versão normal'],
+  ['toca', 'Toca Aqui', 'toca.svg', toca, 'figuras e versão com imagens'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'números e figuras · 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
