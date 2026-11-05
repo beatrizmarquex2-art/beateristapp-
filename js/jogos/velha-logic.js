@@ -1,5 +1,5 @@
 // Jogo da velha: regras puras. Marcadores: 0 = baquetas, 1 = palheta. board = 9 casas (null | 0 | 1).
-import { QUESTIONS } from './velha-data.js';
+import { QUESTIONS, LEVELS } from './velha-data.js';
 export const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 export const MARK_NAME = ['baquetas', 'palheta'];
 export const ERROR_OFFER = 12;
@@ -28,20 +28,24 @@ export const easyMove = (board, rnd = Math.random) => { const c = emptyCells(boa
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const questionById = (id) => QUESTIONS.find((q) => q.id === id);
 
-/** Perguntas sem repetição até esgotar o banco; depois recomeça (sem repetir a última). */
-export function nextQuestion(asked, rnd = Math.random) {
-  let pool = QUESTIONS.filter((q) => !asked.includes(q.id)); let reset = false;
-  if (!pool.length) { pool = QUESTIONS.filter((q) => q.id !== asked[asked.length - 1]); reset = true; }
+/** Perguntas de cada nível: infantil = só as infantis; fácil = infantis + fáceis; intermediário = só as intermediárias. */
+export const LEVEL_IDS = LEVELS.map((l) => l[0]);
+export const poolFor = (level) => QUESTIONS.filter((q) => (level === 'infantil' ? q.level === 'infantil' : level === 'intermediario' ? q.level === 'intermediario' : q.level !== 'intermediario'));
+
+/** Pergunta nova sem repetir na rodada. Devolve null quando as perguntas do nível acabaram. */
+export function nextQuestion(asked, level = 'facil', rnd = Math.random) {
+  const pool = poolFor(level).filter((q) => !asked.includes(q.id));
+  if (!pool.length) return null;
   const q = pool[Math.floor(rnd() * pool.length)];
-  return { q, asked: reset ? [q.id] : [...asked, q.id] };
+  return { q, asked: [...asked, q.id] };
 }
 
 /* ---------- partida ---------- */
-export function newMatch({ mode = 'local', variant = 'classico' } = {}) {
-  return { v: 1, mode, variant, round: 1, scores: [0, 0], draws: 0, starter: 0, errors: 0, nextOffer: ERROR_OFFER, offer: false, asked: [], ...freshBoard(0) };
+export function newMatch({ mode = 'local', variant = 'classico', level = 'facil' } = {}) {
+  return { v: 1, mode, variant, level: LEVEL_IDS.includes(level) ? level : 'facil', round: 1, scores: [0, 0], draws: 0, starter: 0, errors: 0, nextOffer: ERROR_OFFER, offer: false, asked: [], ...freshBoard(0) };
 }
 function freshBoard(starter) { return { board: Array(9).fill(null), turn: starter, over: false, result: null, pending: null, held: null, last: null }; }
-export const nextRound = (g) => { const starter = 1 - g.starter; return { ...g, round: g.round + 1, starter, ...freshBoard(starter) }; };
+export const nextRound = (g) => { const starter = 1 - g.starter; return { ...g, round: g.round + 1, starter, asked: [], ...freshBoard(starter) }; };
 const clone = (g) => JSON.parse(JSON.stringify(g));
 export const isPaulTurn = (g) => g.mode !== 'local' && g.turn === 1;
 
@@ -63,8 +67,12 @@ export function openQuestion(g0, cell, rnd = Math.random) {
   if (g0.over || g0.pending || g0.offer) throw new Error('já há pergunta aberta');
   if (g0.board[cell] != null) throw new Error('casa ocupada');
   const g = clone(g0); let qid = g.held;
-  if (!qid) { const n = nextQuestion(g.asked, rnd); qid = n.q.id; g.asked = n.asked; g.held = qid; }
-  const q = questionById(qid); g.pending = { cell, qid, order: shuffle([0, 1, 2], rnd) }; void q; return g;
+  if (!qid) {
+    const n = nextQuestion(g.asked, g.level, rnd);
+    if (!n) { g.over = true; g.result = { winner: null, line: null, exhausted: true }; return g; } // perguntas esgotadas: placar fica
+    qid = n.q.id; g.asked = n.asked; g.held = qid;
+  }
+  const q = questionById(qid); g.pending = { cell, qid, order: shuffle(q.options.map((_, i) => i), rnd) }; return g;
 }
 export function cancelQuestion(g0) { if (!g0.pending) throw new Error('sem pergunta'); const g = clone(g0); g.pending = null; return g; }
 /** pos = posição visual (0..2) escolhida; order[pos] é o índice original da opção. */
@@ -86,6 +94,7 @@ export function validMatch(g) {
   try {
     if (!g || g.v !== 1 || !Array.isArray(g.board) || g.board.length !== 9 || !g.board.every((x) => x === null || x === 0 || x === 1)) return false;
     if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'facil', 'estrategico'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
+    if (g.level != null && !LEVEL_IDS.includes(g.level)) return false;
     if (g.pending && (g.board[g.pending.cell] != null || !questionById(g.pending.qid))) return false;
     return Array.isArray(g.scores) && g.scores.length === 2 && Array.isArray(g.asked);
   } catch { return false; }

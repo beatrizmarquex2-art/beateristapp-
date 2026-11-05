@@ -3,6 +3,7 @@ import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
+import { LEVELS } from './velha-data.js';
 
 const ID = 'velha';
 const NS = 'http://www.w3.org/2000/svg';
@@ -15,12 +16,13 @@ const mark = (who) => svg(MARKS[who], 'jg-mk');
 const NAMES = (mode) => (mode === 'local' ? ['jogador 1', 'jogador 2'] : ['você', 'Paul']);
 const MODES = [['local', 'dois no aparelho'], ['facil', 'contra o paul · fácil'], ['estrategico', 'contra o paul · estratégico']];
 const VARIANTS = [['classico', 'clássico'], ['desafio', 'desafio musical']];
+const LEVEL_HELP = { infantil: '7 perguntas bem simples', facil: '52 perguntas: bateria, instrumentos, teoria, rock, pop e equipamentos', intermediario: '16 perguntas com 4 alternativas' };
 
 export function mount(host) {
   let gone = false; let timer = 0;
   const saved = getGame(ID);
-  const prefs = { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : 'local', variant: saved.variant === 'desafio' ? 'desafio' : 'classico' };
-  let g = null; let msg = '';
+  const prefs = { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : 'local', variant: saved.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
+  let g = null; let msg = ''; let fb = null;
   const root = h('div', { class: 'jg jg-velha' }); host.replaceChildren(root);
   const persist = () => setGame(ID, { ...prefs, match: g });
   const stop = () => { clearTimeout(timer); timer = 0; };
@@ -35,16 +37,18 @@ export function mount(host) {
       h('p', { class: 'jg-p' }, 'três em linha ganha: baquetas contra palheta.'),
       h('p', { class: 'jg-lab' }, 'quem joga?'), seg('mode', MODES),
       h('p', { class: 'jg-lab' }, 'variante'), seg('variant', VARIANTS),
+      prefs.variant === 'desafio' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível das perguntas'), seg('level', LEVELS), h('p', { class: 'jg-p' }, LEVEL_HELP[prefs.level])) : null,
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'clássico: tocou numa casa vazia, marcou.'),
         h('li', {}, 'desafio musical: tocar abre uma pergunta. acertou, marca. errou, a casa fica vazia e passa a vez.'),
         h('li', {}, 'contra o paul no desafio: só você responde perguntas; o paul joga automático, sem perguntas.'),
         h('li', {}, 'fácil joga em casa aleatória; estratégico não deixa ninguém ganhar de bobeira.'),
+        h('li', {}, 'em cada partida a pergunta não repete; se as perguntas do nível acabarem, a rodada termina e o placar fica.'),
         h('li', {}, 'nas perguntas, a semínima vale 1 tempo.'))),
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, `continuar (rodada ${resume.round})`) : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(V.newMatch(prefs)) }, resume ? 'novo placar' : 'iniciar')));
   }
-  function begin(m) { g = m; msg = ''; persist(); draw(); afterTurn(); }
+  function begin(m) { g = m; msg = ''; fb = null; persist(); draw(); afterTurn(); }
 
   function draw() {
     const names = NAMES(g.mode); const w = g.result && g.result.line; const q = g.pending ? V.questionById(g.pending.qid) : null;
@@ -58,6 +62,7 @@ export function mount(host) {
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, `rodada ${g.round}${status ? ` · ${status}` : ''}`),
       h('div', { class: 'jg-board', role: 'group', 'aria-label': 'tabuleiro 3 por 3' }, ...cells),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
+      fb ? feedback() : null,
       q ? question(q) : null,
       g.offer ? h('div', { class: 'jg-pick', role: 'alertdialog', 'aria-label': 'muitos erros' }, h('b', {}, `já são ${g.errors} erros. encerrar em empate ou continuar?`),
         h('button', { class: 'btn small', type: 'button', onclick: () => { g = V.resolveOffer(g, true); persist(); finish(); } }, 'encerrar em empate'), h('button', { class: 'btn small primary', type: 'button', onclick: () => { g = V.resolveOffer(g, false); persist(); draw(); afterTurn(); } }, 'continuar')) : null,
@@ -68,26 +73,33 @@ export function mount(host) {
   function question(q) {
     const opts = g.pending.order.map((orig, pos) => h('button', { type: 'button', class: 'jg-opt', onclick: () => answer(pos) }, q.options[orig]));
     return h('div', { class: 'jg-q', role: 'group', 'aria-label': 'pergunta' },
-      q.img ? h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${q.img}.webp`, alt: 'instrumento da pergunta', draggable: 'false' }) : null,
-      q.fig ? h('span', { class: 'jg-qfig', role: 'img', 'aria-label': `figura: ${q.figName}` }, figureEl(q.fig)) : null,
       h('p', { class: 'jg-qt' }, q.text),
-      q.img ? h('details', { class: 'jg-desc' }, h('summary', {}, 'ver descrição em texto'), h('p', {}, q.desc)) : null,
       h('div', { class: 'jg-opts' }, ...opts),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => { g = V.cancelQuestion(g); msg = 'sem pressa: a pergunta continua a mesma'; persist(); draw(); } }, 'voltar ao tabuleiro'));
+  }
+
+  /** Foto/figura da resposta: só aparece DEPOIS de responder (antes entregaria o gabarito). */
+  function feedback() {
+    const f = fb; const alt = f.artist ? `foto de ${f.name}` : `imagem: ${f.name}`;
+    return h('div', { class: 'jg-fb' },
+      f.src ? h('img', { class: 'jg-fbimg', src: f.src, alt, draggable: 'false', onerror: (e) => e.target.remove() }) : null,
+      f.fig ? h('span', { class: 'jg-qfig', role: 'img', 'aria-label': `figura: ${f.name}` }, figureEl(f.fig)) : null,
+      h('b', {}, f.name));
   }
 
   function tap(i) {
     if (!human() || g.pending || g.board[i] != null) return;
     sfx('tap');
-    if (g.variant === 'classico' || V.isPaulTurn(g)) { g = V.applyMark(g, i); msg = ''; sfx('place'); return after(); }
-    g = V.openQuestion(g, i); msg = ''; draw();
+    if (g.variant === 'classico' || V.isPaulTurn(g)) { g = V.applyMark(g, i); msg = ''; fb = null; sfx('place'); return after(); }
+    g = V.openQuestion(g, i); msg = ''; fb = null; draw();
     const f = root.querySelector('.jg-opt'); if (f) f.focus();
   }
   function answer(pos) {
     if (!g.pending) return;
     const q = V.questionById(g.pending.qid); const ok = g.pending.order[pos] === q.answer;
     g = V.answerQuestion(g, pos);
-    msg = ok ? `isso! ${q.explain}` : `quase! a resposta era “${q.options[q.answer]}”. ${q.explain}`; sfx(ok ? 'place' : 'bad'); after();
+    msg = ok ? `isso! ${q.explain}` : `quase! a resposta era “${q.options[q.answer]}”. ${q.explain}`;
+    fb = q.show ? { ...q.show, name: q.options[q.answer] } : null; sfx(ok ? 'place' : 'bad'); after();
   }
   function after() { persist(); if (g.over) return finish(); draw(); afterTurn(); }
   function afterTurn() { stop(); if (!g || g.over || g.offer || gone || document.hidden) return; if (V.isPaulTurn(g)) timer = setTimeout(paulStep, reduced() ? 300 : 800); }
@@ -99,9 +111,9 @@ export function mount(host) {
   function finish() { const w = g.result.winner; sfx(w == null ? 'tie' : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
-    const title = w == null ? 'empate' : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
-    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title), g.result.early ? h('p', {}, 'encerrada em empate depois de muitos erros') : null,
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); msg = ''; persist(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
+    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title), g.result.early ? h('p', {}, 'encerrada em empate depois de muitos erros') : null, g.result.exhausted ? h('p', {}, 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.') : null,
+      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); msg = ''; fb = null; persist(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   const onVis = () => { if (document.hidden) stop(); else afterTurn(); };

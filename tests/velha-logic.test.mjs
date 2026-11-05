@@ -35,16 +35,27 @@ test('minimax completa vitória e bloqueio imediatos; fácil sempre joga em casa
   assert.equal(V.bestMove([0, 0, null, 1, null, null, null, null, null], 1), 2);
   for (let s = 1; s < 50; s++) { const b = [0, 1, null, null, 0, null, 1, null, null]; assert.equal(b[V.easyMove(b, seeded(s))], null); }
 });
-test('banco: 18 perguntas, ids únicos, 3 opções distintas, resposta válida, sem vazar nome no desc', () => {
-  assert.equal(QUESTIONS.length, 18); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 18);
+test('banco: 68 aprovadas (7 infantil, 45 fácil, 16 intermediário), alternativas válidas e sem piano+teclado juntos', () => {
+  assert.equal(QUESTIONS.length, 68); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 68);
+  const n = (l) => QUESTIONS.filter((q) => q.level === l).length; assert.deepEqual([n('infantil'), n('facil'), n('intermediario')], [7, 45, 16]);
   for (const q of QUESTIONS) {
-    assert.equal(q.options.length, 3); assert.equal(new Set(q.options).size, 3); assert.ok(q.answer >= 0 && q.answer < 3); assert.ok(q.explain.length > 5);
-    if (q.img) { assert.ok(q.desc); const nome = q.options[q.answer].split(' ')[0]; assert.ok(!q.desc.toLowerCase().includes(nome), `${q.id} vaza o nome`); }
+    const want = q.level === 'intermediario' ? 4 : 3;
+    assert.equal(q.options.length, want, `${q.id} opções`); assert.equal(new Set(q.options.map((o) => o.toLowerCase())).size, want, `${q.id} repetidas`);
+    assert.equal(q.answer, 0); assert.ok(q.explain.length > 5);
   }
+  const q5 = QUESTIONS.find((q) => q.num === 5); assert.ok(!q5.options.some((o) => /^(piano|teclado)$/i.test(o)));
+  assert.equal(V.poolFor('infantil').length, 7); assert.equal(V.poolFor('facil').length, 52); assert.equal(V.poolFor('intermediario').length, 16);
+  assert.ok(QUESTIONS.filter((x) => x.show && x.show.artist).length === 17);
 });
-test('perguntas não repetem até esgotar o banco', () => {
-  let asked = []; const seen = new Set(); for (let i = 0; i < 18; i++) { const n = V.nextQuestion(asked, seeded(i + 1)); assert.ok(!seen.has(n.q.id)); seen.add(n.q.id); asked = n.asked; }
-  assert.equal(seen.size, 18); const n = V.nextQuestion(asked, seeded(99)); assert.equal(n.asked.length, 1);
+test('perguntas não repetem; esgotadas encerram a rodada sem perder o placar', () => {
+  let asked = []; const seen = new Set(); for (let i = 0; i < 7; i++) { const n = V.nextQuestion(asked, 'infantil', seeded(i + 1)); assert.ok(!seen.has(n.q.id)); seen.add(n.q.id); asked = n.asked; }
+  assert.equal(V.nextQuestion(asked, 'infantil'), null);
+  let g = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }), asked: [...asked], scores: [2, 1] }; g = V.openQuestion(g, 0);
+  assert.ok(g.over && g.result.exhausted && g.pending === null && g.scores[0] === 2);
+  const r = V.nextRound(g); assert.deepEqual(r.asked, []); assert.equal(r.scores[0], 2);
+});
+test('intermediário usa 4 opções embaralhadas', () => {
+  const g = V.openQuestion(V.newMatch({ variant: 'desafio', level: 'intermediario' }), 0, seeded(5)); assert.equal(g.pending.order.length, 4); assert.equal(V.questionById(g.pending.qid).level, 'intermediario');
 });
 test('desafio: acerto marca; erro deixa a casa vazia, passa a vez e mostra explicação; clique duplo bloqueado', () => {
   let g = V.newMatch({ variant: 'desafio' }); g = V.openQuestion(g, 4, seeded(1));

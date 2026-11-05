@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v227';
+const VERSION = 'beaterista-v228';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css', 'css/kids.css', 'css/lote2.css', 'css/lote3.css', 'css/audit.css', 'js/session.js', 'css/jogos.css', 'css/estudos.css', 'js/views/story.js', 'assets/story/meio-tom-branco.webp', 'assets/story/rasgado-cinza.webp', 'js/jogos/velha.js', 'js/jogos/velha-logic.js', 'js/jogos/velha-data.js', 'js/jogos/bingo.js', 'js/jogos/bingo-logic.js', 'js/jogos/bingo-art.js', 'js/jogos/cara.js', 'js/jogos/cara-logic.js', 'js/jogos/cara-data.js', 'js/jogos/quebra.js', 'js/jogos/quebra-logic.js', 'js/jogos/stop.js', 'js/jogos/stop-logic.js', 'assets/jogos/palco.webp', 'js/views/jogos.js', 'js/views/jogos-relatorio.js', 'js/jogos/base.js', 'js/jogos/domino.js', 'js/jogos/domino-logic.js', 'js/jogos/cartas.js', 'js/jogos/cartas-logic.js', 'aluno.html', 'js/aluno.js', 'js/aluno-boot.js', 'js/ranking.js', 'js/paul-talk.js', 'js/views/acessos.js', 'manifest-aluno.webmanifest', 'js/mic-access.js', 'js/views/ata.js', 'js/views/kids-relatorio.js', 'js/feedback.js', 'js/tips.js', 'js/tipbox.js', 'js/views/dicas.js', 'js/views/figuras-aprender.js', 'js/kids/ritmo.js', 'js/kids/memoria.js', 'js/kids/memory-themes.js',
   'js/app.js', 'js/util.js', 'js/db.js', 'js/store.js', 'js/auth.js', 'js/sync.js', 'js/config.js',
@@ -64,6 +64,23 @@ const EXTRA = [
   'assets/jogos/instrumentos/trompete.webp',
   'assets/jogos/instrumentos/violao.webp',
   'assets/jogos/instrumentos/violino.webp',
+  'assets/jogos/artistas/88.webp',
+  'assets/jogos/artistas/89.webp',
+  'assets/jogos/artistas/93.webp',
+  'assets/jogos/artistas/97.webp',
+  'assets/jogos/artistas/112.webp',
+  'assets/jogos/artistas/113.webp',
+  'assets/jogos/artistas/114.webp',
+  'assets/jogos/artistas/115.webp',
+  'assets/jogos/artistas/116.webp',
+  'assets/jogos/artistas/117.webp',
+  'assets/jogos/artistas/118.webp',
+  'assets/jogos/artistas/119.webp',
+  'assets/jogos/artistas/121.webp',
+  'assets/jogos/artistas/122.webp',
+  'assets/jogos/artistas/123.webp',
+  'assets/jogos/artistas/126.webp',
+  'assets/jogos/artistas/127.webp',
   'assets/memoria/bateria/01_bumbo.webp',
   'assets/memoria/bateria/02_caixa.webp',
   'assets/memoria/bateria/03_tom1.webp',
