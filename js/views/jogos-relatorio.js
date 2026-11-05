@@ -77,7 +77,7 @@ export function relatorio(host) {
       h('p', { class: 'rel-what' }, what),
       h('p', { class: 'rel-k' }, 'desenvolve'), h('ul', {}, ...skills.map((s) => h('li', {}, s))),
       h('p', { class: 'rel-k' }, 'na aprendizagem'), h('p', {}, how)));
-  host.replaceChildren(banner(document.documentElement.classList.contains('aluno-on') ? 'Aprender jogando' : 'Relatório', 'pra que serve cada jogo'), h('div', { class: 'jg jg-wrap jg-doc' },
+  host.replaceChildren(banner(document.documentElement.classList.contains('aluno-on') ? 'Jogos Ensinam' : 'Relatório', 'pra que serve cada jogo'), h('div', { class: 'jg jg-wrap jg-doc' },
     h('div', { class: 'rel-actions' }, h('a', { class: 'jg-link', href: document.documentElement.classList.contains('aluno-on') ? '#/estudos' : '#/jogos' }, document.documentElement.classList.contains('aluno-on') ? '‹ estudos' : '‹ jogos'), h('button', { class: 'btn small', type: 'button', onclick: () => window.print() }, 'salvar em PDF')),
     h('article', { class: 'rel-page' },
       h('header', { class: 'rel-title' }, h('h1', { class: 'hand' }, 'Relatório dos jogos'), h('p', { class: 'muted' }, `Beaterista · ${total} jogos · o que cada um desenvolve e como ajuda a aprender música`)),

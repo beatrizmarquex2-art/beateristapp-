@@ -117,7 +117,7 @@ function tocarView(view) {
     card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
 }
 
-/** Aba Estudos: sem código só o relatório "Aprender jogando" (os pais leem); com código liberado abre aulinha do Paul, dicionário musical e as 30 dicas. */
+/** Aba Estudos: sem código só o relatório "Jogos Ensinam" (os pais leem); com código liberado abre aulinha do Paul, dicionário musical e as 30 dicas. */
 function estudosView(view) {
   const item = (href, title, sub, trava) => {
     const lock = trava && Acesso.bloqueado(trava);
@@ -128,7 +128,7 @@ function estudosView(view) {
     item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo', 'aulinha'),
     item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando', 'dicionario'),
     item('#/estudos/dicas', 'As 30 dicas', 'pequenas ideias pra estudar melhor', 'dicas'),
-    item('#/jogos/relatorio', 'Aprender jogando', 'relatório aberto pra pais e responsáveis: o que cada jogo desenvolve')));
+    item('#/jogos/relatorio', 'Jogos Ensinam', 'relatório aberto pra pais e responsáveis: o que cada jogo desenvolve')));
   draw(); const on = () => draw(); addEventListener('acesso', on); return () => removeEventListener('acesso', on);
 }
 
