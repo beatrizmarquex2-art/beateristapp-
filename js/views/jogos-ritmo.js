@@ -11,6 +11,8 @@ import * as FB from '../feedback.js';
 import * as RK from '../ranking.js';
 import * as PUB from '../midis-publicos.js';
 import * as CODE from '../codigo.js';
+import * as P from '../kids/progress.js';
+import * as Album from '../kids/album.js';
 import * as AC from '../acesso.js';
 
 const BASE = 'assets/rhythm-games/';
@@ -194,6 +196,8 @@ export function loadPackage() {
 
 /** opts.student: área do aluno (sem importar MIDI; músicas originais do app; ranking compartilhado com o nome do aluno). */
 export function mount(host, opts = {}) {
+  // Modo Aventura (#/ritmo/aventura[/n]): tela própria, o jogo normal abaixo não é montado. Nada do modo livre muda.
+  if (opts.parts && opts.parts[0] === 'aventura') return mountAventura(host, opts.parts);
   const student = !!opts.student;
   let mounted = false; let gone = false;
   const studentTop = (key) => RK.cached(`ritmo|${key}`);
@@ -294,7 +298,7 @@ export function mount(host, opts = {}) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage, codes]));
+  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), h('div', { class: 'pad-x rg-adv' }, h('a', { class: 'btn primary wide', href: '#/ritmo/aventura', 'data-aventura': '' }, '🎯 Modo Aventura'), h('small', { class: 'muted' }, 'desafios num mapa, opcional. Nenhuma música fica trancada.')), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage, codes]));
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
@@ -309,8 +313,12 @@ export function mount(host, opts = {}) {
     if (gone) return;
     BRref = BR;
     box.replaceChildren();
+    // ★ de música longa → figurinha do álbum (a cada 5 ★), pro jogador ativo dos Kids
+    const onStars = async ({ total }) => { const me = P.active(); if (!me) return; const won = await Album.grantByStars(me.id, total);
+      if (won) sheet(won === 1 ? '🎁 pacote novo de figurinhas!' : `🎁 ${won} pacotes novos de figurinhas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou 5 ★ nos jogos de ritmo.'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
+      else toast(`★ ${Album.starsToNext(total)} pra próximo pacote de figurinhas`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = student ? { builtin: true, impLabel: 'Músicas MIDI', readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
-    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;
@@ -322,4 +330,16 @@ export function mount(host, opts = {}) {
     off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }
   };
+}
+
+/** Modo Aventura do No Ritmo: mapa de desafios (#/ritmo/aventura) e missão (#/ritmo/aventura/<n>). Mesma rota do jogo normal, só outra tela. */
+function mountAventura(host, parts) {
+  let gone = false; let off = () => {};
+  const wrap = h('div', { class: 'pad-x' }, h('p', { class: 'muted' }, 'carregando a aventura…')); host.append(wrap);
+  Promise.all([import('../campanha/registry.js'), import('../campanha/run.js')]).then(async ([R, run]) => {
+    const adv = await R.loadAdventure('noritmo'); if (gone) return;
+    const n = parts[1] != null && /^\d+$/.test(parts[1]) ? Number(parts[1]) : null;
+    off = run.mountAdventure(wrap, { gameId: 'noritmo', spec: adv.spec, adv, base: '#/ritmo/aventura', mission: n, backHref: '#/ritmo', nav: (hash) => { location.hash = hash; } });
+  }).catch((e) => { console.warn('aventura indisponível', e); if (!gone) wrap.replaceChildren(h('p', { class: 'muted' }, 'a aventura não abriu.'), h('a', { class: 'btn wide', href: '#/ritmo' }, 'Voltar aos jogos de ritmo')); });
+  return () => { gone = true; try { off(); } catch { /* ok */ } };
 }

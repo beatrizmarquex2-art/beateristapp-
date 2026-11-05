@@ -1,5 +1,6 @@
 // pauLta: mapa de fases no mesmo desenho do Modo Aventura do Toca Aqui (discos de vinil, Escola do Ritmo, escuro/claro).
 // Usa o componente js/kids/mapa.js; aqui só dizemos quais são as fases, as regiões de cada mundo e o progresso do jogador.
+import { livre } from './livre.js';
 import { h } from '../util.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import * as S from './score.js';
@@ -26,7 +27,7 @@ export function worldMap(host, { w, p, mode, me, stars }) {
   const dispose = mountProgressionMap(host, {
     gameId: `paulta-${w}`, levels, profileId: me.id, unitName: 'Fase', tier: 0, stars: { have: stars, max: n * 3 },
     theme: { id: `paulta-${w}`, name: W.name, regions: REGIOES[w] },
-    starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => S.unlocked(p, w, idOf(id)),
+    starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => livre() || S.unlocked(p, w, idOf(id)),
     lockedMsg: 'conclua a fase anterior pra abrir o caminho',
     onBack: () => { location.hash = BASE; }, onOpen: (lv) => { location.hash = `${BASE}/${w}/${idOf(lv.id)}/${mode}`; },
   });

@@ -25,6 +25,18 @@ export function bestMove(board, me, rnd = Math.random) {
 }
 export const easyMove = (board, rnd = Math.random) => { const c = emptyCells(board); return c[Math.floor(rnd() * c.length)]; };
 
+/** Casas que o adversário "que bloqueia" considera: fecha a própria linha se puder; senão tapa a linha do oponente; senão qualquer casa vazia. */
+export function blockCells(board, me) {
+  const cells = emptyCells(board);
+  const closing = (who) => cells.filter((c) => { const b = board.slice(); b[c] = who; return !!winnerOf(b); });
+  const win = closing(me); if (win.length) return win;
+  const stop = closing(1 - me); return stop.length ? stop : cells;
+}
+export const blockMove = (board, me, rnd = Math.random) => { const c = blockCells(board, me); return c[Math.floor(rnd() * c.length)]; };
+/** Estratégias do computador (usadas pelo Modo Aventura): aleatória, bloqueia, estratégica (minimax). */
+export const AI_KINDS = ['aleatoria', 'bloqueia', 'estrategica'];
+export const aiMove = (kind, board, me, rnd = Math.random) => (kind === 'estrategica' ? bestMove(board, me, rnd) : kind === 'bloqueia' ? blockMove(board, me, rnd) : easyMove(board, rnd));
+
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const questionById = (id) => QUESTIONS.find((q) => q.id === id);
 

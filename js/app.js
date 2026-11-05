@@ -312,7 +312,7 @@ function shell() {
       case 'lembretes': c = lembretes.mount(view); break;
       case 'ferramentas': c = ferramentas.mount(view, r.parts); break;
       case 'dicionario': c = dicionario.mount(view, r.parts); break;
-      case 'ritmo': c = jogosRitmo.mount(view); break;
+      case 'ritmo': c = jogosRitmo.mount(view, { parts: r.parts }); break;
       case 'dicas': c = dicas.mount(view, r.parts); break;
       case 'jogos': c = jogos.mount(view, r.parts); break;
       case 'figurinhas': c = figurinhas.mount(view, r.parts); break;

@@ -141,7 +141,7 @@ export function mount(host) {
         h('div', { class: 'row tk-actions' },
           h('button', { class: `btn${listening ? ' primary' : ''}`, type: 'button', onclick: () => { if (listening) { stopAll(); listening = false; drawPanel(); return; } stopLoop(); listening = true; playDoc(doc, { loop: loopOn, withClick: true, onEnd: () => { listening = false; drawPanel(); } }); drawPanel(); } }, icon(listening ? 'stop' : 'play', 14), listening ? ' parar' : ' ouvir na partitura'),
           h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(loopOn), onclick: () => { loopOn = !loopOn; drawPanel(); } }, loopOn ? '↻ em loop ✓' : '↻ em loop'),
-          take.bars.length === 1 ? h('button', { class: 'btn', type: 'button', onclick: async (e) => {
+          take.bars.length === 1 && !document.documentElement.classList.contains('aluno-on') ? h('button', { class: 'btn', type: 'button', onclick: async (e) => { // o Beat Lab só existe no app da Bea
             const btn = e.currentTarget; const b = take.bars[0]; const beat = { id: 'novo', name: 'Toquei na bateria', style: 'Meus', bpm: take.bpm, steps: 16, kind: 'groove', rows: b.rows, mine: true };
             const r = await store.upsert('beat', null, { beat }); await store.upsert('beat', r.id, { beat: { ...beat, id: r.id, recId: r.id } });
             stars(btn); toast('salvo em Meus ritmos ✓', { action: 'abrir', onAction: () => { location.hash = '#/beatlab/meus'; } });

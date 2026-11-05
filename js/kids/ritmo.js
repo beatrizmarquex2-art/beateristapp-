@@ -9,11 +9,14 @@ import { svgEl } from './art.js';
 import { VOICE } from '../views/beatlab.js';
 import * as FB from '../feedback.js';
 import { session } from '../session.js';
+import { mountRitmoMissao } from './ritmo-missao.js';
 
 const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // replaceChildren(null) escreveria "null"
 const feedback = (el, ok, text) => { el.className = `kd-fb ${ok ? 'ok' : 'no'}`; el.textContent = text; };
 
-export function mountRitmo(box) {
+/** `opts.mission` (Modo Aventura) abre o desafio de composição de ritmo-missao.js; sem ele é o jogo de sempre (criar / adivinha). */
+export function mountRitmo(box, opts) {
+  if (opts && opts.mission) return mountRitmoMissao(box, opts);
   let mode = 'criar'; let slots = []; let secret = null; let cur = -1; let bpm = 80;
   const Play = session(); // a execução em curso (cliques, sons e o destaque do tempo); tocar de novo ou trocar de modo cancela a anterior
   const UI = session({ quiet: false }); // timers só de tela (redesenhar depois do acerto)

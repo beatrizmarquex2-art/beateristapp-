@@ -11,7 +11,7 @@ export function trancado(hash) {
   if (ok) return false;
   const m = /^#\/([^/?]+)(?:\/([^/?]*))?/.exec(String(hash || '')); if (!m) return false;
   const [, a, b] = m;
-  if (['ranking', 'album', 'beatlab', 'ritmo', 'dicionario', 'dicas'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) só com código
+  if (['ranking', 'album', 'ritmo', 'dicionario', 'dicas'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) só com código
   if (a === 'kids') return !(b && KIDS_LIVRES.has(b)); // #/kids sozinho (fases e estrelas) e as fases ficam trancados
   return false; // jogos, ritmo (trava por dentro), tocar, toque, piano, relatório
 }

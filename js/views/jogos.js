@@ -13,6 +13,8 @@ import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
+import { hasAdventure, loadAdventure } from '../campanha/registry.js';
+import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
 
 const IMG = 'assets/jogos/icones/';
@@ -44,10 +46,8 @@ const SECTIONS = [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
-  ['jogos das dicas', [
-    link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
-    link('#/dicas/caca', 'caça-palavras', 'caca.svg', null, 'bea'),
-    link('#/dicas/cruzadinha', 'cruzadinha', 'cruza.svg', null, 'bea'),
+  ['quiz e letras (com código)', [
+    link('#/dicas/quiz', 'Quiz e Letras', 'quiz.svg', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
   ]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
@@ -131,9 +131,26 @@ function game(host, entry) {
   return () => { offFesta(); ctl.destroy(); };
 }
 
+/** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */
+function withModes(host, entry, [id, mode, mission]) {
+  if (mode === 'livre') return game(host, entry);
+  let off = () => {}; let gone = false; const wrap = h('div', { class: 'av-root' }); host.replaceChildren(wrap);
+  wrap.append(h('p', { class: 'jg-p' }, 'carregando…'));
+  loadAdventure(id).then((adv) => {
+    if (gone) return; const base = `#/jogos/${id}/aventura`; const spec = adv.spec;
+    if (mode === 'aventura') {
+      const n = mission !== undefined && /^\d+$/.test(mission) ? Number(mission) : null;
+      off = mountAdventure(wrap, { gameId: id, spec, adv, base, mission: n, playClass: `jg jg-wrap jg-game${darkOn(id) ? ' jg-dark' : ''}`, backHref: `#/jogos/${id}`, nav: (hash) => { location.hash = hash; } }); return;
+    }
+    off = modeChooser(wrap, { gameId: id, spec, title: entry[1], hrefLivre: `#/jogos/${id}/livre`, hrefAventura: base });
+    wrap.prepend(h('a', { class: 'av-back', href: '#/jogos', style: 'margin-bottom:8px' }, '‹ jogos'));
+  }).catch((e) => { console.warn('aventura indisponível, abrindo o modo livre', e); if (!gone) off = game(host, entry); });
+  return () => { gone = true; off(); };
+}
+
 export function mount(host, parts = []) {
   if (parts[0] === 'relatorio') return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) return catalog(host);
-  return game(host, entry);
+  return hasAdventure(entry[0]) ? withModes(host, entry, parts) : game(host, entry);
 }

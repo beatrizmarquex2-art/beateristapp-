@@ -7,12 +7,13 @@ import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as CODE from './codigo.js';
 import * as AC from './acesso.js';
+import * as dicas from './views/dicas.js';
+import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
-import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
@@ -25,8 +26,8 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos', dicas: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -140,12 +141,12 @@ function lockView(view, what) {
   view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
-const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria' };
+const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
   view.append(banner('Tocar', 'bateria, pad e piano na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    card('#/toque', 'Bateria e pad', 'toque nas peças com vários dedos, grave um ritmo e salve no Beat Lab'),
+    card('#/toque', 'Bateria e pad', 'toque nas peças com vários dedos e grave o seu ritmo'),
     card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
 }
 
@@ -166,17 +167,21 @@ function shell(name) {
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || 'esta parte');
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
+    else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
+      const box = h('div'); view.append(box); let inner = null; let dead = false;
+      DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); });
+      c = () => { dead = true; if (typeof inner === 'function') inner(); };
+    }
     else if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
     else if (r.name === 'perfil') c = perfil.mount(view);
-    else if (r.name === 'beatlab') c = beatlab.mount(view, r.parts);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'tocar') tocarView(view);
-    else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
+    else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);

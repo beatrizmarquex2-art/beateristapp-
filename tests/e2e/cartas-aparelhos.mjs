@@ -9,7 +9,7 @@ for (const nome of PERFIS) {
   const { defaultBrowserType, ...o } = d; const ctx = await context(browser, o); const p = await ctx.newPage(); const errs = [];
   p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
-  await p.goto(`${url}/aluno.html#/jogos/cartas`); await sleep(1200);
+  await p.goto(`${url}/aluno.html#/jogos/cartas/livre`); await sleep(1200);
   const j = p.locator('button:has-text("JOGAR")'); if (await j.count()) { await j.click(); await sleep(300); }
   await p.locator('.jg-seg').nth(1).locator('button', { hasText: '2' }).click(); await p.locator('button:has-text("iniciar")').click(); await sleep(4200);
   const m = await p.evaluate(() => { const vw = innerWidth, vh = innerHeight; const st = document.querySelector('.cx-stage').getBoundingClientRect();

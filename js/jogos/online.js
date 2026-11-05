@@ -92,6 +92,13 @@ export function lobby({ jogo, makeState, onStart }) {
   return { el: box, close() { if (conn && !live) { conn.close(); conn = null; } } };
 }
 
+/** Volta pra uma sala em que este celular já estava (queda de internet, app fechado). Devolve { conn, estado } ou null se a sala não existe mais. */
+export async function reenter(code, me) {
+  const rows = await rpc('sala_ler', { p_code: code, p_ver: 0 });
+  const row = rows && rows[0]; if (!row || !row.estado) return null;
+  return { conn: connection(code, me, row.ver, null), estado: row.estado };
+}
+
 /** Faixa de status da conexão ("online" / "sem conexão…") para pôr no topo do jogo. */
 export function linkBadge() {
   const el = h('p', { class: 'jg-link-badge', role: 'status' }, '● 2 celulares');

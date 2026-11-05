@@ -2,7 +2,7 @@
 
 /* feedback: Paul no canto, pulinho e tremidinha */
 .fb-paul { position: fixed; right: 10px; bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 250; display: flex; align-items: flex-end; gap: 4px; pointer-events: none; animation: fbIn .28s cubic-bezier(.2, 1.4, .4, 1); }
-.fb-paul img { width: 84px; height: auto; mix-blend-mode: multiply; filter: drop-shadow(0 2px 0 rgb(27 24 24 / .15)); }
+.fb-paul img { width: 84px; height: auto; mix-blend-mode: normal; filter: drop-shadow(0 2px 0 rgb(27 24 24 / .15)); }
 .fb-paul.win img, .fb-paul.great img { animation: fbHop .5s ease-in-out 2; } .fb-paul.lose img { animation: fbSway .6s ease-in-out 2; }
 .fb-say { max-width: 170px; margin-bottom: 40px; padding: 8px 12px; border: 2px solid #1b1818; border-radius: 14px 14px 4px 14px; background: #fffdf8; color: #1b1818; font: 700 14px/1.2 var(--body, sans-serif); box-shadow: 3px 3px 0 #a31d30; }
 .fb-paul.lose .fb-say { box-shadow: 3px 3px 0 #14284b; } .fb-paul.out { opacity: 0; transform: translateY(14px); transition: .3s; }
