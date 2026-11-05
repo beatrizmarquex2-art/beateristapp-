@@ -17,7 +17,7 @@ import { relatorio } from './jogos-relatorio.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca.svg', toca, 'figuras e versão com imagens'],
+  ['toca', 'Toca Aqui', 'toca.svg', toca, 'ler, ouvir, repetir · microfone'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -34,7 +34,6 @@ const SECTIONS = [
     link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
     link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
-    link('#/kids/eco', 'eco rítmico', 'eco.svg', 'ouve e repete'),
   ]],
   ['leitura musical', [
     link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),

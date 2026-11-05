@@ -24,9 +24,9 @@ const peak = (ms) => page.evaluate((m) => window.__peak(m), ms);
 const live = () => page.evaluate(() => window.__audible());
 const phase = () => page.evaluate(() => document.querySelector('#rz-cv') ? 'play' : document.querySelector('.rz-end') ? 'end' : 'menu');
 
-for (const game of ['beat', 'hero', 'tiles', 'setas']) {
-  if (game !== 'beat') { /* o Beaterista só expõe beat/tiles/setas no menu; hero fica fora */ if (game === 'hero') continue; }
+for (const game of ['beat', 'tiles']) { // o menu só tem Beat Hero e Piano Hero
   await click(`#jogos [data-act="rz-game"][data-v="${game}"]`); await sleep(200);
+  await click('#jogos [data-act="rz-acc"][data-v="ritmo"]'); await sleep(150); // o estilo fica dentro da setinha
   await click('#jogos [data-act="rz-style"][data-v="imp"]'); await sleep(200);
 
   // 1) prévia ligada e desligada: tem que calar de verdade (a prévia agenda até 12 s de som de uma vez)

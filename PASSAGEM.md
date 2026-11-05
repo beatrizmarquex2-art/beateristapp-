@@ -29,7 +29,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
   - `ranking_scores` + funções `ranking_top` / `ranking_add` (ranking público, tabela fechada).
   - `aluno_visitas` + função `aluno_visit` (registro de acessos; só a Bea lê, tela **menu → aulas → Acessos dos alunos**).
   - coluna `origem` (aluno beaterista, on-line, tik tok live, youtube/instagram, outro: ...).
-  - `midis_publicos` + função `midis_publicos_lista()` (005): MIDIs que a Bea marca ✓ pros alunos. Marcar/desmarcar fica em **Jogos de ritmo → músicas importadas** (app da Bea); o app copia o arquivo pra tabela (`js/midis-publicos.js`) e reenvia sozinho se renomear, mover de pasta ou cortar. O aluno vê na aba **"Da professora"** (ritmo). Só vale depois de publicar a área dos alunos de novo.
+  - `midis_publicos` + função `midis_publicos_lista()` (005): MIDIs que a Bea marca ✓ pros alunos. Marcar/desmarcar fica em **Jogos de ritmo → músicas importadas** (app da Bea); o app copia o arquivo pra tabela (`js/midis-publicos.js`) e reenvia sozinho se renomear, mover de pasta ou cortar. O aluno vê na aba **"Músicas MIDI"** (ritmo). Só vale depois de publicar a área dos alunos de novo.
 - O Supabase costuma pedir aprovação no chat e expira em 1 minuto; se falhar, a Bea cola o SQL no SQL Editor.
 
 ## Mapa do código
@@ -71,6 +71,14 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Dominó removido. Bingo só linha/coluna/cheia. Memória: 1 ou 2 jogadores, "acerta joga de novo" sim/não.
 - Modo leve: `html.lite` (Android/outros, ver `js/theme-boot.js` e fim de `css/jogos.css`): sem barra de rolagem falsa, sem desfoque/animação de fundo.
 
+## Jogos de ritmo (nov/2026)
+- Só dois jogos: **Beat Hero** (engine `beat`, sempre modo ritmo: batidas e percussão do MIDI) e **Piano Hero** (engine `tiles`: melodia de qualquer faixa, voz/guitarra/teclado). Setinhas e Figuras rítmicas saíram do menu (o código continua no pacote). Menu compacto: ritmo+andamento, ajustes e cores abrem pela setinha (`rzAcc`), botão JOGAR grande. Escolhas (jogo, andamento, estilo, dificuldade, teclas, duração) ficam salvas.
+- Aba da professora agora se chama **Músicas MIDI**. Músicas prontas: 3 por estilo (devagar/médio/rápido, ex.: rock 100/120/140 bpm), em botões grandes; o estilo é uma grade 3×2.
+- Nenhuma linha tem semicolcheia seguida (mínimo uma colcheia): melodia tenta a linha vizinha, bateria sai da pista mas segue soando no fundo (`rzNoFast`). Começo: compassos vazios no início da música são pulados (`rzLeadTrim`).
+- Duração: só **1 min** ou **2 min**. 2 min (e música com 1:40+) = XP em dobro e ★ que valem pras figurinhas (`ritmo.sticker.stars` no armazenamento do pacote; `OPTS.onStars` pra ligar nas figurinhas quando vier o prompt). Teste: `tests/e2e/ritmo-pista.mjs`.
+
+- Ritmo, mais: pausa → **Continuar** conta 4 tempos no bpm da música (notas paradas na tela) e volta de onde parou; música tocada ganha **barrinha verde** (melhor precisão) nos cartões e na lista; **fade out** nos últimos ~2 s; **modo especial**: de vez em quando cai uma nota-estrela (≥12 s entre elas, `rzStars`), acertou = pontos ×2 por 3 compassos, moldura dourada pulsando no tempo + faíscas (`rzSpecialFx`). Teste: `tests/e2e/ritmo-especial.mjs`.
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
@@ -79,7 +87,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Testes: `node --test tests/*.test.mjs`, e2e `tests/e2e/stop.mjs` e `salas.mjs`.
 
 ## Pendências (a Bea leva pra o chat novo)
-1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Da professora". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
+1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Músicas MIDI". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
 2. **MIDIs pros alunos**: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.
 3. **Quebra-cabeça**: 5 imagens novas do Paul (tocando outros instrumentos/cenários), 1536×1024. O jogo já aceita várias (`IMAGES` em `js/jogos/quebra.js` + `sw.js`); falta ela mandar as imagens (ou decidir um botão de subir imagem dentro do app: só ficaria no aparelho dela, não chegaria nos alunos).
 4. **Aba Beaterista** (a Bea deixou pra depois): revisar visual como fizemos na Bea.

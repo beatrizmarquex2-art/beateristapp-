@@ -12,7 +12,7 @@ const micLatency = () => { const d = store.get('setting-tempo') ? store.get('set
  * tapSound() toca o som de cada toque na tela (sem ele a criança toca no mudo).
  * onCount(i) avisa cada tempo da contagem (i = 0..3) e depois 'go' em i = 4.
  */
-export function capture({ mode, pad, bpm, beats, countIn = 4, tail = 0.4, onCount, tapSound }) {
+export function capture({ mode, pad, bpm, beats, countIn = 4, tail = 0.4, onCount, tapSound, clickBeats = true }) {
   const c = audio(); const q = 60 / bpm; let mic = null; let cancelled = false; const hits = []; const timers = []; let onTap = null; const oscs = [];
   const t0 = c.currentTime + 0.4 + countIn * q;
   const cleanup = () => { timers.forEach(clearTimeout); oscs.forEach((o) => { try { o.stop(); } catch { /* já tocou */ } }); if (mic) mic.stop(); if (pad && onTap) pad.removeEventListener('pointerdown', onTap); };
@@ -21,7 +21,7 @@ export function capture({ mode, pad, bpm, beats, countIn = 4, tail = 0.4, onCoun
     else if (pad) { onTap = (e) => { hits.push(perfToCtx(e.timeStamp || performance.now())); if (tapSound) { try { tapSound(); } catch { /* sem som */ } } }; pad.addEventListener('pointerdown', onTap); }
     if (cancelled) return { onsets: [], t0 };
     for (let i = 0; i < countIn; i++) oscs.push(click(t0 - (countIn - i) * q, i === 0 ? 2 : 1, 0.9));
-    for (let b = 0; b < beats; b++) oscs.push(click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.3));
+    if (clickBeats) for (let b = 0; b < beats; b++) oscs.push(click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.3)); // sem clique depois da contagem o microfone não escuta o próprio alto-falante
     if (onCount) for (let i = 0; i <= countIn; i++) timers.push(setTimeout(() => !cancelled && onCount(i), Math.max(0, (t0 - (countIn - i) * q - c.currentTime) * 1000)));
     await new Promise((ok) => timers.push(setTimeout(ok, Math.max(0, (t0 + beats * q + tail - c.currentTime) * 1000))));
     cleanup();
