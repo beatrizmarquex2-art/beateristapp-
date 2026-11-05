@@ -1,6 +1,7 @@
 // Perguntas dos jogos com fases (peças, pauta, figuras, bumbos). Puro, testado em tests/kids-quiz.test.mjs.
 // `d` = dificuldade 0 a 10 (já ajustada pela idade). Cada pergunta: { ans, options:[{id,label}], ...dados do desenho/som }.
-import { PIECES, FIGURES, nameOf, shuffle } from '../kids-logic.js';
+import { PIECES, nameOf, shuffle } from '../kids-logic.js';
+import { FIGS, FIG_NAME, GROUPS, beatsLabel, specId, wrongSpecs } from './figs.js';
 
 const POOL = [['bd', 'sn'], ['bd', 'sn', 'hh'], ['bd', 'sn', 'hh'], ['bd', 'sn', 'hh', 'cr'], ['bd', 'sn', 'hh', 'cr', 'rd'], ['bd', 'sn', 'hh', 'cr', 'rd', 'tt'],
   ['bd', 'sn', 'hh', 'cr', 'rd', 'tt', 'ft'], PIECES.map((p) => p.id), PIECES.map((p) => p.id), PIECES.map((p) => p.id), PIECES.map((p) => p.id)];
@@ -18,24 +19,39 @@ export function pieceQ(rnd, d) {
   return { ans, key: ans, options };
 }
 
-const FIG_NAME = Object.fromEntries(FIGURES.map((f) => [f.id, f.name]));
-export const beatsLabel = (b) => (b >= 1 ? `${b} tempo${b > 1 ? 's' : ''}` : b === 0.5 ? 'meio tempo' : '¼ de tempo');
-/** Figuras: comparar (fácil), quantos tempos dura (médio) e nome da figura (difícil). */
+/** Quantas figuras já entram na fase d (da mais longa pra mais curta): semibreve, mínima, semínima, colcheia, semicolcheia, fusa, semifusa. */
+export const figCount = (d) => [3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7][Math.max(0, Math.min(10, d))];
+/** Tipos de pergunta que cada fase liberta. dura/tempos/nome desde o começo; desenho e montar logo depois; pausas no meio; tercina e sextina no fim. */
+export const figKinds = (d) => (d <= 1 ? ['dura', 'tempos', 'nome'] : d === 2 ? ['dura', 'tempos', 'nome', 'desenho', 'montar']
+  : d <= 4 ? ['dura', 'tempos', 'nome', 'desenho', 'montar', 'pausa'] : d <= 6 ? ['dura', 'tempos', 'nome', 'desenho', 'montar', 'pausa', 'pausaValor']
+    : ['dura', 'tempos', 'nome', 'montar', 'pausa', 'pausaValor', 'grupo', 'grupoN']);
+const pick = (list, rnd) => list[Math.floor(rnd() * list.length)];
+const nOpts = (d) => (d <= 1 ? 3 : 4);
+/** Figuras rítmicas: comparar, quanto vale, nome, desenho, montar o desenho, pausas, tercina e sextina. */
 export function figureQ(rnd, d) {
-  const kind = d <= 5 ? 'dura' : d <= 8 ? 'tempos' : (rnd() < 0.5 ? 'nome' : 'tempos');
+  const pool = FIGS.slice(0, figCount(d)); const kind = pick(figKinds(d), rnd);
   if (kind === 'dura') {
-    const gap = d <= 2 ? 2 : 1; let a; let b;
-    do { a = Math.floor(rnd() * FIGURES.length); b = Math.floor(rnd() * FIGURES.length); } while (Math.abs(a - b) < gap);
-    const pair = [FIGURES[a], FIGURES[b]]; const win = pair[0].beats > pair[1].beats ? pair[0] : pair[1];
+    const gap = d <= 2 ? 2 : 1; let a; let b; let guard = 0;
+    do { a = Math.floor(rnd() * pool.length); b = Math.floor(rnd() * pool.length); guard++; } while (Math.abs(a - b) < gap && guard < 200);
+    const pair = [pool[a], pool[b]]; const win = pair[0].beats > pair[1].beats ? pair[0] : pair[1];
     return { kind, key: 'dura', pair: pair.map((f) => f.id), ans: win.id, options: pair.map((f) => ({ id: f.id, label: f.name })) };
   }
-  const f = FIGURES[Math.floor(rnd() * FIGURES.length)];
-  if (kind === 'tempos') {
-    const opts = shuffle(FIGURES.map((x) => x.beats), rnd).slice(0, 4); if (!opts.includes(f.beats)) opts[0] = f.beats;
-    return { kind, key: 'tempos', fig: f.id, ans: String(f.beats), options: shuffle(opts, rnd).map((b) => ({ id: String(b), label: beatsLabel(b) })) };
+  if (kind === 'grupo') { const g = pick(GROUPS, rnd);
+    return { kind, key: 'grupo', group: g.id, ans: g.id, options: shuffle([{ id: 'tercina', label: 'tercina' }, { id: 'sextina', label: 'sextina' }, { id: 'col2', label: 'duas colcheias' }, { id: 'semi4', label: 'quatro semicolcheias' }], rnd) }; }
+  if (kind === 'grupoN') { const g = pick(GROUPS, rnd); const opts = [...new Set([g.n, g.normal, 3, 4, 6, 8])].slice(0, 4); if (!opts.includes(g.n)) opts[0] = g.n;
+    return { kind, key: 'grupo', group: g.id, ans: String(g.n), options: shuffle([...new Set(opts)].map((n) => ({ id: String(n), label: `${n} notas` })), rnd) }; }
+  const f = pick(pool, rnd);
+  if (kind === 'tempos' || kind === 'pausaValor') {
+    const opts = shuffle([...new Set(pool.map((x) => x.beats))], rnd).slice(0, nOpts(d)); if (!opts.includes(f.beats)) opts[0] = f.beats;
+    return { kind, key: kind === 'tempos' ? 'tempos' : 'pausa', fig: f.id, ans: String(f.beats), options: shuffle(opts, rnd).map((b) => ({ id: String(b), label: beatsLabel(b) })) };
   }
-  const names = shuffle(FIGURES.filter((x) => x.id !== f.id), rnd).slice(0, 3);
-  return { kind, key: 'nome', fig: f.id, ans: f.id, options: shuffle([f, ...names], rnd).map((x) => ({ id: x.id, label: x.name })) };
+  if (kind === 'montar') {
+    const wrong = wrongSpecs(f, rnd, nOpts(d) - 1);
+    return { kind, key: 'montar', fig: f.id, ans: specId(f), options: shuffle([specId(f), ...wrong], rnd).map((id) => ({ id, label: 'desenho' })) };
+  }
+  const others = shuffle(pool.filter((x) => x.id !== f.id), rnd).slice(0, nOpts(d) - 1);
+  if (kind === 'desenho') return { kind, key: 'desenho', fig: f.id, ans: f.id, options: shuffle([f, ...others], rnd).map((x) => ({ id: x.id, label: x.name })) };
+  return { kind, key: kind === 'pausa' ? 'pausa' : 'nome', fig: f.id, ans: f.id, options: shuffle([f, ...others], rnd).map((x) => ({ id: x.id, label: kind === 'pausa' ? `pausa de ${x.name}` : x.name })) };
 }
 
 /** "Quantos bumbos?": quantos bumbos tem no compasso. Mais bumbos e andamento mais rápido nas fases altas. */
@@ -63,8 +79,8 @@ export function pautaQ(rnd, d) {
 /** O que cada erro quer dizer (vira dica no resultado e no PDF). */
 export const hintOf = (game, key) => {
   if (game === 'pecas' || game === 'pauta') return `treinar: ${pairName(key)}`;
-  if (game === 'figuras') return key === 'dura' ? 'comparar a duração das figuras' : key === 'tempos' ? 'quantos tempos cada figura dura' : 'o nome de cada figura';
+  if (game === 'figuras') return { dura: 'comparar a duração das figuras', tempos: 'quanto cada figura vale', nome: 'o nome de cada figura', desenho: 'reconhecer o desenho de cada figura', montar: 'montar o desenho: cabeça, haste e bandeirinhas', pausa: 'as pausas e quanto elas valem', grupo: 'tercina e sextina' }[key] || 'as figuras rítmicas';
   if (game === 'bumbos') return 'contar os bumbos escutando';
   return '';
 };
-export { FIG_NAME };
+export { FIG_NAME, beatsLabel };

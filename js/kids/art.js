@@ -4,7 +4,7 @@ import * as B from '../beats.js';
 import * as N from '../notation.js';
 import { audio, out } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
-import { FIGURES } from '../kids-logic.js';
+import { FIG_BY, GROUPS } from './figs.js';
 import { kitSvg } from './icons.js';
 
 export const play = (id) => { const c = audio(); VOICE[id](c.currentTime + 0.01, 1); };
@@ -25,12 +25,27 @@ export function staffMarkup(ids) {
   const down = feet.length ? `<line x1="${x - 10}" y1="${Math.min(...feet.map(yOf))}" x2="${x - 10}" y2="${Math.max(...feet.map(yOf)) + 44}" stroke="#b5162b" stroke-width="3"/>` : '';
   return `<svg viewBox="0 0 320 150" role="img" aria-label="Pauta com ${list.length > 1 ? 'duas notas juntas' : 'uma nota'}">${lines}<rect x="30" y="${top + gap}" width="6" height="${gap * 2}" fill="#1b1818"/><rect x="40" y="${top + gap}" width="6" height="${gap * 2}" fill="#1b1818"/>${ledger}${heads}${up}${down}</svg>`;
 }
-export function figureMarkup(id) {
-  const open = id === 'semibreve' || id === 'minima'; const stem = id !== 'semibreve'; const flags = { colcheia: 1, semicolcheia: 2, fusa: 3 }[id] || 0;
+/** Desenho de uma figura montada de peças: cabeça (vazia ou cheia), haste e bandeirinhas. */
+export function noteMarkup({ open, stem, flags = 0 }, label = '') {
   const head = `<ellipse cx="40" cy="100" rx="17" ry="12" transform="rotate(-20 40 100)" fill="${open ? '#fffdf8' : '#1b1818'}" stroke="#1b1818" stroke-width="5"/>`;
   const st = stem ? '<line x1="55" y1="96" x2="55" y2="20" stroke="#1b1818" stroke-width="5"/>' : '';
-  const fl = Array.from({ length: flags }, (_, i) => `<path d="M55 ${22 + i * 18}c6 12 26 14 22 40" stroke="#1b1818" stroke-width="5" fill="none"/>`).join('');
-  return `<svg viewBox="0 0 110 130" role="img" aria-label="${(FIGURES.find((f) => f.id === id) || {}).name || id}">${head}${st}${fl}</svg>`;
+  const fl = stem ? Array.from({ length: flags }, (_, i) => `<path d="M55 ${22 + i * 14}c6 12 26 14 22 40" stroke="#1b1818" stroke-width="5" fill="none"/>`).join('') : '';
+  return `<svg viewBox="0 0 110 130" role="img" aria-label="${label || 'desenho de uma nota'}">${head}${st}${fl}</svg>`;
+}
+export function figureMarkup(id) {
+  const f = FIG_BY[id] || FIG_BY.seminima;
+  return noteMarkup(f, f.name);
+}
+/** Tercina (3 notas) e sextina (6 notas): notas ligadas por traço, com o colchete e o número em cima. */
+export function groupMarkup(id) {
+  const g = GROUPS.find((x) => x.id === id) || GROUPS[0]; const n = g.n; const gap = n === 3 ? 56 : 30; const x0 = n === 3 ? 44 : 26; const S = '#1b1818';
+  const xs = Array.from({ length: n }, (_, i) => x0 + i * gap); const top = 44;
+  const heads = xs.map((x) => `<ellipse cx="${x}" cy="100" rx="13" ry="9" transform="rotate(-20 ${x} 100)" fill="${S}"/><line x1="${x + 12}" y1="97" x2="${x + 12}" y2="${top}" stroke="${S}" stroke-width="4"/>`).join('');
+  const beams = Array.from({ length: g.flags }, (_, k) => `<line x1="${xs[0] + 12}" y1="${top + k * 11}" x2="${xs[n - 1] + 12}" y2="${top + k * 11}" stroke="${S}" stroke-width="7"/>`).join('');
+  const mid = (xs[0] + xs[n - 1] + 24) / 2; const L = xs[0] + 4; const R = xs[n - 1] + 20;
+  const br = `<path d="M${L} 30v-8h${mid - L - 12}M${mid + 12} 22h${R - mid - 12}v8" stroke="${S}" stroke-width="3" fill="none"/><text x="${mid}" y="26" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="20" fill="${S}">${n}</text>`;
+  const w = xs[n - 1] + 40;
+  return `<svg viewBox="0 0 ${w} 130" role="img" aria-label="${g.name}: ${n} notas ligadas">${heads}${beams}${br}</svg>`;
 }
 /** Pausas (o silêncio de cada figura) e símbolos da partitura, no mesmo traço das figuras. */
 export function restMarkup(id) {
@@ -42,8 +57,9 @@ export function restMarkup(id) {
     colcheia: `<circle cx="42" cy="44" r="7" fill="${S}"/><path d="M42 50q14 2 18-10l-14 54" stroke="${S}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
     semicolcheia: `<circle cx="42" cy="36" r="7" fill="${S}"/><circle cx="36" cy="58" r="7" fill="${S}"/><path d="M42 42q14 2 18-10M36 64q14 2 18-10M60 32l-16 62" stroke="${S}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
     fusa: `<circle cx="44" cy="26" r="6" fill="${S}"/><circle cx="38" cy="46" r="6" fill="${S}"/><circle cx="32" cy="66" r="6" fill="${S}"/><path d="M44 31q14 2 18-10M38 51q14 2 18-10M32 71q14 2 18-10M62 21l-34 76" stroke="${S}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    semifusa: `<circle cx="46" cy="16" r="5.5" fill="${S}"/><circle cx="41" cy="34" r="5.5" fill="${S}"/><circle cx="36" cy="52" r="5.5" fill="${S}"/><circle cx="31" cy="70" r="5.5" fill="${S}"/><path d="M46 21q12 2 16-9M41 39q12 2 16-9M36 57q12 2 16-9M31 75q12 2 16-9M64 12l-38 86" stroke="${S}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`,
   }[id] || '';
-  return `<svg viewBox="0 0 110 130" role="img" aria-label="pausa de ${(FIGURES.find((f) => f.id === id) || {}).name || id}">${body}</svg>`;
+  return `<svg viewBox="0 0 110 130" role="img" aria-label="pausa de ${(FIG_BY[id] || {}).name || id}">${body}</svg>`;
 }
 export function symbolMarkup(id) {
   const S = '#1b1818';

@@ -5,16 +5,17 @@ import * as N from '../notation.js';
 import { audio, later } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
-import { pieceQ, pautaQ, pairName, figureQ, bumboQ, beatsLabel, hintOf, FIG_NAME } from './quiz.js';
+import { pieceQ, pautaQ, pairName, figureQ, bumboQ, hintOf } from './quiz.js';
+import { FIGS, FIG_NAME, FIG_BY, GROUPS, beatsLabel, specOf } from './figs.js';
 import { ROW_NAME } from './groove.js';
 import { KIT_COLORS } from './icons.js';
-import { kitMarkup, staffMarkup, figureMarkup, svgEl, play, tone } from './art.js';
+import { kitMarkup, staffMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
 import { runMemory } from './memory.js';
 import { runEco } from './eco.js';
 import { runDetetive } from './detetive.js';
 import { nameOf as instName } from './instruments.js';
 
-const BEATS = { semibreve: 4, minima: 2, seminima: 1, colcheia: 0.5, semicolcheia: 0.25 };
+const BEATS = Object.fromEntries(FIGS.map((f) => [f.id, f.beats]));
 const colorOf = (id) => (KIT_COLORS[id] || B.COLORS[id]);
 const withColor = (q) => ({ ...q, options: q.options.map((o) => ({ ...o, color: colorOf(o.id) })) });
 
@@ -40,17 +41,38 @@ export const GAMES = {
     okText: (q) => `isso! ${pairName(q.ans)} ⭐`, noText: (q) => (q.ids.length > 1 ? `eram ${pairName(q.ans)} juntos` : `essa casinha é do ${nameOf(q.ans)}`), hint: (k) => hintOf('pauta', k),
   },
   figuras: {
-    id: 'figuras', title: 'Figuras rítmicas', blurb: 'semibreve, mínima, semínima…', emoji: '⏳', ages: 'a partir de 6 anos',
+    id: 'figuras', title: 'Figuras rítmicas', blurb: 'quanto vale, desenho, pausas, tercina…', emoji: '⏳', ages: 'a partir de 6 anos',
     makeQuestion: (rnd, d) => figureQ(rnd, d),
+    say: (q) => ({ dura: 'qual vale mais?', tempos: 'quanto vale?', nome: 'quem é?', desenho: 'qual é o desenho?', montar: 'qual está montado certinho?', pausa: 'e o silêncio?', pausaValor: 'quanto dura o silêncio?', grupo: 'quantas notas cabem?', grupoN: 'quantas notas?' }[q.kind] || 'qual será?'),
     render: (q) => {
-      if (q.kind === 'dura') return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, 'qual dura mais tempo? (toca pra ouvir)'));
-      return h('div', { class: 'kx-q' }, svgEl(figureMarkup(q.fig), 'kd-fig-svg kx-bigfig'), h('p', { class: 'kd-q' }, q.kind === 'tempos' ? `quantos tempos dura a ${FIG_NAME[q.fig]}?` : 'qual é o nome dessa figura?'));
+      const big = (m) => svgEl(m, 'kd-fig-svg kx-bigfig');
+      switch (q.kind) {
+        case 'dura': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, 'qual vale mais tempo? (toca pra ouvir)'));
+        case 'tempos': return h('div', { class: 'kx-q' }, big(figureMarkup(q.fig)), h('p', { class: 'kd-q' }, `quanto vale a ${FIG_NAME[q.fig]}?`));
+        case 'nome': return h('div', { class: 'kx-q' }, big(figureMarkup(q.fig)), h('p', { class: 'kd-q' }, 'qual é o nome dessa figura?'));
+        case 'desenho': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual é o desenho da ${FIG_NAME[q.fig]}?`));
+        case 'montar': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual desenho está montado certinho para a ${FIG_NAME[q.fig]}?`), h('p', { class: 'muted' }, 'olha a cabeça (vazia ou cheia), a haste e as bandeirinhas.'));
+        case 'pausa': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, 'qual é o nome dessa pausa?'));
+        case 'pausaValor': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, `quanto tempo de silêncio vale a pausa de ${FIG_NAME[q.fig]}?`));
+        case 'grupo': return h('div', { class: 'kx-q' }, big(groupMarkup(q.group)), h('p', { class: 'kd-q' }, 'que grupo de notas é esse?'));
+        default: return h('div', { class: 'kx-q' }, big(groupMarkup(q.group)), h('p', { class: 'kd-q' }, `quantas notas tem a ${GROUPS.find((x) => x.id === q.group).name}?`));
+      }
     },
-    // comparar: os botões são as próprias figuras (tocam o som da duração ao escolher)
-    optionLabel: (q, o) => (q.kind === 'dura' ? svgEl(figureMarkup(o.id), 'kd-fig-svg kx-opt-fig') : o.label),
+    // comparar e desenhar: os botões são os próprios desenhos (comparar também toca a duração ao escolher)
+    optionLabel: (q, o) => (q.kind === 'dura' || q.kind === 'desenho' ? svgEl(figureMarkup(o.id), 'kd-fig-svg kx-opt-fig') : q.kind === 'montar' ? svgEl(noteMarkup(specOf(o.id), 'desenho montado'), 'kd-fig-svg kx-opt-fig') : o.label),
     picked: (q, id) => { if (q.kind === 'dura' && id) tone(BEATS[id]); },
-    okText: (q) => (q.kind === 'dura' ? `isso! ${FIG_NAME[q.ans]} dura mais ⭐` : q.kind === 'tempos' ? 'isso! ⭐' : `isso! é ${FIG_NAME[q.ans]} ⭐`),
-    noText: (q) => (q.kind === 'dura' ? `a ${FIG_NAME[q.ans]} dura mais!` : q.kind === 'tempos' ? `dura ${beatsLabel(Number(q.ans))}` : `era ${FIG_NAME[q.ans]}`),
+    okText: (q) => { const f = FIG_BY[q.fig]; switch (q.kind) {
+      case 'dura': return `isso! ${FIG_NAME[q.ans]} dura mais ⭐`; case 'tempos': return `isso! ${f.name} = ${beatsLabel(f.beats)} ⭐`; case 'nome': return `isso! é ${FIG_NAME[q.ans]} ⭐`;
+      case 'montar': return 'isso! montou certinho ⭐'; case 'pausa': return `isso! pausa de ${FIG_NAME[q.ans]} ⭐`; case 'pausaValor': return `isso! silêncio de ${beatsLabel(f.beats)} ⭐`; default: return 'isso! ⭐'; } },
+    noText: (q) => { const f = FIG_BY[q.fig];
+      switch (q.kind) {
+        case 'dura': return `a ${FIG_NAME[q.ans]} dura mais!`;
+        case 'tempos': case 'pausaValor': return `vale ${beatsLabel(Number(q.ans))}`;
+        case 'montar': return `a ${f.name} tem ${f.open ? 'cabeça vazia' : 'cabeça cheia'}, ${f.stem ? 'haste' : 'sem haste'}${f.flags ? ` e ${f.flags} bandeirinha${f.flags > 1 ? 's' : ''}` : ''}`;
+        case 'grupo': return `era ${q.ans === 'tercina' ? 'a tercina (3 notas)' : q.ans === 'sextina' ? 'a sextina (6 notas)' : 'outro grupo'}`;
+        case 'grupoN': return `são ${q.ans} notas`;
+        default: return `era ${FIG_NAME[q.ans]}`;
+      } },
     hint: (k) => hintOf('figuras', k),
   },
   bumbos: {
