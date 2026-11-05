@@ -175,10 +175,10 @@ async function desenharLimpo(e, formato, carta) {
 }
 
 /** Adesivo com borda branca (estilo sticker de celular): silhueta branca espalhada em volta + sombra + o desenho. */
-function adesivo(ctx, im, x, y, w, rot) {
-  const h = (w * im.naturalHeight) / im.naturalWidth, b = Math.max(6, w * 0.045), sil = canvas(Math.ceil(w + b * 4), Math.ceil(h + b * 4)), sc = sil.getContext('2d');
+function adesivo(ctx, im, x, y, w, rot, plano = false) {
+  const h = (w * im.naturalHeight) / im.naturalWidth, b = Math.max(5, w * (plano ? 0.03 : 0.045)), sil = canvas(Math.ceil(w + b * 4), Math.ceil(h + b * 4)), sc = sil.getContext('2d');
   sc.drawImage(im, b * 2, b * 2, w, h); sc.globalCompositeOperation = 'source-in'; sc.fillStyle = '#fff'; sc.fillRect(0, 0, sil.width, sil.height);
-  ctx.save(); ctx.translate(x, y); ctx.rotate((rot * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 12;
+  ctx.save(); ctx.translate(x, y); ctx.rotate((rot * Math.PI) / 180); ctx.shadowColor = plano ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.45)'; ctx.shadowBlur = plano ? 6 : 24; ctx.shadowOffsetY = plano ? 3 : 12;
   for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; ctx.drawImage(sil, -sil.width / 2 + Math.cos(a) * b, -sil.height / 2 + Math.sin(a) * b); }
   ctx.shadowColor = 'transparent'; ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore();
 }
@@ -192,8 +192,9 @@ const PALETAS = {
   rosa: { centro: '#a3124d', meio: '#52092b', borda: '#1c0510', fim: '#07020a', raio: '255,110,170', raio2: '255,45,80', halo: '255,150,196', glow: '#ff2f7d', glow2: '#ff9ec7', glint: '#ffe3f0', bokeh: ['255,95,160', '255,50,90', '255,190,215'],
     metal: ['#ffe3ee', '#ff6aa6', '#c4182c', '#ffb4d2'], titulo: ['#ffffff', '#ff9ec7', '#e11d5a'], contorno: '#3a0618', placa: 'rgba(30,5,16,.92)', site: '#ffc2dc', tinta: '#ffe9f2', enfeite: '#ff8fbd' },
 };
+const TITULOS = { dourado: ['#fff7d0', '#f4c64e', '#a8680f'], prata: ['#ffffff', '#cfd5e2', '#7b8396'] };
 async function desenharEpico(e, formato, carta) {
-  const { W, H, story } = geo(formato), P = PALETAS[e.tema] || PALETAS.dourado, [lg, stk] = await Promise.all([logoCanvas(true), e.tema === 'rosa' ? adesivos() : Promise.resolve(null)]), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  const { W, H, story } = geo(formato), plano = e.tema === 'rosa', P = PALETAS[e.tema] || PALETAS.dourado, [lg, stk] = await Promise.all([logoCanvas(true), e.tema === 'rosa' ? adesivos() : Promise.resolve(null)]), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   const cx = W / 2, cy = story ? H * 0.52 : H * 0.5, R = O.rng(O.hashSeed(`${e.artista_banda || 'epico'}${e.tema || ''}`)), diag = Math.hypot(W, H);
   const bg = ctx.createRadialGradient(cx, cy, 30, cx, cy, diag * 0.62); bg.addColorStop(0, P.centro); bg.addColorStop(0.24, P.meio); bg.addColorStop(0.58, P.borda); bg.addColorStop(1, P.fim); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
   // duas camadas de raios girando em sentidos diferentes (mais profundidade)
@@ -221,21 +222,20 @@ async function desenharEpico(e, formato, carta) {
   // logo + título em faixa
   const lw = story ? 500 : 410, lh = (lw * 175) / 900, ly = story ? 132 : 66; ctx.drawImage(lg, (W - lw) / 2, ly, lw, lh);
   const TIT = titulo(e, 'CARTA ÉPICA'), ty = ly + lh + (story ? 176 : 132);
-  ctx.save(); ctx.textAlign = 'center'; const fs = fitText(ctx, TIT, W - 170, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - fs * 0.85, 0, ty + 6); gr.addColorStop(0, P.titulo[0]); gr.addColorStop(0.5, P.titulo[1]); gr.addColorStop(1, P.titulo[2]);
-  ctx.shadowColor = P.glow; ctx.shadowBlur = 54; ctx.lineWidth = 20; ctx.lineJoin = 'round'; ctx.strokeStyle = P.contorno; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty);
+  ctx.save(); ctx.textAlign = 'center'; const fs = fitText(ctx, TIT, W - 170, story ? 150 : 118, ANTON); const gr = ctx.createLinearGradient(0, ty - fs * 0.85, 0, ty + 6); const TC = e.tituloCor && TITULOS[e.tituloCor] ? TITULOS[e.tituloCor] : (e.tema === 'rosa' ? TITULOS.dourado : P.titulo); gr.addColorStop(0, TC[0]); gr.addColorStop(0.5, TC[1]); gr.addColorStop(1, TC[2]);
+  ctx.shadowColor = P.glow; ctx.shadowBlur = plano ? 22 : 54; ctx.lineWidth = plano ? 16 : 20; ctx.lineJoin = 'round'; ctx.strokeStyle = P.contorno; ctx.strokeText(TIT, W / 2, ty); ctx.shadowBlur = 0; ctx.fillStyle = gr; ctx.fillText(TIT, W / 2, ty);
   ctx.globalCompositeOperation = 'lighter'; const re = ctx.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0); re.addColorStop(0.4, 'rgba(255,255,255,0)'); re.addColorStop(0.5, 'rgba(255,255,255,.28)'); re.addColorStop(0.6, 'rgba(255,255,255,0)'); ctx.fillStyle = re; ctx.fillText(TIT, W / 2, ty); ctx.restore();
   // ornamento sob o título: linha com estrela no meio
   const oy = ty + (story ? 46 : 38); ctx.save(); ctx.strokeStyle = metal; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(W / 2 - 250, oy); ctx.lineTo(W / 2 - 40, oy); ctx.moveTo(W / 2 + 40, oy); ctx.lineTo(W / 2 + 250, oy); ctx.stroke(); glint(W / 2, oy, 22, 0); ctx.restore();
   // cartinha com aura, sombra no chão e brilho passando
   const cw = story ? 760 : 590, ch = (cw * H2) / W2, cyc = story ? H * 0.52 + 52 : H * 0.5 + 40;
   ctx.save(); ctx.translate(cx, cyc + ch / 2 + 26); ctx.scale(1, 0.12); const chao = ctx.createRadialGradient(0, 0, 10, 0, 0, cw * 0.55); chao.addColorStop(0, 'rgba(0,0,0,.6)'); chao.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = chao; ctx.beginPath(); ctx.arc(0, 0, cw * 0.55, 0, 7); ctx.fill(); ctx.restore();
-  ctx.save(); ctx.translate(cx, cyc); ctx.rotate((-1.6 * Math.PI) / 180); ctx.shadowColor = P.glow; ctx.shadowBlur = 120; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = P.glow2; ctx.shadowBlur = 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
-  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.36, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, 'rgba(255,255,255,.3)'); brilho.addColorStop(0.64, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill();
-  glint(-cw / 2 + 24, -ch / 2 + 24, 44, 0.3); glint(cw / 2 - 20, ch / 2 - 40, 34, 0.7); ctx.restore();
+  ctx.save(); ctx.translate(cx, cyc); ctx.rotate(((plano ? 0 : -1.6) * Math.PI) / 180); ctx.shadowColor = P.glow; ctx.shadowBlur = plano ? 46 : 120; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = P.glow2; ctx.shadowBlur = plano ? 8 : 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
+  const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.36, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, plano ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.3)'); brilho.addColorStop(0.64, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill();
+  if (!plano) { glint(-cw / 2 + 24, -ch / 2 + 24, 44, 0.3); glint(cw / 2 - 20, ch / 2 - 40, 34, 0.7); } ctx.restore();
   // adesivos (tema rosa): carinha apaixonada, corações e estrelas colados em volta da cartinha
   if (stk) { const [car, cor, est] = stk, L = cx - cw / 2, Rr = cx + cw / 2, T = cyc - ch / 2, B = cyc + ch / 2;
-    adesivo(ctx, est, L + 6, T + 50, cw * 0.27, -14); adesivo(ctx, cor, L + 8, B - 70, cw * 0.28, -12); adesivo(ctx, car, Rr - 8, T + 14, cw * 0.34, 12);
-    adesivo(ctx, cor, Rr - 4, B - 96, cw * 0.16, 16); adesivo(ctx, est, Rr + 12, cyc - ch * 0.08, cw * 0.13, 10); adesivo(ctx, cor, L - 4, cyc + ch * 0.1, cw * 0.12, -20); }
+    adesivo(ctx, est, L + 10, T + 34, cw * 0.15, -12, true); adesivo(ctx, car, Rr - 10, T + 18, cw * 0.17, 8, true); adesivo(ctx, cor, L + 14, B - 62, cw * 0.17, -10, true); adesivo(ctx, est, Rr - 6, B - 70, cw * 0.1, 14, true); }
   // rodapé em placa com moldura de metal
   const fw = W - 130, fh = story ? 190 : 150, fy = story ? H - 360 : H - 200;
   ctx.save(); ctx.fillStyle = P.placa; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = metal; ctx.shadowColor = P.glow; ctx.shadowBlur = 26; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
