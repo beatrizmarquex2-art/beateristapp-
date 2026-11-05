@@ -112,8 +112,8 @@ function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
   view.append(banner('Tocar', 'bateria, piano, violão e xilofone na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     card('#/toque', 'Bateria', 'toque nas peças com vários dedos e grave um ritmo'),
-    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes'),
     card('#/violao', 'Violão e guitarra', 'escolha o acorde e passe o dedo nas cordas'),
+    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes'),
     card('#/xilofone', 'Xilofone', 'barras coloridas: nenhuma nota soa errada na pentatônica')));
 }
 

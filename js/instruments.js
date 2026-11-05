@@ -2,6 +2,7 @@
 // muda a força, chimbal aberto fecha, prato retocado corta o anterior), violão/guitarra (corda calculada nota a nota) e xilofone.
 // Também guarda a "batida de fundo" que toca por cima de qualquer instrumento.
 import { audio, out } from './audio.js';
+import { ROWS } from './beats.js';
 
 let bus = null; let rev = null; let nbuf = null; let ctxOf = null;
 /** Saída própria: compressor (vários dedos juntos não estouram) + um pouco de eco de sala. Recria se o AudioContext mudar. */
@@ -129,15 +130,16 @@ export function warmGuitar() {
 }
 
 /* ---------- batida de fundo ---------- */
-export const STYLES = [['rock', 'rock'], ['pop', 'pop'], ['funk', 'funk'], ['samba', 'samba']];
+export const STYLES = [['rock1', 'rock 1'], ['rock2', 'rock 2'], ['pop', 'pop'], ['samba', 'samba']];
 const PAT = {
-  rock: { k: [0, 8, 10], s: [4, 12], h: [0, 2, 4, 6, 8, 10, 12, 14] },
-  pop: { k: [0, 6, 8, 11], s: [4, 12], h: [0, 2, 4, 6, 8, 10, 12, 14], o: [14] },
-  funk: { k: [0, 3, 6, 10], s: [4, 12], g: [7, 9, 15], h: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] },
-  samba: { k: [0, 8], su: [4, 12], r: [2, 5, 8, 11, 14], h: [0, 2, 4, 6, 8, 10, 12, 14] },
+  rock1: { k: [0, 8, 10], s: [4, 12], h: [0, 2, 4, 6, 8, 10, 12, 14] },
+  rock2: { k: [0, 2, 8, 10], s: [4, 12], rd: [0, 2, 4, 6, 8, 10, 12, 14] },
+  pop: { k: [0, 6, 8, 10], s: [4, 12], h: [0, 2, 4, 6, 8, 10, 12, 14], o: [14] },
+  samba: { k: [0, 8], su: [4, 12], r: [2, 6, 10, 14], h: [0, 2, 4, 6, 8, 10, 12, 14] },
 };
 const KEY = 'bt-backing';
-const load = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); return { style: PAT[o.style] ? o.style : 'rock', bpm: Math.max(60, Math.min(160, +o.bpm || 100)) }; } catch { return { style: 'rock', bpm: 100 }; } };
+const OLD = { rock: 'rock1', funk: 'rock2' }; // nomes antigos guardados no aparelho
+const load = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); o.style = OLD[o.style] || o.style; return { style: PAT[o.style] ? o.style : 'rock1', bpm: Math.max(60, Math.min(160, +o.bpm || 100)) }; } catch { return { style: 'rock1', bpm: 100 }; } };
 export const backing = {
   on: false, step: 0, next: 0, timer: 0, ...load(),
   save() { try { localStorage.setItem(KEY, JSON.stringify({ style: this.style, bpm: this.bpm })); } catch { /* sem armazenamento */ } },
@@ -149,10 +151,22 @@ export const backing = {
     const p = PAT[this.style]; const q = 0.5; const has = (a) => a && a.includes(i);
     if (has(p.k)) kick(t, 0.85 * q * 1.5); if (has(p.s)) snare(t, 0.8 * q * 1.4, false); if (has(p.g)) snare(t, 0.22 * q, false);
     if (has(p.su)) tom(t, 92, 0.9 * q * 1.4); if (has(p.r)) snare(t, 0.4 * q, true);
-    if (has(p.o)) hatOpen(t, 0.5 * q); else if (has(p.h)) hatClosed(t, (this.style === 'funk' ? (i % 2 ? 0.35 : 0.8) : (i % 4 === 0 ? 1 : 0.6)) * q);
+    if (has(p.rd)) ride(t, (i % 4 === 0 ? 0.9 : 0.55) * q, false);
+    if (has(p.o)) hatOpen(t, 0.5 * q); else if (has(p.h)) hatClosed(t, (i % 4 === 0 ? 1 : 0.6) * q);
   },
   start() { if (this.on) return; C = init(); this.on = true; this.step = 0; this.next = C.currentTime + 0.08; this.tick(); this.timer = setInterval(() => this.tick(), 25); },
   stop() { if (!this.on) return; this.on = false; clearInterval(this.timer); },
   /** Chamado ao sair de uma das telas de instrumento: a batida segue se a próxima também for de instrumento, senão para. */
   leave() { setTimeout(() => { if (!/^#\/(toque|piano|violao|xilofone)(\/|$)/.test(location.hash)) this.stop(); }, 0); },
 };
+
+/** A batida escrita como ritmo de bateria (16 passos), pra desenhar a partitura: bumbo, caixa, chimbal, condução, surdo. */
+export function grooveBeat(style) {
+  const p = PAT[style] || PAT.rock1; const rows = Object.fromEntries(ROWS.map((r) => [r.id, Array(16).fill(0)]));
+  const put = (id, a) => (a || []).forEach((i) => { rows[id][i] = 1; });
+  put('bd', p.k); put('sn', p.s); put('sn', p.r); put('hh', p.h); put('rd', p.rd); put('ft', p.su);
+  (p.o || []).forEach((i) => { rows.hh[i] = 0; rows.ho[i] = 1; });
+  const par = Object.values(rows).every((r) => r.every((x, i) => !x || i % 2 === 0)); // só colcheias: escreve em 8 passos (senão apareceria como semicolcheia)
+  const out = par ? Object.fromEntries(Object.entries(rows).map(([id, r]) => [id, r.filter((_, i) => i % 2 === 0)])) : rows;
+  return { id: `fundo-${style}`, name: style, style: '', bpm: backing.bpm, steps: par ? 8 : 16, kind: 'groove', rows: out };
+}

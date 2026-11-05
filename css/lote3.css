@@ -631,3 +631,9 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .ti-bar span { pointer-events: none; text-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
 .ti-bar.light span { text-shadow: none; }
 @media (prefers-reduced-motion: reduce) { .ti-rip { display: none; } }
+.ti-staff { margin: 0; background: #fffdf8; color: #1b1818; border: 1px solid var(--line); padding: 4px; }
+.ti-staff svg { width: 100%; height: auto; display: block; }
+.ti-lab { margin: 0; font: 700 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ti-names { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font: 700 14px var(--body); }
+.ti-names li { display: flex; align-items: center; gap: 6px; }
+.ti-names i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #1b1818; }
