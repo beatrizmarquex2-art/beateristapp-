@@ -267,3 +267,6 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - **Códigos**: "trocar nome" no app do aluno tira o código do aparelho; importar "nome ; código" com nome diferente do cadastrado gera código novo (o antigo fica ativo, desativar à mão).
 - **Perfil**: foto, ajuste e "minha coleção" são por nome (`js/figurinhas/dono.js`); modelos do criador sem selo COMUM/RARA em `assets/figurinhas/modelos2/limpo/` (só o criador usa, flag `semSelo`).
 - Deploy dos alunos: `scripts/build-aluno.sh` + `deploy-site` do Netlify (siteId `ccdb0392-...`) rodando o `npx @netlify/mcp` na pasta de saída.
+
+## Deploy alunos (cache v281)
+No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras ritmicas no Toca Aqui, roleta a cada 30 estrelas + 3 figurinhas tops por jogo completo, codigo de acesso no Perfil, excluir cartinhas, correcao do iPad no ritmo (aventura tem tela ritmo/melodia).
