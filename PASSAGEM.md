@@ -125,3 +125,9 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - PNGs: `node scripts/export-figurinhas.mjs` gera `exports/figurinhas/` (125 PNGs 1080x1425; `--classico` gera 1200x1800 do estilo clássico, 8 modelos vazios, folha dos 8, painel de amostra, catálogo final JSON/CSV). `exports/` está no .gitignore.
 - Testes: `node --test tests/figurinhas.test.mjs` e `node tests/e2e/figurinhas.mjs`. (`tests/e2e/layout.mjs` já tinha 1 falha antes: iPhone SE #/estudos.)
 - Zoom da foto: `scripts/detect-rostos.py` guarda no catálogo `rostos` (caixas, OpenCV Haar) e `foco` (área de ação); `planoFoto` em `card2.js` amplia a foto pra preencher a janela (recortada pela forma dela) e nunca corta rosto nem o topo quando não há rosto confirmado. Não identifica ninguém, só acha onde há rosto.
+
+## Cara a Cara Musical (branch `cara-musical`)
+- Tema novo dentro do jogo "cara a cara" (alternar em "tema"; missões do Aventura seguem com instrumentos). Código em `js/jogos/cara-musical/` (regras puras, elenco, perguntas, falas do Paul, tela) + `css/cara-musical.css`.
+- Elenco: 86 entidades do ELENCO (125 fotos); mesma entidade nunca repete na mesa. Atributos `true/false/null`: null nunca vira resposta e a pergunta some se algum card da mesa for null. Os null estão em `revisar` de cada entidade (revisão manual da Bea).
+- Não dá figurinha/pacote/recompensa e não mexe em ranking. Dupla online NÃO implementada (precisaria de protocolo de segredo no backend de salas); só dupla no mesmo aparelho com tela de passe.
+- Testes: `node --test tests/cara-musical.test.mjs`, `node tests/e2e/cara-musical.mjs`.
