@@ -160,3 +160,4 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 ### Ajuste (05/11/2026, cache v249)
 - **Todo o ritmo só com código de aluno** (Beat Hero, Piano Hero, músicas prontas e Músicas MIDI): sem código a tela já abre pedindo o código.
 - **Toque as figuras saiu** da lista de jogos (é o mesmo que o Toca Aqui). Os arquivos `js/kids/toque.js` e `toquePattern` ficaram no código sem uso.
+- Seções do álbum (campo `secao` do catálogo): **Beatlemania** (22, coleção Beatles), **Beaterista** (10), **Comum** (80), **Raras** (13: raridade Rara fora Beatles/Beaterista, inclui as duplas). Abas antigas (Geral, Beatles, Especial) viram Comum, Beatlemania, Raras (`SECAO_ANTIGA`). O campo `colecao` do catálogo não mudou (os PNGs já exportados ainda mostram BEATLES/ESPECIAL no selinho do código).
