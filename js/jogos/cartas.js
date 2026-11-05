@@ -43,11 +43,15 @@ export function cardEl(c) {
 }
 export const backEl = () => h('span', { class: 'cx-card back', 'aria-hidden': 'true' }, h('span', { class: 'cx-oval' }, symbolEl('colcheia', 'cx-sym')));
 
-export function mount(host) {
+export function mount(host, opts) {
+  // Modo Aventura (opts.mission): partida contra UM computador montada pelos params da missão, sem ler nem gravar o Modo Livre.
+  const adv = opts && opts.mission ? opts : null; const mp = adv ? (adv.mission.params || {}) : {};
+  const rnd = adv ? C.seededRnd(mp.seed) : Math.random; const stats = C.newStats(); let reported = false;
+  const NAMES = adv ? [String(mp.oppName || 'Paul').toLowerCase()] : ['paul', 'lia', 'teo']; // sombra do nome do módulo: na aventura o adversário tem o nome do estilo
   let gone = false; let busy = false; let cpuTimer = 0;
   const timers = new Set(); const anims = new Set();
-  const saved = getGame(ID);
-  const prefs = {
+  const saved = adv ? {} : getGame(ID);
+  const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
     hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false,
   };
@@ -68,9 +72,9 @@ export function mount(host) {
   const isCpu = (p) => g && g.mode === 'paul' && p !== 0;
   const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : `jogador ${p + 1}`);
   const human = () => !!g && !g.over && !busy && !hidden && g.turn === meIdx() && !(g.mode === 'local' && g.turn !== viewer);
-  const persist = () => { if (g && g.mode === 'online') return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
+  const persist = () => { if (adv || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
-  const keepPrefs = () => setGame(ID, { ...prefs });
+  const keepPrefs = () => { if (!adv) setGame(ID, { ...prefs }); };
 
   function anim(el, frames, opts) {
     if (!el || fast() || !el.animate) return null;
@@ -257,6 +261,7 @@ export function mount(host) {
             h('div', { class: `cx-ac c-${g.color}`, 'aria-label': `cor ativa: ${C.COLOR_NAME[g.color]}` }, h('span', { class: 'cx-dot' }), h('b', {}, C.COLOR_NAME[g.color])),
             svgIcon(ICON.dir, `cx-dir${g.dir === -1 ? ' rev' : ''}`), toolbar())),
         h('p', { class: 'cx-msg', 'aria-live': 'polite' }, g.over ? '' : msgFor(g.ev))),
+      adv ? h('p', { class: 'jg-p muted cx-advinfo', role: 'status', style: 'font-size:12px;margin:2px 0;text-align:center' }, `adversário: ${mp.oppName || 'Paul'} · rodada ${Math.max(1, stats.rounds)} · compras ${stats.draws} · especiais jogadas ${stats.specials}`) : null,
       h('div', { class: 'cx-me' },
         h('p', { class: `cx-turn${g.over ? '' : ' on'}${turnChanged ? ' pop' : ''}${g.turn === me && !g.over ? ' mine' : ''}`, 'aria-live': 'polite' }, hidden ? '' : turnTxt),
         h('div', { class: 'cx-btns' },
@@ -280,7 +285,7 @@ export function mount(host) {
   }
   function toggleSfx() {
     const now = prefs.sfx && soundOn();
-    if (now) { prefs.sfx = false; S.setOn(false); } else { prefs.sfx = true; if (!soundOn()) { setSound(true); const b = document.querySelector('.jg-snd'); if (b) { b.textContent = '🔊'; b.setAttribute('aria-pressed', 'true'); b.setAttribute('aria-label', 'desligar som'); } } S.setOn(true); }
+    if (now) { prefs.sfx = false; S.setOn(false); } else { prefs.sfx = true; if (!soundOn() && !adv) { setSound(true); const b = document.querySelector('.jg-snd'); if (b) { b.textContent = '🔊'; b.setAttribute('aria-pressed', 'true'); b.setAttribute('aria-label', 'desligar som'); } } S.setOn(true); }
     keepPrefs(); if (prefs.sfx) snd('tap'); paint();
   }
 
@@ -343,15 +348,17 @@ export function mount(host) {
   }
   function humanPlay(id, color) {
     if (!human()) return; const who = g.turn; picking = null;
-    let next; try { next = C.applyPlay(g, who, id, color); } catch { flash('jogada inválida'); snd('bad'); paint(); return; }
+    let next; try { next = C.applyPlay(g, who, id, color, rnd); } catch { flash('jogada inválida'); snd('bad'); paint(); return; }
+    if (adv) C.track(stats, g, next, { type: 'play', id }, 0);
     commit(next);
   }
   function draw1() {
     if (!human()) { if (g && !g.over && !busy && !hidden && g.turn !== meIdx()) flash('espere a sua vez'); return; }
     if (!C.canDraw(g)) { snd('bad'); flash(g.drawn ? 'jogue a carta comprada ou passe' : 'você tem carta que serve: jogue uma'); return; }
-    commit(C.applyDraw(g, g.turn));
+    const nd = C.applyDraw(g, g.turn, rnd); if (adv) C.track(stats, g, nd, { type: 'draw' }, 0);
+    commit(nd);
   }
-  function pass1() { if (!human() || !C.canPass(g)) return; commit(C.applyPass(g, g.turn)); }
+  function pass1() { if (!human() || !C.canPass(g)) return; const np = C.applyPass(g, g.turn); if (adv) C.track(stats, g, np, { type: 'pass' }, 0); commit(np); }
   function uno() { if (gone || !g || !C.mustUno(g, meIdx())) return; commit(C.callUno(g, meIdx()), { fromBusy: true }); }
 
   /** Aplica um estado novo: pinta, anima o que aconteceu e só libera a próxima jogada quando a animação acaba. */
@@ -389,10 +396,10 @@ export function mount(host) {
   function cpuStep() {
     cpuTimer = 0; if (gone || !g || g.over || busy || document.hidden || !isCpu(g.turn)) return;
     const p = g.turn;
-    if (C.mustUno(g, 0)) { commit(C.catchUno(g, 0)); return; } // esqueceu o UNO: compra 2
-    const mv = C.paulMove(g, p);
-    if (mv.type === 'play') commit(C.applyPlay(g, p, mv.id, mv.color));
-    else if (mv.type === 'draw') commit(C.applyDraw(g, p));
+    if (C.mustUno(g, 0)) { if (adv) stats.caught++; commit(C.catchUno(g, 0, rnd)); return; } // esqueceu o UNO: compra 2
+    const mv = adv ? C.aiMove(g, p, mp.style, rnd) : C.paulMove(g, p);
+    if (mv.type === 'play') commit(C.applyPlay(g, p, mv.id, mv.color, rnd));
+    else if (mv.type === 'draw') commit(C.applyDraw(g, p, rnd));
     else commit(C.applyPass(g, p));
   }
 
@@ -445,6 +452,11 @@ export function mount(host) {
     if (!g || !g.over) return;
     if (!recorded) {
       recorded = true;
+      if (adv) { // aventura: nada vai pro Modo Livre; só avisa o resultado real, uma vez
+        const w = g.result.winner; hidden = false; paint(); snd(w == null ? 'tie' : w === 0 ? 'win' : 'lose'); if (w === 0) confetti();
+        if (!reported) { reported = true; adv.onResult(C.matchResult(g, stats, 0)); }
+        return;
+      }
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
@@ -472,7 +484,7 @@ export function mount(host) {
     return h('div', { class: `cx-result${w === 0 && g.mode === 'paul' ? ' win' : ''}`, role: 'status' }, h('h3', { class: 'hand' }, title),
       h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`),
       h('p', { class: 'muted' }, `cartas restantes: ${r.counts.map((n, i) => `${PL(i)} ${n}`).join(' · ')}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      adv ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   /* ----- ciclo de vida ----- */
@@ -482,7 +494,7 @@ export function mount(host) {
   let lastTouch = 0;
   const noZoom = (e) => { const t = Date.now(); if (t - lastTouch < 320) e.preventDefault(); lastTouch = t; };
   root.addEventListener('touchend', noZoom, { passive: false });
-  intro();
+  if (adv) begin(C.newGame({ mode: 'paul', players: 2, rnd })); else intro();
   return {
     inProgress: () => !!(g && !g.over),
     restart: async () => { if (g && !g.over && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },

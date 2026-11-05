@@ -166,7 +166,7 @@ export function validGame(g) {
 
 /* ---------- Modo Aventura: estilos de adversário e medição (só acrescenta; as regras e o paulMove ficam como estão) ---------- */
 export const AI_STYLES = ['distraido', 'paul', 'guardiao', 'pintor', 'esperto'];
-export const isSpecial = (c) => c.kind !== 'num';
+export const isSpecial = (c) => c.kind !== 'fig'; // pular, inverter, +2, curinga e +4
 /** Gerador com semente (mesma semente = mesma sequência): baralho/embaralhadas das missões. */
 export const seededRnd = (s) => { let x = (Number(s) || 1) >>> 0; return () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 2 ** 32; }; };
 const countColors = (hand, skipId) => { const cnt = Object.fromEntries(COLORS.map((k) => [k, 0])); hand.forEach((c) => { if (c.color && c.id !== skipId) cnt[c.color]++; }); return cnt; };
@@ -174,24 +174,24 @@ const bestColor = (hand, card, fallback) => { const cnt = countColors(hand, card
 const pickMax = (list, score, rnd) => list.reduce((b, c) => { const s = score(c) + rnd() * 0.01; return s > b.s ? { c, s } : b; }, { c: null, s: -Infinity }).c;
 
 /**
- * Jogada do computador por estilo (mesmas regras do jogo; só muda a escolha entre as cartas que já servem):
+ * Jogada do computador por estilo (mesmas regras do jogo; só muda a escolha entre as cartas que já servem — legalCards já cuida do +4):
  *  distraido: qualquer carta que serve, cor do curinga ao acaso. paul: o Paul de sempre (prefere ações).
  *  guardiao: guarda as cartas especiais pro fim (ou pra quando o adversário está com 2 cartas ou menos); curinga só sem outra saída.
  *  pintor: joga primeiro as cores que tem pouco, para ficar só com uma cor; curinga escolhe a cor mais frequente.
- *  esperto: especiais cedo (valem jogada extra), cor mais frequente, guarda curinga pro fim; com o adversário quase ganhando corta a vez.
+ *  esperto: ações cedo (valem jogada extra), cor mais frequente, guarda curinga/+4 pro fim; com o adversário quase ganhando corta a vez.
  */
 export function aiMove(g, p = 1, style = 'paul', rnd = Math.random) {
   if (style === 'paul' || !AI_STYLES.includes(style)) return paulMove(g, p, rnd);
   const legal = legalCards(g, p);
   if (!legal.length) return canDraw(g) ? { type: 'draw' } : { type: 'pass' };
-  const hand = g.hands[p]; const opp = g.hands[1 - p].length; const cnt = countColors(hand);
+  const hand = g.hands[p]; const opp = Math.min(...g.hands.filter((_, i) => i !== p).map((x) => x.length)); const cnt = countColors(hand);
   let card;
   if (style === 'distraido') card = legal[Math.floor(rnd() * legal.length)];
   else if (style === 'guardiao') {
-    const nums = legal.filter(isNum); const sp = legal.filter((c) => !isWild(c) && isSpecial(c)); const wild = legal.filter(isWild);
+    const figs = legal.filter(isFig); const sp = legal.filter((c) => !isWild(c) && isSpecial(c)); const wild = legal.filter(isWild);
     const spRank = (c) => (c.kind === 'mais2' ? 3 : 2);
-    if (opp <= 2 && (sp.length || wild.length)) card = sp.length ? pickMax(sp, spRank, rnd) : wild[0];
-    else if (nums.length) card = pickMax(nums, (c) => cnt[c.color], rnd);
+    if (opp <= 2 && (sp.length || wild.length)) card = sp.length ? pickMax(sp, spRank, rnd) : wild.find((c) => c.kind === 'mais4') || wild[0];
+    else if (figs.length) card = pickMax(figs, (c) => cnt[c.color], rnd);
     else card = sp.length ? pickMax(sp, spRank, rnd) : wild[0];
   } else if (style === 'pintor') {
     const non = legal.filter((c) => !isWild(c));
@@ -199,16 +199,16 @@ export function aiMove(g, p = 1, style = 'paul', rnd = Math.random) {
   } else { // esperto
     const non = legal.filter((c) => !isWild(c));
     if (non.length && !(opp <= 2 && legal.some(isWild) && !non.some(isSpecial))) {
-      card = pickMax(non, (c) => (c.kind === 'mais2' ? 50 : isSpecial(c) ? 40 : 0) + (opp <= 2 && isSpecial(c) ? 30 : 0) + cnt[c.color] * 2 - (hand.length <= 3 ? 0 : 0), rnd);
-    } else card = legal.find(isWild) || legal[0];
+      card = pickMax(non, (c) => (c.kind === 'mais2' ? 50 : isSpecial(c) ? 40 : 0) + (opp <= 2 && isSpecial(c) ? 30 : 0) + cnt[c.color] * 2, rnd);
+    } else card = legal.find((c) => c.kind === 'mais4') || legal.find(isWild) || legal[0];
   }
   let color;
   if (isWild(card)) color = style === 'distraido' ? COLORS[Math.floor(rnd() * 4)] : bestColor(hand, card, g.color);
   return { type: 'play', id: card.id, color };
 }
 
-/** Medição da partida do jogador (só o que o motor realmente observa). */
-export const newStats = () => ({ rounds: 0, draws: 0, plays: 0, passes: 0, specials: 0, byKind: { pular: 0, inverter: 0, mais2: 0, curinga: 0 }, open: false });
+/** Medição da partida do jogador (só o que o motor realmente observa). `caught` = vezes que esqueceu o UNO e comprou 2. */
+export const newStats = () => ({ rounds: 0, draws: 0, plays: 0, passes: 0, specials: 0, caught: 0, byKind: { pular: 0, inverter: 0, mais2: 0, curinga: 0, mais4: 0 }, open: false });
 /** Registra UMA ação do jogador `me`. `before`/`after` = estado antes/depois; `act` = { type:'play'|'draw'|'pass', id }. Rodada = vez do jogador (jogadas extras por pular/+2 contam na mesma). */
 export function track(st, before, after, act, me = 0) {
   if (!st.open) { st.rounds++; st.open = true; }
@@ -224,26 +224,31 @@ export function track(st, before, after, act, me = 0) {
 /** Resultado entregue ao Modo Aventura. `me` = índice do jogador (0). */
 export function matchResult(g, st, me = 0) {
   const w = g.result.winner;
-  return { won: w === me, tie: w == null, lost: w != null && w !== me, reason: g.result.reason, rounds: st.rounds, draws: st.draws, plays: st.plays, specials: st.specials, byKind: { ...st.byKind }, mine: g.result.counts[me], theirs: g.result.counts[1 - me] };
+  return { won: w === me, tie: w == null, lost: w != null && w !== me, reason: g.result.reason, rounds: st.rounds, draws: st.draws, plays: st.plays, specials: st.specials, caught: st.caught || 0, byKind: { ...st.byKind }, mine: g.result.counts[me], theirs: Math.min(...g.result.counts.filter((_, i) => i !== me)) };
 }
 
 /**
- * Partida inteira simulada com a MESMA ordem de uso do sorteio que a tela usa (viabilidade das missões e testes).
- * params = { seed, style }; policy(g, rnd) → jogada do jogador 0 ({type,id,color}). Devolve { won, ...matchResult }.
+ * Partida inteira de 2 jogadores simulada com a MESMA ordem de uso do sorteio que a tela usa (viabilidade das missões e testes).
+ * params = { seed, style }; policy(g, rnd) → jogada do jogador 0 ({type,id,color}). O jogador sempre aperta UNO; o computador também.
+ * Devolve { ...matchResult, g, acts } (acts = ações do jogador, com `uno` quando apertou o botão) ou null se não terminou.
  */
 export function simulate(params, policy, maxSteps = 3000) {
-  const rnd = seededRnd(params.seed); const prnd = seededRnd((Number(params.seed) || 1) + 99991); /* sorteio PRÓPRIO do jogador: a pessoa não consome o sorteio da mesa */ let g = newGame({ mode: 'paul', rnd }); const st = newStats(); let n = 0;
+  const rnd = seededRnd(params.seed); const prnd = seededRnd((Number(params.seed) || 1) + 99991); /* sorteio PRÓPRIO do jogador: a pessoa não consome o sorteio da mesa */
+  let g = newGame({ mode: 'paul', players: 2, rnd }); const st = newStats(); const acts = []; let n = 0;
   while (!g.over && n++ < maxSteps) {
     if (g.turn === 0) {
       const mv = policy(g, prnd); const b = g;
+      acts.push({ type: mv.type, idx: mv.type === 'play' ? g.hands[0].findIndex((c) => c.id === mv.id) : -1, id: mv.id, color: mv.color });
       g = mv.type === 'play' ? applyPlay(g, 0, mv.id, mv.color, rnd) : mv.type === 'draw' ? applyDraw(g, 0, rnd) : applyPass(g, 0);
       track(st, b, g, mv, 0);
+      if (!g.over && mustUno(g, 0)) { g = callUno(g, 0); acts.push({ type: 'uno' }); }
     } else {
       const mv = aiMove(g, 1, params.style, rnd);
       g = mv.type === 'play' ? applyPlay(g, 1, mv.id, mv.color, rnd) : mv.type === 'draw' ? applyDraw(g, 1, rnd) : applyPass(g, 1);
+      if (!g.over && mustUno(g, 1)) g = callUno(g, 1);
     }
   }
-  return g.over ? { ...matchResult(g, st, 0), g } : null;
+  return g.over ? { ...matchResult(g, st, 0), g, acts } : null;
 }
-/** Jogador de referência: usa o mesmo critério de cada estilo de computador (exceto distraido, que joga como esperto). `fit` limita/ajusta a política. */
+/** Jogador de referência: usa o mesmo critério de cada estilo de computador. */
 export const playerPolicy = (style = 'esperto') => (g, rnd) => aiMove(g, 0, style, rnd);
