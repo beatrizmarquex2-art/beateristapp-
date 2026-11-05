@@ -79,6 +79,8 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 
 - Ritmo, mais: pausa → **Continuar** conta 4 tempos no bpm da música (notas paradas na tela) e volta de onde parou; música tocada ganha **barrinha verde** (melhor precisão) nos cartões e na lista; **fade out** nos últimos ~2 s; **modo especial**: de vez em quando cai uma nota-estrela (≥12 s entre elas, `rzStars`), acertou = pontos ×2 por 3 compassos, moldura dourada pulsando no tempo + faíscas (`rzSpecialFx`). Teste: `tests/e2e/ritmo-especial.mjs`.
 
+- Teste em aparelhos: `tests/e2e/aparelhos.mjs` (iPhone 13/SE, iPad, iPad Pro, Galaxy S9+/S8/Tab S4, Pixel 5; emulação do Chromium, não são aparelhos de verdade). O botão JOGAR do ritmo fica colado acima da barra de baixo (sticky).
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
