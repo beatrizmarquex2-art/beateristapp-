@@ -23,11 +23,13 @@ const cards = () => page.$$eval('.jg-card', (a) => a.map((x) => ({ t: x.textCont
 check('abas: Jogos, Estudos, Tocar e Ranking', JSON.stringify(await navs()) === JSON.stringify(['Jogos', 'Estudos', 'Tocar', 'Ranking']), JSON.stringify(await navs()));
 let c = await cards();
 check('explorar a bateria saiu dos jogos', !c.some((x) => /explorar/i.test(x.t)));
-check('jogos de ritmo com cadeado', c.find((x) => /jogos de ritmo/i.test(x.t))?.lock === true);
+check('Beat Hero com cadeado', c.find((x) => /beat hero/i.test(x.t))?.lock === true);
 check('quiz e letras (3 em 1) com cadeado', c.find((x) => /quiz e letras/i.test(x.t))?.lock === true);
 check('quiz/caça/cruzadinha não aparecem separados', !c.some((x) => /^(quiz|caça-palavras|cruzadinha)$/i.test(x.t)));
 check('fases e estrelas saiu da lista dos alunos', !c.some((x) => /fases e estrelas/i.test(x.t)));
 check('toque as figuras está na lista e livre', c.find((x) => /toque as figuras/i.test(x.t))?.lock === false);
+const ordem = c.map((x) => x.t.toLowerCase()).slice(0, 9);
+check('ordem pedida pela Bea', JSON.stringify(ordem) === JSON.stringify(['beat hero', 'toca aqui', 'figuras rítmicas', 'memória musical', 'uno musical', 'jogo da velha', 'quebra cabeça', 'cara a cara', 'quiz e letras']), JSON.stringify(ordem));
 check('Toca Aqui livre', c.find((x) => /toca aqui/i.test(x.t))?.lock === false);
 await page.evaluate(() => { location.hash = '#/estudos'; }); await sleep(600);
 const est = await page.$$eval('#view a.card', (a) => a.map((x) => ({ t: x.textContent.replace('🔒', '').trim(), lock: x.classList.contains('locked') })));

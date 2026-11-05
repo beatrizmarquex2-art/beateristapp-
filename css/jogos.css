@@ -533,3 +533,8 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 .dc-picks button.dc-pick { font: inherit; }
 
 .al-card.locked { opacity: .6; }
+
+/* alunos: 3 por fileira (a Bea pediu), 4 só em tela larga */
+html.aluno-on .jg-flat{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+html.aluno-on .jg-flat .jg-card b{font-size:13px}
+@media (min-width:700px){html.aluno-on .jg-flat{grid-template-columns:repeat(4,minmax(0,1fr))}}

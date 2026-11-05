@@ -20,34 +20,30 @@ const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'paul.webp', toca, 'ler, ouvir, repetir · microfone'],
-  ['dicas', 'quiz e letras', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
+  ['dicas', 'Quiz e Letras', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
-  ['bingo', 'bingo', 'bingo.webp', bingo],
-  ['velha', 'jogo da velha', 'velha.webp', velha],
-  ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
-  ['cara', 'cara a cara', 'cara.webp', cara],
-  ['stop', 'stop', 'stop.webp', stop],
+  ['bingo', 'Bingo', 'bingo.webp', bingo],
+  ['velha', 'Jogo da Velha', 'velha.webp', velha],
+  ['quebra', 'Quebra Cabeça', 'quebra-cabeca.webp', quebra],
+  ['cara', 'Cara a Cara', 'cara.webp', cara],
+  ['stop', 'STOP', 'stop.webp', stop],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
+// Ordem pedida pela Bea (3 por fileira no celular): Beat Hero | Toca Aqui | Figuras / Memória | Uno | Velha / Quebra Cabeça | Cara a Cara | Quiz e Letras.
+// Depois vêm os que ficaram de fora dessa grade (a Bea decide se ficam). Os dois últimos só aparecem pra Bea.
 const SECTIONS = [
-  ['ritmo e bateria', [
-    link('#/ritmo', 'jogos de ritmo', 'ritmo.webp', 'toca no tempo e ganha XP'),
+  ['jogos', [
+    link('#/ritmo', 'Beat Hero', 'ritmo.webp', 'toca no tempo e ganha XP (e o Piano Hero)'),
     inner('toca'),
-  ]],
-  ['leitura musical', [
-    link('#/kids/figuras', 'figuras rítmicas', 'figuras.webp', 'semibreve, mínima…'),
-    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
-    link('#/kids/toque', 'toque as figuras', 'toque.webp', 'lê a partitura e toca na tela ou no microfone'),
-  ]],
-  ['cartas e tabuleiro', [
-    link('#/kids/memoria', 'jogo da memória', 'cara-a-cara.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
-    ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
-  ]],
-  ['jogos das dicas', [inner('dicas')]],
-  ['fases e relatório', [
+    link('#/kids/figuras', 'Figuras Rítmicas', 'figuras.webp', 'semibreve, mínima…'),
+    link('#/kids/memoria', 'Memória Musical', 'cara-a-cara.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
+    inner('cartas'), inner('velha'), inner('quebra'), inner('cara'), inner('dicas'),
+    inner('bingo'), inner('stop'),
+    link('#/kids/pauta', 'Onde Mora na Pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
+    link('#/kids/toque', 'Toque as Figuras', 'toque.webp', 'lê a partitura e toca na tela ou no microfone'),
     link('#/kids', 'fases e estrelas', 'rabiscos.webp', 'jogadores, álbum e coleção', 'noaluno'), // pros alunos, fases/estrelas/álbum moram na aba Ranking
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
   ]],
