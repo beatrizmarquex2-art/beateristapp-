@@ -37,3 +37,11 @@ export async function decode(code) {
     return snap;
   } catch { return null; }
 }
+
+/** "bea-0042", "BEA 42", "0042" → "BEA-0042". Devolve '' se não tiver 4 números. */
+export function normCode(v) {
+  const d = String(v || '').replace(/^\s*bea/i, '').replace(/\D/g, '');
+  return d.length === 4 ? `BEA-${d}` : '';
+}
+/** Resumo pra confirmar "é esse álbum?" */
+export const resumo = (snap) => ({ nome: snap.n || 'sem nome', figurinhas: (snap.a || []).length, estrelas: Object.values(snap.l || {}).reduce((t, x) => t + (x[0] || 0), 0) });

@@ -24,3 +24,9 @@ test('restaurar junta e nunca tira', () => {
   assert.equal(m.lv['figuras:0'].s, 3); assert.equal(m.lv['figuras:0'].n, 3);
   assert.equal(m.ritmoStars, 7); assert.equal(m.ritmoPaid, 1);
 });
+import { normCode, resumo } from '../js/kids/savegame-logic.js';
+test('código BEA-0000 aceita jeitos diferentes de digitar', () => {
+  assert.equal(normCode('BEA-0042'), 'BEA-0042'); assert.equal(normCode(' bea 42x '), ''); assert.equal(normCode('bea 0042'), 'BEA-0042');
+  assert.equal(normCode('0042'), 'BEA-0042'); assert.equal(normCode('123'), ''); assert.equal(normCode('12345'), '');
+});
+test('resumo pra confirmar', () => assert.deepEqual(resumo({ n: 'Ana', a: ['x', 'y'], l: { f: [3, 1, 1], g: [2, 1, 1] } }), { nome: 'Ana', figurinhas: 2, estrelas: 5 }));

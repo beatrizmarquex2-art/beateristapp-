@@ -25,6 +25,7 @@ import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
 import * as SG from '../kids/savegame-logic.js';
+import * as Cloud from '../kids/album-cloud.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -137,25 +138,42 @@ function homeScreen(host, rerender) {
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
-/** 💾 Save game: gera o código do álbum (copiar/baixar/compartilhar) ou recupera um código. */
+/** 💾 Save game: código BEA-0000 (servidor, salva sozinho) + código longo de reserva (sem internet). */
 function saveSheet(me, rerender) {
   sheet('💾 save do álbum', (close) => {
-    const out = h('textarea', { class: 'input kx-code', readonly: 'true', rows: 4, 'aria-label': 'código do save', onfocus: (e) => e.target.select() }, 'gerando…');
-    let code = '';
-    SG.encode(SG.snapshot(me.name, P.progOf(me.id))).then((c) => { code = c; out.value = c; });
-    const inp = h('textarea', { class: 'input kx-code', rows: 3, placeholder: 'cole aqui o código BEA1-…', 'aria-label': 'colar código' });
-    const copy = async () => { try { await navigator.clipboard.writeText(code); toast('código copiado ✓', { ms: 1800 }); } catch { out.select(); toast('segure e copie o texto', { ms: 2500 }); } };
-    const file = () => { const a = h('a', { href: URL.createObjectURL(new Blob([code], { type: 'text/plain' })), download: `album-${me.name.replace(/\W+/g, '-').toLowerCase()}.txt` }); document.body.append(a); a.click(); a.remove(); };
-    const share = () => navigator.share ? navigator.share({ title: 'meu álbum', text: code }).catch(() => {}) : copy();
-    const restore = async () => {
-      const snap = await SG.decode(inp.value); if (!snap) { toast('esse código não está certo. confere se copiou tudo', { ms: 3000 }); return; }
-      await P.patch(me.id, SG.mergeSnap(P.progOf(me.id), snap)); close(); toast(`álbum recuperado: ${Album.owned(me.id).length} figurinhas ✓`, { ms: 3000 }); rerender();
+    const body = h('div', { class: 'sheet-body' });
+    const fail = () => toast('sem internet ou o servidor ainda não está ligado. tenta de novo daqui a pouco', { ms: 3500 });
+    const copyText = async (t) => { try { await navigator.clipboard.writeText(t); toast('copiado ✓', { ms: 1500 }); } catch { toast(`anota aí: ${t}`, { ms: 4000 }); } };
+    // ---- código de reserva (texto longo, funciona sem internet) ----
+    const longBox = () => {
+      const out = h('textarea', { class: 'input kx-code', readonly: 'true', rows: 4, 'aria-label': 'código longo', onfocus: (e) => e.target.select() }, 'gerando…'); let code = '';
+      SG.encode(SG.snapshot(me.name, P.progOf(me.id))).then((c) => { code = c; out.value = c; });
+      const inp = h('textarea', { class: 'input kx-code', rows: 3, placeholder: 'cole aqui o código BEA1-…', 'aria-label': 'colar código longo' });
+      const restore = async () => { const snap = await SG.decode(inp.value); if (!snap) { toast('esse código não está certo. confere se copiou tudo', { ms: 3000 }); return; }
+        await P.patch(me.id, SG.mergeSnap(P.progOf(me.id), snap)); close(); toast(`álbum recuperado: ${Album.owned(me.id).length} figurinhas ✓`, { ms: 3000 }); rerender(); };
+      return h('details', { class: 'kx-more' }, h('summary', {}, 'sem internet? código longo de reserva'), out,
+        h('div', { class: 'row' }, h('button', { class: 'kd-chip', type: 'button', onclick: () => copyText(code) }, 'copiar')), inp,
+        h('button', { class: 'kd-chip', type: 'button', onclick: restore }, 'recuperar com o código longo'));
     };
-    return h('div', { class: 'sheet-body' },
-      h('p', {}, 'guarde este código num lugar seguro (notas, WhatsApp). com ele você recupera o álbum em outro celular.'), out,
-      h('div', { class: 'row' }, h('button', { class: 'kd-btn', type: 'button', onclick: copy }, 'copiar'), h('button', { class: 'kd-chip', type: 'button', onclick: share }, 'compartilhar'), h('button', { class: 'kd-chip', type: 'button', onclick: file }, 'baixar')),
-      h('h3', {}, 'recuperar meu álbum'), h('p', { class: 'muted' }, 'junta com o que você já tem: não apaga nada.'), inp,
-      h('button', { class: 'kd-btn', type: 'button', onclick: restore }, 'recuperar'));
+    const draw = () => {
+      const code = Cloud.codeOf(me.id);
+      const mine = code
+        ? [h('p', {}, 'seu código é:'), h('div', { class: 'kx-bigcode' }, code), h('p', { class: 'muted' }, 'anota ou tira print. o álbum salva sozinho quando você ganha figurinha. num celular novo, é só digitar esse código.'),
+          h('div', { class: 'row' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => Cloud.create(me).then(() => toast('álbum salvo ✓', { ms: 1800 })).catch(fail) }, 'salvar agora'), h('button', { class: 'kd-chip', type: 'button', onclick: () => copyText(code) }, 'copiar'))]
+        : [h('p', {}, 'gere um código de 4 números pra guardar seu álbum e recuperar em qualquer celular.'),
+          h('button', { class: 'kd-btn', type: 'button', onclick: () => Cloud.create(me).then(() => draw()).catch(fail) }, 'gerar meu código')];
+      const inp = h('input', { class: 'input', inputmode: 'numeric', maxlength: '8', placeholder: 'BEA-0000', 'aria-label': 'código do álbum' });
+      const find = async () => {
+        const c = SG.normCode(inp.value); if (!c) { toast('digita os 4 números do código', { ms: 2200 }); return; }
+        let snap; try { snap = await Cloud.peek(c); } catch { fail(); return; }
+        if (!snap) { toast('não achei esse código. confere os números', { ms: 2800 }); return; }
+        const r = SG.resumo(snap);
+        if (!(await confirmSheet(`é o álbum de ${r.nome}?`, `${r.figurinhas} figurinhas · ${r.estrelas} ★. vai juntar com o que você já tem (não apaga nada).`, 'é meu'))) return;
+        try { await Cloud.adopt(me, c, snap); } catch { fail(); return; } close(); toast(`álbum recuperado: ${Album.owned(me.id).length} figurinhas ✓`, { ms: 3000 }); rerender();
+      };
+      body.replaceChildren(...mine, h('h3', {}, 'já tenho um código'), h('div', { class: 'row' }, inp, h('button', { class: 'kd-btn', type: 'button', onclick: find }, 'recuperar')), longBox());
+    };
+    draw(); return body;
   });
 }
 

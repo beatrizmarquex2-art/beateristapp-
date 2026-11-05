@@ -3,12 +3,14 @@ import { h } from '../util.js';
 import * as P from './progress.js';
 import { CARDS, ROLES, byId, STARS_PER_CARD, owedByStars, starsToNext } from './album-data.js';
 import { artPhoto } from '../views/artist-photo.js';
+import * as Cloud from './album-cloud.js';
 
 export const total = () => CARDS.length;
 export const owned = (pid) => (P.progOf(pid).album || []).filter((id) => byId[id]);
 
 /** Sorteia `n` figurinhas que ainda faltam, misturando as três categorias. Salva e devolve as cartas. */
 export function grant(pid, n, extra = {}) {
+  Cloud.soon(pid); // se já tem código BEA-0000, salva sozinho daqui a pouco
   if (!n || n < 1) { if (Object.keys(extra).length) P.patch(pid, extra); return []; }
   const have = new Set(owned(pid)); const won = [];
   for (let k = 0; k < n; k++) {

@@ -165,3 +165,4 @@
 .au-cell{width:110px;flex:none}.au-cell svg{width:100%;height:auto}.kx-opt-cell{width:100%}.kx-opt-cell svg{width:100%;height:auto}
 
 .kx-code { width: 100%; font: 12px/1.3 ui-monospace, monospace; word-break: break-all; resize: vertical; }
+.kx-bigcode { font: 400 44px var(--khand); letter-spacing: 3px; color: var(--red); text-align: center; padding: 6px 0; user-select: all; } .kx-more { margin-top: 14px; } .kx-more summary { cursor: pointer; color: var(--kink); }
