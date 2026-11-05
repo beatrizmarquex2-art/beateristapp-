@@ -59,8 +59,9 @@ export function artPhoto(slug, name, cls = 'art-ph', wiki) {
 export function credit(slug, wiki) {
   const el = h('small', { class: 'art-credit' });
   photoOf(slug, wiki).then((p) => {
-    if (!p) el.textContent = 'sem foto livre encontrada. toque em "trocar foto" para pôr a sua.';
-    else if (p.own) el.textContent = 'foto escolhida por você (fica só neste aparelho).';
+    const aluno = document.documentElement.classList.contains('aluno-on'); // aluno não troca foto: só a professora
+    if (!p) el.textContent = aluno ? 'sem foto livre encontrada.' : 'sem foto livre encontrada. toque em "trocar foto" para pôr a sua.';
+    else if (p.own) el.textContent = aluno ? 'foto escolhida pela professora.' : 'foto escolhida por você (fica só neste aparelho).';
     else el.replaceChildren('foto: ', p.author || 'autor no Commons', ' · ', p.license, ' · ', h('a', { href: p.page, target: '_blank', rel: 'noopener' }, 'Wikimedia Commons'));
   });
   return el;

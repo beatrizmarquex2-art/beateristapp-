@@ -115,6 +115,8 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Testes: `node --test tests/*.test.mjs`; e2e por jogo `tests/e2e/aventura-<jogo>.mjs`, `mapa.mjs` (mapa do Kids). Cuidado: testes que abriam `#/jogos/<jogo>` agora precisam de `/livre`.
 - Ao criar um jogo novo com aventura: criar `js/campanha/jogos/<id>.js`, registrar em `registry.js`, tema em `themes.js`, texto em `pontuacao.js`, listar no `sw.js` e subir o `VERSION`.
 
+- **Fotos**: só a Bea adiciona/troca fotos. Na área dos alunos (`html.aluno-on`) `pickImages` (`js/views/mural.js`) nunca abre o seletor e as telas de aluno não têm botão de foto; teste `tests/e2e/aluno-sem-fotos.mjs`. As imagens do Quebra-cabeça entram só por arquivo em `assets/jogos/`.
+
 ## Pendências (a Bea leva pra o chat novo)
 1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Músicas MIDI". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
 2. **MIDIs pros alunos**: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.
