@@ -590,3 +590,4 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .cod-tbl{width:100%;border-collapse:collapse;font-size:14px}.cod-tbl th,.cod-tbl td{padding:8px 6px;border-bottom:1px solid rgb(0 0 0 / .12);text-align:left;vertical-align:middle}
 .cod-tbl tr.off td{opacity:.5}.cod-act{white-space:nowrap}
 .cod-new{border:2px solid var(--accent)}
+.al-cod{text-align:center;letter-spacing:.18em;font:800 20px ui-monospace,Menlo,monospace;text-transform:uppercase}

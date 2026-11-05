@@ -1,0 +1,26 @@
+// Primeira tela do aluno: Nome + "escolha uma opção" (com CÓDIGO DE ACESSO). Código certo libera o Beat Hero e as Músicas MIDI. Supabase simulado.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser } = await launch();
+const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true }); const valid = new Set(['BEA0404']);
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+await ctx.route('**/rest/v1/rpc/aluno_visit', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'null' }));
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
+await p.goto(`${url}/aluno.html`); await sleep(1500);
+const opts = await p.locator('select option').allTextContents();
+check('a lista tem "CÓDIGO DE ACESSO"', opts.includes('CÓDIGO DE ACESSO'), opts.join(' | '));
+check('o campo do código só aparece quando escolhe essa opção', (await p.locator('.al-cod').isHidden()));
+await p.locator('input[aria-label="Seu nome"]').fill('Maria'); await p.locator('select').selectOption('codigo'); await sleep(200);
+check('escolheu a opção: aparece o campo do código', await p.locator('.al-cod').isVisible());
+await p.locator('button:has-text("entrar")').click(); await sleep(400);
+check('sem digitar o código: avisa', (await p.locator('.form-err').textContent()).includes('digite'));
+await p.locator('.al-cod').fill('ZZZ-999'); await p.locator('button:has-text("entrar")').click(); await sleep(700);
+check('código errado: não entra e avisa', (await p.locator('.form-err').textContent()).includes('não achei') && (await p.locator('.al-entry').count()) === 1);
+await p.locator('.al-cod').fill('bea-0404'); await p.locator('button:has-text("entrar")').click(); await sleep(2500);
+check('código certo: entra no app', (await p.locator('.al-entry').count()) === 0 && (await p.locator('.bottom-nav, nav').count()) > 0);
+check('código guardado no aparelho (1 ano)', (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === 'BEA0404');
+check('origem registrada como código de acesso', (await p.evaluate(() => localStorage.getItem('beaterista-aluno-origem'))).includes('código de acesso'));
+await p.evaluate(() => { location.hash = '#/ritmo'; }); await sleep(2500);
+check('já abre no Beat Hero liberado (sem cadeado)', (await p.locator('.rz-g.on b').textContent()) === 'Beat Hero' && (await p.locator('#rz-code').count()) === 0);
+check('sem erros de JS', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close(); done();
