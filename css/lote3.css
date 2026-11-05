@@ -605,7 +605,7 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .bottom-nav .nav-item{position:relative}.bottom-nav .nav-lock{position:absolute;top:2px;right:calc(50% - 22px);font-size:11px;font-style:normal}
 .bottom-nav .nav-item.locked{opacity:.72}
 /* ===== aba Tocar: abas de instrumento, violão, xilofone, batida de fundo ===== */
-.ti-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 16px 10px; }
+.ti-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 6px 16px 10px; }
 .ti-tab { display: grid; place-items: center; min-height: 44px; border: 2px solid #1b1818; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; }
 .ti-tab.on { background: #1b1818; color: #fff; }
 .ti-tab:focus-visible { outline: 3px solid #b5162b; outline-offset: 2px; }
@@ -649,3 +649,33 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .ti-names { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font: 700 14px var(--body); }
 .ti-names li { display: flex; align-items: center; gap: 6px; }
 .ti-names i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #1b1818; }
+
+/* ---- Roleta Musical (aba Tocar) ---- */
+.ti-tab { font-size: 13px; padding: 0 2px; }
+.rl-root{display:grid;gap:12px;padding-bottom:24px}
+.rl-card-main{background:#f5ead2;border:3px solid #14203a;box-shadow:0 6px 0 #6e1423}
+.rl-machine{position:relative;background:#14203a;border:4px solid #6e1423;border-radius:18px;padding:12px;margin:10px 0}
+.rl-reels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rl-win{position:relative;overflow:hidden;aspect-ratio:3/4;border-radius:10px;background:#f5ead2;border:3px solid #e8a92c}
+.rl-win::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#14203a55,transparent 18%,transparent 82%,#14203a55)}
+.rl-strip{width:100%;will-change:transform}
+.rl-it{position:relative;width:100%;height:100%;overflow:hidden;background:#14203a}.rl-it img{width:100%;height:100%;object-fit:cover;display:block}
+.rl-nm{position:absolute;left:0;right:0;bottom:0;background:#f5ead2;color:#14203a;font:700 clamp(10px,3vw,14px)/1.1 inherit;text-align:center;padding:3px 2px}
+.rl-fb{display:grid;place-items:center;width:100%;height:100%;background:#6e1423;color:#f5ead2;text-align:center;font-weight:700;padding:4px}
+
+.rl-spin{width:100%;min-height:56px;font-size:20px;margin-bottom:8px}
+.rl-spin:disabled{opacity:.55}
+.rl-card{display:grid;gap:12px;grid-template-columns:minmax(0,140px) 1fr;align-items:center;margin-top:12px;animation:rl-pop .35s ease both}
+@keyframes rl-pop{from{transform:scale(.9);opacity:0}}
+.rl-foto{aspect-ratio:3/4;border:3px solid #14203a;border-radius:12px;overflow:hidden;background:#14203a}.rl-big{width:100%;height:100%;object-fit:cover;display:block}
+.rl-frase{font-size:clamp(18px,5vw,26px);margin:0 0 10px;line-height:1.15;color:#6e1423}
+@media (max-width:360px){.rl-card{grid-template-columns:1fr}}
+.rl-pop{position:fixed;inset:0;z-index:60;background:#14203acc;display:grid;place-items:center;padding:16px}.rl-pop[hidden]{display:none}
+.rl-pop-in{background:#f5ead2;border:3px solid #14203a;border-radius:16px;padding:16px;max-width:420px;width:100%;max-height:90vh;overflow:auto;display:grid;gap:10px}
+.rl-pop-img{width:100%;max-height:50vh;object-fit:contain;border-radius:10px;background:#14203a}
+.rl-inst{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rl-inst .btn{min-height:48px;text-align:center}
+.rl-hl{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:6px 0}.rl-hl li{background:#f5ead2;border:2px solid #14203a;border-radius:999px;padding:4px 10px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.rl-card{animation:none}}
+.rl-chk{display:flex;gap:8px;align-items:center;min-height:44px;margin:6px 0}.rl-chk input{width:22px;height:22px;flex:none}
+.rl-filtros{margin:8px 0}
+.rl-frase{font-family:var(--display,inherit)!important;font-weight:800}

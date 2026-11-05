@@ -4,7 +4,7 @@ import { audio } from '../audio.js';
 import * as N from '../notation.js';
 import { backing, STYLES, grooveBeat } from '../instruments.js';
 
-export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'violão', '#/violao'], ['piano', 'piano', '#/piano'], ['xilofone', 'xilofone', '#/xilofone']];
+export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'violão', '#/violao'], ['piano', 'piano', '#/piano'], ['xilofone', 'xilofone', '#/xilofone'], ['roleta', 'roleta', '#/roleta']];
 
 /** Linha de abas logo abaixo da faixa: troca de instrumento sem voltar ao menu (a batida de fundo continua). */
 export const tocarTabs = (atual) => h('nav', { class: 'ti-tabs', 'aria-label': 'Instrumento' },

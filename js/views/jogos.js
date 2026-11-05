@@ -12,6 +12,7 @@ import * as cara from '../jogos/cara.js';
 import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
+import * as memart from '../jogos/memoria-artistas.js';
 import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
@@ -27,6 +28,7 @@ const GAMES = [
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
   ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
   ['stop', 'stop', 'stop.webp', stop],
+  ['memart', 'memória de artistas', 'memoria.svg', memart, 'pares de artistas e bandas · sem figurinhas'],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
@@ -43,6 +45,7 @@ const SECTIONS = [
   ]],
   ['cartas e tabuleiro', [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
+    inner('memart'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['quiz e letras (com código)', [

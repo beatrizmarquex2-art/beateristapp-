@@ -270,3 +270,9 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 
 ## Deploy alunos (cache v281)
 No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras ritmicas no Toca Aqui, roleta a cada 30 estrelas + 3 figurinhas tops por jogo completo, codigo de acesso no Perfil, excluir cartinhas, correcao do iPad no ritmo (aventura tem tela ritmo/melodia).
+
+## Roleta Musical + Memória de Artistas (cache v283)
+- Tocar > Roleta Musical (#/roleta, js/views/roleta.js): 3 rolos, resultado sorteado antes (por artista, não por foto), filtros, histórico (10), Tocar agora. NÃO dá figurinha.
+- Jogos > Memória de Artistas (js/jogos/memoria-artistas.js): 4 a 12 pares de artistas distintos, filtros, dica, recordes locais. NÃO dá figurinha.
+- Adaptador compartilhado: js/jogos/artistas-logic.js (usa ENTIDADES do Cara a Cara + catalogo.json).
+- Ritmo: máx 3 estrelas, só músicas >=105 bpm valem, conta a melhor por música+nível; aventura do ritmo só com músicas rápidas.
