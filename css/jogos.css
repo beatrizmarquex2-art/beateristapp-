@@ -531,3 +531,5 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 
 .jg-card { position: relative; } .jg-card.locked .jg-ico { opacity: .55; filter: grayscale(.6); } .ac-lock { position: absolute; top: 6px; right: 6px; font-size: 18px; line-height: 1; background: rgba(255,255,255,.9); border-radius: 999px; padding: 3px 5px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
 .dc-picks button.dc-pick { font: inherit; }
+
+.al-card.locked { opacity: .6; }

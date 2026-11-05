@@ -129,7 +129,7 @@ function game(host, entry) {
 }
 
 export function mount(host, parts = []) {
-  if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
+  if (parts[0] === 'relatorio') return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) return catalog(host);
   if (ALUNO() && lockedKey(`#/jogos/${entry[0]}`)) { location.replace('#/jogos'); Acesso.promptCode(entry[1]); return catalog(host); }

@@ -11,6 +11,8 @@ import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
+import * as dicionario from './views/dicionario.js';
+import * as dicasLista from './views/dicas-lista.js';
 import { banner, closeSheets } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
@@ -22,8 +24,8 @@ import { normCode } from './kids/savegame-logic.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 // quem não tem código liberado vê só Jogos, Tocar e Ranking; com código liberado entra também o Beat Lab
-const navItems = () => [['#/jogos', 'study', 'Jogos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const navItems = () => [['#/jogos', 'study', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -115,6 +117,21 @@ function tocarView(view) {
     card('#/piano', 'Piano', 'teclado na tela, com notas e acordes')));
 }
 
+/** Aba Estudos: dicionário e dicas (só com código liberado), aulinha do Paul e relatório dos jogos (abertos, os pais podem ler). */
+function estudosView(view) {
+  const item = (href, title, sub, trava) => {
+    const lock = trava && Acesso.bloqueado(trava);
+    return h('a', { class: `card pad al-card${lock ? ' locked' : ''}`, href, 'aria-label': lock ? `${title}, só pra alunos` : null, onclick: lock ? (e) => { e.preventDefault(); Acesso.promptCode(title); } : null },
+      h('h2', { class: 'tag' }, lock ? '🔒 ' : '', title), h('p', { class: 'muted' }, sub));
+  };
+  const draw = () => view.replaceChildren(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo'),
+    item('#/dicionario', 'Dicionário da bateria', 'busca, explicação e exemplo tocando', 'dicionario'),
+    item('#/estudos/dicas', 'As 30 dicas', 'pequenas ideias pra estudar melhor', 'dicas'),
+    item('#/jogos/relatorio', 'Relatório dos jogos', 'pra pais e responsáveis: o que cada jogo desenvolve')));
+  draw(); const on = () => draw(); addEventListener('acesso', on); return () => removeEventListener('acesso', on);
+}
+
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'aria-label': 'Navegação' });
@@ -129,12 +146,13 @@ function shell(name) {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
     // fases, estrelas e álbum moram na aba Ranking; os jogos das fases continuam na aba Jogos
-    const tab = r.name === 'kids' && (!r.parts[0] || r.parts[0] === 'album') ? 'ranking' : (TAB_OF[r.name] || r.name);
+    const tab = r.name === 'kids' && (!r.parts[0] || r.parts[0] === 'album') ? 'ranking'
+      : (r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name);
     const NAV = navItems(); nav.style.gridTemplateColumns = `repeat(${NAV.length}, 1fr)`;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + tab) === href ? ' on' : ''}`, 'aria-current': ('#/' + tab) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
-    const travado = { beatlab: 'beatlab', ritmo: 'ritmo' }[r.name];
-    if (travado && Acesso.bloqueado(travado)) { location.replace('#/jogos'); Acesso.promptCode(r.name === 'ritmo' ? 'Beat Hero e Piano Hero' : 'o Beat Lab'); return; }
+    const travado = r.name === 'estudos' && r.parts[0] === 'dicas' ? 'dicas' : { beatlab: 'beatlab', ritmo: 'ritmo', dicionario: 'dicionario' }[r.name];
+    if (travado && Acesso.bloqueado(travado)) { location.replace(r.name === 'ritmo' || r.name === 'beatlab' ? '#/jogos' : '#/estudos'); Acesso.promptCode(Acesso.TRAVA[travado]); return; }
     if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
@@ -142,6 +160,8 @@ function shell(name) {
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos') c = r.parts[0] === 'dicas' ? dicasLista.mount(view) : estudosView(view);
+    else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;

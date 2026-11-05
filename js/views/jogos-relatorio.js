@@ -78,7 +78,7 @@ export function relatorio(host) {
       h('p', { class: 'rel-k' }, 'desenvolve'), h('ul', {}, ...skills.map((s) => h('li', {}, s))),
       h('p', { class: 'rel-k' }, 'na aprendizagem'), h('p', {}, how)));
   host.replaceChildren(banner('Relatório', 'pra que serve cada jogo'), h('div', { class: 'jg jg-wrap jg-doc' },
-    h('div', { class: 'rel-actions' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('button', { class: 'btn small', type: 'button', onclick: () => window.print() }, 'salvar em PDF')),
+    h('div', { class: 'rel-actions' }, h('a', { class: 'jg-link', href: document.documentElement.classList.contains('aluno-on') ? '#/estudos' : '#/jogos' }, document.documentElement.classList.contains('aluno-on') ? '‹ estudos' : '‹ jogos'), h('button', { class: 'btn small', type: 'button', onclick: () => window.print() }, 'salvar em PDF')),
     h('article', { class: 'rel-page' },
       h('header', { class: 'rel-title' }, h('h1', { class: 'hand' }, 'Relatório dos jogos'), h('p', { class: 'muted' }, `Beaterista · ${total} jogos · o que cada um desenvolve e como ajuda a aprender música`)),
       h('p', { class: 'rel-intro' }, 'Os jogos da Beaterista não são só diversão: cada um treina uma habilidade que o aluno vai usar ao tocar. Jogar traz atenção, repetição com meta e retorno imediato, o que ajuda a memória e a motivação. Este documento diz, jogo a jogo, para que ele serve.'),
