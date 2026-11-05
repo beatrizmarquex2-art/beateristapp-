@@ -8,7 +8,7 @@ await fakeLogin(ctx, page, url);
 const go = (h) => page.evaluate((x) => { location.hash = x; }, h);
 await go('#/figurinhas'); await page.waitForSelector('.fig-tabs', { timeout: 8000 });
 check('abre o álbum', (await page.textContent('.fig-total')).includes('0/125'));
-check('Geral tem 91 espaços numerados', (await page.locator('.fig-slot').count()) === 91);
+check('livro do Geral: capa + sumário + 23 páginas (91 figurinhas, 4 por página)', (await page.locator('.lv-page').count()) === 25);
 await page.screenshot({ path: '/tmp/claude-0/fig-album.png' });
 await page.getByRole('tab', { name: /pacotes/ }).click();
 check('2 pacotes de presente (boas-vindas + do dia)', (await page.textContent('.fig-pack-card p')).startsWith('2 pacotes'));
@@ -26,11 +26,14 @@ check('progresso persiste ao recarregar', /^[1-5]\/125/.test(again.trim()), agai
 await page.getByRole('tab', { name: /pacotes/ }).click();
 check('reabrir o app não devolve o pacote já aberto', (await page.textContent('.fig-pack-card p')).startsWith('1 pacote'));
 await page.getByRole('tab', { name: /geral/ }).click(); await sleep(800);
-await page.locator('.fig-slot.got').first().click(); await sleep(500);
+await page.locator('.lv-idx').click(); await sleep(500);
+const gotPage = await page.evaluate(() => { const hit = [...document.querySelectorAll('.lv-slot.got')]; return hit.length; });
+for (let i = 0; i < 25 && !(await page.locator('.lv-slot.got').count()); i++) { await page.locator('.lv-nav[aria-label="Próxima página"]').click(); await sleep(450); }
+await page.locator('.lv-slot.got').first().click(); await sleep(500);
 check('detalhe abre', await page.locator('.fig-zoom > svg').count() === 1);
 await page.screenshot({ path: '/tmp/claude-0/fig-detail.png' });
 await page.keyboard.press('Escape'); await sleep(400);
 await page.getByRole('tab', { name: /beatles/ }).click();
-check('Beatles tem 22 espaços', (await page.locator('.fig-slot').count()) === 22);
+check('livro dos Beatles: capa + sumário + 6 páginas (22 figurinhas)', (await page.locator('.lv-page').count()) === 8);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

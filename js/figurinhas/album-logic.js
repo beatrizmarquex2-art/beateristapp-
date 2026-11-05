@@ -57,3 +57,18 @@ export function stats(state, catalog, colecao = null) {
 /** Número do espaço no álbum (1..N dentro da coleção, na ordem do catálogo). */
 export const slotNumber = (catalog, entry) => catalog.filter((c) => c.colecao === entry.colecao).findIndex((c) => c.codigo === entry.codigo) + 1;
 export const artistsOf = (catalog, colecao) => [...new Set(catalog.filter((c) => c.colecao === colecao).map((c) => c.artista_banda))].sort((a, b) => a.localeCompare(b, 'pt'));
+
+/** Cópias que sobram na mão = (vezes que a figurinha saiu nos pacotes abertos) - (1 se já está colada). Sempre dá pra recalcular, então juntar dois aparelhos nunca erra. */
+export function deriveInv(opened, pasted) {
+  const inv = {};
+  for (const codes of Object.values(opened || {})) for (const c of codes || []) inv[c] = (inv[c] || 0) + 1;
+  for (const c of Object.keys(pasted || {})) if (inv[c]) { inv[c] -= 1; if (inv[c] <= 0) delete inv[c]; }
+  return inv;
+}
+/** Junta o progresso de dois aparelhos: pacotes abertos, pacotes recebidos e figurinhas coladas são a união (nunca apaga nada). */
+export function mergeStates(a, b) {
+  const A = { ...emptyState(), ...(a || {}) }, B = { ...emptyState(), ...(b || {}) };
+  const opened = { ...A.opened, ...B.opened }, pasted = { ...A.pasted, ...B.pasted };
+  return { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+}
+export const sameProgress = (a, b) => JSON.stringify([Object.keys(a.pasted || {}).sort(), Object.keys(a.opened || {}).sort(), [...(a.granted || [])].sort()]) === JSON.stringify([Object.keys(b.pasted || {}).sort(), Object.keys(b.opened || {}).sort(), [...(b.granted || [])].sort()]);

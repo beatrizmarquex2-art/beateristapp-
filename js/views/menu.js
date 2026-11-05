@@ -32,7 +32,7 @@ const MENU_BEA = [
     ['ferramentas', [['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],
   ['aulas', 'aulas', [
-    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/codigos', 'drummer', 'Importar código de aluno'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura']]],
+    ['', [['#/beaterista', 'drummer', 'Alunos'], ['#/acessos', 'drummer', 'Acessos dos alunos'], ['#/codigos', 'drummer', 'Importar código de aluno'], ['#/album-alunos', 'photo', 'Álbum dos alunos'], ['#/ferramentas/leitura', 'staff', 'Folhas de leitura']]],
   ]],
   ['organizar', 'organizar', [
     ['', [['#/inicio', 'home', 'Início'], ['#/hub/anotar', 'note', 'Anotar'], ['#/arquivos', 'folder', 'Meus Arquivos']]],
