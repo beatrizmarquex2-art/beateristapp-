@@ -5,13 +5,13 @@ import * as N from '../notation.js';
 import { audio, later } from '../audio.js';
 import { VOICE } from '../views/beatlab.js';
 import { nameOf, bumboBar } from '../kids-logic.js';
-import { pieceQ, pautaQ, pairName, figureQ, bumboQ, hintOf } from './quiz.js';
+import { pieceQ, pairName, figureQ, bumboQ, hintOf } from './quiz.js';
 import { FIGS, FIG_NAME, FIG_BY, GROUPS, VAR_BY, beatsLabel, specOf, contaOf } from './figs.js';
 import { layoutRhythm } from '../reading.js';
 import { click } from '../audio.js';
 import { ROW_NAME } from './groove.js';
 import { KIT_COLORS } from './icons.js';
-import { kitMarkup, staffMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
+import { kitMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
 import { runMemory } from './memory.js';
 import { runEco } from './eco.js';
 import { runToque } from './toque.js';
@@ -32,16 +32,6 @@ export const GAMES = {
     onShow: (q) => { if (q.mode === 'ouvir') later(() => play(q.ans), 250); },
     picked: (q, id) => { if (id) play(id); },
     okText: (q) => `isso! é ${nameOf(q.ans)} ⭐`, noText: (q) => `era ${nameOf(q.ans)}`, hint: (k) => hintOf('pecas', k),
-  },
-  pauta: {
-    id: 'pauta', title: 'Onde mora na pauta?', blurb: 'cada peça tem a sua casinha', emoji: '🎼', ages: 'a partir de 7 anos',
-    modes: [['nomes', '🔤 com nomes'], ['desenho', '🖼 com desenho']], mode: 'nomes',
-    makeQuestion: (rnd, d, i, { mode }) => ({ ...withColor(pautaQ(rnd, d)), mode }),
-    // com desenho: as respostas são a bateria pintada (pra quem ainda não lê os nomes das peças)
-    optionLabel: (q, o) => (q.mode === 'desenho' ? h('span', { class: 'kx-opt-kit', 'aria-label': o.label }, svgEl(kitMarkup(null, false, o.id), 'kx-kit-op')) : o.label),
-    render: (q) => h('div', { class: 'kx-q' }, svgEl(staffMarkup(q.ids), 'kd-staff'), h('p', { class: 'kd-q' }, q.ids.length > 1 ? 'quem toca nessas duas casinhas juntas?' : 'quem mora nessa casinha?')),
-    picked: (q, id) => { if (id) String(id).split('+').forEach((x) => play(x)); },
-    okText: (q) => `isso! ${pairName(q.ans)} ⭐`, noText: (q) => (q.ids.length > 1 ? `eram ${pairName(q.ans)} juntos` : `essa casinha é do ${nameOf(q.ans)}`), hint: (k) => hintOf('pauta', k),
   },
   figuras: {
     id: 'figuras', title: 'Figuras rítmicas', blurb: 'quanto vale, desenho, pausas, tercina…', emoji: '⏳', ages: 'a partir de 6 anos',
