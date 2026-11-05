@@ -20,11 +20,11 @@ const { chips, line, bpmRow, clampBpm } = parts;
 const KEY = 'setting-treinos', KIND = 'treino';
 const cfg = () => ({ lv: 1, bpm: 70, bars: 1, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (patch) => store.upsert('setting', KEY, patch);
-const MARK = { ok: '#1f9d4a', cedo: '#d98a00', tarde: '#d98a00', faltou: '#c8102e' };
+export const MARK = { ok: '#1f9d4a', cedo: '#d98a00', tarde: '#d98a00', faltou: '#c8102e' };
 const QUESTIONS = 10;
 
 /** Uma pauta por compasso (4 tempos), cada uma com as suas cores. */
-function score(bar4s, marks = []) {
+export function score(bar4s, marks = []) {
   const box = h('div', { class: 'tr-score' }); let k = 0;
   for (const bar of bar4s) {
     const n = bar.reduce((s, p) => s + [...p].filter((c) => c === '1').length, 0);
@@ -33,11 +33,11 @@ function score(bar4s, marks = []) {
   }
   return box;
 }
-const chunk = (beats) => { const out = []; for (let i = 0; i < beats.length; i += 4) out.push(beats.slice(i, i + 4)); return out; };
+export const chunk = (beats) => { const out = []; for (let i = 0; i < beats.length; i += 4) out.push(beats.slice(i, i + 4)); return out; };
 
 
 /** Agenda contagem (4 cliques) + cliques nos tempos (+ caixa, se `play`). Devolve o instante do 1º tempo (relógio do áudio). */
-function schedule(beats, bpm, { play = false, clickAll = true } = {}) {
+export function schedule(beats, bpm, { play = false, clickAll = true } = {}) {
   const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
   for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
   if (clickAll) for (let b = 0; b < beats.length; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.6);

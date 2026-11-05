@@ -1,7 +1,7 @@
 // Leitura das telas de aventura: nada de texto sobreposto ou cortado pela tela (texto só pra leitor de tela fica de fora), em 390 e 320 px, nos 9 jogos (mapa, briefing e missão).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } });
-const GAMES = [['cartas', '#/jogos/cartas/aventura'], ['bingo', '#/jogos/bingo/aventura'], ['stop', '#/jogos/stop/aventura'], ['velha', '#/jogos/velha/aventura'], ['quebra', '#/jogos/quebra/aventura'], ['cara', '#/jogos/cara/aventura'], ['memoria', '#/kids/memoria/aventura'], ['monte', '#/kids/ritmo/aventura'], ['noritmo', '#/ritmo/aventura']];
+const GAMES = [['toca', '#/jogos/toca/aventura'], ['cartas', '#/jogos/cartas/aventura'], ['bingo', '#/jogos/bingo/aventura'], ['stop', '#/jogos/stop/aventura'], ['velha', '#/jogos/velha/aventura'], ['quebra', '#/jogos/quebra/aventura'], ['cara', '#/jogos/cara/aventura'], ['memoria', '#/kids/memoria/aventura'], ['monte', '#/kids/ritmo/aventura'], ['noritmo', '#/ritmo/aventura']];
 const audit = () => {
   const out = []; const vis = (e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && +s.opacity > 0.3; };
   const inScroller = (e) => { for (let n = e.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth) return true; } return false; };

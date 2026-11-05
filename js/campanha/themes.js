@@ -48,6 +48,11 @@ export const THEMES = {
     R('figuras', 'Máquina das Figuras', 'colcheias e semínimas', ['#5a1a47', '#6a2c91', '#ff4fa3', '#ff8bc4'], [['note', 'l', 0.3], ['gear', 'r', 0.55], ['note', 'l', 0.85]]),
     R('pausas', 'Sala das Pausas', 'o silêncio também conta', ['#1b2a4a', '#24305c', '#6ef0a0', '#6f8fd8'], [['curtain', 'r', 0.3], ['gear', 'l', 0.55], ['star', 'r', 0.85]]),
   ] },
+  toca: { id: 'toca', name: 'Escola do Ritmo', accent: '#4fd2ff', regions: [
+    R('sala', 'Sala das Semínimas', 'o pulso primeiro', ['#24305c', '#3a1f6b', '#4fd2ff', '#8e6bd1'], [['school', 'l', 0.3], ['note', 'r', 0.55], ['lamp', 'l', 0.85]]),
+    R('coro', 'Corredor das Colcheias e Semis', 'rápido e no tempo', ['#3a1f6b', '#1b2f6a', '#ffd23f', '#4fd2ff'], [['sticks', 'r', 0.3], ['drum', 'l', 0.55], ['note', 'r', 0.85]]),
+    R('palcoa', 'Palco das Síncopes', 'pontuadas e pausas', ['#5a1a47', '#8e1f4a', '#ffd23f', '#ffd23f'], [['curtain', 'l', 0.3], ['trophy', 'r', 0.5], ['star', 'l', 0.85]]),
+  ] },
   noritmo: { id: 'noritmo', name: 'Estúdio e Palco', accent: '#ff4fa3', regions: [
     R('estudio', 'Estúdio de Gravação', 'luz vermelha acesa', ['#2c1a56', '#3a1f6b', '#ff4fa3', '#8e6bd1'], [['mic', 'l', 0.3], ['amp', 'r', 0.55], ['tape', 'l', 0.85]]),
     R('camarim', 'Camarim', 'últimos ajustes', ['#3a1f6b', '#5a1a47', '#ffd23f', '#ff8bc4'], [['record', 'r', 0.3], ['guitar', 'l', 0.55], ['heart', 'r', 0.85]]),
