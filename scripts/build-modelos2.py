@@ -83,6 +83,10 @@ for i, ((x,y,w,h),(sx,sy)) in enumerate(zip(BOXES, SEED)):
     pts = cv2.findNonZero(tm); (tcx, tcy), (tw, th_), tang = cv2.minAreaRect(pts); tang = tang % 90; tang = tang - 90 if tang > 45 else tang
     ink = np.median(c[tm > 0], axis=0)[::-1].astype(int).tolist()
     clean = apaga_texto(c, tm, (x0, y0, x1, y1))
+    if i == 6:  # M7: a plaquinha do nome é preta lisa; sobravam fantasmas claros do texto de exemplo -> preenche com o preto da própria placa
+        gg = cv2.cvtColor(clean, cv2.COLOR_BGR2GRAY); rx0, ry0, rx1, ry1 = 76, 351, 282, 384; sub = clean[ry0:ry1, rx0:rx1]
+        base = np.median(sub[gg[ry0:ry1, rx0:rx1] < 70].reshape(-1, 3), axis=0)
+        clean[ry0:ry1, rx0:rx1] = np.clip(base + np.random.default_rng(9).normal(0, 1.6, sub.shape), 0, 255).astype(np.uint8)
     clean, sub_cor = apaga_subtitulo(clean, SUB[i], SUB_ESCURO[i])
     # janela -> preto (um pouco além da borda, pra sumir o cinza que sobra na beirada)
     clean[cv2.dilate(win, np.ones((5,5), np.uint8)) > 0] = (18, 16, 20)
