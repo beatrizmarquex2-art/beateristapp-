@@ -83,7 +83,7 @@ html { touch-action: manipulation; }
 .al-pos { font: 700 14px var(--type); } .al-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .al-card { text-decoration: none; display: block; }
 .al-paul { display: flex; align-items: flex-end; gap: 8px; justify-content: center; }
-.al-paul img { height: auto; mix-blend-mode: multiply; }
+.al-paul img { height: auto; mix-blend-mode: normal; }
 .al-bubble { margin: 0 0 30px; font: 700 16px/1.25 var(--hand); color: rgb(var(--ink-rgb)); text-align: left; }
 .al-foot { display: grid; gap: 6px; padding: 18px 16px 8px; }
 .al-social { display: flex; gap: 14px; justify-content: center; }
@@ -344,7 +344,7 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 @keyframes ptTap { 0% { transform: scale(1); } 50% { transform: scale(1.07); } 100% { transform: scale(1); } }
 .pt-think { position: fixed; left: 12px; right: 12px; z-index: 240; display: flex; align-items: flex-end; gap: 4px; justify-content: center; pointer-events: none; opacity: 0; transform: translateY(10px); transition: opacity .3s, transform .3s; }
 .pt-think.on { opacity: 1; transform: none; } .pt-think.out { opacity: 0; transform: translateY(6px); }
-.pt-face { width: 40px; height: auto; mix-blend-mode: multiply; flex: none; }
+.pt-face { width: 40px; height: auto; mix-blend-mode: normal; flex: none; }
 .pt-dot { display: block; border-radius: 50%; background: #fffdf8; border: 2px solid #1b1818; align-self: flex-end; margin-bottom: 14px; }
 .pt-dot.d1 { width: 7px; height: 7px; } .pt-dot.d2 { width: 11px; height: 11px; margin-bottom: 20px; }
 .pt-cloud { pointer-events: auto; max-width: min(78vw, 300px); padding: 10px 16px; border: 2px solid #1b1818; border-radius: 22px 22px 22px 8px; background: #fffdf8; color: #1b1818; font: 400 17px/1.15 'Gochi Hand', var(--hand); text-decoration: none; box-shadow: 3px 3px 0 var(--accent); }
@@ -500,7 +500,7 @@ html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
 .hero-note-link { min-height: 34px; padding: 0 12px; font-size: 12.5px; }
 /* Paul com palavra de incentivo no lugar da frase do topo */
 .hero-paul { display: flex; align-items: center; gap: 8px; width: 100%; margin: 6px 0 0; padding: 0 calc(var(--cs, 82px) + 8px) 0 0; border: 0; background: none; text-align: left; font: inherit; cursor: pointer; color: #1b1818; }
-.hp-img { width: 74px; height: 74px; object-fit: contain; flex: none; mix-blend-mode: multiply; }
+.hp-img { width: 74px; height: 74px; object-fit: contain; flex: none; mix-blend-mode: normal; }
 .hp-bubble { position: relative; flex: 1; padding: 6px 10px; border: 2px solid #1b1818; border-radius: 14px 14px 14px 4px; background: #fffdf7; box-shadow: 2px 2px 0 #1b1818; }
 .hp-msg { font: 16px/1.15 "Gochi Hand", var(--hand); display: block; }
 /* continuar estudando: lista com barra de progresso */
@@ -533,7 +533,7 @@ html[data-space] .topwrap .sb-net.on { color: #a8ecc0; }
 /* Paul aparece no cantinho de baixo da direita, fala e some */
 .paul-pop { position: fixed; right: 8px; bottom: calc(92px + var(--safe-b, 0px)); z-index: 25; display: flex; align-items: flex-end; gap: 2px; max-width: min(78vw, 300px); padding: 0; border: 0; background: none; font: inherit; text-align: left; color: #1b1818; cursor: pointer; opacity: 0; transform: translateX(40px) scale(.9); pointer-events: none; transition: opacity .35s, transform .4s cubic-bezier(.2,.9,.3,1.2); }
 .paul-pop.on { opacity: 1; transform: none; pointer-events: auto; }
-.pp-img { width: 72px; height: 72px; object-fit: contain; flex: none; mix-blend-mode: multiply; }
+.pp-img { width: 72px; height: 72px; object-fit: contain; flex: none; mix-blend-mode: normal; }
 .pp-bubble { margin-bottom: 26px; padding: 7px 11px; border: 2px solid #1b1818; border-radius: 14px 14px 3px 14px; background: #fffdf7; box-shadow: 2px 2px 0 #1b1818; }
 .pp-msg { display: block; font: 15px/1.2 "Gochi Hand", var(--hand); }
 html.kb-open .paul-pop { display: none; }

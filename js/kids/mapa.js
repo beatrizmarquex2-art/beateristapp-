@@ -11,6 +11,7 @@ import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { session } from '../session.js';
 import { roboMarkup } from './robo.js';
+import { temaButton } from '../campanha/tema.js';
 import { sprite, DECOR } from './mapa-art.js';
 import { mapSfx, soundOn, setSound } from './mapa-sfx.js';
 import { ST, REGIONS, computeNodes, chaptersFor, layoutMap, pathThrough, newlyDone, doneIds, regionOf, checkLevels } from './mapa-logic.js';
@@ -43,14 +44,14 @@ export function mountProgressionMap(host, cfg) {
     onBack ? h('button', { type: 'button', class: 'mp-back', onclick: () => onBack() }, '‹ jogo') : null,
     h('div', { class: 'mp-reg', 'aria-live': 'polite' }, regionName, regionSub),
     h('span', { class: 'mp-prog', title: 'discos concluídos' }, h('span', { class: 'mp-vinyl-ico', 'aria-hidden': 'true' }), `${doneN}/${nodes.length}`),
-    cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null, snd);
+    cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null, temaButton(), snd);
 
   /* ---- mundo ---- */
   const world = h('div', { class: `mp-world${motion ? ' mp-anim' : ''}`, style: `aspect-ratio:${L.W} / ${L.H}` });
   const at = (x, y) => `left:${pct(x, L.W)};top:${pct(y, L.H)}`;
   chapters.forEach((c, ci) => {
     const b = L.bands[ci];
-    const col = c.c ? `;--b0:${c.c[0]};--b1:${c.c[1]};--bt:${c.c[2]};--bd:${c.c[3]}` : ''; // cores próprias da região (cada jogo tem o seu mundo)
+    const col = ''; // as cores das faixas vêm do tema da escola (css/aventura-tema.css), escuro ou claro
     const band = h('section', { class: 'mp-band', 'data-r': c.id, 'data-i': ci, style: `top:${pct(b.y0, L.H)};height:${pct(b.y1 - b.y0, L.H)}${col}`, 'aria-label': c.name });
     const sign = h('div', { class: 'mp-sign', style: `top:${pct(b.y0 + 14, L.H)}` }, h('small', {}, `região ${ci + 1}`), h('b', {}, c.name));
     world.append(band, sign);
@@ -89,7 +90,7 @@ export function mountProgressionMap(host, cfg) {
   setMood(celebrate ? 'cheer' : 'happy'); place(startAt);
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => place(Number(paul.dataset.at))) : null; if (ro) { ro.observe(world); S.add(() => ro.disconnect()); }
 
-  const root = h('div', { class: 'mp bmr', 'data-game': gameId, 'data-theme': theme ? theme.id : null, style: theme && theme.accent ? `--mp-pink:${theme.accent}` : null }, head, world);
+  const root = h('div', { class: 'mp bmr', 'data-game': gameId, 'data-theme': theme ? theme.id : null, style: null }, head, world);
   host.replaceChildren(root); // bmr: fora da regra global de cantos retos (os discos são redondos)
   const tw = document.querySelector('.topwrap'); if (tw) head.style.top = `${Math.round(tw.getBoundingClientRect().height)}px`; // o cabeçalho do mapa gruda logo abaixo do topo do app
 
