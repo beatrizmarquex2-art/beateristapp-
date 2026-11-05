@@ -36,7 +36,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - `js/aluno.js`: entrada (nome + origem), abas Ritmo / Beat Lab / Tocar / Jogos / Ranking, rodapé com redes e parceiros.
 - `js/paul-talk.js`: clique no Paul faz barulhinho; nuvens de pensamento (frases e links, incluindo o link do Google).
 - `assets/rhythm-games/rhythm-games.js` + `js/views/jogos-ritmo.js`: jogos de ritmo (um jogo unificado Ritmo/Melodia com 3-5 teclas, Piano Tiles, Setinhas, Figuras). Na área dos alunos entram as músicas prontas (`builtin: true`); no app da Bea, só os MIDIs importados.
-- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (dominó, última nota, bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
+- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [antes última nota], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
 - `js/kids/*` + `js/views/kids.js`: jogos de perguntas (fases por estrelas). Na área dos alunos o nome visível é "Jogos"; os endereços internos continuam `#/kids`.
 - `js/views/ata.js` (ata de reunião em PDF), `js/views/kids-relatorio.js` (relatório editável), `js/mic-access.js` (microfone único), `js/ranking.js`.
 - `css/lote3.css`: estilos dos lotes recentes (entrada do aluno, Paul, iPad).
@@ -65,6 +65,11 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Tudo na entrada dos alunos deve caber numa tela só no iPhone.
 - Paul sem animação própria; animar só os elementos em volta.
 - Pendente (antigo): jogos novos da outra sessão ligarem na aba Jogos dos alunos. Os 7 Pauls cortados já foram removidos (se vierem imagens novas inteiras, voltam).
+
+## Jogos em 2 celulares (nov/2026)
+- Uno Musical, jogo da velha e stop têm modo **2 celulares (código)**: `js/jogos/online.js` + `supabase/006_salas.sql` (tabela `salas`, funções `sala_criar/entrar/ler/enviar`, sondagem a cada 1,2 s). **O SQL precisa estar aplicado no Supabase** (colar no SQL Editor se a aprovação do chat expirar). Teste: `tests/e2e/salas.mjs` (Supabase simulado).
+- Dominó removido. Bingo só linha/coluna/cheia. Memória: 1 ou 2 jogadores, "acerta joga de novo" sim/não.
+- Modo leve: `html.lite` (Android/outros, ver `js/theme-boot.js` e fim de `css/jogos.css`): sem barra de rolagem falsa, sem desfoque/animação de fundo.
 
 ## Pendências (a Bea leva pra o chat novo)
 1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Da professora". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.

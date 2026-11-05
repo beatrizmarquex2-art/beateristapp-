@@ -320,3 +320,20 @@ html[data-space="bea"] .jg-dark .jg-hbtn.fit{background:rgb(255 255 255 / .22)}
   .jg-game .jg-seg button,.jg-game .btn{min-height:48px;font-size:16px}
 }
 .jg-imgs { display: flex; gap: 6px; flex-wrap: wrap; } .jg-imgs button { padding: 3px; } .jg-imgs img { display: block; width: 72px; height: 48px; object-fit: cover; border-radius: 4px; }
+
+/* ---------- modo leve: Android e outros (html.lite, ver theme-boot.js). Tira o que pesa na pintura e deixa a rolagem solta. ---------- */
+html.lite .wash{animation:none!important;will-change:auto}
+html.lite #decor::after{display:none}
+html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.lite .jg-deco.paul,html.lite .jgx-editing .jgx-cell .jg-card,html.lite .al-el,html.lite .al-game,html.lite .rb-fig::before,html.lite .rb-fig::after{animation:none!important}
+html.lite .jg-deco.spray,html.lite .jg-deco.bolt{display:none}
+html.lite .jg-grid,html.lite .jg-board,html.lite .kx-board{contain:layout style}
+html.lite .jg-hand,html.lite .jg-chain{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+html.lite .jg-cell,html.lite .jg-hbtn,html.lite .jg-card,html.lite .jg-bcell,html.lite .kx-mem{touch-action:manipulation}
+
+/* ---------- sala de 2 celulares ---------- */
+.jg-lobby{display:grid;gap:10px}
+.jg-code{font:700 44px/1.1 var(--jg-mono,ui-monospace,Menlo,monospace);letter-spacing:.18em;text-align:center;padding:14px 8px;border:3px dashed var(--jg-navy);border-radius:16px;background:#fff9ec;color:var(--jg-navy);user-select:all}
+.jg-code-in{flex:1;min-width:0;min-height:48px;padding:8px 12px;border:2px solid var(--jg-navy);border-radius:12px;background:#fff9ec;color:var(--jg-ink);font:700 22px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-align:center;text-transform:uppercase}
+.jg-link-badge{margin:0 0 6px;font:700 12px/1 var(--body,system-ui);color:var(--jg-navy);text-align:center}
+.jg-link-badge.off{color:#BD1733}

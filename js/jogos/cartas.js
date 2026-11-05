@@ -1,12 +1,12 @@
-// Última nota: tela. Regras em cartas-logic.js.
+// Uno Musical: tela. Regras em cartas-logic.js.
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as C from './cartas-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
 import { ouvirValor } from './ouvir.js';
+import { lobby, linkBadge } from './online.js';
 
 const ID = 'cartas';
-const PLAYER = (mode, p) => (mode === 'paul' ? (p === 0 ? 'você' : 'Paul') : `jogador ${p + 1}`);
 const NS = 'http://www.w3.org/2000/svg';
 const svg = (inner, cls = 'jg-sym', vb = '0 0 24 24') => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', vb); s.setAttribute('class', cls); s.setAttribute('aria-hidden', 'true'); s.innerHTML = inner; return s; };
 const SYM = {
@@ -41,18 +41,22 @@ export function mount(host) {
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let g = null; let hidden = false; let picking = null; let recorded = false;
+  let conn = null; let lob = null; const badge = linkBadge();
+  const me0 = () => (conn ? conn.me : 0);
+  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : 'Paul') : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : `jogador ${p + 1}`);
   const root = h('div', { class: 'jg jg-cartas' }); host.replaceChildren(root);
 
-  const persist = () => setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec });
+  const persist = () => { if (g && g.mode === 'online') return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
+  const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
   const stop = () => { clearTimeout(timer); timer = 0; };
-  const human = () => g && !g.over && !(g.mode === 'paul' && g.turn === 1);
+  const human = () => g && !g.over && !(g.mode === 'paul' && g.turn === 1) && !(g.mode === 'online' && g.turn !== me0());
 
   function intro() {
-    stop(); g = null; picking = null;
+    stop(); leave(); g = null; picking = null;
     const resume = C.validGame(saved.game) && !saved.game.over ? saved.game : null; const r = rec();
-    const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['paul', 'contra o paul'], ['local', 'dois no aparelho']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; setGame(ID, { mode: v }); intro(); } }, l)));
+    const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['paul', 'contra o paul'], ['local', 'dois no aparelho'], ['online', '2 celulares (código)']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; setGame(ID, { mode: v }); intro(); } }, l)));
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'última nota'), h('p', { class: 'jg-p' }, 'números e figuras. neste jogo, a semínima vale 1 tempo: cada número é a soma das durações da carta.'),
+      h('h2', { class: 'jg-h hand' }, 'Uno Musical'), h('p', { class: 'jg-p' }, 'números e figuras. neste jogo, a semínima vale 1 tempo: cada número é a soma das durações da carta.'),
       h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda dos números' }, ...[1, 2, 3, 4, 5, 6].map((v) => h('button', { type: 'button', class: 'jg-leg', role: 'listitem', onclick: () => { sfx('tap'); ouvirValor(v, (x) => C.FIGS[x]); }, 'aria-label': `${v} (toque para ouvir): ${C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')}` }, face({ color: 'azul', kind: 'num', value: v }, true), h('small', {}, C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + '))))),
       h('p', { class: 'jg-p muted' }, '🔊 toque numa carta da legenda (ou numa carta no jogo) pra ouvir.'),
       h('p', { class: 'jg-lab' }, 'contra quem?'), seg,
@@ -62,25 +66,36 @@ export function mount(host) {
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma. se servir, jogue ou passe; se não servir, passa sozinho.'),
         h('li', {}, 'pular e inverter (com dois jogadores) fazem o adversário perder a vez. +2: ele compra duas e perde a vez. não empilha.'),
         h('li', {}, 'curinga muda a cor. as cores têm símbolo: vermelho estrela, azul raio, mostarda círculo, verde-petróleo losango.'),
-        h('li', {}, 'ficou com uma carta: “última nota!”. quem esvaziar a mão vence.'))),
-      h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, 'continuar partida') : null,
-        h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode })) }, resume ? 'nova partida' : 'iniciar')),
+        h('li', {}, 'ficou com uma carta: “uno!”. quem esvaziar a mão vence.'))),
+      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online' }), onStart: startOnline })).el
+        : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, 'continuar partida') : null,
+          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode })) }, resume ? 'nova partida' : 'iniciar')),
       r.w + r.l + r.e ? h('p', { class: 'jg-p muted' }, `contra o paul: ${r.w} vitória${r.w === 1 ? '' : 's'} · ${r.l} derrota${r.l === 1 ? '' : 's'} · ${r.e} empate${r.e === 1 ? '' : 's'}`) : null,
     ].filter(Boolean));
   }
 
+  function startOnline(c, state) {
+    conn = c; lob = null; badge.set(true);
+    c.on.link = (v) => badge.set(v);
+    c.on.state = (st) => { g = st; picking = null; hidden = false; if (g.over) { const w = g.result.winner; sfx(w == null ? 'tie' : w === me0() ? 'win' : 'lose'); } else sfx('tap'); draw(); };
+    g = state; recorded = false; picking = null; hidden = false; draw();
+  }
+  /** manda a jogada pro outro celular (só no modo 2 celulares) */
+  function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok) { g = { ...g, note: 'o outro celular jogou ao mesmo tempo, veja a mesa' }; } }); }
+  function again() { const ng = C.newGame({ mode: prefs.mode }); if (prefs.mode === 'online') { g = ng; recorded = false; picking = null; draw(); sync(); } else begin(ng); }
   function begin(game) { g = game; recorded = false; picking = null; hidden = g.mode === 'local'; persist(); draw(); afterTurn(); }
 
   function paint() {
-    const me = g.mode === 'paul' ? 0 : g.turn; const opp = 1 - me; const hand = g.hands[me];
+    const me = g.mode === 'paul' ? 0 : g.mode === 'online' ? me0() : g.turn; const opp = 1 - me; const hand = g.hands[me];
     const top = C.topOf(g); const canMove = human() && !hidden;
     const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
-    const status = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : 'vez do paul…') : `vez do ${PLAYER(g.mode, g.turn)}`;
+    const status = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : 'vez do paul…') : g.mode === 'online' ? (g.turn === me ? 'sua vez' : 'vez do outro celular…') : `vez do ${PL(g.turn)}`;
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const colorTxt = `cor ativa: ${C.COLOR_NAME[g.color]} (${C.COLOR_SYMBOL[g.color]})`;
-    const last = !g.over && g.last != null ? `${PLAYER(g.mode, g.last)}: última nota!` : '';
+    const last = !g.over && g.last != null ? `${PL(g.last)}: uno!` : '';
     root.replaceChildren(...[
-      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, g.mode === 'paul' ? 'paul' : `jogador ${opp + 1}`), h('span', {}, `${g.hands[opp].length} carta${g.hands[opp].length === 1 ? '' : 's'}`)),
+      g.mode === 'online' ? badge.el : null,
+      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, g.mode === 'paul' ? 'paul' : g.mode === 'online' ? 'o outro' : `jogador ${opp + 1}`), h('span', {}, `${g.hands[opp].length} carta${g.hands[opp].length === 1 ? '' : 's'}`)),
         h('div', { class: 'jg-who' }, h('b', {}, 'monte'), h('span', {}, String(C.available(g))))),
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, status),
       h('div', { class: 'jg-pile' },
@@ -97,8 +112,8 @@ export function mount(host) {
     paint();
     if (!(g && g.mode === 'local' && hidden && !g.over)) return;
     root.querySelector('.jg-hand').replaceChildren();
-    root.append(h('div', { class: 'jg-cover', role: 'dialog', 'aria-label': 'passe o aparelho' }, h('p', { class: 'hand' }, `passe o aparelho para o ${PLAYER(g.mode, g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
-      h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; sfx('tap'); paint(); } }, `sou o ${PLAYER(g.mode, g.turn)}, mostrar minha mão`)));
+    root.append(h('div', { class: 'jg-cover', role: 'dialog', 'aria-label': 'passe o aparelho' }, h('p', { class: 'hand' }, `passe o aparelho para o ${PL(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
+      h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; sfx('tap'); paint(); } }, `sou o ${PL(g.turn)}, mostrar minha mão`)));
     root.querySelector('.jg-cover button').focus();
   }
 
@@ -118,6 +133,7 @@ export function mount(host) {
 
   /** Depois de qualquer ação: fim, troca de vez (cobre a tela no modo local) ou continua. */
   function after(who) {
+    sync();
     if (g.over) return finishUp();
     if (g.mode === 'local' && g.turn !== who) hidden = true;
     draw(); afterTurn();
@@ -132,17 +148,18 @@ export function mount(host) {
     persist(); if (g.over) return finishUp(); draw(); afterTurn();
   }
   function finishUp() {
+    if (g.mode === 'online') { sfx(g.result.winner == null ? 'tie' : g.result.winner === me0() ? 'win' : 'lose'); draw(); return; }
     if (!recorded) { recorded = true; if (g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w === 1) r.l++; else r.e++; saved.rec = r; } }
     setGame(ID, { ...prefs, game: null, rec: saved.rec });
     const w = g.result.winner; sfx(w == null ? 'tie' : g.mode === 'paul' && w === 1 ? 'lose' : 'win'); hidden = false; draw();
   }
   function result() {
     const r = g.result; const w = r.winner;
-    const title = w == null ? 'empate' : g.mode === 'paul' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${PLAYER(g.mode, w)} venceu!`;
+    const title = w == null ? 'empate' : g.mode === 'paul' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${PL(w)} venceu!`;
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title),
-      h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PLAYER(g.mode, w)} descartou a última carta` : `jogo travado: ${PLAYER(g.mode, w)} ficou com menos cartas`),
-      h('p', { class: 'muted' }, `cartas restantes: ${PLAYER(g.mode, 0)} ${r.counts[0]} · ${PLAYER(g.mode, 1)} ${r.counts[1]}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode })) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`),
+      h('p', { class: 'muted' }, `cartas restantes: ${PL(0)} ${r.counts[0]} · ${PL(1)} ${r.counts[1]}`),
+      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   const onVis = () => { if (document.hidden) stop(); else afterTurn(); };
@@ -151,6 +168,6 @@ export function mount(host) {
   return {
     inProgress: () => !!(g && !g.over),
     restart: async () => { if (g && !g.over && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; stop(); intro(); },
-    destroy() { gone = true; stop(); document.removeEventListener('visibilitychange', onVis); },
+    destroy() { gone = true; stop(); leave(); document.removeEventListener('visibilitychange', onVis); },
   };
 }

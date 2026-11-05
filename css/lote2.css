@@ -100,3 +100,4 @@
 .mem-paul { display: block; width: 120px; margin: 0 auto -6px; }
 .mem-stage { display: grid; gap: 10px; } .kx-arc .mem-board { width: 100%; max-width: 400px; margin: 0 auto; } .mem-stage .kx-memstat, .mem-stage .mem-top { justify-self: center; }
 .mem-stage { width: 100%; }
+.kx-memstat.mem-p2{color:#BD1733}
