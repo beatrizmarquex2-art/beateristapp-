@@ -96,3 +96,10 @@ html.lite .mp-pimg, html.lite .st-current .mp-disc { animation: none; }
 .mp-reg small { font-size: 12px; font-weight: 700; } .mp-sign small { font-size: 3.6cqw; font-weight: 700; } .mp-sign b { font-size: 5.4cqw; font-weight: 800; }
 .mp-tag { font-size: 3.4cqw; font-weight: 700; max-width: 34cqw; } .mp-say { font: 800 3.6cqw var(--mp-pix); }
 @media (max-width: 359px) { .mp-reg b { font-size: 13px; } .mp-prog { font-size: 11px; } }
+
+/* plantinhas ao lado da trilha (estilo mapa do Mario World): balançam de leve, sem flutuar */
+.mp-deco[data-s="bush"], .mp-deco[data-s="flower"], .mp-deco[data-s="cactus"], .mp-deco[data-s="vaso"], .mp-deco[data-s="sprout"] { width: 13cqw; transform-origin: 50% 100%; }
+.mp-deco[data-s="bush"] { width: 20cqw; } .mp-deco[data-s="flower"], .mp-deco[data-s="sprout"] { width: 10cqw; } .mp-deco[data-s="cactus"] { width: 12cqw; }
+.mp-anim .mp-deco[data-s="bush"], .mp-anim .mp-deco[data-s="flower"], .mp-anim .mp-deco[data-s="cactus"], .mp-anim .mp-deco[data-s="vaso"], .mp-anim .mp-deco[data-s="sprout"] { animation: mp-sway 4.2s ease-in-out infinite; }
+.mp-anim .mp-deco[data-s="flower"], .mp-anim .mp-deco[data-s="sprout"] { animation-delay: -1.7s; }
+@keyframes mp-sway { 0%, 100% { transform: translateY(-50%) rotate(-2deg); } 50% { transform: translateY(-50%) rotate(2deg); } }
