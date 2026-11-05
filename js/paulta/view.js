@@ -10,6 +10,7 @@ import { svgEl } from '../kids/art.js';
 import { silence } from '../audio.js';
 import { newPlayer, switchPlayer, cardBg } from '../views/kids.js';
 import { worldIcon } from './icons.js';
+import { adventureMap } from './adventure.js';
 import { WORLDS, WORLD_IDS, MODES, makeQuestion, phaseSpec, reinforceQuestion, parseNoteName } from './worlds.js';
 import { drumStaff, clefStaff, legendHtml } from './draw.js';
 import { noteName } from './music.js';
@@ -58,28 +59,17 @@ function homeScreen(host, rerender) {
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }
 
-/* ---------- mapa de fases de um mundo ---------- */
+/* ---------- mapa de fases de um mundo (mapa de aventura) ---------- */
 function worldScreen(host, w, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const W = WORLDS[w]; const p = V.getP(me.id); const mode = modeArg === 'imagens' || modeArg === 'nomes' ? modeArg : getMode(); setMode(mode);
   if (w === 'duel' && !S.duelUnlocked(p)) { location.hash = BASE; return () => {}; }
-  const done = S.worldProgress(p, w); const full = S.worldDone(p, w);
-  const r = robo({ mood: full ? 'crown' : 'happy', tier: tierOf(P.totalStars(me.id)), size: 84, say: full ? `mundo concluído! a aulinha está liberada, ${me.name}!` : w === 'duel' ? 'aqui as claves se enfrentam. atenção na clave!' : `${W.blurb}. escolhe uma fase!` });
-  const lv = (n) => {
-    const sp = phaseSpec(w, n); const ph = p.ph[S.phKey(w, n, mode)]; const st = ph ? ph.s : 0; const open = S.unlocked(p, w, n); const dn = !!p.done[`${w}:${n}`];
-    const tag = [sp.secs ? `⏱ ${sp.secs}s` : sp.optSecs ? `⏱ opcional` : '', sp.sudden ? '💥' : '', `${sp.rounds} rod.`].filter(Boolean).join(' ');
-    const body = [h('b', { class: 'kx-n' }, String(n)), h('small', {}, tag), h('span', { class: 'kx-st' }, ...[1, 2, 3].map((k) => h('i', { class: k <= st ? 'on' : '' }, '★'))), dn ? h('small', { class: 'pl-ok' }, '✓') : null];
-    return open ? h('a', { class: `kx-lv${dn ? ' done' : ''}${sp.sudden ? ' boss' : ''}`, href: `${BASE}/${w}/${n}/${mode}`, title: sp.title }, ...body)
-      : h('button', { type: 'button', class: 'kx-lv locked', 'aria-label': `Fase ${n} trancada`, onclick: () => toast('conclua a fase anterior pra abrir', { ms: 2200 }) }, h('b', { class: 'kx-n' }, '🔒'), h('small', {}, `fase ${n}`));
-  };
-  host.append(topBar(BASE, h('span', { class: 'kd-stars' }, `${done}/${W.count}`)),
-    gtitle(worldIcon(w), W.name, W.blurb),
-    h('div', { class: 'kx-hello' }, r.el), bar((done / W.count) * 100, 'big'),
+  const full = S.worldDone(p, w); const { scene, hud } = adventureMap({ w, p, mode, me });
+  host.append(topBar(BASE),
+    h('div', { class: 'adv-head' }, h('div', { class: 'adv-logo' }, 'pau', h('b', {}, 'L'), 'ta'), h('div', { class: 'adv-panel' }, h('b', {}, W.name), h('small', {}, full ? 'mundo concluído!' : 'escolha sua fase'))),
     h('div', { class: 'row kd-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))),
-    h('p', { class: 'lib-note' }, mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'),
-    full ? h('a', { class: 'kd-btn kx-go', href: `${BASE}/aula/${w}` }, '📖 aulinha do Paul (liberada!)') : h('p', { class: 'lib-note' }, '📖 a aulinha do Paul abre quando você concluir o mundo.'),
-    h('div', { class: 'kx-levels pl-levels', 'data-world': w }, ...Array.from({ length: W.count }, (_, k) => lv(k + 1))),
-    h('p', { class: 'lib-note' }, '⏱ = com tempo · 💥 = errou, recomeça. as estrelas são do modo que está aberto.'));
+    scene, hud,
+    h('p', { class: 'lib-note' }, `${mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'} ⏱ = com tempo · 💥 = errou, recomeça · ⚔️ = desafio · 👑 = chefão do mundo. a aulinha do Paul abre ao concluir o mundo.`));
   return () => {};
 }
 
