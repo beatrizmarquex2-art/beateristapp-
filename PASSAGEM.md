@@ -254,3 +254,11 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - **Toca Aqui**: atalhos de velocidade (devagar 60 / normal 90 / rápido 130 / turbo 170, até 200 BPM; padrão agora 90) e **som do toque** (caixa, tambor, bumbo, chimbal) nas duas versões (`js/toca-som.js`; o som fica no aparelho, chave `beaterista-toca-som`). Teste: `tests/e2e/toca-velocidade.mjs`.
 - **Bug do iPad corrigido**: no Modo Aventura o jogo de ritmo (Beat/Piano Hero) aparecia só até a metade da tela porque a animação de entrada (`translate`) da caixa de fora virava referência do `position:fixed`. Agora `body.rz-lock #view > * { animation: none; translate: none }` (css/app.css). Teste: `tests/e2e/ipad-ritmo-aventura.mjs`.
 - **Deploy dos alunos feito (05/11/2026, cache v273)** a partir da `main` 7166ed1: miniaturas de modelo de story, beaterista.com.br + redes no rodapé, álbum antigo removido, Toca Aqui com velocidade e som, correção do iPad no ritmo.
+
+## Sessão nov/2026 (velha, Beat Hero, códigos, perfil) — deploy dos alunos v278
+- **Velha**: troca de lugar (1 vez por jogador por rodada, `moveMark`/`canMove` em `velha-logic.js`) e instruções grandes na entrada.
+- **Beat Hero**: "Jogos de ritmo" virou "Beat Hero" nos textos. Na aventura (`campanha/jogos/noritmo.js`) cada missão pergunta ritmo (bateria) ou melodia (piano); `p.game` muda na escolha e volta ao sair.
+- **Cara a cara**: 5 perguntas na tela (as que mais dividem) + "mais perguntas"; o banco inteiro continua. Lista em `perguntas-cara-a-cara.txt`.
+- **Códigos**: "trocar nome" no app do aluno tira o código do aparelho; importar "nome ; código" com nome diferente do cadastrado gera código novo (o antigo fica ativo, desativar à mão).
+- **Perfil**: foto, ajuste e "minha coleção" são por nome (`js/figurinhas/dono.js`); modelos do criador sem selo COMUM/RARA em `assets/figurinhas/modelos2/limpo/` (só o criador usa, flag `semSelo`).
+- Deploy dos alunos: `scripts/build-aluno.sh` + `deploy-site` do Netlify (siteId `ccdb0392-...`) rodando o `npx @netlify/mcp` na pasta de saída.
