@@ -7,7 +7,8 @@ const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await page.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
 await page.goto(`${url}/aluno.html#/toque`); await sleep(1500);
 const box = await page.locator('.tk-art svg').boundingBox();
-const tap = (fx, fy) => page.mouse.click(box.x + box.width * fx, box.y + box.height * fy);
+// a posição do desenho muda quando a tela de gravação aparece: mede de novo a cada toque
+const tap = async (fx, fy) => { const b = await page.locator('.tk-art svg').boundingBox(); await page.mouse.click(b.x + b.width * fx, b.y + b.height * fy); };
 const started = () => page.evaluate(() => window.__ac.started);
 const status = () => page.locator('.tr-status').innerText();
 const btn = (t) => page.locator(`.tk-panel button:has-text("${t}")`).first();

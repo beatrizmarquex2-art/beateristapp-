@@ -22,7 +22,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/cartas', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo, as fases/estudos têm cadeado e os jogos livres não', locked.some((t) => /fases e estrelas/.test(t)) && locked.some((t) => /dicionário/.test(t)) && !locked.some((t) => /memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
+  check('no catálogo, as fases e o quiz têm cadeado e os jogos livres não (o dicionário e a aulinha agora moram na aba Estudos)', locked.some((t) => /fases e estrelas/.test(t)) && locked.some((t) => /Quiz e Letras/.test(t)) && !locked.some((t) => /memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
   check('"Jogos Ensinam" aparece no catálogo (aberto)', (await p.locator('.jg-card:has-text("Jogos Ensinam")').count()) === 1);
   await go(p, '#/jogos/relatorio'); check('Jogos Ensinam abre o relatório', (await p.locator('.rel-page, .jg-doc').count()) > 0 && (await p.locator('h1:has-text("Jogos Ensinam")').count()) >= 1);
   // gerar meu código

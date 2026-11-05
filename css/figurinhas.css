@@ -180,3 +180,29 @@
 .fig-th img { display: block; width: 100%; max-width: 84px; height: auto; min-height: 64px; border-radius: 8px; background: #0002; object-fit: cover; }
 .fig-th span { font-size: 12.5px; font-weight: 700; }
 .fig-th.on { border-color: #c4182c; background: #c4182c1f; }
+
+/* roleta e prêmio de jogo */
+.fig-wheelbox { text-align: center; }
+.fig-wheel { position: relative; width: 240px; height: 250px; margin: 6px auto 12px; }
+.fig-wheel-disc { position: absolute; left: 10px; top: 20px; width: 220px; height: 220px; border-radius: 50%; border: 6px solid #14111a; box-shadow: 0 8px 22px #0006, inset 0 0 0 5px #efe2c6;
+  background: conic-gradient(#c4182c 0 12.5%, #efe2c6 0 25%, #17224a 0 37.5%, #e9b824 0 50%, #c4182c 0 62.5%, #efe2c6 0 75%, #17224a 0 87.5%, #ff9ec7 0 100%); display: grid; place-items: center; }
+.fig-wheel-disc.prize { background: conic-gradient(#d9a63c 0 12.5%, #14111a 0 25%, #f6d77a 0 37.5%, #14111a 0 50%, #d9a63c 0 62.5%, #14111a 0 75%, #f6d77a 0 87.5%, #14111a 0 100%); }
+.fig-wheel-disc.spin { transition: transform 3.2s cubic-bezier(.1, .75, .12, 1); }
+.fig-wheel-hub { width: 74px; height: 74px; border-radius: 50%; background: #fbf4e2; border: 5px solid #14111a; display: grid; place-items: center; font-size: 34px; }
+.fig-wheel-pin { position: absolute; left: 50%; top: 0; width: 0; height: 0; margin-left: -14px; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 30px solid #14111a; filter: drop-shadow(0 2px 0 #fff8); }
+.fig-reveal.fig-n1 { grid-template-columns: minmax(0, 150px); justify-content: center; } .fig-reveal.fig-n2 { grid-template-columns: repeat(2, minmax(0, 150px)); justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .fig-wheel-disc.spin { transition: none; } }
+
+/* código de acesso no Perfil (embaixo da foto) */
+.pf-top { grid-template-columns: 124px 1fr; }
+.pf-left { display: grid; gap: 16px; justify-items: center; align-content: start; width: 124px; }
+.pf-codigo { display: grid; gap: 2px; justify-items: center; text-align: center; width: 100%; padding: 6px 4px 8px; border-radius: 12px; background: #17130f; color: #efe2c6; }
+.pf-codigo small { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .8; line-height: 1.15; }
+.pf-codnum { font: 800 22px/1.1 var(--body, system-ui); letter-spacing: .08em; overflow-wrap: anywhere; color: #ffd566; }
+.pf-codhint { font-size: 11px; opacity: .75; } .pf-codnone { color: #ffd566; font-size: 12px; font-weight: 700; text-decoration: underline; }
+/* excluir cartinha da coleção */
+.mc-cell { position: relative; }
+.mc-del { position: absolute; top: -6px; right: -6px; width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; background: #c4182c; color: #fff; font: 800 18px/1 system-ui; cursor: pointer; box-shadow: 0 2px 6px #0006; display: grid; place-items: center; touch-action: manipulation; }
+.mc-bar { display: flex; gap: 8px; flex-wrap: wrap; } .mc-bar .btn { min-height: 44px; }
+/* o tema rabisco quadra tudo; a roleta tem que ser redonda */
+.fig-wheel-disc, .fig-wheel-hub { border-radius: 50% !important; }

@@ -35,7 +35,7 @@ const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.pu
   const ov = await p.evaluate(() => { const cv = document.querySelector('#rz-cv'); const r = cv.getBoundingClientRect(); return r.right <= innerWidth + 1 && r.left >= -1; });
   check(`[${name}] pista cabe na tela`, ov);
   // stop abre e sorteia
-  await p.goto(`${url}/aluno.html#/jogos/stop`); await sleep(1200);
+  await p.goto(`${url}/aluno.html#/jogos/stop/livre`); await sleep(1200);
   const vis = await p.evaluate(() => { const b = document.querySelector('.st-play').getBoundingClientRect(); return b.bottom <= innerHeight - 76; });
   check(`[${name}] STOP: botão JOGAR aparece sem rolar`, vis);
   await p.locator('button:has-text("JOGAR")').evaluate((el) => el.click()); await sleep(300);

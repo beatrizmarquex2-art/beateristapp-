@@ -91,6 +91,7 @@ export function mountAdventure(host, cfg) {
       if (!stage || !stage.isConnected) return;
       let out; try { out = E.applyResult(cur(), spec, m.id, result); } catch (e) { console.warn('aventura: resultado inválido', e); return; }
       try { await CS.saveGame(pid, gameId, out.g); } catch (e) { console.warn('aventura: não salvou', e); } // tentativa de verdade (vitória ou derrota) sempre conta
+      let premio = null; if (out.done) { try { const A = await import('../kids/album.js'); premio = A.rewardEl({ roletas: await A.sincronizar(pid), jogos: await A.premioAventura(pid, gameId, spec) }); } catch (e) { console.warn('aventura: recompensa de figurinhas', e); } } // roleta a cada 30 ★ e prêmio de jogo completo
       if (!stage || !stage.isConnected) return;
       sfx.play(out.done ? 'win' : 'lose'); if (out.done) S.later(() => sfx.play('star'), 450); if (out.newMedals.length) S.later(() => sfx.play('medal'), 1000);
       const bot = robo({ mood: out.done ? (out.stars >= 2 ? 'cheer' : 'happy') : 'oops', tier, size: 84, say: out.done ? (out.stars === 3 ? 'perfeito!' : 'missão cumprida!') : 'quase! tenta de novo?' });
@@ -101,6 +102,7 @@ export function mountAdventure(host, cfg) {
         out.summary.length ? h('ul', { class: 'av-list av-sum' }, ...out.summary.map((x) => h('li', {}, x))) : null,
         out.firstTime && nextOk ? h('p', { class: 'av-unlock' }, `🔓 missão ${index + 1} liberada!`) : null,
         out.newMedals.length ? h('div', { class: 'av-newm' }, h('b', {}, out.newMedals.length > 1 ? 'medalhas novas!' : 'medalha nova!'), ...out.newMedals.map((x) => h('span', { class: 'av-chip' }, `${x.icon || '🏅'} ${x.title}`))) : null,
+        premio,
         h('div', { class: 'av-bot' }, bot.el),
         h('div', { class: 'av-actions' },
           nextOk ? h('button', { class: 'kd-btn av-go', type: 'button', onclick: () => nav(`${base}/${index + 1}`) }, `missão ${index + 1} →`) : null,

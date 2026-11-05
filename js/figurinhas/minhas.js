@@ -4,6 +4,7 @@ import { h } from '../util.js';
 import { db } from '../db.js';
 import { sheet, toast, confirmSheet } from '../ui.js';
 import { cartaCanvas } from './postar.js';
+import * as AC from '../acesso.js';
 import { shareUI } from './share-ui.js';
 
 const LISTA = 'minhas-cartinhas', IMG = (id) => `minha-carta:${id}`, MAX = 40;
@@ -19,19 +20,23 @@ export async function guardar(entry) {
   await db.metaSet(IMG(id), b); const item = { id, nome: String(entry.artista_banda || '').slice(0, 24), modelo: entry.modelo2, em: Date.now() };
   await gravaLista([item, ...l]); return item;
 }
+export async function apagarTudo() { for (const it of await listar()) { try { await db.metaDel(IMG(it.id)); } catch { /* ok */ } } await gravaLista([]); }
 export async function apagar(id) { await gravaLista((await listar()).filter((x) => x.id !== id)); try { await db.metaDel(IMG(id)); } catch { /* ok */ } }
 
 /** Grade com as cartinhas guardadas. `onMudou` roda quando guarda/apaga (o chamador pode atualizar contagens). */
 export function colecao({ titulo = 'minha coleção', vazio = 'ainda não tem nenhuma. crie uma cartinha e toque em "guardar na minha coleção".' } = {}) {
   const grade = h('div', { class: 'mc-grade' }), cont = h('p', { class: 'muted' }), urls = [];
-  const el = h('section', { class: 'card pad mc' }, h('h2', { class: 'tag' }, titulo), cont, grade, h('p', { class: 'muted pf-priv' }, 'ficam só neste aparelho. se limpar os dados do navegador, elas somem — baixe as que quiser guardar pra sempre.'));
+  const barra = h('div', { class: 'mc-bar' });
+  const el = h('section', { class: 'card pad mc' }, h('h2', { class: 'tag' }, titulo), cont, barra, grade, h('p', { class: 'muted pf-priv' }, 'ficam só neste aparelho. com código de acesso, elas também aparecem no Álbum, na aba Minhas. se limpar os dados do navegador, elas somem — baixe as que quiser guardar pra sempre.'));
   let alive = true;
   async function desenha() {
     urls.splice(0).forEach((u) => URL.revokeObjectURL(u)); const l = await listar(); if (!alive) return;
+    barra.replaceChildren(...(l.length ? [h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { if (await confirmSheet('excluir todas?', `as ${l.length} cartinhas somem da sua coleção neste aparelho.`, 'excluir todas')) { await apagarTudo(); await desenha(); toast('coleção limpa'); } } }, 'excluir todas')] : []), ...(AC.liberado() ? [h('a', { class: 'btn small', href: '#/album/Minhas' }, 'ver no álbum')] : []));
     cont.textContent = l.length ? `${l.length} cartinha${l.length > 1 ? 's' : ''}` : vazio; grade.replaceChildren();
     for (const it of l) {
       const b = await db.metaGet(IMG(it.id)); if (!b || !alive) continue; const u = URL.createObjectURL(b); urls.push(u);
-      grade.append(h('button', { type: 'button', class: 'mc-item', 'aria-label': `${it.nome || 'cartinha'}, abrir`, onclick: () => abrir(it, b) }, h('img', { src: u, alt: it.nome || 'cartinha', width: 360, height: 475, loading: 'lazy' }), h('span', {}, it.nome || '—')));
+      grade.append(h('div', { class: 'mc-cell' }, h('button', { type: 'button', class: 'mc-item', 'aria-label': `${it.nome || 'cartinha'}, abrir`, onclick: () => abrir(it, b) }, h('img', { src: u, alt: it.nome || 'cartinha', width: 360, height: 475, loading: 'lazy' }), h('span', {}, it.nome || '—')),
+        h('button', { type: 'button', class: 'mc-del', 'aria-label': `excluir ${it.nome || 'cartinha'}`, onclick: async () => { if (await confirmSheet('excluir a cartinha?', `“${it.nome || 'cartinha'}” some da sua coleção neste aparelho.`, 'excluir')) { await apagar(it.id); await desenha(); toast('cartinha excluída'); } } }, '×')));
     }
   }
   function abrir(it, b) {

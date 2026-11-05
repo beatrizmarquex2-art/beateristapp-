@@ -5,6 +5,8 @@ import { banner, sheet, toast } from '../ui.js';
 import * as store from '../store.js';
 import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
+import * as EST from '../figurinhas/estrelas.js';
+import * as P from '../kids/progress.js';
 import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
@@ -34,8 +36,8 @@ export function mount(host, parts = [], opts = {}) {
     wrap.append(h('p', { class: 'fig-note' }, 'carregando álbum…'));
     try { await loadCatalog(); } catch { wrap.replaceChildren(h('p', { class: 'fig-note' }, 'não consegui abrir o catálogo agora. tente de novo com internet.')); return; }
     if (!alive) return;
-    // pacotes de presente: 1 de boas-vindas e 1 por dia. Cada um tem id próprio, então abrir o app de novo não entrega em dobro.
-    let s = L.grantPack(state, L.WELCOME_PACK); s = L.grantPack(s, L.dailyPackId(todayKey()));
+    // pacote de presente: só o de boas-vindas. Cada pacote/roleta/prêmio tem id próprio, então abrir o app de novo não entrega em dobro.
+    let s = L.grantPack(state, L.WELCOME_PACK); // 1 pacote de boas-vindas; o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo)
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
     if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
     draw();
@@ -85,14 +87,20 @@ export function mount(host, parts = [], opts = {}) {
 
   /* ---------- pacotes ---------- */
   function packsView() {
-    const pend = L.pendingPacks(state), hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
+    const ordem = { jogo: 0, roleta: 1, pacote: 2 }; // prêmio de jogo e roleta primeiro, depois os pacotes
+    const pend = [...L.pendingPacks(state)].sort((a, b) => ordem[L.packKind(a)] - ordem[L.packKind(b)]), hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
     const pastable = hand.filter((e) => L.canPaste(state, e.codigo));
     const rep = L.repeated(state);
+    const n = (k) => pend.filter((id) => L.packKind(id) === k).length, next = pend[0] ? L.packKind(pend[0]) : null;
+    const partes = [n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
+    const me = (() => { try { return P.active(); } catch { return null; } })();
+    const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 30 ★ nos jogos pra liberar uma roleta de figurinhas';
     return h('section', { class: 'fig-packs' },
       h('div', { class: 'fig-pack-card' },
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, 'beaterista'), h('span', {}, `${L.PACK_SIZE} figurinhas`)),
-        h('p', {}, pend.length ? `${pend.length} pacote${pend.length > 1 ? 's' : ''} pra abrir` : 'nenhum pacote agora — volte amanhã, tem um novo todo dia.'),
-        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, 'abrir pacote')),
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 ou 2 figurinhas' : next === 'jogo' ? '3 figurinhas tops' : `${L.PACK_SIZE} figurinhas`)),
+        h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
+        h('p', { class: 'fig-note' }, `${prog}. terminar um jogo inteiro dá 3 figurinhas tops!`),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
         h('p', { class: 'fig-note' }, `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}`),
@@ -101,28 +109,45 @@ export function mount(host, parts = [], opts = {}) {
       h('label', { class: 'fig-opt' }, h('input', { type: 'checkbox', checked: state.reduzir ? true : null, onchange: (e) => save({ ...state, reduzir: e.target.checked }) }), ' animações reduzidas (sem giros ao abrir pacote)'));
   }
 
+  /** Cartas reveladas (viradas uma a uma, ou já abertas) + botões de colar. */
+  function revealUI(codes, close, aberto = false) {
+    const less = wantsLess(state) || aberto;
+    const cards = codes.map((c) => catalog.find((x) => x.codigo === c));
+    const row = h('div', { class: `fig-reveal fig-n${cards.length}` });
+    const live = h('p', { class: 'fig-note', 'aria-live': 'polite' }, less ? '' : 'toque em cada carta pra virar');
+    cards.forEach((e, i) => {
+      const dup = state.pasted[e.codigo] || cards.findIndex((x) => x.codigo === e.codigo) < i;
+      const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, style: `--d:${i * 180}ms`, 'aria-label': less ? `${e.artista_banda}, ${e.raridade}` : `carta ${i + 1}, virar` });
+      el.innerHTML = `<span class="back"><b>beaterista</b></span><span class="front">${svgOf(e, `o${i}${e.codigo}`)}</span>`;
+      const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${e.raridade}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${e.raridade}${dup ? ' · repetida' : ' · nova'}`; };
+      el.addEventListener('click', flip); row.append(el);
+    });
+    const nomes = cards.map((e) => `${e.artista_banda} (${e.raridade})`).join(', ');
+    return h('div', { class: 'fig-open' }, aberto ? h('p', { class: 'fig-note', role: 'status' }, `você ganhou: ${nomes}`) : live, row,
+      h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
+      h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
+  }
+  /** Pacote comum abre direto; roleta e prêmio de jogo têm a sua cena (girar / abrir o prêmio) e só gastam quando a pessoa gira. */
   function openIt(packId) {
-    const r = L.openPack(state, catalog, packId); if (!r.fresh) return;
-    save(r.state);
-    const less = wantsLess(state);
-    sheet('seu pacote', (close) => {
-      const cards = r.codes.map((c) => catalog.find((x) => x.codigo === c));
-      const seen = new Set(); let shown = 0;
-      const row = h('div', { class: 'fig-reveal' });
-      const live = h('p', { class: 'fig-note', 'aria-live': 'polite' }, less ? '' : 'toque em cada carta pra virar');
-      cards.forEach((e, i) => {
-        const dup = state.pasted[e.codigo] || cards.findIndex((x) => x.codigo === e.codigo) < i;
-        const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, 'aria-label': less ? `${e.artista_banda}, ${e.raridade}` : `carta ${i + 1}, virar` });
-        el.innerHTML = `<span class="back"><b>beaterista</b></span><span class="front">${svgOf(e, `o${i}${e.codigo}`)}</span>`;
-        const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${e.raridade}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${e.raridade}${dup ? ' · repetida' : ' · nova'}`; shown++; };
-        el.addEventListener('click', flip); row.append(el);
-      });
-      return h('div', { class: 'fig-open' }, live, row,
-        h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
-        h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
+    const kind = L.packKind(packId);
+    if (kind === 'pacote') {
+      const r = L.openPack(state, catalog, packId); if (!r.fresh) return; save(r.state);
+      sheet('seu pacote', (close) => revealUI(r.codes, close)); return;
+    }
+    const roleta = kind === 'roleta';
+    sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
+      const box = h('div', { class: 'fig-open fig-wheelbox' });
+      const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? '🎡' : '🏆'));
+      const go = h('button', { type: 'button', class: 'btn primary wide', onclick: () => {
+        go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
+        save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
+        if (wantsLess(state)) { mostra(); return; }
+        disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); setTimeout(mostra, 3300);
+      } }, roleta ? 'girar!' : 'abrir o prêmio');
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'você juntou 30 ★: gire pra ganhar 1 ou 2 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! são 3 figurinhas tops, exclusivas e raras.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      return box;
     });
   }
-
   /* ---------- detalhe com zoom ---------- */
   function detail(e) {
     sheet(`${e.codigo} · ${e.artista_banda}`, () => {

@@ -28,8 +28,10 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos', dicas: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
+const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'jogos' };
+/** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
+const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -145,6 +147,16 @@ function lockView(view, what) {
 }
 const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
 
+/** Aba Estudos: aulinha do Paul, dicionário musical, Quiz e Letras (com código) e o relatório "Jogos Ensinam" (aberto, pros pais). */
+function estudosView(view) {
+  const item = (href, title, sub) => { const lk = AC.trancado(href); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title), h('p', { class: 'muted' }, sub)); };
+  view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo'),
+    item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando'),
+    item('#/dicas/quiz', 'Quiz e Letras', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
+    item('#/jogos/relatorio', 'Jogos Ensinam', 'relatório aberto pra pais e responsáveis: o que cada jogo desenvolve')));
+}
+
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
   view.append(banner('Tocar', 'bateria, piano, violão e xilofone na tela'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
@@ -167,7 +179,7 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
+    nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || 'esta parte');
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
@@ -187,6 +199,7 @@ function shell(name) {
     else if (r.name === 'violao') c = violao.mount(view);
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;

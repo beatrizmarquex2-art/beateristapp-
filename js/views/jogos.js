@@ -39,7 +39,6 @@ const SECTIONS = [
     link('#/kids/explorar', 'explorar a bateria', 'explorar.svg', 'toca e descobre os nomes'),
   ]],
   ['leitura musical', [
-    link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
     link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
   ['cartas e tabuleiro', [
@@ -52,10 +51,6 @@ const SECTIONS = [
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
     link('#/jogos/relatorio', 'Jogos Ensinam', 'relatorio.svg', 'pra que serve cada jogo'),
-  ]],
-  ['estudos (com código)', [
-    link('#/dicionario', 'dicionário da bateria', 'pauta.svg', 'termos e exemplos tocando'),
-    link('#/kids/figuras/aula', 'aulas do Paul', 'figuras.svg', 'aprenda as figuras rítmicas'),
   ]],
 ];
 

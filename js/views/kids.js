@@ -137,7 +137,7 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-cards' }, paultaCard(me.id), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
-    h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${FR.pastedCount()} de 125 figurinhas${FR.pending() ? ` · ${FR.pending()} pacote${FR.pending() > 1 ? 's' : ''} pra abrir` : ''}`, null, Album.albumHref()),
+    h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${FR.pastedCount()} de 125 figurinhas${FR.pending() ? ` · ${FR.pending()} pra abrir (roleta/pacote)` : ''}`, null, Album.albumHref()),
       ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }

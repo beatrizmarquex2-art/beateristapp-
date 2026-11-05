@@ -1,22 +1,26 @@
-// Recompensas do álbum de figurinhas (o novo, de 125): estrelas e pontos dos jogos viram PACOTES. O sistema antigo de cartas (bateristas/guitarristas/vocalistas) foi removido.
-import * as P from './progress.js';
-import * as FR from '../figurinhas/rewards.js';
-import { STARS_PER_CARD, owedByStars, starsToNext } from './pacotes-logic.js';
+// Recompensas do álbum de figurinhas (o novo, de 125): a cada 30 estrelas libera uma ROLETA e terminar um jogo inteiro dá 3 figurinhas tops.
+// O sistema antigo de cartas (bateristas/guitarristas/vocalistas) foi removido. As contas ficam em js/figurinhas/estrelas.js e album-logic.js.
+import { h } from '../util.js';
+import * as EST from '../figurinhas/estrelas.js';
+import * as CS from '../campanha/store.js';
 
-export { STARS_PER_CARD, owedByStars, starsToNext };
 /** Endereço do álbum novo (área dos alunos x app da Bea) e da aba dos pacotes. */
 export const albumHref = (aba = '') => `${document.documentElement.classList.contains('aluno-on') ? '#/album' : '#/figurinhas'}${aba ? `/${aba}` : ''}`;
-/** ★ dos jogos de ritmo → a cada 5 ★, 1 pacote. Devolve quantos pacotes novos (id fixo por pacote: nunca entrega em dobro). */
-export async function grantByStars(pid, totalStars) {
-  const prog = P.progOf(pid); const paid = prog.ritmoPaid || 0; const n = owedByStars(totalStars, paid);
-  const ids = Array.from({ length: n }, (_, k) => `ritmo:${pid}:${paid + k + 1}`);
-  const got = await FR.grantPacks(ids);
-  await P.patch(pid, { ritmoStars: totalStars, ritmoPaid: paid + n });
-  return got;
+export { EST };
+/** Depois de ganhar estrelas (em qualquer jogo): entrega as roletas devidas. Devolve quantas roletas novas. */
+export const sincronizar = (pid) => EST.sincronizar(pid);
+/** Terminou um jogo de fases dos Kids inteiro? Entrega o prêmio (3 figurinhas tops) uma única vez. Devolve 1 se novo. */
+export const premioKids = (pid, game) => (EST.kidsCompleto(pid, game) ? EST.premioJogo(pid, `kids-${game}`) : 0);
+/** Terminou todas as missões de um Modo Aventura? Mesmo prêmio, uma única vez. */
+export const premioAventura = (pid, gameId, spec) => (CS.completo(pid, gameId, spec) ? EST.premioJogo(pid, `av-${gameId}`) : 0);
+/** Tudo de uma vez depois de uma fase dos Kids: roletas novas e prêmio de jogo completo. */
+export async function depoisDaFase(pid, game) { return { roletas: await sincronizar(pid), jogos: await premioKids(pid, game) }; }
+/** Aviso de recompensa (roleta liberada e/ou prêmio de jogo completo) pra colocar na tela de resultado. null se não ganhou nada. */
+export function rewardEl(r) {
+  const { roletas = 0, jogos = 0 } = r || {}; // aceita null/undefined (modo livre não ganha nada)
+  if (!roletas && !jogos) return null;
+  const msg = [jogos ? '🏆 jogo completo! 3 figurinhas tops te esperam' : '', roletas ? `🎡 ${roletas === 1 ? 'roleta liberada!' : `${roletas} roletas liberadas!`}` : ''].filter(Boolean).join(' · ');
+  return h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, msg), h('a', { class: 'kd-btn', href: albumHref('Pacotes') }, 'abrir agora'));
 }
-/** Estrelas novas nas fases dos Kids → 1 pacote por estrela nova. Devolve quantos pacotes novos. */
-export async function grantPacks(pid, n) {
-  if (!n || n < 1) return 0;
-  const t = Date.now().toString(36);
-  return FR.grantPacks(Array.from({ length: n }, (_, k) => `kids:${pid}:${t}:${k}`));
-}
+/** Texto curtinho de progresso (ex.: "faltam 12 ★ pra próxima roleta"). */
+export const progressoTxt = (pid) => `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(pid))} ★ pra próxima roleta`;

@@ -5,6 +5,8 @@ import { db } from '../db.js';
 import { banner, toast } from '../ui.js';
 import { criador } from '../figurinhas/criador.js';
 import * as Minhas from '../figurinhas/minhas.js';
+import * as CODE from '../codigo.js';
+import * as AC from '../acesso.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
@@ -43,7 +45,13 @@ export function mount(host) {
     avatar.replaceChildren();
     if (fotoBlob) { const u = URL.createObjectURL(fotoBlob); avatar.append(h('img', { src: u, alt: '', onload: () => URL.revokeObjectURL(u) })); } else avatar.append(icon('id', 44));
   }
-  const topo = h('section', { class: 'card pad pf-top' }, avatar,
+  /** O código de acesso do aluno, bem à vista pra decorar (o que já valeu, ou o que ele gerou e a professora ainda vai cadastrar). */
+  const codigoDoAluno = () => { let v = ''; try { v = CODE.saved() || localStorage.getItem('beaterista-album-code') || ''; } catch { /* ok */ } return v ? { c: v, ok: true } : (CODE.pendente() ? { c: CODE.pendente(), ok: false } : null); };
+  const cod = codigoDoAluno();
+  const codBox = h('div', { class: 'pf-codigo', role: 'group', 'aria-label': 'Seu código de acesso' }, h('small', {}, cod ? (cod.ok ? 'seu código' : 'seu código (aguardando a professora)') : 'seu código'),
+    cod ? h('b', { class: 'pf-codnum', 'aria-label': `código ${cod.c.split('').join(' ')}` }, cod.c) : h('a', { class: 'pf-codnone', href: '#/album' }, 'ainda sem código · toque pra pedir'),
+    cod ? h('span', { class: 'pf-codhint' }, 'decore esse número!') : null);
+  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
       h('p', { class: 'muted pf-priv' }, 'sua foto fica só neste aparelho. ninguém mais vê.')), fotoInput, selfie);

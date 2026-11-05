@@ -3,6 +3,14 @@
 import { rng, hashSeed } from './ornaments.js';
 
 export const PACK_SIZE = 5;
+export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os jogos) libera uma roleta
+/** Roleta: 1 ou 2 figurinhas; raramente (4%) uma exclusiva da Beaterista; às vezes Beatlemania e rara. */
+export const ROLETA_PESOS = [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', 4]];
+export const ROLETA_DUAS = 0.35; // chance de a roleta dar 2 figurinhas
+/** Prêmio de terminar um jogo inteiro: 3 figurinhas tops (exclusivas da Beaterista e raras). */
+export const TOP_PESOS = [['Beaterista', 70], ['Raras', 30]];
+export const TOP_QTD = 3;
+export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
 export const SECOES = ['Beatlemania', 'Beaterista', 'Comum', 'Raras'];
@@ -22,9 +30,20 @@ export function grantPack(state, id) {
 }
 export const pendingPacks = (state) => (state.granted || []).filter((id) => !state.opened?.[id]);
 
-/** Sorteio do pacote: raridade pelo peso, depois uma figurinha daquela raridade. Mesma seed = mesmo resultado. */
+const pickWeighted = (r, pesos) => { const t = pesos.reduce((a, [, w]) => a + w, 0); let x = r() * t; for (const [k, w] of pesos) { if (x < w) return k; x -= w; } return pesos[0][0]; };
+/** Sorteia `n` códigos distintos, cada um de uma seção escolhida pelos pesos (mesma seed = mesmo resultado). */
+function drawBySection(catalog, r, n, pesos) {
+  const by = {}; for (const c of catalog) (by[c.secao] ||= []).push(c.codigo);
+  const out = []; let guard = 0;
+  while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
+  return out;
+}
+/** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = 3 tops; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE) {
-  const r = rng(hashSeed(`pack|${packId}`)); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0); const out = [];
+  const r = rng(hashSeed(`pack|${packId}`)); const kind = packKind(packId);
+  if (kind === 'roleta') return drawBySection(catalog, r, r() < ROLETA_DUAS ? 2 : 1, ROLETA_PESOS);
+  if (kind === 'jogo') return drawBySection(catalog, r, TOP_QTD, TOP_PESOS);
+  const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0); const out = [];
   const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo);
   while (out.length < size) {
     let x = r() * total, rar = 'Comum';

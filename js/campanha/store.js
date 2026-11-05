@@ -12,3 +12,8 @@ export async function saveGame(pid, gameId, g) {
   const r = raw(); const mine = r.players[pid] || {};
   await store.upsert('setting', KEY, { v: 1, players: { ...r.players, [pid]: { ...mine, [gameId]: g } } });
 }
+
+/** Estrelas ganhas em TODAS as aventuras de um jogador (soma das melhores estrelas de cada missão). */
+export const allStars = (pid) => Object.values(raw().players[pid] || {}).reduce((a, g) => a + Object.values((g && g.m) || {}).reduce((b, x) => b + ((x && x.s) || 0), 0), 0);
+/** Todas as missões desse jogo já têm pelo menos 1 estrela? (jogo completo) */
+export const completo = (pid, gameId, spec) => { const g = gameOf(pid, gameId); return spec.missions.length > 0 && spec.missions.every((m) => ((g.m[m.id] || {}).s || 0) >= 1); };
