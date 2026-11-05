@@ -86,7 +86,7 @@ check('missão 8: concluída com 3 estrelas (até 5 perguntas e no máx. 1 chute
 
 // modo livre
 await go('#/jogos/cara/livre'); await page.waitForSelector('.jg-seg'); await sleep(300);
-check('modo livre: opções automático/manual e iniciar', (await page.locator('.jg-seg button').count()) === 2 && (await page.locator('button:has-text("iniciar")').count()) === 1);
+check('modo livre: opções automático/manual e iniciar', (await page.locator('button:has-text("automático")').count()) === 1 && (await page.locator('button:has-text("manual")').count()) === 1 && (await page.locator('button:has-text("iniciar")').count()) === 1) // o livre agora também escolhe o tema (instrumentos/artistas);
 await page.click('button:has-text("iniciar")'); await page.waitForSelector('.jg-cbtn');
 check('modo livre: 12 cartas, recarregável (guarda partida)', (await page.locator('.jg-cbtn').count()) === 12);
 await go('#/jogos/cara/aventura'); await page.waitForSelector('.mp-node'); await sleep(600);

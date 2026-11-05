@@ -9,6 +9,7 @@ const KIDS_LIVRES = new Set(['explorar', 'memoria', 'ritmo', 'relatorio-jogos'])
 /** O endereço (#/...) está trancado para quem não tem código? */
 export function trancado(hash) {
   if (ok) return false;
+  if (/\/aventura(\/|$)/.test(String(hash || ''))) return true; // Modo Aventura (mapas, missões, estrelas e medalhas) só com código; o Modo Livre de cada jogo fica aberto
   const m = /^#\/([^/?]+)(?:\/([^/?]*))?/.exec(String(hash || '')); if (!m) return false;
   const [, a, b] = m;
   if (['ranking', 'album', 'ritmo', 'dicionario', 'dicas'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) só com código

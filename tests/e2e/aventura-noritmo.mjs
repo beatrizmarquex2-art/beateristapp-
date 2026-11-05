@@ -128,11 +128,11 @@ check('armazenamento do livre idêntico depois da campanha toda', (await ls('bea
 await go('#/jogos'); await sleep(500);
 check('sair não deixa som nem corpo travado', await page.evaluate(() => !document.body.classList.contains('rz-lock') && !document.documentElement.classList.contains('rg-on')));
 check('sem erros de console', errs.length === 0, errs.slice(0, 3).join(' | '));
-// trava de acesso: aluno sem código NÃO joga Beat Hero na aventura (e Piano Hero continua liberado)
+// trava de acesso: aluno sem código não entra na aventura do ritmo (o ritmo todo é só com código)
 const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 await ctx2.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
 const p2 = await ctx2.newPage(); await p2.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste2'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
-await p2.goto(url + '/aluno.html#/ritmo/aventura/0'); await p2.waitForSelector('.av-go', { timeout: 10000 }); await p2.click('.av-go'); await sleep(2500);
-check('sem código: missão de Beat Hero mostra a trava e não abre o jogo', await p2.evaluate(() => /só pra alunos da Beaterista/.test(document.body.innerText) && !document.querySelector('.rz-mmenu .rz-jogar')));
+await p2.goto(url + '/aluno.html#/ritmo/aventura/0'); await sleep(2500);
+check('sem código: a aventura do ritmo mostra a trava e não abre a missão', await p2.evaluate(() => !!document.querySelector('.al-lock') && !document.querySelector('.av-go') && !document.querySelector('.rz-mmenu')));
 await ctx2.close();
 const f = done(); await browser.close(); srv.close(); process.exit(f ? 1 : 0);
