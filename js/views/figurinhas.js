@@ -11,6 +11,7 @@ import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
 import * as D from '../figurinhas/dono.js';
+import { rufo } from '../figurinhas/roleta-sfx.js';
 
 const TABS = [...L.SECOES, 'Minhas', 'Pacotes'];
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
@@ -28,7 +29,7 @@ export function mount(host, parts = [], opts = {}) {
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
-  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
+  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || 'Pacotes', artist = ''; // abre na aba do que falta colar (roleta do dia, pacotes e figurinhas na mão), não no catálogo
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
@@ -37,8 +38,8 @@ export function mount(host, parts = [], opts = {}) {
     wrap.append(h('p', { class: 'fig-note' }, 'carregando álbum…'));
     try { await loadCatalog(); } catch { wrap.replaceChildren(h('p', { class: 'fig-note' }, 'não consegui abrir o catálogo agora. tente de novo com internet.')); return; }
     if (!alive) return;
-    // pacote de presente: só o de boas-vindas. Cada pacote/roleta/prêmio tem id próprio, então abrir o app de novo não entrega em dobro.
-    let s = L.grantPack(state, L.WELCOME_PACK); // 1 pacote de boas-vindas; o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo)
+    // sem pacote de boas-vindas. Check-in: 1 giro grátis da roleta por dia (id do dia, então abrir de novo não entrega outro); o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo).
+    let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
     if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
     draw();
@@ -98,9 +99,9 @@ export function mount(host, parts = [], opts = {}) {
     const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 30 ★ nos jogos pra liberar uma roleta de figurinhas';
     return h('section', { class: 'fig-packs' },
       h('div', { class: 'fig-pack-card' },
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 ou 2 figurinhas' : next === 'jogo' ? '3 figurinhas tops' : `${L.PACK_SIZE} figurinhas`)),
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 ou 2 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
-        h('p', { class: 'fig-note' }, `${prog}. terminar um jogo inteiro dá 3 figurinhas tops!`),
+        h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
         h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
@@ -143,9 +144,9 @@ export function mount(host, parts = [], opts = {}) {
         go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
         if (wantsLess(state)) { mostra(); return; }
-        disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); setTimeout(mostra, 3300);
+        disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'você juntou 30 ★: gire pra ganhar 1 ou 2 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! são 3 figurinhas tops, exclusivas e raras.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar 1 ou 2 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 5 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

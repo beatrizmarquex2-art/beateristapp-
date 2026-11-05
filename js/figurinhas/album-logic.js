@@ -8,8 +8,6 @@ export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os j
 export const ROLETA_PESOS = [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', 4]];
 export const ROLETA_DUAS = 0.35; // chance de a roleta dar 2 figurinhas
 /** Prêmio de terminar um jogo inteiro: 3 figurinhas tops (exclusivas da Beaterista e raras). */
-export const TOP_PESOS = [['Beaterista', 70], ['Raras', 30]];
-export const TOP_QTD = 3;
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
@@ -20,8 +18,8 @@ export const emptyState = () => ({ v: 1, inv: {}, pasted: {}, granted: [], opene
 
 const clone = (s) => ({ ...emptyState(), ...s, inv: { ...(s.inv || {}) }, pasted: { ...(s.pasted || {}) }, granted: [...(s.granted || [])], opened: { ...(s.opened || {}) } });
 
-export const dailyPackId = (dateKey) => `daily:${dateKey}`;
-export const WELCOME_PACK = 'welcome:1';
+/** Check-in: 1 giro grátis da roleta por dia (id fixo por dia: abrir o álbum de novo não entrega outro). */
+export const checkinId = (dateKey) => `roleta:dia:${dateKey}`;
 
 /** Entrega um pacote (uma vez só por id). */
 export function grantPack(state, id) {
@@ -38,11 +36,16 @@ function drawBySection(catalog, r, n, pesos) {
   while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
   return out;
 }
-/** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = 3 tops; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
+/** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE) {
   const r = rng(hashSeed(`pack|${packId}`)); const kind = packKind(packId);
   if (kind === 'roleta') return drawBySection(catalog, r, r() < ROLETA_DUAS ? 2 : 1, ROLETA_PESOS);
-  if (kind === 'jogo') return drawBySection(catalog, r, TOP_QTD, TOP_PESOS);
+  if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 5 com uma RARA garantida
+    const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
+    const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+    while (out.length < size && guard++ < 800) { let x = r() * total, rar = 'Comum'; for (const [k, w] of Object.entries(WEIGHTS)) { if (x < w) { rar = k; break; } x -= w; } const pool = by[rar]; if (!pool?.length) continue; const c = pool[Math.floor(r() * pool.length)]; if (!out.includes(c)) out.push(c); }
+    return out;
+  }
   const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0); const out = [];
   const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo);
   while (out.length < size) {
