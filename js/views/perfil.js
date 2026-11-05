@@ -1,14 +1,14 @@
 // Aba "Perfil" (área do aluno): nome e foto do aluno + "minha figurinha": a criança põe a foto dela dentro de um dos 8 modelos,
 // escreve o nome, arrasta/dá zoom pra enquadrar e baixa pra postar. A foto fica SÓ neste aparelho (nada sobe pra servidor).
 import { h, icon } from '../util.js';
-import { db } from '../db.js';
 import { banner, toast } from '../ui.js';
 import { criador } from '../figurinhas/criador.js';
 import * as Minhas from '../figurinhas/minhas.js';
+import * as D from '../figurinhas/dono.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
-const ls = (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
-const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ok */ } };
+const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
+const lsSet = (k, v) => D.lsGravar(k, v);
 const loadCfg = () => { try { return { modelo: 'M1', zoom: 1, ox: 0, oy: 0, nome: '', ...JSON.parse(ls(CFG) || '{}') }; } catch { return { modelo: 'M1', zoom: 1, ox: 0, oy: 0, nome: '' }; } };
 
 /** Foto escolhida -> JPEG de no máximo 1400 px (o navegador já corrige a rotação do celular). */
@@ -35,10 +35,10 @@ export function mount(host) {
   const fotoInput = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   async function escolher(file, input) {
-    if (!file) return; try { fotoBlob = await reduzir(file); fotoImg = await blobImg(fotoBlob); await db.metaSet(FOTO, fotoBlob); cfg.zoom = 1; cfg.ox = 0; cfg.oy = 0; salvarCfg(); desenhaAvatar(); cri.setFoto(fotoImg); toast('foto salva neste aparelho'); } catch { toast('não consegui abrir essa foto, tente outra'); }
+    if (!file) return; try { fotoBlob = await reduzir(file); fotoImg = await blobImg(fotoBlob); await D.metaGravar(FOTO, fotoBlob); cfg.zoom = 1; cfg.ox = 0; cfg.oy = 0; salvarCfg(); desenhaAvatar(); cri.setFoto(fotoImg); toast('foto salva neste aparelho'); } catch { toast('não consegui abrir essa foto, tente outra'); }
     input.value = '';
   }
-  async function remover() { fotoImg = null; fotoBlob = null; try { await db.metaDel(FOTO); } catch { /* ok */ } desenhaAvatar(); cri.setFoto(null); }
+  async function remover() { fotoImg = null; fotoBlob = null; try { await D.metaApagar(FOTO); } catch { /* ok */ } desenhaAvatar(); cri.setFoto(null); }
   function desenhaAvatar() {
     avatar.replaceChildren();
     if (fotoBlob) { const u = URL.createObjectURL(fotoBlob); avatar.append(h('img', { src: u, alt: '', onload: () => URL.revokeObjectURL(u) })); } else avatar.append(icon('id', 44));
@@ -53,6 +53,6 @@ export function mount(host) {
   const mc = Minhas.colecao({ titulo: 'minha coleção' });
   cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : 'não consegui guardar agora.'); } } }); const area = cri.el;
   body.append(topo, area, mc.el);
-  (async () => { try { const b = await db.metaGet(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
+  (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
   return () => { alive = false; cri.cleanup(); mc.cleanup(); };
 }

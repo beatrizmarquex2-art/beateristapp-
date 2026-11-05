@@ -10,12 +10,12 @@ export const IDS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'];
 /** opts: { cfg (objeto salvo pelo chamador), salvar(), nome() -> texto do rótulo, titulo, extra() -> campos do post (ex.: tituloPost) } */
 export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloShare = 'baixar minha figurinha', extra = () => ({}), aoGuardar = null }) {
   let fotoImg = null, share = null, alive = true, raf = 0;
-  const entry = () => ({ modelo2: cfg.modelo, artista_banda: (nome() || '').trim() || 'SEU NOME', fotoImg, ajuste: { zoom: cfg.zoom, ox: cfg.ox, oy: cfg.oy }, raridade: MODELOS2[cfg.modelo].raridade, secao: 'Comum', codigo: '', ...extra() });
+  const entry = () => ({ modelo2: cfg.modelo, artista_banda: (nome() || '').trim() || 'SEU NOME', fotoImg, ajuste: { zoom: cfg.zoom, ox: cfg.ox, oy: cfg.oy }, raridade: MODELOS2[cfg.modelo].raridade, semSelo: true, secao: 'Comum', codigo: '', ...extra() });
   const cv = h('canvas', { class: 'pf-canvas', width: 720, height: 950, role: 'img', 'aria-label': 'Prévia da cartinha. Arraste para mover a foto.' });
   const zoom = h('input', { type: 'range', min: 1, max: 3, step: 0.02, value: cfg.zoom, 'aria-label': 'Zoom da foto', oninput: (ev) => { cfg.zoom = Number(ev.target.value); limita(); salvar(); pintar(); } });
   const vazio = h('p', { class: 'pf-vazio' }, 'escolha uma foto pra ver a cartinha ✨');
-  const quadros = h('div', { class: 'pf-quadros', role: 'radiogroup', 'aria-label': 'Escolha o modelo' }, IDS.map((id) => h('button', { type: 'button', role: 'radio', 'aria-label': `Modelo ${id.slice(1)} (${MODELOS2[id].raridade})`, 'aria-checked': String(cfg.modelo === id), class: `pf-q${cfg.modelo === id ? ' on' : ''}`, 'data-id': id, onclick: () => { cfg.modelo = id; cfg.ox = 0; cfg.oy = 0; salvar(); quadros.querySelectorAll('button').forEach((b) => { const on = b.dataset.id === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); pintar(); } },
-    h('img', { src: `assets/figurinhas/modelos2/${id}.webp`, alt: '', width: 72, height: 95, loading: 'lazy' }))));
+  const quadros = h('div', { class: 'pf-quadros', role: 'radiogroup', 'aria-label': 'Escolha o modelo' }, IDS.map((id) => h('button', { type: 'button', role: 'radio', 'aria-label': `Modelo ${id.slice(1)}`, 'aria-checked': String(cfg.modelo === id), class: `pf-q${cfg.modelo === id ? ' on' : ''}`, 'data-id': id, onclick: () => { cfg.modelo = id; cfg.ox = 0; cfg.oy = 0; salvar(); quadros.querySelectorAll('button').forEach((b) => { const on = b.dataset.id === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); pintar(); } },
+    h('img', { src: `assets/figurinhas/modelos2/limpo/${id}.webp`, alt: '', width: 72, height: 95, loading: 'lazy' }))));
   const slot = h('div', { class: 'pf-share' });
   const guardaBtn = aoGuardar ? h('button', { type: 'button', class: 'btn primary wide', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { await aoGuardar(entry()); } finally { b.disabled = false; } } }, 'guardar na minha coleção') : null;
   const el = h('section', { class: 'card pad pf-cria' }, h('h2', { class: 'tag' }, titulo), quadros, h('div', { class: 'pf-cv-box' }, cv, vazio), h('label', { class: 'pf-zoom' }, h('span', {}, 'zoom'), zoom), h('p', { class: 'muted' }, 'arraste a foto pra enquadrar.'), guardaBtn, slot);
@@ -26,7 +26,7 @@ export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloS
   function pintar() {
     cancelAnimationFrame(raf); raf = requestAnimationFrame(async () => {
       if (!alive) return; vazio.hidden = !!fotoImg; cv.classList.toggle('sem', !fotoImg);
-      if (!fotoImg) { const g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); const tpl = new Image(); tpl.onload = () => g.drawImage(tpl, 0, 0, cv.width, cv.height); tpl.src = `assets/figurinhas/modelos2/${cfg.modelo}.webp`; return; }
+      if (!fotoImg) { const g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); const tpl = new Image(); tpl.onload = () => g.drawImage(tpl, 0, 0, cv.width, cv.height); tpl.src = `assets/figurinhas/modelos2/limpo/${cfg.modelo}.webp`; return; }
       try { const c = await cartaCanvas(entry(), { escala: 2 }); if (!alive) return; const g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); g.drawImage(c, 0, 0, cv.width, cv.height); } catch { /* ok */ }
       share && share.refresh && share.refresh(entry());
     });

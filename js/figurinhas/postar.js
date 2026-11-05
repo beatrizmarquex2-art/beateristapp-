@@ -35,7 +35,7 @@ function blurDraw(ctx, im, x, y, w, h) {
 export async function cartaCanvas(e, { escala = 3, codigo = false } = {}) {
   if (e.cartaPronta) { const c = canvas(Math.round(W2 * escala), Math.round(H2 * escala)), g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(e.cartaPronta, 0, 0, c.width, c.height); return c; } // cartinha já guardada na coleção
   await Promise.all(FONTS.map((f) => document.fonts.load(f)));
-  const m = MODELOS2[e.modelo2], [tpl, foto] = await Promise.all([img(`assets/figurinhas/modelos2/${e.modelo2}.webp`), e.fotoImg ? Promise.resolve(e.fotoImg) : img(e.foto)]);
+  const m = MODELOS2[e.modelo2], [tpl, foto] = await Promise.all([img(`assets/figurinhas/modelos2/${e.semSelo ? 'limpo/' : ''}${e.modelo2}.webp`), e.fotoImg ? Promise.resolve(e.fotoImg) : img(e.foto)]);
   const pw = foto.naturalWidth || foto.width, ph = foto.naturalHeight || foto.height;
   const c = canvas(Math.round(W2 * escala), Math.round(H2 * escala)), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(tpl, 0, 0, c.width, c.height);

@@ -2,13 +2,14 @@
 // quem tem acesso vê a mesma coleção na aba "Minhas" do Álbum. Cada cartinha vira PNG 720 x 950; dá pra baixar, postar (todos os formatos) ou apagar.
 import { h } from '../util.js';
 import { db } from '../db.js';
+import * as D from './dono.js';
 import { sheet, toast, confirmSheet } from '../ui.js';
 import { cartaCanvas } from './postar.js';
 import { shareUI } from './share-ui.js';
 
 const LISTA = 'minhas-cartinhas', IMG = (id) => `minha-carta:${id}`, MAX = 40;
-export const listar = async () => { try { return (await db.metaGet(LISTA)) || []; } catch { return []; } };
-const gravaLista = (l) => db.metaSet(LISTA, l);
+export const listar = async () => { try { return (await D.metaLer(LISTA)) || []; } catch { return []; } };
+const gravaLista = (l) => D.metaGravar(LISTA, l);
 const blob = (c) => new Promise((ok, no) => c.toBlob((b) => (b ? ok(b) : no(new Error('png'))), 'image/png'));
 const imgDe = (b) => new Promise((ok, no) => { const u = URL.createObjectURL(b), i = new Image(); i.onload = () => ok({ i, u }); i.onerror = () => no(new Error('imagem')); i.src = u; });
 
