@@ -12,6 +12,8 @@ export const IMAGES = [
   { id: 'baixo', src: 'assets/jogos/baixo.webp', nome: 'Paul tocando baixo' },
   { id: 'teclado', src: 'assets/jogos/teclado.webp', nome: 'Paul tocando teclado' },
   { id: 'sax', src: 'assets/jogos/sax.webp', nome: 'Paul tocando saxofone' },
+  { id: 'praca', src: 'assets/jogos/praca.webp', nome: 'Paul tocando saxofone numa praça à noite' },
+  { id: 'terraco', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
 ];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
 

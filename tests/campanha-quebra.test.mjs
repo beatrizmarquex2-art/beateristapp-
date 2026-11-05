@@ -14,7 +14,7 @@ test('spec válido, 11 missões, ids estáveis, tema existente', () => {
 test('só usa grades suportadas, em ordem crescente de peças, com a imagem que existe', () => {
   const d = spec.missions.map((m) => m.params.diff); assert.ok(d.every((x) => Q.DIFFS[x])); assert.deepEqual(d, [...d].sort((a, b) => a - b)); assert.ok(d[0] === 6 && d.at(-1) === 24);
   assert.ok(spec.missions.every((m) => IMAGES.some((x) => x.id === m.params.img))); // só imagens que existem
-  assert.ok(new Set(spec.missions.map((m) => m.params.img)).size >= 5); // a imagem varia de missão em missão
+  assert.ok(new Set(spec.missions.map((m) => m.params.img)).size >= 7); // a imagem varia de missão em missão
 });
 test('concluir exige todas as peças: resultado incompleto ou de outra grade não conclui', () => {
   const m = spec.missions[0];
