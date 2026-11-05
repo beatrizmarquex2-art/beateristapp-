@@ -197,10 +197,10 @@ export function matchResult(g, st, me = 0) {
  * params = { seed, style }; policy(g, rnd) → jogada do jogador 0 ({type,id,color}). Devolve { won, ...matchResult }.
  */
 export function simulate(params, policy, maxSteps = 3000) {
-  const rnd = seededRnd(params.seed); let g = newGame({ mode: 'paul', rnd }); const st = newStats(); let n = 0;
+  const rnd = seededRnd(params.seed); const prnd = seededRnd((Number(params.seed) || 1) + 99991); /* sorteio PRÓPRIO do jogador: a pessoa não consome o sorteio da mesa */ let g = newGame({ mode: 'paul', rnd }); const st = newStats(); let n = 0;
   while (!g.over && n++ < maxSteps) {
     if (g.turn === 0) {
-      const mv = policy(g, rnd); const b = g;
+      const mv = policy(g, prnd); const b = g;
       g = mv.type === 'play' ? applyPlay(g, 0, mv.id, mv.color, rnd) : mv.type === 'draw' ? applyDraw(g, 0, rnd) : applyPass(g, 0);
       track(st, b, g, mv, 0);
     } else {

@@ -15,9 +15,9 @@ const DEF = [
   M('memoria-04', 'Bandas de rock', '8 pares · ⏱', 'bandas', 8, 503, G8, 120, '8 pares de bandas e artistas'),
   M('memoria-05', 'Palco cheio', '8 pares', 'palco', 8, 604, G8, 0, '8 pares de palco e estúdio'),
   M('memoria-06', 'Instrumentos', '8 pares · ⏱', 'instrumentos', 8, 705, G8, 120, '8 pares de instrumentos musicais'),
-  M('memoria-07', 'Figuras rítmicas', '12 pares', 'figuras', 12, 807, G12, 0, '12 pares de figuras, pausas e sinais'),
-  M('memoria-08', 'Orquestra grande', '12 pares', 'instrumentos', 12, 900, G12, 0, '12 pares de instrumentos: o tabuleiro grande'),
-  M('memoria-09', 'Tudo misturado', '8 pares · ⏱', 'misturado', 8, 1011, G8, 120, '8 pares com cartas de todos os temas'),
+  M('memoria-07', 'Tudo misturado', '8 pares · ⏱', 'misturado', 8, 1011, G8, 120, '8 pares com cartas de todos os temas'),
+  M('memoria-08', 'Figuras rítmicas', '12 pares', 'figuras', 12, 807, G12, 0, '12 pares de figuras, pausas e sinais'),
+  M('memoria-09', 'Orquestra grande', '12 pares', 'instrumentos', 12, 900, G12, 0, '12 pares de instrumentos: o tabuleiro grande'),
   M('memoria-10', 'Desafio final', '12 pares · ⏱', 'misturado', 12, 1102, G12, 180, '12 pares misturados: o desafio final'),
 ];
 const plural = (n) => `${n} tentativa${n === 1 ? '' : 's'}`;
@@ -68,7 +68,7 @@ export const spec = {
   missions: DEF.map(build),
   medals: [
     { id: 'memoria-elefante', title: 'Memória de elefante', desc: '3 estrelas em todas as missões de 4 pares', icon: '🐘', test: (g) => ['memoria-00', 'memoria-01', 'memoria-02'].every((id) => ((g.m[id] || {}).s || 0) >= 3) },
-    { id: 'memoria-doze', title: 'Tabuleiro grande', desc: 'conclua as duas missões só de 12 pares', icon: '🃏', test: (g) => ['memoria-07', 'memoria-08'].every((id) => ((g.m[id] || {}).s || 0) >= 1) },
+    { id: 'memoria-doze', title: 'Tabuleiro grande', desc: 'conclua as duas missões só de 12 pares', icon: '🃏', test: (g) => ['memoria-08', 'memoria-09'].every((id) => ((g.m[id] || {}).s || 0) >= 1) },
     { id: 'memoria-mestre', title: 'Mestre da memória', desc: '3 estrelas no desafio final', icon: '🧠', test: (g) => ((g.m['memoria-10'] || {}).s || 0) >= 3 },
   ],
 };
