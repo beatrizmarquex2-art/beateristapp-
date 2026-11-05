@@ -10,8 +10,8 @@ import * as P from '../kids/progress.js';
 import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
+import * as D from '../figurinhas/dono.js';
 
-const ID = 'figurinhas-album';
 const TABS = [...L.SECOES, 'Minhas', 'Pacotes'];
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
@@ -23,7 +23,8 @@ const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: red
 export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
   host.append(banner('Álbum', 'cole todas as figurinhas'), wrap);
-  let state = { ...L.emptyState(), ...(store.get(ID)?.data || {}) };
+  const ID = D.albumId(); // o álbum é de quem está com o nome agora
+  let state = { ...L.emptyState(), ...D.albumDados() };
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho

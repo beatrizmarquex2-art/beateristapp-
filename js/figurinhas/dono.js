@@ -19,3 +19,17 @@ export async function metaLer(base) {
 }
 export const metaGravar = (base, v) => db.metaSet(chave(base), v);
 export const metaApagar = (base) => db.metaDel(chave(base));
+
+/* ---------- álbum de figurinhas: um por dono (antes era um só por aparelho e misturava as cartas de quem trocava de nome) ---------- */
+import * as store from '../store.js';
+const ALBUM = 'figurinhas-album';
+export const albumId = () => chave(ALBUM);
+const migrados = new Set();
+/** Dados do álbum de quem está com o nome agora. O álbum antigo (sem dono) vai inteiro pra UMA pessoa só (a primeira que abrir); as outras começam vazias. */
+export function albumDados() {
+  const id = albumId(); const meu = store.get(id); if (meu) return meu.data || {};
+  if (id === ALBUM) return {};
+  const velho = store.get(ALBUM); if (!velho) return {};
+  if (!migrados.has(id)) { migrados.add(id); store.upsert('figurinhas', id, velho.data || {}).then(() => store.remove(ALBUM)).catch(() => {}); }
+  return velho.data || {};
+}
