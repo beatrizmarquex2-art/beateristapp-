@@ -45,7 +45,7 @@ export function mount(host, parts = []) {
     const shown = searchTerms(q, TERMS.filter((x) => !cat || x.cat === cat));
     list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
   };
-  host.append(banner('Dicionário da bateria', `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, list,
+  host.append(banner(document.documentElement.classList.contains('aluno-on') ? 'Dicionário musical' : 'Dicionário da bateria', `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, list,
     h('p', { class: 'pad-x lib-note' }, 'toque no termo pra abrir a dica e o exemplo. o nome em inglês aparece porque é assim que você vai achar em vídeo e partitura de fora.'));
   draw();
   if (open) setTimeout(() => { const el = document.getElementById(`t-${open}`); if (el) el.scrollIntoView({ block: 'start' }); }, 50);

@@ -31,13 +31,13 @@ check('toque as figuras está na lista e livre', c.find((x) => /toque as figuras
 check('Toca Aqui livre', c.find((x) => /toca aqui/i.test(x.t))?.lock === false);
 await page.evaluate(() => { location.hash = '#/estudos'; }); await sleep(600);
 const est = await page.$$eval('#view a.card', (a) => a.map((x) => ({ t: x.textContent.replace('🔒', '').trim(), lock: x.classList.contains('locked') })));
-check('Estudos: dicionário e dicas travados', est.find((x) => /Dicionário/.test(x.t))?.lock === true && est.find((x) => /30 dicas/.test(x.t))?.lock === true, JSON.stringify(est.map((x) => x.lock)));
-check('Estudos: aulinha e relatório abertos', est.find((x) => /Aulinha/.test(x.t))?.lock === false && est.find((x) => /Relatório/.test(x.t))?.lock === false);
+check('Estudos sem código: aulinha, dicionário musical e dicas travados', ['Aulinha', 'Dicionário musical', '30 dicas'].every((n) => est.find((x) => x.t.includes(n))?.lock === true), JSON.stringify(est));
+check('Estudos sem código: só "Aprender jogando" aberto', est.find((x) => /Aprender jogando/.test(x.t))?.lock === false);
 await page.evaluate(() => { location.hash = '#/dicionario'; }); await sleep(600);
 check('dicionário sem código volta pra Estudos', /#\/estudos/.test(await page.evaluate(() => location.hash)));
 await page.keyboard.press('Escape'); await sleep(300);
 await page.evaluate(() => { location.hash = '#/jogos/relatorio'; }); await sleep(600);
-check('relatório abre pra todo mundo', /Relatório dos jogos/.test(await page.textContent('#view')));
+check('relatório abre pra todo mundo', /Aprender jogando/.test(await page.textContent('#view')));
 await page.evaluate(() => { location.hash = '#/ranking'; }); await sleep(500);
 check('Ranking leva ao álbum', await page.$('a[href="#/kids"]') !== null);
 await page.evaluate(() => { location.hash = '#/kids/album'; }); await sleep(600);

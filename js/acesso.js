@@ -20,7 +20,7 @@ export const liberado = () => !isAluno() || read();
 
 /** Recursos que dependem do código liberado (chave → texto). Tudo o que não está aqui é livre. */
 export const TRAVA = {
-  ritmo: 'Beat Hero e Piano Hero', dicas: 'quiz e letras e as 30 dicas', dicionario: 'o dicionário da bateria', aula: 'modo aula (professor)', beatlab: 'Beat Lab',
+  ritmo: 'Beat Hero e Piano Hero', dicas: 'quiz e letras e as 30 dicas', dicionario: 'o dicionário musical', aulinha: 'a aulinha do Paul', aula: 'modo aula (professor)', beatlab: 'Beat Lab',
 };
 export const bloqueado = (k) => !liberado() && k in TRAVA;
 
