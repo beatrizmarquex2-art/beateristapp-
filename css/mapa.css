@@ -1,7 +1,7 @@
 /* Mapa de fases "Turnê do Vinil": pixel art fofo (8/16-bit) + universo do vinil. Cores no topo: troque aqui pra mudar o mundo todo. */
 .mp {
   --mp-night: #140d26; --mp-deep: #231545; --mp-purple: #6a2c91; --mp-wine: #8e1f4a; --mp-pink: #ff4fa3; --mp-yellow: #ffd23f; --mp-cyan: #4fd2ff; --mp-cream: #fff4e0;
-  --mp-pix: 'Silkscreen', 'Courier New', monospace;
+  --mp-pix: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   position: relative; margin: 0 -16px; padding: 0 0 calc(110px + env(safe-area-inset-bottom)); background: var(--mp-night); color: var(--mp-cream);
   overflow-x: clip; overscroll-behavior-x: none; touch-action: pan-y; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
 }
@@ -87,3 +87,12 @@
   .mp-anim .mp-lit { stroke-dashoffset: 0; }
 }
 html.lite .mp-pimg, html.lite .st-current .mp-disc { animation: none; }
+
+/* LEITURA FÁCIL (mapa): letras normais; o pixel fica só nos sprites. */
+.mp-head *, .mp-sign *, .mp-node *, .mp-say, .mp-prog { text-transform: none; letter-spacing: 0; }
+.mp-reg b { font-weight: 800; font-size: 15px; } .mp-reg small, .mp-reg span { font-weight: 700; }
+.mp-prog { font-weight: 800; font-size: 12px; } .mp-lab { font-weight: 800; font-size: 7cqw; }
+.mp-back, .mp-snd { font-weight: 800; font-size: 14px; }
+.mp-reg small { font-size: 12px; font-weight: 700; } .mp-sign small { font-size: 3.6cqw; font-weight: 700; } .mp-sign b { font-size: 5.4cqw; font-weight: 800; }
+.mp-tag { font-size: 3.4cqw; font-weight: 700; max-width: 34cqw; } .mp-say { font: 800 3.6cqw var(--mp-pix); }
+@media (max-width: 359px) { .mp-reg b { font-size: 13px; } .mp-prog { font-size: 11px; } }
