@@ -121,6 +121,10 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
     el, colecao, pageOfArtist, go, current: () => cur,
     /** Estado novo (colou, abriu pacote): redesenha só as páginas já abertas, sem perder o lugar. */
     update(ns, justPasted = null) { st = ns; last = justPasted; for (const j of rendered) draw(j); setCur(cur); if (last) setTimeout(() => { last = null; }, 900); },
+    /** Página que interessa ao abrir: a primeira com figurinha NA MÃO pra colar; senão a primeira com buraco; senão a capa. */
+    firstTarget: () => { const c = cards.find((x) => L.canPaste(st, x.codigo)) || cards.find((x) => !st.pasted[x.codigo]); return c ? pages.findIndex((p) => p.tipo === 'pagina' && p.cards.includes(c)) : 0; },
+    /** Vai direto pra uma página, sem animação, já marcando como a página atual. */
+    jump: (i) => { i = Math.max(0, Math.min(pages.length - 1, i)); ensure(i); setCur(i); track.scrollTo({ left: i * W(), behavior: 'auto' }); },
     firstMissing: () => { const c = cards.find((x) => !st.pasted[x.codigo]); return c ? pages.findIndex((p) => p.tipo === 'pagina' && p.cards.includes(c)) : 0; },
   };
 }

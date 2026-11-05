@@ -685,3 +685,6 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
   #app { max-width: 1040px; } .bottom-nav, .tray { max-width: 720px; }
   .scroll-track { right: calc(50% - 520px); } .to-top { right: calc(50% - 500px); }
 }
+
+/* álbum: aviso do giro grátis / pacotes quando a pessoa está numa coleção */
+.fig-giro{display:block;width:100%;margin:8px 0;min-height:48px;font-size:16px;text-align:center}

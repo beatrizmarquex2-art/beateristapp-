@@ -21,7 +21,7 @@ const digitar = async (p, codigo) => { await p.locator('.al-lock-have summary').
 await digitar(page, 'ZZZ-9999'); await sleep(900);
 check('código que não existe: avisa e continua trancado', (await page.textContent('.al-lock-msg')).includes('não achei') && (await page.locator('.fig-tabs').count()) === 0);
 await page.fill('.al-lock-have input', ' bea-0404 '); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
-check('código válido (BEA-0404 com traço e espaços): abre o álbum já na aba de colar (pacotes)', (await page.locator('.fig-pack-card').count()) === 1);
+check('código válido (BEA-0404 com traço e espaços): abre o álbum direto na coleção', (await page.locator('.lv').count()) === 1);
 check('manda o nome e de onde veio pro relatório da Bea', entradas.some((e) => e.p_aluno === 'Ana' && e.p_origem === 'tik tok live' && norm(e.p_code) === 'BEA0404'), JSON.stringify(entradas[0]));
 await page.getByRole('tab', { name: /pacotes/ }).click(); await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 }); await sleep(300);
 // (a roleta já mostra as cartas abertas)

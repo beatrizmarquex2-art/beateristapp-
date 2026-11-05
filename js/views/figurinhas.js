@@ -29,7 +29,8 @@ export function mount(host, parts = [], opts = {}) {
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
-  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || 'Pacotes', artist = ''; // abre na aba do que falta colar (roleta do dia, pacotes e figurinhas na mão), não no catálogo
+  const explicita = TABS.includes(parts[0]) || !!L.SECAO_ANTIGA[parts[0]];
+  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
@@ -42,7 +43,14 @@ export function mount(host, parts = [], opts = {}) {
     let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
     if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
+    if (!explicita) tab = abaInicial(); // abre direto na coleção/página onde tem o que colar, não na capa
     draw();
+  }
+  /** Coleção onde tem figurinha na mão pra colar; senão a primeira com buraco; senão a primeira. */
+  function abaInicial() {
+    for (const sec of L.SECOES) if (catalog.some((c) => c.secao === sec && L.canPaste(state, c.codigo))) return sec;
+    for (const sec of L.SECOES) if (L.stats(state, catalog, sec).missing > 0) return sec;
+    return L.SECOES[0];
   }
 
   function draw() {
@@ -52,10 +60,11 @@ export function mount(host, parts = [], opts = {}) {
       const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
       return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
     }));
+    const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, `🎡 você tem ${pend} pra abrir (giro grátis do dia, roleta ou prêmio) — toque aqui`) : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
-      tabs, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
-    if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (b) b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
   /* ---------- coleção: o livro ---------- */
@@ -63,7 +72,7 @@ export function mount(host, parts = [], opts = {}) {
   function collectionView() {
     const st = L.stats(state, catalog, tab);
     let bk = books[tab];
-    if (!bk) bk = books[tab] = createBook({ catalog, colecao: tab, state, onPaste: doPaste, onDetail: detail, reduzir: wantsLess(state) });
+    if (!bk) { bk = books[tab] = createBook({ catalog, colecao: tab, state, onPaste: doPaste, onDetail: detail, reduzir: wantsLess(state) }); bk.novo = true; }
     else bk.update(state, justPasted);
     justPasted = null;
     const sel = h('select', { class: 'fig-filter', 'aria-label': 'Ir para um artista', onchange: (e) => { const i = bk.pageOfArtist(e.target.value); if (i >= 0) bk.go(i); e.target.value = ''; } },
