@@ -5,7 +5,7 @@
 import { mount as mountGame, IMAGES } from '../../jogos/quebra.js';
 import { fmtTime } from '../../jogos/quebra-logic.js';
 
-const ORDEM = ['palco', 'guitarra', 'baixo', 'teclado', 'sax', 'praca', 'terraco']; // a imagem gira de missão em missão (7 imagens no jogo)
+const ORDEM = ['palco', 'guitarra', 'baixo', 'teclado', 'sax', 'praca', 'terraco', 'estudio', 'parque', 'garagem']; // a imagem gira de missão em missão (10 imagens no jogo)
 const imgDe = (i) => { const id = ORDEM[i % ORDEM.length]; return IMAGES.some((x) => x.id === id) ? id : IMAGES[0].id; };
 // [título, tag, peças, maxErr (★2), perfect (★3), timeMs (bônus ★3, opcional)]
 const PLAN = [
