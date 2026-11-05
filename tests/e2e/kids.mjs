@@ -39,7 +39,7 @@ check('sem timers/rAF de fase antiga pendentes na tela de fases', t.i === 0 && t
 check('nenhuma fonte de áudio presa', (await live()) <= 2, `${await live()} ativas`);
 
 // jogar uma fase inteira e apertar "jogar de novo" várias vezes seguidas: sem resultado duplicado
-await go('#/kids/pauta/0'); await sleep(300); await click('.kx-go');
+await go('#/kids/figuras/0'); await sleep(300); await click('.kx-go');
 const rounds = await page.evaluate(() => 0);
 for (let k = 0; k < 40; k++) { await sleep(150); if (await page.evaluate(() => !!document.querySelector('.kx-result'))) break; await click('.kd-opt'); await sleep(1850); }
 const hasResult = await page.evaluate(() => !!document.querySelector('.kx-result'));

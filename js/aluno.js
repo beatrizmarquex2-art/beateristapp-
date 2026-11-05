@@ -5,7 +5,10 @@ import { soundButton } from './sound-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
+import * as CODE from './codigo.js';
 import * as kids from './views/kids.js';
+import * as paulta from './paulta/view.js';
+import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as beatlab from './views/beatlab.js';
 import * as toque from './views/toque.js';
@@ -20,7 +23,7 @@ import { startPaul } from './paul-talk.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -32,7 +35,7 @@ function logVisit(name) {
   RK.visit(visitorId(), name, novo, getOrigem());
 }
 const ORIGEM_KEY = 'beaterista-aluno-origem';
-const ORIGENS = [['aluno beaterista', 'aluno Beaterista'], ['aluno on-line', 'aluno on-line'], ['tik tok live', 'TikTok live'], ['youtube/instagram', 'YouTube/Instagram'], ['outro', 'outro']];
+const ORIGENS = [['aluno beaterista', 'aluno Beaterista'], ['aluno on-line', 'aluno on-line'], ['tik tok live', 'TikTok live'], ['youtube/instagram', 'YouTube/Instagram'], ['outro', 'outro'], ['codigo', 'CÓDIGO DE ACESSO']];
 const getOrigem = () => { try { return localStorage.getItem(ORIGEM_KEY) || ''; } catch { return window.__alunoOrigem || ''; } };
 const LINKS = [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista'], ['YouTube', 'https://www.youtube.com/@beateristadrummer']];
 const SVG = {
@@ -116,7 +119,7 @@ function shell(name) {
   const nav = h('nav', { class: 'bottom-nav', style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, `oi, ${name}!`)),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
     h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
@@ -127,6 +130,7 @@ function shell(name) {
     nav.replaceChildren(...NAV.map(([href, ic, label]) => h('a', { href, class: `nav-item${('#/' + (TAB_OF[r.name] || r.name)) === href ? ' on' : ''}`, 'aria-current': ('#/' + (TAB_OF[r.name] || r.name)) === href ? 'page' : null }, icon(ic, 24), h('span', {}, label))));
     let c;
     if (r.name === 'kids') c = kids.mount(view, r.parts);
+    else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
@@ -149,12 +153,19 @@ function askName() {
   const err = h('p', { class: 'form-err', role: 'alert' });
   const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
-  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
+  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO', hidden: true });
+  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; cod.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!cod.hidden) cod.focus(); });
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
     if (!sel.value) { err.textContent = 'escolha como você chegou aqui.'; return; }
-    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value;
+    if (sel.value === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
+      if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso.'; return; }
+      err.textContent = 'conferindo o código…';
+      try { if (!(await CODE.entrar(cod.value))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+      err.textContent = '';
+    }
+    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value === 'codigo' ? 'aluno beaterista (código de acesso)' : sel.value;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n);
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
@@ -169,7 +180,7 @@ function askName() {
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, err,
+    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, cod, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },

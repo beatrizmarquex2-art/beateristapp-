@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done, fakeLogin } from './harness.mjs';
 const { srv, url } = await serve();
 const VPS = [['iPhone SE', 320, 568], ['iPhone 14', 390, 844], ['iPhone Max', 430, 932], ['Android', 360, 740], ['iPad', 820, 1180], ['notebook', 1366, 768], ['celular horizontal', 844, 390], ['iPad horizontal', 1180, 820]];
-const ROUTES = ['#/inicio', '#/beatlab', '#/metronomo', '#/treinos', '#/toque', '#/piano', '#/ferramentas', '#/kids', '#/ritmo', '#/estudos', '#/ajustes', '#/ouvido', '#/tempo', '#/kids/pauta/0'];
+const ROUTES = ['#/inicio', '#/beatlab', '#/metronomo', '#/treinos', '#/toque', '#/piano', '#/ferramentas', '#/kids', '#/ritmo', '#/estudos', '#/ajustes', '#/ouvido', '#/tempo', '#/kids/figuras/0'];
 for (const [name, w, h] of VPS) {
   const { browser, ctx } = await launch({ viewport: { width: w, height: h }, isMobile: w < 900 });
   const page = await ctx.newPage(); await fakeLogin(ctx, page, url);
