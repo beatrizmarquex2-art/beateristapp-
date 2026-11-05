@@ -10,7 +10,7 @@ import { svgEl } from '../kids/art.js';
 import { silence } from '../audio.js';
 import { newPlayer, switchPlayer, cardBg } from '../views/kids.js';
 import { worldIcon } from './icons.js';
-import { adventureMap } from './adventure.js';
+import { worldMap } from './mapa.js';
 import { WORLDS, WORLD_IDS, MODES, makeQuestion, phaseSpec, reinforceQuestion, parseNoteName } from './worlds.js';
 import { drumStaff, clefStaff, legendHtml } from './draw.js';
 import { noteName } from './music.js';
@@ -64,13 +64,12 @@ function worldScreen(host, w, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const W = WORLDS[w]; const p = V.getP(me.id); const mode = modeArg === 'imagens' || modeArg === 'nomes' ? modeArg : getMode(); setMode(mode);
   if (w === 'duel' && !S.duelUnlocked(p)) { location.hash = BASE; return () => {}; }
-  const full = S.worldDone(p, w); const { scene, hud } = adventureMap({ w, p, mode, me });
-  host.append(topBar(BASE),
-    h('div', { class: 'adv-head' }, h('div', { class: 'adv-logo' }, 'pau', h('b', {}, 'L'), 'ta'), h('div', { class: 'adv-panel' }, h('b', {}, W.name), h('small', {}, full ? 'mundo concluído!' : 'escolha sua fase'))),
-    h('div', { class: 'row kd-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))),
-    scene, hud,
-    h('p', { class: 'lib-note' }, `${mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'} ⏱ = com tempo · 💥 = errou, recomeça · ⚔️ = desafio · 👑 = chefão do mundo. a aulinha do Paul abre ao concluir o mundo.`));
-  return () => {};
+  let stars = 0; for (let k = 1; k <= W.count; k++) stars += (p.ph[S.phKey(w, k, mode)] || {}).s || 0;
+  const holder = h('div', { class: 'pl-mapa' });
+  host.append(h('div', { class: 'row kd-modes pl-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))), holder);
+  const { hud, dispose } = worldMap(holder, { w, p, mode, me, stars });
+  host.append(hud, h('p', { class: 'lib-note' }, `${mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'} a última fase de cada mundo é o chefão. a aulinha do Paul abre ao concluir o mundo.`));
+  return dispose;
 }
 
 /* ---------- resultado ---------- */
