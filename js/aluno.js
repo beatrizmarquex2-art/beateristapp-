@@ -181,7 +181,7 @@ function shell(name) {
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'tocar') tocarView(view);
-    else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName });
+    else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);

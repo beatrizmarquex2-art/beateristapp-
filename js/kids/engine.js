@@ -4,7 +4,7 @@ import { audio, out, silence } from '../audio.js';
 import { session } from '../session.js';
 import { stars as sparkle } from '../ui.js';
 import { robo, tierOf } from './robo.js';
-import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
+import { levelSpec, levelTag, starsFor, pctOf, MAX_LEVEL } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
 import * as FB from '../feedback.js';
@@ -102,15 +102,15 @@ export function runLevel(game, ctx) {
 export async function showResult({ game, ctx, bot, stage, spec, right, total, stars, misses, mode = '', restarts = 0, pct: pctIn, note = '' }) {
   const { level, profile } = ctx; const pct = pctIn != null ? pctIn : pctOf(right, total);
   const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
-  const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
-  const next$ = level < 10 && stars >= 1;
+  const won = await Album.grantPacks(profile.id, gain); // pacotes de figurinhas (1 por estrela nova)
+  const next$ = level < MAX_LEVEL && stars >= 1;
   bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? FB.line('great') : stars >= 1 ? FB.line('win') : FB.line('lose'));
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));
   const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));
   const missList = [...new Set(misses)].map((k) => (game.hint ? game.hint(k) : '')).filter(Boolean);
   stage.replaceChildren(h('div', { class: 'kx-result' },
     h('h2', {}, stars >= 1 ? 'Fase concluída!' : 'Quase lá!'), pctEl, h('p', { class: 'muted' }, note || `${right} de ${total} certas${restarts ? ` · recomeçou ${restarts}×` : ''}`), starsEl,
-    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+    won ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won === 1 ? 'pacote novo de figurinhas!' : `${won} pacotes novos de figurinhas!`}`), h('a', { class: 'kd-btn', href: document.documentElement.classList.contains('aluno-on') ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')) : null,
     missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.slice(0, 4).map((t) => h('li', {}, t)))) : null,
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,

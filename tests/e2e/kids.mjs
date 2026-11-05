@@ -5,7 +5,7 @@ const { browser, ctx } = await launch();
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await page.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
-await page.goto(url + '/aluno.html#/kids');
+await page.goto(url + '/aluno.html#/jogos'); await page.waitForSelector('.al-card, main'); await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true); location.hash = '#/kids'; });
 await page.waitForSelector('.kx-g, .kx-cards');
 const go = async (h) => { await page.evaluate((x) => { location.hash = x; }, h); };
 const click = (sel) => page.evaluate((s) => { const e = document.querySelector(s); if (e && !e.disabled) { e.click(); return true; } return false; }, sel);

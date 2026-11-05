@@ -35,6 +35,8 @@ async function shrink(file) {
 }
 /** Abre o seletor de fotos. Com `multiple`, devolve uma lista (até 12). */
 export function pickImages(multiple = false) {
+  // Só a Bea adiciona fotos: na área dos alunos o seletor nunca abre (nenhuma tela de aluno tem esse botão; isto é a trava de garantia).
+  if (document.documentElement.classList.contains('aluno-on')) { toast('só a professora pode adicionar fotos.'); return Promise.resolve([]); }
   return new Promise((resolve) => {
     const input = h('input', { type: 'file', accept: 'image/*', 'aria-label': 'Escolher fotos' });
     if (multiple) input.multiple = true;

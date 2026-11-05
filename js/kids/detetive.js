@@ -49,7 +49,7 @@ export function runDetetive(game, ctx) {
   const { level, profile } = ctx; const spec = levelSpec(level, profile.age); const d = spec.d; let gone = false; let parts = (P.starsAt(profile.id, 'detetive', level) || 0); let cap = null; let mode = 'tela';
   const S = session(); // timers das partes 2 e 3 (a parte 1 usa o motor de fases, que tem a sessão dele)
   const done = []; // % de cada parte nesta sessão
-  const rec = async (stars, right, total, misses, m) => { const { gain } = await P.record(profile.id, { game: 'detetive', level, right, total, stars, misses, mode: m }); return Album.grant(profile.id, gain); };
+  const rec = async (stars, right, total, misses, m) => { const { gain } = await P.record(profile.id, { game: 'detetive', level, right, total, stars, misses, mode: m }); return Album.grantPacks(profile.id, gain); };
 
   // ---- parte 1: clicar (usa o motor de fases) ----
   const part1 = () => {
@@ -70,7 +70,7 @@ export function runDetetive(game, ctx) {
       h('p', { class: 'muted' }, `${label[step - 1]}: ${done[step - 1] != null ? `${done[step - 1]}% de acerto` : ''}${restarts ? ` · recomeçou ${restarts}×` : ''}`),
       h('div', { class: 'kx-stars', 'aria-label': `${have} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= have ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★'))),
       h('p', { class: 'muted kx-ladder' }, '⭐ clicar · ⭐⭐ escrever na partitura · ⭐⭐⭐ tocar'),
-      won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
+      won ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won === 1 ? 'pacote novo de figurinhas!' : `${won} pacotes novos de figurinhas!`}`), h('a', { class: 'kd-btn', href: document.documentElement.classList.contains('aluno-on') ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')) : null,
       h('div', { class: 'row kx-act' },
         ok && step < 3 ? h('button', { class: 'kd-btn', type: 'button', onclick: () => (step === 1 ? write(bot, stage) : play(bot, stage)) }, step === 1 ? '⭐⭐ escrever na partitura' : '⭐⭐⭐ tocar') : null,
         !ok ? h('button', { class: 'kd-btn', type: 'button', onclick: () => (step === 1 ? (cleanup(), part1()) : step === 2 ? write(bot, stage) : play(bot, stage)) }, 'tentar de novo') : null,

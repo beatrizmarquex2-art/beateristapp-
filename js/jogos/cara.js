@@ -2,41 +2,44 @@
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
-import { INSTRUMENTS, BY_ID, QUESTIONS } from './cara-data.js';
+import { BY_ID, QUESTIONS } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
-import { mountArtistas } from './cara-artistas.js';
 
 const ID = 'cara';
+/** Liga/desliga o tema musical (fotos do álbum). As fotos já são liberadas pros alunos no álbum, então fica ligado. */
+const MUSICAL_LIBERADO = true;
 
-/** Cara a cara com dois temas: instrumentos (o de sempre) e artistas (as figurinhas do álbum). A escolha fica salva. Com `opts.mission` (Modo Aventura) abre sempre os instrumentos. */
-export function mount(host, opts) {
-  if (opts && opts.mission) return mountInstrumentos(host, opts);
-  let ctl = null;
-  const open = (tema) => {
-    if (ctl) { try { ctl.destroy(); } catch { /* ok */ } }
-    setGame(ID, { tema });
-    ctl = tema === 'artistas' ? mountArtistas(host, { onTema: open }) : mountInstrumentos(host, { onTema: open });
+/** Dois temas no mesmo jogo: instrumentos (original) e "cara a cara musical" (artistas, Kids/Clássico). Missões do Aventura usam sempre os instrumentos. */
+/** opts (opcional): { mission: { params: { pool, manual } }, onResult } = Modo Aventura (sempre instrumentos). Sem opts.mission = Modo Livre. */
+export function mount(host, opts = {}) {
+  let inner = null;
+  let morto = false;
+  const abrir = async () => {
+    const musical = MUSICAL_LIBERADO && !opts.mission && getGame(ID).tema === 'musical';
+    const troca = (v) => { setGame(ID, { tema: v }); inner && inner.destroy && inner.destroy(); abrir(); };
+    if (musical) { const { mountMusical } = await import('./cara-musical/tela.js'); if (morto) return; inner = mountMusical(host, { onTema: troca }); } // importado só quando usa (some do build dos alunos)
+    else inner = mountInstrumentos(host, opts, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : troca });
   };
-  open(getGame(ID).tema === 'artistas' ? 'artistas' : 'instrumentos');
-  return { inProgress: () => ctl.inProgress(), restart: () => ctl.restart(), destroy: () => ctl.destroy() };
+  abrir();
+  return { inProgress: () => !!(inner && inner.inProgress()), restart: () => inner && inner.restart(), destroy: () => { morto = true; inner && inner.destroy(); } };
 }
 
-function mountInstrumentos(host, opts = {}) {
+function mountInstrumentos(host, opts, { onTema } = {}) {
+  const mission = opts && opts.mission ? opts : null; const MP = mission ? (mission.mission.params || {}) : null; let reported = false;
   let gone = false;
-  const saved = getGame(ID);
-  const prefs = { manual: saved.manual === true };
+  const saved = mission ? {} : getGame(ID);
+  const prefs = { manual: mission ? MP.manual === true : saved.manual === true };
   let g = null; let picked = null; let msg = '';
-  const root = h('div', { class: 'jg jg-cara' }); host.replaceChildren(root);
-  const persist = () => setGame(ID, { ...prefs, game: g && !g.over ? g : null, best: saved.best });
+  const root = h('div', { class: `jg jg-cara${mission ? ' jg-game jg-dark' : ''}` }); host.replaceChildren(root);
+  const persist = () => mission || setGame(ID, { ...prefs, game: g && !g.over ? g : null, best: saved.best });
 
   function intro() {
     g = null; picked = null;
     const resume = K.validGame(saved.game) && !saved.game.over ? saved.game : null;
     const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[[false, 'automático'], [true, 'manual']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.manual === v), class: prefs.manual === v ? 'on' : '', onclick: () => { prefs.manual = v; setGame(ID, { manual: v }); intro(); } }, l)));
+    const temaSeg = onTema ? h('div', {}, h('p', { class: 'jg-lab' }, 'tema'), h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'tema' }, ...[['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === 'instrumentos'), class: v === 'instrumentos' ? 'on' : '', onclick: () => { if (v !== 'instrumentos') onTema(v); } }, l)))) : null;
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara'),
-      opts.onTema ? h('p', { class: 'jg-lab' }, 'tema') : null, opts.onTema ? h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'tema' }, ...[['instrumentos', 'instrumentos'], ['artistas', 'artistas']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === 'instrumentos'), class: v === 'instrumentos' ? 'on' : '', onclick: () => { if (v !== 'instrumentos') opts.onTema(v); } }, l))) : null,
-      h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara'), temaSeg, h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
       h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg,
       h('p', { class: 'jg-p muted' }, prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.'),
       saved.best ? h('p', { class: 'jg-p muted' }, `seu recorde: ${saved.best} pergunta${saved.best === 1 ? '' : 's'}`) : null,
@@ -59,7 +62,7 @@ function mountInstrumentos(host, opts = {}) {
     const left = K.candidates(g).length;
     root.replaceChildren(...[
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(g.asked.length))), h('div', { class: 'jg-who' }, h('b', {}, 'chutes'), h('span', { 'aria-label': `${g.lives} de 3` }, '♥'.repeat(g.lives) + '♡'.repeat(K.LIVES - g.lives))), h('div', { class: 'jg-who' }, h('b', {}, 'em jogo'), h('span', {}, String(left)))),
-      h('div', { class: 'jg-cgrid', role: 'group', 'aria-label': 'instrumentos' }, ...INSTRUMENTS.map(card)),
+      h('div', { class: 'jg-cgrid', role: 'group', 'aria-label': 'instrumentos' }, ...K.boardOf(g).map(card)),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
       g.over ? result() : picked ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar chute' }, h('b', {}, `é o ${BY_ID[picked].name}?`), h('button', { class: 'btn small primary', type: 'button', onclick: () => doGuess(picked) }, 'sim, chutar'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { picked = null; draw(); } }, 'cancelar')) : null,
       !g.over ? h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...QUESTIONS.map((q) => h('button', { type: 'button', class: 'jg-qbtn', disabled: K.alreadyAsked(g, q.id), onclick: () => ask(q.id) }, q.text))) : null,
@@ -76,15 +79,16 @@ function mountInstrumentos(host, opts = {}) {
     if (ok) { msg = ''; sfx('win'); } else { msg = g.over ? '' : `não era o ${BY_ID[id].name}. ele sai do jogo.`; sfx(g.over ? 'lose' : 'bad'); }
     if (g.over && g.result.win && (!saved.best || g.asked.length < saved.best)) saved.best = g.asked.length;
     persist(); draw();
+    if (mission && g.over && !reported) { reported = true; mission.onResult({ win: g.result.win, questions: g.result.questions, wrong: g.result.wrong, lives: g.lives, manual: g.manual, size: K.boardOf(g).length, secret: g.secret }); }
   }
   function result() {
     const s = BY_ID[g.secret]; const r = g.result;
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, r.win ? 'acertou! 🤘' : 'acabaram os chutes'),
       h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${s.img}.webp`, alt: s.name }),
       h('p', {}, `o paul tinha escolhido: ${s.name}`), h('p', { class: 'muted' }, `${r.questions} pergunta${r.questions === 1 ? '' : 's'} · ${r.wrong} chute${r.wrong === 1 ? '' : 's'} errado${r.wrong === 1 ? '' : 's'}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      mission ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
-  intro();
+  if (mission) begin(K.newGame({ manual: prefs.manual, pool: Array.isArray(MP.pool) ? MP.pool : null })); else intro();
   return {
     inProgress: () => !!(g && !g.over && (g.asked.length || g.wrong.length)),
     restart: async () => { if (g && !g.over && (g.asked.length || g.wrong.length) && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },

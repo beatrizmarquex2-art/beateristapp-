@@ -1,0 +1,1625 @@
+{
+  "total_fotos": 125,
+  "total_entidades_canonicas": 86,
+  "nota": "Todas as fotos permanecem na coleção; atributos null exigem validação antes de gerar perguntas de sim/não. Não duplicar entidade por rodada. Duplas são entidades próprias.",
+  "entidades": [
+    {
+      "entidade_id": "s001",
+      "nome": "Beatriz Marques / Beaterista",
+      "fotos": [
+        {
+          "codigo": "F001",
+          "arquivo": "01_FOTOS_ORIGINAIS/F001.jpeg"
+        },
+        {
+          "codigo": "F004",
+          "arquivo": "01_FOTOS_ORIGINAIS/F004.jpeg"
+        },
+        {
+          "codigo": "F005",
+          "arquivo": "01_FOTOS_ORIGINAIS/F005.jpeg"
+        },
+        {
+          "codigo": "F010",
+          "arquivo": "01_FOTOS_ORIGINAIS/F010.jpeg"
+        },
+        {
+          "codigo": "F011",
+          "arquivo": "01_FOTOS_ORIGINAIS/F011.jpeg"
+        },
+        {
+          "codigo": "F012",
+          "arquivo": "01_FOTOS_ORIGINAIS/F012.jpeg"
+        },
+        {
+          "codigo": "F015",
+          "arquivo": "01_FOTOS_ORIGINAIS/F015.jpeg"
+        },
+        {
+          "codigo": "F129",
+          "arquivo": "01_FOTOS_ORIGINAIS/F129.jpeg"
+        },
+        {
+          "codigo": "F131",
+          "arquivo": "01_FOTOS_ORIGINAIS/F131.jpeg"
+        },
+        {
+          "codigo": "F132",
+          "arquivo": "01_FOTOS_ORIGINAIS/F132.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s002",
+      "nome": "Nirvana",
+      "fotos": [
+        {
+          "codigo": "F013",
+          "arquivo": "01_FOTOS_ORIGINAIS/F013.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s003",
+      "nome": "The Beatles",
+      "fotos": [
+        {
+          "codigo": "F014",
+          "arquivo": "01_FOTOS_ORIGINAIS/F014.jpeg"
+        },
+        {
+          "codigo": "F060",
+          "arquivo": "01_FOTOS_ORIGINAIS/F060.jpeg"
+        },
+        {
+          "codigo": "F061",
+          "arquivo": "01_FOTOS_ORIGINAIS/F061.jpeg"
+        },
+        {
+          "codigo": "F062",
+          "arquivo": "01_FOTOS_ORIGINAIS/F062.jpeg"
+        },
+        {
+          "codigo": "F063",
+          "arquivo": "01_FOTOS_ORIGINAIS/F063.jpeg"
+        },
+        {
+          "codigo": "F064",
+          "arquivo": "01_FOTOS_ORIGINAIS/F064.jpeg"
+        },
+        {
+          "codigo": "F065",
+          "arquivo": "01_FOTOS_ORIGINAIS/F065.jpeg"
+        },
+        {
+          "codigo": "F066",
+          "arquivo": "01_FOTOS_ORIGINAIS/F066.jpeg"
+        },
+        {
+          "codigo": "F067",
+          "arquivo": "01_FOTOS_ORIGINAIS/F067.jpeg"
+        },
+        {
+          "codigo": "F068",
+          "arquivo": "01_FOTOS_ORIGINAIS/F068.jpeg"
+        },
+        {
+          "codigo": "F069",
+          "arquivo": "01_FOTOS_ORIGINAIS/F069.jpeg"
+        },
+        {
+          "codigo": "F070",
+          "arquivo": "01_FOTOS_ORIGINAIS/F070.jpeg"
+        },
+        {
+          "codigo": "F071",
+          "arquivo": "01_FOTOS_ORIGINAIS/F071.jpeg"
+        },
+        {
+          "codigo": "F073",
+          "arquivo": "01_FOTOS_ORIGINAIS/F073.jpeg"
+        },
+        {
+          "codigo": "F074",
+          "arquivo": "01_FOTOS_ORIGINAIS/F074.jpeg"
+        },
+        {
+          "codigo": "F075",
+          "arquivo": "01_FOTOS_ORIGINAIS/F075.jpeg"
+        },
+        {
+          "codigo": "F088",
+          "arquivo": "01_FOTOS_ORIGINAIS/F088.jpeg"
+        },
+        {
+          "codigo": "F103",
+          "arquivo": "01_FOTOS_ORIGINAIS/F103.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s004",
+      "nome": "Justin Bieber e Billie Eilish",
+      "fotos": [
+        {
+          "codigo": "F016",
+          "arquivo": "01_FOTOS_ORIGINAIS/F016.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s005",
+      "nome": "John Bonham",
+      "fotos": [
+        {
+          "codigo": "F017",
+          "arquivo": "01_FOTOS_ORIGINAIS/F017.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s006",
+      "nome": "Eloy Casagrande",
+      "fotos": [
+        {
+          "codigo": "F018",
+          "arquivo": "01_FOTOS_ORIGINAIS/F018.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s007",
+      "nome": "Restart",
+      "fotos": [
+        {
+          "codigo": "F020",
+          "arquivo": "01_FOTOS_ORIGINAIS/F020.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s008",
+      "nome": "Terno Rei",
+      "fotos": [
+        {
+          "codigo": "F021",
+          "arquivo": "01_FOTOS_ORIGINAIS/F021.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s009",
+      "nome": "Mamonas Assassinas",
+      "fotos": [
+        {
+          "codigo": "F022",
+          "arquivo": "01_FOTOS_ORIGINAIS/F022.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s010",
+      "nome": "Legião Urbana",
+      "fotos": [
+        {
+          "codigo": "F023",
+          "arquivo": "01_FOTOS_ORIGINAIS/F023.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s011",
+      "nome": "Skank",
+      "fotos": [
+        {
+          "codigo": "F024",
+          "arquivo": "01_FOTOS_ORIGINAIS/F024.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s012",
+      "nome": "Chorão",
+      "fotos": [
+        {
+          "codigo": "F025",
+          "arquivo": "01_FOTOS_ORIGINAIS/F025.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s013",
+      "nome": "Renato Russo",
+      "fotos": [
+        {
+          "codigo": "F026",
+          "arquivo": "01_FOTOS_ORIGINAIS/F026.jpeg"
+        },
+        {
+          "codigo": "F033",
+          "arquivo": "01_FOTOS_ORIGINAIS/F033.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s014",
+      "nome": "Cássia Eller",
+      "fotos": [
+        {
+          "codigo": "F027",
+          "arquivo": "01_FOTOS_ORIGINAIS/F027.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s015",
+      "nome": "Caetano Veloso",
+      "fotos": [
+        {
+          "codigo": "F028",
+          "arquivo": "01_FOTOS_ORIGINAIS/F028.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s016",
+      "nome": "Lulu Santos",
+      "fotos": [
+        {
+          "codigo": "F029",
+          "arquivo": "01_FOTOS_ORIGINAIS/F029.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s017",
+      "nome": "Jota Quest",
+      "fotos": [
+        {
+          "codigo": "F030",
+          "arquivo": "01_FOTOS_ORIGINAIS/F030.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s018",
+      "nome": "Pitty",
+      "fotos": [
+        {
+          "codigo": "F031",
+          "arquivo": "01_FOTOS_ORIGINAIS/F031.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s019",
+      "nome": "Rita Lee",
+      "fotos": [
+        {
+          "codigo": "F032",
+          "arquivo": "01_FOTOS_ORIGINAIS/F032.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s020",
+      "nome": "Seu Jorge",
+      "fotos": [
+        {
+          "codigo": "F034",
+          "arquivo": "01_FOTOS_ORIGINAIS/F034.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s021",
+      "nome": "NX Zero",
+      "fotos": [
+        {
+          "codigo": "F035",
+          "arquivo": "01_FOTOS_ORIGINAIS/F035.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s022",
+      "nome": "Djavan",
+      "fotos": [
+        {
+          "codigo": "F036",
+          "arquivo": "01_FOTOS_ORIGINAIS/F036.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s023",
+      "nome": "Imagine Dragons",
+      "fotos": [
+        {
+          "codigo": "F037",
+          "arquivo": "01_FOTOS_ORIGINAIS/F037.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s024",
+      "nome": "Adam Levine",
+      "fotos": [
+        {
+          "codigo": "F038",
+          "arquivo": "01_FOTOS_ORIGINAIS/F038.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s025",
+      "nome": "Hayley Williams",
+      "fotos": [
+        {
+          "codigo": "F039",
+          "arquivo": "01_FOTOS_ORIGINAIS/F039.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s026",
+      "nome": "Linkin Park",
+      "fotos": [
+        {
+          "codigo": "F040",
+          "arquivo": "01_FOTOS_ORIGINAIS/F040.jpeg"
+        },
+        {
+          "codigo": "F041",
+          "arquivo": "01_FOTOS_ORIGINAIS/F041.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s027",
+      "nome": "Billie Eilish",
+      "fotos": [
+        {
+          "codigo": "F042",
+          "arquivo": "01_FOTOS_ORIGINAIS/F042.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s028",
+      "nome": "Raul Seixas",
+      "fotos": [
+        {
+          "codigo": "F043",
+          "arquivo": "01_FOTOS_ORIGINAIS/F043.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s029",
+      "nome": "Michael Jackson",
+      "fotos": [
+        {
+          "codigo": "F044",
+          "arquivo": "01_FOTOS_ORIGINAIS/F044.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s030",
+      "nome": "Metallica",
+      "fotos": [
+        {
+          "codigo": "F045",
+          "arquivo": "01_FOTOS_ORIGINAIS/F045.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s031",
+      "nome": "Led Zeppelin",
+      "fotos": [
+        {
+          "codigo": "F046",
+          "arquivo": "01_FOTOS_ORIGINAIS/F046.jpeg"
+        },
+        {
+          "codigo": "F095",
+          "arquivo": "01_FOTOS_ORIGINAIS/F095.jpeg"
+        },
+        {
+          "codigo": "F098",
+          "arquivo": "01_FOTOS_ORIGINAIS/F098.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s032",
+      "nome": "Queen",
+      "fotos": [
+        {
+          "codigo": "F047",
+          "arquivo": "01_FOTOS_ORIGINAIS/F047.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s033",
+      "nome": "KISS",
+      "fotos": [
+        {
+          "codigo": "F048",
+          "arquivo": "01_FOTOS_ORIGINAIS/F048.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s034",
+      "nome": "Green Day",
+      "fotos": [
+        {
+          "codigo": "F049",
+          "arquivo": "01_FOTOS_ORIGINAIS/F049.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s035",
+      "nome": "Guns N' Roses",
+      "fotos": [
+        {
+          "codigo": "F050",
+          "arquivo": "01_FOTOS_ORIGINAIS/F050.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s036",
+      "nome": "The Rolling Stones",
+      "fotos": [
+        {
+          "codigo": "F051",
+          "arquivo": "01_FOTOS_ORIGINAIS/F051.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s037",
+      "nome": "Angus Young",
+      "fotos": [
+        {
+          "codigo": "F052",
+          "arquivo": "01_FOTOS_ORIGINAIS/F052.jpeg"
+        },
+        {
+          "codigo": "F108",
+          "arquivo": "01_FOTOS_ORIGINAIS/F108.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s038",
+      "nome": "AC/DC — Angus Young e Brian Johnson",
+      "fotos": [
+        {
+          "codigo": "F053",
+          "arquivo": "01_FOTOS_ORIGINAIS/F053.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s039",
+      "nome": "Red Hot Chili Peppers",
+      "fotos": [
+        {
+          "codigo": "F054",
+          "arquivo": "01_FOTOS_ORIGINAIS/F054.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s040",
+      "nome": "Oasis",
+      "fotos": [
+        {
+          "codigo": "F055",
+          "arquivo": "01_FOTOS_ORIGINAIS/F055.jpeg"
+        },
+        {
+          "codigo": "F092",
+          "arquivo": "01_FOTOS_ORIGINAIS/F092.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s041",
+      "nome": "Paramore",
+      "fotos": [
+        {
+          "codigo": "F056",
+          "arquivo": "01_FOTOS_ORIGINAIS/F056.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s042",
+      "nome": "Blink-182",
+      "fotos": [
+        {
+          "codigo": "F057",
+          "arquivo": "01_FOTOS_ORIGINAIS/F057.jpeg"
+        },
+        {
+          "codigo": "F099",
+          "arquivo": "01_FOTOS_ORIGINAIS/F099.jpeg"
+        },
+        {
+          "codigo": "F110",
+          "arquivo": "01_FOTOS_ORIGINAIS/F110.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s043",
+      "nome": "Avril Lavigne",
+      "fotos": [
+        {
+          "codigo": "F058",
+          "arquivo": "01_FOTOS_ORIGINAIS/F058.jpeg"
+        },
+        {
+          "codigo": "F115",
+          "arquivo": "01_FOTOS_ORIGINAIS/F115.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s044",
+      "nome": "Black Sabbath",
+      "fotos": [
+        {
+          "codigo": "F059",
+          "arquivo": "01_FOTOS_ORIGINAIS/F059.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s045",
+      "nome": "John Lennon — The Beatles",
+      "fotos": [
+        {
+          "codigo": "F072",
+          "arquivo": "01_FOTOS_ORIGINAIS/F072.jpeg"
+        },
+        {
+          "codigo": "F090",
+          "arquivo": "01_FOTOS_ORIGINAIS/F090.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s046",
+      "nome": "Slipknot",
+      "fotos": [
+        {
+          "codigo": "F076",
+          "arquivo": "01_FOTOS_ORIGINAIS/F076.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s047",
+      "nome": "System of a Down",
+      "fotos": [
+        {
+          "codigo": "F077",
+          "arquivo": "01_FOTOS_ORIGINAIS/F077.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s048",
+      "nome": "Muse",
+      "fotos": [
+        {
+          "codigo": "F078",
+          "arquivo": "01_FOTOS_ORIGINAIS/F078.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s049",
+      "nome": "Arctic Monkeys",
+      "fotos": [
+        {
+          "codigo": "F079",
+          "arquivo": "01_FOTOS_ORIGINAIS/F079.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s050",
+      "nome": "Coldplay",
+      "fotos": [
+        {
+          "codigo": "F080",
+          "arquivo": "01_FOTOS_ORIGINAIS/F080.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s051",
+      "nome": "The Strokes",
+      "fotos": [
+        {
+          "codigo": "F081",
+          "arquivo": "01_FOTOS_ORIGINAIS/F081.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s052",
+      "nome": "The Neighbourhood",
+      "fotos": [
+        {
+          "codigo": "F082",
+          "arquivo": "01_FOTOS_ORIGINAIS/F082.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s053",
+      "nome": "The 1975",
+      "fotos": [
+        {
+          "codigo": "F083",
+          "arquivo": "01_FOTOS_ORIGINAIS/F083.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s054",
+      "nome": "Polyphia",
+      "fotos": [
+        {
+          "codigo": "F084",
+          "arquivo": "01_FOTOS_ORIGINAIS/F084.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s055",
+      "nome": "Bring Me the Horizon",
+      "fotos": [
+        {
+          "codigo": "F085",
+          "arquivo": "01_FOTOS_ORIGINAIS/F085.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s056",
+      "nome": "Tim Henson",
+      "fotos": [
+        {
+          "codigo": "F086",
+          "arquivo": "01_FOTOS_ORIGINAIS/F086.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s057",
+      "nome": "John Lennon e Paul McCartney — The Beatles",
+      "fotos": [
+        {
+          "codigo": "F087",
+          "arquivo": "01_FOTOS_ORIGINAIS/F087.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s058",
+      "nome": "Flea",
+      "fotos": [
+        {
+          "codigo": "F089",
+          "arquivo": "01_FOTOS_ORIGINAIS/F089.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s059",
+      "nome": "Thom Yorke — Radiohead",
+      "fotos": [
+        {
+          "codigo": "F091",
+          "arquivo": "01_FOTOS_ORIGINAIS/F091.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s060",
+      "nome": "Justin Bieber",
+      "fotos": [
+        {
+          "codigo": "F093",
+          "arquivo": "01_FOTOS_ORIGINAIS/F093.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s061",
+      "nome": "Bad Bunny",
+      "fotos": [
+        {
+          "codigo": "F094",
+          "arquivo": "01_FOTOS_ORIGINAIS/F094.jpeg"
+        },
+        {
+          "codigo": "F106",
+          "arquivo": "01_FOTOS_ORIGINAIS/F106.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s062",
+      "nome": "Radiohead",
+      "fotos": [
+        {
+          "codigo": "F096",
+          "arquivo": "01_FOTOS_ORIGINAIS/F096.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s063",
+      "nome": "George Harrison — The Beatles",
+      "fotos": [
+        {
+          "codigo": "F097",
+          "arquivo": "01_FOTOS_ORIGINAIS/F097.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s064",
+      "nome": "John Mayer",
+      "fotos": [
+        {
+          "codigo": "F100",
+          "arquivo": "01_FOTOS_ORIGINAIS/F100.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s065",
+      "nome": "Twenty One Pilots",
+      "fotos": [
+        {
+          "codigo": "F101",
+          "arquivo": "01_FOTOS_ORIGINAIS/F101.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s066",
+      "nome": "Jimi Hendrix",
+      "fotos": [
+        {
+          "codigo": "F102",
+          "arquivo": "01_FOTOS_ORIGINAIS/F102.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s067",
+      "nome": "AC/DC",
+      "fotos": [
+        {
+          "codigo": "F104",
+          "arquivo": "01_FOTOS_ORIGINAIS/F104.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s068",
+      "nome": "Bon Jovi",
+      "fotos": [
+        {
+          "codigo": "F105",
+          "arquivo": "01_FOTOS_ORIGINAIS/F105.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s069",
+      "nome": "Dave Grohl — Nirvana",
+      "fotos": [
+        {
+          "codigo": "F107",
+          "arquivo": "01_FOTOS_ORIGINAIS/F107.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s070",
+      "nome": "Alex Turner",
+      "fotos": [
+        {
+          "codigo": "F109",
+          "arquivo": "01_FOTOS_ORIGINAIS/F109.jpeg"
+        },
+        {
+          "codigo": "F130",
+          "arquivo": "01_FOTOS_ORIGINAIS/F130.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s071",
+      "nome": "Charlie Brown Jr.",
+      "fotos": [
+        {
+          "codigo": "F111",
+          "arquivo": "01_FOTOS_ORIGINAIS/F111.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s072",
+      "nome": "Paul McCartney e Michael Jackson",
+      "fotos": [
+        {
+          "codigo": "F112",
+          "arquivo": "01_FOTOS_ORIGINAIS/F112.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s073",
+      "nome": "Amy Winehouse",
+      "fotos": [
+        {
+          "codigo": "F113",
+          "arquivo": "01_FOTOS_ORIGINAIS/F113.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s074",
+      "nome": "Britney Spears",
+      "fotos": [
+        {
+          "codigo": "F114",
+          "arquivo": "01_FOTOS_ORIGINAIS/F114.jpeg"
+        },
+        {
+          "codigo": "F118",
+          "arquivo": "01_FOTOS_ORIGINAIS/F118.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s075",
+      "nome": "Limp Bizkit",
+      "fotos": [
+        {
+          "codigo": "F116",
+          "arquivo": "01_FOTOS_ORIGINAIS/F116.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s076",
+      "nome": "Eminem",
+      "fotos": [
+        {
+          "codigo": "F117",
+          "arquivo": "01_FOTOS_ORIGINAIS/F117.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s077",
+      "nome": "Elvis Presley",
+      "fotos": [
+        {
+          "codigo": "F119",
+          "arquivo": "01_FOTOS_ORIGINAIS/F119.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s078",
+      "nome": "Cazuza",
+      "fotos": [
+        {
+          "codigo": "F120",
+          "arquivo": "01_FOTOS_ORIGINAIS/F120.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s079",
+      "nome": "Ed Sheeran",
+      "fotos": [
+        {
+          "codigo": "F121",
+          "arquivo": "01_FOTOS_ORIGINAIS/F121.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s080",
+      "nome": "Shawn Mendes",
+      "fotos": [
+        {
+          "codigo": "F122",
+          "arquivo": "01_FOTOS_ORIGINAIS/F122.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s081",
+      "nome": "Axl Rose",
+      "fotos": [
+        {
+          "codigo": "F123",
+          "arquivo": "01_FOTOS_ORIGINAIS/F123.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s082",
+      "nome": "Slash",
+      "fotos": [
+        {
+          "codigo": "F124",
+          "arquivo": "01_FOTOS_ORIGINAIS/F124.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s083",
+      "nome": "My Chemical Romance",
+      "fotos": [
+        {
+          "codigo": "F125",
+          "arquivo": "01_FOTOS_ORIGINAIS/F125.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s084",
+      "nome": "Gorillaz",
+      "fotos": [
+        {
+          "codigo": "F126",
+          "arquivo": "01_FOTOS_ORIGINAIS/F126.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s085",
+      "nome": "Post Malone",
+      "fotos": [
+        {
+          "codigo": "F127",
+          "arquivo": "01_FOTOS_ORIGINAIS/F127.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    },
+    {
+      "entidade_id": "s086",
+      "nome": "Sabrina Carpenter",
+      "fotos": [
+        {
+          "codigo": "F128",
+          "arquivo": "01_FOTOS_ORIGINAIS/F128.jpeg"
+        }
+      ],
+      "atributos_de_entidade": {
+        "eh_banda": null,
+        "eh_artista_solo": null,
+        "eh_dupla_ou_colaboracao": null,
+        "brasileiro": null
+      },
+      "fototags_revisadas": false
+    }
+  ]
+}
