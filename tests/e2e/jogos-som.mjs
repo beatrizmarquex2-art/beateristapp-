@@ -10,7 +10,7 @@ for (const [id, start, play] of [
   ['velha', 'button:has-text("iniciar")', '.jg-cell:not([disabled])'],
   ['cartas', 'button:has-text("iniciar")', '.jg-hbtn:not([disabled])'],
 ]) {
-  await page.goto(`${url}/aluno.html#/jogos/${id}`); await sleep(1200);
+  await page.goto(`${url}/aluno.html#/jogos/${id}/livre`); await sleep(1200);
   const ini = page.locator(start).first(); if (await ini.count()) await ini.click(); await sleep(600);
   const s0 = await started();
   const alvo = page.locator(play).first();
