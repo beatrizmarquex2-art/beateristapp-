@@ -44,6 +44,7 @@ import * as planos from './views/planos.js';
 import * as kids from './views/kids.js';
 import * as ata from './views/ata.js';
 import * as acessos from './views/acessos.js';
+import * as codigos from './views/codigos.js';
 import { remember } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
@@ -256,6 +257,7 @@ function shell() {
       case 'planos': c = planos.mount(view, r.parts); break;
       case 'ata': c = ata.mount(view, r.parts); break;
       case 'acessos': c = acessos.mount(view); break;
+      case 'codigos': c = codigos.mount(view); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
       case 'lembretes': c = lembretes.mount(view); break;

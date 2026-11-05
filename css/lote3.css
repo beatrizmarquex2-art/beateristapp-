@@ -561,3 +561,11 @@ html[data-theme] .card.mini-list { background: #7a1226; border-color: #4a0a16; b
 .rg-pubck input { width: 24px; height: 24px; flex: none; accent-color: #7a1226; }
 .rg-pubck small { display: block; }
 .rg-list { max-height: 60vh; overflow-y: auto; }
+
+/* importar código de aluno */
+.cod-ta{min-height:130px;font:15px/1.4 ui-monospace,Menlo,monospace;resize:vertical}
+.cod-qtd{max-width:110px}
+.cod-wrap{overflow-x:auto}
+.cod-tbl{width:100%;border-collapse:collapse;font-size:14px}.cod-tbl th,.cod-tbl td{padding:8px 6px;border-bottom:1px solid rgb(0 0 0 / .12);text-align:left;vertical-align:middle}
+.cod-tbl tr.off td{opacity:.5}.cod-act{white-space:nowrap}
+.cod-new{border:2px solid var(--accent)}
