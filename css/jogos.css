@@ -700,7 +700,8 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 .ma-esc{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .ma-esc-b{display:grid;gap:4px;justify-items:center;text-align:center;min-height:120px;padding:16px;border:3px solid #14203a;border-radius:16px;background:#fffaf0;color:#14203a;font:inherit;text-decoration:none;box-shadow:0 5px 0 #6e1423;cursor:pointer}
 .ma-esc-b:active{transform:translateY(3px);box-shadow:0 2px 0 #6e1423}.ma-esc-i{font-size:38px}.ma-esc-b b{font-size:18px}.ma-esc-b small{color:#555}
-.cx-lbl{position:absolute;left:4%;right:4%;bottom:5%;text-align:center;font:700 1.05em/1.05 var(--font-hand,inherit);color:#14203a;z-index:2;pointer-events:none;text-shadow:0 0 .3em #fffdf7,0 0 .3em #fffdf7}
+.cx-lbl{display:none;position:absolute;left:4%;right:4%;bottom:5%;text-align:center;font:700 1.05em/1.05 var(--font-hand,inherit);color:#14203a;z-index:2;pointer-events:none;text-shadow:0 0 .3em #fffdf7,0 0 .3em #fffdf7}
 .cx-learn{position:fixed;inset:0;z-index:70;background:#14203acc;display:grid;place-items:center;padding:16px}
 .cx-learn-in{background:#f5ead2;color:#14203a;border:3px solid #14203a;border-radius:16px;padding:16px;max-width:360px;width:100%;display:grid;gap:8px;justify-items:center;text-align:center;box-shadow:0 6px 0 #6e1423}
 .cx-learn-card{--cw:120px;display:grid;place-items:center;margin:4px}.cx-learn-in h3{margin:0;font-size:24px}.cx-learn-in p{margin:0}
+.cx-names .cx-lbl{display:block}

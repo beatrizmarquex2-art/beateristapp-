@@ -8,6 +8,8 @@ await p.goto(`${url}/aluno.html#/jogos/cartas/livre`); await sleep(1000);
 const jog = p.locator('button:has-text("JOGAR")'); if (await jog.count()) await jog.click();
 await p.waitForSelector('[aria-label="aprender"], [role=radiogroup]', { timeout: 10000 });
 check('opção "modo aprender" no menu', (await p.locator('text=modo aprender').count()) === 1);
+check('nome nas cartas e modo aprender vêm desligados (opcionais)', (await p.locator('.cx-names').count()) === 0 && (await p.locator('[aria-checked=true]:has-text("jogo normal")').count()) === 1);
+await p.locator('button:has-text("mostrar o nome em cada carta")').click();
 await p.locator('button:has-text("pausar a cada figura jogada")').click();
 await p.locator('button:has-text("jogar"), .jg-go, button.primary').first().click().catch(() => {}); await p.waitForSelector('.cx-hc', { timeout: 10000 });
 check('cada figura da mão mostra o nome', await p.evaluate(() => [...document.querySelectorAll('.cx-hc .cx-card:not(.act) .cx-lbl')].length > 0 && [...document.querySelectorAll('.cx-hc .cx-lbl')].every((e) => e.textContent.length > 3)));

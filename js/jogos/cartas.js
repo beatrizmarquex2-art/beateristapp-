@@ -53,14 +53,14 @@ export function mount(host, opts) {
   const saved = adv ? {} : getGame(ID);
   const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
-    hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false, learn: saved.learn === true,
+    hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false, learn: saved.learn === true, names: saved.names === true,
   };
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;
   let conn = null; let lob = null; const badge = linkBadge();
   let stage = null; let handEl = null; let deckEl = null; let pileEl = null; let tip = null; let tipT = 0; let ro = null; let lastW = 0;
-  const root = h('div', { class: 'jg jg-cartas cx' }); host.replaceChildren(root);
+  const root = h('div', { class: 'jg jg-cartas cx' }); host.replaceChildren(root); root.classList.toggle('cx-names', !!prefs.names);
 
   /* ----- utilidades ----- */
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); if (!gone) fn(); }, ms); timers.add(id); return id; };
@@ -146,7 +146,8 @@ export function mount(host, opts) {
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       h('p', { class: 'jg-lab' }, 'dicas'), seg('dicas', [['com', 'cartas que servem brilham'], ['sem', 'sem dica']], prefs.hint, (v) => { prefs.hint = v; keepPrefs(); }),
       h('p', { class: 'jg-lab' }, 'ajuda dos nomes'), seg('ajuda', [['on', 'mostrar o nome da carta da mesa'], ['off', 'desligada']], prefs.help ? 'on' : 'off', (v) => { prefs.help = v === 'on'; keepPrefs(); }),
-      h('p', { class: 'jg-lab' }, 'modo aprender'), seg('aprender', [['off', 'jogo normal'], ['on', 'pausar a cada figura jogada']], prefs.learn ? 'on' : 'off', (v) => { prefs.learn = v === 'on'; keepPrefs(); }),
+      h('p', { class: 'jg-lab' }, 'nome da figura nas cartas (opcional)'), seg('nomes', [['off', 'sem nome'], ['on', 'mostrar o nome em cada carta']], prefs.names ? 'on' : 'off', (v) => { prefs.names = v === 'on'; root.classList.toggle('cx-names', prefs.names); keepPrefs(); }),
+      h('p', { class: 'jg-lab' }, 'modo aprender (opcional)'), seg('aprender', [['off', 'jogo normal'], ['on', 'pausar a cada figura jogada']], prefs.learn ? 'on' : 'off', (v) => { prefs.learn = v === 'on'; keepPrefs(); }),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
