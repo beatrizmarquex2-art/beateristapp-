@@ -11,14 +11,14 @@ async function rpc(fn, body) {
   return r.json();
 }
 export const codeOf = (pid) => P.progOf(pid).codigo || '';
-const snapOf = (me) => snapshot(me.name, P.progOf(me.id));
+const snapOf = (me, nome) => snapshot(nome || P.progOf(me.id).nomeAlbum || me.name, P.progOf(me.id));
 
 /** Cria o código (ou salva de novo se já tem). Devolve o código. Lança erro sem internet / sem a tabela. */
-export async function create(me) {
+export async function create(me, nome) {
   const have = codeOf(me.id);
-  const rows = await rpc('album_guardar', { p_code: have || null, p_dados: snapOf(me) });
+  const rows = await rpc('album_guardar', { p_code: have || null, p_dados: snapOf(me, nome) });
   const code = rows && rows[0] && rows[0].code; if (!code) throw new Error('sem código');
-  if (code !== have) await P.patch(me.id, { codigo: code });
+  if (code !== have || (nome && nome !== P.progOf(me.id).nomeAlbum)) await P.patch(me.id, { codigo: code, ...(nome ? { nomeAlbum: nome } : {}) });
   return code;
 }
 /** Lê o álbum de um código (sem mudar nada). null = código não existe. */
