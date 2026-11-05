@@ -37,7 +37,8 @@ export function runToque(game, ctx) {
     const modeBtns = h('div', { class: 'row kd-modes' }, ...[['tela', '📱 na tela'], ['mic', '🎙 pad ou bateria']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { mode = k; intro(); } }, t)));
     const base = toquePattern(spec.d).bpm;
     const bpmRow = h('div', { class: 'row kd-modes' }, h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'menos 5 BPM', onclick: () => { bpmAdj = Math.max(-30, bpmAdj - 5); intro(); } }, '−'), h('b', {}, `${base + bpmAdj} BPM`), h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'mais 5 BPM', onclick: () => { bpmAdj = Math.min(40, bpmAdj + 5); intro(); } }, '+'));
-    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${spec.rounds} ritmos pra ler e tocar · ${mode === 'mic' ? '🎙 toca no seu pad de estudo ou na bateria (o microfone escuta)' : '📱 toca na tela'}`),
+    const tier = level <= 3 ? 'iniciante' : level <= 7 ? 'intermediário' : 'avançado';
+    stage.replaceChildren(introBox(spec, [h('p', { class: 'kx-tag' }, `modo ${tier}`), h('p', { class: 'muted' }, `${spec.rounds} ritmos pra ler e tocar · ${mode === 'mic' ? '🎙 toca no seu pad de estudo ou na bateria (o microfone escuta)' : '📱 toca na tela'}`),
       modeBtns, bpmRow, spec.sudden ? h('p', { class: 'muted' }, '💥 se errar um ritmo, a fase recomeça.') : null,
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };

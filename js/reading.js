@@ -16,15 +16,14 @@ export const CELLS = [
   { p: '0111', lv: 3, name: 'pausa de semi + três semis' },
 ];
 export const LEVEL_NAMES = { 1: 'nível 1 · semínima e colcheia', 2: 'nível 2 · semicolcheias', 3: 'nível 3 · pontuadas e síncopes' };
-/** Caminho da leitura: 2 exercícios por nível, subindo aos poucos. Cada um só abre depois de tirar PASS_SCORE no anterior. */
-export const PATH = [
-  { lv: 1, n: 1, bar: ['1000', '1000', '1000', '1000'] },
-  { lv: 1, n: 2, bar: ['1000', '1010', '1000', '1010'] },
-  { lv: 2, n: 1, bar: ['1010', '1111', '1010', '1000'] },
-  { lv: 2, n: 2, bar: ['1111', '1011', '1110', '1000'] },
-  { lv: 3, n: 1, bar: ['1001', '1000', '1100', '1000'] },
-  { lv: 3, n: 2, bar: ['1101', '1001', '0111', '1000'] },
-];
+/** Os 3 modos da leitura. O iniciante tem mais exercícios (as crianças ficam mais tempo na primeira parte); cada um abre depois de tirar PASS_SCORE no anterior. */
+export const TIERS = [{ id: 'ini', name: 'iniciante', lv: 1, about: 'semínima, pausa e colcheias' }, { id: 'int', name: 'intermediário', lv: 2, about: 'semicolcheias' }, { id: 'ava', name: 'avançado', lv: 3, about: 'pontuadas, síncopes e variações' }];
+const BARS = {
+  ini: [['1000', '1000', '1000', '1000'], ['1000', '1000', '1000', '0000'], ['1000', '1000', '0000', '1000'], ['1000', '1010', '1000', '1000'], ['1010', '1000', '1010', '1000'], ['1000', '1010', '1010', '1000'], ['1010', '1010', '1000', '0000'], ['1010', '1000', '1010', '1010']],
+  int: [['1000', '1111', '1000', '1000'], ['1010', '1111', '1010', '1000'], ['1111', '1000', '1111', '1000'], ['1011', '1000', '1011', '1000'], ['1000', '0010', '1010', '1000'], ['1111', '1011', '1110', '1010']],
+  ava: [['1001', '1000', '1001', '1000'], ['1100', '1000', '1100', '1000'], ['1101', '1010', '1101', '1000'], ['0111', '1000', '0111', '1000'], ['1001', '1100', '1101', '1000'], ['1101', '0111', '1001', '1100']],
+};
+export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar })));
 export const PASS_SCORE = 70;
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
