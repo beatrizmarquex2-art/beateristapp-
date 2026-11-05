@@ -232,3 +232,6 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 
 - **Deploy dos alunos feito (05/11/2026, cache v264)** a partir da `main` 30db8ef: álbum, código de aluno, ritmo só com código, pauLta com mapa novo e plantinhas, Quiz e Letras. Ficaram de fora: `cara-musical`, `claude/mapa-turne-do-vinil`, `aventura-toca-aqui`. O visual novo (meio pixel) do pauLta é só mockup, não foi aplicado.
 - Adesivos do Épico rosa (`assets/figurinhas/adesivos/`: carinha apaixonada, coração e estrela enviados pela Bea, fundo branco removido): colados com borda branca em volta da cartinha quando `tema: 'rosa'` (`adesivo()` em `postar.js`).
+
+- **Bingo antigo (4×4) preservado**: `js/jogos/bingo1.js` + `bingo1-logic.js` só alimentam as missões do Modo Aventura (`js/campanha/jogos/bingo.js`). O Bingo novo (`bingo.js`/`bingo-logic.js`) é o modo livre (`#/jogos/bingo/livre`; convite `?sala=` abre direto o livre).
+- **Pendente (nov/2026)**: aplicar `supabase/009_bingo_salas.sql` no Supabase (a aprovação do chat expirou); sem isso o Bingo online mostra aviso de serviço indisponível, e os outros modos funcionam. Publicado: `main` e alunos (cache v266).
