@@ -5,7 +5,7 @@ const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } })
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e))); page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|ERR_INTERNET/.test(m.text())) errs.push(m.text()); });
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch (e) {} });
-await page.goto(url + '/aluno.html#/kids'); await page.waitForSelector('.kx-g, .kx-cards');
+await page.goto(url + '/aluno.html#/jogos'); await page.waitForSelector('.al-card, main'); await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true); location.hash = '#/kids'; }); await page.waitForSelector('.kx-g, .kx-cards');
 const go = (x) => page.evaluate((v) => { location.hash = v; }, x);
 const states = () => page.evaluate(() => [...document.querySelectorAll('.mp-node')].map((n) => n.className.match(/st-(\w+)/)[1]));
 const hash = () => page.evaluate(() => location.hash);
@@ -40,7 +40,7 @@ check('comemoração só ao voltar de uma conclusão nova', await page.evaluate(
 check('caminho aceso até a fase atual', await page.evaluate(() => !!document.querySelector('.mp-lit')));
 
 // recarregar: tudo restaurado, sem comemorar de novo
-await page.reload(); await page.waitForSelector('.mp-node'); await sleep(900);
+const hh = await page.evaluate(() => location.hash); await page.goto(url + '/aluno.html#/jogos'); await page.reload(); await page.waitForSelector('main'); await page.evaluate(async (x) => { (await import('/js/acesso.js')).definir(true); location.hash = x; }, hh); await page.waitForSelector('.mp-node'); await sleep(900);
 st = await states();
 check('depois de recarregar o progresso continua', st[0] === 'done' && st[1] === 'current', st.join());
 check('recarregar não comemora de novo', await page.evaluate(() => !document.querySelector('.mp-node.pop')));
