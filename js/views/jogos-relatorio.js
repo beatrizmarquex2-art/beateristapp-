@@ -6,7 +6,7 @@ import { banner } from '../ui.js';
 // [nome, ícone, o que é, [o que desenvolve], como ajuda na aprendizagem]
 const GROUPS = [
   ['Ritmo e bateria', [
-    ['Jogos de ritmo', 'ritmo.svg', 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, XP e ranking.',
+    ['Jogos de ritmo', 'ritmo.webp', 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, XP e ranking.',
       ['coordenação motora e precisão de tempo', 'atenção sustentada e tempo de reação', 'percepção de pulso e andamento'],
       'O retorno imediato (acertou, adiantou, atrasou) mostra ao aluno o próprio tempo sem a fala do professor. Pontos e ranking dão motivo para repetir, e a repetição com meta é o que fixa o pulso.'],
     ['Monte seu ritmo', 'monte.svg', 'O aluno monta ritmos com palavras do dia a dia (pão, bolo, chocolate) e ouve o resultado.',
@@ -20,15 +20,15 @@ const GROUPS = [
       'Repetir de ouvido é a base de tocar com outras pessoas. Treina reter uma frase rítmica na memória de trabalho e devolver no tempo, habilidade usada em toda aula de instrumento.'],
   ]],
   ['Leitura musical', [
-    ['Figuras rítmicas', 'figuras.svg', 'Fases para reconhecer figuras e pausas, saber quanto cada uma dura e compará-las.',
+    ['Figuras rítmicas', 'figuras.webp', 'Fases para reconhecer figuras e pausas, saber quanto cada uma dura e compará-las.',
       ['leitura de figuras e pausas', 'proporção e frações (1, 1/2, 1/4…)', 'contagem de tempos'],
       'Liga a matemática da duração à música: o aluno entende por que uma mínima vale duas semínimas. Isso sustenta a leitura de partitura e a contagem em voz alta.'],
-    ['Onde mora na pauta?', 'pauta.svg', 'Cada peça da bateria tem a sua casinha na pauta; o aluno descobre qual é qual.',
+    ['Onde mora na pauta?', 'pauta.webp', 'Cada peça da bateria tem a sua casinha na pauta; o aluno descobre qual é qual.',
       ['leitura de partitura de bateria', 'orientação espacial (linhas e espaços)', 'associação peça × posição'],
       'Dá o primeiro passo para ler partitura de bateria com a peça que o aluno já conhece. Ver e ouvir a peça junto da posição acelera a memorização.'],
   ]],
   ['Cartas e tabuleiro', [
-    ['Jogo da memória', 'memoria.svg', 'Cartas desenhadas (instrumentos, bandas, figuras, profissões, palco e estúdio) para achar os pares, em 4, 8 ou 12 pares.',
+    ['Jogo da memória', 'memoria.webp', 'Cartas desenhadas (instrumentos, bandas, figuras, profissões, palco e estúdio) para achar os pares, em 4, 8 ou 12 pares.',
       ['memória visual e de trabalho', 'atenção e concentração', 'vocabulário e cultura musical'],
       'Cada par achado é uma retomada do nome e da imagem, o que reforça o repertório cultural (bandas, profissões, equipamentos). O recorde pessoal dá meta clara e incentiva a repetir.'],
     ['Uno Musical', 'cartas.webp', 'Jogo de cartas com números e figuras: descartar combinando soma de durações, cor ou tipo, até sobrar uma carta.',
@@ -62,7 +62,7 @@ const GROUPS = [
       'Os cruzamentos funcionam como confirmação: se uma letra não encaixa, o aluno revê a resposta. Boa para fixar termos de estudo e técnica.'],
   ]],
   ['Fases e estrelas', [
-    ['Fases e estrelas', 'fases.svg', 'Jogadores com progresso: cada fase vale até 3 estrelas pela porcentagem de acerto, e as estrelas liberam as próximas fases e figurinhas.',
+    ['Fases e estrelas', 'fases.webp', 'Jogadores com progresso: cada fase vale até 3 estrelas pela porcentagem de acerto, e as estrelas liberam as próximas fases e figurinhas.',
       ['persistência e meta pessoal', 'prática espaçada (voltar para melhorar as estrelas)', 'autoestima por progresso visível'],
       'O progresso por estrelas mostra o avanço sem comparar com os outros. Fases trancadas incentivam completar a anterior antes de seguir, na ordem em que o conteúdo se constrói.'],
   ]],

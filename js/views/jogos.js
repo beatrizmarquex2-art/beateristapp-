@@ -19,8 +19,8 @@ import * as Acesso from '../acesso.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca.svg', toca, 'ler, ouvir, repetir · microfone'],
-  ['dicas', 'jogos das dicas', 'quiz.svg', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
+  ['toca', 'Toca Aqui', 'toca.webp', toca, 'ler, ouvir, repetir · microfone'],
+  ['dicas', 'jogos das dicas', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -34,20 +34,20 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
   ['ritmo e bateria', [
-    link('#/ritmo', 'jogos de ritmo', 'ritmo.svg', 'toca no tempo e ganha XP'),
+    link('#/ritmo', 'jogos de ritmo', 'ritmo.webp', 'toca no tempo e ganha XP'),
     inner('toca'),
   ]],
   ['leitura musical', [
-    link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
-    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.svg', 'cada peça tem a sua casinha'),
+    link('#/kids/figuras', 'figuras rítmicas', 'figuras.webp', 'semibreve, mínima…'),
+    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
   ]],
   ['cartas e tabuleiro', [
-    link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
+    link('#/kids/memoria', 'jogo da memória', 'memoria.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['jogos das dicas', [inner('dicas')]],
   ['fases e relatório', [
-    link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
+    link('#/kids', 'fases e estrelas', 'fases.webp', 'jogadores, álbum e coleção'),
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
   ]],
 ];
