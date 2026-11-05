@@ -33,11 +33,14 @@ for (let i = 0; i < 22 && !(await page.locator('.lv-slot.got').count()); i++) { 
 await page.locator('.lv-slot.got').first().click(); await sleep(500);
 check('detalhe abre', await page.locator('.fig-zoom > svg').count() === 1);
 await page.screenshot({ path: '/tmp/claude-0/fig-detail.png' });
-const png = async (fmt, rotulo) => { const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 30000 }), page.getByRole('button', { name: rotulo }).click()]); const f = await dl.path(); const { readFileSync } = await import('node:fs'); const b = readFileSync(f); return { nome: dl.suggestedFilename(), w: b.readUInt32BE(16), h: b.readUInt32BE(20), kb: Math.round(b.length / 1024), ok: b.subarray(0, 8).toString('hex') === '89504e470d0a1a0a' }; };
+const png = async (fmt, rotulo) => { await page.getByRole('radio', { name: rotulo }).click(); await sleep(350); const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 30000 }), page.getByRole('button', { name: 'baixar / compartilhar' }).click()]); const f = await dl.path(); const { readFileSync } = await import('node:fs'); const b = readFileSync(f); return { nome: dl.suggestedFilename(), w: b.readUInt32BE(16), h: b.readUInt32BE(20), kb: Math.round(b.length / 1024), ok: b.subarray(0, 8).toString('hex') === '89504e470d0a1a0a' }; };
 const post = await png('post', 'post (feed)'), story = await png('story', 'story'), carta = await png('carta', 'só a cartinha');
 check('baixar post do feed: PNG 1080x1350', post.ok && post.w === 1080 && post.h === 1350 && post.kb > 200, JSON.stringify(post));
 check('baixar story: PNG 1080x1920', story.ok && story.w === 1080 && story.h === 1920 && story.kb > 200, JSON.stringify(story));
 check('baixar só a cartinha: PNG 1080x1425', carta.ok && carta.w === 1080 && carta.h === 1425, JSON.stringify(carta));
+await page.getByRole('radio', { name: 'post (feed)' }).click(); await page.getByRole('radio', { name: 'Palco' }).click(); await sleep(350);
+const palco = await (async () => { const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 30000 }), page.getByRole('button', { name: 'baixar / compartilhar' }).click()]); return dl.suggestedFilename(); })();
+check('modelo Palco no nome do arquivo', /_post_palco\.png$/.test(palco), palco);
 check('nome do arquivo com código e artista', /^F\d{3}_[A-Z0-9_]+_post\.png$/.test(post.nome), post.nome);
 await page.keyboard.press('Escape'); await sleep(400);
 await page.getByRole('tab', { name: /beatlemania/ }).click();

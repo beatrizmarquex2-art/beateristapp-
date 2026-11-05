@@ -139,6 +139,24 @@
 @media (min-width: 700px) { .fig-total { text-align: center; } .fig { padding-bottom: 110px; } }
 
 /* baixar pra postar */
-.fig-share { width: 100%; max-width: 360px; display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: color-mix(in srgb, currentColor 7%, transparent); text-align: center; }
-.fig-share-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; } .fig-share-btns .btn { min-height: 48px; padding: 0 6px; font-size: 14px; }
+.fig-share { width: 100%; max-width: 380px; display: grid; gap: 10px; padding: 12px; border-radius: 14px; background: color-mix(in srgb, currentColor 7%, transparent); text-align: center; justify-items: center; }
+.fig-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; } .fig-chips .chip-btn { min-height: 44px; padding: 0 14px; }
+.fig-chips .chip-btn.on { background: #5b1424; color: #efe2c6; border-color: #5b1424; }
+.fig-prev-box { display: grid; place-items: center; min-height: 306px; }
+.fig-prev { display: block; max-width: 100%; height: 300px; width: auto; border-radius: 10px; box-shadow: 0 6px 18px #0005; background: #0002; transition: opacity .2s; } .fig-prev.carregando { opacity: .35; }
 .fig-detail:has(.big) .fig-share { max-width: none; }
+
+/* aba Perfil */
+.pf-top { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: start; }
+.pf-avatar { width: 96px; height: 96px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #5b1424; color: #efe2c6; box-shadow: 0 0 0 4px #efe2c6, 0 0 0 7px #5b1424; }
+.pf-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pf-info { display: grid; gap: 8px; min-width: 0; } .pf-btns { display: flex; gap: 6px; flex-wrap: wrap; } .pf-btns .btn { min-height: 44px; }
+.pf-priv { margin: 0; font-size: 12.5px; }
+.pf-cria { display: grid; gap: 12px; justify-items: center; } .pf-cria .tag { justify-self: start; }
+.pf-quadros { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; width: 100%; scrollbar-width: none; scroll-snap-type: x proximity; }
+.pf-q { flex: none; padding: 0; border: 3px solid transparent; border-radius: 12px; background: none; cursor: pointer; scroll-snap-align: center; touch-action: manipulation; } .pf-q img { display: block; border-radius: 9px; } .pf-q.on { border-color: #c4182c; box-shadow: 0 4px 12px #0005; }
+.pf-cv-box { position: relative; width: min(100%, 340px); } .pf-canvas { display: block; width: 100%; height: auto; border-radius: 14px; touch-action: none; cursor: grab; background: #0002; } .pf-canvas.sem { cursor: default; touch-action: auto; opacity: .55; }
+.pf-vazio { position: absolute; left: 12px; right: 12px; top: 38%; margin: 0; padding: 10px; border-radius: 12px; background: #fbf4e2ee; color: #17130f; text-align: center; font-weight: 700; font-size: 15px; }
+.pf-zoom { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; width: min(100%, 340px); } .pf-zoom input { width: 100%; min-height: 44px; }
+.pf-share { width: 100%; display: grid; justify-items: center; }
+.bottom-nav[data-n="6"] .nav-item { font-size: 10.5px; padding-left: 0; padding-right: 0; } .bottom-nav[data-n="6"] { padding-left: 2px; padding-right: 2px; }

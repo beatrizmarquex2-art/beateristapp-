@@ -6,7 +6,7 @@ import * as store from '../store.js';
 import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
 import { createBook } from '../figurinhas/livro.js';
-import * as Postar from '../figurinhas/postar.js';
+import { shareUI } from '../figurinhas/share-ui.js';
 
 const ID = 'figurinhas-album';
 const TABS = [...L.SECOES, 'Pacotes'];
@@ -121,13 +121,10 @@ export function mount(host, parts = [], opts = {}) {
       let big = false;
       const view = h('div', { class: 'fig-zoom' }); view.innerHTML = svgOf(e, `d${e.codigo}`);
       const btn = h('button', { type: 'button', class: 'btn', 'aria-pressed': 'false', onclick: () => { big = !big; view.classList.toggle('big', big); btn.setAttribute('aria-pressed', String(big)); btn.textContent = big ? 'diminuir' : 'ampliar'; } }, 'ampliar');
-      const msg = h('p', { class: 'fig-note', 'aria-live': 'polite' });
-      const bt = (formato, rotulo) => h('button', { type: 'button', class: 'btn', onclick: async (ev) => {
-        const b = ev.currentTarget; b.disabled = true; msg.textContent = 'gerando a imagem…';
-        try { const r = await Postar.compartilhar(e, formato); msg.textContent = r === 'baixado' ? 'imagem baixada! é só postar 🎉' : r === 'compartilhado' ? 'pronto!' : ''; } catch { msg.textContent = 'não consegui gerar agora. tente de novo.'; }
-        b.disabled = false; } }, rotulo);
-      return h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn,
-        h('div', { class: 'fig-share' }, h('b', {}, 'baixar pra postar'), h('div', { class: 'fig-share-btns' }, bt('post', 'post (feed)'), bt('story', 'story'), bt('carta', 'só a cartinha')), msg));
+      const share = shareUI(e);
+      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
+      box.cleanup = () => share.cleanup();
+      return box;
     });
   }
 
