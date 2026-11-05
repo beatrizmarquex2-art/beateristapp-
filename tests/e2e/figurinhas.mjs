@@ -43,7 +43,9 @@ const palco = await (async () => { const [dl] = await Promise.all([page.waitForE
 check('modelo Palco no nome do arquivo', /_post_palco\.png$/.test(palco), palco);
 check('nome do arquivo com código e artista', /^F\d{3}_[A-Z0-9_]+_post\.png$/.test(post.nome), post.nome);
 await page.keyboard.press('Escape'); await sleep(400);
-await page.getByRole('tab', { name: /beatlemania/ }).click();
+await page.getByRole('tab', { name: /beatlemania/ }).click(); await sleep(300);
 check('livro Beatlemania: capa + sumário + 6 páginas (22 figurinhas)', (await page.locator('.lv-page').count()) === 8);
+await page.getByRole('tab', { name: /minhas/ }).click(); await sleep(400);
+check('aba Minhas no álbum (vazia, com atalho pro Perfil)', (await page.textContent('.mc')).includes('nenhuma ainda') && (await page.locator('a[href="#/perfil"]').count()) >= 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

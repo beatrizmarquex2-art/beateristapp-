@@ -7,9 +7,10 @@ import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
 import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
+import * as Minhas from '../figurinhas/minhas.js';
 
 const ID = 'figurinhas-album';
-const TABS = [...L.SECOES, 'Pacotes'];
+const TABS = [...L.SECOES, 'Minhas', 'Pacotes'];
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 const loadCatalog = async () => (catalog ||= await (await fetch('assets/figurinhas/catalogo.json')).json());
@@ -49,8 +50,8 @@ export function mount(host, parts = [], opts = {}) {
     }));
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
-      tabs, tab === 'Pacotes' ? packsView() : collectionView());
-    if (tab !== 'Pacotes') requestAnimationFrame(() => { const b = books[tab]; if (b) b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (b) b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
   /* ---------- coleção: o livro ---------- */
@@ -73,6 +74,13 @@ export function mount(host, parts = [], opts = {}) {
     justPasted = e.codigo;
     save(L.paste(state, e.codigo));
     toast(`${e.artista_banda} colada no álbum`);
+  }
+
+  /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
+  let mcView = null;
+  function minhasView() {
+    if (mcView) mcView.cleanup(); mcView = Minhas.colecao({ titulo: 'minhas cartinhas', vazio: 'nenhuma ainda. crie a sua na aba Perfil e toque em "guardar na minha coleção".' });
+    return h('section', { class: 'fig-col' }, mcView.el, h('a', { class: 'btn wide', href: '#/perfil' }, 'criar uma cartinha (Perfil)'));
   }
 
   /* ---------- pacotes ---------- */
@@ -128,5 +136,5 @@ export function mount(host, parts = [], opts = {}) {
     });
   }
 
-  return () => { alive = false; clearTimeout(tSave); if (nuvem) opts.salvar(state); };
+  return () => { alive = false; clearTimeout(tSave); if (mcView) mcView.cleanup(); if (nuvem) opts.salvar(state); };
 }

@@ -8,7 +8,7 @@ import { shareUI } from './share-ui.js';
 
 export const IDS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'];
 /** opts: { cfg (objeto salvo pelo chamador), salvar(), nome() -> texto do rótulo, titulo, extra() -> campos do post (ex.: tituloPost) } */
-export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloShare = 'baixar minha figurinha', extra = () => ({}) }) {
+export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloShare = 'baixar minha figurinha', extra = () => ({}), aoGuardar = null }) {
   let fotoImg = null, share = null, alive = true, raf = 0;
   const entry = () => ({ modelo2: cfg.modelo, artista_banda: (nome() || '').trim() || 'SEU NOME', fotoImg, ajuste: { zoom: cfg.zoom, ox: cfg.ox, oy: cfg.oy }, raridade: MODELOS2[cfg.modelo].raridade, secao: 'Comum', codigo: '', ...extra() });
   const cv = h('canvas', { class: 'pf-canvas', width: 720, height: 950, role: 'img', 'aria-label': 'Prévia da cartinha. Arraste para mover a foto.' });
@@ -17,7 +17,8 @@ export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloS
   const quadros = h('div', { class: 'pf-quadros', role: 'radiogroup', 'aria-label': 'Escolha o modelo' }, IDS.map((id) => h('button', { type: 'button', role: 'radio', 'aria-label': `Modelo ${id.slice(1)} (${MODELOS2[id].raridade})`, 'aria-checked': String(cfg.modelo === id), class: `pf-q${cfg.modelo === id ? ' on' : ''}`, 'data-id': id, onclick: () => { cfg.modelo = id; cfg.ox = 0; cfg.oy = 0; salvar(); quadros.querySelectorAll('button').forEach((b) => { const on = b.dataset.id === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); pintar(); } },
     h('img', { src: `assets/figurinhas/modelos2/${id}.webp`, alt: '', width: 72, height: 95, loading: 'lazy' }))));
   const slot = h('div', { class: 'pf-share' });
-  const el = h('section', { class: 'card pad pf-cria' }, h('h2', { class: 'tag' }, titulo), quadros, h('div', { class: 'pf-cv-box' }, cv, vazio), h('label', { class: 'pf-zoom' }, h('span', {}, 'zoom'), zoom), h('p', { class: 'muted' }, 'arraste a foto pra enquadrar.'), slot);
+  const guardaBtn = aoGuardar ? h('button', { type: 'button', class: 'btn primary wide', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { await aoGuardar(entry()); } finally { b.disabled = false; } } }, 'guardar na minha coleção') : null;
+  const el = h('section', { class: 'card pad pf-cria' }, h('h2', { class: 'tag' }, titulo), quadros, h('div', { class: 'pf-cv-box' }, cv, vazio), h('label', { class: 'pf-zoom' }, h('span', {}, 'zoom'), zoom), h('p', { class: 'muted' }, 'arraste a foto pra enquadrar.'), guardaBtn, slot);
   function limita() {
     if (!fotoImg) return; const L = janelaLocal(cfg.modelo), bw = L.bb.x1 - L.bb.x0, bh = L.bb.y1 - L.bb.y0, pw = fotoImg.naturalWidth, ph = fotoImg.naturalHeight, sc = Math.max(bw / pw, bh / ph) * cfg.zoom;
     const ex = Math.max(0, (pw * sc - bw) / 2), ey = Math.max(0, (ph * sc - bh) / 2); cfg.ox = Math.max(-ex, Math.min(ex, cfg.ox)); cfg.oy = Math.max(-ey, Math.min(ey, cfg.oy));
@@ -40,7 +41,7 @@ export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloS
     /** Foto nova (ou null). Refaz o botão de baixar e a prévia. */
     setFoto(img, { resetar = true } = {}) {
       fotoImg = img; if (resetar && img) { cfg.zoom = 1; cfg.ox = 0; cfg.oy = 0; salvar(); }
-      zoom.value = cfg.zoom; if (share) { share.cleanup(); share = null; }
+      zoom.value = cfg.zoom; if (guardaBtn) guardaBtn.hidden = !img; if (share) { share.cleanup(); share = null; }
       if (fotoImg) { share = shareUI(entry(), { titulo: tituloShare }); slot.replaceChildren(share); } else slot.replaceChildren(h('p', { class: 'muted' }, 'depois de escolher a foto, aparece aqui o botão de baixar e postar.'));
       limita(); pintar();
     },

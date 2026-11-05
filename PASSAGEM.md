@@ -244,3 +244,4 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - Os dados novos foram escritos de memória (artistas) e olhando as fotos: revisar com as contestações.
 
 - **Banco de imagens no Supabase (nov/2026)**: tabelas fechadas `cara_entidades` (86) e `cara_fotos` (125, com preto e branco / mais de uma pessoa / instrumento, sha256 e coleção). Só metadados; as imagens ficam em `assets/figurinhas/fotos`. SQL: `supabase/012_cara_banco_imagens.sql` (aplicado). Ler pelo MCP do Supabase (`select ... from cara_fotos`).
+- **Minha coleção** (`js/figurinhas/minhas.js`): na aba Perfil, "guardar na minha coleção" salva a cartinha criada (PNG 720x950) só no aparelho (IndexedDB `minhas-cartinhas`, até 40) — é onde quem NÃO tem acesso ao Álbum guarda; quem tem acesso vê a mesma coleção na aba **Minhas** do Álbum. Dali dá pra postar (todos os formatos, inclusive foto de perfil) ou apagar. Nada sobe pra servidor.

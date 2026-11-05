@@ -4,6 +4,7 @@ import { h, icon } from '../util.js';
 import { db } from '../db.js';
 import { banner, toast } from '../ui.js';
 import { criador } from '../figurinhas/criador.js';
+import * as Minhas from '../figurinhas/minhas.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
@@ -49,8 +50,9 @@ export function mount(host) {
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */
-  cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual }); const area = cri.el;
-  body.append(topo, area);
+  const mc = Minhas.colecao({ titulo: 'minha coleção' });
+  cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : 'não consegui guardar agora.'); } } }); const area = cri.el;
+  body.append(topo, area, mc.el);
   (async () => { try { const b = await db.metaGet(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
-  return () => { alive = false; cri.cleanup(); };
+  return () => { alive = false; cri.cleanup(); mc.cleanup(); };
 }

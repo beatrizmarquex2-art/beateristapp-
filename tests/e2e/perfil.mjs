@@ -28,9 +28,18 @@ await page.getByRole('radio', { name: 'foto de perfil' }).click(); await sleep(6
 check('foto de perfil: some a escolha de modelo de post e aparecem as cores de fundo', await page.locator('.fig-share .fig-chips').nth(1).isHidden() && (await page.locator('.fig-share .fig-chips').nth(2).locator('button').count()) === 8);
 await page.getByRole('radio', { name: 'prata' }).click(); await sleep(300);
 const perfil = await baixar('foto de perfil'); check('baixa a foto de perfil no formato da figurinha 1080x1425', perfil.w === 1080 && perfil.h === 1425 && /^MINHA_ANA_CLARA_perfil\.png$/.test(perfil.nome), JSON.stringify(perfil));
+check('coleção começa vazia', (await page.locator('.mc-item').count()) === 0 && (await page.textContent('.mc')).includes('ainda não tem nenhuma'));
+await page.getByRole('button', { name: 'guardar na minha coleção' }).click(); await page.waitForSelector('.mc-item', { timeout: 15000 });
+check('guardar na minha coleção: aparece na grade com o nome', (await page.locator('.mc-item').count()) === 1 && (await page.textContent('.mc-item')).includes('Ana Clara'));
+await page.locator('.mc-item').first().click(); await page.waitForSelector('.sheet .fig-share', { timeout: 15000 });
+await page.locator('.sheet').getByRole('radio', { name: 'foto de perfil' }).click(); await sleep(500);
+const [dlc] = await Promise.all([page.waitForEvent('download', { timeout: 40000 }), page.locator('.sheet').getByRole('button', { name: 'baixar / compartilhar' }).click()]); const bc = fs.readFileSync(await dlc.path());
+check('da coleção dá pra baixar como foto de perfil (1080x1425)', bc.readUInt32BE(16) === 1080 && bc.readUInt32BE(20) === 1425, dlc.suggestedFilename());
+await page.keyboard.press('Escape'); await sleep(400);
 await page.reload(); await page.waitForSelector('.pf-avatar img', { timeout: 10000 });
 check('foto e escolhas continuam depois de recarregar', (await page.locator('.pf-q.on').getAttribute('data-id')) === 'M7' && (await page.inputValue('.pf-top input.field')) === 'Ana Clara');
 await page.click('text=tirar foto'); await sleep(400);
+check('a coleção continua depois de recarregar', (await page.locator('.mc-item').count()) === 1);
 check('remover a foto volta ao começo', (await page.locator('.pf-avatar img').count()) === 0);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
