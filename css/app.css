@@ -1696,5 +1696,3 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 
 .top-snd { flex: none; }
 @media (max-width: 380px) { .top { gap: 4px; } .top .icon-btn { min-width: 38px; } }
-.top-undo:disabled { opacity: .35; } .top-redo[hidden] { display: none; }
-@media (max-width: 380px) { .top .top-redo { display: none; } }

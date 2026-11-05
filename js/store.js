@@ -79,7 +79,7 @@ async function upsertRaw(kind, id, patch) {
   return rec;
 }
 
-/** Exclusão lógica (tombstone) — o conteúdo é apagado do registro; devolve snapshot para "desfazer". */
+/** Exclusão lógica: vai pra lixeira (o conteúdo fica 30 dias); devolve snapshot para "desfazer". */
 export async function remove(id) {
   const prev0 = cache.get(id);
   const sn = await removeRaw(id);
@@ -90,7 +90,7 @@ async function removeRaw(id) {
   const prev = cache.get(id);
   if (!prev || prev.deleted) return null;
   const snapshot = { kind: prev.kind, data: prev.data };
-  const rec = { id, kind: prev.kind, data: {}, updated_at: nextStamp(prev.updated_at), deleted: true, dirty: 1 };
+  const rec = { id, kind: prev.kind, data: prev.data, updated_at: nextStamp(prev.updated_at), deleted: true, dirty: 1 }; // o conteúdo fica guardado na lixeira (30 dias)
   cache.set(id, rec);
   await db.putRecord(rec);
   emit({ kind: rec.kind, id });
@@ -98,6 +98,28 @@ async function removeRaw(id) {
   return snapshot;
 }
 export const restore = (id, snapshot) => upsert(snapshot.kind, id, snapshot.data);
+
+/* ---------- lixeira: tudo que foi apagado fica 30 dias e pode voltar ---------- */
+export const TRASH_DAYS = 30;
+export function trashList() {
+  const out = [];
+  for (const r of cache.values()) if (r.deleted && r.kind !== 'setting' && r.data && Object.keys(r.data).length) out.push(r);
+  return out.sort((a, b) => b.updated_at - a.updated_at);
+}
+export const restoreFromTrash = (id) => { const r = cache.get(id); return r && r.deleted ? upsert(r.kind, id, r.data) : null; };
+/** Apaga de vez o conteúdo (id) ou tudo da lixeira (sem id). Os mais velhos que 30 dias vão sozinhos. */
+export async function purgeTrash(id, olderThanDays) {
+  const cut = olderThanDays ? Date.now() - olderThanDays * 864e5 : Infinity;
+  const hit = [];
+  for (const r of cache.values()) {
+    if (!r.deleted || !r.data || !Object.keys(r.data).length || r.kind === 'setting') continue;
+    if ((id && r.id !== id) || (olderThanDays && r.updated_at > cut)) continue;
+    const rec = { id: r.id, kind: r.kind, data: {}, updated_at: nextStamp(r.updated_at), deleted: true, dirty: 1 };
+    cache.set(r.id, rec); hit.push(rec);
+  }
+  if (hit.length) { await db.putRecords(hit); emit({ trash: true }); syncHook(); }
+  return hit.length;
+}
 
 /** Aplica registros vindos do servidor. Last-writer-wins por updated_at; local mais novo permanece pendente. */
 export async function applyRemote(rows) {

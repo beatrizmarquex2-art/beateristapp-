@@ -59,26 +59,36 @@ import { openMenu } from './views/menu.js';
 import { getSpace, setSpace } from './space.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import * as lixeira from './views/lixeira.js';
+import { openSearch } from './search.js';
+import { NAV_DEFAULT, NAV_KEY, loadNav, openNavEditor } from './navbar.js';
+import { handsOn, setHands, initHands, handsBar } from './hands.js';
 
 const app = document.getElementById('app');
 let cleanup = null;
 let ticker = null;
 let started = false;
 
-const NAV = [
-  ['#/inicio', 'home', 'Início'],
-  ['#/hub/ritmo', 'kit', 'Criar ritmos'],
-  ['#/estudos', 'study', 'Estudos'],
-  ['#/jogos', 'star', 'Jogos'],
-];
+const NAV = [...NAV_DEFAULT]; // as 4 abas de baixo (a Bea pode trocar: navbar.js)
 const RITMO = ['beatlab', 'toque', 'partitura', 'groovebox'];
 /** A aba de baixo "acesa" pra tela atual: Criar ritmos vale também pro Beat Lab, Bateria de Toque etc. */
-const navOn = (href, r) => (href === '#/hub/ritmo' ? (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name) : `#/${r.name}` === href);
+const navOn = (href, r) => {
+  if (href === '#/hub/ritmo') return (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name);
+  const hs = location.hash || '#/inicio';
+  return `#/${r.name}` === href || hs === href || hs.startsWith(`${href}/`);
+};
 
 function route() {
   const hash = location.hash || '#/inicio';
   const [, a, b, ...rest] = hash.split('/');
   return { name: a || 'inicio', arg: b, parts: [b, ...rest].filter(Boolean).map(decodeURIComponent) };
+}
+
+function handsToggle() {
+  const b = h('button', { type: 'button', class: 'icon-btn top-hands', onclick: () => { setHands(!handsOn()); toast(handsOn() ? 'Modo mão ocupada ligado ✋' : 'Modo mão ocupada desligado'); } }, icon('hand', 22));
+  const paint = () => { b.setAttribute('aria-pressed', String(handsOn())); b.setAttribute('aria-label', handsOn() ? 'Desligar modo mão ocupada' : 'Ligar modo mão ocupada (botões grandes)'); };
+  paint(); document.addEventListener('hands-changed', paint);
+  return b;
 }
 
 function statusBar() {
@@ -102,7 +112,11 @@ function statusBar() {
   clearInterval(ticker); ticker = setInterval(tick, 1000);
   sync.onSync(draw); store.subscribe(draw);
   addEventListener('online', draw); addEventListener('offline', draw);
-  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, time, h('span', { class: 'sb-right' }, net, syn, soundButton()));
+  const tools = h('span', { class: 'sb-tools' },
+    h('button', { type: 'button', class: 'icon-btn top-search', 'aria-label': 'Buscar no app todo', title: 'Buscar', onclick: openSearch }, icon('search', 20)),
+    h('button', { type: 'button', class: 'icon-btn top-undo', 'aria-label': 'Desfazer a última mudança', title: 'Desfazer', disabled: true, onclick: doUndo }, icon('undo', 20)),
+    h('button', { type: 'button', class: 'icon-btn top-redo', 'aria-label': 'Refazer', title: 'Refazer', hidden: true, onclick: doRedo }, icon('redo', 20)));
+  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, h('div', { class: 'sb-row1' }, time, tools), h('span', { class: 'sb-right' }, net, syn, handsToggle(), soundButton()));
 }
 
 /* ---------- voltar: botão no topo + arrastar da borda esquerda ---------- */
@@ -132,6 +146,12 @@ const BOTTOM_ZONE = 96; // faixa de baixo da tela (onde fica a barra de abas): a
 const inBottom = (t) => t.clientY >= innerHeight - BOTTOM_ZONE;
 const hScrollAt = (el) => { for (let n = el; n && n.id !== 'view'; n = n.parentElement) { const o = getComputedStyle(n).overflowX; if ((o === 'auto' || o === 'scroll') && n.scrollWidth > n.clientWidth + 4) return true; if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName)) return true; } return false; };
 const noGesture = (e) => document.querySelector('.drawer, #overlay .sheet') || document.documentElement.classList.contains('kb-open') || playing(e.target) || (e.target.closest && e.target.closest('input, textarea, select, audio, video, canvas, [contenteditable="true"]'));
+/** Vai pra aba de baixo seguinte (d=1) ou anterior (d=-1). */
+function stepTab(d) {
+  const at = NAV.findIndex((n) => n && navOn(n[0], route())); const i = at >= 0 ? at : lastTab;
+  const j = (i + d + NAV.length) % NAV.length; if (NAV[j]) location.hash = NAV[j][0];
+}
+const nextTabName = () => { const at = NAV.findIndex((n) => n && navOn(n[0], route())); const i = at >= 0 ? at : lastTab; return (NAV[(i + 1) % NAV.length] || [])[2] || ''; };
 /* arrastar na faixa de baixo: troca de aba (direita→esquerda = próxima, esquerda→direita = anterior); no início, fora dessa faixa, abre o menu ☰ */
 function swipeMenu() {
   let x0 = 0, y0 = 0, t0 = 0, mode = '';
@@ -145,8 +165,7 @@ function swipeMenu() {
     if (!mode) return; const m = mode; mode = ''; const t = e.changedTouches[0]; const dx = t.clientX - x0, dy = t.clientY - y0;
     if (!(Math.abs(dx) > 90 && Math.abs(dy) < 60 && Math.abs(dx) > 2 * Math.abs(dy) && Date.now() - t0 < 900)) return;
     if (m === 'menu') { if (dx > 0) openMenu(); return; }
-    const at = NAV.findIndex((n) => n && navOn(n[0], route())); const i = at >= 0 ? at : lastTab;
-    const j = (i + (dx < 0 ? 1 : -1) + NAV.length) % NAV.length; if (NAV[j]) location.hash = NAV[j][0];
+    stepTab(dx < 0 ? 1 : -1);
   }, { passive: true });
   addEventListener('touchcancel', () => { mode = ''; }, { passive: true });
 }
@@ -186,6 +205,7 @@ async function doRedo() { if (await store.redo()) toast('Refeito ↷'); }
 function undoUi() {
   const sync = () => {
     const u = document.querySelector('.top-undo'), r = document.querySelector('.top-redo');
+    document.querySelectorAll('.hands-undo').forEach((x) => { x.disabled = !store.canUndo(); });
     if (u) u.disabled = !store.canUndo(); if (r) r.hidden = !store.canRedo();
   };
   store.subscribe((i) => { if (i && i.history) sync(); });
@@ -204,14 +224,20 @@ function shell() {
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
     h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
-    h('button', { type: 'button', class: 'icon-btn top-undo', 'aria-label': 'Desfazer a última mudança', title: 'Desfazer', disabled: true, onclick: doUndo }, icon('undo', 22)),
-    h('button', { type: 'button', class: 'icon-btn top-redo', 'aria-label': 'Refazer', title: 'Refazer', hidden: true, onclick: doRedo }, icon('redo', 22)),
     h('button', { type: 'button', class: 'icon-btn top-add', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 24)),
     h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Personalizar: tema e organização do início', onclick: openPersonalize }, icon('palette', 22)),
     h('a', { href: '#/ajustes', class: 'icon-btn gear', 'aria-label': 'Ajustes' }, icon('gear', 22)));
-  app.replaceChildren(h('div', { class: 'topwrap' }, head, statusBar()), view, nav);
+  const hb = handsBar({ back: goBack, undo: doUndo, next: () => stepTab(1), nextName: nextTabName });
+  app.replaceChildren(h('div', { class: 'topwrap' }, head, statusBar()), view, nav, hb);
+  // segurar um atalho da barra de baixo abre o editor
+  { let t = 0, held = false;
+    nav.addEventListener('pointerdown', (e) => { if (!e.target.closest('.nav-item')) return; held = false; clearTimeout(t); t = setTimeout(() => { held = true; if (navigator.vibrate) navigator.vibrate(15); openNavEditor(); }, 650); });
+    for (const ev of ['pointerup', 'pointercancel', 'pointerleave', 'pointermove']) nav.addEventListener(ev, (e) => { if (ev === 'pointermove' && Math.abs(e.movementX) + Math.abs(e.movementY) < 3) return; clearTimeout(t); });
+    nav.addEventListener('click', (e) => { if (held) { e.preventDefault(); e.stopPropagation(); held = false; } }, true);
+    nav.addEventListener('contextmenu', (e) => { if (e.target.closest('.nav-item')) e.preventDefault(); }); }
 
   function drawChrome(r) {
+    hb.paint();
     const ws = head.querySelector('.ws');
     const home = r.name === 'inicio';
     // o espaço só vira "Beaterista" (azul) pela aba do topo; Alunos aberto pelo menu da Bea continua vinho
@@ -282,6 +308,7 @@ function shell() {
       case 'dicas': c = dicas.mount(view, r.parts); break;
       case 'jogos': c = jogos.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
+      case 'lixeira': c = lixeira.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));
     }
@@ -303,6 +330,7 @@ function shell() {
       else if (['treinos', 'kids', 'ferramentas'].includes(n)) silence();
     });
   }
+  shell.chrome = () => drawChrome(route());
   removeEventListener('hashchange', shell.go);
   shell.go = go;
   addEventListener('hashchange', go);
@@ -316,7 +344,10 @@ function showLogin() {
   mountLogin(app, () => { startApp(); });
 }
 
+let navHooked = false;
 function startApp() {
+  loadNav(NAV); initHands(); store.purgeTrash(null, store.TRASH_DAYS).catch(() => {});
+  if (!navHooked) { navHooked = true; store.subscribe((i) => { if (i && (i.remote || i.imported || i.id === NAV_KEY)) { loadNav(NAV); shell.chrome && shell.chrome(); } }); document.addEventListener('keydown', (e) => { if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') && !document.querySelector('#overlay .sheet')) { e.preventDefault(); openSearch(); } }); }
   shell(); undoUi();
   if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); startPaul({ allowed: () => /^#\/(ritmo|jogos|kids)/.test(location.hash) }); } else { sync.schedule(100); photos.schedule(300); }
 }

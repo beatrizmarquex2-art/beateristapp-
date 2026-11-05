@@ -39,7 +39,7 @@ const MENU_BEA = [
     ['conteúdo', [['#/feed', 'mural', 'Feed Beaterista'], ['#/feed/colagens', 'photo', 'Colagens']]],
   ]],
   ['kit', 'meu kit', [
-    ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/ajustes', 'gear', 'Ajustes e backup']]],
+    ['', [...TABS.map(([k, t, ic]) => [`#/kit/${k}`, ic, k === 'fotos' ? 'Fotos profissionais' : t]), ['#/lixeira', 'trash', 'Lixeira'], ['#/ajustes', 'gear', 'Ajustes e backup']]],
   ]],
 ];
 const MENU_B = [
@@ -193,4 +193,11 @@ export function openMenu() {
   document.addEventListener('keydown', onKey);
   back.append(panel); document.getElementById('overlay').append(back);
   const firstItem = panel.querySelector('.drawer-item.on, .drawer-item'); if (firstItem) firstItem.focus({ preventScroll: true });
+}
+
+/** Todas as atividades do menu (href, nome), sem repetir — usado na busca geral. */
+export function menuItems() {
+  const seen = new Map();
+  for (const M of [MENU_BEA, MENU_B]) for (const [, , groups] of M) for (const [, items] of groups) for (const [href, , label] of items) if (!seen.has(href)) seen.set(href, label);
+  return [...seen];
 }
