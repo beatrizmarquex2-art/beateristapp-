@@ -6,9 +6,25 @@ import { BY_ID, QUESTIONS } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
 
 const ID = 'cara';
+/** Liga/desliga o tema musical (fotos do álbum). As fotos já são liberadas pros alunos no álbum, então fica ligado. */
+const MUSICAL_LIBERADO = true;
 
-/** opts (opcional): { mission: { params: { pool, manual } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
-export function mount(host, opts) {
+/** Dois temas no mesmo jogo: instrumentos (original) e "cara a cara musical" (artistas, Kids/Clássico). Missões do Aventura usam sempre os instrumentos. */
+/** opts (opcional): { mission: { params: { pool, manual } }, onResult } = Modo Aventura (sempre instrumentos). Sem opts.mission = Modo Livre. */
+export function mount(host, opts = {}) {
+  let inner = null;
+  let morto = false;
+  const abrir = async () => {
+    const musical = MUSICAL_LIBERADO && !opts.mission && getGame(ID).tema === 'musical';
+    const troca = (v) => { setGame(ID, { tema: v }); inner && inner.destroy && inner.destroy(); abrir(); };
+    if (musical) { const { mountMusical } = await import('./cara-musical/tela.js'); if (morto) return; inner = mountMusical(host, { onTema: troca }); } // importado só quando usa (some do build dos alunos)
+    else inner = mountInstrumentos(host, opts, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : troca });
+  };
+  abrir();
+  return { inProgress: () => !!(inner && inner.inProgress()), restart: () => inner && inner.restart(), destroy: () => { morto = true; inner && inner.destroy(); } };
+}
+
+function mountInstrumentos(host, opts, { onTema } = {}) {
   const mission = opts && opts.mission ? opts : null; const MP = mission ? (mission.mission.params || {}) : null; let reported = false;
   let gone = false;
   const saved = mission ? {} : getGame(ID);
@@ -21,8 +37,9 @@ export function mount(host, opts) {
     g = null; picked = null;
     const resume = K.validGame(saved.game) && !saved.game.over ? saved.game : null;
     const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[[false, 'automático'], [true, 'manual']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.manual === v), class: prefs.manual === v ? 'on' : '', onclick: () => { prefs.manual = v; setGame(ID, { manual: v }); intro(); } }, l)));
+    const temaSeg = onTema ? h('div', {}, h('p', { class: 'jg-lab' }, 'tema'), h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'tema' }, ...[['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === 'instrumentos'), class: v === 'instrumentos' ? 'on' : '', onclick: () => { if (v !== 'instrumentos') onTema(v); } }, l)))) : null;
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara'), h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara'), temaSeg, h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
       h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg,
       h('p', { class: 'jg-p muted' }, prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.'),
       saved.best ? h('p', { class: 'jg-p muted' }, `seu recorde: ${saved.best} pergunta${saved.best === 1 ? '' : 's'}`) : null,
