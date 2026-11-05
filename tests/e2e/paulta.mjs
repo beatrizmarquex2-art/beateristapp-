@@ -32,6 +32,7 @@ await page.waitForSelector('.kx-result', { timeout: 6000 });
 check('duplo toque não pula rodada: resultado fecha exatamente 3 rodadas', /de 3 certas/.test(await txt()));
 check('algum erro mostrou a explicação com a posição na pauta (ou acertou tudo)', sawExplain || /100/.test(await txt()));
 
+check('resultado entra no progresso do Kids (estrelas e histórico do jogador)', await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); return P.progOf(P.active().id).log.some((l) => l.game === 'pl-drum-nomes'); }));
 // sair da fase cala tudo e não deixa timers
 for (let i = 0; i < 12; i++) { await go('#/paulta/drum/1/imagens'); await sleep(60 + (i % 3) * 50); await click('.kx-go'); await sleep(120); await go('#/paulta'); }
 await sleep(900);

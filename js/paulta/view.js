@@ -3,6 +3,7 @@ import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import * as P from '../kids/progress.js';
 import * as RK from '../ranking.js';
+import * as Album from '../kids/album.js';
 import { robo, tierOf } from '../kids/robo.js';
 import { stars as sparkle, toast, confirmSheet } from '../ui.js';
 import { svgEl } from '../kids/art.js';
@@ -88,6 +89,10 @@ async function finishPhase(ctx, res, spec) {
   const before = V.getP(profile.id); const wasOpen = S.duelUnlocked(before);
   const out = S.applyRun(before, { world, n, mode, right: res.right, total: res.total, misses: res.misses, need: spec.need, sudden: spec.sudden });
   const saved = await V.commit(profile.id, () => out.p); V.publish(profile).catch(() => {});
+  // mesmo molde dos outros jogos do Kids: estrelas por fase entram no total do jogador (Paul ganha adesivos) e rendem figurinhas
+  const kst = S.starsFor(res.right, res.total);
+  const { gain } = await P.record(profile.id, { game: `pl-${world}-${mode}`, level: n, right: res.right, total: res.total, stars: kst, misses: res.misses, mode });
+  const won = Album.grant(profile.id, gain);
   const pct = res.total ? Math.round((res.right / res.total) * 100) : 0; const stars = out.stars;
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
@@ -105,6 +110,7 @@ async function finishPhase(ctx, res, spec) {
     h('p', { class: 'muted' }, `${res.right} de ${res.total} certas${res.restarts ? ` · recomeçou ${res.restarts}×` : ''}${res.best >= 3 && spec.streak ? ` · melhor sequência: ${res.best} 🔥` : ''}`), starsEl,
     !out.passed ? h('p', { class: 'pl-need' }, spec.sudden ? 'nessa fase precisa acertar todas.' : `precisa de ${Math.round(spec.need * 100)}% pra passar.`) : null,
     out.ptsGain > 0 ? h('p', { class: 'pl-pts' }, `+${out.ptsGain} pontos · total ${out.pts}`) : h('p', { class: 'muted' }, 'sem pontos novos: pontos valem uma vez por melhor desempenho.'),
+    won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
     ...gainedTitle.map((t) => h('div', { class: 'pl-newtitle' }, h('small', {}, 'novo título!'), h('b', {}, t.name), h('span', {}, `${profile.name} · ${t.name}`))),
     worldEv ? h('div', { class: 'pl-unlock' }, `🏅 ${WORLDS[world].name} concluído! +${world === 'duel' ? 200 : 100} pontos`, h('br'), h('a', { href: `${BASE}/aula/${world}` }, '📖 abrir a aulinha do Paul')) : null,
     duelOpen ? h('div', { class: 'pl-unlock' }, '⚔️ o Duelo das Claves foi liberado!') : null,
