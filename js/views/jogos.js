@@ -62,7 +62,7 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
 // fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
-const DARK = new Set(['bingo', 'cara', 'quebra']);
+const DARK = new Set(['cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
 function catalog(host) {
@@ -127,7 +127,8 @@ function game(host, entry) {
 
 export function mount(host, parts = []) {
   if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
-  const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
+  const first = String(parts[0] || '').split('?')[0];
+  const entry = GAMES.find((g) => g[0] === first && g[3]);
   if (!entry) return catalog(host);
   return game(host, entry);
 }
