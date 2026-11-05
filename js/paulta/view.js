@@ -7,7 +7,8 @@ import { robo, tierOf } from '../kids/robo.js';
 import { stars as sparkle, toast, confirmSheet } from '../ui.js';
 import { svgEl } from '../kids/art.js';
 import { silence } from '../audio.js';
-import { newPlayer, switchPlayer } from '../views/kids.js';
+import { newPlayer, switchPlayer, cardBg } from '../views/kids.js';
+import { worldIcon } from './icons.js';
 import { WORLDS, WORLD_IDS, MODES, makeQuestion, phaseSpec, reinforceQuestion, parseNoteName } from './worlds.js';
 import { drumStaff, clefStaff, legendHtml } from './draw.js';
 import { noteName } from './music.js';
@@ -22,6 +23,9 @@ const getMode = () => { try { const m = localStorage.getItem(MODE_KEY); return m
 const setMode = (m) => { try { localStorage.setItem(MODE_KEY, m); } catch { /* ok */ } };
 const BASE = '#/paulta';
 export const LOGO = () => h('span', { class: 'pl-logo' }, 'pau', h('b', {}, 'L'), 'ta');
+/** Título de tela no estilo do Kids: ícone de linha + nome em marker vermelho. */
+const gtitle = (iconHtml, title, sub) => { const ico = h('span', { class: 'kx-gico' }); ico.innerHTML = iconHtml; return h('div', { class: 'kx-gtitle' }, ico, h('div', {}, h('h1', { class: 'kx-pix kx-pagetitle' }, title), sub ? h('p', { class: 'kx-gd' }, sub) : null)); };
+const pageH1 = (t) => h('h1', { class: 'kx-pix kx-pagetitle pl-ph' }, t);
 const topBar = (back, right) => h('div', { class: 'kx-top' }, h('a', { class: 'kx-back', href: back }, '‹ voltar'), right || null);
 const bar = (pct, cls = '') => h('span', { class: `pl-bar ${cls}`, 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round(pct)}%` }));
 const titleChip = (p) => { const t = S.currentTitle(p); return t ? h('em', { class: 'pl-title', 'data-t': t.id }, t.name) : null; };
@@ -31,7 +35,7 @@ function homeScreen(host, rerender) {
   const me = P.active();
   if (!me) {
     const r = robo({ mood: 'peace', size: 110, say: 'oi! eu sou o Paul, o robôterista. qual é o seu nome?' });
-    host.append(topBar('#/jogos'), h('h1', { class: 'pl-h1' }, LOGO()), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'));
+    host.append(topBar('#/jogos'), gtitle(worldIcon('sol'), LOGO(), 'o jogo da leitura musical'), h('div', { class: 'kx-hello' }, r.el), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => newPlayer(rerender) }, 'começar'));
     return;
   }
   const p = V.getP(me.id); const tier = tierOf(P.totalStars(me.id)); const pts = S.points(p);
@@ -39,15 +43,16 @@ function homeScreen(host, rerender) {
   const r = robo({ mood: p.started ? 'happy' : 'wave', tier, size: 96, say });
   const card = (w) => {
     const W = WORLDS[w]; const done = S.worldProgress(p, w); const lock = w === 'duel' && !S.duelUnlocked(p); const full = S.worldDone(p, w);
-    const body = [h('span', { class: 'pl-wico', 'aria-hidden': 'true' }, w === 'drum' ? '🥁' : w === 'sol' ? '𝄞' : w === 'fa' ? '𝄢' : '⚔️'), h('b', { class: 'pl-wt' }, W.name), h('span', { class: 'pl-wd' }, lock ? '🔒 conclua sol e fá pra abrir' : W.blurb),
-      bar((done / W.count) * 100), h('small', { class: 'pl-wm' }, `${done}/${W.count} fases${full ? ' · 🏅 mundo concluído' : ''}`)];
-    return lock ? h('button', { type: 'button', class: `pl-world locked${W.bonus ? ' bonus' : ''}`, style: `--wc:${W.color}`, onclick: () => toast('conclua os mundos de sol e fá pra liberar o duelo', { ms: 2600 }) }, ...body)
-      : h('a', { class: `pl-world${full ? ' full' : ''}${W.bonus ? ' bonus' : ''}`, style: `--wc:${W.color}`, href: `${BASE}/${w}` }, ...body);
+    const ico = h('span', { class: 'kx-gi' }); ico.innerHTML = worldIcon(w);
+    const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, lock ? `🔒 ${W.short}` : W.short), h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((done / W.count) * 100)}%` })),
+      h('span', { class: 'kx-gm' }, lock ? 'conclua sol e fá' : full ? `🏅 concluído · ${W.count} fases` : `${done}/${W.count} fases`)];
+    return lock ? h('button', { type: 'button', class: 'kx-g pl-locked', onclick: () => toast('conclua os mundos de sol e fá pra liberar o duelo', { ms: 2600 }) }, ...kids)
+      : h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}` }, ...kids);
   };
-  host.append(topBar('#/jogos'), h('h1', { class: 'pl-h1' }, LOGO()), h('p', { class: 'pl-sub' }, 'o jogo da leitura musical · com o Paul'),
+  host.append(topBar('#/jogos'), gtitle(worldIcon('sol'), LOGO(), 'o jogo da leitura musical · com o Paul'),
     h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), titleChip(p) || h('small', {}, 'sem título ainda')), h('span', { class: 'kd-stars' }, `${pts} pts`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
-    h('h2', { class: 'kx-h' }, 'regiões'), h('div', { class: 'pl-worlds' }, ...['drum', 'sol', 'fa', 'duel'].map(card)),
+    h('h2', { class: 'kx-h' }, 'regiões'), h('div', { class: 'kx-cards' }, ...['drum', 'sol', 'fa', 'duel'].map(card)),
     h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 reforço do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }
@@ -67,7 +72,7 @@ function worldScreen(host, w, modeArg) {
       : h('button', { type: 'button', class: 'kx-lv locked', 'aria-label': `Fase ${n} trancada`, onclick: () => toast('conclua a fase anterior pra abrir', { ms: 2200 }) }, h('b', { class: 'kx-n' }, '🔒'), h('small', {}, `fase ${n}`));
   };
   host.append(topBar(BASE, h('span', { class: 'kd-stars' }, `${done}/${W.count}`)),
-    h('div', { class: 'kx-gtitle' }, h('div', {}, h('h1', { class: 'pl-h1 sm' }, W.name), h('p', { class: 'kx-gd' }, `${W.blurb} · `, LOGO()))),
+    gtitle(worldIcon(w), W.name, W.blurb),
     h('div', { class: 'kx-hello' }, r.el), bar((done / W.count) * 100, 'big'),
     h('div', { class: 'row kd-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))),
     h('p', { class: 'lib-note' }, mode === 'nomes' ? 'modo nomes: você escolhe o nome escrito.' : 'modo imagens: você escolhe a figura (sem nomes).'),
@@ -143,7 +148,7 @@ function reinforceScreen(host, modeArg) {
   const mode = modeArg === 'imagens' ? 'imagens' : 'nomes'; const p = V.getP(me.id); const d = S.difficulties(p);
   const tags = d.all.map((x) => x.tag).filter((t) => reinforceQuestion(t, mode, () => 0.3));
   const r = robo({ mood: tags.length ? 'idea' : 'happy', size: 90, say: tags.length ? 'montei um treino só com o que você mais errou!' : 'nenhuma dificuldade registrada ainda. joga umas fases e eu volto com um treino!' });
-  if (!tags.length) { host.append(topBar(BASE), h('h1', { class: 'pl-h1 sm' }, 'Reforço do Paul'), h('div', { class: 'kx-hello' }, r.el), h('a', { class: 'kd-btn kx-go', href: BASE }, 'voltar')); return () => {}; }
+  if (!tags.length) { host.append(topBar(BASE), pageH1('Reforço do Paul'), h('div', { class: 'kx-hello' }, r.el), h('a', { class: 'kd-btn kx-go', href: BASE }, 'voltar')); return () => {}; }
   const rounds = Math.max(5, Math.min(8, tags.length * 2));
   const order = Array.from({ length: rounds }, (_, i) => tags[i % tags.length]);
   const seen = []; let off = null;
@@ -170,14 +175,14 @@ function lessonScreen(host, w) {
     box.replaceChildren(h('div', { class: 'kx-dots' }, ...L.steps.map((_, j) => h('i', { class: j < k ? 'done' : j === k ? 'now' : '' }))), h('div', { class: 'pl-figs' }, ...s.draw.map((d) => h('figure', { class: 'pl-fig' }, svgEl(d.svg, 'pl-mini'), h('figcaption', {}, d.cap)))),
       h('div', { class: 'row kx-act' }, k > 0 ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { k--; draw(); } }, '‹ voltar') : null, k < L.steps.length - 1 ? h('button', { class: 'kd-btn', type: 'button', onclick: () => { k++; draw(); } }, 'próximo ›') : h('a', { class: 'kd-btn', href: `${BASE}/${w}` }, 'terminei!')));
   };
-  host.append(topBar(`${BASE}/${w}`), h('h1', { class: 'pl-h1 sm' }, L.title), h('div', { class: 'kx-hello' }, r.el), box); draw();
+  host.append(topBar(`${BASE}/${w}`), pageH1(L.title), h('div', { class: 'kx-hello' }, r.el), box); draw();
   return () => {};
 }
 
 /* ---------- legenda ---------- */
 function legendScreen(host) {
   const r = robo({ mood: 'read', size: 84, say: 'essa é a legenda do jogo: uma convenção só, pra não confundir.' });
-  host.append(topBar(BASE), h('h1', { class: 'pl-h1 sm' }, 'Legenda da bateria'), h('div', { class: 'kx-hello' }, r.el),
+  host.append(topBar(BASE), pageH1('Legenda da bateria'), h('div', { class: 'kx-hello' }, r.el),
     h('div', { class: 'pl-legend' }, ...legendHtml().map((x) => h('div', { class: 'pl-card' }, svgEl(x.svg, 'pl-mini'), h('b', {}, x.name), h('small', {}, x.where)))),
     h('p', { class: 'lib-note' }, 'X = pratos e chimbal · bolinha = tambores · parênteses = nota fantasma (bem baixinha) · > = acento (mais forte) · X no lugar da caixa = aro (cross-stick: a baqueta bate no aro). Rimshot é outra técnica: bate na pele e no aro ao mesmo tempo; ela não aparece nos exercícios. Notas alinhadas na vertical = tocadas juntas.'),
     h('h2', { class: 'kx-h' }, 'claves'), h('div', { class: 'pl-legend' },
@@ -198,7 +203,7 @@ function profileScreen(host, rerender) {
     if (on && !(await confirmSheet('Aparecer no ranking?', `Seu apelido “${n}”, seus pontos e seu título ficam visíveis para todos.`, 'Aparecer'))) return;
     await V.commit(me.id, (c) => ({ ...c, rank: { on, nick: n } })); if (on) V.publish(me); toast(on ? 'você está no ranking ✓' : 'você saiu do ranking'); rerender();
   } });
-  host.append(topBar(BASE), h('h1', { class: 'pl-h1 sm' }, 'Perfil'), h('div', { class: 'kx-hello' }, r.el),
+  host.append(topBar(BASE), pageH1('Perfil'), h('div', { class: 'kx-hello' }, r.el),
     h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), titleChip(p) || h('small', {}, 'sem título ainda')), h('span', { class: 'kd-stars' }, `${pts} pts`)),
     h('h2', { class: 'kx-h' }, 'mundos'), h('div', { class: 'pl-prog' }, ...WORLD_IDS.map((w) => h('div', { class: 'pl-prow' }, h('span', {}, WORLDS[w].short), bar((S.worldProgress(p, w) / WORLDS[w].count) * 100), h('small', {}, `${S.worldProgress(p, w)}/${WORLDS[w].count}${S.worldDone(p, w) ? ' 🏅' : ''}`)))),
     h('h2', { class: 'kx-h' }, 'títulos'), h('div', { class: 'pl-titles' }, ...S.TITLES.map((t) => h('div', { class: `pl-tt${earned[t.id] ? ' on' : ''}` }, h('b', {}, earned[t.id] ? `🏅 ${t.name}` : `🔒 ${t.name}`), h('small', {}, t.rule)))),
@@ -215,7 +220,7 @@ function rankingScreen(host) {
   const loc = h('ol', { class: 'pl-rank' }, ...(local.length ? local.map((x, i) => h('li', { class: me && x.pr.id === me.id ? 'me' : '' }, h('span', { class: 'al-pos' }, `${i + 1}º`), h('b', {}, x.pr.name), h('small', {}, `${S.titleName(x.p) || '—'} · ${S.mainDone(x.p)} mundo${S.mainDone(x.p) === 1 ? '' : 's'}`), h('span', { class: 'pl-pt' }, `${x.pts}`))) : [h('li', { class: 'muted' }, 'ninguém jogou ainda.')]));
   const pub = h('ol', { class: 'pl-rank' }, h('li', { class: 'muted' }, 'carregando…'));
   RK.top(V.BOARD, { fresh: true }).then((rows) => { if (!pub.isConnected) return; pub.replaceChildren(...(rows.length ? rows.map((x, i) => { const g = S.decodeRank(x.grade); return h('li', {}, h('span', { class: 'al-pos' }, `${i + 1}º`), h('b', {}, x.name), h('small', {}, `${g.title || '—'} · ${g.worlds} mundo${g.worlds === 1 ? '' : 's'}`), h('span', { class: 'pl-pt' }, `${x.score}`)); }) : [h('li', { class: 'muted' }, 'ninguém no ranking público ainda (ou sem internet).')])); });
-  host.append(topBar(BASE), h('h1', { class: 'pl-h1 sm' }, 'Ranking'), h('h2', { class: 'kx-h' }, 'neste aparelho'), loc, h('h2', { class: 'kx-h' }, 'público'), pub,
+  host.append(topBar(BASE), pageH1('Ranking'), h('h2', { class: 'kx-h' }, 'neste aparelho'), loc, h('h2', { class: 'kx-h' }, 'público'), pub,
     h('p', { class: 'lib-note' }, 'o ranking público só mostra apelidos de quem escolheu aparecer (no perfil). você pode sair quando quiser.'));
   return () => {};
 }

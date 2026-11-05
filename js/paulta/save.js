@@ -27,3 +27,7 @@ export async function publish(profile) {
   const p = getP(profile.id); if (!p.rank.on || !p.rank.nick) return false;
   return RK.add(BOARD, p.rank.nick, S.points(p), null, S.rankCode(p));
 }
+
+/** Texto e % do cartão do jogo na tela do Kids. */
+export const meta = (pid) => { const p = getP(pid); return p.started ? `${S.doneCount(p)} fases · ${S.points(p)} pts` : 'novo'; };
+export const pct = (pid) => { const p = getP(pid); const total = Object.values(S.COUNT).reduce((a, b) => a + b, 0); return Math.round((S.doneCount(p) / total) * 100); };

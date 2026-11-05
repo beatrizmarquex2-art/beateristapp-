@@ -71,7 +71,7 @@ const BG = '<svg class="kx-bgd" viewBox="0 0 100 120" preserveAspectRatio="xMidY
   + '<path d="M9 22l7-13 2 9 7-12 2 9 6-9" style="stroke:var(--s2)" stroke-width="3.6"/><path d="M91 10l-8 11 9-1-7 11" style="stroke:var(--s1)" stroke-width="3.6"/>'
   + '<path d="M9 104l10-5-7-1 9-6" style="stroke:var(--s3)" stroke-width="3.6"/><path d="M80 112l5-9 3 6 5-11" style="stroke:var(--s4)" stroke-width="3.6"/>'
   + '<g style="stroke:var(--s3)" stroke-width="2.6"><path d="M50 14v-6M33 20l-3-5M67 20l3-5M22 38l-5-2M78 38l5-2"/></g></svg>';
-const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
+export const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
 /** Cartão de jogo: cartaz de cor chapada com ícone grande, nome em marker, descrição e andamento. */
 function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {}) {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
@@ -129,12 +129,18 @@ function homeScreen(host, rerender) {
       h('span', { class: 'kd-stars' }, `★ ${total}`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'fases'),
-    h('div', { class: 'kx-cards' }, wideCard('pauta', 'pauLta', 'o jogo da leitura musical: bateria, sol e fá', null, '#/paulta'), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
+    h('div', { class: 'kx-cards' }, paultaCard(me.id), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
       ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
+}
+
+/** Cartaz do pauLta (o L maiúsculo aparece no nome). */
+function paultaCard(pid) {
+  const m = PL.meta(pid); const c = gameCard('#/paulta', 'pauta', 'pauLta', 'leitura musical', m, { on: m !== 'novo', pct: PL.pct(pid) });
+  c.querySelector('.kx-gt').innerHTML = 'pau<span class="pl-L">L</span>ta'; return c;
 }
 
 function albumScreen(host, role) {

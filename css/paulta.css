@@ -46,3 +46,8 @@
 .pl-run { padding-bottom: 120px; }
 .pl-result .kx-miss { display: grid; gap: 6px; justify-items: start; text-align: left; } .pl-result .kx-miss ul { margin: 0; } .pl-result .kx-miss .kd-chip { position: static; margin-top: 6px; }
 .pl-run .kx-head { flex-wrap: nowrap; gap: 8px; } .pl-run .kx-head b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 17px; } .pl-snd { flex: none; padding: 0 10px; }
+
+.kx-g.pl-locked { opacity: .55; filter: grayscale(.6); cursor: default; font: inherit; } .pl-ph { margin: 6px 0 4px; }
+.kx-gtitle .pl-logo { font: inherit; color: inherit; } .kx-gtitle .pl-logo b { color: var(--kink); font-size: 1em; }
+.kx-gtitle .kx-gico { width: 60px; height: 60px; }
+.pl-L { font-size: 1.3em; line-height: .8; vertical-align: -.04em; } .kx-gtitle .kx-pagetitle { font-size: 36px; } .kx-gtitle .kx-pagetitle:has(.pl-logo) { font-size: 50px; }
