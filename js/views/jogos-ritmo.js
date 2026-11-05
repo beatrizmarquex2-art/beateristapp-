@@ -33,7 +33,7 @@ export function importedSongs() {
   }
   return out.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
-/** Músicas que a Bea publicou pros alunos, já convertidas em fases (aba "Da professora"). */
+/** Músicas que a Bea publicou pros alunos, já convertidas em fases (aba "Músicas MIDI"). */
 export async function publicadasParaAluno() {
   const out = [];
   for (const r of await PUB.lista()) {
@@ -241,7 +241,7 @@ export function mount(host, opts = {}) {
       h('button', { class: 'btn small', type: 'button', disabled: busyPub || !vis.length, onclick: () => setPub(vis.map((r) => r.id), true) }, `marcar ${mq.trim() ? 'as ' + vis.length + ' da busca' : 'todas (' + vis.length + ')'} pros alunos`),
       h('button', { class: 'btn small ghost', type: 'button', disabled: busyPub || !nPub, onclick: () => setPub(recs.filter((r) => r.data.pub).map((r) => r.id), false) }, 'tirar todas dos alunos'));
     manage.replaceChildren(h('summary', {}, `músicas importadas (${recs.length}) · ${nPub} pros alunos`),
-      h('p', { class: 'muted rg-pubnote' }, 'marque ✓ as que os alunos podem jogar. elas aparecem na aba "Da professora" do site dos alunos. dá pra desmarcar a qualquer hora.'),
+      h('p', { class: 'muted rg-pubnote' }, 'marque ✓ as que os alunos podem jogar. elas aparecem na aba "Músicas MIDI" do site dos alunos. dá pra desmarcar a qualquer hora.'),
       mFilter, bar,
       h('ul', { class: 'rg-list' }, ...vis.map((r) => h('li', {},
         h('label', { class: 'rg-pubck' }, h('input', { type: 'checkbox', checked: !!r.data.pub, disabled: busyPub, 'aria-label': `${r.data.name} pros alunos`, onchange: (e) => setPub([r.id], e.target.checked) }),
@@ -279,7 +279,7 @@ export function mount(host, opts = {}) {
   Promise.all([loadPackage(), student ? publicadasParaAluno().catch(() => []) : Promise.resolve([])]).then(([BR, pubSongs]) => {
     if (gone) return;
     box.replaceChildren();
-    const studentOpts = student ? { builtin: true, impLabel: 'Da professora', autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
+    const studentOpts = student ? { builtin: true, impLabel: 'Músicas MIDI', autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
     BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
     mounted = true; refresh();
   }).catch((e) => {
