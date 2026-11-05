@@ -16,7 +16,7 @@ export const THEMES = {
   stop: { id: 'stop', name: 'Biblioteca Musical', accent: '#4fd2ff', regions: [
     R('entrada', 'Entrada da Biblioteca', 'silêncio… quase', ['#1b2a4a', '#24305c', '#4fd2ff', '#6f8fd8'], [['book', 'l', 0.3], ['lamp', 'r', 0.55], ['book', 'r', 0.85]]),
     R('estante', 'Estante dos Instrumentos', 'cordas, sopros e peles', ['#24305c', '#17406a', '#ffd23f', '#6f8fd8'], [['guitar', 'r', 0.25], ['book', 'l', 0.5], ['sax', 'r', 0.8]]),
-    R('partituras', 'Sala das Partituras', 'notas pra todo lado', ['#17406a', '#5c1626', '#ff4fa3', '#ff8bc4'], [['note', 'l', 0.3], ['book', 'r', 0.55], ['note', 'l', 0.85]]),
+    R('partituras', 'Sala das Partituras', 'notas pra todo lado', ['#17406a', '#5c1626', '#ff4fa3', '#ff8bc4'], [['book', 'r', 0.55]]),
     R('torrel', 'Torre dos Livros', 'o topo da biblioteca', ['#5c1626', '#8e1f4a', '#ffd23f', '#ffd23f'], [['trophy', 'r', 0.3], ['book', 'l', 0.55], ['star', 'r', 0.85]]),
   ] },
   velha: { id: 'velha', name: 'Arena de Duelos', accent: '#ff4fa3', regions: [
@@ -28,7 +28,7 @@ export const THEMES = {
   quebra: { id: 'quebra', name: 'Galeria de Arte Musical', accent: '#ffd23f', regions: [
     R('sagao', 'Saguão da Galeria', 'bem-vindo à exposição', ['#24305c', '#17406a', '#ffd23f', '#4f9aa6'], [['frame', 'l', 0.3], ['lamp', 'r', 0.55], ['frame', 'r', 0.85]]),
     R('quadros', 'Sala dos Quadros', 'peça por peça', ['#17406a', '#1a4560', '#ff4fa3', '#ffd23f'], [['frame', 'r', 0.25], ['piece', 'l', 0.5], ['frame', 'l', 0.8]]),
-    R('atelie', 'Ateliê Pixel', 'tintas e pincéis', ['#17402f', '#1b2f4f', '#6ef0a0', '#6ef0a0'], [['piece', 'r', 0.3], ['note', 'l', 0.55], ['piece', 'l', 0.85]]),
+    R('atelie', 'Ateliê Pixel', 'tintas e pincéis', ['#17402f', '#1b2f4f', '#6ef0a0', '#6ef0a0'], [['piece', 'r', 0.3], ['piece', 'l', 0.85]]),
     R('mestres', 'Salão dos Mestres', 'obras-primas', ['#5c1626', '#8e1f4a', '#ffd23f', '#ffd23f'], [['trophy', 'r', 0.3], ['frame', 'l', 0.55], ['star', 'r', 0.85]]),
   ] },
   cara: { id: 'cara', name: 'Cidade dos Personagens', accent: '#4fd2ff', regions: [
@@ -45,12 +45,12 @@ export const THEMES = {
   monte: { id: 'monte', name: 'Fábrica de Ritmos', accent: '#ffd23f', regions: [
     R('portaof', 'Portão da Fábrica', 'hora de ligar as máquinas', ['#0f2a47', '#17406a', '#ffd23f', '#4f9aa6'], [['gear', 'l', 0.3], ['lamp', 'r', 0.55], ['gear', 'r', 0.85]]),
     R('esteira', 'Esteira dos Compassos', 'tempo a tempo', ['#17406a', '#1b2f6a', '#4fd2ff', '#4fd2ff'], [['gear', 'r', 0.3], ['tape', 'l', 0.55], ['drum', 'r', 0.85]]),
-    R('figuras', 'Máquina das Figuras', 'colcheias e semínimas', ['#5c1626', '#1f6f78', '#ff4fa3', '#ff8bc4'], [['note', 'l', 0.3], ['gear', 'r', 0.55], ['note', 'l', 0.85]]),
+    R('figuras', 'Máquina das Figuras', 'colcheias e semínimas', ['#5c1626', '#1f6f78', '#ff4fa3', '#ff8bc4'], [['gear', 'r', 0.55]]),
     R('pausas', 'Sala das Pausas', 'o silêncio também conta', ['#1b2a4a', '#24305c', '#6ef0a0', '#6f8fd8'], [['curtain', 'r', 0.3], ['gear', 'l', 0.55], ['star', 'r', 0.85]]),
   ] },
   toca: { id: 'toca', name: 'Escola do Ritmo', accent: '#4fd2ff', regions: [
-    R('sala', 'Sala das Semínimas', 'o pulso primeiro', ['#24305c', '#17406a', '#4fd2ff', '#4f9aa6'], [['school', 'l', 0.3], ['note', 'r', 0.55], ['lamp', 'l', 0.85]]),
-    R('coro', 'Corredor das Colcheias e Semis', 'rápido e no tempo', ['#17406a', '#1b2f6a', '#ffd23f', '#4fd2ff'], [['sticks', 'r', 0.3], ['drum', 'l', 0.55], ['note', 'r', 0.85]]),
+    R('sala', 'Sala das Semínimas', 'o pulso primeiro', ['#24305c', '#17406a', '#4fd2ff', '#4f9aa6'], [['school', 'l', 0.3], ['lamp', 'l', 0.85]]),
+    R('coro', 'Corredor das Colcheias e Semis', 'rápido e no tempo', ['#17406a', '#1b2f6a', '#ffd23f', '#4fd2ff'], [['sticks', 'r', 0.3], ['drum', 'l', 0.55]]),
     R('palcoa', 'Palco das Síncopes', 'pontuadas e pausas', ['#5c1626', '#8e1f4a', '#ffd23f', '#ffd23f'], [['curtain', 'l', 0.3], ['trophy', 'r', 0.5], ['star', 'l', 0.85]]),
   ] },
   noritmo: { id: 'noritmo', name: 'Estúdio e Palco', accent: '#ff4fa3', regions: [

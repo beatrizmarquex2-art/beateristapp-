@@ -42,10 +42,10 @@ export function sprite(name, cls = '') {
 }
 /** Enfeites de cada região: [sprite, lado, deslocamento 0..1 dentro da região]. */
 export const DECOR = {
-  vila: [['school', 'l', 0.2], ['note', 'r', 0.55], ['lamp', 'l', 0.8]],
+  vila: [['school', 'l', 0.2], ['lamp', 'l', 0.8]],
   rua: [['shop', 'r', 0.25], ['lamp', 'l', 0.5], ['amp', 'r', 0.8]],
   estudio: [['tape', 'l', 0.2], ['table', 'r', 0.5], ['amp', 'l', 0.8]],
-  floresta: [['tree', 'l', 0.2], ['note', 'r', 0.45], ['tree', 'r', 0.75], ['tree', 'l', 0.9]],
+  floresta: [['tree', 'l', 0.2], ['tree', 'r', 0.75], ['tree', 'l', 0.9]],
   neon: [['lamp', 'r', 0.2], ['shop', 'l', 0.45], ['star', 'r', 0.7]],
   palco: [['stage', 'l', 0.35], ['amp', 'r', 0.3], ['star', 'r', 0.7]],
 };
