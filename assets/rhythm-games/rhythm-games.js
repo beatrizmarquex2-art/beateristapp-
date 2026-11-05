@@ -169,9 +169,9 @@ function rsArrange(S,short,minSec){const r=hgRng(S.seed^0x9e3779b9);const st=60/
       if(kind==='fim'){if(b===0){D(0,0,'kick');D(0,2,'crash')}continue}
       if(sectionStart&&si>0) D(0,2,'crash');
       if(S.style==='rock'){const ch=kind==='refrao';[0,8].forEach(s=>D(s,0,'kick'));if(ch||r()<.4) D(10,0,'kick');if(ch&&r()<.5) D(6,0,'kick');[4,12].forEach(s=>D(s,1,'snare'));
-        if(last&&kind!=='intro'){[12,13,14,15].forEach((s,k)=>D(s,3,k<2?'tom1':'floor'));}else for(let s=0;s<16;s+=2) if(!(sectionStart&&si>0&&s===0)) D(s,2,ch?'ride':'hhc',s%4?.6:1)}
+        if(last&&kind!=='intro'){[[8,'tom1'],[10,'tom2'],[12,'tom2'],[14,'floor']].forEach(([s,n])=>D(s,3,n));}else for(let s=0;s<16;s+=2) if(!(sectionStart&&si>0&&s===0)) D(s,2,ch?'ride':'hhc',s%4?.6:1)}
       else if(S.style==='pop'){const ch=kind==='refrao';(ch?[0,4,8,12]:[0,10]).forEach(s=>D(s,0,'kick'));[4,12].forEach(s=>D(s,1,'snare'));
-        if(last&&kind!=='intro'){[12,14].forEach(s=>D(s,3,'tom2'));D(15,1,'snare',.7)}else (ch?[2,6,10,14]:[0,2,4,6,8,10,12,14]).forEach(s=>{if(!(sectionStart&&si>0&&s===0)) D(s,2,ch?'hho':'hhc',ch?.8:.6)})}
+        if(last&&kind!=='intro'){[[10,'tom1'],[12,'tom2'],[14,'floor']].forEach(([s,n])=>D(s,3,n))}else (ch?[2,6,10,14]:[0,2,4,6,8,10,12,14]).forEach(s=>{if(!(sectionStart&&si>0&&s===0)) D(s,2,ch?'hho':'hhc',ch?.8:.6)})}
       else if(S.style==='balada'){const ch=kind==='refrao';D(0,0,'kick');if(ch) D(8,0,'kick');D(8,1,'snare',.7);if(ch) D(12,1,'snare',.5);
         if(last&&kind!=='intro') D(14,3,'tom2',.7);else (ch?[0,4,8,12]:[0,8]).forEach(s=>{if(!(sectionStart&&si>0&&s===0)) D(s,2,'hhc',.5)})}
       else if(S.style==='lofi'){const ch=kind==='refrao';[0,10].forEach(s=>D(s,0,'kick',.9));if(ch) D(6,0,'kick',.7);[4,12].forEach(s=>D(s,1,'snare',.7));
@@ -179,7 +179,7 @@ function rsArrange(S,short,minSec){const r=hgRng(S.seed^0x9e3779b9);const st=60/
       else if(S.style==='bossa'){[0,6,8,14].forEach(s=>D(s,0,'kick',.8));if(kind!=='intro') [2,5,8,11,14].forEach(s=>D(s,1,'snare',.45));
         if(last&&kind!=='intro') D(14,3,'tom1',.6);else [0,2,4,6,8,10,12,14].forEach(s=>{if(!(sectionStart&&si>0&&s===0)) D(s,2,'hhc',.35)})}
       else{const ch=kind!=='intro';(ch&&kind!=='ponte'?[0,4,8,12]:[0,8]).forEach(s=>D(s,0,'kick'));(kind==='intro'?[]:[3,6,11,14]).forEach(s=>D(s,1,'snare',.85));
-        if(last&&kind!=='intro'){[13,14,15].forEach(s=>D(s,3,'tom1'))}else [2,6,10,14].forEach(s=>D(s,2,'hhc',.5))}
+        if(last&&kind!=='intro'){[[10,'tom1'],[12,'tom2'],[14,'floor']].forEach(([s,n])=>D(s,3,n))}else [2,6,10,14].forEach(s=>D(s,2,'hhc',.5))}
       /* baixo */
       const bassSteps=S.style==='rock'?[0,2,4,6,8,10,12,14]:S.style==='pop'?[0,6,8,14]:S.style==='balada'?[0,8]:S.style==='lofi'?[0,6,10]:S.style==='bossa'?[0,6,8,14]:[0,3,6,8,11,14];bassSteps.forEach(s=>ev.push({t:T(B,s),k:'bass',m:rootM-12+(S.style!=='rock'&&(s===6||s===14)?7:0),d:st*1.8}));
       ev.push({t:T(B,0),k:'chord',ms:tri,d:16*st*.95,sty:S.style});
@@ -211,9 +211,11 @@ function rzPlayEv(e,at,mute){switch(e.k){case 'click':AE.drum('click',at,e.v);br
 const RZ={acc:null,tier:1,game:'beat',mode:'ritmo',modeEff:'ritmo',keys:4,maxLen:120,inst:'guitarra',diff:'medio',style:'imp',song:null,phase:'menu',chart:[],bg:[],A:null,t0:0,ptr:0,iv:0,raf:0,cv:null,dpr:1,stats:null,held:new Set(),press:new Map(),fx:[],pops:[],flash:{},pauseS:0,health:.5,q:'',fold:'',sel:null,vis:[],tl:null,kn:{bateria:4,piano:7},lives:3,badf:{},cal:null,howFrom:'menu'};
 const RZ_GAMES=[['beat','Beat Hero','batidas e percussão da música','#7a1226'],['tiles','Piano Hero','a melodia: voz, guitarra, teclado…','#1f5a63']];
 const RZ_GTR=[['#5fbf6a','A'],['#e2554f','S'],['#f2c14e','D'],['#5b8dd6','F'],['#ff9d4a','G']];
-const RZ_KITS={3:[['#e2554f','D','bumbo'],['#f2c14e','F','caixa'],['#5b8dd6','J','chimbal']],
-  4:[['#e2554f','D','bumbo'],['#f2c14e','F','caixa'],['#5b8dd6','J','chimbal'],['#b48bff','K','tom']],
-  5:[['#e2554f','D','bumbo'],['#f2c14e','F','caixa'],['#5b8dd6','J','chimbal'],['#b48bff','K','tom'],['#4fd1c5','L','prato']]};
+/* cores fixas por peça: bumbo verde, caixa vermelho, chimbal azul, tom roxo, prato dourado */
+const RZ_C_BUMBO='#3fae5a',RZ_C_CAIXA='#e2554f',RZ_C_CHIMBAL='#5b8dd6',RZ_C_TOM='#a77bff',RZ_C_PRATO='#e0b043';
+const RZ_KITS={3:[[RZ_C_BUMBO,'D','bumbo'],[RZ_C_CAIXA,'F','caixa'],[RZ_C_CHIMBAL,'J','chimbal']],
+  4:[[RZ_C_BUMBO,'D','bumbo'],[RZ_C_CAIXA,'F','caixa'],[RZ_C_CHIMBAL,'J','chimbal'],[RZ_C_TOM,'K','tom']],
+  5:[[RZ_C_BUMBO,'D','bumbo'],[RZ_C_CAIXA,'F','caixa'],[RZ_C_CHIMBAL,'J','chimbal'],[RZ_C_TOM,'K','tom'],[RZ_C_PRATO,'L','prato']]};
 const RZ_KIT_LANE={3:{kick:0,snare:1,hhc:2,hho:2,ride:2,crash:2,tom1:1,tom2:1,floor:1},4:{kick:0,snare:1,hhc:2,hho:2,ride:2,crash:2,tom1:3,tom2:3,floor:3},5:{kick:0,snare:1,hhc:2,hho:2,ride:4,crash:4,tom1:3,tom2:3,floor:3}};
 const RZ_KIT_SND={3:['kick','snare','hhc'],4:['kick','snare','hhc','tom1'],5:['kick','snare','hhc','tom1','crash']};
 const RZ_KIT_N=[3,4,5],RZ_PIANO_N=[3,4,5,7,8];
@@ -269,11 +271,11 @@ function rzKey(){return [RZ.game,(RZ.game==='hero'||RZ.game==='beat')?rzInstKey(
 function rzRank(list,val){const u=[...new Set(list)].sort((a,b)=>a-b);return x=>u.length<2?Math.floor(val/2):Math.round(u.indexOf(x)/(u.length-1)*(val-1))}
 function rzPhraseLanes(notes,nl,keyFn){const by={};notes.forEach(n=>{const k=keyFn(n);(by[k]=by[k]||[]).push(n)});Object.values(by).forEach(G=>{const f=rzRank(G.map(n=>n.idx),nl);let prev=-1;G.forEach(n=>{let l=f(n.idx);if(l===prev&&G.length>3&&n.idx!==n._pidx) l=Math.max(0,Math.min(nl-1,l+(l>=nl/2?-1:1)));n.lane=l;prev=l})})}
 /* mesma linha: duas semicolcheias seguidas na mesma linha não dá pra tocar. Nota de melodia tenta a linha vizinha; bateria (a linha é o instrumento) sai da pista, mas continua soando no fundo. */
-function rzNoFast(notes,bg,st,nl){const gap=st*1.95;const last={};const out=[];notes.sort((a,b)=>a.t-b.t);
+function rzNoFast(notes,bg,st,nl,fam){const gap=st*1.95;const last={};const out=[];const FILL={snare:1,tom1:1,tom2:1,floor:1};notes.sort((a,b)=>a.t-b.t);
   const sound=n=>{if(n.snd) bg.push({t:n.t,k:'drum',snd:n.snd,v:(n.v||.8)*.8});else if(n.m!=null) bg.push({t:n.t,k:'lead',m:n.m,d:n.d||.2})};
   notes.forEach(n=>{if(n.cpu||n.lane==null){out.push(n);return}
     const free=l=>last[l]==null||n.t-last[l]>=gap;
-    if(!free(n.lane)){let alt=-1;if(!n.snd){for(let d=1;d<nl&&alt<0;d++){for(const l of [n.lane-d,n.lane+d]){if(l>=0&&l<nl&&free(l)){alt=l;break}}}}
+    if(!free(n.lane)){let alt=-1;if(n.snd&&fam&&FILL[n.snd]){for(const l of fam){if(l!==n.lane&&free(l)){alt=l;break}}}else if(!n.snd){for(let d=1;d<nl&&alt<0;d++){for(const l of [n.lane-d,n.lane+d]){if(l>=0&&l<nl&&free(l)){alt=l;break}}}}
       if(alt<0){sound(n);return}n.lane=alt}
     last[n.lane]=n.t+(n.sus||0);out.push(n)});return out}
 /* começo: se a primeira nota demora (compassos vazios no começo do MIDI), pula os compassos vazios e já começa tocando. A contagem fica. */
@@ -313,7 +315,8 @@ function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil
     const spd=.5*RZ_WIN[RZ.diff].spd,by=[[],[],[],[]];notes.forEach(n=>by[n.lane].push(n));
     by.forEach(arr=>arr.forEach((n,i)=>{const nx=arr[i+1];const gap=nx?nx.t-n.t:9;const maxF=Math.max(.05,gap*spd*.88);n.hf=n.sus?Math.min(maxF,n.sus*spd+.05):Math.min(.17,maxF)}));
     A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
-  {const nl=RZ.game==='hero'?(RZ.inst==='guitarra'?5:RZ.kn[RZ.inst]):RZ.game==='beat'?RZ.keys:4;notes=rzNoFast(notes,bg,st,nl);
+  {const nl=RZ.game==='hero'?(RZ.inst==='guitarra'?5:RZ.kn[RZ.inst]):RZ.game==='beat'?RZ.keys:4;const kk=RZ.game==='beat'&&RZ.modeEff==='ritmo'?RZ.keys:RZ.game==='hero'&&RZ.inst==='bateria'?RZ.kn.bateria:0;let fam=null;if(kk){const LM=RZ_KIT_LANE[kk];fam=[LM.snare,LM.tom1].filter((x,i,a)=>a.indexOf(x)===i);if(fam.length<2) fam=null}
+   notes=rzNoFast(notes,bg,st,nl,fam);
    const lt=rzLeadTrim(A,notes,bg,S);if(lt.shifted){notes=lt.notes;bg=lt.bg;A.dur=Math.max(A.lead*16*st+1.5,A.dur-lt.shifted)}}
   if(RZ.game==='beat'){const c2=rzClip(A,notes,bg,S);notes=c2.notes;bg=c2.bg}
   notes.sort((a,b)=>a.t-b.t);notes.forEach(n=>{n.res=null;n.hit=false});RZ.chart=notes;bg.sort((a,b)=>a.t-b.t);RZ.bg=bg}
@@ -1151,5 +1154,5 @@ function mount(el,opts){if(typeof el==='string') el=document.querySelector(el);i
   if(OPTS.game==='figuras') showFiguras();else{if(OPTS.game&&RZ_GAMES.some(function(g){return g[0]===OPTS.game})) RZ.game=OPTS.game;rzRe()}}
 function refresh(){if(ROOT&&(RZ.phase==='menu'||RZ.phase==='end')) rzRe()}
 function unmount(){if(!ROOT) return;try{rzPreviewStop()}catch(e){}try{rzStop(true)}catch(e){}clearTimeout(RZ.calT);RZ.cal=null;clearTimeout(RZ.qt);clearTimeout(toast._t);if(saveT){save()}RZ.press.clear();RZ.held.clear();if(AE.ctx){try{AE.hush()}catch(e){}}ACTIVE=false;ROOT.classList.remove('bmr','bmr-playing');ROOT.innerHTML='';ROOT=null}
-global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,refresh:refresh,version:'1.3',_chart:function(){return {chart:RZ.chart,A:RZ.A}},_build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
+global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,refresh:refresh,version:'1.3',_kits:function(){return RZ_KITS},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
 })(typeof window!=='undefined'?window:this);
