@@ -19,7 +19,7 @@ import * as Acesso from '../acesso.js';
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca.webp', toca, 'ler, ouvir, repetir · microfone'],
+  ['toca', 'Toca Aqui', 'paul.webp', toca, 'ler, ouvir, repetir · microfone'],
   ['dicas', 'jogos das dicas', 'dicas.webp', dicas.embedded, 'quiz, caça-palavras e cruzadinha'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
