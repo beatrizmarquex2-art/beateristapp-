@@ -17,6 +17,7 @@ import { noteName } from './music.js';
 import { LESSONS } from './lessons.js';
 import * as S from './score.js';
 import * as V from './save.js';
+import { livre } from './livre.js';
 import * as sfx from './sfx.js';
 import { runSession, teachCards, soundBtn } from './run.js';
 
@@ -63,7 +64,7 @@ function homeScreen(host, rerender) {
 function worldScreen(host, w, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const W = WORLDS[w]; const p = V.getP(me.id); const mode = modeArg === 'imagens' || modeArg === 'nomes' ? modeArg : getMode(); setMode(mode);
-  if (w === 'duel' && !S.duelUnlocked(p)) { location.hash = BASE; return () => {}; }
+  if (w === 'duel' && !S.duelUnlocked(p) && !livre()) { location.hash = BASE; return () => {}; }
   const full = S.worldDone(p, w); const { scene, hud } = adventureMap({ w, p, mode, me });
   host.append(topBar(BASE),
     h('div', { class: 'adv-head' }, h('div', { class: 'adv-logo' }, 'pau', h('b', {}, 'L'), 'ta'), h('div', { class: 'adv-panel' }, h('b', {}, W.name), h('small', {}, full ? 'mundo concluído!' : 'escolha sua fase'))),
@@ -78,11 +79,12 @@ async function finishPhase(ctx, res, spec) {
   const { profile, world, n, mode } = ctx; const { bot, stage } = res;
   const before = V.getP(profile.id); const wasOpen = S.duelUnlocked(before);
   const out = S.applyRun(before, { world, n, mode, right: res.right, total: res.total, misses: res.misses, need: spec.need, sudden: spec.sudden });
-  const saved = await V.commit(profile.id, () => out.p); V.publish(profile).catch(() => {});
+  const free = livre(); // modo livre (sem código): joga, mas nada é salvo nem vale ponto
+  const saved = free ? out.p : await V.commit(profile.id, () => out.p); if (!free) V.publish(profile).catch(() => {});
   // mesmo molde dos outros jogos do Kids: estrelas por fase entram no total do jogador (Paul ganha adesivos) e rendem figurinhas
   const kst = S.starsFor(res.right, res.total);
-  const { gain } = await P.record(profile.id, { game: `pl-${world}-${mode}`, level: n, right: res.right, total: res.total, stars: kst, misses: res.misses, mode });
-  const won = Album.grant(profile.id, gain);
+  const { gain } = free ? { gain: 0 } : await P.record(profile.id, { game: `pl-${world}-${mode}`, level: n, right: res.right, total: res.total, stars: kst, misses: res.misses, mode });
+  const won = free ? [] : Album.grant(profile.id, gain);
   const pct = res.total ? Math.round((res.right / res.total) * 100) : 0; const stars = out.stars;
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
@@ -97,21 +99,22 @@ async function finishPhase(ctx, res, spec) {
   const tagText = (t) => { const [a, b] = String(t).split(/:(.+)/); return hintText[t] || (a === 'peca' || a === 'combo' ? `treinar: ${b.split('+').map((x) => ({ bd: 'bumbo', sn: 'caixa', hh: 'chimbal', ho: 'chimbal aberto', hf: 'chimbal com o pé', rd: 'prato de condução', cr: 'prato de ataque', tt: 'tom 1', mt: 'tom 2', ft: 'surdo', sg: 'caixa fantasma', sa: 'caixa com acento', sr: 'aro' }[x] || x)).join(' + ')}` : a === 'fig' ? `contar as figuras: ${b}` : a === 'nota' ? `treinar a nota ${b}` : a === 'art' ? 'as técnicas da caixa e do chimbal' : String(t)); };
   stage.replaceChildren(h('div', { class: 'kx-result pl-result' },
     h('h2', {}, out.passed ? (worldEv ? 'Mundo concluído!' : 'Fase concluída!') : 'Quase lá!'), pctEl,
-    h('p', { class: 'muted' }, `${res.right} de ${res.total} certas${res.restarts ? ` · recomeçou ${res.restarts}×` : ''}${res.best >= 3 && spec.streak ? ` · melhor sequência: ${res.best} 🔥` : ''}`), starsEl,
+    h('p', { class: 'muted' }, `${res.right} de ${res.total} certas${res.restarts ? ` · recomeçou ${res.restarts}×` : ''}${res.best >= 3 && spec.streak ? ` · melhor sequência: ${res.best} 🔥` : ''}`), free ? null : starsEl,
+    free ? h('p', { class: 'pl-livre', role: 'status' }, '🔓 modo livre: valeu treinar! pontos, estrelas e figurinhas só contam com o seu código de acesso.') : null,
     !out.passed ? h('p', { class: 'pl-need' }, spec.sudden ? 'nessa fase precisa acertar todas.' : `precisa de ${Math.round(spec.need * 100)}% pra passar.`) : null,
-    out.ptsGain > 0 ? h('p', { class: 'pl-pts' }, `+${out.ptsGain} pontos · total ${out.pts}`) : h('p', { class: 'muted' }, 'sem pontos novos: pontos valem uma vez por melhor desempenho.'),
+    free ? null : out.ptsGain > 0 ? h('p', { class: 'pl-pts' }, `+${out.ptsGain} pontos · total ${out.pts}`) : h('p', { class: 'muted' }, 'sem pontos novos: pontos valem uma vez por melhor desempenho.'),
     won.length ? h('div', { class: 'kx-reward' }, h('p', { class: 'kx-reward-t' }, `🎁 ${won.length === 1 ? 'figurinha nova!' : `${won.length} figurinhas novas!`}`), h('div', { class: 'kx-pack' }, ...won.map((c) => Album.cardEl(c, { fresh: true })))) : null,
-    ...gainedTitle.map((t) => h('div', { class: 'pl-newtitle' }, h('small', {}, 'novo título!'), h('b', {}, t.name), h('span', {}, `${profile.name} · ${t.name}`))),
-    worldEv ? h('div', { class: 'pl-unlock' }, `🏅 ${WORLDS[world].name} concluído! +${world === 'duel' ? 200 : 100} pontos`, h('br'), h('a', { href: `${BASE}/aula/${world}` }, '📖 abrir a aulinha do Paul')) : null,
-    duelOpen ? h('div', { class: 'pl-unlock' }, '⚔️ o Duelo das Claves foi liberado!') : null,
+    ...(free ? [] : gainedTitle).map((t) => h('div', { class: 'pl-newtitle' }, h('small', {}, 'novo título!'), h('b', {}, t.name), h('span', {}, `${profile.name} · ${t.name}`))),
+    worldEv && !free ? h('div', { class: 'pl-unlock' }, `🏅 ${WORLDS[world].name} concluído! +${world === 'duel' ? 200 : 100} pontos`, h('br'), h('a', { href: `${BASE}/aula/${world}` }, '📖 abrir a aulinha do Paul')) : null,
+    duelOpen && !free ? h('div', { class: 'pl-unlock' }, '⚔️ o Duelo das Claves foi liberado!') : null,
     missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.map((t) => h('li', {}, tagText(t)))), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${mode}` }, '🎯 reforço do Paul')) : null,
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.go(n + 1) }, `fase ${n + 1} →`) : null,
       h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.go(n) }, 'jogar de novo'),
       h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.back() }, 'mapa de fases'))));
   const pe = stage.querySelector('.kx-pct'); countUp(pe, pct);
-  if (out.passed) setTimeout(() => { if (starsEl.isConnected) sparkle(starsEl); }, 400);
-  if (big) confetti(stage);
+  if (out.passed && !free) setTimeout(() => { if (starsEl.isConnected) sparkle(starsEl); }, 400);
+  if (big && !free) confetti(stage);
 }
 const countUp = (el, to) => { const nEl = el.querySelector('.n'); if (matchMedia('(prefers-reduced-motion: reduce)').matches || !to) { nEl.textContent = String(to); return; } const t0 = performance.now(); const step = (t) => { if (!nEl.isConnected) return; const k = Math.min(1, (t - t0) / 700); nEl.textContent = String(Math.round(to * (1 - (1 - k) ** 3))); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); };
 function confetti(host) {
@@ -124,8 +127,8 @@ function confetti(host) {
 function phaseScreen(host, w, n, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const mode = modeArg === 'imagens' ? 'imagens' : 'nomes'; const sp = phaseSpec(w, n); const p = V.getP(me.id);
-  if (!sp || !S.unlocked(p, w, n)) { location.hash = `${BASE}/${w}`; return () => {}; }
-  V.commit(me.id, (c) => S.start(c)).catch(() => {});
+  if (!sp || !(livre() || S.unlocked(p, w, n))) { location.hash = `${BASE}/${w}`; return () => {}; }
+  if (!livre()) V.commit(me.id, (c) => S.start(c)).catch(() => {});
   const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${mode}`; if (k === n) rerenderHook(); } };
   const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, mode) || (() => {}); };
   const intro = h('div', { class: 'pl-introbox' }, teachCards(w, n) ? h('p', { class: 'pl-new' }, '🆕 o Paul vai te apresentar:') : null, teachCards(w, n),
@@ -149,7 +152,7 @@ function reinforceScreen(host, modeArg) {
   const order = Array.from({ length: rounds }, (_, i) => tags[i % tags.length]);
   const seen = []; let off = null;
   const done = async (res) => {
-    let np = V.getP(me.id); await V.commit(me.id, (c) => S.relief(c, seen));
+    let np = V.getP(me.id); if (!livre()) await V.commit(me.id, (c) => S.relief(c, seen));
     const { bot, stage } = res; sfx.fanfare(); bot.set('cheer', 'treino feito!');
     stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, 'Reforço feito!'), h('p', { class: 'muted' }, `${res.right} de ${res.total} certas · cada acerto alivia uma dificuldade da sua lista.`),
       h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => { location.hash = `${BASE}/perfil`; } }, 'ver meu perfil'), h('button', { class: 'kd-chip', type: 'button', onclick: () => { off(); host.replaceChildren(); off = reinforceScreen(host, mode); } }, 'outro treino'))));
@@ -195,6 +198,7 @@ function profileScreen(host, rerender) {
   const fmt = (t) => String(t).split(/:(.+)/)[1] || t;
   const nick = h('input', { type: 'text', maxlength: 16, placeholder: 'apelido para o ranking', value: p.rank.nick || '', 'aria-label': 'Apelido no ranking' });
   const sw = h('button', { type: 'button', class: 'switch', role: 'switch', 'aria-checked': String(!!p.rank.on), 'aria-label': 'Aparecer no ranking público', onclick: async () => {
+    if (livre()) { toast('o ranking do pauLta é só com código de acesso'); return; }
     const n = nick.value.trim().replace(/\s+/g, ' '); const on = !p.rank.on; if (on && !n) { nick.focus(); toast('escolha um apelido primeiro'); return; }
     if (on && !(await confirmSheet('Aparecer no ranking?', `Seu apelido “${n}”, seus pontos e seu título ficam visíveis para todos.`, 'Aparecer'))) return;
     await V.commit(me.id, (c) => ({ ...c, rank: { on, nick: n } })); if (on) V.publish(me); toast(on ? 'você está no ranking ✓' : 'você saiu do ranking'); rerender();

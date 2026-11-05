@@ -7,6 +7,8 @@ import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as CODE from './codigo.js';
 import * as AC from './acesso.js';
+import * as dicas from './views/dicas.js';
+import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
@@ -25,7 +27,7 @@ import { startPaul } from './paul-talk.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'study', 'Jogos'], ['#/beatlab', 'kit', 'Beat Lab'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/ranking', 'star', 'Ranking']];
-const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
+const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'jogos', paulta: 'jogos', dicas: 'jogos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
@@ -139,7 +141,7 @@ function lockView(view, what) {
   view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
-const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria' };
+const NOMES_TELA = { ritmo: 'os jogos de ritmo', ranking: 'o Ranking', album: 'o Álbum', beatlab: 'o Beat Lab', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
@@ -165,6 +167,11 @@ function shell(name) {
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || 'esta parte');
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
+    else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
+      const box = h('div'); view.append(box); let inner = null; let dead = false;
+      DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); });
+      c = () => { dead = true; if (typeof inner === 'function') inner(); };
+    }
     else if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);

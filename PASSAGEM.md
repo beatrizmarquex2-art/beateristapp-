@@ -103,6 +103,10 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - **Gerar meu código**: o aluno gera um código local (`beaterista-aluno-codigo-pendente`), vê "informe a professora Bea", ela cadastra em Importar código de aluno, e o app libera sozinho (confere ao abrir, no botão "já liberou?" e a cada 8 s na tela trancada). Nada vai pro servidor até ela cadastrar.
 - Ainda NÃO existem na área do aluno: os jogos das 30 dicas (quiz/caça-palavras/cruzadinha usam os registros privados "tip" da Bea). Testes: `tests/e2e/acesso.mjs`, `entrada-codigo.mjs`.
 
+## Quiz e Letras e pauLta livre (nov/2026)
+- **Quiz e Letras** = quiz, caça-palavras e cruzadinha das 30 dicas (`#/dicas/...`, `js/views/dicas.js`). As 30 dicas já estão no Supabase (`dicas_publicas`: n, texto); aluno lê por `dicas_lista(p_code)` (SQL 009, só com código ativo e dentro da validade) via `js/dicas-aluno.js`, que grava como registros "tip" locais. **Trancado sem código**; no app da Bea usa os registros dela como antes. A função `dicas_ler` (outra sessão, usa `album_codigos`) continua lá sem uso.
+- **pauLta em modo livre** (aluno sem código): abre todas as fases e joga normal, mas **não conta** pontos, estrelas, títulos, ranking, reforço nem figurinhas (`js/paulta/livre.js`). Com código (ou no app da Bea) conta tudo. Testes: `tests/e2e/paulta-livre.mjs`, `acesso.mjs`.
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.

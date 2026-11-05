@@ -5,7 +5,9 @@ const { srv, url } = await serve();
 const { browser, ctx } = await launch();
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
-await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch { /* ok */ } });
+// aluno com código de acesso: o pauLta conta pontos, estrelas e figurinhas (sem código é o modo livre, testado em acesso.mjs)
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/paulta');
 await page.waitForSelector('.kx-cards .kx-g');
 const go = async (h) => { await page.evaluate((x) => { location.hash = x; }, h); await sleep(350); };
