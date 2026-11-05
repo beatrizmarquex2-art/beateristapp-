@@ -1,7 +1,8 @@
 // Álbum de figurinhas da área Kids: ganha figurinha nova cada vez que melhora as estrelas de uma fase.
 import { h } from '../util.js';
 import * as P from './progress.js';
-import { CARDS, ROLES, byId } from './album-data.js';
+import { CARDS, ROLES, byId, STARS_PER_CARD, owedByStars, starsToNext } from './album-data.js';
+import * as FR from '../figurinhas/rewards.js';
 import { artPhoto } from '../views/artist-photo.js';
 
 export const total = () => CARDS.length;
@@ -30,4 +31,21 @@ export function cardEl(card, { fresh = false, locked = false, onclick } = {}) {
     h('span', { class: 'kx-ph' }, locked ? h('b', { class: 'kx-q' }, '?') : artPhoto(`album-${card.id}`, card.name, 'art-ph', card.wiki)),
     h('span', { class: 'kx-nm' }, locked ? '???' : card.name), h('small', { class: 'kx-bd' }, locked ? ROLES[card.role][0].slice(0, -1) : card.band), h('span', { class: 'kx-role', 'aria-hidden': 'true' }, emoji));
   return el;
+}
+
+/* ---- estrelas e pontuação viram pacotes do álbum de 125 (id fixo por pacote: nunca entrega em dobro) ---- */
+export { STARS_PER_CARD, owedByStars, starsToNext };
+/** ★ dos jogos de ritmo → a cada 5 ★, 1 pacote. Devolve quantos pacotes novos. */
+export async function grantByStars(pid, totalStars) {
+  const prog = P.progOf(pid); const paid = prog.ritmoPaid || 0; const n = owedByStars(totalStars, paid);
+  const ids = Array.from({ length: n }, (_, k) => `ritmo:${pid}:${paid + k + 1}`);
+  const got = await FR.grantPacks(ids);
+  await P.patch(pid, { ritmoStars: totalStars, ritmoPaid: paid + n });
+  return got;
+}
+/** Estrelas novas nas fases dos Kids → 1 pacote por estrela nova. Devolve quantos pacotes novos. */
+export async function grantPacks(pid, n) {
+  if (!n || n < 1) return 0;
+  const t = Date.now().toString(36);
+  return FR.grantPacks(Array.from({ length: n }, (_, k) => `kids:${pid}:${t}:${k}`));
 }
