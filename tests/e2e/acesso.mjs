@@ -27,9 +27,9 @@ check('Beat Hero com cadeado', c.find((x) => /beat hero/i.test(x.t))?.lock === t
 check('quiz e letras (3 em 1) com cadeado', c.find((x) => /quiz e letras/i.test(x.t))?.lock === true);
 check('quiz/caça/cruzadinha não aparecem separados', !c.some((x) => /^(quiz|caça-palavras|cruzadinha)$/i.test(x.t)));
 check('fases e estrelas saiu da lista dos alunos', !c.some((x) => /fases e estrelas/i.test(x.t)));
-check('toque as figuras está na lista e livre', c.find((x) => /toque as figuras/i.test(x.t))?.lock === false);
-const ordem = c.map((x) => x.t.toLowerCase()).slice(0, 9);
-check('ordem pedida pela Bea', JSON.stringify(ordem) === JSON.stringify(['beat hero', 'toca aqui', 'figuras rítmicas', 'memória musical', 'uno musical', 'jogo da velha', 'quebra cabeça', 'cara a cara', 'quiz e letras']), JSON.stringify(ordem));
+check('toque as figuras não aparece pros alunos', !c.some((x) => /toque as figuras/i.test(x.t)));
+const ordem = c.map((x) => x.t.toLowerCase()).slice(0, 12);
+check('ordem pedida pela Bea', JSON.stringify(ordem) === JSON.stringify(['beat hero', 'toca aqui', 'figuras rítmicas', 'memória musical', 'uno musical', 'jogo da velha', 'quebra cabeça', 'cara a cara', 'quiz e letras', 'onde mora na pauta?', 'bingo', 'stop']), JSON.stringify(ordem));
 check('Toca Aqui livre', c.find((x) => /toca aqui/i.test(x.t))?.lock === false);
 await page.evaluate(() => { location.hash = '#/estudos'; }); await sleep(600);
 const est = await page.$$eval('#view a.card', (a) => a.map((x) => ({ t: x.textContent.replace('🔒', '').trim(), lock: x.classList.contains('locked') })));

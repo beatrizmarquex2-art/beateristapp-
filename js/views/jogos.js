@@ -33,7 +33,7 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 // Ordem pedida pela Bea (3 por fileira no celular): Beat Hero | Toca Aqui | Figuras / Memória | Uno | Velha / Quebra Cabeça | Cara a Cara | Quiz e Letras.
-// Depois vêm os que ficaram de fora dessa grade (a Bea decide se ficam). Os dois últimos só aparecem pra Bea.
+// 4ª fileira: Onde Mora na Pauta? | Bingo | STOP. "Toque as Figuras", "fases e estrelas" e "relatório" não aparecem pros alunos.
 const SECTIONS = [
   ['jogos', [
     link('#/ritmo', 'Beat Hero', 'ritmo.webp', 'toca no tempo e ganha XP (e o Piano Hero)'),
@@ -41,9 +41,9 @@ const SECTIONS = [
     link('#/kids/figuras', 'Figuras Rítmicas', 'figuras.webp', 'semibreve, mínima…'),
     link('#/kids/memoria', 'Memória Musical', 'cara-a-cara.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     inner('cartas'), inner('velha'), inner('quebra'), inner('cara'), inner('dicas'),
-    inner('bingo'), inner('stop'),
     link('#/kids/pauta', 'Onde Mora na Pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
-    link('#/kids/toque', 'Toque as Figuras', 'toque.webp', 'lê a partitura e toca na tela ou no microfone'),
+    inner('bingo'), inner('stop'),
+    link('#/kids/toque', 'Toque as Figuras', 'toque.webp', 'lê a partitura e toca na tela ou no microfone', 'noaluno'), // fora da lista dos alunos (parecido com o Toca Aqui); a Bea ainda vê
     link('#/kids', 'fases e estrelas', 'rabiscos.webp', 'jogadores, álbum e coleção', 'noaluno'), // pros alunos, fases/estrelas/álbum moram na aba Ranking
     link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
   ]],
