@@ -50,8 +50,8 @@ export function onsets(bars, bpm) {
  * Compara os toques com as notas. Janela = 45% de uma semicolcheia (máx. 110 ms).
  * Cada nota: 'ok' (até 35 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
  */
-export function evaluate(taps, expected, bpm) {
-  const win = Math.min(0.11, (60 / bpm / 4) * 0.45);
+export function evaluate(taps, expected, bpm, { mic = false } = {}) {
+  const win = Math.min(mic ? 0.16 : 0.11, (60 / bpm / 4) * 0.45 * (mic ? 1.4 : 1)); const okMs = mic ? 55 : 35; // microfone tem mais folga (atraso do som no ar e do aparelho)
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {
@@ -59,7 +59,7 @@ export function evaluate(taps, expected, bpm) {
     expected.forEach((e, i) => { const d = Math.abs(t - e.t); if (!used.has(i) && d < bd) { bd = d; best = i; } });
     if (best < 0 || bd > win) { extra++; continue; }
     used.add(best); const ms = Math.round((t - expected[best].t) * 1000);
-    res[best] = { st: Math.abs(ms) <= 35 ? 'ok' : ms < 0 ? 'cedo' : 'tarde', ms };
+    res[best] = { st: Math.abs(ms) <= okMs ? 'ok' : ms < 0 ? 'cedo' : 'tarde', ms };
   }
   const n = expected.length || 1;
   const pts = res.reduce((s, r) => s + (r.st === 'ok' ? 1 : r.st === 'faltou' ? 0 : 0.6), 0);

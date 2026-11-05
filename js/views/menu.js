@@ -54,7 +54,7 @@ const MENU_B = [
     ['fases e relatório', [['#/kids', 'star', 'Fases e estrelas'], ['#/jogos/relatorio', 'note', 'Relatório dos jogos']]],
   ]],
   ['ritmo', 'ritmo', [
-    ['', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/kids/eco', 'mic', 'Eco rítmico'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
+    ['', [['#/ritmo', 'kit', 'Jogos de ritmo'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
   ]],
   ['estudar', 'estudos', [
     ['', [['#/dicionario', 'book', 'Dicionário da bateria']]],
