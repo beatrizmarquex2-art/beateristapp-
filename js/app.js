@@ -95,7 +95,7 @@ function statusBar() {
   const time = h('span', { class: 'sb-time' });
   const net = h('span', { class: 'sb-net' });
   const syn = h('a', { class: 'sb-sync', href: '#/ajustes' });
-  const tick = () => { time.textContent = `${shortDate()} · ${clock()}`; };
+  const tick = () => { time.textContent = shortDate(); };
   const draw = () => {
     const on = navigator.onLine;
     net.textContent = on ? '● online' : '○ offline';
@@ -109,7 +109,7 @@ function statusBar() {
     syn.className = `sb-sync ${s}`;
   };
   tick(); draw();
-  clearInterval(ticker); ticker = setInterval(tick, 1000);
+  clearInterval(ticker); ticker = setInterval(tick, 60000);
   sync.onSync(draw); store.subscribe(draw);
   addEventListener('online', draw); addEventListener('offline', draw);
   const tools = h('span', { class: 'sb-tools' },

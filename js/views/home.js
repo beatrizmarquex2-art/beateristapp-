@@ -1,5 +1,4 @@
 import { h, icon, debounce, todayKey, longDate, sparkle } from '../util.js';
-import { ago } from '../kinds.js';
 import * as store from '../store.js';
 import { MODULES } from '../modules.js';
 import { visibleOn } from '../tasks-logic.js';
@@ -204,7 +203,7 @@ export function mount(host) {
     parceiros: partnerStrip(),
   };
   const recentBox = h('section', { class: 'home-recent', 'aria-label': 'Abertos recentemente' });
-  const drawRecent = () => { const l = recents(); recentBox.hidden = !l.length; recentBox.replaceChildren(h('h2', { class: 'tag' }, 'continuar de onde parou'), l[0] ? h('a', { class: 'home-resume', href: l[0].h }, h('span', { class: 'hr-t' }, h('small', {}, `continuar de onde parou · ${ago(l[0].at)}`), h('strong', {}, l[0].t)), icon('back', 22)) : null, h('div', { class: 'home-recent-row' }, ...l.slice(1).map((x) => h('a', { class: 'home-recent-chip', href: x.h }, x.t)))); };
+  const drawRecent = () => { const l = recents(); recentBox.hidden = !l.length; recentBox.replaceChildren(h('h2', { class: 'tag' }, 'continuar de onde parou'), h('div', { class: 'home-recent-row' }, ...l.map((x) => h('a', { class: 'home-recent-chip', href: x.h }, x.t)))); };
   drawRecent(); document.addEventListener('recents-changed', drawRecent);
   const top = hero();
   const fig = top.querySelector('.hero-photo');
