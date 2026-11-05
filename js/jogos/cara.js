@@ -4,20 +4,23 @@ import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
 import { INSTRUMENTS, BY_ID, QUESTIONS } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
-import { mountMusical } from './cara-musical/tela.js';
 
 const ID = 'cara';
+/** Fotos de terceiros: o build dos alunos (scripts/build-aluno.sh) troca por false e apaga as fotos. Para liberar pros alunos depois, tire essas duas linhas do script. */
+const MUSICAL_LIBERADO = true;
 
 /** Dois temas no mesmo jogo: instrumentos (original) e "cara a cara musical" (artistas, Kids/Clássico). Missões do Aventura usam sempre os instrumentos. */
 export function mount(host, opts = {}) {
   let inner = null;
-  const abrir = () => {
-    const musical = !opts.mission && getGame(ID).tema === 'musical';
+  let morto = false;
+  const abrir = async () => {
+    const musical = MUSICAL_LIBERADO && !opts.mission && getGame(ID).tema === 'musical';
     const troca = (v) => { setGame(ID, { tema: v }); inner && inner.destroy && inner.destroy(); abrir(); };
-    inner = musical ? mountMusical(host, { onTema: troca }) : mountInstrumentos(host, { onTema: opts.mission ? null : troca });
+    if (musical) { const { mountMusical } = await import('./cara-musical/tela.js'); if (morto) return; inner = mountMusical(host, { onTema: troca }); } // importado só quando usa (some do build dos alunos)
+    else inner = mountInstrumentos(host, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : troca });
   };
   abrir();
-  return { inProgress: () => !!(inner && inner.inProgress()), restart: () => inner.restart(), destroy: () => inner && inner.destroy() };
+  return { inProgress: () => !!(inner && inner.inProgress()), restart: () => inner && inner.restart(), destroy: () => { morto = true; inner && inner.destroy(); } };
 }
 
 function mountInstrumentos(host, { onTema } = {}) {
