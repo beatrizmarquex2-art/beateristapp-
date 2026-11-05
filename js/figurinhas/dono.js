@@ -24,12 +24,6 @@ export const metaApagar = (base) => db.metaDel(chave(base));
 import * as store from '../store.js';
 const ALBUM = 'figurinhas-album';
 export const albumId = () => chave(ALBUM);
-const migrados = new Set();
-/** Dados do álbum de quem está com o nome agora. O álbum antigo (sem dono) vai inteiro pra UMA pessoa só (a primeira que abrir); as outras começam vazias. */
-export function albumDados() {
-  const id = albumId(); const meu = store.get(id); if (meu) return meu.data || {};
-  if (id === ALBUM) return {};
-  const velho = store.get(ALBUM); if (!velho) return {};
-  if (!migrados.has(id)) { migrados.add(id); store.upsert('figurinhas', id, velho.data || {}).then(() => store.remove(ALBUM)).catch(() => {}); }
-  return velho.data || {};
-}
+/** Dados do álbum de quem está com o nome agora. O álbum antigo do aparelho (sem dono) é IGNORADO de propósito: ele tinha as cartas de todo mundo misturadas
+ *  e o certo de cada aluno vem do servidor (o código dele) quando ele abre o álbum. */
+export function albumDados() { const meu = store.get(albumId()); return meu ? meu.data || {} : {}; }
