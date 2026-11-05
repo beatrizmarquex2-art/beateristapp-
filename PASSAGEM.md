@@ -179,3 +179,9 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 
 - **Cara a Cara Musical nos alunos:** as fotos do álbum já são liberadas pros alunos (álbum com código), então o tema musical vai junto no build normal (`MUSICAL_LIBERADO = true` em `js/jogos/cara.js`; se a Bea quiser esconder, é só trocar por `false`).
 - Pacote final: `beaterista-alunos.zip` (saída do build-aluno.sh, vai pro Netlify jogos.beaterista.com.br) e `beaterista-app-bea.zip` (app completo da Bea, com as fotos). 
+
+## Álbum nos alunos: estrelas e pontuação dão pacotes (deploy-final)
+- Álbum dos alunos = o do main (aba **Álbum**, só com código, cartinhas novas, baixar pra postar). Não entrou a aba Estudos nem o álbum de 91 da branch `album-ritmo-figurinhas`.
+- **Estrelas dos Kids → pacotes**: cada estrela nova numa fase (`Album.grantPacks` em `js/kids/album.js`, chamado por `engine.js` e `detetive.js`) vira 1 pacote do álbum de 125 (id `kids:<perfil>:<tempo>:<n>`). **★ dos jogos de ritmo → pacotes**: a cada 5 ★ (`grantByStars`, `ritmoPaid` guarda quantos já foram entregues; id `ritmo:<perfil>:<n>`). Os pacotes caem no estado local `figurinhas-album` (`js/figurinhas/rewards.js`) e aparecem na aba Pacotes; ao abrir o álbum com o código, sobem pro Supabase junto com o resto. Não entrega em dobro.
+- O jogo Cara a Cara **não** dá pacote nem figurinha.
+- Testes: `node --test tests/album-ritmo.test.mjs`, `node tests/e2e/album-pacotes.mjs`. `tests/e2e/mapa.mjs` agora usa o jogo `pecas` (o antigo `pauta` dos Kids foi trocado pelo pauLta no main).
