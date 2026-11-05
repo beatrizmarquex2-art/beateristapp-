@@ -14,6 +14,14 @@ test('distribuição de coleções e raridades fechadas', () => {
   assert.deepEqual(count('raridade'), { Comum: 101, Rara: 14, Exclusiva: 10 });
   assert.equal(cat.find((c) => c.codigo === 'F102').artista_banda, 'Jimi Hendrix');
 });
+test('seções do álbum: Beatlemania 22, Beaterista 10, Comum 80, Raras 13 (cada figurinha em uma só)', () => {
+  assert.deepEqual(count('secao'), { Beatlemania: 22, Beaterista: 10, Comum: 80, Raras: 13 });
+  for (const c of cat) assert.ok(L.SECOES.includes(c.secao), c.codigo);
+  assert.ok(cat.filter((c) => c.secao === 'Raras').every((c) => c.raridade === 'Rara'));
+  assert.ok(cat.filter((c) => c.secao === 'Comum').every((c) => c.raridade === 'Comum'));
+  assert.equal(cat.find((c) => c.codigo === 'F087').secao, 'Beatlemania');
+  assert.equal(L.SECAO_ANTIGA.Beatles, 'Beatlemania');
+});
 test('raridades conforme a decisão da usuária', () => {
   const ids = (r) => cat.filter((c) => c.raridade === r).map((c) => c.codigo).sort().join();
   assert.equal(ids('Exclusiva'), 'F001,F004,F005,F010,F011,F012,F015,F129,F131,F132');

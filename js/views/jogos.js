@@ -15,6 +15,7 @@ import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
+import * as AC from '../acesso.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -39,7 +40,7 @@ const SECTIONS = [
   ]],
   ['leitura musical', [
     link('#/kids/figuras', 'figuras rítmicas', 'figuras.svg', 'semibreve, mínima…'),
-    link('#/kids/pauta', 'onde mora na pauta?', 'pauta.svg', 'cada peça tem a sua casinha'),
+    link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
   ['cartas e tabuleiro', [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
@@ -52,7 +53,11 @@ const SECTIONS = [
   ]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
-    link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
+    link('#/jogos/relatorio', 'Jogos Ensinam', 'relatorio.svg', 'pra que serve cada jogo'),
+  ]],
+  ['estudos (com código)', [
+    link('#/dicionario', 'dicionário da bateria', 'pauta.svg', 'termos e exemplos tocando'),
+    link('#/kids/figuras/aula', 'aulas do Paul', 'figuras.svg', 'aprenda as figuras rítmicas'),
   ]],
 ];
 
@@ -71,8 +76,8 @@ function catalog(host) {
   const aluno = ALUNO();
   let editing = false; let onlyFav = false;
   const card = (x, edit) => {
-    const [id, title, img, , , href] = x;
-    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}`, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
+    const [id, title, img, , , href] = x; const lk = aluno && AC.trancado(href || `#/jogos/${id}`);
+    return h('a', { class: `jg-card${lk ? ' locked' : ''}`, href: href || `#/jogos/${id}`, 'aria-label': lk ? `${title} (só com código)` : null, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' }), lk ? h('i', { class: 'jg-lock', 'aria-hidden': 'true' }, '🔒') : null), h('b', {}, title));
   };
   let catWrap;
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
@@ -107,8 +112,9 @@ function catalog(host) {
     change({ ...p, order: full.map((k) => (set.has(k) ? newKeys[n++] : k)) }, 'ordem mudou');
   } });
   const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
+  const onAc = () => draw(); document.addEventListener('aluno-acesso', onAc);
   const offFesta = attachFesta(catWrap, { paul: false }); // a faixa de título já tem o Paul
-  return () => { offStore(); offDrag(); offFesta(); };
+  return () => { offStore(); offDrag(); offFesta(); document.removeEventListener('aluno-acesso', onAc); };
 }
 
 function game(host, entry) {
@@ -145,7 +151,7 @@ function withModes(host, entry, [id, mode, mission]) {
 }
 
 export function mount(host, parts = []) {
-  if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
+  if (parts[0] === 'relatorio') return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) return catalog(host);
   return hasAdventure(entry[0]) ? withModes(host, entry, parts) : game(host, entry);

@@ -20,7 +20,7 @@ const SPOTS = [[24, 22], [336, 24], [22, 500], [338, 498], [180, 12], [180, 508]
 
 /** Páginas de uma coleção: capa, sumário e as páginas de figurinhas, artistas em ordem alfabética (as repetidas ficam juntas). */
 export function pagesOf(catalog, colecao) {
-  const cards = catalog.filter((c) => c.colecao === colecao).sort((a, b) => a.artista_banda.localeCompare(b.artista_banda, 'pt') || a.codigo.localeCompare(b.codigo));
+  const cards = catalog.filter((c) => c.secao === colecao).sort((a, b) => a.artista_banda.localeCompare(b.artista_banda, 'pt') || a.codigo.localeCompare(b.codigo));
   const pages = [{ tipo: 'capa' }, { tipo: 'indice' }];
   for (let i = 0; i < cards.length; i += PER) pages.push({ tipo: 'pagina', cards: cards.slice(i, i + PER) });
   return { pages, cards };
@@ -32,10 +32,10 @@ function deco(seed) {
 }
 
 const COVER = {
-  Geral: { titulo: 'Álbum', sub: 'o mundo da música', cls: 'cv-geral' },
-  Beatles: { titulo: 'The Beatles', sub: 'edição psicodélica', cls: 'cv-beatles' },
+  Comum: { titulo: 'Comum', sub: 'o mundo da música', cls: 'cv-geral' },
+  Beatlemania: { titulo: 'Beatlemania', sub: 'edição psicodélica', cls: 'cv-beatles' },
   Beaterista: { titulo: 'Beaterista', sub: 'edição exclusiva da Bea', cls: 'cv-bea' },
-  Especial: { titulo: 'Especial', sub: 'duplas e colaborações', cls: 'cv-esp' },
+  Raras: { titulo: 'Raras', sub: 'as mais difíceis de achar', cls: 'cv-esp' },
 };
 
 
@@ -58,7 +58,7 @@ function beatlesArt(got, total) {
   <g transform="translate(180 333)"><circle r="46" fill="#17224a" stroke="#14111a" stroke-width="3"/><text y="-2" font-family="'Anton',sans-serif" font-size="38" fill="#fbf6ea" text-anchor="middle">${got}</text><text y="19" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="12" fill="#fbf6ea" text-anchor="middle" letter-spacing="1">de ${total}</text></g>
   ${flowers}
   <g fill="#fbf6ea" stroke="#14111a" stroke-width="2.4" stroke-linejoin="round">${[[34, 150, 18], [330, 186, 15], [58, 262, 11], [312, 300, 12]].map(([x, y, r]) => `<path transform="translate(${x} ${y})" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`).join('')}</g>
-  <text x="180" y="62" font-family="'Abril Fatface',serif" font-size="46" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="7" paint-order="stroke" stroke-linejoin="round">THE BEATLES</text>
+  <text x="180" y="60" font-family="'Abril Fatface',serif" font-size="37" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="7" paint-order="stroke" stroke-linejoin="round" textLength="332" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
   <text x="180" y="94" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="6" text-anchor="middle" fill="#14111a">EDIÇÃO PSICODÉLICA</text></svg>`;
 }
 
@@ -91,7 +91,7 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
     if (p.tipo === 'capa') {
       const cv = COVER[colecao];
       node.className = `lv-page lv-capa ${cv.cls}`;
-      if (colecao === 'Beatles') { node.innerHTML = `${beatlesArt(tot.got, tot.total)}<small class="cv-hint">deslize pra folhear ›</small>`; return; }
+      if (colecao === 'Beatlemania') { node.innerHTML = `${beatlesArt(tot.got, tot.total)}<small class="cv-hint">deslize pra folhear ›</small>`; return; }
       node.innerHTML = `<div class="cv-in"><img class="cv-logo" src="assets/logo-nome.png" alt="Beaterista" width="200" height="57"><h2>${cv.titulo}</h2><p>${cv.sub}</p><div class="cv-ring" style="--p:${Math.round((tot.got / tot.total) * 100)}"><b>${tot.got}</b><span>de ${tot.total}</span></div><small>deslize pra folhear ›</small></div>${deco(colecao)}`;
       return;
     }

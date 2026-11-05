@@ -6,10 +6,11 @@ import * as store from '../store.js';
 import { cardSVG } from '../figurinhas/card.js';
 import * as L from '../figurinhas/album-logic.js';
 import { createBook } from '../figurinhas/livro.js';
+import { shareUI } from '../figurinhas/share-ui.js';
 
 const ID = 'figurinhas-album';
-const TABS = [...L.COLECOES, 'Pacotes'];
-const NOTE = { Geral: 'o mundo da música: bandas, bateristas e ídolos', Beatles: 'edição especial psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Beatriz — todas exclusivas', Especial: 'colaborações: dois artistas na mesma foto' };
+const TABS = [...L.SECOES, 'Pacotes'];
+const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 const loadCatalog = async () => (catalog ||= await (await fetch('assets/figurinhas/catalogo.json')).json());
 const aspectOf = (e) => e.largura_px / e.altura_px;
@@ -23,7 +24,7 @@ export function mount(host, parts = [], opts = {}) {
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
-  let tab = TABS.includes(parts[0]) ? parts[0] : 'Geral', artist = '';
+  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
@@ -55,7 +56,7 @@ export function mount(host, parts = [], opts = {}) {
   /* ---------- coleção: o livro ---------- */
   const books = {};
   function collectionView() {
-    const list = catalog.filter((c) => c.colecao === tab), st = L.stats(state, catalog, tab);
+    const st = L.stats(state, catalog, tab);
     let bk = books[tab];
     if (!bk) bk = books[tab] = createBook({ catalog, colecao: tab, state, onPaste: doPaste, onDetail: detail, reduzir: wantsLess(state) });
     else bk.update(state, justPasted);
@@ -120,7 +121,10 @@ export function mount(host, parts = [], opts = {}) {
       let big = false;
       const view = h('div', { class: 'fig-zoom' }); view.innerHTML = svgOf(e, `d${e.codigo}`);
       const btn = h('button', { type: 'button', class: 'btn', 'aria-pressed': 'false', onclick: () => { big = !big; view.classList.toggle('big', big); btn.setAttribute('aria-pressed', String(big)); btn.textContent = big ? 'diminuir' : 'ampliar'; } }, 'ampliar');
-      return h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · coleção ${e.colecao} · nº ${L.slotNumber(catalog, e)}`), btn);
+      const share = shareUI(e);
+      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
+      box.cleanup = () => share.cleanup();
+      return box;
     });
   }
 

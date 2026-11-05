@@ -6,7 +6,7 @@ await page.addInitScript(() => localStorage.setItem('beaterista-aluno-nome', 'Te
 await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);
 const r = await page.evaluate(async () => { const m = await import('/js/views/mural.js'); const out = await m.pickImages(true); return { out, inputs: document.querySelectorAll('input[type=file]').length }; });
 check('aluno: pickImages não abre seletor e devolve vazio', r.out.length === 0 && r.inputs === 0, JSON.stringify(r));
-const ROUTES = ['#/jogos', '#/jogos/quebra', '#/jogos/quebra/livre', '#/jogos/velha/livre', '#/kids', '#/kids/album', '#/kids/pauta', '#/kids/memoria/livre', '#/ritmo', '#/beatlab', '#/tocar', '#/ranking'];
+const ROUTES = ['#/jogos', '#/jogos/quebra', '#/jogos/quebra/livre', '#/jogos/velha/livre', '#/kids', '#/kids/album', '#/kids/figuras', '#/kids/memoria/livre', '#/ritmo', '#/beatlab', '#/tocar', '#/ranking'];
 let bad = [];
 for (const h of ROUTES) { await page.goto(url + '/aluno.html' + h); await sleep(900); const x = await page.evaluate(() => ({ files: document.querySelectorAll('input[type=file]').length, txt: [...document.querySelectorAll('button, a, label')].filter((e) => /trocar foto|adicionar foto|enviar foto|escolher foto|subir (a )?foto|nova foto/i.test(e.textContent || e.getAttribute('aria-label') || '')).length })); if (x.files || x.txt) bad.push(`${h}: ${JSON.stringify(x)}`); }
 check('aluno: nenhuma tela tem seletor de arquivo nem botão de adicionar/trocar foto', !bad.length, bad.join(' | '));

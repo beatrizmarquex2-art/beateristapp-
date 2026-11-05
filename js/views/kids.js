@@ -28,6 +28,7 @@ import { mountProgressionMap } from '../kids/mapa.js';
 import { loadAdventure } from '../campanha/registry.js';
 import { pontuacaoEl } from '../campanha/pontuacao.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
+import * as PL from '../paulta/save.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -75,7 +76,7 @@ const BG = '<svg class="kx-bgd" viewBox="0 0 100 120" preserveAspectRatio="xMidY
   + '<path d="M9 22l7-13 2 9 7-12 2 9 6-9" style="stroke:var(--s2)" stroke-width="3.6"/><path d="M91 10l-8 11 9-1-7 11" style="stroke:var(--s1)" stroke-width="3.6"/>'
   + '<path d="M9 104l10-5-7-1 9-6" style="stroke:var(--s3)" stroke-width="3.6"/><path d="M80 112l5-9 3 6 5-11" style="stroke:var(--s4)" stroke-width="3.6"/>'
   + '<g style="stroke:var(--s3)" stroke-width="2.6"><path d="M50 14v-6M33 20l-3-5M67 20l3-5M22 38l-5-2M78 38l5-2"/></g></svg>';
-const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
+export const cardBg = () => { const t = document.createElement('template'); t.innerHTML = BG; return t.content.firstChild; };
 /** Cartão de jogo: cartaz de cor chapada com ícone grande, nome em marker, descrição e andamento. */
 function gameCard(href, id, title, blurb, meta, { on = false, pct = null } = {}) {
   const ico = h('span', { class: 'kx-gi' }); ico.insertAdjacentHTML('beforeend', gameIcon(id));
@@ -92,7 +93,7 @@ const wideCard = (id, title, sub, onclick, href) => {
 const topBar = (backHref, right) => h('div', { class: 'kx-top' }, backHref ? h('a', { class: 'kx-back', href: backHref }, '‹ voltar') : h('span', { class: 'kx-title' }, h('span', { class: 't1' }, 'beaterista'), h('span', { class: 't2' }, 'JOGOS'), h('img', { class: 'fx-doodle bolt kx-fx-a', src: 'assets/paul/d-bolt2.webp', alt: '', 'aria-hidden': 'true' }), h('img', { class: 'fx-doodle phones kx-fx-b', src: 'assets/paul/d-phones.webp', alt: '', 'aria-hidden': 'true' })), right || null);
 
 /* ---------- jogador ---------- */
-function newPlayer(onDone) {
+export function newPlayer(onDone) {
   sheet('Quem vai jogar?', (close) => {
     let age = 'b';
     const name = h('input', { type: 'text', maxlength: 24, placeholder: 'nome ou apelido', 'aria-label': 'Nome do jogador' });
@@ -105,13 +106,13 @@ function newPlayer(onDone) {
       h('button', { class: 'btn primary', type: 'button', onclick: go }, 'começar'));
   });
 }
-function switchPlayer(onDone) {
+export function switchPlayer(onDone) {
   sheet('Jogadores', (close) => {
     const list = h('div', { style: 'display:grid;gap:8px' });
     const draw = () => {
       const cur = P.active();
       list.replaceChildren(...P.profiles().map((p) => h('div', { class: 'row kx-pl' },
-        h('button', { class: `btn${cur && cur.id === p.id ? '' : ' ghost'}`, type: 'button', onclick: async () => { await P.setActive(p.id); close(); onDone && onDone(); } }, `${p.name} · ${ageLabel(p.age)}`),
+        h('button', { class: `btn${cur && cur.id === p.id ? '' : ' ghost'}`, type: 'button', onclick: async () => { await P.setActive(p.id); close(); onDone && onDone(); } }, `${PL.label(p)} · ${ageLabel(p.age)}`),
         h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${p.name}`, onclick: async () => { if (await confirmSheet('Apagar jogador?', `${p.name} perde estrelas e figurinhas.`, 'Apagar')) { await P.removeProfile(p.id); close(); onDone && onDone(); } } }, icon('trash', 18))))); };
     draw();
     return h('div', { class: 'sheet-body' }, list, h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); newPlayer(onDone); } }, '+ novo jogador'));
@@ -129,16 +130,22 @@ function homeScreen(host, rerender) {
   const total = P.totalStars(me.id); const tier = tierOf(total);
   const r = robo({ mood: 'happy', tier, size: 96, say: total ? `oi, ${me.name}! já temos ${total} estrelas!` : `oi, ${me.name}! vamos jogar?` });
   host.append(topBar('#/jogos'),
-    h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), h('small', {}, ageLabel(me.age))),
+    h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), h('small', {}, [PL.titleOf(me.id), ageLabel(me.age)].filter(Boolean).join(' · '))),
       h('span', { class: 'kd-stars' }, `★ ${total}`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'fases'),
-    h('div', { class: 'kx-cards' }, ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
+    h('div', { class: 'kx-cards' }, paultaCard(me.id), ...ORDER.map((k) => { const g = GAMES[k]; const s = P.summary(me.id, k);
       return gameCard(`#/kids/${k}`, g.icon || k, g.title, g.blurb, s.answered ? `fase ${s.top} · ${s.pct}%` : 'novo', { on: s.stars > 0, pct: Math.round((s.stars / s.maxStars) * 100), led: s.answered > 0 }); })),
     h('h2', { class: 'kx-h' }, 'coleção'),
     h('div', { class: 'kx-cards' }, wideCard('album', 'Álbum', `${Album.owned(me.id).length} de ${Album.total()} figurinhas`, null, '#/kids/album'),
       ...(ALUNO() ? [] : [wideCard('relatorio', 'Relatório', 'monte, edite e gere o pdf', null, '#/kids/relatorio')])),
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
+}
+
+/** Cartaz do pauLta (o L maiúsculo aparece no nome). */
+function paultaCard(pid) {
+  const m = PL.meta(pid); const c = gameCard('#/paulta', 'pauta', 'pauLta', 'leitura musical', m, { on: m !== 'novo', pct: PL.pct(pid) });
+  c.querySelector('.kx-gt').innerHTML = 'pau<span class="pl-L">L</span>ta'; return c;
 }
 
 function albumScreen(host, role) {

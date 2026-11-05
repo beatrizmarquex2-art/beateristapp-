@@ -10,6 +10,7 @@ import { themeOf } from './themes.js';
 import * as E from './engine.js';
 import * as CS from './store.js';
 import * as P from '../kids/progress.js';
+import * as AC from '../acesso.js';
 import { pontuacaoEl } from './pontuacao.js';
 
 const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
@@ -17,11 +18,12 @@ const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce
 /** Primeira tela do jogo: Modo Livre (como sempre foi) ou Modo Aventura. */
 export function modeChooser(host, { gameId, spec, hrefLivre, hrefAventura, title, blurb }) {
   const pid = CS.playerId(); const g = CS.gameOf(pid, gameId); const n = spec.missions.length;
+  const lockedAdv = document.documentElement.classList.contains('aluno-on') && !AC.liberado(); // aluno sem código: só o Modo Livre
   const card = (cls, href, name, text, meta) => h('a', { class: `av-mode ${cls}`, href }, h('b', { class: 'av-mode-t' }, name), h('span', { class: 'av-mode-d' }, text), meta ? h('small', { class: 'av-mode-m' }, meta) : null);
   host.replaceChildren(h('div', { class: 'av av-choose' },
     h('h2', { class: 'av-h' }, title), blurb ? h('p', { class: 'av-p' }, blurb) : null, h('p', { class: 'av-q' }, 'como você quer jogar?'),
     card('livre', hrefLivre, 'Modo Livre', 'do jeito de sempre: sem bloqueios, quantas vezes quiser.', null),
-    card('aventura', hrefAventura, 'Modo Aventura', 'missões, estrelas e medalhas num mapa só desse jogo.', `${E.doneIdx(spec, g)}/${n} missões · ★ ${E.totalStars(spec, g)}/${n * 3}`),
+    card('aventura', hrefAventura, `${lockedAdv ? '🔒 ' : ''}Modo Aventura`, lockedAdv ? 'precisa do código da professora (a professora te dá, ou gere o seu na entrada).' : 'missões, estrelas e medalhas num mapa só desse jogo.', lockedAdv ? null : `${E.doneIdx(spec, g)}/${n} missões · ★ ${E.totalStars(spec, g)}/${n * 3}`),
     pontuacaoEl(gameId, 'livre'), pontuacaoEl(gameId, 'aventura'),
     h('p', { class: 'av-note' }, 'o progresso de cada modo é independente: trocar de um pro outro não apaga nada.')));
   return () => {};
