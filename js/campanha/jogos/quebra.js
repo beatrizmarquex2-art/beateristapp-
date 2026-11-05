@@ -5,7 +5,8 @@
 import { mount as mountGame, IMAGES } from '../../jogos/quebra.js';
 import { fmtTime } from '../../jogos/quebra-logic.js';
 
-const IMG = IMAGES[0].id; // limitação: só existe uma imagem (palco); a variedade vem da quantidade de peças e dos critérios
+const ORDEM = ['palco', 'guitarra', 'baixo', 'teclado', 'sax']; // a imagem gira de missão em missão (5 imagens no jogo)
+const imgDe = (i) => { const id = ORDEM[i % ORDEM.length]; return IMAGES.some((x) => x.id === id) ? id : IMAGES[0].id; };
 // [título, tag, peças, maxErr (★2), perfect (★3), timeMs (bônus ★3, opcional)]
 const PLAN = [
   ['Aquecimento', '6 peças', 6, 3, 0, null],
@@ -31,7 +32,7 @@ const mk = ([title, tag, diff, maxErr, perfect, timeMs], i) => ({
   ],
   stars: ['montar todas as peças', `${maxErr === 0 ? 'nenhuma' : `no máximo ${maxErr}`} tentativa${maxErr === 1 ? '' : 's'} errada${maxErr === 1 ? '' : 's'}`,
     `sem dicas, ${perfect === 0 ? 'sem nenhuma tentativa errada' : `com no máximo ${perfect} tentativa${perfect === 1 ? '' : 's'} errada${perfect === 1 ? '' : 's'}`}${timeMs ? ` e em até ${fmtTime(timeMs)} (bônus de tempo, opcional)` : ''}`],
-  params: { diff, img: IMG, maxErr, perfect, timeMs },
+  params: { diff, img: imgDe(i), maxErr, perfect, timeMs },
   evaluate(result, self) {
     const p = (self && self.params) || { diff, maxErr, perfect, timeMs };
     if (!result || result.won !== true || result.diff !== p.diff) return { done: false, stars: 0, summary: ['faltou encaixar todas as peças.'] };

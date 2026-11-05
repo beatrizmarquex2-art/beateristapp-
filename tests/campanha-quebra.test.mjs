@@ -3,6 +3,7 @@ import { spec } from '../js/campanha/jogos/quebra.js';
 import * as Q from '../js/jogos/quebra-logic.js';
 import { checkSpec, applyResult, blankGame, isUnlocked, statusOf } from '../js/campanha/engine.js';
 import { THEMES } from '../js/campanha/themes.js';
+import { IMAGES } from '../js/jogos/quebra.js';
 const seeded = (s) => () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 2 ** 32; };
 const win = (m, o = {}) => ({ won: true, diff: m.params.diff, img: 'palco', errors: 0, hints: 0, elapsed: 1000, moves: m.params.diff, ...o });
 
@@ -12,7 +13,8 @@ test('spec válido, 11 missões, ids estáveis, tema existente', () => {
 });
 test('só usa grades suportadas, em ordem crescente de peças, com a imagem que existe', () => {
   const d = spec.missions.map((m) => m.params.diff); assert.ok(d.every((x) => Q.DIFFS[x])); assert.deepEqual(d, [...d].sort((a, b) => a - b)); assert.ok(d[0] === 6 && d.at(-1) === 24);
-  assert.ok(spec.missions.every((m) => m.params.img === 'palco'));
+  assert.ok(spec.missions.every((m) => IMAGES.some((x) => x.id === m.params.img))); // só imagens que existem
+  assert.ok(new Set(spec.missions.map((m) => m.params.img)).size >= 5); // a imagem varia de missão em missão
 });
 test('concluir exige todas as peças: resultado incompleto ou de outra grade não conclui', () => {
   const m = spec.missions[0];
