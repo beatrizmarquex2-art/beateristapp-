@@ -56,7 +56,7 @@ export function nextQuestion(asked, level = 'facil', rnd = Math.random) {
 export function newMatch({ mode = 'local', variant = 'classico', level = 'facil' } = {}) {
   return { v: 1, mode, variant, level: LEVEL_IDS.includes(level) ? level : 'facil', round: 1, scores: [0, 0], draws: 0, starter: 0, errors: 0, nextOffer: ERROR_OFFER, offer: false, asked: [], ...freshBoard(0) };
 }
-function freshBoard(starter) { return { board: Array(9).fill(null), turn: starter, over: false, result: null, pending: null, held: null, last: null }; }
+function freshBoard(starter) { return { board: Array(9).fill(null), turn: starter, over: false, result: null, pending: null, held: null, last: null, moved: [false, false] }; }
 export const nextRound = (g) => { const starter = 1 - g.starter; return { ...g, round: g.round + 1, starter, asked: [], ...freshBoard(starter) }; };
 const clone = (g) => JSON.parse(JSON.stringify(g));
 export const isPaulTurn = (g) => (g.mode === 'facil' || g.mode === 'estrategico') && g.turn === 1;
@@ -72,6 +72,14 @@ export function applyMark(g0, cell) {
   if (g0.over || g0.pending || g0.offer) throw new Error('jogada bloqueada');
   if (!Number.isInteger(cell) || cell < 0 || cell > 8 || g0.board[cell] != null) throw new Error('casa ocupada');
   const g = clone(g0); g.board[cell] = g.turn; g.last = { cell, by: g.turn, ok: true };
+  finishIfOver(g); if (!g.over) g.turn = 1 - g.turn; return g;
+}
+/** Troca de lugar: 1 vez por jogador em cada rodada, pode mover UMA marca sua para uma casa vazia (sem pergunta). Conta como a jogada da vez. */
+export const canMove = (g) => !!g && !g.over && !g.pending && !g.offer && !(g.moved || [])[g.turn] && g.board.includes(g.turn) && g.board.includes(null);
+export function moveMark(g0, from, to) {
+  if (!canMove(g0)) throw new Error('troca indisponível');
+  if (!Number.isInteger(from) || !Number.isInteger(to) || g0.board[from] !== g0.turn || g0.board[to] != null) throw new Error('troca inválida');
+  const g = clone(g0); g.board[from] = null; g.board[to] = g.turn; g.moved = [...(g.moved || [false, false])]; g.moved[g.turn] = true; g.last = { cell: to, from, by: g.turn, ok: true, moved: true };
   finishIfOver(g); if (!g.over) g.turn = 1 - g.turn; return g;
 }
 /** Desafio: tocar casa vazia abre a pergunta (a mesma, se já foi aberta e cancelada nesta jogada). */
@@ -108,6 +116,6 @@ export function validMatch(g) {
     if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'facil', 'estrategico', 'online'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
     if (g.level != null && !LEVEL_IDS.includes(g.level)) return false;
     if (g.pending && (g.board[g.pending.cell] != null || !questionById(g.pending.qid))) return false;
-    return Array.isArray(g.scores) && g.scores.length === 2 && Array.isArray(g.asked);
+    return Array.isArray(g.scores) && g.scores.length === 2 && Array.isArray(g.asked) && (g.moved == null || (Array.isArray(g.moved) && g.moved.length === 2));
   } catch { return false; }
 }
