@@ -71,6 +71,13 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Dominó removido. Bingo só linha/coluna/cheia. Memória: 1 ou 2 jogadores, "acerta joga de novo" sim/não.
 - Modo leve: `html.lite` (Android/outros, ver `js/theme-boot.js` e fim de `css/jogos.css`): sem barra de rolagem falsa, sem desfoque/animação de fundo.
 
+## STOP musical (nov/2026)
+- `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
+- Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
+- Modos: individual, dupla (turnos), sala de aula (2 a 12, tempo/rodadas livres), 2 celulares (turnos; ver salas). **Não existe** partida simultânea online, cronômetro sincronizado, painel do professor remoto nem reconexão: precisam de hora do servidor e escrita por jogador (hoje a sala guarda o estado inteiro).
+- Pendente = amarelo pedido, mas na área dos alunos o papel já é amarelo, então o pendente usa âmbar queimado com listras. A decisão antiga "sem amarelo" continua valendo pro resto.
+- Testes: `node --test tests/*.test.mjs`, e2e `tests/e2e/stop.mjs` e `salas.mjs`.
+
 ## Pendências (a Bea leva pra o chat novo)
 1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Da professora". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
 2. **MIDIs pros alunos**: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.

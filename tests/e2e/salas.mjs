@@ -20,7 +20,7 @@ async function phone() {
 }
 async function pair(game) {
   const a = await phone(); const b = await phone();
-  for (const p of [a, b]) { await p.goto(`${url}/aluno.html#/jogos/${game}`); await sleep(900); await p.locator('button:has-text("2 celulares")').first().click(); await sleep(200); }
+  for (const p of [a, b]) { await p.goto(`${url}/aluno.html#/jogos/${game}`); await sleep(900); if (await p.locator('button:has-text("JOGAR")').count()) { await p.locator('button:has-text("JOGAR")').click(); await sleep(300); } await p.locator('button:has-text("2 celulares")').first().click(); await sleep(200); }
   await a.locator('button:has-text("criar sala")').click(); await sleep(400);
   const code = (await a.locator('.jg-code').textContent()).trim();
   await b.locator('.jg-code-in').fill(code); await b.locator('button:has-text("entrar")').click(); await sleep(2500);
@@ -59,11 +59,11 @@ async function pair(game) {
   const tx = async (p) => (await p.locator('.jg-cover2').first().textContent());
   const [vez, esp] = (await tx(a)).includes('sua vez') ? [a, b] : [b, a];
   check('[stop] o outro está esperando', (await tx(esp)).includes('esperando'));
-  await vez.locator('button:has-text("pronto")').click(); await sleep(300);
-  await vez.locator('.jg-fields input').first().fill('Zeca'); await vez.locator('.jg-stopbtn').click(); await sleep(2600);
+  await vez.locator('.jg-cover2 button').click(); await vez.locator('.st-field input').first().waitFor({ timeout: 15000 });
+  await vez.locator('.st-field input').first().fill('Zeca'); await vez.locator('.st-stop').click(); await sleep(3200);
   check('[stop] a vez passou pro outro celular', (await tx(esp)).includes('sua vez'));
-  await esp.locator('button:has-text("pronto")').click(); await sleep(300); await esp.locator('.jg-stopbtn').click(); await sleep(2600);
-  check('[stop] revisão: quem criou revisa, o outro só olha', (await a.locator('button:has-text("confirmar revisão")').count()) + (await b.locator('button:has-text("confirmar revisão")').count()) === 1);
+  await esp.locator('.jg-cover2 button').click(); await esp.locator('.st-field input').first().waitFor({ timeout: 8000 }); await esp.locator('.st-stop').click(); await sleep(3200);
+  check('[stop] correção: quem criou revisa, o outro só olha', (await a.locator('button:has-text("confirmar rodada"), button:has-text("pendente")').count()) + (await b.locator('button:has-text("confirmar rodada"), button:has-text("pendente")').count()) >= 1 && (await a.locator('.st-contest').count()) + (await b.locator('.st-contest').count()) > 0 && ((await a.locator('.st-contest').count()) === 0 || (await b.locator('.st-contest').count()) === 0));
   check('[stop] sem erros de JS', !a.errs.length && !b.errs.length, [...a.errs, ...b.errs].join('|'));
 }
 await browser.close(); srv.close(); done();

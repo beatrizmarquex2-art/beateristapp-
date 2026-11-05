@@ -1,6 +1,6 @@
 // Jogos musicais: catálogo (3 por fileira) e cada jogo dentro da mesma moldura (voltar, som, nova partida).
 import { h } from '../util.js';
-import { banner, toast } from '../ui.js';
+import { banner, toast, confirmSheet } from '../ui.js';
 import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
@@ -116,7 +116,7 @@ function game(host, entry) {
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
-    h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
+    h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) location.hash = '#/jogos'; } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
       h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
     body);
   host.replaceChildren(wrap);
