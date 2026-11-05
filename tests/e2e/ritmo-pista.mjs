@@ -4,6 +4,7 @@ const { srv, url } = await serve(); const { browser } = await launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); const p = await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
 await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'T'); });
 await p.goto(`${url}/aluno.html#/ritmo`); await sleep(2500);
+await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click(); await sleep(200);
 check('3 músicas no estilo', (await p.locator('.rz-tier').count()) === 3, String(await p.locator('.rz-tier').count()));
 console.log((await p.locator('.rz-tier .small').allTextContents()).join(' | '));
 const res = await p.evaluate(() => {
