@@ -2,7 +2,7 @@
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
-import { BY_ID, QUESTIONS } from './cara-data.js';
+import { BY_ID, QUESTIONS, answerFor } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
 
 const ID = 'cara';
@@ -58,6 +58,14 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
       g.manual && !g.over && !wrong ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(flipped), onclick: () => { g = K.flip(g, inst.id); if (picked === inst.id) picked = null; sfx('tap'); persist(); draw(); } }, flipped ? 'desvirar' : 'virar') : null);
   }
 
+  let maisQ = false;
+  /** 5 perguntas que mais dividem as cartas que ainda estão em jogo (as outras ficam em "mais perguntas"). */
+  function sugeridas() {
+    const cand = K.candidates(g).map((id) => BY_ID[id]); const livres = QUESTIONS.filter((q) => !K.alreadyAsked(g, q.id));
+    const nota = (q) => { const sim = cand.filter((i) => answerFor(i, q.id)).length; return Math.min(sim, cand.length - sim); };
+    const uteis = livres.filter((q) => nota(q) > 0).sort((a, b) => nota(b) - nota(a)); const resto = livres.filter((q) => !uteis.includes(q));
+    return [...uteis, ...resto].slice(0, 5);
+  }
   function draw() {
     const left = K.candidates(g).length;
     root.replaceChildren(...[
@@ -65,7 +73,8 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
       h('div', { class: 'jg-cgrid', role: 'group', 'aria-label': 'instrumentos' }, ...K.boardOf(g).map(card)),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
       g.over ? result() : picked ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar chute' }, h('b', {}, `é o ${BY_ID[picked].name}?`), h('button', { class: 'btn small primary', type: 'button', onclick: () => doGuess(picked) }, 'sim, chutar'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { picked = null; draw(); } }, 'cancelar')) : null,
-      !g.over ? h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...QUESTIONS.map((q) => h('button', { type: 'button', class: 'jg-qbtn', disabled: K.alreadyAsked(g, q.id), onclick: () => ask(q.id) }, q.text))) : null,
+      !g.over ? h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...(maisQ ? QUESTIONS : sugeridas()).map((q) => h('button', { type: 'button', class: 'jg-qbtn', disabled: K.alreadyAsked(g, q.id), onclick: () => ask(q.id) }, q.text)),
+        h('button', { type: 'button', class: 'btn small ghost', onclick: () => { maisQ = !maisQ; draw(); } }, maisQ ? 'só as 5 principais' : 'mais perguntas')) : null,
       g.manual && !g.over ? h('button', { class: 'btn small ghost', type: 'button', disabled: !g.flips.length, onclick: () => { g = K.undoFlip(g); persist(); draw(); } }, 'desfazer última virada') : null,
       g.asked.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico de perguntas' }, h('b', {}, 'histórico'), h('ol', { reversed: true }, ...g.asked.slice().reverse().map((a) => h('li', {}, h('b', {}, a.yes ? 'sim' : 'não'), ` · ${a.text}`)))) : null,
     ].filter(Boolean));

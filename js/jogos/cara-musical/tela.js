@@ -152,7 +152,7 @@ export function mountMusical(host, { onTema } = {}) {
   function jogo() {
     const lado = ladoAtual(); const mesa = st.mesa; const cand = R.candidatosDo(mesa, lado); const ids = mesa.cartas.map((c) => c.id);
     const emPalpite = st.palpitando && !lado.terminou;
-    const sug = kids() ? R.sugestoes(mesa, lado, 3) : null; const todas = R.disponiveis(mesa, lado); const semPergunta = !todas.length || (!R.informativas(mesa, lado).length && cand.length > 1);
+    const sug = R.sugestoes(mesa, lado, kids() ? 3 : 5, () => 0); const todas = R.disponiveis(mesa, lado); const semPergunta = !todas.length || (!R.informativas(mesa, lado).length && cand.length > 1);
     const podeMostrar = st.descartadas ? ids : ids.filter((id) => !lado.fora.includes(id) && !lado.erros.includes(id)); // "ver descartadas" mostra todas; senão só as vivas ficam em destaque
     const meu = cfg.jogo === 'solo' ? null : st.lados[cfg.jogo === 'dupla' ? 1 - st.turno : 1].segredo; // minha carta (o que o outro procura)
     const placar = st.serie ? h('div', { class: 'cm-placar', 'aria-label': 'placar' }, h('b', {}, `${nomeJ(0)} ${st.serie.vitorias[0]} × ${st.serie.vitorias[1]} ${nomeJ(1)}`), st.serie.empates ? h('small', {}, `${st.serie.empates} empate${st.serie.empates > 1 ? 's' : ''}`) : null, h('small', {}, 'melhor de 3')) : null;
@@ -177,7 +177,9 @@ export function mountMusical(host, { onTema } = {}) {
     if (semPergunta) return h('p', { class: 'jg-msg' }, fala('semPergunta'));
     const botao = (q, grande) => h('button', { type: 'button', class: grande ? 'cm-q big' : 'jg-qbtn', disabled: lado.perguntas.some((x) => x.id === q.id), onclick: () => perguntar(q.id) }, grande ? h('span', { 'aria-hidden': 'true' }, q.icone) : null, grande ? ` ${q.kids}` : textoDe(q, cfg.modo));
     if (kids()) return h('div', { class: 'cm-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, true)), todas.length > sug.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...todas.filter((q) => !lado.perguntas.some((x) => x.id === q.id)).map((q) => h('button', { type: 'button', class: 'cm-q big', onclick: () => { close(); perguntar(q.id); } }, h('span', { 'aria-hidden': 'true' }, q.icone), ` ${q.kids}`)))) }, 'mais perguntas') : null);
-    return h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...todas.map((q) => botao(q, false)));
+    const resto = todas.filter((q) => !sug.includes(q) && !lado.perguntas.some((x) => x.id === q.id));
+    return h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, false)),
+      resto.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...resto.map((q) => h('button', { type: 'button', class: 'jg-qbtn', onclick: () => { close(); perguntar(q.id); } }, textoDe(q, cfg.modo))))) }, 'mais perguntas') : null);
   }
   function tocar(id) { const c = st.mesa.cartas.find((x) => x.id === id); const lado = ladoAtual();
     if (st.palpitando && !lado.terminou) { st.sel = st.sel === id ? null : id; sfx('tap'); jogo(); return; } zoom(c); }
