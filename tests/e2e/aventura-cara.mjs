@@ -18,6 +18,7 @@ async function deduce() {
     const act = await page.evaluate(async () => {
       const { INSTRUMENTS, QUESTIONS, answerFor } = await import('/js/jogos/cara-data.js');
       const cands = [...document.querySelectorAll('.jg-cbtn:not([disabled])')].map((b) => INSTRUMENTS.find((i) => b.getAttribute('aria-label').startsWith(i.name)));
+      if (document.querySelector('.jg-result') || !cands.length) return 'wait';
       const vec = (i) => QUESTIONS.map((q) => answerFor(i, q.id)).join();
       const manual = !!document.querySelector('.jg-flip');
       if (manual) { // manual: o jogador confere as respostas e vira as cartas que não combinam
@@ -64,14 +65,10 @@ st = await states(); check('mapa: 0 concluída, 1 atual, resto trancado', st[0] 
 await page.reload(); await page.waitForSelector('.mp-node'); await sleep(800);
 st = await states(); check('recarregar mantém o progresso', st[0] === 'done' && st[1] === 'current', st.join());
 
-// derrota: perder os 3 chutes não conclui nem libera
+// perguntar não conclui nada; a pergunta feita aparece no histórico e as cartas que não combinam saem
 await open(1);
-for (let k = 0; k < 3; k++) { const wrong = await page.evaluate(async () => { const g = [...document.querySelectorAll('.jg-cbtn:not([disabled])')]; return g.length; }); void wrong;
-  // chuta a primeira carta ainda em jogo sem perguntar (pode acertar por sorte: então refaz abaixo)
-  const b = page.locator('.jg-cbtn:not([disabled])').first(); if (!(await b.count())) break; await b.click(); await page.click('.jg-pick button:has-text("sim, chutar")'); await sleep(120); if (await page.locator('.av-res').count()) break; }
-await page.waitForSelector('.av-res', { timeout: 8000 });
-const lost = (await page.locator('.av-res h2').textContent()).includes('Ainda não');
-check(lost ? 'chutar sem perguntar e errar 3 vezes: "Ainda não deu", 0 estrelas, missão 2 trancada' : 'chute de sorte na missão 1 acertou (aceitável)', lost ? (await page.locator('.av-rstar.on').count()) === 0 && (await page.locator('.av-unlock').count()) === 0 : true);
+await page.locator('.jg-qbtn').first().click(); await sleep(200);
+check('uma pergunta não encerra a missão e elimina cartas', (await page.locator('.av-res').count()) === 0 && (await page.locator('.jg-hist2 li').count()) === 1 && (await page.locator('.jg-cbtn[disabled]').count()) >= 1);
 
 // missão 5 (manual, 8 cartas): vira as cartas à mão e conclui
 await seed(['cara-01', 'cara-02', 'cara-03', 'cara-04']);

@@ -16,7 +16,7 @@ const setting = (k) => page.evaluate(async (key) => { const s = await import('/j
 const food = (id) => page.evaluate((w) => { const b = [...document.querySelectorAll('.kd-food')].find((x) => x.getAttribute('aria-label').startsWith(w + ',')); if (!b || b.disabled) return false; b.click(); return true; }, foodOf(id).word);
 const press = async (sel) => { await page.evaluate((s) => document.querySelector(s).click(), sel); await sleep(120); };
 const conferir = () => page.evaluate(() => { const b = [...document.querySelectorAll('.kd-btn')].find((x) => x.textContent === 'conferir'); if (b && !b.disabled) { b.click(); return true; } return false; });
-const open = async (i) => { await go(`#/kids/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.mr-checks'); };
+const open = async (i) => { await go('#/kids/ritmo/aventura'); await sleep(250); await go(`#/kids/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.mr-checks'); };
 const unlock = (n, stars = 1) => page.evaluate(async ({ n, stars }) => { const C = await import('/js/campanha/store.js'); const m = {}; for (let i = 0; i < n; i++) m[`monte-${String(i).padStart(2, '0')}`] = { s: stars, n: 1 }; await C.saveGame(C.playerId(), 'monte', { m, medals: [], log: [] }); }, { n, stars });
 const cellIds = (cells) => cells.map((c) => FOOD_OF_CELL[c]);
 
