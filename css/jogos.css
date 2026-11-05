@@ -417,3 +417,10 @@ html.lite .st-notes{display:none}html.lite .st-stop,html.lite .st-play{animation
 .jg-toca .kx-embed>*{min-width:0;max-width:100%}.jg-toca .kd-slots,.jg-toca .kd-foods{max-width:100%}
 .jg-toca .kd-bpm{margin-left:0}.jg-toca .kd-slot{min-height:72px}
 .jg-toca .tr-ctrl .chips,.tr-ctrl .chips{flex-wrap:wrap;overflow:visible;row-gap:6px}
+.tr-path{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.tr-path .lib-tab{min-height:44px;min-width:64px}.tr-path .lib-tab:disabled{opacity:.55}
+/* toca aqui: botões menores */
+.jg-toca .jg-seg{gap:5px;flex-wrap:nowrap}.jg-toca .jg-seg button{min-height:34px;padding:4px 10px;font-size:13px;border-width:2px;border-radius:10px;box-shadow:2px 2px 0 var(--jg-ink)}
+.jg-game.jg-toca .jg-seg button,.jg-toca .btn{min-height:36px;padding:4px 12px;font-size:13px;border-width:2px;box-shadow:2px 2px 0 var(--jg-ink)}
+.jg-toca .tr-actions{gap:6px}.jg-toca .tr-ctrl .lib-tab,.jg-toca .tr-ctrl .chips button,.jg-toca .tr-path .lib-tab{min-height:34px;min-width:0;padding:4px 10px;font-size:13px}
+.jg-toca .tr-path{gap:5px}.jg-toca .bl-step{width:36px;height:36px;min-height:36px;font-size:18px}.jg-toca .bl-bpm{font-size:22px;min-width:64px;height:36px}
+.jg-toca .tr-ctrl{padding:10px 12px}

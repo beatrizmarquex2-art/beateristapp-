@@ -6,7 +6,7 @@ import { getGame, setGame } from './base.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { leitura } from '../views/treinos.js';
 
-const VERSIONS = [['normal', 'versão normal (figuras)'], ['kids', 'versão com imagens']];
+const VERSIONS = [['normal', 'normal (figuras)'], ['kids', 'com imagens']];
 
 export function mount(host) {
   const saved = getGame('toca');
