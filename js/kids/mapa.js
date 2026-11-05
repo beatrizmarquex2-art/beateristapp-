@@ -22,8 +22,9 @@ const pct = (v, total) => `${(v / total) * 100}%`;
 const SAY = { start: 'bora!', cheer: 'mandou bem!', next: 'próxima!', done: 'turnê completa!' };
 
 export function mountProgressionMap(host, cfg) {
-  const { gameId, levels, regions = REGIONS, profileId = 'x', onOpen, onBack } = cfg;
+  const { gameId, levels, profileId = 'x', onOpen, onBack, theme = null, unitName = 'Fase' } = cfg; const regions = (theme && theme.regions) || cfg.regions || REGIONS;
   const S = session({ quiet: false }); const sfx = mapSfx(); const motion = !reduced();
+  const decorOf = (c) => c.decor || DECOR[c.id] || [];
   const bad = checkLevels(levels); if (!bad.ok) console.warn('mapa: fases com problema', bad.errors);
   const { nodes, current, allDone } = computeNodes(levels, cfg);
   const chapters = chaptersFor(nodes.length, regions); const L = layoutMap(nodes.length);
@@ -49,10 +50,11 @@ export function mountProgressionMap(host, cfg) {
   const at = (x, y) => `left:${pct(x, L.W)};top:${pct(y, L.H)}`;
   chapters.forEach((c, ci) => {
     const b = L.bands[ci];
-    const band = h('section', { class: 'mp-band', 'data-r': c.id, 'data-i': ci, style: `top:${pct(b.y0, L.H)};height:${pct(b.y1 - b.y0, L.H)}`, 'aria-label': c.name });
+    const col = c.c ? `;--b0:${c.c[0]};--b1:${c.c[1]};--bt:${c.c[2]};--bd:${c.c[3]}` : ''; // cores próprias da região (cada jogo tem o seu mundo)
+    const band = h('section', { class: 'mp-band', 'data-r': c.id, 'data-i': ci, style: `top:${pct(b.y0, L.H)};height:${pct(b.y1 - b.y0, L.H)}${col}`, 'aria-label': c.name });
     const sign = h('div', { class: 'mp-sign', style: `top:${pct(b.y0 + 14, L.H)}` }, h('small', {}, `região ${ci + 1}`), h('b', {}, c.name));
     world.append(band, sign);
-    (DECOR[c.id] || []).forEach(([name, side, f], k) => {
+    decorOf(c).forEach(([name, side, f], k) => {
       const span = b.y1 - b.y0 - 84; const y = b.y0 + 84 + span * f;
       const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d);
     });
@@ -66,13 +68,13 @@ export function mountProgressionMap(host, cfg) {
   world.append(svg);
 
   const nodeEls = [];
-  const aria = (n) => `Fase ${n.label}, ${n.state === ST.LOCKED ? 'trancada' : n.state === ST.DONE ? `concluída, ${n.stars} de 3 estrelas` : n.state === ST.CURRENT ? 'fase atual' : 'liberada'}`;
+  const aria = (n) => `${unitName} ${n.label}, ${n.state === ST.LOCKED ? 'trancada' : n.state === ST.DONE ? `concluída, ${n.stars} de 3 estrelas` : n.state === ST.CURRENT ? 'fase atual' : 'liberada'}`;
   nodes.forEach((n, i) => {
     const p = pos$(i); const locked = n.state === ST.LOCKED;
     const el = h('button', { type: 'button', class: `mp-node st-${n.state}${n.boss ? ' boss' : ''}`, style: `${at(p.x, p.y)};--i:${i}`, 'data-id': n.id, 'data-pos': i, 'aria-label': aria(n), 'aria-disabled': locked ? 'true' : null, 'aria-current': n.state === ST.CURRENT ? 'step' : null },
       h('span', { class: 'mp-disc' }, h('span', { class: 'mp-lab' }, String(n.label))),
       n.state === ST.DONE ? h('span', { class: 'mp-stars', 'aria-hidden': 'true' }, ...[1, 2, 3].map((s) => h('i', { class: s <= n.stars ? 'on' : '', style: `--d:${s * 0.12}s` }, '★'))) : null,
-      h('span', { class: 'mp-tag' }, locked ? '' : (n.tag || ''), n.best != null && !locked ? ` ${n.best}%` : ''));
+      h('span', { class: 'mp-tag' }, locked ? '' : (n.tag || ''), n.best != null && !locked ? ` ${typeof n.best === 'number' ? `${n.best}%` : n.best}` : ''));
     if (locked) { const l = h('span', { class: 'mp-lock' }); l.innerHTML = sprite('lock'); el.querySelector('.mp-disc').append(l); }
     nodeEls.push(el); world.append(el);
   });
@@ -87,14 +89,15 @@ export function mountProgressionMap(host, cfg) {
   setMood(celebrate ? 'cheer' : 'happy'); place(startAt);
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => place(Number(paul.dataset.at))) : null; if (ro) { ro.observe(world); S.add(() => ro.disconnect()); }
 
-  host.replaceChildren(h('div', { class: 'mp bmr', 'data-game': gameId }, head, world)); // bmr: fora da regra global de cantos retos (os discos são redondos)
+  const root = h('div', { class: 'mp bmr', 'data-game': gameId, 'data-theme': theme ? theme.id : null, style: theme && theme.accent ? `--mp-pink:${theme.accent}` : null }, head, world);
+  host.replaceChildren(root); // bmr: fora da regra global de cantos retos (os discos são redondos)
   const tw = document.querySelector('.topwrap'); if (tw) head.style.top = `${Math.round(tw.getBoundingClientRect().height)}px`; // o cabeçalho do mapa gruda logo abaixo do topo do app
 
   /* ---- regiões ---- */
   let regI = -1; let armed = false;
   const setRegion = (ci, sound) => {
     if (ci === regI || !chapters[ci]) return; regI = ci; const c = chapters[ci];
-    regionName.textContent = c.name; regionSub.textContent = c.sub; host.querySelector('.mp').dataset.region = c.id;
+    regionName.textContent = c.name; regionSub.textContent = c.sub; root.dataset.region = c.id;
     if (motion) { const r = head.querySelector('.mp-reg'); r.classList.remove('flip'); void r.offsetWidth; r.classList.add('flip'); }
     if (sound && armed) sfx.play('region');
   };

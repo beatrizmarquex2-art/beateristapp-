@@ -1,5 +1,5 @@
 // Pixel art do mapa: sprites desenhados em grades de letras (cada letra = uma cor). SVG com bordas retas, nada de imagem nova.
-const PAL = { k: '#140d26', a: '#2a1b4d', b: '#6a2c91', c: '#8e1f4a', d: '#ff4fa3', e: '#ffd23f', f: '#1c2a5c', g: '#4fd2ff', w: '#fff4e0', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a' };
+const PAL = { k: '#140d26', a: '#2a1b4d', b: '#6a2c91', c: '#8e1f4a', d: '#ff4fa3', e: '#ffd23f', f: '#1c2a5c', g: '#4fd2ff', w: '#fff4e0', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a', r: '#e63946', o: '#ff9f43', p: '#ffb3d9', s: '#c9c3d9' };
 const SPR = {
   amp: ['kkkkkkkkkk', 'kffffffffk', 'kfdfdfdffk', 'kffffffffk', 'kkkkkkkkkk', 'kffggggffk', 'kfgkkkkgfk', 'kfgkwwkgfk', 'kfgkkkkgfk', 'kffggggffk', 'kkkkkkkkkk'],
   tape: ['kkkkkkkkkkkk', 'kddddddddddk', 'kdwwwddwwwdk', 'kdwkwddwkwdk', 'kdwwwddwwwdk', 'kddddddddddk', 'kkdkkkkkkdkk', 'kkkkkkkkkkkk'],
@@ -11,6 +11,24 @@ const SPR = {
   lamp: ['.kkkkk.', 'keeeeek', 'keewwek', 'kkkkkkk', '..kfk..', '..kfk..', '..kfk..', '..kfk..', '.kkfkk.'],
   star: ['...ke...', '...kek..', 'kkkkekkk', 'keeeeeek', '.keeeeek', '..keeek.', '.kek.ek.', '.k....k.'],
   lock: ['..kkkk..', '.kwwwwk.', '.kw..wk.', 'kkkkkkkk', 'keeeeeek', 'keekkeek', 'keekkeek', 'kkkkkkkk'],
+  card: ['kkkkkkkk', 'kwwwwwwk', 'kwdwwwwk', 'kwwwwwwk', 'kwwddwwk', 'kwwddwwk', 'kwwwwwwk', 'kwwwwdwk', 'kwwwwwwk', 'kkkkkkkk'],
+  ball: ['..kkkkk..', '.kdddddk.', 'kdddddddk', 'kddwwwddk', 'kddwkwddk', 'kddwwwddk', 'kdddddddk', '.kdddddk.', '..kkkkk..'],
+  book: ['.kkkkkkkk.', 'kbbbbbbbbk', 'kbwwkwwwbk', 'kbwwkwwwbk', 'kbwwkwwwbk', 'kbwwkwwwbk', 'kbbbbbbbbk', '.kkkkkkkk.'],
+  sticks: ['ke.....ek', '.kek.kek.', '..kekek..', '...kek...', '..kekek..', '.kek.kek.', 'ke.....ek'],
+  frame: ['kkkkkkkkkk', 'keeeeeeeek', 'kegggggggek', 'kegggeeggek', 'kennnnnnnek', 'kennnnnnnek', 'keeeeeeeek', 'kkkkkkkkkk'],
+  face: ['..kkkk..', '.kddddk.', 'kddddddk', 'kdkddkdk', 'kddddddk', 'kdkkkkdk', '.kddddk.', '..kkkk..'],
+  guitar: ['.....kk', '....kek', '...kek.', '..kek..', '.kbbk..', 'kbbbbk.', 'kbkkbk.', 'kbbbbk.', '.kbbk..', '..kk...'],
+  gear: ['...kkk...', '.k.kbk.k.', '.kkbbbkk.', 'kkbbkbbkk', 'kbbkwkbbk', 'kkbbkbbkk', '.kkbbbkk.', '.k.kbk.k.', '...kkk...'],
+  mic: ['.kkkk.', 'kggggk', 'kgwwgk', 'kggggk', '.kkkk.', '..kk..', '..kk..', '.kkkk.'],
+  trophy: ['kkkkkkkkk', 'keeeeeeek', 'keewweeek', '.keeeeek.', '..keeek..', '...kek...', '...kek...', '.kkkkkkk.', '.kbbbbbk.', '.kkkkkkk.'],
+  piece: ['..kk....', '.kggk...', 'kkggkkkk', 'kggggggk', 'kggggggk', 'kkggkkkk', '..kggk..', '...kk...'],
+  piano: ['kkkkkkkkkkkk', 'kwkkwkkwkkwk', 'kwkkwkkwkkwk', 'kwkkwkkwkkwk', 'kwwkwwkwwkwk', 'kwwkwwkwwkwk', 'kkkkkkkkkkkk'],
+  drum: ['.kkkkkkkk.', 'kwwwwwwwwk', 'kkkkkkkkkk', 'kddkddkddk', 'kddkddkddk', 'kkkkkkkkkk', '.k......k.', 'k.k....k.k'],
+  record: ['..kkkkk..', '.kaaaaak.', 'kaabbbaak', 'kabbddbak', 'kabddddbk', 'kabbddbak', 'kaabbbaak', '.kaaaaak.', '..kkkkk..'],
+  curtain: ['kkkkkkkkkk', 'kccckkcccc', 'kccckkcccc', 'kcdckkcdck', 'kccckkcccc', 'kccckkcccc', 'kkkkkkkkkk'],
+  spot: ['kkkk....', 'kfffk...', 'kfeeek..', 'kfeeeek.', 'kkfeeeek', '..kkfeek', '....kkkk'],
+  sax: ['.kkk..', 'keek..', '.kek..', '.kek..', '.kek..', '.keek.', 'kekeek', 'keeeek', '.kkkk.'],
+  heart: ['.kk.kk.', 'kddkddk', 'kdddddk', 'kdddddk', '.kdddk.', '..kdk..', '...k...'],
   table: ['kkkkkkkkkkkk', 'kbbbbbbbbbbk', 'kbkkkkkbdbbk', 'kbkaakkbbbbk', 'kbkkkkkbbbbk', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk'],
 };
 /** SVG de um sprite (`px` = tamanho de cada quadradinho em unidades do viewBox; o tamanho final vem do CSS). */

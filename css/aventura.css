@@ -1,0 +1,38 @@
+/* Modo Aventura: escolha de modo, briefing, resultado e medalhas. Mesmo mundo do mapa (vinil + pixel art). */
+.av { --mp-night: #140d26; --mp-deep: #231545; --mp-purple: #6a2c91; --mp-wine: #8e1f4a; --mp-pink: #ff4fa3; --mp-yellow: #ffd23f; --mp-cyan: #4fd2ff; --mp-cream: #fff4e0; --pix: 'Silkscreen', 'Courier New', monospace; position: relative; color: var(--mp-cream); font-family: var(--pix); }
+.av, .av * { box-sizing: border-box; border-radius: 0 !important; } .av .bmr, .av .rb, .av .rb * { border-radius: revert !important; }
+.av-bar { display: flex; align-items: center; gap: 8px; padding: 8px 0; } .av-bt { flex: 1; min-width: 0; font: 400 12px var(--pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.av-back, .av-snd { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0 10px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 12px var(--pix); text-decoration: none; box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; } .av-snd { font-size: 18px; }
+.av-back:active, .av-snd:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mp-pink); }
+.av-sub { margin: 0 0 4px; font: 400 10px var(--pix); color: var(--mp-cyan); }
+.av-h { margin: 6px 0 4px; font: 400 20px/1.15 var(--pix); color: var(--mp-yellow); text-shadow: 3px 3px 0 var(--mp-wine); } .av-h3 { margin: 14px 0 6px; font: 400 13px var(--pix); color: var(--mp-cyan); }
+.av-p, .av-q, .av-note { font: 400 12px/1.5 var(--pix); color: var(--mp-cream); } .av-q { color: var(--mp-cyan); margin: 14px 0 8px; } .av-note { opacity: .75; margin-top: 12px; }
+/* escolha de modo */
+.av-choose { padding: 8px 0 calc(100px + env(safe-area-inset-bottom)); display: grid; gap: 12px; align-content: start; }
+.av-mode { display: grid; gap: 6px; padding: 16px; min-height: 96px; text-decoration: none; color: var(--mp-cream); border: 4px solid var(--mp-cream); background: var(--mp-deep); box-shadow: 5px 5px 0 var(--mp-night), 5px 5px 0 2px var(--mp-purple); }
+.av-mode.aventura { background: linear-gradient(135deg, var(--mp-wine), var(--mp-purple)); border-color: var(--mp-yellow); }
+.av-mode:active { transform: translate(3px, 3px); } .av-mode-t { font: 400 18px var(--pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-night); } .av-mode-d { font: 400 12px/1.4 var(--pix); } .av-mode-m { font: 400 10px var(--pix); color: var(--mp-cyan); }
+/* briefing e partida */
+.av-brief, .av-play-wrap { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+.av-card { display: grid; gap: 8px; padding: 16px; background: var(--mp-deep); border: 4px solid var(--mp-cream); box-shadow: 5px 5px 0 var(--mp-pink); } .av-kick { color: var(--mp-cyan); font: 400 10px var(--pix); }
+.av-goal { margin: 0; font: 400 14px/1.45 var(--pix); } .av-list { margin: 0; padding-left: 18px; font: 400 12px/1.5 var(--pix); } .av-s { color: var(--mp-yellow); }
+.av-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; } .av-actions.row { align-items: center; }
+.av .kd-btn, .av .kd-chip { min-height: 48px; padding: 8px 16px; font: 700 13px var(--pix); border: 3px solid var(--mp-cream); background: var(--mp-pink); color: var(--mp-night); box-shadow: 3px 3px 0 var(--mp-night); cursor: pointer; } .av .kd-chip { background: var(--mp-deep); color: var(--mp-cream); }
+.av .btn { min-height: 44px; }
+.av-bot { display: flex; justify-content: center; margin-top: 10px; }
+.av-objective { position: sticky; top: 0; z-index: 3; margin: 0 0 8px; padding: 8px 10px; background: var(--mp-night); border: 3px solid var(--mp-purple); font: 400 12px/1.35 var(--pix); }
+.av-play { min-height: 200px; }
+/* resultado */
+.av-res { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(20, 13, 38, .88); animation: av-fade .25s ease-out; }
+.av-res-in { width: min(100%, 420px); max-height: 100%; overflow: auto; display: grid; gap: 10px; padding: 18px; background: var(--mp-deep); border: 4px solid var(--mp-yellow); box-shadow: 6px 6px 0 var(--mp-pink); text-align: center; animation: av-pop .35s cubic-bezier(.2, 1.4, .4, 1); }
+.av-rstars { display: flex; justify-content: center; gap: 8px; font-size: 40px; line-height: 1; } .av-rstar { color: #4a3a6a; } .av-rstar.on { color: var(--mp-yellow); text-shadow: 3px 3px 0 var(--mp-wine); animation: av-star .5s cubic-bezier(.2, 1.8, .4, 1) both; animation-delay: var(--d); }
+.av-sum { text-align: left; } .av-unlock { margin: 0; color: var(--mp-cyan); font: 400 12px var(--pix); } .av-newm { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; font: 400 11px var(--pix); } .av-chip { padding: 4px 8px; background: var(--mp-night); border: 2px solid var(--mp-yellow); }
+.av-res .av-actions { justify-content: center; }
+@keyframes av-fade { from { opacity: 0; } } @keyframes av-pop { from { opacity: 0; transform: scale(.85); } } @keyframes av-star { from { transform: scale(0) rotate(-90deg); } }
+/* medalhas */
+.av-meds { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
+.av-medals { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.av-medal { display: grid; gap: 2px; padding: 10px; background: var(--mp-night); border: 3px solid #4a3a6a; opacity: .6; } .av-medal.on { opacity: 1; border-color: var(--mp-yellow); box-shadow: 3px 3px 0 var(--mp-pink); }
+.av-medal-i { font-size: 22px; } .av-medal b { font: 400 11px var(--pix); } .av-medal small { font: 400 9px/1.3 var(--pix); color: var(--mp-cyan); }
+.av-root .mp { margin: 0; }
+@media (prefers-reduced-motion: reduce) { .av *, .av-res, .av-res * { animation: none !important; transition: none !important; } }

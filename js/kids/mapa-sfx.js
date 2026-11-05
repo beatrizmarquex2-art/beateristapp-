@@ -14,6 +14,8 @@ const SONGS = {
   unlock: [[523, 0, 0.09, 'triangle', 0.18], [659, 0.09, 0.09, 'triangle', 0.18], [784, 0.18, 0.14, 'triangle', 0.18]],
   star: [[988, 0, 0.07, 'triangle', 0.16], [1319, 0.07, 0.12, 'triangle', 0.16]],
   win: [[523, 0, 0.1, 'square', 0.12], [659, 0.1, 0.1, 'square', 0.12], [784, 0.2, 0.1, 'square', 0.12], [1047, 0.3, 0.22, 'square', 0.12]],
+  medal: [[784, 0, 0.08, 'square', 0.12], [988, 0.08, 0.08, 'square', 0.12], [1319, 0.16, 0.08, 'square', 0.12], [1568, 0.24, 0.2, 'triangle', 0.14]],
+  lose: [[330, 0, 0.12, 'triangle', 0.12], [262, 0.12, 0.2, 'triangle', 0.12]],
   region: [[330, 0, 0.08, 'square', 0.1], [392, 0.08, 0.08, 'square', 0.1], [494, 0.16, 0.12, 'square', 0.1]],
 };
 /** Cria o tocador de uma tela de mapa. Limita vozes ao mesmo tempo, ignora o mesmo som repetido em sequência e cala tudo no fim. */

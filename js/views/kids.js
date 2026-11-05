@@ -24,6 +24,8 @@ import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
 import { mountProgressionMap } from '../kids/mapa.js';
+import { loadAdventure } from '../campanha/registry.js';
+import { modeChooser, mountAdventure } from '../campanha/run.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -60,6 +62,7 @@ const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // rep
 function ritmo(box) { return mountRitmo(box); }
 
 const RUN = { explorar, ritmo, memoria: mountMemoria };
+const ADV = { memoria: 'memoria', ritmo: 'monte' }; // jogos livres do Kids que têm Modo Aventura (id da campanha)
 
 const ageLabel = (a) => (ALUNO() ? 'jogador' : (AGES.find((x) => x[0] === a) || AGES[1])[1]);
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);
@@ -178,8 +181,17 @@ export function mount(host, parts = []) {
   const mount2 = () => {
     const free = first && RUN[first] ? first : null;
     if (free) {
-      const g = FREE.find((x) => x[0] === free); const box = h('div', { class: 'kd-game' });
-      host.append(topBar('#/jogos'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; return;
+      const g = FREE.find((x) => x[0] === free); const advId = ADV[free];
+      const runFree = () => { const box = h('div', { class: 'kd-game' }); host.append(topBar(advId ? `#/kids/${free}` : '#/jogos'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; };
+      // jogos livres com Modo Aventura: #/kids/<jogo> escolhe o modo; /livre = como sempre; /aventura[/n] = missões
+      if (!advId || lv === 'livre') { runFree(); return; }
+      let gone = false; const wrap = h('div', { class: 'av-root' }); host.append(wrap); off = () => { gone = true; };
+      loadAdventure(advId).then((adv) => {
+        if (gone) return; const base = `#/kids/${free}/aventura`;
+        if (lv === 'aventura') { const n = mode !== undefined && /^\d+$/.test(mode) ? Number(mode) : null; off = mountAdventure(wrap, { gameId: advId, spec: adv.spec, adv, base, mission: n, backHref: `#/kids/${free}`, nav: (hash) => { location.hash = hash; } }); return; }
+        wrap.append(h('a', { class: 'av-back', href: '#/jogos', style: 'margin-bottom:8px' }, '‹ jogos')); off = modeChooser(wrap, { gameId: advId, spec: adv.spec, title: g[1], blurb: g[2], hrefLivre: `#/kids/${free}/livre`, hrefAventura: base });
+      }).catch((e) => { console.warn('aventura indisponível, abrindo o modo livre', e); if (!gone) { wrap.remove(); runFree(); } });
+      return;
     }
     if (first === 'album') { albumScreen(host, lv); return; }
     if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }

@@ -13,6 +13,8 @@ import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
+import { hasAdventure, loadAdventure } from '../campanha/registry.js';
+import { modeChooser, mountAdventure } from '../campanha/run.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -125,9 +127,26 @@ function game(host, entry) {
   return () => { offFesta(); ctl.destroy(); };
 }
 
+/** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */
+function withModes(host, entry, [id, mode, mission]) {
+  if (mode === 'livre') return game(host, entry);
+  let off = () => {}; let gone = false; const wrap = h('div', { class: 'av-root' }); host.replaceChildren(wrap);
+  wrap.append(h('p', { class: 'jg-p' }, 'carregando…'));
+  loadAdventure(id).then((adv) => {
+    if (gone) return; const base = `#/jogos/${id}/aventura`; const spec = adv.spec;
+    if (mode === 'aventura') {
+      const n = mission !== undefined && /^\d+$/.test(mission) ? Number(mission) : null;
+      off = mountAdventure(wrap, { gameId: id, spec, adv, base, mission: n, backHref: `#/jogos/${id}`, nav: (hash) => { location.hash = hash; } }); return;
+    }
+    off = modeChooser(wrap, { gameId: id, spec, title: entry[1], hrefLivre: `#/jogos/${id}/livre`, hrefAventura: base });
+    wrap.prepend(h('a', { class: 'av-back', href: '#/jogos', style: 'margin-bottom:8px' }, '‹ jogos'));
+  }).catch((e) => { console.warn('aventura indisponível, abrindo o modo livre', e); if (!gone) off = game(host, entry); });
+  return () => { gone = true; off(); };
+}
+
 export function mount(host, parts = []) {
   if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
   const entry = GAMES.find((g) => g[0] === parts[0] && g[3]);
   if (!entry) return catalog(host);
-  return game(host, entry);
+  return hasAdventure(entry[0]) ? withModes(host, entry, parts) : game(host, entry);
 }
