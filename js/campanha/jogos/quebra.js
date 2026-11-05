@@ -26,7 +26,7 @@ const mk = ([title, tag, diff, maxErr, perfect, timeMs], i) => ({
   id: `quebra-${String(i).padStart(2, '0')}`, title, tag,
   goal: `monte o quebra-cabeça de ${diff} peças`,
   rules: [
-    'toque numa peça da bandeja e depois no lugar dela no quadro (no computador, pode arrastar).',
+    'toque numa peça da bandeja e depois no lugar dela, ou arraste a peça até o lugar (no celular: arraste pra cima, ou segure um instante e arraste).',
     i === 0 ? 'errou? a peça volta pra bandeja. “dica” mostra o lugar; “ver imagem” mostra a figura pronta.' : 'só vale concluir com todas as peças encaixadas; tentar uma peça errada conta como tentativa errada.',
     timeMs ? `o tempo é um desafio opcional: passar dele não impede de concluir (${fmtTime(timeMs)}).` : 'nesta missão não há tempo: monte com calma.',
   ],
