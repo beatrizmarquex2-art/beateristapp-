@@ -36,7 +36,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - `js/aluno.js`: entrada (nome + origem), abas Ritmo / Beat Lab / Tocar / Jogos / Ranking, rodapé com redes e parceiros.
 - `js/paul-talk.js`: clique no Paul faz barulhinho; nuvens de pensamento (frases e links, incluindo o link do Google).
 - `assets/rhythm-games/rhythm-games.js` + `js/views/jogos-ritmo.js`: jogos de ritmo (um jogo unificado Ritmo/Melodia com 3-5 teclas, Piano Tiles, Setinhas, Figuras). Na área dos alunos entram as músicas prontas (`builtin: true`); no app da Bea, só os MIDIs importados.
-- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [antes última nota], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
+- `js/jogos/*` + `js/views/jogos.js`: jogos musicais (Uno Musical [reformulado em nov/2026, ver seção abaixo], bingo, jogo da velha, quebra-cabeça, cara a cara, stop). **Outra sessão trabalha nestes**; evite sobrescrever.
 - `js/kids/*` + `js/views/kids.js`: jogos de perguntas (fases por estrelas). Na área dos alunos o nome visível é "Jogos"; os endereços internos continuam `#/kids`.
 - `js/views/ata.js` (ata de reunião em PDF), `js/views/kids-relatorio.js` (relatório editável), `js/mic-access.js` (microfone único), `js/ranking.js`.
 - `css/lote3.css`: estilos dos lotes recentes (entrada do aluno, Paul, iPad).
@@ -65,6 +65,18 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Tudo na entrada dos alunos deve caber numa tela só no iPhone.
 - Paul sem animação própria; animar só os elementos em volta.
 - Pendente (antigo): jogos novos da outra sessão ligarem na aba Jogos dos alunos. Os 7 Pauls cortados já foram removidos (se vierem imagens novas inteiras, voltam).
+
+## Uno Musical reformulado (nov/2026)
+- Arquivos: `js/jogos/cartas.js` (tela, animações), `cartas-logic.js` (regras puras), `cartas-simbolos.js` (10 figuras + ícones das especiais em SVG), `cartas-sfx.js` (sons), bloco `cx-` no fim de `css/jogos.css`.
+- Baralho de 112 cartas: 4 cores (vermelho, amarelo, azul, verde) × (10 figuras × 2 + pular/inverter/+2 × 2) + 4 curingas + 4 curingas +4. As figuras são só **categorias** (cor ou figura): semínima, colcheia, semicolcheia, fusa, as 4 pausas, acento (>), nota fantasma.
+- 2 a 4 jogadores com sentido de jogo (inverter com 2 vale como pular). Contra o computador: 1 a 3 adversários (paul, lia, teo). Modos: contra o computador, dois no aparelho, 2 celulares (código, mesmas salas de antes; o estado agora é `v: 2`, partidas salvas do formato antigo são descartadas).
+- Regras decididas: +4 só sem a cor da mesa na mão; botão UNO (contra o computador esquecer custa 2 cartas; nos outros modos o botão não tem penalidade); compra só se não tiver carta que sirva; não empilha +2.
+- Sons: só ruído filtrado (papel, estalo, baralho, "uóip", UNO, vitória), **nenhuma nota**. Botão de som próprio na mesa (junto do botão global da moldura). `S.stopAll()` ao sair.
+- Ajuda de nomes: segurar a carta (ou mouse parado) mostra o nome sem jogar; botão "?" mostra o nome da carta da mesa.
+- Animações só com transform/opacity (WAAPI com `translate/scale/rotate`); travadas durante a animação (`busy`) pra não duplicar jogada. Respeita "reduzir movimento".
+- Testes: `node --test tests/cartas-logic.test.mjs`, e2e `tests/e2e/cartas.mjs` (partida completa, UNO, +2, +4, jogada inválida), `cartas-aparelhos.mjs` (iPhone/iPad/Android emulados), `salas.mjs`, `jogos-som.mjs`.
+- Limite conhecido: sem Safari/iPhone de verdade aqui; conferir som (botão de silencioso) e toque no aparelho. Em celular deitado pequeno a mesa passa um pouco da altura da tela.
+- Publicado: `main` (app da Bea) e área dos alunos (Netlify `beaterista-alunos`, https://jogos.beaterista.com.br) em nov/2026, cache v242.
 
 ## Jogos em 2 celulares (nov/2026)
 - Uno Musical, jogo da velha e stop têm modo **2 celulares (código)**: `js/jogos/online.js` + `supabase/006_salas.sql` (tabela `salas`, funções `sala_criar/entrar/ler/enviar`, sondagem a cada 1,2 s). **O SQL precisa estar aplicado no Supabase** (colar no SQL Editor se a aprovação do chat expirar). Teste: `tests/e2e/salas.mjs` (Supabase simulado).
