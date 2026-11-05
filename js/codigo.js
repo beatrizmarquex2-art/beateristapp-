@@ -1,5 +1,5 @@
 // Código do aluno. O aluno digita uma vez; o código fica no aparelho dele e é conferido toda vez que abre (a Bea pode desativar).
-// Sem código: Piano Hero e as músicas prontas funcionam; o Beat Hero e a aba "Músicas MIDI" ficam trancados.
+// Sem código: todos os jogos de ritmo (Beat Hero, Piano Hero, músicas prontas e Músicas MIDI) ficam trancados.
 import { CONFIG } from './config.js';
 
 const base = `${CONFIG.SUPABASE_URL}/rest/v1`;

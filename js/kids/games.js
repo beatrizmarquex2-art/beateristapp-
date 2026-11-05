@@ -14,7 +14,6 @@ import { KIT_COLORS } from './icons.js';
 import { kitMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
 import { runMemory } from './memory.js';
 import { runEco } from './eco.js';
-import { runToque } from './toque.js';
 import { runDetetive } from './detetive.js';
 import { nameOf as instName } from './instruments.js';
 
@@ -91,6 +90,4 @@ GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som
 GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clica, escreve e toca o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
 GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no seu pad / bateria (o microfone escuta)', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runEco,
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
-GAMES.toque = { id: 'toque', title: 'Toque as figuras', blurb: 'lê a partitura e toca na tela ou no pad / bateria', emoji: '🥁', icon: 'ritmo', ages: 'a partir de 6 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runToque,
-  hint: (k) => (k === 'figuras' ? 'ler e tocar semínima, colcheias e pausas' : 'ler e tocar semicolcheias e suas variações') };
-export const ORDER = ['figuras', 'toque', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos e detetive saíram da lista // peças, bumbos e detetive saíram da lista (o código e o progresso ficam guardados)
+export const ORDER = ['figuras', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos, detetive, pauta e toque saíram da lista (o código e o progresso ficam guardados)
