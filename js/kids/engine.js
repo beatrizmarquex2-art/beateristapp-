@@ -4,7 +4,7 @@ import { audio, out, silence } from '../audio.js';
 import { session } from '../session.js';
 import { stars as sparkle } from '../ui.js';
 import { robo, tierOf } from './robo.js';
-import { levelSpec, levelTag, starsFor, pctOf } from './levels.js';
+import { levelSpec, levelTag, starsFor, pctOf, MAX_LEVEL } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
 import * as FB from '../feedback.js';
@@ -103,7 +103,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
   const { level, profile } = ctx; const pct = pctIn != null ? pctIn : pctOf(right, total);
   const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
   const won = Album.grant(profile.id, gain); // novas figurinhas (se houver)
-  const next$ = level < 10 && stars >= 1;
+  const next$ = level < MAX_LEVEL && stars >= 1;
   bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? FB.line('great') : stars >= 1 ? FB.line('win') : FB.line('lose'));
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));
   const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((n) => h('span', { class: `kx-star${n <= stars ? ' on' : ''}`, style: `--d:${n * 0.25}s` }, '★')));

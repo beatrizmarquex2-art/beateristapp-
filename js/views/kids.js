@@ -23,6 +23,7 @@ import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
+import { mountProgressionMap } from '../kids/mapa.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -148,23 +149,26 @@ function albumScreen(host, role) {
     h('p', { class: 'lib-note' }, 'cada vez que você melhora as estrelas de uma fase, ganha uma figurinha nova. as fotos vêm do Wikimedia Commons (licenças livres, com crédito); sem foto livre, aparece a inicial.'));
 }
 
+/** Tela de fases: mapa "Turnê do Vinil". As regras (fases 0 a 10, 1 estrela libera a próxima) continuam as de progress.js/levels.js. */
 function levelsScreen(host, gameId, mode) {
   const g = GAMES[gameId]; const me = P.active();
-  if (!me) { location.hash = '#/kids'; return; }
+  if (!me) { location.hash = '#/kids'; return () => {}; }
   const m = g.modes ? (g.modes.some((x) => x[0] === mode) ? mode : g.mode) : '';
-  const s = P.summary(me.id, gameId); const tier = tierOf(P.totalStars(me.id));
-  const r = robo({ mood: 'happy', tier, size: 84, say: s.pct != null ? `${s.pct}% de acerto até agora!` : 'escolhe uma fase!' });
-  const lv = (l) => { const spec = levelSpec(l, me.age); const st = P.starsAt(me.id, gameId, l); const open = P.unlocked(me.id, gameId, l); const best = (P.progOf(me.id).lv[`${gameId}:${l}`] || {}).p;
-    const body = [h('b', { class: 'kx-n' }, String(l)), h('small', {}, levelTag(spec)), h('span', { class: 'kx-st' }, ...[1, 2, 3].map((n) => h('i', { class: n <= st ? 'on' : '' }, '★'))), best != null ? h('small', { class: 'kx-best' }, `${best}%`) : null];
-    return open ? h('a', { class: `kx-lv${st ? ' done' : ''}${spec.sudden ? ' boss' : ''}`, href: `#/kids/${gameId}/${l}${m ? `/${m}` : ''}` }, ...body)
-      : h('button', { type: 'button', class: 'kx-lv locked', 'aria-label': `Fase ${l} trancada`, onclick: () => toast('ganha 1 estrela na fase anterior pra abrir', { ms: 2200 }) }, h('b', { class: 'kx-n' }, '🔒'), h('small', {}, `fase ${l}`)); };
+  const s = P.summary(me.id, gameId); const tier = tierOf(P.totalStars(me.id)); const prog = P.progOf(me.id);
+  const lvOf = (id) => Number(String(id).split(':').pop());
+  const levels = Array.from({ length: MAX_LEVEL + 1 }, (_, l) => { const spec = levelSpec(l, me.age); return { id: `${gameId}:${l}`, index: l, label: String(l), tag: levelTag(spec), boss: spec.sudden && l === MAX_LEVEL }; });
+  const top = h('div', {});
   host.append(topBar('#/jogos', h('span', { class: 'kd-stars kx-stars-top' }, `★ ${s.stars}/${s.maxStars}`)),
     h('div', { class: 'kx-gtitle' }, h('span', { class: 'kx-gico' }), h('div', {}, h('h1', { class: 'kx-pix kx-pagetitle' }, g.title), h('p', { class: 'kx-gd' }, g.blurb))),
-    h('div', { class: 'kx-hello' }, r.el),
     g.modes ? h('div', { class: 'row kd-modes' }, ...g.modes.map(([k, t]) => h('a', { class: `kd-chip${m === k ? ' on' : ''}`, href: `#/kids/${gameId}/-/${k}` }, t))) : null,
-    h('div', { class: 'kx-levels' }, ...Array.from({ length: MAX_LEVEL + 1 }, (_, l) => lv(l))),
-    h('p', { class: 'lib-note' }, `${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. ${ALUNO() ? '' : `a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`}`));
+    top,
+    h('p', { class: 'lib-note' }, `${s.pct != null ? `${s.pct}% de acerto até agora. ` : ''}${g.ages}. ⏱ = com tempo · 💥 = errou, recomeça. ${ALUNO() ? '' : `a idade de ${me.name} (${ageLabel(me.age)}) ajusta o tempo e o tamanho das fases.`}`));
   host.querySelector('.kx-gico').innerHTML = gameIcon(g.icon || gameId);
+  return mountProgressionMap(top, {
+    gameId, levels, tier, profileId: me.id, stars: { have: s.stars, max: s.maxStars },
+    starsOf: (id) => P.starsAt(me.id, gameId, lvOf(id)), bestOf: (id) => (prog.lv[id] || {}).p ?? null, unlockedOf: (id) => P.unlocked(me.id, gameId, lvOf(id)),
+    onOpen: (n) => { location.hash = `#/kids/${gameId}/${n.index}${m ? `/${m}` : ''}`; },
+  });
 }
 
 export function mount(host, parts = []) {
@@ -181,8 +185,8 @@ export function mount(host, parts = []) {
     if (first === 'relatorio') { off = relatorioScreen(host, topBar) || off; return; }
     if (first && GAMES[first]) {
       const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
-      const level = lv !== undefined && lv !== '-' && !Number.isNaN(Number(lv)) ? Math.max(0, Math.min(MAX_LEVEL, Number(lv))) : null;
-      if (level === null) { levelsScreen(host, first, mode); return; }
+      const level = lv !== undefined && lv !== '' && lv !== '-' && Number.isInteger(Number(lv)) ? Math.max(0, Math.min(MAX_LEVEL, Number(lv))) : null; // '', '-' ou número quebrado = mostra o mapa
+      if (level === null) { off = levelsScreen(host, first, mode) || off; return; }
       if (!P.unlocked(me.id, first, level)) { location.hash = `#/kids/${first}`; return; }
       const box = h('div'); host.append(box);
       off = (GAMES[first].run || runLevel)(GAMES[first], { host: box, level, profile: me, mode: mode || GAMES[first].mode || '', onBack: () => { location.hash = `#/kids/${first}${mode ? `/-/${mode}` : ''}`; }, onLevel: (n) => { location.hash = `#/kids/${first}/${n}${mode ? `/${mode}` : ''}`; if (n === level) rerender(); } });
