@@ -25,7 +25,7 @@ const GAMES = [
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
-  ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
+  ['cara', 'cara a cara', 'cara.webp', cara],
   ['stop', 'stop', 'stop.webp', stop],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
@@ -42,7 +42,7 @@ const SECTIONS = [
     link('#/kids/pauta', 'onde mora na pauta?', 'pauta.webp', 'cada peça tem a sua casinha'),
   ]],
   ['cartas e tabuleiro', [
-    link('#/kids/memoria', 'jogo da memória', 'memoria.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
+    link('#/kids/memoria', 'jogo da memória', 'cara-a-cara.webp', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['jogos das dicas', [inner('dicas')]],

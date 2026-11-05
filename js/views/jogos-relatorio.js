@@ -28,7 +28,7 @@ const GROUPS = [
       'Dá o primeiro passo para ler partitura de bateria com a peça que o aluno já conhece. Ver e ouvir a peça junto da posição acelera a memorização.'],
   ]],
   ['Cartas e tabuleiro', [
-    ['Jogo da memória', 'memoria.webp', 'Cartas desenhadas (instrumentos, bandas, figuras, profissões, palco e estúdio) para achar os pares, em 4, 8 ou 12 pares.',
+    ['Jogo da memória', 'cara-a-cara.webp', 'Cartas desenhadas (instrumentos, bandas, figuras, profissões, palco e estúdio) para achar os pares, em 4, 8 ou 12 pares.',
       ['memória visual e de trabalho', 'atenção e concentração', 'vocabulário e cultura musical'],
       'Cada par achado é uma retomada do nome e da imagem, o que reforça o repertório cultural (bandas, profissões, equipamentos). O recorde pessoal dá meta clara e incentiva a repetir.'],
     ['Uno Musical', 'cartas.webp', 'Jogo de cartas com números e figuras: descartar combinando soma de durações, cor ou tipo, até sobrar uma carta.',
@@ -43,7 +43,7 @@ const GROUPS = [
     ['Quebra-cabeça', 'quebra-cabeca.webp', 'Monta a cena do Paul no palco em 6, 12 ou 24 peças.',
       ['percepção visual e espacial', 'persistência e resolução de problemas', 'concentração'],
       'Atividade calma que treina foco e paciência, útil para começo de aula ou para alunos agitados. Os níveis permitem progredir sem frustração.'],
-    ['Cara a cara', 'cara-a-cara.webp', 'O Paul escolhe um instrumento em segredo; o aluno faz perguntas de sim ou não para descobrir qual é.',
+    ['Cara a cara', 'cara.webp', 'O Paul escolhe um instrumento em segredo; o aluno faz perguntas de sim ou não para descobrir qual é.',
       ['conhecimento das famílias e características dos instrumentos', 'raciocínio por eliminação', 'formular boas perguntas'],
       'Para perguntar bem o aluno precisa saber como cada instrumento soa e é tocado. Ensina a pensar por categorias (cordas, sopro, percussão), base da escuta analítica.'],
     ['Stop', 'stop.webp', 'STOP musical: com uma letra sorteada, preencher de 5 a 8 categorias (instrumentos, percussão, equipamentos, estilos, profissões, técnicas, cantores, bandas, músicas, álbuns, artistas brasileiros, marcas) antes do tempo acabar. Individual, dupla, sala de aula ou 2 celulares.',
