@@ -9,6 +9,7 @@ import { getGame, setGame, sfx, reduced } from './base.js';
 import * as ON from './bingo-online.js';
 import { printPack } from './bingo-print.js';
 import { silence } from '../audio.js';
+import { cardBg } from '../views/kids.js';
 
 const ID = 'bingo';
 const INTERVALS = [8, 12, 20];
@@ -23,6 +24,7 @@ export function mount(host) {
   const P = { ...DEFAULTS, ...(saved.prefs || {}) };
   P.names = [String(P.names[0] || 'Jogador 1').slice(0, 14), String(P.names[1] || 'Jogador 2').slice(0, 14)];
   let g = null; let on = null; let screen = 'menu';
+  let prevMarks = {}; let shakeCell = null; let celebrated = false; let overlay = null;
   const root = h('div', { class: 'jg jg-bingo bg-root' }); host.replaceChildren(root);
   const savePrefs = () => setGame(ID, { prefs: P });
   const persist = () => setGame(ID, { prefs: P, game: g && !g.over ? g : null });
@@ -77,11 +79,11 @@ export function mount(host) {
     const id = v.cards[ci === 0 && v.online ? 0 : ci].ids[cell];
     if (v.autoMarcar) { speak(nameOf(v, id)); sfx('tap'); msg = ''; render(); return; } // Kids com marcação automática: tocar só mostra/lê o nome
     if (v.online) {
-      const marked = v.cards[0].marks[cell]; if (!marked && v.drawn.indexOf(id) < 0) { msg = `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!`; sfx('bad'); render(); return; }
+      const marked = v.cards[0].marks[cell]; if (!marked && v.drawn.indexOf(id) < 0) { msg = `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!`; shakeCell = `0:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
       msg = ''; sfx('tap'); try { await on.conn.marcar(cell, !marked); } catch { msg = 'sem conexão agora'; render(); } return;
     }
     const r = B.toggleMark(g, ci, cell);
-    if (!r.ok) { msg = r.reason === 'nao-sorteado' ? `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!` : r.reason === 'vez' ? 'Não é a sua vez de marcar.' : ''; sfx('bad'); render(); return; }
+    if (!r.ok) { msg = r.reason === 'nao-sorteado' ? `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!` : r.reason === 'vez' ? 'Não é a sua vez de marcar.' : ''; shakeCell = `${ci}:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
     g = r.g; msg = ''; sfx('tap'); persist(); render();
   }
   async function claim(ci) {
@@ -95,7 +97,7 @@ export function mount(host) {
     if (r.pending) { msg = 'Bingo pedido! Passe a vez para o outro jogador ver a cartela dele.'; sfx('tap'); render(); return; }
     finishSound(); render();
   }
-  function finishSound() { const v = view(); sfx('win'); const r = v && v.result; if (r) { const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : ''; speak(r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : `Bingo! Três na ${KINDS[kind] || 'linha'}!`); } }
+  function finishSound() { const v = view(); sfx('win'); setTimeout(() => sfx('win'), 650); const r = v && v.result; if (v && r) celebrate(v); if (r) { const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : ''; speak(r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : `Bingo! Três na ${KINDS[kind] || 'linha'}!`); } }
   function passTurn() {
     const was = g.over; g = B.passTurn(g); persist(); msg = '';
     if (!was && g.over) finishSound(); else sfx('tap');
@@ -114,13 +116,14 @@ export function mount(host) {
 
   /* ================= MENU ================= */
   function menu() {
-    stopTimer(); auto = false; paused = false; g = null; screen = 'menu'; leaveSpeech();
+    stopTimer(); auto = false; paused = false; g = null; screen = 'menu'; leaveSpeech(); closeOverlay(); celebrated = false; prevMarks = {};
     const resume = B.validGame(saved.game) && !saved.game.over && saved.game.mode !== 'online' ? saved.game : null;
     const sess = ON.lerSessao ? ON.lerSessao() : null;
     const pre = salaDoLink();
-    const themeBtn = (t) => { const [id, nome] = t; const ico = THEME_ICON[id]; const btn = h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.tema === id), class: `bg-theme${P.tema === id ? ' on' : ''}`, onclick: () => { P.tema = id; savePrefs(); menu(); } });
-      const icon = h('span', { class: 'bg-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
-      btn.append(icon, h('b', {}, nome)); return btn; };
+    const themeBtn = (t) => { const [id, nome] = t; const ico = THEME_ICON[id];
+      const btn = h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.tema === id), class: `kx-g bg-poster${P.tema === id ? ' on' : ''}`, onclick: () => { P.tema = id; savePrefs(); menu(); } });
+      const icon = h('span', { class: 'kx-gi bg-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
+      btn.append(cardBg(), icon, h('b', { class: 'kx-gt' }, nome), h('span', { class: 'kx-gm' }, P.tema === id ? '✔ escolhido' : 'toque pra escolher')); return btn; };
     const kids = P.perfil === 'kids';
     const modeLabels = [['solo', 'Sozinho'], ['online', 'Jogar online por código'], ['mesmo', '2 jogadores no mesmo aparelho'], ['sala', 'Sala de aula']];
     const go = () => { if (P.mode === 'online') return; begin(); };
@@ -129,7 +132,7 @@ export function mount(host) {
       resume ? h('div', { class: 'bg-resume' }, h('span', {}, `Partida em andamento (${B.THEME_NAME[resume.tema]}, ${B.counter(resume).toLowerCase()})`), h('button', { class: 'btn primary', type: 'button', onclick: () => { g = resume; screen = 'play'; render(); schedule(); } }, 'continuar')) : null,
       sess ? h('div', { class: 'bg-resume' }, h('span', {}, `Você tem uma sala online aberta (${sess.code}).`), h('button', { class: 'btn primary', type: 'button', onclick: () => reconnect(sess) }, 'voltar à sala'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { ON.limparSessao(); menu(); } }, 'sair dela')) : null,
       tutorial(!P.seen),
-      h('p', { class: 'jg-lab' }, 'Tema'), h('div', { class: 'bg-themes', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(themeBtn)),
+      h('p', { class: 'jg-lab' }, 'Tema'), h('div', { class: 'bg-themes kx-cards kx-arc', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(themeBtn)),
       h('p', { class: 'jg-lab' }, 'Como quer jogar?'), seg('mode', modeLabels),
       h('p', { class: 'jg-lab' }, 'Ajuda'), seg('perfil', [['kids', 'Kids'], ['classico', 'Clássico']], (v) => { if (v === 'classico') P.marcar = 'eu'; else P.marcar = 'auto'; savePrefs(); menu(); }),
       h('p', { class: 'jg-lab' }, 'Vitória por'), seg('vitoria', B.VICTORIES),
@@ -151,7 +154,7 @@ export function mount(host) {
     const mesmo = P.mode === 'mesmo';
     g = B.newGame({ tema: P.tema, perfil: P.perfil, vitoria: P.vitoria, mode: P.mode, draw: P.draw, intervalo: P.intervalo, autoMarcar: P.marcar === 'auto', names: P.names, recent: P.recent });
     P.recent = [...P.recent.filter((x) => !g.pool.includes(x)), ...g.pool].slice(-86); // alvos de artistas usados, do mais antigo ao mais novo
-    savePrefs(); auto = P.draw === 'auto'; paused = false; msg = ''; screen = 'play'; persist();
+    savePrefs(); auto = P.draw === 'auto'; paused = false; msg = ''; screen = 'play'; celebrated = false; prevMarks = {}; closeOverlay(); persist();
     void mesmo; render(); schedule();
   }
 
@@ -192,7 +195,7 @@ export function mount(host) {
     if (first) { auto = (st.config.modo === 'auto'); paused = false; msg = ''; flash = false; }
     if (st.idx && lastStatus !== `${st.idx}`) { lastStatus = `${st.idx}`; if (st.idx > 0) { flash = !reduced(); sfx('draw'); announceNow(view()); } }
     if (st.status === 'fim' && st.resultado) { stopTimer(); finishSound(); }
-    if (st.status === 'jogando' && !st.idx) lastStatus = '';
+    if (st.status === 'jogando' && !st.idx) { lastStatus = ''; celebrated = false; prevMarks = {}; closeOverlay(); }
     if (st.erro === 'invalido') msg = 'Ainda não: confira se três casas em linha já saíram e estão marcadas.';
     render(); flash = false; schedule();
   }
@@ -220,8 +223,9 @@ export function mount(host) {
   function callCard(v) {
     const id = v.current;
     const text = id ? `Saiu: ${nameOf(v, id)}!` : (v.mode === 'sala' ? 'Toque em SORTEAR AGORA para começar' : 'Toque em SORTEAR AGORA');
+    const sparks = flash && id ? h('span', { class: 'bg-sparks', 'aria-hidden': 'true' }, ...['✦', '★', '✦', '♪', '★', '♫'].map((c, i) => h('i', { style: `--a:${i * 60}deg;--d:${i * 0.05}s` }, c))) : null;
     const card = h('button', { type: 'button', class: `bg-call${flash ? ' flash' : ''}`, 'aria-label': id ? `Item sorteado: ${nameOf(v, id)}. Toque para ampliar` : 'Nenhum item sorteado ainda', disabled: !id || null, onclick: () => bigView(v, id) },
-      id ? pic(v, id, 'bg-cpic') : h('span', { class: 'bg-cpic bg-empty', 'aria-hidden': 'true' }, '🎵'), h('b', {}, id ? nameOf(v, id) : 'Vamos começar?'), v.mode === 'online' && !v.host ? h('small', {}, 'O anfitrião sorteia para os dois.') : null);
+      sparks, id ? pic(v, id, 'bg-cpic') : h('span', { class: 'bg-cpic bg-empty', 'aria-hidden': 'true' }, '🎵'), h('b', {}, id ? nameOf(v, id) : 'Vamos começar?'), v.mode === 'online' && !v.host ? h('small', {}, 'O anfitrião sorteia para os dois.') : null);
     return h('div', { class: 'bg-callwrap' }, h('div', { class: 'bg-paul' }, robo({ mood: id ? 'cheer' : 'happy', size: 46 }).el, h('p', { class: 'bg-say', role: 'status', 'aria-live': 'polite' }, text, id && v.mode !== 'sala' ? h('small', {}, ' Você tem esse na cartela?') : null)), card);
   }
   function bigView(v, id) {
@@ -253,14 +257,39 @@ export function mount(host) {
       auto && canAuto ? h('label', { class: 'bg-int' }, h('span', {}, 'Intervalo'), h('select', { 'aria-label': 'Intervalo do sorteio automático', onchange: (e) => { const n = Number(e.target.value); P.intervalo = n; if (g) g.intervalo = n; savePrefs(); if (g) persist(); render(); schedule(); } }, ...INTERVALS.map((s) => h('option', { value: s, selected: (v.interval || P.intervalo) === s ? '' : null }, `${s} segundos`)))) : null);
   }
 
+  const LETTERS = ['B', 'I', 'N', 'G', 'O'];
   function cardGrid(v, ci) {
     const c = v.cards[ci]; const win = v.over && v.result && v.result.linhas ? (v.online ? v.result.linhas[v.mySlot] : v.result.linhas[c.ci]) : null; const winSet = win ? new Set(win) : null; const drawnSet = new Set(v.drawn);
-    return h('div', { class: 'bg-card', role: 'group', 'aria-label': `Cartela de ${c.name}` }, c.ids.map((id, cell) => {
-      const on_ = c.marks[cell]; const out = drawnSet.has(id); const r = Math.floor(cell / 3) + 1; const col = (cell % 3) + 1;
+    const key = `${v.online ? 'o' : 'l'}${ci}`; const before = prevMarks[key] || []; prevMarks[key] = c.marks.slice();
+    const count = c.marks.filter(Boolean).length; const lit = [1, 3, 5, 7, 9].map((n) => count >= n);
+    const cells = c.ids.map((id, cell) => {
+      const on_ = c.marks[cell]; const out = drawnSet.has(id); const r = Math.floor(cell / 3) + 1; const col = (cell % 3) + 1; const fresh = on_ && !before[cell] && before.length > 0;
       const label = `${nameOf(v, id)}, linha ${r}, coluna ${col}, ${out ? 'já sorteado' : 'ainda não sorteado'}, ${on_ ? 'marcado' : 'não marcado'}`;
-      return h('button', { type: 'button', class: `bg-cell${on_ ? ' on' : ''}${out && !on_ ? ' out' : ''}${winSet && winSet.has(cell) ? ' win' : ''}`, 'aria-pressed': String(on_), 'aria-label': label, onclick: () => markCell(v.online ? 0 : ci, cell) },
-        pic(v, id, 'bg-cellpic'), h('small', {}, nameOf(v, id)), on_ ? h('i', { class: 'bg-stamp', 'aria-hidden': 'true' }, '✔') : null);
-    }));
+      return h('button', { type: 'button', class: `bg-cell${on_ ? ' on' : ''}${fresh ? ' fresh' : ''}${out && !on_ ? ' out' : ''}${winSet && winSet.has(cell) ? ' win' : ''}${shakeCell === `${ci}:${cell}` ? ' bad' : ''}`, style: `--i:${cell}`, 'aria-pressed': String(on_), 'aria-label': label, onclick: () => markCell(v.online ? 0 : ci, cell) },
+        pic(v, id, 'bg-cellpic'), h('small', {}, nameOf(v, id)), on_ ? h('i', { class: 'bg-stamp', 'aria-hidden': 'true' }, '★') : null);
+    });
+    return h('div', { class: `bg-cartela p${ci}`, role: 'group', 'aria-label': `Cartela de ${c.name}` },
+      h('div', { class: 'bg-ribbon' }, h('span', { 'aria-hidden': 'true' }, '🎵'), (v.cards.length === 1 && !v.online ? ' Sua cartelinha ' : ` Cartelinha de ${c.name} `), h('span', { 'aria-hidden': 'true' }, '🎵')),
+      h('div', { class: 'bg-letters', 'aria-hidden': 'true' }, ...LETTERS.map((l, i) => h('b', { class: lit[i] ? 'lit' : '', style: `--i:${i}` }, l))),
+      h('div', { class: 'bg-card' }, cells));
+  }
+  function closeOverlay() { if (overlay) { overlay.remove(); overlay = null; modal = Math.max(0, modal - 1); } }
+  /** BINGOOOO! gigante: letras pulando, confete, Paul comemorando. */
+  function celebrate(v) {
+    if (celebrated || gone) return; celebrated = true; const r = v.result; if (!r) return;
+    const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : '';
+    const who = r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : v.online ? (r.vencedores.includes(v.mySlot) ? 'Você fez BINGO!' : `${v.other ? v.other.nome : 'O outro jogador'} fez BINGO!`) : v.cards.length > 1 ? `${v.cards[r.vencedores[0]].name} fez BINGO!` : 'Você venceu!';
+    const word = 'BINGOOO!'.split('');
+    const conf = Array.from({ length: 46 }, (_, i) => h('i', { style: `--x:${(i * 53) % 100}%;--d:${(i % 9) * 0.1}s;--c:${['#BD1733', '#17365B', '#EBA332', '#2f7d3a', '#fff'][i % 5]};--r:${(i * 47) % 360}deg` }));
+    const box = h('div', { class: 'bg-boom', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Bingo!' },
+      h('div', { class: 'bg-conf', 'aria-hidden': 'true' }, ...conf),
+      h('div', { class: 'bg-boomcard' }, h('div', { class: 'bg-boompaul' }, robo({ mood: 'crown', size: 110 }).el),
+        h('div', { class: 'bg-word', 'aria-hidden': 'true' }, ...word.map((ch, i) => h('span', { style: `--i:${i}` }, ch))),
+        h('p', { class: 'bg-who' }, who), kind && r.tipo !== 'empate' ? h('p', { class: 'bg-kind' }, `Três na ${kind}!`) : null,
+        h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: closeOverlay }, 'Ver a cartela'))));
+    overlay = box; modal++; stopTimer(); root.append(box);
+    if (!reduced()) { root.classList.add('bg-shake'); setTimeout(() => root.classList.remove('bg-shake'), 700); }
+    setTimeout(() => { const b = box.querySelector('button'); if (b) b.focus(); }, 50);
   }
   function linePending(v, ci) { // existe linha toda sorteada (Kids: dica de "toque BINGO!")
     const set = new Set(v.drawn); return B.linesFor(v.vitoria).some((l) => l.every((cell) => set.has(v.cards[ci].ids[cell]) && v.cards[ci].marks[cell]));
@@ -333,6 +362,7 @@ export function mount(host) {
     if (screen === 'menu') { return; }
     if (screen === 'lobby' && on && !(on.state && on.state.status !== 'lobby')) { lobby(); return; }
     play();
+    if (overlay && !overlay.isConnected) root.append(overlay); // a comemoração sobrevive aos redesenhos da tela
   }
 
   const onVis = () => { if (document.hidden) stopTimer(); else schedule(); };
@@ -342,6 +372,6 @@ export function mount(host) {
   return {
     inProgress: () => !!(g && !g.over && g.idx > 0) || !!(on && on.state && on.state.status === 'jogando'),
     restart: async () => { const v = view(); if (v && !v.over && v.idx > 0 && !(await confirmSheet('Começar de novo?', 'A partida atual será perdida.', 'Começar de novo'))) return; if (on) { await leaveOnline(); return; } stopTimer(); g = null; persist(); menu(); },
-    destroy() { gone = true; stopTimer(); leaveSpeech(); silence(); document.removeEventListener('visibilitychange', onVis); if (on && on.conn) { try { on.conn.fechar(); } catch { /* ok */ } } if (document.fullscreenElement) { try { document.exitFullscreen(); } catch { /* ok */ } } },
+    destroy() { gone = true; closeOverlay(); stopTimer(); leaveSpeech(); silence(); document.removeEventListener('visibilitychange', onVis); if (on && on.conn) { try { on.conn.fechar(); } catch { /* ok */ } } if (document.fullscreenElement) { try { document.exitFullscreen(); } catch { /* ok */ } } },
   };
 }
