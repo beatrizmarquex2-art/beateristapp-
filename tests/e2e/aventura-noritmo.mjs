@@ -99,7 +99,7 @@ st = await states(); check('falhar não destrava a missão 2', st[1] === 'curren
 // campanha inteira, tocando certo: cada missão é possível (jogo/teclas/dificuldade/duração/música reais)
 const plan = await page.evaluate(async () => (await import('/js/campanha/jogos/noritmo.js')).spec.missions.map((m) => m.params));
 for (let i = 1; i <= 10; i++) {
-  const p = plan[i]; await startMission(i, i === 10 ? 7 : 0);
+  const p = plan[i]; await startMission(i, i === 10 ? 2 : 0);
   const cfg = await page.evaluate(() => { const c = window.BeaterRhythm._chart(); return { n: c.chart.filter((x) => !x.cpu).length, dur: c.A.dur, keys: window.BeaterRhythm._keys().length }; });
   if (p.game === 'beat') check(`missão ${i}: ${p.keys} teclas e ${p.maxLen / 60} min de verdade`, cfg.keys === p.keys && cfg.dur > p.maxLen - 5 && cfg.dur < p.maxLen + 8, JSON.stringify(cfg));
   else check(`missão ${i}: Piano Hero (4 colunas) com notas`, cfg.keys === 4 && cfg.n > 20, JSON.stringify(cfg));

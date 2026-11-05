@@ -8,6 +8,11 @@ const STYLE_NAME = { rock: 'Rock', pop: 'Pop', reggaeton: 'Reggaeton', balada: '
 const TIER_NAME = ['devagar', 'médio', 'rápido'];
 export const STYLES = Object.keys(STYLE_NAME);
 export const ALL_SONGS = STYLES.flatMap((s) => [0, 1, 2].map((t) => [s, t]));
+/** Andamento (bpm) das 18 músicas prontas (igual ao motor). Músicas lentas NÃO valem estrela na aventura: só as de MIN_BPM pra cima. */
+export const TIER_BPM = { rock: [100, 120, 140], pop: [90, 104, 118], reggaeton: [86, 94, 102], balada: [60, 70, 80], lofi: [70, 80, 90], bossa: [80, 94, 108] };
+export const MIN_BPM = 105;
+export const bpmOf = (s, t) => (TIER_BPM[s] || [])[t] || 0;
+export const FAST_SONGS = ALL_SONGS.filter(([s, t]) => bpmOf(s, t) >= MIN_BPM);
 const DIFF_NAME = { facil: 'Fácil', medio: 'Médio', dificil: 'Difícil' };
 export const songLabel = (s, t) => `${STYLE_NAME[s]} · ${TIER_NAME[t]}`;
 
@@ -44,7 +49,7 @@ function mission(index, id, title, tag, goalEnd, p, extraRules = []) {
   return {
     id, title, tag, goal: `${goalEnd} (${jogoTxt(params)}, ${DIFF_NAME[params.diff]}${params.game === 'beat' ? `, ${params.maxLen / 60} min` : ''}${song})`,
     rules: [
-      params.songs.length === 1 ? `música: ${songLabel(...params.songs[0])}.` : 'escolha qualquer uma das músicas prontas: nenhuma está trancada.',
+      params.songs.length === 1 ? `música: ${songLabel(...params.songs[0])}.` : 'escolha uma das músicas rápidas liberadas nesta missão.',
       params.game === 'beat' ? 'toque nas notas quando elas chegarem na linha. Pode pausar quando quiser.' : 'toque nos blocos quando encostarem na linha azul. Se perder os 3 corações, tente de novo.',
       'a missão só conta quando a música chega ao fim.', ...extraRules,
     ],
@@ -58,17 +63,17 @@ const B = (s, t) => [[s, t]];
 export const spec = {
   id: 'noritmo', title: 'No Ritmo', theme: 'noritmo',
   missions: [
-    mission(0, 'noritmo-00', 'Aquecimento', 'aquece', 'termine uma música de aquecimento', { game: 'beat', keys: 3, diff: 'facil', maxLen: 60, songs: B('balada', 0), min: 45, s2: 65, s3: 80 }, ['aqui são só 3 teclas e notas bem espaçadas: o importante é sentir o tempo.']),
-    mission(1, 'noritmo-01', 'Quatro teclas', 'pop', 'toque uma música inteira com 4 teclas', { game: 'beat', keys: 4, diff: 'facil', maxLen: 60, songs: B('pop', 0), min: 50, s2: 70, s3: 85 }),
-    mission(2, 'noritmo-02', 'Lo-fi tranquilo', 'lo-fi', 'termine uma música no nível médio', { game: 'beat', keys: 3, diff: 'medio', maxLen: 60, songs: B('lofi', 1), min: 55, s2: 70, s3: 85 }),
-    mission(3, 'noritmo-03', 'Rock de garagem', 'rock', 'toque um rock inteiro com 4 teclas', { game: 'beat', keys: 4, diff: 'medio', maxLen: 60, songs: B('rock', 0), min: 55, s2: 72, s3: 88 }),
-    mission(4, 'noritmo-04', 'Primeiro piano', 'piano', 'toque a melodia no Piano Hero', { game: 'tiles', diff: 'facil', songs: B('bossa', 0), min: 60, s2: 75, s3: 90 }, ['tem um "como jogar" na tela antes de começar.']),
-    mission(5, 'noritmo-05', 'Reggaeton em 5', '5 teclas', 'toque um reggaeton com 5 teclas', { game: 'beat', keys: 5, diff: 'medio', maxLen: 60, songs: B('reggaeton', 1), min: 55, s2: 72, s3: 88 }),
-    mission(6, 'noritmo-06', 'Sequência de ouro', 'combo', 'faça uma sequência de acertos seguidos', { game: 'beat', keys: 4, diff: 'medio', maxLen: 60, songs: B('pop', 1), min: 60, s2: 75, s3: 90, combo: 25 }, ['combo = acertos seguidos sem errar. Precisa chegar a 25 em algum momento da música.']),
-    mission(7, 'noritmo-07', 'Piano no médio', 'piano+', 'toque uma melodia inteira no nível médio', { game: 'tiles', diff: 'medio', songs: B('rock', 0), min: 60, s2: 78, s3: 92 }),
-    mission(8, 'noritmo-08', 'Maratona de 2 minutos', '2 min', 'toque 2 minutos sem parar', { game: 'beat', keys: 4, diff: 'medio', maxLen: 120, songs: B('balada', 1), min: 60, s2: 78, s3: 90 }, ['é a versão longa do jogo (2 minutos).']),
-    mission(9, 'noritmo-09', 'Cinco teclas, difícil', 'difícil', 'encare o nível difícil com 5 teclas', { game: 'beat', keys: 5, diff: 'dificil', maxLen: 60, songs: B('rock', 1), min: 60, s2: 75, s3: 90 }),
-    mission(10, 'noritmo-10', 'Grande Palco', 'show', 'feche o show: 2 minutos no nível difícil, na música que você escolher', { game: 'beat', keys: 4, diff: 'dificil', maxLen: 120, songs: ALL_SONGS, min: 65, s2: 80, s3: 92 }, ['você escolhe qualquer uma das 18 músicas prontas (6 estilos × 3 velocidades).']),
+    mission(0, 'noritmo-00', 'Aquecimento', 'aquece', 'termine uma música de aquecimento', { game: 'beat', keys: 3, diff: 'facil', maxLen: 60, songs: B('bossa', 2), min: 45, s2: 65, s3: 80 }, ['aqui são só 3 teclas e notas bem espaçadas: o importante é sentir o tempo.']),
+    mission(1, 'noritmo-01', 'Quatro teclas', 'pop', 'toque uma música inteira com 4 teclas', { game: 'beat', keys: 4, diff: 'facil', maxLen: 60, songs: B('pop', 2), min: 50, s2: 70, s3: 85 }),
+    mission(2, 'noritmo-02', 'Bossa animada', 'bossa', 'termine uma música no nível médio', { game: 'beat', keys: 3, diff: 'medio', maxLen: 60, songs: B('bossa', 2), min: 55, s2: 70, s3: 85 }),
+    mission(3, 'noritmo-03', 'Rock de garagem', 'rock', 'toque um rock inteiro com 4 teclas', { game: 'beat', keys: 4, diff: 'medio', maxLen: 60, songs: B('rock', 1), min: 55, s2: 72, s3: 88 }),
+    mission(4, 'noritmo-04', 'Primeiro piano', 'piano', 'toque a melodia no Piano Hero', { game: 'tiles', diff: 'facil', songs: B('bossa', 2), min: 60, s2: 75, s3: 90 }, ['tem um "como jogar" na tela antes de começar.']),
+    mission(5, 'noritmo-05', 'Pop em 5', '5 teclas', 'toque um pop com 5 teclas', { game: 'beat', keys: 5, diff: 'medio', maxLen: 60, songs: B('pop', 2), min: 55, s2: 72, s3: 88 }),
+    mission(6, 'noritmo-06', 'Sequência de ouro', 'combo', 'faça uma sequência de acertos seguidos', { game: 'beat', keys: 4, diff: 'medio', maxLen: 60, songs: B('pop', 2), min: 60, s2: 75, s3: 90, combo: 25 }, ['combo = acertos seguidos sem errar. Precisa chegar a 25 em algum momento da música.']),
+    mission(7, 'noritmo-07', 'Piano no médio', 'piano+', 'toque uma melodia inteira no nível médio', { game: 'tiles', diff: 'medio', songs: B('rock', 1), min: 60, s2: 78, s3: 92 }),
+    mission(8, 'noritmo-08', 'Maratona de 2 minutos', '2 min', 'toque 2 minutos sem parar', { game: 'beat', keys: 4, diff: 'medio', maxLen: 120, songs: B('rock', 1), min: 60, s2: 78, s3: 90 }, ['é a versão longa do jogo (2 minutos).']),
+    mission(9, 'noritmo-09', 'Cinco teclas, difícil', 'difícil', 'encare o nível difícil com 5 teclas', { game: 'beat', keys: 5, diff: 'dificil', maxLen: 60, songs: B('rock', 2), min: 60, s2: 75, s3: 90 }),
+    mission(10, 'noritmo-10', 'Grande Palco', 'show', 'feche o show: 2 minutos no nível difícil, na música que você escolher', { game: 'beat', keys: 4, diff: 'dificil', maxLen: 120, songs: FAST_SONGS, min: 65, s2: 80, s3: 92 }, ['você escolhe uma das músicas rápidas (a partir de 105 bpm): rock, pop e bossa.']),
   ],
   medals: [
     { id: 'nr-dois-jogos', title: 'Beat e Piano', desc: 'conclua uma missão do Beat Hero e uma do Piano Hero', icon: '🎹', test: (g) => ['noritmo-04', 'noritmo-07'].some((i) => ((g.m[i] || {}).s || 0) >= 1) && ['noritmo-00', 'noritmo-01', 'noritmo-02', 'noritmo-03', 'noritmo-05', 'noritmo-06', 'noritmo-08', 'noritmo-09', 'noritmo-10'].some((i) => ((g.m[i] || {}).s || 0) >= 1) },

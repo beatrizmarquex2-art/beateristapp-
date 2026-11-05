@@ -1,6 +1,6 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import mod, { spec, STYLES, ALL_SONGS, evaluateWith, matches, pctOf } from '../js/campanha/jogos/noritmo.js';
+import mod, { spec, STYLES, ALL_SONGS, FAST_SONGS, bpmOf, MIN_BPM, evaluateWith, matches, pctOf } from '../js/campanha/jogos/noritmo.js';
 import { checkSpec, applyResult, blankGame, isUnlocked, statusOf, allMedals } from '../js/campanha/engine.js';
 import { THEMES } from '../js/campanha/themes.js';
 import { LOADERS } from '../js/campanha/registry.js';
@@ -25,8 +25,9 @@ test('só usa jogos, teclas, dificuldades, durações e músicas que o motor tem
     assert.equal(m.stars.length, 3); assert.ok(m.stars[0].includes(`${p.min}%`) && m.stars[1].includes(`${p.s2}%`) && m.stars[2].includes(`${p.s3}%`), 'texto bate com os números');
   }
 });
-test('nada é trancado: toda missão aceita músicas já existentes e a última aceita as 18', () => {
-  assert.equal(spec.missions.at(-1).params.songs.length, 18);
+test('só músicas rápidas: toda missão usa músicas com bpm >= MIN_BPM e a última aceita todas as rápidas', () => {
+  assert.equal(spec.missions.at(-1).params.songs.length, FAST_SONGS.length); assert.ok(FAST_SONGS.length >= 3);
+  for (const m of spec.missions) for (const [s, t] of m.params.songs) assert.ok(bpmOf(s, t) >= MIN_BPM, `${m.id} ${s}/${t}`);
   assert.ok(spec.missions.every((m) => m.params.songs.length >= 1));
 });
 test('abrir/iniciar nunca conclui: resultado vazio, nulo, sem fim, perdido ou de outra missão não conclui', () => {
@@ -56,9 +57,9 @@ test('missão de combo exige a sequência além da precisão', () => {
 test('Piano Hero: perder os corações (lost) não conclui, mesmo com boa precisão parcial', () => {
   for (const m of spec.missions.filter((x) => x.params.game === 'tiles')) assert.equal(m.evaluate(res(m, { lost: true, acc: 0.95 }), m).done, false);
 });
-test('Grande Palco aceita qualquer das 18 músicas, mas só no difícil de 2 min', () => {
+test('Grande Palco aceita qualquer das músicas rápidas, mas só no difícil de 2 min', () => {
   const m = spec.missions.at(-1);
-  for (const [s, t] of ALL_SONGS) assert.equal(m.evaluate(res(m, { style: s, tier: t, acc: 0.9 }), m).stars, 2);
+  for (const [s, t] of FAST_SONGS) assert.equal(m.evaluate(res(m, { style: s, tier: t, acc: 0.9 }), m).stars, 2);
   assert.equal(m.evaluate(res(m, { diff: 'medio' }), m).done, false);
 });
 test('desbloqueio pelo motor: só a ordem dos desafios; falhar não destrava; concluir destrava a próxima', () => {
@@ -74,7 +75,7 @@ test('medalhas: ids únicos, ganhas só com progresso real', () => {
 });
 test('modo livre intacto: o pacote só muda de comportamento com opts.mission e a aventura não grava preferências/recordes/ranking/figurinhas', () => {
   const src = fs.readFileSync(new URL('../assets/rhythm-games/rhythm-games.js', import.meta.url), 'utf8');
-  assert.ok(src.includes('S.record=!MISSION&&'), 'recorde só no livre'); assert.ok(src.includes('if(!MISSION&&S.long&&S.stars>0)'), 'figurinhas só no livre');
+  assert.ok(src.includes('S.record=!MISSION&&'), 'recorde só no livre'); assert.ok(src.includes('if(!MISSION&&S.long&&S.stars>0&&S.fast)'), 'figurinhas só no livre');
   assert.ok(src.includes('if(!MISSION&&!lost&&OPTS.hallTop&&OPTS.autoName'), 'ranking só no livre'); assert.ok(src.includes('function save(){clearTimeout(saveT);if(MISSION) return;'), 'sem gravar o armazenamento na aventura');
   assert.ok(src.includes('function rzSaveOpts(){if(MISSION) return;'), 'sem gravar preferências');
   const j = fs.readFileSync(new URL('../js/views/jogos-ritmo.js', import.meta.url), 'utf8');
