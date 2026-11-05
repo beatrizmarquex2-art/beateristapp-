@@ -75,7 +75,7 @@ export async function importar(rows) {
 }
 /** Entende o que a Bea colou. Linha com 2+ partes (separadas por tab, ; , | ou " - "): a última é o código se for válida.
  *  Linha só com nome (ou sem código válido): vira nome e o código é gerado. Cabeçalho "nome, código" é ignorado. */
-export function entender(texto, jaExistem = new Set()) {
+export function entender(texto, jaExistem = new Set(), nomes = new Map()) {
   const out = []; const usados = new Set(jaExistem); const bad = [];
   const novo = () => { let c; do c = gerar(); while (usados.has(c)); usados.add(c); return c; };
   for (const raw of String(texto || '').split(/\r?\n/)) {
@@ -83,7 +83,11 @@ export function entender(texto, jaExistem = new Set()) {
     const parts = line.split(/\t|;|\||,| - /).map((x) => x.trim()).filter(Boolean); if (!parts.length) continue;
     if (parts.length >= 2 && /^c[oó]digo$/i.test(parts[parts.length - 1])) continue; // cabeçalho
     const last = norm(parts[parts.length - 1]);
-    if (parts.length >= 2 && /^[A-Z0-9]{4,12}$/.test(last) && last === parts[parts.length - 1].toUpperCase().replace(/[^A-Z0-9]/g, '')) { out.push({ code: last, nome: parts.slice(0, -1).join(' '), dado: true }); usados.add(last); }
+    if (parts.length >= 2 && /^[A-Z0-9]{4,12}$/.test(last) && last === parts[parts.length - 1].toUpperCase().replace(/[^A-Z0-9]/g, '')) {
+      const nome = parts.slice(0, -1).join(' '); const antigo = nomes.get(last);
+      if (antigo && antigo.trim().toLowerCase() !== nome.trim().toLowerCase()) out.push({ code: novo(), nome, dado: false, trocou: { de: antigo, codigoAntigo: last } }); // nome diferente = pessoa diferente: código novo (o antigo não é mexido)
+      else { out.push({ code: last, nome, dado: true }); usados.add(last); }
+    }
     else if (line.length <= 60) out.push({ code: novo(), nome: parts.join(' '), dado: false });
     else bad.push(line.slice(0, 40));
   }

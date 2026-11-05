@@ -19,7 +19,7 @@ import * as piano from './views/piano.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import * as perfil from './views/perfil.js';
-import { banner, closeSheets } from './ui.js';
+import { banner, closeSheets, confirmSheet } from './ui.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
@@ -157,7 +157,12 @@ function shell(name) {
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
-    h('button', { type: 'button', class: 'btn small ghost', onclick: () => { try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ } location.reload(); } }, 'trocar nome'));
+    h('button', { type: 'button', class: 'btn small ghost', onclick: async () => {
+      if (!(await confirmSheet('trocar de nome?', 'quem entra com outro nome precisa de um código novo, só dele. o código deste aparelho sai agora.', 'trocar'))) return;
+      try { localStorage.removeItem(NAME_KEY); } catch { /* ok */ }
+      CODE.sair(); try { ['beaterista-album-code', 'beaterista-aluno-codigo-pendente'].forEach((k) => localStorage.removeItem(k)); } catch { /* ok */ } window.__alunoCodigo = ''; window.__alunoCodigoPend = '';
+      location.reload();
+    } }, 'trocar nome'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {

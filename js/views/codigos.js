@@ -43,10 +43,10 @@ export function mount(host) {
     out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, titulo), h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(rows), 'tabela copiada (cola na planilha)') }, 'copiar só essas')),
       h('div', { class: 'cod-wrap' }, h('table', { class: 'cod-tbl' }, h('thead', {}, h('tr', {}, h('th', {}, 'nome'), h('th', {}, 'código'))), h('tbody', {}, ...rows.map((x) => h('tr', {}, h('td', {}, x.nome || '—'), h('td', {}, h('b', { class: 'rg-code' }, x.code))))))))); }
   async function doImport() {
-    if (busy) return; const ja = new Set(list.map((x) => x.code)); const { rows, bad } = CODE.entender(ta.value, ja);
+    if (busy) return; const ja = new Set(list.map((x) => x.code)); const { rows, bad } = CODE.entender(ta.value, ja, new Map(list.filter((x) => x.nome).map((x) => [x.code, x.nome])));
     if (!rows.length) return toast(bad.length ? 'linha muito grande, confira a lista' : 'cole pelo menos um aluno', { id: 'cod-err', ms: 3000 });
     busy = true;
-    try { await CODE.importar(rows); ta.value = ''; show(rows.map((x) => ({ ...x, ativo: true, usos: 0 })), `${rows.length} importado${rows.length === 1 ? '' : 's'} (${rows.filter((x) => !x.dado).length} com código novo)`); toast('importado ✓', { id: 'cod-ok', ms: 2500 }); await load(); }
+    try { await CODE.importar(rows); ta.value = ''; show(rows.map((x) => ({ ...x, ativo: true, usos: 0 })), `${rows.length} importado${rows.length === 1 ? '' : 's'} (${rows.filter((x) => !x.dado).length} com código novo)${rows.some((x) => x.trocou) ? ' · nome trocado = código novo: ' + rows.filter((x) => x.trocou).map((x) => `${x.trocou.de} → ${x.nome}`).join(', ') + '. o código antigo continua ativo, desative se quiser' : ''}`); toast('importado ✓', { id: 'cod-ok', ms: 2500 }); await load(); }
     catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra importar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
     busy = false; draw();
   }
