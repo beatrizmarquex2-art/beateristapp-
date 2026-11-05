@@ -27,7 +27,8 @@ const shot = async (e, file, opts = {}) => {
 const rows = [];
 for (const e of cat) {
   const saida = `cartas/${e.codigo}_${slug(e.artista_banda)}.png`;
-  if (!process.argv.includes('--so-folhas')) await shot(e, path.join(OUT, saida), { estilo: STYLE });
+  const so = (process.argv.find((a) => a.startsWith('--codigos=')) || '').slice(10).split(',').filter(Boolean);
+  if (!process.argv.includes('--so-folhas') && (!so.length || so.includes(e.codigo))) await shot(e, path.join(OUT, saida), { estilo: STYLE });
   rows.push({ codigo: e.codigo, artista_banda: e.artista_banda, colecao: e.colecao, raridade: e.raridade, modelo: CLASSICO ? e.modelo : e.modelo2, foto_original: e.foto, saida_png: saida, status: 'gerada', observacoes: e.nota || '' });
 }
 const tpls = CLASSICO ? ['C01', 'C02', 'R01', 'R02', 'E01', 'E02', 'E03', 'E04'] : ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'];
