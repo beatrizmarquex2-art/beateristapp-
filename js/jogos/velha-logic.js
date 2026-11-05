@@ -47,7 +47,7 @@ export function newMatch({ mode = 'local', variant = 'classico', level = 'facil'
 function freshBoard(starter) { return { board: Array(9).fill(null), turn: starter, over: false, result: null, pending: null, held: null, last: null }; }
 export const nextRound = (g) => { const starter = 1 - g.starter; return { ...g, round: g.round + 1, starter, asked: [], ...freshBoard(starter) }; };
 const clone = (g) => JSON.parse(JSON.stringify(g));
-export const isPaulTurn = (g) => g.mode !== 'local' && g.turn === 1;
+export const isPaulTurn = (g) => (g.mode === 'facil' || g.mode === 'estrategico') && g.turn === 1;
 
 function finishIfOver(g) {
   const w = winnerOf(g.board);
@@ -93,7 +93,7 @@ export function resolveOffer(g0, end) {
 export function validMatch(g) {
   try {
     if (!g || g.v !== 1 || !Array.isArray(g.board) || g.board.length !== 9 || !g.board.every((x) => x === null || x === 0 || x === 1)) return false;
-    if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'facil', 'estrategico'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
+    if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'facil', 'estrategico', 'online'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
     if (g.level != null && !LEVEL_IDS.includes(g.level)) return false;
     if (g.pending && (g.board[g.pending.cell] != null || !questionById(g.pending.qid))) return false;
     return Array.isArray(g.scores) && g.scores.length === 2 && Array.isArray(g.asked);

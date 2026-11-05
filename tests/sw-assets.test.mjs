@@ -9,5 +9,5 @@ test('todo arquivo de SHELL e EXTRA existe', () => {
 });
 test('ícones e artes dos jogos estão no cache offline', () => {
   const all = new Set([...list('SHELL'), ...list('EXTRA')]);
-  for (const f of ['assets/jogos/icones/domino.webp', 'assets/mural/tape.svg', 'assets/mural/brush-gold.svg', 'assets/memoria/rock/verso.webp', 'assets/zine/fita-1.webp', 'assets/paul/e20.webp', 'js/jogos/ouvir.js', 'js/dragsort.js']) assert.ok(all.has(f), f);
+  for (const f of ['assets/jogos/icones/cartas.webp', 'assets/mural/tape.svg', 'assets/mural/brush-gold.svg', 'assets/memoria/rock/verso.webp', 'assets/zine/fita-1.webp', 'assets/paul/e20.webp', 'js/jogos/ouvir.js', 'js/dragsort.js']) assert.ok(all.has(f), f);
 });

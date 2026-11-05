@@ -7,7 +7,7 @@ import { THEMES, SIZES, themeById } from './memory-themes.js';
 import * as FB from '../feedback.js';
 
 const KEY = 'setting-memoria';
-const conf = () => ({ theme: 'instrumentos', pairs: 8, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const conf = () => ({ theme: 'instrumentos', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (p) => store.upsert('setting', KEY, p);
 const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 
@@ -30,27 +30,34 @@ export function mountMemoria(host) {
   const setup = () => {
     const c = conf(); const th = themeById[c.theme] || THEMES[0];
     const maxPairs = th.items.length; preload(th);
-    const pairs = SIZES.includes(c.pairs) ? c.pairs : 8;
+    const pairs = SIZES.includes(c.pairs) ? c.pairs : 8; const players = c.players === 2 ? 2 : 1;
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
       h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Tema do jogo' }, ...THEMES.map((t) => h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}: ${t.blurb}`, onclick: () => save({ theme: t.id }).then(setup) },
         verso(t), h('b', {}, t.title)))),
       h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
+      h('h2', { class: 'kx-h' }, 'quem joga?'),
+      h('div', { class: 'row kd-modes' }, ...[[1, '1 jogador'], [2, '2 jogadores · um de cada vez']].map(([n, l]) => h('button', { type: 'button', class: `kd-chip${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), onclick: () => save({ players: n }).then(setup) }, l))),
+      players === 2 ? h('p', { class: 'muted mem-blurb' }, 'quem acerta um par joga de novo?') : null,
+      players === 2 ? h('div', { class: 'row kd-modes' }, ...[[true, 'sim, joga de novo'], [false, 'não, passa a vez']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${c.again === v ? ' on' : ''}`, 'aria-pressed': String(c.again === v), onclick: () => save({ again: v }).then(setup) }, l))) : null,
       h('h2', { class: 'kx-h' }, 'quantos pares?'),
       h('div', { class: 'row kd-modes' }, ...SIZES.map((n) => h('button', { type: 'button', class: `kd-chip${pairs === n ? ' on' : ''}`, disabled: n > maxPairs, onclick: () => save({ pairs: n }).then(setup) }, `${n} pares`))),
-      ...(() => { const b = c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
-      h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs)) }, 'jogar'));
+      ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
+      h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
     bot.set('happy', 'escolhe o tema e quantos pares!');
   };
 
-  const play = (th, pairs) => {
+  const play = (th, pairs, players = 1, again = true) => {
     const picks = shuffle(th.items, Math.random).slice(0, pairs);
     const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), Math.random).map((c, i) => ({ ...c, key: i }));
     const verso = th.verso ? `url(../${th.verso})` : null;
-    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0;
+    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = [0, 0];
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
-    const paint = () => { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`; };
+    const paint = () => {
+      status.textContent = players === 2 ? `vez do jogador ${turn + 1} · ${score[0]} × ${score[1]}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
+      status.classList.toggle('mem-p2', players === 2 && turn === 1);
+    };
     const board = h('div', { class: `kx-board mem-board n${pairs}`, style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
       const bi = verso || `url(../assets/cards/b${String((i * 7 + (i >> 1)) % 10 + 1).padStart(2, '0')}.webp)`;
       const b = h('button', { type: 'button', class: 'kx-mem mem-photo', 'aria-label': 'carta virada para baixo', onclick: () => flip(b) },
@@ -65,25 +72,27 @@ export function mountMemoria(host) {
       later(() => {
         if (gone) return;
         if (same) {
-          a.classList.add('ok'); b.classList.add('ok'); matched++; streak++; open = []; lock = false; paint();
+          a.classList.add('ok'); b.classList.add('ok'); matched++; streak++; score[turn]++; open = []; lock = false; if (!again && matched < pairs) turn = 1 - turn; paint();
           const done = matched === pairs;
           bot.set('cheer', FB.line('win'));
           if (done) { finish(); } else FB.win(b, { paul: false });
         } else {
-          streak = 0; a.classList.add('no'); b.classList.add('no'); bot.set('oops', FB.line('lose')); FB.lose(a, { paul: false });
+          streak = 0; if (players === 2) turn = 1 - turn; a.classList.add('no'); b.classList.add('no'); bot.set('oops', FB.line('lose')); FB.lose(a, { paul: false });
           later(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; paint(); }, 700);
         }
       }, 650);
     };
     const finish = () => {
-      const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = !prev || tries < prev;
+      const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
-      FB.great(board, { msg: record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', record ? 'novo recorde!' : 'achou todos!');
+      const win = score[0] === score[1] ? 'empate!' : `jogador ${score[0] > score[1] ? 1 : 2} venceu!`;
+      FB.great(board, { msg: players === 2 ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', players === 2 ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {
         if (gone) return;
-        stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, 'Achou todos!'), h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(tries)), h('small', {}, ' tentativas')),
-          h('p', { class: 'muted' }, `${pairs} pares de ${th.title.toLowerCase()}${record ? ' · recorde novo!' : prev ? ` · seu recorde: ${prev}` : ''}`),
-          h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho'))));
+        stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, players === 2 ? win : 'Achou todos!'),
+          players === 2 ? h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, `${score[0]} × ${score[1]}`), h('small', {}, ' pares')) : h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(tries)), h('small', {}, ' tentativas')),
+          h('p', { class: 'muted' }, `${pairs} pares de ${th.title.toLowerCase()}${players === 2 ? ` · jogador 1: ${score[0]} · jogador 2: ${score[1]}` : record ? ' · recorde novo!' : prev ? ` · seu recorde: ${prev}` : ''}`),
+          h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs, players, again) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho'))));
       }, 1800);
     };
     paint(); bot.set('think', 'onde será?');

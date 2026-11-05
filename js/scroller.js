@@ -2,6 +2,8 @@
 import { h, icon } from './util.js';
 
 export function startScroller() {
+  // fora do iPhone/iPad a barra do próprio navegador funciona: só o botão de voltar ao topo, sem medir a tela a cada rolagem
+  if (!document.documentElement.classList.contains('apple')) return topOnly();
   const thumb = h('div', { class: 'scroll-thumb', 'aria-hidden': 'true' });
   const track = h('div', { class: 'scroll-track', 'aria-hidden': 'true' }, thumb);
   const topBtn = h('button', { class: 'to-top', type: 'button', 'aria-label': 'Voltar ao topo', onclick: () => scrollTo({ top: 0, behavior: 'smooth' }) }, icon('up', 22));
@@ -19,7 +21,9 @@ export function startScroller() {
     thumb.style.transform = `translateY(${max > 0 ? (scrollY / max) * room : 0}px)`;
     topBtn.classList.toggle('show', scrollY > innerHeight * 0.9);
   };
-  const wake = () => { paint(); track.classList.add('on'); clearTimeout(hide); hide = setTimeout(() => { if (!drag) track.classList.remove('on'); }, 1400); };
+  let raf = 0;
+  const wake = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; wakeNow(); }); };
+  const wakeNow = () => { paint(); track.classList.add('on'); clearTimeout(hide); hide = setTimeout(() => { if (!drag) track.classList.remove('on'); }, 1400); };
   addEventListener('scroll', wake, { passive: true });
   addEventListener('resize', paint);
   new ResizeObserver(paint).observe(document.body);
@@ -34,4 +38,14 @@ export function startScroller() {
   const end = () => { drag = null; track.classList.remove('drag'); wake(); };
   thumb.addEventListener('pointerup', end); thumb.addEventListener('pointercancel', end);
   paint();
+}
+
+function topOnly() {
+  const topBtn = h('button', { class: 'to-top', type: 'button', 'aria-label': 'Voltar ao topo', onclick: () => scrollTo({ top: 0, behavior: 'smooth' }) }, icon('up', 22));
+  document.body.append(topBtn);
+  let raf = 0; let shown = false;
+  addEventListener('scroll', () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; const on = scrollY > innerHeight * 0.9; if (on !== shown) { shown = on; topBtn.classList.toggle('show', on); } });
+  }, { passive: true });
 }

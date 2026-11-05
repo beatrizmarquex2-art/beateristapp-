@@ -44,14 +44,14 @@ html { -webkit-text-size-adjust: 100%; background: var(--bg); }
 body {
   margin: 0; color: var(--ink); font: 16px/1.45 var(--body); background: var(--bg);
   background-image: radial-gradient(120% 60% at 50% 0%, rgb(255 255 255 / .06), transparent 60%), radial-gradient(100% 50% at 50% 110%, var(--bg-deep), transparent 70%);
-  overflow-x: hidden; overscroll-behavior-y: none; transition: background-color .4s;
+  overflow-x: clip; overscroll-behavior-y: none; transition: background-color .4s;
 }
 img { max-width: 100%; }
 a:where(:not(.bmr *)) { color: inherit; }
 :is(button, input, select, textarea):where(:not(.bmr *)) { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
 [hidden] { display: none !important; }
-html, body { max-width: 100%; overflow-x: hidden; }
+html, body { max-width: 100%; overflow-x: clip; } /* clip não cria área de rolagem própria (com hidden nos dois, o Android rolava travado) */
 
 /* ---------- aquarelas de fundo (só cor + máscara; mudam com o tema) ---------- */
 #decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
