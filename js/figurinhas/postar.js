@@ -173,6 +173,18 @@ async function desenharLimpo(e, formato, carta) {
   const lg = await logoCanvas(!claro), lw = 260, lh = (lw * 175) / 900; ctx.globalAlpha = 0.9; ctx.drawImage(lg, (W - lw) / 2, by + (story ? 86 : 74), lw, lh); ctx.globalAlpha = 1;
   return c;
 }
+
+/** Adesivo com borda branca (estilo sticker de celular): silhueta branca espalhada em volta + sombra + o desenho. */
+function adesivo(ctx, im, x, y, w, rot) {
+  const h = (w * im.naturalHeight) / im.naturalWidth, b = Math.max(6, w * 0.045), sil = canvas(Math.ceil(w + b * 4), Math.ceil(h + b * 4)), sc = sil.getContext('2d');
+  sc.drawImage(im, b * 2, b * 2, w, h); sc.globalCompositeOperation = 'source-in'; sc.fillStyle = '#fff'; sc.fillRect(0, 0, sil.width, sil.height);
+  ctx.save(); ctx.translate(x, y); ctx.rotate((rot * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 12;
+  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; ctx.drawImage(sil, -sil.width / 2 + Math.cos(a) * b, -sil.height / 2 + Math.sin(a) * b); }
+  ctx.shadowColor = 'transparent'; ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore();
+}
+const ADESIVOS = ['carinha', 'coracao', 'estrela'];
+const adesivos = () => Promise.all(ADESIVOS.map((n) => img(`assets/figurinhas/adesivos/${n}.webp`)));
+
 /* ---------- modelo 5: épico (raios, luz, brilhos) com paleta dourada ou rosa e vermelho ---------- */
 const PALETAS = {
   dourado: { centro: '#6a3a08', meio: '#3a1a06', borda: '#150a0e', fim: '#050308', raio: '255,214,102', raio2: '255,170,40', halo: '255,226,140', glow: '#ffb020', glow2: '#ffe08a', glint: '#fff3c4', bokeh: ['255,200,90', '255,160,40', '255,236,170'],
@@ -181,7 +193,7 @@ const PALETAS = {
     metal: ['#ffe3ee', '#ff6aa6', '#c4182c', '#ffb4d2'], titulo: ['#ffffff', '#ff9ec7', '#e11d5a'], contorno: '#3a0618', placa: 'rgba(30,5,16,.92)', site: '#ffc2dc', tinta: '#ffe9f2', enfeite: '#ff8fbd' },
 };
 async function desenharEpico(e, formato, carta) {
-  const { W, H, story } = geo(formato), P = PALETAS[e.tema] || PALETAS.dourado, lg = await logoCanvas(true), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+  const { W, H, story } = geo(formato), P = PALETAS[e.tema] || PALETAS.dourado, [lg, stk] = await Promise.all([logoCanvas(true), e.tema === 'rosa' ? adesivos() : Promise.resolve(null)]), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   const cx = W / 2, cy = story ? H * 0.52 : H * 0.5, R = O.rng(O.hashSeed(`${e.artista_banda || 'epico'}${e.tema || ''}`)), diag = Math.hypot(W, H);
   const bg = ctx.createRadialGradient(cx, cy, 30, cx, cy, diag * 0.62); bg.addColorStop(0, P.centro); bg.addColorStop(0.24, P.meio); bg.addColorStop(0.58, P.borda); bg.addColorStop(1, P.fim); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
   // duas camadas de raios girando em sentidos diferentes (mais profundidade)
@@ -220,6 +232,10 @@ async function desenharEpico(e, formato, carta) {
   ctx.save(); ctx.translate(cx, cyc); ctx.rotate((-1.6 * Math.PI) / 180); ctx.shadowColor = P.glow; ctx.shadowBlur = 120; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = P.glow2; ctx.shadowBlur = 36; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
   const brilho = ctx.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2); brilho.addColorStop(0.36, 'rgba(255,255,255,0)'); brilho.addColorStop(0.5, 'rgba(255,255,255,.3)'); brilho.addColorStop(0.64, 'rgba(255,255,255,0)'); ctx.fillStyle = brilho; rr(ctx, -cw / 2, -ch / 2, cw, ch, 28); ctx.fill();
   glint(-cw / 2 + 24, -ch / 2 + 24, 44, 0.3); glint(cw / 2 - 20, ch / 2 - 40, 34, 0.7); ctx.restore();
+  // adesivos (tema rosa): carinha apaixonada, corações e estrelas colados em volta da cartinha
+  if (stk) { const [car, cor, est] = stk, L = cx - cw / 2, Rr = cx + cw / 2, T = cyc - ch / 2, B = cyc + ch / 2;
+    adesivo(ctx, est, L + 6, T + 50, cw * 0.27, -14); adesivo(ctx, cor, L + 8, B - 70, cw * 0.28, -12); adesivo(ctx, car, Rr - 8, T + 14, cw * 0.34, 12);
+    adesivo(ctx, cor, Rr - 4, B - 96, cw * 0.16, 16); adesivo(ctx, est, Rr + 12, cyc - ch * 0.08, cw * 0.13, 10); adesivo(ctx, cor, L - 4, cyc + ch * 0.1, cw * 0.12, -20); }
   // rodapé em placa com moldura de metal
   const fw = W - 130, fh = story ? 190 : 150, fy = story ? H - 360 : H - 200;
   ctx.save(); ctx.fillStyle = P.placa; rr(ctx, 65, fy, fw, fh, 34); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = metal; ctx.shadowColor = P.glow; ctx.shadowBlur = 26; ctx.stroke(); ctx.shadowBlur = 0; ctx.textAlign = 'center';
