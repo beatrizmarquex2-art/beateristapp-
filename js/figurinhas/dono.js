@@ -19,3 +19,11 @@ export async function metaLer(base) {
 }
 export const metaGravar = (base, v) => db.metaSet(chave(base), v);
 export const metaApagar = (base) => db.metaDel(chave(base));
+
+/* ---------- álbum de figurinhas: um por dono (antes era um só por aparelho e misturava as cartas de quem trocava de nome) ---------- */
+import * as store from '../store.js';
+const ALBUM = 'figurinhas-album';
+export const albumId = () => chave(ALBUM);
+/** Dados do álbum de quem está com o nome agora. O álbum antigo do aparelho (sem dono) é IGNORADO de propósito: ele tinha as cartas de todo mundo misturadas
+ *  e o certo de cada aluno vem do servidor (o código dele) quando ele abre o álbum. */
+export function albumDados() { const meu = store.get(albumId()); return meu ? meu.data || {} : {}; }
