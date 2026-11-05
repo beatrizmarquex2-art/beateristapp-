@@ -8,6 +8,11 @@ const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
 export const IMAGES = [
   { id: 'palco', src: 'assets/jogos/palco.webp', nome: 'Paul no palco' },
+  { id: 'estudio', src: 'assets/jogos/estudio.webp', nome: 'Estúdio de gravação' },
+  { id: 'vitrola', src: 'assets/jogos/vitrola.webp', nome: 'Vitrola e fitas cassete' },
+  { id: 'cordas', src: 'assets/jogos/cordas.webp', nome: 'Violão, guitarra, baixo e violino' },
+  { id: 'sopros', src: 'assets/jogos/sopros.webp', nome: 'Saxofone, trompete e flauta' },
+  { id: 'percussao', src: 'assets/jogos/percussao.webp', nome: 'Roda de percussão' },
 ];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
 
