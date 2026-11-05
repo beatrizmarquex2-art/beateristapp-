@@ -11,17 +11,18 @@ export const IMAGES = [
 ];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
 
-export function mount(host) {
-  let gone = false; let tick = 0;
-  const saved = getGame(ID);
-  const prefs = { diff: [6, 12, 24].includes(saved.diff) ? saved.diff : 6, free: saved.free === true };
+export function mount(host, opts) {
+  const M = opts && opts.mission ? opts.mission : null; // Modo Aventura: monta com os params da missão, não lê nem grava nada do modo livre
+  let gone = false; let tick = 0; let reported = false;
+  const saved = M ? {} : getGame(ID);
+  const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24].includes(saved.diff) ? saved.diff : 6, free: saved.free === true };
   const pick = (id) => IMAGES.find((x) => x.id === id) || IMAGES[0];
-  let imgId = pick(saved.img).id; const SRC = () => pick(imgId).src; const NOME = () => pick(imgId).nome;
+  let imgId = pick(M ? M.params.img : saved.img).id; const SRC = () => pick(imgId).src; const NOME = () => pick(imgId).nome;
   let best = saved.best && typeof saved.best === 'object' ? saved.best : {};
   let g = null; let selected = null; let hintCell = null; let msg = ''; let img = null; let paused = false; let viewing = false; let zoom = false; let last = 0; let record = false;
   let timeEl = null;
   const root = h('div', { class: 'jg jg-quebra' }); host.replaceChildren(root);
-  const persist = () => setGame(ID, { ...prefs, img: imgId, best, game: g && !g.over ? g : null, gameImg: g && !g.over ? imgId : null });
+  const persist = () => M || setGame(ID, { ...prefs, img: imgId, best, game: g && !g.over ? g : null, gameImg: g && !g.over ? imgId : null });
   const running = () => g && !g.free && g.started && !g.over && !document.hidden && !paused;
 
   /* ---------- relógio: soma só o tempo em que a partida está rodando ---------- */
@@ -95,12 +96,14 @@ export function mount(host) {
   function hint() { if (selected == null) return; g = Q.useHint(g); hintCell = selected; msg = `dica: a peça escolhida vai na posição ${posLabel(selected)}`; sfx('tap'); persist(); draw(); }
   function showRules() { pause(true); const el = h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'regras' }, h('p', {}, 'toque numa peça e depois no lugar dela. o tempo está pausado.'), h('button', { class: 'btn primary', type: 'button', onclick: () => { el.remove(); pause(false); } }, 'continuar')); root.append(el); el.querySelector('button').focus(); }
   function finish() {
-    clock(); stopClock(); const r = Q.recordBest(best, g); best = r.best; record = r.record; setGame(ID, { ...prefs, best, game: null }); sfx('win'); draw();
+    clock(); stopClock();
+    if (M) { sfx('win'); draw(); if (!reported && !gone && opts.onResult) { reported = true; opts.onResult({ won: true, diff: g.diff, img: imgId, errors: g.errors, hints: g.hints, elapsed: Math.round(g.elapsed), moves: g.diff + g.errors }); } return; }
+    const r = Q.recordBest(best, g); best = r.best; record = r.record; setGame(ID, { ...prefs, best, game: null }); sfx('win'); draw();
   }
   function result() {
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, 'montou! 🤘'),
       h('p', {}, g.free ? 'modo livre: sem tempo' : `tempo: ${Q.fmtTime(g.elapsed)}${record ? ' · novo recorde!' : ''}`), h('p', { class: 'muted' }, `${g.hints} dica${g.hints === 1 ? '' : 's'} · ${g.errors} tentativa${g.errors === 1 ? '' : 's'} errada${g.errors === 1 ? '' : 's'}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      M ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   /* ---------- arrastar com mouse/caneta (no toque, a rolagem da bandeja tem prioridade: use toque na peça e na posição) ---------- */
@@ -125,7 +128,7 @@ export function mount(host) {
 
   const onVis = () => { if (document.hidden) { clock(); persist(); } else last = performance.now(); };
   document.addEventListener('visibilitychange', onVis);
-  intro();
+  if (M) load(() => begin(Q.newGame({ diff: prefs.diff, free: false }))); else intro();
   return {
     inProgress: () => !!(g && !g.over && g.started),
     restart: async () => { if (g && !g.over && g.started && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },

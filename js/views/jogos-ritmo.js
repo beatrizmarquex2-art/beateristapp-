@@ -192,6 +192,8 @@ export function loadPackage() {
 
 /** opts.student: área do aluno (sem importar MIDI; músicas originais do app; ranking compartilhado com o nome do aluno). */
 export function mount(host, opts = {}) {
+  // Modo Aventura (#/ritmo/aventura[/n]): tela própria, o jogo normal abaixo não é montado. Nada do modo livre muda.
+  if (opts.parts && opts.parts[0] === 'aventura') return mountAventura(host, opts.parts);
   const student = !!opts.student;
   let mounted = false; let gone = false;
   const studentTop = (key) => RK.cached(`ritmo|${key}`);
@@ -272,7 +274,7 @@ export function mount(host, opts = {}) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage]));
+  host.append(banner('Jogos de ritmo', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), h('div', { class: 'pad-x rg-adv' }, h('a', { class: 'btn primary wide', href: '#/ritmo/aventura', 'data-aventura': '' }, '🎯 Modo Aventura'), h('small', { class: 'muted' }, 'desafios num mapa, opcional. Nenhuma música fica trancada.')), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage]));
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
@@ -292,4 +294,16 @@ export function mount(host, opts = {}) {
     off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }
   };
+}
+
+/** Modo Aventura do No Ritmo: mapa de desafios (#/ritmo/aventura) e missão (#/ritmo/aventura/<n>). Mesma rota do jogo normal, só outra tela. */
+function mountAventura(host, parts) {
+  let gone = false; let off = () => {};
+  const wrap = h('div', { class: 'pad-x' }, h('p', { class: 'muted' }, 'carregando a aventura…')); host.append(wrap);
+  Promise.all([import('../campanha/registry.js'), import('../campanha/run.js')]).then(async ([R, run]) => {
+    const adv = await R.loadAdventure('noritmo'); if (gone) return;
+    const n = parts[1] != null && /^\d+$/.test(parts[1]) ? Number(parts[1]) : null;
+    off = run.mountAdventure(wrap, { gameId: 'noritmo', spec: adv.spec, adv, base: '#/ritmo/aventura', mission: n, backHref: '#/ritmo', nav: (hash) => { location.hash = hash; } });
+  }).catch((e) => { console.warn('aventura indisponível', e); if (!gone) wrap.replaceChildren(h('p', { class: 'muted' }, 'a aventura não abriu.'), h('a', { class: 'btn wide', href: '#/ritmo' }, 'Voltar aos jogos de ritmo')); });
+  return () => { gone = true; try { off(); } catch { /* ok */ } };
 }

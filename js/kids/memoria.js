@@ -5,6 +5,7 @@ import { shuffle } from '../kids-logic.js';
 import { robo } from './robo.js';
 import { THEMES, SIZES, themeById } from './memory-themes.js';
 import * as FB from '../feedback.js';
+import { seeded } from '../campanha/jogos/memoria-logic.js';
 
 const KEY = 'setting-memoria';
 const conf = () => ({ theme: 'instrumentos', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -19,8 +20,11 @@ const verso = (t) => (t.verso
   : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
 const face = (it) => h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' });
 
-export function mountMemoria(host) {
-  let gone = false; const timers = [];
+/** `opts.mission` (Modo Aventura): monta a partida com `opts.mission.params`, sem menus, sem retomar nem gravar nada do modo livre (preferências e recordes
+ *  ficam intactos) e avisa `opts.onResult({ won, pairs, theme, tries, ms })` UMA vez, quando acha o último par. Sem `opts.mission` é o jogo de sempre. */
+export function mountMemoria(host, opts) {
+  const MS = opts && opts.mission ? opts.mission : null; const MP = MS ? MS.params || {} : null;
+  let gone = false; let started = false; let reported = false; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
   const bot = robo({ mood: 'happy', size: 84, say: 'escolhe o tema e quantos pares!' });
   const stage = h('div', { class: 'mem-stage' });
@@ -48,13 +52,14 @@ export function mountMemoria(host) {
     bot.set('happy', 'escolhe o tema e quantos pares!');
   };
 
-  const play = (th, pairs, players = 1, again = true) => {
-    const picks = shuffle(th.items, Math.random).slice(0, pairs);
-    const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), Math.random).map((c, i) => ({ ...c, key: i }));
+  const play = (th, pairs, players = 1, again = true, rnd = Math.random) => {
+    const picks = shuffle(th.items, rnd).slice(0, pairs);
+    const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), rnd).map((c, i) => ({ ...c, key: i }));
     const verso = th.verso ? `url(../${th.verso})` : null;
-    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = [0, 0];
+    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = [0, 0]; let t0 = 0;
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => {
+      if (MS) { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}${MP.goalTries ? ` · meta ${MP.goalTries}` : ''}${MP.secs ? ` · ⏱ ${t0 ? Math.min(Math.floor((Date.now() - t0) / 1000), 9999) : 0}/${MP.secs} s (opcional)` : ''}`; return; }
       status.textContent = players === 2 ? `vez do jogador ${turn + 1} · ${score[0]} × ${score[1]}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
       status.classList.toggle('mem-p2', players === 2 && turn === 1);
     };
@@ -67,6 +72,7 @@ export function mountMemoria(host) {
     }));
     const flip = (btn) => {
       if (lock || gone || btn.classList.contains('up') || btn.classList.contains('ok')) return;
+      if (MS && !t0) { t0 = Date.now(); started = true; if (MP.secs) tick(); }
       btn.classList.add('up'); btn.setAttribute('aria-label', btn._c.it.name); open.push(btn); if (open.length < 2) return;
       lock = true; tries++; const [a, b] = open; const same = a._c.it.id === b._c.it.id;
       later(() => {
@@ -82,7 +88,12 @@ export function mountMemoria(host) {
         }
       }, 650);
     };
+    const tick = () => { later(() => { if (reported) return; paint(); tick(); }, 1000); }; // relógio do desafio opcional de tempo (só na aventura)
     const finish = () => {
+      if (MS) { // Modo Aventura: nada do modo livre é gravado e a tela de resultado é a da aventura
+        if (reported) return; reported = true; const ms = Date.now() - t0; paint(); FB.great(board, { msg: FB.line('great') }); bot.set('cheer', 'achou todos!');
+        if (opts.onResult) opts.onResult({ won: true, pairs, theme: th.id, tries, ms }); return;
+      }
       const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
       const win = score[0] === score[1] ? 'empate!' : `jogador ${score[0] > score[1] ? 1 : 2} venceu!`;
@@ -96,9 +107,14 @@ export function mountMemoria(host) {
       }, 1800);
     };
     paint(); bot.set('think', 'onde será?');
-    stage.replaceChildren(h('div', { class: 'row kd-modes mem-top' }, h('b', {}, th.title), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar')), status, board);
+    stage.replaceChildren(h('div', { class: 'row kd-modes mem-top' }, h('b', {}, th.title), MS ? null : h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar')), status, board);
   };
 
-  setup();
-  return () => { gone = true; timers.forEach(clearTimeout); };
+  if (MS) {
+    const th = themeById[MP.theme] || THEMES[0]; preload(th); const seed = Number(MP.seed);
+    play(th, Math.min(SIZES.includes(MP.pairs) ? MP.pairs : 8, th.items.length), 1, true, Number.isFinite(seed) && MP.seed != null ? seeded(seed) : Math.random);
+  } else setup();
+  const stop = () => { gone = true; timers.forEach(clearTimeout); };
+  stop.inProgress = () => !!MS && started && !reported;
+  return stop;
 }

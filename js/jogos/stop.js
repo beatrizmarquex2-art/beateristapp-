@@ -15,8 +15,9 @@ const STATUS = { valida: ['válida', '✔'], invalida: ['inválida', '✖'], pen
 const clock = (s) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 const sleepToken = (ms, fn) => setTimeout(fn, ms);
 
-export function mount(host) {
-  const saved = getGame(ID);
+export function mount(host, opts) {
+  const M = opts && opts.mission ? opts.mission : null; // Modo Aventura: partida montada pelos params, sem ler nem gravar nada do Modo Livre
+  const saved = M ? {} : getGame(ID);
   const prefs = {
     mode: ['solo', 'dupla', 'sala', 'online'].includes(saved.mode) ? saved.mode : 'solo',
     cats: S.catsOk(saved.cats) ? saved.cats : S.randomCats(6),
@@ -25,9 +26,9 @@ export function mount(host) {
     names: Array.isArray(saved.names) && saved.names.length >= 2 ? saved.names.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['jogador 1', 'jogador 2'],
     salaNames: Array.isArray(saved.salaNames) && saved.salaNames.length >= 2 ? saved.salaNames.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['aluno 1', 'aluno 2', 'aluno 3'],
   };
-  const save = (patch = {}) => { Object.assign(prefs, patch); setGame(ID, { ...prefs }); };
+  const save = (patch = {}) => { Object.assign(prefs, patch); if (!M) setGame(ID, { ...prefs }); };
   const favs = () => (S.catsOk(getGame(ID).fav) ? getGame(ID).fav : null);
-  let g = null; let view = 'intro'; let gone = false; let token = 0; let introSeen = false;
+  let g = null; let view = 'intro'; let gone = false; let token = 0; let introSeen = false; let reported = false;
   let conn = null; let lob = null; const badge = linkBadge();
   let clk = 0; let deadline = 0; let timeEl = null; let live = null; let lastSec = -1; let locked = false; let revealed = false; let skipReveal = false; const timers = new Set();
   const root = h('div', { class: 'jg jg-stop st' }); host.replaceChildren(root);
@@ -38,12 +39,15 @@ export function mount(host) {
   const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
   const stopClock = () => { clearInterval(clk); clk = 0; };
   const nextToken = () => { token++; stopClock(); clearTimers(); locked = false; return token; };
-  const persist = () => { if (g && g.online) return; setGame(ID, { match: g && g.stage !== 'done' ? g : null }); };
+  const persist = () => { if (M || (g && g.online)) return; setGame(ID, { match: g && g.stage !== 'done' ? g : null }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
   const sync = () => { if (conn && g && g.online) conn.push(g); };
   const motion = () => !FX.reducedMotion();
   const sr = (t) => { if (live) live.textContent = t; };
   const mk = (tag, cls, ...kids) => h(tag, { class: cls }, ...kids);
+  const goalOf = () => (M && M.params ? M.params.goal : 0);
+  /** Modo Aventura: lembra a meta e o que já foi somado (pontos confirmados; pendente não conta). */
+  const missionLine = () => (M && g ? h('p', { class: 'jg-p muted st-mission', role: 'status' }, `missão: meta de ${goalOf()} pontos · você tem ${g.totals[0]} · máximo possível ${g.rounds * g.cats.length * S.POINTS.unique}`) : null);
 
   /* ================= abertura (fliperama) ================= */
   function sticks() { // baquetas cruzando (SVG de verdade, com o namespace certo)
@@ -123,6 +127,11 @@ export function mount(host) {
     const m = S.newMatch({ mode: mode === 'online' ? 'dupla' : mode, cats: prefs.cats, seconds: prefs.seconds, rounds: prefs.rounds, players: forceMode === 'dupla' && prefs.mode === 'online' ? ['jogador 1', 'jogador 2'] : players, used });
     setGame(ID, { cycle: m.cycle, last: prefs.cats }); return m;
   }
+  /** Modo Aventura: monta a partida individual dos params e vai direto pra primeira vez de jogar. */
+  function startMission() {
+    const q = M.params || {}; nextToken(); leave(); view = 'cover'; FX.stopAll();
+    try { begin(S.newMatch({ mode: 'solo', cats: q.cats, seconds: q.seconds, rounds: q.rounds, players: ['você'], letters: q.letters, free: true })); } catch (e) { toast(e.message === 'sem-letra' ? 'nenhuma letra serve pra essas categorias' : e.message); }
+  }
   function begin(m) { g = m; persist(); turnStart(); }
   function resumeMatch(m) { g = m; if (g.stage === 'review') { revealed = true; return reviewView(); } turnStart(); }
 
@@ -147,7 +156,7 @@ export function mount(host) {
     const who = solo ? `rodada ${g.round + 1} de ${g.rounds}` : g.online ? `sua vez! rodada ${g.round + 1} de ${g.rounds}` : `passe o aparelho para ${pn(g.turn)}`;
     root.replaceChildren(g.online ? badge.el : null, h('div', { class: 'jg-cover2', role: 'dialog', 'aria-label': 'passagem' },
       h('p', { class: 'hand' }, who), g.players.length > 1 && !g.online ? h('p', { class: 'muted' }, `rodada ${g.round + 1} de ${g.rounds} · as respostas anteriores ficam escondidas`) : null,
-      h('p', {}, `${g.cats.length} categorias · ${clock(g.seconds)} · ${first ? 'a letra será sorteada' : `letra ${S.letterOf(g)}`}`),
+      h('p', {}, `${g.cats.length} categorias · ${clock(g.seconds)} · ${first ? 'a letra será sorteada' : `letra ${S.letterOf(g)}`}`), missionLine(),
       h('button', { class: 'btn primary', type: 'button', onclick: () => { FX.play('tap'); first ? drawView() : countdown(); } }, first ? 'sortear a letra' : 'pronto')));
     const b = root.querySelector('.jg-cover2 button'); if (b) b.focus({ preventScroll: true });
   }
@@ -190,6 +199,7 @@ export function mount(host) {
     root.replaceChildren(...[g.online ? badge.el : null, live,
       h('div', { class: 'st-top' }, h('div', { class: 'jg-who' }, h('b', {}, pn(p)), h('span', {}, `rodada ${g.round + 1}/${g.rounds}`)), h('div', { class: 'st-letter', 'aria-label': `letra ${L}` }, L), h('div', { class: 'jg-who st-timebox' }, h('b', {}, 'tempo'), timeEl)),
       h('div', { class: 'st-progress' }, h('span', {}, count, ` de ${g.cats.length} preenchidos`), h('div', { class: 'st-bar' }, bar)),
+      M ? missionLine() : null,
       h('p', { class: 'jg-msg', 'aria-live': 'assertive' }),
       h('div', { class: 'jg-fields st-fields' }, ...fields),
       h('div', { class: 'st-stopbar' }, stopBtn)].filter(Boolean));
@@ -269,17 +279,17 @@ export function mount(host) {
     const r = S.eff(g, p, c); const txt = g.cur.answers[p][c].trim();
     sheet('contestar resposta', (close) => {
       const why = h('input', { type: 'text', maxlength: 160, placeholder: 'motivo (opcional)', 'aria-label': 'motivo da decisão' });
-      const agree = h('input', { type: 'checkbox' }); const saveBank = h('input', { type: 'checkbox', checked: true });
+      const agree = h('input', { type: 'checkbox' }); const saveBank = h('input', { type: 'checkbox', checked: !M });
       const needAgree = g.mode === 'dupla';
       const apply = (d) => {
         if (needAgree && !agree.checked) { toast('os dois precisam concordar com a decisão'); return; }
         g = S.decide(g, p, c, d, { why: why.value.trim() || (d === 'valida' ? 'aprovada na revisão' : d === 'invalida' ? 'rejeitada na revisão' : 'voltou ao automático'), by: byWho() });
-        if (d === 'valida' && saveBank.checked) addCustom(g.cats[c], txt);
+        if (d === 'valida' && !M && saveBank.checked) addCustom(g.cats[c], txt);
         persist(); sync(); FX.play(d === 'valida' ? 'ok' : 'bad'); close(); reviewView();
       };
       return h('div', { class: 'sheet-body st-contest' },
         h('p', {}, h('b', {}, txt), ` · ${S.CAT[g.cats[c]].label} · letra ${S.letterOf(g)}`), h('p', { class: 'muted' }, `agora: ${STATUS[r.status][0]}${r.why ? ` (${r.why})` : ''}`), why,
-        h('label', { class: 'jg-chk' }, saveBank, ' ao aprovar, guardar no banco deste aparelho'),
+        M ? null : h('label', { class: 'jg-chk' }, saveBank, ' ao aprovar, guardar no banco deste aparelho'),
         needAgree ? h('label', { class: 'jg-chk' }, agree, ' os dois jogadores concordam') : null,
         h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => apply('valida') }, 'aprovar'), h('button', { class: 'btn', type: 'button', onclick: () => apply('invalida') }, 'rejeitar'),
           r.manual ? h('button', { class: 'btn ghost', type: 'button', onclick: () => apply(null) }, 'voltar ao automático') : null));
@@ -297,7 +307,8 @@ export function mount(host) {
       perfect.length ? h('div', { class: 'st-perfect', role: 'status' }, h('b', {}, 'RODADA PERFEITA!'), h('span', {}, perfect.map((p) => pn(p)).join(' e ')), h('img', { src: `${PAUL}e20.webp`, alt: '', draggable: 'false' })) : null,
       h('h2', { class: 'jg-h hand' }, `rodada com a letra ${hst.letter}`), table(hst),
       h('p', { class: 'jg-p' }, `acumulado: ${hst.totals.map((t, p) => `${pn(p)} ${t}`).join(' · ')}`),
-      hst.pending.some((x) => x) ? h('p', { class: 'jg-p muted' }, 'respostas pendentes valeram 0. você pode aprová-las depois no histórico (o que for aprovado entra no banco).') : null,
+      hst.pending.some((x) => x) ? h('p', { class: 'jg-p muted' }, M ? 'respostas pendentes não contaram nem a favor nem contra na missão (valeram 0).' : 'respostas pendentes valeram 0. você pode aprová-las depois no histórico (o que for aprovado entra no banco).') : null,
+      M ? missionLine() : null,
       h('div', { class: 'jg-actions' }, last ? h('button', { class: 'btn primary', type: 'button', onclick: finalView }, 'ver resultado final') : h('button', { class: 'btn primary', type: 'button', onclick: () => (g.online && g.turn !== me0() ? waiting() : turnStart()) }, 'próxima rodada'))].filter(Boolean));
     if (perfect.length) { const el = root.querySelector('.st-perfect'); FX.play('perfect'); FX.duck(1500); if (motion()) { stars(el); later(() => { if (token === my) stars(el); }, 600); } }
   }
@@ -311,7 +322,7 @@ export function mount(host) {
   function finalView() {
     const my = nextToken(); view = 'final'; FX.stopMusic(); const w = S.winner(g); const order = g.totals.map((t, p) => [p, t]).sort((a, b) => b[1] - a[1]);
     let recordMsg = '';
-    if (!g.counted) { g.counted = true; recordMsg = record(); }
+    if (!g.counted) { g.counted = true; recordMsg = M ? '' : record(); }
     persist();
     const title = g.players.length === 1 ? `total: ${g.totals[0]} pontos` : w.tie ? 'empate!' : `${pn(w.winners[0])} venceu!`;
     FX.play(g.players.length > 1 && w.tie ? 'tie' : 'win'); FX.duck(2500); FX.vibrate([60, 40, 60, 40, 120]);
@@ -319,10 +330,11 @@ export function mount(host) {
       h('div', { class: `jg-result st-final${w && w.tie ? ' tie' : ''}`, role: 'status' }, h('img', { class: 'st-fpaul', src: `${PAUL}${w && w.tie ? 'e26' : 'e03'}.webp`, alt: '', draggable: 'false' }), h('h3', { class: 'hand' }, title), recordMsg ? h('p', { class: 'st-rec' }, recordMsg) : null,
         h('ol', { class: `st-rank${w && w.tie ? ' side' : ''}` }, ...order.map(([p, t], i) => h('li', { class: w && w.winners.includes(p) && g.players.length > 1 ? 'first' : '' }, h('span', {}, g.players.length > 1 ? `${i + 1}º` : '★'), h('b', {}, pn(p)), h('em', {}, `${t} pts`))))),
       h('h3', { class: 'hand' }, 'rodadas'), ...g.history.map((x) => h('details', { class: 'jg-rules' }, h('summary', {}, `letra ${x.letter} · ${x.sums.join(' x ')}${x.perfect.some(Boolean) ? ' · perfeita!' : ''}`), table(x))),
-      h('div', { class: 'jg-actions' },
+      M ? null : h('div', { class: 'jg-actions' },
         h('button', { class: 'btn primary', type: 'button', onclick: () => rematch() }, g.players.length > 1 ? 'revanche' : 'jogar de novo'),
         h('button', { class: 'btn', type: 'button', onclick: historyPanel }, 'histórico'), h('button', { class: 'btn ghost', type: 'button', onclick: setup }, 'voltar às opções'))].filter(Boolean));
     if (motion() && (!w || !w.tie)) { const el = root.querySelector('.st-final'); stars(el); later(() => { if (token === my) stars(el); }, 700); }
+    if (M && !reported && g.stage === 'done') { reported = true; if (opts.onResult) opts.onResult(S.matchSummary(g)); } // fim REAL da partida: uma vez só
   }
   function rematch() {
     if (g.online) { const ng = { ...newMatch('dupla'), online: true }; g = ng; sync(); return turnStartOrWait(); }
@@ -365,7 +377,7 @@ export function mount(host) {
   document.addEventListener('visibilitychange', onVis);
   const onUnload = () => { if (g && g.stage === 'play') persist(); };
   addEventListener('pagehide', onUnload);
-  intro();
+  if (M) startMission(); else intro();
   return {
     inProgress: () => !!(g && ['cover', 'draw', 'play', 'review', 'summary'].includes(view)),
     restart: async () => { if (g && ['cover', 'draw', 'play', 'review', 'summary'].includes(view) && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; setup(); },

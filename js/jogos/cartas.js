@@ -34,10 +34,14 @@ function face(c, small) {
 }
 const isNum = C.isNum;
 
-export function mount(host) {
+export function mount(host, opts) {
+  // Modo Aventura (opts.mission): partida contra o computador montada pelos params da missão, sem tocar no estado do Modo Livre.
+  const adv = opts && opts.mission ? opts : null; const mp = adv ? (adv.mission.params || {}) : {};
+  const rnd = adv ? C.seededRnd(mp.seed) : Math.random; const stats = C.newStats(); let reported = false;
+  const put = (patch) => { if (!adv) setGame(ID, patch); }; // aventura nunca grava o jogo livre
   let gone = false; let timer = 0;
-  const saved = getGame(ID);
-  const prefs = { mode: saved.mode === 'local' ? 'local' : 'paul', hint: saved.hint === 'sem' ? 'sem' : 'com' };
+  const saved = adv ? {} : getGame(ID);
+  const prefs = adv ? { mode: 'paul', hint: mp.hint === false ? 'sem' : 'com' } : { mode: saved.mode === 'local' ? 'local' : 'paul', hint: saved.hint === 'sem' ? 'sem' : 'com' };
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let g = null; let hidden = false; let picking = null; let recorded = false;
@@ -46,7 +50,7 @@ export function mount(host) {
   const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : 'Paul') : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : `jogador ${p + 1}`);
   const root = h('div', { class: 'jg jg-cartas' }); host.replaceChildren(root);
 
-  const persist = () => { if (g && g.mode === 'online') return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
+  const persist = () => { if (adv || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
   const stop = () => { clearTimeout(timer); timer = 0; };
   const human = () => g && !g.over && !(g.mode === 'paul' && g.turn === 1) && !(g.mode === 'online' && g.turn !== me0());
@@ -54,13 +58,13 @@ export function mount(host) {
   function intro() {
     stop(); leave(); g = null; picking = null;
     const resume = C.validGame(saved.game) && !saved.game.over ? saved.game : null; const r = rec();
-    const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['paul', 'contra o paul'], ['local', 'dois no aparelho'], ['online', '2 celulares (código)']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; setGame(ID, { mode: v }); intro(); } }, l)));
+    const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['paul', 'contra o paul'], ['local', 'dois no aparelho'], ['online', '2 celulares (código)']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.mode === v), class: prefs.mode === v ? 'on' : '', onclick: () => { prefs.mode = v; put({ mode: v }); intro(); } }, l)));
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'Uno Musical'), h('p', { class: 'jg-p' }, 'números e figuras. neste jogo, a semínima vale 1 tempo: cada número é a soma das durações da carta.'),
       h('div', { class: 'jg-legend', role: 'list', 'aria-label': 'legenda dos números' }, ...[1, 2, 3, 4, 5, 6].map((v) => h('button', { type: 'button', class: 'jg-leg', role: 'listitem', onclick: () => { sfx('tap'); ouvirValor(v, (x) => C.FIGS[x]); }, 'aria-label': `${v} (toque para ouvir): ${C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + ')}` }, face({ color: 'azul', kind: 'num', value: v }, true), h('small', {}, C.FIGS[v].map((f) => ({ seminima: 'semínima', minima: 'mínima', semibreve: 'semibreve' }[f])).join(' + '))))),
       h('p', { class: 'jg-p muted' }, '🔊 toque numa carta da legenda (ou numa carta no jogo) pra ouvir.'),
       h('p', { class: 'jg-lab' }, 'contra quem?'), seg,
-      h('p', { class: 'jg-lab' }, 'dicas'), h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['com', 'com dica'], ['sem', 'sem dica']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.hint === v), class: prefs.hint === v ? 'on' : '', onclick: () => { prefs.hint = v; setGame(ID, { hint: v }); intro(); } }, l))),
+      h('p', { class: 'jg-lab' }, 'dicas'), h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[['com', 'com dica'], ['sem', 'sem dica']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.hint === v), class: prefs.hint === v ? 'on' : '', onclick: () => { prefs.hint = v; put({ hint: v }); intro(); } }, l))),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor, do mesmo número ou da mesma ação que a do descarte.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma. se servir, jogue ou passe; se não servir, passa sozinho.'),
@@ -95,13 +99,14 @@ export function mount(host) {
     const last = !g.over && g.last != null ? `${PL(g.last)}: uno!` : '';
     root.replaceChildren(...[
       g.mode === 'online' ? badge.el : null,
-      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, g.mode === 'paul' ? 'paul' : g.mode === 'online' ? 'o outro' : `jogador ${opp + 1}`), h('span', {}, `${g.hands[opp].length} carta${g.hands[opp].length === 1 ? '' : 's'}`)),
+      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, g.mode === 'paul' ? (adv ? (mp.oppName || 'paul').toLowerCase() : 'paul') : g.mode === 'online' ? 'o outro' : `jogador ${opp + 1}`), h('span', {}, `${g.hands[opp].length} carta${g.hands[opp].length === 1 ? '' : 's'}`)),
         h('div', { class: 'jg-who' }, h('b', {}, 'monte'), h('span', {}, String(C.available(g))))),
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, status),
       h('div', { class: 'jg-pile' },
         h('button', { type: 'button', class: `jg-deck${canD && dica() ? ' fit' : ''}`, disabled: !canD, 'aria-label': 'comprar uma carta', onclick: draw1 }, h('span', { class: 'jg-card-u back', 'aria-hidden': 'true' }, h('b', {}, '♪')), h('small', {}, 'comprar')),
         h('div', { class: 'jg-top', role: 'img', 'aria-label': `descarte: ${C.cardName(top)}` }, face(top)),
         h('div', { class: `jg-active c-${g.color}` }, svg(SYM[g.color], 'jg-cs'), h('b', {}, colorTxt))),
+      adv ? h('p', { class: 'jg-p muted', role: 'status' }, `adversário: ${mp.oppName || 'Paul'} · rodada ${Math.max(1, stats.rounds)} · compras ${stats.draws} · especiais jogadas ${stats.specials}`) : null,
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.note), last ? h('p', { class: 'jg-last', role: 'status' }, last) : null,
       picking ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'escolha a cor' }, h('b', {}, 'escolha a cor:'), ...C.COLORS.map((k) => h('button', { type: 'button', class: `jg-pc c-${k}`, onclick: () => play(picking, k) }, svg(SYM[k], 'jg-cs'), C.COLOR_NAME[k])), h('button', { type: 'button', class: 'btn small ghost', onclick: () => { picking = null; paint(); } }, 'cancelar')) : null,
       g.over ? result() : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn small', type: 'button', disabled: !canP, onclick: pass1 }, 'passar'), canMove && g.drawn ? h('small', { class: 'muted' }, 'a carta comprada serve: jogue ou passe') : null),
@@ -124,12 +129,13 @@ export function mount(host) {
     play(c.id);
   }
   function play(id, color) {
-    const who = g.turn; picking = null;
-    try { g = C.applyPlay(g, who, id, color); } catch { g = { ...g, note: 'jogada inválida' }; paint(); return; }
+    const who = g.turn; picking = null; const before = g;
+    try { g = C.applyPlay(g, who, id, color, rnd); } catch { g = { ...g, note: 'jogada inválida' }; paint(); return; }
+    if (adv) C.track(stats, before, g, { type: 'play', id }, 0);
     sfx('place'); persist(); after(who);
   }
-  function draw1() { if (!human() || !C.canDraw(g)) return; const who = g.turn; g = C.applyDraw(g, who); sfx('draw'); persist(); after(who); }
-  function pass1() { if (!human() || !C.canPass(g)) return; const who = g.turn; g = C.applyPass(g, who); persist(); after(who); }
+  function draw1() { if (!human() || !C.canDraw(g)) return; const who = g.turn; const before = g; g = C.applyDraw(g, who, rnd); if (adv) C.track(stats, before, g, { type: 'draw' }, 0); sfx('draw'); persist(); after(who); }
+  function pass1() { if (!human() || !C.canPass(g)) return; const who = g.turn; const before = g; g = C.applyPass(g, who); if (adv) C.track(stats, before, g, { type: 'pass' }, 0); persist(); after(who); }
 
   /** Depois de qualquer ação: fim, troca de vez (cobre a tela no modo local) ou continua. */
   function after(who) {
@@ -141,16 +147,21 @@ export function mount(host) {
   function afterTurn() { stop(); if (!g || g.over || gone || document.hidden) return; if (g.mode === 'paul' && g.turn === 1) timer = setTimeout(paulStep, reduced() ? 350 : 900); }
   function paulStep() {
     timer = 0; if (gone || !g || g.over || g.turn !== 1 || document.hidden) return;
-    const mv = C.paulMove(g, 1);
-    if (mv.type === 'play') { const c = g.hands[1].find((x) => x.id === mv.id); g = C.applyPlay(g, 1, mv.id, mv.color); g.note = `paul jogou ${C.cardName(c)}. ${g.note}`; sfx('place'); }
-    else if (mv.type === 'draw') { g = C.applyDraw(g, 1); g.note = `paul: ${g.note.replace('comprou uma carta que serve: jogue ou passe', 'comprou uma carta')}`; sfx('draw'); }
+    const mv = adv ? C.aiMove(g, 1, mp.style, rnd) : C.paulMove(g, 1);
+    if (mv.type === 'play') { const c = g.hands[1].find((x) => x.id === mv.id); g = C.applyPlay(g, 1, mv.id, mv.color, rnd); g.note = `paul jogou ${C.cardName(c)}. ${g.note}`; sfx('place'); }
+    else if (mv.type === 'draw') { g = C.applyDraw(g, 1, rnd); g.note = `paul: ${g.note.replace('comprou uma carta que serve: jogue ou passe', 'comprou uma carta')}`; sfx('draw'); }
     else { g = C.applyPass(g, 1); g.note = `paul: ${g.note}`; }
     persist(); if (g.over) return finishUp(); draw(); afterTurn();
   }
   function finishUp() {
+    if (adv) { // aventura: só avisa o resultado real (uma vez); nada é gravado no jogo livre
+      const w = g.result.winner; sfx(w == null ? 'tie' : w === 0 ? 'win' : 'lose'); draw();
+      if (!reported) { reported = true; adv.onResult(C.matchResult(g, stats, 0)); }
+      return;
+    }
     if (g.mode === 'online') { sfx(g.result.winner == null ? 'tie' : g.result.winner === me0() ? 'win' : 'lose'); draw(); return; }
     if (!recorded) { recorded = true; if (g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w === 1) r.l++; else r.e++; saved.rec = r; } }
-    setGame(ID, { ...prefs, game: null, rec: saved.rec });
+    put({ ...prefs, game: null, rec: saved.rec });
     const w = g.result.winner; sfx(w == null ? 'tie' : g.mode === 'paul' && w === 1 ? 'lose' : 'win'); hidden = false; draw();
   }
   function result() {
@@ -159,12 +170,12 @@ export function mount(host) {
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title),
       h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`),
       h('p', { class: 'muted' }, `cartas restantes: ${PL(0)} ${r.counts[0]} · ${PL(1)} ${r.counts[1]}`),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      adv ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   const onVis = () => { if (document.hidden) stop(); else afterTurn(); };
   document.addEventListener('visibilitychange', onVis);
-  intro();
+  if (adv) begin(C.newGame({ mode: 'paul', rnd })); else intro();
   return {
     inProgress: () => !!(g && !g.over),
     restart: async () => { if (g && !g.over && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; stop(); intro(); },

@@ -18,16 +18,19 @@ const MODES = [['local', 'dois no aparelho'], ['online', '2 celulares (código)'
 const VARIANTS = [['classico', 'clássico'], ['desafio', 'desafio musical']];
 const LEVEL_HELP = { infantil: '7 perguntas bem simples', facil: '52 perguntas: bateria, instrumentos, teoria, rock, pop e equipamentos', intermediario: '16 perguntas com 4 alternativas' };
 
-export function mount(host) {
+/** opts (opcional): { mission: { params: { ai, variant, level, rounds } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
+export function mount(host, opts) {
+  const mission = opts && opts.mission ? opts : null; const MP = mission ? (mission.mission.params || {}) : null;
+  const rounds = mission ? Math.max(1, Math.floor(Number(MP.rounds) || 1)) : 0; const outcomes = []; const stat = { answered: 0, correct: 0 }; let reported = false;
   let gone = false; let timer = 0;
-  const saved = getGame(ID);
-  const prefs = { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : 'local', variant: saved.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
+  const saved = mission ? {} : getGame(ID);
+  const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : 'local', variant: saved.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
   let g = null; let msg = ''; let fb = null;
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
   const NAMES = (mode) => (mode === 'local' ? ['jogador 1', 'jogador 2'] : mode === 'online' ? (me0() === 0 ? ['você', 'o outro'] : ['o outro', 'você']) : ['você', 'Paul']);
-  const root = h('div', { class: 'jg jg-velha' }); host.replaceChildren(root);
-  const persist = () => { if (g && g.mode === 'online') return; setGame(ID, { ...prefs, match: g }); };
+  const root = h('div', { class: `jg jg-velha${mission ? ' jg-game' : ''}` }); host.replaceChildren(root);
+  const persist = () => { if (mission || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, match: g }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
   const stop = () => { clearTimeout(timer); timer = 0; };
   const human = () => g && !g.over && !g.offer && !V.isPaulTurn(g) && !(g.mode === 'online' && g.turn !== me0());
@@ -72,7 +75,7 @@ export function mount(host) {
       g.mode === 'online' ? badge.el : null,
       h('div', { class: 'jg-score', role: 'group', 'aria-label': 'placar' },
         h('div', {}, mark(0), h('b', {}, `${names[0]}`), h('span', {}, String(g.scores[0]))), h('div', {}, h('b', {}, 'empates'), h('span', {}, String(g.draws))), h('div', {}, mark(1), h('b', {}, `${names[1]}`), h('span', {}, String(g.scores[1])))),
-      h('p', { class: 'jg-turn', 'aria-live': 'polite' }, `rodada ${g.round}${status ? ` · ${status}` : ''}`),
+      h('p', { class: 'jg-turn', 'aria-live': 'polite' }, `rodada ${g.round}${mission ? ` de ${rounds}` : ''}${status ? ` · ${status}` : ''}`),
       h('div', { class: 'jg-board', role: 'group', 'aria-label': 'tabuleiro 3 por 3' }, ...cells),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
       fb ? feedback() : null,
@@ -104,12 +107,13 @@ export function mount(host) {
     if (!human() || g.pending || g.board[i] != null) return;
     sfx('tap');
     if (g.variant === 'classico' || V.isPaulTurn(g)) { g = V.applyMark(g, i); msg = ''; fb = null; sfx('place'); return after(); }
-    g = V.openQuestion(g, i); msg = ''; fb = null; draw();
+    g = V.openQuestion(g, i); msg = ''; fb = null; if (mission && g.over) return finish(); draw();
     const f = root.querySelector('.jg-opt'); if (f) f.focus();
   }
   function answer(pos) {
     if (!g.pending) return;
     const q = V.questionById(g.pending.qid); const ok = g.pending.order[pos] === q.answer;
+    if (mission) { stat.answered++; if (ok) stat.correct++; }
     g = V.answerQuestion(g, pos);
     msg = ok ? `isso! ${q.explain}` : `quase! a resposta era “${q.options[q.answer]}”. ${q.explain}`;
     fb = q.show ? { ...q.show, name: q.options[q.answer] } : null; sfx(ok ? 'place' : 'bad'); after();
@@ -118,20 +122,30 @@ export function mount(host) {
   function afterTurn() { stop(); if (!g || g.over || g.offer || gone || document.hidden) return; if (V.isPaulTurn(g)) timer = setTimeout(paulStep, reduced() ? 300 : 800); }
   function paulStep() {
     timer = 0; if (gone || !g || g.over || !V.isPaulTurn(g) || document.hidden) return;
-    const cell = g.mode === 'estrategico' ? V.bestMove(g.board, 1) : V.easyMove(g.board);
+    const cell = mission ? V.aiMove(MP.ai, g.board, 1) : g.mode === 'estrategico' ? V.bestMove(g.board, 1) : V.easyMove(g.board);
     g = V.applyMark(g, cell); msg = `paul marcou a casa ${cell + 1}`; sfx('place'); after();
   }
-  function finish() { const w = g.result.winner; sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
+  /** Aventura: registra o fim de cada rodada; no fim da última, avisa o resultado UMA vez. */
+  function missionRound() {
+    if (!mission || reported || !g.over || outcomes.length >= g.round) return;
+    const w = g.result.winner; outcomes.push(w === 0 ? 'W' : w === 1 ? 'L' : 'D');
+    if (outcomes.length < rounds) return;
+    reported = true; const wins = outcomes.filter((x) => x === 'W').length; const losses = outcomes.filter((x) => x === 'L').length;
+    let best = 0; let run = 0; for (const o of outcomes) { run = o === 'W' ? run + 1 : 0; best = Math.max(best, run); }
+    mission.onResult({ outcomes: outcomes.slice(), rounds, wins, losses, draws: rounds - wins - losses, bestStreak: best, errors: g.errors, answered: stat.answered, correct: stat.correct, ai: MP.ai, variant: prefs.variant, level: prefs.level });
+  }
+  function finish() { missionRound(); const w = g.result.winner; sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
     const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
     return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title), g.result.early ? h('p', {}, 'encerrada em empate depois de muitos erros') : null, g.result.exhausted ? h('p', {}, 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.') : null,
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); msg = ''; fb = null; persist(); sync(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      mission ? (outcomes.length < rounds ? h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); msg = ''; fb = null; draw(); afterTurn(); } }, 'próxima rodada')) : null)
+        : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); msg = ''; fb = null; persist(); sync(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   const onVis = () => { if (document.hidden) stop(); else afterTurn(); };
   document.addEventListener('visibilitychange', onVis);
-  intro();
+  if (mission) begin(V.newMatch(prefs)); else intro();
   return {
     inProgress: () => !!(g && !g.over && g.board.some((x) => x != null)),
     restart: async () => { if (g && !g.over && g.board.some((x) => x != null) && !(await confirmSheet('começar nova partida?', 'a rodada atual será perdida (o placar fica salvo).', 'nova partida'))) return; stop(); intro(); },
