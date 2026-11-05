@@ -24,7 +24,7 @@ import { normCode } from './kids/savegame-logic.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 // quem não tem código liberado vê só Jogos, Tocar e Ranking; com código liberado entra também o Beat Lab
-const navItems = () => [['#/jogos', 'study', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
+const navItems = () => [['#/jogos', 'gamepad', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ...(Acesso.liberado() ? [['#/beatlab', 'kit', 'Beat Lab']] : []), ['#/tocar', 'drummer', 'Tocar'], ['#/ranking', 'star', 'Ranking']];
 const TAB_OF = { toque: 'tocar', piano: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos' }; // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');

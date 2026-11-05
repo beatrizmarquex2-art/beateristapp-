@@ -112,6 +112,7 @@ const ICONS = {
   book: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',
   news: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6M7 12h10M7 15h10"/><rect x="14.5" y="8" width="3" height="2" rx=".5"/>',
   id: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M15 10h3M15 13h3"/>',
+  gamepad: '<path d="M6.5 7.5h11a4.5 4.5 0 0 1 4.4 5.4l-.6 3a2.8 2.8 0 0 1-4.7 1.4L14.9 15.5H9.1l-1.7 1.8a2.8 2.8 0 0 1-4.7-1.4l-.6-3a4.5 4.5 0 0 1 4.4-5.4z"/><path d="M7.8 10.4v3.2M6.2 12h3.2"/><circle cx="15.6" cy="11" r=".7"/><circle cx="17.7" cy="13" r=".7"/>',
   kit: '<ellipse cx="12" cy="10" rx="7" ry="2.5"/><path d="M5 10v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6"/><path d="M3.5 3l5.5 5.5M20.5 3L15 8.5"/>',
 };
 export function icon(name, size = 24) {
