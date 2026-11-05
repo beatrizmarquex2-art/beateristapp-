@@ -24,6 +24,7 @@ import { CARDS, ROLES } from '../kids/album-data.js';
 import { credit } from './artist-photo.js';
 import { relatorioScreen } from './kids-relatorio.js';
 import { gameIcon } from '../kids/icons.js';
+import * as SG from '../kids/savegame-logic.js';
 
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -136,6 +137,28 @@ function homeScreen(host, rerender) {
     h('p', { class: 'lib-note' }, 'cada fase vale até 3 estrelas pela % de acerto: 60% = 1, 80% = 2, 100% = 3. ⏱ = com tempo · 💥 = errou, recomeça. o som sai daqui do aparelho, sem internet.'));
 }
 
+/** 💾 Save game: gera o código do álbum (copiar/baixar/compartilhar) ou recupera um código. */
+function saveSheet(me, rerender) {
+  sheet('💾 save do álbum', (close) => {
+    const out = h('textarea', { class: 'input kx-code', readonly: 'true', rows: 4, 'aria-label': 'código do save', onfocus: (e) => e.target.select() }, 'gerando…');
+    let code = '';
+    SG.encode(SG.snapshot(me.name, P.progOf(me.id))).then((c) => { code = c; out.value = c; });
+    const inp = h('textarea', { class: 'input kx-code', rows: 3, placeholder: 'cole aqui o código BEA1-…', 'aria-label': 'colar código' });
+    const copy = async () => { try { await navigator.clipboard.writeText(code); toast('código copiado ✓', { ms: 1800 }); } catch { out.select(); toast('segure e copie o texto', { ms: 2500 }); } };
+    const file = () => { const a = h('a', { href: URL.createObjectURL(new Blob([code], { type: 'text/plain' })), download: `album-${me.name.replace(/\W+/g, '-').toLowerCase()}.txt` }); document.body.append(a); a.click(); a.remove(); };
+    const share = () => navigator.share ? navigator.share({ title: 'meu álbum', text: code }).catch(() => {}) : copy();
+    const restore = async () => {
+      const snap = await SG.decode(inp.value); if (!snap) { toast('esse código não está certo. confere se copiou tudo', { ms: 3000 }); return; }
+      await P.patch(me.id, SG.mergeSnap(P.progOf(me.id), snap)); close(); toast(`álbum recuperado: ${Album.owned(me.id).length} figurinhas ✓`, { ms: 3000 }); rerender();
+    };
+    return h('div', { class: 'sheet-body' },
+      h('p', {}, 'guarde este código num lugar seguro (notas, WhatsApp). com ele você recupera o álbum em outro celular.'), out,
+      h('div', { class: 'row' }, h('button', { class: 'kd-btn', type: 'button', onclick: copy }, 'copiar'), h('button', { class: 'kd-chip', type: 'button', onclick: share }, 'compartilhar'), h('button', { class: 'kd-chip', type: 'button', onclick: file }, 'baixar')),
+      h('h3', {}, 'recuperar meu álbum'), h('p', { class: 'muted' }, 'junta com o que você já tem: não apaga nada.'), inp,
+      h('button', { class: 'kd-btn', type: 'button', onclick: restore }, 'recuperar'));
+  });
+}
+
 function albumScreen(host, role) {
   const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
   const have = new Set(Album.owned(me.id)); const tier = tierOf(P.totalStars(me.id));
@@ -144,6 +167,7 @@ function albumScreen(host, role) {
   const list = CARDS.filter((c) => !filter || c.role === filter).sort((x, y) => (have.has(y.id) ? 1 : 0) - (have.has(x.id) ? 1 : 0)); // as que já tem vêm primeiro
   const open = (c) => sheet(c.name, () => h('div', { class: 'sheet-body kx-big' }, Album.cardEl(c), h('p', { class: 'kx-fact' }, c.fact), credit(`album-${c.id}`, c.wiki)));
   host.append(topBar('#/kids'), h('h1', { class: 'kx-pix kx-pagetitle' }, 'Álbum'), h('div', { class: 'kx-hello' }, r.el),
+    h('div', { class: 'row' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => saveSheet(me, () => { host.replaceChildren(); albumScreen(host, role); }) }, '💾 salvar / recuperar meu álbum')),
     h('div', { class: 'row kd-modes' }, h('a', { class: `kd-chip${filter ? '' : ' on'}`, href: '#/kids/album' }, 'todas'), ...Object.entries(ROLES).map(([k, [t, e]]) => h('a', { class: `kd-chip${filter === k ? ' on' : ''}`, href: `#/kids/album/${k}` }, `${e} ${t}`))),
     h('p', { class: 'lib-note' }, `🥁 jogos de ritmo: músicas longas (2 min) dão ★, e a cada 5 ★ vem 1 figurinha. faltam ${Album.starsToNext(P.progOf(me.id).ritmoStars)} ★.`),
     h('div', { class: 'kx-album' }, ...list.map((c) => (have.has(c.id) ? Album.cardEl(c, { onclick: () => open(c) }) : Album.cardEl(c, { locked: true })))),

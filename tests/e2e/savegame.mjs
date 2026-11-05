@@ -1,0 +1,20 @@
+// Save game do álbum: gera o código, cola de volta e recupera sem erro.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+const page = await ctx.newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
+await page.goto(url + '/aluno.html#/kids');
+await page.waitForSelector('.kx-g, .kx-cards');
+await page.evaluate(() => { location.hash = '#/kids/album'; }); await sleep(600);
+await page.click('text=salvar / recuperar'); await sleep(600);
+const code = await page.inputValue('textarea[readonly]');
+check('gera o código BEA1-', code.startsWith('BEA1-'), code.slice(0, 12));
+await page.fill('textarea:not([readonly])', code); await page.click('.sheet button:text-is("recuperar")'); await sleep(600);
+check('recupera e avisa', /recuperado/.test(await page.textContent('#toasts')));
+await sleep(500); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /salvar \/ recuperar/.test(b.textContent)).click()); await sleep(500);
+await page.fill('textarea:not([readonly])', 'BEA1-lixo'); await page.click('.sheet button:text-is("recuperar")'); await sleep(400);
+check('código errado é recusado', /não está certo/.test(await page.textContent('#toasts')));
+check('sem erros de JS', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close && srv.close(); done();
