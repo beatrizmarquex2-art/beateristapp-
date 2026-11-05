@@ -661,3 +661,8 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 .jg-cara-art .jg-ccell .jg-flip{font-size:11px}
 .jg-fala{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 10px;border:2px solid var(--jg-navy);border-radius:14px;background:#fffdf7}.jg-fala img{flex:none;width:40px;height:auto}.jg-fala p{margin:0;font-weight:700;font-size:14px;line-height:1.25}
 .jg-foto{max-height:340px;width:auto;max-width:100%;object-fit:contain;border-radius:10px;border:2px solid var(--jg-navy)}
+
+/* velha: instruções grandes e troca de lugar */
+.jg-velha .jg-big{color:var(--jg-ink,#142036);opacity:1;font-weight:600;font-size:21px;line-height:1.35;margin:10px 0;padding-left:26px}.jg-velha .jg-big li{margin:8px 0}.jg-velha p.jg-big{padding-left:0}.jg-velha .jg-lab.big{color:var(--jg-ink,#142036);font-size:20px;margin:16px 0 6px}
+.jg-velha .jg-seg button{font-size:17px;min-height:48px}
+.jg-move{margin:8px 0;text-align:center}.jg-move .btn{min-height:44px;font-size:16px}.jg-move.on{padding:10px;border:2px dashed currentColor;border-radius:12px;font-size:17px}.jg-movenote{margin:6px 0;font-size:14px;opacity:.8}

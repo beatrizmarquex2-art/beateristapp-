@@ -1,0 +1,46 @@
+# perguntas do cara a cara
+
+## tema instrumentos (15)
+1. tem cordas?  → depois da resposta: o som vem de cordas que vibram.
+2. é tocado com teclas?  → depois da resposta: teclas são a forma de tocar: o teclado e o acordeão usam.
+3. é soprado pela boca?  → depois da resposta: instrumentos de sopro precisam do ar da boca.
+4. é da percussão?  → depois da resposta: percussão é o que se bate, se chacoalha ou se raspa.
+5. é elétrico nesta imagem?  → depois da resposta: os elétricos precisam de energia ou amplificador, como no desenho.
+6. usa arco?  → depois da resposta: o arco roça as cordas; é a técnica usual do violino.
+7. tem pele (couro ou plástico esticado)?  → depois da resposta: a pele é a superfície que se bate nos tambores.
+8. tem fole?  → depois da resposta: o fole é a sanfona dobrável que empurra o ar.
+9. é um conjunto de tambores e pratos?  → depois da resposta: vários tambores e pratos juntos formam uma bateria.
+10. tem palheta?  → depois da resposta: palheta é uma lâmina fina que vibra; o saxofone tem uma, o acordeão tem palhetas livres.
+11. é da família das madeiras?  → depois da resposta: “madeiras” é uma família de instrumentos de sopro (mesmo que o corpo seja de metal, como no saxofone e na flauta).
+12. é da família dos metais?  → depois da resposta: “metais” é a família de sopro de bocal, como o trompete.
+13. tem válvulas?  → depois da resposta: as válvulas mudam o caminho do ar no trompete.
+14. tem chaves (botões de metal que tampam furos)?  → depois da resposta: saxofone e flauta usam chaves.
+15. é tocado principalmente com baquetas ou batedor?  → depois da resposta: a bateria usa baquetas e o triângulo usa um batedor.
+
+## tema cara a cara musical (artistas e bandas) (23)
+1. 🎸 é uma banda?  | versão curtinha: É uma banda?  | explicação: banda é um grupo de músicos que toca junto.
+2. 🧍 é uma pessoa só (artista solo)?  | versão curtinha: É uma pessoa só?  | explicação: artista solo é uma pessoa sozinha.
+3. 👥 é uma dupla ou colaboração?  | versão curtinha: São duas pessoas?  | explicação: dupla ou colaboração é quando duas pessoas aparecem juntas.
+4. 🇧🇷 é do Brasil?  | versão curtinha: É do Brasil?  | explicação: conta de onde o artista ou a banda é.
+5. 🗽 é dos Estados Unidos?  | versão curtinha: É dos Estados Unidos?  | explicação: conta de onde o artista ou a banda é.
+6. ☂️ é do Reino Unido (Inglaterra, Escócia…)?  | versão curtinha: É do Reino Unido?  | explicação: conta de onde o artista ou a banda é.
+7. 🤘 é conhecido pelo rock?  | versão curtinha: Faz rock?  | explicação: rock é o estilo com guitarra, baixo e bateria.
+8. 🎤 faz pop?  | versão curtinha: Faz pop?  | explicação: pop é música feita pra tocar em todo lugar.
+9. ⚡ é rock pesado (metal ou hard rock)?  | versão curtinha: É rock pesado?  | explicação: rock pesado tem guitarras bem distorcidas e som forte.
+10. 📌 é punk, pop punk ou emo?  | versão curtinha: É punk?  | explicação: punk é rápido e direto; emo é mais emotivo.
+11. 🪘 é MPB (música popular brasileira)?  | versão curtinha: É música brasileira (MPB)?  | explicação: MPB mistura samba, bossa e canção brasileira.
+12. 🥁 é baterista?  | versão curtinha: Toca bateria?  | explicação: baterista toca com baquetas, tambores e pratos.
+13. 🎸 é guitarrista?  | versão curtinha: Toca guitarra?  | explicação: guitarrista toca guitarra: riffs e solos.
+14. 📻 a carreira começou antes de 1980?  | versão curtinha: É bem antigo?  | explicação: conta o ano em que o artista ou a banda começou.
+15. 📱 a carreira começou depois de 2000?  | versão curtinha: É bem novo?  | explicação: conta o ano em que o artista ou a banda começou.
+16. 🪲 é dos Beatles?  | versão curtinha: É dos Beatles?  | explicação: os Beatles são a banda de Liverpool; entram a banda e os integrantes.
+17. 🎤 é cantor ou cantora (uma pessoa conhecida pela voz)?  | versão curtinha: É cantor ou cantora?  | explicação: cantor ou cantora é a pessoa conhecida principalmente pela voz; bandas e instrumentistas não entram.
+18. 🎶 ainda está em atividade?  | versão curtinha: Ainda faz música hoje?  | explicação: quem já morreu ou a banda que acabou não está em atividade.
+19. 👨‍👩‍👧‍👦 tem mais de 3 integrantes?  | versão curtinha: Tem mais de 3 pessoas?  | explicação: conta quantas pessoas formam o grupo; artista solo e dupla nunca passam de 2.
+20. 📼 a carreira começou entre 1980 e 1999?  | versão curtinha: Começou nos anos 80 ou 90?  | explicação: nem antes de 1980, nem depois de 2000: no meio.
+21. ⬛ a foto é preto e branco?  | versão curtinha: A foto é preto e branco?  | explicação: olha só a foto: sem cores, só tons de cinza.
+22. 👥 aparece mais de uma pessoa na foto?  | versão curtinha: Tem mais de uma pessoa na foto?  | explicação: olha só a foto e conta as pessoas que aparecem.
+23. 🥁 aparece um instrumento na foto (guitarra, baixo, bateria, baquetas)?  | versão curtinha: Aparece um instrumento na foto?  | explicação: olha a foto: tem guitarra, baixo, bateria ou baquetas aparecendo?
+
+(o tema "artistas" com 15 perguntas ainda não está na main, só em outra branch)
+
