@@ -57,7 +57,7 @@ export function mountProgressionMap(host, cfg) {
     world.append(band, sign);
     decorOf(c).forEach(([name, side, f], k) => {
       const span = b.y1 - b.y0 - 84; const y = b.y0 + 84 + span * f;
-      const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d);
+      const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, 'data-s': name, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d);
     });
   });
   const svgNS = 'http://www.w3.org/2000/svg';
