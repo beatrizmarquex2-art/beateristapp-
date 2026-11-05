@@ -4,7 +4,7 @@ const { srv, url } = await serve(); const { browser, ctx } = await launch({});
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 const bad = []; page.on('response', (r) => { if (r.status() >= 400) bad.push(r.url().slice(-40)); });
 await page.addInitScript(() => localStorage.setItem('beaterista-aluno-nome', 'Teste'));
-await page.goto(url + '/aluno.html#/jogos/cara'); await sleep(1200);
+await page.goto(url + '/aluno.html#/jogos/cara/livre'); await sleep(1200);
 check('abre nos instrumentos', (await page.locator('.jg-cara .jg-cbtn img').count()) === 0 && (await page.locator('button[role=radio]:has-text("artistas")').count()) === 1);
 await page.locator('button[role=radio]:has-text("artistas")').click(); await sleep(500);
 await page.locator('button:has-text("iniciar")').click(); await sleep(900);
