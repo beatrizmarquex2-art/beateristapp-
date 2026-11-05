@@ -50,7 +50,7 @@ const GROUPS = [
       ['repertório e cultura musical', 'recuperação rápida da memória', 'escrita e ortografia sob tempo'],
       'Cada resposta é uma busca rápida na memória de longo prazo, o que fortalece o repertório. Na dupla, ver as respostas do colega amplia as referências.'],
   ]],
-  ['Jogos das dicas', [
+  ['Quiz e Letras', [
     ['Quiz das dicas', 'quiz.svg', 'Perguntas de completar e de ligar sobre as 30 dicas do método.',
       ['retenção do conteúdo do método', 'leitura atenta', 'autoavaliação'],
       'Testar-se é uma das formas de estudo que mais fixam o conteúdo. Depois de cada resposta a dica inteira aparece, e o erro vira explicação.'],
@@ -77,10 +77,10 @@ export function relatorio(host) {
       h('p', { class: 'rel-what' }, what),
       h('p', { class: 'rel-k' }, 'desenvolve'), h('ul', {}, ...skills.map((s) => h('li', {}, s))),
       h('p', { class: 'rel-k' }, 'na aprendizagem'), h('p', {}, how)));
-  host.replaceChildren(banner('Relatório', 'pra que serve cada jogo'), h('div', { class: 'jg jg-wrap jg-doc' },
+  host.replaceChildren(banner('Jogos Ensinam', 'pra que serve cada jogo'), h('div', { class: 'jg jg-wrap jg-doc' },
     h('div', { class: 'rel-actions' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('button', { class: 'btn small', type: 'button', onclick: () => window.print() }, 'salvar em PDF')),
     h('article', { class: 'rel-page' },
-      h('header', { class: 'rel-title' }, h('h1', { class: 'hand' }, 'Relatório dos jogos'), h('p', { class: 'muted' }, `Beaterista · ${total} jogos · o que cada um desenvolve e como ajuda a aprender música`)),
+      h('header', { class: 'rel-title' }, h('h1', { class: 'hand' }, 'Jogos Ensinam'), h('p', { class: 'muted' }, `Beaterista · ${total} jogos · o que cada um desenvolve e como ajuda a aprender música`)),
       h('p', { class: 'rel-intro' }, 'Os jogos da Beaterista não são só diversão: cada um treina uma habilidade que o aluno vai usar ao tocar. Jogar traz atenção, repetição com meta e retorno imediato, o que ajuda a memória e a motivação. Este documento diz, jogo a jogo, para que ele serve.'),
       ...GROUPS.map(([title, list]) => h('section', { class: 'rel-grp' }, h('h2', { class: 'hand' }, title), ...list.map(block))))));
   return null;

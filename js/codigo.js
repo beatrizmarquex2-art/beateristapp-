@@ -1,5 +1,5 @@
 // Código do aluno. O aluno digita uma vez; o código fica no aparelho dele e é conferido toda vez que abre (a Bea pode desativar).
-// Sem código: Piano Hero e as músicas prontas funcionam; o Beat Hero e a aba "Músicas MIDI" ficam trancados.
+// Sem código: todos os jogos de ritmo (Beat Hero, Piano Hero, músicas prontas e Músicas MIDI) ficam trancados.
 import { CONFIG } from './config.js';
 
 const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
@@ -28,6 +28,23 @@ export async function revalidar() {
   try { const ok = await verificar(c); if (!ok) remember(''); else remember(c); return ok; } catch { return recentlyOk(); }
 }
 export const sair = () => remember('');
+
+/* ---------- pedido de código: a criança gera o código dela, conta pra professora, a professora cadastra, e o app libera sozinho ---------- */
+const PEND = 'beaterista-aluno-codigo-pendente';
+export const pendente = () => { try { return localStorage.getItem(PEND) || ''; } catch { return window.__alunoCodigoPend || ''; } };
+/** Gera (uma vez só) o código desta criança. Fica guardado até a professora liberar. */
+export function pedir() {
+  let c = pendente(); if (c) return c;
+  const a = new Uint32Array(6); crypto.getRandomValues(a); const ABCD = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; c = [...a].map((x) => ABCD[x % ABCD.length]).join('');
+  try { localStorage.setItem(PEND, c); } catch { window.__alunoCodigoPend = c; } return c;
+}
+/** A professora já cadastrou o código pedido? Se sim, libera e guarda por 1 ano. true/false; lança erro sem internet. */
+export async function conferirPedido() {
+  const c = pendente(); if (!c) return false;
+  const ok = await verificar(c);
+  if (ok) { remember(c); try { localStorage.removeItem(PEND); } catch { window.__alunoCodigoPend = ''; } }
+  return ok;
+}
 
 /* ---------- Bea: gerenciar os códigos (precisa estar logada) ---------- */
 async function head(extra = {}) { const auth = await import('./auth.js'); const t = await auth.accessToken(); if (!t) throw new Error('entre no app'); return { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${t}`, 'Content-Type': 'application/json', ...extra }; }

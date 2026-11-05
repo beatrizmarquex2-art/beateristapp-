@@ -50,6 +50,8 @@ function local(id) {
   const r = { poly: p, bb: { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }, cx, cy, ang: angulo };
   localCache.set(id, r); return r;
 }
+/** Janela da foto de um modelo no sistema "sem inclinação" (polígono, caixa, centro e ângulo). */
+export const janelaLocal = (id) => local(id);
 /** Caixa que precisa ficar visível: rostos achados (com folga de cabelo e queixo) + a área onde está a ação da foto. */
 export function caixaRostos(rostos, foco) {
   // da área de ação só o miolo (60%) é protegido: o resto pode ficar de fora pra foto preencher a janela

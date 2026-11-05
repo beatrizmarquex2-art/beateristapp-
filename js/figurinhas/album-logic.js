@@ -4,7 +4,10 @@ import { rng, hashSeed } from './ornaments.js';
 
 export const PACK_SIZE = 5;
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
-export const COLECOES = ['Geral', 'Beatles', 'Beaterista', 'Especial'];
+// Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
+export const SECOES = ['Beatlemania', 'Beaterista', 'Comum', 'Raras'];
+export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Comum', Especial: 'Raras' }; // links e abas de antes
+export const COLECOES = SECOES;
 export const emptyState = () => ({ v: 1, inv: {}, pasted: {}, granted: [], opened: {}, reduzir: false });
 
 const clone = (s) => ({ ...emptyState(), ...s, inv: { ...(s.inv || {}) }, pasted: { ...(s.pasted || {}) }, granted: [...(s.granted || [])], opened: { ...(s.opened || {}) } });
@@ -49,14 +52,14 @@ export const repeated = (state) => Object.entries(state.inv || {}).reduce((n, [c
 export const inHand = (state) => Object.values(state.inv || {}).reduce((a, b) => a + b, 0);
 
 /** Contagem de uma coleção (ou de todas): coladas, total, faltantes. */
-export function stats(state, catalog, colecao = null) {
-  const list = colecao ? catalog.filter((c) => c.colecao === colecao) : catalog;
+export function stats(state, catalog, secao = null) {
+  const list = secao ? catalog.filter((c) => c.secao === secao) : catalog;
   const got = list.filter((c) => state.pasted?.[c.codigo]).length;
   return { total: list.length, got, missing: list.length - got };
 }
 /** Número do espaço no álbum (1..N dentro da coleção, na ordem do catálogo). */
-export const slotNumber = (catalog, entry) => catalog.filter((c) => c.colecao === entry.colecao).findIndex((c) => c.codigo === entry.codigo) + 1;
-export const artistsOf = (catalog, colecao) => [...new Set(catalog.filter((c) => c.colecao === colecao).map((c) => c.artista_banda))].sort((a, b) => a.localeCompare(b, 'pt'));
+export const slotNumber = (catalog, entry) => catalog.filter((c) => c.secao === entry.secao).findIndex((c) => c.codigo === entry.codigo) + 1;
+export const artistsOf = (catalog, secao) => [...new Set(catalog.filter((c) => c.secao === secao).map((c) => c.artista_banda))].sort((a, b) => a.localeCompare(b, 'pt'));
 
 /** Cópias que sobram na mão = (vezes que a figurinha saiu nos pacotes abertos) - (1 se já está colada). Sempre dá pra recalcular, então juntar dois aparelhos nunca erra. */
 export function deriveInv(opened, pasted) {

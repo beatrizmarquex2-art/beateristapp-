@@ -4,10 +4,24 @@ import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
 import { INSTRUMENTS, BY_ID, QUESTIONS } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
+import { mountArtistas } from './cara-artistas.js';
 
 const ID = 'cara';
 
-export function mount(host) {
+/** Cara a cara com dois temas: instrumentos (o de sempre) e artistas (as figurinhas do álbum). A escolha fica salva. Com `opts.mission` (Modo Aventura) abre sempre os instrumentos. */
+export function mount(host, opts) {
+  if (opts && opts.mission) return mountInstrumentos(host, opts);
+  let ctl = null;
+  const open = (tema) => {
+    if (ctl) { try { ctl.destroy(); } catch { /* ok */ } }
+    setGame(ID, { tema });
+    ctl = tema === 'artistas' ? mountArtistas(host, { onTema: open }) : mountInstrumentos(host, { onTema: open });
+  };
+  open(getGame(ID).tema === 'artistas' ? 'artistas' : 'instrumentos');
+  return { inProgress: () => ctl.inProgress(), restart: () => ctl.restart(), destroy: () => ctl.destroy() };
+}
+
+function mountInstrumentos(host, opts = {}) {
   let gone = false;
   const saved = getGame(ID);
   const prefs = { manual: saved.manual === true };
@@ -20,7 +34,9 @@ export function mount(host) {
     const resume = K.validGame(saved.game) && !saved.game.over ? saved.game : null;
     const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[[false, 'automático'], [true, 'manual']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.manual === v), class: prefs.manual === v ? 'on' : '', onclick: () => { prefs.manual = v; setGame(ID, { manual: v }); intro(); } }, l)));
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara'), h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara'),
+      opts.onTema ? h('p', { class: 'jg-lab' }, 'tema') : null, opts.onTema ? h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'tema' }, ...[['instrumentos', 'instrumentos'], ['artistas', 'artistas']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === 'instrumentos'), class: v === 'instrumentos' ? 'on' : '', onclick: () => { if (v !== 'instrumentos') opts.onTema(v); } }, l))) : null,
+      h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
       h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg,
       h('p', { class: 'jg-p muted' }, prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.'),
       saved.best ? h('p', { class: 'jg-p muted' }, `seu recorde: ${saved.best} pergunta${saved.best === 1 ? '' : 's'}`) : null,

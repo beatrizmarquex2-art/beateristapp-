@@ -1,4 +1,5 @@
 // pauLta: mapa de aventura (cenário em pixel-vetor, trilha brilhante, discos de vinil como fases, Paul na fase atual e palco no final).
+import { livre } from './livre.js';
 import { h } from '../util.js';
 import { roboMarkup } from '../kids/robo.js';
 import { toast } from '../ui.js';
@@ -53,7 +54,7 @@ export function adventureMap({ w, p, mode, me }) {
   scene.append(road);
   // discos (fases)
   for (let k = 1; k <= n; k++) {
-    const sp = phaseSpec(w, k); const ph = p.ph[S.phKey(w, k, mode)]; const st = ph ? ph.s : 0; const open = S.unlocked(p, w, k); const done = dn(k);
+    const sp = phaseSpec(w, k); const ph = p.ph[S.phKey(w, k, mode)]; const st = ph ? ph.s : 0; const open = livre() || S.unlocked(p, w, k); const done = dn(k);
     const boss = sp.sudden || k === n; const state = !open ? 'locked' : done ? 'done' : 'now'; const c = pos[k - 1];
     const plat = h('span', { class: 'adv-plat' }); plat.innerHTML = platform(boss);
     const dsc = h('span', { class: 'adv-disc' }); dsc.innerHTML = disc(state);

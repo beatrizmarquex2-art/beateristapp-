@@ -13,6 +13,7 @@ import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import { relatorio } from './jogos-relatorio.js';
+import * as AC from '../acesso.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -43,14 +44,16 @@ const SECTIONS = [
     link('#/kids/memoria', 'jogo da memória', 'memoria.svg', '4, 8 ou 12 pares · 1 ou 2 jogadores'),
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
-  ['jogos das dicas', [
-    link('#/dicas/quiz', 'quiz', 'quiz.svg', 'as 30 dicas', 'bea'),
-    link('#/dicas/caca', 'caça-palavras', 'caca.svg', null, 'bea'),
-    link('#/dicas/cruzadinha', 'cruzadinha', 'cruza.svg', null, 'bea'),
+  ['quiz e letras (com código)', [
+    link('#/dicas/quiz', 'Quiz e Letras', 'quiz.svg', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
   ]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
-    link('#/jogos/relatorio', 'relatório', 'relatorio.svg', 'pra que serve cada jogo', 'bea'),
+    link('#/jogos/relatorio', 'Jogos Ensinam', 'relatorio.svg', 'pra que serve cada jogo'),
+  ]],
+  ['estudos (com código)', [
+    link('#/dicionario', 'dicionário da bateria', 'pauta.svg', 'termos e exemplos tocando'),
+    link('#/kids/figuras/aula', 'aulas do Paul', 'figuras.svg', 'aprenda as figuras rítmicas'),
   ]],
 ];
 
@@ -69,8 +72,8 @@ function catalog(host) {
   const aluno = ALUNO();
   let editing = false; let onlyFav = false;
   const card = (x, edit) => {
-    const [id, title, img, , , href] = x;
-    return h('a', { class: 'jg-card', href: href || `#/jogos/${id}`, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' })), h('b', {}, title));
+    const [id, title, img, , , href] = x; const lk = aluno && AC.trancado(href || `#/jogos/${id}`);
+    return h('a', { class: `jg-card${lk ? ' locked' : ''}`, href: href || `#/jogos/${id}`, 'aria-label': lk ? `${title} (só com código)` : null, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' }), lk ? h('i', { class: 'jg-lock', 'aria-hidden': 'true' }, '🔒') : null), h('b', {}, title));
   };
   let catWrap;
   const grid = h('div', { class: 'jg-grid jg-flat' }); const bar = h('div', { class: 'jgx-bar' });
@@ -105,8 +108,9 @@ function catalog(host) {
     change({ ...p, order: full.map((k) => (set.has(k) ? newKeys[n++] : k)) }, 'ordem mudou');
   } });
   const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
+  const onAc = () => draw(); document.addEventListener('aluno-acesso', onAc);
   const offFesta = attachFesta(catWrap, { paul: false }); // a faixa de título já tem o Paul
-  return () => { offStore(); offDrag(); offFesta(); };
+  return () => { offStore(); offDrag(); offFesta(); document.removeEventListener('aluno-acesso', onAc); };
 }
 
 function game(host, entry) {
@@ -126,7 +130,7 @@ function game(host, entry) {
 }
 
 export function mount(host, parts = []) {
-  if (parts[0] === 'relatorio' && !ALUNO()) return relatorio(host);
+  if (parts[0] === 'relatorio') return relatorio(host);
   const first = String(parts[0] || '').split('?')[0];
   const entry = GAMES.find((g) => g[0] === first && g[3]);
   if (!entry) return catalog(host);
