@@ -253,3 +253,10 @@ html.lite .rz-jogar{animation:none}
 .rg-host[data-rz-theme="poster"] .rz-acc-h{color:#14284b}.rg-host[data-rz-theme="poster"] .rz-cor{border:2px solid #000;color:#14284b;background:#fffdf7}
 .rg-host[data-rz-theme="poster"] .rz-jogar{border:3px solid #000;box-shadow:4px 4px 0 #fbf3e6}
 .rg-host[data-rz-theme="poster"] details.panel{background:#fffdf7;color:#14284b}.rg-host[data-rz-theme="poster"] details.panel .muted,.rg-host[data-rz-theme="poster"] details.panel summary{color:#14284b}
+
+/* músicas já tocadas: barrinha da melhor precisão */
+.rz-pbar{display:block;height:6px;width:100%;border-radius:4px;background:rgba(0,0,0,.14);overflow:hidden}
+.rz-pbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#3fae5a,#7fd48f)}
+.rz-tier .rz-pbar{width:78%;margin-top:2px}
+.rz-song .rz-pbar{grid-column:2/4;margin-top:6px}
+.rz-song.played{box-shadow:inset 4px 0 0 #3fae5a}

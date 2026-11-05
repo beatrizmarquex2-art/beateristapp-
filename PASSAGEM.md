@@ -77,6 +77,8 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 - Nenhuma linha tem semicolcheia seguida (mínimo uma colcheia): melodia tenta a linha vizinha, bateria sai da pista mas segue soando no fundo (`rzNoFast`). Começo: compassos vazios no início da música são pulados (`rzLeadTrim`).
 - Duração: só **1 min** ou **2 min**. 2 min (e música com 1:40+) = XP em dobro e ★ que valem pras figurinhas (`ritmo.sticker.stars` no armazenamento do pacote; `OPTS.onStars` pra ligar nas figurinhas quando vier o prompt). Teste: `tests/e2e/ritmo-pista.mjs`.
 
+- Ritmo, mais: pausa → **Continuar** conta 4 tempos no bpm da música (notas paradas na tela) e volta de onde parou; música tocada ganha **barrinha verde** (melhor precisão) nos cartões e na lista; **fade out** nos últimos ~2 s; **modo especial**: de vez em quando cai uma nota-estrela (≥12 s entre elas, `rzStars`), acertou = pontos ×2 por 3 compassos, moldura dourada pulsando no tempo + faíscas (`rzSpecialFx`). Teste: `tests/e2e/ritmo-especial.mjs`.
+
 ## STOP musical (nov/2026)
 - `js/jogos/stop.js` (tela), `stop-logic.js` (regras), `stop-valid.js` (normalização, artigos, reconhecimento, sugestão de grafia), `stop-bank-teoria.js` e `stop-bank-cultura.js` (banco das 12 categorias, escrito de memória: revisar/expandir; linhas "Nome|apelido|apelido"), `stop-sfx.js` (sons sintetizados), `css/jogos.css` (bloco `st-`).
 - Respostas aprovadas na revisão entram num banco local (`beaterista-stop-custom`, só neste aparelho). Histórico/recordes em `beaterista-jogos` → games.stop.
