@@ -95,6 +95,7 @@ O que se sobe no GitHub **não** chega sozinho à área dos alunos.
 
 ## Código do aluno (nov/2026)
 - **Beat Hero e a aba "Músicas MIDI" só com código** (`js/codigo.js`, `supabase/007_codigos.sql`). Sem código: Piano Hero e músicas prontas abrem normal. `midis_publicos_lista(p_code)` só devolve MIDI com código ativo (a lista pública sem código foi removida). A Bea cria/desativa/apaga códigos no app: Jogos de ritmo → "códigos dos alunos". Desativar tranca na próxima vez que o aluno abre (offline vale 14 dias). Alunos não veem renomear/pasta/cortar. Limite: o navegador do aluno precisa receber o arquivo pra tocar, então quem tem código ainda consegue extrair o MIDI; o código só fecha pra quem não é aluno. Teste: `tests/e2e/midi-alunos.mjs` (precisa de `MID_FILE=caminho.mid`).
+- Código vale **1 ano** (`expira_em`, SQL 008 aplicado; botão "+1 ano" no painel) e fica salvo 1 ano no aparelho. Primeira tela do aluno: nome + "escolha uma opção" com **CÓDIGO DE ACESSO** (campo aparece ao escolher; confere no servidor; origem registrada como "aluno beaterista (código de acesso)"). Teste: `tests/e2e/entrada-codigo.mjs`. Código da Bea: BEA0404 (hífen é ignorado).
 - SQL 007 aplicado (nov/2026). Menu (Bea e Beaterista) → aulas → **Importar código de aluno** (`#/codigos`, `js/views/codigos.js`): cola "nome ; código" (só nome = gera código aleatório), gera códigos, tabela atualizada com copiar. Código de teste `BEA2026`. Testes: `tests/codigo.test.mjs`, `tests/e2e/codigos.mjs`.
 
 ## STOP musical (nov/2026)

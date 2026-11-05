@@ -6,7 +6,7 @@ const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
 const anon = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
 const KEY = 'beaterista-aluno-codigo';
 const OK_KEY = 'beaterista-aluno-codigo-ok'; // última vez que o código foi confirmado (vale offline)
-const OFFLINE_DAYS = 14;
+const OFFLINE_DAYS = 365; // o código fica salvo 1 ano neste aparelho (a Bea desativa quando quiser; vale na próxima vez que ele abrir com internet)
 
 export const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
 export const saved = () => { try { return localStorage.getItem(KEY) || ''; } catch { return window.__alunoCodigo || ''; } };
@@ -22,7 +22,7 @@ export async function verificar(code) {
 }
 /** Aluno digitou um código novo: confere e guarda se valer. */
 export async function entrar(code) { const c = norm(code); const ok = await verificar(c); if (ok) remember(c); return ok; }
-/** Ao abrir: o código guardado ainda vale? Sem internet, vale se foi confirmado nos últimos 14 dias. Desativado pela Bea = tranca de novo. */
+/** Ao abrir: o código guardado ainda vale? Sem internet, vale se foi confirmado no último ano. Desativado pela Bea = tranca de novo. */
 export async function revalidar() {
   const c = saved(); if (!c) return false;
   try { const ok = await verificar(c); if (!ok) remember(''); else remember(c); return ok; } catch { return recentlyOk(); }
@@ -34,7 +34,7 @@ async function head(extra = {}) { const auth = await import('./auth.js'); const 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const gerar = () => { const a = new Uint32Array(6); crypto.getRandomValues(a); return [...a].map((x) => ABC[x % ABC.length]).join(''); };
 export async function listar() {
-  const r = await fetch(`${base}/alunos_codigos?select=code,nome,ativo,usos,criado_em,ultimo_uso&order=criado_em.desc`, { headers: await head() });
+  const r = await fetch(`${base}/alunos_codigos?select=code,nome,ativo,usos,criado_em,ultimo_uso,expira_em&order=criado_em.desc`, { headers: await head() });
   if (!r.ok) throw new Error(String(r.status)); return r.json();
 }
 export async function criar(nome) {
