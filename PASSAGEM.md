@@ -231,3 +231,6 @@ Cache atual: **v248**. Deploy da área dos alunos continua **manual e pendente**
 - Épico agora tem paleta: `tema: 'dourado'` (padrão) ou `'rosa'` (rosa e vermelho), escolhida em Criar cartinha ("cor do post Épico"). Camadas: raios duplos, halo, bokeh, brasas, brilhos, moldura de metal com cantos, ornamento sob o título, sombra no chão, grão de filme. M7 teve a plaquinha do nome limpa (fantasma do texto de exemplo).
 
 - **Deploy dos alunos feito (05/11/2026, cache v264)** a partir da `main` 30db8ef: álbum, código de aluno, ritmo só com código, pauLta com mapa novo e plantinhas, Quiz e Letras. Ficaram de fora: `cara-musical`, `claude/mapa-turne-do-vinil`, `aventura-toca-aqui`. O visual novo (meio pixel) do pauLta é só mockup, não foi aplicado.
+
+- **Bingo antigo (4×4) preservado**: `js/jogos/bingo1.js` + `bingo1-logic.js` só alimentam as missões do Modo Aventura (`js/campanha/jogos/bingo.js`). O Bingo novo (`bingo.js`/`bingo-logic.js`) é o modo livre (`#/jogos/bingo/livre`; convite `?sala=` abre direto o livre).
+- **Pendente (nov/2026)**: aplicar `supabase/009_bingo_salas.sql` no Supabase (a aprovação do chat expirou); sem isso o Bingo online mostra aviso de serviço indisponível, e os outros modos funcionam. Publicado: `main` e alunos (cache v266).
