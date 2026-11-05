@@ -42,3 +42,7 @@
 .pt-pontos, .pt-med { margin: 0; padding: 0 12px 8px; } .pt-list { list-style: none; margin: 0; padding: 0 12px 12px; display: grid; gap: 8px; }
 .pt-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px; background: #140d26; border-left: 4px solid #4a3a6a; } .pt-row.sim { border-left-color: #4fd2ff; } .pt-row.nao { opacity: .8; } .pt-row b { color: #fff4e0; display: block; } .pt-row.sim b { color: #4fd2ff; } .pt-i { font-size: 18px; }
 .kx-arc .pt-box { box-shadow: 3px 3px 0 #1b1818; }
+/* fundo escuro próprio: as telas de aventura aparecem em páginas claras (aluno) e escuras (Bea), então não dependem da página */
+.av { background: var(--mp-night); padding-left: 14px; padding-right: 14px; }
+.av-root { margin: 0; } .av-root .mp { margin: 0 -14px; padding-bottom: 16px; }
+.av-h, .av-mode-t { text-shadow: 2px 2px 0 var(--mp-wine); }
