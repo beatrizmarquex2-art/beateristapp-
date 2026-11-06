@@ -42,9 +42,10 @@ export function mountMemoria(host, opts) {
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
   let photo = null; let lockNote = false; let live = false;
   const themes = () => {
-    const drawn = THEMES.filter((t) => !photo || t.id !== 'bandas').map((t) => ({ ...t, open: t.id === 'profissoes' }));
-    const all = photo ? [...photo, ...drawn] : drawn;
-    return [...all.filter((t) => t.open), ...all.filter((t) => !t.open)]; // os abertos primeiro
+    // abertos pra todo mundo: The Beatles, Rock (as cartas desenhadas de bandas) e Profissões. O resto só com código.
+    const drawn = THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: true } : { ...t, open: t.id === 'profissoes' }));
+    const all = photo ? [photo[0], drawn[0], ...drawn.filter((t) => t.id === 'profissoes'), ...photo.slice(1), ...drawn.filter((t) => t.id !== 'rock' && t.id !== 'profissoes')] : drawn;
+    return [...all.filter((t) => t.open), ...all.filter((t) => !t.open)];
   };
   const locked = (t) => !MS && alunoSemCodigo() && !t.open;
 
@@ -52,8 +53,8 @@ export function mountMemoria(host, opts) {
   const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
     verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
   const grupos = (list, th) => {
-    const art = list.filter((t) => t.photo); const rest = list.filter((t) => !t.photo);
-    return [art.length ? h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Artistas' }, ...art.map((t) => tile(t, th))) : null,
+    const art = list.filter((t) => t.open); const rest = list.filter((t) => !t.open); // os livres em destaque (capas grandes), os outros logo abaixo
+    return [art.length ? h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas livres' }, ...art.map((t) => tile(t, th))) : null,
       art.length && rest.length ? h('p', { class: 'mem-more' }, 'mais temas') : null,
       rest.length ? h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Outros temas' }, ...rest.map((t) => tile(t, th))) : null].filter(Boolean);
   };

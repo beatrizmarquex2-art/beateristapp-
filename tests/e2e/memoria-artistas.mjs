@@ -1,4 +1,4 @@
-// Jogo da memória (área dos alunos): abre direto na escolha do tema, sem modo aventura. Abertos: The Beatles e Profissões;
+// Jogo da memória (área dos alunos): abre direto na escolha do tema, sem modo aventura. Abertos: The Beatles, Rock e Profissões;
 // os outros 7 (Bandas, Solos e os desenhados) só com código. Pares 6, 8 ou 12. Joga uma partida inteira (acha todos os pares) e vê o resultado.
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false });
@@ -21,8 +21,8 @@ async function jogarTudo(p) { // lê a foto de cada carta, vira os pares e esper
   const p = await abrir(ctx);
   check('abre direto na escolha de tema (sem escolher modo aventura)', (await p.locator('.av-root, .av-modes, .ma-esc').count()) === 0 && (await p.locator('.mem-theme').count()) >= 8);
   const t = await temas(p);
-  check('abertos: só The Beatles e Profissões da música', JSON.stringify(t.filter((x) => !x.lk).map((x) => x.t).sort()) === JSON.stringify(['Profissões da música', 'The Beatles']), JSON.stringify(t));
-  check('trancados: Bandas, Solos e os outros 5 temas', t.filter((x) => x.lk).length === 7 && t.filter((x) => x.lk).map((x) => x.t).includes('Bandas') && t.filter((x) => x.lk).map((x) => x.t).includes('Solos'), t.filter((x) => x.lk).map((x) => x.t).join(', '));
+  check('abertos: só The Beatles, Rock e Profissões da música', JSON.stringify(t.filter((x) => !x.lk).map((x) => x.t).sort()) === JSON.stringify(['Profissões da música', 'Rock', 'The Beatles']), JSON.stringify(t));
+  check('trancados: Bandas, Solos e os outros 5 temas (7 no total)', t.filter((x) => x.lk).length === 7 && t.filter((x) => x.lk).map((x) => x.t).includes('Bandas') && t.filter((x) => x.lk).map((x) => x.t).includes('Solos'), t.filter((x) => x.lk).map((x) => x.t).join(', '));
   await p.locator('.mem-theme.locked').first().click(); await sleep(300);
   check('tocar num tema trancado avisa e não troca o tema', (await p.locator('.mem-lockmsg').count()) === 1 && (await p.locator('.mem-theme.on b').textContent()).includes('The Beatles'));
   check('opções discretas: ícones 👤 👥 🤖 e setinhas de pares (começa em 8)', (await p.locator('.mem-ic').count()) === 3 && (await rotulo(p)) === '8 pares' && (await p.locator('.kd-chip').count()) === 0);
