@@ -11,6 +11,8 @@ import * as AC from './acesso.js';
 import * as dicas from './views/dicas.js';
 import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
+import { GRATIS } from './amostra.js';
+import { tipList } from './tipbox.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import * as PL from './paulta/save.js';
@@ -150,16 +152,29 @@ function lockView(view, what) {
   view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
-const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras', paulta: 'a pauLta' };
+const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', paulta: 'a pauLta' };
 
 /** Aba Estudos: 5 erros (aberto), Dicionário, Quiz e Letras e Aulinha do Paul (com código). */
 function estudosView(view) {
-  const item = (href, title, sub) => { const lk = AC.trancado(href); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title), h('p', { class: 'muted' }, sub)); };
+  const item = (href, title, sub, amostra) => { const lk = AC.trancado(href); const am = amostra && !AC.liberado(); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : am ? `${title}, amostra grátis: ${amostra}` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title, am ? h('small', { class: 'al-am' }, ` · grátis: ${amostra}`) : null), h('p', { class: 'muted' }, sub)); };
   view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     item('#/erros', '5 erros', 'material em PDF da professora Bea, aberto pra todo mundo'),
-    item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando'),
-    item('#/dicas/quiz', 'Quiz e Letras', 'quiz, caça-palavras e cruzadinha das dicas do método'),
-    item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo')));
+    item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando', `${GRATIS.termos} termos`),
+    item('#/estudos/dicas', 'Dicas do método', 'as dicas da professora Bea pra estudar com calma'),
+    item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo', `${GRATIS.aulinha} passos`)));
+}
+
+/** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Quiz e Letras. */
+function dicasEstudoView(view) {
+  const box = h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'carregando as dicas…'));
+  view.append(banner('Dicas do método', 'pra estudar com calma'), box); let dead = false;
+  DA.carregar(CODE.saved()).finally(() => {
+    if (dead) return; const list = tipList();
+    box.replaceChildren(h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+      ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
+      h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (quiz e letras)'));
+  });
+  return () => { dead = true; };
 }
 
 /** "5 erros": PDF da professora (aberto, sem código). Enquanto o arquivo não existe, avisa que vem aí. */
@@ -231,11 +246,12 @@ function shell(name) {
     const r = route(); view.dataset.page = r.name;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'));
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;
-      DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); });
+      if (AC.liberado()) DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); }); // com código: baixa as dicas
+      else inner = dicas.mount(box, r.parts); // sem código: amostra (caça-palavras com palavras do dicionário), nada é baixado
       c = () => { dead = true; if (typeof inner === 'function') inner(); };
     }
     else if (r.name === 'kids') c = kids.mount(view, r.parts);
@@ -250,6 +266,7 @@ function shell(name) {
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });

@@ -7,6 +7,7 @@ import { CATS, TERMS, searchTerms, byId } from '../glossary.js';
 import { TITLE_PT } from '../catalog.js';
 import { playBeat, stopBeat, playingId } from './beatlab.js';
 import { banner } from '../ui.js';
+import { alunoSemCodigo, GRATIS, avisoCodigo } from '../amostra.js';
 
 /** Exemplo do termo vira um ritmo completo do Beat Lab (todas as linhas da grade). */
 export const beatOf = (x) => x.ex && {
@@ -21,7 +22,11 @@ export function mount(host, parts = []) {
   const search = h('input', { type: 'search', placeholder: 'buscar: síncope, ghost note, BPM…', 'aria-label': 'Buscar no dicionário' });
   search.addEventListener('input', () => { q = search.value; draw(); });
   const chips = h('div', { class: 'chips lib-tabs pad-x', role: 'radiogroup', 'aria-label': 'Temas' });
+  // sem código (área dos alunos): só os primeiros termos abrem; os outros mostram o nome com cadeado
+  const FREE = new Set(TERMS.slice(0, GRATIS.termos).map((x) => x.id));
+  const aviso = avisoCodigo(`só ${GRATIS.termos} termos abrem de graça. com o código de aluno você vê todos os ${TERMS.length}, com dica e exemplo tocando.`); aviso.hidden = true;
   const card = (x) => {
+    if (alunoSemCodigo() && !FREE.has(x.id)) return h('article', { class: 'card pad dc-term locked', id: `t-${x.id}` }, h('button', { type: 'button', class: 'dc-head', 'aria-label': `${x.t}, só pra alunos com código`, onclick: () => { aviso.hidden = false; aviso.scrollIntoView({ block: 'center' }); } }, h('strong', {}, '🔒 ', x.t), h('span', { class: 'dc-cat' }, (CATS.find((c) => c[0] === x.cat) || ['', ''])[1])));
     const isOpen = open === x.id; const b = beatOf(x); const playing = b && playingId() === b.id;
     const mini = b && isOpen ? (() => { const f = h('figure', { class: 'tr-bar' }); f.innerHTML = N.toSVG(N.layout(b, { width: 340, full: false })); return f; })() : null;
     return h('article', { class: `card pad dc-term${isOpen ? ' open' : ''}`, id: `t-${x.id}` },
@@ -45,9 +50,9 @@ export function mount(host, parts = []) {
     const shown = searchTerms(q, TERMS.filter((x) => !cat || x.cat === cat));
     list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
   };
-  host.append(banner('Dicionário da bateria', `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, list,
+  host.append(banner('Dicionário da bateria', alunoSemCodigo() ? `veja ${GRATIS.termos} de ${TERMS.length} termos de graça` : `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, h('div', { class: 'pad-x' }, aviso), list,
     h('p', { class: 'pad-x lib-note' }, 'toque no termo pra abrir a dica e o exemplo. o nome em inglês aparece porque é assim que você vai achar em vídeo e partitura de fora.'));
-  draw();
+  draw(); const onAc = () => { aviso.hidden = true; draw(); }; document.addEventListener('aluno-acesso', onAc);
   if (open) setTimeout(() => { const el = document.getElementById(`t-${open}`); if (el) el.scrollIntoView({ block: 'start' }); }, 50);
-  return () => { if (String(playingId() || '').startsWith('dic-')) stopBeat(); };
+  return () => { document.removeEventListener('aluno-acesso', onAc); if (String(playingId() || '').startsWith('dic-')) stopBeat(); };
 }

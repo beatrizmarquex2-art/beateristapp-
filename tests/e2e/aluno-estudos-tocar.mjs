@@ -12,8 +12,8 @@ check('barra de baixo: Jogos, Estudos, Tocar, Álbum, Perfil (sem Ranking)', ['J
 check('as 5 abas cabem em uma linha', await page.evaluate(() => { const t = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 3; }));
 check('Estudos: acende a aba e mostra os 4 itens', (await page.locator('nav .nav-item.on').textContent()).includes('Estudos') && (await page.locator('#view .al-card').count()) === 4);
 const txt = await page.textContent('#view');
-check('itens: 5 erros, Dicionário musical, Quiz e Letras, Aulinha do Paul (sem Jogos Ensinam)', ['5 erros', 'Dicionário musical', 'Quiz e Letras', 'Aulinha do Paul'].every((x) => txt.includes(x)) && !txt.includes('Jogos Ensinam'));
-check('sem código: aulinha, dicionário e quiz com cadeado; 5 erros aberto', (await page.locator('#view .al-card.locked').count()) === 3 && !(await page.locator('#view .al-card', { hasText: '5 erros' }).getAttribute('class')).includes('locked'));
+check('itens: 5 erros, Dicionário musical, Dicas do método, Aulinha do Paul (sem Jogos Ensinam e sem Quiz)', ['5 erros', 'Dicionário musical', 'Dicas do método', 'Aulinha do Paul'].every((x) => txt.includes(x)) && !txt.includes('Jogos Ensinam'));
+check('sem código: só as Dicas do método têm cadeado; Dicionário e Aulinha com selo "grátis"; 5 erros aberto', (await page.locator('#view .al-card.locked').count()) === 1 && (await page.locator('#view .al-am').count()) === 2 && !(await page.locator('#view .al-card', { hasText: '5 erros' }).getAttribute('class')).includes('locked'));
 await page.locator('#view .al-card', { hasText: '5 erros' }).click(); await sleep(1200);
 check('5 erros abre sem código e a aba Estudos continua acesa', (await page.evaluate(() => location.hash)).includes('erros') && (await page.locator('nav .nav-item.on').textContent()).includes('Estudos'));
 await go('#/tocar');

@@ -5,17 +5,21 @@ import * as store from '../store.js';
 import { banner } from '../ui.js';
 import * as T from '../tips.js';
 import * as FB from '../feedback.js';
+import { TERMS } from '../glossary.js';
+import { alunoSemCodigo, GRATIS, avisoCodigo, cacaUsadas, cacaUsar } from '../amostra.js';
 
 const KEY = 'setting-dicas';
 const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (p) => store.upsert('setting', KEY, p);
 import { tipList } from '../tipbox.js';
 const items = () => T.keywords(tipList(), conf().kw);
+// amostra grátis (sem código): a caça-palavras usa palavras do dicionário musical, não as dicas do método
+const termItems = () => TERMS.filter((x) => /^\p{L}+$/u.test(x.t)).map((x, i) => ({ n: i + 1, text: x.d, w: T.norm(x.t), shown: x.t, termo: true })).filter((x) => x.w.length >= 4 && x.w.length <= 8);
 const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha']];
 const total = () => Math.max(30, tipList().length);
 
 /** A dica inteira, pra quando a palavra é achada. */
-const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' }, h('p', { class: 'dc-n' }, `dica ${it.n} de ${total()} · a palavra é ${it.shown}`), h('p', { class: 'dc-text' }, it.text));
+const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' }, h('p', { class: 'dc-n' }, it.termo ? `termo musical · a palavra é ${it.shown}` : `dica ${it.n} de ${total()} · a palavra é ${it.shown}`), h('p', { class: 'dc-text' }, it.text));
 
 /* ---------- quiz (mesma cara do caça-palavras e da cruzadinha: bolinhas coloridas, opções com letra, progresso) ---------- */
 const LETRAS = ['A', 'B', 'C', 'D'];
@@ -48,7 +52,10 @@ function quiz(box, kinds, key) {
 /* ---------- caça-palavras (fácil: grade 9×9, 6 palavras curtas, só → e ↓, palavras à vista e cada uma de uma cor) ---------- */
 const COLORS = 6; // classes dc-k0..dc-k5 (css/jogos.css)
 function caca(box) {
-  const its = items(); const pick = T.easyPick(its, 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
+  const free = alunoSemCodigo();
+  if (free && cacaUsadas() >= GRATIS.caca) { box.replaceChildren(avisoCodigo(`você já jogou as ${GRATIS.caca} partidas grátis de caça-palavras. com o código de aluno tem caça-palavras sem limite, quiz e cruzadinha com as dicas do método.`)); return; }
+  let counted = false; // a partida grátis conta quando a aluna faz a primeira jogada
+  const its = free ? termItems() : items(); const pick = T.easyPick(its, 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
   const ws = T.wordsearch(pick.map((x) => x.w), 9, Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
@@ -65,6 +72,7 @@ function caca(box) {
   };
   const up = () => {
     const d = drag; drag = null; if (!d) return; preview(null);
+    if (free && !counted) { counted = true; cacaUsar(); }
     if (d.end && (d.end.x !== d.x0 || d.end.y !== d.y0)) { // arrastou: a linha vai da casa do dedo até onde soltou
       start = null; const line = T.lineCells(d.x0, d.y0, d.end.x, d.end.y); if (line) attempt(line, d.end.el); else { draw(); FB.lose(box.querySelector('.dc-grid'), { paul: false }); } return;
     }
@@ -91,7 +99,7 @@ function caca(box) {
       ? h('button', { type: 'button', class: `dc-chip ok dc-k${colorOf[w]}`, onclick: () => { last = byWord[w]; draw(); } }, `✓ ${byWord[w].shown}`)
       : h('span', { class: `dc-chip dc-k${colorOf[w]}` }, byWord[w].shown)));
     const dica = !found.size ? h('p', { class: 'muted' }, 'ache as palavras na grade: arraste o dedo por cima ou toque na primeira e na última letra. quando achar, aparece a dica!') : null;
-    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras`), dica, chips, grid].filter(Boolean)), last ? explain(last) : null,
+    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, chips, grid].filter(Boolean)), last ? explain(last) : null,
       found.size === words.length ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
   };
   draw();
@@ -133,7 +141,8 @@ const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg' };
 const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas' };
 
 export function mount(host, parts = []) {
-  const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : 'quiz';
+  const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
+  const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : limited ? 'caca' : 'quiz';
   const box = h('div', { class: 'dc-box' });
   // modo claro/escuro: lembra a escolha; sem escolha, segue o aparelho
   const KM = 'beaterista-dicas-modo';
@@ -144,15 +153,17 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner('Quiz e Letras', 'quiz, caça-palavras e cruzadinha com as dicas do método'),
+  host.append(banner('Quiz e Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
       h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
-        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, t), h('small', {}, SUB[k])))),
+        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, limited && k !== 'caca' ? `🔒 ${t}` : t), h('small', {}, SUB[k])))),
       box);
   const run = () => {
-    box.replaceChildren(); const n = items().length;
+    box.replaceChildren();
+    if (limited) { if (tab === 'caca') caca(box); else box.append(avisoCodigo(`${tab === 'quiz' ? 'o quiz' : 'a cruzadinha'} é pra alunos da Beaterista: usa as dicas do método. a caça-palavras tem ${GRATIS.caca} partidas grátis.`)); return; }
+    const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
     ({ quiz: () => quiz(box, ['blank', 'continua'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };

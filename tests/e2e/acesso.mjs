@@ -18,11 +18,11 @@ const trancada = (p) => p.locator('.al-lock').count();
   check('aba com cadeado: só o Álbum (Jogos, Estudos, Tocar e Perfil abertos; o Ranking saiu do menu)', (await p.locator('.nav-item.locked').count()) === 1, String(await p.locator('.nav-item.locked').count()));
   check('não existe aba Beat Lab pro aluno', (await p.locator('.bottom-nav .nav-item:has-text("Beat Lab")').count()) === 0);
   await go(p, '#/beatlab'); check('#/beatlab volta pra Jogos (não existe pro aluno)', (await p.evaluate(() => location.hash)).startsWith('#/jogos'));
-  for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/kids/figuras', '#/kids/eco', '#/dicionario']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
+  for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/kids/figuras', '#/kids/eco', '#/estudos/dicas']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
   for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo, as fases e o quiz têm cadeado e os jogos livres não (o dicionário e a aulinha agora moram na aba Estudos)', locked.some((t) => /fases e estrelas/.test(t)) && locked.some((t) => /Quiz e Letras/.test(t)) && !locked.some((t) => /memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
+  check('no catálogo, as fases têm cadeado; o Quiz e Letras (amostra grátis) e os jogos livres não', locked.some((t) => /fases e estrelas/.test(t)) && !locked.some((t) => /Quiz e Letras|memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
   check('"Jogos Ensinam" aparece no catálogo (aberto)', (await p.locator('.jg-card:has-text("Jogos Ensinam")').count()) === 1);
   await go(p, '#/jogos/relatorio'); check('Jogos Ensinam abre o relatório', (await p.locator('.rel-page, .jg-doc').count()) > 0 && (await p.locator('h1:has-text("Jogos Ensinam")').count()) >= 1);
   // gerar meu código
@@ -36,7 +36,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await p.locator('button:has-text("já liberou")').click(); await sleep(1500);
   check('depois que a professora cadastra, libera (sem cadeado nas abas)', (await trancada(p)) === 0 && (await p.locator('.nav-item.locked').count()) === 0);
   check('o código fica guardado e o pedido some', (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === code && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo-pendente'))) === null);
-  for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/dicionario']) { await go(p, h); check(`com código: ${h} abre`, (await trancada(p)) === 0); }
+  for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/estudos/dicas']) { await go(p, h); check(`com código: ${h} abre`, (await trancada(p)) === 0); }
   check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join('|')); await ctx.close();
 }
 // 2) pedido pendente + a professora cadastra enquanto o aluno está na tela: libera sozinho (sem apertar nada)
@@ -74,9 +74,9 @@ const trancada = (p) => p.locator('.al-lock').count();
   };
   valid.clear();
   { const { ctx, p } = await mk(''); await p.goto(`${url}/aluno.html#/dicas/quiz`); await sleep(1800);
-    check('Quiz e Letras sem código: trancado e nada baixado', (await trancada(p)) === 1 && chamadas.length === 0, JSON.stringify(chamadas));
+    check('Quiz e Letras sem código: abre (amostra) e nada é baixado', (await trancada(p)) === 0 && chamadas.length === 0, JSON.stringify(chamadas));
     await go(p, '#/jogos'); const lk = await p.locator('.jg-card.locked b').allTextContents();
-    check('no catálogo, "Quiz e Letras" aparece com cadeado', lk.some((t) => /Quiz e Letras/.test(t)), lk.join(' | ')); await ctx.close(); }
+    check('no catálogo, "Quiz e Letras" aparece sem cadeado e é o último', !lk.some((t) => /Quiz e Letras/.test(t)) && /Quiz e Letras/.test((await p.locator('.jg-card b').last().textContent())), lk.join(' | ')); await ctx.close(); }
   valid.add('ABC123');
   for (const tab of ['quiz', 'caca', 'cruzadinha']) {
     const { ctx, p, errs } = await mk('ABC123'); await p.goto(`${url}/aluno.html#/dicas/${tab}`); await sleep(2500);

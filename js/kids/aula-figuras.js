@@ -9,6 +9,7 @@ import { noteMarkup, figureMarkup, restMarkup, groupMarkup, svgEl } from './art.
 import { FIGS, GROUPS, VARIACOES, contaOf, beatsLabel, figBySpec } from './figs.js';
 import * as N from '../notation.js';
 import { layoutRhythm } from '../reading.js';
+import { alunoSemCodigo, GRATIS, avisoCodigo } from '../amostra.js';
 
 const Q = 1; // 60 BPM: 1 tempo = 1 segundo (fácil de sentir)
 const t0now = () => audio().currentTime + 0.12;
@@ -83,11 +84,13 @@ export function aulaFiguras(host, { onPlay } = {}) {
   ];
 
   const draw = () => {
-    S.reset(); const s = SLIDES[step]; bot.set(s.mood, ''); say.textContent = s.say;
+    // sem código (área dos alunos): só os 2 primeiros passos; do 3º em diante vem o aviso
+    const trancada = alunoSemCodigo() && step >= GRATIS.aulinha;
+    S.reset(); const s = SLIDES[step]; bot.set(trancada ? 'wave' : s.mood, ''); say.textContent = trancada ? 'quer ver o resto da aulinha? é só gerar o seu código!' : s.say;
     dots.replaceChildren(...SLIDES.map((_, k) => h('i', { class: k < step ? 'done' : k === step ? 'now' : '' })));
-    body.replaceChildren(s.make(), h('div', { class: 'row kx-act au-nav' },
+    body.replaceChildren(trancada ? avisoCodigo(`a aulinha tem ${SLIDES.length} passos. os ${GRATIS.aulinha} primeiros são de graça; o resto abre com o código de aluno.`) : s.make(), h('div', { class: 'row kx-act au-nav' },
       step > 0 ? btn('‹ voltar', () => { step--; draw(); }, 'kd-chip') : null,
-      step < SLIDES.length - 1 ? btn('próximo ›', () => { step++; draw(); }, 'kd-btn') : null));
+      step < SLIDES.length - 1 && !trancada ? btn('próximo ›', () => { step++; draw(); }, 'kd-btn') : null));
   };
   host.append(h('div', { class: 'au' }, h('h1', { class: 'kx-pix kx-pagetitle' }, 'aulinha do Paul'), h('div', { class: 'au-top' }, bot.el, h('div', { class: 'au-bubble' }, say)), dots, body));
   draw();
