@@ -8,7 +8,7 @@ const PREVIAS = {
     sobre: 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, combo, XP e ranking.',
     faz: ['escolha a música e o andamento', 'toque nas peças quando as notas chegarem na linha', 'veja seus pontos, combo e precisão na hora'],
     desenvolve: ['coordenação motora e precisão de tempo', 'atenção e tempo de reação', 'percepção de pulso e andamento'],
-    imgs: [['ritmo-1', 'escolha a música'], ['ritmo-3', 'as notas descem: toque no tempo']] },
+    imgs: [['ritmo-1', 'escolha a música'], ['ritmo-2', 'as notas descem: toque no tempo'], ['ritmo-3', 'perfeito! combo e estrelas subindo']] },
   paulta: { titulo: 'pauLta', frase: 'leitura musical por mundos e fases',
     sobre: 'Leitura musical: escolha um mundo (Bateria, Clave de Sol, Clave de Fá e o Duelo das Claves), cumpra as fases e ganhe pontos com o Paul.',
     faz: ['escolha um mundo e siga o caminho das fases', 'leia a nota ou a peça na pauta e responda', 'junte pontos e destrave as próximas fases'],
@@ -41,7 +41,7 @@ export function previa(k) {
   const p = PREVIAS[k]; if (!p) return null;
   return h('section', { class: 'pv', 'aria-label': `Prévia: ${p.titulo}` },
     h('p', { class: 'pv-tag' }, 'dá uma olhada por dentro'),
-    h('div', { class: 'pv-gal', role: 'group', 'aria-label': 'Telas do jogo' }, ...p.imgs.map(([f, leg]) => h('figure', { class: 'pv-fig' }, h('img', { src: `${IMG}${f}.webp`, alt: `${p.titulo}: ${leg}`, loading: 'lazy', draggable: 'false' }), h('figcaption', {}, leg)))),
+    h('div', { class: 'pv-gal', role: 'group', 'aria-label': 'Telas do jogo' }, ...p.imgs.map(([f, leg]) => h('figure', { class: 'pv-fig' }, h('img', { src: `${IMG}${f}.webp`, alt: `${p.titulo}: ${leg}`, draggable: 'false' }), h('figcaption', {}, leg)))),
     h('div', { class: 'card pad pv-txt' }, h('h2', { class: 'tag' }, p.titulo), h('p', {}, p.sobre),
       h('b', {}, 'o que você faz'), h('ul', {}, ...p.faz.map((x) => h('li', {}, x))),
       h('b', {}, 'o que desenvolve'), h('ul', {}, ...p.desenvolve.map((x) => h('li', {}, x)))));
