@@ -846,3 +846,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-game .jg-actions .btn:not(.primary){min-height:32px;padding:4px 12px;font-size:13px}
 .kx-arc .mem-stage .kd-chip{min-height:30px;padding:3px 11px;font:700 12px var(--body);border-width:2px;border-radius:8px;box-shadow:2px 2px 0 #1b1818}
 .kx-arc .mem-stage .kd-modes{gap:6px}
+/* escolhas dos jogos, mais discretas ainda: pílulas pequenas, sem sombra */
+.jg-game .jg-seg button,.jg-seg.sm button{min-height:28px;padding:3px 10px;font-size:12px;border-width:1.5px;border-radius:999px;box-shadow:none;transform:none}
+.jg-game .jg-seg button:nth-child(odd),.jg-game .jg-seg button:nth-child(even){transform:none}
+.jg-game .jg-seg{gap:5px}

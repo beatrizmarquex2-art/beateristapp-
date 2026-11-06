@@ -68,12 +68,14 @@ export function mountMemoria(host, opts) {
       h('h2', { class: 'kx-h' }, 'tema'),
       ...grupos(list, th),
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. gere o seu código na aba ', h('a', { href: '#/perfil' }, 'Perfil'), ' e fale com a professora Bea.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
-      h('h2', { class: 'kx-h' }, 'quem joga?'),
-      h('div', { class: 'row kd-modes' }, ...[[1, '1 jogador'], [2, '2 jogadores · um de cada vez']].map(([n, l]) => h('button', { type: 'button', class: `kd-chip${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), onclick: () => save({ players: n }).then(setup) }, l))),
-      players === 2 ? h('p', { class: 'muted mem-blurb' }, 'quem acerta um par joga de novo?') : null,
-      players === 2 ? h('div', { class: 'row kd-modes' }, ...[[true, 'sim, joga de novo'], [false, 'não, passa a vez']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${c.again === v ? ' on' : ''}`, 'aria-pressed': String(c.again === v), onclick: () => save({ again: v }).then(setup) }, l))) : null,
-      h('h2', { class: 'kx-h' }, 'quantos pares?'),
-      h('div', { class: 'row kd-modes' }, ...PICK.map((n) => h('button', { type: 'button', class: `kd-chip${pairs === n ? ' on' : ''}`, disabled: n > maxPairs, onclick: () => save({ pairs: n }).then(setup) }, `${n} pares`))),
+      // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
+      h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
+        ...[[1, '👤', '1 jogador'], [2, '👥', '2 jogadores, um de cada vez']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, ic)),
+        h('span', { class: 'mem-step' },
+          h('button', { type: 'button', 'aria-label': 'menos pares', disabled: pairs <= PICK[0] || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) - 1] }).then(setup) }, '‹'),
+          h('span', { 'aria-live': 'polite' }, `${pairs} pares`),
+          h('button', { type: 'button', 'aria-label': 'mais pares', disabled: PICK.indexOf(pairs) >= PICK.length - 1 || PICK[PICK.indexOf(pairs) + 1] > maxPairs || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) + 1] }).then(setup) }, '›')),
+        players === 2 ? h('button', { type: 'button', class: `mem-ic${c.again !== false ? ' on' : ''}`, 'aria-pressed': String(c.again !== false), 'aria-label': 'quem acerta joga de novo', title: 'quem acerta joga de novo', onclick: () => save({ again: c.again === false }).then(setup) }, '↻') : null),
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
     bot.set('happy', 'escolhe o tema e quantos pares!');
