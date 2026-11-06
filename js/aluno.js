@@ -27,6 +27,7 @@ import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import * as perfil from './views/perfil.js';
+import { vitrine } from './views/lojinha-vitrine.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
 import * as CONTAS from './contas.js';
 import * as ALBUMACESSO from './figurinhas/acesso.js';
@@ -189,9 +190,8 @@ function lojinhaView(view) {
   const pedido = h('div', { class: 'al-pedido' });
   const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
   drawPedido();
-  view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha está chegando!'),
-      h('p', { class: 'muted' }, 'aqui vão ficar os exercícios, as atividades pra imprimir e o código de acesso pra liberar tudo.')),
+  view.append(h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    vitrine(),
     h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
     h('section', { class: 'card pad' }, h('b', {}, 'ou peça pra professora Bea'), pedido)));
   return () => { gone = true; };

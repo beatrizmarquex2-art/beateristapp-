@@ -206,3 +206,23 @@
 .mc-bar { display: flex; gap: 8px; flex-wrap: wrap; } .mc-bar .btn { min-height: 44px; }
 /* o tema rabisco quadra tudo; a roleta tem que ser redonda */
 .fig-wheel-disc, .fig-wheel-hub { border-radius: 50% !important; }
+
+/* álbum e perfil lado a lado (área do aluno) */
+.al-subnav { display: flex; gap: 8px; justify-content: center; padding: 10px 16px 0; }
+.al-subnav .chip-btn { text-decoration: none; }
+
+/* Lojinha Beaterista (vitrine) */
+.lj { display: grid; gap: 14px; }
+.lj-topo { width: 100%; height: auto; display: block; margin: 0 auto; max-width: 420px; mix-blend-mode: multiply; }
+.lj-esc { text-align: center; margin: -4px 0 0; } .lj-esc span { display: inline-block; background: #f6d56a; padding: 4px 22px; transform: rotate(-1.5deg); font: 900 italic 22px Georgia, serif; color: #14284b; border-radius: 4px; }
+.lj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lj-card { border: 1.5px solid #14284b; border-radius: 14px; padding: 8px 8px 12px; text-align: center; background: #fbf3e0; display: flex; flex-direction: column; gap: 4px; }
+.lj-card img { width: 100%; height: auto; border-radius: 8px; mix-blend-mode: multiply; }
+.lj-card h3 { font: 900 17px/1.1 system-ui, sans-serif; color: #14284b; margin: 4px 0 0; } .lj-card p { font-size: 12.5px; color: #3b3b3b; margin: 0 0 6px; line-height: 1.25; flex: 1; }
+.lj-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; cursor: pointer; background: #9a1226; color: #fff; font: 900 16px system-ui, sans-serif; padding: 10px 12px; border-radius: 999px; box-shadow: 0 3px 0 #5b0a16; }
+.lj-btn.amarelo { background: #f6c93b; color: #14284b; box-shadow: 0 3px 0 #b78a10; } .lj-btn b { font-size: 20px; line-height: 1; }
+.lj-passe { display: grid; grid-template-columns: 96px 1fr; gap: 6px 10px; align-items: center; border: 3px double #9a1226; border-radius: 12px; padding: 10px; background: #fbf3e0; }
+.lj-passe img { width: 96px; height: auto; grid-row: span 2; mix-blend-mode: multiply; }
+.lj-passe h3 { font: 900 20px/1 Georgia, serif; color: #14284b; margin: 0 0 4px; } .lj-passe ul { list-style: none; padding: 0; margin: 0; font-size: 12.5px; font-weight: 700; color: #3b3b3b; }
+.lj-pp { grid-column: 2; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .lj-preco { background: #9a1226; color: #fff; font: 900 20px system-ui, sans-serif; padding: 6px 16px; border-radius: 999px; }
+.lj-pp .lj-btn { width: auto; flex: 1; min-width: 130px; }
