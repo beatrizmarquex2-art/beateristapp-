@@ -33,7 +33,7 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'study', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil'], ['#/ranking', 'star', 'Ranking']];
+const NAV = [['#/jogos', 'study', 'Jogos'], ['#/estudos', 'bulb', 'Estudos'], ['#/tocar', 'drummer', 'Tocar'], ['#/album', 'photo', 'Álbum'], ['#/perfil', 'id', 'Perfil']];
 const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
@@ -152,11 +152,10 @@ function lockView(view, what) {
 }
 const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', dicionario: 'o Dicionário da bateria', dicas: 'o Quiz e Letras' };
 
-/** Aba Estudos: Jogos Ensinam e 5 erros (abertos), Dicionário, Quiz e Letras e Aulinha do Paul (com código). */
+/** Aba Estudos: 5 erros (aberto), Dicionário, Quiz e Letras e Aulinha do Paul (com código). */
 function estudosView(view) {
   const item = (href, title, sub) => { const lk = AC.trancado(href); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title), h('p', { class: 'muted' }, sub)); };
   view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    item('#/jogos/relatorio', 'Jogos Ensinam', 'relatório aberto pra pais e responsáveis: o que cada jogo desenvolve'),
     item('#/erros', '5 erros', 'material em PDF da professora Bea, aberto pra todo mundo'),
     item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando'),
     item('#/dicas/quiz', 'Quiz e Letras', 'quiz, caça-palavras e cruzadinha das dicas do método'),

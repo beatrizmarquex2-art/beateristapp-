@@ -15,7 +15,7 @@ const trancada = (p) => p.locator('.al-lock').count();
 // 1) sem código
 {
   const { ctx, p, errs } = await phone('', ''); await p.goto(`${url}/aluno.html#/jogos`); await sleep(1800);
-  check('abas com cadeado: Álbum e Ranking (Jogos, Tocar e Perfil abertos)', (await p.locator('.nav-item.locked').count()) === 2, String(await p.locator('.nav-item.locked').count()));
+  check('aba com cadeado: só o Álbum (Jogos, Estudos, Tocar e Perfil abertos; o Ranking saiu do menu)', (await p.locator('.nav-item.locked').count()) === 1, String(await p.locator('.nav-item.locked').count()));
   check('não existe aba Beat Lab pro aluno', (await p.locator('.bottom-nav .nav-item:has-text("Beat Lab")').count()) === 0);
   await go(p, '#/beatlab'); check('#/beatlab volta pra Jogos (não existe pro aluno)', (await p.evaluate(() => location.hash)).startsWith('#/jogos'));
   for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/kids/figuras', '#/kids/eco', '#/dicionario']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
@@ -56,7 +56,7 @@ const trancada = (p) => p.locator('.al-lock').count();
 // 4) a professora desativa: tranca de novo ao abrir
 {
   valid.clear(); const { ctx, p } = await phone('ATIVO1', ''); await p.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
-  check('código desativado: tranca de novo', (await p.locator('.nav-item.locked').count()) === 2);
+  check('código desativado: tranca de novo', (await p.locator('.nav-item.locked').count()) === 1);
   await ctx.close();
 }
 // 5) Quiz e Letras (30 dicas): trancado sem código; com código baixa as dicas e abre; sem código nada é baixado
