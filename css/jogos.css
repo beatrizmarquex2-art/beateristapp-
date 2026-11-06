@@ -732,3 +732,24 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-grid.dc-easy .dc-c.dc-k4{background:var(--k4)}
 .dc-grid.dc-easy .dc-c.dc-k5{background:var(--k5)}
 .dc-wrap .dc-cw{max-width:calc(var(--cols) * 28px)}.dc-wrap .dc-cell{font-size:clamp(12px,3.6vw,16px)}.dc-wrap .dc-cell small{font-size:8px;color:var(--jg-red)}
+/* pistas da cruzadinha: sem caixas, só uma linha limpa com a bolinha da cor da palavra */
+.dc-wrap .dc-clues{list-style:none;padding:0;gap:6px}
+.dc-wrap .dc-clues li{display:grid;grid-template-columns:26px 1fr;column-gap:10px;align-items:start;padding:8px 2px;border:0;border-bottom:1px dashed var(--jg-line);border-radius:0;background:none!important;font-size:14px}
+.dc-wrap .dc-clues li::before{content:attr(value);grid-row:1/4;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--jg-navy);font:700 12px var(--body,inherit);color:var(--jg-navy);background:var(--kc,#fff)}
+.dc-wrap .dc-clues li.dc-k0{--kc:var(--k0)}.dc-wrap .dc-clues li.dc-k1{--kc:var(--k1)}.dc-wrap .dc-clues li.dc-k2{--kc:var(--k2)}.dc-wrap .dc-clues li.dc-k3{--kc:var(--k3)}.dc-wrap .dc-clues li.dc-k4{--kc:var(--k4)}.dc-wrap .dc-clues li.dc-k5{--kc:var(--k5)}
+.dc-wrap .dc-clues li::marker{content:''}
+.dc-wrap .dc-clues li.ok::before{background:var(--jg-navy);color:#fff;content:'✓'}
+.dc-wrap .dc-clues .dc-dir{font-size:11px;color:var(--jg-red)}
+.dc-wrap .dc-clues p{margin:0 0 4px}
+.dc-wrap .dc-clues input{border:0;border-bottom:2px solid var(--jg-navy);border-radius:0;background:transparent;padding:4px 0;font-size:16px;letter-spacing:.22em}
+.dc-wrap .dc-clues input:focus{outline:none;border-bottom-color:var(--jg-red)}
+.dc-wrap .dc-clues li::before{align-self:start;border-radius:50%!important;aspect-ratio:1;height:24px}
+.dc-wrap .dc-clues input{height:30px;min-height:0;box-sizing:border-box;margin:0;box-shadow:none}
+.dc-wrap .dc-cell,.dc-grid.dc-easy .dc-c{border-radius:50%!important}
+.dc-wrap .dc-cell.hint,.dc-wrap .dc-cell.on{border-radius:50%!important}
+.dc-wrap .dc-cell.dc-k0{background:var(--k0)}
+.dc-wrap .dc-cell.dc-k1{background:var(--k1)}
+.dc-wrap .dc-cell.dc-k2{background:var(--k2)}
+.dc-wrap .dc-cell.dc-k3{background:var(--k3)}
+.dc-wrap .dc-cell.dc-k4{background:var(--k4)}
+.dc-wrap .dc-cell.dc-k5{background:var(--k5)}
