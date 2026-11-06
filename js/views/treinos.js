@@ -69,6 +69,8 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 
 /** Leitura: passos do caminho (2 por nível). Um passo só abre depois de tirar PASS_SCORE no anterior. */
 const bestOf = (c) => c.pbest || {};
+/** Estrelas de um exercício do caminho: 70% = 1, 85% = 2, 95% = 3. */
+export const estrelasToca = (sc) => (sc >= 95 ? 3 : sc >= 85 ? 2 : sc >= PASS_SCORE ? 1 : 0);
 const unlocked = (c, i) => i === 0 || (bestOf(c)[i - 1] || 0) >= PASS_SCORE;
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };
 
@@ -82,7 +84,8 @@ export function leitura(host) {
   const stop = () => { S.reset(); if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
     stop(); const c = cfg(); const nb = 1; // sempre 1 compasso
-    const livre = c.mode === 'livre'; const step = Math.min(PATH.length - 1, unlocked(c, c.pstep ?? firstOpen(c)) ? (c.pstep ?? firstOpen(c)) : firstOpen(c)); const lvNow = livre ? c.lv : PATH[step].lv;
+    const livre = c.mode === 'livre';
+    const step = Math.min(PATH.length - 1, unlocked(c, c.pstep ?? firstOpen(c)) ? (c.pstep ?? firstOpen(c)) : firstOpen(c)); const lvNow = livre ? c.lv : PATH[step].lv;
     const useMic = c.input === 'mic' && !micBlocked;
     const key = livre ? 'livre' : `p${step}`;
     if (!livre && beats && beats.key !== key) { fresh = true; }
@@ -96,6 +99,7 @@ export function leitura(host) {
       const g = S.gen; run = null;
       lastResult = evaluate(taps, expected, c.bpm, { mic: useMic }); passedNow = !livre && lastResult.score >= PASS_SCORE;
       await store.upsert(KIND, null, { mode: 'leitura', lv: lvNow, bpm: c.bpm, bars: nb, score: lastResult.score, at: Date.now() });
+      if (!livre) { const ganho = estrelasToca(lastResult.score) - estrelasToca(bestOf(c)[step] || 0); if (ganho > 0) import('../figurinhas/mesa.js').then((M) => M.vitoria('toca', ganho)).catch(() => {}); } // só ganha estrela quando melhora (não dá pra repetir e farmar)
       if (!livre && lastResult.score > (bestOf(c)[step] || 0)) await save({ pbest: { ...bestOf(c), [step]: lastResult.score }, pstep: step }); // fica neste exercício vendo o resultado; o próximo abre no menu
       if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
       draw(false);
@@ -141,7 +145,7 @@ export function leitura(host) {
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
-        !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.') : `precisa de ${PASS_SCORE}% pra abrir o próximo. tenta de novo!`) : null);
+        !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(estrelasToca(r.score))}${'☆'.repeat(3 - estrelasToca(r.score))} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra abrir o próximo. tenta de novo!`) : null);
     }
     const modeLine = line('jeito', chips([['caminho', 'caminho'], ['livre', 'livre (aleatório)']], livre ? 'livre' : 'caminho', (v) => save({ mode: v }).then(() => { lastResult = null; draw(true); }), 'Modo'));
     const ctl = h('section', { class: 'card pad tr-ctrl' }, modeLine,
@@ -149,7 +153,7 @@ export function leitura(host) {
         const first = PATH.findIndex((x) => x.tier === t.id); const open = livre || unlocked(c, first); const on = livre ? c.lv === t.lv : PATH[step].tier === t.id;
         return h('button', { type: 'button', role: 'radio', 'aria-checked': String(on), disabled: !open, class: `lib-tab${on ? ' on' : ''}`, 'aria-label': `${t.name}${open ? '' : ' (fechado)'}`,
           onclick: () => (livre ? save({ lv: t.lv }) : save({ pstep: PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) >= 0 ? PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) : first })).then(() => { lastResult = null; draw(true); }) }, open ? t.name : `🔒 ${t.name}`); }))),
-      livre ? null : h('div', { class: 'tr-path', role: 'group', 'aria-label': 'Exercícios do caminho' }, ...PATH.map((st, i) => (st.tier !== PATH[step].tier ? null : (() => { const open = unlocked(c, i); const sc = bestOf(c)[i]; return h('button', { type: 'button', class: `lib-tab${i === step ? ' on' : ''}`, disabled: !open, 'aria-label': `Exercício ${st.n} de ${st.of}${open ? '' : ' (fechado)'}`, onclick: () => save({ pstep: i }).then(() => { lastResult = null; draw(true); }) }, open ? `${st.n}${sc >= PASS_SCORE ? ' ✓' : ''}` : `🔒 ${st.n}`); })()))),
+      livre ? null : h('div', { class: 'tr-path', role: 'group', 'aria-label': 'Exercícios do caminho' }, ...PATH.map((st, i) => (st.tier !== PATH[step].tier ? null : (() => { const open = unlocked(c, i); const sc = bestOf(c)[i]; return h('button', { type: 'button', class: `lib-tab${i === step ? ' on' : ''}`, disabled: !open, 'aria-label': `Exercício ${st.n} de ${st.of}${open ? '' : ' (fechado)'}`, onclick: () => save({ pstep: i }).then(() => { lastResult = null; draw(true); }) }, open ? `${st.n}${sc >= PASS_SCORE ? ` ${'★'.repeat(estrelasToca(sc))}` : ''}` : `🔒 ${st.n}`); })()))),
       h('p', { class: 'muted tr-lvname' }, livre ? `${TIERS[c.lv - 1].name} · ${TIERS[c.lv - 1].about}` : `${PATH[step].tier === 'ini' ? 'iniciante' : PATH[step].tier === 'int' ? 'intermediário' : 'avançado'} · exercício ${PATH[step].n} de ${PATH[step].of}${(bestOf(c)[step] || 0) ? ` · melhor: ${bestOf(c)[step]}%` : ''}`),
       line('velocidade', chips(VELOCIDADES.map(([k, v]) => [k, k]), velocidadeDe(c.bpm), (k) => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)), 'Velocidade')),
     line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),

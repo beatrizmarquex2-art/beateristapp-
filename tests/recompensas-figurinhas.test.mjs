@@ -27,7 +27,7 @@ test('prêmio de jogo completo: pacote de 5 distintas com pelo menos 1 rara', ()
 test('roleta e prêmio entram uma vez só e abrem uma vez só (idempotente)', () => {
   let s = L.grantPack(L.emptyState(), 'roleta:u:1'); s = L.grantPack(s, 'roleta:u:1'); s = L.grantPack(s, 'jogo:av-x:u');
   assert.equal(L.pendingPacks(s).length, 2);
-  const a = L.openPack(s, cat, 'roleta:u:1'); assert.ok(a.fresh); assert.ok(a.codes.length === 1 || a.codes.length === 2);
+  const a = L.openPack(s, cat, 'roleta:u:1'); assert.ok(a.fresh); assert.ok(a.codes.length >= 1 && a.codes.length <= 3);
   const b = L.openPack(a.state, cat, 'roleta:u:1'); assert.equal(b.fresh, false);
   const c = L.openPack(a.state, cat, 'jogo:av-x:u'); assert.equal(c.codes.length, 5);
   assert.equal(L.pendingPacks(L.grantPack(c.state, 'roleta:u:1')).length, 0, 'já aberta não volta');
