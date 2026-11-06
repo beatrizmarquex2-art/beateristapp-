@@ -231,7 +231,7 @@ function shell(name) {
     const r = route(); view.dataset.page = r.name;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : 'esta parte'));
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;

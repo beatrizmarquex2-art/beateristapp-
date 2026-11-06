@@ -9,7 +9,7 @@ for (const t of T) {
   assert.equal(new Set(t.items.map((x) => x.id)).size, t.items.length, `${t.id}: ids repetidos`);
   assert.equal(new Set(t.items.map((x) => x.img)).size, t.items.length, `${t.id}: fotos repetidas`);
   assert.ok(t.items.every((x) => /^assets\/figurinhas\/mini\/F\d+\.webp$/.test(x.img) && fs.existsSync(new URL('../' + x.img, import.meta.url))), `${t.id}: foto ausente`);
-  assert.equal(t.cover.length, 3); assert.ok(t.open);
+  assert.equal(t.cover.length, 3); assert.equal(t.open, t.id === 'beatles', 'só The Beatles fica aberto');
 }
 assert.equal(by.beatles.items.length, cat.filter((c) => c.colecao === 'Beatles').length, 'Beatles = toda a coleção Beatles');
 const nomes = (t) => t.items.map((x) => x.name);

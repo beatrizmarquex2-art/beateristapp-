@@ -14,9 +14,9 @@ export function buildPhotoThemes(catalogo, { pos = () => '50% 30%', rnd = Math.r
   const sem = (a) => !a.colecoes.includes('Beatles') && !a.colecoes.includes('Beaterista');
   const bandas = artistas.filter((a) => a.tipo === 'banda' && sem(a)).map((a) => item(a.id, a.curto, a.fotoPrincipal, a.curto));
   const solo = artistas.filter((a) => a.tipo === 'solo' && sem(a)).map((a) => item(a.id, a.curto, a.fotoPrincipal, a.curto));
-  const mk = (id, title, blurb, items, back) => ({ id, title, blurb, items, verso: null, back, photo: true, open: true, cover: sample(items, 3, rnd).map((x) => x.img) }); // back: o verso das cartas (assets/cards)
+  const mk = (id, title, blurb, items, back, open = false) => ({ id, title, blurb, items, verso: null, back, photo: true, open, cover: sample(items, 3, rnd).map((x) => x.img) }); // back: o verso das cartas (assets/cards)
   return [
-    mk('beatles', 'The Beatles', 'ache as fotos iguais da banda', beatles, 'assets/cards/b02.webp'),
+    mk('beatles', 'The Beatles', 'ache as fotos iguais da banda', beatles, 'assets/cards/b02.webp', true),
     mk('bandas', 'Bandas', 'Queen, Nirvana, Coldplay…', bandas, 'assets/cards/b01.webp'),
     mk('solo', 'Solos', 'Rita Lee, Michael Jackson, Pitty…', solo, 'assets/cards/b03.webp'),
   ].filter((t) => t.items.length >= 6);

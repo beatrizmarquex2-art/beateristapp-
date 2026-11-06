@@ -850,3 +850,4 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-game .jg-seg button,.jg-seg.sm button{min-height:28px;padding:3px 10px;font-size:12px;border-width:1.5px;border-radius:999px;box-shadow:none;transform:none}
 .jg-game .jg-seg button:nth-child(odd),.jg-game .jg-seg button:nth-child(even){transform:none}
 .jg-game .jg-seg{gap:5px}
+.jg-seg button.jg-ic{min-width:34px;font-size:15px;line-height:1;padding:2px 9px}

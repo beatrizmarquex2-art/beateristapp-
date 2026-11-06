@@ -14,7 +14,7 @@ const MARKS = [
   '<path d="M20 5c9 0 15 3 15 11 0 9-8 19-15 19S5 25 5 16C5 8 11 5 20 5z" fill="#BD1733" stroke="#142036" stroke-width="2.4"/>',
 ];
 const mark = (who) => svg(MARKS[who], 'jg-mk');
-const MODES = [['local', 'dois no aparelho'], ['online', '2 celulares (código)'], ['facil', 'contra o paul · fácil'], ['estrategico', 'contra o paul · estratégico']];
+const MODES = [['local', 'dois no aparelho', '👥'], ['online', '2 celulares (código)', '📱'], ['facil', 'contra o paul · fácil', '🤖'], ['estrategico', 'contra o paul · estratégico', '🤖🧠']]; // 3º item: ícone (só o ícone aparece; o texto vira dica)
 const VARIANTS = [['classico', 'clássico'], ['desafio', 'desafio musical']];
 const LEVEL_HELP = { infantil: 'perguntas bem simples', facil: 'perguntas fáceis de música', intermediario: 'perguntas mais difíceis' };
 
@@ -38,7 +38,7 @@ export function mount(host, opts) {
   function intro() {
     stop(); leave(); g = null;
     const resume = V.validMatch(saved.match) ? saved.match : null;
-    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), class: prefs[key] === v ? 'on' : '', onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, l)));
+    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic || l)));
     root.replaceChildren(
       h('h2', { class: 'jg-h hand' }, 'jogo da velha'),
       h('ol', { class: 'jg-big' },

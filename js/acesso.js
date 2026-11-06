@@ -13,7 +13,7 @@ export function trancado(hash) {
   const m = /^#\/([^/?]+)(?:\/([^/?]*))?/.exec(String(hash || '')); if (!m) return false;
   const [, a, b] = m;
   if (['ranking', 'album', 'ritmo', 'dicionario', 'dicas', 'paulta'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) e a pauLta só com código
-  if (a === 'jogos' && b === 'toca') return true; // Toca Aqui ensina de verdade: só com código
+  if (a === 'jogos' && (b === 'toca' || b === 'cartas')) return true; // Toca Aqui e Uno Musical (figuras rítmicas) ensinam de verdade: só com código
   if (a === 'kids') return !(b && KIDS_LIVRES.has(b)); // #/kids sozinho (fases e estrelas) e as fases ficam trancados
   return false; // jogos, ritmo (trava por dentro), tocar, toque, piano, relatório
 }

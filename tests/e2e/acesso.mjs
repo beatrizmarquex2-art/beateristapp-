@@ -19,7 +19,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   check('não existe aba Beat Lab pro aluno', (await p.locator('.bottom-nav .nav-item:has-text("Beat Lab")').count()) === 0);
   await go(p, '#/beatlab'); check('#/beatlab volta pra Jogos (não existe pro aluno)', (await p.evaluate(() => location.hash)).startsWith('#/jogos'));
   for (const h of ['#/ranking', '#/album', '#/ritmo', '#/kids', '#/kids/figuras', '#/kids/eco', '#/dicionario']) { await go(p, h); check(`sem código: ${h} trancado`, (await trancada(p)) === 1); }
-  for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/cartas', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
+  for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
   check('no catálogo, as fases e o quiz têm cadeado e os jogos livres não (o dicionário e a aulinha agora moram na aba Estudos)', locked.some((t) => /fases e estrelas/.test(t)) && locked.some((t) => /Quiz e Letras/.test(t)) && !locked.some((t) => /memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
@@ -91,10 +91,11 @@ const trancada = (p) => p.locator('.al-lock').count();
   await p.goto(`${url}/aluno.html#/paulta`); await sleep(2000);
   check('pauLta trancada sem código', (await trancada(p)) === 1);
   await go(p, '#/jogos/toca'); check('Toca Aqui trancado sem código', (await trancada(p)) === 1);
+  await go(p, '#/jogos/cartas'); check('Uno Musical trancado sem código', (await trancada(p)) === 1);
   await go(p, '#/jogos');
   const lk = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo: Toca Aqui e pauLta com cadeado; memória, uno, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'pauLta'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|uno|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
-  for (const g of ['memart', 'bingo', 'velha', 'cartas', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
+  check('no catálogo: Toca Aqui, pauLta e Uno com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'pauLta', 'Uno'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
+  for (const g of ['memart', 'bingo', 'velha', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
   check('sem erros de página', errs.length === 0, errs.join(' | '));
   await ctx.close();
 }
