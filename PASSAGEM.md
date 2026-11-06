@@ -7,21 +7,31 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Pede mudanças visuais pequenas e iterativas ("mais perto", "menos colado"). Mostre o resultado (print) antes de publicar quando der.
 - Ela **não precisa de explicação técnica**: diga o que mudou e onde ver.
 
-## Dois produtos, dois lugares
-| | App da Bea | Área dos alunos |
-|---|---|---|
-| Endereço | https://beatrizmarquex2-art.github.io/beateristapp-/ | https://jogos.beaterista.com.br (e `beaterista-alunos.netlify.app`) |
-| Entrada | `index.html` + `js/app.js` (com login Supabase) | `aluno.html` + `js/aluno.js` (sem login, só nome) |
-| Publica como | merge/push na `main` (GitHub Pages, automático) | **manual**: `scripts/build-aluno.sh` + deploy Netlify (abaixo) |
+## Sites e onde moram (atualizado em 05/nov/2026)
+| Site | Endereço | Hospedagem | Supabase |
+|---|---|---|---|
+| App da Bea | https://beatrizmarquex2-art.github.io/beateristapp-/ | repo `beateristapp-`, push na `main` (GitHub Pages, automático) | `beaterista-app` |
+| Área dos alunos | https://jogos.beaterista.com.br | repo `beaterista-jogos` (GitHub Pages, arquivo `CNAME` no repo) | `beaterista-app` |
+| bm (era o "bmup" do Netlify) | https://beatrizmarquex2-art.github.io/bmup/ | repo `bmup` (GitHub Pages) | `bm house` (`qquxrvpgppjpeavohhim`, conta gmail; estava pausado e foi restaurado em 05/nov; no plano grátis pausa se ficar parado) |
+| BeLe (casal) | https://bele0708.netlify.app | Netlify, **time novo** separado do time dos jogos. De propósito **não** foi pro GitHub (repo público; fotos e conteúdo do casal) | outra conta (hotmail), org Bele, projeto App BeLe. Cadastro de usuário novo deve ficar desligado |
 
-O que se sobe no GitHub **não** chega sozinho à área dos alunos.
+- **Onde as seções abaixo falam em "Netlify `beaterista-alunos`", hoje vale o repo `beaterista-jogos`.** O Netlify dos alunos foi o que estourou os créditos do time e suspendeu tudo em nov/2026.
+- Entrada: app da Bea = `index.html` + `js/app.js` (login Supabase). Alunos = `aluno.html` + `js/aluno.js` (sem login, só nome).
+- Cada endereço tem seu próprio armazenamento local: trocar de link **não leva** os dados do aparelho. Antes de trocar, baixar backup (bm: Ajustes & Backup > Restaurar backup) e reinstalar o ícone na tela inicial.
 
-### Publicar a área dos alunos
-1. `scripts/build-aluno.sh /caminho/de/saida` (copia só o necessário e troca o `index.html` por `aluno.html`).
-2. Deploy no site Netlify **`beaterista-alunos`** (siteId `ccdb0392-7dd3-46f0-82ba-3b1e0ad845ed`) com a ferramenta `deploy-site` do MCP do Netlify; ela devolve um comando `npx @netlify/mcp ...` para rodar dentro da pasta de saída.
-3. Sempre subir a versão do cache em `sw.js` (`const VERSION = 'beaterista-vNNN'`) a cada mudança, senão o app instalado mostra a versão antiga.
-- O site `beaterista-app` (siteId `9a09521b-...`) já existia; **não mexer**.
-- O domínio `beaterista.com.br` (GoDaddy) hospeda o site pessoal da Bea e **não pode sair do ar**. Só existe o subdomínio `jogos.` apontando (CNAME) para `beaterista-alunos.netlify.app`.
+### Publicar a área dos alunos (agora no GitHub Pages)
+1. Gerar numa pasta temporária, **nunca dentro do clone do repo** (o script apaga a pasta de saída): `scripts/build-aluno.sh /tmp/jogos-out`.
+2. Em `/tmp/jogos-out`: apagar `_headers` (o Pages não usa), criar `.nojekyll` e `CNAME` com `jogos.beaterista.com.br`.
+3. Copiar o conteúdo pro clone do repo `beaterista-jogos` e dar push na `main`.
+4. Sempre subir a versão do cache em `sw.js` (`const VERSION = 'beaterista-vNNN'`) a cada mudança, senão o app instalado mostra a versão antiga.
+- GoDaddy: registro **CNAME** `jogos` apontando pra `beatrizmarquex2-art.github.io` (só esse registro pro `jogos`). `beaterista.com.br` (site pessoal da Bea) **não pode sair do ar**; não mexer em `@` e `www`.
+- HTTPS do `jogos`: em 05/nov o dns estava validado e o certificado ainda sendo emitido. Quando liberar, marcar **Enforce HTTPS** em Settings > Pages do repo.
+
+### Netlify (resto) e limpeza
+- Time antigo "BeLe" (plano Personal, 1000 créditos, suspenso até o reset de 15/nov): `beaterista-alunos` (antigo, apagar quando o `jogos` novo estiver ok), `beaterista-app` (cópia velha, **não mexer** até apagar de vez) e `bxproject04` (do BX, projeto apagado).
+- Time novo: `bele0708` e `bmup` (versão antiga do bm; só apagar depois de conferir o do GitHub, inclusive áudios que o backup não leva).
+- Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
+- Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
 ## Supabase (projeto `beaterista-app`, id `fnxgjxatremjdxaqmswu`)
 - App da Bea: tabela `records` (sincronização) com RLS e lista `app_allowed_emails`.
