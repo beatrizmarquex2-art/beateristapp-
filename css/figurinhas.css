@@ -217,7 +217,8 @@
 .lj-esc { text-align: center; margin: -4px 0 0; } .lj-esc span { display: inline-block; background: #f6d56a; padding: 4px 22px; transform: rotate(-1.5deg); font: 900 italic 22px Georgia, serif; color: #14284b; border-radius: 4px; }
 .lj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .lj-card { border: 1.5px solid #14284b; border-radius: 14px; padding: 8px 8px 12px; text-align: center; background: #fbf3e0; display: flex; flex-direction: column; gap: 4px; }
-.lj-card img { width: 100%; height: auto; border-radius: 8px; mix-blend-mode: multiply; }
+.lj-capa { position: relative; border: 0; padding: 0; background: none; cursor: pointer; display: block; width: 100%; } .lj-capa img { width: 100%; height: auto; border-radius: 8px; display: block; }
+.lj-capa i { position: absolute; left: 6px; bottom: 6px; background: #14284b; color: #f6d56a; font: 800 11px system-ui, sans-serif; font-style: normal; padding: 3px 8px; border-radius: 999px; }
 .lj-card h3 { font: 900 17px/1.1 system-ui, sans-serif; color: #14284b; margin: 4px 0 0; } .lj-card p { font-size: 12.5px; color: #3b3b3b; margin: 0 0 6px; line-height: 1.25; flex: 1; }
 .lj-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; cursor: pointer; background: #9a1226; color: #fff; font: 900 16px system-ui, sans-serif; padding: 10px 12px; border-radius: 999px; box-shadow: 0 3px 0 #5b0a16; }
 .lj-btn.amarelo { background: #f6c93b; color: #14284b; box-shadow: 0 3px 0 #b78a10; } .lj-btn b { font-size: 20px; line-height: 1; }
@@ -226,3 +227,10 @@
 .lj-passe h3 { font: 900 20px/1 Georgia, serif; color: #14284b; margin: 0 0 4px; } .lj-passe ul { list-style: none; padding: 0; margin: 0; font-size: 12.5px; font-weight: 700; color: #3b3b3b; }
 .lj-pp { grid-column: 2; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .lj-preco { background: #9a1226; color: #fff; font: 900 20px system-ui, sans-serif; padding: 6px 16px; border-radius: 999px; }
 .lj-pp .lj-btn { width: auto; flex: 1; min-width: 130px; }
+
+.lj-dlg { border: 0; padding: 0; width: min(94vw, 520px); max-height: 92vh; border-radius: 16px; background: #fbf3e0; color: #14284b; overflow: hidden; }
+.lj-dlg[open] { display: flex; flex-direction: column; } .lj-dlg::backdrop { background: #000a; }
+.lj-dtop { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font: 900 17px system-ui, sans-serif; border-bottom: 1px solid #14284b33; }
+.lj-x { border: 0; background: #14284b; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 15px; cursor: pointer; }
+.lj-fotos { overflow: auto; display: grid; gap: 10px; padding: 10px; flex: 1; } .lj-fotos img { width: 100%; height: auto; border-radius: 10px; display: block; }
+.lj-dbot { padding: 10px 14px 14px; border-top: 1px solid #14284b33; }

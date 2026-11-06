@@ -1,4 +1,5 @@
-// Vitrine da Lojinha Beaterista (desenho da Bea): 4 materiais em cartões + Passe Beaterista. Textos e links em js/loja-config.js.
+// Vitrine da Lojinha Beaterista (desenho da Bea): materiais em cartões + Passe Beaterista. Textos, imagens e links em js/loja-config.js.
+// Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { PASSE, PRODUTOS } from '../loja-config.js';
@@ -9,12 +10,23 @@ const comprar = (item) => () => {
 };
 const botao = (txt, item, cls) => h('button', { type: 'button', class: `lj-btn ${cls || ''}`.trim(), onclick: comprar(item), 'data-id': item.id || 'passe' }, txt, h('b', { 'aria-hidden': 'true' }, '›'));
 
+/** Janela com as fotos grandes do material. */
+function detalhe(p) {
+  const dlg = h('dialog', { class: 'lj-dlg', 'aria-label': p.nome },
+    h('div', { class: 'lj-dtop' }, h('b', {}, p.nome), h('button', { type: 'button', class: 'lj-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
+    h('div', { class: 'lj-fotos' }, ...p.fotos.map((f, i) => h('img', { src: f, alt: `${p.nome}, imagem ${i + 1}`, loading: 'lazy' }))),
+    h('div', { class: 'lj-dbot' }, botao('Adquirir', p)));
+  dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+
 export function vitrine() {
   return h('div', { class: 'lj' },
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
-    h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card' },
-      h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: 370, height: 330 }), h('h3', {}, p.nome), h('p', {}, p.desc), botao('Adquirir', p)))),
+    h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card', 'data-id': p.id },
+      h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: 640, height: 800 })),
+      h('h3', {}, p.nome), h('p', {}, p.desc), botao('Adquirir', p)))),
     h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))));
