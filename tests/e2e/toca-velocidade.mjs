@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-await ctx.route('**/*.supabase.co/**', (r) => r.abort());
+await ctx.route('**/*.supabase.co/**', (r) => (r.request().url().includes('aluno_codigo_ok') ? r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }) : r.abort())); // o Toca Aqui agora só abre com código
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/jogos/toca/livre'); await page.waitForSelector('.tr-pad', { timeout: 15000 });
 const bpmTxt = () => page.textContent('.bl-bpm');

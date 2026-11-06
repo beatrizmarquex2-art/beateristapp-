@@ -29,7 +29,7 @@ await go2('#/jogos');
 const lista = await pg.textContent('#view');
 check('"figuras rítmicas" saiu da lista de jogos', !/figuras rítmicas/i.test(lista));
 await go2('#/jogos/toca/livre');
-check('Toca Aqui tem 3 opções, a terceira é "figuras rítmicas"', (await pg.locator('.jg-seg button').count()) === 3 && (await pg.locator('.jg-seg button').nth(2).textContent()).includes('figuras rítmicas'));
+check('Toca Aqui tem 4 opções (a terceira é "figuras rítmicas" e a quarta o duelo online)', (await pg.locator('.jg-seg button').count()) === 4 && (await pg.locator('.jg-seg button').nth(2).textContent()).includes('figuras rítmicas'));
 await pg.locator('.jg-seg button').nth(2).click(); await sleep(500);
 check('a opção abre o jogo de fases e a aulinha do Paul', (await pg.locator('.jg-fases a[href="#/kids/figuras"]').count()) === 1 && (await pg.locator('.jg-fases a[href="#/kids/figuras/aula"]').count()) === 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));

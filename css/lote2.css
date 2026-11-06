@@ -148,3 +148,13 @@
 .pv-fig img { width: 100%; height: auto; display: block; border: 3px solid #1b1818; border-radius: 12px; box-shadow: 3px 3px 0 #1b1818; background: #fffdf8; }
 .pv-fig figcaption { font: 600 12px var(--body); text-align: center; color: #3b3530; }
 .pv-txt { display: grid; gap: 6px; } .pv-txt p { margin: 0; } .pv-txt ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.45; } .pv-txt b { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; opacity: .75; }
+/* duelo do Beat Hero */
+.dl { display: grid; gap: 12px; padding: 0 16px 24px; } .dl[hidden], .dl-game[hidden] { display: none; }
+.dl-cfg { display: grid; gap: 6px; } .dl-sel { width: 100%; max-width: 100%; min-height: 34px; font: 600 13px var(--body); border: 2px solid #1b1818; border-radius: 8px; background: #fffdf8; color: #1b1818; padding: 2px 6px; }
+.dl-cab { display: grid; gap: 4px; } .dl-cab .jg-link-badge { margin: 0; font: 700 11px var(--body); }
+.dl-pl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dl-j { display: grid; gap: 2px; padding: 10px; text-align: center; border: 2px solid #1b1818; border-radius: 12px; background: #fffdf8; } .dl-j.eu { background: #fff3d6; } .dl-j.win { box-shadow: 0 0 0 3px #1f9d4a; } .dl-j b { font: 700 18px var(--body); }
+.dl-corpo { display: grid; place-items: center; min-height: 80px; text-align: center; } .dl-cont { margin: 0; font: 700 72px/1 var(--display, inherit); color: #a31d30; }
+.dl-fim { display: grid; gap: 8px; justify-items: center; } .dl-nota { margin: 0; font-size: 12px; text-align: center; }
+.dl .jg-seg { display: flex; gap: 6px; flex-wrap: wrap; } .dl .jg-seg button { min-height: 28px; padding: 3px 11px; font: 600 12px var(--body); border: 1.5px solid #1b1818; border-radius: 999px; background: #fffdf8; color: #1b1818; cursor: pointer; } .dl .jg-seg button.on { background: #1b1818; color: #fff; }
+.dl .jo-passo button { background: #fffdf8; color: #1b1818; border-color: #1b1818; } .dl .jo-rot { color: #3b3530; }
