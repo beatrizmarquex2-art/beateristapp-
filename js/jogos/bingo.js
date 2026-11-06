@@ -10,6 +10,7 @@ import * as ON from './bingo-online.js';
 import { printPack } from './bingo-print.js';
 import { silence } from '../audio.js';
 import { cardBg } from '../views/kids.js';
+import { linha, chips, passo, ajuda } from './opcoes.js';
 
 const ID = 'bingo';
 const INTERVALS = [8, 12, 20];
@@ -109,10 +110,7 @@ export function mount(host) {
   const seg = (key, list, onPick) => h('div', { class: 'jg-seg bg-seg', role: 'radiogroup' }, ...list.map(([val, label]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(P[key] === val), class: P[key] === val ? 'on' : '', onclick: () => { P[key] = val; savePrefs(); if (onPick) onPick(val); else menu(); } }, label)));
   const sheetOpen = (title, build) => { modal++; stopTimer(); sheet(title, build, { onClose: () => { modal = Math.max(0, modal - 1); schedule(); } }); };
 
-  function tutorial(open) {
-    const steps = ['Escolha seu tema e como quer jogar.', 'Olhe as nove imagens da sua cartela.', 'O Paul anuncia o item sorteado. Você pode tocar em SORTEAR ou ativar AUTO.', 'Se o item estiver na sua cartela, marque! No Kids, pode marcar sozinho.', 'Completou três na horizontal, vertical ou diagonal? BINGO! O sistema confere se os itens realmente saíram.'];
-    return h('details', { class: 'bg-how', open: open || null }, h('summary', {}, 'Como jogar'), h('ol', {}, ...steps.map((s) => h('li', {}, s))));
-  }
+  const STEPS = ['Escolha seu tema e como quer jogar.', 'Olhe as nove imagens da sua cartela.', 'O Paul anuncia o item sorteado. Você pode tocar em SORTEAR ou ativar AUTO.', 'Se o item estiver na sua cartela, marque! No Kids, pode marcar sozinho.', 'Completou três na horizontal, vertical ou diagonal? BINGO! O sistema confere se os itens realmente saíram.'];
 
   /* ================= MENU ================= */
   function menu() {
@@ -120,30 +118,31 @@ export function mount(host) {
     const resume = B.validGame(saved.game) && !saved.game.over && saved.game.mode !== 'online' ? saved.game : null;
     const sess = ON.lerSessao ? ON.lerSessao() : null;
     const pre = salaDoLink();
-    const themeBtn = (t) => { const [id, nome] = t; const ico = THEME_ICON[id];
-      const btn = h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.tema === id), class: `kx-g bg-poster${P.tema === id ? ' on' : ''}`, onclick: () => { P.tema = id; savePrefs(); menu(); } });
-      const icon = h('span', { class: 'kx-gi bg-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
-      btn.append(cardBg(), icon, h('b', { class: 'kx-gt' }, nome), h('span', { class: 'kx-gm' }, P.tema === id ? '✔ escolhido' : 'toque pra escolher')); return btn; };
+    // tela de começo organizada: tema em capinhas, uma linha por escolha, regras escondidas no "?"
+    const temaBtn = (t) => { const [id, nome] = t; const ico = THEME_ICON[id];
+      const btn = h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.tema === id), 'aria-label': nome, class: `jo-tema${P.tema === id ? ' on' : ''}`, onclick: () => { P.tema = id; savePrefs(); menu(); } });
+      const icon = h('span', { class: 'jo-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
+      btn.append(icon, h('b', {}, nome)); return btn; };
     const kids = P.perfil === 'kids';
-    const modeLabels = [['solo', 'Sozinho'], ['online', 'Jogar online por código'], ['mesmo', '2 jogadores no mesmo aparelho'], ['sala', 'Sala de aula']];
+    const modos = [['solo', 'Sozinho', 'um'], ['online', 'Jogar online por código', 'celular'], ['mesmo', '2 jogadores no mesmo aparelho', 'dois'], ['sala', 'Sala de aula', 'sala']];
     const go = () => { if (P.mode === 'online') return; begin(); };
+    const set = (k, v, extra) => { P[k] = v; if (extra) extra(v); savePrefs(); menu(); };
     root.replaceChildren(...[
-      h('div', { class: 'bg-hero' }, robo({ mood: 'happy', size: 70, say: 'Escolha o tema e bora jogar!' }).el),
       resume ? h('div', { class: 'bg-resume' }, h('span', {}, `Partida em andamento (${B.THEME_NAME[resume.tema]}, ${B.counter(resume).toLowerCase()})`), h('button', { class: 'btn primary', type: 'button', onclick: () => { g = resume; screen = 'play'; render(); schedule(); } }, 'continuar')) : null,
-      sess ? h('div', { class: 'bg-resume' }, h('span', {}, `Você tem uma sala online aberta (${sess.code}).`), h('button', { class: 'btn primary', type: 'button', onclick: () => reconnect(sess) }, 'voltar à sala'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { ON.limparSessao(); menu(); } }, 'sair dela')) : null,
-      tutorial(!P.seen),
-      h('p', { class: 'jg-lab' }, 'Tema'), h('div', { class: 'bg-themes kx-cards kx-arc', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(themeBtn)),
-      h('p', { class: 'jg-lab' }, 'Como quer jogar?'), seg('mode', modeLabels),
-      h('p', { class: 'jg-lab' }, 'Ajuda'), seg('perfil', [['kids', 'Kids'], ['classico', 'Clássico']], (v) => { if (v === 'classico') P.marcar = 'eu'; else P.marcar = 'auto'; savePrefs(); menu(); }),
-      h('p', { class: 'jg-lab' }, 'Vitória por'), seg('vitoria', B.VICTORIES),
-      h('p', { class: 'jg-lab' }, 'Sorteio'), seg('draw', [['manual', 'Manual (Paul sorteia quando eu tocar)'], ['auto', 'Automático']]),
-      P.draw === 'auto' ? seg('intervalo', INTERVALS.map((s) => [s, `${s} s`])) : null,
-      P.mode !== 'sala' ? [h('p', { class: 'jg-lab' }, 'Marcação'), seg('marcar', [['auto', 'Automática'], ['eu', 'Eu quero marcar']])] : null,
+      sess ? h('div', { class: 'bg-resume' }, h('span', {}, `Você tem uma sala online aberta (${sess.code}).`), h('button', { class: 'btn primary', type: 'button', onclick: () => reconnect(sess) }, 'voltar à sala'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { ON.limparSessao(); menu(); } }, 'sair da sala')) : null,
+      h('div', { class: 'jo-topo' }, h('b', {}, 'tema'), ajuda('Como jogar', h('ol', {}, ...STEPS.map((x) => h('li', {}, x))))),
+      h('div', { class: 'jo-temas', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(temaBtn)),
+      h('div', { class: 'jo-card' },
+        linha('quem joga', chips(modos, P.mode, (v) => set('mode', v), 'Como quer jogar')),
+        linha('ajuda', chips([['kids', 'kids'], ['classico', 'clássico']], P.perfil, (v) => set('perfil', v, (x) => { P.marcar = x === 'classico' ? 'eu' : 'auto'; }), 'Ajuda')),
+        linha('vitória', passo(B.VICTORIES, P.vitoria, (v) => set('vitoria', v), 'vitória por')),
+        linha('sorteio', chips([['manual', 'manual'], ['auto', 'automático']], P.draw, (v) => set('draw', v), 'Sorteio'), P.draw === 'auto' ? passo(INTERVALS.map((x) => [x, `${x} s`]), P.intervalo, (v) => set('intervalo', v), 'intervalo') : null),
+        P.mode !== 'sala' ? linha('marcar', chips([['auto', 'automático'], ['eu', 'eu marco']], P.marcar, (v) => set('marcar', v), 'Marcação')) : null,
+        linha('voz do Paul', chips([[true, 'ligada'], [false, 'desligada']], !!P.voz, (v) => set('voz', v, (x) => { if (x) speak('A voz do Paul está ligada.'); else leaveSpeech(); }), 'Voz do Paul'))),
       P.mode === 'mesmo' ? h('div', { class: 'bg-names' }, ...[0, 1].map((i) => h('label', { class: 'field' }, h('span', {}, `Jogador ${i + 1}`), h('input', { type: 'text', maxlength: 14, value: P.names[i], 'aria-label': `Nome do jogador ${i + 1}`, onchange: (e) => { P.names[i] = (e.target.value.trim() || `Jogador ${i + 1}`).slice(0, 14); savePrefs(); } })))) : null,
       P.mode === 'online' ? onlineForm(pre) : null,
-      h('label', { class: 'bg-voice' }, h('input', { type: 'checkbox', checked: P.voz || null, onchange: (e) => { P.voz = e.target.checked; savePrefs(); if (P.voz) speak('A voz do Paul está ligada.'); else leaveSpeech(); } }), h('span', {}, 'Voz do Paul (opcional)')),
       P.mode === 'sala' ? h('button', { class: 'btn', type: 'button', onclick: () => printSheet(P.tema) }, '🖨 Imprimir cartelas e fichas deste tema') : null,
-      P.mode !== 'online' ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bg-bigbtn', type: 'button', onclick: go }, P.mode === 'sala' ? 'Abrir o sorteador' : 'Jogar')) : null,
+      P.mode !== 'online' ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary jo-go', type: 'button', onclick: go }, P.mode === 'sala' ? 'abrir o sorteador' : 'jogar')) : null,
     ].flat().filter(Boolean));
     if (pre && P.mode !== 'online') { P.mode = 'online'; savePrefs(); menu(); }
   }

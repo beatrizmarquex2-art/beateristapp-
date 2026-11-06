@@ -7,6 +7,7 @@ import { addCustom, bankSize } from './stop-valid.js';
 import * as FX from './stop-sfx.js';
 import { getGame, setGame } from './base.js';
 import { lobby, linkBadge } from './online.js';
+import { linha, chips, ajuda } from './opcoes.js';
 
 const ID = 'stop';
 const PAUL = 'assets/paul/';
@@ -96,11 +97,12 @@ export function mount(host, opts) {
     };
     root.replaceChildren(...[
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
-      h('p', { class: 'jg-p' }, 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'),
-      h('p', { class: 'jg-lab' }, 'quem joga?'), seg([['solo', 'individual'], ['dupla', 'dupla'], ['sala', 'sala de aula'], ['online', '2 celulares']], prefs.mode, (v) => { save({ mode: v }); setup(); }, 'modo de jogo'),
-      prefs.mode === 'dupla' ? h('p', { class: 'jg-p muted' }, 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.') : null,
-      prefs.mode === 'sala' ? h('p', { class: 'jg-p muted' }, 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.') : null,
-      prefs.mode === 'online' ? h('p', { class: 'jg-p muted' }, 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas. a partida simultânea ainda não existe.') : null,
+      h('div', { class: 'jo-card' },
+        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'dupla', 'dois'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+          ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
+            : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'
+            : prefs.mode === 'online' ? 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas. a partida simultânea ainda não existe.'
+            : 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'))),
       namesBox(),
       h('p', { class: 'jg-lab' }, `categorias: ${prefs.cats.length} escolhida${prefs.cats.length === 1 ? '' : 's'} (de ${S.MIN_CATS} a ${S.MAX_CATS})`),
       h('div', { class: 'st-cats', role: 'group', 'aria-label': 'categorias' }, ...catBtns),
@@ -111,11 +113,12 @@ export function mount(host, opts) {
         h('button', { class: 'btn small', type: 'button', disabled: !S.catsOk(getGame(ID).last), onclick: () => { save({ cats: getGame(ID).last }); setup(); } }, 'repetir a última'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => { save({ cats: [] }); setup(); } }, 'limpar')),
       h('p', { class: `st-warn${okCats && eligible.length ? ' ok' : ''}`, role: 'status', 'aria-live': 'polite' }, !okCats ? `escolha de ${S.MIN_CATS} a ${S.MAX_CATS} categorias pra começar` : eligible.length ? `${eligible.length} de 16 letras servem pra essa escolha` : 'nenhuma letra serve pra todas essas categorias juntas. troque alguma categoria.'),
-      h('p', { class: 'jg-lab' }, 'tempo por jogador'), seg(secs.map((v) => [v, secsLabel(v)]), customSecs ? 0 : prefs.seconds, (v) => { save({ seconds: v === 0 ? 45 : v }); setup(); }, 'tempo'),
-      customSecs ? h('label', { class: 'jg-field' }, h('span', {}, 'segundos (10 a 600)'), h('input', { type: 'number', inputmode: 'numeric', min: 10, max: 600, value: prefs.seconds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ seconds: Math.min(600, Math.max(10, n || 60)) }); setup(); } })) : null,
-      h('p', { class: 'jg-lab' }, 'rodadas'), seg(roundsList.map((v) => [v, v === 0 ? 'outro' : String(v)]), customRounds ? 0 : prefs.rounds, (v) => { save({ rounds: v === 0 ? 4 : v }); setup(); }, 'rodadas'),
-      customRounds ? h('label', { class: 'jg-field' }, h('span', {}, 'rodadas (1 a 20)'), h('input', { type: 'number', inputmode: 'numeric', min: 1, max: 20, value: prefs.rounds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ rounds: Math.min(20, Math.max(1, n || 3)) }); setup(); } })) : null,
-      h('div', { class: 'jg-rule-box' }, h('b', {}, 'como o jogo confere'), h('p', {}, 'sem diferença de maiúscula, acento ou espaço. “the beatles” vale B (o artigo não conta). se o jogo não conhece a resposta, ela fica amarela, “aguardando revisão”: você decide, e o que for aprovado entra no banco deste aparelho.')),
+      h('div', { class: 'jo-card' },
+        linha('tempo', seg(secs.map((v) => [v, secsLabel(v)]), customSecs ? 0 : prefs.seconds, (v) => { save({ seconds: v === 0 ? 45 : v }); setup(); }, 'tempo por jogador')),
+        customSecs ? h('label', { class: 'jg-field' }, h('span', {}, 'segundos (10 a 600)'), h('input', { type: 'number', inputmode: 'numeric', min: 10, max: 600, value: prefs.seconds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ seconds: Math.min(600, Math.max(10, n || 60)) }); setup(); } })) : null,
+        linha('rodadas', seg(roundsList.map((v) => [v, v === 0 ? 'outro' : String(v)]), customRounds ? 0 : prefs.rounds, (v) => { save({ rounds: v === 0 ? 4 : v }); setup(); }, 'rodadas')),
+        customRounds ? h('label', { class: 'jg-field' }, h('span', {}, 'rodadas (1 a 20)'), h('input', { type: 'number', inputmode: 'numeric', min: 1, max: 20, value: prefs.rounds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ rounds: Math.min(20, Math.max(1, n || 3)) }); setup(); } })) : null,
+        linha('conferência', ajuda('Como o jogo confere', 'sem diferença de maiúscula, acento ou espaço. “the beatles” vale B (o artigo não conta). se o jogo não conhece a resposta, ela fica amarela, “aguardando revisão”: você decide, e o que for aprovado entra no banco deste aparelho.'))),
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => ({ ...newMatch('dupla'), online: true }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => resumeMatch(resume) }, 'continuar partida') : null,
           h('button', { class: `btn ${resume ? '' : 'primary'}`, type: 'button', disabled: !okCats || !eligible.length, onclick: start }, resume ? 'nova partida' : 'iniciar')),

@@ -860,3 +860,27 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-seg button.jg-ic{min-width:34px;min-height:32px;padding:3px 8px}
 .jg-seg button.jg-ic .ic-bq{width:20px;height:20px}
 .jg-seg button.jg-tiny{min-height:22px;padding:1px 8px;font-size:10px;letter-spacing:.03em;opacity:.9;align-self:center}
+/* telas de começo organizadas: uma linha por escolha, chips pequenos, "?" pras regras */
+.jo-card{margin:8px 0;padding:8px 10px;border:2px solid var(--jg-ink);border-radius:12px;background:#fffdf7;color:#142036}
+.jo-card .jg-seg button{box-shadow:none}
+.jo-linha{display:flex;align-items:center;gap:8px;margin:5px 0;flex-wrap:wrap}
+.jo-rot{flex:0 0 78px;font:700 10px var(--body,inherit);letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.jo-opc{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1;min-width:0}
+.jo-chips{display:flex;gap:5px;flex-wrap:wrap}
+.jo-passo{display:inline-flex;align-items:center;gap:3px;font:700 12px var(--body,inherit)}
+.jo-passo>span{min-width:70px;text-align:center}
+.jo-passo button{min-width:26px;min-height:26px;padding:0;border:1.5px solid var(--jg-ink);border-radius:999px;background:#fffdf7;color:#142036;font:700 15px/1 var(--body,inherit);cursor:pointer}
+.jo-passo button:disabled{opacity:.3;cursor:default}
+.jo-ajuda{display:inline-block;vertical-align:middle}.jo-ajuda summary{list-style:none;display:inline-grid;place-items:center;width:22px;height:22px;border:1.5px solid currentColor;border-radius:50%;font:700 12px var(--body,inherit);cursor:pointer;opacity:.8}
+.jo-ajuda summary::-webkit-details-marker{display:none}.jo-ajuda[open] summary{background:currentColor}.jo-ajuda[open] summary{color:#fffdf7}
+.jo-nota{margin:6px 0;padding:8px 10px;border:1.5px dashed currentColor;border-radius:10px;font-size:13px;line-height:1.4;text-align:left}.jo-nota ol,.jo-nota ul{margin:0;padding-left:18px}
+.jo-topo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 4px;font:700 11px var(--body,inherit);letter-spacing:.06em;text-transform:uppercase}
+.jo-temas{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.jo-tema{width:56px;display:grid;justify-items:center;gap:2px;padding:4px 2px 3px;background:transparent;border:2px solid transparent;border-radius:10px;color:inherit;font:700 10px/1.1 var(--body,inherit);text-align:center;cursor:pointer}
+.jo-tema.on{border-color:var(--jg-ink);background:#fff3d6;color:#142036}
+.jo-ticon{display:block;width:36px;height:36px}.jo-ticon img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}
+.jo-go{min-height:34px!important;padding:4px 18px!important;font-size:14px!important}
+.jg-game .jg-actions .btn.primary{min-height:34px;padding:4px 16px;font-size:14px}
+@media (prefers-reduced-motion:reduce){.jo-tema{transition:none}}
+.jg-qprev{max-height:120px;width:auto;max-width:100%;object-fit:cover;border-radius:10px}
+.jg-imgs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;gap:4px}.jg-imgs button{flex:0 0 auto;min-height:0!important;padding:2px!important}.jg-imgs button img{width:46px!important;height:31px!important;object-fit:cover;border-radius:5px;display:block}

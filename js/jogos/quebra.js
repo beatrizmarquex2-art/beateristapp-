@@ -1,5 +1,6 @@
 // Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Sem drag-and-drop nativo (toque: peça e depois posição; mouse também arrasta).
 import { h } from '../util.js';
+import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as Q from './quebra-logic.js';
 import { getGame, setGame, sfx, reduced } from './base.js';
@@ -55,14 +56,15 @@ export function mount(host, opts) {
   function intro() {
     stopClock(); g = null; selected = null; hintCell = null;
     const resume = Q.validGame(saved.game) && !saved.game.over ? saved.game : null;
-    const seg = h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'dificuldade' }, ...SIZES.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.diff === v), class: prefs.diff === v ? 'on' : '', onclick: () => { prefs.diff = v; setGame(ID, { diff: v }); intro(); } }, l)));
+    const RULES = () => h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro, ou arraste a peça até o lugar (no celular: arraste pra cima, ou segure um instante e arraste).'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
       IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: imgId === im.id ? 'on' : '', onclick: () => { imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
-      h('p', { class: 'jg-lab' }, 'tamanho'), seg,
-      h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', checked: prefs.free ? true : null, onchange: (e) => { prefs.free = e.target.checked; setGame(ID, { free: prefs.free }); } }), ' modo livre (sem tempo)'),
-      h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro, ou arraste a peça até o lugar (no celular: arraste pra cima, ou segure um instante e arraste).'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'))),
+      h('div', { class: 'jo-card' },
+        linha('tamanho', chips(SIZES.map(([v, l]) => [v, l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }, 'dificuldade')),
+        linha('tempo', chips([[false, 'com tempo'], [true, 'livre']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo'), ajuda('Regras rápidas', RULES())),
+      ),
       bests.length ? h('p', { class: 'jg-p muted' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => load(() => begin(Q.newGame(prefs))) }, resume ? 'nova partida' : 'iniciar')),

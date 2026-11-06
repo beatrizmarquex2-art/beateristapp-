@@ -35,14 +35,14 @@ async function aparelho(ctx, nome) {
   return page;
 }
 const txt = (p) => p.evaluate(() => document.querySelector('.bg-root').innerText);
-const clickText = (p, sel, t) => p.evaluate(([s, tt]) => { const e = [...document.querySelectorAll(s)].find((x) => x.textContent.trim().startsWith(tt) && !x.disabled); if (e) e.click(); return !!e; }, [sel, t]);
+const clickText = (p, sel, t) => p.evaluate(([s, tt]) => { const low = (v) => String(v || '').trim().toLowerCase(); const e = [...document.querySelectorAll(s)].find((x) => (low(x.textContent).startsWith(low(tt)) || low(x.getAttribute('aria-label')).startsWith(low(tt))) && !x.disabled); if (e) e.click(); return !!e; }, [sel, t]);
 const sorteados = (p) => p.evaluate(() => { const m = /Sorteados: (\d+) de (\d+)/.exec(document.querySelector('.bg-root').innerText); return m ? [Number(m[1]), Number(m[2])] : null; });
 
 /* ---------- 1. Kids sozinho ---------- */
 const p1 = await aparelho(c1, 'solo');
-check('menu: 5 temas, perfil Kids por padrão, mini-tutorial de 5 passos', (await p1.$$('.bg-poster')).length === 5 && (await p1.$$('.bg-how li')).length === 5 && await p1.evaluate(() => [...document.querySelectorAll('.bg-seg button')].some((b) => b.textContent === 'Kids' && b.getAttribute('aria-checked') === 'true')));
-await clickText(p1, '.bg-poster', 'Peças da bateria'); await sleep(200);
-await clickText(p1, '.bg-bigbtn', 'Jogar'); await sleep(300);
+check('menu: 5 temas, perfil Kids por padrão, mini-tutorial de 5 passos', (await p1.$$('.jo-tema')).length === 5 && (await p1.$$('.jo-nota li')).length === 5 && await p1.evaluate(() => [...document.querySelectorAll('.jo-chips button')].some((b) => b.textContent === 'kids' && b.getAttribute('aria-checked') === 'true')));
+await clickText(p1, '.jo-tema', 'Peças da bateria'); await sleep(200);
+await clickText(p1, '.jo-go', 'jogar'); await sleep(300);
 check('jogo abre com cartela 3×3 (9 casas) e contador', (await p1.$$('.bg-cell')).length === 9 && (await sorteados(p1))[1] === 16);
 check('Kids: nenhuma casa marcada antes do primeiro sorteio', (await p1.$$('.bg-cell.on')).length === 0);
 await p1.click('.bg-draw'); await p1.waitForFunction(() => /Sorteados: 1 de/.test(document.querySelector('.bg-root').innerText));
@@ -62,10 +62,10 @@ const pk = (p) => p.evaluate(() => window.__peak(700)); await p1.click('.bg-draw
 await p1.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /Sair para o menu/.test(x.textContent)); if (b) b.click(); }); await sleep(300);
 await p1.evaluate(() => [...document.querySelectorAll('.sheet button')].find((b) => /Sair/.test(b.textContent))?.click()); await sleep(400);
 check('sair da partida: sem som residual', (await pk(p1)) < 0.004);
-if (!(await p1.$('.bg-poster'))) { await p1.goto(url + '/aluno.html#/jogos/bingo/livre'); await p1.reload(); await p1.waitForSelector('.bg-poster'); }
+if (!(await p1.$('.jo-tema'))) { await p1.goto(url + '/aluno.html#/jogos/bingo/livre'); await p1.reload(); await p1.waitForSelector('.jo-tema'); }
 /* ---------- 1b. Clássico: marcação manual e sorteio automático com pausa ---------- */
-await clickText(p1, '.bg-seg button', 'Clássico'); await sleep(200); await clickText(p1, '.bg-seg button', 'Automático'); await sleep(200);
-await clickText(p1, '.bg-seg button', '8 s'); await sleep(200); await clickText(p1, '.bg-bigbtn', 'Jogar'); await sleep(400);
+await clickText(p1, '.jo-chips button', 'Clássico'); await sleep(200); await clickText(p1, '.jo-chips button', 'Automático'); await sleep(200);
+await p1.evaluate(() => { for (let i = 0; i < 4; i++) { const w = [...document.querySelectorAll('.jo-passo')].find((x) => / s$/.test(x.querySelector('span').textContent)); if (!w || w.querySelector('span').textContent === '8 s') break; w.querySelector('button').click(); } }); await sleep(200); await clickText(p1, '.jo-go', 'jogar'); await sleep(400);
 check('Clássico: marcação manual (nada marcado sozinho) e AUTO ligado', (await p1.$$('.bg-cell.on')).length === 0 && /AUTO: desligar/.test(await txt(p1)));
 await p1.click('.bg-cell'); await sleep(200);
 check('Clássico: tocar em item não sorteado não marca e explica sem punir', (await p1.$$('.bg-cell.on')).length === 0 && /ainda não saiu/.test(await txt(p1)));
@@ -78,8 +78,8 @@ check('continuar retoma sem perder a sequência', true);
 await p1.evaluate(() => { const b = [...document.querySelectorAll('.jg-actions .btn')].find((x) => /Sair para o menu/.test(x.textContent)); if (b) b.click(); }); await sleep(300);
 await p1.evaluate(() => [...document.querySelectorAll('.sheet button')].find((b) => /Sair/.test(b.textContent))?.click()); await sleep(400);
 /* ---------- 2. dois jogadores no mesmo aparelho ---------- */
-await clickText(p1, '.bg-seg button', 'Kids'); await sleep(200); await clickText(p1, '.bg-seg button', 'Manual'); await sleep(200); await clickText(p1, '.bg-seg button', '2 jogadores'); await sleep(200);
-await clickText(p1, '.bg-bigbtn', 'Jogar'); await sleep(300);
+await clickText(p1, '.jo-chips button', 'Kids'); await sleep(200); await clickText(p1, '.jo-chips button', 'Manual'); await sleep(200); await clickText(p1, '.jo-chips button', '2 jogadores'); await sleep(200);
+await clickText(p1, '.jo-go', 'jogar'); await sleep(300);
 await p1.click('.bg-draw'); await sleep(300);
 check('mesmo aparelho: só UMA cartela na tela e é a do Jogador 1', (await p1.$$('.bg-card')).length === 1 && /Vez de Jogador 1/.test(await txt(p1)));
 check('SORTEAR bloqueado até os dois jogadores olharem a cartela', await p1.evaluate(() => document.querySelector('.bg-draw').disabled));
@@ -94,8 +94,8 @@ await clickText(p1, '.jg-sheet button, .sheet button', 'Sair'); await sleep(300)
 
 /* ---------- 3. sala de aula: impressão das 24 cartelas ---------- */
 await p1.evaluate(() => { window.__printed = null; window.print = () => { window.__printed = { cards: document.querySelectorAll('.bg-print .bp-card').length, fichas: document.querySelectorAll('.bg-print .bp-ficha').length, marks: document.querySelectorAll('.bg-print .bp-marks i').length, ids: [...document.querySelectorAll('.bg-print .bp-ch small')].map((x) => x.textContent.split(' · ')[0]) }; }; });
-if (!(await p1.$('.bg-poster'))) await p1.goto(url + '/aluno.html#/jogos/bingo/livre');
-await p1.waitForSelector('.bg-poster'); await clickText(p1, '.bg-seg button', 'Sala de aula'); await sleep(200);
+if (!(await p1.$('.jo-tema'))) await p1.goto(url + '/aluno.html#/jogos/bingo/livre');
+await p1.waitForSelector('.jo-tema'); await clickText(p1, '.jo-chips button', 'Sala de aula'); await sleep(200);
 await p1.evaluate(() => [...document.querySelectorAll('button')].find((b) => /Imprimir cartelas/.test(b.textContent))?.click()); await sleep(400);
 await p1.evaluate(() => [...document.querySelectorAll('.sheet button')].find((b) => /Imprimir/.test(b.textContent) && b.classList.contains('primary'))?.click()); await sleep(900);
 const pr = await p1.evaluate(() => window.__printed);
@@ -104,12 +104,12 @@ check('impressão: 24 cartelas numeradas, fichas e marcadores', pr && pr.cards =
 /* ---------- 4. ONLINE por código: dois aparelhos ---------- */
 if (!PGlite) { console.log('AVISO: PGlite ausente, teste online pulado'); } else {
   const c2 = await context(browser); const pa = p1; const pb = await aparelho(c2, 'convidado');
-  await pa.goto(url + '/aluno.html#/jogos/bingo/livre'); await pa.waitForSelector('.bg-poster');
-  await clickText(pa, '.bg-seg button', 'Jogar online'); await sleep(200);
+  await pa.goto(url + '/aluno.html#/jogos/bingo/livre'); await pa.waitForSelector('.jo-tema');
+  await clickText(pa, '.jo-chips button', 'Jogar online'); await sleep(200);
   await pa.fill('.bg-online input[type=text]', 'Ana'); await clickText(pa, '.bg-online .bg-bigbtn', 'CRIAR SALA');
   await pa.waitForSelector('.jg-code', { timeout: 8000 }); const code = (await pa.textContent('.jg-code')).trim();
   check('anfitrião recebe código de 6 caracteres sem ambíguos', /^[A-HJKMNP-Z2-9]{6}$/.test(code), code);
-  await clickText(pb, '.bg-seg button', 'Jogar online'); await sleep(200);
+  await clickText(pb, '.jo-chips button', 'Jogar online'); await sleep(200);
   await pb.fill('.bg-online input[type=text]', 'Beto'); await pb.fill('.bg-online .jg-code-in', code); await clickText(pb, '.bg-online .btn', 'ENTRAR COM CÓDIGO');
   await pb.waitForSelector('.jg-code', { timeout: 8000 });
   check('convidado entra na mesma sala (lobby)', (await pb.textContent('.jg-code')).trim() === code);

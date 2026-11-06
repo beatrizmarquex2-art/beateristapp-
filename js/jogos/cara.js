@@ -1,5 +1,6 @@
 // Cara a cara dos instrumentos: tela. Dados em cara-data.js, regras em cara-logic.js.
 import { h } from '../util.js';
+import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
 import { BY_ID, QUESTIONS, answerFor } from './cara-data.js';
@@ -36,12 +37,13 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   function intro() {
     g = null; picked = null;
     const resume = K.validGame(saved.game) && !saved.game.over ? saved.game : null;
-    const seg = h('div', { class: 'jg-seg', role: 'radiogroup' }, ...[[false, 'automático'], [true, 'manual']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs.manual === v), class: prefs.manual === v ? 'on' : '', onclick: () => { prefs.manual = v; setGame(ID, { manual: v }); intro(); } }, l)));
-    const temaSeg = onTema ? h('div', {}, h('p', { class: 'jg-lab' }, 'tema'), h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'tema' }, ...[['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']].map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === 'instrumentos'), class: v === 'instrumentos' ? 'on' : '', onclick: () => { if (v !== 'instrumentos') onTema(v); } }, l)))) : null;
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara'), temaSeg, h('p', { class: 'jg-p' }, 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'),
-      h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg,
-      h('p', { class: 'jg-p muted' }, prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.'),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara'),
+      h('div', { class: 'jo-card' },
+        onTema ? linha('tema', chips([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'instrumentos', (v) => { if (v !== 'instrumentos') onTema(v); }, 'tema')) : null,
+        linha('cartas', chips([[false, 'automático'], [true, 'manual']], prefs.manual, (v) => { prefs.manual = v; setGame(ID, { manual: v }); intro(); }, 'eliminar cartas'),
+          ajuda('Eliminar cartas', prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.')),
+        linha('regras', ajuda('Como jogar', 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'))),
       saved.best ? h('p', { class: 'jg-p muted' }, `seu recorde: ${saved.best} pergunta${saved.best === 1 ? '' : 's'}`) : null,
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, 'continuar partida') : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, resume ? 'nova partida' : 'iniciar')),
