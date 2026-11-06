@@ -1,6 +1,7 @@
 // Lógica do álbum de figurinhas (sem tela): pacotes, sorteio, colar, contagem. Tudo determinístico e idempotente:
 // o mesmo pacote (mesmo id) sempre dá as mesmas figurinhas e nunca é entregue nem aberto duas vezes.
 import { rng, hashSeed } from './ornaments.js';
+import { juntarBonus } from './passe-cartas.js';
 
 export const PACK_SIZE = 5;
 export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os jogos) libera uma roleta
@@ -94,6 +95,6 @@ export function deriveInv(opened, pasted) {
 export function mergeStates(a, b) {
   const A = { ...emptyState(), ...(a || {}) }, B = { ...emptyState(), ...(b || {}) };
   const opened = { ...A.opened, ...B.opened }, pasted = { ...A.pasted, ...B.pasted };
-  return { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+  return { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted), ...(juntarBonus(A, B) ? { passe: juntarBonus(A, B) } : {}) };
 }
 export const sameProgress = (a, b) => JSON.stringify([Object.keys(a.pasted || {}).sort(), Object.keys(a.opened || {}).sort(), [...(a.granted || [])].sort()]) === JSON.stringify([Object.keys(b.pasted || {}).sort(), Object.keys(b.opened || {}).sort(), [...(b.granted || [])].sort()]);

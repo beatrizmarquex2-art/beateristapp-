@@ -33,11 +33,16 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import * as LOJA from './loja/view.js';
+import { lojaLigada, modoTeste } from './loja/flags.js';
+import { registrarBonus } from './figurinhas/passe-cartas.js';
+import * as FIGLOGIC from './figurinhas/album-logic.js';
+import * as DONO from './figurinhas/dono.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Tocar'], ['#/album', 'gallery', 'Álbum'], ['#/perfil', 'id', 'Perfil']]; // lâmpada, livro, nota musical, galeria e carteirinha
-const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
+const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos', passe: 'lojinha' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
@@ -253,7 +258,8 @@ function trocarAluno() {
 
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
-  const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
+  const NAVL = lojaLigada() ? [...NAV.slice(0, 3), ['#/lojinha', 'shop', 'Lojinha'], ...NAV.slice(3)] : NAV; // a Lojinha entra depois de Jogos, Estudos e Tocar (só com o interruptor ligado)
+  const nav = h('nav', { class: 'bottom-nav', 'data-n': NAVL.length, style: `grid-template-columns: repeat(${NAVL.length}, 1fr)`, 'aria-label': 'Navegação' });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
@@ -264,7 +270,7 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
+    nav.replaceChildren(...NAVL.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
@@ -289,6 +295,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'erros') c = errosView(view);
+    else if ((r.name === 'lojinha' || r.name === 'passe') && lojaLigada()) c = LOJA.mount(view, r.name, r.parts, lojaCtx());
     else if (r.name === 'lojinha') c = lojinhaView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
@@ -300,7 +307,37 @@ function shell(name) {
   go();
 }
 
+
+/** O que a Lojinha precisa do app: o código guardado, o que fazer depois de ativar o Passe e como guardar as 3 cartas bônus. */
+function lojaCtx() {
+  return {
+    codigo: () => CODE.saved(),
+    onAtivado: async (r) => {
+      CODE.guardar(r.code); AC.definir(true);
+      if (!getName()) { const n = cleanName(String(r.email || '').split('@')[0]) || 'aluno'; try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; } try { localStorage.setItem(ORIGEM_KEY, 'passe beaterista'); } catch { window.__alunoOrigem = 'passe beaterista'; } }
+      location.hash = r.bonus_pendente ? '#/passe/envelope' : '#/passe'; location.reload();
+    },
+    guardarBonus: async () => {
+      const id = DONO.albumId(); const atual = { ...FIGLOGIC.emptyState(), ...DONO.albumDados() };
+      const prox = registrarBonus(atual); store.upsert('figurinhas', id, prox); // 1) salva no aparelho ANTES da animação
+      if (modoTeste()) return; // preview: nada vai ao servidor
+      try { const c = CODE.saved(); const r = await ALBUMACESSO.entrar(c); await ALBUMACESSO.salvar(c, registrarBonus(FIGLOGIC.mergeStates(prox, r && r.estado))); } catch { /* o álbum sincroniza na próxima vez */ }
+    },
+  };
+}
+/** Visitante (sem nome): a Lojinha e o Passe abrem direto, sem conta. O resto continua pedindo o nome. */
+function visitanteShell() {
+  document.body.classList.add('lj-visitante');
+  const view = h('main', { id: 'view', tabindex: '-1' });
+  const r0 = route();
+  app.replaceChildren(h('div', { class: 'lj-topo' }, h('a', { href: '#/entrar', class: 'lj-entrar' }, '‹ entrar na área do aluno'), h('img', { src: 'assets/logo-nome.png', alt: 'Beaterista', width: 100, height: 33 })), view,
+    h('nav', { class: 'lj-visitante-nav', 'aria-label': 'Navegação da loja' }, h('a', { href: '#/lojinha', class: r0.name === 'lojinha' ? 'on' : '', 'aria-current': r0.name === 'lojinha' ? 'page' : null }, 'Lojinha'), h('a', { href: '#/passe', class: r0.name === 'passe' ? 'on' : '', 'aria-current': r0.name === 'passe' ? 'page' : null }, 'Passe')));
+  LOJA.mount(view, r0.name, r0.parts, lojaCtx()); window.scrollTo(0, 0);
+}
+const lojaRota = () => lojaLigada() && LOJA.ehRotaLoja(location.hash);
+
 function askName() {
+  document.body.classList.remove('lj-visitante');
   const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
@@ -309,7 +346,7 @@ function askName() {
   const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
   const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
-  const codBox = h('div', { class: 'al-codbox', hidden: true }, cod, gen, pedido);
+  const codBox = h('div', { class: 'al-codbox', hidden: true }, cod, gen, pedido, lojaLigada() ? h('a', { class: 'al-passe-link', href: '#/passe' }, 'Conhecer o Passe Beaterista') : null);
   function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
   sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; codBox.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!codBox.hidden && !cod.hidden) cod.focus(); });
@@ -342,7 +379,8 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, codBox, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
-    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
+    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'),
+    lojaLigada() ? h('nav', { class: 'al-loja-links', 'aria-label': 'Lojinha e Passe' }, h('a', { class: 'btn ghost', href: '#/lojinha' }, 'Visitar a Lojinha')) : null);
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
   setTimeout(() => input.focus(), 100);
@@ -355,7 +393,7 @@ async function refreshAccess() {
 
 async function start() {
   const name = getName() || window.__alunoNome || '';
-  if (!name) { askName(); return; }
+  if (!name) { if (lojaRota()) visitanteShell(); else askName(); return; }
   await ensureKidsPlayer(name);
   logVisit(name);
   await refreshAccess();
@@ -371,5 +409,6 @@ async function start() {
   }
   startScroller();
   startPaul({ first: 7000 });
+  addEventListener('hashchange', () => { if (!getName()) { if (lojaRota()) visitanteShell(); else askName(); } }); // sem nome: a Lojinha abre direto; qualquer outra rota volta pra entrada
   start();
 })();

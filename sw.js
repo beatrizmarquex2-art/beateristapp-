@@ -1,6 +1,7 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v316';
+const VERSION = 'beaterista-v317';
 const SHELL = [
+  'css/loja.css', 'js/loja/flags.js', 'js/loja/catalogo.js', 'js/loja/passe-api.js', 'js/loja/view.js', 'js/figurinhas/passe-cartas.js', 
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
   'js/figurinhas/share-ui.js', 'js/views/perfil.js', 'js/acesso.js',
@@ -23,6 +24,7 @@ const SHELL = [
 
 // <extra-gerado> arquivos dos jogos e das artes, baixados depois do essencial (scripts/sw-extra.mjs refaz esta lista)
 const EXTRA = [
+  'assets/loja/memoria.webp', 'assets/loja/kids.webp', 'assets/loja/robo1.webp', 'assets/loja/robo2.webp', 'assets/loja/violao.webp', 'assets/loja/mood.webp', 'assets/loja/ebook.webp', 'assets/loja/banner-lojinha.webp', 'assets/loja/banner-passe.webp',
   'assets/jogos/guitarra.webp', 'assets/jogos/baixo.webp', 'assets/jogos/teclado.webp', 'assets/jogos/sax.webp', 'assets/jogos/praca.webp', 'assets/jogos/terraco.webp', 'assets/jogos/estudio.webp', 'assets/jogos/parque.webp', 'assets/jogos/garagem.webp', // imagens do quebra-cabeça: baixam em segundo plano (são pesadas)
   'assets/aluno/bingo.webp',
   'assets/aluno/cara-a-cara.webp',

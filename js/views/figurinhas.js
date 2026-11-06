@@ -12,8 +12,9 @@ import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
+import { CARTAS_PASSE, SECAO_PASSE, temBonus } from '../figurinhas/passe-cartas.js';
 
-const TABS = [...L.SECOES, 'Minhas', 'Pacotes'];
+const tabsDe = (st) => [...L.SECOES, ...(temBonus(st) ? ['Passe'] : []), 'Minhas', 'Pacotes']; // 'Passe' = Edição Passe Beaterista (fora do sorteio e da contagem)
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 const loadCatalog = async () => (catalog ||= await (await fetch('assets/figurinhas/catalogo.json')).json());
@@ -29,6 +30,7 @@ export function mount(host, parts = [], opts = {}) {
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
+  const TABS = tabsDe(state);
   const explicita = TABS.includes(parts[0]) || !!L.SECAO_ANTIGA[parts[0]];
   let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
   let alive = true; let io = null; let justPasted = null;
@@ -56,15 +58,21 @@ export function mount(host, parts = [], opts = {}) {
   function draw() {
     if (!catalog) return;
     const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
-    const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
+    const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, tabsDe(state).map((t) => {
       const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
       return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
     }));
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, `🎡 você tem ${pend} pra abrir (giro grátis do dia, roleta ou prêmio) — toque aqui`) : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
-      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
-    if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : tab === 'Passe' ? passeView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Passe') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+  }
+
+  /** Edição Passe Beaterista: 3 cartas bônus, seção separada (não entra no sorteio nem no total acima). */
+  function passeView() {
+    return h('section', { class: 'fig-passe', 'aria-label': SECAO_PASSE }, h('h2', { class: 'hand' }, SECAO_PASSE), h('p', { class: 'fig-note' }, 'bônus de quem ativou o Passe. Estas três cartas ficam fora do sorteio e da conta das 125.'),
+      h('div', { class: 'fig-passe-row' }, CARTAS_PASSE.map((c) => h('figure', { class: 'fig-passe-card', 'data-id': c.id }, h('img', { src: c.arte, alt: `${c.titulo}: ${c.descricao}`, loading: 'lazy' }), h('figcaption', {}, c.titulo)))));
   }
 
   /* ---------- coleção: o livro ---------- */
