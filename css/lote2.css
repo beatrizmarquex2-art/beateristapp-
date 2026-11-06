@@ -140,3 +140,11 @@
 .ic-bq { display: inline-block; line-height: 0; vertical-align: middle; } .ic-bq svg, .ic-bq img { width: 100%; height: 100%; display: block; object-fit: contain; }
 .mem-ic { min-width: 34px; min-height: 32px; padding: 2px 7px; } .mem-ic .ic-bq { width: 20px; height: 20px; }
 .al-am{font:600 11px var(--body);color:#a31d30;text-transform:none;letter-spacing:0}.am-lock{display:grid;gap:8px;justify-items:center;text-align:center;margin:8px 0}.am-lock .am-i{font-size:28px}.am-lock p{margin:0}.dc-term.locked{opacity:.75}
+/* prévia dos jogos trancados */
+.pv { display: grid; gap: 12px; padding: 0 16px; }
+.pv-tag { margin: 0; font: 700 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #6b6258; }
+.pv-gal { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 8px; -webkit-overflow-scrolling: touch; }
+.pv-fig { flex: 0 0 62%; max-width: 250px; margin: 0; scroll-snap-align: start; display: grid; gap: 4px; }
+.pv-fig img { width: 100%; height: auto; display: block; border: 3px solid #1b1818; border-radius: 12px; box-shadow: 3px 3px 0 #1b1818; background: #fffdf8; }
+.pv-fig figcaption { font: 600 12px var(--body); text-align: center; color: #3b3530; }
+.pv-txt { display: grid; gap: 6px; } .pv-txt p { margin: 0; } .pv-txt ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.45; } .pv-txt b { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; opacity: .75; }

@@ -37,6 +37,12 @@ async function abrir(c, valido, hash) {
   await p.goto(`${url}/aluno.html#/dicas/quiz`); await sleep(1500);
   check('quiz sem código mostra o aviso', (await p.locator('.am-lock').count()) === 1 && (await p.locator('.dc-q').count()) === 0);
   check('nada das dicas foi baixado sem código', baixou === 0, String(baixou));
+  // prévia dos jogos que ensinam de verdade
+  for (const [h, nome] of [['#/ritmo', 'Beat Hero'], ['#/paulta', 'pauLta'], ['#/jogos/toca', 'Toca Aqui'], ['#/jogos/cartas', 'Uno Musical']]) {
+    await p.goto(`${url}/aluno.html#/jogos`); await sleep(600); await p.goto(`${url}/aluno.html${h}`); await sleep(1800);
+    const imgs = await p.locator('.pv-fig img').evaluateAll((es) => es.map((e) => e.complete && e.naturalWidth > 0));
+    check(`${nome} sem código: mostra a prévia (telas reais), o que faz e o que desenvolve, e o caminho pra lojinha`, (await p.locator('.pv h2').textContent()).includes(nome) && imgs.length >= 2 && imgs.every(Boolean) && (await p.locator('.pv-txt li').count()) >= 6 && (await p.locator('.al-lock a[href="#/lojinha"]').count()) === 1, JSON.stringify(imgs));
+  }
   await p.close();
 }
 { // com código
@@ -46,6 +52,8 @@ async function abrir(c, valido, hash) {
   check('com código: sem selos "grátis" e sem cadeado no Estudos', (await p.locator('.al-am').count()) === 0 && (await p.locator('.al-card.locked').count()) === 0);
   await p.goto(`${url}/aluno.html#/estudos/dicas`); await sleep(2500);
   check('com código: Dicas do método lista as dicas pra estudar', (await p.locator('.dc-tipbox').count()) >= 6 && baixou >= 1, String(await p.locator('.dc-tipbox').count()));
+  await p.goto(`${url}/aluno.html#/ritmo`); await sleep(2000);
+  check('com código: Beat Hero abre de verdade (sem prévia)', (await p.locator('.pv').count()) === 0 && (await p.locator('.al-lock').count()) === 0);
   await p.goto(`${url}/aluno.html#/kids/figuras/aula`); await sleep(1500);
   for (let i = 0; i < 3; i++) await p.locator('.au-nav button:has-text("próximo")').click();
   check('com código: aulinha passa do 2º passo', (await p.locator('.am-lock').count()) === 0);

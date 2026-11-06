@@ -12,6 +12,7 @@ import * as dicas from './views/dicas.js';
 import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
+import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
@@ -123,7 +124,7 @@ function rankingView(view) {
 }
 
 /** Tela de uma parte que só vale com código: gerar o código, contar pra professora e liberar sozinho. */
-function lockView(view, what) {
+function lockView(view, what, pv) {
   let timer = 0; let gone = false;
   const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
@@ -149,7 +150,7 @@ function lockView(view, what) {
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
   draw(); start();
-  view.append(banner('Só pra alunos', 'libere com o seu código de acesso'), h('div', { class: 'pad-x' }, box));
+  view.append(banner(pv ? tituloDaPrevia(pv) : 'Só pra alunos', pv ? 'dá uma olhada antes de jogar' : 'libere com o seu código de acesso'), pv ? previa(pv) : null, h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
 const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', paulta: 'a pauLta' };
@@ -265,7 +266,7 @@ function shell(name) {
     const r = route(); view.dataset.page = r.name;
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'));
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;
