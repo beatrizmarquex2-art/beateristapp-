@@ -60,7 +60,9 @@ function freshBoard(starter) { return { board: Array(9).fill(null), turn: starte
 /** Perguntas já feitas passam pra próxima rodada (não repete de rodada em rodada); só zera quando sobram poucas no nível. */
 export const nextRound = (g) => { const starter = 1 - g.starter; const sobram = poolFor(g.level).filter((q) => !(g.asked || []).includes(q.id)).length; return { ...g, round: g.round + 1, starter, asked: sobram >= 5 ? g.asked || [] : [], ...freshBoard(starter) }; };
 const clone = (g) => JSON.parse(JSON.stringify(g));
-export const isPaulTurn = (g) => (g.mode === 'facil' || g.mode === 'estrategico') && g.turn === 1;
+export const isPaulTurn = (g) => (g.mode === 'paul' || g.mode === 'facil' || g.mode === 'estrategico') && g.turn === 1; // 'paul' = às vezes fácil, às vezes difícil (sorteia a cada jogada)
+/** A jogada do Paul no modo livre: 'paul' sorteia a cada jogada entre a fácil (aleatória) e a difícil (a melhor); 'estrategico' sempre a melhor; 'facil' sempre aleatória. */
+export const paulMove = (mode, board, rnd = Math.random) => (mode === 'estrategico' || (mode === 'paul' && rnd() < 0.5) ? bestMove(board, 1, rnd) : easyMove(board, rnd));
 
 function finishIfOver(g) {
   const w = winnerOf(g.board);
@@ -114,7 +116,7 @@ export function resolveOffer(g0, end) {
 export function validMatch(g) {
   try {
     if (!g || g.v !== 1 || !Array.isArray(g.board) || g.board.length !== 9 || !g.board.every((x) => x === null || x === 0 || x === 1)) return false;
-    if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'facil', 'estrategico', 'online'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
+    if (g.turn !== 0 && g.turn !== 1) return false; if (!['local', 'paul', 'facil', 'estrategico', 'online'].includes(g.mode) || !['classico', 'desafio'].includes(g.variant)) return false;
     if (g.level != null && !LEVEL_IDS.includes(g.level)) return false;
     if (g.pending && (g.board[g.pending.cell] != null || !questionById(g.pending.qid))) return false;
     return Array.isArray(g.scores) && g.scores.length === 2 && Array.isArray(g.asked) && (g.moved == null || (Array.isArray(g.moved) && g.moved.length === 2));

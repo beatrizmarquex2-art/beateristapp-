@@ -1,4 +1,5 @@
 // Jogo da velha musical: tela. Regras e perguntas em velha-logic.js / velha-data.js.
+import { bq } from './bonequinhos.js';
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
@@ -14,8 +15,7 @@ const MARKS = [
   '<path d="M20 5c9 0 15 3 15 11 0 9-8 19-15 19S5 25 5 16C5 8 11 5 20 5z" fill="#BD1733" stroke="#142036" stroke-width="2.4"/>',
 ];
 const mark = (who) => svg(MARKS[who], 'jg-mk');
-const MODES = [['local', 'dois no aparelho', '👥'], ['online', '2 celulares (código)', '📱'], ['facil', 'contra o paul · fácil', '🤖'], ['estrategico', 'contra o paul · estratégico', '🤖🧠']]; // 3º item: ícone (só o ícone aparece; o texto vira dica)
-const VARIANTS = [['classico', 'clássico'], ['desafio', 'desafio musical']];
+const MODES = [['local', 'dois no aparelho', 'dois'], ['online', '2 celulares (código)', 'celular'], ['paul', 'jogar contra o Paul', 'paul']]; // 3º item: bonequinho (só ele aparece; o texto vira dica)
 const LEVEL_HELP = { infantil: 'perguntas bem simples', facil: 'perguntas fáceis de música', intermediario: 'perguntas mais difíceis' };
 
 /** opts (opcional): { mission: { params: { ai, variant, level, rounds } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
@@ -24,7 +24,7 @@ export function mount(host, opts) {
   const rounds = mission ? Math.max(1, Math.floor(Number(MP.rounds) || 1)) : 0; const outcomes = []; const stat = { answered: 0, correct: 0 }; let reported = false;
   let gone = false; let timer = 0;
   const saved = mission ? {} : getGame(ID);
-  const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : 'local', variant: saved.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
+  const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : (saved.mode === 'facil' || saved.mode === 'estrategico') ? 'paul' : 'local', variant: 'desafio', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
   let g = null; let msg = ''; let fb = null; let mv = null; // mv: null | { from: null | número } = escolhendo a troca de lugar
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
@@ -37,8 +37,8 @@ export function mount(host, opts) {
 
   function intro() {
     stop(); leave(); g = null;
-    const resume = V.validMatch(saved.match) ? saved.match : null;
-    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic || l)));
+    const resume = V.validMatch(saved.match) && saved.match.variant === 'desafio' ? saved.match : null; // partida antiga do modo clássico não continua
+    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic ? bq(ic) : l)));
     root.replaceChildren(
       h('h2', { class: 'jg-h hand' }, 'jogo da velha'),
       h('ol', { class: 'jg-big' },
@@ -46,7 +46,6 @@ export function mount(host, opts) {
         h('li', {}, '3 marcas em linha ganha'),
         h('li', {}, h('b', {}, '1 vez por rodada'), ' você pode mudar uma marca de lugar')),
       h('p', { class: 'jg-lab big' }, 'quem joga?'), seg('mode', MODES),
-      h('p', { class: 'jg-lab big' }, 'qual jogo?'), seg('variant', VARIANTS),
       prefs.variant === 'desafio' ? h('div', {}, h('p', { class: 'jg-lab big' }, 'nível das perguntas'), seg('level', LEVELS), h('p', { class: 'jg-big' }, LEVEL_HELP[prefs.level])) : null,
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => V.newMatch({ ...prefs, mode: 'online' }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, `continuar (rodada ${resume.round})`) : null,
@@ -136,7 +135,7 @@ export function mount(host, opts) {
   function afterTurn() { stop(); if (!g || g.over || g.offer || gone || document.hidden) return; if (V.isPaulTurn(g)) timer = setTimeout(paulStep, reduced() ? 300 : 800); }
   function paulStep() {
     timer = 0; if (gone || !g || g.over || !V.isPaulTurn(g) || document.hidden) return;
-    const cell = mission ? V.aiMove(MP.ai, g.board, 1) : g.mode === 'estrategico' ? V.bestMove(g.board, 1) : V.easyMove(g.board);
+    const cell = mission ? V.aiMove(MP.ai, g.board, 1) : V.paulMove(g.mode, g.board);
     g = V.applyMark(g, cell); msg = `paul marcou a casa ${cell + 1}`; sfx('place'); after();
   }
   /** Aventura: registra o fim de cada rodada; no fim da última, avisa o resultado UMA vez. */

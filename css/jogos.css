@@ -851,3 +851,8 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-game .jg-seg button:nth-child(odd),.jg-game .jg-seg button:nth-child(even){transform:none}
 .jg-game .jg-seg{gap:5px}
 .jg-seg button.jg-ic{min-width:34px;font-size:15px;line-height:1;padding:2px 9px}
+/* bonequinhos (quem joga?) */
+.ic-bq{display:inline-block;width:24px;height:24px;line-height:0;vertical-align:middle}.ic-bq svg,.ic-bq img{width:100%;height:100%;display:block;object-fit:contain}
+.jg-seg button.jg-ic{min-width:42px;min-height:36px;padding:3px 8px}
+.jg-seg button.jg-ic .ic-bq{width:28px;height:28px}
+.jg-seg button.jg-ic.on{background:#f6d28a;border-color:var(--jg-ink)}

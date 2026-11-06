@@ -7,6 +7,7 @@ import { THEMES, SIZES, themeById } from './memory-themes.js';
 import * as FB from '../feedback.js';
 import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
+import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
 
 const KEY = 'setting-memoria';
@@ -71,7 +72,7 @@ export function mountMemoria(host, opts) {
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. gere o seu código na aba ', h('a', { href: '#/perfil' }, 'Perfil'), ' e fale com a professora Bea.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
-        ...[[1, '👤', '1 jogador'], [2, '👥', '2 jogadores, um de cada vez'], ['bot', '🤖', 'jogar contra o Paul']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, ic)),
+        ...[[1, 'um', '1 jogador'], [2, 'dois', '2 jogadores, um de cada vez'], ['bot', 'paul', 'jogar contra o Paul']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, bq(ic))),
         h('span', { class: 'mem-step' },
           h('button', { type: 'button', 'aria-label': 'menos pares', disabled: pairs <= PICK[0] || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) - 1] }).then(setup) }, '‹'),
           h('span', { 'aria-live': 'polite' }, `${pairs} pares`),

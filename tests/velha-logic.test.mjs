@@ -103,3 +103,15 @@ test('perguntas não repetem de uma rodada pra outra; zera só quando sobram pou
   let h = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }) }; h = { ...h, asked: V.poolFor('infantil').slice(0, 4).map((q) => q.id) };
   assert.deepEqual(V.nextRound(h).asked, []); // sobram só 3 (< 5): recomeça o ciclo
 });
+
+test('modo "paul": é a vez do Paul no turno 1 e a jogada sorteia entre fácil e difícil', () => {
+  const g = V.newMatch({ mode: 'paul', variant: 'desafio' }); assert.ok(V.validMatch(g));
+  assert.equal(V.isPaulTurn({ ...g, turn: 1 }), true); assert.equal(V.isPaulTurn({ ...g, turn: 0 }), false); assert.equal(V.isPaulTurn({ ...V.newMatch({ mode: 'local' }), turn: 1 }), false);
+  // tabuleiro em que o Paul (1) ganha jogando na casa 2: a jogada difícil acha, a fácil é qualquer casa livre
+  const board = [1, 1, null, 0, 0, null, null, null, null];
+  assert.equal(V.paulMove('paul', board, () => 0.9 /* >= .5: fácil */) !== undefined, true);
+  assert.equal(V.paulMove('paul', board, () => 0.1 /* < .5: difícil */), 2);
+  let dificil = 0; let facil = 0; for (let i = 0; i < 400; i++) { const m = V.paulMove('paul', board); if (m === 2) dificil++; else facil++; }
+  assert.ok(dificil > 100 && facil > 100, `às vezes uma, às vezes outra (${dificil}/${facil})`);
+  assert.equal(V.paulMove('estrategico', board, () => 0.99), 2);
+});
