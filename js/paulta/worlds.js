@@ -6,37 +6,21 @@ import { mk, noteName, CLEFS, OTHER, posOf, placeText, sameSpotOther, range, inS
 export const MODES = [['nomes', '🔤 nomes'], ['imagens', '🖼 imagens']];
 export const MAIN = ['drum', 'sol', 'fa'];
 export const WORLDS = {
-  drum: { id: 'drum', name: 'Mundo da Bateria', short: 'Bateria', count: 18, color: '#a31d30', blurb: 'ler percussão na pauta' },
+  drum: { id: 'drum', name: 'Mundo da Bateria', short: 'Bateria', count: 12, color: '#a31d30', blurb: 'ler percussão na pauta', levels: ['drumF', 'drumI', 'drumD'] },
+  drumF: { id: 'drumF', name: 'Bateria · fácil', short: 'Bateria fácil', count: 12, color: '#a31d30', blurb: 'sem acentos, fantasmas, chimbal aberto nem semicolcheias', parent: 'drum', lv: 'F' },
+  drumI: { id: 'drumI', name: 'Bateria · intermediário', short: 'Bateria intermediário', count: 12, color: '#a31d30', blurb: 'todos os símbolos, só com colcheias', parent: 'drum', lv: 'I' },
+  drumD: { id: 'drumD', name: 'Bateria · difícil', short: 'Bateria difícil', count: 12, color: '#a31d30', blurb: 'tudo, até semicolcheias', parent: 'drum', lv: 'D' },
   sol: { id: 'sol', name: 'Mundo da Clave de Sol', short: 'Clave de Sol', count: 15, color: '#14284b', blurb: 'ler notas agudas' },
   fa: { id: 'fa', name: 'Mundo da Clave de Fá', short: 'Clave de Fá', count: 15, color: '#1f5d63', blurb: 'ler notas graves' },
   duel: { id: 'duel', name: 'Duelo das Claves', short: 'Duelo das Claves', count: 6, color: '#8a5a14', blurb: 'sol e fá, uma contra a outra', bonus: true },
 };
-export const WORLD_IDS = ['drum', 'sol', 'fa', 'duel'];
+export const WORLD_IDS = ['drumF', 'drumI', 'drumD', 'sol', 'fa', 'duel'];
+export const isDrum = (w) => /^drum[FID]$/.test(String(w));
+export const LEVELS = [['drumF', 'fácil'], ['drumI', 'intermediário'], ['drumD', 'difícil']];
 
 /* ================= BATERIA ================= */
 const ALL1 = ['bd', 'sn', 'hh', 'rd', 'cr', 'tt', 'mt', 'ft', 'hf'];
 const C610 = ['hh+bd', 'cr+bd', 'rd+sn', 'hh+sn', 'tt+ft', 'bd+hf'];
-const dp = (title, rounds, o) => ({ title, rounds, secs: null, optSecs: null, sudden: false, need: 0.6, ...o });
-export const DRUM_PHASES = [
-  dp('Bumbo, caixa e chimbal', 3, { q: 'single', pool: ['bd', 'sn', 'hh'] }),
-  dp('Chimbal, prato de condução e prato de ataque', 3, { q: 'single', pool: ['hh', 'rd', 'cr'] }),
-  dp('Tom 1 e surdo', 4, { q: 'single', pool: ['tt', 'ft'], optSecs: 12 }),
-  dp('Tom 1 e tom 2', 4, { q: 'single', pool: ['tt', 'mt'], streak: true }),
-  dp('Revisão geral + chimbal com o pé', 5, { q: 'single', pool: ALL1 }),
-  dp('Chimbal + bumbo', 5, { q: 'combo', pool: ['hh+bd'] }),
-  dp('Prato de ataque + bumbo', 5, { q: 'combo', pool: ['cr+bd'] }),
-  dp('Prato de condução + caixa; chimbal + caixa', 6, { q: 'combo', pool: ['rd+sn', 'hh+sn'] }),
-  dp('Tom 1 + surdo', 6, { q: 'combo', pool: ['tt+ft'] }),
-  dp('Bumbo + chimbal com o pé', 6, { q: 'combo', pool: ['bd+hf'] }),
-  dp('Revisão de combinações sem errar', 6, { q: 'combo', pool: C610, sudden: true, need: 1 }),
-  dp('Combinações com cronômetro', 6, { q: 'combo', pool: C610, secs: 12 }),
-  dp('Colcheias e semicolcheias', 5, { q: 'fig', pool: ['hh', 'sn'], figs: ['seminima', 'colcheia', 'semicolcheia'] }),
-  dp('Chimbal fechado, aberto e com pedal', 5, { q: 'single', pool: ['hh', 'ho', 'hf'] }),
-  dp('Caixa normal, nota fantasma e acento', 6, { q: 'single', pool: ['sn', 'sg', 'sa'] }),
-  dp('Caixa, aro, nota fantasma e acento', 6, { q: 'single', pool: ['sn', 'sr', 'sg', 'sa'] }),
-  dp('Combinações com articulações e figuras', 7, { q: 'mix', secs: 12 }),
-  dp('Mestre da bateria: desafio final', 8, { q: 'mix18', secs: 10, need: 0.8 }),
-];
 const FIGLAB = { seminima: 'semínima', colcheia: 'colcheias', semicolcheia: 'semicolcheias' };
 const FIGN = { seminima: 1, colcheia: 2, semicolcheia: 4 };
 const ORDER = ['bd', 'sn', 'sg', 'sa', 'sr', 'hh', 'ho', 'hf', 'rd', 'cr', 'tt', 'mt', 'ft'];
@@ -46,18 +30,76 @@ export const figOf = (id) => String(id).split('@')[1] || null;
 export const symName = (id) => { const p = partsOf(id).map((x) => DRUM[x].name).join(' + '); const f = figOf(id); return f ? `${p} · ${FIGLAB[f]}` : p; };
 const comboId = (ids, fig) => `${sortIds(ids).join('+')}${fig ? `@${fig}` : ''}`;
 
+const dp = (title, rounds, o) => ({ title, rounds, secs: null, optSecs: null, sudden: false, need: 0.6, ...o });
+/** Regras de cada modo. Fácil: sem semicolcheia, acento, nota fantasma, aro nem chimbal aberto. Intermediário: todos os símbolos, só colcheias.
+ *  Difícil: tudo. `kinds` = tipos de pergunta usados nas fases mistas. */
+const ART = ['ho', 'sg', 'sa', 'sr'];
+const ALLI = [...ALL1, ...ART];
+const CART = ['sa+bd', 'sg+bd', 'ho+bd', 'sa+hh', 'cr+sa'];
+const cn = (id) => comboId(partsOf(id), figOf(id));
+export const LV = {
+  F: { singles: ALL1, combos: C610.map(cn), figs: ['seminima', 'colcheia'], artBases: [], artFigs: [], kinds: ['single', 'combo', 'fig'] },
+  I: { singles: ALLI, combos: [...C610, ...CART].map(cn), figs: ['seminima', 'colcheia'], artBases: ['sn', 'sg', 'sa', 'sr', 'hh', 'ho'], artFigs: ['colcheia'], kinds: ['single', 'combo', 'fig', 'artfig'] },
+  D: { singles: ALLI, combos: [...C610, ...CART].map(cn), figs: ['seminima', 'colcheia', 'semicolcheia'], artBases: ['sn', 'sg', 'sa', 'sr', 'hh', 'ho'], artFigs: ['colcheia', 'semicolcheia'], kinds: ['single', 'combo', 'fig', 'artfig'] },
+};
+const NOTIME = ['single', 'combo']; // fases com cronômetro não têm figuras (colcheia/semicolcheia nunca valem com tempo)
+export const DRUM_LEVELS = {
+  drumF: [
+    dp('Bumbo, caixa e chimbal', 4, { q: 'single', pool: ['bd', 'sn', 'hh'] }),
+    dp('Pratos: chimbal, condução e ataque (sem errar)', 4, { q: 'single', pool: ['hh', 'rd', 'cr'], sudden: true, need: 1 }),
+    dp('Tom 1 e surdo', 4, { q: 'single', pool: ['tt', 'ft'], optSecs: 10 }),
+    dp('Tom 1 e tom 2', 4, { q: 'single', pool: ['tt', 'mt'], streak: true }),
+    dp('Revisão geral + chimbal com o pé', 5, { q: 'single', pool: ALL1 }),
+    dp('Chimbal + bumbo (sem errar)', 5, { q: 'combo', pool: ['hh+bd'], sudden: true, need: 1 }),
+    dp('Prato de ataque + bumbo', 5, { q: 'combo', pool: ['cr+bd'] }),
+    dp('Condução + caixa; chimbal + caixa', 5, { q: 'combo', pool: ['rd+sn', 'hh+sn'], secs: 10 }),
+    dp('Tom 1 + surdo; bumbo + chimbal com o pé', 5, { q: 'combo', pool: ['tt+ft', 'bd+hf'] }),
+    dp('Combinações com cronômetro', 6, { q: 'combo', pool: C610, secs: 10 }),
+    dp('Colcheias', 5, { q: 'fig', pool: ['hh', 'sn'], figs: ['seminima', 'colcheia'] }),
+    dp('Mestre da bateria fácil', 6, { q: 'mix', kinds: NOTIME, secs: 10, need: 0.7 }),
+  ],
+  drumI: [
+    dp('Revisão geral das peças', 5, { q: 'single', pool: ALL1 }),
+    dp('Chimbal fechado, aberto e com o pé', 5, { q: 'single', pool: ['hh', 'ho', 'hf'] }),
+    dp('Caixa normal, fantasma e acento', 6, { q: 'single', pool: ['sn', 'sg', 'sa'] }),
+    dp('Caixa, aro, fantasma e acento', 6, { q: 'single', pool: ['sn', 'sr', 'sg', 'sa'], secs: 10 }),
+    dp('Combinações', 6, { q: 'combo', pool: C610, optSecs: 10 }),
+    dp('Combinações sem errar', 6, { q: 'combo', pool: C610, sudden: true, need: 1 }),
+    dp('Semínima ou colcheias?', 6, { q: 'fig', pool: ['hh', 'sn'], figs: ['seminima', 'colcheia'] }),
+    dp('Técnica + colcheias', 6, { q: 'artfig' }),
+    dp('Combinações com articulações', 6, { q: 'combo', pool: [...C610, ...CART], secs: 10 }),
+    dp('Misto com cronômetro', 7, { q: 'mix', kinds: NOTIME, secs: 10 }),
+    dp('Misto sem errar', 6, { q: 'mix', sudden: true, need: 1 }),
+    dp('Mestre da bateria intermediário', 8, { q: 'mix', kinds: NOTIME, secs: 7, need: 0.8 }),
+  ],
+  drumD: [
+    dp('Revisão geral das peças', 5, { q: 'single', pool: ALLI, secs: 10 }),
+    dp('Todas as técnicas', 6, { q: 'single', pool: ['hh', 'ho', 'hf', 'sn', 'sg', 'sa', 'sr'] }),
+    dp('Combinações', 6, { q: 'combo', pool: C610, secs: 10 }),
+    dp('Combinações com articulações', 6, { q: 'combo', pool: [...C610, ...CART], secs: 8 }),
+    dp('Colcheias e semicolcheias', 6, { q: 'fig', pool: ['hh', 'sn'], figs: ['seminima', 'colcheia', 'semicolcheia'] }),
+    dp('Técnica + figura', 7, { q: 'artfig' }),
+    dp('Combinações sem errar', 6, { q: 'combo', pool: [...C610, ...CART], sudden: true, need: 1 }),
+    dp('Misto com cronômetro', 8, { q: 'mix', kinds: NOTIME, secs: 8 }),
+    dp('Figuras sem errar', 5, { q: 'fig', pool: ['hh', 'sn'], figs: ['seminima', 'colcheia', 'semicolcheia'], sudden: true, need: 1 }),
+    dp('Tudo misturado sem errar', 7, { q: 'mix', rot: true, sudden: true, need: 1 }),
+    dp('Misto relâmpago', 8, { q: 'mix', kinds: NOTIME, secs: 7 }),
+    dp('Mestre da bateria difícil', 10, { q: 'mix', rot: true, need: 0.8 }),
+  ],
+};
 /** Peças/símbolos que a fase ensina pela primeira vez (Paul apresenta antes das perguntas). */
-export function drumPoolOf(n) {
-  const sp = DRUM_PHASES[n - 1];
-  if (sp.q === 'mix' || sp.q === 'mix18') return ['sa', 'sg', 'sr', 'ho', 'hf', ...ALL1].filter((v, i, a) => a.indexOf(v) === i);
+export function drumPoolOf(lv, n) {
+  const sp = DRUM_LEVELS[lv][n - 1];
+  if (sp.q === 'mix') return LV[lv.slice(-1)].singles;
+  if (sp.q === 'artfig') return LV[lv.slice(-1)].artBases;
   if (sp.q === 'fig') return sp.pool;
   return [...new Set(sp.pool.flatMap(partsOf))];
 }
 export function teachOf(world, n) {
-  if (world === 'drum') {
-    const sp = DRUM_PHASES[n - 1]; if (sp.q === 'mix' || sp.q === 'mix18') return [];
-    const seen = new Set(); for (let k = 1; k < n; k++) drumPoolOf(k).forEach((x) => seen.add(x));
-    return drumPoolOf(n).filter((x) => !seen.has(x) && sp.q !== 'fig');
+  if (isDrum(world)) {
+    const sp = DRUM_LEVELS[world][n - 1]; if (sp.q === 'mix' || sp.q === 'fig' || sp.q === 'artfig') return [];
+    const seen = new Set(); for (let k = 1; k < n; k++) drumPoolOf(world, k).forEach((x) => seen.add(x));
+    return drumPoolOf(world, n).filter((x) => !seen.has(x));
   }
   if (world === 'sol' || world === 'fa') {
     const seen = new Set(); for (let k = 1; k < n; k++) notePool(world, k).forEach((x) => seen.add(x));
@@ -98,48 +140,66 @@ const explainFig = (q, c) => `Conte as notas dentro de um tempo: semínima = 1 n
 
 /* ----- perguntas da bateria ----- */
 const unique = (a) => [...new Set(a)];
-function drumOptions(ans, pool, learned, rnd, n) {
+const CLASH = [['hh', 'ho', 'hf'], ['rd', 'cr'], ['sn', 'sg', 'sa', 'sr']]; // duas peças da mesma família não tocam juntas
+const clash = (a, b) => CLASH.some((g) => g.includes(a) && g.includes(b));
+/** Combinações "parecidas": troca uma das peças por outra já conhecida (sempre com duas peças). */
+function neighbors(ans, parts, fig) {
+  const ap = partsOf(ans); const out = [];
+  ap.forEach((p, k) => { const keep = ap.filter((_, j) => j !== k); for (const r of parts) { if (ap.includes(r) || keep.some((x) => clash(x, r))) continue; out.push(comboId([...keep, r], fig)); } });
+  return out;
+}
+function drumOptions(ans0, pool, learned, rnd, n) {
+  const ans = partsOf(ans0).length > 1 ? cn(ans0) : ans0; // mesma ordem das peças em todas as alternativas (não repete "a+b" e "b+a")
   const ap = partsOf(ans); const fig = figOf(ans); const set = new Set([ans]);
   const add = (id) => { if (set.size < n && id) set.add(id); };
-  if (ap.length > 1) { // combinação: as peças soltas, uma combinação parecida, e as outras da fase
+  if (ap.length > 1) { // combinação: pelo menos 2 alternativas também com duas peças, e só 1 solta
+    const known = learned.filter((x) => DRUM[x]);
+    const combos = unique([...shuffle(pool.map(cn).filter((x) => x !== ans), rnd), ...shuffle(neighbors(ans, known, fig), rnd)]).filter((x) => x !== ans);
+    const want2 = Math.max(2, n - 2); let c2 = 0;
+    for (const c of combos) { if (c2 >= want2) break; add(c); c2++; }
+    add(comboId([shuffle(ap, rnd)[0]], fig));
+    for (const c of combos) add(c);
     shuffle(ap, rnd).forEach((p) => add(comboId([p], fig)));
-    shuffle(pool.filter((x) => x !== ans), rnd).forEach(add);
-    for (const e of shuffle(['hh+sn', 'sn+bd', 'hh+bd', 'rd+bd'], rnd)) add(comboId(partsOf(e), fig));
   } else {
     shuffle(pool.filter((x) => x !== ans), rnd).forEach(add);
     const fam = FAMILY.find((f) => f.includes(ap[0])); if (fam && pool.length < n) shuffle(fam.filter((x) => learned.includes(x)), rnd).forEach(add);
     shuffle(learned.filter((x) => x !== ans), rnd).forEach(add);
   }
-  return shuffle([...set].slice(0, n), rnd);
+  return shuffle([...set].slice(0, n).map((x) => (x === ans ? ans0 : x)), rnd);
 }
-function drumQuestion(n, mode, rnd, i) {
-  const sp = DRUM_PHASES[n - 1]; const learned = unique([...Array.from({ length: n }, (_, k) => drumPoolOf(k + 1)).flat()]).filter((x) => DRUM[x]);
-  let kind = sp.q; if (kind === 'mix') kind = rnd() < 0.5 ? 'artfig' : 'combo'; if (kind === 'mix18') kind = ['single', 'combo', 'fig', 'artfig'][i % 4];
-  let ans; let fig = null; let pool = sp.pool; let nOpts = Math.min(4, Math.max(3, pool ? pool.length : 3));
-  if (kind === 'single' && (sp.q === 'mix18')) pool = ['bd', 'sn', 'hh', 'ho', 'hf', 'rd', 'cr', 'tt', 'mt', 'ft', 'sg', 'sa', 'sr'];
-  if (kind === 'combo' && (sp.q === 'mix' || sp.q === 'mix18')) pool = [...C610, 'sa+bd', 'sg+bd', 'ho+bd', 'sa+hh', 'cr+sa'];
-  let piece_ = null;
-  if (kind === 'fig') { fig = pick(sp.figs || ['seminima', 'colcheia', 'semicolcheia'], rnd); piece_ = pick(sp.pool && sp.pool.length ? sp.pool.filter((x) => ['hh', 'sn'].includes(x)).concat([]) : ['hh', 'sn'], rnd) || 'hh'; ans = fig; }
-  else if (kind === 'artfig') { const base = pick(['sn', 'sg', 'sa', 'sr', 'hh', 'ho'], rnd); fig = pick(['colcheia', 'semicolcheia'], rnd); ans = comboId([base], fig); pool = []; }
+const learnedParts = (lv, n) => unique(Array.from({ length: n }, (_, k) => drumPoolOf(lv, k + 1)).flat().flatMap(partsOf)).filter((x) => DRUM[x]);
+function drumQuestion(lv, n, mode, rnd, i) {
+  const sp = DRUM_LEVELS[lv][n - 1]; const L = LV[lv.slice(-1)]; const learned = learnedParts(lv, n);
+  let kind = sp.q;
+  if (kind === 'mix') { const ks = sp.kinds || L.kinds; kind = sp.rot ? ks[i % ks.length] : pick(ks, rnd); }
+  const figs = sp.figs || L.figs; let pool = sp.pool; let ans; let fig = null; let piece_ = null;
+  // fases com poucos itens novos: as perguntas ímpares revisam o que já foi aprendido (senão a mesma pergunta voltaria seguida)
+  if ((kind === 'single' || kind === 'combo') && sp.q !== 'mix' && pool.length < 4 && rnd() < 0.5) {
+    const extra = kind === 'single' ? learned.filter((x) => !pool.includes(x)) : L.combos.filter((c) => partsOf(c).every((x) => learned.includes(x)) && !pool.map(cn).includes(c));
+    if (extra.length) pool = extra;
+  }
+  if (kind === 'single' && sp.q === 'mix') pool = L.singles;
+  if (kind === 'combo' && sp.q === 'mix') pool = L.combos;
+  if (kind === 'fig') { fig = pick(figs, rnd); piece_ = pick(['hh', 'sn'], rnd); ans = fig; }
+  else if (kind === 'artfig') { const base = pick(L.artBases, rnd); fig = pick(L.artFigs, rnd); ans = comboId([base], fig); pool = []; }
   else ans = pick(pool, rnd);
   if (pool && pool.length > 1 && !pool.includes(ans)) pool = [ans, ...pool];
-  let options; let promptSvg; let key;
   if (kind === 'fig') {
-    options = (sp.figs || ['seminima', 'colcheia', 'semicolcheia']).map((f) => ({ id: f, label: `${FIGLAB[f]} (${FIGN[f]} por tempo)`, img: dotsImage(f) }));
-    promptSvg = drumStaff(piece_, ans); key = `fig:${ans}`;
-    return { kind: 'fig', key, ans, options: shuffle(options, rnd), promptSvg, say: 'quantas notas cabem dentro de um tempo?', sound: { type: 'drum', ids: [piece_], fig: ans }, tags: [`fig:${ans}`], explain: (c) => explainFig({ ans }, c) };
+    const options = figs.map((f) => ({ id: f, label: `${FIGLAB[f]} (${FIGN[f]} por tempo)`, img: dotsImage(f) }));
+    return { kind: 'fig', key: `fig:${ans}`, sig: `fig:${ans}:${piece_}`, ans, options: shuffle(options, rnd), promptSvg: drumStaff(piece_, ans), say: 'quantas notas cabem dentro de um tempo?', sound: { type: 'drum', ids: [piece_], fig: ans }, tags: [`fig:${ans}`], explain: (c) => explainFig({ ans }, c) };
   }
   if (kind === 'artfig') {
     const set = new Set([ans]); const [bp] = partsOf(ans); const f0 = figOf(ans);
     const arts = ['sn', 'sg', 'sa', 'sr'].includes(bp) ? ['sn', 'sg', 'sa', 'sr'] : ['hh', 'ho', 'hf'];
     shuffle(arts.filter((x) => x !== bp), rnd).slice(0, 2).forEach((x) => set.add(comboId([x], f0)));
-    set.add(comboId([bp], f0 === 'colcheia' ? 'semicolcheia' : 'colcheia'));
-    options = shuffle([...set].slice(0, 4), rnd).map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), figOf(id)) }));
+    const other = L.artFigs.find((f) => f !== f0) || (f0 === 'colcheia' ? 'seminima' : 'colcheia'); set.add(comboId([bp], other));
+    const options = shuffle([...set].slice(0, 4), rnd).map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), figOf(id)) }));
     return { kind: 'drum', key: `art:${ans}`, ans, options, promptSvg: drumStaff(partsOf(ans), figOf(ans)), say: 'que peça, técnica e figura é essa?', sound: { type: 'drum', ids: partsOf(ans), fig: figOf(ans) }, tags: [`art:${bp}`, `fig:${f0}`], explain: (c) => explainDrum({ ans }, c) };
   }
+  const ap = partsOf(ans); const nOpts = ap.length > 1 ? 4 : Math.min(4, Math.max(3, pool.length));
   const ids = drumOptions(ans, pool, learned, rnd, nOpts);
-  options = ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id)) }));
-  const ap = partsOf(ans); key = ap.length > 1 ? `combo:${ans}` : `peca:${ans}`;
+  const options = ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id)) }));
+  const key = ap.length > 1 ? `combo:${ans}` : `peca:${ans}`;
   return { kind: 'drum', key, ans, options, promptSvg: drumStaff(ap), say: ap.length > 1 ? 'quem toca nessas notas juntas?' : 'que peça é essa?', sound: { type: 'drum', ids: ap }, tags: [key], explain: (c) => explainDrum({ ans }, c) };
 }
 
@@ -177,7 +237,7 @@ export const DUEL_PHASES = [
 ].map((p) => ({ optSecs: null, ...p }));
 
 export function phaseSpec(world, n) {
-  const base = world === 'drum' ? DRUM_PHASES[n - 1] : world === 'duel' ? DUEL_PHASES[n - 1] : NOTE_PHASES[n - 1];
+  const base = isDrum(world) ? DRUM_LEVELS[world][n - 1] : world === 'duel' ? DUEL_PHASES[n - 1] : NOTE_PHASES[n - 1];
   if (!base) return null;
   return { world, n, title: base.title, rounds: base.rounds, secs: base.secs || null, optSecs: base.optSecs || null, sudden: !!base.sudden, need: base.need, streak: !!base.streak };
 }
@@ -236,9 +296,13 @@ function duelQuestion(n, mode, rnd, i) {
   q.say = `que nota é essa? (${CLEFS[clef].name})`; q.tags.push('clave'); return q;
 }
 
-/** Cria a pergunta `i` (0-based) da fase. `rnd` = sorteio (use seeded() nos testes). */
-export function makeQuestion(world, n, mode, rnd = Math.random, i = 0) {
-  const q = world === 'drum' ? drumQuestion(n, mode, rnd, i) : world === 'duel' ? duelQuestion(n, mode, rnd, i) : noteQuestion(world, n, mode, rnd, i, {});
+/** Cria a pergunta `i` (0-based) da fase. `rnd` = sorteio (use seeded() nos testes). `avoid` = assinaturas das últimas perguntas (não repete seguidas). */
+export function makeQuestion(world, n, mode, rnd = Math.random, i = 0, avoid = []) {
+  let q = null;
+  for (let t = 0; t < 40; t++) {
+    q = isDrum(world) ? drumQuestion(world, n, mode, rnd, i) : world === 'duel' ? duelQuestion(n, mode, rnd, i) : noteQuestion(world, n, mode, rnd, i, {});
+    if (!avoid.includes(q.sig || q.key)) break;
+  }
   q.world = world; q.n = n; q.mode = mode; return q;
 }
 /** Reforço: pergunta montada a partir de uma "tag" de dificuldade guardada no histórico (ex.: peca:hh, combo:hh+bd, fig:colcheia, nota:mi4, oitava, clave). */

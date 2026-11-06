@@ -4,7 +4,7 @@ import { livre } from './livre.js';
 import { h } from '../util.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import * as S from './score.js';
-import { phaseSpec, WORLDS } from './worlds.js';
+import { phaseSpec, WORLDS, isDrum } from './worlds.js';
 
 const BASE = '#/paulta';
 const R = (id, name, sub, decor) => ({ id, name, sub, decor });
@@ -15,6 +15,7 @@ const REGIOES = {
   fa: [R('graves', 'Sala das Graves', 'o chão da música', [['flower', 'r', 0.06], ['cactus', 'l', 0.13], ['vaso', 'l', 0.28], ['bush', 'r', 0.5], ['sprout', 'l', 0.57], ['cactus', 'l', 0.72], ['sprout', 'r', 0.94], ['flower', 'l', 0.97]]), R('baixo', 'Corredor do Baixo', 'notas profundas', [['cactus', 'l', 0.06], ['vaso', 'r', 0.13], ['sprout', 'r', 0.28], ['flower', 'l', 0.5], ['bush', 'r', 0.57], ['vaso', 'r', 0.72], ['bush', 'l', 0.94], ['cactus', 'r', 0.97]]), R('palcof', 'Palco da Clave de Fá', 'ler sem pensar', [['vaso', 'r', 0.06], ['sprout', 'l', 0.13], ['bush', 'l', 0.28], ['cactus', 'r', 0.5], ['flower', 'l', 0.57], ['sprout', 'l', 0.72], ['flower', 'r', 0.94], ['vaso', 'l', 0.97]])],
   duel: [R('arena', 'Arena das Claves', 'sol contra fá', [['sprout', 'l', 0.06], ['bush', 'r', 0.13], ['flower', 'r', 0.35], ['vaso', 'l', 0.65], ['cactus', 'r', 0.72], ['bush', 'r', 0.94]]), R('final', 'Palco Final', 'só uma vence', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.35], ['sprout', 'l', 0.65], ['vaso', 'r', 0.72], ['flower', 'r', 0.94]])],
 };
+REGIOES.drumF = REGIOES.drum; REGIOES.drumI = REGIOES.drum; REGIOES.drumD = REGIOES.drum;
 const curto = (t) => (t.length > 26 ? `${t.slice(0, 24).trim()}…` : t);
 
 /** Monta o mapa do mundo `w` dentro de `host`. Devolve { hud, dispose }. */
@@ -29,7 +30,7 @@ export function worldMap(host, { w, p, mode, me, stars }) {
     theme: { id: `paulta-${w}`, name: W.name, regions: REGIOES[w] },
     starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => livre() || S.unlocked(p, w, idOf(id)),
     lockedMsg: 'conclua a fase anterior pra abrir o caminho',
-    onBack: () => { location.hash = BASE; }, onOpen: (lv) => { location.hash = `${BASE}/${w}/${idOf(lv.id)}/${mode}`; },
+    onBack: () => { location.hash = isDrum(w) ? `${BASE}/drum` : BASE; }, onOpen: (lv) => { location.hash = `${BASE}/${w}/${idOf(lv.id)}/${mode}`; },
   });
   // barra de baixo: continuar de onde parou e conquistas
   const full = S.worldDone(p, w); let cur = 0; for (let k = 1; k <= n; k++) if (!done(k)) { cur = k; break; }

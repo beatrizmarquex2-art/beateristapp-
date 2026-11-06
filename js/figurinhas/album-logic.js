@@ -8,6 +8,9 @@ export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os j
 export const ROLETA_PESOS = [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', 4]];
 export const ROLETA_DUAS = 0.35; // chance de a roleta dar 2 figurinhas
 /** Prêmio de terminar um jogo inteiro: 3 figurinhas tops (exclusivas da Beaterista e raras). */
+/** Pacotes da pauLta: id `pl:<cartas>:<chance de Beaterista %>:...`. Qualquer outro pacote comum tem PACK_SIZE cartas. */
+export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); return m ? { n: Number(m[1]), bea: Number(m[2]) } : null; };
+export const packSize = (id) => (plPack(id) ? plPack(id).n : PACK_SIZE);
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
@@ -39,6 +42,8 @@ function drawBySection(catalog, r, n, pesos) {
 /** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE) {
   const r = rng(hashSeed(`pack|${packId}`)); const kind = packKind(packId);
+  const pl = plPack(packId);
+  if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, r() < ROLETA_DUAS ? 2 : 1, ROLETA_PESOS);
   if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 5 com uma RARA garantida
     const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];

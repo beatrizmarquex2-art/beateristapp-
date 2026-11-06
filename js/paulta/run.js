@@ -7,7 +7,7 @@ import { stars as sparkle } from '../ui.js';
 import * as P from '../kids/progress.js';
 import * as FB from '../feedback.js';
 import { svgEl } from '../kids/art.js';
-import { makeQuestion, phaseSpec, teachOf, revealOf, WORLDS, drumName } from './worlds.js';
+import { makeQuestion, phaseSpec, teachOf, revealOf, WORLDS, drumName, isDrum } from './worlds.js';
 import { DRUM, drumStaff, clefStaff } from './draw.js';
 import { noteName, CLEFS, placeText, sameSpotOther, letterOf, mk } from './music.js';
 import * as sfx from './sfx.js';
@@ -21,7 +21,7 @@ export { soundBtn };
 /** Cartões do que é novo na fase (Paul apresenta). */
 export function teachCards(world, n) {
   const ids = teachOf(world, n); if (!ids.length) return null;
-  if (world === 'drum') return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-card' }, svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where))));
+  if (isDrum(world)) return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-card' }, svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where))));
   const clef = world;
   return h('div', { class: 'pl-teach' }, ...ids.map((x) => h('div', { class: 'pl-card' }, svgEl(clefStaff(clef, x), 'pl-mini'), h('b', {}, noteName(x)), h('small', {}, placeText(clef, x)))));
 }
@@ -37,7 +37,8 @@ export function runSession(cfg) {
   const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' });
   const stage = h('div', { class: 'kx-stage pl-stage' });
   const tag = () => [secs ? `⏱ ${secs}s` : '', spec.sudden ? '💥 sem errar' : '', `${spec.rounds} rodadas`].filter(Boolean).join(' · ');
-  const head = h('div', { class: 'kx-head' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => cfg.onBack() }, '‹ fases'), h('b', {}, cfg.title), soundBtn());
+  const redoBtn = h('button', { type: 'button', class: 'btn small ghost pl-redo', hidden: true, title: 'recomeçar a fase do zero (pra buscar as 3 estrelas)', onclick: () => redo() }, '↻ recomeçar');
+  const head = h('div', { class: 'kx-head' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => cfg.onBack() }, '‹ fases'), h('b', {}, cfg.title), redoBtn, soundBtn());
   host.replaceChildren(h('div', { class: 'kx-run pl-run', 'data-world': world }, head, h('div', { class: 'kx-botrow' }, bot.el), dots, stage));
   const paintDots = () => dots.replaceChildren(...Array.from({ length: spec.rounds }, (_, k) => h('i', { class: k < i ? 'done' : k === i ? 'now' : '' })));
 
@@ -56,7 +57,9 @@ export function runSession(cfg) {
     const step = () => { k--; if (k > 0) { big.textContent = String(k); big.classList.remove('pop'); void big.offsetWidth; big.classList.add('pop'); sfx.tick(false); S_.later(step, 650); } else { big.textContent = 'DUELO!'; sfx.tick(true); S_.later(done, 500); } };
     S_.later(step, 650);
   };
-  const begin = () => { S_.reset(); sfx.ok(); i = 0; right = 0; streak = 0; finished = false; countdown(next); };
+  const begin = () => { S_.reset(); sfx.ok(); i = 0; right = 0; streak = 0; finished = false; redoBtn.hidden = false; countdown(next); };
+  /** recomeço voluntário (quem quer as 3 estrelas): volta pra primeira pergunta, sem punição; os erros já ficam anotados */
+  const redo = () => { if (gone || finished) return; S_.reset(); locked = true; restarts++; i = 0; right = 0; streak = 0; next(); };
   const next = () => {
     if (gone) return; if (i >= spec.rounds) { finish(); return; }
     q = cfg.make(i); if (!q) { finish(); return; }
@@ -101,6 +104,7 @@ export function runSession(cfg) {
     fb.replaceChildren(h('p', { class: 'pl-why' }, why));
     const go = h('button', { class: 'kd-btn pl-continue', type: 'button', disabled: true, onclick: () => { if (spec.sudden) restart(); else { i++; next(); } } }, spec.sudden ? 'recomeçar a fase' : 'entendi, próxima →');
     S_.later(() => { go.disabled = false; }, 700); fb.append(go);
+    if (!spec.sudden && spec.rounds > 1) fb.append(h('button', { class: 'kd-chip pl-redo2', type: 'button', onclick: () => redo() }, '↻ recomeçar a fase (buscar as 3 ⭐)'));
     S_.later(() => { try { go.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch { /* ok */ } }, 120);
   };
   const restart = () => { if (gone) return; S_.reset(); restarts++; i = 0; right = 0; streak = 0; bot.set('oops', 'recomeçando…'); stage.replaceChildren(h('div', { class: 'kx-restart' }, h('h2', {}, '💥 errou!'), h('p', {}, 'a fase recomeça do zero. a dica já ficou guardada.'), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { sfx.ok(); countdown(next); } }, 'tentar de novo'))); };

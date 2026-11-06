@@ -1,7 +1,8 @@
 // pauLta: progresso, pontos, títulos e desbloqueios (puro, sem tela). Os pontos SEMPRE são recalculados do melhor desempenho de cada fase,
 // então repetir fase fácil não acumula nada.
 export const MAIN = ['drum', 'sol', 'fa'];
-export const COUNT = { drum: 18, sol: 15, fa: 15, duel: 6 };
+export const COUNT = { drumF: 12, drumI: 12, drumD: 12, sol: 15, fa: 15, duel: 6 };
+export const DRUMS = ['drumF', 'drumI', 'drumD']; // os 3 modos da bateria; o título "mundo da bateria" vale ao concluir qualquer um
 export const TITLES = [
   { id: 'aprendiz', name: 'Aprendiz da pauLta', rule: 'começar o jogo' },
   { id: 'explorador', name: 'Explorador da pauLta', rule: 'concluir 5 fases' },
@@ -15,8 +16,8 @@ export const phKey = (w, n, m) => `${w}:${n}:${m}`;
 export const starsFor = (right, total) => { const p = total ? right / total : 0; return p >= 1 ? 3 : p >= 0.8 ? 2 : p >= 0.6 ? 1 : 0; };
 
 export const doneCount = (p) => Object.keys(p.done).length;
-export const worldDone = (p, w) => Array.from({ length: COUNT[w] }, (_, i) => `${w}:${i + 1}`).every((k) => p.done[k]);
-export const worldProgress = (p, w) => Array.from({ length: COUNT[w] }, (_, i) => p.done[`${w}:${i + 1}`]).filter(Boolean).length;
+export const worldDone = (p, w) => (w === 'drum' ? DRUMS.some((d) => worldDone(p, d)) : Array.from({ length: COUNT[w] }, (_, i) => `${w}:${i + 1}`).every((k) => p.done[k]));
+export const worldProgress = (p, w) => (w === 'drum' ? Math.max(...DRUMS.map((d) => worldProgress(p, d))) : Array.from({ length: COUNT[w] }, (_, i) => p.done[`${w}:${i + 1}`]).filter(Boolean).length);
 export const mainDone = (p) => MAIN.filter((w) => worldDone(p, w)).length;
 export const duelUnlocked = (p) => worldDone(p, 'sol') && worldDone(p, 'fa'); // não depende da bateria
 /** A fase está aberta? 1ª fase sempre; depois só se a anterior foi concluída (em qualquer formato). `mig.open` = fases liberadas pela migração do jogo antigo. */
@@ -82,5 +83,5 @@ export function difficulties(p) {
 export function migrate(p0, oldPassed) {
   const p = norm(p0); if (p.mig && p.mig.done) return p;
   const open = oldPassed >= 2 ? Math.min(4, oldPassed + 1) : 1;
-  return { ...p, mig: { done: true, from: oldPassed, open: { drum: open } } };
+  return { ...p, mig: { done: true, from: oldPassed, open: { drumF: open } } };
 }

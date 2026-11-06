@@ -18,25 +18,25 @@ const txt = () => page.evaluate(() => document.querySelector('#view').innerText)
 
 check('nome do jogo aparece como pauLta (L maiúsculo)', (await txt()).includes('pauLta'));
 check('4 regiões: bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 4 && !!(await page.$('.kx-g.pl-locked')));
-for (const [w, n] of [['drum', 18], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.mp-node')).length === n); }
-await go('#/paulta/drum/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.mp')).length === 1);
+for (const [w, n] of [['drumF', 12], ['drumI', 12], ['drumD', 12], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.mp-node')).length === n); }
+await go('#/paulta/drumF/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.mp')).length === 1);
 
 // errar mostra explicação específica e exige "entendi"
-await go('#/paulta/drum/1/nomes'); await click('.kx-go'); await sleep(250);
+await go('#/paulta/drumF/1/nomes'); await click('.kx-go'); await sleep(250);
 check('fase 1 mostra 3 alternativas', (await page.$$('.pl-opt-btn')).length === 3);
 let sawExplain = false;
-for (let i = 0; i < 3; i++) {
+for (let i = 0; i < 4; i++) {
   await page.evaluate(() => { const b = [...document.querySelectorAll('.pl-opt-btn:not([disabled])')]; if (b[0]) { b[0].click(); b[0].click(); } }); // duplo clique
   await sleep(250);
   if (await page.$('.pl-continue')) { sawExplain = sawExplain || /Você escolheu .* mas a posição apresentada corresponde a/.test(await txt()); await sleep(800); await click('.pl-continue'); } else await sleep(1400);
 }
 await page.waitForSelector('.kx-result', { timeout: 6000 });
-check('duplo toque não pula rodada: resultado fecha exatamente 3 rodadas', /de 3 certas/.test(await txt()));
+check('duplo toque não pula rodada: resultado fecha exatamente 4 rodadas', /de 4 certas/.test(await txt()));
 check('algum erro mostrou a explicação com a posição na pauta (ou acertou tudo)', sawExplain || /100/.test(await txt()));
 
-check('resultado entra no progresso do Kids (estrelas e histórico do jogador)', await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); return P.progOf(P.active().id).log.some((l) => l.game === 'pl-drum-nomes'); }));
+check('resultado entra no progresso do Kids (estrelas e histórico do jogador)', await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); return P.progOf(P.active().id).log.some((l) => l.game === 'pl-drumF-nomes'); }));
 // sair da fase cala tudo e não deixa timers
-for (let i = 0; i < 12; i++) { await go('#/paulta/drum/1/imagens'); await sleep(60 + (i % 3) * 50); await click('.kx-go'); await sleep(120); await go('#/paulta'); }
+for (let i = 0; i < 12; i++) { await go('#/paulta/drumF/1/imagens'); await sleep(60 + (i % 3) * 50); await click('.kx-go'); await sleep(120); await go('#/paulta'); }
 await sleep(900);
 check('sair rápido da fase: sem som residual', (await peak(900)) < 0.004);
 check('sem intervalos/rAF pendentes', (await timers()).i === 0);
@@ -45,15 +45,21 @@ check('sem intervalos/rAF pendentes', (await timers()).i === 0);
 await page.evaluate(async () => {
   const P = await import('/js/kids/progress.js'); const V = await import('/js/paulta/save.js'); const S = await import('/js/paulta/score.js');
   const me = P.active();
-  await V.commit(me.id, (c) => { let p = c; for (let n = 1; n <= 5; n++) p = S.applyRun(p, { world: 'drum', n, mode: 'nomes', right: 3, total: 3 }).p; return p; });
+  await V.commit(me.id, (c) => { let p = c; for (let n = 1; n <= 5; n++) p = S.applyRun(p, { world: 'drumF', n, mode: 'nomes', right: 3, total: 3 }).p; return p; });
 });
 await page.reload(); await page.waitForSelector('.kx-cards .kx-g');
 check('depois de recarregar o título persiste (Explorador)', /Explorador da pauLta/.test(await txt()));
 check('nome do aluno aparece com o título no topo', await page.evaluate(() => /Teste · Explorador da pauLta/.test(document.querySelector('.ws').innerText)));
-await go('#/paulta/drum'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.mp-node:not(.st-locked)')).length === 6);
+await go('#/paulta/drumF'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.mp-node:not(.st-locked)')).length === 6);
 await go('#/paulta/perfil'); check('perfil mostra o título e os pontos', /Explorador/.test(await txt()) && /pts/.test(await txt()));
 await go('#/paulta/ranking'); check('ranking local lista o aluno', /Teste/.test(await txt()));
 await go('#/paulta/legenda'); check('legenda de bateria tem 13 símbolos', (await page.$$('.pl-legend .pl-card')).length >= 13);
-await go('#/paulta/aula/drum'); check('aulinha trancada até concluir o mundo', !(await page.$('.pl-lesson')));
+await go('#/paulta/aula/drumF'); check('aulinha trancada até concluir o mundo', !(await page.$('.pl-lesson')));
+await go('#/paulta/drum'); check('Mundo da Bateria mostra os 3 modos', (await page.$$('.kx-cards .kx-g')).length === 3 && /fácil/.test(await txt()) && /intermediário/.test(await txt()) && /difícil/.test(await txt()));
+await go('#/paulta/drumF/1/nomes'); await click('.kx-go'); await sleep(250);
+check('botão de recomeçar aparece durante a fase', await page.evaluate(() => { const b = document.querySelector('.pl-redo'); return !!b && !b.hidden; }));
+await page.evaluate(() => { document.querySelector('.pl-opt-btn').click(); }); await sleep(1500);
+await click('.pl-redo'); await sleep(300);
+check('recomeçar volta pra rodada 1', await page.evaluate(() => { const d = document.querySelectorAll('.kx-dots i'); return d[0].classList.contains('now') && !document.querySelector('.kx-dots i.done'); }));
 check('sem erros de script', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

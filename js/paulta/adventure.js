@@ -24,6 +24,7 @@ const skyline = (t) => {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 };
 
+THEME.drumF = THEME.drum; THEME.drumI = THEME.drum; THEME.drumD = THEME.drum;
 const disc = (state) => {
   const body = state === 'locked' ? '#3b3548' : '#0d0a14'; const label = state === 'locked' ? '#6f6880' : state === 'done' ? '#d8394d' : '#e8455a'; const ring = state === 'now' ? '#ffcf5a' : state === 'done' ? '#ffcf5a' : '#5a4a7a';
   return `<svg viewBox="0 0 90 70" aria-hidden="true"><ellipse cx="45" cy="42" rx="38" ry="24" fill="#05030a"/><ellipse cx="45" cy="37" rx="38" ry="24" fill="${body}" stroke="${ring}" stroke-width="3"/><ellipse cx="45" cy="37" rx="30" ry="18.5" fill="none" stroke="#fff" stroke-opacity=".13" stroke-width="1.4"/><ellipse cx="45" cy="37" rx="23" ry="14" fill="none" stroke="#fff" stroke-opacity=".1" stroke-width="1.4"/><path d="M22 22q12-8 28-6" stroke="#fff" stroke-opacity=".25" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="45" cy="37" rx="17" ry="10.5" fill="${label}" stroke="#fff" stroke-width="2"/></svg>`;

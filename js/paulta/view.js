@@ -11,7 +11,9 @@ import { silence } from '../audio.js';
 import { newPlayer, switchPlayer, cardBg } from '../views/kids.js';
 import { worldIcon } from './icons.js';
 import { worldMap } from './mapa.js';
-import { WORLDS, WORLD_IDS, MODES, makeQuestion, phaseSpec, reinforceQuestion, parseNoteName } from './worlds.js';
+import { WORLDS, WORLD_IDS, MODES, LEVELS, isDrum, makeQuestion, phaseSpec, reinforceQuestion, parseNoteName } from './worlds.js';
+import * as RW from './recompensas.js';
+import * as FR from '../figurinhas/rewards.js';
 import { drumStaff, clefStaff, legendHtml } from './draw.js';
 import { noteName } from './music.js';
 import { LESSONS } from './lessons.js';
@@ -56,8 +58,27 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), titleChip(p) || h('small', {}, 'sem título ainda')), h('span', { class: 'kd-stars' }, `${pts} pts`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'regiões'), h('div', { class: 'kx-cards' }, ...['drum', 'sol', 'fa', 'duel'].map(card)),
-    h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 reforço do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
+    h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 revisão do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
+}
+
+/* ---------- Mundo da Bateria: escolher o modo ---------- */
+function levelScreen(host) {
+  const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
+  const p = V.getP(me.id);
+  const r = robo({ mood: 'happy', size: 90, say: 'escolhe o seu modo! todos têm 12 fases e pacotinhos de figurinhas.' });
+  const info = { drumF: ['🟢', 'fácil', 'peças e combinações, só com semínimas e colcheias. sem acento, nota fantasma, chimbal aberto nem semicolcheia.'], drumI: ['🟡', 'intermediário', 'todos os símbolos, só com colcheias. tem tempo e fases “sem errar”.'], drumD: ['🔴', 'difícil', 'tudo misturado, inclusive semicolcheias.'] };
+  const card = (w) => {
+    const [dot, nome, txt] = info[w]; const done = S.worldProgress(p, w); const full = S.worldDone(p, w); const t = RW.totalDoModo(w);
+    const ico = h('span', { class: 'kx-gi' }); ico.innerHTML = worldIcon(w);
+    return h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}` }, cardBg(), ico, h('b', { class: 'kx-gt' }, `${dot} ${nome}`),
+      h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((done / 12) * 100)}%` })),
+      h('span', { class: 'kx-gm' }, full ? '🏅 concluído · 12 fases' : `${done}/12 fases`), h('span', { class: 'kx-gm pl-lvtxt' }, txt));
+  };
+  host.append(topBar(BASE), gtitle(worldIcon('drum'), 'Mundo da Bateria', 'ler percussão na pauta'), h('div', { class: 'kx-hello' }, r.el),
+    h('h2', { class: 'kx-h' }, 'modos'), h('div', { class: 'kx-cards' }, ...LEVELS.map(([w]) => card(w))),
+    h('p', { class: 'lib-note' }, 'você pode jogar o modo que quiser, e os três valem pro título do mundo. figurinhas só com o seu código de acesso.'));
+  return () => {};
 }
 
 /* ---------- mapa de fases de um mundo (mapa de aventura) ---------- */
@@ -84,6 +105,9 @@ async function finishPhase(ctx, res, spec) {
   const kst = S.starsFor(res.right, res.total);
   const { gain } = free ? { gain: 0 } : await P.record(profile.id, { game: `pl-${world}-${mode}`, level: n, right: res.right, total: res.total, stars: kst, misses: res.misses, mode });
   const won = free ? null : { roletas: await Album.sincronizar(profile.id), jogos: 0 }; // a cada 30 ★ (todos os jogos) libera uma roleta
+  // pacotinhos da Bateria (tabela em recompensas.js): só os marcos NOVOS aparecem no aviso; a entrega é idempotente
+  let packs = [];
+  if (!free && isDrum(world)) { const antes = new Set(RW.merecidos(before, profile.id).map((x) => x.id)); const todos = RW.merecidos(saved, profile.id); await FR.grantPacks(todos.map((x) => x.id)).catch(() => 0); packs = todos.filter((x) => !antes.has(x.id)); }
   const pct = res.total ? Math.round((res.right / res.total) * 100) : 0; const stars = out.stars;
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
@@ -103,10 +127,11 @@ async function finishPhase(ctx, res, spec) {
     !out.passed ? h('p', { class: 'pl-need' }, spec.sudden ? 'nessa fase precisa acertar todas.' : `precisa de ${Math.round(spec.need * 100)}% pra passar.`) : null,
     free ? null : out.ptsGain > 0 ? h('p', { class: 'pl-pts' }, `+${out.ptsGain} pontos · total ${out.pts}`) : h('p', { class: 'muted' }, 'sem pontos novos: pontos valem uma vez por melhor desempenho.'),
     Album.rewardEl(won),
+    packs.length ? h('div', { class: 'kx-reward pl-packs' }, h('p', { class: 'kx-reward-t' }, `🎁 ${packs.length === 1 ? 'pacotinho novo' : `${packs.length} pacotinhos novos`}: ${packs.map((x) => `${x.n} carta${x.n > 1 ? 's' : ''}`).join(' + ')}${packs.some((x) => x.bea >= 10) ? ' (pode vir Beaterista!)' : ''}`), h('a', { class: 'kd-btn', href: Album.albumHref('Pacotes') }, 'abrir agora')) : null,
     ...(free ? [] : gainedTitle).map((t) => h('div', { class: 'pl-newtitle' }, h('small', {}, 'novo título!'), h('b', {}, t.name), h('span', {}, `${profile.name} · ${t.name}`))),
     worldEv && !free ? h('div', { class: 'pl-unlock' }, `🏅 ${WORLDS[world].name} concluído! +${world === 'duel' ? 200 : 100} pontos`, h('br'), h('a', { href: `${BASE}/aula/${world}` }, '📖 abrir a aulinha do Paul')) : null,
     duelOpen && !free ? h('div', { class: 'pl-unlock' }, '⚔️ o Duelo das Claves foi liberado!') : null,
-    missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.map((t) => h('li', {}, tagText(t)))), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${mode}` }, '🎯 reforço do Paul')) : null,
+    missList.length ? h('div', { class: 'kx-miss' }, h('b', {}, 'pra treinar mais:'), h('ul', {}, ...missList.map((t) => h('li', {}, tagText(t)))), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${mode}` }, '🎯 revisão do Paul')) : null,
     h('div', { class: 'row kx-act' },
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.go(n + 1) }, `fase ${n + 1} →`) : null,
       h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.go(n) }, 'jogar de novo'),
@@ -131,49 +156,56 @@ function phaseScreen(host, w, n, modeArg) {
   const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${mode}`; if (k === n) rerenderHook(); } };
   const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, mode) || (() => {}); };
   const intro = h('div', { class: 'pl-introbox' }, teachCards(w, n) ? h('p', { class: 'pl-new' }, '🆕 o Paul vai te apresentar:') : null, teachCards(w, n),
-    w === 'drum' && n >= 13 ? h('p', { class: 'muted' }, 'lembrete: X = prato/chimbal · bolinha = tambor · parênteses = fantasma · > = acento.') : null);
+    isDrum(w) && /colcheia|figura|Técnica|Tudo|Misto|Mestre|semicolcheia/i.test(sp.title) ? h('p', { class: 'muted' }, 'lembrete: X = prato/chimbal · bolinha = tambor · parênteses = fantasma · > = acento.') : null);
+  const hist = [];
   let off = runSession({
-    host, profile: me, mode, world: w, title: `${WORLDS[w].short} · fase ${n}`, sub: sp.title, spec: sp, say: sp.title, intro,
-    make: (i) => makeQuestion(w, n, mode, Math.random, i), onBack: ctx.back,
+    host, profile: me, mode, world: w, title: isDrum(w) ? `fase ${n}` : `${WORLDS[w].short} · fase ${n}`, sub: sp.title, spec: sp, say: sp.title, intro,
+    make: (i) => { const q = makeQuestion(w, n, mode, Math.random, i, hist.slice(-2)); hist.push(q.sig || q.key); return q; }, onBack: ctx.back,
     onFinish: (res) => finishPhase(ctx, res, sp),
   });
   return () => off();
 }
 
-/* ---------- reforço ---------- */
+/* ---------- revisão (reforço do Paul): 10 perguntas só com o que foi ruim; 10 estrelas e, acertando tudo, 3 figurinhas (1× por dia) ---------- */
+const hoje = () => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
 function reinforceScreen(host, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const mode = modeArg === 'imagens' ? 'imagens' : 'nomes'; const p = V.getP(me.id); const d = S.difficulties(p);
   const tags = d.all.map((x) => x.tag).filter((t) => reinforceQuestion(t, mode, () => 0.3));
-  const r = robo({ mood: tags.length ? 'idea' : 'happy', size: 90, say: tags.length ? 'montei um treino só com o que você mais errou!' : 'nenhuma dificuldade registrada ainda. joga umas fases e eu volto com um treino!' });
-  if (!tags.length) { host.append(topBar(BASE), pageH1('Reforço do Paul'), h('div', { class: 'kx-hello' }, r.el), h('a', { class: 'kd-btn kx-go', href: BASE }, 'voltar')); return () => {}; }
-  const rounds = Math.max(5, Math.min(8, tags.length * 2));
-  const order = Array.from({ length: rounds }, (_, i) => tags[i % tags.length]);
-  const seen = []; let off = null;
+  const r = robo({ mood: tags.length ? 'idea' : 'happy', size: 90, say: tags.length ? 'montei 10 perguntas só com o que você errou! acerte tudo e ganhe 3 figurinhas.' : 'nenhuma dificuldade registrada ainda. joga umas fases e eu volto com um treino!' });
+  if (!tags.length) { host.append(topBar(BASE), pageH1('Revisão do Paul'), h('div', { class: 'kx-hello' }, r.el), h('a', { class: 'kd-btn kx-go', href: BASE }, 'voltar')); return () => {}; }
+  const order = RW.ordemRevisao(tags, 10); const hist = []; const seen = []; let off = null;
   const done = async (res) => {
-    let np = V.getP(me.id); if (!livre()) await V.commit(me.id, (c) => S.relief(c, seen));
-    const { bot, stage } = res; sfx.fanfare(); bot.set('cheer', 'treino feito!');
-    stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, 'Reforço feito!'), h('p', { class: 'muted' }, `${res.right} de ${res.total} certas · cada acerto alivia uma dificuldade da sua lista.`),
-      h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => { location.hash = `${BASE}/perfil`; } }, 'ver meu perfil'), h('button', { class: 'kd-chip', type: 'button', onclick: () => { off(); host.replaceChildren(); off = reinforceScreen(host, mode); } }, 'outro treino'))));
+    const free = livre(); if (!free) await V.commit(me.id, (c) => S.relief(c, seen));
+    const all = res.right === res.total; let ganhou = 0;
+    if (!free) { await P.record(me.id, { game: 'pl-revisao', level: 1, right: res.right, total: res.total, stars: S.starsFor(res.right, res.total), misses: [], mode }); await Album.sincronizar(me.id); if (all) ganhou = await FR.grantPacks([RW.revisaoId(me.id, hoje())]).catch(() => 0); }
+    const { bot, stage } = res; sfx.fanfare(); bot.set(all ? 'crown' : 'cheer', all ? 'gabaritou!' : 'treino feito!');
+    stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, all ? 'Revisão perfeita!' : 'Revisão feita!'),
+      h('div', { class: 'pl-rev-stars', 'aria-label': `${res.right} de 10 estrelas` }, ...Array.from({ length: 10 }, (_, k) => h('span', { class: `kx-star${k < res.right ? ' on' : ''}`, style: `--d:${k * 0.12}s` }, '★'))),
+      h('p', { class: 'muted' }, `${res.right} de ${res.total} certas · cada acerto vale 1 ★ e alivia uma dificuldade da sua lista.`),
+      free ? h('p', { class: 'pl-livre', role: 'status' }, '🔓 modo livre: as figurinhas só contam com o seu código de acesso.') : null,
+      !free && all ? (ganhou ? h('div', { class: 'kx-reward pl-packs' }, h('p', { class: 'kx-reward-t' }, '🎁 3 figurinhas pra você!'), h('a', { class: 'kd-btn', href: Album.albumHref('Pacotes') }, 'abrir agora')) : h('p', { class: 'muted' }, 'as 3 figurinhas da revisão já foram entregues hoje. volta amanhã!')) : !free ? h('p', { class: 'muted' }, 'acerte as 10 pra ganhar 3 figurinhas (1 prêmio por dia).') : null,
+      h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => { location.hash = `${BASE}/perfil`; } }, 'ver meu perfil'), h('button', { class: 'kd-chip', type: 'button', onclick: () => { off(); host.replaceChildren(); off = reinforceScreen(host, mode); } }, 'outra revisão'))));
   };
-  off = runSession({ host, profile: me, mode, world: 'reforco', title: 'Reforço do Paul', sub: 'Reforço do Paul', spec: { rounds, secs: null, sudden: false, need: 0 }, say: 'o que você mais erra, em um treino só', noScore: true,
-    make: (i) => { const q = reinforceQuestion(order[i], mode, Math.random); return q; }, relief: (q, ok) => { if (ok && q.tag && !seen.includes(q.tag)) seen.push(q.tag); },
+  off = runSession({ host, profile: me, mode, world: 'reforco', title: 'Revisão do Paul', sub: 'Revisão do Paul · 10 estrelas', spec: { rounds: 10, secs: null, sudden: false, need: 0 }, say: 'o que você mais erra, em um treino só', noScore: true,
+    make: (i) => { let q = null; for (let t = 0; t < 20; t++) { q = reinforceQuestion(order[i], mode, Math.random); if (!q || !hist.slice(-2).includes(q.sig || `${q.key}:${q.ans}`)) break; } if (q) hist.push(q.sig || `${q.key}:${q.ans}`); return q; }, relief: (q, ok) => { if (ok && q.tag && !seen.includes(q.tag)) seen.push(q.tag); },
     onBack: () => { location.hash = BASE; }, onFinish: done });
   return () => off && off();
 }
 
 /* ---------- aulinha ---------- */
-function lessonScreen(host, w) {
+function lessonScreen(host, w0) {
+  const w = isDrum(w0) ? 'drum' : w0;
   const me = P.active(); if (!me || !LESSONS[w]) { location.hash = BASE; return () => {}; }
-  const p = V.getP(me.id); if (!S.worldDone(p, w)) { toast('a aulinha abre quando você concluir o mundo', { ms: 2600 }); location.hash = `${BASE}/${w}`; return () => {}; }
+  const p = V.getP(me.id); if (!S.worldDone(p, w)) { toast('a aulinha abre quando você concluir o mundo', { ms: 2600 }); location.hash = `${BASE}/${w0}`; return () => {}; }
   const L = LESSONS[w]; let k = 0; const box = h('div', { class: 'pl-lesson' });
   const r = robo({ mood: 'read', tier: tierOf(P.totalStars(me.id)), size: 90 });
   const draw = () => {
     const s = L.steps[k]; r.set(k === L.steps.length - 1 ? 'cheer' : 'point', s.say);
     box.replaceChildren(h('div', { class: 'kx-dots' }, ...L.steps.map((_, j) => h('i', { class: j < k ? 'done' : j === k ? 'now' : '' }))), h('div', { class: 'pl-figs' }, ...s.draw.map((d) => h('figure', { class: 'pl-fig' }, svgEl(d.svg, 'pl-mini'), h('figcaption', {}, d.cap)))),
-      h('div', { class: 'row kx-act' }, k > 0 ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { k--; draw(); } }, '‹ voltar') : null, k < L.steps.length - 1 ? h('button', { class: 'kd-btn', type: 'button', onclick: () => { k++; draw(); } }, 'próximo ›') : h('a', { class: 'kd-btn', href: `${BASE}/${w}` }, 'terminei!')));
+      h('div', { class: 'row kx-act' }, k > 0 ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { k--; draw(); } }, '‹ voltar') : null, k < L.steps.length - 1 ? h('button', { class: 'kd-btn', type: 'button', onclick: () => { k++; draw(); } }, 'próximo ›') : h('a', { class: 'kd-btn', href: `${BASE}/${w0}` }, 'terminei!')));
   };
-  host.append(topBar(`${BASE}/${w}`), pageH1(L.title), h('div', { class: 'kx-hello' }, r.el), box); draw();
+  host.append(topBar(`${BASE}/${w0}`), pageH1(L.title), h('div', { class: 'kx-hello' }, r.el), box); draw();
   return () => {};
 }
 
@@ -237,6 +269,7 @@ export function mount(host, parts = []) {
     if (a === 'perfil') { off = profileScreen(host, rerender) || off; return; }
     if (a === 'reforco') { off = reinforceScreen(host, b) || off; return; }
     if (a === 'aula') { off = lessonScreen(host, b) || off; return; }
+    if (a === 'drum') { off = levelScreen(host) || off; return; }
     if (a && WORLDS[a]) {
       const n = Number(b);
       if (b && b !== '-' && Number.isInteger(n) && n >= 1 && n <= WORLDS[a].count) { off = phaseScreen(host, a, n, c) || off; return; }

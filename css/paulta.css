@@ -59,3 +59,12 @@
 .pl-hud-b { position: relative; flex: 1; min-height: 48px; display: grid; place-items: center; padding: 6px 10px; font: 800 15px var(--body); text-decoration: none; text-align: center; color: var(--avp-text); background: var(--avp-card); border: 3px solid var(--avp-line); border-radius: 12px; }
 .pl-hud-b.go { background: var(--avp-accent); color: var(--avp-accent-ink); border-color: var(--avp-text); box-shadow: 3px 3px 0 var(--avp-accent-dk); }
 .pl-hud-dot { position: absolute; top: -8px; right: -6px; min-width: 22px; height: 22px; display: grid; place-items: center; padding: 0 5px; font: 800 12px var(--body); font-style: normal; color: var(--avp-accent-ink); background: var(--avp-gold); border: 2px solid var(--avp-text); border-radius: 999px; }
+
+/* modos da bateria, recomeçar e revisão */
+.pl-lvtxt { display: block; margin-top: 4px; font-size: .74rem; line-height: 1.25; font-weight: 600; text-transform: none; }
+.pl-redo { font-size: .78rem; padding: 4px 10px; white-space: nowrap; }
+.pl-redo[hidden] { display: none; }
+.pl-redo2 { margin-top: 8px; font-size: .8rem; }
+.pl-rev-stars { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 10px 0; }
+.pl-rev-stars .kx-star { font-size: 1.6rem; }
+.pl-packs { margin-top: 10px; }
