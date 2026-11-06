@@ -43,10 +43,10 @@ test('pacote: mesmo id = mesmas figurinhas, entrega e abertura só uma vez', () 
   assert.equal(L.pendingPacks(L.grantPack(a.state, 'daily:2026-11-05')).length, 0, 'pacote já aberto não volta');
 });
 test('colar: uma por espaço, repetida fica na mão', () => {
-  let s = L.grantPack(L.emptyState(), 'p'); s = L.openPack(s, cat, 'p').state;
+  let s = L.grantPack(L.emptyState(), 'p'); s = L.openPack(s, cat, 'p').state; const abertas = s.opened.p; // o sorteio agora é por aluno (seed): vale o que foi gravado
   const code = Object.keys(s.inv)[0];
   s = L.paste(s, code); assert.ok(s.pasted[code]); assert.equal(L.paste(s, code), s);
-  s = L.pasteAll(s); assert.equal(Object.keys(s.pasted).length, new Set(L.drawPack(cat, 'p')).size);
+  s = L.pasteAll(s); assert.equal(Object.keys(s.pasted).length, new Set(abertas).size);
   assert.equal(L.stats(s, cat).got, Object.keys(s.pasted).length);
 });
 test('raridade das figurinhas sorteadas respeita o catálogo (não existem códigos inventados)', () => {
