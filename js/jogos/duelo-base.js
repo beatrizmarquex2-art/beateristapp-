@@ -3,6 +3,7 @@
 import { h } from '../util.js';
 import { banner } from '../ui.js';
 import { lobby, linkBadge } from './online.js';
+import { portal } from '../rg-portal.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -26,7 +27,7 @@ export function mountDueloBase(host, A) {
   const badge = linkBadge(); const root = h('div', { class: 'dl' });
   const box = h('div', { class: A.frameClass ? '' : 'dl-play', id: A.boxId || null }); const frame = h('div', { class: `${A.frameClass || 'dl-playframe'} dl-game`, hidden: true }, box);
   if (!A.semCabecalho) host.append(banner(A.titulo, A.sub), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: A.voltar[0] }, A.voltar[1])));
-  host.append(root, frame);
+  host.append(root, frame); const stopPortal = A.frameClass === 'rg-host' ? portal(frame) : () => {}; // iPad: o jogo de ritmo vai pro <body> enquanto roda
   const later = (fn, ms) => { const t = setTimeout(() => { if (!gone) fn(); }, ms); timers.push(t); return t; };
   let cfgUI = null;
 
@@ -89,7 +90,7 @@ export function mountDueloBase(host, A) {
     try { await A.carregar(); if (gone) return; telaConfig(); } catch { if (!gone) root.replaceChildren(h('p', { class: 'muted' }, 'não consegui abrir o duelo agora. confira a internet.')); }
   })();
   return () => {
-    gone = true; timers.forEach((t) => { clearTimeout(t); clearInterval(t); });
+    stopPortal(); gone = true; timers.forEach((t) => { clearTimeout(t); clearInterval(t); });
     try { if (conn) conn.close(); } catch { /* ok */ } try { if (parar) parar(); } catch { /* ok */ } try { if (A.aoSair) A.aoSair(); } catch { /* ok */ }
   };
 }

@@ -14,6 +14,7 @@ import * as CODE from '../codigo.js';
 import * as P from '../kids/progress.js';
 import * as Album from '../kids/album.js';
 import * as AC from '../acesso.js';
+import { portal } from '../rg-portal.js';
 
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
@@ -208,6 +209,7 @@ export function mount(host, opts = {}) {
   // #jogos fica sem altura fixa (o pacote mede a tela com 100dvh); durante o jogo o .rg-host vira tela cheia (ver app.css)
   const box = h('div', { id: 'jogos' }, h('p', { class: 'muted rg-wait' }, 'carregando os jogos…'));
   const frame = h('div', { class: 'rg-host' }, box);
+  const stopPortal = portal(frame); // iPad: na hora de jogar, a tela do jogo vai pro <body> (senão fica cortada)
   // importar MIDI: vira a aba "Importados" do pacote (a busca do próprio pacote filtra pelo nome)
   const input = h('input', { type: 'file', accept: '.mid,.midi,.kar,.zip,audio/midi,audio/x-midi,application/zip', multiple: true, hidden: true, 'aria-label': 'Arquivos MIDI' });
   const manage = h('details', { class: 'card pad rg-manage' });
@@ -329,7 +331,7 @@ export function mount(host, opts = {}) {
   // MIDI importado em outro aparelho chega pela sincronização
   const off = store.subscribe((i) => { if (student) return; if ((!i.kind || i.kind === KIND || i.kind === 'setting') && mounted && !document.body.classList.contains('rz-lock')) refresh(); if (!i.kind || i.kind === KIND) resync(); });
   return () => {
-    off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
+    stopPortal(); off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }
   };
 }

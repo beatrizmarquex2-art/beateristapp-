@@ -158,3 +158,6 @@
 .dl-fim { display: grid; gap: 8px; justify-items: center; } .dl-nota { margin: 0; font-size: 12px; text-align: center; }
 .dl .jg-seg { display: flex; gap: 6px; flex-wrap: wrap; } .dl .jg-seg button { min-height: 28px; padding: 3px 11px; font: 600 12px var(--body); border: 1.5px solid #1b1818; border-radius: 999px; background: #fffdf8; color: #1b1818; cursor: pointer; } .dl .jg-seg button.on { background: #1b1818; color: #fff; }
 .dl .jo-passo button { background: #fffdf8; color: #1b1818; border-color: #1b1818; } .dl .jo-rot { color: #3b3530; }
+/* aula ao vivo (Toca Aqui) */
+.au-toca { display: grid; gap: 12px; } .au-esc { display: grid; gap: 8px; } .au-cels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 8px; } .au-cel-l { display: grid; gap: 2px; min-width: 0; } .au-cel-l small { font: 700 10px var(--body); opacity: .7; } .au-cel { min-width: 0; }
+.au-dica { margin: 4px 0 0; font-size: 12px; } .au-sala { display: grid; gap: 8px; } .au-cab { display: grid; gap: 2px; }

@@ -1,6 +1,6 @@
 // Microfone: um jeito só de pedir e de explicar o que deu errado (antes cada ferramenta tinha o seu e algumas desistiam
 // por qualquer erro). Tenta sem filtros (melhor pra bateria); se o aparelho recusar os ajustes, tenta o microfone simples.
-import { audio } from './audio.js';
+import { audio, micSession } from './audio.js';
 
 const RAW = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
 
@@ -9,16 +9,20 @@ export async function getMic({ plain = false } = {}) {
   if (!window.isSecureContext && location.hostname !== 'localhost') throw Object.assign(new Error('sem https'), { name: 'Insecure' });
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('sem microfone'), { name: 'NotSupported' });
   try { audio(); } catch { /* o som da tela pode não abrir; o microfone segue */ } // destrava o áudio dentro do toque (iPhone/iPad)
+  micSession(true); // iOS/iPadOS: sem isso a sessão de áudio fica só de reprodução e o microfone chega mudo
   const tries = plain ? [{ audio: true }] : [{ audio: RAW }, { audio: true }];
   let last;
   for (const c of tries) {
-    try { return await navigator.mediaDevices.getUserMedia(c); }
+    try { const stream = await navigator.mediaDevices.getUserMedia(c); try { audio(); } catch { /* ok */ }
+      stream.getTracks().forEach((t) => { const parar = t.stop.bind(t); t.stop = () => { parar(); if (stream.getTracks().every((x) => x.readyState === 'ended')) micSession(false); }; }); // fechou o microfone: a sessão de áudio volta ao normal
+      return stream; }
     catch (e) {
       last = e;
       // permissão negada ou sem aparelho: tentar de novo com outros ajustes não adianta
       if (e && /NotAllowed|Security|NotFound|DevicesNotFound/.test(e.name)) break;
     }
   }
+  micSession(false); // não abriu: volta a sessão pro normal
   throw last || new Error('microfone indisponível');
 }
 

@@ -92,6 +92,14 @@ export function lobby({ jogo, makeState, onStart }) {
   return { el: box, close() { if (conn && !live) { conn.close(); conn = null; } } };
 }
 
+/** Cria uma sala por código sem a tela de entrada (usada pela aula ao vivo). Devolve { code, conn } (quem cria é o celular 0). */
+export async function criarSala(jogo, estado) { const code = await rpc('sala_criar', { p_jogo: jogo, p_estado: estado }); return { code, conn: connection(code, 0, 1, null) }; }
+/** Entra numa sala por código (vários celulares podem entrar; quem só lê não escreve). Devolve { conn, estado } ou null se a sala não existe. */
+export async function entrarSala(code, jogo) {
+  const c = String(code || '').trim().toUpperCase(); const rows = await rpc('sala_entrar', { p_code: c, p_jogo: jogo });
+  if (!rows || !rows[0]) return null; return { conn: connection(c, 1, rows[0].ver, null), estado: rows[0].estado };
+}
+
 /** Volta pra uma sala em que este celular já estava (queda de internet, app fechado). Devolve { conn, estado } ou null se a sala não existe mais. */
 export async function reenter(code, me) {
   const rows = await rpc('sala_ler', { p_code: code, p_ver: 0 });

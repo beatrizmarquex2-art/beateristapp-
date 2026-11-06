@@ -87,8 +87,9 @@ export const spec = {
 /** Monta a partida da missão dentro de `body`. O pacote de ritmo recebe `mission` e só avisa `onResult` no fim real da música. */
 export function mount(body, opts) {
   const m = opts.mission; const p = m.params; let gone = false; let BRref = null;
-  const root = document.createElement('div'); root.className = 'rg-host'; const box = document.createElement('div'); box.id = 'jogos';
+  const root = document.createElement('div'); root.className = 'rg-host'; const box = document.createElement('div'); box.id = 'jogos'; let stopPortal = () => {};
   const wait = document.createElement('p'); wait.className = 'muted rg-wait'; wait.textContent = 'carregando o jogo…'; box.append(wait); root.append(box); body.append(root);
+  import('../../rg-portal.js').then((m) => { stopPortal = m.portal(root); }).catch(() => { /* sem o portal: segue como antes */ });
   const nativo = p.game; // o jogo original da missão: a Bea pediu que a pessoa escolha, então p.game muda conforme a escolha (evaluate lê o mesmo objeto) e volta ao sair
   const KEY = 'beaterista-noritmo-modo';
   const lembrado = () => { try { const v = localStorage.getItem(KEY); return v === 'beat' || v === 'tiles' ? v : nativo; } catch { return nativo; } };
@@ -128,7 +129,7 @@ export function mount(body, opts) {
   return {
     inProgress: () => !gone && document.body.classList.contains('rz-lock'),
     destroy() {
-      gone = true; p.game = nativo;
+      gone = true; p.game = nativo; stopPortal();
       try { if (BRref && BRref.unmount) BRref.unmount(); } catch { /* ok */ }
       document.body.classList.remove('rz-lock'); document.documentElement.classList.remove('rg-on');
       root.remove();

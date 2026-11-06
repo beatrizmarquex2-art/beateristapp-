@@ -13,10 +13,10 @@ const loadMic = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}
 const saveMic = (v) => { try { localStorage.setItem(KEY, JSON.stringify({ mic: !!v })); } catch { /* sem armazenamento */ } };
 
 /** host: onde desenhar. { bar: 4 células, bpm, onResult(result) }. Devolve { destroy, inProgress }. */
-export function mountLeituraMissao(host, { bar, bpm, onResult }) {
+export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
   const S = session(); const expected = onsets(bar, bpm); const q = 60 / bpm;
   let phase = 'idle'; // idle | run | done
-  let wantMic = loadMic(); let micBlocked = false; let last = null; let run = null; let reported = false;
+  let wantMic = mic === true ? true : loadMic(); /* mic:true = a aula ao vivo já abre no microfone (tocar na bateria) */ let micBlocked = false; let last = null; let run = null; let reported = false;
   const root = h('div', { class: 'tm-root' }); host.replaceChildren(root);
   const stopRun = () => { S.reset(); if (run) { try { run.off(); } catch { /* ok */ } run = null; } };
 

@@ -1,5 +1,5 @@
 // Microfone → batidas (pra "tocar no pad / na bateria de verdade"). Mesmo detector do Juiz de Tempo. Nada de áudio sai do aparelho.
-import { audio } from '../audio.js';
+import { audio, micSession } from '../audio.js';
 import { OnsetCore } from '../onset-core.js';
 import { getMic } from '../mic-access.js';
 
@@ -18,5 +18,5 @@ export async function openMic(onHit) {
     node.onaudioprocess = (e) => { const t0 = e.playbackTime != null ? e.playbackTime - 1024 / ctx.sampleRate : ctx.currentTime; for (const ev of core.push(e.inputBuffer.getChannelData(0), t0)) onHit(ev); };
     const mute = ctx.createGain(); mute.gain.value = 0; src.connect(node); node.connect(mute).connect(ctx.destination); mode = 'script';
   }
-  return { mode, stop() { try { src.disconnect(); node.disconnect(); } catch { /* já desligado */ } stream.getTracks().forEach((t) => t.stop()); } };
+  return { mode, stop() { try { src.disconnect(); node.disconnect(); } catch { /* já desligado */ } stream.getTracks().forEach((t) => t.stop()); micSession(false); } };
 }

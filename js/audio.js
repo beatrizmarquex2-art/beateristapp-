@@ -13,9 +13,16 @@ export function setMuted(v) {
   if (master) master.gain.value = muted ? 0 : 0.9;
   window.dispatchEvent(new CustomEvent('bt-mute', { detail: muted }));
 }
-let keep = null;
+let keep = null; let micOn = false;
+/** iPhone/iPad: com a sessão de áudio em "playback" o microfone fica MUDO (o iOS bloqueia a captura). Enquanto o microfone está aberto a sessão vira
+ *  "play-and-record" (e o playbackMode abaixo não volta pra "playback" nos toques); ao fechar o microfone, volta ao normal. */
+export function micSession(on) {
+  micOn = !!on;
+  try { if (navigator.audioSession) navigator.audioSession.type = micOn ? 'play-and-record' : 'playback'; } catch (e) {}
+  if (micOn) { try { audio(false); } catch (e) {} }
+}
 function playbackMode() {
-  try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
+  try { if (!micOn && navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
   try {
     if (!keep) {
       const n = 800, b = new DataView(new ArrayBuffer(44 + n * 2));
