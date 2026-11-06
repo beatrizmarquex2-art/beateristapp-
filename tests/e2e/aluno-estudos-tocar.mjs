@@ -1,4 +1,4 @@
-// Área dos alunos: aba Estudos (aulinha do Paul, dicionário, quiz, Jogos Ensinam), Tocar com os 4 instrumentos, e "figuras rítmicas" dentro do Toca Aqui (fora da lista de jogos).
+// Área dos alunos: aba Estudos (5 erros, dicionário, quiz, aulinha do Paul), Tocar com os 4 instrumentos, e "figuras rítmicas" dentro do Toca Aqui (fora da lista de jogos).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false }); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
 const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
@@ -8,17 +8,17 @@ await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-no
 const go = async (h) => { await page.goto(url + '/aluno.html' + h); await sleep(1500); };
 await go('#/estudos');
 const abas = await page.evaluate(() => [...document.querySelectorAll('nav .nav-item')].map((a) => a.textContent.trim()));
-check('barra de baixo: Jogos, Estudos, Tocar, Álbum, Perfil, Ranking', ['Jogos', 'Estudos', 'Tocar', 'Álbum', 'Perfil', 'Ranking'].every((x, i) => (abas[i] || '').includes(x)), abas.join('|'));
-check('as 6 abas cabem em uma linha', await page.evaluate(() => { const t = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 3; }));
+check('barra de baixo: Jogos, Estudos, Tocar, Álbum, Perfil (sem Ranking)', ['Jogos', 'Estudos', 'Tocar', 'Álbum', 'Perfil'].every((x, i) => (abas[i] || '').includes(x)), abas.join('|'));
+check('as 5 abas cabem em uma linha', await page.evaluate(() => { const t = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 3; }));
 check('Estudos: acende a aba e mostra os 4 itens', (await page.locator('nav .nav-item.on').textContent()).includes('Estudos') && (await page.locator('#view .al-card').count()) === 4);
 const txt = await page.textContent('#view');
-check('itens: Aulinha do Paul, Dicionário musical, Quiz e Letras, Jogos Ensinam', ['Aulinha do Paul', 'Dicionário musical', 'Quiz e Letras', 'Jogos Ensinam'].every((x) => txt.includes(x)));
-check('sem código: aulinha, dicionário e quiz com cadeado; Jogos Ensinam aberto', (await page.locator('#view .al-card.locked').count()) === 3 && !(await page.locator('#view .al-card', { hasText: 'Jogos Ensinam' }).getAttribute('class')).includes('locked'));
-await page.locator('#view .al-card', { hasText: 'Jogos Ensinam' }).click(); await sleep(1200);
-check('Jogos Ensinam abre sem código e a aba Estudos continua acesa', (await page.evaluate(() => location.hash)).includes('relatorio') && (await page.locator('nav .nav-item.on').textContent()).includes('Estudos'));
+check('itens: 5 erros, Dicionário musical, Quiz e Letras, Aulinha do Paul (sem Jogos Ensinam)', ['5 erros', 'Dicionário musical', 'Quiz e Letras', 'Aulinha do Paul'].every((x) => txt.includes(x)) && !txt.includes('Jogos Ensinam'));
+check('sem código: aulinha, dicionário e quiz com cadeado; 5 erros aberto', (await page.locator('#view .al-card.locked').count()) === 3 && !(await page.locator('#view .al-card', { hasText: '5 erros' }).getAttribute('class')).includes('locked'));
+await page.locator('#view .al-card', { hasText: '5 erros' }).click(); await sleep(1200);
+check('5 erros abre sem código e a aba Estudos continua acesa', (await page.evaluate(() => location.hash)).includes('erros') && (await page.locator('nav .nav-item.on').textContent()).includes('Estudos'));
 await go('#/tocar');
 const tocar = await page.textContent('#view');
-check('Tocar mostra os 4 instrumentos', ['Bateria', 'Violão e guitarra', 'Piano', 'Xilofone'].every((x) => tocar.includes(x)));
+check('Tocar mostra os 4 instrumentos', ['Bateria', 'Violão', 'Piano', 'Xilofone'].every((x) => tocar.includes(x)));
 for (const [rota, nome] of [['#/violao', 'violão'], ['#/xilofone', 'xilofone']]) { await go(rota); check(`${nome} abre sem erro`, (await page.locator('#view').innerText()).length > 20 && (await page.locator('nav .nav-item.on').textContent()).includes('Tocar')); }
 await go('#/jogos');
 const lista = await page.textContent('#view');

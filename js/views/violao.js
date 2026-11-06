@@ -1,6 +1,6 @@
-// Violão e guitarra na tela: escolhe o acorde e passa o dedo nas cordas (pra baixo e pra cima). Corda de verdade (ver instruments.js).
+// Violão na tela: escolhe o acorde e passa o dedo nas cordas (pra baixo e pra cima). Corda de verdade (ver instruments.js).
 import { h } from '../util.js';
-import { audio } from '../audio.js';
+import { audio, isMuted, setMuted } from '../audio.js';
 import { banner } from '../ui.js';
 import { kitTheme, themeRow } from '../kids/kit-theme.js';
 import { CHORDS, pluck, warmGuitar, backing } from '../instruments.js';
@@ -62,11 +62,14 @@ export function mount(host) {
   };
   document.addEventListener('keydown', onKey);
 
+  // aviso quando o som do app está desligado (o alto-falante do topo): sem isso parece que o violão não toca
+  const offMsg = h('section', { class: 'card pad', role: 'status', hidden: true }, h('p', {}, 'o som do app está desligado, por isso o violão não toca. no iPhone, confira também o botão lateral de silencioso.'), h('button', { class: 'btn primary', type: 'button', onclick: () => setMuted(false) }, 'ligar o som'));
+  const syncOff = () => { offMsg.hidden = !isMuted(); }; window.addEventListener('bt-mute', syncOff); syncOff();
   stage.append(chordsEl, h('div', { class: 'ti-neck' }, notes, strs));
-  host.append(banner('Violão', 'passe o dedo nas cordas'), tocarTabs('violao'), stage,
+  host.append(banner('Violão', 'passe o dedo nas cordas'), tocarTabs('violao'), offMsg, stage,
     h('section', { class: 'card pad ti-panel' }, soundRow, h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' })), themeBox),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. “abafar” (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));
   drawChords(); drawSound(); drawTheme();
-  return () => { document.removeEventListener('keydown', onKey); backing.leave(); };
+  return () => { document.removeEventListener('keydown', onKey); window.removeEventListener('bt-mute', syncOff); backing.leave(); };
 }
