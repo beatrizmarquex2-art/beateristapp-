@@ -27,7 +27,7 @@
 .lj-selo { display: inline-block; align-self: center; margin: 8px auto 0; padding: 2px 10px; border-radius: 99px; background: var(--lj-navy); color: #fff; font: 700 10.5px/1.5 var(--body, system-ui); letter-spacing: .02em; }
 .lj-card h2 { font-size: 18px; line-height: 1.12; margin-top: 8px; color: var(--lj-navy); font-weight: 800; }
 .lj-curta { margin: 3px 2px 0; font-size: 13px; line-height: 1.25; color: #3b3f55; }
-.lj-preco { margin: 4px 0 0; font-weight: 800; color: var(--lj-vinho); } .lj-preco.big { font-size: 26px; } .lj-preco small { font: 600 13px/1.3 var(--body, system-ui); color: #3b3f55; }
+.lj-preco { margin: 4px 0 0; font-weight: 800; color: var(--lj-vinho); } .lj-preco.big { font-size: 26px; } .lj-preco small { display: block; font: 600 13px/1.3 var(--body, system-ui); color: #3b3f55; }
 .lj-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 46px; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--lj-vinho); color: #fff !important; font: 800 17px/1.1 var(--body, system-ui); text-decoration: none; cursor: pointer; box-shadow: 0 3px 0 var(--lj-vinho2); transition: transform .1s; }
 .lj-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--lj-vinho2); }
 .lj-btn.wide { width: 100%; margin-top: 10px; } .lj-btn.gold { background: var(--lj-ouro); color: var(--lj-tinta) !important; box-shadow: 0 3px 0 #c99a1f; }

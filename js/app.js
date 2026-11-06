@@ -51,6 +51,7 @@ import * as acessos from './views/acessos.js';
 import * as albumAlunos from './views/album-alunos.js';
 import * as cartinha from './views/cartinha.js';
 import * as codigos from './views/codigos.js';
+import * as passeAdmin from './views/passe-admin.js';
 import { remember } from './recent.js';
 import * as repertorio from './views/repertorio.js';
 import * as lembretes from './views/lembretes.js';
@@ -314,6 +315,7 @@ function shell() {
       case 'album-alunos': c = albumAlunos.mount(view); break;
       case 'cartinha': c = cartinha.mount(view); break;
       case 'codigos': c = codigos.mount(view); break;
+      case 'passe-admin': c = passeAdmin.mount(view); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
       case 'lembretes': c = lembretes.mount(view); break;
