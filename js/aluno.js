@@ -158,7 +158,7 @@ function estudosView(view) {
   view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo'),
     item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando'),
-    item('#/dicas/quiz', 'Quiz e Letras', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
+    item('#/dicas/quiz', 'Quiz e Letras', 'quiz, caça-palavras e cruzadinha das dicas do método'),
     item('#/jogos/relatorio', 'Jogos Ensinam', 'relatório aberto pra pais e responsáveis: o que cada jogo desenvolve')));
 }
 

@@ -47,7 +47,7 @@ const SECTIONS = [
     ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['quiz e letras (com código)', [
-    link('#/dicas/quiz', 'Quiz e Letras', 'quiz.svg', 'quiz, caça-palavras e cruzadinha das 30 dicas'),
+    link('#/dicas/quiz', 'Quiz e Letras', 'quiz.svg', 'quiz, caça-palavras e cruzadinha das dicas do método'),
   ]],
   ['fases e relatório', [
     link('#/kids', 'fases e estrelas', 'fases.svg', 'jogadores, álbum e coleção'),
