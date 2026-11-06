@@ -474,7 +474,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
-      if (g.mode === 'paul' && w === 0) MESA.vitoria('cartas');
+      if (g.mode === 'paul' && w === 0) MESA.vitoria('cartas', 3);
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');
       if (mineWin) confetti();

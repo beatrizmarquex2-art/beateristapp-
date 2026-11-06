@@ -6,6 +6,7 @@ import { banner } from '../ui.js';
 import * as T from '../tips.js';
 import * as FB from '../feedback.js';
 import { TERMS } from '../glossary.js';
+const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0), pct: (c, t) => (t ? (c / t >= 0.9 ? 3 : c / t >= 0.7 ? 2 : c / t >= 0.4 ? 1 : 0) : 0), erros: (e) => (e === 0 ? 3 : e <= 2 ? 2 : 1) }; // estrelas só quando termina (carrega sob demanda)
 import { alunoSemCodigo, GRATIS, avisoCodigo, cacaUsadas, cacaUsar } from '../amostra.js';
 
 const KEY = 'setting-dicas';
@@ -29,6 +30,7 @@ function quiz(box, kinds, key) {
   const next = () => { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); answered = false; picked = null; draw(); };
   const dots = () => h('div', { class: 'dc-prog', role: 'img', 'aria-label': `pergunta ${i + 1} de ${ROUNDS}, ${score} certas` }, ...Array.from({ length: ROUNDS }, (_, n) => h('i', { class: n < hist.length ? (hist[n] ? 'ok' : 'no') : n === i ? 'now' : '' })));
   const finish = () => {
+    if (!alunoSemCodigo()) MESA.vitoria('quiz', MESA.pct(score, ROUNDS));
     const b = conf().best; const best = Math.max(b[key] || 0, score); if (score > (b[key] || 0)) save({ best: { ...b, [key]: score } });
     const frase = score >= ROUNDS * 0.9 ? 'você é fera! 🏆' : score >= ROUNDS * 0.7 ? 'mandou muito bem!' : score >= ROUNDS * 0.4 ? 'tá evoluindo, bora de novo!' : 'sem stress, errar faz parte';
     box.replaceChildren(h('section', { class: 'card pad ft-center dc-fim' }, h('div', { class: 'dc-score' }, h('b', {}, String(score)), h('small', {}, `de ${ROUNDS}`)), h('p', { class: 'dc-clue' }, frase), h('p', { class: 'muted' }, `seu melhor: ${best}`),
@@ -58,6 +60,7 @@ function caca(box) {
   const its = free ? termItems() : items(); const pick = T.easyPick(its, 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
   const ws = T.wordsearch(pick.map((x) => x.w), 9, Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
+  let erros = 0; let pagou = false;
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
   const key = (x, y) => `${x},${y}`;
   const cellColor = new Map(); // casa -> cor da palavra achada
@@ -67,8 +70,8 @@ function caca(box) {
   const attempt = (line, el) => {
     const str = line.map((c) => ws.grid[c.y][c.x]).join(''); const rev = [...str].reverse().join('');
     const w = words.find((k) => !found.has(k) && (k === str || k === rev));
-    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
-    else { draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
+    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (done && !pagou && !free) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
+    else { erros++; draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
   };
   const up = () => {
     const d = drag; drag = null; if (!d) return; preview(null);
@@ -108,7 +111,7 @@ function caca(box) {
 /* ---------- cruzadinha (fácil: 5 palavras curtas, banco de palavras à vista, 1ª letra de cada uma já na grade, cores) ---------- */
 function cruzadinha(box) {
   const its = items(); const pick = T.easyPick(its, 5, { min: 4, max: 8 });
-  const cw = T.crossword(pick.map((x) => x.w), Math.random, 12); const solved = new Set(); let last = null;
+  const cw = T.crossword(pick.map((x) => x.w), Math.random, 12); const solved = new Set(); let last = null; let erros = 0; let pagou = false;
   const cellsOf = (e) => Array.from({ length: e.w.length }, (_, k) => ({ x: e.x + (e.dir === 'h' ? k : 0), y: e.y + (e.dir === 'v' ? k : 0), ch: e.w[k] }));
   const shown = new Map(); // casa -> { ch, k } letra revelada e a cor da palavra
   const hintOf = new Map(); // casa -> 1ª letra de cada palavra (já aparece clarinha)
@@ -126,8 +129,8 @@ function cruzadinha(box) {
       const inp = h('input', { type: 'text', maxlength: e.w.length, autocapitalize: 'off', autocomplete: 'off', spellcheck: 'false', disabled: ok, placeholder: e.w[0] + '·'.repeat(e.w.length - 1), 'aria-label': `Resposta da ${e.n} ${e.dir === 'h' ? 'horizontal' : 'vertical'}`, value: ok ? it.w : '' });
       inp.addEventListener('input', () => {
         const v = T.norm(inp.value).replace(/[^A-Z]/g, ''); if (v.length < e.w.length) return;
-        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
-        else { FB.lose(inp, { paul: false }); inp.select(); }
+        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (all && !pagou) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
+        else { erros++; FB.lose(inp, { paul: false }); inp.select(); }
       });
       return h('li', { class: `${ok ? 'ok ' : ''}dc-k${e.idx % COLORS}`, value: e.n }, h('span', { class: 'dc-dir' }, `${e.dir === 'h' ? '→' : '↓'} ${e.w.length} letras · começa com ${e.w[0]}`), h('p', {}, T.clueOf(it)), inp); }));
     box.replaceChildren(...[h('section', { class: 'card pad' }, h('p', { class: 'tr-count' }, `${solved.size} de ${cw.entries.length} palavras`), h('p', { class: 'muted' }, 'as respostas estão aqui embaixo, é só encaixar cada uma na pista certa:'), bank, grid), last ? explain(last) : null, h('section', { class: 'card pad' }, h('h3', { class: 'tag' }, 'pistas'), clues),

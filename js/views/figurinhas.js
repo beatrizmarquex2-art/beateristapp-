@@ -138,6 +138,14 @@ export function mount(host, parts = [], opts = {}) {
       h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
       h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
   }
+  /** Paleta aleatória da roleta (nunca igual de uma vez pra outra): 8 fatias, 2 a 4 cores vivas combinadas com o creme e o azul-marinho da marca. */
+  function coresRoleta() {
+    const base = Math.floor(Math.random() * 360); const passo = [30, 60, 90, 120, 150][Math.floor(Math.random() * 5)]; const n = 2 + Math.floor(Math.random() * 3);
+    const vivas = Array.from({ length: n }, (_, k) => `hsl(${(base + k * passo) % 360} ${70 + Math.floor(Math.random() * 20)}% ${48 + Math.floor(Math.random() * 12)}%)`);
+    const neutras = ['#efe2c6', '#17224a', '#fff6e0', '#14111a'];
+    const fatias = Array.from({ length: 8 }, (_, k) => (k % 2 === 0 ? vivas[(k / 2) % vivas.length] : neutras[Math.floor(Math.random() * neutras.length)]));
+    return `conic-gradient(${fatias.map((c, k) => `${c} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
+  }
   /** Pacote comum abre direto; roleta e prêmio de jogo têm a sua cena (girar / abrir o prêmio) e só gastam quando a pessoa gira. */
   function openIt(packId) {
     const kind = L.packKind(packId);
@@ -149,6 +157,7 @@ export function mount(host, parts = [], opts = {}) {
     sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
       const box = h('div', { class: 'fig-open fig-wheelbox' });
       const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? '🎡' : '🏆'));
+      if (roleta) disc.style.background = coresRoleta(); // cores diferentes a cada vez
       const go = h('button', { type: 'button', class: 'btn primary wide', onclick: () => {
         go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
