@@ -127,12 +127,29 @@ export function crossword(words, rnd = Math.random, size = 15) {
 /* ---------- quiz ---------- */
 export const shuffle = (a, rnd = Math.random) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const snippet = (t) => { const s = t.split(/(?<=[.!?])\s+/)[0]; return s.length > 90 ? `${s.slice(0, 88).trim()}…` : s; };
+/** Parte a dica em começo e fim (perto do meio, de preferência depois de uma vírgula). null se for curta demais. */
+export function cutTip(text) {
+  const w = String(text || '').trim().split(/\s+/); if (w.length < 8) return null;
+  const mid = w.length / 2; let k = Math.round(mid);
+  const punct = []; for (let j = 4; j <= w.length - 4; j++) if (/[,;:.…]$/.test(w[j - 1])) punct.push(j);
+  if (punct.length) k = punct.sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid))[0];
+  k = Math.min(Math.max(k, 4), w.length - 4);
+  return { head: w.slice(0, k).join(' ').replace(/[,;:]$/, ''), tail: w.slice(k).join(' ') };
+}
+const clip = (t, n = 84) => (t.length > n ? `${t.slice(0, n - 1).trim()}…` : t);
 /** Uma pergunta: kind 'blank' (qual palavra completa?), 'match' (qual dica fala disso?) ou 'embaralhada' (desembaralhe). */
 export function question(items, kind, rnd = Math.random) {
   const it = items[Math.floor(rnd() * items.length)]; const others = shuffle(items.filter((x) => x.n !== it.n), rnd);
   if (kind === 'match') {
     const wrong = others.filter((x) => !wordsOf(x.text).some((y) => y.w === it.w)).slice(0, 3);
     return { kind, item: it, prompt: `qual dica fala de “${it.shown}”?`, options: shuffle([it, ...wrong], rnd).map((x) => ({ id: String(x.n), label: snippet(x.text) })), ans: String(it.n) };
+  }
+  if (kind === 'continua') { // mostra o começo da dica e pergunta como ela termina (a resposta não está escrita na pergunta)
+    const ok = items.filter((x) => cutTip(x.text)); const base = ok[Math.floor(rnd() * ok.length)];
+    if (base) {
+      const c = cutTip(base.text); const wrong = shuffle(ok.filter((x) => x.n !== base.n), rnd).slice(0, 3);
+      return { kind, item: base, prompt: `${c.head} …`, ask: 'como essa dica termina?', options: shuffle([base, ...wrong], rnd).map((x) => ({ id: String(x.n), label: clip(cutTip(x.text).tail) })), ans: String(base.n) };
+    }
   }
   if (kind === 'embaralhada') {
     let letters = shuffle([...it.w], rnd); for (let k = 0; k < 6 && letters.join('') === it.w; k++) letters = shuffle(letters, rnd);

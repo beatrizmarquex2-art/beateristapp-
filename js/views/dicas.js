@@ -17,23 +17,28 @@ const total = () => Math.max(30, tipList().length);
 /** A dica inteira, pra quando a palavra é achada. */
 const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' }, h('p', { class: 'dc-n' }, `dica ${it.n} de ${total()} · a palavra é ${it.shown}`), h('p', { class: 'dc-text' }, it.text));
 
-/* ---------- quiz ---------- */
+/* ---------- quiz (mesma cara do caça-palavras e da cruzadinha: bolinhas coloridas, opções com letra, progresso) ---------- */
+const LETRAS = ['A', 'B', 'C', 'D'];
 function quiz(box, kinds, key) {
   const its = items(); const ROUNDS = Math.min(10, its.length);
-  let i = 0; let score = 0; let q = null; let answered = false; let picked = [];
-  const next = () => { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); answered = false; picked = []; draw(); };
+  let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = [];
+  const next = () => { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); answered = false; picked = null; draw(); };
+  const dots = () => h('div', { class: 'dc-prog', role: 'img', 'aria-label': `pergunta ${i + 1} de ${ROUNDS}, ${score} certas` }, ...Array.from({ length: ROUNDS }, (_, n) => h('i', { class: n < hist.length ? (hist[n] ? 'ok' : 'no') : n === i ? 'now' : '' })));
   const finish = () => {
     const b = conf().best; const best = Math.max(b[key] || 0, score); if (score > (b[key] || 0)) save({ best: { ...b, [key]: score } });
-    box.replaceChildren(h('section', { class: 'card pad ft-center' }, h('h2', {}, `${score} de ${ROUNDS}`), h('p', { class: 'muted' }, `seu melhor: ${best}`),
-      h('button', { class: 'btn primary', type: 'button', onclick: () => { i = 0; score = 0; next(); } }, 'jogar de novo')));
+    const frase = score >= ROUNDS * 0.9 ? 'você é fera! 🏆' : score >= ROUNDS * 0.7 ? 'mandou muito bem!' : score >= ROUNDS * 0.4 ? 'tá evoluindo, bora de novo!' : 'sem stress, errar faz parte';
+    box.replaceChildren(h('section', { class: 'card pad ft-center dc-fim' }, h('div', { class: 'dc-score' }, h('b', {}, String(score)), h('small', {}, `de ${ROUNDS}`)), h('p', { class: 'dc-clue' }, frase), h('p', { class: 'muted' }, `seu melhor: ${best}`),
+      h('button', { class: 'btn primary', type: 'button', onclick: () => { i = 0; score = 0; hist = []; next(); } }, 'jogar de novo')));
     (score >= ROUNDS * 0.7 ? FB.great : FB.win)(box.firstChild);
   };
-  const done = (ok, el) => { answered = true; if (ok) score++; draw(); FB.result(ok, el && el.isConnected ? el : box.querySelector('.dc-q'), { live: null }); };
+  const done = (ok, el) => { answered = true; hist.push(ok); if (ok) score++; draw(); FB.result(ok, el && el.isConnected ? el : box.querySelector('.dc-q'), { live: null }); };
   function draw() {
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
-    const body = [h(q.kind === 'blank' ? 'p' : 'h3', { class: q.kind === 'blank' ? 'dc-clue' : 'dc-ask' }, q.prompt), q.kind === 'blank' ? h('p', { class: 'muted' }, 'qual palavra completa a dica?') : null,
-        h('div', { class: `dc-opts${q.kind === 'match' ? ' long' : ''}` }, ...q.options.map((o) => h('button', { type: 'button', class: `tr-pal dc-opt${answered ? (o.id === q.ans ? ' ok' : picked[0] === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = [o.id]; done(o.id === q.ans, e.currentTarget); } }, o.label)))];
-    box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, head, ...body.filter(Boolean)),
+    const ask = q.ask || (q.kind === 'blank' ? 'qual palavra completa a dica?' : null);
+    const body = [dots(), head, h('p', { class: 'dc-clue' }, q.prompt), ask ? h('p', { class: 'muted' }, ask) : null,
+      h('div', { class: `dc-opts${q.options.some((o) => o.label.length > 18) ? ' long' : ''}` }, ...q.options.map((o, n) => h('button', { type: 'button', class: `tr-pal dc-opt dc-op${answered ? (o.id === q.ans ? ' ok' : picked === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = o.id; done(o.id === q.ans, e.currentTarget); } },
+        h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
+    box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
       answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? 'ver o resultado' : 'próxima') : null].filter(Boolean));
   }
@@ -149,7 +154,7 @@ export function mount(host, parts = []) {
   const run = () => {
     box.replaceChildren(); const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
-    ({ quiz: () => quiz(box, ['blank', 'match'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
+    ({ quiz: () => quiz(box, ['blank', 'continua'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };
   run();
   const off = store.subscribe((i) => { if (i.kind === 'tip' && !box.children.length) run(); });
