@@ -164,7 +164,7 @@ function estudosView(view) {
 }
 
 /** "5 erros": PDF da professora (aberto, sem código). Enquanto o arquivo não existe, avisa que vem aí. */
-const PDF_ERROS = 'assets/estudos/5-erros.pdf';
+const PDF_ERROS = 'assets/5-erros.pdf';
 function errosView(view) {
   const box = h('section', { class: 'card pad' }, h('p', { class: 'muted' }, 'carregando…'));
   view.append(banner('5 erros', 'material da professora Bea'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'), box));
