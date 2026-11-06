@@ -840,3 +840,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-wrap .dc-clues li.ok{color:#1f6b3f}.dc-wrap.escuro .dc-clues li.ok{color:#8fe0b0}
 .dc-wrap .dc-clues li.ok::before{background:#1f9d4a;color:#fff}.dc-wrap.escuro .dc-clues li.ok::before{background:#6fd49a;color:#0e4a22}
 .dc-wrap .dc-explain,.dc-wrap.escuro .dc-explain{border-left-color:#1f9d4a}
+/* opções dentro dos jogos: chips pequenos (jeito da Bea: tudo pequenininho, como "anotações / dicionário / criar" e "favoritos / treinar / jogos") */
+.jg-game .jg-seg{gap:6px}
+.jg-game .jg-seg button,.jg-seg.sm button{min-height:32px;padding:4px 11px;font-size:13px;line-height:1.1;border-width:2px;box-shadow:2px 2px 0 var(--jg-ink)}
+.jg-game .jg-actions .btn:not(.primary){min-height:32px;padding:4px 12px;font-size:13px}
+.kx-arc .mem-stage .kd-chip{min-height:30px;padding:3px 11px;font:700 12px var(--body);border-width:2px;border-radius:8px;box-shadow:2px 2px 0 #1b1818}
+.kx-arc .mem-stage .kd-modes{gap:6px}

@@ -6,6 +6,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Escreve sem pontuação formal; gosta de resposta prática, objetiva e criativa, em português.
 - Pede mudanças visuais pequenas e iterativas ("mais perto", "menos colado"). Mostre o resultado (print) antes de publicar quando der.
 - Ela **não precisa de explicação técnica**: diga o que mudou e onde ver.
+- **Opções dentro dos jogos (escolher jogadores, pares, nível, tema…) sempre em chips pequenininhos**, no jeito dos exemplos que ela mostrou ("anotações · dicionário · ★ · criar" e "favoritos · treinar · jogos"): retângulo curto, texto pequeno, sombra deslocada. Botão grande só pro "jogar". Classes: `.jg-seg button` (jogos) e `.kd-chip` (memória/kids).
 
 ## Sites e onde moram (atualizado em 05/nov/2026)
 | Site | Endereço | Hospedagem | Supabase |
