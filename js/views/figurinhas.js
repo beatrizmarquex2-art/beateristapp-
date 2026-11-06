@@ -108,7 +108,7 @@ export function mount(host, parts = [], opts = {}) {
     const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 30 ★ nos jogos pra liberar uma roleta de figurinhas';
     return h('section', { class: 'fig-packs' },
       h('div', { class: 'fig-pack-card' },
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 ou 2 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
         h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
         h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
@@ -155,7 +155,7 @@ export function mount(host, parts = [], opts = {}) {
         if (wantsLess(state)) { mostra(); return; }
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar 1 ou 2 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 5 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 5 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

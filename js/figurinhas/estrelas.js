@@ -1,5 +1,5 @@
 // Estrelas -> roleta e jogo completo -> prêmio. Tudo idempotente: cada roleta/prêmio tem id fixo (por jogador), então nunca entrega em dobro.
-//  * a cada 30 estrelas (fases dos Kids + jogos de ritmo + missões do Modo Aventura) libera 1 roleta (1 ou 2 figurinhas)
+//  * a cada 30 estrelas (fases dos Kids + jogos de ritmo + missões do Modo Aventura) libera 1 roleta (1 a 3 figurinhas)
 //  * terminar um jogo inteiro (todas as fases ou todas as missões, pelo menos 1 estrela em cada) dá 1 pacote de 5 com uma rara garantida
 import * as P from '../kids/progress.js';
 import * as CS from '../campanha/store.js';
@@ -7,7 +7,7 @@ import * as FR from './rewards.js';
 import { ESTRELAS_POR_ROLETA } from './album-logic.js';
 import { MAX_LEVEL } from '../kids/levels.js';
 
-export const estrelasTotais = (pid) => P.totalStars(pid) + (P.progOf(pid).ritmoStars || 0) + CS.allStars(pid);
+export const estrelasTotais = (pid) => P.totalStars(pid) + (P.progOf(pid).ritmoStars || 0) + ((P.progOf(pid).mesa || {}).total || 0) + CS.allStars(pid);
 export const roletasDevidas = (total) => Math.floor((total || 0) / ESTRELAS_POR_ROLETA);
 /** Quantas estrelas faltam pra próxima roleta. */
 export const faltamParaRoleta = (total) => ESTRELAS_POR_ROLETA - ((total || 0) % ESTRELAS_POR_ROLETA);

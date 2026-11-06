@@ -10,12 +10,12 @@ test('a roleta vem a cada 30 estrelas', () => {
 test('tipos de pacote pelo id', () => {
   assert.equal(L.packKind('roleta:u1:3'), 'roleta'); assert.equal(L.packKind('jogo:kids-figuras:u1'), 'jogo'); assert.equal(L.packKind('welcome:1'), 'pacote'); assert.equal(L.packKind(L.checkinId('2026-11-05')), 'roleta');
 });
-test('roleta: sempre 1 ou 2 figurinhas distintas, mesma id = mesmo resultado', () => {
-  for (let i = 0; i < 400; i++) { const d = L.drawPack(cat, `roleta:p:${i}`); assert.ok(d.length === 1 || d.length === 2, String(d.length)); assert.equal(new Set(d).size, d.length); d.forEach((c) => assert.ok(by[c], c)); assert.deepEqual(d, L.drawPack(cat, `roleta:p:${i}`)); }
+test('roleta: de 1 a 3 figurinhas distintas, mesma id = mesmo resultado', () => {
+  for (let i = 0; i < 400; i++) { const d = L.drawPack(cat, `roleta:p:${i}`); assert.ok(d.length >= 1 && d.length <= 3, String(d.length)); assert.equal(new Set(d).size, d.length); d.forEach((c) => assert.ok(by[c], c)); assert.deepEqual(d, L.drawPack(cat, `roleta:p:${i}`)); }
 });
 test('roleta: maioria comum, às vezes rara e Beatlemania, exclusiva só bem raramente', () => {
-  const n = {}; let tot = 0, dois = 0; const N = 6000;
-  for (let i = 0; i < N; i++) { const d = L.drawPack(cat, `roleta:t:${i}`); if (d.length === 2) dois++; for (const c of d) { n[by[c].secao] = (n[by[c].secao] || 0) + 1; tot++; } }
+  const n = {}; let tot = 0, dois = 0, tres = 0; const N = 6000;
+  for (let i = 0; i < N; i++) { const d = L.drawPack(cat, `roleta:t:${i}`); if (d.length === 2) dois++; if (d.length === 3) tres = (tres || 0) + 1; for (const c of d) { n[by[c].secao] = (n[by[c].secao] || 0) + 1; tot++; } }
   assert.ok(n.Comum / tot > 0.5 && n.Comum / tot < 0.75, `comum ${n.Comum / tot}`);
   assert.ok(n.Raras > 0 && n.Beatlemania > 0, 'raras e beatles aparecem');
   assert.ok(n.Beaterista > 0 && n.Beaterista / tot < 0.08, `exclusiva rara ${n.Beaterista / tot}`);
@@ -32,4 +32,10 @@ test('roleta e prêmio entram uma vez só e abrem uma vez só (idempotente)', ()
   const c = L.openPack(a.state, cat, 'jogo:av-x:u'); assert.equal(c.codes.length, 5);
   assert.equal(L.pendingPacks(L.grantPack(c.state, 'roleta:u:1')).length, 0, 'já aberta não volta');
   assert.equal(L.inHand(c.state), a.codes.length + 5);
+});
+
+test('cada aluno sorteia diferente (o check-in do dia não dá a mesma carta pra todos) e o sorteio é estável depois de aberto', () => {
+  const id = L.checkinId('2026-11-06'); const vistos = new Set();
+  for (let i = 0; i < 60; i++) { const s = L.grantPack(L.emptyState(), id); const r = L.openPack(s, cat, id); vistos.add(r.codes.join(',')); assert.ok(r.state.seed); assert.deepEqual(L.openPack(r.state, cat, id).codes, r.codes); }
+  assert.ok(vistos.size > 20, `só ${vistos.size} resultados diferentes em 60 alunos`);
 });

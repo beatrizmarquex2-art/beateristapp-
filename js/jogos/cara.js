@@ -5,6 +5,7 @@ import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
 import { BY_ID, QUESTIONS, answerFor } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
+const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cara';
 /** Liga/desliga o tema musical (fotos do álbum). As fotos já são liberadas pros alunos no álbum, então fica ligado. */
@@ -88,6 +89,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   function doGuess(id) {
     const ok = id === g.secret; g = K.guess(g, id); picked = null;
     if (ok) { msg = ''; sfx('win'); } else { msg = g.over ? '' : `não era o ${BY_ID[id].name}. ele sai do jogo.`; sfx(g.over ? 'lose' : 'bad'); }
+    if (g.over && g.result.win && !mission) MESA.vitoria('cara');
     if (g.over && g.result.win && (!saved.best || g.asked.length < saved.best)) saved.best = g.asked.length;
     persist(); draw();
     if (mission && g.over && !reported) { reported = true; mission.onResult({ win: g.result.win, questions: g.result.questions, wrong: g.result.wrong, lives: g.lives, manual: g.manual, size: K.boardOf(g).length, secret: g.secret }); }

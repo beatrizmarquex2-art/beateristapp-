@@ -324,3 +324,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **↻ recomeçar** a fase (botão no topo durante a fase e depois de cada erro, sem punição) pra quem quer 3 estrelas. Estrelas na Bateria: 1 (≥60%), 2 (≥80%), 3 (100%).
 - **Revisão do Paul** (antigo "reforço"): 10 perguntas só com o que a pessoa mais errou (completa com revisão leve), 1 ★ por acerto (10 ★), e **acertando as 10 ganha 3 figurinhas (1 prêmio por dia)**.
 - O título "mundo da bateria concluído" (Leitor/Especialista/Mestre) vale ao concluir **qualquer um** dos 3 modos. O progresso da bateria antiga (18 fases) não é aproveitado, só abre as primeiras fases do fácil.
+
+## Sorteio por aluno, roleta de 1 a 3 e estrelas dos jogos de mesa (nov/2026)
+- **Bug: todo aluno ganhava a mesma carta no check-in do dia** (o sorteio era só pelo id do pacote, e `roleta:dia:<data>` é igual pra todos). Agora cada álbum guarda um `seed` aleatório próprio (criado na 1ª abertura, vai junto no estado salvo no Supabase) e o sorteio usa id + seed. Pacotes que já foram abertos não mudam (as cartas ficam gravadas em `opened`).
+- **Roleta dá de 1 a 3 figurinhas** (`ROLETA_QTD`: 45% / 35% / 20%).
+- **Estrelas dos jogos de mesa** (`js/figurinhas/mesa.js`, regra pura em `mesa-logic.js`): ganhar do Paul vale 1 ★, no máximo 30 por jogo por dia (cada jogo tem o seu limite). Vale em: Uno Musical (contra o computador), jogo da velha (contra o Paul) e cara a cara (acertar o instrumento do Paul). Sem código de acesso (modo livre) e no Modo Aventura não conta. As estrelas somam no total da roleta (`estrelasTotais`) e aparecem como aviso "+1 ★". Guardadas no perfil Kids (`mesa`).
+- Pacote de presente: id `dado:<cartas separadas por vírgula>:<rótulo>` abre exatamente aquelas cartas (usado pra liberar pacote pra um aluno).

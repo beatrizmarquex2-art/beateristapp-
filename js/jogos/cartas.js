@@ -7,6 +7,7 @@ import { SYMS, SYM_NAME, SYM_SHORT, SYM_LEARN, symbolEl, actionEl } from './cart
 import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
 import { lobby, linkBadge } from './online.js';
+const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
 const NS = 'http://www.w3.org/2000/svg';
@@ -473,6 +474,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
+      if (g.mode === 'paul' && w === 0) MESA.vitoria('cartas');
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');
       if (mineWin) confetti();

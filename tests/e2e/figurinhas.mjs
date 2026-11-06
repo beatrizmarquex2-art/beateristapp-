@@ -15,7 +15,7 @@ await page.getByRole('tab', { name: /pacotes/ }).click();
 check('check-in: 1 giro grátis da roleta (sem pacote de boas-vindas)', (await page.textContent('.fig-pack-card p')).includes('1 roleta') && !(await page.textContent('.fig-pack-card p')).includes('pacote'));
 await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 }); await sleep(300);
 await page.screenshot({ path: '/tmp/claude-0/fig-pack.png' });
-check('roleta dá 1 ou 2 cartas', [1, 2].includes(await page.locator('.fig-flip').count()));
+check('roleta dá 1 a 3 cartas', [1, 2, 3].includes(await page.locator('.fig-flip').count()));
 // (a roleta já mostra as cartas abertas)
 await sleep(700); await page.screenshot({ path: '/tmp/claude-0/fig-pack2.png' });
 await page.getByRole('button', { name: 'colar tudo no álbum' }).click(); await sleep(400);

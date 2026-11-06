@@ -44,7 +44,7 @@ await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.w
 check('abre a cena da roleta (ainda não gastou)', (await page.locator('.fig-reveal').count()) === 0 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 1);
 await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 });
 const nCartas = await page.locator('.fig-reveal .fig-flip').count();
-check('depois de girar: ganha 1 ou 2 figurinhas', nCartas === 1 || nCartas === 2, String(nCartas));
+check('depois de girar: ganha de 1 a 3 figurinhas', nCartas >= 1 && nCartas <= 3, String(nCartas));
 check('as cartas já vêm abertas e o texto diz o que ganhou', (await page.locator('.fig-reveal .fig-flip.open').count()) === nCartas && (await page.textContent('.sheet')).includes('você ganhou'));
 check('sem erros', errs.length === 0, errs.join('|'));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

@@ -4,9 +4,9 @@ import { rng, hashSeed } from './ornaments.js';
 
 export const PACK_SIZE = 5;
 export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os jogos) libera uma roleta
-/** Roleta: 1 ou 2 figurinhas; raramente (4%) uma exclusiva da Beaterista; às vezes Beatlemania e rara. */
+/** Roleta: 1 a 3 figurinhas; raramente (4%) uma exclusiva da Beaterista; às vezes Beatlemania e rara. */
 export const ROLETA_PESOS = [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', 4]];
-export const ROLETA_DUAS = 0.35; // chance de a roleta dar 2 figurinhas
+export const ROLETA_QTD = [[1, 45], [2, 35], [3, 20]]; // a roleta dá de 1 a 3 figurinhas (peso de cada quantidade)
 /** Prêmio de terminar um jogo inteiro: 3 figurinhas tops (exclusivas da Beaterista e raras). */
 /** Pacotes da pauLta: id `pl:<cartas>:<chance de Beaterista %>:...`. Qualquer outro pacote comum tem PACK_SIZE cartas. */
 export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); return m ? { n: Number(m[1]), bea: Number(m[2]) } : null; };
@@ -39,13 +39,13 @@ function drawBySection(catalog, r, n, pesos) {
   while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
   return out;
 }
-/** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
-export function drawPack(catalog, packId, size = PACK_SIZE) {
-  const r = rng(hashSeed(`pack|${packId}`)); const kind = packKind(packId);
+/** Sorteio do pacote. `roleta:*` = 1 a 3 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
+export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
+  const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   const pl = plPack(packId);
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
-  if (kind === 'roleta') return drawBySection(catalog, r, r() < ROLETA_DUAS ? 2 : 1, ROLETA_PESOS);
+  if (kind === 'roleta') return drawBySection(catalog, r, pickWeighted(r, ROLETA_QTD), ROLETA_PESOS);
   if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 5 com uma RARA garantida
     const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
     const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
@@ -65,7 +65,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE) {
 /** Abre o pacote: as figurinhas vão pra "mão" (ainda não coladas). Abrir de novo o mesmo id não faz nada. */
 export function openPack(state, catalog, packId) {
   if (!state.granted?.includes(packId) || state.opened?.[packId]) return { state, codes: state.opened?.[packId] || null, fresh: false };
-  const s = clone(state); const codes = drawPack(catalog, packId);
+  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12); const codes = drawPack(catalog, packId, PACK_SIZE, s.seed); // sorteio diferente pra cada aluno
   s.opened[packId] = codes; for (const c of codes) s.inv[c] = (s.inv[c] || 0) + 1;
   return { state: s, codes, fresh: true };
 }
