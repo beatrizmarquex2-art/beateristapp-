@@ -1,57 +1,47 @@
-// Memória de Artistas: sorteio de artistas distintos, virar/combinar/errar, travas, dificuldades, filtros, fim de partida, sem figurinhas, sem erros de JS.
+// Jogo da memória (área dos alunos): abre direto na escolha do tema, sem modo aventura. Abertos: The Beatles, Bandas, Solo e Profissões;
+// os outros 5 só com código. Pares 6, 8 ou 12. Joga uma partida inteira (acha todos os pares) e vê o resultado.
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
-const { srv, url } = await serve(); const { browser } = await launch();
-async function open(w = 390, h = 844, hash = '#/jogos/memart', file = 'aluno.html') {
-  const ctx = await context(browser, { viewport: { width: w, height: h }, isMobile: true });
-  const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
-  await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
-  await p.goto(`${url}/${file}${hash}`); await p.waitForSelector('.ma-esc', { timeout: 15000 }); await p.locator('.ma-esc button').click(); await p.waitForSelector('.jg-memart .ma-go'); p.errs = errs; p.ctx = ctx; return p;
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false });
+const errs = [];
+async function abrir(c, nome = 'Teste', valido = false) {
+  await c.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? String(valido) : '[]' }));
+  const p = await c.newPage(); await p.setViewportSize({ width: 390, height: 844 }); p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+  await p.addInitScript((n) => { try { localStorage.setItem('beaterista-aluno-nome', n); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } }, nome);
+  await p.goto(`${url}/aluno.html#/jogos/memart`); await p.waitForSelector('.mem-theme', { timeout: 15000 }); await sleep(500); return p;
 }
-const cartas = (p) => p.evaluate(() => [...document.querySelectorAll('.ma-card')].map((b) => b.querySelector('.ma-cap').textContent));
-const nao = (p) => p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
-{
-  const p = await open();
-  check('menu: 5 níveis e filtros', (await p.locator('.jg-memart [aria-label="dificuldade"] button').count()) === 5 && (await p.locator('[aria-label="coleção"] button').count()) === 9);
-  await p.click('.ma-go'); await p.waitForSelector('.ma-card');
-  let c = await cartas(p); check('kids: 8 cartas, 4 artistas distintos, cada um 2x', c.length === 8 && new Set(c).size === 4 && [...new Set(c)].every((n) => c.filter((x) => x === n).length === 2), c.join('|'));
-  check('cartas começam viradas para baixo', (await p.locator('.ma-card.open').count()) === 0);
-  const idx = await p.evaluate(() => { const n = [...document.querySelectorAll('.ma-card .ma-cap')].map((e) => e.textContent); const a = n[0]; return [0, n.indexOf(a, 1), n.findIndex((x) => x !== a)]; });
-  await p.locator('.ma-card').nth(idx[0]).click(); await p.locator('.ma-card').nth(idx[2]).click();
-  await p.locator('.ma-card').nth(idx[1]).click(); // 3º toque durante a avaliação é ignorado
-  check('par errado: 2 abertas e a 3ª bloqueada', (await p.locator('.ma-card.open').count()) === 2);
-  await sleep(1300); check('par errado desvira sozinho', (await p.locator('.ma-card.open').count()) === 0);
-  await p.locator('.ma-card').nth(idx[0]).click(); await p.locator('.ma-card').nth(idx[1]).click(); await sleep(700);
-  check('par certo fica aberto e mostra o nome', (await p.locator('.ma-card.ok').count()) === 2 && (await p.locator('.ma-nome').innerText()).length > 2);
-  check('placar 1 de 4', (await p.locator('.ma-placar').innerText()).includes('1 de 4 pares'));
-  // termina
-  const nomes = await cartas(p);
-  for (const n of [...new Set(nomes)]) { const is = nomes.map((x, i) => (x === n ? i : -1)).filter((i) => i >= 0); if (await p.locator('.ma-card').nth(is[0]).evaluate((e) => e.classList.contains('ok'))) continue; await p.locator('.ma-card').nth(is[0]).click(); await p.locator('.ma-card').nth(is[1]).click(); await sleep(700); }
-  await p.waitForSelector('.ma-fim'); check('fim: painel com jogar de novo / mudar / voltar', (await p.locator('.ma-fim button').count()) === 3);
-  check('sem figurinhas/pacotes na tela final', !/figurinha|pacote|roleta/i.test(await p.locator('.ma-fim').innerText()));
-  const antes = c.join('|'); await p.click('.ma-fim >> text=jogar de novo'); await p.waitForSelector('.ma-card'); const c2 = await cartas(p);
-  check('nova partida sorteia outros artistas', new Set(c2).size === 4 && c2.every((n) => !c.includes(n)), c2.join('|'));
-  check('sem scroll horizontal (iPhone)', !(await nao(p)));
-  check('sem erros de JS', p.errs.length === 0, p.errs.join(' ; '));
-  await p.ctx.close();
+const temas = (p) => p.locator('.mem-theme').evaluateAll((es) => es.map((e) => ({ t: e.querySelector('b').textContent.trim(), lk: e.classList.contains('locked') })));
+async function jogarTudo(p) { // lê a foto de cada carta, vira os pares e espera o resultado
+  const pares = await p.evaluate(() => { const m = {}; [...document.querySelectorAll('.kx-mem')].forEach((b, i) => { const im = b.querySelector('img.mem-card-img'); (m[im.getAttribute('src')] ||= []).push(i); }); return Object.values(m); });
+  for (const [a, b] of pares) { await p.locator('.kx-mem').nth(a).click(); await p.locator('.kx-mem').nth(b).click(); await sleep(850); }
+  return pares;
 }
-{
-  const p = await open(); await p.locator('[aria-label="dificuldade"] button:has-text("especialista")').click(); await p.click('.ma-go'); await p.waitForSelector('.ma-card');
-  const c = await cartas(p); check('especialista: 24 cartas, 12 artistas distintos', c.length === 24 && new Set(c).size === 12);
-  const bb = await p.evaluate(() => [...document.querySelectorAll('.ma-card')].every((e) => { const r = e.getBoundingClientRect(); return r.width >= 44 && r.height >= 44 && r.right <= innerWidth; }));
-  check('cartas >=44px e dentro da tela', bb); await p.ctx.close();
+{ // aluno sem código
+  const p = await abrir(ctx);
+  check('abre direto na escolha de tema (sem escolher modo aventura)', (await p.locator('.av-root, .av-modes, .ma-esc').count()) === 0 && (await p.locator('.mem-theme').count()) >= 8);
+  const t = await temas(p);
+  check('abertos: The Beatles, Bandas, Solo e Profissões da música (nessa ordem)', JSON.stringify(t.filter((x) => !x.lk).map((x) => x.t)) === JSON.stringify(['The Beatles', 'Bandas', 'Solo', 'Profissões da música']), JSON.stringify(t));
+  check('trancados: os outros 5 temas', t.filter((x) => x.lk).length === 5, t.filter((x) => x.lk).map((x) => x.t).join(', '));
+  await p.locator('.mem-theme.locked').first().click(); await sleep(300);
+  check('tocar num tema trancado avisa e não troca o tema', (await p.locator('.mem-lockmsg').count()) === 1 && (await p.locator('.mem-theme.on b').textContent()).includes('The Beatles'));
+  check('opções de pares: 6, 8 e 12', JSON.stringify(await p.locator('.kd-chip:has-text("pares")').allTextContents()) === JSON.stringify(['6 pares', '8 pares', '12 pares']));
+  await p.locator('.kd-chip:has-text("6 pares")').click(); await sleep(200); await p.locator('.kx-go').click(); await sleep(600);
+  check('The Beatles com 6 pares: 12 cartas de foto', (await p.locator('.kx-mem').count()) === 12 && (await p.locator('.kx-mem img.mem-card-img').count()) === 12);
+  const pares = await jogarTudo(p); await sleep(2400);
+  check('achou todos os 6 pares e aparece o resultado', pares.length === 6 && (await p.locator('.kx-result').count()) === 1, String(pares.length));
+  await p.locator('.kx-result .kd-chip').click(); await sleep(400);
+  await p.locator('.mem-theme:has-text("Profissões")').click(); await sleep(300);
+  const off = await p.locator('.kd-chip:has-text("pares")').evaluateAll((es) => es.map((e) => e.disabled));
+  check('Profissões tem 8 cartas: 12 pares fica desativado', JSON.stringify(off) === JSON.stringify([false, false, true]), JSON.stringify(off));
+  await p.locator('.mem-theme:has-text("Solo")').click(); await sleep(300); await p.locator('.kd-chip:has-text("12 pares")').click(); await sleep(200); await p.locator('.kx-go').click(); await sleep(600);
+  check('Solo com 12 pares: 24 cartas, com nome embaixo', (await p.locator('.kx-mem').count()) === 24 && (await p.locator('.mem-cap').count()) === 24);
+  await p.close();
 }
-{
-  const p = await open();
-  const bad = await p.evaluate(() => [...document.querySelectorAll('[aria-label="coleção"] button')].filter((b) => { const n = +b.textContent.match(/\((\d+)\)/)[1]; return (n < 2) !== b.disabled; }).map((b) => b.textContent));
-  check('filtros com menos de 2 artistas ficam desativados (nunca repete entidade)', bad.length === 0, bad.join(','));
-  await p.locator('[aria-label="coleção"] button:has-text("raras")').click().catch(() => {});
-  await p.locator('[aria-label="coleção"] button:has-text("dupla")').click().catch(() => {});
-  const avisa = await p.locator('.ma-aviso').count(); const go = await p.locator('.ma-go').isDisabled();
-  check('filtro pequeno: ou avisa e bloqueia, ou joga com artistas distintos', (avisa === 1 && go) || (avisa === 0 && !go), `${avisa} ${go}`);
-  await p.ctx.close();
+{ // aluno com código: tudo aberto
+  const c2 = await context(browser); const p = await abrir(c2, 'Ana', true);
+  check('com código: nenhum tema trancado', (await p.locator('.mem-theme.locked').count()) === 0 && (await p.locator('.mem-theme').count()) >= 8);
+  await p.locator('.mem-theme:has-text("Instrumentos")').click(); await sleep(300); await p.locator('.kx-go').click(); await sleep(600);
+  check('com código: Instrumentos musicais joga', (await p.locator('.kx-mem').count()) === 16);
+  await p.close();
 }
-{
-  const p = await open(820, 1180); await p.click('.ma-go'); await p.waitForSelector('.ma-card');
-  check('iPad: sem scroll horizontal', !(await nao(p))); check('iPad: sem erros', p.errs.length === 0, p.errs.join(';')); await p.ctx.close();
-}
+check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

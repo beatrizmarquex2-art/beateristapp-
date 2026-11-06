@@ -9,19 +9,19 @@ async function phone(codigo) {
   return { ctx, p };
 }
 const go = async (p, h) => { await p.goto(url + '/aluno.html' + h); await sleep(1600); };
-const ROTAS = ['#/jogos/stop/aventura', '#/jogos/cartas/aventura/0', '#/jogos/quebra/aventura', '#/kids/memoria/aventura', '#/kids/ritmo/aventura', '#/ritmo/aventura'];
+const ROTAS = ['#/jogos/toca/aventura', '#/kids/memoria/aventura', '#/kids/ritmo/aventura', '#/ritmo/aventura'];
 {
   const { ctx, p } = await phone(false);
   for (const r of ROTAS) { await go(p, r); check(`sem código: ${r} fica trancado`, await p.evaluate(() => !!document.querySelector('.al-lock') && !document.querySelector('.mp-node') && !document.querySelector('.av-go'))); }
-  await go(p, '#/jogos/stop'); check('sem código: a escolha de modo mostra o Modo Aventura com cadeado', await p.evaluate(() => /🔒\s*Modo Aventura/.test(document.body.innerText) && /precisa do código/.test(document.body.innerText)));
-  await go(p, '#/jogos/stop/livre'); check('sem código: o Modo Livre continua aberto', await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.jg-game, .jg-stop, .st-intro, button')));
+  await go(p, '#/jogos/toca'); check('sem código: o Toca Aqui (com Modo Aventura) fica trancado', await p.evaluate(() => !!document.querySelector('.al-lock')));
+  await go(p, '#/jogos/stop'); check('sem código: o stop abre direto no jogo, sem escolher modo e sem Modo Aventura', await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.jg-game') && !/Modo Aventura/.test(document.body.innerText)));
   await go(p, '#/kids/memoria/livre'); check('sem código: Jogo da memória livre continua aberto', await p.evaluate(() => !document.querySelector('.al-lock')));
   await ctx.close();
 }
 {
   const { ctx, p } = await phone(true);
-  for (const r of ['#/jogos/stop/aventura', '#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
-  await go(p, '#/jogos/stop'); check('com código: a escolha de modo mostra o Modo Aventura liberado', await p.evaluate(() => !/🔒\s*Modo Aventura/.test(document.body.innerText) && /missões/.test(document.body.innerText)));
+  for (const r of ['#/jogos/toca/aventura', '#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
+  await go(p, '#/jogos/toca'); check('com código: a escolha de modo do Toca Aqui mostra o Modo Aventura liberado', await p.evaluate(() => !/🔒\s*Modo Aventura/.test(document.body.innerText) && /missões/.test(document.body.innerText)));
   await ctx.close();
 }
 const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);

@@ -102,3 +102,18 @@
 .mem-stage { display: grid; gap: 10px; } .kx-arc .mem-board { width: 100%; max-width: 400px; margin: 0 auto; } .mem-stage .kx-memstat, .mem-stage .mem-top { justify-self: center; }
 .mem-stage { width: 100%; }
 .kx-memstat.mem-p2{color:#BD1733}
+/* jogo da memória: capas das categorias de artistas, carta com foto, tema trancado */
+.mem-theme { position: relative; }
+.mem-vt.cat { display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6px 4px 5px; color: #fff6e0; }
+.mem-vt.cat-beatles { background: #14284b; } .mem-vt.cat-beatles .mc-t { color: #ffd37a; } .mem-vt.cat-bandas { background: #a31d30; } .mem-vt.cat-solo { background: #e3a82f; color: #142036; }
+.mem-vt .mc-t { display: block; font: 400 clamp(13px, 4.4vw, 18px)/1 var(--display, inherit); text-align: center; letter-spacing: .01em; z-index: 3; }
+.mem-vt .mc-fan { position: relative; display: block; width: 80%; flex: 1; margin-top: 4px; }
+.mem-vt .mc-fan img { position: absolute; left: 18%; top: 0; width: 64%; height: 86%; object-fit: cover; border: 2px solid #1b1818; border-radius: 5px; box-shadow: 1px 1px 0 #1b1818; }
+.mem-vt .mc-fan .m0 { transform: rotate(-12deg) translateX(-34%); } .mem-vt .mc-fan .m1 { z-index: 1; } .mem-vt .mc-fan .m2 { transform: rotate(12deg) translateX(34%); }
+.mem-vt .mc-paul { position: absolute; right: -4px; bottom: 12px; width: 42%; height: auto; z-index: 2; object-fit: contain; }
+.mem-vt .mc-b { font: 700 8px var(--body); letter-spacing: .06em; opacity: .9; z-index: 3; }
+.mem-pf { position: relative; display: block; width: 100%; height: 100%; }
+.mem-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 2px; background: rgb(20 40 75 / .88); color: #fff6e0; font: 700 clamp(8px, 2.6vw, 11px)/1.1 var(--body); text-align: center; }
+.mem-theme.locked .mem-vt { filter: grayscale(.7) brightness(.85); }
+.mem-lk { position: absolute; top: 5px; right: 5px; z-index: 4; font-style: normal; font-size: 15px; line-height: 1; background: #fffdf8; border: 2px solid #1b1818; border-radius: 8px; padding: 2px 3px; }
+.mem-lockmsg { margin: 8px 0 0; padding: 8px 10px; border: 2px dashed #a31d30; border-radius: 10px; text-align: center; font-size: 14px; } .mem-lockmsg a { text-decoration: underline; }

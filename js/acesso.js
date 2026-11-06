@@ -12,7 +12,8 @@ export function trancado(hash) {
   if (/\/aventura(\/|$)/.test(String(hash || ''))) return true; // Modo Aventura (mapas, missões, estrelas e medalhas) só com código; o Modo Livre de cada jogo fica aberto
   const m = /^#\/([^/?]+)(?:\/([^/?]*))?/.exec(String(hash || '')); if (!m) return false;
   const [, a, b] = m;
-  if (['ranking', 'album', 'ritmo', 'dicionario', 'dicas'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) só com código
+  if (['ranking', 'album', 'ritmo', 'dicionario', 'dicas', 'paulta'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) e a pauLta só com código
+  if (a === 'jogos' && b === 'toca') return true; // Toca Aqui ensina de verdade: só com código
   if (a === 'kids') return !(b && KIDS_LIVRES.has(b)); // #/kids sozinho (fases e estrelas) e as fases ficam trancados
   return false; // jogos, ritmo (trava por dentro), tocar, toque, piano, relatório
 }

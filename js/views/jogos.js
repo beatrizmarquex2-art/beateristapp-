@@ -28,9 +28,11 @@ const GAMES = [
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
   ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
   ['stop', 'stop', 'stop.webp', stop],
-  ['memart', 'jogo da memória', 'memoria.svg', memart, 'figuras e instrumentos ou artistas e bandas'],
+  ['memart', 'jogo da memória', 'memoria.svg', memart, 'The Beatles, bandas, solo e profissões'],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
+// jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
+const SEM_AVENTURA = new Set(['memart', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -150,5 +152,5 @@ export function mount(host, parts = []) {
   const entry = GAMES.find((g) => g[0] === first && g[3]);
   if (!entry) return catalog(host);
   if (/[?&]sala=/.test(String(parts[0] || ''))) return game(host, entry); // link de convite do bingo online: abre direto o jogo livre
-  return hasAdventure(entry[0]) ? withModes(host, entry, parts) : game(host, entry);
+  return hasAdventure(entry[0]) && !SEM_AVENTURA.has(entry[0]) ? withModes(host, entry, parts) : game(host, entry);
 }

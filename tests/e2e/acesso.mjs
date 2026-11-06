@@ -85,15 +85,17 @@ const trancada = (p) => p.locator('.al-lock').count();
     check(`Quiz e Letras (${tab}): título novo e sem erros`, (await p.locator('h1:has-text("Quiz e Letras")').count()) >= 1 && errs.length === 0, errs.join('|')); await ctx.close();
   }
 }
-// 6) pauLta em modo livre: abre sem código com todas as fases, mas nada é salvo nem vale ponto
+// 6) o que ensina de verdade (pauLta e Toca Aqui) fica trancado sem código; os jogos de mesa abrem direto, sem modo aventura
 {
   valid.clear(); const { ctx, p, errs } = await phone('', '');
   await p.goto(`${url}/aluno.html#/paulta`); await sleep(2000);
-  check('pauLta abre sem código (modo livre)', (await trancada(p)) === 0 && (await p.locator('.kx-g, .kx-cards, .pl-links').count()) > 0);
-  await go(p, '#/paulta/drum/6/nomes'); await sleep(900);
-  check('modo livre: dá pra abrir qualquer fase (a 6 sem ter feito as outras)', (await p.locator('#rz-code, .al-lock').count()) === 0 && location_ok(await p.evaluate(() => location.hash)));
-  const salvo = await p.evaluate(async () => { const { db } = await import('/js/db.js').catch(() => ({})); return !!db; });
-  void salvo;
+  check('pauLta trancada sem código', (await trancada(p)) === 1);
+  await go(p, '#/jogos/toca'); check('Toca Aqui trancado sem código', (await trancada(p)) === 1);
+  await go(p, '#/jogos');
+  const lk = await p.locator('.jg-card.locked b').allTextContents();
+  check('no catálogo: Toca Aqui e pauLta com cadeado; memória, uno, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'pauLta'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|uno|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
+  for (const g of ['memart', 'bingo', 'velha', 'cartas', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
+  check('sem erros de página', errs.length === 0, errs.join(' | '));
   await ctx.close();
 }
 function location_ok(h) { return h.includes('/paulta/drum/6'); }

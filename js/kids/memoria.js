@@ -6,19 +6,28 @@ import { robo } from './robo.js';
 import { THEMES, SIZES, themeById } from './memory-themes.js';
 import * as FB from '../feedback.js';
 import { seeded } from '../campanha/jogos/memoria-logic.js';
+import * as AC from '../acesso.js';
+import { loadPhotoThemes } from './memory-photos.js';
 
 const KEY = 'setting-memoria';
-const conf = () => ({ theme: 'instrumentos', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const conf = () => ({ theme: 'beatles', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (p) => store.upsert('setting', KEY, p);
 const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 
-/** A carta inteira (a imagem já traz o desenho, o nome e a borda). */
 /** O verso da carta é o botão do tema; "tudo misturado" não tem verso próprio, então mostra um leque de três. */
 const MIX = ['rock', 'percussao', 'figuras'].map((k) => `assets/memoria/${k}/verso.webp`);
-const verso = (t) => (t.verso
-  ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
-  : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
-const face = (it) => h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' });
+const verso = (t) => (t.cover
+  ? h('span', { class: `mem-vt cat cat-${t.id}` }, h('span', { class: 'mc-t' }, t.title.toLowerCase()), h('span', { class: 'mc-fan' }, ...t.cover.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))),
+    h('img', { class: 'mc-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }), h('small', { class: 'mc-b' }, 'beaterista'))
+  : t.verso
+    ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
+    : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
+/** A carta: desenho da Bea (a imagem já traz nome e borda) ou foto de artista (recortada no rosto, com o nome embaixo quando tem). */
+const face = (it) => (it.photo
+  ? h('span', { class: 'mem-pf' }, h('img', { class: 'mem-card-img', src: it.img, alt: it.name, style: `object-position:${it.pos || '50% 30%'}`, draggable: 'false', decoding: 'async' }), it.cap ? h('span', { class: 'mem-cap' }, it.cap) : null)
+  : h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' }));
+const PICK = [6, 8, 12]; // quantos pares o jogador escolhe (a aventura usa SIZES)
+const alunoSemCodigo = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 
 /** `opts.mission` (Modo Aventura): monta a partida com `opts.mission.params`, sem menus, sem retomar nem gravar nada do modo livre (preferências e recordes
  *  ficam intactos) e avisa `opts.onResult({ won, pairs, theme, tries, ms })` UMA vez, quando acha o último par. Sem `opts.mission` é o jogo de sempre. */
@@ -30,23 +39,32 @@ export function mountMemoria(host, opts) {
   const stage = h('div', { class: 'mem-stage' });
   host.replaceChildren(h('div', { class: 'kx-botrow' }, bot.el), stage);
   const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
+  // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (rock e profissões abertos).
+  let photo = null; let lockNote = false; let live = false;
+  const themes = () => {
+    const drawn = THEMES.filter((t) => !photo || t.id !== 'bandas').map((t) => ({ ...t, open: t.id === 'profissoes' || t.id === 'bandas' }));
+    const all = photo ? [...photo, ...drawn] : drawn;
+    return [...all.filter((t) => t.open), ...all.filter((t) => !t.open)]; // os abertos primeiro
+  };
+  const locked = (t) => !MS && alunoSemCodigo() && !t.open;
 
   const setup = () => {
-    const c = conf(); const th = themeById[c.theme] || THEMES[0];
+    live = false; const c = conf(); const list = themes();
+    let th = list.find((t) => t.id === c.theme) || list[0]; if (locked(th)) th = list.find((t) => !locked(t)) || list[0];
     const maxPairs = th.items.length; preload(th);
-    const pairs = SIZES.includes(c.pairs) ? c.pairs : 8; const players = c.players === 2 ? 2 : 1;
+    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); const players = c.players === 2 ? 2 : 1;
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
-      h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Tema do jogo' }, ...THEMES.map((t) => h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}: ${t.blurb}`, onclick: () => save({ theme: t.id }).then(setup) },
-        verso(t), h('b', {}, t.title)))),
-      h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
+      h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Tema do jogo' }, ...list.map((t) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
+        verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); })),
+      lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. gere o seu código na aba ', h('a', { href: '#/perfil' }, 'Perfil'), ' e fale com a professora Bea.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
       h('h2', { class: 'kx-h' }, 'quem joga?'),
       h('div', { class: 'row kd-modes' }, ...[[1, '1 jogador'], [2, '2 jogadores · um de cada vez']].map(([n, l]) => h('button', { type: 'button', class: `kd-chip${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), onclick: () => save({ players: n }).then(setup) }, l))),
       players === 2 ? h('p', { class: 'muted mem-blurb' }, 'quem acerta um par joga de novo?') : null,
       players === 2 ? h('div', { class: 'row kd-modes' }, ...[[true, 'sim, joga de novo'], [false, 'não, passa a vez']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${c.again === v ? ' on' : ''}`, 'aria-pressed': String(c.again === v), onclick: () => save({ again: v }).then(setup) }, l))) : null,
       h('h2', { class: 'kx-h' }, 'quantos pares?'),
-      h('div', { class: 'row kd-modes' }, ...SIZES.map((n) => h('button', { type: 'button', class: `kd-chip${pairs === n ? ' on' : ''}`, disabled: n > maxPairs, onclick: () => save({ pairs: n }).then(setup) }, `${n} pares`))),
+      h('div', { class: 'row kd-modes' }, ...PICK.map((n) => h('button', { type: 'button', class: `kd-chip${pairs === n ? ' on' : ''}`, disabled: n > maxPairs, onclick: () => save({ pairs: n }).then(setup) }, `${n} pares`))),
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
     bot.set('happy', 'escolhe o tema e quantos pares!');
@@ -55,7 +73,7 @@ export function mountMemoria(host, opts) {
   const play = (th, pairs, players = 1, again = true, rnd = Math.random) => {
     const picks = shuffle(th.items, rnd).slice(0, pairs);
     const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), rnd).map((c, i) => ({ ...c, key: i }));
-    const verso = th.verso ? `url(../${th.verso})` : null;
+    const verso = th.verso ? `url(../${th.verso})` : th.back ? `url(../${th.back})` : null;
     let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = [0, 0]; let t0 = 0;
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => {
@@ -73,6 +91,7 @@ export function mountMemoria(host, opts) {
     const flip = (btn) => {
       if (lock || gone || btn.classList.contains('up') || btn.classList.contains('ok')) return;
       if (MS && !t0) { t0 = Date.now(); started = true; if (MP.secs) tick(); }
+      if (!MS) live = true;
       btn.classList.add('up'); btn.setAttribute('aria-label', btn._c.it.name); open.push(btn); if (open.length < 2) return;
       lock = true; tries++; const [a, b] = open; const same = a._c.it.id === b._c.it.id;
       later(() => {
@@ -94,7 +113,7 @@ export function mountMemoria(host, opts) {
         if (reported) return; reported = true; const ms = Date.now() - t0; paint(); FB.great(board, { msg: FB.line('great') }); bot.set('cheer', 'achou todos!');
         if (opts.onResult) opts.onResult({ won: true, pairs, theme: th.id, tries, ms }); return;
       }
-      const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
+      live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
       const win = score[0] === score[1] ? 'empate!' : `jogador ${score[0] > score[1] ? 1 : 2} venceu!`;
       FB.great(board, { msg: players === 2 ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', players === 2 ? win : record ? 'novo recorde!' : 'achou todos!');
@@ -113,8 +132,14 @@ export function mountMemoria(host, opts) {
   if (MS) {
     const th = themeById[MP.theme] || THEMES[0]; preload(th); const seed = Number(MP.seed);
     play(th, Math.min(SIZES.includes(MP.pairs) ? MP.pairs : 8, th.items.length), 1, true, Number.isFinite(seed) && MP.seed != null ? seeded(seed) : Math.random);
-  } else setup();
-  const stop = () => { gone = true; timers.forEach(clearTimeout); };
-  stop.inProgress = () => !!MS && started && !reported;
+  } else {
+    stage.replaceChildren(h('p', { class: 'muted', style: 'text-align:center' }, 'carregando os temas…'));
+    loadPhotoThemes().then((l) => { photo = l; }).finally(() => { if (!gone) setup(); });
+  }
+  const onAc = () => { if (!MS && !gone && !live) setup(); }; // o código do aluno foi conferido (ou tirado): refaz a escolha de temas
+  document.addEventListener('aluno-acesso', onAc);
+  const stop = () => { gone = true; timers.forEach(clearTimeout); document.removeEventListener('aluno-acesso', onAc); };
+  stop.inProgress = () => (MS ? started && !reported : live);
+  stop.restart = () => { if (!MS && !gone) { lockNote = false; setup(); } };
   return stop;
 }
