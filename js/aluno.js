@@ -165,14 +165,14 @@ function estudosView(view) {
 
 /** "5 erros": PDF da professora (aberto, sem código). Enquanto o arquivo não existe, avisa que vem aí. */
 const PDF_ERROS = 'assets/5-erros.pdf';
+const PDF_ERROS_DRIVE = 'https://drive.google.com/file/d/1FJ7dLVD2EOg2eFIvt14kkFA8vFEnNokn/view'; // enquanto o PDF não está dentro do app (precisa estar como "qualquer pessoa com o link")
 function errosView(view) {
   const box = h('section', { class: 'card pad' }, h('p', { class: 'muted' }, 'carregando…'));
   view.append(banner('5 erros', 'material da professora Bea'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'), box));
   let gone = false;
   fetch(PDF_ERROS, { method: 'HEAD', cache: 'no-store' }).then((r) => {
     if (gone) return;
-    if (r.ok) box.replaceChildren(h('h2', { class: 'tag' }, '5 erros'), h('p', {}, 'toque pra abrir o material. dá pra ler e baixar.'), h('a', { class: 'btn primary wide', href: PDF_ERROS, target: '_blank', rel: 'noopener' }, 'abrir o PDF'));
-    else box.replaceChildren(h('h2', { class: 'tag' }, 'em breve'), h('p', { class: 'muted' }, 'a professora Bea está preparando este material.'));
+    box.replaceChildren(h('h2', { class: 'tag' }, '5 erros'), h('p', {}, 'toque pra abrir o material. dá pra ler e baixar.'), h('a', { class: 'btn primary wide', href: r.ok ? PDF_ERROS : PDF_ERROS_DRIVE, target: '_blank', rel: 'noopener' }, 'abrir o PDF'));
   }).catch(() => { if (!gone) box.replaceChildren(h('p', { class: 'muted' }, 'sem internet agora. tente de novo.')); });
   return () => { gone = true; };
 }
