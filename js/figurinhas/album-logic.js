@@ -42,6 +42,7 @@ function drawBySection(catalog, r, n, pesos) {
 /** Sorteio do pacote. `roleta:*` = 1 ou 2 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE) {
   const r = rng(hashSeed(`pack|${packId}`)); const kind = packKind(packId);
+  if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   const pl = plPack(packId);
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, r() < ROLETA_DUAS ? 2 : 1, ROLETA_PESOS);
