@@ -19,7 +19,7 @@ async function jogarTudo(p) { // lê a foto de cada carta, vira os pares e esper
   const p = await abrir(ctx);
   check('abre direto na escolha de tema (sem escolher modo aventura)', (await p.locator('.av-root, .av-modes, .ma-esc').count()) === 0 && (await p.locator('.mem-theme').count()) >= 8);
   const t = await temas(p);
-  check('abertos: The Beatles, Bandas, Solo e Profissões da música (nessa ordem)', JSON.stringify(t.filter((x) => !x.lk).map((x) => x.t)) === JSON.stringify(['The Beatles', 'Bandas', 'Solo', 'Profissões da música']), JSON.stringify(t));
+  check('abertos: The Beatles, Bandas, Solos e Profissões da música (nessa ordem)', JSON.stringify(t.filter((x) => !x.lk).map((x) => x.t)) === JSON.stringify(['The Beatles', 'Bandas', 'Solos', 'Profissões da música']), JSON.stringify(t));
   check('trancados: os outros 5 temas', t.filter((x) => x.lk).length === 5, t.filter((x) => x.lk).map((x) => x.t).join(', '));
   await p.locator('.mem-theme.locked').first().click(); await sleep(300);
   check('tocar num tema trancado avisa e não troca o tema', (await p.locator('.mem-lockmsg').count()) === 1 && (await p.locator('.mem-theme.on b').textContent()).includes('The Beatles'));

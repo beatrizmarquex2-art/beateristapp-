@@ -18,7 +18,7 @@ export function buildPhotoThemes(catalogo, { pos = () => '50% 30%', rnd = Math.r
   return [
     mk('beatles', 'The Beatles', 'ache as fotos iguais da banda', beatles, 'assets/cards/b02.webp'),
     mk('bandas', 'Bandas', 'Queen, Nirvana, Coldplay…', bandas, 'assets/cards/b01.webp'),
-    mk('solo', 'Solo', 'Rita Lee, Michael Jackson, Pitty…', solo, 'assets/cards/b03.webp'),
+    mk('solo', 'Solos', 'Rita Lee, Michael Jackson, Pitty…', solo, 'assets/cards/b03.webp'),
   ].filter((t) => t.items.length >= 6);
 }
 

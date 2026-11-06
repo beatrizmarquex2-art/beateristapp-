@@ -17,7 +17,7 @@ const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 /** O verso da carta é o botão do tema; "tudo misturado" não tem verso próprio, então mostra um leque de três. */
 const MIX = ['rock', 'percussao', 'figuras'].map((k) => `assets/memoria/${k}/verso.webp`);
 const verso = (t) => (t.cover
-  ? h('span', { class: `mem-vt cat cat-${t.id}` }, h('span', { class: 'mc-t' }, t.title.toLowerCase()), h('span', { class: 'mc-fan' }, ...t.cover.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))),
+  ? h('span', { class: `mem-vt cat cat-${t.id}` }, h('span', { class: 'mc-t' }, t.title), h('span', { class: 'mc-fan' }, ...t.cover.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))),
     h('img', { class: 'mc-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }), h('small', { class: 'mc-b' }, 'beaterista'))
   : t.verso
     ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
@@ -48,6 +48,16 @@ export function mountMemoria(host, opts) {
   };
   const locked = (t) => !MS && alunoSemCodigo() && !t.open;
 
+  // os 3 temas de artistas ficam em destaque (3 capas grandes); os outros temas vêm logo abaixo, menores
+  const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
+    verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
+  const grupos = (list, th) => {
+    const art = list.filter((t) => t.photo); const rest = list.filter((t) => !t.photo);
+    return [art.length ? h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Artistas' }, ...art.map((t) => tile(t, th))) : null,
+      art.length && rest.length ? h('p', { class: 'mem-more' }, 'mais temas') : null,
+      rest.length ? h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Outros temas' }, ...rest.map((t) => tile(t, th))) : null].filter(Boolean);
+  };
+
   const setup = () => {
     live = false; const c = conf(); const list = themes();
     let th = list.find((t) => t.id === c.theme) || list[0]; if (locked(th)) th = list.find((t) => !locked(t)) || list[0];
@@ -56,8 +66,7 @@ export function mountMemoria(host, opts) {
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
-      h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Tema do jogo' }, ...list.map((t) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
-        verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); })),
+      ...grupos(list, th),
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. gere o seu código na aba ', h('a', { href: '#/perfil' }, 'Perfil'), ' e fale com a professora Bea.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
       h('h2', { class: 'kx-h' }, 'quem joga?'),
       h('div', { class: 'row kd-modes' }, ...[[1, '1 jogador'], [2, '2 jogadores · um de cada vez']].map(([n, l]) => h('button', { type: 'button', class: `kd-chip${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), onclick: () => save({ players: n }).then(setup) }, l))),

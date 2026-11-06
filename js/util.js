@@ -116,6 +116,8 @@ const ICONS = {
   book: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',
   news: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6M7 12h10M7 15h10"/><rect x="14.5" y="8" width="3" height="2" rx=".5"/>',
   id: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M15 10h3M15 13h3"/>',
+  nota: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+  gallery: '<rect x="2.5" y="8" width="14" height="11.5" rx="2"/><path d="M7 8V6.5a2 2 0 012-2h10.5a2 2 0 012 2v8a2 2 0 01-2 2H16.5"/><circle cx="6.5" cy="12" r="1.3"/><path d="M3 17.5l4-3.500 3 2.500 3-2.500 3.500 3"/>',
   kit: '<ellipse cx="12" cy="10" rx="7" ry="2.5"/><path d="M5 10v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6"/><path d="M3.5 3l5.5 5.5M20.5 3L15 8.5"/>',
 };
 export function icon(name, size = 24) {

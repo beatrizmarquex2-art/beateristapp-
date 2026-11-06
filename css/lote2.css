@@ -117,3 +117,13 @@
 .mem-theme.locked .mem-vt { filter: grayscale(.7) brightness(.85); }
 .mem-lk { position: absolute; top: 5px; right: 5px; z-index: 4; font-style: normal; font-size: 15px; line-height: 1; background: #fffdf8; border: 2px solid #1b1818; border-radius: 8px; padding: 2px 3px; }
 .mem-lockmsg { margin: 8px 0 0; padding: 8px 10px; border: 2px dashed #a31d30; border-radius: 10px; text-align: center; font-size: 14px; } .mem-lockmsg a { text-decoration: underline; }
+/* memória: os 3 temas de artistas em destaque (capas grandes) */
+.mem-themes.hero { grid-template-columns: repeat(3, 1fr); gap: 12px 10px; margin-bottom: 4px; }
+.mem-themes.hero .mem-theme b { font: 700 14px/1.1 var(--body); }
+.mem-themes.hero .mem-vt.cat { padding: 9px 6px 7px; }
+.mem-themes.hero .mem-vt .mc-t { font-size: clamp(17px, 5.6vw, 24px); text-transform: uppercase; line-height: .95; text-shadow: 1px 1px 0 rgb(27 24 24 / .55); }
+.mem-themes.hero .mem-vt .mc-b { font-size: 9px; }
+.mem-more { margin: 10px 0 2px; font: 700 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #6b6258; }
+.mem-themes.hero .mem-theme { width: 100%; } .mem-themes.hero .mem-vt { width: 100%; }
+.mem-themes.hero .mem-vt .mc-t { font-size: clamp(14px, 4.3vw, 18px); overflow-wrap: normal; word-break: keep-all; }
+.mem-themes, .mem-themes.hero { padding-inline: 0; }
