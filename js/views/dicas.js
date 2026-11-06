@@ -130,12 +130,22 @@ const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preen
 export function mount(host, parts = []) {
   const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : 'quiz';
   const box = h('div', { class: 'dc-box' });
+  // modo claro/escuro: lembra a escolha; sem escolha, segue o aparelho
+  const KM = 'beaterista-dicas-modo';
+  let modo = ''; try { modo = localStorage.getItem(KM) || ''; } catch { /* sem armazenamento: segue o aparelho */ }
+  if (modo !== 'claro' && modo !== 'escuro') modo = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
+  const wrap = h('div', { class: `jg jg-wrap dc-wrap${modo === 'escuro' ? ' escuro' : ''}` });
+  const tg = h('button', { type: 'button', class: 'dc-modo', 'aria-label': 'trocar entre modo claro e escuro' });
+  const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
+  tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
+  paint();
   host.append(banner('Quiz e Letras', 'quiz, caça-palavras e cruzadinha com as dicas do método'),
-    h('div', { class: 'jg jg-wrap dc-wrap' },
-      h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos')),
+    wrap);
+  wrap.append(
+      h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
       h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
         h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, t), h('small', {}, SUB[k])))),
-      box));
+      box);
   const run = () => {
     box.replaceChildren(); const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }

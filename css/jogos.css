@@ -753,3 +753,37 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-wrap .dc-cell.dc-k3{background:var(--k3)}
 .dc-wrap .dc-cell.dc-k4{background:var(--k4)}
 .dc-wrap .dc-cell.dc-k5{background:var(--k5)}
+/* modo escuro do Quiz e Letras (botão ☀️/🌙 no topo; lembra a escolha, senão segue o aparelho) */
+.dc-modo{min-height:36px;padding:4px 12px;border:1.5px solid var(--jg-navy);border-radius:999px;background:transparent;color:var(--jg-ink);font:700 13px var(--body,inherit);cursor:pointer}
+.dc-modo:focus-visible{outline:3px solid var(--jg-mus);outline-offset:2px}
+.dc-wrap.escuro{--jg-bg:#16273f;--jg-ink:#f6ecd8;--jg-navy:#9db8de;--jg-red:#ff7a90;--jg-line:#f6ecd833;background:#0f1b2e;color:#f6ecd8;border-color:#3c5f8f}
+.dc-wrap.escuro .card{background:#16273f;color:#f6ecd8;border-color:#3c5f8f;box-shadow:none}
+.dc-wrap.escuro .muted,.dc-wrap.escuro .dc-dir{color:#a9b3c4}
+.dc-wrap.escuro .dc-clues .dc-dir{color:#ff9aab}
+.dc-wrap.escuro .dc-pick{background:#16273f;border-color:#3c5f8f;color:#f6ecd8}
+.dc-wrap.escuro .dc-pick.on{background:#4a3d1c;border-color:#EBA332;box-shadow:3px 3px 0 #EBA332}
+.dc-wrap.escuro .dc-n,.dc-wrap.escuro .dc-wrap .tr-count,.dc-wrap.escuro .tr-count{color:#ff9aab}
+.dc-wrap.escuro .dc-opt{background:#1c3350;color:#f6ecd8;border-color:#9db8de;box-shadow:2px 2px 0 #9db8de}
+.dc-wrap.escuro .dc-opt.ok{background:#1f6b3f;border-color:#6fd49a;color:#fff}
+.dc-wrap.escuro .dc-opt.no{background:#8a1d30;border-color:#ff7a90;color:#fff}
+.dc-wrap.escuro .dc-chip{color:#142036}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c{background:#1c3350;color:#f6ecd8;border-color:#9db8de}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found{color:#142036}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.sel{background:#EBA332;color:#142036}
+.dc-wrap.escuro .dc-cell{background:#1c3350;color:#f6ecd8;border-color:#9db8de}
+.dc-wrap.escuro .dc-cell.on{color:#142036}
+.dc-wrap.escuro .dc-cell.hint{background:#4a3d1c;color:#ffd37a}
+.dc-wrap.escuro .dc-cell small{color:#ff9aab}
+.dc-wrap.escuro .dc-clues li::before{color:#142036}
+.dc-wrap.escuro .dc-clues li.ok::before{background:#9db8de;color:#0f1b2e}
+.dc-wrap.escuro .dc-clues input{color:#f6ecd8;border-bottom-color:#9db8de}
+.dc-wrap.escuro .dc-clues input:focus{border-bottom-color:#ff7a90}
+.dc-wrap.escuro .dc-clues li.ok{color:#8fe0b0}
+.dc-wrap.escuro .dc-explain{border-left-color:#6fd49a}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k0,.dc-wrap.escuro .dc-cell.on.dc-k0{background:var(--k0)}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k1,.dc-wrap.escuro .dc-cell.on.dc-k1{background:var(--k1)}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k2,.dc-wrap.escuro .dc-cell.on.dc-k2{background:var(--k2)}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k3,.dc-wrap.escuro .dc-cell.on.dc-k3{background:var(--k3)}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k4,.dc-wrap.escuro .dc-cell.on.dc-k4{background:var(--k4)}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k5,.dc-wrap.escuro .dc-cell.on.dc-k5{background:var(--k5)}
+.dc-wrap.escuro .tag,.dc-wrap.escuro h2,.dc-wrap.escuro h3{color:#f6ecd8}.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found,.dc-wrap.escuro .dc-cell.on{color:#142036}
