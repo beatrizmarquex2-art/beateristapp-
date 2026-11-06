@@ -8,7 +8,10 @@ const comprar = (item) => () => {
   if (item.link) { window.open(item.link, '_blank', 'noopener'); return; }
   toast('a compra abre em breve! por enquanto, chame a professora Bea', { ms: 3200 });
 };
-const botao = (txt, item, cls) => h('button', { type: 'button', class: `lj-btn ${cls || ''}`.trim(), onclick: comprar(item), 'data-id': item.id || 'passe' }, txt, h('b', { 'aria-hidden': 'true' }, '›'));
+// sem link de compra ainda: o botão diz "em breve" (e não faz nada); com link, vira "Adquirir"
+const botao = (txt, item, cls) => (item.link
+  ? h('button', { type: 'button', class: `lj-btn ${cls || ''}`.trim(), onclick: comprar(item), 'data-id': item.id || 'passe' }, txt, h('b', { 'aria-hidden': 'true' }, '›'))
+  : h('button', { type: 'button', class: `lj-btn breve ${cls || ''}`.trim(), disabled: true, 'data-id': item.id || 'passe' }, 'em breve'));
 
 /** Janela com as fotos grandes do material. */
 function detalhe(p) {

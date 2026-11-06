@@ -234,3 +234,5 @@
 .lj-x { border: 0; background: #14284b; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 15px; cursor: pointer; }
 .lj-fotos { overflow: auto; display: grid; gap: 10px; padding: 10px; flex: 1; } .lj-fotos img { width: 100%; height: auto; border-radius: 10px; display: block; }
 .lj-dbot { padding: 10px 14px 14px; border-top: 1px solid #14284b33; }
+
+.lj-btn.breve { background: #c9bfa8; color: #5b5240; box-shadow: none; cursor: default; }
