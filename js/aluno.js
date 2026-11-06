@@ -36,8 +36,8 @@ import { startPaul } from './paul-talk.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Tocar'], ['#/album', 'gallery', 'Álbum'], ['#/perfil', 'id', 'Perfil']]; // lâmpada, livro, nota musical, galeria e carteirinha
-const TAB_OF = { toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
+const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Tocar'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
+const TAB_OF = { perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
@@ -292,6 +292,7 @@ function shell(name) {
     else if (r.name === 'lojinha') c = lojinhaView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
+    if (r.name === 'album' || r.name === 'perfil') view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum e perfil' }, h('a', { href: '#/album', role: 'tab', 'aria-selected': String(r.name === 'album'), class: `chip-btn${r.name === 'album' ? ' on' : ''}` }, 'figurinhas'), h('a', { href: '#/perfil', role: 'tab', 'aria-selected': String(r.name === 'perfil'), class: `chip-btn${r.name === 'perfil' ? ' on' : ''}` }, 'perfil'))); // o Perfil mora junto do Álbum
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }

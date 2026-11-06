@@ -6,7 +6,7 @@ const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)))
 await ctx.route('**/*.supabase.co/**', (r) => r.abort());
 await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('i')) { sessionStorage.setItem('i', '1'); localStorage.setItem('beaterista-aluno-nome', 'Ana'); localStorage.setItem('beaterista-aluno-codigo', 'ANA123'); localStorage.setItem('beaterista-aluno-origem', 'tik tok live'); } } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/perfil'); await page.waitForSelector('.pf-top', { timeout: 10000 });
-check('aba Perfil na barra de baixo', (await page.locator('nav a', { hasText: 'Perfil' }).count()) === 1);
+check('Perfil fica junto do Álbum (aba acesa e atalho no topo); Lojinha na barra de baixo', (await page.locator('nav a', { hasText: 'Perfil' }).count()) === 0 && (await page.locator('nav a', { hasText: 'Lojinha' }).count()) === 1 && (await page.locator('nav a.on', { hasText: 'Álbum' }).count()) === 1 && (await page.locator('.al-subnav a', { hasText: 'figurinhas' }).count()) === 1);
 check('abas lado a lado (sem quebrar linha)', await page.evaluate(() => { const r = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return r.length >= 5 && Math.max(...r) - Math.min(...r) < 3; }));
 check('o código de acesso aparece embaixo da foto, pra decorar', (await page.locator('.pf-left .pf-codnum').textContent()).trim() === 'ANA123' && (await page.locator('.pf-left .pf-avatar').count()) === 1);
 check('nome começa com o nome do aluno', (await page.inputValue('.pf-top input.field')) === 'Ana');
