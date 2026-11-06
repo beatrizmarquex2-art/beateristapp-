@@ -705,3 +705,29 @@ html.lite .cx-dir,html.lite .cx-deck.fit .cx-stack{animation:none}
 .cx-learn-in{background:#f5ead2;color:#14203a;border:3px solid #14203a;border-radius:16px;padding:16px;max-width:360px;width:100%;display:grid;gap:8px;justify-items:center;text-align:center;box-shadow:0 6px 0 #6e1423}
 .cx-learn-card{--cw:120px;display:grid;place-items:center;margin:4px}.cx-learn-in h3{margin:0;font-size:24px}.cx-learn-in p{margin:0}
 .cx-names .cx-lbl{display:block}
+
+/* Quiz e Letras: caça-palavras e cruzadinha fáceis e coloridas */
+.dc-wrap{--k0:#ffc9d6;--k1:#ffe08a;--k2:#b9efc4;--k3:#bfdcff;--k4:#dccbff;--k5:#ffd1a8}
+.dc-k0{background:var(--k0)}.dc-k1{background:var(--k1)}.dc-k2{background:var(--k2)}.dc-k3{background:var(--k3)}.dc-k4{background:var(--k4)}.dc-k5{background:var(--k5)}
+.dc-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.dc-chip{display:inline-flex;align-items:center;min-height:36px;padding:4px 14px;border:2px solid var(--jg-navy);border-radius:999px;font:800 15px/1 var(--body, inherit);text-transform:uppercase;letter-spacing:.04em;box-shadow:2px 2px 0 var(--jg-navy);color:var(--jg-ink)}
+button.dc-chip{cursor:pointer;min-height:44px}.dc-chip.ok,.dc-chip.done{opacity:.85;text-decoration:none}.dc-chip.done{box-shadow:none}
+.dc-grid.dc-easy{max-width:360px;gap:3px;touch-action:none;user-select:none;-webkit-user-select:none}
+.dc-grid.dc-easy .dc-c{border-radius:10px;border-width:2px;font-weight:800;font-size:clamp(16px,5.4vw,22px);text-transform:uppercase;background:#fff;min-height:36px;touch-action:none}
+.dc-grid.dc-easy .dc-c.sel{background:#ffe08a;transform:scale(1.06)}
+.dc-grid.dc-easy .dc-c.found{color:var(--jg-ink)}
+.dc-wrap .dc-cell{border-radius:8px;border-color:var(--jg-navy);background:#fff}
+.dc-wrap .dc-cell.hint{background:#fff7dc;color:#b9a574}
+.dc-wrap .dc-cell.on{color:var(--jg-ink)}
+.dc-wrap .dc-clues li{padding:10px;border:2px solid var(--jg-navy);border-radius:12px;list-style-position:inside}
+.dc-wrap .dc-clues li.ok{opacity:.8}
+@media (prefers-reduced-motion:reduce){.dc-grid.dc-easy .dc-c.sel{transform:none}}
+.dc-grid.dc-easy{grid-template-columns:repeat(var(--n),minmax(0,1fr));width:100%;box-sizing:border-box}
+.dc-grid.dc-easy .dc-c{min-width:0;min-height:0;aspect-ratio:1;padding:0;line-height:1;font-size:clamp(14px,4.8vw,20px)}
+.dc-wrap .dc-box .card{min-width:0;box-sizing:border-box}
+.dc-grid.dc-easy .dc-c.dc-k0{background:var(--k0)}
+.dc-grid.dc-easy .dc-c.dc-k1{background:var(--k1)}
+.dc-grid.dc-easy .dc-c.dc-k2{background:var(--k2)}
+.dc-grid.dc-easy .dc-c.dc-k3{background:var(--k3)}
+.dc-grid.dc-easy .dc-c.dc-k4{background:var(--k4)}
+.dc-grid.dc-easy .dc-c.dc-k5{background:var(--k5)}
