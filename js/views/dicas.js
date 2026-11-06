@@ -32,7 +32,7 @@ function quiz(box, kinds, key) {
   function draw() {
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
     const body = [h(q.kind === 'blank' ? 'p' : 'h3', { class: q.kind === 'blank' ? 'dc-clue' : 'dc-ask' }, q.prompt), q.kind === 'blank' ? h('p', { class: 'muted' }, 'qual palavra completa a dica?') : null,
-        h('div', { class: `dc-opts${q.kind === 'match' ? ' long' : ''}` }, ...q.options.map((o) => h('button', { type: 'button', class: `tr-pal dc-opt${answered ? (o.id === q.ans ? ' ok' : '') : ''}`, disabled: answered, onclick: (e) => { const btn = e.currentTarget; done(o.id === q.ans, btn); if (o.id !== q.ans) btn.classList.add('no'); } }, o.label)))];
+        h('div', { class: `dc-opts${q.kind === 'match' ? ' long' : ''}` }, ...q.options.map((o) => h('button', { type: 'button', class: `tr-pal dc-opt${answered ? (o.id === q.ans ? ' ok' : picked[0] === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = [o.id]; done(o.id === q.ans, e.currentTarget); } }, o.label)))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, head, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
       answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? 'ver o resultado' : 'próxima') : null].filter(Boolean));

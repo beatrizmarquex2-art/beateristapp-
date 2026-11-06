@@ -787,3 +787,10 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k4,.dc-wrap.escuro .dc-cell.on.dc-k4{background:var(--k4)}
 .dc-wrap.escuro .dc-grid.dc-easy .dc-c.found.dc-k5,.dc-wrap.escuro .dc-cell.on.dc-k5{background:var(--k5)}
 .dc-wrap.escuro .tag,.dc-wrap.escuro h2,.dc-wrap.escuro h3{color:#f6ecd8}.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found,.dc-wrap.escuro .dc-cell.on{color:#142036}
+/* quiz: acerto/erro aparecem (antes a cor do fundo branco vencia), opções redondas e pergunta legível */
+.dc-wrap .dc-opt{border-radius:14px;border-width:1.5px;box-shadow:none}
+.dc-wrap .dc-opt.ok{background:#d8f0dc;border-color:#1f9d4a;color:#0e4a22}
+.dc-wrap .dc-opt.no{background:#f6d5d9;border-color:#BD1733;color:#7a0e20}
+.dc-wrap.escuro .dc-opt.ok{background:#1f6b3f;border-color:#6fd49a;color:#fff}
+.dc-wrap.escuro .dc-opt.no{background:#8a1d30;border-color:#ff7a90;color:#fff}
+.dc-wrap .dc-clue{font-family:var(--body,inherit);font-weight:700;font-size:18px;line-height:1.4;text-transform:none}
