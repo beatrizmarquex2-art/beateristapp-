@@ -22,11 +22,13 @@ const trancada = (p) => p.locator('.al-lock').count();
   for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo, as fases têm cadeado; o Quiz e Letras (amostra grátis) e os jogos livres não', locked.some((t) => /fases e estrelas/.test(t)) && !locked.some((t) => /Quiz e Letras|memória|velha|stop|bingo|Jogos Ensinam/i.test(t)), locked.join(' | '));
-  check('"Jogos Ensinam" aparece no catálogo (aberto)', (await p.locator('.jg-card:has-text("Jogos Ensinam")').count()) === 1);
+  check('no catálogo: Beat Hero, Toca Aqui, pauLta e Uno com cadeado; Quiz e Letras (amostra) e os jogos livres não; sem fases e estrelas e sem Jogos Ensinam', ['Beat Hero', 'Toca Aqui'].every((n) => locked.some((t) => t.includes(n))) && !locked.some((t) => /Quiz e Letras|memória|velha|stop|bingo/i.test(t)) && (await p.locator('.jg-card:has-text("fases e estrelas"), .jg-card:has-text("Jogos Ensinam")').count()) === 0, locked.join(' | '));
+  check('"Jogos Ensinam" saiu do catálogo de jogos (mora em Estudos)', (await p.locator('.jg-card:has-text("Jogos Ensinam")').count()) === 0);
   await go(p, '#/jogos/relatorio'); check('Jogos Ensinam abre o relatório', (await p.locator('.rel-page, .jg-doc').count()) > 0 && (await p.locator('h1:has-text("Jogos Ensinam")').count()) >= 1);
   // gerar meu código
-  await go(p, '#/ranking'); await p.locator('button:has-text("gerar meu código")').click(); await sleep(400);
+  await go(p, '#/ranking'); await p.locator('a:has-text("gerar meu código")').click(); await sleep(700);
+  check('"gerar meu código" leva direto pra lojinha', (await p.evaluate(() => location.hash)) === '#/lojinha' && (await p.locator('h2:has-text("lojinha")').count()) >= 1);
+  await p.locator('button:has-text("pedir o código pra professora")').click(); await sleep(300); await go(p, '#/ranking');
   const code = (await p.locator('.al-lock-code').textContent()).trim();
   check('gerou um código de 6 e mandou informar a professora Bea', /^[A-Z0-9]{6}$/.test(code) && (await p.locator('.al-lock-t').textContent()).includes('informe a professora Bea'), code);
   check('o mesmo código aparece de novo em outra tela trancada', (async () => { await go(p, '#/album'); return (await p.locator('.al-lock-code').textContent()).trim() === code; })() instanceof Promise);

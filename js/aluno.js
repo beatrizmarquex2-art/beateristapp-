@@ -143,7 +143,7 @@ function lockView(view, what) {
     box.replaceChildren(h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🔒'), h('h2', { class: 'hand' }, `${what} é pra alunos da Beaterista`),
       h('p', { class: 'muted' }, 'sem código você joga o modo livre dos jogos e usa a aba Tocar.'),
       ...(pend ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code', role: 'status', 'aria-label': `seu código ${pend.split('').join(' ')}` }, pend), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'quando ela cadastrar o seu código, isto libera sozinho.'), h('button', { class: 'btn', type: 'button', onclick: () => check(false) }, 'já liberou? conferir')]
-        : [h('button', { class: 'btn primary wide', type: 'button', onclick: () => { CODE.pedir(); draw(); start(); } }, 'gerar meu código')]),
+        : [h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'gerar meu código')]),
       msg, h('details', { class: 'al-lock-have' }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))));
   };
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
@@ -158,6 +158,7 @@ const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbu
 function estudosView(view) {
   const item = (href, title, sub, amostra) => { const lk = AC.trancado(href); const am = amostra && !AC.liberado(); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : am ? `${title}, amostra grátis: ${amostra}` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title, am ? h('small', { class: 'al-am' }, ` · grátis: ${amostra}`) : null), h('p', { class: 'muted' }, sub)); };
   view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    item('#/jogos/relatorio', 'Jogos Ensinam', 'o que cada jogo desenvolve, aberto pra pais e responsáveis'),
     item('#/erros', '5 erros', 'material em PDF da professora Bea, aberto pra todo mundo'),
     item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando', `${GRATIS.termos} termos`),
     item('#/estudos/dicas', 'Dicas do método', 'as dicas da professora Bea pra estudar com calma'),
@@ -175,6 +176,24 @@ function dicasEstudoView(view) {
       h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (quiz e letras)'));
   });
   return () => { dead = true; };
+}
+
+/** Lojinha (em construção): exercícios, atividades pra imprimir e o código de acesso. Por enquanto avisa que vem aí e deixa digitar um código que já tem. */
+function lojinhaView(view) {
+  let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
+  const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
+  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+  // enquanto a lojinha não abre: a aluna ainda pode pedir um código pra professora Bea cadastrar (aparece nas telas trancadas e no Perfil)
+  const pedido = h('div', { class: 'al-pedido' });
+  const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
+  drawPedido();
+  view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha está chegando!'),
+      h('p', { class: 'muted' }, 'aqui vão ficar os exercícios, as atividades pra imprimir e o código de acesso pra liberar tudo.')),
+    h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
+    h('section', { class: 'card pad' }, h('b', {}, 'ou peça pra professora Bea'), pedido)));
+  return () => { gone = true; };
 }
 
 /** "5 erros": PDF da professora (aberto, sem código). Enquanto o arquivo não existe, avisa que vem aí. */
@@ -269,6 +288,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'erros') c = errosView(view);
+    else if (r.name === 'lojinha') c = lojinhaView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     cleanup = typeof c === 'function' ? c : null;

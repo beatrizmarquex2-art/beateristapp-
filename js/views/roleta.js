@@ -115,7 +115,7 @@ export function mount(host) {
   spin.addEventListener('click', girar);
   const evCk = h('input', { type: 'checkbox', checked: evitar || null, onchange: (e) => { evitar = e.target.checked; setGame('roleta', { evitar }); } });
   root.append(h('div', { class: 'card pad rl-card-main' },
-    h('h2', { class: 'tag' }, 'Roleta Musical'), h('p', { class: 'muted' }, 'gire e descubra de quem você vai tocar uma música hoje. é só um sorteio divertido: não vale dinheiro nem figurinha.'),
+    h('h2', { class: 'tag' }, 'Roleta Musical'), h('p', { class: 'muted' }, 'vamos tocar e conhecer mais sobre:'),
     machine, spin, h('div', { class: 'row', style: 'justify-content:space-between;gap:8px;flex-wrap:wrap' }, somBtn),
     resultado, painel),
     h('div', { class: 'card pad' }, h('b', {}, 'quais artistas'), filtrosEl, nota, h('label', { class: 'rl-chk' }, evCk, ' evitar repetir os últimos sorteados'), histEl));

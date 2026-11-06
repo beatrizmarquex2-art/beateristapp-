@@ -8,9 +8,12 @@ export const alunoSemCodigo = () => document.documentElement.classList.contains(
 
 export const GRATIS = { termos: 3, aulinha: 2, caca: 2 };
 
-/** Cartãozinho "isso é pra alunos": cadeado, o que falta e o caminho pra gerar o código (aba Perfil). */
-export const avisoCodigo = (texto) => h('section', { class: 'card pad am-lock', role: 'status' }, h('span', { class: 'am-i', 'aria-hidden': 'true' }, '🔒'),
-  h('p', {}, texto), h('a', { class: 'btn small', href: '#/perfil' }, 'gerar meu código'));
+/** Onde se pega o código de acesso: a lojinha (ainda em construção). */
+export const LOJINHA = '#/lojinha';
+
+/** Cartãozinho "isso é pra alunos": cadeado, o que falta e o caminho pra gerar o código (vai direto pra lojinha). */
+export const avisoCodigo = (texto, rotulo = 'gerar meu código') => h('section', { class: 'card pad am-lock', role: 'status' }, h('span', { class: 'am-i', 'aria-hidden': 'true' }, '🔒'),
+  h('p', {}, texto), h('a', { class: 'btn small', href: LOJINHA }, rotulo));
 
 const KEY = 'beaterista-caca-gratis';
 /** Quantas partidas grátis de caça-palavras já foram começadas neste aparelho. */

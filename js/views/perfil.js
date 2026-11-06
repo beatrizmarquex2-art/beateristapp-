@@ -49,7 +49,7 @@ export function mount(host) {
   const codigoDoAluno = () => { let v = ''; try { v = CODE.saved() || localStorage.getItem('beaterista-album-code') || ''; } catch { /* ok */ } return v ? { c: v, ok: true } : (CODE.pendente() ? { c: CODE.pendente(), ok: false } : null); };
   const cod = codigoDoAluno();
   const codBox = h('div', { class: 'pf-codigo', role: 'group', 'aria-label': 'Seu código de acesso' }, h('small', {}, cod ? (cod.ok ? 'seu código' : 'seu código (aguardando a professora)') : 'seu código'),
-    cod ? h('b', { class: 'pf-codnum', 'aria-label': `código ${cod.c.split('').join(' ')}` }, cod.c) : h('a', { class: 'pf-codnone', href: '#/album' }, 'ainda sem código · toque pra pedir'),
+    cod ? h('b', { class: 'pf-codnum', 'aria-label': `código ${cod.c.split('').join(' ')}` }, cod.c) : h('a', { class: 'pf-codnone', href: '#/lojinha' }, 'ainda sem código · toque pra pegar na lojinha'),
     cod ? h('span', { class: 'pf-codhint' }, 'decore esse número!') : null);
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
