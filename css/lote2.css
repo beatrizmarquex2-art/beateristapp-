@@ -138,3 +138,4 @@
 .mem-ic { min-width: 38px; min-height: 36px; padding: 2px 7px; }
 .mem-ic .ic-bq { width: 28px; height: 28px; } .mem-ic.on { background: #f6d28a; border-color: #1b1818; box-shadow: 2px 2px 0 #1b1818; }
 .ic-bq { display: inline-block; line-height: 0; vertical-align: middle; } .ic-bq svg, .ic-bq img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.mem-ic { min-width: 34px; min-height: 32px; padding: 2px 7px; } .mem-ic .ic-bq { width: 20px; height: 20px; }

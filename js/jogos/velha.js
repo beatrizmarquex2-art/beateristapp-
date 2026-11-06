@@ -15,7 +15,7 @@ const MARKS = [
   '<path d="M20 5c9 0 15 3 15 11 0 9-8 19-15 19S5 25 5 16C5 8 11 5 20 5z" fill="#BD1733" stroke="#142036" stroke-width="2.4"/>',
 ];
 const mark = (who) => svg(MARKS[who], 'jg-mk');
-const MODES = [['local', 'dois no aparelho', 'dois'], ['online', '2 celulares (código)', 'celular'], ['paul', 'jogar contra o Paul', 'paul']]; // 3º item: bonequinho (só ele aparece; o texto vira dica)
+const MODES = [['local', 'dois no aparelho', 'dois'], ['online', '2 celulares (código)', 'celular'], ['paul', 'jogar contra o Paul (às vezes fácil, às vezes difícil)', 'paul'], ['estrategico', 'jogar contra o Paul no desafio: ele joga sempre bem', '#desafio']]; // 3º item: ícone (só ele aparece; o texto vira dica); '#texto' = pílula pequenininha
 const LEVEL_HELP = { infantil: 'perguntas bem simples', facil: 'perguntas fáceis de música', intermediario: 'perguntas mais difíceis' };
 
 /** opts (opcional): { mission: { params: { ai, variant, level, rounds } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
@@ -38,7 +38,7 @@ export function mount(host, opts) {
   function intro() {
     stop(); leave(); g = null;
     const resume = V.validMatch(saved.match) && saved.match.variant === 'desafio' ? saved.match : null; // partida antiga do modo clássico não continua
-    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic ? bq(ic) : l)));
+    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? (ic[0] === '#' ? ' jg-tiny' : ' jg-ic') : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic ? (ic[0] === '#' ? ic.slice(1) : bq(ic)) : l)));
     root.replaceChildren(
       h('h2', { class: 'jg-h hand' }, 'jogo da velha'),
       h('ol', { class: 'jg-big' },
