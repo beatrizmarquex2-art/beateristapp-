@@ -6,7 +6,7 @@ const { srv, url } = await serve(); const { browser } = await launch();
 const state = { valid: new Set(['ABC123']), listCalls: [] };
 async function phone(saved) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
-  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => { const c = r.request().postDataJSON().p_code; r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c)) }); });
+  await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => { const c = r.request().postDataJSON().p_code; r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c)) }); });
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => { const c = r.request().postDataJSON().p_code; state.listCalls.push(c); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c) ? [{ id: 'a1', name: 'Minha música MIDI', folder: 'Filmes', corte: null, b64 }] : []) }); });
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript((c) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', c); }, saved || '');
@@ -17,7 +17,6 @@ async function phone(saved) {
   const { p, errs, ctx } = await phone('');
   check('sem código: o ritmo pede o código na hora (sem JOGAR)', (await p.locator('.al-lock').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
   check('nenhuma lista de MIDI foi baixada sem código', state.listCalls.length === 0, JSON.stringify(state.listCalls));
-  await p.locator('.al-lock-have summary').click();
   await p.locator('.al-lock-have input').fill('ZZZ999'); await p.locator('.al-lock-have button').click(); await sleep(700);
   check('código errado: avisa e continua trancado', (await p.locator('.al-lock-msg').textContent()).includes('não achei') && (await p.locator('.al-lock').count()) === 1);
   await p.locator('.al-lock-have input').fill('abc 123'); await p.locator('.al-lock-have button').click(); await sleep(2500);

@@ -3,7 +3,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
 const p = await ctx.newPage(); await p.setViewportSize({ width: 820, height: 1180 }); const errs = []; p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
+await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().match(/aluno_(codigo_ok|acesso)/) ? 'true' : '[]' }));
 await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } window.__sess = []; let t = 'auto'; Object.defineProperty(navigator, 'audioSession', { value: { get type() { return t; }, set type(v) { t = v; window.__sess.push(v); } }, configurable: true }); });
 await p.goto(`${url}/aluno.html#/jogos/toca/livre`); await p.waitForSelector('.tr-pad', { timeout: 20000 }); await sleep(800);
 await p.locator('[role=radio]:has-text("microfone")').click(); await sleep(300);

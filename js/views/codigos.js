@@ -9,7 +9,7 @@ const dia = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sa
 const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt); toast(ok, { id: 'cod-copy', ms: 2200 }); } catch { toast('não deu pra copiar, selecione a tabela', { id: 'cod-copy', ms: 3000 }); } };
 
 export function mount(host) {
-  let list = []; let busy = false; let gone = false; let last = null; // last = linhas da última importação/geração (pra mostrar só elas)
+  let list = []; let apar = {}; let busy = false; let gone = false; let last = null; // last = linhas da última importação/geração (pra mostrar só elas)
   const ta = h('textarea', { class: 'field cod-ta', rows: 6, 'aria-label': 'Lista de alunos e códigos', placeholder: 'um aluno por linha\nMaria Souza ; K7M2QX   (já tem código)\nJoão Pedro             (só o nome: eu gero o código)', spellcheck: 'false' });
   const qtd = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 100, value: 5, inputmode: 'numeric', 'aria-label': 'Quantos códigos' });
   const out = h('div', { class: 'cod-out' });
@@ -24,16 +24,17 @@ export function mount(host) {
       h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'tabela atualizada'), h('span', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(list), 'tabela copiada (cola na planilha)'), }, 'copiar tabela'), h('button', { class: 'btn small ghost', type: 'button', onclick: load }, 'atualizar'))), tableBox)));
   const tsv = (rows) => ['nome\tcódigo\tativo\tusos\tvalido ate', ...rows.map((x) => `${x.nome || ''}\t${x.code}\t${x.ativo ? 'sim' : 'não'}\t${x.usos ?? 0}\t${dia(x.expira_em)}`)].join('\n');
   async function load() {
-    try { list = await CODE.listar(); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : e.message === '404' ? 'a tabela de códigos ainda não foi criada no Supabase' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 4000 }); }
+    try { list = await CODE.listar(); apar = await CODE.aparelhos().catch(() => ({})); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : e.message === '404' ? 'a tabela de códigos ainda não foi criada no Supabase' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 4000 }); }
     if (!gone) draw();
   }
   function draw() {
     const n = list.filter((x) => x.ativo).length;
     tableBox.replaceChildren(h('p', { class: 'muted' }, `${list.length} código${list.length === 1 ? '' : 's'} · ${n} ativo${n === 1 ? '' : 's'}`),
       list.length ? h('div', { class: 'cod-wrap' }, h('table', { class: 'cod-tbl' }, h('thead', {}, h('tr', {}, ...['nome', 'código', 'usos', 'válido até', ''].map((t) => h('th', {}, t)))),
-        h('tbody', {}, ...list.map((x) => h('tr', { class: x.ativo ? '' : 'off' }, h('td', {}, x.nome || '—'), h('td', {}, h('b', { class: 'rg-code' }, x.code)), h('td', {}, String(x.usos ?? 0)), h('td', {}, dia(x.expira_em), x.ultimo_uso ? h('small', { class: 'muted' }, ` · usou ${when(x.ultimo_uso)}`) : null),
+        h('tbody', {}, ...list.map((x) => h('tr', { class: x.ativo ? '' : 'off' }, h('td', {}, x.nome || '—', x.tipo === 'passe' ? h('small', { class: 'muted' }, ` · passe · ${apar[x.code] || 0}/${x.max_aparelhos || 2} aparelhos`) : null), h('td', {}, h('b', { class: 'rg-code' }, x.code)), h('td', {}, String(x.usos ?? 0)), h('td', {}, x.expira_em ? dia(x.expira_em) : (x.tipo === 'passe' ? 'começa no 1º uso' : 'sem validade'), x.ultimo_uso ? h('small', { class: 'muted' }, ` · usou ${when(x.ultimo_uso)}`) : null),
           h('td', { class: 'cod-act' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => copy(x.code, 'código copiado') }, 'copiar'),
             h('button', { class: 'btn small ghost', type: 'button', disabled: busy, onclick: () => run(() => CODE.alterar(x.code, { ativo: !x.ativo }), x.ativo ? 'desativado' : 'ativado') }, x.ativo ? 'desativar' : 'ativar'),
+            x.tipo === 'passe' && apar[x.code] ? h('button', { class: 'btn small ghost', type: 'button', disabled: busy, onclick: () => run(() => CODE.liberarAparelhos(x.code), 'aparelhos liberados') }, 'liberar aparelhos') : null,
             h('button', { class: 'btn small ghost', type: 'button', disabled: busy, onclick: () => run(() => CODE.alterar(x.code, { expira_em: new Date(Date.now() + 365 * 864e5).toISOString(), ativo: true }), 'renovado por 1 ano') }, '+1 ano'),
             h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `Apagar o código de ${x.nome || x.code}`, disabled: busy, onclick: async () => { if (await confirmSheet('Apagar este código?', `${x.nome || ''} ${x.code}: o aluno perde o acesso.`, 'Apagar')) run(() => CODE.apagar(x.code), 'apagado'); } }, '✕'))))))) : h('p', { class: 'muted' }, 'nenhum código ainda.'));
   }

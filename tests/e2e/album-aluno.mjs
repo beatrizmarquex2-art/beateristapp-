@@ -6,18 +6,18 @@ const banco = { BEA0404: { nome: 'Bea (professora)', estado: null } };
 const entradas = [], salvos = [];
 const norm = (c) => String(c).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
 async function mocks(c) {
-  await c.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => { const b = JSON.parse(r.request().postData() || '{}'); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!!banco[norm(b.p_code)]) }); });
+  await c.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => { const b = JSON.parse(r.request().postData() || '{}'); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!!banco[norm(b.p_code)]) }); });
   await c.route('**/rest/v1/rpc/fig_entrar', async (r) => { const b = JSON.parse(r.request().postData() || '{}'); entradas.push(b); const k = banco[norm(b.p_code)];
     await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!k ? { ok: false, motivo: 'codigo' } : { ok: true, nome: k.nome, estado: k.estado }) }); });
   await c.route('**/rest/v1/rpc/fig_salvar', async (r) => { const b = JSON.parse(r.request().postData() || '{}'); salvos.push(b); if (banco[norm(b.p_code)]) banco[norm(b.p_code)].estado = b.p_estado; await r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }); });
-  await c.route('**/*.supabase.co/**', (r) => (/\/rpc\/(fig_|aluno_codigo_ok)/.test(r.request().url()) ? r.fallback() : r.abort()));
+  await c.route('**/*.supabase.co/**', (r) => (/\/rpc\/(fig_|aluno_codigo_ok|aluno_acesso)/.test(r.request().url()) ? r.fallback() : r.abort()));
   await c.addInitScript(() => { if (sessionStorage.getItem('ini')) return; sessionStorage.setItem('ini', '1'); try { localStorage.setItem('beaterista-aluno-nome', 'Ana'); localStorage.setItem('beaterista-aluno-origem', 'tik tok live'); } catch { /* ok */ } });
 }
 await mocks(ctx);
 await page.goto(url + '/aluno.html#/album'); await page.waitForSelector('.al-lock', { timeout: 10000 });
 check('aba Álbum aparece embaixo', (await page.locator('nav a', { hasText: 'Álbum' }).count()) >= 1);
 check('sem código: trancado, sem figurinha à vista', (await page.locator('.fig-tabs, .lv').count()) === 0 && (await page.textContent('.al-lock')).includes('Álbum'));
-const digitar = async (p, codigo) => { await p.locator('.al-lock-have summary').click(); await p.fill('.al-lock-have input', codigo); await p.getByRole('button', { name: 'liberar' }).click(); };
+const digitar = async (p, codigo) => { await p.fill('.al-lock-have input', codigo); await p.getByRole('button', { name: 'liberar' }).click(); };
 await digitar(page, 'ZZZ-9999'); await sleep(900);
 check('código que não existe: avisa e continua trancado', (await page.textContent('.al-lock-msg')).includes('não achei') && (await page.locator('.fig-tabs').count()) === 0);
 await page.fill('.al-lock-have input', ' bea-0404 '); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });

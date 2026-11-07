@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
 const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 }); const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 160)));
-await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
+await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().match(/aluno_(codigo_ok|acesso)/) ? 'true' : '[]' }));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(`${url}/aluno.html#/ritmo`); await sleep(2500);
 const jogar = () => page.locator('.rz-jogar small').first().textContent();

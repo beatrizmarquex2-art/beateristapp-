@@ -4,7 +4,7 @@ import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false });
 const errs = []; let baixou = 0;
 async function abrir(c, valido, hash) {
-  await c.route('**/rest/v1/rpc/**', (r) => { const u = r.request().url(); if (u.includes('dicas_lista')) { baixou++; return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(Array.from({ length: 12 }, (_, i) => ({ n: i + 1, texto: `Dica ${i + 1}: estude devagar com o metrônomo e relaxe a pegada da baqueta.` }))) }); } r.fulfill({ status: 200, contentType: 'application/json', body: u.includes('aluno_codigo_ok') ? String(valido) : '[]' }); });
+  await c.route('**/rest/v1/rpc/**', (r) => { const u = r.request().url(); if (u.includes('dicas_lista')) { baixou++; return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(Array.from({ length: 12 }, (_, i) => ({ n: i + 1, texto: `Dica ${i + 1}: estude devagar com o metrônomo e relaxe a pegada da baqueta.` }))) }); } r.fulfill({ status: 200, contentType: 'application/json', body: u.match(/aluno_(codigo_ok|acesso)/) ? String(valido) : '[]' }); });
   const p = await c.newPage(); await p.setViewportSize({ width: 390, height: 844 }); p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
   await p.addInitScript((v) => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); if (v) localStorage.setItem('beaterista-aluno-codigo', 'ABC123'); } catch { /* ok */ } }, valido);
   await p.goto(`${url}/aluno.html${hash}`); await sleep(2200); return p;
