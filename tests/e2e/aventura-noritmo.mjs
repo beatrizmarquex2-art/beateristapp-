@@ -25,7 +25,7 @@ await ctx.addInitScript(() => { // relógio de áudio virtual (só liga quando w
     });
   } catch (e) { console.log('init', e); }
 });
-await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' })); // aluno com código (Beat Hero liberado)
+await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' })); // aluno com código (Beat Hero liberado)
 await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e))); page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|ERR_INTERNET|ERR_FAILED|Failed to load resource/.test(m.text())) errs.push(m.text()); });
@@ -130,7 +130,7 @@ check('sair não deixa som nem corpo travado', await page.evaluate(() => !docume
 check('sem erros de console', errs.length === 0, errs.slice(0, 3).join(' | '));
 // trava de acesso: aluno sem código não entra na aventura do ritmo (o ritmo todo é só com código)
 const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
-await ctx2.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
+await ctx2.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
 const p2 = await ctx2.newPage(); await p2.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste2'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
 await p2.goto(url + '/aluno.html#/ritmo/aventura/0'); await sleep(2500);
 check('sem código: a aventura do ritmo mostra a trava e não abre a missão', await p2.evaluate(() => !!document.querySelector('.al-lock') && !document.querySelector('.av-go') && !document.querySelector('.rz-mmenu')));

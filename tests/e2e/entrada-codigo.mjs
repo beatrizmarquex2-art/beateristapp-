@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true }); const valid = new Set(['BEA0404']);
-await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
 await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 await ctx.route('**/rest/v1/rpc/aluno_visit', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'null' }));
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -26,7 +26,7 @@ check('sem erros de JS', errs.length === 0, errs.join('|'));
 // "gerar meu código" na primeira tela: mostra o código e manda informar a professora; entra e fica trancado até ela cadastrar
 {
   const c2 = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
-  await c2.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+  await c2.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
   await c2.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   await c2.route('**/rest/v1/rpc/aluno_visit', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'null' }));
   const q = await c2.newPage(); const e2 = []; q.on('pageerror', (e) => e2.push(String(e)));

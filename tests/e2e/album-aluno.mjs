@@ -6,11 +6,11 @@ const banco = { BEA0404: { nome: 'Bea (professora)', estado: null } };
 const entradas = [], salvos = [];
 const norm = (c) => String(c).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
 async function mocks(c) {
-  await c.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => { const b = JSON.parse(r.request().postData() || '{}'); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!!banco[norm(b.p_code)]) }); });
+  await c.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => { const b = JSON.parse(r.request().postData() || '{}'); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!!banco[norm(b.p_code)]) }); });
   await c.route('**/rest/v1/rpc/fig_entrar', async (r) => { const b = JSON.parse(r.request().postData() || '{}'); entradas.push(b); const k = banco[norm(b.p_code)];
     await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(!k ? { ok: false, motivo: 'codigo' } : { ok: true, nome: k.nome, estado: k.estado }) }); });
   await c.route('**/rest/v1/rpc/fig_salvar', async (r) => { const b = JSON.parse(r.request().postData() || '{}'); salvos.push(b); if (banco[norm(b.p_code)]) banco[norm(b.p_code)].estado = b.p_estado; await r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }); });
-  await c.route('**/*.supabase.co/**', (r) => (/\/rpc\/(fig_|aluno_codigo_ok)/.test(r.request().url()) ? r.fallback() : r.abort()));
+  await c.route('**/*.supabase.co/**', (r) => (/\/rpc\/(fig_|aluno_codigo_ok|aluno_acesso)/.test(r.request().url()) ? r.fallback() : r.abort()));
   await c.addInitScript(() => { if (sessionStorage.getItem('ini')) return; sessionStorage.setItem('ini', '1'); try { localStorage.setItem('beaterista-aluno-nome', 'Ana'); localStorage.setItem('beaterista-aluno-origem', 'tik tok live'); } catch { /* ok */ } });
 }
 await mocks(ctx);

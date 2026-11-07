@@ -6,7 +6,7 @@ const { srv, url } = await serve(); const { browser } = await launch();
 const state = { valid: new Set(['ABC123']), listCalls: [] };
 async function phone(saved) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
-  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => { const c = r.request().postDataJSON().p_code; r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c)) }); });
+  await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => { const c = r.request().postDataJSON().p_code; r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c)) }); });
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => { const c = r.request().postDataJSON().p_code; state.listCalls.push(c); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.valid.has(c) ? [{ id: 'a1', name: 'Minha música MIDI', folder: 'Filmes', corte: null, b64 }] : []) }); });
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript((c) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', c); }, saved || '');

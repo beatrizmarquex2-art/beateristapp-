@@ -30,6 +30,7 @@ import * as perfil from './views/perfil.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
 import * as CONTAS from './contas.js';
+import { trocarAlunoProf } from './prof.js';
 import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
@@ -137,7 +138,7 @@ function lockView(view, what, pv) {
   };
   const enter = async () => {
     msg.textContent = 'conferindo…';
-    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = 'não achei esse código. confira com a sua professora.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = CODE.erroTexto(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
   };
   const box = h('section', { class: 'card pad al-lock' });
   const draw = () => {
@@ -184,7 +185,7 @@ function dicasEstudoView(view) {
 function lojinhaView(view) {
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
-  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = CODE.erroTexto(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
   // enquanto a lojinha não abre: a aluna ainda pode pedir um código pra professora Bea cadastrar (aparece nas telas trancadas e no Perfil)
   const pedido = h('div', { class: 'al-pedido' });
@@ -226,6 +227,7 @@ function tocarView(view) {
 
 /** Trocar de aluno no mesmo aparelho: voltar a uma conta já conectada, conectar outro código ou entrar com outro nome. */
 function trocarAluno() {
+  if (CODE.ehProf()) { trocarAlunoProf(); return; } // professora logada: busca pelo nome na turma dela
   CONTAS.guardarAtual(); const atual = CONTAS.atual();
   sheet('trocar de aluno', (close) => {
     const err = h('p', { class: 'muted', role: 'status' });
@@ -238,7 +240,7 @@ function trocarAluno() {
       if (!n) { err.textContent = 'escreva o nome do aluno.'; return; } if (c.length < 4) { err.textContent = 'escreva o código.'; return; }
       b.disabled = true; err.textContent = 'conferindo…';
       try {
-        if (!(await CODE.verificar(c))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; }
+        if (!(await CODE.verificar(c))) { err.textContent = CODE.erroTexto(); return; }
         CONTAS.ativar({ nome: n, code: c }); try { await ALBUMACESSO.entrar(c); } catch { /* o álbum confere de novo na próxima vez */ }
         CONTAS.guardarConta({ nome: n, code: c }); toast(`${n} conectado`); close(); location.reload();
       } catch { err.textContent = 'sem internet agora. tente de novo.'; } finally { b.disabled = false; }
@@ -325,7 +327,7 @@ function askName() {
       if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
         if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
         err.textContent = 'conferindo o código…';
-        try { if (!(await CODE.entrar(cod.value))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+        try { if (!(await CODE.entrar(cod.value))) { err.textContent = CODE.erroTexto(); return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
       }
       err.textContent = '';
     }

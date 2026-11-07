@@ -4,7 +4,7 @@ const { srv, url } = await serve();
 const { browser, ctx } = await launch();
 const page = await ctx.newPage();
 const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
-await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/paulta'); await page.waitForSelector('.kx-cards .kx-g');
 const r = await page.evaluate(async () => {
@@ -19,6 +19,6 @@ check('outro jogo tem o seu próprio limite', r.o === 1);
 check('as estrelas entram no total da roleta', r.delta === 31 && r.total === 31, JSON.stringify(r));
 await page.goto(url + '/aluno.html#/paulta'); await sleep(400);
 await page.evaluate(() => { localStorage.removeItem('beaterista-aluno-codigo'); });
-await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (x) => x.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
+await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (x) => x.fulfill({ status: 200, contentType: 'application/json', body: 'false' }));
 check('sem erros de script', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

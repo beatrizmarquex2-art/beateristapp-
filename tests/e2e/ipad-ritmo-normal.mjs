@@ -4,7 +4,7 @@ import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch();
 for (const [nome, w, h] of [['iPad deitado', 1112, 834], ['iPad em pé', 834, 1112], ['iPhone', 390, 844]]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, hasTouch: true, isMobile: true, serviceWorkers: 'block' });
-  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+  await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   await ctx.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
   const p = await ctx.newPage(); await p.goto(url + '/aluno.html#/ritmo'); await sleep(2500);

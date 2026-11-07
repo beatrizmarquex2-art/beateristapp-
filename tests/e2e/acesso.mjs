@@ -3,9 +3,9 @@ import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch(); const valid = new Set();
 async function phone(codigo, pend) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
-  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+  await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
-  await ctx.route('**/rest/v1/rpc/**', (r) => (r.request().url().match(/aluno_codigo_ok|midis_publicos_lista/) ? r.fallback() : r.fulfill({ status: 200, contentType: 'application/json', body: '[]' })));
+  await ctx.route('**/rest/v1/rpc/**', (r) => (r.request().url().match(/aluno_codigo_ok|aluno_acesso|midis_publicos_lista/) ? r.fallback() : r.fulfill({ status: 200, contentType: 'application/json', body: '[]' })));
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript(([c, pd]) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', c); if (pd) localStorage.setItem('beaterista-aluno-codigo-pendente', pd); }, [codigo || '', pend || '']);
   return { ctx, p, errs };
@@ -67,7 +67,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   let chamadas = [];
   const mk = async (codigo) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
-    await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+    await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
     await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await ctx.route('**/rest/v1/rpc/dicas_lista', (r) => { const c = r.request().postDataJSON().p_code; chamadas.push(c); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(c) ? tips : []) }); });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));

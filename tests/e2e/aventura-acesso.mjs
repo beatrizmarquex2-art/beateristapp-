@@ -3,7 +3,7 @@ import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch({ codigo: false });
 async function phone(codigo) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
-  await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: codigo ? 'true' : 'false' }));
+  await ctx.route('**/rest/v1/rpc/{aluno_codigo_ok,aluno_acesso}', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: codigo ? 'true' : 'false' }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   const p = await ctx.newPage(); await p.addInitScript((c) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); }, codigo);
   return { ctx, p };
