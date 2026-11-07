@@ -31,7 +31,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await p.locator('button:has-text("pedir o código pra professora")').click(); await sleep(300); await go(p, '#/ranking');
   const code = (await p.locator('.al-lock-code').textContent()).trim();
   check('gerou um código de 6 e mandou informar a professora Bea', /^[A-Z0-9]{6}$/.test(code) && (await p.locator('.al-lock-t').textContent()).includes('informe a professora Bea'), code);
-  check('o mesmo código aparece de novo em outra tela trancada', (async () => { await go(p, '#/album'); return (await p.locator('.al-lock-code').textContent()).trim() === code; })() instanceof Promise);
+  await go(p, '#/album'); check('o mesmo código aparece de novo em outra tela trancada', (await p.locator('.al-lock-code').textContent()).trim() === code);
   await p.locator('button:has-text("já liberou")').click(); await sleep(700);
   check('ainda não cadastrado: continua trancado e avisa', (await trancada(p)) === 1 && (await p.locator('.al-lock-msg').textContent()).includes('ainda não liberou'));
   valid.add(code); // a professora cadastra o código no app dela

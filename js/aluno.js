@@ -145,9 +145,10 @@ function lockView(view, what, pv) {
     const pend = CODE.pendente();
     box.replaceChildren(h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🔒'), h('h2', { class: 'hand' }, `${what} é pra alunos da Beaterista`),
       h('p', { class: 'muted' }, 'sem código você joga o modo livre dos jogos e usa a aba Tocar.'),
+      h('details', { class: 'al-lock-have', open: true }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))),
       ...(pend ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code', role: 'status', 'aria-label': `seu código ${pend.split('').join(' ')}` }, pend), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'quando ela cadastrar o seu código, isto libera sozinho.'), h('button', { class: 'btn', type: 'button', onclick: () => check(false) }, 'já liberou? conferir')]
         : [h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'gerar meu código')]),
-      msg, h('details', { class: 'al-lock-have' }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))));
+      msg);
   };
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });

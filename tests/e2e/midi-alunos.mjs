@@ -17,7 +17,6 @@ async function phone(saved) {
   const { p, errs, ctx } = await phone('');
   check('sem código: o ritmo pede o código na hora (sem JOGAR)', (await p.locator('.al-lock').count()) === 1 && (await p.locator('.rz-jogar').count()) === 0);
   check('nenhuma lista de MIDI foi baixada sem código', state.listCalls.length === 0, JSON.stringify(state.listCalls));
-  await p.locator('.al-lock-have summary').click();
   await p.locator('.al-lock-have input').fill('ZZZ999'); await p.locator('.al-lock-have button').click(); await sleep(700);
   check('código errado: avisa e continua trancado', (await p.locator('.al-lock-msg').textContent()).includes('não achei') && (await p.locator('.al-lock').count()) === 1);
   await p.locator('.al-lock-have input').fill('abc 123'); await p.locator('.al-lock-have button').click(); await sleep(2500);

@@ -28,7 +28,7 @@ check('65 ★ = 2 roletas, e repetir não dá de novo', r.r1 === 2 && r.r2 === 0
 check('95 ★ = mais 1 roleta (a cada 30)', r.r3 === 1 && r.falta === 25, JSON.stringify(r));
 check('jogo completo dá o prêmio uma vez só; outro jogo incompleto não dá', r.j1 === 1 && r.j2 === 0 && r.j3 === 0, JSON.stringify(r));
 check('roletas e prêmio somam à lista de pacotes pra abrir', r.depois === r.antes + 4, JSON.stringify(r));
-await page.locator('.al-lock-have summary').click(); await page.fill('.al-lock-have input', 'bea-0404'); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
+await page.fill('.al-lock-have input', 'bea-0404'); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
 check('com o código, a aba Pacotes mostra os pacotes ganhos', /[3-9]/.test(await page.locator('.fig-tabs [role=tab]').last().textContent()), await page.locator('.fig-tabs [role=tab]').last().textContent());
 await page.getByRole('tab', { name: /pacotes/ }).click(); await sleep(300);
 check('a aba mostra roletas e prêmio', (await page.textContent('.fig-pack-card')).includes('roleta') && (await page.textContent('.fig-pack-card')).includes('prêmio'), await page.textContent('.fig-pack-card'));

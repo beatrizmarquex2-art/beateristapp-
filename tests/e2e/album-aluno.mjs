@@ -17,7 +17,7 @@ await mocks(ctx);
 await page.goto(url + '/aluno.html#/album'); await page.waitForSelector('.al-lock', { timeout: 10000 });
 check('aba Álbum aparece embaixo', (await page.locator('nav a', { hasText: 'Álbum' }).count()) >= 1);
 check('sem código: trancado, sem figurinha à vista', (await page.locator('.fig-tabs, .lv').count()) === 0 && (await page.textContent('.al-lock')).includes('Álbum'));
-const digitar = async (p, codigo) => { await p.locator('.al-lock-have summary').click(); await p.fill('.al-lock-have input', codigo); await p.getByRole('button', { name: 'liberar' }).click(); };
+const digitar = async (p, codigo) => { await p.fill('.al-lock-have input', codigo); await p.getByRole('button', { name: 'liberar' }).click(); };
 await digitar(page, 'ZZZ-9999'); await sleep(900);
 check('código que não existe: avisa e continua trancado', (await page.textContent('.al-lock-msg')).includes('não achei') && (await page.locator('.fig-tabs').count()) === 0);
 await page.fill('.al-lock-have input', ' bea-0404 '); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
