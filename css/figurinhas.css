@@ -236,3 +236,15 @@
 .lj-dbot { padding: 10px 14px 14px; border-top: 1px solid #14284b33; }
 
 .lj-btn.breve { background: #c9bfa8; color: #5b5240; box-shadow: none; cursor: default; }
+
+/* depoimentos e alunos tocando (Lojinha) */
+.lj-abas { flex-wrap: wrap; padding-bottom: 6px; }
+.pv { display: grid; gap: 12px; padding-bottom: 24px; } .pv-h { font: 900 20px Georgia, serif; color: #14284b; margin: 6px 0 0; text-align: center; } .pv-s { text-align: center; color: #555; margin: 0; font-size: 14px; }
+.pv-baloes { display: grid; gap: 12px; } .pv-bal { margin: 0; padding: 14px 16px; border-radius: 18px 18px 18px 4px; border: 2px solid #14284b; box-shadow: 3px 3px 0 #14284b; }
+.pv-bal.c0 { background: #fff3c4; } .pv-bal.c1 { background: #ffe0e0; } .pv-bal.c2 { background: #dff1ff; }
+.pv-bal blockquote { margin: 0; font-size: 15px; line-height: 1.35; color: #17130f; } .pv-bal figcaption { margin-top: 8px; font-size: 12px; font-weight: 800; color: #9a1226; }
+.pv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .pv-vid { position: relative; border: 2px solid #14284b; border-radius: 14px; overflow: hidden; padding: 0; background: #000; cursor: pointer; aspect-ratio: 9 / 16; }
+.pv-vid img { width: 100%; height: 100%; object-fit: cover; display: block; } .pv-vid i { position: absolute; inset: 0; margin: auto; width: 52px; height: 52px; border-radius: 50%; background: #fffc; color: #9a1226; font-style: normal; display: grid; place-items: center; font-size: 22px; padding-left: 4px; }
+.pv-vid small { position: absolute; left: 0; right: 0; bottom: 0; background: #000a; color: #fff; font-size: 12px; padding: 4px 6px; }
+.pv-dlg { border: 0; padding: 0; background: #000; border-radius: 14px; max-height: 92vh; width: min(92vw, 420px); overflow: hidden; } .pv-dlg video { width: 100%; max-height: 92vh; display: block; } .pv-dlg::backdrop { background: #000c; }
+.pv-x { position: absolute; right: 8px; top: 8px; z-index: 2; }
