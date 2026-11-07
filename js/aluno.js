@@ -129,7 +129,7 @@ function rankingView(view) {
 function lockView(view, what, pv) {
   let timer = 0; let gone = false;
   const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
-  const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
+  const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'seu código', 'aria-label': 'Código de acesso' });
   const done = () => { AC.definir(true); go(); };
   const check = async (quiet) => {
     if (!CODE.pendente()) return;
