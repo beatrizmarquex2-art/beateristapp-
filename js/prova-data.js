@@ -8,7 +8,8 @@ export const DEPOIMENTOS = [
   { txt: 'era um sonho que eu tenho desde criança, mas não tinha condições de comprar uma bateria nem de fazer um curso. mas hoje eu estou realizando esse sonho', de: 'aluna do Bateria Start' },
   { txt: 'eu amo demais tocar. e com o teu curso junto tenho certeza que ficarei mais confiante', de: 'aluna do Bateria Start' },
 ];
-export const DEPOIMENTOS_VIDEO = [1, 2, 3, 4].map((n) => ({ n, titulo: 'aluna do treinamento' }));
-export const TOCANDO = [5, 6, 7, 8, 9, 10, 11, 12].map((n) => ({ n, titulo: '' }));
+const L = (ns, nomes) => ns.map((n, i) => ({ n, titulo: nomes[i] }));
+export const DEPOIMENTOS_VIDEO = L([2, 3, 4, 1], ['aluna', 'aluna', 'aluna', 'conversas']);
+export const TOCANDO = L([5, 6, 7, 8, 9, 10, 11, 12], ['viradas', 'aluna', 'tropeçando', 'Love Story', 'inspiração', 'dueto', 'tutorial', 'treino em casa']);
 export const vid = (n) => `assets/alunos/v${String(n).padStart(2, '0')}.mp4`;
 export const capa = (n) => `assets/alunos/p${String(n).padStart(2, '0')}.webp`;
