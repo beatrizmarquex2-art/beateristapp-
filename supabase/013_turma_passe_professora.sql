@@ -130,6 +130,8 @@ $$;
 revoke all on function public.passe_criar(text, text, int), public.passe_desativar(text) from public, anon, authenticated;
 grant execute on function public.passe_criar(text, text, int), public.passe_desativar(text) to service_role;
 
--- o código antigo da professora (BEA0404, público nos arquivos do projeto) sai do ar
-update public.alunos_codigos set ativo = false where code = 'BEA0404';
-update public.album_codigos set liberado = false where code = 'BEA-0404';
+-- Códigos pessoais da Bea (tipo turma: abrem tudo, sem limite de aparelhos e sem validade; entram no ranking com o nome dela).
+-- Não são o código "professora": esses dois aparecem em arquivos públicos/conversas, então NÃO listam a turma nem têm poderes de professora.
+insert into public.alunos_codigos(code, nome, tipo, ativo, expira_em) values ('BEA0404', 'Bea', 'turma', true, null), ('BELE1212', 'Bele', 'turma', true, null)
+  on conflict (code) do update set ativo = true, tipo = 'turma', expira_em = null;
+update public.album_codigos set liberado = true where code = 'BEA-0404';
