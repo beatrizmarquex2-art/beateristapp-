@@ -9,6 +9,6 @@ export const PRODUTOS = [
   { id: 'bateria-kids', nome: 'Bateria Kids', desc: 'aprenda bateria brincando e colorindo', tag: '36 páginas', img: 'assets/loja/bateria-kids.webp', fotos: ['assets/loja/d-bateria-kids.webp'], link: '' },
   { id: 'roboterista', nome: 'Robôterista Ensina', desc: 'figuras rítmicas, pausas e tempo: imprimir, desenhar, recortar e tocar', tag: '48 páginas', img: 'assets/loja/roboterista.webp', fotos: ['assets/loja/d-roboterista-1.webp', 'assets/loja/d-roboterista-2.webp', 'assets/loja/d-roboterista-3.webp'], link: '' },
   { id: 'violao', nome: 'Violão do Zero', desc: 'da primeira corda à primeira música', tag: '47 páginas', img: 'assets/loja/violao.webp', fotos: ['assets/loja/d-violao.webp'], link: '' },
-  { id: 'mood', nome: 'Beaterista Mood', desc: 'o método de estudo pessoal da professora (com cronograma semanal)', tag: '33 páginas', img: 'assets/loja/mood.webp', fotos: ['assets/loja/d-mood.webp'], link: '' },
+  { id: 'mood', nome: 'Beaterista Mood', desc: 'exercícios que eu estudo, ensino e levo pro palco', tag: '55 páginas', preco: 'R$ 29,90', img: 'assets/loja/mood.webp', fotos: ['assets/loja/d-mood.webp'], link: '' },
   { id: 'start', nome: 'Bateria Start', desc: 'curso em videoaulas + ebook, pra começar do zero', preco: 'R$ 79,90', tag: 'curso + ebook', img: 'assets/loja/curso-start.webp', fotos: ['assets/loja/d-curso-sequencia.webp', 'assets/loja/d-curso-vertical.webp', 'assets/loja/d-bateria-start.webp'], link: '' },
 ];
