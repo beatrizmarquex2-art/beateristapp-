@@ -130,8 +130,16 @@ $$;
 revoke all on function public.passe_criar(text, text, int), public.passe_desativar(text) from public, anon, authenticated;
 grant execute on function public.passe_criar(text, text, int), public.passe_desativar(text) to service_role;
 
--- Códigos pessoais da Bea (tipo turma: abrem tudo, sem limite de aparelhos e sem validade; entram no ranking com o nome dela).
--- Não são o código "professora": esses dois aparecem em arquivos públicos/conversas, então NÃO listam a turma nem têm poderes de professora.
-insert into public.alunos_codigos(code, nome, tipo, ativo, expira_em) values ('BEA0404', 'Bea', 'turma', true, null), ('BELE1212', 'Bele', 'turma', true, null)
-  on conflict (code) do update set ativo = true, tipo = 'turma', expira_em = null;
-update public.album_codigos set liberado = true where code = 'BEA-0404';
+-- Turma da Bea (tipo turma: abre tudo, sem limite de aparelhos e sem validade). Aparecem na busca "trocar aluno" só com o código secreto da professora.
+-- Beatriz Marques e Leticia Oliveira são as contas pessoais; BEA0404 e BELE1212 saem (BEA0404 estava em arquivos públicos).
+delete from public.alunos_codigos where code in ('BEA0404', 'BELE1212');
+update public.album_codigos set liberado = false where code = 'BEA-0404';
+insert into public.alunos_codigos(code, nome, tipo, ativo, expira_em) values
+  ('BEA0204', 'Beatriz Marques', 'turma', true, null),
+  ('BEA1204', 'Leticia Oliveira', 'turma', true, null),
+  ('BEA0504', 'Isabella M', 'turma', true, null),
+  ('BEA2103', 'Gislaine M', 'turma', true, null),
+  ('BEA2706', 'Eliel de C', 'turma', true, null),
+  ('BEA1704', 'Lenira', 'turma', true, null),
+  ('BEA1610', 'Kalebe', 'turma', true, null)
+  on conflict (code) do update set nome = excluded.nome, ativo = true, tipo = 'turma', expira_em = null;
