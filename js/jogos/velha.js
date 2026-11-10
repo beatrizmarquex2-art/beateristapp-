@@ -5,7 +5,7 @@ import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
 import { LEVELS } from './velha-data.js';
-import { lobby, linkBadge } from './online.js';
+import { lobby, linkBadge, salaAutoPara } from './online.js';
 const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'velha';
@@ -26,6 +26,7 @@ export function mount(host, opts) {
   let gone = false; let timer = 0;
   const saved = mission ? {} : getGame(ID);
   const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : (saved.mode === 'facil' || saved.mode === 'estrategico') ? 'paul' : 'local', variant: 'desafio', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
+  if (!mission && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
   let g = null; let msg = ''; let fb = null; let mv = null; // mv: null | { from: null | número } = escolhendo a troca de lugar
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);

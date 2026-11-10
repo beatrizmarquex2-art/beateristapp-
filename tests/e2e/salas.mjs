@@ -1,5 +1,5 @@
 // 2 celulares: Uno Musical, jogo da velha e stop em sala com código. O Supabase é simulado na memória (as 4 funções sala_*).
-import { serve, launch, sleep, check, done } from './harness.mjs';
+import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve();
 const { browser } = await launch();
 const salas = new Map();
@@ -14,16 +14,16 @@ const mock = async (route) => {
   return route.continue();
 };
 async function phone() {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); await ctx.route('**/rest/v1/rpc/sala_*', mock);
+  const ctx = await context(browser, { viewport: { width: 390, height: 800 } }); await ctx.route('**/rest/v1/rpc/sala_*', mock);
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); }); p.errs = errs; return p;
 }
 async function pair(game) {
   const a = await phone(); const b = await phone();
-  for (const p of [a, b]) { await p.goto(`${url}/aluno.html#/jogos/${game}/livre`); await sleep(900); if (await p.locator('button:has-text("JOGAR")').count()) { await p.locator('button:has-text("JOGAR")').click(); await sleep(300); } await p.locator('button:has-text("2 celulares")').first().click(); await sleep(200); }
+  for (const p of [a, b]) { await p.goto(`${url}/aluno.html#/jogos/${game}/livre`); await sleep(900); if (await p.locator('button:has-text("JOGAR")').count()) { await p.locator('button:has-text("JOGAR")').click(); await sleep(300); } await p.locator('button:has-text("2 celulares"), button[aria-label*="2 celulares"]').first().click(); await sleep(200); }
   await a.locator('button:has-text("criar sala")').click(); await sleep(400);
   const code = (await a.locator('.jg-code').textContent()).trim();
-  await b.locator('.jg-code-in').fill(code); await b.locator('button:has-text("entrar")').click(); await sleep(2500);
+  await b.locator('.jg-code-in').fill(code); await sleep(2800); /* entra sozinho ao completar os 5 caracteres */
   return [a, b, code];
 }
 // --- uno
