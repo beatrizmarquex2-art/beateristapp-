@@ -1,0 +1,18 @@
+/* Jogo da memória em 2 celulares (js/kids/memoria-sala.js). Sem cores novas: azul e vinho do app, verde dos pares. */
+.ms-vez { margin: 4px 0 2px; text-align: center; font: 800 30px/1.1 var(--body, system-ui); color: #14284b; text-transform: lowercase; }
+.ms-vez.mine { color: #a31d30; }
+.ms-vez.mine::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; background: #a31d30; vertical-align: 3px; }
+.ms-vez.fim { font-size: 28px; }
+.ms-placar { margin: 0 0 6px; text-align: center; font: 700 16px var(--body, system-ui); color: #1b1818; }
+.ms-aviso { margin: 6px 0 0; min-height: 18px; text-align: center; font-size: 13px; }
+.ms-mesa { position: relative; }
+.ms-board .kx-mem.ms-eu .kx-mem-front { box-shadow: inset 0 0 0 3px #14284b; }
+.ms-board .kx-mem.ms-outro .kx-mem-front { box-shadow: inset 0 0 0 3px #a31d30; }
+.ms-mesa.paused .ms-board { visibility: hidden; }
+.ms-veu { display: none; }
+.ms-mesa.paused .ms-veu { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; background: #f3eee4; border: 3px solid #1b1818; border-radius: 12px; font: 800 24px var(--body, system-ui); text-transform: lowercase; }
+.ms-fim { margin-top: 10px; }
+.ms-fim .kx-act { justify-content: center; gap: 8px; }
+.ms-bloq { margin: 14px 0; padding: 14px; text-align: center; border: 3px dashed #14284b; border-radius: 12px; }
+.ms-bloq b { display: block; font: 800 16px var(--body, system-ui); }
+.ms-lobby { margin-top: 8px; }
