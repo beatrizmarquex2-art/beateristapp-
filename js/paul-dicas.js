@@ -4,9 +4,13 @@ import { h } from './util.js';
 import { chirp } from './paul-talk.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer', SITE = 'https://beaterista.com.br';
+// vídeo novo do canal: aparece SEMPRE como primeira carta e volta no sorteio. Pra trocar, mude só id e título.
+export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok Brasil' };
+export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
+  ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
   // frases musicais e curiosidades
   ['curiosidade', 'a pausa também é música: o silêncio entre as notas dá o balanço do groove.', 'n-amp'],
   ['curiosidade', 'o bumbo marca o chão, a caixa marca o meio e o chimbal é o relógio do groove.', 'n-stick'],
@@ -62,6 +66,6 @@ export function paulDica() {
       href ? h('a', { class: 'pd-btn go', href, target: '_blank', rel: 'noopener noreferrer' }, rot || 'abrir') : null);
   };
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
-  mostrar(sortear());
+  mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo
   return h('section', { class: 'pd', 'aria-label': 'o Paul conta' }, img, h('div', {}, tag, text, row));
 }

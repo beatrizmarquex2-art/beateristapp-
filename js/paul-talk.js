@@ -9,6 +9,7 @@ export const GOOGLE_REVIEW = 'https://g.page/r/CS34GVfs3jjqEAE/review';
 export const THOUGHTS = [
   ['já estudou hoje?'],
   ['siga a Bea nas redes!', IG],
+  ['vídeo novo no canal! corre pra assistir 🎬', 'https://www.youtube.com/watch?v=UvdaoUHo3XU'],
   ['veja os vídeos do canal!', YT],
   ['seja aluno online da Bea!', 'https://beaterista.com.br'],
   ['já tem o seu uniforme?'],
