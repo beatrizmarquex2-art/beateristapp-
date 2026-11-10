@@ -714,3 +714,5 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .top .ws{min-width:0;flex:1 1 0}.top .ws span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top .btn.small{padding:6px 9px;font-size:13px;white-space:nowrap}
 .jg-sala-atalho .jg-msg:empty{display:none}
+
+.al-ver{display:flex;align-items:center;gap:8px;font-size:14px;min-height:32px}.al-ver input{width:20px;height:20px}.al-guardar{display:grid;gap:10px}.al-guardar .btn{min-height:48px}

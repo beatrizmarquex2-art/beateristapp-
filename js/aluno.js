@@ -14,6 +14,7 @@ import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
+import * as SALVAR from './salvar-codigo.js';
 import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
 import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
 import { AULAS, montarAula } from './kids/aulas-paul.js';
@@ -349,6 +350,7 @@ function shell(name) {
   const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
   const tenhoCodigo = h('button', { type: 'button', class: 'btn small al-tenho', onclick: abrirCodigo, hidden: AC.liberado(), 'aria-label': 'tenho código de acesso' }, '🔑 código');
   document.addEventListener('aluno-acesso', (ev) => { tenhoCodigo.hidden = !!(ev.detail); });
+  if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
@@ -401,21 +403,22 @@ function shell(name) {
 }
 
 function askName() {
-  const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
+  const input = h('input', { class: 'field', type: 'text', name: 'username', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
   const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.filter(([v]) => v !== 'codigo').map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
-  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
+  const cod = h('input', { class: 'field al-cod', type: 'password', name: 'password', maxlength: 14, autocomplete: 'current-password', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' }); // tipo senha: o aparelho oferece guardar e preencher o código
+  const ver = h('label', { class: 'al-ver' }, h('input', { type: 'checkbox', onchange: (e) => { cod.type = e.target.checked ? 'text' : 'password'; } }), ' mostrar o código');
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
   const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
-  const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, gen, pedido);
+  const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, ver, gen, pedido);
   const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
   cod.addEventListener('input', () => { sel.required = !temCodigoDigitado(); });
-  function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  function drawPedido() { const c = CODE.pendente(); sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
   sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
-  const form = h('form', { class: 'login-card', onsubmit: async (e) => {
+  const form = h('form', { class: 'login-card', noValidate: true, onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
     const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : sel.value; // digitou o código? já vale, sem precisar escolher a opção
@@ -430,7 +433,7 @@ function askName() {
     }
     const o = modo === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : modo;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
-    logVisit(n);
+    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) SALVAR.agendar();
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } },
