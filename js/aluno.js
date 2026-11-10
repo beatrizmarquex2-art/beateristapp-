@@ -13,6 +13,10 @@ import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
+import * as META from './estudos-meta.js';
+import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
+import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
+import { AULAS, montarAula } from './kids/aulas-paul.js';
 const TERMS_QTD = TERMS.length;
 import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
@@ -161,13 +165,14 @@ const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbu
 
 /** Conteúdo de cada item da aba Estudos: o que tem dentro (a prévia que aparece antes de abrir) e o que desenvolve. */
 const ESTUDOS = {
-  aulinha: { href: '#/kids/figuras/aula', titulo: 'Aulinha do Paul', sub: 'as figuras rítmicas, passo a passo', dentro: ['9 passos curtinhos, cada um com uma fala do Paul e algo pra mexer ou ouvir', 'a semínima como medida, a escadinha das figuras e as pausas', 'montar o desenho da nota e as variações da semicolcheia', 'tercina e sextina, no fim'], dev: 'ler e contar o tempo da música', tempo: '10 min', amostra: () => `${GRATIS.aulinha} passos` },
+  aulas: { href: '#/estudos/aulas', titulo: 'Aulas do Paul', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
+  curiosidades: { href: '#/estudos/curiosidades', titulo: 'Curiosidades de músicos', sub: 'histórias de quem tocou antes de você', dentro: ['bateristas, pianistas, guitarristas e compositores', 'uma curiosidade por vez, com “outra” pra seguir', 'conta pra meta do dia'], dev: 'repertório e inspiração', tempo: '1 min', aberto: true },
   dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
   dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Quiz e Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
   erros: { href: '#/erros', titulo: '5 erros', sub: 'material em PDF da professora Bea', dentro: ['PDF pra ler e baixar', 'os 5 erros mais comuns de quem está começando e como evitar cada um'], dev: 'evitar vícios desde o começo', tempo: '5 min', aberto: true },
   ensinam: { href: '#/jogos/relatorio', titulo: 'Jogos Ensinam', sub: 'o que cada jogo desenvolve, aberto pra pais e responsáveis', dentro: ['uma folha por jogo: o que a criança faz e o que desenvolve', 'serve pra mostrar pra família por que brincar também é estudar'], dev: 'entender o que cada jogo treina', tempo: '5 min', aberto: true },
 };
-const TRILHA = ['aulinha', 'dicionario', 'dicas', 'erros', 'ensinam'];
+const TRILHA = ['aulas', 'curiosidades', 'dicionario', 'dicas', 'erros', 'ensinam'];
 const VISTOS = 'beaterista-estudos-vistos';
 const vistos = () => { try { return JSON.parse(localStorage.getItem(VISTOS) || '[]'); } catch { return []; } };
 const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) localStorage.setItem(VISTOS, JSON.stringify([...v, id])); } catch { /* sem armazenamento: só não lembra */ } };
@@ -192,10 +197,47 @@ function estudosView(view) {
   const passo = prox ? h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'seu próximo passo'), h('p', { class: 'es-frase' }, v.length ? `bora seguir: ${prox.titulo}` : `comece por aqui: ${prox.titulo}`),
     h('a', { class: 'btn primary wide', href: prox.href, onclick: () => marcarVisto(proximo) }, `abrir · ${prox.tempo}`))
     : h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'tudo visto!'), h('p', { class: 'es-frase' }, 'agora é praticar: abra a aba Jogos e ganhe estrelas'), h('a', { class: 'btn primary wide', href: '#/jogos' }, 'ir pros jogos'));
+  // meta do dia: 3 coisinhas (dica musical, passo de aula, curiosidade) com barra e sequência
+  META.marcar('dica'); // ver a dica do dia já conta
+  const mt = META.ler(); const seq = META.sequencia(mt);
+  const meta = h('section', { class: 'card pad es-meta-dia', 'aria-label': 'Meta de hoje' },
+    h('div', { class: 'es-meta-top' }, h('b', {}, META.cumprida(mt) ? 'meta de hoje cumprida! 🎉' : 'meta de hoje'), h('small', {}, seq ? `🔥 ${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos` : 'comece a sua sequência')),
+    h('div', { class: 'es-barra', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': META.METAS.length, 'aria-valuenow': mt.feitas.length }, h('i', { style: `width:${(mt.feitas.length / META.METAS.length) * 100}%` })),
+    h('ul', { class: 'es-metas' }, ...META.METAS.map(([k, t]) => h('li', { class: mt.feitas.includes(k) ? 'ok' : '' }, mt.feitas.includes(k) ? '✓ ' : '○ ', t))));
+  // dica musical do dia (aberta pra todo mundo; "outra" mostra a próxima)
+  let di = dicaDeHoje(); const dTag = h('p', { class: 'es-tag' }); const dTxt = h('p', { class: 'es-dica' });
+  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica musical do dia · ${tema}`; dTxt.textContent = txt; };
+  desenhaDica();
+  const dica = h('section', { class: 'card pad es-dica-box' }, dTag, dTxt, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { di++; desenhaDica(); } }, 'outra dica'));
   view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'),
-    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, passo,
-      h('h3', { class: 'es-sec' }, 'aprender'), cartao('aulinha', proximo === 'aulinha'), cartao('dicionario', proximo === 'dicionario'), cartao('dicas', proximo === 'dicas'),
+    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, meta, dica, passo,
+      h('h3', { class: 'es-sec' }, 'aprender'), cartao('aulas', proximo === 'aulas'), cartao('curiosidades', proximo === 'curiosidades'), cartao('dicionario', proximo === 'dicionario'), cartao('dicas', proximo === 'dicas'),
       h('h3', { class: 'es-sec' }, 'conhecer o método'), cartao('erros', proximo === 'erros'), cartao('ensinam', proximo === 'ensinam')));
+}
+
+/** Aulas do Paul: lista das 4 aulas (as 3 novas e a das figuras rítmicas). */
+function aulasView(view) {
+  const lk = (href, t, sub, tempo) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, t, !AC.liberado() ? h('small', { class: 'al-am' }, ` · grátis: ${GRATIS.aulinha} passos`) : null), h('p', { class: 'muted' }, `${sub} · ${tempo}`));
+  view.append(banner('Aulas do Paul', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+    ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo)),
+    lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min')));
+}
+function aulaView(view, id) {
+  if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
+  view.append(banner(`Aula de ${AULAS[id].titulo.toLowerCase()}`, 'com o Paul'), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ aulas')));
+  const box = h('div', { class: 'pad-x' }); view.append(box);
+  return montarAula(box, id, { onPasso: () => { META.marcar('aula'); marcarVisto('aulas'); } });
+}
+
+/** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
+function curiosidadesView(view) {
+  let i = curiosidadeDeHoje();
+  const nome = h('h2', { class: 'tag' }); const inst = h('p', { class: 'es-tag' }); const txt = h('p', { class: 'es-dica' }); const pos = h('small', { class: 'muted' });
+  const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; META.marcar('curiosidade'); marcarVisto('curiosidades'); };
+  view.append(banner('Curiosidades de músicos', 'quem tocou antes de você'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+    h('article', { class: 'card pad es-cur' }, inst, nome, txt, pos),
+    h('div', { class: 'row', style: 'gap:8px' }, h('button', { type: 'button', class: 'btn', onclick: () => { i--; draw(); } }, '‹ anterior'), h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => { i++; draw(); } }, 'outra curiosidade ›'))));
+  draw();
 }
 
 /** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Quiz e Letras. */
@@ -326,6 +368,8 @@ function shell(name) {
     else if (r.name === 'roleta') c = roleta.mount(view);
     else if (r.name === 'tocar') tocarView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
     else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
