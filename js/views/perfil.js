@@ -2,6 +2,7 @@
 // escreve o nome, arrasta/dá zoom pra enquadrar e baixa pra postar. A foto fica SÓ neste aparelho (nada sobe pra servidor).
 import { h, icon } from '../util.js';
 import { banner, toast } from '../ui.js';
+import { paulDica } from '../paul-dicas.js';
 import { criador } from '../figurinhas/criador.js';
 import * as Minhas from '../figurinhas/minhas.js';
 import * as CODE from '../codigo.js';
@@ -30,7 +31,7 @@ export function mount(host) {
   const salvarCfg = () => lsSet(CFG, JSON.stringify(cfg));
   const nomeAtual = () => (cfg.nome || ls(NOME_ALUNO) || '').trim();
   const body = h('div', { class: 'pad-x', style: 'display:grid;gap:14px' });
-  host.append(banner('Perfil', 'seu nome e a sua figurinha'), body);
+  host.append(banner('Perfil', 'seu nome e a sua figurinha'), paulDica(), body);
 
   const avatar = h('div', { class: 'pf-avatar', 'aria-label': 'Sua foto' });
   const nome = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'off', 'aria-label': 'Seu nome na figurinha', placeholder: 'seu nome', value: nomeAtual(), oninput: (ev) => { cfg.nome = ev.target.value; salvarCfg(); cri && cri.refresh(); } });

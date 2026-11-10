@@ -1,6 +1,7 @@
 // Jogos musicais: catálogo (3 por fileira) e cada jogo dentro da mesma moldura (voltar, som, nova partida).
 import { h } from '../util.js';
 import { banner, toast, confirmSheet } from '../ui.js';
+import { paulDica } from '../paul-dicas.js';
 import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
@@ -93,7 +94,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {

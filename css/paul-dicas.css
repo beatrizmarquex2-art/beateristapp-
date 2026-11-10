@@ -1,0 +1,10 @@
+/* Cartão "o Paul conta": uma pose nova, uma frase ou curiosidade e um botão pra próxima. Cores: vinho, creme e azul-marinho. */
+.pd { display: grid; grid-template-columns: 104px 1fr; gap: 12px; align-items: center; margin: 12px 16px; padding: 12px 14px; background: var(--card); color: var(--ink); border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 #1b2a4a; }
+.pd-img { width: 104px; height: 104px; object-fit: contain; cursor: pointer; transition: transform .25s; }
+.pd-img.pd-pop { transform: rotate(-6deg) scale(1.08); }
+.pd-tag { margin: 0 0 3px; font: 700 11px var(--body); letter-spacing: .06em; text-transform: lowercase; color: #1b2a4a; }
+.pd-text { margin: 0; font: 600 16px/1.35 var(--body); }
+.pd-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pd-btn { font: 700 12px var(--body); padding: 5px 10px; border: 1.5px solid var(--ink); border-radius: 8px; background: var(--card-soft); color: var(--ink); text-decoration: none; box-shadow: 2px 2px 0 var(--ink); cursor: pointer; }
+.pd-btn.go { background: #1b2a4a; color: #fff7f3; }
+@media (max-width: 380px) { .pd { grid-template-columns: 80px 1fr; } .pd-img { width: 80px; height: 80px; } }
