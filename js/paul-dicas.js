@@ -72,7 +72,7 @@ function sortear() {
 /** Cartão do Paul. `soBeaterista` não é usado: serve igual pro aluno e pra Bea. */
 export function paulDica() {
   const img = h('img', { class: 'pd-img', alt: '', 'aria-hidden': 'true', draggable: 'false', decoding: 'async' });
-  const tag = h('p', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
+  const tag = h('small', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
   const mostrar = (it) => {
     const [t, tx, pose, href, rot] = it;
     img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
@@ -82,5 +82,6 @@ export function paulDica() {
   };
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
   mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo
-  return h('section', { class: 'pd', 'aria-label': 'o Paul conta' }, img, h('div', {}, tag, text, row));
+  // modelo "quadrinho": Paul grande saindo da borda, etiqueta do assunto e balão de fala
+  return h('section', { class: 'pd pd-q', 'aria-label': 'o Paul conta' }, tag, img, h('div', { class: 'pd-bal' }, text, row));
 }
