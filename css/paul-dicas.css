@@ -8,3 +8,9 @@
 .pd-btn { font: 700 12px var(--body); padding: 5px 10px; border: 1.5px solid var(--ink); border-radius: 8px; background: var(--card-soft); color: var(--ink); text-decoration: none; box-shadow: 2px 2px 0 var(--ink); cursor: pointer; }
 .pd-btn.go { background: #1b2a4a; color: #fff7f3; }
 @media (max-width: 380px) { .pd { grid-template-columns: 80px 1fr; } .pd-img { width: 80px; height: 80px; } }
+
+.pd-arte { width: calc(100% - 32px); text-align: left; cursor: pointer; grid-template-columns: 78px 1fr; font: inherit; }
+.pd-thumb { width: 78px; height: 98px; object-fit: cover; object-position: top; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0 #9a1226; background: #fbf3e0; }
+.pd-arte > span { display: grid; gap: 2px; } .pd-sub { color: #5b4a4c; font-weight: 600; }
+.pd-dlg { border: 0; padding: 0; background: #fbf3e0; border-radius: 14px; width: min(94vw, 520px); max-height: 94dvh; overflow: auto; } .pd-dlg::backdrop { background: #000b; }
+.pd-dlg img { display: block; width: 100%; height: auto; } .pd-x { position: sticky; top: 8px; float: right; margin: 8px 8px -44px 0; z-index: 2; border: 2px solid #fbf3e0; background: #14284b; color: #fbf3e0; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; cursor: pointer; }

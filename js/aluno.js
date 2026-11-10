@@ -34,6 +34,7 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -159,7 +160,7 @@ const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbu
 /** Aba Estudos: 5 erros (aberto), Dicionário, Quiz e Letras e Aulinha do Paul (com código). */
 function estudosView(view) {
   const item = (href, title, sub, amostra) => { const lk = AC.trancado(href); const am = amostra && !AC.liberado(); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : am ? `${title}, amostra grátis: ${amostra}` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title, am ? h('small', { class: 'al-am' }, ` · grátis: ${amostra}`) : null), h('p', { class: 'muted' }, sub)); };
-  view.append(banner('Estudos', 'aprender com calma'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+  view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     item('#/jogos/relatorio', 'Jogos Ensinam', 'o que cada jogo desenvolve, aberto pra pais e responsáveis'),
     item('#/erros', '5 erros', 'material em PDF da professora Bea, aberto pra todo mundo'),
     item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando', `${GRATIS.termos} termos`),
@@ -199,6 +200,7 @@ function lojinhaView(view, parts = []) {
   view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
+    LOJA_ABERTA ? null : arteDoPaul('arte-por-que-paul', 'por que Paul?', 'a homenagem do nome do robozinho', 'por que Paul? o nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea'),
     h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
     h('section', { class: 'card pad' }, h('b', {}, 'ou peça pra professora Bea'), pedido)));
   return () => { gone = true; };
@@ -299,6 +301,7 @@ function shell(name) {
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
+    if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
     if (r.name === 'album' || r.name === 'perfil') view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum e perfil' }, h('a', { href: '#/album', role: 'tab', 'aria-selected': String(r.name === 'album'), class: `chip-btn${r.name === 'album' ? ' on' : ''}` }, 'figurinhas'), h('a', { href: '#/perfil', role: 'tab', 'aria-selected': String(r.name === 'perfil'), class: `chip-btn${r.name === 'perfil' ? ' on' : ''}` }, 'perfil'))); // o Perfil mora junto do Álbum
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);

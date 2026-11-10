@@ -44,6 +44,21 @@ export const DICAS = [
   ['beaterista', 'quer aula com a Bea? conhece a Beaterista Escola de Música!', 'n-break', SITE, 'abrir o site'],
 ];
 
+/** Cartão compacto com uma arte do Paul: toque abre a arte inteira numa janela (sem ocupar a tela toda). */
+export function arteDoPaul(arquivo, titulo, sub, alt) {
+  const abrir = () => {
+    const dlg = h('dialog', { class: 'pd-dlg', 'aria-label': titulo },
+      h('button', { type: 'button', class: 'pd-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕'),
+      h('img', { src: `assets/paul/${arquivo}.webp`, alt: alt || titulo }));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => dlg.remove());
+    document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  };
+  return h('button', { type: 'button', class: 'pd pd-arte', 'aria-label': `${titulo}: ver a arte`, onclick: abrir },
+    h('img', { class: 'pd-thumb', src: `assets/paul/${arquivo}.webp`, alt: '', loading: 'lazy', draggable: 'false' }),
+    h('span', {}, h('b', { class: 'pd-tag' }, 'Robôterista Paul'), h('span', { class: 'pd-text' }, titulo), h('small', { class: 'pd-sub' }, sub || 'toque pra ver a arte')));
+}
+
 let bag = [], last = -1;
 function sortear() {
   if (!bag.length) {
