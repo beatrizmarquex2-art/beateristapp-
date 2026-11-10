@@ -33,7 +33,7 @@ async function entrar(a, b, tema) {
   while ((await a.locator('.mem-step > span').textContent()) !== '6 pares') { await a.locator('.mem-step button[aria-label="menos pares"]').click(); await sleep(150); }
   await a.locator('button:has-text("criar sala")').click(); await sleep(500);
   const code = (await a.locator('.jg-code').textContent()).trim();
-  await b.locator('.jg-code-in').fill(code); await b.locator('button:has-text("entrar")').click(); await sleep(2800);
+  await b.locator('.jg-code-in').fill(code); await sleep(2800); // o lobby entra sozinho com 5 caracteres
   return code;
 }
 
@@ -58,7 +58,7 @@ async function entrar(a, b, tema) {
   check('a carta virada por A aparece virada no B', (await ups(a)) === 1 && (await ups(b)) === 1 && (await b.locator('.kx-mem.up').first().getAttribute('aria-label')).length > 3);
   // A erra: vira uma carta de outro par; as duas ficam à vista nos dois, depois desviram e a vez passa
   const outro = pares.find((pr) => !pr.includes(p0))[0];
-  await a.locator('.kx-mem').nth(outro).click(); await sleep(1100);
+  await a.locator('.kx-mem').nth(outro).click(); await sleep(1500);
   check('erro: as duas cartas ficam à vista nos dois celulares', (await ups(a)) === 2 && (await ups(b)) === 2, `${await ups(a)}/${await ups(b)}`);
   await sleep(3200);
   check('erro: desviram nos dois e a vez passou pro B', (await ups(a)) === 0 && (await ups(b)) === 0 && (await vez(b)) === 'sua vez' && (await vez(a)) === 'vez do outro', `${await vez(a)} / ${await vez(b)}`);
@@ -105,6 +105,15 @@ async function entrar(a, b, tema) {
   const msg = await b.locator('.ms-bloq').innerText().catch(() => '');
   check('sem código: B recebe um aviso claro e não vê as cartas', msg.includes('Bandas') && msg.includes('código') && (await b.locator('.kx-mem').count()) === 0, msg);
   check('o aviso tem como sair da sala', (await b.locator('button:has-text("sair da sala")').count()) === 1);
+}
+{ // atalho "tem um código de sala": abre direto na sala, sem escolher tema nem clicar no ícone
+  const a = await phone(true); await a.locator('.mem-ic[aria-label^="sala"]').click(); await sleep(250); await a.locator('button:has-text("criar sala")').click(); await sleep(500);
+  const code = (await a.locator('.jg-code').textContent()).trim();
+  const ctx = await context(browser); await ctx.route('**/rest/v1/rpc/sala_*', mock);
+  await ctx.addInitScript((c) => { try { sessionStorage.setItem('beaterista-sala-auto', JSON.stringify({ jogo: 'memoria', code: c, voltar: false, at: Date.now() })); localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch { /* ok */ } }, code);
+  const b = await ctx.newPage(); b.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+  await b.goto(`${url}/aluno.html#/jogos/memart`); await sleep(4500); 
+  check('atalho de código: a memória abre direto na sala e a mesa aparece nos dois', (await b.locator('.kx-mem').count()) === 16 && (await a.locator('.kx-mem').count()) === 16 && (await b.locator('.ms-vez').innerText()) === 'vez do outro');
 }
 check('sem erros de JS', errs.length === 0, errs.join('|'));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

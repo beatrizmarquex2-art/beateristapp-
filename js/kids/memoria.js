@@ -9,7 +9,7 @@ import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
 import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
-import { lobby } from '../jogos/online.js';
+import { lobby, salaAutoPara } from '../jogos/online.js';
 import { confirmSheet } from '../ui.js';
 import { mostrarSala, mesaNova, JOGO as JOGO_SALA } from './memoria-sala.js';
 
@@ -44,7 +44,7 @@ export function mountMemoria(host, opts) {
   host.replaceChildren(h('div', { class: 'kx-botrow' }, bot.el), stage);
   const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
-  let photo = null; let lockNote = false; let live = false; let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
+  let photo = null; let lockNote = false; let live = false; let autoSala = !MS && !!salaAutoPara(JOGO_SALA); let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
   const themes = () => {
     // abertos pra todo mundo: The Beatles, Rock (as cartas desenhadas de bandas) e Profissões. O resto só com código.
     const drawn = THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: true } : { ...t, open: t.id === 'profissoes' }));
@@ -68,7 +68,8 @@ export function mountMemoria(host, opts) {
     live = false; paused = false; const c = conf(); const list = themes();
     let th = list.find((t) => t.id === c.theme) || list[0]; if (locked(th)) th = list.find((t) => !locked(t)) || list[0];
     const maxPairs = th.items.length; preload(th);
-    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); const players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
+    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); let players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
+    if (autoSala) { autoSala = false; players = 'sala'; } // veio do atalho "tem um código de sala": abre direto na sala (o lobby entra sozinho)
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
