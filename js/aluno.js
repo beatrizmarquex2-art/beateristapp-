@@ -1,6 +1,7 @@
 // Área do aluno (aluno.html): sem login. O aluno escolhe um nome, joga os Jogos de ritmo e o Kids e aparece no ranking que todos veem.
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
-import { h, icon } from './util.js';
+import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
+import { h, icon, uid } from './util.js';
 import { soundButton } from './sound-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
@@ -53,7 +54,7 @@ let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
 const ID_KEY = 'beaterista-aluno-id';
-const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = crypto.randomUUID(); localStorage.setItem(ID_KEY, v); } return v; } catch { return crypto.randomUUID(); } };
+const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = uid(); localStorage.setItem(ID_KEY, v); } return v; } catch { return uid(); } };
 /** Conta 1 visita por sessão; atualiza o nome quando ele muda. */
 function logVisit(name) {
   let novo = true; try { novo = !sessionStorage.getItem('bt-aluno-visita'); sessionStorage.setItem('bt-aluno-visita', '1'); } catch { /* ok */ }

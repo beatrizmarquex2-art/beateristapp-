@@ -1,3 +1,4 @@
+import './polyfills.js'; // iPhones antigos: primeiro import
 import { h, icon, clock, longDate, shortDate } from './util.js';
 import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
