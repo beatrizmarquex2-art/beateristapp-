@@ -2,7 +2,7 @@
 // Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS } from '../loja-config.js';
+import { PASSE, PRODUTOS, AVISO_DIGITAL } from '../loja-config.js';
 
 const comprar = (item) => () => {
   if (item.link) { window.open(item.link, '_blank', 'noopener'); return; }
@@ -27,10 +27,11 @@ export function vitrine() {
   return h('div', { class: 'lj' },
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
+    h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
     h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card', 'data-id': p.id },
       h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: 640, height: 800 })),
       h('h3', {}, p.nome), h('p', {}, p.desc), p.preco ? h('b', { class: 'lj-preco lj-preco-card' }, p.preco) : null, botao('Adquirir', p)))),
-    h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
+    PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
-      h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))));
+      h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }
