@@ -11,24 +11,24 @@ export class ErroSala extends Error {
 }
 
 const MAPA = [
-  [/n[ãa]o encontrada/i, 'sala', 'Não achei essa sala. Confira o código com quem criou.'],
-  [/cheia/i, 'cheia', 'Essa sala já tem dois jogadores.'],
-  [/encerrada/i, 'encerrada', 'Essa partida já acabou.'],
-  [/token/i, 'token', 'Você saiu dessa sala ou ela não existe mais.'],
-  [/nome inv/i, 'nome', 'Escolha um nome de 1 a 20 letras.'],
-  [/anfitri/i, 'anfitriao', 'Só quem criou a sala pode fazer isso.'],
-  [/2 jogadores/i, 'jogadores', 'Espere o outro jogador entrar para começar.'],
-  [/j[áa] come[çc]ou|ainda n[ãa]o come[çc]ou/i, 'estado', 'O jogo não está nesse momento. Atualize a tela.'],
-  [/ainda n[ãa]o saiu/i, 'item', 'Esse item ainda não foi sorteado.'],
-  [/cheio|n[ãa]o consegui/i, 'servidor', 'O serviço está cheio agora. Tente de novo daqui a pouco.'],
-  [/inv[áa]lid/i, 'dados', 'Algo nas opções não está certo. Confira e tente de novo.'],
+  [/n[ãa]o encontrada/i, 'sala', 'não achei essa sala. confira o código com quem criou'],
+  [/cheia/i, 'cheia', 'essa sala já tem dois jogadores'],
+  [/encerrada/i, 'encerrada', 'essa partida já acabou'],
+  [/token/i, 'token', 'você saiu dessa sala ou ela não existe mais'],
+  [/nome inv/i, 'nome', 'escolha um nome de 1 a 20 letras'],
+  [/anfitri/i, 'anfitriao', 'só quem criou a sala pode fazer isso'],
+  [/2 jogadores/i, 'jogadores', 'espere o outro jogador entrar para começar'],
+  [/j[áa] come[çc]ou|ainda n[ãa]o come[çc]ou/i, 'estado', 'o jogo não está nesse momento. atualize a tela'],
+  [/ainda n[ãa]o saiu/i, 'item', 'esse item ainda não foi sorteado'],
+  [/cheio|n[ãa]o consegui/i, 'servidor', 'o serviço está cheio agora. tente de novo daqui a pouco'],
+  [/inv[áa]lid/i, 'dados', 'algo nas opções não está certo. confira e tente de novo'],
 ];
 
 function traduzir(status, corpo) {
   const msg = (corpo && (corpo.message || corpo.hint || corpo.error)) || '';
   for (const [re, codigo, texto] of MAPA) if (re.test(msg)) return new ErroSala(codigo, texto);
-  if (status === 404) return new ErroSala('rede', 'O serviço do jogo online não está disponível.');
-  return new ErroSala('rede', 'Sem internet ou o serviço não respondeu. Tente de novo.');
+  if (status === 404) return new ErroSala('rede', 'o jogo online não está disponível agora');
+  return new ErroSala('rede', 'sem internet ou o serviço não respondeu. tente de novo');
 }
 
 const head = () => ({ apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' });
@@ -36,7 +36,7 @@ const head = () => ({ apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer $
 async function rpc(fn, body) {
   let r;
   try { r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers: head(), body: JSON.stringify(body) }); }
-  catch { throw new ErroSala('rede', 'Sem internet. Confira a conexão e tente de novo.'); }
+  catch { throw new ErroSala('rede', 'sem internet. confira a conexão e tente de novo'); }
   if (!r.ok) {
     let corpo = null; try { corpo = await r.json(); } catch { /* sem corpo */ }
     throw traduzir(r.status, corpo);
@@ -50,7 +50,7 @@ export function normalizarCodigo(c) {
   return String(c ?? '').toUpperCase().split('').filter((ch) => ALFABETO.includes(ch)).join('').slice(0, 6);
 }
 
-const nomeOk = (n) => { const t = String(n ?? '').trim(); if (!t || t.length > 20) throw new ErroSala('nome', 'Escolha um nome de 1 a 20 letras.'); return t; };
+const nomeOk = (n) => { const t = String(n ?? '').trim(); if (!t || t.length > 20) throw new ErroSala('nome', 'escolha um nome de 1 a 20 letras'); return t; };
 
 export async function salaCriar({ nome, tema, perfil, vitoria, modo, intervalo, autoMarcar }) {
   const rows = await rpc('bingo_criar', {
@@ -58,16 +58,16 @@ export async function salaCriar({ nome, tema, perfil, vitoria, modo, intervalo, 
     p_intervalo: Math.round(Number(intervalo) || 10), p_auto_marcar: !!autoMarcar,
   });
   const r = Array.isArray(rows) ? rows[0] : rows;
-  if (!r || !r.code || !r.token) throw new ErroSala('rede', 'O serviço não respondeu direito. Tente de novo.');
+  if (!r || !r.code || !r.token) throw new ErroSala('rede', 'o serviço não respondeu direito. tente de novo');
   return { code: r.code, token: r.token, slot: r.slot };
 }
 
 export async function salaEntrar({ code, nome }) {
   const c = normalizarCodigo(code);
-  if (c.length !== 6) throw new ErroSala('sala', 'O código tem 6 letras ou números.');
+  if (c.length !== 6) throw new ErroSala('sala', 'o código tem 6 letras ou números');
   const rows = await rpc('bingo_entrar', { p_code: c, p_nome: nomeOk(nome) });
   const r = Array.isArray(rows) ? rows[0] : rows;
-  if (!r || !r.token) throw new ErroSala('rede', 'O serviço não respondeu direito. Tente de novo.');
+  if (!r || !r.token) throw new ErroSala('rede', 'o serviço não respondeu direito. tente de novo');
   return { code: c, token: r.token, slot: r.slot };
 }
 
@@ -123,7 +123,7 @@ export function conectar({ code, token, onEstado, onLink, onErro, intervaloMs = 
   // escritas em fila (uma por vez); depois pedem o estado na hora
   function escrever(fn, corpo, devolveEstado) {
     const p = cadeia.then(async () => {
-      if (fechado) throw new ErroSala('token', 'Você saiu dessa sala.');
+      if (fechado) throw new ErroSala('token', 'você saiu dessa sala');
       try {
         const r = await rpc(fn, { p_code: c, p_token: token, ...corpo });
         link(true);
