@@ -1,0 +1,18 @@
+/* STOP musical "ao mesmo tempo" (2 celulares). Reaproveita as cores e classes st- do jogos.css; só o que é novo fica aqui (ss-). */
+.ss{padding-bottom:8px}
+.ss-cab{display:flex;flex-direction:column;gap:4px;margin:8px 0}.ss-cab b{font-size:16px}
+.ss-cats{display:flex;flex-wrap:wrap;gap:4px;list-style:none;margin:4px 0 0;padding:0}
+.ss-cats li{font-size:11px;padding:2px 8px;border:1.5px solid var(--jg-navy);border-radius:8px;box-shadow:2px 2px 0 var(--jg-line)}
+.ss-pl{display:flex;gap:8px;margin:8px 0;width:100%;align-self:stretch}
+.ss-j{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border:2px solid var(--jg-line);border-radius:12px;background:var(--jg-bg);text-align:center}
+.ss-j.eu{border-color:var(--jg-navy)}.ss-j.win{border-color:var(--st-green);box-shadow:3px 3px 0 var(--st-green)}
+.ss-j b{font-size:22px}.ss-j small{font-size:11px}
+.ss-wins{font-size:12px;color:var(--jg-navy);font-weight:700}
+.ss-nota{font-size:12px;margin:8px 0}
+.ss-quem{margin:0 0 6px;font-size:13px;font-weight:700}
+.ss-aviso{display:none;margin:6px 0;padding:6px 10px;border:2px solid var(--st-red);border-radius:10px;color:var(--st-red);font-weight:700;font-size:14px;text-align:center}
+.ss-aviso.on{display:block}
+.ss-pausa{display:none;flex-direction:column;align-items:center;gap:8px;margin:18px 0;padding:18px 12px;border:2px dashed var(--jg-navy);border-radius:14px;text-align:center}
+.ss-pausa b{font-size:26px}
+.ss-pausado .ss-pausa{display:flex}
+.ss-pausado .st-fields,.ss-pausado .st-stopbar,.ss-pausado .st-progress{display:none}
