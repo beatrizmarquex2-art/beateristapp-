@@ -255,10 +255,10 @@ function dicasEstudoView(view) {
 
 /** Lojinha (em construção): exercícios, atividades pra imprimir e o código de acesso. Por enquanto avisa que vem aí e deixa digitar um código que já tem. */
 function lojinhaView(view, parts = []) {
-  // depoimentos e vídeos dos alunos só aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js) e com a autorização dos alunos confirmada
-  const aba = LOJA_ABERTA && (parts[0] === 'depoimentos' || parts[0] === 'videos') ? parts[0] : 'loja';
-  const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos'], ['videos', '#/lojinha/videos', 'alunos tocando']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
-  if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(aba === 'videos' ? m.tocando() : m.depoimentos())); return () => {}; }
+  // os depoimentos (só texto) aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js)
+  const aba = LOJA_ABERTA && parts[0] === 'depoimentos' ? parts[0] : 'loja';
+  const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
+  if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
   const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };

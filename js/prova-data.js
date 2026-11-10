@@ -1,5 +1,4 @@
-// Depoimentos e vídeos dos alunos (aba dentro da Lojinha). Pra acrescentar vídeo: colocar assets/alunos/vNN.mp4 + pNN.webp (capa) e uma linha aqui.
-// IMPORTANTE: só publicar vídeo de aluno com autorização (dele ou do responsável).
+// Depoimentos dos alunos (aba dentro da Lojinha): só texto, sem nome. Decisão da Bea (nov/2026): nada de foto nem vídeo de aluno.
 export const DEPOIMENTOS = [
   { txt: 'amei a didática, é bem mais fácil de entender, amei que também tem uma parte que explica partitura, estou bem empolgada para continuar', de: 'aluna do Bateria Start' },
   { txt: 'está muito legal!! agora é treinar! amei a estrutura!', de: 'aluna do Bateria Start' },
@@ -8,8 +7,3 @@ export const DEPOIMENTOS = [
   { txt: 'era um sonho que eu tenho desde criança, mas não tinha condições de comprar uma bateria nem de fazer um curso. mas hoje eu estou realizando esse sonho', de: 'aluna do Bateria Start' },
   { txt: 'eu amo demais tocar. e com o teu curso junto tenho certeza que ficarei mais confiante', de: 'aluna do Bateria Start' },
 ];
-const L = (ns, nomes) => ns.map((n, i) => ({ n, titulo: nomes[i] }));
-export const DEPOIMENTOS_VIDEO = L([2, 3, 4, 1], ['aluna', 'aluna', 'aluna', 'conversas']);
-export const TOCANDO = L([5, 6, 7, 8, 9, 10, 11, 12], ['viradas', 'aluna', 'tropeçando', 'Love Story', 'inspiração', 'dueto', 'tutorial', 'treino em casa']);
-export const vid = (n) => `assets/alunos/v${String(n).padStart(2, '0')}.mp4`;
-export const capa = (n) => `assets/alunos/p${String(n).padStart(2, '0')}.webp`;
