@@ -13,7 +13,7 @@ async function rpc(fn, body) {
   if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch { /* ok */ } throw new Error(m || (r.status === 404 ? 'o SQL 011 ainda não foi aplicado no Supabase' : `erro ${r.status}`)); }
   return r.json();
 }
-const TOTAL = 125;
+import { TOTAL_FIGURINHAS as TOTAL } from '../figurinhas/album-logic.js';
 
 export function mount(host) {
   const body = h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('p', { class: 'muted' }, 'carregando…'));

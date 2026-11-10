@@ -34,7 +34,7 @@ function deco(seed) {
 const COVER = {
   Comum: { titulo: 'Comum', sub: 'o mundo da música', cls: 'cv-geral' },
   Beatlemania: { titulo: 'Beatlemania', sub: 'edição psicodélica', cls: 'cv-beatles' },
-  Beaterista: { titulo: 'Beaterista', sub: 'edição exclusiva da Bea', cls: 'cv-bea' },
+  Beaterista: { titulo: 'Beaterista', sub: 'edição exclusiva da Bea e do Paul', cls: 'cv-bea' },
   Raras: { titulo: 'Raras', sub: 'as mais difíceis de achar', cls: 'cv-esp' },
 };
 

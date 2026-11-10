@@ -3,6 +3,7 @@
 import { rng, hashSeed } from './ornaments.js';
 
 export const PACK_SIZE = 5;
+export const TOTAL_FIGURINHAS = 131; // 125 do catálogo original + 6 do Paul (catalogo-paul.json)
 export const ESTRELAS_POR_ROLETA = 30; // a cada 30 estrelas (somando todos os jogos) libera uma roleta
 /** Roleta: 1 a 3 figurinhas; raramente (4%) uma exclusiva da Beaterista; às vezes Beatlemania e rara. */
 export const ROLETA_PESOS = [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', 4]];
