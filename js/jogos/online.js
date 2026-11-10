@@ -99,7 +99,7 @@ export function lobby({ jogo, makeState, onStart: aoComecar }) {
     if (conn) { conn.close(); conn = null; }
     const ult = salaLembrada(jogo);
     const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala', inputmode: 'text',
-      oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (e.target.value.length === 5) entrarCom(e.target.value); }, onkeydown: (e) => { if (e.key === 'Enter') entrarCom(inp.value); } });
+      oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') entrarCom(inp.value); } });
     box.replaceChildren(
       ult ? h('div', { class: 'jg-volta' }, h('button', { class: 'btn primary wide', type: 'button', onclick: () => voltar(ult) }, `voltar pra sala ${ult.code}`), h('small', { class: 'muted' }, 'você saiu de uma partida? volte por aqui.')) : null,
       h('p', { class: 'jg-lab' }, 'tem o código da sala? digite aqui'),

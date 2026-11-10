@@ -23,7 +23,7 @@ async function pair(game) {
   for (const p of [a, b]) { await p.goto(`${url}/aluno.html#/jogos/${game}/livre`); await sleep(900); if (await p.locator('button:has-text("JOGAR")').count()) { await p.locator('button:has-text("JOGAR")').click(); await sleep(300); } await p.locator('button:has-text("2 celulares"), button[aria-label^="2 celulares"]').first().click(); await sleep(200); if (game === 'stop' && p === a) { await p.locator('button:has-text("um de cada vez")').click(); await sleep(200); } }
   await a.locator('button:has-text("criar sala")').click(); await sleep(400);
   const code = (await a.locator('.jg-code').textContent()).trim();
-  await b.locator('.jg-code-in').fill(code); await sleep(2800); /* entra sozinho ao completar os 5 caracteres */
+  await b.locator('.jg-code-in').fill(code); await b.locator('button:has-text("entrar")').click(); await sleep(2500);
   return [a, b, code];
 }
 // --- uno
