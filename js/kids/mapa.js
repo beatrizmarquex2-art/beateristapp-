@@ -126,7 +126,7 @@ export function mountProgressionMap(host, cfg) {
     busy = true; sess(lastKey, { pos: i, t: Date.now() }); sfx.play('disc');
     const el = nodeEls[i]; el.classList.add('press');
     const go = () => { sfx.dispose(); onOpen(n); };
-    if (motion) S.later(go, 220); else go();
+    if (motion) S.later(go, 110); else go();
   };
   S.on(world, 'click', (e) => { const b = e.target.closest('.mp-node'); if (b) open(Number(b.dataset.pos)); });
   S.on(world, 'keydown', (e) => {

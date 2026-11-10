@@ -5,7 +5,7 @@
 import { PATH, CELLS, TIERS, PASS_SCORE } from '../../reading.js';
 
 export const STAR_AT = [PASS_SCORE, 85, 95]; // precisão mínima pra 1, 2 e 3 estrelas
-const BPM = { ini: [60, 60, 64, 64, 68, 68, 72, 72], int: [66, 70, 74, 78, 82, 86], ava: [72, 76, 80, 84, 88, 92] };
+const BPM = { ini: [80, 84, 88, 90, 92, 96, 100, 104], int: [90, 94, 98, 102, 106, 110], ava: [96, 100, 104, 108, 112, 116] };
 const TIER_NAME = Object.fromEntries(TIERS.map((t) => [t.id, t.name]));
 const N = (n) => String(n).padStart(2, '0');
 const cellName = (p) => (CELLS.find((c) => c.p === p) || { name: p }).name;

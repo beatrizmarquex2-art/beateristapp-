@@ -10,9 +10,8 @@ check('modo livre abre o Toca Aqui de sempre', (await page.locator('.tr-actions'
 await page.goto(url + '/aluno.html#/jogos/toca/aventura'); await page.waitForSelector('.mp-node', { timeout: 8000 }).catch(() => {}); await sleep(900);
 check('mapa com 20 missões', (await page.locator('.mp-node').count()) === 20, String(await page.locator('.mp-node').count()));
 await page.goto(url + '/aluno.html#/jogos/toca/aventura/1'); await sleep(900);
-check('missão trancada volta pro mapa', !(await page.locator('.av-go').count()));
-await page.goto(url + '/aluno.html#/jogos/toca/aventura/0'); await page.waitForSelector('.av-go', { timeout: 6000 }); await sleep(400);
-await page.click('.av-go'); await sleep(900);
+check('missão trancada volta pro mapa', !(await page.locator('.av-stage').count()));
+await page.goto(url + '/aluno.html#/jogos/toca/aventura/0'); await page.waitForSelector('.av-stage', { timeout: 6000 }); await sleep(900);
 check('sem resultado, nada conclui', !(await page.locator('.av-res').count()));
 await page.locator('button:has-text("tocar direto")').click(); await sleep(300);
 await page.evaluate(() => new Promise((ok) => { const pad = document.querySelector('.tr-pad'); const ons = JSON.parse(pad.dataset.onsets); let i = 0; const tick = () => { const t = pad.clock(); if (i < ons.length && t >= ons[i]) { pad.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); i++; } if (i >= ons.length) return ok(); setTimeout(tick, 4); }; tick(); }));

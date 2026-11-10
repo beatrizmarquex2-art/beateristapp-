@@ -50,21 +50,21 @@ await page.evaluate(() => document.querySelectorAll('.mp-node')[1].click()); awa
 check('missão 1 trancada não abre', (await hash()) === '#/ritmo/aventura');
 await go('#/ritmo/aventura/1'); await sleep(500);
 check('rota direta da missão trancada volta ao mapa', (await hash()) === '#/ritmo/aventura', await hash());
-await page.evaluate(() => document.querySelector('.st-current').click()); await page.waitForSelector('.av-go');
-check('briefing: objetivo, regras e as 3 estrelas', (await page.locator('.av-goal').count()) === 1 && (await page.locator('.av-stars-how li').count()) === 3);
+await page.evaluate(() => document.querySelector('.st-current').click()); await page.waitForSelector('.av-how');
+check('regras e estrelas: objetivo, regras e as 3 estrelas', (await page.locator('.av-goal').count()) === 1 && (await page.locator('.av-stars-how li').count()) === 3);
 await go('#/ritmo/aventura'); await page.waitForSelector('.mp-node'); await sleep(400);
 check('abrir a missão 0 não a conclui', (await states())[0] === 'current' && (await states())[1] === 'locked');
 check('abrir não gravou progresso', await page.evaluate(() => { const r = localStorage.getItem('beaterista-aluno-ritmo'); return true; }));
 
 const startMission = async (i, songIdx = 0) => {
-  await go(`#/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.click('.nr-esc-b.primary');
+  await go(`#/ritmo/aventura/${i}`); await page.waitForSelector('.nr-esc-b.primary'); await page.click('.nr-esc-b.primary');
   await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
   await page.locator('.rz-mmenu .rz-jogar').nth(songIdx).click();
   if (await page.locator('[data-act="rz-go"]').count()) await page.click('[data-act="rz-go"]');
   await page.waitForSelector('#rz-cv', { timeout: 5000 });
 };
 // missão 0: menu da missão sem opções do modo livre
-await go('#/ritmo/aventura/0'); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.click('.nr-esc-b.primary'); await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
+await go('#/ritmo/aventura/0'); await page.waitForSelector('.nr-esc-b.primary'); await page.click('.nr-esc-b.primary'); await page.waitForSelector('.rz-mmenu .rz-jogar', { timeout: 15000 });
 check('missão 0: menu simples (sem abas de jogo/ajustes/importar do modo livre)', (await page.locator('[data-act="rz-game"], [data-act="rz-diff"], [data-act="rz-len"]').count()) === 0 && (await page.locator('.rz-mmenu .tag').textContent()).includes('3 teclas'));
 check('missão 0: botão JOGAR grande', (await page.locator('.rz-mmenu .rz-jogar').first().boundingBox()).height >= 44);
 for (const w of [320, 430]) { await page.setViewportSize({ width: w, height: 700 }); await sleep(250); check(`menu da missão sem rolagem horizontal em ${w}px`, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), await page.evaluate(() => document.documentElement.scrollWidth + '>' + window.innerWidth)); }
@@ -107,7 +107,7 @@ for (let i = 1; i <= 10; i++) {
   await page.evaluate(() => window.__auto(0.25)); await page.waitForSelector('.av-res', { timeout: 20000 });
   const h2 = await page.locator('.av-res h2').textContent(); const stars = await page.locator('.av-rstar.on').count();
   check(`missão ${i} (${p.game}/${p.diff}) concluída tocando tudo certo: 3 estrelas`, h2.includes('concluída') && stars === 3, `${h2} ${stars}★ ${await page.locator('.av-sum').textContent()}`);
-  if (i < 10) { await page.click('.av-res .av-go'); await page.waitForSelector('.av-go'); }
+  if (i < 10) { await page.click('.av-res .av-go'); await page.waitForSelector('.av-stage'); }
 }
 check('medalhas novas aparecem no fim', (await page.locator('.av-newm .av-chip').count()) >= 1);
 await page.click('text=ver o mapa'); await page.waitForSelector('.mp-node'); await sleep(500);

@@ -1,4 +1,4 @@
-// Tela do Modo Aventura (serve pra qualquer jogo): escolha de modo (livre × aventura), mapa de missões, briefing, partida e resultado.
+// Tela do Modo Aventura (serve pra qualquer jogo): escolha de modo (livre × aventura), mapa de missões, partida e resultado.
 // O jogo em si não muda: recebe `opts.mission` e avisa o resultado real em `opts.onResult(result)`.
 import { h } from '../util.js';
 import { session } from '../session.js';
@@ -70,22 +70,18 @@ export function mountAdventure(host, cfg) {
     const m = spec.missions[index]; const g = cur();
     if (!m || !E.isUnlocked(spec, g, index)) { nav(base); return; }
     const bar = (extra) => h('div', { class: 'av-bar' }, h('a', { class: 'av-back', href: base }, '‹ mapa'), h('b', { class: 'av-bt' }, `missão ${index} · ${m.title}`), temaButton(), extra || null);
-    const briefing = () => {
-      clean(); const bot = robo({ mood: 'happy', tier, size: 84, say: index === 0 ? 'vamos começar a turnê!' : 'bora nessa missão!' });
-      host.replaceChildren(h('div', { class: 'av av-brief' }, bar(),
-        h('div', { class: 'av-card' }, h('small', { class: 'av-kick' }, `${theme.name}`), h('h2', { class: 'av-h' }, m.title), h('p', { class: 'av-goal' }, h('span', { class: 'av-ico', 'aria-hidden': 'true' }, '🎯'), ' ', m.goal),
-          m.rules && m.rules.length ? h('ul', { class: 'av-list' }, ...m.rules.map((r) => h('li', {}, r))) : null,
-          m.stars && m.stars.length ? h('div', { class: 'av-stars-how' }, h('b', {}, 'estrelas'), h('ul', { class: 'av-list' }, ...m.stars.map((r, k) => h('li', {}, h('span', { class: 'av-s' }, '★'.repeat(k + 1)), ` ${r}`)))) : null,
-          h('div', { class: 'av-actions' }, h('button', { class: 'kd-btn av-go', type: 'button', onclick: () => { sfx.play('disc'); play(); } }, 'começar a missão'))),
-        h('div', { class: 'av-bot' }, bot.el)));
-    };
+    // sem tela de briefing (era um toque a mais em toda missão): objetivo no topo e regras/estrelas numa gavetinha fechada
+    const how = () => (m.rules && m.rules.length) || (m.stars && m.stars.length) ? h('details', { class: 'av-how' }, h('summary', {}, 'regras e estrelas'),
+      h('p', { class: 'av-goal' }, h('span', { class: 'av-ico', 'aria-hidden': 'true' }, '🎯'), ' ', m.goal),
+      m.rules && m.rules.length ? h('ul', { class: 'av-list' }, ...m.rules.map((r) => h('li', {}, r))) : null,
+      m.stars && m.stars.length ? h('div', { class: 'av-stars-how' }, h('b', {}, 'estrelas'), h('ul', { class: 'av-list' }, ...m.stars.map((r, k) => h('li', {}, h('span', { class: 'av-s' }, '★'.repeat(k + 1)), ` ${r}`)))) : null) : null;
     let finished = false;
     const play = () => {
       clean(); finished = false; const body = h('div', { class: `av-play ${cfg.playClass || ''}`.trim() });
-      stage = h('div', { class: 'av av-stage' }, bar(snd()), h('p', { class: 'av-objective', role: 'status' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), m.goal), body,
+      stage = h('div', { class: 'av av-stage' }, bar(snd()), h('p', { class: 'av-objective', role: 'status' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), m.goal), how(), body,
         h('div', { class: 'av-actions row' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (!ctl || !ctl.inProgress || !ctl.inProgress() || await confirmSheet('tentar de novo?', 'a partida atual será perdida.', 'recomeçar')) play(); } }, 'recomeçar missão')));
       host.replaceChildren(stage);
-      ctl = adv.mount(body, { mission: { id: m.id, index, title: m.title, goal: m.goal, params: m.params || {} }, onResult: (r) => { if (finished) return; finished = true; S.later(() => settle(r), motion ? (r && r.delay != null ? r.delay : 900) : 0); } });
+      ctl = adv.mount(body, { mission: { id: m.id, index, title: m.title, goal: m.goal, params: m.params || {} }, onResult: (r) => { if (finished) return; finished = true; S.later(() => settle(r), motion ? (r && r.delay != null ? Math.min(r.delay, 450) : 450) : 0); } });
     };
     const settle = async (result) => {
       if (!stage || !stage.isConnected) return;
@@ -110,7 +106,7 @@ export function mountAdventure(host, cfg) {
           h('button', { class: 'kd-chip', type: 'button', onclick: () => nav(base) }, 'ver o mapa'))));
       stage.append(panel); const first = panel.querySelector('button'); if (first) first.focus();
     };
-    briefing();
+    play(); // direto na partida
   }
 
   if (cfg.mission == null) mapScreen(); else missionScreen(cfg.mission);

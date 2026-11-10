@@ -8,7 +8,7 @@ for (const [nome, w, h] of [['iPad em pé', 820, 1180], ['iPad deitado', 1180, 8
   await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
   await ctx.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
   const p = await ctx.newPage();
-  await p.goto(url + '/aluno.html#/ritmo/aventura/0'); await p.waitForSelector('.av-go', { timeout: 20000 }); await p.click('.av-go');
+  await p.goto(url + '/aluno.html#/ritmo/aventura/0'); await p.waitForSelector('.av-stage', { timeout: 20000 });
   await p.waitForSelector('[data-nr-modo="beat"]', { timeout: 20000 });
   const eh = await p.evaluate(() => { const b = document.querySelector('.rg-host').getBoundingClientRect(); return [Math.round(b.x), Math.round(b.y), Math.round(b.width), Math.round(b.height)]; });
   check(`${nome}: a tela de escolha cabe inteira na tela`, eh[1] >= 0 && eh[1] + eh[3] <= h && eh[0] >= 0 && eh[0] + eh[2] <= w, JSON.stringify(eh));
