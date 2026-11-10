@@ -404,7 +404,7 @@ function askName() {
   const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
-  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
+  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.filter(([v]) => v !== 'codigo').map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
   const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
@@ -443,7 +443,7 @@ function askName() {
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, codBox, err,
+    codBox, h('label', { class: 'field' }, h('span', {}, 'ou, se não tem código: como você chegou aqui?'), sel), outro, err,
     h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },

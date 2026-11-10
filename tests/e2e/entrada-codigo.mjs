@@ -8,7 +8,7 @@ await ctx.route('**/rest/v1/rpc/aluno_visit', (r) => r.fulfill({ status: 200, co
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
 await p.goto(`${url}/aluno.html`); await sleep(1500);
 const opts = await p.locator('select option').allTextContents();
-check('a lista tem "CÓDIGO DE ACESSO"', opts.includes('CÓDIGO DE ACESSO'), opts.join(' | '));
+check('a lista não repete "CÓDIGO DE ACESSO" (o campo já está na tela)', !opts.includes('CÓDIGO DE ACESSO'), opts.join(' | '));
 check('o campo do código já aparece direto na primeira tela, sem escolher opção', (await p.locator('.al-cod').isVisible()));
 await p.locator('input[aria-label="Seu nome"]').fill('Maria'); await p.locator('select').selectOption('codigo'); await sleep(200);
 check('escolheu a opção: aparece o campo do código', await p.locator('.al-cod').isVisible());
