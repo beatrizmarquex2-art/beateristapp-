@@ -919,3 +919,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-wrap{position:relative}.jg-pausa{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:rgba(18,40,74,.88);padding:16px}
 .jg-pausa-box{display:grid;gap:12px;width:min(340px,100%);padding:20px;border:3px solid #1b1818;border-radius:16px;background:#fffdf8;color:#1b1818;text-align:center;box-shadow:6px 6px 0 rgba(0,0,0,.35)}
 .jg-pausa-box .btn{min-height:52px;font-size:18px}.jg-pausa-btn{white-space:nowrap}.jg-continuar{min-height:52px;font-size:18px;text-align:center}
+
+.jg-cod-aluno{display:grid;gap:8px}.jg-cod-aluno .jg-msg:empty{display:none}

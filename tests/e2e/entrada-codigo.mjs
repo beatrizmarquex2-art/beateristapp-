@@ -9,7 +9,7 @@ const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.pu
 await p.goto(`${url}/aluno.html`); await sleep(1500);
 const opts = await p.locator('select option').allTextContents();
 check('a lista tem "CÓDIGO DE ACESSO"', opts.includes('CÓDIGO DE ACESSO'), opts.join(' | '));
-check('o campo do código só aparece quando escolhe essa opção', (await p.locator('.al-cod').isHidden()));
+check('o campo do código já aparece direto na primeira tela, sem escolher opção', (await p.locator('.al-cod').isVisible()));
 await p.locator('input[aria-label="Seu nome"]').fill('Maria'); await p.locator('select').selectOption('codigo'); await sleep(200);
 check('escolheu a opção: aparece o campo do código', await p.locator('.al-cod').isVisible());
 await p.locator('button:has-text("entrar")').click(); await sleep(400);

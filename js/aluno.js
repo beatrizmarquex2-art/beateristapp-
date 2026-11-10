@@ -409,15 +409,18 @@ function askName() {
   const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
   const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
-  const codBox = h('div', { class: 'al-codbox', hidden: true }, cod, gen, pedido);
+  const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, gen, pedido);
+  const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
+  cod.addEventListener('input', () => { sel.required = !temCodigoDigitado(); });
   function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
-  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; codBox.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!codBox.hidden && !cod.hidden) cod.focus(); });
+  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
   const form = h('form', { class: 'login-card', onsubmit: async (e) => {
     e.preventDefault(); const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
-    if (!sel.value) { err.textContent = 'escolha como você chegou aqui.'; return; }
-    if (sel.value === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
+    const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : sel.value; // digitou o código? já vale, sem precisar escolher a opção
+    if (!modo) { err.textContent = 'escolha como você chegou aqui.'; return; }
+    if (modo === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
       if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
         if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
         err.textContent = 'conferindo o código…';
@@ -425,7 +428,7 @@ function askName() {
       }
       err.textContent = '';
     }
-    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : sel.value;
+    const o = modo === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : modo;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n);
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }

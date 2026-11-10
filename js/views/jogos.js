@@ -7,6 +7,7 @@ import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import { silence } from '../audio.js';
+import * as CODE from '../codigo.js';
 import * as cartas from '../jogos/cartas.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
@@ -74,6 +75,21 @@ function prepararEAbrir(id, rota, code, voltar) {
   if (id === 'cara-musical') { try { const g = getGame('cara'); setGame('cara', { tema: 'musical', musical: { ...(g.musical || {}), jogo: 'online' } }); } catch { /* segue */ } }
   definirSalaAuto(id, code, voltar); location.hash = rota;
 }
+/** Campo do código de aluno direto na aba Jogos (só na área dos alunos, enquanto ainda não tem código). */
+function atalhoCodigoAluno() {
+  if (!ALUNO() || AC.liberado()) return null;
+  const msg = h('p', { class: 'jg-msg', role: 'status', 'aria-live': 'polite' });
+  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ALUNO', 'aria-label': 'código de aluno',
+    onkeydown: (e) => { if (e.key === 'Enter') ir(); } });
+  async function ir() {
+    msg.textContent = 'conferindo…';
+    try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; } else msg.textContent = 'não achei esse código. confira com a sua professora.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+  }
+  const box = h('section', { class: 'card pad jg-cod-aluno', 'aria-label': 'já tenho código' }, h('b', {}, 'já tem código de aluno? coloque aqui'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'liberar')), msg);
+  document.addEventListener('aluno-acesso', () => box.remove(), { once: true });
+  return box;
+}
+
 function atalhoSala() {
   const msg = h('p', { class: 'jg-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 6, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala',
@@ -132,7 +148,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
