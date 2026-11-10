@@ -83,5 +83,5 @@ export function judgeHits(onsets, expected, win) {
 }
 export const roundOk = (j) => j.total > 0 && j.hits / j.total >= 0.8 && j.extras <= Math.max(1, Math.round(j.total * 0.25));
 /** Janela de acerto: grande nas fases baixas, menor nas altas; o microfone ganha um pouco mais (latência). Fases fáceis e médias (0 a 6) têm folga extra. */
-export const windowFor = (d, mic) => 0.2 - d * 0.01 + (d <= 3 ? 0.06 : d <= 6 ? 0.04 : 0) + (mic ? 0.04 : 0);
+export const windowFor = (d, mic) => 0.2 - d * 0.01 + (d <= 3 ? 0.06 : d <= 6 ? 0.04 : 0) + (mic ? 0.04 : 0) + 0.03;
 export { shuffle };

@@ -246,7 +246,7 @@ function rzBackdrop(g,W,H,dpr){const id=rzThemeId(),k=id+'|'+W+'|'+H;
     if(T.bands){x.fillStyle='rgba(255,209,102,.1)';x.beginPath();x.moveTo(W*.22,0);x.lineTo(W*.36,0);x.lineTo(W*.1,H);x.lineTo(-W*.04,H);x.fill();x.fillStyle='rgba(217,32,49,.14)';x.beginPath();x.moveTo(W*.64,0);x.lineTo(W*.7,0);x.lineTo(W*.52,H);x.lineTo(W*.46,H);x.fill()}
     RZ._bgc=c;RZ._bgk=k}
   g.drawImage(RZ._bgc,0,0)}
-const RZ_WIN={facil:{pf:.11,gd:.24,spd:.6,k:1.4,n:'Fácil'},medio:{pf:.08,gd:.16,k:1.22,spd:.85,n:'Médio'},dificil:{pf:.045,gd:.1,spd:1.12,k:1,n:'Difícil'}};
+const RZ_WIN={facil:{pf:.13,gd:.28,spd:.6,k:1.7,n:'Fácil'},medio:{pf:.1,gd:.2,k:1.5,spd:.85,n:'Médio'},dificil:{pf:.055,gd:.12,spd:1.12,k:1.25,n:'Difícil'}};
 /* teclado com 3, 4, 5, 7 ou 8 teclas: 3 a 5 viram acorde/pentatônica, 7 é a escala, 8 fecha a oitava */
 function rzPSemis(k,minor){const sc=minor?RS_MIN:RS_MAJ;if(k===7) return sc.slice();if(k===8) return sc.concat([12]);
   return k===3?(minor?[0,3,7]:[0,4,7]):k===4?(minor?[0,3,7,10]:[0,4,7,9]):(minor?[0,3,5,7,10]:[0,2,4,7,9])}
