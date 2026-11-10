@@ -38,6 +38,10 @@ export const DICAS = [
   ['parceiros da Bea', 'a Bea tem parceria com a Pad Gorilla: pad de estudo pra treinar em casa. conhece?', 'n-stick'],
   ['parceiros da Bea', 'Spark Cajons: instrumento de percussão que cabe em qualquer rodinha de música.', 'n-squat'],
   ['parceiros da Bea', 'Nagano Drums é outra parceira da Bea. dá uma olhada nos perfis das marcas lá embaixo!', 'n-amp'],
+  // Lojinha e jogos (só na área dos alunos)
+  ['lojinha', 'tem ebook novo na Lojinha! são materiais digitais: dá pra estudar na tela e imprimir pra treinar no papel.', 'n-walk', '#/lojinha', 'ver a lojinha', 'aluno'],
+  ['promoção black friday', 'PROMOÇÃO BLACK FRIDAY: o ebook Bateria Start está pela metade do preço! 44 páginas pra começar do zero.', 'n-amp', '#/lojinha', 'aproveitar', 'aluno'],
+  ['jogos', 'bora jogar? tem bingo, velha, STOP, quebra-cabeça e mais. escolhe um e me desafia!', 'n-skate', '#/jogos', 'ver os jogos', 'aluno'],
   // beaterista, redes
   ['siga a Bea', 'segue a Bea no instagram pra ver os treinos e as novidades da Beaterista!', 'n-walk', IG, 'seguir no instagram'],
   ['canal', 'curtiu? deixa o like e se inscreve no canal do YouTube da Bea!', 'n-skate', YT, 'ver o canal'],
@@ -62,7 +66,7 @@ export function arteDoPaul(arquivo, titulo, sub, alt) {
 let bag = [], last = -1;
 function sortear() {
   if (!bag.length) {
-    bag = DICAS.map((_, i) => i);
+    bag = DICAS.map((_, i) => i).filter((i) => DICAS[i][5] !== 'aluno' || document.documentElement.classList.contains('aluno-on'));
     for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
     if (bag.length > 1 && bag[bag.length - 1] === last) [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
   }
@@ -75,10 +79,11 @@ export function paulDica() {
   const tag = h('small', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
   const mostrar = (it) => {
     const [t, tx, pose, href, rot] = it;
+    const interno = href && String(href).startsWith('#');
     img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
     tag.textContent = t; text.textContent = tx;
     row.replaceChildren(h('button', { class: 'pd-btn', type: 'button', onclick: () => { chirp(); mostrar(sortear()); } }, 'outra ▸'),
-      href ? h('a', { class: 'pd-btn go', href, target: '_blank', rel: 'noopener noreferrer' }, rot || 'abrir') : null);
+      href ? h('a', { class: 'pd-btn go', href, ...(interno ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, rot || 'abrir') : null);
   };
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
   mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo

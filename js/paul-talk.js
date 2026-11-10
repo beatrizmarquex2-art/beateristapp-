@@ -45,6 +45,19 @@ export const THOUGHTS = [
   ['cada estrela conta, continua!'],
   ['será que eu tenho ritmo? tenho sim!'],
   ['psiu… já passou na aba jogos?'],
+  // Lojinha e jogos (só na área dos alunos: o link abre dentro do app)
+  ['tem ebook novo na Lojinha! 📄 dá pra estudar e imprimir', '#/lojinha', 'aluno'],
+  ['PROMOÇÃO BLACK FRIDAY: ebook Bateria Start pela metade do preço! 🖤', '#/lojinha', 'aluno'],
+  ['Bateria Kids: aprenda bateria colorindo! olha na Lojinha', '#/lojinha', 'aluno'],
+  ['Jogo da Memória Musical pra imprimir e recortar, na Lojinha!', '#/lojinha', 'aluno'],
+  ['Robôterista Ensina: figuras rítmicas pra imprimir. vai na Lojinha!', '#/lojinha', 'aluno'],
+  ['bora jogar bingo musical? 🎲', '#/jogos/bingo', 'aluno'],
+  ['me desafia no jogo da velha musical!', '#/jogos/velha', 'aluno'],
+  ['quantas palavras musicais você sabe? joga STOP!', '#/jogos/stop', 'aluno'],
+  ['quebra-cabeça do Paul tocando: monta aí!', '#/jogos/quebra', 'aluno'],
+  ['já jogou o Uno Musical? tem cartas de figuras rítmicas!', '#/jogos/cartas', 'aluno'],
+  ['bora tocar no Toca Aqui? leia e toque no tempo', '#/jogos/toca', 'aluno'],
+  ['aula do Paul de bateria, teclado e violão: vem estudar!', '#/estudos/aulas', 'aluno'],
   ['tum tá tum tum tá!'],
   ['bateristas nunca chegam atrasados, chegam no tempo'],
   ['eu sou só um robozinho, mas sei contar até 4'],
@@ -72,9 +85,11 @@ export function chirp() {
 
 let box = null, hideT = 0, last = -1, bag = [];
 /** Sorteia sem repetir: embaralha todas as falas e só recomeça quando todas já apareceram (a primeira nova nunca é a última antiga). */
+const noAluno = () => document.documentElement.classList.contains('aluno-on');
+const vale = (it) => it[2] !== 'aluno' || noAluno(); // pensamentos "aluno" levam pra telas que só existem na área dos alunos
 function pick() {
   if (!bag.length) {
-    bag = THOUGHTS.map((_, i) => i);
+    bag = THOUGHTS.map((_, i) => i).filter((i) => vale(THOUGHTS[i]));
     for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
     if (bag.length > 1 && bag[bag.length - 1] === last) [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
   }
@@ -88,7 +103,7 @@ export function think(item, ms = 6500) {
   const [text, href] = item || pick();
   if (!box) { box = h('div', { class: 'pt-think', role: 'status' }); document.body.append(box); }
   const bubble = href
-    ? h('a', { class: 'pt-cloud', href, target: '_blank', rel: 'noopener noreferrer' }, text)
+    ? h('a', { class: 'pt-cloud', href, ...(String(href).startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, text)
     : h('span', { class: 'pt-cloud' }, text);
   box.replaceChildren(h('img', { class: 'pt-face', src: 'assets/paul/e02.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }), h('i', { class: 'pt-dot d1' }), h('i', { class: 'pt-dot d2' }), bubble);
   box.style.bottom = `${document.querySelector('.bottom-nav') ? 96 : 22}px`;
