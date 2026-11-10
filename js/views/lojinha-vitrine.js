@@ -29,7 +29,7 @@ export function vitrine() {
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
     h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card', 'data-id': p.id },
       h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: 640, height: 800 })),
-      h('h3', {}, p.nome), h('p', {}, p.desc), botao('Adquirir', p)))),
+      h('h3', {}, p.nome), h('p', {}, p.desc), p.preco ? h('b', { class: 'lj-preco lj-preco-card' }, p.preco) : null, botao('Adquirir', p)))),
     h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))));

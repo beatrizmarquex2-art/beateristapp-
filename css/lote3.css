@@ -702,3 +702,5 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .es-metas{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:14px}.es-metas li.ok{font-weight:700;color:#1f6f78}
 .es-dica-box{display:grid;gap:6px}.es-dica{margin:0;font:600 16px/1.35 var(--body)}.es-cur{display:grid;gap:6px}
 @media (prefers-reduced-motion:reduce){.es-barra i{transition:none}}
+
+.lj-preco-card{display:block;margin:2px 0 6px;font:800 18px var(--body)}
