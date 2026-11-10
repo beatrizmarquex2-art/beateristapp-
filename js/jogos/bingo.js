@@ -1,4 +1,4 @@
-// Bingo musical v2 (tela): Kids primeiro, jogável; sozinho, online por código (backend real), 2 jogadores no mesmo aparelho (uma cartela por vez)
+// Bingo musical v3 (tela): primeira tela simples (4 jeitos de jogar + "mais opções"), SORTEAR e BINGO grandes lado a lado; sozinho, online por código (backend real), 2 jogadores no mesmo aparelho (uma cartela por vez)
 // e sala de aula (sorteador + cartelas para imprimir). Regras puras em bingo-logic.js; sala online em bingo-online.js + supabase/009_bingo_salas.sql.
 import { h } from '../util.js';
 import { confirmSheet, sheet, toast } from '../ui.js';
@@ -10,7 +10,10 @@ import * as ON from './bingo-online.js';
 import { printPack } from './bingo-print.js';
 import { silence } from '../audio.js';
 import { cardBg } from '../views/kids.js';
-import { linha, chips, passo, ajuda } from './opcoes.js';
+import { linha, chips, passo } from './opcoes.js';
+
+// o CSS novo do bingo carrega sozinho (arquivo css/bingo-v3.css), assim não depende de outro lugar ligar
+function cssV3() { try { if (!document.querySelector('link[data-bingo-v3]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'css/bingo-v3.css'; l.setAttribute('data-bingo-v3', ''); document.head.append(l); } } catch { /* sem DOM */ } }
 
 const ID = 'bingo';
 const INTERVALS = [8, 12, 20];
@@ -20,16 +23,17 @@ const DEFAULTS = { tema: 'instrumentos', perfil: 'kids', vitoria: 'qualquer', mo
 const THEME_ICON = { instrumentos: 'bateria', pecas: 'bumbo', figuras: 'colcheia', simbolos: 'clave_sol', artistas: null };
 
 export function mount(host) {
-  let gone = false; let timer = 0; let auto = false; let paused = false; let lastDraw = 0; let modal = 0; let msg = ''; let flash = false;
+  let gone = false; let timer = 0; let due = 0; let left = 0; let extPaused = false; let maisAberto = false; let auto = false; let paused = false; let lastDraw = 0; let modal = 0; let msg = ''; let flash = false;
   const saved = getGame(ID);
   const P = { ...DEFAULTS, ...(saved.prefs || {}) };
   P.names = [String(P.names[0] || 'Jogador 1').slice(0, 14), String(P.names[1] || 'Jogador 2').slice(0, 14)];
   let g = null; let on = null; let screen = 'menu';
   let prevMarks = {}; let shakeCell = null; let celebrated = false; let overlay = null;
+  cssV3();
   const root = h('div', { class: 'jg jg-bingo bg-root' }); host.replaceChildren(root);
   const savePrefs = () => setGame(ID, { prefs: P });
   const persist = () => setGame(ID, { prefs: P, game: g && !g.over ? g : null });
-  const stopTimer = () => { clearTimeout(timer); timer = 0; };
+  const stopTimer = () => { clearTimeout(timer); timer = 0; due = 0; };
   const leaveSpeech = () => { try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch { /* sem voz */ } };
   const speak = (text) => { if (!P.voz) return; try { if (!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'pt-BR'; u.rate = 0.95; speechSynthesis.speak(u); } catch { /* sem voz */ } };
 
@@ -54,21 +58,24 @@ export function mount(host) {
     const v = view(); if (!v || !v.canDraw) return;
     msg = '';
     if (v.online) {
-      sfx('draw'); try { await on.conn.sortear(!!fromAuto); } catch (e) { msg = e.message || 'não consegui sortear agora'; render(); }
+      sfx('draw'); try { await on.conn.sortear(!!fromAuto); } catch (e) { msg = (e && e.message) || 'não consegui sortear agora. tente de novo'; render(); }
       return;
     }
-    g = B.drawNext(g); sfx('draw'); flash = !reduced(); persist(); announceNow(view()); render(); flash = false; schedule();
+    g = B.drawNext(g); sfx('draw'); flash = !reduced(); persist(); announceNow(view()); render(); flash = false; stopTimer(); schedule();
   }
-  function schedule() {
-    stopTimer(); const v = view();
-    if (!auto || gone || !v || v.over || paused || document.hidden || modal || screen !== 'play') return;
-    if (v.online && (!v.host || !v.other || !v.other.presente)) return;
-    if (!v.canDraw) return;
-    timer = setTimeout(() => { timer = 0; doDraw(true); }, (v.interval || P.intervalo) * 1000);
+  /** Agenda o próximo sorteio automático. `ms`: tempo que falta (ao retomar); sem `ms`, mantém o relógio que já corre. */
+  function schedule(ms) {
+    const v = view();
+    if (!auto || gone || !v || v.over || paused || extPaused || document.hidden || modal || screen !== 'play') { stopTimer(); return; }
+    if (v.online && (!v.host || !v.other || !v.other.presente)) { stopTimer(); return; }
+    if (!v.canDraw) { stopTimer(); return; }
+    if (timer && ms == null) return; // já tem um relógio andando: não reinicia a cada atualização da tela
+    stopTimer(); const wait = ms != null ? ms : (v.interval || P.intervalo) * 1000; due = Date.now() + wait;
+    timer = setTimeout(() => { timer = 0; due = 0; doDraw(true); }, wait);
   }
-  function setAuto(on_) { auto = on_; P.draw = on_ ? 'auto' : 'manual'; savePrefs(); render(); schedule(); }
+  function setAuto(on_) { auto = on_; P.draw = on_ ? 'auto' : 'manual'; savePrefs(); stopTimer(); render(); schedule(); }
   function setPaused(p) {
-    paused = p; stopTimer();
+    paused = p; stopTimer(); left = 0;
     if (on && on.conn) on.conn.pausar(p).catch(() => {});
     render(); schedule();
   }
@@ -80,22 +87,22 @@ export function mount(host) {
     const id = v.cards[ci === 0 && v.online ? 0 : ci].ids[cell];
     if (v.autoMarcar) { speak(nameOf(v, id)); sfx('tap'); msg = ''; render(); return; } // Kids com marcação automática: tocar só mostra/lê o nome
     if (v.online) {
-      const marked = v.cards[0].marks[cell]; if (!marked && v.drawn.indexOf(id) < 0) { msg = `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!`; shakeCell = `0:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
-      msg = ''; sfx('tap'); try { await on.conn.marcar(cell, !marked); } catch { msg = 'sem conexão agora'; render(); } return;
+      const marked = v.cards[0].marks[cell]; if (!marked && v.drawn.indexOf(id) < 0) { msg = `“${nameOf(v, id)}” ainda não saiu. quando o Paul sortear, é só tocar!`; shakeCell = `0:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
+      msg = ''; sfx('tap'); try { await on.conn.marcar(cell, !marked); } catch { msg = 'sem internet agora. tente de novo'; render(); } return;
     }
     const r = B.toggleMark(g, ci, cell);
-    if (!r.ok) { msg = r.reason === 'nao-sorteado' ? `“${nameOf(v, id)}” ainda não saiu. Quando o Paul anunciar, é só marcar!` : r.reason === 'vez' ? 'Não é a sua vez de marcar.' : ''; shakeCell = `${ci}:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
+    if (!r.ok) { msg = r.reason === 'nao-sorteado' ? `“${nameOf(v, id)}” ainda não saiu. quando o Paul sortear, é só tocar!` : r.reason === 'vez' ? 'não é a sua vez de marcar' : ''; shakeCell = `${ci}:${cell}`; sfx('bad'); render(); shakeCell = null; return; }
     g = r.g; msg = ''; sfx('tap'); persist(); render();
   }
   async function claim(ci) {
     const v = view(); if (!v || v.over) return;
     if (v.online) {
-      try { await on.conn.bingo(); } catch { msg = 'sem conexão agora'; render(); } return;
+      try { await on.conn.bingo(); } catch (e) { msg = (e && e.message) || 'sem internet agora. tente de novo'; render(); } return;
     }
     const r = B.declare(g, ci);
-    if (!r.ok) { msg = r.reason === 'falta-marcar' ? 'Você tem três em linha, mas falta marcar essas casas. Marque e confirme de novo!' : r.reason === 'vez' ? 'Não é a sua vez.' : 'Ainda não: confira se três casas em linha já foram sorteadas e marcadas.'; sfx('bad'); render(); return; }
+    if (!r.ok) { msg = r.reason === 'falta-marcar' ? 'você tem 3 em linha, mas falta marcar. toque nas figuras e aperte BINGO de novo' : r.reason === 'vez' ? 'não é a sua vez' : 'ainda não: precisa de 3 em linha que já saíram'; sfx('bad'); render(); return; }
     g = r.g; stopTimer(); persist();
-    if (r.pending) { msg = 'Bingo pedido! Passe a vez para o outro jogador ver a cartela dele.'; sfx('tap'); render(); return; }
+    if (r.pending) { msg = 'bingo pedido! passe a vez pro outro jogador ver a cartela dele'; sfx('tap'); render(); return; }
     finishSound(); render();
   }
   function finishSound() { const v = view(); sfx('win'); setTimeout(() => sfx('win'), 650); const r = v && v.result; if (v && r) celebrate(v); if (r) { const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : ''; speak(r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : `Bingo! Três na ${KINDS[kind] || 'linha'}!`); } }
@@ -110,39 +117,41 @@ export function mount(host) {
   const seg = (key, list, onPick) => h('div', { class: 'jg-seg bg-seg', role: 'radiogroup' }, ...list.map(([val, label]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(P[key] === val), class: P[key] === val ? 'on' : '', onclick: () => { P[key] = val; savePrefs(); if (onPick) onPick(val); else menu(); } }, label)));
   const sheetOpen = (title, build) => { modal++; stopTimer(); sheet(title, build, { onClose: () => { modal = Math.max(0, modal - 1); schedule(); } }); };
 
-  const STEPS = ['Escolha seu tema e como quer jogar.', 'Olhe as nove imagens da sua cartela.', 'O Paul anuncia o item sorteado. Você pode tocar em SORTEAR ou ativar AUTO.', 'Se o item estiver na sua cartela, marque! No Kids, pode marcar sozinho.', 'Completou três na horizontal, vertical ou diagonal? BINGO! O sistema confere se os itens realmente saíram.'];
+  const COMO = ['1  olhe a sua cartela', '2  o Paul sorteia um item: toque nele se você tem', '3 em linha = BINGO!'];
+  const MODOS = [['solo', 'sozinho', 'você e o Paul'], ['online', 'com alguém', 'em 2 celulares'], ['mesmo', 'no mesmo aparelho', '2 jogadores'], ['sala', 'sala de aula', 'sorteador e cartelas']];
 
   /* ================= MENU ================= */
   function menu() {
-    stopTimer(); auto = false; paused = false; g = null; screen = 'menu'; leaveSpeech(); closeOverlay(); celebrated = false; prevMarks = {};
-    const resume = B.validGame(saved.game) && !saved.game.over && saved.game.mode !== 'online' ? saved.game : null;
+    stopTimer(); auto = false; paused = false; left = 0; g = null; screen = 'menu'; leaveSpeech(); closeOverlay(); celebrated = false; prevMarks = {};
+    const fresh = getGame(ID); // sempre lê de novo: a partida guardada muda enquanto a pessoa joga
+    const resume = B.validGame(fresh.game) && !fresh.game.over && fresh.game.mode !== 'online' ? fresh.game : null;
     const sess = ON.lerSessao ? ON.lerSessao() : null;
     const pre = salaDoLink();
-    // tela de começo organizada: tema em capinhas, uma linha por escolha, regras escondidas no "?"
     const temaBtn = (t) => { const [id, nome] = t; const ico = THEME_ICON[id];
       const btn = h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.tema === id), 'aria-label': nome, class: `jo-tema${P.tema === id ? ' on' : ''}`, onclick: () => { P.tema = id; savePrefs(); menu(); } });
       const icon = h('span', { class: 'jo-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
       btn.append(icon, h('b', {}, nome)); return btn; };
-    const kids = P.perfil === 'kids';
-    const modos = [['solo', 'Sozinho', 'um'], ['online', 'Jogar online por código', 'celular'], ['mesmo', '2 jogadores no mesmo aparelho', 'dois'], ['sala', 'Sala de aula', 'sala']];
-    const go = () => { if (P.mode === 'online') return; begin(); };
     const set = (k, v, extra) => { P[k] = v; if (extra) extra(v); savePrefs(); menu(); };
-    root.replaceChildren(...[
-      resume ? h('div', { class: 'bg-resume' }, h('span', {}, `Partida em andamento (${B.THEME_NAME[resume.tema]}, ${B.counter(resume).toLowerCase()})`), h('button', { class: 'btn primary', type: 'button', onclick: () => { g = resume; screen = 'play'; render(); schedule(); } }, 'continuar')) : null,
-      sess ? h('div', { class: 'bg-resume' }, h('span', {}, `Você tem uma sala online aberta (${sess.code}).`), h('button', { class: 'btn primary', type: 'button', onclick: () => reconnect(sess) }, 'voltar à sala'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { ON.limparSessao(); menu(); } }, 'sair da sala')) : null,
-      h('div', { class: 'jo-topo' }, h('b', {}, 'tema'), ajuda('Como jogar', h('ol', {}, ...STEPS.map((x) => h('li', {}, x))))),
-      h('div', { class: 'jo-temas', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(temaBtn)),
+    const modo = (m) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.mode === m[0]), class: `bv-modo${P.mode === m[0] ? ' on' : ''}`, onclick: () => set('mode', m[0]) }, h('b', {}, m[1]), h('small', {}, m[2]));
+    const mais = h('details', { class: 'bv-mais', open: maisAberto ? '' : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções'),
       h('div', { class: 'jo-card' },
-        linha('quem joga', chips(modos, P.mode, (v) => set('mode', v), 'Como quer jogar')),
-        linha('ajuda', chips([['kids', 'kids'], ['classico', 'clássico']], P.perfil, (v) => set('perfil', v, (x) => { P.marcar = x === 'classico' ? 'eu' : 'auto'; }), 'Ajuda')),
+        P.mode !== 'sala' ? linha('marcar', chips([['auto', 'o jogo marca'], ['eu', 'eu marco']], P.marcar, (v) => set('marcar', v, (x) => { P.perfil = x === 'auto' ? 'kids' : 'classico'; }), 'Quem marca')) : null,
         linha('vitória', passo(B.VICTORIES, P.vitoria, (v) => set('vitoria', v), 'vitória por')),
-        linha('sorteio', chips([['manual', 'manual'], ['auto', 'automático']], P.draw, (v) => set('draw', v), 'Sorteio'), P.draw === 'auto' ? passo(INTERVALS.map((x) => [x, `${x} s`]), P.intervalo, (v) => set('intervalo', v), 'intervalo') : null),
-        P.mode !== 'sala' ? linha('marcar', chips([['auto', 'automático'], ['eu', 'eu marco']], P.marcar, (v) => set('marcar', v), 'Marcação')) : null,
-        linha('voz do Paul', chips([[true, 'ligada'], [false, 'desligada']], !!P.voz, (v) => set('voz', v, (x) => { if (x) speak('A voz do Paul está ligada.'); else leaveSpeech(); }), 'Voz do Paul'))),
-      P.mode === 'mesmo' ? h('div', { class: 'bg-names' }, ...[0, 1].map((i) => h('label', { class: 'field' }, h('span', {}, `Jogador ${i + 1}`), h('input', { type: 'text', maxlength: 14, value: P.names[i], 'aria-label': `Nome do jogador ${i + 1}`, onchange: (e) => { P.names[i] = (e.target.value.trim() || `Jogador ${i + 1}`).slice(0, 14); savePrefs(); } })))) : null,
+        linha('sorteio', chips([['manual', 'eu aperto'], ['auto', 'automático']], P.draw, (v) => set('draw', v), 'Sorteio'), P.draw === 'auto' ? passo(INTERVALS.map((x) => [x, `${x} s`]), P.intervalo, (v) => set('intervalo', v), 'intervalo') : null),
+        linha('voz do Paul', chips([[true, 'ligada'], [false, 'desligada']], !!P.voz, (v) => set('voz', v, (x) => { if (x) speak('A voz do Paul está ligada.'); else leaveSpeech(); }), 'Voz do Paul'))));
+    root.replaceChildren(...[
+      sess ? h('div', { class: 'bg-resume bv-volta' }, h('button', { class: 'btn primary bv-bigbtn', type: 'button', onclick: () => reconnect(sess) }, `voltar pra sala ${sess.code}`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { ON.limparSessao(); menu(); } }, 'sair dessa sala')) : null,
+      resume ? h('div', { class: 'bg-resume bv-volta' }, h('button', { class: 'btn primary bv-bigbtn', type: 'button', onclick: () => { g = resume; auto = g.draw === 'auto'; screen = 'play'; render(); schedule(); } }, 'continuar partida'), h('small', {}, `${B.THEME_NAME[resume.tema].toLowerCase()} · ${B.counter(resume).toLowerCase()}`)) : null,
+      h('ol', { class: 'bv-como', 'aria-label': 'Como jogar' }, ...COMO.map((x) => h('li', {}, x))),
+      h('p', { class: 'bv-tit' }, 'como quer jogar?'),
+      h('div', { class: 'bv-modos', role: 'radiogroup', 'aria-label': 'Como quer jogar' }, ...MODOS.map(modo)),
+      h('p', { class: 'bv-tit' }, 'tema'),
+      h('div', { class: 'jo-temas', role: 'radiogroup', 'aria-label': 'Tema do bingo' }, ...B.THEME_LIST.map(temaBtn)),
+      P.mode === 'mesmo' ? h('div', { class: 'bg-names' }, ...[0, 1].map((i) => h('label', { class: 'field' }, h('span', {}, `jogador ${i + 1}`), h('input', { type: 'text', maxlength: 14, value: P.names[i], 'aria-label': `Nome do jogador ${i + 1}`, onchange: (e) => { P.names[i] = (e.target.value.trim() || `Jogador ${i + 1}`).slice(0, 14); savePrefs(); } })))) : null,
       P.mode === 'online' ? onlineForm(pre) : null,
-      P.mode === 'sala' ? h('button', { class: 'btn', type: 'button', onclick: () => printSheet(P.tema) }, '🖨 Imprimir cartelas e fichas deste tema') : null,
-      P.mode !== 'online' ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary jo-go', type: 'button', onclick: go }, P.mode === 'sala' ? 'abrir o sorteador' : 'jogar')) : null,
+      P.mode === 'sala' ? h('button', { class: 'btn small', type: 'button', onclick: () => printSheet(P.tema) }, 'imprimir cartelas e fichas deste tema') : null,
+      P.mode !== 'online' ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bv-bigbtn bv-go', type: 'button', onclick: begin }, P.mode === 'sala' ? 'abrir o sorteador' : 'jogar')) : null,
+      mais,
     ].flat().filter(Boolean));
     if (pre && P.mode !== 'online') { P.mode = 'online'; savePrefs(); menu(); }
   }
@@ -162,27 +171,27 @@ export function mount(host) {
     const nome = h('input', { type: 'text', maxlength: 20, placeholder: 'seu nome', value: P.nome || '', 'aria-label': 'Seu nome', autocomplete: 'off' });
     const code = h('input', { type: 'text', class: 'jg-code-in', maxlength: 6, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO', 'aria-label': 'Código da sala', value: pre || '', oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); } });
     const err = h('p', { class: 'jg-msg', 'aria-live': 'polite' });
-    const needName = () => { const n = nome.value.trim(); if (!n) { err.textContent = 'Escreva seu nome primeiro.'; nome.focus(); return null; } P.nome = n; savePrefs(); return n; };
+    const needName = () => { const n = nome.value.trim(); if (!n) { err.textContent = 'escreva seu nome primeiro'; nome.focus(); return null; } P.nome = n; savePrefs(); return n; };
     const create = async () => {
-      const n = needName(); if (!n) return; err.textContent = 'Criando a sala…'; P.seen = true;
+      const n = needName(); if (!n) return; err.textContent = 'criando a sala…'; P.seen = true;
       try {
         const s = await ON.salaCriar({ nome: n, tema: P.tema, perfil: P.perfil, vitoria: P.vitoria, modo: P.draw, intervalo: P.intervalo, autoMarcar: P.marcar === 'auto' });
         ON.salvarSessao(s); connect(s);
-      } catch (e) { err.textContent = (e && e.message) || 'Não consegui criar a sala. Confira a internet e tente de novo.'; }
+      } catch (e) { err.textContent = (e && e.message) || 'não consegui criar a sala. confira a internet e tente de novo'; }
     };
     const join = async () => {
-      const n = needName(); if (!n) return; const c = code.value.trim(); if (c.length < 6) { err.textContent = 'O código tem 6 letras ou números.'; return; }
-      err.textContent = 'Entrando…';
-      try { const s = await ON.salaEntrar({ code: c, nome: n }); ON.salvarSessao(s); connect(s); } catch (e) { err.textContent = (e && e.message) || 'Não achei essa sala. Confira o código com quem criou.'; }
+      const n = needName(); if (!n) return; const c = code.value.trim(); if (c.length < 6) { err.textContent = 'o código tem 6 letras ou números'; return; }
+      err.textContent = 'entrando…';
+      try { const s = await ON.salaEntrar({ code: c, nome: n }); ON.salvarSessao(s); connect(s); } catch (e) { err.textContent = (e && e.message) || 'não achei essa sala. confira o código com quem criou'; }
     };
-    return h('div', { class: 'bg-online' }, h('label', { class: 'field' }, h('span', {}, 'Seu nome'), nome),
-      h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bg-bigbtn', type: 'button', onclick: create }, 'CRIAR SALA')),
-      h('p', { class: 'jg-lab' }, 'ou entre com o código'), h('div', { class: 'jg-actions row' }, code, h('button', { class: 'btn', type: 'button', onclick: join }, 'ENTRAR COM CÓDIGO')), err);
+    return h('div', { class: 'bg-online' }, h('label', { class: 'field' }, h('span', {}, 'seu nome'), nome),
+      h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bv-bigbtn', type: 'button', onclick: create }, 'criar sala')),
+      h('p', { class: 'jg-lab' }, 'ou entre na sala de um amigo'), h('div', { class: 'jg-actions row' }, code, h('button', { class: 'btn', type: 'button', onclick: join }, 'entrar com código')), err);
   }
   function connect(s) {
     on = { code: s.code, token: s.token, slot: s.slot, state: null, link: true, conn: null };
     on.conn = ON.conectar({ code: s.code, token: s.token, onEstado: (st) => { on.state = st; onState(); }, onLink: (ok) => { on.link = ok; if (screen !== 'menu') render(); schedule(); },
-      onErro: (e) => { const m = (e && e.message) || 'A sala não existe mais.'; try { ON.limparSessao(); } catch { /* ok */ } on = null; stopTimer(); auto = false; menu(); toast(m, { ms: 4500 }); } });
+      onErro: (e) => { const m = (e && e.message) || 'essa sala não existe mais'; try { ON.limparSessao(); } catch { /* ok */ } on = null; stopTimer(); auto = false; menu(); toast(m, { ms: 4500 }); } });
     screen = 'lobby'; render();
   }
   async function reconnect(s) { connect(s); }
@@ -195,7 +204,7 @@ export function mount(host) {
     if (st.idx && lastStatus !== `${st.idx}`) { lastStatus = `${st.idx}`; if (st.idx > 0) { flash = !reduced(); sfx('draw'); announceNow(view()); } }
     if (st.status === 'fim' && st.resultado) { stopTimer(); finishSound(); }
     if (st.status === 'jogando' && !st.idx) { lastStatus = ''; celebrated = false; prevMarks = {}; closeOverlay(); }
-    if (st.erro === 'invalido') msg = 'Ainda não: confira se três casas em linha já saíram e estão marcadas.';
+    if (st.erro === 'invalido') msg = 'ainda não: precisa de 3 em linha que já saíram';
     render(); flash = false; schedule();
   }
   function lobby() {
@@ -203,13 +212,13 @@ export function mount(host) {
     const invite = ON.linkConvite ? ON.linkConvite(code) : '';
     const copy = async (text, ok) => { try { await navigator.clipboard.writeText(text); toast(ok, { ms: 1800 }); } catch { toast('Copie manualmente: ' + text, { ms: 4000 }); } };
     root.replaceChildren(
-      h('p', { class: 'jg-lab' }, 'Código da sala'), h('div', { class: 'jg-code', role: 'status', 'aria-label': `código ${code.split('').join(' ')}` }, code),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn', type: 'button', onclick: () => copy(code, 'Código copiado ✓') }, 'Copiar código'), h('button', { class: 'btn', type: 'button', onclick: () => copy(invite, 'Link copiado ✓') }, 'Copiar link de convite')),
-      h('ul', { class: 'bg-players' }, h('li', {}, `${st && st.host ? st.eu.nome : (other ? other.nome : '…')} (anfitrião) ✓`), h('li', {}, other || !host ? `${host ? other.nome : (st ? st.eu.nome : '')} ${host ? (other.presente ? '✓ conectado' : '… ausente') : '✓'}` : 'esperando o outro jogador entrar…')),
-      st ? h('p', { class: 'jg-p' }, `${B.THEME_NAME[st.config.tema]} · ${st.config.perfil === 'kids' ? 'Kids' : 'Clássico'} · ${(B.VICTORIES.find((x) => x[0] === st.config.vitoria) || [])[1]} · sorteio ${st.config.modo === 'auto' ? `automático (${st.config.intervalo} s)` : 'manual'}`) : null,
-      host ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bg-bigbtn', type: 'button', disabled: !(other && other.presente), onclick: async () => { try { await on.conn.iniciar(); } catch (e) { msg = (e && e.message) || ''; render(); } } }, 'COMEÇAR')) : h('p', { class: 'jg-p muted' }, 'Esperando o anfitrião começar…'),
-      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, on.link ? msg : 'Sem conexão… tentando de novo.'),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: leaveOnline }, host ? 'Fechar a sala' : 'Sair da sala')));
+      h('p', { class: 'jg-lab' }, 'código da sala: passe pro seu amigo'), h('div', { class: 'jg-code', role: 'status', 'aria-label': `código ${code.split('').join(' ')}` }, code),
+      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn', type: 'button', onclick: () => copy(code, 'código copiado ✓') }, 'copiar código'), h('button', { class: 'btn', type: 'button', onclick: () => copy(invite, 'link copiado ✓') }, 'copiar link')),
+      h('ul', { class: 'bg-players' }, h('li', {}, `${st && st.host ? st.eu.nome : (other ? other.nome : '…')} (criou a sala) ✓`), h('li', {}, other || !host ? `${host ? other.nome : (st ? st.eu.nome : '')} ${host ? (other.presente ? '✓ conectado' : '… ausente') : '✓'}` : 'esperando o outro jogador entrar…')),
+      st ? h('p', { class: 'jg-p' }, `${B.THEME_NAME[st.config.tema]} · ${st.config.perfil === 'kids' ? 'o jogo marca' : 'cada um marca'} · ${(B.VICTORIES.find((x) => x[0] === st.config.vitoria) || [])[1]} · sorteio ${st.config.modo === 'auto' ? `automático (${st.config.intervalo} s)` : 'manual'}`) : null,
+      host ? h('div', { class: 'bg-go' }, h('button', { class: 'btn primary bv-bigbtn', type: 'button', disabled: !(other && other.presente), onclick: async () => { try { await on.conn.iniciar(); } catch (e) { msg = (e && e.message) || ''; render(); } } }, 'começar')) : h('p', { class: 'jg-p muted' }, 'esperando quem criou a sala começar…'),
+      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, on.link ? msg : 'sem internet… tentando de novo'),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: leaveOnline }, host ? 'fechar a sala' : 'sair da sala')));
   }
   async function leaveOnline() {
     const had = on; on = null; stopTimer(); auto = false;
@@ -221,11 +230,11 @@ export function mount(host) {
   /* ================= JOGO ================= */
   function callCard(v) {
     const id = v.current;
-    const text = id ? `Saiu: ${nameOf(v, id)}!` : (v.mode === 'sala' ? 'Toque em SORTEAR AGORA para começar' : 'Toque em SORTEAR AGORA');
+    const text = id ? `Saiu: ${nameOf(v, id)}!` : 'aperte SORTEAR pro Paul começar';
     const sparks = flash && id ? h('span', { class: 'bg-sparks', 'aria-hidden': 'true' }, ...['✦', '★', '✦', '♪', '★', '♫'].map((c, i) => h('i', { style: `--a:${i * 60}deg;--d:${i * 0.05}s` }, c))) : null;
     const card = h('button', { type: 'button', class: `bg-call${flash ? ' flash' : ''}`, 'aria-label': id ? `Item sorteado: ${nameOf(v, id)}. Toque para ampliar` : 'Nenhum item sorteado ainda', disabled: !id || null, onclick: () => bigView(v, id) },
-      sparks, id ? pic(v, id, 'bg-cpic') : h('span', { class: 'bg-cpic bg-empty', 'aria-hidden': 'true' }, '🎵'), h('b', {}, id ? nameOf(v, id) : 'Vamos começar?'), v.mode === 'online' && !v.host ? h('small', {}, 'O anfitrião sorteia para os dois.') : null);
-    return h('div', { class: 'bg-callwrap' }, h('div', { class: 'bg-paul' }, robo({ mood: id ? 'cheer' : 'happy', size: 46 }).el, h('p', { class: 'bg-say', role: 'status', 'aria-live': 'polite' }, text, id && v.mode !== 'sala' ? h('small', {}, ' Você tem esse na cartela?') : null)), card);
+      sparks, id ? pic(v, id, 'bg-cpic') : h('span', { class: 'bg-cpic bg-empty', 'aria-hidden': 'true' }, '🎵'), h('b', {}, id ? nameOf(v, id) : 'vamos começar?'), v.mode === 'online' && !v.host ? h('small', {}, 'quem criou a sala sorteia pros dois') : null);
+    return h('div', { class: 'bg-callwrap' }, h('div', { class: 'bg-paul' }, robo({ mood: id ? 'cheer' : 'happy', size: 46 }).el, h('p', { class: 'bg-say', role: 'status', 'aria-live': 'polite' }, text, id && v.mode !== 'sala' ? h('small', {}, ' você tem esse na cartela?') : null)), card);
   }
   function bigView(v, id) {
     if (!id) return;
@@ -241,19 +250,21 @@ export function mount(host) {
   function announceRepeat() { const v = view(); if (!v || !v.current) return; const t = `Saiu: ${nameOf(v, v.current)}!`; if (P.voz) speak(t); else speakOnce(t); flash = !reduced(); sfx('tap'); render(); flash = false; }
 
   function controls(v) {
-    const canHostDraw = v.canDraw; const waitTurn = v.mode === 'mesmo' && v.round && !v.round.done.every(Boolean);
-    const drawBtn = h('button', { class: 'btn primary bg-bigbtn bg-draw', type: 'button', disabled: !canHostDraw || null, onclick: () => doDraw(false) }, v.idx >= v.total ? 'Acabou o sorteio' : v.online && !v.host ? 'O anfitrião sorteia' : 'SORTEAR AGORA');
     const canAuto = !v.over && (!v.online || v.host);
+    const fim = v.idx >= v.total;
+    const sortearTxt = fim ? 'acabou o sorteio' : v.online && !v.host ? 'quem criou sorteia' : 'SORTEAR';
+    const drawBtn = h('button', { class: 'btn primary bv-bigbtn bg-draw', type: 'button', disabled: !v.canDraw || null, onclick: () => doDraw(false) }, sortearTxt);
+    const bingoBtn = v.mode === 'sala' ? null : h('button', { class: 'btn primary bv-bigbtn bg-bingo', type: 'button', onclick: () => claim(v.mode === 'mesmo' ? v.active : 0) }, 'BINGO!');
+    const waitTurn = v.mode === 'mesmo' && v.round && !v.round.done.every(Boolean);
     return h('div', { class: 'bg-ctl' },
-      drawBtn,
-      waitTurn ? h('p', { class: 'jg-p muted' }, v.round.active === 0 ? `Falta ${v.cards[0].name} olhar a cartela e depois ${v.cards[1].name}.` : `Falta ${v.cards[1].name} olhar a cartela.`) : null,
-      h('div', { class: 'jg-actions row' },
-        canAuto ? h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(auto), onclick: () => setAuto(!auto) }, auto ? `AUTO: desligar (${v.interval || P.intervalo} s)` : 'AUTO: ligar') : null,
-        auto && canAuto ? h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(paused), onclick: () => setPaused(!paused) }, paused ? '▶ Continuar' : '⏸ Pausar') : null,
-        !v.online && v.mode !== 'sala' || v.online ? null : null,
-        h('button', { class: 'btn small ghost', type: 'button', disabled: !v.current || null, onclick: announceRepeat }, '🔁 Repetir anúncio'),
-        h('button', { class: 'btn small ghost', type: 'button', onclick: historySheet }, '🕘 Histórico')),
-      auto && canAuto ? h('label', { class: 'bg-int' }, h('span', {}, 'Intervalo'), h('select', { 'aria-label': 'Intervalo do sorteio automático', onchange: (e) => { const n = Number(e.target.value); P.intervalo = n; if (g) g.intervalo = n; savePrefs(); if (g) persist(); render(); schedule(); } }, ...INTERVALS.map((s) => h('option', { value: s, selected: (v.interval || P.intervalo) === s ? '' : null }, `${s} segundos`)))) : null);
+      h('div', { class: 'bv-duo' }, drawBtn, bingoBtn),
+      waitTurn ? h('p', { class: 'jg-p muted' }, v.round.active === 0 ? `falta ${v.cards[0].name} olhar a cartela e depois ${v.cards[1].name}` : `falta ${v.cards[1].name} olhar a cartela`) : null,
+      h('div', { class: 'jg-actions row bv-peq' },
+        canAuto ? h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(auto), onclick: () => setAuto(!auto) }, auto ? `automático: desligar (${v.interval || P.intervalo} s)` : 'sortear sozinho') : null,
+        auto && canAuto ? h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(paused), onclick: () => setPaused(!paused) }, paused ? '▶ continuar' : '⏸ pausar') : null,
+        h('button', { class: 'btn small ghost', type: 'button', disabled: !v.current || null, onclick: announceRepeat }, '🔁 repetir'),
+        h('button', { class: 'btn small ghost', type: 'button', onclick: historySheet }, '🕘 histórico')),
+      auto && canAuto ? h('label', { class: 'bg-int' }, h('span', {}, 'intervalo'), h('select', { 'aria-label': 'Intervalo do sorteio automático', onchange: (e) => { const n = Number(e.target.value); P.intervalo = n; if (g) g.intervalo = n; savePrefs(); if (g) persist(); stopTimer(); render(); schedule(); } }, ...INTERVALS.map((s) => h('option', { value: s, selected: (v.interval || P.intervalo) === s ? '' : null }, `${s} segundos`)))) : null);
   }
 
   const LETTERS = ['B', 'I', 'N', 'G', 'O'];
@@ -297,19 +308,19 @@ export function mount(host) {
     const r = v.result; if (!r) return null;
     const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : '';
     let title;
-    if (r.tipo === 'empate') title = 'Empate! Bingo para os dois 🤝';
-    else if (v.online) title = r.vencedores.includes(v.mySlot) ? 'Você fez BINGO! 🤘' : `${v.other ? v.other.nome : 'O outro jogador'} fez BINGO!`;
-    else if (v.cards.length > 1) title = `${v.cards[r.vencedores[0]].name} fez BINGO! 🤘`; else title = 'BINGO! Você venceu 🤘';
-    return h('div', { class: 'jg-result bg-result', role: 'status' }, h('h3', { class: 'hand' }, title), kind ? h('p', {}, `Três na ${kind}.`) : null,
+    if (r.tipo === 'empate') title = 'empate! bingo pros dois 🤝';
+    else if (v.online) title = r.vencedores.includes(v.mySlot) ? 'você fez BINGO! 🤘' : `${v.other ? v.other.nome : 'o outro jogador'} fez BINGO!`;
+    else if (v.cards.length > 1) title = `${v.cards[r.vencedores[0]].name} fez BINGO! 🤘`; else title = 'BINGO! você venceu 🤘';
+    return h('div', { class: 'jg-result bg-result', role: 'status' }, h('h3', { class: 'hand' }, title), kind ? h('p', {}, `3 na ${kind}.`) : null,
       h('div', { class: 'jg-actions row' },
-        v.online ? (v.host ? h('button', { class: 'btn primary', type: 'button', onclick: async () => { try { await on.conn.iniciar(); } catch { /* ok */ } } }, 'Revanche') : h('span', { class: 'muted' }, 'O anfitrião pode começar a revanche.')) : h('button', { class: 'btn primary', type: 'button', onclick: begin }, v.cards.length > 1 ? 'Revanche (cartelas novas)' : 'Jogar de novo'),
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => (v.online ? leaveOnline() : menu()) }, 'Voltar ao menu')));
+        v.online ? (v.host ? h('button', { class: 'btn primary', type: 'button', onclick: async () => { try { await on.conn.iniciar(); } catch { /* ok */ } } }, 'jogar de novo') : h('span', { class: 'muted' }, 'quem criou a sala começa outra rodada')) : h('button', { class: 'btn primary', type: 'button', onclick: begin }, 'jogar de novo'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => (v.online ? leaveOnline() : menu()) }, 'voltar ao início')));
   }
   function statusBar(v) {
-    const label = v.mode === 'online' ? (on.link ? `● online · sala ${on.code}` : '○ sem conexão, tentando de novo…') : v.mode === 'mesmo' ? '2 jogadores · mesmo aparelho' : v.mode === 'sala' ? 'Sala de aula · sorteador' : 'Sozinho';
-    return h('div', { class: 'bg-status' }, h('b', { 'aria-live': 'polite' }, `Sorteados: ${v.idx} de ${v.total}`), h('span', { class: on && !on.link ? 'bad' : '' }, label),
-      v.paused || (v.online && v.paused) ? h('span', { class: 'bad' }, '⏸ sorteio pausado') : null,
-      v.online && v.other ? h('span', { class: v.other.presente ? '' : 'bad' }, v.other.presente ? `${v.other.nome} ✓` : `${v.other.nome} ausente: sorteio pausado`) : null);
+    const label = v.mode === 'online' ? (on.link ? `● online · sala ${on.code}` : '○ sem internet, tentando de novo…') : v.mode === 'mesmo' ? '2 jogadores · mesmo aparelho' : v.mode === 'sala' ? 'sala de aula · sorteador' : 'sozinho';
+    return h('div', { class: 'bg-status' }, h('b', { 'aria-live': 'polite' }, `saíram ${v.idx} de ${v.total}`), h('span', { class: on && !on.link ? 'bad' : '' }, label),
+      v.paused || (v.online && v.paused) ? h('span', { class: 'bad' }, '⏸ pausado') : null,
+      v.online && v.other ? h('span', { class: v.other.presente ? '' : 'bad' }, v.other.presente ? `${v.other.nome} ✓` : `${v.other.nome} saiu da tela: sorteio parado`) : null);
   }
 
   function play() {
@@ -317,29 +328,26 @@ export function mount(host) {
     const mesmo = v.mode === 'mesmo'; const ci = v.active;
     const parts = [statusBar(v)];
     if (v.mode === 'sala') {
-      parts.push(callCard(v), controls(v), h('p', { class: 'jg-p' }, `Tema: ${B.THEME_NAME[v.tema]} · vitória: ${(B.VICTORIES.find((x) => x[0] === v.vitoria) || [])[1]}. Cartelas de papel não ficam conectadas: todos usam esta mesma sequência.`),
-        h('div', { class: 'jg-actions row' }, h('button', { class: 'btn', type: 'button', onclick: () => printSheet(v.tema) }, '🖨 Imprimir cartelas e fichas'), h('button', { class: 'btn ghost', type: 'button', onclick: () => fullscreen() }, 'Tela cheia'), h('button', { class: 'btn ghost', type: 'button', onclick: newRound }, 'Nova rodada')));
+      parts.push(callCard(v), controls(v), h('p', { class: 'jg-p' }, `tema: ${B.THEME_NAME[v.tema].toLowerCase()} · vitória: ${((B.VICTORIES.find((x) => x[0] === v.vitoria) || [])[1] || '').toLowerCase()}. as cartelas de papel não ficam ligadas ao aparelho: todo mundo usa esta mesma sequência`),
+        h('div', { class: 'jg-actions row' }, h('button', { class: 'btn small', type: 'button', onclick: () => printSheet(v.tema) }, '🖨 imprimir cartelas'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => fullscreen() }, 'tela cheia'), h('button', { class: 'btn small ghost', type: 'button', onclick: newRound }, 'nova rodada')),
+        h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost small', type: 'button', onclick: exitGame }, 'voltar ao início')));
       root.replaceChildren(...parts); return;
     }
+    const hint = !v.over && linePending(v, mesmo ? ci : 0);
     parts.push(callCard(v), controls(v));
-    if (mesmo && !v.over) parts.push(h('div', { class: `bg-turn p${ci}`, role: 'status' }, v.round ? `Vez de ${v.cards[ci].name}: marque${v.autoMarcar ? '' : ' se tiver o item'} e passe a vez.` : 'Sorteie o primeiro item.'));
-    if (v.round || !mesmo) parts.push(cardGrid(v, mesmo ? ci : 0));
-    else parts.push(cardGrid(v, 0));
+    const bb = parts[parts.length - 1].querySelector('.bg-bingo'); if (bb && hint) bb.classList.add('pulse');
+    if (!v.over) parts.push(h('p', { class: 'bv-passo', role: 'status' }, hint ? 'você fez 3 em linha! aperte BINGO!' : !v.current ? '1 olhe a sua cartela · 2 aperte SORTEAR' : v.autoMarcar ? 'o jogo marca sozinho. fez 3 em linha? BINGO!' : 'tem esse item? toque nele na cartela. 3 em linha = BINGO!'));
+    if (mesmo && !v.over) parts.push(h('div', { class: `bg-turn p${ci}`, role: 'status' }, v.round ? `vez de ${v.cards[ci].name}: ${v.autoMarcar ? 'olhe a cartela' : 'marque se tiver o item'} e passe a vez` : 'sorteie o primeiro item'));
+    parts.push(cardGrid(v, mesmo ? ci : 0));
     parts.push(h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg));
-    if (v.over) { parts.push(resultPanel(v)); }
-    else {
-      const hint = linePending(v, mesmo ? ci : 0);
-      parts.push(h('div', { class: 'jg-actions row bg-bingorow' },
-        h('button', { class: `btn primary bg-bingo${hint ? ' pulse' : ''}`, type: 'button', onclick: () => claim(mesmo ? ci : 0) }, `BINGO!${mesmo ? ` (${v.cards[ci].name})` : ''}`),
-        mesmo && v.round ? h('button', { class: 'btn bg-pass', type: 'button', onclick: passTurn }, v.round.active === 0 ? `Passar para ${v.cards[1].name}` : 'Pronto: liberar o próximo sorteio') : null));
-      if (hint && v.perfil === 'kids') parts.push(h('p', { class: 'bg-tip' }, 'Paul: você fez uma linha! Toque em BINGO!'));
-    }
-    parts.push(h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost small', type: 'button', onclick: exitGame }, v.online ? 'Sair da sala' : 'Sair para o menu')));
+    if (v.over) parts.push(resultPanel(v));
+    else if (mesmo && v.round) parts.push(h('div', { class: 'jg-actions row bg-bingorow' }, h('button', { class: 'btn bg-pass', type: 'button', onclick: passTurn }, v.round.active === 0 ? `passar para ${v.cards[1].name}` : 'pronto: liberar o próximo sorteio')));
+    parts.push(h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost small', type: 'button', onclick: exitGame }, v.online ? 'sair da sala' : 'voltar ao início')));
     root.replaceChildren(...parts);
   }
   async function exitGame() {
-    const v = view(); if (v && !v.over && v.idx > 0 && !(await confirmSheet('Sair da partida?', 'A partida atual será perdida.', 'Sair'))) return;
-    if (on) { leaveOnline(); return; } stopTimer(); g = null; persist(); menu();
+    if (on) { const v = view(); if (v && !v.over && v.idx > 0 && !(await confirmSheet('sair da sala?', 'você sai da partida e não volta mais pra essa sala.', 'sair'))) return; leaveOnline(); return; }
+    stopTimer(); persist(); menu(); // partida local fica guardada: no início aparece "continuar partida"
   }
   function newRound() { if (g) { g = B.newGame({ tema: g.tema, perfil: g.perfil, vitoria: g.vitoria, mode: 'sala', draw: g.draw, intervalo: g.intervalo, recent: P.recent }); persist(); msg = ''; render(); schedule(); } }
   function fullscreen() { try { if (document.fullscreenElement) document.exitFullscreen(); else if (root.requestFullscreen) root.requestFullscreen(); } catch { /* sem tela cheia */ } }
@@ -370,7 +378,11 @@ export function mount(host) {
   menu();
   return {
     inProgress: () => !!(g && !g.over && g.idx > 0) || !!(on && on.state && on.state.status === 'jogando'),
-    restart: async () => { const v = view(); if (v && !v.over && v.idx > 0 && !(await confirmSheet('Começar de novo?', 'A partida atual será perdida.', 'Começar de novo'))) return; if (on) { await leaveOnline(); return; } stopTimer(); g = null; persist(); menu(); },
+    /** Pausa geral do app: segura o sorteio automático daqui (e a voz). Online, só o relógio local de quem sorteia; o outro jogador não é afetado. */
+    pause() { if (extPaused) return; extPaused = true; left = due ? Math.max(0, due - Date.now()) : 0; stopTimer(); leaveSpeech(); },
+    /** Retoma de onde parou: o próximo sorteio sai quando faltava. */
+    resume() { if (!extPaused) return; extPaused = false; const l = left; left = 0; schedule(l > 0 ? l : undefined); },
+    restart: async () => { if (screen === 'menu') return; const v = view(); if (v && !v.over && v.idx > 0 && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'começar de novo'))) return; if (on) { await leaveOnline(); return; } stopTimer(); g = null; persist(); menu(); },
     destroy() { gone = true; closeOverlay(); stopTimer(); leaveSpeech(); silence(); document.removeEventListener('visibilitychange', onVis); if (on && on.conn) { try { on.conn.fechar(); } catch { /* ok */ } } if (document.fullscreenElement) { try { document.exitFullscreen(); } catch { /* ok */ } } },
   };
 }
