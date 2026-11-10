@@ -56,11 +56,11 @@ export function onsets(bars, bpm) {
 }
 
 /**
- * Compara os toques com as notas. Janela = 45% de uma semicolcheia (máx. 110 ms).
- * Cada nota: 'ok' (até 35 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
+ * Compara os toques com as notas. Janela = 60% de uma semicolcheia (máx. 150 ms).
+ * Cada nota: 'ok' (até 50 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
  */
 export function evaluate(taps, expected, bpm, { mic = false } = {}) {
-  const win = Math.min(mic ? 0.16 : 0.11, (60 / bpm / 4) * 0.45 * (mic ? 1.4 : 1)); const okMs = mic ? 55 : 35; // microfone tem mais folga (atraso do som no ar e do aparelho)
+  const win = Math.min(mic ? 0.2 : 0.15, (60 / bpm / 4) * 0.6 * (mic ? 1.4 : 1)); const okMs = mic ? 70 : 50; // microfone tem mais folga (atraso do som no ar e do aparelho)
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {
