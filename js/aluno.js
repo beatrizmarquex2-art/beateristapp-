@@ -181,7 +181,11 @@ function dicasEstudoView(view) {
 }
 
 /** Lojinha (em construção): exercícios, atividades pra imprimir e o código de acesso. Por enquanto avisa que vem aí e deixa digitar um código que já tem. */
-function lojinhaView(view) {
+function lojinhaView(view, parts = []) {
+  // depoimentos e vídeos dos alunos só aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js) e com a autorização dos alunos confirmada
+  const aba = LOJA_ABERTA && (parts[0] === 'depoimentos' || parts[0] === 'videos') ? parts[0] : 'loja';
+  const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos'], ['videos', '#/lojinha/videos', 'alunos tocando']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
+  if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(aba === 'videos' ? m.tocando() : m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
   const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
@@ -192,7 +196,7 @@ function lojinhaView(view) {
   drawPedido();
   const vitrineBox = h('div');
   if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine()); });
-  view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+  view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
     h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
@@ -292,7 +296,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos') estudosView(view);
     else if (r.name === 'erros') c = errosView(view);
-    else if (r.name === 'lojinha') c = lojinhaView(view);
+    else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     if (r.name === 'album' || r.name === 'perfil') view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum e perfil' }, h('a', { href: '#/album', role: 'tab', 'aria-selected': String(r.name === 'album'), class: `chip-btn${r.name === 'album' ? ' on' : ''}` }, 'figurinhas'), h('a', { href: '#/perfil', role: 'tab', 'aria-selected': String(r.name === 'perfil'), class: `chip-btn${r.name === 'perfil' ? ' on' : ''}` }, 'perfil'))); // o Perfil mora junto do Álbum
