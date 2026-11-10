@@ -418,8 +418,9 @@ function askName() {
   function drawPedido() { const c = CODE.pendente(); sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
   sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
-  const form = h('form', { class: 'login-card', noValidate: true, onsubmit: async (e) => {
-    e.preventDefault(); const n = cleanName(input.value);
+  let indo = false;
+  const entrarAgora = async () => { if (indo) return; indo = true; try {
+    const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
     const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : sel.value; // digitou o código? já vale, sem precisar escolher a opção
     if (!modo) { err.textContent = 'escolha como você chegou aqui.'; return; }
@@ -436,7 +437,9 @@ function askName() {
     logVisit(n); if (modo === 'codigo' && !CODE.pendente()) SALVAR.agendar();
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
-  } },
+  } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
+  for (const campo of [input, cod]) campo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); entrarAgora(); } }); // sem botão "submit", o Enter precisa ser tratado aqui
+  const form = h('form', { class: 'login-card', noValidate: true, onsubmit: (e) => { e.preventDefault(); entrarAgora(); } },
     h('div', { class: 'al-hero' },
       h('div', { class: 'al-paulbox' },
         h('img', { class: 'al-paul-img', src: `assets/aluno/paul-${pose[0]}.webp`, alt: `Paul, o robôterista, ${pose[1]}` }),
@@ -447,7 +450,7 @@ function askName() {
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     codBox, h('label', { class: 'field' }, h('span', {}, 'ou, se não tem código: como você chegou aqui?'), sel), outro, err,
-    h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
+    h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));

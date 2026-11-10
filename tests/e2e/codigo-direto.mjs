@@ -9,7 +9,7 @@ const mk = async () => { const ctx = await context(browser, { viewport: { width:
 // primeira tela: nome + código, sem escolher a opção
 let p = await mk(); await p.goto(`${url}/aluno.html`); await sleep(1500);
 check('primeira tela mostra o campo do código direto', await p.locator('.al-cod').isVisible());
-await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('.al-cod').fill('MEU1234'); await p.locator('button[type=submit]').first().click(); await sleep(2500);
+await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('.al-cod').fill('MEU1234'); await p.locator('button:has-text("entrar")').first().click(); await sleep(2500);
 check('entrou só com nome + código (sem escolher "como chegou")', (await p.evaluate(() => location.hash)).includes('jogos') || (await p.locator('nav .nav-item').count()) >= 4);
 check('já entrou liberado: sem botão "código" no topo e sem cadeado na aba Álbum', (await p.locator('.al-tenho:visible').count()) === 0 && (await p.locator('.nav-item.locked').count()) === 0);
 // aba Jogos: campo direto enquanto não tem código
