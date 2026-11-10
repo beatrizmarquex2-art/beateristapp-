@@ -908,3 +908,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-wrap.escuro .dc-cell.on,.dc-wrap.escuro .dc-cell.on[class*="dc-k"]{background:#EBA332!important;color:#142036}
 .dc-wrap.escuro .dc-cell.hint{background:#4a3d1c;color:#ffd37a}
 @media (prefers-reduced-motion:reduce){.dc-wrap .dc-grid.dc-easy .dc-c,.dc-wrap .dc-chip{transform:none!important}}
+/* modelo 5: o painel atrás das figurinhas é azul-acinzentado claro (como no desenho aprovado) */
+.dc-wrap:not(.escuro) .dc-cacabox,.dc-wrap:not(.escuro) section:has(.dc-cw){background:#e9edf4}
