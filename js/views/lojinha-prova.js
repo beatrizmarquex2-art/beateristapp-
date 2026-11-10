@@ -5,7 +5,7 @@ import { DEPOIMENTOS, DEPOIMENTOS_VIDEO, TOCANDO, vid, capa } from '../prova-dat
 
 // overlays de identidade: poses do Paul e rabiscos da Beaterista por cima das mídias (cantos, nunca no meio, pra não cobrir o rosto do aluno)
 const POSES = ['n-skate', 'n-stick', 'n-walk', 'n-squat', 'n-amp', 'n-break'];
-const RAB = ['d-stars', 'd-burst', 'd-note', 'd-bolt2', 'd-ulstar', 'd-notered'];
+const RAB = ['d-stars', 'd-ulstar', 'd-burst', 'd-stars', 'd-ulstar', 'd-note'];
 const ov = (cls, src) => h('img', { class: `pv-ov ${cls}`, src: `assets/paul/${src}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false', loading: 'lazy' });
 const reduzido = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 

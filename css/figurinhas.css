@@ -277,3 +277,12 @@
 .st-paul { position: absolute; width: 96px; left: 8px; bottom: 34px; filter: drop-shadow(2px 2px 0 #0009); }
 .st-tag { position: absolute; left: 0; right: 0; bottom: 0; padding: 5px 10px; background: #14284b; color: #fbf3e0; font: 800 12px system-ui, sans-serif; text-align: right; letter-spacing: .02em; }
 .st-bar b { background: #fbf3e0; } .st-b { background: #14284bcc; border: 1.5px solid #fbf3e0; }
+/* mesma direção de arte da Lojinha aprovada (Retro Editorial Grunge / Music Zine Collage): título em placa azul-marinho com listras vinho, grifa-texto mostarda, papel creme, pontinhos de retícula, fita e raios/estrelas do Paul */
+.pv { background: radial-gradient(#14284b1f 1.1px, transparent 1.3px) 0 0 / 9px 9px; border-radius: 14px; padding: 6px 4px 24px; }
+.pv-h { justify-self: center; position: relative; margin: 8px 0 2px; padding: 8px 26px; background: #14284b; color: #fbf3e0; font: 900 22px/1 system-ui, "Archivo Black", sans-serif; letter-spacing: .01em; text-transform: uppercase; border-radius: 26px 26px 26px 26px / 22px; box-shadow: 0 3px 0 #0b1830; }
+.pv-h::before, .pv-h::after { content: ""; position: absolute; top: 50%; width: 36px; height: 9px; background: repeating-linear-gradient(#9a1226 0 3px, transparent 3px 6px); } .pv-h::before { right: 100%; margin-right: 6px; } .pv-h::after { left: 100%; margin-left: 6px; }
+.pv-s { justify-self: center; background: #f6d56a; color: #14284b; font: 800 italic 15px Georgia, serif; padding: 3px 18px; transform: rotate(-1.5deg); text-align: center; margin: 4px 0 6px; }
+.pv-ring { background: conic-gradient(#9a1226, #14284b, #f6d56a, #14284b, #9a1226); }
+.pv-vid::after { content: ""; position: absolute; right: 2.5px; top: 2.5px; width: 46%; height: 30%; border-radius: 0 10px 0 0; background: radial-gradient(#14284b66 1.2px, transparent 1.5px) 0 0 / 7px 7px; pointer-events: none; z-index: 1; -webkit-mask-image: linear-gradient(225deg, #000, transparent 70%); mask-image: linear-gradient(225deg, #000, transparent 70%); }
+.pv-vid i { background: #f6d56a; color: #9a1226; }
+.pv-zap { background: #fbf3e0 radial-gradient(#14284b1a 1px, transparent 1.2px) 0 0 / 8px 8px; }
