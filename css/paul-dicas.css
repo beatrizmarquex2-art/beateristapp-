@@ -15,12 +15,13 @@
 .pd-dlg { border: 0; padding: 0; background: #fbf3e0; border-radius: 14px; width: min(94vw, 520px); max-height: 94dvh; overflow: auto; } .pd-dlg::backdrop { background: #000b; }
 .pd-dlg img { display: block; width: 100%; height: auto; } .pd-x { position: sticky; top: 8px; float: right; margin: 8px 8px -44px 0; z-index: 2; border: 2px solid #fbf3e0; background: #14284b; color: #fbf3e0; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; cursor: pointer; }
 
-/* modelo "quadrinho" (escolhido pela Bea): Paul grande saindo da borda + etiqueta + balão de fala */
-.pd.pd-q { display: block; position: relative; margin: 34px 16px 14px; padding: 16px 14px 16px 124px; min-height: 130px; background: #fbf3e0; border: 2.5px solid #14284b; border-radius: 18px; box-shadow: 5px 5px 0 #9a1226; }
-.pd-q .pd-img { position: absolute; left: -8px; bottom: -14px; width: 122px; height: auto; max-height: 150px; object-fit: contain; filter: drop-shadow(2px 3px 0 #14284b55); }
-.pd-q .pd-tag { position: absolute; top: -14px; left: 122px; margin: 0; padding: 3px 11px; background: #14284b; color: #fbf3e0; border-radius: 999px; font: 800 11px var(--body, system-ui); letter-spacing: .02em; transform: rotate(-2deg); }
-.pd-q .pd-bal { position: relative; background: #fff; border: 2px solid #14284b; border-radius: 16px; padding: 10px 12px; }
-.pd-q .pd-bal::before { content: ""; position: absolute; left: -12px; bottom: 20px; border: 8px solid transparent; border-right-color: #14284b; border-left: 0; }
-.pd-q .pd-bal::after { content: ""; position: absolute; left: -8px; bottom: 21px; border: 7px solid transparent; border-right-color: #fff; border-left: 0; }
-.pd-q .pd-text { font: 700 15px/1.35 var(--body, system-ui); color: #14284b; }
-@media (max-width: 380px) { .pd.pd-q { padding-left: 100px; } .pd-q .pd-img { width: 100px; } .pd-q .pd-tag { left: 98px; } }
+/* modelo "cartaz azul-marinho" (escolhido pela Bea): fundo de pôster com pontinhos e raios, texto creme, botões vinho e o Paul grande no canto */
+.pd.pd-q { display: block; position: relative; overflow: hidden; margin: 14px 16px; padding: 16px 124px 16px 16px; min-height: 132px; color: #fbf3e0; background: #14284b radial-gradient(#fbf3e022 1.2px, transparent 1.4px) 0 0 / 10px 10px; border: 2.5px solid #fbf3e0; border-radius: 18px; box-shadow: 0 0 0 3px #14284b, 5px 6px 0 3px #9a1226; }
+.pd-q::before { content: ""; position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 85% 90%, #fbf3e00d 0 8deg, transparent 8deg 16deg); pointer-events: none; }
+.pd-q .pd-img { position: absolute; right: -6px; bottom: -4px; width: 132px; height: auto; max-height: 100%; object-fit: contain; object-position: bottom right; cursor: pointer; }
+.pd-q .pd-tag { position: relative; display: block; margin: 0 0 5px; padding: 0; background: none; color: #f6d56a; border-radius: 0; transform: none; font: 900 12px var(--body, system-ui); letter-spacing: .08em; text-transform: uppercase; }
+.pd-q .pd-bal { position: relative; }
+.pd-q .pd-text { margin: 0; font: 700 16px/1.35 var(--body, system-ui); color: #fbf3e0; }
+.pd-q .pd-btn { background: #9a1226; color: #fff; border-color: #fbf3e0; box-shadow: 2px 2px 0 #0b1830; }
+.pd-q .pd-btn.go { background: #fbf3e0; color: #14284b; border-color: #fbf3e0; }
+@media (max-width: 380px) { .pd.pd-q { padding-right: 104px; } .pd-q .pd-img { width: 108px; } }
