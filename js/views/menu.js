@@ -70,6 +70,8 @@ const MENU_B = [
 const TAB_ICON = { fav: 'star', ritmo: 'kit', tocar: 'kit', treinar: 'timer', jogos: 'star', estudar: 'book', aulas: 'drummer', organizar: 'check', kit: 'id' };
 const GROUP_ICON = { ferramentas: 'metro', 'técnica': 'staff', 'leitura e ouvido': 'mic', jogos: 'play', 'ritmo e bateria': 'kit', 'leitura musical': 'staff', 'cartas e tabuleiro': 'star', dicas: 'bulb', 'fases e relatório': 'star', conceitos: 'book', 'álbuns': 'note', artistas: 'drummer', foco: 'timer', 'conteúdo': 'mural' };
 // tocar de novo na aba que já está aberta abre a página principal dela (o primeiro toque só mostra os itens, pra não sair da tela sem querer)
+// favoritos que já vêm fixados no menu da Bea (até ela mexer nos favoritos; depois vale a escolha dela)
+const FAV_BEA = ['#/acessos', '#/jogos-alunos'];
 const TAB_HOME = { jogos: '#/jogos', ritmo: '#/ritmo', estudar: '#/estudos' };
 const TAB_HOME_B = { jogos: '#/jogos', ritmo: '#/ritmo', tocar: '#/ferramentas' };
 const prefKey = (sp) => (sp === 'beaterista' ? 'setting-menu-beaterista' : 'setting-menu'); // { hidden: [href], moved: { href: abaId }, order: [href] }
@@ -103,7 +105,7 @@ export function openMenu() {
   if (document.querySelector('.drawer')) return;
   const SP = getSpace(); const TABS_MENU = SP === 'beaterista' ? MENU_B : MENU_BEA;
   const PREF = prefKey(SP); const LAST = `bt-menu-tab-${SP}`;
-  const prefs = () => ({ hidden: [], moved: {}, order: [], fav: [], ...(store.get(PREF) ? store.get(PREF).data : {}) });
+  const prefs = () => ({ hidden: [], moved: {}, order: [], fav: SP === 'beaterista' ? [] : FAV_BEA, ...(store.get(PREF) ? store.get(PREF).data : {}) });
   const savePrefs = (p) => store.upsert('setting', PREF, p);
   const here = location.hash || '#/inicio';
   const back = h('div', { class: 'drawer-back' });
