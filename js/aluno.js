@@ -12,6 +12,8 @@ import * as dicas from './views/dicas.js';
 import * as DA from './dicas-aluno.js';
 import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
+import { TERMS } from './glossary.js';
+const TERMS_QTD = TERMS.length;
 import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
 import * as kids from './views/kids.js';
@@ -157,15 +159,43 @@ function lockView(view, what, pv) {
 }
 const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', paulta: 'a pauLta' };
 
-/** Aba Estudos: 5 erros (aberto), Dicionário, Quiz e Letras e Aulinha do Paul (com código). */
+/** Conteúdo de cada item da aba Estudos: o que tem dentro (a prévia que aparece antes de abrir) e o que desenvolve. */
+const ESTUDOS = {
+  aulinha: { href: '#/kids/figuras/aula', titulo: 'Aulinha do Paul', sub: 'as figuras rítmicas, passo a passo', dentro: ['9 passos curtinhos, cada um com uma fala do Paul e algo pra mexer ou ouvir', 'a semínima como medida, a escadinha das figuras e as pausas', 'montar o desenho da nota e as variações da semicolcheia', 'tercina e sextina, no fim'], dev: 'ler e contar o tempo da música', tempo: '10 min', amostra: () => `${GRATIS.aulinha} passos` },
+  dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
+  dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Quiz e Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
+  erros: { href: '#/erros', titulo: '5 erros', sub: 'material em PDF da professora Bea', dentro: ['PDF pra ler e baixar', 'os 5 erros mais comuns de quem está começando e como evitar cada um'], dev: 'evitar vícios desde o começo', tempo: '5 min', aberto: true },
+  ensinam: { href: '#/jogos/relatorio', titulo: 'Jogos Ensinam', sub: 'o que cada jogo desenvolve, aberto pra pais e responsáveis', dentro: ['uma folha por jogo: o que a criança faz e o que desenvolve', 'serve pra mostrar pra família por que brincar também é estudar'], dev: 'entender o que cada jogo treina', tempo: '5 min', aberto: true },
+};
+const TRILHA = ['aulinha', 'dicionario', 'dicas', 'erros', 'ensinam'];
+const VISTOS = 'beaterista-estudos-vistos';
+const vistos = () => { try { return JSON.parse(localStorage.getItem(VISTOS) || '[]'); } catch { return []; } };
+const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) localStorage.setItem(VISTOS, JSON.stringify([...v, id])); } catch { /* sem armazenamento: só não lembra */ } };
+
+/** Aba Estudos: "seu próximo passo" no topo, depois "aprender" e "conhecer o método", cada cartão com uma prévia do que tem dentro. */
 function estudosView(view) {
-  const item = (href, title, sub, amostra) => { const lk = AC.trancado(href); const am = amostra && !AC.liberado(); return h('a', { class: `card pad al-card${lk ? ' locked' : ''}`, href, 'aria-label': lk ? `${title}, só pra alunos com código` : am ? `${title}, amostra grátis: ${amostra}` : null }, h('h2', { class: 'tag' }, lk ? '🔒 ' : '', title, am ? h('small', { class: 'al-am' }, ` · grátis: ${amostra}`) : null), h('p', { class: 'muted' }, sub)); };
-  view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    item('#/jogos/relatorio', 'Jogos Ensinam', 'o que cada jogo desenvolve, aberto pra pais e responsáveis'),
-    item('#/erros', '5 erros', 'material em PDF da professora Bea, aberto pra todo mundo'),
-    item('#/dicionario', 'Dicionário musical', 'busca, explicação e exemplo tocando', `${GRATIS.termos} termos`),
-    item('#/estudos/dicas', 'Dicas do método', 'as dicas da professora Bea pra estudar com calma'),
-    item('#/kids/figuras/aula', 'Aulinha do Paul', 'as figuras rítmicas, passo a passo', `${GRATIS.aulinha} passos`)));
+  const v = vistos();
+  const cartao = (id, destaque) => {
+    const it = ESTUDOS[id]; const lk = AC.trancado(it.href); const am = it.amostra && !AC.liberado() ? it.amostra() : null; const visto = v.includes(id);
+    const abrir = () => marcarVisto(id);
+    return h('article', { class: `card pad al-card es-card${lk ? ' locked' : ''}${destaque ? ' es-next' : ''}` },
+      h('a', { class: 'es-main', href: it.href, onclick: abrir, 'aria-label': lk ? `${it.titulo}, só pra alunos com código` : am ? `${it.titulo}, amostra grátis: ${am}` : null },
+        h('h2', { class: 'tag' }, lk ? '🔒 ' : '', it.titulo, am ? h('small', { class: 'al-am' }, ` · grátis: ${am}`) : null, visto ? h('small', { class: 'es-ok' }, ' ✓') : null),
+        h('p', { class: 'muted' }, it.sub)),
+      h('details', { class: 'es-prev' }, h('summary', {}, 'o que tem dentro'),
+        h('ul', {}, ...it.dentro.map((x) => h('li', {}, x))),
+        h('p', { class: 'es-meta' }, h('b', {}, 'desenvolve: '), it.dev, ' · ', h('b', {}, 'leva: '), it.tempo),
+        lk ? h('p', { class: 'es-lock' }, '🔒 abre com o código de aluno. ', h('a', { href: '#/lojinha' }, 'gerar meu código')) : null));
+  };
+  const proximo = TRILHA.find((id) => !v.includes(id));
+  const prox = proximo ? ESTUDOS[proximo] : null;
+  const passo = prox ? h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'seu próximo passo'), h('p', { class: 'es-frase' }, v.length ? `bora seguir: ${prox.titulo}` : `comece por aqui: ${prox.titulo}`),
+    h('a', { class: 'btn primary wide', href: prox.href, onclick: () => marcarVisto(proximo) }, `abrir · ${prox.tempo}`))
+    : h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'tudo visto!'), h('p', { class: 'es-frase' }, 'agora é praticar: abra a aba Jogos e ganhe estrelas'), h('a', { class: 'btn primary wide', href: '#/jogos' }, 'ir pros jogos'));
+  view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'),
+    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, passo,
+      h('h3', { class: 'es-sec' }, 'aprender'), cartao('aulinha', proximo === 'aulinha'), cartao('dicionario', proximo === 'dicionario'), cartao('dicas', proximo === 'dicas'),
+      h('h3', { class: 'es-sec' }, 'conhecer o método'), cartao('erros', proximo === 'erros'), cartao('ensinam', proximo === 'ensinam')));
 }
 
 /** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Quiz e Letras. */

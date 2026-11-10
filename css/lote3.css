@@ -688,3 +688,11 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 
 /* álbum: aviso do giro grátis / pacotes quando a pessoa está numa coleção */
 .fig-giro{display:block;width:100%;margin:8px 0;min-height:48px;font-size:16px;text-align:center}
+
+/* aba Estudos: próximo passo, seções e prévia "o que tem dentro" */
+.es-passo{display:grid;gap:8px;padding:14px;border-radius:14px;background:color-mix(in srgb,var(--gold) 28%,var(--card));border:2px solid rgb(var(--ink-rgb));box-shadow:4px 4px 0 rgb(var(--ink-rgb));text-align:center}
+.es-tag{margin:0;font:700 11px var(--body);letter-spacing:.08em;text-transform:uppercase}.es-frase{margin:0;font:700 18px/1.2 var(--hand)}
+.es-sec{margin:6px 0 -4px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#6b6258}
+.es-card{display:grid;gap:6px}.es-main{text-decoration:none;color:inherit;display:block}.es-next{outline:2px solid var(--gold);outline-offset:2px}.es-ok{color:#1f6f78;font-size:13px}
+.es-prev summary{cursor:pointer;font:700 12px var(--body);color:#a31d30;min-height:32px;display:flex;align-items:center}
+.es-prev ul{margin:4px 0 6px;padding-left:18px;display:grid;gap:3px;font-size:14px}.es-meta{margin:0;font-size:13px}.es-lock{margin:6px 0 0;font-size:13px}
