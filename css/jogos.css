@@ -910,3 +910,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 @media (prefers-reduced-motion:reduce){.dc-wrap .dc-grid.dc-easy .dc-c,.dc-wrap .dc-chip{transform:none!important}}
 /* modelo 5: o painel atrás das figurinhas é azul-acinzentado claro (como no desenho aprovado) */
 .dc-wrap:not(.escuro) .dc-cacabox,.dc-wrap:not(.escuro) section:has(.dc-cw){background:#e9edf4}
+
+/* fundo escuro (Bea/vinho): texto claro e bem legível na velha, no stop e no aviso "2 celulares" */
+.jg-dark .jg-velha .jg-big,.jg-dark .jg-velha .jg-lab.big,.jg-dark .jg-velha .jg-movenote{color:#fbf7ee;opacity:1}
+.jg-dark .jg-link-badge{color:#fbf7ee;font-size:13px}.jg-dark .jg-link-badge.off{color:#ffd9a0}
+.jg-dark .jg-cover2,.jg-dark .jg-cover2 p{color:#fbf7ee}.jg-dark .jg-cover2 .muted{color:#fbf7ee;opacity:1;font-size:16px;line-height:1.4}
+.jg-dark .jg-cover2 .hand{font-size:28px}
