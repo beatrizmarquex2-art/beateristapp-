@@ -196,3 +196,8 @@
 .tk-pad small { color: #fbf7ee; opacity: 1; font-size: 13px; }
 .tk-pads .tk-pad { width: 100%; justify-self: stretch; }
 .tk-pad, .tk-pads { box-sizing: border-box; } .tk-pads { width: min(100%, 420px); } .tk-wrap { height: min(26vh, 220px); }
+.tk-drum { display: block; width: 82px; height: 74px; margin: 0 auto; }
+.tk-pad b { display: none; }
+.drum-art { display: block; width: 132px; height: 118px; }
+.tr-pad .drum-art { margin: 0 auto 4px; }
+.tk-jogo .tk { padding-bottom: 24px; }

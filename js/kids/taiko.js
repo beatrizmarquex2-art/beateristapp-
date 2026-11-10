@@ -2,6 +2,7 @@
 import { h } from '../util.js';
 import { audio, click, tom, perfToCtx } from '../audio.js';
 import { foodOf, cellOf } from '../kids-logic.js';
+import { drumSvg } from './drum-art.js';
 import { buildChart, judgeTap, sweep, summary, LADO_AGUDO, LADO_GRAVE } from './taiko-logic.js';
 
 const LOOK = 1.7; // s que a nota leva pra descer
@@ -13,8 +14,8 @@ const soa = (side, t, v = 0.95) => (side === LADO_GRAVE ? tom(t, 95, v) : tom(t,
 export function mountTaiko({ ids, bpm }) {
   const cells = ids.map(cellOf); let chart = []; let raf = 0; let t0 = 0; let state = 'idle'; let endAt = 0; let pop = null; const timers = [];
   const cv = h('canvas', { class: 'tk-cv', 'aria-label': 'Notas descendo: esquerda é agudo, direita é grave' });
-  const pads = [LADO_AGUDO, LADO_GRAVE].map((s) => h('button', { type: 'button', class: `tk-pad ${s}`, 'aria-label': `${s} (${s === LADO_AGUDO ? 'esquerda' : 'direita'})`, 'data-side': s },
-    h('b', {}, s), h('small', {}, s === LADO_AGUDO ? '◀ esquerda' : 'direita ▶')));
+  const pads = [LADO_AGUDO, LADO_GRAVE].map((s) => h('button', { type: 'button', class: `tk-pad ${s}`, 'aria-label': `${s} (${s === LADO_AGUDO ? 'esquerda, caixa' : 'direita, bumbo'})`, 'data-side': s },
+    drumSvg(s === LADO_AGUDO ? 'caixa' : 'bumbo', 'tk-drum'), h('small', {}, s === LADO_AGUDO ? '◀ agudo' : 'grave ▶')));
   const info = h('p', { class: 'kd-q tk-info', 'aria-live': 'polite' }, 'esquerda = som agudo · direita = som grave');
   const go = h('button', { class: 'kd-btn', type: 'button' }, '▶ jogar');
   const res = h('div', { class: 'tk-res', hidden: true });
@@ -65,4 +66,24 @@ export function mountTaiko({ ids, bpm }) {
   window.__taiko = { get chart() { return chart; }, tap, get t0() { return t0; } }; // só pra teste
   raf = requestAnimationFrame(draw);
   return { el, dispose() { cancelAnimationFrame(raf); document.removeEventListener('keydown', onKey); timers.forEach(clearTimeout); state = 'idle'; delete window.__taiko; } };
+}
+
+/** Jogo "taiko" do Toca Aqui: escolhe nível e andamento e joga. */
+import { randomFoods } from '../kids-logic.js';
+import { VELOCIDADES } from '../toca-som.js';
+export function mountTaikoJogo(host) {
+  let bpm = 90; let nivel = 1; let ids = randomFoods(Math.random, 1); let cur = null;
+  const root = h('div', { class: 'kx-arc kx-embed kd-game tk-jogo' }); host.append(root);
+  const chip = (txt, on, fn) => h('button', { type: 'button', class: `kd-chip${on ? ' on' : ''}`, onclick: fn }, txt);
+  const draw = () => {
+    if (cur) cur.dispose();
+    cur = mountTaiko({ ids, bpm });
+    root.replaceChildren(
+      h('div', { class: 'row kd-modes' }, h('span', { class: 'kd-lab' }, 'andamento'), ...VELOCIDADES.map(([k, v]) => chip(k, bpm === v, () => { bpm = v; draw(); }))),
+      h('div', { class: 'row kd-modes' }, h('span', { class: 'kd-lab' }, 'nível'), chip('fácil', nivel === 1, () => { nivel = 1; ids = randomFoods(Math.random, 1); draw(); }), chip('difícil', nivel === 2, () => { nivel = 2; ids = randomFoods(Math.random, 2); draw(); }),
+        chip('🎲 outro ritmo', false, () => { ids = randomFoods(Math.random, nivel); draw(); })),
+      cur.el);
+  };
+  draw();
+  return () => { if (cur) cur.dispose(); };
 }
