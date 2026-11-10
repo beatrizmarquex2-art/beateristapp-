@@ -12,16 +12,10 @@ const marcar = (tipo, code) => gravaAsk({ ...lerAsk(), [tipo]: code });
 /** O app está aberto como ícone na tela de início (PWA)? */
 export const instalado = () => { try { return !!(window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; } catch { return false; } };
 
-/** Pede ao gerenciador de senhas do navegador pra guardar (nome = usuário, código = senha). Safari/iPhone só oferece "salvar senha" depois de um envio de formulário, então também fazemos um envio invisível. */
+/** Pede ao gerenciador de senhas do navegador pra guardar (nome = usuário, código = senha). Sem truques de formulário: o Safari/iPhone costuma oferecer "salvar senha" sozinho quando o formulário de entrada some da tela; se não oferecer, valem as outras opções (enviar, copiar, baixar). */
 export async function guardarNoGerenciador(nome, code) {
   let feito = false;
   try { if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) { await navigator.credentials.store(new window.PasswordCredential({ id: String(nome || 'aluno'), name: String(nome || 'aluno'), password: code })); feito = true; } } catch { /* navegador sem suporte */ }
-  try { // envio invisível (POST pra um quadro escondido): faz o Safari/Chrome mostrarem "salvar senha"
-    const fr = h('iframe', { name: 'cred-frame', hidden: true, title: '', 'aria-hidden': 'true', tabindex: '-1' });
-    const f = h('form', { method: 'post', action: location.pathname, target: 'cred-frame', hidden: true, autocomplete: 'on' },
-      h('input', { type: 'text', name: 'username', autocomplete: 'username', value: String(nome || 'aluno') }), h('input', { type: 'password', name: 'password', autocomplete: 'current-password', value: code }));
-    document.body.append(fr, f); f.submit(); setTimeout(() => { f.remove(); fr.remove(); }, 4000); feito = true;
-  } catch { /* sem formulário */ }
   return feito;
 }
 const texto = (code) => `meu código de aluno da Beaterista: ${code}\nsite: https://jogos.beaterista.com.br`;
