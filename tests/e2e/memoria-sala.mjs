@@ -33,7 +33,7 @@ async function entrar(a, b, tema) {
   while ((await a.locator('.mem-step > span').textContent()) !== '6 pares') { await a.locator('.mem-step button[aria-label="menos pares"]').click(); await sleep(150); }
   await a.locator('button:has-text("criar sala")').click(); await sleep(500);
   const code = (await a.locator('.jg-code').textContent()).trim();
-  await b.locator('.jg-code-in').fill(code); await sleep(2800); // o lobby entra sozinho com 5 caracteres
+  await b.locator('.jg-code-in').fill(code); await b.locator('button:has-text("entrar")').click(); await sleep(2800);
   return code;
 }
 
