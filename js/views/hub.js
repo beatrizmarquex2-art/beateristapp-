@@ -1,6 +1,7 @@
 // Páginas "juntas": reúnem ferramentas parecidas num lugar só (Criar ritmos, Tempo, Anotar). As ferramentas continuam as mesmas.
 import { h, icon } from '../util.js';
 import { banner } from '../ui.js';
+import { paulDica } from '../paul-dicas.js';
 
 export const HUBS = {
   ritmo: { title: 'Criar ritmos', ic: 'kit', blurb: 'montar, tocar e escrever ritmo', items: [
@@ -28,7 +29,7 @@ export const HUBS = {
 export function mount(host, parts = []) {
   const hub = HUBS[parts[0]];
   if (!hub) { host.append(banner('Não achei', 'essa página não existe'), h('p', { class: 'pad-x' }, h('a', { class: 'btn', href: '#/inicio' }, 'voltar ao início'))); return () => {}; }
-  host.append(banner(hub.title, hub.blurb),
+  host.append(banner(hub.title, hub.blurb), paulDica(),
     h('div', { class: 'hub-grid' }, ...hub.items.map(([href, ic, label, desc], i) => h('a', { class: `hub-card hc-${i % 4}`, href }, h('span', { class: 'hub-ic' }, icon(ic, 30)), h('b', {}, label), h('small', {}, desc)))));
   return () => {};
 }

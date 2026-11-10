@@ -6,6 +6,7 @@ import { toggleTask } from './tasks.js';
 import { homeNoteId, setHomeNote, HOME_NOTE_KEY } from './notes.js';
 import { sortedFavs, favChip } from './favs.js';
 import { toast } from '../ui.js';
+import { paulDica } from '../paul-dicas.js';
 import { getLayout, LAYOUT_KEY } from '../layout.js';
 import { todayRoll } from './students.js';
 import { studyWidget, metroWidget, focusWidget } from './widgets.js';
@@ -210,7 +211,7 @@ export function mount(host) {
   paintCover(fig);
   function drawLayout() {
     const { order, hidden } = getLayout();
-    host.replaceChildren(top, recentBox, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
+    host.replaceChildren(top, paulDica(), recentBox, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
   }
   drawLayout();
   drawMini(); drawFavs(); drawGrid();

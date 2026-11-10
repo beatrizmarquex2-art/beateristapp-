@@ -11,6 +11,7 @@ import { mountPost, collectionsSection } from './club.js';
 import { attach as attachGrifos } from '../highlights.js';
 import * as G from '../highlights.js';
 import { openStory } from './story.js';
+import { paulDica } from '../paul-dicas.js';
 
 const go = (hash) => { location.hash = hash; };
 const when = (ts) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short' }).format(new Date(ts));
@@ -126,7 +127,7 @@ function mountHome(host) {
   const hoje = h('div', { class: 'hoje' },
     h('div', { class: 'h-head' }, h('h2', {}, 'Hoje'), h('div', { class: 'h-date' }, dayLabel())),
     h('div', { class: 'h-search' }, searchIcon(), q, found), body);
-  host.append(banner('Conceitos', 'o que a ciência diz sobre música, ritmo e estudo'), tabs('#/estudos'), hoje,
+  host.append(banner('Conceitos', 'o que a ciência diz sobre música, ritmo e estudo'), paulDica(), tabs('#/estudos'), hoje,
     importer(async () => { lib.resetIndex(); await lib.loadIndex(); draw(); }));
   lib.loadIndex().then(() => { draw(); lib.prefetch().catch(() => {}); });
   return store.subscribe((i) => { if (!i.kind || i.kind === 'study' || i.kind === G.KIND) draw(); });
