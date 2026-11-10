@@ -23,6 +23,8 @@ export async function mountOnline(root, { conn, estado, sair }) {
   let e = estado; let msg = ''; let sel = null; let palpitando = false; let respondendo = false; let revelando = false; let gone = false; let conferencia = null;
   const chave = () => `cm-online-${code}-${e.rodada}`;
   const meu = () => ler(chave()); // { segredo, sal } só neste aparelho
+  const viradasMao = () => ler(`${chave()}-viradas`) || []; // cartas que EU virei à mão (pergunta livre), só neste aparelho
+  const virarMao = (id) => { const v = viradasMao(); guardar(`${chave()}-viradas`, v.includes(id) ? v.filter((x) => x !== id) : [...v, id]); render(); };
   const badge = linkBadge(); conn.on.link = (v) => badge.set(v);
   conn.on.state = (novo) => { e = novo; msg = ''; sel = null; palpitando = false; render(); reagir(); };
 
@@ -30,14 +32,14 @@ export async function mountOnline(root, { conn, estado, sair }) {
   /** Respostas automáticas: quem foi perguntado responde do próprio aparelho; no fim cada um revela a sua carta. */
   async function reagir() {
     if (gone) return; const m = meu(); const pend = O.pendente(e);
-    if (pend && pend.p !== me && m && !respondendo) { respondendo = true; await agir((s) => O.responder(s, me, m.segredo)); respondendo = false; sfx('tap'); }
+    if (pend && pend.p !== me && pend.t !== 'f' && m && !respondendo) { respondendo = true; await agir((s) => O.responder(s, me, m.segredo)); respondendo = false; sfx('tap'); }
     if (O.fase(e) === 'fim' && !e.reveal[me] && m && !revelando) { revelando = true; await agir((s) => O.revelar(s, me, m.segredo, m.sal)); revelando = false; }
     if (O.fase(e) === 'fim' && e.reveal[1 - me] && !conferencia) { conferencia = O.conferir(e, 1 - me); conferencia.then(() => { if (!gone) render(); }); }
   }
-  const celula = (id, { fora = false, aoToque, selecionada = false } = {}) => { const c = O.cartaDe(e, id); const ent = BY_ID[id];
+  const celula = (id, { fora = false, aoToque, selecionada = false, virar = null, virada = false } = {}) => { const c = O.cartaDe(e, id); const ent = BY_ID[id];
     return h('div', { class: `cm-cell${fora ? ' out' : ''}${selecionada ? ' sel' : ''}` }, h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada), 'aria-label': `${ent.curto}${fora ? ', virada' : ''}`, onclick: () => aoToque(id) },
-      h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: `object-position:${posOf(c.foto)}` }), h('small', { class: ent.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, ent.curto), fora ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null)); };
-  const grade = (ids, opt) => h('div', { class: `cm-grade ${e.mesa.cartas.length <= 6 ? 'cm-g3' : 'cm-g4'}`, role: 'group', 'aria-label': 'cartas' }, ...ids.map((id) => celula(id, { fora: typeof opt.fora === 'function' ? opt.fora(id) : false, selecionada: opt.selecionada === id, aoToque: opt.aoToque })));
+      h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: `object-position:${posOf(c.foto)}` }), h('small', { class: ent.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, ent.curto), fora ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null), virar ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(virada), onclick: virar }, virada ? 'desvirar' : 'virar') : null); };
+  const grade = (ids, opt) => h('div', { class: `cm-grade ${e.mesa.cartas.length <= 6 ? 'cm-g3' : 'cm-g4'}`, role: 'group', 'aria-label': 'cartas' }, ...ids.map((id) => celula(id, { fora: typeof opt.fora === 'function' ? opt.fora(id) : false, selecionada: opt.selecionada === id, aoToque: opt.aoToque, virar: opt.virar ? opt.virar(id) : null, virada: !!(opt.virada && opt.virada(id)) })));
   const zoom = (id) => { const c = O.cartaDe(e, id); sheet(BY_ID[id].curto, () => h('div', { class: 'sheet-body cm-zoom' }, h('img', { src: grande(c.foto), alt: `foto de ${BY_ID[id].curto}`, onerror: (ev) => { ev.target.src = mini(c.foto); } }), h('b', {}, BY_ID[id].curto)));
   };
   const topo = () => [badge.el, h('div', { class: 'cm-placar', 'aria-label': 'placar' }, h('b', {}, `você ${e.serie.vitorias[me]} × ${e.serie.vitorias[1 - me]} o outro`), e.serie.empates ? h('small', {}, `${e.serie.empates} empate${e.serie.empates > 1 ? 's' : ''}`) : null, h('small', {}, `melhor de 3 · rodada ${e.rodada} · sala ${code}`))];
@@ -59,24 +61,37 @@ export async function mountOnline(root, { conn, estado, sair }) {
   function telaJogo(m) {
     const lado = O.ladoDe(e, me); const minhaVez = e.turno === me && !O.pendente(e) && !lado.terminou; const pend = O.pendente(e);
     const cand = R.candidatosDo(e.mesa, lado); const kids = e.modo === 'kids';
-    const ultimaA = [...e.log].reverse().find((x) => x.p === me && (x.t === 'a' || x.t === 'v')); const ultimaDoOutro = [...e.log].reverse().find((x) => x.p !== me && (x.t === 'a' || x.t === 'v'));
-    const frase = pend ? (pend.p === me ? 'esperando o outro responder…' : 'respondendo…') : lado.terminou ? 'você já terminou. esperando o outro acabar…' : minhaVez ? 'sua vez!' : 'vez do outro. espere…';
-    const lastOutro = ultimaDoOutro && ultimaDoOutro.t === 'a' ? `o outro perguntou: ${textoDe(BY_Q[ultimaDoOutro.qid], e.modo)} → você respondeu ${ultimaDoOutro.sim ? 'SIM' : 'NÃO'}` : ultimaDoOutro ? `o outro palpitou ${BY_ID[ultimaDoOutro.id].curto}: ${ultimaDoOutro.ok ? 'acertou!' : 'errou'}` : '';
+    const ultimaA = [...e.log].reverse().find((x) => x.p === me && (x.t === 'a' || x.t === 'v' || x.t === 'fa')); const ultimaDoOutro = [...e.log].reverse().find((x) => x.p !== me && (x.t === 'a' || x.t === 'v' || x.t === 'fa'));
+    const livre = e.log.some((x) => x.p === me && (x.t === 'f' || x.t === 'fa')); const vir = livre ? viradasMao() : []; const livreDoOutro = pend && pend.t === 'f' && pend.p !== me ? pend : null;
+    const frase = pend ? (pend.p === me ? 'esperando o outro responder…' : pend.t === 'f' ? 'o outro fez uma pergunta livre: responda SIM ou NÃO' : 'respondendo…') : lado.terminou ? 'você já terminou. esperando o outro acabar…' : minhaVez ? 'sua vez!' : 'vez do outro. espere…';
+    const lastOutro = ultimaDoOutro && ultimaDoOutro.t === 'fa' ? `o outro perguntou${ultimaDoOutro.txt ? `: “${ultimaDoOutro.txt}”` : ' (pergunta falada)'} → você respondeu ${ultimaDoOutro.sim ? 'SIM' : 'NÃO'}` : ultimaDoOutro && ultimaDoOutro.t === 'a' ? `o outro perguntou: ${textoDe(BY_Q[ultimaDoOutro.qid], e.modo)} → você respondeu ${ultimaDoOutro.sim ? 'SIM' : 'NÃO'}` : ultimaDoOutro ? `o outro palpitou ${BY_ID[ultimaDoOutro.id].curto}: ${ultimaDoOutro.ok ? 'acertou!' : 'errou'}` : '';
     const sug = kids ? R.sugestoes(e.mesa, { ...lado, segredo: null }, 3) : null; const todas = O.perguntasLivres(e, me);
     const botao = (q, grande$) => h('button', { type: 'button', class: grande$ ? 'cm-q big' : 'jg-qbtn', onclick: () => { sfx('tap'); agir((s) => O.perguntar(s, me, q.id)); } }, grande$ ? h('span', { 'aria-hidden': 'true' }, q.icone) : null, grande$ ? ` ${q.kids}` : textoDe(q, e.modo));
     root.replaceChildren(...topo(),
       h('p', { class: minhaVez ? 'cm-vez' : 'jg-p', role: 'status', 'aria-live': 'polite' }, frase),
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, e.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
       m ? h('p', { class: 'cm-minha' }, h('img', { src: mini(O.cartaDe(e, m.segredo).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[m.segredo].curto}`)) : null,
+      livreDoOutro ? h('div', { class: 'cm-livre', role: 'group', 'aria-label': 'responder pergunta livre' }, h('b', {}, 'o outro perguntou:'), h('p', { class: 'cm-livre-txt' }, livreDoOutro.txt ? `“${livreDoOutro.txt}”` : 'uma pergunta falada: ouça o outro e responda'), h('p', { class: 'jg-p muted' }, 'responda pela sua carta secreta, com sinceridade.'), h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { sfx('tap'); agir((s) => O.responderLivre(s, me, true)); } }, 'SIM'), h('button', { class: 'btn big', type: 'button', onclick: () => { sfx('tap'); agir((s) => O.responderLivre(s, me, false)); } }, 'NÃO'))) : null,
+      ultimaA && ultimaA.t === 'fa' ? h('div', { class: 'cm-paul', role: 'status' }, h('img', { src: 'assets/paul/e02.webp', alt: '', width: 44, height: 36 }), h('p', {}, `${ultimaA.sim ? 'SIM' : 'NÃO'}!${ultimaA.txt ? ` “${ultimaA.txt}”` : ''} vire as cartas que não combinam.`)) : null,
       ultimaA && ultimaA.t === 'a' ? h('div', { class: 'cm-paul', role: 'status' }, h('img', { src: 'assets/paul/e02.webp', alt: '', width: 44, height: 36 }), h('p', {}, `${ultimaA.sim ? 'SIM' : 'NÃO'}! ${BY_Q[ultimaA.qid].porque}`)) : null,
       lado.dica ? h('p', { class: 'cm-dica', role: 'status' }, `dica: ${textoDe(BY_Q[lado.dica.id], 'kids')} → ${lado.dica.sim ? 'SIM' : 'NÃO'}`) : null,
       lastOutro ? h('p', { class: 'jg-p muted' }, lastOutro) : null,
-      grade(e.mesa.cartas.map((c) => c.id), { fora: id => lado.fora.includes(id) || lado.erros.includes(id), selecionada: sel, aoToque: (id) => { if (palpitando) { sel = sel === id ? null : id; sfx('tap'); render(); } else zoom(id); } }),
+      grade(e.mesa.cartas.map((c) => c.id), { fora: id => lado.fora.includes(id) || lado.erros.includes(id) || vir.includes(id), virada: (id) => vir.includes(id), virar: livre && !lado.terminou && !palpitando ? (id) => (lado.fora.includes(id) || lado.erros.includes(id) ? null : () => virarMao(id)) : null, selecionada: sel, aoToque: (id) => { if (palpitando) { sel = sel === id ? null : id; sfx('tap'); render(); } else zoom(id); } }),
       palpitando ? h('div', { class: 'jg-pick', role: 'group' }, sel ? h('b', {}, `é ${BY_ID[sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => { const id = sel; palpitando = false; agir((s) => O.palpitar(s, me, id)); } }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { palpitando = false; sel = null; render(); } }, 'voltar às perguntas'))
         : minhaVez ? h('div', {}, kids ? h('div', { class: 'cm-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, true)), todas.length > sug.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...todas.filter((q) => !lado.perguntas.some((x) => x.id === q.id)).map((q) => h('button', { type: 'button', class: 'cm-q big', onclick: () => { close(); agir((s) => O.perguntar(s, me, q.id)); } }, h('span', { 'aria-hidden': 'true' }, q.icone), ` ${q.kids}`)))) }, 'mais perguntas') : null)
           : h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...todas.map((q) => botao(q, false))),
-          h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { palpitando = true; sel = null; render(); } }, 'Adivinhar!'))) : null,
+          h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { palpitando = true; sel = null; render(); } }, 'Adivinhar!'), h('button', { class: 'btn big', type: 'button', onclick: perguntaLivre }, 'pergunta livre'))) : null,
       botaoSair());
+  }
+  /** Pergunta livre: escreve (ou só fala em voz alta) e o outro celular responde SIM ou NÃO. Depois você vira as cartas à mão. */
+  function perguntaLivre() {
+    sheet('pergunta livre', (close) => {
+      const campo = h('input', { class: 'field', type: 'text', maxlength: String(O.TEXTO_LIVRE_MAX), placeholder: 'escreva a pergunta (ou deixe vazio e fale em voz alta)', 'aria-label': 'pergunta livre', autocomplete: 'off' });
+      const enviar = () => { const t = campo.value; close(); sfx('tap'); agir((s) => O.perguntarLivre(s, me, t)); };
+      campo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') enviar(); });
+      return h('div', { class: 'sheet-body' }, h('p', { class: 'jg-p' }, 'faça a sua própria pergunta de SIM ou NÃO. o outro celular vai tocar em SIM ou NÃO, e você vira as cartas que não combinam.'), campo,
+        h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: enviar }, 'perguntar'), h('button', { class: 'btn ghost', type: 'button', onclick: close }, 'cancelar')));
+    });
   }
   function telaFim() {
     const l = [O.ladoDe(e, 0), O.ladoDe(e, 1)]; const r = e.fim; const venceu = r.vencedor === me; const outro = e.reveal[1 - me]; const meuReveal = meu();

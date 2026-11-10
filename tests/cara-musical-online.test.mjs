@@ -72,3 +72,36 @@ test('melhor de 3 e próxima rodada alternam quem começa', async () => {
   const S = await partida('kids', [0, 1]); const e = jogarAteFim(S); const m = R.novaMesa({ modo: 'kids', tamanho: 6 });
   const n = O.proxima(e, m); if (!e.serie.fim) { assert.equal(n.rodada, 2); assert.equal(n.turno, 1); assert.deepEqual(n.selos, [null, null]); }
 });
+
+test('pergunta livre: o outro responde SIM/NÃO na mão, a vez alterna, conta como pergunta e não vira cartas sozinha', async () => {
+  const S = await partida('classico', [0, 1]); let e = S.e; const p = e.turno;
+  e = O.perguntarLivre(e, p, '  tem   bateria? ');
+  assert.equal(O.pendente(e).t, 'f'); assert.equal(O.pendente(e).txt, 'tem bateria?');
+  assert.throws(() => O.perguntarLivre(e, p, 'outra'), /sua vez/); // enquanto espera, não pode perguntar de novo
+  assert.throws(() => O.responderLivre(e, p, true), /nada pra responder/); // quem perguntou não responde
+  e = O.responderLivre(e, 1 - p, true);
+  assert.equal(O.pendente(e), null); assert.equal(e.turno, 1 - p, 'a vez passa pro outro');
+  const lado = O.ladoDe(e, p);
+  assert.equal(lado.perguntas.length, 1); assert.equal(lado.perguntas[0].livre, true); assert.equal(lado.perguntas[0].sim, true);
+  assert.equal(lado.fora.length, 0, 'nenhuma carta sai sozinha: quem perguntou vira à mão');
+});
+test('pergunta livre: texto é opcional (pergunta falada) e limitado a 140 caracteres', async () => {
+  const S = await partida('kids', [0, 1]); let e = S.e; const p = e.turno;
+  e = O.perguntarLivre(e, p); assert.equal(O.pendente(e).txt, ''); e = O.responderLivre(e, 1 - p, false);
+  assert.equal(O.ladoDe(e, p).perguntas[0].sim, false);
+  e = O.perguntarLivre(e, 1 - p, 'x'.repeat(500)); assert.equal(O.pendente(e).txt.length, O.TEXTO_LIVRE_MAX);
+});
+test('pergunta livre mistura com perguntas prontas e palpite sem quebrar o fim da rodada nem a conferência', async () => {
+  const S = await partida('classico', [0, 1]); let e = S.e; let guard = 0;
+  while (O.fase(e) === 'jogo' && guard++ < 200) {
+    const pend = O.pendente(e);
+    if (pend) { const outro = 1 - pend.p; e = pend.t === 'f' ? O.responderLivre(e, outro, guard % 2 === 0) : O.responder(e, outro, S.seg[outro]); continue; }
+    const p = e.turno; const lado = O.ladoDe(e, p); const cand = R.candidatosDo(e.mesa, lado);
+    if (cand.length === 1) e = O.palpitar(e, p, cand[0]);
+    else if (guard % 3 === 0) e = O.perguntarLivre(e, p, 'pergunta livre ' + guard);
+    else e = O.perguntar(e, p, R.sugestoes(e.mesa, lado, 1)[0].id);
+  }
+  assert.equal(O.fase(e), 'fim'); assert.ok(e.fim);
+  for (const p of [0, 1]) e = O.revelar(e, p, S.seg[p], S.sal[p]);
+  assert.ok((await O.conferir(e, 0)).ok && (await O.conferir(e, 1)).ok);
+});

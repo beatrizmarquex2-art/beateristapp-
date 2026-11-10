@@ -20,7 +20,8 @@ export function ladoDe(e, p) {
   const lado = { fora: [], perguntas: [], erros: [], palpites: e.palpites, terminou: false, acertou: false, dica: null, aberto: null };
   for (const x of e.log) {
     if (x.p !== p) continue;
-    if (x.t === 'q' || x.t === 'g') lado.aberto = x;
+    if (x.t === 'q' || x.t === 'g' || x.t === 'f') lado.aberto = x;
+    else if (x.t === 'fa') { lado.aberto = null; lado.perguntas.push({ id: null, txt: x.txt, sim: x.sim, livre: true }); } // pergunta livre: conta como pergunta, mas NÃO vira cartas sozinha (quem perguntou vira à mão)
     else if (x.t === 'a') {
       const q = BY_Q[x.qid]; lado.aberto = null; lado.perguntas.push({ id: x.qid, sim: x.sim });
       for (const c of e.mesa.cartas) if (!lado.fora.includes(c.id) && R.respostaDe(q, c) !== x.sim) lado.fora.push(c.id);
@@ -36,7 +37,7 @@ export function fase(e) {
   return ladoDe(e, 0).terminou && ladoDe(e, 1).terminou ? 'fim' : 'jogo';
 }
 /** Pergunta/palpite aguardando resposta (do outro celular). */
-export function pendente(e) { const u = e.log[e.log.length - 1]; return u && (u.t === 'q' || u.t === 'g') ? u : null; }
+export function pendente(e) { const u = e.log[e.log.length - 1]; return u && (u.t === 'q' || u.t === 'g' || u.t === 'f') ? u : null; }
 export const candidatos = (e, p) => R.candidatosDo(e.mesa, ladoDe(e, p));
 export const perguntasLivres = (e, p) => R.disponiveis(e.mesa, ladoDe(e, p));
 
@@ -46,6 +47,14 @@ export function perguntar(e, p, qid) {
   const lado = ladoDe(e, p); if (lado.terminou) throw new Error('você já terminou');
   if (!R.disponiveis(e.mesa, lado).some((q) => q.id === qid)) throw new Error('pergunta indisponível');
   const n = clone(e); n.log.push({ p, t: 'q', qid }); return n;
+}
+/** Pergunta livre (as pessoas estão juntas): o texto é opcional (pode ser falada). O outro celular responde SIM/NÃO na mão e as cartas são viradas à mão. */
+export const TEXTO_LIVRE_MAX = 140;
+export function perguntarLivre(e, p, txt = '') {
+  if (fase(e) !== 'jogo' || e.turno !== p || pendente(e)) throw new Error('não é a sua vez');
+  if (ladoDe(e, p).terminou) throw new Error('você já terminou');
+  const t = String(txt || '').replace(/\s+/g, ' ').trim().slice(0, TEXTO_LIVRE_MAX);
+  const n = clone(e); n.log.push({ p, t: 'f', txt: t }); return n;
 }
 export function palpitar(e, p, id) {
   if (fase(e) !== 'jogo' || e.turno !== p || pendente(e)) throw new Error('não é a sua vez');
@@ -63,6 +72,16 @@ export function responder(e, p, segredo) {
     if (!ok && n.modo === 'kids' && ladoDe(e, pend.p).palpites - 1 > 0) { const d = R.dicaPara(n.mesa, { segredo }, pend.id); if (d) v.dica = d; }
     n.log.push(v);
   }
+  return fecharVez(n, pend, p);
+}
+/** Quem foi perguntado (p) responde SIM ou NÃO a uma pergunta livre (a resposta é de quem tem a carta; não dá pra conferir no fim). */
+export function responderLivre(e, p, sim) {
+  const pend = pendente(e); if (!pend || pend.t !== 'f' || pend.p === p) throw new Error('nada pra responder');
+  const n = clone(e); n.log.push({ p: pend.p, t: 'fa', txt: pend.txt || '', sim: sim === true });
+  return fecharVez(n, pend, p);
+}
+/** Depois de uma resposta: fecha a rodada se os dois terminaram; senão passa a vez (quem já terminou é pulado). */
+function fecharVez(n, pend, p) {
   const l = [ladoDe(n, 0), ladoDe(n, 1)];
   if (l[0].terminou && l[1].terminou) { const res = R.resultadoRodada(l[0], l[1]); n.serie = R.fecharRodada(n.serie, res); n.fim = res; n.turno = pend.p; }
   else n.turno = !l[p].terminou ? p : pend.p; // alterna; quem já terminou é pulado

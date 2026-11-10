@@ -42,3 +42,7 @@
 .cm-contesta:active{opacity:1}
 .cm-contesta-sheet .field{width:100%;margin:8px 0}.cm-contesta-lista{margin:8px 0;padding-left:20px;display:grid;gap:8px}
 .cm-contesta-item{width:100%;text-align:left;min-height:44px;padding:8px 12px;border:2px solid var(--jg-navy,#13213f);border-radius:12px;background:#fff;color:var(--jg-ink,#17202e);font:inherit;cursor:pointer}
+
+.cm-livre{display:grid;gap:6px;padding:12px;border:3px solid var(--jg-navy,#12284a);border-radius:14px;background:var(--jg-paper,#fffdf8);text-align:center}.cm-livre-txt{margin:0;font:700 20px/1.25 var(--body)}.cm-livre .btn.big{min-height:56px;font-size:20px}
+.cm-livre .jg-actions{display:flex;gap:12px}.cm-livre .btn.big{flex:1;min-height:64px;font-size:24px;font-weight:800}
+.cm-root .jg-flip{color:#fffdf8;border-color:rgba(255,253,248,.7);font-weight:700}.cm-root .jg-flip[aria-pressed="true"]{background:#fffdf8;color:#12284a}
