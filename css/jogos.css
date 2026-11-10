@@ -884,3 +884,27 @@ button.dc-chip{cursor:pointer;min-height:36px}
 @media (prefers-reduced-motion:reduce){.jo-tema{transition:none}}
 .jg-qprev{max-height:120px;width:auto;max-width:100%;object-fit:cover;border-radius:10px}
 .jg-imgs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;gap:4px}.jg-imgs button{flex:0 0 auto;min-height:0!important;padding:2px!important}.jg-imgs button img{width:46px!important;height:31px!important;object-fit:cover;border-radius:5px;display:block}
+
+/* Quiz e Letras, modelo 5 "figurinhas" (escolhido pela Bea): cada letra é uma mini figurinha meio torta; achou, fica dourada e a última letra carimba uma estrela */
+.dc-wrap .dc-grid.dc-easy{gap:5px;padding:4px}
+.dc-wrap .dc-grid.dc-easy .dc-c{border-radius:7px!important;border:2px solid #17365B;background:#fff;color:#142036;box-shadow:2px 2px 0 #17365B;transform:rotate(var(--r,0deg));position:relative;font-weight:700}
+.dc-wrap .dc-grid.dc-easy .dc-c:nth-child(5n+1){--r:-1.8deg}.dc-wrap .dc-grid.dc-easy .dc-c:nth-child(5n+2){--r:1.4deg}.dc-wrap .dc-grid.dc-easy .dc-c:nth-child(5n+3){--r:-.6deg}.dc-wrap .dc-grid.dc-easy .dc-c:nth-child(5n+4){--r:2deg}.dc-wrap .dc-grid.dc-easy .dc-c:nth-child(5n){--r:.8deg}
+.dc-wrap .dc-grid.dc-easy .dc-c.sel{background:#fbe3a6;color:#142036}
+.dc-wrap .dc-grid.dc-easy .dc-c.found,.dc-wrap .dc-grid.dc-easy .dc-c.found[class*="dc-k"]{background:#EBA332!important;color:#142036}
+.dc-wrap .dc-grid.dc-easy .dc-c.found.fe::after{content:"\2605";position:absolute;top:-9px;right:-7px;font-size:15px;line-height:1;color:#BD1733;text-shadow:-1px 0 #fff,1px 0 #fff,0 1px #fff,0 -1px #fff}
+.dc-wrap .dc-chip{background:#fff;border:2px solid #17365B;border-radius:6px;box-shadow:2px 2px 0 #BD1733;color:#17365B}
+.dc-wrap .dc-chips .dc-chip:nth-child(3n+1){transform:rotate(-1.4deg)}.dc-wrap .dc-chips .dc-chip:nth-child(3n+2){transform:rotate(1.1deg)}.dc-wrap .dc-chips .dc-chip:nth-child(3n){transform:rotate(-.5deg)}
+.dc-wrap .dc-chip.ok,.dc-wrap .dc-chip.done{background:#EBA332!important;color:#142036}
+.dc-wrap .dc-chip[class*="dc-k"]:not(.ok):not(.done){background:#fff}
+.dc-wrap .dc-cell,.dc-wrap .dc-cell.hint,.dc-wrap .dc-cell.on{border-radius:6px!important;border:2px solid #17365B}
+.dc-wrap .dc-cell.on,.dc-wrap .dc-cell.on[class*="dc-k"]{background:#EBA332!important;color:#142036}
+.dc-wrap .dc-cell.hint{background:#fff3d6;color:#BD1733}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c{background:#1c3350;color:#f6ecd8;border-color:#9db8de;box-shadow:2px 2px 0 #9db8de}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.sel{background:#4a3d1c;color:#ffd37a}
+.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found,.dc-wrap.escuro .dc-grid.dc-easy .dc-c.found[class*="dc-k"]{background:#EBA332!important;color:#142036}
+.dc-wrap.escuro .dc-chip{background:#1c3350;color:#f6ecd8;border-color:#9db8de;box-shadow:2px 2px 0 #BD1733}
+.dc-wrap.escuro .dc-chip.ok,.dc-wrap.escuro .dc-chip.done{background:#EBA332!important;color:#142036}
+.dc-wrap.escuro .dc-cell,.dc-wrap.escuro .dc-cell.hint,.dc-wrap.escuro .dc-cell.on{border-color:#9db8de}
+.dc-wrap.escuro .dc-cell.on,.dc-wrap.escuro .dc-cell.on[class*="dc-k"]{background:#EBA332!important;color:#142036}
+.dc-wrap.escuro .dc-cell.hint{background:#4a3d1c;color:#ffd37a}
+@media (prefers-reduced-motion:reduce){.dc-wrap .dc-grid.dc-easy .dc-c,.dc-wrap .dc-chip{transform:none!important}}

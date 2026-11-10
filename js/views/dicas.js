@@ -64,13 +64,14 @@ function caca(box) {
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
   const key = (x, y) => `${x},${y}`;
   const cellColor = new Map(); // casa -> cor da palavra achada
+  const cellEnd = new Set(); // última letra de cada palavra achada (leva a estrelinha do modelo figurinha)
   let drag = null; let grid = null;
   const cellAt = (el) => { const c = el && el.closest && el.closest('.dc-c'); return c && c.dataset.x != null ? { x: +c.dataset.x, y: +c.dataset.y, el: c } : null; };
   const preview = (line) => { grid.querySelectorAll('.dc-c.sel').forEach((e) => e.classList.remove('sel')); if (line) line.forEach((c) => grid.children[c.y * ws.size + c.x].classList.add('sel')); };
   const attempt = (line, el) => {
     const str = line.map((c) => ws.grid[c.y][c.x]).join(''); const rev = [...str].reverse().join('');
     const w = words.find((k) => !found.has(k) && (k === str || k === rev));
-    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (done && !pagou && !free) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
+    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (done && !pagou && !free) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
     else { erros++; draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
   };
   const up = () => {
@@ -90,7 +91,7 @@ function caca(box) {
   const draw = () => {
     grid = h('div', { class: 'dc-grid dc-easy', style: `--n:${ws.size}` }, ...ws.grid.flatMap((row, y) => row.map((l, x) => {
       const ck = cellColor.get(key(x, y));
-      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
+      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
     })));
     grid.addEventListener('pointerdown', (e) => { const c = cellAt(e.target); if (!c) return; drag = { x0: c.x, y0: c.y, el: c.el, end: null }; });
     grid.addEventListener('pointermove', (e) => {
