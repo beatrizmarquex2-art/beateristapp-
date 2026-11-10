@@ -1,0 +1,21 @@
+// Na tela de entrada o balão de pensamento do Paul nunca aparece (cobria o botão "entrar") e o "entrar" é tocável depois de gerar o código.
+import { serve, launch, context, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser } = await launch();
+const ctx = await context(browser, { viewport: { width: 390, height: 780 }, codigo: false });
+await ctx.route('**/*.supabase.co/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'null', headers: { 'access-control-allow-origin': '*' } }));
+const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(String(e).slice(0, 160)));
+await p.goto(`${url}/aluno.html`); await sleep(1500);
+await p.evaluate(async () => { const m = await import('/js/paul-talk.js'); m.think(m.THOUGHTS.find((t) => t[1] === '#/lojinha')); }); await sleep(500);
+check('balão não aparece na tela de entrada', (await p.locator('.pt-think.on').count()) === 0);
+await p.locator('.al-paul-img').click(); await sleep(600);
+check('tocar no Paul na entrada não abre balão', (await p.locator('.pt-think.on').count()) === 0);
+await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('button:has-text("gerar meu código")').click(); await sleep(500);
+check('"mostrar o código" some quando o código foi gerado', await p.locator('.al-ver').isHidden());
+const alvo = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === 'entrar'); b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); const e = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return e === b || b.contains(e); });
+check('o botão "entrar" está livre (nada por cima)', alvo === true);
+await p.locator('button:has-text("entrar")').click(); await sleep(2500);
+check('entra no app', (await p.locator('.al-entry').count()) === 0 && (await p.locator('nav .nav-item').count()) >= 4);
+await p.evaluate(async () => { const m = await import('/js/paul-talk.js'); m.think(m.THOUGHTS.find((x) => x[1] === '#/lojinha')); }); await sleep(500);
+check('depois de entrar, o balão do Paul volta a funcionar', (await p.locator('.pt-think.on').count()) === 1);
+check('sem erros de JS', !p.errs.length, p.errs.join('|'));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

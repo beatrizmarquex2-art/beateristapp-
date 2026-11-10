@@ -415,7 +415,7 @@ function askName() {
   const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, ver, gen, pedido);
   const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
   cod.addEventListener('input', () => { sel.required = !temCodigoDigitado(); });
-  function drawPedido() { const c = CODE.pendente(); sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  function drawPedido() { const c = CODE.pendente(); ver.hidden = !!c; sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
   sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
   let indo = false;
@@ -479,6 +479,6 @@ async function start() {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
   startScroller();
-  startPaul({ first: 7000 });
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') }); // na tela de entrada o balão do Paul cobria o botão "entrar"
   start();
 })();
