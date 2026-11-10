@@ -9,6 +9,9 @@ import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
 import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
+import { lobby } from '../jogos/online.js';
+import { confirmSheet } from '../ui.js';
+import { mostrarSala, mesaNova, JOGO as JOGO_SALA } from './memoria-sala.js';
 
 const KEY = 'setting-memoria';
 const conf = () => ({ theme: 'beatles', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -34,14 +37,14 @@ const alunoSemCodigo = () => document.documentElement.classList.contains('aluno-
  *  ficam intactos) e avisa `opts.onResult({ won, pairs, theme, tries, ms })` UMA vez, quando acha o último par. Sem `opts.mission` é o jogo de sempre. */
 export function mountMemoria(host, opts) {
   const MS = opts && opts.mission ? opts.mission : null; const MP = MS ? MS.params || {} : null;
-  let gone = false; let started = false; let reported = false; const timers = [];
+  let gone = false; let paused = false; let started = false; let reported = false; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
   const bot = robo({ mood: 'happy', size: 84, say: 'escolhe o tema e quantos pares!' });
   const stage = h('div', { class: 'mem-stage' });
   host.replaceChildren(h('div', { class: 'kx-botrow' }, bot.el), stage);
   const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
-  let photo = null; let lockNote = false; let live = false;
+  let photo = null; let lockNote = false; let live = false; let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
   const themes = () => {
     // abertos pra todo mundo: The Beatles, Rock (as cartas desenhadas de bandas) e Profissões. O resto só com código.
     const drawn = THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: true } : { ...t, open: t.id === 'profissoes' }));
@@ -61,10 +64,11 @@ export function mountMemoria(host, opts) {
   };
 
   const setup = () => {
-    live = false; const c = conf(); const list = themes();
+    if (sala) { sala.destroy(); sala = null; } if (lob) { lob.close(); lob = null; }
+    live = false; paused = false; const c = conf(); const list = themes();
     let th = list.find((t) => t.id === c.theme) || list[0]; if (locked(th)) th = list.find((t) => !locked(t)) || list[0];
     const maxPairs = th.items.length; preload(th);
-    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); const players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : 1;
+    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); const players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
     stage.replaceChildren(
       h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
       h('h2', { class: 'kx-h' }, 'tema'),
@@ -72,15 +76,23 @@ export function mountMemoria(host, opts) {
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
-        ...[[1, 'um', '1 jogador'], [2, 'dois', '2 jogadores, um de cada vez'], ['bot', 'paul', 'jogar contra o Paul']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, bq(ic))),
+        ...[[1, 'um', '1 jogador'], [2, 'dois', '2 jogadores, um de cada vez'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, bq(ic))),
         h('span', { class: 'mem-step' },
           h('button', { type: 'button', 'aria-label': 'menos pares', disabled: pairs <= PICK[0] || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) - 1] }).then(setup) }, '‹'),
           h('span', { 'aria-live': 'polite' }, `${pairs} pares`),
           h('button', { type: 'button', 'aria-label': 'mais pares', disabled: PICK.indexOf(pairs) >= PICK.length - 1 || PICK[PICK.indexOf(pairs) + 1] > maxPairs || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) + 1] }).then(setup) }, '›')),
         players !== 1 ? h('button', { type: 'button', class: `mem-ic${c.again !== false ? ' on' : ''}`, 'aria-pressed': String(c.again !== false), 'aria-label': 'quem acerta joga de novo', title: 'quem acerta joga de novo', onclick: () => save({ again: c.again === false }).then(setup) }, '↻') : null),
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
-      h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
+      players === 'sala' ? h('div', { class: 'jg ms-lobby' }, (lob = lobby({ jogo: JOGO_SALA, makeState: () => mesaNova(th, Math.min(pairs, maxPairs), c.again !== false), onStart: startSala })).el)
+        : h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
     bot.set('happy', 'escolhe o tema e quantos pares!');
+  };
+
+  /** Os dois celulares entram na mesma mesa: tudo vem do estado da sala (tema, pares, regra, semente, vez, cartas viradas, pares achados). */
+  const startSala = (conn, estado) => {
+    if (gone) { conn.close(); return; }
+    if (sala) sala.destroy(); lob = null; live = true;
+    sala = mostrarSala({ stage, themes, locked, face, bot, back: () => { sala = null; setup(); } }, conn, estado);
   };
 
   const play = (th, pairs, players = 1, again = true, rnd = Math.random) => {
@@ -103,7 +115,7 @@ export function mountMemoria(host, opts) {
       b._c = c; return b;
     }));
     const flip = (btn, byPaul = false) => {
-      if (lock || gone || btn.classList.contains('up') || btn.classList.contains('ok')) return;
+      if (lock || gone || (paused && !byPaul) || btn.classList.contains('up') || btn.classList.contains('ok')) return;
       if (vsPaul && turn === 1 && !byPaul) return; // a vez é do Paul
       if (vsPaul && Math.random() < 0.7) known.set(btn._c.key, btn._c.it.id); // o Paul vê toda carta virada, mas nem sempre lembra
       if (MS && !t0) { t0 = Date.now(); started = true; if (MP.secs) tick(); }
@@ -167,10 +179,12 @@ export function mountMemoria(host, opts) {
     stage.replaceChildren(h('p', { class: 'muted', style: 'text-align:center' }, 'carregando os temas…'));
     loadPhotoThemes().then((l) => { photo = l; }).finally(() => { if (!gone) setup(); });
   }
-  const onAc = () => { if (!MS && !gone && !live) setup(); }; // o código do aluno foi conferido (ou tirado): refaz a escolha de temas
+  const onAc = () => { if (!MS && !gone && !live && !sala) setup(); }; // o código do aluno foi conferido (ou tirado): refaz a escolha de temas
   document.addEventListener('aluno-acesso', onAc);
-  const stop = () => { gone = true; timers.forEach(clearTimeout); document.removeEventListener('aluno-acesso', onAc); };
-  stop.inProgress = () => (MS ? started && !reported : live);
-  stop.restart = () => { if (!MS && !gone) { lockNote = false; setup(); } };
+  const stop = () => { gone = true; timers.forEach(clearTimeout); if (sala) { sala.destroy(); sala = null; } if (lob) { lob.close(); lob = null; } document.removeEventListener('aluno-acesso', onAc); };
+  stop.inProgress = () => (MS ? started && !reported : (sala ? sala.inProgress() : live));
+  stop.pause = () => { paused = true; if (sala) sala.pause(); }; // só local; a mesa não tem relógio (só o desafio de tempo da aventura, que não é pausado)
+  stop.resume = () => { paused = false; if (sala) sala.resume();  };
+  stop.restart = async () => { if (MS || gone) return; if (sala && sala.inProgress() && !(await confirmSheet('sair da sala?', 'a partida atual será perdida.', 'sair'))) return; lockNote = false; setup(); };
   return stop;
 }

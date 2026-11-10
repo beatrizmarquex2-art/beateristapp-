@@ -6,6 +6,7 @@ import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
+import { silence } from '../audio.js';
 import * as cartas from '../jogos/cartas.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
@@ -18,6 +19,8 @@ import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
+import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
+import { setGame, getGame } from '../jogos/base.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -65,6 +68,41 @@ const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
 const DARK = new Set(['cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
+/** Atalho no topo da tela de Jogos: digite o código da sala (5 letras = jogo de 2 celulares; 6 = bingo) e o app abre o jogo certo já entrando na sala. */
+const NOME_SALA = { velha: 'jogo da velha', cartas: 'Uno Musical', stop: 'stop', 'cara-musical': 'cara a cara', memoria: 'jogo da memória', beathero: 'Beat Hero (duelo)' };
+function prepararEAbrir(id, rota, code, voltar) {
+  if (id === 'cara-musical') { try { const g = getGame('cara'); setGame('cara', { tema: 'musical', musical: { ...(g.musical || {}), jogo: 'online' } }); } catch { /* segue */ } }
+  definirSalaAuto(id, code, voltar); location.hash = rota;
+}
+function atalhoSala() {
+  const msg = h('p', { class: 'jg-msg', role: 'status', 'aria-live': 'polite' });
+  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 6, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala',
+    oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') ir(); } });
+  async function ir() {
+    const c = inp.value.trim().toUpperCase();
+    if (c.length === 6) { location.hash = `#/jogos/bingo?sala=${c}`; return; }
+    if (c.length !== 5) { msg.textContent = 'o código tem 5 letras ou números (o do bingo tem 6)'; return; }
+    msg.textContent = 'procurando a sala…';
+    const r = await acharJogoDaSala(c);
+    if (!r) { msg.textContent = 'não achei essa sala. confira o código ou a internet'; return; }
+    prepararEAbrir(r[0], r[1], c, false);
+  }
+  const voltas = JOGOS_SALA.map(([id, rota]) => [id, rota, salaLembrada(id)]).filter((x) => x[2]);
+  return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'entrar numa sala' },
+    h('b', {}, 'tem um código de sala?'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar')),
+    ...voltas.map(([id, rota, u]) => h('button', { class: 'btn small', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`)), msg);
+}
+
+/* ---- sair sem querer: lembra o jogo em andamento e a tela de Jogos oferece "continuar" ---- */
+const JOGO_ULT = 'beaterista-jogo-ultimo'; const VALE = 12 * 3600 * 1000;
+function lembrarJogo(id, nome) { try { localStorage.setItem(JOGO_ULT, JSON.stringify({ id, nome, at: Date.now() })); } catch { /* sem armazenamento */ } }
+function esquecerJogo(id) { try { const u = JSON.parse(localStorage.getItem(JOGO_ULT) || 'null'); if (u && u.id === id) localStorage.removeItem(JOGO_ULT); } catch { /* ok */ } }
+const jogoUltimo = () => { try { const u = JSON.parse(localStorage.getItem(JOGO_ULT) || 'null'); return u && u.id && Date.now() - (u.at || 0) < VALE ? u : null; } catch { return null; } };
+function atalhoContinuar() {
+  const u = jogoUltimo(); if (!u) return null; const e = BY[u.id]; if (!e) return null;
+  return h('a', { class: 'btn primary wide jg-continuar', href: `#/jogos/${u.id}` }, `continuar: ${u.nome}`);
+}
+
 function catalog(host) {
   const aluno = ALUNO();
   let editing = false; let onlyFav = false;
@@ -94,7 +132,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'nenhum favorito ainda. toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
@@ -117,13 +155,24 @@ function game(host, entry) {
     setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇';
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
+  // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
+  let pausa = null; let deVez = false; // deVez: a pessoa escolheu sair (não oferece "continuar")
+  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  const pausar = () => {
+    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } body.inert = true;
+    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('h2', { class: 'hand' }, 'pausado ⏸'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
+      h('button', { class: 'btn primary wide', type: 'button', onclick: despausar }, 'continuar'),
+      h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
+    wrap.append(pausa); const b = pausa.querySelector('button'); if (b) b.focus();
+  };
+  const btnPausa = h('button', { class: 'btn small ghost jg-pausa-btn', type: 'button', 'aria-label': 'pausar o jogo', onclick: pausar }, '⏸ pausa');
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
-    h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) location.hash = '#/jogos'; } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
-      h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
+    h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
+      btnPausa, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);
-  return () => { offFesta(); ctl.destroy(); };
+  return () => { const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */

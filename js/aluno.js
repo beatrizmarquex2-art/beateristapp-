@@ -332,13 +332,28 @@ function trocarAluno() {
   });
 }
 
+/** "tenho código": folha rápida (aberta do topo de qualquer tela) pra digitar o código de acesso sem procurar a Lojinha. */
+function abrirCodigo() {
+  sheet('já tenho meu código', (close) => {
+    const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
+    const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
+    const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+    return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
+      h('p', { class: 'muted' }, 'ainda não tem? ', h('a', { href: '#/lojinha', onclick: close }, 'veja a Lojinha')));
+  });
+}
+
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
+  const tenhoCodigo = h('button', { type: 'button', class: 'btn small al-tenho', onclick: abrirCodigo, hidden: AC.liberado(), 'aria-label': 'tenho código de acesso' }, '🔑 código');
+  document.addEventListener('aluno-acesso', (ev) => { tenhoCodigo.hidden = !!(ev.detail); });
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
+    tenhoCodigo,
     h('button', { type: 'button', class: 'btn small ghost', onclick: trocarAluno }, 'trocar aluno'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 

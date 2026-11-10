@@ -6,7 +6,7 @@ import * as C from './cartas-logic.js';
 import { SYMS, SYM_NAME, SYM_SHORT, SYM_LEARN, symbolEl, actionEl } from './cartas-simbolos.js';
 import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
-import { lobby, linkBadge } from './online.js';
+import { lobby, linkBadge, salaAutoPara } from './online.js';
 const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
@@ -56,6 +56,7 @@ export function mount(host, opts) {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
     hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false, learn: saved.learn === true, names: saved.names === true,
   };
+  if (!adv && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;

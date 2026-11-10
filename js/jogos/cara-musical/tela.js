@@ -9,7 +9,7 @@ import { BY_Q, textoDe } from './perguntas.js';
 import * as R from './regras.js';
 import { falador } from './falas.js';
 import { fatosDe } from './fichas.js';
-import { lobby, reenter } from '../online.js';
+import { lobby, reenter, salaAutoPara } from '../online.js';
 import * as O from './online-regras.js';
 import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
@@ -249,7 +249,7 @@ export function mountMusical(host, { onTema } = {}) {
     else escolherSegredo(0, (s1) => passe(1, `${nomeJ(1)}, escolha sua carta secreta`, () => escolherSegredo(1, (s2) => { st.lados = [R.novoLado({ mesa, segredo: s2, palpites }), R.novoLado({ mesa, segredo: s1, palpites })]; passe(0, `vez de ${nomeJ(0)}`, comecar); })));
   }
 
-  menu();
+  if (salaAutoPara('cara-musical')) { cfg.jogo = 'online'; salaOnline(); } else menu(); // veio de "tenho um código de sala"
   return {
     inProgress: () => !!(st && st.lados && st.lados.some((l) => l.perguntas.length || l.erros.length) && !st.lados.every((l) => l.terminou)),
     restart: async () => { if (st && st.lados && st.lados.some((l) => l.perguntas.length) && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'recomeçar'))) return; menu(); },

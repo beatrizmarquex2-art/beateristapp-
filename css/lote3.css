@@ -708,3 +708,9 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .lj-digital{margin:0;padding:10px 12px;border:2px dashed rgb(var(--ink-rgb));border-radius:12px;background:var(--card);font-size:14px;line-height:1.35;text-align:center}
 
 .lj-selo{display:inline-block;margin:2px 0;padding:4px 8px;border-radius:6px;background:#1b1818;color:#fffdf8;font:800 11px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase}.lj-de{font-weight:600;font-size:14px;opacity:.7}
+
+.al-tenho{font-weight:800;border:2px solid currentColor;white-space:nowrap}
+/* topo da área do aluno com o botão "tenho código": o nome encolhe em vez de quebrar */
+.top .ws{min-width:0;flex:1 1 0}.top .ws span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .btn.small{padding:6px 9px;font-size:13px;white-space:nowrap}
+.jg-sala-atalho .jg-msg:empty{display:none}

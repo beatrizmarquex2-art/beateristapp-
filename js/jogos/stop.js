@@ -6,7 +6,7 @@ import * as S from './stop-logic.js';
 import { addCustom, bankSize } from './stop-valid.js';
 import * as FX from './stop-sfx.js';
 import { getGame, setGame } from './base.js';
-import { lobby, linkBadge } from './online.js';
+import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { linha, chips, ajuda } from './opcoes.js';
 import * as Q from './stop-sim-logic.js';
 import { montarSimultaneo, garantirCss, caixaPausa } from './stop-simultaneo.js';
@@ -395,7 +395,7 @@ export function mount(host, opts) {
   document.addEventListener('visibilitychange', onVis);
   const onUnload = () => { if (g && g.stage === 'play') persist(); };
   addEventListener('pagehide', onUnload);
-  if (M) startMission(); else intro();
+  if (M) startMission(); else if (salaAutoPara(ID)) { prefs.mode = 'online'; introSeen = true; setup(); } else intro(); // veio de "tenho um código de sala": abre direto em 2 celulares
   /** Pausa do app: para só o relógio deste celular (no 'ao mesmo tempo' o outro não é afetado). */
   function pause() {
     if (sim) return sim.pause();

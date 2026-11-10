@@ -11,6 +11,28 @@ async function rpc(fn, body) {
 }
 const POLL_MS = 1200;
 
+/* ---- lembrar a última sala de cada jogo (pra voltar se sair sem querer) e entrada automática por código ---- */
+const ULT = (jogo) => `beaterista-sala-ultima-${jogo}`; const AUTO = 'beaterista-sala-auto'; const VALE_MS = 12 * 3600 * 1000;
+const lerJ = (k, st = localStorage) => { try { return JSON.parse(st.getItem(k)); } catch { return null; } };
+const gravaJ = (k, v, st = localStorage) => { try { v === null ? st.removeItem(k) : st.setItem(k, JSON.stringify(v)); } catch { /* sem armazenamento */ } };
+/** A última sala deste jogo em que este celular entrou (ou null se não tem, ou se já passou de 12 h). */
+export function salaLembrada(jogo) { const u = lerJ(ULT(jogo)); if (!u || !u.code || Date.now() - (u.at || 0) > VALE_MS) return null; return u; }
+export const lembrarSala = (jogo, code, me) => gravaJ(ULT(jogo), { code, me, at: Date.now() });
+export const esquecerSala = (jogo) => gravaJ(ULT(jogo), null);
+/** Entrada automática: o atalho "tenho um código de sala" da tela de Jogos deixa o código aqui e abre o jogo certo. */
+export const definirSalaAuto = (jogo, code, voltar = false) => gravaJ(AUTO, { jogo, code: String(code).toUpperCase(), voltar: !!voltar, at: Date.now() }, sessionStorage);
+/** Há uma entrada automática esperando por este jogo? (só olha, não consome) */
+export function salaAutoPara(jogo) { const a = lerJ(AUTO, sessionStorage); return a && a.jogo === jogo && Date.now() - (a.at || 0) < 120000 ? a.code : null; }
+const consumirSalaAuto = (jogo) => { const c = salaAutoPara(jogo); if (!c) return null; const a = lerJ(AUTO, sessionStorage); gravaJ(AUTO, null, sessionStorage); return a; };
+/** Jogos de sala que o atalho da tela de Jogos sabe procurar: [id da sala, rota pra abrir]. */
+export const JOGOS_SALA = [['velha', '#/jogos/velha'], ['cartas', '#/jogos/cartas'], ['stop', '#/jogos/stop'], ['cara-musical', '#/jogos/cara'], ['memoria', '#/jogos/memart'], ['beathero', '#/ritmo/duelo']];
+/** Descobre de que jogo é uma sala de 5 letras (tenta cada jogo; sala_entrar só acha se o jogo bate). Devolve [id, rota] ou null. */
+export async function acharJogoDaSala(code) {
+  const c = String(code || '').trim().toUpperCase();
+  for (const [id, rota] of JOGOS_SALA) { try { const rows = await rpc('sala_entrar', { p_code: c, p_jogo: id }); if (rows && rows[0]) return [id, rota]; } catch { /* sem internet: tenta o próximo e o chamador avisa */ } }
+  return null;
+}
+
 /** Conexão com uma sala já criada/entrada. `me` = 0 (quem criou) ou 1 (quem entrou). */
 function connection(code, me, ver, onPeer) {
   let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true;
@@ -49,29 +71,41 @@ function connection(code, me, ver, onPeer) {
 }
 
 /** Tela de entrada da sala. `makeState()` gera a partida nova de quem cria. `onStart(conn, state)` roda nos dois celulares. */
-export function lobby({ jogo, makeState, onStart }) {
+export function lobby({ jogo, makeState, onStart: aoComecar }) {
   const box = h('div', { class: 'jg-lobby' });
   let conn = null; let live = false;
+  const onStart = (c, st) => { lembrarSala(jogo, c.code, c.me); aoComecar(c, st); }; // cada jogo continua recebendo (conn, estado); aqui só guardamos a sala pra dar pra voltar
   const msg = h('p', { class: 'jg-msg', 'aria-live': 'polite' });
   const err = (t) => { msg.textContent = t; };
+  let entrando = false;
+  async function entrarCom(c) {
+    c = String(c || '').trim().toUpperCase(); if (c.length !== 5) return err('o código tem 5 letras ou números');
+    if (entrando || live) return; entrando = true; err('entrando…');
+    try {
+      const rows = await rpc('sala_entrar', { p_code: c, p_jogo: jogo });
+      if (!rows || !rows[0]) { entrando = false; return err('não achei essa sala. confira o código com quem criou'); }
+      conn = connection(c, 1, rows[0].ver); live = true; onStart(conn, rows[0].estado);
+    } catch { entrando = false; err('sem internet ou o serviço não respondeu. tente de novo'); }
+  }
+  async function voltar(ult) {
+    err('voltando pra sala…');
+    try {
+      const r = await reenter(ult.code, ult.me);
+      if (!r) { esquecerSala(jogo); err('essa sala não existe mais. crie uma nova ou entre com outro código'); return home(); }
+      conn = r.conn; live = true; onStart(conn, r.estado);
+    } catch { err('sem internet agora. tente de novo'); }
+  }
   function home() {
     if (conn) { conn.close(); conn = null; }
-    const inp = h('input', { type: 'text', class: 'jg-code-in', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO', 'aria-label': 'código da sala',
-      oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') join(); } });
-    const join = async () => {
-      const c = inp.value.trim(); if (c.length !== 5) return err('o código tem 5 letras ou números');
-      err('entrando…');
-      try {
-        const rows = await rpc('sala_entrar', { p_code: c, p_jogo: jogo });
-        if (!rows || !rows[0]) return err('não achei essa sala. confira o código com quem criou');
-        conn = connection(c, 1, rows[0].ver); live = true; onStart(conn, rows[0].estado);
-      } catch { err('sem internet ou o serviço não respondeu. tente de novo'); }
-    };
+    const ult = salaLembrada(jogo);
+    const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala', inputmode: 'text',
+      oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (e.target.value.length === 5) entrarCom(e.target.value); }, onkeydown: (e) => { if (e.key === 'Enter') entrarCom(inp.value); } });
     box.replaceChildren(
-      h('p', { class: 'jg-p' }, 'jogue em dois celulares ao mesmo tempo. um cria a sala e passa o código; o outro entra com ele.'),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: create }, 'criar sala')),
-      h('p', { class: 'jg-lab' }, 'ou entre numa sala'),
-      h('div', { class: 'jg-actions row' }, inp, h('button', { class: 'btn', type: 'button', onclick: join }, 'entrar')),
+      ult ? h('div', { class: 'jg-volta' }, h('button', { class: 'btn primary wide', type: 'button', onclick: () => voltar(ult) }, `voltar pra sala ${ult.code}`), h('small', { class: 'muted' }, 'você saiu de uma partida? volte por aqui.')) : null,
+      h('p', { class: 'jg-lab' }, 'tem o código da sala? digite aqui'),
+      h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: () => entrarCom(inp.value) }, 'entrar')),
+      h('p', { class: 'jg-lab' }, 'ou crie uma sala e passe o código'),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: create }, 'criar sala')),
       msg);
     msg.textContent = '';
   }
@@ -80,15 +114,16 @@ export function lobby({ jogo, makeState, onStart }) {
     try {
       const state = makeState(); const code = await rpc('sala_criar', { p_jogo: jogo, p_estado: state });
       const c = connection(code, 0, 1, () => { if (conn === c) { live = true; onStart(c, state); } });
-      conn = c;
+      conn = c; lembrarSala(jogo, code, 0);
       box.replaceChildren(
         h('p', { class: 'jg-lab' }, 'código da sala'), h('div', { class: 'jg-code', role: 'status', 'aria-label': `código ${code.split('').join(' ')}` }, code),
-        h('p', { class: 'jg-p' }, 'no outro celular: abra este mesmo jogo, escolha “2 celulares” e entre com o código.'),
+        h('p', { class: 'jg-p' }, 'no outro celular: abra a tela Jogos e digite este código em “tenho um código de sala”.'),
         h('p', { class: 'jg-p muted' }, 'esperando o outro celular entrar…'),
         h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: home }, 'cancelar')));
     } catch { err('não consegui criar a sala. confira a internet e tente de novo'); }
   }
   home();
+  const auto = consumirSalaAuto(jogo); if (auto) setTimeout(() => { const u = salaLembrada(jogo); if (auto.voltar && u) voltar(u); else entrarCom(auto.code); }, 0); // veio do atalho "tenho um código de sala"
   return { el: box, close() { if (conn && !live) { conn.close(); conn = null; } } };
 }
 
