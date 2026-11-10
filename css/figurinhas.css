@@ -286,3 +286,25 @@
 .pv-vid::after { content: ""; position: absolute; right: 2.5px; top: 2.5px; width: 46%; height: 30%; border-radius: 0 10px 0 0; background: radial-gradient(#14284b66 1.2px, transparent 1.5px) 0 0 / 7px 7px; pointer-events: none; z-index: 1; -webkit-mask-image: linear-gradient(225deg, #000, transparent 70%); mask-image: linear-gradient(225deg, #000, transparent 70%); }
 .pv-vid i { background: #f6d56a; color: #9a1226; }
 .pv-zap { background: #fbf3e0 radial-gradient(#14284b1a 1px, transparent 1.2px) 0 0 / 8px 8px; }
+/* depoimentos em conversa (zap da Beaterista): tema claro e tema escuro */
+.zp-chips { display: flex; gap: 6px; justify-content: center; margin: 4px 0 2px; }
+.zp { position: relative; border: 2.5px solid #14284b; border-radius: 18px; overflow: hidden; box-shadow: 4px 4px 0 #9a1226; padding-bottom: 70px; }
+.zp-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; color: #fbf3e0; background: #14284b; border-bottom: 4px solid #9a1226; }
+.zp-head img { width: 44px; height: 44px; border-radius: 50%; background: #fbf3e0; border: 2px solid #fbf3e0; object-fit: contain; }
+.zp-head b { display: block; font: 900 16px system-ui, sans-serif; } .zp-head small { opacity: .9; } .zp-head small::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #7bd88f; margin-right: 5px; }
+.zp-body { display: grid; gap: 14px; padding: 14px 12px 10px; }
+.zp-dia { justify-self: center; background: #f6d56a; color: #14284b; font: 800 12px system-ui, sans-serif; padding: 3px 14px; border-radius: 999px; transform: rotate(-1.5deg); }
+.zp-m { position: relative; max-width: 86%; padding: 9px 12px 20px; border-radius: 4px 16px 16px 16px; font: 600 15px/1.35 system-ui, sans-serif; }
+.zp-m::before { content: ""; position: absolute; left: -9px; top: -2px; border: 8px solid transparent; }
+.zp-nome { display: block; font: 900 12px system-ui, sans-serif; margin-bottom: 2px; color: #9a1226; }
+.zp-m small { position: absolute; right: 10px; bottom: 3px; font-size: 11px; font-weight: 800; }
+.zp-re { position: absolute; right: -6px; bottom: -13px; border-radius: 999px; padding: 1px 7px; font-size: 13px; }
+.zp-paul { position: absolute; right: 6px; bottom: -6px; width: 92px; height: auto; pointer-events: none; }
+.zp-claro { background: #fbf3e0 radial-gradient(#14284b18 1px, transparent 1.2px) 0 0 / 9px 9px; }
+.zp-claro .zp-m { background: #fff; border: 2px solid #14284b; box-shadow: 3px 3px 0 #9a1226; color: #14284b; }
+.zp-claro .zp-m::before { border-top-color: #14284b; border-right-color: #14284b; } .zp-claro .zp-m small { color: #14284b; } .zp-claro .zp-re { background: #fff; border: 1.5px solid #14284b; }
+.zp-escuro { background: #14284b radial-gradient(#fbf3e022 1.2px, transparent 1.4px) 0 0 / 10px 10px; border-color: #fbf3e0; box-shadow: 4px 4px 0 #0b1830; }
+.zp-escuro .zp-head { background: #9a1226; border-bottom-color: #fbf3e0; } .zp-escuro .zp-dia { background: #fbf3e0; }
+.zp-escuro .zp-m { background: #fbf3e0; color: #14284b; box-shadow: 0 3px 0 #0b1830; } .zp-escuro .zp-m::before { left: -7px; top: 0; border-width: 7px; border-top-color: #fbf3e0; border-right-color: #fbf3e0; }
+.zp-escuro .zp-m small { color: #5b4a4c; } .zp-escuro .zp-re { background: #9a1226; border: 1.5px solid #fbf3e0; }
+.zp-head small { color: #fbf3e0 !important; opacity: .92; font-weight: 600; }
