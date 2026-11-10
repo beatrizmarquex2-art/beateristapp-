@@ -4,14 +4,15 @@
 import { audio, out } from './audio.js';
 import { ROWS } from './beats.js';
 
-let bus = null; let rev = null; let nbuf = null; let ctxOf = null;
+let bus = null; let rev = null; let nbuf = null; let ctxOf = null; let comp = null; let outOf = null;
 /** Saída própria: compressor (vários dedos juntos não estouram) + um pouco de eco de sala. Recria se o AudioContext mudar. */
 function init() {
   const c = audio();
-  if (bus && ctxOf === c) return c;
+  // trocar de tela chama silence(), que troca a saída principal: religa o compressor na saída nova (senão o instrumento seguinte fica mudo)
+  if (bus && ctxOf === c) { const o = out(); if (o !== outOf) { try { comp.disconnect(); } catch { /* já solto */ } comp.connect(o); outOf = o; } return c; }
   ctxOf = c;
-  const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.003; comp.release.value = 0.2;
-  bus = c.createGain(); bus.connect(comp).connect(out());
+  comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.003; comp.release.value = 0.2;
+  outOf = out(); bus = c.createGain(); bus.connect(comp).connect(outOf);
   const n = Math.floor(c.sampleRate * 1.3); const ir = c.createBuffer(2, n, c.sampleRate);
   for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 3.2; }
   rev = c.createConvolver(); rev.buffer = ir; const rg = c.createGain(); rg.gain.value = 0.5; rev.connect(rg).connect(comp);
@@ -144,7 +145,7 @@ export const backing = {
   on: false, step: 0, next: 0, timer: 0, ...load(),
   save() { try { localStorage.setItem(KEY, JSON.stringify({ style: this.style, bpm: this.bpm })); } catch { /* sem armazenamento */ } },
   tick() {
-    const sp = 60 / this.bpm / 4;
+    C = init(); const sp = 60 / this.bpm / 4; // init() religa na saída nova depois de trocar de aba
     while (this.next < C.currentTime + 0.12) { this.play(this.step, this.next); this.next += sp; this.step = (this.step + 1) % 16; }
   },
   play(i, t) {
