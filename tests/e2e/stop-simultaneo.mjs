@@ -40,7 +40,7 @@ await L(A, 'button[role=radio]:has-text("30 s")').click(); await sleep(200);
 if (SHOT) await A.screenshot({ path: `${SHOT}/stop-sim-opcoes.png` });
 await L(A, 'button:has-text("criar sala")').click(); await sleep(500);
 const code = (await L(A, '.jg-code').textContent()).trim(); check('[sala] código de 5 caracteres', code.length === 5, code);
-await L(B, '.jg-code-in').fill(code); await L(B, 'button:has-text("entrar")').click(); await sleep(2800);
+await L(B, '.jg-code-in').fill(code); await sleep(3200); /* entra sozinho ao completar o código */
 const e0 = salaDe(code);
 check('[sala] estado "ao mesmo tempo" com 30 s, letra e categorias na sala', e0.sim === true && e0.seconds === 30 && !!e0.letter && e0.cats.length >= 5);
 check('[sala] os dois veem "estou pronto" e a mesma lista de categorias', (await L(A, 'button:has-text("estou pronto")').count()) === 1 && (await L(B, 'button:has-text("estou pronto")').count()) === 1 && (await L(A, '.ss-cats').innerText()) === (await L(B, '.ss-cats').innerText()));
