@@ -491,7 +491,14 @@ async function start() {
 }
 
 (async () => {
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    // Versão nova do app: quando o service worker novo assume, recarrega sozinho (fora de um jogo; dentro de um jogo espera sair), e procura versão nova sempre que o app volta pra tela.
+    const tinha = !!navigator.serviceWorker.controller; let recarregar = false;
+    const tenta = () => { if (!recarregar) return; if (document.documentElement.classList.contains('em-jogo')) return; location.reload(); };
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { recarregar = true; tenta(); } });
+    addEventListener('hashchange', () => setTimeout(tenta, 300));
+    navigator.serviceWorker.register('sw.js').then((reg) => { document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
+  }
   try { await store.init(); } catch {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
