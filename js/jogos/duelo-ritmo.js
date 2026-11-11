@@ -45,6 +45,7 @@ export function mountDuelo(host, opts = {}) {
     resumo: (c) => [c.song.name, `${bpmEfetivo(c.song, c.pct)} bpm (${c.pct}%) · ${(DIFFS.find((d) => d[0] === c.diff) || [0, ''])[1]} · ${c.maxLen / 60} min`],
     desbloquear() { if (BR && BR.unlock) BR.unlock(); },
     nota: (r) => r.score,
+    aoVencer() { import('./estrelas-jogo.js').then((E) => E.ganhou('beathero', 3)).catch(() => {}); }, // ganhou o duelo: 3 ★
     placar: (r) => [r.desistiu ? 'saiu' : `${r.score.toLocaleString('pt-BR')} pts`, r.desistiu ? '' : `precisão ${r.acc}% · combo ${r.combo}`],
     jogar(box, c, fim) {
       const song = c.song; startedAt = Date.now(); acabou = false; document.documentElement.classList.add('rg-on');

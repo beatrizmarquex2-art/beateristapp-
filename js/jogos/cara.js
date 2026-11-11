@@ -5,7 +5,7 @@ import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
 import { BY_ID, QUESTIONS, answerFor } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
-const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
+const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cara';
 /** Liga/desliga o tema musical (fotos do álbum). As fotos já são liberadas pros alunos no álbum, então fica ligado. */

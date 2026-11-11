@@ -45,7 +45,7 @@ export function mountMemoria(host, opts) {
   const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
   const bot = robo({ mood: 'happy', size: 84, say: 'escolhe o tema e quantos pares!' });
   const stage = h('div', { class: 'mem-stage' });
-  host.replaceChildren(h('div', { class: 'kx-botrow' }, bot.el), stage);
+  const botrow = h('div', { class: 'kx-botrow' }, bot.el); host.replaceChildren(botrow, stage); // o Paul só aparece durante a partida (na escolha do tema não gasta espaço de tela)
   const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
   let photo = null; let lockNote = false; let live = false; let autoSala = !MS && !!salaAutoPara(JOGO_SALA); let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
@@ -60,12 +60,7 @@ export function mountMemoria(host, opts) {
   // os 3 temas de artistas ficam em destaque (3 capas grandes); os outros temas vêm logo abaixo, menores
   const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
     verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
-  const grupos = (list, th) => {
-    const art = list.filter((t) => t.open); const rest = list.filter((t) => !t.open); // os livres em destaque (capas grandes), os outros logo abaixo
-    return [art.length ? h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas livres' }, ...art.map((t) => tile(t, th))) : null,
-      art.length && rest.length ? h('p', { class: 'mem-more' }, 'mais temas') : null,
-      rest.length ? h('div', { class: 'mem-themes', role: 'radiogroup', 'aria-label': 'Outros temas' }, ...rest.map((t) => tile(t, th))) : null].filter(Boolean);
-  };
+  const grupos = (list, th) => [h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas' }, ...list.map((t) => tile(t, th)))]; // todos os temas do mesmo tamanho, numa grade só (os abertos primeiro)
 
   const setup = () => {
     if (sala) { sala.destroy(); sala = null; } if (lob) { lob.close(); lob = null; }
@@ -75,10 +70,8 @@ export function mountMemoria(host, opts) {
     const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); let players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
     if (autoSala) { autoSala = false; players = 'sala'; } // veio do atalho "tem um código de sala": abre direto na sala (o lobby entra sozinho)
     stage.replaceChildren(
-      h('img', { class: 'mem-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }),
-      h('h2', { class: 'kx-h' }, 'tema'),
       ...grupos(list, th),
-      lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : h('p', { class: 'muted mem-blurb', 'aria-live': 'polite' }, th.blurb),
+      lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : null,
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
         ...[[1, 'um', '1 jogador'], [2, 'dois', '2 jogadores, um de cada vez'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, bq(ic))),
@@ -90,7 +83,7 @@ export function mountMemoria(host, opts) {
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
       players === 'sala' ? h('div', { class: 'jg ms-lobby' }, (lob = lobby({ jogo: JOGO_SALA, makeState: () => mesaNova(th, Math.min(pairs, maxPairs), c.again !== false), onStart: startSala })).el)
         : h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
-    bot.set('happy', 'escolhe o tema e quantos pares!');
+    botrow.hidden = true; bot.set('happy', 'escolhe o tema e quantos pares!');
   };
 
   /** Os dois celulares entram na mesma mesa: tudo vem do estado da sala (tema, pares, regra, semente, vez, cartas viradas, pares achados). */
@@ -101,6 +94,7 @@ export function mountMemoria(host, opts) {
   };
 
   const play = (th, pairs, players = 1, again = true, rnd = Math.random) => {
+    botrow.hidden = false;
     const picks = shuffle(th.items, rnd).slice(0, pairs);
     const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), rnd).map((c, i) => ({ ...c, key: i }));
     const verso = th.verso ? `url(../${th.verso})` : th.back ? `url(../${th.back})` : null;

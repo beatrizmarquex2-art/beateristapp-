@@ -46,12 +46,14 @@ if (false) { fs.mkdirSync(SHOT, { recursive: true }); await a.screenshot({ path:
 
 const vez = async (p) => (await p.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('sua vez');
 const quem = async () => ((await vez(a)) ? [a, b] : (await vez(b)) ? [b, a] : [null, null]);
-const [v, o] = await quem(); check('[jogo] um dos dois tem a vez e vê o botão "pergunta livre"', !!v && (await v.locator('button:has-text("pergunta livre")').count()) === 1);
-check('[jogo] quem não tem a vez não vê o botão', (await o.locator('button:has-text("pergunta livre")').count()) === 0);
-// pergunta livre: um modo só (falar em voz alta); nada de campo de texto
-await v.locator('button:has-text("pergunta livre")').click(); await sleep(3000);
-check('[livre] não abre campo de escrever', (await v.locator('input[aria-label="pergunta livre"]').count()) === 0);
-check('[livre] o outro celular pede pra ouvir e mostra os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('em voz alta') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
+const [v, o] = await quem(); check('[jogo] um dos dois tem a vez e vê o botão "escrever uma pergunta" (sem opção de falar)', !!v && (await v.locator('button:has-text("escrever uma pergunta")').count()) === 1 && (await v.locator('button:has-text("falar")').count()) === 0);
+check('[jogo] quem não tem a vez não vê o botão', (await o.locator('button:has-text("escrever uma pergunta")').count()) === 0);
+// pergunta livre: SÓ por escrito; o outro lê e responde SIM ou NÃO
+await v.locator('button:has-text("escrever uma pergunta")').click(); await v.waitForSelector('.cm-livre-in', { timeout: 5000 });
+await v.locator('button:has-text("enviar pergunta")').click(); await sleep(300);
+check('[livre] não envia pergunta vazia', (await v.locator('.cm-livre-in').count()) === 1);
+await v.locator('.cm-livre-in').fill('ele toca bateria?'); await v.locator('button:has-text("enviar pergunta")').click(); await sleep(3000);
+check('[livre] o outro celular LÊ a pergunta escrita e mostra os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('ele toca bateria?') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
 check('[livre] não responde sozinho (continua esperando)', (await v.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('esperando o outro'));
 await o.locator('.cm-livre button:text-is("SIM")').click(); await sleep(3000);
 check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('vire as cartas'));
@@ -64,10 +66,10 @@ check('[livre] virar à mão tira a carta do jogo (só neste aparelho)', (await 
 await v.locator('.cm-cell.out .jg-flip').click(); await sleep(300);
 check('[livre] desvirar devolve a carta', (await v.locator('.cm-cell.out').count()) === 0);
 // agora o outro faz a sua pergunta livre e responde NÃO
-await o.locator('button:has-text("pergunta livre")').click(); await sleep(3000);
-check('[falada] o outro celular pede pra ouvir e responder', (await v.locator('.cm-livre-txt').innerText()).includes('em voz alta'));
+await o.locator('button:has-text("escrever uma pergunta")').click(); await o.waitForSelector('.cm-livre-in', { timeout: 5000 }); await o.locator('.cm-livre-in').fill('é do Brasil?'); await o.locator('button:has-text("enviar pergunta")').click(); await sleep(3000);
+check('[escrita] o outro celular lê a pergunta e responde', (await v.locator('.cm-livre-txt').innerText()).includes('é do Brasil?'));
 await v.locator('.cm-livre button:text-is("NÃO")').click(); await sleep(3000);
-check('[falada] NÃO chega pra quem perguntou e a vez volta', /NÃO/.test(await o.locator('.cm-paul').innerText()) && await vez(v));
+check('[escrita] NÃO chega pra quem perguntou e a vez volta', /NÃO/.test(await o.locator('.cm-paul').innerText()) && await vez(v));
 // pergunta pronta continua funcionando e mistura com as livres
 await v.locator('.cm-qs .cm-q').first().click(); await sleep(3000);
 check('[mistura] pergunta pronta ainda responde sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '2');

@@ -171,7 +171,7 @@ const ESTUDOS = {
   aulas: { href: '#/estudos/aulas', titulo: 'Aulas do Paul', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
   curiosidades: { href: '#/estudos/curiosidades', titulo: 'Curiosidades de músicos', sub: 'histórias de quem tocou antes de você', dentro: ['bateristas, pianistas, guitarristas e compositores', 'uma curiosidade por vez, com “outra” pra seguir', 'conta pra meta do dia'], dev: 'repertório e inspiração', tempo: '1 min', aberto: true },
   dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
-  dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Quiz e Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
+  dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
   erros: { href: '#/erros', titulo: '5 erros', sub: 'material em PDF da professora Bea', dentro: ['PDF pra ler e baixar', 'os 5 erros mais comuns de quem está começando e como evitar cada um'], dev: 'evitar vícios desde o começo', tempo: '5 min', aberto: true },
   ensinam: { href: '#/jogos/relatorio', titulo: 'Jogos Ensinam', sub: 'o que cada jogo desenvolve, aberto pra pais e responsáveis', dentro: ['uma folha por jogo: o que a criança faz e o que desenvolve', 'serve pra mostrar pra família por que brincar também é estudar'], dev: 'entender o que cada jogo treina', tempo: '5 min', aberto: true },
 };
@@ -243,7 +243,7 @@ function curiosidadesView(view) {
   draw();
 }
 
-/** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Quiz e Letras. */
+/** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Letras. */
 function dicasEstudoView(view) {
   const box = h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'carregando as dicas…'));
   view.append(banner('Dicas do método', 'pra estudar com calma'), box); let dead = false;
@@ -251,7 +251,7 @@ function dicasEstudoView(view) {
     if (dead) return; const list = tipList();
     box.replaceChildren(h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
       ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
-      h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (quiz e letras)'));
+      h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (Letras)'));
   });
   return () => { dead = true; };
 }
@@ -368,7 +368,7 @@ function shell(name) {
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
-    else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
+    else if (r.name === 'dicas') { // Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;
       if (AC.liberado()) DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); }); // com código: baixa as dicas
       else inner = dicas.mount(box, r.parts); // sem código: amostra (caça-palavras com palavras do dicionário), nada é baixado

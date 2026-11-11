@@ -1,4 +1,4 @@
-// Duelo de Quiz e Letras em 2 celulares (sala falsa na memória): o MESMO puzzle nos dois, começam juntos, vence quem termina primeiro. Testa a cruzadinha e a caça-palavras.
+// Duelo de Letras em 2 celulares (sala falsa na memória): o MESMO puzzle nos dois, começam juntos, vence quem termina primeiro. Testa a cruzadinha e a caça-palavras.
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx: ctxA } = await launch({ codigo: true }); const ctxB = await context(browser);
 const salas = new Map(); const errs = [];
@@ -24,7 +24,7 @@ async function celular(c) {
 }
 const A = await celular(ctxA); const B = await celular(ctxB);
 for (const p of [A, B]) { await p.goto(`${url}/aluno.html#/dicas/duelo`); await p.waitForSelector('.dc-picks', { timeout: 20000 }); await sleep(2500); }
-check('a aba "duelo" aparece em Quiz e Letras', (await A.locator('.dc-pick', { hasText: 'duelo' }).count()) === 1);
+check('a aba "duelo" aparece em Letras', (await A.locator('.dc-pick', { hasText: 'duelo' }).count()) === 1);
 const temSala = await A.locator('button:has-text("criar sala")').count();
 check('a tela do duelo abre com jogo (caça, cruzadinha, quiz), como vence e criar sala', temSala === 1 && (await A.locator('.jo-chips button').count()) >= 5, `criar:${temSala}`);
 await A.locator('.jo-chips button', { hasText: 'cruzadinha' }).click(); await sleep(300);

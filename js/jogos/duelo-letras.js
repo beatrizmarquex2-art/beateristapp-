@@ -1,4 +1,4 @@
-// Duelo de Quiz e Letras (caça-palavras, cruzadinha e quiz) em 2 celulares: o MESMO jogo nos dois (mesmas palavras, mesma grade), começando juntos depois da contagem.
+// Duelo de Letras (caça-palavras, cruzadinha e quiz) em 2 celulares: o MESMO jogo nos dois (mesmas palavras, mesma grade), começando juntos depois da contagem.
 // Dois jeitos de vencer: "quem termina primeiro" ou "por tempo" (quem faz mais no tempo escolhido). A sala, a contagem e o placar vêm de duelo-base.js.
 import { h } from '../util.js';
 import { linha, chips } from './opcoes.js';
@@ -17,7 +17,7 @@ const seg = (ms) => `${(ms / 1000).toFixed(1)} s`;
 export function mountDueloLetras(host) {
   let D = null; let T = null; const cfg = { jogo: 'caca', modo: 'primeiro', seg: 120 };
   return mountDueloBase(host, {
-    jogo: 'letras', titulo: 'Quiz e Letras', sub: 'duelo em 2 celulares', voltar: ['#/dicas', '‹ quiz e letras'], semCabecalho: true,
+    jogo: 'letras', titulo: 'Letras', sub: 'duelo em 2 celulares', voltar: ['#/dicas', '‹ letras'], semCabecalho: true,
     async carregar() { D = (await import('../views/dicas.js'))._duelo; T = await import('../tips.js'); },
     config({ redraw }) {
       return { cfg: () => {

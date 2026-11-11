@@ -163,7 +163,7 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner('Quiz e Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
+  host.append(banner('Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),

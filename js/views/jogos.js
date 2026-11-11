@@ -55,8 +55,8 @@ const SECTIONS = [
     inner('memart'),
     ...['cartas', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
-  ['quiz e letras', [
-    link('#/dicas', 'Quiz e Letras', 'quiz.svg', '2 partidas de caça-palavras grátis · o resto com código'),
+  ['letras', [
+    link('#/dicas', 'Letras', 'quiz.svg', 'caça-palavras, cruzadinha, quiz e duelo · 2 partidas grátis'),
   ]],
 ];
 
@@ -72,7 +72,7 @@ const DARK = new Set(['cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
 /** Atalho no topo da tela de Jogos: digite o código da sala (5 letras = jogo de 2 celulares; 6 = bingo) e o app abre o jogo certo já entrando na sala. */
-const NOME_SALA = { velha: 'jogo da velha', cartas: 'Uno Musical', stop: 'stop', 'cara-musical': 'cara a cara', memoria: 'jogo da memória', beathero: 'Beat Hero (duelo)', letras: 'Quiz e Letras (duelo)' };
+const NOME_SALA = { velha: 'jogo da velha', cartas: 'Uno Musical', stop: 'stop', 'cara-musical': 'cara a cara', memoria: 'jogo da memória', beathero: 'Beat Hero (duelo)', letras: 'Letras (duelo)' };
 function prepararEAbrir(id, rota, code, voltar) {
   if (id === 'cara-musical') { try { const g = getGame('cara'); setGame('cara', { tema: 'musical', musical: { ...(g.musical || {}), jogo: 'online' } }); } catch { /* segue */ } }
   definirSalaAuto(id, code, voltar); location.hash = rota;
