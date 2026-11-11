@@ -7,3 +7,9 @@ export const posOf = (code) => { const c = (CATALOGO || {})[code]; if (!c) retur
   if (r) { const cx = r.reduce((s, b) => s + b[0] + b[2] / 2, 0) / r.length; const cy = r.reduce((s, b) => s + b[1] + b[3] / 2, 0) / r.length; return `${Math.round(cx * 100)}% ${Math.round(cy * 100)}%`; }
   if (c.foco) return `${Math.round(((c.foco[0] + c.foco[2]) / 2) * 100)}% ${Math.round(((c.foco[1] + c.foco[3]) / 2) * 100)}%`; return '50% 30%'; };
 
+
+/** Enquadramento da foto numa carta QUADRADA do Cara a Cara (o rosto detectado do catálogo erra, então não vale): foto bem mais larga que alta aparece inteira;
+ *  foto alta preenche alinhada ao topo, onde fica a cabeça. Ajustes manuais por foto em `MANUAL` (código → posição). Devolve um trecho de `style`. */
+const MANUAL = { F016: '50% 78%', F123: '50% 41%', F027: '50% 88%', F091: '50% 64%', F093: '50% 28%' };
+export const enquadreFoto = (code) => { const c = (CATALOGO || {})[code]; const a = c && c.largura_px && c.altura_px ? c.largura_px / c.altura_px : 1;
+  if (MANUAL[code]) return `object-position:${MANUAL[code]}`; if (a > 1.15) return 'object-fit:contain;object-position:50% 50%'; return `object-position:50% ${a > 0.9 ? 12 : 0}%`; };
