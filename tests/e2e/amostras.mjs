@@ -29,7 +29,7 @@ async function abrir(c, valido, hash) {
   const cacaJogada = async () => { await p.goto(`${url}/aluno.html#/jogos`); await sleep(800); await p.goto(`${url}/aluno.html#/dicas`); await sleep(2200); const c = p.locator('.dc-grid .dc-c'); await c.nth(0).click(); await c.nth(1).click(); await sleep(300); };
   await p.goto(`${url}/aluno.html#/dicas`); await sleep(2200);
   check('Letras sem código abre na caça-palavras (grade 9×9) com palavras do dicionário', (await p.locator('.dc-grid .dc-c').count()) === 81 && (await p.locator('.dc-chips .dc-chip').count()) >= 4);
-  check('quiz e cruzadinha: cadeado nas abas', (await p.locator('.dc-pick b').allTextContents()).filter((t) => t.includes('🔒')).length === 2);
+  check('quiz, cruzadinha e duelo: cadeado nas abas', (await p.locator('.dc-pick b').allTextContents()).filter((t) => t.includes('🔒')).length === 3);
   await cacaJogada(); check('1ª partida grátis conta', /grátis 1 de 2/.test(await p.locator('.tr-count').textContent()));
   await cacaJogada(); check('2ª partida grátis conta', /grátis 2 de 2/.test(await p.locator('.tr-count').textContent()));
   await p.goto(`${url}/aluno.html#/jogos`); await sleep(800); await p.goto(`${url}/aluno.html#/dicas`); await sleep(2000);
