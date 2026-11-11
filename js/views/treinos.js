@@ -56,6 +56,7 @@ function history(mode) {
       new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(r.data.at))))));
 }
 
+let maisAberto = false; // "mais opções" do Toca Aqui continua aberto quando a tela se redesenha
 function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, input = false } = {}) {
   return h('section', { class: 'card pad tr-ctrl' },
     line('nível', chips([[1, '1'], [2, '2'], [3, '3']], c.lv, (v) => save({ lv: v }).then(() => draw(true)), 'Nível')),
@@ -93,7 +94,7 @@ export function leitura(host) {
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
-      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('span', {}, 'toque aqui'), h('small', {}, 'ou aperte qualquer tecla'));
+      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('i', { class: 'tr-drum', 'aria-hidden': 'true' }, '🥁'), h('span', {}, 'toque aqui'), h('small', {}, 'ou aperte qualquer tecla'));
     const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
     const conclude = async (taps) => {
       const g = S.gen; run = null;
@@ -155,17 +156,18 @@ export function leitura(host) {
           onclick: () => (livre ? save({ lv: t.lv }) : save({ pstep: PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) >= 0 ? PATH.findIndex((x, k) => x.tier === t.id && (bestOf(c)[k] || 0) < PASS_SCORE && unlocked(c, k)) : first })).then(() => { lastResult = null; draw(true); }) }, open ? t.name : `🔒 ${t.name}`); }))),
       livre ? null : h('div', { class: 'tr-path', role: 'group', 'aria-label': 'Exercícios do caminho' }, ...PATH.map((st, i) => (st.tier !== PATH[step].tier ? null : (() => { const open = unlocked(c, i); const sc = bestOf(c)[i]; return h('button', { type: 'button', class: `lib-tab${i === step ? ' on' : ''}`, disabled: !open, 'aria-label': `Exercício ${st.n} de ${st.of}${open ? '' : ' (fechado)'}`, onclick: () => save({ pstep: i }).then(() => { lastResult = null; draw(true); }) }, open ? `${st.n}${sc >= PASS_SCORE ? ` ${'★'.repeat(estrelasToca(sc))}` : ''}` : `🔒 ${st.n}`); })()))),
       h('p', { class: 'muted tr-lvname' }, livre ? `${TIERS[c.lv - 1].name} · ${TIERS[c.lv - 1].about}` : `${PATH[step].tier === 'ini' ? 'iniciante' : PATH[step].tier === 'int' ? 'intermediário' : 'avançado'} · exercício ${PATH[step].n} de ${PATH[step].of}${(bestOf(c)[step] || 0) ? ` · melhor: ${bestOf(c)[step]}%` : ''}`),
-      line('velocidade', chips(VELOCIDADES.map(([k, v]) => [k, k]), velocidadeDe(c.bpm), (k) => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)), 'Velocidade')),
-    line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
-    line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque')),
-      line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')));
+      h('div', { class: 'tr-como', role: 'radiogroup', 'aria-label': 'Como você toca' }, ...[['tela', '👆', 'na tela', 'toque no botão grande'], ['mic', '🎙', 'microfone', 'toque no seu pad ou bateria']].map(([k, ic, t, sub]) => h('button', { type: 'button', role: 'radio', class: `tr-card${(c.input === 'mic' ? 'mic' : 'tela') === k ? ' on' : ''}`, 'aria-checked': String((c.input === 'mic' ? 'mic' : 'tela') === k), onclick: () => save({ input: k }).then(() => draw(false)) }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, ic), h('b', {}, t), h('small', {}, sub)))),
+      h('div', { class: 'tr-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k]) => [k, { devagar: '🐢', normal: '🚶', 'rápido': '🐇', turbo: '🚀' }[k] || '🎵']).map(([k, ic]) => h('button', { type: 'button', role: 'radio', class: `tr-card small${velocidadeDe(c.bpm) === k ? ' on' : ''}`, 'aria-checked': String(velocidadeDe(c.bpm) === k), onclick: () => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)) }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, ic), h('b', {}, k)))),
+      h('details', { class: 'tr-mais', open: maisAberto ? true : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções (andamento e som do toque)'),
+        line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
+        line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque'))));
     body.replaceChildren(...[ctl, score(chunk(beats), marks),
       micBlocked && c.input === 'mic' ? h('p', { class: 'tr-status bad' }, 'microfone indisponível agora: usando a tela.') : null,
-      h('div', { class: 'row tr-actions' },
-        h('button', { class: 'btn primary', type: 'button', onclick: start }, '▶ tocar direto'),
-        h('button', { class: 'btn', type: 'button', onclick: listenThenPlay }, 'ouvir e depois tocar'),
-        h('button', { class: 'btn', type: 'button', onclick: listen }, 'só ouvir'),
-        livre ? h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, 'outro compasso') : null),
+      h('div', { class: 'tr-modos', role: 'group', 'aria-label': 'Como começar' },
+        h('button', { class: 'tr-card go', type: 'button', onclick: start }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, '▶'), h('b', {}, 'tocar direto'), h('small', {}, 'conta 4 e toca')),
+        h('button', { class: 'tr-card', type: 'button', onclick: listenThenPlay }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, '👂'), h('b', {}, 'ouvir e tocar'), h('small', {}, 'escuta antes')),
+        h('button', { class: 'tr-card', type: 'button', onclick: listen }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, '🎧'), h('b', {}, 'só ouvir'), h('small', {}, 'sem tocar'))),
+      livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
       status, pad, summary, history('leitura')].filter(Boolean));
   };
   host.append(body); draw(true);

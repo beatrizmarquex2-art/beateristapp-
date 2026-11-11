@@ -5,6 +5,7 @@ const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)))
 await ctx.route('**/*.supabase.co/**', (r) => (r.request().url().includes('aluno_codigo_ok') ? r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }) : r.abort())); // o Toca Aqui agora só abre com código
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/jogos/toca/livre'); await page.waitForSelector('.tr-pad', { timeout: 15000 });
+await page.locator('.tr-mais summary').first().click(); // andamento e som do toque ficam em "mais opções"
 const bpmTxt = () => page.textContent('.bl-bpm');
 const chip = (nome) => page.getByRole('radio', { name: nome, exact: true });
 check('andamento padrão mais animado (90 BPM)', (await bpmTxt()).trim() === '90', await bpmTxt());
@@ -18,7 +19,7 @@ check('4 sons: caixa, tambor, bumbo, chimbal', (await page.locator('[aria-label=
 check('caixa é o som padrão', (await chip('caixa').getAttribute('aria-checked')) === 'true');
 await chip('tambor').click(); await sleep(300);
 check('escolher tambor guarda no aparelho e marca o botão', (await page.evaluate(() => localStorage.getItem('beaterista-toca-som'))) === 'tambor' && (await chip('tambor').getAttribute('aria-checked')) === 'true');
-await page.reload(); await page.waitForSelector('.tr-pad'); check('depois de recarregar continua tambor', (await chip('tambor').getAttribute('aria-checked')) === 'true');
+await page.reload(); await page.waitForSelector('.tr-pad'); await page.locator('.tr-mais summary').first().click(); check('depois de recarregar continua tambor', (await chip('tambor').getAttribute('aria-checked')) === 'true');
 // versão com imagens
 await page.getByRole('radio', { name: 'com imagens' }).click(); await page.waitForSelector('.kd-bpmv', { timeout: 10000 });
 check('com imagens: velocidade e som também aparecem', (await page.locator('.kd-vel button').count()) === 4 && (await page.locator('.kd-som button').count()) === 4);

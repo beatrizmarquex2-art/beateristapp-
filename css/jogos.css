@@ -928,3 +928,15 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .qz-card .cx-sym{height:70%}
 .qz-ops{display:grid;gap:8px;width:min(100%,360px)}.qz-op{min-height:52px;font-size:18px;font-weight:700}
 .qz-op.certo{background:#2e9f5b;color:#fff;border-color:#2e9f5b}.qz-op.errado{background:#BD1733;color:#fff;border-color:#BD1733}
+/* Toca Aqui (figuras): escolhas grandes e visuais */
+.tr-como,.tr-modos{display:grid;gap:8px}.tr-como{grid-template-columns:1fr 1fr}.tr-modos{grid-template-columns:1.2fr 1fr 1fr;padding:6px 16px}
+.tr-vel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tr-card{display:grid;justify-items:center;gap:2px;padding:10px 6px;min-height:64px;border:2px solid #17365B;border-radius:14px;background:#fffdf7;color:#17365B;font:inherit;cursor:pointer;text-align:center;box-shadow:3px 3px 0 #17365B}
+.tr-card b{font-size:15px}.tr-card small{font-size:11px;opacity:.8}.tr-card .tr-ic{font-size:26px;line-height:1}
+.tr-card.on{background:#17365B;color:#fff}.tr-card.go{background:#EBA332;color:#142036}.tr-card.small{min-height:54px;box-shadow:2px 2px 0 #17365B}.tr-card.small .tr-ic{font-size:20px}.tr-card.small b{font-size:13px}
+.tr-card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #17365B}
+.tr-mais{margin-top:4px}.tr-mais summary{cursor:pointer;font-weight:700;font-size:13px;padding:6px 0}
+.tr-pad:not(.mic){min-height:200px;border:3px solid #17365B;border-style:solid;border-radius:22px;background:linear-gradient(160deg,#fff4d6,#ffe3a1);color:#17365B;box-shadow:5px 5px 0 #17365B;font:400 30px var(--display,inherit)}
+.tr-pad:not(.mic) .tr-drum{font-size:64px;font-style:normal;line-height:1}.tr-pad:not(.mic) span{font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.tr-pad:not(.mic).live{border-color:#BD1733;background:linear-gradient(160deg,#ffe0d9,#ffc7bb)}.tr-pad.hit .tr-drum{animation:tr-boom .14s ease-out}@keyframes tr-boom{from{transform:scale(1.35) rotate(-8deg)}to{transform:none}}
+@media (max-width:360px){.tr-modos{grid-template-columns:1fr}}
