@@ -38,10 +38,11 @@ export const chunk = (beats) => { const out = []; for (let i = 0; i < beats.leng
 
 
 /** Agenda contagem (4 cliques) + cliques nos tempos (+ caixa, se `play`). Devolve o instante do 1º tempo (relógio do áudio). */
-export function schedule(beats, bpm, { play = false, clickAll = true } = {}) {
+export function schedule(beats, bpm, { play = false, clickAll = true, tail = false } = {}) {
   const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
   for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
-  if (clickAll) for (let b = 0; b < beats.length + 4; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, b < beats.length ? 0.6 : 0.4); // o metrônomo continua mais 1 compasso depois do exercício (não corta seco)
+  // o metrônomo NÃO para quando a pessoa começa a tocar: bate em volume cheio durante o compasso (o toque da caixa é forte e abafava o clique) e mais 1 compasso depois
+  if (clickAll) for (let b = 0; b < beats.length + (tail ? 4 : 0); b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, b < beats.length ? 1 : 0.6);
   if (play) for (const e of onsets(beats, bpm)) voz(t0 + e.t, 0.8);
   return t0;
 }
@@ -119,9 +120,9 @@ export function leitura(host) {
         });
         return;
       }
-      const t0 = schedule(beats, c.bpm);
+      const t0 = schedule(beats, c.bpm, { tail: true });
       const taps = [];
-      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); voz(audio().currentTime, 0.7); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
+      const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); voz(audio().currentTime, 0.5); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
       pad.addEventListener('pointerdown', onTap); document.addEventListener('keydown', onTap);
       const off = () => { pad.removeEventListener('pointerdown', onTap); document.removeEventListener('keydown', onTap); };
       // segundos desde o 1º tempo, no relógio do som (para quem testa tocando por script)
