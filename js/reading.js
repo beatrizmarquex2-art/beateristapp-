@@ -24,7 +24,7 @@ const BARS = {
   ava: [['1001', '1000', '1001', '1000'], ['1100', '1000', '1100', '1000'], ['1101', '1010', '1101', '1000'], ['0111', '1000', '0111', '1000'], ['1001', '1100', '1101', '1000'], ['1101', '0111', '1001', '1100']],
 };
 export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar })));
-export const PASS_SCORE = 70;
+export const PASS_SCORE = 50; // 50% já passa (1 ★) e abre o próximo exercício; 70% = 2 ★; 100% = 3 ★
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
 /** Notas de uma célula: [{ pos, dur }] em semicolcheias (a última vai até o fim do tempo). */

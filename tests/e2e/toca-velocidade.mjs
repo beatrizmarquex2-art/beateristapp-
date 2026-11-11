@@ -6,6 +6,8 @@ await ctx.route('**/*.supabase.co/**', (r) => (r.request().url().includes('aluno
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(url + '/aluno.html#/jogos/toca/livre'); await page.waitForSelector('.tr-pad', { timeout: 15000 });
 await page.locator('.tr-mais summary').first().click(); // andamento e som do toque ficam em "mais opções"
+const est = await page.evaluate(async () => { const T = await import('/js/views/treinos.js'); const R = await import('/js/reading.js'); return { e: [49, 50, 69, 70, 99, 100].map(T.estrelasToca), pass: R.PASS_SCORE }; });
+check('Toca Aqui: 50% = 1 ★, 70% = 2 ★, 100% = 3 ★ (e 50% já abre a próxima fase)', JSON.stringify(est.e) === '[0,1,1,2,2,3]' && est.pass === 50, JSON.stringify(est));
 const bpmTxt = () => page.textContent('.bl-bpm');
 const chip = (nome) => page.getByRole('radio', { name: nome, exact: true });
 check('andamento padrão mais animado (90 BPM)', (await bpmTxt()).trim() === '90', await bpmTxt());

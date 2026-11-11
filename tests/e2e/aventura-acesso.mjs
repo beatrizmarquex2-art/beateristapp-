@@ -1,4 +1,4 @@
-// Acesso do aluno: sem código só o Modo Livre. O Modo Aventura (mapa e missões) fica trancado; com código abre.
+// Acesso do aluno: sem código só o Modo Livre. O Modo Aventura (mapa e missões) fica trancado; com código abre (Toca Aqui e Beat Hero/Piano Hero não têm mais).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch({ codigo: false });
 async function phone(codigo) {
@@ -9,7 +9,7 @@ async function phone(codigo) {
   return { ctx, p };
 }
 const go = async (p, h) => { await p.goto(url + '/aluno.html' + h); await sleep(1600); };
-const ROTAS = ['#/jogos/toca/aventura', '#/kids/memoria/aventura', '#/kids/ritmo/aventura', '#/ritmo/aventura'];
+const ROTAS = ['#/kids/memoria/aventura', '#/kids/ritmo/aventura']; // (o Modo Aventura do Toca Aqui e do Beat Hero/Piano Hero foi removido)
 {
   const { ctx, p } = await phone(false);
   for (const r of ROTAS) { await go(p, r); check(`sem código: ${r} fica trancado`, await p.evaluate(() => !!document.querySelector('.al-lock') && !document.querySelector('.mp-node') && !document.querySelector('.av-go'))); }
@@ -20,8 +20,8 @@ const ROTAS = ['#/jogos/toca/aventura', '#/kids/memoria/aventura', '#/kids/ritmo
 }
 {
   const { ctx, p } = await phone(true);
-  for (const r of ['#/jogos/toca/aventura', '#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
-  await go(p, '#/jogos/toca'); check('com código: a escolha de modo do Toca Aqui mostra o Modo Aventura liberado', await p.evaluate(() => !/🔒\s*Modo Aventura/.test(document.body.innerText) && /missões/.test(document.body.innerText)));
+  for (const r of ['#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
+  await go(p, '#/jogos/toca'); check('com código: o Toca Aqui abre direto, sem escolher modo e sem Modo Aventura', await p.evaluate(() => !document.querySelector('.al-lock') && !/Modo Aventura/.test(document.body.innerText)));
   await ctx.close();
 }
 const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);

@@ -70,8 +70,8 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 
 /** Leitura: passos do caminho (2 por nível). Um passo só abre depois de tirar PASS_SCORE no anterior. */
 const bestOf = (c) => c.pbest || {};
-/** Estrelas de um exercício do caminho: 70% = 1, 85% = 2, 95% = 3. */
-export const estrelasToca = (sc) => (sc >= 95 ? 3 : sc >= 85 ? 2 : sc >= PASS_SCORE ? 1 : 0);
+/** Estrelas de um exercício do caminho: 50% = 1, 70% = 2, 100% = 3. */
+export const estrelasToca = (sc) => (sc >= 100 ? 3 : sc >= 70 ? 2 : sc >= PASS_SCORE ? 1 : 0);
 const unlocked = (c, i) => i === 0 || (bestOf(c)[i - 1] || 0) >= PASS_SCORE;
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };
 
@@ -146,7 +146,8 @@ export function leitura(host) {
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
-        !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(estrelasToca(r.score))}${'☆'.repeat(3 - estrelasToca(r.score))} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra abrir o próximo. tenta de novo!`) : null);
+        !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(estrelasToca(r.score))}${'☆'.repeat(3 - estrelasToca(r.score))} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra abrir o próximo (50% = 1 ★ · 70% = 2 ★ · 100% = 3 ★). tenta de novo!`) : null,
+        passedNow && step < PATH.length - 1 ? h('button', { class: 'btn primary wide tr-next', type: 'button', onclick: () => save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }) }, 'próxima fase ▶') : null);
     }
     const modeLine = line('jeito', chips([['caminho', 'caminho'], ['livre', 'livre (aleatório)']], livre ? 'livre' : 'caminho', (v) => save({ mode: v }).then(() => { lastResult = null; draw(true); }), 'Modo'));
     const ctl = h('section', { class: 'card pad tr-ctrl' }, modeLine,

@@ -79,5 +79,5 @@ test('modo livre intacto: o pacote só muda de comportamento com opts.mission e 
   assert.ok(src.includes('if(!MISSION&&!lost&&OPTS.hallTop&&OPTS.autoName'), 'ranking só no livre'); assert.ok(src.includes('function save(){clearTimeout(saveT);if(MISSION) return;'), 'sem gravar o armazenamento na aventura');
   assert.ok(src.includes('function rzSaveOpts(){if(MISSION) return;'), 'sem gravar preferências');
   const j = fs.readFileSync(new URL('../js/views/jogos-ritmo.js', import.meta.url), 'utf8');
-  assert.ok(j.includes("opts.parts[0] === 'aventura'") && j.includes('href: \'#/ritmo/aventura\''));
+  assert.ok(j.includes("opts.parts[0] === 'aventura'") && !j.includes('href: \'#/ritmo/aventura\''), 'o botão do Modo Aventura do Beat Hero foi removido (link antigo só volta pro jogo)');
 });

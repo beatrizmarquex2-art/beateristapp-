@@ -4,7 +4,7 @@
 // Estrelas: 70% = 1★ (concluir), 85% = 2★, 95% = 3★. Só conta quando o jogo entrega um resultado real (tocou o compasso até o fim).
 import { PATH, CELLS, TIERS, PASS_SCORE } from '../../reading.js';
 
-export const STAR_AT = [PASS_SCORE, 85, 95]; // precisão mínima pra 1, 2 e 3 estrelas
+export const STAR_AT = [70, 85, 95]; void PASS_SCORE; // precisão mínima pra 1, 2 e 3 estrelas
 const BPM = { ini: [60, 60, 64, 64, 68, 68, 72, 72], int: [66, 70, 74, 78, 82, 86], ava: [72, 76, 80, 84, 88, 92] };
 const TIER_NAME = Object.fromEntries(TIERS.map((t) => [t.id, t.name]));
 const N = (n) => String(n).padStart(2, '0');
