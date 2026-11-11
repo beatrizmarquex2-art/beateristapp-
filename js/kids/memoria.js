@@ -28,7 +28,10 @@ const verso = (t) => (t.cover
     : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
 /** A carta: desenho da Bea (a imagem já traz nome e borda) ou foto de artista (recortada no rosto, com o nome embaixo quando tem). */
 const face = (it) => (it.photo
-  ? h('span', { class: 'mem-pf' }, h('img', { class: 'mem-card-img', src: it.img, alt: it.name, style: `object-position:${it.pos || '50% 30%'}`, draggable: 'false', decoding: 'async' }), it.cap ? h('span', { class: 'mem-cap' }, it.cap) : null)
+  ? h('span', { class: `mem-pf${it.fit === 'contain' ? ' fit' : ''}` },
+    h('span', { class: 'mem-ph' }, it.fit === 'contain' ? h('img', { class: 'mem-bg', src: it.img, alt: '', draggable: 'false', decoding: 'async' }) : null,
+      h('img', { class: 'mem-card-img', src: it.img, alt: it.name, style: `object-position:${it.pos || '50% 0%'}${it.fit === 'contain' ? ';object-fit:contain' : ''}`, draggable: 'false', decoding: 'async' })),
+    it.cap ? h('span', { class: `mem-cap${it.cap.length > 17 ? ' xl' : it.cap.length > 11 ? ' lg' : ''}` }, it.cap) : null)
   : h('img', { class: 'mem-card-img', src: it.img, alt: it.name, draggable: 'false', decoding: 'async' }));
 const PICK = [6, 8, 12]; // quantos pares o jogador escolhe (a aventura usa SIZES)
 const alunoSemCodigo = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
