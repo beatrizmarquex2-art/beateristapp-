@@ -940,3 +940,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .tr-pad:not(.mic) .tr-drum{font-size:64px;font-style:normal;line-height:1}.tr-pad:not(.mic) span{font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .tr-pad:not(.mic).live{border-color:#BD1733;background:linear-gradient(160deg,#ffe0d9,#ffc7bb)}.tr-pad.hit .tr-drum{animation:tr-boom .14s ease-out}@keyframes tr-boom{from{transform:scale(1.35) rotate(-8deg)}to{transform:none}}
 @media (max-width:360px){.tr-modos{grid-template-columns:1fr}}
+/* resultado do Toca Aqui: nota e "próxima fase" logo abaixo de onde se toca */
+.tr-quick{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 16px 10px;padding:10px 14px;border:3px solid #17365B;border-radius:16px;background:#fffdf7;box-shadow:4px 4px 0 #17365B}
+.tr-quick.ok{background:#e9f8ee;border-color:#1f7a3f;box-shadow:4px 4px 0 #1f7a3f}
+.tr-quick .tr-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}.tr-quick .tr-big b{font-size:48px}
+.tr-stars{flex-basis:100%;font-style:normal;font-size:22px;letter-spacing:2px;color:#EBA332}.tr-stars i{font-style:normal;color:#c9c2b0}
+.tr-quick .tr-next{min-height:56px;font-size:17px;font-weight:800;white-space:nowrap}

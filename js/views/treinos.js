@@ -135,21 +135,26 @@ export function leitura(host) {
     const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); status.textContent = 'ouvindo como é…'; };
     // ouvir primeiro e, quando acabar, já entra a vez da Bea (contagem + clique + o som de cada toque)
     const listenThenPlay = () => { stop(); const q = 60 / c.bpm; schedule(beats, c.bpm, { play: true }); status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
-    let summary = null;
+    let summary = null; let quick = null;
     if (lastResult) {
       const r = lastResult; const devs = r.notes.filter((n) => n.ms != null).map((n) => n.ms);
       const avg = devs.length ? Math.round(devs.reduce((s, x) => s + x, 0) / devs.length) : 0;
       const spread = devs.length ? Math.round(Math.sqrt(devs.reduce((s, x) => s + (x - avg) ** 2, 0) / devs.length)) : 0;
       const tip = r.hits < r.total ? 'faltaram notas: leia o compasso em voz alta (“1 e & a”) antes de tocar.' : Math.abs(avg) > 25 ? (avg < 0 ? `você está adiantando (${avg} ms em média). respira e espera o clique.` : `você está atrasando (+${avg} ms em média). toque mais junto do clique.`) : r.extra ? 'cuidado com toques a mais nas pausas.' : 'leitura limpa! pra desafiar, sobe 5 BPM.';
+      // logo EMBAIXO do lugar de tocar: a nota (100%) do lado e o botão da próxima fase; a explicação fica mais abaixo
+      const temProx = passedNow && step < PATH.length - 1; const nest = estrelasToca(r.score);
+      quick = h('section', { class: `tr-quick${passedNow ? ' ok' : ''}`, 'aria-live': 'polite' },
+        h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão'), !livre ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
+        temProx ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }) }, 'próxima fase ▶')
+          : h('button', { class: 'btn tr-next', type: 'button', onclick: () => (livre ? draw(true) : start()) }, livre ? '🔀 outro compasso' : '↻ tentar de novo'));
       summary = h('section', { class: 'card pad tr-res' },
-        h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão')),
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}`),
         r.ajuste ? h('p', { class: 'muted' }, `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
         !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(estrelasToca(r.score))}${'☆'.repeat(3 - estrelasToca(r.score))} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra abrir o próximo (50% = 1 ★ · 70% = 2 ★ · 100% = 3 ★). tenta de novo!`) : null,
-        passedNow && step < PATH.length - 1 ? h('button', { class: 'btn primary wide tr-next', type: 'button', onclick: () => save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }) }, 'próxima fase ▶') : null);
+        null);
     }
     const modeLine = line('jeito', chips([['caminho', 'caminho'], ['livre', 'livre (aleatório)']], livre ? 'livre' : 'caminho', (v) => save({ mode: v }).then(() => { lastResult = null; draw(true); }), 'Modo'));
     const ctl = h('section', { class: 'card pad tr-ctrl' }, modeLine,
@@ -171,7 +176,7 @@ export function leitura(host) {
         h('button', { class: 'tr-card', type: 'button', onclick: listenThenPlay }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, '👂'), h('b', {}, 'ouvir e tocar'), h('small', {}, 'escuta antes')),
         h('button', { class: 'tr-card', type: 'button', onclick: listen }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, '🎧'), h('b', {}, 'só ouvir'), h('small', {}, 'sem tocar'))),
       livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
-      status, pad, summary, history('leitura')].filter(Boolean));
+      status, pad, quick, summary, history('leitura')].filter(Boolean));
   };
   host.append(body); draw(true);
   return () => { stop(); S.dispose(); };
