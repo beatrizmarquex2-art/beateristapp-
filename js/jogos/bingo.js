@@ -10,6 +10,7 @@ import * as ON from './bingo-online.js';
 import { printPack } from './bingo-print.js';
 import { silence } from '../audio.js';
 import { cardBg } from '../views/kids.js';
+import { ganhou } from './estrelas-jogo.js';
 import { linha, chips, passo } from './opcoes.js';
 
 // o CSS novo do bingo carrega sozinho (arquivo css/bingo-v3.css), assim não depende de outro lugar ligar
@@ -105,7 +106,9 @@ export function mount(host) {
     if (r.pending) { msg = 'bingo pedido! passe a vez pro outro jogador ver a cartela dele'; sfx('tap'); render(); return; }
     finishSound(); render();
   }
-  function finishSound() { const v = view(); sfx('win'); setTimeout(() => sfx('win'), 650); const r = v && v.result; if (v && r) celebrate(v); if (r) { const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : ''; speak(r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : `Bingo! Três na ${KINDS[kind] || 'linha'}!`); } }
+  let pago = false; // 3 ★ uma vez por partida, quando VOCÊ faz bingo (sozinho com o Paul ou em 2 celulares)
+  function finishSound() { const v = view(); if (!pago && v && v.over && v.result && v.result.tipo === 'vitoria' && v.result.vencedores && (v.online ? v.result.vencedores.includes(v.mySlot) : v.mode === 'solo' && v.result.vencedores.includes(0))) { pago = true; ganhou('bingo'); }
+    sfx('win'); setTimeout(() => sfx('win'), 650); const r = v && v.result; if (v && r) celebrate(v); if (r) { const kind = r.linhas && Object.values(r.linhas)[0] ? B.lineKind(Object.values(r.linhas)[0]) : ''; speak(r.tipo === 'empate' ? 'Empate! Bingo para os dois!' : `Bingo! Três na ${KINDS[kind] || 'linha'}!`); } }
   function passTurn() {
     const was = g.over; g = B.passTurn(g); persist(); msg = '';
     if (!was && g.over) finishSound(); else sfx('tap');
@@ -198,7 +201,8 @@ export function mount(host) {
   let lastStatus = '';
   function onState() {
     const st = on.state; if (!st) return;
-    if (st.status === 'lobby') { screen = 'lobby'; auto = false; render(); return; }
+    if (st.status === 'lobby') { screen = 'lobby'; auto = false; pago = false; render(); return; }
+    if (st.status === 'jogando' && !st.idx) pago = false;
     const first = screen !== 'play'; screen = 'play';
     if (first) { auto = (st.config.modo === 'auto'); paused = false; msg = ''; flash = false; }
     if (st.idx && lastStatus !== `${st.idx}`) { lastStatus = `${st.idx}`; if (st.idx > 0) { flash = !reduced(); sfx('draw'); announceNow(view()); } }

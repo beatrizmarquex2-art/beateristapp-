@@ -16,6 +16,7 @@ import * as Contestar from './contestar.js';
 
 const GID = 'cara';
 import { mini, grande, loadCat, enquadreFoto } from './midia.js';
+import { ganhou } from '../estrelas-jogo.js';
 
 export function mountMusical(host, { onTema } = {}) {
   const fala = falador(); const timers = new Set(); let gone = false;
@@ -225,6 +226,7 @@ export function mountMusical(host, { onTema } = {}) {
     const lados = st.lados; const solo = cfg.jogo === 'solo'; let res = null; let serie = st.serie;
     if (!solo) { res = R.resultadoRodada(lados[0], lados[1]); serie = R.fecharRodada(st.serie, res); st.serie = serie; }
     sfx(solo ? (lados[0].acertou ? 'win' : 'lose') : res.vencedor === 0 ? 'win' : res.vencedor === 1 ? 'lose' : 'tie');
+    if (solo ? lados[0].acertou : cfg.jogo === 'paul' && res.vencedor === 0) ganhou('cara'); // acertou / ganhou a rodada do Paul: 3 ★
     const secreto = (l) => st.mesa.cartas.find((c) => c.id === l.segredo);
     const bloco = (l, titulo) => { const c = secreto(l); const e = BY_ID[c.id]; const fatos = fatosDe(c.id);
       return h('div', { class: 'cm-ficha' }, h('small', {}, titulo), h('img', { src: grande(c.foto), alt: `foto de ${e.curto}`, onerror: (ev) => { ev.target.src = mini(c.foto); } }), h('b', {}, e.nome === 'Beaterista' ? 'Beaterista' : e.curto),

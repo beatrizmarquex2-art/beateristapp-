@@ -150,7 +150,7 @@ export function mount(host, opts) {
     mission.onResult({ outcomes: outcomes.slice(), rounds, wins, losses, draws: rounds - wins - losses, bestStreak: best, errors: g.errors, answered: stat.answered, correct: stat.correct, ai: MP.ai, variant: prefs.variant, level: prefs.level });
   }
   let pago = -1;
-  function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode !== 'local' && g.mode !== 'online' && w === 0 && pago !== g.round) { pago = g.round; MESA.vitoria('velha'); } sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
+  function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode !== 'local' && (g.mode === 'online' ? w === me0() : w === 0) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', 1); } sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
     const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;

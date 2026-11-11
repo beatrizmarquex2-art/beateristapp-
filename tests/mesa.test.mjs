@@ -17,3 +17,16 @@ test('estrelas por desempenho nos jogos que ensinam: até 3 por partida, sempre 
   assert.equal(starsErros(0), 3); assert.equal(starsErros(2), 2); assert.equal(starsErros(5), 1);
   assert.ok(ENSINAM.includes('cartas') && ENSINAM.includes('quiz') && ENSINAM.includes('caca') && ENSINAM.includes('cruzadinha'));
 });
+
+test('quebra-cabeça: 3 ★ na 1ª volta, 2 na 2ª, 1 da 3ª em diante; cada imagem 1 vez por volta', async () => {
+  const { premioQuebra } = await import('../js/figurinhas/mesa-logic.js');
+  let q = null; const got = []; const ids = ['a', 'b', 'c'];
+  for (let volta = 0; volta < 4; volta++) for (const id of ids) { const r = premioQuebra(q, id, 3); q = r.q; got.push(r.estrelas); }
+  assert.deepEqual(got, [3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1]);
+  const r1 = premioQuebra(null, 'a', 3); assert.equal(premioQuebra(r1.q, 'a', 3).estrelas, 0); // repetir a mesma imagem na mesma volta não dá nada
+  assert.equal(premioQuebra(r1.q, 'b', 3).estrelas, 3);
+});
+test('tabela de estrelas: velha 1, os outros jogos 3', async () => {
+  const { ESTRELAS_JOGO } = await import('../js/figurinhas/mesa-logic.js');
+  assert.equal(ESTRELAS_JOGO.velha, 1); for (const j of ['memoria', 'cara', 'stop', 'bingo', 'cartas']) assert.equal(ESTRELAS_JOGO[j], 3);
+});

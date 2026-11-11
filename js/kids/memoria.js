@@ -11,6 +11,7 @@ import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
 import { lobby, salaAutoPara } from '../jogos/online.js';
 import { confirmSheet } from '../ui.js';
+import { ganhou } from '../jogos/estrelas-jogo.js';
 import { mostrarSala, mesaNova, JOGO as JOGO_SALA } from './memoria-sala.js';
 
 const KEY = 'setting-memoria';
@@ -162,6 +163,7 @@ export function mountMemoria(host, opts) {
       }
       live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
+      if (players === 1 || (vsPaul && score[0] > score[1])) ganhou('memoria'); // achou todos (ou ganhou do Paul): 3 ★
       const win = score[0] === score[1] ? 'empate!' : vsPaul ? (score[0] > score[1] ? 'você venceu!' : 'o Paul venceu!') : `jogador ${score[0] > score[1] ? 1 : 2} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {

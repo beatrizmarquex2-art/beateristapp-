@@ -106,7 +106,7 @@ export function mount(host, parts = [], opts = {}) {
     const n = (k) => pend.filter((id) => L.packKind(id) === k).length, next = pend[0] ? L.packKind(pend[0]) : null;
     const partes = [n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
     const me = (() => { try { return P.active(); } catch { return null; } })();
-    const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 30 ★ nos jogos pra liberar uma roleta de figurinhas';
+    const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 15 ★ nos jogos pra liberar uma roleta de figurinhas';
     return h('section', { class: 'fig-packs' },
       h('div', { class: 'fig-pack-card' },
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),

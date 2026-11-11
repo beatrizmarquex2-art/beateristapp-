@@ -4,6 +4,7 @@ import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as Q from './quebra-logic.js';
 import { getGame, setGame, sfx, reduced } from './base.js';
+import { quebra as estrelasQuebra } from './estrelas-jogo.js';
 
 const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
@@ -109,6 +110,7 @@ export function mount(host, opts) {
   function finish() {
     clock(); stopClock();
     if (M) { sfx('win'); draw(); if (!reported && !gone && opts.onResult) { reported = true; opts.onResult({ won: true, diff: g.diff, img: imgId, errors: g.errors, hints: g.hints, elapsed: Math.round(g.elapsed), moves: g.diff + g.errors }); } return; }
+    estrelasQuebra(imgId, IMAGES.length); // 3 ★ por imagem (2 na 2ª volta, 1 depois)
     const r = Q.recordBest(best, g); best = r.best; record = r.record; setGame(ID, { ...prefs, best, game: null }); sfx('win'); draw();
   }
   function result() {

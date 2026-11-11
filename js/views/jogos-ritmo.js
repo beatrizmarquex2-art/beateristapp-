@@ -317,9 +317,9 @@ export function mount(host, opts = {}) {
     if (gone) return;
     BRref = BR;
     box.replaceChildren();
-    // ★ dos jogos de ritmo entram na conta: a cada 30 ★ (somando todos os jogos) libera uma roleta de figurinhas
+    // ★ dos jogos de ritmo entram na conta: a cada 15 ★ (somando todos os jogos) libera uma roleta de figurinhas
     const onStars = async ({ total }) => { const me = P.active(); if (!me) return; await P.patch(me.id, { ritmoStars: total }); const won = await Album.sincronizar(me.id);
-      if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 30 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
+      if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 15 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
       else toast(`★ ${Album.progressoTxt(me.id)}`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = student ? { builtin: true, impLabel: 'Músicas MIDI', readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
     BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });

@@ -1,5 +1,6 @@
 // Jogo da memória em 2 celulares (sala por código): cada pessoa joga no seu celular a MESMA mesa, em turnos.
 // A partida inteira mora no estado da sala (js/kids/memoria-sala-logic.js); aqui só a tela e o vai-e-vem. Nada essencial fica só na memória do celular.
+import { ganhou } from '../jogos/estrelas-jogo.js';
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as FB from '../feedback.js';
@@ -86,6 +87,7 @@ export function mostrarSala(c, conn, estado) {
       banner.className = `ms-vez fim${w === me ? ' mine' : ''}`;
       aviso.textContent = '';
       const jaTem = fim.dataset.k === key; fim.dataset.k = key;
+      if (!jaTem && w === me) ganhou('memoria'); // ganhou a partida em 2 celulares: 3 ★
       if (!jaTem) { FB.great(refs.board, { msg: w === me ? FB.line('great') : '' }); c.bot.set(w === -1 || w === me ? 'cheer' : 'happy', w === me ? 'você venceu!' : w === -1 ? 'empate!' : 'boa partida!'); }
       fim.replaceChildren(h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'kd-chip', type: 'button', onclick: sair }, 'sair da sala')));
     } else {

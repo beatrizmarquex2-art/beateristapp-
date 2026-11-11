@@ -5,7 +5,7 @@ const cat = JSON.parse(fs.readFileSync(new URL('../assets/figurinhas/catalogo.js
 const by = Object.fromEntries(cat.map((c) => [c.codigo, c]));
 
 test('a roleta vem a cada 30 estrelas', () => {
-  assert.equal(L.ESTRELAS_POR_ROLETA, 30);
+  assert.equal(L.ESTRELAS_POR_ROLETA, 15);
 });
 test('tipos de pacote pelo id', () => {
   assert.equal(L.packKind('roleta:u1:3'), 'roleta'); assert.equal(L.packKind('jogo:kids-figuras:u1'), 'jogo'); assert.equal(L.packKind('welcome:1'), 'pacote'); assert.equal(L.packKind(L.checkinId('2026-11-05')), 'roleta');

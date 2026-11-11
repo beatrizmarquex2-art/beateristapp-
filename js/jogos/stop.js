@@ -9,6 +9,7 @@ import { getGame, setGame } from './base.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { linha, chips, ajuda } from './opcoes.js';
 import * as Q from './stop-sim-logic.js';
+import { ganhou } from './estrelas-jogo.js';
 import { montarSimultaneo, garantirCss, caixaPausa } from './stop-simultaneo.js';
 
 const ID = 'stop';
@@ -340,7 +341,7 @@ export function mount(host, opts) {
   function finalView() {
     const my = nextToken(); view = 'final'; FX.stopMusic(); const w = S.winner(g); const order = g.totals.map((t, p) => [p, t]).sort((a, b) => b[1] - a[1]);
     let recordMsg = '';
-    if (!g.counted) { g.counted = true; recordMsg = M ? '' : record(); }
+    if (!g.counted) { g.counted = true; recordMsg = M ? '' : record(); if (!M && (g.players.length === 1 ? g.totals[0] > 0 : g.online && !w.tie && w.winners[0] === me0())) ganhou('stop'); } // terminou sozinho (ou ganhou online): 3 ★
     persist();
     const title = g.players.length === 1 ? `total: ${g.totals[0]} pontos` : w.tie ? 'empate!' : `${pn(w.winners[0])} venceu!`;
     FX.play(g.players.length > 1 && w.tie ? 'tie' : 'win'); FX.duck(2500); FX.vibrate([60, 40, 60, 40, 120]);
