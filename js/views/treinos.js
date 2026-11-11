@@ -41,7 +41,7 @@ export const chunk = (beats) => { const out = []; for (let i = 0; i < beats.leng
 export function schedule(beats, bpm, { play = false, clickAll = true } = {}) {
   const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
   for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
-  if (clickAll) for (let b = 0; b < beats.length; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.6);
+  if (clickAll) for (let b = 0; b < beats.length + 4; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, b < beats.length ? 0.6 : 0.4); // o metrônomo continua mais 1 compasso depois do exercício (não corta seco)
   if (play) for (const e of onsets(beats, bpm)) voz(t0 + e.t, 0.8);
   return t0;
 }
@@ -143,6 +143,7 @@ export function leitura(host) {
       summary = h('section', { class: 'card pad tr-res' },
         h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão')),
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}`),
+        r.ajuste ? h('p', { class: 'muted' }, `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),

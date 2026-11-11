@@ -60,7 +60,21 @@ export function onsets(bars, bpm) {
  * Cada nota: 'ok' (até 35 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
  */
 export function evaluate(taps, expected, bpm, { mic = false } = {}) {
-  const win = Math.min(mic ? 0.16 : 0.11, (60 / bpm / 4) * 0.45 * (mic ? 1.4 : 1)); const okMs = mic ? 55 : 35; // microfone tem mais folga (atraso do som no ar e do aparelho)
+  const r = avaliar(taps, expected, bpm, { mic });
+  // Andamento rápido (>= 130 BPM): quem toca certinho mas SEMPRE atrasado/adiantado por causa do atraso do aparelho (tela, som, bluetooth) não pode ser punido.
+  // Se os toques acertados têm um desvio médio constante (>= 25 ms), desconta esse atraso (até 90 ms) e avalia de novo. O resultado mostra o ajuste.
+  if (bpm >= 130 && r.hits >= 3) {
+    const ds = r.notes.filter((n) => n.ms != null).map((n) => n.ms).sort((a, b) => a - b); const med = ds[Math.floor(ds.length / 2)];
+    const sd = Math.sqrt(ds.reduce((t, x) => t + (x - med) ** 2, 0) / ds.length);
+    if (Math.abs(med) >= 25 && sd <= 35) { const shift = Math.max(-90, Math.min(90, med)); const r2 = avaliar(taps.map((t) => t - shift / 1000), expected, bpm, { mic }); if (r2.score >= r.score) return { ...r2, ajuste: shift }; }
+  }
+  return r;
+}
+function avaliar(taps, expected, bpm, { mic = false } = {}) {
+  // Janela de cada nota: nos andamentos lentos ~0,11 s; nos rápidos (turbo 170 BPM) a semicolcheia dura só 88 ms, então a janela nunca cai abaixo de 0,075 s
+  // (toque na tela tem ~50 a 80 ms de atraso no iPad). Cada toque vai pra nota MAIS PRÓXIMA, então janela maior não confunde as notas.
+  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.16, Math.max(sub * 0.63, 0.1)) : Math.max(Math.min(0.11, sub * 0.45), 0.075);
+  const okMs = mic ? 55 : Math.round(Math.min(60, Math.max(35, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {
