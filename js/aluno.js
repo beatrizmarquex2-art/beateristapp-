@@ -17,6 +17,18 @@ import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
+/** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
+function versaoApp() {
+  const v = h('b', {}, '…'); const msg = h('p', { class: 'muted', role: 'status' });
+  try { caches.keys().then((ks) => { const k = ks.filter((x) => /^beaterista-v\d+/.test(x)).sort().pop(); v.textContent = k ? k.replace('beaterista-', '') : 'sem cópia'; }); } catch { v.textContent = '?'; }
+  const atualizar = async () => {
+    msg.textContent = 'atualizando…';
+    try { const regs = (await navigator.serviceWorker.getRegistrations()) || []; await Promise.all(regs.map((r) => r.unregister())); } catch { /* sem service worker */ }
+    try { const ks = await caches.keys(); await Promise.all(ks.map((k) => caches.delete(k))); } catch { /* sem cache */ }
+    location.reload();
+  };
+  return h('section', { class: 'card pad al-versao' }, h('p', {}, 'versão do app: ', v), h('button', { class: 'btn small', type: 'button', onclick: atualizar }, '🔄 atualizar agora'), msg);
+}
 function marcarEstudo(id) {
   const antes = META.ler().feitas.length; const s = META.marcar(id);
   if (s.feitas.length > antes) ganhouEstrela('estudos', 1 + (META.cumprida(s) ? 3 : 0));
@@ -390,6 +402,7 @@ function shell(name) {
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
     else if (r.name === 'perfil') c = perfil.mount(view);
+    if (r.name === 'perfil') view.append(versaoApp());
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
