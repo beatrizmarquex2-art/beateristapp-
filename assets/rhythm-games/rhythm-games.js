@@ -446,8 +446,17 @@ function rzDrawBeat(g,W,H,dpr){const T=rzTh();const s=rzSNow();const now=perform
   if(s>-1){for(const nt of RZ.chart){const y=hitY-(nt.t-s)*speed;if(y<-60*dpr) break;if(nt.sus){const y2=hitY-(nt.t+nt.sus-s)*speed;if(y2<hitY&&(!nt.hit||nt.holding)){g.fillStyle=C[nt.lane]+(nt.holding?'cc':'66');g.fillRect(x0+nt.lane*lw+lw*.36,Math.max(0,y2),lw*.28,Math.min(hitY,y)-Math.max(0,y2))}}
       if(nt.hit||y>H+20) continue;const x=x0+nt.lane*lw+6*dpr,w=lw-12*dpr,h=Math.max(16*dpr,lw*.28);g.globalAlpha=nt.res==='miss'?.25:1;g.shadowColor=C[nt.lane];g.shadowBlur=14*dpr;const r=8*dpr;g.fillStyle=C[nt.lane];g.beginPath();g.moveTo(x+r,y-h/2);g.arcTo(x+w,y-h/2,x+w,y+h/2,r);g.arcTo(x+w,y+h/2,x,y+h/2,r);g.arcTo(x,y+h/2,x,y-h/2,r);g.arcTo(x,y-h/2,x+w,y-h/2,r);g.closePath();g.fill();g.shadowBlur=0;
       g.fillStyle='rgba(255,255,255,.5)';g.fillRect(x+r,y-h/2+3*dpr,w-2*r,3*dpr);if(nt.star&&nt.res!=='miss') rzStarMark(g,x,y,w,h,dpr);if(nt.sw){g.fillStyle='#1a0b2e';g.font='800 '+(h*.8)+'px system-ui';g.textAlign='center';g.fillText({u:'⇧',l:'⇦',r:'⇨'}[nt.sw],x+w/2,y+h*.3)}g.globalAlpha=1}}
-  const st=RZ.stats;if(st){const tot=RZ.chart.length||1;const sc=Math.min(1,(st.pp+st.perfect+st.great*.75+st.good*.5)/tot);[0,1,2,3,4].forEach(i=>{const on=sc>=[.45,.65,.8,.9,.97][i]*((RZ.chart.filter(n=>n.res).length)/tot);g.fillStyle=on&&st.combo+st.perfect>0?'#ffd84a':'rgba(255,255,255,.18)';g.font=(18*dpr)+'px system-ui';g.textAlign='center';g.fillText('★',W/2+(i-2)*24*dpr,30*dpr)})}
+  rzStarBar(g,W,dpr);
   rzPopsFx(g,l=>x0+l*lw+lw/2,hitY,dpr);rzCountdown(g,W,H,dpr,s)}
+
+/* Barra de precisão do Beat Hero: mostra a precisão até agora e as 3 estrelas de verdade (65%, 85% e 95%, as mesmas do fim da música). Antes eram 5 estrelas que viravam 3. */
+function rzStarBar(g,W,dpr){const st=RZ.stats;if(!st) return;const judged=st.pp+st.perfect+st.great+st.good+st.miss;const cur=judged?(st.pp+st.perfect+st.great*.75+st.good*.5)/judged:0;
+  const bw=Math.min(W*.62,190*dpr),bh=9*dpr,x=W/2-bw/2,y=36*dpr,pos=p=>Math.max(0,Math.min(1,(p-.5)/.5));
+  g.save();g.fillStyle='rgba(20,32,54,.82)';g.fillRect(x-3*dpr,y-3*dpr,bw+6*dpr,bh+6*dpr);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x,y,bw,bh);
+  g.fillStyle=cur>=.95?'#ffd84a':cur>=.85?'#8be05a':cur>=.65?'#4cc3ff':'#ff6f6f';g.fillRect(x,y,bw*pos(cur),bh);
+  g.textAlign='center';g.font='900 '+(20*dpr)+'px system-ui';g.lineJoin='round';
+  [.65,.85,.95].forEach(p=>{const on=judged>=6&&cur>=p;const px=x+bw*pos(p);g.fillStyle='rgba(255,255,255,.7)';g.fillRect(px-1*dpr,y-3*dpr,2*dpr,bh+6*dpr);g.lineWidth=4*dpr;g.strokeStyle='rgba(20,32,54,.9)';g.strokeText('★',px,y-7*dpr);g.fillStyle=on?'#ffd84a':'rgba(255,255,255,.55)';g.fillText('★',px,y-7*dpr)});
+  g.font='800 '+(12*dpr)+'px system-ui';const t=judged?Math.round(cur*100)+'%':'—';g.lineWidth=4*dpr;g.strokeStyle='rgba(20,32,54,.9)';g.strokeText(t,W/2,y+bh+15*dpr);g.fillStyle='#fff';g.fillText(t,W/2,y+bh+15*dpr);g.restore()}
 
 /* ---------- Piano Tiles ---------- */
 function rzDrawTiles(g,W,H,dpr){const s=rzSNow(),now=performance.now();const hitY=H*.8,lw=W/4,sp=H*.5*RZ_WIN[RZ.diff].spd;
