@@ -1,0 +1,21 @@
+// Beat Hero e Piano Hero: Beat Hero sem notas juntas e sem notas coladas (só virada alternando), Piano Hero com 1 min / 2 min e sem corações, nota dourada ×2 (não ★).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
+await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
+const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 900 }); const errs = []; p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'T'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await p.goto(`${url}/aluno.html#/ritmo`); await sleep(3000);
+const r = await p.evaluate(() => { let simult = 0, close = 0, runMax = 0, n = 0; for (const st of ['rock', 'pop', 'reggaeton', 'balada', 'lofi', 'bossa']) for (const tier of [0, 1, 2]) { const c = window.BeaterRhythm._build(st, tier, 'beat', 120); const ch = c.chart.filter((x) => !x.cpu).sort((a, b) => a.t - b.t); const s = c.A.st; let run = 0; n += ch.length;
+  for (let i = 1; i < ch.length; i++) { const d = ch[i].t - ch[i - 1].t; if (d < 0.045) simult++; if (d >= 0.045 && d < s * 1.9) { close++; run++; runMax = Math.max(runMax, run); } else run = 0; } } return { simult, close, runMax, n }; });
+check('Beat Hero: nenhuma nota junto de outra, em todos os estilos e níveis', r.simult === 0, JSON.stringify(r));
+check('Beat Hero: notas coladas só em virada alternando (poucas e no máximo 4 seguidas)', r.close < r.n * 0.02 && r.runMax <= 3, JSON.stringify(r));
+await p.locator('button', { hasText: 'Piano Hero' }).first().click(); await sleep(600);
+await p.locator('summary, button', { hasText: 'Ajustes' }).first().click(); await sleep(400);
+check('Piano Hero tem Duração 1 min / 2 min', (await p.locator('[data-act="rz-len"]').count()) === 2 && /1 min/.test(await p.locator('[data-act="rz-len"]').first().innerText()));
+await p.locator('[data-act="rz-len"][data-v="60"]').click(); await sleep(400);
+check('a escolha de 1 min aparece no resumo dos ajustes', /1 min/.test(await p.locator('body').innerText()));
+const src = await (await fetch(`${url}/assets/rhythm-games/rhythm-games.js`)).text();
+check('sem corações no Piano Hero (nem vidas no HUD)', !src.includes('RZ.lives=Math.max') && !src.includes('id="rz-lives"') && !src.includes("fillText('♥'"));
+check('a nota dourada especial mostra ×2 em vez de ★', src.includes("g.fillText('×2'") && !src.includes("g.fillText('★',x+w/2"));
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);
