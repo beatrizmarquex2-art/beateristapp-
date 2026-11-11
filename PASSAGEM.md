@@ -388,3 +388,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **A "estrela" que caía na pista** (nota dourada do modo especial, a cada ≥12 s, uns 5 por música de 2 min) parecia estrela de figurinha; agora mostra **"×2"**. As ★ de verdade são no máximo **3 por música** (precisão ≥65/85/95%).
 - **Roleta de estrelas:** é a cada **15 ★** (não 30) somando todos os jogos (`ESTRELAS_POR_ROLETA`); a mensagem do Beat Hero já fala "15 ★".
 - Testes: `tests/e2e/ritmo-enxuto.mjs`; `ritmo-pista.mjs` ajustado (viradas mais enxutas).
+
+## Roleta com 3 desenhos sorteados e abas bem visíveis (nov/2026)
+- **Roleta:** a cada vez que o aluno gira, o desenho é sorteado entre **vinil** (disco com sulcos, rótulo colorido e agulha), **néon** (borda dourada, luzes piscando, ponteiro brilhante) e **tambor** (pele de bateria com parafusos e baquetas), sempre com cores novas (`js/views/figurinhas.js`, classes `sk-vinil/sk-neon/sk-tambor` em `css/figurinhas.css`). O prêmio de jogo completo continua dourado. Com "animações reduzidas" a roleta não gira (como antes). O rufo de bateria é o mesmo.
+- **Abas Álbum · Roleta · Perfil** (`.al-subnav`): agora grandes, com ícone (📒 🎡 👤), no topo da tela, e a aba **roleta mostra uma bolinha vermelha** com quantos giros/pacotes estão esperando.

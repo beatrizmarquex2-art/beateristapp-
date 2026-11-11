@@ -20,7 +20,7 @@ check('5 certas seguidas: "perfeito" e 1 giro da roleta', /perfeito/.test(txt) &
 const roletas = await p.evaluate(async () => { const FR = await import('/js/figurinhas/rewards.js'); return FR.pending(); });
 check('o giro está esperando na roleta', roletas === 1, String(roletas));
 await p.goto(`${url}/aluno.html#/album/Pacotes`); await p.waitForSelector('.al-subnav', { timeout: 10000 });
-check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()) === 'roleta');
+check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()).includes('roleta'));
 const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);
 await app.evaluate(() => { location.hash = '#/figurinhas/Pacotes'; }); await app.waitForSelector('.fig-regras', { timeout: 10000 });
 const regras = await app.locator('.fig-regras').innerText();

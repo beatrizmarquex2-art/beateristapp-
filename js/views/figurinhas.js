@@ -163,14 +163,30 @@ export function mount(host, parts = [], opts = {}) {
     sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
       const box = h('div', { class: 'fig-open fig-wheelbox' });
       const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? '🎡' : '🏆'));
-      if (roleta) disc.style.background = coresRoleta(); // cores diferentes a cada vez
+      // 3 desenhos de roleta, sorteados a cada vez (e cores sempre diferentes): disco de vinil, roleta néon e pele de tambor
+      const skin = roleta ? ['vinil', 'neon', 'tambor'][Math.floor(Math.random() * 3)] : 'premio'; box.classList.add(`sk-${skin}`); const extras = [];
+      if (roleta) {
+        const hue = Math.floor(Math.random() * 360);
+        if (skin === 'vinil') { disc.style.background = ''; disc.querySelector('.fig-wheel-hub').style.background = coresRoleta(); extras.push(h('i', { class: 'fig-arm', 'aria-hidden': 'true' })); }
+        else if (skin === 'neon') {
+          const neon = ['#ff2d95', '#ffd23f', '#2dd4ff', '#7cff6b', '#b388ff', '#ff7a2d'].sort(() => Math.random() - 0.5).slice(0, 4);
+          disc.style.background = `conic-gradient(${Array.from({ length: 8 }, (_, k) => `${k % 2 ? '#14111a' : neon[(k / 2) % 4]} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
+          for (let k = 0; k < 12; k++) disc.append(h('i', { class: 'fig-luz', style: `--a:${k * 30}deg`, 'aria-hidden': 'true' }));
+        } else {
+          const c1 = ['#d3122f', '#EBA332', '#17365B', '#2a9d8f'].sort(() => Math.random() - 0.5);
+          disc.style.background = `conic-gradient(${Array.from({ length: 8 }, (_, k) => `${k % 2 ? '#fff8e6' : c1[(k / 2) % 4]} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
+          for (let k = 0; k < 8; k++) disc.append(h('i', { class: 'fig-parafuso', style: `--a:${k * 45}deg`, 'aria-hidden': 'true' }));
+          extras.push(h('i', { class: 'fig-stick l', 'aria-hidden': 'true' }), h('i', { class: 'fig-stick r', 'aria-hidden': 'true' }));
+        }
+        disc.querySelector('.fig-wheel-hub').textContent = skin === 'tambor' ? '🥁' : skin === 'vinil' ? '🎵' : '🎡'; void hue;
+      }
       const go = h('button', { type: 'button', class: 'btn primary wide', onclick: () => {
         go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
         if (wantsLess(state)) { mostra(); return; }
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

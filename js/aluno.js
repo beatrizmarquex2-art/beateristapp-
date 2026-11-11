@@ -34,6 +34,7 @@ import * as roleta from './views/roleta.js';
 import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
+import { pending as FRpend } from './figurinhas/rewards.js'; // quantos giros/pacotes esperando (bolinha vermelha na aba roleta)
 import * as perfil from './views/perfil.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
@@ -395,8 +396,10 @@ function shell(name) {
     else { location.hash = '#/jogos'; return; }
     if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
     if (r.name === 'album' || r.name === 'perfil') { // 3 abas: ÁLBUM · ROLETA · PERFIL (a roleta é a aba "Pacotes" do álbum; o perfil mora junto)
-      const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes'; const aba = (href, nome, on) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}` }, nome);
-      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta), aba('#/album/Pacotes', 'roleta', roleta), aba('#/perfil', 'perfil', r.name === 'perfil')));
+      const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
+      let pend = 0; try { pend = FRpend() || 0; } catch { pend = 0; }
+      const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '📒'), aba('#/album/Pacotes', 'roleta', roleta, '🎡', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
     }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
