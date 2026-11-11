@@ -399,7 +399,7 @@ function shell(name) {
       const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
       let pend = 0; try { pend = FRpend() || 0; } catch { pend = 0; }
       const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
-      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '📒'), aba('#/album/Pacotes', 'roleta', roleta, '🎡', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '🃏'), aba('#/album/Pacotes', 'roleta', roleta, '🎡', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
     }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);

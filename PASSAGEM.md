@@ -391,4 +391,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## Roleta com 3 desenhos sorteados e abas bem visíveis (nov/2026)
 - **Roleta:** a cada vez que o aluno gira, o desenho é sorteado entre **vinil** (disco com sulcos, rótulo colorido e agulha), **néon** (borda dourada, luzes piscando, ponteiro brilhante) e **tambor** (pele de bateria com parafusos e baquetas), sempre com cores novas (`js/views/figurinhas.js`, classes `sk-vinil/sk-neon/sk-tambor` em `css/figurinhas.css`). O prêmio de jogo completo continua dourado. Com "animações reduzidas" a roleta não gira (como antes). O rufo de bateria é o mesmo.
-- **Abas Álbum · Roleta · Perfil** (`.al-subnav`): agora grandes, com ícone (📒 🎡 👤), no topo da tela, e a aba **roleta mostra uma bolinha vermelha** com quantos giros/pacotes estão esperando.
+- **Abas Álbum · Roleta · Perfil** (`.al-subnav`): agora grandes, com ícone (🃏 🎡 👤), no topo da tela, e a aba **roleta mostra uma bolinha vermelha** com quantos giros/pacotes estão esperando.
