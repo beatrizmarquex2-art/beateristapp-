@@ -332,3 +332,4 @@
 .al-subnav .chip-btn .al-ic{font-size:24px;line-height:1}
 .al-subnav .chip-btn.on{background:#17365B;color:#fff}
 .al-subnav .chip-btn .al-badge{position:absolute;top:-8px;right:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:99px;background:#d3122f;color:#fff;font:800 13px/22px var(--body,inherit);border:2px solid #fff}
+.fig-vaimudar{margin:6px 0 10px;padding:8px 12px;border:2px dashed #BD1733;border-radius:12px;background:#fff4f4;color:#7a0f22;font-size:14px;font-weight:600;text-align:center}

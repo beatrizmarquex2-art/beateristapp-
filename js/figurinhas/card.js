@@ -2,6 +2,7 @@
 // A foto original entra INTEIRA (preserveAspectRatio "meet"): nunca é cortada, filtrada ou refeita — só ganha moldura em volta.
 import * as O from './ornaments.js';
 import { cardSVG2, hasModelo2 } from './card2.js';
+import { nomeRaridade } from './album-logic.js';
 const { C } = O;
 
 export const W = 600, H = 900;
@@ -188,7 +189,7 @@ export function cardSVGClassic(e, { url = null, aspect = null, uid = '' } = {}) 
   const P = fitPhoto(aspect || (e.largura_px && e.altura_px ? e.largura_px / e.altura_px : 0.86));
   const d = TPL(t, k, P), dark = meta.dark;
   const name = e.artista_banda || '';
-  const label = e.codigo ? `${name}, figurinha ${e.codigo}, ${e.raridade}` : `Modelo ${t}, ${meta.nome}, ${meta.raridade}`;
+  const label = e.codigo ? `${name}, figurinha ${e.codigo}, ${nomeRaridade(e)}` : `Modelo ${t}, ${meta.nome}, ${meta.raridade}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}" data-modelo="${t}">${defs(k)}
 <g clip-path="url(#cl${k})">${d.bg}${d.logoBg || ''}${d.logo}
 ${photoLayer(k, P, url, t)}${d.front || ''}${nameStrip(k, name, 300 + (d.shift || 0), d.maxW || 380, t, d.under)}${d.front2 || ''}${d.over || ''}${seal(k, meta.raridade, d.seal, t)}${codeText({ ...e, codigo: e.codigo || 'F000' }, dark)}

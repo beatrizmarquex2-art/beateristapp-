@@ -21,7 +21,7 @@ export function selosTeamCanvas(ctx, id) {
   ctx.fillText(TEXTO_TEAM, 0, 0.5); ctx.restore();
 }
 /** O mesmo em SVG (texto ajustado pela largura). */
-export function seloTeamSVG(id) {
+export function seloTeamSVG(id, texto = TEXTO_TEAM) {
   const s = SELO_TEAM[id]; if (!s) return '';
-  return `<g transform="translate(${s.cx} ${s.cy}) rotate(${s.ang})"><text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-family="${FONTE.replace(/"/g, "'")}" font-weight="800" font-size="10.5" letter-spacing="0.6" fill="${s.cor}" textLength="${s.w}" lengthAdjust="spacingAndGlyphs">${TEXTO_TEAM}</text></g>`;
+  return `<g transform="translate(${s.cx} ${s.cy}) rotate(${s.ang})"><text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-family="${FONTE.replace(/"/g, "'")}" font-weight="800" font-size="10.5" letter-spacing="0.6" fill="${s.cor}" textLength="${Math.min(s.w, Math.round(texto.length * 7.4))}" lengthAdjust="spacingAndGlyphs">${texto}</text></g>`;
 }

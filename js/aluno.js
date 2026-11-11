@@ -15,6 +15,13 @@ import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
+import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
+/** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
+function marcarEstudo(id) {
+  const antes = META.ler().feitas.length; const s = META.marcar(id);
+  if (s.feitas.length > antes) ganhouEstrela('estudos', 1 + (META.cumprida(s) ? 3 : 0));
+  return s;
+}
 import * as SALVAR from './salvar-codigo.js';
 import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
 import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
@@ -201,12 +208,13 @@ function estudosView(view) {
     h('a', { class: 'btn primary wide', href: prox.href, onclick: () => marcarVisto(proximo) }, `abrir · ${prox.tempo}`))
     : h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'tudo visto!'), h('p', { class: 'es-frase' }, 'agora é praticar: abra a aba Jogos e ganhe estrelas'), h('a', { class: 'btn primary wide', href: '#/jogos' }, 'ir pros jogos'));
   // meta do dia: 3 coisinhas (dica musical, passo de aula, curiosidade) com barra e sequência
-  META.marcar('dica'); // ver a dica do dia já conta
+  marcarEstudo('dica'); // ver a dica do dia já conta
   const mt = META.ler(); const seq = META.sequencia(mt);
   const meta = h('section', { class: 'card pad es-meta-dia', 'aria-label': 'Meta de hoje' },
     h('div', { class: 'es-meta-top' }, h('b', {}, META.cumprida(mt) ? 'meta de hoje cumprida! 🎉' : 'meta de hoje'), h('small', {}, seq ? `🔥 ${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos` : 'comece a sua sequência')),
     h('div', { class: 'es-barra', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': META.METAS.length, 'aria-valuenow': mt.feitas.length }, h('i', { style: `width:${(mt.feitas.length / META.METAS.length) * 100}%` })),
-    h('ul', { class: 'es-metas' }, ...META.METAS.map(([k, t]) => h('li', { class: mt.feitas.includes(k) ? 'ok' : '' }, mt.feitas.includes(k) ? '✓ ' : '○ ', t))));
+    h('ul', { class: 'es-metas' }, ...META.METAS.map(([k, t]) => h('li', { class: mt.feitas.includes(k) ? 'ok' : '' }, mt.feitas.includes(k) ? '✓ ' : '○ ', t))),
+    h('p', { class: 'muted es-estrelas' }, '★ cada meta vale 1 estrela e cumprir as 3 do dia vale +3 estrelas!'));
   // dica musical do dia (aberta pra todo mundo; "outra" mostra a próxima)
   let di = dicaDeHoje(); const dTag = h('p', { class: 'es-tag' }); const dTxt = h('p', { class: 'es-dica' });
   const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica musical do dia · ${tema}`; dTxt.textContent = txt; };
@@ -229,14 +237,14 @@ function aulaView(view, id) {
   if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
   view.append(banner(`Aula de ${AULAS[id].titulo.toLowerCase()}`, 'com o Paul'), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ aulas')));
   const box = h('div', { class: 'pad-x' }); view.append(box);
-  return montarAula(box, id, { onPasso: () => { META.marcar('aula'); marcarVisto('aulas'); } });
+  return montarAula(box, id, { onPasso: () => { marcarEstudo('aula'); marcarVisto('aulas'); } });
 }
 
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
   const nome = h('h2', { class: 'tag' }); const inst = h('p', { class: 'es-tag' }); const txt = h('p', { class: 'es-dica' }); const pos = h('small', { class: 'muted' });
-  const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; META.marcar('curiosidade'); marcarVisto('curiosidades'); };
+  const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; marcarEstudo('curiosidade'); marcarVisto('curiosidades'); };
   view.append(banner('Curiosidades de músicos', 'quem tocou antes de você'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('article', { class: 'card pad es-cur' }, inst, nome, txt, pos),
     h('div', { class: 'row', style: 'gap:8px' }, h('button', { type: 'button', class: 'btn', onclick: () => { i--; draw(); } }, '‹ anterior'), h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => { i++; draw(); } }, 'outra curiosidade ›'))));
@@ -364,6 +372,8 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
+    { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));

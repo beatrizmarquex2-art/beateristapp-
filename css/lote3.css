@@ -720,3 +720,6 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .fig-giro{background:#d3122f!important;border-color:#8f0a1f!important;color:#fff!important;font-weight:800;box-shadow:0 4px 0 #8f0a1f,0 0 0 4px rgb(211 18 47 / .22);animation:fig-giro-pulso 1.8s ease-in-out infinite}
 @keyframes fig-giro-pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 @media (prefers-reduced-motion:reduce){.fig-giro{animation:none}}
+/* dentro de um jogo: sem barra de baixo (toque perto da borda caía na Lojinha) e sem o espaço reservado pra ela */
+html.em-jogo .bottom-nav { display: none !important; }
+html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }

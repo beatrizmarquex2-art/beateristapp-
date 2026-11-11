@@ -64,6 +64,7 @@ export function mount(host, parts = [], opts = {}) {
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, `🎡 você tem ${pend} pra abrir (giro grátis do dia, roleta ou prêmio) — toque aqui`) : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
+      h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!'),
       tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
     if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
@@ -116,7 +117,7 @@ export function mount(host, parts = [], opts = {}) {
           h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
           h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '3 fases com 3 ★'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),
           h('li', {}, '🎯 acertou 5 seguidas no quiz Uno Musical: 1 giro (até 3 por dia)'),
-          h('li', {}, '✨ ', h('b', {}, 'vão chegar mais figurinhas'), ' em breve!')),
+          h('li', {}, '✨ ', h('b', {}, 'o álbum ainda vai mudar'), ': vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!')),
         h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
@@ -134,12 +135,12 @@ export function mount(host, parts = [], opts = {}) {
     const live = h('p', { class: 'fig-note', 'aria-live': 'polite' }, less ? '' : 'toque em cada carta pra virar');
     cards.forEach((e, i) => {
       const dup = state.pasted[e.codigo] || cards.findIndex((x) => x.codigo === e.codigo) < i;
-      const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, style: `--d:${i * 180}ms`, 'aria-label': less ? `${e.artista_banda}, ${e.raridade}` : `carta ${i + 1}, virar` });
+      const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, style: `--d:${i * 180}ms`, 'aria-label': less ? `${e.artista_banda}, ${L.nomeRaridade(e)}` : `carta ${i + 1}, virar` });
       el.innerHTML = `<span class="back"><b>beaterista</b></span><span class="front">${svgOf(e, `o${i}${e.codigo}`)}</span>`;
-      const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${e.raridade}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${e.raridade}${dup ? ' · repetida' : ' · nova'}`; };
+      const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${L.nomeRaridade(e)}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${L.nomeRaridade(e)}${dup ? ' · repetida' : ' · nova'}`; };
       el.addEventListener('click', flip); row.append(el);
     });
-    const nomes = cards.map((e) => `${e.artista_banda} (${e.raridade})`).join(', ');
+    const nomes = cards.map((e) => `${e.artista_banda} (${L.nomeRaridade(e)})`).join(', ');
     return h('div', { class: 'fig-open' }, aberto ? h('p', { class: 'fig-note', role: 'status' }, `você ganhou: ${nomes}`) : live, row,
       h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
       h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
@@ -197,7 +198,7 @@ export function mount(host, parts = [], opts = {}) {
       const view = h('div', { class: 'fig-zoom' }); view.innerHTML = svgOf(e, `d${e.codigo}`);
       const btn = h('button', { type: 'button', class: 'btn', 'aria-pressed': 'false', onclick: () => { big = !big; view.classList.toggle('big', big); btn.setAttribute('aria-pressed', String(big)); btn.textContent = big ? 'diminuir' : 'ampliar'; } }, 'ampliar');
       const share = shareUI(e);
-      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
+      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${L.nomeRaridade(e)} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
       box.cleanup = () => share.cleanup();
       return box;
     });

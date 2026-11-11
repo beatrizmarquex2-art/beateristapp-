@@ -15,6 +15,10 @@ export const packSize = (id) => (plPack(id) ? plPack(id).n : PACK_SIZE);
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
+/** Nome que aparece pra cada raridade. Os Beatles NÃO são "comum": o nome deles é Beatlemania. (Os outros nomes podem ser trocados aqui quando a Bea escolher a lista nova.) */
+export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva' };
+export const ehBeatles = (e) => !!e && (e.colecao === 'Beatles' || e.secao === 'Beatlemania');
+export const nomeRaridade = (e) => (ehBeatles(e) ? 'Beatlemania' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
 export const SECOES = ['Beatlemania', 'Beaterista', 'Comum', 'Raras'];
 export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Comum', Especial: 'Raras' }; // links e abas de antes
 export const COLECOES = SECOES;

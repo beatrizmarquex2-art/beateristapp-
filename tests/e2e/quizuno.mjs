@@ -24,7 +24,7 @@ check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav
 const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);
 await app.evaluate(() => { location.hash = '#/figurinhas/Pacotes'; }); await app.waitForSelector('.fig-regras', { timeout: 10000 });
 const regras = await app.locator('.fig-regras').innerText();
-check('a roleta explica: 15 ★, jogos de aprender dão extra (3 fases com 3 ★) e vêm mais figurinhas', /15 ★/.test(regras) && /jogos de aprender dão figurinha extra/.test(regras) && /3 fases com 3 ★/.test(regras) && /mais figurinhas/.test(regras), regras);
+check('a roleta explica: 15 ★, jogos de aprender dão extra (3 fases com 3 ★) e vêm o álbum ainda vai mudar', /15 ★/.test(regras) && /jogos de aprender dão figurinha extra/.test(regras) && /3 fases com 3 ★/.test(regras) && /o álbum ainda vai mudar/.test(regras), regras);
 const extra = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); const me = P.active();
   const lv = {}; for (let i = 0; i < 7; i++) lv[`figuras:${i}`] = { s: 3 }; lv['pl-revisao:1'] = { s: 3 }; lv['figuras:9'] = { s: 2 };
   await P.patch(me.id, { lv }); return { f3: E.fases3Estrelas(me.id), extras: E.girosExtras(me.id), faltam: E.faltamFases3(me.id), novas: await E.sincronizar(me.id) }; });

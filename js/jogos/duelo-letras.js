@@ -4,12 +4,12 @@ import { h } from '../util.js';
 import { linha, chips } from './opcoes.js';
 import { mountDueloBase } from './duelo-base.js';
 import { ganhou } from './estrelas-jogo.js';
+import { sementeRnd } from './semente.js';
 
 const NOMES = { caca: 'caça-palavras', cruzadinha: 'cruzadinha', quiz: 'quiz' };
 const TEMPOS = [[60, '1 min'], [120, '2 min'], [180, '3 min']];
 const LIMITE_RAPIDO = 6 * 60; // no "quem termina primeiro", ninguém espera mais que 6 minutos
-/** Sorteio com semente: os dois celulares geram a mesma grade. */
-export const sementeRnd = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+export { sementeRnd };
 /** Quem ganhou (maior vence): "primeiro" = quem terminou e com menos tempo (ninguém terminou: quem achou mais); "tempo" = quem achou mais, depois menos erros e menos tempo. */
 export const notaLetras = (modo) => (r) => (modo === 'tempo' ? [r.found | 0, -(r.erros | 0), -(r.ms | 0)] : [r.done ? 1 : 0, r.done ? 1e7 - (r.ms | 0) : (r.found | 0), -(r.erros | 0)]);
 const seg = (ms) => `${(ms / 1000).toFixed(1)} s`;
