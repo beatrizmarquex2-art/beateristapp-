@@ -9,7 +9,7 @@ export const albumHref = (aba = '') => `${document.documentElement.classList.con
 export { EST };
 /** Depois de ganhar estrelas (em qualquer jogo): entrega as roletas devidas. Devolve quantas roletas novas. */
 export const sincronizar = (pid) => EST.sincronizar(pid);
-/** Terminou um jogo de fases dos Kids inteiro? Entrega o prêmio (1 pacote de 5 com uma rara) uma única vez. Devolve 1 se novo. */
+/** Terminou um jogo de fases dos Kids inteiro? Entrega o prêmio (1 pacote de 3 com uma rara) uma única vez. Devolve 1 se novo. */
 export const premioKids = (pid, game) => (EST.kidsCompleto(pid, game) ? EST.premioJogo(pid, `kids-${game}`) : 0);
 /** Terminou todas as missões de um Modo Aventura? Mesmo prêmio, uma única vez. */
 export const premioAventura = (pid, gameId, spec) => (CS.completo(pid, gameId, spec) ? EST.premioJogo(pid, `av-${gameId}`) : 0);

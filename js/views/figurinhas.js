@@ -157,7 +157,7 @@ export function mount(host, parts = [], opts = {}) {
     const kind = L.packKind(packId);
     if (kind === 'pacote') {
       const r = L.openPack(state, catalog, packId); if (!r.fresh) return; save(r.state);
-      sheet('seu pacote', (close) => revealUI(r.codes, close)); return;
+      sheet('seu pacote', (close) => revealUI(r.codes, close, true)); return; // as figurinhas já aparecem viradas: ninguém precisa tocar pra descobrir
     }
     const roleta = kind === 'roleta';
     sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
@@ -170,7 +170,7 @@ export function mount(host, parts = [], opts = {}) {
         if (wantsLess(state)) { mostra(); return; }
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 5 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

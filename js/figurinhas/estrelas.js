@@ -1,6 +1,6 @@
 // Estrelas -> roleta e jogo completo -> prêmio. Tudo idempotente: cada roleta/prêmio tem id fixo (por jogador), então nunca entrega em dobro.
 //  * a cada 15 estrelas (fases dos Kids + jogos de ritmo + missões do Modo Aventura) libera 1 roleta (1 a 3 figurinhas)
-//  * terminar um jogo inteiro (todas as fases ou todas as missões, pelo menos 1 estrela em cada) dá 1 pacote de 5 com uma rara garantida
+//  * terminar um jogo inteiro (todas as fases ou todas as missões, pelo menos 1 estrela em cada) dá 1 pacote de 3 com uma rara garantida
 import * as P from '../kids/progress.js';
 import * as CS from '../campanha/store.js';
 import * as FR from './rewards.js';
@@ -22,7 +22,7 @@ export async function sincronizar(pid) {
   const n = roletasDevidas(estrelasTotais(pid)); const x = girosExtras(pid);
   return FR.grantPacks([...Array.from({ length: n }, (_, k) => `roleta:${pid}:${k + 1}`), ...Array.from({ length: x }, (_, k) => `roleta:fases3:${pid}:${k + 1}`)]);
 }
-/** Prêmio de jogo completo (1 pacote de 5 com uma rara). Devolve 1 se foi entregue agora, 0 se já tinha. */
+/** Prêmio de jogo completo (1 pacote de 3 com uma rara). Devolve 1 se foi entregue agora, 0 se já tinha. */
 export const premioJogo = (pid, jogoId) => FR.grantPacks([`jogo:${jogoId}:${pid}`]);
 /** Jogo de fases dos Kids completo: as 11 fases (0..MAX_LEVEL) com pelo menos 1 estrela. */
 export const kidsCompleto = (pid, game) => Array.from({ length: MAX_LEVEL + 1 }, (_, l) => l).every((l) => P.starsAt(pid, game, l) >= 1);

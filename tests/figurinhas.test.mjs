@@ -87,5 +87,5 @@ test('juntar progresso de dois aparelhos: união, sem perder nada, e a mão é r
   assert.deepEqual(L.mergeStates(m, a), m, 'juntar de novo é idempotente');
   assert.deepEqual(L.mergeStates(a, b), L.mergeStates(b, a), 'ordem não importa');
   const total = Object.values(m.inv).reduce((x, y) => x + y, 0) + Object.keys(m.pasted).length;
-  assert.equal(total, 10, 'nenhuma figurinha some nem aparece do nada (2 pacotes x 5)');
+  assert.equal(total, 6, 'nenhuma figurinha some nem aparece do nada (2 pacotes x 3)');
 });

@@ -2,7 +2,7 @@
 // o mesmo pacote (mesmo id) sempre dá as mesmas figurinhas e nunca é entregue nem aberto duas vezes.
 import { rng, hashSeed } from './ornaments.js';
 
-export const PACK_SIZE = 5;
+export const PACK_SIZE = 3; // pacote comum e prêmio de jogo: 3 figurinhas (a roleta dá de 1 a 3)
 export const TOTAL_FIGURINHAS = 131; // 125 do catálogo original + 6 do Paul (catalogo-paul.json)
 export const ESTRELAS_POR_ROLETA = 15; // a cada 15 estrelas (somando todos os jogos) libera uma roleta
 /** Roleta: 1 a 3 figurinhas; raramente (4%) uma exclusiva da Beaterista; às vezes Beatlemania e rara. */
@@ -40,14 +40,14 @@ function drawBySection(catalog, r, n, pesos) {
   while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
   return out;
 }
-/** Sorteio do pacote. `roleta:*` = 1 a 3 figurinhas; `jogo:*` = pacote de 5 com 1 rara garantida; o resto = pacote de 5 por raridade. Mesma seed = mesmas figurinhas. */
+/** Sorteio do pacote. `roleta:*` = 1 a 3 figurinhas; `jogo:*` = pacote de 3 com 1 rara garantida; o resto = pacote de 3 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   const pl = plPack(packId);
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, pickWeighted(r, ROLETA_QTD), ROLETA_PESOS);
-  if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 5 com uma RARA garantida
+  if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 3 com uma RARA garantida
     const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
     const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
     while (out.length < size && guard++ < 800) { let x = r() * total, rar = 'Comum'; for (const [k, w] of Object.entries(WEIGHTS)) { if (x < w) { rar = k; break; } x -= w; } const pool = by[rar]; if (!pool?.length) continue; const c = pool[Math.floor(r() * pool.length)]; if (!out.includes(c)) out.push(c); }

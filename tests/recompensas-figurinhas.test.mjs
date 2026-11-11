@@ -21,17 +21,17 @@ test('roleta: maioria comum, às vezes rara e Beatlemania, exclusiva só bem rar
   assert.ok(n.Beaterista > 0 && n.Beaterista / tot < 0.08, `exclusiva rara ${n.Beaterista / tot}`);
   assert.ok(dois / N > 0.25 && dois / N < 0.45, `2 figurinhas em ${dois / N}`);
 });
-test('prêmio de jogo completo: pacote de 5 distintas com pelo menos 1 rara', () => {
-  for (let i = 0; i < 400; i++) { const d = L.drawPack(cat, `jogo:g:${i}`); assert.equal(d.length, 5); assert.equal(new Set(d).size, 5); assert.ok(d.some((c) => by[c].raridade === 'Rara'), 'tem rara'); }
+test('prêmio de jogo completo: pacote de 3 distintas com pelo menos 1 rara', () => {
+  for (let i = 0; i < 400; i++) { const d = L.drawPack(cat, `jogo:g:${i}`); assert.equal(d.length, 3); assert.equal(new Set(d).size, 3); assert.ok(d.some((c) => by[c].raridade === 'Rara'), 'tem rara'); }
 });
 test('roleta e prêmio entram uma vez só e abrem uma vez só (idempotente)', () => {
   let s = L.grantPack(L.emptyState(), 'roleta:u:1'); s = L.grantPack(s, 'roleta:u:1'); s = L.grantPack(s, 'jogo:av-x:u');
   assert.equal(L.pendingPacks(s).length, 2);
   const a = L.openPack(s, cat, 'roleta:u:1'); assert.ok(a.fresh); assert.ok(a.codes.length >= 1 && a.codes.length <= 3);
   const b = L.openPack(a.state, cat, 'roleta:u:1'); assert.equal(b.fresh, false);
-  const c = L.openPack(a.state, cat, 'jogo:av-x:u'); assert.equal(c.codes.length, 5);
+  const c = L.openPack(a.state, cat, 'jogo:av-x:u'); assert.equal(c.codes.length, 3);
   assert.equal(L.pendingPacks(L.grantPack(c.state, 'roleta:u:1')).length, 0, 'já aberta não volta');
-  assert.equal(L.inHand(c.state), a.codes.length + 5);
+  assert.equal(L.inHand(c.state), a.codes.length + 3);
 });
 
 test('cada aluno sorteia diferente (o check-in do dia não dá a mesma carta pra todos) e o sorteio é estável depois de aberto', () => {
