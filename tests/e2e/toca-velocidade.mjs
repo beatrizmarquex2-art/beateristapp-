@@ -8,6 +8,7 @@ await page.goto(url + '/aluno.html#/jogos/toca/livre'); await page.waitForSelect
 await page.locator('.tr-mais summary').first().click(); // andamento e som do toque ficam em "mais opções"
 const est = await page.evaluate(async () => { const T = await import('/js/views/treinos.js'); const R = await import('/js/reading.js'); return { e: [49, 50, 69, 70, 99, 100].map(T.estrelasToca), pass: R.PASS_SCORE }; });
 check('Toca Aqui: 50% = 1 ★, 70% = 2 ★, 100% = 3 ★ (e 50% já abre a próxima fase)', JSON.stringify(est.e) === '[0,1,1,2,2,3]' && est.pass === 50, JSON.stringify(est));
+check('Toca Aqui: intermediário e avançado abertos desde o começo (nada trancado)', (await page.locator('.lib-tab[disabled]').count()) === 0 && !(await page.locator('.tr-ctrl').first().innerText()).includes('🔒'));
 const bpmTxt = () => page.textContent('.bl-bpm');
 const chip = (nome) => page.getByRole('radio', { name: nome, exact: true });
 check('andamento padrão mais animado (90 BPM)', (await bpmTxt()).trim() === '90', await bpmTxt());

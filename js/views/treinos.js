@@ -73,7 +73,7 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 const bestOf = (c) => c.pbest || {};
 /** Estrelas de um exercício do caminho: 50% = 1, 70% = 2, 100% = 3. */
 export const estrelasToca = (sc) => (sc >= 100 ? 3 : sc >= 70 ? 2 : sc >= PASS_SCORE ? 1 : 0);
-const unlocked = (c, i) => i === 0 || (bestOf(c)[i - 1] || 0) >= PASS_SCORE;
+const unlocked = () => true; // tudo aberto: o aluno escolhe qualquer nível e exercício (as ★ continuam contando por exercício)
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };
 
 /* ---------- leitura (Toca Aqui, versão normal) ---------- */
