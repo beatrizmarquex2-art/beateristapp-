@@ -308,3 +308,4 @@
 .zp-escuro .zp-m { background: #fbf3e0; color: #14284b; box-shadow: 0 3px 0 #0b1830; } .zp-escuro .zp-m::before { left: -7px; top: 0; border-width: 7px; border-top-color: #fbf3e0; border-right-color: #fbf3e0; }
 .zp-escuro .zp-m small { color: #5b4a4c; } .zp-escuro .zp-re { background: #9a1226; border: 1.5px solid #fbf3e0; }
 .zp-head small { color: #fbf3e0 !important; opacity: .92; font-weight: 600; }
+.fig-regras{margin:8px 0 12px;padding:10px 12px 10px 28px;border-radius:12px;background:#fff8e6;border:2px solid #142036;font-size:14px;line-height:1.35;text-align:left}.fig-regras li{margin:4px 0}

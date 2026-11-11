@@ -921,3 +921,10 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-pausa-box .btn{min-height:52px;font-size:18px}.jg-pausa-btn{white-space:nowrap}.jg-continuar{min-height:52px;font-size:18px;text-align:center}
 
 .jg-cod-aluno{display:grid;gap:8px}.jg-cod-aluno .jg-msg:empty{display:none}
+/* quiz Uno Musical */
+.jg-quizuno{display:grid;gap:10px;justify-items:center;text-align:center}
+.qz-dots{display:flex;gap:8px}.qz-dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--jg-navy);background:#fff}.qz-dots i.ok{background:#2e9f5b;border-color:#2e9f5b}.qz-dots i.now{background:var(--jg-hi,#EBA332)}
+.qz-card{width:min(46vw,170px);aspect-ratio:3/4;display:grid;place-items:center;border:3px solid var(--jg-navy);border-radius:16px;background:#fffdf7;color:var(--jg-navy);box-shadow:4px 4px 0 var(--jg-navy)}
+.qz-card .cx-sym{height:70%}
+.qz-ops{display:grid;gap:8px;width:min(100%,360px)}.qz-op{min-height:52px;font-size:18px;font-weight:700}
+.qz-op.certo{background:#2e9f5b;color:#fff;border-color:#2e9f5b}.qz-op.errado{background:#BD1733;color:#fff;border-color:#BD1733}

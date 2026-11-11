@@ -16,6 +16,7 @@ import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import * as memart from '../jogos/memoria-artistas.js';
+import * as quizuno from '../jogos/quizuno.js';
 import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
@@ -28,6 +29,7 @@ const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'ler, ouvir, repetir · microfone'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
+  ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
   ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
@@ -37,7 +39,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['memart', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -51,7 +53,7 @@ const SECTIONS = [
   ]],
   ['cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+    ...['cartas', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['quiz e letras', [
     link('#/dicas', 'Quiz e Letras', 'quiz.svg', '2 partidas de caça-palavras grátis · o resto com código'),

@@ -1,0 +1,35 @@
+// Quiz Uno Musical e giros extras: 5 certas seguidas = 1 giro (aparece na roleta); jogos de aprender: 3 fases com 3 ★ = +1 giro; 3 abas Álbum · Roleta · Perfil.
+import { serve, launch, sleep, check, done, fakeLogin } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
+await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
+const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 844 }); const errs = []; p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await p.goto(`${url}/aluno.html#/jogos`); await p.waitForSelector('.jg-card', { timeout: 20000 });
+const titulos = await p.locator('.jg-card').allInnerTexts(); const iU = titulos.findIndex((t) => /Uno Musical/.test(t) && !/quiz/i.test(t));
+check('o quiz Uno Musical aparece logo depois do Uno', /quiz Uno Musical/.test(titulos[iU + 1] || ''), titulos.join(' | ').slice(0, 200));
+const roletasAntes = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); await import('/js/figurinhas/rewards.js'); return P.active().id; });
+await p.goto(`${url}/aluno.html#/jogos/quizuno`); await p.waitForSelector('.qz-op', { timeout: 10000 });
+for (let i = 0; i < 5; i++) { // acerta as 5: lê a certa pelo botão que vira .certo depois de errar de propósito? não: acha pela lógica
+  const nome = await p.evaluate(async () => { const Z = await import('/js/jogos/quizuno-logic.js'); const sym = [...document.querySelectorAll('.qz-card svg')][0]; return sym ? sym.outerHTML : ''; });
+  const certo = await p.evaluate(async () => { const { SYMS } = await import('/js/jogos/cartas-simbolos.js'); const { symbolEl } = await import('/js/jogos/cartas-simbolos.js'); const { nomeDe } = await import('/js/jogos/quizuno-logic.js'); const html = document.querySelector('.qz-card svg').outerHTML; const sym = SYMS.find((s) => symbolEl(s, 'cx-sym').outerHTML === html); return nomeDe(sym); });
+  await p.locator('.qz-op', { hasText: new RegExp(`^${certo.replace(/[()>]/g, '\\$&')}$`) }).click(); await sleep(i < 4 ? 900 : 300);
+}
+await p.waitForSelector('.jg-result', { timeout: 6000 }); await sleep(600);
+const txt = await p.locator('.jg-result').innerText();
+check('5 certas seguidas: "perfeito" e 1 giro da roleta', /perfeito/.test(txt) && /1 giro da roleta/.test(txt), txt);
+const roletas = await p.evaluate(async () => { const FR = await import('/js/figurinhas/rewards.js'); return FR.pending(); });
+check('o giro está esperando na roleta', roletas === 1, String(roletas));
+await p.goto(`${url}/aluno.html#/album/Pacotes`); await p.waitForSelector('.al-subnav', { timeout: 10000 });
+check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()) === 'roleta');
+const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);
+await app.evaluate(() => { location.hash = '#/figurinhas/Pacotes'; }); await app.waitForSelector('.fig-regras', { timeout: 10000 });
+const regras = await app.locator('.fig-regras').innerText();
+check('a roleta explica: 15 ★, jogos de aprender dão extra (3 fases com 3 ★) e vêm mais figurinhas', /15 ★/.test(regras) && /jogos de aprender dão figurinha extra/.test(regras) && /3 fases com 3 ★/.test(regras) && /mais figurinhas/.test(regras), regras);
+const extra = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); const me = P.active();
+  const lv = {}; for (let i = 0; i < 7; i++) lv[`figuras:${i}`] = { s: 3 }; lv['pl-revisao:1'] = { s: 3 }; lv['figuras:9'] = { s: 2 };
+  await P.patch(me.id, { lv }); return { f3: E.fases3Estrelas(me.id), extras: E.girosExtras(me.id), faltam: E.faltamFases3(me.id), novas: await E.sincronizar(me.id) }; });
+check('7 fases com 3 ★ (revisão e 2 ★ não contam) = 2 giros extras, faltam 2, entrega os 2 extras + 1 giro das 26 ★ (15 ★) sem duplicar', extra.f3 === 7 && extra.extras === 2 && extra.faltam === 2 && extra.novas === 3, JSON.stringify(extra));
+const dnv = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); return E.sincronizar(P.active().id); });
+check('sincronizar de novo não entrega nada em dobro', dnv === 0);
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

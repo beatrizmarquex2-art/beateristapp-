@@ -24,3 +24,4 @@ export function rewardEl(r) {
 }
 /** Texto curtinho de progresso (ex.: "faltam 12 ★ pra próxima roleta"). */
 export const progressoTxt = (pid) => `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(pid))} ★ pra próxima roleta`;
+export const progressoFases3 = (pid) => `faltam ${EST.faltamFases3(pid)} fase${EST.faltamFases3(pid) === 1 ? '' : 's'} com 3 ★ nos jogos de aprender pra ganhar +1 giro`;

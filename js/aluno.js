@@ -394,7 +394,10 @@ function shell(name) {
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
-    if (r.name === 'album' || r.name === 'perfil') view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum e perfil' }, h('a', { href: '#/album', role: 'tab', 'aria-selected': String(r.name === 'album'), class: `chip-btn${r.name === 'album' ? ' on' : ''}` }, 'figurinhas'), h('a', { href: '#/perfil', role: 'tab', 'aria-selected': String(r.name === 'perfil'), class: `chip-btn${r.name === 'perfil' ? ' on' : ''}` }, 'perfil'))); // o Perfil mora junto do Álbum
+    if (r.name === 'album' || r.name === 'perfil') { // 3 abas: ÁLBUM · ROLETA · PERFIL (a roleta é a aba "Pacotes" do álbum; o perfil mora junto)
+      const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes'; const aba = (href, nome, on) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}` }, nome);
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta), aba('#/album/Pacotes', 'roleta', roleta), aba('#/perfil', 'perfil', r.name === 'perfil')));
+    }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }
