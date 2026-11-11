@@ -26,7 +26,7 @@ const verso = (t) => (t.cover
     h('img', { class: 'mc-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }), h('small', { class: 'mc-b' }, 'beaterista'))
   : t.verso
     ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
-    : h('span', { class: 'mem-vt mix' }, ...MIX.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))));
+    : h('span', { class: 'mem-vt' }, h('img', { src: MIX[0], alt: '', draggable: 'false', decoding: 'async' }))); // "tudo misturado": só uma carta de verso (antes era um leque de 3)
 /** A carta: desenho da Bea (a imagem já traz nome e borda) ou foto de artista (recortada no rosto, com o nome embaixo quando tem). */
 const face = (it) => (it.photo
   ? h('span', { class: `mem-pf${it.fit === 'contain' ? ' fit' : ''}` },

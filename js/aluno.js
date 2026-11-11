@@ -401,8 +401,7 @@ function shell(name) {
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
-    else if (r.name === 'perfil') c = perfil.mount(view);
-    if (r.name === 'perfil') view.append(versaoApp());
+    else if (r.name === 'perfil') { c = perfil.mount(view); view.append(versaoApp()); }
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
