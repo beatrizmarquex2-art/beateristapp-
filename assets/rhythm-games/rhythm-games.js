@@ -151,13 +151,13 @@ const RS_PROG={rock:{M:[[0,7,9,5],[0,10,5,0],[9,5,0,7],[0,5,7,5],[0,5,0,7]],m:[[
 function rsQual(deg,minor){const M={0:'',2:'m',4:'m',5:'',7:'',9:'m',10:'',8:'',3:''},m={0:'m',3:'',5:'m',7:'m',8:'',10:'',2:'dim'};return (minor?m:M)[deg]||''}
 /* 3 músicas por estilo, cada uma mais rápida que a anterior */
 const RZ_STAR_BPM=105;const RS_TIER_BPM={rock:[100,120,140],pop:[90,104,118],reggaeton:[86,94,102],balada:[60,70,80],lofi:[70,80,90],bossa:[80,94,108]},RS_TIER_N=['devagar','médio','rápido'];
-function rsSong(style,i){if(style==='imp') return IMP[i]?Object.assign({},IMP[i],{i:i}):null;const seed=hash('rs-'+style+'-'+i);const r=hgRng(seed);const N=RS_NAMES[style];const name=N[0][i%10]+' '+N[1][Math.floor(i/10)%5];
+function rsSong(style,i){if(style==='imp') return IMP[i]?Object.assign({},IMP[i],{i:i}):null;if(style==='rock') return rkStyleSong(i);const seed=hash('rs-'+style+'-'+i);const r=hgRng(seed);const N=RS_NAMES[style];const name=N[0][i%10]+' '+N[1][Math.floor(i/10)%5];
   const minor=style==='balada'?r()<.5:style==='lofi'?r()<.6:style==='bossa'?r()<.4:style==='reggaeton'?r()<.9:style==='rock'?r()<.35:r()<.2;const bpm=(r(),(RS_TIER_BPM[style]||[90,100,110])[i%3]);
   const key=[0,2,4,5,7,9,10][Math.floor(r()*7)];const P=RS_PROG[style][minor?'m':'M'];const pick=()=>P[Math.floor(r()*P.length)];
   return {id:style+'-'+i,style,i,name,bpm,root:48+key,minor,seed,pv:pick(),pc:pick(),pb:pick()}}
 function rsAll(style){if(style==='imp') return IMP.map(function(x,i){return Object.assign({},x,{i:i})});return [0,1,2].map(i=>rsSong(style,i))}
 /* arranjo: seções, bateria, baixo, acordes e melodia */
-function rsArrange(S,short,minSec){const r=hgRng(S.seed^0x9e3779b9);const st=60/S.bpm/4;const scale=S.minor?RS_MIN:RS_MAJ;
+function rsArrange(S,short,minSec){if(S.style==='rock'&&S.rk!=null) return rkArrange(S,short,minSec);const r=hgRng(S.seed^0x9e3779b9);const st=60/S.bpm/4;const scale=S.minor?RS_MIN:RS_MAJ;
   let secs;if(minSec&&!short){secs=[['intro',2]];let tot=2;const cyc=[['verso',8],['refrao',8],['verso',8],['refrao',8],['ponte',4],['refrao',8]];for(let k=0;tot*16*st<minSec;k++){const c=cyc[k%cyc.length];secs.push(c);tot+=c[1]}secs.push(['fim',2])}
   else secs=short?[['intro',2],['verso',8],['refrao',8],['refrao',8],['fim',2]]:[['intro',2],['verso',8],['refrao',8],['verso',8],['refrao',8],['ponte',4],['refrao',8],['fim',2]];
   const ev=[],mel=[],drums=[],chords=[];let bar=0;const lead=1;const T=(b,s)=>(lead+b)*16*st+s*st;
@@ -199,6 +199,115 @@ function rsArrange(S,short,minSec){const r=hgRng(S.seed^0x9e3779b9);const st=60/
   mel.sort((a,b)=>a.t-b.t);drums.sort((a,b)=>a.t-b.t);ev.sort((a,b)=>a.t-b.t);
   const pre=[];for(let s=0;s<4;s++) pre.push({t:s*4*st,k:'click',v:s?.6:1});
   return {st,mel,drums,ev:pre.concat(ev),chords,dur:T(bar,0)+1.5,bars:bar,lead}}
+/* ===== ROCK escrito à mão (v2): 3 músicas com riff, baixo, guitarra base (palm mute / acorde aberto), bateria com viradas e melodia de refrão =====
+   Cada música é uma lista de seções; cada seção tem a progressão (graus da escala, 4 compassos), padrões de 16 passos (semicolcheias) de bateria/baixo/guitarra e a melodia
+   escrita em graus RELATIVOS ao acorde do compasso: [passo, grau, duração em passos]. Grau 0 = fundamental, 2 = terça, 4 = quinta, 7 = oitava. */
+const RK_DEF=[
+ {name:'Estrada Sem Freio',bpm:100,key:4,/* mi menor */ chord:{verso:[0,6,5,6],refrao:[0,5,2,6],ponte:[5,5,6,6]},
+  drum:{intro:['x.......x.......|........|x.x.x.x.x.x.x.x.'],
+   verso:['x.......x.x.....|....s.......s...|x.x.x.x.x.x.x.x.','x.......x.x...x.|....s.......s...|x.x.x.x.x.x.x.xo'],
+   refrao:['x.x.....x.x.....|....s.......s...|r.r.r.r.r.r.r.r.','x.x...x.x.x.....|....s.......s...|r.r.r.r.r.r.r.r.'],
+   ponte:['x.....x...x.....|........s.......|r...r...r...r...']},
+  bass:{intro:'0.0.0.0.0.0.0.0.',verso:'0.0.0.0.0.0.0.n.',refrao:'0.0.c.0.0.0.c.0.',ponte:'0.......0.......'},
+  gtr:{intro:'M.m.m.m.M.m.m.m.',verso:'M.m.m.m.M.m.m.m.',refrao:'o.......o.o.o...',ponte:'o...............'},
+  mel:{verso:[[[0,4,3],[4,2,2],[6,4,2],[8,7,6]],[[0,4,3],[4,2,2],[6,4,2],[8,0,6]],[[0,4,2],[2,2,2],[4,0,4],[8,2,4],[12,4,2]],[[0,4,6],[8,7,8]]],
+   refrao:[[[0,4,4],[4,7,4],[8,9,6],[14,7,2]],[[0,7,4],[4,7,2],[6,4,2],[8,2,8]],[[0,4,4],[4,7,4],[8,9,6],[14,11,2]],[[0,9,4],[4,7,4],[8,7,8]]],
+   ponte:[[[0,7,16]],[[0,4,8],[8,2,8]],[[0,4,16]],[[0,7,8],[8,9,8]]]}},
+ {name:'Trovão de Garagem',bpm:120,key:9,/* lá menor */ chord:{verso:[0,0,5,6],refrao:[5,6,0,0],ponte:[3,3,6,6]},
+  drum:{intro:['x.......x.......|........|x.x.x.x.x.x.x.x.'],
+   verso:['x.....x.x.x.....|....s.......s...|x.x.x.x.x.x.x.x.','x.....x.x.x...x.|....s.......s...|x.x.x.x.x.x.x.xo'],
+   refrao:['x.x...x.x.x...x.|....s.......s...|r.r.r.r.r.r.r.r.','x.xx..x.x.x...x.|....s.......s...|r.r.r.r.r.r.r.r.'],
+   ponte:['x.....x...x.....|........s.......|x.x.x.x.x.x.x.x.']},
+  bass:{intro:'0.0.0.0.0.0.0.0.',verso:'0..0..0.0..0..7.',refrao:'0.0.0.0.0.0.0.n.',ponte:'0.0.0.0.0.0.0.0.'},
+  gtr:{intro:'M.m.M.m.m.m.M.m.',verso:'M.m.M.m.m.m.M.m.',refrao:'o.o.o.o.o.o.o.o.',ponte:'m.m.m.m.m.m.m.m.'},
+  mel:{verso:[[[0,0,2],[2,2,2],[4,4,4],[10,2,2],[12,0,4]],[[0,0,2],[2,2,2],[4,4,4],[10,5,2],[12,4,4]],[[0,4,2],[2,5,2],[4,7,4],[10,5,2],[12,4,4]],[[0,2,4],[4,4,4],[8,2,8]]],
+   refrao:[[[0,7,4],[4,7,2],[6,9,2],[8,7,4],[12,4,4]],[[0,7,4],[4,6,2],[6,7,2],[8,9,8]],[[0,7,4],[4,7,2],[6,9,2],[8,11,4],[12,9,4]],[[0,7,4],[4,4,4],[8,0,8]]],
+   ponte:[[[0,4,16]],[[0,2,8],[8,4,8]],[[0,4,8],[8,7,8]],[[0,4,4],[4,2,4],[8,0,8]]]}},
+ {name:'Motor de Fogo',bpm:140,key:2,/* ré menor */ chord:{verso:[0,0,6,5],refrao:[0,3,5,6],ponte:[3,3,6,6]},
+  drum:{intro:['x.x.....x.......|....s...|x.x.x.x.x.x.x.x.'],
+   verso:['x.x.....x.x.....|....s.......s...|x.x.x.x.x.x.x.x.','x.x.....x.x...x.|....s.......s...|x.x.x.x.x.x.x.xo'],
+   refrao:['x.x...x.x.x...x.|....s.......s...|r.r.r.r.r.r.r.r.','x.x...x.x.x...x.|....s.......s.s.|r.r.r.r.r.r.r.r.'],
+   ponte:['x.......x.......|....s.......s...|x...x...x...x...']},
+  bass:{intro:'0.0.0.0.0.0.0.0.',verso:'0.0.0.0.0.0.0.0.',refrao:'0.0.c.0.0.0.c.0.',ponte:'0.......0.......'},
+  gtr:{intro:'M.m.m.m.M.m.m.m.',verso:'M.m.m.m.m.m.m.m.',refrao:'o...o...o...o...',ponte:'o.......o.......'},
+  mel:{verso:[[[0,4,2],[2,4,2],[4,5,2],[6,4,2],[8,2,4],[12,4,4]],[[0,4,2],[2,4,2],[4,5,2],[6,4,2],[8,2,4],[12,0,4]],[[0,2,2],[2,2,2],[4,4,2],[6,2,2],[8,0,4],[12,2,4]],[[0,4,4],[4,2,4],[8,0,8]]],
+   refrao:[[[0,7,4],[4,9,4],[8,11,4],[12,9,4]],[[0,7,4],[4,7,2],[6,9,2],[8,7,8]],[[0,9,4],[4,11,4],[8,9,4],[12,7,4]],[[0,7,4],[4,4,4],[8,0,8]]],
+   ponte:[[[0,7,16]],[[0,4,16]],[[0,7,8],[8,9,8]],[[0,11,16]]]}}
+];
+const RK_SCALE_MIN=[0,2,3,5,7,8,10];
+function rkStyleSong(i){const D=RK_DEF[i%3];return {id:'rock-'+i,style:'rock',i:i,name:D.name,bpm:D.bpm,root:48+D.key,minor:true,seed:hash('rk-'+i),rk:i,pv:[0,6,5,6],pc:[0,5,2,6],pb:[5,5,6,6]}}
+/* arranjo do rock: devolve o mesmo formato de rsArrange ({st,mel,drums,ev,chords,dur,bars,lead}) */
+function rkArrange(S,short,minSec){const D=RK_DEF[S.rk||0];const st=60/S.bpm/4;const sc=RK_SCALE_MIN;
+  let secs;if(minSec&&!short){secs=[['intro',2]];let tot=2;const cyc=[['verso',8],['refrao',8],['verso',8],['refrao',8],['ponte',4],['refrao',8]];for(let k=0;tot*16*st<minSec;k++){const c=cyc[k%cyc.length];secs.push(c);tot+=c[1]}secs.push(['fim',2])}
+  else secs=short?[['intro',2],['verso',8],['refrao',8],['refrao',8],['fim',2]]:[['intro',2],['verso',8],['refrao',8],['verso',8],['refrao',8],['ponte',4],['refrao',8],['fim',2]];
+  const ev=[],mel=[],drums=[],chords=[];let bar=0;const lead=1;const T=(b,s)=>(lead+b)*16*st+s*st;
+  const gtrRoot=semi=>40+((((S.root+semi)-40)%12)+12)%12; /* fundamental da guitarra na região grave (mi2 a ré♯3) */
+  const pitchOf=idx=>S.root+12+sc[((idx%7)+7)%7]+12*Math.floor(idx/7);
+  const dstep=(str,i)=>{const m=str.split('|');return {k:m[0],s:m[1],h:m[2]}};
+  let secSeen={};
+  secs.forEach(([kind,n],si)=>{const cnt=(secSeen[kind]=(secSeen[kind]||0)+1)-1;
+    const prog=D.chord[kind==='fim'||kind==='intro'?'verso':kind];const degI=b=>kind==='intro'||kind==='fim'?0:prog[b%4];
+    for(let b=0;b<n;b++){const di=degI(b),semi=sc[((di%7)+7)%7];const B=bar+b;const sectionStart=b===0,last=b===n-1;const nextDi=(b+1<n)?degI(b+1):di;const nextSemi=sc[nextDi%7];
+      chords.push({t:T(B,0),ms:[semi,semi+3,semi+7].map(x=>S.root+12+x),d:16*st,deg:semi,bar:B,kind});
+      const kd=kind==='intro'?'intro':kind;
+      /* ---- bateria ---- */
+      const D1=(s,l,snd,v)=>drums.push({t:T(B,s),lane:l,snd,v:v==null?1:v,bar:B,kind});
+      if(kind==='fim'){if(b===0){D1(0,0,'kick');D1(0,2,'crash')}}
+      else if(kind==='intro'&&b===0){/* só a guitarra */}
+      else{const pats=D.drum[kd]||D.drum.verso;const P=dstep(pats[b%pats.length]);const filler=(b===n-1)?'big':(b%4===3&&kind!=='intro')?'small':null;
+        for(let s=0;s<16;s++){const kc=P.k[s],sc2=P.s[s],hc=(P.h||'')[s];const inFill=filler&&s>=(filler==='big'?8:12);
+          if(kc==='x'&&!(inFill&&filler==='big'&&s>=8)) D1(s,0,'kick',s%8===0?1:.85);
+          if(sc2==='s'&&!inFill) D1(s,1,'snare',1);
+          if(!inFill){if(sectionStart&&si>0&&s===0) continue;if(hc==='x') D1(s,2,'hhc',s%4===0?.85:.55);else if(hc==='o') D1(s,2,'hho',.7);else if(hc==='r') D1(s,2,'ride',s%4===0?.8:.55)}}
+        if(sectionStart&&si>0) D1(0,2,'crash',1);
+        if(filler==='big'){[[8,1,'snare'],[10,3,'tom1'],[12,3,'tom2'],[14,3,'floor']].forEach(([s,l,sd])=>D1(s,l,sd,.95));D1(15,1,'snare',.7)}
+        else if(filler==='small'){[[12,1,'snare'],[14,3,'tom1']].forEach(([s,l,sd])=>D1(s,l,sd,.85))}
+        else if(kind==='intro'&&b===1){D1(12,1,'snare',.8);D1(14,1,'snare',.9)}}
+      /* ---- baixo ---- */
+      if(kind!=='fim'&&!(kind==='intro'&&b===0)){const bp=D.bass[kd]||D.bass.verso;const hits=[];for(let s=0;s<16;s++) if(bp[s]!=='.') hits.push(s);
+        hits.forEach((s,hi)=>{const ch=bp[s];let m=S.root+semi-12;if(ch==='c') m+=12;else if(ch==='7') m+=7;else if(ch==='n') m=S.root+nextSemi-12;const nx=hi+1<hits.length?hits[hi+1]:16;const ds=Math.min(nx-s,ch==='n'?2:8);
+          ev.push({t:T(B,s),k:'rkb',m,d:Math.max(.06,ds*st*(ds<=2?.85:.92)),v:s%4===0?1:.85})})}
+      /* ---- guitarra base ---- */
+      if(kind==='fim'){if(b===0) ev.push({t:T(B,0),k:'rgp',m:gtrRoot(semi),d:st*14,v:1,mu:false})}
+      else{const gp=D.gtr[kd]||D.gtr.verso;const hits=[];for(let s=0;s<16;s++) if(gp[s]!=='.') hits.push(s);
+        hits.forEach((s,hi)=>{const ch=gp[s];const nx=hi+1<hits.length?hits[hi+1]:16;const mu=ch==='m'||ch==='M';ev.push({t:T(B,s),k:'rgp',m:gtrRoot(semi),d:Math.max(.08,(nx-s)*st*(mu?.6:1)),v:ch==='M'?1:ch==='m'?.72:.95,mu})})}
+      /* ---- melodia (graus relativos ao acorde) ---- */
+      if((kind==='verso'||kind==='refrao'||kind==='ponte')){const M=D.mel[kind];const tpl=M[b%4];let rootIdx=di;if(rootIdx>3) rootIdx-=7;const base=0;
+        tpl.forEach(([s,rel,ds])=>{if(last&&s===0&&false) return;let idx=rootIdx+base+rel;if(kind==='refrao') idx=rootIdx+base+rel-0;
+          mel.push({t:T(B,s),m:pitchOf(idx),idx,d:ds*st,ds,bar:B,step:s,kind})});
+        if(last&&kind!=='ponte'){/* o último compasso da seção termina na fundamental, no tempo forte */}}
+    }
+    bar+=n});
+  mel.sort((a,b)=>a.t-b.t);drums.sort((a,b)=>a.t-b.t);ev.sort((a,b)=>a.t-b.t);
+  const pre=[];for(let s=0;s<4;s++) pre.push({t:s*4*st,k:'click',v:s?.6:1});
+  return {st,mel,drums,ev:pre.concat(ev),chords,dur:T(bar,0)+1.5,bars:bar,lead}}
+/* ---------- sons do rock ---------- */
+let RK_CUR=null;function rkCurve(){if(!RK_CUR){const n=2048,cu=new Float32Array(n);for(let i=0;i<n;i++){const x=i/n*2-1;cu[i]=Math.tanh(x*6.5)*.92+Math.tanh(x*18)*.08}RK_CUR=cu}return RK_CUR}
+/* acorde de força (fundamental + quinta + oitava), distorcido, com caixa de som (filtro) e palm mute (curto e seco) */
+function rkPower(root,t,d,v,mute){const c=AE.get();const out=c.createGain();const pk=c.createBiquadFilter();pk.type='peaking';pk.frequency.value=1700;pk.gain.value=5;pk.Q.value=.9;
+  const lo=c.createBiquadFilter();lo.type='lowshelf';lo.frequency.value=180;lo.gain.value=3;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=mute?2300:3300;lp.Q.value=.6;
+  const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=85;const ws=c.createWaveShaper();ws.curve=rkCurve();ws.oversample='2x';
+  const pre=c.createGain();pre.gain.value=.55;const amp=c.createGain();const lvl=(v||.8)*(mute?.30:.26);
+  const dur=mute?Math.min(Math.max(d,.07),.13):Math.max(d,.1);
+  amp.gain.setValueAtTime(0,t);amp.gain.linearRampToValueAtTime(lvl,t+.004);
+  if(mute){amp.gain.exponentialRampToValueAtTime(lvl*.35,t+.04);amp.gain.setTargetAtTime(0,t+dur*.6,.025)}
+  else{amp.gain.setTargetAtTime(lvl*.62,t+.012,.18);amp.gain.setTargetAtTime(0,t+dur,.07)}
+  [[0,0],[7,0],[12,0]].forEach(([iv],k)=>{const f=440*Math.pow(2,(root+iv-69)/12);[-7,7].forEach(dt=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt+(k?0:0);const og=c.createGain();og.gain.value=k===0?1:k===1?.8:.55;o.connect(og);og.connect(pre);o.start(t);o.stop(t+dur+.5)})});
+  pre.connect(hp);hp.connect(ws);ws.connect(lo);lo.connect(pk);pk.connect(lp);lp.connect(amp);amp.connect(out);out.connect(AE.master);const s=c.createGain();s.gain.value=mute?.05:.18;amp.connect(s);s.connect(AE.rev)}
+/* guitarra solo: serra + vibrato que entra devagar + um pouco de eco (reverb) */
+function rkLead(m,t,d,v){const c=AE.get();const f=440*Math.pow(2,(m-69)/12);const o=c.createOscillator(),o2=c.createOscillator();o.type='sawtooth';o2.type='square';o.frequency.value=f;o2.frequency.value=f;o2.detune.value=6;
+  const vib=c.createOscillator(),vg=c.createGain();vib.frequency.value=5.4;vg.gain.setValueAtTime(0,t);vg.gain.linearRampToValueAtTime(11,t+Math.max(.25,d*.7));vib.connect(vg);vg.connect(o.detune);vg.connect(o2.detune);
+  const m2=c.createGain();m2.gain.value=.35;const ws=c.createWaveShaper();ws.curve=rkCurve();const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3600;const pk=c.createBiquadFilter();pk.type='peaking';pk.frequency.value=2400;pk.gain.value=4;pk.Q.value=1.1;
+  const pre=c.createGain();pre.gain.value=.5;const g=c.createGain();const lv=(v||.6)*.2,dd=Math.max(.1,d||.3);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(lv,t+.006);g.gain.setTargetAtTime(lv*.7,t+.04,.3);g.gain.setTargetAtTime(0,t+dd,.07);
+  o.connect(pre);o2.connect(m2);m2.connect(pre);pre.connect(ws);ws.connect(pk);pk.connect(lp);lp.connect(g);g.connect(AE.master);const s=c.createGain();s.gain.value=.3;g.connect(s);s.connect(AE.rev);
+  [o,o2,vib].forEach(x=>{x.start(t);x.stop(t+dd+.6)})}
+/* baixo elétrico: corpo (seno + triângulo) com um "dente" de serra filtrado que cai rápido */
+function rkBass(m,t,d,v){const c=AE.get();const f=440*Math.pow(2,(m-69)/12);const g=c.createGain();const lv=(v||.8)*.62,dd=Math.max(.07,d||.2);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(lv,t+.005);g.gain.setTargetAtTime(lv*.62,t+.03,.12);g.gain.setTargetAtTime(0,t+dd,.05);
+  const o=c.createOscillator();o.type='sine';o.frequency.value=f;const o2=c.createOscillator();o2.type='triangle';o2.frequency.value=f*2;const og=c.createGain();og.gain.value=.22;
+  const sw=c.createOscillator();sw.type='sawtooth';sw.frequency.value=f;const sf=c.createBiquadFilter();sf.type='lowpass';sf.Q.value=1.2;sf.frequency.setValueAtTime(1500,t);sf.frequency.exponentialRampToValueAtTime(260,t+.12);const sg=c.createGain();sg.gain.value=.34;
+  o.connect(g);o2.connect(og);og.connect(g);sw.connect(sf);sf.connect(sg);sg.connect(g);g.connect(AE.master);
+  [o,o2,sw].forEach(x=>{x.start(t);x.stop(t+dd+.4)})}
 /* ---------- som ---------- */
 function rzGuitar(m,t,d,v,clean){const c=AE.get();t=t||c.currentTime;const out=c.createGain();out.connect(AE.master);const o=c.createOscillator(),o2=c.createOscillator();o.type='sawtooth';o2.type='square';o.frequency.value=440*Math.pow(2,(m-69)/12);o2.frequency.value=o.frequency.value*1.005;
   const ws=c.createWaveShaper();if(!rzGuitar.curve){const n=1024,cu=new Float32Array(n);for(let i=0;i<n;i++){const x=i/n*2-1;cu[i]=Math.tanh(x*3.2)}rzGuitar.curve=cu}ws.curve=rzGuitar.curve;
@@ -207,15 +316,15 @@ function rzGuitar(m,t,d,v,clean){const c=AE.get();t=t||c.currentTime;const out=c
 function rzSynth(ms,t,d,v){const c=AE.get();ms.forEach(m=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=440*Math.pow(2,(m-69)/12);const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1600;const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime((v||.5)*.05,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+Math.max(.08,d));o.connect(lp);lp.connect(g);g.connect(AE.master);o.start(t);o.stop(t+d+.1)})}
 function rzVoice(m,t,d,v,pan){const c=AE.get();t=t||c.currentTime;const o=c.createOscillator();o.type='square';o.frequency.value=440*Math.pow(2,(m-69)/12);const f1=c.createBiquadFilter();f1.type='bandpass';f1.frequency.value=900+((m*37)%5)*180;f1.Q.value=2.5;const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime((v||.6)*.22,t+.01);g.gain.setTargetAtTime(0,t+Math.max(.06,d||.15),.05);
   let node=g;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=pan||0;g.connect(p);node=p}o.connect(f1);f1.connect(g);node.connect(AE.master);o.start(t);o.stop(t+(d||.15)+.4)}
-function rzPlayEv(e,at,mute){switch(e.k){case 'click':AE.drum('click',at,e.v);break;case 'bass':AE.noteOn(e.m,.55,at);AE.noteOff(e.m,at+e.d);break;
+function rzPlayEv(e,at,mute){switch(e.k){case 'click':AE.drum('click',at,e.v);break;case 'rgp':rkPower(e.m,at,e.d,e.v,e.mu);break;case 'rkb':rkBass(e.m,at,e.d,e.v);break;case 'bass':AE.noteOn(e.m,.55,at);AE.noteOff(e.m,at+e.d);break;
   case 'chord':if(e.sty==='pop'||e.sty==='balada'||e.sty==='lofi'||e.sty==='bossa'){e.ms.forEach(m=>{AE.noteOn(m,.32,at);AE.noteOff(m,at+e.d)})}else if(e.sty==='reggaeton'){e.ms.forEach(m=>{AE.noteOn(m+12,.18,at);AE.noteOff(m+12,at+e.d*.5)})}break;
   case 'stab':rzSynth(e.ms,at,e.d,.7);break;case 'pchord':if(!mute.guitar) rzGuitar(e.m-12,at,e.d,e.v,false);break;
-  case 'drum':AE.drum(e.snd,at,e.v);break;case 'lead':if(RZ.inst==='piano'&&RZ.game==='hero'){AE.noteOn(e.m,.45,at);AE.noteOff(e.m,at+e.d)}else rzGuitar(e.m,at,e.d,.32,RZ.song&&RZ.song.style!=='rock');break;case 'voice':rzVoice(e.m,at,e.d,.55,-.5);break}}
+  case 'drum':AE.drum(e.snd,at,e.v);break;case 'lead':if(RZ.inst==='piano'&&RZ.game==='hero'){AE.noteOn(e.m,.45,at);AE.noteOff(e.m,at+e.d)}else if(RZ.song&&RZ.song.style==='rock') rkLead(e.m,at,e.d,.8);else rzGuitar(e.m,at,e.d,.32,true);break;case 'voice':rzVoice(e.m,at,e.d,.55,-.5);break}}
 
 /* ===== jogos ===== */
 /* ================= jogos de ritmo: Palco (guitarra, bateria, piano), Beatstar e Setinhas ================= */
 const RZ={acc:null,tier:1,game:'beat',mode:'ritmo',modeEff:'ritmo',keys:4,maxLen:120,inst:'guitarra',diff:'medio',style:'imp',song:null,phase:'menu',chart:[],bg:[],A:null,t0:0,ptr:0,iv:0,raf:0,cv:null,dpr:1,stats:null,held:new Set(),press:new Map(),fx:[],pops:[],flash:{},pauseS:0,health:.5,q:'',fold:'',sel:null,vis:[],tl:null,kn:{bateria:4,piano:7},lives:3,badf:{},cal:null,howFrom:'menu'};
-const RZ_GAMES=[['beat','Beat Hero','batidas e percussão da música','#7a1226'],['tiles','Piano Hero','a melodia: voz, guitarra, teclado…','#1f5a63']];
+const RZ_GAMES=[['beat','Beat Hero','batidas e percussão da música','#7a1226'],['tiles','Na Batida','toque a melodia no ritmo da música','#1f5a63']];
 const RZ_GTR=[['#5fbf6a','A'],['#e2554f','S'],['#f2c14e','D'],['#5b8dd6','F'],['#ff9d4a','G']];
 /* cores fixas por peça: bumbo verde, caixa vermelho, chimbal azul, tom roxo, prato dourado */
 const RZ_C_BUMBO='#3fae5a',RZ_C_CAIXA='#e2554f',RZ_C_CHIMBAL='#5b8dd6',RZ_C_TOM='#a77bff',RZ_C_PRATO='#e0b043';
@@ -235,7 +344,10 @@ const RZ_THEMES={
   poster:{n:'Pôster',bg:['#14284b','#0d1b36'],hw:['rgba(8,16,38,.5)','rgba(10,22,52,.97)'],line:'rgba(251,243,230,.4)',beat:'rgba(251,243,230,.3)',beat2:'rgba(251,243,230,.12)',txt:'#fff3d6',lane:['rgba(255,255,255,.04)','rgba(251,243,230,.07)'],hit:'rgba(255,255,255,.8)',floor:'#0d1b36',tile:'#fbf3e6',dots:'rgba(251,243,230,.2)',bands:true}
 };
 const RZ_THEME_KEY='bt-rz-theme';
-function rzThemeId(){try{const t=localStorage.getItem(RZ_THEME_KEY);return RZ_THEMES[t]?t:'colagem'}catch(e){return 'colagem'}}
+/* Beat Hero: SEMPRE o modo Vinil (parece Guitar Hero). Na Batida (piano): estilo Clássico (blocos pretos, fundo claro) ou Colorido (blocos coloridos, fundo escuro). */
+const RZ_TILES_KEY='bt-rz-tiles';
+function rzTilesStyle(){try{return localStorage.getItem(RZ_TILES_KEY)==='colorido'?'colorido':'classico'}catch(e){return 'classico'}}
+function rzThemeId(){if(RZ.game==='beat') return 'vinil';if(RZ.game==='tiles') return 'colagem';try{const t=localStorage.getItem(RZ_THEME_KEY);return RZ_THEMES[t]?t:'colagem'}catch(e){return 'colagem'}}
 function rzTh(){return RZ_THEMES[rzThemeId()]}
 /* cor do aviso (Perfeito, Ótimo, Errou…) que se lê em cima do fundo do tema */
 function rzPopCol(res){const light=rzThemeId()==='colagem';return (light?{pp:'#0b6fa8',perfect:'#142036',great:'#1f6b3f',good:'#7a4a10',miss:'#a51a28'}:{pp:'#7fe7ff',perfect:'#F3E7D4',great:'#7fb77e',good:'#e8c07a',miss:'#f0606c'})[res]||'#fff'}
@@ -298,7 +410,7 @@ function rzLeadTrim(A,notes,bg,song){if(song.trim||!notes.length) return{notes,b
   const first=Math.min.apply(null,notes.map(n=>n.t));const bars=Math.floor((first-cl+1e-6)/bar);if(bars<1) return{notes,bg};
   const sh=bars*bar,a=cl+sh;
   return{notes:notes.map(n=>Object.assign({},n,{t:n.t-sh})),bg:bg.filter(e=>e.k==='click'||e.t>=a-.001).map(e=>e.k==='click'?e:Object.assign({},e,{t:e.t-sh})),shifted:sh}}
-function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil';const A=S.arr?Object.assign({},S.arr,{mel:S.arr.mel.map(n=>Object.assign({},n)),drums:S.arr.drums.map(d=>Object.assign({},d)),ev:S.arr.ev.slice(),chords:(S.arr.chords||[]).slice()}):rsArrange(S,RZ.game!=='hero'&&RZ.game!=='beat',RZ.game==='beat'?125:0);RZ.A=A;const st=A.st;let notes=[],bg=A.ev.slice();
+function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil';const A=S.arr?Object.assign({},S.arr,{mel:S.arr.mel.map(n=>Object.assign({},n)),drums:S.arr.drums.map(d=>Object.assign({},d)),ev:S.arr.ev.slice(),chords:(S.arr.chords||[]).slice()}):rsArrange(S,RZ.game!=='hero'&&RZ.game!=='beat'&&RZ.game!=='tiles',RZ.game==='beat'||RZ.game==='tiles'?125:0);RZ.A=A;const st=A.st;let notes=[],bg=A.ev.slice();
   const melF=A.mel.filter(n=>dif||n.step%(easy?4:2)===0).map(n=>Object.assign({},n));
   if(RZ.game==='hero'){
     if(RZ.inst==='guitarra'){notes=melF;rzPhraseLanes(notes,5,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.9});
@@ -460,25 +572,25 @@ function rzStarBar(g,W,dpr){const st=RZ.stats;if(!st) return;const judged=st.pp+
   g.font='800 '+(12*dpr)+'px system-ui';const t=judged?Math.round(cur*100)+'%':'—';g.lineWidth=4*dpr;g.strokeStyle='rgba(20,32,54,.9)';g.strokeText(t,W/2,y+bh+15*dpr);g.fillStyle='#fff';g.fillText(t,W/2,y+bh+15*dpr);g.restore()}
 
 /* ---------- Piano Tiles ---------- */
-function rzDrawTiles(g,W,H,dpr){const s=rzSNow(),now=performance.now();const hitY=H*.8,lw=W/4,sp=H*.5*RZ_WIN[RZ.diff].spd;
-  g.fillStyle=rzTh().tile;g.fillRect(0,0,W,H);
-  for(let i=0;i<4;i++){g.fillStyle=i%2?'rgba(0,0,0,.035)':'rgba(255,255,255,.35)';g.fillRect(i*lw,0,lw,H)}
-  g.strokeStyle='rgba(0,0,0,.14)';g.lineWidth=dpr;for(let i=1;i<4;i++){g.beginPath();g.moveTo(i*lw,0);g.lineTo(i*lw,H);g.stroke()}
-  g.fillStyle='rgba(47,196,232,.10)';g.fillRect(0,hitY-H*.13,W,H*.22);
-  for(let i=0;i<4;i++){const fl=RZ.flash[i]&&now-RZ.flash[i]<170;if(fl||RZ.held.has(i)){const gr=g.createLinearGradient(0,hitY+H*.1,0,hitY-H*.45);gr.addColorStop(0,'rgba(47,196,232,.38)');gr.addColorStop(1,'rgba(47,196,232,0)');g.fillStyle=gr;g.fillRect(i*lw,hitY-H*.45,lw,H*.55)}
+function rzDrawTiles(g,W,H,dpr){const s=rzSNow(),now=performance.now();const hitY=H*.8,lw=W/4,sp=H*.5*RZ_WIN[RZ.diff].spd;const col=rzTilesStyle()==='colorido',AC=i=>col?RZ_NEON[i%RZ_NEON.length]:'#2fc4e8';
+  if(col){const bgr=g.createLinearGradient(0,0,0,H);bgr.addColorStop(0,'#1a1040');bgr.addColorStop(1,'#0e2a52');g.fillStyle=bgr;g.fillRect(0,0,W,H)}else{g.fillStyle=rzTh().tile;g.fillRect(0,0,W,H)}
+  for(let i=0;i<4;i++){g.fillStyle=col?(i%2?'rgba(255,255,255,.03)':'rgba(255,255,255,.075)'):(i%2?'rgba(0,0,0,.035)':'rgba(255,255,255,.35)');g.fillRect(i*lw,0,lw,H)}
+  g.strokeStyle=col?'rgba(255,255,255,.14)':'rgba(0,0,0,.14)';g.lineWidth=dpr;for(let i=1;i<4;i++){g.beginPath();g.moveTo(i*lw,0);g.lineTo(i*lw,H);g.stroke()}
+  g.fillStyle=col?'rgba(255,255,255,.07)':'rgba(47,196,232,.10)';g.fillRect(0,hitY-H*.13,W,H*.22);
+  for(let i=0;i<4;i++){const fl=RZ.flash[i]&&now-RZ.flash[i]<170;if(fl||RZ.held.has(i)){const gr=g.createLinearGradient(0,hitY+H*.1,0,hitY-H*.45);gr.addColorStop(0,col?AC(i)+'77':'rgba(47,196,232,.38)');gr.addColorStop(1,col?AC(i)+'00':'rgba(47,196,232,0)');g.fillStyle=gr;g.fillRect(i*lw,hitY-H*.45,lw,H*.55)}
     const bd=RZ.badf[i]&&now-RZ.badf[i]<240;if(bd){g.fillStyle='rgba(224,74,85,'+(.4*(1-(now-RZ.badf[i])/240))+')';g.fillRect(i*lw,0,lw,H)}}
-  g.fillStyle='#2fc4e8';g.fillRect(0,hitY-1.5*dpr,W,3*dpr);
-  g.fillStyle='rgba(23,20,27,.45)';g.font='600 '+(11*dpr)+'px system-ui,sans-serif';g.textAlign='left';g.fillText('LINHA DE TOQUE',8*dpr,hitY+H*.045);
+  g.fillStyle=col?'#ffffff':'#2fc4e8';if(col){g.shadowColor='#ffffff';g.shadowBlur=10*dpr}g.fillRect(0,hitY-1.5*dpr,W,3*dpr);g.shadowBlur=0;
+  g.fillStyle=col?'rgba(255,255,255,.5)':'rgba(23,20,27,.45)';g.font='600 '+(11*dpr)+'px system-ui,sans-serif';g.textAlign='left';g.fillText('LINHA DE TOQUE',8*dpr,hitY+H*.045);
   const rr=(x,y,w,h,r)=>{r=Math.min(r,w/2,h/2);g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
   if(s>-1){for(const nt of RZ.chart){const yb=hitY-(nt.t-s)*sp;if(yb<0) break;const h=nt.hf*H,yt=yb-h;if(yt>H) continue;const x=nt.lane*lw+3*dpr,w=lw-6*dpr;
-      if(nt.hit&&!nt.holding){const k=(now-(nt.at||0))/260;if(k<1){g.globalAlpha=1-k;g.fillStyle='#2fc4e8';rr(x,yt,w,h,8*dpr);g.fill();g.globalAlpha=1}continue}
-      g.globalAlpha=nt.res==='miss'?.45:1;const gr=g.createLinearGradient(0,yt,0,yb);gr.addColorStop(0,'#2a2530');gr.addColorStop(1,'#0f0c12');g.fillStyle=nt.res==='miss'?'#e04a55':gr;rr(x,yt,w,h,8*dpr);g.fill();
+      if(nt.hit&&!nt.holding){const k=(now-(nt.at||0))/260;if(k<1){g.globalAlpha=1-k;g.fillStyle=AC(nt.lane);rr(x,yt,w,h,8*dpr);g.fill();g.globalAlpha=1}continue}
+      g.globalAlpha=nt.res==='miss'?.45:1;const gr=g.createLinearGradient(0,yt,0,yb);if(col){gr.addColorStop(0,AC(nt.lane));gr.addColorStop(1,AC(nt.lane)+'aa')}else{gr.addColorStop(0,'#2a2530');gr.addColorStop(1,'#0f0c12')}g.fillStyle=nt.res==='miss'?'#e04a55':gr;if(col&&nt.res!=='miss'){g.shadowColor=AC(nt.lane);g.shadowBlur=14*dpr}rr(x,yt,w,h,8*dpr);g.fill();g.shadowBlur=0;
       if(nt.res!=='miss'){if(nt.star){rzStarMark(g,x,yb-Math.min(h,64*dpr)/2,w,Math.min(h,64*dpr),dpr)}g.fillStyle='rgba(255,255,255,.07)';g.fillRect(x+4*dpr,yt+4*dpr,w-8*dpr,3*dpr);if(nt.sus){g.strokeStyle='rgba(255,255,255,.16)';g.lineWidth=2*dpr;g.setLineDash([6*dpr,8*dpr]);g.beginPath();g.moveTo(x+w/2,yt+14*dpr);g.lineTo(x+w/2,yb-16*dpr);g.stroke();g.setLineDash([])}
-        g.fillStyle='#2fc4e8';g.fillRect(x+6*dpr,yb-7*dpr,w-12*dpr,4*dpr)}
-      if(nt.holding&&yb>hitY){g.save();rr(x,yt,w,h,8*dpr);g.clip();g.fillStyle='rgba(47,196,232,.85)';g.fillRect(x,Math.max(yt,hitY),w,yb-Math.max(yt,hitY));g.restore()}
+        g.fillStyle=col?'rgba(255,255,255,.85)':'#2fc4e8';g.fillRect(x+6*dpr,yb-7*dpr,w-12*dpr,4*dpr)}
+      if(nt.holding&&yb>hitY){g.save();rr(x,yt,w,h,8*dpr);g.clip();g.fillStyle=col?'rgba(255,255,255,.55)':'rgba(47,196,232,.85)';g.fillRect(x,Math.max(yt,hitY),w,yb-Math.max(yt,hitY));g.restore()}
       g.globalAlpha=1}}
-  const pl=RZ.pops.length?RZ.pops[RZ.pops.length-1]:null;if(pl&&now-pl.t<600){const a=1-(now-pl.t)/600;g.globalAlpha=a;g.textAlign='center';g.font='800 '+(20*dpr)+'px system-ui,sans-serif';g.lineWidth=4*dpr;g.strokeStyle='rgba(239,233,220,.95)';const tx=pl.lane*lw+lw/2,ty=hitY-H*.16-(1-a)*18*dpr;g.strokeText(pl.txt,tx,ty);g.fillStyle={pp:'#13a3c2',perfect:'#13a3c2',great:'#3d8f4a',good:'#a77b14',miss:'#d03846'}[pl.res]||'#222';g.fillText(pl.txt,tx,ty);g.globalAlpha=1}
-  if(s>-1&&RZ.A&&s<RZ.A.lead*16*RZ.A.st){const beat=4*RZ.A.st;const cnt=4-Math.floor(Math.max(0,s)/beat);if(cnt>0&&cnt<=4){g.fillStyle='rgba(23,20,27,.82)';g.font='800 '+(70*dpr)+'px system-ui,sans-serif';g.textAlign='center';g.fillText(String(cnt),W/2,H*.42)}}
+  const pl=RZ.pops.length?RZ.pops[RZ.pops.length-1]:null;if(pl&&now-pl.t<600){const a=1-(now-pl.t)/600;g.globalAlpha=a;g.textAlign='center';g.font='800 '+(20*dpr)+'px system-ui,sans-serif';g.lineWidth=4*dpr;g.strokeStyle=col?'rgba(20,10,50,.9)':'rgba(239,233,220,.95)';const tx=pl.lane*lw+lw/2,ty=hitY-H*.16-(1-a)*18*dpr;g.strokeText(pl.txt,tx,ty);g.fillStyle=(col?{pp:'#7fe7ff',perfect:'#ffffff',great:'#7fe7a6',good:'#ffd84a',miss:'#ff7b86'}:{pp:'#13a3c2',perfect:'#13a3c2',great:'#3d8f4a',good:'#a77b14',miss:'#d03846'})[pl.res]||'#222';g.fillText(pl.txt,tx,ty);g.globalAlpha=1}
+  if(s>-1&&RZ.A&&s<RZ.A.lead*16*RZ.A.st){const beat=4*RZ.A.st;const cnt=4-Math.floor(Math.max(0,s)/beat);if(cnt>0&&cnt<=4){g.fillStyle=col?'rgba(255,255,255,.9)':'rgba(23,20,27,.82)';g.font='800 '+(70*dpr)+'px system-ui,sans-serif';g.textAlign='center';g.fillText(String(cnt),W/2,H*.42)}}
   if(RZ.phase==='pause'){g.fillStyle='rgba(13,11,13,.72)';g.fillRect(0,0,W,H);g.fillStyle='#F3E7D4';g.font='800 '+(30*dpr)+'px system-ui,sans-serif';g.textAlign='center';g.fillText('PAUSA',W/2,H*.45)}
   if(s>0&&RZ.A){g.fillStyle='rgba(217,32,49,.9)';g.fillRect(0,0,W*Math.min(1,s/RZ.A.dur),3*dpr)}}
 function rzArrow(g,x,y,r,lane,col,fill){g.save();g.translate(x,y);g.rotate([Math.PI,Math.PI/2,-Math.PI/2,0][lane]);g.beginPath();g.moveTo(r,0);g.lineTo(0,-r);g.lineTo(0,-r*.45);g.lineTo(-r,-r*.45);g.lineTo(-r,r*.45);g.lineTo(0,r*.45);g.lineTo(0,r);g.closePath();if(fill){g.fillStyle=col;g.fill();g.lineWidth=r*.16;g.strokeStyle='rgba(0,0,0,.6)';g.stroke()}else{g.lineWidth=r*.18;g.strokeStyle=col;g.stroke()}g.restore()}
@@ -507,6 +619,8 @@ function rzOptsHTML(){const seg=(act,cur,arr)=>'<div class="segtabs rz-big-tabs"
   return '<div class="rz-row rz-countrow"><span class="rz-lbl">Modo</span>'+seg('rz-mode',RZ.mode,[['ritmo','Ritmo'],['melodia','Melodia']])+'<p class="small muted rz-lanes">'+(RZ.mode==='ritmo'?'você toca o ritmo da bateria da música (bumbo, caixa, chimbal…). se a música não tiver bateria, o app cria um ritmo em cima dela.':'você toca a melodia da música, nota por nota.')+'</p></div>'
    +'<div class="rz-row rz-countrow"><span class="rz-lbl">Teclas</span>'+seg('rz-keys',RZ.keys,[[3,'3'],[4,'4'],[5,'5']])+'<p class="small muted rz-lanes">nunca mais que 2 notas ao mesmo tempo: dá pra jogar só com os polegares.</p></div>'
    +'<div class="rz-row rz-countrow"><span class="rz-lbl">Duração</span>'+seg('rz-len',RZ.maxLen,[[60,'1 min'],[120,'2 min']])+'<p class="small muted rz-lanes">2 min: ganha as ★ que valem pras figurinhas e o dobro de XP.</p></div>'}
+function rzTilesRow(){const cur=rzTilesStyle();const o=[['classico','Clássico','blocos pretos, como o piano tiles','#fbf3e6','#17141b'],['colorido','Colorido','blocos coloridos que brilham','#1a1040','#ff6ad5']];
+  return '<div class="rz-cores" role="group" aria-label="Estilo do Na Batida">'+o.map(v=>'<button type="button" class="rz-cor'+(cur===v[0]?' on':'')+'" data-act="rz-theme" data-v="'+v[0]+'" aria-pressed="'+(cur===v[0])+'"><span class="rz-sw" style="background:linear-gradient(135deg,'+v[3]+' 0 50%,'+v[4]+' 50% 100%)"></span><b>'+v[1]+'</b></button>').join('')+'</div>'}
 function rzThemeRow(){const cur=rzThemeId();return '<div class="rz-cores" role="group" aria-label="Cores do jogo">'+Object.entries(RZ_THEMES).map(([k,v])=>'<button type="button" class="rz-cor'+(cur===k?' on':'')+'" data-act="rz-theme" data-v="'+k+'" aria-pressed="'+(cur===k)+'"><span class="rz-sw" style="background:linear-gradient(135deg,'+v.bg[0]+' 0 50%,'+v.hw[1]+' 50% 100%)"></span><b>'+v.n+'</b></button>').join('')+'</div>'}
 /* seção que abre e fecha pela setinha (menos espaço na tela) */
 /* barrinha das músicas já tocadas: o quanto da precisão você já tem */
@@ -540,9 +654,9 @@ function rzMenu(){const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game)
     h+=rzAcc('ritmo','🎶','Ritmo: '+esc(rzStyleLabel()),cur,'<div class="rz-styles">'+styles.map(([k,l,c])=>'<button type="button" class="rz-st'+(RZ.style===k?' on':'')+'" style="--sc:'+c+'" data-act="rz-style" data-v="'+k+'">'+esc(l)+'</button>').join('')+'</div>'
       +(builtin?'<p class="small muted rz-tierhint">começa devagar e vai ficando mais rápido:</p><div class="rz-tiers">'+[0,1,2].map(function(k){var sg=rsSong(RZ.style,k);var bk=[RZ.game,(RZ.game==='beat')?rzInstKey():'',RZ.diff,sg.id].join('|');var b=R.best[bk];return '<button type="button" class="rz-tier'+(RZ.tier===k?' on':'')+'" data-act="rz-tier" data-v="'+k+'"><span class="rz-lv" aria-hidden="true">'+'▮'.repeat(k+1)+'<i>'+'▮'.repeat(2-k)+'</i></span><b>'+RS_TIER_N[k]+'</b><span class="small">'+sg.bpm+' bpm</span>'+rzPBar(b)+(b?'<span class="rz-b">'+(RZ.game==='beat'?'★'.repeat(b.stars||0):b.grade)+'</span>':'')+'</button>'}).join('')+'</div>':''))}
   h+=rzAcc('ajustes','⚙','Ajustes',(RZ.game==='beat'?RZ.keys+' teclas · ':'')+RZ_WIN[RZ.diff].n+((RZ.game==='beat'||RZ.game==='tiles')?' · '+(RZ.maxLen/60)+' min':''),rzAjustesBody());
-  h+=rzAcc('cores','🎨','Cores',RZ_THEMES[rzThemeId()].n,rzThemeRow());
+  if(RZ.game==='tiles') h+=rzAcc('cores','🎨','Estilo',rzTilesStyle()==='colorido'?'Colorido':'Clássico',rzTilesRow());
   if(builtin){const sg=rsSong(RZ.style,RZ.tier);h+='<button type="button" class="rz-jogar" data-act="rz-play" data-v="'+RZ.tier+'"><span class="rz-jogar-p" aria-hidden="true">▶</span><span><b>JOGAR</b><small>'+esc(sg.name)+' · '+Math.round(sg.bpm*(RZ.tempoPct||100)/100)+' bpm'+((RZ.tempoPct||100)!==100?' ('+RZ.tempoPct+'%)':'')+'</small></span></button>'}
-  if(RZ.game==='tiles') h+='<details class="rz-how2"><summary class="small">como jogar o Piano Hero</summary><section class="panel rz-how"><ol><li>Os blocos pretos descem. Cada bloco é uma nota da melodia.</li><li>Toque na coluna quando o bloco encostar na <b style="color:#2fc4e8">linha azul</b>.</li><li>Bloco comprido: segure até acabar. Deixou passar: perde um ♥ (são 3).</li></ol><button type="button" class="btn btn-sm" data-act="rz-how">Ver com desenho</button></section></details>';
+  if(RZ.game==='tiles') h+='<details class="rz-how2"><summary class="small">como jogar o Na Batida</summary><section class="panel rz-how"><ol><li>Os blocos descem. Cada bloco é uma nota da melodia.</li><li>Toque na coluna quando o bloco encostar na <b style="color:#2fc4e8">linha azul</b>.</li><li>Bloco comprido: segure até acabar. Deixou passar: o combo zera.</li></ol><button type="button" class="btn btn-sm" data-act="rz-how">Ver com desenho</button></section></details>';
   RZ.vis=songs.map(function(x){return x.id});
   if(RZ.style==='imp'&&midiOn()) h+='<div class="rz-row rz-imp"><button type="button" class="btn btn-sm btn-red" data-act="rz-midi">+ importar MIDI</button><span class="small muted">.mid, .midi ou um .zip com vários</span></div>';
 
@@ -565,7 +679,7 @@ function rzMissionMenu(){var M=MISSION;var G=RZ_GAMES.find(function(x){return x[
   var h='<section class="panel rz-mmenu"><span class="tag">'+esc(G[1])+(RZ.game==='beat'?' · '+RZ.keys+' teclas':'')+' · '+RZ_WIN[RZ.diff].n+((RZ.game==='beat'||RZ.game==='tiles')?' · '+(RZ.maxLen/60)+' min':'')+'</span>';
   h+='<h2 class="h2">'+(picks.length>1?'Escolha a música':'Pronto pra tocar?')+'</h2>';
   h+=picks.map(function(p){var sg=rsSong(p[0],p[1]);var st=RS_BUILTIN.filter(function(b){return b[0]===p[0]})[0];return '<button type="button" class="rz-jogar" data-act="rz-mplay" data-s="'+p[0]+'" data-v="'+p[1]+'"><span class="rz-jogar-p" aria-hidden="true">▶</span><span><b>'+(picks.length>1?esc(sg.name):'JOGAR')+'</b><small>'+(picks.length>1?esc(st?st[1]:p[0])+' · '+RS_TIER_N[p[1]]+' · ':esc(sg.name)+' · ')+sg.bpm+' bpm</small></span></button>'}).join('');
-  if(RZ.game==='tiles') h+='<p class="actions"><button type="button" class="btn btn-ghost" data-act="rz-how">como jogar o Piano Hero</button></p>';
+  if(RZ.game==='tiles') h+='<p class="actions"><button type="button" class="btn btn-ghost" data-act="rz-how">como jogar o Na Batida</button></p>';
   return h+'</section>'}
 function rzMissionEnd(){var S=RZ.stats;var G=RZ_GAMES.find(function(x){return x[0]===RZ.game});
   return '<section class="panel rz-end"><span class="tag">'+esc(G[1])+' · '+RZ_WIN[RZ.diff].n+'</span><h2 class="h2">'+esc(RZ.song.name)+'</h2>'
@@ -578,11 +692,11 @@ function rzTilesHowto(){const fromStart=RZ.howFrom==='start';
     +'<rect x="60" y="111" width="30" height="4" fill="#2fc4e8"/><rect x="0" y="118" width="200" height="3" fill="#2fc4e8"/><rect x="0" y="100" width="200" height="30" fill="rgba(47,196,232,.12)"/>'
     +'<text x="100" y="142" text-anchor="middle" font-size="9" fill="#17141b" font-family="system-ui">linha de toque</text><text x="75" y="80" text-anchor="middle" font-size="30">👆</text><path d="M75 82 v-1" stroke="#17141b"/>'
     +'<text x="175" y="132" text-anchor="middle" font-size="8" fill="#fff" font-family="system-ui">segure</text></svg>';
-  return '<section class="panel rz-howto"><span class="tag">Piano Hero</span><h2 class="h2">Como jogar</h2>'+svg
-    +'<ol class="rz-steps"><li><b>Os blocos pretos descem</b> e cada um é uma nota da música. Você toca a melodia.</li>'
+  return '<section class="panel rz-howto"><span class="tag">Na Batida</span><h2 class="h2">Como jogar</h2>'+svg
+    +'<ol class="rz-steps"><li><b>Os blocos descem</b> e cada um é uma nota da música. Você toca a melodia.</li>'
     +'<li><b>Toque na coluna do bloco</b> quando a faixa azul da base dele encostar na <b style="color:#12a3c2">linha azul</b>. Não precisa acertar o bloco em cheio: vale qualquer lugar da coluna.</li>'
     +'<li><b>Bloco comprido?</b> Segure o dedo nele até acabar.</li>'
-    +'<li><b>Se um bloco passar</b> sem você tocar, perde um ♥ (você tem 3). Tocar em coluna vazia só zera o combo.</li>'
+    +'<li><b>Se um bloco passar</b> sem você tocar, o combo zera. Tocar em coluna vazia também.</li>'
     +'<li><b>Nota que você não toca fica muda.</b> A bateria e o baixo seguem tocando sozinhos.</li></ol>'
     +'<p class="small muted">No iPad, apoie as duas mãos e use os polegares. Dá pra tocar com vários dedos ao mesmo tempo. Com teclado: A S D F.</p>'
     +'<div class="actions">'+(fromStart?'<button type="button" class="btn btn-red rz-bigbtn" data-act="rz-go">Entendi, bora tocar</button>':'')+'<button type="button" class="btn btn-ghost" data-act="rz-menu">'+(fromStart?'Voltar':'Voltar ao menu')+'</button></div></section>'}
@@ -610,7 +724,7 @@ function rzApplyTheme(){const id=rzThemeId();try{ROOT.setAttribute('data-rz-them
 function rzRe(){if(route()!=='ritmo') return;rzPreviewStop();setTimeout(rzLockPoll,0);const y=window.scrollY;VIEW().innerHTML=viewRitmo();rzApplyTheme();setPlaying();if(RZ.phase==='play'||RZ.phase==='pause'){rzBind();rzHud()}else window.scrollTo(0,y)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&RZ.phase==='play') rzPause();else if(!document.hidden&&(RZ.phase==='play'||RZ.phase==='pause')) rzWake(true)});
 document.addEventListener('click',ev=>{const a=ev.target.closest('[data-act^="rz-"]');if(!a||route()!=='ritmo') return;const act=a.dataset.act;if(act==='rz-code'){rzCodeSubmit();return}if(act==='rz-code-gen'){OPTS.gate.pedir();rzRe();return}if(act==='rz-code-check'){var cm=$('#rz-code-msg');if(cm) cm.textContent='conferindo…';OPTS.gate.conferir().then(function(ok){if(ok){toast('liberado! 🎉');rzRe()}else if(cm) cm.textContent='ainda não liberou. fala o código pra professora Bea.'}).catch(function(){if(cm) cm.textContent='sem internet agora. tente de novo.'});return}if(act==='rz-prev'){rzPreviewToggle(a);return}if(act==='rz-mtrim'){rzTrimSheet(a.dataset.v);return}if(act==='rz-fig'){rzPreviewStop();showFiguras();return}if(act==='rz-midi'){mPick();return}if(act==='rz-mdel'){mDel(a.dataset.v);return}if(act==='rz-mren'){if(OPTS.onRename) OPTS.onRename(a.dataset.v);return}if(act==='rz-mmov'){if(OPTS.onMove) OPTS.onMove(a.dataset.v);return}if(act==='rz-hall'){var hn=$('#rz-hn'),nm=hn?hn.value.replace(/\s+/g,' ').trim():'';if(!nm){if(hn) hn.focus();return}var S2=RZ.stats,R2=ensureRitmo();R2.lastName=nm;save();var at=nowIso();if(OPTS.hallAdd) OPTS.hallAdd(S2.hallKey,{name:nm,score:S2.score,acc:Math.round(S2.acc*100),grade:S2.grade,stars:S2.stars,at:at});S2.hallDone=true;S2.hallMe=at+nm;rzRe();return}if(act==='rz-mfold'){if(OPTS.onAddFolder) OPTS.onAddFolder();return}if(act==='rz-selt'&&RZ.sel){var sid=a.dataset.v;if(RZ.sel.has(sid)) RZ.sel.delete(sid);else RZ.sel.add(sid);var son=RZ.sel.has(sid);a.classList.toggle('sel',son);var snn=a.querySelector('.rz-n');if(snn) snn.textContent=son?'✓':'○';var sbb=document.querySelector('.rz-selbar b');if(sbb) sbb.textContent=RZ.sel.size+' selecionada(s)';if(!!RZ.sel.size!==!!document.querySelector('[data-act="rz-selmove"]')) rzRe();return}if(act==='rz-selmove'){if(OPTS.onMoveMany&&RZ.sel&&RZ.sel.size) OPTS.onMoveMany([...RZ.sel],function(ok){if(ok){RZ.sel=null;rzRe()}});return}if(act==='rz-fren'){if(OPTS.onRenameFolder) OPTS.onRenameFolder(RZ.fold,function(nn){RZ.fold=nn;rzRe()});return}if(act==='rz-fdel'){if(OPTS.onDelFolder) OPTS.onDelFolder(RZ.fold,function(ok){if(ok){RZ.fold='';rzRe()}});return}
-  if(act==='rz-theme'){try{localStorage.setItem(RZ_THEME_KEY,RZ_THEMES[a.dataset.v]?a.dataset.v:'colagem')}catch(e){}RZ._bgc=null}else if(act==='rz-game'){RZ.game=a.dataset.v;if(RZ.game==='beat'){RZ.mode='ritmo'}RZ.acc=null;rzSaveOpts()}else if(act==='rz-acc'){RZ.acc=RZ.acc===a.dataset.v?null:a.dataset.v}else if(act==='rz-tier'){RZ.tier=Math.max(0,Math.min(2,+a.dataset.v||0));RZ.acc=null;rzSaveOpts()}else if(act==='rz-mode'){RZ.mode=a.dataset.v==='melodia'?'melodia':'ritmo';rzSaveOpts()}else if(act==='rz-keys'){RZ.keys=[3,4,5].indexOf(+a.dataset.v)>=0?+a.dataset.v:4;rzSaveOpts()}else if(act==='rz-len'){RZ.maxLen=[0,60,90,120].indexOf(+a.dataset.v)>=0?+a.dataset.v:120;rzSaveOpts()}else if(act==='rz-inst'){RZ.inst=a.dataset.v}else if(act==='rz-kn'){RZ.kn[RZ.inst]=+a.dataset.v;const R=ensureRitmo();R.kn=Object.assign({},RZ.kn);saveSoon()}
+  if(act==='rz-theme'){try{if(RZ.game==='tiles') localStorage.setItem(RZ_TILES_KEY,a.dataset.v==='colorido'?'colorido':'classico');else localStorage.setItem(RZ_THEME_KEY,RZ_THEMES[a.dataset.v]?a.dataset.v:'colagem')}catch(e){}RZ._bgc=null}else if(act==='rz-game'){RZ.game=a.dataset.v;if(RZ.game==='beat'){RZ.mode='ritmo'}RZ.acc=null;rzSaveOpts()}else if(act==='rz-acc'){RZ.acc=RZ.acc===a.dataset.v?null:a.dataset.v}else if(act==='rz-tier'){RZ.tier=Math.max(0,Math.min(2,+a.dataset.v||0));RZ.acc=null;rzSaveOpts()}else if(act==='rz-mode'){RZ.mode=a.dataset.v==='melodia'?'melodia':'ritmo';rzSaveOpts()}else if(act==='rz-keys'){RZ.keys=[3,4,5].indexOf(+a.dataset.v)>=0?+a.dataset.v:4;rzSaveOpts()}else if(act==='rz-len'){RZ.maxLen=[0,60,90,120].indexOf(+a.dataset.v)>=0?+a.dataset.v:120;rzSaveOpts()}else if(act==='rz-inst'){RZ.inst=a.dataset.v}else if(act==='rz-kn'){RZ.kn[RZ.inst]=+a.dataset.v;const R=ensureRitmo();R.kn=Object.assign({},RZ.kn);saveSoon()}
   else if(act==='rz-how'){RZ.howFrom='menu';RZ.phase='howto'}else if(act==='rz-go'){const R=ensureRitmo();R.tilesSeen=1;if(MISSION) ADV_SEEN=true;save();rzStart(RZ.song);return}
   else if(act==='rz-cal'){rzCalStart();return}else if(act==='rz-calx'){clearTimeout(RZ.calT);RZ.cal=null;AE.hush()}else if(act==='rz-diff'){RZ.diff=a.dataset.v;rzSaveOpts()}else if(act==='rz-fold'){RZ.fold=a.dataset.v==='__all__'?'':a.dataset.v}else if(act==='rz-selon'){RZ.sel=new Set()}else if(act==='rz-seloff'){RZ.sel=null}else if(act==='rz-selnone'){RZ.sel=new Set()}else if(act==='rz-selall'){RZ.vis.forEach(function(i){RZ.sel.add(i)})}else if(act==='rz-selt'){if(RZ.sel.has(a.dataset.v)) RZ.sel.delete(a.dataset.v);else RZ.sel.add(a.dataset.v)}else if(act==='rz-style'){RZ.style=a.dataset.v;if(RZ.style==='imp') RZ.acc=null;rzSaveOpts()}
   else if(act==='rz-mplay'&&MISSION){RZ.style=a.dataset.s;RZ.tier=Math.max(0,Math.min(2,+a.dataset.v||0));const sg=rsSong(RZ.style,RZ.tier);if(RZ.game==='tiles'&&!ensureRitmo().tilesSeen&&!ADV_SEEN){RZ.song=sg;RZ.howFrom='start';RZ.phase='howto';rzRe();window.scrollTo(0,0);return}rzStart(sg);return}
@@ -1243,5 +1357,9 @@ function unmount(){if(!ROOT) return;clearInterval(RZ.lockT);RZ.lockT=0;try{rzPre
 global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,refresh:refresh,version:'1.4',unlock:function(){try{AE.unlock()}catch(e){}},_kits:function(){return RZ_KITS},_forceSpecial:function(){const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur}},_special:function(){AE.get();RZ.stats={pp:0,perfect:0,good:0,great:0,miss:0,stray:0,combo:0,maxCombo:0,score:0,hold:0,specials:0};RZ.sp=null;RZ.phase='play';RZ.t0=AE.ctx.currentTime-5;
   const star=RZ.chart.find(n=>n.star),plain=RZ.chart.find(n=>!n.star&&!n.res);const before=RZ.stats.score;rzJudge(plain,'perfect');const normal=RZ.stats.score-before;
   rzJudge(star,'perfect');const on=rzSpOn(),mult=rzMult();const b2=RZ.stats.score;const p2=RZ.chart.filter(n=>!n.star&&!n.res)[0];rzJudge(p2,'perfect');const doubled=RZ.stats.score-b2;
-  RZ.t0=AE.ctx.currentTime-5-RZ.sp.dur-1;const off=rzSpOn();RZ.phase='menu';return {on:on,mult:mult,normal:normal,doubled:doubled,off:off,specials:RZ.stats.specials}},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_time:function(){return RZ.phase==='play'?rzTime():null},_keys:function(){return RZ_KEYS()},_build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
+  RZ.t0=AE.ctx.currentTime-5-RZ.sp.dur-1;const off=rzSpOn();RZ.phase='menu';return {on:on,mult:mult,normal:normal,doubled:doubled,off:off,specials:RZ.stats.specials}},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_time:function(){return RZ.phase==='play'?rzTime():null},_keys:function(){return RZ_KEYS()},_render:async function(style,i,secs,lead){const S=rsSong(style,i);const A=rsArrange(S,false,secs-4);const sr=44100;const oc=new OfflineAudioContext(2,Math.ceil((secs+2)*sr),sr);AE.ctx=oc;AE.build();RZ.song=S;RZ.game=lead==='piano'?'hero':'beat';RZ.inst='piano';
+  const mu={};A.ev.forEach(e=>{if(e.t<secs) rzPlayEv(e,e.t,mu)});A.drums.forEach(d=>{if(d.t<secs) AE.drum(d.snd,d.t,d.v)});
+  A.mel.forEach(n=>{if(n.t>=secs) return;if(lead==='piano'){AE.noteOn(n.m,.75,n.t);AE.noteOff(n.m,n.t+n.d)}else if(lead!=='none') rzPlayEv({k:'lead',m:n.m,d:n.d},n.t,mu)});
+  const b=await oc.startRendering();AE.ctx=null;AE.master=null;return {L:Array.from(b.getChannelData(0)),R:Array.from(b.getChannelData(1)),bars:A.bars,dur:A.dur}},
+  _build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
 })(typeof window!=='undefined'?window:this);
