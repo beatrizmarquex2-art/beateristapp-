@@ -14,6 +14,7 @@ import * as FB from '../feedback.js';
 import { vinil } from '../kids/drum-art.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { themeOf } from '../campanha/themes.js';
+import { musicaPausa, musicaVolta } from './musica.js';
 import { TEMAS, MODOS, FASES, RODADAS, BPMS, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
@@ -36,7 +37,7 @@ export function mount(host) {
 
   /* ---------- mapa (abre aqui) ---------- */
   const mapa = () => {
-    limpa(); jogando = false;
+    limpa(); jogando = false; musicaVolta(); // música só no mapa; nas fases precisa ouvir o ritmo
     const box = h('div', { class: 'tm-map' });
     const levels = Array.from({ length: FASES }, (_, i) => ({ id: `det:${modo}:${i + 1}`, index: i + 1, label: String(i + 1), tag: '', boss: i === FASES - 1 }));
     const have = levels.reduce((s, l) => s + estOf(modo, l.index), 0);
@@ -50,7 +51,7 @@ export function mount(host) {
   };
 
   /* ---------- uma fase: 3 ritmos ---------- */
-  const comeca = (n) => { limpa(); fase = n; rodada = 0; primeira = 0; jogando = true; nova(); };
+  const comeca = (n) => { limpa(); musicaPausa(); fase = n; rodada = 0; primeira = 0; jogando = true; nova(); };
   const ouvir = () => { Au.reset(); audio(); schedule(secreto, bpm, { play: true }); };
   const nova = () => { S.reset(); secreto = sortear(fase); slots = []; errou = false; marcas = null; desenha(); Au.later(ouvir, 400); };
   const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),

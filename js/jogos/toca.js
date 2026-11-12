@@ -7,6 +7,7 @@ import { mountProgressionMap } from '../kids/mapa.js';
 import { themeOf } from '../campanha/themes.js';
 import { leitura, progressoToca } from '../views/treinos.js';
 import { PATH, TIERS } from '../reading.js';
+import { musicaPausa, musicaVolta } from './musica.js';
 
 export function mount(host) {
   const saved = getGame('toca');
@@ -17,7 +18,7 @@ export function mount(host) {
   const starsAt = (pr, i) => (pr.pstars[i] ?? ((pr.pbest[i] || 0) >= 50 ? 1 : 0));
   const clean = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } };
   const drawMapa = () => {
-    clean(); view = 'mapa'; const pr = progressoToca();
+    clean(); view = 'mapa'; musicaVolta(); const pr = progressoToca(); // a musiquinha só toca no mapa (dentro da fase precisa de silêncio: contagem, clique e microfone)
     const mapBox = h('div', { class: 'tm-map' });
     const levels = Array.from({ length: 12 }, (_, i) => ({ id: `toca:${tier}:${i + 1}`, index: i + 1, label: String(i + 1), tag: '', boss: i === 11 }));
     const have = PATH.reduce((s, x, i) => s + (x.tier === tier ? starsAt(pr, i) : 0), 0);
@@ -35,7 +36,7 @@ export function mount(host) {
     const hd = mapBox.querySelector('.mp-head'); if (hd) hd.append(bar); else mapBox.prepend(bar); // o modo e o aleatório ficam no cabeçalho fixo do mapa
   };
   const jogar = (n) => {
-    clean(); view = 'jogo'; const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);
+    clean(); view = 'jogo'; musicaPausa(); const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);
     off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: drawMapa });
   };
   drawMapa();

@@ -26,6 +26,7 @@ import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
+import { musica } from '../jogos/musica.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -177,14 +178,15 @@ function game(host, entry) {
   const [, title, , mod] = entry;
   const body = h('div', { class: 'jg-body' });
   const snd = h('button', { class: 'icon-btn jg-snd', type: 'button', 'aria-pressed': String(soundOn()), 'aria-label': soundOn() ? 'desligar som' : 'ligar som', onclick: () => {
-    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇';
+    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇'; if (soundOn()) mus.start(); else mus.stop();
   } }, soundOn() ? '🔊' : '🔇');
+  const mus = musica(entry[0]); // musiquinha de fundo, uma diferente pra cada jogo (some com o botão de som e na pausa)
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
   let pausa = null; let deVez = false; // deVez: a pessoa escolheu sair (não oferece "continuar")
-  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; if (soundOn()) mus.start(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const pausar = () => {
-    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } body.inert = true;
+    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } mus.stop(); body.inert = true;
     pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('h2', { class: 'hand' }, 'pausado ⏸'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide', type: 'button', onclick: despausar }, 'continuar'),
       h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
@@ -197,7 +199,8 @@ function game(host, entry) {
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);
-  return () => { const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  if (soundOn()) mus.start();
+  return () => { mus.stop(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */
