@@ -166,8 +166,9 @@ export function mountMusical(host, { onTema } = {}) {
       grade(ids, { fora: st.descartadas ? [] : [...lado.fora, ...lado.erros], selecionada: st.sel, aoToque: (id) => tocar(id), manual: !kids() && !cfg.auto && !lado.terminou && !emPalpite ? (id) => { st.lados[st.turno === undefined ? 0 : (cfg.jogo === 'solo' ? 0 : st.turno)] = R.virar(lado, id); sfx('tap'); jogo(); } : null }),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, st.msg),
       emPalpite ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar palpite' }, st.sel ? h('b', {}, `é ${BY_ID[st.sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), st.sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => palpitar(st.sel) }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.palpitando = false; st.sel = null; jogo(); } }, 'voltar às perguntas')) : null,
-      !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
-      !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
+      st.aguardaVirar != null && !emPalpite ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { const i = st.aguardaVirar; st.aguardaVirar = null; sfx('tap'); fimDeAcao(i); } }, cfg.jogo === 'paul' ? 'pronto, já virei! ▶' : 'pronto, já virei! passar a vez ▶')) : null,
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
         !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
       h('div', { class: 'cm-acoes' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) menu(); } }, 'Sair')),
@@ -191,6 +192,7 @@ export function mountMusical(host, { onTema } = {}) {
     const r = R.perguntar(st.mesa, lado, qid, { automatico: kids() || cfg.auto }); st.lados[i] = r.lado; const left = R.candidatosDo(st.mesa, r.lado).length;
     st.msg = `${r.sim ? 'SIM' : 'NÃO'}. ${q.porque}${kids() || cfg.auto ? (r.tirou.length ? ` saíram ${r.tirou.length} carta${r.tirou.length === 1 ? '' : 's'}.` : '') : ' vire as cartas que não combinam.'}`;
     st.fala = (kids() || cfg.auto) && left === 1 ? fala('uma') : (kids() || cfg.auto) && left <= 3 ? fala('poucas', { k: left }) : fala(r.sim ? 'sim' : 'nao'); st.dica = ''; sfx(r.sim ? 'place' : 'tap');
+    if (!kids() && !cfg.auto && cfg.jogo !== 'solo') { st.aguardaVirar = i; return jogo(); } // manual: primeiro vira as cartas, depois toca em "pronto" pra passar a vez
     fimDeAcao(i);
   }
   function palpitar(id) {

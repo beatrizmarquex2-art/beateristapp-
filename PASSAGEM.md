@@ -451,3 +451,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## v387 — acordes só maior/menor + estrelas anti-farm
 - acordes: violão 7 maiores + 7 menores, cada cartão com ouvir no violão / guitarra / baixo; teclado maior e menor com piano e elétrico (função `piano()` em estudos-som.js)
 - `vitoria(jogo, n, chave)` / `ganhou(jogo, n, chave)`: a `chave` (jogo+música/nível/tema) paga até 3 ★ NA VIDA e só a diferença (`pagarChave` em mesa-logic.js, livro-caixa em `mesa.pago`). Chaves usadas: duelo toca (exercício+bpm), duelo beat hero (música+nível), duelo quebra (imagem+tamanho), memória (tema+pares), teoria (sessão), ritmo secreto (padrão). Beat Hero solo e fases já eram "melhor por música/nível". Jogos sem conteúdo fixo (Uno, bingo, stop, cara, velha) seguem só com o limite de 30 ★/dia
+
+## v388 — cara a cara manual, violão em símbolos
+- Cara a Cara (eliminar "manual", contra Paul/dupla): depois da pergunta some a lista e aparece "pronto, já virei" → só então passa a vez (antes passava na hora e não dava pra virar). `st.aguardaVirar` em cara-musical/tela.js; teste tests/e2e/cara-manual.mjs
+- Violão (aba Tocar): sons em símbolos 🎸 violão (padrão) ⚡ 🤘; abafar vira só 🔉 pequeno
+- instruments.js: pluck/mallet esperam o áudio destravar (1º toque no iPhone). Violão/xilofone sem som no iPhone da Bea: NÃO reproduzido no Chromium; se persistir, pedir detalhes
