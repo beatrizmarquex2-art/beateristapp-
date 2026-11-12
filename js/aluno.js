@@ -387,7 +387,7 @@ function shell(name) {
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'neon'; } catch { t = 'neon'; } if (r.name === 'album' || r.name === 'perfil') document.documentElement.dataset.alb = ['neon', 'prata'].includes(t) ? t : 'neon'; else delete document.documentElement.dataset.alb; } // aba Álbum com visual próprio (css/album-tema.css)
+    { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'neon'; } catch { t = 'neon'; } if (r.name === 'album' || r.name === 'perfil') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'neon'; else delete document.documentElement.dataset.alb; } // aba Álbum com visual próprio (css/album-tema.css)
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
