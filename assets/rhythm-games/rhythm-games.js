@@ -510,6 +510,7 @@ function rkChord(ci,ms,t,d,v){v=v||.8;d=Math.max(.1,d||.4);
   if(ci==='epiano'){ms.forEach(m=>rkLeadX('epiano',m,t,d,v*.55));return}
   if(ci==='organ'){ms.forEach(m=>rkLeadX('orgao',m,t,d,v*.55));return}
   if(ci==='stab'){rzSynth(ms,t,Math.min(d,.22),.75);return}
+  if(ci==='piano+violao'){rkChord('piano',ms,t,d,v*.8);rkChord('violao',ms,t,d,v*.9);return}
   if(ci==='clean'){rkClean(ms[0]-12,t,d,v*.9,false);return}
   if(ci==='violao'){ms.forEach((m,k)=>AE.pluck(m-12,t+k*.028,v*.7));return}
   if(ci==='vibra'){ms.forEach(m=>rkLeadX('vibra',m,t,d,v*.5));return}
