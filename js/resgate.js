@@ -11,7 +11,7 @@ export const MISSOES = [
   { tipo: 'youtube', titulo: 'seguiu no YouTube ou nas redes', dica: 'siga a Bea no YouTube, no Instagram ou no TikTok e tire um print mostrando que você segue', link: 'https://www.youtube.com/@beateristadrummer', rotulo: 'YouTube', extras: [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista']] },
   { tipo: 'amigo', titulo: 'mandou pra um amigo', dica: 'mande o app pra um amigo e tire um print da conversa', link: 'https://jogos.beaterista.com.br', rotulo: 'copiar o link do app' },
 ];
-export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de 3 produtos)' };
+export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 
 /** Reduz o print (lado maior 900 px, JPEG) e devolve o base64 puro. Fica bem abaixo do limite do banco (900 mil caracteres). */

@@ -10,3 +10,15 @@ export const LENDARIAS = [
 export const temLendaria = (state, codigo) => Array.isArray(state && state.lend) && state.lend.includes(codigo);
 /** Entrega uma lendária (uma vez só). Puro. */
 export const darLendaria = (state, codigo) => (temLendaria(state, codigo) || !LENDARIAS.some((x) => x.codigo === codigo) ? state : { ...state, lend: [...(state.lend || []), codigo] });
+
+/** Quantas lendárias, no total, cada compra libera: 1 produto = 1 · 2 produtos = 3 (mais 2) · 3 produtos = as 5 (mais 2). */
+export const FAIXAS = { 1: 1, 2: 3, 3: 5 };
+export const totalPorProdutos = (n) => FAIXAS[Math.max(0, Math.min(3, Math.round(Number(n) || 0)))] || 0;
+/** Quantos produtos a Bea conferiu no print (ela guarda em `obs` como "produtos:2"). Sem a marca, vale 1. */
+export const produtosDoResgate = (obs) => { const m = /produtos:\s*([123])/.exec(String(obs || '')); return m ? Number(m[1]) : 1; };
+/** Completa as lendárias da pessoa até `total` (na ordem L01, L02…), sem repetir. Devolve { state, novas: [códigos] }. Puro. */
+export function completarLendarias(state, total) {
+  let s = state; const novas = [];
+  for (const x of LENDARIAS) { if (((s && s.lend) || []).length >= total) break; if (!temLendaria(s, x.codigo)) { s = darLendaria(s, x.codigo); novas.push(x.codigo); } }
+  return { state: s, novas };
+}

@@ -16,8 +16,10 @@ export function mount(host) {
       const card = h('section', { class: 'card pad rs-card' },
         h('b', {}, `${r.nome || 'aluno'} · código ${r.code}`), h('p', { class: 'muted' }, `${R.TIPO_NOME[r.tipo] || r.tipo} · ${quando(r.criado_em)}`),
         r.print_b64 ? h('img', { class: 'rs-img', src: `data:image/jpeg;base64,${r.print_b64}`, alt: 'print enviado' }) : h('p', { class: 'muted' }, '(sem imagem)'),
-        h('div', { class: 'row' },
-          h('button', { class: 'btn primary', type: 'button', onclick: async () => { try { await R.decidir(r.id, 'aprovado'); toast('aprovado! a recompensa chega no aparelho do aluno.'); card.remove(); if (!lista.children.length) carregar(); } catch { toast('não consegui aprovar agora.'); } } }, 'aprovar'),
+        r.tipo === 'lendaria' ? h('p', { class: 'muted' }, 'quantos produtos diferentes aparecem na compra? 1 produto libera 1 lendária · 2 liberam 3 · 3 liberam as 5.') : null,
+        h('div', { class: 'row', style: 'flex-wrap:wrap' },
+          ...(r.tipo === 'lendaria' ? [[1, '1 produto → 1 lendária'], [2, '2 produtos → 3 lendárias'], [3, '3 produtos → as 5']] : [[0, 'aprovar']]).map(([n, rotulo]) =>
+            h('button', { class: 'btn primary', type: 'button', onclick: async () => { try { await R.decidir(r.id, 'aprovado', n ? `produtos:${n}` : ''); toast('aprovado! a recompensa chega no aparelho do aluno.'); card.remove(); if (!lista.children.length) carregar(); } catch { toast('não consegui aprovar agora.'); } } }, rotulo)),
           h('button', { class: 'btn ghost', type: 'button', onclick: async () => { if (!(await confirmSheet('recusar o print?', 'o print some e o aluno pode mandar outro.', 'recusar'))) return; try { await R.decidir(r.id, 'recusado', 'print não confere'); toast('recusado.'); card.remove(); if (!lista.children.length) carregar(); } catch { toast('não consegui recusar agora.'); } } }, 'recusar')));
       return card;
     }));
