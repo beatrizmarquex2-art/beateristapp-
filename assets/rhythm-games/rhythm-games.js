@@ -313,6 +313,8 @@ const RK_STY={
 function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 /* timbre escolhido pela Bea: blues = gaita + órgão + bateria de vassourinha */
 (function(){const Y=RK_STY.blues;Y.kit='brush';Y.g.forEach(g=>{g.ci='organ'});Y.S.forEach(d=>{d.lead='gaita'})})();
+/* rock: 2 com flauta, 2 com 8-bit e 2 com guitarra elétrica solo */
+(function(){RK_STY.rock.S.forEach(d=>{if(d.n==='Relâmpago'||d.n==='Amplificador no Dez') d.lead='guitarra'})})();
 const RK_TIER_NAMES=['calminha','devagar','médio','rápido','turbo'];
 function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:Y.kit,lead:D.lead,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
 /* arranjo: devolve o mesmo formato de rsArrange ({st,mel,drums,ev,chords,dur,bars,lead}) */
