@@ -1,4 +1,4 @@
-// Rudimentos: jogo novo da área dos alunos, feito do zero, num visual "LED premium": fundo escuro, neon e brilho. Esquerda = E = CAIXA (vermelho), direita = D = BUMBO (verde).
+// Rudimentos: jogo novo da área dos alunos, feito do zero, num visual "LED premium": fundo escuro, neon e brilho. Esquerda = E = CAIXA (vermelho), direita = D = BUMBO (azul).
 // O padrão de mãos (D = direita, E = esquerda) aparece escrito e as notas descem em duas colunas (esquerda = E, direita = D).
 // 11 fases na ordem da Bea. Figura: colcheia ou semicolcheia. Andamentos 80, 100, 120 e 140. Jogar na tela (E / D) ou com o microfone (só confere o tempo).
 // 80% de acerto passa; estrelas em rudimentos-logic.js (1 colcheia, 2 semicolcheia, 3 semicolcheia a 120 ou mais).
@@ -14,8 +14,8 @@ import { micToast } from '../mic-access.js';
 import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, sweep, summary, guardar, melhoresDe, estrelas, liberada, totalEstrelas } from './rudimentos-logic.js';
 
 const LOOK = 1.15; // s que a nota leva pra descer
-const COR = { E: '#ff3d57', D: '#27ff8a' }; // LED: vermelho = caixa (esquerda, E), verde = bumbo (direita, D)
-const SOMBRA = { E: '#7d0f23', D: '#0a6b3b' }; const RGB = { E: '255,61,87', D: '39,255,138' };
+const COR = { E: '#ff3d57', D: '#2d8cff' }; // LED: vermelho = caixa (esquerda, E), azul = bumbo (direita, D)
+const SOMBRA = { E: '#7d0f23', D: '#0b3c8f' }; const RGB = { E: '255,61,87', D: '45,140,255' };
 const soa = (lado, t, v = 0.95) => (lado === LADO_D ? tom(t, 230, v * 0.9) : tom(t, 330, v * 0.9));
 const grupos = (sq) => { const out = []; for (let i = 0; i < sq.length; i += 4) out.push(sq.slice(i, i + 4)); return out; };
 const estrelasTxt = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
