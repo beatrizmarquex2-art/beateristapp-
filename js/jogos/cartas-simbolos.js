@@ -56,7 +56,7 @@ function restBalls(k) {
 }
 
 // clave de sol, clave de fá e ritornelo: traços simples (48×64, currentColor), na mesma espessura das outras figuras
-const CLAVE_SOL = '<path d="M27 5C20 12 18 21 22 28C27 36 35 38 35 45C35 51 29 53 25 50C20 46 23 40 28 41C32 42 32 47 29 48" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 5C33 9 33 18 25 27C15 37 13 47 20 52" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round"/><path d="M27 6V57" stroke="currentColor" stroke-width="3.9" stroke-linecap="round"/><circle cx="23" cy="58" r="3.6" fill="currentColor"/>';
+const CLAVE_SOL = '<path d="M26 6V52C26 58 20 60 19 56" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><circle cx="19" cy="57" r="2.9" fill="currentColor"/><path d="M26 8C32 2 36 10 32 18C28 26 12 32 13 43C14 52 26 55 32 47C36 41 31 34 25 36C20 38 20 44 25 44" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>';
 const CLAVE_FA = '<path d="M11 24C11 14 21 10 28 12C37 14 39 25 35 36C32 44 25 51 14 56" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><circle cx="12" cy="24" r="5.2" fill="currentColor"/><circle cx="42" cy="21" r="2.9" fill="currentColor"/><circle cx="42" cy="34" r="2.9" fill="currentColor"/>';
 const RITORNELO = '<circle cx="11" cy="25" r="3.2" fill="currentColor"/><circle cx="11" cy="39" r="3.2" fill="currentColor"/><path d="M21 10V54" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M32 10V54" stroke="currentColor" stroke-width="7" stroke-linecap="butt"/>';
 
