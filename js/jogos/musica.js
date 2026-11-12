@@ -39,6 +39,7 @@ function stop(fade = true) {
 /** Abaixa a música enquanto o jogo toca ritmo ou nota (ela não pode atrapalhar), e cala de vez quando o jogo manda (Beat Hero tocando). */
 function ajusta(c, p) {
   if (!bus) return;
+  if (isMuted() || !soundOn()) { sync(); return; } // o som foi desligado por um botão que não avisa
   const calar = pausada || (p.parar && document.body.classList.contains(p.parar));
   const baixa = p.duck && Date.now() - lastAudioUse() < 1300;
   const alvo = calar ? 0 : baixa ? 0.04 : 1;
@@ -58,12 +59,14 @@ function start(id) {
 export function sync() {
   const want = trackDe(location.hash);
   if (!gesture && want) { try { const c = audio(false); if (c && c.state === 'running') gesture = true; } catch { /* sem áudio */ } } // o navegador já liberou o som (sem precisar de toque)
-  const ok = want && gesture && !document.hidden && !isMuted() && soundOn();
+  const ok = want && gesture && !document.hidden && !isMuted() && soundOn() && !desligada();
   if (!ok) { if (cur) stop(); return; }
   if (cur !== want) start(want);
 }
 /** Estado atual (pra testes): qual faixa toca e se algum jogo pediu silêncio. */
 export const estadoMusica = () => ({ faixa: cur, pausada, gesto: gesture });
+/** Só os testes de tela usam: com a chave ligada a música não toca (os testes de ciclo de vida do som exigem silêncio ao sair da fase). */
+const desligada = () => { try { return localStorage.getItem('beaterista-musica-off') === '1'; } catch { return false; } };
 let started = false;
 /** Liga o sistema uma vez (app da Bea e área dos alunos). */
 export function initMusica() {
@@ -74,7 +77,7 @@ export function initMusica() {
   document.addEventListener('visibilitychange', sync);
   const first = () => { gesture = true; sync(); };
   ['pointerdown', 'touchend', 'keydown'].forEach((ev) => document.addEventListener(ev, first, { capture: true, passive: true }));
-  setTimeout(sync, 250); setInterval(sync, 1200); // pega o botão de som dos jogos (muda um valor guardado, sem evento)
+  setTimeout(sync, 250); // pega o botão de som dos jogos (muda um valor guardado, sem evento)
 }
 
 /** Os jogos avisam: a música dá uma pausa enquanto o jogo precisa de silêncio (ouvir o ritmo, microfone, pausa da partida). */

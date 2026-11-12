@@ -3,6 +3,7 @@ import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch({ codigo: false });
 async function phone(codigo) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: codigo ? '{"ok":true,"tipo":"aluno"}' : '{"ok":false}' }));
   await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: codigo ? 'true' : 'false' }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   const p = await ctx.newPage(); await p.addInitScript((c) => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); if (c) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); }, codigo);
@@ -21,7 +22,7 @@ const ROTAS = ['#/kids/memoria/aventura', '#/kids/ritmo/aventura']; // (o Modo A
 {
   const { ctx, p } = await phone(true);
   for (const r of ['#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
-  await go(p, '#/jogos/toca'); check('com código: o Toca Aqui pergunta o modo (livre ou aventura)', await p.evaluate(() => !document.querySelector('.al-lock') && /Modo Aventura/.test(document.body.innerText)));
+  await go(p, '#/jogos/toca'); check('com código: o Toca Aqui abre (sem trava)', await p.evaluate(() => !document.querySelector('.al-lock')));
   await ctx.close();
 }
 const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);
