@@ -404,3 +404,9 @@
 .hj-roleta { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #fff1c7; border: 3px solid #1b1818; border-radius: 16px !important; box-shadow: 3px 3px 0 #1b1818; font: 800 13px system-ui, sans-serif; } .hj-roleta span:first-child { font-size: 22px; }
 .hj-exp h2 { margin: 6px 0 8px; font: 400 20px Anton, sans-serif; color: #14284b; letter-spacing: .5px; text-transform: uppercase; } .hj-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .hj-chip { padding: 8px 13px; background: #fff; color: #14284b; border: 2.5px solid #1b1818; border-radius: 99px !important; font: 700 13px system-ui, sans-serif; text-decoration: none; } .hj-chip.locked { opacity: .65; }
+
+/* Hoje: o que é mais importante (estudar) vem primeiro, em cartões grandes */
+.hj-big { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.hj-tile { display: grid; justify-items: center; gap: 2px; text-align: center; padding: 14px 8px; min-height: 112px; background: #fffdf8; color: #14284b; border: 3px solid #1b1818; border-radius: 18px !important; box-shadow: 4px 4px 0 #1b1818; text-decoration: none; } .hj-tile:nth-child(1) { background: #ffe4e8; } .hj-tile:nth-child(2) { background: #fff1c7; } .hj-tile:nth-child(3) { background: #dfe8fb; } .hj-tile:nth-child(4) { background: #e6f3e3; }
+.hj-ti { font-size: 36px; line-height: 1.1; } .hj-tile b { font: 800 15px/1.1 system-ui, sans-serif; } .hj-tile small { font: 500 12px system-ui, sans-serif; color: #555; } .hj-tile.locked { opacity: .7; }
+.hj-hero { margin-top: 6px; }

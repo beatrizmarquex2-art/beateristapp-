@@ -236,10 +236,15 @@ function estudosView(view) {
       : h('button', { type: 'button', class: cls, 'aria-label': `${titulo}${feito ? ', feito' : ''}`, onclick: () => { if (!feito) dicaBox.hidden = !dicaBox.hidden; } }, ...corpo); });
   const idxDica = META.METAS.findIndex(([k]) => k === 'dica');
   cartoes.splice(idxDica + 1, 0, dicaBox);
-  const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'explorar'), h('div', { class: 'hj-chips' }, ...EXPLORAR.map(([href, ic, nome, vid]) => { const lk = AC.trancado(href);
-    return h('a', { class: `hj-chip${lk ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lk ? `${nome}, só pra alunos com código` : nome }, `${ic} ${nome}${lk ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`); })));
+  const GRANDES = [['#/estudos/aulas', '📚', 'aulas do Paul', 'bateria, teclado e violão', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', 'veja e ouça', null], ['#/estudos/acordes/violao', '🎸', 'acordes', 'violão e teclado', null], ['#/dicionario', '📖', 'dicionário musical', 'busque um termo', 'dicionario']];
+  const OUTROS = EXPLORAR.filter(([href]) => !GRANDES.some((g) => g[0] === href));
+  const lock = (href) => AC.trancado(href);
+  const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
+    h('div', { class: 'hj-big' }, ...GRANDES.map(([href, ic, nome, sub, vid]) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
+      h('span', { class: 'hj-ti', 'aria-hidden': 'true' }, ic), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub)))),
+    h('div', { class: 'hj-chips' }, ...OUTROS.map(([href, ic, nome, vid]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${ic} ${nome}${lock(href) ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`))));
   const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, '🎡'), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
-  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'HOJE'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`), seq ? h('span', { class: 'hj-fogo' }, `🔥 ${seq}`) : null), hero, card, ...cartoes, sorte, chips));
+  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'HOJE'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`), seq ? h('span', { class: 'hj-fogo' }, `🔥 ${seq}`) : null), chips, hero, card, ...cartoes, sorte));
   import('./figurinhas/estrelas.js').then(async (E) => { try { const P = await import('./kids/progress.js'); const me = P.active(); if (!me) return; const f = E.faltamParaRoleta(E.estrelasTotais(me.id)); const el = sorte.querySelector('.hj-rt'); if (el && f) el.textContent = `faltam ${f} ★ pra roleta`; } catch { /* sem o álbum */ } }).catch(() => {});
 }
 
