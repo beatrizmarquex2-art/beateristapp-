@@ -561,3 +561,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Compartilhar as ★ (post/story) agora mora no Perfil** (v473, pedido da Bea; saiu da tela Pacotes). Teste: `tests/e2e/perfil-estrelas.mjs`.
 - **Missão "seguiu no YouTube ou nas redes"** (v475): vale seguir no YouTube, Instagram ou TikTok (`MISSOES` em `js/resgate.js`; o tipo no banco continua `youtube`).
 - **Taiko: só pros alunos** (a Bea chegou a liberar na v476 e voltou atrás na v478): sem código fica trancado, igual ao Toca Aqui.
+- **Quebra-cabeça sem código: só 2 imagens** (v479, pedido da Bea): as outras 11 ficam com cadeado (`GRATIS_IMAGENS = 2` em `js/jogos/quebra.js`). **Radar Musical sem código: 2 partidas grátis** (já era assim, `GRATIS.caca` em `js/amostra.js`). Teste: `tests/e2e/quebra-gratis.mjs`.

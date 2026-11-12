@@ -7,6 +7,8 @@ import { getGame, setGame, sfx, reduced } from './base.js';
 import { quebra as estrelasQuebra } from './estrelas-jogo.js';
 import { sementeRnd } from './semente.js';
 import { salaAutoPara } from './online.js';
+import { alunoSemCodigo } from '../amostra.js';
+import { toast } from '../ui.js';
 
 const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
@@ -33,7 +35,9 @@ export function mount(host, opts) {
   const saved = M ? {} : getGame(ID);
   const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24].includes(saved.diff) ? saved.diff : 6, free: saved.free === true };
   const pick = (id) => IMAGES.find((x) => x.id === id) || IMAGES[0];
-  let imgId = pick(M ? M.params.img : saved.img).id; const SRC = () => pick(imgId).src; const NOME = () => pick(imgId).nome;
+  // sem código de aluno só as 2 primeiras imagens abrem (pedido da Bea); as outras pedem o código
+  const GRATIS_IMAGENS = 2; const travada = (id) => !M && alunoSemCodigo() && IMAGES.findIndex((x) => x.id === id) >= GRATIS_IMAGENS;
+  let imgId = pick(M ? M.params.img : saved.img).id; if (travada(imgId)) imgId = IMAGES[0].id; const SRC = () => pick(imgId).src; const NOME = () => pick(imgId).nome;
   let best = saved.best && typeof saved.best === 'object' ? saved.best : {};
   let g = null; let selected = null; let hintCell = null; let msg = ''; let img = null; let paused = false; let viewing = false; let zoom = false; let last = 0; let record = false;
   let timeEl = null;
@@ -68,7 +72,7 @@ export function mount(host, opts) {
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
-      IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: imgId === im.id ? 'on' : '', onclick: () => { imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
+      IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
       h('div', { class: 'jo-card' },
         linha('tamanho', chips(SIZES.map(([v, l]) => [v, l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }, 'dificuldade')),
         linha('tempo', chips([[false, 'com tempo'], [true, 'livre']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo'), ajuda('Regras rápidas', RULES())),
