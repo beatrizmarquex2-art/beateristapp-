@@ -436,34 +436,34 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
     case 'snare':tone('sine',330,290,.12,.8,dst);noise('bandpass',2500,1,.04,.6);break;
     case 'hhc':noise('highpass',7000,.5,.06,.38);break;case 'hho':noise('highpass',6500,.5,.16,.34);break;
     case 'tom1':T(200,170,.25,1);break;case 'tom2':T(260,225,.2,1);break;case 'floor':T(130,105,.3,1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='claps'){switch(name){
     case 'kick':T(120,38,.85,1.5);break;
     case 'snare':rkClap(t,vel*.95);noise('bandpass',2600,1.4,.04,.35);break;
     case 'hhc':noise('highpass',9500,.6,.03,.5);break;case 'hho':noise('highpass',8500,.6,.22,.42);break;
     case 'tom1':T(240,140,.4,1);break;case 'tom2':T(180,100,.45,1);break;case 'floor':T(125,70,.6,1.1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='brush'){switch(name){
     case 'kick':T(100,48,.35,.9);break;
     case 'snare':{const n=AE.noiseSrc(t,.4),bp=AE.filt('bandpass',3800,.8),g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.35,t+.06);g.gain.exponentialRampToValueAtTime(.0001,t+.3);n.connect(bp);bp.connect(g);g.connect(dst);break}
     case 'hhc':noise('highpass',8000,.5,.04,.25);break;case 'hho':noise('highpass',7500,.5,.2,.22);break;
     case 'crash':noise('highpass',4500,.5,1.2,.3);break;
     case 'tom1':T(220,130,.35,.8);break;case 'tom2':T(170,100,.4,.8);break;case 'floor':T(120,70,.5,.9);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='pop'){switch(name){
     case 'kick':T(150,46,.4,1.35);noise('highpass',3000,.7,.02,.4);break;
     case 'snare':noise('highpass',1800,.7,.2,.7);tone('triangle',210,170,.1,.6,dst);break;
     case 'hhc':noise('highpass',9500,.6,.04,.5);break;case 'hho':noise('highpass',8500,.6,.28,.42);break;
     case 'crash':noise('highpass',4800,.5,1.3,.5);break;
     case 'tom1':T(240,140,.4,1);break;case 'tom2':T(180,100,.45,1);break;case 'floor':T(125,70,.6,1.1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='dembow'){switch(name){
     case 'kick':T(140,44,.5,1.4);noise('highpass',2800,.7,.02,.4);break;
     case 'snare':noise('bandpass',2000,.9,.14,.85);tone('triangle',340,260,.08,.6,dst);break;
     case 'hhc':noise('highpass',9000,.6,.035,.45);break;case 'hho':noise('highpass',8000,.6,.2,.4);break;
     case 'crash':noise('highpass',4500,.5,1.1,.45);break;
     case 'tom1':T(230,130,.35,1);break;case 'tom2':T(170,95,.4,1);break;case 'floor':T(120,65,.5,1.1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='eletro'){switch(name){
     case 'kick':T(130,38,.9,1.3);break;
     case 'snare':noise('highpass',1500,.7,.28,.75);noise('bandpass',1100,.8,.12,.9);for(let k=0;k<3;k++){const o=0;}break;
@@ -471,7 +471,7 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
     case 'ride':noise('highpass',7000,.5,.5,.3);tone('triangle',1500,1480,.4,.12);break;
     case 'crash':noise('highpass',4500,.5,1.4,.55);break;
     case 'tom1':T(260,120,.5,1);break;case 'tom2':T(190,90,.55,1);break;case 'floor':T(130,60,.7,1.1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='seca'){switch(name){
     case 'kick':T(120,52,.16,1.4);noise('highpass',2500,.7,.02,.45);break;
     case 'snare':noise('bandpass',3000,1.2,.1,.9);tone('triangle',230,200,.07,.8,dst);break;
@@ -479,7 +479,7 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
     case 'ride':noise('highpass',6500,.6,.3,.3);tone('triangle',1700,1650,.2,.1);break;
     case 'crash':noise('highpass',5000,.6,.7,.5);break;
     case 'tom1':T(220,150,.22,1);break;case 'tom2':T(170,110,.26,1);break;case 'floor':T(120,80,.3,1.1);break;
-    default:AE.drum(name,t,vel)}return}
+    default:AE._drum0(name,t,vel)}return}
   if(kit==='lofi'){switch(name){
     case 'kick':T(110,48,.38,1.2);noise('lowpass',400,.7,.05,.3);break;
     case 'snare':noise('bandpass',1800,.7,.22,.7);tone('triangle',170,150,.12,.5,dst);break;
@@ -487,8 +487,8 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
     case 'ride':noise('highpass',5000,.5,.4,.22);break;
     case 'crash':noise('highpass',3000,.5,1.2,.4);break;
     case 'tom1':T(210,120,.4,.9);break;case 'tom2':T(160,90,.45,.9);break;case 'floor':T(110,65,.55,1);break;
-    default:AE.drum(name,t,vel)}return}
-  AE.drum(name,t,vel)}
+    default:AE._drum0(name,t,vel)}return}
+  AE._drum0(name,t,vel)}
 /* ---------- sons do rock ---------- */
 let RK_CUR=null;function rkCurve(){if(!RK_CUR){const n=2048,cu=new Float32Array(n);for(let i=0;i<n;i++){const x=i/n*2-1;cu[i]=Math.tanh(x*6.5)*.92+Math.tanh(x*18)*.08}RK_CUR=cu}return RK_CUR}
 /* acorde de força (fundamental + quinta + oitava), distorcido, com caixa de som (filtro) e palm mute (curto e seco) */
