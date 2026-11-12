@@ -9,7 +9,9 @@ export const TEMPOS = [['devagar', 80], ['normal', 100], ['rápido', 120], ['tur
 /** A figura do toque: colcheia = 2 por tempo, semicolcheia = 4 por tempo. */
 export const FIGURAS = [['colcheia', 2], ['semicolcheia', 4]];
 /** Acerto mínimo (%) pra "passar" um andamento. */
-export const MIN_ACERTO = 80;
+export const MIN_ACERTO = 70;
+/** Estrelas de CADA célula (fase × figura × andamento): 70% de toques certos = 1 ★, 85% = 2 ★, 100% = 3 ★ (pedido da Bea). */
+export const estrelasCel = (a) => ((a | 0) >= 100 ? 3 : (a | 0) >= 85 ? 2 : (a | 0) >= MIN_ACERTO ? 1 : 0);
 /** Quantas notas tem uma rodada (o padrão se repete até chegar perto disso). */
 export const NOTAS_RODADA = 64;
 const seq = (s) => s.replace(/\s+/g, '').toUpperCase();
@@ -54,8 +56,9 @@ export const melhoresDe = (est, n) => {
 };
 /** Guarda um resultado (só se melhorar). `figIdx` 0 = colcheia, 1 = semicolcheia. Devolve o novo `est` (puro). */
 export function guardar(est, n, figIdx, tempoIdx, acc) { const m = melhoresDe(est, n); const k = figIdx ? 's' : 'c'; if (acc > m[k][tempoIdx]) m[k][tempoIdx] = acc; return { ...(est || {}), [n]: m }; }
-/** Estrelas da fase (0 a 3): 1 = passou a colcheia (em qualquer andamento); 2 = passou também a semicolcheia; 3 = passou a semicolcheia a 120 BPM ou mais. */
-export const estrelas = (est, n) => { const m = melhoresDe(est, n); const ok = (a) => a >= MIN_ACERTO; return (m.c.some(ok) ? 1 : 0) + (m.s.some(ok) ? 1 : 0) + (m.s.some((a, i) => ok(a) && TEMPOS[i][1] >= 120) ? 1 : 0); };
+/** Estrelas de uma fase: soma das 8 células (2 figuras × 4 andamentos), até 24. */
+export const ESTRELAS_POR_FASE = 24;
+export const estrelas = (est, n) => { const m = melhoresDe(est, n); return [...m.c, ...m.s].reduce((t, a) => t + estrelasCel(a), 0); };
 /** A fase 1 é livre; as outras abrem quando a anterior tem pelo menos 1 estrela. */
 export const liberada = (est, n) => n <= 1 || estrelas(est, n - 1) >= 1;
 export const totalEstrelas = (est) => FASES.reduce((t, f) => t + estrelas(est, f.n), 0);

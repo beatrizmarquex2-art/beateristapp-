@@ -30,7 +30,7 @@ await page.evaluate(async () => {
 await sleep(1800);
 const txt = await page.evaluate(() => (document.querySelector('.rd-res') && !document.querySelector('.rd-res').hidden ? document.querySelector('.rd-res').textContent : ''));
 check('resultado com boa precisão', /(\d+)%/.test(txt) && +txt.match(/(\d+)%/)[1] >= 90, txt);
-check('avisa que ganhou a estrela', /ganhou uma estrela/.test(txt) && (await page.evaluate(() => document.querySelector('.rd-topo .rd-est').textContent)).startsWith('★'));
+check('avisa que ganhou as 3 estrelas da célula (100% de toques certos)', /ganhou 3 ★/.test(txt) && /^3\/24/.test(await page.evaluate(() => document.querySelector('.rd-topo .rd-est').textContent)));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/rud-4-resultado.png' : '/tmp/rud-4-resultado.png' });
 await page.evaluate(() => [...document.querySelectorAll('.rd-topo .btn')][0].click()); await sleep(300);
 check('depois da estrela a fase 2 destrava', await page.evaluate(() => !document.querySelector('.rd-fase[data-fase="2"]').disabled && document.querySelector('.rd-fase[data-fase="3"]').disabled));
@@ -54,6 +54,6 @@ await page.evaluate(async () => {
 });
 await sleep(1800);
 const txt2 = await page.evaluate(() => document.querySelector('.rd-res').textContent);
-check('mão trocada não passa', /(\d+)%/.test(txt2) && +txt2.match(/(\d+)%/)[1] < 30 && /precisa de 80%/.test(txt2), txt2);
+check('mão trocada não passa', /(\d+)%/.test(txt2) && +txt2.match(/(\d+)%/)[1] < 30 && /precisa de 70%/.test(txt2), txt2);
 check('sem erro de página', errs.length === 0, errs.join('|'));
 await browser.close(); srv.close(); done();
