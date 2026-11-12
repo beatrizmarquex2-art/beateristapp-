@@ -946,3 +946,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .tr-quick .tr-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}.tr-quick .tr-big b{font-size:48px}
 .tr-stars{flex-basis:100%;font-style:normal;font-size:22px;letter-spacing:2px;color:#EBA332}.tr-stars i{font-style:normal;color:#c9c2b0}
 .tr-quick .tr-next{min-height:56px;font-size:17px;font-weight:800;white-space:nowrap}
+/* cabeçalho dos jogos: o título tinha uma coluna estreita e quebrava ("MEMÓRI / A"); agora o título ocupa a linha de cima inteira e os botões ficam embaixo */
+.jg-game > .jg-top{display:grid;grid-template-columns:auto 1fr auto auto;grid-template-areas:"titulo titulo titulo titulo" "voltar . pausa nova";gap:8px 6px;align-items:center}
+.jg-game > .jg-top > .jg-title{grid-area:titulo;justify-self:start;max-width:100%;white-space:normal;overflow-wrap:normal;word-break:keep-all;font-size:22px}
+.jg-game > .jg-top > .jg-link{grid-area:voltar}.jg-game > .jg-top > .jg-pausa-btn{grid-area:pausa}.jg-game > .jg-top > .btn:not(.jg-pausa-btn){grid-area:nova}
+.jg-game > .jg-top > .jg-snd{position:absolute;right:20px;top:14px;z-index:5}
+.jg-game > .jg-top{position:relative}.jg-game > .jg-top > .jg-title{margin-right:50px}

@@ -723,3 +723,15 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 /* dentro de um jogo: sem barra de baixo (toque perto da borda caía na Lojinha) e sem o espaço reservado pra ela */
 html.em-jogo .bottom-nav { display: none !important; }
 html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
+/* auditoria de leitura (nov/2026): texto miúdo maior, abas que não cortam em tela estreita, teclas com letra legível */
+.jgx-cell b, .jg-card b{font-size:12.5px}
+.tr-card small, .dc-pick small, .bv-tit, .pf-codigo small, .mem-theme b{font-size:12px}
+.jg-tiny{font-size:12px!important;min-height:30px}
+.mem-vt .mc-b{font-size:10.5px}.mem-themes.hero .mem-vt .mc-t{font-size:clamp(11px,3.4vw,14px)}
+.cx-lbl{font-size:max(9.5px,.1em)}
+.jg-seg button{min-height:36px}.jo-chips button,.jo-passo button{min-height:36px}
+.jg-toca > .jg-seg{flex-wrap:wrap}.jg-toca > .jg-seg button{padding:6px 10px}
+.pn-w span,.ti-bar span{font-size:11px;font-weight:800}.pn-w span{color:#3a3330}
+.pf-codigo small{color:#4a423e}
+@media (max-width:360px){.tr-modos{grid-template-columns:1fr}.tr-como{grid-template-columns:1fr}}
+.dc-chips-cat,.lib-tabs{flex-wrap:wrap}
