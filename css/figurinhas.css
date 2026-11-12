@@ -374,3 +374,12 @@
 .ac-sons{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}.ac-sons .ac-ouvir{padding:8px 10px;min-height:36px;border:2px solid #17365B;border-radius:99px;background:#fff;color:#17365B;font:800 12px var(--body,inherit);cursor:pointer}.ac-sons .ac-ouvir:active{background:#ffd23f}
 .ac-card:not(.wide) .ac-sons{display:grid;width:100%}.ac-card:not(.wide) .ac-sons .ac-ouvir{width:100%;padding:6px 8px;min-height:34px}.ac-diag{width:120px}
 .bottom-nav[data-n="5"] .nav-item { font-size: 11px; padding-left: 0; padding-right: 0; } .bottom-nav[data-n="5"] { padding-left: 3px; padding-right: 3px; }
+
+/* álbum: aba Lendárias (trancada, dourada) */
+.ld-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.ld-slot { position: relative; display: grid; place-items: center; align-content: center; gap: 4px; aspect-ratio: 720 / 950; border: 3px solid #1b1818; border-radius: 14px; overflow: hidden; background: linear-gradient(160deg, #3a2a08 0%, #8a6414 45%, #f3d36b 70%, #6a4a0c 100%); color: #fff7d6; box-shadow: 3px 3px 0 #1b1818; text-align: center; padding: 6px; }
+.ld-slot b { font: 800 12px var(--body); text-shadow: 0 1px 0 #0008; } .ld-cad { font-size: 30px; filter: drop-shadow(0 2px 0 #0008); }
+.ld-brilho { position: absolute; top: -20%; bottom: -20%; width: 34%; left: -60%; background: linear-gradient(100deg, transparent, rgb(255 255 255 / .6), transparent); transform: skewX(-18deg); animation: ld-pass 3.2s ease-in-out infinite; }
+.ld-slot:nth-child(2n) .ld-brilho { animation-delay: .8s; } .ld-slot:nth-child(3n) .ld-brilho { animation-delay: 1.6s; }
+@keyframes ld-pass { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) { .ld-brilho { animation: none; } }

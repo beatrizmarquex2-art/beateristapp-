@@ -13,7 +13,7 @@ import * as Minhas from '../figurinhas/minhas.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
-const TABS = [...L.SECOES, 'Minhas', 'Pacotes'];
+const TABS = [...L.SECOES, 'Lendárias', 'Minhas', 'Pacotes'];
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 // catálogo completo = as 125 originais + as figurinhas do Paul (arquivo separado, pra não mexer no catálogo original)
@@ -65,8 +65,8 @@ export function mount(host, parts = [], opts = {}) {
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
       h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!'),
-      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
-    if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
   /* ---------- coleção: o livro ---------- */
@@ -89,6 +89,17 @@ export function mount(host, parts = [], opts = {}) {
     justPasted = e.codigo;
     save(L.paste(state, e.codigo));
     toast(`${e.artista_banda} colada no álbum`);
+  }
+
+  /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */
+  function lendariasView() {
+    const slot = (i) => h('div', { class: 'ld-slot', 'aria-label': `lendária ${i + 1} trancada` }, h('i', { class: 'ld-brilho', 'aria-hidden': 'true' }), h('span', { class: 'ld-cad', 'aria-hidden': 'true' }, '🔒'), h('b', {}, `lendária ${i + 1}`));
+    return h('section', { class: 'fig-col ld' },
+      h('h2', { class: 'tag' }, '✨ Lendárias'),
+      h('p', { class: 'muted' }, 'figurinhas exclusivas, só pra quem compra um produto na Lojinha da Beaterista. não saem na roleta e não dá pra trocar: cada produto libera as suas.'),
+      h('div', { class: 'ld-grid' }, ...Array.from({ length: 6 }, (_, i) => slot(i))),
+      h('p', { class: 'fig-note' }, 'as lendárias estão chegando. quando saírem, elas aparecem aqui e brilham quando você tiver o produto.'),
+      h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'ver a Lojinha'));
   }
 
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
