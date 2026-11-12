@@ -125,6 +125,21 @@ export const PERC = [
   ['bg2', 'bongô grave', (t, v) => skin(t, 400, 330, 0.22, v * 0.9, 0.22)],
 ];
 
+
+/* Sons "de verdade": cada modo de vibração do tambor ou do sino soa com a sua própria frequência e o seu próprio tempo de queda (síntese modal) */
+const modal = (t, v, f0, modos, dec, wet, glide = 0.03) => modos.forEach(([r, a, d]) => { const o = C.createOscillator(); const g = gn(); const f = f0 * r; o.frequency.setValueAtTime(f * (1 + glide), t); o.frequency.exponentialRampToValueAtTime(f, t + 0.025); env(g, t, a * v, 0.0008, dec * d); o.connect(g); route(g, wet); o.start(t); o.stop(t + dec * d + 0.08); });
+const baqueta = (t, v, fq, lvl) => { const n = noiseSrc(t, 0.02); const g = gn(); n.connect(bq('bandpass', fq, 1.3)).connect(g); env(g, t, lvl * v, 0.0005, 0.008); route(g); };
+function tamborimReal(t, v, f0, dec) {
+  modal(t, v * 0.42, f0, [[1, 1, 0.16], [1.59, 0.62, 0.11], [2.14, 0.46, 0.09], [2.30, 0.36, 0.08], [2.65, 0.26, 0.065], [2.92, 0.18, 0.055]], dec, 0.08);
+  baqueta(t, v, 5200, 0.55); baqueta(t, v, 2400, 0.3);
+}
+let agFlip = 0;
+function agogoReal(t, v, f1, f2, dec, wet) {
+  const f = (agFlip++ % 2) ? f2 : f1; // cada toque é num sino (o grave, o agudo, o grave…), como o instrumentista de verdade
+  modal(t, v * 0.36, f, [[1, 1, 0.55], [2.0, 0.5, 0.36], [2.76, 0.46, 0.3], [4.1, 0.26, 0.2], [5.4, 0.18, 0.13], [6.9, 0.1, 0.09]], dec, wet, 0.012);
+  modal(t, v * 0.1, f * 1.004, [[1, 1, 0.5]], dec, wet, 0); // o sino bate um pouquinho desafinado de si mesmo
+  baqueta(t, v, 3600, 0.5); baqueta(t, v, 7000, 0.2);
+}
 /* 3 jeitos de soar de cada peça (a Bea escolhe): 0 = o de sempre, 1 = seco e brilhante, 2 = cheio e grave (com eco). */
 const dryBell = (t, v, fs, dur, gain, wet) => { const g = gn(); fs.forEach(([f, a]) => { const o = C.createOscillator(); const og = gn(a); o.type = 'sine'; o.frequency.value = f; o.connect(og).connect(g); o.start(t); o.stop(t + dur + 0.1); }); env(g, t, gain * v, 0.001, dur); route(g, wet); };
 const jingles = (t, v, n, hp, gap, len, lvl, wet) => { for (let k = 0; k < n; k++) { const nn = noiseSrc(t + k * gap, len + 0.02); const g = gn(); nn.connect(bq('highpass', hp)).connect(g); env(g, t + k * gap, lvl * v, 0.001, len); route(g, wet); } };
@@ -133,12 +148,8 @@ export const PERC_VAR = {
   pd: [PERC[0][2],
     (t, v) => { skin(t, 215, 175, 0.12, v * 0.7, 0.3); jingles(t, v, 7, 8200, 0.005, 0.045, 0.32, 0.05); },
     (t, v) => { skin(t, 160, 118, 0.32, v * 0.95, 0.15); jingles(t + 0.003, v, 4, 5600, 0.011, 0.16, 0.3, 0.3); }],
-  tb: [PERC[1][2],
-    (t, v) => { skin(t, 720, 560, 0.17, v * 0.85, 0.35); skin(t + 0.008, 1100, 860, 0.08, v * 0.25, 0.1); },
-    (t, v) => { skin(t, 1350, 1050, 0.06, v * 0.8, 0.7); }],
-  ag: [PERC[2][2],
-    (t, v) => { dryBell(t, v, [[960, 1], [1950, 0.35], [2800, 0.15]], 0.3, 0.3, 0.1); dryBell(t + 0.1, v * 0.9, [[1320, 1], [2640, 0.3]], 0.28, 0.28, 0.1); },
-    (t, v) => { dryBell(t, v, [[560, 1], [1180, 0.45], [1700, 0.25]], 0.9, 0.3, 0.35); dryBell(t + 0.13, v * 0.9, [[790, 1], [1650, 0.4], [2400, 0.2]], 0.8, 0.28, 0.35); }],
+  tb: [(t, v) => tamborimReal(t, v, 1000, 1), (t, v) => tamborimReal(t, v, 1250, 0.7), (t, v) => tamborimReal(t, v, 820, 1.35)],
+  ag: [(t, v) => agogoReal(t, v, 740, 1050, 1, 0.1), (t, v) => agogoReal(t, v, 900, 1260, 0.75, 0.08), (t, v) => agogoReal(t, v, 620, 880, 1.4, 0.25)],
   rr: [PERC[3][2],
     (t, v) => { for (let k = 0; k < 12; k++) { const d = k * 0.011; const n = noiseSrc(t + d, 0.03); const g = gn(); n.connect(bq('bandpass', 6400 - k * 180, 2.6)).connect(g); env(g, t + d, (0.26 - k * 0.01) * v, 0.001, 0.01); route(g, 0.04); } },
     (t, v) => { for (let k = 0; k < 5; k++) { const d = k * 0.028; const n = noiseSrc(t + d, 0.05); const g = gn(); n.connect(bq('bandpass', 3200 - k * 260, 1.6)).connect(g); env(g, t + d, (0.3 - k * 0.02) * v, 0.003, 0.028); route(g, 0.25); } }],
@@ -164,6 +175,7 @@ export const PERC_VAR = {
     (t, v) => snare(t, v * 0.95, true),
     (t, v) => { const n = noiseSrc(t, 0.06); const g = gn(); n.connect(bq('bandpass', 2300, 1.5)).connect(g); env(g, t, 0.7 * v, 0.001, 0.045); route(g); const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(560, t + 0.04); env(og, t, 0.6 * v, 0.001, 0.06); o.connect(og); route(og); o.start(t); o.stop(t + 0.1); }],
 };
+const PERC_PADRAO = { pd: 2, rr: 0, tr: 2, gz: 2, cg: 2, bg: 2, cx: 0, tb: 0, ag: 0 }; // escolhidas pela Bea (a do tamborim e a do agogô ainda vão ser escolhidas)
 let PERC_ESCOLHA = {}; try { PERC_ESCOLHA = JSON.parse(localStorage.getItem('bt-perc-var') || '{}') || {}; } catch { PERC_ESCOLHA = {}; }
 /** Gera uma amostra da peça (id, variante 0-2) numa fila de toques. Só pra conferir/gravar o som: devolve os canais L e R. */
 export async function renderPercSample(id, variante, hits, secs = 4) {
@@ -179,7 +191,7 @@ export async function renderPercSample(id, variante, hits, secs = 4) {
     const b = await oc.startRendering(); return { L: Array.from(b.getChannelData(0)), R: Array.from(b.getChannelData(1)) };
   } finally { C = keep.C; bus = keep.bus; rev = keep.rev; nbuf = keep.nbuf; ctxOf = keep.ctxOf; comp = keep.comp; outOf = keep.outOf; }
 }
-export function percHit(id, vel = 0.9) { C = init(); if (C.state !== 'running') { C.resume().then(() => percHit(id, vel)).catch(() => {}); return; } const vr = PERC_VAR[id]; const k = (PERC_ESCOLHA[id.replace(/\d$/, '')] | 0) % 3; if (vr) vr[k](C.currentTime, vel * (0.94 + Math.random() * 0.12)); else { const p = PERC.find((x) => x[0] === id); if (p) p[2](C.currentTime, vel * (0.94 + Math.random() * 0.12)); } }
+export function percHit(id, vel = 0.9) { C = init(); if (C.state !== 'running') { C.resume().then(() => percHit(id, vel)).catch(() => {}); return; } const vr = PERC_VAR[id]; const k = ((PERC_ESCOLHA[id.replace(/\d$/, '')] ?? PERC_PADRAO[id.replace(/\d$/, '')] ?? 0) | 0) % 3; if (vr) vr[k](C.currentTime, vel * (0.94 + Math.random() * 0.12)); else { const p = PERC.find((x) => x[0] === id); if (p) p[2](C.currentTime, vel * (0.94 + Math.random() * 0.12)); } }
 /** Chamado ao tocar numa aba de instrumento: esquenta o áudio dentro do toque (o iPhone só destrava assim) e religa a saída do instrumento. */
 export function wake() { try { C = init(); } catch { /* sem áudio */ } }
 
