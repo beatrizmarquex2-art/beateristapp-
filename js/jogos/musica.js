@@ -1,6 +1,6 @@
 // Música de fundo dos jogos: escolhe a música pelo endereço (musica-dados.js), sintetiza no aparelho e toca baixinho em loop.
 // Respeita o som do topo (alto-falante) e o som dos jogos; só começa depois do primeiro toque (regra do navegador); para ao sair do jogo ou ao esconder o app.
-import { audio, out, isMuted } from '../audio.js';
+import { audio, out, isMuted, lastAudioUse } from '../audio.js';
 import { soundOn } from './base.js';
 import { TRACKS, trackDe } from './musica-dados.js';
 
@@ -34,12 +34,20 @@ function stop(fade = true) {
   clearInterval(timer); timer = 0; cur = '';
   if (bus) { const b = bus; bus = null; try { b.gain.setTargetAtTime(0, b.context.currentTime, fade ? 0.12 : 0.01); } catch { /* sem áudio */ } clearTimeout(fadeT); fadeT = setTimeout(() => { try { b.disconnect(); } catch { /* ok */ } }, 600); }
 }
+/** Abaixa a música enquanto o jogo toca ritmo ou nota (ela não pode atrapalhar), e cala de vez quando o jogo manda (Beat Hero tocando). */
+function ajusta(c, p) {
+  if (!bus) return;
+  const calar = p.parar && document.body.classList.contains(p.parar);
+  const baixa = p.duck && Date.now() - lastAudioUse() < 1300;
+  const alvo = calar ? 0 : baixa ? 0.04 : 1;
+  bus.gain.setTargetAtTime(VOL * alvo, c.currentTime, calar || baixa ? 0.05 : 0.4);
+}
 function start(id) {
   const p = TRACKS[id]; if (!p) return;
   try {
-    const c = audio(); if (!c) return; stop(false);
+    const c = audio(false); if (!c) return; stop(false);
     bus = c.createGain(); bus.gain.value = VOL; bus.connect(out()); cur = id; step = 0; nextT = c.currentTime + 0.1;
-    const tick = () => { if (!bus) return; while (nextT < c.currentTime + 0.18) { schedule(c, p, step % 16, nextT); nextT += 60 / p.bpm / 4; step++; } };
+    const tick = () => { if (!bus) return; ajusta(c, p); while (nextT < c.currentTime + 0.18) { schedule(c, p, step % 16, nextT); nextT += 60 / p.bpm / 4; step++; } };
     timer = setInterval(tick, 40); tick();
   } catch { stop(false); }
 }
