@@ -491,3 +491,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - virar = ✕, desvirar = ✅; nomes com `nomeCls()` (midia.js) nunca passam de 2 linhas; MANUAL de enquadre: F123 (Axl) e F103 ajustados; carrossel mostra 2 perguntas por vez
 
 ## v396 — cara a cara: pergunta compacta e centrada (flex; no iPhone o grid deixava o texto no topo)
+
+## v397 — ícones dos modos, opção 3 (linha azul + toque vermelho, em bolinha)
+- `bq()` em js/jogos/bonequinhos.js: kinds paul (robô = 1 contra o robô), um, dois, celular (código), mais (3 ou mais), sala; CSS no fim de css/jogos.css (.ac vermelho / .fa preenchido; ligado = bolinha azul + amarelo)
+- Cara a Cara: "como jogar" agora com ícones (um/paul/dois/celular)

@@ -2,6 +2,7 @@
 // Fluxo: menu (Kids ou Clássico, Solo com Paul / Contra Paul / Dupla) → (tutorial Kids) → partida → ficha da rodada → placar (melhor de 3 nos duelos).
 // Não dá figurinha, pacote nem recompensa; não mexe em ranking nem estrelas.
 import { h } from '../../util.js';
+import { bq } from '../bonequinhos.js';
 import { sheet, confirmSheet, toast } from '../../ui.js';
 import { getGame, setGame, sfx } from '../base.js';
 import { BY_ID } from './elenco.js';
@@ -30,7 +31,7 @@ export function mountMusical(host, { onTema } = {}) {
   const nomeJ = (i) => (cfg.jogo === 'dupla' ? `Jogador ${i + 1}` : i === 0 ? 'você' : 'Paul');
 
   /* ---------------- componentes ---------------- */
-  const seg = (lista, atual, onPick, rotulo) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': rotulo }, ...lista.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(atual === v), class: atual === v ? 'on' : '', onclick: () => onPick(v) }, l)));
+  const seg = (lista, atual, onPick, rotulo) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': rotulo }, ...lista.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(atual === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${atual === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => onPick(v) }, ic ? bq(ic) : l)));
   const temaRow = () => seg([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'musical', (v) => { if (v !== 'musical' && onTema) onTema(v); }, 'tema');
   const paulFala = (txt) => (txt ? h('div', { class: 'cm-paul', role: 'status', 'aria-live': 'polite' }, h('img', { src: 'assets/paul/e02.webp', alt: '', width: 44, height: 36, draggable: 'false' }), h('p', {}, txt)) : null);
   function zoom(carta) {
@@ -70,7 +71,7 @@ export function mountMusical(host, { onTema } = {}) {
       h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
       h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
       h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
-      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
+      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul', 'um'], ['paul', 'contra o Paul', 'paul'], ['dupla', 'dupla (mesmo aparelho)', 'dois'], ['online', '2 celulares (código)', 'celular']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
       h('p', { class: 'jg-lab' }, 'cartas na mesa'), seg(R.TAMANHOS[cfg.modo].map((n) => [n, `${n} cartas`]), tam, (v) => { cfg.tamanho = v; salvar(); menu(); }, 'tamanho'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
       kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar'), cfg.auto ? null : h('p', { class: 'jg-p muted' }, 'manual: depois da resposta, toque no ✕ das cartas que não combinam (toca de novo pra desvirar) e então em "pronto".')),
