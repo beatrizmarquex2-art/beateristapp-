@@ -79,7 +79,8 @@ export const INSTR_ART = { toque: IMG('bateria'), violao: IMG('violao'), piano: 
 PERC_ART.pd = IMG('pandeiro'); PERC_ART.tr = IMG('triangulo');
 /** Cartões do jogo da memória (o Paul tocando cada instrumento): são os pads da Percussão. [id do pad, nome, arquivo, som de cada lado (se tiver)] */
 export const PADS_FOTO = [
-  ['pd', 'pandeiro', '01_pandeiro'], ['tb', 'tamborim', '02_tamborim'], ['ag', 'agogô', '03_agogo'], ['rr', 'reco-reco', '04_reco_reco'],
-  ['tr', 'triângulo', '05_triangulo'], ['gz', 'ganzá', '06_ganza'], ['cg', 'congas', '07_congas', ['cg1', 'cg2']], ['bg', 'bongôs', '08_bongos', ['bg2', 'bg1']],
+  ['pd', 'pandeiro', 'percussao/01_pandeiro'], ['tb', 'tamborim', 'percussao/02_tamborim'], ['ag', 'agogô', 'percussao/03_agogo'],
+  ['rr', 'reco-reco', 'percussao/04_reco_reco'], ['tr', 'triângulo', 'percussao/05_triangulo'], ['gz', 'ganzá', 'percussao/06_ganza'],
+  ['cg', 'congas', 'percussao/07_congas', ['cg1', 'cg2']], ['bg', 'bongôs', 'percussao/08_bongos', ['bg2', 'bg1']], ['cx', 'caixa', 'bateria/02_caixa'],
 ];
-export const PAD_ANIM = { pd: 'pd', tb: 'bg', ag: 'ag', rr: 'cl', tr: 'tr', gz: 'ov', cg: 'cg1', bg: 'bg' };
+export const PAD_ANIM = { pd: 'pd', tb: 'bg', ag: 'ag', rr: 'cl', tr: 'tr', gz: 'ov', cg: 'cg1', bg: 'bg', cx: 'cb' };

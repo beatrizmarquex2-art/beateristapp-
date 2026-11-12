@@ -812,3 +812,6 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-pp-foto img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
 .ti-pp-foto.hit { filter: brightness(1.08) saturate(1.15); }
 @media (max-width: 340px) { .ti-perc { grid-template-columns: repeat(3, 1fr) !important; } }
+
+.ti-perc { grid-template-columns: repeat(3, 1fr) !important; }
+@media (min-width: 560px) { .ti-perc { grid-template-columns: repeat(5, 1fr) !important; } }

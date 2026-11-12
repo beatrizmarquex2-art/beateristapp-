@@ -17,7 +17,7 @@ export function mount(host) {
   let scale = 'penta'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
   const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
   const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão sem nota', hidden: true },
-    ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/percussao/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
+    ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
   const NOTAS = ['♪', '♫', '♩', '✦'];
   pads.addEventListener('pointerdown', (e) => {
     const b = e.target.closest && e.target.closest('.ti-pp'); if (!b) return; e.preventDefault(); audio();

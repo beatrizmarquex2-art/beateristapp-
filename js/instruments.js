@@ -120,6 +120,7 @@ export const PERC = [
   ['gz', 'ganzá', (t, v) => { [0, 0.045].forEach((d, k) => { const n = noiseSrc(t + d, 0.1); const g = gn(); n.connect(bq('highpass', 5800)).connect(g); env(g, t + d, (k ? 0.18 : 0.26) * v, 0.012, 0.07); route(g, 0.06); }); }],
   ['cg1', 'conga aguda', (t, v) => skin(t, 360, 300, 0.32, v, 0.34)],
   ['cg2', 'conga grave', (t, v) => skin(t, 236, 190, 0.5, v, 0.26)],
+  ['cx', 'caixa', (t, v) => snare(t, v * 0.95, false)],
   ['bg1', 'bongô agudo', (t, v) => skin(t, 560, 460, 0.18, v * 0.9, 0.3)],
   ['bg2', 'bongô grave', (t, v) => skin(t, 400, 330, 0.22, v * 0.9, 0.22)],
 ];
