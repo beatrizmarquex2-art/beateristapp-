@@ -605,7 +605,7 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .bottom-nav .nav-item{position:relative}.bottom-nav .nav-lock{position:absolute;top:2px;right:calc(50% - 22px);font-size:11px;font-style:normal}
 .bottom-nav .nav-item.locked{opacity:.72}
 /* ===== aba Tocar: abas de instrumento, violão, xilofone, batida de fundo ===== */
-.ti-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 6px 16px 10px; }
+.ti-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 16px 10px; }
 .ti-tab { display: grid; place-items: center; min-height: 44px; border: 2px solid #1b1818; background: #fff; color: #1b1818; font: 700 14px var(--body); text-decoration: none; }
 .ti-tab.on { background: #1b1818; color: #fff; }
 .ti-tab:focus-visible { outline: 3px solid #b5162b; outline-offset: 2px; }
@@ -744,3 +744,8 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .drawer .drawer-search { padding-bottom: 0; }
 .drawer .drawer-pins { padding: 6px 0 0; }
 .drawer .drawer-pin { min-height: 34px; }
+
+/* aba Tocar: linha "útil" (metrônomo, afinador, timer) abaixo dos instrumentos */
+.ti-util { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; flex-wrap: wrap; }
+.ti-util-l { font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; opacity: .65; }
+.ti-util-a { display: inline-flex; align-items: center; min-height: 34px; padding: 4px 12px; border: 2px solid currentColor; border-radius: 999px; font: 700 13px var(--body); text-decoration: none; color: inherit; }

@@ -29,7 +29,7 @@ const MENU_BEA = [
   ]],
   ['tocar', 'tocar', [
     ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/piano', 'note', 'Piano'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
-    ['útil', [['#/metronomo', 'metro', 'Metrônomo'], ['#/ouvido', 'mic', 'Afinador']]],
+    ['útil', [['#/metronomo', 'metro', 'Metrônomo'], ['#/ouvido', 'mic', 'Afinador'], ['#/foco', 'timer', 'Timer']]],
     ['ferramentas', [['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],
   ['aulas', 'aulas', [
