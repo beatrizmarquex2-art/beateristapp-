@@ -5,7 +5,7 @@ import { h } from './util.js';
 const IMG = 'assets/previa/';
 const PREVIAS = {
   ritmo: { titulo: 'Beat Hero', frase: 'toque no tempo certo em músicas de verdade',
-    sobre: 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, combo, XP e ranking.',
+    sobre: 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, combo, estrelas e ranking.',
     faz: ['escolha a música e o andamento', 'toque nas peças quando as notas chegarem na linha', 'veja seus pontos, combo e precisão na hora'],
     desenvolve: ['coordenação motora e precisão de tempo', 'atenção e tempo de reação', 'percepção de pulso e andamento'],
     imgs: [['ritmo-1', 'escolha a música'], ['ritmo-2', 'as notas descem: toque no tempo'], ['ritmo-3', 'perfeito! combo e estrelas subindo']] },

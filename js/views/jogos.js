@@ -55,7 +55,7 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
   ['Ritmo e bateria', [
-    link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
+    link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha estrelas'),
     inner('toca'),
     inner('detetive'),
     inner('figurix'),

@@ -201,3 +201,16 @@
 .drum-art { display: block; width: 132px; height: 118px; }
 .tr-pad .drum-art { margin: 0 auto 4px; }
 .tk-jogo .tk { padding-bottom: 24px; }
+
+/* Festa musical (pauLta, ao concluir um modo): chuva de notas e estrelas + o Paul comemorando (js/paulta/festa.js) */
+.pf{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(255,209,102,.28),rgba(10,20,45,.82) 70%);animation:pf-in .25s ease-out}
+.pf.out{opacity:0;transition:opacity .35s}
+.pf-p{position:absolute;top:-8%;left:var(--x);font-style:normal;font-size:var(--s);color:var(--c);text-shadow:0 0 10px var(--c);transform:rotate(var(--r));animation:pf-fall var(--d) linear var(--w) infinite;pointer-events:none}
+.pf-box{position:relative;display:grid;justify-items:center;gap:8px;max-width:min(86vw,360px);padding:22px 22px 18px;text-align:center;color:#14284b;background:#fbf7ee;border:4px solid #14284b;border-radius:22px;box-shadow:6px 8px 0 #8a1a30;animation:pf-pop .5s cubic-bezier(.2,1.4,.4,1)}
+.pf-box b{font:400 30px/1.05 var(--display,inherit);text-transform:uppercase;color:#8a1a30}.pf-box p{margin:0;font-weight:700}
+.pf-paul{width:150px;height:auto;animation:pf-dance .6s ease-in-out infinite alternate}
+@keyframes pf-fall{from{transform:translateY(0) rotate(var(--r))}to{transform:translateY(115vh) rotate(calc(var(--r) + 360deg))}}
+@keyframes pf-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes pf-in{from{opacity:0}to{opacity:1}}
+@keyframes pf-dance{from{transform:rotate(-6deg) translateY(0)}to{transform:rotate(6deg) translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.pf-p,.pf-paul,.pf-box{animation:none}}

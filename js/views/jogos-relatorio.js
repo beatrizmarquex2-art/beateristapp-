@@ -6,7 +6,7 @@ import { banner } from '../ui.js';
 // [nome, ícone, o que é, [o que desenvolve], como ajuda na aprendizagem]
 const GROUPS = [
   ['Ritmo e bateria', [
-    ['Beat Hero', 'ritmo.svg', 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, XP e ranking.',
+    ['Beat Hero', 'ritmo.svg', 'Toque no tempo certo em músicas e fases (Ritmo/Melodia, Piano Tiles, Setinhas e Figuras), com pontos, estrelas e ranking.',
       ['coordenação motora e precisão de tempo', 'atenção sustentada e tempo de reação', 'percepção de pulso e andamento'],
       'O retorno imediato (acertou, adiantou, atrasou) mostra ao aluno o próprio tempo sem a fala do professor. Pontos e ranking dão motivo para repetir, e a repetição com meta é o que fixa o pulso.'],
     ['Monte seu ritmo', 'monte.svg', 'O aluno monta ritmos com palavras do dia a dia (pão, bolo, chocolate) e ouve o resultado.',

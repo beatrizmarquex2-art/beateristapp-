@@ -11,7 +11,10 @@ export const ROLETA_QTD = [[1, 45], [2, 35], [3, 20]]; // a roleta dá de 1 a 3 
 /** Prêmio de terminar um jogo inteiro: 3 figurinhas tops (exclusivas da Beaterista e raras). */
 /** Pacotes da pauLta: id `pl:<cartas>:<chance de Beaterista %>:...`. Qualquer outro pacote comum tem PACK_SIZE cartas. */
 export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); return m ? { n: Number(m[1]), bea: Number(m[2]) } : null; };
-export const packSize = (id) => (plPack(id) ? plPack(id).n : PACK_SIZE);
+/** Pacotinhos de FIM de modo da pauLta (pedido da Bea): `plf:<drumF|drumI|drumD>:<a|b|c>:...` = 2 cartas cada; os 3 juntos dão 2 Beatles + 3 comuns + 1 especial
+ *  (fácil = rara, médio = do robô Paul, difícil = exclusiva da Bea). a = Beatles + comum, b = Beatles + comum, c = comum + a especial. */
+export const plfPack = (id) => { const m = /^plf:(drum[FID]):([abc]):/.exec(String(id)); return m ? { modo: m[1], k: m[2] } : null; };
+export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : PACK_SIZE);
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
@@ -48,6 +51,13 @@ function drawBySection(catalog, r, n, pesos) {
 export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
+  const plf = plfPack(packId);
+  if (plf) {
+    const sec = (s, ok = () => true) => catalog.filter((c) => c.secao === s && ok(c)).map((c) => c.codigo); const um = (lista, fora = []) => { const l = lista.filter((x) => !fora.includes(x)); const pool = l.length ? l : lista; return pool.length ? pool[Math.floor(r() * pool.length)] : null; };
+    const especial = plf.modo === 'drumF' ? () => um(sec('Raras')) : plf.modo === 'drumI' ? (f) => um(sec('Beaterista', (c) => /^P/.test(c.codigo)), f) : (f) => um(sec('Beaterista', (c) => /^F/.test(c.codigo)), f);
+    const out = plf.k === 'c' ? [um(sec('Comum'))] : [um(sec('Beatlemania')), um(sec('Comum'))];
+    if (plf.k === 'c') out.push(especial(out)); return out.filter(Boolean);
+  }
   const pl = plPack(packId);
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, pickWeighted(r, ROLETA_QTD), ROLETA_PESOS);

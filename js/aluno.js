@@ -154,7 +154,6 @@ function rankingView(view) {
   view.append(banner('Ranking', 'os melhores da escola'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
       box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
-      box('XP dos jogos', 'quem mais jogou e treinou o ritmo', 'xp', 'XP'),
       socialRow(),
       footerBlock(),
       h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));

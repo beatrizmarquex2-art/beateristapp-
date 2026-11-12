@@ -205,7 +205,6 @@ export function mount(host, opts = {}) {
   let mounted = false; let gone = false;
   const studentTop = (key) => RK.cached(`ritmo|${key}`);
   const studentAdd = (key, e) => { RK.add(`ritmo|${key}`, e.name, e.score, e.acc, e.grade).then(() => RK.top(`ritmo|${key}`, { fresh: true })).then(() => window.BeaterRhythm && window.BeaterRhythm.refresh && window.BeaterRhythm.refresh()); };
-  const xpOut = h('output', { class: 'rg-xp', 'aria-live': 'polite' }, `${xpTotal()} XP`);
   // #jogos fica sem altura fixa (o pacote mede a tela com 100dvh); durante o jogo o .rg-host vira tela cheia (ver app.css)
   const box = h('div', { id: 'jogos' }, h('p', { class: 'muted rg-wait' }, 'carregando os jogos…'));
   const frame = h('div', { class: 'rg-host' }, box);
@@ -302,7 +301,7 @@ export function mount(host, opts = {}) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Beat Hero', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), frame, ...(student ? [] : [codes])); // sem importar MIDI nem lista de MIDI: só as músicas prontas
+  host.append(banner('Beat Hero', 'toca no tempo e ganha estrelas'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos')), frame, ...(student ? [] : [codes])); // sem importar MIDI nem lista de MIDI: só as músicas prontas
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
@@ -322,7 +321,7 @@ export function mount(host, opts = {}) {
       if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 15 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
       else toast(`★ ${Album.progressoTxt(me.id)}`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = !student ? { builtin: true } : { builtin: true, readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) };
-    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });
+    BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { await addXp(n, why); /* XP não aparece mais pra ninguém (pedido da Bea): só fica guardado em silêncio */ } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;
