@@ -21,7 +21,7 @@ export function trancado(hash) {
   const [, a, b] = m;
   if (['ranking', 'album', 'ritmo', 'paulta'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) e a pauLta só com código. Dicionário, Letras e a aulinha abrem com AMOSTRA grátis (js/amostra.js)
   if (a === 'estudos' && b === 'dicas') return true; // a lista de dicas do método pra estudar: só com código
-  if (a === 'jogos' && (b === 'toca' || b === 'cartas' || b === 'quizuno' || b === 'figurix' || b === 'detetive')) return true; // Toca Aqui, Uno Musical (figuras rítmicas) e Detetive Note ensinam de verdade: só com código. O Taiko (rudimentos) foi LIBERADO pra todos (pedido da Bea); pra voltar a trancar: acrescentar || b === 'rudimentos'
+  if (a === 'jogos' && (b === 'toca' || b === 'cartas' || b === 'quizuno' || b === 'figurix' || b === 'rudimentos' || b === 'detetive')) return true; // Toca Aqui, Uno Musical (figuras rítmicas), Taiko (rudimentos) e Detetive Note ensinam de verdade: só com código (o Taiko é só pros alunos, a Bea confirmou)
   if (a === 'kids' && b === 'figuras' && /^#\/kids\/figuras\/aula(\/|$)/.test(String(hash || ''))) return false; // aulinha do Paul: amostra grátis
   if (a === 'kids') return !(b && KIDS_LIVRES.has(b)); // #/kids sozinho (fases e estrelas) e as fases ficam trancados
   return false; // jogos, ritmo (trava por dentro), tocar, toque, piano, relatório
