@@ -104,7 +104,7 @@ export function mount(host, opts) {
     root.replaceChildren(...[
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
       h('div', { class: 'jo-card' },
-        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'dupla', 'dois'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
         prefs.mode === 'dupla' ? linha('quantos jogam', chips([[2, '2'], [3, '3'], [4, '4']], prefs.nDupla, (v) => { FX.play('tap'); save({ nDupla: v }); setup(); }, 'quantos jogam')) : null,
           ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
             : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'

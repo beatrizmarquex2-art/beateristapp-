@@ -1087,3 +1087,13 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix .fx-duas{display:flex;align-items:center;justify-content:center;gap:10px;font:800 22px var(--body,inherit)}.jg-figurix .fx-duas .fx-fig{width:70px}
 .jg-figurix .fx-txt{font-size:13px;text-align:center;line-height:1.15}
 .jg-figurix .fx-mem{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* ícones dos modos (opção 3: linha azul + toque vermelho, em bolinha). Vale em todos os jogos. */
+.ic-bq{width:26px;height:26px}.ic-bq svg{stroke-width:2}.ic-bq .ac{stroke:#d3122f}.ic-bq .fa{fill:#d3122f;stroke:none}
+.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border-radius:50%;display:inline-grid;place-items:center;border:2.5px solid #17365B;background:#fffdf7;color:#17365B;box-shadow:none}
+.jg-seg button.jg-ic .ic-bq,.mem-ic .ic-bq,.bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+.jg-seg button.jg-ic.on,button.mem-ic.on,.bv-modo.bv-ic.on{background:#17365B;border-color:#17365B;color:#fff;box-shadow:none}
+.jg-seg button.jg-ic.on .ic-bq .ac,.mem-ic.on .ic-bq .ac,.bv-modo.bv-ic.on .ic-bq .ac{stroke:#ffd23f}
+.jg-seg button.jg-ic.on .ic-bq .fa,.mem-ic.on .ic-bq .fa,.bv-modo.bv-ic.on .ic-bq .fa{fill:#ffd23f}
+.cm-root .jg-seg button.jg-ic{background:transparent;color:#fffdf8;border-color:rgba(255,253,248,.9)}.cm-root .jg-seg button.jg-ic .ic-bq .ac{stroke:#ff8a98}.cm-root .jg-seg button.jg-ic .ic-bq .fa{fill:#ff8a98}
+.cm-root .jg-seg button.jg-ic.on{background:#fffdf8;color:#17365B}.cm-root .jg-seg button.jg-ic.on .ic-bq .ac{stroke:#d3122f}.cm-root .jg-seg button.jg-ic.on .ic-bq .fa{fill:#d3122f}
+.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{border-radius:50% !important}

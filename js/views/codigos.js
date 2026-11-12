@@ -8,11 +8,21 @@ const when = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/S
 const dia = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(t)) : '—');
 const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt); toast(ok, { id: 'cod-copy', ms: 2200 }); } catch { toast('não deu pra copiar, selecione a tabela', { id: 'cod-copy', ms: 3000 }); } };
 
+
+/** O que um passe pode liberar (telas que ficam trancadas sem código). `rotas` = prefixos de endereço. */
+const PASSES = [
+  ['Uno Musical', ['#/jogos/cartas']], ['quiz do Uno', ['#/jogos/quizuno']], ['Toca Aqui', ['#/jogos/toca', '#/kids/figuras']],
+  ['Beat Hero e músicas', ['#/ritmo']], ['pauLta', ['#/paulta']], ['fases dos Kids', ['#/kids']], ['dicas do método (Estudos)', ['#/estudos/dicas']],
+  ['Modo Aventura (todos os jogos)', ['/aventura']], ['Álbum e roleta', ['#/album']], ['Ranking', ['#/ranking']],
+];
+const SITE = 'https://jogos.beaterista.com.br';
+
 export function mount(host) {
   let list = []; let busy = false; let gone = false; let last = null; // last = linhas da última importação/geração (pra mostrar só elas)
   const ta = h('textarea', { class: 'field cod-ta', rows: 6, 'aria-label': 'Lista de alunos e códigos', placeholder: 'um aluno por linha\nMaria Souza ; K7M2QX   (já tem código)\nJoão Pedro             (só o nome: eu gero o código)', spellcheck: 'false' });
   const qtd = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 100, value: 5, inputmode: 'numeric', 'aria-label': 'Quantos códigos' });
   const out = h('div', { class: 'cod-out' });
+  const diasIn = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: 3, inputmode: 'numeric', 'aria-label': 'Quantos dias vale o passe' });
   const tableBox = h('div', {});
   host.append(banner('Importar código de aluno', 'quem tem código usa o Beat Hero e as Músicas MIDI'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
@@ -20,6 +30,10 @@ export function mount(host) {
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doImport }, 'importar'), h('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = ''; } }, 'limpar'))),
       h('section', { class: 'card pad' }, h('b', {}, 'gerar códigos novos'), h('p', { class: 'muted' }, 'sem lista: eu crio códigos aleatórios sem nome (você dá o nome depois, se quiser).'),
         h('div', { class: 'row' }, qtd, h('button', { class: 'btn', type: 'button', onclick: doGen }, 'gerar'))),
+      h('section', { class: 'card pad' }, h('b', {}, 'passe (amigos e família)'), h('p', { class: 'muted' }, 'escolha o que libera. o código sai como BEA + 4 letras/números, vale os dias que você marcar a partir do 1º uso e funciona em até 2 aparelhos. o passe não dá estrelas nem álbum.'),
+        h('div', { class: 'cod-passes' }, ...PASSES.map(([nome], i) => h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', 'data-i': String(i) }), ` ${nome}`))),
+        h('div', { class: 'row' }, h('label', { class: 'muted' }, 'dias '), diasIn, h('button', { class: 'btn primary', type: 'button', onclick: doPasse }, 'gerar passe')),
+        h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn', type: 'button', onclick: doTestDrive }, 'test drive: site todo por 1 dia (BEASITE)'))),
       out,
       h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'tabela atualizada'), h('span', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(list), 'tabela copiada (cola na planilha)'), }, 'copiar tabela'), h('button', { class: 'btn small ghost', type: 'button', onclick: load }, 'atualizar'))), tableBox)));
   const tsv = (rows) => ['nome\tcódigo\tativo\tusos\tvalido ate', ...rows.map((x) => `${x.nome || ''}\t${x.code}\t${x.ativo ? 'sim' : 'não'}\t${x.usos ?? 0}\t${dia(x.expira_em)}`)].join('\n');
@@ -42,6 +56,25 @@ export function mount(host) {
     last = rows;
     out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, titulo), h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(rows), 'tabela copiada (cola na planilha)') }, 'copiar só essas')),
       h('div', { class: 'cod-wrap' }, h('table', { class: 'cod-tbl' }, h('thead', {}, h('tr', {}, h('th', {}, 'nome'), h('th', {}, 'código'))), h('tbody', {}, ...rows.map((x) => h('tr', {}, h('td', {}, x.nome || '—'), h('td', {}, h('b', { class: 'rg-code' }, x.code))))))))); }
+  const msgPasse = (code, o, dias) => `oi! aqui está o seu passe da Beaterista (${o}): ${code}\nvale ${dias} dia${dias === 1 ? '' : 's'} a partir da 1ª vez que você usar, em até 2 aparelhos.\nentre em ${SITE} e toque em "tenho código".`;
+  function mostraPasse(code, o, dias) {
+    const m = msgPasse(code, o, dias);
+    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe: ${o}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cola no WhatsApp)') }, 'copiar mensagem')),
+      h('p', { class: 'rg-code', style: 'font-size:28px;margin:6px 0' }, code), h('p', { class: 'muted' }, m)));
+  }
+  async function doPasse() {
+    const marcados = [...host.querySelectorAll('.cod-passes input:checked')].map((x) => PASSES[+x.dataset.i]); if (!marcados.length) return toast('marque o que o passe libera', { id: 'cod-err', ms: 2600 });
+    const dias = Math.max(1, Math.min(365, Math.round(Number(diasIn.value) || 3))); if (busy) return; busy = true;
+    try { const code = await CODE.criarPasse({ prefixo: 'BEA', nome: `passe ${marcados.map((x) => x[0]).join(' + ')}`, dias, jogos: marcados.flatMap((x) => x[1]) }); mostraPasse(code, marcados.map((x) => x[0]).join(' + '), dias); toast('passe gerado ✓', { id: 'cod-ok', ms: 2200 }); await load(); }
+    catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
+    busy = false;
+  }
+  async function doTestDrive() {
+    if (busy) return; busy = true;
+    try { const code = await CODE.criarPasse({ prefixo: 'BEASITE', nome: 'test drive 1 dia', dias: 1, jogos: null }); mostraPasse(code, 'test drive: o site todo', 1); toast('test drive gerado ✓', { id: 'cod-ok', ms: 2200 }); await load(); }
+    catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
+    busy = false;
+  }
   async function doImport() {
     if (busy) return; const ja = new Set(list.map((x) => x.code)); const { rows, bad } = CODE.entender(ta.value, ja, new Map(list.filter((x) => x.nome).map((x) => [x.code, x.nome])));
     if (!rows.length) return toast(bad.length ? 'linha muito grande, confira a lista' : 'cole pelo menos um aluno', { id: 'cod-err', ms: 3000 });

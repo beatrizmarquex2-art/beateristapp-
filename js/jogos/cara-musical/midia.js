@@ -10,6 +10,9 @@ export const posOf = (code) => { const c = (CATALOGO || {})[code]; if (!c) retur
 
 /** Enquadramento da foto numa carta QUADRADA do Cara a Cara (o rosto detectado do catálogo erra, então não vale): foto bem mais larga que alta aparece inteira;
  *  foto alta preenche alinhada ao topo, onde fica a cabeça. Ajustes manuais por foto em `MANUAL` (código → posição). Devolve um trecho de `style`. */
-const MANUAL = { F016: '50% 78%', F123: '50% 41%', F027: '50% 88%', F091: '50% 64%', F093: '50% 28%' };
+const MANUAL = { F016: '50% 78%', F123: '50% 60%', F103: '50% 45%', F027: '50% 88%', F091: '50% 64%', F093: '50% 28%' };
 export const enquadreFoto = (code) => { const c = (CATALOGO || {})[code]; const a = c && c.largura_px && c.altura_px ? c.largura_px / c.altura_px : 1;
   if (MANUAL[code]) return `object-position:${MANUAL[code]}`; if (a > 1.15) return 'object-fit:contain;object-position:50% 50%'; return `object-position:50% ${a > 0.9 ? 12 : 0}%`; };
+
+/** Classe do nome na carta: nome grande diminui a letra pra nunca passar de 2 linhas (e nunca quebrar no meio da palavra). */
+export const nomeCls = (curto) => { const t = String(curto || ''); const w = Math.max(...t.split(' ').map((x) => x.length), 0); return w >= 12 || t.length >= 22 ? 'xs' : w >= 9 || t.length >= 15 ? 'long' : ''; };

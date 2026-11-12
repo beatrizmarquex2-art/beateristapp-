@@ -1,6 +1,8 @@
 -- Limite de aparelhos por código de aluno: no máximo `max_aparelhos` (padrão 2) aparelhos ao mesmo tempo.
 -- Vale pra 'passe' (já valia) e pra 'turma' quando o app manda o id do aparelho. App antigo (sem id) segue funcionando sem limite.
 -- Vaga parada há 30 dias é liberada sozinha; "sair/tirar da lista" no app libera na hora (aluno_sair).
+alter table public.alunos_codigos add column if not exists jogos text[]; -- telas que o passe libera (null = o site todo)
+
 create or replace function public.aluno_acesso(p_code text, p_aparelho text default null, p_ua text default null)
 returns jsonb language plpgsql security definer set search_path to 'public' as $function$
 declare c text := public.fig_canon(p_code); r public.alunos_codigos%rowtype; n int; ap text := nullif(btrim(coalesce(p_aparelho, '')), '');
@@ -30,7 +32,7 @@ begin
     iniciado_em = coalesce(iniciado_em, now()),
     expira_em = case when tipo = 'passe' and expira_em is null then now() + make_interval(days => dias) else expira_em end
    where code = c returning expira_em into r.expira_em;
-  return jsonb_build_object('ok', true, 'tipo', r.tipo, 'nome', r.nome, 'expira_em', r.expira_em);
+  return jsonb_build_object('ok', true, 'tipo', r.tipo, 'nome', r.nome, 'expira_em', r.expira_em, 'jogos', to_jsonb(r.jogos));
 end $function$;
 
 -- Libera a vaga deste aparelho (o aluno saiu / tirou o código da lista).

@@ -9,7 +9,7 @@ import { BY_Q, textoDe } from './perguntas.js';
 import * as R from './regras.js';
 import * as O from './online-regras.js';
 import { fatosDe } from './fichas.js';
-import { mini, grande, enquadreFoto, loadCat } from './midia.js';
+import { mini, grande, enquadreFoto, loadCat, nomeCls } from './midia.js';
 import { ganhou } from '../estrelas-jogo.js';
 
 const guardar = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch { /* sem armazenamento */ } };
@@ -39,7 +39,7 @@ export async function mountOnline(root, { conn, estado, sair }) {
   }
   const celula = (id, { fora = false, aoToque, selecionada = false, virar = null, virada = false } = {}) => { const c = O.cartaDe(e, id); const ent = BY_ID[id];
     return h('div', { class: `cm-cell${fora ? ' out' : ''}${selecionada ? ' sel' : ''}` }, h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada), 'aria-label': `${ent.curto}${fora ? ', virada' : ''}`, onclick: () => aoToque(id) },
-      h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto) }), h('small', { class: ent.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, ent.curto), fora ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null), virar ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(virada), 'aria-label': virada ? 'desvirar a carta' : 'virar a carta', onclick: virar }, '✕') : null); };
+      h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto) }), h('small', { class: nomeCls(ent.curto) }, ent.curto), fora ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null), virar ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(virada), 'aria-label': virada ? 'desvirar a carta' : 'virar a carta', onclick: virar }, virada ? '✅' : '✕') : null); };
   const grade = (ids, opt) => h('div', { class: `cm-grade ${e.mesa.cartas.length <= 6 ? 'cm-g3' : 'cm-g4'}`, role: 'group', 'aria-label': 'cartas' }, ...ids.map((id) => celula(id, { fora: typeof opt.fora === 'function' ? opt.fora(id) : false, selecionada: opt.selecionada === id, aoToque: opt.aoToque, virar: opt.virar ? opt.virar(id) : null, virada: !!(opt.virada && opt.virada(id)) })));
   const zoom = (id) => { const c = O.cartaDe(e, id); sheet(BY_ID[id].curto, () => h('div', { class: 'sheet-body cm-zoom' }, h('img', { src: grande(c.foto), alt: `foto de ${BY_ID[id].curto}`, onerror: (ev) => { ev.target.src = mini(c.foto); } }), h('b', {}, BY_ID[id].curto)));
   };

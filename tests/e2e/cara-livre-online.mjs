@@ -25,7 +25,7 @@ async function abrir(p) {
   if (await p.locator('button:text-is("JOGAR")').count()) { await p.locator('button:text-is("JOGAR")').click(); await sleep(300); }
   await livre(p);
   await sleep(250); // o cara a cara é só de artistas: abre direto
-  await p.locator('button[role=radio]:has-text("2 celulares")').click(); await sleep(200);
+  await p.locator('button[role=radio][aria-label*="2 celulares"]').click(); await sleep(200);
 }
 const a = await phone(); const b = await phone();
 await abrir(a); await abrir(b);

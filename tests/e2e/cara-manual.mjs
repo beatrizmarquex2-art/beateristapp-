@@ -7,8 +7,7 @@ await p.goto(`${url}/aluno.html#/jogos/cara`); await sleep(1200);
 const j = p.locator('button:text-is("JOGAR")'); if (await j.count()) { await j.click(); await sleep(300); }
 const b = p.locator('button:has-text("Modo Livre"), a:has-text("Modo Livre")'); if (await b.count()) { await b.first().click(); await sleep(400); }
 await p.locator('button[role=radio]:has-text("clássico")').click(); await sleep(250);
-await p.locator('button[role=radio]:has-text("manual")').click(); await sleep(250);
-await p.locator('button[role=radio]:has-text("contra o Paul")').click(); await sleep(250);
+await p.locator('button[role=radio][aria-label*="contra o Paul"]').click(); await sleep(250);
 await p.locator('button:has-text("jogar")').first().click(); await sleep(1200);
 await p.locator('.cm-card').first().click(); await sleep(400); await p.locator('.sheet-body button.btn.primary').first().click(); await sleep(900);
 await p.locator('.cm-carro .cm-qc').first().click(); await sleep(400);

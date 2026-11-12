@@ -506,3 +506,23 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Figurix em 4 mundos** (nov/2026): as 62 fases se repartem em 4 mapas com cenário e cores próprios (`MUNDOS` em `js/jogos/figurix-logic.js`): Floresta das Semínimas (1–15), Deserto das Pausas (16–31), Mar das Colcheias (32–47), Montanha das Semifusas (48–62). Abas "1 · floresta … 4 · montanha" no cabeçalho do mapa; todos abertos. Cores em `css/aventura-tema.css` (`.mp[data-theme="figurix-…"]`, sem roxo). **Ideia pendente pro pauLta**: trocar fácil/intermediário/difícil da bateria por mundos (ver conversa).
 - **Todos os jogos de caminhozinho em mundos** (pedido da Bea, nov/2026): cada modo/nível virou um **mundo com cenário e cor próprios** no mapa (`css/aventura-tema.css`, `.mp[data-theme="…"]`, escuro e claro, sem roxo/rosa). **pauLta**: a home mostra 6 mundos (Selva da Bateria, Cidade das Colcheias, Vulcão das Semicolcheias, Clave de Sol, Clave de Fá, Duelo); acabou a escolha fácil/intermediário/difícil (os ids internos `drumF/I/D` e o progresso são os mesmos). **Toca Aqui**: Vila das Semínimas, Cidade das Semicolcheias, Palco das Síncopes (ids `ini/int/ava`, estrelas iguais). **Detetive Note**: cada modo é um mundo (Ilha das Figuras, Cozinha Rítmica, Parque dos Ritmos, Corpo em Movimento, Floresta dos Bichos). **Figurix**: 4 mundos.
 - **Temas dos mundos compartilhados** (`js/jogos/mundos-tema.js`): floresta, deserto, mar, espaço, gelo e vulcão (mesmos desenhos e cores do Figurix, que a Bea adorou; cores em `css/aventura-tema.css` como `.mp[data-theme="mundo-<tema>"]`, sprites em `js/kids/mapa-art.js`). Quem usa: **Figurix** (floresta, deserto, mar, espaço), **pauLta** (Selva = floresta, Deserto das Colcheias = deserto, Vulcão das Semicolcheias = vulcão, Clave de Sol = mar, Clave de Fá = gelo, Duelo = espaço), **Toca Aqui** (Bosque das Semínimas = floresta, Maré das Semicolcheias = mar, Órbita das Síncopes = espaço) e **Detetive Note** (figuras = espaço, comida = deserto, parque = floresta, corpo = vulcão, animal = mar). Pra criar um mundo novo: `temaDoMundo(tema, nome, [[id, nome, sub], …])`.
+## v394 — cara a cara: ✕/✅, nomes em 2 linhas, enquadre, 2 perguntas por vez
+- virar = ✕, desvirar = ✅; nomes com `nomeCls()` (midia.js) nunca passam de 2 linhas; MANUAL de enquadre: F123 (Axl) e F103 ajustados; carrossel mostra 2 perguntas por vez
+
+## v396 — cara a cara: pergunta compacta e centrada (flex; no iPhone o grid deixava o texto no topo)
+
+## v397 — ícones dos modos, opção 3 (linha azul + toque vermelho, em bolinha)
+- `bq()` em js/jogos/bonequinhos.js: kinds paul (robô = 1 contra o robô), um, dois, celular (código), mais (3 ou mais), sala; CSS no fim de css/jogos.css (.ac vermelho / .fa preenchido; ligado = bolinha azul + amarelo)
+- Cara a Cara: "como jogar" agora com ícones (um/paul/dois/celular)
+
+## v398 — cara a cara: 2 modos fixos
+- kids = automático + 12 cartas; clássico = manual (✕) + 20 cartas. Sem seletor de "cartas na mesa" nem de "eliminar". `tamanhoPadrao()` e `cfg.auto` em cara-musical/tela.js
+
+## v399 — "2 a 4" = "3 ou mais"
+- Uno (local), memória (2 a 4) e stop (dupla) usam o ícone de grupo (`mais`) com o nome "no mesmo celular (2 a 4 pessoas)"; velha, bingo e cara a cara (só 2) seguem com `dois`
+
+## v400 — passes (código de um jogo só / test drive)
+- Pedido da Bea: "passe único" = BEA + 4 letras/números, ela escolhe o(s) jogo(s)/aba(s), vale N dias a partir do 1º uso, 2 aparelhos; "test drive" = BEASITE + 4, site todo por 1 dia. Passe NÃO dá estrelas/álbum (`AC.liberado()` é false com escopo; `AC.comCodigo()` é true)
+- Cliente: `js/acesso.js` (escopo em localStorage `beaterista-aluno-escopo`, `trancado()` libera só os prefixos), `js/codigo.js` (`criarPasse`, guarda escopo vindo de `aluno_acesso.jogos`), gerador em js/views/codigos.js (app da Bea). tests/acesso-passe.test.mjs
+- SERVIDOR: supabase/014_passes_aparelhos.sql (coluna `jogos`, `aluno_acesso` com aparelhos+escopo, `aluno_sair`) — **AINDA NÃO APLICADO** (o Supabase pede confirmação da Bea e o pedido expira em 60 s). Sem ele o gerador de passe dá erro e o limite de 2 aparelhos não vale
+- Pagamento automático (Hotmart → webhook → Edge Function → "comprei o passe" por e-mail): ainda a fazer; depende do hottok/produto da Bea
