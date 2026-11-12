@@ -18,10 +18,13 @@ check('teclado: 12 notas × tipo, com teclado desenhado', (await p.locator('.ac-
 await p.locator('button[role=radio]', { hasText: 'menor' }).first().click(); await sleep(300);
 check('teclado: trocar o tipo muda os acordes (Cm)', /Cm/.test(await p.locator('.ac-cifra').first().innerText()));
 await go('#/estudos/ritmos');
-check('ritmos: 8 ritmos de bateria', (await p.locator('.rt-item').count()) === 8);
-await p.locator('.rt-item', { hasText: 'Funk' }).click(); await sleep(300);
+check('ritmos: 7 pontinhos, sem lista escrita', (await p.locator('.rt-dots i').count()) === 7 && (await p.locator('.rt-item').count()) === 0);
+const nomes = [];
+for (let k = 0; k < 7; k++) { nomes.push(await p.locator('.rt-t').innerText()); await p.locator('.rt-seta[aria-label="próximo ritmo"]').click(); await sleep(80); }
+check('ritmos: setinha passa por Rock 1-3, Pop, Reggaeton, Samba, Baião', nomes.join('|') === 'Rock 1|Rock 2|Rock 3|Pop|Reggaeton|Samba simplificado|Baião', nomes.join('|'));
+check('ritmos: partitura colorida desenhada', (await p.locator('.rt-part ellipse').count()) >= 4);
 const o1 = await p.evaluate(() => window.__osc); await p.locator('.rt-play').click(); await sleep(1500);
-check('ritmos: ouvir toca e acende os passos', (await p.locator('.rt-linha i.agora').count()) >= 1, String(await p.locator('.rt-linha i.agora').count()));
+check('ritmos: ouvir toca e acende os passos', (await p.locator('.rt-linha i.agora').count()) >= 1 && (await p.locator('.rt-part .pc.agora').count()) >= 1);
 await p.locator('.rt-play').click();
 await go('#/estudos/basica/figuras');
 check('teoria: 5 cartões clicáveis e o quiz está travado até virar todos', (await p.locator('.tf-card').count()) === 5 && (await p.locator('button:has-text("cartões que faltam")').isDisabled()));

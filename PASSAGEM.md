@@ -442,3 +442,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## v385 — Stop 2–4 no mesmo celular + nuvem do Paul
 - Stop modo dupla: seletor "quantos jogam" (2/3/4), `prefs.nDupla`; online segue 2; teste `tests/e2e/stop-quatro.mjs`
 - nuvem do Paul não aparece dentro de jogos (cobria o botão STOP): regra em `startPaul({allowed})` no aluno.js
+
+## v386 — ritmos com setinha + cartas da memória maiores
+- Estudos > Ritmos: só Rock 1/2/3, Pop, Reggaeton, Samba simplificado, Baião; setinhas ‹ › (sem lista), grade colorida + partitura SVG colorida (`partitura()` em estudos-som.js) que acende junto com o som
+- assets/memoria/figuras/*.webp: símbolo central ampliado (originais em git antigo / v385)
+- dúvida pendente com a Bea: Rock 1 = bumbo 1 e 3; Rock 2 = bumbo 1, 2 e 3; Rock 3 = bumbo 1, 3 e "e" do 3
