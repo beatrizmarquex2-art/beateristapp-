@@ -309,7 +309,7 @@ const RK_STY={
      {n:'Última Fita',key:0,g:1,mv:4,mc:6,sh:-1,p:P([5,1,4,0],[0,5,1,4],[3,3,4,4]),sc:J}]});
 })();
 /* a Bea tirou do rock a 2, 5, 8 e 9: ficam as 1, 3, 4, 6, 7 e 10 (o som de flauta/8-bit de cada uma continua o da posição original) */
-(function(){const DROP={rock:[1,4,7,8]};Object.keys(RK_STY).forEach(k=>{const Y=RK_STY[k];Y.S.forEach((d,i)=>{d.lead=i%2?'8bit':'flauta';d.bpm=Y.tiers[i]});const dr=DROP[k]||[];Y.S=Y.S.filter((d,i)=>dr.indexOf(i)<0);Y.tiers=Y.S.map(d=>d.bpm)})})();
+(function(){const DROP={rock:[1,4,7,8],pop:[0,1,2,6,8]};Object.keys(RK_STY).forEach(k=>{const Y=RK_STY[k];Y.S.forEach((d,i)=>{d.lead=i%2?'8bit':'flauta';d.bpm=Y.tiers[i]});const dr=DROP[k]||[];Y.S=Y.S.filter((d,i)=>dr.indexOf(i)<0);Y.tiers=Y.S.map(d=>d.bpm)})})();
 function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 const RK_TIER_NAMES=['calminha','devagar','médio','rápido','turbo'];
 function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:Y.kit,lead:D.lead,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
