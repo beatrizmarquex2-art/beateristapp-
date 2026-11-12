@@ -6,8 +6,7 @@ const mk = async () => { const ctx = await context(browser, { viewport: { width:
   await ctx.route('**/rest/v1/rpc/**', (r) => (r.request().url().includes('aluno_codigo_ok') ? r.fallback() : r.fulfill({ status: 200, contentType: 'application/json', body: '[]' })));
   const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(String(e).slice(0, 160))); return p; };
 const p = await mk(); await p.goto(`${url}/aluno.html`); await sleep(1500);
-check('o campo do código é de senha (o aparelho oferece guardar) e tem "mostrar o código"', (await p.locator('.al-cod').getAttribute('type')) === 'password' && (await p.locator('.al-ver').count()) === 1);
-await p.locator('.al-ver input').check(); check('"mostrar o código" revela o texto', (await p.locator('.al-cod').getAttribute('type')) === 'text'); await p.locator('.al-ver input').uncheck();
+check('o campo do código mostra as letras (texto) e não tem mais "mostrar o código"', (await p.locator('.al-cod').getAttribute('type')) === 'text' && (await p.locator('.al-ver').count()) === 0);
 await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('.al-cod').fill('MEU1234'); await p.locator('button:has-text("entrar")').first().click(); await sleep(3500);
 check('depois de entrar com o código, pergunta se quer guardar', (await p.locator('.al-guardar').count()) === 1 && (await p.locator('.al-guardar .al-lock-code').innerText()).includes('MEU1234'));
 check('tem as opções: salvar senha, enviar pra mim, copiar, baixar e agora não', ['salvar senha', 'enviar pra mim', 'copiar', 'baixar', 'agora não'].every(async () => true) && (await p.locator('.al-guardar button').count()) === 5);

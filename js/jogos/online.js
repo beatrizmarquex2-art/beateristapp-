@@ -98,14 +98,13 @@ export function lobby({ jogo, makeState, onStart: aoComecar }) {
   function home() {
     if (conn) { conn.close(); conn = null; }
     const ult = salaLembrada(jogo);
-    const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala', inputmode: 'text',
+    const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'código da sala', 'aria-label': 'código da sala', inputmode: 'text',
       oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') entrarCom(inp.value); } });
     box.replaceChildren(
       ult ? h('div', { class: 'jg-volta' }, h('button', { class: 'btn primary wide', type: 'button', onclick: () => voltar(ult) }, `voltar pra sala ${ult.code}`), h('small', { class: 'muted' }, 'você saiu de uma partida? volte por aqui.')) : null,
-      h('p', { class: 'jg-lab' }, 'tem o código da sala? digite aqui'),
-      h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: () => entrarCom(inp.value) }, 'entrar')),
-      h('p', { class: 'jg-lab' }, 'ou crie uma sala e passe o código'),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: create }, 'criar sala')),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary wide', type: 'button', onclick: create }, 'criar sala')), // criar sala vem primeiro, lá em cima
+      h('p', { class: 'jg-lab jg-lab-peq' }, 'ou entre com o código da sala'),
+      h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn', type: 'button', onclick: () => entrarCom(inp.value) }, 'entrar')),
       msg);
     msg.textContent = '';
   }

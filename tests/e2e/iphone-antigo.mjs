@@ -9,7 +9,7 @@ await ctx.addInitScript(antigo);
 await ctx.route('**/*.supabase.co/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'null', headers: { 'access-control-allow-origin': '*' } }));
 const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(String(e).slice(0, 160)));
 await p.goto(`${url}/aluno.html`); await sleep(1500);
-await p.locator('input[aria-label="Seu nome"]').fill('Leticia'); await p.locator('select').selectOption({ index: 1 }); await p.locator('button:has-text("gerar meu código")').click(); await sleep(400);
+await p.locator('input[aria-label="Seu nome"]').fill('Leticia'); await p.locator('button:has-text("gerar código")').click(); await sleep(400);
 await p.locator('button:has-text("entrar")').click(); await sleep(2500);
 check('entra no app mesmo sem randomUUID (o erro do iPhone da Letícia)', (await p.locator('.al-entry').count()) === 0 && (await p.locator('nav .nav-item').count()) >= 4 && !(await p.locator('.form-err').innerText().catch(() => '')).includes('deu erro'), await p.locator('.form-err').innerText().catch(() => ''));
 check('os polyfills entraram', await p.evaluate(() => typeof crypto.randomUUID === 'function' && typeof [].at === 'function' && typeof [].findLast === 'function'));

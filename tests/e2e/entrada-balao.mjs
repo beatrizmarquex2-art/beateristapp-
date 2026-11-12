@@ -9,7 +9,7 @@ await p.evaluate(async () => { const m = await import('/js/paul-talk.js'); m.thi
 check('balão não aparece na tela de entrada', (await p.locator('.pt-think.on').count()) === 0);
 await p.locator('.al-paul-img').click(); await sleep(600);
 check('tocar no Paul na entrada não abre balão', (await p.locator('.pt-think.on').count()) === 0);
-await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('button:has-text("gerar meu código")').click(); await sleep(500);
+await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('button:has-text("gerar código")').click(); await sleep(500);
 check('"mostrar o código" some quando o código foi gerado', await p.locator('.al-ver').isHidden());
 const alvo = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === 'entrar'); b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); const e = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return e === b || b.contains(e); });
 check('o botão "entrar" está livre (nada por cima)', alvo === true);
