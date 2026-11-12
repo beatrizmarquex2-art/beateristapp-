@@ -442,6 +442,57 @@ details{border-width:1px;padding:10px 14px;margin-bottom:7px}
     <h2 class="A">Da tela pra mão na massa</h2>
     <img class="oferta-banner" src="assets/9c5cc9a5295ed6fd.webp" alt="Lojinha Beaterista, ebooks, cursos, jogos e materiais para imprimir" width="1450" height="483" loading="lazy">
     <p class="lead">Se quiser levar a prática pra fora da tela, na lojinha você encontra jogos pra imprimir e recortar, atividades pra colorir e apostilas pra tocar em casa. Escolha o material que combina com o que seu filho quer explorar.</p>
+    <!-- COMBO ROBÔTERISTA — bloco independente para integrar na vitrine Beaterista -->
+<div class="be-roboc" id="combo-roboterista" aria-labelledby="be-roboc-title">
+  <style>
+    .be-roboc, .be-roboc * { box-sizing: border-box; }
+    .be-roboc { --creme:#f6eee2;--navy:#0e2347;--vermelho:#b5162b;--amarelo:#f6c44f; font-family:system-ui,-apple-system,'Segoe UI',sans-serif; max-width:1160px; margin:40px auto; padding:20px; color:var(--navy); }
+    .be-roboc-card { position:relative; display:grid;grid-template-columns:minmax(0, .95fr) minmax(0, 1.05fr);align-items:center;gap:clamp(20px,4vw,54px);overflow:hidden;background:var(--creme);border:3px solid var(--navy);border-radius:22px;padding:clamp(18px,4vw,45px);box-shadow:10px 11px 0 var(--navy); }
+    .be-roboc-card:before{content:"";position:absolute;right:-45px;top:-45px;width:160px;height:160px;border-radius:50%;background:var(--amarelo);opacity:.6;}
+    .be-roboc-media { position:relative;z-index:1; }
+    .be-roboc-media img {display:block;width:100%;height:auto;max-width:500px;border-radius:12px;box-shadow:0 16px 38px #0e234733;}
+    .be-roboc-tag {display:inline-flex;align-items:center;gap:8px;background:var(--vermelho);color:#fff;padding:7px 12px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.07em;border-radius:5px;transform:rotate(-2deg);}
+    .be-roboc h2 {color:var(--navy);font-size:clamp(28px,4.8vw,56px);letter-spacing:-.045em;line-height:1.01;font-weight:950;text-transform:uppercase;margin:17px 0 12px;position:relative;z-index:1;}
+    .be-roboc h2 span {color:var(--vermelho);}
+    .be-roboc p {font-size:clamp(14px,1.5vw,17px);line-height:1.55;margin:0 0 15px;max-width:52ch;position:relative;z-index:1;}
+    .be-roboc-chips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 19px;}
+    .be-roboc-chips span {border:1.5px solid var(--navy);border-radius:100px;padding:7px 11px;background:#fff9ee;font-size:12px;font-weight:800;}
+    .be-roboc-price{display:flex;gap:13px;align-items:center;flex-wrap:wrap;margin:10px 0 18px;}
+    .be-roboc-price s{font-size:18px;color:#606778;}
+    .be-roboc-price strong{font-size:clamp(37px,4vw,52px);font-weight:950;color:var(--vermelho);letter-spacing:-.04em;}
+    .be-roboc-button{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:min(100%,340px);background:var(--navy);color:#fff!important;border:0;border-radius:11px;padding:17px 22px;text-decoration:none!important;font-weight:950;font-size:17px;text-align:center;box-shadow:5px 5px 0 var(--amarelo);transition:transform .15s ease;}
+    .be-roboc-button:hover,.be-roboc-button:focus-visible{transform:translateY(-3px);}
+    .be-roboc-small{margin-top:15px!important;font-size:12px!important;color:#44526b;}
+    .be-roboc-contents{margin-top:25px;padding:24px;background:#fff9ee;border:2px solid var(--navy);border-radius:16px;}
+    .be-roboc-contents h3 {margin:0 0 14px;font-size:22px;text-transform:uppercase;font-weight:900;}
+    .be-roboc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .be-roboc-grid div{padding:14px 11px;background:var(--creme);border-radius:10px;border-top:4px solid var(--vermelho);font-weight:800;font-size:14px;line-height:1.4;}
+    @media(max-width:780px){.be-roboc{padding:10px;margin:22px auto}.be-roboc-card{grid-template-columns:1fr;padding:20px;box-shadow:5px 6px 0 var(--navy)}.be-roboc-media img{max-width:320px;margin:0 auto}.be-roboc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.be-roboc-contents{padding:18px}.be-roboc-button{width:100%;}}
+  </style>
+  <div class="be-roboc-card">
+    <div class="be-roboc-media">
+      <img src="assets/combo-roboterista.webp" alt="Capa do Combo Robôterista com os quatro materiais digitais, o mascote Paul e oferta por R$ 79,90" loading="lazy" width="1254" height="1254">
+    </div>
+    <div class="be-roboc-copy">
+      <span class="be-roboc-tag">oferta especial • material digital</span>
+      <h2 id="be-roboc-title">combo <span>robôterista</span></h2>
+      <p>quatro materiais para tornar o aprendizado musical mais visual, criativo e divertido — com ritmo, figuras, harmonia, melodia, exercícios e jogo da memória.</p>
+      <div class="be-roboc-chips"><span>4 materiais em PDF</span><span>para imprimir</span><span>teoria + prática</span></div>
+      <div class="be-roboc-price"><s>de R$ 119,90</s><strong>R$ 79,90</strong></div>
+      <a class="be-roboc-button" href="https://pay.hotmart.com/K108463375K?src=vendas" target="_blank" rel="noopener noreferrer" aria-label="comprar Combo Robôterista na Hotmart por R$ 79,90">QUERO MEU COMBO ↗</a>
+      <p class="be-roboc-small">pagamento pela Hotmart • produto digital em PDF, sem envio físico</p>
+    </div>
+  </div>
+  <div class="be-roboc-contents">
+    <h3>o que vem no combo?</h3>
+    <div class="be-roboc-grid">
+      <div>01 · ritmo e figuras<br><small>leitura, pausas e ritmo</small></div>
+      <div>02 · harmonia e melodia<br><small>notas e acordes</small></div>
+      <div>03 · na prática<br><small>atividades e exercícios</small></div>
+      <div>04 · memória musical<br><small>cartinhas para recortar e jogar</small></div>
+    </div>
+  </div>
+</div>
     <h3 class="A colecao-titulo">Materiais do Robôterista Paul</h3>
     <div class="prat novos-materiais">
       <article class="p"><img src="assets/d5c382ef93281c9a.webp" alt="Capa de Robôterista Ensina · Na Prática" loading="lazy"><b>Robôterista Ensina · Na Prática</b><small>48 atividades em 64 páginas. Jogos, desafios de ritmo e desenhos pra imprimir em A4. Inclui gabarito.</small><a class="btn" download="caderno-paul-amostra.webp" href="assets/7bd09f8b5cfd4b92.webp">Ver uma atividade</a><a class="colecao-link" href="https://pay.hotmart.com/V108460210V?src=vendas">Ver na Hotmart</a></article>
