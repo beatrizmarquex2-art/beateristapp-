@@ -117,10 +117,10 @@ def build(L):
         c = titulo('As pausas', 'o silêncio também tem desenho', 380)
         c += fala('shhh! na música, às vezes ninguém toca. esse silêncio tem nome: <b>pausa</b>. e cada figura tem a sua!', 'sono', 'r')
         c += '<p>A pausa dura <b>o mesmo tempo</b> da figura dela. O tempo continua andando; só não tocamos nada.</p>'
-        c += '<div class="row" style="padding:0 16px;font-size:11.5px;font-weight:800;color:#444;gap:0"><span style="width:92px">figura</span><span style="width:92px">pausa</span><span style="flex:1">nome</span><span style="width:130px">silêncio de</span></div>'
+        c += '<div class="row" style="padding:0 16px;font-size:11.5px;font-weight:800;color:#444;gap:0"><span style="width:92px">figura</span><span style="width:92px">pausa</span><span style="flex:1">nome</span><span style="width:130px">silêncio de</span><span>fração</span></div>'
         for n in FIG7:
             c += (f'<div class="box row" style="padding:4px 16px;margin-bottom:6px;border-radius:14px"><div style="width:92px">{figura(n, 62)}</div><div style="width:92px">{figura(n, 62, rest=True)}</div>'
-                  f'<div class="m" style="flex:1;font-size:15px;text-transform:uppercase">pausa de {NOMES[n]}</div><b style="width:130px;font-size:13.5px">{PAUSAS[n]}</b></div>')
+                  f'<div class="m" style="flex:1;font-size:15px;text-transform:uppercase">pausa de {NOMES[n]}</div><b style="width:130px;font-size:13.5px">{PAUSAS[n]}</b><span class="pill">1/{int(round(1/(VALOR_N[n]/4)))}</span></div>')
         c += tip('a pausa de <b>semibreve</b> fica <b>pendurada</b> na linha; a de <b>mínima</b> fica <b>sentada</b> em cima dela.')
         c += corner_('sono', 56)
         return c

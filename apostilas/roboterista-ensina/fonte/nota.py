@@ -43,9 +43,9 @@ def rest_svg(cx, ly, d, col=INK):
     nome, fl, _, _ = BASE[b]
     o = []
     if b == 64:
-        o.append(f'<rect x="{cx-6.5:.2f}" y="{ly:.2f}" width="13" height="5.2" fill="{col}"/>')
+        o.append(f'<rect x="{cx-8:.2f}" y="{ly:.2f}" width="16" height="7.5" fill="{col}"/>')
     elif b == 32:
-        o.append(f'<rect x="{cx-6.5:.2f}" y="{ly-5.2:.2f}" width="13" height="5.2" fill="{col}"/>')
+        o.append(f'<rect x="{cx-8:.2f}" y="{ly-7.5:.2f}" width="16" height="7.5" fill="{col}"/>')
     elif b == 16:
         o.append(f'<path d="M{cx-3:.2f},{ly-13:.2f} L{cx+3.5:.2f},{ly-6:.2f} L{cx-3:.2f},{ly+0.5:.2f} L{cx+3:.2f},{ly+7:.2f} '
                  f'C{cx-5:.2f},{ly+6:.2f} {cx-6.5:.2f},{ly+11:.2f} {cx-1.5:.2f},{ly+14:.2f}" fill="none" stroke="{col}" '
@@ -61,7 +61,7 @@ def rest_svg(cx, ly, d, col=INK):
             yj = ly - 8 + j * step
             t = (yj - y0) / (y1 - y0)
             xj = x0 + (x1 - x0) * t
-            o.append(f'<circle cx="{xj-4.7:.2f}" cy="{yj+0.2:.2f}" r="3.1" fill="{col}"/>')
+            o.append(f'<circle cx="{xj-4.7:.2f}" cy="{yj+0.2:.2f}" r="3.5" fill="{col}"/>')
             o.append(f'<path d="M{xj-4.2:.2f},{yj-1.4:.2f} C{xj-2:.2f},{yj-4.6:.2f} {xj+0.4:.2f},{yj-4.8:.2f} {xj+1.7:.2f},{yj-7:.2f}" '
                      f'fill="none" stroke="{col}" stroke-width="2.4" stroke-linecap="round"/>')
     if dot:

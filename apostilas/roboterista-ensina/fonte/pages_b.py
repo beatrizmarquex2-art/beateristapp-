@@ -149,7 +149,7 @@ def build(L):
         for n in FIG7:
             frac = VALOR_N[n] / 4
             c += (f'<div class="box" style="display:flex;align-items:center;gap:16px;padding:6px 16px;margin-bottom:8px;border-radius:16px"><div style="width:60px;flex:none;display:flex;justify-content:center">{figura(n, 74)}</div>'
-                  f'<div style="width:215px;flex:none"><div class="m" style="font-size:18px;text-transform:uppercase">{NOMES[n]}</div><b style="font-size:14px">vale {VALOR[n]}</b><div style="font-size:11.5px">{desc[n]}</div></div>'
+                  f'<div style="width:215px;flex:none"><div class="m" style="font-size:18px;text-transform:uppercase">{NOMES[n]}</div><b style="font-size:14px">vale {VALOR[n]}</b> <span class="pill">1/{int(round(1/(VALOR_N[n]/4)))}</span><div style="font-size:11.5px">{desc[n]}</div></div>'
                   f'<div style="flex:1"><div style="height:20px;border:2px solid #111;background:linear-gradient(90deg,#111 {frac*100:.2f}%,#fff {frac*100:.2f}%)"></div><div class="cap" style="margin-top:3px">tamanho comparado com 4 tempos</div></div></div>')
         c += tip('2 colcheias = 1 semínima. 2 semínimas = 1 mínima. sempre dividindo ao meio!')
         c += corner('feliz', 60)
