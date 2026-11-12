@@ -86,14 +86,46 @@ const MALLET = {
   xilofone: { p: [[1, 1, 0.55], [3, 0.3, 0.16], [6.2, 0.14, 0.07]], tick: 0.16 },
   metalofone: { p: [[1, 1, 1.5], [2.76, 0.45, 0.8], [5.4, 0.28, 0.45], [8.93, 0.12, 0.25]], tick: 0.05 },
   marimba: { p: [[1, 1, 0.75], [4, 0.35, 0.2], [9.9, 0.1, 0.09]], tick: 0.12 },
+  vibrafone: { p: [[1, 1, 2.4], [3.99, 0.2, 0.9], [10.1, 0.05, 0.3]], tick: 0.03, trem: 5.2 }, // barra de metal com o "motorzinho" (tremolo)
+  glockenspiel: { p: [[1, 1, 1.2], [2.76, 0.5, 0.7], [5.4, 0.3, 0.4], [8.93, 0.14, 0.22]], tick: 0.04, up: 2 }, // sininhos, uma oitava acima
+  caixinha: { p: [[1, 1, 0.6], [2.756, 0.28, 0.28], [5.4, 0.1, 0.12]], tick: 0.03, up: 2 }, // caixinha de música
+  kalimba: { p: [[1, 1, 1.0], [5.4, 0.2, 0.14], [9.5, 0.07, 0.07]], tick: 0.2 },
+  steel: { p: [[1, 1, 1.0], [2, 0.6, 0.7], [3, 0.32, 0.4], [4.05, 0.16, 0.22]], tick: 0.1 }, // steel drum
+  sino: { p: [[1, 1, 3.2], [2.76, 0.5, 2.2], [5.4, 0.36, 1.6], [8.93, 0.22, 1.1]], tick: 0.02 }, // sino tubular
 };
+export const MALLETS = [['xilofone', 'xilofone'], ['marimba', 'marimba'], ['vibrafone', 'vibrafone'], ['metalofone', 'metalofone'], ['glockenspiel', 'glockenspiel'], ['steel', 'steel drum'], ['kalimba', 'kalimba'], ['caixinha', 'caixinha de música'], ['sino', 'sino tubular']];
 export function mallet(midi, vel = 0.9, kind = 'xilofone', t) {
   C = init(); if (C.state !== 'running') { C.resume().then(() => mallet(midi, vel, kind, undefined)).catch(() => {}); return; } // 1º toque no iPhone: espera o som destravar em vez de tocar no escuro
- t = t ?? C.currentTime; const m = MALLET[kind] || MALLET.xilofone; const f = hz(midi); const sc = 1.35 - ((midi - 60) / 60) * 0.55;
+ t = t ?? C.currentTime; const m = MALLET[kind] || MALLET.xilofone; const f = hz(midi) * (m.up || 1); const sc = 1.35 - ((midi - 60) / 60) * 0.55;
   const mix = gn(0.55 * vel); route(mix, 0.2);
+  if (m.trem) { const lf = C.createOscillator(); const lg = gn(0.22); lf.frequency.value = m.trem; lf.connect(lg).connect(mix.gain); lf.start(t); lf.stop(t + 3.2); }
   m.p.forEach(([r, a, d]) => { if (f * r > 12000) return; const o = C.createOscillator(); const g = gn(); o.frequency.value = f * r; env(g, t, a, 0.002, d * sc); o.connect(g).connect(mix); o.start(t); o.stop(t + d * sc + 0.1); });
   const n = noiseSrc(t, 0.03); const ng = gn(); n.connect(bq('bandpass', 3600, 1.2)).connect(ng); env(ng, t, m.tick * vel, 0.001, 0.014); route(ng);
 }
+
+
+/* ---------- percussão sem nota: congas, bongô, pandeiro, triângulo, cowbell, ovinho, claves, palma, agogô ---------- */
+function skin(t, f0, f1, dur, v, slap = 0.3) {
+  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + 0.05); env(g, t, 0.95 * v, 0.002, dur); o.connect(g); route(g, 0.12); o.start(t); o.stop(t + dur + 0.05);
+  const o2 = C.createOscillator(); const g2 = gn(); o2.type = 'triangle'; o2.frequency.setValueAtTime(f0 * 1.9, t); o2.frequency.exponentialRampToValueAtTime(f1 * 1.8, t + 0.04); env(g2, t, 0.28 * v, 0.002, dur * 0.4); o2.connect(g2); route(g2); o2.start(t); o2.stop(t + dur);
+  const n = noiseSrc(t, 0.03); const ng = gn(); n.connect(bq('bandpass', 2600, 1.1)).connect(ng); env(ng, t, slap * v, 0.001, 0.02); route(ng);
+}
+function bellHit(t, v, fs, dur, gain) { const g = gn(); fs.forEach(([f, a]) => { const o = C.createOscillator(); const og = gn(a); o.type = 'sine'; o.frequency.value = f; o.connect(og).connect(g); o.start(t); o.stop(t + dur + 0.1); }); env(g, t, gain * v, 0.001, dur); route(g, 0.25); }
+export const PERC = [
+  ['cg1', 'conga aguda', (t, v) => skin(t, 360, 300, 0.32, v, 0.34)],
+  ['cg2', 'conga grave', (t, v) => skin(t, 236, 190, 0.5, v, 0.26)],
+  ['bg', 'bongô', (t, v) => { skin(t, 520, 430, 0.18, v * 0.9, 0.3); skin(t + 0.012, 390, 320, 0.2, v * 0.55, 0.15); }],
+  ['pd', 'pandeiro', (t, v) => { skin(t, 190, 150, 0.2, v * 0.8, 0.2); for (let k = 0; k < 5; k++) { const n = noiseSrc(t + k * 0.007, 0.09); const g = gn(); n.connect(bq('highpass', 6800)).connect(g); env(g, t + k * 0.007, 0.3 * v, 0.001, 0.07); route(g, 0.1); } }],
+  ['tr', 'triângulo', (t, v) => bellHit(t, v, [[3520, 1], [9500, 0.5], [6100, 0.35], [2860, 0.2]], 1.6, 0.16)],
+  ['cb', 'cowbell', (t, v) => { const g = gn(); const bp = bq('bandpass', 800, 2.4); [560, 845].forEach((f) => { const o = C.createOscillator(); o.type = 'square'; o.frequency.value = f; o.connect(bp); o.start(t); o.stop(t + 0.34); }); bp.connect(g); env(g, t, 0.34 * v, 0.002, 0.26); route(g, 0.12); }],
+  ['ov', 'ovinho', (t, v) => { [0, 0.045].forEach((d, k) => { const n = noiseSrc(t + d, 0.1); const g = gn(); n.connect(bq('highpass', 5800)).connect(g); env(g, t + d, (k ? 0.18 : 0.26) * v, 0.012, 0.07); route(g, 0.06); }); }],
+  ['cl', 'claves', (t, v) => bellHit(t, v, [[2400, 1], [3600, 0.25]], 0.09, 0.42)],
+  ['pm', 'palma', (t, v) => { [0, 0.011, 0.023].forEach((d, k) => { const n = noiseSrc(t + d, 0.14); const g = gn(); n.connect(bq('bandpass', 1500, 1.1)).connect(g); env(g, t + d, (k === 2 ? 0.75 : 0.5) * v, 0.001, k === 2 ? 0.16 : 0.03); route(g, 0.22); }); }],
+  ['ag', 'agogô', (t, v) => { bellHit(t, v, [[740, 1], [1560, 0.4], [2230, 0.2]], 0.5, 0.3); bellHit(t + 0.11, v * 0.9, [[1010, 1], [2140, 0.4], [3050, 0.2]], 0.45, 0.28); }],
+];
+export function percHit(id, vel = 0.9) { C = init(); if (C.state !== 'running') { C.resume().then(() => percHit(id, vel)).catch(() => {}); return; } const p = PERC.find((x) => x[0] === id); if (p) p[2](C.currentTime, vel * (0.94 + Math.random() * 0.12)); }
+/** Chamado ao tocar numa aba de instrumento: esquenta o áudio dentro do toque (o iPhone só destrava assim) e religa a saída do instrumento. */
+export function wake() { try { C = init(); } catch { /* sem áudio */ } }
 
 /* ---------- violão e guitarra: corda de verdade (Karplus-Strong calculado em JS, uma vez por nota) ---------- */
 const ks = new Map();
@@ -118,6 +150,8 @@ export function pluck(midi, vel, t, kind = 'acoustic', mute = false) {
     chain = chain.connect(gn(2.4)).connect(shaper).connect(bq('lowpass', 3200)); // distorção + caixa de som
   } else chain = chain.connect(bq('lowpass', 4200 + vel * 2500));
   chain.connect(g); g.gain.setValueAtTime((kind === 'rock' ? 0.3 : 0.75) * vel, t);
+  { const pk = noiseSrc(t, 0.03); const pg = gn(); pk.connect(bq('bandpass', isA ? 2800 : 3600, 1.1)).connect(pg); env(pg, t, (isA ? 0.14 : 0.1) * vel, 0.001, 0.018); route(pg); } // ataque da palheta
+  if (kind === 'clean') { const s2 = C.createBufferSource(); s2.buffer = buf; s2.playbackRate.value = 1.004; const g2 = gn(0.35 * vel); s2.connect(bq('lowpass', 3800)).connect(g2); g2.gain.setTargetAtTime(0.0001, t + buf.duration - 0.35, 0.12); route(g2, 0.14); s2.start(t + 0.011); s2.stop(t + buf.duration); } // 2ª corda levemente desafinada: o "chorus" da guitarra limpa
   if (mute) g.gain.setTargetAtTime(0.0001, t + 0.015, 0.045); else g.gain.setTargetAtTime(0.0001, t + buf.duration - 0.35, 0.12);
   route(g, isA ? 0.2 : 0.14); s.start(t); s.stop(t + buf.duration);
 }

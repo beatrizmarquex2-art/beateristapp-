@@ -2,16 +2,16 @@
 import { h } from '../util.js';
 import { audio } from '../audio.js';
 import * as N from '../notation.js';
-import { backing, STYLES, grooveBeat } from '../instruments.js';
+import { backing, STYLES, grooveBeat, wake } from '../instruments.js';
 
-export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'violão', '#/violao'], ['piano', 'piano', '#/piano'], ['xilofone', 'xilofone', '#/xilofone']];
+export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'cordas', '#/violao'], ['piano', 'teclas', '#/piano'], ['xilofone', 'percussão', '#/xilofone']];
 /** Útil (pra todo mundo): metrônomo, afinador e timer. */
 export const UTEIS = [['metronomo', 'metrônomo', '#/metronomo'], ['ouvido', 'afinador', '#/ouvido'], ['foco', 'timer', '#/foco']];
 
 /** Linha de abas logo abaixo da faixa: troca de instrumento sem voltar ao menu (a batida de fundo continua). */
 export const tocarTabs = (atual) => h('div', { class: 'ti-wrap' },
   h('nav', { class: 'ti-tabs', 'aria-label': 'Instrumento' },
-    ...INSTRUMENTOS.map(([id, label, href]) => h('a', { href, class: `ti-tab${id === atual ? ' on' : ''}`, 'aria-current': id === atual ? 'page' : null }, label))),
+    ...INSTRUMENTOS.map(([id, label, href]) => h('a', { href, class: `ti-tab${id === atual ? ' on' : ''}`, 'aria-current': id === atual ? 'page' : null, onpointerdown: wake }, label))),
   h('nav', { class: 'ti-util', 'aria-label': 'Útil' }, h('span', { class: 'ti-util-l' }, 'útil'),
     ...UTEIS.map(([id, label, href]) => h('a', { href, class: 'ti-util-a' }, label))));
 

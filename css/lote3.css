@@ -749,3 +749,10 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-util { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; flex-wrap: wrap; }
 .ti-util-l { font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; opacity: .65; }
 .ti-util-a { display: inline-flex; align-items: center; min-height: 34px; padding: 4px 12px; border: 2px solid currentColor; border-radius: 999px; font: 700 13px var(--body); text-decoration: none; color: inherit; }
+
+/* percussão: pads sem nota (congas, bongô, pandeiro, triângulo…) */
+.ti-perc { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 10px; height: 100%; align-content: stretch; }
+.ti-perc[hidden] { display: none; }
+.ti-pp { display: grid; place-items: center; min-height: 64px; border: 2px solid #1b1818; border-radius: 14px; background: #fffdf7; color: #1b1818; font: 700 12px var(--body); text-align: center; padding: 4px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.ti-pp:active { background: #ffd166; }
+@media (max-width: 460px) { .ti-perc { grid-template-columns: repeat(3, 1fr); } }

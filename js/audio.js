@@ -196,7 +196,7 @@ export function silence() {
   if (!ctx || !master) return;
   const old = master; const t = ctx.currentTime;
   old.gain.setTargetAtTime(0, t, 0.01); setTimeout(() => { try { old.disconnect(); } catch { /* já saiu */ } }, 80);
-  master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
+  master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ctx.destination);
 }
 
 /** Converte um instante do relógio da tela (event.timeStamp / performance.now) pro relógio do som que está SAINDO no alto-falante. */

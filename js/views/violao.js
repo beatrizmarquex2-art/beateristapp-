@@ -7,7 +7,7 @@ import { CHORDS, pluck, warmGuitar, backing } from '../instruments.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
-const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'guitarra'], ['rock', '🤘', 'rock']]; // só o símbolo (o nome fica no aria-label); o padrão é o violão 🎸
+const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'guitarra limpa'], ['rock', '🤘', 'guitarra rock']]; // o padrão é o violão 🎸
 const GROSS = [4, 3.6, 3, 2.3, 1.7, 1.2]; // espessura das 6 cordas (mi grave em cima)
 
 export function mount(host) {
@@ -25,7 +25,7 @@ export function mount(host) {
     chordsEl.replaceChildren(...CHORDS.map(([n], i) => h('button', { class: 'ti-chord', type: 'button', 'aria-pressed': String(i === chord), onclick: () => { audio(); chord = i; drawChords(); } }, n)));
     notes.replaceChildren(...CHORDS[chord][1].map((m, i) => { strEls[i].classList.toggle('off', m == null); return h('div', { class: 'ti-gnote' }, m == null ? '×' : nome(m)); }));
   };
-  const drawSound = () => soundRow.replaceChildren(...SOUNDS.map(([v, l, nm]) => h('button', { type: 'button', class: `kd-chip ti-sym${sound === v ? ' on' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { sound = v; audio(); warmGuitar(); drawSound(); } }, l)));
+  const drawSound = () => soundRow.replaceChildren(...SOUNDS.map(([v, l, nm]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { sound = v; audio(); warmGuitar(); drawSound(); } }, `${l} ${nm}`)));
   const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
 
   const ripple = (x, y, big) => {
@@ -66,7 +66,7 @@ export function mount(host) {
   const offMsg = h('section', { class: 'card pad', role: 'status', hidden: true }, h('p', {}, 'o som do app está desligado, por isso o violão não toca. no iPhone, confira também o botão lateral de silencioso.'), h('button', { class: 'btn primary', type: 'button', onclick: () => setMuted(false) }, 'ligar o som'));
   const syncOff = () => { offMsg.hidden = !isMuted(); }; window.addEventListener('bt-mute', syncOff); syncOff();
   stage.append(chordsEl, h('div', { class: 'ti-neck' }, notes, strs));
-  host.append(banner('Violão', 'passe o dedo nas cordas'), tocarTabs('violao'), offMsg, stage,
+  host.append(banner('Cordas', 'violão e guitarra: passe o dedo nas cordas'), tocarTabs('violao'), offMsg, stage,
     h('section', { class: 'card pad ti-panel' }, soundRow, h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' })), themeBox),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. 🔉 (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));

@@ -340,11 +340,11 @@ function errosView(view) {
 
 function tocarView(view) {
   const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
-  view.append(banner('Tocar', 'bateria, piano, violão e xilofone'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+  view.append(banner('Tocar', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     card('#/toque', 'Bateria', 'toque nas peças com vários dedos e grave um ritmo'),
-    card('#/violao', 'Violão', 'escolha o acorde e passe o dedo nas cordas'),
-    card('#/piano', 'Piano', 'teclado na tela, com notas e acordes'),
-    card('#/xilofone', 'Xilofone', 'barras coloridas: nenhuma nota soa errada na pentatônica'),
+    card('#/violao', 'Cordas', 'violão e guitarra: escolha o acorde e passe o dedo nas cordas'),
+    card('#/piano', 'Teclas', 'piano, elétrico, órgão e cordas, com notas e acordes'),
+    card('#/xilofone', 'Percussão', 'xilofone, vibrafone, steel drum, kalimba, congas, pandeiro e mais'),
     h('h2', { class: 'tag', style: 'margin-top:6px' }, 'Útil'),
     card('#/metronomo', 'Metrônomo', 'BPM, tap, compasso e acento'),
     card('#/ouvido', 'Afinador', 'afine a bateria ouvindo pelo microfone'),

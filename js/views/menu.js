@@ -28,7 +28,7 @@ const MENU_BEA = [
     ['foco', [['#/foco', 'timer', 'Cronômetro de Foco'], ['#/ambiente', 'mic', 'Estúdio de Ambiente']]],
   ]],
   ['tocar', 'tocar', [
-    ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/piano', 'note', 'Piano'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
+    ['', [['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/toque', 'kit', 'Bateria'], ['#/violao', 'note', 'Cordas'], ['#/piano', 'note', 'Teclas'], ['#/xilofone', 'note', 'Percussão'], ['#/hub/tempo', 'timer', 'Tempo'], ['#/repertorio', 'note', 'Repertório']]],
     ['útil', [['#/metronomo', 'metro', 'Metrônomo'], ['#/ouvido', 'mic', 'Afinador'], ['#/foco', 'timer', 'Timer']]],
     ['ferramentas', [['#/ferramentas/loop', 'note', 'Play-along em loop'], ['#/ferramentas/mapa', 'staff', 'Mapa da música']]],
   ]],

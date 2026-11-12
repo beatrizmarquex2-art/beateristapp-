@@ -3,17 +3,21 @@ import { h } from '../util.js';
 import { audio } from '../audio.js';
 import { banner } from '../ui.js';
 import { kitTheme, themeRow } from '../kids/kit-theme.js';
-import { mallet, backing } from '../instruments.js';
+import { mallet, backing, MALLETS, PERC, percHit } from '../instruments.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 const SCALES = { penta: [60, 62, 64, 67, 69, 72, 74, 76, 79, 81], maior: [60, 62, 64, 65, 67, 69, 71, 72] };
 const COR = { 0: '#b5162b', 2: '#1d3566', 4: '#4a79b4', 5: '#2a7f86', 7: '#e8a92c', 9: '#6e1423', 11: '#f5ead2' }; // vinho, azul-marinho, azul, petróleo, mostarda, bordô, creme (as cores da bateria)
-const SOUNDS = [['xilofone', 'xilofone'], ['metalofone', 'metalofone'], ['marimba', 'marimba']];
+const SOUNDS = MALLETS;
 const XK = 'asdfghjklç';
 
 export function mount(host) {
-  let scale = 'penta'; let sound = 'xilofone'; const live = new Map();
+  let scale = 'penta'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
+  const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
+  const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão sem nota', hidden: true },
+    ...PERC.map(([id, nome]) => { const b = h('button', { type: 'button', class: 'ti-pp', 'data-p': id, 'aria-label': nome }, h('span', {}, nome)); return b; }));
+  pads.addEventListener('pointerdown', (e) => { const b = e.target.closest && e.target.closest('.ti-pp'); if (!b) return; e.preventDefault(); audio(); percHit(b.dataset.p, 0.9); squish(b); });
   const stage = h('div', { class: 'ti-stage ti-xy-stage', 'data-kit-theme': kitTheme() });
   const xy = h('div', { class: 'ti-xy', role: 'group', 'aria-label': 'Barras do xilofone' });
   const scaleRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Escala' });
@@ -27,6 +31,7 @@ export function mount(host) {
       e.style.setProperty('--bc', COR[pc] || '#2a7f86'); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
     }));
   };
+  const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'pads (sem nota)']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
   const drawRows = () => {
     scaleRow.replaceChildren(h('small', {}, 'escala'), ...[['penta', 'pentatônica'], ['maior', 'dó maior']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { scale = v; drawXy(); drawRows(); } }, l)));
     soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { sound = v; audio(); drawRows(); } }, l)));
@@ -52,11 +57,11 @@ export function mount(host) {
   };
   document.addEventListener('keydown', onKey);
 
-  stage.append(xy);
-  host.append(banner('Xilofone', 'toque nas barras ou deslize o dedo'), tocarTabs('xilofone'), stage,
-    h('section', { class: 'card pad ti-panel' }, scaleRow, soundRow, themeBox),
+  stage.append(xy, pads);
+  host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), stage,
+    h('section', { class: 'card pad ti-panel' }, modeRow, scaleRow, soundRow, themeBox),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó é vinho, ré azul-marinho, mi azul, sol mostarda…), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
-  drawXy(); drawRows(); drawTheme();
+  drawXy(); drawRows(); drawTheme(); drawMode();
   return () => { document.removeEventListener('keydown', onKey); backing.leave(); };
 }
