@@ -8,10 +8,10 @@ const anon = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG
 export const ESTRELAS_MISSAO = 5;
 export const MISSOES = [
   { tipo: 'google', titulo: 'avaliou a escola no Google', dica: 'avalie a escola e tire um print da sua avaliação publicada', link: 'https://g.page/r/CS34GVfs3jjqEAE/review', rotulo: 'avaliar no Google' },
-  { tipo: 'youtube', titulo: 'seguiu no YouTube', dica: 'se inscreva no canal da Bea e tire um print mostrando "inscrito"', link: 'https://www.youtube.com/@beateristadrummer', rotulo: 'abrir o canal' },
+  { tipo: 'youtube', titulo: 'seguiu no YouTube ou nas redes', dica: 'siga a Bea no YouTube, no Instagram ou no TikTok e tire um print mostrando que você segue', link: 'https://www.youtube.com/@beateristadrummer', rotulo: 'YouTube', extras: [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista']] },
   { tipo: 'amigo', titulo: 'mandou pra um amigo', dica: 'mande o app pra um amigo e tire um print da conversa', link: 'https://jogos.beaterista.com.br', rotulo: 'copiar o link do app' },
 ];
-export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de 3 produtos)' };
+export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de 3 produtos)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 
 /** Reduz o print (lado maior 900 px, JPEG) e devolve o base64 puro. Fica bem abaixo do limite do banco (900 mil caracteres). */
