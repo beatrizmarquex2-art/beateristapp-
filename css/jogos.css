@@ -991,3 +991,26 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-toca .jg-seg{flex-wrap:wrap;overflow:visible;row-gap:6px}.jg-toca .jg-seg button{flex:1 1 30%;min-width:96px}
 .jg-toca .tk-pad .tk-drum{width:92px;height:92px;padding:12px;box-sizing:border-box;background:#fbf7ee;border-radius:50%;margin:0 auto}
 .jg-toca .tk-pad small{font-size:14px;font-weight:800}
+
+/* Toca Aqui: nada de quadrados grandes empilhados. Controles em pílulas pequenas, lado a lado, em poucas linhas (pedido da Bea). */
+.jg-toca .tr-ctrl{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.jg-toca .tr-ctrl .tp-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.jg-toca .tr-ctrl .tp-lab{min-width:56px;font-size:11px}
+.jg-toca .tr-ctrl .chips,.jg-toca .tr-ctrl .lib-tabs{display:flex;flex-wrap:wrap;flex-direction:row;gap:5px;overflow:visible}
+.jg-toca .tr-ctrl .lib-tab,.jg-toca .tr-ctrl .chips button{min-height:32px;padding:3px 12px;border-radius:999px;font-size:13px;line-height:1.1;width:auto;flex:0 0 auto}
+.jg-toca .tr-ctrl .tr-lvname{margin:0;font-size:12px}
+.jg-toca .tr-path{display:flex;flex-wrap:nowrap;gap:4px;margin:0;overflow-x:auto}
+.jg-toca .tr-path .lib-tab{min-height:32px;min-width:32px;padding:0 8px;border-radius:999px;font-size:13px}
+.jg-toca .tr-como{display:flex;gap:6px}
+.jg-toca .tr-como .tr-card{flex:1 1 0;flex-direction:row;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:4px 10px;border-radius:999px;box-shadow:2px 2px 0 #2a0710}
+.jg-toca .tr-como .tr-card small{display:none}.jg-toca .tr-como .tr-card b{font-size:14px;font-family:var(--body,inherit);font-weight:800;text-transform:none}
+.jg-toca .tr-como .tr-card .tr-ic{width:20px;height:20px}
+.jg-toca .tr-modos{padding:4px 0;gap:6px}
+.jg-toca .tr-modos .tr-card{min-height:58px;padding:6px 4px;gap:2px;border-radius:14px}
+.jg-toca .tr-modos .tr-card small{display:none}.jg-toca .tr-modos .tr-card b{font-size:14px}.jg-toca .tr-modos .tr-card .tr-ic{width:22px;height:22px}
+.jg-toca .tr-vel .tr-card.small .tr-ic{width:38px;height:38px}.jg-toca .tr-vel .tr-card.small small{display:none}
+.jg-toca .tr-pad:not(.mic){min-height:150px}.jg-toca .tr-pad .drum-art{width:112px;height:100px}
+.jg-toca .tr-mais summary{padding:2px 0}
+.jg-toca .tr-ctrl .tp-lab{display:none}
+.jg-toca .tr-ctrl .tp-line{gap:0}
+.jg-toca .tr-ctrl .lib-tab,.jg-toca .tr-ctrl .chips button{padding:3px 10px;font-size:12.5px}
