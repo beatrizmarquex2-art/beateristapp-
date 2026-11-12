@@ -55,6 +55,7 @@ import * as roleta from './views/roleta.js';
 import * as metronome from './views/metronome.js';
 import * as ouvido from './views/ouvido.js';
 import * as focus from './views/focus.js';
+import { utilTiles } from './views/tocar-nav.js';
 import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
@@ -345,10 +346,7 @@ function tocarView(view) {
     card('#/violao', 'Cordas', 'violão e guitarra: escolha o acorde e passe o dedo nas cordas'),
     card('#/piano', 'Teclas', 'piano, elétrico, órgão e cordas, com notas e acordes'),
     card('#/xilofone', 'Percussão', 'xilofone, vibrafone, steel drum, kalimba, congas, pandeiro e mais'),
-    h('h2', { class: 'tag', style: 'margin-top:6px' }, 'Útil'),
-    card('#/metronomo', 'Metrônomo', 'BPM, tap, compasso e acento'),
-    card('#/ouvido', 'Afinador', 'afine a bateria ouvindo pelo microfone'),
-    card('#/foco', 'Timer', 'conte o tempo de estudo: 15, 25, 40 ou 60 minutos')));
+    utilTiles(true)));
 }
 
 /** Trocar de aluno no mesmo aparelho: voltar a uma conta já conectada, conectar outro código ou entrar com outro nome. */

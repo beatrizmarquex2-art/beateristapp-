@@ -756,3 +756,26 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-pp { display: grid; place-items: center; min-height: 64px; border: 2px solid #1b1818; border-radius: 14px; background: #fffdf7; color: #1b1818; font: 700 12px var(--body); text-align: center; padding: 4px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .ti-pp:active { background: #ffd166; }
 @media (max-width: 460px) { .ti-perc { grid-template-columns: repeat(3, 1fr); } }
+
+/* Útil na aba Tocar: 3 quadradinhos com desenho */
+.ti-util { display: block; padding: 0 16px 12px; }
+.ti-util-l { display: block; font: 800 12px var(--body); letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin: 0 0 6px; }
+.ti-util-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ti-ut { display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 4px; aspect-ratio: 1 / .92; padding: 8px 6px 6px; border: 2.5px solid #1b1818; border-radius: 16px; background: #fffdf7; box-shadow: 3px 3px 0 #1b1818; color: #1b1818; text-decoration: none; }
+.ti-ut:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1b1818; }
+.ti-ut-art { display: grid; place-items: center; width: 100%; min-height: 0; } .ti-ut-art svg { width: 62%; max-width: 74px; height: auto; }
+.ti-ut b { font: 800 12.5px var(--body); }
+.ti-ut-metronomo { background: #fbe3dc; } .ti-ut-ouvido { background: #dfe8f6; } .ti-ut-foco { background: #dcefef; }
+.ti-util.big .ti-util-g { gap: 12px; } .ti-util.big .ti-ut { padding: 12px 8px 8px; border-radius: 20px; } .ti-util.big .ti-ut-art svg { max-width: 96px; } .ti-util.big .ti-ut b { font-size: 14px; }
+@keyframes mt-sway { 0%, 100% { transform: rotate(-24deg); } 50% { transform: rotate(24deg); } }
+@keyframes af-wob { 0%, 100% { transform: rotate(-26deg); } 40% { transform: rotate(8deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(2deg); } }
+@keyframes cr-spin { to { transform: rotate(360deg); } }
+.mt-arm { animation: mt-sway 1.6s ease-in-out infinite; } .af-agulha { animation: af-wob 3.2s ease-in-out infinite; } .cr-ponteiro { animation: cr-spin 6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .mt-arm, .af-agulha, .cr-ponteiro { animation: none; } }
+/* percussão: pads com desenho e bichinho de animação */
+.ti-pp { display: grid; grid-template-rows: 1fr auto; place-items: center; gap: 2px; min-height: 92px; padding: 6px 4px 5px; background: var(--pb, #fffdf7); border: 2.5px solid #1b1818; border-radius: 16px; box-shadow: 3px 3px 0 #1b1818; color: #1b1818; touch-action: manipulation; position: relative; overflow: visible; }
+.ti-pp-art { display: grid; place-items: center; width: 100%; } .ti-pp-art svg { width: 64%; max-width: 62px; height: auto; overflow: visible; }
+.ti-pp b { font: 800 11.5px var(--body); }
+.ti-pp.hit { background: color-mix(in srgb, var(--pb, #fff) 70%, #ffd166); transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1b1818; }
+.ti-note { position: fixed; z-index: 99999; pointer-events: none; font: 800 22px system-ui; color: #7a1226; }
+.ti-perc { grid-template-columns: repeat(5, 1fr); } @media (max-width: 460px) { .ti-perc { grid-template-columns: repeat(3, 1fr); } }
