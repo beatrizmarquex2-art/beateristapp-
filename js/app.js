@@ -71,6 +71,8 @@ import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
 import * as lixeira from './views/lixeira.js';
 import * as paulta from './paulta/view.js';
+import { initMusica } from './jogos/musica.js';
+initMusica(); // música de fundo dos jogos (escolhida pela Bea)
 import { openSearch } from './search.js';
 import { NAV_DEFAULT, NAV_KEY, loadNav, openNavEditor } from './navbar.js';
 import { handsOn, setHands, initHands, handsBar } from './hands.js';
