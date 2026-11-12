@@ -462,3 +462,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - memória, tema "figuras e pausas" (`th.id === 'figuras'`): 1 ★ ao completar, até contra o robô ou em 2 no mesmo aparelho
 - quiz Uno: acertar as 5 = 1 ★ (não é mais giro da roleta), a cada rodada jogada; perguntas diferentes (foge das 5 da rodada anterior, tipo figura→nome ou nome→figura); recentes em localStorage `beaterista-quizuno-recentes`
 - `ESTRELAS_JOGO`: velha/memoria/cartas/quizuno = 1; cara/stop/bingo = 3
+
+## v390 — Cara a Cara: perguntas em cima, em carrossel
+- perguntas viraram carrossel horizontal (`.cm-carro .cm-qc`, ~3 visíveis, arrastar pro lado) ACIMA das cartas, local e online; "mais perguntas" removido
+- botão virar = só ↻ (desvirar ↩); legenda no menu (modo manual) e na mensagem depois da resposta

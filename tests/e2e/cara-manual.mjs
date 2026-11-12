@@ -11,12 +11,12 @@ await p.locator('button[role=radio]:has-text("manual")').click(); await sleep(25
 await p.locator('button[role=radio]:has-text("contra o Paul")').click(); await sleep(250);
 await p.locator('button:has-text("jogar")').first().click(); await sleep(1200);
 await p.locator('.cm-card').first().click(); await sleep(400); await p.locator('.sheet-body button.btn.primary').first().click(); await sleep(900);
-await p.locator('.jg-qs .jg-qbtn').first().click(); await sleep(400);
+await p.locator('.cm-carro .cm-qc').first().click(); await sleep(400);
 check('depois da pergunta aparece o botão "pronto, já virei"', (await p.locator('button:has-text("pronto, já virei")').count()) === 1);
-check('as perguntas somem até terminar de virar', (await p.locator('.jg-qs .jg-qbtn').count()) === 0);
+check('as perguntas somem até terminar de virar', (await p.locator('.cm-carro .cm-qc').count()) === 0);
 await p.locator('.jg-flip').first().click(); await sleep(200);
 check('dá pra virar uma carta', (await p.locator('.cm-cell.out').count()) >= 1);
 await p.locator('button:has-text("pronto, já virei")').click(); await sleep(2500);
-check('depois do pronto as perguntas voltam', (await p.locator('.jg-qs .jg-qbtn').count()) >= 1);
+check('depois do pronto as perguntas voltam', (await p.locator('.cm-carro .cm-qc').count()) >= 1);
 check('sem erros de JS', errs.length === 0, errs.join('|'));
 done(); await browser.close(); srv.close();
