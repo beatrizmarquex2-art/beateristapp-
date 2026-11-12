@@ -33,6 +33,7 @@ function tocaCompasso(cells, bpm, som) {
   const c = audio(); const q = 60 / bpm; const conta = COM_CONTAGEM(bpm); const t0 = c.currentTime + (conta ? 0.25 + 4 * q : 0.15);
   if (conta) for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
   cells.forEach((cell, b) => [...cell].forEach((x, k) => { if (x === '1') voz(t0 + b * q + (k * q) / 4, 0.85, som); }));
+  return t0;
 }
 
 const MUNDOS_DET = {
@@ -47,7 +48,7 @@ export function mount(host) {
   const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'normal'; let bpm = BPMS.includes(saved.bpm) ? saved.bpm : BPMS[0]; // 80 ou 100
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
-  const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
+  const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; let visual = ['acende', 'barra', 'bolinha'].includes(saved.visual) ? saved.visual : 'acende'; // ultimo = o compasso anterior (o novo nunca repete); visual = como o tempo aparece nos modos de desenho
   let fase = 1; let secreto = null; let slots = []; let rodada = 0; let primeira = 0; let errou = false; let gone = false; let jogando = false; let marcas = null;
   const estOf = (m, n) => ((getGame('detetive').est || {})[`${m}:${n}`] || 0);
   const guardaEst = (m, n, v) => { const g = getGame('detetive'); setGame('detetive', { ...g, est: { ...(g.est || {}), [`${m}:${n}`]: v } }); };
@@ -70,10 +71,25 @@ export function mount(host) {
 
   /* ---------- uma fase: 3 ritmos ---------- */
   const comeca = (n) => { limpa(); musicaPausa(); fase = n; rodada = 0; primeira = 0; jogando = true; nova(); };
-  const ouvir = () => { Au.reset(); audio(); tocaCompasso(secreto, bpm, somDaFase(fase)); };
+  /* marcador do tempo (só nos modos de desenho): mostra em qual dos 4 tempos o ritmo está, pra criança sentir o tempo andando */
+  const limparTempo = () => { const w = root.querySelector('.dn-wrap'); if (!w) return; w.querySelectorAll('.agora,.conta').forEach((e) => e.classList.remove('agora', 'conta')); const b = w.querySelector('.dn-barra'); if (b) { b.style.transition = 'none'; b.style.left = '0%'; b.style.opacity = '0'; } const o = w.querySelector('.dn-bola'); if (o) o.style.opacity = '0'; };
+  const marca = (i, tipo) => {
+    const w = root.querySelector('.dn-wrap'); if (!w) return; w.querySelectorAll('.dn-nums span').forEach((e, k) => { e.classList.toggle(tipo, k === i); if (k !== i) e.classList.remove('agora', 'conta'); });
+    if (tipo === 'agora') { w.querySelectorAll('.dn-slot').forEach((e, k) => e.classList.toggle('agora', k === i)); const o = w.querySelector('.dn-bola'); if (o) { o.style.opacity = '1'; o.style.left = `${(i + 0.5) * 25}%`; o.classList.remove('pula'); void o.offsetWidth; o.classList.add('pula'); } }
+  };
+  const anima = (t0, q, conta) => {
+    if (modo === 'normal') return; limparTempo(); const c = audio(); const espera = (t) => Math.max(0, (t - c.currentTime) * 1000);
+    if (conta) for (let i = 0; i < 4; i++) Au.later(() => marca(i, 'conta'), espera(t0 - (4 - i) * q));
+    for (let b = 0; b < 4; b++) Au.later(() => marca(b, 'agora'), espera(t0 + b * q));
+    Au.later(() => { const w = root.querySelector('.dn-wrap'); const bar = w && w.querySelector('.dn-barra'); if (bar) { bar.style.opacity = '1'; bar.style.transition = 'none'; bar.style.left = '0%'; void bar.offsetWidth; bar.style.transition = `left ${4 * q}s linear`; bar.style.left = '100%'; } }, espera(t0));
+    Au.later(limparTempo, espera(t0 + 4 * q + 0.1));
+  };
+  const ouvir = () => { Au.reset(); limparTempo(); audio(); const q = 60 / bpm; const t0 = tocaCompasso(secreto, bpm, somDaFase(fase)); anima(t0, q, COM_CONTAGEM(bpm)); };
   const nova = () => { S.reset(); secreto = sortear(fase, Math.random, ultimo); ultimo = secreto; slots = []; errou = false; marcas = null; desenha(); Au.later(ouvir, 400); };
   const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
+  const escolhaVisual = () => h('div', { class: 'dn-visuais', role: 'radiogroup', 'aria-label': 'Como mostrar o tempo' }, h('small', {}, 'marcador do tempo:'),
+    ...[['acende', '1 · casas acendem'], ['barra', '2 · barrinha'], ['bolinha', '3 · bolinha']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(visual === v), class: `kd-chip${visual === v ? ' on' : ''}`, onclick: () => { visual = v; setGame('detetive', { ...getGame('detetive'), visual }); desenha(); ouvir(); } }, t)));
   const desenha = () => {
     const cs = cartas(modo, fase); const cheio = slots.length === 4;
     const casas = Array.from({ length: 4 }, (_, i) => { const c = slots[i] != null ? cs.find((x) => x.cell === slots[i]) : null; const m = marcas ? marcas[i] : null;
@@ -83,7 +99,8 @@ export function mount(host) {
     const vel = h('div', { class: 'dn-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...BPMS.map((v, i) => { const b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(bpm === v), 'aria-label': `${v} BPM`, class: `dn-bpm${bpm === v ? ' on' : ''}`, onclick: () => { bpm = v; setGame('detetive', { ...getGame('detetive'), bpm }); ouvir(); desenha(); } }); b.append(vinil(['devagar', 'normal', 'rápido'][i] || 'normal', 'vinil sm'), h('b', {}, String(v))); return b; }));
     root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', onclick: ouvir }, `▶ ouvir o ritmo (${somDaFase(fase)})`), vel,
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
-      h('div', { class: 'dn-slots' }, ...casas), h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),
+      h('div', { class: `dn-wrap v-${visual}${modo === 'normal' ? ' sem' : ''}` }, modo === 'normal' ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas), modo === 'normal' ? null : h('i', { class: 'dn-barra', 'aria-hidden': 'true' }), modo === 'normal' ? null : h('i', { class: 'dn-bola', 'aria-hidden': 'true' })),
+      modo === 'normal' ? null : escolhaVisual(), h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir'), slots.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { slots = []; marcas = null; desenha(); } }, 'limpar') : null));
   };
   const confere = () => {

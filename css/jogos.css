@@ -1097,3 +1097,21 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .cm-root .jg-seg button.jg-ic{background:transparent;color:#fffdf8;border-color:rgba(255,253,248,.9)}.cm-root .jg-seg button.jg-ic .ic-bq .ac{stroke:#ff8a98}.cm-root .jg-seg button.jg-ic .ic-bq .fa{fill:#ff8a98}
 .cm-root .jg-seg button.jg-ic.on{background:#fffdf8;color:#17365B}.cm-root .jg-seg button.jg-ic.on .ic-bq .ac{stroke:#d3122f}.cm-root .jg-seg button.jg-ic.on .ic-bq .fa{fill:#d3122f}
 .jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{border-radius:50% !important}
+
+/* Detetive Note: marcador do tempo nos modos de desenho (3 jeitos pra Bea escolher) */
+.jg-detetive .dn-wrap{position:relative;margin:10px 0}
+.jg-detetive .dn-wrap .dn-slots{margin:0}
+.jg-detetive .dn-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 4px}
+.jg-detetive .dn-nums span{text-align:center;font:800 15px var(--body,inherit);color:#142036;opacity:.35;transition:transform .08s,opacity .08s}
+.jg-detetive .dn-nums span.conta{opacity:1;color:#1f6f78;transform:scale(1.25)}.jg-detetive .dn-nums span.agora{opacity:1;color:#8a1a30;transform:scale(1.5)}
+.jg-detetive .dn-barra,.jg-detetive .dn-bola{position:absolute;opacity:0;pointer-events:none}
+/* 1 · casas acendem */
+.jg-detetive .v-acende .dn-slot.agora{background:#d99a2b;border-style:solid;transform:scale(1.07);box-shadow:0 0 0 4px rgba(217,154,43,.45),3px 3px 0 #142036;transition:transform .08s}
+/* 2 · barrinha passando */
+.jg-detetive .v-barra .dn-barra{top:-6px;bottom:-6px;left:0;width:5px;margin-left:-2px;background:#8a1a30;border-radius:3px;box-shadow:0 0 0 3px rgba(138,26,48,.28),0 0 12px rgba(138,26,48,.5)}
+.jg-detetive .v-barra .dn-slot.agora{background:rgba(217,154,43,.35)}
+/* 3 · bolinha pulando */
+.jg-detetive .v-bolinha .dn-bola{top:-4px;left:12.5%;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:#8a1a30;border:3px solid #fbf7ee;box-shadow:0 2px 0 #142036;transition:left .12s ease-out}
+.jg-detetive .v-bolinha .dn-bola.pula{animation:dn-pula .32s ease-out}@keyframes dn-pula{0%{transform:translateY(-30px)}60%{transform:translateY(0) scaleY(.8)}100%{transform:none}}
+.jg-detetive .v-bolinha .dn-slot.agora{border-color:#8a1a30;background:#fff3d6}
+.jg-detetive .dn-visuais{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 0}.jg-detetive .dn-visuais small{font-weight:700;font-size:12px}
