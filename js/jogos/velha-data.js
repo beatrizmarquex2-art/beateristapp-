@@ -1,11 +1,10 @@
-// Banco aprovado do jogo da velha musical: 68 perguntas (IDs não são consecutivos de propósito). Dados separados da tela.
+// Banco aprovado do jogo da velha musical: 59 perguntas (IDs não são consecutivos de propósito). Dados separados da tela.
 // Enunciado e resposta são exatamente os aprovados. As alternativas erradas foram escolhidas antes (nada é gerado na partida).
 // options[0] é sempre a resposta certa; a tela embaralha a posição. Infantil/fácil: 3 opções. Intermediário: 4 opções.
 // show (opcional): imagem ou figura mostrada DEPOIS da resposta (nunca antes, pra não entregar o gabarito).
 export const LEVELS = [['infantil', 'infantil'], ['facil', 'fácil'], ['intermediario', 'intermediário']];
 
 const INS = (n) => ({ src: `assets/jogos/instrumentos/${n}.webp` });
-const ART = (id) => ({ src: `assets/jogos/artistas/${id}.webp`, artist: true });
 const FIG = (f) => ({ fig: f });
 
 // [id, nível, categoria, pergunta, resposta, erradas, explicação, show]
@@ -56,28 +55,19 @@ const RAW = [
   [79, 'facil', 'bateria', 'qual equipamento permite abrir e fechar os pratos do chimbal?', 'máquina de chimbal', ['pedal de bumbo', 'chave de afinação'], 'a máquina de chimbal abre e fecha os pratos com o pé.'],
   [82, 'intermediario', 'bateria', 'qual mecanismo permite ligar e desligar a esteira da caixa?', 'automático da caixa', ['chave de afinação', 'máquina de chimbal', 'pedal de bumbo'], 'o automático liga e desliga a esteira da caixa.'],
   [86, 'intermediario', 'bateria', 'qual componente circular mantém a pele presa ao tambor?', 'aro', ['esteira', 'casco', 'pedal'], 'o aro prende a pele no tambor.'],
-  [88, 'facil', 'rock', 'quem era o vocalista e guitarrista do Nirvana?', 'Kurt Cobain', ['Dave Grohl', 'Chris Cornell'], 'Kurt Cobain era vocalista e guitarrista do Nirvana.', ART(88)],
-  [89, 'facil', 'rock', "quem é o vocalista conhecido da banda Guns N' Roses?", 'Axl Rose', ['Slash', 'Bruce Dickinson'], "Axl Rose é o vocalista do Guns N' Roses.", ART(89)],
-  [93, 'intermediario', 'rock', 'quem é o baterista do Blink-182 conhecido por sua técnica e velocidade?', 'Travis Barker', ['Dave Grohl', 'Tré Cool', 'Mark Hoppus'], 'Travis Barker é o baterista do Blink-182.', ART(93)],
-  [97, 'intermediario', 'rock', 'qual integrante dos Beatles era o principal baixista da banda?', 'Paul McCartney', ['John Lennon', 'George Harrison', 'Ringo Starr'], 'Paul McCartney tocava baixo nos Beatles.', ART(97)],
   [99, 'facil', 'marcas', 'qual produto da Pad Gorilla utilizamos para treinar com as baquetas sem precisar de uma bateria completa?', 'pad de estudo', ['pad de bumbo', 'metrônomo digital'], 'o pad de estudo deixa treinar com baquetas em qualquer lugar.'],
   [101, 'facil', 'marcas', 'qual modelo de cajon da Spark pode ser tocado apoiado nas pernas do músico?', 'cajon de colo', ['cajon de assento', 'pad de colo'], 'o cajon de colo toca apoiado nas pernas.'],
   [102, 'facil', 'marcas', 'além das baterias acústicas, qual outro tipo de bateria a Nagano fabrica?', 'bateria eletrônica', ['guitarra elétrica', 'teclado digital'], 'a Nagano também faz bateria eletrônica.'],
   [104, 'facil', 'marcas', 'qual produto da Pad Gorilla permite praticar golpes de pedal de bumbo?', 'pad de bumbo', ['pad de estudo', 'cajon de colo'], 'o pad de bumbo serve pra treinar o pedal.'],
   [108, 'intermediario', 'marcas', 'qual tipo de saída para cabo de áudio está presente no Cajon de Colo Elétrico da Spark?', 'saída P10', ['saída USB', 'saída HDMI', 'saída óptica'], 'a saída P10 liga o cajon elétrico num amplificador ou mesa.'],
-  [112, 'facil', 'pop', 'qual cantor canadense ficou mundialmente conhecido com a música Baby?', 'Justin Bieber', ['Shawn Mendes', 'Bruno Mars'], 'Justin Bieber estourou com Baby.', ART(112)],
-  [113, 'facil', 'pop', 'qual cantora é conhecida pelas músicas Poker Face e Bad Romance?', 'Lady Gaga', ['Katy Perry', 'Madonna'], 'Poker Face e Bad Romance são da Lady Gaga.', ART(113)],
-  [114, 'facil', 'pop', 'qual cantora lançou o sucesso bad guy?', 'Billie Eilish', ['Olivia Rodrigo', 'Lorde'], 'bad guy é da Billie Eilish.', ART(114)],
-  [115, 'facil', 'pop', 'quem canta Shake It Off e Anti-Hero?', 'Taylor Swift', ['Katy Perry', 'Selena Gomez'], 'Shake It Off e Anti-Hero são da Taylor Swift.', ART(115)],
-  [116, 'facil', 'pop', "qual cantora lançou os sucessos Levitating e Don't Start Now?", 'Dua Lipa', ['Ariana Grande', 'Rihanna'], "Levitating e Don't Start Now são da Dua Lipa.", ART(116)],
-  [117, 'intermediario', 'pop', 'qual ex-integrante do One Direction lançou a música As It Was?', 'Harry Styles', ['Zayn Malik', 'Niall Horan', 'Liam Payne'], 'As It Was é do Harry Styles.', ART(117)],
-  [118, 'facil', 'pop', 'qual artista é conhecido pelos sucessos Blinding Lights e Starboy?', 'The Weeknd', ['Bruno Mars', 'Drake'], 'Blinding Lights e Starboy são do The Weeknd.', ART(118)],
-  [119, 'intermediario', 'pop', 'qual cantora lançou as músicas 7 rings e thank u, next?', 'Ariana Grande', ['Selena Gomez', 'Dua Lipa', 'Rihanna'], '7 rings e thank u, next são da Ariana Grande.', ART(119)],
-  [121, 'facil', 'bandas', 'quem é o vocalista principal da banda Coldplay?', 'Chris Martin', ['Bono', 'Brandon Flowers'], 'Chris Martin é o vocalista do Coldplay.', ART(121)],
-  [122, 'facil', 'bandas', 'qual banda lançou os sucessos Believer e Radioactive?', 'Imagine Dragons', ['OneRepublic', 'Coldplay'], 'Believer e Radioactive são do Imagine Dragons.', ART(122)],
-  [123, 'facil', 'bandas', 'quem é o vocalista do Maroon 5, conhecido por músicas como Sugar?', 'Adam Levine', ['Chris Martin', 'Ryan Tedder'], 'Adam Levine é o vocalista do Maroon 5.', ART(123)],
-  [126, 'facil', 'bandas', 'quem é a vocalista da banda Paramore?', 'Hayley Williams', ['Avril Lavigne', 'Gwen Stefani'], 'Hayley Williams é a vocalista do Paramore.', ART(126)],
-  [127, 'facil', 'bandas', 'qual banda lançou os sucessos In the End e Numb?', 'Linkin Park', ['Green Day', 'Evanescence'], 'In the End e Numb são do Linkin Park.', ART(127)],
+  [130, 'facil', 'bandas', 'qual banda lançou Believer e Enemy?', 'Imagine Dragons', ['OneRepublic', 'Coldplay'], 'Believer e Enemy são do Imagine Dragons.'],
+  [131, 'facil', 'rock', "qual é o guitarrista da banda Guns N' Roses?", 'Slash', ['Axl Rose', 'Angus Young'], "Slash é o guitarrista do Guns N' Roses."],
+  [132, 'facil', 'rock', 'quem canta as músicas TNT e Back in Black?', 'AC/DC', ['Metallica', 'Black Sabbath'], 'TNT e Back in Black são do AC/DC.'],
+  [133, 'intermediario', 'pop', 'Uptown Funk toca no filme do?', 'Sonic e Alvin e os esquilos', ['Shrek', 'Toy Story', 'Madagascar'], 'Uptown Funk toca no filme do Sonic e Alvin e os esquilos.'],
+  [134, 'facil', 'rock', 'Kurt Cobain era vocalista da banda?', 'Nirvana', ['Pearl Jam', 'Foo Fighters'], 'Kurt Cobain era vocalista do Nirvana.'],
+  [135, 'intermediario', 'pop', 'qual música toca no filme do Homem-Aranha no Aranhaverso?', 'Sunflower (Post Malone)', ['Blinding Lights (The Weeknd)', 'bad guy (Billie Eilish)', 'Believer (Imagine Dragons)'], 'Sunflower, do Post Malone, toca no Aranhaverso.'],
+  [136, 'facil', 'pop', 'quem é considerado o Rei do Pop?', 'Michael Jackson', ['Bruno Mars', 'Justin Bieber'], 'Michael Jackson é o Rei do Pop.'],
+  [137, 'facil', 'pop', 'quem canta a famosa música da Copa Waka Waka?', 'Shakira', ['Beyoncé', 'Jennifer Lopez'], 'Waka Waka é da Shakira.'],
 ];
 
 export const QUESTIONS = RAW.map(([id, level, cat, text, ans, wrong, explain, show]) => ({

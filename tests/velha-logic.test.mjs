@@ -35,17 +35,17 @@ test('minimax completa vitória e bloqueio imediatos; fácil sempre joga em casa
   assert.equal(V.bestMove([0, 0, null, 1, null, null, null, null, null], 1), 2);
   for (let s = 1; s < 50; s++) { const b = [0, 1, null, null, 0, null, 1, null, null]; assert.equal(b[V.easyMove(b, seeded(s))], null); }
 });
-test('banco: 68 aprovadas (7 infantil, 45 fácil, 16 intermediário), alternativas válidas e sem piano+teclado juntos', () => {
-  assert.equal(QUESTIONS.length, 68); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 68);
-  const n = (l) => QUESTIONS.filter((q) => q.level === l).length; assert.deepEqual([n('infantil'), n('facil'), n('intermediario')], [7, 45, 16]);
+test('banco: 59 aprovadas (7 infantil, 38 fácil, 14 intermediário), alternativas válidas e sem piano+teclado juntos', () => {
+  assert.equal(QUESTIONS.length, 59); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 59);
+  const n = (l) => QUESTIONS.filter((q) => q.level === l).length; assert.deepEqual([n('infantil'), n('facil'), n('intermediario')], [7, 38, 14]);
   for (const q of QUESTIONS) {
     const want = q.level === 'intermediario' ? 4 : 3;
     assert.equal(q.options.length, want, `${q.id} opções`); assert.equal(new Set(q.options.map((o) => o.toLowerCase())).size, want, `${q.id} repetidas`);
     assert.equal(q.answer, 0); assert.ok(q.explain.length > 5);
   }
   const q5 = QUESTIONS.find((q) => q.num === 5); assert.ok(!q5.options.some((o) => /^(piano|teclado)$/i.test(o)));
-  assert.equal(V.poolFor('infantil').length, 7); assert.equal(V.poolFor('facil').length, 52); assert.equal(V.poolFor('intermediario').length, 16);
-  assert.ok(QUESTIONS.filter((x) => x.show && x.show.artist).length === 17);
+  assert.equal(V.poolFor('infantil').length, 7); assert.equal(V.poolFor('facil').length, 45); assert.equal(V.poolFor('intermediario').length, 14);
+  assert.ok(QUESTIONS.filter((x) => x.show && x.show.artist).length === 0);
 });
 test('perguntas não repetem; esgotadas encerram a rodada sem perder o placar', () => {
   let asked = []; const seen = new Set(); for (let i = 0; i < 7; i++) { const n = V.nextQuestion(asked, 'infantil', seeded(i + 1)); assert.ok(!seen.has(n.q.id)); seen.add(n.q.id); asked = n.asked; }
