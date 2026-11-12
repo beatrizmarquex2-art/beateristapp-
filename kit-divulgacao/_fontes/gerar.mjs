@@ -19,6 +19,9 @@ const C = { red: '#b5162b', wine: '#6e1219', cream: '#f1ebe1', ink: '#1b1818', n
 const P = (n) => `/kit-divulgacao/prints/${n}.png`;
 const PAUL = { bateria: '/assets/aluno/paul-bateria.webp', violao: '/assets/aluno/paul-violao.webp', paz: '/assets/aluno/paul-paz.webp', apontando: '/assets/aluno/paul-apontando.webp', skate: '/assets/aluno/paul-skate.webp', selfie: '/assets/aluno/paul-selfie.webp', normal: '/assets/aluno/paul.webp', feliz: '/assets/paul/e02.webp', fone: '/assets/paul/e05.webp' };
 const SITE = 'jogos.beaterista.com.br';
+const ZAP = '(18) 99180-4150';
+const PARC = `<img class="parc" src="/assets/parceiros-preto.png" alt="Pad Gorilla, Spark, Nagano">`;
+const BF = JSON.parse(fs.readFileSync(path.join(OUT, '_fontes/bf-config.json'), 'utf8'));
 const REDES = '@beaterista_ · @beaterista · @beateristadrummer';
 
 // bg/fg/acc por jogo (alterna as 4 cores da escola)
@@ -31,8 +34,9 @@ const JOGOS = [
   { id: 'uno-musical', nome: 'Uno Musical', lab: 'cartas e tabuleiro', frase: 'combine a cor ou a figura rítmica e vença o Paul', dev: ['reconhecer figuras', 'estratégia', 'jogar em grupo'], img: 'uno-musical-jogando', bg: C.navy, fg: C.cream, acc: C.gold, paul: 'selfie' },
   { id: 'stop-musical', nome: 'STOP Musical', lab: 'cartas e tabuleiro', frase: 'a letra é sorteada, você escreve rápido: 12 categorias de música', dev: ['vocabulário musical', 'agilidade', 'cultura musical'], img: 'stop-musical', bg: C.gold, fg: C.ink, acc: C.red, paul: 'skate' },
   { id: 'jogo-da-velha', nome: 'Jogo da Velha Musical', lab: 'cartas e tabuleiro', frase: 'responda a pergunta de música pra marcar a casa', dev: ['conhecimento musical', 'raciocínio', 'atenção'], img: 'jogo-da-velha', bg: C.red, fg: C.cream, acc: C.gold, paul: 'apontando' },
+  { id: 'cara-a-cara', nome: 'Cara a Cara', lab: 'cartas e tabuleiro', frase: 'o Paul escolheu um instrumento em segredo: faça perguntas de sim ou não e descubra qual é', dev: ['dedução', 'vocabulário de instrumentos', 'atenção'], img: 'cara-instrumentos-jogando', bg: C.navy, fg: C.cream, acc: C.gold, paul: 'apontando' },
   { id: 'quebra-cabeca', nome: 'Quebra-cabeça', lab: 'cartas e tabuleiro', frase: 'monte o palco, a guitarra, o estúdio e mais', dev: ['percepção visual', 'paciência', 'foco'], img: 'quebra-cabeca', bg: C.cream, fg: C.ink, acc: C.red, paul: 'violao' },
-  { id: 'memoria', nome: 'Jogo da Memória', lab: 'cartas e tabuleiro', frase: 'instrumentos, figuras, bandas e profissões da música', dev: ['memória', 'vocabulário musical', 'atenção'], img: 'memoria-jogando', bg: C.navy, fg: C.cream, acc: C.gold, paul: 'feliz' },
+  { id: 'memoria', nome: 'Jogo da Memória', lab: 'cartas e tabuleiro', frase: 'instrumentos, figuras, bandas e profissões da música', dev: ['memória', 'vocabulário musical', 'atenção'], img: 'memoria-instrumentos', bg: C.navy, fg: C.cream, acc: C.gold, paul: 'feliz' },
   { id: 'letras', nome: 'Letras', lab: 'palavras', frase: 'caça-palavras, cruzadinha e quiz com o vocabulário da música', dev: ['vocabulário', 'leitura', 'concentração'], img: 'letras', bg: C.gold, fg: C.ink, acc: C.red, paul: 'paz' },
   { id: 'estudos', nome: 'Estudos', lab: 'aprender brincando', frase: 'ritmo, melodia e teoria em passos curtinhos, com som', dev: ['teoria básica', 'hábito de estudo', 'meta do dia'], img: 'estudos-ritmo', bg: C.red, fg: C.cream, acc: C.gold, paul: 'bateria' },
   { id: 'ritmos-de-bateria', nome: 'Ritmos de bateria', lab: 'estudos', frase: 'veja o desenho do ritmo, a partitura e ouça: rock, pop, samba, baião…', dev: ['levadas', 'leitura de grade', 'escuta ativa'], img: 'estudos-ritmos-de-bateria', bg: C.cream, fg: C.ink, acc: C.red, paul: 'bateria' },
@@ -51,7 +55,7 @@ const base = (w, h, css, body) => `<!doctype html><html><head><meta charset="utf
 body{font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .A{font-family:'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;line-height:.95}
 .M{font-family:'Permanent Marker','Gochi Hand',cursive}.T{font-family:'Special Elite',monospace}
-.logo{height:60px}.logo.w{filter:brightness(0) invert(1)}
+.logo{height:60px;width:auto;align-self:flex-start}.logo.w{filter:brightness(0) invert(1)}
 .phone{position:relative;border:14px solid #151213;border-radius:64px;overflow:hidden;background:#151213;box-shadow:0 40px 60px -20px rgba(0,0,0,.55),0 0 0 3px rgba(255,255,255,.12)}
 .phone img{display:block;width:100%}
 .phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:34%;height:26px;background:#151213;border-radius:0 0 18px 18px;z-index:3}
@@ -59,7 +63,7 @@ body{font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:an
 .chip{display:inline-block;font-family:'Special Elite';padding:.25em .7em;border:2px solid currentColor;border-radius:999px}
 ${css}</style></head><body>${body}</body></html>`;
 
-const logoFor = (g) => `<img class="logo ${[C.red, C.navy, C.wine].includes(g.bg) ? 'w' : ''}" src="/assets/logo-nome.png">`;
+const logoFor = (g) => `<img class="logo ${[C.red, C.navy, C.wine, C.ink].includes(g.bg) ? 'w' : ''}" src="/assets/logo-nome.png">`;
 
 function feed(g) {
   const W = 1080, H = 1350;
@@ -76,7 +80,7 @@ h1{font-size:${g.nome.length > 14 ? 120 : 150}px;color:${g.fg}}
 .dev .chip{font-size:30px;align-self:flex-start;background:${g.acc};color:${g.bg === C.gold ? C.cream : g.bg === C.cream ? C.cream : C.ink};border-color:transparent}
 .phone{position:absolute;right:40px;top:260px;width:470px;transform:rotate(4deg)}
 .paul{position:absolute;left:20px;bottom:90px;width:360px;transform:rotate(-4deg);filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))}
-.foot{position:absolute;left:0;right:0;bottom:0;height:80px;background:${C.ink};color:${C.cream};display:flex;align-items:center;justify-content:center;gap:30px;font-size:30px;font-family:'Special Elite'}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.ink};color:${C.cream};display:flex;align-items:center;justify-content:space-between;padding:0 50px;gap:20px;font-size:28px;font-family:'Special Elite'}.foot .parc{height:56px;filter:brightness(0) invert(1);opacity:.9}.foot span{white-space:nowrap}
 .foot b{color:${C.gold};font-family:'Anton';font-weight:400;letter-spacing:.04em;font-size:34px}
 `, `<div class="dots"></div>
 <div class="top">${logoFor(g)}<span class="chip">${g.lab}</span></div>
@@ -84,7 +88,7 @@ h1{font-size:${g.nome.length > 14 ? 120 : 150}px;color:${g.fg}}
 <div class="dev"><b>desenvolve:</b>${g.dev.map((d) => `<span class="chip">${d}</span>`).join('')}</div></div>
 <div class="phone"><img src="${P(g.img)}"></div>
 <img class="paul" src="${PAUL[g.paul]}">
-<div class="foot"><b>jogue agora</b> ${SITE}</div>`)];
+<div class="foot"><span><b>jogue agora</b> ${SITE}</span>${PARC}</div>`)];
 }
 
 function story(g) {
@@ -100,11 +104,11 @@ h1{font-size:${g.nome.length > 14 ? 130 : 170}px;width:940px}
 .paul{position:absolute;right:20px;top:560px;width:300px;transform:rotate(6deg);z-index:5;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))}
 .cta{position:absolute;left:0;right:0;bottom:210px;text-align:center;font-size:56px}
 .cta .btn{background:${g.acc};color:${g.acc === C.gold ? C.ink : C.cream}}
-.site{position:absolute;left:0;right:0;bottom:140px;text-align:center;font-family:'Special Elite';font-size:34px}
+.site{position:absolute;left:0;right:0;bottom:150px;text-align:center;font-family:'Special Elite';font-size:34px}.parc{position:absolute;left:50%;margin-left:-230px;bottom:70px;height:56px;filter:brightness(0) invert(1);opacity:.85}.pt{position:absolute;left:0;right:0;bottom:38px;text-align:center;font-family:'Special Elite';font-size:22px;opacity:.7}
 `, `<div class="dots"></div>
 <div class="top">${logoFor(g)}<span class="chip">${g.lab}</span><h1 class="A">${g.nome}</h1><p class="fr">${g.frase}</p></div>
 <div class="phone"><img src="${P(g.img)}"></div><img class="paul" src="${PAUL[g.paul]}">
-<div class="cta"><span class="btn">jogar agora</span></div><div class="site">${SITE}</div>`)];
+<div class="cta"><span class="btn">jogar agora</span></div><div class="site">${SITE}</div>${PARC}<div class="pt">em parceria com Pad Gorilla · Spark · Nagano</div>`)];
 }
 
 // ---------- WhatsApp (pais) ----------
@@ -139,8 +143,8 @@ p{position:absolute;left:60px;top:470px;width:520px;font-size:38px;font-weight:7
 .u{position:absolute;left:60px;top:840px;font-family:'Special Elite';font-size:34px}
 .phone{position:absolute;right:50px;top:110px;width:420px;transform:rotate(4deg)}
 .paul{position:absolute;right:400px;bottom:20px;width:230px}
-.logo{position:absolute;left:60px;bottom:50px;height:90px}
-`, `<div class="dots"></div><h1 class="A">teste grátis o app da bea</h1><p>abre no celular ou no tablet, sem instalar nada. tem jogo liberado pra experimentar agora.</p><span class="btn">jogar agora</span><div class="u">${SITE}</div>
+.logo{position:absolute;left:60px;bottom:50px;height:90px}.zap{position:absolute;left:60px;top:900px;font-size:30px;font-weight:800}
+`, `<div class="dots"></div><h1 class="A">teste grátis o app da bea</h1><p>abre no celular ou no tablet, sem instalar nada. tem jogo liberado pra experimentar agora.</p><span class="btn">jogar agora</span><div class="u">${SITE}</div><div class="zap">whatsapp ${ZAP}</div>
 <div class="phone"><img src="${P('lista-de-jogos')}"></div><img class="paul" src="${PAUL.paz}"><img class="logo" src="/assets/logo-nome.png">`)],
   'wa-04-black-friday-bateria-start': [1080, 1080, () => base(1080, 1080, `
 body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/24px 24px}
@@ -152,7 +156,7 @@ h1{position:absolute;left:60px;top:150px;font-size:150px;width:520px}h1 span{col
 .cap{position:absolute;right:50px;top:120px;width:430px;transform:rotate(5deg);box-shadow:20px 30px 0 rgba(0,0,0,.4);border:6px solid ${C.cream}}
 .foot{position:absolute;left:0;right:0;bottom:0;height:70px;background:${C.red};display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:30px}
 `, `<div class="dots"></div><div class="sel A">black friday · metade do preço</div><h1 class="A">bateria <span>start</span></h1><div class="pr">R$ 29,90</div><div class="po">R$ 14,90</div>
-<div class="l">ebook pra iniciantes: peças, figuras rítmicas, partitura e rudimentos · 44 páginas em PDF</div><img class="cap" src="/assets/loja/bateria-start.webp"><div class="foot">link na descrição / chama a Bea no zap</div>`)],
+<div class="l">ebook pra iniciantes: peças, figuras rítmicas, partitura e rudimentos · 44 páginas em PDF</div><img class="cap" src="/assets/loja/bateria-start.webp"><div class="foot">link na lojinha · whatsapp ${ZAP}</div>`)],
   'wa-05-materiais-pdf': [1080, 1080, () => base(1080, 1080, `
 body{background:${C.cream};color:${C.ink};position:relative}
 h1{position:absolute;left:60px;top:40px;font-size:92px;color:${C.red};width:960px}
@@ -172,7 +176,7 @@ h1{position:absolute;left:60px;top:50px;font-size:110px;color:${C.gold}}
 .foot{position:absolute;left:0;right:0;bottom:0;height:70px;background:${C.red};display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:30px}
 `, `<h1 class="A">como funciona</h1><img class="paul" src="${PAUL.selfie}">
 <div class="s"><div><i>1</i><p><b>entra pelo link</b><span>${SITE}: celular, tablet ou computador</span></p></div><div><i>2</i><p><b>joga e estuda</b><span>jogos de ritmo, leitura e teoria, com o Paul explicando</span></p></div><div><i>3</i><p><b>ganha estrelas</b><span>com o código do aluno: estrelas, roleta e álbum de figurinhas</span></p></div></div>
-<div class="foot">${SITE}</div>`)],
+<div class="foot">${SITE} · whatsapp ${ZAP}</div>`)],
 };
 
 // ---------- banners (site, Google Display, mobile) ----------
@@ -239,14 +243,82 @@ const YTBANNER = () => base(2560, 1440, `body{background:${C.red};color:${C.crea
 .side1{position:absolute;left:60px;top:60px;height:300px;transform:rotate(-8deg)}.side2{position:absolute;right:80px;bottom:80px;height:360px;transform:rotate(6deg)}
 `, `<div class="dots"></div><img class="side1" src="${PAUL.skate}"><img class="side2" src="${PAUL.violao}"><div class="safe"><img class="paul" src="${PAUL.bateria}"><div><div class="t A">bateria, música e <em>jogos</em></div><div class="s">@beateristadrummer · ${SITE}</div></div></div>`);
 
+
+// ---------- álbum de figurinhas ----------
+const CARD = (c) => `/kit-divulgacao/_fontes/cartas/${c}.webp`;
+const ALBUM = {
+  'album-paul-e-beaterista': { bg: C.ink, fg: C.cream, acc: C.gold, lab: 'álbum de figurinhas', t: 'colecione o <em>Paul</em> e a <em>Beaterista</em>', s: 'cartas exclusivas, só aqui', cards: ['P01', 'F001', 'P03', 'F004', 'P05'] },
+  'album-rock': { bg: C.red, fg: C.cream, acc: C.gold, lab: 'álbum de figurinhas', t: 'figurinhas de <em>rock</em>', s: 'Queen, Metallica, Guns, KISS, Led Zeppelin…', cards: ['F045', 'F046', 'F047', 'F048', 'F050'] },
+  'album-pop': { bg: C.navy, fg: C.cream, acc: C.gold, lab: 'álbum de figurinhas', t: 'figurinhas de <em>pop</em>', s: 'Michael Jackson, Britney, Avril, Billie, Ed Sheeran…', cards: ['F044', 'F114', 'F058', 'F042', 'F128'] },
+  'album-colecao-completa': { bg: C.gold, fg: C.ink, acc: C.red, lab: 'álbum de figurinhas', t: 'bandas, <em>pop</em> e o <em>Paul</em>', s: 'jogue, ganhe pacotes e complete o álbum', cards: ['F013', 'P02', 'F044', 'F001', 'F104'] },
+};
+function album(a, W, H) {
+  const story = H > 1500; const cw = story ? 330 : 280; const rots = [-22, -11, 0, 11, 22]; const dy = [60, 14, 0, 14, 60]; const step = story ? 170 : 145;
+  const x0 = W / 2 - cw / 2;
+  return base(W, H, `body{background:${a.bg};color:${a.fg};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(${a.fg}22 2.5px,transparent 3px) 0 0/30px 30px}
+.top{position:absolute;left:70px;right:70px;top:${story ? 150 : 60}px;display:flex;flex-direction:column;gap:18px}.top .chip{font-size:30px;align-self:flex-start}
+h1{font-size:${story ? 170 : 112}px;color:${a.fg}}h1 em{font-style:normal;color:${a.acc}}.s{font-size:${story ? 48 : 40}px;font-weight:700;line-height:1.15;max-width:900px}
+.k{position:absolute;width:${cw}px;filter:drop-shadow(10px 14px 0 rgba(0,0,0,.35))}
+.btn{position:absolute;left:0;right:0;margin:auto;width:fit-content;bottom:${story ? 330 : 190}px;font-size:${story ? 56 : 46}px;background:${a.acc};color:${a.acc === C.gold ? C.ink : C.cream}}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.ink};color:${C.cream};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite';gap:18px}.foot b{color:${C.gold};font-family:Anton;font-weight:400}
+.fine{position:absolute;left:0;right:0;bottom:${story ? 240 : 100}px;text-align:center;font-family:'Special Elite';font-size:24px;opacity:.8}`,
+    `<div class="dots"></div><div class="top">${logoFor({ bg: a.bg })}<span class="chip">${a.lab}</span><h1 class="A">${a.t}</h1><p class="s">${a.s}</p></div>
+${a.cards.map((c, i) => `<img class="k" src="${CARD(c)}" style="left:${x0 + (i - 2) * step}px;top:${(story ? 760 : 660) + dy[i]}px;transform:rotate(${rots[i]}deg);z-index:${i === 2 ? 5 : 3 - Math.abs(i - 2)}">`).join('')}
+<span class="btn A">jogue e colecione</span><div class="fine">131 figurinhas pra colecionar · ganhe pacotes jogando</div><div class="foot"><b>${SITE}</b> · estrelas, roleta e álbum com o código de aluno</div>`);
+}
+// faça a sua figurinha
+function suaFigurinha(W, H) {
+  const story = H > 1500;
+  return base(W, H, `body{background:${C.cream};color:${C.ink};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#00000012 2.5px,transparent 3px) 0 0/30px 30px}
+.top{position:absolute;left:70px;top:${story ? 150 : 60}px;right:70px;display:flex;flex-direction:column;gap:18px}.top .chip{font-size:30px;align-self:flex-start}
+h1{font-size:${story ? 170 : 140}px;color:${C.red}}h1 em{font-style:normal;color:${C.ink}}.s{font-size:${story ? 48 : 36}px;font-weight:700;line-height:1.15;max-width:${story ? 760 : 520}px}
+.k{position:absolute;width:${story ? 420 : 380}px;filter:drop-shadow(10px 14px 0 rgba(0,0,0,.3))}
+.p{position:absolute;width:180px}
+.btn{position:absolute;left:70px;bottom:${story ? 330 : 140}px;font-size:${story ? 56 : 46}px;background:${C.red};color:${C.cream}}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.ink};color:${C.cream};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
+    `<div class="dots"></div><div class="top"><img class="logo" src="/assets/logo-nome.png"><span class="chip">perfil do aluno</span><h1 class="A">faça a <em>sua</em> figurinha</h1><p class="s">escolha o modelo, ajuste sua foto e baixe sua cartinha. a foto fica só no seu aparelho.</p></div>
+<img class="k" src="${CARD('F001')}" style="right:${story ? 70 : 90}px;top:${story ? 760 : 500}px;transform:rotate(7deg)"><img class="k" src="${CARD('P03')}" style="right:${story ? 420 : 400}px;top:${story ? 900 : 620}px;transform:rotate(-8deg)">
+<img class="p" src="${PAUL.selfie}" style="left:60px;bottom:${story ? 520 : 240}px"><span class="btn A">criar a minha</span><div class="foot">${SITE} · aba perfil</div>`);
+}
+
+// ---------- black friday geral (um post por material) ----------
+const CAPAS = { start: 'bateria-start', memoria: 'memoria', 'bateria-kids': 'bateria-kids', roboterista: 'roboterista', violao: 'violao', mood: 'mood' };
+function bfProduto(id, W, H) {
+  const p = BF.produtos[id]; const story = H > 1500; const por = p.por && p.por.trim();
+  return base(W, H, `body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/26px 26px}
+.sel{position:absolute;left:60px;top:${story ? 140 : 60}px;font-size:40px;background:${C.gold};color:${C.ink};padding:8px 26px;transform:rotate(-2deg)}
+.cap{position:absolute;right:50px;top:${story ? 300 : 150}px;width:${story ? 560 : 470}px;transform:rotate(4deg);box-shadow:20px 28px 0 rgba(0,0,0,.45);border:6px solid ${C.cream}}
+.t{position:absolute;left:60px;top:${story ? 300 : 150}px;width:${story ? 440 : 470}px}.t h1{font-size:${story ? 130 : 112}px;line-height:.95}.t p{font-size:${story ? 36 : 32}px;font-weight:700;margin-top:20px;line-height:1.2}
+.pr{position:absolute;left:60px;top:${story ? 1100 : 700}px}.pr s{font-family:Anton;font-size:64px;opacity:.6}.pr b{display:block;font-family:Anton;font-weight:400;font-size:${por ? 190 : 100}px;color:${C.gold};line-height:1.05;text-transform:uppercase}
+.btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:46px;background:${C.red};color:${C.cream}}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
+    `<div class="dots"></div><div class="sel A">black friday · ${BF.periodo}</div>
+<div class="t"><h1 class="A">${p.nome}</h1><p>${p.info}</p></div><img class="cap" src="/assets/loja/${CAPAS[id]}.webp">
+<div class="pr">${por ? `<s>${p.de}</s><b>${p.por}</b>` : `<b>preço especial<br>de black friday</b>`}</div><span class="btn A">pegar na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
+}
+function bfGeral(W, H) {
+  const story = H > 1500;
+  return base(W, H, `body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/26px 26px}
+.sel{position:absolute;left:60px;top:${story ? 140 : 50}px;font-size:40px;background:${C.gold};color:${C.ink};padding:8px 26px;transform:rotate(-2deg)}
+h1{position:absolute;left:60px;top:${story ? 260 : 140}px;font-size:${story ? 150 : 130}px;width:960px}h1 em{font-style:normal;color:${C.gold}}
+.s{position:absolute;left:60px;top:${story ? 640 : 400}px;font-size:${story ? 48 : 38}px;font-weight:700;width:900px;line-height:1.15}
+.g{position:absolute;left:50px;right:50px;top:${story ? 820 : 540}px;display:grid;grid-template-columns:repeat(${story ? 3 : 6},1fr);gap:${story ? 24 : 14}px}
+.g img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border:4px solid ${C.cream};box-shadow:8px 8px 0 rgba(0,0,0,.5)}
+.btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:${story ? 56 : 46}px;background:${C.red};color:${C.cream}}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
+    `<div class="dots"></div><div class="sel A">${BF.periodo}</div><h1 class="A">black friday <em>beaterista</em></h1><div class="s">desconto nos materiais em PDF: bateria, violão, partitura e jogos pra imprimir.</div>
+<div class="g">${Object.keys(CAPAS).map((k) => `<img src="/assets/loja/${CAPAS[k]}.webp">`).join('')}</div><span class="btn A">ver na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
+}
+
 // ---------- render ----------
 const browser = await chromium.launch({ args: ['--no-sandbox'] });
 async function shot(file, w, h, html, scale = 1) {
   if (FILTRO && !FILTRO.test(file)) return;
+  const jpg = /^(posts-feed|stories|album|black-friday|whatsapp-pais|youtube|banners)\//.test(file) && !/logo|parceiros/.test(file); const saida = jpg ? file.replace(/\.png$/, '.jpg') : file;
   fs.mkdirSync(path.dirname(path.join(OUT, file)), { recursive: true });
   const pg = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: scale });
   await pg.setContent(html, { waitUntil: 'load' }); await pg.evaluate(async () => { await Promise.all(['1em Anton','1em "Special Elite"','1em "Permanent Marker"','700 1em "Hanken Grotesk"','400 1em "Hanken Grotesk"'].map((f) => document.fonts.load(f, 'aAÇãé'))); await document.fonts.ready; }); await pg.waitForTimeout(250);
-  await pg.screenshot({ path: path.join(OUT, file) }); await pg.close(); console.log('ok', file);
+  await pg.screenshot(jpg ? { path: path.join(OUT, saida), type: 'jpeg', quality: 92 } : { path: path.join(OUT, saida) }); await pg.close(); console.log('ok', saida);
 }
 for (const g of JOGOS) { const [w, h, html] = feed(g); await shot(`posts-feed/${g.id}.png`, w, h, html); const [w2, h2, html2] = story(g); await shot(`stories/${g.id}.png`, w2, h2, html2); }
 for (const [n, [w, h, f]] of Object.entries(WA)) await shot(`whatsapp-pais/${n}.png`, w, h, f());
@@ -256,4 +328,10 @@ for (const [n, f] of Object.entries(YT)) await shot(`youtube/${n}.png`, 1280, 72
 await shot('youtube/canal-banner-2560x1440.png', 2560, 1440, YTBANNER());
 await shot('banners/logo-quadrado-1200x1200.png', 1200, 1200, base(1200, 1200, `body{background:${C.cream};display:flex;align-items:center;justify-content:center}img{width:900px}`, `<img src="/assets/logo-nome.png">`));
 await shot('banners/logo-horizontal-1200x300.png', 1200, 300, base(1200, 300, `body{background:${C.cream};display:flex;align-items:center;justify-content:center}img{height:240px}`, `<img src="/assets/logo-nome.png">`));
+
+for (const [n, a] of Object.entries(ALBUM)) { await shot(`album/${n}-feed.png`, 1080, 1350, album(a, 1080, 1350)); await shot(`album/${n}-story.png`, 1080, 1920, album(a, 1080, 1920)); }
+await shot('album/album-faca-a-sua-figurinha-feed.png', 1080, 1350, suaFigurinha(1080, 1350)); await shot('album/album-faca-a-sua-figurinha-story.png', 1080, 1920, suaFigurinha(1080, 1920));
+for (const id of Object.keys(BF.produtos)) { await shot(`black-friday/bf-${id}-feed.png`, 1080, 1350, bfProduto(id, 1080, 1350)); await shot(`black-friday/bf-${id}-story.png`, 1080, 1920, bfProduto(id, 1080, 1920)); }
+await shot('black-friday/bf-geral-feed.png', 1080, 1350, bfGeral(1080, 1350)); await shot('black-friday/bf-geral-story.png', 1080, 1920, bfGeral(1080, 1920));
+await shot('banners/parceiros-1200x300.png', 1200, 300, base(1200, 300, `body{background:${C.cream};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}img{height:150px}small{font-family:'Special Elite';font-size:24px}`, `<img src="/assets/parceiros-preto.png"><small>Beaterista em parceria com Pad Gorilla · Spark · Nagano</small>`));
 await browser.close(); srv.close();

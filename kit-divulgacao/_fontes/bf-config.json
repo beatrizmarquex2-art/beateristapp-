@@ -1,0 +1,13 @@
+{
+  "_ajuda": "bê: preencha 'de' e 'por' de cada material quando definir o desconto na lojinha. Se 'por' ficar vazio, a imagem diz 'preço especial de black friday' sem número. Depois rode: NODE_PATH=$(npm root -g) node kit-divulgacao/_fontes/gerar.mjs black",
+  "link": "jogos.beaterista.com.br/#/lojinha",
+  "periodo": "27/11 a 30/11",
+  "produtos": {
+    "start":        { "nome": "Bateria Start",           "info": "44 páginas · peças, figuras, partitura e rudimentos", "de": "R$ 29,90", "por": "R$ 14,90" },
+    "memoria":      { "nome": "Jogo da Memória Musical", "info": "61 pares · imprima, recorte, embaralhe",            "de": "R$ 19,90", "por": "" },
+    "bateria-kids": { "nome": "Bateria Kids",            "info": "36 páginas · aprenda bateria brincando e colorindo", "de": "R$ 19,90", "por": "" },
+    "roboterista":  { "nome": "Robôterista Ensina",      "info": "70 páginas · figuras rítmicas, pausas e tempo",      "de": "R$ 29,90", "por": "" },
+    "violao":       { "nome": "Violão do Zero",          "info": "47 páginas · da primeira corda à primeira música",   "de": "R$ 29,90", "por": "" },
+    "mood":         { "nome": "Beaterista Mood",         "info": "55 páginas · exercícios que a Bea estuda e leva pro palco", "de": "R$ 29,90", "por": "" }
+  }
+}

@@ -91,6 +91,12 @@ h2{font-size:clamp(2rem,6vw,3.4rem);margin-bottom:14px}
 .p small{opacity:.7}.p .pr{font-weight:800;color:var(--red);margin:6px 0 10px}.p .pr s{opacity:.5;font-weight:400;margin-right:6px}
 .p .btn{font-size:1rem;margin-top:auto;padding:.5em 1em}
 .bf{display:inline-block;background:var(--ink);color:var(--gold);font-family:'Anton';text-transform:uppercase;padding:2px 12px;margin-bottom:8px;font-size:.9rem}
+.album{background:var(--ink);color:var(--cream)}.album h2{color:var(--gold)}
+.fan{display:flex;justify-content:center;margin:40px 0 50px;padding:0 20px}
+.fan img{width:min(190px,24vw);margin:0 -14px;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.4));transition:transform .2s}
+.fan img:nth-child(1){transform:rotate(-14deg) translateY(24px)}.fan img:nth-child(2){transform:rotate(-7deg) translateY(8px)}.fan img:nth-child(3){transform:none;z-index:2}.fan img:nth-child(4){transform:rotate(7deg) translateY(8px)}.fan img:nth-child(5){transform:rotate(14deg) translateY(24px)}
+.parc{background:var(--cream);text-align:center;padding:44px 0}.parc img{width:min(560px,90%);margin:0 auto 12px}.parc p{font-family:'Special Elite'}
+.avisobf{background:var(--ink);color:var(--gold);text-align:center;padding:14px;font-family:'Anton';text-transform:uppercase;letter-spacing:.04em;font-size:1.1rem}.avisobf a{color:var(--cream)}
 /* faq */
 details{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:16px 20px;margin-bottom:12px}
 summary{font-family:'Anton';text-transform:uppercase;font-size:1.2rem;cursor:pointer;list-style:none}
@@ -110,11 +116,7 @@ footer a{color:var(--gold)}
 </head>
 <body>
 
-<!-- ============ TROCAR ANTES DE PUBLICAR ============
- WHATSAPP: procure por "SEUNUMERO" e coloque o número com DDI+DDD (ex.: 5511999999999)
- SITE DOS JOGOS: https://jogos.beaterista.com.br
- Os links "comprar" são os da Hotmart que já estão na lojinha (js/loja-config.js). Confira antes de subir.
-====================================================== -->
+<!-- links: jogos em https://jogos.beaterista.com.br · WhatsApp da escola (18) 99180-4150 · compras pela Hotmart (mesmos links da lojinha) -->
 
 <header class="hero">
   <div class="wrap">
@@ -124,9 +126,9 @@ footer a{color:var(--gold)}
       <p>ritmo, leitura de partitura e teoria brincando, no celular, tablet ou computador. criado pela professora Bea, de bateria, junto com o Paul, o robô que explica tudo.</p>
       <div class="cta">
         <a class="btn" href="https://jogos.beaterista.com.br">testar grátis agora</a>
-        <a class="btn ghost" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código</a>
+        <a class="btn ghost" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código</a>
       </div>
-      <small>sem instalar nada · abre direto no navegador</small>
+      <small>sem instalar nada · abre direto no navegador (precisa de internet)</small>
     </div>
     <div class="ph"><div class="phone"><img src="img/toca-aqui-jogando.webp" alt="Toca Aqui: leia a figura e toque no tempo" width="390"></div><img class="paul" src="img/paul-bateria.webp" alt="Paul, o robô baterista"></div>
   </div>
@@ -158,13 +160,23 @@ footer a{color:var(--gold)}
       <article class="j"><div class="shot"><img src="img/paulta-jogando.webp" alt="pauLta" loading="lazy"></div><div class="tx"><h3>pauLta</h3><p>aprenda a ler a pauta da bateria e as claves de sol e de fá.</p><span class="tag">partitura</span><span class="tag">claves</span></div></article>
       <article class="j"><div class="shot"><img src="img/uno-musical-jogando.webp" alt="Uno Musical" loading="lazy"></div><div class="tx"><h3>Uno Musical</h3><p>jogue a carta da mesma cor ou figura rítmica. contra o Paul ou com amigos.</p><span class="tag">figuras</span><span class="tag">estratégia</span></div></article>
       <article class="j"><div class="shot"><img src="img/stop-musical.webp" alt="STOP Musical" loading="lazy"></div><div class="tx"><h3>STOP Musical</h3><p>a letra é sorteada e você escreve rápido em 12 categorias de música.</p><span class="tag">vocabulário</span><span class="tag">cultura musical</span></div></article>
+      <article class="j"><div class="shot"><img src="img/cara-instrumentos-jogando.webp" alt="Cara a Cara dos instrumentos" loading="lazy"></div><div class="tx"><h3>Cara a Cara</h3><p>o Paul escolheu um instrumento em segredo: pergunte sim ou não e descubra qual é.</p><span class="tag">dedução</span><span class="tag">instrumentos</span></div></article>
       <article class="j"><div class="shot"><img src="img/quebra-cabeca.webp" alt="Quebra-cabeça" loading="lazy"></div><div class="tx"><h3>Quebra-cabeça</h3><p>monte o palco, a guitarra, o estúdio e outras cenas musicais.</p><span class="tag">foco</span><span class="tag">percepção</span></div></article>
       <article class="j"><div class="shot"><img src="img/estudos-ritmos-de-bateria.webp" alt="Ritmos de bateria" loading="lazy"></div><div class="tx"><h3>Estudos: ritmos</h3><p>veja o desenho do ritmo, a partitura e ouça: rock, pop, samba, baião.</p><span class="tag">levadas</span><span class="tag">escuta ativa</span></div></article>
       <article class="j"><div class="shot"><img src="img/estudos-acordes-violao.webp" alt="Acordes de violão" loading="lazy"></div><div class="tx"><h3>Estudos: acordes</h3><p>16 acordes de violão e guitarra: veja onde pôr o dedo e ouça.</p><span class="tag">harmonia</span><span class="tag">mapa do braço</span></div></article>
       <article class="j"><div class="shot"><img src="img/tocar-bateria.webp" alt="Bateria de toque" loading="lazy"></div><div class="tx"><h3>Tocar</h3><p>bateria, violão, piano e xilofone na tela. grave seu ritmo e brinque.</p><span class="tag">criatividade</span><span class="tag">coordenação</span></div></article>
-      <article class="j"><div class="shot"><img src="img/memoria-jogando.webp" alt="Jogo da memória" loading="lazy"></div><div class="tx"><h3>Jogo da Memória</h3><p>instrumentos, figuras, bandas e profissões da música.</p><span class="tag">memória</span><span class="tag">vocabulário</span></div></article>
+      <article class="j"><div class="shot"><img src="img/memoria-instrumentos.webp" alt="Jogo da memória" loading="lazy"></div><div class="tx"><h3>Jogo da Memória</h3><p>instrumentos, figuras, partitura, palco e profissões da música.</p><span class="tag">memória</span><span class="tag">vocabulário</span></div></article>
     </div>
     <p style="text-align:center;margin-top:36px"><a class="btn" href="https://jogos.beaterista.com.br">jogar agora</a></p>
+  </div>
+</section>
+
+<section class="album" id="album">
+  <div class="wrap">
+    <h2 class="A">álbum de figurinhas</h2>
+    <p class="lead">jogando você ganha estrelas, giros da roleta e pacotes. cole as cartas do <b>Paul</b>, da <b>Beaterista</b>, de bandas de rock e de pop, e ainda crie a <b>sua figurinha</b> com a sua foto (a foto fica só no seu aparelho).</p>
+    <div class="fan"><img src="img/carta-P01.webp" alt="Figurinha do Paul"><img src="img/carta-F001.webp" alt="Figurinha da Beaterista"><img src="img/carta-F047.webp" alt="Figurinha de rock"><img src="img/carta-F044.webp" alt="Figurinha de pop"><img src="img/carta-P03.webp" alt="Figurinha do Paul"></div>
+    <p style="text-align:center"><small class="T">131 figurinhas pra colecionar · o álbum com figurinhas é liberado com o código de aluno</small></p>
   </div>
 </section>
 
@@ -172,11 +184,11 @@ footer a{color:var(--gold)}
   <div class="wrap">
     <h2 class="A">como funciona</h2>
     <div class="passos">
-      <div class="passo"><h3>abra o link</h3><p>jogos.beaterista.com.br no celular, tablet ou computador. dá pra colocar o ícone na tela inicial.</p></div>
+      <div class="passo"><h3>abra o link</h3><p>jogos.beaterista.com.br no celular, tablet ou computador. dá pra colocar o ícone na tela inicial do celular.</p></div>
       <div class="passo"><h3>jogue e estude</h3><p>alguns jogos já abrem livres pra testar. o Paul explica, o jogo dá a resposta na hora.</p></div>
       <div class="passo"><h3>libere tudo</h3><p>com o código de aluno você desbloqueia as fases, ganha estrelas, giros da roleta e figurinhas do álbum.</p></div>
     </div>
-    <p style="margin-top:30px"><a class="btn red" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código pelo whatsapp</a></p>
+    <p style="margin-top:30px"><a class="btn red" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código pelo whatsapp</a></p>
   </div>
 </section>
 
@@ -210,6 +222,7 @@ footer a{color:var(--gold)}
   </div>
 </section>
 
+<div class="avisobf">black friday na lojinha: descontos em vários materiais · <a href="https://jogos.beaterista.com.br/#/lojinha">ver na lojinha</a></div>
 <section class="loja" id="materiais">
   <div class="wrap">
     <h2 class="A">materiais da bea em pdf</h2>
@@ -225,6 +238,8 @@ footer a{color:var(--gold)}
   </div>
 </section>
 
+<section class="parc"><div class="wrap"><img src="img/parceiros.png" alt="Pad Gorilla, Spark Cajons e Nagano Drums"><p>a Beaterista tem parceria com Pad Gorilla, Spark e Nagano Drums</p></div></section>
+
 <section>
   <div class="wrap" style="max-width:800px">
     <h2 class="A">perguntas frequentes</h2>
@@ -234,7 +249,7 @@ footer a{color:var(--gold)}
     <details><summary>preciso ter bateria?</summary><p>não. dá pra tocar na tela. alguns jogos aceitam o microfone se você tiver instrumento, mas não é obrigatório.</p></details>
     <details><summary>o que é o código de aluno?</summary><p>é o que libera as fases, as estrelas, a roleta e o álbum de figurinhas. você pode testar os jogos livres antes e pedir o código para a professora Bea.</p></details>
     <details><summary>os materiais em pdf são enviados como?</summary><p>a compra é pela Hotmart e o acesso ao PDF chega por lá, na hora do pagamento confirmado.</p></details>
-    <details><summary>funciona sem internet?</summary><p>depois de aberto uma vez, boa parte funciona offline. algumas coisas (códigos, jogos em 2 celulares) precisam de internet.</p></details>
+    <details><summary>funciona sem internet?</summary><p>não: os jogos precisam de internet pra abrir e funcionar. por isso é um site, sem instalar nada.</p></details>
   </div>
 </section>
 
@@ -243,7 +258,7 @@ footer a{color:var(--gold)}
     <img class="paul" src="img/paul-paz.webp" alt="Paul fazendo sinal de paz">
     <h2 class="A">bora tocar juntos?</h2>
     <p class="lead" style="margin:0 auto">teste os jogos agora, sem compromisso. quando gostar, é só pedir o seu código.</p>
-    <div class="cta"><a class="btn" href="https://jogos.beaterista.com.br">testar grátis</a><a class="btn ghost" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">falar com a bea</a></div>
+    <div class="cta"><a class="btn" href="https://jogos.beaterista.com.br">testar grátis</a><a class="btn ghost" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">falar com a bea</a></div>
   </div>
 </section>
 
