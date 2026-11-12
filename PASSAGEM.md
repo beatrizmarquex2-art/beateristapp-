@@ -470,3 +470,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## v391 — Cara a Cara mais limpo + só as perguntas da Bea
 - perguntas mantidas (MANTER em perguntas.js): banda, solo, dupla, brasileiro, rock, pop, punk, baterista, ativo, instrumento(foto) + NOVA "é uma mulher?" (attr `mulher` em dados-extra.js: solo mulher = true, solo homem/banda = false, dupla mista/Paramore/Gorillaz/Beaterista = null). As outras ficam em TODAS/BY_Q só pra logs antigos
 - chips de pergunta em texto curto (kids), sem emoji nem quadrados; virar = ✕ pequeno sem contorno
+
+## v392 — contas, lista curta e limite de 2 aparelhos
+- entrar direto (nome+código) já salva o aluno em "trocar aluno" (`CONTAS.guardarConta` na entrada + `guardarAtual` no boot)
+- "trocar aluno" e "voltar pra sala" (Jogos): só 2 itens + setinha ▾ +N (`js/lista-curta.js`)
+- limite de 2 aparelhos por código: cliente manda `p_aparelho` (id aleatório em localStorage `beaterista-aparelho-id`) pra `aluno_acesso`; sai/tirar da lista chama `aluno_sair`. SERVIDOR: supabase/013_aparelhos.sql (NÃO aplicado até a Bea aprovar a migração; sem ela o app funciona igual, só sem limite). Vaga parada 30 dias libera sozinha. Cliente cai no `aluno_codigo_ok` se a função nova não responder
+- Uno Musical (#/jogos/cartas) continua TRANCADO sem código, mesmo entrando por sala (acesso.js)

@@ -8,6 +8,7 @@ import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import { silence } from '../audio.js';
 import * as CODE from '../codigo.js';
+import { listaCurta } from '../lista-curta.js';
 import * as cartas from '../jogos/cartas.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
@@ -85,7 +86,7 @@ function atalhoCodigoAluno() {
     onkeydown: (e) => { if (e.key === 'Enter') ir(); } });
   async function ir() {
     msg.textContent = 'conferindo…';
-    try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; } else msg.textContent = 'não achei esse código. confira com a sua professora.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+    try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
   }
   const box = h('section', { class: 'card pad jg-cod-aluno', 'aria-label': 'já tenho código' }, h('b', {}, 'já tem código de aluno? coloque aqui'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'liberar')), msg);
   document.addEventListener('aluno-acesso', () => box.remove(), { once: true });
@@ -108,7 +109,7 @@ function atalhoSala() {
   const voltas = JOGOS_SALA.map(([id, rota]) => [id, rota, salaLembrada(id)]).filter((x) => x[2]);
   return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'entrar numa sala' },
     h('b', {}, 'tem um código de sala?'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar')),
-    ...voltas.map(([id, rota, u]) => h('button', { class: 'btn small', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`)), msg);
+    voltas.length ? listaCurta(voltas.map(([id, rota, u]) => h('button', { class: 'btn small jg-volta-mini', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`))) : null, msg);
 }
 
 /* ---- sair sem querer: lembra o jogo em andamento e a tela de Jogos oferece "continuar" ---- */
