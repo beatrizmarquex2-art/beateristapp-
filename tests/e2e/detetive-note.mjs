@@ -29,7 +29,7 @@ check('acertou: os 4 tempos ficam verdes', (await page.locator('.dn-slot.ok').co
 await sleep(1500);
 for (let r = 1; r < 3; r++) { await monta(1, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1500); }
 check('3 ritmos acertados: fase concluída com estrelas e botão da próxima fase', /fase 1 concluída/.test(await page.textContent('.jg-detetive')) && (await page.getByRole('button', { name: /próxima fase/ }).count()) === 1);
-check('errou de primeira no 1º ritmo, então não são 3 estrelas', (await page.getAttribute('.dn-estrelas', 'aria-label')) === '2 de 3 estrelas', await page.getAttribute('.dn-estrelas', 'aria-label'));
+check('errou de primeira no 1º ritmo (2 de 3 = 67%): 1 estrela, como na pauLta', (await page.getAttribute('.dn-estrelas', 'aria-label')) === '1 de 3 estrelas', await page.getAttribute('.dn-estrelas', 'aria-label'));
 await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
 await page.locator('.tm-tabs button').nth(2).click(); await page.waitForSelector('.mp-node'); // parque
 await abre(4); // fase 5: entram as semicolcheias
