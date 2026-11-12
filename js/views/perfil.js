@@ -8,6 +8,8 @@ import * as Minhas from '../figurinhas/minhas.js';
 import * as CODE from '../codigo.js';
 import * as AC from '../acesso.js';
 import * as D from '../figurinhas/dono.js';
+import * as EstCard from '../figurinhas/estrelas-card.js';
+import * as PROG from '../kids/progress.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
@@ -32,6 +34,14 @@ export function mount(host) {
   const nomeAtual = () => (cfg.nome || ls(NOME_ALUNO) || '').trim();
   const body = h('div', { class: 'pad-x', style: 'display:grid;gap:14px' });
   host.append(banner('Perfil', 'seu nome e a sua figurinha'), paulDica(), body);
+  // compartilhar as estrelas (post e story): moram aqui no Perfil (pedido da Bea)
+  const compartilhaEst = () => {
+    let me = null; try { me = PROG.active(); } catch { /* sem perfil */ } if (!me) return null;
+    const total = async () => { try { const E = await import('../figurinhas/estrelas.js'); return E.estrelasTotais(me.id); } catch { return 0; } };
+    return h('section', { class: 'card pad pf-share-est' }, h('b', {}, 'compartilhar minhas ★'), h('p', { class: 'muted' }, 'gera uma imagem com as suas estrelas pra postar.'),
+      h('div', { class: 'row' }, ...[['post', 'post'], ['story', 'story']].map(([f, t]) => h('button', { type: 'button', class: 'btn', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { const r = await EstCard.compartilhar({ nome: nomeAtual() || me.name, total: await total(), formato: f }); if (r === 'baixado') toast('imagem baixada: é só postar!'); else if (r === 'compartilhado') toast('compartilhado!'); } catch { toast('não consegui montar a imagem agora.'); } b.disabled = false; } }, t))));
+  };
+  setTimeout(() => { if (alive) { const s = compartilhaEst(); if (s) body.append(s); } }, 0);
 
   const avatar = h('div', { class: 'pf-avatar', 'aria-label': 'Sua foto' });
   const nome = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'off', 'aria-label': 'Seu nome na figurinha', placeholder: 'seu nome', value: nomeAtual(), oninput: (ev) => { cfg.nome = ev.target.value; salvarCfg(); cri && cri.refresh(); } });

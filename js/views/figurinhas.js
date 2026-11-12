@@ -10,7 +10,6 @@ import * as P from '../kids/progress.js';
 import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
-import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as LEND from '../figurinhas/lendarias.js';
 import * as RS from '../resgate.js';
 import * as CODE from '../codigo.js';
@@ -174,7 +173,6 @@ export function mount(host, parts = [], opts = {}) {
               statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))),
         h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`)),
         h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
-        me ? h('div', { class: 'fig-share-est' }, h('b', {}, 'compartilhar minhas ★'), ...[['post', 'post'], ['story', 'story']].map(([f, t]) => h('button', { type: 'button', class: 'btn small', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { const r = await EstCard.compartilhar({ nome: me.name, total: EST.estrelasTotais(me.id), formato: f }); if (r === 'baixado') toast('imagem baixada: é só postar!'); else if (r === 'compartilhado') toast('compartilhado!'); } catch { toast('não consegui montar a imagem agora.'); } b.disabled = false; } }, t))) : null,
         h('ul', { class: 'fig-regras' },
           h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
           h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '4 fases com 3 ★'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),
