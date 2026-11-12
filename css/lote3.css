@@ -835,3 +835,6 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-ut b { padding: 1px 9px; border: 2px solid #1b1818; border-radius: 999px !important; background: #d92031; color: #fff !important; font: 800 11.5px var(--body) !important; white-space: nowrap; }
 /* cronômetro um pouco mais alto e menor dentro do botão redondo (o desenho tem o botãozinho em cima e pesava pra baixo) */
 .ti-ut-foco .ti-ut-art img { transform: translateY(-6%) scale(.9); }
+
+/* nuvem do Paul: quebra equilibrada, e o js encolhe o balão até a última palavra */
+.pt-cloud { text-wrap: balance; box-sizing: border-box; }
