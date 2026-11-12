@@ -61,7 +61,7 @@ const SECTIONS = [
   ]],
   ['cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+    ...['cartas', 'quizuno', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
   ['letras', [
     link('#/dicas', 'Letras', 'quiz.svg', 'caça-palavras, cruzadinha, quiz e duelo · 2 partidas grátis'),

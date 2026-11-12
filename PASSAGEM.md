@@ -501,3 +501,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Estrelas da fase: sem erro 3, até 2 erros 2, senão 1 (só ganha a diferença sobre o melhor). Nada é tocado (só aprender).
 - **Pendente (Bea)**: o final da ideia do tetris ("de um lado está escrita uma nota e do outro lado outra; a um…") ficou cortado; fiz a versão em que o Paul vai pro lado do nome certo.
 - **Música**: `js/jogos/musica.js` dá uma musiquinha sintetizada, baixinha, diferente pra cada jogo da aba Jogos (some no botão de som do jogo e na pausa; o Toca Aqui e o Detetive Note só têm música no mapa, usando o evento `jogo-musica`). Testes: `tests/musica.test.mjs`, `tests/e2e/musica-jogos.mjs`.
+
+- **Bingo inativo** (pedido da Bea, nov/2026): saiu da lista da aba Jogos (`SECTIONS` em `js/views/jogos.js`). O código (`js/jogos/bingo*.js`, `supabase/009_bingo_salas.sql`) e o endereço `#/jogos/bingo` continuam, pra reativar é só recolocar `'bingo'` na lista de `inner(...)`.
