@@ -33,7 +33,7 @@ export const GAMES = {
     okText: (q) => `isso! é ${nameOf(q.ans)} ⭐`, noText: (q) => `era ${nameOf(q.ans)}`, hint: (k) => hintOf('pecas', k),
   },
   figuras: {
-    id: 'figuras', title: 'Figuras rítmicas', blurb: 'quanto vale, desenho, pausas, tercina…', emoji: '⏳', ages: 'a partir de 6 anos',
+    id: 'figuras', title: 'Figurix', blurb: 'quanto vale, desenho, pausas, tercina…', emoji: '⏳', ages: 'a partir de 6 anos',
     makeQuestion: (rnd, d) => figureQ(rnd, d),
     say: (q) => ({ dura: 'qual vale mais?', tempos: 'quanto vale?', nome: 'quem é?', desenho: 'qual é o desenho?', montar: 'qual está montado certinho?', pausa: 'e o silêncio?', pausaValor: 'quanto dura o silêncio?', grupo: 'quantas notas cabem?', grupoN: 'quantas notas?' }[q.kind] || 'qual será?'),
     render: (q) => {
