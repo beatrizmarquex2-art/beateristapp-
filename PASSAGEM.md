@@ -495,3 +495,6 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## v397 — ícones dos modos, opção 3 (linha azul + toque vermelho, em bolinha)
 - `bq()` em js/jogos/bonequinhos.js: kinds paul (robô = 1 contra o robô), um, dois, celular (código), mais (3 ou mais), sala; CSS no fim de css/jogos.css (.ac vermelho / .fa preenchido; ligado = bolinha azul + amarelo)
 - Cara a Cara: "como jogar" agora com ícones (um/paul/dois/celular)
+
+## v398 — cara a cara: 2 modos fixos
+- kids = automático + 12 cartas; clássico = manual (✕) + 20 cartas. Sem seletor de "cartas na mesa" nem de "eliminar". `tamanhoPadrao()` e `cfg.auto` em cara-musical/tela.js

@@ -24,8 +24,8 @@ const pickTema = async (p) => { await livre(p); await sleep(300); };
   check('[kids] tutorial aparece na primeira vez', (await p.locator('.cm-tut').count()) === 1); await shot(p, '02-tutorial');
   await p.locator('button:has-text("pular")').click(); await sleep(300);
   await p.locator('button:has-text("jogar")').first().click(); await sleep(1000);
-  check('[kids] 6 cartas', (await p.locator('.cm-card').count()) === 6);
-  const nomes = await p.locator('.cm-card small').allTextContents(); check('[kids] sem duplicatas', new Set(nomes).size === 6, nomes.join(','));
+  check('[kids] 12 cartas, automático', (await p.locator('.cm-card').count()) === 12 && (await p.locator('.jg-flip').count()) === 0);
+  const nomes = await p.locator('.cm-card small').allTextContents(); check('[kids] sem duplicatas', new Set(nomes).size === 12, nomes.join(','));
   check('[kids] perguntas no carrossel (3 visíveis por vez)', (await p.locator('.cm-carro .cm-qc').count()) >= 3);
   const min = await p.evaluate(() => Math.min(...[...document.querySelectorAll('.cm-root .cm-card,.cm-root .cm-qc,.cm-root .btn')].map((e) => e.getBoundingClientRect().height)));
   const peq = await p.evaluate(() => [...document.querySelectorAll('.cm-root .cm-card,.cm-root .cm-qc,.cm-root .btn')].filter((e) => e.getBoundingClientRect().height < 43.5).map((e) => e.className + ':' + e.textContent.slice(0, 20))); check('[kids] alvos >= 44px', min >= 43.5, peq.join(';')); check('[kids] sem scroll horizontal', !(await hscroll(p))); await shot(p, '03-kids-jogo');
@@ -45,10 +45,10 @@ const pickTema = async (p) => { await livre(p); await sleep(300); };
   check('[kids] sem erros de JS', p.errs.length === 0, p.errs.join(' | '));
 }
 { // CLÁSSICO 12 e 20
-  for (const n of [12, 20]) {
+  for (const n of [20]) {
     const p = await open(); await pickTema(p);
     await p.locator('button[role=radio]:has-text("clássico")').click(); await sleep(150);
-    await p.locator(`button[role=radio]:has-text("${n} cartas")`).click(); await sleep(150);
+    check('[menu] sem seletor de cartas nem de eliminar', (await p.locator('.cm-root').innerText()).indexOf('cartas na mesa') < 0 && (await p.locator('.cm-root').innerText()).indexOf('eliminar') < 0);
     await p.locator('button:has-text("jogar")').first().click(); await sleep(1000);
     const nomes = await p.locator('.cm-card small').allTextContents(); check(`[clássico ${n}] ${n} cartas sem duplicata`, nomes.length === n && new Set(nomes).size === n);
     const q = p.locator('.cm-carro .cm-qc'); const c = await q.count(); check(`[clássico ${n}] perguntas listadas`, c >= 3, String(c));
@@ -60,7 +60,7 @@ const pickTema = async (p) => { await livre(p); await sleep(300); };
 }
 { // CONTRA PAUL
   const p = await open(); await pickTema(p);
-  await p.locator('button[role=radio]:has-text("contra o Paul")').click(); await sleep(150);
+  await p.locator('button[role=radio][aria-label*="contra o Paul"]').click(); await sleep(150);
   await p.locator('button:has-text("jogar")').first().click(); await sleep(800);
   if (await p.locator('.cm-tut').count()) { await p.locator('button:has-text("pular")').click(); await sleep(200); await p.locator('button:has-text("jogar")').first().click(); await sleep(800); }
   await p.locator('.cm-card').first().click(); await sleep(300); await shot(p, '07-paul-escolha');
@@ -73,7 +73,7 @@ const pickTema = async (p) => { await livre(p); await sleep(300); };
 }
 { // DUPLA
   const p = await open(); await pickTema(p);
-  await p.locator('button[role=radio]:has-text("dupla")').click(); await sleep(150);
+  await p.locator('button[role=radio][aria-label*="dupla"]').click(); await sleep(150);
   await p.locator('button:has-text("jogar")').first().click(); await sleep(800);
   if (await p.locator('.cm-tut').count()) { await p.locator('button:has-text("pular")').click(); await sleep(200); await p.locator('button:has-text("jogar")').first().click(); await sleep(800); }
   await p.locator('.cm-card').first().click(); await sleep(300); await p.locator('button:has-text("esta é a minha carta secreta")').click(); await sleep(400);

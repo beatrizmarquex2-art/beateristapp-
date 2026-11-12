@@ -24,10 +24,11 @@ export function mountMusical(host, { onTema } = {}) {
   const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); if (!gone) fn(); }, ms); timers.add(t); return t; };
   const saved = getGame(GID).musical || {};
   const cfg = { modo: saved.modo === 'classico' ? 'classico' : 'kids', jogo: ['solo', 'paul', 'dupla', 'online'].includes(saved.jogo) ? saved.jogo : 'solo', tamanho: saved.tamanho || 0, nivel: saved.nivel === 'desafio' ? 'desafio' : 'iniciante', auto: saved.auto !== false, tutorialVisto: saved.tutorialVisto === true };
+  cfg.auto = cfg.modo === 'kids'; // kids tira as cartas sozinho; clássico é manual (toque no ✕)
   const salvar = () => setGame(GID, { musical: { ...cfg } });
   let st = null; // partida
   const root = h('div', { class: 'jg jg-cara cm-root' }); host.replaceChildren(root);
-  const tamanhoPadrao = () => (cfg.tamanho && R.TAMANHOS[cfg.modo].includes(cfg.tamanho) ? cfg.tamanho : R.TAMANHOS[cfg.modo][0]);
+  const tamanhoPadrao = () => (cfg.modo === 'kids' ? 12 : 20); // kids = 12 cartas, tirando sozinho · clássico = 20 cartas, você vira à mão
   const nomeJ = (i) => (cfg.jogo === 'dupla' ? `Jogador ${i + 1}` : i === 0 ? 'você' : 'Paul');
 
   /* ---------------- componentes ---------------- */
@@ -69,13 +70,11 @@ export function mountMusical(host, { onTema } = {}) {
     const tam = tamanhoPadrao(); const kids = cfg.modo === 'kids';
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
-      h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
-      h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
+      h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Tire as cartas que não combinam. Descubra o artista!'),
+      h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; cfg.auto = v === 'kids'; salvar(); menu(); }, 'modo'),
       h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul', 'um'], ['paul', 'contra o Paul', 'paul'], ['dupla', 'dupla (mesmo aparelho)', 'dois'], ['online', '2 celulares (código)', 'celular']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
-      h('p', { class: 'jg-lab' }, 'cartas na mesa'), seg(R.TAMANHOS[cfg.modo].map((n) => [n, `${n} cartas`]), tam, (v) => { cfg.tamanho = v; salvar(); menu(); }, 'tamanho'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
-      kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar'), cfg.auto ? null : h('p', { class: 'jg-p muted' }, 'manual: depois da resposta, toque no ✕ das cartas que não combinam (toca de novo pra desvirar) e então em "pronto".')),
-      h('p', { class: 'jg-p muted' }, kids ? `kids: perguntas prontas num toque, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, todas as perguntas, 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
+      h('p', { class: 'jg-p muted' }, kids ? `kids: ${tam} cartas, o jogo tira as cartas sozinho, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, manual (toque no ✕ das cartas que não combinam), 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
       Contestar.listar().length ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn small ghost', type: 'button', onclick: contestacoes }, `respostas contestadas (${Contestar.listar().length})`)) : null,
     ].filter(Boolean));
