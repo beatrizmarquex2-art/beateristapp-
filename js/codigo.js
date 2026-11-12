@@ -10,7 +10,9 @@ const OFFLINE_DAYS = 365; // o código fica salvo 1 ano neste aparelho (a Bea de
 
 export const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
 export const saved = () => { try { return localStorage.getItem(KEY) || ''; } catch { return window.__alunoCodigo || ''; } };
-function remember(c) { try { if (c) { localStorage.setItem(KEY, c); localStorage.setItem(OK_KEY, String(Date.now())); } else { localStorage.removeItem(KEY); localStorage.removeItem(OK_KEY); } } catch { window.__alunoCodigo = c || ''; } }
+const ESC_KEY = 'beaterista-aluno-escopo'; // telas que o passe libera (null = tudo)
+function guardarEscopo(j) { try { if (Array.isArray(j) && j.length) localStorage.setItem(ESC_KEY, JSON.stringify(j)); else localStorage.removeItem(ESC_KEY); } catch { /* ok */ } }
+function remember(c) { try { if (c) { localStorage.setItem(KEY, c); localStorage.setItem(OK_KEY, String(Date.now())); } else { localStorage.removeItem(KEY); localStorage.removeItem(OK_KEY); localStorage.removeItem(ESC_KEY); } } catch { window.__alunoCodigo = c || ''; } }
 const recentlyOk = () => { try { return Date.now() - Number(localStorage.getItem(OK_KEY) || 0) < OFFLINE_DAYS * 864e5; } catch { return false; } };
 
 /** Id deste aparelho (aleatório, fica no navegador). O servidor conta no máximo 2 aparelhos por código de aluno. */
@@ -30,7 +32,7 @@ export async function verificar(code) {
   motivo = ''; const c = norm(code); if (c.length < 4) return false;
   const r = await fetch(`${base}/rpc/aluno_acesso`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c, p_aparelho: aparelhoProf() ? null : aparelhoId(), p_ua: String(navigator.userAgent || '').slice(0, 160) }) });
   let j = null; if (r.ok) { try { j = await r.json(); } catch { j = null; } }
-  if (j && typeof j === 'object' && typeof j.ok === 'boolean') { if (j.ok) { if (j.tipo === 'prof') { try { localStorage.setItem(PROF_KEY, '1'); } catch { /* ok */ } } return true; } motivo = j.motivo || 'codigo'; return false; }
+  if (j && typeof j === 'object' && typeof j.ok === 'boolean') { if (j.ok) { guardarEscopo(j.jogos); if (j.tipo === 'prof') { try { localStorage.setItem(PROF_KEY, '1'); } catch { /* ok */ } } return true; } motivo = j.motivo || 'codigo'; return false; }
   if (r.ok || r.status === 404) { // servidor sem a função nova (ou resposta que não entendi): confere do jeito antigo
     const r2 = await fetch(`${base}/rpc/aluno_codigo_ok`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c }) });
     if (!r2.ok) throw new Error(String(r2.status)); const ok = (await r2.json()) === true; if (!ok) motivo = 'codigo'; return ok;
@@ -88,6 +90,17 @@ export async function apagar(code) {
   if (!r.ok) throw new Error(String(r.status));
 }
 
+/** Passe: código de um jogo/aba só (ou test drive do site todo). Código = prefixo + 4 letras/números; vale `dias` dias a partir do primeiro uso; 2 aparelhos.
+ *  `jogos` = telas liberadas (prefixos de endereço, ex.: ['#/jogos/cartas']) ou null = o site todo. Devolve o código. */
+export async function criarPasse({ prefixo = 'BEA', nome = '', dias = 3, jogos = null } = {}) {
+  const A4 = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  for (let i = 0; i < 6; i++) {
+    const r4 = new Uint32Array(4); crypto.getRandomValues(r4); const code = norm(prefixo) + [...r4].map((x) => A4[x % A4.length]).join('');
+    const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify({ code, nome: String(nome).slice(0, 60), tipo: 'passe', dias, jogos: jogos && jogos.length ? jogos : null, max_aparelhos: 2, ativo: true }) });
+    if (r.ok) return code; if (r.status !== 409) throw new Error(String(r.status));
+  }
+  throw new Error('não consegui gerar um código livre');
+}
 /** Importa uma lista [{ code, nome }] (cria ou atualiza o nome; reativa o código). */
 export async function importar(rows) {
   const body = rows.map((x) => ({ code: norm(x.code), nome: String(x.nome || '').slice(0, 60), ativo: true }));

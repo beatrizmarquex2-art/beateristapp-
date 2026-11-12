@@ -501,3 +501,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## v399 — "2 a 4" = "3 ou mais"
 - Uno (local), memória (2 a 4) e stop (dupla) usam o ícone de grupo (`mais`) com o nome "no mesmo celular (2 a 4 pessoas)"; velha, bingo e cara a cara (só 2) seguem com `dois`
+
+## v400 — passes (código de um jogo só / test drive)
+- Pedido da Bea: "passe único" = BEA + 4 letras/números, ela escolhe o(s) jogo(s)/aba(s), vale N dias a partir do 1º uso, 2 aparelhos; "test drive" = BEASITE + 4, site todo por 1 dia. Passe NÃO dá estrelas/álbum (`AC.liberado()` é false com escopo; `AC.comCodigo()` é true)
+- Cliente: `js/acesso.js` (escopo em localStorage `beaterista-aluno-escopo`, `trancado()` libera só os prefixos), `js/codigo.js` (`criarPasse`, guarda escopo vindo de `aluno_acesso.jogos`), gerador em js/views/codigos.js (app da Bea). tests/acesso-passe.test.mjs
+- SERVIDOR: supabase/014_passes_aparelhos.sql (coluna `jogos`, `aluno_acesso` com aparelhos+escopo, `aluno_sair`) — **AINDA NÃO APLICADO** (o Supabase pede confirmação da Bea e o pedido expira em 60 s). Sem ele o gerador de passe dá erro e o limite de 2 aparelhos não vale
+- Pagamento automático (Hotmart → webhook → Edge Function → "comprei o passe" por e-mail): ainda a fazer; depende do hottok/produto da Bea
