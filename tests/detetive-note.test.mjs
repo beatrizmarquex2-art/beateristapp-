@@ -26,3 +26,8 @@ test('conferir: certo, errado e vazio por tempo; acertou só com tudo certo', ()
 test('estrelas da fase: completar = 1, 2 de primeira = 2, todas de primeira = 3', () => { assert.equal(estrelas(0), 1); assert.equal(estrelas(1), 1); assert.equal(estrelas(2), 2); assert.equal(estrelas(3), 3); });
 
 test('o compasso novo nunca repete o anterior', () => { for (let n = 1; n <= 12; n++) { let ant = null; for (let i = 0; i < 60; i++) { const s = sortear(n, Math.random, ant); if (ant) assert.notEqual(s.join(), ant.join()); ant = s; } } });
+
+test('velocidades 80, 100 e 120; só o 120 toca direto, sem a contagem', async () => {
+  const { BPMS, COM_CONTAGEM } = await import('../js/jogos/detetive-logic.js');
+  assert.deepEqual(BPMS, [80, 100, 120]); assert.deepEqual(BPMS.map(COM_CONTAGEM), [true, true, false]);
+});

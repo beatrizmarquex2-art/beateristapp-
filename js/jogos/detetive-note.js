@@ -16,7 +16,7 @@ import { vinil } from '../kids/drum-art.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
-import { TEMAS, MODOS, FASES, RODADAS, BPMS, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
+import { TEMAS, MODOS, FASES, RODADAS, BPMS, COM_CONTAGEM, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 const NOME = (m) => (m === 'normal' ? 'figuras' : `${EMOJI_MODO[m]} ${TEMAS[m].nome}`);
@@ -28,10 +28,10 @@ const face = (card, modo) => (modo === 'normal' ? svgEl(N.toSVG(semPauta(layoutR
 const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
 const somDaFase = (n) => SONS_FASE[(n - 1) % SONS_FASE.length];
 const soa = (cell, bpm, som) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...cell].forEach((x, k) => { if (x === '1') voz(t + (k * q) / 4, 0.85, som); }); };
-/** Conta 4 e toca o compasso (4 tempos) com o som da fase. */
+/** Toca o compasso (4 tempos) com o som da fase: conta 4 antes (a 120 BPM começa tocando direto, sem a contagem). */
 function tocaCompasso(cells, bpm, som) {
-  const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
-  for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
+  const c = audio(); const q = 60 / bpm; const conta = COM_CONTAGEM(bpm); const t0 = c.currentTime + (conta ? 0.25 + 4 * q : 0.15);
+  if (conta) for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
   cells.forEach((cell, b) => [...cell].forEach((x, k) => { if (x === '1') voz(t0 + b * q + (k * q) / 4, 0.85, som); }));
 }
 
@@ -80,7 +80,7 @@ export function mount(host) {
       return h('button', { type: 'button', class: `dn-slot${c ? ' cheia' : ''}${m === true ? ' ok' : m === false ? ' no' : ''}`, 'aria-label': c ? `tempo ${i + 1}: tirar` : `tempo ${i + 1} vazio`, onclick: () => { if (c) { slots = slots.slice(0, i); marcas = null; desenha(); } } },
         c ? face(c, modo) : h('small', {}, String(i + 1))); });
     const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
-    const vel = h('div', { class: 'dn-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...BPMS.map((v, i) => { const b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(bpm === v), 'aria-label': `${v} BPM`, class: `dn-bpm${bpm === v ? ' on' : ''}`, onclick: () => { bpm = v; setGame('detetive', { ...getGame('detetive'), bpm }); ouvir(); desenha(); } }); b.append(vinil(i ? 'normal' : 'devagar', 'vinil sm'), h('b', {}, String(v))); return b; }));
+    const vel = h('div', { class: 'dn-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...BPMS.map((v, i) => { const b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(bpm === v), 'aria-label': `${v} BPM`, class: `dn-bpm${bpm === v ? ' on' : ''}`, onclick: () => { bpm = v; setGame('detetive', { ...getGame('detetive'), bpm }); ouvir(); desenha(); } }); b.append(vinil(['devagar', 'normal', 'rápido'][i] || 'normal', 'vinil sm'), h('b', {}, String(v))); return b; }));
     root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', onclick: ouvir }, `▶ ouvir o ritmo (${somDaFase(fase)})`), vel,
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: 'dn-slots' }, ...casas), h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),

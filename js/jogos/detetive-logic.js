@@ -3,7 +3,8 @@
 
 export const FASES = 12; // fases por modo
 export const RODADAS = 3; // ritmos por fase
-export const BPMS = [80, 100]; // a criança escolhe a velocidade do ritmo
+export const BPMS = [80, 100, 120]; // a criança escolhe a velocidade do ritmo (a 120 toca direto, sem a contagem)
+export const COM_CONTAGEM = (bpm) => bpm < 120;
 /** Uma palavra por tipo de tempo em cada tema (as mesmas do "Monte seu ritmo"): 1 tempo, 2 colcheias, 4 semicolcheias; a pausa é sempre "shhh". */
 export const TEMAS = {
   comida: { nome: 'comida', '1000': 'pao', '1010': 'bolo', '1111': 'chocolate' },
