@@ -3,7 +3,7 @@ import { h } from '../util.js';
 import * as store from '../store.js';
 import { shuffle } from '../kids-logic.js';
 import { robo } from './robo.js';
-import { THEMES, SIZES, themeById } from './memory-themes.js';
+import { THEMES, SIZES, themeById, TEMA_PERCUSSAO } from './memory-themes.js';
 import * as FB from '../feedback.js';
 import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
@@ -50,10 +50,12 @@ export function mountMemoria(host, opts) {
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
   let photo = null; let lockNote = false; let live = false; let autoSala = !MS && !!salaAutoPara(JOGO_SALA); let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
   const themes = () => {
-    // abertos pra todo mundo: The Beatles, Rock (as cartas desenhadas de bandas) e Profissões. O resto só com código.
-    const drawn = THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: true } : { ...t, open: t.id === 'profissoes' }));
-    const all = photo ? [photo[0], drawn[0], ...drawn.filter((t) => t.id === 'profissoes'), ...photo.slice(1), ...drawn.filter((t) => t.id !== 'rock' && t.id !== 'profissoes')] : drawn;
-    return [...all.filter((t) => t.open), ...all.filter((t) => !t.open)];
+    // abertos pra todo mundo (pedido da Bea): só Percussão e Profissões da música. The Beatles, Rock e o resto só com código.
+    const drawn = [...THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: false } : { ...t, open: t.id === 'profissoes' })), { ...TEMA_PERCUSSAO, open: true }];
+    const by = (id) => drawn.find((t) => t.id === id); const abertos = [by('percussao'), by('profissoes')];
+    const ph = photo ? photo.map((t) => ({ ...t, open: false })) : null;
+    const resto = ph ? [ph[0], by('rock'), ...ph.slice(1), ...drawn.filter((t) => !['rock', 'profissoes', 'percussao'].includes(t.id))] : drawn.filter((t) => !['profissoes', 'percussao'].includes(t.id));
+    return [...abertos, ...resto];
   };
   const locked = (t) => !MS && alunoSemCodigo() && !t.open;
 
