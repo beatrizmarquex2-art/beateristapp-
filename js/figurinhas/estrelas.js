@@ -11,8 +11,8 @@ export const estrelasTotais = (pid) => P.totalStars(pid) + (P.progOf(pid).ritmoS
 export const roletasDevidas = (total) => Math.floor((total || 0) / ESTRELAS_POR_ROLETA);
 /** Quantas estrelas faltam pra próxima roleta. */
 export const faltamParaRoleta = (total) => ESTRELAS_POR_ROLETA - ((total || 0) % ESTRELAS_POR_ROLETA);
-/** Jogos de APRENDER (fases dos Kids e da pauLta): cada 3 fases fechadas com 3 ★ dão 1 giro EXTRA da roleta (além das 15 ★). A revisão do Paul não entra. */
-export const FASES_POR_GIRO_EXTRA = 3;
+/** Jogos de APRENDER (fases dos Kids e da pauLta): cada 4 fases fechadas com 3 ★ dão 1 giro EXTRA da roleta (além das 15 ★). A revisão do Paul não entra. */
+export const FASES_POR_GIRO_EXTRA = 4; // pedido da Bea: a cada 4 fases fechadas com 3 ★, +1 giro (giros já ganhos antes não são tirados)
 export const fases3Estrelas = (pid) => Object.entries(P.progOf(pid).lv || {}).filter(([k, x]) => (x.s || 0) >= 3 && !k.startsWith('pl-revisao')).length;
 export const girosExtras = (pid) => Math.floor(fases3Estrelas(pid) / FASES_POR_GIRO_EXTRA);
 /** Quantas fases com 3 ★ faltam pro próximo giro extra. */

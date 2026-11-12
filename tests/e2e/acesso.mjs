@@ -78,13 +78,13 @@ const trancada = (p) => p.locator('.al-lock').count();
   { const { ctx, p } = await mk(''); await p.goto(`${url}/aluno.html#/dicas/quiz`); await sleep(1800);
     check('Letras sem código: abre (amostra) e nada é baixado', (await trancada(p)) === 0 && chamadas.length === 0, JSON.stringify(chamadas));
     await go(p, '#/jogos'); const lk = await p.locator('.jg-card.locked b').allTextContents();
-    check('no catálogo, "Letras" aparece sem cadeado e é o último', !lk.some((t) => /Letras/.test(t)) && /Letras/.test((await p.locator('.jg-card b').last().textContent())), lk.join(' | ')); await ctx.close(); }
+    check('no catálogo, Radar Musical, Cruzadinha e Quiz do Paul aparecem sem cadeado e são os últimos', !lk.some((t) => /Radar|Cruzadinha|Quiz do Paul/.test(t)) && /Quiz do Paul/.test((await p.locator('.jg-card b').last().textContent())), lk.join(' | ')); await ctx.close(); }
   valid.add('ABC123');
   for (const tab of ['quiz', 'caca', 'cruzadinha']) {
     const { ctx, p, errs } = await mk('ABC123'); await p.goto(`${url}/aluno.html#/dicas/${tab}`); await sleep(2500);
     check(`Letras com código: ${tab} abre com as 30 dicas`, (await trancada(p)) === 0 && (await p.locator('.dc-box .card, .dc-box .dc-grid, .dc-box .dc-q').count()) > 0 && (await p.locator('.dc-box .empty').count()) === 0, tab);
     check(`Letras (${tab}): só pediu as dicas com o código`, chamadas.length >= 1 && chamadas.every((c) => c === 'ABC123'), JSON.stringify(chamadas));
-    check(`Letras (${tab}): título novo e sem erros`, (await p.locator('h1:has-text("Letras")').count()) >= 1 && errs.length === 0, errs.join('|')); await ctx.close();
+    check(`Letras (${tab}): título novo e sem erros`, (await p.locator(`h1:has-text("${({ quiz: 'Quiz do Paul', caca: 'Radar Musical', cruzadinha: 'Cruzadinha' })[tab]}")`).count()) >= 1 && errs.length === 0, errs.join('|')); await ctx.close();
   }
 }
 // 6) o que ensina de verdade (pauLta e Toca Aqui) fica trancado sem código; os jogos de mesa abrem direto, sem modo aventura
@@ -96,7 +96,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await go(p, '#/jogos/cartas'); check('Uno Musical trancado sem código', (await trancada(p)) === 1);
   await go(p, '#/jogos');
   const lk = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo: Toca Aqui, pauLta e Uno com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'pauLta', 'Uno'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
+  check('no catálogo: Toca Aqui, PauLta, Uno, Detetive Note e Taiko com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'PauLta', 'Uno', 'Detetive Note', 'Taiko'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
   for (const g of ['memart', 'bingo', 'velha', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
   check('sem erros de página', errs.length === 0, errs.join(' | '));
   await ctx.close();

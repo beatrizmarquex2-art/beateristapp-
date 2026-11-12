@@ -7,7 +7,7 @@ import * as T from '../tips.js';
 import * as FB from '../feedback.js';
 import { TERMS } from '../glossary.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0), pct: (c, t) => (t ? (c / t >= 0.9 ? 3 : c / t >= 0.7 ? 2 : c / t >= 0.4 ? 1 : 0) : 0), erros: (e) => (e === 0 ? 3 : e <= 2 ? 2 : 1) }; // estrelas só quando termina (carrega sob demanda)
-import { alunoSemCodigo, GRATIS, avisoCodigo, cacaUsadas, cacaUsar } from '../amostra.js';
+import { alunoSemCodigo, GRATIS, avisoCodigo, cacaUsadas, cacaUsar, cruzUsadas, cruzUsar } from '../amostra.js';
 
 const KEY = 'setting-dicas';
 const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -116,7 +116,10 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
 
 /* ---------- cruzadinha (fácil: 5 palavras curtas, banco de palavras à vista, 1ª letra de cada uma já na grade, cores) ---------- */
 function cruzadinha(box, D) {
-  const pick = D ? D.pick : T.easyPick(items(), 5, { min: 4, max: 8 });
+  const free = !D && alunoSemCodigo(); // sem código: a criança vê como é, com palavras do dicionário (2 cruzadinhas grátis)
+  if (free && cruzUsadas() >= GRATIS.cruzadinha) { box.replaceChildren(avisoCodigo(`você já jogou as ${GRATIS.cruzadinha} cruzadinhas grátis. com o código de aluno tem cruzadinha sem limite, quiz e ${nomeLetras('caca')} com as dicas do método.`)); return; }
+  let counted = false; // a cruzadinha grátis conta quando a aluna tenta a primeira resposta
+  const pick = D ? D.pick : T.easyPick(free ? termItems() : items(), 5, { min: 4, max: 8 });
   const cw = T.crossword(pick.map((x) => x.w), D ? D.mk() : Math.random, 12); const solved = new Set(); let last = null; let erros = 0; let pagou = false;
   const cellsOf = (e) => Array.from({ length: e.w.length }, (_, k) => ({ x: e.x + (e.dir === 'h' ? k : 0), y: e.y + (e.dir === 'v' ? k : 0), ch: e.w[k] }));
   const shown = new Map(); // casa -> { ch, k } letra revelada e a cor da palavra
@@ -134,8 +137,9 @@ function cruzadinha(box, D) {
     const clues = h('ol', { class: 'dc-clues' }, ...cw.entries.map((e) => { const it = pick[e.idx]; const ok = solved.has(e.idx);
       const inp = h('input', { type: 'text', maxlength: e.w.length, autocapitalize: 'off', autocomplete: 'off', spellcheck: 'false', disabled: ok, placeholder: e.w[0] + '·'.repeat(e.w.length - 1), 'aria-label': `Resposta da ${e.n} ${e.dir === 'h' ? 'horizontal' : 'vertical'}`, value: ok ? it.w : '' });
       inp.addEventListener('input', () => {
+        if (free && !counted) { counted = true; cruzUsar(); }
         const v = T.norm(inp.value).replace(/[^A-Z]/g, ''); if (v.length < e.w.length) return;
-        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (D && all) D.fim(); if (all && !pagou && !D) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
+        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (D && all) D.fim(); if (all && !pagou && !free && !D) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
         else { erros++; FB.lose(inp, { paul: false }); inp.select(); }
       });
       return h('li', { class: `${ok ? 'ok ' : ''}dc-k${e.idx % COLORS}`, value: e.n }, h('span', { class: 'dc-dir' }, `${e.dir === 'h' ? '→' : '↓'} ${e.w.length} letras · começa com ${e.w[0]}`), h('p', {}, T.clueOf(it)), inp); }));
@@ -166,19 +170,19 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner(tab === 'duelo' ? 'jogar com código' : nomeLetras(tab), limited ? `${GRATIS.caca} partidas de ${nomeLetras('caca')} de graça` : 'com as dicas do método'),
+  host.append(banner(tab === 'duelo' ? 'jogar com código' : nomeLetras(tab), limited ? `partidas grátis de ${nomeLetras('caca')} e de ${nomeLetras('cruzadinha')}` : 'com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
       h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
-        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, limited && k !== 'caca' ? `🔒 ${t}` : t), h('small', {}, SUB[k])))),
+        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, limited && !['caca', 'cruzadinha'].includes(k) ? `🔒 ${t}` : t), h('small', {}, SUB[k])))),
       JOGOS_LETRAS.includes(tab) ? h('div', { class: 'jg-seg dc-modos', role: 'radiogroup', 'aria-label': 'como jogar' },
         h('button', { type: 'button', role: 'radio', 'aria-checked': String(!porCodigo), class: porCodigo ? '' : 'on', onclick: () => { location.hash = `#/dicas/${tab}`; } }, 'sozinho'),
         h('button', { type: 'button', role: 'radio', 'aria-checked': String(porCodigo), class: porCodigo ? 'on' : '', onclick: () => { location.hash = `#/dicas/${tab}/codigo`; } }, limited ? 'com código (alunos)' : 'com código · 2 celulares')) : null,
       box);
   const run = () => {
     box.replaceChildren();
-    if (limited) { if (tab === 'caca' && !porCodigo) caca(box); else box.append(avisoCodigo(`${porCodigo ? 'jogar com código' : tab === 'quiz' ? nomeLetras('quiz') : nomeLetras('cruzadinha')} é pra alunos da Beaterista: usa as dicas do método. ${nomeLetras('caca')} tem ${GRATIS.caca} partidas grátis.`)); return; }
+    if (limited) { if ((tab === 'caca' || tab === 'cruzadinha') && !porCodigo) (tab === 'caca' ? caca : cruzadinha)(box); else box.append(avisoCodigo(`${porCodigo ? 'jogar com código' : nomeLetras('quiz')} é pra alunos da Beaterista: usa as dicas do método. ${nomeLetras('caca')} e ${nomeLetras('cruzadinha')} têm ${GRATIS.caca} partidas grátis cada.`)); return; }
     const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
     if (porCodigo) { import('../jogos/duelo-letras.js').then((m) => { if (!gone) stopDuelo = m.mountDueloLetras(box, JOGOS_LETRAS.includes(tab) ? tab : null); }); return; }

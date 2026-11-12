@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v460';
+const VERSION = 'beaterista-v470';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -23,7 +23,7 @@ const SHELL = [
 
 // <extra-gerado> arquivos dos jogos e das artes, baixados depois do essencial (scripts/sw-extra.mjs refaz esta lista)
 const EXTRA = [
-  'assets/jogos/guitarra.webp', 'assets/jogos/baixo.webp', 'assets/jogos/teclado.webp', 'assets/jogos/sax.webp', 'assets/jogos/praca.webp', 'assets/jogos/terraco.webp', 'assets/jogos/estudio.webp', 'assets/jogos/parque.webp', 'assets/jogos/garagem.webp', // imagens do quebra-cabeça: baixam em segundo plano (são pesadas)
+  'assets/jogos/guitarra.webp', 'assets/jogos/baixo.webp', 'assets/jogos/teclado.webp', 'assets/jogos/sax.webp', 'assets/jogos/praca.webp', 'assets/jogos/terraco.webp', 'assets/jogos/estudio.webp', 'assets/jogos/estudio-paul.webp', 'assets/jogos/show-guitarra.webp', 'assets/jogos/bateria-palco.webp', 'assets/jogos/parque.webp', 'assets/jogos/garagem.webp', // imagens do quebra-cabeça: baixam em segundo plano (são pesadas)
   'assets/aluno/bingo.webp',
   'assets/aluno/cara-a-cara.webp',
   'assets/aluno/cartas.webp',
@@ -56,7 +56,7 @@ const EXTRA = [
   'assets/jogos/icones/relatorio.svg',
   'assets/jogos/icones/ritmo.svg',
   'assets/jogos/icones/stop.webp',
-  'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg',
+  'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
   'assets/jogos/icones/velha.webp',
   'assets/jogos/instrumentos/acordeao.webp',
   'assets/jogos/instrumentos/baixo.webp',

@@ -1,5 +1,5 @@
-// Jogo da memória (entrada única do catálogo de jogos): abre direto na escolha do tema. Temas abertos pra todo mundo: The Beatles, Bandas, Solo
-// (fotos do catálogo de figurinhas) e Profissões da música; os outros temas só com código de aluno. Sem modo aventura. Não concede figurinhas nem prêmios.
+// Jogo da memória (entrada única do catálogo de jogos): abre direto na escolha do tema. Temas abertos pra todo mundo: só Percussão e Profissões da música
+// (pedido da Bea); The Beatles, Rock, Solo e os outros temas só com código de aluno. Sem modo aventura. Não concede figurinhas nem prêmios.
 // O jogo em si é o mesmo dos Kids (js/kids/memoria.js); aqui só entra na moldura da tela de Jogos.
 import { h } from '../util.js';
 import { mountMemoria } from '../kids/memoria.js';

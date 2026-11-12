@@ -7,6 +7,8 @@ import { sheet, toast, confirmSheet } from '../ui.js';
 import { cartaCanvas } from './postar.js';
 import * as AC from '../acesso.js';
 import { shareUI } from './share-ui.js';
+import { LIMITE_IGUAIS, contaIguais } from './minhas-regras.js';
+export { LIMITE_IGUAIS, contaIguais };
 
 const LISTA = 'minhas-cartinhas', IMG = (id) => `minha-carta:${id}`, MAX = 40;
 export const listar = async () => { try { return (await D.metaLer(LISTA)) || []; } catch { return []; } };
@@ -18,13 +20,21 @@ const imgDe = (b) => new Promise((ok, no) => { const u = URL.createObjectURL(b),
 async function assinatura(b) {
   try { const buf = await b.arrayBuffer(); if (crypto && crypto.subtle) return [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map((x) => x.toString(16).padStart(2, '0')).join(''); const a = new Uint8Array(buf); let h = 2166136261; for (let i = 0; i < a.length; i += 7) h = Math.imul(h ^ a[i], 16777619); return `${a.length}-${h >>> 0}`; } catch { return ''; }
 }
+/** Impressão digital da FOTO (miniatura 16x16 em poucas cores): a mesma foto dá a mesma, mesmo com outro corte ou outro nome. Vazio se não der pra medir. */
+export function assinaturaFoto(img) {
+  try {
+    const c = document.createElement('canvas'); c.width = 16; c.height = 16; const g = c.getContext('2d'); g.drawImage(img, 0, 0, 16, 16); const d = g.getImageData(0, 0, 16, 16).data;
+    let hx = 2166136261; for (let i = 0; i < d.length; i += 4) for (let k = 0; k < 3; k++) { hx ^= d[i + k] >> 5; hx = Math.imul(hx, 16777619) >>> 0; } return hx.toString(36);
+  } catch { return ''; }
+}
 /** Guarda a cartinha (já montada) na coleção. Devolve o item, ou lança erro se a coleção está cheia. */
 export async function guardar(entry) {
   const l = await listar(); if (l.length >= MAX) throw new Error('cheia');
   const c = await cartaCanvas(entry, { escala: 2 }), b = await blob(c), sig = await assinatura(b);
   if (l.some((x) => x.sig && x.sig === sig)) throw new Error('repetida'); // a mesma figurinha (mesma foto, modelo, nome e enquadramento) não entra duas vezes
+  const fotoSig = assinaturaFoto(entry.fotoImg); if (contaIguais(l, fotoSig, entry.modelo2) >= LIMITE_IGUAIS) throw new Error('limite2'); // no máximo 2 da mesma foto e do mesmo card
   const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-  await db.metaSet(IMG(id), b); const item = { id, sig, nome: String(entry.artista_banda || '').slice(0, 24), modelo: entry.modelo2, em: Date.now() };
+  await db.metaSet(IMG(id), b); const item = { id, sig, fotoSig, nome: String(entry.artista_banda || '').slice(0, 24), modelo: entry.modelo2, em: Date.now() };
   await gravaLista([item, ...l]); return item;
 }
 export async function apagarTudo() { for (const it of await listar()) { try { await db.metaDel(IMG(it.id)); } catch { /* ok */ } } await gravaLista([]); }

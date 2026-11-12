@@ -201,3 +201,31 @@
 .drum-art { display: block; width: 132px; height: 118px; }
 .tr-pad .drum-art { margin: 0 auto 4px; }
 .tk-jogo .tk { padding-bottom: 24px; }
+
+/* Festa musical (pauLta, ao concluir um modo): palco LED neon (js/paulta/festa.js) */
+.pf{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(120% 70% at 50% 0%,rgba(80,60,255,.45),transparent 60%),radial-gradient(90% 60% at 50% 100%,rgba(255,30,120,.4),transparent 60%),#060818;animation:pf-in .3s ease-out}
+.pf.out{opacity:0;transition:opacity .35s}
+.pf-beam{position:absolute;top:-10%;width:38%;height:130%;opacity:.55;mix-blend-mode:screen;filter:blur(6px);transform-origin:50% 0;animation:pf-sweep 3.2s ease-in-out infinite alternate}
+.pf-beam.b1{left:-8%;background:linear-gradient(#2d8cff,transparent 78%);--a:-28deg;--b:18deg}
+.pf-beam.b2{left:31%;background:linear-gradient(#b14dff,transparent 78%);--a:22deg;--b:-20deg;animation-delay:-.8s}
+.pf-beam.b3{right:-8%;background:linear-gradient(#ff3d57,transparent 78%);--a:-18deg;--b:28deg;animation-delay:-1.6s}
+.pf-ring{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px;border-radius:50%;border:4px solid #7a5cff;box-shadow:0 0 26px #7a5cff,inset 0 0 26px #7a5cff;opacity:0;animation:pf-ring 2.4s ease-out infinite}
+.pf-ring.r2{border-color:#b14dff;box-shadow:0 0 26px #b14dff,inset 0 0 26px #b14dff;animation-delay:.8s}.pf-ring.r3{border-color:#2d8cff;box-shadow:0 0 26px #2d8cff,inset 0 0 26px #2d8cff;animation-delay:1.6s}
+.pf-p{position:absolute;top:-8%;left:var(--x);font-style:normal;font-weight:800;font-size:var(--s);color:var(--c);text-shadow:0 0 6px var(--c),0 0 16px var(--c),0 0 30px var(--c);animation:pf-fall var(--d) linear var(--w) infinite;pointer-events:none}
+.pf-eq{position:absolute;left:0;right:0;bottom:0;height:22%;display:flex;align-items:flex-end;gap:3px;padding:0 4px;pointer-events:none}
+.pf-eq i{flex:1;height:100%;transform-origin:50% 100%;background:linear-gradient(#b14dff,#2d8cff);box-shadow:0 0 12px #2d8cff;border-radius:3px 3px 0 0;animation:pf-eq var(--t) ease-in-out var(--l) infinite alternate}
+.pf-box{position:relative;display:grid;justify-items:center;gap:8px;max-width:min(88vw,370px);padding:22px 22px 18px;text-align:center;color:#fff;background:rgba(10,12,40,.78);border:3px solid #7a5cff;border-radius:24px;box-shadow:0 0 0 2px #0a0c28,0 0 28px #7a5cff,0 0 60px rgba(122,92,255,.45),inset 0 0 30px rgba(122,92,255,.25);backdrop-filter:blur(4px);animation:pf-pop .55s cubic-bezier(.2,1.4,.4,1),pf-border 2.4s linear infinite}
+.pf-box b{font:400 31px/1.05 var(--display,inherit);text-transform:uppercase;color:#fff;text-shadow:0 0 6px #b14dff,0 0 18px #b14dff,0 0 38px #b14dff;animation:pf-flick 1.6s steps(1) infinite}
+.pf-box p{margin:0;font-weight:700;color:#cfe9ff;text-shadow:0 0 8px #2d8cff}
+.pf-paul{width:150px;height:auto;filter:drop-shadow(0 0 14px #ff3d57) drop-shadow(0 0 28px #b14dff);animation:pf-dance .6s ease-in-out infinite alternate}
+.pf-box .kd-btn{background:linear-gradient(135deg,#7a5cff,#2d8cff);color:#041018;border:0;box-shadow:0 0 22px #7a5cff}
+@keyframes pf-sweep{from{transform:rotate(var(--a))}to{transform:rotate(var(--b))}}
+@keyframes pf-ring{0%{transform:scale(.3);opacity:.9}100%{transform:scale(8);opacity:0}}
+@keyframes pf-fall{from{transform:translateY(0) rotate(0)}to{transform:translateY(115vh) rotate(360deg)}}
+@keyframes pf-eq{from{transform:scaleY(.12)}to{transform:scaleY(1)}}
+@keyframes pf-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes pf-in{from{opacity:0}to{opacity:1}}
+@keyframes pf-dance{from{transform:rotate(-7deg) translateY(0)}to{transform:rotate(7deg) translateY(-10px)}}
+@keyframes pf-border{0%,100%{border-color:#7a5cff}33%{border-color:#b14dff}66%{border-color:#2d8cff}}
+@keyframes pf-flick{0%,92%{opacity:1}94%{opacity:.55}96%{opacity:1}98%{opacity:.7}}
+@media (prefers-reduced-motion:reduce){.pf-p,.pf-paul,.pf-box,.pf-box b,.pf-beam,.pf-ring,.pf-eq i{animation:none}}

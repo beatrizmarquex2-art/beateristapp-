@@ -50,7 +50,14 @@ export const DICAS = [
 
 /** Cartão compacto com uma arte do Paul: toque abre a arte inteira numa janela (sem ocupar a tela toda). */
 export function arteDoPaul(arquivo, titulo, sub, alt) {
+  const estrelaDaArte = async () => { // abrir a arte inteira vale 1 ★, só na 1ª vez de cada arte (por aluno)
+    try {
+      const D = await import('./figurinhas/dono.js'); const k = `beaterista-arte-estrela:${arquivo}`; if (D.lsLer(k) === '1') return;
+      const M = await import('./figurinhas/mesa.js'); const n = await M.vitoria('arte', 1); if (n > 0) D.lsGravar(k, '1');
+    } catch { /* sem perfil ou sem código: não ganha */ }
+  };
   const abrir = () => {
+    estrelaDaArte();
     const dlg = h('dialog', { class: 'pd-dlg', 'aria-label': titulo },
       h('button', { type: 'button', class: 'pd-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕'),
       h('img', { src: `assets/paul/${arquivo}.webp`, alt: alt || titulo }));
@@ -60,7 +67,7 @@ export function arteDoPaul(arquivo, titulo, sub, alt) {
   };
   return h('button', { type: 'button', class: 'pd pd-arte', 'aria-label': `${titulo}: ver a arte`, onclick: abrir },
     h('img', { class: 'pd-thumb', src: `assets/paul/${arquivo}.webp`, alt: '', loading: 'lazy', draggable: 'false' }),
-    h('span', {}, h('b', { class: 'pd-tag' }, 'Robôterista Paul'), h('span', { class: 'pd-text' }, titulo), h('small', { class: 'pd-sub' }, sub || 'toque pra ver a arte')));
+    h('span', {}, h('b', { class: 'pd-tag' }, 'Robôterista Paul'), h('span', { class: 'pd-text' }, titulo), h('small', { class: 'pd-sub' }, `${sub || 'toque pra ver a arte'} · toque pra abrir inteira (1 ★ na 1ª vez)`)));
 }
 
 let bag = [], last = -1;

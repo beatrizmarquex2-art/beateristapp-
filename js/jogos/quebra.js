@@ -20,6 +20,9 @@ export const IMAGES = [
   { id: 'estudio', src: 'assets/jogos/estudio.webp', nome: 'Paul tocando teclado num estúdio de gravação' },
   { id: 'parque', src: 'assets/jogos/parque.webp', nome: 'Paul tocando baixo num parque em festa' },
   { id: 'garagem', src: 'assets/jogos/garagem.webp', nome: 'Paul tocando guitarra numa garagem' },
+  { id: 'estudio-paul', src: 'assets/jogos/estudio-paul.webp', nome: 'Paul tocando teclado no estúdio' },
+  { id: 'show-guitarra', src: 'assets/jogos/show-guitarra.webp', nome: 'Paul tocando guitarra no show' },
+  { id: 'bateria-palco', src: 'assets/jogos/bateria-palco.webp', nome: 'Paul tocando bateria no palco' },
   { id: 'terraco', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
 ];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];

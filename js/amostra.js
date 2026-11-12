@@ -1,12 +1,12 @@
 // "Amostra grátis" da área dos alunos: quem ainda não tem código vê um pedacinho (3 termos do dicionário, 2 passos da aulinha, 2 partidas
-// de caça-palavras); o resto pede o código. É trava de tela (o conteúdo continua no aplicativo), como o resto do acesso.
+// de caça-palavras, 2 cruzadinhas); o resto pede o código. É trava de tela (o conteúdo continua no aplicativo), como o resto do acesso.
 import { h } from './util.js';
 import * as AC from './acesso.js';
 
 /** Estamos na área dos alunos e ainda sem código? (no app da Bea nada é limitado) */
 export const alunoSemCodigo = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 
-export const GRATIS = { termos: 3, aulinha: 2, caca: 2 };
+export const GRATIS = { termos: 3, aulinha: 2, caca: 2, cruzadinha: 2 };
 
 /** Onde se pega o código de acesso: a lojinha (ainda em construção). */
 export const LOJINHA = '#/lojinha';
@@ -19,3 +19,8 @@ const KEY = 'beaterista-caca-gratis';
 /** Quantas partidas grátis de caça-palavras já foram começadas neste aparelho. */
 export const cacaUsadas = () => { try { return Math.max(0, Number(localStorage.getItem(KEY)) || 0); } catch { return 0; } };
 export const cacaUsar = () => { try { localStorage.setItem(KEY, String(cacaUsadas() + 1)); } catch { /* sem armazenamento: não conta */ } };
+
+const KEYC = 'beaterista-cruzadinha-gratis';
+/** Quantas cruzadinhas grátis já foram começadas neste aparelho (a criança vê como é, com as palavras do dicionário; o resto pede o código). */
+export const cruzUsadas = () => { try { return Math.max(0, Number(localStorage.getItem(KEYC)) || 0); } catch { return 0; } };
+export const cruzUsar = () => { try { localStorage.setItem(KEYC, String(cruzUsadas() + 1)); } catch { /* sem armazenamento: não conta */ } };

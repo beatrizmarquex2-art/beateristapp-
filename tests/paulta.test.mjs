@@ -77,13 +77,12 @@ test('pacotinhos: fácil, intermediário e difícil seguem a tabela', () => {
   for (let n = 1; n <= 2; n++) p = run(p, 'drumF', n); assert.equal(cartas(p, 'drumF'), 0);
   p = run(p, 'drumF', 3); assert.equal(cartas(p, 'drumF'), 1, 'a cada 3 fases certas, 1 carta');
   for (let n = 4; n <= 12; n++) p = run(p, 'drumF', n);
-  const f = RW.merecidos(p, 'x').filter((x) => x.id.includes(':x:F:'));
-  assert.deepEqual(f.filter((x) => x.id.includes(':fim:')).map((x) => x.n).sort(), [2, 3], 'fim do fácil: pacotes de 3 e de 2');
-  assert.ok(f.find((x) => x.n === 3 && x.id.includes(':fim:')).bea > 0, 'o de 3 pode vir Beaterista');
-  assert.equal(f.length, 4 + 2);
+  const f = RW.merecidos(p, 'x').filter((x) => x.id.includes(':x:F:') || x.id.startsWith('plf:drumF:'));
+  assert.deepEqual(f.filter((x) => x.fim).map((x) => x.n), [2, 2, 2], 'fim do fácil: 3 pacotinhos de 2 cartas (2 Beatles, 3 comuns e 1 rara)');
+  assert.equal(f.length, 4 + 3);
   let q = S.norm(); for (let n = 1; n <= 12; n++) q = run(q, 'drumI', n);
-  const i = RW.merecidos(q, 'x').filter((x) => x.id.includes(':x:I:'));
-  assert.deepEqual(i.filter((x) => x.id.includes(':fim:')).map((x) => x.n), [3, 2, 2], 'fim do intermediário: 3 pacotes, 7 cartas');
+  const i = RW.merecidos(q, 'x').filter((x) => x.id.includes(':x:I:') || x.id.startsWith('plf:drumI:'));
+  assert.deepEqual(i.filter((x) => x.fim).map((x) => x.n), [2, 2, 2], 'fim do intermediário: 3 pacotinhos de 2 cartas (2 Beatles, 3 comuns e 1 do robô)');
   assert.deepEqual(i.filter((x) => x.id.includes(':m:')).map((x) => x.n), [2, 2], 'a cada 5 fases, 2 cartas');
   assert.ok(i.filter((x) => x.id.includes(':m:')).every((x) => x.bea > 0), 'exclusivas também no meio');
   // difícil: só conta fase com 3 estrelas

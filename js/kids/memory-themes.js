@@ -24,6 +24,8 @@ export const THEMES = [
   { id: 'palco', title: 'Palco e estúdio', emoji: '🎚️', blurb: 'microfone, mesa de som, pedal…', items: all(M.palco), verso: M.palco.verso },
   { id: 'misturado', title: 'Tudo misturado', emoji: '🌈', blurb: 'todas as cartas juntas', items: all(...Object.values(M)), verso: null },
 ];
+/** Tema só do modo livre (não entra em THEMES, que a aventura usa): só os 8 instrumentos de percussão. Aberto pra todos (pedido da Bea). */
+export const TEMA_PERCUSSAO = { id: 'percussao', title: 'Percussão', emoji: '🥁', blurb: 'pandeiro, tamborim, agogô…', items: all(M.percussao), verso: M.percussao.verso };
 export const themeById = Object.fromEntries(THEMES.map((t) => [t.id, t]));
 /** Todas as imagens (pra pré-carregar as cartas do tema antes de começar). */
 export const imagesOf = (items) => items.map((x) => x.img);

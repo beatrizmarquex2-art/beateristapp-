@@ -3,7 +3,7 @@ import { h } from '../util.js';
 import * as store from '../store.js';
 import { shuffle } from '../kids-logic.js';
 import { robo } from './robo.js';
-import { THEMES, SIZES, themeById } from './memory-themes.js';
+import { THEMES, SIZES, themeById, TEMA_PERCUSSAO } from './memory-themes.js';
 import * as FB from '../feedback.js';
 import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
@@ -50,10 +50,12 @@ export function mountMemoria(host, opts) {
   // temas da tela de escolha: as 3 categorias de artistas (fotos do catálogo) + os temas desenhados. Sem o catálogo, cai nos desenhados (só profissões aberta).
   let photo = null; let lockNote = false; let live = false; let autoSala = !MS && !!salaAutoPara(JOGO_SALA); let sala = null; let lob = null; // sala: a mesa de 2 celulares em andamento; lob: a tela de criar/entrar
   const themes = () => {
-    // abertos pra todo mundo: The Beatles, Rock (as cartas desenhadas de bandas) e Profissões. O resto só com código.
-    const drawn = THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: true } : { ...t, open: t.id === 'profissoes' }));
-    const all = photo ? [photo[0], drawn[0], ...drawn.filter((t) => t.id === 'profissoes'), ...photo.slice(1), ...drawn.filter((t) => t.id !== 'rock' && t.id !== 'profissoes')] : drawn;
-    return [...all.filter((t) => t.open), ...all.filter((t) => !t.open)];
+    // abertos pra todo mundo (pedido da Bea): só Percussão e Profissões da música. The Beatles, Rock e o resto só com código.
+    const drawn = [...THEMES.map((t) => (t.id === 'bandas' ? { ...t, id: 'rock', title: 'Rock', open: false } : { ...t, open: t.id === 'profissoes' })), { ...TEMA_PERCUSSAO, open: true }];
+    const by = (id) => drawn.find((t) => t.id === id); const abertos = [by('percussao'), by('profissoes')];
+    const ph = photo ? photo.map((t) => ({ ...t, open: false })) : null;
+    const resto = ph ? [ph[0], by('rock'), ...ph.slice(1), ...drawn.filter((t) => !['rock', 'profissoes', 'percussao'].includes(t.id))] : drawn.filter((t) => !['profissoes', 'percussao'].includes(t.id));
+    return [...abertos, ...resto];
   };
   const locked = (t) => !MS && alunoSemCodigo() && !t.open;
 
@@ -158,7 +160,7 @@ export function mountMemoria(host, opts) {
       }
       live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
-      if (th.id === 'figuras') ganhou('memoria', 1); // SÓ o tema "figuras e pausas" dá 1 ★ por partida completada (até contra o robô ou em 2 no mesmo aparelho); os outros temas só em 2 celulares
+      ganhou('memoria', 1); // 1 ★ por partida completada em qualquer tema (pedido da Bea: todo jogo dá estrela); o limite de 30 ★ por jogo por dia continua
       // achou todos (ou ganhou do Paul): 3 ★
       const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `jogador ${topo[0] + 1} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
