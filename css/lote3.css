@@ -822,3 +822,5 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-ut-art img, .ti-ut-art svg { height: 100%; width: auto; max-width: 100%; max-height: none; object-fit: contain; }
 .ti-util-g { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ti-ut { min-width: 0; aspect-ratio: auto; }
 .ti-ut-art { height: 56px; } .ti-util.big .ti-ut-art { height: 74px; }
+.ti-ut-art img, .ti-ut-art svg { width: auto !important; height: 100% !important; max-width: 100% !important; max-height: none !important; }
+.ti-ut-art { height: 62px; } .ti-util.big .ti-ut-art { height: 80px; }

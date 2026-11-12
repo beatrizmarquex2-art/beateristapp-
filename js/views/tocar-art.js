@@ -84,3 +84,26 @@ export const PADS_FOTO = [
   ['cg', 'congas', 'percussao/07_congas', ['cg1', 'cg2']], ['bg', 'bongôs', 'percussao/08_bongos', ['bg2', 'bg1']], ['cx', 'caixa', 'bateria/02_caixa'],
 ];
 export const PAD_ANIM = { pd: 'pd', tb: 'bg', ag: 'ag', rr: 'cl', tr: 'tr', gz: 'ov', cg: 'cg1', bg: 'bg', cx: 'cb' };
+
+/** Desenhos "de giz de cera" (traço tremido, hachura) no estilo dos cartões do Paul: metrônomo e diapasão (afinador). */
+const RGH = `<defs><filter id="rgh" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter></defs>`;
+export const UTIL_DOODLE = {
+  metronomo: S(`${RGH}<g filter="url(#rgh)">
+    <path d="M24 90 L36 15 Q50 8 64 15 L76 90 Z" fill="${RE}" stroke="${K}" stroke-width="3.6" stroke-linejoin="round"/>
+    <g stroke="${VI}" stroke-width="2.2" stroke-linecap="round"><path d="M30 80 L70 70M29 68 L69 58M31 56 L66 47M33 44 L63 36M36 33 L60 27"/></g>
+    <path d="M38 88 L45 26 L55 26 L62 88 Z" fill="${CR}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>
+    <g stroke="${K}" stroke-width="2" stroke-linecap="round"><path d="M46 38h8M45 48h10M44 58h12M43 68h14M42 78h16"/></g>
+    <path d="M50 84 L63 20" stroke="${K}" stroke-width="4.5" stroke-linecap="round"/><path d="M50 84 L63 20" stroke="${OU}" stroke-width="2" stroke-linecap="round"/>
+    <rect x="55" y="36" width="15" height="13" rx="3" fill="${OU}" stroke="${K}" stroke-width="3" transform="rotate(12 62 42)"/>
+    <rect x="18" y="88" width="64" height="8" rx="3" fill="${AM}" stroke="${K}" stroke-width="3"/>
+    <circle cx="50" cy="84" r="4" fill="${OU}" stroke="${K}" stroke-width="2.5"/></g>
+    <g stroke="${OU}" stroke-width="3" stroke-linecap="round"><path d="M82 24 L92 18M84 36 L95 36M80 12 L84 4"/></g><path d="M12 22 l2.4 5 5.4.7-4 3.8.9 5.4-4.7-2.6-4.7 2.6.9-5.4-4-3.8 5.4-.7z" fill="${AM}" stroke="${K}" stroke-width="1.6"/>`),
+  afinador: S(`${RGH}<g filter="url(#rgh)">
+    <path d="M36 12 V50 Q36 64 50 64 Q64 64 64 50 V12" fill="none" stroke="${K}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 12 V50 Q36 64 50 64 Q64 64 64 50 V12" fill="none" stroke="${AZ}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="44" y="62" width="12" height="30" rx="4" fill="${AM}" stroke="${K}" stroke-width="3.2"/>
+    <g stroke="${CR}" stroke-width="1.6" stroke-linecap="round"><path d="M44 72h12M44 78h12M44 84h12"/></g>
+    <g stroke="${VI}" stroke-width="1.8" stroke-linecap="round"><path d="M37 20v22M63 20v22"/></g></g>
+    <g fill="none" stroke-linecap="round" stroke-width="3.6"><path d="M24 22 Q16 34 24 46" stroke="${RE}"/><path d="M15 16 Q4 34 15 52" stroke="${OU}"/><path d="M76 22 Q84 34 76 46" stroke="${RE}"/><path d="M85 16 Q96 34 85 52" stroke="${OU}"/></g>
+    <text x="50" y="9" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="11" fill="${K}">♪</text>`),
+};
