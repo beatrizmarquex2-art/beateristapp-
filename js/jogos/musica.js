@@ -1,6 +1,6 @@
 // Música de fundo dos jogos: escolhe a música pelo endereço (musica-dados.js), sintetiza no aparelho e toca baixinho em loop.
 // Respeita o som do topo (alto-falante) e o som dos jogos; só começa depois do primeiro toque (regra do navegador); para ao sair do jogo ou ao esconder o app.
-import { audio, out, isMuted, lastAudioUse } from '../audio.js';
+import { audio, isMuted, lastAudioUse } from '../audio.js';
 import { soundOn } from './base.js';
 import { TRACKS, trackDe } from './musica-dados.js';
 import './efeitos.js'; // registra o som próprio de cada jogo
@@ -34,7 +34,7 @@ function schedule(c, p, i, t) {
 }
 function stop(fade = true) {
   clearInterval(timer); timer = 0; cur = '';
-  if (bus) { const b = bus; bus = null; try { b.gain.setTargetAtTime(0, b.context.currentTime, fade ? 0.12 : 0.01); } catch { /* sem áudio */ } clearTimeout(fadeT); fadeT = setTimeout(() => { try { b.disconnect(); } catch { /* ok */ } }, 600); }
+  if (bus) { const b = bus; bus = null; try { b.gain.setTargetAtTime(0, b.context.currentTime, fade ? 0.03 : 0.01); } catch { /* sem áudio */ } clearTimeout(fadeT); fadeT = setTimeout(() => { try { b.disconnect(); } catch { /* ok */ } }, 250); }
 }
 /** Abaixa a música enquanto o jogo toca ritmo ou nota (ela não pode atrapalhar), e cala de vez quando o jogo manda (Beat Hero tocando). */
 function ajusta(c, p) {
@@ -48,7 +48,8 @@ function start(id) {
   const p = TRACKS[id]; if (!p) return;
   try {
     const c = audio(false); if (!c) return; stop(false);
-    bus = c.createGain(); bus.gain.value = VOL; bus.connect(out()); cur = id; step = 0; nextT = c.currentTime + 0.1;
+    // a música vai direto pro destino: o silence() do app (troca de tela, de fase) troca o master e não pode matar a música
+    bus = c.createGain(); bus.gain.value = VOL; bus.connect(c.destination); cur = id; step = 0; nextT = c.currentTime + 0.1;
     const tick = () => { if (!bus) return; ajusta(c, p); while (nextT < c.currentTime + 0.18) { schedule(c, p, step % 16, nextT); nextT += 60 / p.bpm / 4; step++; } };
     timer = setInterval(tick, 40); tick();
   } catch { stop(false); }
@@ -56,10 +57,13 @@ function start(id) {
 /** Liga ou desliga conforme a tela e o som. Chamado ao trocar de tela, no primeiro toque e quando o som do topo muda. */
 export function sync() {
   const want = trackDe(location.hash);
+  if (!gesture && want) { try { const c = audio(false); if (c && c.state === 'running') gesture = true; } catch { /* sem áudio */ } } // o navegador já liberou o som (sem precisar de toque)
   const ok = want && gesture && !document.hidden && !isMuted() && soundOn();
   if (!ok) { if (cur) stop(); return; }
   if (cur !== want) start(want);
 }
+/** Estado atual (pra testes): qual faixa toca e se algum jogo pediu silêncio. */
+export const estadoMusica = () => ({ faixa: cur, pausada, gesto: gesture });
 let started = false;
 /** Liga o sistema uma vez (app da Bea e área dos alunos). */
 export function initMusica() {
@@ -70,7 +74,7 @@ export function initMusica() {
   document.addEventListener('visibilitychange', sync);
   const first = () => { gesture = true; sync(); };
   ['pointerdown', 'touchend', 'keydown'].forEach((ev) => document.addEventListener(ev, first, { capture: true, passive: true }));
-  setInterval(sync, 2500); // pega o botão de som dos jogos (muda um valor guardado, sem evento)
+  setTimeout(sync, 250); setInterval(sync, 1200); // pega o botão de som dos jogos (muda um valor guardado, sem evento)
 }
 
 /** Os jogos avisam: a música dá uma pausa enquanto o jogo precisa de silêncio (ouvir o ritmo, microfone, pausa da partida). */

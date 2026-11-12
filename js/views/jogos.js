@@ -27,7 +27,7 @@ import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
-import { musicaPausa, musicaVolta } from '../jogos/musica.js';
+import { musicaPausa, musicaVolta, sync as sincronizarMusica } from '../jogos/musica.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -180,7 +180,7 @@ function game(host, entry) {
   const [, title, , mod] = entry;
   const body = h('div', { class: 'jg-body' });
   const snd = h('button', { class: 'icon-btn jg-snd', type: 'button', 'aria-pressed': String(soundOn()), 'aria-label': soundOn() ? 'desligar som' : 'ligar som', onclick: () => {
-    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇';
+    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇'; sincronizarMusica();
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
