@@ -433,3 +433,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## Estudos redesenhados (nov/2026)
 - **Aba Estudos** (`estudosView` em `js/aluno.js`, estilos `.es-*` em `css/figurinhas.css`): saíram os cartões grandes e textos. Agora: faixa pequena da **meta do dia** (3 estrelinhas), **3 áreas coloridas** — 🥁 ritmo (vermelho), 🎹 melodia e harmonia (azul), 📖 teoria (dourado) — e embaixo os **modos de estudo** da área em cartões com ícone e o Paul desenhado (aulas, Toca Aqui, Beat Hero, Uno, piano, violão, xilofone, roleta musical, pauLta, dicionário, curiosidades, dicas, 5 erros, Jogos Ensinam). Lembra a última área (`#/estudos/<area>` também abre direto). A dica do dia ficou curtinha no fim.
 - Testes ajustados: `estudos-novo`, `estudos-estrelas`, `aluno-estudos-tocar`, `bingo` (modos em ícones), `cara-*` (só artistas).
+
+## v384 — Estudos com som
+- rotas novas: `#/estudos/basica` (+`/<id>`), `#/estudos/acordes/<violao|teclado>`, `#/estudos/ritmos`
+- `js/views/estudos-som.js` (acordes + ritmos de bateria com som), `js/kids/teoria.js` (teoria básica + mini quiz de 3 perguntas)
+- Estudos sem jogos misturados

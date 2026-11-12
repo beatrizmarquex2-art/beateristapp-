@@ -15,6 +15,8 @@ import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
+import * as teoriaBasica from './kids/teoria.js';
+import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
 /** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
@@ -201,21 +203,24 @@ const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) loc
 
 /** Aba Estudos: 3 áreas coloridas (ritmo · melodia e harmonia · teoria) e, embaixo, os MODOS DE ESTUDO da área escolhida em cartões grandes com desenho. Sem textão: abre direto no que estudar. */
 const AREAS = [
-  ['ritmo', '🥁', 'ritmo', 'sinta o tempo e toque no pulso', '#d3122f', '#fff', 'p-drum2.webp', [
+  ['ritmo', '🥁', 'ritmo', 'sinta o tempo e o groove', '#d3122f', '#fff', 'p-drum2.webp', [
     ['#/estudos/aulas/bateria', '🥁', 'Aula de bateria', 'peças, levada de rock e postura · 10 min', 'aulas'],
     ['#/kids/figuras/aula', '🎵', 'Figuras rítmicas', 'o tempo, as pausas e a tercina · 10 min', 'aulas'],
-    ['#/jogos/toca', '✋', 'Toca Aqui', 'leia o compasso e toque no tempo', null],
-    ['#/ritmo', '🎮', 'Beat Hero', 'toque as batidas junto com a música', null],
-    ['#/jogos/cartas', '🃏', 'Uno Musical', 'aprenda as figuras jogando', null]]],
+    ['#/estudos/ritmos', '🔊', 'Ritmos de bateria', 'rock, pop, funk, samba, reggae… veja e ouça', null],
+    ['#/estudos/basica/figuras', '🎶', 'Figuras e pausas', 'cartões + mini quiz de 3 perguntas', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e fórmula de compasso', null]]],
   ['melodia', '🎹', 'melodia e harmonia', 'notas, escalas e acordes', '#17365B', '#fff', 'p-guitar.webp', [
     ['#/estudos/aulas/teclado', '🎹', 'Aula de teclado', 'teclas, notas, escala e acordes · 10 min', 'aulas'],
     ['#/estudos/aulas/violao', '🎸', 'Aula de violão', 'cordas, acorde e batida · 8 min', 'aulas'],
-    ['#/piano', '🎹', 'Piano', 'teclado na tela, com notas e acordes', null],
-    ['#/violao', '🎸', 'Violão', 'escolha o acorde e passe o dedo', null],
-    ['#/xilofone', '🎶', 'Xilofone', 'barras coloridas: nenhuma nota soa errada', null],
-    ['#/roleta', '🎰', 'Roleta Musical', 'descubra o artista e toque a música', null]]],
+    ['#/estudos/acordes/violao', '🎸', 'Acordes de violão e guitarra', '16 acordes: veja onde pôr o dedo e ouça', null],
+    ['#/estudos/acordes/teclado', '🎹', 'Acordes de teclado', 'as 12 notas em 5 tipos de acorde', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'dó ré mi fá sol lá si + mini quiz', null]]],
   ['teoria', '📖', 'teoria', 'ler, entender e conhecer', '#EBA332', '#142036', 'p-book.webp', [
-    ['#/paulta', '🎼', 'pauLta', 'leia a pauta: bateria, clave de sol e de fá', null],
+    ['#/estudos/basica/figuras', '🎵', 'Figuras', 'quanto dura cada nota · mini quiz', null],
+    ['#/estudos/basica/pausas', '🤫', 'Pausas', 'o silêncio também conta · mini quiz', null],
+    ['#/estudos/basica/claves', '𝄞', 'Claves', 'sol, fá, dó e a bateria · mini quiz', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e compasso · mini quiz', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'os nomes das notas · mini quiz', null],
     ['#/dicionario', '📚', 'Dicionário musical', 'busque um termo e veja tocando', 'dicionario'],
     ['#/estudos/curiosidades', '💡', 'Curiosidades de músicos', 'histórias de quem tocou antes de você', 'curiosidades'],
     ['#/estudos/dicas', '🧠', 'Dicas do método', 'como a Bea estuda e ensina', 'dicas'],
@@ -422,6 +427,9 @@ function shell(name) {
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'basica') c = teoriaBasica.mount(view, r.parts.slice(1), { aoFim: () => marcarEstudo('aula') });
+    else if (r.name === 'estudos' && r.parts[0] === 'acordes') acordesView(view, r.parts.slice(1));
+    else if (r.name === 'estudos' && r.parts[0] === 'ritmos') c = ritmosView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
