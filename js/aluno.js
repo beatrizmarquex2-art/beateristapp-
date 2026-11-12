@@ -55,7 +55,7 @@ import * as roleta from './views/roleta.js';
 import * as metronome from './views/metronome.js';
 import * as ouvido from './views/ouvido.js';
 import * as focus from './views/focus.js';
-import { utilTiles } from './views/tocar-nav.js';
+import { deckView } from './views/tocar-deck.js';
 import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
@@ -340,13 +340,7 @@ function errosView(view) {
 }
 
 function tocarView(view) {
-  const card = (href, title, sub) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub));
-  view.append(banner('Tocar', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-    card('#/toque', 'Bateria', 'toque nas peças com vários dedos e grave um ritmo'),
-    card('#/violao', 'Cordas', 'violão e guitarra: escolha o acorde e passe o dedo nas cordas'),
-    card('#/piano', 'Teclas', 'piano, elétrico, órgão e cordas, com notas e acordes'),
-    card('#/xilofone', 'Percussão', 'xilofone, vibrafone, steel drum, kalimba, congas, pandeiro e mais'),
-    utilTiles(true)));
+  view.append(banner('Tocar', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x' }, deckView()));
 }
 
 /** Trocar de aluno no mesmo aparelho: voltar a uma conta já conectada, conectar outro código ou entrar com outro nome. */

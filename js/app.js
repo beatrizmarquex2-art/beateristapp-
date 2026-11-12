@@ -19,6 +19,7 @@ import { openPersonalize } from './views/personalize.js';
 import * as mural from './views/mural.js';
 import * as library from './views/library.js';
 import * as metronome from './views/metronome.js';
+import { deckView } from './views/tocar-deck.js';
 import * as accent from './views/accent.js';
 import * as studentsView from './views/students.js';
 import * as focus from './views/focus.js';
@@ -287,6 +288,7 @@ function shell() {
       case 'mural': c = mural.mount(view); break;
       case 'estudos': c = library.mount(view, r.parts); break;
       case 'metronomo': c = metronome.mount(view); break;
+      case 'tocar': view.append(banner('Tocar', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x' }, deckView())); break;
       case 'acentuacao': c = accent.mount(view); break;
       case 'ajustes': c = settings.mount(view, { onSignedOut: showLogin }); break;
       case 'beaterista': c = studentsView.mount(view, r.parts); break;

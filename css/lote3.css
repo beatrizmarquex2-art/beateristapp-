@@ -779,3 +779,24 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-pp.hit { background: color-mix(in srgb, var(--pb, #fff) 70%, #ffd166); transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1b1818; }
 .ti-note { position: fixed; z-index: 99999; pointer-events: none; font: 800 22px system-ui; color: #7a1226; }
 .ti-perc { grid-template-columns: repeat(5, 1fr); } @media (max-width: 460px) { .ti-perc { grid-template-columns: repeat(3, 1fr); } }
+
+/* aba Tocar: toca-discos (vinil girando, agulha, 4 botões redondos). Pra mudar a cor da caixa, troque --deck-a e --deck-b. */
+.dk { --deck-a: #2c5199; --deck-b: #12254a; padding: 2px 0 8px; }
+.dk-caixa { position: relative; padding: 16px 12px 12px; border: 3px solid #1b1818; border-radius: 22px !important; background: linear-gradient(160deg, var(--deck-a), var(--deck-b)); box-shadow: 4px 4px 0 #1b1818; overflow: hidden; }
+.dk-disco { position: relative; width: min(66vw, 250px); aspect-ratio: 1; margin: 4px 0 16px 4px; border-radius: 50% !important; border: 3px solid #1b1818; background: repeating-radial-gradient(circle, #161313 0 2px, #2b2727 2px 4px); animation: dk-gira 9s linear infinite; }
+.dk-disco::after { content: ""; position: absolute; inset: 0; border-radius: 50% !important; background: conic-gradient(from 0deg, transparent 0 20%, rgb(255 255 255 / .22) 25%, transparent 30% 70%, rgb(255 255 255 / .16) 75%, transparent 80%); }
+.dk-rotulo { position: absolute; left: 50%; top: 50%; width: 36%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50% !important; border: 3px solid #1b1818; background: conic-gradient(#d92031 0 25%, #e8a92c 25% 50%, #4a79b4 50% 75%, #2a7f86 75% 100%); display: grid; place-items: center; }
+.dk-rotulo em { width: 14%; aspect-ratio: 1; border-radius: 50% !important; background: #fbf3e6; border: 3px solid #1b1818; }
+.dk-braco-box { position: absolute; right: 10px; top: 8px; width: 92px; height: 175px; transform-origin: 84% 12%; animation: dk-braco 3.2s ease-in-out infinite; pointer-events: none; }
+.dk-braco { width: 100%; height: 100%; display: block; }
+.dk-botoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.dk-btn { display: grid; justify-items: center; gap: 5px; text-decoration: none; color: #fff; -webkit-tap-highlight-color: transparent; }
+.dk-bola { display: grid; place-items: center; width: min(19vw, 74px); aspect-ratio: 1; padding: 10px; border-radius: 50% !important; border: 3px solid #1b1818; background: radial-gradient(circle at 35% 30%, #fff 0, #f4e7c8 55%, #d9c28c 100%); box-shadow: 0 4px 0 #1b1818; transition: transform .08s, box-shadow .08s; }
+.dk-art { display: block; width: 100%; } .dk-art svg { width: 100%; height: auto; display: block; }
+.dk-btn:active .dk-bola { transform: translateY(3px); box-shadow: 0 1px 0 #1b1818; }
+.dk-nome { padding: 1px 9px; border: 2px solid #1b1818; border-radius: 999px !important; background: #d92031; color: #fff; font: 800 11.5px var(--body); white-space: nowrap; }
+.dk-dica { margin: 10px 0 0; text-align: center; color: rgb(255 255 255 / .82); font: 600 12px var(--body); }
+.dk > .ti-util { padding: 14px 0 0; }
+@keyframes dk-gira { to { transform: rotate(360deg); } }
+@keyframes dk-braco { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) { .dk-disco, .dk-braco-box { animation: none; } }

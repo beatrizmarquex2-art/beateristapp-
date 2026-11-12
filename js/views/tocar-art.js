@@ -64,3 +64,11 @@ export const PERC_ANIM = {
 };
 /** Cor de fundo de cada pad. */
 export const PERC_BG = { cg1: '#ffe1d6', cg2: '#f5d9de', bg: '#d9e5f5', pd: '#fff0c9', tr: '#e8f1f3', cb: '#ececec', ov: '#d7efee', cl: '#f6e7cf', pm: '#fde4d2', ag: '#fff2c2' };
+
+/** Os 4 grupos de instrumento (bateria, cordas, teclas, percussão) em desenho. */
+export const INSTR_ART = {
+  toque: S(`<g><circle cx="60" cy="62" r="26" fill="${RE}" ${st}/><circle cx="60" cy="62" r="19" fill="${CR}" ${st}/><circle cx="60" cy="62" r="4" fill="${VI}"/></g><g><ellipse cx="30" cy="38" rx="15" ry="6" fill="${CR}" ${st}/><path d="M15 38 V54 Q30 62 45 54 V38" fill="${AM}" ${st}/></g><g><ellipse cx="90" cy="38" rx="15" ry="6" fill="${CR}" ${st}/><path d="M75 38 V54 Q90 62 105 54 V38" fill="${AM}" ${st}/></g><ellipse cx="14" cy="18" rx="16" ry="4" fill="${OU}" ${st}/><g><ellipse cx="106" cy="14" rx="16" ry="4" fill="${OU}" ${st}/><path d="M106 18 V60" stroke="${K}" stroke-width="3"/></g>`, '0 0 120 100'),
+  violao: S(`<g transform="rotate(-38 60 52)"><path d="M12 52 H64" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M12 52 H64" stroke="${MA}" stroke-width="5" stroke-linecap="round"/><rect x="2" y="44" width="16" height="16" rx="3" fill="${K}"/><path d="M60 52 C60 36 78 30 84 40 C88 46 100 40 106 48 C112 58 100 74 84 72 C78 71 74 66 68 66 C58 66 60 58 60 52Z" fill="${RE}" ${st}/><circle cx="84" cy="54" r="7" fill="${K}"/><rect x="92" y="46" width="4" height="16" fill="${K}"/></g>`, '0 0 120 100'),
+  piano: S(`<rect x="6" y="26" width="108" height="52" rx="8" fill="${K}"/><rect x="10" y="30" width="100" height="44" rx="5" fill="${CR}"/><g stroke="${K}" stroke-width="1.5"><path d="M24 30v44M38 30v44M52 30v44M66 30v44M80 30v44M94 30v44"/></g><g fill="${K}"><rect x="20" y="30" width="9" height="26" rx="2"/><rect x="34" y="30" width="9" height="26" rx="2"/><rect x="62" y="30" width="9" height="26" rx="2"/><rect x="76" y="30" width="9" height="26" rx="2"/><rect x="90" y="30" width="9" height="26" rx="2"/></g>`, '0 0 120 100'),
+  xilofone: PERC_ART.pd,
+};
