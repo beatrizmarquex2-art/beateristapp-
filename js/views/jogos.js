@@ -17,6 +17,8 @@ import * as cara from '../jogos/cara.js';
 import * as quebra from '../jogos/quebra.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
+import * as detetive from '../jogos/detetive-note.js';
+import * as figurix from '../jogos/figurix.js';
 import * as memart from '../jogos/memoria-artistas.js';
 import * as quizuno from '../jogos/quizuno.js';
 import { relatorio } from './jogos-relatorio.js';
@@ -25,11 +27,14 @@ import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
+import { musicaPausa, musicaVolta } from '../jogos/musica.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
-  ['toca', 'Toca Aqui', 'toca2.svg', toca, 'ler, ouvir, repetir · microfone'],
+  ['toca', 'Toca Aqui', 'toca2.svg', toca, 'toque as figuras no tempo · microfone vale mais ★'],
+  ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
+  ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · robô, mesmo celular ou 2 celulares'],
   ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
@@ -42,7 +47,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['toca', 'detetive', 'figurix', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -50,13 +55,15 @@ const SECTIONS = [
   ['ritmo e bateria', [
     link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
+    inner('detetive'),
+    inner('figurix'),
   ]],
   ['leitura musical', [
     link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
   ['cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'un', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+    ...['cartas', 'un', 'quizuno', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
   ['letras', [
     link('#/dicas', 'Letras', 'quiz.svg', 'caça-palavras, cruzadinha, quiz e duelo · 2 partidas grátis'),
@@ -178,9 +185,9 @@ function game(host, entry) {
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
   let pausa = null; let deVez = false; // deVez: a pessoa escolheu sair (não oferece "continuar")
-  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const pausar = () => {
-    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } body.inert = true;
+    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); body.inert = true;
     pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('h2', { class: 'hand' }, 'pausado ⏸'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide', type: 'button', onclick: despausar }, 'continuar'),
       h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
@@ -193,7 +200,7 @@ function game(host, entry) {
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);
-  return () => { const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  return () => { musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */

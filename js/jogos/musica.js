@@ -6,6 +6,7 @@ import { TRACKS, trackDe } from './musica-dados.js';
 import './efeitos.js'; // registra o som próprio de cada jogo
 
 const VOL = 0.32; // bem baixinho: o fundo não pode atrapalhar a atenção
+let pausada = false; // um jogo pediu silêncio (ouvir o ritmo, microfone): evento 'jogo-musica'
 let bus = null; let timer = 0; let cur = ''; let step = 0; let nextT = 0; let gesture = false; let noiseBuf = null; let fadeT = 0;
 const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
@@ -38,7 +39,7 @@ function stop(fade = true) {
 /** Abaixa a música enquanto o jogo toca ritmo ou nota (ela não pode atrapalhar), e cala de vez quando o jogo manda (Beat Hero tocando). */
 function ajusta(c, p) {
   if (!bus) return;
-  const calar = p.parar && document.body.classList.contains(p.parar);
+  const calar = pausada || (p.parar && document.body.classList.contains(p.parar));
   const baixa = p.duck && Date.now() - lastAudioUse() < 1300;
   const alvo = calar ? 0 : baixa ? 0.04 : 1;
   bus.gain.setTargetAtTime(VOL * alvo, c.currentTime, calar || baixa ? 0.05 : 0.4);
@@ -65,8 +66,13 @@ export function initMusica() {
   if (started || typeof window === 'undefined') return; started = true;
   window.addEventListener('hashchange', sync);
   window.addEventListener('bt-mute', sync);
+  window.addEventListener('jogo-musica', (e) => { pausada = e.detail === 'pausa'; if (!pausada) sync(); }); // Toca Aqui, Detetive Note e a pausa dos jogos avisam por aqui
   document.addEventListener('visibilitychange', sync);
   const first = () => { gesture = true; sync(); };
   ['pointerdown', 'touchend', 'keydown'].forEach((ev) => document.addEventListener(ev, first, { capture: true, passive: true }));
   setInterval(sync, 2500); // pega o botão de som dos jogos (muda um valor guardado, sem evento)
 }
+
+/** Os jogos avisam: a música dá uma pausa enquanto o jogo precisa de silêncio (ouvir o ritmo, microfone, pausa da partida). */
+export const musicaPausa = () => { try { window.dispatchEvent(new CustomEvent('jogo-musica', { detail: 'pausa' })); } catch { /* sem DOM */ } };
+export const musicaVolta = () => { try { window.dispatchEvent(new CustomEvent('jogo-musica', { detail: 'volta' })); } catch { /* sem DOM */ } };

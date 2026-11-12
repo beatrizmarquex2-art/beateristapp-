@@ -52,12 +52,12 @@ function homeScreen(host, rerender) {
     const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, lock ? `🔒 ${W.short}` : W.short), h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((done / W.count) * 100)}%` })),
       h('span', { class: 'kx-gm' }, lock ? 'conclua sol e fá' : full ? `🏅 concluído · ${W.count} fases` : `${done}/${W.count} fases`)];
     return lock ? h('button', { type: 'button', class: 'kx-g pl-locked', onclick: () => toast('conclua os mundos de sol e fá pra liberar o duelo', { ms: 2600 }) }, ...kids)
-      : h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}` }, ...kids);
+      : h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}`, 'data-mundo': w }, ...kids);
   };
   host.append(topBar('#/jogos'), gtitle(worldIcon('sol'), LOGO(), 'o jogo da leitura musical · com o Paul'),
     h('div', { class: 'kx-me' }, h('span', { class: 'kx-av', 'aria-hidden': 'true' }, me.name.trim()[0].toUpperCase()), h('span', {}, h('b', {}, me.name), h('br'), titleChip(p) || h('small', {}, 'sem título ainda')), h('span', { class: 'kd-stars' }, `${pts} pts`), h('button', { class: 'btn small ghost', type: 'button', onclick: () => switchPlayer(rerender) }, 'trocar')),
     h('div', { class: 'kx-hello' }, r.el),
-    h('h2', { class: 'kx-h' }, 'regiões'), h('div', { class: 'kx-cards' }, ...['drum', 'sol', 'fa', 'duel'].map(card)),
+    h('h2', { class: 'kx-h' }, 'mundos'), h('div', { class: 'kx-cards' }, ...['drumF', 'drumI', 'drumD', 'sol', 'fa', 'duel'].map(card)),
     h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 revisão do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }

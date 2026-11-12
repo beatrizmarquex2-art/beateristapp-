@@ -1,4 +1,4 @@
-// Toca Aqui, jogo taiko (caixa à esquerda = agudo, bumbo à direita = grave): abre, joga uma rodada tocando no lado certo e confere o resultado.
+// Taiko (guardado pra virar o jogo de rudimentos; não aparece mais no Toca Aqui): monta o jogo direto e confere uma rodada (caixa à esquerda = agudo, bumbo à direita = grave): abre, joga uma rodada tocando no lado certo e confere o resultado.
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve();
 const { browser, ctx } = await launch();
@@ -6,8 +6,9 @@ const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => e
 await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
 await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
-await page.goto(url + '/aluno.html#/jogos/toca/livre'); await sleep(800);
-await page.evaluate(() => [...document.querySelectorAll('.jg-seg button')].find((b) => /taiko/.test(b.textContent)).click()); await sleep(300);
+await page.goto(url + '/aluno.html#/jogos'); await sleep(1500);
+await page.evaluate(async () => { const M = await import('/js/kids/taiko.js'); const box = document.createElement('div'); box.className = 'jg jg-toca'; document.body.append(box); M.mountTaikoJogo(box); });
+await sleep(300);
 check('os botões são desenhos de tambor', await page.evaluate(() => document.querySelectorAll('.tk-pad svg').length === 2));
 check('tem os 2 pads (agudo à esquerda, grave à direita)', await page.evaluate(() => { const p = [...document.querySelectorAll('.tk-pad')]; return p.length === 2 && p[0].dataset.side === 'agudo' && p[1].dataset.side === 'grave' && p[0].getBoundingClientRect().left < p[1].getBoundingClientRect().left; }));
 await page.evaluate(() => document.querySelector('.tk > .kd-btn').click()); await sleep(300);

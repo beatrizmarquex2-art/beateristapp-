@@ -12,7 +12,7 @@ test('músicas escolhidas: 10 faixas, 16 passos em cada linha, bpm e notas váli
   }
 });
 test('qual música em qual tela: Uno/UN🚫, Bingo, Velha, Quebra, Cara, Memória, Figuras e pauLta; STOP fica sem', () => {
-  const casos = { '#/jogos/cartas': 'uno', '#/jogos/un': 'uno', '#/jogos/bingo/livre': 'bingo', '#/jogos/velha': 'velha', '#/jogos/quebra': 'quebra', '#/jogos/cara': 'cara', '#/jogos/memart': 'memoria', '#/kids/memoria/aventura': 'memoria', '#/kids/figuras/3': 'figuras', '#/paulta/drum': 'paulta', '#/paulta': 'paulta', '#/jogos/toca': 'toca', '#/ritmo': 'beat' };
+  const casos = { '#/jogos/cartas': 'uno', '#/jogos/un': 'uno', '#/jogos/bingo/livre': 'bingo', '#/jogos/velha': 'velha', '#/jogos/quebra': 'quebra', '#/jogos/cara': 'cara', '#/jogos/memart': 'memoria', '#/kids/memoria/aventura': 'memoria', '#/kids/figuras/3': 'figuras', '#/paulta/drum': 'paulta', '#/paulta': 'paulta', '#/jogos/toca': 'toca', '#/ritmo': 'beat', '#/jogos/detetive': 'cara', '#/jogos/figurix': 'figuras' };
   for (const [h, id] of Object.entries(casos)) assert.equal(trackDe(h), id, h);
   for (const h of ['#/jogos/stop', '#/ritmo/duelo', '#/jogos', '#/kids', '#/kids/ritmo/aventura', '#/jogos/cartas2', '']) assert.equal(trackDe(h), '', h);
 });

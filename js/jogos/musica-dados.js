@@ -22,6 +22,8 @@ export const ROTAS = [
   [/^#\/jogos\/velha(\/|$|\?)/, 'velha'],
   [/^#\/jogos\/quebra(\/|$|\?)/, 'quebra'],
   [/^#\/jogos\/cara(\/|$|\?)/, 'cara'],
+  [/^#\/jogos\/detetive(\/|$|\?)/, 'cara'], // Detetive Note: o mistério de detetive (ainda sem escolha da Bea)
+  [/^#\/jogos\/figurix(\/|$|\?)/, 'figuras'], // Figurix: a bossa nova das Figuras rítmicas
   [/^#\/(jogos\/memart|kids\/memoria)(\/|$|\?)/, 'memoria'],
   [/^#\/kids\/figuras(\/|$|\?)/, 'figuras'],
   [/^#\/paulta(\/|$|\?)/, 'paulta'],

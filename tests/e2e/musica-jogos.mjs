@@ -1,0 +1,21 @@
+// Musiquinha dos jogos: toca ao entrar num jogo (som ligado), some no botão de som, e fica quieta nas fases do Toca Aqui e do Detetive Note.
+import { serve, launch, sleep, check, done, alunoComCodigo } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } }); await alunoComCodigo(ctx);
+const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch (e) {} });
+const pico = (ms) => page.evaluate((m) => window.__peak(m), ms);
+await page.goto(url + '/aluno.html#/jogos/velha'); await page.waitForSelector('.jg-game'); await sleep(800);
+const com = await pico(1500);
+check('entrar num jogo com o som ligado toca a musiquinha', com > 0.002, String(com));
+await page.locator('.jg-snd').click(); await sleep(900);
+check('botão de som desliga a música', (await pico(1200)) < 0.001);
+await page.locator('.jg-snd').click(); await sleep(900);
+check('ligar de novo traz a música de volta', (await pico(1500)) > 0.002);
+await page.goto(url + '/aluno.html#/jogos'); await sleep(600);
+check('sair do jogo para a música', (await pico(1200)) < 0.001);
+await page.goto(url + '/aluno.html#/jogos/detetive'); await page.waitForSelector('.mp-node'); await sleep(900);
+check('no mapa do Detetive Note a música toca', (await pico(1500)) > 0.002);
+await page.evaluate(() => document.querySelector('.mp-node[data-pos="0"]').click()); await page.waitForSelector('.dn-card'); await sleep(8000);
+check('dentro de uma fase, depois de ouvir o ritmo, a música continua em pausa (silêncio pra ouvir)', (await pico(1500)) < 0.001);
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

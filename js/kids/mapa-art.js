@@ -1,6 +1,6 @@
 // Pixel art do mapa: sprites desenhados em grades de letras (cada letra = uma cor). SVG com bordas retas, nada de imagem nova.
 // cores da escola (mostarda/dourado, azul-cinza e branco); verdes e marrom só nos desenhos de árvore
-const PAL = { k: '#1d2a3a', a: '#2b3d52', b: '#5d7189', c: '#8f6a14', d: '#c99a2e', e: '#e2b84a', f: '#2b3d52', g: '#b8c6d6', w: '#ffffff', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a', r: '#c99a2e', o: '#e2b84a', p: '#f0d9a0', s: '#c4d0dd' };
+const PAL = { k: '#1d2a3a', a: '#2b3d52', b: '#5d7189', c: '#8f6a14', d: '#c99a2e', e: '#e2b84a', f: '#2b3d52', g: '#b8c6d6', w: '#ffffff', n: '#3fae6b', m: '#1f6b4a', t: '#7a4a2a', r: '#c99a2e', o: '#e2b84a', p: '#f0d9a0', s: '#c4d0dd', u: '#7fc8e6', v: '#2b86aa', x: '#e98a2b', y: '#b8561a', z: '#f3c98a', q: '#3b4c8a' };
 const SPR = {
   amp: ['kkkkkkkkkk', 'kffffffffk', 'kfdfdfdffk', 'kffffffffk', 'kkkkkkkkkk', 'kffggggffk', 'kfgkkkkgfk', 'kfgkwwkgfk', 'kfgkkkkgfk', 'kffggggffk', 'kkkkkkkkkk'],
   tape: ['kkkkkkkkkkkk', 'kddddddddddk', 'kdwwwddwwwdk', 'kdwkwddwkwdk', 'kdwwwddwwwdk', 'kddddddddddk', 'kkdkkkkkkdkk', 'kkkkkkkkkkkk'],
@@ -35,6 +35,20 @@ const SPR = {
   cactus: ['...kkk...', '..knnnk..', '..knmnk..', 'k.knnnk.k', 'knknnnknk', 'knknmnknk', 'kkknnnkkk', '..knnnk..', '..knnnk..', '.kkkkkkk.'],
   vaso: ['..k..k...', '.knk.knk.', 'knnmknnnk', '.knnnnnk.', '..kmnmk..', '.kbbbbbk.', '..kbbbk..', '..kkkkk..'],
   sprout: ['.kk.kk.', 'knnknnk', 'kmnnnmk', '.kknkk.', '...kn..', '...kn..', '..kkkk.'],
+  pine: ['....k....', '...knk...', '..knnnk..', '...knnk..', '..knmnnk.', '.knnnmnnk', '..knnnnk.', '.knnmnnnk', '....ktk..', '....ktk..'],
+  fish: ['....kkkk....', '..kkxxxxk.kk', '.kxxxxxxkkyk', 'kxxwkxxxxyyk', 'kxxxxxxxxkyk', '.kxxxxxxk.kk', '..kkkkkk....'],
+  fish2: ['....kkkk....', '..kkuuuuk.kk', '.kuuuuuukkvk', 'kuuwkuuuuvvk', 'kuuuuuuuukvk', '.kuuuuuuk.kk', '..kkkkkk....'],
+  wave: ['...kk.......kk..', '..kuuk.....kuuk.', '.kuuuuk...kuuuuk', 'kuuwuuukkkuuwuuk', 'kkkkkkkkkkkkkkkk'],
+  bubble: ['.kkk.', 'kwuuk', 'kuuuk', '.kkk.'],
+  moon: ['..kkkk..', '.kzzzzk.', 'kzzzkkk.', 'kzzk....', 'kzzk....', 'kzzzkkk.', '.kzzzzk.', '..kkkk..'],
+  planet: ['...kkkkk...', '..kxxxxxk..', '.kxxyxxxxk.', 'kkkkkkkkkkk', 'keeeeeeeeek', 'kkkkkkkkkkk', '.kxxxxyxxk.', '..kxxxxxk..', '...kkkkk...'],
+  rocket: ['...kk...', '..kwwk..', '.kwwwwk.', '.kwuuwk.', '.kwuuwk.', '.kwwwwk.', 'kkwwwwkk', 'kxkkkkxk', 'kx.kk.xk', '..kxxk..', '...yy...'],
+  pineS: ['....k....', '...kwk...', '..kwwwk..', '...kswk..', '..kwswwk.', '.kwwswwwk', '..kswwwk.', '.kwwswwwk', '....ktk..', '....ktk..'],
+  flake: ['..k..', 'kwkwk', '.kwk.', 'kwkwk', '..k..'],
+  igloo: ['..kkkkk..', '.kwwwwwk.', 'kwwswwwwk', 'kwwkkkwwk', 'kwwkbkwwk', 'kkkkkkkkk'],
+  volcano: ['.....kk.....', '....kyyk....', '...kyxxyk...', '..kbbxxbbk..', '.kbbbkkbbbk.', 'kbbbbbbbbbbk'],
+  flame: ['..k..k..', '.kxk.kxk', '.kxxkxxk', 'kxxyxxyk', 'kxyyyyyk', '.kyyyyk.', '..kkkk..'],
+  rock: ['..kkkk..', '.kbbbbk.', 'kbbsbbbk', 'kbbbbbbk', 'kkkkkkkk'],
   table: ['kkkkkkkkkkkk', 'kbbbbbbbbbbk', 'kbkkkkkbdbbk', 'kbkaakkbbbbk', 'kbkkkkkbbbbk', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk'],
 };
 /** SVG de um sprite (`px` = tamanho de cada quadradinho em unidades do viewBox; o tamanho final vem do CSS). */

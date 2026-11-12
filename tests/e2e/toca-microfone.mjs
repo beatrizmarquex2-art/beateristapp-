@@ -7,7 +7,7 @@ await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType
 await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ }
   const real = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices); window.__nega = true;
   navigator.mediaDevices.getUserMedia = (c) => (window.__nega ? Promise.reject(Object.assign(new Error('negado'), { name: 'NotAllowedError' })) : real(c)); });
-await p.goto(`${url}/aluno.html#/jogos/toca/livre`); await p.waitForSelector('.tr-pad', { timeout: 20000 }); await sleep(600);
+await p.goto(`${url}/aluno.html#/jogos/toca`); await p.waitForSelector('.mp-node', { timeout: 20000 }); await p.evaluate(() => document.querySelector('.mp-node[data-pos="0"]').click()); await p.waitForSelector('.tr-pad', { timeout: 20000 }); await sleep(600);
 await p.locator('[role=radio]:has-text("microfone")').click(); await sleep(300);
 await p.locator('button:has-text("tocar direto")').click(); await p.waitForSelector('.tr-micerro', { timeout: 8000 });
 const txt = await p.locator('.tr-micerro').innerText();
@@ -18,5 +18,10 @@ await p.locator('.tr-micerro button').click(); await sleep(400);
 check('depois de tentar de novo o aviso some e o toque volta pro modo microfone', (await p.locator('.tr-micerro').count()) === 0 && (await p.locator('.tr-pad.mic').count()) === 1);
 await p.locator('button:has-text("tocar direto")').click(); await sleep(2000);
 check('com a permissão liberada o microfone abre (pad "live")', (await p.locator('.tr-pad.live').count()) === 1 && (await p.locator('.tr-micerro').count()) === 0);
+await p.evaluate(() => { window.__nega = false; });
+await p.locator('.tr-testmic').click(); await sleep(1500);
+check('"testar o microfone" abre o microfone e mostra o aviso de teste', /parar o teste/.test(await p.locator('.tr-testmic').innerText()) && /pad ou bateria|ouvi/.test(await p.locator('.tr-status').first().innerText()));
+await p.locator('.tr-testmic').click(); await sleep(300);
+check('parar o teste volta o botão', /testar o microfone/.test(await p.locator('.tr-testmic').innerText()));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

@@ -7,9 +7,9 @@ export const MODES = [['nomes', '🔤 nomes'], ['imagens', '🖼 imagens']];
 export const MAIN = ['drum', 'sol', 'fa'];
 export const WORLDS = {
   drum: { id: 'drum', name: 'Mundo da Bateria', short: 'Bateria', count: 12, color: '#a31d30', blurb: 'ler percussão na pauta', levels: ['drumF', 'drumI', 'drumD'] },
-  drumF: { id: 'drumF', name: 'Bateria · fácil', short: 'Bateria fácil', count: 12, color: '#a31d30', blurb: 'sem acentos, fantasmas, chimbal aberto nem semicolcheias', parent: 'drum', lv: 'F' },
-  drumI: { id: 'drumI', name: 'Bateria · intermediário', short: 'Bateria intermediário', count: 12, color: '#a31d30', blurb: 'todos os símbolos, só com colcheias', parent: 'drum', lv: 'I' },
-  drumD: { id: 'drumD', name: 'Bateria · difícil', short: 'Bateria difícil', count: 12, color: '#a31d30', blurb: 'tudo, até semicolcheias', parent: 'drum', lv: 'D' },
+  drumF: { id: 'drumF', name: 'Selva da Bateria', short: 'Selva da Bateria', count: 12, color: '#a31d30', blurb: 'sem acentos, fantasmas, chimbal aberto nem semicolcheias', parent: 'drum', lv: 'F' },
+  drumI: { id: 'drumI', name: 'Deserto das Colcheias', short: 'Deserto das Colcheias', count: 12, color: '#a31d30', blurb: 'todos os símbolos, só com colcheias', parent: 'drum', lv: 'I' },
+  drumD: { id: 'drumD', name: 'Vulcão das Semicolcheias', short: 'Vulcão das Semicolcheias', count: 12, color: '#a31d30', blurb: 'tudo, até semicolcheias', parent: 'drum', lv: 'D' },
   sol: { id: 'sol', name: 'Mundo da Clave de Sol', short: 'Clave de Sol', count: 15, color: '#14284b', blurb: 'ler notas agudas' },
   fa: { id: 'fa', name: 'Mundo da Clave de Fá', short: 'Clave de Fá', count: 15, color: '#1f5d63', blurb: 'ler notas graves' },
   duel: { id: 'duel', name: 'Duelo das Claves', short: 'Duelo das Claves', count: 6, color: '#8a5a14', blurb: 'sol e fá, uma contra a outra', bonus: true },

@@ -13,7 +13,7 @@ import { ROW_NAME } from './groove.js';
 
 const W = 1240, H = 1754, MM = W / 210; const SIDE = Math.round(16 * MM);
 const FONT = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
-export const TITLES = { pecas: 'Que peça é essa?', pauta: 'Onde mora na pauta?', figuras: 'Figuras rítmicas', bumbos: 'Quantos bumbos?', memoria: 'Memória dos instrumentos', detetive: 'Detetive do groove', eco: 'Eco rítmico', toque: 'Toque as figuras' };
+export const TITLES = { pecas: 'Que peça é essa?', pauta: 'Onde mora na pauta?', figuras: 'Figurix', bumbos: 'Quantos bumbos?', memoria: 'Memória dos instrumentos', detetive: 'Detetive do groove', eco: 'Eco rítmico', toque: 'Toque as figuras' };
 const ORDER = Object.keys(TITLES);
 
 const WHY = {
