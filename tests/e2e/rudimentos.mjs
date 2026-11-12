@@ -12,6 +12,7 @@ check('lista as 11 fases em 3 blocos', await page.evaluate(() => document.queryS
 check('só a fase 1 está aberta no começo', await page.evaluate(() => [...document.querySelectorAll('.rd-fase')].map((b) => !b.disabled).join() === 'true,false,false,false,false,false,false,false,false,false,false'));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/rud-1-fases.png' : '/tmp/rud-1-fases.png' });
 await page.evaluate(() => document.querySelector('.rd-fase[data-fase="1"]').click()); await sleep(400);
+check('caixa à esquerda (E, vermelho) e bumbo à direita (D, verde)', await page.evaluate(() => { const e = document.querySelector('.rd-pad.E'); const d = document.querySelector('.rd-pad.D'); const rgb = (el) => getComputedStyle(el).borderTopColor; return e.dataset.inst === 'caixa' && d.dataset.inst === 'bumbo' && /255, 61, 87/.test(rgb(e)) && /39, 255, 138/.test(rgb(d)) && e.getBoundingClientRect().left < d.getBoundingClientRect().left; }));
 check('mostra o padrão escrito (16 letras) e os 2 pads E/D', await page.evaluate(() => document.querySelectorAll('.rd-l').length === 16 && document.querySelectorAll('.rd-pad').length === 2 && document.querySelectorAll('.rd-pad .rd-drum svg').length === 2 && document.querySelector('.rd-pad.E').getBoundingClientRect().left < document.querySelector('.rd-pad.D').getBoundingClientRect().left));
 check('tem os 4 andamentos (80, 100, 120, 140) em discos de vinil', await page.evaluate(() => [...document.querySelectorAll('.rd-vin small')].map((x) => x.textContent.replace(/\D/g, '')).join() === '80,100,120,140' && document.querySelectorAll('.rd-vin .vinil').length === 4));
 check('escolhe a figura (colcheia/semicolcheia) e como jogar (tela/microfone)', await page.evaluate(() => [...document.querySelectorAll('.rd-chip')].map((x) => x.textContent).join() === 'colcheia,semicolcheia,jogar na tela,microfone'));
@@ -21,7 +22,7 @@ await page.evaluate(() => document.querySelector('.rd-go').click()); await sleep
 const n = await page.evaluate(() => window.__rud.chart.length); check('gera 64 notas', n === 64, String(n));
 check('colcheia a 80 BPM: uma nota a cada 0,375 s', await page.evaluate(() => Math.abs(window.__rud.chart[1].t - 0.375) < 1e-9 && window.__rud.por === 2));
 check('as notas seguem o padrão D E D E…', await page.evaluate(() => window.__rud.chart.slice(0, 8).map((x) => x.side).join('') === 'DEDEDEDE'));
-await sleep(2700); await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/rud-3-jogando.png' : '/tmp/rud-3-jogando.png' });
+await sleep(2500); await page.evaluate(() => document.querySelector('.rd-info').scrollIntoView({ block: 'start' })); await sleep(250); await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/rud-3-jogando.png' : '/tmp/rud-3-jogando.png' });
 await page.evaluate(async () => {
   const T = window.__rud; const ctxA = (await import('/js/audio.js')).audio(false);
   for (const note of T.chart.slice()) { while (ctxA.currentTime < T.t0 + note.t - 0.005) await new Promise((r) => setTimeout(r, 2)); document.querySelector(`.rd-pad.${note.side}`).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true })); }
