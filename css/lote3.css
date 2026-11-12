@@ -824,3 +824,12 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-ut-art { height: 56px; } .ti-util.big .ti-ut-art { height: 74px; }
 .ti-ut-art img, .ti-ut-art svg { width: auto !important; height: 100% !important; max-width: 100% !important; max-height: none !important; }
 .ti-ut-art { height: 62px; } .ti-util.big .ti-ut-art { height: 80px; }
+
+/* Útil: 3 botões redondos, iguais aos do toca-discos (nada de quadrado; o desenho nunca corta) */
+.ti-util-g { gap: 6px; }
+.ti-ut, .ti-ut-metronomo, .ti-ut-ouvido, .ti-ut-foco { display: grid !important; grid-template-rows: auto auto !important; justify-items: center; align-content: start; gap: 6px; aspect-ratio: auto !important; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; transform: none !important; }
+.ti-ut-art { display: grid !important; place-items: center; width: min(22vw, 76px) !important; height: auto !important; aspect-ratio: 1 !important; padding: 9px; overflow: visible !important; border: 3px solid #1b1818; border-radius: 50% !important; background: radial-gradient(circle at 35% 30%, #fff 0, #f4e7c8 55%, #d9c28c 100%); box-shadow: 0 4px 0 #1b1818; transition: transform .08s, box-shadow .08s; }
+.ti-util.big .ti-ut-art { width: min(26vw, 96px) !important; padding: 11px; }
+.ti-ut:active .ti-ut-art { transform: translateY(3px); box-shadow: 0 1px 0 #1b1818; }
+.ti-ut-art img, .ti-ut-art svg { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain; display: block; }
+.ti-ut b { padding: 1px 9px; border: 2px solid #1b1818; border-radius: 999px !important; background: #d92031; color: #fff !important; font: 800 11.5px var(--body) !important; white-space: nowrap; }
