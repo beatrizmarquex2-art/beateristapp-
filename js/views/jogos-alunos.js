@@ -15,8 +15,9 @@ export function mount(host) {
     h('div', { class: 'pad-x', style: 'display:grid;gap:10px' },
       h('div', { class: 'row' },
         h('a', { class: 'btn small', href: SITE_ALUNOS, target: '_blank', rel: 'noopener noreferrer' }, 'abrir em outra aba'),
+        h('a', { class: 'btn small', href: '#/codigos' }, 'importar código de aluno'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => { frame.src = SITE_ALUNOS; } }, 'recarregar')),
       frame,
-      h('p', { class: 'muted' }, 'se ficar em branco, toque em "abrir em outra aba". aqui você entra como aluno (sem código, ou com o seu: BEA-0404).')));
+      h('p', { class: 'muted' }, 'se ficar em branco, toque em "abrir em outra aba". aqui você entra como aluno (sem código, ou com o seu: BEA0204).')));
   return () => {};
 }
