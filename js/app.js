@@ -71,6 +71,7 @@ import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
 import * as lixeira from './views/lixeira.js';
 import * as paulta from './paulta/view.js';
+import * as trilha from './views/trilha.js';
 import { openSearch } from './search.js';
 import { NAV_DEFAULT, NAV_KEY, loadNav, openNavEditor } from './navbar.js';
 import { handsOn, setHands, initHands, handsBar } from './hands.js';
@@ -328,6 +329,7 @@ function shell() {
       case 'figurinhas': c = figurinhas.mount(view, r.parts); break;
       case 'feed': c = r.arg === 'colagens' ? collages.mount(view) : feed.mount(view); break;
       case 'paulta': c = paulta.mount(view, r.parts); break;
+      case 'trilha': c = trilha.mount(view); break;
       case 'lixeira': c = lixeira.mount(view); break;
       case 'em-breve': mountSoon(view, r.arg); break;
       default: view.append(banner('Ops'), h('p', { class: 'pad-x' }, 'Essa página não existe.'), h('a', { class: 'btn primary wide', href: '#/inicio' }, 'Voltar ao início'));

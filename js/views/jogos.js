@@ -19,6 +19,7 @@ import * as memart from '../jogos/memoria-artistas.js';
 import * as quizuno from '../jogos/quizuno.js';
 import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
+import { guarda as trilhaGuarda } from '../campanha/trilha-estado.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
@@ -39,11 +40,14 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['toca', 'memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
+  ['trilha', [
+    link('#/trilha', 'Trilha: aprender e tocar', 'fases.svg', 'a ordem certinha, passo a passo'),
+  ]],
   ['ritmo e bateria', [
     link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
@@ -196,6 +200,7 @@ function game(host, entry) {
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */
 function withModes(host, entry, [id, mode, mission]) {
   if (mode === 'livre') return game(host, entry);
+  if (mode === 'aventura' && id === 'toca' && trilhaGuarda('toca')) return () => {};
   let off = () => {}; let gone = false; const wrap = h('div', { class: 'av-root' }); host.replaceChildren(wrap);
   wrap.append(h('p', { class: 'jg-p' }, 'carregando…'));
   loadAdventure(id).then((adv) => {

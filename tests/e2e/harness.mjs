@@ -84,7 +84,7 @@ const TAP = `(() => {
 export async function alunoComCodigo(ctx) {
   await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
-  await ctx.addInitScript(() => { try { if (!localStorage.getItem('beaterista-aluno-codigo')) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) { /* ok */ } });
+  await ctx.addInitScript(() => { try { if (!localStorage.getItem('beaterista-aluno-codigo')) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('beaterista-trilha-off', '1'); } catch (e) { /* ok */ } });
 }
 export async function launch({ viewport = { width: 390, height: 844 }, hasTouch = true, isMobile = true, ua, codigo = true } = {}) {
   const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--no-sandbox'] });

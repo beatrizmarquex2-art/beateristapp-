@@ -22,6 +22,7 @@ import * as V from './save.js';
 import { livre } from './livre.js';
 import * as sfx from './sfx.js';
 import { runSession, teachCards, soundBtn } from './run.js';
+import { guarda as trilhaGuarda } from '../campanha/trilha-estado.js';
 
 const MODE_KEY = 'beaterista-paulta-mode';
 const getMode = () => { try { const m = localStorage.getItem(MODE_KEY); return m === 'imagens' ? 'imagens' : 'nomes'; } catch { return 'nomes'; } };
@@ -269,6 +270,7 @@ export function mount(host, parts = []) {
     if (a === 'perfil') { off = profileScreen(host, rerender) || off; return; }
     if (a === 'reforco') { off = reinforceScreen(host, b) || off; return; }
     if (a === 'aula') { off = lessonScreen(host, b) || off; return; }
+    { const passo = a === 'drum' ? 'paulta-bateria' : (a === 'sol' || a === 'fa') ? 'paulta-claves' : a === 'duel' ? 'paulta-duelo' : null; if (passo && trilhaGuarda(passo)) return; }
     if (a === 'drum') { off = levelScreen(host) || off; return; }
     if (a && WORLDS[a]) {
       const n = Number(b);
