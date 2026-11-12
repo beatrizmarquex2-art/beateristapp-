@@ -47,8 +47,15 @@ export function mount(host, parts = [], opts = {}) {
     for (const r of rsLista) {
       if (r.status !== 'aprovado' || r.entregue) continue;
       let ok = false; try { ok = await RS.entregar(r.id); } catch { /* tenta na próxima */ } if (!ok) continue; r.entregue = true;
-      if (r.tipo === 'lendaria') { const c = RS.proximaLendaria(state.lend, LEND.LENDARIAS); if (c) { save(LEND.darLendaria(state, c)); const nome = LEND.LENDARIAS.find((x) => x.codigo === c).nome; import('../paulta/festa.js').then((F) => F.festa({ titulo: 'figurinha lendária!', sub: `a Bea aprovou: você ganhou "${nome}"` })).catch(() => {}); } }
+      if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (1 produto = 1 · 2 = 3 · 3 = 5)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
+    }
+    // lendárias: vale a maior compra aprovada; completa até esse total (sem repetir) e festeja só as novas
+    const alvo = Math.max(0, ...rsLista.filter((r) => r.tipo === 'lendaria' && r.status === 'aprovado').map((r) => LEND.totalPorProdutos(LEND.produtosDoResgate(r.obs))));
+    const comp = LEND.completarLendarias(state, alvo);
+    if (comp.novas.length) {
+      save(comp.state); const nomes = comp.novas.map((c) => LEND.LENDARIAS.find((x) => x.codigo === c).nome);
+      import('../paulta/festa.js').then((F) => F.festa({ titulo: comp.novas.length > 1 ? 'figurinhas lendárias!' : 'figurinha lendária!', sub: `a Bea aprovou: você ganhou ${nomes.map((n) => `"${n}"`).join(' e ')}` })).catch(() => {});
     }
     if (alive) draw();
   }
@@ -137,13 +144,14 @@ export function mount(host, parts = [], opts = {}) {
       h('h2', { class: 'tag' }, '✨ Lendárias'),
       h('p', { class: 'muted' }, `figurinhas exclusivas de quem compra na Lojinha da Beaterista. não saem na roleta. você tem ${n} de ${LEND.LENDARIAS.length}.`),
       h('div', { class: 'ld-grid' }, ...LEND.LENDARIAS.map(slot)),
-      h('p', { class: 'fig-note' }, 'com 3 produtos da Lojinha você resgata as suas figurinhas lendárias.'),
-      statusRs('lendaria') ? h('p', { class: 'fig-note' }, `seu resgate: ${statusRs('lendaria')}`) : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint('lendaria') }, 'resgatar por print (comprei 3 produtos)'),
+      h('p', { class: 'fig-note' }, 'quanto mais produtos da Lojinha, mais lendárias: 1 produto libera 1 · 2 produtos liberam 3 · 3 produtos liberam as 5.'),
+      rsLista.some((x) => x.tipo === 'lendaria' && x.status === 'pendente') ? h('p', { class: 'fig-note' }, 'seu resgate: esperando a Bea') : n >= LEND.LENDARIAS.length ? h('p', { class: 'fig-note' }, 'você já tem as 5 lendárias! 🎉')
+        : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint('lendaria') }, n ? 'comprei mais produtos (mandar outro print)' : 'resgatar por print (mostre suas compras)'),
       h('a', { class: 'btn wide', href: '#/lojinha' }, 'ver a Lojinha'));
   }
   function verLendaria(c) {
     sheet(c.nome, (close) => h('div', { class: 'ld-ver' }, h('img', { class: LEND.temLendaria(state, c.codigo) ? '' : 'ld-bloq', src: c.img, alt: c.nome }),
-      h('p', { class: 'muted' }, LEND.temLendaria(state, c.codigo) ? 'lendária sua!' : 'trancada: resgate com 3 produtos da Lojinha.'), h('button', { type: 'button', class: 'btn wide', onclick: close }, 'fechar')));
+      h('p', { class: 'muted' }, LEND.temLendaria(state, c.codigo) ? 'lendária sua!' : 'trancada: 1 produto da Lojinha libera 1 lendária, 2 liberam 3 e 3 liberam as 5.'), h('button', { type: 'button', class: 'btn wide', onclick: close }, 'fechar')));
   }
 
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
