@@ -815,3 +815,10 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 
 .ti-perc { grid-template-columns: repeat(3, 1fr) !important; }
 @media (min-width: 560px) { .ti-perc { grid-template-columns: repeat(5, 1fr) !important; } }
+
+.ti-ut-art img { width: 62%; max-width: 74px; height: auto; display: block; } .ti-util.big .ti-ut-art img { max-width: 96px; }
+.ti-ut-art svg, .ti-ut-art img { max-height: 70px; } .ti-util.big .ti-ut-art svg, .ti-util.big .ti-ut-art img { max-height: 92px; }
+.ti-ut-art { height: 70px; overflow: hidden; } .ti-util.big .ti-ut-art { height: 88px; }
+.ti-ut-art img, .ti-ut-art svg { height: 100%; width: auto; max-width: 100%; max-height: none; object-fit: contain; }
+.ti-util-g { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ti-ut { min-width: 0; aspect-ratio: auto; }
+.ti-ut-art { height: 56px; } .ti-util.big .ti-ut-art { height: 74px; }

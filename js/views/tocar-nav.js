@@ -8,7 +8,8 @@ import { UTIL_ART } from './tocar-art.js';
 export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'cordas', '#/violao'], ['piano', 'teclas', '#/piano'], ['xilofone', 'percussão', '#/xilofone']];
 /** Útil (pra todo mundo): metrônomo, afinador e timer. */
 export const UTEIS = [['metronomo', 'metrônomo', '#/metronomo'], ['ouvido', 'afinador', '#/ouvido'], ['foco', 'cronômetro', '#/foco']];
-const UART = { metronomo: UTIL_ART.metronomo, ouvido: UTIL_ART.afinador, foco: UTIL_ART.cronometro };
+const FOTO = (n) => `<img src="assets/tocar/${n}.webp" alt="" draggable="false" decoding="async">`;
+const UART = { metronomo: UTIL_ART.metronomo, ouvido: FOTO('onda'), foco: FOTO('cronometro') }; // cronômetro e onda do afinador: figurinhas desenhadas da Beaterista
 /** Três quadradinhos com desenho: metrônomo, afinador e cronômetro (o nome da seção vai por cima). `big` = versão grande da tela Tocar. */
 export function utilTiles(big = false) {
   return h('nav', { class: `ti-util${big ? ' big' : ''}`, 'aria-label': 'Útil' }, h('span', { class: 'ti-util-l' }, 'útil'),
