@@ -23,8 +23,16 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
+/** Destaque do combo Black Friday: primeira coisa da Lojinha. */
+function destaqueCombo() {
+  return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
+    h('a', { href: '#/lojinha/blackfriday', 'aria-label': 'ver o combo Robôterista' }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
+    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
+}
+
 export function vitrine() {
   return h('div', { class: 'lj' },
+    destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
     h('p', { class: 'lj-apostila' }, 'Apostila Didática Beaterista', h('small', {}, 'para evolução musical')),

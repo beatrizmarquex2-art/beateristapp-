@@ -4,6 +4,7 @@ const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)))
 await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch {} });
 await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1500);
+check('combo é a primeira coisa da vitrine', (await page.locator('.lj > :first-child').getAttribute('data-id')) === 'combo-bf');
 await page.getByRole('tab', { name: 'black friday' }).click(); await sleep(1500);
 check('aba abre rota blackfriday', (await page.evaluate(() => location.hash)) === '#/lojinha/blackfriday');
 check('arte do combo aparece', await page.locator('.lj-bf-arte').isVisible());
