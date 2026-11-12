@@ -318,11 +318,15 @@ function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 (function(){RK_STY.rock.S.forEach(d=>{if(d.n==='Relâmpago'||d.n==='Amplificador no Dez') d.lead='guitarra'})})();
 /* lo-fi: melodia em flauta e marimba (alternando) com pad no fundo */
 (function(){const Y=RK_STY.lofi;Y.g.forEach(g=>{g.ci='pad'});Y.S.forEach((d,i)=>{d.lead=i%2?'marimba':'flauta'})})();
+/* pop: melodia no sinte com piano dobrando, acompanhamento de piano + violão */
+(function(){const Y=RK_STY.pop;Y.g.forEach(g=>{g.ci='piano+violao'});Y.S.forEach(d=>{d.lead='sinte';d.lead2=[{k:'piano',off:0,v:1}]})})();
+/* reggaeton: 3 conjuntos de instrumentos (flauta, steel drum, pluck, sempre com piano elétrico) e 2 baterias (seca e apertada, congas) alternando */
+(function(){const Y=RK_STY.reggaeton,sets=[['flauta','epiano'],['steeldrum','epiano'],['pluck','epiano']];Y.S.forEach((d,i)=>{d.lead=sets[i%3][0];d.ci=sets[i%3][1];d.kit=['seca','conga'][i%2]})})();
 const RK_TIER_NAMES=['calminha','devagar','médio','rápido','turbo'];
-function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:Y.kit,lead:D.lead,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
+function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:D.kit||Y.kit,lead:D.lead,lead2:D.lead2,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
 /* arranjo: devolve o mesmo formato de rsArrange ({st,mel,drums,ev,chords,dur,bars,lead}) */
 const RK_OVR={};
-function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.length],G=Object.assign({},Y.g[D.g],RK_OVR.ci?{ci:RK_OVR.ci}:{});const st=60/S.bpm/4;const sc=RK_SC[D.sc];const SEC=Y.sec;const sw=Y.sw||0;
+function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.length],G=Object.assign({},Y.g[D.g],D.ci?{ci:D.ci}:{},RK_OVR.ci?{ci:RK_OVR.ci}:{});const st=60/S.bpm/4;const sc=RK_SC[D.sc];const SEC=Y.sec;const sw=Y.sw||0;
   let secs;const cyc=[['verso',SEC.verso],['refrao',SEC.refrao],['verso',SEC.verso],['refrao',SEC.refrao],['ponte',SEC.ponte],['refrao',SEC.refrao]];
   if(minSec&&!short){secs=[['intro',2]];let tot=2;for(let k=0;tot*16*st<minSec;k++){const c=cyc[k%cyc.length];secs.push(c);tot+=c[1]}secs.push(['fim',2])}
   else secs=short?[['intro',2],['verso',SEC.verso],['refrao',SEC.refrao],['fim',2]]:[['intro',2]].concat(cyc).concat([['fim',2]]);
