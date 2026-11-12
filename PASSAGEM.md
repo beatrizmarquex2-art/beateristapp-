@@ -57,6 +57,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Poses de corpo na área dos alunos: `assets/aluno/paul-*.webp` (paz, apontando, bateria, skate, violão, selfie), sorteadas a cada abertura.
 - Rabiscos recortados: `assets/paul/el/*.webp`. O Paul fica **parado**; os rabiscos em volta é que se mexem.
 - Folhas originais enviadas pela Bea: `assets/originals/paul/` (não vão para o site dos alunos).
+- **Artes de divulgação + recortes do Paul (referência)**: `assets/originals/artes-beaterista/` (feed, stories, banner e 9 recortes PNG transparentes; estilo descrito no `LEIA-ME.md` da pasta). Usar de modelo pra novas artes/posts.
 - Cuidado ao recortar imagens: nunca por grade fixa (cortava orelhas e laterais); usar o contorno do desenho.
 
 ## Testes
