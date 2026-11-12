@@ -407,6 +407,6 @@
 
 /* Hoje: o que é mais importante (estudar) vem primeiro, em cartões grandes */
 .hj-big { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.hj-tile { display: grid; justify-items: center; gap: 2px; text-align: center; padding: 14px 8px; min-height: 112px; background: #fffdf8; color: #14284b; border: 3px solid #1b1818; border-radius: 18px !important; box-shadow: 4px 4px 0 #1b1818; text-decoration: none; } .hj-tile:nth-child(1) { background: #ffe4e8; } .hj-tile:nth-child(2) { background: #fff1c7; } .hj-tile:nth-child(3) { background: #dfe8fb; } .hj-tile:nth-child(4) { background: #e6f3e3; }
+.hj-tile { display: grid; justify-items: center; gap: 2px; text-align: center; padding: 14px 8px; min-height: 112px; background: #fffdf8; color: #14284b; border: 3px solid #1b1818; border-radius: 18px !important; box-shadow: 4px 4px 0 #1b1818; text-decoration: none; } .hj-tile:nth-child(1) { background: #d3122f; color: #fff; } .hj-tile:nth-child(2) { background: #17365B; color: #fff; } .hj-tile:nth-child(3) { background: #EBA332; color: #142036; } .hj-tile:nth-child(4) { background: #fffdf8; color: #d3122f; } .hj-tile:nth-child(-n+3) small { color: inherit; opacity: .85; }
 .hj-ti { font-size: 36px; line-height: 1.1; } .hj-tile b { font: 800 15px/1.1 system-ui, sans-serif; } .hj-tile small { font: 500 12px system-ui, sans-serif; color: #555; } .hj-tile.locked { opacity: .7; }
 .hj-hero { margin-top: 6px; }
