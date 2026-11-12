@@ -17,7 +17,9 @@ import { TEMAS, MODOS, FASES, RODADAS, BPM, cartas, sortear, conferir, acertou, 
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 const NOME = (m) => (m === 'normal' ? 'figuras' : `${EMOJI_MODO[m]} ${TEMAS[m].nome}`);
-const face = (card, modo) => (modo === 'normal' ? svgEl(N.toSVG(layoutRhythm([card.cell], { width: 120, count: false, clef: false })), 'dn-face-fig')
+// figuras SEM pauta: só as notas, hastes, barras e pausas (tira a linha, a clave e o travessão)
+const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o.y1 === o.y2 || (o.x1 === o.x2 && o.w === 2)))) });
+const face = (card, modo) => (modo === 'normal' ? svgEl(N.toSVG(semPauta(layoutRhythm([card.cell], { width: 84, count: false, clef: false }))), 'dn-face-fig')
   : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 const soa = (cell, bpm = BPM) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...cell].forEach((x, k) => { if (x === '1') voz(t + (k * q) / 4, 0.85); }); };
 
@@ -50,7 +52,8 @@ export function mount(host) {
   const comeca = (n) => { limpa(); fase = n; rodada = 0; primeira = 0; jogando = true; nova(); };
   const ouvir = () => { Au.reset(); audio(); schedule(secreto, BPM, { play: true }); };
   const nova = () => { S.reset(); secreto = sortear(fase); slots = []; errou = false; marcas = null; desenha(); Au.later(ouvir, 400); };
-  const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'), h('b', {}, `${NOME(modo)} · fase ${fase} de ${FASES} · ritmo ${rodada + 1} de ${RODADAS}`));
+  const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
+    h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
   const desenha = () => {
     const cs = cartas(modo, fase); const cheio = slots.length === 4;
     const casas = Array.from({ length: 4 }, (_, i) => { const c = slots[i] != null ? cs.find((x) => x.cell === slots[i]) : null; const m = marcas ? marcas[i] : null;

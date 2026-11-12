@@ -17,7 +17,8 @@ const monta = async (fase, certo = true) => {
 };
 const abre = async (pos) => { await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await page.waitForSelector('.dn-card'); };
 await abre(0);
-check('fase 1: só 2 cartas (semínima e colcheias) e cabeçalho da fase', (await page.locator('.dn-card').count()) === 2 && /figuras · fase 1 de 12 · ritmo 1 de 3/.test(await page.textContent('.tr-fasehead')));
+check('fase 1: só 2 cartas e o cabeçalho sem texto de fase (só 3 bolinhas dos ritmos)', (await page.locator('.dn-card').count()) === 2 && !/fase|ritmo/i.test(await page.textContent('.tr-fasehead')) && (await page.locator('.dn-dots i').count()) === 3);
+check('figuras sem pauta: as cartas não têm a linha da pauta', await page.evaluate(() => [...document.querySelectorAll('.dn-card svg')].every((s) => ![...s.querySelectorAll('line')].some((l) => l.getAttribute('y1') === l.getAttribute('y2')))));
 await monta(1, false); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('errou: mostra o tempo errado em vermelho e deixa tentar de novo', (await page.locator('.dn-slot.no').count()) >= 1 && /quase/.test(await page.textContent('.jg-msg')));
 await page.getByRole('button', { name: 'limpar' }).click(); await monta(1, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
