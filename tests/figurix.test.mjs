@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PHASES, FASES, rapidaLenta, MONTES, peçasDe, confereMonte, paresLigar, paresPausa, mesmoPar, quizQ, ARVORE, opcoesArvore, itensTetris, estrelasFigurix, ids } from '../js/jogos/figurix-logic.js';
+import { PHASES, FASES, CICLO, rapidaLenta, MONTES, peçasDe, confereMonte, paresLigar, paresPausa, mesmoPar, quizQ, ARVORE, opcoesArvore, itensTetris, estrelasFigurix, ids, rapidaLentaN, totalRL, totalQuiz, montesDe, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, palavrasDe, grandeCaca, arvore, opcoesCabem, tetrisCfg, itensTetrisN } from '../js/jogos/figurix-logic.js';
 import { FIG_BY } from '../js/kids/figs.js';
 
-test('12 fases na ordem das ideias da Bea', () => {
-  assert.equal(PHASES.length, FASES); assert.deepEqual(PHASES.map((p) => p.tipo), ['rapida', 'lenta', 'monte', 'ligar', 'ligar', 'memoria', 'quiz', 'caca', 'notas', 'tetris', 'quiz', 'tetris']);
-  assert.deepEqual(PHASES.filter((p) => p.tipo === 'ligar').map((p) => p.k), [3, 5]);
+test('as 12 primeiras fases são as da Bea e depois vêm mais 50 (62 no total)', () => {
+  assert.equal(PHASES.length, FASES); assert.equal(FASES, 62); assert.deepEqual(PHASES.slice(0, 12).map((p) => p.tipo), ['rapida', 'lenta', 'monte', 'ligar', 'ligar', 'memoria', 'quiz', 'caca', 'notas', 'tetris', 'quiz', 'tetris']);
+  assert.deepEqual(PHASES.filter((p) => p.tipo === 'ligar').slice(0, 2).map((p) => p.k), [3, 5]); assert.ok(PHASES.every((p, i) => p.n === i + 1)); assert.ok(PHASES.slice(12).every((p, i) => p.tipo === CICLO[i % 10]));
+  const niveis = PHASES.slice(12).map((p) => p.nivel); assert.deepEqual(niveis, niveis.slice().sort((a, b) => a - b), 'a dificuldade nunca desce');
 });
 test('rápida/lenta: a 1ª é a da Bea e a resposta é a que dura menos/mais', () => {
   const r = rapidaLenta('rapida', 0); assert.deepEqual(r.figs.slice().sort(), ['colcheia', 'semicolcheia', 'seminima']); assert.equal(r.ok, 'semicolcheia');
@@ -27,3 +28,26 @@ test('árvore: semibreve e mínima prontas; quantas cabem numa semibreve', () =>
 });
 test('tetris: o lado certo tem o nome da figura que cai', () => { for (const n of [1, 2]) for (const it of itensTetris(n, 30)) { assert.notEqual(it.esq, it.dir); assert.equal(it[it.ok], it.fig); assert.ok(ids.includes(it.fig)); } });
 test('estrelas: sem erro 3, até 2 erros 2, mais que isso 1', () => { assert.deepEqual([0, 1, 2, 3, 9].map(estrelasFigurix), [3, 2, 2, 1, 1]); });
+
+test('fases novas: rápida/lenta com mais opções nos níveis altos e resposta certa sempre única', () => {
+  for (const nivel of [3, 4, 5, 6, 7]) for (const tipo of ['rapida', 'lenta']) for (let i = 0; i < 40; i++) { const q = rapidaLentaN(tipo, i, nivel); const b = q.figs.map((f) => FIG_BY[f].beats); assert.equal(q.figs.length, nivel >= 6 ? 5 : nivel >= 4 ? 4 : 3); assert.equal(FIG_BY[q.ok].beats, tipo === 'rapida' ? Math.min(...b) : Math.max(...b)); }
+  assert.equal(totalRL(3), 5); assert.equal(totalRL(6), 7); assert.equal(totalQuiz(3), 8); assert.equal(totalQuiz(6), 12);
+});
+test('monte a figura: todas as figuras pedidas existem e crescem nos níveis', () => { for (const n of [1, 2, 3, 4, 5, 6, 7]) for (const f of montesDe(n)) assert.ok(FIG_BY[f]); assert.ok(montesDe(5).includes('semifusa')); });
+test('ligar por nível: cada esquerda tem exatamente uma direita igual', () => {
+  for (const p of PHASES.filter((x) => x.tipo === 'ligar')) { const c = ligarCfg(p); const r = paresLigarN(c.k, c.tipo); assert.equal(r.esq.length, c.k); assert.deepEqual(r.esq.map((x) => x.id).sort(), r.dir.map((x) => x.id).sort()); assert.equal(new Set(r.dir.map((x) => x.id)).size, c.k); }
+});
+test('memória por nível: pares válidos, mesmo par só entre os dois lados', () => {
+  for (const n of [1, 2, 3, 4, 5, 6, 7]) { const c = memCfg(n); const cs = paresMem(c.k, c.modo); assert.equal(cs.length, c.k * 2); const a = cs.find((x) => x.lado === 0); const b = cs.find((x) => x.lado === 1 && x.par === a.par); assert.ok(mesmoParN(a, b)); assert.ok(!mesmoParN(a, cs.find((x) => x.lado === 0 && x.k !== a.k))); }
+});
+test('quiz por nível: resposta entre as opções, sem repetir, e os tipos novos aparecem', () => {
+  const tipos = new Set(); for (const n of [3, 4, 5, 6, 7]) for (let i = 0; i < 120; i++) { const q = quizN(n); tipos.add(q.tipo); assert.ok(q.opcoes.includes(q.ok), `${n} ${q.tipo}`); assert.equal(new Set(q.opcoes).size, q.opcoes.length); }
+  assert.ok(tipos.has('metade') && tipos.has('cabem') && tipos.has('pausa'));
+});
+test('caça-palavras: 6 listas, palavras cabem na grade', () => { for (let n = 1; n <= 7; n++) { const ps = palavrasDe(n); assert.equal(ps.length, 6); assert.ok(ps.every((w) => w.length <= grandeCaca(n) && /^[a-z]+$/.test(w))); } });
+test('árvore: cabem = valor da base ÷ valor da figura, e opções incluem a certa', () => { for (let n = 1; n <= 7; n++) { const t = arvore(n); assert.ok(t.linhas[0].pronto); assert.ok(t.linhas.some((l) => !l.pronto)); for (const l of t.linhas) { assert.equal(l.cabem, FIG_BY[t.base].beats / FIG_BY[l.id].beats); assert.ok(opcoesCabem(l.cabem).includes(l.cabem)); } } });
+test('tetris por nível: mais rápido e mais itens; lado certo tem o nome certo', () => {
+  assert.ok(tetrisCfg(7).queda < tetrisCfg(3).queda); assert.ok(tetrisCfg(6).itens > tetrisCfg(3).itens);
+  for (let n = 1; n <= 7; n++) { const T = itensTetrisN(n); assert.equal(T.itens.length, tetrisCfg(n).itens); for (const it of T.itens) { assert.notEqual(it.esq, it.dir); assert.equal(it[it.ok], it.fig); } }
+  assert.ok(['nome', 'valor', 'pausa'].includes(tetrisCfg(5).jeito));
+});

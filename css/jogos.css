@@ -1079,3 +1079,11 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix .fx-paul{position:absolute;bottom:34px;width:64px;transition:left .15s ease}.jg-figurix .fx-paul.esq{left:calc(25% - 32px)}.jg-figurix .fx-paul.dir{left:calc(75% - 32px)}
 .jg-figurix .fx-arv{grid-template-columns:56px 1fr}.jg-figurix .fx-arv .fx-opts,.jg-figurix .fx-arv .fx-num{grid-column:1/-1}.jg-figurix .fx-arv .fx-num{justify-self:end;margin-top:-30px}
 .jg-figurix .fx-opts{justify-content:flex-start;flex-wrap:wrap}
+/* Figurix: tetris em fundo amarelo claro (o Paul aparece melhor) e a nota solta, sem caixa */
+.jg-figurix .fx-campo{background:radial-gradient(circle at 50% 30%,#fff3c4,#ffe08a 70%);border-color:#142036}
+.jg-figurix .fx-cai{background:none;padding:0;border-radius:0;width:96px;filter:drop-shadow(0 2px 0 rgba(20,32,54,.18))}
+.jg-figurix .fx-nome{color:#142036;font-size:16px;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.55)}
+.jg-figurix .fx-ops.n4{grid-template-columns:repeat(2,minmax(0,1fr))}.jg-figurix .fx-ops.n5{grid-template-columns:repeat(3,minmax(0,1fr))}
+.jg-figurix .fx-duas{display:flex;align-items:center;justify-content:center;gap:10px;font:800 22px var(--body,inherit)}.jg-figurix .fx-duas .fx-fig{width:70px}
+.jg-figurix .fx-txt{font-size:13px;text-align:center;line-height:1.15}
+.jg-figurix .fx-mem{grid-template-columns:repeat(4,minmax(0,1fr))}

@@ -1,10 +1,11 @@
-// Figurix: abre no mapa de 12 fases; joga as fases pelas ideias da Bea (rápida, lenta, monte, ligar, memória, quiz, caça-palavras, notas, tetris).
+// Figurix: abre no mapa de 62 fases; joga as fases pelas ideias da Bea (rápida, lenta, monte, ligar, memória, quiz, caça-palavras, notas, tetris).
 import { serve, launch, sleep, check, done, alunoComCodigo } from './harness.mjs';
+import { PHASES } from '../../js/jogos/figurix-logic.js';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } }); await alunoComCodigo(ctx);
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node', { timeout: 15000 });
-check('abre no mapa com 12 fases', (await page.locator('.mp-node').count()) === 12);
+check('abre no mapa com 62 fases (12 da Bea + 50 novas)', (await page.locator('.mp-node').count()) === 62);
 const abre = async (pos) => { await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await sleep(400); };
 const mapa = async () => { await page.getByRole('button', { name: '‹ mapa' }).click(); await page.waitForSelector('.mp-node'); };
 // fase 1: qual é a mais rápida? (semínima, colcheia, semicolcheia -> semicolcheia)
@@ -68,5 +69,14 @@ await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitF
 await abre(9); await page.waitForSelector('.fx-campo');
 for (let i = 0; i < 8; i++) { await page.evaluate(() => { const t = window.__figurix.tetris; t.vai(t.item.ok); }); await page.waitForFunction((k) => !window.__figurix.tetris || window.__figurix.tetris.item !== k, null, null, { timeout: 9000 }).catch(() => {}); await sleep(6200); if (await page.locator('.dn-estrelas').count()) break; }
 check('tetris: acompanhou o lado certo e terminou a fase', /concluída/.test(await page.textContent('.jg-figurix')), (await page.textContent('.jg-figurix')).slice(0, 80));
+// as 50 fases novas: abre uma de cada tipo (nível 3 e nível 7) e confere que monta sem erro
+const SEL = { rapida: '.fx-op', lenta: '.fx-op', monte: '.fx-peca', ligar: '.fx-lig', memoria: '.fx-card', quiz: '.fx-op', caca: '.fx-c', notas: '.fx-arv', tetris: '.fx-campo' };
+const novas = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 33, 44, 53, 54, 55, 56, 57, 58, 59, 60, 61].map((pos) => [pos, SEL[PHASES[pos].tipo]]);
+for (const [pos, sel] of novas) {
+  await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
+  await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).scrollIntoView({ block: 'center' }), pos); await sleep(200);
+  await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await sleep(500);
+  const ok = (await page.locator(sel).count()) > 0; check(`fase ${pos + 1} (${PHASES[pos].tipo}, nível ${PHASES[pos].nivel}) abre`, ok);
+}
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
