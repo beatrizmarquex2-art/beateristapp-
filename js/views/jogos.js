@@ -36,15 +36,15 @@ const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'toque as figuras no tempo · microfone vale mais ★'],
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
-  ['rudimentos', 'Taiko', 'toca.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
+  ['rudimentos', 'Taiko', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
-  ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
-  ['bingo', 'bingo', 'bingo.webp', bingo],
-  ['velha', 'jogo da velha', 'velha.webp', velha],
-  ['quebra', 'quebra-cabeça', 'quebra-cabeca.webp', quebra],
-  ['cara', 'cara a cara', 'cara-a-cara.webp', cara],
-  ['stop', 'stop', 'stop.webp', stop],
-  ['memart', 'jogo da memória', 'memoria.svg', memart, 'The Beatles, bandas, solo e profissões'],
+  ['quizuno', 'Quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
+  ['bingo', 'Bingo', 'bingo.webp', bingo],
+  ['velha', 'Jogo da velha', 'velha.webp', velha],
+  ['quebra', 'Quebra-cabeça', 'quebra-cabeca.webp', quebra],
+  ['cara', 'Cara a cara', 'cara-a-cara.webp', cara],
+  ['stop', 'Stop', 'stop.webp', stop],
+  ['memart', 'Jogo da memória', 'memoria.svg', memart, 'The Beatles, bandas, solo e profissões'],
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
@@ -53,21 +53,21 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
-  ['ritmo e bateria', [
+  ['Ritmo e bateria', [
     link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha XP'),
     inner('toca'),
     inner('detetive'),
     inner('figurix'),
     inner('rudimentos'),
   ]],
-  ['leitura musical', [
-    link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
+  ['Leitura musical', [
+    link('#/paulta', 'PauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
   ]],
-  ['cartas e tabuleiro', [
+  ['Cartas e tabuleiro', [
     inner('memart'),
     ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
-  ['palavras e quiz', [
+  ['Palavras e quiz', [
     link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
     link('#/dicas/cruzadinha', LETRAS.cruzadinha[0], 'cruza.svg', LETRAS.cruzadinha[1]),
     link('#/dicas/quiz', LETRAS.quiz[0], 'quiz.svg', LETRAS.quiz[1]),
