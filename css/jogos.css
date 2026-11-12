@@ -960,3 +960,6 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* acerto no jogo da velha: verde com ✓ (o vermelho parecia erro) */
 .jg-msg.ok,.jg-game .jg-msg.ok{color:#1c7a3c}.jg-dark .jg-msg.ok{color:#8be39b}
 .st-fixas{margin:4px 0 10px;padding-left:18px;font-size:14px;display:grid;gap:3px}
+
+/* botão UNO pequeno, na coluna da cor, embaixo do som */
+.cx-uno.sm{min-width:0;min-height:30px;padding:0 12px;font-size:13px;border-width:2px}.cx-uno.sm::after{inset:-4px;border-width:2px}
