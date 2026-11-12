@@ -27,6 +27,7 @@ export function vitrine() {
   return h('div', { class: 'lj' },
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
+    h('p', { class: 'lj-apostila' }, 'Apostila Didática Beaterista', h('small', {}, 'para evolução musical')),
     h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
     h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card', 'data-id': p.id },
       h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),

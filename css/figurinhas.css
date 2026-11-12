@@ -414,3 +414,5 @@
 /* explorar: chips compactos, teoria · dicas · 5 erros · jogos ensinam numa linha só */
 .hj-chips { gap: 6px; } .hj-chip { padding: 7px 10px; font-size: 12.5px; white-space: nowrap; }
 .hj-chips { gap: 4px; } .hj-chip { padding: 6px 8px; font-size: 11.5px; }
+
+.lj-apostila { margin: -2px 0 8px; text-align: center; font: 400 24px/1.05 Anton, var(--display, sans-serif); color: #d3122f; letter-spacing: .4px; text-transform: uppercase; } .lj-apostila small { display: block; font: 400 21px 'Gochi Hand', var(--hand); color: #14284b; text-transform: none; letter-spacing: 0; }
