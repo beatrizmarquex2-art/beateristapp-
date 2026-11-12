@@ -11,6 +11,7 @@ import { printPack } from './bingo-print.js';
 import { silence } from '../audio.js';
 import { cardBg } from '../views/kids.js';
 import { ganhou } from './estrelas-jogo.js';
+import { bq } from './bonequinhos.js';
 import { linha, chips, passo } from './opcoes.js';
 
 // o CSS novo do bingo carrega sozinho (arquivo css/bingo-v3.css), assim não depende de outro lugar ligar
@@ -135,7 +136,8 @@ export function mount(host) {
       const icon = h('span', { class: 'jo-ticon', 'aria-hidden': 'true' }); if (id === 'artistas') icon.innerHTML = '<img src="assets/figurinhas/fotos/F001.jpeg" alt="" draggable="false">'; else icon.append(imgEl(id, ico, 'm'));
       btn.append(icon, h('b', {}, nome)); return btn; };
     const set = (k, v, extra) => { P[k] = v; if (extra) extra(v); savePrefs(); menu(); };
-    const modo = (m) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.mode === m[0]), class: `bv-modo${P.mode === m[0] ? ' on' : ''}`, onclick: () => set('mode', m[0]) }, h('b', {}, m[1]), h('small', {}, m[2]));
+    const ICM = { solo: 'paul', online: 'celular', mesmo: 'dois', sala: 'sala' };
+    const modo = (m) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(P.mode === m[0]), 'aria-label': `${m[1]}: ${m[2]}`, title: `${m[1]}: ${m[2]}`, class: `bv-modo bv-ic${P.mode === m[0] ? ' on' : ''}`, onclick: () => set('mode', m[0]) }, bq(ICM[m[0]]));
     const mais = h('details', { class: 'bv-mais', open: maisAberto ? '' : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções'),
       h('div', { class: 'jo-card' },
         P.mode !== 'sala' ? linha('marcar', chips([['auto', 'o jogo marca'], ['eu', 'eu marco']], P.marcar, (v) => set('marcar', v, (x) => { P.perfil = x === 'auto' ? 'kids' : 'classico'; }), 'Quem marca')) : null,

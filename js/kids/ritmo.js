@@ -3,7 +3,7 @@
 import { h } from '../util.js';
 import * as N from '../notation.js';
 import { audio, click } from '../audio.js';
-import { voz, getSom, setSom, SONS, VELOCIDADES, BPM_MAX, velocidadeDe } from '../toca-som.js';
+import { voz, VELOCIDADES, ICONE_VEL, BPM_MAX, velocidadeDe } from '../toca-som.js';
 import { layoutRhythm } from '../reading.js';
 import { FOODS, FOOD_GROUPS, foodOf, randomFoods, sameRhythm, cellOf } from '../kids-logic.js';
 import { svgEl } from './art.js';
@@ -41,8 +41,7 @@ export function mountRitmo(box, opts) {
     put(box,
       h('div', { class: 'row kd-modes' }, ...[['criar', '🎨 criar'], ['adivinha', '🕵️ adivinha']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { Play.reset(); UI.reset(); cur = -1; mode = k; slots = []; secret = k === 'adivinha' ? randomFoods() : null; fb.textContent = ''; draw(); } }, t)),
         h('span', { class: 'kd-bpm' }, h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'menos 5 BPM', onclick: () => { bpm = Math.max(40, bpm - 5); draw(); } }, '−'), h('output', { class: 'kd-bpmv', 'aria-label': `${bpm} BPM` }, `${bpm} BPM`), h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'mais 5 BPM', onclick: () => { bpm = Math.min(BPM_MAX, bpm + 5); draw(); } }, '+'))),
-      h('div', { class: 'row kd-modes kd-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, h('span', { class: 'kd-lab' }, 'velocidade'), ...VELOCIDADES.map(([k, v]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(velocidadeDe(bpm) === k), class: `kd-chip${velocidadeDe(bpm) === k ? ' on' : ''}`, onclick: () => { bpm = v; draw(); } }, k))),
-      h('div', { class: 'row kd-modes kd-som', role: 'radiogroup', 'aria-label': 'Som do toque' }, h('span', { class: 'kd-lab' }, 'som'), ...SONS.map(([k, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(getSom() === k), class: `kd-chip${getSom() === k ? ' on' : ''}`, onclick: () => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(); } }, t))),
+      h('div', { class: 'row kd-modes kd-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k, v]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(velocidadeDe(bpm) === k), 'aria-label': k, title: k, class: `kd-chip kd-vic${velocidadeDe(bpm) === k ? ' on' : ''}`, onclick: () => { bpm = v; draw(); } }, ICONE_VEL[k]))),
       mode === 'adivinha' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBar(secret) }, '▶ ouvir o ritmo secreto') : h('p', { class: 'kd-q' }, 'monta 4 tempos e toca!'),
       h('div', { class: 'kd-slots' }, ...slotEls),
       ...palette,

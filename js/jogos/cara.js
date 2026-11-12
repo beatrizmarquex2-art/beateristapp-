@@ -17,7 +17,7 @@ export function mount(host, opts = {}) {
   let inner = null;
   let morto = false;
   const abrir = async () => {
-    const musical = MUSICAL_LIBERADO && !opts.mission && getGame(ID).tema === 'musical';
+    const musical = MUSICAL_LIBERADO && !opts.mission; // só artistas: a versão de instrumentos saiu do jogo livre
     const troca = (v) => { setGame(ID, { tema: v }); inner && inner.destroy && inner.destroy(); abrir(); };
     if (musical) { const { mountMusical } = await import('./cara-musical/tela.js'); if (morto) return; inner = mountMusical(host, { onTema: troca }); } // importado só quando usa (some do build dos alunos)
     else inner = mountInstrumentos(host, opts, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : troca });

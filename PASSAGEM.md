@@ -424,3 +424,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Uno Musical:** o nome da figura aparece **sempre** em todas as cartas (saíram as opções "nome da figura nas cartas" e "ajuda dos nomes"); o "contra quem?" virou **ícones** (robô 1 a 3, mesmo celular, 2 celulares por código); **no mesmo celular agora são 2 a 4 pessoas** (`newGame` em `cartas-logic.js`, `mode:'local'`).
 - **Memória:** o ícone de "pessoas no mesmo celular" tem **2 a 4 jogadores** (‹ N jogadores ›), placar e vez em rodízio. Teste `tests/e2e/mais-pessoas.mjs`.
 - Falta: os outros jogos (velha, bingo, cara a cara, stop, quebra-cabeça…) com o mesmo "só símbolos" nos modos.
+
+## Só caixa, velocidade em ícones, Cara a Cara só artistas, bingo em ícones (nov/2026)
+- **Toca Aqui:** o som do toque é **só a caixa** (`SONS` em `js/toca-som.js`; a escolha de som sumiu de todas as telas). No "com imagens" (Monte seu ritmo) a **velocidade virou 4 ícones** 🐢 🚶 🐇 🚀 (`ICONE_VEL`).
+- **Cara a Cara:** **só artistas** (cara a cara musical); a versão de instrumentos saiu do jogo livre (`js/jogos/cara.js`) e o seletor de tema sumiu. O "virar" manual funciona no clássico do musical (era a versão de instrumentos que não pegava).
+- **Bingo:** "como quer jogar?" virou **4 ícones pequenos** (robô, 2 celulares, mesmo aparelho, sala de aula) com dica no toque.

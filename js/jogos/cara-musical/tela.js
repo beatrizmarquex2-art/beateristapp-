@@ -67,7 +67,7 @@ export function mountMusical(host, { onTema } = {}) {
     st = null;
     const tam = tamanhoPadrao(); const kids = cfg.modo === 'kids';
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), h('p', { class: 'jg-lab' }, 'tema'), temaRow(),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
       h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
       h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
       h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),

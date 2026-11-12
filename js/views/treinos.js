@@ -65,7 +65,6 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
     h('p', { class: 'muted tr-lvname' }, LEVEL_NAMES[c.lv]),
     line('velocidade', chips(VELOCIDADES.map(([k, v]) => [k, k]), velocidadeDe(c.bpm), (k) => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)), 'Velocidade')),
     line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
-    line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque')),
     bars ? line('compassos', chips(barList.map((v) => [v, String(v)]), Math.min(c.bars, barList[barList.length - 1]), (v) => save({ bars: v }).then(() => draw(true)), 'Compassos por fase')) : null,
     input ? line('como toca', chips([['tela', 'na tela'], ['mic', 'microfone']], c.input === 'mic' ? 'mic' : 'tela', (v) => save({ input: v }).then(() => draw(false)), 'Como você toca')) : null);
 }
@@ -168,9 +167,8 @@ export function leitura(host) {
       h('p', { class: 'muted tr-lvname' }, livre ? `${TIERS[c.lv - 1].name} · ${TIERS[c.lv - 1].about}` : `${PATH[step].tier === 'ini' ? 'iniciante' : PATH[step].tier === 'int' ? 'intermediário' : 'avançado'} · exercício ${PATH[step].n} de ${PATH[step].of}${(bestOf(c)[step] || 0) ? ` · melhor: ${bestOf(c)[step]}%` : ''}`),
       h('div', { class: 'tr-como', role: 'radiogroup', 'aria-label': 'Como você toca' }, ...[['tela', '👆', 'na tela', 'toque no botão grande'], ['mic', '🎙', 'microfone', 'toque no seu pad ou bateria']].map(([k, ic, t, sub]) => h('button', { type: 'button', role: 'radio', class: `tr-card${(c.input === 'mic' ? 'mic' : 'tela') === k ? ' on' : ''}`, 'aria-checked': String((c.input === 'mic' ? 'mic' : 'tela') === k), onclick: () => { if (k === 'mic') { micBlocked = false; micErro = null; } save({ input: k }).then(() => draw(false)); } }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, ic), h('b', {}, t), h('small', {}, sub)))),
       h('div', { class: 'tr-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k]) => [k, { devagar: '🐢', normal: '🚶', 'rápido': '🐇', turbo: '🚀' }[k] || '🎵']).map(([k, ic]) => h('button', { type: 'button', role: 'radio', class: `tr-card small${velocidadeDe(c.bpm) === k ? ' on' : ''}`, 'aria-checked': String(velocidadeDe(c.bpm) === k), onclick: () => save({ bpm: VELOCIDADES.find(([x]) => x === k)[1] }).then(() => draw(false)) }, h('span', { class: 'tr-ic', 'aria-hidden': 'true' }, ic), h('b', {}, k)))),
-      h('details', { class: 'tr-mais', open: maisAberto ? true : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções (andamento e som do toque)'),
-        line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false)))),
-        line('som do toque', chips(SONS, getSom(), (k) => { setSom(k); voz(audio().currentTime + 0.02, 0.9, k); draw(false); }, 'Som do toque'))));
+      h('details', { class: 'tr-mais', open: maisAberto ? true : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções (andamento)'),
+        line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false))))));
     body.replaceChildren(...[ctl, score(chunk(beats), marks),
       micBlocked && c.input === 'mic' ? h('div', { class: 'tr-status bad tr-micerro', role: 'alert' }, h('b', {}, (micMessage(micErro)[0] || 'microfone indisponível agora') + ' vou usar a tela.'), h('p', { class: 'muted' }, `${micMessage(micErro)[1]}${micErro && micErro.name ? ` (${micErro.name})` : ''}`),
         h('button', { class: 'btn small', type: 'button', onclick: () => { micBlocked = false; micErro = null; draw(false); } }, '🎙 tentar o microfone de novo')) : null,

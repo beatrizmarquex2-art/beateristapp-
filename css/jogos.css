@@ -952,3 +952,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-game > .jg-top > .jg-link{grid-area:voltar}.jg-game > .jg-top > .jg-pausa-btn{grid-area:pausa}.jg-game > .jg-top > .btn:not(.jg-pausa-btn){grid-area:nova}
 .jg-game > .jg-top > .jg-snd{position:absolute;right:20px;top:14px;z-index:5}
 .jg-game > .jg-top{position:relative}.jg-game > .jg-top > .jg-title{margin-right:50px}
+/* só ícones: velocidade do Monte seu ritmo e modos do bingo */
+.kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
+.bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
+.bv-modo.bv-ic .ic-bq{width:28px;height:28px}

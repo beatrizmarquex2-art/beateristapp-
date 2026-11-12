@@ -3,7 +3,8 @@ import { snare, kick, tom, hihat } from './audio.js';
 
 export const BPM_MAX = 200;
 export const VELOCIDADES = [['devagar', 60], ['normal', 90], ['rápido', 130], ['turbo', 170]];
-export const SONS = [['caixa', 'caixa'], ['tambor', 'tambor'], ['bumbo', 'bumbo'], ['chimbal', 'chimbal']];
+export const SONS = [['caixa', 'caixa']]; // só o som de caixa (pedido da Bea); a escolha de som sumiu das telas
+export const ICONE_VEL = { devagar: '🐢', normal: '🚶', 'rápido': '🐇', turbo: '🚀' };
 const KEY = 'beaterista-toca-som';
 export const getSom = () => { try { const v = localStorage.getItem(KEY); return SONS.some(([k]) => k === v) ? v : 'caixa'; } catch { return 'caixa'; } };
 export const setSom = (k) => { try { localStorage.setItem(KEY, k); } catch { /* sem armazenamento */ } };
