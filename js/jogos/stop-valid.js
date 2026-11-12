@@ -7,15 +7,15 @@ import { LINES as EXTRA } from './stop-bank-extra.js';
 export const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'J', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V'];
 /** As 12 categorias oficiais. `grupo` serve pro sorteio de categorias variar entre instrumentos, teoria e cultura. */
 export const CATS = [
-  { id: 'instrumento', label: 'instrumento musical e derivados (pad, tubos sonoros, peças da bateria, sinos melódicos, percussão)', grupo: 'instrumentos' },
+  { id: 'instrumento', label: 'instrumento musical e derivados', grupo: 'instrumentos' },
   { id: 'percussao', label: 'peças da bateria e instrumentos de percussão', grupo: 'instrumentos' },
-  { id: 'equipamento', label: 'acessórios e equipamentos (baqueta, cabo, palheta, afinador, pedal, mesa de som, caixa de som…)', grupo: 'instrumentos' },
+  { id: 'equipamento', label: 'acessórios e equipamentos', grupo: 'instrumentos' },
   { id: 'estilo', label: 'estilo musical', grupo: 'teoria' },
   { id: 'profissao', label: 'profissão da música', grupo: 'teoria' },
   { id: 'tecnica', label: 'técnicas musicais', grupo: 'teoria' },
-  { id: 'cantor', label: 'cantor ou cantora (nacional ou internacional, solo, de dupla ou de banda: só um)', grupo: 'cultura' },
-  { id: 'banda', label: 'banda ou grupo (nacional ou internacional: só um)', grupo: 'cultura' },
-  { id: 'musica', label: 'nome de música (qualquer uma)', grupo: 'cultura' },
+  { id: 'cantor', label: 'cantor ou cantora', grupo: 'cultura' },
+  { id: 'banda', label: 'banda ou grupo', grupo: 'cultura' },
+  { id: 'musica', label: 'nome de música', grupo: 'cultura' },
   { id: 'album', label: 'álbum musical', grupo: 'cultura' },
   { id: 'brasileiro', label: 'artista brasileiro', grupo: 'cultura' },
   { id: 'marca', label: 'marca de instrumentos musicais', grupo: 'instrumentos' },

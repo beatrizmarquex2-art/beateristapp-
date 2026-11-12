@@ -27,8 +27,8 @@ export function mount(host, opts) {
   const prefs = {
     mode: ['solo', 'dupla', 'sala', 'online'].includes(saved.mode) ? saved.mode : 'solo',
     cats: FIXAS.slice(), // categorias sempre as mesmas (sem escolher)
-    seconds: Number.isInteger(saved.seconds) && saved.seconds >= 10 && saved.seconds <= 600 ? saved.seconds : 60,
-    rounds: Number.isInteger(saved.rounds) && saved.rounds >= 1 && saved.rounds <= 20 ? saved.rounds : 3,
+    seconds: 90, // sempre 90 segundos (pedido da Bea)
+    rounds: 3, // sempre 3 rodadas
     names: Array.isArray(saved.names) && saved.names.length >= 2 ? saved.names.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['jogador 1', 'jogador 2'],
     sim: saved.sim !== false, // 2 celulares: 'ao mesmo tempo' (padrão) ou 'um de cada vez'
     salaNames: Array.isArray(saved.salaNames) && saved.salaNames.length >= 2 ? saved.salaNames.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['aluno 1', 'aluno 2', 'aluno 3'],
@@ -112,15 +112,12 @@ export function mount(host, opts) {
             : 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'))),
       prefs.mode === 'online' ? h('div', { class: 'jo-card' }, linha('como', chips([['sim', 'ao mesmo tempo'], ['turnos', 'um de cada vez']], prefs.sim ? 'sim' : 'turnos', (v) => { FX.play('tap'); save({ sim: v === 'sim' }); setup(); }, 'como jogar em 2 celulares'))) : null,
       namesBox(),
-      h('p', { class: 'jg-lab' }, 'categorias (sempre as mesmas)'),
-      h('ul', { class: 'st-fixas' }, ...FIXAS.map((id) => h('li', {}, S.CAT[id].label))),
-      h('p', { class: `st-warn${okCats && eligible.length ? ' ok' : ''}`, role: 'status', 'aria-live': 'polite' }, !okCats ? `escolha de ${S.MIN_CATS} a ${S.MAX_CATS} categorias pra começar` : eligible.length ? `${eligible.length} de 16 letras servem pra essa escolha` : 'nenhuma letra serve pra todas essas categorias juntas. troque alguma categoria.'),
-      h('div', { class: 'jo-card' },
-        linha('tempo', seg(secs.map((v) => [v, secsLabel(v)]), customSecs ? 0 : prefs.seconds, (v) => { save({ seconds: v === 0 ? 45 : v }); setup(); }, 'tempo por jogador')),
-        customSecs ? h('label', { class: 'jg-field' }, h('span', {}, 'segundos (10 a 600)'), h('input', { type: 'number', inputmode: 'numeric', min: 10, max: 600, value: prefs.seconds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ seconds: Math.min(600, Math.max(10, n || 60)) }); setup(); } })) : null,
-        simOn ? null : linha('rodadas', seg(roundsList.map((v) => [v, v === 0 ? 'outro' : String(v)]), customRounds ? 0 : prefs.rounds, (v) => { save({ rounds: v === 0 ? 4 : v }); setup(); }, 'rodadas')),
-        customRounds && !simOn ? h('label', { class: 'jg-field' }, h('span', {}, 'rodadas (1 a 20)'), h('input', { type: 'number', inputmode: 'numeric', min: 1, max: 20, value: prefs.rounds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ rounds: Math.min(20, Math.max(1, n || 3)) }); setup(); } })) : null,
-        linha('conferência', ajuda('Como o jogo confere', 'sem diferença de maiúscula, acento ou espaço. “the beatles” vale B (o artigo não conta). se o jogo não conhece a resposta, ela fica amarela, “aguardando revisão”: você decide, e o que for aprovado entra no banco deste aparelho.'))),
+      h('details', { class: 'jg-rules' }, h('summary', {}, 'ver regras'), h('ul', {},
+        h('li', {}, 'uma letra é sorteada: escreva uma palavra de cada categoria que comece com ela.'),
+        h('li', {}, '10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'),
+        h('li', {}, 'não faz diferença maiúscula, acento ou espaço, e o artigo não conta (“the beatles” vale B).'),
+        h('li', {}, 'se o jogo não conhece a resposta, ela fica “aguardando revisão”: você decide.'),
+        h('li', {}, 'são 90 segundos por jogador e 3 rodadas.'))),
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => (prefs.sim ? newSim() : { ...newMatch('dupla'), online: true }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => resumeMatch(resume) }, 'continuar partida') : null,
           h('button', { class: `btn ${resume ? '' : 'primary'}`, type: 'button', disabled: !okCats || !eligible.length, onclick: start }, resume ? 'nova partida' : 'iniciar')),
