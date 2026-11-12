@@ -7,6 +7,7 @@ import { audio, out, isMuted } from '../audio.js';
 export const TEMAS = {
   toca: { root: 60, scale: [0, 2, 4, 7, 9], bpm: 100, wave: 'triangle', seed: 11 },
   detetive: { root: 62, scale: [0, 2, 5, 7, 9], bpm: 92, wave: 'sine', seed: 23 },
+  rudimentos: { root: 57, scale: [0, 3, 5, 7, 10], bpm: 100, wave: 'triangle', seed: 131 },
   figurix: { root: 57, scale: [0, 3, 5, 7, 10], bpm: 108, wave: 'triangle', seed: 37 },
   cartas: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 116, wave: 'square', seed: 41 },
   quizuno: { root: 65, scale: [0, 2, 4, 5, 7, 9], bpm: 104, wave: 'triangle', seed: 53 },

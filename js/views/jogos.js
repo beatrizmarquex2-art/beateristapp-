@@ -18,6 +18,7 @@ import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import * as detetive from '../jogos/detetive-note.js';
 import * as figurix from '../jogos/figurix.js';
+import * as rudimentos from '../jogos/rudimentos.js';
 import * as memart from '../jogos/memoria-artistas.js';
 import * as quizuno from '../jogos/quizuno.js';
 import { relatorio } from './jogos-relatorio.js';
@@ -34,6 +35,7 @@ const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'toque as figuras no tempo · microfone vale mais ★'],
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
+  ['rudimentos', 'Rudimentos', 'toca.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
@@ -45,7 +47,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['toca', 'detetive', 'figurix', 'memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -55,6 +57,7 @@ const SECTIONS = [
     inner('toca'),
     inner('detetive'),
     inner('figurix'),
+    inner('rudimentos'),
   ]],
   ['leitura musical', [
     link('#/paulta', 'pauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),
