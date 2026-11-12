@@ -124,7 +124,62 @@ export const PERC = [
   ['bg1', 'bongô agudo', (t, v) => skin(t, 560, 460, 0.18, v * 0.9, 0.3)],
   ['bg2', 'bongô grave', (t, v) => skin(t, 400, 330, 0.22, v * 0.9, 0.22)],
 ];
-export function percHit(id, vel = 0.9) { C = init(); if (C.state !== 'running') { C.resume().then(() => percHit(id, vel)).catch(() => {}); return; } const p = PERC.find((x) => x[0] === id); if (p) p[2](C.currentTime, vel * (0.94 + Math.random() * 0.12)); }
+
+/* 3 jeitos de soar de cada peça (a Bea escolhe): 0 = o de sempre, 1 = seco e brilhante, 2 = cheio e grave (com eco). */
+const dryBell = (t, v, fs, dur, gain, wet) => { const g = gn(); fs.forEach(([f, a]) => { const o = C.createOscillator(); const og = gn(a); o.type = 'sine'; o.frequency.value = f; o.connect(og).connect(g); o.start(t); o.stop(t + dur + 0.1); }); env(g, t, gain * v, 0.001, dur); route(g, wet); };
+const jingles = (t, v, n, hp, gap, len, lvl, wet) => { for (let k = 0; k < n; k++) { const nn = noiseSrc(t + k * gap, len + 0.02); const g = gn(); nn.connect(bq('highpass', hp)).connect(g); env(g, t + k * gap, lvl * v, 0.001, len); route(g, wet); } };
+const bursts = (t, v, list, hp, wet) => list.forEach(([d, a, len, att]) => { const n = noiseSrc(t + d, len + 0.03); const g = gn(); n.connect(bq('highpass', hp)).connect(g); env(g, t + d, a * v, att, len); route(g, wet); });
+export const PERC_VAR = {
+  pd: [PERC[0][2],
+    (t, v) => { skin(t, 215, 175, 0.12, v * 0.7, 0.3); jingles(t, v, 7, 8200, 0.005, 0.045, 0.32, 0.05); },
+    (t, v) => { skin(t, 160, 118, 0.32, v * 0.95, 0.15); jingles(t + 0.003, v, 4, 5600, 0.011, 0.16, 0.3, 0.3); }],
+  tb: [PERC[1][2],
+    (t, v) => { skin(t, 720, 560, 0.17, v * 0.85, 0.35); skin(t + 0.008, 1100, 860, 0.08, v * 0.25, 0.1); },
+    (t, v) => { skin(t, 1350, 1050, 0.06, v * 0.8, 0.7); }],
+  ag: [PERC[2][2],
+    (t, v) => { dryBell(t, v, [[960, 1], [1950, 0.35], [2800, 0.15]], 0.3, 0.3, 0.1); dryBell(t + 0.1, v * 0.9, [[1320, 1], [2640, 0.3]], 0.28, 0.28, 0.1); },
+    (t, v) => { dryBell(t, v, [[560, 1], [1180, 0.45], [1700, 0.25]], 0.9, 0.3, 0.35); dryBell(t + 0.13, v * 0.9, [[790, 1], [1650, 0.4], [2400, 0.2]], 0.8, 0.28, 0.35); }],
+  rr: [PERC[3][2],
+    (t, v) => { for (let k = 0; k < 12; k++) { const d = k * 0.011; const n = noiseSrc(t + d, 0.03); const g = gn(); n.connect(bq('bandpass', 6400 - k * 180, 2.6)).connect(g); env(g, t + d, (0.26 - k * 0.01) * v, 0.001, 0.01); route(g, 0.04); } },
+    (t, v) => { for (let k = 0; k < 5; k++) { const d = k * 0.028; const n = noiseSrc(t + d, 0.05); const g = gn(); n.connect(bq('bandpass', 3200 - k * 260, 1.6)).connect(g); env(g, t + d, (0.3 - k * 0.02) * v, 0.003, 0.028); route(g, 0.25); } }],
+  tr: [PERC[4][2],
+    (t, v) => dryBell(t, v, [[3520, 1], [9500, 0.45]], 0.5, 0.2, 0.05),
+    (t, v) => dryBell(t, v, [[3520, 1], [9500, 0.5], [6100, 0.4], [2860, 0.25], [4200, 0.2]], 3.2, 0.15, 0.4)],
+  gz: [PERC[5][2],
+    (t, v) => bursts(t, v, [[0, 0.3, 0.05, 0.004], [0.04, 0.2, 0.05, 0.004]], 7600, 0.04),
+    (t, v) => bursts(t, v, [[0, 0.22, 0.09, 0.02], [0.05, 0.26, 0.1, 0.02], [0.1, 0.2, 0.11, 0.02]], 5200, 0.25)],
+  cg1: [PERC[6][2],
+    (t, v) => { skin(t, 420, 360, 0.16, v * 0.85, 0.7); },
+    (t, v) => { skin(t, 330, 270, 0.6, v, 0.18); const o = C.createOscillator(); const g = gn(); o.frequency.value = 660; env(g, t, 0.18 * v, 0.002, 0.3); o.connect(g); route(g, 0.3); o.start(t); o.stop(t + 0.4); }],
+  cg2: [PERC[7][2],
+    (t, v) => { skin(t, 270, 225, 0.2, v * 0.85, 0.65); },
+    (t, v) => { skin(t, 205, 160, 0.8, v, 0.16); const o = C.createOscillator(); const g = gn(); o.frequency.value = 410; env(g, t, 0.2 * v, 0.002, 0.4); o.connect(g); route(g, 0.3); o.start(t); o.stop(t + 0.5); }],
+  bg1: [PERC[9][2],
+    (t, v) => { skin(t, 680, 560, 0.1, v * 0.85, 0.6); },
+    (t, v) => { skin(t, 520, 430, 0.35, v, 0.2); }],
+  bg2: [PERC[10][2],
+    (t, v) => { skin(t, 480, 400, 0.12, v * 0.85, 0.5); },
+    (t, v) => { skin(t, 360, 300, 0.4, v, 0.18); }],
+  cx: [PERC[8][2],
+    (t, v) => snare(t, v * 0.95, true),
+    (t, v) => { const n = noiseSrc(t, 0.06); const g = gn(); n.connect(bq('bandpass', 2300, 1.5)).connect(g); env(g, t, 0.7 * v, 0.001, 0.045); route(g); const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(560, t + 0.04); env(og, t, 0.6 * v, 0.001, 0.06); o.connect(og); route(og); o.start(t); o.stop(t + 0.1); }],
+};
+let PERC_ESCOLHA = {}; try { PERC_ESCOLHA = JSON.parse(localStorage.getItem('bt-perc-var') || '{}') || {}; } catch { PERC_ESCOLHA = {}; }
+/** Gera uma amostra da peça (id, variante 0-2) numa fila de toques. Só pra conferir/gravar o som: devolve os canais L e R. */
+export async function renderPercSample(id, variante, hits, secs = 4) {
+  const sr = 44100; const oc = new OfflineAudioContext(2, Math.ceil(secs * sr), sr);
+  const keep = { C, bus, rev, nbuf, ctxOf, comp, outOf };
+  try {
+    C = oc; comp = oc.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.003; comp.release.value = 0.2; comp.connect(oc.destination);
+    bus = oc.createGain(); bus.connect(comp);
+    const n = Math.floor(sr * 1.3); const ir = oc.createBuffer(2, n, sr); for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 3.2; }
+    rev = oc.createConvolver(); rev.buffer = ir; const rg = oc.createGain(); rg.gain.value = 0.5; rev.connect(rg).connect(comp);
+    nbuf = oc.createBuffer(1, sr * 2, sr); const nd = nbuf.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    hits.forEach(([t, v, sub]) => { const key = sub || id; const fn = (PERC_VAR[key] || PERC_VAR[id])[variante]; fn(t + 0.05, v); });
+    const b = await oc.startRendering(); return { L: Array.from(b.getChannelData(0)), R: Array.from(b.getChannelData(1)) };
+  } finally { C = keep.C; bus = keep.bus; rev = keep.rev; nbuf = keep.nbuf; ctxOf = keep.ctxOf; comp = keep.comp; outOf = keep.outOf; }
+}
+export function percHit(id, vel = 0.9) { C = init(); if (C.state !== 'running') { C.resume().then(() => percHit(id, vel)).catch(() => {}); return; } const vr = PERC_VAR[id]; const k = (PERC_ESCOLHA[id.replace(/\d$/, '')] | 0) % 3; if (vr) vr[k](C.currentTime, vel * (0.94 + Math.random() * 0.12)); else { const p = PERC.find((x) => x[0] === id); if (p) p[2](C.currentTime, vel * (0.94 + Math.random() * 0.12)); } }
 /** Chamado ao tocar numa aba de instrumento: esquenta o áudio dentro do toque (o iPhone só destrava assim) e religa a saída do instrumento. */
 export function wake() { try { C = init(); } catch { /* sem áudio */ } }
 
