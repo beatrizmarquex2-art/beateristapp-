@@ -208,9 +208,9 @@ const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) loc
 
 /** Aba Estudos = "Hoje": o Paul conta quantas coisinhas faltam, a meta do dia vira um anel e as 3 missões (dica, aula, curiosidade) ficam em cartões grandes; o resto dos estudos fica em "explorar". */
 const EXPLORAR = [
-  ['#/estudos/aulas', '📚', 'aulas do Paul', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', null], ['#/estudos/acordes/violao', '🎸', 'acordes', null],
-  ['#/dicionario', '📖', 'dicionário musical', 'dicionario'], ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades'], ['#/estudos/basica/figuras', '🎼', 'teoria', null],
-  ['#/estudos/dicas', '🧠', 'dicas do método', 'dicas'], ['#/erros', '⚠️', '5 erros', 'erros'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam']];
+  ['#/estudos/aulas', '📚', 'aulas do Paul', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', null], ['#/estudos/acordes/violao', '🎸', 'acordes', null], ['#/dicionario', '📖', 'dicionário musical', 'dicionario'],
+  ['#/estudos/basica/figuras', '🎼', 'teoria', null], ['#/estudos/dicas', '🧠', 'dicas', 'dicas'], ['#/erros', '⚠️', '5 erros', 'erros'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam'],
+  ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades']];
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 function estudosView(view) {
   const v = vistos();
