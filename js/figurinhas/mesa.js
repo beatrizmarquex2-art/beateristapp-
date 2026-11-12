@@ -4,8 +4,8 @@ import * as P from '../kids/progress.js';
 import * as AC from '../acesso.js';
 import { toast } from '../ui.js';
 
-import { LIMITE_DIA, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra, pagarChave } from './mesa-logic.js';
-export { pagarChave, LIMITE_DIA, contar, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra };
+import { LIMITE_DIA, APRENDER, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra, pagarChave } from './mesa-logic.js';
+export { pagarChave, LIMITE_DIA, APRENDER, contar, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra };
 const livre = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 export const totalMesa = (pid) => (P.progOf(pid).mesa || {}).total || 0;
 /** Entrega as estrelas e avisa quantas faltam pra roleta (a cada 15 ★ de qualquer jogo libera 1 giro). */

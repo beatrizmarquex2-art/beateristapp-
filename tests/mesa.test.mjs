@@ -9,10 +9,10 @@ test('estrelas dos jogos de mesa: 1 por vitória contra o Paul, limite de 30 por
   const amanha = contar(o.mesa, 'velha', '2026-11-07'); assert.equal(amanha.ganhou, 1, 'no dia seguinte volta a contar');
 });
 
-test('estrelas por desempenho nos jogos que ensinam: até 3 por partida, sempre dentro do limite do dia', () => {
+test('estrelas por desempenho nos jogos que ensinam: até 3 por partida (sem limite por dia: o limite de 30 é só dos jogos de mesa)', () => {
   let m = null; let tot = 0;
   for (let i = 0; i < 20; i++) { const r = contar(m, 'quiz', '2026-11-06', 3); m = r.mesa; tot += r.ganhou; }
-  assert.equal(tot, 30, '20 partidas de 3 estrelas = 60, mas o limite é 30 por dia');
+  assert.equal(tot, 60, '20 partidas de 3 estrelas = 60, sem limite por dia nos jogos de aprender');
   assert.equal(starsPct(10, 10), 3); assert.equal(starsPct(7, 10), 2); assert.equal(starsPct(4, 10), 1); assert.equal(starsPct(2, 10), 0);
   assert.equal(starsErros(0), 3); assert.equal(starsErros(2), 2); assert.equal(starsErros(5), 1);
   assert.ok(ENSINAM.includes('cartas') && ENSINAM.includes('quiz') && ENSINAM.includes('caca') && ENSINAM.includes('cruzadinha'));
@@ -38,4 +38,11 @@ test('anti-farm: cada chave (música/nível) paga até 3 ★ na vida, só a dife
   r = pagarChave(r.pago, 'toca|b|90', 3); assert.equal(r.novas, 3, 'outra música rende');
   let q = pagarChave({}, 'teoria|x', 1); assert.equal(q.novas, 1); q = pagarChave(q.pago, 'teoria|x', 2); assert.equal(q.novas, 1, 'melhorou: paga só a diferença'); assert.equal(pagarChave(q.pago, 'teoria|x', 2).novas, 0);
   assert.equal(pagarChave({}, 'k', 9).novas, 3, 'nunca passa de 3');
+});
+test('jogos de aprender não têm o limite de 30 por dia; os de mesa têm', async () => {
+  const { contar: c, APRENDER } = await import('../js/figurinhas/mesa-logic.js');
+  let m; let ganhas = 0; for (let i = 0; i < 50; i++) { const r = c(m, 'quiz', '2026-11-13', 1); m = r.mesa; ganhas += r.ganhou; } assert.equal(ganhas, 50, 'quiz: 50 estrelas no mesmo dia');
+  let v; let g2 = 0; for (let i = 0; i < 50; i++) { const r = c(v, 'velha', '2026-11-13', 1); v = r.mesa; g2 += r.ganhou; } assert.equal(g2, 30, 'jogo da velha: trava em 30');
+  assert.ok(APRENDER.includes('rudimentos') && APRENDER.includes('toca') && !APRENDER.includes('velha') && !APRENDER.includes('memoria') && !APRENDER.includes('quebra'));
+  assert.equal(c(undefined, 'rudimentos', '2026-11-13', 10).ganhou, 10);
 });
