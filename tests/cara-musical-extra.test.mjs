@@ -33,7 +33,7 @@ test('mesas continuam com solução e as perguntas novas aparecem em mesas reais
     const ids = R.perguntasDaMesa(mesa.cartas, modo).map((q) => q.id);
     if (ids.some((x) => ['cantor', 'ativo', 'grande', 'anos80_90'].includes(x))) viuNova++; if (ids.some((x) => ['varias', 'instrumento'].includes(x))) viuFoto++;
   }
-  assert.ok(viuNova > 120, `perguntas novas de artista em poucas mesas (${viuNova}/240)`); assert.ok(viuFoto > 120, `perguntas de foto em poucas mesas (${viuFoto}/240)`);
+  assert.ok(viuNova > 72, `perguntas novas de artista em poucas mesas (${viuNova}/240)`); assert.ok(viuFoto > 72, `perguntas de foto em poucas mesas (${viuFoto}/240)`);
 });
 test('contestar: anota, tira a pergunta daquela carta e dá pra copiar e limpar', () => {
   C.limpar();

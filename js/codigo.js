@@ -101,6 +101,16 @@ export async function criarPasse({ prefixo = 'BEA', nome = '', dias = 3, jogos =
   }
   throw new Error('não consegui gerar um código livre');
 }
+/** Passe anual (PIX/WhatsApp): cria o código do comprador, vence 12 meses depois de hoje, 2 aparelhos, o site todo. Devolve { code, expira }. */
+export async function criarPasseAnual({ nome = '' } = {}) {
+  const P = await import('./passe-anual.js'); const expira = P.daquiA12Meses();
+  for (let i = 0; i < 6; i++) {
+    const code = P.gerarCodigoPasse();
+    const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(P.linhaPasse(nome, code, expira)) });
+    if (r.ok) return { code, expira }; if (r.status !== 409) throw new Error(String(r.status));
+  }
+  throw new Error('não consegui gerar um código livre');
+}
 /** Importa uma lista [{ code, nome }] (cria ou atualiza o nome; reativa o código). */
 export async function importar(rows) {
   const body = rows.map((x) => ({ code: norm(x.code), nome: String(x.nome || '').slice(0, 60), ativo: true }));

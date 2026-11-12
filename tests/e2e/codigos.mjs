@@ -8,7 +8,7 @@ await ctx.unroute('**/*.supabase.co/**');
 await ctx.route('**/rest/v1/alunos_codigos**', async (r) => {
   const req = r.request(); const m = req.method();
   if (m === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(db.map((x) => ({ ...x }))) });
-  if (m === 'POST') { for (const x of req.postDataJSON()) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
+  if (m === 'POST') { for (const x of [].concat(req.postDataJSON())) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null, tipo: x.tipo, expira_em: x.expira_em, max_aparelhos: x.max_aparelhos, tem_jogos: 'jogos' in x }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
   if (m === 'PATCH') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) Object.assign(db[i], req.postDataJSON()); return r.fulfill({ status: 204, body: '' }); }
   if (m === 'DELETE') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) db.splice(i, 1); return r.fulfill({ status: 204, body: '' }); }
   return r.continue();
@@ -20,13 +20,20 @@ check('importou os 4 alunos', db.length === 4, String(db.length));
 check('os 2 com código ficaram com o código que ela mandou', db.find((x) => x.nome === 'Maria Souza').code === 'K7M2QX' && db.find((x) => x.nome === 'Ana Lima').code === 'HQ9ZT4');
 check('quem veio só com o nome ganhou código aleatório de 6', /^[A-Z0-9]{6}$/.test(db.find((x) => x.nome === 'Carlos').code));
 check('mostra a tabela atualizada', (await page.locator('.cod-tbl').count()) >= 1 && (await page.locator('.cod-tbl tbody tr').count()) >= 4);
-await page.locator('.cod-qtd').fill('3'); await page.locator('button:has-text("gerar")').click(); await sleep(1200);
+await page.locator('input[aria-label="Quantos códigos"]').fill('3'); await page.locator('button:text-is("gerar")').click(); await sleep(1200);
 check('gerou 3 códigos novos (7 no total, todos diferentes)', db.length === 7 && new Set(db.map((x) => x.code)).size === 7, String(db.length));
 await page.locator('.cod-act button:has-text("desativar")').first().click(); await sleep(900);
 check('desativar funciona', db.some((x) => x.ativo === false));
 await page.evaluate(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; }); await page.locator('button:has-text("copiar tabela")').click(); await sleep(300);
 const copied = await page.evaluate(() => window.__copied || '');
 check('copiar tabela: cabeçalho nome/código e uma linha por aluno', copied.startsWith('nome\tcódigo\tativo\tusos') && copied.split('\n').length === 8, copied.split('\n').length + ' linhas');
+// passe anual (PIX): gera código, 12 meses, 2 aparelhos, sem a coluna jogos, mensagem pronta e link do WhatsApp
+await page.locator('input[aria-label="Nome de quem pagou"]').fill('Maria Souza'); await page.locator('input[aria-label="WhatsApp de quem pagou"]').fill('(18) 99180-4150'); await page.locator('button:has-text("gerar passe anual")').click(); await sleep(1200);
+const pa = db.find((x) => x.tipo === 'passe');
+check('passe anual criado: P + 9, nome "Passe Maria Souza", 2 aparelhos', pa && /^P[A-HJ-NP-Z2-9]{9}$/.test(pa.code) && pa.nome === 'Passe Maria Souza' && pa.max_aparelhos === 2, JSON.stringify(pa));
+check('vence em ~12 meses e não manda a coluna jogos', pa && Math.abs(new Date(pa.expira_em) - (Date.now() + 365 * 864e5)) < 3 * 864e5 && pa.tem_jogos === false);
+check('mostra o código e a mensagem pronta', (await page.locator('.cod-new').first().innerText()).includes(pa.code) && /12 meses/.test(await page.locator('.cod-new').first().innerText()));
+const wa = await page.locator('.cod-new a:has-text("WhatsApp")').getAttribute('href'); check('botão abrir no WhatsApp com o número e o código', wa && wa.startsWith('https://wa.me/5518991804150?text=') && decodeURIComponent(wa).includes(pa.code), wa);
 // botão no menu dos dois perfis
 for (const sp of ['bea', 'beaterista']) {
   await page.evaluate((s) => { localStorage.setItem('bt-space', s); }, sp); await page.evaluate(() => { location.hash = '#/inicio'; }); await page.reload(); await sleep(1200);
