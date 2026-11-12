@@ -3,6 +3,7 @@
 import { audio, out, isMuted, lastAudioUse } from '../audio.js';
 import { soundOn } from './base.js';
 import { TRACKS, trackDe } from './musica-dados.js';
+import './efeitos.js'; // registra o som próprio de cada jogo
 
 const VOL = 0.32; // bem baixinho: o fundo não pode atrapalhar a atenção
 let bus = null; let timer = 0; let cur = ''; let step = 0; let nextT = 0; let gesture = false; let noiseBuf = null; let fadeT = 0;

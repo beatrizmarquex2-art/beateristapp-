@@ -1,6 +1,6 @@
 // Toca os efeitos de efeitos-dados.js no AudioContext do app. `tocarEfeito('velha', 'marcar X')`. Respeita o som do topo e o som dos jogos.
 import { audio, out, isMuted } from '../audio.js';
-import { soundOn } from './base.js';
+import { soundOn, setPerfilSom } from './base.js';
 import { EFEITOS } from './efeitos-dados.js';
 
 let noiseBuf = null;
@@ -24,3 +24,28 @@ export function tocarEfeito(jogo, nome) {
   const lista = EFEITOS[jogo] && EFEITOS[jogo].efeitos[nome]; if (!lista) return;
   try { const c = audio(); tocarLista(c, out(), lista, c.currentTime + 0.01); } catch { /* sem áudio */ }
 }
+
+/** Qual jogo é a tela atual (pra escolher o perfil de som). */
+export const jogoDaRota = (hash = typeof location !== 'undefined' ? location.hash : '') => {
+  const h = String(hash || '');
+  if (/^#\/jogos\/velha(\/|$|\?)/.test(h)) return 'velha';
+  if (/^#\/jogos\/bingo(\/|$|\?)/.test(h)) return 'bingo';
+  if (/^#\/jogos\/quebra(\/|$|\?)/.test(h)) return 'quebra';
+  if (/^#\/jogos\/cara(\/|$|\?)/.test(h)) return 'cara';
+  if (/^#\/kids\/figuras(\/|$|\?)/.test(h)) return 'figuras';
+  if (/^#\/(kids\/memoria|jogos\/memart)(\/|$|\?)/.test(h)) return 'memoria';
+  return '';
+};
+/** Os sons genéricos dos jogos (tap, place, draw, ok, bad, win, lose, tie) viram o efeito próprio de cada jogo. Sem entrada = continua o som de sempre. */
+export const POR_JOGO = {
+  velha: { ok: 'acertou a pergunta', bad: 'errou a pergunta', win: 'vitória', lose: 'derrota (trombone)', tie: 'empate', place: 'marcar X' },
+  bingo: { draw: 'sorteou a bola', bad: 'errou', win: 'BINGO!' },
+  quebra: { tap: 'pegar a peça', place: 'encaixou', bad: 'não encaixa', win: 'terminou' },
+  cara: { tap: 'virar carta', place: 'resposta: sim', bad: 'resposta: não', win: 'palpite certo', lose: 'palpite errado' },
+};
+let alterna = false; // Velha: marca X e O se alternam
+setPerfilSom((kind) => {
+  const j = jogoDaRota(); const nome = j && POR_JOGO[j] && POR_JOGO[j][kind]; if (!nome) return false;
+  const eff = j === 'velha' && kind === 'place' ? (alterna = !alterna, alterna ? 'marcar X' : 'marcar O') : nome;
+  tocarEfeito(j, eff); return true;
+});

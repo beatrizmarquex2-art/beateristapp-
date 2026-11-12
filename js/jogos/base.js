@@ -21,10 +21,14 @@ export function setSound(on) { read().sound = !!on; write(); }
 export const getGame = (id) => { const g = read().games[id]; return g && typeof g === 'object' ? g : {}; };
 export function setGame(id, patch) { const s = read(); s.games[id] = { ...getGame(id), ...patch }; write(); }
 
+let perfilSom = null;
+/** efeitos.js registra aqui o jeito de tocar o som PRÓPRIO do jogo da tela atual (devolve true se tratou o efeito). */
+export const setPerfilSom = (fn) => { perfilSom = fn; };
 /** Sons curtos sintetizados; só depois de um toque (chamados a partir de cliques) e só se o som estiver ligado. */
 export function sfx(kind) {
   try { document.dispatchEvent(new CustomEvent('jg-sfx', { detail: kind })); } catch { /* sem DOM */ } // a tela reage (Paul) mesmo com o som desligado
   if (!soundOn()) return;
+  try { if (perfilSom && perfilSom(kind)) return; } catch { /* usa o som genérico */ }
   try {
     const c = audio(); const t0 = c.currentTime + 0.01;
     const seq = { tap: [[330, 0, 0.09]], place: [[262, 0, 0.08], [196, 0.05, 0.1]], draw: [[220, 0, 0.12]], ok: [[587, 0, 0.1], [784, 0.09, 0.1], [988, 0.18, 0.24]], bad: [[170, 0, 0.16]], win: [[523, 0, 0.14], [659, 0.12, 0.14], [784, 0.24, 0.24]], lose: [[330, 0, 0.16], [262, 0.15, 0.16], [196, 0.3, 0.26]], tie: [[392, 0, 0.14], [392, 0.16, 0.2]] }[kind] || [];

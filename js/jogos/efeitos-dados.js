@@ -60,22 +60,22 @@ export const EFEITOS = {
     'ganhou estrela': arp([83, 88, 95], 'triangle', 0.07, 0.14, 0.3),
     'passou de fase': arp([62, 66, 69, 74, 78, 81], 'triangle', 0.08, 0.16, 0.38),
     'mundo concluído': arp([60, 64, 67, 72, 76, 79, 84, 88], 'triangle', 0.08, 0.2, 0.35) } },
-  toca: { nome: 'Toca Aqui', som: 'caixa e aro de bateria', efeitos: {
-    'acertou o tempo': [R(0, 1500, 0.09, 0.4), O(0, 'triangle', 190, 0.08, 0.35, 140)],
-    'quase': [R(0, 700, 0.06, 0.25, 3000), O(0, 'triangle', 150, 0.08, 0.2)],
-    'errou': [O(0, 'sine', 90, 0.2, 0.45, 50)],
-    'ouvir o ritmo': [O(0, 'sine', 130, 0.14, 0.7, 45), R(0.25, 1500, 0.1, 0.35), O(0.5, 'sine', 130, 0.14, 0.7, 45)],
-    'passou': [R(0, 1500, 0.07, 0.4), R(0.09, 1500, 0.07, 0.4), R(0.18, 1500, 0.07, 0.4), O(0.27, 'sine', 120, 0.3, 0.7, 45), R(0.27, 6000, 0.5, 0.3)] } },
-  beat: { nome: 'Beat Hero', som: 'caixa, guitarra e power chord', efeitos: {
-    'acertou a nota': [R(0, 1800, 0.13, 0.5), O(0, 'triangle', 200, 0.1, 0.3, 150)],
-    'perdeu a nota': [O(0, 'sawtooth', 90, 0.18, 0.2, 60)],
-    'combo': [O(0, 'sawtooth', m(45), 0.3, 0.14), O(0, 'sawtooth', m(52), 0.3, 0.14), O(0, 'square', m(57), 0.3, 0.06)],
-    'nota estrela': arp([79, 83, 86, 91], 'square', 0.06, 0.16, 0.12),
-    'fim da música': [O(0, 'sawtooth', m(40), 0.6, 0.16), O(0, 'sawtooth', m(47), 0.6, 0.16), O(0.5, 'sawtooth', m(45), 0.9, 0.16), O(0.5, 'sawtooth', m(52), 0.9, 0.16), R(0.5, 5000, 0.8, 0.3)] } },
-  stop: { nome: 'STOP', som: 'relógio e campainha', efeitos: {
-    'tique-taque': [R(0, 4000, 0.03, 0.4), R(0.5, 3000, 0.03, 0.3)],
-    'STOP!': [O(0, 'square', 440, 0.3, 0.18), O(0, 'square', 554, 0.3, 0.12)],
-    'resposta válida': [O(0, 'triangle', m(84), 0.12, 0.28), O(0.1, 'triangle', m(91), 0.25, 0.28)],
-    'resposta inválida': [O(0, 'square', 150, 0.25, 0.14, 120)],
-    'acabou o tempo': [O(0, 'square', 700, 0.12, 0.14), O(0.18, 'square', 700, 0.12, 0.14), O(0.36, 'square', 520, 0.4, 0.14)] } },
+  toca: { nome: 'Toca Aqui', som: 'batucada: pandeiro, tamborim e surdo', efeitos: {
+    'acertou o tempo': [O(0, 'sine', 230, 0.13, 0.5, 110), R(0, 6000, 0.09, 0.28), R(0.05, 7500, 0.07, 0.2)],
+    'quase': [R(0, 3500, 0.05, 0.3, 6000), R(0.07, 3500, 0.05, 0.22, 6000)],
+    'errou': [O(0, 'sine', 85, 0.28, 0.5, 55)],
+    'contagem (tique)': [O(0, 'sine', 1700, 0.04, 0.35), O(0.4, 'sine', 1700, 0.04, 0.35), O(0.8, 'sine', 1700, 0.04, 0.35), O(1.2, 'sine', 2300, 0.07, 0.4)],
+    'passou de fase': [R(0, 3500, 0.05, 0.3, 6000), R(0.08, 3500, 0.05, 0.3, 6000), R(0.16, 3500, 0.05, 0.3, 6000), R(0.24, 3500, 0.05, 0.3, 6000), O(0.34, 'sine', 200, 0.3, 0.6, 70), R(0.34, 7000, 0.7, 0.28)] } },
+  beat: { nome: 'Beat Hero', som: 'arcade: laser, moeda e chiptune', efeitos: {
+    'acertou a nota': [O(0, 'square', 1300, 0.07, 0.14, 620), O(0.06, 'square', m(88), 0.12, 0.1)],
+    'perdeu a nota': [O(0, 'square', 330, 0.22, 0.14, 70)],
+    'combo': arp([72, 76, 79, 84], 'square', 0.05, 0.1, 0.1),
+    'nota estrela': [O(0, 'triangle', m(91), 0.1, 0.22), O(0.07, 'triangle', m(96), 0.1, 0.22), O(0.14, 'triangle', m(100), 0.14, 0.22), O(0.22, 'triangle', m(103), 0.3, 0.2)],
+    'fim da música': [...arp([67, 72, 76, 79, 84], 'square', 0.1, 0.16, 0.1), O(0.55, 'square', m(88), 0.7, 0.1), O(0.55, 'triangle', m(76), 0.7, 0.14)] } },
+  stop: { nome: 'STOP', som: 'programa de auditório: sino e buzina', efeitos: {
+    'tique-taque': [O(0, 'sine', 1900, 0.03, 0.4), O(0.5, 'sine', 1400, 0.03, 0.4)],
+    'STOP!': [O(0, 'square', 880, 0.16, 0.14), O(0, 'square', 1108, 0.16, 0.1), O(0.2, 'square', 880, 0.3, 0.14), O(0.2, 'square', 1108, 0.3, 0.1), R(0, 2500, 0.3, 0.15)],
+    'resposta válida': [O(0, 'triangle', m(88), 0.5, 0.3), O(0, 'sine', m(100), 0.5, 0.1), O(0.01, 'sine', m(95), 0.5, 0.12)],
+    'resposta inválida': [O(0, 'sawtooth', 120, 0.32, 0.18, 90), O(0, 'square', 126, 0.32, 0.08)],
+    'acabou o tempo': [O(0, 'triangle', 988, 0.1, 0.25), O(0.14, 'triangle', 784, 0.1, 0.25), O(0.28, 'triangle', 622, 0.1, 0.25), O(0.44, 'square', 233, 0.7, 0.14)] } },
 };

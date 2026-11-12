@@ -8,9 +8,13 @@ import { levelSpec, levelTag, starsFor, pctOf, MAX_LEVEL } from './levels.js';
 import * as P from './progress.js';
 import * as Album from './album.js';
 import * as FB from '../feedback.js';
+import { tocarEfeito, jogoDaRota } from '../jogos/efeitos.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 function beep(ok) {
+  const j = jogoDaRota(); // Figuras rítmicas (marimba) e Memória (harpa) têm som próprio, aprovado pela Bea
+  if (j === 'figuras') { tocarEfeito('figuras', ok ? 'acertou' : 'errou'); return; }
+  if (j === 'memoria') { tocarEfeito('memoria', ok ? 'achou o par' : 'não é par'); return; }
   try {
     const c = audio(); const t = c.currentTime + 0.01; const notes = ok ? [659, 880] : [220, 165];
     notes.forEach((f, i) => { const o = c.createOscillator(); const g = c.createGain(); o.type = ok ? 'triangle' : 'sawtooth'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t + i * 0.11); g.gain.exponentialRampToValueAtTime(ok ? 0.25 : 0.14, t + i * 0.11 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.11 + 0.18); o.connect(g).connect(out()); o.start(t + i * 0.11); o.stop(t + i * 0.11 + 0.2); });
@@ -116,6 +120,7 @@ export async function showResult({ game, ctx, bot, stage, spec, right, total, st
       next$ ? h('button', { class: 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level + 1) }, `fase ${level + 1} →`) : null,
       h('button', { class: next$ ? 'kd-chip' : 'kd-btn', type: 'button', onclick: () => ctx.onLevel(level) }, 'jogar de novo'),
       h('button', { class: 'kd-chip', type: 'button', onclick: () => ctx.onBack() }, 'todas as fases'))));
+  if (jogoDaRota() === 'figuras' && stars >= 1) tocarEfeito('figuras', stars === 3 && ctx.level === MAX_LEVEL ? 'chefão' : 'passou de fase');
   countUp(pctEl, pct); if (stars >= 1) setTimeout(() => { if (starsEl.isConnected) sparkle(starsEl); }, 400);
 }
 /** Cabeçalho comum das fases: robô, título e pontinhos. */
