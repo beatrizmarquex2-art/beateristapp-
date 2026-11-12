@@ -67,14 +67,15 @@ export function mountMemoria(host, opts) {
     live = false; paused = false; const c = conf(); const list = themes();
     let th = list.find((t) => t.id === c.theme) || list[0]; if (locked(th)) th = list.find((t) => !locked(t)) || list[0];
     const maxPairs = th.items.length; preload(th);
-    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); let players = c.players === 2 ? 2 : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
+    const saved = PICK.includes(c.pairs) ? c.pairs : 8; const pairs = Math.min(saved, [...PICK].reverse().find((n) => n <= maxPairs) || PICK[0]); let players = [2, 3, 4].includes(c.players) ? c.players : c.players === 'bot' ? 'bot' : c.players === 'sala' ? 'sala' : 1;
     if (autoSala) { autoSala = false; players = 'sala'; } // veio do atalho "tem um código de sala": abre direto na sala (o lobby entra sozinho)
     stage.replaceChildren(
       ...grupos(list, th),
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : null,
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
-        ...[[1, 'um', '1 jogador'], [2, 'dois', '2 jogadores, um de cada vez'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => h('button', { type: 'button', class: `mem-ic${players === n ? ' on' : ''}`, 'aria-pressed': String(players === n), 'aria-label': l, title: l, onclick: () => save({ players: n }).then(setup) }, bq(ic))),
+        ...[[1, 'um', '1 jogador'], [2, 'dois', 'pessoas no mesmo celular, uma de cada vez (2 a 4)'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => { const on = n === 2 ? typeof players === 'number' && players >= 2 : players === n; return h('button', { type: 'button', class: `mem-ic${on ? ' on' : ''}`, 'aria-pressed': String(on), 'aria-label': l, title: l, onclick: () => save({ players: n === 2 && typeof players === 'number' && players >= 2 ? players : n }).then(setup) }, bq(ic)); }),
+        typeof players === 'number' && players >= 2 ? h('span', { class: 'mem-step' }, h('button', { type: 'button', 'aria-label': 'menos jogadores', disabled: players <= 2 || null, onclick: () => save({ players: players - 1 }).then(setup) }, '‹'), h('span', { 'aria-live': 'polite' }, `${players} jogadores`), h('button', { type: 'button', 'aria-label': 'mais jogadores', disabled: players >= 4 || null, onclick: () => save({ players: players + 1 }).then(setup) }, '›')) : null,
         h('span', { class: 'mem-step' },
           h('button', { type: 'button', 'aria-label': 'menos pares', disabled: pairs <= PICK[0] || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) - 1] }).then(setup) }, '‹'),
           h('span', { 'aria-live': 'polite' }, `${pairs} pares`),
@@ -98,13 +99,13 @@ export function mountMemoria(host, opts) {
     const picks = shuffle(th.items, rnd).slice(0, pairs);
     const deck = shuffle(picks.flatMap((it) => [{ it, side: 'a' }, { it, side: 'b' }]), rnd).map((c, i) => ({ ...c, key: i }));
     const verso = th.verso ? `url(../${th.verso})` : th.back ? `url(../${th.back})` : null;
-    const two = players !== 1; const vsPaul = players === 'bot'; const known = new Map(); // known: cartas que o Paul viu e lembrou (key -> id do par)
-    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = [0, 0]; let t0 = 0;
+    const nP = typeof players === 'number' ? players : players === 'bot' ? 2 : 1; const two = players !== 1; const vsPaul = players === 'bot'; const known = new Map(); // known: cartas que o Paul viu e lembrou (key -> id do par)
+    let open = []; let lock = false; let matched = 0; let tries = 0; let streak = 0; let turn = 0; const score = Array(Math.max(2, nP)).fill(0); let t0 = 0;
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => {
       if (MS) { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}${MP.goalTries ? ` · meta ${MP.goalTries}` : ''}${MP.secs ? ` · ⏱ ${t0 ? Math.min(Math.floor((Date.now() - t0) / 1000), 9999) : 0}/${MP.secs} s (opcional)` : ''}`; return; }
-      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez do jogador ${turn + 1}`} · ${score[0]} × ${score[1]}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
-      status.classList.toggle('mem-p2', two && turn === 1);
+      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez do jogador ${turn + 1}`} · ${score.join(' × ')}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
+      status.classList.toggle('mem-p2', two && turn % 2 === 1);
     };
     const board = h('div', { class: `kx-board mem-board n${pairs}`, style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
       const bi = verso || `url(../assets/cards/b${String((i * 7 + (i >> 1)) % 10 + 1).padStart(2, '0')}.webp)`;
@@ -124,12 +125,12 @@ export function mountMemoria(host, opts) {
       later(() => {
         if (gone) return;
         if (same) {
-          a.classList.add('ok'); b.classList.add('ok'); matched++; streak++; score[turn]++; open = []; lock = false; if (!again && matched < pairs) turn = 1 - turn; paint();
+          a.classList.add('ok'); b.classList.add('ok'); matched++; streak++; score[turn]++; open = []; lock = false; if (!again && matched < pairs) turn = (turn + 1) % nP; paint();
           const done = matched === pairs; if (!done) paulNext();
           bot.set('cheer', FB.line('win'));
           if (done) { finish(); } else FB.win(b, { paul: false });
         } else {
-          streak = 0; if (two) turn = 1 - turn; a.classList.add('no'); b.classList.add('no'); bot.set('oops', FB.line('lose')); FB.lose(a, { paul: false });
+          streak = 0; if (two) turn = (turn + 1) % nP; a.classList.add('no'); b.classList.add('no'); bot.set('oops', FB.line('lose')); FB.lose(a, { paul: false });
           later(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; paint(); paulNext(); }, 700);
         }
       }, 650);
@@ -158,13 +159,13 @@ export function mountMemoria(host, opts) {
       live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
       if (players === 1 || (vsPaul && score[0] > score[1])) ganhou('memoria'); // achou todos (ou ganhou do Paul): 3 ★
-      const win = score[0] === score[1] ? 'empate!' : vsPaul ? (score[0] > score[1] ? 'você venceu!' : 'o Paul venceu!') : `jogador ${score[0] > score[1] ? 1 : 2} venceu!`;
+      const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `jogador ${topo[0] + 1} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {
         if (gone) return;
         stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, two ? win : 'Achou todos!'),
-          two ? h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, `${score[0]} × ${score[1]}`), h('small', {}, ' pares')) : h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(tries)), h('small', {}, ' tentativas')),
-          h('p', { class: 'muted' }, `${pairs} pares de ${th.title.toLowerCase()}${two ? (vsPaul ? ` · você: ${score[0]} · Paul: ${score[1]}` : ` · jogador 1: ${score[0]} · jogador 2: ${score[1]}`) : record ? ' · recorde novo!' : prev ? ` · seu recorde: ${prev}` : ''}`),
+          two ? h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, score.join(' × ')), h('small', {}, ' pares')) : h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(tries)), h('small', {}, ' tentativas')),
+          h('p', { class: 'muted' }, `${pairs} pares de ${th.title.toLowerCase()}${two ? (vsPaul ? ` · você: ${score[0]} · Paul: ${score[1]}` : ` · ${score.map((x, i) => `jogador ${i + 1}: ${x}`).join(' · ')}`) : record ? ' · recorde novo!' : prev ? ` · seu recorde: ${prev}` : ''}`),
           h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs, players, again) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho'))));
       }, 1800);
     };

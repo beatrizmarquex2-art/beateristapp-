@@ -419,3 +419,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## Auditoria de leitura e desempenho (nov/2026)
 - Script de auditoria (39 telas × 390 e 320 px): erros de JS, rolagem lateral, texto <11,5 px, contraste, botões <30 px, travadas (long tasks, quadros lentos) e deslocamento de layout. **Resultado: nenhum erro de JS, nenhuma travada (long task) e nenhum quadro lento; carga <4,5 s em todas.** Achados e correções (`css/lote3.css`, fim): títulos dos jogos quebrando ("MEMÓRI / A") → título na linha de cima; textos de 9–11 px subiram pra 11–12,5 px; abas do Toca Aqui e do Dicionário cortadas em 320 px → quebram linha; letras das teclas do piano/xilofone mais legíveis; botões de opção dos jogos mais altos. O "1,2:1" que a auditoria aponta nos títulos é falso alarme (letra branca sobre pincelada de imagem).
+
+## Mais pessoas no Uno e na memória; Uno com nomes sempre (nov/2026)
+- **Uno Musical:** o nome da figura aparece **sempre** em todas as cartas (saíram as opções "nome da figura nas cartas" e "ajuda dos nomes"); o "contra quem?" virou **ícones** (robô 1 a 3, mesmo celular, 2 celulares por código); **no mesmo celular agora são 2 a 4 pessoas** (`newGame` em `cartas-logic.js`, `mode:'local'`).
+- **Memória:** o ícone de "pessoas no mesmo celular" tem **2 a 4 jogadores** (‹ N jogadores ›), placar e vez em rodízio. Teste `tests/e2e/mais-pessoas.mjs`.
+- Falta: os outros jogos (velha, bingo, cara a cara, stop, quebra-cabeça…) com o mesmo "só símbolos" nos modos.
