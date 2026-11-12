@@ -65,3 +65,12 @@
 .cm-root .cm-card small{background:transparent;color:#fffdf8;padding:4px 2px 5px}
 .cm-root .cm-cell.sel .cm-card{border-color:#ffd23f;box-shadow:0 0 0 3px #ffd23f}.cm-root .cm-card.dest{box-shadow:0 0 0 3px #ffd23f}
 .cm-root .cm-paul{background:transparent;border:2px solid rgba(255,253,248,.9)}.cm-root .cm-paul p{color:#fffdf8}
+/* nomes: no máximo 2 linhas, letra menor se for grande, altura igual em todas as cartas */
+.cm-root .cm-card small{display:flex;align-items:center;justify-content:center;min-height:2.5em;line-height:1.1;font-size:12px;overflow-wrap:normal;word-break:normal;hyphens:none}
+.cm-root .cm-g3 .cm-card small{font-size:15px}.cm-root .cm-card small.long{font-size:10.5px;letter-spacing:0}.cm-root .cm-card small.xs{font-size:9px;letter-spacing:-.1px}
+.cm-root .cm-g3 .cm-card small.long{font-size:13px}.cm-root .cm-g3 .cm-card small.xs{font-size:11px}
+/* 2 perguntas por vez na tela; o resto arrasta pro lado */
+.cm-root .cm-qc{flex:0 0 calc((100% - 8px) / 2);white-space:normal;text-align:center;line-height:1.15;border-radius:16px;padding:8px 10px;min-height:48px}
+.cm-root .cm-cell .jg-flip{font-size:15px}
+.cm-root .cm-card small{min-height:calc(2.2em + 9px)}
+.cm-root .cm-qc{align-content:center;grid-template-rows:1fr}.cm-carro{align-items:stretch}

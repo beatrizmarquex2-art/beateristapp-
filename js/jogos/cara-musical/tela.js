@@ -15,7 +15,7 @@ import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
 
 const GID = 'cara';
-import { mini, grande, loadCat, enquadreFoto } from './midia.js';
+import { mini, grande, loadCat, enquadreFoto, nomeCls } from './midia.js';
 import { ganhou } from '../estrelas-jogo.js';
 
 export function mountMusical(host, { onTema } = {}) {
@@ -143,8 +143,8 @@ export function mountMusical(host, { onTema } = {}) {
       const c = (st ? st.mesa : { cartas: [] }).cartas.find((x) => x.id === id) || { id, foto: BY_ID[id].fotos[0] }; const e = BY_ID[id]; const out = fora.includes(id);
       return h('div', { class: `cm-cell${out ? ' out' : ''}${selecionada === id ? ' sel' : ''}` },
         h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada === id), 'aria-label': `${e.curto}${out ? ', virada' : ''}`, onclick: () => aoToque(id) },
-          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: e.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
-        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), 'aria-label': out ? 'desvirar a carta' : 'virar a carta', onclick: () => manual(id) }, '✕') : null);
+          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: nomeCls(e.curto) }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
+        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), 'aria-label': out ? 'desvirar a carta' : 'virar a carta', onclick: () => manual(id) }, out ? '✅' : '✕') : null);
     }));
   }
   const ladoAtual = () => st.lados[cfg.jogo === 'solo' ? 0 : st.turno];

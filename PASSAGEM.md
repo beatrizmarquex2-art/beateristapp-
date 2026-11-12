@@ -486,3 +486,6 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Layout escolhido: C "Turnê"** (vinho, discos de vinil, estrelas, cartões grandes). Mockups no artefato "Toca Aqui: 3 layouts" (https://claude.ai/artifact/E51BAUoSdCh2T8FoymjVhA). **Ainda não aplicado no app.** Velocidades propostas nos mockups: **80, 100, 120, 140, 160 BPM** (hoje o app usa 60/90/130/170 em `VELOCIDADES` de `js/toca-som.js`); a Bea ainda não confirmou se vale pro app todo.
 - Modo Aventura: sem tela de briefing (objetivo no topo e "regras e estrelas" numa gavetinha) e toques/resultado mais rápidos (`js/campanha/run.js`). Toca Aqui e Beat Hero não têm mais Aventura na `main`.
 - Testes que já falhavam na `main` (não são desta branch): `ritmo-toque` (tiles/setas), `amostras`, `aventura-leitura` (não termina).
+
+## v394 — cara a cara: ✕/✅, nomes em 2 linhas, enquadre, 2 perguntas por vez
+- virar = ✕, desvirar = ✅; nomes com `nomeCls()` (midia.js) nunca passam de 2 linhas; MANUAL de enquadre: F123 (Axl) e F103 ajustados; carrossel mostra 2 perguntas por vez
