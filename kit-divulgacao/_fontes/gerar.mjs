@@ -282,6 +282,8 @@ h1{font-size:${story ? 170 : 140}px;color:${C.red}}h1 em{font-style:normal;color
 }
 
 // ---------- black friday geral (um post por material) ----------
+const CAPA_NOVA = { 'bateria-kids': '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-bateria-kids.jpg', mood: '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg' };
+const capaSrc = (id) => CAPA_NOVA[id] || `/assets/loja/${CAPAS[id]}.webp`;
 const CAPAS = { start: 'bateria-start', memoria: 'memoria', 'bateria-kids': 'bateria-kids', roboterista: 'roboterista', violao: 'violao', mood: 'mood' };
 function bfProduto(id, W, H) {
   const p = BF.produtos[id]; const story = H > 1500; const por = p.por && p.por.trim();
@@ -293,7 +295,7 @@ function bfProduto(id, W, H) {
 .btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:46px;background:${C.red};color:${C.cream}}
 .foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
     `<div class="dots"></div><div class="sel A">black friday · ${BF.periodo}</div>
-<div class="t"><h1 class="A">${p.nome}</h1><p>${p.info}</p></div><img class="cap" src="/assets/loja/${CAPAS[id]}.webp">
+<div class="t"><h1 class="A">${p.nome}</h1><p>${p.info}</p></div><img class="cap" src="${capaSrc(id)}">
 <div class="pr">${por ? `<s>${p.de}</s><b>${p.por}</b>` : `<b>preço especial<br>de black friday</b>`}</div><span class="btn A">pegar na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
 }
 function bfGeral(W, H) {
@@ -307,7 +309,7 @@ h1{position:absolute;left:60px;top:${story ? 260 : 140}px;font-size:${story ? 15
 .btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:${story ? 56 : 46}px;background:${C.red};color:${C.cream}}
 .foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
     `<div class="dots"></div><div class="sel A">${BF.periodo}</div><h1 class="A">black friday <em>beaterista</em></h1><div class="s">desconto nos materiais em PDF: bateria, violão, partitura e jogos pra imprimir.</div>
-<div class="g">${Object.keys(CAPAS).map((k) => `<img src="/assets/loja/${CAPAS[k]}.webp">`).join('')}</div><span class="btn A">ver na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
+<div class="g">${Object.keys(CAPAS).map((k) => `<img src="${capaSrc(k)}">`).join('')}</div><span class="btn A">ver na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
 }
 
 // ---------- render ----------

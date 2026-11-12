@@ -3,11 +3,41 @@
   "link": "jogos.beaterista.com.br/#/lojinha",
   "periodo": "27/11 a 30/11",
   "produtos": {
-    "start":        { "nome": "Bateria Start",           "info": "44 páginas · peças, figuras, partitura e rudimentos", "de": "R$ 29,90", "por": "R$ 14,90" },
-    "memoria":      { "nome": "Jogo da Memória Musical", "info": "61 pares · imprima, recorte, embaralhe",            "de": "R$ 19,90", "por": "" },
-    "bateria-kids": { "nome": "Bateria Kids",            "info": "36 páginas · aprenda bateria brincando e colorindo", "de": "R$ 19,90", "por": "" },
-    "roboterista":  { "nome": "Robôterista Ensina",      "info": "70 páginas · figuras rítmicas, pausas e tempo",      "de": "R$ 29,90", "por": "" },
-    "violao":       { "nome": "Violão do Zero",          "info": "47 páginas · da primeira corda à primeira música",   "de": "R$ 29,90", "por": "" },
-    "mood":         { "nome": "Beaterista Mood",         "info": "55 páginas · exercícios que a Bea estuda e leva pro palco", "de": "R$ 29,90", "por": "" }
+    "start": {
+      "nome": "Bateria Start",
+      "info": "44 páginas · peças, figuras, partitura e rudimentos",
+      "de": "R$ 29,90",
+      "por": "R$ 14,90"
+    },
+    "memoria": {
+      "nome": "Jogo da Memória Musical",
+      "info": "61 pares · imprima, recorte, embaralhe",
+      "de": "R$ 19,90",
+      "por": ""
+    },
+    "bateria-kids": {
+      "nome": "Bateria Kids",
+      "info": "36 páginas · aprenda bateria brincando e colorindo",
+      "de": "R$ 19,90",
+      "por": ""
+    },
+    "roboterista": {
+      "nome": "Robôterista Ensina",
+      "info": "70 páginas · figuras rítmicas, pausas e tempo",
+      "de": "R$ 29,90",
+      "por": ""
+    },
+    "violao": {
+      "nome": "Violão do Zero",
+      "info": "47 páginas · da primeira corda à primeira música",
+      "de": "R$ 29,90",
+      "por": ""
+    },
+    "mood": {
+      "nome": "Beaterista Mood",
+      "info": "55 páginas + 20 de atividades bônus · estudo estruturado e prática eficiente",
+      "de": "R$ 29,90",
+      "por": ""
+    }
   }
 }

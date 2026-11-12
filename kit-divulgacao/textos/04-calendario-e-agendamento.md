@@ -61,8 +61,8 @@ se quiser que eu agende, me diga **"conecta o Instagram"** e eu abro a tela de c
 | data | hora | canal | arquivo | assunto | ferramenta |
 |---|---|---|---|---|---|
 | qui 12/11 | 21:00 | Você (tarefa) | `pagina-de-vendas/index.html` | publicar a página de vendas | manual |
-| sex 13/11 | 19:00 | @beaterista_ (feed) | `album/album-paul-e-beaterista-feed.jpg` | álbum: Paul + Beaterista | Meta Business Suite |
-| sex 13/11 | 19:05 | @beaterista_ (stories) | `album/album-paul-e-beaterista-story.jpg` | álbum (story) | Meta Business Suite (ou manual) |
+| sex 13/11 | 19:00 | @beaterista_ (feed) | `minhas-artes/carrossel-B-paul-3-slides/ (3 slides)` | apresentando o Robôterista Paul (carrossel 3 slides) | Meta Business Suite |
+| sex 13/11 | 19:05 | @beaterista_ (stories) | `minhas-artes/stories-9x16/01-oi-eu-sou-o-roboterista-paul.jpg` | story: oi, eu sou o Paul | Meta Business Suite (ou manual) |
 | sáb 14/11 | 10:00 | Você (tarefa) | `textos/02-redes-youtube-shorts.md` | gravar 3 reels e o vídeo do YouTube | manual |
 | seg 16/11 | 12:00 | @beaterista_ (feed) | `posts-feed/beat-hero.jpg` | jogo da semana: Beat Hero | Meta Business Suite |
 | seg 16/11 | 19:30 | @beaterista_ (reels) | `(vídeo roteiro 1)` | Reels Beat Hero | Meta Business Suite |
@@ -70,17 +70,21 @@ se quiser que eu agende, me diga **"conecta o Instagram"** e eu abro a tela de c
 | ter 17/11 | 19:00 | WhatsApp pais | `whatsapp-pais/wa-01-brincar-e-estudar.jpg` | convite aos pais | manual (lembrete) |
 | qua 18/11 | 12:00 | @beaterista_ (feed) | `posts-feed/toca-aqui.jpg` | Toca Aqui | Meta Business Suite |
 | qua 18/11 | 12:10 | @beaterista_ (stories) | `stories/toca-aqui.jpg` | enquete: sabe ler partitura? | Meta Business Suite (ou manual) |
-| qui 19/11 | 19:30 | @beaterista_ (reels) | `(vídeo roteiro 2 ou 4)` | Reels Toca Aqui / Uno Musical | Meta Business Suite |
 | qui 19/11 | 10:00 | Google Meu Negócio | `posts-feed/detetive-note.jpg` | novidade: Detetive Note | manual ou Metricool/Buffer |
-| sex 20/11 | 19:00 | @beaterista_ (feed) | `album/album-faca-a-sua-figurinha-feed.jpg` | faça a sua figurinha | Meta Business Suite |
+| qui 19/11 | 19:30 | @beaterista_ (reels) | `(vídeo roteiro 2 ou 4)` | Reels Toca Aqui / Uno Musical | Meta Business Suite |
 | sex 20/11 | 12:00 | Google Ads | `textos/01-google-ads-e-seo.md` | criar campanha de Pesquisa | manual |
+| sex 20/11 | 19:00 | @beaterista_ (feed) | `minhas-artes/posts-unicos/por-que-paul.jpg` | por que Paul? (história do nome) | Meta Business Suite |
 | sáb 21/11 | 10:00 | YouTube @beateristadrummer | `youtube/yt-01-jogos-que-ensinam.jpg` | vídeo: jogos que ensinam bateria | YouTube Studio |
+| dom 22/11 | 12:00 | @beaterista_ (feed) | `minhas-artes/carrossel-A-paul-4-slides/ (4 slides)` | conheça o Paul: parceiro de som, estudos, lojinha e álbum | Meta Business Suite |
 | dom 22/11 | 18:00 | @beaterista_ (stories) | `(caixa de perguntas)` | caixa: qual figura rítmica você mais erra? | manual |
 | seg 23/11 | 12:00 | @beaterista_ (feed) | `posts-feed/detetive-note.jpg` | Detetive Note | Meta Business Suite |
 | seg 23/11 | 19:00 | @beaterista_ (stories) | `black-friday/bf-geral-story.jpg` | teaser black friday | Meta Business Suite (ou manual) |
+| ter 24/11 | 12:00 | @beaterista_ (feed) | `album/album-paul-e-beaterista-feed.jpg` | álbum: Paul + Beaterista | Meta Business Suite |
 | ter 24/11 | 19:00 | WhatsApp pais | `whatsapp-pais/wa-02-o-que-cada-jogo-desenvolve.jpg` | o que cada jogo desenvolve | manual (lembrete) |
 | ter 24/11 | 19:30 | @beaterista_ (reels) | `(vídeo roteiro 5)` | Reels pauLta | Meta Business Suite |
 | qua 25/11 | 12:00 | @beaterista_ (feed) | `posts-feed/paulta.jpg` | pauLta | Meta Business Suite |
+| qua 25/11 | 19:00 | @beaterista_ (feed) | `minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg` | por dentro do Beaterista Mood | Meta Business Suite |
+| qui 26/11 | 12:00 | @beaterista_ (feed) | `minhas-artes/posts-unicos/menos-pressa-mais-groove.jpg` | menos pressa, mais groove | Meta Business Suite |
 | qui 26/11 | 19:30 | @beaterista_ (reels) | `(vídeo bastidores)` | Reels: como o Paul nasceu | Meta Business Suite |
 | qui 26/11 | 20:00 | WhatsApp lista/grupos | `black-friday/bf-geral-feed.jpg` | amanhã: black friday | manual (lembrete) |
 | sex 27/11 | 08:00 | @beaterista_ (feed) | `black-friday/bf-geral-feed.jpg` | BLACK FRIDAY abriu | Meta Business Suite |
@@ -98,12 +102,16 @@ se quiser que eu agende, me diga **"conecta o Instagram"** e eu abro a tela de c
 | ter 01/12 | 12:00 | @beaterista_ (feed) | `posts-feed/jogo-da-velha.jpg` | jogo da velha musical | Meta Business Suite |
 | qua 02/12 | 19:00 | @beaterista_ (feed) | `posts-feed/stop-musical.jpg` | STOP Musical | Meta Business Suite |
 | qui 03/12 | 10:00 | Google Meu Negócio | `posts-feed/estudos.jpg` | dica de estudo | manual ou Metricool/Buffer |
+| qui 03/12 | 19:00 | @beaterista_ (feed) | `minhas-artes/posts-unicos/a-bea-ensina-eu-treino-com-voce.jpg` | a Bea ensina, o Paul treina com você | Meta Business Suite |
 | sex 04/12 | 19:00 | @beaterista_ (feed) | `posts-feed/quebra-cabeca.jpg` | quebra-cabeça musical | Meta Business Suite |
 | sáb 05/12 | 10:00 | YouTube @beateristadrummer | `youtube/yt-04-uno-musical.jpg` | vídeo: Uno Musical | YouTube Studio |
+| sáb 05/12 | 19:00 | @beaterista_ (feed) | `album/album-faca-a-sua-figurinha-feed.jpg` | faça a sua figurinha | Meta Business Suite |
 | dom 06/12 | 12:00 | @beaterista_ (reels) | `(com @naganodrumsofficial @sparkmusical @padgorilla)` | Reels com parceiros | Meta Business Suite |
 | seg 07/12 | 12:00 | @beaterista_ (feed) | `posts-feed/ritmos-de-bateria.jpg` | ritmos de bateria (estudos) | Meta Business Suite |
+| ter 08/12 | 12:00 | @beaterista_ (feed) | `minhas-artes/posts-unicos/da-o-play-deixa-a-musica-levar.jpg` | dá o play | Meta Business Suite |
 | ter 08/12 | 19:00 | WhatsApp pais | `whatsapp-pais/wa-06-como-funciona.jpg` | como funciona | manual (lembrete) |
 | qua 09/12 | 12:00 | @beaterista_ (feed) | `posts-feed/acordes.jpg` | acordes de violão | Meta Business Suite |
+| qui 10/12 | 12:00 | @beaterista_ (feed) | `minhas-artes/posts-unicos/seu-parceiro-de-groove-azul.jpg` | seu parceiro de groove | Meta Business Suite |
 | qui 10/12 | 19:30 | @beaterista_ (reels) | `(vídeo roteiro 7)` | Reels ritmos de bateria | Meta Business Suite |
 
 ### lembretes de preparação

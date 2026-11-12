@@ -10,7 +10,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261112T210000
 DTEND;TZID=America/Sao_Paulo:20261112T213000
 SUMMARY:Você (tarefa) · publicar a página de vendas
-DESCRIPTION:arquivo: pagina-de-vendas/index.html\\nlegenda: publicar a página (GitHub Pages/Netlify/seu site)\, colocar o link na bio dos 2 instagrams\, TikTok e YouTube\\nferramenta: manual
+DESCRIPTION:arquivo: pagina-de-vendas/index.html\nlegenda: publicar a página (GitHub Pages/Netlify/seu site)\, colocar o link na bio dos 2 instagrams\, TikTok e YouTube\nferramenta: manual
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -22,8 +22,8 @@ UID:beaterista-post-1@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261113T190000
 DTEND;TZID=America/Sao_Paulo:20261113T193000
-SUMMARY:@beaterista_ (feed) · álbum: Paul + Beaterista
-DESCRIPTION:arquivo: album/album-paul-e-beaterista-feed.jpg\\nlegenda: criei um álbum de figurinhas do Paul e da Beaterista 🥁 jogue\, ganhe pacotes e complete a coleção: jogos.beaterista.com.br (link na bio)\\nferramenta: Meta Business Suite
+SUMMARY:@beaterista_ (feed) · apresentando o Robôterista Paul (carrossel 3 slides)
+DESCRIPTION:arquivo: minhas-artes/carrossel-B-paul-3-slides/ (3 slides)\nlegenda: oi\, eu sou o Robôterista Paul 🤖🥁 assistente da Bea. vou te acompanhar nos estudos\, nos jogos e nos desafios musicais. arrasta pro lado! teste grátis: jogos.beaterista.com.br (link na bio)\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -35,8 +35,8 @@ UID:beaterista-post-2@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261113T190500
 DTEND;TZID=America/Sao_Paulo:20261113T193500
-SUMMARY:@beaterista_ (stories) · álbum (story)
-DESCRIPTION:arquivo: album/album-paul-e-beaterista-story.jpg\\nlegenda: link/adesivo pro site\\nferramenta: Meta Business Suite (ou manual)
+SUMMARY:@beaterista_ (stories) · story: oi\, eu sou o Paul
+DESCRIPTION:arquivo: minhas-artes/stories-9x16/01-oi-eu-sou-o-roboterista-paul.jpg\nlegenda: link/adesivo pro site\nferramenta: Meta Business Suite (ou manual)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -49,7 +49,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261114T100000
 DTEND;TZID=America/Sao_Paulo:20261114T103000
 SUMMARY:Você (tarefa) · gravar 3 reels e o vídeo do YouTube
-DESCRIPTION:arquivo: textos/02-redes-youtube-shorts.md\\nlegenda: roteiros 1\, 2 e 4 + vídeo longo "5 jogos pra aprender ritmo"\\nferramenta: manual
+DESCRIPTION:arquivo: textos/02-redes-youtube-shorts.md\nlegenda: roteiros 1\, 2 e 4 + vídeo longo "5 jogos pra aprender ritmo"\nferramenta: manual
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -62,7 +62,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261116T120000
 DTEND;TZID=America/Sao_Paulo:20261116T123000
 SUMMARY:@beaterista_ (feed) · jogo da semana: Beat Hero
-DESCRIPTION:arquivo: posts-feed/beat-hero.jpg\\nlegenda: toque no tempo certo e ganhe XP 🥁 teste grátis: jogos.beaterista.com.br (link na bio)\\nferramenta: Meta Business Suite
+DESCRIPTION:arquivo: posts-feed/beat-hero.jpg\nlegenda: toque no tempo certo e ganhe XP 🥁 teste grátis: jogos.beaterista.com.br (link na bio)\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -75,7 +75,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261116T193000
 DTEND;TZID=America/Sao_Paulo:20261116T200000
 SUMMARY:@beaterista_ (reels) · Reels Beat Hero
-DESCRIPTION:arquivo: (vídeo roteiro 1)\\nlegenda: se você acerta 3 estrelas nesse\, toca bateria. teste grátis\, link na bio.\\nferramenta: Meta Business Suite
+DESCRIPTION:arquivo: (vídeo roteiro 1)\nlegenda: se você acerta 3 estrelas nesse\, toca bateria. teste grátis\, link na bio.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -88,7 +88,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261116T193000
 DTEND;TZID=America/Sao_Paulo:20261116T200000
 SUMMARY:TikTok @beaterista · mesmo Reels Beat Hero
-DESCRIPTION:arquivo: (vídeo roteiro 1)\\nlegenda: mesmo vídeo\, legenda curta + #bateria #jogosmusicais\\nferramenta: TikTok Studio
+DESCRIPTION:arquivo: (vídeo roteiro 1)\nlegenda: mesmo vídeo\, legenda curta + #bateria #jogosmusicais\nferramenta: TikTok Studio
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -101,7 +101,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261117T190000
 DTEND;TZID=America/Sao_Paulo:20261117T193000
 SUMMARY:WhatsApp pais · convite aos pais
-DESCRIPTION:arquivo: whatsapp-pais/wa-01-brincar-e-estudar.jpg\\nlegenda: texto 1 de textos/03-whatsapp-pais.md\\nferramenta: manual (lembrete)
+DESCRIPTION:arquivo: whatsapp-pais/wa-01-brincar-e-estudar.jpg\nlegenda: texto 1 de textos/03-whatsapp-pais.md\nferramenta: manual (lembrete)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -114,7 +114,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261118T120000
 DTEND;TZID=America/Sao_Paulo:20261118T123000
 SUMMARY:@beaterista_ (feed) · Toca Aqui
-DESCRIPTION:arquivo: posts-feed/toca-aqui.jpg\\nlegenda: leia a figura e toque no pulso 🎼 36 fases pra treinar leitura rítmica. link na bio.\\nferramenta: Meta Business Suite
+DESCRIPTION:arquivo: posts-feed/toca-aqui.jpg\nlegenda: leia a figura e toque no pulso 🎼 36 fases pra treinar leitura rítmica. link na bio.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -127,7 +127,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261118T121000
 DTEND;TZID=America/Sao_Paulo:20261118T124000
 SUMMARY:@beaterista_ (stories) · enquete: sabe ler partitura?
-DESCRIPTION:arquivo: stories/toca-aqui.jpg\\nlegenda: enquete: "você sabe ler partitura?" + story do jogo\\nferramenta: Meta Business Suite (ou manual)
+DESCRIPTION:arquivo: stories/toca-aqui.jpg\nlegenda: enquete: "você sabe ler partitura?" + story do jogo\nferramenta: Meta Business Suite (ou manual)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -137,10 +137,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-10@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261119T193000
-DTEND;TZID=America/Sao_Paulo:20261119T200000
-SUMMARY:@beaterista_ (reels) · Reels Toca Aqui / Uno Musical
-DESCRIPTION:arquivo: (vídeo roteiro 2 ou 4)\\nlegenda: consegue ler isso e tocar no tempo?\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261119T100000
+DTEND;TZID=America/Sao_Paulo:20261119T103000
+SUMMARY:Google Meu Negócio · novidade: Detetive Note
+DESCRIPTION:arquivo: posts-feed/detetive-note.jpg\nlegenda: texto 1 de textos/01-google-ads-e-seo.md §5\nferramenta: manual ou Metricool/Buffer
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -150,10 +150,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-11@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261119T100000
-DTEND;TZID=America/Sao_Paulo:20261119T103000
-SUMMARY:Google Meu Negócio · novidade: Detetive Note
-DESCRIPTION:arquivo: posts-feed/detetive-note.jpg\\nlegenda: texto 1 de textos/01-google-ads-e-seo.md §5\\nferramenta: manual ou Metricool/Buffer
+DTSTART;TZID=America/Sao_Paulo:20261119T193000
+DTEND;TZID=America/Sao_Paulo:20261119T200000
+SUMMARY:@beaterista_ (reels) · Reels Toca Aqui / Uno Musical
+DESCRIPTION:arquivo: (vídeo roteiro 2 ou 4)\nlegenda: consegue ler isso e tocar no tempo?\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -163,10 +163,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-12@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261120T190000
-DTEND;TZID=America/Sao_Paulo:20261120T193000
-SUMMARY:@beaterista_ (feed) · faça a sua figurinha
-DESCRIPTION:arquivo: album/album-faca-a-sua-figurinha-feed.jpg\\nlegenda: escolha o modelo\, ajuste sua foto e baixe a sua cartinha. a foto fica só no seu aparelho. perfil do aluno → criar.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261120T120000
+DTEND;TZID=America/Sao_Paulo:20261120T123000
+SUMMARY:Google Ads · criar campanha de Pesquisa
+DESCRIPTION:arquivo: textos/01-google-ads-e-seo.md\nlegenda: criar hoje pra começar a rodar 23/11 (aprovação leva até 1-2 dias). R$ 15-25/dia\nferramenta: manual
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -176,10 +176,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-13@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261120T120000
-DTEND;TZID=America/Sao_Paulo:20261120T123000
-SUMMARY:Google Ads · criar campanha de Pesquisa
-DESCRIPTION:arquivo: textos/01-google-ads-e-seo.md\\nlegenda: criar hoje pra começar a rodar 23/11 (aprovação leva até 1-2 dias). R$ 15-25/dia\\nferramenta: manual
+DTSTART;TZID=America/Sao_Paulo:20261120T190000
+DTEND;TZID=America/Sao_Paulo:20261120T193000
+SUMMARY:@beaterista_ (feed) · por que Paul? (história do nome)
+DESCRIPTION:arquivo: minhas-artes/posts-unicos/por-que-paul.jpg\nlegenda: meu nome é uma homenagem ao Paul McCartney\, um dos músicos favoritos da Bea 🎸 qual é a sua favorita dos Beatles? comenta aqui!\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -192,7 +192,7 @@ DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261121T100000
 DTEND;TZID=America/Sao_Paulo:20261121T103000
 SUMMARY:YouTube @beateristadrummer · vídeo: jogos que ensinam bateria
-DESCRIPTION:arquivo: youtube/yt-01-jogos-que-ensinam.jpg\\nlegenda: título 1 de textos/02\; descrição modelo\; miniatura yt-01\\nferramenta: YouTube Studio
+DESCRIPTION:arquivo: youtube/yt-01-jogos-que-ensinam.jpg\nlegenda: título 1 de textos/02\; descrição modelo\; miniatura yt-01\nferramenta: YouTube Studio
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -202,10 +202,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-15@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261122T180000
-DTEND;TZID=America/Sao_Paulo:20261122T183000
-SUMMARY:@beaterista_ (stories) · caixa: qual figura rítmica você mais erra?
-DESCRIPTION:arquivo: (caixa de perguntas)\\nlegenda: sticker de pergunta\\nferramenta: manual
+DTSTART;TZID=America/Sao_Paulo:20261122T120000
+DTEND;TZID=America/Sao_Paulo:20261122T123000
+SUMMARY:@beaterista_ (feed) · conheça o Paul: parceiro de som\, estudos\, lojinha e álbum
+DESCRIPTION:arquivo: minhas-artes/carrossel-A-paul-4-slides/ (4 slides)\nlegenda: seu parceiro de som 🥁 estudos\, jogos\, lojinha e álbum de figurinhas. arrasta e vem comigo! (teste grátis no link da bio)\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -215,10 +215,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-16@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261123T120000
-DTEND;TZID=America/Sao_Paulo:20261123T123000
-SUMMARY:@beaterista_ (feed) · Detetive Note
-DESCRIPTION:arquivo: posts-feed/detetive-note.jpg\\nlegenda: ouça o ritmo e monte com as cartas 🕵️ escuta + memória rítmica\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261122T180000
+DTEND;TZID=America/Sao_Paulo:20261122T183000
+SUMMARY:@beaterista_ (stories) · caixa: qual figura rítmica você mais erra?
+DESCRIPTION:arquivo: (caixa de perguntas)\nlegenda: sticker de pergunta\nferramenta: manual
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -228,10 +228,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-17@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261123T190000
-DTEND;TZID=America/Sao_Paulo:20261123T193000
-SUMMARY:@beaterista_ (stories) · teaser black friday
-DESCRIPTION:arquivo: black-friday/bf-geral-story.jpg\\nlegenda: sticker de contagem regressiva pra 27/11 + "semana que vem tem black friday na lojinha"\\nferramenta: Meta Business Suite (ou manual)
+DTSTART;TZID=America/Sao_Paulo:20261123T120000
+DTEND;TZID=America/Sao_Paulo:20261123T123000
+SUMMARY:@beaterista_ (feed) · Detetive Note
+DESCRIPTION:arquivo: posts-feed/detetive-note.jpg\nlegenda: ouça o ritmo e monte com as cartas 🕵️ escuta + memória rítmica\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -241,10 +241,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-18@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261124T190000
-DTEND;TZID=America/Sao_Paulo:20261124T193000
-SUMMARY:WhatsApp pais · o que cada jogo desenvolve
-DESCRIPTION:arquivo: whatsapp-pais/wa-02-o-que-cada-jogo-desenvolve.jpg\\nlegenda: texto 2\\nferramenta: manual (lembrete)
+DTSTART;TZID=America/Sao_Paulo:20261123T190000
+DTEND;TZID=America/Sao_Paulo:20261123T193000
+SUMMARY:@beaterista_ (stories) · teaser black friday
+DESCRIPTION:arquivo: black-friday/bf-geral-story.jpg\nlegenda: sticker de contagem regressiva pra 27/11 + "semana que vem tem black friday na lojinha"\nferramenta: Meta Business Suite (ou manual)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -254,10 +254,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-19@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261124T193000
-DTEND;TZID=America/Sao_Paulo:20261124T200000
-SUMMARY:@beaterista_ (reels) · Reels pauLta
-DESCRIPTION:arquivo: (vídeo roteiro 5)\\nlegenda: ler partitura de bateria em 30 segundos\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261124T120000
+DTEND;TZID=America/Sao_Paulo:20261124T123000
+SUMMARY:@beaterista_ (feed) · álbum: Paul + Beaterista
+DESCRIPTION:arquivo: album/album-paul-e-beaterista-feed.jpg\nlegenda: criei um álbum de figurinhas do Paul e da Beaterista 🥁 jogue\, ganhe pacotes e complete a coleção. link na bio.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -267,10 +267,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-20@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261125T120000
-DTEND;TZID=America/Sao_Paulo:20261125T123000
-SUMMARY:@beaterista_ (feed) · pauLta
-DESCRIPTION:arquivo: posts-feed/paulta.jpg\\nlegenda: aprenda a ler a pauta da bateria\, clave de sol e de fá. link na bio.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261124T190000
+DTEND;TZID=America/Sao_Paulo:20261124T193000
+SUMMARY:WhatsApp pais · o que cada jogo desenvolve
+DESCRIPTION:arquivo: whatsapp-pais/wa-02-o-que-cada-jogo-desenvolve.jpg\nlegenda: texto 2\nferramenta: manual (lembrete)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -280,10 +280,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-21@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261126T193000
-DTEND;TZID=America/Sao_Paulo:20261126T200000
-SUMMARY:@beaterista_ (reels) · Reels: como o Paul nasceu
-DESCRIPTION:arquivo: (vídeo bastidores)\\nlegenda: bastidor do robô: desenho\, nome\, personalidade\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261124T193000
+DTEND;TZID=America/Sao_Paulo:20261124T200000
+SUMMARY:@beaterista_ (reels) · Reels pauLta
+DESCRIPTION:arquivo: (vídeo roteiro 5)\nlegenda: ler partitura de bateria em 30 segundos\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -293,10 +293,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-22@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261126T200000
-DTEND;TZID=America/Sao_Paulo:20261126T203000
-SUMMARY:WhatsApp lista/grupos · amanhã: black friday
-DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\\nlegenda: "amanhã abre a black friday da Beaterista. fique de olho aqui 💛"\\nferramenta: manual (lembrete)
+DTSTART;TZID=America/Sao_Paulo:20261125T120000
+DTEND;TZID=America/Sao_Paulo:20261125T123000
+SUMMARY:@beaterista_ (feed) · pauLta
+DESCRIPTION:arquivo: posts-feed/paulta.jpg\nlegenda: aprenda a ler a pauta da bateria\, clave de sol e de fá. link na bio.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -306,10 +306,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-23@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261127T080000
-DTEND;TZID=America/Sao_Paulo:20261127T083000
-SUMMARY:@beaterista_ (feed) · BLACK FRIDAY abriu
-DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\\nlegenda: 🔥 BLACK FRIDAY Beaterista: descontos nos materiais em PDF. link na lojinha (bio). whatsapp (18) 99180-4150\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261125T190000
+DTEND;TZID=America/Sao_Paulo:20261125T193000
+SUMMARY:@beaterista_ (feed) · por dentro do Beaterista Mood
+DESCRIPTION:arquivo: minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg\nlegenda: o ebook que eu uso\, ensino e levo pro palco 🥁 55 páginas + 20 de atividades bônus. black friday na lojinha (27/11).\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -319,10 +319,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-24@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261127T080000
-DTEND;TZID=America/Sao_Paulo:20261127T083000
-SUMMARY:@beaterista.escolademusica · black friday na escola
-DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\\nlegenda: convidar @beaterista_ como colaboradora do post (Meta Business Suite permite) ou repostar\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261126T120000
+DTEND;TZID=America/Sao_Paulo:20261126T123000
+SUMMARY:@beaterista_ (feed) · menos pressa\, mais groove
+DESCRIPTION:arquivo: minhas-artes/posts-unicos/menos-pressa-mais-groove.jpg\nlegenda: toda semana alguém me pergunta como evoluir mais rápido. resposta: menos pressa\, mais groove 🥁 salva pra lembrar!\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -332,10 +332,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-25@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261127T081000
-DTEND;TZID=America/Sao_Paulo:20261127T084000
-SUMMARY:@beaterista_ (stories) · BF story 1 de 3
-DESCRIPTION:arquivo: black-friday/bf-geral-story.jpg\\nlegenda: link da lojinha\\nferramenta: manual (stories com link)
+DTSTART;TZID=America/Sao_Paulo:20261126T193000
+DTEND;TZID=America/Sao_Paulo:20261126T200000
+SUMMARY:@beaterista_ (reels) · Reels: como o Paul nasceu
+DESCRIPTION:arquivo: (vídeo bastidores)\nlegenda: bastidor do robô: desenho\, nome\, personalidade\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -345,10 +345,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-26@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261127T120000
-DTEND;TZID=America/Sao_Paulo:20261127T123000
-SUMMARY:WhatsApp pais · black friday: mensagem 4
-DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\\nlegenda: texto 4 (atualizado\, com lojinha)\\nferramenta: manual (lembrete)
+DTSTART;TZID=America/Sao_Paulo:20261126T200000
+DTEND;TZID=America/Sao_Paulo:20261126T203000
+SUMMARY:WhatsApp lista/grupos · amanhã: black friday
+DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\nlegenda: "amanhã abre a black friday da Beaterista. fique de olho aqui 💛"\nferramenta: manual (lembrete)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -358,10 +358,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-27@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261127T190000
-DTEND;TZID=America/Sao_Paulo:20261127T193000
-SUMMARY:@beaterista_ (feed) · Bateria Start pela metade do preço
-DESCRIPTION:arquivo: black-friday/bf-start-feed.jpg\\nlegenda: de R$ 29\,90 por R$ 14\,90 🥁 44 páginas pra quem está começando. link na lojinha.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261127T080000
+DTEND;TZID=America/Sao_Paulo:20261127T083000
+SUMMARY:@beaterista_ (feed) · BLACK FRIDAY abriu
+DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\nlegenda: 🔥 BLACK FRIDAY Beaterista: descontos nos materiais em PDF. link na lojinha (bio). whatsapp (18) 99180-4150\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -371,10 +371,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-28@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261128T100000
-DTEND;TZID=America/Sao_Paulo:20261128T103000
-SUMMARY:YouTube @beateristadrummer · vídeo: ler partitura jogando (pauLta)
-DESCRIPTION:arquivo: youtube/yt-02-aprenda-a-ler-partitura.jpg\\nlegenda: título 2\; no fim\, citar a black friday\\nferramenta: YouTube Studio
+DTSTART;TZID=America/Sao_Paulo:20261127T080000
+DTEND;TZID=America/Sao_Paulo:20261127T083000
+SUMMARY:@beaterista.escolademusica · black friday na escola
+DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\nlegenda: convidar @beaterista_ como colaboradora do post (Meta Business Suite permite) ou repostar\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -384,10 +384,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-29@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261128T190000
-DTEND;TZID=America/Sao_Paulo:20261128T193000
-SUMMARY:@beaterista_ (feed) · Bateria Kids
-DESCRIPTION:arquivo: black-friday/bf-bateria-kids-feed.jpg\\nlegenda: aprenda bateria brincando e colorindo. black friday na lojinha.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261127T081000
+DTEND;TZID=America/Sao_Paulo:20261127T084000
+SUMMARY:@beaterista_ (stories) · BF story 1 de 3
+DESCRIPTION:arquivo: black-friday/bf-geral-story.jpg\nlegenda: link da lojinha\nferramenta: manual (stories com link)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -397,10 +397,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-30@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261129T120000
-DTEND;TZID=America/Sao_Paulo:20261129T123000
-SUMMARY:@beaterista_ (feed) · Violão do Zero
-DESCRIPTION:arquivo: black-friday/bf-violao-feed.jpg\\nlegenda: da primeira corda à primeira música. black friday na lojinha.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261127T120000
+DTEND;TZID=America/Sao_Paulo:20261127T123000
+SUMMARY:WhatsApp pais · black friday: mensagem 4
+DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\nlegenda: texto 4 (atualizado\, com lojinha)\nferramenta: manual (lembrete)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -410,10 +410,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-31@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261129T190000
-DTEND;TZID=America/Sao_Paulo:20261129T193000
-SUMMARY:@beaterista_ (stories) · BF story: jogo da memória (imprimir)
-DESCRIPTION:arquivo: black-friday/bf-memoria-story.jpg\\nlegenda: link da lojinha\\nferramenta: manual (stories com link)
+DTSTART;TZID=America/Sao_Paulo:20261127T190000
+DTEND;TZID=America/Sao_Paulo:20261127T193000
+SUMMARY:@beaterista_ (feed) · Bateria Start pela metade do preço
+DESCRIPTION:arquivo: black-friday/bf-start-feed.jpg\nlegenda: de R$ 29\,90 por R$ 14\,90 🥁 44 páginas pra quem está começando. link na lojinha.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -423,10 +423,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-32@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261130T080000
-DTEND;TZID=America/Sao_Paulo:20261130T083000
-SUMMARY:@beaterista_ (feed) · ÚLTIMO DIA: Robôterista Ensina
-DESCRIPTION:arquivo: black-friday/bf-roboterista-feed.jpg\\nlegenda: último dia da black friday na Beaterista! link na lojinha.\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261128T100000
+DTEND;TZID=America/Sao_Paulo:20261128T103000
+SUMMARY:YouTube @beateristadrummer · vídeo: ler partitura jogando (pauLta)
+DESCRIPTION:arquivo: youtube/yt-02-aprenda-a-ler-partitura.jpg\nlegenda: título 2\; no fim\, citar a black friday\nferramenta: YouTube Studio
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -436,10 +436,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-33@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261130T120000
-DTEND;TZID=America/Sao_Paulo:20261130T123000
-SUMMARY:WhatsApp pais · último dia
-DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\\nlegenda: "último dia da black friday 💛"\\nferramenta: manual (lembrete)
+DTSTART;TZID=America/Sao_Paulo:20261128T190000
+DTEND;TZID=America/Sao_Paulo:20261128T193000
+SUMMARY:@beaterista_ (feed) · Bateria Kids
+DESCRIPTION:arquivo: black-friday/bf-bateria-kids-feed.jpg\nlegenda: aprenda bateria brincando e colorindo. black friday na lojinha.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -449,10 +449,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-34@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261130T200000
-DTEND;TZID=America/Sao_Paulo:20261130T203000
-SUMMARY:@beaterista_ (stories) · última chamada (story)
-DESCRIPTION:arquivo: black-friday/bf-mood-story.jpg\\nlegenda: "hoje termina"\\nferramenta: manual
+DTSTART;TZID=America/Sao_Paulo:20261129T120000
+DTEND;TZID=America/Sao_Paulo:20261129T123000
+SUMMARY:@beaterista_ (feed) · Violão do Zero
+DESCRIPTION:arquivo: black-friday/bf-violao-feed.jpg\nlegenda: da primeira corda à primeira música. black friday na lojinha.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -462,10 +462,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-35@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261201T120000
-DTEND;TZID=America/Sao_Paulo:20261201T123000
-SUMMARY:@beaterista_ (feed) · jogo da velha musical
-DESCRIPTION:arquivo: posts-feed/jogo-da-velha.jpg\\nlegenda: responda a pergunta de música pra marcar a casa ⭕❌\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261129T190000
+DTEND;TZID=America/Sao_Paulo:20261129T193000
+SUMMARY:@beaterista_ (stories) · BF story: jogo da memória (imprimir)
+DESCRIPTION:arquivo: black-friday/bf-memoria-story.jpg\nlegenda: link da lojinha\nferramenta: manual (stories com link)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -475,10 +475,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-36@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261202T190000
-DTEND;TZID=America/Sao_Paulo:20261202T193000
-SUMMARY:@beaterista_ (feed) · STOP Musical
-DESCRIPTION:arquivo: posts-feed/stop-musical.jpg\\nlegenda: a letra é sorteada e você escreve rápido: 12 categorias de música\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261130T080000
+DTEND;TZID=America/Sao_Paulo:20261130T083000
+SUMMARY:@beaterista_ (feed) · ÚLTIMO DIA: Robôterista Ensina
+DESCRIPTION:arquivo: black-friday/bf-roboterista-feed.jpg\nlegenda: último dia da black friday na Beaterista! link na lojinha.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -488,10 +488,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-37@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261203T100000
-DTEND;TZID=America/Sao_Paulo:20261203T103000
-SUMMARY:Google Meu Negócio · dica de estudo
-DESCRIPTION:arquivo: posts-feed/estudos.jpg\\nlegenda: texto 3 de §5\\nferramenta: manual ou Metricool/Buffer
+DTSTART;TZID=America/Sao_Paulo:20261130T120000
+DTEND;TZID=America/Sao_Paulo:20261130T123000
+SUMMARY:WhatsApp pais · último dia
+DESCRIPTION:arquivo: black-friday/bf-geral-feed.jpg\nlegenda: "último dia da black friday 💛"\nferramenta: manual (lembrete)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -501,10 +501,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-38@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261204T190000
-DTEND;TZID=America/Sao_Paulo:20261204T193000
-SUMMARY:@beaterista_ (feed) · quebra-cabeça musical
-DESCRIPTION:arquivo: posts-feed/quebra-cabeca.jpg\\nlegenda: monte o palco\, a guitarra e o estúdio 🧩\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261130T200000
+DTEND;TZID=America/Sao_Paulo:20261130T203000
+SUMMARY:@beaterista_ (stories) · última chamada (story)
+DESCRIPTION:arquivo: black-friday/bf-mood-story.jpg\nlegenda: "hoje termina"\nferramenta: manual
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -514,10 +514,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-39@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261205T100000
-DTEND;TZID=America/Sao_Paulo:20261205T103000
-SUMMARY:YouTube @beateristadrummer · vídeo: Uno Musical
-DESCRIPTION:arquivo: youtube/yt-04-uno-musical.jpg\\nlegenda: título 3\\nferramenta: YouTube Studio
+DTSTART;TZID=America/Sao_Paulo:20261201T120000
+DTEND;TZID=America/Sao_Paulo:20261201T123000
+SUMMARY:@beaterista_ (feed) · jogo da velha musical
+DESCRIPTION:arquivo: posts-feed/jogo-da-velha.jpg\nlegenda: responda a pergunta de música pra marcar a casa ⭕❌\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -527,10 +527,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-40@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261206T120000
-DTEND;TZID=America/Sao_Paulo:20261206T123000
-SUMMARY:@beaterista_ (reels) · Reels com parceiros
-DESCRIPTION:arquivo: (com @naganodrumsofficial @sparkmusical @padgorilla)\\nlegenda: marcar os parceiros e usar banners/parceiros-1200x300.png no final\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261202T190000
+DTEND;TZID=America/Sao_Paulo:20261202T193000
+SUMMARY:@beaterista_ (feed) · STOP Musical
+DESCRIPTION:arquivo: posts-feed/stop-musical.jpg\nlegenda: a letra é sorteada e você escreve rápido: 12 categorias de música\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -540,10 +540,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-41@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261207T120000
-DTEND;TZID=America/Sao_Paulo:20261207T123000
-SUMMARY:@beaterista_ (feed) · ritmos de bateria (estudos)
-DESCRIPTION:arquivo: posts-feed/ritmos-de-bateria.jpg\\nlegenda: rock 1\, rock 2\, rock 3: sabe a diferença?\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261203T100000
+DTEND;TZID=America/Sao_Paulo:20261203T103000
+SUMMARY:Google Meu Negócio · dica de estudo
+DESCRIPTION:arquivo: posts-feed/estudos.jpg\nlegenda: texto 3 de §5\nferramenta: manual ou Metricool/Buffer
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -553,10 +553,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-42@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261208T190000
-DTEND;TZID=America/Sao_Paulo:20261208T193000
-SUMMARY:WhatsApp pais · como funciona
-DESCRIPTION:arquivo: whatsapp-pais/wa-06-como-funciona.jpg\\nlegenda: texto 3\\nferramenta: manual (lembrete)
+DTSTART;TZID=America/Sao_Paulo:20261203T190000
+DTEND;TZID=America/Sao_Paulo:20261203T193000
+SUMMARY:@beaterista_ (feed) · a Bea ensina\, o Paul treina com você
+DESCRIPTION:arquivo: minhas-artes/posts-unicos/a-bea-ensina-eu-treino-com-voce.jpg\nlegenda: a Bea ensina\, o Paul treina com você 🤖 jogos e desafios no app\, link na bio.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -566,10 +566,10 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-43@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261209T120000
-DTEND;TZID=America/Sao_Paulo:20261209T123000
-SUMMARY:@beaterista_ (feed) · acordes de violão
-DESCRIPTION:arquivo: posts-feed/acordes.jpg\\nlegenda: 16 acordes: veja onde pôr o dedo e ouça\\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261204T190000
+DTEND;TZID=America/Sao_Paulo:20261204T193000
+SUMMARY:@beaterista_ (feed) · quebra-cabeça musical
+DESCRIPTION:arquivo: posts-feed/quebra-cabeca.jpg\nlegenda: monte o palco\, a guitarra e o estúdio 🧩\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -579,10 +579,114 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-44@kit
 DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T100000
+DTEND;TZID=America/Sao_Paulo:20261205T103000
+SUMMARY:YouTube @beateristadrummer · vídeo: Uno Musical
+DESCRIPTION:arquivo: youtube/yt-04-uno-musical.jpg\nlegenda: título 3\nferramenta: YouTube Studio
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-45@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T190000
+DTEND;TZID=America/Sao_Paulo:20261205T193000
+SUMMARY:@beaterista_ (feed) · faça a sua figurinha
+DESCRIPTION:arquivo: album/album-faca-a-sua-figurinha-feed.jpg\nlegenda: escolha o modelo\, ajuste sua foto e baixe sua cartinha. a foto fica só no seu aparelho. perfil do aluno → criar.\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-46@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261206T120000
+DTEND;TZID=America/Sao_Paulo:20261206T123000
+SUMMARY:@beaterista_ (reels) · Reels com parceiros
+DESCRIPTION:arquivo: (com @naganodrumsofficial @sparkmusical @padgorilla)\nlegenda: marcar os parceiros e usar banners/parceiros-1200x300.png no final\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-47@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261207T120000
+DTEND;TZID=America/Sao_Paulo:20261207T123000
+SUMMARY:@beaterista_ (feed) · ritmos de bateria (estudos)
+DESCRIPTION:arquivo: posts-feed/ritmos-de-bateria.jpg\nlegenda: rock 1\, rock 2\, rock 3: sabe a diferença?\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-48@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T120000
+DTEND;TZID=America/Sao_Paulo:20261208T123000
+SUMMARY:@beaterista_ (feed) · dá o play
+DESCRIPTION:arquivo: minhas-artes/posts-unicos/da-o-play-deixa-a-musica-levar.jpg\nlegenda: dá o play. deixa a música levar 🎶\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-49@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T190000
+DTEND;TZID=America/Sao_Paulo:20261208T193000
+SUMMARY:WhatsApp pais · como funciona
+DESCRIPTION:arquivo: whatsapp-pais/wa-06-como-funciona.jpg\nlegenda: texto 3\nferramenta: manual (lembrete)
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-50@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261209T120000
+DTEND;TZID=America/Sao_Paulo:20261209T123000
+SUMMARY:@beaterista_ (feed) · acordes de violão
+DESCRIPTION:arquivo: posts-feed/acordes.jpg\nlegenda: 16 acordes: veja onde pôr o dedo e ouça\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-51@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261210T120000
+DTEND;TZID=America/Sao_Paulo:20261210T123000
+SUMMARY:@beaterista_ (feed) · seu parceiro de groove
+DESCRIPTION:arquivo: minhas-artes/posts-unicos/seu-parceiro-de-groove-azul.jpg\nlegenda: dicas pra praticar\, desafios musicais e uma força nos estudos. com a Bea\, aprender ganha ritmo.\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-52@kit
+DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261210T193000
 DTEND;TZID=America/Sao_Paulo:20261210T200000
 SUMMARY:@beaterista_ (reels) · Reels ritmos de bateria
-DESCRIPTION:arquivo: (vídeo roteiro 7)\\nlegenda: rock 1\, 2\, 3…\\nferramenta: Meta Business Suite
+DESCRIPTION:arquivo: (vídeo roteiro 7)\nlegenda: rock 1\, 2\, 3…\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY

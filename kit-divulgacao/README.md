@@ -10,6 +10,7 @@ Tudo feito a partir do app dos alunos (jogos.beaterista.com.br) e do `PASSAGEM.m
 | `whatsapp-pais/` | 6 imagens 1080×1080 | grupos de pais, lista de transmissão |
 | `banners/` | site (1920×600) + 10 tamanhos do Google Display + 2 logos | seu site e Google Ads |
 | `youtube/` | 4 miniaturas 1280×720 + banner de canal | YouTube |
+| `minhas-artes/` | **as suas 16 artes do Paul** (JPG) em pastas: carrossel A (4), carrossel B (3), posts únicos, capas dos materiais, versões 9:16 para stories | publicar nos seus dias do calendário |
 | `album/` | 4 temas de figurinhas (Paul + Beaterista, rock, pop, coleção) + "faça a sua figurinha", feed e story | divulgar o álbum |
 | `black-friday/` | geral + 1 post e 1 story por material (6) | black friday da lojinha |
 | `pagina-de-vendas/` | `index.html` pronta (abre no navegador) | publicar como página de vendas |
