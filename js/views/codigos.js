@@ -11,7 +11,7 @@ const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt)
 
 /** O que um passe pode liberar (telas que ficam trancadas sem código). `rotas` = prefixos de endereço. */
 const PASSES = [
-  ['Uno Musical', ['#/jogos/cartas']], ['quiz do Uno', ['#/jogos/quizuno']], ['Toca Aqui', ['#/jogos/toca']], ['Figurix', ['#/jogos/figurix', '#/kids/figuras']], ['Rudimentos', ['#/jogos/rudimentos']],
+  ['Uno Musical', ['#/jogos/cartas']], ['quiz do Uno', ['#/jogos/quizuno']], ['Toca Aqui', ['#/jogos/toca']], ['Figurix', ['#/jogos/figurix', '#/kids/figuras']], ['Taiko', ['#/jogos/rudimentos']],
   ['Beat Hero e músicas', ['#/ritmo']], ['pauLta', ['#/paulta']], ['fases dos Kids', ['#/kids']], ['dicas do método (Estudos)', ['#/estudos/dicas']],
   ['Modo Aventura (todos os jogos)', ['/aventura']], ['Álbum e roleta', ['#/album']], ['Ranking', ['#/ranking']],
 ];

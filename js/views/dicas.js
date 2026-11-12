@@ -13,10 +13,12 @@ const KEY = 'setting-dicas';
 const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (p) => store.upsert('setting', KEY, p);
 import { tipList } from '../tipbox.js';
+import { LETRAS as NOMES_LETRAS, nomeLetras } from '../letras-nomes.js';
 const items = () => T.keywords(tipList(), conf().kw);
 // amostra grátis (sem código): a caça-palavras usa palavras do dicionário musical, não as dicas do método
 const termItems = () => TERMS.filter((x) => /^\p{L}+$/u.test(x.t)).map((x, i) => ({ n: i + 1, text: x.d, w: T.norm(x.t), shown: x.t, termo: true })).filter((x) => x.w.length >= 4 && x.w.length <= 8);
-const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha'], ['duelo', 'duelo']];
+const TABS = ['quiz', 'caca', 'cruzadinha'].map((k) => [k, nomeLetras(k)]); // 'duelo' (jogar com código) não é mais aba: vive dentro de cada jogo (#/dicas/<jogo>/codigo); #/dicas/duelo segue abrindo pra quem entra numa sala por código
+const JOGOS_LETRAS = ['quiz', 'caca', 'cruzadinha'];
 const total = () => Math.max(30, tipList().length);
 
 /** A dica inteira, pra quando a palavra é achada. */
@@ -148,11 +150,12 @@ function cruzadinha(box, D) {
 /** Pro duelo em 2 celulares (js/jogos/duelo-letras.js): os 3 jogos com puzzle preparado e as dicas do aluno. */
 export const _duelo = { caca, cruzadinha, quiz, items };
 const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg', duelo: 'cara-a-cara.webp' };
-const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas', duelo: '2 celulares' };
+const SUB = Object.fromEntries(Object.entries(NOMES_LETRAS).map(([k, v]) => [k, v[1]]));
 
 export function mount(host, parts = []) {
   const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
-  const tab = TABS.some(([k]) => k === parts[0]) ? parts[0] : limited ? 'caca' : 'quiz';
+  const tab = TABS.some(([k]) => k === parts[0]) || parts[0] === 'duelo' ? parts[0] : limited ? 'caca' : 'quiz';
+  const porCodigo = tab === 'duelo' || (JOGOS_LETRAS.includes(tab) && parts[1] === 'codigo'); // duelo de 2 celulares por código de sala
   const box = h('div', { class: 'dc-box' });
   // modo claro/escuro: lembra a escolha; sem escolha, segue o aparelho
   const KM = 'beaterista-dicas-modo';
@@ -163,19 +166,22 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner('Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
+  host.append(banner(tab === 'duelo' ? 'jogar com código' : nomeLetras(tab), limited ? `${GRATIS.caca} partidas de ${nomeLetras('caca')} de graça` : 'com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
       h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
         h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, limited && k !== 'caca' ? `🔒 ${t}` : t), h('small', {}, SUB[k])))),
+      JOGOS_LETRAS.includes(tab) ? h('div', { class: 'jg-seg dc-modos', role: 'radiogroup', 'aria-label': 'como jogar' },
+        h('button', { type: 'button', role: 'radio', 'aria-checked': String(!porCodigo), class: porCodigo ? '' : 'on', onclick: () => { location.hash = `#/dicas/${tab}`; } }, 'sozinho'),
+        h('button', { type: 'button', role: 'radio', 'aria-checked': String(porCodigo), class: porCodigo ? 'on' : '', onclick: () => { location.hash = `#/dicas/${tab}/codigo`; } }, limited ? 'com código (alunos)' : 'com código · 2 celulares')) : null,
       box);
   const run = () => {
     box.replaceChildren();
-    if (limited) { if (tab === 'caca') caca(box); else box.append(avisoCodigo(`${tab === 'quiz' ? 'o quiz' : tab === 'duelo' ? 'o duelo' : 'a cruzadinha'} é pra alunos da Beaterista: usa as dicas do método. a caça-palavras tem ${GRATIS.caca} partidas grátis.`)); return; }
+    if (limited) { if (tab === 'caca' && !porCodigo) caca(box); else box.append(avisoCodigo(`${porCodigo ? 'jogar com código' : tab === 'quiz' ? nomeLetras('quiz') : nomeLetras('cruzadinha')} é pra alunos da Beaterista: usa as dicas do método. ${nomeLetras('caca')} tem ${GRATIS.caca} partidas grátis.`)); return; }
     const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
-    if (tab === 'duelo') { import('../jogos/duelo-letras.js').then((m) => { if (!gone) stopDuelo = m.mountDueloLetras(box); }); return; }
+    if (porCodigo) { import('../jogos/duelo-letras.js').then((m) => { if (!gone) stopDuelo = m.mountDueloLetras(box, JOGOS_LETRAS.includes(tab) ? tab : null); }); return; }
     ({ quiz: () => quiz(box, ['blank', 'continua'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };
   let gone = false; let stopDuelo = null;

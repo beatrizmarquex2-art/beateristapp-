@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FASES, BLOCOS, TEMPOS, FIGURAS, buildChart, passo, janela, judgeTap, judgeOnsets, sweep, summary, guardar, melhoresDe, estrelas, liberada, totalEstrelas } from '../js/jogos/rudimentos-logic.js';
+import { FASES, BLOCOS, TEMPOS, FIGURAS, buildChart, passo, janela, judgeTap, judgeOnsets, folgas, chaveFalhas, contaFalhas, sweep, summary, guardar, melhoresDe, estrelas, liberada, totalEstrelas } from '../js/jogos/rudimentos-logic.js';
 
 test('são as 11 fases da Bea, em 3 blocos, só com D e E e com 16 toques (a fase do paradiddle duplo dos dois lados tem 32)', () => {
   assert.equal(FASES.length, 11); assert.equal(BLOCOS.length, 3);
@@ -61,3 +61,18 @@ test('estrelas: 1 = colcheia, 2 = + semicolcheia, 3 = semicolcheia a 120 ou mais
   assert.equal(totalEstrelas(est), 3);
 });
 test('dados salvos estragados não quebram', () => { assert.deepEqual(melhoresDe({ 1: 'x' }, 1), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); assert.deepEqual(melhoresDe(null, 3), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); assert.deepEqual(melhoresDe({ 1: [1, 2, 3] }, 1), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); });
+test('folguinha: depois de cada tentativa que não passou a folga cresce (mais pra atrasado) e volta ao normal quando passa', () => {
+  const n0 = folgas(100, 4, 0); assert.equal(n0.nivel, 0); assert.equal(n0.win, janela(100, 4)); assert.equal(n0.late, n0.win);
+  const n1 = folgas(100, 4, 1); const n3 = folgas(100, 4, 3);
+  assert.ok(n1.win > n0.win && n3.win > n1.win); assert.ok(n1.late > n1.win && n3.late > n3.win); assert.ok(n3.win <= 0.2 && n3.late <= 0.26);
+  assert.equal(folgas(100, 4, 9).nivel, 3); // máximo 3
+  let f = {}; const k = chaveFalhas(3, 1, 2); f = contaFalhas(f, k, false); f = contaFalhas(f, k, false); assert.equal(f[k], 2);
+  assert.equal(contaFalhas(f, k, true)[k], 0); assert.equal(contaFalhas({}, k, false)[k], 1); assert.equal(contaFalhas(f, chaveFalhas(3, 0, 2), false)[chaveFalhas(3, 0, 2)], 1); // cada fase/figura/andamento tem o seu
+});
+test('atrasadinho: com a folguinha, um toque um pouco atrasado ainda conta; sem ela, não', () => {
+  const w = janela(60, 2); const atraso = w + 0.03; // colcheia a 60 BPM: notas a cada 0,5 s, folga normal 160 ms
+  const c1 = buildChart('DE', 60, 2); assert.equal(judgeTap(c1, atraso, 'D', w, w).kind, 'extra');
+  const f = folgas(60, 2, 3); const c2 = buildChart('DE', 60, 2); assert.equal(judgeTap(c2, atraso, 'D', f.win, f.late).kind, 'bom');
+  const c3 = buildChart('DE', 60, 2); assert.equal(judgeTap(c3, -(f.win + 0.05), 'D', f.win, f.late).kind, 'extra'); // adiantado demais continua não valendo
+  const c4 = buildChart('DE', 60, 2); judgeOnsets(c4, [atraso], f.win, f.late); assert.equal(c4[0].res, 'bom');
+});

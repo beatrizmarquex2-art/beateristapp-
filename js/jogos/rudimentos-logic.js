@@ -62,30 +62,39 @@ export const totalEstrelas = (est) => FASES.reduce((t, f) => t + estrelas(est, f
 
 /* ---------- conferir os toques ---------- */
 export const PERFEITO = 0.07; // s: toque dentro disso da nota vale "perfeito"
-/** Confere um toque no lado `side` no instante `t` (s). Marca a nota mais próxima, dentro da janela `win`, como 'perfeito', 'bom' ou 'lado' (mão trocada). */
-export function judgeTap(chart, t, side, win = 0.16) {
+/** Confere um toque no lado `side` no instante `t` (s). Marca a nota mais próxima como 'perfeito', 'bom' ou 'lado' (mão trocada).
+ *  `win` = folga pra antes da nota; `late` = folga pra depois (pode ser maior: tocar um pouquinho atrasado é mais comum que adiantado). */
+export function judgeTap(chart, t, side, win = 0.16, late = win) {
   let best = -1; let bd = Infinity;
-  chart.forEach((n, i) => { if (n.res) return; const d = Math.abs(t - n.t); if (d < bd) { bd = d; best = i; } });
-  if (best < 0 || bd > win) return { kind: 'extra' };
+  chart.forEach((n, i) => { if (n.res) return; const d = t - n.t; if (d < -win || d > late) return; const a = Math.abs(d); if (a < bd) { bd = a; best = i; } });
+  if (best < 0) return { kind: 'extra' };
   const n = chart[best]; const ms = Math.round((t - n.t) * 1000);
   n.res = n.side !== side ? 'lado' : bd <= PERFEITO ? 'perfeito' : 'bom';
   return { kind: n.res, i: best, ms };
 }
-/** Notas que já passaram da janela sem toque viram 'faltou'. Devolve quantas mudaram. */
-export function sweep(chart, now, win = 0.16) { let c = 0; for (const n of chart) if (!n.res && now > n.t + win) { n.res = 'faltou'; c++; } return c; }
+/** Notas que já passaram da folga (a de depois, `late`) sem toque viram 'faltou'. Devolve quantas mudaram. */
+export function sweep(chart, now, win = 0.16, late = win) { let c = 0; for (const n of chart) if (!n.res && now > n.t + late) { n.res = 'faltou'; c++; } return c; }
 export function summary(chart) {
   const total = chart.length || 1; const c = (k) => chart.filter((n) => n.res === k).length;
   const hits = c('perfeito') + c('bom'); const pts = c('perfeito') + c('bom') * 0.75;
   return { total: chart.length, perfeito: c('perfeito'), bom: c('bom'), lado: c('lado'), faltou: c('faltou'), hits, acc: Math.round((pts / total) * 100) };
 }
 
+/** Folguinha pra quem está sofrendo: depois de cada tentativa que não passou na mesma fase, figura e andamento (até 3), a folga de acerto cresce
+ *  um pouco, mais pra atrasado que pra adiantado. Quando passa, volta ao normal. `falhas` = tentativas seguidas sem passar. */
+export const AJUDA_MAX = 3;
+export const folgas = (bpm, por, falhas = 0) => { const k = Math.max(0, Math.min(AJUDA_MAX, falhas | 0)); const w = janela(bpm, por); return { win: Math.min(0.2, w * (1 + 0.2 * k)), late: Math.min(0.26, w * (1 + 0.55 * k)), nivel: k }; };
+export const chaveFalhas = (n, figIdx, tempoIdx) => `${n}:${figIdx ? 1 : 0}:${tempoIdx}`;
+/** Novo contador de falhas depois de uma tentativa (puro). */
+export const contaFalhas = (falhas, chave, passou) => { const f = { ...(falhas || {}) }; f[chave] = passou ? 0 : Math.min(AJUDA_MAX, (f[chave] | 0) + 1); return f; };
+
 /** Microfone: o app só ouve QUANDO o aluno bateu (não sabe qual mão). Cada ataque (`onsets`, s desde o 1º tempo) marca a nota mais próxima,
- *  dentro da janela, como 'perfeito' ou 'bom' (qualquer mão). O que sobra vira 'faltou'; ataques a mais vão em `extras`. */
-export function judgeOnsets(chart, onsets, win = 0.16) {
+ *  dentro da folga, como 'perfeito' ou 'bom' (qualquer mão). O que sobra vira 'faltou'; ataques a mais vão em `extras`. */
+export function judgeOnsets(chart, onsets, win = 0.16, late = win) {
   let extras = 0;
   for (const t of [...onsets].sort((a, b) => a - b)) {
-    let best = -1; let bd = Infinity; chart.forEach((n, i) => { if (n.res) return; const d = Math.abs(t - n.t); if (d < bd) { bd = d; best = i; } });
-    if (best < 0 || bd > win) { extras++; continue; } chart[best].res = bd <= PERFEITO ? 'perfeito' : 'bom';
+    let best = -1; let bd = Infinity; chart.forEach((n, i) => { if (n.res) return; const d = t - n.t; if (d < -win || d > late) return; const a = Math.abs(d); if (a < bd) { bd = a; best = i; } });
+    if (best < 0) { extras++; continue; } chart[best].res = bd <= PERFEITO ? 'perfeito' : 'bom';
   }
-  sweep(chart, Infinity, win); return { extras };
+  sweep(chart, Infinity, win, late); return { extras };
 }
