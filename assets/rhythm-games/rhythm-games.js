@@ -314,7 +314,8 @@ function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 const RK_TIER_NAMES=['calminha','devagar','médio','rápido','turbo'];
 function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:Y.kit,lead:D.lead,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
 /* arranjo: devolve o mesmo formato de rsArrange ({st,mel,drums,ev,chords,dur,bars,lead}) */
-function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.length],G=Y.g[D.g];const st=60/S.bpm/4;const sc=RK_SC[D.sc];const SEC=Y.sec;const sw=Y.sw||0;
+const RK_OVR={};
+function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.length],G=Object.assign({},Y.g[D.g],RK_OVR.ci?{ci:RK_OVR.ci}:{});const st=60/S.bpm/4;const sc=RK_SC[D.sc];const SEC=Y.sec;const sw=Y.sw||0;
   let secs;const cyc=[['verso',SEC.verso],['refrao',SEC.refrao],['verso',SEC.verso],['refrao',SEC.refrao],['ponte',SEC.ponte],['refrao',SEC.refrao]];
   if(minSec&&!short){secs=[['intro',2]];let tot=2;for(let k=0;tot*16*st<minSec;k++){const c=cyc[k%cyc.length];secs.push(c);tot+=c[1]}secs.push(['fim',2])}
   else secs=short?[['intro',2],['verso',SEC.verso],['refrao',SEC.refrao],['fim',2]]:[['intro',2]].concat(cyc).concat([['fim',2]]);
@@ -348,7 +349,7 @@ function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.leng
       /* ---- baixo ---- */
       if(kind!=='fim'&&!(kind==='intro'&&b===0)){const bp=G.bass[dk]||G.bass.verso;const hits=[];for(let s=0;s<16;s++) if(bp[s]!=='.') hits.push(s);
         hits.forEach((s,hi)=>{const ch=bp[s];let m=S.root+rootSemi-12;if(ch==='n') m=S.root+nextSemi-12;else m+=IV[ch]||0;const nx=hi+1<hits.length?hits[hi+1]:16;const ds=Math.min(nx-s,ch==='n'?2:Y.bt==='sub'?6:8);
-          ev.push({t:T(B,s),k:'rkb',m,d:Math.max(.06,ds*st*(ds<=2?.85:.92)),v:s%4===0?1:.85,tm:Y.bt})})}
+          ev.push({t:T(B,s),k:'rkb',m,d:Math.max(.06,ds*st*(ds<=2?.85:.92)),v:s%4===0?1:.85,tm:RK_OVR.bt||Y.bt})})}
       /* ---- guitarra base (rock) ou acompanhamento (teclado, órgão, sintetizador) ---- */
       const cp=(G.ch[dk]||G.ch.verso);
       if(kind==='fim'){if(b===0){if(G.ci==='gtr') ev.push({t:T(B,0),k:'rgp',m:gtrRoot(rootSemi),d:st*14,v:1,mu:false});else ev.push({t:T(B,0),k:'rkc',ms:tones,d:st*14,v:.9,ci:G.ci})}}
@@ -379,6 +380,15 @@ function rkLeadX(kind,m,t,d,v){const c=AE.get();d=Math.max(.1,d||.3);v=v||.8;con
   const out=(g,rv)=>{g.connect(AE.master);if(rv){const s=c.createGain();s.gain.value=rv;g.connect(s);s.connect(AE.rev)}};
   const osc=(type,fr,det)=>{const o=c.createOscillator();o.type=type;o.frequency.value=fr;if(det) o.detune.value=det;return o};
   const run=(os,end)=>os.forEach(o=>{o.start(t);o.stop(t+end)});
+  const vibr=(o,del,dep,rate)=>{const lf=c.createOscillator(),lg=c.createGain();lf.frequency.value=rate||5.2;lg.gain.setValueAtTime(0,t);lg.gain.setValueAtTime(0,t+del);lg.gain.linearRampToValueAtTime(dep,t+del+.25);lf.connect(lg);lg.connect(o.detune);lf.start(t);lf.stop(t+d+.6)};
+  const breath=(fq,lvl,dest)=>{const n=AE.noiseSrc(t,Math.min(d+.2,1.5)),bp=AE.filt('bandpass',fq,1.4),ng=c.createGain();ng.gain.setValueAtTime(lvl,t);ng.gain.setTargetAtTime(lvl*.4,t+.05,.2);n.connect(bp);bp.connect(ng);ng.connect(dest)};
+  if(kind==='gaita'){const g=c.createGain(),bp=AE.filt('bandpass',1700,1.1),lp=AE.filt('lowpass',3600,.7);env(g,v*.26,.03,.12,.85,.07);const o=osc('sawtooth',f),o2=osc('square',f,9);o.detune.setValueAtTime(-35,t);o.detune.linearRampToValueAtTime(0,t+.07);const og=c.createGain();og.gain.value=.5;o2.connect(og);o.connect(bp);og.connect(bp);bp.connect(lp);lp.connect(g);vibr(o,.2,14,5.6);breath(2600,.05,g);out(g,.22);run([o,o2],d+.5);return}
+  if(kind==='sax'){const g=c.createGain(),lp=AE.filt('lowpass',2300,.8),pk=AE.filt('peaking',950,1.6);pk.gain.value=7;env(g,v*.24,.04,.12,.9,.08);const o=osc('sawtooth',f),o2=osc('square',f,-6);const og=c.createGain();og.gain.value=.4;o2.connect(og);o.connect(pk);og.connect(pk);pk.connect(lp);lp.connect(g);vibr(o,.18,16,5);vibr(o2,.18,16,5);breath(3000,.06,g);out(g,.25);run([o,o2],d+.5);return}
+  if(kind==='trompete'){const g=c.createGain(),bp=AE.filt('bandpass',1300,2.2),lp=AE.filt('lowpass',3000,.7);env(g,v*.3,.025,.1,.85,.06);const o=osc('sawtooth',f),o2=osc('sawtooth',f,5);o.connect(bp);o2.connect(bp);bp.connect(lp);lp.connect(g);vibr(o,.25,10,5.3);out(g,.2);run([o,o2],d+.5);return}
+  if(kind==='vibra'){const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.3,t+.004);g.gain.setTargetAtTime(0,t+.01,Math.min(.9,.3+d*.5));const tr=c.createOscillator(),tg=c.createGain();tr.frequency.value=5;tg.gain.value=.18;tr.connect(tg);tg.connect(g.gain);[[1,1],[3.99,.18],[10,.04]].forEach(([r,a])=>{const o=osc('sine',f*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+2)});tr.start(t);tr.stop(t+2);out(g,.3);return}
+  if(kind==='marimba'){const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.36,t+.003);g.gain.setTargetAtTime(0,t+.005,.12);[[1,1],[4,.28],[9.2,.06]].forEach(([r,a])=>{const o=osc('sine',f*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+.8)});out(g,.2);return}
+  if(kind==='violao'){AE.pluck(m,t,v*.9);return}
+  if(kind==='guitblues'){const g=c.createGain(),ws=c.createWaveShaper(),lp=AE.filt('lowpass',3000,.7),pk=AE.filt('peaking',1500,1.1);pk.gain.value=4;const cu=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/512-1;cu[i]=Math.tanh(x*2.4)}ws.curve=cu;env(g,v*.22,.006,.35,.55,.1);const o=osc('sawtooth',f),o2=osc('triangle',f*2);const og=c.createGain();og.gain.value=.2;o.detune.setValueAtTime(-90,t);o.detune.linearRampToValueAtTime(0,t+.07);o2.connect(og);const pre=c.createGain();pre.gain.value=.6;o.connect(pre);og.connect(pre);pre.connect(ws);ws.connect(pk);pk.connect(lp);lp.connect(g);vibr(o,.22,15,5.4);out(g,.25);run([o,o2],d+.6);return}
   if(kind==='guitarra') return rkLead(m,t,d,v);
   if(kind==='piano'){AE.noteOn(m,.75,t);AE.noteOff(m,t+d);return}
   if(kind==='sinte'){const g=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.Q.value=4;lp.frequency.setValueAtTime(5200,t);lp.frequency.exponentialRampToValueAtTime(1300,t+Math.min(d,.5));env(g,v*.13,.01,.25,.7,.09);
@@ -411,6 +421,13 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
   const noise=(type,fq,q,dur,pk,dest)=>{const n=AE.noiseSrc(t,dur),f=AE.filt(type,fq,q),g=c.createGain();AE.env(g,t,pk,dur,.001);n.connect(f);f.connect(g);g.connect(dest||out)};
   let dst=out;if(kit==='lofi'){const lp=AE.filt('lowpass',3200,.7);lp.connect(out);dst=lp}
   const T=(f0,f1,dur,pk)=>tone('sine',f0,f1,dur,pk,dst);
+  if(kit==='brush'){switch(name){
+    case 'kick':T(100,48,.35,.9);break;
+    case 'snare':{const n=AE.noiseSrc(t,.4),bp=AE.filt('bandpass',3800,.8),g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.35,t+.06);g.gain.exponentialRampToValueAtTime(.0001,t+.3);n.connect(bp);bp.connect(g);g.connect(dst);break}
+    case 'hhc':noise('highpass',8000,.5,.04,.25);break;case 'hho':noise('highpass',7500,.5,.2,.22);break;
+    case 'crash':noise('highpass',4500,.5,1.2,.3);break;
+    case 'tom1':T(220,130,.35,.8);break;case 'tom2':T(170,100,.4,.8);break;case 'floor':T(120,70,.5,.9);break;
+    default:AE.drum(name,t,vel)}return}
   if(kit==='pop'){switch(name){
     case 'kick':T(150,46,.4,1.35);noise('highpass',3000,.7,.02,.4);break;
     case 'snare':noise('highpass',1800,.7,.2,.7);tone('triangle',210,170,.1,.6,dst);break;
@@ -491,6 +508,9 @@ function rkChord(ci,ms,t,d,v){v=v||.8;d=Math.max(.1,d||.4);
   if(ci==='epiano'){ms.forEach(m=>rkLeadX('epiano',m,t,d,v*.55));return}
   if(ci==='organ'){ms.forEach(m=>rkLeadX('orgao',m,t,d,v*.55));return}
   if(ci==='stab'){rzSynth(ms,t,Math.min(d,.22),.75);return}
+  if(ci==='clean'){rkClean(ms[0]-12,t,d,v*.9,false);return}
+  if(ci==='violao'){ms.forEach((m,k)=>AE.pluck(m-12,t+k*.028,v*.7));return}
+  if(ci==='vibra'){ms.forEach(m=>rkLeadX('vibra',m,t,d,v*.5));return}
   ms.forEach(m=>rkLeadX('sinte',m,t,d,v*.5))}
 /* palmas e aro (side stick) */
 function rkClap(t,vel){const c=AE.get();const out=c.createGain();out.gain.value=vel;out.connect(AE.master);const rv=c.createGain();rv.gain.value=.22;out.connect(rv);rv.connect(AE.rev);if(AE.onDrum) try{AE.onDrum('snare',t)}catch(e){}
@@ -1548,9 +1568,9 @@ global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,refresh:refre
   const star=RZ.chart.find(n=>n.star),plain=RZ.chart.find(n=>!n.star&&!n.res);const before=RZ.stats.score;rzJudge(plain,'perfect');const normal=RZ.stats.score-before;
   rzJudge(star,'perfect');const on=rzSpOn(),mult=rzMult();const b2=RZ.stats.score;const p2=RZ.chart.filter(n=>!n.star&&!n.res)[0];rzJudge(p2,'perfect');const doubled=RZ.stats.score-b2;
   RZ.t0=AE.ctx.currentTime-5-RZ.sp.dur-1;const off=rzSpOn();RZ.phase='menu';return {on:on,mult:mult,normal:normal,doubled:doubled,off:off,specials:RZ.stats.specials}},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_time:function(){return RZ.phase==='play'?rzTime():null},_keys:function(){return RZ_KEYS()},_names:function(){var o={};Object.keys(RK_STY).forEach(function(k){o[k]={n:RK_STY[k].S.map(function(x){return x.n}),t:RK_STY[k].tiers,vb:RK_STY[k].sec.verso}});return o},
-  _render:async function(style,i,secs,lead,opt){opt=opt||{};if(opt.gtr) RK_SND.gtr=opt.gtr;if(opt.kit) RK_SND.kit=opt.kit;if(opt.lead) RK_SND.lead=opt.lead;if(opt.ride) RK_SND.ride=opt.ride;const fr=opt.from||0;const S=rsSong(style,i);const A=rsArrange(S,false,fr+secs+4);const sr=44100;const oc=new OfflineAudioContext(2,Math.ceil((secs+2)*sr),sr);AE.ctx=oc;AE.build();RZ.song=S;RZ.game='beat';RZ.inst='piano';
+  _render:async function(style,i,secs,lead,opt){opt=opt||{};if(opt.gtr) RK_SND.gtr=opt.gtr;if(opt.kit) RK_SND.kit=opt.kit;if(opt.ride) RK_SND.ride=opt.ride;const fr=opt.from||0;const S=rsSong(style,i);if(opt.lead) S.lead=opt.lead;if(opt.kit) S.kit=opt.kit;RK_OVR.ci=opt.ci||null;RK_OVR.bt=opt.bt||null;const A=rsArrange(S,false,fr+secs+4);const sr=44100;const oc=new OfflineAudioContext(2,Math.ceil((secs+2)*sr),sr);AE.ctx=oc;AE.build();RZ.song=S;RZ.game='beat';RZ.inst='piano';
   const mu={};const W=t=>t>=fr&&t<fr+secs;A.ev.forEach(e=>{if(W(e.t)&&e.k!=='click') rzPlayEv(e,e.t-fr,mu)});A.drums.forEach(d=>{if(W(d.t)) AE.drum(d.snd,d.t-fr,d.v)});
   A.mel.forEach(n=>{if(W(n.t)) rzPlayEv({k:'lead',m:n.m,d:n.d},n.t-fr,mu)});
-  const b=await oc.startRendering();AE.ctx=null;AE.master=null;RK_SND.lead='flauta';RK_SND.gtr='distorcida';RK_SND.kit='rock';RK_SND.ride='ride';return {L:Array.from(b.getChannelData(0)),R:Array.from(b.getChannelData(1)),bars:A.bars,dur:A.dur}},
+  const b=await oc.startRendering();AE.ctx=null;AE.master=null;RK_SND.lead='flauta';RK_SND.gtr='distorcida';RK_SND.kit='rock';RK_SND.ride='ride';RK_OVR.ci=null;RK_OVR.bt=null;return {L:Array.from(b.getChannelData(0)),R:Array.from(b.getChannelData(1)),bars:A.bars,dur:A.dur}},
   _cfg:function(o){Object.assign(RZ,o)},_build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
 })(typeof window!=='undefined'?window:this);
