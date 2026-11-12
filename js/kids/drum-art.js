@@ -7,7 +7,8 @@ const sticks = `<g ${W}><path d="M30 6 L70 38" fill="none" stroke-width="5"/><pa
 const cilindro = (cor, extra = '') => `<path d="M14 44 V78 Q14 92 60 92 Q106 92 106 78 V44" fill="${cor}" ${W}/>${lugs(22, 98, 52, 86, 6)}<ellipse cx="60" cy="44" rx="46" ry="14" fill="${CREME}" ${W}/>${extra}`;
 
 const ART = {
-  caixa: () => cilindro(VINHO, `<ellipse cx="60" cy="44" rx="30" ry="8" fill="none" stroke="${CINZA}" stroke-width="2"/>`) + sticks,
+  // PROVISÓRIO (pedido da Bea): só o contorno da caixa, até ela escolher o desenho definitivo. É só trocar este bloco.
+  caixa: () => `<g fill="none" ${W}><path d="M14 44V80Q14 92 60 92Q106 92 106 80V44"/><ellipse cx="60" cy="44" rx="46" ry="14"/><path d="M30 6L70 38M90 6L50 38" stroke-width="5"/></g>`,
   tambor: () => `<path d="M30 92 L22 100 M90 92 L98 100" ${W} fill="none"/>` + cilindro(PET) + sticks,
   bumbo: () => `<circle cx="60" cy="56" r="40" fill="${VINHO}" ${W}/><circle cx="60" cy="56" r="29" fill="${CREME}" ${W}/><circle cx="60" cy="56" r="9" fill="${INK}"/><path d="M60 16 V8 M60 96 V104 M20 56 H12 M100 56 H108" ${W} fill="none"/>`,
   chimbal: () => `<path d="M60 40 V102 M44 102 L60 90 L76 102" ${W} fill="none"/><ellipse cx="60" cy="52" rx="42" ry="9" fill="${CINZA}" ${W}/><ellipse cx="60" cy="38" rx="42" ry="9" fill="${CREME}" ${W}/><ellipse cx="60" cy="36" rx="9" ry="3" fill="${CINZA}" stroke="${INK}" stroke-width="1.5"/>`,
