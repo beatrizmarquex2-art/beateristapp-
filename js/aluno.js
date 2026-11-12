@@ -209,8 +209,7 @@ const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) loc
 /** Aba Estudos = "Hoje": o Paul conta quantas coisinhas faltam, a meta do dia vira um anel e as 3 missões (dica, aula, curiosidade) ficam em cartões grandes; o resto dos estudos fica em "explorar". */
 const EXPLORAR = [
   ['#/estudos/aulas', '📚', 'aulas do Paul', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', null], ['#/estudos/acordes/violao', '🎸', 'acordes', null], ['#/dicionario', '📖', 'dicionário musical', 'dicionario'],
-  ['#/estudos/basica/figuras', '🎼', 'teoria', null], ['#/estudos/dicas', '🧠', 'dicas', 'dicas'], ['#/erros', '⚠️', '5 erros', 'erros'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam'],
-  ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades']];
+  ['#/estudos/basica/figuras', '🎼', 'teoria', null], ['#/estudos/dicas', '🧠', 'dicas', 'dicas'], ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam']];
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 function estudosView(view) {
   const v = vistos();
@@ -242,7 +241,7 @@ function estudosView(view) {
   const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
     h('div', { class: 'hj-big' }, ...GRANDES.map(([href, ic, nome, sub, vid]) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
       h('span', { class: 'hj-ti', 'aria-hidden': 'true' }, ic), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub)))),
-    h('div', { class: 'hj-chips' }, ...OUTROS.map(([href, ic, nome, vid]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${ic} ${nome}${lock(href) ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`))));
+    h('div', { class: 'hj-chips' }, ...OUTROS.map(([href, ic, nome, vid]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`))));
   const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, '🎡'), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
   view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'HOJE'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`), seq ? h('span', { class: 'hj-fogo' }, `🔥 ${seq}`) : null), chips, hero, card, ...cartoes, sorte));
   import('./figurinhas/estrelas.js').then(async (E) => { try { const P = await import('./kids/progress.js'); const me = P.active(); if (!me) return; const f = E.faltamParaRoleta(E.estrelasTotais(me.id)); const el = sorte.querySelector('.hj-rt'); if (el && f) el.textContent = `faltam ${f} ★ pra roleta`; } catch { /* sem o álbum */ } }).catch(() => {});
