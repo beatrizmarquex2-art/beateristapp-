@@ -129,9 +129,17 @@ export const PERC = [
 /* Sons "de verdade": cada modo de vibração do tambor ou do sino soa com a sua própria frequência e o seu próprio tempo de queda (síntese modal) */
 const modal = (t, v, f0, modos, dec, wet, glide = 0.03) => modos.forEach(([r, a, d]) => { const o = C.createOscillator(); const g = gn(); const f = f0 * r; o.frequency.setValueAtTime(f * (1 + glide), t); o.frequency.exponentialRampToValueAtTime(f, t + 0.025); env(g, t, a * v, 0.0008, dec * d); o.connect(g); route(g, wet); o.start(t); o.stop(t + dec * d + 0.08); });
 const baqueta = (t, v, fq, lvl) => { const n = noiseSrc(t, 0.02); const g = gn(); n.connect(bq('bandpass', fq, 1.3)).connect(g); env(g, t, lvl * v, 0.0005, 0.008); route(g); };
-function tamborimReal(t, v, f0, dec) {
-  modal(t, v * 0.42, f0, [[1, 1, 0.16], [1.59, 0.62, 0.11], [2.14, 0.46, 0.09], [2.30, 0.36, 0.08], [2.65, 0.26, 0.065], [2.92, 0.18, 0.055]], dec, 0.08);
-  baqueta(t, v, 5200, 0.55); baqueta(t, v, 2400, 0.3);
+function tamborimReal(t, v, tipo) {
+  // tamborim de samba: pele plástica pequena, som agudo e estalado; cada batida varia um pouquinho (a baqueta nunca cai igual)
+  const j = 1 + (Math.random() - 0.5) * 0.04;
+  const golpe = (tt, vv, f0, dec, bright) => {
+    modal(tt, vv * 0.34, f0 * j, [[1, 1, 0.11], [1.59, 0.5, 0.07], [2.14, 0.34, 0.05], [2.65, 0.2, 0.04]], dec, 0.05, 0.05);
+    const o = C.createOscillator(); const g = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(f0 * 2.4 * j, tt); o.frequency.exponentialRampToValueAtTime(f0 * 1.9 * j, tt + 0.012); env(g, tt, 0.28 * vv, 0.0005, 0.018); o.connect(g); route(g); o.start(tt); o.stop(tt + 0.05);
+    baqueta(tt, vv, bright, 0.75); baqueta(tt, vv, 2600, 0.35);
+  };
+  if (tipo === 0) golpe(t, v, 1750, 0.5, 6200);              // seco e estalado
+  else if (tipo === 1) { golpe(t, v * 0.7, 1500, 0.8, 5200); golpe(t + 0.022, v, 1500, 0.9, 5600); } // "virada": duas batidas coladas (flam)
+  else { golpe(t, v, 1350, 1.3, 4600); const n = noiseSrc(t + 0.004, 0.07); const g = gn(); n.connect(bq('highpass', 6500)).connect(g); env(g, t + 0.004, 0.22 * v, 0.002, 0.05); route(g, 0.08); } // pele frouxa, com a "chiadeira" da borda
 }
 let agFlip = 0;
 function agogoReal(t, v, f1, f2, dec, wet) {
@@ -148,7 +156,7 @@ export const PERC_VAR = {
   pd: [PERC[0][2],
     (t, v) => { skin(t, 215, 175, 0.12, v * 0.7, 0.3); jingles(t, v, 7, 8200, 0.005, 0.045, 0.32, 0.05); },
     (t, v) => { skin(t, 160, 118, 0.32, v * 0.95, 0.15); jingles(t + 0.003, v, 4, 5600, 0.011, 0.16, 0.3, 0.3); }],
-  tb: [(t, v) => tamborimReal(t, v, 1000, 1), (t, v) => tamborimReal(t, v, 1250, 0.7), (t, v) => tamborimReal(t, v, 820, 1.35)],
+  tb: [(t, v) => tamborimReal(t, v, 0), (t, v) => tamborimReal(t, v, 1), (t, v) => tamborimReal(t, v, 2)],
   ag: [(t, v) => agogoReal(t, v, 740, 1050, 1, 0.1), (t, v) => agogoReal(t, v, 900, 1260, 0.75, 0.08), (t, v) => agogoReal(t, v, 620, 880, 1.4, 0.25)],
   rr: [PERC[3][2],
     (t, v) => { for (let k = 0; k < 12; k++) { const d = k * 0.011; const n = noiseSrc(t + d, 0.03); const g = gn(); n.connect(bq('bandpass', 6400 - k * 180, 2.6)).connect(g); env(g, t + d, (0.26 - k * 0.01) * v, 0.001, 0.01); route(g, 0.04); } },
@@ -175,7 +183,7 @@ export const PERC_VAR = {
     (t, v) => snare(t, v * 0.95, true),
     (t, v) => { const n = noiseSrc(t, 0.06); const g = gn(); n.connect(bq('bandpass', 2300, 1.5)).connect(g); env(g, t, 0.7 * v, 0.001, 0.045); route(g); const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(560, t + 0.04); env(og, t, 0.6 * v, 0.001, 0.06); o.connect(og); route(og); o.start(t); o.stop(t + 0.1); }],
 };
-const PERC_PADRAO = { pd: 2, rr: 0, tr: 2, gz: 2, cg: 2, bg: 2, cx: 0, tb: 0, ag: 0 }; // escolhidas pela Bea (a do tamborim e a do agogô ainda vão ser escolhidas)
+const PERC_PADRAO = { pd: 2, rr: 0, tr: 2, gz: 2, cg: 2, bg: 2, cx: 0, tb: 0, ag: 2 }; // escolhidas pela Bea (agogô 3; o tamborim ainda vai ser escolhido)
 let PERC_ESCOLHA = {}; try { PERC_ESCOLHA = JSON.parse(localStorage.getItem('bt-perc-var') || '{}') || {}; } catch { PERC_ESCOLHA = {}; }
 /** Gera uma amostra da peça (id, variante 0-2) numa fila de toques. Só pra conferir/gravar o som: devolve os canais L e R. */
 export async function renderPercSample(id, variante, hits, secs = 4) {
