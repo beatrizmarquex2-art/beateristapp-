@@ -9,12 +9,12 @@ await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos'); await sleep(2200);
 const txt = await page.evaluate(() => document.body.innerText);
-for (const n of ['Caça-Som', 'Cruza-Som', 'Quiz Sonoro', 'Taiko']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
-check('não tem card de duelo nem "Rudimentos" na lista', !/Duelo Sonoro/.test(txt) && !/Rudimentos/.test(txt));
+for (const n of ['Radar Musical', 'Clave Cruzada', 'Quiz do Paul', 'Taiko']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
+check('não tem card de duelo nem "Rudimentos" na lista', !/Duelo/.test(txt) && !/Rudimentos/.test(txt));
 check('a lista não tem mais o card "Letras" nem o "quiz Uno Musical"', !/^Letras$/m.test(txt) && !/quiz Uno Musical/i.test(txt));
 check('Uno Musical continua na lista', /Uno Musical/.test(txt));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
-for (const [nome, hash] of [['Cruza-Som', '#/dicas/cruzadinha'], ['Quiz Sonoro', '#/dicas/quiz'], ['Caça-Som', '#/dicas/caca']]) {
+for (const [nome, hash] of [['Clave Cruzada', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Radar Musical', '#/dicas/caca']]) {
   await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);
   await page.evaluate((n) => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes(n)); if (a) a.click(); }, nome); await sleep(1200);
   check(`"${nome}" abre ${hash}`, (await page.evaluate(() => location.hash)).startsWith(hash), await page.evaluate(() => location.hash));
