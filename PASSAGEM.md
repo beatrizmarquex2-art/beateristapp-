@@ -498,3 +498,6 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## v398 — cara a cara: 2 modos fixos
 - kids = automático + 12 cartas; clássico = manual (✕) + 20 cartas. Sem seletor de "cartas na mesa" nem de "eliminar". `tamanhoPadrao()` e `cfg.auto` em cara-musical/tela.js
+
+## v399 — "2 a 4" = "3 ou mais"
+- Uno (local), memória (2 a 4) e stop (dupla) usam o ícone de grupo (`mais`) com o nome "no mesmo celular (2 a 4 pessoas)"; velha, bingo e cara a cara (só 2) seguem com `dois`
