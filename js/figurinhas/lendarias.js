@@ -2,7 +2,7 @@
 // A pessoa tem uma lendária quando o código dela está em `state.lend` (entregue pelo resgate aprovado pela Bea).
 export const LENDARIAS = [
   { codigo: 'L01', nome: 'Guitarrista da Tempestade', img: 'assets/figurinhas/lendarias/L01.webp' },
-  { codigo: 'L02', nome: 'Rei do Pixel Roxo', img: 'assets/figurinhas/lendarias/L02.webp' },
+  { codigo: 'L02', nome: 'Rei da Aura', img: 'assets/figurinhas/lendarias/L02.webp' },
   { codigo: 'L03', nome: 'Construtor de Notas', img: 'assets/figurinhas/lendarias/L03.webp' },
   { codigo: 'L04', nome: 'Baterista Cósmico', img: 'assets/figurinhas/lendarias/L04.webp' },
   { codigo: 'L05', nome: 'Sineiro do Castelo', img: 'assets/figurinhas/lendarias/L05.webp' },
