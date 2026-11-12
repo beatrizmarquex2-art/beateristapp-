@@ -567,4 +567,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## Black Friday: Combo Robôterista (nov/2026)
 - **Bloco grande do combo no topo da Lojinha** (sem aba própria; `destaqueCombo()` em `js/views/lojinha-vitrine.js`, config `COMBO` em `js/loja-config.js`): arte do combo (`assets/loja/combo-black-friday.webp`, original em `assets/originals/artes-beaterista/`) + botão Adquirir pro link Hotmart `K108463375K`, R$ 79,90. Teste: `tests/e2e/lojinha-blackfriday.mjs`. Cache v482. Falta publicar a área dos alunos (e o app da Bea sai com o push na `main`).
-- Atenção na arte: diz "182 páginas" na Harmonia (o certo é 102) e "de R$ 119,90" (a soma dos 4 hoje é R$ 99,60).
+- Arte corrigida: Harmonia agora diz 102 páginas. Ainda diz "de R$ 119,90" (a soma dos 4 hoje é R$ 99,60).
