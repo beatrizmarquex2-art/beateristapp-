@@ -1014,3 +1014,6 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-toca .tr-ctrl .tp-lab{display:none}
 .jg-toca .tr-ctrl .tp-line{gap:0}
 .jg-toca .tr-ctrl .lib-tab,.jg-toca .tr-ctrl .chips button{padding:3px 10px;font-size:12.5px}
+/* taiko: sem a cor atrás do ícone, só o desenho vazado em creme (pedido da Bea) */
+.jg-toca .tk-pad .tk-drum{background:transparent;border-radius:0;padding:0;width:84px;height:76px}
+.jg-toca .tk-pad .tk-drum svg *{fill:none;stroke:#fbf7ee}
