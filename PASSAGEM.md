@@ -429,9 +429,3 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Toca Aqui:** o som do toque é **só a caixa** (`SONS` em `js/toca-som.js`; a escolha de som sumiu de todas as telas). No "com imagens" (Monte seu ritmo) a **velocidade virou 4 ícones** 🐢 🚶 🐇 🚀 (`ICONE_VEL`).
 - **Cara a Cara:** **só artistas** (cara a cara musical); a versão de instrumentos saiu do jogo livre (`js/jogos/cara.js`) e o seletor de tema sumiu. O "virar" manual funciona no clássico do musical (era a versão de instrumentos que não pegava).
 - **Bingo:** "como quer jogar?" virou **4 ícones pequenos** (robô, 2 celulares, mesmo aparelho, sala de aula) com dica no toque.
-
-## Trilha de aprender e tocar (nov/2026)
-- **Regra da Bea**: Modo Aventura (mapa/mundo) só pra jogos que **ensinam teoria e fazem tocar de verdade**. Uno, Bingo, STOP, Velha, Quebra-cabeça e Cara a Cara ficam só no Modo Livre (já estão em `SEM_AVENTURA` em `js/views/jogos.js`; o código das missões ficou guardado). Beat Hero/Piano Hero continuam sem aventura.
-- **Sequência** (`js/campanha/trilha.js`, pura): Memória → Figuras rítmicas → pauLta Bateria → Monte seu ritmo → Toca Aqui (aventura religada) → pauLta Claves (sol e fá) → pauLta Duelo. Cada passo abre quando o anterior termina (Kids/Aventura: todas as fases/missões com ≥1★; pauLta: mundo concluído). Cada jogo mantém o seu próprio mapa.
-- Estado e trava: `js/campanha/trilha-estado.js` (`guarda(id)` leva pra `#/trilha`). **Só vale pro aluno com código**; Bea e Modo Livre abrem tudo. Tela: `#/trilha` (`js/views/trilha.js`, card "Trilha" no topo da aba Jogos). Testes: `tests/trilha.test.mjs`, `tests/e2e/aventura-acesso.mjs`. Os e2e usam `localStorage beaterista-trilha-off=1` (no harness) pra não esbarrar na trava.
-- Eco não entrou (não existe como aventura separada). Cache v385; deploy dos alunos ainda manual.

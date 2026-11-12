@@ -28,7 +28,6 @@ import { gameIcon } from '../kids/icons.js';
 import * as PL from '../paulta/save.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { loadAdventure } from '../campanha/registry.js';
-import { guarda as trilhaGuarda } from '../campanha/trilha-estado.js';
 import { pontuacaoEl } from '../campanha/pontuacao.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
 
@@ -184,7 +183,6 @@ export function mount(host, parts = []) {
       const runFree = () => { const box = h('div', { class: 'kd-game' }); host.append(topBar(advId ? `#/kids/${free}` : '#/jogos'), h('h1', { class: 'kx-pix kx-pagetitle' }, g[1]), h('p', { class: 'kx-gd' }, g[2]), box); off = RUN[free](box) || off; };
       // jogos livres com Modo Aventura: #/kids/<jogo> escolhe o modo; /livre = como sempre; /aventura[/n] = missões
       if (!advId || lv === 'livre') { runFree(); return; }
-      if (lv === 'aventura' && trilhaGuarda(free === 'ritmo' ? 'monte' : free)) return; // 'ritmo' do Kids = Monte seu ritmo na trilha
       let gone = false; const wrap = h('div', { class: 'av-root' }); host.append(wrap); off = () => { gone = true; };
       loadAdventure(advId).then((adv) => {
         if (gone) return; const base = `#/kids/${free}/aventura`;
@@ -199,7 +197,6 @@ export function mount(host, parts = []) {
     if (first && GAMES[first]) {
       const me = P.active(); if (!me) { location.hash = '#/kids'; return; }
       const level = lv !== undefined && lv !== '' && lv !== '-' && Number.isInteger(Number(lv)) ? Math.max(0, Math.min(MAX_LEVEL, Number(lv))) : null; // '', '-' ou número quebrado = mostra o mapa
-      if (first === 'figuras' && trilhaGuarda('figuras')) return;
       if (level === null) { off = levelsScreen(host, first, mode) || off; return; }
       if (!P.unlocked(me.id, first, level)) { location.hash = `#/kids/${first}`; return; }
       const box = h('div'); host.append(box);
