@@ -1,7 +1,6 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Beaterista//Calendario de posts//PT
-CALSCALE:GREGORIAN
+PRODID:-//Beaterista//Calendario//PT
 X-WR-CALNAME:Beaterista · posts
 X-WR-TIMEZONE:America/Sao_Paulo
 BEGIN:VEVENT
@@ -410,6 +409,19 @@ END:VEVENT
 BEGIN:VEVENT
 UID:beaterista-post-31@kit
 DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261127T123000
+DTEND;TZID=America/Sao_Paulo:20261127T130000
+SUMMARY:@beaterista_ (feed) · Beaterista Mood
+DESCRIPTION:arquivo: black-friday/bf-mood-feed.jpg\nlegenda: 55 páginas + 20 de atividades bônus: de R$ 29\,90 por R$ 19\,90. link na lojinha.\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-32@kit
+DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261127T190000
 DTEND;TZID=America/Sao_Paulo:20261127T193000
 SUMMARY:@beaterista_ (feed) · Bateria Start pela metade do preço
@@ -421,7 +433,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-32@kit
+UID:beaterista-post-33@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261128T100000
 DTEND;TZID=America/Sao_Paulo:20261128T103000
@@ -434,7 +446,20 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-33@kit
+UID:beaterista-post-34@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T120000
+DTEND;TZID=America/Sao_Paulo:20261128T123000
+SUMMARY:@beaterista_ (feed) · Robôterista Ensina: Melodia e Harmonia
+DESCRIPTION:arquivo: black-friday/bf-melodia-feed.jpg\nlegenda: teclado\, violão\, notas e acordes: de R$ 29\,90 por R$ 19\,90 até 30/11. link na lojinha.\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-35@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261128T190000
 DTEND;TZID=America/Sao_Paulo:20261128T193000
@@ -447,12 +472,12 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-34@kit
+UID:beaterista-post-36@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261129T120000
 DTEND;TZID=America/Sao_Paulo:20261129T123000
 SUMMARY:@beaterista_ (feed) · Violão do Zero
-DESCRIPTION:arquivo: black-friday/bf-violao-feed.jpg\nlegenda: da primeira corda à primeira música. black friday na lojinha.\nferramenta: Meta Business Suite
+DESCRIPTION:arquivo: black-friday/bf-violao-feed.jpg\nlegenda: da primeira corda à primeira música: de R$ 29\,90 por R$ 19\,90 até 30/11.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -460,7 +485,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-35@kit
+UID:beaterista-post-37@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261129T190000
 DTEND;TZID=America/Sao_Paulo:20261129T193000
@@ -473,12 +498,12 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-36@kit
+UID:beaterista-post-38@kit
 DTSTAMP:20261112T120000Z
-DTSTART;TZID=America/Sao_Paulo:20261130T080000
-DTEND;TZID=America/Sao_Paulo:20261130T083000
-SUMMARY:@beaterista_ (feed) · ÚLTIMO DIA: Robôterista Ensina
-DESCRIPTION:arquivo: black-friday/bf-roboterista-feed.jpg\nlegenda: último dia da black friday na Beaterista! link na lojinha.\nferramenta: Meta Business Suite
+DTSTART;TZID=America/Sao_Paulo:20261129T190000
+DTEND;TZID=America/Sao_Paulo:20261129T193000
+SUMMARY:@beaterista_ (feed) · Combo Kids
+DESCRIPTION:arquivo: black-friday/bf-combo-kids-feed.jpg\nlegenda: Jogo da Memória + Bateria Kids pra colorir: de R$ 59\,70 por R$ 49\,90 até 30/11.\nferramenta: Meta Business Suite
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
@@ -486,7 +511,20 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-37@kit
+UID:beaterista-post-39@kit
+DTSTAMP:20261112T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261130T080000
+DTEND;TZID=America/Sao_Paulo:20261130T083000
+SUMMARY:@beaterista_ (feed) · ÚLTIMO DIA: Robôterista Ensina
+DESCRIPTION:arquivo: black-friday/bf-roboterista-feed.jpg\nlegenda: ÚLTIMO DIA: Robôterista Ensina Ritmo de R$ 29\,90 por R$ 19\,90. termina hoje 23:59. link na lojinha.\nferramenta: Meta Business Suite
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:postar agora
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:beaterista-post-40@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261130T120000
 DTEND;TZID=America/Sao_Paulo:20261130T123000
@@ -499,7 +537,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-38@kit
+UID:beaterista-post-41@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261130T200000
 DTEND;TZID=America/Sao_Paulo:20261130T203000
@@ -512,7 +550,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-39@kit
+UID:beaterista-post-42@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261201T120000
 DTEND;TZID=America/Sao_Paulo:20261201T123000
@@ -525,7 +563,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-40@kit
+UID:beaterista-post-43@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261202T190000
 DTEND;TZID=America/Sao_Paulo:20261202T193000
@@ -538,7 +576,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-41@kit
+UID:beaterista-post-44@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261203T100000
 DTEND;TZID=America/Sao_Paulo:20261203T103000
@@ -551,7 +589,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-42@kit
+UID:beaterista-post-45@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261203T190000
 DTEND;TZID=America/Sao_Paulo:20261203T193000
@@ -564,7 +602,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-43@kit
+UID:beaterista-post-46@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261204T190000
 DTEND;TZID=America/Sao_Paulo:20261204T193000
@@ -577,7 +615,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-44@kit
+UID:beaterista-post-47@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261205T100000
 DTEND;TZID=America/Sao_Paulo:20261205T103000
@@ -590,7 +628,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-45@kit
+UID:beaterista-post-48@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261205T190000
 DTEND;TZID=America/Sao_Paulo:20261205T193000
@@ -603,7 +641,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-46@kit
+UID:beaterista-post-49@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261206T120000
 DTEND;TZID=America/Sao_Paulo:20261206T123000
@@ -616,7 +654,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-47@kit
+UID:beaterista-post-50@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261207T120000
 DTEND;TZID=America/Sao_Paulo:20261207T123000
@@ -629,7 +667,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-48@kit
+UID:beaterista-post-51@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261208T120000
 DTEND;TZID=America/Sao_Paulo:20261208T123000
@@ -642,7 +680,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-49@kit
+UID:beaterista-post-52@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261208T190000
 DTEND;TZID=America/Sao_Paulo:20261208T193000
@@ -655,7 +693,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-50@kit
+UID:beaterista-post-53@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261209T120000
 DTEND;TZID=America/Sao_Paulo:20261209T123000
@@ -668,7 +706,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-51@kit
+UID:beaterista-post-54@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261210T120000
 DTEND;TZID=America/Sao_Paulo:20261210T123000
@@ -681,7 +719,7 @@ DESCRIPTION:postar agora
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:beaterista-post-52@kit
+UID:beaterista-post-55@kit
 DTSTAMP:20261112T120000Z
 DTSTART;TZID=America/Sao_Paulo:20261210T193000
 DTEND;TZID=America/Sao_Paulo:20261210T200000

@@ -1,13 +1,43 @@
 {
-  "_ajuda": "bê: preencha 'de' e 'por' de cada material quando definir o desconto na lojinha. Se 'por' ficar vazio, a imagem diz 'preço especial de black friday' sem número. Depois rode: NODE_PATH=$(npm root -g) node kit-divulgacao/_fontes/gerar.mjs black",
+  "_ajuda": "preços definidos pela Bea em 12/11. mood: link da Hotmart ainda será gerado.",
   "link": "jogos.beaterista.com.br/#/lojinha",
   "periodo": "27/11 a 30/11",
   "produtos": {
+    "roboterista": {
+      "nome": "Robôterista Ensina: Ritmo",
+      "info": "figuras rítmicas, pausas e tempo: imprimir, desenhar, recortar e tocar",
+      "de": "R$ 29,90",
+      "por": "R$ 19,90"
+    },
+    "melodia": {
+      "nome": "Robôterista Ensina: Melodia e Harmonia",
+      "info": "notas, pauta e acordes no teclado e no violão · jogos e músicas pra tocar",
+      "de": "R$ 29,90",
+      "por": "R$ 19,90"
+    },
     "start": {
       "nome": "Bateria Start",
       "info": "44 páginas · peças, figuras, partitura e rudimentos",
       "de": "R$ 29,90",
       "por": "R$ 14,90"
+    },
+    "mood": {
+      "nome": "Beaterista Mood",
+      "info": "55 páginas + 20 de atividades bônus · estudo estruturado e prática eficiente",
+      "de": "R$ 29,90",
+      "por": "R$ 19,90"
+    },
+    "violao": {
+      "nome": "Violão do Zero",
+      "info": "47 páginas · da primeira corda à primeira música",
+      "de": "R$ 29,90",
+      "por": "R$ 19,90"
+    },
+    "combo-kids": {
+      "nome": "Combo Kids",
+      "info": "Jogo da Memória + Bateria Kids pra colorir",
+      "de": "R$ 59,70",
+      "por": "R$ 49,90"
     },
     "memoria": {
       "nome": "Jogo da Memória Musical",
@@ -17,26 +47,8 @@
     },
     "bateria-kids": {
       "nome": "Bateria Kids",
-      "info": "36 páginas · aprenda bateria brincando e colorindo",
+      "info": "aprenda bateria colorindo",
       "de": "R$ 19,90",
-      "por": ""
-    },
-    "roboterista": {
-      "nome": "Robôterista Ensina",
-      "info": "70 páginas · figuras rítmicas, pausas e tempo",
-      "de": "R$ 29,90",
-      "por": ""
-    },
-    "violao": {
-      "nome": "Violão do Zero",
-      "info": "47 páginas · da primeira corda à primeira música",
-      "de": "R$ 29,90",
-      "por": ""
-    },
-    "mood": {
-      "nome": "Beaterista Mood",
-      "info": "55 páginas + 20 de atividades bônus · estudo estruturado e prática eficiente",
-      "de": "R$ 29,90",
       "por": ""
     }
   }

@@ -91,11 +91,14 @@ se quiser que eu agende, me diga **"conecta o Instagram"** e eu abro a tela de c
 | sex 27/11 | 08:00 | @beaterista.escolademusica | `black-friday/bf-geral-feed.jpg` | black friday na escola | Meta Business Suite |
 | sex 27/11 | 08:10 | @beaterista_ (stories) | `black-friday/bf-geral-story.jpg` | BF story 1 de 3 | manual (stories com link) |
 | sex 27/11 | 12:00 | WhatsApp pais | `black-friday/bf-geral-feed.jpg` | black friday: mensagem 4 | manual (lembrete) |
+| sex 27/11 | 12:30 | @beaterista_ (feed) | `black-friday/bf-mood-feed.jpg` | Beaterista Mood | Meta Business Suite |
 | sex 27/11 | 19:00 | @beaterista_ (feed) | `black-friday/bf-start-feed.jpg` | Bateria Start pela metade do preço | Meta Business Suite |
 | sáb 28/11 | 10:00 | YouTube @beateristadrummer | `youtube/yt-02-aprenda-a-ler-partitura.jpg` | vídeo: ler partitura jogando (pauLta) | YouTube Studio |
+| sáb 28/11 | 12:00 | @beaterista_ (feed) | `black-friday/bf-melodia-feed.jpg` | Robôterista Ensina: Melodia e Harmonia | Meta Business Suite |
 | sáb 28/11 | 19:00 | @beaterista_ (feed) | `black-friday/bf-bateria-kids-feed.jpg` | Bateria Kids | Meta Business Suite |
 | dom 29/11 | 12:00 | @beaterista_ (feed) | `black-friday/bf-violao-feed.jpg` | Violão do Zero | Meta Business Suite |
 | dom 29/11 | 19:00 | @beaterista_ (stories) | `black-friday/bf-memoria-story.jpg` | BF story: jogo da memória (imprimir) | manual (stories com link) |
+| dom 29/11 | 19:00 | @beaterista_ (feed) | `black-friday/bf-combo-kids-feed.jpg` | Combo Kids | Meta Business Suite |
 | seg 30/11 | 08:00 | @beaterista_ (feed) | `black-friday/bf-roboterista-feed.jpg` | ÚLTIMO DIA: Robôterista Ensina | Meta Business Suite |
 | seg 30/11 | 12:00 | WhatsApp pais | `black-friday/bf-geral-feed.jpg` | último dia | manual (lembrete) |
 | seg 30/11 | 20:00 | @beaterista_ (stories) | `black-friday/bf-mood-story.jpg` | última chamada (story) | manual |

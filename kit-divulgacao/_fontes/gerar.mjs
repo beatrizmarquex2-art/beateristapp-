@@ -282,15 +282,15 @@ h1{font-size:${story ? 170 : 140}px;color:${C.red}}h1 em{font-style:normal;color
 }
 
 // ---------- black friday geral (um post por material) ----------
-const CAPA_NOVA = { 'bateria-kids': '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-bateria-kids.jpg', mood: '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg' };
+const CAPA_NOVA = { melodia: '/kit-divulgacao/material-da-bea/capas-e-produtos/capa-melodia-harmonia.jpg', 'combo-kids': '/kit-divulgacao/material-da-bea/capas-e-produtos/combo-kids-composto.jpg', 'bateria-kids': '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-bateria-kids.jpg', mood: '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg' };
 const capaSrc = (id) => CAPA_NOVA[id] || `/assets/loja/${CAPAS[id]}.webp`;
-const CAPAS = { start: 'bateria-start', memoria: 'memoria', 'bateria-kids': 'bateria-kids', roboterista: 'roboterista', violao: 'violao', mood: 'mood' };
+const CAPAS = { melodia: 'x', 'combo-kids': 'x', start: 'bateria-start', memoria: 'memoria', 'bateria-kids': 'bateria-kids', roboterista: 'roboterista', violao: 'violao', mood: 'mood' };
 function bfProduto(id, W, H) {
   const p = BF.produtos[id]; const story = H > 1500; const por = p.por && p.por.trim();
   return base(W, H, `body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/26px 26px}
 .sel{position:absolute;left:60px;top:${story ? 140 : 60}px;font-size:40px;background:${C.gold};color:${C.ink};padding:8px 26px;transform:rotate(-2deg)}
-.cap{position:absolute;right:50px;top:${story ? 300 : 150}px;width:${story ? 560 : 470}px;transform:rotate(4deg);box-shadow:20px 28px 0 rgba(0,0,0,.45);border:6px solid ${C.cream}}
-.t{position:absolute;left:60px;top:${story ? 300 : 150}px;width:${story ? 440 : 470}px}.t h1{font-size:${story ? 130 : 112}px;line-height:.95}.t p{font-size:${story ? 36 : 32}px;font-weight:700;margin-top:20px;line-height:1.2}
+.cap{position:absolute;right:50px;top:${story ? 300 : 150}px;width:${story ? 470 : 470}px;transform:rotate(4deg);box-shadow:20px 28px 0 rgba(0,0,0,.45);border:6px solid ${C.cream}}
+.t{position:absolute;left:60px;top:${story ? 300 : 150}px;width:${story ? 440 : 450}px}.t h1{font-size:${(p.nome.length > 22 ? (story ? 84 : 76) : p.nome.length > 12 ? (story ? 96 : 100) : (story ? 130 : 112))}px;line-height:.95}.t p{font-size:${story ? 36 : 32}px;font-weight:700;margin-top:20px;line-height:1.2}
 .pr{position:absolute;left:60px;top:${story ? 1100 : 700}px}.pr s{font-family:Anton;font-size:64px;opacity:.6}.pr b{display:block;font-family:Anton;font-weight:400;font-size:${por ? 190 : 100}px;color:${C.gold};line-height:1.05;text-transform:uppercase}
 .btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:46px;background:${C.red};color:${C.cream}}
 .foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
