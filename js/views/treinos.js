@@ -16,7 +16,7 @@ import { mountRitmo } from '../kids/ritmo.js';
 import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
 import { capture } from '../kids/capture.js';
-import { drumSvg, vinil, icone } from '../kids/drum-art.js';
+import { vinil, icone } from '../kids/drum-art.js';
 import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
@@ -96,7 +96,7 @@ export function leitura(host) {
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
-      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, drumSvg(getSom(), 'drum-art tr-drum'), h('small', {}, 'toque no tambor · ou aperte qualquer tecla'));
+      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'toque aqui no tempo · ou aperte qualquer tecla'));
     const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
     const conclude = async (taps) => {
       const g = S.gen; run = null;

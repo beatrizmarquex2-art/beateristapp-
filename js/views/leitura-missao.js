@@ -6,8 +6,6 @@ import { session } from '../session.js';
 import { toast } from '../ui.js';
 import { onsets, evaluate } from '../reading.js';
 import { capture } from '../kids/capture.js';
-import { drumSvg } from '../kids/drum-art.js';
-import { getSom } from '../toca-som.js';
 import { score as scoreEl, chunk, schedule, MARK } from './treinos.js';
 
 const KEY = 'beaterista-toca-aventura';
@@ -26,7 +24,7 @@ export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
     const useMic = wantMic && !micBlocked;
     const marks = last ? last.res.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
-      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, drumSvg(getSom(), 'drum-art tr-drum'), h('small', {}, 'toque no tambor · ou aperte qualquer tecla'));
+      : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'toque aqui no tempo · ou aperte qualquer tecla'));
     const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, last ? `precisão ${last.res.score}%` : `${bpm} BPM · ▶ vai direto pra sua vez (toque depois do “4”) ou ouça antes.`);
     const busy = phase === 'run';
     const mode = h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Como você toca' }, ...[[false, 'na tela'], [true, 'microfone']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(wantMic === v), disabled: busy, class: `lib-tab${wantMic === v ? ' on' : ''}`, onclick: () => { wantMic = v; micBlocked = false; saveMic(v); draw(); } }, t)));
