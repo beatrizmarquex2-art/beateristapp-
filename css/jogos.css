@@ -961,3 +961,33 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
 .bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
 .bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+
+/* ===== Toca Aqui no visual "Turnê" (escolhido pela Bea): vinho, discos de vinil, cartões grandes, ícones de traço ===== */
+.jg-game:has(.jg-toca){--jg-paper:#6b0f22;color:#fbf7ee}
+.jg-game:has(.jg-toca) .jg-toca .jg-h,.jg-game:has(.jg-toca) .jg-toca>.jg-p,.jg-game:has(.jg-toca) .jg-toca .muted{color:#fbf7ee}
+.jg-toca .jg-seg button.on{background:#d99a2b;color:#2a0710;box-shadow:3px 3px 0 #2a0710}
+.jg-toca .tr-ctrl{background:#fbf7ee;color:#142036;border:2px solid #142036;border-radius:18px;box-shadow:4px 5px 0 #2a0710}
+.jg-toca .tr-ctrl .muted{color:#4a5163}
+.jg-toca .tr-como,.jg-toca .tr-modos{gap:10px}
+.jg-toca .tr-card{background:#8a1a30;color:#fbf7ee;border:2px solid #fbf7ee;border-radius:16px;box-shadow:3px 3px 0 #2a0710;min-height:84px;gap:4px}
+.jg-toca .tr-card b{font-family:var(--display,inherit);font-weight:700;font-size:16px;line-height:1.05}.jg-toca .tr-card small{opacity:1;color:#f1e3d6}
+.jg-toca .tr-card .tr-ic{width:28px;height:28px;display:block;font-size:0}
+.jg-toca .tr-card.go{background:#d99a2b;color:#2a0710}.jg-toca .tr-card.go small{color:#4a2a0a}
+.jg-toca .tr-como .tr-card.on{background:#d99a2b;color:#2a0710}.jg-toca .tr-como .tr-card.on small{color:#4a2a0a}
+.jg-toca .tr-vel{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.jg-toca .tr-vel .tr-card.small{background:transparent;border:0;box-shadow:none;min-height:44px;color:#142036;padding:2px 0}
+.jg-toca .tr-vel .tr-card.small b{font-family:var(--body,inherit);font-size:15px;color:#142036}.jg-toca .tr-vel .tr-card.small small{font-size:11px;font-weight:700;color:#4a5163}
+.jg-toca .tr-vel .tr-card.small .tr-ic{width:46px;height:46px}
+.jg-toca .tr-vel .tr-card.small.on{background:transparent}.jg-toca .tr-vel .tr-card.small.on .tr-ic{filter:drop-shadow(0 0 0 #d99a2b);outline:3px solid #d99a2b;outline-offset:2px;border-radius:50%}
+.jg-toca .tr-vel .tr-card.small.on b,.jg-toca .tr-vel .tr-card.small.on small{color:#8a5a00}
+.vinil{display:block;width:44px;height:44px}.vinil.sm{width:30px;height:30px}
+.kd-vic{display:inline-flex;align-items:center;gap:6px}.kd-vic small{font-size:12px;font-weight:700}
+.jg-toca .tr-pad:not(.mic){background:#fbf7ee;border:3px solid #fbf7ee;box-shadow:5px 6px 0 #2a0710;border-radius:24px;min-height:210px;color:#142036}
+.jg-toca .tr-pad:not(.mic).live{background:#fff3e0;border-color:#d99a2b}
+.jg-toca .tr-pad .drum-art{width:150px;height:132px}.jg-toca .tr-pad small{color:#4a5163;font-size:13px;font-weight:700}
+.jg-toca .tr-pad.hit .drum-art{animation:tr-boom .14s ease-out}
+.jg-toca .tr-status{color:#fbf7ee}
+.jg-toca .tk-pad.agudo{background:#1f6f78}.jg-toca .tk-pad.grave{background:#8a1a30}
+.jg-toca .jg-seg{flex-wrap:wrap;overflow:visible;row-gap:6px}.jg-toca .jg-seg button{flex:1 1 30%;min-width:96px}
+.jg-toca .tk-pad .tk-drum{width:92px;height:92px;padding:12px;box-sizing:border-box;background:#fbf7ee;border-radius:50%;margin:0 auto}
+.jg-toca .tk-pad small{font-size:14px;font-weight:800}

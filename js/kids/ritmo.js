@@ -3,7 +3,8 @@
 import { h } from '../util.js';
 import * as N from '../notation.js';
 import { audio, click } from '../audio.js';
-import { voz, VELOCIDADES, ICONE_VEL, BPM_MAX, velocidadeDe } from '../toca-som.js';
+import { voz, VELOCIDADES, BPM_MAX, velocidadeDe } from '../toca-som.js';
+import { vinil } from './drum-art.js';
 import { layoutRhythm } from '../reading.js';
 import { FOODS, FOOD_GROUPS, foodOf, randomFoods, sameRhythm, cellOf } from '../kids-logic.js';
 import { svgEl } from './art.js';
@@ -17,7 +18,7 @@ const feedback = (el, ok, text) => { el.className = `kd-fb ${ok ? 'ok' : 'no'}`;
 /** `opts.mission` (Modo Aventura) abre o desafio de composição de ritmo-missao.js; sem ele é o jogo de sempre (criar / adivinha). */
 export function mountRitmo(box, opts) {
   if (opts && opts.mission) return mountRitmoMissao(box, opts);
-  let mode = 'criar'; let slots = []; let secret = null; let cur = -1; let bpm = 90;
+  let mode = 'criar'; let slots = []; let secret = null; let cur = -1; let bpm = 100;
   const Play = session(); // a execução em curso (cliques, sons e o destaque do tempo); tocar de novo ou trocar de modo cancela a anterior
   const UI = session({ quiet: false }); // timers só de tela (redesenhar depois do acerto)
   const fb = h('p', { class: 'kd-fb', 'aria-live': 'polite' });
@@ -41,7 +42,7 @@ export function mountRitmo(box, opts) {
     put(box,
       h('div', { class: 'row kd-modes' }, ...[['criar', '🎨 criar'], ['adivinha', '🕵️ adivinha']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { Play.reset(); UI.reset(); cur = -1; mode = k; slots = []; secret = k === 'adivinha' ? randomFoods() : null; fb.textContent = ''; draw(); } }, t)),
         h('span', { class: 'kd-bpm' }, h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'menos 5 BPM', onclick: () => { bpm = Math.max(40, bpm - 5); draw(); } }, '−'), h('output', { class: 'kd-bpmv', 'aria-label': `${bpm} BPM` }, `${bpm} BPM`), h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'mais 5 BPM', onclick: () => { bpm = Math.min(BPM_MAX, bpm + 5); draw(); } }, '+'))),
-      h('div', { class: 'row kd-modes kd-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k, v]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(velocidadeDe(bpm) === k), 'aria-label': k, title: k, class: `kd-chip kd-vic${velocidadeDe(bpm) === k ? ' on' : ''}`, onclick: () => { bpm = v; draw(); } }, ICONE_VEL[k]))),
+      h('div', { class: 'row kd-modes kd-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k, v]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(velocidadeDe(bpm) === k), 'aria-label': k, title: k, class: `kd-chip kd-vic${velocidadeDe(bpm) === k ? ' on' : ''}`, onclick: () => { bpm = v; draw(); } }, vinil(k, 'vinil sm'), h('small', {}, String(v))))),
       mode === 'adivinha' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBar(secret) }, '▶ ouvir o ritmo secreto') : h('p', { class: 'kd-q' }, 'monta 4 tempos e toca!'),
       h('div', { class: 'kd-slots' }, ...slotEls),
       ...palette,

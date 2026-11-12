@@ -20,3 +20,24 @@ export function drumSvg(kind = 'caixa', cls = 'drum-art') {
   const d = document.createElement('span'); d.className = cls; d.setAttribute('aria-hidden', 'true');
   d.innerHTML = `<svg viewBox="0 0 120 108" width="100%" height="100%" focusable="false">${(ART[kind] || ART.caixa)()}</svg>`; return d;
 }
+
+/* ---------- discos de velocidade e ícones de traço (no lugar dos emojis) ---------- */
+const DISCO = { devagar: '#8a1a30', normal: '#d99a2b', 'rápido': '#1f6f78', turbo: '#4a79b4', super: '#8a1a30' };
+/** Disco de vinil da velocidade `k` (devagar, normal, rápido, turbo, super). */
+export function vinil(k, cls = 'vinil') {
+  const d = document.createElement('span'); d.className = cls; d.setAttribute('aria-hidden', 'true');
+  d.innerHTML = `<svg viewBox="0 0 48 48" width="100%" height="100%" focusable="false"><circle cx="24" cy="24" r="22" fill="#1b0a10" stroke="#fbf7ee" stroke-width="2"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fbf7ee" stroke-opacity=".25" stroke-width="1"/><circle cx="24" cy="24" r="9" fill="${DISCO[k] || '#8a1a30'}"/><circle cx="24" cy="24" r="2.4" fill="#fbf7ee"/></svg>`; return d;
+}
+const ICO = {
+  play: '<path d="M7 4l13 8-13 8z" fill="currentColor" stroke="none"/>',
+  ouvir: '<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 010 7"/>',
+  fone: '<path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  tela: '<rect x="6" y="3" width="12" height="18" rx="3"/><path d="M10 17h4"/>',
+  mic: '<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',
+  outro: '<path d="M4 8h12l-3-3M20 16H8l3 3"/>',
+};
+/** Ícone de traço (play, ouvir, fone, tela, mic, outro) com a cor do texto. */
+export function icone(nome, cls = 'ico') {
+  const d = document.createElement('span'); d.className = cls; d.setAttribute('aria-hidden', 'true');
+  d.innerHTML = `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">${ICO[nome] || ''}</svg>`; return d;
+}

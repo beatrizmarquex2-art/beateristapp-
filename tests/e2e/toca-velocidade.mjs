@@ -11,18 +11,18 @@ check('Toca Aqui: 50% = 1 ★, 70% = 2 ★, 100% = 3 ★ (e 50% já abre a próx
 check('Toca Aqui: intermediário e avançado abertos desde o começo (nada trancado)', (await page.locator('.lib-tab[disabled]').count()) === 0 && !(await page.locator('.tr-ctrl').first().innerText()).includes('🔒'));
 const bpmTxt = () => page.textContent('.bl-bpm');
 const chip = (nome) => page.getByRole('radio', { name: nome, exact: true });
-check('andamento padrão mais animado (90 BPM)', (await bpmTxt()).trim() === '90', await bpmTxt());
-check('4 atalhos de velocidade', (await page.locator('[aria-label="Velocidade"] button').count()) === 4);
-await chip('turbo').click(); await sleep(400);
-check('turbo = 170 BPM e o atalho fica marcado', (await bpmTxt()).trim() === '170' && (await chip('turbo').getAttribute('aria-checked')) === 'true', await bpmTxt());
-for (let i = 0; i < 8; i++) await page.getByRole('button', { name: 'mais 5 BPM' }).click();
+check('andamento padrão (100 BPM)', (await bpmTxt()).trim() === '100', await bpmTxt());
+check('5 atalhos de velocidade (80 a 160)', (await page.locator('[aria-label="Velocidade"] button').count()) === 5);
+await chip('turbo, 140 BPM').click(); await sleep(400);
+check('turbo = 140 BPM e o atalho fica marcado', (await bpmTxt()).trim() === '140' && (await chip('turbo, 140 BPM').getAttribute('aria-checked')) === 'true', await bpmTxt());
+for (let i = 0; i < 14; i++) await page.getByRole('button', { name: 'mais 5 BPM' }).click();
 await sleep(300); check('pode passar de 160: vai até 200 BPM', (await bpmTxt()).trim() === '200', await bpmTxt());
-await chip('devagar').click(); await sleep(300); check('devagar = 60 BPM', (await bpmTxt()).trim() === '60');
+await chip('devagar, 80 BPM').click(); await sleep(300); check('devagar = 80 BPM', (await bpmTxt()).trim() === '80');
 check('só o som de caixa: sumiu a escolha de som', (await page.locator('[aria-label="Som do toque"] button').count()) === 0);
 // versão com imagens
 await page.getByRole('radio', { name: 'com imagens' }).click(); await page.waitForSelector('.kd-bpmv', { timeout: 10000 });
-check('com imagens: velocidade em 4 ícones e sem escolha de som', (await page.locator('.kd-vel button').count()) === 4 && (await page.locator('.kd-som button').count()) === 0 && (await page.locator('.kd-vel button').first().innerText()).trim() === '🐢');
+check('com imagens: velocidade em 5 discos e sem escolha de som', (await page.locator('.kd-vel button').count()) === 5 && (await page.locator('.kd-som button').count()) === 0 && (await page.locator('.kd-vel button').first().innerText()).trim() === '80');
 await page.locator('.kd-vel button[aria-label="rápido"]').click(); await sleep(300);
-check('com imagens: rápido = 130 BPM', (await page.textContent('.kd-bpmv')).includes('130'), await page.textContent('.kd-bpmv'));
+check('com imagens: rápido = 120 BPM', (await page.textContent('.kd-bpmv')).includes('120'), await page.textContent('.kd-bpmv'));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
