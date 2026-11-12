@@ -501,7 +501,7 @@ export function mount(host, opts) {
     return h('div', { class: `cx-result${w === 0 && g.mode === 'paul' ? ' win' : ''}`, role: 'status' }, h('h3', { class: 'hand' }, title),
       h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`),
       h('p', { class: 'muted' }, `cartas restantes: ${r.counts.map((n, i) => `${PL(i)} ${n}`).join(' · ')}`),
-      adv ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+      adv ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('a', { class: 'btn', href: '#/jogos/quizuno' }, 'quiz do Uno Musical'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
   }
 
   /* ----- ciclo de vida ----- */

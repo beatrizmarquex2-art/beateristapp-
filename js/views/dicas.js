@@ -13,10 +13,11 @@ const KEY = 'setting-dicas';
 const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 const save = (p) => store.upsert('setting', KEY, p);
 import { tipList } from '../tipbox.js';
+import { LETRAS as NOMES_LETRAS, nomeLetras } from '../letras-nomes.js';
 const items = () => T.keywords(tipList(), conf().kw);
 // amostra grátis (sem código): a caça-palavras usa palavras do dicionário musical, não as dicas do método
 const termItems = () => TERMS.filter((x) => /^\p{L}+$/u.test(x.t)).map((x, i) => ({ n: i + 1, text: x.d, w: T.norm(x.t), shown: x.t, termo: true })).filter((x) => x.w.length >= 4 && x.w.length <= 8);
-const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha'], ['duelo', 'duelo']];
+const TABS = ['quiz', 'caca', 'cruzadinha', 'duelo'].map((k) => [k, nomeLetras(k)]);
 const total = () => Math.max(30, tipList().length);
 
 /** A dica inteira, pra quando a palavra é achada. */
@@ -148,7 +149,7 @@ function cruzadinha(box, D) {
 /** Pro duelo em 2 celulares (js/jogos/duelo-letras.js): os 3 jogos com puzzle preparado e as dicas do aluno. */
 export const _duelo = { caca, cruzadinha, quiz, items };
 const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg', duelo: 'cara-a-cara.webp' };
-const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas', duelo: '2 celulares' };
+const SUB = Object.fromEntries(Object.entries(NOMES_LETRAS).map(([k, v]) => [k, v[1]]));
 
 export function mount(host, parts = []) {
   const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
@@ -163,7 +164,7 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner('Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
+  host.append(banner(nomeLetras(tab), limited ? `${GRATIS.caca} partidas de ${nomeLetras('caca')} de graça` : 'com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),

@@ -25,6 +25,7 @@ import { relatorio } from './jogos-relatorio.js';
 import { hasAdventure, loadAdventure } from '../campanha/registry.js';
 import { modeChooser, mountAdventure } from '../campanha/run.js';
 import * as AC from '../acesso.js';
+import { LETRAS } from '../letras-nomes.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
 import { musica } from '../jogos/musica.js';
@@ -64,10 +65,13 @@ const SECTIONS = [
   ]],
   ['cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'quizuno', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
+    ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
-  ['letras', [
-    link('#/dicas', 'Letras', 'quiz.svg', 'caça-palavras, cruzadinha, quiz e duelo · 2 partidas grátis'),
+  ['palavras e quiz', [
+    link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
+    link('#/dicas/cruzadinha', LETRAS.cruzadinha[0], 'cruza.svg', LETRAS.cruzadinha[1]),
+    link('#/dicas/quiz', LETRAS.quiz[0], 'quiz.svg', LETRAS.quiz[1]),
+    link('#/dicas/duelo', LETRAS.duelo[0], 'cara-a-cara.webp', LETRAS.duelo[1]),
   ]],
 ];
 
