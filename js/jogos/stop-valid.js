@@ -2,19 +2,20 @@
 // Pipeline: normalizar → tirar artigo inicial → conferir a letra → reconhecer na categoria → classificar (válida / inválida / pendente).
 import { LINES as TEORIA } from './stop-bank-teoria.js';
 import { LINES as CULTURA } from './stop-bank-cultura.js';
+import { LINES as EXTRA } from './stop-bank-extra.js';
 
 export const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'J', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V'];
 /** As 12 categorias oficiais. `grupo` serve pro sorteio de categorias variar entre instrumentos, teoria e cultura. */
 export const CATS = [
-  { id: 'instrumento', label: 'instrumento musical', grupo: 'instrumentos' },
+  { id: 'instrumento', label: 'instrumento musical e derivados (pad, tubos sonoros, peças da bateria, sinos melódicos, percussão)', grupo: 'instrumentos' },
   { id: 'percussao', label: 'peças da bateria e instrumentos de percussão', grupo: 'instrumentos' },
-  { id: 'equipamento', label: 'acessórios musicais e equipamentos de palco ou estúdio', grupo: 'instrumentos' },
+  { id: 'equipamento', label: 'acessórios e equipamentos (baqueta, cabo, palheta, afinador, pedal, mesa de som, caixa de som…)', grupo: 'instrumentos' },
   { id: 'estilo', label: 'estilo musical', grupo: 'teoria' },
   { id: 'profissao', label: 'profissão da música', grupo: 'teoria' },
   { id: 'tecnica', label: 'técnicas musicais', grupo: 'teoria' },
-  { id: 'cantor', label: 'cantor ou cantora', grupo: 'cultura' },
-  { id: 'banda', label: 'banda ou grupo musical', grupo: 'cultura' },
-  { id: 'musica', label: 'nome de música', grupo: 'cultura' },
+  { id: 'cantor', label: 'cantor ou cantora (nacional ou internacional, solo, de dupla ou de banda: só um)', grupo: 'cultura' },
+  { id: 'banda', label: 'banda ou grupo (nacional ou internacional: só um)', grupo: 'cultura' },
+  { id: 'musica', label: 'nome de música (qualquer uma)', grupo: 'cultura' },
   { id: 'album', label: 'álbum musical', grupo: 'cultura' },
   { id: 'brasileiro', label: 'artista brasileiro', grupo: 'cultura' },
   { id: 'marca', label: 'marca de instrumentos musicais', grupo: 'instrumentos' },
@@ -52,6 +53,9 @@ function put(cat, line) {
   for (const p of parts) { const k = keyOf(p); if (k && !m.has(k)) m.set(k, { id, name: parts[0] }); const l = initialOf(p); if (l) ls.add(l); }
 }
 for (const [cat, list] of Object.entries({ ...TEORIA, ...CULTURA })) if (CAT[cat]) list.forEach((l) => put(cat, l));
+// categorias fixas: "instrumento musical e derivados" aceita também as peças da bateria e a percussão; os complementos da Bea entram aqui
+(TEORIA.percussao || []).forEach((l) => put('instrumento', l));
+for (const [cat, list] of Object.entries(EXTRA)) list.forEach((l) => put(cat, l));
 custom.forEach((c) => put(c.cat, [c.name, ...(c.aliases || [])].join('|')));
 /** Guarda uma resposta aprovada na revisão (fica neste aparelho). */
 export function addCustom(cat, name, aliases = []) {

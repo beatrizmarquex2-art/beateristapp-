@@ -959,3 +959,4 @@ button.dc-chip{cursor:pointer;min-height:36px}
 
 /* acerto no jogo da velha: verde com ✓ (o vermelho parecia erro) */
 .jg-msg.ok,.jg-game .jg-msg.ok{color:#1c7a3c}.jg-dark .jg-msg.ok{color:#8be39b}
+.st-fixas{margin:4px 0 10px;padding-left:18px;font-size:14px;display:grid;gap:3px}

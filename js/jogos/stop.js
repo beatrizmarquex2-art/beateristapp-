@@ -8,6 +8,8 @@ import * as FX from './stop-sfx.js';
 import { getGame, setGame } from './base.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { linha, chips, ajuda } from './opcoes.js';
+/** As 5 categorias do STOP, sempre as mesmas (pedido da Bea): instrumento e derivados, acessórios e equipamentos, cantor(a), banda e nome de música. */
+const FIXAS = ['instrumento', 'equipamento', 'cantor', 'banda', 'musica'];
 import * as Q from './stop-sim-logic.js';
 import { ganhou } from './estrelas-jogo.js';
 import { montarSimultaneo, garantirCss, caixaPausa } from './stop-simultaneo.js';
@@ -24,7 +26,7 @@ export function mount(host, opts) {
   const saved = M ? {} : getGame(ID);
   const prefs = {
     mode: ['solo', 'dupla', 'sala', 'online'].includes(saved.mode) ? saved.mode : 'solo',
-    cats: S.catsOk(saved.cats) ? saved.cats : S.randomCats(6),
+    cats: FIXAS.slice(), // categorias sempre as mesmas (sem escolher)
     seconds: Number.isInteger(saved.seconds) && saved.seconds >= 10 && saved.seconds <= 600 ? saved.seconds : 60,
     rounds: Number.isInteger(saved.rounds) && saved.rounds >= 1 && saved.rounds <= 20 ? saved.rounds : 3,
     names: Array.isArray(saved.names) && saved.names.length >= 2 ? saved.names.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['jogador 1', 'jogador 2'],
@@ -110,14 +112,8 @@ export function mount(host, opts) {
             : 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'))),
       prefs.mode === 'online' ? h('div', { class: 'jo-card' }, linha('como', chips([['sim', 'ao mesmo tempo'], ['turnos', 'um de cada vez']], prefs.sim ? 'sim' : 'turnos', (v) => { FX.play('tap'); save({ sim: v === 'sim' }); setup(); }, 'como jogar em 2 celulares'))) : null,
       namesBox(),
-      h('p', { class: 'jg-lab' }, `categorias: ${prefs.cats.length} escolhida${prefs.cats.length === 1 ? '' : 's'} (de ${S.MIN_CATS} a ${S.MAX_CATS})`),
-      h('div', { class: 'st-cats', role: 'group', 'aria-label': 'categorias' }, ...catBtns),
-      h('div', { class: 'jg-actions row st-catact' },
-        h('button', { class: 'btn small', type: 'button', onclick: () => { save({ cats: S.randomCats(5 + Math.floor(Math.random() * 4)) }); FX.play('tap'); setup(); } }, '🎲 sortear'),
-        h('button', { class: 'btn small', type: 'button', disabled: !favs(), onclick: () => { save({ cats: favs() }); setup(); } }, '★ minhas favoritas'),
-        h('button', { class: 'btn small', type: 'button', disabled: !okCats, onclick: () => { setGame(ID, { fav: prefs.cats }); toast('categorias favoritas salvas'); setup(); } }, 'salvar como favoritas'),
-        h('button', { class: 'btn small', type: 'button', disabled: !S.catsOk(getGame(ID).last), onclick: () => { save({ cats: getGame(ID).last }); setup(); } }, 'repetir a última'),
-        h('button', { class: 'btn small ghost', type: 'button', onclick: () => { save({ cats: [] }); setup(); } }, 'limpar')),
+      h('p', { class: 'jg-lab' }, 'categorias (sempre as mesmas)'),
+      h('ul', { class: 'st-fixas' }, ...FIXAS.map((id) => h('li', {}, S.CAT[id].label))),
       h('p', { class: `st-warn${okCats && eligible.length ? ' ok' : ''}`, role: 'status', 'aria-live': 'polite' }, !okCats ? `escolha de ${S.MIN_CATS} a ${S.MAX_CATS} categorias pra começar` : eligible.length ? `${eligible.length} de 16 letras servem pra essa escolha` : 'nenhuma letra serve pra todas essas categorias juntas. troque alguma categoria.'),
       h('div', { class: 'jo-card' },
         linha('tempo', seg(secs.map((v) => [v, secsLabel(v)]), customSecs ? 0 : prefs.seconds, (v) => { save({ seconds: v === 0 ? 45 : v }); setup(); }, 'tempo por jogador')),
