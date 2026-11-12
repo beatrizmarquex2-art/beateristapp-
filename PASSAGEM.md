@@ -489,3 +489,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## v394 — cara a cara: ✕/✅, nomes em 2 linhas, enquadre, 2 perguntas por vez
 - virar = ✕, desvirar = ✅; nomes com `nomeCls()` (midia.js) nunca passam de 2 linhas; MANUAL de enquadre: F123 (Axl) e F103 ajustados; carrossel mostra 2 perguntas por vez
+
+## v396 — cara a cara: pergunta compacta e centrada (flex; no iPhone o grid deixava o texto no topo)

@@ -74,3 +74,7 @@
 .cm-root .cm-cell .jg-flip{font-size:15px}
 .cm-root .cm-card small{min-height:calc(2.2em + 9px)}
 .cm-root .cm-qc{align-content:center;grid-template-rows:1fr}.cm-carro{align-items:stretch}
+/* pergunta: caixa compacta com o texto bem no meio (flex funciona igual no iPhone) */
+.cm-root .cm-qc{display:flex;align-items:center;justify-content:center;grid-template-rows:none;min-height:42px;padding:6px 10px;font-size:14px;line-height:1.15}
+.cm-root .cm-qc>span{display:block}
+.cm-carro{align-items:stretch}
