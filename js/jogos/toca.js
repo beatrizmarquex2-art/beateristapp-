@@ -4,10 +4,17 @@
 import { h } from '../util.js';
 import { getGame, setGame } from './base.js';
 import { mountProgressionMap } from '../kids/mapa.js';
-import { themeOf } from '../campanha/themes.js';
 import { leitura, progressoToca } from '../views/treinos.js';
 import { PATH, TIERS } from '../reading.js';
 import { musicaPausa, musicaVolta } from './musica.js';
+
+const R = (id, name, sub, decor) => ({ id, name, sub, decor });
+/** Os 3 modos viram 3 mundos, cada um com o seu cenário (o id do modo continua o mesmo: ini, int, ava). */
+const MUNDOS = {
+  ini: { id: 'vila', nome: 'Vila das Semínimas', curto: 'vila', sub: 'o pulso e as colcheias', regioes: [R('praca', 'Praça do Pulso', 'semínima e pausa', [['tree', 'l', 0.2], ['flower', 'r', 0.45], ['bush', 'l', 0.8]]), R('feira', 'Feira das Colcheias', 'duas por tempo', [['flower', 'r', 0.2], ['tree', 'l', 0.5], ['sprout', 'r', 0.85]])] },
+  int: { id: 'cidade', nome: 'Cidade das Semicolcheias', curto: 'cidade', sub: 'quatro por tempo', regioes: [R('avenida', 'Avenida das Semis', 'rápido e firme', [['lamp', 'l', 0.2], ['star', 'r', 0.45], ['note', 'l', 0.8]]), R('metro', 'Metrô dos Ritmos', 'mistura de figuras', [['record', 'r', 0.2], ['lamp', 'l', 0.5], ['star', 'r', 0.85]])] },
+  ava: { id: 'palco', nome: 'Palco das Síncopes', curto: 'palco', sub: 'pontuadas e contratempos', regioes: [R('coxia', 'Coxia dos Contratempos', 'o ritmo fora do lugar', [['curtain', 'l', 0.2], ['sticks', 'r', 0.5], ['spot', 'l', 0.85]]), R('palco', 'Palco Principal', 'tudo junto', [['stage', 'r', 0.25], ['trophy', 'l', 0.6], ['star', 'r', 0.92]])] },
+};
 
 export function mount(host) {
   const saved = getGame('toca');
@@ -23,12 +30,12 @@ export function mount(host) {
     const levels = Array.from({ length: 12 }, (_, i) => ({ id: `toca:${tier}:${i + 1}`, index: i + 1, label: String(i + 1), tag: '', boss: i === 11 }));
     const have = PATH.reduce((s, x, i) => s + (x.tier === tier ? starsAt(pr, i) : 0), 0);
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Modo' }, ...TIERS.map((t) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(tier === t.id), class: tier === t.id ? 'on' : '',
-      onclick: () => { tier = t.id; setGame('toca', { ...getGame('toca'), tier }); drawMapa(); } }, t.name)));
+      onclick: () => { tier = t.id; setGame('toca', { ...getGame('toca'), tier }); drawMapa(); } }, `${TIERS.indexOf(t) + 1} · ${MUNDOS[t.id].curto}`)));
     const bar = h('div', { class: 'tm-bar' }, tabs, h('button', { type: 'button', class: 'tm-rand', onclick: () => jogar(null) }, h('span', { 'aria-hidden': 'true' }, '↻'), ' aleatório'));
-    root.replaceChildren(h('p', { class: 'tm-dica' }, 'toque as figuras da pauta no tempo: na tela, com as duas mãos, ou no microfone (vale mais estrelas).'), mapBox);
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS[tier].nome} · toque as figuras da pauta no tempo: na tela, com as duas mãos, ou no microfone (vale mais estrelas).`), mapBox);
     off = mountProgressionMap(mapBox, {
       gameId: `toca-${tier}`, levels, profileId: 'toca', unitName: 'Fase', tier: 0, stars: { have, max: 36 },
-      theme: themeOf('toca'),
+      theme: { id: `toca-${MUNDOS[tier].id}`, name: MUNDOS[tier].nome, regions: MUNDOS[tier].regioes },
       starsOf: (id) => starsAt(pr, idxOf(tier, Number(id.split(':')[2]))),
       unlockedOf: () => true, lockedMsg: '',
       onOpen: (lv) => jogar(lv.index),

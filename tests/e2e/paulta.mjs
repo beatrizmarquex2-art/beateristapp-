@@ -17,7 +17,7 @@ const timers = () => page.evaluate(() => ({ i: window.__ac.intervals.size, r: wi
 const txt = () => page.evaluate(() => document.querySelector('#view').innerText);
 
 check('nome do jogo aparece como pauLta (L maiúsculo)', (await txt()).includes('pauLta'));
-check('4 regiões: bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 4 && !!(await page.$('.kx-g.pl-locked')));
+check('6 mundos: selva, cidade e vulcão da bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 6 && !!(await page.$('.kx-g.pl-locked')) && /Selva da Bateria/.test(await txt()) && /Cidade das Colcheias/.test(await txt()) && /Vulcão das Semicolcheias/.test(await txt()));
 for (const [w, n] of [['drumF', 12], ['drumI', 12], ['drumD', 12], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.mp-node')).length === n); }
 await go('#/paulta/drumF/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.mp')).length === 1);
 

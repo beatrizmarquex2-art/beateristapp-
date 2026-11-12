@@ -15,7 +15,9 @@ const REGIOES = {
   fa: [R('graves', 'Sala das Graves', 'o chão da música', [['flower', 'r', 0.06], ['cactus', 'l', 0.13], ['vaso', 'l', 0.28], ['bush', 'r', 0.5], ['sprout', 'l', 0.57], ['cactus', 'l', 0.72], ['sprout', 'r', 0.94], ['flower', 'l', 0.97]]), R('baixo', 'Corredor do Baixo', 'notas profundas', [['cactus', 'l', 0.06], ['vaso', 'r', 0.13], ['sprout', 'r', 0.28], ['flower', 'l', 0.5], ['bush', 'r', 0.57], ['vaso', 'r', 0.72], ['bush', 'l', 0.94], ['cactus', 'r', 0.97]]), R('palcof', 'Palco da Clave de Fá', 'ler sem pensar', [['vaso', 'r', 0.06], ['sprout', 'l', 0.13], ['bush', 'l', 0.28], ['cactus', 'r', 0.5], ['flower', 'l', 0.57], ['sprout', 'l', 0.72], ['flower', 'r', 0.94], ['vaso', 'l', 0.97]])],
   duel: [R('arena', 'Arena das Claves', 'sol contra fá', [['sprout', 'l', 0.06], ['bush', 'r', 0.13], ['flower', 'r', 0.35], ['vaso', 'l', 0.65], ['cactus', 'r', 0.72], ['bush', 'r', 0.94]]), R('final', 'Palco Final', 'só uma vence', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.35], ['sprout', 'l', 0.65], ['vaso', 'r', 0.72], ['flower', 'r', 0.94]])],
 };
-REGIOES.drumF = REGIOES.drum; REGIOES.drumI = REGIOES.drum; REGIOES.drumD = REGIOES.drum;
+REGIOES.drumF = REGIOES.drum;
+REGIOES.drumI = [R('avenida', 'Avenida do Chimbal', 'colcheias em fila', [['lamp', 'l', 0.15], ['star', 'r', 0.4], ['lamp', 'l', 0.7], ['note', 'r', 0.92]]), R('praca', 'Praça dos Acentos', 'forte e fraco', [['record', 'r', 0.15], ['lamp', 'l', 0.45], ['star', 'r', 0.75], ['note', 'l', 0.95]])];
+REGIOES.drumD = [R('cratera', 'Cratera das Semis', 'tudo bem rápido', [['cactus', 'l', 0.15], ['vaso', 'r', 0.4], ['star', 'l', 0.7], ['cactus', 'r', 0.92]]), R('lava', 'Rio de Lava', 'sem tempo pra pensar', [['star', 'r', 0.15], ['cactus', 'l', 0.45], ['vaso', 'r', 0.75], ['star', 'l', 0.95]])];
 const curto = (t) => (t.length > 26 ? `${t.slice(0, 24).trim()}…` : t);
 
 /** Monta o mapa do mundo `w` dentro de `host`. Devolve { hud, dispose }. */

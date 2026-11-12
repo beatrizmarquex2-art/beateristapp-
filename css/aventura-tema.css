@@ -53,3 +53,33 @@ html[data-av="claro"] .mp[data-theme="figurix-floresta"]{--avp-sky0:#d9f0e0;--av
 html[data-av="claro"] .mp[data-theme="figurix-deserto"]{--avp-sky0:#f6e6cf;--avp-sky1:#ecd0a6;--avp-sky2:#f0dab8;--avp-sky3:#e2c08c;--avp-edge:#9a6a32;--avp-dots:#d4aa72}
 html[data-av="claro"] .mp[data-theme="figurix-mar"]{--avp-sky0:#d8eef8;--avp-sky1:#b4dcef;--avp-sky2:#c6e5f3;--avp-sky3:#9cd0e8;--avp-edge:#2b86aa;--avp-dots:#82bfdc}
 html[data-av="claro"] .mp[data-theme="figurix-montanha"]{--avp-sky0:#e6ecf2;--avp-sky1:#ccd6e0;--avp-sky2:#d8e0e9;--avp-sky3:#b9c6d4;--avp-edge:#52667c;--avp-dots:#a3b3c4}
+
+/* Mundos dos jogos de caminhozinho (pauLta, Toca Aqui, Detetive Note): cada mundo com a sua cor no mapa (escuro e claro; sem roxo e sem rosa) */
+.mp[data-theme="paulta-drumF"]{--avp-sky0:hsl(140 45% 14%);--avp-sky1:hsl(140 42% 22%);--avp-sky2:hsl(140 44% 18%);--avp-sky3:hsl(140 38% 28%);--avp-edge:hsl(140 55% 72%);--avp-dots:hsl(140 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-drumF"]{--avp-sky0:hsl(140 55% 92%);--avp-sky1:hsl(140 48% 82%);--avp-sky2:hsl(140 52% 87%);--avp-sky3:hsl(140 44% 76%);--avp-edge:hsl(140 40% 34%);--avp-dots:hsl(140 35% 70%)}
+.mp[data-theme="paulta-drumI"]{--avp-sky0:hsl(212 45% 14%);--avp-sky1:hsl(212 42% 22%);--avp-sky2:hsl(212 44% 18%);--avp-sky3:hsl(212 38% 28%);--avp-edge:hsl(212 55% 72%);--avp-dots:hsl(212 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-drumI"]{--avp-sky0:hsl(212 55% 92%);--avp-sky1:hsl(212 48% 82%);--avp-sky2:hsl(212 52% 87%);--avp-sky3:hsl(212 44% 76%);--avp-edge:hsl(212 40% 34%);--avp-dots:hsl(212 35% 70%)}
+.mp[data-theme="paulta-drumD"]{--avp-sky0:hsl(10 45% 14%);--avp-sky1:hsl(10 42% 22%);--avp-sky2:hsl(10 44% 18%);--avp-sky3:hsl(10 38% 28%);--avp-edge:hsl(10 55% 72%);--avp-dots:hsl(10 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-drumD"]{--avp-sky0:hsl(10 55% 92%);--avp-sky1:hsl(10 48% 82%);--avp-sky2:hsl(10 52% 87%);--avp-sky3:hsl(10 44% 76%);--avp-edge:hsl(10 40% 34%);--avp-dots:hsl(10 35% 70%)}
+.mp[data-theme="paulta-sol"]{--avp-sky0:hsl(225 45% 14%);--avp-sky1:hsl(225 42% 22%);--avp-sky2:hsl(225 44% 18%);--avp-sky3:hsl(225 38% 28%);--avp-edge:hsl(225 55% 72%);--avp-dots:hsl(225 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-sol"]{--avp-sky0:hsl(225 55% 92%);--avp-sky1:hsl(225 48% 82%);--avp-sky2:hsl(225 52% 87%);--avp-sky3:hsl(225 44% 76%);--avp-edge:hsl(225 40% 34%);--avp-dots:hsl(225 35% 70%)}
+.mp[data-theme="paulta-fa"]{--avp-sky0:hsl(178 45% 14%);--avp-sky1:hsl(178 42% 22%);--avp-sky2:hsl(178 44% 18%);--avp-sky3:hsl(178 38% 28%);--avp-edge:hsl(178 55% 72%);--avp-dots:hsl(178 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-fa"]{--avp-sky0:hsl(178 55% 92%);--avp-sky1:hsl(178 48% 82%);--avp-sky2:hsl(178 52% 87%);--avp-sky3:hsl(178 44% 76%);--avp-edge:hsl(178 40% 34%);--avp-dots:hsl(178 35% 70%)}
+.mp[data-theme="paulta-duel"]{--avp-sky0:hsl(36 45% 14%);--avp-sky1:hsl(36 42% 22%);--avp-sky2:hsl(36 44% 18%);--avp-sky3:hsl(36 38% 28%);--avp-edge:hsl(36 55% 72%);--avp-dots:hsl(36 35% 38%)}
+html[data-av="claro"] .mp[data-theme="paulta-duel"]{--avp-sky0:hsl(36 55% 92%);--avp-sky1:hsl(36 48% 82%);--avp-sky2:hsl(36 52% 87%);--avp-sky3:hsl(36 44% 76%);--avp-edge:hsl(36 40% 34%);--avp-dots:hsl(36 35% 70%)}
+.mp[data-theme="toca-vila"]{--avp-sky0:hsl(48 45% 14%);--avp-sky1:hsl(48 42% 22%);--avp-sky2:hsl(48 44% 18%);--avp-sky3:hsl(48 38% 28%);--avp-edge:hsl(48 55% 72%);--avp-dots:hsl(48 35% 38%)}
+html[data-av="claro"] .mp[data-theme="toca-vila"]{--avp-sky0:hsl(48 55% 92%);--avp-sky1:hsl(48 48% 82%);--avp-sky2:hsl(48 52% 87%);--avp-sky3:hsl(48 44% 76%);--avp-edge:hsl(48 40% 34%);--avp-dots:hsl(48 35% 70%)}
+.mp[data-theme="toca-cidade"]{--avp-sky0:hsl(205 45% 14%);--avp-sky1:hsl(205 42% 22%);--avp-sky2:hsl(205 44% 18%);--avp-sky3:hsl(205 38% 28%);--avp-edge:hsl(205 55% 72%);--avp-dots:hsl(205 35% 38%)}
+html[data-av="claro"] .mp[data-theme="toca-cidade"]{--avp-sky0:hsl(205 55% 92%);--avp-sky1:hsl(205 48% 82%);--avp-sky2:hsl(205 52% 87%);--avp-sky3:hsl(205 44% 76%);--avp-edge:hsl(205 40% 34%);--avp-dots:hsl(205 35% 70%)}
+.mp[data-theme="toca-palco"]{--avp-sky0:hsl(8 45% 14%);--avp-sky1:hsl(8 42% 22%);--avp-sky2:hsl(8 44% 18%);--avp-sky3:hsl(8 38% 28%);--avp-edge:hsl(8 55% 72%);--avp-dots:hsl(8 35% 38%)}
+html[data-av="claro"] .mp[data-theme="toca-palco"]{--avp-sky0:hsl(8 55% 92%);--avp-sky1:hsl(8 48% 82%);--avp-sky2:hsl(8 52% 87%);--avp-sky3:hsl(8 44% 76%);--avp-edge:hsl(8 40% 34%);--avp-dots:hsl(8 35% 70%)}
+.mp[data-theme="detetive-normal"]{--avp-sky0:hsl(220 45% 14%);--avp-sky1:hsl(220 42% 22%);--avp-sky2:hsl(220 44% 18%);--avp-sky3:hsl(220 38% 28%);--avp-edge:hsl(220 55% 72%);--avp-dots:hsl(220 35% 38%)}
+html[data-av="claro"] .mp[data-theme="detetive-normal"]{--avp-sky0:hsl(220 55% 92%);--avp-sky1:hsl(220 48% 82%);--avp-sky2:hsl(220 52% 87%);--avp-sky3:hsl(220 44% 76%);--avp-edge:hsl(220 40% 34%);--avp-dots:hsl(220 35% 70%)}
+.mp[data-theme="detetive-comida"]{--avp-sky0:hsl(28 45% 14%);--avp-sky1:hsl(28 42% 22%);--avp-sky2:hsl(28 44% 18%);--avp-sky3:hsl(28 38% 28%);--avp-edge:hsl(28 55% 72%);--avp-dots:hsl(28 35% 38%)}
+html[data-av="claro"] .mp[data-theme="detetive-comida"]{--avp-sky0:hsl(28 55% 92%);--avp-sky1:hsl(28 48% 82%);--avp-sky2:hsl(28 52% 87%);--avp-sky3:hsl(28 44% 76%);--avp-edge:hsl(28 40% 34%);--avp-dots:hsl(28 35% 70%)}
+.mp[data-theme="detetive-parque"]{--avp-sky0:hsl(122 45% 14%);--avp-sky1:hsl(122 42% 22%);--avp-sky2:hsl(122 44% 18%);--avp-sky3:hsl(122 38% 28%);--avp-edge:hsl(122 55% 72%);--avp-dots:hsl(122 35% 38%)}
+html[data-av="claro"] .mp[data-theme="detetive-parque"]{--avp-sky0:hsl(122 55% 92%);--avp-sky1:hsl(122 48% 82%);--avp-sky2:hsl(122 52% 87%);--avp-sky3:hsl(122 44% 76%);--avp-edge:hsl(122 40% 34%);--avp-dots:hsl(122 35% 70%)}
+.mp[data-theme="detetive-corpo"]{--avp-sky0:hsl(170 45% 14%);--avp-sky1:hsl(170 42% 22%);--avp-sky2:hsl(170 44% 18%);--avp-sky3:hsl(170 38% 28%);--avp-edge:hsl(170 55% 72%);--avp-dots:hsl(170 35% 38%)}
+html[data-av="claro"] .mp[data-theme="detetive-corpo"]{--avp-sky0:hsl(170 55% 92%);--avp-sky1:hsl(170 48% 82%);--avp-sky2:hsl(170 52% 87%);--avp-sky3:hsl(170 44% 76%);--avp-edge:hsl(170 40% 34%);--avp-dots:hsl(170 35% 70%)}
+.mp[data-theme="detetive-animal"]{--avp-sky0:hsl(88 45% 14%);--avp-sky1:hsl(88 42% 22%);--avp-sky2:hsl(88 44% 18%);--avp-sky3:hsl(88 38% 28%);--avp-edge:hsl(88 55% 72%);--avp-dots:hsl(88 35% 38%)}
+html[data-av="claro"] .mp[data-theme="detetive-animal"]{--avp-sky0:hsl(88 55% 92%);--avp-sky1:hsl(88 48% 82%);--avp-sky2:hsl(88 52% 87%);--avp-sky3:hsl(88 44% 76%);--avp-edge:hsl(88 40% 34%);--avp-dots:hsl(88 35% 70%)}
