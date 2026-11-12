@@ -735,3 +735,5 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .pf-codigo small{color:#4a423e}
 @media (max-width:360px){.tr-modos{grid-template-columns:1fr}.tr-como{grid-template-columns:1fr}}
 .dc-chips-cat,.lib-tabs{flex-wrap:wrap}
+
+.kd-chip.ti-sym { min-width: 44px; padding: 6px 10px; font-size: 20px; line-height: 1; }

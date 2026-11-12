@@ -26,7 +26,7 @@ export function mountDueloToca(host) {
     resumo: (c) => [EXERCICIOS[c.step] ? EXERCICIOS[c.step].rot : 'exercício', `${c.bpm} bpm`],
     desbloquear() { try { A0.audio(); } catch { /* ok */ } },
     nota: notaToca,
-    aoVencer() { import('./estrelas-jogo.js').then((E) => E.ganhou('toca', 3)).catch(() => {}); }, // ganhou o duelo: 3 ★
+    aoVencer(c) { import('./estrelas-jogo.js').then((E) => E.ganhou('toca', 3, `toca|duelo|${c && c.step}|${c && c.bpm}`)).catch(() => {}); }, // ganhou o duelo: 3 ★
     placar: (r) => [`${r.score}%`, `${r.hits}/${r.total} notas · média ${r.avgMs > 0 ? '+' : ''}${r.avgMs} ms`],
     jogar(box, c, fim) {
       const ex = EXERCICIOS[c.step] || EXERCICIOS[0]; let off = null; let tm = 0;

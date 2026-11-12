@@ -15,6 +15,8 @@ import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
+import * as teoriaBasica from './kids/teoria.js';
+import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
 /** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
@@ -60,6 +62,7 @@ import * as perfil from './views/perfil.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
 import * as CONTAS from './contas.js';
+import { listaCurta } from './lista-curta.js';
 import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
@@ -168,7 +171,7 @@ function lockView(view, what, pv) {
   };
   const enter = async () => {
     msg.textContent = 'conferindo…';
-    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = 'não achei esse código. confira com a sua professora.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
   };
   const box = h('section', { class: 'card pad al-lock' });
   const draw = () => {
@@ -201,43 +204,60 @@ const VISTOS = 'beaterista-estudos-vistos';
 const vistos = () => { try { return JSON.parse(localStorage.getItem(VISTOS) || '[]'); } catch { return []; } };
 const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) localStorage.setItem(VISTOS, JSON.stringify([...v, id])); } catch { /* sem armazenamento: só não lembra */ } };
 
-/** Aba Estudos: "seu próximo passo" no topo, depois "aprender" e "conhecer o método", cada cartão com uma prévia do que tem dentro. */
-function estudosView(view) {
+/** Aba Estudos: 3 áreas coloridas (ritmo · melodia e harmonia · teoria) e, embaixo, os MODOS DE ESTUDO da área escolhida em cartões grandes com desenho. Sem textão: abre direto no que estudar. */
+const AREAS = [
+  ['ritmo', '🥁', 'ritmo', 'sinta o tempo e o groove', '#d3122f', '#fff', 'p-drum2.webp', [
+    ['#/estudos/aulas/bateria', '🥁', 'Aula de bateria', 'peças, levada de rock e postura · 10 min', 'aulas'],
+    ['#/kids/figuras/aula', '🎵', 'Figuras rítmicas', 'o tempo, as pausas e a tercina · 10 min', 'aulas'],
+    ['#/estudos/ritmos', '🔊', 'Ritmos de bateria', 'rock, pop, funk, samba, reggae… veja e ouça', null],
+    ['#/estudos/basica/figuras', '🎶', 'Figuras e pausas', 'cartões + mini quiz de 3 perguntas', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e fórmula de compasso', null]]],
+  ['melodia', '🎹', 'melodia e harmonia', 'notas, escalas e acordes', '#17365B', '#fff', 'p-guitar.webp', [
+    ['#/estudos/aulas/teclado', '🎹', 'Aula de teclado', 'teclas, notas, escala e acordes · 10 min', 'aulas'],
+    ['#/estudos/aulas/violao', '🎸', 'Aula de violão', 'cordas, acorde e batida · 8 min', 'aulas'],
+    ['#/estudos/acordes/violao', '🎸', 'Acordes de violão e guitarra', '16 acordes: veja onde pôr o dedo e ouça', null],
+    ['#/estudos/acordes/teclado', '🎹', 'Acordes de teclado', 'as 12 notas em 5 tipos de acorde', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'dó ré mi fá sol lá si + mini quiz', null]]],
+  ['teoria', '📖', 'teoria', 'ler, entender e conhecer', '#EBA332', '#142036', 'p-book.webp', [
+    ['#/estudos/basica/figuras', '🎵', 'Figuras', 'quanto dura cada nota · mini quiz', null],
+    ['#/estudos/basica/pausas', '🤫', 'Pausas', 'o silêncio também conta · mini quiz', null],
+    ['#/estudos/basica/claves', '𝄞', 'Claves', 'sol, fá, dó e a bateria · mini quiz', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e compasso · mini quiz', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'os nomes das notas · mini quiz', null],
+    ['#/dicionario', '📚', 'Dicionário musical', 'busque um termo e veja tocando', 'dicionario'],
+    ['#/estudos/curiosidades', '💡', 'Curiosidades de músicos', 'histórias de quem tocou antes de você', 'curiosidades'],
+    ['#/estudos/dicas', '🧠', 'Dicas do método', 'como a Bea estuda e ensina', 'dicas'],
+    ['#/erros', '⚠️', '5 erros', 'os erros mais comuns de quem começa', 'erros'],
+    ['#/jogos/relatorio', '👨‍👩‍👧', 'Jogos Ensinam', 'pra pais e responsáveis', 'ensinam']]],
+];
+function estudosView(view, parts = []) {
   const v = vistos();
-  const cartao = (id, destaque) => {
-    const it = ESTUDOS[id]; const lk = AC.trancado(it.href); const am = it.amostra && !AC.liberado() ? it.amostra() : null; const visto = v.includes(id);
-    const abrir = () => marcarVisto(id);
-    return h('article', { class: `card pad al-card es-card${lk ? ' locked' : ''}${destaque ? ' es-next' : ''}` },
-      h('a', { class: 'es-main', href: it.href, onclick: abrir, 'aria-label': lk ? `${it.titulo}, só pra alunos com código` : am ? `${it.titulo}, amostra grátis: ${am}` : null },
-        h('h2', { class: 'tag' }, lk ? '🔒 ' : '', it.titulo, am ? h('small', { class: 'al-am' }, ` · grátis: ${am}`) : null, visto ? h('small', { class: 'es-ok' }, ' ✓') : null),
-        h('p', { class: 'muted' }, it.sub)),
-      h('details', { class: 'es-prev' }, h('summary', {}, 'o que tem dentro'),
-        h('ul', {}, ...it.dentro.map((x) => h('li', {}, x))),
-        h('p', { class: 'es-meta' }, h('b', {}, 'desenvolve: '), it.dev, ' · ', h('b', {}, 'leva: '), it.tempo),
-        lk ? h('p', { class: 'es-lock' }, '🔒 abre com o código de aluno. ', h('a', { href: '#/lojinha' }, 'gerar meu código')) : null));
-  };
-  const proximo = TRILHA.find((id) => !v.includes(id));
-  const prox = proximo ? ESTUDOS[proximo] : null;
-  const passo = prox ? h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'seu próximo passo'), h('p', { class: 'es-frase' }, v.length ? `bora seguir: ${prox.titulo}` : `comece por aqui: ${prox.titulo}`),
-    h('a', { class: 'btn primary wide', href: prox.href, onclick: () => marcarVisto(proximo) }, `abrir · ${prox.tempo}`))
-    : h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'tudo visto!'), h('p', { class: 'es-frase' }, 'agora é praticar: abra a aba Jogos e ganhe estrelas'), h('a', { class: 'btn primary wide', href: '#/jogos' }, 'ir pros jogos'));
-  // meta do dia: 3 coisinhas (dica musical, passo de aula, curiosidade) com barra e sequência
-  marcarEstudo('dica'); // ver a dica do dia já conta
+  let area = AREAS.find((a) => a[0] === parts[0])?.[0] || (() => { try { return localStorage.getItem('beaterista-estudos-area') || 'ritmo'; } catch { return 'ritmo'; } })();
+  if (!AREAS.some((a) => a[0] === area)) area = 'ritmo';
+  marcarEstudo('dica'); // abrir os Estudos já conta a dica do dia
   const mt = META.ler(); const seq = META.sequencia(mt);
-  const meta = h('section', { class: 'card pad es-meta-dia', 'aria-label': 'Meta de hoje' },
-    h('div', { class: 'es-meta-top' }, h('b', {}, META.cumprida(mt) ? 'meta de hoje cumprida! 🎉' : 'meta de hoje'), h('small', {}, seq ? `🔥 ${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos` : 'comece a sua sequência')),
-    h('div', { class: 'es-barra', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': META.METAS.length, 'aria-valuenow': mt.feitas.length }, h('i', { style: `width:${(mt.feitas.length / META.METAS.length) * 100}%` })),
-    h('ul', { class: 'es-metas' }, ...META.METAS.map(([k, t]) => h('li', { class: mt.feitas.includes(k) ? 'ok' : '' }, mt.feitas.includes(k) ? '✓ ' : '○ ', t))),
-    h('p', { class: 'muted es-estrelas' }, '★ cada meta vale 1 estrela e cumprir as 3 do dia vale +3 estrelas!'));
-  // dica musical do dia (aberta pra todo mundo; "outra" mostra a próxima)
+  const meta = h('div', { class: 'es-strip', 'aria-label': 'Meta de hoje' },
+    h('span', { class: 'es-strip-t' }, META.cumprida(mt) ? '🎉 meta cumprida!' : 'meta de hoje'),
+    h('span', { class: 'es-dots' }, ...META.METAS.map(([k, t]) => h('i', { class: mt.feitas.includes(k) ? 'ok' : '', title: t, 'aria-label': `${t}: ${mt.feitas.includes(k) ? 'feito' : 'falta'}` }, mt.feitas.includes(k) ? '★' : '☆'))),
+    h('span', { class: 'es-strip-s' }, seq ? `🔥 ${seq}` : '★ +1 cada'));
+  const topo = h('div', { class: 'es-areas', role: 'tablist', 'aria-label': 'Áreas de estudo' });
+  const grade = h('div', { class: 'es-modos' });
+  const desenha = () => {
+    const A = AREAS.find((a) => a[0] === area);
+    topo.replaceChildren(...AREAS.map(([id, ic, nome, , cor, fg]) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(id === area), class: `es-area${id === area ? ' on' : ''}`, style: `--c:${cor};--f:${fg}`, onclick: () => { area = id; try { localStorage.setItem('beaterista-estudos-area', id); } catch { /* ok */ } desenha(); } }, h('span', { class: 'es-ai', 'aria-hidden': 'true' }, ic), h('b', {}, nome))));
+    grade.style.setProperty('--c', A[4]); grade.style.setProperty('--f', A[5]);
+    grade.replaceChildren(h('div', { class: 'es-cab' }, h('img', { src: `assets/paul/${A[6]}`, alt: '', draggable: 'false', loading: 'lazy' }), h('div', {}, h('h2', {}, `${A[1]} ${A[2]}`), h('p', {}, A[3]))),
+      ...A[7].map(([href, ic, titulo, sub, vid]) => { const lk = AC.trancado(href); const visto = vid && v.includes(vid);
+        return h('a', { class: `es-modo${lk ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lk ? `${titulo}, só pra alunos com código` : titulo },
+          h('span', { class: 'es-mi', 'aria-hidden': 'true' }, ic), h('span', { class: 'es-mt' }, h('b', {}, titulo, lk ? ' 🔒' : '', visto ? ' ✓' : ''), h('small', {}, sub)), h('span', { class: 'es-go', 'aria-hidden': 'true' }, '▶')); }));
+  };
+  desenha();
+  // dica musical do dia (curtinha, no fim; "outra" mostra a próxima)
   let di = dicaDeHoje(); const dTag = h('p', { class: 'es-tag' }); const dTxt = h('p', { class: 'es-dica' });
-  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica musical do dia · ${tema}`; dTxt.textContent = txt; };
+  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `💡 dica do dia · ${tema}`; dTxt.textContent = txt; };
   desenhaDica();
   const dica = h('section', { class: 'card pad es-dica-box' }, dTag, dTxt, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { di++; desenhaDica(); } }, 'outra dica'));
-  view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'),
-    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, meta, dica, passo,
-      h('h3', { class: 'es-sec' }, 'aprender'), cartao('aulas', proximo === 'aulas'), cartao('curiosidades', proximo === 'curiosidades'), cartao('dicionario', proximo === 'dicionario'), cartao('dicas', proximo === 'dicas'),
-      h('h3', { class: 'es-sec' }, 'conhecer o método'), cartao('erros', proximo === 'erros'), cartao('ensinam', proximo === 'ensinam')));
+  view.append(banner('Estudos', 'aprender brincando'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, meta, topo, grade, dica));
 }
 
 /** Aulas do Paul: lista das 4 aulas (as 3 novas e a das figuras rítmicas). */
@@ -286,7 +306,7 @@ function lojinhaView(view, parts = []) {
   if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
-  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
   // enquanto a lojinha não abre: a aluna ainda pode pedir um código pra professora Bea cadastrar (aparece nas telas trancadas e no Perfil)
   const pedido = h('div', { class: 'al-pedido' });
@@ -341,16 +361,16 @@ function trocarAluno() {
       if (!n) { err.textContent = 'escreva o nome do aluno.'; return; } if (c.length < 4) { err.textContent = 'escreva o código.'; return; }
       b.disabled = true; err.textContent = 'conferindo…';
       try {
-        if (!(await CODE.verificar(c))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; }
+        if (!(await CODE.verificar(c))) { err.textContent = CODE.msgFalha(); return; }
         CONTAS.ativar({ nome: n, code: c }); try { await ALBUMACESSO.entrar(c); } catch { /* o álbum confere de novo na próxima vez */ }
         CONTAS.guardarConta({ nome: n, code: c }); toast(`${n} conectado`); close(); location.reload();
       } catch { err.textContent = 'sem internet agora. tente de novo.'; } finally { b.disabled = false; }
     }
     return h('div', { class: 'sheet-body' },
       atual.nome ? h('p', { class: 'muted' }, `agora: ${atual.nome}`) : null,
-      contas.length ? h('div', {}, h('b', {}, 'voltar pra'), ...contas.map((c) => h('div', { class: 'row', style: 'gap:8px;margin:6px 0' },
+      contas.length ? h('div', {}, h('b', {}, 'voltar pra'), listaCurta(contas.map((c) => h('div', { class: 'row', style: 'gap:8px;margin:6px 0' },
         h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => ir(c) }, c.nome),
-        h('button', { type: 'button', class: 'btn small ghost', 'aria-label': `Tirar ${c.nome} da lista`, onclick: async (ev) => { if (await confirmSheet('tirar da lista?', `${c.nome} some daqui; o código dele continua valendo.`, 'tirar')) { CONTAS.esquecer(c.code); ev.target.closest('.row').remove(); } } }, '✕')))) : null,
+        h('button', { type: 'button', class: 'btn small ghost', 'aria-label': `Tirar ${c.nome} da lista`, onclick: async (ev) => { if (await confirmSheet('tirar da lista?', `${c.nome} some daqui; o código dele continua valendo.`, 'tirar')) { CONTAS.esquecer(c.code); ev.target.closest('.row').remove(); } } }, '✕'))))) : null,
       h('b', {}, 'conectar outro código'), h('p', { class: 'muted' }, 'um aluno novo neste aparelho: nome e código. cada um fica com as suas figurinhas e a sua foto.'), nome, cod,
       h('button', { type: 'button', class: 'btn primary wide', onclick: conectar }, 'conectar'), err,
       h('button', { type: 'button', class: 'btn ghost wide', onclick: async () => { if (!(await confirmSheet('entrar com outro nome?', 'o código deste aparelho sai e quem entrar precisa pedir um código. dá pra voltar pra este aluno depois pela lista.', 'continuar'))) return; CONTAS.semConta(); close(); location.reload(); } }, 'entrar com outro nome (ainda sem código)'));
@@ -362,7 +382,7 @@ function abrirCodigo() {
   sheet('já tenho meu código', (close) => {
     const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
     const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
-    const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+    const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
     return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
       h('p', { class: 'muted' }, 'ainda não tem? ', h('a', { href: '#/lojinha', onclick: close }, 'veja a Lojinha')));
@@ -410,10 +430,13 @@ function shell(name) {
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'basica') c = teoriaBasica.mount(view, r.parts.slice(1), { aoFim: () => marcarEstudo('aula') });
+    else if (r.name === 'estudos' && r.parts[0] === 'acordes') acordesView(view, r.parts.slice(1));
+    else if (r.name === 'estudos' && r.parts[0] === 'ritmos') c = ritmosView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
-    else if (r.name === 'estudos') estudosView(view);
+    else if (r.name === 'estudos') estudosView(view, r.parts);
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
@@ -459,13 +482,13 @@ function askName() {
       if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
         if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
         err.textContent = 'conferindo o código…';
-        try { if (!(await CODE.entrar(cod.value))) { err.textContent = 'não achei esse código. confira com a sua professora.'; return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+        try { if (!(await CODE.entrar(cod.value))) { err.textContent = CODE.msgFalha(); return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
       }
       err.textContent = '';
     }
     const o = modo === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : modo;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
-    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) SALVAR.agendar();
+    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); } // já entra na lista de "trocar aluno" na hora
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
   } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
@@ -499,6 +522,7 @@ async function start() {
   await ensureKidsPlayer(name);
   logVisit(name);
   await refreshAccess();
+  try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
@@ -517,6 +541,6 @@ async function start() {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
   startScroller();
-  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') }); // na tela de entrada o balão do Paul cobria o botão "entrar"
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && !/^#\/(jogos|dicas|ritmo|paulta|kids|piano|violao|xilofone)\/./.test(location.hash) }); // dentro de um jogo a nuvem não aparece: ela cobria botões como o STOP */; // na tela de entrada o balão do Paul cobria o botão "entrar"
   start();
 })();

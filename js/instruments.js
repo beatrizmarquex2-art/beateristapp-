@@ -4,14 +4,15 @@
 import { audio, out } from './audio.js';
 import { ROWS } from './beats.js';
 
-let bus = null; let rev = null; let nbuf = null; let ctxOf = null;
+let bus = null; let rev = null; let nbuf = null; let ctxOf = null; let comp = null; let outOf = null;
 /** Saída própria: compressor (vários dedos juntos não estouram) + um pouco de eco de sala. Recria se o AudioContext mudar. */
 function init() {
   const c = audio();
-  if (bus && ctxOf === c) return c;
+  // trocar de tela chama silence(), que troca a saída principal: religa o compressor na saída nova (senão o instrumento seguinte fica mudo)
+  if (bus && ctxOf === c) { const o = out(); if (o !== outOf) { try { comp.disconnect(); } catch { /* já solto */ } comp.connect(o); outOf = o; } return c; }
   ctxOf = c;
-  const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.003; comp.release.value = 0.2;
-  bus = c.createGain(); bus.connect(comp).connect(out());
+  comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.003; comp.release.value = 0.2;
+  outOf = out(); bus = c.createGain(); bus.connect(comp).connect(outOf);
   const n = Math.floor(c.sampleRate * 1.3); const ir = c.createBuffer(2, n, c.sampleRate);
   for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 3.2; }
   rev = c.createConvolver(); rev.buffer = ir; const rg = c.createGain(); rg.gain.value = 0.5; rev.connect(rg).connect(comp);
@@ -87,7 +88,8 @@ const MALLET = {
   marimba: { p: [[1, 1, 0.75], [4, 0.35, 0.2], [9.9, 0.1, 0.09]], tick: 0.12 },
 };
 export function mallet(midi, vel = 0.9, kind = 'xilofone', t) {
-  C = init(); t = t ?? C.currentTime; const m = MALLET[kind] || MALLET.xilofone; const f = hz(midi); const sc = 1.35 - ((midi - 60) / 60) * 0.55;
+  C = init(); if (C.state !== 'running') { C.resume().then(() => mallet(midi, vel, kind, undefined)).catch(() => {}); return; } // 1º toque no iPhone: espera o som destravar em vez de tocar no escuro
+ t = t ?? C.currentTime; const m = MALLET[kind] || MALLET.xilofone; const f = hz(midi); const sc = 1.35 - ((midi - 60) / 60) * 0.55;
   const mix = gn(0.55 * vel); route(mix, 0.2);
   m.p.forEach(([r, a, d]) => { if (f * r > 12000) return; const o = C.createOscillator(); const g = gn(); o.frequency.value = f * r; env(g, t, a, 0.002, d * sc); o.connect(g).connect(mix); o.start(t); o.stop(t + d * sc + 0.1); });
   const n = noiseSrc(t, 0.03); const ng = gn(); n.connect(bq('bandpass', 3600, 1.2)).connect(ng); env(ng, t, m.tick * vel, 0.001, 0.014); route(ng);
@@ -107,7 +109,8 @@ function ksBuf(midi, kind) {
 let shaper = null;
 /** Uma corda. `kind`: 'acoustic' (violão), 'clean' (guitarra limpa) ou 'rock' (distorcida). `mute` = abafada com a palma da mão. */
 export function pluck(midi, vel, t, kind = 'acoustic', mute = false) {
-  C = init(); const isA = kind === 'acoustic'; const buf = ksBuf(midi, isA ? 'a' : 'e'); const s = C.createBufferSource(); s.buffer = buf;
+  C = init(); if (C.state !== 'running') { const dt = Math.max(0, (t || 0) - C.currentTime); C.resume().then(() => pluck(midi, vel, C.currentTime + dt + 0.02, kind, mute)).catch(() => {}); return; } // 1º toque no iPhone: espera o som destravar
+ const isA = kind === 'acoustic'; const buf = ksBuf(midi, isA ? 'a' : 'e'); const s = C.createBufferSource(); s.buffer = buf;
   const g = C.createGain(); let chain = s;
   if (isA) chain = chain.connect(bq('peaking', 110, 1, 5)).connect(bq('peaking', 240, 1, 3)).connect(bq('lowpass', 2200 + vel * 4200));
   else if (kind === 'rock') {
@@ -144,7 +147,7 @@ export const backing = {
   on: false, step: 0, next: 0, timer: 0, ...load(),
   save() { try { localStorage.setItem(KEY, JSON.stringify({ style: this.style, bpm: this.bpm })); } catch { /* sem armazenamento */ } },
   tick() {
-    const sp = 60 / this.bpm / 4;
+    C = init(); const sp = 60 / this.bpm / 4; // init() religa na saída nova depois de trocar de aba
     while (this.next < C.currentTime + 0.12) { this.play(this.step, this.next); this.next += sp; this.step = (this.step + 1) % 16; }
   },
   play(i, t) {

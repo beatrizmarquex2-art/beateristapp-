@@ -430,6 +430,83 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Cara a Cara:** **só artistas** (cara a cara musical); a versão de instrumentos saiu do jogo livre (`js/jogos/cara.js`) e o seletor de tema sumiu. O "virar" manual funciona no clássico do musical (era a versão de instrumentos que não pegava).
 - **Bingo:** "como quer jogar?" virou **4 ícones pequenos** (robô, 2 celulares, mesmo aparelho, sala de aula) com dica no toque.
 
+## Estudos redesenhados (nov/2026)
+- **Aba Estudos** (`estudosView` em `js/aluno.js`, estilos `.es-*` em `css/figurinhas.css`): saíram os cartões grandes e textos. Agora: faixa pequena da **meta do dia** (3 estrelinhas), **3 áreas coloridas** — 🥁 ritmo (vermelho), 🎹 melodia e harmonia (azul), 📖 teoria (dourado) — e embaixo os **modos de estudo** da área em cartões com ícone e o Paul desenhado (aulas, Toca Aqui, Beat Hero, Uno, piano, violão, xilofone, roleta musical, pauLta, dicionário, curiosidades, dicas, 5 erros, Jogos Ensinam). Lembra a última área (`#/estudos/<area>` também abre direto). A dica do dia ficou curtinha no fim.
+- Testes ajustados: `estudos-novo`, `estudos-estrelas`, `aluno-estudos-tocar`, `bingo` (modos em ícones), `cara-*` (só artistas).
+
+## v384 — Estudos com som
+- rotas novas: `#/estudos/basica` (+`/<id>`), `#/estudos/acordes/<violao|teclado>`, `#/estudos/ritmos`
+- `js/views/estudos-som.js` (acordes + ritmos de bateria com som), `js/kids/teoria.js` (teoria básica + mini quiz de 3 perguntas)
+- Estudos sem jogos misturados
+
+## v385 — Stop 2–4 no mesmo celular + nuvem do Paul
+- Stop modo dupla: seletor "quantos jogam" (2/3/4), `prefs.nDupla`; online segue 2; teste `tests/e2e/stop-quatro.mjs`
+- nuvem do Paul não aparece dentro de jogos (cobria o botão STOP): regra em `startPaul({allowed})` no aluno.js
+
+## v386 — ritmos com setinha + cartas da memória maiores
+- Estudos > Ritmos: só Rock 1/2/3, Pop, Reggaeton, Samba simplificado, Baião; setinhas ‹ › (sem lista), grade colorida + partitura SVG colorida (`partitura()` em estudos-som.js) que acende junto com o som
+- assets/memoria/figuras/*.webp: símbolo central ampliado (originais em git antigo / v385)
+- dúvida pendente com a Bea: Rock 1 = bumbo 1 e 3; Rock 2 = bumbo 1, 2 e 3; Rock 3 = bumbo 1, 3 e "e" do 3
+
+## v387 — acordes só maior/menor + estrelas anti-farm
+- acordes: violão 7 maiores + 7 menores, cada cartão com ouvir no violão / guitarra / baixo; teclado maior e menor com piano e elétrico (função `piano()` em estudos-som.js)
+- `vitoria(jogo, n, chave)` / `ganhou(jogo, n, chave)`: a `chave` (jogo+música/nível/tema) paga até 3 ★ NA VIDA e só a diferença (`pagarChave` em mesa-logic.js, livro-caixa em `mesa.pago`). Chaves usadas: duelo toca (exercício+bpm), duelo beat hero (música+nível), duelo quebra (imagem+tamanho), memória (tema+pares), teoria (sessão), ritmo secreto (padrão). Beat Hero solo e fases já eram "melhor por música/nível". Jogos sem conteúdo fixo (Uno, bingo, stop, cara, velha) seguem só com o limite de 30 ★/dia
+
+## v388 — cara a cara manual, violão em símbolos
+- Cara a Cara (eliminar "manual", contra Paul/dupla): depois da pergunta some a lista e aparece "pronto, já virei" → só então passa a vez (antes passava na hora e não dava pra virar). `st.aguardaVirar` em cara-musical/tela.js; teste tests/e2e/cara-manual.mjs
+- Violão (aba Tocar): sons em símbolos 🎸 violão (padrão) ⚡ 🤘; abafar vira só 🔉 pequeno
+- instruments.js: pluck/mallet esperam o áudio destravar (1º toque no iPhone). Violão/xilofone sem som no iPhone da Bea: NÃO reproduzido no Chromium; se persistir, pedir detalhes
+
+## v389 — regras de estrela (pedido da Bea)
+- jogo da velha, Uno e memória (temas de artistas etc.): só ganham em 2 celulares logados, 1 ★ por vitória; contra o Paul / mesmo aparelho NÃO ganha nada
+- memória, tema "figuras e pausas" (`th.id === 'figuras'`): 1 ★ ao completar, até contra o robô ou em 2 no mesmo aparelho
+- quiz Uno: acertar as 5 = 1 ★ (não é mais giro da roleta), a cada rodada jogada; perguntas diferentes (foge das 5 da rodada anterior, tipo figura→nome ou nome→figura); recentes em localStorage `beaterista-quizuno-recentes`
+- `ESTRELAS_JOGO`: velha/memoria/cartas/quizuno = 1; cara/stop/bingo = 3
+
+## v390 — Cara a Cara: perguntas em cima, em carrossel
+- perguntas viraram carrossel horizontal (`.cm-carro .cm-qc`, ~3 visíveis, arrastar pro lado) ACIMA das cartas, local e online; "mais perguntas" removido
+- botão virar = só ↻ (desvirar ↩); legenda no menu (modo manual) e na mensagem depois da resposta
+
+## v391 — Cara a Cara mais limpo + só as perguntas da Bea
+- perguntas mantidas (MANTER em perguntas.js): banda, solo, dupla, brasileiro, rock, pop, punk, baterista, ativo, instrumento(foto) + NOVA "é uma mulher?" (attr `mulher` em dados-extra.js: solo mulher = true, solo homem/banda = false, dupla mista/Paramore/Gorillaz/Beaterista = null). As outras ficam em TODAS/BY_Q só pra logs antigos
+- chips de pergunta em texto curto (kids), sem emoji nem quadrados; virar = ✕ pequeno sem contorno
+
+## v392 — contas, lista curta e limite de 2 aparelhos
+- entrar direto (nome+código) já salva o aluno em "trocar aluno" (`CONTAS.guardarConta` na entrada + `guardarAtual` no boot)
+- "trocar aluno" e "voltar pra sala" (Jogos): só 2 itens + setinha ▾ +N (`js/lista-curta.js`)
+- limite de 2 aparelhos por código: cliente manda `p_aparelho` (id aleatório em localStorage `beaterista-aparelho-id`) pra `aluno_acesso`; sai/tirar da lista chama `aluno_sair`. SERVIDOR: supabase/013_aparelhos.sql (NÃO aplicado até a Bea aprovar a migração; sem ela o app funciona igual, só sem limite). Vaga parada 30 dias libera sozinha. Cliente cai no `aluno_codigo_ok` se a função nova não responder
+- Uno Musical (#/jogos/cartas) continua TRANCADO sem código, mesmo entrando por sala (acesso.js)
+
+## v393 — cara a cara sem brancos + aparelho da professora
+- cara a cara: perguntas, resposta do Paul e cartas só com contorno branco e texto branco (sem fundo branco)
+- aparelho da professora: quem entra num aparelho com código de professora (tipo 'prof') marca `beaterista-aparelho-prof`; esse aparelho não manda id e NÃO ocupa vaga dos alunos (limite de 2). Precisa entrar uma vez com o código de professora no iPad
+## Taiko, Toca Aqui em novo visual e rudimentos (nov/2026, só na branch `claude/awesome-ptolemy-97wluo`, NÃO publicado)
+- **Taiko** (esquerda = agudo, direita = grave) mora no Toca Aqui (`js/kids/taiko.js`, regras puras em `taiko-logic.js`, teste `tests/e2e/taiko.mjs`). A Bea mandou **guardar**: ele vai virar a base de um **jogo de rudimentos** que vão montar em seguida (não apagar; reaproveitar o motor de notas descendo e a janela de acerto folgada).
+- **Desenho da caixa**: está **provisório** (só o contorno) em `js/kids/drum-art.js`; a Bea vai procurar o definitivo. Os pads do Toca Aqui normal e do taiko usam `drumSvg()` (um lugar só pra trocar).
+- **Layout escolhido: C "Turnê"** (vinho, discos de vinil, estrelas, cartões grandes). Mockups no artefato "Toca Aqui: 3 layouts" (https://claude.ai/artifact/E51BAUoSdCh2T8FoymjVhA). **Ainda não aplicado no app.** Velocidades propostas nos mockups: **80, 100, 120, 140, 160 BPM** (hoje o app usa 60/90/130/170 em `VELOCIDADES` de `js/toca-som.js`); a Bea ainda não confirmou se vale pro app todo.
+- Modo Aventura: sem tela de briefing (objetivo no topo e "regras e estrelas" numa gavetinha) e toques/resultado mais rápidos (`js/campanha/run.js`). Toca Aqui e Beat Hero não têm mais Aventura na `main`.
+- Testes que já falhavam na `main` (não são desta branch): `ritmo-toque` (tiles/setas), `amostras`, `aventura-leitura` (não termina).
+
+## v394 — cara a cara: ✕/✅, nomes em 2 linhas, enquadre, 2 perguntas por vez
+- virar = ✕, desvirar = ✅; nomes com `nomeCls()` (midia.js) nunca passam de 2 linhas; MANUAL de enquadre: F123 (Axl) e F103 ajustados; carrossel mostra 2 perguntas por vez
+
+## v396 — cara a cara: pergunta compacta e centrada (flex; no iPhone o grid deixava o texto no topo)
+
+## v397 — ícones dos modos, opção 3 (linha azul + toque vermelho, em bolinha)
+- `bq()` em js/jogos/bonequinhos.js: kinds paul (robô = 1 contra o robô), um, dois, celular (código), mais (3 ou mais), sala; CSS no fim de css/jogos.css (.ac vermelho / .fa preenchido; ligado = bolinha azul + amarelo)
+- Cara a Cara: "como jogar" agora com ícones (um/paul/dois/celular)
+
+## v398 — cara a cara: 2 modos fixos
+- kids = automático + 12 cartas; clássico = manual (✕) + 20 cartas. Sem seletor de "cartas na mesa" nem de "eliminar". `tamanhoPadrao()` e `cfg.auto` em cara-musical/tela.js
+
+## v399 — "2 a 4" = "3 ou mais"
+- Uno (local), memória (2 a 4) e stop (dupla) usam o ícone de grupo (`mais`) com o nome "no mesmo celular (2 a 4 pessoas)"; velha, bingo e cara a cara (só 2) seguem com `dois`
+
+## v400 — passes (código de um jogo só / test drive)
+- Pedido da Bea: "passe único" = BEA + 4 letras/números, ela escolhe o(s) jogo(s)/aba(s), vale N dias a partir do 1º uso, 2 aparelhos; "test drive" = BEASITE + 4, site todo por 1 dia. Passe NÃO dá estrelas/álbum (`AC.liberado()` é false com escopo; `AC.comCodigo()` é true)
+- Cliente: `js/acesso.js` (escopo em localStorage `beaterista-aluno-escopo`, `trancado()` libera só os prefixos), `js/codigo.js` (`criarPasse`, guarda escopo vindo de `aluno_acesso.jogos`), gerador em js/views/codigos.js (app da Bea). tests/acesso-passe.test.mjs
+- SERVIDOR: supabase/014_passes_aparelhos.sql (coluna `jogos`, `aluno_acesso` com aparelhos+escopo, `aluno_sair`) — **AINDA NÃO APLICADO** (o Supabase pede confirmação da Bea e o pedido expira em 60 s). Sem ele o gerador de passe dá erro e o limite de 2 aparelhos não vale
+- Pagamento automático (Hotmart → webhook → Edge Function → "comprei o passe" por e-mail): ainda a fazer; depende do hottok/produto da Bea
 ## UN🚫 (nov/2026) e ajustes do STOP/Velha/Uno
 - **UN🚫** = variante do Uno Musical (`js/jogos/un.js` chama `cartas.mount(host, { un: true })`; regras em `cartas-logic.js` com `g.un`): cartas iguais (só figuras) juntas (`applyPlayMany`, `twins`), comprar até achar, +2 em +2 e +4 em +4 acumulam (`g.pend`; quem recebe responde ou compra tudo e perde a vez), +4 quando quiser, UNO silencioso (sem aviso de UNO (o número de cartas de cada um aparece); botão UNO e "pegou!" sempre na tela; `catchable`/`wrongCatch`: acusar errado = quem acusou compra 2; a chance de pegar acaba quando a próxima pessoa age), sem brilho nas cartas. Modos: robô, mesmo celular e 2 celulares por código (sala `un`, sem SQL novo; "pegou!" e UNO fora da vez dependem da sondagem de 1,2 s, não testado com 2 aparelhos). Salvo em `un` (separado do Uno). Trancado por código como o Uno Musical (`acesso.js`). Testes: `tests/un-logic.test.mjs`.
 - **Uno Musical**: sempre jogo normal (sem "modo aprender"), cartas que servem sempre brilham, nome da figura sempre aparece, +4 nunca como última carta nem pra ficar com UNO.

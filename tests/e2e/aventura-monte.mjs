@@ -16,7 +16,7 @@ const setting = (k) => page.evaluate(async (key) => { const s = await import('/j
 const food = (id) => page.evaluate((w) => { const b = [...document.querySelectorAll('.kd-food')].find((x) => x.getAttribute('aria-label').startsWith(w + ',')); if (!b || b.disabled) return false; b.click(); return true; }, foodOf(id).word);
 const press = async (sel) => { await page.evaluate((s) => document.querySelector(s).click(), sel); await sleep(120); };
 const conferir = () => page.evaluate(() => { const b = [...document.querySelectorAll('.kd-btn')].find((x) => x.textContent === 'conferir'); if (b && !b.disabled) { b.click(); return true; } return false; });
-const open = async (i) => { await go('#/kids/ritmo/aventura'); await sleep(250); await go(`#/kids/ritmo/aventura/${i}`); await page.waitForSelector('.av-go'); await page.click('.av-go'); await page.waitForSelector('.mr-checks'); };
+const open = async (i) => { await go('#/kids/ritmo/aventura'); await sleep(250); await go(`#/kids/ritmo/aventura/${i}`); await page.waitForSelector('.mr-checks'); };
 const unlock = (n, stars = 1) => page.evaluate(async ({ n, stars }) => { const C = await import('/js/campanha/store.js'); const m = {}; for (let i = 0; i < n; i++) m[`monte-${String(i).padStart(2, '0')}`] = { s: stars, n: 1 }; await C.saveGame(C.playerId(), 'monte', { m, medals: [], log: [] }); }, { n, stars });
 const cellIds = (cells) => cells.map((c) => FOOD_OF_CELL[c]);
 
@@ -37,8 +37,8 @@ let st = await states(); check('mapa com 11 missões; só a 0 atual', st.length 
 await page.evaluate(() => document.querySelectorAll('.mp-node')[1].click()); await sleep(300);
 check('missão 1 trancada não abre', (await hash()) === '#/kids/ritmo/aventura');
 await go('#/kids/ritmo/aventura/1'); await sleep(500); check('rota direta da missão trancada volta ao mapa', (await hash()) === '#/kids/ritmo/aventura');
-await page.evaluate(() => document.querySelector('.st-current').click()); await page.waitForSelector('.av-go');
-check('briefing: objetivo, requisitos e 3 estrelas', (await page.locator('.av-goal').count()) === 1 && (await page.locator('.av-stars-how li').count()) === 3);
+await page.evaluate(() => document.querySelector('.st-current').click()); await page.waitForSelector('.av-how');
+check('regras e estrelas: objetivo, requisitos e 3 estrelas', (await page.locator('.av-goal').count()) === 1 && (await page.locator('.av-stars-how li').count()) === 3);
 await go('#/kids/ritmo/aventura'); await page.waitForSelector('.mp-node'); await sleep(400);
 check('abrir a missão 0 não a conclui nem grava', (await states())[0] === 'current' && (await setting('setting-aventura')) === aven0);
 

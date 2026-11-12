@@ -56,8 +56,8 @@ export function onsets(bars, bpm) {
 }
 
 /**
- * Compara os toques com as notas. Janela = 45% de uma semicolcheia (máx. 110 ms).
- * Cada nota: 'ok' (até 35 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
+ * Compara os toques com as notas. Janela folgada (ver `avaliar`).
+ * Cada nota: 'ok' (até ~50 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
  */
 export function evaluate(taps, expected, bpm, { mic = false } = {}) {
   const r = avaliar(taps, expected, bpm, { mic });
@@ -73,8 +73,8 @@ export function evaluate(taps, expected, bpm, { mic = false } = {}) {
 function avaliar(taps, expected, bpm, { mic = false } = {}) {
   // Janela de cada nota: nos andamentos lentos ~0,11 s; nos rápidos (turbo 170 BPM) a semicolcheia dura só 88 ms, então a janela nunca cai abaixo de 0,075 s
   // (toque na tela tem ~50 a 80 ms de atraso no iPad). Cada toque vai pra nota MAIS PRÓXIMA, então janela maior não confunde as notas.
-  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.16, Math.max(sub * 0.63, 0.1)) : Math.max(Math.min(0.11, sub * 0.45), 0.075);
-  const okMs = mic ? 55 : Math.round(Math.min(60, Math.max(35, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
+  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.2, Math.max(sub * 0.8, 0.12)) : Math.max(Math.min(0.15, sub * 0.6), 0.09); // folgada de propósito (pedido da Bea)
+  const okMs = mic ? 70 : Math.round(Math.min(70, Math.max(50, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {

@@ -15,7 +15,7 @@ export const starsPct = (certas, total) => { const p = total ? certas / total : 
 export const starsErros = (erros) => (erros === 0 ? 3 : erros <= 2 ? 2 : 1);
 
 /** Estrelas por vitória em cada jogo (todo jogo dá estrela, pra querer ficar jogando). Os que ensinam variam com o desempenho (starsPct/starsErros). */
-export const ESTRELAS_JOGO = { velha: 1, memoria: 3, cara: 3, stop: 3, bingo: 3, cartas: 3 };
+export const ESTRELAS_JOGO = { velha: 1, memoria: 1, cara: 3, stop: 3, bingo: 3, cartas: 1, quizuno: 1 };
 /** Quebra-cabeça: 3 ★ na 1ª vez que monta cada imagem; quando todas já foram montadas, uma 2ª volta vale 2 ★ por imagem; na 3ª volta (e depois) 1 ★.
  *  `q` = { volta, feitas:[ids] } (a volta atual e as imagens já montadas nela). Puro: devolve o novo estado e as estrelas. */
 export function premioQuebra(q, imgId, total) {
@@ -23,4 +23,12 @@ export function premioQuebra(q, imgId, total) {
   if (feitas.includes(imgId)) return { q: { volta, feitas }, estrelas: 0 };
   const estrelas = Math.max(1, 4 - volta); const novas = [...feitas, imgId];
   return novas.length >= total ? { q: { volta: volta + 1, feitas: [] }, estrelas } : { q: { volta, feitas: novas }, estrelas };
+}
+
+/** Anti-farm: cada "chave" (jogo + música/nível/tema) paga no máximo 3 ★ na vida toda, e só a diferença do que já pagou.
+ *  Repetir a mesma música/nível não rende de novo. Puro: devolve quantas ★ ainda valem (`novas`) e o livro-caixa novo. */
+export const MAX_CHAVE = 3;
+export function pagarChave(pago, chave, n) {
+  const p0 = (pago && typeof pago === 'object') ? pago : {}; const ja = Math.max(0, p0[chave] | 0);
+  const novas = Math.max(0, Math.min(Math.round(n) || 0, MAX_CHAVE) - ja); return { novas, pago: { ...p0, [chave]: ja + novas } };
 }

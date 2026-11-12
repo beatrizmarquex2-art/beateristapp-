@@ -2,6 +2,7 @@
 // Fluxo: menu (Kids ou Clássico, Solo com Paul / Contra Paul / Dupla) → (tutorial Kids) → partida → ficha da rodada → placar (melhor de 3 nos duelos).
 // Não dá figurinha, pacote nem recompensa; não mexe em ranking nem estrelas.
 import { h } from '../../util.js';
+import { bq } from '../bonequinhos.js';
 import { sheet, confirmSheet, toast } from '../../ui.js';
 import { getGame, setGame, sfx } from '../base.js';
 import { BY_ID } from './elenco.js';
@@ -15,7 +16,7 @@ import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
 
 const GID = 'cara';
-import { mini, grande, loadCat, enquadreFoto } from './midia.js';
+import { mini, grande, loadCat, enquadreFoto, nomeCls } from './midia.js';
 import { ganhou } from '../estrelas-jogo.js';
 
 export function mountMusical(host, { onTema } = {}) {
@@ -23,14 +24,15 @@ export function mountMusical(host, { onTema } = {}) {
   const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); if (!gone) fn(); }, ms); timers.add(t); return t; };
   const saved = getGame(GID).musical || {};
   const cfg = { modo: saved.modo === 'classico' ? 'classico' : 'kids', jogo: ['solo', 'paul', 'dupla', 'online'].includes(saved.jogo) ? saved.jogo : 'solo', tamanho: saved.tamanho || 0, nivel: saved.nivel === 'desafio' ? 'desafio' : 'iniciante', auto: saved.auto !== false, tutorialVisto: saved.tutorialVisto === true };
+  cfg.auto = cfg.modo === 'kids'; // kids tira as cartas sozinho; clássico é manual (toque no ✕)
   const salvar = () => setGame(GID, { musical: { ...cfg } });
   let st = null; // partida
   const root = h('div', { class: 'jg jg-cara cm-root' }); host.replaceChildren(root);
-  const tamanhoPadrao = () => (cfg.tamanho && R.TAMANHOS[cfg.modo].includes(cfg.tamanho) ? cfg.tamanho : R.TAMANHOS[cfg.modo][0]);
+  const tamanhoPadrao = () => (cfg.modo === 'kids' ? 12 : 20); // kids = 12 cartas, tirando sozinho · clássico = 20 cartas, você vira à mão
   const nomeJ = (i) => (cfg.jogo === 'dupla' ? `Jogador ${i + 1}` : i === 0 ? 'você' : 'Paul');
 
   /* ---------------- componentes ---------------- */
-  const seg = (lista, atual, onPick, rotulo) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': rotulo }, ...lista.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(atual === v), class: atual === v ? 'on' : '', onclick: () => onPick(v) }, l)));
+  const seg = (lista, atual, onPick, rotulo) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': rotulo }, ...lista.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(atual === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${atual === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => onPick(v) }, ic ? bq(ic) : l)));
   const temaRow = () => seg([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'musical', (v) => { if (v !== 'musical' && onTema) onTema(v); }, 'tema');
   const paulFala = (txt) => (txt ? h('div', { class: 'cm-paul', role: 'status', 'aria-live': 'polite' }, h('img', { src: 'assets/paul/e02.webp', alt: '', width: 44, height: 36, draggable: 'false' }), h('p', {}, txt)) : null);
   function zoom(carta) {
@@ -68,13 +70,11 @@ export function mountMusical(host, { onTema } = {}) {
     const tam = tamanhoPadrao(); const kids = cfg.modo === 'kids';
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
-      h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
-      h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
-      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
-      h('p', { class: 'jg-lab' }, 'cartas na mesa'), seg(R.TAMANHOS[cfg.modo].map((n) => [n, `${n} cartas`]), tam, (v) => { cfg.tamanho = v; salvar(); menu(); }, 'tamanho'),
+      h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Tire as cartas que não combinam. Descubra o artista!'),
+      h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; cfg.auto = v === 'kids'; salvar(); menu(); }, 'modo'),
+      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul', 'um'], ['paul', 'contra o Paul', 'paul'], ['dupla', 'dupla (mesmo aparelho)', 'dois'], ['online', '2 celulares (código)', 'celular']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
-      kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar')),
-      h('p', { class: 'jg-p muted' }, kids ? `kids: perguntas prontas num toque, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, todas as perguntas, 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
+      h('p', { class: 'jg-p muted' }, kids ? `kids: ${tam} cartas, o jogo tira as cartas sozinho, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, manual (toque no ✕ das cartas que não combinam), 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
       Contestar.listar().length ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn small ghost', type: 'button', onclick: contestacoes }, `respostas contestadas (${Contestar.listar().length})`)) : null,
     ].filter(Boolean));
@@ -143,8 +143,8 @@ export function mountMusical(host, { onTema } = {}) {
       const c = (st ? st.mesa : { cartas: [] }).cartas.find((x) => x.id === id) || { id, foto: BY_ID[id].fotos[0] }; const e = BY_ID[id]; const out = fora.includes(id);
       return h('div', { class: `cm-cell${out ? ' out' : ''}${selecionada === id ? ' sel' : ''}` },
         h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada === id), 'aria-label': `${e.curto}${out ? ', virada' : ''}`, onclick: () => aoToque(id) },
-          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: e.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
-        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), onclick: () => manual(id) }, out ? 'desvirar' : 'virar') : null);
+          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: nomeCls(e.curto) }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
+        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), 'aria-label': out ? 'desvirar a carta' : 'virar a carta', onclick: () => manual(id) }, out ? '✅' : '✕') : null);
     }));
   }
   const ladoAtual = () => st.lados[cfg.jogo === 'solo' ? 0 : st.turno];
@@ -163,24 +163,24 @@ export function mountMusical(host, { onTema } = {}) {
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
       meu ? h('p', { class: 'cm-minha' }, h('img', { src: mini(st.mesa.cartas.find((c) => c.id === meu).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[meu].curto}`)) : null,
       paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,
+      st.aguardaVirar != null && !emPalpite ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { const i = st.aguardaVirar; st.aguardaVirar = null; sfx('tap'); fimDeAcao(i); } }, cfg.jogo === 'paul' ? 'pronto, já virei! ▶' : 'pronto, já virei! passar a vez ▶')) : null,
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
       grade(ids, { fora: st.descartadas ? [] : [...lado.fora, ...lado.erros], selecionada: st.sel, aoToque: (id) => tocar(id), manual: !kids() && !cfg.auto && !lado.terminou && !emPalpite ? (id) => { st.lados[st.turno === undefined ? 0 : (cfg.jogo === 'solo' ? 0 : st.turno)] = R.virar(lado, id); sfx('tap'); jogo(); } : null }),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, st.msg),
       emPalpite ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar palpite' }, st.sel ? h('b', {}, `é ${BY_ID[st.sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), st.sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => palpitar(st.sel) }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.palpitando = false; st.sel = null; jogo(); } }, 'voltar às perguntas')) : null,
-      !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
-      !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
         !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
       h('div', { class: 'cm-acoes' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) menu(); } }, 'Sair')),
       lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => contestar(BY_Q[a.id], a, lado.segredo) }, '⚑ contestar'))))) : null,
     ].filter(Boolean));
   }
+  /** Perguntas em cima, num carrossel: arrasta pro lado e aparecem umas 3 por vez (ícone grande + texto curto). */
   function perguntasUI(lado, sug, todas, semPergunta) {
     if (semPergunta) return h('p', { class: 'jg-msg' }, fala('semPergunta'));
-    const botao = (q, grande) => h('button', { type: 'button', class: grande ? 'cm-q big' : 'jg-qbtn', disabled: lado.perguntas.some((x) => x.id === q.id), onclick: () => perguntar(q.id) }, grande ? h('span', { 'aria-hidden': 'true' }, q.icone) : null, grande ? ` ${q.kids}` : textoDe(q, cfg.modo));
-    if (kids()) return h('div', { class: 'cm-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, true)), todas.length > sug.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...todas.filter((q) => !lado.perguntas.some((x) => x.id === q.id)).map((q) => h('button', { type: 'button', class: 'cm-q big', onclick: () => { close(); perguntar(q.id); } }, h('span', { 'aria-hidden': 'true' }, q.icone), ` ${q.kids}`)))) }, 'mais perguntas') : null);
-    const resto = todas.filter((q) => !sug.includes(q) && !lado.perguntas.some((x) => x.id === q.id));
-    return h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, false)),
-      resto.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...resto.map((q) => h('button', { type: 'button', class: 'jg-qbtn', onclick: () => { close(); perguntar(q.id); } }, textoDe(q, cfg.modo))))) }, 'mais perguntas') : null);
+    const feitas = (q) => lado.perguntas.some((x) => x.id === q.id); const ordem = [...sug, ...todas.filter((q) => !sug.includes(q))].filter((q) => !feitas(q));
+    const card = (q) => h('button', { type: 'button', class: 'cm-qc', onclick: () => perguntar(q.id) }, h('span', {}, q.kids));
+    return h('div', { class: 'cm-qbox', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, `pergunte (arraste →)  ${ordem.length}`), h('div', { class: 'cm-carro' }, ...ordem.map(card)));
   }
   function tocar(id) { const c = st.mesa.cartas.find((x) => x.id === id); const lado = ladoAtual();
     if (st.palpitando && !lado.terminou) { st.sel = st.sel === id ? null : id; sfx('tap'); jogo(); return; } zoom(c); }
@@ -189,8 +189,9 @@ export function mountMusical(host, { onTema } = {}) {
   function perguntar(qid) {
     const i = cfg.jogo === 'solo' ? 0 : st.turno; const lado = st.lados[i]; const q = BY_Q[qid];
     const r = R.perguntar(st.mesa, lado, qid, { automatico: kids() || cfg.auto }); st.lados[i] = r.lado; const left = R.candidatosDo(st.mesa, r.lado).length;
-    st.msg = `${r.sim ? 'SIM' : 'NÃO'}. ${q.porque}${kids() || cfg.auto ? (r.tirou.length ? ` saíram ${r.tirou.length} carta${r.tirou.length === 1 ? '' : 's'}.` : '') : ' vire as cartas que não combinam.'}`;
+    st.msg = `${r.sim ? 'SIM' : 'NÃO'}. ${q.porque}${kids() || cfg.auto ? (r.tirou.length ? ` saíram ${r.tirou.length} carta${r.tirou.length === 1 ? '' : 's'}.` : '') : ' toque no ✕ das cartas que não combinam e depois em "pronto".'}`;
     st.fala = (kids() || cfg.auto) && left === 1 ? fala('uma') : (kids() || cfg.auto) && left <= 3 ? fala('poucas', { k: left }) : fala(r.sim ? 'sim' : 'nao'); st.dica = ''; sfx(r.sim ? 'place' : 'tap');
+    if (!kids() && !cfg.auto && cfg.jogo !== 'solo') { st.aguardaVirar = i; return jogo(); } // manual: primeiro vira as cartas, depois toca em "pronto" pra passar a vez
     fimDeAcao(i);
   }
   function palpitar(id) {

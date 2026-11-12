@@ -146,7 +146,7 @@ export function mount(host, opts) {
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
       h('p', { class: 'jg-lab' }, 'as 12 figuras (toque pra ver o nome)'), legend,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
-      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'dois'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
+      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
@@ -505,7 +505,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
-      if ((g.mode === 'paul' && w === 0) || (g.mode === 'online' && w === me0())) MESA.vitoria('cartas', 3); // ganhou do computador ou do colega (2 celulares): 3 ★
+      if (g.mode === 'online' && w === me0()) MESA.vitoria('cartas', 1); // só ganha em 2 celulares: 1 ★ por vitória (contra o Paul não ganha)
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');
       if (mineWin) confetti();

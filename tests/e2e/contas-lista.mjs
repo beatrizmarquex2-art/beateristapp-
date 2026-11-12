@@ -1,0 +1,21 @@
+// Entrar direto já salva o aluno na lista; "trocar aluno" mostra só 2 nomes e uma setinha pro resto; o servidor recebe o id do aparelho.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser } = await launch();
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; const corpos = [];
+p.on('pageerror', (e) => errs.push(String(e)));
+await ctx.route('**/rest/v1/rpc/**', (r) => { const u = r.request().url(); if (u.includes('aluno_acesso')) corpos.push(r.request().postData()); return r.fulfill({ status: 200, contentType: 'application/json', body: u.includes('aluno_acesso') ? '{"ok":true,"tipo":"turma"}' : u.includes('aluno_codigo_ok') ? 'true' : '[]' }); });
+await p.goto(url + '/aluno.html'); await sleep(1200);
+await p.locator('input[name=username]').fill('Maria'); await p.locator('input[name=password]').fill('ABC123'); await p.locator('button:has-text("entrar")').click(); await sleep(3500);
+const contas = JSON.parse(await p.evaluate(() => localStorage.getItem('beaterista-aluno-contas') || '[]'));
+check('entrou direto: já está na lista de alunos do aparelho', contas.length === 1 && contas[0].nome === 'Maria', JSON.stringify(contas));
+check('o servidor recebeu o id do aparelho', corpos.some((c) => /"p_aparelho":"[0-9a-f]{16,}"/.test(c)), String(corpos[0]));
+await p.evaluate(() => localStorage.setItem('beaterista-aluno-contas', JSON.stringify([['Ana', 'AAAA11'], ['Beto', 'BBBB22'], ['Caio', 'CCCC33'], ['Duda', 'DDDD44'], ['Maria', 'ABC123']].map(([nome, code]) => ({ nome, code })))));
+await p.reload(); await sleep(2500);
+await p.locator('button:has-text("trocar aluno")').first().click(); await sleep(600);
+const vis = await p.locator('.sheet .lc > .row').count();
+check('trocar aluno: só 2 nomes aparecem', vis === 2, String(vis));
+check('tem a setinha com +2', (await p.locator('.sheet .lc-seta').innerText()).includes('+2'));
+await p.locator('.sheet .lc-seta').click(); await sleep(200);
+check('a setinha abre os outros', (await p.locator('.sheet .lc-resto .row:visible').count()) === 2);
+check('sem erros de JS', errs.length === 0, errs.join('|'));
+done(); await browser.close(); srv.close();

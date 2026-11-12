@@ -73,7 +73,7 @@ export function mountDueloBase(host, A) {
   function render(n) {
     if (!latest || gone) return;
     const v = vencedor(latest.res, A.nota); const [l1, l2] = A.resumo(latest.cfg);
-    if (v === me && A.aoVencer && pagoRodada !== (latest.round || 1)) { pagoRodada = latest.round || 1; try { A.aoVencer(); } catch { /* sem estrelas */ } } // vitória: 1 vez por rodada
+    if (v === me && A.aoVencer && pagoRodada !== (latest.round || 1)) { pagoRodada = latest.round || 1; try { A.aoVencer(latest.cfg); } catch { /* sem estrelas */ } } // vitória: 1 vez por rodada
     const cab = h('section', { class: 'card pad dl-cab' }, badge.el, h('b', {}, l1), h('small', { class: 'muted' }, l2));
     const placar = h('div', { class: 'dl-pl' }, ...[me, 1 - me].map((i) => { const r = latest.res[i]; const [g, p] = r ? A.placar(r) : ['', '']; return h('div', { class: `dl-j${i === me ? ' eu' : ''}${v === i ? ' win' : ''}` }, h('small', {}, quem(i)),
       r ? h('b', {}, g) : h('b', { class: 'muted' }, latest.ready[i] ? 'pronto ✓' : 'esperando…'), r && p ? h('small', {}, p) : null); }));

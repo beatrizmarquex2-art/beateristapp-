@@ -30,7 +30,7 @@ export function mountDueloQuebra(host, { IMAGES, SIZES, abrir, voltar }) {
     desbloquear() { /* nada a liberar */ },
     nota: notaQuebra,
     placar: (r) => [fmt(tempoFinal(r)), `montou em ${fmt(r.ms)} · ${r.hints} dica${r.hints === 1 ? '' : 's'} · ${r.errors} erro${r.errors === 1 ? '' : 's'}`],
-    aoVencer() { ganhou('quebra', 3); }, // ganhou o duelo: 3 ★
+    aoVencer(c) { ganhou('quebra', 3, `quebra|duelo|${c && c.img}|${c && c.diff}`); }, // ganhou o duelo: 3 ★
     jogar(box, c, fim) {
       let ctl = null; const t0 = Date.now(); // o tempo conta desde o começo da partida (e não só da 1ª peça), igual pros dois
       box.replaceChildren();

@@ -24,8 +24,8 @@ async function abrir(p) {
   await p.goto(`${url}/aluno.html#/jogos/cara`); await sleep(1000);
   if (await p.locator('button:text-is("JOGAR")').count()) { await p.locator('button:text-is("JOGAR")').click(); await sleep(300); }
   await livre(p);
-  await p.locator('button[role=radio]:has-text("cara a cara musical")').click(); await sleep(250);
-  await p.locator('button[role=radio]:has-text("2 celulares")').click(); await sleep(200);
+  await sleep(250); // o cara a cara é só de artistas: abre direto
+  await p.locator('button[role=radio][aria-label*="2 celulares"]').click(); await sleep(200);
 }
 const a = await phone(); const b = await phone();
 await abrir(a); await abrir(b);
@@ -56,11 +56,11 @@ await v.locator('.cm-livre-in').fill('ele toca bateria?'); await v.locator('butt
 check('[livre] o outro celular LÊ a pergunta escrita e mostra os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('ele toca bateria?') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
 check('[livre] não responde sozinho (continua esperando)', (await v.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('esperando o outro'));
 await o.locator('.cm-livre button:text-is("SIM")').click(); await sleep(3000);
-check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('vire as cartas'));
+check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('✕'));
 check('[livre] a vez passou pro outro', await vez(o) && !(await vez(v)));
 check('[livre] conta como pergunta (1) e nenhuma carta saiu sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '1' && (await v.locator('.cm-cell.out').count()) === 0);
 if (SHOT) await v.screenshot({ path: `${SHOT}/livre-virar.png` });
-check('[livre] botões "virar" aparecem nas cartas de quem perguntou', (await v.locator('.cm-cell .jg-flip').count()) > 0);
+check('[livre] botões de virar (↻) aparecem nas cartas de quem perguntou', (await v.locator('.cm-cell .jg-flip').count()) > 0);
 await v.locator('.cm-cell .jg-flip').first().click(); await sleep(300);
 check('[livre] virar à mão tira a carta do jogo (só neste aparelho)', (await v.locator('.cm-cell.out').count()) === 1 && (await o.locator('.cm-cell.out').count()) === 0);
 await v.locator('.cm-cell.out .jg-flip').click(); await sleep(300);
@@ -71,7 +71,7 @@ check('[escrita] o outro celular lê a pergunta e responde', (await v.locator('.
 await v.locator('.cm-livre button:text-is("NÃO")').click(); await sleep(3000);
 check('[escrita] NÃO chega pra quem perguntou e a vez volta', /NÃO/.test(await o.locator('.cm-paul').innerText()) && await vez(v));
 // pergunta pronta continua funcionando e mistura com as livres
-await v.locator('.cm-qs .cm-q').first().click(); await sleep(3000);
+await v.locator('.cm-carro .cm-qc').first().click(); await sleep(3000);
 check('[mistura] pergunta pronta ainda responde sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '2');
 check('[sem erros de JS]', !a.errs.length && !b.errs.length, [...a.errs, ...b.errs].join('|'));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

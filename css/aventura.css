@@ -71,3 +71,4 @@
 .pt-box summary { font: 800 14px var(--pix); } .pt-box { font: 600 14px/1.45 var(--pix); }
 /* Paul nas telas escuras: os arquivos dele agora têm o branco sólido (olhos, capacete) e o fundo transparente só por fora; sem multiply, sem adesivo. Ele NÃO é pixel: é o desenho oficial. */
 .av .rb-img { mix-blend-mode: normal; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .45)); }
+.av-how { margin: 4px 16px 8px; } .av-how summary { cursor: pointer; font-weight: 700; min-height: 36px; display: flex; align-items: center; }

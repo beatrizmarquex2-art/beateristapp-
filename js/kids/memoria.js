@@ -74,7 +74,7 @@ export function mountMemoria(host, opts) {
       lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : null,
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
-        ...[[1, 'um', '1 jogador'], [2, 'dois', 'pessoas no mesmo celular, uma de cada vez (2 a 4)'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => { const on = n === 2 ? typeof players === 'number' && players >= 2 : players === n; return h('button', { type: 'button', class: `mem-ic${on ? ' on' : ''}`, 'aria-pressed': String(on), 'aria-label': l, title: l, onclick: () => save({ players: n === 2 && typeof players === 'number' && players >= 2 ? players : n }).then(setup) }, bq(ic)); }),
+        ...[[1, 'um', '1 jogador'], [2, 'mais', 'pessoas no mesmo celular, uma de cada vez (2 a 4)'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 celulares (código)']].map(([n, ic, l]) => { const on = n === 2 ? typeof players === 'number' && players >= 2 : players === n; return h('button', { type: 'button', class: `mem-ic${on ? ' on' : ''}`, 'aria-pressed': String(on), 'aria-label': l, title: l, onclick: () => save({ players: n === 2 && typeof players === 'number' && players >= 2 ? players : n }).then(setup) }, bq(ic)); }),
         typeof players === 'number' && players >= 2 ? h('span', { class: 'mem-step' }, h('button', { type: 'button', 'aria-label': 'menos jogadores', disabled: players <= 2 || null, onclick: () => save({ players: players - 1 }).then(setup) }, '‹'), h('span', { 'aria-live': 'polite' }, `${players} jogadores`), h('button', { type: 'button', 'aria-label': 'mais jogadores', disabled: players >= 4 || null, onclick: () => save({ players: players + 1 }).then(setup) }, '›')) : null,
         h('span', { class: 'mem-step' },
           h('button', { type: 'button', 'aria-label': 'menos pares', disabled: pairs <= PICK[0] || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) - 1] }).then(setup) }, '‹'),
@@ -158,7 +158,8 @@ export function mountMemoria(host, opts) {
       }
       live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
-      if (players === 1 || (vsPaul && score[0] > score[1])) ganhou('memoria'); // achou todos (ou ganhou do Paul): 3 ★
+      if (th.id === 'figuras') ganhou('memoria', 1); // SÓ o tema "figuras e pausas" dá 1 ★ por partida completada (até contra o robô ou em 2 no mesmo aparelho); os outros temas só em 2 celulares
+      // achou todos (ou ganhou do Paul): 3 ★
       const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `jogador ${topo[0] + 1} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {

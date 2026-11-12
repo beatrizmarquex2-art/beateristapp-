@@ -82,6 +82,7 @@ const TAP = `(() => {
 
 /** Aluno COM código liberado (como a Bea dá): a conferência no servidor responde "true" e o código fica no aparelho. Sem isso o aluno só vê o Modo Livre. */
 export async function alunoComCodigo(ctx) {
+  await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
   await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
   await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   await ctx.addInitScript(() => { try { if (!localStorage.getItem('beaterista-aluno-codigo')) localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) { /* ok */ } });

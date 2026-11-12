@@ -25,9 +25,9 @@ for (const w of [390, 320]) {
     const H = await page.evaluate(() => (document.querySelector('.mp-world') || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height);
     const iss = new Set(); for (const f of [0, 0.5, 1]) { await page.evaluate((y) => window.scrollTo(0, y), f * H); await sleep(200); (await page.evaluate(audit)).forEach((x) => iss.add(x)); }
     check(`${w}px ${id} mapa legível`, !iss.size, [...iss].slice(0, 4).join(' | '));
-    await page.goto(url + '/aluno.html' + hash + '/0'); await page.waitForSelector('.av-go', { timeout: 6000 }).catch(() => {}); await sleep(700);
+    await page.goto(url + '/aluno.html' + hash + '/0'); await page.waitForSelector('.av-stage', { timeout: 6000 }).catch(() => {}); await sleep(700);
     const b = await page.evaluate(audit); check(`${w}px ${id} briefing legível`, !b.length, b.slice(0, 4).join(' | '));
-    await page.click('.av-go').catch(() => {}); await sleep(1400);
+    await sleep(1400);
     const m = await page.evaluate(audit); check(`${w}px ${id} missão legível`, !m.length, m.slice(0, 4).join(' | '));
   }
   await page.close();

@@ -26,7 +26,16 @@ test('quebra-cabeça: 3 ★ na 1ª volta, 2 na 2ª, 1 da 3ª em diante; cada ima
   const r1 = premioQuebra(null, 'a', 3); assert.equal(premioQuebra(r1.q, 'a', 3).estrelas, 0); // repetir a mesma imagem na mesma volta não dá nada
   assert.equal(premioQuebra(r1.q, 'b', 3).estrelas, 3);
 });
-test('tabela de estrelas: velha 1, os outros jogos 3', async () => {
+test('tabela de estrelas: velha, memória, Uno e quiz Uno 1; cara, stop e bingo 3', async () => {
   const { ESTRELAS_JOGO } = await import('../js/figurinhas/mesa-logic.js');
-  assert.equal(ESTRELAS_JOGO.velha, 1); for (const j of ['memoria', 'cara', 'stop', 'bingo', 'cartas']) assert.equal(ESTRELAS_JOGO[j], 3);
+  for (const j of ['velha', 'memoria', 'cartas', 'quizuno']) assert.equal(ESTRELAS_JOGO[j], 1); for (const j of ['cara', 'stop', 'bingo']) assert.equal(ESTRELAS_JOGO[j], 3);
+});
+
+import { pagarChave } from '../js/figurinhas/mesa-logic.js';
+test('anti-farm: cada chave (música/nível) paga até 3 ★ na vida, só a diferença', () => {
+  let r = pagarChave({}, 'toca|a|90', 3); assert.equal(r.novas, 3);
+  r = pagarChave(r.pago, 'toca|a|90', 3); assert.equal(r.novas, 0, 'repetir a mesma música não rende');
+  r = pagarChave(r.pago, 'toca|b|90', 3); assert.equal(r.novas, 3, 'outra música rende');
+  let q = pagarChave({}, 'teoria|x', 1); assert.equal(q.novas, 1); q = pagarChave(q.pago, 'teoria|x', 2); assert.equal(q.novas, 1, 'melhorou: paga só a diferença'); assert.equal(pagarChave(q.pago, 'teoria|x', 2).novas, 0);
+  assert.equal(pagarChave({}, 'k', 9).novas, 3, 'nunca passa de 3');
 });

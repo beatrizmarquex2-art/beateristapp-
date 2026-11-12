@@ -19,12 +19,16 @@ const GRANDE_SIM = lista(`the-beatles mamonas-assassinas jota-quest nx-zero imag
 const GRANDE_NAO_BANDA = lista(`nirvana green-day paramore blink-182 muse twenty-one-pilots`);
 const GRANDE_NULO = lista(`legiao-urbana restart terno-rei skank gorillaz`);
 
+/** mulher: artista solo que é mulher = true; solo homem e banda = false; dupla mista, banda com mulher na formação e "beaterista" = null (a pergunta some). Dados públicos dos artistas, nada de reconhecer por imagem. */
+const MULHER_SIM = lista(`cassia-eller pitty rita-lee hayley-williams billie-eilish avril-lavigne amy-winehouse britney-spears sabrina-carpenter`);
+const MULHER_NULO = lista(`beaterista justin-bieber-e-billie-eilish paramore gorillaz`);
 const tri = (v) => (v === true ? true : v === false ? false : null);
 for (const e of ENTIDADES) {
   const a = e.attrs; const id = e.id;
   a.cantor = CANTOR_SIM.includes(id) ? true : (CANTOR_NAO.includes(id) || a.banda === true) ? false : null;
   a.ativo = ATIVO_NAO.includes(id) ? false : ATIVO_NULO.includes(id) ? null : true;
   a.grande = GRANDE_SIM.includes(id) ? true : GRANDE_NULO.includes(id) ? null : (GRANDE_NAO_BANDA.includes(id) || a.banda !== true) ? false : null;
+  a.mulher = MULHER_SIM.includes(id) ? true : MULHER_NULO.includes(id) ? null : false;
   const ant = tri(a.antes1980); const dep = tri(a.depois2000);
   a.anos80_90 = ant === null || dep === null ? null : (!ant && !dep); // derivado: nem antes de 1980 nem depois de 2000
 }

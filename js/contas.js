@@ -15,8 +15,8 @@ export function guardarConta({ nome, code }) {
 }
 /** A conta que está ativa agora entra na lista (pra dar pra voltar a ela). */
 export function guardarAtual() { const a = atual(); if (a.nome && a.code) guardarConta(a); }
-export function esquecer(code) { grava(lista().filter((x) => x.code !== CODE.norm(code))); }
+export function esquecer(code) { grava(lista().filter((x) => x.code !== CODE.norm(code))); CODE.liberarAparelho(code); /* libera a vaga (máx. 2 aparelhos por código) */ }
 /** Liga a conta: nome + código ativos (Beat Hero e álbum). Quem chama recarrega a tela. */
 export function ativar({ nome, code }) { const c = CODE.norm(code); set(NOME, clean(nome)); CODE.guardar(c); set(ALBUM, c); window.__alunoNome = clean(nome); }
 /** Sem conta: só esquece o código deste aparelho (o nome vai ser digitado de novo). */
-export function semConta() { guardarAtual(); set(NOME, ''); CODE.sair(); set(ALBUM, ''); set('beaterista-aluno-codigo-pendente', ''); window.__alunoNome = ''; window.__alunoCodigo = ''; window.__alunoCodigoPend = ''; }
+export function semConta() { guardarAtual(); const c0 = CODE.saved(); if (c0) CODE.liberarAparelho(c0); set(NOME, ''); CODE.sair(); set(ALBUM, ''); set('beaterista-aluno-codigo-pendente', ''); window.__alunoNome = ''; window.__alunoCodigo = ''; window.__alunoCodigoPend = ''; }
