@@ -258,6 +258,7 @@ function shell() {
     ws.replaceChildren(
       h('a', { href: '#/inicio', role: 'tab', 'aria-selected': String(!inB), class: !inB ? 'on' : '' }, 'Bea'),
       h('a', { href: '#/beaterista', role: 'tab', 'aria-selected': String(inB), class: inB ? 'on' : '', onclick: () => setSpace('beaterista') }, 'Beaterista'));
+    nav.dataset.n = NAV.length; nav.style.gridTemplateColumns = `repeat(${NAV.length}, 1fr)`; // 4 ou 5 abas na mesma linha
     nav.replaceChildren(...NAV.map((n) => n
       ? h('a', { href: n[0], class: `nav-item${navOn(n[0], r) ? ' on' : ''}`, 'aria-current': navOn(n[0], r) ? 'page' : null }, icon(n[1], 24), h('span', {}, n[2]))
       : h('button', { class: 'fab', type: 'button', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 30))));

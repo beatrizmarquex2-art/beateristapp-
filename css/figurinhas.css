@@ -373,3 +373,4 @@
 
 .ac-sons{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}.ac-sons .ac-ouvir{padding:8px 10px;min-height:36px;border:2px solid #17365B;border-radius:99px;background:#fff;color:#17365B;font:800 12px var(--body,inherit);cursor:pointer}.ac-sons .ac-ouvir:active{background:#ffd23f}
 .ac-card:not(.wide) .ac-sons{display:grid;width:100%}.ac-card:not(.wide) .ac-sons .ac-ouvir{width:100%;padding:6px 8px;min-height:34px}.ac-diag{width:120px}
+.bottom-nav[data-n="5"] .nav-item { font-size: 11px; padding-left: 0; padding-right: 0; } .bottom-nav[data-n="5"] { padding-left: 3px; padding-right: 3px; }
