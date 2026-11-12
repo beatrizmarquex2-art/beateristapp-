@@ -1047,3 +1047,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-detetive .dn-face{display:grid;justify-items:center;gap:1px}.jg-detetive .dn-face i{font-style:normal;font-size:28px;line-height:1.1}.jg-detetive .dn-face small{font-size:10px;font-weight:700;line-height:1.1;text-align:center}
 .jg-detetive .dn-face-fig{width:100%}.jg-detetive .dn-face-fig svg{width:100%;height:auto}
 .jg-detetive .dn-slot small{font-size:13px;font-weight:800;opacity:.6}
+.jg-detetive .dn-baralho{grid-template-columns:repeat(var(--n,4),minmax(0,1fr))}
+.jg-detetive .dn-estrelas{font-size:34px;letter-spacing:4px;color:#d99a2b;margin:6px 0}
+.jg-detetive .tr-fasehead{color:#142036}
+.jg-detetive .tr-fasehead .btn,.jg-toca .tr-fasehead .btn{white-space:nowrap;flex:0 0 auto}.jg-detetive .tr-fasehead b{font-size:13px;line-height:1.2}

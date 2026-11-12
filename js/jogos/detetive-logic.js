@@ -1,8 +1,8 @@
 // Detetive Note (regras puras): o secreto é 1 compasso de 4 tempos; a criança ouve e MONTA com cartas de um tema (comida, parque, corpo, animal)
 // ou com figuras (modo normal). Sem tela nem áudio, testado em tests/detetive-note.test.mjs.
-import { randomFoods, cellOf } from '../kids-logic.js';
 
-export const RODADAS = 6;
+export const FASES = 12; // fases por modo
+export const RODADAS = 3; // ritmos por fase
 export const BPM = 80;
 /** Uma palavra por tipo de tempo em cada tema (as mesmas do "Monte seu ritmo"): 1 tempo, 2 colcheias, 4 semicolcheias; a pausa é sempre "shhh". */
 export const TEMAS = {
@@ -11,13 +11,25 @@ export const TEMAS = {
   corpo: { nome: 'corpo', '1000': 'mao', '1010': 'braco', '1111': 'esqueleto' },
   animal: { nome: 'animal', '1000': 'cao', '1010': 'pato', '1111': 'borboleta' },
 };
-export const MODOS = [...Object.keys(TEMAS), 'normal'];
-/** As 4 cartas de um modo (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */
-export const cartas = (modo) => ['1000', '1010', '1111', '0000'].map((cell) => ({ cell, id: modo === 'normal' ? null : cell === '0000' ? 'shh' : TEMAS[modo][cell] }));
-/** Sorteia o compasso secreto: 4 células (nunca começa com pausa nem tem mais de uma pausa). */
-export const sortear = (rnd = Math.random) => randomFoods(rnd, 2).map(cellOf);
+export const MODOS = ['normal', ...Object.keys(TEMAS)]; // figuras em primeiro
+/** Células que cada fase usa (a dificuldade sobe): 1-2 só semínima e colcheias; 3-4 entra a pausa; 5-6 entram as 4 semicolcheias; 7-12 tudo, com mais variedade. */
+export const poolFase = (n) => (n <= 2 ? ['1000', '1010'] : n <= 4 ? ['1000', '1010', '0000'] : n <= 6 ? ['1000', '1010', '1111'] : ['1000', '1010', '1111', '0000']);
+/** As cartas de um modo nessa fase (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */
+export const cartas = (modo, n = FASES) => poolFase(n).slice().sort((a, b) => ['1000', '1010', '1111', '0000'].indexOf(a) - ['1000', '1010', '1111', '0000'].indexOf(b)).map((cell) => ({ cell, id: modo === 'normal' ? null : cell === '0000' ? 'shh' : TEMAS[modo][cell] }));
+/** Sorteia o compasso secreto da fase `n`: 4 células do conjunto da fase (nunca começa com pausa, no máximo 1 pausa, e usa pelo menos 2 tipos). */
+export function sortear(n = FASES, rnd = Math.random) {
+  const pool = poolFase(n);
+  for (let g = 0; g < 500; g++) {
+    const b = Array.from({ length: 4 }, () => pool[Math.floor(rnd() * pool.length)]);
+    if (b[0] === '0000' || b.filter((c) => c === '0000').length > 1 || new Set(b).size < 2) continue;
+    if (n >= 5 && n <= 6 && !b.includes('1111')) continue; // a fase que apresenta as semicolcheias sempre usa
+    if (n >= 3 && n <= 4 && !b.includes('0000')) continue; // a fase que apresenta a pausa sempre usa
+    return b;
+  }
+  return pool.slice(0, 1).concat(pool.slice(1, 2), pool.slice(0, 1), pool.slice(1, 2));
+}
 /** Confere o que foi montado: um booleano por tempo (null = tempo ainda vazio). */
 export const conferir = (slots, secreto) => secreto.map((c, i) => (slots[i] == null ? null : slots[i] === c));
 export const acertou = (slots, secreto) => secreto.every((c, i) => slots[i] === c);
-/** Estrelas pela partida: quantas rodadas foram certas de primeira. */
-export const estrelas = (primeira, total = RODADAS) => { const p = total ? primeira / total : 0; return p >= 0.9 ? 3 : p >= 0.6 ? 2 : p > 0 ? 1 : 0; };
+/** Estrelas da fase (completou = 1): 2 se acertou pelo menos 2 ritmos de primeira, 3 se acertou todos de primeira. */
+export const estrelas = (primeira, total = RODADAS) => (primeira >= total ? 3 : primeira >= 2 ? 2 : 1);
