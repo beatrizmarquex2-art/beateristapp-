@@ -15,3 +15,7 @@ Pacote enviado pela Bea em nov/2026. Serve de **referência de estilo** e de mat
 - Mockups do app em celular inclinado + Paul de adesivo + estrelinha/asterisco desenhados em vinho e mostarda.
 - Exemplo de texto do feed 01: "AULAS DE MÚSICA NA PALMA DA MÃO. DEPOIS, MÃO NA MASSA."
 - Recortes do Paul: só os arquivos oficiais, sem redesenhar (ver "Paul" no PASSAGEM.md).
+
+## Kit Robôterista Black Friday (`kit-roboterista/`)
+- `arte-feed-kit.png` (1080×1350) e `arte-feed.html` (fonte da arte); `kit.html` = página com abas clicáveis (Ritmo, Harmonia, Na Prática, Memória) + 5 lendárias brilhando; `lendarias-png/` = as 5 lendárias em PNG.
+- Preço da proposta: R$ 79,90 pelos 4 (soma real dos preços atuais = R$ 99,60) + 5 lendárias de presente. Ainda NÃO está no app nem na Hotmart.
