@@ -30,7 +30,7 @@ const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'ler, ouvir, repetir · microfone'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
-  ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · contra o computador ou no mesmo celular'],
+  ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · robô, mesmo celular ou 2 celulares'],
   ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
