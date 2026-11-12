@@ -1,0 +1,27 @@
+// Beat Hero sempre no modo Vinil (sem escolha de cores); Na Batida (piano) com estilo Clássico ou Colorido.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
+await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
+const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 844 }); const errs = []; p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'T'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); localStorage.setItem('beater-rhythm-v1', JSON.stringify({ ritmo: { tilesSeen: true } })); localStorage.setItem('bt-rz-theme', 'colagem'); } catch { /* ok */ } });
+await p.goto(`${url}/aluno.html#/ritmo`); await sleep(3000);
+const theme = () => p.evaluate(() => document.querySelector('.rg-host') && document.querySelector('.rg-host').getAttribute('data-rz-theme'));
+await p.locator('button', { hasText: 'Beat Hero' }).first().click(); await sleep(500);
+check('Beat Hero abre no tema vinil mesmo com outro tema salvo', (await theme()) === 'vinil', await theme());
+check('Beat Hero não tem escolha de cores', (await p.locator('[data-act="rz-theme"]').count()) === 0 && !/Cores/.test(await p.locator('.rg-host').innerText()));
+await p.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/beat-menu.png` : '/dev/null' });
+await p.locator('[data-act="rz-play"]').first().click(); await sleep(6500);
+if (process.env.SHOTS) await p.screenshot({ path: `${process.env.SHOTS}/beat-play.png` });
+await p.locator('[data-act="rz-quit"]').first().click().catch(() => {}); await sleep(500);
+await p.locator('button', { hasText: 'Na Batida' }).first().click(); await sleep(500);
+check('Na Batida clássico usa o tema claro', (await theme()) === 'colagem', await theme());
+await p.locator('[data-act="rz-acc"][data-v="cores"]').click(); await sleep(300);
+check('Na Batida tem Clássico e Colorido', (await p.locator('[data-act="rz-theme"]').count()) === 2);
+await p.locator('[data-act="rz-theme"][data-v="colorido"]').click(); await sleep(400);
+check('Colorido guarda a escolha', (await p.evaluate(() => localStorage.getItem('bt-rz-tiles'))) === 'colorido');
+await p.locator('[data-act="rz-play"]').first().click(); await sleep(4000);
+await p.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/tiles-colorido.png` : '/dev/null' }).catch(() => {});
+await sleep(5000);
+if (process.env.SHOTS) await p.screenshot({ path: `${process.env.SHOTS}/tiles-colorido2.png` });
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);
