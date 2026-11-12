@@ -12,6 +12,7 @@ import { banner, toast, stars } from '../ui.js';
 import { micMessage, micToast } from '../mic-access.js';
 import { parts } from './tempo.js';
 import * as FB from '../feedback.js';
+import { tocarEfeito } from '../jogos/efeitos.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
@@ -104,6 +105,7 @@ export function leitura(host) {
       if (!livre) { const ganho = estrelasToca(lastResult.score) - estrelasToca(bestOf(c)[step] || 0); if (ganho > 0) import('../figurinhas/mesa.js').then((M) => M.vitoria('toca', ganho)).catch(() => {}); } // só ganha estrela quando melhora (não dá pra repetir e farmar)
       if (!livre && lastResult.score > (bestOf(c)[step] || 0)) await save({ pbest: { ...bestOf(c), [step]: lastResult.score }, pstep: step }); // fica neste exercício vendo o resultado; o próximo abre no menu
       if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
+      tocarEfeito('toca', passedNow ? 'passou de fase' : lastResult.score >= 70 ? 'acertou o tempo' : lastResult.score >= 40 ? 'quase' : 'errou'); // batucada: pandeiro, tamborim e surdo
       draw(false);
       const tgt = body.querySelector('.tr-res') || body;
       if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
