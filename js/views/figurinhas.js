@@ -61,10 +61,10 @@ export function mount(host, parts = [], opts = {}) {
       const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
       return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
     }));
-    const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, `🎡 você tem ${pend} pra abrir (giro grátis do dia, roleta ou prêmio) — toque aqui`) : null;
+    const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, '🎡 você tem cartas para resgatar') : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
-      h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!'),
+      h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!')),
       tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
     if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
@@ -96,10 +96,10 @@ export function mount(host, parts = [], opts = {}) {
     const slot = (i) => h('div', { class: 'ld-slot', 'aria-label': `lendária ${i + 1} trancada` }, h('i', { class: 'ld-brilho', 'aria-hidden': 'true' }), h('span', { class: 'ld-cad', 'aria-hidden': 'true' }, '🔒'), h('b', {}, `lendária ${i + 1}`));
     return h('section', { class: 'fig-col ld' },
       h('h2', { class: 'tag' }, '✨ Lendárias'),
-      h('p', { class: 'muted' }, 'figurinhas exclusivas, só pra quem compra um produto na Lojinha da Beaterista. não saem na roleta e não dá pra trocar: cada produto libera as suas.'),
+      h('p', { class: 'muted' }, 'figurinhas exclusivas de quem compra na Lojinha da Beaterista. cada produto libera algumas. não saem na roleta.'),
       h('div', { class: 'ld-grid' }, ...Array.from({ length: 6 }, (_, i) => slot(i))),
-      h('p', { class: 'fig-note' }, 'as lendárias estão chegando. quando saírem, elas aparecem aqui e brilham quando você tiver o produto.'),
-      h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'ver a Lojinha'));
+      h('p', { class: 'fig-note' }, 'as lendárias estão chegando. com 3 produtos da Lojinha você resgata as suas figurinhas lendárias.'),
+      h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'resgate suas figurinhas lendárias'));
   }
 
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
@@ -128,7 +128,7 @@ export function mount(host, parts = [], opts = {}) {
           h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
           h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '3 fases com 3 ★'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),
           h('li', {}, '🎯 acertou 5 seguidas no quiz Uno Musical: 1 giro (até 3 por dia)'),
-          h('li', {}, '✨ ', h('b', {}, 'o álbum ainda vai mudar'), ': vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!')),
+          h('li', {}, '✨ ', h('b', {}, 'o álbum ainda vai mudar'), ': vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!'))),
         h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),

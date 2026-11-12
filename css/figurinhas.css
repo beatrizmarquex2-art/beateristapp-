@@ -383,3 +383,7 @@
 .ld-slot:nth-child(2n) .ld-brilho { animation-delay: .8s; } .ld-slot:nth-child(3n) .ld-brilho { animation-delay: 1.6s; }
 @keyframes ld-pass { 0%, 55% { left: -60%; } 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .ld-brilho { animation: none; } }
+
+/* "300 figurinhas": nunca uma palavra sozinha na última linha */
+.fig-vaimudar, .fig-regras li { text-wrap: balance; } .fig-300 { white-space: nowrap; }
+.fig-giro { text-wrap: balance; }
