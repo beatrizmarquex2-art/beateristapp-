@@ -27,7 +27,7 @@ const BARS = {
     ['1001', '1001', '1001', '1001'], ['1100', '1100', '1100', '1100'], ['1101', '1011', '1001', '1000'], ['0111', '1101', '0111', '1000'], ['1001', '1111', '1100', '1010'], ['1111', '1101', '0111', '1001']],
 };
 export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar })));
-export const PASS_SCORE = 50; // 50% já passa (1 ★) e abre o próximo exercício; 70% = 2 ★; 100% = 3 ★
+export const PASS_SCORE = 60; // 60% passa (1 ★); 80% = 2 ★; 100% = 3 ★ (igual à pauLta; no microfone vale mais, ver toca-estrelas.js)
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
 /** Notas de uma célula: [{ pos, dur }] em semicolcheias (a última vai até o fim do tempo). */

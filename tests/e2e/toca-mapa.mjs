@@ -35,7 +35,7 @@ await page.getByRole('button', { name: /próximo compasso/ }).click(); await sle
 check('3º compasso avisa "compasso 3 de 3"', /compasso 3 de 3/.test(await page.textContent('.tr-status')));
 await tocaCompasso(); await page.waitForSelector('.tr-stars', { timeout: 15000 });
 const est = await page.evaluate(() => document.querySelector('.tr-stars') ? document.querySelector('.tr-stars').getAttribute('aria-label') : '');
-check('tocando na tela vale 1 estrela (nota = média dos 3 compassos)', /^1 de 3/.test(est) && /média dos 3 compassos/.test(await page.textContent('.tr-big')), est);
+check('tocando tudo certinho na tela vale 3 estrelas (nota = média dos 3 compassos, igual à pauLta)', /^3 de 3/.test(est) && /média dos 3 compassos/.test(await page.textContent('.tr-big')), est);
 await page.getByRole('button', { name: /próxima fase/ }).click(); await sleep(500);
 check('próxima fase abre outra fase (pauta nova)', (await page.locator('.tr-fasehead').count()) === 1 && (await page.locator('.tr-pad').count()) === 1);
 await page.locator('.tr-fasehead button').click(); await page.waitForSelector('.mp-node');

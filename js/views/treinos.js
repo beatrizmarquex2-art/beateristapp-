@@ -19,7 +19,7 @@ import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
 import { capture } from '../kids/capture.js';
 import { vinil, icone } from '../kids/drum-art.js';
-import { estrelasFase, ganhoEstrelas } from '../toca-estrelas.js';
+import { estrelasFase, ganhoEstrelas, estrelasPct } from '../toca-estrelas.js';
 import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
@@ -83,8 +83,8 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 
 /** Leitura: passos do caminho (2 por nível). Um passo só abre depois de tirar PASS_SCORE no anterior. */
 const bestOf = (c) => c.pbest || {};
-/** Estrelas de um exercício do caminho: 50% = 1, 70% = 2, 100% = 3. */
-export const estrelasToca = (sc) => (sc >= 100 ? 3 : sc >= 70 ? 2 : sc >= PASS_SCORE ? 1 : 0);
+/** Estrelas de um exercício do caminho na tela: 60% = 1, 80% = 2, 100% = 3 (igual à pauLta). */
+export const estrelasToca = (sc) => estrelasPct(sc);
 const unlocked = () => true; // tudo aberto: o aluno escolhe qualquer nível e exercício (as ★ continuam contando por exercício)
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };
 
