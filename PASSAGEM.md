@@ -438,3 +438,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - rotas novas: `#/estudos/basica` (+`/<id>`), `#/estudos/acordes/<violao|teclado>`, `#/estudos/ritmos`
 - `js/views/estudos-som.js` (acordes + ritmos de bateria com som), `js/kids/teoria.js` (teoria básica + mini quiz de 3 perguntas)
 - Estudos sem jogos misturados
+
+## v385 — Stop 2–4 no mesmo celular + nuvem do Paul
+- Stop modo dupla: seletor "quantos jogam" (2/3/4), `prefs.nDupla`; online segue 2; teste `tests/e2e/stop-quatro.mjs`
+- nuvem do Paul não aparece dentro de jogos (cobria o botão STOP): regra em `startPaul({allowed})` no aluno.js

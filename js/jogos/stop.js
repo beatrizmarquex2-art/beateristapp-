@@ -27,7 +27,8 @@ export function mount(host, opts) {
     cats: S.catsOk(saved.cats) ? saved.cats : S.randomCats(6),
     seconds: Number.isInteger(saved.seconds) && saved.seconds >= 10 && saved.seconds <= 600 ? saved.seconds : 60,
     rounds: Number.isInteger(saved.rounds) && saved.rounds >= 1 && saved.rounds <= 20 ? saved.rounds : 3,
-    names: Array.isArray(saved.names) && saved.names.length >= 2 ? saved.names.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['jogador 1', 'jogador 2'],
+    names: Array.isArray(saved.names) && saved.names.length >= 2 ? [...saved.names, 'jogador 3', 'jogador 4'].slice(0, 4).map((n, i) => String(n || `jogador ${i + 1}`).slice(0, 20)) : ['jogador 1', 'jogador 2', 'jogador 3', 'jogador 4'],
+    nDupla: [2, 3, 4].includes(saved.nDupla) ? saved.nDupla : 2, // quantos jogam no mesmo celular
     sim: saved.sim !== false, // 2 celulares: 'ao mesmo tempo' (padrão) ou 'um de cada vez'
     salaNames: Array.isArray(saved.salaNames) && saved.salaNames.length >= 2 ? saved.salaNames.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['aluno 1', 'aluno 2', 'aluno 3'],
   };
@@ -88,7 +89,7 @@ export function mount(host, opts) {
     const customSecs = prefs.mode === 'sala' && !S.SECONDS.includes(prefs.seconds);
     const roundsList = prefs.mode === 'sala' ? [...S.ROUNDS, 0] : S.ROUNDS; const customRounds = prefs.mode === 'sala' && !S.ROUNDS.includes(prefs.rounds);
     const namesBox = () => {
-      if (prefs.mode === 'dupla') return h('div', { class: 'st-names' }, ...[0, 1].map((i) => h('label', { class: 'jg-field' }, h('span', {}, `nome do jogador ${i + 1}`), h('input', { type: 'text', value: prefs.names[i], maxlength: 20, autocomplete: 'off', oninput: (e) => { const n = prefs.names.slice(); n[i] = e.target.value; save({ names: n }); } }))));
+      if (prefs.mode === 'dupla') return h('div', { class: 'st-names' }, ...Array.from({ length: prefs.nDupla }, (_, i) => i).map((i) => h('label', { class: 'jg-field' }, h('span', {}, `nome do jogador ${i + 1}`), h('input', { type: 'text', value: prefs.names[i], maxlength: 20, autocomplete: 'off', oninput: (e) => { const n = prefs.names.slice(); n[i] = e.target.value; save({ names: n }); } }))));
       if (prefs.mode === 'sala') return h('div', { class: 'st-names' }, h('p', { class: 'jg-lab' }, `participantes (${prefs.salaNames.length})`),
         ...prefs.salaNames.map((nm, i) => h('div', { class: 'st-namerow' }, h('input', { type: 'text', value: nm, maxlength: 20, 'aria-label': `participante ${i + 1}`, autocomplete: 'off', oninput: (e) => { const n = prefs.salaNames.slice(); n[i] = e.target.value; save({ salaNames: n }); } }),
           h('button', { class: 'btn small ghost', type: 'button', disabled: prefs.salaNames.length <= 2, 'aria-label': `tirar participante ${i + 1}`, onclick: () => { save({ salaNames: prefs.salaNames.filter((_, k) => k !== i) }); setup(); } }, '✕'))),
@@ -104,6 +105,7 @@ export function mount(host, opts) {
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
       h('div', { class: 'jo-card' },
         linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'dupla', 'dois'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+        prefs.mode === 'dupla' ? linha('quantos jogam', chips([[2, '2'], [3, '3'], [4, '4']], prefs.nDupla, (v) => { FX.play('tap'); save({ nDupla: v }); setup(); }, 'quantos jogam')) : null,
           ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
             : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'
             : prefs.mode === 'online' ? (prefs.sim ? 'cada um joga no seu celular ao mesmo tempo, com a mesma letra. quem apertar STOP primeiro para o outro também. quem cria a sala revisa as respostas.' : 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas.')
@@ -137,7 +139,7 @@ export function mount(host, opts) {
   }
   function newMatch(forceMode) {
     const mode = forceMode || prefs.mode; const used = getGame(ID).cycle || [];
-    const players = mode === 'dupla' ? prefs.names : mode === 'sala' ? prefs.salaNames : [prefs.names[0] === 'jogador 1' ? 'você' : prefs.names[0]];
+    const players = mode === 'dupla' ? prefs.names.slice(0, prefs.nDupla) : mode === 'sala' ? prefs.salaNames : [prefs.names[0] === 'jogador 1' ? 'você' : prefs.names[0]];
     const m = S.newMatch({ mode: mode === 'online' ? 'dupla' : mode, cats: prefs.cats, seconds: prefs.seconds, rounds: prefs.rounds, players: forceMode === 'dupla' && prefs.mode === 'online' ? ['jogador 1', 'jogador 2'] : players, used });
     setGame(ID, { cycle: m.cycle, last: prefs.cats }); return m;
   }
@@ -299,9 +301,9 @@ export function mount(host, opts) {
     sheet('contestar resposta', (close) => {
       const why = h('input', { type: 'text', maxlength: 160, placeholder: 'motivo (opcional)', 'aria-label': 'motivo da decisão' });
       const agree = h('input', { type: 'checkbox' }); const saveBank = h('input', { type: 'checkbox', checked: !M });
-      const needAgree = g.mode === 'dupla';
+      const needAgree = g.mode === 'dupla' && g.players.length === 2;
       const apply = (d) => {
-        if (needAgree && !agree.checked) { toast('os dois precisam concordar com a decisão'); return; }
+        if (needAgree && !agree.checked) { toast('todos precisam concordar com a decisão'); return; }
         g = S.decide(g, p, c, d, { why: why.value.trim() || (d === 'valida' ? 'aprovada na revisão' : d === 'invalida' ? 'rejeitada na revisão' : 'voltou ao automático'), by: byWho() });
         if (d === 'valida' && !M && saveBank.checked) addCustom(g.cats[c], txt);
         persist(); sync(); FX.play(d === 'valida' ? 'ok' : 'bad'); close(); reviewView();
@@ -309,7 +311,7 @@ export function mount(host, opts) {
       return h('div', { class: 'sheet-body st-contest' },
         h('p', {}, h('b', {}, txt), ` · ${S.CAT[g.cats[c]].label} · letra ${S.letterOf(g)}`), h('p', { class: 'muted' }, `agora: ${STATUS[r.status][0]}${r.why ? ` (${r.why})` : ''}`), why,
         M ? null : h('label', { class: 'jg-chk' }, saveBank, ' ao aprovar, guardar no banco deste aparelho'),
-        needAgree ? h('label', { class: 'jg-chk' }, agree, ' os dois jogadores concordam') : null,
+        needAgree ? h('label', { class: 'jg-chk' }, agree, ' os jogadores concordam') : null,
         h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => apply('valida') }, 'aprovar'), h('button', { class: 'btn', type: 'button', onclick: () => apply('invalida') }, 'rejeitar'),
           r.manual ? h('button', { class: 'btn ghost', type: 'button', onclick: () => apply(null) }, 'voltar ao automático') : null));
     });

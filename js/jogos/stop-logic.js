@@ -45,7 +45,7 @@ export function newMatch({ mode = 'solo', cats, seconds = 60, rounds = 3, player
   if (!(SECONDS.includes(seconds) || (custom && Number.isInteger(seconds) && seconds >= 10 && seconds <= 600))) throw new Error('tempo inválido');
   if (!(ROUNDS.includes(rounds) || (custom && Number.isInteger(rounds) && rounds >= 1 && rounds <= 20))) throw new Error('rodadas inválidas');
   const names = mode === 'solo' ? [String((players && players[0]) || 'você')] : (players || []).map((n, i) => String(n || `jogador ${i + 1}`).trim().slice(0, 20) || `jogador ${i + 1}`);
-  if (mode === 'dupla' && names.length !== 2) throw new Error('a dupla tem 2 jogadores');
+  if (mode === 'dupla' && (names.length < 2 || names.length > 4)) throw new Error('no mesmo celular jogam de 2 a 4 pessoas');
   if (mode === 'sala' && (names.length < 2 || names.length > MAX_PLAYERS)) throw new Error('sala: de 2 a 12 participantes');
   let eligible = lettersFor(cats); if (Array.isArray(only)) eligible = eligible.filter((l) => only.includes(l)); if (!eligible.length) throw new Error('sem-letra');
   const { letters, cycle } = drawLetters(rounds, used, rnd, eligible);
