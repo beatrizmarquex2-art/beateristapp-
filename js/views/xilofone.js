@@ -21,7 +21,7 @@ export function mount(host) {
   const NOTAS = ['♪', '♫', '♩', '✦'];
   pads.addEventListener('pointerdown', (e) => {
     const b = e.target.closest && e.target.closest('.ti-pp'); if (!b) return; e.preventDefault(); audio(); percHit(b.dataset.p, 0.9);
-    const art = b.querySelector('.ti-pp-art svg'); const an = PERC_ANIM[b.dataset.p]; if (art && an && !matchMedia('(prefers-reduced-motion: reduce)').matches) art.animate(an[0], { duration: an[1], easing: 'ease-out' });
+    const art = b.querySelector('.ti-pp-art svg, .ti-pp-art img'); const an = PERC_ANIM[b.dataset.p]; if (art && an && !matchMedia('(prefers-reduced-motion: reduce)').matches) art.animate(an[0], { duration: an[1], easing: 'ease-out' });
     b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
     const r = b.getBoundingClientRect(); for (let k = 0; k < 3; k++) { const n = h('i', { class: 'ti-note' }, NOTAS[(Math.random() * NOTAS.length) | 0]); n.style.left = `${r.left + r.width * (0.25 + Math.random() * 0.5)}px`; n.style.top = `${r.top + r.height * 0.3}px`; document.body.append(n); const a = n.animate([{ transform: 'translateY(0) scale(.7)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 40}px,-60px) scale(1.2)`, opacity: 0 }], { duration: 700 + k * 120, easing: 'ease-out' }); a.onfinish = () => n.remove(); }
   });
