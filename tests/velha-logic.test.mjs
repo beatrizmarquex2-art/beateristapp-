@@ -35,27 +35,28 @@ test('minimax completa vitória e bloqueio imediatos; fácil sempre joga em casa
   assert.equal(V.bestMove([0, 0, null, 1, null, null, null, null, null], 1), 2);
   for (let s = 1; s < 50; s++) { const b = [0, 1, null, null, 0, null, 1, null, null]; assert.equal(b[V.easyMove(b, seeded(s))], null); }
 });
-test('banco: 59 aprovadas (7 infantil, 38 fácil, 14 intermediário), alternativas válidas e sem piano+teclado juntos', () => {
-  assert.equal(QUESTIONS.length, 59); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 59);
-  const n = (l) => QUESTIONS.filter((q) => q.level === l).length; assert.deepEqual([n('infantil'), n('facil'), n('intermediario')], [7, 38, 14]);
+test('banco: 61 perguntas num bolo só, alternativas válidas e sem piano+teclado juntos', () => {
+  assert.equal(QUESTIONS.length, 61); assert.equal(new Set(QUESTIONS.map((q) => q.id)).size, 61);
+  const n = (l) => QUESTIONS.filter((q) => q.level === l).length; assert.equal(n('infantil') + n('facil') + n('intermediario'), 61);
   for (const q of QUESTIONS) {
-    const want = q.level === 'intermediario' ? 4 : 3;
+    const want = q.options.length; assert.ok(want === 3 || want === 4, `${q.id} nº de opções`);
     assert.equal(q.options.length, want, `${q.id} opções`); assert.equal(new Set(q.options.map((o) => o.toLowerCase())).size, want, `${q.id} repetidas`);
     assert.equal(q.answer, 0); assert.ok(q.explain.length > 5);
   }
   const q5 = QUESTIONS.find((q) => q.num === 5); assert.ok(!q5.options.some((o) => /^(piano|teclado)$/i.test(o)));
-  assert.equal(V.poolFor('infantil').length, 7); assert.equal(V.poolFor('facil').length, 45); assert.equal(V.poolFor('intermediario').length, 14);
+  assert.equal(V.poolFor('infantil').length, 61); assert.equal(V.poolFor('intermediario').length, 61);
   assert.ok(QUESTIONS.filter((x) => x.show && x.show.artist).length === 0);
+  assert.equal(QUESTIONS.find((q) => q.num === 16).show.sym, 'fantasma');
 });
 test('perguntas não repetem; esgotadas encerram a rodada sem perder o placar', () => {
-  let asked = []; const seen = new Set(); for (let i = 0; i < 7; i++) { const n = V.nextQuestion(asked, 'infantil', seeded(i + 1)); assert.ok(!seen.has(n.q.id)); seen.add(n.q.id); asked = n.asked; }
+  let asked = []; const seen = new Set(); for (let i = 0; i < QUESTIONS.length; i++) { const n = V.nextQuestion(asked, 'infantil', seeded(i + 1)); assert.ok(!seen.has(n.q.id)); seen.add(n.q.id); asked = n.asked; }
   assert.equal(V.nextQuestion(asked, 'infantil'), null);
   let g = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }), asked: [...asked], scores: [2, 1] }; g = V.openQuestion(g, 0);
   assert.ok(g.over && g.result.exhausted && g.pending === null && g.scores[0] === 2);
   const r = V.nextRound(g); assert.deepEqual(r.asked, []); assert.equal(r.scores[0], 2);
 });
-test('intermediário usa 4 opções embaralhadas', () => {
-  const g = V.openQuestion(V.newMatch({ variant: 'desafio', level: 'intermediario' }), 0, seeded(5)); assert.equal(g.pending.order.length, 4); assert.equal(V.questionById(g.pending.qid).level, 'intermediario');
+test('as opções de cada pergunta vêm embaralhadas', () => {
+  const g = V.openQuestion(V.newMatch({ variant: 'desafio', level: 'intermediario' }), 0, seeded(5)); assert.equal(g.pending.order.length, V.questionById(g.pending.qid).options.length);
 });
 test('desafio: acerto marca; erro deixa a casa vazia, passa a vez e mostra explicação; clique duplo bloqueado', () => {
   let g = V.newMatch({ variant: 'desafio' }); g = V.openQuestion(g, 4, seeded(1));
@@ -100,7 +101,7 @@ test('perguntas não repetem de uma rodada pra outra; zera só quando sobram pou
     for (let i = 0; i < 3; i++) { const n = V.nextQuestion(g.asked, g.level, seeded(r * 10 + i + 1)); assert.ok(!vistas.has(n.q.id), `repetiu na rodada ${r + 1}`); vistas.add(n.q.id); g = { ...g, asked: n.asked }; }
     g = V.nextRound(g); assert.equal(g.asked.length, vistas.size);
   }
-  let h = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }) }; h = { ...h, asked: V.poolFor('infantil').slice(0, 4).map((q) => q.id) };
+  let h = { ...V.newMatch({ variant: 'desafio', level: 'infantil' }) }; h = { ...h, asked: V.poolFor('infantil').slice(0, QUESTIONS.length - 4).map((q) => q.id) };
   assert.deepEqual(V.nextRound(h).asked, []); // sobram só 3 (< 5): recomeça o ciclo
 });
 

@@ -6,6 +6,7 @@ export const LEVELS = [['infantil', 'infantil'], ['facil', 'fácil'], ['intermed
 
 const INS = (n) => ({ src: `assets/jogos/instrumentos/${n}.webp` });
 const FIG = (f) => ({ fig: f });
+const SYM = (s) => ({ sym: s }); // desenho das figuras do Uno (cartas-simbolos.js), aparece só depois da resposta
 
 // [id, nível, categoria, pergunta, resposta, erradas, explicação, show]
 const RAW = [
@@ -19,12 +20,12 @@ const RAW = [
   [8, 'facil', 'bateria', 'qual peça da bateria normalmente é responsável pelas batidas graves?', 'bumbo', ['caixa', 'chimbal'], 'o bumbo faz o som grave da bateria.'],
   [9, 'facil', 'teoria', 'qual aparelho usamos para estudar mantendo a velocidade constante?', 'metrônomo', ['afinador', 'amplificador'], 'o metrônomo marca o tempo sempre igual.'],
   [10, 'facil', 'teoria', 'o que significa BPM na música?', 'batidas por minuto', ['baixos por minuto', 'barras por música'], 'BPM é a velocidade: quantas batidas cabem em um minuto.'],
-  [11, 'facil', 'teoria', 'qual figura rítmica vale um tempo quando a semínima é a unidade de tempo?', 'semínima', ['mínima', 'semibreve'], 'a semínima é a unidade: vale 1 tempo.', FIG('seminima')],
-  [12, 'facil', 'teoria', 'qual figura musical vale dois tempos de semínima?', 'mínima', ['semínima', 'colcheia'], 'a mínima dura o dobro da semínima: 2 tempos.', FIG('minima')],
-  [13, 'facil', 'teoria', 'qual figura musical vale meio tempo de semínima?', 'colcheia', ['mínima', 'semibreve'], 'duas colcheias cabem em uma semínima: cada uma vale meio tempo.'],
+  [11, 'facil', 'teoria', 'quantos tempos vale uma semínima?', 'um tempo', ['meio tempo', 'dois tempos'], 'a semínima é a unidade: vale 1 tempo.', SYM('seminima')],
+  [12, 'facil', 'teoria', 'quantos tempos vale uma colcheia?', 'meio tempo', ['um tempo', 'dois tempos'], 'duas colcheias cabem em uma semínima: cada uma vale meio tempo.', SYM('colcheia')],
+  [13, 'facil', 'teoria', 'uma semínima tem quantas fusas?', 'oito', ['quatro', 'dois'], 'em uma semínima cabem oito fusas.', SYM('fusa')],
   [14, 'facil', 'teoria', 'qual símbolo na partitura representa um momento de silêncio?', 'pausa', ['clave', 'compasso'], 'a pausa marca na partitura quanto tempo ficamos em silêncio.'],
   [15, 'facil', 'teoria', 'qual símbolo indica que uma nota deve ser tocada com destaque ou mais intensidade?', 'acento (>)', ['pausa', 'ligadura'], 'o acento (>) pede a nota mais forte.'],
-  [16, 'facil', 'bateria', 'como chamamos uma batida muito suave na caixa, usada para dar textura ao groove?', 'nota fantasma (ghost note)', ['acento', 'rulo'], 'a nota fantasma é bem baixinha e dá textura ao groove.'],
+  [16, 'facil', 'bateria', 'como chamamos uma batida muito suave na caixa, usada para dar textura ao groove?', 'nota fantasma (ghost note)', ['acento', 'rulo'], 'a nota fantasma é bem baixinha e dá textura ao groove.', SYM('fantasma')],
   [17, 'facil', 'bateria', 'qual rudimento alterna as mãos D E D E continuamente?', 'toque simples (single stroke roll)', ['toque duplo', 'paradiddle'], 'no toque simples as mãos se alternam: D E D E.'],
   [18, 'facil', 'bateria', 'qual rudimento utiliza a sequência D D E E continuamente?', 'toque duplo (double stroke roll)', ['toque simples', 'paradiddle'], 'no toque duplo cada mão bate duas vezes: D D E E.'],
   [19, 'intermediario', 'bateria', 'qual rudimento utiliza a sequência D E D D E D E E?', 'paradiddle simples', ['toque simples', 'toque duplo', 'flam'], 'o paradiddle simples é D E D D, E D E E.'],
@@ -39,9 +40,12 @@ const RAW = [
   [37, 'facil', 'sopros', 'qual instrumento de sopro é comum nas aulas de iniciação musical e tem furos cobertos pelos dedos?', 'flauta doce', ['trompete', 'saxofone'], 'a flauta doce é a queridinha das primeiras aulas de música.'],
   [40, 'facil', 'acessórios', 'qual pequeno acessório é utilizado para tocar as cordas de guitarra e violão?', 'palheta', ['arco', 'baqueta'], 'a palheta é a pecinha que ajuda a tocar as cordas.'],
   [43, 'facil', 'equipamentos', 'qual equipamento reúne vários efeitos sonoros para guitarra e costuma ser controlado com os pés?', 'pedaleira', ['amplificador', 'metrônomo'], 'a pedaleira junta vários efeitos e a gente liga com os pés.'],
-  [52, 'intermediario', 'sopros', 'qual instrumento costuma ocupar o registro mais grave da família dos metais na orquestra?', 'tuba', ['trompete', 'trombone', 'trompa'], 'a tuba é o metal mais grave.'],
-  [54, 'intermediario', 'cordas', 'entre violino e viola de arco, qual geralmente possui afinação mais grave?', 'viola de arco', ['violino', 'flauta', 'trompete'], 'a viola de arco é um pouco maior e mais grave que o violino.'],
-  [56, 'intermediario', 'cordas', 'qual é a afinação padrão das seis cordas soltas do violão, da mais grave para a mais aguda?', 'mi, lá, ré, sol, si, mi', ['mi, si, sol, ré, lá, mi', 'dó, ré, mi, fá, sol, lá', 'lá, ré, sol, dó, mi, lá'], 'do grave ao agudo: mi, lá, ré, sol, si, mi.'],
+  [140, 'facil', 'cordas', 'qual nota é a 6ª corda (a mais grossa, a mais grave) do violão?', 'mi', ['lá', 'si'], 'a 6ª corda do violão é mi.'],
+  [141, 'facil', 'cordas', 'qual nota é a 5ª corda do violão?', 'lá', ['mi', 'ré'], 'a 5ª corda do violão é lá.'],
+  [142, 'facil', 'cordas', 'qual nota é a 4ª corda do violão?', 'ré', ['sol', 'lá'], 'a 4ª corda do violão é ré.'],
+  [143, 'facil', 'cordas', 'qual nota é a 3ª corda do violão?', 'sol', ['si', 'ré'], 'a 3ª corda do violão é sol.'],
+  [144, 'facil', 'cordas', 'qual nota é a 2ª corda do violão?', 'si', ['sol', 'mi'], 'a 2ª corda do violão é si.'],
+  [145, 'facil', 'cordas', 'qual nota é a 1ª corda (a mais fina, a mais aguda) do violão?', 'mi', ['si', 'lá'], 'a 1ª corda do violão é mi.'],
   [57, 'intermediario', 'cordas', 'qual é a afinação padrão das quatro cordas soltas do baixo elétrico, da mais grave para a mais aguda?', 'mi, lá, ré, sol', ['sol, ré, lá, mi', 'dó, sol, ré, lá', 'lá, ré, sol, si'], 'do grave ao agudo: mi, lá, ré, sol.'],
   [58, 'intermediario', 'cordas', 'qual técnica de baixo elétrico utiliza ataques percussivos com o polegar?', 'slap', ['pizzicato', 'hammer-on', 'palm mute'], 'no slap o polegar bate na corda com som percussivo.'],
   [65, 'intermediario', 'teoria', 'qual acidente musical eleva uma nota em um semitom?', 'sustenido', ['bemol', 'bequadro', 'fermata'], 'o sustenido sobe a nota meio tom (um semitom).'],
@@ -59,7 +63,6 @@ const RAW = [
   [101, 'facil', 'marcas', 'qual modelo de cajon da Spark pode ser tocado apoiado nas pernas do músico?', 'cajon de colo', ['cajon de assento', 'pad de colo'], 'o cajon de colo toca apoiado nas pernas.'],
   [102, 'facil', 'marcas', 'além das baterias acústicas, qual outro tipo de bateria a Nagano fabrica?', 'bateria eletrônica', ['guitarra elétrica', 'teclado digital'], 'a Nagano também faz bateria eletrônica.'],
   [104, 'facil', 'marcas', 'qual produto da Pad Gorilla permite praticar golpes de pedal de bumbo?', 'pad de bumbo', ['pad de estudo', 'cajon de colo'], 'o pad de bumbo serve pra treinar o pedal.'],
-  [108, 'intermediario', 'marcas', 'qual tipo de saída para cabo de áudio está presente no Cajon de Colo Elétrico da Spark?', 'saída P10', ['saída USB', 'saída HDMI', 'saída óptica'], 'a saída P10 liga o cajon elétrico num amplificador ou mesa.'],
   [130, 'facil', 'bandas', 'qual banda lançou Believer e Enemy?', 'Imagine Dragons', ['OneRepublic', 'Coldplay'], 'Believer e Enemy são do Imagine Dragons.'],
   [131, 'facil', 'rock', "qual é o guitarrista da banda Guns N' Roses?", 'Slash', ['Axl Rose', 'Angus Young'], "Slash é o guitarrista do Guns N' Roses."],
   [132, 'facil', 'rock', 'quem canta as músicas TNT e Back in Black?', 'AC/DC', ['Metallica', 'Black Sabbath'], 'TNT e Back in Black são do AC/DC.'],

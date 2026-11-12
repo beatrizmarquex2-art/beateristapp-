@@ -24,7 +24,7 @@ test('os níveis das missões usam só perguntas aprovadas já existentes (banco
     // o jogador (1º a jogar) precisa de no máximo 5 marcas por rodada; sobram perguntas pra errar algumas sem esgotar
     assert.ok(pool.length - 5 >= 2);
   }
-  assert.equal(by('infantil').length, 7);
+  assert.equal(by('infantil').length, QUESTIONS.length); // sem níveis: todas no mesmo bolo
 });
 
 test('evaluate: concluir exige o critério real; abrir/zero rodadas nunca conclui', () => {
@@ -165,5 +165,5 @@ test('Modo Livre: funções puras existentes continuam iguais', () => {
   assert.deepEqual(Object.keys(g).sort(), ['asked', 'board', 'draws', 'errors', 'held', 'last', 'level', 'mode', 'moved', 'nextOffer', 'offer', 'over', 'pending', 'result', 'round', 'scores', 'starter', 'turn', 'v', 'variant']);
   assert.ok(V.validMatch(g)); assert.equal(V.isPaulTurn({ ...g, turn: 1 }), true); assert.equal(V.isPaulTurn({ ...g, mode: 'local', turn: 1 }), false);
   assert.equal(V.easyMove(empty(), () => 0), 0); assert.equal(V.bestMove([0, null, null, null, 1, null, null, null, 0], 1, () => 0) != null, true);
-  assert.equal(V.ERROR_OFFER, 12); assert.deepEqual(V.poolFor('infantil').map((q) => q.level), Array(7).fill('infantil'));
+  assert.equal(V.ERROR_OFFER, 12); assert.equal(V.poolFor('infantil').length, QUESTIONS.length);
 });

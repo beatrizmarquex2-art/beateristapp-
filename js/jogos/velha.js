@@ -4,6 +4,7 @@ import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
+import { symbolEl } from './cartas-simbolos.js';
 import { LEVELS } from './velha-data.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
@@ -17,7 +18,6 @@ const MARKS = [
 ];
 const mark = (who) => svg(MARKS[who], 'jg-mk');
 const MODES = [['local', 'dois no aparelho', 'dois'], ['online', '2 celulares (código)', 'celular'], ['paul', 'jogar contra o Paul (às vezes fácil, às vezes difícil)', 'paul'], ['estrategico', 'jogar contra o Paul no desafio: ele joga sempre bem', '#desafio']]; // 3º item: ícone (só ele aparece; o texto vira dica); '#texto' = pílula pequenininha
-const LEVEL_HELP = { infantil: 'perguntas bem simples', facil: 'perguntas fáceis de música', intermediario: 'perguntas mais difíceis' };
 
 /** opts (opcional): { mission: { params: { ai, variant, level, rounds } }, onResult } = Modo Aventura. Sem opts.mission nada muda no Modo Livre. */
 export function mount(host, opts) {
@@ -48,7 +48,6 @@ export function mount(host, opts) {
         h('li', {}, '3 marcas em linha ganha'),
         h('li', {}, h('b', {}, '1 vez por rodada'), ' você pode mudar uma marca de lugar')),
       h('p', { class: 'jg-lab big' }, 'quem joga?'), seg('mode', MODES),
-      prefs.variant === 'desafio' ? h('div', {}, h('p', { class: 'jg-lab big' }, 'nível das perguntas'), seg('level', LEVELS), h('p', { class: 'jg-big' }, LEVEL_HELP[prefs.level])) : null,
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => V.newMatch({ ...prefs, mode: 'online' }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, `continuar (rodada ${resume.round})`) : null,
           h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(V.newMatch(prefs)) }, resume ? 'novo placar' : 'iniciar')));
@@ -108,6 +107,7 @@ export function mount(host, opts) {
     const f = fb; const alt = f.artist ? `foto de ${f.name}` : `imagem: ${f.name}`;
     return h('div', { class: 'jg-fb' },
       f.src ? h('img', { class: 'jg-fbimg', src: f.src, alt, draggable: 'false', onerror: (e) => e.target.remove() }) : null,
+      f.sym ? h('span', { class: 'jg-qfig', role: 'img', 'aria-label': `figura: ${f.name}` }, symbolEl(f.sym, 'jg-fig')) : null,
       f.fig ? h('span', { class: 'jg-qfig', role: 'img', 'aria-label': `figura: ${f.name}` }, figureEl(f.fig)) : null,
       h('b', {}, f.name));
   }
