@@ -93,3 +93,4 @@ salvamentos e compartilhamentos > curtidas; cliques no link da bio; qual arte do
 - Legendas completas de todos os dias: `planejamento/legendas-instagram.py` (texto puro, dá pra abrir e copiar) e a página interativa em `assets/originals/artes-beaterista/instagram/pagina-calendario/index.html`.
 - 4 reels prontos (sem som) em `assets/originals/artes-beaterista/instagram/reels/`.
 - Cartazes do Paul (carrossel e frases) estão só em 266×333 px, exceto "por que Paul?". Pedir os originais em alta.
+- Vídeos gravados pela Bea (sem som, 1080×1920): `assets/originals/artes-beaterista/instagram/reels/video-v1-completo.mp4` (29 s), `video-v2-rapido.mp4` (16,5 s), `video-v3-bateria-e-album.mp4` (18 s). Feitos com IMG_7953 (bateria), IMG_8358 (pauta), IMG_9025 (quebra-cabeça), IMG_9023 (álbum), IMG_9027 (radar). Os .mov originais não foram guardados no repo (ficam no chat).
