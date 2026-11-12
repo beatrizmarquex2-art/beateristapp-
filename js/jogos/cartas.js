@@ -48,6 +48,8 @@ export const backEl = () => h('span', { class: 'cx-card back', 'aria-hidden': 't
 export function mount(host, opts) {
   // Modo Aventura (opts.mission): partida contra UM computador montada pelos params da missão, sem ler nem gravar o Modo Livre.
   const adv = opts && opts.mission ? opts : null; const mp = adv ? (adv.mission.params || {}) : {};
+  const UN = !!(opts && opts.un) && !adv; // UN🚫: variante com regras próprias (cartas iguais juntas, UNO silencioso, +2/+4 acumulam)
+  const ID = UN ? 'un' : 'cartas'; const TITLE = UN ? 'UN🚫' : 'Uno Musical';
   const rnd = adv ? C.seededRnd(mp.seed) : Math.random; const stats = C.newStats(); let reported = false;
   const NAMES = adv ? [String(mp.oppName || 'Paul').toLowerCase()] : ['paul', 'lia', 'teo']; // sombra do nome do módulo: na aventura o adversário tem o nome do estilo
   let gone = false; let busy = false; let cpuTimer = 0;
@@ -58,9 +60,9 @@ export function mount(host, opts) {
     hint: 'com', help: true, sfx: saved.sfx !== false, learn: false, names: true, // sempre jogo normal (nunca pausa), as cartas que servem sempre brilham e o nome da figura sempre aparece: // o nome da figura aparece sempre em todas as cartas
   };
   if (!adv && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
-  const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
+  const dica = () => !UN && prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
-  let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;
+  let dup = null; let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;
   let conn = null; let lob = null; const badge = linkBadge();
   let stage = null; let handEl = null; let deckEl = null; let pileEl = null; let tip = null; let tipT = 0; let ro = null; let lastW = 0;
   const root = h('div', { class: 'jg jg-cartas cx' }); host.replaceChildren(root); root.classList.toggle('cx-names', !!prefs.names);
@@ -140,25 +142,31 @@ export function mount(host, opts) {
       return b;
     }));
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'Uno Musical'),
+      h('h2', { class: 'jg-h hand' }, TITLE),
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
       h('p', { class: 'jg-lab' }, 'as 10 figuras (toque pra ver o nome)'), legend,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
-      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'dois'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
+      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'dois'], ...(UN ? [] : [['online', '2 celulares (código)', 'celular']])], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
       prefs.mode === 'local' ? seg('pessoas', [[2, '2'], [3, '3'], [4, '4']], prefs.opps + 1, (v) => { prefs.opps = v - 1; keepPrefs(); }) : null,
-      h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
+      ...(UN ? [] : [h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
         h('li', {}, 'pular: o próximo perde a vez. inverter: muda o sentido (com 2 jogadores, vale como pular). +2: o próximo compra 2 e perde a vez.'),
         h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa.'),
         h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas.'),
-        h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.'))),
-      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online' }), onStart: startOnline })).el
+        h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.')))]),
+      ...(UN ? [h('details', { class: 'jg-rules', open: true }, h('summary', {}, 'regras do UN🚫'), h('ul', {},
+        h('li', {}, 'cartas iguais (mesma cor e mesma figura) podem ser jogadas juntas.'),
+        h('li', {}, 'sem carta que sirva? compre até achar uma que dá pra jogar.'),
+        h('li', {}, 'o +2 acumula com outro +2 e o +4 com outro +4: quem recebe responde com o mesmo ou compra tudo e perde a vez. o +4 sai quando você quiser.'),
+        h('li', {}, 'ficou com uma carta? aperte UNO. ninguém avisa: se você esquecer e outro apertar “pegou!” antes da próxima jogada, você compra 2. mas se acusar sem ninguém ter esquecido, quem acusou compra 2.'),
+        h('li', {}, 'nada brilha: você descobre quais cartas servem.')))] : []),
+      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online', un: UN }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume, true) }, 'continuar partida') : null,
-          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1 })) }, resume ? 'nova partida' : 'iniciar')),
+          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN })) }, resume ? 'nova partida' : 'iniciar')),
       r.w + r.l + r.e ? h('p', { class: 'jg-p muted' }, `contra o computador: ${r.w} vitória${r.w === 1 ? '' : 's'} · ${r.l} derrota${r.l === 1 ? '' : 's'} · ${r.e} empate${r.e === 1 ? '' : 's'}`) : null,
     ].filter(Boolean));
   }
@@ -181,7 +189,7 @@ export function mount(host, opts) {
   }
   /** manda a jogada pro outro celular (só no modo 2 celulares) */
   function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok && !gone) flash('o outro celular jogou ao mesmo tempo, veja a mesa'); }); }
-  function again() { const ng = C.newGame({ mode: prefs.mode, players: prefs.opps + 1 }); if (prefs.mode === 'online') { begin(ng); sync(); } else begin(ng); }
+  function again() { const ng = C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }); if (prefs.mode === 'online') { begin(ng); sync(); } else begin(ng); }
 
   /* ----- começo de partida: embaralhar e distribuir ----- */
   function begin(game, resume = false) {
@@ -220,12 +228,12 @@ export function mount(host, opts) {
 
   /* ----- desenho da mesa ----- */
   function seat(p) {
-    const k = g.hands[p].length; const minis = Math.min(k, 7); const cpu = isCpu(p);
+    const k = g.hands[p].length; const minis = UN ? 3 : Math.min(k, 7); const cpu = isCpu(p); // UN🚫: sem número e sem aviso de UNO, só prestando atenção
     const on = !g.over && g.turn === p;
-    return h('div', { class: `cx-seat${on ? ' on' : ''}${g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}: ${k} carta${k === 1 ? '' : 's'}${on ? ', jogando' : ''}` },
+    return h('div', { class: `cx-seat${on ? ' on' : ''}${!UN && g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}${UN ? '' : `: ${k} carta${k === 1 ? '' : 's'}`}${on ? ', jogando' : ''}` },
       h('span', { class: 'cx-minis', 'aria-hidden': 'true' }, ...Array.from({ length: minis }, () => h('i', { class: 'cx-mb' }))),
-      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : PL(p)), h('em', {}, String(k))),
-      h('span', { class: 'cx-sstate' }, g.unoSaid === p && k === 1 ? 'UNO!' : on ? (cpu ? 'pensando…' : 'jogando') : ''));
+      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : PL(p)), UN ? null : h('em', {}, String(k))),
+      h('span', { class: 'cx-sstate' }, !UN && g.unoSaid === p && k === 1 ? 'UNO!' : on ? (cpu ? 'pensando…' : 'jogando') : ''));
   }
   function paint(opt = {}) {
     if (!g) return;
@@ -239,7 +247,7 @@ export function mount(host, opts) {
     const prevTurn = stage ? stage.dataset.turn : ''; const turnChanged = String(prevTurn) !== String(g.turn);
     const wasPre = opt.pre || (stage && stage.classList.contains('cx-pre') && opt.keepPre);
     deckEl = h('button', { type: 'button', class: `cx-deck${canD && dica() ? ' fit' : ''}`, disabled: !human() || undefined, 'aria-label': `comprar uma carta (restam ${C.available(g)})`, onclick: draw1 },
-      h('span', { class: 'cx-stack' }, backEl(), backEl(), backEl()), h('small', {}, `comprar · ${C.available(g)}`));
+      h('span', { class: 'cx-stack' }, backEl(), backEl(), backEl()), h('small', {}, g.pend ? `comprar ${g.pend.n}` : `comprar · ${C.available(g)}`));
     pileEl = h('div', { class: 'cx-pile', role: 'img', 'aria-label': `mesa: ${C.cardName(top)}. cor ativa: ${C.COLOR_NAME[g.color]}`, style: { '--ac': `var(--k-${g.color})` } },
       ...under.map((c) => { const e = cardEl(c); e.style.transform = `rotate(${(hash(c.id) % 41) - 20}deg)`; return e; }),
       (() => { const e = cardEl(top); e.classList.add('top'); e.style.transform = `rotate(${(hash(top.id) % 17) - 8}deg)`; return e; })());
@@ -251,6 +259,9 @@ export function mount(host, opts) {
         hold = holdable(b, C.cardName(c)); return b;
       }));
     const mustUno = !hidden && C.mustUno(g, me);
+    const dupEl = () => (dup && !hidden ? h('div', { class: 'cx-pick', role: 'group', 'aria-label': 'jogar cartas iguais' }, h('b', {}, 'você tem duas iguais'),
+      h('div', { class: 'cx-pick-row' }, h('button', { type: 'button', class: 'btn small', onclick: () => humanPlay(dup.id) }, 'só esta'), h('button', { type: 'button', class: 'btn small primary', onclick: () => humanMany(dup.ids) }, 'as duas juntas')),
+      h('button', { type: 'button', class: 'btn small ghost', onclick: () => { dup = null; paint(); } }, 'cancelar')) : null);
     const pickEl = picking ? h('div', { class: 'cx-pick', role: 'group', 'aria-label': 'escolha a cor' }, h('b', {}, 'escolha a cor'),
       h('div', { class: 'cx-pick-row' }, ...C.COLORS.map((k) => h('button', { type: 'button', class: `cx-pc c-${k}`, onclick: () => humanPlay(picking, k) }, h('span', { class: 'cx-dot' }), C.COLOR_NAME[k]))),
       h('button', { type: 'button', class: 'btn small ghost', onclick: () => { picking = null; paint(); } }, 'cancelar')) : null;
@@ -269,8 +280,9 @@ export function mount(host, opts) {
         h('p', { class: `cx-turn${g.over ? '' : ' on'}${turnChanged ? ' pop' : ''}${g.turn === me && !g.over ? ' mine' : ''}`, 'aria-live': 'polite' }, hidden ? '' : turnTxt),
         h('div', { class: 'cx-btns' },
           h('button', { class: 'btn small', type: 'button', disabled: !canP || undefined, onclick: pass1 }, 'passar'),
-          mustUno ? h('button', { class: 'cx-uno', type: 'button', onclick: uno }, 'UNO!') : null)),
-      handEl, pickEl,
+          UN ? h('button', { class: 'cx-uno', type: 'button', disabled: hidden || undefined, onclick: uno }, 'UNO') : (mustUno ? h('button', { class: 'cx-uno', type: 'button', onclick: uno }, 'UNO!') : null),
+          UN ? h('button', { class: 'btn small', type: 'button', disabled: hidden || !human() || undefined, onclick: pegou }, 'pegou!') : null)),
+      handEl, pickEl, dupEl(),
       !g.over && g.mode === 'local' && hidden ? h('div', { class: 'cx-cover', role: 'dialog', 'aria-label': 'passe o aparelho' },
         h('p', { class: 'hand' }, `passe o aparelho para o ${PL(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
         h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; viewer = g.turn; snd('flip'); paint(); } }, `sou o ${PL(g.turn)}, mostrar minha mão`)) : null,
@@ -322,13 +334,17 @@ export function mount(host, opts) {
       const who = PL(ev.by); const card = C.cardName(top);
       if (ev.kind === 'pular') return `${who}: ${card}. ${PL(ev.victim)} perde a vez`;
       if (ev.kind === 'inverter') return g.n === 2 ? `${who}: inverter. ${PL(ev.victim)} perde a vez` : `${who}: inverter. o sentido mudou`;
+      if (ev.pend) return `${who}: ${ev.kind === 'mais2' ? '+2' : '+4'} acumulado (${ev.pend}). ${PL(ev.victim)}: jogue outro ${ev.kind === 'mais2' ? '+2' : '+4'} ou compre ${ev.pend}`;
       if (ev.kind === 'mais2' || ev.kind === 'mais4') return `${who}: ${ev.kind === 'mais2' ? '+2' : '+4'}. ${PL(ev.victim)} compra ${ev.n} e perde a vez`;
       if (ev.kind === 'curinga') return `${who}: curinga. a cor agora é ${C.COLOR_NAME[g.color]}`;
-      return `${who} jogou ${card}`;
+      return ev.many > 1 ? `${who} jogou ${ev.many} cartas iguais: ${card}` : `${who} jogou ${card}`;
     }
+    if (ev.t === 'draw' && ev.pend) return `${PL(ev.by)} comprou ${ev.n} e perdeu a vez`;
+    if (ev.t === 'draw' && UN && ev.n > 1) return ev.fits && ev.by === meIdx() && g.mode !== 'local' ? `você comprou ${ev.n} até achar uma que serve: jogue ou passe` : `${PL(ev.by)} comprou ${ev.n} cartas${ev.fits ? ' até achar uma que serve' : ' e passou'}`;
     if (ev.t === 'draw') return ev.fits && ev.by === meIdx() && g.mode !== 'local' ? 'a carta comprada serve: jogue ou passe' : ev.fits ? `${PL(ev.by)} comprou uma carta que serve` : `${PL(ev.by)} comprou uma carta e passou`;
     if (ev.t === 'pass') return `${PL(ev.by)} passou`;
-    if (ev.t === 'uno') return `${PL(ev.by)}: UNO!`;
+    if (ev.t === 'uno') return UN ? '' : `${PL(ev.by)}: UNO!`; // no UN🚫 ninguém avisa
+    if (ev.t === 'wrong') return `${PL(ev.by)} acusou sem ninguém ter esquecido o UNO e comprou ${ev.n}`;
     if (ev.t === 'catch') return `${PL(ev.by)} esqueceu o UNO e comprou ${ev.n}`;
     return '';
   }
@@ -347,22 +363,34 @@ export function mount(host, opts) {
       return;
     }
     if (C.isWild(c)) { picking = c.id; snd('tap'); paint(); return; }
+    const tw = UN ? C.twins(g, g.turn, c) : [c];
+    if (tw.length >= 2) { dup = { id: c.id, ids: tw.map((x) => x.id) }; snd('tap'); paint(); return; }
     humanPlay(c.id);
   }
+  function humanMany(ids) {
+    if (!human()) return; const who = g.turn; picking = null; dup = null;
+    let next; try { next = C.applyPlayMany(g, who, ids); } catch { flash('jogada inválida'); snd('bad'); paint(); return; }
+    commit(next);
+  }
   function humanPlay(id, color) {
-    if (!human()) return; const who = g.turn; picking = null;
+    if (!human()) return; const who = g.turn; picking = null; dup = null;
     let next; try { next = C.applyPlay(g, who, id, color, rnd); } catch { flash('jogada inválida'); snd('bad'); paint(); return; }
     if (adv) C.track(stats, g, next, { type: 'play', id }, 0);
     commit(next);
   }
   function draw1() {
     if (!human()) { if (g && !g.over && !busy && !hidden && g.turn !== meIdx()) flash('espere a sua vez'); return; }
-    if (!C.canDraw(g)) { snd('bad'); flash(g.drawn ? 'jogue a carta comprada ou passe' : 'você tem carta que serve: jogue uma'); return; }
+    if (!C.canDraw(g)) { snd('bad'); flash(g.drawn ? 'jogue a carta comprada ou passe' : UN ? 'não dá pra comprar agora' : 'você tem carta que serve: jogue uma'); return; }
     const nd = C.applyDraw(g, g.turn, rnd); if (adv) C.track(stats, g, nd, { type: 'draw' }, 0);
     commit(nd);
   }
   function pass1() { if (!human() || !C.canPass(g)) return; const np = C.applyPass(g, g.turn); if (adv) C.track(stats, g, np, { type: 'pass' }, 0); commit(np); }
-  function uno() { if (gone || !g || !C.mustUno(g, meIdx())) return; commit(C.callUno(g, meIdx()), { fromBusy: true }); }
+  function uno() { if (gone || !g) return; if (!C.mustUno(g, meIdx())) { if (UN) { snd('tap'); flash('você não precisa de UNO agora', 1200); } return; } commit(C.callUno(g, meIdx()), { fromBusy: true }); }
+  /** UN🚫: “pegou!”. Acertou = o outro compra 2; errou = quem acusou compra 2. */
+  function pegou() {
+    if (gone || !g || !UN || !human() || busy) return; const me = meIdx(); const t = C.catchable(g, me);
+    commit(t != null ? C.catchUno(g, t, rnd) : C.wrongCatch(g, me, rnd));
+  }
 
   /** Aplica um estado novo: pinta, anima o que aconteceu e só libera a próxima jogada quando a animação acaba. */
   function commit(next, { fromBusy = false } = {}) {
@@ -397,7 +425,7 @@ export function mount(host, opts) {
     if (queued) { const q = queued; queued = null; g = q; picking = null; hidden = false; paint(); if (g.over) finishUp(); return; }
     if (g.over) return finishUp();
     if (g.mode === 'local' && g.turn !== viewer) { hidden = true; paint(); return; }
-    if (g.mode === 'paul' && g.unoPending > 0 && C.mustUno(g, g.unoPending)) { busy = true; paint(); later(() => commit(C.callUno(g, g.unoPending), { fromBusy: true }), 380); return; } // o computador sempre avisa UNO
+    if (g.mode === 'paul' && g.unoPending > 0 && C.mustUno(g, g.unoPending) && !(UN && Math.random() < 0.3)) { busy = true; paint(); later(() => commit(C.callUno(g, g.unoPending), { fromBusy: true }), 380); return; } // o computador sempre avisa UNO
     paint(); afterTurn();
   }
 
@@ -410,7 +438,7 @@ export function mount(host, opts) {
   function cpuStep() {
     cpuTimer = 0; if (gone || !g || g.over || busy || document.hidden || !isCpu(g.turn)) return;
     const p = g.turn;
-    if (C.mustUno(g, 0)) { if (adv) stats.caught++; commit(C.catchUno(g, 0, rnd)); return; } // esqueceu o UNO: compra 2
+    if (C.mustUno(g, 0) && (!UN || Math.random() < 0.85)) { if (adv) stats.caught++; commit(C.catchUno(g, 0, rnd)); return; } // esqueceu o UNO: compra 2
     const mv = adv ? C.aiMove(g, p, mp.style, rnd) : C.paulMove(g, p);
     if (mv.type === 'play') commit(C.applyPlay(g, p, mv.id, mv.color, rnd));
     else if (mv.type === 'draw') commit(C.applyDraw(g, p, rnd));
@@ -443,6 +471,7 @@ export function mount(host, opts) {
       const sp = ev.kind;
       if (sp === 'pular') { later(() => { snd('special'); bigFx('pular', actionEl('pular', 'cx-fxsym')); const s = ev.victim != null ? seatEl(ev.victim) : null; if (s) shake(s); }, 360 * q); return 1050 * q; }
       if (sp === 'inverter') { later(() => { snd('special'); bigFx('inverter', actionEl('inverter', 'cx-fxsym')); const d = stage && stage.querySelector('.cx-dir'); if (d) anim(d, [{ rotate: '0deg', scale: 1.5 }, { rotate: '360deg', scale: 1 }], { duration: 700 }); }, 360 * q); return 1000 * q; }
+      if (ev.pend) { later(() => { snd('special'); bigFx(`mais ${sp}`, h('b', {}, `+${ev.pend}`)); const s = seatEl(ev.victim); if (s) shake(s); }, 340 * q); return 1000 * q; }
       if (sp === 'mais2' || sp === 'mais4') {
         later(() => { snd('special'); bigFx(`mais ${sp}`, h('b', {}, sp === 'mais2' ? '+2' : '+4')); const s = seatEl(ev.victim); if (s) shake(s); }, 340 * q);
         if (sp === 'mais4') later(() => bigFx(`ring c-${g.color}`, null, 900), 380 * q);
@@ -453,9 +482,11 @@ export function mount(host, opts) {
       return 560 * q;
     }
     if (ev.t === 'draw') {
-      later(() => snd('draw'), 40 * q); gain(ev.by, 1, 0, 420 * q); return 560 * q;
+      const k = Math.max(1, ev.n || 1); later(() => snd('draw', k), 40 * q); gain(ev.by, k, 0, 420 * q, 90); return (560 + (k - 1) * 90) * q;
     }
     if (ev.t === 'pass') { snd('tap'); return 320 * q; }
+    if (ev.t === 'uno' && UN) return 120 * q; // sem anúncio
+    if (ev.t === 'wrong') { later(() => snd('bad'), 0); later(() => snd('draw', ev.n), 200 * q); bigFx('catchfx', h('b', {}, 'acusou errado! +2'), 1200); gain(ev.by, ev.n, 200 * q); return 1300 * q; }
     if (ev.t === 'uno') { snd('uno'); bigFx('unofx', h('b', {}, 'UNO!'), 1100); return 950 * q; }
     if (ev.t === 'catch') { later(() => snd('bad'), 0); later(() => snd('draw', ev.n), 200 * q); bigFx('catchfx', h('b', {}, 'esqueceu o UNO! +2'), 1200); gain(ev.by, ev.n, 200 * q); return 1300 * q; }
     return 300 * q;

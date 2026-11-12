@@ -168,7 +168,7 @@ export function mount(host, opts) {
     const who = solo ? `rodada ${g.round + 1} de ${g.rounds}` : g.online ? `sua vez! rodada ${g.round + 1} de ${g.rounds}` : `passe o aparelho para ${pn(g.turn)}`;
     root.replaceChildren(g.online ? badge.el : null, h('div', { class: 'jg-cover2', role: 'dialog', 'aria-label': 'passagem' },
       h('p', { class: 'hand' }, who), g.players.length > 1 && !g.online ? h('p', { class: 'muted' }, `rodada ${g.round + 1} de ${g.rounds} · as respostas anteriores ficam escondidas`) : null,
-      h('p', {}, `${g.cats.length} categorias · ${clock(g.seconds)} · ${first ? 'a letra será sorteada' : `letra ${S.letterOf(g)}`}`), missionLine(),
+      h('p', {}, `${clock(g.seconds)} · ${first ? 'a letra será sorteada' : `letra ${S.letterOf(g)}`}`), missionLine(),
       h('button', { class: 'btn primary', type: 'button', onclick: () => { FX.play('tap'); first ? drawView() : countdown(); } }, first ? 'sortear a letra' : 'pronto')));
     const b = root.querySelector('.jg-cover2 button'); if (b) b.focus({ preventScroll: true });
   }

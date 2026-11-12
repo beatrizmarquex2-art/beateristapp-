@@ -429,3 +429,11 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Toca Aqui:** o som do toque é **só a caixa** (`SONS` em `js/toca-som.js`; a escolha de som sumiu de todas as telas). No "com imagens" (Monte seu ritmo) a **velocidade virou 4 ícones** 🐢 🚶 🐇 🚀 (`ICONE_VEL`).
 - **Cara a Cara:** **só artistas** (cara a cara musical); a versão de instrumentos saiu do jogo livre (`js/jogos/cara.js`) e o seletor de tema sumiu. O "virar" manual funciona no clássico do musical (era a versão de instrumentos que não pegava).
 - **Bingo:** "como quer jogar?" virou **4 ícones pequenos** (robô, 2 celulares, mesmo aparelho, sala de aula) com dica no toque.
+
+## UN🚫 (nov/2026) e ajustes do STOP/Velha/Uno
+- **UN🚫** = variante do Uno Musical (`js/jogos/un.js` chama `cartas.mount(host, { un: true })`; regras em `cartas-logic.js` com `g.un`): cartas iguais (só figuras) juntas (`applyPlayMany`, `twins`), comprar até achar, +2 em +2 e +4 em +4 acumulam (`g.pend`; quem recebe responde ou compra tudo e perde a vez), +4 quando quiser, UNO silencioso (sem aviso e sem contagem nas mãos; botão UNO e "pegou!" sempre na tela; `catchable`/`wrongCatch`: acusar errado = quem acusou compra 2; a chance de pegar acaba quando a próxima pessoa age), sem brilho nas cartas. Só modos robô e mesmo celular (sem 2 celulares). Salvo em `un` (separado do Uno). Trancado por código como o Uno Musical (`acesso.js`). Testes: `tests/un-logic.test.mjs`.
+- **Uno Musical**: sempre jogo normal (sem "modo aprender"), cartas que servem sempre brilham, nome da figura sempre aparece, +4 nunca como última carta nem pra ficar com UNO.
+- **STOP**: 5 categorias fixas (instrumento e derivados, acessórios e equipamentos, cantor, banda, música), sem mostrar lista nem exemplos (só "ver regras"), sempre 90 s e 3 rodadas. Banco ampliado em `stop-bank-extra.js`.
+- **Velha**: sem níveis (61 perguntas no mesmo bolo), acerto com som que sobe e mensagem verde ✓.
+- **Mundos coloridos**: `js/campanha/mundos.js` + `css/aventura-tema.css`: Figuras e Memória em clarinho, Monte seu ritmo e Toca Aqui em amarelo (tudo em azul-marinho); pauLta como sempre.
+- Músicas dos jogos: página de escolha publicada como artifact (A/B por jogo); a escolha ainda não foi feita.

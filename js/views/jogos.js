@@ -9,6 +9,7 @@ import { soundOn, setSound } from '../jogos/base.js';
 import { silence } from '../audio.js';
 import * as CODE from '../codigo.js';
 import * as cartas from '../jogos/cartas.js';
+import * as un from '../jogos/un.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
 import * as cara from '../jogos/cara.js';
@@ -29,6 +30,7 @@ const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'ler, ouvir, repetir · microfone'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
+  ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · contra o computador ou no mesmo celular'],
   ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
   ['velha', 'jogo da velha', 'velha.webp', velha],
@@ -39,7 +41,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -53,7 +55,7 @@ const SECTIONS = [
   ]],
   ['cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
+    ...['cartas', 'un', 'quizuno', 'bingo', 'velha', 'quebra', 'cara', 'stop'].map(inner),
   ]],
   ['letras', [
     link('#/dicas', 'Letras', 'quiz.svg', 'caça-palavras, cruzadinha, quiz e duelo · 2 partidas grátis'),

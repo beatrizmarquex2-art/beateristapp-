@@ -31,7 +31,7 @@ export function previaDaRota(r) {
   if (r.name === 'ritmo') return 'ritmo';
   if (r.name === 'paulta') return 'paulta';
   if (r.name === 'jogos' && r.parts[0] === 'toca') return 'toca';
-  if (r.name === 'jogos' && r.parts[0] === 'cartas') return 'cartas';
+  if (r.name === 'jogos' && (r.parts[0] === 'cartas' || r.parts[0] === 'un')) return 'cartas';
   return null;
 }
 export const tituloDaPrevia = (k) => (PREVIAS[k] ? PREVIAS[k].titulo : '');
