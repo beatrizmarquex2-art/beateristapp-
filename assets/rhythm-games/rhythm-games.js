@@ -131,7 +131,7 @@ const AE={
   }
 };
 /* música some devagar no fim (a saída principal desce até zero) */
-AE._drum0=AE.drum;AE.drum=function(name,t,vel){const c=this.get();t=t||c.currentTime;vel=vel==null?.9:vel;if(RK_SND.kit!=='rock'&&name!=='click'&&RZ.song&&RZ.song.style==='rock') return rkKitDrum(RK_SND.kit,name,t,vel);return this._drum0(name,t,vel)};
+AE._drum0=AE.drum;AE.drum=function(name,t,vel){const c=this.get();t=t||c.currentTime;vel=vel==null?.9:vel;if(name==='ride'&&RK_SND.ride!=='ride'&&RZ.song&&RZ.song.style==='rock') return rkRide(RK_SND.ride,t,vel);if(RK_SND.kit!=='rock'&&name!=='click'&&RZ.song&&RZ.song.style==='rock') return rkKitDrum(RK_SND.kit,name,t,vel);return this._drum0(name,t,vel)};
 AE.fadeOut=function(sec){try{const m=this.master,c=this.ctx;if(!m||!c) return;const t=c.currentTime;m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(.0001,t+sec)}catch(e){}};
 /* ===== gerador de músicas e arranjos ===== */
 function hgRng(seed){let a=seed>>>0;return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
@@ -283,7 +283,8 @@ function rkArrange(S,short,minSec){const D=RK_DEF[S.rk||0];const st=60/S.bpm/4;c
   return {st,mel,drums,ev:pre.concat(ev),chords,dur:T(bar,0)+1.5,bars:bar,lead}}
 
 /* ===== timbres escolhíveis (rock): melodia, guitarra base e kit de bateria ===== */
-const RK_SND={lead:'guitarra',gtr:'distorcida',kit:'rock'};
+const RK_SND={lead:'guitarra',gtr:'distorcida',kit:'rock',ride:'ride'};
+const RK_RIDES=[['ride','Prato de condução (ride)'],['hhc','Chimbal fechado'],['semi','Chimbal semiaberto'],['aro','Aro da caixa (side stick)'],['shaker','Ovinho (shaker)'],['cowbell','Cowbell']];
 const RK_LEADS=[['guitarra','Guitarra solo'],['sinte','Sintetizador'],['epiano','Piano elétrico'],['orgao','Órgão'],['flauta','Flauta'],['caixinha','Caixinha de música'],['8bit','8-bit (videogame)'],['piano','Piano']];
 const RK_GTRS=[['distorcida','Distorcida (rock pesado)'],['crunch','Crunch (rock clássico)'],['limpa','Limpa (com chorus)']];
 const RK_KITS=[['rock','Rock (acústica)'],['seca','Seca e apertada'],['eletro','Eletrônica 808'],['lofi','Lo-fi empoeirada']];
@@ -309,6 +310,15 @@ function rkLeadX(kind,m,t,d,v){const c=AE.get();d=Math.max(.1,d||.3);v=v||.8;con
     [[1,1],[2.756,.3],[5.4,.12],[8.9,.05]].forEach(([r,a])=>{const o=osc('sine',f*2*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+1.4)});out(g,.4);return}
   if(kind==='8bit'){const g=c.createGain();env(g,v*.14,.003,.05,.8,.03);const o=osc('square',f),o2=osc('square',f*2);const og=c.createGain();og.gain.value=.25;o2.connect(og);o.connect(g);og.connect(g);out(g,.05);run([o,o2],d+.3);return}
   return rkLead(m,t,d,v)}
+function rkRide(kind,t,vel){const c=AE.get();const out=c.createGain();out.gain.value=vel;out.connect(AE.master);const rv=c.createGain();rv.gain.value=.12;out.connect(rv);rv.connect(AE.rev);
+  if(AE.onDrum) try{AE.onDrum('ride',t)}catch(e){}
+  const noise=(type,fq,q,dur,pk)=>{const n=AE.noiseSrc(t,dur),f=AE.filt(type,fq,q),g=c.createGain();AE.env(g,t,pk,dur,.001);n.connect(f);f.connect(g);g.connect(out)};
+  if(kind==='hhc') return AE._drum0('hhc',t,vel);
+  if(kind==='semi'){AE.metal(t,40,.16,.55,10000,6500,out);return}
+  if(kind==='aro'){noise('bandpass',2200,1.5,.05,.8);const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(600,t+.04);AE.env(g,t,.6,.05,.001);o.connect(g);g.connect(out);o.start(t);o.stop(t+.08);return}
+  if(kind==='shaker'){noise('highpass',6500,.6,.07,.45);return}
+  if(kind==='cowbell'){const bp=AE.filt('bandpass',800,2.5),g=c.createGain();[560,845].forEach(f=>{const o=c.createOscillator();o.type='square';o.frequency.value=f;o.connect(bp);o.start(t);o.stop(t+.3)});bp.connect(g);AE.env(g,t,.5,.22,.001);g.connect(out);return}
+  AE._drum0('ride',t,vel)}
 /* kits de bateria alternativos: o kit "rock" é o AE.drum original */
 function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out.gain.value=vel;out.connect(AE.master);const rv=c.createGain();rv.gain.value=kit==='lofi'?.3:kit==='seca'?.04:.15;out.connect(rv);rv.connect(AE.rev);
   if(AE.onDrum) try{AE.onDrum(name,t)}catch(e){}
@@ -1422,9 +1432,9 @@ function unmount(){if(!ROOT) return;clearInterval(RZ.lockT);RZ.lockT=0;try{rzPre
 global.BeaterRhythm={mount:mount,unmount:unmount,setSongs:setSongs,refresh:refresh,version:'1.4',unlock:function(){try{AE.unlock()}catch(e){}},_kits:function(){return RZ_KITS},_forceSpecial:function(){const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur}},_special:function(){AE.get();RZ.stats={pp:0,perfect:0,good:0,great:0,miss:0,stray:0,combo:0,maxCombo:0,score:0,hold:0,specials:0};RZ.sp=null;RZ.phase='play';RZ.t0=AE.ctx.currentTime-5;
   const star=RZ.chart.find(n=>n.star),plain=RZ.chart.find(n=>!n.star&&!n.res);const before=RZ.stats.score;rzJudge(plain,'perfect');const normal=RZ.stats.score-before;
   rzJudge(star,'perfect');const on=rzSpOn(),mult=rzMult();const b2=RZ.stats.score;const p2=RZ.chart.filter(n=>!n.star&&!n.res)[0];rzJudge(p2,'perfect');const doubled=RZ.stats.score-b2;
-  RZ.t0=AE.ctx.currentTime-5-RZ.sp.dur-1;const off=rzSpOn();RZ.phase='menu';return {on:on,mult:mult,normal:normal,doubled:doubled,off:off,specials:RZ.stats.specials}},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_time:function(){return RZ.phase==='play'?rzTime():null},_keys:function(){return RZ_KEYS()},_render:async function(style,i,secs,lead,opt){opt=opt||{};if(opt.gtr) RK_SND.gtr=opt.gtr;if(opt.kit) RK_SND.kit=opt.kit;if(opt.lead) RK_SND.lead=opt.lead;const fr=opt.from||0;const S=rsSong(style,i);const A=rsArrange(S,false,fr+secs+4);const sr=44100;const oc=new OfflineAudioContext(2,Math.ceil((secs+2)*sr),sr);AE.ctx=oc;AE.build();RZ.song=S;RZ.game='beat';RZ.inst='piano';
+  RZ.t0=AE.ctx.currentTime-5-RZ.sp.dur-1;const off=rzSpOn();RZ.phase='menu';return {on:on,mult:mult,normal:normal,doubled:doubled,off:off,specials:RZ.stats.specials}},_chart:function(){return {chart:RZ.chart,A:RZ.A}},_time:function(){return RZ.phase==='play'?rzTime():null},_keys:function(){return RZ_KEYS()},_render:async function(style,i,secs,lead,opt){opt=opt||{};if(opt.gtr) RK_SND.gtr=opt.gtr;if(opt.kit) RK_SND.kit=opt.kit;if(opt.lead) RK_SND.lead=opt.lead;if(opt.ride) RK_SND.ride=opt.ride;const fr=opt.from||0;const S=rsSong(style,i);const A=rsArrange(S,false,fr+secs+4);const sr=44100;const oc=new OfflineAudioContext(2,Math.ceil((secs+2)*sr),sr);AE.ctx=oc;AE.build();RZ.song=S;RZ.game='beat';RZ.inst='piano';
   const mu={};const W=t=>t>=fr&&t<fr+secs;A.ev.forEach(e=>{if(W(e.t)&&e.k!=='click') rzPlayEv(e,e.t-fr,mu)});A.drums.forEach(d=>{if(W(d.t)) AE.drum(d.snd,d.t-fr,d.v)});
   A.mel.forEach(n=>{if(W(n.t)) rzPlayEv({k:'lead',m:n.m,d:n.d},n.t-fr,mu)});
-  const b=await oc.startRendering();AE.ctx=null;AE.master=null;RK_SND.lead='guitarra';RK_SND.gtr='distorcida';RK_SND.kit='rock';return {L:Array.from(b.getChannelData(0)),R:Array.from(b.getChannelData(1)),bars:A.bars,dur:A.dur}},
+  const b=await oc.startRendering();AE.ctx=null;AE.master=null;RK_SND.lead='guitarra';RK_SND.gtr='distorcida';RK_SND.kit='rock';RK_SND.ride='ride';return {L:Array.from(b.getChannelData(0)),R:Array.from(b.getChannelData(1)),bars:A.bars,dur:A.dur}},
   _build:function(style,i,game,maxLen){RZ.style=style;RZ.game=game;if(maxLen!=null) RZ.maxLen=maxLen;RZ.song=rsSong(style,i);rzBuild();return {chart:RZ.chart,A:RZ.A}},importMidi:function(files){return mImport(files)},games:['hero','tiles','beat','setas','figuras']};
 })(typeof window!=='undefined'?window:this);
