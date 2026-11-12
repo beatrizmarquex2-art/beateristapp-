@@ -78,7 +78,7 @@
 | dom 13 | feed | B2 + PAUL aceno | balanço do mês e o que vem em janeiro | comentar |
 
 ## O que falta (precisa de você)
-1. **Nome/@ do perfil** e a foto: sugestão `@roboterista.paul` ou `@paul.beaterista` (confere se está livre).
+1. **Nome/@ do perfil** e a foto: sugestão `@jogos.beaterista` (definido pela Bea).
 2. **Reels (6 no mês):** só tenho imagens. Dá pra gravar a tela do app (10 a 15 s cada) e usar o Paul como capa. Posso escrever o roteiro segundo a segundo.
 3. **Legendas completas:** posso escrever todas (com hashtags) por semana, no tom do Paul.
 4. **Combo/lendárias:** confirmar que o resgate das lendárias vale pra quem compra o combo antes de prometer.
@@ -87,3 +87,9 @@
 
 ## Métricas pra olhar 1x por semana (5 min)
 salvamentos e compartilhamentos > curtidas; cliques no link da bio; qual arte do carrossel puxou mais; quantas compras do combo vieram com `src=vendas`.
+
+## Atualização (nov/2026)
+- Perfil: **@jogos.beaterista**. Foto de perfil: `assets/originals/artes-beaterista/instagram/perfil-paul-1080.png`.
+- Legendas completas de todos os dias: `planejamento/legendas-instagram.py` (texto puro, dá pra abrir e copiar) e a página interativa em `assets/originals/artes-beaterista/instagram/pagina-calendario/index.html`.
+- 4 reels prontos (sem som) em `assets/originals/artes-beaterista/instagram/reels/`.
+- Cartazes do Paul (carrossel e frases) estão só em 266×333 px, exceto "por que Paul?". Pedir os originais em alta.

@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+HASH="#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista"
+P=[]
+def add(d,dia,sem,tipo,hora,arts,leg,story,cta,tag=''):
+    P.append(dict(d=d,dia=dia,sem=sem,tipo=tipo,hora=hora,arts=arts,leg=leg,story=story,cta=cta,tag=tag))
+# semana 0
+add('qui 12/nov','qui',0,'configurar','—',['perfil'],"BIO (copiar):\naprenda música jogando 🎧🥁\njogos + apostilas da Bea\nsou o Paul, assistente robô da professora Bea\n👇 jogue grátis agora\njogos.beaterista.com.br","Destaques: jogar · apostilas · álbum · bastidores (use a capa B1 e fundo creme).","trocar a foto e colocar o link",'setup')
+add('sex 13/nov','sex',0,'carrossel','19h30',['car1','car2','car3','car4'],"oi, eu sou o Paul 🤖🎧\nassistente de música da professora Bea.\n\nvim te chamar pra aprender jogando: ritmo, notas, acordes e até figurinhas pra colecionar.\n\narrasta pro lado e vem comigo ➡️\n\nsegue @jogos.beaterista e joga grátis no link da bio 🥁\n\n"+HASH,"Story: arte S1 + enquete \"você já tocou algum instrumento? sim / ainda não\".","seguir o perfil")
+add('sáb 14/nov','sáb',0,'story','12h',['s1'],"(sem legenda de feed)","Story S1 + caixinha de pergunta: \"qual instrumento você quer aprender?\".","link na bio")
+add('dom 15/nov','dom',0,'feed','19h30',['porque'],"por que Paul? 🎸\n\nmeu nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea.\n\ne você, qual música dele é a sua favorita? me conta aqui embaixo 👇\n\n"+HASH,"Story: repostar o feed com sticker de enquete \"conhece o Paul McCartney?\".","comentar")
+# semana 1
+add('seg 16/nov','seg',1,'feed','12h',['f1'],"aulas de música na palma da mão 📱\ndepois, mão na massa. 🥁\n\njogue com o Paul, treine ritmo e leitura de notas e leve o que aprendeu pro instrumento.\n\ngrátis no link da bio: jogos.beaterista.com.br\n\n"+HASH,"Story: print do app + \"qual jogo você quer ver primeiro?\".","link na bio")
+add('ter 17/nov','ter',1,'story','12h',['paul_baqueta'],"(só story)","Paul com a baqueta: \"bora testar seu ritmo? 🥁\" + caixinha \"quer ver o jogo na tela?\".","link")
+add('qua 18/nov','qua',1,'reel','19h30',['r4'],"3 minutos, 4 frases do Paul pra você começar a semana com mais groove 🎧\n\nsalva esse reel e manda pra quem toca (ou quer tocar)!\n\n"+HASH,"Story: repostar o reel com \"qual frase é a sua?\".","salvar e enviar")
+add('qui 19/nov','qui',1,'story','12h',['cz_menos'],"(só story)","\"menos pressa. mais groove.\" + sticker de música.","—")
+add('sex 20/nov','sex',1,'feed','19h30',['f2'],"jogue. toque. colecione. 🎮🎸🏆\n\nencare os desafios do Paul e complete o seu álbum musical.\n\ntem figurinha, ranking e jogos de ritmo, tudo no link da bio.\n\n"+HASH,"Story: sticker \"quem joga comigo?\" convidando a marcar um amigo.","marcar um amigo")
+add('sáb 21/nov','sáb',1,'story','12h',['paul_agachado'],"(só story)","Quiz: \"essa nota é dó ou ré?\" (use a enquete do story).","responder")
+add('dom 22/nov','dom',1,'feed','19h30',['cz_play'],"dá o play, deixa a música levar. 🎧\n\nestudar música não precisa ser pesado: 10 minutinhos por dia já fazem diferença. salva esse post pra lembrar de treinar hoje 💛\n\n"+HASH,"Story: lembrete \"10 minutos de música hoje\".","salvar")
+# semana 2 BF
+add('seg 23/nov','seg',2,'feed','12h',['cz_bea'],"a Bea ensina, eu treino com você! 📚🤖\n\nlogo, logo tem novidade pra quem quer levar a prática pra fora da tela: apostilas pra imprimir, feitas pela professora Bea.\n\nativa o 🔔 e fica ligado!\n\n"+HASH,"Story: \"sexta tem uma surpresa 👀\".","ativar notificações")
+add('ter 24/nov','ter',2,'story','12h',['paul_case','combo'],"(só story)","Contagem regressiva: \"sexta é Black Friday 🖤\" com sticker de lembrete.","lembrete",'bf')
+add('qua 25/nov','qua',2,'feed','19h30',['f3'],"o que vem na apostila Robôterista? 👀\n\nRitmo e Figuras, Harmonia e Melodia, Na Prática e o Jogo da Memória Musical: material em PDF pra imprimir e estudar quando quiser.\n\nsexta: Black Friday 🖤\n\n"+HASH,"Story: caixinha \"qual apostila você quer ver por dentro?\".","lembrete",'bf')
+add('qui 26/nov','qui',2,'story','12h',['kit_feed'],"(só story)","Arte do kit: \"amanhã: combo com as 4 apostilas\" + lembrete.","lembrete",'bf')
+add('sex 27/nov','sex',2,'feed + reel','12h e 19h30',['combo','r2'],"🖤 BLACK FRIDAY BEATERISTA 🖤\n\nCOMBO ROBÔTERISTA: 4 apostilas em PDF por R$ 79,90 (de R$ 99,60)\n✅ Ritmo e Figuras\n✅ Harmonia e Melodia\n✅ Na Prática\n✅ Jogo da Memória Musical\n\nmateriais digitais pra imprimir e estudar. compra pela Hotmart, link na bio.\n\n"+HASH+" #blackfriday","Story ×3: arte do combo, contagem \"termina segunda\" e print de depoimento (com permissão).","link da página de vendas",'bf')
+add('sáb 28/nov','sáb',2,'story','12h, 17h e 21h',['kit_banner','combo'],"(só story)","Lembrete de que o preço vai até segunda + caixinha \"dúvidas sobre o combo?\".","link",'bf')
+add('dom 29/nov','dom',2,'carrossel','19h30',['kit_feed','combo'],"um combo, quatro jeitos de aprender música 🎼\n\n1 · Ritmo e Figuras (100 páginas)\n2 · Harmonia e Melodia (102 páginas)\n3 · Na Prática (48 atividades)\n4 · Jogo da Memória Musical (61 pares)\n\nR$ 79,90 até segunda 🖤\n\n"+HASH,"Story: \"amanhã é o último dia do preço\".","link",'bf')
+# semana 3
+add('seg 30/nov','seg',3,'feed + story','12h',['combo'],"últimas horas do combo Robôterista 🖤\n\n4 apostilas por R$ 79,90. depois de hoje volta ao preço normal.\n\nlink na bio.\n\n"+HASH+" #cybermonday","Story: contagem de horas + link.","link",'bf')
+add('ter 1/dez','ter',3,'story','12h',['lend1','lend2','lend3','lend4','lend5'],"(só story, 1 lendária por story)","Mostra as 5 lendárias, uma por story, com o nome de cada uma. Só diga que vêm de brinde se o resgate estiver confirmado.","link",'bf')
+add('qua 2/dez','qua',3,'feed','19h30',['car4'],"jogue. colecione. complete seu álbum. 🏆\n\ncada jogo vale estrelas e figurinhas. tem comum, rara e lendária ✨ qual você quer primeiro?\n\n"+HASH,"Story: enquete \"quer ver as lendárias?\".","comentar")
+add('qui 3/dez','qui',3,'reel','19h30',['r3'],"as 5 figurinhas lendárias do app ✨🤖\n\nGuitarrista da Tempestade, Rei do Pixel Roxo, Construtor de Notas, Baterista Cósmico e Sineiro do Castelo.\n\ncomo conseguir? chama no direct que eu explico 👇\n\n"+HASH,"Story: repostar o reel.","direct")
+add('sex 4/dez','sex',3,'feed','19h30',['cz_ritmo'],"o ritmo é seu. o palco também. 🥁🎤\n\nmarca aquele amigo que merece subir no palco um dia.\n\n"+HASH,"Story: enquete \"bateria, violão ou teclado?\".","marcar")
+add('sáb 5/dez','sáb',3,'story','12h',['paul_amplificador'],"(só story)","Quiz musical + caixinha \"qual jogo você quer que o Paul explique?\".","responder")
+add('dom 6/dez','dom',3,'feed','19h30',['cz_solta'],"solta o play, vem pro ritmo. 🛹🎧\n\nresumo da semana: jogos, figurinhas e dica de estudo. qual foi a sua parte favorita?\n\n"+HASH,"Story: \"o que você quer ver semana que vem?\".","comentar")
+# semana 4
+add('seg 7/dez','seg',4,'feed','12h',['f1'],"um jogo por dia, um pouquinho de música. 🎮\n\nessa semana o Paul mostra jogos do app: ritmo, cartas, quebra-cabeça e mais. salva pra não esquecer!\n\n"+HASH,"Story: \"jogo do dia\" com print.","salvar")
+add('ter 8/dez','ter',4,'story','12h',['paul_caderno'],"(só story)","Dica de estudo: 10 minutos por dia, anota no caderno 📓.","—")
+add('qua 9/dez','qua',4,'carrossel','19h30',['car1','car2'],"quem chegou agora? eu sou o Paul 🤖🎧 assistente da professora Bea.\n\naqui tem jogos de música, apostilas e figurinhas. começa pelo link da bio 👇\n\n"+HASH,"Story: caixinha de perguntas \"o que você quer aprender?\".","seguir")
+add('qui 10/dez','qui',4,'reel','19h30',['r1'],"conhece o Paul? 👋 aprender música jogando, com apostilas e figurinhas.\n\nconta quem você marcaria pra aprender junto 👇\n\n"+HASH,"Story: repostar.","marcar")
+add('sex 11/dez','sex',4,'feed','12h',['cz_groove'],"presente de Natal musical 🎁🎧\n\napostilas em PDF pra imprimir e estudar, sem frete e sem espera. o combo Robôterista continua disponível no link da bio.\n\n"+HASH,"Story: \"presente de última hora\" com a arte do combo.","link")
+add('sáb 12/dez','sáb',4,'story','12h',['combo'],"(só story)","Presente de última hora: o PDF chega na hora (só use se o desconto ainda valer).","link")
+add('dom 13/dez','dom',4,'feed','19h30',['b2','paul_aceno'],"obrigado por esse começo, família! 🤖💛\n\nem janeiro tem mais jogos, mais dicas e novidades. o que você quer ver por aqui? comenta 👇\n\n"+HASH,"Story: caixinha \"o que você quer em janeiro?\".","comentar")
