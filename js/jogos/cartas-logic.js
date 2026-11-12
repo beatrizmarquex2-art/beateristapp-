@@ -37,7 +37,7 @@ export function shuffle(list, rnd = Math.random) {
  */
 export function playable(card, top, color, hand) {
   if (card.kind === 'curinga') return true;
-  if (card.kind === 'mais4') return !hand || !hand.some((c) => c.color === color);
+  if (card.kind === 'mais4') return !hand || (hand.length >= 3 && !hand.some((c) => c.color === color)); // nunca como última carta nem pra ficar com UNO (ganharia na hora)
   if (card.color === color) return true;
   if (isWild(top)) return false;
   return isFig(card) ? isFig(top) && card.sym === top.sym : card.kind === top.kind;

@@ -55,7 +55,7 @@ export function mount(host, opts) {
   const saved = adv ? {} : getGame(ID);
   const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
-    hint: saved.hint === 'sem' ? 'sem' : 'com', help: true, sfx: saved.sfx !== false, learn: saved.learn === true, names: true, // o nome da figura aparece sempre em todas as cartas
+    hint: 'com', help: true, sfx: saved.sfx !== false, learn: false, names: true, // sempre jogo normal (nunca pausa), as cartas que servem sempre brilham e o nome da figura sempre aparece: // o nome da figura aparece sempre em todas as cartas
   };
   if (!adv && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
@@ -149,8 +149,6 @@ export function mount(host, opts) {
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
       prefs.mode === 'local' ? seg('pessoas', [[2, '2'], [3, '3'], [4, '4']], prefs.opps + 1, (v) => { prefs.opps = v - 1; keepPrefs(); }) : null,
-      h('p', { class: 'jg-lab' }, 'dicas'), seg('dicas', [['com', 'cartas que servem brilham'], ['sem', 'sem dica']], prefs.hint, (v) => { prefs.hint = v; keepPrefs(); }),
-      h('p', { class: 'jg-lab' }, 'modo aprender (opcional)'), seg('aprender', [['off', 'jogo normal'], ['on', 'pausar a cada figura jogada']], prefs.learn ? 'on' : 'off', (v) => { prefs.learn = v === 'on'; keepPrefs(); }),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
@@ -345,7 +343,7 @@ export function mount(host, opts) {
     const legal = C.legalCards(g, g.turn);
     if (!legal.some((x) => x.id === c.id)) {
       snd('bad'); const b = handEl.querySelector(`.cx-hc[data-id="${c.id}"]`); if (b) shake(b.firstElementChild);
-      flash(g.drawn ? 'só a carta que você comprou pode ser jogada' : c.kind === 'mais4' ? 'o +4 só vale se você não tiver a cor da mesa' : dica() ? `essa não serve: a mesa é ${C.cardName(C.topOf(g))}` : 'essa carta não serve');
+      flash(g.drawn ? 'só a carta que você comprou pode ser jogada' : c.kind === 'mais4' ? 'o +4 só vale se você não tiver a cor da mesa e ainda sobrarem 2 cartas depois dele' : dica() ? `essa não serve: a mesa é ${C.cardName(C.topOf(g))}` : 'essa carta não serve');
       return;
     }
     if (C.isWild(c)) { picking = c.id; snd('tap'); paint(); return; }

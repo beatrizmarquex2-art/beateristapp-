@@ -86,7 +86,7 @@ test('estilos de adversário: escolhas diferentes na mesma mesa, todas legais (i
   assert.deepEqual(C.aiMove({ ...stuck, draw: [] }, 1, 'esperto', r), { type: 'pass' });
   assert.deepEqual(C.aiMove(g, 1, 'paul', r), C.paulMove(g, 1, r));
   const only4 = base({ hands: [[fig('azul', 6)], [p4, fig('azul', 4)]], draw: [] }); // com a cor da mesa na mão... mão sem vermelho: +4 vale
-  const g3 = base({ hands: [[fig('azul', 6)], [p4, fig('azul', 4)]] }); assert.ok(C.legalCards(g3, 1).some((c) => c.id === p4.id)); assert.ok(only4);
+  const g3 = base({ hands: [[fig('azul', 6)], [p4, fig('azul', 4), fig('azul', 3)]] }); assert.ok(C.legalCards(g3, 1).some((c) => c.id === p4.id)); assert.ok(only4);
 });
 test('estilos de adversário: 1500 partidas entre quaisquer estilos terminam, conservam 112 cartas, com UNO, e só jogam lances válidos', () => {
   let n = 0;

@@ -42,10 +42,11 @@ test('jogabilidade: mesma cor ou mesma figura; ação só com mesma ação; topo
   // acento e nota fantasma são categorias normais: casam entre si, não com as outras
   assert.ok(C.playable(fig('verde', 'acento'), fig('azul', 'acento'), 'azul')); assert.ok(!C.playable(fig('verde', 'fantasma'), fig('azul', 'acento'), 'azul'));
 });
-test('+4 só vale sem carta da cor ativa na mão', () => {
+test('+4 só vale sem carta da cor ativa na mão e nunca como última carta nem pra ficar com UNO', () => {
   const w4 = card(null, 'mais4'); const top = fig('vermelho', 'colcheia');
-  assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('vermelho', 'fusa')])); assert.ok(C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa')]));
-  const g = base({ hands: [[w4, fig('vermelho', 'fusa')], padHand(3)] });
+  assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('vermelho', 'fusa'), fig('azul', 'fusa')])); assert.ok(C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa'), fig('azul', 'colcheia')]));
+  assert.ok(!C.playable(w4, top, 'vermelho', [w4]), 'última carta'); assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa')]), 'ficaria com UNO');
+  const g = base({ hands: [[w4, fig('vermelho', 'fusa'), fig('azul', 'fusa')], padHand(3)] });
   assert.throws(() => C.applyPlay(g, 0, w4.id, 'azul'), /serve/); assert.equal(C.legalCards(g, 0).length, 1);
 });
 test('curinga exige cor e muda a cor sem pular a vez', () => {
@@ -55,7 +56,7 @@ test('curinga exige cor e muda a cor sem pular a vez', () => {
 });
 test('pular, +2 e +4 fazem o próximo perder a vez; +2/+4 compram', () => {
   const sk = card('vermelho', 'pular'); const m2 = card('vermelho', 'mais2'); const w4 = card(null, 'mais4');
-  const mk = (c) => base({ n: 3, hands: [[c, fig('azul', 'fusa')], padHand(2), padHand(2)], draw: padHand(8) });
+  const mk = (c) => base({ n: 3, hands: [[c, fig('azul', 'fusa'), fig('azul', 'colcheia')], padHand(2), padHand(2)], draw: padHand(8) });
   let r = C.applyPlay(mk(sk), 0, sk.id); assert.equal(r.turn, 2); assert.equal(r.ev.victim, 1);
   r = C.applyPlay(mk(m2), 0, m2.id); assert.equal(r.hands[1].length, 4); assert.equal(r.turn, 2); assert.equal(r.ev.n, 2);
   r = C.applyPlay(mk(w4), 0, w4.id, 'verde'); assert.equal(r.hands[1].length, 6); assert.equal(r.turn, 2); assert.equal(r.color, 'verde');
