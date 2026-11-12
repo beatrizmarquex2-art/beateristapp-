@@ -1,0 +1,30 @@
+// Resgate por print (lado do aluno, com o servidor simulado): missões na tela Pacotes, envio do print, e entrega da recompensa quando a Bea aprova (estrelas e lendária).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+import fs from 'node:fs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64'); fs.writeFileSync('/tmp/print-teste.png', png);
+let enviados = []; let entregues = []; let aprovados = [];
+await ctx.route('**/rest/v1/rpc/resgate_enviar', (r) => { enviados.push(JSON.parse(r.request().postData() || '{}')); r.fulfill({ status: 200, contentType: 'application/json', body: '"ok"' }); });
+await ctx.route('**/rest/v1/rpc/resgate_minhas', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(aprovados) }));
+await ctx.route('**/rest/v1/rpc/resgate_entregar', (r) => { entregues.push(JSON.parse(r.request().postData() || '{}').p_id); r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }); });
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch (e) {} });
+await page.goto(url + '/aluno.html#/album'); await sleep(3000);
+await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); if (!P.active()) await P.addProfile('Teste', 10); });
+await page.goto(url + '/aluno.html#/album'); await sleep(3000);
+await page.evaluate(() => [...document.querySelectorAll('.fig-tabs button, [role=tab]')].find((b) => /pacotes/i.test(b.textContent)).click()); await sleep(600);
+check('a tela Pacotes mostra as 3 missões com print', await page.evaluate(() => document.querySelectorAll('.fig-missao').length === 3));
+const [fc] = await Promise.all([page.waitForEvent('filechooser'), page.evaluate(() => document.querySelector('.fig-missao .btn:not(.ghost)').click())]);
+await fc.setFiles('/tmp/print-teste.png'); await sleep(1500);
+check('o print foi enviado com tipo, código e imagem', enviados.length === 1 && enviados[0].p_tipo === 'google' && !!enviados[0].p_code && (enviados[0].p_print || '').length > 100, JSON.stringify(Object.keys(enviados[0] || {})));
+// a Bea aprovou: entrega +5 ★ (missão) e 1 lendária
+aprovados = [{ id: '11111111-1111-1111-1111-111111111111', tipo: 'google', status: 'aprovado', entregue: false, obs: '', criado_em: new Date().toISOString() }, { id: '22222222-2222-2222-2222-222222222222', tipo: 'lendaria', status: 'aprovado', entregue: false, obs: '', criado_em: new Date().toISOString() }];
+const antes = await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); const me = P.active(); return (P.progOf(me.id).mesa || {}).total || 0; });
+await page.reload(); await sleep(4500);
+check('as 2 recompensas foram entregues (o servidor confirmou)', entregues.length === 2, entregues.join());
+const dep = await page.evaluate(async () => { const P = await import('/js/kids/progress.js'); const me = P.active(); return { est: (P.progOf(me.id).mesa || {}).total || 0, lend: await (async () => { const D = await import('/js/figurinhas/dono.js'); return null; })() }; });
+check('missão aprovada deu +5 ★', dep.est === antes + 5, `${antes} -> ${dep.est}`);
+check('compra aprovada mostra a festa da lendária', await page.evaluate(() => !!document.querySelector('.pf')));
+await page.evaluate(() => document.querySelector('.pf button')?.click()); await sleep(500);
+await page.evaluate(() => [...document.querySelectorAll('.fig-tabs button, [role=tab]')].find((b) => /lendárias/i.test(b.textContent)).click()); await sleep(600);
+check('a primeira lendária ficou destrancada', await page.evaluate(() => document.querySelectorAll('.ld-card.on').length === 1));
+check('sem erro de página', errs.length === 0, errs.join('|')); await browser.close(); srv.close(); done();

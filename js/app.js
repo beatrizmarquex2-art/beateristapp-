@@ -53,6 +53,7 @@ import * as acessos from './views/acessos.js';
 import * as albumAlunos from './views/album-alunos.js';
 import * as cartinha from './views/cartinha.js';
 import * as codigos from './views/codigos.js';
+import * as resgates from './views/resgates.js';
 import * as jogosAlunos from './views/jogos-alunos.js';
 import { remember } from './recent.js';
 import * as repertorio from './views/repertorio.js';
@@ -319,6 +320,7 @@ function shell() {
       case 'album-alunos': c = albumAlunos.mount(view); break;
       case 'cartinha': c = cartinha.mount(view); break;
       case 'codigos': c = codigos.mount(view); break;
+      case 'resgates': c = resgates.mount(view); break;
       case 'jogos-alunos': c = jogosAlunos.mount(view); break;
       case 'kids': c = kids.mount(view, r.parts); break;
       case 'repertorio': c = repertorio.mount(view); break;
@@ -368,10 +370,18 @@ function showLogin() {
 }
 
 let navHooked = false;
+/** Ao abrir o app da Bea: se tem print esperando aprovação, avisa com um toque pra abrir a tela (e faz o aparelho piscar o título). */
+async function avisarResgates() {
+  try {
+    const R = await import('./resgate.js'); const n = await R.quantosPendentes(); if (!n) return;
+    toast(`${n} resgate${n > 1 ? 's' : ''} por print esperando você`, { action: 'ver', onAction: () => { location.hash = '#/resgates'; }, ms: 12000, id: 'resgates-pend' });
+  } catch { /* sem internet ou sem login: sem aviso */ }
+}
 function startApp() {
   loadNav(NAV); initHands(); store.purgeTrash(null, store.TRASH_DAYS).catch(() => {});
   if (!navHooked) { navHooked = true; store.subscribe((i) => { if (i && (i.remote || i.imported || i.id === NAV_KEY)) { loadNav(NAV); shell.chrome && shell.chrome(); } }); document.addEventListener('keydown', (e) => { if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') && !document.querySelector('#overlay .sheet')) { e.preventDefault(); openSearch(); } }); }
   shell(); undoUi();
+  setTimeout(avisarResgates, 3000); // aviso: resgates por print esperando a aprovação da Bea
   if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); startPaul({ allowed: () => /^#\/(ritmo|jogos|kids)/.test(location.hash) }); } else { sync.schedule(100); photos.schedule(300); }
 }
 
