@@ -25,7 +25,7 @@ async function run(label, open) {
   const nm = await p.evaluate(() => [...document.querySelectorAll('.ti-panel .row')].map(r => r.getAttribute('aria-label')));
   for (const k of ['vibrafone', 'steel drum', 'kalimba', 'caixinha de música', 'sino tubular', 'glockenspiel', 'marimba']) { await p.locator('.ti-panel .kd-chip', { hasText: k }).first().click(); await sleep(120); await measure(`percussão barras: ${k}`, () => tap('.ti-bar', 3)); }
   await p.locator('.ti-panel .kd-chip', { hasText: 'pads' }).click(); await sleep(250);
-  const names = await p.locator('.ti-pp').allInnerTexts(); console.log('pads:', names.join(', '));
+  const names = await p.locator('.ti-pp').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label'))); console.log('pads:', names.join(', '));
   for (let i = 0; i < names.length; i++) await measure(`percussão pad: ${names[i]}`, async () => { await p.locator('.ti-pp').nth(i).click(); });
   await tab('bateria'); await measure('bateria de volta (depois de tudo)', () => tap('.tk-art [data-p="sn"]'));
   await p.close();

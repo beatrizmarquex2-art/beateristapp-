@@ -77,3 +77,9 @@ export const INSTR_ART_SVG = {
 /** Desenhos de verdade (os mesmos instrumentos ilustrados do resto do app) pro toca-discos e pros pads de pandeiro e triângulo. */
 export const INSTR_ART = { toque: IMG('bateria'), violao: IMG('violao'), piano: IMG('teclado'), xilofone: IMG('pandeiro') };
 PERC_ART.pd = IMG('pandeiro'); PERC_ART.tr = IMG('triangulo');
+/** Cartões do jogo da memória (o Paul tocando cada instrumento): são os pads da Percussão. [id do pad, nome, arquivo, som de cada lado (se tiver)] */
+export const PADS_FOTO = [
+  ['pd', 'pandeiro', '01_pandeiro'], ['tb', 'tamborim', '02_tamborim'], ['ag', 'agogô', '03_agogo'], ['rr', 'reco-reco', '04_reco_reco'],
+  ['tr', 'triângulo', '05_triangulo'], ['gz', 'ganzá', '06_ganza'], ['cg', 'congas', '07_congas', ['cg1', 'cg2']], ['bg', 'bongôs', '08_bongos', ['bg2', 'bg1']],
+];
+export const PAD_ANIM = { pd: 'pd', tb: 'bg', ag: 'ag', rr: 'cl', tr: 'tr', gz: 'ov', cg: 'cg1', bg: 'bg' };

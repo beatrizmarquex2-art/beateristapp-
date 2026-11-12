@@ -3,8 +3,8 @@ import { h } from '../util.js';
 import { audio } from '../audio.js';
 import { banner } from '../ui.js';
 import { kitTheme, themeRow } from '../kids/kit-theme.js';
-import { mallet, backing, MALLETS, PERC, percHit } from '../instruments.js';
-import { PERC_ART, PERC_ANIM, PERC_BG } from './tocar-art.js';
+import { mallet, backing, MALLETS, percHit } from '../instruments.js';
+import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
@@ -17,13 +17,16 @@ export function mount(host) {
   let scale = 'penta'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
   const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
   const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão sem nota', hidden: true },
-    ...PERC.map(([id, nome]) => { const art = h('span', { class: 'ti-pp-art' }); art.innerHTML = PERC_ART[id]; const b = h('button', { type: 'button', class: 'ti-pp', 'data-p': id, 'aria-label': nome }, art, h('b', {}, nome)); b.style.setProperty('--pb', PERC_BG[id] || '#fffdf7'); return b; }));
+    ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/percussao/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
   const NOTAS = ['♪', '♫', '♩', '✦'];
   pads.addEventListener('pointerdown', (e) => {
-    const b = e.target.closest && e.target.closest('.ti-pp'); if (!b) return; e.preventDefault(); audio(); percHit(b.dataset.p, 0.9);
-    const art = b.querySelector('.ti-pp-art svg, .ti-pp-art img'); const an = PERC_ANIM[b.dataset.p]; if (art && an && !matchMedia('(prefers-reduced-motion: reduce)').matches) art.animate(an[0], { duration: an[1], easing: 'ease-out' });
+    const b = e.target.closest && e.target.closest('.ti-pp'); if (!b) return; e.preventDefault(); audio();
+    const def = PADS_FOTO.find((x) => x[0] === b.dataset.p); const r = b.getBoundingClientRect();
+    const som = def[3] ? def[3][e.clientX < r.left + r.width / 2 ? 0 : 1] : def[0]; // congas e bongôs: esquerda e direita são dois tambores
+    percHit(som, 0.9);
+    const img = b.querySelector('img'); const an = PERC_ANIM[PAD_ANIM[def[0]]]; if (img && an && !matchMedia('(prefers-reduced-motion: reduce)').matches) img.animate(an[0], { duration: an[1], easing: 'ease-out' });
     b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
-    const r = b.getBoundingClientRect(); for (let k = 0; k < 3; k++) { const n = h('i', { class: 'ti-note' }, NOTAS[(Math.random() * NOTAS.length) | 0]); n.style.left = `${r.left + r.width * (0.25 + Math.random() * 0.5)}px`; n.style.top = `${r.top + r.height * 0.3}px`; document.body.append(n); const a = n.animate([{ transform: 'translateY(0) scale(.7)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 40}px,-60px) scale(1.2)`, opacity: 0 }], { duration: 700 + k * 120, easing: 'ease-out' }); a.onfinish = () => n.remove(); }
+    for (let k = 0; k < 3; k++) { const n = h('i', { class: 'ti-note' }, NOTAS[(Math.random() * NOTAS.length) | 0]); n.style.left = `${r.left + r.width * (0.25 + Math.random() * 0.5)}px`; n.style.top = `${r.top + r.height * 0.3}px`; document.body.append(n); const a = n.animate([{ transform: 'translateY(0) scale(.7)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 40}px,-60px) scale(1.2)`, opacity: 0 }], { duration: 700 + k * 120, easing: 'ease-out' }); a.onfinish = () => n.remove(); }
   });
   const stage = h('div', { class: 'ti-stage ti-xy-stage', 'data-kit-theme': kitTheme() });
   const xy = h('div', { class: 'ti-xy', role: 'group', 'aria-label': 'Barras do xilofone' });
