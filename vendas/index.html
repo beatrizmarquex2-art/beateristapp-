@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beaterista · jogos e estudos que ensinam música</title>
+<meta name="description" content="Jogos de ritmo, leitura de partitura e teoria musical criados pela professora Bea. Teste grátis no celular, tablet ou computador.">
+<meta property="og:title" content="Beaterista · jogos que ensinam música">
+<meta property="og:description" content="Ritmo, partitura e teoria brincando, com a professora Bea e o Robôterista Paul. Teste grátis.">
+<meta property="og:image" content="https://jogos.beaterista.com.br/vendas/assets/d5c382ef93281c9a.webp"><meta property="og:url" content="https://jogos.beaterista.com.br/vendas/"><link rel="canonical" href="https://jogos.beaterista.com.br/vendas/">
+<meta name="theme-color" content="#b5162b">
+<style>
+/* fontes locais (pasta fonts/) */
+@font-face{font-family:'Anton';src:url(assets/d0fa07ff63dd60cb.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Hanken Grotesk';font-weight:400 800;src:url(assets/1f21c6eaa0000f33.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Special Elite';src:url(assets/3cf06771841c778d.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Permanent Marker';src:url(assets/4884fec2c73aa52a.woff2) format('woff2');font-display:swap}
+:root{--red:#b5162b;--wine:#6e1219;--cream:#f1ebe1;--ink:#1b1818;--navy:#0e2347;--gold:#f6c44f}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:18px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.A{font-family:'Anton',Impact,sans-serif;text-transform:uppercase;line-height:1;letter-spacing:.01em;font-weight:400}
+.T{font-family:'Special Elite',monospace}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.btn{display:inline-block;font-family:'Anton';text-transform:uppercase;letter-spacing:.04em;font-size:1.15rem;padding:.7em 1.4em;border-radius:6px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);text-decoration:none;background:var(--gold);color:var(--ink);transition:transform .1s}
+.btn:hover{transform:translate(-1px,-1px)}
+.btn.red{background:var(--red);color:var(--cream)}
+.btn.ghost{background:transparent;color:inherit;border-color:currentColor;box-shadow:none}
+section{padding:72px 0}
+h2{font-size:clamp(2rem,6vw,3.4rem);margin-bottom:14px}
+.lead{font-size:1.2rem;max-width:640px}
+/* hero */
+.hero{background:var(--red);color:var(--cream);position:relative;overflow:hidden;padding:36px 0 0}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(#ffffff22 2px,transparent 2.5px) 0 0/26px 26px}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:end}
+.nav{display:flex;justify-content:space-between;align-items:center;padding-bottom:30px;grid-column:1/-1}
+.nav img{height:54px;filter:brightness(0) invert(1)}
+.hero h1{font-size:clamp(2.8rem,9vw,5.8rem);margin-bottom:18px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{font-size:1.25rem;max-width:520px;margin-bottom:26px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.hero small{display:block;font-family:'Special Elite';opacity:.85;margin-bottom:40px}
+.hero .ph{position:relative;padding-bottom:0}
+.phone{border:10px solid #151213;border-radius:42px;overflow:hidden;background:#151213;box-shadow:0 30px 50px -20px rgba(0,0,0,.6)}
+.hero .phone{width:min(330px,80%);margin:0 auto;border-bottom:0;border-radius:42px 42px 0 0;transform:rotate(3deg) translateY(8px)}
+.hero .paul{position:absolute;left:-10px;bottom:0;width:150px}
+/* faixa */
+.faixa{background:var(--ink);color:var(--cream);padding:18px 0;text-align:center;font-family:'Special Elite';font-size:1rem}
+.faixa b{color:var(--gold);font-weight:400}
+/* pilares */
+.pilares{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.card{background:#fff;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);border-radius:12px;padding:22px}
+.card h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.6rem;color:var(--red);margin-bottom:6px}
+.card .ic{font-size:2rem;margin-bottom:6px}
+/* jogos */
+.jogos{background:var(--navy);color:var(--cream)}
+.jogos h2{color:var(--gold)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:26px;margin-top:36px}
+.j{background:var(--cream);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:6px 6px 0 var(--red)}
+.j .shot{background:var(--gold);padding:18px 18px 0;height:300px;overflow:hidden}
+.j .shot img{width:78%;margin:0 auto;border:8px solid #151213;border-bottom:0;border-radius:30px 30px 0 0}
+.j .tx{padding:16px 18px 20px}
+.j h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.6rem;color:var(--red)}
+.j p{font-size:.98rem;margin:4px 0 10px}
+.tag{display:inline-block;font-family:'Special Elite';font-size:.8rem;border:1.5px solid var(--ink);border-radius:99px;padding:2px 10px;margin:2px 4px 0 0}
+/* passos */
+.passos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px;counter-reset:p}
+.passo{background:var(--cream);border:3px solid var(--ink);border-radius:12px;padding:22px;position:relative}
+.passo::before{counter-increment:p;content:counter(p);font-family:'Anton';font-size:4rem;color:var(--red);line-height:1;display:block}
+.passo h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.5rem}
+/* ciencia */
+.ciencia{background:var(--gold)}
+.refs{margin-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.ref{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:18px}
+.ref b{display:block;font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.3rem;color:var(--red)}
+.ref small{display:block;margin-top:8px;font-family:'Special Elite';font-size:.78rem;opacity:.8}
+/* pais */
+.pais{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+.pais ul{list-style:none;margin:18px 0}
+.pais li{padding-left:28px;position:relative;margin-bottom:10px}
+.pais li::before{content:'★';position:absolute;left:0;color:var(--red)}
+.pais .phone{width:min(300px,80%);margin:0 auto;transform:rotate(-3deg)}
+/* loja */
+.loja{background:var(--cream)}
+.prat{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:22px;margin-top:30px}
+.p{background:#fff;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:12px;text-align:center;display:flex;flex-direction:column}
+.p img{aspect-ratio:3/4;object-fit:cover;object-position:top;width:100%;border:1px solid #0002}
+.p b{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:1.25rem;margin-top:10px}
+.p small{opacity:.7}.p .pr{font-weight:800;color:var(--red);margin:6px 0 10px}.p .pr s{opacity:.5;font-weight:400;margin-right:6px}
+.p .btn{font-size:1rem;margin-top:auto;padding:.5em 1em}
+.bf{display:inline-block;background:var(--ink);color:var(--gold);font-family:'Anton';text-transform:uppercase;padding:2px 12px;margin-bottom:8px;font-size:.9rem}
+.album{background:var(--ink);color:var(--cream)}.album h2{color:var(--gold)}
+.fan{display:flex;justify-content:center;margin:40px 0 50px;padding:0 20px}
+.fan img{width:min(190px,24vw);margin:0 -14px;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.4));transition:transform .2s}
+.fan img:nth-child(1){transform:rotate(-14deg) translateY(24px)}.fan img:nth-child(2){transform:rotate(-7deg) translateY(8px)}.fan img:nth-child(3){transform:none;z-index:2}.fan img:nth-child(4){transform:rotate(7deg) translateY(8px)}.fan img:nth-child(5){transform:rotate(14deg) translateY(24px)}
+.parc{background:var(--cream);text-align:center;padding:44px 0}.parc img{width:min(560px,90%);margin:0 auto 12px}.parc p{font-family:'Special Elite'}
+.avisobf{background:var(--ink);color:var(--gold);text-align:center;padding:14px;font-family:'Anton';text-transform:uppercase;letter-spacing:.04em;font-size:1.1rem}.avisobf a{color:var(--cream)}
+/* faq */
+details{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+summary{font-family:'Anton';text-transform:uppercase;font-size:1.2rem;cursor:pointer;list-style:none}
+summary::after{content:'+';float:right;color:var(--red)}
+details[open] summary::after{content:'−'}
+details p{margin-top:10px}
+/* final */
+.final{background:var(--red);color:var(--cream);text-align:center}
+.final img.paul{width:170px;margin:0 auto 10px}
+.final .cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+footer{background:var(--ink);color:var(--cream);padding:30px 0 100px;font-family:'Special Elite';font-size:.9rem;text-align:center}
+footer a{color:var(--gold)}
+.sticky{position:fixed;left:0;right:0;bottom:0;background:var(--ink);padding:10px 16px;display:none;z-index:9;text-align:center}
+.sticky .btn{width:100%;box-shadow:none}
+@media(max-width:820px){.hero .wrap,.pais{grid-template-columns:1fr}.pilares,.passos,.refs{grid-template-columns:1fr}.hero .paul{width:110px}.sticky{display:block}section{padding:52px 0}}
+
+/* Layout intermediário com as cores da primeira versão. */
+section{padding:44px 0}
+.hero{padding-top:20px}
+.hero .wrap{align-items:center}
+.hero .nav{padding-bottom:6px}
+.hero .ph{align-self:end}
+.hero .phone{width:min(250px,75%);max-height:330px}
+.hero h1{font-size:clamp(2.8rem,7vw,5rem)}
+.btn{border-width:1px;box-shadow:2px 2px 0 var(--ink)}
+.pilares,.passos{gap:14px;margin-top:18px}
+.card,.passo{border-width:1px;box-shadow:none;padding:16px}
+.passo::before{font-size:2rem}
+.gal{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px}
+.j{box-shadow:none}
+.j .shot{height:154px;padding-top:9px}
+.j .shot img{width:min(118px,85%);border-width:4px;border-radius:15px 15px 0 0}
+.j .tx{padding:10px 12px}
+.j h3{font-size:1.25rem}
+.j p{margin-bottom:4px}
+.tag{display:none}
+.fan{margin:18px 0 30px}
+.fan img{width:min(110px,21vw);margin-inline:-8px}
+.pais .phone{width:min(190px,80%);max-height:265px;border-width:5px;border-radius:20px}
+.prat{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.p{border-width:1px;box-shadow:none;border-radius:10px;text-align:left;display:grid;grid-template-columns:68px 1fr;grid-template-rows:auto 1fr auto;gap:3px 9px}
+.p img{grid-row:1/4;width:100%;object-fit:contain;align-self:center;border:0}
+.p b{margin:0;font-size:1.05rem}
+.p small{line-height:1.25}
+.p .btn{justify-self:start;padding:.25em .5em;font-size:.82rem}
+.parc{padding:18px 0}
+.parc img{width:min(360px,85%)}
+details{border-width:1px;padding:10px 14px;margin-bottom:7px}
+.paul-extra{padding:0 0 16px}
+
+
+.pass-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+@media(max-width:820px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(0,.45fr);gap:10px}
+  .hero .phone{width:100%;max-height:245px;border-width:5px;border-radius:18px 18px 0 0}
+  .hero p{font-size:1rem;margin-bottom:12px}
+  .hero .cta{gap:7px;margin-bottom:12px}
+  .hero .cta .btn{font-size:.9rem;padding:.45em .65em}
+  .hero small{margin-bottom:14px}
+  .nav img{max-width:145px;object-fit:contain}
+  .gal,.prat{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .pilares,.passos{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .card,.passo{padding:8px;overflow-wrap:break-word;font-size:.8rem}
+  .card h3,.passo h3{font-size:1rem}
+  .card .ic{font-size:1.2rem}
+  .j .shot{height:104px}
+  .j .shot img{width:min(86px,80%)}
+  .j p{font-size:.86rem}
+  .p{grid-template-columns:40px 1fr;padding:6px}
+  .p b{font-size:.9rem}
+  .p small{font-size:.72rem}
+  .p .btn{font-size:.7rem}
+  .pais{grid-template-columns:minmax(0,1fr) minmax(0,.45fr);gap:12px}
+  .pais .phone{width:100%;max-height:205px}
+
+  section{padding:28px 0}
+}
+@media(max-width:360px){.hero h1{font-size:2.2rem}.hero .phone{max-height:200px}.p{grid-template-columns:1fr}.p img{grid-row:auto;height:54px}}
+
+.hero .ph{display:grid;justify-items:center;align-self:start;gap:12px;padding:0 0 16px}
+.hero .ph .phone{width:min(205px,100%);max-height:275px;border:5px solid #151213;border-radius:22px;transform:rotate(3deg)}
+.hero-paul{width:min(115px,85%);height:auto}
+.pais-exemplos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pais-exemplos figure{margin:0;text-align:center;min-width:0}
+.pais-exemplos a{display:block;height:clamp(175px,29vw,310px);overflow:hidden;background:#fff;border:1px solid #1b181833;border-radius:12px}
+.pais-exemplos img{width:100%;height:100%;object-fit:cover;object-position:top}
+.pais-exemplos figcaption{font-size:.88rem;margin-top:5px}
+@media(max-width:820px){
+  .hero .ph{margin-top:6px;gap:14px}
+  .hero .ph .phone{max-height:clamp(130px,48vw,245px);border-radius:15px}
+  .hero-paul{width:min(87px,90%)}
+  .pais{grid-template-columns:1fr}
+  .pais-exemplos a{height:clamp(180px,58vw,300px)}
+}
+
+.album h2,.album .lead,.album .T,.estudos h2{text-wrap:balance}
+.loja{background:#18345b;color:var(--cream)}
+.loja h2{color:var(--gold)}
+.loja .p{color:var(--ink)}
+.estudos{background:#f6dfaa}
+.estudos-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.estudos-grid article{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:12px;background:#fffaf0;border:1px solid #1b181833;border-radius:12px;padding:10px}
+.estudos-grid a{height:90px;overflow:hidden;border-radius:6px;display:block}
+.estudos-grid img{width:100%;height:100%;object-fit:cover;object-position:top}
+.estudos-grid h3{color:var(--navy);line-height:1.2}
+.estudos-grid p{font-size:.9rem;margin-top:4px}
+@media(max-width:700px){.estudos-grid{grid-template-columns:1fr;gap:7px}.estudos-grid article{grid-template-columns:58px 1fr}.estudos-grid a{height:64px}}
+
+.paul-extra{padding:20px 0;background:#f1ebe1}
+.paul-extra details{background:transparent;border-color:#0e234744}
+.paul-gallery{display:grid;grid-template-columns:minmax(190px,.7fr) minmax(0,1.5fr);gap:14px;align-items:start;padding-block:8px 4px}
+.paul-gallery a{display:block}
+.paul-gallery img{width:100%;height:auto;border-radius:8px}
+.paul-posters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media(max-width:700px){
+  .paul-gallery{grid-template-columns:minmax(0,1fr);gap:10px}
+  .paul-story{width:min(100%,380px);margin-inline:auto}
+  .paul-posters{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:42%;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:8px}
+  .paul-posters a{scroll-snap-align:start}
+}
+
+.hero .ph{align-self:stretch;grid-template-rows:auto 1fr;gap:14px;padding-bottom:4px}
+.hero .hero-paul{align-self:end;width:min(175px,98%)}
+@media(max-width:820px){.hero .hero-paul{width:100%;max-width:140px}}
+
+.hero h1,.hero .hero-copy>p,.pais h2,.album h2,.loja h2{text-wrap:balance}
+.hero .hero-copy{padding-bottom:20px}
+.hero .aluno-acesso,.aluno-acesso{margin:12px 0 0;font-size:1rem;line-height:1.4}
+.aluno-acesso a{font-weight:800;white-space:nowrap;text-underline-offset:3px}
+.hero .aluno-acesso a{color:var(--gold)}
+.hero .cta{margin-bottom:12px}
+.pais p{margin-bottom:16px}
+.paul-extra{background:#f6dfaa}
+.paul-intro{margin:0 0 10px}
+.passe-oferta{display:flex;align-items:center;gap:12px 22px;flex-wrap:wrap;margin:14px 0}
+.passe-oferta strong{font-size:1.45rem}
+.loja .p{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:10px}
+.loja .p img{width:100%;height:clamp(105px,21vw,180px);object-fit:contain;background:#f1ebe1;border-radius:5px}
+.loja .p .btn{margin-top:auto}
+@media(max-width:820px){
+  html{scroll-padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .sticky{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  footer{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(78px,.40fr)}
+  .hero .hero-paul{max-width:150px}
+  .hero .hero-copy>p{font-size:1rem}
+}
+
+
+
+
+@media(max-width:540px){
+
+
+
+}
+
+.nome-paul{white-space:nowrap}
+.hero .hero-paul{width:min(225px,100%)}
+@media(max-width:820px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(92px,35%)}
+  .hero .hero-paul{width:100%;max-width:175px}
+  .hero .ph{padding-bottom:3px}
+}
+@media(max-width:360px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(78px,32%)}
+}
+
+.bea-fotos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:4px 0 14px;max-width:510px}
+.bea-fotos img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:9px}
+.bea-fotos img:first-child{grid-column:1/-1;aspect-ratio:3/2}
+
+.escola-beaterista{background:var(--navy);color:var(--cream)}
+.escola-beaterista h2{color:var(--gold);text-wrap:balance}
+.escola-chamada{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+@media(max-width:680px){.escola-chamada{grid-template-columns:1fr}.escola-chamada .btn{justify-self:start}}
+
+.escola-titulo{display:grid;grid-template-columns:minmax(0,1fr) minmax(95px,145px);gap:12px;align-items:center}
+.escola-titulo img{width:100%;max-width:115px;justify-self:end}
+.loja .novos-materiais{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}
+.loja .novos-materiais .p img{height:clamp(130px,30vw,210px)}
+@media(max-width:820px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(92px,39%)}
+  .hero .hero-paul{max-width:195px}
+}
+@media(max-width:360px){.hero .wrap{grid-template-columns:minmax(0,1fr) minmax(78px,36%)}}
+
+.oferta-banner{width:100%;height:auto;border-radius:10px;margin:10px 0 14px}
+.colecao-titulo{font-size:1.4rem;color:var(--gold);margin-top:18px}
+.colecao-link{font-size:.8rem;font-weight:700;color:var(--navy)}
+@media(max-width:600px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr) minmax(100px,45%)}
+  .hero .ph .phone{width:84%;max-height:clamp(125px,39vw,190px)}
+  .hero .hero-paul{width:100%;max-width:none}
+  .hero .aluno-acesso{font-size:.88rem}
+  .hero .aluno-acesso a{white-space:normal}
+  .loja .novos-materiais{grid-template-columns:1fr;gap:8px}
+  .loja .novos-materiais .p{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto auto auto;align-items:start;gap:5px 10px}
+  .loja .novos-materiais .p img{grid-row:1/5;height:105px}
+}
+
+.aprendizado{background:#f6dfaa;color:var(--ink)}
+.aprendizado .pilares{margin-top:16px}
+.aprendizado h2{text-wrap:balance}
+@media(max-width:600px){
+  .aprendizado .pilares{grid-template-columns:1fr}
+  .aprendizado .card{padding:12px 14px;font-size:.95rem}
+  .aprendizado .card h3{font-size:1.12rem}
+}
+
+.hero .wrap{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.hero h1{font-size:clamp(2.4rem,5vw,4.4rem);line-height:1.04}
+.hero h1 em{display:block;margin-top:.12em}
+.hero-vitrine{display:grid;align-self:end;gap:6px}
+.hero-telas{position:relative;padding:0 21% 4% 3%}
+.hero-tablet,.hero-celular{overflow:hidden;background:var(--ink);border:6px solid var(--ink);border-radius:16px;box-shadow:0 10px 20px #55101a88}
+.hero-tablet{aspect-ratio:1.62;transform:rotate(-3deg)}
+.hero-celular{position:absolute;width:28%;aspect-ratio:.52;right:5%;bottom:0;transform:rotate(8deg)}
+.hero-telas img{width:100%;height:100%;object-fit:cover;object-position:top}
+.hero-maos{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);align-items:end;gap:8px;padding-bottom:3px}
+.hero-capas{display:flex;align-items:center;justify-content:center;padding:8px 4px 15px}
+.hero-personagem{width:min(100%,280px);justify-self:end}
+@media(max-width:680px){
+  .hero .wrap{grid-template-columns:minmax(0,1fr);gap:14px}
+  .hero .hero-copy{padding-bottom:0}
+  .hero h1{font-size:clamp(2.45rem,9.5vw,3.6rem)}
+  .hero .hero-copy>p{max-width:46ch}
+  .hero-vitrine{width:min(100%,440px);justify-self:center}
+  .hero-personagem{width:min(100%,210px)}
+}
+#pais{background:#e3edf7;color:var(--navy)}
+
+.escola-fotos{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.escola-fotos img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+@media(max-width:680px){.escola-fotos img{aspect-ratio:4/5}}
+
+.hero .cta{clear:both}
+.escola-perfil{grid-column:1/-1;font-weight:700;text-underline-offset:3px}
+.escola-fotos{grid-template-columns:minmax(0,360px)}
+.escola-fotos img{aspect-ratio:3/2;object-position:50% 55%}
+@media(max-width:680px){
+
+  .escola-chamada .btn{white-space:normal;text-align:left}
+}
+
+
+.rabisco-estudos{display:inline-block;margin-left:.18em;color:var(--wine);font-family:system-ui;font-size:.7em;transform:rotate(12deg)}
+
+.hero-capas{gap:5%;padding-top:24%;padding-bottom:14px}
+.hero-apostila{position:relative;width:46%;isolation:isolate}
+.hero-apostila:first-child{transform:rotate(-8deg)}
+.hero-apostila:last-child{transform:rotate(8deg)}
+.hero-apostila img{display:block;width:100%;height:auto;border-radius:3px;box-shadow:0 4px 10px #55101a88}
+.hero-apostila .hero-folha{position:absolute;z-index:-1;left:8%;bottom:24%;width:89%;transform:rotate(-11deg)}
+.hero-apostila:last-child .hero-folha{transform:rotate(11deg)}
+
+.hero{background:radial-gradient(ellipse at 88% 66%,#8d273a 0,transparent 62%),#691a2c}
+.hero::before{opacity:.35}
+.hero-arte-acordes{float:right;display:block;width:clamp(86px,23%,125px);margin:5px 0 12px 18px}
+.hero-arte-acordes img{width:100%;height:auto;border-radius:9px;box-shadow:0 8px 22px #32101b55}
+.hero-vitrine{gap:22px;padding-top:12px}
+.hero-maos{padding:0 4px 6px}
+.hero-capas{padding-top:14%;gap:7%}
+.hero-apostila:first-child{transform:rotate(-4deg)}
+.hero-apostila:last-child{transform:rotate(4deg)}
+.hero-apostila .hero-folha{bottom:17%;transform:rotate(-7deg)}
+.hero-apostila:last-child .hero-folha{transform:rotate(7deg)}
+@media(max-width:680px){
+  .hero .wrap{row-gap:18px}
+  .hero-vitrine{padding-top:16px;gap:16px}
+  .hero .aluno-acesso{margin-bottom:0}
+}
+</style>
+</head>
+<body>
+
+<!-- links: jogos em https://jogos.beaterista.com.br · WhatsApp da escola (18) 99180-4150 · compras pela Hotmart (mesmos links da lojinha) -->
+
+<header class="hero">
+  <div class="wrap">
+    <div class="nav"><img src="assets/f417de08a82cf518.png" alt="Beaterista escola de música"><a class="btn ghost" style="font-size:.95rem;padding:.4em 1em" href="#materiais">ver materiais</a></div>
+    <div class="hero-copy">
+      <h1 class="A">Aulas de música na palma da mão. <em>Depois, mão na massa.</em></h1>
+      <a class="hero-arte-acordes" href="#estudos" aria-label="Veja os estudos de acordes de violão"><img src="assets/f46effde7f724513.webp" alt="Acordes de violão: veja, ouça e toque" width="540" height="675"></a>
+      <p>Aproveite o tempo na tela pra aprender música jogando. O Robôterista Paul, meu assistente, te guia em desafios de ritmo e leitura musical. Depois, pegue uma apostila ou vá direto pro instrumento e coloque em prática o que aprendeu.</p>
+      <div class="cta">
+        <a class="btn" href="https://jogos.beaterista.com.br/#/jogos/detetive">Jogar agora grátis</a>
+        <a class="btn ghost" href="#materiais">Ver materiais pra imprimir</a>
+      </div>
+      <p class="aluno-acesso"><strong>Já é aluno da Beaterista?</strong> Seu passe anual está incluso. <a href="https://jogos.beaterista.com.br/#/album">Entrar com meu código</a></p>
+    </div>
+    <div class="hero-vitrine">
+      <div class="hero-telas">
+        <div class="hero-tablet"><img src="assets/a6053f0358e0bd84.webp" alt="Tela do jogo de leitura musical pauLta em um mockup de iPad"></div>
+        <div class="hero-celular"><img src="assets/02eded2a16dc87b7.webp" alt="Dicionário de acordes de violão em um mockup de celular"></div>
+      </div>
+      <div class="hero-maos">
+        <a class="hero-capas" href="#materiais" aria-label="Ver apostilas e materiais para imprimir">
+          <span class="hero-apostila"><img class="hero-folha" src="assets/7bd09f8b5cfd4b92.webp" alt=""><img class="hero-capa" src="assets/d5c382ef93281c9a.webp" alt="Capa de Robôterista Ensina · Na Prática"></span>
+          <span class="hero-apostila"><img class="hero-folha" src="assets/8b274609886c9512.webp" alt=""><img class="hero-capa" src="assets/454982bc25227a5a.webp" alt="Capa de Harmonia e Melodia"></span>
+        </a>
+        <img class="hero-personagem" src="assets/b5d6563afb9fc0ff.png" alt="Robôterista Paul com seu amplificador">
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="jogos" id="jogos">
+  <div class="wrap">
+    <h2 class="A">veja por dentro</h2>
+    <p class="lead">Mais de 15 jogos e estudos</p>
+    <div class="gal">
+      <article class="j"><div class="shot"><img src="assets/59f03481c1a887c9.webp" alt="Beat Hero" loading="lazy"></div><div class="tx"><h3>Beat Hero</h3><p>toque no tempo certo e ganhe XP, com músicas de vários estilos.</p><span class="tag">coordenação</span><span class="tag">precisão de tempo</span></div></article>
+      
+      <article class="j"><div class="shot"><img src="assets/7dfe2be6cd132427.webp" alt="Detetive Note" loading="lazy"></div><div class="tx"><h3>Detetive Note</h3><p>Ouvir e repetir um ritmo usando cartas.</p><span class="tag">escuta</span><span class="tag">memória rítmica</span></div></article>
+      <article class="j"><div class="shot"><img src="assets/c0c549a9b88ef20b.webp" alt="Figurix" loading="lazy"></div><div class="tx"><h3>Figurix</h3><p>62 fases pra dominar semínima, colcheia, pausas e muito mais.</p><span class="tag">valor das figuras</span><span class="tag">raciocínio</span></div></article>
+      <article class="j"><div class="shot"><img src="assets/a6053f0358e0bd84.webp" alt="pauLta" loading="lazy"></div><div class="tx"><h3>pauLta</h3><p>Encontrar notas na pauta e ler as claves de sol e de fá.</p><span class="tag">partitura</span><span class="tag">claves</span></div></article>
+      <article class="j"><div class="shot"><img src="assets/c4d98b45bb28c88a.webp" alt="Uno Musical" loading="lazy"></div><div class="tx"><h3>Uno Musical</h3><p>jogue a carta da mesma cor ou figura rítmica. contra o Robôterista Paul ou com amigos.</p><span class="tag">figuras</span><span class="tag">estratégia</span></div></article>
+      
+      
+      
+      
+      <article class="j"><div class="shot"><img src="assets/53c9b526fedbefb3.webp" alt="Bateria de toque" loading="lazy"></div><div class="tx"><h3>Tocar</h3><p>Tocar percussão na tela e gravar seu ritmo. Também dá pra explorar piano e violão.</p><span class="tag">criatividade</span><span class="tag">coordenação</span></div></article>
+      
+    </div>
+    <p style="text-align:center;margin-top:36px"><a class="btn" href="https://jogos.beaterista.com.br/#/jogos/detetive">Jogar Detetive Note</a></p>
+  </div>
+</section>
+
+<section class="estudos" id="estudos">
+  <div class="wrap">
+    <h2 class="A">estudos de música <span class="rabisco-estudos" aria-hidden="true">♫</span></h2>
+    <div class="estudos-grid">
+      <article><a download="dicionario-da-bateria.webp" href="assets/012e4c6bd66c4ad6.webp" aria-label="Ampliar a tela do dicionário da bateria"><img src="assets/012e4c6bd66c4ad6.webp" alt="" loading="lazy"></a><div><h3>Dicionário musical</h3><p>consulte os termos da bateria e relembre o vocabulário usado nas aulas.</p></div></article>
+      <article><a download="estudos-acordes-violao.webp" href="assets/02eded2a16dc87b7.webp" aria-label="Ampliar a tela de acordes"><img src="assets/02eded2a16dc87b7.webp" alt="" loading="lazy"></a><div><h3>Acordes de violão</h3><p>veja onde colocar os dedos e ouça como cada acorde soa.</p></div></article>
+      <article><a download="estudos-ritmos-de-bateria.webp" href="assets/6741ad560bcf30ff.webp" aria-label="Ampliar a tela de ritmos"><img src="assets/6741ad560bcf30ff.webp" alt="" loading="lazy"></a><div><h3>Ritmos de bateria</h3><p>acompanhe a partitura e ouça levadas de rock, pop, samba e baião.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="loja" id="materiais">
+  <div class="wrap">
+    <h2 class="A">Da tela pra mão na massa</h2>
+    <img class="oferta-banner" src="assets/9c5cc9a5295ed6fd.webp" alt="Lojinha Beaterista, ebooks, cursos, jogos e materiais para imprimir" width="1450" height="483" loading="lazy">
+    <p class="lead">Se quiser levar a prática pra fora da tela, na lojinha você encontra jogos pra imprimir e recortar, atividades pra colorir e apostilas pra tocar em casa. Escolha o material que combina com o que seu filho quer explorar.</p>
+    <h3 class="A colecao-titulo">Materiais do Robôterista Paul</h3>
+    <div class="prat novos-materiais">
+      <article class="p"><img src="assets/d5c382ef93281c9a.webp" alt="Capa de Robôterista Ensina · Na Prática" loading="lazy"><b>Robôterista Ensina · Na Prática</b><small>48 atividades em 64 páginas. Jogos, desafios de ritmo e desenhos pra imprimir em A4. Inclui gabarito.</small><a class="btn" download="caderno-paul-amostra.webp" href="assets/7bd09f8b5cfd4b92.webp">Ver uma atividade</a><a class="colecao-link" href="https://pay.hotmart.com/V108460210V?src=vendas">Ver na Hotmart</a></article>
+      <article class="p"><img src="assets/6051f022964e2c44.webp" alt="Capa de Robôterista Ensina · Ritmo e Figuras" loading="lazy"><b>Robôterista Ensina · Ritmo e Figuras</b><small>100 páginas com figuras rítmicas, pausas, jogos, partituras e levadas de rock.</small><a class="btn" href="https://pay.hotmart.com/Q108426927S?src=vendas">Ver na Hotmart</a></article>
+      <article class="p"><img src="assets/454982bc25227a5a.webp" alt="Capa de Robôterista Ensina · Harmonia e Melodia" loading="lazy"><b>Robôterista Ensina · Harmonia e Melodia</b><small>102 páginas sobre notas, pauta e acordes no teclado e no violão, com jogos e músicas.</small><a class="btn" href="https://pay.hotmart.com/L108460189W?src=vendas">Ver na Hotmart</a></article>
+    </div>
+    <div class="prat">
+      <div class="p"><img src="assets/b818eb1301f167a1.webp" alt="" loading="lazy"><b>Bateria Kids</b><small>36 páginas · aprenda brincando e colorindo</small><a class="btn" href="https://pay.hotmart.com/J103900759O?src=vendas">Ver na Hotmart</a></div>
+      <div class="p"><img src="assets/8df69808fc5f6bc4.webp" alt="" loading="lazy"><b>Jogo da Memória Musical</b><small>8 temas e 61 pares, em cores e em preto e branco, pra imprimir e jogar em família.</small><a class="btn" href="https://pay.hotmart.com/T108261878K?src=vendas">Ver na Hotmart</a></div>
+
+
+      <div class="p"><img src="assets/d9daf41f0b6b6594.webp" alt="" loading="lazy"><b>Beaterista Mood</b><small>55 páginas · exercícios que a Bea estuda e leva pro palco</small><a class="btn" href="https://pay.hotmart.com/G103615712R?src=vendas">Ver na Hotmart</a></div>
+      <div class="p"><img src="assets/35ecddbb7129c81b.webp" alt="" loading="lazy"><b>Bateria Start</b><small>apostila do curso · peças, figuras, partitura e rudimentos</small><a class="btn" href="https://pay.hotmart.com/K66533032H?src=vendas">Ver na Hotmart</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="pais">
+  <div class="wrap pais">
+    <div>
+      <div class="bea-apresentacao"><div><h2 class="A">Oi, eu sou a Bea!</h2><p>Sou professora de bateria e fundadora da Beaterista. Criei, desenvolvi e revisei cada atividade pensando nas dificuldades que vejo nas aulas. Quando um aluno trava na pauta, eu penso: como transformar isso num desafio que ele queira tentar de novo? Foi assim que nasceram os jogos.</p></div><div class="bea-fotos"><img src="assets/d46fe097df0f9ef3.webp" alt="Bea sorrindo atrás de uma bateria Nagano" width="1050" height="700" loading="lazy"><img src="assets/f3db0252c57c9c35.webp" alt="Retrato da Bea com baquetas" width="1150" height="983" loading="lazy"><img src="assets/875ba4fd1fe24d29.webp" alt="Bea tocando bateria no estúdio" width="1150" height="767" loading="lazy"></div></div>
+      <a class="btn" href="https://jogos.beaterista.com.br/#/jogos/relatorio">ver o que cada jogo ensina</a>
+    </div>
+    <div class="pais-exemplos">
+      <figure><a download="paulta-jogando.webp" href="assets/a6053f0358e0bd84.webp"><img src="assets/a6053f0358e0bd84.webp" alt="Ampliar o print da leitura de partitura no pauLta" loading="lazy"></a><figcaption>leitura de pauta</figcaption></figure>
+      <figure><a download="estudos-ritmos-de-bateria.webp" href="assets/6741ad560bcf30ff.webp"><img src="assets/6741ad560bcf30ff.webp" alt="Abra a tela de estudo de ritmos de bateria em tamanho maior" loading="lazy"></a><figcaption>ritmos na partitura</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+
+<section class="escola-beaterista" id="escola">
+  <div class="wrap escola-chamada">
+    <div><div class="escola-titulo"><h2 class="A">Conheça a escola Beaterista</h2><img src="assets/7f0899417780103b.webp" alt="Logo dourado da Escola de Música Beaterista" loading="lazy"></div><p>Em Araçatuba, a música também acontece em sala de aula e no palco. Veja as aulas presenciais e o trabalho dos nossos alunos.</p></div>
+    <a class="btn" href="https://beaterista.com.br/">Conheça a escola e os alunos clicando aqui</a>
+    <a class="escola-perfil" href="https://www.instagram.com/beaterista_/">Ver meu perfil no Instagram</a>
+    <div class="escola-fotos"><img src="assets/d4a3b8edf7059b52.webp" alt="Fachada da Escola de Música Beaterista" width="862" height="1150" loading="lazy"></div>
+  </div>
+</section>
+
+<section class="paul-extra" id="conheca-o-paul">
+  <div class="wrap">
+    <details open>
+      <summary>Conheça o Robôterista Paul</summary><p class="paul-intro">O Robôterista Paul guia os desafios, e a criança pode consultar o <a href="https://jogos.beaterista.com.br/#/dicionario">dicionário musical</a> quando encontrar um termo novo.</p>
+      <div class="paul-gallery">
+        <a class="paul-story" download="paul-por-que.webp" href="assets/71b6d7616eaebe73.webp">
+          <img src="assets/71b6d7616eaebe73.webp" alt="Por que o nome Robôterista Paul? Uma homenagem a Paul McCartney e as músicas favoritas da Bea." width="1122" height="1402" loading="lazy">
+        </a>
+        <div class="paul-posters" aria-label="Cartazes do Robôterista Paul">
+      <a download="paul-cartaz-01.webp" href="assets/d822ce626b95da25.webp"><img src="assets/d822ce626b95da25.webp" alt="Seu parceiro de som" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-02.webp" href="assets/d9e6cc4c39d69418.webp"><img src="assets/d9e6cc4c39d69418.webp" alt="Bora evoluir no groove?" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-03.webp" href="assets/98c0171b57fe76f6.webp"><img src="assets/98c0171b57fe76f6.webp" alt="Seu próximo estudo começa na lojinha" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-04.webp" href="assets/17a0f57e77a0ef55.webp"><img src="assets/17a0f57e77a0ef55.webp" alt="Jogue, colecione, complete seu álbum" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-05.webp" href="assets/8cf83cdf7b354cee.webp"><img src="assets/8cf83cdf7b354cee.webp" alt="Seu parceiro de groove" width="267" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-06.webp" href="assets/1528b3cd1dbadc94.webp"><img src="assets/1528b3cd1dbadc94.webp" alt="A Bea ensina, eu treino com você" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-07.webp" href="assets/e7b0c0ac94ea9917.webp"><img src="assets/e7b0c0ac94ea9917.webp" alt="Dá o play, deixa a música levar" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-08.webp" href="assets/c854691a0f8a3674.webp"><img src="assets/c854691a0f8a3674.webp" alt="Menos pressa, mais groove" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-09.webp" href="assets/5dea56c2ee6ffc7d.webp"><img src="assets/5dea56c2ee6ffc7d.webp" alt="O ritmo é seu, o palco também" width="266" height="333" loading="lazy"></a>
+      <a download="paul-cartaz-10.webp" href="assets/ae15d3ff64c6b08c.webp"><img src="assets/ae15d3ff64c6b08c.webp" alt="Solta o play, vem pro ritmo" width="267" height="333" loading="lazy"></a>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="album" id="album">
+  <div class="wrap">
+    <h2 class="A">Mais de 100 figurinhas pra desbloquear</h2>
+    <p class="lead">A criança ganha figurinhas conforme avança nos jogos e, com elas, conhece novos músicos e bandas.</p>
+    <div class="fan"><img src="assets/50e43d9c1ac86e11.webp" alt="Figurinha do Robôterista Paul"><img src="assets/db26dd0ec59a36c5.webp" alt="Figurinha da Beaterista"><img src="assets/fc58973b8a158f96.webp" alt="Figurinha de rock"><img src="assets/d57f002811f7348a.webp" alt="Figurinha de pop"><img src="assets/37998267bd48c6fd.webp" alt="Figurinha do Robôterista Paul"></div>
+    <p style="text-align:center"><small class="T">libere o álbum com seu código&nbsp;de&nbsp;acesso</small></p>
+  </div>
+</section>
+
+
+
+<section id="passe">
+  <div class="wrap">
+    <h2 class="A">Passe anual Beaterista</h2>
+    <img class="oferta-banner" src="assets/fd0404cadcf02a60.webp" alt="Passe Beaterista, jogos musicais, modo online e estudos" width="1450" height="483" loading="lazy">
+    <p class="lead">O passe libera as fases, os estudos, a roleta e o álbum de figurinhas.</p>
+    <div class="passe-oferta">
+      <p><strong>R$ 49,90</strong> · pagamento único · 12 meses de acesso</p>
+      <a class="btn" href="https://wa.me/5518991804150?text=Oi%2C%20Bea%21%20Quero%20saber%20como%20assinar%20o%20Passe%20Anual%20Beaterista.">Consultar compra pelo WhatsApp</a>
+    </div>
+    <p class="aluno-acesso"><strong>Já é aluno da Beaterista?</strong> Seu passe anual está incluso. <a href="https://jogos.beaterista.com.br/#/album">Entrar com meu código</a></p>
+  </div>
+</section>
+
+
+
+
+
+
+<section class="parc"><div class="wrap"><img src="assets/518e62a48b86f88d.png" alt="Pad Gorilla, Spark Cajons e Nagano Drums"><p>a Beaterista tem parceria com Pad Gorilla, Spark e Nagano Drums</p></div></section>
+
+<section>
+  <div class="wrap" style="max-width:800px">
+    <h2 class="A">perguntas frequentes</h2>
+    <details><summary>precisa instalar alguma coisa?</summary><p>não. abre direto no navegador. se quiser, dá pra adicionar o ícone na tela inicial do celular ou tablet.</p></details>
+    <details><summary>é pra qual idade?</summary><p>a escola Beaterista ensina crianças e adultos, e os jogos servem pros dois. o Robôterista Paul explica de um jeito leve, sem faixa de idade.</p></details>
+    <details><summary>preciso saber música pra começar?</summary><p>não. tem jogos pra quem nunca tocou e fases que sobem de nível aos poucos.</p></details>
+    <details><summary>preciso ter bateria?</summary><p>não. dá pra tocar na tela. alguns jogos aceitam o microfone se você tiver instrumento, mas não é obrigatório.</p></details>
+    <details><summary>o que é o código de aluno?</summary><p>ele libera o acesso completo. alunos da escola podem pedir o código à Bea. quem estuda por conta própria pode solicitar o passe anual pelo WhatsApp.</p></details>
+    <details><summary>os materiais em pdf são enviados como?</summary><p>a compra é pela Hotmart e o acesso ao PDF chega por lá, na hora do pagamento confirmado.</p></details>
+    <details><summary>funciona sem internet?</summary><p>não: os jogos precisam de internet pra abrir e funcionar. por isso é um site, sem instalar nada.</p></details>
+  </div>
+</section>
+
+
+
+<footer>
+  <div class="wrap">
+    <p>beaterista escola de música · <a href="https://beaterista.com.br">beaterista.com.br</a></p>
+    <p style="margin-top:8px"><a href="https://www.instagram.com/beaterista_/">@beaterista_</a> · <a href="https://www.tiktok.com/@beaterista">@beaterista</a> · <a href="https://www.youtube.com/@beateristadrummer">@beateristadrummer</a></p>
+  </div>
+</footer>
+<div class="sticky"><a class="btn" href="https://jogos.beaterista.com.br/#/jogos/detetive">Jogar agora grátis</a></div>
+</body>
+</html>
