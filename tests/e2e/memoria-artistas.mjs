@@ -25,7 +25,7 @@ async function jogarTudo(p) { // lê a foto de cada carta, vira os pares e esper
   check('trancados: Bandas, Solos e os outros 5 temas (7 no total)', t.filter((x) => x.lk).length === 7 && t.filter((x) => x.lk).map((x) => x.t).includes('Bandas') && t.filter((x) => x.lk).map((x) => x.t).includes('Solos'), t.filter((x) => x.lk).map((x) => x.t).join(', '));
   await p.locator('.mem-theme.locked').first().click(); await sleep(300);
   check('tocar num tema trancado avisa e não troca o tema', (await p.locator('.mem-lockmsg').count()) === 1 && (await p.locator('.mem-theme.on b').textContent()).includes('The Beatles'));
-  check('opções discretas: ícones 👤 👥 🤖 📱 e setinhas de pares (começa em 8)', (await p.locator('.mem-ic').count()) === 4 && (await rotulo(p)) === '8 pares' && (await p.locator('.kd-chip').count()) === 0);
+  check('opções discretas: ícones 👤 👥 🤖 📱(sala) e setinhas de pares (começa em 8)', (await p.locator('.mem-ic').count()) === 4 && (await rotulo(p)) === '8 pares' && (await p.locator('.kd-chip').count()) === 0);
   await passo(p, -1); check('setinha ‹ leva a 6 pares e trava no mínimo', (await rotulo(p)) === '6 pares' && await p.locator('.mem-step button[aria-label="menos pares"]').isDisabled());
   await passo(p, 1); await passo(p, 1); check('setinha › chega a 12 pares e trava no máximo', (await rotulo(p)) === '12 pares' && await p.locator('.mem-step button[aria-label="mais pares"]').isDisabled());
   await passo(p, -1); await passo(p, -1); await p.locator('.kx-go').click(); await sleep(600);

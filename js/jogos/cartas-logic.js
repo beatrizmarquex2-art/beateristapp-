@@ -51,7 +51,7 @@ export const available = (g) => g.draw.length + Math.max(0, g.discard.length - 1
 export const adv = (g, p, k = 1) => (((p + g.dir * k) % g.n) + g.n) % g.n;
 
 export function newGame({ mode = 'paul', players = 2, rnd = Math.random } = {}) {
-  const n = mode === 'paul' ? Math.max(2, Math.min(4, players | 0 || 2)) : 2;
+  const n = mode === 'paul' || mode === 'local' ? Math.max(2, Math.min(4, players | 0 || 2)) : 2; // contra o computador e no mesmo celular: 2 a 4 jogadores
   const deck = shuffle(makeDeck(), rnd);
   const hands = Array.from({ length: n }, (_, i) => deck.slice(i * HAND, (i + 1) * HAND));
   let rest = deck.slice(n * HAND);

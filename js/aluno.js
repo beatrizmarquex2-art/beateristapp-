@@ -1,6 +1,7 @@
 // Área do aluno (aluno.html): sem login. O aluno escolhe um nome, joga os Jogos de ritmo e o Kids e aparece no ranking que todos veem.
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
-import { h, icon } from './util.js';
+import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
+import { h, icon, uid } from './util.js';
 import { soundButton } from './sound-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
@@ -14,6 +15,28 @@ import * as dicionario from './views/dicionario.js';
 import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
+import * as teoriaBasica from './kids/teoria.js';
+import { acordesView, ritmosView } from './views/estudos-som.js';
+import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
+/** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
+/** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
+function versaoApp() {
+  const v = h('b', {}, '…'); const msg = h('p', { class: 'muted', role: 'status' });
+  try { caches.keys().then((ks) => { const k = ks.filter((x) => /^beaterista-v\d+/.test(x)).sort().pop(); v.textContent = k ? k.replace('beaterista-', '') : 'sem cópia'; }); } catch { v.textContent = '?'; }
+  const atualizar = async () => {
+    msg.textContent = 'atualizando…';
+    try { const regs = (await navigator.serviceWorker.getRegistrations()) || []; await Promise.all(regs.map((r) => r.unregister())); } catch { /* sem service worker */ }
+    try { const ks = await caches.keys(); await Promise.all(ks.map((k) => caches.delete(k))); } catch { /* sem cache */ }
+    location.reload();
+  };
+  return h('section', { class: 'card pad al-versao' }, h('p', {}, 'versão do app: ', v), h('button', { class: 'btn small', type: 'button', onclick: atualizar }, '🔄 atualizar agora'), msg);
+}
+function marcarEstudo(id) {
+  const antes = META.ler().feitas.length; const s = META.marcar(id);
+  if (s.feitas.length > antes) ganhouEstrela('estudos', 1 + (META.cumprida(s) ? 3 : 0));
+  return s;
+}
+import * as SALVAR from './salvar-codigo.js';
 import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
 import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
 import { AULAS, montarAula } from './kids/aulas-paul.js';
@@ -32,6 +55,7 @@ import * as roleta from './views/roleta.js';
 import './ipad-fit.js';
 import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
+import { pending as FRpend } from './figurinhas/rewards.js'; // quantos giros/pacotes esperando (bolinha vermelha na aba roleta)
 import * as perfil from './views/perfil.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
@@ -52,7 +76,7 @@ let cleanup = null;
 document.documentElement.classList.add('aluno-on');
 
 const ID_KEY = 'beaterista-aluno-id';
-const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = crypto.randomUUID(); localStorage.setItem(ID_KEY, v); } return v; } catch { return crypto.randomUUID(); } };
+const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = uid(); localStorage.setItem(ID_KEY, v); } return v; } catch { return uid(); } };
 /** Conta 1 visita por sessão; atualiza o nome quando ele muda. */
 function logVisit(name) {
   let novo = true; try { novo = !sessionStorage.getItem('bt-aluno-visita'); sessionStorage.setItem('bt-aluno-visita', '1'); } catch { /* ok */ }
@@ -168,7 +192,7 @@ const ESTUDOS = {
   aulas: { href: '#/estudos/aulas', titulo: 'Aulas do Paul', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
   curiosidades: { href: '#/estudos/curiosidades', titulo: 'Curiosidades de músicos', sub: 'histórias de quem tocou antes de você', dentro: ['bateristas, pianistas, guitarristas e compositores', 'uma curiosidade por vez, com “outra” pra seguir', 'conta pra meta do dia'], dev: 'repertório e inspiração', tempo: '1 min', aberto: true },
   dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
-  dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Quiz e Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
+  dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
   erros: { href: '#/erros', titulo: '5 erros', sub: 'material em PDF da professora Bea', dentro: ['PDF pra ler e baixar', 'os 5 erros mais comuns de quem está começando e como evitar cada um'], dev: 'evitar vícios desde o começo', tempo: '5 min', aberto: true },
   ensinam: { href: '#/jogos/relatorio', titulo: 'Jogos Ensinam', sub: 'o que cada jogo desenvolve, aberto pra pais e responsáveis', dentro: ['uma folha por jogo: o que a criança faz e o que desenvolve', 'serve pra mostrar pra família por que brincar também é estudar'], dev: 'entender o que cada jogo treina', tempo: '5 min', aberto: true },
 };
@@ -177,42 +201,60 @@ const VISTOS = 'beaterista-estudos-vistos';
 const vistos = () => { try { return JSON.parse(localStorage.getItem(VISTOS) || '[]'); } catch { return []; } };
 const marcarVisto = (id) => { try { const v = vistos(); if (!v.includes(id)) localStorage.setItem(VISTOS, JSON.stringify([...v, id])); } catch { /* sem armazenamento: só não lembra */ } };
 
-/** Aba Estudos: "seu próximo passo" no topo, depois "aprender" e "conhecer o método", cada cartão com uma prévia do que tem dentro. */
-function estudosView(view) {
+/** Aba Estudos: 3 áreas coloridas (ritmo · melodia e harmonia · teoria) e, embaixo, os MODOS DE ESTUDO da área escolhida em cartões grandes com desenho. Sem textão: abre direto no que estudar. */
+const AREAS = [
+  ['ritmo', '🥁', 'ritmo', 'sinta o tempo e o groove', '#d3122f', '#fff', 'p-drum2.webp', [
+    ['#/estudos/aulas/bateria', '🥁', 'Aula de bateria', 'peças, levada de rock e postura · 10 min', 'aulas'],
+    ['#/kids/figuras/aula', '🎵', 'Figuras rítmicas', 'o tempo, as pausas e a tercina · 10 min', 'aulas'],
+    ['#/estudos/ritmos', '🔊', 'Ritmos de bateria', 'rock, pop, funk, samba, reggae… veja e ouça', null],
+    ['#/estudos/basica/figuras', '🎶', 'Figuras e pausas', 'cartões + mini quiz de 3 perguntas', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e fórmula de compasso', null]]],
+  ['melodia', '🎹', 'melodia e harmonia', 'notas, escalas e acordes', '#17365B', '#fff', 'p-guitar.webp', [
+    ['#/estudos/aulas/teclado', '🎹', 'Aula de teclado', 'teclas, notas, escala e acordes · 10 min', 'aulas'],
+    ['#/estudos/aulas/violao', '🎸', 'Aula de violão', 'cordas, acorde e batida · 8 min', 'aulas'],
+    ['#/estudos/acordes/violao', '🎸', 'Acordes de violão e guitarra', '16 acordes: veja onde pôr o dedo e ouça', null],
+    ['#/estudos/acordes/teclado', '🎹', 'Acordes de teclado', 'as 12 notas em 5 tipos de acorde', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'dó ré mi fá sol lá si + mini quiz', null]]],
+  ['teoria', '📖', 'teoria', 'ler, entender e conhecer', '#EBA332', '#142036', 'p-book.webp', [
+    ['#/estudos/basica/figuras', '🎵', 'Figuras', 'quanto dura cada nota · mini quiz', null],
+    ['#/estudos/basica/pausas', '🤫', 'Pausas', 'o silêncio também conta · mini quiz', null],
+    ['#/estudos/basica/claves', '𝄞', 'Claves', 'sol, fá, dó e a bateria · mini quiz', null],
+    ['#/estudos/basica/tempo', '⏱️', 'Tempo e compasso', 'pulso, BPM e compasso · mini quiz', null],
+    ['#/estudos/basica/leitura', '🎼', 'Leitura de notas', 'os nomes das notas · mini quiz', null],
+    ['#/dicionario', '📚', 'Dicionário musical', 'busque um termo e veja tocando', 'dicionario'],
+    ['#/estudos/curiosidades', '💡', 'Curiosidades de músicos', 'histórias de quem tocou antes de você', 'curiosidades'],
+    ['#/estudos/dicas', '🧠', 'Dicas do método', 'como a Bea estuda e ensina', 'dicas'],
+    ['#/erros', '⚠️', '5 erros', 'os erros mais comuns de quem começa', 'erros'],
+    ['#/jogos/relatorio', '👨‍👩‍👧', 'Jogos Ensinam', 'pra pais e responsáveis', 'ensinam']]],
+];
+function estudosView(view, parts = []) {
   const v = vistos();
-  const cartao = (id, destaque) => {
-    const it = ESTUDOS[id]; const lk = AC.trancado(it.href); const am = it.amostra && !AC.liberado() ? it.amostra() : null; const visto = v.includes(id);
-    const abrir = () => marcarVisto(id);
-    return h('article', { class: `card pad al-card es-card${lk ? ' locked' : ''}${destaque ? ' es-next' : ''}` },
-      h('a', { class: 'es-main', href: it.href, onclick: abrir, 'aria-label': lk ? `${it.titulo}, só pra alunos com código` : am ? `${it.titulo}, amostra grátis: ${am}` : null },
-        h('h2', { class: 'tag' }, lk ? '🔒 ' : '', it.titulo, am ? h('small', { class: 'al-am' }, ` · grátis: ${am}`) : null, visto ? h('small', { class: 'es-ok' }, ' ✓') : null),
-        h('p', { class: 'muted' }, it.sub)),
-      h('details', { class: 'es-prev' }, h('summary', {}, 'o que tem dentro'),
-        h('ul', {}, ...it.dentro.map((x) => h('li', {}, x))),
-        h('p', { class: 'es-meta' }, h('b', {}, 'desenvolve: '), it.dev, ' · ', h('b', {}, 'leva: '), it.tempo),
-        lk ? h('p', { class: 'es-lock' }, '🔒 abre com o código de aluno. ', h('a', { href: '#/lojinha' }, 'gerar meu código')) : null));
-  };
-  const proximo = TRILHA.find((id) => !v.includes(id));
-  const prox = proximo ? ESTUDOS[proximo] : null;
-  const passo = prox ? h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'seu próximo passo'), h('p', { class: 'es-frase' }, v.length ? `bora seguir: ${prox.titulo}` : `comece por aqui: ${prox.titulo}`),
-    h('a', { class: 'btn primary wide', href: prox.href, onclick: () => marcarVisto(proximo) }, `abrir · ${prox.tempo}`))
-    : h('section', { class: 'es-passo' }, h('p', { class: 'es-tag' }, 'tudo visto!'), h('p', { class: 'es-frase' }, 'agora é praticar: abra a aba Jogos e ganhe estrelas'), h('a', { class: 'btn primary wide', href: '#/jogos' }, 'ir pros jogos'));
-  // meta do dia: 3 coisinhas (dica musical, passo de aula, curiosidade) com barra e sequência
-  META.marcar('dica'); // ver a dica do dia já conta
+  let area = AREAS.find((a) => a[0] === parts[0])?.[0] || (() => { try { return localStorage.getItem('beaterista-estudos-area') || 'ritmo'; } catch { return 'ritmo'; } })();
+  if (!AREAS.some((a) => a[0] === area)) area = 'ritmo';
+  marcarEstudo('dica'); // abrir os Estudos já conta a dica do dia
   const mt = META.ler(); const seq = META.sequencia(mt);
-  const meta = h('section', { class: 'card pad es-meta-dia', 'aria-label': 'Meta de hoje' },
-    h('div', { class: 'es-meta-top' }, h('b', {}, META.cumprida(mt) ? 'meta de hoje cumprida! 🎉' : 'meta de hoje'), h('small', {}, seq ? `🔥 ${seq} ${seq === 1 ? 'dia' : 'dias'} seguidos` : 'comece a sua sequência')),
-    h('div', { class: 'es-barra', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': META.METAS.length, 'aria-valuenow': mt.feitas.length }, h('i', { style: `width:${(mt.feitas.length / META.METAS.length) * 100}%` })),
-    h('ul', { class: 'es-metas' }, ...META.METAS.map(([k, t]) => h('li', { class: mt.feitas.includes(k) ? 'ok' : '' }, mt.feitas.includes(k) ? '✓ ' : '○ ', t))));
-  // dica musical do dia (aberta pra todo mundo; "outra" mostra a próxima)
+  const meta = h('div', { class: 'es-strip', 'aria-label': 'Meta de hoje' },
+    h('span', { class: 'es-strip-t' }, META.cumprida(mt) ? '🎉 meta cumprida!' : 'meta de hoje'),
+    h('span', { class: 'es-dots' }, ...META.METAS.map(([k, t]) => h('i', { class: mt.feitas.includes(k) ? 'ok' : '', title: t, 'aria-label': `${t}: ${mt.feitas.includes(k) ? 'feito' : 'falta'}` }, mt.feitas.includes(k) ? '★' : '☆'))),
+    h('span', { class: 'es-strip-s' }, seq ? `🔥 ${seq}` : '★ +1 cada'));
+  const topo = h('div', { class: 'es-areas', role: 'tablist', 'aria-label': 'Áreas de estudo' });
+  const grade = h('div', { class: 'es-modos' });
+  const desenha = () => {
+    const A = AREAS.find((a) => a[0] === area);
+    topo.replaceChildren(...AREAS.map(([id, ic, nome, , cor, fg]) => h('button', { type: 'button', role: 'tab', 'aria-selected': String(id === area), class: `es-area${id === area ? ' on' : ''}`, style: `--c:${cor};--f:${fg}`, onclick: () => { area = id; try { localStorage.setItem('beaterista-estudos-area', id); } catch { /* ok */ } desenha(); } }, h('span', { class: 'es-ai', 'aria-hidden': 'true' }, ic), h('b', {}, nome))));
+    grade.style.setProperty('--c', A[4]); grade.style.setProperty('--f', A[5]);
+    grade.replaceChildren(h('div', { class: 'es-cab' }, h('img', { src: `assets/paul/${A[6]}`, alt: '', draggable: 'false', loading: 'lazy' }), h('div', {}, h('h2', {}, `${A[1]} ${A[2]}`), h('p', {}, A[3]))),
+      ...A[7].map(([href, ic, titulo, sub, vid]) => { const lk = AC.trancado(href); const visto = vid && v.includes(vid);
+        return h('a', { class: `es-modo${lk ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lk ? `${titulo}, só pra alunos com código` : titulo },
+          h('span', { class: 'es-mi', 'aria-hidden': 'true' }, ic), h('span', { class: 'es-mt' }, h('b', {}, titulo, lk ? ' 🔒' : '', visto ? ' ✓' : ''), h('small', {}, sub)), h('span', { class: 'es-go', 'aria-hidden': 'true' }, '▶')); }));
+  };
+  desenha();
+  // dica musical do dia (curtinha, no fim; "outra" mostra a próxima)
   let di = dicaDeHoje(); const dTag = h('p', { class: 'es-tag' }); const dTxt = h('p', { class: 'es-dica' });
-  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica musical do dia · ${tema}`; dTxt.textContent = txt; };
+  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `💡 dica do dia · ${tema}`; dTxt.textContent = txt; };
   desenhaDica();
   const dica = h('section', { class: 'card pad es-dica-box' }, dTag, dTxt, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { di++; desenhaDica(); } }, 'outra dica'));
-  view.append(banner('Estudos', 'aprender com calma'), arteDoPaul('arte-estudos', 'bora evoluir no groove?', 'exercícios, prática e material pra seguir avançando', 'o Paul sentado com a baqueta: bora evoluir no groove? na área de estudos, exercícios, prática e material intermediário'),
-    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, meta, dica, passo,
-      h('h3', { class: 'es-sec' }, 'aprender'), cartao('aulas', proximo === 'aulas'), cartao('curiosidades', proximo === 'curiosidades'), cartao('dicionario', proximo === 'dicionario'), cartao('dicas', proximo === 'dicas'),
-      h('h3', { class: 'es-sec' }, 'conhecer o método'), cartao('erros', proximo === 'erros'), cartao('ensinam', proximo === 'ensinam')));
+  view.append(banner('Estudos', 'aprender brincando'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, meta, topo, grade, dica));
 }
 
 /** Aulas do Paul: lista das 4 aulas (as 3 novas e a das figuras rítmicas). */
@@ -226,21 +268,21 @@ function aulaView(view, id) {
   if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
   view.append(banner(`Aula de ${AULAS[id].titulo.toLowerCase()}`, 'com o Paul'), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ aulas')));
   const box = h('div', { class: 'pad-x' }); view.append(box);
-  return montarAula(box, id, { onPasso: () => { META.marcar('aula'); marcarVisto('aulas'); } });
+  return montarAula(box, id, { onPasso: () => { marcarEstudo('aula'); marcarVisto('aulas'); } });
 }
 
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
   const nome = h('h2', { class: 'tag' }); const inst = h('p', { class: 'es-tag' }); const txt = h('p', { class: 'es-dica' }); const pos = h('small', { class: 'muted' });
-  const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; META.marcar('curiosidade'); marcarVisto('curiosidades'); };
+  const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; marcarEstudo('curiosidade'); marcarVisto('curiosidades'); };
   view.append(banner('Curiosidades de músicos', 'quem tocou antes de você'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('article', { class: 'card pad es-cur' }, inst, nome, txt, pos),
     h('div', { class: 'row', style: 'gap:8px' }, h('button', { type: 'button', class: 'btn', onclick: () => { i--; draw(); } }, '‹ anterior'), h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => { i++; draw(); } }, 'outra curiosidade ›'))));
   draw();
 }
 
-/** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Quiz e Letras. */
+/** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Letras. */
 function dicasEstudoView(view) {
   const box = h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'carregando as dicas…'));
   view.append(banner('Dicas do método', 'pra estudar com calma'), box); let dead = false;
@@ -248,7 +290,7 @@ function dicasEstudoView(view) {
     if (dead) return; const list = tipList();
     box.replaceChildren(h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
       ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
-      h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (quiz e letras)'));
+      h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (Letras)'));
   });
   return () => { dead = true; };
 }
@@ -332,24 +374,42 @@ function trocarAluno() {
   });
 }
 
+/** "tenho código": folha rápida (aberta do topo de qualquer tela) pra digitar o código de acesso sem procurar a Lojinha. */
+function abrirCodigo() {
+  sheet('já tenho meu código', (close) => {
+    const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
+    const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
+    const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = 'não achei esse código. confira e tente de novo.'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+    return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
+      h('p', { class: 'muted' }, 'ainda não tem? ', h('a', { href: '#/lojinha', onclick: close }, 'veja a Lojinha')));
+  });
+}
+
 function shell(name) {
   const view = h('main', { id: 'view', tabindex: '-1' });
   const nav = h('nav', { class: 'bottom-nav', 'data-n': NAV.length, style: `grid-template-columns: repeat(${NAV.length}, 1fr)`, 'aria-label': 'Navegação' });
+  const tenhoCodigo = h('button', { type: 'button', class: 'btn small al-tenho', onclick: abrirCodigo, hidden: AC.liberado(), 'aria-label': 'tenho código de acesso' }, '🔑 código');
+  document.addEventListener('aluno-acesso', (ev) => { tenhoCodigo.hidden = !!(ev.detail); });
+  if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(),
+    tenhoCodigo,
     h('button', { type: 'button', class: 'btn small ghost', onclick: trocarAluno }, 'trocar aluno'));
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
+    { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
-    else if (r.name === 'dicas') { // Quiz e Letras: baixa as 30 dicas (só com código) e abre
+    else if (r.name === 'dicas') { // Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;
       if (AC.liberado()) DA.carregar(CODE.saved()).finally(() => { if (!dead) inner = dicas.mount(box, r.parts); }); // com código: baixa as dicas
       else inner = dicas.mount(box, r.parts); // sem código: amostra (caça-palavras com palavras do dicionário), nada é baixado
@@ -360,23 +420,31 @@ function shell(name) {
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
-    else if (r.name === 'perfil') c = perfil.mount(view);
+    else if (r.name === 'perfil') { c = perfil.mount(view); view.append(versaoApp()); }
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
     else if (r.name === 'tocar') tocarView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'basica') c = teoriaBasica.mount(view, r.parts.slice(1), { aoFim: () => marcarEstudo('aula') });
+    else if (r.name === 'estudos' && r.parts[0] === 'acordes') acordesView(view, r.parts.slice(1));
+    else if (r.name === 'estudos' && r.parts[0] === 'ritmos') c = ritmosView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
-    else if (r.name === 'estudos') estudosView(view);
+    else if (r.name === 'estudos') estudosView(view, r.parts);
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
-    if (r.name === 'album' || r.name === 'perfil') view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum e perfil' }, h('a', { href: '#/album', role: 'tab', 'aria-selected': String(r.name === 'album'), class: `chip-btn${r.name === 'album' ? ' on' : ''}` }, 'figurinhas'), h('a', { href: '#/perfil', role: 'tab', 'aria-selected': String(r.name === 'perfil'), class: `chip-btn${r.name === 'perfil' ? ' on' : ''}` }, 'perfil'))); // o Perfil mora junto do Álbum
+    if (r.name === 'album' || r.name === 'perfil') { // 3 abas: ÁLBUM · ROLETA · PERFIL (a roleta é a aba "Pacotes" do álbum; o perfil mora junto)
+      const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
+      let pend = 0; try { pend = FRpend() || 0; } catch { pend = 0; }
+      const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '🃏'), aba('#/album/Pacotes', 'roleta', roleta, '🎡', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
+    }
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }
@@ -386,23 +454,28 @@ function shell(name) {
 }
 
 function askName() {
-  const input = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'given-name', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
+  const input = h('input', { class: 'field', type: 'text', name: 'username', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
-  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.map(([v, t]) => h('option', { value: v }, t)));
+  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.filter(([v]) => v !== 'codigo').map(([v, t]) => h('option', { value: v }, t)));
   const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
-  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' });
+  const cod = h('input', { class: 'field al-cod', type: 'password', name: 'password', maxlength: 14, autocomplete: 'current-password', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' }); // tipo senha: o aparelho oferece guardar e preencher o código
+  const ver = h('label', { class: 'al-ver' }, h('input', { type: 'checkbox', onchange: (e) => { cod.type = e.target.checked ? 'text' : 'password'; } }), ' mostrar o código');
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
   const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
-  const codBox = h('div', { class: 'al-codbox', hidden: true }, cod, gen, pedido);
-  function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, ver, gen, pedido);
+  const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
+  cod.addEventListener('input', () => { sel.required = !temCodigoDigitado(); });
+  function drawPedido() { const c = CODE.pendente(); ver.hidden = !!c; sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
-  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; codBox.hidden = sel.value !== 'codigo'; if (!outro.hidden) outro.focus(); if (!codBox.hidden && !cod.hidden) cod.focus(); });
-  const form = h('form', { class: 'login-card', onsubmit: async (e) => {
-    e.preventDefault(); const n = cleanName(input.value);
+  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
+  let indo = false;
+  const entrarAgora = async () => { if (indo) return; indo = true; try {
+    const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
-    if (!sel.value) { err.textContent = 'escolha como você chegou aqui.'; return; }
-    if (sel.value === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
+    const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : sel.value; // digitou o código? já vale, sem precisar escolher a opção
+    if (!modo) { err.textContent = 'escolha como você chegou aqui.'; return; }
+    if (modo === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
       if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
         if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
         err.textContent = 'conferindo o código…';
@@ -410,12 +483,14 @@ function askName() {
       }
       err.textContent = '';
     }
-    const o = sel.value === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : sel.value === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : sel.value;
+    const o = modo === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : modo;
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
-    logVisit(n);
+    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) SALVAR.agendar();
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
     start();
-  } },
+  } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
+  for (const campo of [input, cod]) campo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); entrarAgora(); } }); // sem botão "submit", o Enter precisa ser tratado aqui
+  const form = h('form', { class: 'login-card', noValidate: true, onsubmit: (e) => { e.preventDefault(); entrarAgora(); } },
     h('div', { class: 'al-hero' },
       h('div', { class: 'al-paulbox' },
         h('img', { class: 'al-paul-img', src: `assets/aluno/paul-${pose[0]}.webp`, alt: `Paul, o robôterista, ${pose[1]}` }),
@@ -425,8 +500,8 @@ function askName() {
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    h('label', { class: 'field' }, h('span', {}, 'como você chegou aqui?'), sel), outro, codBox, err,
-    h('button', { class: 'btn primary wide', type: 'submit' }, 'entrar'),
+    codBox, h('label', { class: 'field' }, h('span', {}, 'ou, se não tem código: como você chegou aqui?'), sel), outro, err,
+    h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
@@ -450,11 +525,18 @@ async function start() {
 }
 
 (async () => {
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    // Versão nova do app: quando o service worker novo assume, recarrega sozinho (fora de um jogo; dentro de um jogo espera sair), e procura versão nova sempre que o app volta pra tela.
+    const tinha = !!navigator.serviceWorker.controller; let recarregar = false;
+    const tenta = () => { if (!recarregar) return; if (document.documentElement.classList.contains('em-jogo')) return; location.reload(); };
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { recarregar = true; tenta(); } });
+    addEventListener('hashchange', () => setTimeout(tenta, 300));
+    navigator.serviceWorker.register('sw.js').then((reg) => { document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
+  }
   try { await store.init(); } catch {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
   startScroller();
-  startPaul({ first: 7000 });
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && !/^#\/(jogos|dicas|ritmo|paulta|kids|piano|violao|xilofone)\/./.test(location.hash) }); // dentro de um jogo a nuvem não aparece: ela cobria botões como o STOP */; // na tela de entrada o balão do Paul cobria o botão "entrar"
   start();
 })();

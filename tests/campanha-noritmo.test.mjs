@@ -75,9 +75,9 @@ test('medalhas: ids únicos, ganhas só com progresso real', () => {
 });
 test('modo livre intacto: o pacote só muda de comportamento com opts.mission e a aventura não grava preferências/recordes/ranking/figurinhas', () => {
   const src = fs.readFileSync(new URL('../assets/rhythm-games/rhythm-games.js', import.meta.url), 'utf8');
-  assert.ok(src.includes('S.record=!MISSION&&'), 'recorde só no livre'); assert.ok(src.includes('if(!MISSION&&S.long&&S.stars>0&&S.fast)'), 'figurinhas só no livre');
+  assert.ok(src.includes('S.record=!MISSION&&'), 'recorde só no livre'); assert.ok(src.includes("if(!MISSION&&!lost&&RZ.game==='beat'&&S.stars>0)"), 'figurinhas só no livre');
   assert.ok(src.includes('if(!MISSION&&!lost&&OPTS.hallTop&&OPTS.autoName'), 'ranking só no livre'); assert.ok(src.includes('function save(){clearTimeout(saveT);if(MISSION) return;'), 'sem gravar o armazenamento na aventura');
   assert.ok(src.includes('function rzSaveOpts(){if(MISSION) return;'), 'sem gravar preferências');
   const j = fs.readFileSync(new URL('../js/views/jogos-ritmo.js', import.meta.url), 'utf8');
-  assert.ok(j.includes("opts.parts[0] === 'aventura'") && j.includes('href: \'#/ritmo/aventura\''));
+  assert.ok(j.includes("opts.parts[0] === 'aventura'") && !j.includes('href: \'#/ritmo/aventura\''), 'o botão do Modo Aventura do Beat Hero foi removido (link antigo só volta pro jogo)');
 });

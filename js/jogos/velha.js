@@ -5,8 +5,8 @@ import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
 import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
 import { LEVELS } from './velha-data.js';
-import { lobby, linkBadge } from './online.js';
-const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
+import { lobby, linkBadge, salaAutoPara } from './online.js';
+const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'velha';
 const NS = 'http://www.w3.org/2000/svg';
@@ -26,6 +26,7 @@ export function mount(host, opts) {
   let gone = false; let timer = 0;
   const saved = mission ? {} : getGame(ID);
   const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : (saved.mode === 'facil' || saved.mode === 'estrategico') ? 'paul' : 'local', variant: 'desafio', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
+  if (!mission && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
   let g = null; let msg = ''; let fb = null; let mv = null; // mv: null | { from: null | número } = escolhendo a troca de lugar
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
@@ -149,7 +150,7 @@ export function mount(host, opts) {
     mission.onResult({ outcomes: outcomes.slice(), rounds, wins, losses, draws: rounds - wins - losses, bestStreak: best, errors: g.errors, answered: stat.answered, correct: stat.correct, ai: MP.ai, variant: prefs.variant, level: prefs.level });
   }
   let pago = -1;
-  function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode !== 'local' && g.mode !== 'online' && w === 0 && pago !== g.round) { pago = g.round; MESA.vitoria('velha'); } sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
+  function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode !== 'local' && (g.mode === 'online' ? w === me0() : w === 0) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', g.mode === 'online' ? 3 : 1); } sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
     const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;

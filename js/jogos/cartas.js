@@ -6,8 +6,9 @@ import * as C from './cartas-logic.js';
 import { SYMS, SYM_NAME, SYM_SHORT, SYM_LEARN, symbolEl, actionEl } from './cartas-simbolos.js';
 import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
-import { lobby, linkBadge } from './online.js';
-const MESA = { vitoria: (j) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
+import { lobby, linkBadge, salaAutoPara } from './online.js';
+import { bq } from './bonequinhos.js';
+const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
 const NS = 'http://www.w3.org/2000/svg';
@@ -54,8 +55,9 @@ export function mount(host, opts) {
   const saved = adv ? {} : getGame(ID);
   const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
     mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
-    hint: saved.hint === 'sem' ? 'sem' : 'com', help: saved.help !== false, sfx: saved.sfx !== false, learn: saved.learn === true, names: saved.names === true,
+    hint: saved.hint === 'sem' ? 'sem' : 'com', help: true, sfx: saved.sfx !== false, learn: saved.learn === true, names: true, // o nome da figura aparece sempre em todas as cartas
   };
+  if (!adv && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
   const dica = () => prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;
@@ -131,7 +133,7 @@ export function mount(host, opts) {
   function intro() {
     clearTimers(); busy = false; leave(); g = null; picking = null; stage = null; handEl = null; deckEl = null; pileEl = null; tip = null; S.stopAll();
     const resume = C.validGame(saved.game) && !saved.game.over ? saved.game : null; const r = rec();
-    const seg = (name, opts, cur, on) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': name }, ...opts.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), class: cur === v ? 'on' : '', onclick: () => { on(v); intro(); } }, l)));
+    const seg = (name, opts, cur, on) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': name }, ...opts.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${cur === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { on(v); intro(); } }, ic ? bq(ic) : l)));
     const legend = h('div', { class: 'cx-legend', role: 'list', 'aria-label': 'as dez figuras das cartas' }, ...SYMS.map((s, i) => {
       const card = cardEl({ id: `lg${i}`, color: C.COLORS[i % 4], kind: 'fig', sym: s });
       const b = h('button', { type: 'button', class: 'cx-leg', role: 'listitem', 'aria-label': SYM_NAME[s], onclick: () => { snd('tap'); showTip(b, SYM_NAME[s], 1500); } }, card, h('small', {}, SYM_NAME[s]));
@@ -142,12 +144,12 @@ export function mount(host, opts) {
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
       h('p', { class: 'jg-lab' }, 'as 10 figuras (toque pra ver o nome)'), legend,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
-      seg('modo', [['paul', 'contra o computador'], ['local', 'dois no aparelho'], ['online', '2 celulares (código)']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
+      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'dois'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
+      prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
+      prefs.mode === 'local' ? seg('pessoas', [[2, '2'], [3, '3'], [4, '4']], prefs.opps + 1, (v) => { prefs.opps = v - 1; keepPrefs(); }) : null,
       h('p', { class: 'jg-lab' }, 'dicas'), seg('dicas', [['com', 'cartas que servem brilham'], ['sem', 'sem dica']], prefs.hint, (v) => { prefs.hint = v; keepPrefs(); }),
-      h('p', { class: 'jg-lab' }, 'ajuda dos nomes'), seg('ajuda', [['on', 'mostrar o nome da carta da mesa'], ['off', 'desligada']], prefs.help ? 'on' : 'off', (v) => { prefs.help = v === 'on'; keepPrefs(); }),
-      h('p', { class: 'jg-lab' }, 'nome da figura nas cartas (opcional)'), seg('nomes', [['off', 'sem nome'], ['on', 'mostrar o nome em cada carta']], prefs.names ? 'on' : 'off', (v) => { prefs.names = v === 'on'; root.classList.toggle('cx-names', prefs.names); keepPrefs(); }),
       h('p', { class: 'jg-lab' }, 'modo aprender (opcional)'), seg('aprender', [['off', 'jogo normal'], ['on', 'pausar a cada figura jogada']], prefs.learn ? 'on' : 'off', (v) => { prefs.learn = v === 'on'; keepPrefs(); }),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
@@ -474,7 +476,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
-      if (g.mode === 'paul' && w === 0) MESA.vitoria('cartas', 3);
+      if ((g.mode === 'paul' && w === 0) || (g.mode === 'online' && w === me0())) MESA.vitoria('cartas', 3); // ganhou do computador ou do colega (2 celulares): 3 ★
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');
       if (mineWin) confetti();

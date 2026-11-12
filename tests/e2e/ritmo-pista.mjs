@@ -26,7 +26,7 @@ const kits = await p.evaluate(() => window.BeaterRhythm._kits());
 check('cores: bumbo verde, caixa vermelho, chimbal azul, tom roxo, prato dourado', kits[5].map((k) => k[2] + ':' + k[0]).join(' ') === 'bumbo:#3fae5a caixa:#e2554f chimbal:#5b8dd6 tom:#a77bff prato:#e0b043', JSON.stringify(kits[5].map((k) => k[0])));
 const fill = await p.evaluate(() => { // viradas: cada linha só em colcheia, mas a virada continua com todas as notas distribuídas
   const c = window.BeaterRhythm._build('rock', 2, 'beat', 120); const toms = c.chart.filter((n) => n.snd === 'tom1' || n.snd === 'tom2' || n.snd === 'floor').length; return toms; });
-check('as viradas (tons) continuam na pista', fill > 20, String(fill));
+check('as viradas (tons) continuam na pista (mais enxutas: nada junto, só alternando)', fill >= 5, String(fill));
 check('sem erros de JS', errs.length === 0, errs.slice(0,2).join('|'));
 const lead = await p.evaluate(() => {
   const st = 0.125; const bar = 16 * st; const cl = bar; const t0 = cl + 10 * bar; // 1ª nota 10 compassos (20 s) depois da contagem
@@ -53,7 +53,8 @@ const vir = await p.evaluate(() => {
   window.BeaterRhythm.setSongs([{ id: 'imp-f', style: 'imp', name: 'f', bpm: 120, root: 48, minor: false, seed: 0, imported: true, arr: { st, mel, drums, ev: pre, chords: [], dur: T(12, 0) + 2, bars: 12, lead: 1 } }]);
   const c = window.BeaterRhythm._build('imp', 0, 'beat', 120); const fillNotes = c.chart.filter((n) => n.snd && n.snd !== 'kick' && !(Math.abs(((n.t / st) % 16) - 4) < .01 && n.snd === 'snare'));
   const by = {}; c.chart.forEach((n) => { (by[n.lane] = by[n.lane] || []).push(n.t); }); let worst = 9; Object.values(by).forEach((a) => { a.sort((x,y)=>x-y); for (let k=1;k<a.length;k++) worst = Math.min(worst,(a[k]-a[k-1])/st); });
-  return { total: c.chart.filter((n) => n.snd).length, esperado: 12 * 3 + 3 * 4, worst, lanes: Object.keys(by).join(',') };
+  const ord = c.chart.filter((n) => n.snd).sort((a, b) => a.t - b.t); let juntas = 0; for (let k = 1; k < ord.length; k++) if (ord[k].t - ord[k - 1].t < 0.045) juntas++; const fillKept = fillNotes.length;
+  return { total: ord.length, juntas, fillKept, worst, lanes: Object.keys(by).join(',') };
 });
-check('virada rápida do MIDI fica distribuída entre caixa e tom (nenhuma nota perdida)', vir.total === vir.esperado && vir.worst >= 1.9, JSON.stringify(vir));
+check('virada rápida do MIDI fica distribuída entre caixa e tom, sem nenhuma nota ao mesmo tempo que outra', vir.juntas === 0 && vir.fillKept >= 9 && vir.worst >= 1.9, JSON.stringify(vir));
 await browser.close(); srv.close(); done();

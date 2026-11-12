@@ -6,8 +6,11 @@ import * as S from './stop-logic.js';
 import { addCustom, bankSize } from './stop-valid.js';
 import * as FX from './stop-sfx.js';
 import { getGame, setGame } from './base.js';
-import { lobby, linkBadge } from './online.js';
+import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { linha, chips, ajuda } from './opcoes.js';
+import * as Q from './stop-sim-logic.js';
+import { ganhou } from './estrelas-jogo.js';
+import { montarSimultaneo, garantirCss, caixaPausa } from './stop-simultaneo.js';
 
 const ID = 'stop';
 const PAUL = 'assets/paul/';
@@ -24,13 +27,15 @@ export function mount(host, opts) {
     cats: S.catsOk(saved.cats) ? saved.cats : S.randomCats(6),
     seconds: Number.isInteger(saved.seconds) && saved.seconds >= 10 && saved.seconds <= 600 ? saved.seconds : 60,
     rounds: Number.isInteger(saved.rounds) && saved.rounds >= 1 && saved.rounds <= 20 ? saved.rounds : 3,
-    names: Array.isArray(saved.names) && saved.names.length >= 2 ? saved.names.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['jogador 1', 'jogador 2'],
+    names: Array.isArray(saved.names) && saved.names.length >= 2 ? [...saved.names, 'jogador 3', 'jogador 4'].slice(0, 4).map((n, i) => String(n || `jogador ${i + 1}`).slice(0, 20)) : ['jogador 1', 'jogador 2', 'jogador 3', 'jogador 4'],
+    nDupla: [2, 3, 4].includes(saved.nDupla) ? saved.nDupla : 2, // quantos jogam no mesmo celular
+    sim: saved.sim !== false, // 2 celulares: 'ao mesmo tempo' (padrão) ou 'um de cada vez'
     salaNames: Array.isArray(saved.salaNames) && saved.salaNames.length >= 2 ? saved.salaNames.slice(0, S.MAX_PLAYERS).map((n) => String(n).slice(0, 20)) : ['aluno 1', 'aluno 2', 'aluno 3'],
   };
   const save = (patch = {}) => { Object.assign(prefs, patch); if (!M) setGame(ID, { ...prefs }); };
   const favs = () => (S.catsOk(getGame(ID).fav) ? getGame(ID).fav : null);
   let g = null; let view = 'intro'; let gone = false; let token = 0; let introSeen = false; let reported = false;
-  let conn = null; let lob = null; const badge = linkBadge();
+  let conn = null; let lob = null; let sim = null; let paused = false; let remain = 0; let tickRef = null; let pauseEl = null; const badge = linkBadge();
   let clk = 0; let deadline = 0; let timeEl = null; let live = null; let lastSec = -1; let locked = false; let revealed = false; let skipReveal = false; const timers = new Set();
   const root = h('div', { class: 'jg jg-stop st' }); host.replaceChildren(root);
   const me0 = () => (conn ? conn.me : 0);
@@ -39,9 +44,9 @@ export function mount(host, opts) {
   const later = (fn, ms) => { const id = sleepToken(ms, () => { timers.delete(id); if (!gone) fn(); }); timers.add(id); return id; };
   const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
   const stopClock = () => { clearInterval(clk); clk = 0; };
-  const nextToken = () => { token++; stopClock(); clearTimers(); locked = false; return token; };
+  const nextToken = () => { token++; stopClock(); clearTimers(); locked = false; paused = false; pauseEl = null; root.classList.remove('ss-pausado'); return token; };
   const persist = () => { if (M || (g && g.online)) return; setGame(ID, { match: g && g.stage !== 'done' ? g : null }); };
-  const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
+  const leave = () => { if (sim) { sim.destroy(); sim = null; } if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
   const sync = () => { if (conn && g && g.online) conn.push(g); };
   const motion = () => !FX.reducedMotion();
   const sr = (t) => { if (live) live.textContent = t; };
@@ -79,11 +84,12 @@ export function mount(host, opts) {
       if (!has && prefs.cats.length >= S.MAX_CATS) { toast(`no máximo ${S.MAX_CATS} categorias`, { id: 'stop-cats' }); return; }
       save({ cats: has ? prefs.cats.filter((c) => c !== id) : [...prefs.cats, id] }); FX.play('tap'); setup();
     };
+    const simOn = prefs.mode === 'online' && prefs.sim;
     const secs = prefs.mode === 'sala' ? [...S.SECONDS, 0] : S.SECONDS; const secsLabel = (v) => (v === 0 ? 'outro' : `${v} s`);
     const customSecs = prefs.mode === 'sala' && !S.SECONDS.includes(prefs.seconds);
     const roundsList = prefs.mode === 'sala' ? [...S.ROUNDS, 0] : S.ROUNDS; const customRounds = prefs.mode === 'sala' && !S.ROUNDS.includes(prefs.rounds);
     const namesBox = () => {
-      if (prefs.mode === 'dupla') return h('div', { class: 'st-names' }, ...[0, 1].map((i) => h('label', { class: 'jg-field' }, h('span', {}, `nome do jogador ${i + 1}`), h('input', { type: 'text', value: prefs.names[i], maxlength: 20, autocomplete: 'off', oninput: (e) => { const n = prefs.names.slice(); n[i] = e.target.value; save({ names: n }); } }))));
+      if (prefs.mode === 'dupla') return h('div', { class: 'st-names' }, ...Array.from({ length: prefs.nDupla }, (_, i) => i).map((i) => h('label', { class: 'jg-field' }, h('span', {}, `nome do jogador ${i + 1}`), h('input', { type: 'text', value: prefs.names[i], maxlength: 20, autocomplete: 'off', oninput: (e) => { const n = prefs.names.slice(); n[i] = e.target.value; save({ names: n }); } }))));
       if (prefs.mode === 'sala') return h('div', { class: 'st-names' }, h('p', { class: 'jg-lab' }, `participantes (${prefs.salaNames.length})`),
         ...prefs.salaNames.map((nm, i) => h('div', { class: 'st-namerow' }, h('input', { type: 'text', value: nm, maxlength: 20, 'aria-label': `participante ${i + 1}`, autocomplete: 'off', oninput: (e) => { const n = prefs.salaNames.slice(); n[i] = e.target.value; save({ salaNames: n }); } }),
           h('button', { class: 'btn small ghost', type: 'button', disabled: prefs.salaNames.length <= 2, 'aria-label': `tirar participante ${i + 1}`, onclick: () => { save({ salaNames: prefs.salaNames.filter((_, k) => k !== i) }); setup(); } }, '✕'))),
@@ -99,10 +105,12 @@ export function mount(host, opts) {
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
       h('div', { class: 'jo-card' },
         linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'dupla', 'dois'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+        prefs.mode === 'dupla' ? linha('quantos jogam', chips([[2, '2'], [3, '3'], [4, '4']], prefs.nDupla, (v) => { FX.play('tap'); save({ nDupla: v }); setup(); }, 'quantos jogam')) : null,
           ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
             : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'
-            : prefs.mode === 'online' ? 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas. a partida simultânea ainda não existe.'
+            : prefs.mode === 'online' ? (prefs.sim ? 'cada um joga no seu celular ao mesmo tempo, com a mesma letra. quem apertar STOP primeiro para o outro também. quem cria a sala revisa as respostas.' : 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas.')
             : 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'))),
+      prefs.mode === 'online' ? h('div', { class: 'jo-card' }, linha('como', chips([['sim', 'ao mesmo tempo'], ['turnos', 'um de cada vez']], prefs.sim ? 'sim' : 'turnos', (v) => { FX.play('tap'); save({ sim: v === 'sim' }); setup(); }, 'como jogar em 2 celulares'))) : null,
       namesBox(),
       h('p', { class: 'jg-lab' }, `categorias: ${prefs.cats.length} escolhida${prefs.cats.length === 1 ? '' : 's'} (de ${S.MIN_CATS} a ${S.MAX_CATS})`),
       h('div', { class: 'st-cats', role: 'group', 'aria-label': 'categorias' }, ...catBtns),
@@ -116,17 +124,22 @@ export function mount(host, opts) {
       h('div', { class: 'jo-card' },
         linha('tempo', seg(secs.map((v) => [v, secsLabel(v)]), customSecs ? 0 : prefs.seconds, (v) => { save({ seconds: v === 0 ? 45 : v }); setup(); }, 'tempo por jogador')),
         customSecs ? h('label', { class: 'jg-field' }, h('span', {}, 'segundos (10 a 600)'), h('input', { type: 'number', inputmode: 'numeric', min: 10, max: 600, value: prefs.seconds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ seconds: Math.min(600, Math.max(10, n || 60)) }); setup(); } })) : null,
-        linha('rodadas', seg(roundsList.map((v) => [v, v === 0 ? 'outro' : String(v)]), customRounds ? 0 : prefs.rounds, (v) => { save({ rounds: v === 0 ? 4 : v }); setup(); }, 'rodadas')),
-        customRounds ? h('label', { class: 'jg-field' }, h('span', {}, 'rodadas (1 a 20)'), h('input', { type: 'number', inputmode: 'numeric', min: 1, max: 20, value: prefs.rounds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ rounds: Math.min(20, Math.max(1, n || 3)) }); setup(); } })) : null,
+        simOn ? null : linha('rodadas', seg(roundsList.map((v) => [v, v === 0 ? 'outro' : String(v)]), customRounds ? 0 : prefs.rounds, (v) => { save({ rounds: v === 0 ? 4 : v }); setup(); }, 'rodadas')),
+        customRounds && !simOn ? h('label', { class: 'jg-field' }, h('span', {}, 'rodadas (1 a 20)'), h('input', { type: 'number', inputmode: 'numeric', min: 1, max: 20, value: prefs.rounds, onchange: (e) => { const n = Math.round(Number(e.target.value)); save({ rounds: Math.min(20, Math.max(1, n || 3)) }); setup(); } })) : null,
         linha('conferência', ajuda('Como o jogo confere', 'sem diferença de maiúscula, acento ou espaço. “the beatles” vale B (o artigo não conta). se o jogo não conhece a resposta, ela fica amarela, “aguardando revisão”: você decide, e o que for aprovado entra no banco deste aparelho.'))),
-      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => ({ ...newMatch('dupla'), online: true }), onStart: startOnline })).el
+      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => (prefs.sim ? newSim() : { ...newMatch('dupla'), online: true }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => resumeMatch(resume) }, 'continuar partida') : null,
           h('button', { class: `btn ${resume ? '' : 'primary'}`, type: 'button', disabled: !okCats || !eligible.length, onclick: start }, resume ? 'nova partida' : 'iniciar')),
     ].filter(Boolean));
   }
+  /** Sala 'ao mesmo tempo': mesma letra e mesmas categorias nos dois celulares. */
+  function newSim() {
+    const st = Q.novoEstado({ cats: prefs.cats, seconds: S.SECONDS.includes(prefs.seconds) ? prefs.seconds : 60, usadas: getGame(ID).cycle || [] });
+    setGame(ID, { cycle: st.usadas, last: prefs.cats }); return st;
+  }
   function newMatch(forceMode) {
     const mode = forceMode || prefs.mode; const used = getGame(ID).cycle || [];
-    const players = mode === 'dupla' ? prefs.names : mode === 'sala' ? prefs.salaNames : [prefs.names[0] === 'jogador 1' ? 'você' : prefs.names[0]];
+    const players = mode === 'dupla' ? prefs.names.slice(0, prefs.nDupla) : mode === 'sala' ? prefs.salaNames : [prefs.names[0] === 'jogador 1' ? 'você' : prefs.names[0]];
     const m = S.newMatch({ mode: mode === 'online' ? 'dupla' : mode, cats: prefs.cats, seconds: prefs.seconds, rounds: prefs.rounds, players: forceMode === 'dupla' && prefs.mode === 'online' ? ['jogador 1', 'jogador 2'] : players, used });
     setGame(ID, { cycle: m.cycle, last: prefs.cats }); return m;
   }
@@ -139,7 +152,12 @@ export function mount(host, opts) {
   function resumeMatch(m) { g = m; if (g.stage === 'review') { revealed = true; return reviewView(); } turnStart(); }
 
   /* ================= online (2 celulares, por turnos) ================= */
-  function startOnline(c, state) { conn = c; lob = null; badge.set(true); c.on.link = (v) => badge.set(v); c.on.state = (st) => { g = st; route(); }; g = state; route(); }
+  function startSim(c, state) {
+    conn = c; lob = null; nextToken(); view = 'sim'; g = null; badge.set(true); FX.stopMusic();
+    if (!Q.estadoValido(state)) { toast('não consegui abrir essa sala'); return setup(); }
+    sim = montarSimultaneo({ root, conn: c, estado: state, badge, sair: () => setup() });
+  }
+  function startOnline(c, state) { if (state && state.sim) return startSim(c, state); conn = c; lob = null; badge.set(true); c.on.link = (v) => badge.set(v); c.on.state = (st) => { g = st; route(); }; g = state; route(); }
   function route() {
     if (g.stage === 'done') return finalView();
     if (g.stage === 'review') { if (view === 'play') nextToken(); revealed = false; return reviewView(); }
@@ -213,12 +231,12 @@ export function mount(host, opts) {
       if (box) { box.classList.toggle('warn', sec <= 10 && sec > 5); box.classList.toggle('hot', sec <= 5); box.classList.toggle('last', sec <= 3); }
       if (sec !== lastSec) { lastSec = sec; if (sec > 0 && sec <= 3) FX.play('last3'); else if (sec > 0 && sec <= 10) FX.play('metro'); if (sec === 10 || sec === 5) sr(`${sec} segundos`); }
       if (rem <= 0) timeUp(my); };
-    clk = setInterval(tick, 200); tick();
+    tickRef = tick; clk = setInterval(tick, 200); tick();
   }
   function freeze() { locked = true; stopClock(); root.querySelectorAll('.st-field input').forEach((i) => { i.readOnly = true; i.blur(); }); const b = root.querySelector('.st-stop'); if (b) b.disabled = true; }
   function usedSec() { return Math.min(g.seconds, Math.max(0, g.seconds - (deadline - Date.now()) / 1000)); }
   function stopPress(btn) {
-    if (locked || view !== 'play') return; const used = usedSec(); freeze(); const my = token; // um clique só: trava na hora
+    if (locked || paused || view !== 'play') return; const used = usedSec(); freeze(); const my = token; // um clique só: trava na hora
     FX.play('stop'); FX.duck(2500); FX.vibrate([40, 30, 70]);
     if (motion()) { btn.classList.add('hit'); root.classList.add('shake'); const ov = h('div', { class: 'st-stopword', 'aria-hidden': 'true' }, 'STOP!'); root.append(ov); later(() => { ov.remove(); root.classList.remove('shake'); }, 900); }
     sr('stop!'); later(() => { if (token === my) endTurn(used, true); }, motion() ? 800 : 150);
@@ -283,9 +301,9 @@ export function mount(host, opts) {
     sheet('contestar resposta', (close) => {
       const why = h('input', { type: 'text', maxlength: 160, placeholder: 'motivo (opcional)', 'aria-label': 'motivo da decisão' });
       const agree = h('input', { type: 'checkbox' }); const saveBank = h('input', { type: 'checkbox', checked: !M });
-      const needAgree = g.mode === 'dupla';
+      const needAgree = g.mode === 'dupla' && g.players.length === 2;
       const apply = (d) => {
-        if (needAgree && !agree.checked) { toast('os dois precisam concordar com a decisão'); return; }
+        if (needAgree && !agree.checked) { toast('todos precisam concordar com a decisão'); return; }
         g = S.decide(g, p, c, d, { why: why.value.trim() || (d === 'valida' ? 'aprovada na revisão' : d === 'invalida' ? 'rejeitada na revisão' : 'voltou ao automático'), by: byWho() });
         if (d === 'valida' && !M && saveBank.checked) addCustom(g.cats[c], txt);
         persist(); sync(); FX.play(d === 'valida' ? 'ok' : 'bad'); close(); reviewView();
@@ -293,7 +311,7 @@ export function mount(host, opts) {
       return h('div', { class: 'sheet-body st-contest' },
         h('p', {}, h('b', {}, txt), ` · ${S.CAT[g.cats[c]].label} · letra ${S.letterOf(g)}`), h('p', { class: 'muted' }, `agora: ${STATUS[r.status][0]}${r.why ? ` (${r.why})` : ''}`), why,
         M ? null : h('label', { class: 'jg-chk' }, saveBank, ' ao aprovar, guardar no banco deste aparelho'),
-        needAgree ? h('label', { class: 'jg-chk' }, agree, ' os dois jogadores concordam') : null,
+        needAgree ? h('label', { class: 'jg-chk' }, agree, ' os jogadores concordam') : null,
         h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => apply('valida') }, 'aprovar'), h('button', { class: 'btn', type: 'button', onclick: () => apply('invalida') }, 'rejeitar'),
           r.manual ? h('button', { class: 'btn ghost', type: 'button', onclick: () => apply(null) }, 'voltar ao automático') : null));
     });
@@ -325,7 +343,7 @@ export function mount(host, opts) {
   function finalView() {
     const my = nextToken(); view = 'final'; FX.stopMusic(); const w = S.winner(g); const order = g.totals.map((t, p) => [p, t]).sort((a, b) => b[1] - a[1]);
     let recordMsg = '';
-    if (!g.counted) { g.counted = true; recordMsg = M ? '' : record(); }
+    if (!g.counted) { g.counted = true; recordMsg = M ? '' : record(); if (!M && (g.players.length === 1 ? g.totals[0] > 0 : g.online && !w.tie && w.winners[0] === me0())) ganhou('stop'); } // terminou sozinho (ou ganhou online): 3 ★
     persist();
     const title = g.players.length === 1 ? `total: ${g.totals[0]} pontos` : w.tie ? 'empate!' : `${pn(w.winners[0])} venceu!`;
     FX.play(g.players.length > 1 && w.tie ? 'tie' : 'win'); FX.duck(2500); FX.vibrate([60, 40, 60, 40, 120]);
@@ -376,13 +394,26 @@ export function mount(host, opts) {
   }
 
   /* ================= ciclo de vida ================= */
-  const onVis = () => { if (!document.hidden && view === 'play' && !locked) { const rem = deadline - Date.now(); if (rem <= 0) timeUp(token); } };
+  const onVis = () => { if (!document.hidden && view === 'play' && !locked && !paused) { const rem = deadline - Date.now(); if (rem <= 0) timeUp(token); } };
   document.addEventListener('visibilitychange', onVis);
   const onUnload = () => { if (g && g.stage === 'play') persist(); };
   addEventListener('pagehide', onUnload);
-  if (M) startMission(); else intro();
+  if (M) startMission(); else if (salaAutoPara(ID)) { prefs.mode = 'online'; introSeen = true; setup(); } else intro(); // veio de "tenho um código de sala": abre direto em 2 celulares
+  /** Pausa do app: para só o relógio deste celular (no 'ao mesmo tempo' o outro não é afetado). */
+  function pause() {
+    if (sim) return sim.pause();
+    if (view !== 'play' || locked || paused) return false;
+    paused = true; remain = Math.max(0, deadline - Date.now()); stopClock(); root.querySelectorAll('.st-field input').forEach((i) => i.blur()); garantirCss();
+    pauseEl = caixaPausa(() => resume()); root.append(pauseEl); root.classList.add('ss-pausado'); return true;
+  }
+  function resume() {
+    if (sim) return sim.resume();
+    if (!paused) return false;
+    paused = false; deadline = Date.now() + remain; if (pauseEl) pauseEl.remove(); pauseEl = null; root.classList.remove('ss-pausado'); stopClock(); if (tickRef) { clk = setInterval(tickRef, 200); tickRef(); } return true;
+  }
   return {
-    inProgress: () => !!(g && ['cover', 'draw', 'play', 'review', 'summary'].includes(view)),
+    pause, resume,
+    inProgress: () => !!(sim && sim.inProgress()) || !!(g && ['cover', 'draw', 'play', 'review', 'summary'].includes(view)),
     restart: async () => { if (g && ['cover', 'draw', 'play', 'review', 'summary'].includes(view) && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; setup(); },
     destroy() { gone = true; nextToken(); FX.stopAll(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pagehide', onUnload); leave(); },
   };

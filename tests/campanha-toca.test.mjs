@@ -11,7 +11,7 @@ test('spec do Toca Aqui é válido: 20 missões (8 + 6 + 6), ids estáveis e ún
   assert.equal(spec.missions[0].id, 'toca-00'); assert.equal(spec.missions[19].id, 'toca-19');
 });
 test('cada missão usa a partitura do caminho do modo livre, andamento sobe dentro do modo', () => {
-  spec.missions.forEach((m, i) => { assert.deepEqual(m.params.bar, PATH[i].bar); assert.ok(m.params.bpm >= 80 && m.params.bpm <= 120); });
+  spec.missions.forEach((m, i) => { assert.deepEqual(m.params.bar, PATH[i].bar); assert.ok(m.params.bpm >= 60 && m.params.bpm <= 95); });
   for (const t of ['ini', 'int', 'ava']) { const b = spec.missions.filter((m) => m.params.tier === t).map((m) => m.params.bpm); assert.deepEqual(b, [...b].sort((x, y) => x - y), t); }
 });
 test('estrelas: 70% = 1, 85% = 2, 95% = 3; abaixo de 70% não conclui', () => {

@@ -70,7 +70,7 @@ export function mountTaiko({ ids, bpm }) {
 
 /** Jogo "taiko" do Toca Aqui: escolhe nível e andamento e joga. */
 import { randomFoods } from '../kids-logic.js';
-import { VELOCIDADES } from '../toca-som.js';
+import { VELOCIDADES, ICONE_VEL } from '../toca-som.js';
 export function mountTaikoJogo(host) {
   let bpm = 90; let nivel = 1; let ids = randomFoods(Math.random, 1); let cur = null;
   const root = h('div', { class: 'kx-arc kx-embed kd-game tk-jogo' }); host.append(root);
@@ -79,7 +79,7 @@ export function mountTaikoJogo(host) {
     if (cur) cur.dispose();
     cur = mountTaiko({ ids, bpm });
     root.replaceChildren(
-      h('div', { class: 'row kd-modes' }, h('span', { class: 'kd-lab' }, 'andamento'), ...VELOCIDADES.map(([k, v]) => chip(k, bpm === v, () => { bpm = v; draw(); }))),
+      h('div', { class: 'row kd-modes' }, h('span', { class: 'kd-lab' }, 'andamento'), ...VELOCIDADES.map(([k, v]) => { const b = chip(ICONE_VEL[k] || k, bpm === v, () => { bpm = v; draw(); }); b.setAttribute('aria-label', k); b.title = k; return b; })),
       h('div', { class: 'row kd-modes' }, h('span', { class: 'kd-lab' }, 'nível'), chip('fácil', nivel === 1, () => { nivel = 1; ids = randomFoods(Math.random, 1); draw(); }), chip('difícil', nivel === 2, () => { nivel = 2; ids = randomFoods(Math.random, 2); draw(); }),
         chip('🎲 outro ritmo', false, () => { ids = randomFoods(Math.random, nivel); draw(); })),
       cur.el);

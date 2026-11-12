@@ -22,7 +22,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   for (const h of ['#/jogos', '#/tocar', '#/toque', '#/piano', '#/kids/explorar', '#/kids/memoria', '#/kids/ritmo', '#/jogos/velha', '#/jogos/stop', '#/jogos/bingo', '#/jogos/relatorio']) { await go(p, h); check(`sem código: ${h} aberto`, (await trancada(p)) === 0); }
   await go(p, '#/jogos');
   const locked = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo: Beat Hero, Toca Aqui, pauLta e Uno com cadeado; Quiz e Letras (amostra) e os jogos livres não; sem fases e estrelas e sem Jogos Ensinam', ['Beat Hero', 'Toca Aqui'].every((n) => locked.some((t) => t.includes(n))) && !locked.some((t) => /Quiz e Letras|memória|velha|stop|bingo/i.test(t)) && (await p.locator('.jg-card:has-text("fases e estrelas"), .jg-card:has-text("Jogos Ensinam")').count()) === 0, locked.join(' | '));
+  check('no catálogo: Beat Hero, Toca Aqui, pauLta e Uno com cadeado; Letras (amostra) e os jogos livres não; sem fases e estrelas e sem Jogos Ensinam', ['Beat Hero', 'Toca Aqui'].every((n) => locked.some((t) => t.includes(n))) && !locked.some((t) => /Letras|memória|velha|stop|bingo/i.test(t)) && (await p.locator('.jg-card:has-text("fases e estrelas"), .jg-card:has-text("Jogos Ensinam")').count()) === 0, locked.join(' | '));
   check('"Jogos Ensinam" saiu do catálogo de jogos (mora em Estudos)', (await p.locator('.jg-card:has-text("Jogos Ensinam")').count()) === 0);
   await go(p, '#/jogos/relatorio'); check('Jogos Ensinam abre o relatório', (await p.locator('.rel-page, .jg-doc').count()) > 0 && (await p.locator('h1:has-text("Jogos Ensinam")').count()) >= 1);
   // gerar meu código
@@ -61,7 +61,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   check('código desativado: tranca de novo', (await p.locator('.nav-item.locked').count()) === 1);
   await ctx.close();
 }
-// 5) Quiz e Letras (30 dicas): trancado sem código; com código baixa as dicas e abre; sem código nada é baixado
+// 5) Letras (30 dicas): trancado sem código; com código baixa as dicas e abre; sem código nada é baixado
 {
   const tips = Array.from({ length: 30 }, (_, i) => ({ n: i + 1, texto: `Dica ${i + 1}: pratique com metrônomo sempre devagar e aumente o andamento aos poucos, mantendo o pulso firme e a postura relaxada.` }));
   let chamadas = [];
@@ -76,15 +76,15 @@ const trancada = (p) => p.locator('.al-lock').count();
   };
   valid.clear();
   { const { ctx, p } = await mk(''); await p.goto(`${url}/aluno.html#/dicas/quiz`); await sleep(1800);
-    check('Quiz e Letras sem código: abre (amostra) e nada é baixado', (await trancada(p)) === 0 && chamadas.length === 0, JSON.stringify(chamadas));
+    check('Letras sem código: abre (amostra) e nada é baixado', (await trancada(p)) === 0 && chamadas.length === 0, JSON.stringify(chamadas));
     await go(p, '#/jogos'); const lk = await p.locator('.jg-card.locked b').allTextContents();
-    check('no catálogo, "Quiz e Letras" aparece sem cadeado e é o último', !lk.some((t) => /Quiz e Letras/.test(t)) && /Quiz e Letras/.test((await p.locator('.jg-card b').last().textContent())), lk.join(' | ')); await ctx.close(); }
+    check('no catálogo, "Letras" aparece sem cadeado e é o último', !lk.some((t) => /Letras/.test(t)) && /Letras/.test((await p.locator('.jg-card b').last().textContent())), lk.join(' | ')); await ctx.close(); }
   valid.add('ABC123');
   for (const tab of ['quiz', 'caca', 'cruzadinha']) {
     const { ctx, p, errs } = await mk('ABC123'); await p.goto(`${url}/aluno.html#/dicas/${tab}`); await sleep(2500);
-    check(`Quiz e Letras com código: ${tab} abre com as 30 dicas`, (await trancada(p)) === 0 && (await p.locator('.dc-box .card, .dc-box .dc-grid, .dc-box .dc-q').count()) > 0 && (await p.locator('.dc-box .empty').count()) === 0, tab);
-    check(`Quiz e Letras (${tab}): só pediu as dicas com o código`, chamadas.length >= 1 && chamadas.every((c) => c === 'ABC123'), JSON.stringify(chamadas));
-    check(`Quiz e Letras (${tab}): título novo e sem erros`, (await p.locator('h1:has-text("Quiz e Letras")').count()) >= 1 && errs.length === 0, errs.join('|')); await ctx.close();
+    check(`Letras com código: ${tab} abre com as 30 dicas`, (await trancada(p)) === 0 && (await p.locator('.dc-box .card, .dc-box .dc-grid, .dc-box .dc-q').count()) > 0 && (await p.locator('.dc-box .empty').count()) === 0, tab);
+    check(`Letras (${tab}): só pediu as dicas com o código`, chamadas.length >= 1 && chamadas.every((c) => c === 'ABC123'), JSON.stringify(chamadas));
+    check(`Letras (${tab}): título novo e sem erros`, (await p.locator('h1:has-text("Letras")').count()) >= 1 && errs.length === 0, errs.join('|')); await ctx.close();
   }
 }
 // 6) o que ensina de verdade (pauLta e Toca Aqui) fica trancado sem código; os jogos de mesa abrem direto, sem modo aventura

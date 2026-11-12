@@ -7,7 +7,7 @@ const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)))
 await fakeLogin(ctx, page, url);
 const go = (h) => page.evaluate((x) => { location.hash = x; }, h);
 await go('#/figurinhas'); await page.waitForSelector('.fig-tabs', { timeout: 8000 });
-check('abre o álbum', (await page.textContent('.fig-total')).includes('0/125'));
+check('abre o álbum', /^0\/\d+/.test((await page.textContent('.fig-total')).trim()));
 await page.getByRole('tab', { name: /comum/ }).click(); await sleep(500);
 check('livro Comum: capa + sumário + 20 páginas (80 figurinhas, 4 por página)', (await page.locator('.lv-page').count()) === 22);
 await page.screenshot({ path: '/tmp/claude-0/fig-album.png' });
@@ -20,10 +20,10 @@ check('roleta dá 1 a 3 cartas', [1, 2, 3].includes(await page.locator('.fig-fli
 await sleep(700); await page.screenshot({ path: '/tmp/claude-0/fig-pack2.png' });
 await page.getByRole('button', { name: 'colar tudo no álbum' }).click(); await sleep(400);
 const after = await page.textContent('.fig-total');
-check('colou (pelo menos 1 de 125)', /^[1-2]\/125/.test(after.trim()), after);
+check('colou (pelo menos 1 de 125)', /^[1-3]\/\d+/.test(after.trim()), after);
 await page.reload(); await page.waitForSelector('.fig-tabs'); await sleep(600);
 const again = await page.textContent('.fig-total');
-check('progresso persiste ao recarregar', /^[1-2]\/125/.test(again.trim()), again);
+check('progresso persiste ao recarregar', /^[1-3]\/\d+/.test(again.trim()), again);
 await page.getByRole('tab', { name: /pacotes/ }).click();
 check('reabrir o app não devolve o pacote já aberto', (await page.textContent('.fig-pack-card p')).includes('nada pra abrir'));
 await page.getByRole('tab', { name: /comum/ }).click(); await sleep(800);

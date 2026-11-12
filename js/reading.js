@@ -24,7 +24,7 @@ const BARS = {
   ava: [['1001', '1000', '1001', '1000'], ['1100', '1000', '1100', '1000'], ['1101', '1010', '1101', '1000'], ['0111', '1000', '0111', '1000'], ['1001', '1100', '1101', '1000'], ['1101', '0111', '1001', '1100']],
 };
 export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar })));
-export const PASS_SCORE = 70;
+export const PASS_SCORE = 50; // 50% já passa (1 ★) e abre o próximo exercício; 70% = 2 ★; 100% = 3 ★
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
 /** Notas de uma célula: [{ pos, dur }] em semicolcheias (a última vai até o fim do tempo). */
@@ -56,11 +56,25 @@ export function onsets(bars, bpm) {
 }
 
 /**
- * Compara os toques com as notas. Janela = 60% de uma semicolcheia (máx. 150 ms).
- * Cada nota: 'ok' (até 50 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
+ * Compara os toques com as notas. Janela folgada (ver `avaliar`).
+ * Cada nota: 'ok' (até ~50 ms), 'cedo'/'tarde' (dentro da janela), 'faltou'. Toque fora de qualquer nota = extra.
  */
 export function evaluate(taps, expected, bpm, { mic = false } = {}) {
-  const win = Math.min(mic ? 0.2 : 0.15, (60 / bpm / 4) * 0.6 * (mic ? 1.4 : 1)); const okMs = mic ? 70 : 50; // microfone tem mais folga (atraso do som no ar e do aparelho)
+  const r = avaliar(taps, expected, bpm, { mic });
+  // Andamento rápido (>= 130 BPM): quem toca certinho mas SEMPRE atrasado/adiantado por causa do atraso do aparelho (tela, som, bluetooth) não pode ser punido.
+  // Se os toques acertados têm um desvio médio constante (>= 25 ms), desconta esse atraso (até 90 ms) e avalia de novo. O resultado mostra o ajuste.
+  if (bpm >= 130 && r.hits >= 3) {
+    const ds = r.notes.filter((n) => n.ms != null).map((n) => n.ms).sort((a, b) => a - b); const med = ds[Math.floor(ds.length / 2)];
+    const sd = Math.sqrt(ds.reduce((t, x) => t + (x - med) ** 2, 0) / ds.length);
+    if (Math.abs(med) >= 25 && sd <= 35) { const shift = Math.max(-90, Math.min(90, med)); const r2 = avaliar(taps.map((t) => t - shift / 1000), expected, bpm, { mic }); if (r2.score >= r.score) return { ...r2, ajuste: shift }; }
+  }
+  return r;
+}
+function avaliar(taps, expected, bpm, { mic = false } = {}) {
+  // Janela de cada nota: nos andamentos lentos ~0,11 s; nos rápidos (turbo 170 BPM) a semicolcheia dura só 88 ms, então a janela nunca cai abaixo de 0,075 s
+  // (toque na tela tem ~50 a 80 ms de atraso no iPad). Cada toque vai pra nota MAIS PRÓXIMA, então janela maior não confunde as notas.
+  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.2, Math.max(sub * 0.8, 0.12)) : Math.max(Math.min(0.15, sub * 0.6), 0.09); // folgada de propósito (pedido da Bea)
+  const okMs = mic ? 70 : Math.round(Math.min(70, Math.max(50, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {

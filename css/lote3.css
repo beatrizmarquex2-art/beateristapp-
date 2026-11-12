@@ -708,3 +708,30 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 .lj-digital{margin:0;padding:10px 12px;border:2px dashed rgb(var(--ink-rgb));border-radius:12px;background:var(--card);font-size:14px;line-height:1.35;text-align:center}
 
 .lj-selo{display:inline-block;margin:2px 0;padding:4px 8px;border-radius:6px;background:#1b1818;color:#fffdf8;font:800 11px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase}.lj-de{font-weight:600;font-size:14px;opacity:.7}
+
+.al-tenho{font-weight:800;border:2px solid currentColor;white-space:nowrap}
+/* topo da área do aluno com o botão "tenho código": o nome encolhe em vez de quebrar */
+.top .ws{min-width:0;flex:1 1 0}.top .ws span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .btn.small{padding:6px 9px;font-size:13px;white-space:nowrap}
+.jg-sala-atalho .jg-msg:empty{display:none}
+
+.al-ver{display:flex;align-items:center;gap:8px;font-size:14px;min-height:32px}.al-ver input{width:20px;height:20px}.al-guardar{display:grid;gap:10px}.al-guardar .btn{min-height:48px}
+/* aviso do giro grátis do dia: vermelho forte, pra ficar bem na cara */
+.fig-giro{background:#d3122f!important;border-color:#8f0a1f!important;color:#fff!important;font-weight:800;box-shadow:0 4px 0 #8f0a1f,0 0 0 4px rgb(211 18 47 / .22);animation:fig-giro-pulso 1.8s ease-in-out infinite}
+@keyframes fig-giro-pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@media (prefers-reduced-motion:reduce){.fig-giro{animation:none}}
+/* dentro de um jogo: sem barra de baixo (toque perto da borda caía na Lojinha) e sem o espaço reservado pra ela */
+html.em-jogo .bottom-nav { display: none !important; }
+html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
+/* auditoria de leitura (nov/2026): texto miúdo maior, abas que não cortam em tela estreita, teclas com letra legível */
+.jgx-cell b, .jg-card b{font-size:12.5px}
+.tr-card small, .dc-pick small, .bv-tit, .pf-codigo small, .mem-theme b{font-size:12px}
+.jg-tiny{font-size:12px!important;min-height:30px}
+.mem-vt .mc-b{font-size:10.5px}.mem-themes.hero .mem-vt .mc-t{font-size:clamp(11px,3.4vw,14px)}
+.cx-lbl{font-size:max(9.5px,.1em)}
+.jg-seg button{min-height:36px}.jo-chips button,.jo-passo button{min-height:36px}
+.jg-toca > .jg-seg{flex-wrap:wrap}.jg-toca > .jg-seg button{padding:6px 10px}
+.pn-w span,.ti-bar span{font-size:11px;font-weight:800}.pn-w span{color:#3a3330}
+.pf-codigo small{color:#4a423e}
+@media (max-width:360px){.tr-modos{grid-template-columns:1fr}.tr-como{grid-template-columns:1fr}}
+.dc-chips-cat,.lib-tabs{flex-wrap:wrap}

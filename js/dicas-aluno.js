@@ -1,4 +1,4 @@
-// Quiz e Letras na área do aluno: as 30 dicas vêm do Supabase (função dicas_lista) e só com código de aluno válido.
+// Letras na área do aluno: as 30 dicas vêm do Supabase (função dicas_lista) e só com código de aluno válido.
 // Elas entram no armazenamento local do aluno como registros "tip", que é de onde os jogos já leem.
 import { CONFIG } from './config.js';
 import * as store from './store.js';

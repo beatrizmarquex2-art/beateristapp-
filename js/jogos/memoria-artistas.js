@@ -7,5 +7,5 @@ import { mountMemoria } from '../kids/memoria.js';
 export function mount(host) {
   const arc = h('div', { class: 'kx-arc kx-embed kd-game' }); host.replaceChildren(arc);
   const stop = mountMemoria(arc, {});
-  return { inProgress: () => stop.inProgress(), restart: () => stop.restart(), destroy: () => stop() };
+  return { inProgress: () => stop.inProgress(), restart: () => stop.restart(), pause: () => stop.pause(), resume: () => stop.resume(), destroy: () => stop() };
 }

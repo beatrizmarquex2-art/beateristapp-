@@ -198,7 +198,7 @@ export function loadPackage() {
 /** opts.student: área do aluno (sem importar MIDI; músicas originais do app; ranking compartilhado com o nome do aluno). */
 export function mount(host, opts = {}) {
   // Modo Aventura (#/ritmo/aventura[/n]): tela própria, o jogo normal abaixo não é montado. Nada do modo livre muda.
-  if (opts.parts && opts.parts[0] === 'aventura') return mountAventura(host, opts.parts);
+  if (opts.parts && opts.parts[0] === 'aventura') { location.hash = '#/ritmo'; return () => {}; } // o Modo Aventura do Beat Hero/Piano Hero foi removido (links antigos voltam pro jogo)
   // Duelo (#/ritmo/duelo): a mesma música ao mesmo tempo em dois celulares, por código de sala
   if (opts.parts && opts.parts[0] === 'duelo') { let off = () => {}; let gone2 = false; import('../jogos/duelo-ritmo.js').then((m) => { if (!gone2) off = m.mountDuelo(host, opts); }); return () => { gone2 = true; off(); }; }
   const student = !!opts.student;
@@ -302,7 +302,7 @@ export function mount(host, opts = {}) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Beat Hero', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), h('div', { class: 'pad-x rg-adv' }, h('a', { class: 'btn primary wide', href: '#/ritmo/aventura', 'data-aventura': '' }, '🎯 Modo Aventura'), h('a', { class: 'btn wide', href: '#/ritmo/duelo' }, '⚔ Duelo online · 2 celulares'), h('small', { class: 'muted' }, 'desafios num mapa, opcional. Nenhuma música fica trancada.')), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage, codes]));
+  host.append(banner('Beat Hero', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), h('div', { class: 'pad-x rg-adv' }, h('a', { class: 'btn primary wide', href: '#/ritmo/duelo' }, '⚔ Duelo online · 2 celulares'), h('small', { class: 'muted' }, 'nenhuma música fica trancada.')), ...(student ? [] : [tools]), frame, ...(student ? [] : [manage, codes]));
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
@@ -317,9 +317,9 @@ export function mount(host, opts = {}) {
     if (gone) return;
     BRref = BR;
     box.replaceChildren();
-    // ★ dos jogos de ritmo entram na conta: a cada 30 ★ (somando todos os jogos) libera uma roleta de figurinhas
+    // ★ dos jogos de ritmo entram na conta: a cada 15 ★ (somando todos os jogos) libera uma roleta de figurinhas
     const onStars = async ({ total }) => { const me = P.active(); if (!me) return; await P.patch(me.id, { ritmoStars: total }); const won = await Album.sincronizar(me.id);
-      if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 30 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
+      if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 15 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
       else toast(`★ ${Album.progressoTxt(me.id)}`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = student ? { builtin: true, impLabel: 'Músicas MIDI', readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) } : {};
     BR.mount('#jogos', { storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { const t = await addXp(n, why); xpOut.textContent = `${t} XP`; if (n > 0) toast(`+${Math.round(n)} XP${why ? ` · ${why}` : ''}`, { id: 'rg-xp', ms: 1600 }); } });

@@ -10,7 +10,7 @@ await p.locator('[role=radio]:has-text("microfone")').click(); await sleep(300);
 await p.locator('button:has-text("tocar direto")').click(); await sleep(1800);
 const durante = await p.evaluate(() => navigator.audioSession.type);
 check('com o microfone aberto, a sessão de áudio é "play-and-record"', durante === 'play-and-record', durante);
-await p.mouse.click(200, 500); await sleep(300); // um toque qualquer na tela não derruba a sessão de volta pra "playback"
+await p.locator('.tr-pad').click({ force: true }); await sleep(300); // um toque qualquer na tela não derruba a sessão de volta pra "playback"
 check('um toque na tela não volta a sessão pra "playback" enquanto o microfone está aberto', (await p.evaluate(() => navigator.audioSession.type)) === 'play-and-record');
 await p.waitForSelector('.tr-res', { timeout: 40000 }); await sleep(500);
 const depois = await p.evaluate(() => navigator.audioSession.type);

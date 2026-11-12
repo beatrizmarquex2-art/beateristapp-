@@ -30,7 +30,7 @@ test('distribuição: 7 por jogador (2 a 4), descarte começa com figura, 112 co
     const g = C.newGame({ mode: 'paul', players, rnd: seeded(s) }); assert.equal(g.n, players); assert.equal(g.hands.length, players);
     g.hands.forEach((h) => assert.equal(h.length, 7)); assert.ok(C.isFig(g.discard[0])); assert.equal(g.color, g.discard[0].color); assert.ok(C.validGame(g));
   }
-  assert.equal(C.newGame({ mode: 'local', players: 4 }).n, 2); assert.equal(C.newGame({ mode: 'online' }).n, 2);
+  assert.equal(C.newGame({ mode: 'local', players: 4 }).n, 4); assert.equal(C.newGame({ mode: 'local' }).n, 2); assert.equal(C.newGame({ mode: 'online', players: 4 }).n, 2);
 });
 test('jogabilidade: mesma cor ou mesma figura; ação só com mesma ação; topo curinga só pela cor', () => {
   const top = fig('vermelho', 'colcheia');

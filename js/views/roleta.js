@@ -6,7 +6,7 @@ import { audio } from '../audio.js';
 import { banner } from '../ui.js';
 import { getGame, setGame } from '../jogos/base.js';
 import { ENTIDADES } from '../jogos/cara-musical/elenco.js';
-import { mini, grande, loadCat, posOf } from '../jogos/cara-musical/midia.js';
+import { mini, grande, loadCat, enquadreFoto } from '../jogos/cara-musical/midia.js';
 import { agrupar, elegiveis, contagens, sortearUm, embaralhar, FILTROS } from '../jogos/artistas-logic.js';
 import { tocarTabs } from './tocar-nav.js';
 
@@ -45,7 +45,7 @@ export function mount(host) {
   const somBtn = h('button', { type: 'button', class: 'btn small ghost', 'aria-pressed': String(som), onclick: () => { som = !som; setGame('roleta', { som }); somBtn.setAttribute('aria-pressed', String(som)); somBtn.textContent = som ? '🔊 som' : '🔇 mudo'; } }, som ? '🔊 som' : '🔇 mudo');
 
   const img = (a, cls = '') => {
-    const c = a.fotoPrincipal; const im = h('img', { src: mini(c), alt: `foto de ${a.nome}`, class: cls, draggable: 'false', style: `object-position:${posOf(c)}` });
+    const c = a.fotoPrincipal; const im = h('img', { src: mini(c), alt: `foto de ${a.nome}`, class: cls, draggable: 'false', style: enquadreFoto(c) });
     im.addEventListener('error', () => { const f = h('span', { class: 'rl-fb' }, a.curto); im.replaceWith(f); console.warn('roleta: foto ausente', c); });
     return im;
   };

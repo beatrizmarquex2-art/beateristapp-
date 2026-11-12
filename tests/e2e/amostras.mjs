@@ -1,4 +1,4 @@
-// Amostra grátis (aluno sem código): Dicionário mostra 3 termos, Aulinha do Paul 2 passos, Quiz e Letras 2 partidas de caça-palavras (palavras do dicionário).
+// Amostra grátis (aluno sem código): Dicionário mostra 3 termos, Aulinha do Paul 2 passos, Letras 2 partidas de caça-palavras (palavras do dicionário).
 // Dicas do método só com código. Com código tudo abre.
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false });
@@ -25,11 +25,11 @@ async function abrir(c, valido, hash) {
   check('3º passo: aviso do código e sem botão próximo', (await p.locator('.am-lock').count()) === 1 && (await p.locator('.au-nav button:has-text("próximo")').count()) === 0);
   await p.goto(`${url}/aluno.html#/estudos/dicas`); await sleep(1500);
   check('Dicas do método trancadas sem código', (await p.locator('.al-lock').count()) === 1);
-  // Quiz e Letras: 2 partidas de caça-palavras
+  // Letras: 2 partidas de caça-palavras
   const cacaJogada = async () => { await p.goto(`${url}/aluno.html#/jogos`); await sleep(800); await p.goto(`${url}/aluno.html#/dicas`); await sleep(2200); const c = p.locator('.dc-grid .dc-c'); await c.nth(0).click(); await c.nth(1).click(); await sleep(300); };
   await p.goto(`${url}/aluno.html#/dicas`); await sleep(2200);
-  check('Quiz e Letras sem código abre na caça-palavras (grade 9×9) com palavras do dicionário', (await p.locator('.dc-grid .dc-c').count()) === 81 && (await p.locator('.dc-chips .dc-chip').count()) >= 4);
-  check('quiz e cruzadinha: cadeado nas abas', (await p.locator('.dc-pick b').allTextContents()).filter((t) => t.includes('🔒')).length === 2);
+  check('Letras sem código abre na caça-palavras (grade 9×9) com palavras do dicionário', (await p.locator('.dc-grid .dc-c').count()) === 81 && (await p.locator('.dc-chips .dc-chip').count()) >= 4);
+  check('quiz, cruzadinha e duelo: cadeado nas abas', (await p.locator('.dc-pick b').allTextContents()).filter((t) => t.includes('🔒')).length === 3);
   await cacaJogada(); check('1ª partida grátis conta', /grátis 1 de 2/.test(await p.locator('.tr-count').textContent()));
   await cacaJogada(); check('2ª partida grátis conta', /grátis 2 de 2/.test(await p.locator('.tr-count').textContent()));
   await p.goto(`${url}/aluno.html#/jogos`); await sleep(800); await p.goto(`${url}/aluno.html#/dicas`); await sleep(2000);

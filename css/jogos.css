@@ -916,3 +916,48 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-dark .jg-link-badge{color:#fbf7ee;font-size:13px}.jg-dark .jg-link-badge.off{color:#ffd9a0}
 .jg-dark .jg-cover2,.jg-dark .jg-cover2 p{color:#fbf7ee}.jg-dark .jg-cover2 .muted{color:#fbf7ee;opacity:1;font-size:16px;line-height:1.4}
 .jg-dark .jg-cover2 .hand{font-size:28px}
+/* entrar numa sala: código grande e fácil de achar */
+.jg-sala-atalho{display:grid;gap:8px}.jg-entrar{display:flex;gap:8px;align-items:stretch}.jg-code-big{flex:1;min-width:0;min-height:52px;font:800 22px var(--body);letter-spacing:.18em;text-align:center;text-transform:uppercase;border:3px solid currentColor;border-radius:12px;background:var(--card,#fffdf8);color:inherit}
+.jg-entrar .btn{min-height:52px;font-size:18px}.jg-volta{display:grid;gap:4px;margin-bottom:8px}.jg-volta .btn{min-height:52px;font-size:18px}
+
+/* pausa do jogo */
+.jg-wrap{position:relative}.jg-pausa{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:rgba(18,40,74,.88);padding:16px}
+.jg-pausa-box{display:grid;gap:12px;width:min(340px,100%);padding:20px;border:3px solid #1b1818;border-radius:16px;background:#fffdf8;color:#1b1818;text-align:center;box-shadow:6px 6px 0 rgba(0,0,0,.35)}
+.jg-pausa-box .btn{min-height:52px;font-size:18px}.jg-pausa-btn{white-space:nowrap}.jg-continuar{min-height:52px;font-size:18px;text-align:center}
+
+.jg-cod-aluno{display:grid;gap:8px}.jg-cod-aluno .jg-msg:empty{display:none}
+/* quiz Uno Musical */
+.jg-quizuno{display:grid;gap:10px;justify-items:center;text-align:center}
+.qz-dots{display:flex;gap:8px}.qz-dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--jg-navy);background:#fff}.qz-dots i.ok{background:#2e9f5b;border-color:#2e9f5b}.qz-dots i.now{background:var(--jg-hi,#EBA332)}
+.qz-card{width:min(46vw,170px);aspect-ratio:3/4;display:grid;place-items:center;border:3px solid var(--jg-navy);border-radius:16px;background:#fffdf7;color:var(--jg-navy);box-shadow:4px 4px 0 var(--jg-navy)}
+.qz-card .cx-sym{height:70%}
+.qz-ops{display:grid;gap:8px;width:min(100%,360px)}.qz-op{min-height:52px;font-size:18px;font-weight:700}
+.qz-op.certo{background:#2e9f5b;color:#fff;border-color:#2e9f5b}.qz-op.errado{background:#BD1733;color:#fff;border-color:#BD1733}
+/* Toca Aqui (figuras): escolhas grandes e visuais */
+.tr-como,.tr-modos{display:grid;gap:8px}.tr-como{grid-template-columns:1fr 1fr}.tr-modos{grid-template-columns:1.2fr 1fr 1fr;padding:6px 16px}
+.tr-vel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tr-card{display:grid;justify-items:center;gap:2px;padding:10px 6px;min-height:64px;border:2px solid #17365B;border-radius:14px;background:#fffdf7;color:#17365B;font:inherit;cursor:pointer;text-align:center;box-shadow:3px 3px 0 #17365B}
+.tr-card b{font-size:15px}.tr-card small{font-size:11px;opacity:.8}.tr-card .tr-ic{font-size:26px;line-height:1}
+.tr-card.on{background:#17365B;color:#fff}.tr-card.go{background:#EBA332;color:#142036}.tr-card.small{min-height:54px;box-shadow:2px 2px 0 #17365B}.tr-card.small .tr-ic{font-size:20px}.tr-card.small b{font-size:13px}
+.tr-card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #17365B}
+.tr-mais{margin-top:4px}.tr-mais summary{cursor:pointer;font-weight:700;font-size:13px;padding:6px 0}
+.tr-pad:not(.mic){min-height:200px;border:3px solid #17365B;border-style:solid;border-radius:22px;background:linear-gradient(160deg,#fff4d6,#ffe3a1);color:#17365B;box-shadow:5px 5px 0 #17365B;font:400 30px var(--display,inherit)}
+.tr-pad:not(.mic) .tr-drum{font-size:64px;font-style:normal;line-height:1}.tr-pad:not(.mic) span{font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.tr-pad:not(.mic).live{border-color:#BD1733;background:linear-gradient(160deg,#ffe0d9,#ffc7bb)}.tr-pad.hit .tr-drum{animation:tr-boom .14s ease-out}@keyframes tr-boom{from{transform:scale(1.35) rotate(-8deg)}to{transform:none}}
+@media (max-width:360px){.tr-modos{grid-template-columns:1fr}}
+/* resultado do Toca Aqui: nota e "próxima fase" logo abaixo de onde se toca */
+.tr-quick{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 16px 10px;padding:10px 14px;border:3px solid #17365B;border-radius:16px;background:#fffdf7;box-shadow:4px 4px 0 #17365B}
+.tr-quick.ok{background:#e9f8ee;border-color:#1f7a3f;box-shadow:4px 4px 0 #1f7a3f}
+.tr-quick .tr-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}.tr-quick .tr-big b{font-size:48px}
+.tr-stars{flex-basis:100%;font-style:normal;font-size:22px;letter-spacing:2px;color:#EBA332}.tr-stars i{font-style:normal;color:#c9c2b0}
+.tr-quick .tr-next{min-height:56px;font-size:17px;font-weight:800;white-space:nowrap}
+/* cabeçalho dos jogos: o título tinha uma coluna estreita e quebrava ("MEMÓRI / A"); agora o título ocupa a linha de cima inteira e os botões ficam embaixo */
+.jg-game > .jg-top{display:grid;grid-template-columns:auto 1fr auto auto;grid-template-areas:"titulo titulo titulo titulo" "voltar . pausa nova";gap:8px 6px;align-items:center}
+.jg-game > .jg-top > .jg-title{grid-area:titulo;justify-self:start;max-width:100%;white-space:normal;overflow-wrap:normal;word-break:keep-all;font-size:22px}
+.jg-game > .jg-top > .jg-link{grid-area:voltar}.jg-game > .jg-top > .jg-pausa-btn{grid-area:pausa}.jg-game > .jg-top > .btn:not(.jg-pausa-btn){grid-area:nova}
+.jg-game > .jg-top > .jg-snd{position:absolute;right:20px;top:14px;z-index:5}
+.jg-game > .jg-top{position:relative}.jg-game > .jg-top > .jg-title{margin-right:50px}
+/* só ícones: velocidade do Monte seu ritmo e modos do bingo */
+.kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
+.bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
+.bv-modo.bv-ic .ic-bq{width:28px;height:28px}

@@ -64,6 +64,7 @@ export function mount(host, parts = [], opts = {}) {
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, `🎡 você tem ${pend} pra abrir (giro grátis do dia, roleta ou prêmio) — toque aqui`) : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
+      h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!'),
       tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : collectionView());
     if (tab !== 'Pacotes' && tab !== 'Minhas') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
@@ -106,12 +107,17 @@ export function mount(host, parts = [], opts = {}) {
     const n = (k) => pend.filter((id) => L.packKind(id) === k).length, next = pend[0] ? L.packKind(pend[0]) : null;
     const partes = [n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
     const me = (() => { try { return P.active(); } catch { return null; } })();
-    const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 30 ★ nos jogos pra liberar uma roleta de figurinhas';
+    const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 15 ★ nos jogos pra liberar uma roleta de figurinhas';
     return h('section', { class: 'fig-packs' },
       h('div', { class: 'fig-pack-card' },
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
         h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
+        h('ul', { class: 'fig-regras' },
+          h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
+          h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '3 fases com 3 ★'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),
+          h('li', {}, '🎯 acertou 5 seguidas no quiz Uno Musical: 1 giro (até 3 por dia)'),
+          h('li', {}, '✨ ', h('b', {}, 'o álbum ainda vai mudar'), ': vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', {}, '300 figurinhas'), '!')),
         h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
@@ -129,12 +135,12 @@ export function mount(host, parts = [], opts = {}) {
     const live = h('p', { class: 'fig-note', 'aria-live': 'polite' }, less ? '' : 'toque em cada carta pra virar');
     cards.forEach((e, i) => {
       const dup = state.pasted[e.codigo] || cards.findIndex((x) => x.codigo === e.codigo) < i;
-      const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, style: `--d:${i * 180}ms`, 'aria-label': less ? `${e.artista_banda}, ${e.raridade}` : `carta ${i + 1}, virar` });
+      const el = h('button', { type: 'button', class: `fig-flip${less ? ' open' : ''}`, style: `--d:${i * 180}ms`, 'aria-label': less ? `${e.artista_banda}, ${L.nomeRaridade(e)}` : `carta ${i + 1}, virar` });
       el.innerHTML = `<span class="back"><b>beaterista</b></span><span class="front">${svgOf(e, `o${i}${e.codigo}`)}</span>`;
-      const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${e.raridade}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${e.raridade}${dup ? ' · repetida' : ' · nova'}`; };
+      const flip = () => { if (el.classList.contains('open')) { detail(e); return; } el.classList.add('open'); el.setAttribute('aria-label', `${e.artista_banda}, ${L.nomeRaridade(e)}${dup ? ', repetida' : ', nova'}`); live.textContent = `${e.artista_banda} · ${L.nomeRaridade(e)}${dup ? ' · repetida' : ' · nova'}`; };
       el.addEventListener('click', flip); row.append(el);
     });
-    const nomes = cards.map((e) => `${e.artista_banda} (${e.raridade})`).join(', ');
+    const nomes = cards.map((e) => `${e.artista_banda} (${L.nomeRaridade(e)})`).join(', ');
     return h('div', { class: 'fig-open' }, aberto ? h('p', { class: 'fig-note', role: 'status' }, `você ganhou: ${nomes}`) : live, row,
       h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
       h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
@@ -152,20 +158,36 @@ export function mount(host, parts = [], opts = {}) {
     const kind = L.packKind(packId);
     if (kind === 'pacote') {
       const r = L.openPack(state, catalog, packId); if (!r.fresh) return; save(r.state);
-      sheet('seu pacote', (close) => revealUI(r.codes, close)); return;
+      sheet('seu pacote', (close) => revealUI(r.codes, close, true)); return; // as figurinhas já aparecem viradas: ninguém precisa tocar pra descobrir
     }
     const roleta = kind === 'roleta';
     sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
       const box = h('div', { class: 'fig-open fig-wheelbox' });
       const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? '🎡' : '🏆'));
-      if (roleta) disc.style.background = coresRoleta(); // cores diferentes a cada vez
+      // 3 desenhos de roleta, sorteados a cada vez (e cores sempre diferentes): disco de vinil, roleta néon e pele de tambor
+      const skin = roleta ? ['vinil', 'neon', 'tambor'][Math.floor(Math.random() * 3)] : 'premio'; box.classList.add(`sk-${skin}`); const extras = [];
+      if (roleta) {
+        const hue = Math.floor(Math.random() * 360);
+        if (skin === 'vinil') { disc.style.background = ''; disc.querySelector('.fig-wheel-hub').style.background = coresRoleta(); extras.push(h('i', { class: 'fig-arm', 'aria-hidden': 'true' })); }
+        else if (skin === 'neon') {
+          const neon = ['#ff2d95', '#ffd23f', '#2dd4ff', '#7cff6b', '#b388ff', '#ff7a2d'].sort(() => Math.random() - 0.5).slice(0, 4);
+          disc.style.background = `conic-gradient(${Array.from({ length: 8 }, (_, k) => `${k % 2 ? '#14111a' : neon[(k / 2) % 4]} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
+          for (let k = 0; k < 12; k++) disc.append(h('i', { class: 'fig-luz', style: `--a:${k * 30}deg`, 'aria-hidden': 'true' }));
+        } else {
+          const c1 = ['#d3122f', '#EBA332', '#17365B', '#2a9d8f'].sort(() => Math.random() - 0.5);
+          disc.style.background = `conic-gradient(${Array.from({ length: 8 }, (_, k) => `${k % 2 ? '#fff8e6' : c1[(k / 2) % 4]} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
+          for (let k = 0; k < 8; k++) disc.append(h('i', { class: 'fig-parafuso', style: `--a:${k * 45}deg`, 'aria-hidden': 'true' }));
+          extras.push(h('i', { class: 'fig-stick l', 'aria-hidden': 'true' }), h('i', { class: 'fig-stick r', 'aria-hidden': 'true' }));
+        }
+        disc.querySelector('.fig-wheel-hub').textContent = skin === 'tambor' ? '🥁' : skin === 'vinil' ? '🎵' : '🎡'; void hue;
+      }
       const go = h('button', { type: 'button', class: 'btn primary wide', onclick: () => {
         go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
         if (wantsLess(state)) { mostra(); return; }
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 5 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }
@@ -176,7 +198,7 @@ export function mount(host, parts = [], opts = {}) {
       const view = h('div', { class: 'fig-zoom' }); view.innerHTML = svgOf(e, `d${e.codigo}`);
       const btn = h('button', { type: 'button', class: 'btn', 'aria-pressed': 'false', onclick: () => { big = !big; view.classList.toggle('big', big); btn.setAttribute('aria-pressed', String(big)); btn.textContent = big ? 'diminuir' : 'ampliar'; } }, 'ampliar');
       const share = shareUI(e);
-      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${e.raridade} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
+      const box = h('div', { class: 'fig-detail' }, view, h('p', { class: 'fig-note' }, `${L.nomeRaridade(e)} · seção ${e.secao} · nº ${L.slotNumber(catalog, e)}`), btn, share);
       box.cleanup = () => share.cleanup();
       return box;
     });

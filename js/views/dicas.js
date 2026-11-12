@@ -16,7 +16,7 @@ import { tipList } from '../tipbox.js';
 const items = () => T.keywords(tipList(), conf().kw);
 // amostra grátis (sem código): a caça-palavras usa palavras do dicionário musical, não as dicas do método
 const termItems = () => TERMS.filter((x) => /^\p{L}+$/u.test(x.t)).map((x, i) => ({ n: i + 1, text: x.d, w: T.norm(x.t), shown: x.t, termo: true })).filter((x) => x.w.length >= 4 && x.w.length <= 8);
-const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha']];
+const TABS = [['quiz', 'quiz'], ['caca', 'caça-palavras'], ['cruzadinha', 'cruzadinha'], ['duelo', 'duelo']];
 const total = () => Math.max(30, tipList().length);
 
 /** A dica inteira, pra quando a palavra é achada. */
@@ -24,12 +24,13 @@ const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' 
 
 /* ---------- quiz (mesma cara do caça-palavras e da cruzadinha: bolinhas coloridas, opções com letra, progresso) ---------- */
 const LETRAS = ['A', 'B', 'C', 'D'];
-function quiz(box, kinds, key) {
-  const its = items(); const ROUNDS = Math.min(10, its.length);
+function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas iguais nos dois celulares, fim() } — sem estrela própria, sem recorde e sem tela final
+  const its = D ? [] : items(); const ROUNDS = D ? D.qs.length : Math.min(10, its.length);
   let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = [];
-  const next = () => { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); answered = false; picked = null; draw(); };
+  const next = () => { if (D) q = D.qs[i]; else { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); } answered = false; picked = null; draw(); };
   const dots = () => h('div', { class: 'dc-prog', role: 'img', 'aria-label': `pergunta ${i + 1} de ${ROUNDS}, ${score} certas` }, ...Array.from({ length: ROUNDS }, (_, n) => h('i', { class: n < hist.length ? (hist[n] ? 'ok' : 'no') : n === i ? 'now' : '' })));
   const finish = () => {
+    if (D) { D.fim(); return; }
     if (!alunoSemCodigo()) MESA.vitoria('quiz', MESA.pct(score, ROUNDS));
     const b = conf().best; const best = Math.max(b[key] || 0, score); if (score > (b[key] || 0)) save({ best: { ...b, [key]: score } });
     const frase = score >= ROUNDS * 0.9 ? 'você é fera! 🏆' : score >= ROUNDS * 0.7 ? 'mandou muito bem!' : score >= ROUNDS * 0.4 ? 'tá evoluindo, bora de novo!' : 'sem stress, errar faz parte';
@@ -46,19 +47,20 @@ function quiz(box, kinds, key) {
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
-      answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? 'ver o resultado' : 'próxima') : null].filter(Boolean));
+      answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
   }
   next();
+  return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length }) };
 }
 
 /* ---------- caça-palavras (fácil: grade 9×9, 6 palavras curtas, só → e ↓, palavras à vista e cada uma de uma cor) ---------- */
 const COLORS = 6; // classes dc-k0..dc-k5 (css/jogos.css)
-function caca(box) {
-  const free = alunoSemCodigo();
+function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual nos dois celulares, fim() }
+  const free = !D && alunoSemCodigo();
   if (free && cacaUsadas() >= GRATIS.caca) { box.replaceChildren(avisoCodigo(`você já jogou as ${GRATIS.caca} partidas grátis de caça-palavras. com o código de aluno tem caça-palavras sem limite, quiz e cruzadinha com as dicas do método.`)); return; }
   let counted = false; // a partida grátis conta quando a aluna faz a primeira jogada
-  const its = free ? termItems() : items(); const pick = T.easyPick(its, 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
-  const ws = T.wordsearch(pick.map((x) => x.w), 9, Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
+  const pick = D ? D.pick : T.easyPick(free ? termItems() : items(), 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
+  const ws = T.wordsearch(pick.map((x) => x.w), 9, D ? D.mk() : Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let erros = 0; let pagou = false;
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
@@ -71,7 +73,7 @@ function caca(box) {
   const attempt = (line, el) => {
     const str = line.map((c) => ws.grid[c.y][c.x]).join(''); const rev = [...str].reverse().join('');
     const w = words.find((k) => !found.has(k) && (k === str || k === rev));
-    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (done && !pagou && !free) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
+    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (D && done) D.fim(); if (done && !pagou && !free && !D) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
     else { erros++; draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
   };
   const up = () => {
@@ -104,15 +106,16 @@ function caca(box) {
       : h('span', { class: `dc-chip dc-k${colorOf[w]}` }, byWord[w].shown)));
     const dica = !found.size ? h('p', { class: 'muted' }, 'ache as palavras na grade: arraste o dedo por cima ou toque na primeira e na última letra. quando achar, aparece a dica!') : null;
     box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, chips, grid].filter(Boolean)), last ? explain(last) : null,
-      found.size === words.length ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
+      found.size === words.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
   };
   draw();
+  return { stats: () => ({ found: found.size, total: words.length, erros }) };
 }
 
 /* ---------- cruzadinha (fácil: 5 palavras curtas, banco de palavras à vista, 1ª letra de cada uma já na grade, cores) ---------- */
-function cruzadinha(box) {
-  const its = items(); const pick = T.easyPick(its, 5, { min: 4, max: 8 });
-  const cw = T.crossword(pick.map((x) => x.w), Math.random, 12); const solved = new Set(); let last = null; let erros = 0; let pagou = false;
+function cruzadinha(box, D) {
+  const pick = D ? D.pick : T.easyPick(items(), 5, { min: 4, max: 8 });
+  const cw = T.crossword(pick.map((x) => x.w), D ? D.mk() : Math.random, 12); const solved = new Set(); let last = null; let erros = 0; let pagou = false;
   const cellsOf = (e) => Array.from({ length: e.w.length }, (_, k) => ({ x: e.x + (e.dir === 'h' ? k : 0), y: e.y + (e.dir === 'v' ? k : 0), ch: e.w[k] }));
   const shown = new Map(); // casa -> { ch, k } letra revelada e a cor da palavra
   const hintOf = new Map(); // casa -> 1ª letra de cada palavra (já aparece clarinha)
@@ -130,19 +133,22 @@ function cruzadinha(box) {
       const inp = h('input', { type: 'text', maxlength: e.w.length, autocapitalize: 'off', autocomplete: 'off', spellcheck: 'false', disabled: ok, placeholder: e.w[0] + '·'.repeat(e.w.length - 1), 'aria-label': `Resposta da ${e.n} ${e.dir === 'h' ? 'horizontal' : 'vertical'}`, value: ok ? it.w : '' });
       inp.addEventListener('input', () => {
         const v = T.norm(inp.value).replace(/[^A-Z]/g, ''); if (v.length < e.w.length) return;
-        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (all && !pagou) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
+        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (D && all) D.fim(); if (all && !pagou && !D) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
         else { erros++; FB.lose(inp, { paul: false }); inp.select(); }
       });
       return h('li', { class: `${ok ? 'ok ' : ''}dc-k${e.idx % COLORS}`, value: e.n }, h('span', { class: 'dc-dir' }, `${e.dir === 'h' ? '→' : '↓'} ${e.w.length} letras · começa com ${e.w[0]}`), h('p', {}, T.clueOf(it)), inp); }));
     box.replaceChildren(...[h('section', { class: 'card pad' }, h('p', { class: 'tr-count' }, `${solved.size} de ${cw.entries.length} palavras`), h('p', { class: 'muted' }, 'as respostas estão aqui embaixo, é só encaixar cada uma na pista certa:'), bank, grid), last ? explain(last) : null, h('section', { class: 'card pad' }, h('h3', { class: 'tag' }, 'pistas'), clues),
-      solved.size === cw.entries.length ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); cruzadinha(box); } }, 'outra cruzadinha') : null].filter(Boolean));
+      solved.size === cw.entries.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); cruzadinha(box); } }, 'outra cruzadinha') : null].filter(Boolean));
     if (focus != null) { const el = box.querySelectorAll('.dc-clues input')[focus]; el && el.focus(); }
   };
   draw();
+  return { stats: () => ({ found: solved.size, total: cw.entries.length, erros }) };
 }
 
-const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg' };
-const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas' };
+/** Pro duelo em 2 celulares (js/jogos/duelo-letras.js): os 3 jogos com puzzle preparado e as dicas do aluno. */
+export const _duelo = { caca, cruzadinha, quiz, items };
+const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg', duelo: 'cara-a-cara.webp' };
+const SUB = { quiz: 'completa e liga', caca: 'ache na grade', cruzadinha: 'preencha as pistas', duelo: '2 celulares' };
 
 export function mount(host, parts = []) {
   const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
@@ -157,7 +163,7 @@ export function mount(host, parts = []) {
   const paint = () => { wrap.classList.toggle('escuro', modo === 'escuro'); tg.textContent = modo === 'escuro' ? '☀️ claro' : '🌙 escuro'; tg.setAttribute('aria-pressed', String(modo === 'escuro')); };
   tg.addEventListener('click', () => { modo = modo === 'escuro' ? 'claro' : 'escuro'; try { localStorage.setItem(KM, modo); } catch { /* ok */ } paint(); });
   paint();
-  host.append(banner('Quiz e Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
+  host.append(banner('Letras', limited ? `${GRATIS.caca} partidas de caça-palavras de graça` : 'quiz, caça-palavras e cruzadinha com as dicas do método'),
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
@@ -166,12 +172,14 @@ export function mount(host, parts = []) {
       box);
   const run = () => {
     box.replaceChildren();
-    if (limited) { if (tab === 'caca') caca(box); else box.append(avisoCodigo(`${tab === 'quiz' ? 'o quiz' : 'a cruzadinha'} é pra alunos da Beaterista: usa as dicas do método. a caça-palavras tem ${GRATIS.caca} partidas grátis.`)); return; }
+    if (limited) { if (tab === 'caca') caca(box); else box.append(avisoCodigo(`${tab === 'quiz' ? 'o quiz' : tab === 'duelo' ? 'o duelo' : 'a cruzadinha'} é pra alunos da Beaterista: usa as dicas do método. a caça-palavras tem ${GRATIS.caca} partidas grátis.`)); return; }
     const n = items().length;
     if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
+    if (tab === 'duelo') { import('../jogos/duelo-letras.js').then((m) => { if (!gone) stopDuelo = m.mountDueloLetras(box); }); return; }
     ({ quiz: () => quiz(box, ['blank', 'continua'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };
+  let gone = false; let stopDuelo = null;
   run();
   const off = store.subscribe((i) => { if (i.kind === 'tip' && !box.children.length) run(); });
-  return off;
+  return () => { gone = true; off(); if (stopDuelo) stopDuelo(); };
 }

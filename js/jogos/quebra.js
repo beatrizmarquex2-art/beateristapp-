@@ -4,6 +4,9 @@ import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as Q from './quebra-logic.js';
 import { getGame, setGame, sfx, reduced } from './base.js';
+import { quebra as estrelasQuebra } from './estrelas-jogo.js';
+import { sementeRnd } from './semente.js';
+import { salaAutoPara } from './online.js';
 
 const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
@@ -53,8 +56,10 @@ export function mount(host, opts) {
     im.src = SRC();
   }
 
+  let autoAbriu = false;
   function intro() {
     stopClock(); g = null; selected = null; hintCell = null;
+    if (!M && !autoAbriu && salaAutoPara(ID)) { autoAbriu = true; abrirDuelo(); return; } // veio de "tem um código de sala"
     const resume = Q.validGame(saved.game) && !saved.game.over ? saved.game : null;
     const RULES = () => h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro, ou arraste a peça até o lugar (no celular: arraste pra cima, ou segure um instante e arraste).'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
@@ -67,9 +72,13 @@ export function mount(host, opts) {
       ),
       bests.length ? h('p', { class: 'jg-p muted' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
-        h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => load(() => begin(Q.newGame(prefs))) }, resume ? 'nova partida' : 'iniciar')),
+        h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => load(() => begin(Q.newGame(prefs))) }, resume ? 'nova partida' : 'iniciar'),
+        h('button', { class: 'btn', type: 'button', onclick: abrirDuelo }, '⚔ duelo · 2 celulares')),
     ].filter(Boolean));
   }
+  /** Duelo em 2 celulares: a mesma imagem e as mesmas peças nos dois; vence quem montar mais rápido (js/jogos/duelo-quebra.js). */
+  let offDuelo = null;
+  function abrirDuelo() { stopClock(); root.replaceChildren(h('p', { class: 'jg-p muted' }, 'carregando o duelo…')); import('./duelo-quebra.js').then((m) => { if (gone) return; root.replaceChildren(); offDuelo = m.mountDueloQuebra(root, { IMAGES, SIZES, abrir: (opts, el) => mount(el || root, opts), voltar: () => { if (offDuelo) { offDuelo(); offDuelo = null; } intro(); } }); }); }
   function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = false; record = false; persist(); draw(); startClock(); }
 
   const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
@@ -109,6 +118,7 @@ export function mount(host, opts) {
   function finish() {
     clock(); stopClock();
     if (M) { sfx('win'); draw(); if (!reported && !gone && opts.onResult) { reported = true; opts.onResult({ won: true, diff: g.diff, img: imgId, errors: g.errors, hints: g.hints, elapsed: Math.round(g.elapsed), moves: g.diff + g.errors }); } return; }
+    estrelasQuebra(imgId, IMAGES.length); // 3 ★ por imagem (2 na 2ª volta, 1 depois)
     const r = Q.recordBest(best, g); best = r.best; record = r.record; setGame(ID, { ...prefs, best, game: null }); sfx('win'); draw();
   }
   function result() {
@@ -157,10 +167,10 @@ export function mount(host, opts) {
 
   const onVis = () => { if (document.hidden) { clock(); persist(); } else last = performance.now(); };
   document.addEventListener('visibilitychange', onVis);
-  if (M) load(() => begin(Q.newGame({ diff: prefs.diff, free: false }))); else intro();
+  if (M) load(() => begin(Q.newGame({ diff: prefs.diff, free: false, rnd: M.params.seed ? sementeRnd(M.params.seed) : Math.random }))); else intro(); // seed: no duelo os dois celulares embaralham igual
   return {
     inProgress: () => !!(g && !g.over && g.started),
     restart: async () => { if (g && !g.over && g.started && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },
-    destroy() { gone = true; stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd); void reduced; },
+    destroy() { gone = true; if (offDuelo) { offDuelo(); offDuelo = null; } stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd); void reduced; },
   };
 }

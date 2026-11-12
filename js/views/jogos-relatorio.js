@@ -50,7 +50,7 @@ const GROUPS = [
       ['repertório e cultura musical', 'recuperação rápida da memória', 'escrita e ortografia sob tempo'],
       'Cada resposta é uma busca rápida na memória de longo prazo, o que fortalece o repertório. Na dupla, ver as respostas do colega amplia as referências.'],
   ]],
-  ['Quiz e Letras', [
+  ['Letras', [
     ['Quiz das dicas', 'quiz.svg', 'Perguntas de completar e de ligar sobre as dicas do método.',
       ['retenção do conteúdo do método', 'leitura atenta', 'autoavaliação'],
       'Testar-se é uma das formas de estudo que mais fixam o conteúdo. Depois de cada resposta a dica inteira aparece, e o erro vira explicação.'],

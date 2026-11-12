@@ -24,7 +24,7 @@ async function abrir(p) {
   await p.goto(`${url}/aluno.html#/jogos/cara`); await sleep(1000);
   if (await p.locator('button:text-is("JOGAR")').count()) { await p.locator('button:text-is("JOGAR")').click(); await sleep(300); }
   await livre(p);
-  await p.locator('button[role=radio]:has-text("cara a cara musical")').click(); await sleep(250);
+  await sleep(250); // o cara a cara é só de artistas: abre direto
   await p.locator('button[role=radio]:has-text("2 celulares")').click(); await sleep(200);
 }
 const a = await phone(); const b = await phone();
@@ -46,16 +46,17 @@ if (false) { fs.mkdirSync(SHOT, { recursive: true }); await a.screenshot({ path:
 
 const vez = async (p) => (await p.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('sua vez');
 const quem = async () => ((await vez(a)) ? [a, b] : (await vez(b)) ? [b, a] : [null, null]);
-const [v, o] = await quem(); check('[jogo] um dos dois tem a vez e vê o botão "pergunta livre"', !!v && (await v.locator('button:has-text("pergunta livre")').count()) === 1);
-check('[jogo] quem não tem a vez não vê o botão', (await o.locator('button:has-text("pergunta livre")').count()) === 0);
-// pergunta livre com texto
-await v.locator('button:has-text("pergunta livre")').click(); await sleep(400);
-await v.locator('input[aria-label="pergunta livre"]').fill('a sua carta já tocou no rock in rio?'); await v.locator('.sheet-body button:has-text("perguntar")').click(); await sleep(3000);
-check('[livre] o outro celular recebe o texto e os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('rock in rio') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
-if (SHOT) { fs.mkdirSync(SHOT, { recursive: true }); await o.screenshot({ path: `${SHOT}/livre-responder.png` }); }
+const [v, o] = await quem(); check('[jogo] um dos dois tem a vez e vê o botão "escrever uma pergunta" (sem opção de falar)', !!v && (await v.locator('button:has-text("escrever uma pergunta")').count()) === 1 && (await v.locator('button:has-text("falar")').count()) === 0);
+check('[jogo] quem não tem a vez não vê o botão', (await o.locator('button:has-text("escrever uma pergunta")').count()) === 0);
+// pergunta livre: SÓ por escrito; o outro lê e responde SIM ou NÃO
+await v.locator('button:has-text("escrever uma pergunta")').click(); await v.waitForSelector('.cm-livre-in', { timeout: 5000 });
+await v.locator('button:has-text("enviar pergunta")').click(); await sleep(300);
+check('[livre] não envia pergunta vazia', (await v.locator('.cm-livre-in').count()) === 1);
+await v.locator('.cm-livre-in').fill('ele toca bateria?'); await v.locator('button:has-text("enviar pergunta")').click(); await sleep(3000);
+check('[livre] o outro celular LÊ a pergunta escrita e mostra os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('ele toca bateria?') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
 check('[livre] não responde sozinho (continua esperando)', (await v.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('esperando o outro'));
 await o.locator('.cm-livre button:text-is("SIM")').click(); await sleep(3000);
-check('[livre] quem perguntou vê o SIM com o texto', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('rock in rio'));
+check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('vire as cartas'));
 check('[livre] a vez passou pro outro', await vez(o) && !(await vez(v)));
 check('[livre] conta como pergunta (1) e nenhuma carta saiu sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '1' && (await v.locator('.cm-cell.out').count()) === 0);
 if (SHOT) await v.screenshot({ path: `${SHOT}/livre-virar.png` });
@@ -64,11 +65,11 @@ await v.locator('.cm-cell .jg-flip').first().click(); await sleep(300);
 check('[livre] virar à mão tira a carta do jogo (só neste aparelho)', (await v.locator('.cm-cell.out').count()) === 1 && (await o.locator('.cm-cell.out').count()) === 0);
 await v.locator('.cm-cell.out .jg-flip').click(); await sleep(300);
 check('[livre] desvirar devolve a carta', (await v.locator('.cm-cell.out').count()) === 0);
-// agora o outro faz uma pergunta livre SEM texto (falada) e responde NÃO
-await o.locator('button:has-text("pergunta livre")').click(); await sleep(400); await o.locator('.sheet-body button:has-text("perguntar")').click(); await sleep(3000);
-check('[falada] o outro celular pede pra ouvir e responder', (await v.locator('.cm-livre-txt').innerText()).includes('falada'));
+// agora o outro faz a sua pergunta livre e responde NÃO
+await o.locator('button:has-text("escrever uma pergunta")').click(); await o.waitForSelector('.cm-livre-in', { timeout: 5000 }); await o.locator('.cm-livre-in').fill('é do Brasil?'); await o.locator('button:has-text("enviar pergunta")').click(); await sleep(3000);
+check('[escrita] o outro celular lê a pergunta e responde', (await v.locator('.cm-livre-txt').innerText()).includes('é do Brasil?'));
 await v.locator('.cm-livre button:text-is("NÃO")').click(); await sleep(3000);
-check('[falada] NÃO chega pra quem perguntou e a vez volta', /NÃO/.test(await o.locator('.cm-paul').innerText()) && await vez(v));
+check('[escrita] NÃO chega pra quem perguntou e a vez volta', /NÃO/.test(await o.locator('.cm-paul').innerText()) && await vez(v));
 // pergunta pronta continua funcionando e mistura com as livres
 await v.locator('.cm-qs .cm-q').first().click(); await sleep(3000);
 check('[mistura] pergunta pronta ainda responde sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '2');

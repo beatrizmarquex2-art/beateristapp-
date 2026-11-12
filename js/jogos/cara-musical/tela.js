@@ -9,13 +9,14 @@ import { BY_Q, textoDe } from './perguntas.js';
 import * as R from './regras.js';
 import { falador } from './falas.js';
 import { fatosDe } from './fichas.js';
-import { lobby, reenter } from '../online.js';
+import { lobby, reenter, salaAutoPara } from '../online.js';
 import * as O from './online-regras.js';
 import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
 
 const GID = 'cara';
-import { mini, grande, loadCat, posOf } from './midia.js';
+import { mini, grande, loadCat, enquadreFoto } from './midia.js';
+import { ganhou } from '../estrelas-jogo.js';
 
 export function mountMusical(host, { onTema } = {}) {
   const fala = falador(); const timers = new Set(); let gone = false;
@@ -66,7 +67,7 @@ export function mountMusical(host, { onTema } = {}) {
     st = null;
     const tam = tamanhoPadrao(); const kids = cfg.modo === 'kids';
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), h('p', { class: 'jg-lab' }, 'tema'), temaRow(),
+      h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
       h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Vire as cartas que não combinam. Descubra o artista!'),
       h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; salvar(); menu(); }, 'modo'),
       h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
@@ -107,7 +108,7 @@ export function mountMusical(host, { onTema } = {}) {
     ];
     let k = 0; const box = h('div', { class: 'cm-tut' });
     const draw = () => { const p = passos[k];
-      box.replaceChildren(paulFala(p.fala), h('div', { class: 'cm-grade cm-g2' }, ...cartas.map((c) => h('div', { class: `cm-card${p.fora.includes(c.id) ? ' out' : ''}${p.dest === c.id ? ' dest' : ''}` }, h('img', { src: mini(c.foto), alt: '', style: `object-position:${posOf(c.foto)}` }), h('small', {}, BY_ID[c.id].curto), p.fora.includes(c.id) ? h('i', { class: 'cm-x' }, '✕') : null))),
+      box.replaceChildren(paulFala(p.fala), h('div', { class: 'cm-grade cm-g2' }, ...cartas.map((c) => h('div', { class: `cm-card${p.fora.includes(c.id) ? ' out' : ''}${p.dest === c.id ? ' dest' : ''}` }, h('img', { src: mini(c.foto), alt: '', style: enquadreFoto(c.foto) }), h('small', {}, BY_ID[c.id].curto), p.fora.includes(c.id) ? h('i', { class: 'cm-x' }, '✕') : null))),
         p.pergunta ? h('div', { class: 'cm-q big' }, p.pergunta) : null, h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { if (k < passos.length - 1) { k++; draw(); } else menu(); } }, k < passos.length - 1 ? 'próximo' : 'entendi!'), h('button', { class: 'btn ghost', type: 'button', onclick: menu }, 'pular')));
       sfx('tap'); };
     root.replaceChildren(h('h2', { class: 'jg-h hand' }, 'como jogar'), box); draw();
@@ -142,7 +143,7 @@ export function mountMusical(host, { onTema } = {}) {
       const c = (st ? st.mesa : { cartas: [] }).cartas.find((x) => x.id === id) || { id, foto: BY_ID[id].fotos[0] }; const e = BY_ID[id]; const out = fora.includes(id);
       return h('div', { class: `cm-cell${out ? ' out' : ''}${selecionada === id ? ' sel' : ''}` },
         h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada === id), 'aria-label': `${e.curto}${out ? ', virada' : ''}`, onclick: () => aoToque(id) },
-          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: `object-position:${posOf(c.foto)}`, onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: e.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
+          h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: e.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
         manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), onclick: () => manual(id) }, out ? 'desvirar' : 'virar') : null);
     }));
   }
@@ -225,6 +226,7 @@ export function mountMusical(host, { onTema } = {}) {
     const lados = st.lados; const solo = cfg.jogo === 'solo'; let res = null; let serie = st.serie;
     if (!solo) { res = R.resultadoRodada(lados[0], lados[1]); serie = R.fecharRodada(st.serie, res); st.serie = serie; }
     sfx(solo ? (lados[0].acertou ? 'win' : 'lose') : res.vencedor === 0 ? 'win' : res.vencedor === 1 ? 'lose' : 'tie');
+    if (solo ? lados[0].acertou : cfg.jogo === 'paul' && res.vencedor === 0) ganhou('cara'); // acertou / ganhou a rodada do Paul: 3 ★
     const secreto = (l) => st.mesa.cartas.find((c) => c.id === l.segredo);
     const bloco = (l, titulo) => { const c = secreto(l); const e = BY_ID[c.id]; const fatos = fatosDe(c.id);
       return h('div', { class: 'cm-ficha' }, h('small', {}, titulo), h('img', { src: grande(c.foto), alt: `foto de ${e.curto}`, onerror: (ev) => { ev.target.src = mini(c.foto); } }), h('b', {}, e.nome === 'Beaterista' ? 'Beaterista' : e.curto),
@@ -249,7 +251,7 @@ export function mountMusical(host, { onTema } = {}) {
     else escolherSegredo(0, (s1) => passe(1, `${nomeJ(1)}, escolha sua carta secreta`, () => escolherSegredo(1, (s2) => { st.lados = [R.novoLado({ mesa, segredo: s2, palpites }), R.novoLado({ mesa, segredo: s1, palpites })]; passe(0, `vez de ${nomeJ(0)}`, comecar); })));
   }
 
-  menu();
+  if (salaAutoPara('cara-musical')) { cfg.jogo = 'online'; salaOnline(); } else menu(); // veio de "tenho um código de sala"
   return {
     inProgress: () => !!(st && st.lados && st.lados.some((l) => l.perguntas.length || l.erros.length) && !st.lados.every((l) => l.terminou)),
     restart: async () => { if (st && st.lados && st.lados.some((l) => l.perguntas.length) && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'recomeçar'))) return; menu(); },
