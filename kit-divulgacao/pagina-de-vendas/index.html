@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beaterista · jogos e estudos que ensinam música</title>
+<meta name="description" content="Jogos de ritmo, leitura de partitura e teoria musical criados pela professora Bea. Teste grátis no celular, tablet ou computador.">
+<meta property="og:title" content="Beaterista · jogos que ensinam música">
+<meta property="og:description" content="Ritmo, partitura e teoria brincando, com a professora Bea e o Paul. Teste grátis.">
+<meta property="og:image" content="img/lista-de-jogos.webp">
+<meta name="theme-color" content="#b5162b">
+<style>
+/* fontes locais (pasta fonts/) */
+@font-face{font-family:'Anton';src:url(fonts/Anton-latin.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Hanken Grotesk';font-weight:400 800;src:url(fonts/HankenGrotesk-latin.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Special Elite';src:url(fonts/SpecialElite-latin.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Permanent Marker';src:url(fonts/PermanentMarker-latin.woff2) format('woff2');font-display:swap}
+:root{--red:#b5162b;--wine:#6e1219;--cream:#f1ebe1;--ink:#1b1818;--navy:#0e2347;--gold:#f6c44f}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:18px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.A{font-family:'Anton',Impact,sans-serif;text-transform:uppercase;line-height:1;letter-spacing:.01em;font-weight:400}
+.T{font-family:'Special Elite',monospace}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.btn{display:inline-block;font-family:'Anton';text-transform:uppercase;letter-spacing:.04em;font-size:1.15rem;padding:.7em 1.4em;border-radius:6px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);text-decoration:none;background:var(--gold);color:var(--ink);transition:transform .1s}
+.btn:hover{transform:translate(-1px,-1px)}
+.btn.red{background:var(--red);color:var(--cream)}
+.btn.ghost{background:transparent;color:inherit;border-color:currentColor;box-shadow:none}
+section{padding:72px 0}
+h2{font-size:clamp(2rem,6vw,3.4rem);margin-bottom:14px}
+.lead{font-size:1.2rem;max-width:640px}
+/* hero */
+.hero{background:var(--red);color:var(--cream);position:relative;overflow:hidden;padding:36px 0 0}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(#ffffff22 2px,transparent 2.5px) 0 0/26px 26px}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:end}
+.nav{display:flex;justify-content:space-between;align-items:center;padding-bottom:30px;grid-column:1/-1}
+.nav img{height:54px;filter:brightness(0) invert(1)}
+.hero h1{font-size:clamp(2.8rem,9vw,5.8rem);margin-bottom:18px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{font-size:1.25rem;max-width:520px;margin-bottom:26px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.hero small{display:block;font-family:'Special Elite';opacity:.85;margin-bottom:40px}
+.hero .ph{position:relative;padding-bottom:0}
+.phone{border:10px solid #151213;border-radius:42px;overflow:hidden;background:#151213;box-shadow:0 30px 50px -20px rgba(0,0,0,.6)}
+.hero .phone{width:min(330px,80%);margin:0 auto;border-bottom:0;border-radius:42px 42px 0 0;transform:rotate(3deg) translateY(8px)}
+.hero .paul{position:absolute;left:-10px;bottom:0;width:150px}
+/* faixa */
+.faixa{background:var(--ink);color:var(--cream);padding:18px 0;text-align:center;font-family:'Special Elite';font-size:1rem}
+.faixa b{color:var(--gold);font-weight:400}
+/* pilares */
+.pilares{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.card{background:#fff;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);border-radius:12px;padding:22px}
+.card h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.6rem;color:var(--red);margin-bottom:6px}
+.card .ic{font-size:2rem;margin-bottom:6px}
+/* jogos */
+.jogos{background:var(--navy);color:var(--cream)}
+.jogos h2{color:var(--gold)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:26px;margin-top:36px}
+.j{background:var(--cream);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:6px 6px 0 var(--red)}
+.j .shot{background:var(--gold);padding:18px 18px 0;height:300px;overflow:hidden}
+.j .shot img{width:78%;margin:0 auto;border:8px solid #151213;border-bottom:0;border-radius:30px 30px 0 0}
+.j .tx{padding:16px 18px 20px}
+.j h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.6rem;color:var(--red)}
+.j p{font-size:.98rem;margin:4px 0 10px}
+.tag{display:inline-block;font-family:'Special Elite';font-size:.8rem;border:1.5px solid var(--ink);border-radius:99px;padding:2px 10px;margin:2px 4px 0 0}
+/* passos */
+.passos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px;counter-reset:p}
+.passo{background:var(--cream);border:3px solid var(--ink);border-radius:12px;padding:22px;position:relative}
+.passo::before{counter-increment:p;content:counter(p);font-family:'Anton';font-size:4rem;color:var(--red);line-height:1;display:block}
+.passo h3{font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.5rem}
+/* ciencia */
+.ciencia{background:var(--gold)}
+.refs{margin-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.ref{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:18px}
+.ref b{display:block;font-family:'Anton';text-transform:uppercase;font-weight:400;font-size:1.3rem;color:var(--red)}
+.ref small{display:block;margin-top:8px;font-family:'Special Elite';font-size:.78rem;opacity:.8}
+/* pais */
+.pais{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+.pais ul{list-style:none;margin:18px 0}
+.pais li{padding-left:28px;position:relative;margin-bottom:10px}
+.pais li::before{content:'★';position:absolute;left:0;color:var(--red)}
+.pais .phone{width:min(300px,80%);margin:0 auto;transform:rotate(-3deg)}
+/* loja */
+.loja{background:var(--cream)}
+.prat{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:22px;margin-top:30px}
+.p{background:#fff;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:12px;text-align:center;display:flex;flex-direction:column}
+.p img{aspect-ratio:3/4;object-fit:cover;object-position:top;width:100%;border:1px solid #0002}
+.p b{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:1.25rem;margin-top:10px}
+.p small{opacity:.7}.p .pr{font-weight:800;color:var(--red);margin:6px 0 10px}.p .pr s{opacity:.5;font-weight:400;margin-right:6px}
+.p .btn{font-size:1rem;margin-top:auto;padding:.5em 1em}
+.bf{display:inline-block;background:var(--ink);color:var(--gold);font-family:'Anton';text-transform:uppercase;padding:2px 12px;margin-bottom:8px;font-size:.9rem}
+/* faq */
+details{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+summary{font-family:'Anton';text-transform:uppercase;font-size:1.2rem;cursor:pointer;list-style:none}
+summary::after{content:'+';float:right;color:var(--red)}
+details[open] summary::after{content:'−'}
+details p{margin-top:10px}
+/* final */
+.final{background:var(--red);color:var(--cream);text-align:center}
+.final img.paul{width:170px;margin:0 auto 10px}
+.final .cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+footer{background:var(--ink);color:var(--cream);padding:30px 0 100px;font-family:'Special Elite';font-size:.9rem;text-align:center}
+footer a{color:var(--gold)}
+.sticky{position:fixed;left:0;right:0;bottom:0;background:var(--ink);padding:10px 16px;display:none;z-index:9;text-align:center}
+.sticky .btn{width:100%;box-shadow:none}
+@media(max-width:820px){.hero .wrap,.pais{grid-template-columns:1fr}.pilares,.passos,.refs{grid-template-columns:1fr}.hero .paul{width:110px}.sticky{display:block}section{padding:52px 0}}
+</style>
+</head>
+<body>
+
+<!-- ============ TROCAR ANTES DE PUBLICAR ============
+ WHATSAPP: procure por "SEUNUMERO" e coloque o número com DDI+DDD (ex.: 5511999999999)
+ SITE DOS JOGOS: https://jogos.beaterista.com.br
+ Os links "comprar" são os da Hotmart que já estão na lojinha (js/loja-config.js). Confira antes de subir.
+====================================================== -->
+
+<header class="hero">
+  <div class="wrap">
+    <div class="nav"><img src="img/logo.png" alt="Beaterista escola de música"><a class="btn ghost" style="font-size:.95rem;padding:.4em 1em" href="https://jogos.beaterista.com.br">entrar nos jogos</a></div>
+    <div>
+      <h1 class="A">jogos que <em>ensinam</em> música</h1>
+      <p>ritmo, leitura de partitura e teoria brincando, no celular, tablet ou computador. criado pela professora Bea, de bateria, junto com o Paul, o robô que explica tudo.</p>
+      <div class="cta">
+        <a class="btn" href="https://jogos.beaterista.com.br">testar grátis agora</a>
+        <a class="btn ghost" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código</a>
+      </div>
+      <small>sem instalar nada · abre direto no navegador</small>
+    </div>
+    <div class="ph"><div class="phone"><img src="img/toca-aqui-jogando.webp" alt="Toca Aqui: leia a figura e toque no tempo" width="390"></div><img class="paul" src="img/paul-bateria.webp" alt="Paul, o robô baterista"></div>
+  </div>
+</header>
+
+<div class="faixa"><div class="wrap"><b>+15 jogos</b> · <b>estudos com som</b> · <b>álbum de figurinhas</b> · <b>materiais em PDF</b> — tudo da escola Beaterista</div></div>
+
+<section>
+  <div class="wrap">
+    <h2 class="A">música se aprende fazendo</h2>
+    <p class="lead">aqui cada jogo treina uma habilidade de verdade. a criança (ou o adulto!) toca, lê, ouve e erra sem medo, porque o Paul mostra o caminho e o jogo deixa tentar de novo.</p>
+    <div class="pilares">
+      <div class="card"><div class="ic">🥁</div><h3>ritmo e bateria</h3><p>tocar no tempo, ler figuras rítmicas, ouvir e montar ritmos. do pulso ao groove.</p></div>
+      <div class="card"><div class="ic">🎼</div><h3>leitura musical</h3><p>pauta da bateria, clave de sol e de fá em mundos cheios de fases, passo a passo.</p></div>
+      <div class="card"><div class="ic">🧠</div><h3>teoria sem tédio</h3><p>dicionário, acordes, ritmos e aulinhas curtas. cada coisa nova vira jogo.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="jogos" id="jogos">
+  <div class="wrap">
+    <h2 class="A">veja por dentro</h2>
+    <p class="lead">telas reais do app. cada jogo diz o que desenvolve.</p>
+    <div class="gal">
+      <article class="j"><div class="shot"><img src="img/beat-hero-jogando.webp" alt="Beat Hero" loading="lazy"></div><div class="tx"><h3>Beat Hero</h3><p>toque no tempo certo e ganhe XP, com músicas de vários estilos.</p><span class="tag">coordenação</span><span class="tag">precisão de tempo</span></div></article>
+      <article class="j"><div class="shot"><img src="img/toca-aqui-jogando.webp" alt="Toca Aqui" loading="lazy"></div><div class="tx"><h3>Toca Aqui</h3><p>leia a figura na pauta e toque no pulso, na tela ou no microfone, em mundos com fases.</p><span class="tag">leitura rítmica</span><span class="tag">pulso</span></div></article>
+      <article class="j"><div class="shot"><img src="img/detetive-note-jogando.webp" alt="Detetive Note" loading="lazy"></div><div class="tx"><h3>Detetive Note</h3><p>ouça o ritmo e monte com as cartas. a dificuldade sobe a cada fase.</p><span class="tag">escuta</span><span class="tag">memória rítmica</span></div></article>
+      <article class="j"><div class="shot"><img src="img/figurix-jogando.webp" alt="Figurix" loading="lazy"></div><div class="tx"><h3>Figurix</h3><p>62 fases pra dominar semínima, colcheia, pausas e muito mais.</p><span class="tag">valor das figuras</span><span class="tag">raciocínio</span></div></article>
+      <article class="j"><div class="shot"><img src="img/paulta-jogando.webp" alt="pauLta" loading="lazy"></div><div class="tx"><h3>pauLta</h3><p>aprenda a ler a pauta da bateria e as claves de sol e de fá.</p><span class="tag">partitura</span><span class="tag">claves</span></div></article>
+      <article class="j"><div class="shot"><img src="img/uno-musical-jogando.webp" alt="Uno Musical" loading="lazy"></div><div class="tx"><h3>Uno Musical</h3><p>jogue a carta da mesma cor ou figura rítmica. contra o Paul ou com amigos.</p><span class="tag">figuras</span><span class="tag">estratégia</span></div></article>
+      <article class="j"><div class="shot"><img src="img/stop-musical.webp" alt="STOP Musical" loading="lazy"></div><div class="tx"><h3>STOP Musical</h3><p>a letra é sorteada e você escreve rápido em 12 categorias de música.</p><span class="tag">vocabulário</span><span class="tag">cultura musical</span></div></article>
+      <article class="j"><div class="shot"><img src="img/quebra-cabeca.webp" alt="Quebra-cabeça" loading="lazy"></div><div class="tx"><h3>Quebra-cabeça</h3><p>monte o palco, a guitarra, o estúdio e outras cenas musicais.</p><span class="tag">foco</span><span class="tag">percepção</span></div></article>
+      <article class="j"><div class="shot"><img src="img/estudos-ritmos-de-bateria.webp" alt="Ritmos de bateria" loading="lazy"></div><div class="tx"><h3>Estudos: ritmos</h3><p>veja o desenho do ritmo, a partitura e ouça: rock, pop, samba, baião.</p><span class="tag">levadas</span><span class="tag">escuta ativa</span></div></article>
+      <article class="j"><div class="shot"><img src="img/estudos-acordes-violao.webp" alt="Acordes de violão" loading="lazy"></div><div class="tx"><h3>Estudos: acordes</h3><p>16 acordes de violão e guitarra: veja onde pôr o dedo e ouça.</p><span class="tag">harmonia</span><span class="tag">mapa do braço</span></div></article>
+      <article class="j"><div class="shot"><img src="img/tocar-bateria.webp" alt="Bateria de toque" loading="lazy"></div><div class="tx"><h3>Tocar</h3><p>bateria, violão, piano e xilofone na tela. grave seu ritmo e brinque.</p><span class="tag">criatividade</span><span class="tag">coordenação</span></div></article>
+      <article class="j"><div class="shot"><img src="img/memoria-jogando.webp" alt="Jogo da memória" loading="lazy"></div><div class="tx"><h3>Jogo da Memória</h3><p>instrumentos, figuras, bandas e profissões da música.</p><span class="tag">memória</span><span class="tag">vocabulário</span></div></article>
+    </div>
+    <p style="text-align:center;margin-top:36px"><a class="btn" href="https://jogos.beaterista.com.br">jogar agora</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="A">como funciona</h2>
+    <div class="passos">
+      <div class="passo"><h3>abra o link</h3><p>jogos.beaterista.com.br no celular, tablet ou computador. dá pra colocar o ícone na tela inicial.</p></div>
+      <div class="passo"><h3>jogue e estude</h3><p>alguns jogos já abrem livres pra testar. o Paul explica, o jogo dá a resposta na hora.</p></div>
+      <div class="passo"><h3>libere tudo</h3><p>com o código de aluno você desbloqueia as fases, ganha estrelas, giros da roleta e figurinhas do álbum.</p></div>
+    </div>
+    <p style="margin-top:30px"><a class="btn red" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">pedir meu código pelo whatsapp</a></p>
+  </div>
+</section>
+
+<section class="ciencia">
+  <div class="wrap">
+    <h2 class="A">por que funciona</h2>
+    <p class="lead">o método junta o que a pesquisa sobre aprendizagem vem mostrando há anos. sem promessa mágica: prática curta, frequente e com retorno na hora.</p>
+    <div class="refs">
+      <div class="ref"><b>testar para lembrar</b>responder e tentar recuperar o que aprendeu fixa mais do que só reler. por isso os jogos perguntam, mostram o erro e deixam repetir.<small>Roediger &amp; Karpicke (2006), Psychological Science</small></div>
+      <div class="ref"><b>pouco, mas sempre</b>estudar em sessões espaçadas retém mais do que fazer tudo de uma vez. daí a meta do dia e as fases curtinhas.<small>Cepeda et al. (2006), Psychological Bulletin</small></div>
+      <div class="ref"><b>ouvido treinado</b>treino musical está ligado a melhor processamento de som e de fala no cérebro. escutar e tocar juntos é o coração do app.<small>Kraus &amp; Chandrasekaran (2010), Nature Reviews Neuroscience</small></div>
+      <div class="ref"><b>aulas de música e cognição</b>estudo com crianças encontrou ganhos pequenos de desempenho cognitivo após aulas de música. é um apoio, não uma garantia.<small>Schellenberg (2004), Psychological Science</small></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap pais">
+    <div>
+      <h2 class="A">pra pais e responsáveis</h2>
+      <p>sabe aquela hora de tela? aqui ela tem objetivo. cada jogo tem uma folha dizendo o que a criança faz e o que desenvolve.</p>
+      <ul>
+        <li>jogos feitos por uma professora de música de verdade</li>
+        <li>o nome e a foto do aluno ficam só no aparelho dele</li>
+        <li>funciona no celular, no tablet e no computador</li>
+        <li>a página "Jogos Ensinam" explica cada jogo (dá pra salvar em PDF)</li>
+      </ul>
+      <a class="btn" href="https://jogos.beaterista.com.br/#/jogos/relatorio">ver o que cada jogo ensina</a>
+    </div>
+    <div class="phone"><img src="img/jogos-ensinam-para-pais.webp" alt="Jogos Ensinam: o que cada jogo desenvolve" loading="lazy"></div>
+  </div>
+</section>
+
+<section class="loja" id="materiais">
+  <div class="wrap">
+    <h2 class="A">materiais da bea em pdf</h2>
+    <p class="lead">digitais: estude na tela do celular ou do computador, ou imprima para treinar no papel.</p>
+    <div class="prat">
+      <div class="p"><img src="img/loja-memoria.webp" alt="" loading="lazy"><b>Jogo da Memória Musical</b><small>61 pares · imprima, recorte, embaralhe</small><div class="pr">R$ 19,90</div><a class="btn" href="https://pay.hotmart.com/T108261878K">quero</a></div>
+      <div class="p"><img src="img/loja-bateria-kids.webp" alt="" loading="lazy"><b>Bateria Kids</b><small>36 páginas · aprenda brincando e colorindo</small><div class="pr">R$ 19,90</div><a class="btn" href="https://pay.hotmart.com/J103900759O">quero</a></div>
+      <div class="p"><img src="img/loja-roboterista.webp" alt="" loading="lazy"><b>Robôterista Ensina</b><small>70 páginas · figuras rítmicas, pausas e tempo</small><div class="pr">R$ 29,90</div><a class="btn" href="https://pay.hotmart.com/Q108426927S">quero</a></div>
+      <div class="p"><img src="img/loja-violao.webp" alt="" loading="lazy"><b>Violão do Zero</b><small>47 páginas · da primeira corda à primeira música</small><div class="pr">R$ 29,90</div><a class="btn" href="https://pay.hotmart.com/D108261763C">quero</a></div>
+      <div class="p"><img src="img/loja-mood.webp" alt="" loading="lazy"><b>Beaterista Mood</b><small>55 páginas · exercícios que a Bea estuda e leva pro palco</small><div class="pr">R$ 29,90</div><a class="btn" href="https://pay.hotmart.com/G103615712R">quero</a></div>
+      <div class="p"><img src="img/loja-bateria-start.webp" alt="" loading="lazy"><span class="bf">black friday · metade do preço</span><b>Bateria Start</b><small>44 páginas · peças, figuras, partitura e rudimentos</small><div class="pr"><s>R$ 29,90</s>R$ 14,90</div><a class="btn red" href="https://pay.hotmart.com/K66533032H">quero</a></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" style="max-width:800px">
+    <h2 class="A">perguntas frequentes</h2>
+    <details><summary>precisa instalar alguma coisa?</summary><p>não. abre direto no navegador. se quiser, dá pra adicionar o ícone na tela inicial do celular ou tablet.</p></details>
+    <details><summary>é pra qual idade?</summary><p>a escola Beaterista ensina crianças e adultos, e os jogos servem pros dois. o Paul explica de um jeito leve, sem faixa de idade.</p></details>
+    <details><summary>preciso saber música pra começar?</summary><p>não. tem jogos pra quem nunca tocou e fases que sobem de nível aos poucos.</p></details>
+    <details><summary>preciso ter bateria?</summary><p>não. dá pra tocar na tela. alguns jogos aceitam o microfone se você tiver instrumento, mas não é obrigatório.</p></details>
+    <details><summary>o que é o código de aluno?</summary><p>é o que libera as fases, as estrelas, a roleta e o álbum de figurinhas. você pode testar os jogos livres antes e pedir o código para a professora Bea.</p></details>
+    <details><summary>os materiais em pdf são enviados como?</summary><p>a compra é pela Hotmart e o acesso ao PDF chega por lá, na hora do pagamento confirmado.</p></details>
+    <details><summary>funciona sem internet?</summary><p>depois de aberto uma vez, boa parte funciona offline. algumas coisas (códigos, jogos em 2 celulares) precisam de internet.</p></details>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <img class="paul" src="img/paul-paz.webp" alt="Paul fazendo sinal de paz">
+    <h2 class="A">bora tocar juntos?</h2>
+    <p class="lead" style="margin:0 auto">teste os jogos agora, sem compromisso. quando gostar, é só pedir o seu código.</p>
+    <div class="cta"><a class="btn" href="https://jogos.beaterista.com.br">testar grátis</a><a class="btn ghost" href="https://wa.me/55SEUNUMERO?text=Oi%20Bea!%20Quero%20meu%20c%C3%B3digo%20de%20aluno%20do%20Beaterista">falar com a bea</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>beaterista escola de música · <a href="https://beaterista.com.br">beaterista.com.br</a></p>
+    <p style="margin-top:8px"><a href="https://www.instagram.com/beaterista_/">@beaterista_</a> · <a href="https://www.tiktok.com/@beaterista">@beaterista</a> · <a href="https://www.youtube.com/@beateristadrummer">@beateristadrummer</a></p>
+  </div>
+</footer>
+<div class="sticky"><a class="btn" href="https://jogos.beaterista.com.br">testar grátis agora</a></div>
+</body>
+</html>
