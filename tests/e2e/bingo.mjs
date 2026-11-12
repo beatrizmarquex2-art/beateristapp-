@@ -63,6 +63,7 @@ await p1.click('.bg-result .btn.ghost'); await sleep(300);
 const pk = (p) => p.evaluate(() => window.__peak(700)); await p1.click('.bg-draw').catch(() => {});
 await p1.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /voltar ao início/.test(x.textContent)); if (b) b.click(); }); await sleep(300);
 await p1.evaluate(() => [...document.querySelectorAll('.sheet button')].find((b) => /Sair/.test(b.textContent))?.click()); await sleep(400);
+await p1.evaluate(() => { const b = document.querySelector('.jg-snd'); if (b && b.getAttribute('aria-pressed') === 'true') b.click(); }); await sleep(500); // a musiquinha do jogo é de propósito: desliga pelo botão de som e confere se sobrou som da partida
 check('sair da partida: sem som residual', (await pk(p1)) < 0.004);
 if (!(await p1.$('.jo-tema'))) { await p1.goto(url + '/aluno.html#/jogos/bingo/livre'); await p1.reload(); await p1.waitForSelector('.jo-tema'); }
 /* ---------- 1b. Clássico: marcação manual e sorteio automático com pausa ---------- */

@@ -43,3 +43,17 @@ html[data-av="claro"] {
 .av-objective { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
 .av-medal { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
 .av-mode { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); } .av-mode.aventura { background: var(--avp-card); border-color: var(--avp-accent); } .av-mode-d { color: var(--avp-text); } .av-mode-m { color: var(--avp-soft); }
+
+/* Mundos dos jogos de caminhozinho (Figurix, pauLta, Toca Aqui e Detetive Note): os mesmos 6 temas, cada um com as suas cores no mapa (escuro e claro; sem roxo e sem rosa) */
+.mp[data-theme="mundo-floresta"]{--avp-sky0:#14402c;--avp-sky1:#1f5a3a;--avp-sky2:#1a4d33;--avp-sky3:#27704a;--avp-edge:#8fe0a8;--avp-dots:#3a8a5c}
+.mp[data-theme="mundo-deserto"]{--avp-sky0:#c9702a;--avp-sky1:#e8964a;--avp-sky2:#d98238;--avp-sky3:#f2ab66;--avp-edge:#ffe0b0;--avp-dots:#f5bf84}
+.mp[data-theme="mundo-mar"]{--avp-sky0:#0f4a74;--avp-sky1:#1b6d9c;--avp-sky2:#155d88;--avp-sky3:#2587b6;--avp-edge:#9ad8f2;--avp-dots:#3b9dc8}
+.mp[data-theme="mundo-espaco"]{--avp-sky0:#070d1f;--avp-sky1:#0f1b3a;--avp-sky2:#0b1530;--avp-sky3:#16264d;--avp-edge:#9fb6e8;--avp-dots:#c9d6ff}
+.mp[data-theme="mundo-gelo"]{--avp-sky0:#17405a;--avp-sky1:#2a6485;--avp-sky2:#215474;--avp-sky3:#3f84a8;--avp-edge:#e6f6ff;--avp-dots:#9fd0e8}
+.mp[data-theme="mundo-vulcao"]{--avp-sky0:#2a0f0a;--avp-sky1:#4a1a10;--avp-sky2:#381410;--avp-sky3:#6a2615;--avp-edge:#ff9d4a;--avp-dots:#c4522a}
+html[data-av="claro"] .mp[data-theme="mundo-floresta"]{--avp-sky0:#d9f0e0;--avp-sky1:#bfe3cb;--avp-sky2:#cdeed7;--avp-sky3:#a9d8ba;--avp-edge:#2f7a52;--avp-dots:#8cc7a3}
+html[data-av="claro"] .mp[data-theme="mundo-deserto"]{--avp-sky0:#ffe6c4;--avp-sky1:#ffd09a;--avp-sky2:#ffdcae;--avp-sky3:#fcc384;--avp-edge:#c46a1c;--avp-dots:#f3b46a}
+html[data-av="claro"] .mp[data-theme="mundo-mar"]{--avp-sky0:#d8eef8;--avp-sky1:#b4dcef;--avp-sky2:#c6e5f3;--avp-sky3:#9cd0e8;--avp-edge:#2b86aa;--avp-dots:#82bfdc}
+html[data-av="claro"] .mp[data-theme="mundo-espaco"]{--avp-sky0:#cfd9f2;--avp-sky1:#b3c2e8;--avp-sky2:#c1cdee;--avp-sky3:#9fb0e0;--avp-edge:#2b3f7a;--avp-dots:#8497cc}
+html[data-av="claro"] .mp[data-theme="mundo-gelo"]{--avp-sky0:#eaf6fd;--avp-sky1:#d2eaf7;--avp-sky2:#dff0fa;--avp-sky3:#bfe0f2;--avp-edge:#3a7ea0;--avp-dots:#a9d3e8}
+html[data-av="claro"] .mp[data-theme="mundo-vulcao"]{--avp-sky0:#ffe1d2;--avp-sky1:#ffc4a3;--avp-sky2:#ffd3b8;--avp-sky3:#ffad82;--avp-edge:#b23a12;--avp-dots:#f08a5c}
