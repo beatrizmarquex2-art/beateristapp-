@@ -183,7 +183,7 @@ export const PERC_VAR = {
     (t, v) => snare(t, v * 0.95, true),
     (t, v) => { const n = noiseSrc(t, 0.06); const g = gn(); n.connect(bq('bandpass', 2300, 1.5)).connect(g); env(g, t, 0.7 * v, 0.001, 0.045); route(g); const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(560, t + 0.04); env(og, t, 0.6 * v, 0.001, 0.06); o.connect(og); route(og); o.start(t); o.stop(t + 0.1); }],
 };
-const PERC_PADRAO = { pd: 2, rr: 0, tr: 2, gz: 2, cg: 2, bg: 2, cx: 0, tb: 0, ag: 2 }; // escolhidas pela Bea (agogô 3; o tamborim ainda vai ser escolhido)
+const PERC_PADRAO = { pd: 2, rr: 0, tr: 2, gz: 2, cg: 2, bg: 2, cx: 0, tb: 2, ag: 2 }; // todas escolhidas pela Bea
 let PERC_ESCOLHA = {}; try { PERC_ESCOLHA = JSON.parse(localStorage.getItem('bt-perc-var') || '{}') || {}; } catch { PERC_ESCOLHA = {}; }
 /** Gera uma amostra da peça (id, variante 0-2) numa fila de toques. Só pra conferir/gravar o som: devolve os canais L e R. */
 export async function renderPercSample(id, variante, hits, secs = 4) {
