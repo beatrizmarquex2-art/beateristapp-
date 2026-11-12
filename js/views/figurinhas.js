@@ -10,6 +10,7 @@ import * as P from '../kids/progress.js';
 import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
+import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
@@ -125,6 +126,7 @@ export function mount(host, parts = [], opts = {}) {
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
         h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
+        me ? h('div', { class: 'fig-share-est' }, h('b', {}, 'compartilhar minhas ★'), ...[['post', 'post'], ['story', 'story']].map(([f, t]) => h('button', { type: 'button', class: 'btn small', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { const r = await EstCard.compartilhar({ nome: me.name, total: EST.estrelasTotais(me.id), formato: f }); if (r === 'baixado') toast('imagem baixada: é só postar!'); else if (r === 'compartilhado') toast('compartilhado!'); } catch { toast('não consegui montar a imagem agora.'); } b.disabled = false; } }, t))) : null,
         h('ul', { class: 'fig-regras' },
           h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
           h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '3 fases com 3 ★'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),

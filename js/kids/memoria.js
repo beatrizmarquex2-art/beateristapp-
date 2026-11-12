@@ -160,7 +160,7 @@ export function mountMemoria(host, opts) {
       }
       live = false; const c = conf(); const k = `${th.id}:${pairs}`; const prev = c.best[k]; const record = players === 1 && (!prev || tries < prev);
       if (record) save({ best: { ...c.best, [k]: tries } });
-      if (th.id === 'figuras') ganhou('memoria', 1); // SÓ o tema "figuras e pausas" dá 1 ★ por partida completada (até contra o robô ou em 2 no mesmo aparelho); os outros temas só em 2 celulares
+      ganhou('memoria', 1); // 1 ★ por partida completada em qualquer tema (pedido da Bea: todo jogo dá estrela); o limite de 30 ★ por jogo por dia continua
       // achou todos (ou ganhou do Paul): 3 ★
       const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `jogador ${topo[0] + 1} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');

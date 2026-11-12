@@ -418,3 +418,4 @@
 .lj-apostila { margin: -2px 0 8px; text-align: center; font: 400 24px/1.05 Anton, var(--display, sans-serif); color: #d3122f; letter-spacing: .4px; text-transform: uppercase; } .lj-apostila small { display: block; font: 400 21px 'Gochi Hand', var(--hand); color: #14284b; text-transform: none; letter-spacing: 0; }
 
 .hj-chips { flex-wrap: nowrap; } .hj-chip { flex: 1 1 auto; text-align: center; padding: 8px 6px; font-size: 12px; }
+.fig-share-est{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}.fig-share-est b{font-size:13px}
