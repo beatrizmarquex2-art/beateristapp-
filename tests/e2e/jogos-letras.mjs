@@ -14,16 +14,11 @@ check('não tem card de duelo nem "Rudimentos" na lista', !/Duelo/.test(txt) && 
 check('a lista não tem mais o card "Letras" nem o "quiz Uno Musical"', !/^Letras$/m.test(txt) && !/quiz Uno Musical/i.test(txt));
 check('Uno Musical continua na lista', /Uno Musical/.test(txt));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
-const nomesVisiveis = () => page.evaluate(() => [...document.querySelectorAll('.jg-flat .jg-card')].map((c) => c.textContent.trim().replace(/\s+/g, ' ')));
-const clicaChip = async (txt) => { await page.evaluate((x) => [...document.querySelectorAll('.jgx-chip')].find((c) => c.textContent.startsWith(x)).click(), txt); await sleep(300); };
-check('os filtros são: Todos, Novos jogos, Mais chances de ganhar estrelas e Favoritos', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|Novos jogos|Mais chances de ganhar estrelas|★ Favoritos');
-await clicaChip('Novos jogos'); let nv = await nomesVisiveis();
-check('"Novos jogos" mostra o Taiko, o Radar Musical, a Cruzadinha e o Quiz do Paul', nv.length === 4 && ['Taiko', 'Radar Musical', 'Cruzadinha', 'Quiz do Paul'].every((n) => nv.some((c) => c.includes(n))), nv.join(' | '));
-await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-novos.png' : '/tmp/jogos-novos.png' });
-await clicaChip('Mais chances'); nv = await nomesVisiveis();
-check('"Mais chances de ganhar estrelas" mostra os 7 jogos que pagam até 3 ★', nv.length === 7 && ['Uno Musical', 'Cara a cara', 'Stop', 'Taiko'].every((n) => nv.some((c) => c.includes(n))), nv.join(' | '));
-await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-estrelas.png' : '/tmp/jogos-estrelas.png' });
-await clicaChip('Todos'); nv = await nomesVisiveis(); check('"Todos" volta a mostrar tudo', nv.length >= 15, String(nv.length));
+check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agora são o Paul falando)', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|★ Favoritos');
+await sleep(1800);
+const nuvem = await page.evaluate(() => { const c = document.querySelector('.pt-cloud'); return c ? { t: c.textContent, h: c.getAttribute('href') } : null; });
+check('o Paul fala numa nuvem de pensamento ao abrir a aba Jogos (jogo novo ou mais estrelas), com link', !!nuvem && /jogo novo|estrela|★/.test(nuvem.t) && /^#\//.test(nuvem.h || ''), JSON.stringify(nuvem));
+await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-paul.png' : '/tmp/jogos-paul.png' });
 for (const [nome, hash] of [['Cruzadinha', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Radar Musical', '#/dicas/caca']]) {
   await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);
   await page.evaluate((n) => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes(n)); if (a) a.click(); }, nome); await sleep(1200);

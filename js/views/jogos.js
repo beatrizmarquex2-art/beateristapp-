@@ -2,6 +2,7 @@
 import { h } from '../util.js';
 import { banner, toast, confirmSheet } from '../ui.js';
 import { paulDica } from '../paul-dicas.js';
+import { think, NOVIDADES_JOGOS } from '../paul-talk.js';
 import * as store from '../store.js';
 import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
@@ -81,11 +82,6 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 /** salva e mostra "desfazer" por uns segundos */
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
-// Filtros da aba Jogos (além de "Todos" e "Favoritos"). Pra mudar quais jogos entram, é só mexer nestas duas listas (endereço de cada jogo).
-/** "Novos jogos": os que chegaram agora. */
-const NOVOS = new Set(['#/jogos/rudimentos', '#/dicas/caca', '#/dicas/cruzadinha', '#/dicas/quiz']);
-/** "Mais chances de ganhar estrelas": jogos que pagam até 3 ★ por partida ou por fase (regras em figurinhas/mesa-logic.js: Uno Musical, caça-palavras, cruzadinha e quiz valem até 3 pelo desempenho; cara a cara e stop, 3 por vitória; Taiko, até 3 por fase). */
-const MAIS_ESTRELAS = new Set(['#/jogos/cartas', '#/dicas/caca', '#/dicas/cruzadinha', '#/dicas/quiz', '#/jogos/cara', '#/jogos/stop', '#/jogos/rudimentos']);
 // fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
 const DARK = new Set(['cara', 'quebra']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
@@ -142,7 +138,8 @@ function atalhoContinuar() {
 
 function catalog(host) {
   const aluno = ALUNO();
-  let editing = false; let filtro = 'todos'; // todos | fav | novos | estrelas
+  let editing = false; let filtro = 'todos'; // todos | fav
+  let pensou = 0;
   const card = (x, edit) => {
     const [id, title, img, , , href] = x; const lk = aluno && AC.trancado(href || `#/jogos/${id}`);
     return h('a', { class: `jg-card${lk ? ' locked' : ''}`, href: href || `#/jogos/${id}`, 'aria-label': lk ? `${title} (só com código)` : null, onclick: edit ? (e) => e.preventDefault() : null }, h('span', { class: 'jg-ico' }, h('img', { src: `${IMG}${img}`, alt: '', decoding: 'async', draggable: 'false' }), lk ? h('i', { class: 'jg-lock', 'aria-hidden': 'true' }, '🔒') : null), h('b', {}, title));
@@ -154,11 +151,11 @@ function catalog(host) {
     const all = SECTIONS.flatMap(([, list]) => list).filter((x) => !(aluno && x[6] === 'bea'));
     const rank = (k) => { const i = p.order.indexOf(k); return i < 0 ? 1e6 : i; };
     const list = all.map((x, i) => [x, i]).sort((a, c) => rank(keyOf(a[0])) - rank(keyOf(c[0])) || a[1] - c[1]).map((x) => x[0]);
-    const passa = (x) => (filtro === 'fav' ? p.fav.includes(keyOf(x)) : filtro === 'novos' ? NOVOS.has(keyOf(x)) : filtro === 'estrelas' ? MAIS_ESTRELAS.has(keyOf(x)) : true);
+    const passa = (x) => (filtro === 'fav' ? p.fav.includes(keyOf(x)) : true);
     const shown = list.filter((x) => (editing || !p.hidden.includes(keyOf(x))) && passa(x));
     const keys = list.map(keyOf);
     bar.replaceChildren(
-      ...[['todos', 'Todos'], ['novos', 'Novos jogos'], ['estrelas', 'Mais chances de ganhar estrelas'], ['fav', `★ Favoritos (${p.fav.filter((k) => keys.includes(k)).length})`]].map(([k, t]) => h('button', { type: 'button', class: `jgx-chip${filtro === k ? ' on' : ''}`, 'aria-pressed': String(filtro === k), onclick: () => { filtro = k; draw(); } }, t)),
+      ...[['todos', 'Todos'], ['fav', `★ Favoritos (${p.fav.filter((k) => keys.includes(k)).length})`]].map(([k, t]) => h('button', { type: 'button', class: `jgx-chip${filtro === k ? ' on' : ''}`, 'aria-pressed': String(filtro === k), onclick: () => { filtro = k; draw(); } }, t)),
       aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
     grid.classList.toggle('jgx-editing', editing);
     grid.replaceChildren(...(shown.length ? shown.map((x) => {
@@ -167,10 +164,12 @@ function catalog(host) {
         h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => { const next = { ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }; if (fav) change(next, 'tirado dos favoritos'); else savePrefs(next); } }, fav ? '★' : '☆'),
         editing ? h('div', { class: 'jgx-ctl' },
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
-    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, filtro === 'fav' ? 'Nenhum favorito ainda. Toque na ☆ de um jogo.' : 'Nenhum jogo aqui ainda.')]));
+    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque na ☆ de um jogo.')]));
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
+  // O Paul fala numa nuvem de pensamento (só pros alunos): uma vez é um jogo novo, na outra é "mais chances de ganhar estrelas" (alterna a cada visita)
+  if (aluno) { const KP = 'beaterista-jogos-pensou'; let n = 0; try { n = Number(localStorage.getItem(KP) || 0) || 0; localStorage.setItem(KP, String(n + 1)); } catch { /* sem armazenamento */ } const lista = NOVIDADES_JOGOS[n % 2]; pensou = setTimeout(() => think(lista[Math.floor(Math.random() * lista.length)], 8000), 1400); }
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
     const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && x[6] === 'bea')).map(keyOf);
@@ -182,7 +181,7 @@ function catalog(host) {
   const offStore = store.subscribe((i) => { if (!i.kind || i.id === PK) draw(); });
   const onAc = () => draw(); document.addEventListener('aluno-acesso', onAc);
   const offFesta = attachFesta(catWrap, { paul: false }); // a faixa de título já tem o Paul
-  return () => { offStore(); offDrag(); offFesta(); document.removeEventListener('aluno-acesso', onAc); };
+  return () => { clearTimeout(pensou); offStore(); offDrag(); offFesta(); document.removeEventListener('aluno-acesso', onAc); };
 }
 
 function game(host, entry) {

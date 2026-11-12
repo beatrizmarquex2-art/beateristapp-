@@ -61,10 +61,26 @@ export const THOUGHTS = [
   ['tum tá tum tum tá!'],
   ['bateristas nunca chegam atrasados, chegam no tempo'],
   ['eu sou só um robozinho, mas sei contar até 4'],
-  ['tem jogo novo no mapa, vai lá!'],
+  ['tem jogo novo na aba Jogos, vai lá!', '#/jogos', 'aluno'],
   ['beba água, baterista também se hidrata'],
   ['que tal ensinar um ritmo pra um amigo?'],
   ['música boa é a que você toca com vontade'],
+];
+
+/** Novidades da aba Jogos: o Paul fala numa nuvem quando o aluno abre a aba (alterna entre "jogo novo" e "mais chances de ganhar estrelas"). [texto, link, 'aluno']. */
+export const NOVIDADES_JOGOS = [
+  [
+    ['jogo novo! o Taiko: toque E e D no tempo', '#/jogos/rudimentos', 'aluno'],
+    ['jogo novo! Radar Musical: ache as palavras na grade', '#/dicas/caca', 'aluno'],
+    ['jogo novo! Cruzadinha musical, vem preencher', '#/dicas/cruzadinha', 'aluno'],
+    ['jogo novo! Quiz do Paul: será que você acerta?', '#/dicas/quiz', 'aluno'],
+  ],
+  [
+    ['quer mais chances de ganhar estrelas? joga o Uno Musical!', '#/jogos/cartas', 'aluno'],
+    ['mais estrelas: Cara a cara e Stop dão até 3 ★ por vitória!', '#/jogos/cara', 'aluno'],
+    ['o Taiko dá estrela em cada fase: bora?', '#/jogos/rudimentos', 'aluno'],
+    ['Radar Musical, Cruzadinha e Quiz do Paul valem até 3 ★ por partida', '#/dicas/caca', 'aluno'],
+  ],
 ];
 
 /** Barulhinho de robô: dois a quatro "blips" rápidos, cada vez um diferente. Só toca depois de um toque. */
