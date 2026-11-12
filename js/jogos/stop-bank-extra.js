@@ -17,5 +17,6 @@ export const LINES = {
     'P2|plugue p2|conector p2|cabo p2',
     'P3|plugue p3|conector p3|cabo p3|mini jack',
     'Palco|stage|praticável',
+    'Cuvave|cuvave cube baby|cube baby|pedal cuvave',
   ],
 };
