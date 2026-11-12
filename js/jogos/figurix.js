@@ -12,7 +12,7 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, noteMarkup, svgEl, tone } from '../kids/art.js';
 import { robo } from '../kids/robo.js';
 import { wordsearch, lineCells, EASY_DIRS, DIRS } from '../tips.js';
-import { PHASES, FASES, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix } from './figurix-logic.js';
+import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix } from './figurix-logic.js';
 
 const fig = (id, cls = 'fx-fig') => svgEl(figureMarkup(id), cls);
 const pausa = (id, cls = 'fx-fig') => svgEl(restMarkup(id), cls);
@@ -21,27 +21,31 @@ const tocar = (beats) => { try { audio(); tone(beats, 90); } catch { /* sem som 
 export function mount(host) {
   const root = h('div', { class: 'jg jg-figurix' }); host.replaceChildren(root);
   const S = session(); const sfx = mapSfx(); let off = null; let gone = false; let jogando = false;
-  let fase = 1; let erros = 0;
+  let fase = 1; let erros = 0; const salvo = getGame('figurix'); let mundo = MUNDOS.some((m) => m.id === salvo.mundo) ? salvo.mundo : MUNDOS[0].id;
   const estOf = (n) => ((getGame('figurix').est || {})[n] || 0);
   const guarda = (n, v) => { const g = getGame('figurix'); setGame('figurix', { ...g, est: { ...(g.est || {}), [n]: v } }); };
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } S.reset(); };
   window.__figurix = { get erros() { return erros; } }; // só pros testes automáticos
 
-  /* ---------- mapa (abre aqui) ---------- */
+  /* ---------- mapa (abre aqui): 4 mundos, cada um com o seu cenário ---------- */
+  const estMundo = (m) => PHASES.slice(m.de - 1, m.ate).reduce((t, p) => t + estOf(p.n), 0);
   const mapa = () => {
-    limpa(); jogando = false;
+    limpa(); jogando = false; const M = MUNDOS.find((x) => x.id === mundo) || MUNDOS[0];
     const box = h('div', { class: 'tm-map' });
-    const levels = PHASES.map((p) => ({ id: `fx:${p.n}`, index: p.n, label: String(p.n), tag: '', boss: p.n === FASES }));
-    const have = PHASES.reduce((s, p) => s + estOf(p.n), 0);
-    root.replaceChildren(h('p', { class: 'tm-dica' }, 'figuras rítmicas: cada fase é um jogo diferente.'), h('a', { class: 'btn small ghost', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul'), box);
-    off = mountProgressionMap(box, { gameId: 'figurix', levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have, max: FASES * 3 }, theme: themeOf('toca'),
-      starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(lv.index) });
+    const fases = PHASES.slice(M.de - 1, M.ate);
+    const levels = fases.map((p, i) => ({ id: `fx:${p.n}`, index: i + 1, label: String(i + 1), tag: '', boss: i === fases.length - 1 }));
+    const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: m.id === mundo ? 'on' : '', 'aria-label': `mundo ${i + 1}: ${m.nome}`,
+      onclick: () => { mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${i + 1} · ${m.curto}`)));
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul'), box);
+    off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `figurix-${M.id}`, name: M.nome, regions: M.regioes },
+      starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
+    const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };
   const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
   const acerto = (el) => { try { FB.win(el); } catch { /* ok */ } };
   const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } };
-  const comeca = (n) => { limpa(); fase = n; erros = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
+  const comeca = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
 
   /* ---------- fim da fase ---------- */
   const fim = () => {
@@ -50,7 +54,7 @@ export function mount(host) {
     sfx.play('win');
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, erros ? `${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' sem errar nenhum, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
-      h('div', { class: 'jg-actions' }, fase < FASES ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, 'próxima fase ▶') : null, h('button', { class: 'btn', type: 'button', onclick: () => comeca(fase) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
+      h('div', { class: 'jg-actions' }, fase < FASES ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null, h('button', { class: 'btn', type: 'button', onclick: () => comeca(fase) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 
   /* ---------- as fases ---------- */

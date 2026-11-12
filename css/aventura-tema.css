@@ -43,3 +43,13 @@ html[data-av="claro"] {
 .av-objective { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
 .av-medal { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
 .av-mode { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); } .av-mode.aventura { background: var(--avp-card); border-color: var(--avp-accent); } .av-mode-d { color: var(--avp-text); } .av-mode-m { color: var(--avp-soft); }
+
+/* Figurix: cada mundo com as suas cores no mapa (sem roxo, sem rosa) */
+.mp[data-theme="figurix-floresta"]{--avp-sky0:#133a2b;--avp-sky1:#1a5238;--avp-sky2:#16452f;--avp-sky3:#216245;--avp-edge:#7fd09a;--avp-dots:#2f7a52}
+.mp[data-theme="figurix-deserto"]{--avp-sky0:#4a2d14;--avp-sky1:#6e4420;--avp-sky2:#5a3818;--avp-sky3:#8a5a2a;--avp-edge:#e0a95c;--avp-dots:#9a6a32}
+.mp[data-theme="figurix-mar"]{--avp-sky0:#0f3a5c;--avp-sky1:#17597f;--avp-sky2:#124a6c;--avp-sky3:#1f7396;--avp-edge:#7fc8e6;--avp-dots:#2b86aa}
+.mp[data-theme="figurix-montanha"]{--avp-sky0:#26323f;--avp-sky1:#3b4c5e;--avp-sky2:#2f3e4e;--avp-sky3:#52667c;--avp-edge:#d9e2ec;--avp-dots:#6b7f94}
+html[data-av="claro"] .mp[data-theme="figurix-floresta"]{--avp-sky0:#d9f0e0;--avp-sky1:#bfe3cb;--avp-sky2:#cdeed7;--avp-sky3:#a9d8ba;--avp-edge:#2f7a52;--avp-dots:#8cc7a3}
+html[data-av="claro"] .mp[data-theme="figurix-deserto"]{--avp-sky0:#f6e6cf;--avp-sky1:#ecd0a6;--avp-sky2:#f0dab8;--avp-sky3:#e2c08c;--avp-edge:#9a6a32;--avp-dots:#d4aa72}
+html[data-av="claro"] .mp[data-theme="figurix-mar"]{--avp-sky0:#d8eef8;--avp-sky1:#b4dcef;--avp-sky2:#c6e5f3;--avp-sky3:#9cd0e8;--avp-edge:#2b86aa;--avp-dots:#82bfdc}
+html[data-av="claro"] .mp[data-theme="figurix-montanha"]{--avp-sky0:#e6ecf2;--avp-sky1:#ccd6e0;--avp-sky2:#d8e0e9;--avp-sky3:#b9c6d4;--avp-edge:#52667c;--avp-dots:#a3b3c4}

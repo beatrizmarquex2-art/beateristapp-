@@ -135,3 +135,22 @@ export function itensTetrisN(nivel, rnd = Math.random) {
   }
   return { itens: out, queda: c.queda, jeito: c.jeito };
 }
+
+/* ================= os 4 mundos ================= */
+const R = (id, name, sub, decor) => ({ id, name, sub, decor });
+/** 4 mundos do Figurix: cada um é um mapa com cenário próprio; as 62 fases se repartem entre eles. Todos abertos (a Bea escolhe por onde começar). */
+export const MUNDOS = [
+  { id: 'floresta', nome: 'Floresta das Semínimas', curto: 'floresta', sub: 'onde tudo começa', de: 1, ate: 15, regioes: [
+    R('clareira', 'Clareira do Pulso', 'a semínima manda', [['tree', 'l', 0.2], ['flower', 'r', 0.4], ['bush', 'l', 0.7], ['sprout', 'r', 0.9]]),
+    R('trilha', 'Trilha das Figuras', 'quem é quem', [['tree', 'r', 0.2], ['bush', 'l', 0.45], ['flower', 'r', 0.7], ['tree', 'l', 0.92]])] },
+  { id: 'deserto', nome: 'Deserto das Pausas', curto: 'deserto', sub: 'o silêncio também conta', de: 16, ate: 31, regioes: [
+    R('dunas', 'Dunas do Silêncio', 'pausa também é música', [['cactus', 'l', 0.2], ['vaso', 'r', 0.45], ['star', 'l', 0.75]]),
+    R('oasis', 'Oásis dos Valores', 'quanto vale cada uma', [['cactus', 'r', 0.2], ['bush', 'l', 0.5], ['cactus', 'r', 0.85]])] },
+  { id: 'mar', nome: 'Mar das Colcheias', curto: 'mar', sub: 'tudo mais rápido', de: 32, ate: 47, regioes: [
+    R('praia', 'Praia das Colcheias', 'ondas de duas em duas', [['ball', 'l', 0.2], ['note', 'r', 0.5], ['heart', 'l', 0.85]]),
+    R('recife', 'Recife das Semicolcheias', 'quatro por tempo', [['record', 'r', 0.2], ['ball', 'l', 0.55], ['note', 'r', 0.9]])] },
+  { id: 'montanha', nome: 'Montanha das Semifusas', curto: 'montanha', sub: 'o topo do ritmo', de: 48, ate: 62, regioes: [
+    R('encosta', 'Encosta das Fusas', 'a escalada começa', [['lamp', 'l', 0.2], ['star', 'r', 0.5], ['sticks', 'l', 0.85]]),
+    R('pico', 'Pico do Ritmo', 'só os melhores chegam', [['stage', 'r', 0.25], ['curtain', 'l', 0.55], ['trophy', 'r', 0.9]])] },
+];
+export const mundoDe = (n) => MUNDOS.find((m) => n >= m.de && n <= m.ate) || MUNDOS[0];

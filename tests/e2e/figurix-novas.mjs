@@ -1,12 +1,13 @@
 // Figurix, fases novas (13 a 62): resolve de verdade uma de cada tipo mais difícil (ligar por valor, memória pausa↔nome, monte a fsemifusa, árvore com base menor, quiz difícil, caça na diagonal).
 import { serve, launch, sleep, check, done, alunoComCodigo } from './harness.mjs';
-import { PHASES, montesDe, peçasDe, arvore } from '../../js/jogos/figurix-logic.js';
+import { PHASES, MUNDOS, mundoDe, montesDe, peçasDe, arvore } from '../../js/jogos/figurix-logic.js';
 import { FIGS } from '../../js/kids/figs.js';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } }); await alunoComCodigo(ctx);
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
-const abre = async (n) => { await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
-  await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).scrollIntoView({ block: 'center' }), n - 1); await sleep(150); await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), n - 1); await sleep(500); };
+const abre = async (n) => { const m = mundoDe(n); await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
+  await page.locator('.tm-tabs button').nth(MUNDOS.indexOf(m)).click(); await sleep(700); await page.waitForSelector('.mp-node');
+  await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).scrollIntoView({ block: 'center' }), n - m.de); await sleep(150); await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), n - m.de); await sleep(500); };
 const nivel = (tipo, nv) => PHASES.find((p) => p.tipo === tipo && p.nivel === nv).n;
 const concluida = async () => { await sleep(1400); return /concluída/.test(await page.textContent('.jg-figurix')); };
 // ligar por valor (nível 4 = tipo "valor")
