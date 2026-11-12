@@ -456,3 +456,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Cara a Cara (eliminar "manual", contra Paul/dupla): depois da pergunta some a lista e aparece "pronto, já virei" → só então passa a vez (antes passava na hora e não dava pra virar). `st.aguardaVirar` em cara-musical/tela.js; teste tests/e2e/cara-manual.mjs
 - Violão (aba Tocar): sons em símbolos 🎸 violão (padrão) ⚡ 🤘; abafar vira só 🔉 pequeno
 - instruments.js: pluck/mallet esperam o áudio destravar (1º toque no iPhone). Violão/xilofone sem som no iPhone da Bea: NÃO reproduzido no Chromium; se persistir, pedir detalhes
+
+## v389 — regras de estrela (pedido da Bea)
+- jogo da velha, Uno e memória (temas de artistas etc.): só ganham em 2 celulares logados, 1 ★ por vitória; contra o Paul / mesmo aparelho NÃO ganha nada
+- memória, tema "figuras e pausas" (`th.id === 'figuras'`): 1 ★ ao completar, até contra o robô ou em 2 no mesmo aparelho
+- quiz Uno: acertar as 5 = 1 ★ (não é mais giro da roleta), a cada rodada jogada; perguntas diferentes (foge das 5 da rodada anterior, tipo figura→nome ou nome→figura); recentes em localStorage `beaterista-quizuno-recentes`
+- `ESTRELAS_JOGO`: velha/memoria/cartas/quizuno = 1; cara/stop/bingo = 3

@@ -956,3 +956,4 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
 .bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
 .bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+.qz-fig{min-height:84px;display:grid;place-items:center}.qz-fig .cx-sym{width:64px;height:64px}

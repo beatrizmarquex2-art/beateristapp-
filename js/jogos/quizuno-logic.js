@@ -1,19 +1,19 @@
 // Quiz Uno Musical (regra pura, sem tela): rodada de 5 perguntas, cada uma mostra uma figura (nota ou pausa) e pede o nome entre 3 opções.
-// Acertou as 5 seguidas = 1 giro da roleta (até 3 por dia).
+// Acertou as 5 seguidas = 1 estrela por rodada jogada. Perguntas diferentes a cada vez: foge das figuras da rodada anterior e sorteia o tipo (figura→nome ou nome→figura).
 import { SYMS, SYM_NAME } from './cartas-simbolos.js';
 export const PERGUNTAS = 5; export const OPCOES = 3; export const GIROS_POR_DIA = 3;
 const emb = (a, rnd) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 /** Nome que o aluno vê (acento e fantasma só pelo nome curto). */
 export const nomeDe = (sym) => ({ acento: 'acento', fantasma: 'nota fantasma' }[sym] || SYM_NAME[sym]);
 /** Monta a rodada: 5 figuras diferentes, cada uma com 3 opções (a certa + 2 erradas, de preferência da mesma família: nota com nota, pausa com pausa). */
-export function novaRodada(rnd = Math.random) {
-  const sorteadas = emb(SYMS, rnd).slice(0, PERGUNTAS);
+export function novaRodada(rnd = Math.random, evitar = []) {
+  const novas = emb(SYMS.filter((x) => !evitar.includes(x)), rnd); const sorteadas = [...novas, ...emb(SYMS.filter((x) => evitar.includes(x)), rnd)].slice(0, PERGUNTAS); // as da rodada passada só entram se faltar figura
   const qs = sorteadas.map((sym) => {
     const familia = (s) => (s.startsWith('p_') ? 'pausa' : s === 'acento' || s === 'fantasma' ? 'sinal' : 'nota');
     const perto = emb(SYMS.filter((s) => s !== sym && familia(s) === familia(sym)), rnd); const longe = emb(SYMS.filter((s) => s !== sym && familia(s) !== familia(sym)), rnd);
     const erradas = [...perto, ...longe].slice(0, OPCOES - 1);
     const opcoes = emb([sym, ...erradas], rnd);
-    return { sym, opcoes, certa: opcoes.indexOf(sym) };
+    return { sym, opcoes, certa: opcoes.indexOf(sym), tipo: rnd() < 0.5 ? 'nome' : 'figura' }; // 'figura': vê a figura e escolhe o nome · 'nome': vê o nome e escolhe a figura
   });
   return { qs, i: 0, acertos: 0, erros: 0, fim: false };
 }

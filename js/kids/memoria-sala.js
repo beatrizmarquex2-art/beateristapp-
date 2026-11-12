@@ -87,7 +87,7 @@ export function mostrarSala(c, conn, estado) {
       banner.className = `ms-vez fim${w === me ? ' mine' : ''}`;
       aviso.textContent = '';
       const jaTem = fim.dataset.k === key; fim.dataset.k = key;
-      if (!jaTem && w === me) ganhou('memoria'); // ganhou a partida em 2 celulares: 3 ★
+      if (!jaTem && w === me) ganhou('memoria', 1); // ganhou a partida em 2 celulares logados: 1 ★
       if (!jaTem) { FB.great(refs.board, { msg: w === me ? FB.line('great') : '' }); c.bot.set(w === -1 || w === me ? 'cheer' : 'happy', w === me ? 'você venceu!' : w === -1 ? 'empate!' : 'boa partida!'); }
       fim.replaceChildren(h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'kd-chip', type: 'button', onclick: sair }, 'sair da sala')));
     } else {
