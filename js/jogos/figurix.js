@@ -37,7 +37,7 @@ export function mount(host) {
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: m.id === mundo ? 'on' : '', 'aria-label': `mundo ${i + 1}: ${m.nome}`,
       onclick: () => { mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${i + 1} · ${m.curto}`)));
     root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul'), box);
-    off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `figurix-${M.id}`, name: M.nome, regions: M.regioes },
+    off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `mundo-${M.tema}`, name: M.nome, regions: M.regioes },
       starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };

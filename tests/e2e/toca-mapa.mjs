@@ -11,7 +11,7 @@ check('3 mundos (vila, cidade, palco) e botão aleatório', (await page.locator(
 check('sem as outras versões (imagens, figuras, taiko, duelo, aula)', !/duelo|aula ao vivo|com imagens|taiko/i.test(await page.textContent('.jg-toca')));
 check('texto fala das duas mãos', /duas mãos/.test(await page.textContent('.jg-toca')));
 await page.locator('.tm-tabs button').nth(1).click(); await sleep(400);
-check('trocar de mundo mostra outro mapa de 12 fases com cenário próprio', (await page.locator('.mp-node').count()) === 12 && (await page.locator('.tm-tabs button.on').textContent()) === '2 · cidade' && (await page.getAttribute('.mp', 'data-theme')) === 'toca-cidade');
+check('trocar de mundo mostra outro mapa de 12 fases com cenário próprio', (await page.locator('.mp-node').count()) === 12 && (await page.locator('.tm-tabs button.on').textContent()) === '2 · maré' && (await page.getAttribute('.mp', 'data-theme')) === 'mundo-mar');
 await page.locator('.tm-tabs button').nth(0).click(); await sleep(400);
 await page.evaluate(() => document.querySelector('.mp-node[data-pos="0"]').click()); await page.waitForSelector('.tr-fasehead', { timeout: 8000 });
 check('fase aberta: só o botão de voltar no topo (sem texto de fase) e sem escolha de nível/caminho', !/fase/i.test(await page.textContent('.tr-fasehead')) && /mapa/.test(await page.textContent('.tr-fasehead')) && (await page.locator('.tr-path').count()) === 0 && (await page.locator('.tr-ctrl > .tp-line').count()) === 0);

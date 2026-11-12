@@ -5,6 +5,9 @@ import { h } from '../util.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import * as S from './score.js';
 import { phaseSpec, WORLDS, isDrum } from './worlds.js';
+import { DECOR_TEMA } from '../jogos/mundos-tema.js';
+/** Cada mundo do pauLta usa um tema do Figurix (mesmos desenhos e cores). */
+const TEMA_MUNDO = { drumF: 'floresta', drumI: 'deserto', drumD: 'vulcao', sol: 'mar', fa: 'gelo', duel: 'espaco' };
 
 const BASE = '#/paulta';
 const R = (id, name, sub, decor) => ({ id, name, sub, decor });
@@ -16,7 +19,7 @@ const REGIOES = {
   duel: [R('arena', 'Arena das Claves', 'sol contra fá', [['sprout', 'l', 0.06], ['bush', 'r', 0.13], ['flower', 'r', 0.35], ['vaso', 'l', 0.65], ['cactus', 'r', 0.72], ['bush', 'r', 0.94]]), R('final', 'Palco Final', 'só uma vence', [['bush', 'l', 0.06], ['flower', 'r', 0.13], ['cactus', 'r', 0.35], ['sprout', 'l', 0.65], ['vaso', 'r', 0.72], ['flower', 'r', 0.94]])],
 };
 REGIOES.drumF = REGIOES.drum;
-REGIOES.drumI = [R('avenida', 'Avenida do Chimbal', 'colcheias em fila', [['lamp', 'l', 0.15], ['star', 'r', 0.4], ['lamp', 'l', 0.7], ['note', 'r', 0.92]]), R('praca', 'Praça dos Acentos', 'forte e fraco', [['record', 'r', 0.15], ['lamp', 'l', 0.45], ['star', 'r', 0.75], ['note', 'l', 0.95]])];
+REGIOES.drumI = [R('avenida', 'Duna do Chimbal', 'colcheias em fila', [['lamp', 'l', 0.15], ['star', 'r', 0.4], ['lamp', 'l', 0.7], ['note', 'r', 0.92]]), R('praca', 'Oásis dos Acentos', 'forte e fraco', [['record', 'r', 0.15], ['lamp', 'l', 0.45], ['star', 'r', 0.75], ['note', 'l', 0.95]])];
 REGIOES.drumD = [R('cratera', 'Cratera das Semis', 'tudo bem rápido', [['cactus', 'l', 0.15], ['vaso', 'r', 0.4], ['star', 'l', 0.7], ['cactus', 'r', 0.92]]), R('lava', 'Rio de Lava', 'sem tempo pra pensar', [['star', 'r', 0.15], ['cactus', 'l', 0.45], ['vaso', 'r', 0.75], ['star', 'l', 0.95]])];
 const curto = (t) => (t.length > 26 ? `${t.slice(0, 24).trim()}…` : t);
 
@@ -29,7 +32,7 @@ export function worldMap(host, { w, p, mode, me, stars }) {
   const idOf = (id) => Number(id.split(':')[1]);
   const dispose = mountProgressionMap(host, {
     gameId: `paulta-${w}`, levels, profileId: me.id, unitName: 'Fase', tier: 0, stars: { have: stars, max: n * 3 },
-    theme: { id: `paulta-${w}`, name: W.name, regions: REGIOES[w] },
+    theme: { id: `mundo-${TEMA_MUNDO[w] || 'floresta'}`, name: W.name, regions: (REGIOES[w] || []).map((r, i) => ({ ...r, decor: DECOR_TEMA[TEMA_MUNDO[w] || 'floresta'][i % 2] })) },
     starsOf: (id) => starsAt(idOf(id)), unlockedOf: (id) => livre() || S.unlocked(p, w, idOf(id)),
     lockedMsg: 'conclua a fase anterior pra abrir o caminho',
     onBack: () => { location.hash = isDrum(w) ? `${BASE}/drum` : BASE; }, onOpen: (lv) => { location.hash = `${BASE}/${w}/${idOf(lv.id)}/${mode}`; },

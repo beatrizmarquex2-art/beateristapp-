@@ -1,5 +1,6 @@
 // Figurix (regras puras, sem tela): 12 fases com as ideias da Bea sobre as figuras rítmicas. Testado em tests/figurix.test.mjs.
 import { FIGS, FIG_BY } from '../kids/figs.js';
+import { regioesDoTema } from './mundos-tema.js';
 
 /** As 12 primeiras fases (a ordem é a da lista de ideias da Bea) e mais 50 no mesmo estilo, com a dificuldade (`nivel`) subindo de 10 em 10. */
 const BASE = [
@@ -137,20 +138,11 @@ export function itensTetrisN(nivel, rnd = Math.random) {
 }
 
 /* ================= os 4 mundos ================= */
-const R = (id, name, sub, decor) => ({ id, name, sub, decor });
-/** 4 mundos do Figurix: cada um é um mapa com cenário próprio; as 62 fases se repartem entre eles. Todos abertos (a Bea escolhe por onde começar). */
+/** 4 mundos do Figurix: cada um é um mapa com cenário próprio (tema em js/jogos/mundos-tema.js); as 62 fases se repartem entre eles. Todos abertos (a Bea escolhe por onde começar). */
 export const MUNDOS = [
-  { id: 'floresta', nome: 'Floresta das Semínimas', curto: 'floresta', sub: 'onde tudo começa', de: 1, ate: 15, regioes: [
-    R('clareira', 'Clareira do Pulso', 'a semínima manda', [['tree', 'l', 0.05], ['pine', 'r', 0.1], ['tree', 'r', 0.2], ['bush', 'l', 0.27], ['pine', 'l', 0.36], ['tree', 'r', 0.45], ['flower', 'l', 0.52], ['pine', 'r', 0.6], ['tree', 'l', 0.7], ['bush', 'r', 0.78], ['tree', 'r', 0.86], ['pine', 'l', 0.94]]),
-    R('trilha', 'Trilha das Figuras', 'quem é quem', [['pine', 'l', 0.05], ['tree', 'r', 0.12], ['tree', 'l', 0.2], ['pine', 'r', 0.3], ['bush', 'l', 0.38], ['tree', 'r', 0.47], ['pine', 'l', 0.55], ['flower', 'r', 0.62], ['tree', 'l', 0.7], ['pine', 'r', 0.78], ['tree', 'r', 0.87], ['bush', 'l', 0.94]])] },
-  { id: 'deserto', nome: 'Deserto das Pausas', curto: 'deserto', sub: 'o silêncio também conta', de: 16, ate: 31, regioes: [
-    R('dunas', 'Dunas do Silêncio', 'pausa também é música', [['cactus', 'l', 0.2], ['vaso', 'r', 0.45], ['star', 'l', 0.75]]),
-    R('oasis', 'Oásis dos Valores', 'quanto vale cada uma', [['cactus', 'r', 0.2], ['bush', 'l', 0.5], ['cactus', 'r', 0.85]])] },
-  { id: 'mar', nome: 'Mar das Colcheias', curto: 'mar', sub: 'tudo mais rápido', de: 32, ate: 47, regioes: [
-    R('praia', 'Praia das Colcheias', 'ondas de duas em duas', [['wave', 'l', 0.05], ['fish', 'r', 0.12], ['wave', 'l', 0.2], ['fish2', 'l', 0.3], ['wave', 'r', 0.4], ['wave', 'r', 0.48], ['fish', 'l', 0.58], ['wave', 'l', 0.68], ['fish2', 'r', 0.76], ['wave', 'l', 0.84], ['wave', 'r', 0.93]]),
-    R('recife', 'Recife das Semicolcheias', 'quatro por tempo', [['fish2', 'l', 0.05], ['wave', 'r', 0.13], ['fish', 'r', 0.22], ['wave', 'l', 0.3], ['wave', 'l', 0.4], ['fish', 'l', 0.5], ['fish2', 'r', 0.6], ['wave', 'r', 0.68], ['wave', 'r', 0.77], ['fish', 'r', 0.86], ['wave', 'l', 0.94]])] },
-  { id: 'espaco', nome: 'Espaço das Semifusas', curto: 'espaço', sub: 'o mais rápido de todos', de: 48, ate: 62, regioes: [
-    R('orbita', 'Órbita das Fusas', 'rápido como um foguete', [['star', 'l', 0.08], ['planet', 'r', 0.2], ['star', 'r', 0.32], ['moon', 'l', 0.45], ['star', 'l', 0.58], ['rocket', 'r', 0.7], ['star', 'r', 0.82], ['planet', 'l', 0.93]]),
-    R('estacao', 'Estação do Ritmo', 'só quem treinou chega', [['moon', 'r', 0.08], ['star', 'l', 0.2], ['rocket', 'l', 0.33], ['star', 'r', 0.45], ['planet', 'r', 0.58], ['star', 'l', 0.7], ['moon', 'l', 0.83], ['star', 'r', 0.94]])] },
+  { id: 'floresta', tema: 'floresta', nome: 'Floresta das Semínimas', curto: 'floresta', sub: 'onde tudo começa', de: 1, ate: 15, regioes: regioesDoTema('floresta', [['clareira', 'Clareira do Pulso', 'a semínima manda'], ['trilha', 'Trilha das Figuras', 'quem é quem']]) },
+  { id: 'deserto', tema: 'deserto', nome: 'Deserto das Pausas', curto: 'deserto', sub: 'o silêncio também conta', de: 16, ate: 31, regioes: regioesDoTema('deserto', [['dunas', 'Dunas do Silêncio', 'pausa também é música'], ['oasis', 'Oásis dos Valores', 'quanto vale cada uma']]) },
+  { id: 'mar', tema: 'mar', nome: 'Mar das Colcheias', curto: 'mar', sub: 'tudo mais rápido', de: 32, ate: 47, regioes: regioesDoTema('mar', [['praia', 'Praia das Colcheias', 'ondas de duas em duas'], ['recife', 'Recife das Semicolcheias', 'quatro por tempo']]) },
+  { id: 'espaco', tema: 'espaco', nome: 'Espaço das Semifusas', curto: 'espaço', sub: 'o mais rápido de todos', de: 48, ate: 62, regioes: regioesDoTema('espaco', [['orbita', 'Órbita das Fusas', 'rápido como um foguete'], ['estacao', 'Estação do Ritmo', 'só quem treinou chega']]) },
 ];
 export const mundoDe = (n) => MUNDOS.find((m) => n >= m.de && n <= m.ate) || MUNDOS[0];

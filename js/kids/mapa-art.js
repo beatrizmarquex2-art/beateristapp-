@@ -43,6 +43,12 @@ const SPR = {
   moon: ['..kkkk..', '.kzzzzk.', 'kzzzkkk.', 'kzzk....', 'kzzk....', 'kzzzkkk.', '.kzzzzk.', '..kkkk..'],
   planet: ['...kkkkk...', '..kxxxxxk..', '.kxxyxxxxk.', 'kkkkkkkkkkk', 'keeeeeeeeek', 'kkkkkkkkkkk', '.kxxxxyxxk.', '..kxxxxxk..', '...kkkkk...'],
   rocket: ['...kk...', '..kwwk..', '.kwwwwk.', '.kwuuwk.', '.kwuuwk.', '.kwwwwk.', 'kkwwwwkk', 'kxkkkkxk', 'kx.kk.xk', '..kxxk..', '...yy...'],
+  pineS: ['....k....', '...kwk...', '..kwwwk..', '...kswk..', '..kwswwk.', '.kwwswwwk', '..kswwwk.', '.kwwswwwk', '....ktk..', '....ktk..'],
+  flake: ['..k..', 'kwkwk', '.kwk.', 'kwkwk', '..k..'],
+  igloo: ['..kkkkk..', '.kwwwwwk.', 'kwwswwwwk', 'kwwkkkwwk', 'kwwkbkwwk', 'kkkkkkkkk'],
+  volcano: ['.....kk.....', '....kyyk....', '...kyxxyk...', '..kbbxxbbk..', '.kbbbkkbbbk.', 'kbbbbbbbbbbk'],
+  flame: ['..k..k..', '.kxk.kxk', '.kxxkxxk', 'kxxyxxyk', 'kxyyyyyk', '.kyyyyk.', '..kkkk..'],
+  rock: ['..kkkk..', '.kbbbbk.', 'kbbsbbbk', 'kbbbbbbk', 'kkkkkkkk'],
   table: ['kkkkkkkkkkkk', 'kbbbbbbbbbbk', 'kbkkkkkbdbbk', 'kbkaakkbbbbk', 'kbkkkkkbbbbk', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk'],
 };
 /** SVG de um sprite (`px` = tamanho de cada quadradinho em unidades do viewBox; o tamanho final vem do CSS). */

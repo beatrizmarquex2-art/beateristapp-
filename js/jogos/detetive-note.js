@@ -14,6 +14,7 @@ import * as FB from '../feedback.js';
 import { vinil } from '../kids/drum-art.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { musicaPausa, musicaVolta } from './musica.js';
+import { temaDoMundo } from './mundos-tema.js';
 import { TEMAS, MODOS, FASES, RODADAS, BPMS, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
@@ -24,13 +25,12 @@ const face = (card, modo) => (modo === 'normal' ? svgEl(N.toSVG(semPauta(layoutR
   : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 const soa = (cell, bpm) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...cell].forEach((x, k) => { if (x === '1') voz(t + (k * q) / 4, 0.85); }); };
 
-const R = (id, name, sub, decor) => ({ id, name, sub, decor });
 const MUNDOS_DET = {
-  normal: { nome: 'Ilha das Figuras', sub: 'monte com as figuras da pauta', regioes: [R('praia', 'Praia da Pauta', 'semínima e colcheias', [['note', 'l', 0.2], ['star', 'r', 0.5], ['note', 'l', 0.85]]), R('farol', 'Farol dos Ritmos', 'tudo na pauta', [['lamp', 'r', 0.2], ['note', 'l', 0.55], ['star', 'r', 0.9]])] },
-  comida: { nome: 'Cozinha Rítmica', sub: 'pão, bolo e chocolate', regioes: [R('padaria', 'Padaria do Pulso', 'pão quentinho', [['flower', 'l', 0.2], ['bush', 'r', 0.5], ['sprout', 'l', 0.85]]), R('confeitaria', 'Confeitaria das Semis', 'cho-co-la-te', [['heart', 'r', 0.2], ['star', 'l', 0.55], ['flower', 'r', 0.9]])] },
-  parque: { nome: 'Parque dos Ritmos', sub: 'céu, bola e bicicleta', regioes: [R('gramado', 'Gramado da Bola', 'bo-la', [['tree', 'l', 0.2], ['ball', 'r', 0.5], ['bush', 'l', 0.85]]), R('ciclovia', 'Ciclovia', 'bi-ci-cle-ta', [['tree', 'r', 0.2], ['ball', 'l', 0.55], ['flower', 'r', 0.9]])] },
-  corpo: { nome: 'Corpo em Movimento', sub: 'mão, braço e esqueleto', regioes: [R('maos', 'Sala das Mãos', 'palmas no pulso', [['heart', 'l', 0.2], ['star', 'r', 0.5], ['heart', 'l', 0.85]]), R('esqueleto', 'Galeria do Esqueleto', 'es-que-le-to', [['star', 'r', 0.2], ['heart', 'l', 0.55], ['star', 'r', 0.9]])] },
-  animal: { nome: 'Floresta dos Bichos', sub: 'cão, pato e borboleta', regioes: [R('toca', 'Toca do Cão', 'au au', [['tree', 'l', 0.2], ['bush', 'r', 0.5], ['sprout', 'l', 0.85]]), R('lago', 'Lago da Borboleta', 'bor-bo-le-ta', [['tree', 'r', 0.2], ['flower', 'l', 0.55], ['bush', 'r', 0.9]])] },
+  normal: { tema: 'espaco', nome: 'Espaço das Figuras', regioes: [['praia', 'Órbita da Pauta', 'semínima e colcheias'], ['farol', 'Estação dos Ritmos', 'tudo na pauta']] },
+  comida: { tema: 'deserto', nome: 'Cozinha do Deserto', regioes: [['padaria', 'Padaria do Pulso', 'pão quentinho'], ['confeitaria', 'Confeitaria das Semis', 'cho-co-la-te']] },
+  parque: { tema: 'floresta', nome: 'Parque dos Ritmos', regioes: [['gramado', 'Gramado da Bola', 'bo-la'], ['ciclovia', 'Ciclovia', 'bi-ci-cle-ta']] },
+  corpo: { tema: 'vulcao', nome: 'Corpo em Movimento', regioes: [['maos', 'Sala das Mãos', 'palmas no pulso'], ['esqueleto', 'Galeria do Esqueleto', 'es-que-le-to']] },
+  animal: { tema: 'mar', nome: 'Oceano dos Bichos', regioes: [['toca', 'Recife do Cão', 'au au'], ['lago', 'Lagoa da Borboleta', 'bor-bo-le-ta']] },
 };
 
 export function mount(host) {
@@ -52,7 +52,7 @@ export function mount(host) {
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Modo' }, ...MODOS.map((m) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(modo === m), class: modo === m ? 'on' : '', onclick: () => { modo = m; setGame('detetive', { ...getGame('detetive'), modo }); mapa(); } }, NOME(m))));
     root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS_DET[modo].nome} · escute o ritmo e monte ele com as cartas, na ordem certa.`), box);
     off = mountProgressionMap(box, {
-      gameId: `detetive-${modo}`, levels, profileId: 'detetive', unitName: 'Fase', tier: 0, stars: { have, max: FASES * 3 }, theme: { id: `detetive-${modo}`, name: MUNDOS_DET[modo].nome, regions: MUNDOS_DET[modo].regioes },
+      gameId: `detetive-${modo}`, levels, profileId: 'detetive', unitName: 'Fase', tier: 0, stars: { have, max: FASES * 3 }, theme: temaDoMundo(MUNDOS_DET[modo].tema, MUNDOS_DET[modo].nome, MUNDOS_DET[modo].regioes),
       starsOf: (id) => estOf(modo, Number(id.split(':')[2])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(lv.index),
     });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);

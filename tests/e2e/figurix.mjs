@@ -6,7 +6,7 @@ const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => e
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node', { timeout: 15000 });
 check('abre no mapa do mundo 1 (15 fases) com os 4 mundos pra escolher', (await page.locator('.mp-node').count()) === 15 && (await page.locator('.tm-tabs button').count()) === 4 && /floresta/.test(await page.textContent('.tm-tabs')));
-for (const [i, m] of MUNDOS.entries()) { await page.locator('.tm-tabs button').nth(i).click(); await sleep(600); check(`mundo ${i + 1} (${m.curto}): ${m.ate - m.de + 1} fases e cenário próprio`, (await page.locator('.mp-node').count()) === m.ate - m.de + 1 && (await page.getAttribute('.mp', 'data-theme')) === `figurix-${m.id}`); }
+for (const [i, m] of MUNDOS.entries()) { await page.locator('.tm-tabs button').nth(i).click(); await sleep(600); check(`mundo ${i + 1} (${m.curto}): ${m.ate - m.de + 1} fases e cenário próprio`, (await page.locator('.mp-node').count()) === m.ate - m.de + 1 && (await page.getAttribute('.mp', 'data-theme')) === `mundo-${m.tema}`); }
 await page.locator('.tm-tabs button').nth(0).click(); await sleep(600);
 const abreFase = async (n) => { const m = mundoDe(n); await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
   await page.locator('.tm-tabs button').nth(MUNDOS.indexOf(m)).click(); await sleep(700); await page.waitForSelector('.mp-node');

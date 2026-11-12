@@ -51,3 +51,10 @@ test('tetris por nível: mais rápido e mais itens; lado certo tem o nome certo'
   for (let n = 1; n <= 7; n++) { const T = itensTetrisN(n); assert.equal(T.itens.length, tetrisCfg(n).itens); for (const it of T.itens) { assert.notEqual(it.esq, it.dir); assert.equal(it[it.ok], it.fig); } }
   assert.ok(['nome', 'valor', 'pausa'].includes(tetrisCfg(5).jeito));
 });
+
+test('os 4 mundos usam os temas do Figurix e todos os enfeites existem como sprites', async () => {
+  const { MUNDOS } = await import('../js/jogos/figurix-logic.js'); const { DECOR_TEMA, TEMAS } = await import('../js/jogos/mundos-tema.js'); const fs = await import('node:fs');
+  const art = fs.readFileSync(new URL('../js/kids/mapa-art.js', import.meta.url), 'utf8'); assert.deepEqual(TEMAS.sort(), ['deserto', 'espaco', 'floresta', 'gelo', 'mar', 'vulcao']);
+  for (const [t, regs] of Object.entries(DECOR_TEMA)) for (const r of regs) for (const [s] of r) assert.ok(new RegExp(`\\n  ${s}: \\[`).test(art), `sprite ${s} (${t}) não existe`);
+  assert.deepEqual(MUNDOS.map((m) => m.tema), ['floresta', 'deserto', 'mar', 'espaco']);
+});
