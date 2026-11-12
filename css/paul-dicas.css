@@ -41,3 +41,22 @@
 @keyframes pd-brilho { 0%, 55% { left: -60%; } 100% { left: 130%; } }
 @keyframes pd-selo { 0%, 100% { transform: rotate(-4deg) scale(1); } 50% { transform: rotate(-1deg) scale(1.08); } }
 @media (prefers-reduced-motion: reduce) { .pd-novo .pd-sticker, .pd-novo .pd-luz, .pd-novo .pd-img, .pd-novo .pd-btn.go, .pd-novo .pd-btn.go::after { animation: none; } }
+
+/* Cartões do Paul em azul colorido, sempre com luz e movimento (pedido da Bea): o quadrado da arte do Paul (Álbum, "por que Paul?") e o cartaz "o Paul conta" */
+.pd-arte, .pd.pd-q { position: relative; overflow: hidden; isolation: isolate; color: #fff; border: 2.5px solid #7fd3ff;
+  background: linear-gradient(120deg, #16377a, #1f5fd0 35%, #6a3ad6 65%, #e0369e) 0 0 / 220% 220%; animation: pd-grad 7s ease-in-out infinite alternate;
+  box-shadow: 0 0 0 2px #0b1b44, 0 0 18px rgba(80,170,255,.75), 0 0 38px rgba(176,90,255,.45), 4px 6px 0 #0b1b44; }
+.pd-arte::before, .pd.pd-q::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,.28) 0 2px, transparent 3px) 0 0 / 34px 34px, radial-gradient(circle at 70% 70%, rgba(255,230,120,.35) 0 2px, transparent 3px) 0 0 / 46px 46px; animation: pd-stars 9s linear infinite; }
+.pd-arte::after, .pd.pd-q::after { content: ""; position: absolute; top: 0; bottom: 0; left: -40%; width: 40%; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.4), transparent); transform: skewX(-18deg); animation: pd-shine 3.8s ease-in-out infinite; }
+.pd-arte .pd-sub, .pd-arte .pd-tag, .pd.pd-q .pd-tag { color: #cfeaff; text-shadow: 0 0 8px rgba(120,200,255,.9); }
+.pd-arte b, .pd.pd-q .pd-text { color: #fff; text-shadow: 0 0 10px rgba(120,200,255,.8); }
+.pd-arte .pd-thumb { border-color: #7fd3ff; box-shadow: 0 0 14px rgba(127,211,255,.9); animation: pd-float 2.6s ease-in-out infinite alternate; }
+.pd.pd-q .pd-img { filter: drop-shadow(0 0 12px rgba(127,211,255,.9)); animation: pd-float 2.6s ease-in-out infinite alternate; }
+.pd.pd-q .pd-btn { border-color: #7fd3ff; box-shadow: 0 0 10px rgba(127,211,255,.6); }
+@keyframes pd-grad { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+@keyframes pd-stars { to { background-position: 34px 68px, -46px 92px; } }
+@keyframes pd-shine { 0%, 55% { left: -45%; } 100% { left: 125%; } }
+@keyframes pd-float { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .pd-arte, .pd.pd-q, .pd-arte::before, .pd.pd-q::before, .pd-arte::after, .pd.pd-q::after, .pd-thumb, .pd-img { animation: none !important; } }
