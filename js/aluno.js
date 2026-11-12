@@ -445,24 +445,18 @@ function askName() {
   const input = h('input', { class: 'field', type: 'text', name: 'username', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const pose = pickPose();
   const err = h('p', { class: 'form-err', role: 'alert' });
-  const sel = h('select', { required: true, 'aria-label': 'Como você chegou aqui?' }, h('option', { value: '', disabled: true, selected: true }, 'escolha uma opção'), ...ORIGENS.filter(([v]) => v !== 'codigo').map(([v, t]) => h('option', { value: v }, t)));
-  const outro = h('input', { class: 'field', type: 'text', maxlength: 40, 'aria-label': 'Outro: qual?', placeholder: 'outro: escreva aqui', hidden: true });
-  const cod = h('input', { class: 'field al-cod', type: 'password', name: 'password', maxlength: 14, autocomplete: 'current-password', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'CÓDIGO DE ACESSO' }); // tipo senha: o aparelho oferece guardar e preencher o código
-  const ver = h('label', { class: 'al-ver' }, h('input', { type: 'checkbox', onchange: (e) => { cod.type = e.target.checked ? 'text' : 'password'; } }), ' mostrar o código');
+  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'código de acesso' }); // letras sempre visíveis (sem tipo senha)
   const pedido = h('div', { class: 'al-pedido', role: 'status' });
-  const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar meu código');
-  const codBox = h('div', { class: 'al-codbox' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno? coloque aqui'), cod, ver, gen, pedido);
+  const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar código');
+  const codBox = h('div', { class: 'al-codbox al-amarelo' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno?'), h('div', { class: 'al-codrow' }, cod, gen), pedido);
   const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
-  cod.addEventListener('input', () => { sel.required = !temCodigoDigitado(); });
-  function drawPedido() { const c = CODE.pendente(); ver.hidden = !!c; sel.required = !c && !temCodigoDigitado(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
   drawPedido();
-  sel.addEventListener('change', () => { outro.hidden = sel.value !== 'outro'; if (!outro.hidden) outro.focus(); });
   let indo = false;
   const entrarAgora = async () => { if (indo) return; indo = true; try {
     const n = cleanName(input.value);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
-    const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : sel.value; // digitou o código? já vale, sem precisar escolher a opção
-    if (!modo) { err.textContent = 'escolha como você chegou aqui.'; return; }
+    const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : 'sem código'; // digitou o código? libera tudo; sem código entra no modo livre
     if (modo === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
       if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
         if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
@@ -471,7 +465,7 @@ function askName() {
       }
       err.textContent = '';
     }
-    const o = modo === 'outro' ? `outro: ${cleanName(outro.value) || '—'}` : modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : modo;
+    const o = modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : 'não informou';
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); } // já entra na lista de "trocar aluno" na hora
     try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
@@ -488,7 +482,7 @@ function askName() {
         h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
         h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    codBox, h('label', { class: 'field' }, h('span', {}, 'ou, se não tem código: como você chegou aqui?'), sel), outro, err,
+    codBox, err,
     h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
     h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
     app.replaceChildren(h('main', { class: 'login al-entry' },

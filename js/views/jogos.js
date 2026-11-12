@@ -95,7 +95,7 @@ function prepararEAbrir(id, rota, code, voltar) {
 function atalhoCodigoAluno() {
   if (!ALUNO() || AC.liberado()) return null;
   const msg = h('p', { class: 'jg-msg', role: 'status', 'aria-live': 'polite' });
-  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ALUNO', 'aria-label': 'código de aluno',
+  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'código de aluno', 'aria-label': 'código de aluno',
     onkeydown: (e) => { if (e.key === 'Enter') ir(); } });
   async function ir() {
     msg.textContent = 'conferindo…';
@@ -108,7 +108,7 @@ function atalhoCodigoAluno() {
 
 function atalhoSala() {
   const msg = h('p', { class: 'jg-msg', role: 'status', 'aria-live': 'polite' });
-  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 6, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DA SALA', 'aria-label': 'código da sala',
+  const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 6, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'código da sala', 'aria-label': 'código da sala',
     oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') ir(); } });
   async function ir() {
     const c = inp.value.trim().toUpperCase();
@@ -121,7 +121,7 @@ function atalhoSala() {
   }
   const voltas = JOGOS_SALA.map(([id, rota]) => [id, rota, salaLembrada(id)]).filter((x) => x[2]);
   return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'entrar numa sala' },
-    h('b', {}, 'tem um código de sala?'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar')),
+    h('b', { class: 'jg-sala-t' }, 'tem código de sala?'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar')),
     voltas.length ? listaCurta(voltas.map(([id, rota, u]) => h('button', { class: 'btn small jg-volta-mini', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`))) : null, msg);
 }
 

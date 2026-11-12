@@ -418,3 +418,18 @@
 .lj-apostila { margin: -2px 0 8px; text-align: center; font: 400 24px/1.05 Anton, var(--display, sans-serif); color: #d3122f; letter-spacing: .4px; text-transform: uppercase; } .lj-apostila small { display: block; font: 400 21px 'Gochi Hand', var(--hand); color: #14284b; text-transform: none; letter-spacing: 0; }
 
 .hj-chips { flex-wrap: nowrap; } .hj-chip { flex: 1 1 auto; text-align: center; padding: 8px 6px; font-size: 12px; }
+
+/* entrada: código pequeno e visível + "gerar" lado a lado num bloco amarelo, sem a lista "como você chegou aqui" */
+.al-codbox.al-amarelo { background: #ffe08a; border: 2.5px solid #1b1818; border-radius: 14px !important; padding: 10px 12px; box-shadow: 3px 3px 0 #1b1818; gap: 6px; }
+.al-codbox.al-amarelo .al-lock-l { font-size: 14px; color: #1b1818; }
+.al-codrow { display: flex; gap: 8px; align-items: stretch; }
+.al-cod { flex: 1; min-width: 0; min-height: 44px; font: 700 16px ui-monospace, Menlo, monospace; letter-spacing: .06em; text-align: left; text-transform: uppercase; padding: 0 10px; }
+.al-cod::placeholder { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .55; }
+.al-codrow .btn { flex: none; width: 38%; min-height: 44px; padding: 4px 8px; font-size: 13px; line-height: 1.1; white-space: normal; background: #fff; color: #1b1818; border: 2px solid #1b1818; }
+.al-codbox.al-amarelo .al-pedido { color: #1b1818; }
+/* sala: código menor e com as letras aparecendo */
+.jg-code-big, .jg-code-in { min-height: 44px !important; font: 700 16px ui-monospace, Menlo, monospace !important; letter-spacing: .06em !important; text-align: left !important; padding: 0 12px !important; text-transform: uppercase; }
+.jg-code-big::placeholder, .jg-code-in::placeholder { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .55; }
+.jg-entrar .btn { min-height: 44px !important; font-size: 15px !important; }
+.jg-sala-atalho { gap: 6px; padding-block: 10px; } .jg-sala-t { font-size: 15px; } .jg-lab-peq { font-size: 14px; margin: 6px 0 2px; }
+.al-cod::placeholder { font: 600 14px system-ui, sans-serif; }

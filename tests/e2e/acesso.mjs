@@ -27,7 +27,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await go(p, '#/jogos/relatorio'); check('Jogos Ensinam abre o relatório', (await p.locator('.rel-page, .jg-doc').count()) > 0 && (await p.locator('h1:has-text("Jogos Ensinam")').count()) >= 1);
   // gerar meu código
   await go(p, '#/ranking'); await p.locator('a:has-text("gerar meu código")').click(); await sleep(700);
-  check('"gerar meu código" leva direto pra lojinha', (await p.evaluate(() => location.hash)) === '#/lojinha' && (await p.locator('.lj-card').count()) === 6);
+  check('"gerar meu código" leva direto pra lojinha', (await p.evaluate(() => location.hash)) === '#/lojinha' && (await p.locator('.lj-card').count()) === 8);
   await sleep(1200); await p.locator('button:has-text("pedir o código pra professora")').click(); await sleep(300); await go(p, '#/ranking');
   const code = (await p.locator('.al-lock-code').textContent()).trim();
   check('gerou um código de 6 e mandou informar a professora Bea', /^[A-Z0-9]{6}$/.test(code) && (await p.locator('.al-lock-t').textContent()).includes('informe a professora Bea'), code);
