@@ -9,7 +9,7 @@ async function open(w = 390, h = 844) {
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e))); p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|ERR_TUNNEL|net::/.test(m.text())) errs.push(m.text()); });
   await p.addInitScript(() => { localStorage.setItem('beaterista-aluno-nome', 'Teste'); });
   await p.goto(`${url}/aluno.html#/jogos/cara`); await sleep(1200);
-  const jog = p.locator('button:has-text("JOGAR")'); if (await jog.count()) { await jog.click(); await sleep(300); }
+  const jog = p.locator('button:text-is("JOGAR")'); if (await jog.count()) { await jog.click(); await sleep(300); }
   p.errs = errs; return p;
 }
 const livre = async (p) => { const b = p.locator('button:has-text("Modo Livre"), a:has-text("Modo Livre")'); if (await b.count()) { await b.first().click(); await sleep(400); } };
