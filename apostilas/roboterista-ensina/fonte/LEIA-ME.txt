@@ -1,0 +1,5 @@
+Como regerar o PDF (precisa de Python 3 + segno + Node com playwright):
+  cd fonte
+  python3 build.py pages_a,pages_b,pages_c,pages_d,pages_e,pages_f   # gera livro.html
+  node render.js livro.html ../Roboterista_Ensina_Completo_100pgs.pdf
+Cada pages_*.py tem as páginas de uma parte do livro. nota.py desenha as figuras e pausas em SVG.
