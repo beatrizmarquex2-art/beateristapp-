@@ -526,3 +526,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Cliente: `js/acesso.js` (escopo em localStorage `beaterista-aluno-escopo`, `trancado()` libera só os prefixos), `js/codigo.js` (`criarPasse`, guarda escopo vindo de `aluno_acesso.jogos`), gerador em js/views/codigos.js (app da Bea). tests/acesso-passe.test.mjs
 - SERVIDOR: supabase/014_passes_aparelhos.sql (coluna `jogos`, `aluno_acesso` com aparelhos+escopo, `aluno_sair`) — **AINDA NÃO APLICADO** (o Supabase pede confirmação da Bea e o pedido expira em 60 s). Sem ele o gerador de passe dá erro e o limite de 2 aparelhos não vale
 - Pagamento automático (Hotmart → webhook → Edge Function → "comprei o passe" por e-mail): ainda a fazer; depende do hottok/produto da Bea
+
+- **Detetive Note, marcador do tempo** (escolha da Bea: opção 1): nos modos de desenho as casas acendem uma de cada vez no tempo do ritmo e os números 1 2 3 4 acompanham (azul na contagem, vermelho no ritmo); no modo figuras não aparece. Velocidades 80/100/120; a 120 toca direto sem contagem (só no Detetive). Cada fase toca com um som diferente (caixa, tambor, bumbo, chimbal) e tem jingle no fim.
