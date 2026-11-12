@@ -334,3 +334,17 @@
 .al-subnav .chip-btn .al-badge{position:absolute;top:-8px;right:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:99px;background:#d3122f;color:#fff;font:800 13px/22px var(--body,inherit);border:2px solid #fff}
 .fig-vaimudar{margin:6px 0 10px;padding:8px 12px;border:2px dashed #BD1733;border-radius:12px;background:#fff4f4;color:#7a0f22;font-size:14px;font-weight:600;text-align:center}
 .al-versao{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 12px 90px;font-size:14px}.al-versao p{margin:0}
+/* Estudos: 3 áreas coloridas + modos de estudo em cartões grandes */
+.es-strip{display:flex;align-items:center;gap:10px;padding:8px 14px;border:3px solid #17365B;border-radius:14px;background:#fffdf7;box-shadow:3px 3px 0 #17365B;font-weight:800;font-size:14px}
+.es-strip-t{flex:1;color:#17365B}.es-dots{display:flex;gap:4px}.es-dots i{font-style:normal;font-size:22px;color:#c9c2b0}.es-dots i.ok{color:#EBA332}.es-strip-s{color:#BD1733;font-size:13px}
+.es-areas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.es-area{display:grid;justify-items:center;gap:2px;padding:10px 4px;min-height:76px;border:3px solid var(--c);border-radius:16px;background:#fffdf7;color:var(--c);font:inherit;cursor:pointer;box-shadow:3px 3px 0 var(--c);text-align:center}
+.es-area b{font-size:13px;line-height:1.1}.es-ai{font-size:28px;line-height:1}
+.es-area.on{background:var(--c);color:var(--f)}
+.es-modos{display:grid;gap:10px;padding:12px;border:3px solid var(--c);border-radius:20px;background:color-mix(in srgb,var(--c) 10%,#fffdf7)}
+.es-cab{display:flex;align-items:center;gap:12px}.es-cab img{width:84px;height:84px;object-fit:contain;flex:none}.es-cab h2{margin:0;font:400 26px/1 var(--display,inherit);color:var(--c);text-transform:uppercase}.es-cab p{margin:4px 0 0;font-size:14px;font-weight:600}
+.es-modo{display:flex;align-items:center;gap:12px;padding:12px;min-height:72px;border:3px solid #14111a;border-radius:16px;background:#fffdf7;color:#14111a;text-decoration:none;box-shadow:3px 3px 0 var(--c)}
+.es-modo:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--c)}.es-modo.locked{opacity:.75}
+.es-mi{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:14px;background:var(--c);color:var(--f);font-size:28px}
+.es-mt{flex:1;display:grid;gap:2px}.es-mt b{font-size:17px;line-height:1.15}.es-mt small{font-size:13px;color:#4a423e;line-height:1.25}
+.es-go{flex:none;color:var(--c);font-size:20px}

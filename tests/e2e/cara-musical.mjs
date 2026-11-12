@@ -15,7 +15,7 @@ async function open(w = 390, h = 844) {
 const livre = async (p) => { const b = p.locator('button:has-text("Modo Livre"), a:has-text("Modo Livre")'); if (await b.count()) { await b.first().click(); await sleep(400); } };
 const shot = async (p, n) => { if (SHOT) { fs.mkdirSync(SHOT, { recursive: true }); await p.screenshot({ path: `${SHOT}/${n}.png` }); } };
 const hscroll = (p) => p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
-const pickTema = async (p) => { await livre(p); await p.locator('button[role=radio]:has-text("cara a cara musical")').click(); await sleep(300); };
+const pickTema = async (p) => { await livre(p); await sleep(300); };
 
 { // KIDS SOLO
   const p = await open(); await pickTema(p); await shot(p, '01-menu');

@@ -429,3 +429,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Toca Aqui:** o som do toque é **só a caixa** (`SONS` em `js/toca-som.js`; a escolha de som sumiu de todas as telas). No "com imagens" (Monte seu ritmo) a **velocidade virou 4 ícones** 🐢 🚶 🐇 🚀 (`ICONE_VEL`).
 - **Cara a Cara:** **só artistas** (cara a cara musical); a versão de instrumentos saiu do jogo livre (`js/jogos/cara.js`) e o seletor de tema sumiu. O "virar" manual funciona no clássico do musical (era a versão de instrumentos que não pegava).
 - **Bingo:** "como quer jogar?" virou **4 ícones pequenos** (robô, 2 celulares, mesmo aparelho, sala de aula) com dica no toque.
+
+## Estudos redesenhados (nov/2026)
+- **Aba Estudos** (`estudosView` em `js/aluno.js`, estilos `.es-*` em `css/figurinhas.css`): saíram os cartões grandes e textos. Agora: faixa pequena da **meta do dia** (3 estrelinhas), **3 áreas coloridas** — 🥁 ritmo (vermelho), 🎹 melodia e harmonia (azul), 📖 teoria (dourado) — e embaixo os **modos de estudo** da área em cartões com ícone e o Paul desenhado (aulas, Toca Aqui, Beat Hero, Uno, piano, violão, xilofone, roleta musical, pauLta, dicionário, curiosidades, dicas, 5 erros, Jogos Ensinam). Lembra a última área (`#/estudos/<area>` também abre direto). A dica do dia ficou curtinha no fim.
+- Testes ajustados: `estudos-novo`, `estudos-estrelas`, `aluno-estudos-tocar`, `bingo` (modos em ícones), `cara-*` (só artistas).

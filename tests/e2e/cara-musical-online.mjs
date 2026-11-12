@@ -24,7 +24,7 @@ async function abrir(p) {
   await p.goto(`${url}/aluno.html#/jogos/cara`); await sleep(1000);
   if (await p.locator('button:text-is("JOGAR")').count()) { await p.locator('button:text-is("JOGAR")').click(); await sleep(300); }
   await livre(p);
-  await p.locator('button[role=radio]:has-text("cara a cara musical")').click(); await sleep(250);
+  await sleep(250); // o cara a cara é só de artistas: abre direto
   await p.locator('button[role=radio]:has-text("2 celulares")').click(); await sleep(200);
 }
 const a = await phone(); const b = await phone();
@@ -65,7 +65,7 @@ check('[fim] sem figurinha/recompensa', !/figurinha|pacote|recompensa/i.test(awa
 await b.reload(); await sleep(1200);
 if (await b.locator('button:text-is("JOGAR")').count()) { await b.locator('button:text-is("JOGAR")').click(); await sleep(300); }
 await b.screenshot({ path: '/tmp/claude-0/shots/dbg-b.png' });
-if (await b.locator('button[role=radio]:has-text("cara a cara musical")').count() || await livre(b) || true) await b.locator('button[role=radio]:has-text("cara a cara musical")').click(); await sleep(250); await b.locator('button[role=radio]:has-text("2 celulares")').click(); await sleep(250);
+await livre(b); await sleep(250);
 check('[reconexão] botão voltar pra sala', (await b.locator(`button:has-text("voltar pra sala ${code}")`).count()) === 1);
 await b.locator(`button:has-text("voltar pra sala ${code}")`).click(); await sleep(1800);
 check('[reconexão] volta no fim da rodada', (await b.locator('.cm-ficha').count()) === 2);
