@@ -419,3 +419,8 @@
 
 .hj-chips { flex-wrap: nowrap; } .hj-chip { flex: 1 1 auto; text-align: center; padding: 8px 6px; font-size: 12px; }
 .fig-share-est{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}.fig-share-est b{font-size:13px}
+.fig-semana{display:grid;gap:6px;margin:8px 0;padding:10px;border-radius:14px;background:linear-gradient(120deg,#16377a,#6a3ad6);color:#fff;box-shadow:0 0 16px rgba(127,211,255,.6)}
+.fig-semana b{font-size:13px}.fig-semana small{color:#cfeaff}
+.fig-semana-dias{display:flex;gap:6px}.fig-semana-dias i{flex:1;display:grid;place-items:center;height:30px;border-radius:50%;font:800 13px system-ui;font-style:normal;color:#cfeaff;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3)}
+.fig-semana-dias i.on{background:#27ffb0;color:#041018;border-color:#fff;box-shadow:0 0 12px #27ffb0}.fig-semana-dias i.premio{background:linear-gradient(135deg,#ffd23f,#ff2d95);border-color:#fff;animation:pf-dance .7s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.fig-semana-dias i.premio{animation:none}}

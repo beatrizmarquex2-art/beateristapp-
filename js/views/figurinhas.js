@@ -37,6 +37,11 @@ export function mount(host, parts = [], opts = {}) {
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
+  let semanaFesta = false;
+  async function semanaPremio() {
+    try { const me = P.active(); if (me) { const M = await import('../figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } } catch { /* sem perfil: ganha só o pacote */ }
+    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★ e um pacote com uma figurinha exclusiva da Bea` }); } catch { /* sem animação */ }
+  }
   load();
   async function load() {
     wrap.append(h('p', { class: 'fig-note' }, 'carregando álbum…'));
@@ -45,7 +50,10 @@ export function mount(host, parts = [], opts = {}) {
     // sem pacote de boas-vindas. Check-in: 1 giro grátis da roleta por dia (id do dia, então abrir de novo não entrega outro); o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo).
     let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
+    // check-in de 7 dias seguidos: pacote com 1 exclusiva da Bea + 10 ★ + festa (só 1x por dia entra na conta)
+    { const r = L.checkinSemana(state.sem, todayKey()); if (r.sem !== state.sem && JSON.stringify(r.sem) !== JSON.stringify(state.sem)) { state = { ...state, sem: r.sem }; if (r.completou) { state = L.grantPack(state, L.semanaPackId(r.sem.ciclo)); semanaFesta = true; } store.upsert('figurinhas', ID, state); } }
     if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
+    if (semanaFesta) { semanaFesta = false; semanaPremio(); }
     if (!explicita) tab = abaInicial(); // abre direto na coleção/página onde tem o que colar, não na capa
     draw();
   }
@@ -125,6 +133,7 @@ export function mount(host, parts = [], opts = {}) {
       h('div', { class: 'fig-pack-card' },
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
+        h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`)),
         h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
         me ? h('div', { class: 'fig-share-est' }, h('b', {}, 'compartilhar minhas ★'), ...[['post', 'post'], ['story', 'story']].map(([f, t]) => h('button', { type: 'button', class: 'btn small', onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { const r = await EstCard.compartilhar({ nome: me.name, total: EST.estrelasTotais(me.id), formato: f }); if (r === 'baixado') toast('imagem baixada: é só postar!'); else if (r === 'compartilhado') toast('compartilhado!'); } catch { toast('não consegui montar a imagem agora.'); } b.disabled = false; } }, t))) : null,
         h('ul', { class: 'fig-regras' },
