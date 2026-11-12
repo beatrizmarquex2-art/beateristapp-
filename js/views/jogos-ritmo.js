@@ -200,7 +200,7 @@ export function mount(host, opts = {}) {
   // Modo Aventura (#/ritmo/aventura[/n]): tela própria, o jogo normal abaixo não é montado. Nada do modo livre muda.
   if (opts.parts && opts.parts[0] === 'aventura') { location.hash = '#/ritmo'; return () => {}; } // o Modo Aventura do Beat Hero/Piano Hero foi removido (links antigos voltam pro jogo)
   // Duelo (#/ritmo/duelo): a mesma música ao mesmo tempo em dois celulares, por código de sala
-  if (opts.parts && opts.parts[0] === 'duelo') { let off = () => {}; let gone2 = false; import('../jogos/duelo-ritmo.js').then((m) => { if (!gone2) off = m.mountDuelo(host, opts); }); return () => { gone2 = true; off(); }; }
+  if (opts.parts && opts.parts[0] === 'duelo') { location.hash = '#/ritmo'; return () => {}; } // o duelo de 2 celulares saiu: só o modo normal
   const student = !!opts.student;
   let mounted = false; let gone = false;
   const studentTop = (key) => RK.cached(`ritmo|${key}`);
@@ -302,7 +302,7 @@ export function mount(host, opts = {}) {
     } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
   });
   const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner('Beat Hero', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), h('div', { class: 'pad-x rg-adv' }, h('a', { class: 'btn primary wide', href: '#/ritmo/duelo' }, '⚔ Duelo online · 2 celulares'), h('small', { class: 'muted' }, 'nenhuma música fica trancada.')), frame, ...(student ? [] : [codes])); // sem importar MIDI nem lista de MIDI: só as músicas prontas
+  host.append(banner('Beat Hero', 'joga, ganha XP e treina o tempo'), h('div', { class: 'row between pad-x rg-top' }, student ? h('span') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos'), xpOut), frame, ...(student ? [] : [codes])); // sem importar MIDI nem lista de MIDI: só as músicas prontas
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
