@@ -10,22 +10,23 @@ const fig = (color, sym) => card(color, 'fig', sym);
 const base = (o = {}) => ({ v: 2, mode: 'local', n: 2, dir: 1, hands: [[], []], draw: [], discard: [fig('vermelho', 'seminima')], color: 'vermelho', turn: 0, drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: null, ...o });
 const padHand = (n) => Array.from({ length: n }, () => fig('azul', 'fusa'));
 
-test('as 10 figuras existem, têm nome e desenho vetorial', () => {
-  assert.equal(SYMS.length, 10);
-  assert.deepEqual(SYMS, ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'fantasma']);
+test('as 12 figuras existem, têm nome e desenho vetorial', () => {
+  assert.equal(SYMS.length, 12);
+  assert.deepEqual(SYMS, ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'clave_sol', 'clave_fa', 'ritornelo']);
+  assert.ok(!SYMS.includes('fantasma'), 'a nota fantasma saiu das cartas');
   for (const s of SYMS) { assert.ok(SYM_NAME[s]); assert.match(SYM_SVG[s], /<(path|ellipse|circle)/); }
 });
-test('baralho: 112 cartas, ids únicos, 26 por cor (10 figuras × 2 + 3 ações × 2), 4 curingas e 4 +4', () => {
-  const d = C.makeDeck(); assert.equal(d.length, 112); assert.equal(new Set(d.map((c) => c.id)).size, 112);
+test('baralho: 128 cartas, ids únicos, 30 por cor (12 figuras × 2 + 3 ações × 2), 4 curingas e 4 +4', () => {
+  const d = C.makeDeck(); assert.equal(d.length, 128); assert.equal(new Set(d.map((c) => c.id)).size, 128);
   assert.deepEqual(C.COLORS, ['vermelho', 'amarelo', 'azul', 'verde']);
   for (const k of C.COLORS) {
-    const cs = d.filter((c) => c.color === k); assert.equal(cs.length, 26);
+    const cs = d.filter((c) => c.color === k); assert.equal(cs.length, 30);
     for (const s of SYMS) assert.equal(cs.filter((c) => c.kind === 'fig' && c.sym === s).length, 2);
     for (const a of C.ACTIONS) assert.equal(cs.filter((c) => c.kind === a).length, 2);
   }
   assert.equal(d.filter((c) => c.kind === 'curinga').length, 4); assert.equal(d.filter((c) => c.kind === 'mais4').length, 4);
 });
-test('distribuição: 7 por jogador (2 a 4), descarte começa com figura, 112 conservadas', () => {
+test('distribuição: 7 por jogador (2 a 4), descarte começa com figura, 128 conservadas', () => {
   for (const players of [2, 3, 4]) for (let s = 1; s <= 40; s++) {
     const g = C.newGame({ mode: 'paul', players, rnd: seeded(s) }); assert.equal(g.n, players); assert.equal(g.hands.length, players);
     g.hands.forEach((h) => assert.equal(h.length, 7)); assert.ok(C.isFig(g.discard[0])); assert.equal(g.color, g.discard[0].color); assert.ok(C.validGame(g));
@@ -114,14 +115,14 @@ test('o computador só joga cartas legais e escolhe cor válida', () => {
     else if (mv.type === 'draw') assert.ok(C.canDraw(g)); else assert.ok(C.canPass(g));
   }
 });
-test('invariantes: 300 partidas de 2, 3 e 4 jogadores (computador × computador) terminam e conservam 112 cartas', () => {
+test('invariantes: 300 partidas de 2, 3 e 4 jogadores (computador × computador) terminam e conservam 128 cartas', () => {
   for (const players of [2, 3, 4]) for (let s = 1; s <= 100; s++) {
     const rnd = seeded(s * 7 + players); let g = C.newGame({ mode: 'paul', players, rnd }); let steps = 0;
     while (!g.over && steps++ < 3000) {
       const p = g.turn; const mv = C.paulMove(g, p, rnd);
       g = mv.type === 'play' ? C.applyPlay(g, p, mv.id, mv.color, rnd) : mv.type === 'draw' ? C.applyDraw(g, p, rnd) : C.applyPass(g, p);
       if (g.unoPending != null && C.mustUno(g, g.unoPending)) g = C.callUno(g, g.unoPending);
-      assert.equal([...g.hands.flat(), ...g.draw, ...g.discard].length, 112); assert.equal(new Set([...g.hands.flat(), ...g.draw, ...g.discard].map((c) => c.id)).size, 112);
+      assert.equal([...g.hands.flat(), ...g.draw, ...g.discard].length, 128); assert.equal(new Set([...g.hands.flat(), ...g.draw, ...g.discard].map((c) => c.id)).size, 128);
     }
     assert.ok(g.over, `partida ${players}p/${s} não terminou`); assert.ok(C.validGame(g));
   }

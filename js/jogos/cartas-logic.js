@@ -8,17 +8,19 @@ export const ACTIONS = ['pular', 'inverter', 'mais2'];
 export const ACTION_NAME = { pular: 'pular', inverter: 'inverter', mais2: '+2', curinga: 'curinga', mais4: '+4' };
 export { SYMS, SYM_NAME };
 export const HAND = 7;
-export const DECK_SIZE = 112;
+export const DECK_SIZE = 128; // 4 cores × (12 figuras × 2 + 3 ações × 2) + 4 curingas + 4 curingas +4
 
 export const isFig = (c) => c.kind === 'fig';
 export const isWild = (c) => c.kind === 'curinga' || c.kind === 'mais4';
 export const isAction = (c) => !isFig(c);
 export const cardName = (c) => (c.kind === 'curinga' ? 'curinga (muda a cor)' : c.kind === 'mais4' ? 'curinga +4' : `${isFig(c) ? SYM_NAME[c.sym] : ACTION_NAME[c.kind]} ${COLOR_NAME[c.color]}`);
 
-export function makeDeck() {
+/** Figuras do baralho ANTIGO (112 cartas, com a nota fantasma): só o Modo Aventura do Uno usa, pra manter as missões e sementes de sempre. */
+export const LEGACY_SYMS = ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'fantasma'];
+export function makeDeck(syms = SYMS) {
   const d = []; let n = 0;
   for (const color of COLORS) {
-    for (const sym of SYMS) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: 'fig', sym });
+    for (const sym of syms) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: 'fig', sym });
     for (const a of ACTIONS) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: a, sym: null });
   }
   for (const w of ['curinga', 'mais4']) for (let k = 0; k < 4; k++) d.push({ id: `c${n++}`, color: null, kind: w, sym: null });
@@ -58,14 +60,14 @@ export const available = (g) => g.draw.length + Math.max(0, g.discard.length - 1
 /** Jogador que vem `k` passos depois de `p`, no sentido atual. */
 export const adv = (g, p, k = 1) => (((p + g.dir * k) % g.n) + g.n) % g.n;
 
-export function newGame({ mode = 'paul', players = 2, rnd = Math.random, un = false } = {}) {
+export function newGame({ mode = 'paul', players = 2, rnd = Math.random, un = false, legacy = false } = {}) {
   const n = mode === 'paul' || mode === 'local' ? Math.max(2, Math.min(4, players | 0 || 2)) : 2; // contra o computador e no mesmo celular: 2 a 4 jogadores
-  const deck = shuffle(makeDeck(), rnd);
+  const deck = shuffle(makeDeck(legacy ? LEGACY_SYMS : SYMS), rnd);
   const hands = Array.from({ length: n }, (_, i) => deck.slice(i * HAND, (i + 1) * HAND));
   let rest = deck.slice(n * HAND);
   const i = rest.findIndex(isFig); const open = rest[i];
   rest = shuffle(rest.filter((_, k) => k !== i), rnd); // a carta aberta é sempre de figura; as outras voltam ao monte embaralhadas
-  return { v: 2, mode, n, dir: 1, hands, draw: rest, discard: [open], color: open.color, turn: Math.floor(rnd() * n), drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: { t: 'start' }, ...(un ? { un: true, pend: null } : {}) };
+  return { v: 2, mode, n, dir: 1, hands, draw: rest, discard: [open], color: open.color, turn: Math.floor(rnd() * n), drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: { t: 'start' }, ...(un ? { un: true, pend: null } : {}), ...(legacy ? { legacy: true } : {}) };
 }
 const clone = (g) => JSON.parse(JSON.stringify(g));
 
@@ -213,8 +215,8 @@ export function validGame(g) {
   try {
     if (!g || g.v !== 2 || !Array.isArray(g.hands) || g.hands.length !== g.n || g.n < 2 || g.n > 4 || !Array.isArray(g.draw) || !Array.isArray(g.discard) || !g.discard.length) return false;
     if (!Number.isInteger(g.turn) || g.turn < 0 || g.turn >= g.n || (g.dir !== 1 && g.dir !== -1) || !COLORS.includes(g.color)) return false;
-    const all = [...g.hands.flat(), ...g.draw, ...g.discard]; const ref = new Map(makeDeck().map((c) => [c.id, c]));
-    if (all.length !== DECK_SIZE || new Set(all.map((c) => c.id)).size !== DECK_SIZE) return false;
+    const all = [...g.hands.flat(), ...g.draw, ...g.discard]; const deckRef = makeDeck(g.legacy ? LEGACY_SYMS : SYMS); const ref = new Map(deckRef.map((c) => [c.id, c]));
+    if (all.length !== deckRef.length || new Set(all.map((c) => c.id)).size !== deckRef.length) return false;
     for (const c of all) { const r = ref.get(c.id); if (!r || r.kind !== c.kind || r.sym !== c.sym || r.color !== c.color) return false; }
     if (g.drawn && !g.hands[g.turn].some((c) => c.id === g.drawn)) return false;
     return Number.isInteger(g.passes) && g.passes >= 0 && g.passes < g.n && Number.isInteger(g.seq);
@@ -291,7 +293,7 @@ export function matchResult(g, st, me = 0) {
  */
 export function simulate(params, policy, maxSteps = 3000) {
   const rnd = seededRnd(params.seed); const prnd = seededRnd((Number(params.seed) || 1) + 99991); /* sorteio PRÓPRIO do jogador: a pessoa não consome o sorteio da mesa */
-  let g = newGame({ mode: 'paul', players: 2, rnd }); const st = newStats(); const acts = []; let n = 0;
+  let g = newGame({ mode: 'paul', players: 2, rnd, legacy: true }); const st = newStats(); const acts = []; let n = 0;
   while (!g.over && n++ < maxSteps) {
     if (g.turn === 0) {
       const mv = policy(g, prnd); const b = g;

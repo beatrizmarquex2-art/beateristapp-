@@ -88,7 +88,7 @@ test('estilos de adversário: escolhas diferentes na mesma mesa, todas legais (i
   const only4 = base({ hands: [[fig('azul', 6)], [p4, fig('azul', 4)]], draw: [] }); // com a cor da mesa na mão... mão sem vermelho: +4 vale
   const g3 = base({ hands: [[fig('azul', 6)], [p4, fig('azul', 4), fig('azul', 3)]] }); assert.ok(C.legalCards(g3, 1).some((c) => c.id === p4.id)); assert.ok(only4);
 });
-test('estilos de adversário: 1500 partidas entre quaisquer estilos terminam, conservam 112 cartas, com UNO, e só jogam lances válidos', () => {
+test('estilos de adversário: 1500 partidas entre quaisquer estilos terminam, conservam 128 cartas, com UNO, e só jogam lances válidos', () => {
   let n = 0;
   for (const a of C.AI_STYLES) for (const b of C.AI_STYLES) for (let s = 1; s <= 60; s++) {
     const rnd = C.seededRnd(s * 31 + n++); let g = C.newGame({ rnd }); let k = 0;
@@ -96,7 +96,7 @@ test('estilos de adversário: 1500 partidas entre quaisquer estilos terminam, co
       const mv = C.aiMove(g, g.turn, g.turn === 0 ? a : b, rnd);
       g = mv.type === 'play' ? C.applyPlay(g, g.turn, mv.id, mv.color, rnd) : mv.type === 'draw' ? C.applyDraw(g, g.turn, rnd) : C.applyPass(g, g.turn);
       if (!g.over && g.unoPending != null && C.mustUno(g, g.unoPending)) g = C.callUno(g, g.unoPending);
-      assert.equal(g.hands[0].length + g.hands[1].length + g.draw.length + g.discard.length, 112);
+      assert.equal(g.hands[0].length + g.hands[1].length + g.draw.length + g.discard.length, 128);
     }
     assert.ok(g.over && C.validGame(g), `${a} x ${b} semente ${s}`);
   }
@@ -105,7 +105,7 @@ test('estilos de adversário: 1500 partidas entre quaisquer estilos terminam, co
 test('modo livre intacto: newGame/paulMove idênticos aos de sempre e semente reproduzível', () => {
   const a = C.newGame({ rnd: C.seededRnd(42) }); const b = C.newGame({ rnd: C.seededRnd(42) }); assert.deepEqual(a, b);
   assert.deepEqual(C.newGame({ rnd: C.seededRnd(1) }), C.newGame({ rnd: C.seededRnd(1) })); assert.notDeepEqual(C.newGame({ rnd: C.seededRnd(1) }).hands, C.newGame({ rnd: C.seededRnd(2) }).hands);
-  assert.equal(C.HAND, 7); assert.equal(C.makeDeck().length, 112); assert.deepEqual(C.ACTIONS, ['pular', 'inverter', 'mais2']);
+  assert.equal(C.HAND, 7); assert.equal(C.makeDeck().length, 128); assert.equal(C.makeDeck(C.LEGACY_SYMS).length, 112); // o Modo Aventura do Uno continua no baralho antigo (112) assert.deepEqual(C.ACTIONS, ['pular', 'inverter', 'mais2']);
   assert.equal(typeof C.paulMove, 'function'); assert.equal(typeof C.legalCards, 'function');
 });
 test('partida de cada missão é reproduzível (mesma semente + mesmas jogadas = mesmo resultado)', () => {

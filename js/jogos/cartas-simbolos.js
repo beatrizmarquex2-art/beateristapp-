@@ -2,15 +2,16 @@
 // Tudo desenhado em 48×64 com currentColor, então a mesma figura serve na carta grande, no canto e na legenda.
 const NS = 'http://www.w3.org/2000/svg';
 
-export const SYMS = ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'fantasma'];
+// 12 figuras no baralho. A nota fantasma saiu das cartas (continua desenhada aqui porque o jogo da velha usa o desenho dela).
+export const SYMS = ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'clave_sol', 'clave_fa', 'ritornelo'];
 export const SYM_NAME = {
   seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semicolcheia', fusa: 'fusa',
   p_seminima: 'pausa de semínima', p_colcheia: 'pausa de colcheia', p_semicolcheia: 'pausa de semicolcheia', p_fusa: 'pausa de fusa',
-  acento: 'acento (>)', fantasma: 'nota fantasma (entre parênteses)',
+  acento: 'acento (>)', fantasma: 'nota fantasma (entre parênteses)', clave_sol: 'clave de sol', clave_fa: 'clave de fá', ritornelo: 'ritornelo (sinal de repetição)',
 };
 
 /** Nome curto (cabe em 2 linhas na carta) e o que a figura significa (tela de aprender). */
-export const SYM_SHORT = { seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semi-colcheia', fusa: 'fusa', p_seminima: 'pausa semínima', p_colcheia: 'pausa colcheia', p_semicolcheia: 'pausa semi-colcheia', p_fusa: 'pausa fusa', acento: 'acento', fantasma: 'fantasma' };
+export const SYM_SHORT = { seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semi-colcheia', fusa: 'fusa', p_seminima: 'pausa semínima', p_colcheia: 'pausa colcheia', p_semicolcheia: 'pausa semi-colcheia', p_fusa: 'pausa fusa', acento: 'acento', fantasma: 'fantasma', clave_sol: 'clave de sol', clave_fa: 'clave de fá', ritornelo: 'ritornelo' };
 export const SYM_LEARN = {
   seminima: 'dura 1 tempo. é a nota que a gente conta: 1, 2, 3, 4.',
   colcheia: 'dura meio tempo: duas colcheias cabem em 1 tempo ("1 e").',
@@ -22,6 +23,9 @@ export const SYM_LEARN = {
   p_fusa: 'é um silêncio de um oitavo de tempo, igual à fusa.',
   acento: 'o sinal ">" quer dizer: toque essa nota mais forte!',
   fantasma: 'nota fantasma (entre parênteses): toque bem baixinho, quase sem som.',
+  clave_sol: 'a clave de sol marca as notas mais agudas. ela abre a pauta de melodias, como a do violão e a do piano (mão direita).',
+  clave_fa: 'a clave de fá marca as notas mais graves. ela abre a pauta do baixo e da mão esquerda do piano.',
+  ritornelo: 'o ritornelo (dois pontinhos e as barras) quer dizer: repita o trecho! volte pro começo e toque de novo.',
 };
 
 const f1 = (n) => Math.round(n * 10) / 10;
@@ -51,6 +55,11 @@ function restBalls(k) {
   return s;
 }
 
+// clave de sol, clave de fá e ritornelo: traços simples (48×64, currentColor), na mesma espessura das outras figuras
+const CLAVE_SOL = '<path d="M27 5C20 12 18 21 22 28C27 36 35 38 35 45C35 51 29 53 25 50C20 46 23 40 28 41C32 42 32 47 29 48" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 5C33 9 33 18 25 27C15 37 13 47 20 52" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round"/><path d="M27 6V57" stroke="currentColor" stroke-width="3.9" stroke-linecap="round"/><circle cx="23" cy="58" r="3.6" fill="currentColor"/>';
+const CLAVE_FA = '<path d="M11 24C11 14 21 10 28 12C37 14 39 25 35 36C32 44 25 51 14 56" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><circle cx="12" cy="24" r="5.2" fill="currentColor"/><circle cx="42" cy="21" r="2.9" fill="currentColor"/><circle cx="42" cy="34" r="2.9" fill="currentColor"/>';
+const RITORNELO = '<circle cx="11" cy="25" r="3.2" fill="currentColor"/><circle cx="11" cy="39" r="3.2" fill="currentColor"/><path d="M21 10V54" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M32 10V54" stroke="currentColor" stroke-width="7" stroke-linecap="butt"/>';
+
 export const SYM_SVG = {
   seminima: note(22, 0),
   colcheia: note(18, 1),
@@ -63,6 +72,9 @@ export const SYM_SVG = {
   p_fusa: restBalls(3),
   acento: '<path d="M7 17L40 32L7 47" stroke="currentColor" stroke-width="7.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
   // nota fantasma: semínima entre parênteses
+  clave_sol: CLAVE_SOL,
+  clave_fa: CLAVE_FA,
+  ritornelo: RITORNELO,
   fantasma: `${note(24, 0)}<path d="M11 13Q-1 32 11 55M37 13Q49 32 37 55" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none"/>`,
 };
 

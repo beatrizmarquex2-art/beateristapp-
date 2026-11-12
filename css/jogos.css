@@ -511,7 +511,7 @@ html.lite .st-notes{display:none}html.lite .st-stop,html.lite .st-play{animation
 @keyframes cxRing{from{opacity:1;scale:.4}to{opacity:0;scale:7}}
 @keyframes cxFall{from{translate:0 0;rotate:0deg;opacity:1}to{translate:var(--dx) 620px;rotate:var(--r);opacity:.9}}
 /* tela inicial: as 10 figuras */
-.cx-legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 6px;margin:6px 0 12px}
+.cx-legend{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 4px;margin:6px 0 12px}
 .cx-leg{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;color:inherit;font:inherit;padding:2px 0;min-height:44px;cursor:pointer}
 .cx-leg .cx-card{--cw:min(14vw,64px)}.cx-leg small{font-size:10px;line-height:1.15;text-align:center}
 @media (min-width:700px){.cx{--cw:88px}.cx-leg .cx-card{--cw:72px}.cx-leg small{font-size:12px}}

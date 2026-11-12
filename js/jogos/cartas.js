@@ -144,7 +144,7 @@ export function mount(host, opts) {
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, TITLE),
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
-      h('p', { class: 'jg-lab' }, 'as 10 figuras (toque pra ver o nome)'), legend,
+      h('p', { class: 'jg-lab' }, 'as 12 figuras (toque pra ver o nome)'), legend,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
       seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'dois'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
@@ -540,7 +540,7 @@ export function mount(host, opts) {
   let lastTouch = 0;
   const noZoom = (e) => { const t = Date.now(); if (t - lastTouch < 320) e.preventDefault(); lastTouch = t; };
   root.addEventListener('touchend', noZoom, { passive: false });
-  if (adv) begin(C.newGame({ mode: 'paul', players: 2, rnd })); else intro();
+  if (adv) begin(C.newGame({ mode: 'paul', players: 2, rnd, legacy: true })); else intro();
   return {
     inProgress: () => !!(g && !g.over),
     restart: async () => { if (g && !g.over && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },

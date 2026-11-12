@@ -437,3 +437,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Velha**: sem níveis (61 perguntas no mesmo bolo), acerto com som que sobe e mensagem verde ✓.
 - **Mundos coloridos**: `js/campanha/mundos.js` + `css/aventura-tema.css`: Figuras e Memória em clarinho, Monte seu ritmo e Toca Aqui em amarelo (tudo em azul-marinho); pauLta como sempre.
 - Músicas dos jogos: página de escolha publicada como artifact (A/B por jogo); a escolha ainda não foi feita.
+
+- **Uno Musical agora tem 128 cartas** (4 cores × (12 figuras × 2 + pular/inverter/+2 × 2) + 4 curingas + 4 +4). Figuras: semínima, colcheia, semicolcheia, fusa, as 4 pausas, acento, **clave de sol, clave de fá e ritornelo** (a nota fantasma saiu das cartas; o desenho dela continua em `cartas-simbolos.js` porque a Velha usa). O Modo Aventura do Uno (escondido) segue no baralho antigo de 112 (`LEGACY_SYMS`, `newGame({ legacy: true })`).
