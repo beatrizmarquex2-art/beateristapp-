@@ -833,3 +833,5 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .ti-ut:active .ti-ut-art { transform: translateY(3px); box-shadow: 0 1px 0 #1b1818; }
 .ti-ut-art img, .ti-ut-art svg { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain; display: block; }
 .ti-ut b { padding: 1px 9px; border: 2px solid #1b1818; border-radius: 999px !important; background: #d92031; color: #fff !important; font: 800 11.5px var(--body) !important; white-space: nowrap; }
+/* cronômetro um pouco mais alto e menor dentro do botão redondo (o desenho tem o botãozinho em cima e pesava pra baixo) */
+.ti-ut-foco .ti-ut-art img { transform: translateY(-6%) scale(.9); }
