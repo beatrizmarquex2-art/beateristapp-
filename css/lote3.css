@@ -737,3 +737,10 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .dc-chips-cat,.lib-tabs{flex-wrap:wrap}
 
 .kd-chip.ti-sym { min-width: 44px; padding: 6px 10px; font-size: 20px; line-height: 1; }
+
+/* menu ☰ compacto: as abas ficam numa linha só (rola de lado), os 2 atalhos mais baixos e os recentes mais perto */
+.drawer .drawer-tabs.lib-tabs { flex-wrap: nowrap; overflow-x: auto; padding: 0; margin-bottom: 2px; }
+.drawer .drawer-tabs .drawer-tab, .drawer .drawer-tabs .lib-tab { flex: none; white-space: nowrap; }
+.drawer .drawer-search { padding-bottom: 0; }
+.drawer .drawer-pins { padding: 6px 0 0; }
+.drawer .drawer-pin { min-height: 34px; }
