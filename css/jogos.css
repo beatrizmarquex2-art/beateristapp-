@@ -1024,3 +1024,13 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* pad do Toca Aqui sem desenho no meio: só os anéis */
 .jg-toca .tr-pad:not(.mic){background:radial-gradient(circle at 50% 50%,transparent 0 22%,rgba(138,26,48,.16) 22.5% 23.5%,transparent 24% 40%,rgba(138,26,48,.12) 40.5% 41.5%,transparent 42%),radial-gradient(circle at 50% 46%,#fffdf7 0%,#fbf7ee 45%,#efe4cf 100%);justify-items:center;align-content:end}
 .jg-toca .tr-pad:not(.mic) small{margin-bottom:14px;font-size:14px}
+
+/* Toca Aqui: abas do modo + aleatório em cima do mapa */
+.tm-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 6px}
+.tm-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.tm-tabs button,.tm-rand{min-height:34px;padding:3px 12px;border:2px solid #fbf7ee;border-radius:999px;background:#8a1a30;color:#fbf7ee;font:700 13px var(--body,inherit);box-shadow:2px 2px 0 #2a0710;cursor:pointer}
+.tm-tabs button.on{background:#d99a2b;color:#2a0710}
+.tm-rand{margin-left:auto;background:#1f6f78}
+.tm-dica{margin:0 0 6px;font-size:13px;color:#fbf7ee}
+.tr-fasehead{display:flex;align-items:center;gap:10px;margin:0 0 8px;color:#fbf7ee}.tr-fasehead b{font-family:var(--display,inherit);font-size:16px}
+.tm-map .mp-head{flex-wrap:wrap}.tm-map .tm-bar{flex:1 1 100%;margin:2px 0 0}

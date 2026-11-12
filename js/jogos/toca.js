@@ -1,45 +1,47 @@
-// Toca Aqui: o jogo de ler a figura rítmica e tocar no tempo. Três versões na mesma tela:
-//  • versão com imagens: cada tempo é uma palavrinha com imagem (pão, bolo, braço…): monte e toque (BPM ajustável).
-//  • versão normal (figuras): a pauta de verdade (níveis 1 a 3): ouvir e/ou tocar direto, cada toque soa e volta pintado.
-//  • figuras rítmicas: o jogo de fases (semibreve, mínima, colcheia…) que antes ficava solto na lista de jogos; abre pelo mesmo caminho de sempre (#/kids/figuras).
+// Toca Aqui: ler a figura na pauta e tocar no tempo. Abre direto no CAMINHO (mapa de 12 fases por modo: iniciante, intermediário, avançado),
+// igual ao pauLta; o "aleatório" fica ao lado do mapa. Toca na tela (com as duas mãos) ou no microfone (vale mais estrelas).
+// Os outros jogos que moravam aqui agora são separados: Detetive Note (adivinhar o ritmo), Figurix (figuras rítmicas) e, em breve, o de rudimentos (taiko).
 import { h } from '../util.js';
 import { getGame, setGame } from './base.js';
-import { mountRitmo } from '../kids/ritmo.js';
-import { mountTaikoJogo } from '../kids/taiko.js';
-import { leitura } from '../views/treinos.js';
-import * as AC from '../acesso.js';
-
-const VERSIONS = [['normal', 'normal (figuras)'], ['kids', 'com imagens'], ['fases', 'figuras rítmicas'], ['taiko', 'taiko (agudo e grave)'], ['duelo', 'duelo online'], ['aula', 'aula ao vivo']];
+import { mountProgressionMap } from '../kids/mapa.js';
+import { themeOf } from '../campanha/themes.js';
+import { leitura, progressoToca } from '../views/treinos.js';
+import { PATH, TIERS } from '../reading.js';
 
 export function mount(host) {
   const saved = getGame('toca');
-  let ver = VERSIONS.some((v) => v[0] === saved.ver) ? saved.ver : 'normal';
-  let off = null; let gone = false;
+  let tier = TIERS.some((t) => t.id === saved.tier) ? saved.tier : 'ini';
+  let view = 'mapa'; let off = null; let gone = false;
   const root = h('div', { class: 'jg jg-toca' }); host.replaceChildren(root);
-  const stage = h('div', { class: 'jg-toca-stage' });
-  const draw = () => {
-    if (off) { off(); off = null; }
-    root.replaceChildren(
-      h('h2', { class: 'jg-h hand' }, 'toca aqui'),
-      h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': 'versão' }, ...VERSIONS.map(([v, l]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(ver === v), class: ver === v ? 'on' : '', onclick: () => { ver = v; setGame('toca', { ver }); draw(); } }, l))),
-      h('p', { class: 'jg-p' }, ver === 'taiko' ? 'as notas descem: toque na caixa (esquerda) pro agudo e no bumbo (direita) pro grave, na hora certa.' : ver === 'aula' ? 'a professora monta a partitura e abre uma aula com código: a turma toca na bateria na hora, cada um no seu aparelho.' : ver === 'duelo' ? 'crie uma sala e passe o código: os dois celulares leem o mesmo compasso, tocam no mesmo andamento e comparam a precisão.' : ver === 'kids' ? 'cada tempo é uma palavrinha com imagem: monte o ritmo, ouça e toque. escolha o andamento (BPM).' : ver === 'fases' ? 'o jogo de fases das figuras rítmicas, agora aqui dentro do Toca Aqui.' : 'leia a figura na pauta e toque no tempo. ouça antes ou vá direto pra sua vez. escolha o BPM.'),
-      stage);
-    stage.replaceChildren();
-    if (ver === 'fases') {
-      const lk = AC.trancado('#/kids/figuras');
-      stage.append(h('div', { class: 'card pad al-card jg-fases' }, h('h2', { class: 'tag' }, lk ? '🔒 figuras rítmicas' : 'figuras rítmicas'), h('p', { class: 'muted' }, 'o jogo de fases: semibreve, mínima, semínima, colcheia… leia, monte e toque cada figura. cada fase vale até 3 estrelas.'),
-        lk ? h('p', { class: 'muted' }, 'as fases e estrelas precisam do código da professora. a aulinha do Paul e o Toca Aqui acima continuam abertos pra treinar.') : null,
-        h('a', { class: 'btn primary wide', href: '#/kids/figuras' }, lk ? 'abrir (pede o código)' : 'jogar as fases'), h('a', { class: 'btn wide', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul')));
-    } else if (ver === 'kids') { const box = h('div', { class: 'kx-arc kx-embed kd-game' }); stage.append(box); off = mountRitmo(box); }
-    else if (ver === 'taiko') off = mountTaikoJogo(stage);
-    else if (ver === 'aula') { let d = () => {}; let cancel = false; import('./aula-toca.js').then((m) => { if (!cancel) d = m.mountAulaToca(stage); }); off = () => { cancel = true; d(); }; }
-    else if (ver === 'duelo') { let d = () => {}; let cancel = false; import('./duelo-toca.js').then((m) => { if (!cancel) d = m.mountDueloToca(stage); }); off = () => { cancel = true; d(); }; }
-    else if (ver === 'normal') off = leitura(stage);
+  const idxOf = (t, n) => PATH.findIndex((x) => x.tier === t && x.n === n);
+  const starsAt = (pr, i) => (pr.pstars[i] ?? ((pr.pbest[i] || 0) >= 50 ? 1 : 0));
+  const clean = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } };
+  const drawMapa = () => {
+    clean(); view = 'mapa'; const pr = progressoToca();
+    const mapBox = h('div', { class: 'tm-map' });
+    const levels = Array.from({ length: 12 }, (_, i) => ({ id: `toca:${tier}:${i + 1}`, index: i + 1, label: String(i + 1), tag: '', boss: i === 11 }));
+    const have = PATH.reduce((s, x, i) => s + (x.tier === tier ? starsAt(pr, i) : 0), 0);
+    const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Modo' }, ...TIERS.map((t) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(tier === t.id), class: tier === t.id ? 'on' : '',
+      onclick: () => { tier = t.id; setGame('toca', { ...getGame('toca'), tier }); drawMapa(); } }, t.name)));
+    const bar = h('div', { class: 'tm-bar' }, tabs, h('button', { type: 'button', class: 'tm-rand', onclick: () => jogar(null) }, h('span', { 'aria-hidden': 'true' }, '↻'), ' aleatório'));
+    root.replaceChildren(h('p', { class: 'tm-dica' }, 'toque as figuras da pauta no tempo: na tela, com as duas mãos, ou no microfone (vale mais estrelas).'), mapBox);
+    off = mountProgressionMap(mapBox, {
+      gameId: `toca-${tier}`, levels, profileId: 'toca', unitName: 'Fase', tier: 0, stars: { have, max: 36 },
+      theme: themeOf('toca'),
+      starsOf: (id) => starsAt(pr, idxOf(tier, Number(id.split(':')[2]))),
+      unlockedOf: () => true, lockedMsg: '',
+      onOpen: (lv) => jogar(lv.index),
+    });
+    const hd = mapBox.querySelector('.mp-head'); if (hd) hd.append(bar); else mapBox.prepend(bar); // o modo e o aleatório ficam no cabeçalho fixo do mapa
   };
-  draw();
+  const jogar = (n) => {
+    clean(); view = 'jogo'; const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);
+    off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: drawMapa });
+  };
+  drawMapa();
   return {
     inProgress: () => false,
-    restart: () => { if (!gone) draw(); },
-    destroy() { gone = true; if (off) off(); off = null; },
+    restart: () => { if (!gone) drawMapa(); },
+    destroy() { gone = true; clean(); },
   };
 }
