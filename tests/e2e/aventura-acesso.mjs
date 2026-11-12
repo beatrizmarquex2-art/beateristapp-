@@ -21,7 +21,7 @@ const ROTAS = ['#/kids/memoria/aventura', '#/kids/ritmo/aventura']; // (o Modo A
 {
   const { ctx, p } = await phone(true);
   for (const r of ['#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
-  await go(p, '#/jogos/toca'); check('com código: o Toca Aqui abre direto, sem escolher modo e sem Modo Aventura', await p.evaluate(() => !document.querySelector('.al-lock') && !/Modo Aventura/.test(document.body.innerText)));
+  await go(p, '#/jogos/toca'); check('com código: o Toca Aqui pergunta o modo (livre ou aventura)', await p.evaluate(() => !document.querySelector('.al-lock') && /Modo Aventura/.test(document.body.innerText)));
   await ctx.close();
 }
 const fails = done(); await browser.close(); srv.close(); process.exit(fails ? 1 : 0);
