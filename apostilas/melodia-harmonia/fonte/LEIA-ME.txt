@@ -1,0 +1,5 @@
+Para regerar o PDF (Python 3 + segno, Node + playwright):
+  cd fonte
+  python3 build_m.py m_a,m_b,m_c,m_d,m_e,m_f livro_m.html
+  node render.js livro_m.html ../Roboterista_Melodia_e_Harmonia_102pgs.pdf
+mel.py desenha pauta, teclado, diagramas de acorde, braço e tablatura. Os acordes ficam em mel.ACORDES.
