@@ -24,3 +24,11 @@ export function premioQuebra(q, imgId, total) {
   const estrelas = Math.max(1, 4 - volta); const novas = [...feitas, imgId];
   return novas.length >= total ? { q: { volta: volta + 1, feitas: [] }, estrelas } : { q: { volta, feitas: novas }, estrelas };
 }
+
+/** Anti-farm: cada "chave" (jogo + música/nível/tema) paga no máximo 3 ★ na vida toda, e só a diferença do que já pagou.
+ *  Repetir a mesma música/nível não rende de novo. Puro: devolve quantas ★ ainda valem (`novas`) e o livro-caixa novo. */
+export const MAX_CHAVE = 3;
+export function pagarChave(pago, chave, n) {
+  const p0 = (pago && typeof pago === 'object') ? pago : {}; const ja = Math.max(0, p0[chave] | 0);
+  const novas = Math.max(0, Math.min(Math.round(n) || 0, MAX_CHAVE) - ja); return { novas, pago: { ...p0, [chave]: ja + novas } };
+}

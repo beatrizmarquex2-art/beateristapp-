@@ -30,3 +30,12 @@ test('tabela de estrelas: velha 1, os outros jogos 3', async () => {
   const { ESTRELAS_JOGO } = await import('../js/figurinhas/mesa-logic.js');
   assert.equal(ESTRELAS_JOGO.velha, 1); for (const j of ['memoria', 'cara', 'stop', 'bingo', 'cartas']) assert.equal(ESTRELAS_JOGO[j], 3);
 });
+
+import { pagarChave } from '../js/figurinhas/mesa-logic.js';
+test('anti-farm: cada chave (música/nível) paga até 3 ★ na vida, só a diferença', () => {
+  let r = pagarChave({}, 'toca|a|90', 3); assert.equal(r.novas, 3);
+  r = pagarChave(r.pago, 'toca|a|90', 3); assert.equal(r.novas, 0, 'repetir a mesma música não rende');
+  r = pagarChave(r.pago, 'toca|b|90', 3); assert.equal(r.novas, 3, 'outra música rende');
+  let q = pagarChave({}, 'teoria|x', 1); assert.equal(q.novas, 1); q = pagarChave(q.pago, 'teoria|x', 2); assert.equal(q.novas, 1, 'melhorou: paga só a diferença'); assert.equal(pagarChave(q.pago, 'teoria|x', 2).novas, 0);
+  assert.equal(pagarChave({}, 'k', 9).novas, 3, 'nunca passa de 3');
+});

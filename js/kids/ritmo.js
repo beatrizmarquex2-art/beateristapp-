@@ -49,7 +49,7 @@ export function mountRitmo(box, opts) {
       h('div', { class: 'row kd-modes' },
         full ? h('button', { class: 'kd-btn', type: 'button', onclick: () => playBar(slots, () => box.querySelectorAll('.kd-slot').forEach((s, i) => s.classList.toggle('now', i === cur))) }, '▶ tocar') : null,
         mode === 'adivinha' && full ? h('button', { class: 'kd-btn', type: 'button', onclick: (e) => {
-          if (sameRhythm(slots, secret)) { feedback(fb, true, 'acertou o ritmo secreto! ⭐ +1 ★'); FB.great(e.currentTarget); import('../jogos/estrelas-jogo.js').then((E) => E.ganhou('toca', 1)).catch(() => {}); /* cada fase completada no Toca Aqui vale 1 ★ */ secret = randomFoods(Math.random, 2); slots = []; UI.later(draw, 1800); }
+          if (sameRhythm(slots, secret)) { feedback(fb, true, 'acertou o ritmo secreto! ⭐ +1 ★'); FB.great(e.currentTarget); import('../jogos/estrelas-jogo.js').then((E) => E.ganhou('toca', 1, `ritmo-secreto|${JSON.stringify(secret)}`)).catch(() => {}); /* cada fase completada no Toca Aqui vale 1 ★ */ secret = randomFoods(Math.random, 2); slots = []; UI.later(draw, 1800); }
           else { feedback(fb, false, 'quase! ouve de novo e troca uma carta'); FB.lose(e.currentTarget); }
         } }, 'conferir') : null,
         slots.length ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { slots = []; draw(); } }, 'limpar') : null),

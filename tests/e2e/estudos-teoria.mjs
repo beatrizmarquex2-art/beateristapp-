@@ -10,11 +10,14 @@ for (const a of ['ritmo', 'melodia', 'teoria']) { await p.locator('.es-area', { 
 await p.locator('.es-area', { hasText: 'melodia' }).click();
 check('melodia e harmonia tem os acordes de violão e de teclado', /Acordes de violão/.test(await p.locator('.es-modos').innerText()) && /Acordes de teclado/.test(await p.locator('.es-modos').innerText()));
 await go('#/estudos/acordes/violao');
-check('violão: 16 acordes com diagrama', (await p.locator('.ac-card').count()) === 16 && (await p.locator('.ac-diag').count()) === 16);
-const o0 = await p.evaluate(() => window.__osc); await p.locator('.ac-card').first().click(); await sleep(400);
+check('violão: 14 acordes (7 maiores e 7 menores) com diagrama', (await p.locator('.ac-card').count()) === 14 && (await p.locator('.ac-diag').count()) === 14);
+check('violão: cada acorde tem ouvir no violão, na guitarra e no baixo', (await p.locator('.ac-sons').first().locator('button').count()) === 3 && /baixo/.test(await p.locator('.ac-sons').first().innerText()));
+check('só maior e menor (sem sétimas)', (await p.locator('.ac-cifra', { hasText: '7' }).count()) === 0);
+const o0 = await p.evaluate(() => window.__osc); for (const k of [0, 1, 2]) { await p.locator('.ac-sons').first().locator('button').nth(k).click(); await sleep(250); }
 check('violão: tocar o cartão faz som', (await p.evaluate(() => window.__osc)) >= o0, '');
 await go('#/estudos/acordes/teclado');
-check('teclado: 12 notas × tipo, com teclado desenhado', (await p.locator('.ac-teclado').count()) === 12);
+check('teclado: 12 notas, só maior e menor, com piano e elétrico', (await p.locator('.ac-teclado').count()) === 12 && (await p.locator('button[role=radio]').count()) === 2 && (await p.locator('.ac-sons').first().locator('button').count()) === 2);
+for (const k of [0, 1]) { await p.locator('.ac-sons').first().locator('button').nth(k).click(); await sleep(250); }
 await p.locator('button[role=radio]', { hasText: 'menor' }).first().click(); await sleep(300);
 check('teclado: trocar o tipo muda os acordes (Cm)', /Cm/.test(await p.locator('.ac-cifra').first().innerText()));
 await go('#/estudos/ritmos');

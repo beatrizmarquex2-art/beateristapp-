@@ -4,8 +4,8 @@ import * as P from '../kids/progress.js';
 import * as AC from '../acesso.js';
 import { toast } from '../ui.js';
 
-import { LIMITE_DIA, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra } from './mesa-logic.js';
-export { LIMITE_DIA, contar, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra };
+import { LIMITE_DIA, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra, pagarChave } from './mesa-logic.js';
+export { pagarChave, LIMITE_DIA, contar, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra };
 const livre = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 export const totalMesa = (pid) => (P.progOf(pid).mesa || {}).total || 0;
 /** Entrega as estrelas e avisa quantas faltam pra roleta (a cada 15 ★ de qualquer jogo libera 1 giro). */
@@ -16,11 +16,15 @@ async function entregar(me, r) {
   toast(`+${r.ganhou} ★ ${nova ? `· 🎡 roleta liberada!` : faltam ? `· faltam ${faltam} pra roleta` : ''}${r.resta ? '' : ' (limite de hoje neste jogo)'}`, { ms: 2600 });
   return r.ganhou;
 }
-/** Chame UMA vez por vitória. `n` = quantas estrelas (padrão: a tabela ESTRELAS_JOGO do jogo, senão 1). Devolve quantas ganhou. */
-export async function vitoria(jogo, n) {
+/** Chame UMA vez por vitória. `n` = quantas estrelas (padrão: a tabela ESTRELAS_JOGO do jogo, senão 1). Devolve quantas ganhou.
+ *  `chave` (opcional) = o que foi jogado (ex.: `toca|exercício 3|90`): cada chave paga até 3 ★ na vida, sem repetir (anti-farm). */
+export async function vitoria(jogo, n, chave) {
   try {
     if (livre()) return 0; const me = P.active(); if (!me) return 0;
-    const r = contar(P.progOf(me.id).mesa, jogo, undefined, n == null ? (ESTRELAS_JOGO[jogo] || 1) : n); await P.patch(me.id, { mesa: r.mesa });
+    const mesa0 = P.progOf(me.id).mesa || {}; let q = n == null ? (ESTRELAS_JOGO[jogo] || 1) : n; let pago = null;
+    if (chave) { const c = pagarChave(mesa0.pago, chave, q); if (!c.novas) { toast('você já ganhou as ★ dessa — tente outra música ou nível 😉', { ms: 2600 }); return 0; } q = c.novas; pago = c.pago; }
+    const r = contar(mesa0, jogo, undefined, q); if (pago && r.ganhou) pago = pagarChave(mesa0.pago, chave, r.ganhou).pago;
+    await P.patch(me.id, { mesa: pago ? { ...r.mesa, pago } : r.mesa });
     return entregar(me, r);
   } catch { return 0; }
 }

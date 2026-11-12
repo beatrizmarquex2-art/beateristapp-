@@ -1,8 +1,8 @@
 // Estudos com som: dicionário de acordes (violão/guitarra e teclado) e ritmos de bateria. Tudo sintetizado, nada é baixado.
 import { h } from '../util.js';
-import { audio, kick, snare, hihat, tom } from '../audio.js';
+import { audio, out, kick, snare, hihat, tom } from '../audio.js';
 import { pluck } from '../instruments.js';
-import { epiano, rim } from '../synth.js';
+import { epiano, rim, bass } from '../synth.js';
 import { banner } from '../ui.js';
 
 const NOMES = ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'];
@@ -16,24 +16,36 @@ const voltar = (href, t) => h('a', { class: 'jg-link', href }, t);
 export const VIOLAO = [
   ['C', 'Dó maior', [-1, 3, 2, 0, 1, 0]], ['D', 'Ré maior', [-1, -1, 0, 2, 3, 2]], ['E', 'Mi maior', [0, 2, 2, 1, 0, 0]], ['F', 'Fá maior (pestana)', [1, 3, 3, 2, 1, 1]],
   ['G', 'Sol maior', [3, 2, 0, 0, 0, 3]], ['A', 'Lá maior', [-1, 0, 2, 2, 2, 0]], ['B', 'Si maior (pestana)', [-1, 2, 4, 4, 4, 2]],
-  ['Am', 'Lá menor', [-1, 0, 2, 2, 1, 0]], ['Dm', 'Ré menor', [-1, -1, 0, 2, 3, 1]], ['Em', 'Mi menor', [0, 2, 2, 0, 0, 0]], ['Bm', 'Si menor (pestana)', [-1, 2, 4, 4, 3, 2]],
-  ['C7', 'Dó com sétima', [-1, 3, 2, 3, 1, 0]], ['D7', 'Ré com sétima', [-1, -1, 0, 2, 1, 2]], ['E7', 'Mi com sétima', [0, 2, 0, 1, 0, 0]], ['G7', 'Sol com sétima', [3, 2, 0, 0, 0, 1]], ['A7', 'Lá com sétima', [-1, 0, 2, 0, 2, 0]],
+  ['Cm', 'Dó menor (pestana)', [-1, 3, 5, 5, 4, 3]], ['Dm', 'Ré menor', [-1, -1, 0, 2, 3, 1]], ['Em', 'Mi menor', [0, 2, 2, 0, 0, 0]], ['Fm', 'Fá menor (pestana)', [1, 3, 3, 1, 1, 1]],
+  ['Gm', 'Sol menor (pestana)', [3, 5, 5, 3, 3, 3]], ['Am', 'Lá menor', [-1, 0, 2, 2, 1, 0]], ['Bm', 'Si menor (pestana)', [-1, 2, 4, 4, 3, 2]],
 ];
 const ABERTAS = [40, 45, 50, 55, 59, 64];
 function diagrama(frets) {
-  const x = (i) => 22 + i * 17; const y = (f) => 30 + f * 21; let s = '';
+  const x = (i) => 26 + i * 17; const y = (f) => 30 + f * 21; let s = '';
   for (let i = 0; i < 6; i++) s += `<line x1="${x(i)}" y1="${y(0)}" x2="${x(i)}" y2="${y(5)}" stroke="#14111a" stroke-width="${2.4 - i * 0.28}"/>`;
   for (let f = 0; f <= 5; f++) s += `<line x1="${x(0)}" y1="${y(f)}" x2="${x(5)}" y2="${y(f)}" stroke="#14111a" stroke-width="${f === 0 ? 5 : 1.5}"/>`;
   frets.forEach((f, i) => { if (f < 0) s += `<text x="${x(i)}" y="22" text-anchor="middle" font-size="15" font-weight="800" fill="#BD1733">×</text>`; else if (f === 0) s += `<circle cx="${x(i)}" cy="17" r="5" fill="none" stroke="#17365B" stroke-width="2.2"/>`; else s += `<circle cx="${x(i)}" cy="${y(f) - 10.5}" r="8" fill="#17365B"/>`; });
-  return svg(110, 140, s, 'ac-diag');
+  return svg(120, 140, s, 'ac-diag');
 }
+/** Som do acorde: 'acoustic' violão, 'clean' guitarra, 'baixo' (a nota mais grave do acorde, uma oitava abaixo, depois a quinta). */
 function tocaViolao(frets, kind = 'acoustic') {
-  const c = audio(); const t = c.currentTime + 0.05;
+  const c = audio(); const t = c.currentTime + 0.05; const notas = frets.map((f, i) => (f >= 0 ? ABERTAS[i] + f : null)).filter((n) => n != null);
+  if (kind === 'baixo') { const r = Math.min(...notas) - 12; bass(t, r, 0.9, 1.3); bass(t + 0.5, r + 7, 0.7, 1.1); bass(t + 0.95, r, 0.9, 1.2); return; }
   frets.forEach((f, i) => { if (f >= 0) pluck(ABERTAS[i] + f, 0.85, t + i * 0.05, kind); });
+}
+/** Piano simples: harmônicos que caem rápido (martelo), sem baixar nada. */
+function piano(t, notas, len = 1.6) {
+  const c = audio();
+  notas.forEach((m, k) => {
+    const f = 440 * 2 ** ((m - 69) / 12); const g = c.createGain(); const t0 = t + k * 0.012;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(0.3 / Math.sqrt(notas.length), t0 + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(5200, t0); lp.frequency.exponentialRampToValueAtTime(900, t0 + 0.9); g.connect(lp).connect(out());
+    [[1, 1], [2, 0.5], [3, 0.28], [4, 0.14], [5, 0.07]].forEach(([mul, a]) => { const o = c.createOscillator(); const og = c.createGain(); o.type = 'sine'; o.frequency.value = f * mul * (1 + mul * 0.0004); og.gain.value = a; o.connect(og).connect(g); o.start(t0); o.stop(t0 + len + 0.05); });
+  });
 }
 
 /* ---------------- acordes de teclado ---------------- */
-const TIPOS = [['maior', [0, 4, 7], ''], ['menor', [0, 3, 7], 'm'], ['com sétima', [0, 4, 7, 10], '7'], ['menor com sétima', [0, 3, 7, 10], 'm7'], ['maior com sétima maior', [0, 4, 7, 11], 'maj7']];
+const TIPOS = [['maior', [0, 4, 7], ''], ['menor', [0, 3, 7], 'm']];
 const BRANCAS = [0, 2, 4, 5, 7, 9, 11];
 function tecladoSVG(notas) {
   // 2 oitavas: de Dó4 (60) a Si5 (83)
@@ -53,21 +65,21 @@ export function acordesView(host, parts = []) {
       h('a', { class: `es-area${aba === 'teclado' ? ' on' : ''}`, href: '#/estudos/acordes/teclado', style: '--c:#17365B;--f:#fff' }, h('span', { class: 'es-ai' }, '🎹'), h('b', {}, 'teclado'))),
     aba === 'violao' ? violaoLista() : tecladoLista()));
 }
+const ouvirBtn = (t, fn, aria) => h('button', { type: 'button', class: 'ac-ouvir', 'aria-label': aria, onclick: fn }, t);
 function violaoLista() {
-  let kind = 'acoustic';
   const lista = h('div', { class: 'ac-grid' });
-  const draw = () => lista.replaceChildren(...VIOLAO.map(([cifra, nome, frets]) => h('button', { type: 'button', class: 'ac-card', onclick: () => tocaViolao(frets, kind), 'aria-label': `ouvir o acorde ${nome}` },
-    h('b', { class: 'ac-cifra' }, cifra), diagrama(frets), h('small', {}, nome), h('span', { class: 'ac-ouvir' }, '🔊 ouvir'))));
-  draw();
-  return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, '× = não toca a corda · ○ = corda solta · bolinha azul = onde pôr o dedo. toque no cartão pra ouvir.'),
-    h('div', { class: 'jg jg-seg', role: 'radiogroup', 'aria-label': 'som' }, ...[['acoustic', '🎸 violão'], ['clean', '⚡ guitarra']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(kind === v), onclick: (e) => { kind = v; e.currentTarget.parentElement.querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b === e.currentTarget))); } }, t))), lista);
+  lista.replaceChildren(...VIOLAO.map(([cifra, nome, frets]) => h('div', { class: 'ac-card' },
+    h('b', { class: 'ac-cifra' }, cifra), diagrama(frets), h('small', {}, nome),
+    h('div', { class: 'ac-sons' }, ouvirBtn('🪕 violão', () => tocaViolao(frets, 'acoustic'), `ouvir ${nome} no violão`), ouvirBtn('⚡ guitarra', () => tocaViolao(frets, 'clean'), `ouvir ${nome} na guitarra`), ouvirBtn('🎵 baixo', () => tocaViolao(frets, 'baixo'), `ouvir ${nome} no baixo`)))));
+  return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, '× = não toca a corda · ○ = corda solta · bolinha azul = onde pôr o dedo. escolha em qual instrumento ouvir.'), lista);
 }
 function tecladoLista() {
-  let tipo = 0; const grade = h('div', { class: 'ac-grid' });
-  const draw = () => grade.replaceChildren(...NOMES.map((n, r) => { const notas = acorde(r, tipo); return h('button', { type: 'button', class: 'ac-card wide', onclick: () => { const c = audio(); epiano(c.currentTime + 0.05, notas, 1.4, 1); }, 'aria-label': `ouvir ${n} ${TIPOS[tipo][0]}` },
-    h('b', { class: 'ac-cifra' }, `${CIFRA[r]}${TIPOS[tipo][2]}`), tecladoSVG(notas), h('small', {}, `${n} ${TIPOS[tipo][0]}`), h('span', { class: 'ac-ouvir' }, '🔊 ouvir')); }));
-  draw();
-  return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'as teclas douradas e vermelhas formam o acorde. toque no cartão pra ouvir.'),
+  const grade = h('div', { class: 'ac-grid' });
+  const card = (r, tipo) => { const notas = acorde(r, tipo); const nome = `${NOMES[r]} ${TIPOS[tipo][0]}`;
+    return h('div', { class: 'ac-card wide' }, h('b', { class: 'ac-cifra' }, `${CIFRA[r]}${TIPOS[tipo][2]}`), tecladoSVG(notas), h('small', {}, nome),
+      h('div', { class: 'ac-sons' }, ouvirBtn('🎹 piano', () => piano(audio().currentTime + 0.05, notas), `ouvir ${nome} no piano`), ouvirBtn('⚡ elétrico', () => epiano(audio().currentTime + 0.05, notas, 1.4, 1), `ouvir ${nome} no piano elétrico`))); };
+  let tipo = 0; const draw = () => grade.replaceChildren(...NOMES.map((_, r) => card(r, tipo))); draw();
+  return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'as teclas douradas e vermelhas formam o acorde. escolha piano ou elétrico pra ouvir.'),
     h('div', { class: 'jg jg-seg', role: 'radiogroup', 'aria-label': 'tipo de acorde' }, ...TIPOS.map(([nome], i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(tipo === i), onclick: (e) => { tipo = i; e.currentTarget.parentElement.querySelectorAll('button').forEach((b, k) => b.setAttribute('aria-checked', String(k === i))); draw(); } }, nome))), grade);
 }
 

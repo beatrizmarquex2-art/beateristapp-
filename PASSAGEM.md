@@ -447,3 +447,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Estudos > Ritmos: só Rock 1/2/3, Pop, Reggaeton, Samba simplificado, Baião; setinhas ‹ › (sem lista), grade colorida + partitura SVG colorida (`partitura()` em estudos-som.js) que acende junto com o som
 - assets/memoria/figuras/*.webp: símbolo central ampliado (originais em git antigo / v385)
 - dúvida pendente com a Bea: Rock 1 = bumbo 1 e 3; Rock 2 = bumbo 1, 2 e 3; Rock 3 = bumbo 1, 3 e "e" do 3
+
+## v387 — acordes só maior/menor + estrelas anti-farm
+- acordes: violão 7 maiores + 7 menores, cada cartão com ouvir no violão / guitarra / baixo; teclado maior e menor com piano e elétrico (função `piano()` em estudos-som.js)
+- `vitoria(jogo, n, chave)` / `ganhou(jogo, n, chave)`: a `chave` (jogo+música/nível/tema) paga até 3 ★ NA VIDA e só a diferença (`pagarChave` em mesa-logic.js, livro-caixa em `mesa.pago`). Chaves usadas: duelo toca (exercício+bpm), duelo beat hero (música+nível), duelo quebra (imagem+tamanho), memória (tema+pares), teoria (sessão), ritmo secreto (padrão). Beat Hero solo e fases já eram "melhor por música/nível". Jogos sem conteúdo fixo (Uno, bingo, stop, cara, velha) seguem só com o limite de 30 ★/dia

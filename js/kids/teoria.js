@@ -90,10 +90,9 @@ export const melhor = (id) => feitas()[id] || 0;
 /** Estrelas de um resultado do mini quiz. */
 export const estrelasQuiz = (certas) => (certas >= 3 ? 2 : certas === 2 ? 1 : 0);
 
-async function darEstrelas(id, n) {
-  if (!n) return 0; const dia = new Date().toDateString(); const k = `beaterista-teoria-dia-${id}`;
-  try { if (localStorage.getItem(k) === dia) return 0; localStorage.setItem(k, dia); } catch { /* ok */ }
-  try { const E = await import('../jogos/estrelas-jogo.js'); return await E.ganhou('estudos', n); } catch { return 0; }
+async function darEstrelas(id, n) { // cada sessão paga até 2 ★ na vida (só a diferença se melhorar), sem repetir
+  if (!n) return 0;
+  try { const E = await import('../jogos/estrelas-jogo.js'); return await E.ganhou('estudos', n, `teoria|${id}`); } catch { return 0; }
 }
 
 /** `#/estudos/teoria` (lista) e `#/estudos/basica/<id>` (a sessão). `aoFim()` avisa a meta do dia. */
