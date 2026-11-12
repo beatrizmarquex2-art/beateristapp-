@@ -390,6 +390,9 @@ function rkLeadX(kind,m,t,d,v){const c=AE.get();d=Math.max(.1,d||.3);v=v||.8;con
   if(kind==='vibra'){const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.3,t+.004);g.gain.setTargetAtTime(0,t+.01,Math.min(.9,.3+d*.5));const tr=c.createOscillator(),tg=c.createGain();tr.frequency.value=5;tg.gain.value=.18;tr.connect(tg);tg.connect(g.gain);[[1,1],[3.99,.18],[10,.04]].forEach(([r,a])=>{const o=osc('sine',f*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+2)});tr.start(t);tr.stop(t+2);out(g,.3);return}
   if(kind==='marimba'){const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.36,t+.003);g.gain.setTargetAtTime(0,t+.005,.12);[[1,1],[4,.28],[9.2,.06]].forEach(([r,a])=>{const o=osc('sine',f*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+.8)});out(g,.2);return}
   if(kind==='violao'){AE.pluck(m,t,v*.9);return}
+  if(kind==='steeldrum'){const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.3,t+.003);g.gain.setTargetAtTime(0,t+.01,.22);[[1,1],[2.01,.5],[3.02,.2],[4.1,.08]].forEach(([r,a])=>{const o=osc('sine',f*r),og=c.createGain();og.gain.value=a;o.connect(og);og.connect(g);o.start(t);o.stop(t+1.2)});out(g,.25);return}
+  if(kind==='acordeon'){const g=c.createGain(),bp=AE.filt('bandpass',1400,.8),lp=AE.filt('lowpass',3500,.7);env(g,v*.24,.03,.1,.9,.06);const o=osc('sawtooth',f,-8),o2=osc('square',f,8),o3=osc('sawtooth',f*2,0);const og=c.createGain();og.gain.value=.3;o3.connect(og);o.connect(bp);o2.connect(bp);og.connect(bp);bp.connect(lp);lp.connect(g);const tr=c.createOscillator(),tg=c.createGain();tr.frequency.value=6;tg.gain.value=.12;tr.connect(tg);tg.connect(g.gain);tr.start(t);tr.stop(t+d+.6);out(g,.2);run([o,o2,o3],d+.5);return}
+  if(kind==='pluck'){const g=c.createGain(),lp=AE.filt('lowpass',500,2);lp.frequency.setValueAtTime(4200,t);lp.frequency.exponentialRampToValueAtTime(500,t+.28);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*.3,t+.004);g.gain.setTargetAtTime(0,t+.01,.16);const o=osc('sawtooth',f),o2=osc('square',f,7);o.connect(lp);o2.connect(lp);lp.connect(g);out(g,.3);run([o,o2],1.4);return}
   if(kind==='guitblues'){const g=c.createGain(),ws=c.createWaveShaper(),lp=AE.filt('lowpass',3000,.7),pk=AE.filt('peaking',1500,1.1);pk.gain.value=4;const cu=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/512-1;cu[i]=Math.tanh(x*2.4)}ws.curve=cu;env(g,v*.22,.006,.35,.55,.1);const o=osc('sawtooth',f),o2=osc('triangle',f*2);const og=c.createGain();og.gain.value=.2;o.detune.setValueAtTime(-90,t);o.detune.linearRampToValueAtTime(0,t+.07);o2.connect(og);const pre=c.createGain();pre.gain.value=.6;o.connect(pre);og.connect(pre);pre.connect(ws);ws.connect(pk);pk.connect(lp);lp.connect(g);vibr(o,.22,15,5.4);out(g,.25);run([o,o2],d+.6);return}
   if(kind==='guitarra') return rkLead(m,t,d,v);
   if(kind==='piano'){AE.noteOn(m,.75,t);AE.noteOff(m,t+d);return}
@@ -423,6 +426,18 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
   const noise=(type,fq,q,dur,pk,dest)=>{const n=AE.noiseSrc(t,dur),f=AE.filt(type,fq,q),g=c.createGain();AE.env(g,t,pk,dur,.001);n.connect(f);f.connect(g);g.connect(dest||out)};
   let dst=out;if(kit==='lofi'){const lp=AE.filt('lowpass',3200,.7);lp.connect(out);dst=lp}
   const T=(f0,f1,dur,pk)=>tone('sine',f0,f1,dur,pk,dst);
+  if(kit==='conga'){switch(name){
+    case 'kick':T(95,50,.4,1.15);break;
+    case 'snare':tone('sine',330,290,.12,.8,dst);noise('bandpass',2500,1,.04,.6);break;
+    case 'hhc':noise('highpass',7000,.5,.06,.38);break;case 'hho':noise('highpass',6500,.5,.16,.34);break;
+    case 'tom1':T(200,170,.25,1);break;case 'tom2':T(260,225,.2,1);break;case 'floor':T(130,105,.3,1);break;
+    default:AE.drum(name,t,vel)}return}
+  if(kit==='claps'){switch(name){
+    case 'kick':T(120,38,.85,1.5);break;
+    case 'snare':rkClap(t,vel*.95);noise('bandpass',2600,1.4,.04,.35);break;
+    case 'hhc':noise('highpass',9500,.6,.03,.5);break;case 'hho':noise('highpass',8500,.6,.22,.42);break;
+    case 'tom1':T(240,140,.4,1);break;case 'tom2':T(180,100,.45,1);break;case 'floor':T(125,70,.6,1.1);break;
+    default:AE.drum(name,t,vel)}return}
   if(kit==='brush'){switch(name){
     case 'kick':T(100,48,.35,.9);break;
     case 'snare':{const n=AE.noiseSrc(t,.4),bp=AE.filt('bandpass',3800,.8),g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.35,t+.06);g.gain.exponentialRampToValueAtTime(.0001,t+.3);n.connect(bp);bp.connect(g);g.connect(dst);break}
