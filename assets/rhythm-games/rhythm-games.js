@@ -312,6 +312,51 @@ const RK_STY={
 (function(){const DROP={rock:[1,4,7,8],pop:[0,1,2,6,8],reggaeton:[1,4,7,8],blues:[0,2,4,7,8],lofi:[1,2,3,7,9]};Object.keys(RK_STY).forEach(k=>{const Y=RK_STY[k];Y.S.forEach((d,i)=>{d.lead=i%2?'8bit':'flauta';d.bpm=Y.tiers[i]});const dr=DROP[k]||[];Y.S=Y.S.filter((d,i)=>dr.indexOf(i)<0);Y.tiers=Y.S.map(d=>d.bpm)})})();
 function rkThird(m,root){const T={0:4,2:3,4:3,5:4,7:4,9:3,11:3};return T[(((m-root)%12)+12)%12]||3}
 function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
+/* ===== 3 músicas COMPLEXAS por estilo (semicolcheias, caixa fantasma, bumbo sincopado, baixo e guitarra em 16 passos) =====
+   Na pista do jogo a mesma tecla nunca toca duas semicolcheias seguidas e no difícil no máximo 2 peças juntas; o que não cabe na pista continua soando no fundo. */
+(function(){const P=(v,c,b)=>({v,c,b});const add=(st,gs,songs)=>{const Y=RK_STY[st];Y.g.push(...gs);songs.forEach((d,k)=>{d.g=Y.g.length-gs.length+(d.g||0);d.cx=1;d.lead=d.lead||(k%2?'8bit':'flauta');Y.S.push(d);Y.tiers.push(d.bpm)})};
+ const IN='x.......x.......|........|x.x.x.x.x.x.x.x.';
+ add('rock',[
+  {ci:'gtr',drum:{intro:[IN],verso:['x.x...x.x.x...x.|....s..g...gs..g|xxxxxxxxxxxxxxxx','x.x..xx.x.x...x.|....s..g...gs..g|xxxxxxxxxxxxxxxo'],refrao:['x.xx....x.xx..x.|....s..g....s..g|r.r.r.r.r.r.r.r.','x.xx..x.x.xx..x.|....s..g....s..g|r.r.r.r.r.r.r.r.'],ponte:['x.......x.......|....s.......s.g.|xxxxxxxxxxxxxxxx']},
+   bass:{intro:'0.0.0.0.0.0.0.0.',verso:'0.00.0.00.00.0.n.',refrao:'0.0.c.0.0.0.c.0c',ponte:'0...0...0...0...'},ch:{intro:'M.mmM.mmM.mmM.mm',verso:'M.mmM.mmM.mmM.mm',refrao:'o...o.o.o...o.o.',ponte:'o.......o.......'}},
+  {ci:'gtr',drum:{intro:[IN],verso:['x.x.....x.x.x.x.|....s.g.....s.g.|x.x.x.x.x.x.x.xo','x.x.....x.x.x.xx|....s.g.....s.g.|xxxxxxxxxxxxxxxx'],refrao:['x.x.x...x.x.x...|....s.gg....s.g.|r.r.r.r.r.r.r.r.','x.xxx.x.x.xxx.x.|....s.g.....s.g.|r.r.r.r.r.r.r.r.'],ponte:['x...............|........s.......|x...x...x...x...']},
+   bass:{intro:'0.0.0.0.0.0.0.0.',verso:'0.0.0.0.0.0.0.0.',refrao:'0.0.0.0.0.0.0.n.',ponte:'0...............'},ch:{intro:'M.m.M.m.M.m.M.m.',verso:'M.mmM.mmM.mmM.mm',refrao:'o.o.o.o.o.o.o.o.',ponte:'m.m.m.m.m.m.m.m.'}}],
+  [{n:'Solo no Escuro',key:4,bpm:118,g:0,mv:0,mc:3,sh:0,p:P([0,6,5,6],[0,5,2,6],[5,5,6,6]),sc:'min',lead:'guitarra'},
+   {n:'Tempestade Elétrica',key:9,bpm:132,g:1,mv:3,mc:1,sh:1,p:P([0,0,5,6],[5,6,0,0],[3,3,6,6]),sc:'min',lead:'8bit'},
+   {n:'Fúria do Palco',key:2,bpm:146,g:1,mv:6,mc:4,sh:0,p:P([0,5,6,0],[0,3,5,6],[3,3,4,4]),sc:'min',lead:'flauta'}]);
+ add('pop',[
+  {ci:'piano+violao',drum:{intro:[IN],verso:['x.....x.x.x.....|....c..g..g.c...|xxxxxxxxxxxxxxxx','x.....x.x.x...x.|....c..g..g.c..g|xxxxxxxxxxxxxxxo'],refrao:['x.x...x.x.x...x.|....c..g....c..g|x.o.x.o.x.o.x.o.','x.xx..x.x.xx..x.|....c..g....c..g|x.o.x.o.x.o.x.o.'],ponte:['x...............|........c.......|x.x.x.x.x.x.x.x.']},
+   bass:{intro:'0...............',verso:'0..0.0..0.0.0..0',refrao:'0.0..0.00.0.0.0.',ponte:'0.......0.......'},ch:{intro:'o.......o.......',verso:'o...x.x.o...x.x.',refrao:'o.x.x.x.o.x.x.x.',ponte:'o...............'}},
+  {ci:'piano+violao',drum:{intro:[IN],verso:['x.x...x.x.......|....c.g.....c.g.|x.xxx.xxx.xxx.xx','x.x...x.x.....x.|....c.g.....c.gg|x.xxx.xxx.xxx.xo'],refrao:['x.xx..x.x.xx..x.|....c.g.....c.g.|xxxxxxxxxxxxxxxx','x.xx..x.x.x.x.x.|....c.g.....c.g.|xxxxxxxxxxxxxxxo'],ponte:['x.......x.......|........c.......|x...x...x...x...']},
+   bass:{intro:'0...............',verso:'0.0..0..0.0..0..',refrao:'0.00.0.00.00.0.0',ponte:'0.......0.......'},ch:{intro:'o.......o.......',verso:'o.o...x.o.o...x.',refrao:'x.x.x.x.x.x.x.x.',ponte:'o...............'}}],
+  [{n:'Pista Cheia',key:0,bpm:108,g:0,mv:5,mc:5,sh:1,p:P([0,4,5,3],[3,0,4,5],[5,3,5,4]),sc:'maj'},
+   {n:'Batida Digital',key:7,bpm:118,g:1,mv:6,mc:6,sh:0,p:P([5,3,0,4],[0,4,5,3],[3,4,3,4]),sc:'maj'},
+   {n:'Glitter Remix',key:2,bpm:126,g:0,mv:2,mc:3,sh:-1,p:P([0,5,3,4],[3,4,0,5],[1,4,0,0]),sc:'maj'}]);
+ add('reggaeton',[
+  {ci:'epiano',drum:{intro:['x...x...x...x...|...m..m.|x.x.x.x.x.x.x.x.'],verso:['x...x...x...x...|...m..m.g..m.gm.|xxxxxxxxxxxxxxxx','x...x...x...x...|...m..m..g.m.gm.|xxxxxxxxxxxxxxxo'],refrao:['x...x...x...x...|...c..c..g.c..cg|xxxxxxxxxxxxxxxx','x...x...x...x...|...c..c..g.c.cc.|xxxxxxxxxxxxxxxo'],ponte:['x.......x.......|...m..m....m..m.|x.x.x.x.x.x.x.x.']},
+   bass:{intro:'0...............',verso:'0..0..0.0.0.0..0',refrao:'0..0.00.0..0.0.7',ponte:'0.......0.......'},ch:{intro:'................',verso:'...x..x..x.x..x.',refrao:'x..x..x.x..x.xx.',ponte:'o...............'}},
+  {ci:'epiano',drum:{intro:['x...x...x...x...|...m..m.|x.x.x.x.x.x.x.x.'],verso:['x...x...x...x..x|...m..m.g..m.g.|x.xxx.xxx.xxx.xx','x...x...x...x...|...m..m....m..m.|xxxxxxxxxxxxxxxx'],refrao:['x..xx..xx..xx..x|...c..c....c..c.|xxxxxxxxxxxxxxxx','x...x...x...x..x|...c..c..g.c..c.|xxxxxxxxxxxxxxxo'],ponte:['x.......x.......|...m..m....m..m.|x...x...x...x...']},
+   bass:{intro:'0...............',verso:'0.0..0..0.0..0..',refrao:'0..00.0.0..00.0.',ponte:'0.......0.......'},ch:{intro:'................',verso:'o..x..x.o..x..x.',refrao:'x.xx..x.x.xx..x.',ponte:'o...............'}}],
+  [{n:'Dembow Pesado',key:9,bpm:90,g:0,mv:0,mc:5,sh:0,p:P([0,6,5,6],[0,6,5,4],[5,5,6,6]),sc:'min'},
+   {n:'Perreo Complejo',key:4,bpm:96,g:1,mv:5,mc:2,sh:1,p:P([0,5,2,6],[0,5,2,6],[3,3,6,6]),sc:'min'},
+   {n:'Fuego Remix',key:0,bpm:102,g:0,mv:6,mc:6,sh:0,p:P([0,3,5,4],[0,6,5,4],[5,5,4,4]),sc:'min'}]);
+ add('blues',[
+  {ci:'organ',drum:{intro:[IN],verso:['x.......x.x.....|....s..g...gs..g|x.x.x.x.x.x.x.x.'],refrao:['x.x.....x.x...x.|....s..g...gs..g|x.x.x.x.x.x.x.x.'],ponte:['x.......x.......|....s.......s.g.|x.x.x.x.x.x.x.x.']},
+   bass:{intro:'0...4...7...9...',verso:'0.0.4.4.7.7.9.9.',refrao:'0.0.4.4.7.7.a.a.',ponte:'0.......7.......'},ch:{intro:'o...............',verso:'o...x...o...x...',refrao:'o.x.x.x.o.x.x.x.',ponte:'o...............'}},
+  {ci:'organ',drum:{intro:[IN],verso:['x.......x.......|....s.g.....s.g.|x.x.x.x.x.x.x.x.'],refrao:['x.x...x.x.x.....|....s.g.....s.g.|x.x.x.x.x.x.x.x.'],ponte:['x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.']},
+   bass:{intro:'0...4...7...9...',verso:'0..0.0..4..4.4..',refrao:'0.0.0.4.4.7.7.9.',ponte:'0.......7.......'},ch:{intro:'o...............',verso:'o.....x.o.....x.',refrao:'x.x.x.x.x.x.x.x.',ponte:'o...............'}}],
+  [{n:'Shuffle Complicado',key:9,bpm:84,g:0,mv:5,mc:5,p:P([0,0,0,0,3,3,0,0,4,3,0,4],[0,3,0,0,3,3,0,0,4,3,0,4],[4,3,0,4]),sc:'mix'},
+   {n:'Blues Veloz',key:4,bpm:104,g:1,mv:6,mc:6,p:P([0,0,0,0,3,3,0,0,4,3,0,4],[0,3,0,0,3,3,0,0,4,3,0,4],[4,3,0,4]),sc:'mix'},
+   {n:'Boogie Avançado',key:7,bpm:96,g:0,mv:2,mc:3,p:P([0,0,0,0,3,3,0,0,4,3,0,4],[0,3,0,0,3,3,0,0,4,3,0,4],[4,3,0,4]),sc:'mix'}]);
+ add('lofi',[
+  {ci:'pad',drum:{intro:[IN],verso:['x.......x.x...x.|....s..g...gs..g|xxxxxxxxxxxxxxxx','x.....x.x.x...x.|....s..g...gs.g.|x.x.x.x.x.x.x.xo'],refrao:['x.....x.x.x.....|....s..g...gs..g|xxxxxxxxxxxxxxxx','x.x...x.x.x...x.|....s..g...gs..g|xxxxxxxxxxxxxxxo'],ponte:['x...............|........s.......|x...x...x...x...']},
+   bass:{intro:'0...............',verso:'0.....0..0..7...',refrao:'0..0..0...0.7.0.',ponte:'0...............'},ch:{intro:'o.......o.......',verso:'o.....x.o...x...',refrao:'o.x...x.o.x.x...',ponte:'o...............'}},
+  {ci:'pad',drum:{intro:[IN],verso:['x.....x.x.x.....|....s.g.....s.g.|x.xx.x.x.xx.x.x.','x.....x.x.x...x.|....s.g.....s.gg|x.xx.x.x.xx.x.xo'],refrao:['x..x..x.x..x....|....s.g.....s.g.|xxxxxxxxxxxxxxxx','x..x..x.x..x..x.|....s.g.....s.g.|xxxxxxxxxxxxxxxo'],ponte:['x...............|........s.......|x...x...x...x...']},
+   bass:{intro:'0...............',verso:'0...0..0....7...',refrao:'0.0...0..0..0.7.',ponte:'0...............'},ch:{intro:'o.......o.......',verso:'a...a.a.a...a.a.',refrao:'a.a.a.a.a.a.a.a.',ponte:'o...............'}}],
+  [{n:'Batida Quebrada',key:2,bpm:84,g:0,mv:5,mc:6,sh:0,p:P([1,4,0,5],[0,5,1,4],[3,3,4,4]),sc:'maj'},
+   {n:'Jazz de Chuva',key:9,bpm:90,g:1,mv:6,mc:5,sh:1,p:P([0,5,3,4],[0,3,5,4],[1,1,4,4]),sc:'min'},
+   {n:'Loop Noturno',key:7,bpm:96,g:0,mv:3,mc:2,sh:-1,p:P([5,1,4,0],[0,5,1,4],[3,3,4,4]),sc:'maj'}]);
+})();
 /* timbre escolhido pela Bea: blues = gaita + órgão + bateria de vassourinha */
 (function(){const Y=RK_STY.blues;Y.kit='brush';Y.g.forEach(g=>{g.ci='organ'});Y.S.forEach(d=>{d.lead='gaita'})})();
 /* rock: 2 com flauta, 2 com 8-bit e 2 com guitarra elétrica solo */
@@ -350,7 +395,7 @@ function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.leng
       else{const pats=G.drum[dk]||G.drum.verso;const P=pats[b%pats.length].split('|');const Pk=P[0],Ps=P[1]||'',Ph=P[2]||'';const filler=(b===n-1)?'big':(b%4===3&&kind!=='intro')?'small':null;
         for(let s=0;s<16;s++){const kc=Pk[s],sc2=Ps[s],hc=Ph[s];const inFill=filler&&s>=(filler==='big'?8:12);
           if(kc==='x'&&!(inFill&&filler==='big')) D1(s,0,'kick',s%8===0?1:.85);
-          if(!inFill){if(sc2==='s') D1(s,1,'snare',1);else if(sc2==='c') D1(s,1,'clap',1);else if(sc2==='m') D1(s,1,'rim',.9)}
+          if(!inFill){if(sc2==='s') D1(s,1,'snare',1);else if(sc2==='g') D1(s,1,'snare',.38);else if(sc2==='c') D1(s,1,'clap',1);else if(sc2==='m') D1(s,1,'rim',.9)}
           if(inFill) continue;if(sectionStart&&si>0&&s===0) continue;
           if(hc==='x') D1(s,2,'hhc',s%4===0?.85:.55);else if(hc==='o') D1(s,2,'hho',.7);else if(hc==='r') D1(s,2,s%4===0?'cow':'semi',s%4===0?.8:.6)}
         if(sectionStart&&si>0) D1(0,2,'crash',1);
@@ -609,7 +654,7 @@ const RZ_NEON=['#ff6ad5','#ffd84a','#5ee0ff','#7fe7a6','#ff9d4a'];
 /* pistas do jogo unificado: 3, 4 ou 5 teclas. No modo ritmo cada tecla é uma peça da bateria; na melodia são só cores. */
 function rzBeatLanes(){const K=RZ.keys,kit=RZ_KITS[K];return kit.map((x,i)=>RZ.modeEff==='ritmo'?[x[0],x[1],x[2]]:[RZ_NEON[i],x[1],''])}
 /* "só usamos os polegares": nunca mais que `max` notas ao mesmo tempo; as que sobram viram som de fundo */
-function rzThumbs(notes,max,bg){notes.sort((a,b)=>a.t-b.t);const pr={kick:0,snare:1,crash:2,ride:3,hho:3,tom1:3,tom2:3,floor:3,hhc:4};const out=[];let i=0;
+function rzThumbs(notes,max,bg){notes.sort((a,b)=>a.t-b.t);const pr={kick:0,snare:1,crash:max===1?-1:2,ride:3,hho:3,tom1:3,tom2:3,floor:3,hhc:4};const out=[];let i=0;
   const drop=n=>{if(n.snd) bg.push({t:n.t,k:'drum',snd:n.snd,v:(n.v||.8)*.8})};
   while(i<notes.length){let j=i+1;while(j<notes.length&&notes[j].t-notes[i].t<.045) j++;const seen=new Set();
     const u=notes.slice(i,j).filter(n=>{if(seen.has(n.lane)){drop(n);return false}seen.add(n.lane);return true});
@@ -637,18 +682,22 @@ function rzNoFast(notes,bg,st,nl,fam){const gap=st*1.95;const last={};const out=
 /* começo: se a primeira nota demora (compassos vazios no começo do MIDI), pula os compassos vazios e já começa tocando. A contagem fica. */
 /* Beat Hero: nada de notas coladas. Duas notas só ficam perto uma da outra (a distância de uma semicolcheia) numa VIRADA: caixa e tons alternando de tecla, no máximo 4 seguidas.
    Fora disso cada nota precisa de quase uma colcheia de folga. A nota cortada continua soando de fundo (só não vira tecla). */
-function rzSpread(notes,bg,st){const gap=st*1.95,FILL={snare:1,tom1:1,tom2:1,floor:1};notes.sort((a,b)=>a.t-b.t);const out=[];let lt=-9,lf=false,ll=-1,run=0;
+function rzSpread(notes,bg,st,diff){const gap=st*1.95,FILL={snare:1,tom1:1,tom2:1,floor:1};const multi=diff!=='facil',hard=diff==='dificil';notes.sort((a,b)=>a.t-b.t);const out=[];let lt=-9,lf=false,ll=-1,run=0,gt=-9,gn=0;
   const sound=n=>{if(n.snd) bg.push({t:n.t,k:'drum',snd:n.snd,v:(n.v||.8)*.8});else if(n.m!=null) bg.push({t:n.t,k:'lead',m:n.m,d:n.d||.2})};
   notes.forEach(n=>{if(n.cpu||n.lane==null){out.push(n);return}const d=n.t-lt,fill=!!(n.snd&&FILL[n.snd]);
+    if(multi&&n.t-gt<.045&&gn<2){out.push(n);gn++;return}
+    if(n.snd==='crash'&&d<gap-1e-4&&d>=.045&&out.length&&!out[out.length-1].cpu){sound(out.pop());out.push(n);lt=n.t;lf=false;ll=n.lane;gt=n.t;gn=1;run=0;return}
     if(d>=gap-1e-4){out.push(n);run=0}
     else if(fill&&lf&&n.lane!==ll&&d>=st*.95&&run<3){out.push(n);run++}
+    else if(hard&&n.lane!==ll&&d>=st*.95&&run<2){out.push(n);run++}
     else{sound(n);return}
-    lt=n.t;lf=fill;ll=n.lane});return out}
+    lt=n.t;lf=fill;ll=n.lane;gt=n.t;gn=1});return out}
 function rzLeadTrim(A,notes,bg,song){if(song.trim||!notes.length) return{notes,bg};const bar=16*A.st,cl=A.lead*bar;
   const first=Math.min.apply(null,notes.map(n=>n.t));const bars=Math.floor((first-cl+1e-6)/bar);if(bars<1) return{notes,bg};
   const sh=bars*bar,a=cl+sh;
   return{notes:notes.map(n=>Object.assign({},n,{t:n.t-sh})),bg:bg.filter(e=>e.k==='click'||e.t>=a-.001).map(e=>e.k==='click'?e:Object.assign({},e,{t:e.t-sh})),shifted:sh}}
-function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil';const A=S.arr?Object.assign({},S.arr,{mel:S.arr.mel.map(n=>Object.assign({},n)),drums:S.arr.drums.map(d=>Object.assign({},d)),ev:S.arr.ev.slice(),chords:(S.arr.chords||[]).slice()}):rsArrange(S,RZ.game!=='hero'&&RZ.game!=='beat'&&RZ.game!=='tiles',RZ.game==='beat'||RZ.game==='tiles'?125:0);RZ.A=A;const st=A.st;let notes=[],bg=A.ev.slice();
+function rzSyncKeys(){RZ.keys=({facil:3,medio:4,dificil:5})[RZ.diff]||4}
+function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil';const A=S.arr?Object.assign({},S.arr,{mel:S.arr.mel.map(n=>Object.assign({},n)),drums:S.arr.drums.map(d=>Object.assign({},d)),ev:S.arr.ev.slice(),chords:(S.arr.chords||[]).slice()}):rsArrange(S,RZ.game!=='hero'&&RZ.game!=='beat'&&RZ.game!=='tiles',RZ.game==='beat'||RZ.game==='tiles'?125:0);RZ.A=A;const st=A.st;let notes=[],bg=A.ev.slice();
   const melF=A.mel.filter(n=>dif||n.step%(easy?4:2)===0).map(n=>Object.assign({},n));
   if(RZ.game==='hero'){
     if(RZ.inst==='guitarra'){notes=melF;rzPhraseLanes(notes,5,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.9});
@@ -672,7 +721,7 @@ function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil
       A.mel.forEach(n=>bg.push({t:n.t,k:'lead',m:n.m,d:n.d}))}
     else{notes=melF;rzPhraseLanes(notes,K,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.85});
       A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
-    notes=rzThumbs(notes,1,bg)}
+    notes=rzThumbs(notes,RZ.diff==='facil'?1:2,bg)}
   else if(RZ.game==='setas'){const bar=16*st;const groups={};melF.forEach(n=>{const g=Math.floor((n.bar-2)/4);if(g<0) return;(groups[g]=groups[g]||[]).push(n)});
     Object.keys(groups).map(Number).filter(g=>g%2===0).forEach(g=>{const G=groups[g];const f=rzRank(G.map(n=>n.idx),4);G.forEach(n=>{const l=f(n.idx);const sus=n.ds>=6?n.d*.8:0;notes.push({t:n.t,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus,cpu:true});notes.push({t:n.t+4*bar,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus})})});
     notes.filter(n=>n.cpu).forEach(n=>bg.push({t:n.t,k:'voice',m:n.m,d:Math.max(.12,n.sus||n.d)}));A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}));RZ.health=.5}
@@ -681,7 +730,7 @@ function rzBuild(){const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.diff==='facil
     by.forEach(arr=>arr.forEach((n,i)=>{const nx=arr[i+1];const gap=nx?nx.t-n.t:9;const maxF=Math.max(.05,gap*spd*.88);n.hf=n.sus?Math.min(maxF,n.sus*spd+.05):Math.min(.17,maxF)}));
     A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
   {const nl=RZ.game==='hero'?(RZ.inst==='guitarra'?5:RZ.kn[RZ.inst]):RZ.game==='beat'?RZ.keys:4;const kk=RZ.game==='beat'&&RZ.modeEff==='ritmo'?RZ.keys:RZ.game==='hero'&&RZ.inst==='bateria'?RZ.kn.bateria:0;let fam=null;if(kk){const LM=RZ_KIT_LANE[kk];fam=[LM.snare,LM.tom1].filter((x,i,a)=>a.indexOf(x)===i);if(fam.length<2) fam=null}
-   notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st);
+   notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st,RZ.diff);
    const lt=rzLeadTrim(A,notes,bg,S);if(lt.shifted){notes=lt.notes;bg=lt.bg;A.dur=Math.max(A.lead*16*st+1.5,A.dur-lt.shifted)}}
   if(RZ.game==='beat'||RZ.game==='tiles'){const c2=rzClip(A,notes,bg,S);notes=c2.notes;bg=c2.bg} // Piano Hero também respeita 1 min / 2 min
   if(RZ.game==='beat'||RZ.game==='tiles') rzStars(notes,A,S);
@@ -876,14 +925,13 @@ function rzLockPoll(){clearInterval(RZ.lockT);RZ.lockT=0;if(!(OPTS.gate&&OPTS.ga
 function rzCodeSubmit(){var inp=$('#rz-code'),msg=$('#rz-code-msg');var v=inp?inp.value.toUpperCase().replace(/[^A-Z0-9]/g,''):'';if(v.length<4){if(msg) msg.textContent='o código tem de 4 a 12 letras ou números';return}
   if(msg) msg.textContent='conferindo…';OPTS.gate.check(v).then(function(ok){if(ok){toast('liberado! 🎉');rzRe()}else if(msg) msg.textContent='não achei esse código. confira com a sua professora.'}).catch(function(){if(msg) msg.textContent='sem internet agora. tente de novo.'})}
 function rzAcc(id,icon,title,summary,body){const open=RZ.acc===id;return '<section class="rz-acc'+(open?' open':'')+'"><button type="button" class="rz-acc-h" data-act="rz-acc" data-v="'+id+'" aria-expanded="'+open+'"><span class="rz-acc-i" aria-hidden="true">'+icon+'</span><span class="rz-acc-t"><b>'+title+'</b><small>'+summary+'</small></span><span class="rz-acc-c" aria-hidden="true">▾</span></button>'+(open?'<div class="rz-acc-b">'+body+'</div>':'')+'</section>'}
-function rzDiffRow(){return '<div class="rz-row"><span class="rz-lbl">Dificuldade</span><div class="segtabs rz-big-tabs" role="group" aria-label="Dificuldade">'+Object.entries(RZ_WIN).map(([k,v])=>'<button type="button" data-act="rz-diff" data-v="'+k+'" aria-pressed="'+(RZ.diff===k)+'">'+v.n+'</button>').join('')+'</div></div>'}
+function rzDiffRow(){return '<div class="rz-row"><span class="rz-lbl">Dificuldade</span><div class="segtabs rz-big-tabs" role="group" aria-label="Dificuldade">'+Object.entries(RZ_WIN).map(([k,v])=>'<button type="button" data-act="rz-diff" data-v="'+k+'" aria-pressed="'+(RZ.diff===k)+'">'+v.n+'</button>').join('')+'</div>'+(RZ.game==='beat'?'<p class="small muted">fácil: bumbo, caixa e às vezes um prato (3 peças) · médio: 4 peças, com duas notas juntas · difícil: 5 peças, no máximo 2 juntas</p>':'')+'</div>'}
 function rzAjustesBody(){const seg=(act,cur,arr)=>'<div class="segtabs rz-big-tabs" role="group">'+arr.map(a=>'<button type="button" data-act="'+act+'" data-v="'+a[0]+'" aria-pressed="'+(String(cur)===String(a[0]))+'">'+a[1]+'</button>').join('')+'</div>';
   var h=rzDiffRow();
   h+='<div class="rz-row"><span class="rz-lbl">Andamento</span><div class="segtabs rz-big-tabs" role="group" aria-label="Andamento da música"><button type="button" data-act="rz-tempo" data-v="-5" aria-label="mais devagar"'+((RZ.tempoPct||100)<=50?' disabled':'')+'>−</button><button type="button" disabled aria-live="polite">'+(RZ.tempoPct||100)+'%</button><button type="button" data-act="rz-tempo" data-v="5" aria-label="mais rápido"'+((RZ.tempoPct||100)>=150?' disabled':'')+'>+</button></div><p class="small muted">mais devagar pra treinar, mais rápido pra desafiar. vale pra todas as músicas.</p></div>';
-  if(RZ.game==='beat') h+='<div class="rz-row"><span class="rz-lbl">Teclas</span>'+seg('rz-keys',RZ.keys,[[3,'3'],[4,'4'],[5,'5']])+'<p class="small muted">nunca duas notas ao mesmo tempo: dá pra jogar só com os polegares.</p></div>';
   return h}
 function rzStyleLabel(){const x=RS_STYLES.filter(function(y){return y[0]===RZ.style})[0];return x?x[1]:''}
-function rzMenu(){const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game)||RZ_GAMES[0];const songs=RZ.style==='imp'?rsAll('imp').filter(s=>!RZ.q||normTxt(s.name).includes(normTxt(RZ.q))).filter(s=>!OPTS.onAddFolder||!RZ.fold||(RZ.fold==='__none__'?!s.folder:s.folder===RZ.fold)):[];
+function rzMenu(){rzSyncKeys();const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[0]===RZ.game)||RZ_GAMES[0];const songs=RZ.style==='imp'?rsAll('imp').filter(s=>!RZ.q||normTxt(s.name).includes(normTxt(RZ.q))).filter(s=>!OPTS.onAddFolder||!RZ.fold||(RZ.fold==='__none__'?!s.folder:s.folder===RZ.fold)):[];
   const styles=RS_STYLES.filter(function(x){return x[0]!=='imp'||IMP.length||OPTS.impLabel});const builtin=RZ.style!=='imp'&&RS_BUILTIN.some(function(b){return b[0]===RZ.style});
   let h='<div class="rz-games rz-two" role="group" aria-label="Jogo">'+RZ_GAMES.map(([k,t,d,c])=>'<button type="button" class="rz-g'+(RZ.game===k?' on':'')+'" style="--gc:'+c+'" data-act="rz-game" data-v="'+k+'" aria-pressed="'+(RZ.game===k)+'"><i class="rz-gi" aria-hidden="true">'+(k==='beat'?'🥁':'🎹')+'</i><b>'+t+'</b><span>'+(rzLocked()?'🔒 com código de aluno':d)+'</span></button>').join('')+'</div>';
   if(rzLocked()) return h+rzLockHTML();
