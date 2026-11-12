@@ -1,25 +1,23 @@
-// Detetive Note (regras puras): monta as perguntas. Sem tela nem áudio, testado em tests/detetive-note.test.mjs.
-import { genBar, shuffle } from '../reading.js';
-import { FOODS, cellOf, randomFoods } from '../kids-logic.js';
+// Detetive Note (regras puras): o secreto é 1 compasso de 4 tempos; a criança ouve e MONTA com cartas de um tema (comida, parque, corpo, animal)
+// ou com figuras (modo normal). Sem tela nem áudio, testado em tests/detetive-note.test.mjs.
+import { randomFoods, cellOf } from '../kids-logic.js';
 
-export const QUESTOES = 8;
+export const RODADAS = 6;
 export const BPM = 80;
-/** Opções erradas: troca 1 ou 2 tempos do certo por outros do mesmo conjunto. */
-export function variantes(correta, pool, rnd = Math.random, k = 3) {
-  const out = []; const seen = new Set([correta.join()]);
-  for (let g = 0; out.length < k && g < 800; g++) {
-    const b = correta.slice(); const n = 1 + (rnd() < 0.4 ? 1 : 0);
-    for (let c = 0; c < n; c++) { const i = Math.floor(rnd() * b.length); const alt = pool.filter((x) => x !== b[i]); b[i] = alt[Math.floor(rnd() * alt.length)]; }
-    if (seen.has(b.join())) continue; seen.add(b.join()); out.push(b);
-  }
-  return out;
-}
-/** Uma pergunta: `bar` = 4 células (strings '1010'), `opts` = 4 compassos embaralhados, `ok` = índice do certo. */
-export function pergunta(modo, lv = 1, rnd = Math.random) {
-  if (modo === 'infantil') {
-    const ids = randomFoods(rnd, 2); const bar = ids.map(cellOf); const pool = FOODS.map((f) => f.cell).filter((v, i, a) => a.indexOf(v) === i);
-    const opts = shuffle([bar, ...variantes(bar, pool, rnd)], rnd); return { bar, opts, ok: opts.findIndex((o) => o.join() === bar.join()) };
-  }
-  const bar = genBar(lv, rnd); const pool = [...new Set(Array.from({ length: 60 }, () => genBar(lv, rnd)).flat())];
-  const opts = shuffle([bar, ...variantes(bar, pool, rnd)], rnd); return { bar, opts, ok: opts.findIndex((o) => o.join() === bar.join()) };
-}
+/** Uma palavra por tipo de tempo em cada tema (as mesmas do "Monte seu ritmo"): 1 tempo, 2 colcheias, 4 semicolcheias; a pausa é sempre "shhh". */
+export const TEMAS = {
+  comida: { nome: 'comida', '1000': 'pao', '1010': 'bolo', '1111': 'chocolate' },
+  parque: { nome: 'parque', '1000': 'ceu', '1010': 'bola', '1111': 'bicicleta' },
+  corpo: { nome: 'corpo', '1000': 'mao', '1010': 'braco', '1111': 'esqueleto' },
+  animal: { nome: 'animal', '1000': 'cao', '1010': 'pato', '1111': 'borboleta' },
+};
+export const MODOS = [...Object.keys(TEMAS), 'normal'];
+/** As 4 cartas de um modo (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */
+export const cartas = (modo) => ['1000', '1010', '1111', '0000'].map((cell) => ({ cell, id: modo === 'normal' ? null : cell === '0000' ? 'shh' : TEMAS[modo][cell] }));
+/** Sorteia o compasso secreto: 4 células (nunca começa com pausa nem tem mais de uma pausa). */
+export const sortear = (rnd = Math.random) => randomFoods(rnd, 2).map(cellOf);
+/** Confere o que foi montado: um booleano por tempo (null = tempo ainda vazio). */
+export const conferir = (slots, secreto) => secreto.map((c, i) => (slots[i] == null ? null : slots[i] === c));
+export const acertou = (slots, secreto) => secreto.every((c, i) => slots[i] === c);
+/** Estrelas pela partida: quantas rodadas foram certas de primeira. */
+export const estrelas = (primeira, total = RODADAS) => { const p = total ? primeira / total : 0; return p >= 0.9 ? 3 : p >= 0.6 ? 2 : p > 0 ? 1 : 0; };
