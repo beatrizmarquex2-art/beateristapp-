@@ -10,6 +10,7 @@ import { toSVG } from '../notation.js';
 import { PATH, TIERS, PASS_SCORE, LEVEL_NAMES, genBar, onsets, evaluate, distractors, shuffle, layoutRhythm, cellsFor, checkCells } from '../reading.js';
 import { banner, toast, stars } from '../ui.js';
 import { micMessage, micToast } from '../mic-access.js';
+import { openMic } from '../kids/mic.js';
 import { parts } from './tempo.js';
 import * as FB from '../feedback.js';
 import { mountRitmo } from '../kids/ritmo.js';
@@ -94,7 +95,8 @@ export function leitura(host, opts = {}) {
   let beats = null; let run = null; let lastResult = null; let micBlocked = false; let micErro = null; let passedNow = false;
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
-  const stop = () => { S.reset(); if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
+  let testeAtivo = null; // microfone do "testar" (precisa fechar ao sair da tela)
+  const stop = () => { S.reset(); if (testeAtivo) { try { testeAtivo.stop(); } catch { /* ok */ } testeAtivo = null; } if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
     stop(); const c = cfg(); const nb = 1; // sempre 1 compasso
     const livre = opts.mapa ? !!opts.livre : c.mode === 'livre'; if (opts.mapa && opts.livre) c.lv = opts.lv || 1;
@@ -148,6 +150,14 @@ export function leitura(host, opts = {}) {
     // ouvir primeiro e, quando acabar, já entra a vez da Bea (contagem + clique + o som de cada toque)
     // No microfone o iPhone/iPad só deixa abrir o microfone logo depois de um TOQUE (não dentro de um temporizador): então depois de ouvir, quem toca aperta "tocar direto".
     const listenThenPlay = () => { stop(); const q = 60 / c.bpm; schedule(beats, c.bpm, { play: true }); if (useMic) { status.textContent = 'ouça primeiro… depois aperte “tocar direto” e toque no seu pad ou bateria.'; return; } status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
+    // "testar o microfone": 10 s ouvindo, e cada batida que o app escuta acende o pad (pra saber se o aparelho está ouvindo antes de jogar)
+    const testeMic = !useMic ? null : h('button', { class: 'btn small ghost tr-testmic', type: 'button', onclick: async (ev) => {
+      const b = ev.currentTarget; if (testeAtivo) { testeAtivo.stop(); testeAtivo = null; b.textContent = '🎙 testar o microfone'; status.textContent = ''; return; }
+      stop(); b.textContent = 'abrindo…'; let n = 0;
+      try { testeAtivo = await openMic(() => { n++; status.textContent = `ouvi! ✓ (${n})`; pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); }); } catch (e) { testeAtivo = null; b.textContent = '🎙 testar o microfone'; toast(micToast(e)); return; }
+      b.textContent = '■ parar o teste'; status.textContent = 'toque no seu pad ou bateria: cada batida que eu ouvir acende o quadro.';
+      const mine = testeAtivo; S.later(() => { if (testeAtivo === mine) { mine.stop(); testeAtivo = null; b.textContent = '🎙 testar o microfone'; status.textContent = n ? `ouvi ${n} batida${n > 1 ? 's' : ''}: o microfone está funcionando!` : 'não ouvi nada. aproxime o pad do aparelho e bata mais forte.'; } }, 10000);
+    } }, '🎙 testar o microfone');
     let summary = null; let quick = null;
     if (lastResult) {
       const r = lastResult; const devs = r.notes.filter((n) => n.ms != null).map((n) => n.ms);
@@ -163,7 +173,7 @@ export function leitura(host, opts = {}) {
           : h('button', { class: 'btn tr-next', type: 'button', onclick: () => (livre ? draw(true) : start()) }, livre ? '🔀 outro compasso' : '↻ tentar de novo'));
       summary = h('section', { class: 'card pad tr-res' },
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}`),
-        r.ajuste ? h('p', { class: 'muted' }, `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
+        r.ajuste ? h('p', { class: 'muted' }, r.mic ? `o microfone demora uns ${Math.abs(r.ajuste)} ms pra ouvir (normal): já descontei isso da sua nota.` : `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
@@ -194,7 +204,7 @@ export function leitura(host, opts = {}) {
         h('button', { class: 'tr-card', type: 'button', onclick: listenThenPlay }, icone('ouvir', 'tr-ic'), h('b', {}, 'ouvir e tocar'), h('small', {}, 'escuta antes')),
         h('button', { class: 'tr-card', type: 'button', onclick: listen }, icone('fone', 'tr-ic'), h('b', {}, 'só ouvir'), h('small', {}, 'sem tocar'))),
       livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
-      status, pad, quick, summary, history('leitura')].filter(Boolean));
+      status, pad, testeMic, quick, summary, history('leitura')].filter(Boolean));
   };
   host.append(body); draw(true);
   return () => { stop(); S.dispose(); };
