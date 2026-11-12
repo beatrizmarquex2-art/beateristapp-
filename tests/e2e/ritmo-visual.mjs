@@ -9,11 +9,10 @@ const theme = () => p.evaluate(() => document.querySelector('.rg-host') && docum
 await p.locator('button', { hasText: 'Beat Hero' }).first().click(); await sleep(500);
 check('Beat Hero abre no tema vinil mesmo com outro tema salvo', (await theme()) === 'vinil', await theme());
 check('Beat Hero não tem escolha de cores', (await p.locator('[data-act="rz-theme"]').count()) === 0 && !/Cores/.test(await p.locator('.rg-host').innerText()));
-await p.locator('[data-act="rz-style"][data-v="rock"]').first().click().catch(() => {}); await sleep(300);
-await p.locator('[data-act="rz-acc"][data-v="som"]').click(); await sleep(300);
-check('Beat Hero rock tem Som da melodia (flauta / 8-bit)', (await p.locator('[data-act="rz-lead"]').count()) === 2);
-await p.locator('[data-act="rz-lead"][data-v="8bit"]').click(); await sleep(300);
-check('8-bit fica salvo', (await p.evaluate(() => localStorage.getItem('bt-rz-lead'))) === '8bit');
+await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click().catch(() => {}); await sleep(300);
+check('menu mostra 5 músicas por estilo', (await p.locator('[data-act="rz-tier"]').count()) === 5, String(await p.locator('[data-act="rz-tier"]').count()));
+const estilos = (await p.locator('[data-act="rz-style"]').allInnerTexts()).join(',');
+check('estilos: rock, pop, reggaeton, blues e lo-fi', /Rock/.test(estilos) && /Blues/.test(estilos) && !/Balada|Bossa/.test(estilos), estilos);
 await p.locator('[data-act="rz-play"]').first().click(); await sleep(6500);
 if (process.env.SHOTS) await p.screenshot({ path: `${process.env.SHOTS}/beat-play.png` });
 await p.locator('[data-act="rz-quit"]').first().click().catch(() => {}); await sleep(500);
