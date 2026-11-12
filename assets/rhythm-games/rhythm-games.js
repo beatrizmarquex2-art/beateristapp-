@@ -309,7 +309,7 @@ const RK_STY={
      {n:'Última Fita',key:0,g:1,mv:4,mc:6,sh:-1,p:P([5,1,4,0],[0,5,1,4],[3,3,4,4]),sc:J}]});
 })();
 /* a Bea tirou do rock a 2, 5, 8 e 9: ficam as 1, 3, 4, 6, 7 e 10 (o som de flauta/8-bit de cada uma continua o da posição original) */
-(function(){const DROP={rock:[1,4,7,8],pop:[0,1,2,6,8],reggaeton:[1,4,7,8]};Object.keys(RK_STY).forEach(k=>{const Y=RK_STY[k];Y.S.forEach((d,i)=>{d.lead=i%2?'8bit':'flauta';d.bpm=Y.tiers[i]});const dr=DROP[k]||[];Y.S=Y.S.filter((d,i)=>dr.indexOf(i)<0);Y.tiers=Y.S.map(d=>d.bpm)})})();
+(function(){const DROP={rock:[1,4,7,8],pop:[0,1,2,6,8],reggaeton:[1,4,7,8],blues:[0,2,4,7,8],lofi:[1,2,3,7,9]};Object.keys(RK_STY).forEach(k=>{const Y=RK_STY[k];Y.S.forEach((d,i)=>{d.lead=i%2?'8bit':'flauta';d.bpm=Y.tiers[i]});const dr=DROP[k]||[];Y.S=Y.S.filter((d,i)=>dr.indexOf(i)<0);Y.tiers=Y.S.map(d=>d.bpm)})})();
 function rkThird(m,root){const T={0:4,2:3,4:3,5:4,7:4,9:3,11:3};return T[(((m-root)%12)+12)%12]||3}
 function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 /* timbre escolhido pela Bea: blues = gaita + órgão + bateria de vassourinha */
@@ -317,7 +317,7 @@ function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 /* rock: 2 com flauta, 2 com 8-bit e 2 com guitarra elétrica solo */
 (function(){RK_STY.rock.S.forEach(d=>{if(d.n==='Relâmpago'||d.n==='Amplificador no Dez') d.lead='guitarra'})})();
 /* lo-fi: melodia em flauta e marimba (alternando) com pad no fundo */
-(function(){const Y=RK_STY.lofi;Y.g.forEach(g=>{g.ci='pad'});Y.S.forEach((d,i)=>{d.lead=i%2?'marimba':'flauta'})})();
+(function(){const Y=RK_STY.lofi;Y.g.forEach(g=>{g.ci='pad'});Y.S.forEach(d=>{d.lead=d.lead==='8bit'?'marimba':'flauta'})})();
 /* pop: melodia no sinte com piano dobrando, acompanhamento de piano + violão */
 (function(){const Y=RK_STY.pop;Y.g.forEach(g=>{g.ci='piano+violao'});Y.S.forEach(d=>{d.lead='sinte';d.lead2=[{k:'piano',off:0,v:1}]})})();
 /* reggaeton: 3 conjuntos de instrumentos (flauta, steel drum, pluck, sempre com piano elétrico) e 2 baterias (seca e apertada, congas) alternando */
