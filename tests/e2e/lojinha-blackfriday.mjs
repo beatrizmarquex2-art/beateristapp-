@@ -1,0 +1,13 @@
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false }); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch {} });
+await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1500);
+await page.getByRole('tab', { name: 'black friday' }).click(); await sleep(1500);
+check('aba abre rota blackfriday', (await page.evaluate(() => location.hash)) === '#/lojinha/blackfriday');
+check('arte do combo aparece', await page.locator('.lj-bf-arte').isVisible());
+check('botão leva ao link do combo', await page.locator('.lj-bf-cta .lj-btn').count() === 1);
+await page.screenshot({ path: '/tmp/lojinha-bf.png', fullPage: true });
+check('sem erros', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close(); done();

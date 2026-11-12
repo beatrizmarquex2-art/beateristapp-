@@ -2,7 +2,7 @@
 // Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, AVISO_DIGITAL } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBO, AVISO_DIGITAL } from '../loja-config.js';
 
 const comprar = (item) => () => {
   if (item.link) { window.open(item.link, '_blank', 'noopener'); return; }
@@ -35,4 +35,12 @@ export function vitrine() {
     PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
+}
+
+/** Aba "black friday": arte do combo + botão de compra. */
+export function blackFriday() {
+  return h('div', { class: 'lj lj-bf' },
+    h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h }),
+    h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
+    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
 }
