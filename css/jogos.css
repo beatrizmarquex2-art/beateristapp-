@@ -1054,3 +1054,6 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-detetive .dn-dots{display:inline-flex;gap:6px;align-items:center}.jg-detetive .dn-dots i{width:14px;height:14px;border-radius:50%;border:2px solid #142036;background:transparent}
 .jg-detetive .dn-dots i.on{background:#1f7a3f;border-color:#1f7a3f}.jg-detetive .dn-dots i.now{background:#d99a2b}
 .jg-detetive .dn-face-fig{max-width:84px;margin:0 auto}
+.jg-detetive .dn-vel{display:flex;gap:8px;margin:4px 0 2px}
+.jg-detetive .dn-bpm{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:2px 12px 2px 6px;border:2px solid #142036;border-radius:999px;background:#fffdf7;color:#142036;font:700 14px var(--body,inherit);cursor:pointer}
+.jg-detetive .dn-bpm.on{background:#d99a2b;color:#2a0710}

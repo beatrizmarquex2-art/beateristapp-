@@ -11,9 +11,10 @@ import { schedule } from '../views/treinos.js';
 import { foodOf } from '../kids-logic.js';
 import { svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
+import { vinil } from '../kids/drum-art.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { themeOf } from '../campanha/themes.js';
-import { TEMAS, MODOS, FASES, RODADAS, BPM, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
+import { TEMAS, MODOS, FASES, RODADAS, BPMS, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 const NOME = (m) => (m === 'normal' ? 'figuras' : `${EMOJI_MODO[m]} ${TEMAS[m].nome}`);
@@ -21,10 +22,10 @@ const NOME = (m) => (m === 'normal' ? 'figuras' : `${EMOJI_MODO[m]} ${TEMAS[m].n
 const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o.y1 === o.y2 || (o.x1 === o.x2 && o.w === 2)))) });
 const face = (card, modo) => (modo === 'normal' ? svgEl(N.toSVG(semPauta(layoutRhythm([card.cell], { width: 84, count: false, clef: false }))), 'dn-face-fig')
   : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
-const soa = (cell, bpm = BPM) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...cell].forEach((x, k) => { if (x === '1') voz(t + (k * q) / 4, 0.85); }); };
+const soa = (cell, bpm) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...cell].forEach((x, k) => { if (x === '1') voz(t + (k * q) / 4, 0.85); }); };
 
 export function mount(host) {
-  const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'normal';
+  const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'normal'; let bpm = BPMS.includes(saved.bpm) ? saved.bpm : BPMS[0]; // 80 ou 100
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); let off = null;
@@ -50,7 +51,7 @@ export function mount(host) {
 
   /* ---------- uma fase: 3 ritmos ---------- */
   const comeca = (n) => { limpa(); fase = n; rodada = 0; primeira = 0; jogando = true; nova(); };
-  const ouvir = () => { Au.reset(); audio(); schedule(secreto, BPM, { play: true }); };
+  const ouvir = () => { Au.reset(); audio(); schedule(secreto, bpm, { play: true }); };
   const nova = () => { S.reset(); secreto = sortear(fase); slots = []; errou = false; marcas = null; desenha(); Au.later(ouvir, 400); };
   const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
@@ -59,15 +60,16 @@ export function mount(host) {
     const casas = Array.from({ length: 4 }, (_, i) => { const c = slots[i] != null ? cs.find((x) => x.cell === slots[i]) : null; const m = marcas ? marcas[i] : null;
       return h('button', { type: 'button', class: `dn-slot${c ? ' cheia' : ''}${m === true ? ' ok' : m === false ? ' no' : ''}`, 'aria-label': c ? `tempo ${i + 1}: tirar` : `tempo ${i + 1} vazio`, onclick: () => { if (c) { slots = slots.slice(0, i); marcas = null; desenha(); } } },
         c ? face(c, modo) : h('small', {}, String(i + 1))); });
-    const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
-    root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', onclick: ouvir }, '▶ ouvir o ritmo'),
+    const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
+    const vel = h('div', { class: 'dn-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...BPMS.map((v, i) => { const b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(bpm === v), 'aria-label': `${v} BPM`, class: `dn-bpm${bpm === v ? ' on' : ''}`, onclick: () => { bpm = v; setGame('detetive', { ...getGame('detetive'), bpm }); ouvir(); desenha(); } }); b.append(vinil(i ? 'normal' : 'devagar', 'vinil sm'), h('b', {}, String(v))); return b; }));
+    root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', onclick: ouvir }, '▶ ouvir o ritmo'), vel,
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: 'dn-slots' }, ...casas), h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir'), slots.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { slots = []; marcas = null; desenha(); } }, 'limpar') : null));
   };
   const confere = () => {
     if (acertou(slots, secreto)) {
-      if (!errou) primeira++; marcas = secreto.map(() => true); desenha(); FB.win(root.querySelector('.dn-slots')); Au.reset(); soa('1000');
+      if (!errou) primeira++; marcas = secreto.map(() => true); desenha(); FB.win(root.querySelector('.dn-slots')); Au.reset(); soa('1000', bpm);
       S.later(() => { rodada++; if (rodada >= RODADAS) fim(); else nova(); }, 1200);
     } else { errou = true; marcas = conferir(slots, secreto); desenha(); FB.lose(root.querySelector('.dn-slots')); }
   };

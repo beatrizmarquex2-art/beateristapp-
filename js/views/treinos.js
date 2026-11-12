@@ -193,9 +193,8 @@ export function leitura(host, opts = {}) {
       h('details', { class: 'tr-mais', open: maisAberto ? true : null, ontoggle: (e) => { maisAberto = e.target.open; } }, h('summary', {}, 'mais opções (andamento)'),
         line('andamento', bpmRow(c, (v) => save({ bpm: clampBpm(Math.min(BPM_MAX, v)) }).then(() => draw(false))))));
     if (opts.mapa) ctl.querySelectorAll(':scope > .tp-line, :scope > .tr-path').forEach((e) => e.remove()); // quem escolhe fase e nível é o mapa
-    const tierNome = TIERS.find((t) => t.id === PATH[step].tier).name;
     const topo = opts.mapa ? h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => opts.onBack && opts.onBack() }, '‹ mapa'),
-      h('b', {}, livre ? `aleatório · ${TIERS[(c.lv || 1) - 1].name}` : `${tierNome} · fase ${PATH[step].n} de ${PATH[step].of}`)) : null;
+      null) : null; // sem texto de fase: só o botão de voltar ao mapa
     body.replaceChildren(...[topo, ctl, score(chunk(beats), marks),
       micBlocked && c.input === 'mic' ? h('div', { class: 'tr-status bad tr-micerro', role: 'alert' }, h('b', {}, (micMessage(micErro)[0] || 'microfone indisponível agora') + ' vou usar a tela.'), h('p', { class: 'muted' }, `${micMessage(micErro)[1]}${micErro && micErro.name ? ` (${micErro.name})` : ''}`),
         h('button', { class: 'btn small', type: 'button', onclick: () => { micBlocked = false; micErro = null; draw(false); } }, '🎙 tentar o microfone de novo')) : null,

@@ -19,6 +19,9 @@ const abre = async (pos) => { await page.evaluate((p) => document.querySelector(
 await abre(0);
 check('fase 1: só 2 cartas e o cabeçalho sem texto de fase (só 3 bolinhas dos ritmos)', (await page.locator('.dn-card').count()) === 2 && !/fase|ritmo/i.test(await page.textContent('.tr-fasehead')) && (await page.locator('.dn-dots i').count()) === 3);
 check('figuras sem pauta: as cartas não têm a linha da pauta', await page.evaluate(() => [...document.querySelectorAll('.dn-card svg')].every((s) => ![...s.querySelectorAll('line')].some((l) => l.getAttribute('y1') === l.getAttribute('y2')))));
+check('tem a escolha de 80 ou 100 BPM, com 80 marcado', (await page.locator('.dn-bpm').count()) === 2 && (await page.locator('.dn-bpm.on').textContent()).trim() === '80');
+await page.locator('.dn-bpm').nth(1).click(); await sleep(200);
+check('trocar pra 100 BPM marca o 100', (await page.locator('.dn-bpm.on').textContent()).trim() === '100');
 await monta(1, false); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('errou: mostra o tempo errado em vermelho e deixa tentar de novo', (await page.locator('.dn-slot.no').count()) >= 1 && /quase/.test(await page.textContent('.jg-msg')));
 await page.getByRole('button', { name: 'limpar' }).click(); await monta(1, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
