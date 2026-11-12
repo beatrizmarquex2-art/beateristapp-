@@ -77,8 +77,10 @@ function sortear() {
 export function paulDica() {
   const img = h('img', { class: 'pd-img', alt: '', 'aria-hidden': 'true', draggable: 'false', decoding: 'async' });
   const tag = h('small', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
+  let sec = null;
   const mostrar = (it) => {
     const [t, tx, pose, href, rot] = it;
+    if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL);
     const interno = href && String(href).startsWith('#');
     img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
     tag.textContent = t; text.textContent = tx;
@@ -88,5 +90,6 @@ export function paulDica() {
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
   mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo
   // modelo "quadrinho": Paul grande saindo da borda, etiqueta do assunto e balão de fala
-  return h('section', { class: 'pd pd-q', 'aria-label': 'o Paul conta' }, tag, img, h('div', { class: 'pd-bal' }, text, row));
+  sec = h('section', { class: `pd pd-q${DICAS[0][3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
+  return sec;
 }
