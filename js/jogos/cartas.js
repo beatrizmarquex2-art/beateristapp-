@@ -228,11 +228,11 @@ export function mount(host, opts) {
 
   /* ----- desenho da mesa ----- */
   function seat(p) {
-    const k = g.hands[p].length; const minis = UN ? 3 : Math.min(k, 7); const cpu = isCpu(p); // UN🚫: sem número e sem aviso de UNO, só prestando atenção
+    const k = g.hands[p].length; const minis = Math.min(k, 7); const cpu = isCpu(p); // no UN🚫 o número de cartas aparece, mas ninguém avisa quando alguém fica com UNO
     const on = !g.over && g.turn === p;
-    return h('div', { class: `cx-seat${on ? ' on' : ''}${!UN && g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}${UN ? '' : `: ${k} carta${k === 1 ? '' : 's'}`}${on ? ', jogando' : ''}` },
+    return h('div', { class: `cx-seat${on ? ' on' : ''}${!UN && g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}: ${k} carta${k === 1 ? '' : 's'}${on ? ', jogando' : ''}` },
       h('span', { class: 'cx-minis', 'aria-hidden': 'true' }, ...Array.from({ length: minis }, () => h('i', { class: 'cx-mb' }))),
-      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : PL(p)), UN ? null : h('em', {}, String(k))),
+      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : PL(p)), h('em', {}, String(k))),
       h('span', { class: 'cx-sstate' }, !UN && g.unoSaid === p && k === 1 ? 'UNO!' : on ? (cpu ? 'pensando…' : 'jogando') : ''));
   }
   function paint(opt = {}) {
