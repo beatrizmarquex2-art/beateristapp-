@@ -18,6 +18,8 @@ const AP_KEY = 'beaterista-aparelho-id';
 export function aparelhoId() {
   try { let a = localStorage.getItem(AP_KEY); if (!a || a.length < 8) { const b = new Uint8Array(16); crypto.getRandomValues(b); a = [...b].map((x) => x.toString(16).padStart(2, '0')).join(''); localStorage.setItem(AP_KEY, a); } return a; } catch { return window.__aparelhoId || (window.__aparelhoId = Math.random().toString(16).slice(2) + Date.now().toString(16)); }
 }
+const PROF_KEY = 'beaterista-aparelho-prof'; // aparelho da professora (já entrou com código de professora): não ocupa vaga dos alunos
+const aparelhoProf = () => { try { return localStorage.getItem(PROF_KEY) === '1'; } catch { return false; } };
 let motivo = '';
 /** Por que o último `verificar` disse não: 'codigo' (não existe/desativado), 'vencido' ou 'aparelhos' (já está em 2 aparelhos). */
 export const motivoFalha = () => motivo;
@@ -26,9 +28,9 @@ export const msgFalha = () => (motivo === 'aparelhos' ? 'esse código já está 
 /** Confere um código no servidor (e registra este aparelho). true/false; lança erro se não deu pra falar com o servidor. */
 export async function verificar(code) {
   motivo = ''; const c = norm(code); if (c.length < 4) return false;
-  const r = await fetch(`${base}/rpc/aluno_acesso`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c, p_aparelho: aparelhoId(), p_ua: String(navigator.userAgent || '').slice(0, 160) }) });
+  const r = await fetch(`${base}/rpc/aluno_acesso`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c, p_aparelho: aparelhoProf() ? null : aparelhoId(), p_ua: String(navigator.userAgent || '').slice(0, 160) }) });
   let j = null; if (r.ok) { try { j = await r.json(); } catch { j = null; } }
-  if (j && typeof j === 'object' && typeof j.ok === 'boolean') { if (j.ok) return true; motivo = j.motivo || 'codigo'; return false; }
+  if (j && typeof j === 'object' && typeof j.ok === 'boolean') { if (j.ok) { if (j.tipo === 'prof') { try { localStorage.setItem(PROF_KEY, '1'); } catch { /* ok */ } } return true; } motivo = j.motivo || 'codigo'; return false; }
   if (r.ok || r.status === 404) { // servidor sem a função nova (ou resposta que não entendi): confere do jeito antigo
     const r2 = await fetch(`${base}/rpc/aluno_codigo_ok`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c }) });
     if (!r2.ok) throw new Error(String(r2.status)); const ok = (await r2.json()) === true; if (!ok) motivo = 'codigo'; return ok;
@@ -36,7 +38,7 @@ export async function verificar(code) {
   throw new Error(String(r.status));
 }
 /** Libera a vaga deste aparelho no servidor (saiu do código / tirou da lista). Sem esperar resposta. */
-export function liberarAparelho(code) { const c = norm(code); if (c.length < 4) return; try { fetch(`${base}/rpc/aluno_sair`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c, p_aparelho: aparelhoId() }), keepalive: true }).catch(() => {}); } catch { /* sem rede */ } }
+export function liberarAparelho(code) { const c = norm(code); if (c.length < 4 || aparelhoProf()) return; try { fetch(`${base}/rpc/aluno_sair`, { method: 'POST', headers: anon, body: JSON.stringify({ p_code: c, p_aparelho: aparelhoId() }), keepalive: true }).catch(() => {}); } catch { /* sem rede */ } }
 /** Aluno digitou um código novo: confere e guarda se valer. */
 export async function entrar(code) { const c = norm(code); const ok = await verificar(c); if (ok) remember(c); return ok; }
 /** Ao abrir: o código guardado ainda vale? Sem internet, vale se foi confirmado no último ano. Desativado pela Bea = tranca de novo. */

@@ -476,3 +476,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - "trocar aluno" e "voltar pra sala" (Jogos): só 2 itens + setinha ▾ +N (`js/lista-curta.js`)
 - limite de 2 aparelhos por código: cliente manda `p_aparelho` (id aleatório em localStorage `beaterista-aparelho-id`) pra `aluno_acesso`; sai/tirar da lista chama `aluno_sair`. SERVIDOR: supabase/013_aparelhos.sql (NÃO aplicado até a Bea aprovar a migração; sem ela o app funciona igual, só sem limite). Vaga parada 30 dias libera sozinha. Cliente cai no `aluno_codigo_ok` se a função nova não responder
 - Uno Musical (#/jogos/cartas) continua TRANCADO sem código, mesmo entrando por sala (acesso.js)
+
+## v393 — cara a cara sem brancos + aparelho da professora
+- cara a cara: perguntas, resposta do Paul e cartas só com contorno branco e texto branco (sem fundo branco)
+- aparelho da professora: quem entra num aparelho com código de professora (tipo 'prof') marca `beaterista-aparelho-prof`; esse aparelho não manda id e NÃO ocupa vaga dos alunos (limite de 2). Precisa entrar uma vez com o código de professora no iPad

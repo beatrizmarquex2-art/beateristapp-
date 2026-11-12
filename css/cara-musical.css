@@ -59,3 +59,9 @@
 .cm-carro{gap:8px;padding:2px 0 6px}
 .cm-root .cm-cell .jg-flip{min-height:22px;width:22px;margin:2px auto 0;border:0;background:transparent;font-size:12px;opacity:.75;color:#fffdf8}.cm-root .cm-cell .jg-flip[aria-pressed="true"]{background:#fffdf8;color:#12284a;opacity:1}
 .cm-qc{min-height:44px;display:grid;place-items:center}
+/* sem quadrados brancos: pergunta = só contorno branco com texto branco; carta = foto com contorno e o nome em branco por baixo */
+.cm-root .cm-qc{background:transparent;color:#fffdf8;border:2px solid rgba(255,253,248,.9);box-shadow:none}.cm-root .cm-qc:active{background:rgba(255,253,248,.18);color:#fffdf8;box-shadow:none}
+.cm-root .cm-card{background:transparent;color:#fffdf8;border:2px solid rgba(255,253,248,.85)}
+.cm-root .cm-card small{background:transparent;color:#fffdf8;padding:4px 2px 5px}
+.cm-root .cm-cell.sel .cm-card{border-color:#ffd23f;box-shadow:0 0 0 3px #ffd23f}.cm-root .cm-card.dest{box-shadow:0 0 0 3px #ffd23f}
+.cm-root .cm-paul{background:transparent;border:2px solid rgba(255,253,248,.9)}.cm-root .cm-paul p{color:#fffdf8}
