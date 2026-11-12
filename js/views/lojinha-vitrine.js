@@ -26,7 +26,7 @@ function detalhe(p) {
 /** Destaque do combo Black Friday: primeira coisa da Lojinha. */
 function destaqueCombo() {
   return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
-    h('a', { href: '#/lojinha/blackfriday', 'aria-label': 'ver o combo Robôterista' }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
     h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
 }
 
@@ -45,10 +45,3 @@ export function vitrine() {
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }
 
-/** Aba "black friday": arte do combo + botão de compra. */
-export function blackFriday() {
-  return h('div', { class: 'lj lj-bf' },
-    h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h }),
-    h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
-    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
-}

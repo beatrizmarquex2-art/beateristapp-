@@ -839,5 +839,9 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 /* nuvem do Paul: quebra equilibrada, e o js encolhe o balão até a última palavra */
 .pt-cloud { text-wrap: balance; box-sizing: border-box; }
 
-.lj-bf{display:grid;gap:12px}.lj-bf-arte{display:block;width:100%;height:auto;border-radius:14px;border:2px solid rgb(var(--ink-rgb))}
+.lj-bf{display:grid;gap:10px}.lj-bf-arte{display:block;width:100%;height:auto}
+.lj-bf-link{display:block;padding:0;border:0;background:none;cursor:pointer;width:100%}
+.lj-bf-topo{padding:10px;border:3px solid rgb(var(--ink-rgb));border-radius:18px;background:var(--card);box-shadow:5px 5px 0 rgb(var(--ink-rgb));margin-bottom:6px}
+.lj-bf-topo .lj-bf-arte{border-radius:12px}
 .lj-bf-cta{display:grid;gap:8px;justify-items:center;text-align:center}.lj-bf-cta .lj-preco{font:800 26px var(--body)}
+.lj-bf-cta .lj-btn{width:100%;font-size:18px;padding:14px}
