@@ -109,6 +109,7 @@ async function finishPhase(ctx, res, spec) {
   // pacotinhos da Bateria (tabela em recompensas.js): só os marcos NOVOS aparecem no aviso; a entrega é idempotente
   let packs = [];
   if (!free && isDrum(world)) { const antes = new Set(RW.merecidos(before, profile.id).map((x) => x.id)); const todos = RW.merecidos(saved, profile.id); await FR.grantPacks(todos.map((x) => x.id)).catch(() => 0); packs = todos.filter((x) => !antes.has(x.id)); }
+  if (!packs.some((x) => x.fim) && !free && out.events.some((e) => e.type === 'world')) setTimeout(() => festa({ titulo: `${WORLDS[world].name} concluído!`, sub: 'parabéns! você terminou o mundo inteiro' }), 600); // festa também nos outros mundos (notas, claves…)
   if (packs.some((x) => x.fim)) { const t = { drumF: 'fácil', drumI: 'médio', drumD: 'difícil' }[packs.find((x) => x.fim).id.split(':')[1]]; setTimeout(() => festa({ titulo: `modo ${t} concluído!`, sub: '3 pacotinhos de figurinhas esperando por você no Álbum' }), 600); } // festa musical ao concluir os 12 níveis
   const pct = res.total ? Math.round((res.right / res.total) * 100) : 0; const stars = out.stars;
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);

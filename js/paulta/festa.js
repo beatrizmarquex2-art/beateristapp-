@@ -5,7 +5,7 @@ import { audio, out } from '../audio.js';
 import { muted } from './sfx.js';
 
 const NOTAS = ['♪', '♫', '★', '♬', '✦'];
-const CORES = ['#ffd23f', '#ff2d95', '#27d3ff', '#27ffb0', '#ffffff'];
+const CORES = ['#2d8cff', '#7a5cff', '#b14dff', '#ff3d57', '#ffffff']; // só azul, roxo e vermelho (nada de verde)
 const reduz = () => { try { return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 const tom = (f, t, d, tipo = 'triangle', v = 0.18) => { const c = audio(); const o = c.createOscillator(); const g = c.createGain(); o.type = tipo; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(g).connect(out()); o.start(t); o.stop(t + d + 0.05); };
 /** Musiquinha de festa (~4 s): subida em dó maior, um "tchan" e um refrãozinho. */
