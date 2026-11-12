@@ -961,6 +961,10 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
 .bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
 .bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+.qz-fig{min-height:84px;display:grid;place-items:center}.qz-fig .cx-sym{width:64px;height:64px}
+.lc{display:grid;gap:4px}.lc-resto{display:grid;gap:4px}.lc-resto[hidden]{display:none}
+.lc-seta{justify-self:start;min-height:28px;padding:2px 10px;border:0;border-radius:99px;background:rgba(20,17,26,.08);color:inherit;font:700 12px var(--body,inherit);cursor:pointer}
+.jg-volta-mini{min-height:34px;padding:4px 10px;font-size:12px;opacity:.9}
 
 /* ===== Toca Aqui no visual "Turnê" (escolhido pela Bea): vinho, discos de vinil, cartões grandes, ícones de traço ===== */
 .jg-game:has(.jg-toca){--jg-paper:#6b0f22;color:#fbf7ee}

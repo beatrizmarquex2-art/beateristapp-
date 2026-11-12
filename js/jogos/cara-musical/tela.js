@@ -73,7 +73,7 @@ export function mountMusical(host, { onTema } = {}) {
       h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul'], ['paul', 'contra o Paul'], ['dupla', 'dupla (mesmo aparelho)'], ['online', '2 celulares (código)']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
       h('p', { class: 'jg-lab' }, 'cartas na mesa'), seg(R.TAMANHOS[cfg.modo].map((n) => [n, `${n} cartas`]), tam, (v) => { cfg.tamanho = v; salvar(); menu(); }, 'tamanho'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
-      kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar')),
+      kids ? null : h('div', {}, h('p', { class: 'jg-lab' }, 'eliminar cartas'), seg([[true, 'automático'], [false, 'manual']], cfg.auto, (v) => { cfg.auto = v; salvar(); menu(); }, 'eliminar'), cfg.auto ? null : h('p', { class: 'jg-p muted' }, 'manual: depois da resposta, toque no ✕ das cartas que não combinam (toca de novo pra desvirar) e então em "pronto".')),
       h('p', { class: 'jg-p muted' }, kids ? `kids: perguntas prontas num toque, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, todas as perguntas, 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
       Contestar.listar().length ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn small ghost', type: 'button', onclick: contestacoes }, `respostas contestadas (${Contestar.listar().length})`)) : null,
@@ -144,7 +144,7 @@ export function mountMusical(host, { onTema } = {}) {
       return h('div', { class: `cm-cell${out ? ' out' : ''}${selecionada === id ? ' sel' : ''}` },
         h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada === id), 'aria-label': `${e.curto}${out ? ', virada' : ''}`, onclick: () => aoToque(id) },
           h('img', { src: mini(c.foto), alt: '', loading: 'lazy', draggable: 'false', style: enquadreFoto(c.foto), onerror: (ev) => { ev.target.style.visibility = 'hidden'; } }), h('small', { class: e.curto.split(' ').some((w) => w.length > 10) ? 'long' : '' }, e.curto), out ? h('i', { class: 'cm-x', 'aria-hidden': 'true' }, '✕') : null),
-        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), onclick: () => manual(id) }, out ? 'desvirar' : 'virar') : null);
+        manual ? h('button', { type: 'button', class: 'jg-flip', 'aria-pressed': String(out), 'aria-label': out ? 'desvirar a carta' : 'virar a carta', onclick: () => manual(id) }, '✕') : null);
     }));
   }
   const ladoAtual = () => st.lados[cfg.jogo === 'solo' ? 0 : st.turno];
@@ -163,24 +163,24 @@ export function mountMusical(host, { onTema } = {}) {
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
       meu ? h('p', { class: 'cm-minha' }, h('img', { src: mini(st.mesa.cartas.find((c) => c.id === meu).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[meu].curto}`)) : null,
       paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,
+      st.aguardaVirar != null && !emPalpite ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { const i = st.aguardaVirar; st.aguardaVirar = null; sfx('tap'); fimDeAcao(i); } }, cfg.jogo === 'paul' ? 'pronto, já virei! ▶' : 'pronto, já virei! passar a vez ▶')) : null,
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
       grade(ids, { fora: st.descartadas ? [] : [...lado.fora, ...lado.erros], selecionada: st.sel, aoToque: (id) => tocar(id), manual: !kids() && !cfg.auto && !lado.terminou && !emPalpite ? (id) => { st.lados[st.turno === undefined ? 0 : (cfg.jogo === 'solo' ? 0 : st.turno)] = R.virar(lado, id); sfx('tap'); jogo(); } : null }),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, st.msg),
       emPalpite ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar palpite' }, st.sel ? h('b', {}, `é ${BY_ID[st.sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), st.sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => palpitar(st.sel) }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.palpitando = false; st.sel = null; jogo(); } }, 'voltar às perguntas')) : null,
-      !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
-      !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
+      st.aguardaVirar == null && !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
         !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
       h('div', { class: 'cm-acoes' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) menu(); } }, 'Sair')),
       lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => contestar(BY_Q[a.id], a, lado.segredo) }, '⚑ contestar'))))) : null,
     ].filter(Boolean));
   }
+  /** Perguntas em cima, num carrossel: arrasta pro lado e aparecem umas 3 por vez (ícone grande + texto curto). */
   function perguntasUI(lado, sug, todas, semPergunta) {
     if (semPergunta) return h('p', { class: 'jg-msg' }, fala('semPergunta'));
-    const botao = (q, grande) => h('button', { type: 'button', class: grande ? 'cm-q big' : 'jg-qbtn', disabled: lado.perguntas.some((x) => x.id === q.id), onclick: () => perguntar(q.id) }, grande ? h('span', { 'aria-hidden': 'true' }, q.icone) : null, grande ? ` ${q.kids}` : textoDe(q, cfg.modo));
-    if (kids()) return h('div', { class: 'cm-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, true)), todas.length > sug.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...todas.filter((q) => !lado.perguntas.some((x) => x.id === q.id)).map((q) => h('button', { type: 'button', class: 'cm-q big', onclick: () => { close(); perguntar(q.id); } }, h('span', { 'aria-hidden': 'true' }, q.icone), ` ${q.kids}`)))) }, 'mais perguntas') : null);
-    const resto = todas.filter((q) => !sug.includes(q) && !lado.perguntas.some((x) => x.id === q.id));
-    return h('div', { class: 'jg-qs', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, 'pergunte:'), ...sug.map((q) => botao(q, false)),
-      resto.length ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => sheet('mais perguntas', (close) => h('div', { class: 'sheet-body cm-mais' }, ...resto.map((q) => h('button', { type: 'button', class: 'jg-qbtn', onclick: () => { close(); perguntar(q.id); } }, textoDe(q, cfg.modo))))) }, 'mais perguntas') : null);
+    const feitas = (q) => lado.perguntas.some((x) => x.id === q.id); const ordem = [...sug, ...todas.filter((q) => !sug.includes(q))].filter((q) => !feitas(q));
+    const card = (q) => h('button', { type: 'button', class: 'cm-qc', onclick: () => perguntar(q.id) }, h('span', {}, q.kids));
+    return h('div', { class: 'cm-qbox', role: 'group', 'aria-label': 'perguntas' }, h('b', {}, `pergunte (arraste →)  ${ordem.length}`), h('div', { class: 'cm-carro' }, ...ordem.map(card)));
   }
   function tocar(id) { const c = st.mesa.cartas.find((x) => x.id === id); const lado = ladoAtual();
     if (st.palpitando && !lado.terminou) { st.sel = st.sel === id ? null : id; sfx('tap'); jogo(); return; } zoom(c); }
@@ -189,8 +189,9 @@ export function mountMusical(host, { onTema } = {}) {
   function perguntar(qid) {
     const i = cfg.jogo === 'solo' ? 0 : st.turno; const lado = st.lados[i]; const q = BY_Q[qid];
     const r = R.perguntar(st.mesa, lado, qid, { automatico: kids() || cfg.auto }); st.lados[i] = r.lado; const left = R.candidatosDo(st.mesa, r.lado).length;
-    st.msg = `${r.sim ? 'SIM' : 'NÃO'}. ${q.porque}${kids() || cfg.auto ? (r.tirou.length ? ` saíram ${r.tirou.length} carta${r.tirou.length === 1 ? '' : 's'}.` : '') : ' vire as cartas que não combinam.'}`;
+    st.msg = `${r.sim ? 'SIM' : 'NÃO'}. ${q.porque}${kids() || cfg.auto ? (r.tirou.length ? ` saíram ${r.tirou.length} carta${r.tirou.length === 1 ? '' : 's'}.` : '') : ' toque no ✕ das cartas que não combinam e depois em "pronto".'}`;
     st.fala = (kids() || cfg.auto) && left === 1 ? fala('uma') : (kids() || cfg.auto) && left <= 3 ? fala('poucas', { k: left }) : fala(r.sim ? 'sim' : 'nao'); st.dica = ''; sfx(r.sim ? 'place' : 'tap');
+    if (!kids() && !cfg.auto && cfg.jogo !== 'solo') { st.aguardaVirar = i; return jogo(); } // manual: primeiro vira as cartas, depois toca em "pronto" pra passar a vez
     fimDeAcao(i);
   }
   function palpitar(id) {

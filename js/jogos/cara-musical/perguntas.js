@@ -1,7 +1,8 @@
 import './dados-extra.js'; // completa o elenco com os atributos novos (cantor, ativo, grande, anos80_90, varias, instrumento)
 // Perguntas do Cara a Cara Musical. Cada pergunta olha UM atributo (da entidade ou da foto) e só vale quando o atributo está verificado (true/false) em TODOS os alvos da mesa.
 // kids: texto curtinho com ícone (modo Kids); classico: texto normal. `por_que` aparece depois da resposta (fala do Paul).
-export const PERGUNTAS = [
+const TODAS = [
+  { id: 'mulher', de: 'entidade', attr: 'mulher', kids: 'É uma mulher?', classico: 'é uma mulher?', icone: '👩', kidsOk: true, porque: 'conta se o artista é uma mulher; bandas e grupos não contam.' },
   { id: 'banda', de: 'entidade', attr: 'banda', kids: 'É uma banda?', classico: 'é uma banda?', icone: '🎸', kidsOk: true, porque: 'banda é um grupo de músicos que toca junto.' },
   { id: 'solo', de: 'entidade', attr: 'solo', kids: 'É uma pessoa só?', classico: 'é uma pessoa só (artista solo)?', icone: '🧍', kidsOk: true, porque: 'artista solo é uma pessoa sozinha.' },
   { id: 'dupla', de: 'entidade', attr: 'dupla', kids: 'São duas pessoas?', classico: 'é uma dupla ou colaboração?', icone: '👥', kidsOk: false, porque: 'dupla ou colaboração é quando duas pessoas aparecem juntas.' },
@@ -26,5 +27,8 @@ export const PERGUNTAS = [
   { id: 'varias', de: 'foto', attr: 'varias', kids: 'Tem mais de uma pessoa na foto?', classico: 'aparece mais de uma pessoa na foto?', icone: '👥', kidsOk: true, porque: 'olha só a foto e conta as pessoas que aparecem.' },
   { id: 'instrumento', de: 'foto', attr: 'instrumento', kids: 'Aparece um instrumento na foto?', classico: 'aparece um instrumento na foto (guitarra, baixo, bateria, baquetas)?', icone: '🥁', kidsOk: true, porque: 'olha a foto: tem guitarra, baixo, bateria ou baquetas aparecendo?' },
 ];
-export const BY_Q = Object.fromEntries(PERGUNTAS.map((p) => [p.id, p]));
+// só estas perguntas aparecem nas mesas (escolhidas pela Bea); as outras ficam guardadas pra partidas antigas/online que ainda as citem
+const MANTER = ['banda', 'solo', 'dupla', 'brasileiro', 'rock', 'pop', 'punk', 'baterista', 'ativo', 'instrumento', 'mulher'];
+export const PERGUNTAS = TODAS.filter((q) => MANTER.includes(q.id));
+export const BY_Q = Object.fromEntries(TODAS.map((p) => [p.id, p]));
 export const textoDe = (q, modo) => (modo === 'kids' ? q.kids : q.classico);

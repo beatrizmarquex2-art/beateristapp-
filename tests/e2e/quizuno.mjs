@@ -9,16 +9,22 @@ const titulos = await p.locator('.jg-card').allInnerTexts(); const iU = titulos.
 check('o quiz Uno Musical aparece logo depois do Uno', /quiz Uno Musical/.test(titulos[iU + 1] || ''), titulos.join(' | ').slice(0, 200));
 const roletasAntes = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); await import('/js/figurinhas/rewards.js'); return P.active().id; });
 await p.goto(`${url}/aluno.html#/jogos/quizuno`); await p.waitForSelector('.qz-op', { timeout: 10000 });
-for (let i = 0; i < 5; i++) { // acerta as 5: lê a certa pelo botão que vira .certo depois de errar de propósito? não: acha pela lógica
-  const nome = await p.evaluate(async () => { const Z = await import('/js/jogos/quizuno-logic.js'); const sym = [...document.querySelectorAll('.qz-card svg')][0]; return sym ? sym.outerHTML : ''; });
-  const certo = await p.evaluate(async () => { const { SYMS } = await import('/js/jogos/cartas-simbolos.js'); const { symbolEl } = await import('/js/jogos/cartas-simbolos.js'); const { nomeDe } = await import('/js/jogos/quizuno-logic.js'); const html = document.querySelector('.qz-card svg').outerHTML; const sym = SYMS.find((s) => symbolEl(s, 'cx-sym').outerHTML === html); return nomeDe(sym); });
-  await p.locator('.qz-op', { hasText: new RegExp(`^${certo.replace(/[()>]/g, '\\$&')}$`) }).click(); await sleep(i < 4 ? 900 : 300);
+const tipos = new Set(); const figs = [];
+for (let i = 0; i < 5; i++) { // acerta as 5 lendo a resposta certa do atributo de teste
+  const c = await p.locator('.qz-ops').getAttribute('data-certa'); tipos.add(await p.locator('.qz-ops').getAttribute('data-tipo'));
+  figs.push((await p.locator('.qz-card').getAttribute('aria-label')) + await p.locator('.qz-card').innerHTML().then((x) => x.length));
+  await p.locator(`.qz-op[data-i="${c}"]`).click(); await sleep(i < 4 ? 900 : 300);
 }
 await p.waitForSelector('.jg-result', { timeout: 6000 }); await sleep(600);
 const txt = await p.locator('.jg-result').innerText();
-check('5 certas seguidas: "perfeito" e 1 giro da roleta', /perfeito/.test(txt) && /1 giro da roleta/.test(txt), txt);
-const roletas = await p.evaluate(async () => { const FR = await import('/js/figurinhas/rewards.js'); return FR.pending(); });
-check('o giro está esperando na roleta', roletas === 1, String(roletas));
+check('5 certas seguidas: "perfeito" e 1 estrela', /perfeito/.test(txt) && /1 estrela/.test(txt), txt);
+const est = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); return (P.progOf(P.active().id).mesa || {}).total || 0; });
+check('a estrela entrou na conta', est === 1, String(est));
+await p.locator('button:has-text("jogar de novo")').click(); await sleep(400);
+const prim = await p.evaluate(() => document.querySelector('.qz-ops').dataset.tipo);
+check('cada rodada sorteia perguntas de figura→nome ou nome→figura', ['figura', 'nome'].includes(prim));
+const ant = JSON.parse(await p.evaluate(() => localStorage.getItem('beaterista-quizuno-recentes')));
+check('a rodada seguinte foge das figuras da anterior (5 recentes guardadas)', Array.isArray(ant) && ant.length === 5);
 await p.goto(`${url}/aluno.html#/album/Pacotes`); await p.waitForSelector('.al-subnav', { timeout: 10000 });
 check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()).includes('roleta'));
 const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);

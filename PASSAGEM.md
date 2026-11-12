@@ -452,6 +452,34 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - acordes: violão 7 maiores + 7 menores, cada cartão com ouvir no violão / guitarra / baixo; teclado maior e menor com piano e elétrico (função `piano()` em estudos-som.js)
 - `vitoria(jogo, n, chave)` / `ganhou(jogo, n, chave)`: a `chave` (jogo+música/nível/tema) paga até 3 ★ NA VIDA e só a diferença (`pagarChave` em mesa-logic.js, livro-caixa em `mesa.pago`). Chaves usadas: duelo toca (exercício+bpm), duelo beat hero (música+nível), duelo quebra (imagem+tamanho), memória (tema+pares), teoria (sessão), ritmo secreto (padrão). Beat Hero solo e fases já eram "melhor por música/nível". Jogos sem conteúdo fixo (Uno, bingo, stop, cara, velha) seguem só com o limite de 30 ★/dia
 
+## v388 — cara a cara manual, violão em símbolos
+- Cara a Cara (eliminar "manual", contra Paul/dupla): depois da pergunta some a lista e aparece "pronto, já virei" → só então passa a vez (antes passava na hora e não dava pra virar). `st.aguardaVirar` em cara-musical/tela.js; teste tests/e2e/cara-manual.mjs
+- Violão (aba Tocar): sons em símbolos 🎸 violão (padrão) ⚡ 🤘; abafar vira só 🔉 pequeno
+- instruments.js: pluck/mallet esperam o áudio destravar (1º toque no iPhone). Violão/xilofone sem som no iPhone da Bea: NÃO reproduzido no Chromium; se persistir, pedir detalhes
+
+## v389 — regras de estrela (pedido da Bea)
+- jogo da velha, Uno e memória (temas de artistas etc.): só ganham em 2 celulares logados, 1 ★ por vitória; contra o Paul / mesmo aparelho NÃO ganha nada
+- memória, tema "figuras e pausas" (`th.id === 'figuras'`): 1 ★ ao completar, até contra o robô ou em 2 no mesmo aparelho
+- quiz Uno: acertar as 5 = 1 ★ (não é mais giro da roleta), a cada rodada jogada; perguntas diferentes (foge das 5 da rodada anterior, tipo figura→nome ou nome→figura); recentes em localStorage `beaterista-quizuno-recentes`
+- `ESTRELAS_JOGO`: velha/memoria/cartas/quizuno = 1; cara/stop/bingo = 3
+
+## v390 — Cara a Cara: perguntas em cima, em carrossel
+- perguntas viraram carrossel horizontal (`.cm-carro .cm-qc`, ~3 visíveis, arrastar pro lado) ACIMA das cartas, local e online; "mais perguntas" removido
+- botão virar = só ↻ (desvirar ↩); legenda no menu (modo manual) e na mensagem depois da resposta
+
+## v391 — Cara a Cara mais limpo + só as perguntas da Bea
+- perguntas mantidas (MANTER em perguntas.js): banda, solo, dupla, brasileiro, rock, pop, punk, baterista, ativo, instrumento(foto) + NOVA "é uma mulher?" (attr `mulher` em dados-extra.js: solo mulher = true, solo homem/banda = false, dupla mista/Paramore/Gorillaz/Beaterista = null). As outras ficam em TODAS/BY_Q só pra logs antigos
+- chips de pergunta em texto curto (kids), sem emoji nem quadrados; virar = ✕ pequeno sem contorno
+
+## v392 — contas, lista curta e limite de 2 aparelhos
+- entrar direto (nome+código) já salva o aluno em "trocar aluno" (`CONTAS.guardarConta` na entrada + `guardarAtual` no boot)
+- "trocar aluno" e "voltar pra sala" (Jogos): só 2 itens + setinha ▾ +N (`js/lista-curta.js`)
+- limite de 2 aparelhos por código: cliente manda `p_aparelho` (id aleatório em localStorage `beaterista-aparelho-id`) pra `aluno_acesso`; sai/tirar da lista chama `aluno_sair`. SERVIDOR: supabase/013_aparelhos.sql (NÃO aplicado até a Bea aprovar a migração; sem ela o app funciona igual, só sem limite). Vaga parada 30 dias libera sozinha. Cliente cai no `aluno_codigo_ok` se a função nova não responder
+- Uno Musical (#/jogos/cartas) continua TRANCADO sem código, mesmo entrando por sala (acesso.js)
+
+## v393 — cara a cara sem brancos + aparelho da professora
+- cara a cara: perguntas, resposta do Paul e cartas só com contorno branco e texto branco (sem fundo branco)
+- aparelho da professora: quem entra num aparelho com código de professora (tipo 'prof') marca `beaterista-aparelho-prof`; esse aparelho não manda id e NÃO ocupa vaga dos alunos (limite de 2). Precisa entrar uma vez com o código de professora no iPad
 ## Taiko, Toca Aqui em novo visual e rudimentos (nov/2026, só na branch `claude/awesome-ptolemy-97wluo`, NÃO publicado)
 - **Taiko** (esquerda = agudo, direita = grave) mora no Toca Aqui (`js/kids/taiko.js`, regras puras em `taiko-logic.js`, teste `tests/e2e/taiko.mjs`). A Bea mandou **guardar**: ele vai virar a base de um **jogo de rudimentos** que vão montar em seguida (não apagar; reaproveitar o motor de notas descendo e a janela de acerto folgada).
 - **Desenho da caixa**: está **provisório** (só o contorno) em `js/kids/drum-art.js`; a Bea vai procurar o definitivo. Os pads do Toca Aqui normal e do taiko usam `drumSvg()` (um lugar só pra trocar).

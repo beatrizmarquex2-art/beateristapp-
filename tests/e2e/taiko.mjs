@@ -3,6 +3,7 @@ import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve();
 const { browser, ctx } = await launch();
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
 await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos/toca/livre'); await sleep(800);

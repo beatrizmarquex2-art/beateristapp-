@@ -15,7 +15,7 @@ export const starsPct = (certas, total) => { const p = total ? certas / total : 
 export const starsErros = (erros) => (erros === 0 ? 3 : erros <= 2 ? 2 : 1);
 
 /** Estrelas por vitória em cada jogo (todo jogo dá estrela, pra querer ficar jogando). Os que ensinam variam com o desempenho (starsPct/starsErros). */
-export const ESTRELAS_JOGO = { velha: 1, memoria: 3, cara: 3, stop: 3, bingo: 3, cartas: 3 };
+export const ESTRELAS_JOGO = { velha: 1, memoria: 1, cara: 3, stop: 3, bingo: 3, cartas: 1, quizuno: 1 };
 /** Quebra-cabeça: 3 ★ na 1ª vez que monta cada imagem; quando todas já foram montadas, uma 2ª volta vale 2 ★ por imagem; na 3ª volta (e depois) 1 ★.
  *  `q` = { volta, feitas:[ids] } (a volta atual e as imagens já montadas nela). Puro: devolve o novo estado e as estrelas. */
 export function premioQuebra(q, imgId, total) {
