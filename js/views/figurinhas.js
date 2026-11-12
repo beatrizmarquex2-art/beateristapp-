@@ -11,6 +11,7 @@ import { createBook } from '../figurinhas/livro.js';
 import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
 import * as EstCard from '../figurinhas/estrelas-card.js';
+import * as LEND from '../figurinhas/lendarias.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
@@ -103,13 +104,20 @@ export function mount(host, parts = [], opts = {}) {
 
   /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */
   function lendariasView() {
-    const slot = (i) => h('div', { class: 'ld-slot', 'aria-label': `lendária ${i + 1} trancada` }, h('i', { class: 'ld-brilho', 'aria-hidden': 'true' }), h('span', { class: 'ld-cad', 'aria-hidden': 'true' }, '🔒'), h('b', {}, `lendária ${i + 1}`));
+    const tem = (c) => LEND.temLendaria(state, c.codigo);
+    const slot = (c) => h('button', { type: 'button', class: `ld-slot ld-card${tem(c) ? ' on' : ''}`, 'aria-label': `${c.nome}, lendária${tem(c) ? '' : ', trancada'}`, onclick: () => verLendaria(c) },
+      h('img', { src: c.img, alt: '', loading: 'lazy', draggable: 'false' }), tem(c) ? null : h('span', { class: 'ld-cad', 'aria-hidden': 'true' }, '🔒'), h('i', { class: 'ld-brilho', 'aria-hidden': 'true' }));
+    const n = LEND.LENDARIAS.filter(tem).length;
     return h('section', { class: 'fig-col ld' },
       h('h2', { class: 'tag' }, '✨ Lendárias'),
-      h('p', { class: 'muted' }, 'figurinhas exclusivas de quem compra na Lojinha da Beaterista. cada produto libera algumas. não saem na roleta.'),
-      h('div', { class: 'ld-grid' }, ...Array.from({ length: 6 }, (_, i) => slot(i))),
-      h('p', { class: 'fig-note' }, 'as lendárias estão chegando. com 3 produtos da Lojinha você resgata as suas figurinhas lendárias.'),
+      h('p', { class: 'muted' }, `figurinhas exclusivas de quem compra na Lojinha da Beaterista. não saem na roleta. você tem ${n} de ${LEND.LENDARIAS.length}.`),
+      h('div', { class: 'ld-grid' }, ...LEND.LENDARIAS.map(slot)),
+      h('p', { class: 'fig-note' }, 'com 3 produtos da Lojinha você resgata as suas figurinhas lendárias.'),
       h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'resgate suas figurinhas lendárias'));
+  }
+  function verLendaria(c) {
+    sheet(c.nome, (close) => h('div', { class: 'ld-ver' }, h('img', { class: LEND.temLendaria(state, c.codigo) ? '' : 'ld-bloq', src: c.img, alt: c.nome }),
+      h('p', { class: 'muted' }, LEND.temLendaria(state, c.codigo) ? 'lendária sua!' : 'trancada: resgate com 3 produtos da Lojinha.'), h('button', { type: 'button', class: 'btn wide', onclick: close }, 'fechar')));
   }
 
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */

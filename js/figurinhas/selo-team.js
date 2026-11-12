@@ -13,12 +13,12 @@ export const SELO_TEAM = {
 };
 const FONTE = "'Hanken Grotesk', system-ui, sans-serif";
 /** Escreve BEATERISTA TEAM no canvas (ctx já na escala do cartão 360 x 475). */
-export function selosTeamCanvas(ctx, id) {
+export function selosTeamCanvas(ctx, id, texto = TEXTO_TEAM) {
   const s = SELO_TEAM[id]; if (!s) return;
   ctx.save(); ctx.translate(s.cx, s.cy); ctx.rotate((s.ang * Math.PI) / 180); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = s.cor;
   let size = 12; ctx.font = `800 ${size}px ${FONTE}`; if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0.6px';
-  const w = ctx.measureText(TEXTO_TEAM).width; if (w > s.w) { size = Math.max(6, size * (s.w / w)); ctx.font = `800 ${size}px ${FONTE}`; }
-  ctx.fillText(TEXTO_TEAM, 0, 0.5); ctx.restore();
+  const w = ctx.measureText(texto).width; if (w > s.w) { size = Math.max(6, size * (s.w / w)); ctx.font = `800 ${size}px ${FONTE}`; }
+  ctx.fillText(texto, 0, 0.5); ctx.restore();
 }
 /** O mesmo em SVG (texto ajustado pela largura). */
 export function seloTeamSVG(id, texto = TEXTO_TEAM) {
