@@ -36,7 +36,7 @@ const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'toque as figuras no tempo · microfone vale mais ★'],
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
-  ['rudimentos', 'Rudimentos', 'toca.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
+  ['rudimentos', 'Taiko', 'toca.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['quizuno', 'quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'bingo', 'bingo.webp', bingo],
@@ -71,7 +71,6 @@ const SECTIONS = [
     link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
     link('#/dicas/cruzadinha', LETRAS.cruzadinha[0], 'cruza.svg', LETRAS.cruzadinha[1]),
     link('#/dicas/quiz', LETRAS.quiz[0], 'quiz.svg', LETRAS.quiz[1]),
-    link('#/dicas/duelo', LETRAS.duelo[0], 'cara-a-cara.webp', LETRAS.duelo[1]),
   ]],
 ];
 

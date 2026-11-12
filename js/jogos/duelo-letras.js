@@ -14,8 +14,9 @@ export { sementeRnd };
 export const notaLetras = (modo) => (r) => (modo === 'tempo' ? [r.found | 0, -(r.erros | 0), -(r.ms | 0)] : [r.done ? 1 : 0, r.done ? 1e7 - (r.ms | 0) : (r.found | 0), -(r.erros | 0)]);
 const seg = (ms) => `${(ms / 1000).toFixed(1)} s`;
 
-export function mountDueloLetras(host) {
-  let D = null; let T = null; const cfg = { jogo: 'caca', modo: 'primeiro', seg: 120 };
+/** `fixo`: se o duelo foi aberto de dentro de um jogo (caça-palavras, cruzadinha ou quiz), esse jogo já vem escolhido e a escolha some. */
+export function mountDueloLetras(host, fixo = null) {
+  let D = null; let T = null; const cfg = { jogo: NOMES[fixo] ? fixo : 'caca', modo: 'primeiro', seg: 120 };
   return mountDueloBase(host, {
     jogo: 'letras', titulo: 'Letras', sub: 'duelo em 2 celulares', voltar: ['#/dicas', '‹ letras'], semCabecalho: true,
     async carregar() { D = (await import('../views/dicas.js'))._duelo; T = await import('../tips.js'); },
@@ -27,7 +28,7 @@ export function mountDueloLetras(host) {
         else { const rnd = sementeRnd(seed); const qs = []; const vistos = new Set(); for (let k = 0; k < 60 && qs.length < Math.min(10, its.length); k++) { const q = T.question(its, ['blank', 'continua'][Math.floor(rnd() * 2)], rnd); if (!vistos.has(q.item.n)) { vistos.add(q.item.n); qs.push(q); } } c.qs = qs; }
         return c;
       }, nodes: [
-        linha('jogo', chips(Object.entries(NOMES), cfg.jogo, (v) => { cfg.jogo = v; redraw(); }, 'Jogo')),
+        NOMES[fixo] ? null : linha('jogo', chips(Object.entries(NOMES), cfg.jogo, (v) => { cfg.jogo = v; redraw(); }, 'Jogo')),
         linha('quem vence', chips([['primeiro', 'quem termina primeiro'], ['tempo', 'por tempo']], cfg.modo, (v) => { cfg.modo = v; redraw(); }, 'Como vence')),
         cfg.modo === 'tempo' ? linha('tempo', chips(TEMPOS, cfg.seg, (v) => { cfg.seg = v; redraw(); }, 'Tempo')) : null,
         h('p', { class: 'jg-p muted' }, cfg.modo === 'tempo' ? 'os dois jogam o mesmo tempo. vence quem achar mais (empate: menos erros).' : 'começam juntos e vence quem terminar primeiro (até 6 min).')] };
