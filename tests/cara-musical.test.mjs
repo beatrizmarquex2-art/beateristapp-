@@ -20,10 +20,10 @@ test('o álbum não foi alterado: catálogo com 125 fotos, 101 comuns, 14 raras,
   const n = (r) => cat.filter((c) => c.raridade === r).length; assert.deepEqual([n('Comum'), n('Rara'), n('Exclusiva')], [101, 14, 10]);
   for (const c of cat) assert.ok(fs.existsSync(new URL(`../assets/figurinhas/fotos/${c.codigo}.jpeg`, import.meta.url)), c.codigo);
 });
-test('entidades próprias: Beatles (banda) e integrantes são alvos diferentes; duplas são entidades próprias; sem gênero nem raridade nas perguntas', () => {
+test('entidades próprias: Beatles (banda) e integrantes são alvos diferentes; duplas são entidades próprias; sem raridade nas perguntas (a pergunta "é uma mulher?" foi pedida pela Bea, por dados públicos)', () => {
   assert.ok(BY_ID['the-beatles'].attrs.banda && BY_ID['john-lennon-the-beatles'].attrs.solo && BY_ID['john-lennon-e-paul-mccartney-the-beatles'].attrs.dupla);
   assert.ok(BY_ID['the-beatles'].fotos.length > 10);
-  assert.ok(!PERGUNTAS.some((q) => /mulher|homem|gênero|rar|exclusiv/i.test(`${q.kids} ${q.classico} ${q.attr}`)));
+  assert.ok(!PERGUNTAS.some((q) => /homem|gênero|rar|exclusiv/i.test(`${q.kids} ${q.classico} ${q.attr}`)));
 });
 test('mesas: tamanhos 6/12 (kids) e 12/20 (clássico), sem entidade repetida, com solução, só perguntas verificadas e todas coerentes com cada carta', () => {
   for (const [modo, tam] of [['kids', 6], ['kids', 12], ['classico', 12], ['classico', 20]]) for (let s = 1; s <= 40; s++) {

@@ -53,3 +53,9 @@
 .cm-qi{font-size:30px;line-height:1}.cm-qc small{font-size:12px;line-height:1.15;font-weight:700;text-align:center;overflow-wrap:anywhere}
 .cm-root .jg-flip{min-height:36px;width:36px;padding:0;border-radius:50%;font-size:20px;line-height:1;justify-self:center;margin-top:2px}
 .cm-root .cm-cell .jg-flip{display:block;margin:4px auto 0}
+
+/* limpo: perguntas em pílulas de texto (sem emoji, sem quadrados) e ✕ pequeno sem contorno */
+.cm-qc{flex:0 0 auto;display:block;min-height:0;padding:9px 14px;border:0;border-radius:99px;background:#fffdf7;box-shadow:none;white-space:nowrap;font-size:13px;font-weight:700;color:#12284a}.cm-qc:active{transform:none;background:#ffd23f;box-shadow:none}
+.cm-carro{gap:8px;padding:2px 0 6px}
+.cm-root .cm-cell .jg-flip{min-height:22px;width:22px;margin:2px auto 0;border:0;background:transparent;font-size:12px;opacity:.75;color:#fffdf8}.cm-root .cm-cell .jg-flip[aria-pressed="true"]{background:#fffdf8;color:#12284a;opacity:1}
+.cm-qc{min-height:44px;display:grid;place-items:center}

@@ -466,3 +466,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## v390 — Cara a Cara: perguntas em cima, em carrossel
 - perguntas viraram carrossel horizontal (`.cm-carro .cm-qc`, ~3 visíveis, arrastar pro lado) ACIMA das cartas, local e online; "mais perguntas" removido
 - botão virar = só ↻ (desvirar ↩); legenda no menu (modo manual) e na mensagem depois da resposta
+
+## v391 — Cara a Cara mais limpo + só as perguntas da Bea
+- perguntas mantidas (MANTER em perguntas.js): banda, solo, dupla, brasileiro, rock, pop, punk, baterista, ativo, instrumento(foto) + NOVA "é uma mulher?" (attr `mulher` em dados-extra.js: solo mulher = true, solo homem/banda = false, dupla mista/Paramore/Gorillaz/Beaterista = null). As outras ficam em TODAS/BY_Q só pra logs antigos
+- chips de pergunta em texto curto (kids), sem emoji nem quadrados; virar = ✕ pequeno sem contorno

@@ -56,7 +56,7 @@ await v.locator('.cm-livre-in').fill('ele toca bateria?'); await v.locator('butt
 check('[livre] o outro celular LÊ a pergunta escrita e mostra os botões SIM e NÃO', (await o.locator('.cm-livre-txt').innerText()).includes('ele toca bateria?') && (await o.locator('.cm-livre button:text-is("SIM")').count()) === 1 && (await o.locator('.cm-livre button:text-is("NÃO")').count()) === 1);
 check('[livre] não responde sozinho (continua esperando)', (await v.locator('.cm-root p[aria-live=polite]').first().innerText()).includes('esperando o outro'));
 await o.locator('.cm-livre button:text-is("SIM")').click(); await sleep(3000);
-check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('↻'));
+check('[livre] quem perguntou vê o SIM e a dica de virar as cartas', /SIM/.test(await v.locator('.cm-paul').innerText()) && (await v.locator('.cm-paul').innerText()).includes('✕'));
 check('[livre] a vez passou pro outro', await vez(o) && !(await vez(v)));
 check('[livre] conta como pergunta (1) e nenhuma carta saiu sozinha', (await v.locator('.jg-who').nth(0).locator('span').innerText()) === '1' && (await v.locator('.cm-cell.out').count()) === 0);
 if (SHOT) await v.screenshot({ path: `${SHOT}/livre-virar.png` });
