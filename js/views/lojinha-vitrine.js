@@ -2,7 +2,7 @@
 // Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, AVISO_DIGITAL } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBO, AVISO_DIGITAL } from '../loja-config.js';
 
 const comprar = (item) => () => {
   if (item.link) { window.open(item.link, '_blank', 'noopener'); return; }
@@ -23,8 +23,16 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
+/** Destaque do combo Black Friday: primeira coisa da Lojinha. */
+function destaqueCombo() {
+  return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
+    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
+}
+
 export function vitrine() {
   return h('div', { class: 'lj' },
+    destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
     h('p', { class: 'lj-apostila' }, 'Apostila Didática Beaterista', h('small', {}, 'para evolução musical')),
@@ -36,3 +44,4 @@ export function vitrine() {
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }
+

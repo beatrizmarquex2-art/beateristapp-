@@ -1,0 +1,52 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apostila Robôterista · Kit Black Friday</title>
+<style>@font-face{font-family:Anton;src:url(img/anton.woff2) format('woff2')}
+:root{--vinho:#a8182e;--navy:#10234a;--creme:#f3eadc;--ouro:#f2c14e}
+*{box-sizing:border-box}body{margin:0;background:var(--creme);color:var(--navy);font-family:system-ui,sans-serif}
+.wrap{max-width:980px;margin:auto;padding:24px 16px}
+h1{font:900 clamp(38px,9vw,84px)/1.05 Anton,Anton,Impact,sans-serif;text-transform:uppercase;margin:8px 0}
+h1 em{color:var(--vinho);font-style:normal;display:block}
+.top{background:var(--vinho);color:var(--creme);padding:28px 16px 40px;clip-path:polygon(0 0,100% 0,100% 94%,60% 100%,0 94%)}
+.top h1 em{color:var(--ouro)} .tag{font:13px ui-monospace,monospace;letter-spacing:.08em}
+.preco{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-top:14px}
+.preco s{opacity:.7;font-size:20px}.preco b{font:900 56px Anton,Impact,sans-serif;color:var(--ouro)}.preco span{background:var(--navy);padding:6px 12px;border-radius:6px;font-weight:700}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 14px}
+.tabs button{border:2px solid var(--navy);background:#fff;color:var(--navy);padding:8px 14px;border-radius:6px;font-weight:700;box-shadow:3px 3px 0 var(--navy);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--navy);color:var(--creme)}
+.painel{display:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:center;background:#fff;border:2px solid var(--navy);border-radius:10px;padding:18px;box-shadow:6px 6px 0 var(--vinho)}
+.painel.on{display:grid}.painel img{width:100%;border-radius:6px}.painel .pg{font:13px ui-monospace,monospace}
+.painel a{display:inline-block;margin-top:10px;background:var(--vinho);color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:700}
+.lend{background:#0b0b0d;color:var(--ouro);margin:34px -16px 0;padding:34px 16px;text-align:center}
+.lend h2{font:900 34px Anton,Impact,sans-serif;text-transform:uppercase;margin:0 0 4px}
+.cards{display:flex;gap:12px;overflow-x:auto;padding:22px 6px;justify-content:center;flex-wrap:wrap}
+.card{width:150px;position:relative;border-radius:10px;overflow:hidden;filter:drop-shadow(0 0 14px #f2c14e88);transition:transform .25s;transform-style:preserve-3d}
+.card:hover{transform:translateY(-8px) rotate(-2deg) scale(1.06)}
+.card img{display:block;width:100%}
+.card:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,#fff9 48%,#ffd86655 52%,transparent 70%);background-size:250% 100%;animation:brilho 3.2s infinite;mix-blend-mode:screen}
+.card:nth-child(2):after{animation-delay:.5s}.card:nth-child(3):after{animation-delay:1s}.card:nth-child(4):after{animation-delay:1.5s}.card:nth-child(5):after{animation-delay:2s}
+@keyframes brilho{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}
+@media(prefers-reduced-motion:reduce){.card:after{animation:none}}
+.cta{display:block;text-align:center;background:var(--ouro);color:var(--navy);font:900 22px Anton,Impact,sans-serif;padding:16px;border-radius:8px;text-decoration:none;margin:26px 0;box-shadow:4px 4px 0 var(--navy)}
+@media(max-width:700px){.painel.on{grid-template-columns:1fr}}
+</style></head><body>
+<div class="top"><div class="wrap" style="padding:0">
+<div class="tag">BEATERISTA ESCOLA DE MÚSICA · BLACK FRIDAY</div>
+<h1>Apostila<em>Robôterista</em></h1>
+<p>O kit completo do Paul: 4 materiais pra imprimir + 5 figurinhas lendárias de presente.</p>
+<div class="preco"><s>de R$ 99,60</s><b>R$ 79,90</b><span>4 materiais + 5 lendárias</span></div></div></div>
+<div class="wrap">
+<div class="tabs" role="tablist" id="tabs"></div><div id="paineis"></div>
+<div class="lend"><h2>5 lendárias de presente</h2><div>exclusivas de quem compra · não saem na roleta</div>
+<div class="cards"><div class="card"><img src="lendarias-png/lendaria-01.png" alt="Guitarrista da Tempestade"></div><div class="card"><img src="lendarias-png/lendaria-02.png" alt="Rei do Pixel Roxo"></div><div class="card"><img src="lendarias-png/lendaria-03.png" alt="Construtor de Notas"></div><div class="card"><img src="lendarias-png/lendaria-04.png" alt="Baterista Cósmico"></div><div class="card"><img src="lendarias-png/lendaria-05.png" alt="Sineiro do Castelo"></div></div></div>
+<a class="cta" href="#" id="cta">QUERO O KIT · R$ 79,90</a>
+</div>
+<script>
+const P=[['ritmo','Ritmo e Figuras','100 páginas','figuras, pausas, jogos, partituras e levadas de rock','R$ 29,90','https://pay.hotmart.com/Q108426927S'],
+['harmonia','Harmonia e Melodia','102 páginas','notas, pauta e acordes no teclado e no violão','R$ 29,90','https://pay.hotmart.com/L108460189W'],
+['pratica','Na Prática','48 atividades · 64 páginas','jogos, cruzadinhas e labirintos, com gabarito','R$ 19,90','https://pay.hotmart.com/V108460210V'],
+['memoria','Jogo da Memória Musical','61 pares','8 temas pra imprimir, recortar e embaralhar','R$ 19,90','https://pay.hotmart.com/T108261878K']];
+const t=document.getElementById('tabs'),pn=document.getElementById('paineis');
+P.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[1];b.role='tab';b.setAttribute('aria-selected',i==0);b.onclick=()=>sel(i);t.append(b);
+const d=document.createElement('div');d.className='painel'+(i==0?' on':'');d.innerHTML=`<img src="img/${p[0]}.png" alt="Capa ${p[1]}"><div><h2>${p[1]}</h2><div class="pg">${p[2]}</div><p>${p[3]}</p><b>${p[4]} separado</b><br><a href="${p[5]}">ver este material</a></div>`;pn.append(d)});
+function sel(i){[...t.children].forEach((b,j)=>b.setAttribute('aria-selected',i==j));[...pn.children].forEach((d,j)=>d.classList.toggle('on',i==j))}
+</script></body></html>
