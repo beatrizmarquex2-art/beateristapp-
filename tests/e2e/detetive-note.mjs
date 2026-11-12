@@ -17,6 +17,7 @@ const monta = async (fase, certo = true) => {
 };
 const abre = async (pos) => { await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await page.waitForSelector('.dn-card'); };
 await abre(0);
+check('fase 1: o botão de ouvir diz o som da fase (caixa)', /\(caixa\)/.test(await page.textContent('.dn-ouvir')));
 check('fase 1: só 2 cartas e o cabeçalho sem texto de fase (só 3 bolinhas dos ritmos)', (await page.locator('.dn-card').count()) === 2 && !/fase|ritmo/i.test(await page.textContent('.tr-fasehead')) && (await page.locator('.dn-dots i').count()) === 3);
 check('figuras sem pauta: as cartas não têm a linha da pauta', await page.evaluate(() => [...document.querySelectorAll('.dn-card svg')].every((s) => ![...s.querySelectorAll('line')].some((l) => l.getAttribute('y1') === l.getAttribute('y2')))));
 check('tem a escolha de 80 ou 100 BPM, com 80 marcado', (await page.locator('.dn-bpm').count()) === 2 && (await page.locator('.dn-bpm.on').textContent()).trim() === '80');
@@ -30,10 +31,13 @@ await sleep(1500);
 for (let r = 1; r < 3; r++) { await monta(1, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1500); }
 check('3 ritmos acertados: fase concluída com estrelas e botão da próxima fase', /fase 1 concluída/.test(await page.textContent('.jg-detetive')) && (await page.getByRole('button', { name: /próxima fase/ }).count()) === 1);
 check('errou de primeira no 1º ritmo, então não são 3 estrelas', (await page.getAttribute('.dn-estrelas', 'aria-label')) === '2 de 3 estrelas', await page.getAttribute('.dn-estrelas', 'aria-label'));
-await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
+await page.getByRole('button', { name: /próxima fase/ }).click(); await page.waitForSelector('.dn-card');
+check('a próxima fase toca com outro som (tambor) e ganha a pausa como carta nova', /\(tambor\)/.test(await page.textContent('.dn-ouvir')) && (await page.locator('.dn-card').count()) === 3, await page.textContent('.dn-ouvir'));
+await page.getByRole('button', { name: '‹ mapa' }).click(); await page.waitForSelector('.mp-node');
 await page.locator('.tm-tabs button').nth(2).click(); await page.waitForSelector('.mp-node'); // parque
 await abre(4); // fase 5: entram as semicolcheias
-check('fase 5 do parque: 3 cartas com desenho', (await page.locator('.dn-card').count()) === 3 && (await page.locator('.dn-card i').count()) === 3);
+check('fase 5 do parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i').count()) === 4);
+
 await monta(5, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('parque: monta e confere', (await page.locator('.dn-slot.ok').count()) === 4);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
