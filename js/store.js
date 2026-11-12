@@ -49,7 +49,22 @@ async function step(from, to) {
 export const undo = () => step(undoSt, redoSt);
 export const redo = () => step(redoSt, undoSt);
 
-export const get = (id) => { const r = cache.get(id); return r && !r.deleted ? r : null; };
+/* Área dos alunos: o progresso dos jogos é de cada aluno (nome), não do aparelho. Quem troca de aluno começa do zero e, ao voltar, o que era dele está lá.
+ * Sem nome (app da Bea) nada muda. Os dados que já existiam sem dono passam pra quem está com o nome agora (uma vez só: `beaterista-escopo-migrado`). */
+const POR_ALUNO = new Set(['setting-xp', 'setting-treinos', 'setting-jogos', 'setting-roleta', 'setting-aventura', 'setting-paulta', 'setting-memoria', 'setting-ouvido', 'setting-desafio', 'setting-toque', 'setting-ritmo-hall', 'setting-piano']);
+const MIGRADO = 'beaterista-escopo-migrado';
+const donoAluno = () => { try { return (localStorage.getItem('beaterista-aluno-nome') || window.__alunoNome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30); } catch { return ''; } };
+const chaveAluno = (id) => { if (!POR_ALUNO.has(id)) return id; const d = donoAluno(); return d ? `${id}:${d}` : id; };
+/** Se o aluno ainda não tem o registro e há um antigo sem dono, o antigo passa pra ele (só pra quem chegar primeiro). */
+function herdar(id, k) {
+  if (k === id || cache.has(k)) return;
+  const velho = cache.get(id); if (!velho || velho.deleted) return;
+  let m = ''; try { m = localStorage.getItem(MIGRADO) || ''; } catch { /* ok */ }
+  const d = donoAluno(); if (m && m !== d) return;
+  try { localStorage.setItem(MIGRADO, d); } catch { /* ok */ }
+  const novo = { ...velho, id: k, dirty: 0 }; cache.set(k, novo); db.putRecord(novo).catch(() => {});
+}
+export const get = (id) => { const k = chaveAluno(id); herdar(id, k); const r = cache.get(k); return r && !r.deleted ? r : null; };
 export const pendingCount = () => { let n = 0; for (const r of cache.values()) if (r.dirty) n++; return n; };
 export const allRaw = () => [...cache.values()];
 
@@ -57,6 +72,7 @@ const nextStamp = (prev) => Math.max(Date.now(), (prev || 0) + 1);
 
 /** Cria ou atualiza (merge raso de `patch` em data). */
 export async function upsert(kind, id, patch) {
+  if (id) { const k = chaveAluno(id); herdar(id, k); id = k; }
   const prev0 = id ? cache.get(id) : null;
   const rec = await upsertRaw(kind, id, patch);
   track(rec.id, kind, snap(prev0));

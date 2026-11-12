@@ -569,3 +569,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Bloco grande do combo no topo da Lojinha** (sem aba própria; `destaqueCombo()` em `js/views/lojinha-vitrine.js`, config `COMBO` em `js/loja-config.js`): arte do combo (`assets/loja/combo-black-friday.webp`, original em `assets/originals/artes-beaterista/`) + botão Adquirir pro link Hotmart `K108463375K`, R$ 79,90. Teste: `tests/e2e/lojinha-blackfriday.mjs`. Cache v482. Falta publicar a área dos alunos (e o app da Bea sai com o push na `main`).
 - Arte corrigida: Harmonia agora diz 102 páginas. Preço "de" = R$ 99,60 (soma real dos 4).
 - **Página de vendas (`vendas/index.html`)**: bloco `#combo-roboterista` (do pacote `combo_roboterista_para_site.zip`, Bea nov/2026) logo antes de "Materiais do Robôterista Paul". Imagem corrigida (102 págs) em `vendas/assets/combo-roboterista.webp`; link Hotmart com `?src=vendas`. O bloco diz "de R$ 99,60".
+
+## Progresso por aluno (nov/2026, v487)
+- Bug: "trocar aluno" só trocava nome/código; o progresso dos jogos (Toca Aqui, XP, roleta, aventura, pauLta, memória, ouvido, desafio, toque, piano, `beaterista-jogos`) era do aparelho e o aluno novo herdava tudo.
+- Agora esses registros são por aluno (nome): `js/store.js` (`POR_ALUNO`, chave `id:nome`) e `js/jogos/base.js` (`beaterista-jogos:nome`). App da Bea (sem nome de aluno) não muda. O que já existia sem dono passa **uma vez** pro primeiro aluno que abrir (`beaterista-escopo-migrado`, `beaterista-escopo-jogos`). Teste: `tests/e2e/aluno-progresso-separado.mjs`.
+- Kids (estrelas dos jogos de perguntas) e figurinhas já eram por nome. Fora da lista ficam configurações do aparelho (tema, som, metrônomo…).

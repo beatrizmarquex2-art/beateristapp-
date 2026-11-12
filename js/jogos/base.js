@@ -1,20 +1,23 @@
 // Base compartilhada dos jogos musicais: armazenamento local versionado (cai pra memória se faltar), som opcional e figuras rítmicas em SVG.
 import { audio, out } from '../audio.js';
 
-const KEY = 'beaterista-jogos';
+const KEY0 = 'beaterista-jogos';
+// área dos alunos: cada aluno (nome) tem o seu; os dados antigos do aparelho passam pro primeiro aluno que abrir (uma vez)
+const donoJ = () => { try { return (localStorage.getItem('beaterista-aluno-nome') || window.__alunoNome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30); } catch { return ''; } };
+const chaveJ = () => { const d = donoJ(); if (!d) return KEY0; const k = `${KEY0}:${d}`; try { if (localStorage.getItem(k) == null && localStorage.getItem(KEY0) != null && !localStorage.getItem('beaterista-escopo-jogos')) { localStorage.setItem(k, localStorage.getItem(KEY0)); localStorage.setItem('beaterista-escopo-jogos', d); } } catch { /* ok */ } return k; };
 const SCHEMA = 1;
-let mem = null; // espelho em memória: vale mesmo se o armazenamento do navegador falhar
+let mem = null, memKey = ''; // espelho em memória: vale mesmo se o armazenamento do navegador falhar
 
 const blank = () => ({ v: SCHEMA, sound: true, games: {} });
 function read() {
-  if (mem) return mem;
+  const KEY = chaveJ(); if (mem && memKey === KEY) return mem; memKey = KEY;
   let data = null;
   try { data = JSON.parse(localStorage.getItem(KEY)); } catch { data = null; }
   const ok = data && typeof data === 'object' && data.v === SCHEMA && data.games && typeof data.games === 'object';
   mem = ok ? { ...blank(), ...data, sound: data.sound !== false } : blank();
   return mem;
 }
-function write() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch { /* sem armazenamento: segue em memória */ } }
+function write() { try { localStorage.setItem(chaveJ(), JSON.stringify(mem)); } catch { /* sem armazenamento: segue em memória */ } }
 
 export const soundOn = () => read().sound;
 export function setSound(on) { read().sound = !!on; write(); }
