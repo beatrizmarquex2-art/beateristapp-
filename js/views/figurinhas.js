@@ -13,7 +13,7 @@ import * as Minhas from '../figurinhas/minhas.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
-const LENDARIAS_ON = false; // a aba Lendárias está pronta, mas fica escondida até as figurinhas e o jeito de liberar chegarem
+const LENDARIAS_ON = true; // aba Lendárias liberada (pedido da Bea): por enquanto os espaços ficam trancados até as figurinhas chegarem
 const TABS = [...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Minhas', 'Pacotes'];
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
