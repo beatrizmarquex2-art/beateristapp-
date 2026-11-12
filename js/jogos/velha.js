@@ -73,7 +73,7 @@ export function mount(host, opts) {
         h('div', {}, mark(0), h('b', {}, `${names[0]}`), h('span', {}, String(g.scores[0]))), h('div', {}, h('b', {}, 'empates'), h('span', {}, String(g.draws))), h('div', {}, mark(1), h('b', {}, `${names[1]}`), h('span', {}, String(g.scores[1])))),
       h('p', { class: 'jg-turn', 'aria-live': 'polite' }, `rodada ${g.round}${mission ? ` de ${rounds}` : ''}${status ? ` · ${status}` : ''}`),
       h('div', { class: 'jg-board', role: 'group', 'aria-label': 'tabuleiro 3 por 3' }, ...cells),
-      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, msg),
+      h('p', { class: `jg-msg${msg.startsWith('✓') ? ' ok' : ''}`, 'aria-live': 'polite' }, msg),
       moveBox(canTap),
       fb ? feedback() : null,
       q ? question(q) : null,
@@ -130,8 +130,8 @@ export function mount(host, opts) {
     const q = V.questionById(g.pending.qid); const ok = g.pending.order[pos] === q.answer;
     if (mission) { stat.answered++; if (ok) stat.correct++; }
     g = V.answerQuestion(g, pos);
-    msg = ok ? `isso! ${q.explain}` : `quase! a resposta era “${q.options[q.answer]}”. ${q.explain}`;
-    fb = q.show ? { ...q.show, name: q.options[q.answer] } : null; sfx(ok ? 'place' : 'bad'); after();
+    msg = ok ? `✓ certo! ${q.explain}` : `✗ quase! a resposta era “${q.options[q.answer]}”. ${q.explain}`;
+    fb = q.show ? { ...q.show, name: q.options[q.answer] } : null; sfx(ok ? 'ok' : 'bad'); after();
   }
   function after() { mv = null; persist(); sync(); if (g.over) return finish(); draw(); afterTurn(); }
   function afterTurn() { stop(); if (!g || g.over || g.offer || gone || document.hidden) return; if (V.isPaulTurn(g)) timer = setTimeout(paulStep, reduced() ? 300 : 800); }

@@ -956,3 +956,6 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
 .bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
 .bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+
+/* acerto no jogo da velha: verde com ✓ (o vermelho parecia erro) */
+.jg-msg.ok,.jg-game .jg-msg.ok{color:#1c7a3c}.jg-dark .jg-msg.ok{color:#8be39b}
