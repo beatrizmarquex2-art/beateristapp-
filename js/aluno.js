@@ -540,6 +540,7 @@ async function start() {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
   startScroller();
-  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && !/^#\/(jogos|dicas|ritmo|paulta|kids|piano|violao|xilofone)\/./.test(location.hash) }); // dentro de um jogo a nuvem não aparece: ela cobria botões como o STOP */; // na tela de entrada o balão do Paul cobria o botão "entrar"
+  // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|jogos|tocar|album|lojinha|perfil)?\/?)?$/.test(location.hash) });
   start();
 })();

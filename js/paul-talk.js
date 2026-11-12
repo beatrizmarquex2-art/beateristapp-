@@ -106,7 +106,10 @@ export function think(item, ms = 6500) {
     ? h('a', { class: 'pt-cloud', href, ...(String(href).startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, text)
     : h('span', { class: 'pt-cloud' }, text);
   box.replaceChildren(h('img', { class: 'pt-face', src: 'assets/paul/e02.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }), h('i', { class: 'pt-dot d1' }), h('i', { class: 'pt-dot d2' }), bubble);
-  box.style.bottom = `${document.querySelector('.bottom-nav') ? 96 : 22}px`;
+  // cada vez aparece num lugar: esquerda, meio ou direita, mais embaixo ou um pouco acima
+  const lado = ['flex-start', 'center', 'flex-end'][Math.floor(Math.random() * 3)];
+  box.style.justifyContent = lado;
+  box.style.bottom = `${(document.querySelector('.bottom-nav') ? 96 : 22) + (Math.random() < 0.4 ? 90 + Math.round(Math.random() * 70) : 0)}px`;
   box.classList.remove('out'); void box.offsetWidth; box.classList.add('on');
   // o balão acaba onde a frase acaba: mede a linha mais larga e encolhe até ela
   try {
