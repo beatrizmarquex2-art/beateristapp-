@@ -1,0 +1,171 @@
+<title>Materiais Beaterista</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;600;800&family=Special+Elite&display=swap">
+<style>
+/* layout: faixa vermelha de abertura + uma ficha por produto (capa inclinada, o que tem dentro, preço em selo) + barra de atalhos */
+:root{--red:#b5162b;--navy:#0e2347;--cream:#f1ebe1;--ink:#1b1818;--gold:#f6c44f;--paper:#fffdf8;--line:#1b181833;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 17px/1.5 'Hanken Grotesk',system-ui,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:1;margin:0;text-wrap:balance;letter-spacing:.01em}
+.mono{font-family:'Special Elite',monospace}
+a{color:inherit}
+.btn{display:inline-block;font:400 1.05rem 'Anton',sans-serif;text-transform:uppercase;letter-spacing:.05em;padding:.7em 1.3em;border:2px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 var(--ink);text-decoration:none;background:var(--gold);color:var(--ink)}
+.btn:focus-visible,.nav a:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.btn.red{background:var(--red);color:var(--cream)}.btn.navy{background:var(--navy);color:var(--cream)}
+/* topo */
+.top{background:var(--red);color:var(--cream);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:40px max(16px,env(safe-area-inset-left,0px)) 36px;position:relative;overflow:hidden}
+.top::before{content:'';position:absolute;inset:0;background:radial-gradient(#ffffff22 2px,transparent 2.5px) 0 0/26px 26px}
+.top .wrap{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:end}
+.top h1{font-size:clamp(2.6rem,9vw,5.4rem)}.top h1 em{font-style:normal;color:var(--gold)}
+.top p{max-width:34ch;margin:16px 0 22px;font-size:1.15rem}
+.top img{width:min(260px,100%);justify-self:center;filter:drop-shadow(6px 8px 0 #0004)}
+.bf{display:inline-block;background:var(--gold);color:var(--ink);padding:3px 14px;transform:rotate(-2deg);font-size:1rem;margin-bottom:14px}
+/* atalhos */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--cream);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px));border-bottom:2px solid var(--ink);overflow-x:auto;white-space:nowrap;display:flex;gap:8px}
+.nav a{font:400 .8rem 'Special Elite',monospace;text-decoration:none;border:1.5px solid var(--ink);border-radius:99px;padding:3px 12px;background:var(--paper)}
+/* ficha do produto */
+.prod{padding-block:56px;border-bottom:3px solid var(--ink);scroll-margin-top:60px}
+.prod:last-of-type{border-bottom:0}
+.grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:36px;align-items:start}
+.cov{position:relative}
+.cov img.c{width:100%;border:6px solid #fff;box-shadow:12px 14px 0 #1b181833;transform:rotate(-2.5deg);background:#fff;display:block}
+.cov .tag{position:absolute;left:-8px;top:-14px;background:var(--navy);color:var(--cream);padding:3px 12px;font-family:'Special Elite',monospace;font-size:.85rem;transform:rotate(-4deg)}
+.info h2{font-size:clamp(2rem,6vw,3.2rem);color:var(--navy)}
+.info .sub{font-size:1.15rem;font-weight:600;margin:8px 0 14px}
+.info ul{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:8px}
+.info li{padding-left:28px;position:relative}
+.info li::before{content:'★';position:absolute;left:0;color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.chips span{font:400 .8rem 'Special Elite',monospace;border:1.5px solid var(--ink);border-radius:99px;padding:2px 10px;background:var(--paper)}
+.buy{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.price{display:flex;align-items:center;gap:12px}
+.seal{width:112px;height:112px;border-radius:50%;background:var(--red);color:var(--cream);border:5px solid var(--navy);box-shadow:inset 0 0 0 4px var(--cream),5px 6px 0 #1b18184d;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-6deg);flex:none}
+.seal s{font:400 .9rem 'Anton',sans-serif;opacity:.85}.seal b{font:400 1.7rem/1 'Anton',sans-serif;color:var(--gold)}.seal small{font:.62rem 'Special Elite',monospace}
+.now{font-size:.9rem;max-width:20ch;line-height:1.3}
+.look{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}
+.look figure{margin:0;background:var(--paper);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:8px}
+.look img{width:100%;display:block}
+.look figcaption{font:.85rem 'Special Elite',monospace;padding:6px 2px 0}
+.bonus{background:var(--gold);border:3px solid var(--ink);padding:10px 14px;margin:0 0 16px;font-weight:800}
+/* combo + final */
+.combo{background:var(--navy);color:var(--cream);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:48px max(16px,env(safe-area-inset-left,0px))}
+.combo h2{color:var(--gold);font-size:clamp(2rem,6vw,3.4rem);margin-bottom:12px}
+.combo .grid{align-items:center}
+.final{text-align:center;padding-block:56px}
+.final img{width:150px;margin:0 auto 10px}
+.final .btn{margin:6px}
+.foot{font:.85rem 'Special Elite',monospace;text-align:center;padding-bottom:40px;opacity:.85}
+@media(max-width:760px){.top .wrap,.grid{grid-template-columns:1fr}.top img{width:170px;justify-self:start}.cov{max-width:420px;margin:0 auto}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div>
+    <span class="bf A">black friday · 27/11 a 30/11</span>
+    <h1>materiais <em>beaterista</em></h1>
+    <p>ebooks e atividades da professora Bea. Digitais, em PDF: estude na tela ou imprima pra treinar.</p>
+    <a class="btn" href="#start">ver o mais vendido</a>
+  </div>
+  <img src="img/paul-bateria.webp" alt="Paul, o robô baterista da Beaterista, tocando bateria">
+</div></header>
+
+<nav class="nav" aria-label="Produtos">
+  <a href="#start">Bateria Start</a><a href="#ritmo">Robôterista: Ritmo</a><a href="#melodia">Melodia e Harmonia</a><a href="#mood">Beaterista Mood</a><a href="#violao">Violão do Zero</a><a href="#kids">Linha Kids</a>
+</nav>
+
+<main class="wrap">
+
+<section class="prod" id="start"><div class="grid">
+  <div class="cov"><span class="tag">porta de entrada</span><img class="c" src="img/c-start.webp" alt="Capa do ebook Bateria Start" width="360"></div>
+  <div class="info">
+    <h2>Bateria Start</h2>
+    <p class="sub">ebook para quem está começando do zero.</p>
+    <ul><li>peças da bateria, baqueta e pedal</li><li>figuras rítmicas e partitura de bateria</li><li>rudimentos, viradas e ritmos</li><li>lista de músicas com bpm</li></ul>
+    <div class="chips"><span>44 páginas</span><span>PDF</span><span>iniciante</span></div>
+    <div class="buy"><div class="price"><div class="seal"><s>R$ 29,90</s><b>R$ 14,90</b><small>até 30/11</small></div><p class="now">preço de Black Friday. Depois volta a R$ 29,90.</p></div>
+    <a class="btn red" href="https://pay.hotmart.com/K66533032H">quero o Start</a></div>
+  </div>
+</div>
+<div class="look"><figure><img src="img/d-start.webp" alt="Páginas do ebook Bateria Start" loading="lazy"><figcaption>por dentro do Bateria Start</figcaption></figure></div>
+</section>
+
+<section class="prod" id="ritmo"><div class="grid">
+  <div class="cov"><span class="tag">método com o Paul</span><img class="c" src="img/c-roboterista.webp" alt="Capa do Robôterista Ensina" width="360"></div>
+  <div class="info">
+    <h2>Robôterista Ensina: Ritmo</h2>
+    <p class="sub">aprender, desenhar, recortar e tocar.</p>
+    <ul><li>6 aulinhas com o Paul: tempo, semínima, as 7 figuras, pausas, semicolcheias, tercina e sextina</li><li>desenhe e trace cada figura: cabeça, haste e bandeirinhas</li><li>jogos e desafios: caça-palavras, cruzadinha, contas e “qual vale mais?”</li><li>partituras para tocar em 3 níveis</li><li>cartas para recortar, QR codes pros jogos do app e diploma de Robôterista</li></ul>
+    <div class="chips"><span>PDF para imprimir</span><span>preto e branco: gasta pouca tinta</span><span>crianças e famílias</span></div>
+    <div class="buy"><div class="price"><div class="seal"><s>R$ 29,90</s><b>R$ 19,90</b><small>até 30/11</small></div><p class="now">preço de Black Friday.</p></div>
+    <a class="btn red" href="https://pay.hotmart.com/Q108426927S">quero o Robôterista</a></div>
+  </div>
+</div>
+<div class="look"><figure><img src="img/d-roboterista-dentro.webp" alt="O que tem dentro do Robôterista Ensina" loading="lazy"><figcaption>o que tem dentro</figcaption></figure><figure><img src="img/d-roboterista-1.webp" alt="Páginas de exemplo do Robôterista Ensina" loading="lazy"><figcaption>páginas de exemplo</figcaption></figure></div>
+</section>
+
+<section class="prod" id="melodia"><div class="grid">
+  <div class="cov"><span class="tag">novo</span><img class="c" src="img/c-melodia.webp" alt="Capa do Robôterista Ensina: Melodia e Harmonia" width="360"></div>
+  <div class="info">
+    <h2>Melodia e Harmonia</h2>
+    <p class="sub">as notas, a pauta e os acordes no teclado e no violão.</p>
+    <ul><li>teclado passo a passo</li><li>violão: acordes e batidas</li><li>leitura de notas: pauta e clave de sol</li><li>acordes com diagramas e cifras</li><li>jogos e atividades: cruzadinha, bingo, memória e mais</li><li>músicas para tocar: melodias e sequências</li></ul>
+    <div class="chips"><span>edição completa · 102 páginas</span><span>material para imprimir</span><span>crianças e famílias</span></div>
+    <div class="buy"><div class="price"><div class="seal"><s>R$ 29,90</s><b>R$ 19,90</b><small>até 30/11</small></div><p class="now">preço de Black Friday.</p></div>
+    <a class="btn red" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20o%20Melodia%20e%20Harmonia">pedir pelo WhatsApp</a></div>
+  </div>
+</div></section>
+
+<section class="prod" id="mood"><div class="grid">
+  <div class="cov"><span class="tag">o que a Bea estuda</span><img class="c" src="img/c-mood.webp" alt="Capa do ebook Beaterista Mood" width="360"></div>
+  <div class="info">
+    <h2>Beaterista Mood</h2>
+    <p class="sub">exercícios que eu estudo, ensino e levo pro palco.</p>
+    <p class="bonus">55 páginas + 20 páginas de atividades bônus</p>
+    <ul><li>estudo estruturado e prática eficiente</li><li>rudimentos, paradiddle e acentuação</li><li>folhas de exercício, cola de baqueteamento e atividades</li><li>modo Kids para colorir</li><li>cronograma semanal de estudo</li></ul>
+    <div class="chips"><span>PDF</span><span>musicalidade real</span></div>
+    <div class="buy"><div class="price"><div class="seal"><s>R$ 29,90</s><b>R$ 19,90</b><small>até 30/11</small></div><p class="now">preço de Black Friday.</p></div>
+    <a class="btn red" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20o%20Beaterista%20Mood">pedir pelo WhatsApp</a></div>
+  </div>
+</div>
+<div class="look"><figure><img src="img/d-mood-bonus.webp" alt="Páginas bônus do Beaterista Mood" loading="lazy"><figcaption>além das 55 páginas, 20 de atividades</figcaption></figure></div>
+</section>
+
+<section class="prod" id="violao"><div class="grid">
+  <div class="cov"><span class="tag">do zero</span><img class="c" src="img/c-violao.webp" alt="Capa do ebook Violão do Zero" width="360"></div>
+  <div class="info">
+    <h2>Violão do Zero</h2>
+    <p class="sub">da primeira corda à primeira música.</p>
+    <ul><li>4 módulos: acordes, ritmo, melodias e dedilhado</li><li>acordes maiores com diagrama e dedos</li><li>treino progressivo em 11 etapas</li><li>folhas em branco de tablatura e partitura</li></ul>
+    <div class="chips"><span>47 páginas para imprimir</span><span>iniciante</span></div>
+    <div class="buy"><div class="price"><div class="seal"><s>R$ 29,90</s><b>R$ 19,90</b><small>até 30/11</small></div><p class="now">preço de Black Friday.</p></div>
+    <a class="btn red" href="https://pay.hotmart.com/D108261763C">quero o Violão do Zero</a></div>
+  </div>
+</div>
+<div class="look"><figure><img src="img/d-violao-post.webp" alt="Páginas do Violão do Zero" loading="lazy"><figcaption>acordes, ritmo, melodias e dedilhado</figcaption></figure></div>
+</section>
+
+</main>
+
+<section class="combo" id="kids"><div class="wrap">
+  <h2>Linha Kids</h2>
+  <p style="max-width:56ch;margin:0 0 28px;font-size:1.1rem">jogos e atividades para imprimir, recortar e brincar. Os preços de Black Friday da linha Kids avulsa ainda serão definidos; o combo já está valendo.</p>
+  <div class="look" style="margin:0">
+    <figure style="color:var(--ink)"><img src="img/c-memoria.webp" alt="Capa do Jogo da Memória Musical" loading="lazy"><figcaption>Jogo da Memória Musical · 8 temas · R$ 19,90</figcaption></figure>
+    <figure style="color:var(--ink)"><img src="img/c-kids.webp" alt="Capa do Bateria Kids" loading="lazy"><figcaption>Bateria Kids, aprenda colorindo · 36 páginas · R$ 19,90</figcaption></figure>
+    <figure style="color:var(--ink)"><img src="img/d-memoria-post.webp" alt="Cartas do jogo da memória e página do Bateria Kids" loading="lazy"><figcaption>imprima, recorte, embaralhe e jogue</figcaption></figure>
+  </div>
+  <div class="buy" style="margin-top:28px"><div class="price"><div class="seal" style="box-shadow:inset 0 0 0 4px var(--navy),5px 6px 0 #0006"><s>R$ 59,70</s><b>R$ 49,90</b><small>combo</small></div><p class="now">Combo Kids com os itens da linha.</p></div>
+  <a class="btn" href="https://wa.me/5518991804150?text=Oi%20Bea!%20Quero%20o%20Combo%20Kids">pedir o Combo Kids</a></div>
+</div></section>
+
+<section class="final wrap">
+  <img src="img/paul-paz.webp" alt="Paul fazendo sinal de paz">
+  <h2 style="font-size:clamp(2rem,6vw,3.4rem);color:var(--navy)">bora tocar juntos?</h2>
+  <p style="max-width:44ch;margin:12px auto 18px">teste os jogos do app antes de comprar. Dúvidas sobre qualquer material, chama a Bea.</p>
+  <a class="btn red" href="https://jogos.beaterista.com.br">testar os jogos grátis</a>
+  <a class="btn navy" href="https://wa.me/5518991804150">falar com a Bea</a>
+  <p class="mono" style="margin-top:14px">WhatsApp da escola: (18) 99180-4150</p>
+</section>
+
+<p class="foot">Beaterista escola de música · em parceria com Pad Gorilla, Spark e Nagano<br>@beaterista_ · @beaterista · @beateristadrummer</p>

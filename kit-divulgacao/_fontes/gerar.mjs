@@ -285,31 +285,45 @@ h1{font-size:${story ? 170 : 140}px;color:${C.red}}h1 em{font-style:normal;color
 const CAPA_NOVA = { melodia: '/kit-divulgacao/material-da-bea/capas-e-produtos/capa-melodia-harmonia.jpg', 'combo-kids': '/kit-divulgacao/material-da-bea/capas-e-produtos/combo-kids-composto.jpg', 'bateria-kids': '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-bateria-kids.jpg', mood: '/kit-divulgacao/minhas-artes/capas-dos-materiais/capa-beaterista-mood.jpg' };
 const capaSrc = (id) => CAPA_NOVA[id] || `/assets/loja/${CAPAS[id]}.webp`;
 const CAPAS = { melodia: 'x', 'combo-kids': 'x', start: 'bateria-start', memoria: 'memoria', 'bateria-kids': 'bateria-kids', roboterista: 'roboterista', violao: 'violao', mood: 'mood' };
+const PAUL_BF = { start: 'baqueta', roboterista: 'piscando', melodia: 'ouvindo', mood: 'amp', violao: 'andando', 'combo-kids': 'piscando', memoria: 'duvida', 'bateria-kids': 'baqueta', geral: 'andando' };
+const bfCss = (W, H, story) => `body{background:${C.cream};color:${C.ink};position:relative;overflow:hidden}
+.kraft{position:absolute;inset:0;background:radial-gradient(#0000000d 2px,transparent 2.5px) 0 0/26px 26px}
+.brush{position:absolute;left:-40px;top:${story ? 90 : 40}px;width:${W + 80}px;height:${story ? 190 : 170}px;background:url(/assets/mural/brush-red.svg) center/100% 100% no-repeat;display:flex;align-items:center;padding-left:${story ? 190 : 250}px;gap:26px;transform:rotate(-1.5deg)}
+.brush b{font-family:Anton;font-weight:400;font-size:${story ? 100 : 92}px;color:${C.cream};text-transform:uppercase;letter-spacing:.02em}
+.brush span{font-family:'Special Elite';font-size:30px;background:${C.gold};color:${C.ink};padding:4px 16px;transform:rotate(2deg)}
+.nt{position:absolute;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.18))}
+.ttl{position:absolute;left:60px;top:${story ? 360 : 260}px;width:${story ? 520 : 500}px}
+.ttl h1{color:${C.navy};line-height:.95}.ttl p{font-size:${story ? 36 : 32}px;font-weight:700;margin-top:18px;line-height:1.2}
+.cov{position:absolute;right:${story ? 50 : 40}px;top:${story ? 360 : 260}px;width:${story ? 440 : 470}px;transform:rotate(4deg);box-shadow:16px 20px 0 rgba(27,24,24,.25);border:6px solid #fff;background:#fff}
+.tp{position:absolute;width:130px;right:${story ? 420 : 430}px;top:${story ? 330 : 232}px;transform:rotate(-30deg);z-index:3}
+.paul{position:absolute;left:30px;bottom:${story ? 330 : 225}px;width:${story ? 330 : 270}px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.18));z-index:4}
+.burst{position:absolute;right:${story ? 70 : 60}px;bottom:${story ? 260 : 130}px;width:${story ? 400 : 380}px;height:${story ? 400 : 380}px;border-radius:50%;background:${C.red};border:8px solid ${C.navy};box-shadow:10px 12px 0 rgba(27,24,24,.3),inset 0 0 0 8px ${C.cream};display:flex;flex-direction:column;align-items:center;justify-content:center;color:${C.cream};transform:rotate(-6deg);z-index:5}
+.burst s{font-family:Anton;font-size:44px;opacity:.9}.burst b{font-family:Anton;font-weight:400;font-size:${story ? 96 : 92}px;line-height:1;color:${C.gold}}.burst small{font-family:'Special Elite';font-size:24px}
+.btn{position:absolute;left:60px;bottom:${story ? 220 : 110}px;font-size:44px;background:${C.navy};color:${C.cream};z-index:6}
+.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.navy};color:${C.cream};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite';gap:16px}.foot b{color:${C.gold};font-family:Anton;font-weight:400}
+.parc{position:absolute;right:60px;bottom:${story ? 130 : 20}px;height:50px;opacity:.9}`;
+const bfDecor = (story) => `<img class="nt" src="/assets/rabiscos/notas-terracota.png" style="width:110px;left:${story ? 560 : 520}px;top:${story ? 190 : 130}px;transform:rotate(10deg);z-index:2"><img class="nt" src="/assets/rabiscos/explosao-ouro.png" style="width:300px;right:10px;top:${story ? 700 : 500}px;z-index:0;opacity:.9">`;
 function bfProduto(id, W, H) {
   const p = BF.produtos[id]; const story = H > 1500; const por = p.por && p.por.trim();
-  return base(W, H, `body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/26px 26px}
-.sel{position:absolute;left:60px;top:${story ? 140 : 60}px;font-size:40px;background:${C.gold};color:${C.ink};padding:8px 26px;transform:rotate(-2deg)}
-.cap{position:absolute;right:50px;top:${story ? 300 : 150}px;width:${story ? 470 : 470}px;transform:rotate(4deg);box-shadow:20px 28px 0 rgba(0,0,0,.45);border:6px solid ${C.cream}}
-.t{position:absolute;left:60px;top:${story ? 300 : 150}px;width:${story ? 440 : 450}px}.t h1{font-size:${(p.nome.length > 22 ? (story ? 84 : 76) : p.nome.length > 12 ? (story ? 96 : 100) : (story ? 130 : 112))}px;line-height:.95}.t p{font-size:${story ? 36 : 32}px;font-weight:700;margin-top:20px;line-height:1.2}
-.pr{position:absolute;left:60px;top:${story ? 1100 : 700}px}.pr s{font-family:Anton;font-size:64px;opacity:.6}.pr b{display:block;font-family:Anton;font-weight:400;font-size:${por ? 190 : 100}px;color:${C.gold};line-height:1.05;text-transform:uppercase}
-.btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:46px;background:${C.red};color:${C.cream}}
-.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
-    `<div class="dots"></div><div class="sel A">black friday · ${BF.periodo}</div>
-<div class="t"><h1 class="A">${p.nome}</h1><p>${p.info}</p></div><img class="cap" src="${capaSrc(id)}">
-<div class="pr">${por ? `<s>${p.de}</s><b>${p.por}</b>` : `<b>preço especial<br>de black friday</b>`}</div><span class="btn A">pegar na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
+  const fs = p.nome.length > 22 ? (story ? 84 : 76) : p.nome.length > 12 ? (story ? 100 : 104) : (story ? 130 : 120);
+  return base(W, H, bfCss(W, H, story), `<div class="kraft"></div>${bfDecor(story)}
+<div class="brush"><b>black friday</b><span>${BF.periodo}</span></div>
+<div class="ttl"><h1 class="A" style="font-size:${fs}px">${p.nome}</h1><p>${p.info}</p></div>
+<img class="cov" src="${capaSrc(id)}"><img class="tp" src="/assets/rabiscos/fita-1.png">
+<img class="paul" src="/kit-divulgacao/_fontes/paul/${PAUL_BF[id] || 'andando'}.png">
+<div class="burst">${por ? `<s>${p.de}</s><b>${p.por}</b><small>só até ${BF.periodo.split(' a ')[1]}</small>` : `<b style="font-size:60px;text-align:center">preço<br>especial</b>`}</div>
+<span class="btn A">pegar na lojinha</span><div class="foot"><b>${BF.link}</b> · whatsapp ${ZAP}</div>`);
 }
 function bfGeral(W, H) {
-  const story = H > 1500;
-  return base(W, H, `body{background:${C.ink};color:${C.cream};position:relative}.dots{position:absolute;inset:0;background:radial-gradient(#ffffff12 2px,transparent 2.5px) 0 0/26px 26px}
-.sel{position:absolute;left:60px;top:${story ? 140 : 50}px;font-size:40px;background:${C.gold};color:${C.ink};padding:8px 26px;transform:rotate(-2deg)}
-h1{position:absolute;left:60px;top:${story ? 260 : 140}px;font-size:${story ? 150 : 130}px;width:960px}h1 em{font-style:normal;color:${C.gold}}
-.s{position:absolute;left:60px;top:${story ? 640 : 400}px;font-size:${story ? 48 : 38}px;font-weight:700;width:900px;line-height:1.15}
-.g{position:absolute;left:50px;right:50px;top:${story ? 820 : 540}px;display:grid;grid-template-columns:repeat(${story ? 3 : 6},1fr);gap:${story ? 24 : 14}px}
-.g img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border:4px solid ${C.cream};box-shadow:8px 8px 0 rgba(0,0,0,.5)}
-.btn{position:absolute;left:60px;bottom:${story ? 330 : 140}px;font-size:${story ? 56 : 46}px;background:${C.red};color:${C.cream}}
-.foot{position:absolute;left:0;right:0;bottom:0;height:90px;background:${C.red};display:flex;align-items:center;justify-content:center;font-size:28px;font-family:'Special Elite'}`,
-    `<div class="dots"></div><div class="sel A">${BF.periodo}</div><h1 class="A">black friday <em>beaterista</em></h1><div class="s">desconto nos materiais em PDF: bateria, violão, partitura e jogos pra imprimir.</div>
-<div class="g">${Object.keys(CAPAS).map((k) => `<img src="${capaSrc(k)}">`).join('')}</div><span class="btn A">ver na lojinha</span><div class="foot">${BF.link} · whatsapp ${ZAP}</div>`);
+  const story = H > 1500; const ids = Object.keys(CAPAS).filter((k) => !['memoria', 'bateria-kids'].includes(k));
+  return base(W, H, bfCss(W, H, story) + `.t2{position:absolute;left:60px;top:${story ? 340 : 250}px;width:960px}.t2 h1{font-size:${story ? 118 : 112}px;color:${C.navy}}.t2 h1 em{font-style:normal;color:${C.red}}.t2 p{font-size:${story ? 44 : 36}px;font-weight:700;margin-top:10px;max-width:760px}
+.g{position:absolute;left:50px;right:50px;top:${story ? 780 : 640}px;display:grid;grid-template-columns:repeat(${story ? 3 : 4},1fr);gap:${story ? 26 : 18}px;z-index:2}
+.g img{width:100%;aspect-ratio:${story ? '1/1.1' : '1/.9'};object-fit:cover;object-position:top;border:5px solid #fff;box-shadow:8px 8px 0 rgba(27,24,24,.25);background:#fff}.g img:nth-child(odd){transform:rotate(-2deg)}.g img:nth-child(even){transform:rotate(2deg)}
+.paul{left:auto;right:30px;bottom:${story ? 330 : 160}px;width:${story ? 300 : 230}px}.btn{bottom:${story ? 240 : 120}px}`,
+    `<div class="kraft"></div>${bfDecor(story)}<div class="brush"><b>black friday</b><span>${BF.periodo}</span></div>
+<div class="t2"><h1 class="A">tudo de <em>R$ 29,90</em><br>por R$ 19,90</h1><p>materiais em PDF de bateria, violão, partitura e jogos pra imprimir. Bateria Start por R$ 14,90.</p></div>
+<div class="g">${ids.map((k) => `<img src="${capaSrc(k)}">`).join('')}</div>
+<img class="paul" src="/kit-divulgacao/_fontes/paul/piscando.png"><span class="btn A">ver na lojinha</span><div class="foot"><b>${BF.link}</b> · whatsapp ${ZAP}</div>`);
 }
 
 // ---------- render ----------
