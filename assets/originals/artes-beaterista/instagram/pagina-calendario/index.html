@@ -1,0 +1,285 @@
+<title>Calendário Paul Jogos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* layout: cabeçalho do perfil, atalhos de semana, uma coluna de cartões por dia (duas em telas largas) */
+:root{--bg:#f3eadc;--panel:#fff9ee;--ink:#10234a;--muted:#4a5875;--vinho:#a8182e;--ouro:#f2c14e;--line:#10234a;--chip:#10234a;--chipt:#f3eadc;--bf:#fde3e6;--display:'Anton','Impact',sans-serif;--body:'Inter',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1426;--panel:#18213a;--ink:#f3eadc;--muted:#aab3c9;--vinho:#ff6b7d;--line:#f3eadc;--chip:#f3eadc;--chipt:#10234a;--bf:#3a1a26;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1426;--panel:#18213a;--ink:#f3eadc;--muted:#aab3c9;--vinho:#ff6b7d;--line:#f3eadc;--chip:#f3eadc;--chipt:#10234a;--bf:#3a1a26;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:26px}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+.perfil{display:grid;grid-template-columns:auto 1fr;gap:16px 20px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:18px;box-shadow:5px 5px 0 var(--vinho)}
+.perfil img{width:96px;height:96px;border-radius:50%}
+h1{font-size:clamp(30px,6vw,52px);line-height:1}
+.arr{color:var(--vinho);font-weight:800}
+.bio{grid-column:1/-1;display:grid;gap:8px}
+.bio pre{margin:0;white-space:pre-wrap;font:inherit;background:var(--bg);border-radius:8px;padding:12px}
+button{font:inherit;cursor:pointer}
+.cp{border:2px solid var(--line);background:var(--chip);color:var(--chipt);border-radius:6px;padding:5px 12px;font-weight:800;font-size:13px}
+.cp:focus-visible,.nav a:focus-visible{outline:3px solid var(--vinho);outline-offset:2px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+.nav span{align-self:center;font-weight:800;margin-right:4px}
+.nav a{border:2px solid var(--line);color:var(--ink);text-decoration:none;border-radius:6px;padding:4px 12px;font-weight:800;background:var(--panel)}
+.semh h2{font-size:clamp(24px,4vw,36px)} .semh p{margin:2px 0 0;color:var(--muted)}
+.dias{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:16px;margin-top:12px}
+.dia{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.dia.bf{background:var(--bf)}
+.dh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dt{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.02em}
+.chip{background:var(--chip);color:var(--chipt);border-radius:4px;padding:2px 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.hr{color:var(--muted);font-size:13px}
+.ok{margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center}
+.thumbs{display:grid;gap:8px;grid-template-columns:repeat(4,1fr)}
+.thumbs.n1{grid-template-columns:minmax(0,260px)} .thumbs.n2{grid-template-columns:repeat(2,minmax(0,1fr))} .thumbs.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.thumbs img{width:100%;height:auto;border-radius:8px;border:1px solid var(--line);display:block}
+.lh{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.leg pre{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit;background:var(--bg);border-radius:8px;padding:12px;max-width:62ch}
+.st,.cta{margin:0;font-size:14px;color:var(--muted)} .st b,.cta b{color:var(--ink)}
+.reels{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:16px}
+.reel{margin:0;display:grid;gap:8px;min-width:0} .reel video{width:100%;aspect-ratio:9/16;background:#000;border-radius:12px;border:2px solid var(--line)}
+.reel figcaption{display:grid;gap:2px;font-size:13px} .reel small{color:var(--muted)}
+.aviso{background:var(--panel);border:2px dashed var(--line);border-radius:12px;padding:14px;margin:0}
+.aviso ul{margin:8px 0 0;padding-left:20px;display:grid;gap:4px}
+@media (max-width:520px){.perfil{grid-template-columns:1fr}.perfil img{width:80px;height:80px}}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+<div class="wrap">
+<header class="perfil"><img src="img/perfil.jpg" alt="Foto de perfil: o Paul sorrindo de boné e fone"><div><h1>@jogos.beaterista</h1><p style="margin:6px 0 0;color:var(--muted)">perfil do Robôterista Paul · calendário de 12/nov a 13/dez de 2026</p></div>
+<div class="bio"><div class="lh"><span>bio e link</span><button type="button" class="cp" data-t="bio">copiar bio</button></div><pre id="bio">aprenda música jogando 🎧🥁
+jogos + apostilas da Bea
+sou o Paul, assistente robô da professora Bea
+👇 jogue grátis agora
+jogos.beaterista.com.br</pre></div></header>
+<nav class="nav" aria-label="Semanas"><span>semana</span><a href="#sem0">0</a><a href="#sem1">1</a><a href="#sem2">2</a><a href="#sem3">3</a><a href="#sem4">4</a><a href="#reels">reels</a></nav>
+<section class="sem" id="sem0"><header class="semh"><div><h2>Montar a casa</h2><p>Semana 0 · 12 a 15 de novembro</p></div></header><div class="dias"><article class="dia" data-i="0"><div class="dh"><b class="dt">qui 12/nov</b><span class="chip">configurar</span><span class="hr">—</span><label class="ok"><input type="checkbox" class="postado" id="ok0"> postado</label></div>
+<div class="thumbs n1"><img src="img/perfil.jpg" alt="arte perfil" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg0">copiar</button></div><pre id="leg0">BIO (copiar):
+aprenda música jogando 🎧🥁
+jogos + apostilas da Bea
+sou o Paul, assistente robô da professora Bea
+👇 jogue grátis agora
+jogos.beaterista.com.br</pre></div>
+<p class="st"><b>story:</b> Destaques: jogar · apostilas · álbum · bastidores (use a capa B1 e fundo creme).</p><p class="cta"><b>chamada:</b> trocar a foto e colocar o link</p></article><article class="dia" data-i="1"><div class="dh"><b class="dt">sex 13/nov</b><span class="chip">carrossel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok1"> postado</label></div>
+<div class="thumbs n4"><img src="img/car1.jpg" alt="arte car1" loading="lazy"><img src="img/car2.jpg" alt="arte car2" loading="lazy"><img src="img/car3.jpg" alt="arte car3" loading="lazy"><img src="img/car4.jpg" alt="arte car4" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg1">copiar</button></div><pre id="leg1">oi, eu sou o Paul 🤖🎧
+assistente de música da professora Bea.
+
+vim te chamar pra aprender jogando: ritmo, notas, acordes e até figurinhas pra colecionar.
+
+arrasta pro lado e vem comigo ➡️
+
+segue @jogos.beaterista e joga grátis no link da bio 🥁
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: arte S1 + enquete &quot;você já tocou algum instrumento? sim / ainda não&quot;.</p><p class="cta"><b>chamada:</b> seguir o perfil</p></article><article class="dia" data-i="2"><div class="dh"><b class="dt">sáb 14/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok2"> postado</label></div>
+<div class="thumbs n1"><img src="img/s1.jpg" alt="arte s1" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg2">copiar</button></div><pre id="leg2">(sem legenda de feed)</pre></div>
+<p class="st"><b>story:</b> Story S1 + caixinha de pergunta: &quot;qual instrumento você quer aprender?&quot;.</p><p class="cta"><b>chamada:</b> link na bio</p></article><article class="dia" data-i="3"><div class="dh"><b class="dt">dom 15/nov</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok3"> postado</label></div>
+<div class="thumbs n1"><img src="img/porque.jpg" alt="arte porque" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg3">copiar</button></div><pre id="leg3">por que Paul? 🎸
+
+meu nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea.
+
+e você, qual música dele é a sua favorita? me conta aqui embaixo 👇
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: repostar o feed com sticker de enquete &quot;conhece o Paul McCartney?&quot;.</p><p class="cta"><b>chamada:</b> comentar</p></article></div></section><section class="sem" id="sem1"><header class="semh"><div><h2>Apresentar o jogo</h2><p>Semana 1 · 16 a 22 de novembro</p></div></header><div class="dias"><article class="dia" data-i="4"><div class="dh"><b class="dt">seg 16/nov</b><span class="chip">feed</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok4"> postado</label></div>
+<div class="thumbs n1"><img src="img/f1.jpg" alt="arte f1" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg4">copiar</button></div><pre id="leg4">aulas de música na palma da mão 📱
+depois, mão na massa. 🥁
+
+jogue com o Paul, treine ritmo e leitura de notas e leve o que aprendeu pro instrumento.
+
+grátis no link da bio: jogos.beaterista.com.br
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: print do app + &quot;qual jogo você quer ver primeiro?&quot;.</p><p class="cta"><b>chamada:</b> link na bio</p></article><article class="dia" data-i="5"><div class="dh"><b class="dt">ter 17/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok5"> postado</label></div>
+<div class="thumbs n1"><img src="img/paul_baqueta.jpg" alt="arte paul_baqueta" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg5">copiar</button></div><pre id="leg5">(só story)</pre></div>
+<p class="st"><b>story:</b> Paul com a baqueta: &quot;bora testar seu ritmo? 🥁&quot; + caixinha &quot;quer ver o jogo na tela?&quot;.</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia" data-i="6"><div class="dh"><b class="dt">qua 18/nov</b><span class="chip">reel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok6"> postado</label></div>
+<div class="thumbs n1"><img src="img/r4.jpg" alt="arte r4" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg6">copiar</button></div><pre id="leg6">3 minutos, 4 frases do Paul pra você começar a semana com mais groove 🎧
+
+salva esse reel e manda pra quem toca (ou quer tocar)!
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: repostar o reel com &quot;qual frase é a sua?&quot;.</p><p class="cta"><b>chamada:</b> salvar e enviar</p></article><article class="dia" data-i="7"><div class="dh"><b class="dt">qui 19/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok7"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_menos.jpg" alt="arte cz_menos" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg7">copiar</button></div><pre id="leg7">(só story)</pre></div>
+<p class="st"><b>story:</b> &quot;menos pressa. mais groove.&quot; + sticker de música.</p><p class="cta"><b>chamada:</b> —</p></article><article class="dia" data-i="8"><div class="dh"><b class="dt">sex 20/nov</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok8"> postado</label></div>
+<div class="thumbs n1"><img src="img/f2.jpg" alt="arte f2" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg8">copiar</button></div><pre id="leg8">jogue. toque. colecione. 🎮🎸🏆
+
+encare os desafios do Paul e complete o seu álbum musical.
+
+tem figurinha, ranking e jogos de ritmo, tudo no link da bio.
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: sticker &quot;quem joga comigo?&quot; convidando a marcar um amigo.</p><p class="cta"><b>chamada:</b> marcar um amigo</p></article><article class="dia" data-i="9"><div class="dh"><b class="dt">sáb 21/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok9"> postado</label></div>
+<div class="thumbs n1"><img src="img/paul_agachado.jpg" alt="arte paul_agachado" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg9">copiar</button></div><pre id="leg9">(só story)</pre></div>
+<p class="st"><b>story:</b> Quiz: &quot;essa nota é dó ou ré?&quot; (use a enquete do story).</p><p class="cta"><b>chamada:</b> responder</p></article><article class="dia" data-i="10"><div class="dh"><b class="dt">dom 22/nov</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok10"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_play.jpg" alt="arte cz_play" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg10">copiar</button></div><pre id="leg10">dá o play, deixa a música levar. 🎧
+
+estudar música não precisa ser pesado: 10 minutinhos por dia já fazem diferença. salva esse post pra lembrar de treinar hoje 💛
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: lembrete &quot;10 minutos de música hoje&quot;.</p><p class="cta"><b>chamada:</b> salvar</p></article></div></section><section class="sem" id="sem2"><header class="semh"><div><h2>Black Friday (sexta 27)</h2><p>Semana 2 · 23 a 29 de novembro</p></div></header><div class="dias"><article class="dia" data-i="11"><div class="dh"><b class="dt">seg 23/nov</b><span class="chip">feed</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok11"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_bea.jpg" alt="arte cz_bea" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg11">copiar</button></div><pre id="leg11">a Bea ensina, eu treino com você! 📚🤖
+
+logo, logo tem novidade pra quem quer levar a prática pra fora da tela: apostilas pra imprimir, feitas pela professora Bea.
+
+ativa o 🔔 e fica ligado!
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: &quot;sexta tem uma surpresa 👀&quot;.</p><p class="cta"><b>chamada:</b> ativar notificações</p></article><article class="dia bf" data-i="12"><div class="dh"><b class="dt">ter 24/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok12"> postado</label></div>
+<div class="thumbs n2"><img src="img/paul_case.jpg" alt="arte paul_case" loading="lazy"><img src="img/combo.jpg" alt="arte combo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg12">copiar</button></div><pre id="leg12">(só story)</pre></div>
+<p class="st"><b>story:</b> Contagem regressiva: &quot;sexta é Black Friday 🖤&quot; com sticker de lembrete.</p><p class="cta"><b>chamada:</b> lembrete</p></article><article class="dia bf" data-i="13"><div class="dh"><b class="dt">qua 25/nov</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok13"> postado</label></div>
+<div class="thumbs n1"><img src="img/f3.jpg" alt="arte f3" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg13">copiar</button></div><pre id="leg13">o que vem na apostila Robôterista? 👀
+
+Ritmo e Figuras, Harmonia e Melodia, Na Prática e o Jogo da Memória Musical: material em PDF pra imprimir e estudar quando quiser.
+
+sexta: Black Friday 🖤
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: caixinha &quot;qual apostila você quer ver por dentro?&quot;.</p><p class="cta"><b>chamada:</b> lembrete</p></article><article class="dia bf" data-i="14"><div class="dh"><b class="dt">qui 26/nov</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok14"> postado</label></div>
+<div class="thumbs n1"><img src="img/kit_feed.jpg" alt="arte kit_feed" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg14">copiar</button></div><pre id="leg14">(só story)</pre></div>
+<p class="st"><b>story:</b> Arte do kit: &quot;amanhã: combo com as 4 apostilas&quot; + lembrete.</p><p class="cta"><b>chamada:</b> lembrete</p></article><article class="dia bf" data-i="15"><div class="dh"><b class="dt">sex 27/nov</b><span class="chip">feed + reel</span><span class="hr">12h e 19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok15"> postado</label></div>
+<div class="thumbs n2"><img src="img/combo.jpg" alt="arte combo" loading="lazy"><img src="img/r2.jpg" alt="arte r2" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg15">copiar</button></div><pre id="leg15">🖤 BLACK FRIDAY BEATERISTA 🖤
+
+COMBO ROBÔTERISTA: 4 apostilas em PDF por R$ 79,90 (de R$ 99,60)
+✅ Ritmo e Figuras
+✅ Harmonia e Melodia
+✅ Na Prática
+✅ Jogo da Memória Musical
+
+materiais digitais pra imprimir e estudar. compra pela Hotmart, link na bio.
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista #blackfriday</pre></div>
+<p class="st"><b>story:</b> Story ×3: arte do combo, contagem &quot;termina segunda&quot; e print de depoimento (com permissão).</p><p class="cta"><b>chamada:</b> link da página de vendas</p></article><article class="dia bf" data-i="16"><div class="dh"><b class="dt">sáb 28/nov</b><span class="chip">story</span><span class="hr">12h, 17h e 21h</span><label class="ok"><input type="checkbox" class="postado" id="ok16"> postado</label></div>
+<div class="thumbs n2"><img src="img/kit_banner.jpg" alt="arte kit_banner" loading="lazy"><img src="img/combo.jpg" alt="arte combo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg16">copiar</button></div><pre id="leg16">(só story)</pre></div>
+<p class="st"><b>story:</b> Lembrete de que o preço vai até segunda + caixinha &quot;dúvidas sobre o combo?&quot;.</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia bf" data-i="17"><div class="dh"><b class="dt">dom 29/nov</b><span class="chip">carrossel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok17"> postado</label></div>
+<div class="thumbs n2"><img src="img/kit_feed.jpg" alt="arte kit_feed" loading="lazy"><img src="img/combo.jpg" alt="arte combo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg17">copiar</button></div><pre id="leg17">um combo, quatro jeitos de aprender música 🎼
+
+1 · Ritmo e Figuras (100 páginas)
+2 · Harmonia e Melodia (102 páginas)
+3 · Na Prática (48 atividades)
+4 · Jogo da Memória Musical (61 pares)
+
+R$ 79,90 até segunda 🖤
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: &quot;amanhã é o último dia do preço&quot;.</p><p class="cta"><b>chamada:</b> link</p></article></div></section><section class="sem" id="sem3"><header class="semh"><div><h2>Cyber Monday e lendárias</h2><p>Semana 3 · 30 de nov a 6 de dez</p></div></header><div class="dias"><article class="dia bf" data-i="18"><div class="dh"><b class="dt">seg 30/nov</b><span class="chip">feed + story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok18"> postado</label></div>
+<div class="thumbs n1"><img src="img/combo.jpg" alt="arte combo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg18">copiar</button></div><pre id="leg18">últimas horas do combo Robôterista 🖤
+
+4 apostilas por R$ 79,90. depois de hoje volta ao preço normal.
+
+link na bio.
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista #cybermonday</pre></div>
+<p class="st"><b>story:</b> Story: contagem de horas + link.</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia bf" data-i="19"><div class="dh"><b class="dt">ter 1/dez</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok19"> postado</label></div>
+<div class="thumbs n4"><img src="img/lend1.jpg" alt="arte lend1" loading="lazy"><img src="img/lend2.jpg" alt="arte lend2" loading="lazy"><img src="img/lend3.jpg" alt="arte lend3" loading="lazy"><img src="img/lend4.jpg" alt="arte lend4" loading="lazy"><img src="img/lend5.jpg" alt="arte lend5" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg19">copiar</button></div><pre id="leg19">(só story, 1 lendária por story)</pre></div>
+<p class="st"><b>story:</b> Mostra as 5 lendárias, uma por story, com o nome de cada uma. Só diga que vêm de brinde se o resgate estiver confirmado.</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia" data-i="20"><div class="dh"><b class="dt">qua 2/dez</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok20"> postado</label></div>
+<div class="thumbs n1"><img src="img/car4.jpg" alt="arte car4" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg20">copiar</button></div><pre id="leg20">jogue. colecione. complete seu álbum. 🏆
+
+cada jogo vale estrelas e figurinhas. tem comum, rara e lendária ✨ qual você quer primeiro?
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: enquete &quot;quer ver as lendárias?&quot;.</p><p class="cta"><b>chamada:</b> comentar</p></article><article class="dia" data-i="21"><div class="dh"><b class="dt">qui 3/dez</b><span class="chip">reel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok21"> postado</label></div>
+<div class="thumbs n1"><img src="img/r3.jpg" alt="arte r3" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg21">copiar</button></div><pre id="leg21">as 5 figurinhas lendárias do app ✨🤖
+
+Guitarrista da Tempestade, Rei do Pixel Roxo, Construtor de Notas, Baterista Cósmico e Sineiro do Castelo.
+
+como conseguir? chama no direct que eu explico 👇
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: repostar o reel.</p><p class="cta"><b>chamada:</b> direct</p></article><article class="dia" data-i="22"><div class="dh"><b class="dt">sex 4/dez</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok22"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_ritmo.jpg" alt="arte cz_ritmo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg22">copiar</button></div><pre id="leg22">o ritmo é seu. o palco também. 🥁🎤
+
+marca aquele amigo que merece subir no palco um dia.
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: enquete &quot;bateria, violão ou teclado?&quot;.</p><p class="cta"><b>chamada:</b> marcar</p></article><article class="dia" data-i="23"><div class="dh"><b class="dt">sáb 5/dez</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok23"> postado</label></div>
+<div class="thumbs n1"><img src="img/paul_amplificador.jpg" alt="arte paul_amplificador" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg23">copiar</button></div><pre id="leg23">(só story)</pre></div>
+<p class="st"><b>story:</b> Quiz musical + caixinha &quot;qual jogo você quer que o Paul explique?&quot;.</p><p class="cta"><b>chamada:</b> responder</p></article><article class="dia" data-i="24"><div class="dh"><b class="dt">dom 6/dez</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok24"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_solta.jpg" alt="arte cz_solta" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg24">copiar</button></div><pre id="leg24">solta o play, vem pro ritmo. 🛹🎧
+
+resumo da semana: jogos, figurinhas e dica de estudo. qual foi a sua parte favorita?
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: &quot;o que você quer ver semana que vem?&quot;.</p><p class="cta"><b>chamada:</b> comentar</p></article></div></section><section class="sem" id="sem4"><header class="semh"><div><h2>Presentes e prova</h2><p>Semana 4 · 7 a 13 de dezembro</p></div></header><div class="dias"><article class="dia" data-i="25"><div class="dh"><b class="dt">seg 7/dez</b><span class="chip">feed</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok25"> postado</label></div>
+<div class="thumbs n1"><img src="img/f1.jpg" alt="arte f1" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg25">copiar</button></div><pre id="leg25">um jogo por dia, um pouquinho de música. 🎮
+
+essa semana o Paul mostra jogos do app: ritmo, cartas, quebra-cabeça e mais. salva pra não esquecer!
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: &quot;jogo do dia&quot; com print.</p><p class="cta"><b>chamada:</b> salvar</p></article><article class="dia" data-i="26"><div class="dh"><b class="dt">ter 8/dez</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok26"> postado</label></div>
+<div class="thumbs n1"><img src="img/paul_caderno.jpg" alt="arte paul_caderno" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg26">copiar</button></div><pre id="leg26">(só story)</pre></div>
+<p class="st"><b>story:</b> Dica de estudo: 10 minutos por dia, anota no caderno 📓.</p><p class="cta"><b>chamada:</b> —</p></article><article class="dia" data-i="27"><div class="dh"><b class="dt">qua 9/dez</b><span class="chip">carrossel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok27"> postado</label></div>
+<div class="thumbs n2"><img src="img/car1.jpg" alt="arte car1" loading="lazy"><img src="img/car2.jpg" alt="arte car2" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg27">copiar</button></div><pre id="leg27">quem chegou agora? eu sou o Paul 🤖🎧 assistente da professora Bea.
+
+aqui tem jogos de música, apostilas e figurinhas. começa pelo link da bio 👇
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: caixinha de perguntas &quot;o que você quer aprender?&quot;.</p><p class="cta"><b>chamada:</b> seguir</p></article><article class="dia" data-i="28"><div class="dh"><b class="dt">qui 10/dez</b><span class="chip">reel</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok28"> postado</label></div>
+<div class="thumbs n1"><img src="img/r1.jpg" alt="arte r1" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg28">copiar</button></div><pre id="leg28">conhece o Paul? 👋 aprender música jogando, com apostilas e figurinhas.
+
+conta quem você marcaria pra aprender junto 👇
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: repostar.</p><p class="cta"><b>chamada:</b> marcar</p></article><article class="dia" data-i="29"><div class="dh"><b class="dt">sex 11/dez</b><span class="chip">feed</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok29"> postado</label></div>
+<div class="thumbs n1"><img src="img/cz_groove.jpg" alt="arte cz_groove" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg29">copiar</button></div><pre id="leg29">presente de Natal musical 🎁🎧
+
+apostilas em PDF pra imprimir e estudar, sem frete e sem espera. o combo Robôterista continua disponível no link da bio.
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: &quot;presente de última hora&quot; com a arte do combo.</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia" data-i="30"><div class="dh"><b class="dt">sáb 12/dez</b><span class="chip">story</span><span class="hr">12h</span><label class="ok"><input type="checkbox" class="postado" id="ok30"> postado</label></div>
+<div class="thumbs n1"><img src="img/combo.jpg" alt="arte combo" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg30">copiar</button></div><pre id="leg30">(só story)</pre></div>
+<p class="st"><b>story:</b> Presente de última hora: o PDF chega na hora (só use se o desconto ainda valer).</p><p class="cta"><b>chamada:</b> link</p></article><article class="dia" data-i="31"><div class="dh"><b class="dt">dom 13/dez</b><span class="chip">feed</span><span class="hr">19h30</span><label class="ok"><input type="checkbox" class="postado" id="ok31"> postado</label></div>
+<div class="thumbs n2"><img src="img/b2.jpg" alt="arte b2" loading="lazy"><img src="img/paul_aceno.jpg" alt="arte paul_aceno" loading="lazy"></div>
+<div class="leg"><div class="lh"><span>legenda</span><button type="button" class="cp" data-t="leg31">copiar</button></div><pre id="leg31">obrigado por esse começo, família! 🤖💛
+
+em janeiro tem mais jogos, mais dicas e novidades. o que você quer ver por aqui? comenta 👇
+
+#aulademusica #musicaparacriancas #aprendermusica #bateria #teoriamusical #jogosmusicais #robôterista #beaterista</pre></div>
+<p class="st"><b>story:</b> Story: caixinha &quot;o que você quer em janeiro?&quot;.</p><p class="cta"><b>chamada:</b> comentar</p></article></div></section>
+<section id="reels"><h2 style="font-size:clamp(24px,4vw,36px);margin-bottom:12px">4 reels prontos</h2><div class="reels"><figure class="reel"><video controls playsinline preload="metadata" poster="img/r1.jpg" src="reels/reel-01-apresentacao.mp4"></video><figcaption><b>Paul se apresenta</b><span>postar quinta 10/dez</span><small>Carrossel de apresentação virando vídeo, 14 s. Sem som: escolha a música dentro do Instagram.</small></figcaption></figure><figure class="reel"><video controls playsinline preload="metadata" poster="img/r2.jpg" src="reels/reel-02-black-friday.mp4"></video><figcaption><b>Black Friday do combo</b><span>postar sexta 27/nov</span><small>Kit, combo e banner, 11 s. Sem som: escolha a música dentro do Instagram.</small></figcaption></figure><figure class="reel"><video controls playsinline preload="metadata" poster="img/r3.jpg" src="reels/reel-03-lendarias.mp4"></video><figcaption><b>As 5 lendárias</b><span>postar quinta 3/dez</span><small>Cada lendária e o combo no final, 13 s. Sem som: escolha a música dentro do Instagram.</small></figcaption></figure><figure class="reel"><video controls playsinline preload="metadata" poster="img/r4.jpg" src="reels/reel-04-frases-do-paul.mp4"></video><figcaption><b>Frases do Paul</b><span>postar quarta 18/nov</span><small>5 cartazes de frase, 13 s. Sem som: escolha a música dentro do Instagram.</small></figcaption></figure></div></section>
+<p class="aviso"><b>antes de postar</b><ul><li>Os cartazes do Paul (carrossel e frases) só existem aqui em tamanho pequeno. Peça os originais em alta ao gerador das imagens para o Instagram não ficar embaçado.</li><li>Só prometa as lendárias de brinde com o resgate confirmado.</li><li>Horários são sugestões: veja no Insights qual funciona melhor.</li></ul></p>
+</div>
+<script>
+(function(){
+  function flash(b,t){var o=b.textContent;b.textContent=t;setTimeout(function(){b.textContent=o},1400)}
+  document.querySelectorAll('.cp').forEach(function(b){b.addEventListener('click',function(){
+    var el=document.getElementById(b.getAttribute('data-t')),txt=el.innerText;
+    function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);flash(b,'selecionado')}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){flash(b,'copiado!')},sel)}else sel();
+  })});
+  document.querySelectorAll('.postado').forEach(function(c){
+    try{c.checked=localStorage.getItem('pj-'+c.id)==='1'}catch(e){}
+    c.addEventListener('change',function(){try{localStorage.setItem('pj-'+c.id,c.checked?'1':'0')}catch(e){}c.closest('.dia').style.opacity=c.checked?.55:1});
+    if(c.checked)c.closest('.dia').style.opacity=.55;
+  });
+})();
+</script>

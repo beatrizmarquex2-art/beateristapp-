@@ -1,0 +1,38 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulação @jogos.beaterista</title>
+<style>
+:root{--bg:#fff;--fg:#111;--mut:#737373;--line:#dbdbdb;--btn:#efefef;--blue:#0095f6}
+*{box-sizing:border-box}body{margin:0;background:#e9e9e9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:var(--fg);display:flex;justify-content:center}
+.phone{width:100%;max-width:430px;background:var(--bg);min-height:100vh}
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.top b{font-size:20px;display:flex;align-items:center;gap:6px}
+.top span{font-size:22px;letter-spacing:6px}
+.head{display:grid;grid-template-columns:auto 1fr;gap:16px 24px;padding:6px 16px;align-items:center}
+.av{width:86px;height:86px;border-radius:50%;padding:3px;background:conic-gradient(#a8182e,#f2c14e,#a8182e)}
+.av img{width:100%;height:100%;border-radius:50%;border:3px solid #fff;display:block}
+.stats{display:flex;justify-content:space-around;text-align:center;font-size:14px}.stats b{display:block;font-size:17px}
+.bio{padding:6px 16px;font-size:14px;line-height:1.35}.bio b{display:block}.bio .cat{color:var(--mut)}.bio a{color:#00376b;font-weight:600;text-decoration:none}
+.btns{display:grid;grid-template-columns:1fr 1fr 40px;gap:6px;padding:10px 16px}
+.btns div{background:var(--btn);border-radius:8px;text-align:center;padding:8px;font-weight:600;font-size:14px}.btns .pri{background:var(--blue);color:#fff}
+.hl{display:flex;gap:14px;padding:8px 16px 14px;overflow-x:auto}
+.hl div{text-align:center;font-size:12px;flex:0 0 66px}.hl img{width:62px;height:62px;border-radius:50%;border:1px solid var(--line);padding:2px;display:block;margin:0 auto 4px;object-fit:cover}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);text-align:center;font-size:22px}.tabs span{padding:9px;color:var(--mut)}.tabs .on{color:var(--fg);border-top:1px solid var(--fg);margin-top:-1px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.grid .c{position:relative;aspect-ratio:4/5;overflow:hidden;background:#ddd}.grid img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;top:6px;right:6px;color:#fff;font-size:15px;text-shadow:0 0 4px #000a}
+.nav{display:flex;justify-content:space-around;background:#fff;border-top:1px solid var(--line);padding:10px;font-size:22px}
+.note{font-size:11px;color:var(--mut);text-align:center;padding:8px}
+</style></head><body><div class="phone">
+<div class="top"><b>🔒 jogos.beaterista ⌄</b><span>＋ ☰</span></div>
+<div class="head"><div class="av"><img src="img/avatar.jpg" alt=""></div><div class="stats"><div><b>32</b>posts</div><div><b>0</b>seguidores</div><div><b>0</b>seguindo</div></div></div>
+<div class="bio"><b>Robôterista Paul · jogos beaterista</b><span class="cat">Educação · Escola de música</span><br>aprenda música jogando 🎧🥁<br>jogos + apostilas da professora Bea<br>👇 jogue grátis agora<br><a href="#">jogos.beaterista.com.br</a></div>
+<div class="btns"><div class="pri">Seguir</div><div>Mensagem</div><div>⌄</div></div>
+<div class="hl"><div><img src="img/hl_jogar.jpg" alt="">jogar</div><div><img src="img/hl_apostilas.jpg" alt="">apostilas</div><div><img src="img/hl_album.jpg" alt="">álbum</div><div><img src="img/hl_bf.jpg" alt="">combo</div><div><img src="img/hl_bastidores.jpg" alt="">bastidores</div></div>
+<div class="tabs"><span class="on">▦</span><span>▶</span><span>☺</span></div>
+<div class="grid" id="g"></div>
+<div class="nav"><span>⌂</span><span>⌕</span><span>▶</span><span>♡</span><span>◉</span></div>
+<p class="note">simulação visual: nada foi publicado · números e perfil são exemplos</p>
+</div>
+<script>
+const P=[['p_combo',''],['r_v3','▶'],['p_acordes',''],['p_kit',''],['p_car1','❐'],['r_v1','▶'],['p_f1',''],['p_lend',''],['p_memoria',''],['p_play','❐'],['r_r2','▶'],['p_mock',''],['p_menos',''],['p_f2',''],['r_v2','▶'],['p_ritmo',''],['p_porque',''],['p_menos','']];
+const g=document.getElementById('g');P.slice(0,18).forEach(([n,t],i)=>{const d=document.createElement('div');d.className='c';d.innerHTML='<img src="img/'+n+'.jpg" alt="">'+(t?'<span class="tag">'+t+'</span>':'');g.append(d)});
+</script></body></html>

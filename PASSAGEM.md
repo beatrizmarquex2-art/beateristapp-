@@ -57,6 +57,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Poses de corpo na área dos alunos: `assets/aluno/paul-*.webp` (paz, apontando, bateria, skate, violão, selfie), sorteadas a cada abertura.
 - Rabiscos recortados: `assets/paul/el/*.webp`. O Paul fica **parado**; os rabiscos em volta é que se mexem.
 - Folhas originais enviadas pela Bea: `assets/originals/paul/` (não vão para o site dos alunos).
+- **Artes de divulgação + recortes do Paul (referência)**: `assets/originals/artes-beaterista/` (feed, stories, banner e 9 recortes PNG transparentes; estilo descrito no `LEIA-ME.md` da pasta). Usar de modelo pra novas artes/posts.
 - Cuidado ao recortar imagens: nunca por grade fixa (cortava orelhas e laterais); usar o contorno do desenho.
 
 ## Testes
@@ -564,3 +565,13 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Quebra-cabeça sem código: só 2 imagens** (v479, pedido da Bea): as outras 11 ficam com cadeado (`GRATIS_IMAGENS = 2` em `js/jogos/quebra.js`). **Radar Musical sem código: 2 partidas grátis** (já era assim, `GRATIS.caca` em `js/amostra.js`). Teste: `tests/e2e/quebra-gratis.mjs`.
 - **Limite de 30 ★ por dia só nos jogos de mesa** (v480, pedido da Bea): velha, memória, cara a cara, stop, bingo e quebra-cabeça (1 ★ por vez, 30 por dia). Os de **aprender não têm limite diário** (`APRENDER` em `js/figurinhas/mesa-logic.js`: Uno Musical, quiz do Uno, Quiz do Paul, Radar, Cruzadinha, Toca Aqui, Figurix, Detetive, Taiko, estudos, Beat Hero, arte do Paul, check-in e missões). Atenção: o Uno Musical contra o Paul (1 ★ por vitória) agora não tem teto diário; se virar "farm", dá pra tirar o `cartas` de `APRENDER`.
 - **Taiko: 264 ★** (v481, pedido da Bea): cada **célula = fase × figura (colcheia/semicolcheia) × andamento (80/100/120/140)** paga **70% = 1 ★, 85% = 2 ★, 100% = 3 ★** (`estrelasCel`); 11 fases × 8 células × 3 = **264**. A % é a de **toques certos** (não a ponderada: 100% = acertar todos dentro da folga). Cada célula paga na roleta até 3 ★ na vida (chave `rud:<fase>:<figura>:<andamento>`); o Taiko está em `APRENDER`, sem limite diário. Passar = 70%. Fase seguinte abre com ≥1 ★ na anterior. Tela mostra `n/24 ★` por fase e `x/264` no total.
+
+## Black Friday: Combo Robôterista (nov/2026)
+- **Bloco grande do combo no topo da Lojinha** (sem aba própria; `destaqueCombo()` em `js/views/lojinha-vitrine.js`, config `COMBO` em `js/loja-config.js`): arte do combo (`assets/loja/combo-black-friday.webp`, original em `assets/originals/artes-beaterista/`) + botão Adquirir pro link Hotmart `K108463375K`, R$ 79,90. Teste: `tests/e2e/lojinha-blackfriday.mjs`. Cache v482. Falta publicar a área dos alunos (e o app da Bea sai com o push na `main`).
+- Arte corrigida: Harmonia agora diz 102 páginas. Preço "de" = R$ 99,60 (soma real dos 4).
+- **Página de vendas (`vendas/index.html`)**: bloco `#combo-roboterista` (do pacote `combo_roboterista_para_site.zip`, Bea nov/2026) logo antes de "Materiais do Robôterista Paul". Imagem corrigida (102 págs) em `vendas/assets/combo-roboterista.webp`; link Hotmart com `?src=vendas`. O bloco diz "de R$ 99,60".
+
+## Progresso por aluno (nov/2026, v487)
+- Bug: "trocar aluno" só trocava nome/código; o progresso dos jogos (Toca Aqui, XP, roleta, aventura, pauLta, memória, ouvido, desafio, toque, piano, `beaterista-jogos`) era do aparelho e o aluno novo herdava tudo.
+- Agora esses registros são por aluno (nome): `js/store.js` (`POR_ALUNO`, chave `id:nome`) e `js/jogos/base.js` (`beaterista-jogos:nome`). App da Bea (sem nome de aluno) não muda. O que já existia sem dono passa **uma vez** pro primeiro aluno que abrir (`beaterista-escopo-migrado`, `beaterista-escopo-jogos`). Teste: `tests/e2e/aluno-progresso-separado.mjs`.
+- Kids (estrelas dos jogos de perguntas) e figurinhas já eram por nome. Fora da lista ficam configurações do aparelho (tema, som, metrônomo…).

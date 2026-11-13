@@ -6,6 +6,8 @@ export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
 export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 49,90', info: ['12 meses de acesso', 'Pagamento único'], img: 'assets/loja/passe.webp', link: '' };
+// Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
+export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [
   { id: 'ritmo', nome: 'Ritmo e Figuras', desc: 'figuras, pausas e levadas de rock', preco: 'R$ 29,90', tag: '100 páginas', img: 'assets/loja/ritmo.webp', w: 800, h: 800, fotos: ['assets/loja/d-ritmo.webp'], link: 'https://pay.hotmart.com/Q108426927S' },
   { id: 'harmonia', nome: 'Harmonia e Melodia', desc: 'notas e acordes no teclado e no violão', preco: 'R$ 29,90', tag: '102 páginas', img: 'assets/loja/harmonia.webp', w: 800, h: 800, fotos: ['assets/loja/d-harmonia.webp'], link: 'https://pay.hotmart.com/L108460189W' },
