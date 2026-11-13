@@ -28,7 +28,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 | IMG_8350 | vertical, meio escuro | 9s | jogo de ritmo com pistas coloridas (verde, vermelho, azul); confirmar com a Bea se é Beat Hero ou Piano Hero | ritmo |
 | IMG_9250 | vertical, escuro | 14s | aluno com estudo de ritmo (ouvir/tocar), baquetas e pad; cabeça de costas | reserva pro "ouve, lê, toca" |
 | IMG_9254 | horizontal | 8s | jogo da memória musical, cartas virando | corte de tour |
-| IMG_9025 | (reenviado, mesmo arquivo) | 10s | é o quebra-cabeça; fica em pé com `layout: rot`, `transpose: 1` | corte de tour |
+| IMG_9025 | (reenviado, mesmo arquivo) | 10s | é o quebra-cabeça; fica em pé com `layout: rot`, `transpose: 2` (com 1 sai de cabeça pra baixo) | corte de tour |
 | IMG_9299 a IMG_9304 (fotos) | foto vertical 3:4 | - | Bateria Kids impresso em espiral, na mão, com o banner da escola atrás: pato/gato/borboleta/chocolate (2 fotos), formas de tocar na caixa, partitura, vamos tocar, xilofone | reel e carrossel do Bateria Kids (`layout: img`) |
 
 Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autorização dos pais antes de postar**.
