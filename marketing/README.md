@@ -61,6 +61,7 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | IMG_9305 a IMG_9308 (prints) | prints de celular | acordes de violão/guitarra/baixo, acordes de teclado, menu Tocar (bateria, cordas, teclas, percussão) e cordas na tela |
 | IMG_9326 a IMG_9328 (prints) | prints de celular | álbum (4/131 coladas, "serão 300 figurinhas"), roleta de figurinhas e figurinhas ganhas. **As figurinhas têm foto de bandas reais (Radiohead, Rolling Stones, Beatles): evitar em peça de venda** (direito de imagem); mostrar a roleta, o álbum e a tela "minha figurinha" (IMG_9330, figurinha com a foto da própria Bea) |
 | IMG_9331 e IMG_9332 (prints) | prints de celular | tela "alunos da Beaterista" da lojinha: 6 depoimentos anônimos de alunos do Bateria Start (única fonte de depoimento; copiar fiel, nunca inventar) |
+| IMG_9333 (print) | print de celular | jogo da velha no modo musical: pergunta "qual equipamento permite abrir e fechar os pratos do chimbal?" (o jogo tem 68 perguntas em 3 níveis) |
 
 No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
@@ -104,6 +105,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 19_nao_e_so_bateria | geral | "não é só bateria": acordes de violão, guitarra, baixo e teclado, e tocar na tela |
 | 20_roleta_de_figurinhas | crianças e pais | "terminou o jogo? gira a roleta", abre com "sua foto vira figurinha" (figurinha da Bea), roleta e álbum, sem foto de banda |
 | depoimentos_1 a 8 (imagens 1080x1350) | iniciantes, perfil da Bea | os 6 depoimentos do Bateria Start, um por slide; `carrossel_depoimentos.js`. Cartão final sem preço (confirmar com a Bea nome e preço do curso) |
+| quiz_chimbal_1 a 3 (imagens 1080x1350) | geral, engajamento | "você acerta essa? comenta a resposta" com a pergunta do jogo da velha; formato repetível com outras perguntas (`specs_carrossel/quiz_chimbal.json`) |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
