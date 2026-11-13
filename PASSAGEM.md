@@ -694,6 +694,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 - **Figurix mais difícil** (a Bea achou fácil demais: repetia pergunta e a resposta ficava sempre do mesmo lado). Nas fases de pergunta (mais rápida, mais lenta, quiz), em `perguntas()` de `js/jogos/figurix.js`: (1) a pergunta não se repete dentro da fase; (2) a resposta certa nunca fica no mesmo lugar duas vezes seguidas (`novoLugar`); (3) cada pergunta tem uma barra de tempo que encurta a cada pergunta (`tempoPergunta` em `figurix-logic.js`: nível 1 de 10 s até 5 s; nível 2 de 9 até 4,5; níveis 3 e 4 de 8 até 4; do 5 em diante de 7 até 3,5). Acabou o tempo = conta como erro, mostra a certa e passa pra próxima. Os testes antigos desligam o tempo com `localStorage beaterista-figurix-sem-tempo=1`. A pausa do jogo ainda NÃO para o relógio. `sw.js` v517.
 
+- **Troca de repetida pela MESMA raridade** (pedido da Bea): `degrau` e `poolTroca` em `album-logic.js` (comum 0, Beatlemania 1, rara 2, exclusiva 3). Repetida antiga (`trocarRepetidas`): vira carta da mesma raridade; se dessa raridade não falta nenhuma, desce pra mais alta que falta abaixo; NUNCA sobe (se não tem pra onde ir, a repetida fica). Pacote novo (`semRepetir`): mesma regra, mas se não sobrar nada igual nem abaixo aí sim sobe, pra não vir repetida nem pacote vazio. `sw.js` v518.
+- **Publicado em 13/nov/2026**: app da Bea (`main`) e área dos alunos (repo `beaterista-jogos`, `jogos.beaterista.com.br`) na v518. Os 4 jogos de tocar de verdade seguem só no app da Bea.
+
 ## Quais jogos dão até 3 ★ por fase (resumo pra Bea, conferido no código em 13/nov/2026)
 | Jogo | Tem mundo com fases? | Estrelas por fase | Como ganha as 3 |
 |---|---|---|---|

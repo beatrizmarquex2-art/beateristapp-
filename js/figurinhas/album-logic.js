@@ -95,12 +95,26 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
  * por uma que ainda falta. Procura primeiro do mesmo tipo (mesma seção e mesma letra do código), depois da mesma seção, depois qualquer uma que falte.
  * Se faltam menos cartas do que o pacote traria, o pacote vem menor. Só repete quando o álbum inteiro já está completo. `tem` = Set dos códigos que o aluno já tem; `r` = gerador de números (0 a 1).
  */
+/** Degrau de raridade da carta: comum 0, Beatlemania 1, rara 2, exclusiva da Beaterista 3. */
+export const degrau = (e) => (!e ? 0 : e.raridade === 'Exclusiva' ? 3 : e.raridade === 'Rara' ? 2 : ehBeatles(e) ? 1 : 0);
+/**
+ * De onde sai a carta que entra no lugar de uma repetida (pedido da Bea: troca pela MESMA raridade).
+ * 1º a mesma raridade (mesmo tipo de carta quando dá); se dessa raridade já não falta nenhuma, a mais alta que falta ABAIXO dela.
+ * Nunca sobe de raridade: repetida comum não vira rara nem exclusiva. Sem nada pra pôr no lugar devolve undefined.
+ */
+export function poolTroca(livres, e, code, sobe = false) {
+  const d = degrau(e); const mesma = livres.filter((c) => degrau(c) === d);
+  if (mesma.length) return [mesma.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), mesma.filter((c) => e && c.secao === e.secao), mesma].find((l) => l.length);
+  for (let k = d - 1; k >= 0; k--) { const l = livres.filter((c) => degrau(c) === k); if (l.length) return l; }
+  if (sobe) for (let k = d + 1; k <= 3; k++) { const l = livres.filter((c) => degrau(c) === k); if (l.length) return l; } // pacote NOVO: melhor uma carta mais rara do que vir repetida ou vazio
+  return undefined;
+}
 export function semRepetir(catalog, codes, tem, r = Math.random) {
   const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const usados = new Set(tem); const out = [];
   for (const code of codes) {
     if (!usados.has(code)) { usados.add(code); out.push(code); continue; }
     const e = by[code]; const livres = catalog.filter((c) => !usados.has(c.codigo));
-    const pool = [livres.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), livres.filter((c) => e && c.secao === e.secao), livres].find((l) => l.length);
+    const pool = poolTroca(livres, e, code, true);
     if (!pool) continue; // não sobrou carta nova: o pacote vem menor em vez de trazer repetida
     const novo = pool[Math.floor(r() * pool.length)].codigo; usados.add(novo); out.push(novo);
   }
@@ -124,7 +138,7 @@ export function trocarRepetidas(state, catalog) {
     opened[id] = codes.map((code) => {
       if (!vistos.has(code)) { vistos.add(code); return code; }
       const e = by[code]; const livres = catalog.filter((c) => !tem.has(c.codigo));
-      const pool = [livres.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), livres.filter((c) => e && c.secao === e.secao), livres].find((l) => l.length);
+      const pool = poolTroca(livres, e, code);
       if (!pool) return code; // álbum completo: não tem o que pôr no lugar
       if ((s.inv[code] || 0) <= 0) return code; // essa cópia não está na mão (dado antigo): não mexe
       const novo = pool[Math.floor(r() * pool.length)].codigo; vistos.add(novo); tem.add(novo); trocadas++;
