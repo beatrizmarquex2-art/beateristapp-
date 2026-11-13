@@ -21,7 +21,7 @@ export const BLOCOS = [
   { n: 2, nome: 'paradiddle duplo dos dois lados' },
   { n: 3, nome: 'combinações' },
 ];
-// nomes das linhas 10 e 11 do bloco 3 ainda não foram dados pela Bea: ficam "padrão" até ela nomear
+// as linhas 10 e 11 do bloco 3 se chamam "combinação 1" e "combinação 2" (a Bea aprovou; pode trocar o nome aqui)
 export const FASES = [
   { n: 1, bloco: 1, nome: 'toque simples', seq: seq('d e d e d e d e d e d e d e d e') },
   { n: 2, bloco: 1, nome: 'toque duplo', seq: seq('d d e e d d e e d d e e d d e e') },
@@ -32,8 +32,8 @@ export const FASES = [
   { n: 7, bloco: 3, nome: 'paradiddle triplo', seq: seq('d e d e d e d d e d e d e d e e') },
   { n: 8, bloco: 3, nome: 'oito de cada mão', seq: seq('d d d d d d d d e e e e e e e e') },
   { n: 9, bloco: 3, nome: 'quatro de cada mão', seq: seq('d d d d e e e e d d d d e e e e') },
-  { n: 10, bloco: 3, nome: 'padrão 10', seq: seq('d e e d e d d e d e e d e d d e') },
-  { n: 11, bloco: 3, nome: 'padrão 11', seq: seq('d d e d e e d e d d e d e e d e') },
+  { n: 10, bloco: 3, nome: 'combinação 1', seq: seq('d e e d e d d e d e e d e d d e') },
+  { n: 11, bloco: 3, nome: 'combinação 2', seq: seq('d d e d e e d e d d e d e e d e') },
 ];
 export const FASE_BY = Object.fromEntries(FASES.map((f) => [f.n, f]));
 
