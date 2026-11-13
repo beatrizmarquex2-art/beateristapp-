@@ -863,8 +863,8 @@ html.aluno-on #app { padding-bottom: calc(96px + var(--safe-b)); }
 .fig-mao-it .btn { width: 100%; }
 
 /* aba Jogos > "bora jogar junto?": faixa mostarda baixinha, rosto do Paul em círculo (arte de linha da Bea) e pílulas */
-section.card.jg-sala-atalho { background: #f2c14e !important; border: 2.5px solid #1b1818; border-radius: 18px; box-shadow: 3px 3px 0 #a8182e; color: #1b1818; margin-top: 8px; padding: 9px 10px; display: grid; grid-template-columns: 54px 1fr; gap: 6px 10px; align-items: center; }
-.jg-sala-av { width: 54px; height: 54px; border-radius: 50% !important; background: #f3eadc; border: 2.5px solid #1b1818; overflow: hidden; display: grid; place-items: center; } .jg-sala-av img { width: 46px; height: auto; display: block; }
+section.card.jg-sala-atalho { background: #f2c14e !important; border: 2.5px solid #1b1818; border-radius: 18px; box-shadow: 3px 3px 0 #a8182e; color: #1b1818; margin-top: 8px; padding: 9px 10px; display: grid; grid-template-columns: 72px 1fr; gap: 6px 10px; align-items: center; }
+.jg-sala-paul { width: 72px; height: 66px; object-fit: contain; margin: -6px 0; filter: drop-shadow(1px 2px 0 rgb(0 0 0 / .2)); pointer-events: none; }
 .jg-sala-corpo { display: grid; gap: 5px; min-width: 0; } .jg-sala-extra { grid-column: 1 / -1; display: grid; gap: 6px; } .jg-sala-extra:empty { display: none; }
 .jg-sala-t { font: 400 17px/1 'Anton', 'Impact', sans-serif; text-transform: uppercase; color: #10234a; }
 .jg-pils { display: flex; flex-wrap: wrap; gap: 6px; }

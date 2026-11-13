@@ -134,9 +134,10 @@ function atalhoSala() {
   const nada = (txt, t) => h('button', { type: 'button', class: 'jg-pil off', disabled: true, title: t }, txt);
   const voltaSala = voltas.length === 1 ? h('button', { type: 'button', class: 'jg-pil', onclick: () => prepararEAbrir(voltas[0][0], voltas[0][1], voltas[0][2].code, true) }, `↩ voltar pra sala ${voltas[0][2].code}`) : voltas.length ? pil('↩ voltar pra sala', salas) : nada('↩ voltar pra sala', 'nenhuma sala aberta');
   const continuar = ult ? h('a', { class: 'jg-pil go', href: `#/jogos/${ult.id}` }, `▶ continuar: ${ult.nome}`) : nada('▶ continuar jogo', 'nenhum jogo em andamento');
-  const rosto = `f${String(1 + Math.floor(Math.random() * 13)).padStart(2, '0')}`; // o rosto do Paul (arte de linha da Bea) muda a cada vez
+  const PAULS = ['bateria', 'guitarra', 'teclado', 'microfone', 'pandeiro', 'lendo-partitura', 'ouvindo', 'estudando', 'baquetas-pra-cima', 'metronomo']; // o Paul colorido (adesivos da Bea, sem moldura) muda a cada vez
+  const paul = PAULS[Math.floor(Math.random() * PAULS.length)];
   return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'jogar com amigos' },
-    h('span', { class: 'jg-sala-av', 'aria-hidden': 'true' }, h('img', { src: `assets/paul/linha/${rosto}.webp`, alt: '', draggable: 'false' })),
+    h('img', { class: 'jg-sala-paul', src: `assets/paul/colorido/paul-${paul}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }),
     h('div', { class: 'jg-sala-corpo' }, h('b', { class: 'jg-sala-t' }, 'bora jogar junto?'),
       h('div', { class: 'jg-pils' }, pil('🔑 tenho código', entrar), pil('＋ criar sala', criar), voltaSala, continuar)),
     h('div', { class: 'jg-sala-extra' }, entrar, criar, salas, msg));
