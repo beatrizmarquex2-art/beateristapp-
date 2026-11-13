@@ -4,7 +4,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 
 ## Onde ficam os vídeos crus
 - **Não entram neste repo**: ele é público e os vídeos têm alunos crianças.
-- Pasta no Google Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)" (https://drive.google.com/drive/folders/1LkrR-b3lwRgMv442lotJMtJtYNhGU6Wu). A Bea sobe os arquivos lá pelo celular (o conector do chat só aceita arquivo até uns 3 MB; as 6 fotos do Bateria Kids já estão lá).
+- Pasta no Google Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)" (https://drive.google.com/drive/folders/1LkrR-b3lwRgMv442lotJMtJtYNhGU6Wu). O conector do chat só aceita arquivo até uns 3 MB. Em 13/nov subiram **cópias leves (720p, comprimidas) dos 17 vídeos crus**, com "(cópia leve)" no nome: servem pra consulta e pra montar rascunho, mas pra edição final a Bea precisa subir os originais pelo celular (ou reenviar no chat).
 - Numa sessão nova, a Bea reenvia os clipes que quiser usar; o catálogo abaixo diz o que é cada um.
 
 ## Catálogo dos clipes (nov/2026)
