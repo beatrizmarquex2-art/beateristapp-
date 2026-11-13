@@ -68,6 +68,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   const mk = async (codigo) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
     await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+    await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => { const okc = valid.has(r.request().postDataJSON().p_code); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(okc ? { ok: true, tipo: 'aluno' } : { ok: false, motivo: 'codigo' }) }); }); // a função nova de acesso também é simulada: sem isso o teste perguntava ao servidor de verdade
     await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await ctx.route('**/rest/v1/rpc/dicas_lista', (r) => { const c = r.request().postDataJSON().p_code; chamadas.push(c); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(c) ? tips : []) }); });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
