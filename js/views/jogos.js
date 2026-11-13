@@ -34,7 +34,8 @@ import * as AC from '../acesso.js';
 import { LETRAS } from '../letras-nomes.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
-import { musicaPausa, musicaVolta, sync as sincronizarMusica } from '../jogos/musica.js';
+import { musicaPausa, musicaVolta, sync as sincronizarMusica, fixarMusica } from '../jogos/musica.js';
+import { musicButton } from '../sound-btn.js';
 import { lembrar as lembrarUltimo, ultimoJogo } from '../ultimo-jogo.js';
 
 const IMG = 'assets/jogos/icones/';
@@ -83,7 +84,7 @@ const SECTIONS = [
   ]],
   ['Cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'un', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
+    ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // UN🚫 ESCONDIDO (pedido da Bea em 13/nov/2026: precisa de conserto); o código e o endereço #/jogos/un continuam, é só pôr 'un' de volta nesta lista // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
   ['Palavras e quiz', [
     link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
@@ -208,8 +209,8 @@ function catalog(host) {
 function game(host, entry) {
   const [, title, , mod] = entry;
   const body = h('div', { class: 'jg-body' });
-  const snd = h('button', { class: 'icon-btn jg-snd', type: 'button', 'aria-pressed': String(soundOn()), 'aria-label': soundOn() ? 'desligar som' : 'ligar som', onclick: () => {
-    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇'; sincronizarMusica();
+  const snd = h('button', { class: 'icon-btn jg-snd', type: 'button', 'aria-pressed': String(soundOn()), 'aria-label': soundOn() ? 'desligar os efeitos' : 'ligar os efeitos', onclick: () => {
+    fixarMusica(); setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar os efeitos' : 'ligar os efeitos'); snd.textContent = soundOn() ? '🔊' : '🔇'; sincronizarMusica();
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
@@ -225,7 +226,7 @@ function game(host, entry) {
   const btnPausa = h('button', { class: 'btn small ghost jg-pausa-btn', type: 'button', 'aria-label': 'pausar o jogo', onclick: pausar }, '⏸ pausa');
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
     h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
-      btnPausa, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd),
+      btnPausa, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd, musicButton('icon-btn jg-mus')),
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);

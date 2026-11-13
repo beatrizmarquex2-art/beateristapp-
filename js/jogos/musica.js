@@ -5,6 +5,12 @@ import { soundOn } from './base.js';
 import { TRACKS, trackDe } from './musica-dados.js';
 import './efeitos.js'; // registra o som próprio de cada jogo
 
+const KM = 'bt-musica';
+/** Música ligada? Tem botão próprio (separado dos efeitos). Quem nunca mexeu no botão da música segue a regra antiga: ela acompanha o som do app e o som dos jogos. */
+export const musicaLigada = () => { let v = null; try { v = localStorage.getItem(KM); } catch { /* sem armazenamento */ } return v == null ? !isMuted() && soundOn() : v === '1'; };
+export function setMusica(on) { try { localStorage.setItem(KM, on ? '1' : '0'); } catch { /* sem armazenamento */ } try { window.dispatchEvent(new CustomEvent('bt-musica', { detail: !!on })); } catch { /* sem DOM */ } sync(); }
+/** Antes de mexer nos EFEITOS, fixa a música como está: assim desligar um não desliga o outro. */
+export const fixarMusica = () => { let v = null; try { v = localStorage.getItem(KM); } catch { /* ok */ } if (v == null) { try { localStorage.setItem(KM, musicaLigada() ? '1' : '0'); } catch { /* ok */ } } };
 const VOL = 0.32; // bem baixinho: o fundo não pode atrapalhar a atenção
 let pausada = false; // um jogo pediu silêncio (ouvir o ritmo, microfone): evento 'jogo-musica'
 let bus = null; let timer = 0; let cur = ''; let step = 0; let nextT = 0; let gesture = false; let noiseBuf = null; let fadeT = 0;
@@ -39,7 +45,7 @@ function stop(fade = true) {
 /** Abaixa a música enquanto o jogo toca ritmo ou nota (ela não pode atrapalhar), e cala de vez quando o jogo manda (Beat Hero tocando). */
 function ajusta(c, p) {
   if (!bus) return;
-  if (isMuted() || !soundOn()) { sync(); return; } // o som foi desligado por um botão que não avisa
+  if (!musicaLigada()) { sync(); return; } // a música foi desligada por um botão que não avisa
   const calar = pausada || (p.parar && document.body.classList.contains(p.parar));
   const baixa = p.duck && Date.now() - lastAudioUse() < 1300;
   const alvo = calar ? 0 : baixa ? 0.04 : 1;
@@ -59,7 +65,7 @@ function start(id) {
 export function sync() {
   const want = trackDe(location.hash);
   if (!gesture && want) { try { const c = audio(false); if (c && c.state === 'running') gesture = true; } catch { /* sem áudio */ } } // o navegador já liberou o som (sem precisar de toque)
-  const ok = want && gesture && !document.hidden && !isMuted() && soundOn() && !desligada();
+  const ok = want && gesture && !document.hidden && musicaLigada() && !desligada();
   if (!ok) { if (cur) stop(); return; }
   if (cur !== want) start(want);
 }

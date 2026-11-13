@@ -36,10 +36,10 @@ check('3º compasso avisa "compasso 3 de 3"', /compasso 3 de 3/.test(await page.
 await tocaCompasso(); await page.waitForSelector('.tr-stars', { timeout: 15000 });
 const est = await page.evaluate(() => document.querySelector('.tr-stars') ? document.querySelector('.tr-stars').getAttribute('aria-label') : '');
 check('tocando tudo certinho na tela vale 3 estrelas (nota = média dos 3 compassos, igual à pauLta)', /^3 de 3/.test(est) && /média dos 3 compassos/.test(await page.textContent('.tr-big')), est);
-await page.getByRole('button', { name: /próxima fase/ }).click(); await sleep(500);
-check('próxima fase abre outra fase (pauta nova)', (await page.locator('.tr-fasehead').count()) === 1 && (await page.locator('.tr-pad').count()) === 1);
-await page.locator('.tr-fasehead button').click(); await page.waitForSelector('.mp-node');
-check('voltar leva ao mapa', (await page.locator('.mp-node').count()) === 12);
+check('passou de fase: NÃO tem "próxima fase" direto; o botão avisa que andou no mundinho', (await page.getByRole('button', { name: /próxima fase/ }).count()) === 0 && (await page.getByRole('button', { name: /andou no mundinho/ }).count()) === 1);
+await page.getByRole('button', { name: /andou no mundinho/ }).click(); await page.waitForSelector('.mp-node');
+check('o botão leva ao mapa e o aviso diz que a fase 2 abriu', (await page.locator('.mp-node').count()) === 12 && /fase 1 concluída, a fase 2 abriu/.test(await page.evaluate(() => (document.getElementById('toasts') || document.body).textContent)));
+await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/toca-andou.png` });
 await page.locator('.tm-rand').click(); await page.waitForSelector('.tr-fasehead');
 check('aleatório abre uma fase', (await page.locator('.tr-pad').count()) === 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));

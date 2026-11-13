@@ -208,3 +208,18 @@ test('pacotinho da pauLta: tamanho certo, mesmo id = mesmas cartas, e Beaterista
   assert.ok(bea > 0, 'com chance, às vezes vem Beaterista');
   for (let k = 0; k < 100; k++) assert.ok(L.drawPack(lista, `pl:3:0:x:t:${k}`).every((c) => lista.find((x) => x.codigo === c).secao !== 'Beaterista'), 'sem chance, nunca vem');
 });
+
+test('regra das 3 estrelas (opção): desligada abre tudo; ligada só abre o próximo mundo com 3 ★ em todas as fases do anterior', () => {
+  let p = S.blank(); const joga = (w, n, right) => { p = S.applyRun(p, { world: w, n, mode: 'nomes', right, total: 10 }).p; };
+  assert.ok(S.worldOpen(p, 'drumI') && S.worldOpen(p, 'fa') && S.unlocked(p, 'drumD', 1), 'sem a regra, os mundos abrem como sempre');
+  assert.ok(!S.worldOpen(p, 'duel'), 'o Duelo continua pedindo sol e fá');
+  p = { ...p, exig: true };
+  assert.ok(S.worldOpen(p, 'drumF') && S.worldOpen(p, 'sol'), 'o primeiro de cada caminho nunca tranca');
+  assert.ok(!S.worldOpen(p, 'drumI') && !S.unlocked(p, 'drumI', 1) && !S.worldOpen(p, 'fa'));
+  for (let n = 1; n <= 12; n++) joga('drumF', n, n === 12 ? 8 : 10); // a última com 2 ★
+  assert.equal(S.faltam3(p, 'drumF'), 1); assert.ok(S.worldDone(p, 'drumF')); assert.ok(!S.worldOpen(p, 'drumI'), 'concluir não basta: falta 3 ★ numa fase');
+  p = S.applyRun(p, { world: 'drumF', n: 12, mode: 'imagens', right: 10, total: 10 }).p; // 3 ★ no outro formato também vale
+  assert.equal(S.faltam3(p, 'drumF'), 0); assert.ok(S.worldOpen(p, 'drumI') && S.unlocked(p, 'drumI', 1)); assert.ok(!S.worldOpen(p, 'drumD'));
+  for (let n = 1; n <= 15; n++) { joga('sol', n, 10); joga('fa', n, 8); }
+  assert.ok(S.duelUnlocked(p) && !S.worldOpen(p, 'duel'), 'com a regra, o Duelo pede 3 ★ em todo o mundo de fá');
+});

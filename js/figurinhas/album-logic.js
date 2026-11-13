@@ -93,7 +93,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
 /**
  * Sem figurinha repetida (pedido da Bea): troca cada carta que o aluno JÁ TEM (colada ou na mão), ou que veio duas vezes no mesmo pacote,
  * por uma que ainda falta. Procura primeiro do mesmo tipo (mesma seção e mesma letra do código), depois da mesma seção, depois qualquer uma que falte.
- * Só repete quando o álbum inteiro já está completo. `tem` = Set dos códigos que o aluno já tem; `r` = gerador de números (0 a 1).
+ * Se faltam menos cartas do que o pacote traria, o pacote vem menor. Só repete quando o álbum inteiro já está completo. `tem` = Set dos códigos que o aluno já tem; `r` = gerador de números (0 a 1).
  */
 export function semRepetir(catalog, codes, tem, r = Math.random) {
   const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const usados = new Set(tem); const out = [];
@@ -101,9 +101,10 @@ export function semRepetir(catalog, codes, tem, r = Math.random) {
     if (!usados.has(code)) { usados.add(code); out.push(code); continue; }
     const e = by[code]; const livres = catalog.filter((c) => !usados.has(c.codigo));
     const pool = [livres.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), livres.filter((c) => e && c.secao === e.secao), livres].find((l) => l.length);
-    const novo = pool ? pool[Math.floor(r() * pool.length)].codigo : code; usados.add(novo); out.push(novo);
+    if (!pool) continue; // não sobrou carta nova: o pacote vem menor em vez de trazer repetida
+    const novo = pool[Math.floor(r() * pool.length)].codigo; usados.add(novo); out.push(novo);
   }
-  return out;
+  return out.length ? out : [...new Set(codes)]; // álbum completo: aí o pacote vem como foi sorteado
 }
 /** Abre o pacote: as figurinhas vão pra "mão" (ainda não coladas). Abrir de novo o mesmo id não faz nada. */
 export function openPack(state, catalog, packId) {
