@@ -49,6 +49,7 @@ export function mountProgressionMap(host, cfg) {
   /* ---- mundo ---- */
   const world = h('div', { class: `mp-world${motion ? ' mp-anim' : ''}`, style: `aspect-ratio:${L.W} / ${L.H}` });
   const at = (x, y) => `left:${pct(x, L.W)};top:${pct(y, L.H)}`;
+  const decorEls = []; // { el, side, y }: o que fica embaixo do Paul some enquanto ele está ali
   chapters.forEach((c, ci) => {
     const b = L.bands[ci];
     const col = ''; // as cores das faixas vêm do tema da escola (css/aventura-tema.css), escuro ou claro
@@ -61,11 +62,11 @@ export function mountProgressionMap(host, cfg) {
       const name = ELEMENTOS[(ci * 5 + k * 3 + gameId.length) % ELEMENTOS.length]; const side = (ci + k) % 2 ? 'l' : 'r'; let y = b.y0 + 110 + (b.y1 - b.y0 - 150) * ((k * 0.17 + 0.06 + ci * 0.11) % 0.95);
       for (let t = 0; t < 8 && ocupados.some(([sd, yy]) => sd === side && Math.abs(yy - y) < 52); t++) y += 34; // empurra pra baixo até achar um vão
       if (y > b.y1 - 30) continue; ocupados.push([side, y]);
-      const d = h('img', { class: `mp-stk ${side}${k % 2 ? ' b' : ''}`, src: stkSrc(name), alt: '', 'aria-hidden': 'true', draggable: 'false', style: `top:${pct(y, L.H)};--rot:${(k % 2 ? 1 : -1) * (6 + k * 3)}deg` }); world.append(d);
+      const d = h('img', { class: `mp-stk ${side}${k % 2 ? ' b' : ''}`, src: stkSrc(name), alt: '', 'aria-hidden': 'true', draggable: 'false', style: `top:${pct(y, L.H)};--rot:${(k % 2 ? 1 : -1) * (6 + k * 3)}deg` }); world.append(d); decorEls.push({ el: d, side, y });
     }
     decorOf(c).forEach(([name, side, f], k) => {
       const span = b.y1 - b.y0 - 84; const y = b.y0 + 84 + span * f;
-      const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, 'data-s': name, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d);
+      const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, 'data-s': name, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d); decorEls.push({ el: d, side: side === 'l' ? 'l' : 'r', y });
     });
   });
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -93,7 +94,7 @@ export function mountProgressionMap(host, cfg) {
   const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = `<img class="mp-cor" src="${corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; };
   paul.append(paulImg, say); world.append(paul);
   let saidT = 0; const speak = (t, ms = 2400) => { say.textContent = t; say.hidden = false; S.cancel(saidT); saidT = S.later(() => { say.hidden = true; }, ms); };
-  const place = (i) => { const w = world.clientWidth || 360; const k = w / L.W; const p = pos$(i); const side = p.x > 180 ? -1 : 1; paul.style.transform = `translate(${(p.x + side * 62) * k}px, ${(p.y - 40) * k}px)`; paul.dataset.at = String(i); paul.classList.toggle('flip', side < 0); };
+  const place = (i) => { const w = world.clientWidth || 360; const k = w / L.W; const p = pos$(i); const side = p.x > 180 ? -1 : 1; const lado = side < 0 ? 'l' : 'r'; for (const d of decorEls) d.el.style.visibility = d.side === lado && Math.abs(d.y - p.y) < 64 ? 'hidden' : ''; paul.style.transform = `translate(${(p.x + side * 62) * k}px, ${(p.y - 40) * k}px)`; paul.dataset.at = String(i); paul.classList.toggle('flip', side < 0); };
   const startAt = celebrate ? Math.max(0, celebrate.pos) : current; // se acabou de concluir, o Paul sai do disco concluído e anda até o próximo
   setMood(celebrate ? 'cheer' : 'happy'); place(startAt);
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => place(Number(paul.dataset.at))) : null; if (ro) { ro.observe(world); S.add(() => ro.disconnect()); }
