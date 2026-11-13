@@ -35,7 +35,7 @@ await page.getByRole('button', { name: /próximo compasso/ }).click(); await sle
 check('3º compasso avisa "compasso 3 de 3"', /compasso 3 de 3/.test(await page.textContent('.tr-status')));
 await tocaCompasso(); await page.waitForSelector('.tr-stars', { timeout: 15000 });
 const est = await page.evaluate(() => document.querySelector('.tr-stars') ? document.querySelector('.tr-stars').getAttribute('aria-label') : '');
-check('tocando tudo certinho na tela vale 3 estrelas (nota = média dos 3 compassos, igual à pauLta)', /^3 de 3/.test(est) && /média dos 3 compassos/.test(await page.textContent('.tr-big')), est);
+check('tocando tudo certinho na tela vale 3 estrelas (vale o último compasso, não a média)', /^3 de 3/.test(est) && /vale o último compasso/.test(await page.textContent('.tr-big')), est);
 check('passou de fase: NÃO tem "próxima fase" direto; o botão avisa que andou no mundinho', (await page.getByRole('button', { name: /próxima fase/ }).count()) === 0 && (await page.getByRole('button', { name: /andou no mundinho/ }).count()) === 1);
 await page.getByRole('button', { name: /andou no mundinho/ }).click(); await page.waitForSelector('.mp-node');
 check('o botão leva ao mapa e o aviso diz que a fase 2 abriu', (await page.locator('.mp-node').count()) === 12 && /fase 1 concluída, a fase 2 abriu/.test(await page.evaluate(() => (document.getElementById('toasts') || document.body).textContent)));
