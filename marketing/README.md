@@ -4,7 +4,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 
 ## Onde ficam os vídeos crus
 - **Não entram neste repo**: ele é público e os vídeos têm alunos crianças.
-- Pasta no Google Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)" (https://drive.google.com/drive/folders/1LkrR-b3lwRgMv442lotJMtJtYNhGU6Wu). A Bea sobe os arquivos lá pelo celular (o conector do chat só aceita arquivo até uns 3 MB).
+- Pasta no Google Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)" (https://drive.google.com/drive/folders/1LkrR-b3lwRgMv442lotJMtJtYNhGU6Wu). A Bea sobe os arquivos lá pelo celular (o conector do chat só aceita arquivo até uns 3 MB; as 6 fotos do Bateria Kids já estão lá).
 - Numa sessão nova, a Bea reenvia os clipes que quiser usar; o catálogo abaixo diz o que é cada um.
 
 ## Catálogo dos clipes (nov/2026)
@@ -22,6 +22,8 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 | IMG_9260 | horizontal | 22s | caça-palavras/cruzadinha musical | pra professores |
 | IMG_9268 | vertical, som real de baqueta | 23s | aluno lê a partitura no tablet e toca no pad (0-10s e 15-18s são os melhores) | prova: da tela pro instrumento |
 | IMG_9269 | vertical | 16s | aluno de camisa amarela jogando; perfil do rosto aparece a partir de 10s | "parece só joguinho" |
+
+| IMG_9299 a IMG_9304 (fotos) | foto vertical 3:4 | - | Bateria Kids impresso em espiral, na mão, com o banner da escola atrás: pato/gato/borboleta/chocolate (2 fotos), formas de tocar na caixa, partitura, vamos tocar, xilofone | reel e carrossel do Bateria Kids (`layout: img`) |
 
 Crianças aparecem em 9246, 9248, 9249, 9268 e 9269: **confirmar autorização dos pais antes de postar**.
 
@@ -45,6 +47,8 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 07_prof_3_atividades | professores | 3 atividades prontas pra aula de amanhã |
 | 08_loop_tempo_de_tela | pais | 7s em loop, "o tempo de tela que eu deixo" |
 | 09_lojinha_imprimir | pais e profs | da tela pro papel, combo robôterista R$ 79,90 |
+| 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
+| kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
 
 ## O que está funcionando no nicho (pesquisa de ago a nov/2026)
 - Bateria: aluno toca e professor reage (377 mil a 1,5 mi de views em contas pequenas); "assim não / assim sim"; número ou figura na tela enquanto toca; estudar sem bateria.

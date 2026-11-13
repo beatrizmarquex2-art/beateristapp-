@@ -3,7 +3,7 @@
 uso: python3 build.py specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA
 os brutos sao achados pelo numero (ex.: "9268" acha qualquer arquivo *IMG_9268.mov).
 layout de cada trecho: "v" (vertical, tela cheia), "h" (horizontal, recorte 4:5 com faixa azul em cima),
-"rot" (gravado de lado: gira e usa em tela cheia). audio: "beat" (batida original) ou "raw" (som da gravacao)."""
+"rot" (gravado de lado: gira e usa em tela cheia), "img" (foto com zoom lento). audio: "beat" (batida original) ou "raw" (som da gravacao)."""
 import json,sys,glob,os,subprocess,tempfile
 spec=json.load(open(sys.argv[1])); raw=sys.argv[2]; outdir=sys.argv[3]; here=os.path.dirname(os.path.abspath(__file__))
 os.makedirs(outdir,exist_ok=True); tmp=tempfile.mkdtemp()
@@ -13,13 +13,16 @@ clipT=sum(s['dur'] for s in segs); T=clipT+ENDD
 cmd=['ffmpeg','-v','error','-y']; fc=''
 for i,s in enumerate(segs):
     f=glob.glob(os.path.join(raw,f"*{s['src']}*"))[0]
-    cmd+=['-ss',str(s['ss']),'-t',str(s['dur']+0.2),'-i',f]
+    if s.get('layout')=='img': cmd+=['-loop','1','-framerate','30','-t',str(s['dur']+0.2),'-i',f]
+    else: cmd+=['-ss',str(s['ss']),'-t',str(s['dur']+0.2),'-i',f]
     g=s.get('gamma',1.06); eq=f"eq=contrast=1.07:brightness={s.get('bright',0.03)}:saturation=1.18:gamma={g},unsharp=5:5:0.5"
     d=s['dur']; z=f"zoompan=z='1+0.05*on/{int(d*30)}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920:fps=30"
     lay=s.get('layout','v')
     if lay=='h':
         x=s.get('x','(iw-864)/2')
         v=f"fps=30,crop=864:1080:{x}:0,scale=1080:1350:flags=lanczos,{eq},pad=1080:1920:0:570:color=0x101f47"
+    elif lay=='img':  # foto: preenche a tela (cx = posicao horizontal do recorte, 0 a 1), encostada embaixo pra frase nao cobrir a pagina
+        v=f"scale=-2:1700:flags=lanczos,crop=1080:1700:(iw-1080)*{s.get('cx',0.5)}:0,eq=contrast=1.05:saturation=1.1,pad=1080:1920:0:220:color=0x101f47,fps=30"
     elif lay=='rot':
         v=f"fps=30,transpose={s.get('transpose',2)},scale=1188:2112:flags=lanczos,{z},{eq}"
     else:
