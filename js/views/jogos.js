@@ -132,14 +132,14 @@ function atalhoSala() {
   pil.todas = [];
   const u = jogoUltimo(); const ult = u && BY[u.id] ? u : null;
   const nada = (txt, t) => h('button', { type: 'button', class: 'jg-pil off', disabled: true, title: t }, txt);
-  const voltaSala = voltas.length === 1 ? h('button', { type: 'button', class: 'jg-pil', onclick: () => prepararEAbrir(voltas[0][0], voltas[0][1], voltas[0][2].code, true) }, `↩ voltar pra sala ${voltas[0][2].code}`) : voltas.length ? pil('↩ voltar pra sala', salas) : nada('↩ voltar pra sala', 'nenhuma sala aberta');
-  const continuar = ult ? h('a', { class: 'jg-pil go', href: `#/jogos/${ult.id}` }, `▶ continuar: ${ult.nome}`) : nada('▶ continuar jogo', 'nenhum jogo em andamento');
+  const voltaSala = voltas.length === 1 ? h('button', { type: 'button', class: 'jg-pil', onclick: () => prepararEAbrir(voltas[0][0], voltas[0][1], voltas[0][2].code, true) }, `↩ sala ${voltas[0][2].code}`) : voltas.length ? pil('↩ salas', salas) : nada('↩', 'nenhuma sala aberta');
+  const continuar = ult ? h('a', { class: 'jg-pil go', href: `#/jogos/${ult.id}` }, `▶ ${ult.nome}`) : nada('▶', 'nenhum jogo em andamento');
   const PAULS = ['bateria', 'guitarra', 'teclado', 'microfone', 'pandeiro', 'lendo-partitura', 'ouvindo', 'estudando', 'baquetas-pra-cima', 'metronomo']; // o Paul colorido (adesivos da Bea, sem moldura) muda a cada vez
   const paul = PAULS[Math.floor(Math.random() * PAULS.length)];
   return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'jogar com amigos' },
     h('img', { class: 'jg-sala-paul', src: `assets/paul/colorido/paul-${paul}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }),
-    h('div', { class: 'jg-sala-corpo' }, h('b', { class: 'jg-sala-t' }, 'bora jogar junto?'),
-      h('div', { class: 'jg-pils' }, pil('🔑 tenho código', entrar), pil('＋ criar sala', criar), voltaSala, continuar)),
+    h('div', { class: 'jg-sala-corpo' }, h('b', { class: 'jg-sala-t' }, 'jogar junto'),
+      h('div', { class: 'jg-pils' }, pil('🔑 código', entrar), pil('＋ sala', criar), voltaSala, continuar)),
     h('div', { class: 'jg-sala-extra' }, entrar, criar, salas, msg));
 }
 
@@ -178,7 +178,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica({ compacto: true }), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // (o Paul já fala pelo cartão azul do topo, que muda a cada volta; o balão solto não aparece mais em cima dele)
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
