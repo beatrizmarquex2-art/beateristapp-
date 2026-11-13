@@ -58,6 +58,7 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | IMG_9152 | print | rascunho de página "pra pais e responsáveis" |
 | IMG_8866, IMG_8865 | banners 3:1 | Passe Beaterista R$ 49,90 e Lojinha Beaterista |
 | IMG_9309 a IMG_9325 (16 prints limpos, aluno "Beatriz") | prints de celular | tocar (bateria, xilofone), ritmo Rock 1, quebra-cabeça, Detetive Note, memória, Figurix, Uno Musical, mapas (floresta, mar, espaço), dicionário, aula de bateria com o Paul e 3 telas da página **Jogos Ensinam** (o que cada jogo desenvolve: fonte dos textos de benefício) |
+| IMG_9305 a IMG_9308 (prints) | prints de celular | acordes de violão/guitarra/baixo, acordes de teclado, menu Tocar (bateria, cordas, teclas, percussão) e cordas na tela |
 
 No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
@@ -98,6 +99,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | passe_carrossel_1 a 7 (imagens 1080x1350) | geral | "o que tem dentro do passe beaterista?"; gerado por `marketing/reels/carrossel_passe.js RECORTES SAIDA` |
 | 18_toca_na_tela | iniciante | "sem instrumento em casa? toca na tela" (bateria, xilofone, ritmo Rock 1, aula com o Paul) |
 | jogos_ensinam_1 a 7 (imagens 1080x1350) | pais | "seu filho joga. olha o que ele treina", benefícios tirados da página Jogos Ensinam; spec em `specs_carrossel/` e gerador genérico `carrossel.js` |
+| 19_nao_e_so_bateria | geral | "não é só bateria": acordes de violão, guitarra, baixo e teclado, e tocar na tela |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |

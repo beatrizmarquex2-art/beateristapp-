@@ -1,0 +1,6 @@
+{"name":"19_nao_e_so_bateria","tag":"jogos de música","audio":"beat","segs":[
+ {"src":"T3_menu","layout":"img","dur":2.5,"lines":["NÃO É SÓ","*BATERIA"]},
+ {"src":"T3_violao","layout":"img","dur":2.5,"lines":["ACORDES DE VIOLÃO,","*GUITARRA E BAIXO"]},
+ {"src":"T3_teclado","layout":"img","dur":2,"lines":["ACORDES","*NO TECLADO"]},
+ {"src":"T3_cordas","layout":"img","dur":2.5,"lines":["ESCOLHE O ACORDE","*E TOCA NA TELA"]}],
+ "end":{"tag":"jogos + estudos + álbum","h":["MÚSICA NA","PALMA DA MÃO"],"sub":"comece grátis hoje"}}
