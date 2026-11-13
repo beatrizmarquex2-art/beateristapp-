@@ -8,17 +8,19 @@ export const ACTIONS = ['pular', 'inverter', 'mais2'];
 export const ACTION_NAME = { pular: 'pular', inverter: 'inverter', mais2: '+2', curinga: 'curinga', mais4: '+4' };
 export { SYMS, SYM_NAME };
 export const HAND = 7;
-export const DECK_SIZE = 112;
+export const DECK_SIZE = 128; // 4 cores × (12 figuras × 2 + 3 ações × 2) + 4 curingas + 4 curingas +4
 
 export const isFig = (c) => c.kind === 'fig';
 export const isWild = (c) => c.kind === 'curinga' || c.kind === 'mais4';
 export const isAction = (c) => !isFig(c);
 export const cardName = (c) => (c.kind === 'curinga' ? 'curinga (muda a cor)' : c.kind === 'mais4' ? 'curinga +4' : `${isFig(c) ? SYM_NAME[c.sym] : ACTION_NAME[c.kind]} ${COLOR_NAME[c.color]}`);
 
-export function makeDeck() {
+/** Figuras do baralho ANTIGO (112 cartas, com a nota fantasma): só o Modo Aventura do Uno usa, pra manter as missões e sementes de sempre. */
+export const LEGACY_SYMS = ['seminima', 'colcheia', 'semicolcheia', 'fusa', 'p_seminima', 'p_colcheia', 'p_semicolcheia', 'p_fusa', 'acento', 'fantasma'];
+export function makeDeck(syms = SYMS) {
   const d = []; let n = 0;
   for (const color of COLORS) {
-    for (const sym of SYMS) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: 'fig', sym });
+    for (const sym of syms) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: 'fig', sym });
     for (const a of ACTIONS) for (let k = 0; k < 2; k++) d.push({ id: `c${n++}`, color, kind: a, sym: null });
   }
   for (const w of ['curinga', 'mais4']) for (let k = 0; k < 4; k++) d.push({ id: `c${n++}`, color: null, kind: w, sym: null });
@@ -37,27 +39,35 @@ export function shuffle(list, rnd = Math.random) {
  */
 export function playable(card, top, color, hand) {
   if (card.kind === 'curinga') return true;
-  if (card.kind === 'mais4') return !hand || !hand.some((c) => c.color === color);
+  if (card.kind === 'mais4') return !hand || (hand.length >= 3 && !hand.some((c) => c.color === color)); // nunca como última carta nem pra ficar com UNO (ganharia na hora)
   if (card.color === color) return true;
   if (isWild(top)) return false;
   return isFig(card) ? isFig(top) && card.sym === top.sym : card.kind === top.kind;
 }
 export const topOf = (g) => g.discard[g.discard.length - 1];
 /** Com carta recém-comprada só ela pode ser jogada. */
-export const legalCards = (g, p) => g.hands[p].filter((c) => (g.drawn ? c.id === g.drawn : true) && playable(c, topOf(g), g.color, g.hands[p]));
+export const legalCards = (g, p) => g.hands[p].filter((c) => (g.drawn ? c.id === g.drawn : true) && canPlayCard(g, c, g.hands[p]));
+/** Uma carta pode ser jogada agora? No UN🚫: o +4 sai quando quiser, e com +2/+4 acumulado só dá pra responder com o mesmo tipo. */
+export function canPlayCard(g, card, hand) {
+  if (g.un) {
+    if (g.pend) return card.kind === g.pend.kind;
+    if (card.kind === 'mais4') return true;
+  }
+  return playable(card, topOf(g), g.color, hand);
+}
 /** Cartas que ainda dá para comprar (monte + descarte reciclável sem o topo). */
 export const available = (g) => g.draw.length + Math.max(0, g.discard.length - 1);
 /** Jogador que vem `k` passos depois de `p`, no sentido atual. */
 export const adv = (g, p, k = 1) => (((p + g.dir * k) % g.n) + g.n) % g.n;
 
-export function newGame({ mode = 'paul', players = 2, rnd = Math.random } = {}) {
+export function newGame({ mode = 'paul', players = 2, rnd = Math.random, un = false, legacy = false } = {}) {
   const n = mode === 'paul' || mode === 'local' ? Math.max(2, Math.min(4, players | 0 || 2)) : 2; // contra o computador e no mesmo celular: 2 a 4 jogadores
-  const deck = shuffle(makeDeck(), rnd);
+  const deck = shuffle(makeDeck(legacy ? LEGACY_SYMS : SYMS), rnd);
   const hands = Array.from({ length: n }, (_, i) => deck.slice(i * HAND, (i + 1) * HAND));
   let rest = deck.slice(n * HAND);
   const i = rest.findIndex(isFig); const open = rest[i];
   rest = shuffle(rest.filter((_, k) => k !== i), rnd); // a carta aberta é sempre de figura; as outras voltam ao monte embaralhadas
-  return { v: 2, mode, n, dir: 1, hands, draw: rest, discard: [open], color: open.color, turn: Math.floor(rnd() * n), drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: { t: 'start' } };
+  return { v: 2, mode, n, dir: 1, hands, draw: rest, discard: [open], color: open.color, turn: Math.floor(rnd() * n), drawn: null, passes: 0, over: false, result: null, unoPending: null, unoSaid: null, shuf: 0, seq: 0, ev: { t: 'start' }, ...(un ? { un: true, pend: null } : {}), ...(legacy ? { legacy: true } : {}) };
 }
 const clone = (g) => JSON.parse(JSON.stringify(g));
 
@@ -73,8 +83,8 @@ function take(g, k, rnd) {
 const end = (g, winner, reason) => { g.over = true; g.result = { winner, reason, counts: g.hands.map((h) => h.length) }; return g; };
 const next = (g, ev) => { g.seq += 1; g.ev = ev; return g; };
 
-export const canDraw = (g) => !g.over && !g.drawn && legalCards(g, g.turn).length === 0 && available(g) > 0;
-export const canPass = (g) => !g.over && (g.drawn ? true : legalCards(g, g.turn).length === 0 && available(g) === 0);
+export const canDraw = (g) => !g.over && !g.drawn && (g.pend || legalCards(g, g.turn).length === 0) && available(g) > 0;
+export const canPass = (g) => !g.over && !g.pend && (g.drawn ? true : legalCards(g, g.turn).length === 0 && available(g) === 0);
 
 export function applyPlay(g0, p, cardId, color, rnd = Math.random) {
   if (g0.over || p !== g0.turn) throw new Error('não é a vez');
@@ -82,8 +92,9 @@ export function applyPlay(g0, p, cardId, color, rnd = Math.random) {
   if (i < 0) throw new Error('carta não está na mão');
   const card = hand[i];
   if (g.drawn && g.drawn !== cardId) throw new Error('só a carta comprada');
-  if (!playable(card, topOf(g), g.color, hand)) throw new Error('carta não serve');
+  if (!canPlayCard(g, card, hand)) throw new Error('carta não serve');
   if (isWild(card) && !COLORS.includes(color)) throw new Error('escolha uma cor');
+  if (g.un) fechaJanelaUno(g, p);
   hand.splice(i, 1); g.discard.push(card); g.color = isWild(card) ? color : card.color; g.drawn = null; g.passes = 0;
   if (g.unoPending === p) g.unoPending = null; g.unoSaid = g.unoSaid === p ? null : g.unoSaid;
   const ev = { t: 'play', by: p, id: card.id, kind: card.kind, color: g.color, victim: null, n: 0 };
@@ -93,6 +104,10 @@ export function applyPlay(g0, p, cardId, color, rnd = Math.random) {
   else if (card.kind === 'inverter') {
     g.dir = -g.dir;
     if (g.n === 2) { ev.victim = first; nxt = p; } else nxt = adv(g, p, 1);
+  } else if (g.un && (card.kind === 'mais2' || card.kind === 'mais4')) {
+    // UN🚫: o +2 e o +4 acumulam; quem recebe responde com o mesmo tipo ou compra tudo
+    const add = card.kind === 'mais2' ? 2 : 4; g.pend = { kind: card.kind, n: (g.pend ? g.pend.n : 0) + add };
+    ev.victim = first; ev.pend = g.pend.n;
   } else if (card.kind === 'mais2' || card.kind === 'mais4') {
     const got = take(g, card.kind === 'mais2' ? 2 : 4, rnd); g.hands[first].push(...got);
     ev.victim = first; ev.n = got.length; nxt = adv(g, p, 2);
@@ -104,7 +119,21 @@ export function applyPlay(g0, p, cardId, color, rnd = Math.random) {
 }
 export function applyDraw(g0, p, rnd = Math.random) {
   if (p !== g0.turn || !canDraw(g0)) throw new Error('não pode comprar');
-  const g = clone(g0); const [c] = take(g, 1, rnd); g.hands[p].push(c); g.passes = 0;
+  const g = clone(g0);
+  if (g.un) fechaJanelaUno(g, p);
+  if (g.un && g.pend) { // UN🚫: não tem como responder (ou não quis): compra tudo que acumulou e perde a vez
+    const got = take(g, g.pend.n, rnd); g.hands[p].push(...got); const n = got.length; g.pend = null; g.passes = 0; g.drawn = null;
+    if (g.unoPending === p) g.unoPending = null; if (g.unoSaid === p) g.unoSaid = null;
+    g.turn = adv(g, p, 1); return next(g, { t: 'draw', by: p, n, id: got.length ? got[got.length - 1].id : null, fits: false, pend: true });
+  }
+  if (g.un) { // UN🚫: compra até achar uma carta que dá pra jogar
+    let n = 0; let c = null; let fits = false;
+    while (available(g) > 0) { [c] = take(g, 1, rnd); if (!c) break; g.hands[p].push(c); n++; if (canPlayCard(g, c, g.hands[p])) { fits = true; break; } }
+    g.passes = 0; if (g.unoPending === p) g.unoPending = null; if (g.unoSaid === p) g.unoSaid = null;
+    if (fits) g.drawn = c.id; else { g.drawn = null; g.turn = adv(g, p, 1); }
+    return next(g, { t: 'draw', by: p, n, id: c ? c.id : null, fits });
+  }
+  const [c] = take(g, 1, rnd); g.hands[p].push(c); g.passes = 0;
   if (g.unoPending === p) g.unoPending = null; if (g.unoSaid === p) g.unoSaid = null;
   const fits = playable(c, topOf(g), g.color, g.hands[p]);
   if (fits) g.drawn = c.id; else { g.drawn = null; g.turn = adv(g, p, 1); }
@@ -112,7 +141,7 @@ export function applyDraw(g0, p, rnd = Math.random) {
 }
 export function applyPass(g0, p) {
   if (p !== g0.turn || !canPass(g0)) throw new Error('não pode passar');
-  const g = clone(g0);
+  const g = clone(g0); if (g.un) fechaJanelaUno(g, p);
   if (g.drawn) { g.drawn = null; g.turn = adv(g, p, 1); return next(g, { t: 'pass', by: p }); }
   g.passes += 1;
   if (g.passes >= g.n) {
@@ -135,6 +164,36 @@ export function catchUno(g0, p, rnd = Math.random) {
   return next(g, { t: 'catch', by: p, n: got.length });
 }
 
+
+/* ---------- UN🚫 (variante): cartas iguais juntas, UNO silencioso, acusação errada ---------- */
+/** No UN🚫 a chance de pegar quem esqueceu o UNO acaba quando a próxima pessoa joga, compra ou passa. */
+function fechaJanelaUno(g, p) { if (g.unoPending != null && g.unoPending !== p) g.unoPending = null; }
+const sameCard = (a, b) => a.kind === b.kind && a.color === b.color && a.sym === b.sym;
+/** Cartas da mão idênticas a `card` (mesma cor e figura), contando ela mesma. Só figuras repetem juntas. */
+export const twins = (g, p, card) => (g.un && isFig(card) && !g.drawn && !g.pend ? g.hands[p].filter((c) => isFig(c) && sameCard(c, card)) : [card]);
+/** Joga 2 ou mais figuras idênticas de uma vez (UN🚫). */
+export function applyPlayMany(g0, p, ids) {
+  if (!g0.un || g0.over || p !== g0.turn || g0.drawn || g0.pend) throw new Error('não pode jogar junto');
+  const g = clone(g0); const hand = g.hands[p]; const cards = ids.map((id) => hand.find((c) => c.id === id));
+  if (cards.length < 2 || cards.some((c) => !c || !isFig(c) || !sameCard(c, cards[0]))) throw new Error('só figuras iguais');
+  if (!canPlayCard(g, cards[0], hand)) throw new Error('carta não serve');
+  fechaJanelaUno(g, p);
+  g.hands[p] = hand.filter((c) => !ids.includes(c.id)); g.discard.push(...cards); g.color = cards[0].color; g.drawn = null; g.passes = 0;
+  if (g.unoPending === p) g.unoPending = null; g.unoSaid = g.unoSaid === p ? null : g.unoSaid;
+  const ev = { t: 'play', by: p, id: cards[cards.length - 1].id, kind: 'fig', color: g.color, victim: null, n: 0, many: cards.length, dir: g.dir };
+  if (!g.hands[p].length) { g.turn = p; next(g, ev); return end(g, p, 'mao-vazia'); }
+  if (g.hands[p].length === 1) g.unoPending = p;
+  g.turn = adv(g, p, 1); return next(g, ev);
+}
+/** Acusou "pegou!" sem ninguém ter esquecido o UNO: quem acusou compra 2. */
+export function wrongCatch(g0, p, rnd = Math.random) {
+  if (!g0.un || g0.over) throw new Error('não vale aqui');
+  const g = clone(g0); const got = take(g, 2, rnd); g.hands[p].push(...got);
+  return next(g, { t: 'wrong', by: p, n: got.length });
+}
+/** Alguém que dá pra pegar agora (esqueceu o UNO e a janela ainda está aberta)? Devolve o número do jogador ou null. */
+export const catchable = (g, me) => (g.un && g.unoPending != null && g.unoPending !== me && mustUno(g, g.unoPending) ? g.unoPending : null);
+
 /**
  * Computador: só usa a própria mão (g.hands[p]), o descarte, a cor ativa e se pode comprar. Prefere ações, guarda curingas pro fim
  * e, no curinga, escolhe a cor que mais aparece na mão. As mesmas regras do jogador (legalCards/canDraw).
@@ -156,8 +215,8 @@ export function validGame(g) {
   try {
     if (!g || g.v !== 2 || !Array.isArray(g.hands) || g.hands.length !== g.n || g.n < 2 || g.n > 4 || !Array.isArray(g.draw) || !Array.isArray(g.discard) || !g.discard.length) return false;
     if (!Number.isInteger(g.turn) || g.turn < 0 || g.turn >= g.n || (g.dir !== 1 && g.dir !== -1) || !COLORS.includes(g.color)) return false;
-    const all = [...g.hands.flat(), ...g.draw, ...g.discard]; const ref = new Map(makeDeck().map((c) => [c.id, c]));
-    if (all.length !== DECK_SIZE || new Set(all.map((c) => c.id)).size !== DECK_SIZE) return false;
+    const all = [...g.hands.flat(), ...g.draw, ...g.discard]; const deckRef = makeDeck(g.legacy ? LEGACY_SYMS : SYMS); const ref = new Map(deckRef.map((c) => [c.id, c]));
+    if (all.length !== deckRef.length || new Set(all.map((c) => c.id)).size !== deckRef.length) return false;
     for (const c of all) { const r = ref.get(c.id); if (!r || r.kind !== c.kind || r.sym !== c.sym || r.color !== c.color) return false; }
     if (g.drawn && !g.hands[g.turn].some((c) => c.id === g.drawn)) return false;
     return Number.isInteger(g.passes) && g.passes >= 0 && g.passes < g.n && Number.isInteger(g.seq);
@@ -234,7 +293,7 @@ export function matchResult(g, st, me = 0) {
  */
 export function simulate(params, policy, maxSteps = 3000) {
   const rnd = seededRnd(params.seed); const prnd = seededRnd((Number(params.seed) || 1) + 99991); /* sorteio PRÓPRIO do jogador: a pessoa não consome o sorteio da mesa */
-  let g = newGame({ mode: 'paul', players: 2, rnd }); const st = newStats(); const acts = []; let n = 0;
+  let g = newGame({ mode: 'paul', players: 2, rnd, legacy: true }); const st = newStats(); const acts = []; let n = 0;
   while (!g.over && n++ < maxSteps) {
     if (g.turn === 0) {
       const mv = policy(g, prnd); const b = g;

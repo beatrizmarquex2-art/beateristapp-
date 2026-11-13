@@ -1,0 +1,67 @@
+{
+ "name": "03_passe_anual_v2",
+ "tag": "passe anual",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "03_passe_anual",
+   "ss": 0.04,
+   "dur": 2.5,
+   "layout": "moldura",
+   "lines": [
+    "+ DE 15 JOGOS",
+    "E ESTUDOS DE MÚSICA",
+    "*POR R$ 49,90 NO ANO"
+   ]
+  },
+  {
+   "src": "03_passe_anual",
+   "ss": 2.83,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "GANHE FIGURINHAS",
+    "E COMPLETE O",
+    "*ÁLBUM"
+   ]
+  },
+  {
+   "src": "03_passe_anual",
+   "ss": 5.42,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "TREINE RITMO",
+    "*JOGANDO"
+   ]
+  },
+  {
+   "src": "03_passe_anual",
+   "ss": 8.0,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "ESTUDO QUE",
+    "*VIRA PRÁTICA"
+   ]
+  },
+  {
+   "src": "03_passe_anual",
+   "ss": 10.71,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "1 ANO INTEIRO",
+    "*PAGAMENTO ÚNICO"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "acesso por 12 meses",
+  "h": [
+   "PASSE",
+   "BEATERISTA"
+  ],
+  "sub": "comece grátis hoje"
+ }
+}

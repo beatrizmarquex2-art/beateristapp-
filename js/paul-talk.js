@@ -70,7 +70,7 @@ export const THOUGHTS = [
 /** Novidades da aba Jogos: o Paul fala numa nuvem quando o aluno abre a aba (alterna entre "jogo novo" e "mais chances de ganhar estrelas"). [texto, link, 'aluno']. */
 export const NOVIDADES_JOGOS = [
   [
-    ['jogo novo! o Taiko: toque E e D no tempo', '#/jogos/rudimentos', 'aluno'],
+    ['jogo novo! o Rudimentix: toque E e D no tempo', '#/jogos/rudimentos', 'aluno'],
     ['jogo novo! Radar Musical: ache as palavras na grade', '#/dicas/caca', 'aluno'],
     ['jogo novo! Cruzadinha musical, vem preencher', '#/dicas/cruzadinha', 'aluno'],
     ['jogo novo! Quiz do Paul: será que você acerta?', '#/dicas/quiz', 'aluno'],
@@ -78,7 +78,7 @@ export const NOVIDADES_JOGOS = [
   [
     ['quer mais chances de ganhar estrelas? joga o Uno Musical!', '#/jogos/cartas', 'aluno'],
     ['mais estrelas: Cara a cara e Stop dão até 3 ★ por vitória!', '#/jogos/cara', 'aluno'],
-    ['o Taiko dá estrela em cada fase: bora?', '#/jogos/rudimentos', 'aluno'],
+    ['o Rudimentix dá estrela em cada fase: bora?', '#/jogos/rudimentos', 'aluno'],
     ['Radar Musical, Cruzadinha e Quiz do Paul valem até 3 ★ por partida', '#/dicas/caca', 'aluno'],
   ],
 ];

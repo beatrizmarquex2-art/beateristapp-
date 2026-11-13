@@ -13,12 +13,13 @@ import { micMessage, micToast } from '../mic-access.js';
 import { openMic } from '../kids/mic.js';
 import { parts } from './tempo.js';
 import * as FB from '../feedback.js';
+import { tocarEfeito } from '../jogos/efeitos.js';
 import { mountRitmo } from '../kids/ritmo.js';
 import { aprender } from './figuras-aprender.js';
 import { tipBox } from '../tipbox.js';
 import { capture } from '../kids/capture.js';
 import { vinil, icone } from '../kids/drum-art.js';
-import { estrelasFase, ganhoEstrelas } from '../toca-estrelas.js';
+import { estrelasFase, ganhoEstrelas, estrelasPct } from '../toca-estrelas.js';
 import { session } from '../session.js';
 
 const { chips, line, bpmRow, clampBpm } = parts;
@@ -82,8 +83,8 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 
 /** Leitura: passos do caminho (2 por nível). Um passo só abre depois de tirar PASS_SCORE no anterior. */
 const bestOf = (c) => c.pbest || {};
-/** Estrelas de um exercício do caminho: 50% = 1, 70% = 2, 100% = 3. */
-export const estrelasToca = (sc) => (sc >= 100 ? 3 : sc >= 70 ? 2 : sc >= PASS_SCORE ? 1 : 0);
+/** Estrelas de um exercício do caminho na tela: 60% = 1, 80% = 2, 100% = 3 (igual à pauLta). */
+export const estrelasToca = (sc) => estrelasPct(sc);
 const unlocked = () => true; // tudo aberto: o aluno escolhe qualquer nível e exercício (as ★ continuam contando por exercício)
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };
 
@@ -93,31 +94,41 @@ const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0
 export function leitura(host, opts = {}) {
   let fixedStep = opts.mapa && !opts.livre ? opts.step : undefined; // dentro do mapa a fase vem de fora (nada de escolher aqui)
   let beats = null; let run = null; let lastResult = null; let micBlocked = false; let micErro = null; let passedNow = false;
+  const RODADAS_FASE = 3; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (nota = média); no modo livre segue 1 por vez
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   let testeAtivo = null; // microfone do "testar" (precisa fechar ao sair da tela)
   const stop = () => { S.reset(); if (testeAtivo) { try { testeAtivo.stop(); } catch { /* ok */ } testeAtivo = null; } if (run) { run.off(); run.pad.classList.remove('live'); run = null; } };
   const draw = (fresh) => {
-    stop(); const c = cfg(); const nb = 1; // sempre 1 compasso
-    const livre = opts.mapa ? !!opts.livre : c.mode === 'livre'; if (opts.mapa && opts.livre) c.lv = opts.lv || 1;
+    stop(); const c = cfg(); const nb = 1; // cada compasso é 1 (a fase do mapa junta 3)
+    const livre = opts.mapa ? !!opts.livre : c.mode === 'livre'; const fase3 = !!opts.mapa && !livre; if (opts.mapa && opts.livre) c.lv = opts.lv || 1;
     const step = fixedStep != null ? Math.max(0, Math.min(PATH.length - 1, fixedStep)) : Math.min(PATH.length - 1, unlocked(c, c.pstep ?? firstOpen(c)) ? (c.pstep ?? firstOpen(c)) : firstOpen(c)); const lvNow = livre ? c.lv : PATH[step].lv;
     const useMic = c.input === 'mic' && !micBlocked;
     const key = livre ? 'livre' : `p${step}`;
-    if (!livre && beats && beats.key !== key) { fresh = true; }
-    if (fresh || !beats || beats.length !== nb * 4) { beats = livre ? genBar(c.lv) : [...PATH[step].bar]; beats.key = key; lastResult = null; }
+    if (!livre && beats && beats.key !== key) { fresh = true; rodada = 0; notasFase = []; }
+    if (fresh || !beats || beats.length !== nb * 4) { beats = livre ? genBar(c.lv) : (fase3 && rodada > 0 ? genBar(PATH[step].lv) : [...PATH[step].bar]); beats.key = key; lastResult = null; }
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
       : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'pode tocar com as duas mãos na tela · ou aperte qualquer tecla'));
-    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : fase3 ? `compasso ${rodada + 1} de ${RODADAS_FASE} · ▶ toque depois do “4”` : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
     const conclude = async (taps) => {
       const g = S.gen; run = null;
-      lastResult = evaluate(taps, expected, c.bpm, { mic: useMic }); passedNow = !livre && lastResult.score >= PASS_SCORE;
-      const est = livre ? 0 : estrelasFase({ score: lastResult.score, mic: useMic, tier: PATH[step].tier, bpm: c.bpm }); lastResult.est = est; lastResult.mic = useMic;
+      lastResult = evaluate(taps, expected, c.bpm, { mic: useMic });
+      let final = true;
+      if (fase3) { // fase do mapa: junta os 3 compassos; só no último vale nota, estrelas e passar de fase
+        const nota = lastResult.score; notasFase = [...notasFase, nota];
+        if (notasFase.length < RODADAS_FASE) final = false;
+        else { const media = Math.round(notasFase.reduce((s, x) => s + x, 0) / notasFase.length); lastResult.compassos = notasFase.slice(); lastResult.score = media; }
+        lastResult.compassoNota = nota;
+      }
+      passedNow = final && !livre && lastResult.score >= PASS_SCORE;
+      const est = livre || !final ? 0 : estrelasFase({ score: lastResult.score, mic: useMic, tier: PATH[step].tier, bpm: c.bpm }); lastResult.est = est; lastResult.mic = useMic; lastResult.parcial = !final;
       await store.upsert(KIND, null, { mode: 'leitura', lv: lvNow, bpm: c.bpm, bars: nb, score: lastResult.score, at: Date.now() });
-      if (!livre) { const antes = (c.pstars || {})[step] ?? ((bestOf(c)[step] || 0) >= PASS_SCORE ? 1 : 0); const ganho = ganhoEstrelas(est, antes); if (est > antes) await save({ pstars: { ...(c.pstars || {}), [step]: est } }); if (ganho > 0) import('../figurinhas/mesa.js').then((M) => M.vitoria('toca', ganho)).catch(() => {}); } // só ganha estrela quando melhora (não dá pra repetir e farmar)
-      if (!livre && lastResult.score > (bestOf(c)[step] || 0)) await save({ pbest: { ...bestOf(c), [step]: lastResult.score }, pstep: step }); // fica neste exercício vendo o resultado; o próximo abre no menu
+      if (!livre && final) { const antes = (c.pstars || {})[step] ?? ((bestOf(c)[step] || 0) >= PASS_SCORE ? 1 : 0); const ganho = ganhoEstrelas(est, antes); if (est > antes) await save({ pstars: { ...(c.pstars || {}), [step]: est } }); if (ganho > 0) import('../figurinhas/mesa.js').then((M) => M.vitoria('toca', ganho)).catch(() => {}); }
+      if (!livre && final && lastResult.score > (bestOf(c)[step] || 0)) await save({ pbest: { ...bestOf(c), [step]: lastResult.score }, pstep: step }); // fica neste exercício vendo o resultado; o próximo abre no menu
       if (!S.alive || g !== S.gen) return; // saiu da tela (ou recomeçou) enquanto gravava: não mexe na tela de agora
+      tocarEfeito('toca', passedNow ? 'passou de fase' : lastResult.score >= 70 ? 'acertou o tempo' : lastResult.score >= 40 ? 'quase' : 'errou'); // batucada: pandeiro, tamborim e surdo
       draw(false);
       const tgt = body.querySelector('.tr-res') || body;
       if (lastResult.score >= 90) FB.great(tgt); else if (lastResult.score >= 60) FB.win(tgt); else FB.lose(tgt);
@@ -167,17 +178,19 @@ export function leitura(host, opts = {}) {
       // logo EMBAIXO do lugar de tocar: a nota (100%) do lado e o botão da próxima fase; a explicação fica mais abaixo
       const temProx = passedNow && step < PATH.length - 1 && (!opts.mapa || PATH[step + 1].tier === PATH[step].tier); const nest = r.est || 0;
       quick = h('section', { class: `tr-quick${passedNow ? ' ok' : ''}`, 'aria-live': 'polite' },
-        h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão'), !livre ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
-        temProx ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { if (opts.mapa) { fixedStep = step + 1; lastResult = null; draw(true); } else save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }); } }, 'próxima fase ▶')
+        h('div', { class: 'tr-big' }, h('b', {}, `${r.parcial ? r.compassoNota : r.score}%`), h('span', {}, r.parcial ? `compasso ${notasFase.length} de ${RODADAS_FASE}` : fase3 ? 'média dos 3 compassos' : 'precisão'), !livre && !r.parcial ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
+        r.parcial ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { rodada++; lastResult = null; draw(true); } }, `próximo compasso ▶ (${notasFase.length + 1} de ${RODADAS_FASE})`)
+          : temProx ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { if (opts.mapa) { fixedStep = step + 1; rodada = 0; notasFase = []; lastResult = null; draw(true); } else save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }); } }, 'próxima fase ▶')
           : passedNow && opts.mapa ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => opts.onBack && opts.onBack() }, 'voltar ao mapa ▶')
-          : h('button', { class: 'btn tr-next', type: 'button', onclick: () => (livre ? draw(true) : start()) }, livre ? '🔀 outro compasso' : '↻ tentar de novo'));
+          : h('button', { class: 'btn tr-next', type: 'button', onclick: () => { if (livre) draw(true); else if (fase3) { rodada = 0; notasFase = []; lastResult = null; draw(true); } else start(); } }, livre ? '🔀 outro compasso' : fase3 ? '↻ tentar a fase de novo' : '↻ tentar de novo'));
       summary = h('section', { class: 'card pad tr-res' },
-        h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}`),
+        fase3 && !r.parcial && r.compassos ? h('p', {}, `os 3 compassos: ${r.compassos.map((x) => `${x}%`).join(' · ')} → média ${r.score}%`) : null,
+        h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}${fase3 ? ` (compasso ${r.parcial ? notasFase.length : RODADAS_FASE})` : ''}`),
         r.ajuste ? h('p', { class: 'muted' }, r.mic ? `o microfone demora uns ${Math.abs(r.ajuste)} ms pra ouvir (normal): já descontei isso da sua nota.` : `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
-        !livre ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(nest)}${'☆'.repeat(3 - nest)} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra passar. na tela vale 1 ★; no microfone vale mais. tenta de novo!`) : null,
+        !livre && !r.parcial ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(nest)}${'☆'.repeat(3 - nest)} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra passar. na tela vale 1 ★; no microfone vale mais. tenta de novo!`) : null,
         null);
     }
     const modeLine = line('jeito', chips([['caminho', 'caminho'], ['livre', 'livre (aleatório)']], livre ? 'livre' : 'caminho', (v) => save({ mode: v }).then(() => { lastResult = null; draw(true); }), 'Modo'));

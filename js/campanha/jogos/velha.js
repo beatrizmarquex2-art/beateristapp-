@@ -28,12 +28,12 @@ const DEFS = [
   ['Primeira pergunta', 'infantil', 'aleatoria', 'desafio', 'infantil', 3, [{ w: 1 }, { w: 2 }, { w: 3 }], 'toque numa casa: responda certo para marcar. Errou? a casa continua vazia.'],
   ['Sequência', 'seguidas', 'aleatoria', 'desafio', 'infantil', 5, [{ s: 2 }, { s: 3 }, { s: 4 }], 'conta a maior sequência de vitórias seguidas dentro das 5 rodadas.'],
   ['Paul bloqueia', 'bloqueio', 'bloqueia', 'classico', null, 3, [{ w: 1 }, { w: 2 }, { w: 2, l: 0 }], 'ele tapa sua linha: crie duas ameaças de uma vez (um garfo).'],
-  ['Bloqueio e perguntas', 'fácil', 'bloqueia', 'desafio', 'facil', 3, [{ w: 1 }, { w: 2 }, { w: 2, l: 0 }], 'agora as perguntas são do nível fácil (sem repetir na rodada).'],
+  ['Bloqueio e perguntas', 'fácil', 'bloqueia', 'desafio', 'facil', 3, [{ w: 1 }, { w: 2 }, { w: 2, l: 0 }], 'agora vêm as perguntas de música (sem repetir na rodada).'],
   ['Placar alto', '5 rodadas', 'aleatoria', 'desafio', 'facil', 5, [{ w: 3 }, { w: 4 }, { w: 5 }], 'cinco rodadas seguidas valendo vitórias.'],
   ['Muralha', 'não perde', 'estrategica', 'classico', null, 4, [{ l: 2 }, { l: 1 }, { l: 0 }], 'o Paul estratégico nunca perde, então empatar já é ótimo. Foque em não deixá-lo fazer linha.'],
   ['Muralha com perguntas', 'fácil', 'estrategica', 'desafio', 'facil', 3, [{ l: 2 }, { l: 1 }, { l: 0 }], 'errar uma pergunta custa a vez: acerte pra segurar o empate.'],
-  ['Intermediário', 'nível 3', 'bloqueia', 'desafio', 'intermediario', 3, [{ w: 1 }, { w: 2 }, { w: 2, l: 0 }], 'perguntas de nível intermediário, com 4 alternativas.'],
-  ['Duelo final', 'chefão', 'estrategica', 'desafio', 'intermediario', 5, [{ l: 2 }, { l: 1 }, { l: 0 }], 'cinco rodadas contra o Paul estratégico com perguntas intermediárias.'],
+  ['Intermediário', 'nível 3', 'bloqueia', 'desafio', 'intermediario', 3, [{ w: 1 }, { w: 2 }, { w: 2, l: 0 }], 'perguntas de música valendo a casa, sem pegar leve.'],
+  ['Duelo final', 'chefão', 'estrategica', 'desafio', 'intermediario', 5, [{ l: 2 }, { l: 1 }, { l: 0 }], 'cinco rodadas contra o Paul estratégico com perguntas de música.'],
 ];
 
 const starLine = (tiers) => tiers.map((t, k) => `${'★'.repeat(k + 1)}: ${tierText(t)}`);
@@ -43,7 +43,7 @@ function build([title, tag, ai, variant, level, rounds, tiers, tip], i) {
   return {
     id: `velha-${N(i)}`, title, goal: `${goal} contra o Paul`, tag, params: { ai, variant, level: level || undefined, rounds, vs: AI_NAME[ai] },
     rules: [
-      `o Paul (${AI_NAME[ai]}), ${variant === 'desafio' ? `perguntas de nível ${LV[level]}: acertar marca a casa, errar passa a vez` : 'modo clássico: tocou, marcou'}.`,
+      `o Paul (${AI_NAME[ai]}), ${variant === 'desafio' ? 'perguntas de música: acertar marca a casa, errar passa a vez' : 'modo clássico: tocou, marcou'}.`,
       `são ${rounds} rodadas; quem começa alterna a cada rodada.`, tip,
       ...(ai === 'estrategica' ? ['vencer o Paul estratégico não é possível (ele joga perfeito): a meta é não perder.'] : []),
     ],

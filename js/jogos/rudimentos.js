@@ -11,14 +11,14 @@ import { musicaPausa, musicaVolta } from './musica.js';
 import { capture } from '../kids/capture.js';
 import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
-import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, sweep, summary, guardar, melhoresDe, estrelas, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
+import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
 
 const LOOK = 1.15; // s que a nota leva pra descer
 const COR = { E: '#ff3d57', D: '#2d8cff' }; // LED: vermelho = caixa (esquerda, E), azul = bumbo (direita, D)
 const SOMBRA = { E: '#7d0f23', D: '#0b3c8f' }; const RGB = { E: '255,61,87', D: '45,140,255' };
 const soa = (lado, t, v = 0.95) => (lado === LADO_D ? tom(t, 230, v * 0.9) : tom(t, 330, v * 0.9));
 const grupos = (sq) => { const out = []; for (let i = 0; i < sq.length; i += 4) out.push(sq.slice(i, i + 4)); return out; };
-const estrelasTxt = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
+const estrelasTxt = (n) => `${n}/24 ★`;
 const cadeado = () => { const s = document.createElement('span'); s.className = 'rd-cad'; s.setAttribute('aria-hidden', 'true'); s.innerHTML = '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>'; return s; };
 
 export function mount(host) {
@@ -39,7 +39,7 @@ export function mount(host) {
     };
     root.replaceChildren(
       h('p', { class: 'rd-intro' }, 'toque o padrão das mãos: ', h('b', {}, 'E'), ' = mão esquerda, ', h('b', {}, 'D'), ' = mão direita. toque na tela ou com o microfone, em colcheias ou semicolcheias. ', `${MIN_ACERTO}% de acerto passa.`),
-      h('p', { class: 'rd-total' }, `★ ${totalEstrelas(e)}/${FASES.length * 3}`),
+      h('p', { class: 'rd-total' }, `★ ${totalEstrelas(e)}/${FASES.length * 24}`),
       ...BLOCOS.map((b) => h('section', { class: 'rd-bloco' }, h('h3', { class: 'rd-bloco-h' }, `${b.n}. ${b.nome}`), h('div', { class: 'rd-fases' }, ...FASES.filter((f) => f.bloco === b.n).map(card)))));
   };
 
@@ -57,7 +57,7 @@ export function mount(host) {
     const chip = (txt, on, fn, extra = '') => h('button', { type: 'button', role: 'radio', 'aria-checked': String(on), class: `rd-chip${on ? ' on' : ''}${extra}`, onclick: fn }, txt);
     const figuras = h('div', { class: 'rd-linha', role: 'radiogroup', 'aria-label': 'figura' }, h('span', { class: 'rd-lab' }, 'figura'), ...FIGURAS.map(([nome], i) => chip(nome, i === figIdx, () => { if (i !== figIdx) jogo(f, { fig: i }); })));
     const chips = h('div', { class: 'rd-andamento', role: 'radiogroup', 'aria-label': 'andamento' }, h('span', { class: 'rd-lab' }, 'andamento'),
-      ...TEMPOS.map(([nome, b], i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(i === tempoIdx), class: `rd-vin${i === tempoIdx ? ' on' : ''}`, title: `${nome}, ${b} BPM`, 'aria-label': `${nome}, ${b} BPM${melhores[i] >= MIN_ACERTO ? ', já passou' : ''}`, onclick: () => { if (i !== tempoIdx) jogo(f, { tempo: i }); } }, vinil(nome, 'vinil sm'), h('small', {}, `${b}${melhores[i] >= MIN_ACERTO ? ' ✓' : ''}`))));
+      ...TEMPOS.map(([nome, b], i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(i === tempoIdx), class: `rd-vin${i === tempoIdx ? ' on' : ''}`, title: `${nome}, ${b} BPM`, 'aria-label': `${nome}, ${b} BPM${melhores[i] >= MIN_ACERTO ? `, ${estrelasCel(melhores[i])} de 3 estrelas` : ''}`, onclick: () => { if (i !== tempoIdx) jogo(f, { tempo: i }); } }, vinil(nome, 'vinil sm'), h('small', {}, `${b}${melhores[i] >= MIN_ACERTO ? ' ' + '★'.repeat(estrelasCel(melhores[i])) : ''}`))));
     const modos = h('div', { class: 'rd-linha', role: 'radiogroup', 'aria-label': 'como jogar' }, h('span', { class: 'rd-lab' }, 'como jogar'), chip('jogar na tela', !mic, () => { if (mic) jogo(f, { modo: 'tela' }); }), chip('microfone', mic, () => { if (!mic) jogo(f, { modo: 'mic' }); }));
     const cv = h('canvas', { class: 'rd-cv', 'aria-label': 'Notas descendo: esquerda é a mão esquerda (E), direita é a mão direita (D)' });
     const micAviso = h('div', { class: 'rd-micaviso' }, h('b', {}, 'microfone ligado'), h('small', {}, 'toque o padrão no seu pad ou na sua bateria (ou bata palma). o app escuta depois da contagem e confere o tempo; ele não separa mão esquerda de direita.'));
@@ -112,13 +112,14 @@ export function mount(host) {
       g.restore();
     };
     const finish = () => {
-      state = 'idle'; spans.forEach((x) => x.classList.remove('now')); prog.firstChild.style.width = '0%'; const s = summary(chart); const antes = estrelas(est(), f.n);
-      const novo = guardar(est(), f.n, figIdx, tempoIdx, s.acc); setGame('rudimentos', { est: novo, falhas: contaFalhas(getGame('rudimentos').falhas, chaveF, s.acc >= MIN_ACERTO) }); const depois = estrelas(novo, f.n); const passou = s.acc >= MIN_ACERTO;
-      if (depois > antes) import('../figurinhas/mesa.js').then((M) => M.vitoria('rudimentos', depois - antes, `rud:${f.n}`)).catch(() => { /* sem estrelas da mesa */ });
+      state = 'idle'; spans.forEach((x) => x.classList.remove('now')); prog.firstChild.style.width = '0%'; const s = summary(chart); const pct = s.total ? Math.round((s.hits / s.total) * 100) : 0; const kfig = figIdx ? 's' : 'c';
+      const antesCel = estrelasCel(melhoresDe(est(), f.n)[kfig][tempoIdx]); const novo = guardar(est(), f.n, figIdx, tempoIdx, pct); const depoisCel = estrelasCel(melhoresDe(novo, f.n)[kfig][tempoIdx]);
+      setGame('rudimentos', { est: novo, falhas: contaFalhas(getGame('rudimentos').falhas, chaveF, pct >= MIN_ACERTO) }); const depois = estrelas(novo, f.n); const passou = pct >= MIN_ACERTO;
+      if (depoisCel > antesCel) import('../figurinhas/mesa.js').then((M) => M.vitoria('rudimentos', depoisCel - antesCel, `rud:${f.n}:${figIdx}:${tempoIdx}`)).catch(() => { /* sem estrelas da mesa */ }); // cada célula (fase × figura × andamento) paga até 3 ★ na vida
       res.hidden = false; try { res.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch { /* sem rolagem */ }
-      res.replaceChildren(h('b', {}, `${s.acc}%`), h('p', {}, `${s.hits} de ${s.total} toques certos`), h('small', {}, `perfeito ${s.perfeito} · bom ${s.bom} · mão trocada ${s.lado} · faltou ${s.faltou}`),
-        h('p', { class: 'rd-ok' }, passou ? (depois > antes ? 'ganhou uma estrela!' : 'passou!') : `precisa de ${MIN_ACERTO}% pra passar`));
-      info.textContent = passou ? 'muito bom!' : s.acc >= 50 ? 'quase lá! na próxima eu dou uma folguinha a mais' : 'bora de novo: olha o padrão escrito. na próxima eu dou uma folguinha a mais';
+      res.replaceChildren(h('b', {}, `${pct}%`), h('p', {}, `${s.hits} de ${s.total} toques certos`), h('small', {}, `perfeito ${s.perfeito} · bom ${s.bom} · mão trocada ${s.lado} · faltou ${s.faltou}`),
+        h('p', { class: 'rd-ok' }, passou ? (depoisCel > antesCel ? `ganhou ${depoisCel - antesCel} ★ (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)} neste andamento)` : `passou! (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)}) — 85% = 2 ★ · 100% = 3 ★`) : `precisa de ${MIN_ACERTO}% de toques certos pra ganhar estrela`));
+      info.textContent = passou ? 'muito bom!' : pct >= 50 ? 'quase lá! na próxima eu dou uma folguinha a mais' : 'bora de novo: olha o padrão escrito. na próxima eu dou uma folguinha a mais';
       go.textContent = '↻ jogar de novo'; go.disabled = false; topo.querySelector('.rd-est').textContent = estrelasTxt(depois);
       extra.replaceChildren();
       if (passou && tempoIdx < TEMPOS.length - 1) extra.append(h('button', { type: 'button', class: 'btn small', onclick: () => jogo(f, { tempo: tempoIdx + 1 }) }, `${TEMPOS[tempoIdx + 1][1]} BPM ▶`));

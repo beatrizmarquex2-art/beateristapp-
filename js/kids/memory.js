@@ -8,6 +8,7 @@ import { levelSpec } from './levels.js';
 import { shuffle } from '../kids-logic.js';
 import { INSTRUMENTS, byId, nameOf, playInstrument } from './instruments.js';
 import { frame, showResult, introBox, beep } from './engine.js';
+import { tocarEfeito } from '../jogos/efeitos.js';
 import { gameIcon } from './icons.js';
 
 const back = (i) => h('span', { class: 'kx-mem-back', 'aria-hidden': 'true', style: `--bi:url(../assets/cards/b${String((i * 7 + (i >> 1)) % 10 + 1).padStart(2, '0')}.webp)` });
@@ -49,6 +50,7 @@ export function runMemory(game, ctx) {
   const svgBox = (id) => { const d = h('span', { class: 'kx-mem-art' }); d.innerHTML = byId[id].art; return d; };
   const flip = (btn, c) => {
     if (lock || gone || btn.classList.contains('up') || btn.classList.contains('ok')) return;
+    tocarEfeito('memoria', 'virar a carta');
     btn.classList.add('up'); btn.setAttribute('aria-label', c.kind === 'sound' ? 'carta de som' : nameOf(c.id));
     if (c.kind === 'sound') playInstrument(c.id); // a figura só mostra; o som fica na carta do som
     open.push(btn); if (open.length < 2) return;
@@ -57,7 +59,7 @@ export function runMemory(game, ctx) {
       if (same) {
         a.classList.add('ok'); b.classList.add('ok'); matched++; beep(true); bot.set('cheer', 'isso!'); sparkle(b); if (mode === 'som') playInstrument(a._c.id);
         open = []; lock = false; stage._paint();
-        if (matched === pairs) { S.reset(false); finishUp(false); }
+        if (matched === pairs) { S.reset(false); tocarEfeito('memoria', 'terminou'); finishUp(false); }
       } else {
         beep(false); miss++; misses.push(a._c.id, b._c.id); a.classList.add('no'); b.classList.add('no'); bot.set('oops', 'ops, tenta de novo');
         S.later(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; stage._paint(); if (miss > maxMiss) restart(); }, 700);

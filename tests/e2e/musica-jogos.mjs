@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done, alunoComCodigo } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } }); await alunoComCodigo(ctx);
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
-await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch (e) {} });
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.removeItem('beaterista-musica-off'); } catch (e) {} });
 const pico = (ms) => page.evaluate((m) => window.__peak(m), ms);
 await page.goto(url + '/aluno.html#/jogos/velha'); await page.waitForSelector('.jg-game'); await sleep(800);
 const com = await pico(1500);

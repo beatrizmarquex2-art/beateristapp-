@@ -25,7 +25,7 @@ export const definirSalaAuto = (jogo, code, voltar = false) => gravaJ(AUTO, { jo
 export function salaAutoPara(jogo) { const a = lerJ(AUTO, sessionStorage); return a && a.jogo === jogo && Date.now() - (a.at || 0) < 120000 ? a.code : null; }
 const consumirSalaAuto = (jogo) => { const c = salaAutoPara(jogo); if (!c) return null; const a = lerJ(AUTO, sessionStorage); gravaJ(AUTO, null, sessionStorage); return a; };
 /** Jogos de sala que o atalho da tela de Jogos sabe procurar: [id da sala, rota pra abrir]. */
-export const JOGOS_SALA = [['velha', '#/jogos/velha'], ['cartas', '#/jogos/cartas'], ['stop', '#/jogos/stop'], ['cara-musical', '#/jogos/cara'], ['memoria', '#/jogos/memart'], ['letras', '#/dicas/duelo'], ['quebra', '#/jogos/quebra']];
+export const JOGOS_SALA = [['velha', '#/jogos/velha'], ['cartas', '#/jogos/cartas'], ['un', '#/jogos/un'], ['stop', '#/jogos/stop'], ['cara-musical', '#/jogos/cara'], ['memoria', '#/jogos/memart'], ['beathero', '#/ritmo/duelo'], ['letras', '#/dicas/duelo'], ['quebra', '#/jogos/quebra']];
 /** Descobre de que jogo é uma sala de 5 letras (tenta cada jogo; sala_entrar só acha se o jogo bate). Devolve [id, rota] ou null. */
 export async function acharJogoDaSala(code) {
   const c = String(code || '').trim().toUpperCase();

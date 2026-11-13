@@ -23,7 +23,7 @@ test('conferir: certo, errado e vazio por tempo; acertou só com tudo certo', ()
   assert.deepEqual(conferir(['1000', '1000', '1111'], sec), [true, false, true, null]);
   assert.ok(acertou(sec.slice(), sec)); assert.ok(!acertou(['1000', '1010', '1111'], sec));
 });
-test('estrelas da fase: completar = 1, 2 de primeira = 2, todas de primeira = 3', () => { assert.equal(estrelas(0), 1); assert.equal(estrelas(1), 1); assert.equal(estrelas(2), 2); assert.equal(estrelas(3), 3); });
+test('estrelas da fase igual à pauLta: 3 de 3 = 3 estrelas, 2 de 3 = 1 estrela (67%), menos de 60% = 0', () => { assert.equal(estrelas(0), 0); assert.equal(estrelas(1), 0); assert.equal(estrelas(2), 1); assert.equal(estrelas(3), 3); assert.equal(estrelas(4, 5), 2); });
 
 test('o compasso novo nunca repete o anterior', () => { for (let n = 1; n <= 12; n++) { let ant = null; for (let i = 0; i < 60; i++) { const s = sortear(n, Math.random, ant); if (ant) assert.notEqual(s.join(), ant.join()); ant = s; } } });
 

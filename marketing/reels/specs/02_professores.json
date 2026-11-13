@@ -1,0 +1,67 @@
+{
+ "name": "02_professores_v2",
+ "tag": "pra professores",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "02_professores",
+   "ss": 5.54,
+   "dur": 2.5,
+   "layout": "moldura",
+   "lines": [
+    "PROF, E SE",
+    "SUA AULA FOSSE",
+    "*ASSIM?"
+   ]
+  },
+  {
+   "src": "02_professores",
+   "ss": 2.83,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "O ALUNO PARTICIPA",
+    "*DE VERDADE"
+   ]
+  },
+  {
+   "src": "02_professores",
+   "ss": 8.33,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "LEITURA MUSICAL",
+    "*VIRA DESAFIO"
+   ]
+  },
+  {
+   "src": "02_professores",
+   "ss": 10.75,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "TEORIA NA PRÁTICA,",
+    "*JOGANDO"
+   ]
+  },
+  {
+   "src": "02_professores",
+   "ss": 0.04,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "CRIADO POR",
+    "*PROFESSORA",
+    "DE BATERIA"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "jogos + estudos + álbum",
+  "h": [
+   "SUAS AULAS,",
+   "MAIS CRIATIVAS"
+  ],
+  "sub": "teste grátis com seus alunos"
+ }
+}

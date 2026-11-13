@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FASES, BLOCOS, TEMPOS, FIGURAS, buildChart, passo, janela, judgeTap, judgeOnsets, folgas, chaveFalhas, contaFalhas, sweep, summary, guardar, melhoresDe, estrelas, liberada, totalEstrelas } from '../js/jogos/rudimentos-logic.js';
+import { FASES, BLOCOS, TEMPOS, FIGURAS, buildChart, passo, janela, judgeTap, judgeOnsets, folgas, chaveFalhas, contaFalhas, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, ESTRELAS_POR_FASE, liberada, totalEstrelas } from '../js/jogos/rudimentos-logic.js';
 
 test('são as 11 fases da Bea, em 3 blocos, só com D e E e com 16 toques (a fase do paradiddle duplo dos dois lados tem 32)', () => {
   assert.equal(FASES.length, 11); assert.equal(BLOCOS.length, 3);
@@ -51,14 +51,16 @@ test('microfone: confere só o tempo (qualquer mão), o que não tocou vira falt
   const c2 = buildChart('DE', 60, 4); judgeOnsets(c2, c2.map((n) => n.t)); assert.equal(summary(c2).acc, 100); // tocou tudo no tempo, sem saber a mão
   const c3 = buildChart('DE', 60, 4); const r3 = judgeOnsets(c3, [50, 51]); assert.equal(r3.extras, 2); assert.equal(summary(c3).acc, 0);
 });
-test('estrelas: 1 = colcheia, 2 = + semicolcheia, 3 = semicolcheia a 120 ou mais; a fase seguinte abre com 1 estrela', () => {
+test('estrelas por célula (fase × figura × andamento): 70% = 1, 85% = 2, 100% = 3; total 264', () => {
+  assert.deepEqual([0, 69, 70, 84, 85, 99, 100].map(estrelasCel), [0, 0, 1, 1, 2, 2, 3]);
   let est = {}; assert.equal(estrelas(est, 1), 0); assert.equal(liberada(est, 1), true); assert.equal(liberada(est, 2), false);
-  est = guardar(est, 1, 0, 0, 79); assert.equal(estrelas(est, 1), 0);
-  est = guardar(est, 1, 0, 0, 85); assert.equal(estrelas(est, 1), 1); assert.equal(liberada(est, 2), true);
+  est = guardar(est, 1, 0, 0, 69); assert.equal(estrelas(est, 1), 0); assert.equal(liberada(est, 2), false);
+  est = guardar(est, 1, 0, 0, 85); assert.equal(estrelas(est, 1), 2); assert.equal(liberada(est, 2), true);
   est = guardar(est, 1, 0, 0, 60); assert.deepEqual(melhoresDe(est, 1).c, [85, 0, 0, 0]); // não piora
-  est = guardar(est, 1, 1, 0, 90); assert.equal(estrelas(est, 1), 2); // semicolcheia a 80
-  est = guardar(est, 1, 1, 2, 82); assert.equal(estrelas(est, 1), 3); // semicolcheia a 120
-  assert.equal(totalEstrelas(est), 3);
+  est = guardar(est, 1, 1, 0, 100); assert.equal(estrelas(est, 1), 5); // + semicolcheia a 80: 3 ★
+  est = guardar(est, 1, 1, 3, 70); assert.equal(estrelas(est, 1), 6); // + semicolcheia a 140: 1 ★
+  assert.equal(totalEstrelas(est), 6); assert.equal(ESTRELAS_POR_FASE, 24); assert.equal(FASES.length * ESTRELAS_POR_FASE, 264);
+  let cheio = {}; for (const f of FASES) for (const fi of [0, 1]) for (let t = 0; t < 4; t++) cheio = guardar(cheio, f.n, fi, t, 100); assert.equal(totalEstrelas(cheio), 264);
 });
 test('dados salvos estragados não quebram', () => { assert.deepEqual(melhoresDe({ 1: 'x' }, 1), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); assert.deepEqual(melhoresDe(null, 3), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); assert.deepEqual(melhoresDe({ 1: [1, 2, 3] }, 1), { c: [0, 0, 0, 0], s: [0, 0, 0, 0] }); });
 test('folguinha: depois de cada tentativa que não passou a folga cresce (mais pra atrasado) e volta ao normal quando passa', () => {

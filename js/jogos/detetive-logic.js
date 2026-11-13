@@ -1,6 +1,8 @@
 // Detetive Note (regras puras): o secreto é 1 compasso de 4 tempos; a criança ouve e MONTA com cartas de um tema (comida, parque, corpo, animal)
 // ou com figuras (modo normal). Sem tela nem áudio, testado em tests/detetive-note.test.mjs.
 
+import { starsFor } from '../kids/levels.js';
+
 export const FASES = 12; // fases por modo
 export const RODADAS = 3; // ritmos por fase
 export const BPMS = [80, 100, 120]; // a criança escolhe a velocidade do ritmo (a 120 toca direto, sem a contagem)
@@ -33,5 +35,5 @@ export function sortear(n = FASES, rnd = Math.random, evitar = null) {
 /** Confere o que foi montado: um booleano por tempo (null = tempo ainda vazio). */
 export const conferir = (slots, secreto) => secreto.map((c, i) => (slots[i] == null ? null : slots[i] === c));
 export const acertou = (slots, secreto) => secreto.every((c, i) => slots[i] === c);
-/** Estrelas da fase (completou = 1): 2 se acertou pelo menos 2 ritmos de primeira, 3 se acertou todos de primeira. */
-export const estrelas = (primeira, total = RODADAS) => (primeira >= total ? 3 : primeira >= 2 ? 2 : 1);
+/** Estrelas da fase, igual à pauLta: % de ritmos acertados de primeira. 60% = 1 estrela, 80% = 2, 100% = 3; abaixo de 60% = 0 (quase lá, tenta de novo). */
+export const estrelas = (primeira, total = RODADAS) => starsFor(primeira, total);

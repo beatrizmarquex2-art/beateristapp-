@@ -1,5 +1,6 @@
 // Figurix (regras puras, sem tela): 12 fases com as ideias da Bea sobre as figuras rítmicas. Testado em tests/figurix.test.mjs.
 import { FIGS, FIG_BY } from '../kids/figs.js';
+import { starsFor } from '../kids/levels.js';
 import { regioesDoTema } from './mundos-tema.js';
 
 /** As 12 primeiras fases (a ordem é a da lista de ideias da Bea) e mais 50 no mesmo estilo, com a dificuldade (`nivel`) subindo de 10 em 10. */
@@ -66,8 +67,8 @@ export function itensTetris(nivel, n = 8, rnd = Math.random) {
   return out;
 }
 export const SEG_QUEDA = { 1: 6, 2: 3.6 }; // segundos que cada figura leva pra cair
-/** Estrelas da fase: terminou = 1; até 2 erros = 2; sem erros = 3. */
-export const estrelasFigurix = (erros) => (erros <= 0 ? 3 : erros <= 2 ? 2 : 1);
+/** Estrelas da fase, igual à pauLta: % de acertos (cada acerto e cada tentativa errada contam). 60% = 1 estrela, 80% = 2, 100% = 3; abaixo de 60% = 0 (quase lá, tenta de novo). */
+export const estrelasFigurix = (acertos, erros) => starsFor(acertos, acertos + erros);
 
 /* ================= variações por nível (fases 13 a 62) ================= */
 const NOMES_VAL = [1, 2, 4, 8, 16, 32, 64];

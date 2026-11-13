@@ -44,6 +44,20 @@ html[data-av="claro"] {
 .av-medal { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); }
 .av-mode { background: var(--avp-card); border-color: var(--avp-line); color: var(--avp-text); } .av-mode.aventura { background: var(--avp-card); border-color: var(--avp-accent); } .av-mode-d { color: var(--avp-text); } .av-mode-m { color: var(--avp-soft); }
 
+/* Mundos coloridos (Bea aprovou): fundo clarinho ou amarelo, tudo em azul-marinho. Valem nos dois modos (o botão ☀/🌙 some). */
+html[data-av][data-mundo] .av-tema { display: none; }
+html[data-av][data-mundo="clarinho"] {
+  --avp-bg: #f6f0e1; --avp-card: #fffdf7; --avp-line: #14213d; --avp-text: #14213d; --avp-soft: #46506a;
+  --avp-accent: #14213d; --avp-accent-dk: #0b1530; --avp-accent-ink: #fffdf7; --avp-gold: #14213d; --avp-shadow: #b9b3a3;
+  --avp-sky0: #efe7d2; --avp-sky1: #f6f0e1; --avp-sky2: #ebe2cb; --avp-sky3: #f2ead7; --avp-dots: rgba(20, 33, 61, .22); --avp-edge: #14213d;
+  --avp-vinyl-a: #14213d; --avp-vinyl-b: #2c3c66; --avp-locked: #c8cdd9; --avp-overlay: rgba(246, 240, 225, .94); --avp-tagbg: rgba(255, 253, 247, .95); --avp-star-off: #b9bfce;
+}
+html[data-av][data-mundo="amarelo"] {
+  --avp-bg: #f4c542; --avp-card: #fff1b8; --avp-line: #14213d; --avp-text: #14213d; --avp-soft: #3a4668;
+  --avp-accent: #14213d; --avp-accent-dk: #0b1530; --avp-accent-ink: #fff6cf; --avp-gold: #14213d; --avp-shadow: #b8901c;
+  --avp-sky0: #f7d160; --avp-sky1: #f4c542; --avp-sky2: #f9d974; --avp-sky3: #f1be36; --avp-dots: rgba(20, 33, 61, .22); --avp-edge: #14213d;
+  --avp-vinyl-a: #14213d; --avp-vinyl-b: #2c3c66; --avp-locked: #d9ae35; --avp-overlay: rgba(244, 197, 66, .94); --avp-tagbg: rgba(255, 241, 184, .95); --avp-star-off: #c79a22;
+}
 /* Mundos dos jogos de caminhozinho (Figurix, pauLta, Toca Aqui e Detetive Note): os mesmos 6 temas, cada um com as suas cores no mapa (escuro e claro; sem roxo e sem rosa) */
 .mp[data-theme="mundo-floresta"]{--avp-sky0:#14402c;--avp-sky1:#1f5a3a;--avp-sky2:#1a4d33;--avp-sky3:#27704a;--avp-edge:#8fe0a8;--avp-dots:#3a8a5c}
 .mp[data-theme="mundo-deserto"]{--avp-sky0:#c9702a;--avp-sky1:#e8964a;--avp-sky2:#d98238;--avp-sky3:#f2ab66;--avp-edge:#ffe0b0;--avp-dots:#f5bf84}

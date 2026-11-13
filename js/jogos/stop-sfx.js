@@ -2,6 +2,8 @@
 // Respeita o som geral dos jogos (base.js), as preferências do painel de áudio e o "silence()" do app (sair da tela corta o que ficou tocando).
 import { audio, now, kick, snare, hihat, cymbal, tom, click, out } from '../audio.js';
 import { soundOn, getGame, setGame } from './base.js';
+import { EFEITOS } from './efeitos-dados.js';
+import { tocarLista } from './efeitos.js';
 
 const KEY = 'stop-audio';
 const DEF = { fx: true, music: false, timer: true, fxVol: 0.8, musicVol: 0.5, vibrate: true, reduce: false };
@@ -19,12 +21,15 @@ function note(f, t, len = 0.14, peak = 0.22, type = 'triangle') {
 }
 const NOTE = { c4: 261.6, e4: 329.6, g4: 392, c5: 523.3, e5: 659.3, g5: 784, a3: 220, c3: 130.8, g2: 98, c2: 65.4 };
 
+/** Sons próprios do STOP (programa de auditório), aprovados pela Bea: nome do efeito do jogo -> nome em efeitos-dados.js. O resto segue como era. */
+const PROPRIO = { metro: 'tique-taque', timeup: 'acabou o tempo', stop: 'STOP!', ok: 'resposta válida', points: 'resposta válida', bad: 'resposta inválida' };
 /** Toca um efeito pelo nome. Sem som ligado, não faz nada (a tela mostra o mesmo por imagem/texto). */
 export function play(name, arg) {
   if (!fxOn()) return;
   if ((name === 'metro' || name === 'last3') && !settings().timer) return;
   try {
-    const t = now() + 0.02; audio(); const v = vol();
+    const t = now() + 0.02; const c0 = audio(); const v = vol();
+    if (PROPRIO[name] && EFEITOS.stop.efeitos[PROPRIO[name]]) { tocarLista(c0, out(), EFEITOS.stop.efeitos[PROPRIO[name]], t, Math.max(0.2, v)); return; }
     switch (name) {
       case 'tap': hihat(t, 0.5 * v); break; // clique suave de baqueta
       case 'spin': for (let i = 0; i < 9; i++) snare(t + i * 0.055, (0.14 + i * 0.035) * v); break; // rulo curto de caixa

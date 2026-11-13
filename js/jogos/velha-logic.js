@@ -40,9 +40,9 @@ export const aiMove = (kind, board, me, rnd = Math.random) => (kind === 'estrate
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const questionById = (id) => QUESTIONS.find((q) => q.id === id);
 
-/** Perguntas de cada nível: infantil = só as infantis; fácil = infantis + fáceis; intermediário = só as intermediárias. */
+/** Todas as perguntas valem pra qualquer partida (o campo `level` ficou só como etiqueta interna). */
 export const LEVEL_IDS = LEVELS.map((l) => l[0]);
-export const poolFor = (level) => QUESTIONS.filter((q) => (level === 'infantil' ? q.level === 'infantil' : level === 'intermediario' ? q.level === 'intermediario' : q.level !== 'intermediario'));
+export const poolFor = () => QUESTIONS.slice(); // sem níveis: todas as perguntas no mesmo bolo
 
 /** Pergunta nova sem repetir na rodada. Devolve null quando as perguntas do nível acabaram. */
 export function nextQuestion(asked, level = 'facil', rnd = Math.random) {

@@ -30,11 +30,11 @@ check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav
 const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);
 await app.evaluate(() => { location.hash = '#/figurinhas/Pacotes'; }); await app.waitForSelector('.fig-regras', { timeout: 10000 });
 const regras = await app.locator('.fig-regras').innerText();
-check('a roleta explica: 15 ★, jogos de aprender dão extra (4 fases com 3 ★) e vêm o álbum ainda vai mudar', /15 ★/.test(regras) && /jogos de aprender dão figurinha extra/.test(regras) && /4 fases com 3 ★/.test(regras) && /o álbum ainda vai mudar/.test(regras), regras);
+check('a roleta explica: 15 ★, jogos de aprender dão extra (4 fases concluídas) e vêm o álbum ainda vai mudar', /15 ★/.test(regras) && /jogos de aprender dão figurinha extra/.test(regras) && /4 fases concluídas/.test(regras) && /o álbum ainda vai mudar/.test(regras), regras);
 const extra = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); const me = P.active();
   const lv = {}; for (let i = 0; i < 7; i++) lv[`figuras:${i}`] = { s: 3 }; lv['pl-revisao:1'] = { s: 3 }; lv['figuras:9'] = { s: 2 };
   await P.patch(me.id, { lv }); return { f3: E.fases3Estrelas(me.id), extras: E.girosExtras(me.id), faltam: E.faltamFases3(me.id), novas: await E.sincronizar(me.id) }; });
-check('7 fases com 3 ★ (revisão e 2 ★ não contam) = 1 giro extra (a cada 4), faltam 1, entrega o extra + 1 giro das 26 ★ (15 ★) sem duplicar', extra.f3 === 7 && extra.extras === 1 && extra.faltam === 1 && extra.novas === 2, JSON.stringify(extra));
+check('8 fases concluídas (a revisão não conta) = 2 giros extras (a cada 4), faltam 4, entrega os 2 extras + 1 giro das 26 ★ (15 ★) sem duplicar', extra.f3 === 8 && extra.extras === 2 && extra.faltam === 4 && extra.novas === 3, JSON.stringify(extra));
 const dnv = await p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); return E.sincronizar(P.active().id); });
 check('sincronizar de novo não entrega nada em dobro', dnv === 0);
 check('sem erros de página', errs.length === 0, errs.join(' | '));

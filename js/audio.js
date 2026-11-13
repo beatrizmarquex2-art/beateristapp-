@@ -176,6 +176,8 @@ export function scheduler(next, { onEnd } = {}) {
  */
 let epoch = 0;
 export const audioEpoch = () => epoch;
+/** Quando (Date.now) algum jogo pediu som pela última vez. A música de fundo usa pra abaixar enquanto o jogo toca ritmo ou nota. */
+export const lastAudioUse = () => lastUse;
 /** setTimeout de som: morre junto com o silence() (troca de tela, de fase ou de rodada). Ex.: "toca o exemplo 250 ms depois de mostrar a pergunta". */
 const pending = new Set();
 export function later(fn, ms) {

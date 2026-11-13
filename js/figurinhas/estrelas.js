@@ -6,17 +6,20 @@ import * as CS from '../campanha/store.js';
 import * as FR from './rewards.js';
 import { ESTRELAS_POR_ROLETA } from './album-logic.js';
 import { MAX_LEVEL } from '../kids/levels.js';
+import { getGame } from '../jogos/base.js';
 
 export const estrelasTotais = (pid) => P.totalStars(pid) + (P.progOf(pid).ritmoStars || 0) + ((P.progOf(pid).mesa || {}).total || 0) + CS.allStars(pid);
 export const roletasDevidas = (total) => Math.floor((total || 0) / ESTRELAS_POR_ROLETA);
 /** Quantas estrelas faltam pra próxima roleta. */
 export const faltamParaRoleta = (total) => ESTRELAS_POR_ROLETA - ((total || 0) % ESTRELAS_POR_ROLETA);
-/** Jogos de APRENDER (fases dos Kids e da pauLta): cada 4 fases fechadas com 3 ★ dão 1 giro EXTRA da roleta (além das 15 ★). A revisão do Paul não entra. */
-export const FASES_POR_GIRO_EXTRA = 4; // pedido da Bea: a cada 4 fases fechadas com 3 ★, +1 giro (giros já ganhos antes não são tirados)
-export const fases3Estrelas = (pid) => Object.entries(P.progOf(pid).lv || {}).filter(([k, x]) => (x.s || 0) >= 3 && !k.startsWith('pl-revisao')).length;
-export const girosExtras = (pid) => Math.floor(fases3Estrelas(pid) / FASES_POR_GIRO_EXTRA);
-/** Quantas fases com 3 ★ faltam pro próximo giro extra. */
-export const faltamFases3 = (pid) => FASES_POR_GIRO_EXTRA - (fases3Estrelas(pid) % FASES_POR_GIRO_EXTRA);
+/** Jogos de APRENDER (fases dos Kids, pauLta, Figurix e Detetive Note): a cada 4 fases CONCLUÍDAS (pelo menos 1 ★) o aluno ganha 1 giro EXTRA da roleta (além das 15 ★). A revisão do Paul não entra. */
+export const FASES_POR_GIRO_EXTRA = 4; // pedido da Bea: a cada 4 fases concluídas, +1 giro (giros já ganhos antes não são tirados)
+const contaEst = (est) => Object.values(est || {}).filter((v) => (v || 0) >= 1).length;
+export const fasesConcluidas = (pid) => Object.entries(P.progOf(pid).lv || {}).filter(([k, x]) => (x.s || 0) >= 1 && !k.startsWith('pl-revisao')).length + contaEst(getGame('figurix').est) + contaEst(getGame('detetive').est);
+export const fases3Estrelas = fasesConcluidas; // nome antigo (a regra agora é fase concluída, não só 3 ★)
+export const girosExtras = (pid) => Math.floor(fasesConcluidas(pid) / FASES_POR_GIRO_EXTRA);
+/** Quantas fases concluídas faltam pro próximo giro extra. */
+export const faltamFases3 = (pid) => FASES_POR_GIRO_EXTRA - (fasesConcluidas(pid) % FASES_POR_GIRO_EXTRA);
 /** Entrega as roletas devidas pelo total de estrelas e os giros extras das fases com 3 ★. Devolve quantas roletas NOVAS. */
 export async function sincronizar(pid) {
   const n = roletasDevidas(estrelasTotais(pid)); const x = girosExtras(pid);

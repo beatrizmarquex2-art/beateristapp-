@@ -2,6 +2,8 @@
 // Tudo sintetizado a partir de ruído filtrado (e um "zip" deslizante nos efeitos de festa) e passa pela saída principal do app,
 // então sair do jogo ou do app corta o que estiver soando (stopAll). Um efeito mais importante corta o anterior; os leves não empilham.
 import { audio, out, noise } from '../audio.js';
+import { EFEITOS } from './efeitos-dados.js';
+import { tocarLista } from './efeitos.js';
 
 let enabled = true;
 const live = new Set(); // fontes ainda tocando
@@ -52,6 +54,8 @@ const RECIPE = {
   tie: (c, t) => { puff(c, t, { len: 0.12, f: 1400, f2: 1000, q: 1, vol: 0.2 }); puff(c, t + 0.15, { len: 0.12, f: 1400, f2: 1000, q: 1, vol: 0.2 }); return 0.3; },
 };
 
+/** Efeitos próprios aprovados pela Bea (efeitos-dados.js, perfil "uno"); os demais (baralho, virar, tap, empate) seguem as receitas de papel acima. */
+const PROPRIO = { place: 'jogar carta', draw: 'comprar carta', special: 'carta especial', uno: 'UNO', bad: 'jogada inválida', win: 'vitória', lose: 'derrota' };
 /** Toca um efeito. `n` = quantas cartas (só no draw). O resultado (win/lose/tie) também avisa o Paul da moldura (evento jg-sfx), mesmo sem som. */
 export function play(kind, n = 1) {
   if (kind === 'win' || kind === 'lose' || kind === 'tie') { try { document.dispatchEvent(new CustomEvent('jg-sfx', { detail: kind })); } catch { /* sem DOM */ } }
@@ -59,7 +63,9 @@ export function play(kind, n = 1) {
   try {
     const c = audio(); const now = c.currentTime; const pr = PRIO[kind] || 1;
     if (now < busyUntil) { if (pr <= busyPrio) return; stopAll(); } // leve não atropela; importante corta o que estava soando
-    const dur = RECIPE[kind](c, now + 0.01, n);
+    const lista = PROPRIO[kind] && EFEITOS.uno.efeitos[PROPRIO[kind]];
+    let dur;
+    if (lista) { const reps = kind === 'draw' ? Math.max(1, n) : 1; for (let i = 0; i < reps; i++) tocarLista(c, out(), lista, now + 0.01 + i * 0.12); dur = 0.3 + reps * 0.12; } else dur = RECIPE[kind](c, now + 0.01, n);
     busyUntil = now + dur; busyPrio = pr;
   } catch { /* sem áudio */ }
 }
