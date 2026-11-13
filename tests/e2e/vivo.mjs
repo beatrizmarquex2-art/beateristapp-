@@ -12,8 +12,7 @@ const espera = (fn, ms = 20000) => page.waitForFunction(fn, null, { timeout: ms 
 
 /* ---------- catálogo ---------- */
 await page.goto(url + '/aluno.html#/jogos'); await sleep(1800);
-check('os 4 jogos aparecem na aba Jogos', await page.evaluate(() => ['copia', 'paultavivo', 'groove', 'fantasma'].every((id) => document.querySelector(`a.jg-card[href="#/jogos/${id}"]`))));
-await page.evaluate(() => document.querySelector('a.jg-card[href="#/jogos/copia"]').scrollIntoView({ block: 'center' })); await sleep(300); await shot('0-catalogo');
+check('os 4 jogos ainda ficam escondidos dos alunos na aba Jogos (em obras: só no app da Bea)', await page.evaluate(() => ['copia', 'paultavivo', 'groove', 'fantasma'].every((id) => !document.querySelector(`a.jg-card[href="#/jogos/${id}"]`)) && !!document.querySelector('a.jg-card[href="#/jogos/toca"]')));
 
 /* ---------- Copia Aí ---------- */
 await page.goto(url + '/aluno.html#/jogos/copia'); await sleep(1500);

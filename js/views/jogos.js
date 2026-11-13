@@ -74,10 +74,11 @@ const SECTIONS = [
     inner('rudimentos'),
   ]],
   ['Tocar de verdade', [
-    inner('copia'),
-    inner('paultavivo'),
-    inner('groove'),
-    inner('fantasma'),
+    // os 4 jogos de tocar de verdade ainda estão em obras: aparecem SÓ no app da Bea ('bea'). Pra liberar pros alunos, tirar o `, undefined, 'bea'`.
+    [...inner('copia'), undefined, 'bea'],
+    [...inner('paultavivo'), undefined, 'bea'],
+    [...inner('groove'), undefined, 'bea'],
+    [...inner('fantasma'), undefined, 'bea'],
   ]],
   ['Leitura musical', [
     link('#/paulta', 'PauLta', 'pauta.svg', 'leitura musical: bateria, clave de sol e de fá'),

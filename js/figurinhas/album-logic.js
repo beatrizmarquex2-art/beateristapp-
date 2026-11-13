@@ -106,6 +106,34 @@ export function semRepetir(catalog, codes, tem, r = Math.random) {
   }
   return out.length ? out : [...new Set(codes)]; // álbum completo: aí o pacote vem como foi sorteado
 }
+/**
+ * Quem já tinha figurinha repetida (de antes da regra "sem repetir"): cada cópia a mais vira uma carta NOVA que ainda falta (pedido da Bea).
+ * Percorre os pacotes já abertos em ordem; a 1ª vez de cada carta fica, as repetidas são trocadas (mesmo tipo quando dá). Presentes da Bea (`dado:`) não mudam.
+ * Só sobra repetida se o álbum inteiro já estiver completo. Devolve { state, trocadas } (o mesmo state se não havia nada pra trocar).
+ */
+export function trocarRepetidas(state, catalog) {
+  if (!repeated(state)) return { state, trocadas: 0 };
+  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12);
+  const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const r = rng(hashSeed(`trocarep|${s.seed}`)); const ids = Object.keys(s.opened).sort();
+  // `tem` = tudo que o aluno já tem em qualquer pacote ou colado (a carta nova nunca pode ser uma dessas); `vistos` = as que já apareceram nesta passada
+  const tem = new Set([...Object.keys(s.pasted || {}), ...Object.keys(s.inv || {}), ...ids.flatMap((id) => s.opened[id] || [])]);
+  const vistos = new Set(); for (const id of ids) if (String(id).startsWith('dado:')) for (const c of s.opened[id] || []) vistos.add(c); // os presentes contam como "já tem"
+  const opened = {}; let trocadas = 0;
+  for (const id of ids) {
+    const codes = s.opened[id] || []; if (String(id).startsWith('dado:')) { opened[id] = codes; continue; }
+    opened[id] = codes.map((code) => {
+      if (!vistos.has(code)) { vistos.add(code); return code; }
+      const e = by[code]; const livres = catalog.filter((c) => !tem.has(c.codigo));
+      const pool = [livres.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), livres.filter((c) => e && c.secao === e.secao), livres].find((l) => l.length);
+      if (!pool) return code; // álbum completo: não tem o que pôr no lugar
+      if ((s.inv[code] || 0) <= 0) return code; // essa cópia não está na mão (dado antigo): não mexe
+      const novo = pool[Math.floor(r() * pool.length)].codigo; vistos.add(novo); tem.add(novo); trocadas++;
+      s.inv[code] -= 1; if (s.inv[code] <= 0) delete s.inv[code]; s.inv[novo] = (s.inv[novo] || 0) + 1; return novo; // sai a repetida da mão, entra a nova
+    });
+  }
+  if (!trocadas) return { state, trocadas: 0 };
+  s.opened = opened; return { state: s, trocadas };
+}
 /** Abre o pacote: as figurinhas vão pra "mão" (ainda não coladas). Abrir de novo o mesmo id não faz nada. */
 export function openPack(state, catalog, packId) {
   if (!state.granted?.includes(packId) || state.opened?.[packId]) return { state, codes: state.opened?.[packId] || null, fresh: false };

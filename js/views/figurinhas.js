@@ -82,6 +82,7 @@ export function mount(host, parts = [], opts = {}) {
     try { await loadCatalog(); } catch { wrap.replaceChildren(h('p', { class: 'fig-note' }, 'não consegui abrir o catálogo agora. tente de novo com internet.')); return; }
     if (!alive) return;
     // sem pacote de boas-vindas. Check-in: 1 giro grátis da roleta por dia (id do dia, então abrir de novo não entrega outro); o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo).
+    { const t = L.trocarRepetidas(state, catalog); if (t.trocadas) { state = t.state; store.upsert('figurinhas', ID, state); guardarNaNuvem(); toast(`suas ${t.trocadas} repetida${t.trocadas === 1 ? ' virou carta nova' : 's viraram cartas novas'}! olha na aba Pacotes`, { ms: 5000 }); } } // as repetidas de antes viram cartas que faltam
     let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
     // check-in de 7 dias seguidos: pacote com 1 exclusiva da Bea + 10 ★ + festa (só 1x por dia entra na conta)

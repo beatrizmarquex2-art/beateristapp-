@@ -657,6 +657,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Toca Aqui: a nota da fase é a do ÚLTIMO compasso, não a média** (pedido da Bea, com foto: aparecia "os 3 compassos: 100 · 66 · 71 · 100 · 100 → média 87%"). Em `js/views/treinos.js` a nota final, as estrelas e o "passou" usam o resultado do 3º compasso; tocar de novo depois do 3º troca o último em vez de somar mais um (era o que fazia a lista passar de 3). `sw.js` v495.
 - **Figurix: "↻ recomeçar pra ganhar 3 ★"** (pedido da Bea): aparece no topo da fase assim que o aluno erra uma vez (um erro já tira as 3 ★ da rodada) e recomeça a mesma fase do zero, sem passar pela aulinha. Na tela de fim, com menos de 3 ★, o "jogar de novo" vira o mesmo texto. Teste `tests/e2e/figurix-recomeca.mjs`. `sw.js` v496.
 
+- **Repetidas antigas viram cartas novas** (`trocarRepetidas` em `album-logic.js`, roda ao abrir o Álbum enquanto houver repetida): cada cópia a mais é trocada por uma carta que falta (mesmo tipo quando dá); o que está colado não muda; presente da Bea (`dado:`) não muda; aparece o aviso "suas N repetidas viraram cartas novas". Teste `tests/troca-repetidas.test.mjs`.
+- **Aviso de versão nova pros alunos**: quando chega versão nova aparece a barra "tem coisa nova no app! [atualizar]" (`.atualiza-bar`, em `js/aluno.js`); ao trocar de tela fora de um jogo ele ainda atualiza sozinho, e depois de atualizar aparece "app atualizado! tem novidade pra você". Antes ele recarregava calado.
+- **Os 4 jogos de tocar de verdade ficam SÓ no app da Bea** por enquanto (marcados `'bea'` em `SECTIONS` de `js/views/jogos.js`): escondidos da aba Jogos dos alunos até a Bea liberar. `sw.js` v497.
+
 ## Quais jogos dão até 3 ★ por fase (resumo pra Bea, conferido no código em 13/nov/2026)
 | Jogo | Tem mundo com fases? | Estrelas por fase | Como ganha as 3 |
 |---|---|---|---|

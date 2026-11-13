@@ -71,8 +71,6 @@ export const THOUGHTS = [
 export const NOVIDADES_JOGOS = [
   [
     ['jogo novo! o Taiko: toque E e D no tempo', '#/jogos/rudimentos', 'aluno'],
-    ['jogo novo! Copia Aí: eu toco e você copia no teclado', '#/jogos/copia', 'aluno'],
-    ['jogo novo! Clique Fantasma: segura o tempo sem o clique?', '#/jogos/fantasma', 'aluno'],
     ['jogo novo! Radar Musical: ache as palavras na grade', '#/dicas/caca', 'aluno'],
     ['jogo novo! Cruzadinha musical, vem preencher', '#/dicas/cruzadinha', 'aluno'],
     ['jogo novo! Quiz do Paul: será que você acerta?', '#/dicas/quiz', 'aluno'],

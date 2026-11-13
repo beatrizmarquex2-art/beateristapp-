@@ -512,8 +512,12 @@ async function start() {
   if ('serviceWorker' in navigator) {
     // Versão nova do app: quando o service worker novo assume, recarrega sozinho (fora de um jogo; dentro de um jogo espera sair), e procura versão nova sempre que o app volta pra tela.
     const tinha = !!navigator.serviceWorker.controller; let recarregar = false;
-    const tenta = () => { if (!recarregar) return; if (document.documentElement.classList.contains('em-jogo')) return; location.reload(); };
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { recarregar = true; tenta(); } });
+    const atualizar = () => { try { sessionStorage.setItem('bt-atualizou', '1'); } catch { /* ok */ } location.reload(); };
+    const tenta = () => { if (!recarregar) return; if (document.documentElement.classList.contains('em-jogo')) return; atualizar(); };
+    // pedido da Bea: quando tem coisa nova o app AVISA o aluno e mostra o botão "atualizar" (ao trocar de tela fora de um jogo ele também atualiza sozinho)
+    const avisaNovidade = () => { if (document.querySelector('.atualiza-bar')) return; document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizar }, 'atualizar'))); };
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { recarregar = true; avisaNovidade(); } });
+    try { if (sessionStorage.getItem('bt-atualizou') === '1') { sessionStorage.removeItem('bt-atualizou'); setTimeout(() => toast('app atualizado! tem novidade pra você ✨', { ms: 4500 }), 1200); } } catch { /* ok */ }
     addEventListener('hashchange', () => setTimeout(tenta, 300));
     navigator.serviceWorker.register('sw.js').then((reg) => { document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
   }
