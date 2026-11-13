@@ -1,0 +1,5 @@
+{"name":"15_memoria_da_tela_pro_papel","tag":"jogo da memória musical","audio":"beat","segs":[
+ {"src":"IMG_9254","ss":0.5,"dur":2.5,"layout":"h","lines":["JOGO DA MEMÓRIA","*NA TELA…"]},
+ {"src":"IMG_9254","ss":4,"dur":2,"layout":"h","lines":["ACHA O PAR,","*APRENDE O NOME"]},
+ {"src":"memoria-quadrada","layout":"fit","dur":3,"lines":["…E AGORA","*NA MESA DE CASA"]}],
+ "end":{"tag":"material digital em pdf","h":["MEMÓRIA","MUSICAL"],"price":"R$ 19,90","priceNote":"8 temas, 61 pares<br>pra imprimir e recortar","cta":"VEJA NA LOJINHA · LINK NA BIO","sub":"compra pela hotmart, pdf na hora"}}

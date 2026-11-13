@@ -1,0 +1,6 @@
+{"name":"18_toca_na_tela","tag":"pra quem tá começando","audio":"beat","segs":[
+ {"src":"TELA_bateria","layout":"img","dur":2.5,"lines":["SEM INSTRUMENTO","EM CASA?","*TOCA NA TELA"]},
+ {"src":"TELA_xilofone","layout":"img","dur":2,"lines":["BATERIA, CORDAS,","*TECLAS E PERCUSSÃO"]},
+ {"src":"TELA_rock","layout":"img","dur":2.5,"lines":["VÊ O DESENHO","*E OUVE O RITMO"]},
+ {"src":"TELA_aula","layout":"img","dur":2.5,"lines":["E TEM AULA","*COM O PAUL"]}],
+ "end":{"tag":"jogos + estudos + álbum","h":["MÚSICA NA","PALMA DA MÃO"],"sub":"comece grátis hoje"}}

@@ -71,6 +71,7 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
@@ -249,11 +250,19 @@ function estudosView(view) {
 }
 
 /** Aulas do Paul: lista das 4 aulas (as 3 novas e a das figuras rítmicas). */
+/** Botão fixo "‹ jogos" (embaixo, à esquerda) dentro de qualquer jogo: volta sempre pra lista. Some nas telas de jogo cheias (rz-lock) pelo CSS. */
+function voltarJogos(on) {
+  let b = document.getElementById('voltar-jogos');
+  if (!on) { if (b) b.hidden = true; return; }
+  if (!b) { b = h('a', { id: 'voltar-jogos', class: 'voltar-jogos', href: '#/jogos', 'aria-label': 'voltar pra lista de jogos' }, '‹ jogos'); document.body.append(b); }
+  b.hidden = false;
+}
 function aulasView(view) {
-  const lk = (href, t, sub, tempo) => h('a', { class: 'card pad al-card', href }, h('h2', { class: 'tag' }, t, !AC.liberado() ? h('small', { class: 'al-am' }, ` · grátis: ${GRATIS.aulinha} passos`) : null), h('p', { class: 'muted' }, `${sub} · ${tempo}`));
-  view.append(banner('Aulas do Paul', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
-    ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo)),
-    lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min')));
+  const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
+    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, `grátis: ${GRATIS.aulinha} passos`) : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
+  view.append(banner('Aulas do Paul', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+    ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo, a.cor, a.pose, a.adesivos[0])),
+    lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min', 'figuras', 'metronomo', 'nota2')));
 }
 function aulaView(view, id) {
   if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
@@ -390,7 +399,7 @@ function shell(name) {
     const r = route(); view.dataset.page = r.name;
     { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album' || r.name === 'perfil') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; } // aba Álbum com visual próprio (css/album-tema.css)
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
-    { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); }
+    { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
     if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
@@ -526,6 +535,6 @@ async function start() {
   }
   startScroller();
   // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
-  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|jogos|tocar|album|lojinha|perfil)?\/?)?$/.test(location.hash) });
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
   start();
 })();

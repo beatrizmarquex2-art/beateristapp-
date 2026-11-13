@@ -36,6 +36,15 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Rudimentix (era "Taiko", 13/nov/2026)
+- A Bea trocou o nome visível do jogo de rudimentos de "Taiko" pra **Rudimentix** (`js/views/jogos.js`, `js/paul-talk.js`, testes `jogos-letras` e `acesso`). Rota, arquivos e ícone não mudaram. Cache v490. Já está na `main` e publicado em jogos.beaterista.com.br (repo `beaterista-jogos`, v490) em 13/nov.
+
+## Marketing e reels (nov/2026)
+- Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
+- Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).
+- Os vídeos crus **não ficam no repo** (público, tem aluno criança). Pasta no Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)". A Bea vai mandando mais clipes; a cada leva, atualizar o catálogo.
+- A Bea avisou que o formato "como tocar X em 1 minuto" não funciona mais. Vídeo com criança só com autorização dos pais.
+
 ## Supabase (projeto `beaterista-app`, id `fnxgjxatremjdxaqmswu`)
 - App da Bea: tabela `records` (sincronização) com RLS e lista `app_allowed_emails`.
 - Área dos alunos (tudo em `supabase/*.sql`, já aplicado):
@@ -577,6 +586,28 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Bug: "trocar aluno" só trocava nome/código; o progresso dos jogos (Toca Aqui, XP, roleta, aventura, pauLta, memória, ouvido, desafio, toque, piano, `beaterista-jogos`) era do aparelho e o aluno novo herdava tudo.
 - Agora esses registros são por aluno (nome): `js/store.js` (`POR_ALUNO`, chave `id:nome`) e `js/jogos/base.js` (`beaterista-jogos:nome`). App da Bea (sem nome de aluno) não muda. O que já existia sem dono passa **uma vez** pro primeiro aluno que abrir (`beaterista-escopo-migrado`, `beaterista-escopo-jogos`). Teste: `tests/e2e/aluno-progresso-separado.mjs`.
 - Kids (estrelas dos jogos de perguntas) e figurinhas já eram por nome. Fora da lista ficam configurações do aparelho (tema, som, metrônomo…).
+
+## Nuvem do Paul não cobre mais os botões (nov/2026, v488)
+- Bug: a nuvem de pensamento (link) aparecia sobre os botões de jogar e levava pro Radar Musical sem querer. Agora a nuvem deixa o toque passar e só o botãozinho **"ver ›"** (`.pt-ver`, `js/paul-talk.js`) abre o link. Teste: `tests/e2e/paul-nuvem-nao-cobre.mjs` (jogos-letras e lojinha-paul ajustados).
+
+## Jogos: carta do Paul em rodízio e roleta mais limpa (nov/2026, v490)
+- A carta "o Paul conta" da aba Jogos muda a cada volta (`cartaDaVez` em `js/paul-dicas.js`, rodízio no aparelho `beaterista-paul-rodizio`, intercala convites do app e frases). Cartas novas (só alunos): combo, avaliação no Google, atividades extra (★), cartinhas, jogos novos, instrumentos pra tocar, curiosidades de músicos, aulinha do Paul, dicionário, cada uma com pose `p-*` própria.
+- Álbum > Pacotes: "girar a roleta" vem logo depois do texto; as missões com print e o check-in ficam recolhidos em "ganhe mais ★" embaixo do botão (`.fig-mais`). A lista de regras (texto ilegível no tema neon) foi tirada, e a caixinha "animações reduzidas" voltou ao tamanho normal. Teste: `tests/e2e/jogos-paul-rodizio.mjs`.
+
+## Menu preso em baixo e "minhas figurinhas" (nov/2026, v493)
+- Área dos alunos: `.bottom-nav` colado na borda de baixo, largura total (`html.aluno-on` em `css/lote3.css`), sem blur nem translateX (mais estável no iPad/iPhone).
+- Álbum: nova 1ª aba **minhas figurinhas** (`Na mão`, `maoView` em `js/views/figurinhas.js`): grade das figurinhas na mão, "colar no álbum" em cada uma, "colar tudo", repetidas marcadas. A antiga aba "Minhas" (cartinhas criadas com foto) passou a se chamar **criadas por mim**. Teste: `tests/e2e/album-minhas-figurinhas.mjs`.
+- (v495) O cartão azul "o Paul conta" (`paulDica`, usado em Início, Jogos, Perfil e Conceitos) agora roda a cada volta, com os convites do app logo depois do vídeo novo. Na aba Jogos dos alunos o balão solto do Paul não aparece mais por cima do cartão (`startPaul` em `js/aluno.js` não roda em `#/jogos`; `think` da aba removido).
+- (v503) Aba Jogos: "tem código de sala?" virou **"bora jogar junto?"** bem pequeno (faixa mostarda, rosto do Paul em círculo, arte de linha da Bea em `assets/paul/linha/f01-f13.webp`, sorteado a cada vez; folhas originais em `assets/originals/paul-folhas/`), só com pílulas: **tenho código**, **criar sala**, **voltar pra sala** e **continuar jogo** (as duas últimas aparecem tracejadas quando não há sala nem jogo em andamento; o botão grande "continuar" antigo saiu). Teste: `tests/e2e/jogos-sala-opcoes.mjs`.
+- (v504) Revisão visual de 31 telas da área dos alunos (celular 390 e iPad 820): sem texto cortado nem rolagem lateral. Único ajuste: no iPad a arte do combo e a vitrine da Lojinha passaram a ter largura máxima (`@media (min-width: 700px)` em `css/lote3.css`). Prints "antes" ficam só na conversa.
+- (v505) Paul só **colorido ou PNG recortado, sem moldura/círculo** (pedido da Bea). Recortes dos adesivos em `assets/originals/paul-png/` (ver LEIA-ME.md ali); webp leves em `assets/paul/colorido/`. O quadro "bora jogar junto?" usa esses (um sorteado a cada vez). O print do Piano Hero que veio junto não é Paul (não foi usado).
+- (v510) **Paul colorido em tudo que é novo** (`js/paul-cor.js`: `corSrc`, `poseDe`, `poseDoJogo`, `stkSrc`, `ELEMENTOS`; imagens em `assets/paul/colorido/` e adesivos em `assets/paul/stk/`, recortados dos adesivos da Bea).
+  - **Mapas** (`js/kids/mapa.js`, `css/mapa.css`): o Paul do mapa é colorido (pose por jogo) e cada região ganha adesivos (notas, vinil, fones, livros…) nas bordas, empurrados pra longe dos desenhos pixel. Regiões muito cheias (ex.: floresta do Toca Aqui) ficam sem adesivo.
+  - **Aulinha do Paul** (`js/kids/aulas-paul.js`, lista em `aulasView` de `js/aluno.js`): lista com um cartão colorido por instrumento (vinho/azul/mostarda/verde-petróleo) e o Paul do instrumento; aula aberta com topo colorido, Paul que pula a cada passo, passos numerados e chuva de adesivos no último passo.
+  - **Cartão azul do Paul** (`paul-dicas.js`): Paul colorido por assunto.
+- (v512) Pedido da Bea: **não trocar todos os Pauls** (ela gosta do adolescente também). O cartão azul "o Paul conta" voltou às poses n-/p- (adolescente); o colorido fica no quadro de salas, mapas e aulinha. Aba Jogos mais enxuta: cartão azul compacto (`paulDica({ compacto: true })`) e "jogar junto" numa faixa baixinha de uma fila (Paul pequeno, pílulas curtas: código · sala · ↩ · ▶), pra os jogos aparecerem já na primeira tela.
+- (v513) Mapa: o Paul não fica mais em cima de árvore/desenho: o que está no lado dele, na altura dele, some enquanto ele está ali (`decorEls` em `js/kids/mapa.js`). O adesivo "nota" estava cortado (recorte errado) e foi trocado pela nota dupla inteira (`assets/paul/stk/nota.webp`).
+
 ## UN🚫 (nov/2026) e ajustes do STOP/Velha/Uno
 - **UN🚫** = variante do Uno Musical (`js/jogos/un.js` chama `cartas.mount(host, { un: true })`; regras em `cartas-logic.js` com `g.un`): cartas iguais (só figuras) juntas (`applyPlayMany`, `twins`), comprar até achar, +2 em +2 e +4 em +4 acumulam (`g.pend`; quem recebe responde ou compra tudo e perde a vez), +4 quando quiser, UNO silencioso (sem aviso de UNO (o número de cartas de cada um aparece); botão UNO e "pegou!" sempre na tela; `catchable`/`wrongCatch`: acusar errado = quem acusou compra 2; a chance de pegar acaba quando a próxima pessoa age), sem brilho nas cartas. Modos: robô, mesmo celular e 2 celulares por código (sala `un`, sem SQL novo; "pegou!" e UNO fora da vez dependem da sondagem de 1,2 s, não testado com 2 aparelhos). Salvo em `un` (separado do Uno). Trancado por código como o Uno Musical (`acesso.js`). Testes: `tests/un-logic.test.mjs`.
 - **Uno Musical**: sempre jogo normal (sem "modo aprender"), cartas que servem sempre brilham, nome da figura sempre aparece, +4 nunca como última carta nem pra ficar com UNO.
@@ -678,3 +709,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 | Quebra-cabeça | não | 3 na 1ª vez de cada imagem | depois 2 e 1 nas voltas seguintes |
 - **Trava de mundo por 3 ★** existe só na pauLta e no Figurix. Toca Aqui e Detetive Note têm mundos, mas hoje não trancam.
 - Toda estrela soma pro giro da roleta: 15 ★ = 1 giro; + 1 giro a cada 4 fases concluídas (pauLta, Kids, Figurix, Detetive).
+- (v515) Botão fixo **‹ jogos** (embaixo à esquerda, `voltarJogos` em `js/aluno.js`) dentro de todos os jogos; a barra de baixo continua escondida lá (toque perto da borda caía na Lojinha). Some nas telas de jogo cheias (`rz-lock`). Teste: `tests/e2e/voltar-jogos.mjs`.

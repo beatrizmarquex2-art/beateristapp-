@@ -1,0 +1,66 @@
+{
+ "name": "01_pais_v2",
+ "tag": "pra família",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "01_pais",
+   "ss": 2.96,
+   "dur": 2.5,
+   "layout": "moldura",
+   "lines": [
+    "TEMPO DE TELA",
+    "QUE VIRA",
+    "*AULA DE MÚSICA"
+   ]
+  },
+  {
+   "src": "01_pais",
+   "ss": 0.04,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "CADA TOQUE É UM",
+    "*DESAFIO DE RITMO"
+   ]
+  },
+  {
+   "src": "01_pais",
+   "ss": 5.67,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "APRENDE",
+    "*BRINCANDO"
+   ]
+  },
+  {
+   "src": "01_pais",
+   "ss": 11.16,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "DEPOIS,",
+    "SAI DA TELA…"
+   ]
+  },
+  {
+   "src": "01_pais",
+   "ss": 8.37,
+   "dur": 2,
+   "layout": "moldura",
+   "lines": [
+    "…E VAI PRO",
+    "*INSTRUMENTO"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "jogos + estudos + álbum",
+  "h": [
+   "MÚSICA NA",
+   "PALMA DA MÃO"
+  ],
+  "sub": "comece grátis hoje"
+ }
+}
