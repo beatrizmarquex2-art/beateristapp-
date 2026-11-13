@@ -17,7 +17,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 | IMG_9246 | vertical, escuro | 9s | aluno aperta "ouvir" no estudo de ritmo, baquetas e pad (cabeça de costas) | passo "ouve" |
 | IMG_9248 | vertical, bem escuro | 22s | mesmo estudo, mais longo; clareia no fim (20s) | reserva |
 | IMG_9249 | horizontal | 20s | tablet com ouvir/tocar + baquetas + pad, braço do aluno | pra professores |
-| IMG_9255 | vertical | 14s | jogo de ritmo neon, duas mãos, bem iluminado | melhor imagem de "jogo" |
+| IMG_9255 | vertical | 14s | jogo **Taiko** (rudimentos: E = caixa, D = bumbo; `js/jogos/rudimentos.js`), duas mãos, bem iluminado | melhor imagem de "jogo" |
 | IMG_9257 | horizontal | 5s | jogo de ritmo neon, duas pessoas tocando na tela | pra professores |
 | IMG_9260 | horizontal | 22s | caça-palavras/cruzadinha musical | pra professores |
 | IMG_9268 | vertical, som real de baqueta | 23s | aluno lê a partitura no tablet e toca no pad (0-10s e 15-18s são os melhores) | prova: da tela pro instrumento |
@@ -90,6 +90,12 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Mostra o endereço e o @ (`@jogos.beaterista`; no Mood, `@beaterista_`).
 - Os 3 primeiros vídeos (os da moldura) agora também têm spec (`layout: moldura`).
 
+## Identidade (regra da Bea, 13/nov/2026)
+- "O que estiver errado ou fora da identidade, tira ou altera", sem perguntar.
+- Dentro da identidade: azul-marinho, vermelho, creme e amarelo; fontes do app; o Paul atual; capas de `assets/loja` e do kit Robôterista.
+- Fora: robô antigo (cinza, sem boné do Paul), personagens que não são o Paul, artes com número ou nome errado ("capa site 01" escrita BATERISTA START, "capa site 06" com 70 páginas, arte do combo com 182 páginas, arte da memória com 61 cartas).
+- A Bea não quer reel com áudio de depoimento.
+
 ## Reels já feitos
 | arquivo | público | ideia |
 |---|---|---|
@@ -115,7 +121,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | quiz_chimbal_1 a 3 (imagens 1080x1350) | geral, engajamento | "você acerta essa? comenta a resposta" com a pergunta do jogo da velha; formato repetível com outras perguntas (`specs_carrossel/quiz_chimbal.json`) |
 | 21_apostila_bateria_start | iniciantes | apostila do curso em promoção: R$ 14,90 (de R$ 29,90, Black Friday), 44 páginas. **A promoção vale só até 30/nov/2026**: depois disso não postar e trocar o preço pra R$ 29,90 |
 | curso_start_1 a 6 (imagens 1080x1350) | iniciantes, perfil da Bea | "o que tem dentro do curso Bateria Start": módulos 3, 4, bônus e apostilas; cartão final com R$ 79,90 (`specs_carrossel/curso_bateria_start.json`) |
-| 22_material_pra_cada_fase | geral | 6 capas em sequência (kids, memória, apostila, curso, cronograma, mood), "material pra cada fase", sem preço |
+| 22_material_pra_cada_fase | geral | 6 capas da lojinha (`assets/loja`: kids, memória, apostila, curso, violão, mood), "material pra cada fase", sem preço. Refeito em 13/nov sem as "capas site" (erro de texto e fora da identidade) |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
