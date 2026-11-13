@@ -21,21 +21,21 @@ export function mount(host) {
   function tela() {
     limpa(); musicaVolta(); estado = 'menu'; const c = cfg(); const nivel = NIVEIS_FANTASMA.find((n) => n.id === c.nivel); const q = 60 / c.bpm; const win = folgaFantasma(c.bpm); const chave = `${nivel.id}:${c.bpm}`; const best = getGame('fantasma').best || {};
     const onsets = []; let t0 = 0;
-    const luz = h('div', { class: 'vv-luz', 'aria-hidden': 'true' }, h('i', {})); const fase = h('b', { class: 'vv-quem' }, best[chave] != null ? `seu melhor aqui: ${best[chave]}% ${estrelasTxt(estrelasPct(best[chave]))}` : 'toque junto com o clique e não pare quando ele sumir');
+    const luz = h('div', { class: 'vv-luz bmr', 'aria-hidden': 'true' }, h('i', {})); const fase = h('b', { class: 'vv-quem' }, best[chave] != null ? `seu melhor aqui: ${best[chave]}% ${estrelasTxt(estrelasPct(best[chave]))}` : 'toque junto com o clique e não pare quando ele sumir');
     const msg = h('p', { class: 'vv-msg', role: 'status', 'aria-live': 'polite' }, `o clique toca ${JUNTO} tempos, some por ${nivel.mudo} e volta.`);
     const pad = h('button', { type: 'button', class: 'vv-padzao', 'aria-label': 'toque aqui no tempo' }, 'toque aqui'); const res = h('div', { class: 'vv-fim' }); const go = h('button', { type: 'button', class: 'vv-go' }, '▶ jogar');
     const ops = h('div', { class: 'vv-ops' },
       chips('andamento', TEMPOS_FANTASMA.map((b) => [b, `${b} BPM`]), c.bpm, (v) => muda({ bpm: v })),
       chips('o clique some por', NIVEIS_FANTASMA.map((n) => [n.id, n.nome]), c.nivel, (v) => muda({ nivel: v })),
       chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })));
-    root.replaceChildren(ops, luz, fase, msg, c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque uma batida por tempo: na bateria, numa corda do violão, numa tecla ou batendo palma.') : pad, go, res);
+    root.replaceChildren(ops, luz, fase, msg, c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque uma batida por tempo: na bateria, numa corda do violão, numa tecla ou batendo palma.') : pad, go, res, h('div', { class: 'vv-placar' }, h('span', {}, `${c.bpm} bpm`), h('span', {}, `silêncio: ${nivel.nome}`)));
 
     const bate = (ts) => { const a = audio(); tom(a.currentTime + 0.005, 220, 0.55); if (estado !== 'play') return; const t = ts ? perfToCtx(ts) : a.currentTime; onsets.push(Math.abs(t - a.currentTime) > 0.25 ? a.currentTime : t); };
     pad.addEventListener('pointerdown', (e) => { e.preventDefault(); bate(e.timeStamp); pad.classList.add('hit'); setTimeout(() => pad.classList.remove('hit'), 90); });
     const em = (t, fn) => { timers.push(setTimeout(() => { if (!gone && estado === 'play') fn(); }, Math.max(0, (t - audio(false).currentTime) * 1000))); };
     const pisca = () => { luz.classList.remove('bate'); void luz.offsetWidth; luz.classList.add('bate'); };
     function fim() {
-      estado = 'fim'; if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta(); luz.className = 'vv-luz';
+      estado = 'fim'; if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta(); luz.className = 'vv-luz bmr';
       const r = julgaFantasma(onsets.map((t) => t - t0), { q, mudo: nivel.mudo, win }); const n = estrelasPct(r.pct); const b = { ...(getGame('fantasma').best || {}) }; if (r.pct > (b[chave] ?? -1)) b[chave] = r.pct; setGame('fantasma', { best: b }); premiar('fantasma', n, `fa:${chave}`);
       const lim = Math.round(win * 1000); const faixa = Math.max(150, lim * 1.5);
       const linha = h('div', { class: 'vv-pontos', role: 'img', 'aria-label': `batidas no silêncio: ${r.pontos.map((p) => (p == null ? 'faltou' : `${p > 0 ? '+' : ''}${p} ms`)).join(', ')}` },

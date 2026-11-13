@@ -70,7 +70,7 @@ await shot('6-groove-fases');
 await page.evaluate(() => { localStorage.setItem(Object.keys(localStorage).find((k) => k.startsWith('beaterista-jogos')) || 'beaterista-jogos:teste', JSON.stringify({ v: 1, sound: true, games: { groove: { est: { 1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100 }, bpm: 100 } } })); });
 await page.reload(); await sleep(1500);
 await page.evaluate(() => document.querySelector('.vv-fase[data-fase="8"]').click()); await sleep(300);
-check('Eco de Groove: compasso escrito com chimbal e bumbo juntos e caixa; 3 pads', await page.evaluate(() => { const t = [...document.querySelectorAll('.vv-tempo')].map((x) => [...x.querySelectorAll('.vv-peca')].map((p) => p.textContent).join('+')); return t.join(' | ') === 'chimbal+bumbo | caixa | chimbal+bumbo | caixa' && document.querySelectorAll('.vv-pad').length === 3; }));
+check('Eco de Groove: grade de 4 tempos com chimbal e bumbo juntos e caixa; 3 pads', await page.evaluate(() => { const t = [0, 1, 2, 3].map((i) => [...document.querySelectorAll(`.vv-cel.on[data-i="${i}"]`)].map((c) => c.dataset.p).join('')); return t.join('|') === 'hb|c|hb|c' && [...document.querySelectorAll('.vv-gl')].map((x) => x.textContent).join() === 'chimbal,caixa,bumbo' && document.querySelectorAll('.vv-pad').length === 3; }));
 await shot('7-groove-fase');
 await page.evaluate(() => document.querySelector('.vv-go').click()); await espera(() => window.__vivo.t0 > 0);
 await page.evaluate(async () => { // toca cada compasso certo na vez do aluno
