@@ -574,3 +574,6 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Bug: "trocar aluno" só trocava nome/código; o progresso dos jogos (Toca Aqui, XP, roleta, aventura, pauLta, memória, ouvido, desafio, toque, piano, `beaterista-jogos`) era do aparelho e o aluno novo herdava tudo.
 - Agora esses registros são por aluno (nome): `js/store.js` (`POR_ALUNO`, chave `id:nome`) e `js/jogos/base.js` (`beaterista-jogos:nome`). App da Bea (sem nome de aluno) não muda. O que já existia sem dono passa **uma vez** pro primeiro aluno que abrir (`beaterista-escopo-migrado`, `beaterista-escopo-jogos`). Teste: `tests/e2e/aluno-progresso-separado.mjs`.
 - Kids (estrelas dos jogos de perguntas) e figurinhas já eram por nome. Fora da lista ficam configurações do aparelho (tema, som, metrônomo…).
+
+## Nuvem do Paul não cobre mais os botões (nov/2026, v488)
+- Bug: a nuvem de pensamento (link) aparecia sobre os botões de jogar e levava pro Radar Musical sem querer. Agora a nuvem deixa o toque passar e só o botãozinho **"ver ›"** (`.pt-ver`, `js/paul-talk.js`) abre o link. Teste: `tests/e2e/paul-nuvem-nao-cobre.mjs` (jogos-letras e lojinha-paul ajustados).
