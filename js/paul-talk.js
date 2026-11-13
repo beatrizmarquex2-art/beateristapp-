@@ -118,8 +118,9 @@ export function think(item, ms = 6500) {
   if (busy()) return;
   const [text, href] = item || pick();
   if (!box) { box = h('div', { class: 'pt-think', role: 'status' }); document.body.append(box); }
+  // a nuvem deixa o toque passar (antes ela cobria os botões de jogar e levava a criança pro Radar sem querer); só o botãozinho "ver" abre o link
   const bubble = href
-    ? h('a', { class: 'pt-cloud', href, ...(String(href).startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, text)
+    ? h('span', { class: 'pt-cloud' }, text, h('a', { class: 'pt-ver', href, ...(String(href).startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, 'ver ›'))
     : h('span', { class: 'pt-cloud' }, text);
   box.replaceChildren(h('img', { class: 'pt-face', src: 'assets/paul/e02.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }), h('i', { class: 'pt-dot d1' }), h('i', { class: 'pt-dot d2' }), bubble);
   // cada vez aparece num lugar: esquerda, meio ou direita, mais embaixo ou um pouco acima

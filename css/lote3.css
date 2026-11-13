@@ -347,7 +347,7 @@ html[data-theme="rabisco"] body.aluno:has(.al-entry) #decor::before { background
 .pt-face { width: 40px; height: auto; mix-blend-mode: normal; flex: none; }
 .pt-dot { display: block; border-radius: 50%; background: #fffdf8; border: 2px solid #1b1818; align-self: flex-end; margin-bottom: 14px; }
 .pt-dot.d1 { width: 7px; height: 7px; } .pt-dot.d2 { width: 11px; height: 11px; margin-bottom: 20px; }
-.pt-cloud { pointer-events: auto; max-width: min(78vw, 300px); padding: 10px 16px; border: 2px solid #1b1818; border-radius: 22px 22px 22px 8px; background: #fffdf8; color: #1b1818; font: 400 17px/1.15 'Gochi Hand', var(--hand); text-decoration: none; box-shadow: 3px 3px 0 var(--accent); }
+.pt-cloud { pointer-events: none; max-width: min(78vw, 300px); padding: 10px 16px; border: 2px solid #1b1818; border-radius: 22px 22px 22px 8px; background: #fffdf8; color: #1b1818; font: 400 17px/1.15 'Gochi Hand', var(--hand); text-decoration: none; box-shadow: 3px 3px 0 var(--accent); }
 a.pt-cloud { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 body.rz-lock .pt-think { display: none; }
 @media (prefers-reduced-motion: reduce) { .pt-think { transition: none; } .pt-tap { animation: none; } }
@@ -845,3 +845,59 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 .lj-bf-topo .lj-bf-arte{border-radius:12px}
 .lj-bf-cta{display:grid;gap:8px;justify-items:center;text-align:center}.lj-bf-cta .lj-preco{font:800 26px var(--body)}
 .lj-bf-cta .lj-btn{width:100%;font-size:18px;padding:14px}
+
+/* nuvem do Paul: só o botão "ver" é tocável (a nuvem inteira deixa o toque passar pros botões de baixo) */
+.pt-ver { pointer-events: auto; display: inline-block; margin-left: 8px; padding: 2px 10px; border: 2px solid #1b1818; border-radius: 999px; background: var(--accent); color: #fffdf8; font: 800 13px/1.3 var(--body); text-decoration: none; white-space: nowrap; }
+/* álbum > pacotes: a caixinha "animações reduzidas" não vira um retângulo gigante; "ganhe mais ★" fica recolhido embaixo do botão de girar */
+.fig-opt { display: flex; align-items: center; gap: 8px; } .fig-opt input[type=checkbox] { width: 22px; height: 22px; min-width: 22px; padding: 0; flex: none; }
+.fig-mais { margin-top: 10px; } .fig-mais > summary { cursor: pointer; font-weight: 800; padding: 8px 4px; }
+
+/* área dos alunos: o menu de baixo fica colado na borda de baixo da tela (preso, sem flutuar nem tremer no iPad/iPhone) */
+html.aluno-on .bottom-nav { left: 0; right: 0; bottom: 0; transform: none; width: 100%; max-width: none; margin: 0; border-radius: 18px 18px 0 0; padding: 6px max(6px, calc((100% - 620px) / 2)) calc(6px + var(--safe-b)); -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--card); box-shadow: 0 -2px 0 var(--frame), 0 -10px 24px -14px rgb(var(--shadow-rgb) / .6); -webkit-transform: translateZ(0); }
+html.aluno-on #app { padding-bottom: calc(96px + var(--safe-b)); }
+
+/* aba "minhas figurinhas": grade das figurinhas na mão, cada uma com o botão de colar */
+.fig-mao-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr)); gap: 12px; margin-top: 8px; }
+.fig-mao-it { display: grid; gap: 6px; justify-items: center; text-align: center; font-size: 13px; min-width: 0; } .fig-mao-it.rep { opacity: .75; }
+.fig-mao-img { width: 100%; padding: 0; border: 0; background: none; cursor: pointer; } .fig-mao-img svg { width: 100%; height: auto; display: block; }
+.fig-mao-it .btn { width: 100%; }
+
+/* aba Jogos > "bora jogar junto?": faixa mostarda baixinha, rosto do Paul em círculo (arte de linha da Bea) e pílulas */
+section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid #1b1818; border-radius: 14px; box-shadow: 2px 2px 0 #a8182e; color: #1b1818; margin: 4px 0 0; padding: 6px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.jg-sala-corpo { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; flex: 1; min-width: 0; } .jg-sala-extra { flex-basis: 100%; display: grid; gap: 6px; } .jg-sala-extra:empty { display: none; }
+.jg-sala-t { font: 400 15px/1 'Anton', 'Impact', sans-serif; text-transform: uppercase; color: #10234a; white-space: nowrap; }
+.jg-sala-paul { width: 42px; height: 40px; object-fit: contain; flex: none; filter: drop-shadow(1px 2px 0 rgb(0 0 0 / .2)); pointer-events: none; }
+.jg-sala-corpo { display: grid; gap: 5px; min-width: 0; } .jg-sala-extra { grid-column: 1 / -1; display: grid; gap: 6px; } .jg-sala-extra:empty { display: none; }
+.jg-sala-t { font: 400 17px/1 'Anton', 'Impact', sans-serif; text-transform: uppercase; color: #10234a; }
+.jg-pils { display: flex; flex-wrap: wrap; gap: 6px; }
+.jg-pil { display: inline-flex; align-items: center; min-height: 28px; padding: 1px 10px; border: 2px solid #1b1818; border-radius: 999px !important; background: #fff; color: #10234a; font: 700 12.5px var(--body); text-decoration: none; cursor: pointer; box-shadow: 2px 2px 0 #1b1818; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.jg-pil[aria-expanded="true"] { background: #10234a; color: #fff; box-shadow: none; transform: translate(2px, 2px); }
+.jg-pil.go { background: #a8182e; color: #fff; } .jg-pil.off { background: rgb(255 255 255 / .45); color: #6b5a2a; border-style: dashed; box-shadow: none; cursor: default; }
+.jg-sala-jogos { display: grid; gap: 4px; } .jg-sala-jogos small { font: 600 12px/1.3 var(--body); }
+.jg-sala-chips { display: flex; flex-wrap: wrap; gap: 5px; } .jg-sala-chips button { display: flex; align-items: center; gap: 5px; background: #f3eadc; color: #1b1818; border: 2px solid #1b1818; border-radius: 999px !important; padding: 1px 10px 1px 3px; font: 700 12px var(--body); cursor: pointer; min-height: 28px; }
+.jg-sala-chips img { width: 22px; height: 22px; object-fit: contain; }
+.jg-sala-atalho .jg-entrar { margin: 0; } .jg-sala-atalho .jg-code-in { min-height: 34px; font-size: 16px; }
+/* tablet/iPad: a arte do combo e a vitrine não esticam até a borda (ficam num tamanho legível, centralizadas) */
+@media (min-width: 700px) { .lj-bf-topo { max-width: 560px; margin-left: auto; margin-right: auto; } .lj-grid { max-width: 760px; margin-left: auto; margin-right: auto; } }
+
+/* Aulas do Paul: lista colorida (um cartão por instrumento, com o Paul colorido) */
+.al-aula { position: relative; display: grid; grid-template-columns: 96px 1fr 34px; align-items: center; gap: 8px; min-height: 104px; padding: 10px 12px; border: 3px solid #1b1818; border-radius: 18px; box-shadow: 4px 4px 0 #1b1818; text-decoration: none; overflow: hidden; color: #fff; }
+.al-aula-bateria { background: linear-gradient(135deg, #a8182e, #7a0f20); } .al-aula-teclado { background: linear-gradient(135deg, #17356b, #0e2347); } .al-aula-violao { background: linear-gradient(135deg, #f2c14e, #e0902a); color: #1b1818; } .al-aula-figuras { background: linear-gradient(135deg, #1f6f78, #134a52); }
+.al-aula-paul { width: 96px; height: 92px; object-fit: contain; filter: drop-shadow(2px 3px 0 rgb(0 0 0 / .3)); } .al-aula-adv { position: absolute; right: 44px; top: 6px; width: 38px; opacity: .9; transform: rotate(10deg); }
+.al-aula-txt { display: grid; gap: 2px; min-width: 0; } .al-aula-txt b { font: 400 26px/1 'Anton', 'Impact', sans-serif; text-transform: uppercase; } .al-aula-txt small { font: 600 13px/1.3 var(--body); color: inherit; opacity: .95; } .al-aula-txt em { font: 700 11px var(--body); font-style: normal; background: rgb(255 255 255 / .22); border-radius: 999px; padding: 1px 8px; width: max-content; }
+.al-aula-go { width: 30px; height: 30px; border-radius: 50% !important; background: #fff; color: #1b1818; display: grid; place-items: center; font-style: normal; font-size: 12px; border: 2px solid #1b1818; }
+/* aula aberta: cores do instrumento, Paul grande que pula a cada passo, adesivos flutuando, passos numerados */
+.au-cor-bateria { --ac: #a8182e; --ac2: #f3eadc; } .au-cor-teclado { --ac: #17356b; --ac2: #f2c14e; } .au-cor-violao { --ac: #e0902a; --ac2: #fff3d1; }
+.au .au-top { position: relative; padding: 10px 10px 10px 4px; border: 3px solid #1b1818; border-radius: 20px; background: linear-gradient(135deg, var(--ac), color-mix(in srgb, var(--ac) 70%, #000)); box-shadow: 4px 4px 0 #1b1818; align-items: flex-end; overflow: hidden; min-height: 150px; }
+.au-paul { width: 120px; height: 130px; object-fit: contain; flex: none; z-index: 2; filter: drop-shadow(2px 3px 0 rgb(0 0 0 / .3)); transform-origin: 50% 100%; } .au-paul.pula { animation: au-pula .55s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes au-pula { 0% { transform: translateY(10px) scale(.9) rotate(-4deg); } 60% { transform: translateY(-12px) scale(1.05) rotate(3deg); } 100% { transform: none; } }
+.au .au-bubble { z-index: 2; background: #fffdf7; border-width: 3px; box-shadow: 3px 3px 0 #1b1818; margin-bottom: 14px; }
+.au-adv { position: absolute; width: 38px; opacity: .85; pointer-events: none; filter: drop-shadow(0 2px 1px rgb(0 0 0 / .3)); } .au-adv.a0 { right: 8px; top: 6px; transform: rotate(12deg); } .au-adv.a1 { left: 118px; top: 4px; transform: rotate(-10deg); } .au-adv.a2 { right: 56px; top: 10px; width: 30px; } .au-adv.a3 { left: 6px; top: 8px; width: 30px; transform: rotate(-14deg); }
+.au-barra { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .au-conta { font: 400 15px 'Anton', 'Impact', sans-serif; text-transform: uppercase; color: var(--ac); }
+.au-passos { display: flex; gap: 6px; flex-wrap: wrap; } .au-passos i { width: 28px; height: 28px; border-radius: 50% !important; border: 2.5px solid #1b1818; background: #fff; display: grid; place-items: center; font: 800 13px var(--body); font-style: normal; } .au-passos i.done { background: #3fae6b; color: #fff; } .au-passos i.now { background: var(--ac); color: var(--ac2); transform: scale(1.18); box-shadow: 2px 2px 0 #1b1818; }
+.au-cor-bateria .au-box, .au-cor-teclado .au-box, .au-cor-violao .au-box { border-color: var(--ac); box-shadow: 4px 4px 0 var(--ac); }
+.au-chuva { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; } .au-chuva img { position: absolute; top: -40px; width: 30px; animation: au-cai 2.2s ease-in forwards; } @keyframes au-cai { to { transform: translateY(220px) rotate(240deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .au-paul.pula, .au-chuva img { animation: none; } }
+
+/* cartão azul do Paul compacto na aba Jogos: o primeiro olhar já mostra os jogos */
+.pd.pd-compacto { grid-template-columns: 76px 1fr; gap: 8px; margin: 6px 16px; padding: 8px 10px; } .pd-compacto .pd-img { width: 76px; height: 76px; } .pd-compacto .pd-text { font-size: 14px; line-height: 1.25; } .pd-compacto .pd-tag { font-size: 11px; } .pd-compacto .pd-btn { min-height: 34px; padding: 4px 10px; font-size: 12px; }
