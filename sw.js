@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v491';
+const VERSION = 'beaterista-v492';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -56,7 +56,7 @@ const EXTRA = [
   'assets/jogos/icones/relatorio.svg',
   'assets/jogos/icones/ritmo.svg',
   'assets/jogos/icones/stop.webp',
-  'js/jogos/vivo-logic.js', 'js/jogos/vivo-ui.js', 'js/jogos/copia.js', 'js/jogos/paulta-vivo.js', 'js/jogos/groove.js', 'js/jogos/fantasma.js', 'assets/jogos/icones/copia.svg', 'assets/jogos/icones/pauta-vivo.svg', 'assets/jogos/icones/groove.svg', 'assets/jogos/icones/fantasma.svg', 'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
+  'js/ultimo-jogo.js', 'js/jogos/vivo-logic.js', 'js/jogos/vivo-ui.js', 'js/jogos/copia.js', 'js/jogos/paulta-vivo.js', 'js/jogos/groove.js', 'js/jogos/fantasma.js', 'assets/jogos/icones/copia.svg', 'assets/jogos/icones/pauta-vivo.svg', 'assets/jogos/icones/groove.svg', 'assets/jogos/icones/fantasma.svg', 'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
   'assets/jogos/icones/velha.webp',
   'assets/jogos/instrumentos/acordeao.webp',
   'assets/jogos/instrumentos/baixo.webp',

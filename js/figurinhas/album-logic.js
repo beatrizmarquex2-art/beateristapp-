@@ -90,10 +90,26 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   }
   return out;
 }
+/**
+ * Sem figurinha repetida (pedido da Bea): troca cada carta que o aluno JÁ TEM (colada ou na mão), ou que veio duas vezes no mesmo pacote,
+ * por uma que ainda falta. Procura primeiro do mesmo tipo (mesma seção e mesma letra do código), depois da mesma seção, depois qualquer uma que falte.
+ * Só repete quando o álbum inteiro já está completo. `tem` = Set dos códigos que o aluno já tem; `r` = gerador de números (0 a 1).
+ */
+export function semRepetir(catalog, codes, tem, r = Math.random) {
+  const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const usados = new Set(tem); const out = [];
+  for (const code of codes) {
+    if (!usados.has(code)) { usados.add(code); out.push(code); continue; }
+    const e = by[code]; const livres = catalog.filter((c) => !usados.has(c.codigo));
+    const pool = [livres.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), livres.filter((c) => e && c.secao === e.secao), livres].find((l) => l.length);
+    const novo = pool ? pool[Math.floor(r() * pool.length)].codigo : code; usados.add(novo); out.push(novo);
+  }
+  return out;
+}
 /** Abre o pacote: as figurinhas vão pra "mão" (ainda não coladas). Abrir de novo o mesmo id não faz nada. */
 export function openPack(state, catalog, packId) {
   if (!state.granted?.includes(packId) || state.opened?.[packId]) return { state, codes: state.opened?.[packId] || null, fresh: false };
-  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12); const codes = drawPack(catalog, packId, PACK_SIZE, s.seed); // sorteio diferente pra cada aluno
+  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12); let codes = drawPack(catalog, packId, PACK_SIZE, s.seed); // sorteio diferente pra cada aluno
+  if (!String(packId).startsWith('dado:')) codes = semRepetir(catalog, codes, new Set([...Object.keys(s.inv).filter((c) => s.inv[c] > 0), ...Object.keys(s.pasted)]), rng(hashSeed(`troca|${packId}|${s.seed}`))); // presente da Bea (cartas escolhidas) vem como ela mandou
   s.opened[packId] = codes; for (const c of codes) s.inv[c] = (s.inv[c] || 0) + 1;
   return { state: s, codes, fresh: true };
 }

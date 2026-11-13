@@ -1,5 +1,6 @@
 // Álbum de figurinhas da Beaterista: coleções, espaços numerados, pacotes, colar, detalhe com zoom.
 // Progresso salvo no registro 'figurinhas-album' do app (IndexedDB; sincroniza pela conta como o resto, quando há login).
+import { ultimoJogo } from '../ultimo-jogo.js';
 import { h, todayKey } from '../util.js';
 import { banner, sheet, toast } from '../ui.js';
 import * as store from '../store.js';
@@ -28,7 +29,8 @@ const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: red
 
 export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
-  host.append(banner('Álbum', 'cole todas as figurinhas'), wrap);
+  const ult = ultimoJogo(); // pra ninguém se perder: o Álbum mostra o caminho de volta pro jogo em que o aluno estava
+  host.append(banner('Álbum', 'cole todas as figurinhas'), ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
   const ID = D.albumId(); // o álbum é de quem está com o nome agora
   let state = { ...L.emptyState(), ...D.albumDados() };
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;

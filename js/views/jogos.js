@@ -35,6 +35,7 @@ import { LETRAS } from '../letras-nomes.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
 import { musicaPausa, musicaVolta, sync as sincronizarMusica } from '../jogos/musica.js';
+import { lembrar as lembrarUltimo, ultimoJogo } from '../ultimo-jogo.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -142,14 +143,18 @@ function atalhoSala() {
     voltas.length ? listaCurta(voltas.map(([id, rota, u]) => h('button', { class: 'btn small jg-volta-mini', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`))) : null, msg);
 }
 
-/* ---- sair sem querer: lembra o jogo em andamento e a tela de Jogos oferece "continuar" ---- */
-const JOGO_ULT = 'beaterista-jogo-ultimo'; const VALE = 12 * 3600 * 1000;
+/* ---- último jogo: todo jogo aberto fica lembrado e a tela de Jogos (e o Álbum) oferecem "voltar pro jogo" ---- */
+const JOGO_ULT = 'beaterista-jogo-antigo'; const VALE = 12 * 3600 * 1000;
+/** Qual jogo do catálogo é este endereço? (o mais específico ganha: #/dicas/caca antes de #/dicas) */
+function jogoDoEndereco(hash) { const hsh = String(hash || ''); let melhor = null; for (const x of SECTIONS.flatMap(([, l]) => l)) { const k = keyOf(x); if ((hsh === k || hsh.startsWith(`${k}/`) || hsh.startsWith(`${k}?`)) && (!melhor || k.length > keyOf(melhor).length)) melhor = x; } return melhor; }
+function anotarUltimo() { const x = jogoDoEndereco(location.hash); if (x) lembrarUltimo(location.hash, x[1], x[0]); }
+if (typeof window !== 'undefined' && window.addEventListener) { window.addEventListener('hashchange', anotarUltimo); anotarUltimo(); }
 function lembrarJogo(id, nome) { try { localStorage.setItem(JOGO_ULT, JSON.stringify({ id, nome, at: Date.now() })); } catch { /* sem armazenamento */ } }
 function esquecerJogo(id) { try { const u = JSON.parse(localStorage.getItem(JOGO_ULT) || 'null'); if (u && u.id === id) localStorage.removeItem(JOGO_ULT); } catch { /* ok */ } }
 const jogoUltimo = () => { try { const u = JSON.parse(localStorage.getItem(JOGO_ULT) || 'null'); return u && u.id && Date.now() - (u.at || 0) < VALE ? u : null; } catch { return null; } };
 function atalhoContinuar() {
-  const u = jogoUltimo(); if (!u) return null; const e = BY[u.id]; if (!e) return null;
-  return h('a', { class: 'btn primary wide jg-continuar', href: `#/jogos/${u.id}` }, `continuar: ${u.nome}`);
+  const u = ultimoJogo(); if (!u) return null;
+  return h('a', { class: 'btn primary wide jg-continuar', href: u.href }, `voltar pro último jogo: ${u.nome}`);
 }
 
 function catalog(host) {
