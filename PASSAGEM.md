@@ -577,3 +577,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 ## Nuvem do Paul não cobre mais os botões (nov/2026, v488)
 - Bug: a nuvem de pensamento (link) aparecia sobre os botões de jogar e levava pro Radar Musical sem querer. Agora a nuvem deixa o toque passar e só o botãozinho **"ver ›"** (`.pt-ver`, `js/paul-talk.js`) abre o link. Teste: `tests/e2e/paul-nuvem-nao-cobre.mjs` (jogos-letras e lojinha-paul ajustados).
+
+## Jogos: carta do Paul em rodízio e roleta mais limpa (nov/2026, v490)
+- A carta "o Paul conta" da aba Jogos muda a cada volta (`cartaDaVez` em `js/paul-dicas.js`, rodízio no aparelho `beaterista-paul-rodizio`, intercala convites do app e frases). Cartas novas (só alunos): combo, avaliação no Google, atividades extra (★), cartinhas, jogos novos, instrumentos pra tocar, curiosidades de músicos, aulinha do Paul, dicionário, cada uma com pose `p-*` própria.
+- Álbum > Pacotes: "girar a roleta" vem logo depois do texto; as missões com print e o check-in ficam recolhidos em "ganhe mais ★" embaixo do botão (`.fig-mais`). A lista de regras (texto ilegível no tema neon) foi tirada, e a caixinha "animações reduzidas" voltou ao tamanho normal. Teste: `tests/e2e/jogos-paul-rodizio.mjs`.

@@ -42,6 +42,16 @@ export const DICAS = [
   ['lojinha', 'tem ebook novo na Lojinha! são materiais digitais: dá pra estudar na tela e imprimir pra treinar no papel.', 'n-walk', '#/lojinha', 'ver a lojinha', 'aluno'],
   ['promoção black friday', 'PROMOÇÃO BLACK FRIDAY: o ebook Bateria Start está pela metade do preço! 44 páginas pra começar do zero.', 'n-amp', '#/lojinha', 'aproveitar', 'aluno'],
   ['jogos', 'bora jogar? tem bingo, velha, STOP, quebra-cabeça e mais. escolhe um e me desafia!', 'n-skate', '#/jogos', 'ver os jogos', 'aluno'],
+  // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
+  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
+  ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
+  ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
+  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
+  ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
+  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
+  ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
+  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
+  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procura no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
   // beaterista, redes
   ['siga a Bea', 'segue a Bea no instagram pra ver os treinos e as novidades da Beaterista!', 'n-walk', IG, 'seguir no instagram'],
   ['canal', 'curtiu? deixa o like e se inscreve no canal do YouTube da Bea!', 'n-skate', YT, 'ver o canal'],
@@ -80,6 +90,16 @@ function sortear() {
   last = bag.pop(); return DICAS[last];
 }
 
+const ROD = 'beaterista-paul-rodizio';
+/** Carta da vez: anda 1 a cada vez que a aba é aberta (guarda o ponto no aparelho), então nunca repete a de antes. O vídeo novo entra na fila como as outras. */
+function cartaDaVez() {
+  const ok = DICAS.filter((d) => d[5] !== 'aluno' || document.documentElement.classList.contains('aluno-on'));
+  const app = ok.filter((d) => d[5] === 'aluno' || d[3] === VIDEO_URL), gerais = ok.filter((d) => !(d[5] === 'aluno' || d[3] === VIDEO_URL));
+  const lista = []; for (let i = 0; i < Math.max(app.length, gerais.length); i++) { if (app[i]) lista.push(app[i]); if (gerais[i]) lista.push(gerais[i]); } // intercala: convite do app, frase, convite, frase…
+  let n = 0; try { n = Number(localStorage.getItem(ROD)) || 0; localStorage.setItem(ROD, String(n + 1)); } catch { n = Math.floor(Math.random() * lista.length); }
+  return lista[n % lista.length];
+}
+
 /** Cartão do Paul. `soBeaterista` não é usado: serve igual pro aluno e pra Bea. */
 export function paulDica() {
   const img = h('img', { class: 'pd-img', alt: '', 'aria-hidden': 'true', draggable: 'false', decoding: 'async' });
@@ -95,8 +115,8 @@ export function paulDica() {
       href ? h('a', { class: 'pd-btn go', href, ...(interno ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, rot || 'abrir') : null);
   };
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
-  mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo
+  const inicial = cartaDaVez(); mostrar(inicial); // uma carta diferente a cada vez que a aba é aberta
   // modelo "quadrinho": Paul grande saindo da borda, etiqueta do assunto e balão de fala
-  sec = h('section', { class: `pd pd-q${DICAS[0][3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
+  sec = h('section', { class: `pd pd-q${inicial[3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
   return sec;
 }
