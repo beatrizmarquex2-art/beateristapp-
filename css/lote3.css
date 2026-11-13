@@ -722,7 +722,7 @@ html.kb-open .hands-bar, body.rz-lock .hands-bar { display: none !important; }
 @media (prefers-reduced-motion:reduce){.fig-giro{animation:none}}
 /* dentro de um jogo: sem barra de baixo (toque perto da borda caía na Lojinha) e sem o espaço reservado pra ela */
 html.em-jogo .bottom-nav { display: none !important; }
-html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
+html.em-jogo #app { padding-bottom: calc(76px + var(--safe-b)); }
 /* auditoria de leitura (nov/2026): texto miúdo maior, abas que não cortam em tela estreita, teclas com letra legível */
 .jgx-cell b, .jg-card b{font-size:12.5px}
 .tr-card small, .dc-pick small, .bv-tit, .pf-codigo small, .mem-theme b{font-size:12px}
@@ -901,3 +901,7 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 
 /* cartão azul do Paul compacto na aba Jogos: o primeiro olhar já mostra os jogos */
 .pd.pd-compacto { grid-template-columns: 76px 1fr; gap: 8px; margin: 6px 16px; padding: 8px 10px; } .pd-compacto .pd-img { width: 76px; height: 76px; } .pd-compacto .pd-text { font-size: 14px; line-height: 1.25; } .pd-compacto .pd-tag { font-size: 11px; } .pd-compacto .pd-btn { min-height: 34px; padding: 4px 10px; font-size: 12px; }
+
+/* botão fixo de voltar à lista, dentro dos jogos (a barra de baixo continua escondida lá, pra o toque perto da borda não cair na Lojinha) */
+.voltar-jogos { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(14px + var(--safe-b)); z-index: 60; display: inline-flex; align-items: center; min-height: 44px; padding: 6px 18px; border: 2.5px solid #1b1818; border-radius: 999px !important; background: #fffdf8; color: #1b1818; font: 800 15px var(--body); text-decoration: none; box-shadow: 3px 3px 0 #1b1818; }
+.voltar-jogos[hidden] { display: none !important; } body.rz-lock .voltar-jogos, html:not(.em-jogo) .voltar-jogos, html.kb-open .voltar-jogos { display: none !important; }
