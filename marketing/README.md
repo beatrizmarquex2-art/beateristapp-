@@ -25,7 +25,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 
 | IMG_7953 | gravado de lado (`layout: rot`, `transpose: 1`) | 13s | "explorar a bateria": bateria desenhada na tela, mão tocando nas peças e vendo o nome | iniciante / primeira bateria |
 | IMG_7979 | vertical | 14s | "achar na pauta": nota na pauta, Paul no canto; "fase concluída" com estrelas aos 9-11s | leitura de partitura |
-| IMG_8350 | vertical, meio escuro | 9s | jogo de ritmo com pistas coloridas (verde, vermelho, azul); confirmar com a Bea se é Beat Hero ou Piano Hero | ritmo |
+| IMG_8350 | vertical, meio escuro | 9s | Beat Hero (pistas verde, vermelha e azul), confirmado pelas fotos de nov/2026 | ritmo |
 | IMG_9250 | vertical, escuro | 14s | aluno com estudo de ritmo (ouvir/tocar), baquetas e pad; cabeça de costas | reserva pro "ouve, lê, toca" |
 | IMG_9254 | horizontal | 8s | jogo da memória musical, cartas virando | corte de tour |
 | IMG_9025 | (reenviado, mesmo arquivo) | 10s | é o quebra-cabeça; fica em pé com `layout: rot`, `transpose: 2` (com 1 sai de cabeça pra baixo) | corte de tour |
@@ -50,6 +50,13 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | paul_sentado_baqueta_transparente | PNG sem fundo | Paul pra montar artes |
 | figurinhas_paul_instrumentos, figurinhas_paul_dourado | pranchas | figurinhas e adesivos pra stories |
 | colorir_instrumentos_de_percussao | 4:5 preto e branco | isca grátis: página pra imprimir e colorir |
+| IMG_9270, IMG_9264, IMG_9261, IMG_9066 (fotos de tela) | fotos | mapa de fases, Taiko (rudimentos), grade de jogos, níveis do Toca Aqui. **Mostram nome de aluno no topo ("oi, ..."): só usar recortadas** |
+| IMG_9086, IMG_9056 | fotos | Beat Hero (pistas verde/vermelha/azul = bumbo, caixa, chimbal; "PERFEITO+", precisão 99%) |
+| IMG_9085 | foto | Toca Aqui no celular (tocar direto / ouvir e tocar / só ouvir) |
+| IMG_9084, IMG_9087, IMG_9059 | prints | caça-palavras, jogo da velha com quiz, cartas do jogo da memória |
+| IMG_9146 | print | app da Bea (professora), não é a área do aluno |
+| IMG_9152 | print | rascunho de página "pra pais e responsáveis" |
+| IMG_8866, IMG_8865 | banners 3:1 | Passe Beaterista R$ 49,90 e Lojinha Beaterista |
 
 No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
@@ -80,6 +87,8 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 13_explorar_a_bateria | iniciante | "a primeira bateria cabe no tablet" |
 | 15_memoria_da_tela_pro_papel | pais e profs | memória no tablet e depois impressa, R$ 19,90 |
 | 16_beaterista_mood | bateristas (perfil da Bea) | "os exercícios que eu estudo e levo pro palco", 55 páginas + 20 de bônus, R$ 29,90 |
+| 17_beat_hero | geral | "parece videogame. é aula de ritmo", cada cor é uma peça da bateria |
+| passe_carrossel_1 a 7 (imagens 1080x1350) | geral | "o que tem dentro do passe beaterista?"; gerado por `marketing/reels/carrossel_passe.js RECORTES SAIDA` |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |

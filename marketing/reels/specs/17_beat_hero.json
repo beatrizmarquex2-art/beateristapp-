@@ -1,0 +1,5 @@
+{"name":"17_beat_hero","tag":"beat hero","audio":"beat","segs":[
+ {"src":"IMG_9086","layout":"img","cx":0.5,"dur":2.5,"lines":["PARECE VIDEOGAME.","*É AULA DE RITMO"]},
+ {"src":"IMG_8350","ss":2,"dur":3,"lines":["CADA COR É","UMA PEÇA","*DA BATERIA"],"gamma":1.2},
+ {"src":"IMG_8350","ss":5.5,"dur":2.5,"lines":["ACERTOU NO TEMPO?","*PERFEITO+"],"gamma":1.2}],
+ "end":{"tag":"jogos + estudos + álbum","h":["BEAT","HERO"],"sub":"comece grátis hoje"}}
