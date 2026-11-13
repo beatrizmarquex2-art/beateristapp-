@@ -34,6 +34,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Marketing e reels (nov/2026)
+- Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
+- Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).
+- Os vídeos crus **não ficam no repo** (público, tem aluno criança). Pasta no Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)". A Bea vai mandando mais clipes; a cada leva, atualizar o catálogo.
+- A Bea avisou que o formato "como tocar X em 1 minuto" não funciona mais. Vídeo com criança só com autorização dos pais.
+
 ## Supabase (projeto `beaterista-app`, id `fnxgjxatremjdxaqmswu`)
 - App da Bea: tabela `records` (sincronização) com RLS e lista `app_allowed_emails`.
 - Área dos alunos (tudo em `supabase/*.sql`, já aplicado):
