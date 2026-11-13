@@ -17,8 +17,8 @@ const css=`@font-face{font-family:Anton;src:url(file://${A}/fonts/Anton-latin.wo
 .c{position:absolute;left:70px;right:70px;top:150px}
 .c h1{margin-top:26px;font:400 150px/1.02 Anton;color:#f4ecdf}.c h1 b{font-weight:400;color:#f6b93b}
 .c p{margin-top:30px;font:700 44px/1.3 HG;color:#f4ecdf}
-.card{position:absolute;left:70px;right:70px;top:210px;background:#f8f0de;border:5px solid #101f47;box-shadow:14px 14px 0 #c0152f;padding:54px 56px 60px;transform:rotate(-1.2deg)}
-.who{font:800 36px HG;color:#a3192c}
+.card{position:absolute;left:70px;right:70px;top:250px;background:#f8f0de;border:5px solid #101f47;box-shadow:14px 14px 0 #c0152f;padding:54px 56px 60px;transform:rotate(-1.2deg)}
+.who{font:800 42px HG;color:#a3192c}
 .q{margin-top:22px;font:600 SIZEpx/1.28 HG;color:#101f47}.q b{background:#f6b93b;font-weight:800;padding:0 6px}
 .aspas{position:absolute;left:70px;top:70px;font:400 200px/1 Anton;color:#f6b93b;height:120px}
 .n{position:absolute;right:40px;bottom:36px;font:800 30px HG;color:#fff;background:rgba(255,255,255,.14);padding:8px 18px;border-radius:999px}
@@ -28,7 +28,7 @@ const css=`@font-face{font-family:Anton;src:url(file://${A}/fonts/Anton-latin.wo
 .paul{position:absolute;right:6px;bottom:-4px;width:470px}.selo{position:absolute;left:60px;bottom:56px;width:132px}.marca{position:absolute;left:205px;bottom:46px;width:290px}`;
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const n=Q.length+2;const H=[];
  H.push(`<div class="top"></div><div class="c"><div class="tag">curso bateria start</div><h1>O QUE DIZ<br>QUEM JÁ<br><b>ESTUDA COMIGO</b></h1><p>6 mensagens de alunos,<br>do jeito que chegaram</p></div><img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"><div class="n">1/${n} →</div>`);
- Q.forEach((q,i)=>{const len=q[1].replace(/<[^>]+>/g,'').length;const size=len>130?58:len>90?66:78;
+ Q.forEach((q,i)=>{const len=q[1].replace(/<[^>]+>/g,'').length;const size=len>130?72:len>90?86:104;
   H.push(`<style>.q{font-size:${size}px}</style><div class="top"></div><div class="aspas">“</div><div class="card"><div class="who">${q[0]}</div><div class="q">${q[1]}</div></div><div class="rod">alunos da beaterista</div><div class="n">${i+2}/${n} →</div>`);});
  H.push(`<div class="top"></div><div class="c" style="top:110px"><div class="tag">curso online de bateria</div><h1 style="font-size:132px">DO ZERO À<br>SUA PRIMEIRA<br><b>MÚSICA</b></h1><p style="font-size:40px;margin-top:20px">mesmo sem bateria em casa</p><div class="cta">QUERO COMEÇAR · LINK NA BIO</div><div class="u">beaterista.com.br</div><div class="hd">@beaterista_</div></div><img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"><img class="paul" src="file://${__dirname}/paul_final.png">`);
  for(let i=0;i<H.length;i++){const f=path.join(O,'t.html');fs.writeFileSync(f,`<style>${css.replace('SIZEpx','66px')}</style>`+H[i]);await p.goto('file://'+f);await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(250);await p.screenshot({path:path.join(O,`depoimentos_${i+1}.jpg`),type:'jpeg',quality:92});}
