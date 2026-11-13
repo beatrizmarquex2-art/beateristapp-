@@ -862,8 +862,17 @@ html.aluno-on #app { padding-bottom: calc(96px + var(--safe-b)); }
 .fig-mao-img { width: 100%; padding: 0; border: 0; background: none; cursor: pointer; } .fig-mao-img svg { width: 100%; height: auto; display: block; }
 .fig-mao-it .btn { width: 100%; }
 
-/* aba Jogos > jogar com amigos: duas opções em chips pequenos (entrar com código / criar sala) */
-.jg-sala-atalho .jg-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; } .jg-sala-atalho .jg-seg button { min-height: 34px; padding: 4px 12px; font-size: 13px; }
-.jg-sala-jogos { display: grid; gap: 4px; }
-.jg-sala-atalho .jg-seg button { border: 2px solid rgb(var(--ink-rgb)); background: var(--card); color: rgb(var(--ink-rgb)); border-radius: 6px; box-shadow: 2px 2px 0 rgb(var(--ink-rgb)); font-weight: 700; cursor: pointer; }
-.jg-sala-atalho .jg-seg button[aria-pressed="true"] { background: rgb(var(--ink-rgb)); color: var(--card); box-shadow: none; transform: translate(2px, 2px); }
+/* aba Jogos > "bora jogar junto?": mesa mostarda, Paul saindo pela borda, 2 botões grandes e os jogos em bolinhas */
+section.card.jg-sala-atalho { position: relative; background: #f2c14e !important; border: 3px solid #1b1818; border-radius: 20px 8px 20px 8px; box-shadow: 5px 5px 0 #a8182e; color: #1b1818; margin-top: 22px; display: grid; gap: 8px; }
+.jg-sala-t { font: 400 26px/1 'Anton', 'Impact', sans-serif; text-transform: uppercase; color: #10234a; padding-right: 110px; }
+.jg-sala-sub { margin: 0; font: 400 17px/1.15 'Gochi Hand', var(--hand); max-width: 62%; }
+.jg-sala-paul { position: absolute; right: 6px; top: -22px; width: 104px; height: auto; transform: rotate(5deg); pointer-events: none; filter: drop-shadow(2px 3px 0 rgb(0 0 0 / .18)); }
+.jg-sala-big { display: grid; gap: 8px; margin-top: 4px; }
+.jg-sala-btn { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: #fff; color: #10234a; border: 2.5px solid #1b1818; border-radius: 12px; padding: 10px 12px; box-shadow: 3px 3px 0 #1b1818; cursor: pointer; font: inherit; }
+.jg-sala-btn b { display: block; font: 400 19px/1.1 'Anton', 'Impact', sans-serif; text-transform: uppercase; } .jg-sala-btn small { display: block; font: 600 12px/1.3 var(--body); color: #555; }
+.jg-sala-ic { flex: none; width: 40px; height: 40px; border-radius: 50% !important; display: grid; place-items: center; background: #a8182e; color: #fff; font-size: 20px; font-style: normal; } .jg-sala-btn.v2 .jg-sala-ic { background: #10234a; }
+.jg-sala-btn[aria-expanded="true"] { background: #10234a; color: #fff; box-shadow: none; transform: translate(3px, 3px); } .jg-sala-btn[aria-expanded="true"] small { color: #dbe3f3; }
+.jg-sala-jogos { display: grid; gap: 6px; } .jg-sala-jogos small { font: 600 13px/1.3 var(--body); }
+.jg-sala-chips { display: flex; flex-wrap: wrap; gap: 6px; } .jg-sala-chips button { display: flex; align-items: center; gap: 6px; background: #f3eadc; color: #1b1818; border: 2px solid #1b1818; border-radius: 999px; padding: 3px 12px 3px 4px; font: 700 13px var(--body); cursor: pointer; min-height: 34px; }
+.jg-sala-chips img { width: 26px; height: 26px; object-fit: contain; }
+.jg-sala-atalho .jg-entrar { margin-top: 2px; }
