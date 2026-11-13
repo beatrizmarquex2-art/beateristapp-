@@ -10,7 +10,7 @@
 import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { session } from '../session.js';
-import { roboMarkup } from './robo.js';
+import { corSrc, poseDe, poseDoJogo, stkSrc, ELEMENTOS } from '../paul-cor.js';
 import { temaButton } from '../campanha/tema.js';
 import { sprite, DECOR } from './mapa-art.js';
 import { mapSfx, soundOn, setSound } from './mapa-sfx.js';
@@ -55,6 +55,14 @@ export function mountProgressionMap(host, cfg) {
     const band = h('section', { class: 'mp-band', 'data-r': c.id, 'data-i': ci, style: `top:${pct(b.y0, L.H)};height:${pct(b.y1 - b.y0, L.H)}${col}`, 'aria-label': c.name });
     const sign = h('div', { class: 'mp-sign', style: `top:${pct(b.y0 + 14, L.H)}` }, h('small', {}, `região ${ci + 1}`), h('b', {}, c.name));
     world.append(band, sign);
+    // adesivos da Bea (notas, estrelas, vinil, fones…) pelas bordas de cada região, longe do caminho e dos desenhos pixel (sem encostar neles)
+    const ocupados = decorOf(c).map(([, sd, f]) => [sd === 'l' ? 'l' : 'r', b.y0 + 84 + (b.y1 - b.y0 - 84) * f]);
+    for (let k = 0; k < 6; k++) {
+      const name = ELEMENTOS[(ci * 5 + k * 3 + gameId.length) % ELEMENTOS.length]; const side = (ci + k) % 2 ? 'l' : 'r'; let y = b.y0 + 110 + (b.y1 - b.y0 - 150) * ((k * 0.17 + 0.06 + ci * 0.11) % 0.95);
+      for (let t = 0; t < 8 && ocupados.some(([sd, yy]) => sd === side && Math.abs(yy - y) < 52); t++) y += 34; // empurra pra baixo até achar um vão
+      if (y > b.y1 - 30) continue; ocupados.push([side, y]);
+      const d = h('img', { class: `mp-stk ${side}${k % 2 ? ' b' : ''}`, src: stkSrc(name), alt: '', 'aria-hidden': 'true', draggable: 'false', style: `top:${pct(y, L.H)};--rot:${(k % 2 ? 1 : -1) * (6 + k * 3)}deg` }); world.append(d);
+    }
     decorOf(c).forEach(([name, side, f], k) => {
       const span = b.y1 - b.y0 - 84; const y = b.y0 + 84 + span * f;
       const d = h('span', { class: `mp-deco ${side}${k % 2 ? ' b' : ''}`, 'data-s': name, style: `top:${pct(y, L.H)}` }); d.innerHTML = sprite(name); world.append(d);
@@ -82,7 +90,7 @@ export function mountProgressionMap(host, cfg) {
 
   /* ---- Paul ---- */
   const paul = h('div', { class: 'mp-paul' }); const say = h('span', { class: 'mp-say', hidden: true });
-  const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = roboMarkup(m, cfg.tier || 0); };
+  const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = `<img class="mp-cor" src="${corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; };
   paul.append(paulImg, say); world.append(paul);
   let saidT = 0; const speak = (t, ms = 2400) => { say.textContent = t; say.hidden = false; S.cancel(saidT); saidT = S.later(() => { say.hidden = true; }, ms); };
   const place = (i) => { const w = world.clientWidth || 360; const k = w / L.W; const p = pos$(i); const side = p.x > 180 ? -1 : 1; paul.style.transform = `translate(${(p.x + side * 62) * k}px, ${(p.y - 40) * k}px)`; paul.dataset.at = String(i); paul.classList.toggle('flip', side < 0); };

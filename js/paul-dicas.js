@@ -2,12 +2,15 @@
 // Usado nas abas Jogos e Perfil. Cada toque em "outra" mostra a próxima (sorteia sem repetir até passar por todas).
 import { h } from './util.js';
 import { chirp } from './paul-talk.js';
+import { corSrc, POSES } from './paul-cor.js';
+// Paul colorido por assunto do cartão (adesivos da Bea); sem assunto conhecido, sorteia um
+const POSE_ASSUNTO = [[/vídeo|canal|siga/i, 'microfone'], [/combo|lojinha|promoção/i, 'baquetas-pra-cima'], [/google|avalia/i, 'ouvindo'], [/atividades|cartinhas|álbum/i, 'baquetas-pra-cima'], [/jogos/i, 'pandeiro'], [/instrumentos|toque simples|estudar em casa/i, 'bateria'], [/curiosidades/i, 'lendo-partitura'], [/aulinha/i, 'estudando'], [/dicionário/i, 'estudando'], [/outros instrumentos/i, 'guitarra'], [/frase/i, 'ouvindo'], [/parceiros/i, 'teclado'], [/beaterista/i, 'metronomo']];
+const poseDe = (assunto) => { const m = POSE_ASSUNTO.find(([r]) => r.test(assunto)); return m ? m[1] : POSES[Math.floor(Math.random() * POSES.length)]; };
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer', SITE = 'https://beaterista.com.br';
 // vídeo novo do canal: aparece SEMPRE como primeira carta e volta no sorteio. Pra trocar, mude só id e título.
 export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok Brasil' };
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
-const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
@@ -109,7 +112,7 @@ export function paulDica() {
     const [t, tx, pose, href, rot] = it;
     if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL);
     const interno = href && String(href).startsWith('#');
-    img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
+    img.src = corSrc(poseDe(t));
     tag.textContent = t; text.textContent = tx;
     row.replaceChildren(h('button', { class: 'pd-btn', type: 'button', onclick: () => { chirp(); mostrar(sortear()); } }, 'outra ▸'),
       href ? h('a', { class: 'pd-btn go', href, ...(interno ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, rot || 'abrir') : null);

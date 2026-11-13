@@ -103,3 +103,11 @@ html.lite .mp-pimg, html.lite .st-current .mp-disc { animation: none; }
 .mp-anim .mp-deco[data-s="bush"], .mp-anim .mp-deco[data-s="flower"], .mp-anim .mp-deco[data-s="cactus"], .mp-anim .mp-deco[data-s="vaso"], .mp-anim .mp-deco[data-s="sprout"] { animation: mp-sway 4.2s ease-in-out infinite; }
 .mp-anim .mp-deco[data-s="flower"], .mp-anim .mp-deco[data-s="sprout"] { animation-delay: -1.7s; }
 @keyframes mp-sway { 0%, 100% { transform: translateY(-50%) rotate(-2deg); } 50% { transform: translateY(-50%) rotate(2deg); } }
+
+/* adesivos coloridos da Bea nas bordas do mapa + Paul colorido (PNG, sem moldura) */
+.mp-stk { position: absolute; z-index: 1; width: 12cqw; height: auto; transform: translateY(-50%) rotate(var(--rot, 0deg)); filter: drop-shadow(0 0.8cqw 0.8cqw rgb(0 0 0 / .35)); pointer-events: none; opacity: .96; } .mp-stk.l { left: 1.5cqw; } .mp-stk.r { right: 1.5cqw; } .mp-stk.b { width: 15cqw; }
+.mp-anim .mp-stk { animation: mp-stk-bob 3.6s ease-in-out infinite; } .mp-anim .mp-stk.b { animation-delay: -1.7s; }
+@keyframes mp-stk-bob { 50% { transform: translateY(calc(-50% - 1.2cqw)) rotate(calc(var(--rot, 0deg) * -1)); } }
+.mp-cor { display: block; width: 100%; height: auto; } .mp-paul { width: 21cqw; }
+html.lite .mp-stk { animation: none; }
+@media (prefers-reduced-motion: reduce) { .mp-anim .mp-stk { animation: none; } }
