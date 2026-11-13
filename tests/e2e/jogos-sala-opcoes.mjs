@@ -1,0 +1,13 @@
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
+await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
+const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 700 }); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
+await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch {} });
+await p.goto(`${url}/aluno.html#/jogos`); await sleep(2500);
+const card = p.locator('.jg-sala-atalho'); await card.scrollIntoViewIfNeeded();
+check('começa só com as 2 opções', (await p.locator('.jg-sala-op button').count()) === 2 && !(await p.locator('.jg-entrar').isVisible()));
+await card.screenshot({ path: '/tmp/jogos-sala-1.png' });
+await p.getByRole('button', { name: 'entrar com código' }).click(); check('abre o campo do código', await p.locator('.jg-code-in').isVisible()); await card.screenshot({ path: '/tmp/jogos-sala-2.png' });
+await p.getByRole('button', { name: 'criar sala' }).click(); check('criar sala mostra os jogos e esconde o campo', (await p.locator('.jg-sala-chips button').count()) === 7 && !(await p.locator('.jg-code-in').isVisible())); await card.screenshot({ path: '/tmp/jogos-sala-3.png' });
+await p.locator('.jg-sala-chips button', { hasText: 'Uno' }).click(); await sleep(600); check('chip abre o jogo', (await p.evaluate(()=>location.hash))==='#/jogos/cartas');
+check('sem erros', errs.length===0, errs.join('|')); await browser.close(); srv.close(); done();

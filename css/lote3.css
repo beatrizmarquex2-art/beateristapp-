@@ -861,3 +861,9 @@ html.aluno-on #app { padding-bottom: calc(96px + var(--safe-b)); }
 .fig-mao-it { display: grid; gap: 6px; justify-items: center; text-align: center; font-size: 13px; min-width: 0; } .fig-mao-it.rep { opacity: .75; }
 .fig-mao-img { width: 100%; padding: 0; border: 0; background: none; cursor: pointer; } .fig-mao-img svg { width: 100%; height: auto; display: block; }
 .fig-mao-it .btn { width: 100%; }
+
+/* aba Jogos > jogar com amigos: duas opções em chips pequenos (entrar com código / criar sala) */
+.jg-sala-atalho .jg-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; } .jg-sala-atalho .jg-seg button { min-height: 34px; padding: 4px 12px; font-size: 13px; }
+.jg-sala-jogos { display: grid; gap: 4px; }
+.jg-sala-atalho .jg-seg button { border: 2px solid rgb(var(--ink-rgb)); background: var(--card); color: rgb(var(--ink-rgb)); border-radius: 6px; box-shadow: 2px 2px 0 rgb(var(--ink-rgb)); font-weight: 700; cursor: pointer; }
+.jg-sala-atalho .jg-seg button[aria-pressed="true"] { background: rgb(var(--ink-rgb)); color: var(--card); box-shadow: none; transform: translate(2px, 2px); }

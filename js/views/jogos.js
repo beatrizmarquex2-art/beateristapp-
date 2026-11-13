@@ -121,8 +121,16 @@ function atalhoSala() {
     prepararEAbrir(r[0], r[1], c, false);
   }
   const voltas = JOGOS_SALA.map(([id, rota]) => [id, rota, salaLembrada(id)]).filter((x) => x[2]);
-  return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'entrar numa sala' },
-    h('b', { class: 'jg-sala-t' }, 'tem código de sala?'), h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar')),
+  // opções em chips pequenos: "entrar com código" abre o campo; "criar sala" lista os jogos que têm sala (a sala é criada dentro do jogo, no modo 2 celulares)
+  const entrar = h('div', { class: 'jg-actions row jg-entrar', hidden: true }, inp, h('button', { class: 'btn primary', type: 'button', onclick: ir }, 'entrar'));
+  const criar = h('div', { class: 'jg-sala-jogos', hidden: true }, h('small', { class: 'muted' }, 'escolha o jogo e toque em "2 celulares" pra criar a sala e passar o código:'),
+    h('div', { class: 'jg-seg jg-sala-chips' }, ...[['cartas', '#/jogos/cartas'], ['velha', '#/jogos/velha'], ['stop', '#/jogos/stop'], ['cara-musical', '#/jogos/cara'], ['memoria', '#/jogos/memart'], ['quebra', '#/jogos/quebra'], ['bingo', '#/jogos/bingo']]
+      .map(([id, rota]) => h('button', { type: 'button', onclick: () => { location.hash = rota; } }, id === 'bingo' ? 'bingo' : id === 'quebra' ? 'quebra-cabeça' : NOME_SALA[id] || id))));
+  const abas = h('div', { class: 'jg-seg jg-sala-op', role: 'group', 'aria-label': 'jogar com amigos' });
+  const op = (rot, alvo, outro) => h('button', { type: 'button', 'aria-pressed': 'false', onclick: (e) => { const on = alvo.hidden; alvo.hidden = !on; outro.hidden = true; for (const b of abas.children) b.setAttribute('aria-pressed', 'false'); e.currentTarget.setAttribute('aria-pressed', String(on)); if (on && alvo === entrar) inp.focus(); } }, rot);
+  abas.append(op('entrar com código', entrar, criar), op('criar sala', criar, entrar));
+  return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'jogar com amigos' },
+    h('b', { class: 'jg-sala-t' }, 'jogar com amigos'), abas, entrar, criar,
     voltas.length ? listaCurta(voltas.map(([id, rota, u]) => h('button', { class: 'btn small jg-volta-mini', type: 'button', onclick: () => prepararEAbrir(id, rota, u.code, true) }, `voltar pra sala ${u.code} · ${NOME_SALA[id] || id}`))) : null, msg);
 }
 
