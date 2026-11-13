@@ -16,8 +16,11 @@ check('Uno Musical continua na lista', /Uno Musical/.test(txt));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
 check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agora são o Paul falando)', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|★ Favoritos');
 await sleep(1800);
+check('na aba Jogos o Paul fala só pelo cartão azul (sem balão solto por cima)', (await page.locator('.pt-cloud').count()) === 0 && (await page.locator('.pd-q').count()) === 1);
+await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
+check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agora são o Paul falando)', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|★ Favoritos');
+await sleep(1800);
 const nuvem = await page.evaluate(() => { const c = document.querySelector('.pt-cloud'); return c ? { t: c.textContent, h: ((c.querySelector('.pt-ver') || c).getAttribute('href')) } : null; });
-check('o Paul fala numa nuvem de pensamento ao abrir a aba Jogos (jogo novo ou mais estrelas), com link', !!nuvem && /jogo novo|estrela|★/.test(nuvem.t) && /^#\//.test(nuvem.h || ''), JSON.stringify(nuvem));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-paul.png' : '/tmp/jogos-paul.png' });
 for (const [nome, hash] of [['Cruzadinha', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Radar Musical', '#/dicas/caca']]) {
   await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);

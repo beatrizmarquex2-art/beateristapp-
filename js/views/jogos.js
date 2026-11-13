@@ -168,8 +168,7 @@ function catalog(host) {
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica(), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
-  // O Paul fala numa nuvem de pensamento (só pros alunos): uma vez é um jogo novo, na outra é "mais chances de ganhar estrelas" (alterna a cada visita)
-  if (aluno) { const KP = 'beaterista-jogos-pensou'; let n = 0; try { n = Number(localStorage.getItem(KP) || 0) || 0; localStorage.setItem(KP, String(n + 1)); } catch { /* sem armazenamento */ } const lista = NOVIDADES_JOGOS[n % 2]; pensou = setTimeout(() => think(lista[Math.floor(Math.random() * lista.length)], 8000), 1400); }
+  // (o Paul já fala pelo cartão azul do topo, que muda a cada volta; o balão solto não aparece mais em cima dele)
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
   const offDrag = dragSort(grid, { itemSel: '.jgx-cell', onDone: (newKeys) => {
     const p = prefs(); const all = SECTIONS.flatMap(([, l]) => l).filter((x) => !(aluno && x[6] === 'bea')).map(keyOf);

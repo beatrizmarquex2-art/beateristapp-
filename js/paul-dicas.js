@@ -11,6 +11,16 @@ const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
+  // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
+  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
+  ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
+  ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
+  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
+  ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
+  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
+  ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
+  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
+  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procura no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
   // frases musicais e curiosidades
   ['curiosidade', 'a pausa também é música: o silêncio entre as notas dá o balanço do groove.', 'n-amp'],
   ['curiosidade', 'o bumbo marca o chão, a caixa marca o meio e o chimbal é o relógio do groove.', 'n-stick'],
@@ -42,16 +52,6 @@ export const DICAS = [
   ['lojinha', 'tem ebook novo na Lojinha! são materiais digitais: dá pra estudar na tela e imprimir pra treinar no papel.', 'n-walk', '#/lojinha', 'ver a lojinha', 'aluno'],
   ['promoção black friday', 'PROMOÇÃO BLACK FRIDAY: o ebook Bateria Start está pela metade do preço! 44 páginas pra começar do zero.', 'n-amp', '#/lojinha', 'aproveitar', 'aluno'],
   ['jogos', 'bora jogar? tem bingo, velha, STOP, quebra-cabeça e mais. escolhe um e me desafia!', 'n-skate', '#/jogos', 'ver os jogos', 'aluno'],
-  // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
-  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
-  ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
-  ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
-  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
-  ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
-  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
-  ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
-  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
-  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procura no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
   // beaterista, redes
   ['siga a Bea', 'segue a Bea no instagram pra ver os treinos e as novidades da Beaterista!', 'n-walk', IG, 'seguir no instagram'],
   ['canal', 'curtiu? deixa o like e se inscreve no canal do YouTube da Bea!', 'n-skate', YT, 'ver o canal'],
