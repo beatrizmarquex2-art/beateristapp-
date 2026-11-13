@@ -1,0 +1,8 @@
+{"name":"11_tour_5_jogos","tag":"jogos de música","audio":"beat","segs":[
+ {"src":"IMG_8350","ss":0.5,"dur":2.5,"lines":["5 JOGOS QUE","ENSINAM MÚSICA","*DE VERDADE"],"gamma":1.2},
+ {"src":"IMG_9255","ss":6,"dur":2,"lines":["*1. RITMO","TOCAR NO TEMPO"]},
+ {"src":"IMG_7979","ss":2,"dur":2,"lines":["*2. ACHAR NA PAUTA","LER PARTITURA"]},
+ {"src":"IMG_7953","ss":3,"dur":2,"layout":"rot","transpose":1,"lines":["*3. EXPLORAR A BATERIA","NOME DE CADA PEÇA"]},
+ {"src":"IMG_9254","ss":2,"dur":2,"layout":"h","lines":["*4. MEMÓRIA MUSICAL","ACHAR OS PARES"]},
+ {"src":"IMG_9025","ss":5,"dur":2,"layout":"rot","transpose":1,"lines":["*5. QUEBRA-CABEÇA","MONTAR E DESCOBRIR"]}],
+ "end":{"tag":"jogos + estudos + álbum","h":["+ DE 15 JOGOS","E ESTUDOS"],"sub":"comece grátis hoje"}}

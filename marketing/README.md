@@ -23,9 +23,15 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 | IMG_9268 | vertical, som real de baqueta | 23s | aluno lê a partitura no tablet e toca no pad (0-10s e 15-18s são os melhores) | prova: da tela pro instrumento |
 | IMG_9269 | vertical | 16s | aluno de camisa amarela jogando; perfil do rosto aparece a partir de 10s | "parece só joguinho" |
 
+| IMG_7953 | gravado de lado (`layout: rot`, `transpose: 1`) | 13s | "explorar a bateria": bateria desenhada na tela, mão tocando nas peças e vendo o nome | iniciante / primeira bateria |
+| IMG_7979 | vertical | 14s | "achar na pauta": nota na pauta, Paul no canto; "fase concluída" com estrelas aos 9-11s | leitura de partitura |
+| IMG_8350 | vertical, meio escuro | 9s | jogo de ritmo com pistas coloridas (verde, vermelho, azul); confirmar com a Bea se é Beat Hero ou Piano Hero | ritmo |
+| IMG_9250 | vertical, escuro | 14s | aluno com estudo de ritmo (ouvir/tocar), baquetas e pad; cabeça de costas | reserva pro "ouve, lê, toca" |
+| IMG_9254 | horizontal | 8s | jogo da memória musical, cartas virando | corte de tour |
+| IMG_9025 | (reenviado, mesmo arquivo) | 10s | é o quebra-cabeça; fica em pé com `layout: rot`, `transpose: 1` | corte de tour |
 | IMG_9299 a IMG_9304 (fotos) | foto vertical 3:4 | - | Bateria Kids impresso em espiral, na mão, com o banner da escola atrás: pato/gato/borboleta/chocolate (2 fotos), formas de tocar na caixa, partitura, vamos tocar, xilofone | reel e carrossel do Bateria Kids (`layout: img`) |
 
-Crianças aparecem em 9246, 9248, 9249, 9268 e 9269: **confirmar autorização dos pais antes de postar**.
+Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autorização dos pais antes de postar**.
 
 ## Como montar um reel
 ```
@@ -47,6 +53,9 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 07_prof_3_atividades | professores | 3 atividades prontas pra aula de amanhã |
 | 08_loop_tempo_de_tela | pais | 7s em loop, "o tempo de tela que eu deixo" |
 | 09_lojinha_imprimir | pais e profs | da tela pro papel, combo robôterista R$ 79,90 |
+| 11_tour_5_jogos | geral | "5 jogos que ensinam música de verdade", lista numerada |
+| 12_achar_na_pauta | pais | "seu filho lendo partitura. e achando que é jogo" |
+| 13_explorar_a_bateria | iniciante | "a primeira bateria cabe no tablet" |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
 
