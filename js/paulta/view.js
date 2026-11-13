@@ -116,7 +116,7 @@ async function finishPhase(ctx, res, spec) {
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
   const big = !!worldEv || gainedTitle.length;
   bot.set(out.passed ? (big ? 'crown' : stars >= 2 ? 'cheer' : 'happy') : 'oops', out.passed ? (worldEv ? 'mundo concluído! 🎉' : 'fase concluída!') : 'quase lá! olha o que treinar');
-  if (big) sfx.fanfare(); else if (out.passed) sfx.ok();
+  if (big) sfx.fanfare(true); else if (out.passed) sfx.fanfare();
   const next$ = out.passed && n < WORLDS[world].count;
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(pct)), h('small', {}, '%'));
   const starsEl = h('div', { class: 'kx-stars', 'aria-label': `${stars} de 3 estrelas` }, ...[1, 2, 3].map((k) => h('span', { class: `kx-star${k <= stars ? ' on' : ''}`, style: `--d:${k * 0.25}s` }, '★')));

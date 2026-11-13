@@ -511,7 +511,7 @@ html.lite .st-notes{display:none}html.lite .st-stop,html.lite .st-play{animation
 @keyframes cxRing{from{opacity:1;scale:.4}to{opacity:0;scale:7}}
 @keyframes cxFall{from{translate:0 0;rotate:0deg;opacity:1}to{translate:var(--dx) 620px;rotate:var(--r);opacity:.9}}
 /* tela inicial: as 10 figuras */
-.cx-legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 6px;margin:6px 0 12px}
+.cx-legend{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 4px;margin:6px 0 12px}
 .cx-leg{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;color:inherit;font:inherit;padding:2px 0;min-height:44px;cursor:pointer}
 .cx-leg .cx-card{--cw:min(14vw,64px)}.cx-leg small{font-size:10px;line-height:1.15;text-align:center}
 @media (min-width:700px){.cx{--cw:88px}.cx-leg .cx-card{--cw:72px}.cx-leg small{font-size:12px}}
@@ -961,6 +961,13 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .kd-vic{min-width:46px;min-height:40px;font-size:22px;padding:2px 8px}
 .bv-modos:has(.bv-ic){display:flex;gap:8px;flex-wrap:wrap}.bv-modo.bv-ic{width:auto;min-width:48px;min-height:44px;padding:4px 10px;display:inline-grid;place-items:center}
 .bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+
+/* acerto no jogo da velha: verde com ✓ (o vermelho parecia erro) */
+.jg-msg.ok,.jg-game .jg-msg.ok{color:#1c7a3c}.jg-dark .jg-msg.ok{color:#8be39b}
+.st-fixas{margin:4px 0 10px;padding-left:18px;font-size:14px;display:grid;gap:3px}
+
+/* botão UNO pequeno, na coluna da cor, embaixo do som */
+.cx-uno.sm{min-width:0;min-height:30px;padding:0 12px;font-size:13px;border-width:2px}.cx-uno.sm::after{inset:-4px;border-width:2px}
 .qz-fig{min-height:84px;display:grid;place-items:center}.qz-fig .cx-sym{width:64px;height:64px}
 .lc{display:grid;gap:4px}.lc-resto{display:grid;gap:4px}.lc-resto[hidden]{display:none}
 .lc-seta{justify-self:start;min-height:28px;padding:2px 10px;border:0;border-radius:99px;background:rgba(20,17,26,.08);color:inherit;font:700 12px var(--body,inherit);cursor:pointer}
@@ -1024,6 +1031,16 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* pad do Toca Aqui sem desenho no meio: só os anéis */
 .jg-toca .tr-pad:not(.mic){background:radial-gradient(circle at 50% 50%,transparent 0 22%,rgba(138,26,48,.16) 22.5% 23.5%,transparent 24% 40%,rgba(138,26,48,.12) 40.5% 41.5%,transparent 42%),radial-gradient(circle at 50% 46%,#fffdf7 0%,#fbf7ee 45%,#efe4cf 100%);justify-items:center;align-content:end}
 .jg-toca .tr-pad:not(.mic) small{margin-bottom:14px;font-size:14px}
+/* ícones dos modos (opção 3: linha azul + toque vermelho, em bolinha). Vale em todos os jogos. */
+.ic-bq{width:26px;height:26px}.ic-bq svg{stroke-width:2}.ic-bq .ac{stroke:#d3122f}.ic-bq .fa{fill:#d3122f;stroke:none}
+.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border-radius:50%;display:inline-grid;place-items:center;border:2.5px solid #17365B;background:#fffdf7;color:#17365B;box-shadow:none}
+.jg-seg button.jg-ic .ic-bq,.mem-ic .ic-bq,.bv-modo.bv-ic .ic-bq{width:28px;height:28px}
+.jg-seg button.jg-ic.on,button.mem-ic.on,.bv-modo.bv-ic.on{background:#17365B;border-color:#17365B;color:#fff;box-shadow:none}
+.jg-seg button.jg-ic.on .ic-bq .ac,.mem-ic.on .ic-bq .ac,.bv-modo.bv-ic.on .ic-bq .ac{stroke:#ffd23f}
+.jg-seg button.jg-ic.on .ic-bq .fa,.mem-ic.on .ic-bq .fa,.bv-modo.bv-ic.on .ic-bq .fa{fill:#ffd23f}
+.cm-root .jg-seg button.jg-ic{background:transparent;color:#fffdf8;border-color:rgba(255,253,248,.9)}.cm-root .jg-seg button.jg-ic .ic-bq .ac{stroke:#ff8a98}.cm-root .jg-seg button.jg-ic .ic-bq .fa{fill:#ff8a98}
+.cm-root .jg-seg button.jg-ic.on{background:#fffdf8;color:#17365B}.cm-root .jg-seg button.jg-ic.on .ic-bq .ac{stroke:#d3122f}.cm-root .jg-seg button.jg-ic.on .ic-bq .fa{fill:#d3122f}
+.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{border-radius:50% !important}
 
 /* Toca Aqui: abas do modo + aleatório em cima do mapa */
 .tm-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 6px}
@@ -1087,16 +1104,6 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix .fx-duas{display:flex;align-items:center;justify-content:center;gap:10px;font:800 22px var(--body,inherit)}.jg-figurix .fx-duas .fx-fig{width:70px}
 .jg-figurix .fx-txt{font-size:13px;text-align:center;line-height:1.15}
 .jg-figurix .fx-mem{grid-template-columns:repeat(4,minmax(0,1fr))}
-/* ícones dos modos (opção 3: linha azul + toque vermelho, em bolinha). Vale em todos os jogos. */
-.ic-bq{width:26px;height:26px}.ic-bq svg{stroke-width:2}.ic-bq .ac{stroke:#d3122f}.ic-bq .fa{fill:#d3122f;stroke:none}
-.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{width:46px;height:46px;min-width:46px;min-height:46px;padding:0;border-radius:50%;display:inline-grid;place-items:center;border:2.5px solid #17365B;background:#fffdf7;color:#17365B;box-shadow:none}
-.jg-seg button.jg-ic .ic-bq,.mem-ic .ic-bq,.bv-modo.bv-ic .ic-bq{width:28px;height:28px}
-.jg-seg button.jg-ic.on,button.mem-ic.on,.bv-modo.bv-ic.on{background:#17365B;border-color:#17365B;color:#fff;box-shadow:none}
-.jg-seg button.jg-ic.on .ic-bq .ac,.mem-ic.on .ic-bq .ac,.bv-modo.bv-ic.on .ic-bq .ac{stroke:#ffd23f}
-.jg-seg button.jg-ic.on .ic-bq .fa,.mem-ic.on .ic-bq .fa,.bv-modo.bv-ic.on .ic-bq .fa{fill:#ffd23f}
-.cm-root .jg-seg button.jg-ic{background:transparent;color:#fffdf8;border-color:rgba(255,253,248,.9)}.cm-root .jg-seg button.jg-ic .ic-bq .ac{stroke:#ff8a98}.cm-root .jg-seg button.jg-ic .ic-bq .fa{fill:#ff8a98}
-.cm-root .jg-seg button.jg-ic.on{background:#fffdf8;color:#17365B}.cm-root .jg-seg button.jg-ic.on .ic-bq .ac{stroke:#d3122f}.cm-root .jg-seg button.jg-ic.on .ic-bq .fa{fill:#d3122f}
-.jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{border-radius:50% !important}
 
 /* Detetive Note: marcador do tempo nos modos de desenho (escolha da Bea: as casas acendem) */
 .jg-detetive .dn-wrap{position:relative;margin:10px 0}

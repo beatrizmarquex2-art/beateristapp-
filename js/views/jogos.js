@@ -11,6 +11,7 @@ import { silence } from '../audio.js';
 import * as CODE from '../codigo.js';
 import { listaCurta } from '../lista-curta.js';
 import * as cartas from '../jogos/cartas.js';
+import * as un from '../jogos/un.js';
 import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
 import * as cara from '../jogos/cara.js';
@@ -29,7 +30,7 @@ import * as AC from '../acesso.js';
 import { LETRAS } from '../letras-nomes.js';
 import { acharJogoDaSala, definirSalaAuto, salaLembrada, JOGOS_SALA } from '../jogos/online.js';
 import { setGame, getGame } from '../jogos/base.js';
-import { musica } from '../jogos/musica.js';
+import { musicaPausa, musicaVolta, sync as sincronizarMusica } from '../jogos/musica.js';
 
 const IMG = 'assets/jogos/icones/';
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
@@ -39,6 +40,7 @@ const GAMES = [
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
   ['rudimentos', 'Taiko', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
+  ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · robô, mesmo celular ou 2 celulares'],
   ['quizuno', 'Quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
   ['bingo', 'Bingo', 'bingo.webp', bingo],
   ['velha', 'Jogo da velha', 'velha.webp', velha],
@@ -49,7 +51,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -66,7 +68,7 @@ const SECTIONS = [
   ]],
   ['Cartas e tabuleiro', [
     inner('memart'),
-    ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
+    ...['cartas', 'un', 'velha', 'quebra', 'cara', 'stop'].map(inner), // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
   ['Palavras e quiz', [
     link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
@@ -188,15 +190,14 @@ function game(host, entry) {
   const [, title, , mod] = entry;
   const body = h('div', { class: 'jg-body' });
   const snd = h('button', { class: 'icon-btn jg-snd', type: 'button', 'aria-pressed': String(soundOn()), 'aria-label': soundOn() ? 'desligar som' : 'ligar som', onclick: () => {
-    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇'; if (soundOn()) mus.start(); else mus.stop();
+    setSound(!soundOn()); snd.setAttribute('aria-pressed', String(soundOn())); snd.setAttribute('aria-label', soundOn() ? 'desligar som' : 'ligar som'); snd.textContent = soundOn() ? '🔊' : '🔇'; sincronizarMusica();
   } }, soundOn() ? '🔊' : '🔇');
-  const mus = musica(entry[0]); // musiquinha de fundo, uma diferente pra cada jogo (some com o botão de som e na pausa)
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
   let pausa = null; let deVez = false; // deVez: a pessoa escolheu sair (não oferece "continuar")
-  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; if (soundOn()) mus.start(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const pausar = () => {
-    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } mus.stop(); body.inert = true;
+    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); body.inert = true;
     pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('h2', { class: 'hand' }, 'pausado ⏸'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide', type: 'button', onclick: despausar }, 'continuar'),
       h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
@@ -209,8 +210,7 @@ function game(host, entry) {
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);
-  if (soundOn()) mus.start();
-  return () => { mus.stop(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  return () => { musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */

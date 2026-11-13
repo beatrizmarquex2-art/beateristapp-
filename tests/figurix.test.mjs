@@ -27,7 +27,7 @@ test('árvore: semibreve e mínima prontas; quantas cabem numa semibreve', () =>
   assert.deepEqual(ARVORE.map((a) => a.cabem), [1, 2, 4, 8, 16]); assert.deepEqual(ARVORE.map((a) => a.pronto), [true, true, false, false, false]); for (const a of ARVORE) assert.ok(opcoesArvore(a.cabem).includes(a.cabem));
 });
 test('tetris: o lado certo tem o nome da figura que cai', () => { for (const n of [1, 2]) for (const it of itensTetris(n, 30)) { assert.notEqual(it.esq, it.dir); assert.equal(it[it.ok], it.fig); assert.ok(ids.includes(it.fig)); } });
-test('estrelas: sem erro 3, até 2 erros 2, mais que isso 1', () => { assert.deepEqual([0, 1, 2, 3, 9].map(estrelasFigurix), [3, 2, 2, 1, 1]); });
+test('estrelas igual à pauLta: 100% = 3, 80% = 2, 60% = 1, abaixo = 0 (acertos contra acertos + erros)', () => { assert.deepEqual([[8, 0], [8, 2], [8, 3], [8, 5], [8, 6], [5, 5]].map(([a, e]) => estrelasFigurix(a, e)), [3, 2, 1, 1, 0, 0]); });
 
 test('fases novas: rápida/lenta com mais opções nos níveis altos e resposta certa sempre única', () => {
   for (const nivel of [3, 4, 5, 6, 7]) for (const tipo of ['rapida', 'lenta']) for (let i = 0; i < 40; i++) { const q = rapidaLentaN(tipo, i, nivel); const b = q.figs.map((f) => FIG_BY[f].beats); assert.equal(q.figs.length, nivel >= 6 ? 5 : nivel >= 4 ? 4 : 3); assert.equal(FIG_BY[q.ok].beats, tipo === 'rapida' ? Math.min(...b) : Math.max(...b)); }

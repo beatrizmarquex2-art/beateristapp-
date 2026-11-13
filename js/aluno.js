@@ -45,6 +45,8 @@ import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
 import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
+import { initMusica } from './jogos/musica.js';
+initMusica(); // música de fundo dos jogos (escolhida pela Bea)
 import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as toque from './views/toque.js';

@@ -21,7 +21,7 @@ const tocar = (beats) => { try { audio(); tone(beats, 90); } catch { /* sem som 
 export function mount(host) {
   const root = h('div', { class: 'jg jg-figurix' }); host.replaceChildren(root);
   const S = session(); const sfx = mapSfx(); let off = null; let gone = false; let jogando = false;
-  let fase = 1; let erros = 0; const salvo = getGame('figurix'); let mundo = MUNDOS.some((m) => m.id === salvo.mundo) ? salvo.mundo : MUNDOS[0].id;
+  let fase = 1; let erros = 0; let acertos = 0; const salvo = getGame('figurix'); let mundo = MUNDOS.some((m) => m.id === salvo.mundo) ? salvo.mundo : MUNDOS[0].id;
   const estOf = (n) => ((getGame('figurix').est || {})[n] || 0);
   const guarda = (n, v) => { const g = getGame('figurix'); setGame('figurix', { ...g, est: { ...(g.est || {}), [n]: v } }); };
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } S.reset(); };
@@ -43,17 +43,21 @@ export function mount(host) {
   };
   const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
-  const acerto = (el) => { try { FB.win(el); } catch { /* ok */ } };
+  const acerto = (el) => { acertos++; try { FB.win(el); } catch { /* ok */ } };
   const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } };
-  const comeca = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
+  const comeca = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
 
   /* ---------- fim da fase ---------- */
   const fim = () => {
-    limpa(); jogando = false; const est = estrelasFigurix(erros); const antes = estOf(fase);
+    limpa(); jogando = false; const est = estrelasFigurix(acertos, erros); const antes = estOf(fase);
+    if (est === 0) { // menos de 60% de acertos: não conclui, tenta de novo
+      sfx.play('click'); root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'quase lá!'), h('p', { class: 'jg-p' }, `você acertou ${acertos} de ${acertos + erros} tentativas. com 60% ou mais você ganha a primeira estrela.`),
+        h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa'))); return;
+    }
     if (est > antes) { guarda(fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('figurix', est - antes)).catch(() => {}); }
     sfx.play('win');
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
-      h('p', { class: 'jg-p' }, erros ? `${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' sem errar nenhum, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
+      h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' acertando tudo de primeira, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
       h('div', { class: 'jg-actions' }, fase < FASES ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null, h('button', { class: 'btn', type: 'button', onclick: () => comeca(fase) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 

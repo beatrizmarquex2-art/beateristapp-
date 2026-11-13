@@ -31,6 +31,7 @@ function xpGain(n,why){if(OPTS.onXp) OPTS.onXp(n,why)}
 function sfx(){}
 
 /* ===== áudio ===== */
+function rzFx(n){try{if(rzMuted()||!window.__bfx) return;window.__bfx('beat',n)}catch(e){}} /* sons próprios do Beat Hero (arcade), vêm de js/jogos/efeitos.js */
 function rzMuted(){try{return localStorage.getItem('bt-mute')==='1'}catch(e){return false}}
 const AE={
   ctx:null,master:null,rev:null,noise:null,wave:null,voices:new Map(),sustained:new Set(),sustain:false,plucks:new Map(),openHat:null,comp:null,ir:null,timers:new Set(),all:new Set(),
@@ -774,9 +775,9 @@ function rzSpecialFx(g,W,H,dpr){if(!RZ.sp||RZ.phase==='end') return;const s=rzSN
 /* contagem ao continuar depois da pausa */
 function rzCinFx(g,W,H,dpr){const c=RZ.cin;if(!c) return;const now=performance.now();if(now>=c.until){RZ.cin=null;return}const el=now-c.start;g.save();g.fillStyle='rgba(20,32,54,.42)';g.fillRect(0,0,W,H);
   if(el>=0){const i=Math.min(c.n-1,Math.floor(el/c.spb));const f=(el-i*c.spb)/c.spb;g.textAlign='center';g.fillStyle='#fff';g.font='900 '+((92-26*f)*dpr)+'px system-ui';g.fillText(String(c.n-i),W/2,H*.44);g.font='700 '+(18*dpr)+'px system-ui';g.fillText('voltando no tempo da música…',W/2,H*.52)}g.restore()}
-function rzJudge(n,res){const S=RZ.stats;n.res=res;n.at=performance.now();n.hit=res!=='miss';if(res!=='miss'&&n.star){try{const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur};S.specials=(S.specials||0)+1;AE.drum('crash',AE.ctx.currentTime,.6)}catch(e){}}
-  if(res==='miss'){S.miss++;S.combo=0;if(RZ.game==='setas') RZ.health=Math.max(0,RZ.health-.07);}
-  else{S[res]++;S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);const base={pp:100,perfect:90,great:60,good:40}[res];S.score+=base*rzMult()+(RZ.game==='beat'?Math.min(50,S.combo):0)*(rzSpOn()?2:1);if(RZ.game==='setas') RZ.health=Math.min(1,RZ.health+(res==='good'?.012:.025))}
+function rzJudge(n,res){const S=RZ.stats;n.res=res;n.at=performance.now();n.hit=res!=='miss';if(res!=='miss'&&n.star){try{const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur};S.specials=(S.specials||0)+1;AE.drum('crash',AE.ctx.currentTime,.6);rzFx('nota estrela')}catch(e){}}
+  if(res==='miss'){S.miss++;if(S.combo>=5) rzFx('perdeu a nota');S.combo=0;if(RZ.game==='setas') RZ.health=Math.max(0,RZ.health-.07);}
+  else{S[res]++;S.combo++;if(S.combo>0&&S.combo%10===0) rzFx('combo');S.maxCombo=Math.max(S.maxCombo,S.combo);const base={pp:100,perfect:90,great:60,good:40}[res];S.score+=base*rzMult()+(RZ.game==='beat'?Math.min(50,S.combo):0)*(rzSpOn()?2:1);if(RZ.game==='setas') RZ.health=Math.min(1,RZ.health+(res==='good'?.012:.025))}
   const txt=res!=='miss'&&n.star?'ESPECIAL ×2!':{pp:'PERFEITO+',perfect:'Perfeito',great:'Ótimo',good:'Bom',miss:'Errou'}[res];RZ.pops.push({lane:n.lane,txt,res,t:performance.now()});if(RZ.pops.length>10) RZ.pops.shift()}
 function rzTier(d){const W=RZ_WIN[RZ.diff];if(RZ.game==='beat'){const k=W.k||1;if(d<=.025*k) return 'pp';if(d<=.05*k) return 'perfect';if(d<=.09*k) return 'great';if(d<=.13*k) return 'good';return null}if(d<=W.pf) return 'perfect';if(d<=W.gd) return 'good';return null}
 /* toque fora do tempo (ou sem nota): ainda assim soa, uma nota da escala da música na pista tocada (silêncio faz a pessoa perder o fio) */
@@ -808,7 +809,7 @@ function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase=
   rzDraw();RZ.raf=requestAnimationFrame(rzFrame)}
 function rzEnd(lost){rzWake(false);document.body.classList.remove('rz-lock');clearInterval(RZ.iv);RZ.phase='end';AE.allOff();const S=RZ.stats;const tot=RZ.chart.filter(n=>!n.cpu).length||1;
   let acc;acc=(S.pp+S.perfect+S.great*.75+S.good*.5)/tot;S.acc=acc;S.lost=!!lost;
-  S.grade=lost?'—':acc>=.96&&!S.miss?'S':acc>=.9?'A':acc>=.78?'B':acc>=.6?'C':'D';S.stars=RZ.game==='beat'?(acc>=.95?3:acc>=.85?2:acc>=.65?1:0):0;
+  if(!lost) rzFx('fim da música');S.grade=lost?'—':acc>=.96&&!S.miss?'S':acc>=.9?'A':acc>=.78?'B':acc>=.6?'C':'D';S.stars=RZ.game==='beat'?(acc>=.95?3:acc>=.85?2:acc>=.65?1:0):0;
   const R=ensureRitmo();const k=rzKey();const prev=R.best[k];const val=S.score;S.record=!MISSION&&!lost&&(!prev||val>prev.score);if(S.record) R.best[k]={score:val,acc:Math.round(acc*100),grade:S.grade,stars:S.stars,at:nowIso()};if(!MISSION){R.plays++;save()}
   S.hallKey=rzKey();S.hallQ=false;S.hallDone=false;if(!MISSION&&!lost&&OPTS.hallTop&&OPTS.autoName&&OPTS.hallAdd&&S.score>0){var an=OPTS.autoName();if(an){var at0=nowIso();OPTS.hallAdd(S.hallKey,{name:an,score:S.score,acc:Math.round(acc*100),grade:S.grade,stars:S.stars,at:at0});S.hallDone=true;S.hallMe=at0+an}}else if(!MISSION&&!lost&&OPTS.hallTop){var ht=OPTS.hallTop(S.hallKey)||[];S.hallQ=S.score>0&&(ht.length<5||S.score>ht[ht.length-1].score)}
   try{sfx(lost||acc<.6?'lose':'win')}catch(e){}try{window.__bfb&&window.__bfb(lost||acc<.6?'lose':acc>=.9?'great':'win')}catch(e){}var played=RZ.A?RZ.A.dur-RZ.A.lead*16*RZ.A.st-1.5:0;S.long=RZ.game==='beat'&&played>=55&&!lost;
