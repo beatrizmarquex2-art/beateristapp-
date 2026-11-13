@@ -106,10 +106,10 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | jogos_ensinam_1 a 7 (imagens 1080x1350) | pais | "seu filho joga. olha o que ele treina", benefícios tirados da página Jogos Ensinam; spec em `specs_carrossel/` e gerador genérico `carrossel.js` |
 | 19_nao_e_so_bateria | geral | "não é só bateria": acordes de violão, guitarra, baixo e teclado, e tocar na tela |
 | 20_roleta_de_figurinhas | crianças e pais | "terminou o jogo? gira a roleta", abre com "sua foto vira figurinha" (figurinha da Bea), roleta e álbum, sem foto de banda |
-| depoimentos_1 a 8 (imagens 1080x1350) | iniciantes, perfil da Bea | os 6 depoimentos do Bateria Start, um por slide; `carrossel_depoimentos.js`. A Bea confirmou: Bateria Start é o curso dela (no site aparece como "Aprenda do Zero", R$ 79,90; preço do curso ainda não confirmado por ela, cartão final sem preço) |
+| depoimentos_1 a 8 (imagens 1080x1350) | iniciantes, perfil da Bea | os 6 depoimentos do Bateria Start, um por slide; `carrossel_depoimentos.js`. A Bea confirmou: Bateria Start é o curso dela (no site aparece como "Aprenda do Zero", R$ 79,90; a Bea confirmou R$ 79,90 em 13/nov; cartão final com preço) |
 | quiz_chimbal_1 a 3 (imagens 1080x1350) | geral, engajamento | "você acerta essa? comenta a resposta" com a pergunta do jogo da velha; formato repetível com outras perguntas (`specs_carrossel/quiz_chimbal.json`) |
-| 21_apostila_bateria_start | iniciantes | apostila do curso em promoção: R$ 14,90 (de R$ 29,90, Black Friday), 44 páginas. Trocar o preço quando a promoção acabar |
-| curso_start_1 a 6 (imagens 1080x1350) | iniciantes, perfil da Bea | "o que tem dentro do curso Bateria Start": módulos 3, 4, bônus e apostilas; cartão final sem preço (`specs_carrossel/curso_bateria_start.json`) |
+| 21_apostila_bateria_start | iniciantes | apostila do curso em promoção: R$ 14,90 (de R$ 29,90, Black Friday), 44 páginas. **A promoção vale só até 30/nov/2026**: depois disso não postar e trocar o preço pra R$ 29,90 |
+| curso_start_1 a 6 (imagens 1080x1350) | iniciantes, perfil da Bea | "o que tem dentro do curso Bateria Start": módulos 3, 4, bônus e apostilas; cartão final com R$ 79,90 (`specs_carrossel/curso_bateria_start.json`) |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
