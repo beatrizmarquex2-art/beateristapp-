@@ -1,4 +1,38 @@
-{"name":"13_explorar_a_bateria","tag":"pra quem tá começando","audio":"beat","segs":[
- {"src":"IMG_7953","ss":1,"dur":3,"layout":"rot","transpose":1,"lines":["A PRIMEIRA BATERIA","*CABE NO TABLET"]},
- {"src":"IMG_7953","ss":6,"dur":3,"layout":"rot","transpose":1,"lines":["TOCA NA PEÇA,","*APRENDE O NOME"]}],
- "end":{"tag":"jogos + estudos + álbum","h":["DA TELA","PRO INSTRUMENTO"],"sub":"comece grátis hoje"}}
+{
+ "name": "13_explorar_a_bateria",
+ "tag": "pra quem tá começando",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "IMG_7953",
+   "ss": 1,
+   "dur": 3,
+   "layout": "rot",
+   "transpose": 1,
+   "lines": [
+    "A PRIMEIRA BATERIA",
+    "*CABE NO TABLET"
+   ]
+  },
+  {
+   "src": "IMG_7953",
+   "ss": 6,
+   "dur": 3,
+   "layout": "rot",
+   "transpose": 1,
+   "lines": [
+    "TOCA NA PEÇA,",
+    "*APRENDE O NOME"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "jogos + estudos + álbum",
+  "h": [
+   "DA TELA",
+   "PRO INSTRUMENTO"
+  ],
+  "sub": "comece grátis hoje",
+  "paul": "baqueta"
+ }
+}

@@ -1,4 +1,41 @@
-{"name":"16_beaterista_mood","tag":"pra bateristas","audio":"beat","segs":[
- {"src":"capa_beaterista_mood","layout":"fit","dur":3,"lines":["OS EXERCÍCIOS","QUE EU ESTUDO","*E LEVO PRO PALCO"]},
- {"src":"post_mood_bonus","layout":"fit","y":600,"dur":3,"lines":["55 PÁGINAS","*+ 20 DE BÔNUS"]}],
- "end":{"tag":"ebook em pdf","h":["BEATERISTA","MOOD"],"price":"R$ 29,90","priceNote":"55 páginas<br>+ 20 de atividades","cta":"QUERO O MOOD · LINK NA BIO","url":"beaterista.com.br","handle":"@beaterista_","sub":"compra pela hotmart, pdf na hora"}}
+{
+ "name": "16_beaterista_mood",
+ "tag": "pra bateristas",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "capa_beaterista_mood",
+   "layout": "fit",
+   "dur": 3,
+   "lines": [
+    "OS EXERCÍCIOS",
+    "QUE EU ESTUDO",
+    "*E LEVO PRO PALCO"
+   ]
+  },
+  {
+   "src": "post_mood_bonus",
+   "layout": "fit",
+   "y": 600,
+   "dur": 3,
+   "lines": [
+    "55 PÁGINAS",
+    "*+ 20 DE BÔNUS"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "ebook em pdf",
+  "h": [
+   "BEATERISTA",
+   "MOOD"
+  ],
+  "price": "R$ 29,90",
+  "priceNote": "55 páginas<br>+ 20 de atividades",
+  "cta": "QUERO O MOOD · LINK NA BIO",
+  "url": "beaterista.com.br",
+  "handle": "@beaterista_",
+  "sub": "compra pela hotmart, pdf na hora",
+  "paul": "baqueta"
+ }
+}

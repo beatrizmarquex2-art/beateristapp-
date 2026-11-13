@@ -85,7 +85,10 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Precisa de ffmpeg, node com playwright e python com numpy.
 
 ## Cartão final (padrão pedido pela Bea em 13/nov/2026)
-- O desenho do Paul é cortado na cintura: ele entra **grande e encostado na borda de baixo** (`paul_final.png`), nunca solto no meio com o corte aparecendo.
+- **Pauls aprovados pela Bea (13/nov): caderno, baqueta, amplificador, case e atividades** (`marketing/reels/pauls/`). Usar por tema ou revezando; nos specs é o campo `end.paul`.
+  - baqueta: bateria, curso, apostila, Mood · atividades: material pra imprimir (kids, combo, memória, lojinha) · case: violão, acordes, "tocar na tela" · amplificador: jogos e passe · caderno: pais, leitura, álbum, quiz.
+  - O caderno é cortado na cintura: entra grande e encostado na borda de baixo. Os outros são de corpo inteiro e ficam inteiros no canto.
+  - Não usar: aceno, agachado, skate e breakdance (ela não escolheu).
 - Sempre com os dois logos ao lado dele: selo "Escola de Música Beaterista" (`assets/logo-512.png`) e a marca "Beaterista" com coroa (`assets/logo-menu-beaterista.webp`).
 - Mostra o endereço e o @ (`@jogos.beaterista`; no Mood, `@beaterista_`).
 - Os 3 primeiros vídeos (os da moldura) agora também têm spec (`layout: moldura`).

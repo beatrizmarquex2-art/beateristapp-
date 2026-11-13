@@ -1,5 +1,43 @@
-{"name":"20_roleta_de_figurinhas","tag":"álbum beaterista","audio":"beat","segs":[
- {"src":"T4_minha","layout":"img","dur":2.5,"lines":["SUA FOTO","*VIRA FIGURINHA"]},
- {"src":"T4_roleta","layout":"img","dur":2.5,"lines":["TERMINOU O JOGO?","*GIRA A ROLETA"]},
- {"src":"T4_album","layout":"img","dur":2.5,"lines":["GANHA FIGURINHA","*E COLA NO ÁLBUM"]}],
- "end":{"tag":"álbum de figurinhas","h":["JOGUE.","COLECIONE."],"sub":"131 figurinhas pra colar"}}
+{
+ "name": "20_roleta_de_figurinhas",
+ "tag": "álbum beaterista",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "T4_minha",
+   "layout": "img",
+   "dur": 2.5,
+   "lines": [
+    "SUA FOTO",
+    "*VIRA FIGURINHA"
+   ]
+  },
+  {
+   "src": "T4_roleta",
+   "layout": "img",
+   "dur": 2.5,
+   "lines": [
+    "TERMINOU O JOGO?",
+    "*GIRA A ROLETA"
+   ]
+  },
+  {
+   "src": "T4_album",
+   "layout": "img",
+   "dur": 2.5,
+   "lines": [
+    "GANHA FIGURINHA",
+    "*E COLA NO ÁLBUM"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "álbum de figurinhas",
+  "h": [
+   "JOGUE.",
+   "COLECIONE."
+  ],
+  "sub": "131 figurinhas pra colar",
+  "paul": "caderno"
+ }
+}

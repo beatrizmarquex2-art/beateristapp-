@@ -1,5 +1,48 @@
-{"name":"05_prova_ouve_le_toca","tag":"aula de bateria","audio":"raw","segs":[
- {"src":"IMG_9246","ss":0,"dur":3,"lines":["COMO MEUS ALUNOS","ESTUDAM RITMO:","*1. OUVEM"],"gamma":1.3,"bright":0.05},
- {"src":"IMG_9268","ss":6.2,"dur":3.5,"lines":["*2. LEEM","A PARTITURA"],"gamma":1.25},
- {"src":"IMG_9268","ss":15,"dur":3.5,"lines":["*3. TOCAM","DE VERDADE"],"gamma":1.25}],
- "end":{"tag":"jogos + estudos + álbum","h":["DA TELA","PRO INSTRUMENTO"],"sub":"comece grátis hoje"}}
+{
+ "name": "05_prova_ouve_le_toca",
+ "tag": "aula de bateria",
+ "audio": "raw",
+ "segs": [
+  {
+   "src": "IMG_9246",
+   "ss": 0,
+   "dur": 3,
+   "lines": [
+    "COMO MEUS ALUNOS",
+    "ESTUDAM RITMO:",
+    "*1. OUVEM"
+   ],
+   "gamma": 1.3,
+   "bright": 0.05
+  },
+  {
+   "src": "IMG_9268",
+   "ss": 6.2,
+   "dur": 3.5,
+   "lines": [
+    "*2. LEEM",
+    "A PARTITURA"
+   ],
+   "gamma": 1.25
+  },
+  {
+   "src": "IMG_9268",
+   "ss": 15,
+   "dur": 3.5,
+   "lines": [
+    "*3. TOCAM",
+    "DE VERDADE"
+   ],
+   "gamma": 1.25
+  }
+ ],
+ "end": {
+  "tag": "jogos + estudos + álbum",
+  "h": [
+   "DA TELA",
+   "PRO INSTRUMENTO"
+  ],
+  "sub": "comece grátis hoje",
+  "paul": "baqueta"
+ }
+}

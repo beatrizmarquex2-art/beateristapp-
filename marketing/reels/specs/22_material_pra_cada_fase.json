@@ -1,8 +1,77 @@
-{"name":"22_material_pra_cada_fase","tag":"lojinha beaterista","audio":"beat","segs":[
- {"src":"LOJA_bateria-kids","layout":"fit","y":640,"dur":1.5,"lines":["PRA CRIANÇA","*BATERIA KIDS"]},
- {"src":"LOJA_memoria","layout":"fit","y":640,"dur":1.5,"lines":["PRA FAMÍLIA","*JOGO DA MEMÓRIA"]},
- {"src":"LOJA_bateria-start","layout":"fit","y":640,"dur":1.5,"lines":["PRA COMEÇAR","*APOSTILA BATERIA START"]},
- {"src":"LOJA_curso-start","layout":"fit","dur":1.5,"lines":["PRA TOCAR DE VERDADE","*CURSO BATERIA START"]},
- {"src":"LOJA_violao","layout":"fit","y":640,"dur":1.5,"lines":["PRA QUEM QUER VIOLÃO","*VIOLÃO DO ZERO"]},
- {"src":"LOJA_mood","layout":"fit","y":640,"dur":1.5,"lines":["PRA EVOLUIR","*BEATERISTA MOOD"]}],
- "end":{"tag":"lojinha beaterista","h":["MATERIAL PRA","CADA FASE"],"price":false,"cta":"VEJA NA LOJINHA · LINK NA BIO","sub":"e-books, curso e jogos pra imprimir"}}
+{
+ "name": "22_material_pra_cada_fase",
+ "tag": "lojinha beaterista",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "LOJA_bateria-kids",
+   "layout": "fit",
+   "y": 640,
+   "dur": 1.5,
+   "lines": [
+    "PRA CRIANÇA",
+    "*BATERIA KIDS"
+   ]
+  },
+  {
+   "src": "LOJA_memoria",
+   "layout": "fit",
+   "y": 640,
+   "dur": 1.5,
+   "lines": [
+    "PRA FAMÍLIA",
+    "*JOGO DA MEMÓRIA"
+   ]
+  },
+  {
+   "src": "LOJA_bateria-start",
+   "layout": "fit",
+   "y": 640,
+   "dur": 1.5,
+   "lines": [
+    "PRA COMEÇAR",
+    "*APOSTILA BATERIA START"
+   ]
+  },
+  {
+   "src": "LOJA_curso-start",
+   "layout": "fit",
+   "dur": 1.5,
+   "lines": [
+    "PRA TOCAR DE VERDADE",
+    "*CURSO BATERIA START"
+   ]
+  },
+  {
+   "src": "LOJA_violao",
+   "layout": "fit",
+   "y": 640,
+   "dur": 1.5,
+   "lines": [
+    "PRA QUEM QUER VIOLÃO",
+    "*VIOLÃO DO ZERO"
+   ]
+  },
+  {
+   "src": "LOJA_mood",
+   "layout": "fit",
+   "y": 640,
+   "dur": 1.5,
+   "lines": [
+    "PRA EVOLUIR",
+    "*BEATERISTA MOOD"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "lojinha beaterista",
+  "h": [
+   "MATERIAL PRA",
+   "CADA FASE"
+  ],
+  "price": false,
+  "cta": "VEJA NA LOJINHA · LINK NA BIO",
+  "sub": "e-books, curso e jogos pra imprimir",
+  "paul": "atividades"
+ }
+}

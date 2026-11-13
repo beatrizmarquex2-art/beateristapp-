@@ -42,9 +42,12 @@ for i,s in enumerate(segs):
 if end:
     cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(tmp,'end.png')]
     fc+=f"[{k}:v]format=rgba,fade=in:st={clipT}:d=0.15:alpha=1[oe];[{prev}][oe]overlay=enable='gte(t,{clipT})'[ve];"; k+=1
-    # paul grande, encostado na borda de baixo (o desenho e cortado na cintura, entao a borda esconde o corte)
-    cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(here,'paul_final.png')]
-    fc+=f"[{k}:v]scale=680:-1,format=rgba[pl];[ve][pl]overlay=x=W-w-6:y='H-h+4+900*pow(max(0,1-(t-{clipT+0.1})/0.35),2)':enable='gte(t,{clipT+0.1})'[vout];"; k+=1
+    # paul do cartao final: "caderno" (cortado na cintura) entra grande e encostado na borda; os de corpo inteiro ficam inteiros no canto
+    paul=end.get('paul','caderno'); cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(here,'pauls',paul+'.png')]
+    sl=f"900*pow(max(0,1-(t-{clipT+0.1})/0.35),2)"
+    if paul=='caderno': sc,px,py="scale=680:-1","W-w-6",f"H-h+4+{sl}"
+    else: sc,px,py="scale=640:600:force_original_aspect_ratio=decrease","W-w-34",f"H-h-36+{sl}"
+    fc+=f"[{k}:v]{sc},format=rgba[pl];[ve][pl]overlay=x={px}:y='{py}':enable='gte(t,{clipT+0.1})'[vout];"; k+=1
 else:
     fc+=f"[{prev}]null[vout];"
 if spec.get('audio')=='raw':

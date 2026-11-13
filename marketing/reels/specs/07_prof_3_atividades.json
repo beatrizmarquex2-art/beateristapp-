@@ -1,6 +1,57 @@
-{"name":"07_prof_3_atividades","tag":"pra professores","audio":"beat","segs":[
- {"src":"IMG_9257","ss":0,"dur":2.5,"layout":"h","lines":["PROF: 3 ATIVIDADES","PRONTAS PRA SUA","*AULA DE AMANHÃ"]},
- {"src":"IMG_9257","ss":2.4,"dur":2.5,"layout":"h","lines":["*1. RITMO","NO TEMPO CERTO"]},
- {"src":"IMG_9260","ss":2,"dur":2.5,"layout":"h","lines":["*2. CAÇA-PALAVRAS","MUSICAL"]},
- {"src":"IMG_9249","ss":12,"dur":2.5,"layout":"h","lines":["*3. OUVIR","E TOCAR"]}],
- "end":{"tag":"jogos + estudos + álbum","h":["SUAS AULAS,","MAIS CRIATIVAS"],"sub":"teste grátis com seus alunos"}}
+{
+ "name": "07_prof_3_atividades",
+ "tag": "pra professores",
+ "audio": "beat",
+ "segs": [
+  {
+   "src": "IMG_9257",
+   "ss": 0,
+   "dur": 2.5,
+   "layout": "h",
+   "lines": [
+    "PROF: 3 ATIVIDADES",
+    "PRONTAS PRA SUA",
+    "*AULA DE AMANHÃ"
+   ]
+  },
+  {
+   "src": "IMG_9257",
+   "ss": 2.4,
+   "dur": 2.5,
+   "layout": "h",
+   "lines": [
+    "*1. RITMO",
+    "NO TEMPO CERTO"
+   ]
+  },
+  {
+   "src": "IMG_9260",
+   "ss": 2,
+   "dur": 2.5,
+   "layout": "h",
+   "lines": [
+    "*2. CAÇA-PALAVRAS",
+    "MUSICAL"
+   ]
+  },
+  {
+   "src": "IMG_9249",
+   "ss": 12,
+   "dur": 2.5,
+   "layout": "h",
+   "lines": [
+    "*3. OUVIR",
+    "E TOCAR"
+   ]
+  }
+ ],
+ "end": {
+  "tag": "jogos + estudos + álbum",
+  "h": [
+   "SUAS AULAS,",
+   "MAIS CRIATIVAS"
+  ],
+  "sub": "teste grátis com seus alunos",
+  "paul": "atividades"
+ }
+}
