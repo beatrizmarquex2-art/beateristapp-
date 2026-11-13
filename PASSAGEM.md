@@ -35,7 +35,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
 ## Rudimentix (era "Taiko", 13/nov/2026)
-- A Bea trocou o nome visível do jogo de rudimentos de "Taiko" pra **Rudimentix** (`js/views/jogos.js`, `js/paul-talk.js`, testes `jogos-letras` e `acesso`). Rota, arquivos e ícone não mudaram. Cache v490. Feito no branch `claude/great-goldberg-nfvgyx`; falta juntar na `main` e publicar a área dos alunos.
+- A Bea trocou o nome visível do jogo de rudimentos de "Taiko" pra **Rudimentix** (`js/views/jogos.js`, `js/paul-talk.js`, testes `jogos-letras` e `acesso`). Rota, arquivos e ícone não mudaram. Cache v490. Já está na `main` e publicado em jogos.beaterista.com.br (repo `beaterista-jogos`, v490) em 13/nov.
 
 ## Marketing e reels (nov/2026)
 - Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.

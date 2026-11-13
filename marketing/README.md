@@ -96,7 +96,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Fora: robô antigo (cinza, sem boné do Paul), personagens que não são o Paul, artes com número ou nome errado ("capa site 01" escrita BATERISTA START, "capa site 06" com 70 páginas, arte do combo com 182 páginas, arte da memória com 61 cartas).
 - A Bea não quer reel com áudio de depoimento.
 - Em 13/nov foram pra lixeira do Drive, a pedido dela, 6 artes erradas: combo com 182 páginas, memória com 61 cartas, robô antigo, capa site 01 (BATERISTA START), capa site 06 (70 páginas) e o banner "conheça o curso on-line" com letras sobrepostas.
-- **O jogo Taiko agora se chama Rudimentix** (escolha da Bea, 13/nov). Trocado no rótulo da lista de jogos, nas falas do Paul, nos testes e no reel 11; cache v490. Só o nome visível mudou: rota `#/jogos/rudimentos`, arquivos e o ícone `taiko.svg` seguem iguais. **Só neste branch: falta ir pra `main` e publicar a área dos alunos.**
+- **O jogo Taiko agora se chama Rudimentix** (escolha da Bea, 13/nov). Trocado no rótulo da lista de jogos, nas falas do Paul, nos testes e no reel 11; cache v490. Só o nome visível mudou: rota `#/jogos/rudimentos`, arquivos e o ícone `taiko.svg` seguem iguais. Já na `main` e publicado em jogos.beaterista.com.br (v490).
 
 ## Reels já feitos
 | arquivo | público | ideia |
