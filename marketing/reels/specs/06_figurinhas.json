@@ -1,5 +1,5 @@
 {"name":"06_album_figurinhas","tag":"álbum beaterista","audio":"beat","segs":[
- {"src":"IMG_9023","ss":0,"dur":3,"lines":["MEU ALUNO ESTUDA","PRA GANHAR","*FIGURINHA"]},
- {"src":"IMG_9023","ss":3,"dur":2.5,"lines":["TERMINOU O JOGO?","*GANHA PACOTE"]},
- {"src":"IMG_9269","ss":10,"dur":2,"lines":["QUANTO MAIS TREINA,","*MAIS COLECIONA"]}],
- "end":{"tag":"álbum de figurinhas","h":["+ DE 100","FIGURINHAS"],"sub":"músicos e bandas pra colecionar"}}
+ {"src":"IMG_9269","ss":3,"dur":2.5,"lines":["MEU ALUNO ESTUDA","PRA GANHAR","*FIGURINHA"]},
+ {"src":"T4_roleta","layout":"img","dur":2.5,"lines":["TERMINOU O JOGO?","*GIRA A ROLETA"]},
+ {"src":"T4_minha","layout":"img","dur":2.5,"lines":["E AINDA CRIA","*A PRÓPRIA"]}],
+ "end":{"tag":"álbum de figurinhas","h":["JOGUE.","COLECIONE."],"sub":"131 figurinhas pra colar"}}

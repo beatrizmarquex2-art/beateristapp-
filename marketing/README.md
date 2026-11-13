@@ -89,7 +89,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 01_pais_v2, 02_professores_v2, 03_passe_anual_v2 | pais / profs / geral | versões "anúncio" refeitas a partir dos vídeos com moldura |
 | 04_pais_parece_so_joguinho | pais | "parece só joguinho… mas ele tá treinando ritmo, coordenação, escuta" |
 | 05_prova_ouve_le_toca | geral | "como meus alunos estudam ritmo: ouvem, leem, tocam" (som real) |
-| 06_album_figurinhas | crianças e pais | estuda pra ganhar figurinha |
+| 06_album_figurinhas | crianças e pais | estuda pra ganhar figurinha; refeito em 13/nov sem foto de banda (roleta + figurinha da Bea) |
 | 07_prof_3_atividades | professores | 3 atividades prontas pra aula de amanhã |
 | 08_loop_tempo_de_tela | pais | 7s em loop, "o tempo de tela que eu deixo" |
 | 09_lojinha_imprimir | pais e profs | da tela pro papel, combo robôterista R$ 79,90 |
