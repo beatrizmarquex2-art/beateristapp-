@@ -34,6 +34,9 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Rudimentix (era "Taiko", 13/nov/2026)
+- A Bea trocou o nome visível do jogo de rudimentos de "Taiko" pra **Rudimentix** (`js/views/jogos.js`, `js/paul-talk.js`, testes `jogos-letras` e `acesso`). Rota, arquivos e ícone não mudaram. Cache v490. Feito no branch `claude/great-goldberg-nfvgyx`; falta juntar na `main` e publicar a área dos alunos.
+
 ## Marketing e reels (nov/2026)
 - Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
 - Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).

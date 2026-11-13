@@ -38,7 +38,7 @@ const GAMES = [
   ['toca', 'Toca Aqui', 'toca2.svg', toca, 'toque as figuras no tempo · microfone vale mais ★'],
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
-  ['rudimentos', 'Taiko', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
+  ['rudimentos', 'Rudimentix', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · robô, mesmo celular ou 2 celulares'],
   ['quizuno', 'Quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],

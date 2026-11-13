@@ -17,7 +17,7 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 | IMG_9246 | vertical, escuro | 9s | aluno aperta "ouvir" no estudo de ritmo, baquetas e pad (cabeça de costas) | passo "ouve" |
 | IMG_9248 | vertical, bem escuro | 22s | mesmo estudo, mais longo; clareia no fim (20s) | reserva |
 | IMG_9249 | horizontal | 20s | tablet com ouvir/tocar + baquetas + pad, braço do aluno | pra professores |
-| IMG_9255 | vertical | 14s | jogo **Taiko** (rudimentos: E = caixa, D = bumbo; `js/jogos/rudimentos.js`), duas mãos, bem iluminado | melhor imagem de "jogo" |
+| IMG_9255 | vertical | 14s | jogo **Rudimentix** (antes Taiko; rudimentos: E = caixa, D = bumbo; `js/jogos/rudimentos.js`), duas mãos, bem iluminado | melhor imagem de "jogo" |
 | IMG_9257 | horizontal | 5s | jogo de ritmo neon, duas pessoas tocando na tela | pra professores |
 | IMG_9260 | horizontal | 22s | caça-palavras/cruzadinha musical | pra professores |
 | IMG_9268 | vertical, som real de baqueta | 23s | aluno lê a partitura no tablet e toca no pad (0-10s e 15-18s são os melhores) | prova: da tela pro instrumento |
@@ -96,7 +96,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Fora: robô antigo (cinza, sem boné do Paul), personagens que não são o Paul, artes com número ou nome errado ("capa site 01" escrita BATERISTA START, "capa site 06" com 70 páginas, arte do combo com 182 páginas, arte da memória com 61 cartas).
 - A Bea não quer reel com áudio de depoimento.
 - Em 13/nov foram pra lixeira do Drive, a pedido dela, 6 artes erradas: combo com 182 páginas, memória com 61 cartas, robô antigo, capa site 01 (BATERISTA START), capa site 06 (70 páginas) e o banner "conheça o curso on-line" com letras sobrepostas.
-- **O jogo Taiko vai mudar de nome** (a Bea quer trocar; nome novo ainda não definido). Quando ela escolher: trocar o rótulo em `js/views/jogos.js` e a frase do reel 11.
+- **O jogo Taiko agora se chama Rudimentix** (escolha da Bea, 13/nov). Trocado no rótulo da lista de jogos, nas falas do Paul, nos testes e no reel 11; cache v490. Só o nome visível mudou: rota `#/jogos/rudimentos`, arquivos e o ícone `taiko.svg` seguem iguais. **Só neste branch: falta ir pra `main` e publicar a área dos alunos.**
 
 ## Reels já feitos
 | arquivo | público | ideia |
