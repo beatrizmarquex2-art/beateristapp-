@@ -42,6 +42,16 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | prancha_6_telas_do_app | quadrada | visão geral do app (entrada, jogos, estudos, tocar, álbum, lojinha) |
 | capa_na_pratica / capa_harmonia_e_melodia / capa_ritmo_e_figuras | quadradas | capas das apostilas (as mesmas estão em `assets/originals/artes-beaterista/kit-roboterista/img`) |
 | arte_combo_roboterista_quadrada_ERRO_182pag | quadrada | **não postar como está**: diz 182 páginas (o certo é 102) e "de R$ 100,00" (o certo é R$ 99,60). A versão corrigida é `vendas/assets/combo-roboterista.webp` |
+| arte_passe_beaterista_49_90 | quadrada | post de venda do passe (jogos, estudos, álbum; lojinha à parte) |
+| arte_jogo_da_memoria_8_temas | quadrada | diz "61 cartas"; a loja diz "61 pares". Confirmar com a Bea qual vale antes de postar |
+| arte_roboterista_aprenda_brincando_ROBO_ANTIGO | quadrada | robô com desenho antigo (não é o Paul atual): não usar no perfil do Paul |
+| capa_bateria_kids_aprenda_colorindo, capa_beaterista_mood_55pag, post_mood_bonus_20_paginas | quadradas e 4:5 | capas e bônus (Mood: 55 páginas + 20 de atividades) |
+| post_por_que_paul, post_menos_pressa_mais_groove, carrossel_paul_02 e _03, prancha_10_posts_do_paul | 4:5 | posts de personalidade do Paul |
+| paul_sentado_baqueta_transparente | PNG sem fundo | Paul pra montar artes |
+| figurinhas_paul_instrumentos, figurinhas_paul_dourado | pranchas | figurinhas e adesivos pra stories |
+| colorir_instrumentos_de_percussao | 4:5 preto e branco | isca grátis: página pra imprimir e colorir |
+
+No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
 Arte pronta entra no montador com `layout: fit`.
 
@@ -68,6 +78,8 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 11_tour_5_jogos | geral | "5 jogos que ensinam música de verdade", lista numerada |
 | 12_achar_na_pauta | pais | "seu filho lendo partitura. e achando que é jogo" |
 | 13_explorar_a_bateria | iniciante | "a primeira bateria cabe no tablet" |
+| 15_memoria_da_tela_pro_papel | pais e profs | memória no tablet e depois impressa, R$ 19,90 |
+| 16_beaterista_mood | bateristas (perfil da Bea) | "os exercícios que eu estudo e levo pro palco", 55 páginas + 20 de bônus, R$ 29,90 |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
@@ -83,4 +95,4 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Instagram @beaterista_ ~32 mil. Perfil novo do Paul no Instagram (pegar o @ com a Bea).
 - beaterista.com.br (GoDaddy): curso "Aprenda do Zero" R$ 79,90; falta garantia visível, depoimentos, lista de aulas e vídeo; muitos produtos competindo.
 - Regra de toda peça: 1 promessa + 1 chamada ("link na bio" ou palavra pra comentar), hashtags só no fim, um produto por peça.
-- Preços e fatos pra usar: passe anual R$ 49,90 (pagamento único, 12 meses), mais de 15 jogos e estudos, mais de 100 figurinhas, combo Robôterista R$ 79,90 (4 PDFs), jogar grátis em jogos.beaterista.com.br. Nunca inventar depoimento, número ou escassez.
+- Preços e fatos pra usar: passe anual R$ 49,90 (pagamento único, 12 meses), mais de 15 jogos e estudos, mais de 100 figurinhas, combo Robôterista R$ 79,90 (4 PDFs, de R$ 99,60); avulsos em `js/loja-config.js`: Ritmo e Figuras, Harmonia e Melodia, Mood e Violão do Zero R$ 29,90; Na Prática, Memória e Bateria Kids R$ 19,90, jogar grátis em jogos.beaterista.com.br. Nunca inventar depoimento, número ou escassez.
