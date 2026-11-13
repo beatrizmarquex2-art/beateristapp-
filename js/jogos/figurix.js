@@ -12,7 +12,7 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, noteMarkup, svgEl, tone } from '../kids/art.js';
 import { robo } from '../kids/robo.js';
 import { wordsearch, lineCells, EASY_DIRS, DIRS } from '../tips.js';
-import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha } from './figurix-logic.js';
+import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha, tempoPergunta, novoLugar } from './figurix-logic.js';
 import { toast } from '../ui.js';
 
 const fig = (id, cls = 'fx-fig') => svgEl(figureMarkup(id), cls);
@@ -80,14 +80,24 @@ export function mount(host) {
 
   /* ---------- as fases ---------- */
   // uma pergunta de cada vez: `render(i)` devolve { el, ok(btn)... }; aqui o padrão é "escolher a certa entre cartões" (rápida, lenta, quiz)
+  // pedido da Bea (estava fácil demais): a pergunta não se repete na fase, a resposta certa NUNCA fica no mesmo lugar duas vezes seguidas,
+  // e cada pergunta tem um tempo que vai ficando mais curto (acabou o tempo = conta como erro e passa pra próxima).
   const perguntas = (titulo, total, fazer) => {
-    let i = 0;
+    let i = 0; let lugar = -1; const usadas = new Set(); const nivel = (PHASES[fase - 1] || {}).nivel || 1;
+    const chaveDe = (q) => `${q.titulo || ''}|${(q.opcoes.find((o) => o.certo) || {}).label}|${q.opcoes.map((o) => o.label).sort().join(',')}`;
     const mostra = () => {
-      const q = fazer(i); S.reset(); window.__figurix.certa = (q.opcoes.find((o) => o.certo) || {}).label; // só pros testes
-      const cartoes = q.opcoes.map((o) => { const b = h('button', { type: 'button', class: `fx-op${o.cls ? ` ${o.cls}` : ''}`, 'aria-label': o.label, onclick: () => {
-        if (b.classList.contains('feito')) return; sfx.play('click');
-        if (o.certo) { b.classList.add('ok', 'feito'); acerto(b); S.later(() => { i++; if (i >= total) fim(); else mostra(); }, 800); } else { erro(b); b.disabled = true; } } }, o.face); return b; });
-      root.replaceChildren(topo(i, total), h('p', { class: 'fx-q' }, q.titulo || titulo), q.destaque || null, h('div', { class: `fx-ops n${q.opcoes.length}` }, ...cartoes));
+      let q = fazer(i); for (let t = 0; t < 12 && usadas.has(chaveDe(q)); t++) q = fazer(i); usadas.add(chaveDe(q)); S.reset();
+      const ops = q.opcoes.slice(); const onde = novoLugar(ops.findIndex((o) => o.certo), lugar, ops.length); { const c = ops.findIndex((o) => o.certo); if (c >= 0 && onde !== c) { const tmp = ops[onde]; ops[onde] = ops[c]; ops[c] = tmp; } } lugar = onde;
+      window.__figurix.certa = (ops.find((o) => o.certo) || {}).label; window.__figurix.lugar = lugar; // só pros testes
+      const vez = i; let fechada = false; const seg = tempoPergunta(i, nivel); window.__figurix.seg = seg;
+      const segue = () => { i++; if (i >= total) fim(); else mostra(); };
+      const cartoes = ops.map((o) => { const b = h('button', { type: 'button', class: `fx-op${o.cls ? ` ${o.cls}` : ''}`, 'aria-label': o.label, 'data-certo': o.certo ? '1' : null, onclick: () => {
+        if (fechada || b.classList.contains('feito')) return; sfx.play('click');
+        if (o.certo) { fechada = true; barra.classList.add('parada'); b.classList.add('ok', 'feito'); acerto(b); S.later(segue, 800); } else { erro(b); b.disabled = true; } } }, o.face); return b; });
+      const barra = h('div', { class: 'fx-tempo', role: 'timer', 'aria-label': `${Math.round(seg)} segundos pra responder` }, h('i', { style: `animation-duration:${seg}s` }));
+      root.replaceChildren(topo(i, total), barra, h('p', { class: 'fx-q' }, q.titulo || titulo), q.destaque || null, h('div', { class: `fx-ops n${ops.length}` }, ...cartoes));
+      let semTempo = false; try { semTempo = localStorage.getItem('beaterista-figurix-sem-tempo') === '1'; } catch { /* ok */ } // só os testes de tela antigos usam (eles respondem devagar)
+      if (semTempo) barra.hidden = true; else S.later(() => { if (fechada || vez !== i || !jogando) return; fechada = true; barra.classList.add('acabou'); erro(null); const certo = cartoes.find((b) => b.dataset.certo); if (certo) certo.classList.add('ok'); cartoes.forEach((b) => { b.disabled = true; }); S.later(segue, 1100); }, seg * 1000);
     };
     mostra();
   };

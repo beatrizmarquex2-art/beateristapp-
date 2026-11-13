@@ -72,3 +72,14 @@ test('aulinha nas 3 primeiras fases, com fala pra cada tipo e a colinha das figu
   for (const n of [1, 2, 3]) assert.ok(FA[PH[n - 1].tipo], `fase ${n}`);
   assert.equal(COL.length, 5); assert.equal(COL[2][0], 'seminima');
 });
+
+import { tempoPergunta as tP, novoLugar as nL } from '../js/jogos/figurix-logic.js';
+test('o tempo da pergunta encurta a cada pergunta até o piso do nível, e níveis altos são mais rápidos', () => {
+  assert.equal(tP(0, 1), 10); assert.ok(tP(3, 1) < tP(0, 1)); assert.equal(tP(50, 1), 5);
+  assert.ok(tP(0, 3) < tP(0, 1)); assert.equal(tP(50, 6), 3.5);
+  for (let i = 1; i < 12; i++) assert.ok(tP(i, 2) <= tP(i - 1, 2));
+});
+test('a resposta certa nunca fica no mesmo lugar duas vezes seguidas', () => {
+  for (let k = 0; k < 200; k++) { const n = k % 2 ? 3 : 4; const ant = k % n; assert.notEqual(nL(ant, ant, n), ant); }
+  assert.equal(nL(2, 0, 3), 2, 'já mudou de lugar: fica onde caiu'); assert.equal(nL(-1, 0, 3), -1);
+});

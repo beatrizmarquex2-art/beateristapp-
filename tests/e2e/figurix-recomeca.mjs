@@ -12,5 +12,19 @@ check('errou uma: aparece "recomeçar pra ganhar 3 ★"', await page.evaluate(()
 await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/figurix-recomeca.png` });
 await page.evaluate(() => document.querySelector('.fx-recomeca').click()); await sleep(500);
 check('o botão recomeça a fase do zero (sem erros, 1ª pergunta, sem passar pela aulinha)', await page.evaluate(() => window.__figurix.erros === 0 && !document.querySelector('.fx-recomeca') && !!document.querySelector('.fx-op') && !document.querySelector('.fx-colinha') && document.querySelector('.dn-dots i').classList.contains('now')));
+// a resposta certa muda de lugar a cada pergunta, a pergunta não se repete e o tempo vai encurtando
+const vistos = []; const lugares = []; const tempos = [];
+for (let k = 0; k < 4; k++) {
+  await page.waitForSelector('.fx-op:not(.feito)'); await sleep(150);
+  const r = await page.evaluate(() => ({ lugar: window.__figurix.lugar, seg: window.__figurix.seg, chave: [...document.querySelectorAll('.fx-op')].map((b) => b.getAttribute('aria-label')).sort().join(',') + '|' + window.__figurix.certa, barra: !!document.querySelector('.fx-tempo i') }));
+  lugares.push(r.lugar); tempos.push(r.seg); vistos.push(r.chave); if (!r.barra) check('tem barra de tempo', false);
+  await page.evaluate(() => document.querySelector('.fx-op[data-certo="1"]').click()); await sleep(950);
+}
+check('a resposta certa nunca fica no mesmo lugar duas vezes seguidas', lugares.every((l, k) => k === 0 || l !== lugares[k - 1]), lugares.join());
+check('nenhuma pergunta repetida na fase', new Set(vistos).size === vistos.length, vistos.join(' / '));
+check('o tempo de resposta vai encurtando', tempos.every((t, k) => k === 0 || t < tempos[k - 1]) && tempos[0] === 10, tempos.join());
+await page.waitForSelector('.fx-op:not(.feito)'); const antes = await page.evaluate(() => window.__figurix.erros);
+await sleep((await page.evaluate(() => window.__figurix.seg)) * 1000 + 400);
+check('acabou o tempo: conta como erro, mostra a certa e segue', await page.evaluate((a) => window.__figurix.erros === a + 1, antes));
 check('sem erro de página', errs.length === 0, errs.join('|'));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

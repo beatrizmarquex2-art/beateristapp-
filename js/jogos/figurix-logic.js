@@ -156,3 +156,14 @@ export const mundoLiberado = (est, id) => { const i = MUNDOS.findIndex((x) => x.
 export const COLINHA = [['semibreve', '4 tempos'], ['minima', '2 tempos'], ['seminima', '1 tempo'], ['colcheia', 'meio tempo'], ['semicolcheia', 'um quarto de tempo']];
 export const FALA_AULINHA = { rapida: 'quanto MENOS tempo a figura dura, mais RÁPIDA ela é. a semicolcheia é a mais rápida desta tabela.', lenta: 'quanto MAIS tempo a figura dura, mais LENTA ela é. a semibreve é a mais lenta desta tabela.', monte: 'toda figura tem até 3 partes: a cabeça (cheia ou vazia), a haste e os colchetes. cada colchete deixa a figura mais rápida.' };
 export const temAulinha = (n) => n <= 3;
+
+/** Tempo (s) pra responder a pergunta `i` (0, 1, 2…) do nível: começa folgado e encurta a cada pergunta, até o piso do nível. */
+export function tempoPergunta(i, nivel = 1) {
+  const [ini, piso] = nivel <= 1 ? [10, 5] : nivel === 2 ? [9, 4.5] : nivel <= 4 ? [8, 4] : [7, 3.5];
+  return Math.max(piso, ini - i * 0.6);
+}
+/** Lugar da resposta certa: nunca o mesmo da pergunta anterior. `atual` = onde ela caiu no sorteio; `anterior` = lugar da pergunta passada; `n` = quantas opções. */
+export function novoLugar(atual, anterior, n, rnd = Math.random) {
+  if (atual < 0 || n < 2 || atual !== anterior) return atual;
+  const livres = Array.from({ length: n }, (_, k) => k).filter((k) => k !== anterior); return livres[Math.floor(rnd() * livres.length)];
+}

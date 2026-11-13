@@ -1260,3 +1260,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pl-aulinha{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}.pl-aulinha small{font-size:12px}.pl-regra{font-weight:700;text-align:center}
 
 .fx-recomeca{font-weight:800;border-color:#8e1b2c!important;box-shadow:2px 2px 0 #8e1b2c}
+
+/* Figurix: barra do tempo de cada pergunta (encurta a cada pergunta) */
+.fx-tempo{height:10px;margin:6px 0 2px;border:2px solid #142036;background:#fffdf7;overflow:hidden}
+.fx-tempo i{display:block;height:100%;width:100%;background:#1f6f78;transform-origin:left center;animation:fx-tempo linear forwards}
+.fx-tempo.parada i{animation-play-state:paused}.fx-tempo.acabou i{background:#8e1b2c}
+@keyframes fx-tempo{0%{transform:scaleX(1)}70%{background:#1f6f78}100%{transform:scaleX(0);background:#8e1b2c}}
