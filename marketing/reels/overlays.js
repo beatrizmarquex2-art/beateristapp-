@@ -40,7 +40,7 @@ function clip(i){const s=spec.segs[i];const ls=s.lines;const max=Math.max(...ls.
  ${s.foot?`<div class="foot">${s.foot}</div>`:''}`}
 function end(){const e=spec.end;return `<style>${css}</style><div class="end"><div class="top"></div><div class="e">
  <div class="tag">${e.tag}</div><h1>${e.h[0]}<br><b>${e.h[1]}</b></h1>
- <div class="price"><div class="v">${e.price||'R$ 49,90'}</div><div class="d">${e.priceNote||'passe anual<br>pagamento único'}</div></div>
+ ${e.price===false?'':`<div class="price"><div class="v">${e.price||'R$ 49,90'}</div><div class="d">${e.priceNote||'passe anual<br>pagamento único'}</div></div>`}
  <div class="cta">${e.cta||'JOGUE GRÁTIS · LINK NA BIO'}</div>
  <div class="url">${e.url||'jogos.beaterista.com.br'}</div><div class="hd">${e.handle||'@jogos.beaterista'}</div><div class="sub">${e.sub||'comece grátis hoje'}</div></div>
  <img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"></div>`}

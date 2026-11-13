@@ -64,6 +64,11 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | IMG_9333 (print) | print de celular | jogo da velha no modo musical: pergunta "qual equipamento permite abrir e fechar os pratos do chimbal?" (o jogo tem 68 perguntas em 3 níveis) |
 | curso start (3 arquivos), banner "conheça o curso on-line", story e mockups | prints e artes | curso **Bateria Start** (é o curso da Bea; no site aparece como "Aprenda do Zero"). Módulos: 1 Comece por aqui, 2 Conhecendo a bateria, 3 Destravando rudimentos e viradas (6 aulas), 4 Descomplicando ritmos (7 aulas), 5 Aumentando o repertório, Bônus (aulão de ritmos, "evoluindo mais rápido na bateria"). Materiais: apostila completa com exercícios, lista de músicas, para colorir e escrever |
 | vídeo 0fe13cf7 (480x854, 27s) | vídeo | tela parada "Bateria Start · Depoimentos" com áudio; baixa resolução, não usado |
+| recorte paul-*.png (9) | PNG sem fundo | Paul de corpo inteiro: aceno, agachado, amplificador, atividades, baqueta, breakdance, caderno (o do cartão final), case, skate. Usar os de corpo inteiro em artes novas |
+| capa site 01 a 08 | quadradas 1080 | capas novas dos 8 produtos. **Conferir antes de usar**: a 01 (curso) está escrita "BATERISTA START" em vez de "Bateria Start"; a 06 diz "70 páginas" (loja e página de vendas dizem 48 atividades em 64 páginas) e usa o robô antigo; 04 "Método Beaterista" não está na lojinha |
+| feed - acordes de violão, story - dá o play, sequência de 6 materiais | artes | "16 acordes: veja onde pôr o dedo e ouça no violão, guitarra e baixo" |
+| Jogo_da_Memoria_COMPLETO.pdf (34 págs, 9,4 MB) | PDF do produto | conferido: **8 temas / 61 pares** (8+8+10+8+3+8+8+8). Não coube no Drive pelo conector; não vai pro repo (é o produto pago) |
+| Beaterista-pagina-de-vendas.zip | site | versão **mais antiga** que `vendas/` do repo (sem o bloco do combo): não usar pra sobrescrever |
 
 No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
@@ -110,6 +115,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | quiz_chimbal_1 a 3 (imagens 1080x1350) | geral, engajamento | "você acerta essa? comenta a resposta" com a pergunta do jogo da velha; formato repetível com outras perguntas (`specs_carrossel/quiz_chimbal.json`) |
 | 21_apostila_bateria_start | iniciantes | apostila do curso em promoção: R$ 14,90 (de R$ 29,90, Black Friday), 44 páginas. **A promoção vale só até 30/nov/2026**: depois disso não postar e trocar o preço pra R$ 29,90 |
 | curso_start_1 a 6 (imagens 1080x1350) | iniciantes, perfil da Bea | "o que tem dentro do curso Bateria Start": módulos 3, 4, bônus e apostilas; cartão final com R$ 79,90 (`specs_carrossel/curso_bateria_start.json`) |
+| 22_material_pra_cada_fase | geral | 6 capas em sequência (kids, memória, apostila, curso, cronograma, mood), "material pra cada fase", sem preço |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |

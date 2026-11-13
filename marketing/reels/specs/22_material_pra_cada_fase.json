@@ -1,0 +1,8 @@
+{"name":"22_material_pra_cada_fase","tag":"lojinha beaterista","audio":"beat","segs":[
+ {"src":"CAPA_05","layout":"fit","dur":1.5,"lines":["PRA CRIANÇA","*BATERIA KIDS"]},
+ {"src":"CAPA_08","layout":"fit","dur":1.5,"lines":["PRA FAMÍLIA","*JOGO DA MEMÓRIA"]},
+ {"src":"CAPA_02","layout":"fit","dur":1.5,"lines":["PRA COMEÇAR","*APOSTILA BATERIA START"]},
+ {"src":"CAPA_01","layout":"fit","dur":1.5,"lines":["PRA TOCAR DE VERDADE","*CURSO BATERIA START"]},
+ {"src":"CAPA_07","layout":"fit","dur":1.5,"lines":["PRA ORGANIZAR O ESTUDO","*CRONOGRAMA"]},
+ {"src":"CAPA_03","layout":"fit","dur":1.5,"lines":["PRA EVOLUIR","*BEATERISTA MOOD"]}],
+ "end":{"tag":"lojinha beaterista","h":["MATERIAL PRA","CADA FASE"],"price":false,"cta":"VEJA NA LOJINHA · LINK NA BIO","sub":"e-books, curso e jogos pra imprimir"}}
