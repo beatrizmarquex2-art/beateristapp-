@@ -851,3 +851,13 @@ html.em-jogo #app { padding-bottom: calc(24px + var(--safe-b)); }
 /* álbum > pacotes: a caixinha "animações reduzidas" não vira um retângulo gigante; "ganhe mais ★" fica recolhido embaixo do botão de girar */
 .fig-opt { display: flex; align-items: center; gap: 8px; } .fig-opt input[type=checkbox] { width: 22px; height: 22px; min-width: 22px; padding: 0; flex: none; }
 .fig-mais { margin-top: 10px; } .fig-mais > summary { cursor: pointer; font-weight: 800; padding: 8px 4px; }
+
+/* área dos alunos: o menu de baixo fica colado na borda de baixo da tela (preso, sem flutuar nem tremer no iPad/iPhone) */
+html.aluno-on .bottom-nav { left: 0; right: 0; bottom: 0; transform: none; width: 100%; max-width: none; margin: 0; border-radius: 18px 18px 0 0; padding: 6px max(6px, calc((100% - 620px) / 2)) calc(6px + var(--safe-b)); -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--card); box-shadow: 0 -2px 0 var(--frame), 0 -10px 24px -14px rgb(var(--shadow-rgb) / .6); -webkit-transform: translateZ(0); }
+html.aluno-on #app { padding-bottom: calc(96px + var(--safe-b)); }
+
+/* aba "minhas figurinhas": grade das figurinhas na mão, cada uma com o botão de colar */
+.fig-mao-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr)); gap: 12px; margin-top: 8px; }
+.fig-mao-it { display: grid; gap: 6px; justify-items: center; text-align: center; font-size: 13px; min-width: 0; } .fig-mao-it.rep { opacity: .75; }
+.fig-mao-img { width: 100%; padding: 0; border: 0; background: none; cursor: pointer; } .fig-mao-img svg { width: 100%; height: auto; display: block; }
+.fig-mao-it .btn { width: 100%; }

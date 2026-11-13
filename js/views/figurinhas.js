@@ -17,7 +17,8 @@ import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
 const LENDARIAS_ON = true; // aba Lendárias liberada (pedido da Bea): por enquanto os espaços ficam trancados até as figurinhas chegarem
-const TABS = [...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Minhas', 'Pacotes'];
+const TABS = ['Na mão', ...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Minhas', 'Pacotes']; // "minhas figurinhas" (as da mão, pra colar) é a primeira aba
+const ROTULO = { 'Na mão': 'minhas figurinhas', Minhas: 'criadas por mim' }; // nome na aba (o resto usa o próprio nome)
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 // catálogo completo = as 125 originais + as figurinhas do Paul (arquivo separado, pra não mexer no catálogo original)
@@ -35,7 +36,7 @@ export function mount(host, parts = [], opts = {}) {
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
   const explicita = TABS.includes(parts[0]) || !!L.SECAO_ANTIGA[parts[0]];
-  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
+  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || L.SECOES[0], artist = '';
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
@@ -101,15 +102,15 @@ export function mount(host, parts = [], opts = {}) {
     if (!catalog) return;
     const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
     const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
-      const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
-      return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
+      const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : t === 'Na mão' ? (L.inHand(state) ? ` ${L.inHand(state)}` : '') : '';
+      return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, (ROTULO[t] || t.toLowerCase()) + badge);
     }));
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, '🎡 você tem cartas para resgatar') : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
       h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!')),
-      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
-    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Na mão' ? maoView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias' && tab !== 'Na mão') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
   /* ---------- coleção: o livro ---------- */
@@ -132,6 +133,22 @@ export function mount(host, parts = [], opts = {}) {
     justPasted = e.codigo;
     save(L.paste(state, e.codigo));
     toast(`${e.artista_banda} colada no álbum`);
+  }
+
+  /* ---------- minhas figurinhas: as que estão na mão, pra colar no álbum ---------- */
+  function maoView() {
+    const hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
+    const pastable = hand.filter((e) => L.canPaste(state, e.codigo)), rep = hand.length - pastable.length;
+    const cell = (e) => {
+      const pode = L.canPaste(state, e.codigo); const th = h('button', { type: 'button', class: 'fig-mao-img', 'aria-label': `ver ${e.artista_banda}`, onclick: () => detail(e) }); th.innerHTML = svgOf(e, `m${e.codigo}`);
+      return h('div', { class: `fig-mao-it${pode ? '' : ' rep'}` }, th, h('b', {}, e.artista_banda),
+        pode ? h('button', { type: 'button', class: 'btn small primary', onclick: () => doPaste(e) }, 'colar no álbum') : h('em', {}, 'repetida · já está no álbum'));
+    };
+    return h('section', { class: 'fig-col fig-mao' },
+      h('h2', { class: 'tag' }, `minhas figurinhas (${hand.length})`),
+      h('p', { class: 'muted' }, hand.length ? `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}. toque na figurinha pra ver grande.` : 'nenhuma figurinha na mão. ganhe estrelas nos jogos e gire a roleta pra pegar mais!'),
+      pastable.length ? h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo no álbum (${pastable.length})`) : null,
+      hand.length ? h('div', { class: 'fig-mao-grid' }, ...hand.map(cell)) : h('button', { type: 'button', class: 'btn wide', onclick: () => { tab = 'Pacotes'; draw(); } }, 'ir pra roleta'));
   }
 
   /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */

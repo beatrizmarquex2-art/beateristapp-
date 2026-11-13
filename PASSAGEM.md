@@ -581,3 +581,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 ## Jogos: carta do Paul em rodízio e roleta mais limpa (nov/2026, v490)
 - A carta "o Paul conta" da aba Jogos muda a cada volta (`cartaDaVez` em `js/paul-dicas.js`, rodízio no aparelho `beaterista-paul-rodizio`, intercala convites do app e frases). Cartas novas (só alunos): combo, avaliação no Google, atividades extra (★), cartinhas, jogos novos, instrumentos pra tocar, curiosidades de músicos, aulinha do Paul, dicionário, cada uma com pose `p-*` própria.
 - Álbum > Pacotes: "girar a roleta" vem logo depois do texto; as missões com print e o check-in ficam recolhidos em "ganhe mais ★" embaixo do botão (`.fig-mais`). A lista de regras (texto ilegível no tema neon) foi tirada, e a caixinha "animações reduzidas" voltou ao tamanho normal. Teste: `tests/e2e/jogos-paul-rodizio.mjs`.
+
+## Menu preso em baixo e "minhas figurinhas" (nov/2026, v493)
+- Área dos alunos: `.bottom-nav` colado na borda de baixo, largura total (`html.aluno-on` em `css/lote3.css`), sem blur nem translateX (mais estável no iPad/iPhone).
+- Álbum: nova 1ª aba **minhas figurinhas** (`Na mão`, `maoView` em `js/views/figurinhas.js`): grade das figurinhas na mão, "colar no álbum" em cada uma, "colar tudo", repetidas marcadas. A antiga aba "Minhas" (cartinhas criadas com foto) passou a se chamar **criadas por mim**. Teste: `tests/e2e/album-minhas-figurinhas.mjs`.
