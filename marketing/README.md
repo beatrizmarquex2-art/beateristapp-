@@ -33,6 +33,18 @@ Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem expl
 
 Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autorização dos pais antes de postar**.
 
+## Artes prontas (nov/2026, na pasta do Drive)
+| arquivo | formato | uso |
+|---|---|---|
+| feed_4x5_aulas_na_palma_da_mao / _primeiro_ritmo / _jogue_toque_colecione | 1080x1350 | posts de feed do perfil do Paul |
+| story_aulas_na_palma_da_mao / story_jogue_toque_colecione | 1080x1920 | stories e destaques |
+| banner_site_* (3) e prancha_3_banners_site | 1800x620 | banners do site |
+| prancha_6_telas_do_app | quadrada | visão geral do app (entrada, jogos, estudos, tocar, álbum, lojinha) |
+| capa_na_pratica / capa_harmonia_e_melodia / capa_ritmo_e_figuras | quadradas | capas das apostilas (as mesmas estão em `assets/originals/artes-beaterista/kit-roboterista/img`) |
+| arte_combo_roboterista_quadrada_ERRO_182pag | quadrada | **não postar como está**: diz 182 páginas (o certo é 102) e "de R$ 100,00" (o certo é R$ 99,60). A versão corrigida é `vendas/assets/combo-roboterista.webp` |
+
+Arte pronta entra no montador com `layout: fit`.
+
 ## Como montar um reel
 ```
 python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA
@@ -56,6 +68,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 11_tour_5_jogos | geral | "5 jogos que ensinam música de verdade", lista numerada |
 | 12_achar_na_pauta | pais | "seu filho lendo partitura. e achando que é jogo" |
 | 13_explorar_a_bateria | iniciante | "a primeira bateria cabe no tablet" |
+| 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
 
