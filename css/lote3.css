@@ -875,3 +875,5 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2.5px soli
 .jg-sala-chips { display: flex; flex-wrap: wrap; gap: 5px; } .jg-sala-chips button { display: flex; align-items: center; gap: 5px; background: #f3eadc; color: #1b1818; border: 2px solid #1b1818; border-radius: 999px !important; padding: 1px 10px 1px 3px; font: 700 12px var(--body); cursor: pointer; min-height: 28px; }
 .jg-sala-chips img { width: 22px; height: 22px; object-fit: contain; }
 .jg-sala-atalho .jg-entrar { margin: 0; } .jg-sala-atalho .jg-code-in { min-height: 34px; font-size: 16px; }
+/* tablet/iPad: a arte do combo e a vitrine não esticam até a borda (ficam num tamanho legível, centralizadas) */
+@media (min-width: 700px) { .lj-bf-topo { max-width: 560px; margin-left: auto; margin-right: auto; } .lj-grid { max-width: 760px; margin-left: auto; margin-right: auto; } }
