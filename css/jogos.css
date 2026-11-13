@@ -1249,3 +1249,12 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .sb-right .top-mus{margin-right:0}
 .pl-exig{flex-direction:column;align-items:center;gap:4px}.pl-exig-btn.on{font-weight:800}
 .tr-andou{white-space:normal}
+
+/* Figurix: aulinha das primeiras fases (colinha das figuras) e mundo trancado pela regra das 3 estrelas */
+.fx-colinha{width:100%;max-width:340px;margin:8px auto;border-collapse:collapse;background:#fffdf7;color:#142036;border:2px solid #142036;box-shadow:3px 3px 0 #17365b}
+.fx-colinha caption{font:400 18px 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:6px;color:inherit;text-align:center}
+.fx-colinha td,.fx-colinha th{padding:6px 10px;border-top:1.5px dashed #14203655;text-align:left;font-size:15px}.fx-colinha th{font-weight:800}
+.fx-col-fig{width:44px;text-align:center}.fx-fig-mini{height:38px;width:auto}
+.fx-aula-fala{font-weight:700}.fx-aula-nota{font-size:13px;opacity:.85}.fx-trava{font-weight:700}
+.tm-tabs button.lock{opacity:.6}
+.pl-aulinha{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}.pl-aulinha small{font-size:12px}.pl-regra{font-weight:700;text-align:center}

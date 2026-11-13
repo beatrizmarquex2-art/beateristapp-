@@ -159,7 +159,7 @@ export function mount(host, parts = [], opts = {}) {
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
   let mcView = null;
   function minhasView() {
-    if (mcView) mcView.cleanup(); mcView = Minhas.colecao({ titulo: 'minhas cartinhas', vazio: 'nenhuma ainda. crie a sua na aba Perfil e toque em "guardar na minha coleção".' });
+    if (mcView) mcView.cleanup(); let nomeAluno = ''; try { nomeAluno = (localStorage.getItem('beaterista-aluno-nome') || '').trim(); } catch { /* sem nome */ } mcView = Minhas.album({ nome: nomeAluno }); // álbum de verdade só do aluno, só neste aparelho
     return h('section', { class: 'fig-col' }, mcView.el, h('a', { class: 'btn wide', href: '#/perfil' }, 'criar uma cartinha (Perfil)'));
   }
 

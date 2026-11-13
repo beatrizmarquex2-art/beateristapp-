@@ -61,7 +61,7 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'mundos'), h('div', { class: 'kx-cards' }, ...['drumF', 'drumI', 'drumD', 'sol', 'fa', 'duel'].map(card)),
     h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 revisão do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
-    livre() ? null : h('div', { class: 'pl-links pl-exig', role: 'group', 'aria-label': 'regra das 3 estrelas' }, h('button', { type: 'button', class: `kd-chip pl-exig-btn${p.exig ? ' on' : ''}`, 'aria-pressed': String(!!p.exig), onclick: async () => { await V.commit(me.id, (c) => ({ ...c, exig: !c.exig })); rerender(); } }, p.exig ? '★★★ regra das 3 estrelas: ligada' : '☆ regra das 3 estrelas: desligada'), h('small', { class: 'lib-note' }, p.exig ? 'o próximo mundo só abre com 3 ★ em todas as fases do anterior.' : 'ligue pra só abrir o próximo mundo com 3 ★ em todas as fases.')),
+    livre() ? null : V.regraFixa() ? h('p', { class: 'lib-note pl-regra' }, '★★★ pra abrir o próximo mundo você precisa de 3 estrelas em todas as fases do mundo anterior.') : h('div', { class: 'pl-links pl-exig', role: 'group', 'aria-label': 'regra das 3 estrelas' }, h('button', { type: 'button', class: `kd-chip pl-exig-btn${p.exig ? ' on' : ''}`, 'aria-pressed': String(!!p.exig), onclick: async () => { await V.commit(me.id, (c) => ({ ...c, exig: !c.exig })); rerender(); } }, p.exig ? '★★★ regra das 3 estrelas: ligada' : '☆ regra das 3 estrelas: desligada'), h('small', { class: 'lib-note' }, p.exig ? 'o próximo mundo só abre com 3 ★ em todas as fases do anterior.' : 'ligue pra só abrir o próximo mundo com 3 ★ em todas as fases.')),
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }
 
@@ -162,6 +162,7 @@ function phaseScreen(host, w, n, modeArg) {
   const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${mode}`; if (k === n) rerenderHook(); } };
   const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, mode) || (() => {}); };
   const intro = h('div', { class: 'pl-introbox' }, teachCards(w, n) ? h('p', { class: 'pl-new' }, '🆕 o Paul vai te apresentar:') : null, teachCards(w, n),
+    n <= 3 ? h('p', { class: 'pl-aulinha' }, h('a', { class: 'kd-chip', href: '#/estudos/aulas' }, '📖 o Paul explica nas aulas (Estudos)'), h('small', {}, ' concluindo as aulas lá você ganha estrela.')) : null, // primeiras fases: caminho pra aulinha
     isDrum(w) && /colcheia|figura|Técnica|Tudo|Misto|Mestre|semicolcheia/i.test(sp.title) ? h('p', { class: 'muted' }, 'lembrete: X = prato/chimbal · bolinha = tambor · parênteses = fantasma · > = acento.') : null);
   const hist = [];
   let off = runSession({

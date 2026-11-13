@@ -446,3 +446,30 @@
 .ld-ver{display:grid;gap:10px;justify-items:center}.ld-ver img{width:min(78vw,340px);height:auto;border-radius:14px}.ld-ver img.ld-bloq{filter:grayscale(.85) brightness(.6)}
 .fig-missoes{display:grid;gap:8px;margin:8px 0;padding:10px;border-radius:14px;background:linear-gradient(120deg,#1d3a6b,#7a3ad6);color:#fff;box-shadow:0 0 16px rgba(127,211,255,.5)}.fig-missoes>b{font-size:13px}.fig-missoes small{color:#cfeaff;display:block}
 .fig-missao{display:grid;gap:6px;padding:8px;border-radius:10px;background:rgba(255,255,255,.1)}.fig-missao>span:first-child b{display:block;font-size:13px}.fig-missao-bt{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.fig-missao-st{font-size:12px;font-style:normal;font-weight:800;color:#ffd166}
+
+/* "Meu álbum": álbum das cartinhas criadas pelo aluno (espaços numerados, só neste aparelho) */
+.ma { display: grid; gap: 12px; }
+.ma-tit { margin: 0; font: 400 26px/1 'Anton', Impact, sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+.ma-cont { margin: 0; font-size: 13px; opacity: .85; }
+.ma-mao { display: grid; gap: 8px; padding: 10px; border: 2px dashed #c4182c; border-radius: 12px; }
+.ma-mao-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.ma-fila { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; }
+.ma-solta { flex: none; width: 84px; padding: 0; border: 0; background: none; color: inherit; font: inherit; display: grid; gap: 3px; text-align: center; cursor: pointer; transform: rotate(-3deg); transition: transform .15s; }
+.ma-solta:nth-child(even) { transform: rotate(2.5deg); }
+.ma-solta img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 10px #0005; }
+.ma-solta span { font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
+.ma-solta.on { transform: translateY(-6px) scale(1.06); } .ma-solta.on img { outline: 3px solid #c4182c; outline-offset: 2px; }
+.ma-folha { padding: 12px; border-radius: 12px; border: 2px solid color-mix(in srgb, currentColor 40%, transparent); background: color-mix(in srgb, currentColor 5%, transparent); }
+.ma-pag-t { font: 12px 'Special Elite', 'Courier New', monospace; text-transform: uppercase; letter-spacing: .1em; text-align: center; margin-bottom: 8px; opacity: .8; }
+.ma-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ma-esp { position: relative; aspect-ratio: 360 / 475; padding: 0; border: 2px dashed color-mix(in srgb, currentColor 40%, transparent); border-radius: 10px; background: color-mix(in srgb, currentColor 6%, transparent); color: inherit; font: inherit; cursor: pointer; display: grid; place-items: center; overflow: hidden; }
+.ma-esp i { font: 400 26px 'Anton', Impact, sans-serif; font-style: normal; opacity: .35; }
+.ma-esp.alvo { border-color: #c4182c; border-style: solid; } .ma-esp.alvo i { opacity: .8; color: #c4182c; }
+.ma-esp.cheia { border: 0; background: none; display: block; overflow: visible; }
+.ma-esp.cheia img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px #0004; }
+.ma-esp.cheia span { position: absolute; left: 0; right: 0; bottom: -2px; font-size: 11px; font-weight: 700; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: none; }
+.ma-esp.colou img { animation: ma-colou .45s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes ma-colou { 0% { transform: scale(1.5) rotate(-8deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.ma-nav { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 14px; } .ma-nav .btn { min-width: 44px; min-height: 44px; }
+.ma-solta:focus-visible, .ma-esp:focus-visible { outline: 3px solid #e3a82f; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .ma-esp.colou img { animation: none; } .ma-solta { transition: none; } }

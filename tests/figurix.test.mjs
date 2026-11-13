@@ -58,3 +58,17 @@ test('os 4 mundos usam os temas do Figurix e todos os enfeites existem como spri
   for (const [t, regs] of Object.entries(DECOR_TEMA)) for (const r of regs) for (const [s] of r) assert.ok(new RegExp(`\\n  ${s}: \\[`).test(art), `sprite ${s} (${t}) não existe`);
   assert.deepEqual(MUNDOS.map((m) => m.tema), ['floresta', 'deserto', 'mar', 'espaco']);
 });
+
+import { faltam3Mundo as f3, mundoLiberado as mlib, MUNDOS as MS, temAulinha as tA, COLINHA as COL, FALA_AULINHA as FA, PHASES as PH } from '../js/jogos/figurix-logic.js';
+test('regra das 3 estrelas: o próximo mundo só abre com 3 ★ em todas as fases do anterior', () => {
+  const m1 = MS[0]; const m2 = MS[1]; const est = {};
+  assert.ok(mlib(est, m1.id)); assert.ok(!mlib(est, m2.id)); assert.equal(f3(est, m1.id), m1.ate - m1.de + 1);
+  for (let n = m1.de; n <= m1.ate; n++) est[n] = n === m1.ate ? 2 : 3;
+  assert.equal(f3(est, m1.id), 1); assert.ok(!mlib(est, m2.id), 'uma fase com 2 ★ ainda tranca');
+  est[m1.ate] = 3; assert.ok(mlib(est, m2.id)); assert.ok(!mlib(est, MS[2].id));
+});
+test('aulinha nas 3 primeiras fases, com fala pra cada tipo e a colinha das figuras', () => {
+  assert.deepEqual([1, 2, 3, 4].map(tA), [true, true, true, false]);
+  for (const n of [1, 2, 3]) assert.ok(FA[PH[n - 1].tipo], `fase ${n}`);
+  assert.equal(COL.length, 5); assert.equal(COL[2][0], 'seminima');
+});
