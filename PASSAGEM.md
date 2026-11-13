@@ -6,6 +6,8 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Escreve sem pontuação formal; gosta de resposta prática, objetiva e criativa, em português.
 - Pede mudanças visuais pequenas e iterativas ("mais perto", "menos colado"). Mostre o resultado (print) antes de publicar quando der.
 - Ela **não precisa de explicação técnica**: diga o que mudou e onde ver.
+- **Visual novo = sempre 3 opções de design antes de aplicar** (pedido da Bea em 13/nov/2026): criativo, bonito, elegante, que faça a criança querer jogar e que leve a marca Beaterista como referência. Mostrar as 3 lado a lado (mockup) e só aplicar a que ela escolher.
+- **Não publicar sem ela mandar**: jogo novo fica na branch até ela dizer que pode subir.
 - **Opções dentro dos jogos (escolher jogadores, pares, nível, tema…) sempre em chips pequenininhos**, no jeito dos exemplos que ela mostrou ("anotações · dicionário · ★ · criar" e "favoritos · treinar · jogos"): retângulo curto, texto pequeno, sombra deslocada. Botão grande só pro "jogar". Classes: `.jg-seg button` (jogos) e `.kd-chip` (memória/kids).
 
 ## Sites e onde moram (atualizado em 05/nov/2026)
