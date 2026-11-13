@@ -69,6 +69,7 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | feed - acordes de violão, story - dá o play, sequência de 6 materiais | artes | "16 acordes: veja onde pôr o dedo e ouça no violão, guitarra e baixo" |
 | Jogo_da_Memoria_COMPLETO.pdf (34 págs, 9,4 MB) | PDF do produto | conferido: **8 temas / 61 pares** (8+8+10+8+3+8+8+8). Não coube no Drive pelo conector; não vai pro repo (é o produto pago) |
 | Beaterista-pagina-de-vendas.zip | site | versão **mais antiga** que `vendas/` do repo (sem o bloco do combo): não usar pra sobrescrever |
+| lote do Drive de 13/nov (42 vídeos originais + fotos, na pasta) | vídeos do celular | **Dá pra puxar vídeo do Drive direto, até 10 MB por arquivo** (`download_file_content`; o resultado vem em base64 num arquivo e é só decodificar). Acima de 10 MB o conector recusa: a Bea manda pelo chat. Vistos (21): 9349, 9350, 9351, 9353, 9372 a 9376 = tablet apoiado na bateria de verdade, aluno tocando na caixa vendo o jogo (tela rosa), visto de cima, bem iluminado, **melhor material até agora**; 9358, 9359 = bateria inteira de cima com o Rudimentix no tablet; 9363 = mãos jogando Rudimentix; 9347 = igual, horizontal; 9367 = roleta de figurinhas (aparecem fotos de banda: não usar); 9244, 9245, 9266 = tablet + pad no chão; 9247, 9379 = aparece cabeça/rosto de aluno (não usar sem autorização); 9251, 9252 = muito escuros. Não vistos (acima de 10 MB): 9243, 9265, 9348, 9352, 9354, 9355, 9356, 9357, 9360, 9361, 9362, 9366, 9380, 9382 |
 
 No Drive, os arquivos acima de 3 MB foram salvos em JPG (limite do conector).
 
@@ -98,6 +99,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Dentro da identidade: azul-marinho, vermelho, creme e amarelo; fontes do app; o Paul atual; capas de `assets/loja` e do kit Robôterista.
 - Fora: robô antigo (cinza, sem boné do Paul), personagens que não são o Paul, artes com número ou nome errado ("capa site 01" escrita BATERISTA START, "capa site 06" com 70 páginas, arte do combo com 182 páginas, arte da memória com 61 cartas).
 - A Bea não quer reel com áudio de depoimento.
+- **A Bea aprovou tudo de antemão (13/nov): pode puxar material do Drive e montar sem pedir.** Continua valendo confirmar antes de publicar em rede social ou apagar coisas dela.
 - Em 13/nov foram pra lixeira do Drive, a pedido dela, 6 artes erradas: combo com 182 páginas, memória com 61 cartas, robô antigo, capa site 01 (BATERISTA START), capa site 06 (70 páginas) e o banner "conheça o curso on-line" com letras sobrepostas.
 - **O jogo Taiko agora se chama Rudimentix** (escolha da Bea, 13/nov). Trocado no rótulo da lista de jogos, nas falas do Paul, nos testes e no reel 11; cache v490. Só o nome visível mudou: rota `#/jogos/rudimentos`, arquivos e o ícone `taiko.svg` seguem iguais. Já na `main` e publicado em jogos.beaterista.com.br (v490).
 
@@ -127,6 +129,8 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 21_apostila_bateria_start | iniciantes | apostila do curso em promoção: R$ 14,90 (de R$ 29,90, Black Friday), 44 páginas. **A promoção vale só até 30/nov/2026**: depois disso não postar e trocar o preço pra R$ 29,90 |
 | curso_start_1 a 6 (imagens 1080x1350) | iniciantes, perfil da Bea | "o que tem dentro do curso Bateria Start": módulos 3, 4, bônus e apostilas; cartão final com R$ 79,90 (`specs_carrossel/curso_bateria_start.json`) |
 | 22_material_pra_cada_fase | geral | 6 capas da lojinha (`assets/loja`: kids, memória, apostila, curso, violão, mood), "material pra cada fase", sem preço. Refeito em 13/nov sem as "capas site" (erro de texto e fora da identidade) |
+| 23_o_jogo_foi_pra_bateria | pais e iniciantes | "o jogo saiu do sofá e foi pra bateria": tablet na bateria, aluno tocando na caixa |
+| 24_rudimentix_na_caixa | iniciantes | "rudimentix: primeiro na tela, depois na caixa" |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |
