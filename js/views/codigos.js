@@ -11,7 +11,7 @@ const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt)
 
 /** O que um passe pode liberar (telas que ficam trancadas sem código). `rotas` = prefixos de endereço. */
 const PASSES = [
-  ['Uno Musical e UN🚫', ['#/jogos/cartas', '#/jogos/un']], ['quiz do Uno', ['#/jogos/quizuno']], ['Toca Aqui', ['#/jogos/toca', '#/kids/figuras']], ['Figurix', ['#/jogos/figurix']], ['Taiko', ['#/jogos/rudimentos']], ['Detetive Note', ['#/jogos/detetive']],
+  ['Uno Musical e UN🚫', ['#/jogos/cartas', '#/jogos/un']], ['quiz do Uno', ['#/jogos/quizuno']], ['Toca Aqui', ['#/jogos/toca', '#/kids/figuras']], ['Figurix', ['#/jogos/figurix']], ['Taiko', ['#/jogos/rudimentos']], ['Detetive Note', ['#/jogos/detetive']], ['Tocar de verdade (Copia Aí, pauLta ao Vivo, Eco de Groove, Clique Fantasma)', ['#/jogos/copia', '#/jogos/paultavivo', '#/jogos/groove', '#/jogos/fantasma']],
   ['Beat Hero e músicas', ['#/ritmo']], ['pauLta', ['#/paulta']], ['fases dos Kids', ['#/kids']], ['dicas do método (Estudos)', ['#/estudos/dicas']],
   ['Modo Aventura (todos os jogos)', ['/aventura']], ['Álbum e roleta', ['#/album']], ['Ranking', ['#/ranking']],
 ];

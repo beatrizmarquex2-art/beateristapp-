@@ -1169,3 +1169,65 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-rud .rd-linha .rd-lab{flex-basis:100%;text-align:center}.jg-rud .rd-fases{grid-template-columns:repeat(auto-fill,minmax(138px,1fr))}.jg-rud .rd-chip{padding:4px 12px;font-size:11px}
 .jg-rud .rd-letra{font-family:system-ui,-apple-system,sans-serif;font-size:34px}.jg-rud .rd-res b{font-family:system-ui,-apple-system,sans-serif;font-size:44px;letter-spacing:.02em}.jg-rud .rd-l{font-family:system-ui,-apple-system,sans-serif}
 .jg-imgs button.locked{position:relative;opacity:.5}.jg-imgs button.locked::after{content:"🔒";position:absolute;right:2px;top:2px;font-size:13px}
+
+/* ===== Jogos "de verdade" (Copia Aí, pauLta ao Vivo, Eco de Groove, Clique Fantasma): bloco vv- ===== */
+.vv{--vv-ink:#142036;--vv-navy:#17365B;--vv-vinho:#8a1a30;--vv-petro:#1f6f78;--vv-creme:#FFF8EA;--vv-line:#14203626;display:grid;gap:10px;padding:14px 12px 20px;border-radius:20px;background:var(--vv-creme);color:var(--vv-ink);border:2px solid var(--vv-navy);box-shadow:4px 4px 0 var(--vv-navy);max-width:560px;margin:0 auto;text-align:center}
+.vv button{font-family:inherit}.vv [hidden]{display:none!important}
+.vv-ops{display:grid;gap:6px}
+.vv-linha{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.vv-lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--vv-navy);opacity:.75;margin-right:2px}
+.vv-chip{padding:4px 10px;min-height:28px;font-size:12px;line-height:1.2;border:1.5px solid var(--vv-navy);border-radius:7px;background:#fffdf7;color:var(--vv-ink);box-shadow:2px 2px 0 var(--vv-navy);cursor:pointer}
+.vv-chip.on{background:var(--vv-navy);color:#fff;box-shadow:2px 2px 0 var(--vv-vinho)}
+.vv-chip:focus-visible,.vv-go:focus-visible,.vv-tecla:focus-visible,.vv-pad:focus-visible,.vv-fase:focus-visible,.vv-padzao:focus-visible{outline:3px solid var(--vv-petro);outline-offset:2px}
+.vv-placar{display:flex;gap:12px;justify-content:center;min-height:18px;font-size:13px;font-weight:700;color:var(--vv-navy)}.vv-best{font-weight:500;opacity:.8}
+.vv-seq{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:44px;margin:0;align-items:center}
+.vv-n{font-style:normal;font-weight:800;font-size:20px;padding:4px 9px;border-radius:9px;border:2px solid var(--vv-line);background:#fffdf7;transition:transform .12s}
+.vv-n.now{background:var(--vv-navy);color:#fff;border-color:var(--vv-navy);transform:translateY(-3px)}.vv-n.vez{border-color:var(--vv-vinho);border-style:dashed}
+.vv-n.ok{background:var(--vv-petro);color:#fff;border-color:var(--vv-petro)}.vv-n.bad{background:var(--vv-vinho);color:#fff;border-color:var(--vv-vinho)}
+.vv-msg{margin:0;min-height:1.4em;font-weight:600;color:var(--vv-vinho)}.vv-intro{margin:0;font-size:14px;line-height:1.4}
+.vv-mic{margin:0;padding:8px 10px;font-size:13px;line-height:1.4;border:1.5px dashed var(--vv-petro);border-radius:10px;background:#eef6f5}.vv-mic b{color:var(--vv-petro)}
+.vv-go{justify-self:center;min-height:52px;padding:10px 34px;font-size:19px;font-weight:800;border:2px solid var(--vv-ink);border-radius:14px;background:var(--vv-vinho);color:#fff;box-shadow:3px 3px 0 var(--vv-ink);cursor:pointer}
+.vv-go:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--vv-ink)}
+.vv-kbwrap{padding:0 2px}
+.vv-teclado{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:0;height:150px;border:2px solid var(--vv-ink);border-radius:0 0 12px 12px;border-top-width:6px;background:var(--vv-ink);touch-action:none;user-select:none;-webkit-user-select:none}
+.vv-tecla{position:relative;display:flex;align-items:flex-end;justify-content:center;padding:0 0 10px;border:0;border-right:1.5px solid var(--vv-ink);background:#fffdf7;color:var(--vv-ink);font-size:14px;font-weight:800;cursor:pointer;border-radius:0 0 7px 7px;touch-action:none}
+.vv-tecla:last-of-type{border-right:0}.vv-tecla.fora{background:#e4dccb;cursor:default}
+.vv-tecla.on{background:#b9cfe9}.vv-tecla.ok{background:var(--vv-petro);color:#fff}.vv-tecla.bad{background:var(--vv-vinho);color:#fff}.vv-tecla.certa{background:#b9cfe9;box-shadow:inset 0 0 0 3px var(--vv-navy)}
+.vv-tecla:not(.fora):active{background:#dfe8f3}
+.vv-preta{position:absolute;top:0;width:calc(100%/var(--n)*.5);height:58%;transform:translateX(-50%);background:var(--vv-ink);border-radius:0 0 5px 5px;pointer-events:none}
+.vv-teclado.travado .vv-tecla{cursor:default}
+.vv-pauta{background:#fffdf7;border:2px solid var(--vv-line);border-radius:14px;padding:4px 8px}.vv-pauta svg{display:block;width:100%;max-width:300px;height:auto;margin:0 auto}
+.vv-fim:empty{display:none}
+.vv-res{display:grid;gap:4px;justify-items:center;padding:12px;border:2px solid var(--vv-vinho);border-radius:14px;background:#fffdf7}
+.vv-res-n{font-size:38px;line-height:1;color:var(--vv-navy)}.vv-res-est{font-size:26px;letter-spacing:.1em;color:var(--vv-vinho)}.vv-res p{margin:0;font-weight:600}.vv-res small{font-size:12px;opacity:.8}
+/* Eco de Groove */
+.vv-fases{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.vv-fase{display:grid;grid-template-columns:30px 1fr;gap:3px 8px;align-items:center;text-align:left;padding:9px 10px;border:2px solid var(--vv-navy);border-radius:12px;background:#fffdf7;color:var(--vv-ink);box-shadow:2px 2px 0 var(--vv-navy);cursor:pointer}
+.vv-fase.lock{opacity:.5;cursor:default;box-shadow:none}
+.vv-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--vv-navy);color:#fff;font-style:normal;font-weight:800;font-size:13px}
+.vv-nome{font-weight:800;font-size:13px;line-height:1.15}.vv-fase .vv-est{grid-column:1/-1;font-size:13px;color:var(--vv-vinho)}.vv-fase.lock .vv-est{font-size:11px;color:var(--vv-ink)}
+.vv-topo{display:flex;align-items:center;gap:8px;justify-content:space-between;text-align:left}.vv-topo b{flex:1;font-size:15px}.vv-topo .vv-est{color:var(--vv-vinho)}
+.vv-quem{display:block;font-size:15px;padding:5px 10px;border-radius:9px;justify-self:center}.vv-quem.paul{background:var(--vv-navy);color:#fff}.vv-quem.vez{background:var(--vv-vinho);color:#fff}
+.vv-compasso{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.vv-tempo{display:grid;grid-template-rows:auto 1fr;gap:4px;min-height:92px;padding:5px 3px;border:2px solid var(--vv-line);border-radius:12px;background:#fffdf7}
+.vv-tempo small{font-weight:800;color:var(--vv-navy);opacity:.6}.vv-tempo.now{border-color:var(--vv-navy);box-shadow:0 0 0 2px var(--vv-navy)}.vv-tempo.ok{border-color:var(--vv-petro);background:#e6f2f1}.vv-tempo.bad{border-color:var(--vv-vinho);background:#f6e3e6}
+.vv-pecas{display:grid;gap:3px;align-content:center}
+.vv-peca{font-size:11px;font-weight:800;padding:3px 2px;border-radius:6px;color:#fff}.vv-peca.h{background:var(--vv-petro)}.vv-peca.c{background:var(--vv-vinho)}.vv-peca.b{background:var(--vv-navy)}.vv-peca.pausa{background:transparent;color:var(--vv-ink);opacity:.55;border:1.5px dashed var(--vv-line)}
+.vv-pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vv-pad{display:grid;justify-items:center;gap:2px;padding:8px 4px 10px;border:2px solid var(--vv-ink);border-radius:16px;background:#fffdf7;color:var(--vv-ink);font-weight:800;font-size:13px;box-shadow:3px 3px 0 var(--vv-ink);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.vv-pad.h{border-color:var(--vv-petro);box-shadow:3px 3px 0 var(--vv-petro)}.vv-pad.c{border-color:var(--vv-vinho);box-shadow:3px 3px 0 var(--vv-vinho)}.vv-pad.b{border-color:var(--vv-navy);box-shadow:3px 3px 0 var(--vv-navy)}
+.vv-pad.hit,.vv-padzao.hit{transform:translate(2px,2px) scale(.97);box-shadow:none;background:#dfe8f3}
+.vv-drum{display:block;width:64px;height:58px}
+/* Clique Fantasma */
+.vv-luz{justify-self:center;display:grid;place-items:center;width:84px;height:84px;border-radius:50%;border:4px solid var(--vv-navy);background:#fffdf7}
+.vv-luz i{width:44px;height:44px;border-radius:50%;background:var(--vv-navy);opacity:.25}
+.vv-luz.bate i{animation:vv-bate .22s ease-out}.vv-luz.mudo{border-style:dashed;border-color:var(--vv-vinho)}.vv-luz.mudo i{background:transparent;border:3px dashed var(--vv-vinho);opacity:.5;animation:none}
+@keyframes vv-bate{0%{opacity:1;transform:scale(1.35)}100%{opacity:.25;transform:scale(1)}}
+.vv-padzao{justify-self:stretch;min-height:120px;font-size:20px;font-weight:800;border:3px solid var(--vv-ink);border-radius:20px;background:#fffdf7;color:var(--vv-navy);box-shadow:4px 4px 0 var(--vv-ink);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.vv-pontos{display:flex;gap:3px;justify-content:center;width:100%;margin-top:4px}
+.vv-ponto{position:relative;flex:1;max-width:34px;height:26px;border-radius:6px;background:linear-gradient(90deg,transparent calc(50% - 1px),var(--vv-line) calc(50% - 1px),var(--vv-line) calc(50% + 1px),transparent calc(50% + 1px)),#f1ead9}
+.vv-ponto.um{box-shadow:inset 0 3px 0 var(--vv-navy)}
+.vv-ponto i{position:absolute;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--vv-petro)}.vv-ponto.bad i{background:var(--vv-vinho)}.vv-ponto.falta i{background:transparent;border:2px solid var(--vv-ink);opacity:.4}
+.vv-leg{letter-spacing:.02em}
+@media (prefers-reduced-motion:reduce){.vv-luz.bate i{animation:none;opacity:1}.vv-n{transition:none}}
+@media (max-width:360px){.vv-tecla{font-size:11px}.vv-teclado{height:130px}.vv-peca{font-size:10px}.vv-drum{width:52px;height:48px}}
