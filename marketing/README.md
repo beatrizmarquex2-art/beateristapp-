@@ -43,7 +43,7 @@ Crianças aparecem em 9250, 9246, 9248, 9249, 9268 e 9269: **confirmar autoriza�
 | capa_na_pratica / capa_harmonia_e_melodia / capa_ritmo_e_figuras | quadradas | capas das apostilas (as mesmas estão em `assets/originals/artes-beaterista/kit-roboterista/img`) |
 | arte_combo_roboterista_quadrada_ERRO_182pag | quadrada | **não postar como está**: diz 182 páginas (o certo é 102) e "de R$ 100,00" (o certo é R$ 99,60). A versão corrigida é `vendas/assets/combo-roboterista.webp` |
 | arte_passe_beaterista_49_90 | quadrada | post de venda do passe (jogos, estudos, álbum; lojinha à parte) |
-| arte_jogo_da_memoria_8_temas | quadrada | diz "61 cartas"; a loja diz "61 pares". Confirmar com a Bea qual vale antes de postar |
+| arte_jogo_da_memoria_8_temas | quadrada | diz "61 cartas", mas o certo é **8 temas e 61 pares** (loja, página de vendas e Bea em 13/nov): corrigir o texto da arte antes de postar |
 | arte_roboterista_aprenda_brincando_ROBO_ANTIGO | quadrada | robô com desenho antigo (não é o Paul atual): não usar no perfil do Paul |
 | capa_bateria_kids_aprenda_colorindo, capa_beaterista_mood_55pag, post_mood_bonus_20_paginas | quadradas e 4:5 | capas e bônus (Mood: 55 páginas + 20 de atividades) |
 | post_por_que_paul, post_menos_pressa_mais_groove, carrossel_paul_02 e _03, prancha_10_posts_do_paul | 4:5 | posts de personalidade do Paul |
