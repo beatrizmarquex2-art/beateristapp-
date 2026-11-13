@@ -51,6 +51,7 @@ export const THOUGHTS = [
   ['Bateria Kids: aprenda bateria colorindo! olha na Lojinha', '#/lojinha', 'aluno'],
   ['Jogo da Memória Musical pra imprimir e recortar, na Lojinha!', '#/lojinha', 'aluno'],
   ['Robôterista Ensina: figuras rítmicas pra imprimir. vai na Lojinha!', '#/lojinha', 'aluno'],
+  ['quer o app na tela inicial do celular? eu te mostro como!', '#/instalar', 'aluno'],
   ['bora jogar bingo musical? 🎲', '#/jogos/bingo', 'aluno'],
   ['me desafia no jogo da velha musical!', '#/jogos/velha', 'aluno'],
   ['quantas palavras musicais você sabe? joga STOP!', '#/jogos/stop', 'aluno'],

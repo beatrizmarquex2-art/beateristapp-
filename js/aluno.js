@@ -285,6 +285,11 @@ function dicasEstudoView(view) {
 }
 
 /** Lojinha (em construção): exercícios, atividades pra imprimir e o código de acesso. Por enquanto avisa que vem aí e deixa digitar um código que já tem. */
+function instalarView(view) { // arte "põe o app na tela inicial" (assets/paul/arte-instalar.webp)
+  view.append(banner('Instalar o app', 'põe a Beaterista na tela inicial do celular'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+    h('img', { src: 'assets/paul/arte-instalar.webp', alt: 'como pôr o app na tela inicial: no iPhone, abra no Safari, toque em compartilhar e em adicionar à tela de início; no Android, abra no Chrome, toque nos três pontinhos e em instalar app', style: 'width:100%;height:auto;border-radius:18px', loading: 'lazy' }),
+    h('p', { class: 'muted' }, 'depois de instalar, abre pelo ícone, em tela cheia, igual a um aplicativo.')));
+}
 function lojinhaView(view, parts = []) {
   // os depoimentos (só texto) aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js)
   const aba = LOJA_ABERTA && parts[0] === 'depoimentos' ? parts[0] : 'loja';
@@ -304,6 +309,7 @@ function lojinhaView(view, parts = []) {
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
     LOJA_ABERTA ? null : arteDoPaul('arte-por-que-paul', 'por que Paul?', 'a homenagem do nome do robozinho', 'por que Paul? o nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea'),
+    arteDoPaul('arte-instalar', 'põe o app na tela inicial', 'iPhone e Android, em 3 toques', 'passo a passo pra pôr o app na tela inicial do celular'),
     h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
     h('section', { class: 'card pad' }, h('b', {}, 'ou peça pra professora Bea'), pedido)));
   return () => { gone = true; };
@@ -423,6 +429,7 @@ function shell(name) {
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
+    else if (r.name === 'instalar') instalarView(view);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
     if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
