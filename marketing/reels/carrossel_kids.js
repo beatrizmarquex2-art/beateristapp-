@@ -22,10 +22,11 @@ const css=`@font-face{font-family:Anton;src:url(file://${A}/fonts/Anton-latin.wo
 .p{margin-top:26px;display:flex;align-items:flex-end;gap:24px}.p .v{font:400 150px/.9 Anton;color:#f6b93b}.p .d{font:700 38px/1.25 HG;color:#f4ecdf;padding-bottom:8px}
 .cta{margin-top:40px;display:inline-block;background:#c0152f;color:#fff;font:400 68px/1 Anton;padding:26px 38px 30px;border-radius:24px;box-shadow:9px 9px 0 rgba(0,0,0,.35)}
 .u{margin-top:28px;font:800 42px HG;color:#f4ecdf}.s{margin-top:8px;font:600 34px HG;color:#f6b93b}
-.paul{position:absolute;right:50px;bottom:40px;width:430px}`;
+.paul{position:absolute;right:6px;bottom:-4px;width:470px}
+.selo{position:absolute;left:60px;bottom:56px;width:132px}.marca{position:absolute;left:205px;bottom:46px;width:290px}.hd{margin-top:6px;font:800 38px HG;color:#f6b93b}`;
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});
  for(let i=0;i<slides.length;i++){const s=slides[i];let h;
-  if(s.end) h=`<style>${css}</style><div class="e"><div class="tag">material digital em pdf</div><h1>BATERIA<br><b>KIDS</b></h1><div class="p"><div class="v">R$ 19,90</div><div class="d">36 páginas<br>pra imprimir</div></div><div class="cta">LINK NA BIO</div><div class="u">jogos.beaterista.com.br</div><div class="s">compra pela hotmart, pdf na hora</div></div><img class="paul" src="file://${A}/originals/artes-beaterista/kit-roboterista/img/paul.png">`;
+  if(s.end) h=`<style>${css}</style><div class="e"><div class="tag">material digital em pdf</div><h1>BATERIA<br><b>KIDS</b></h1><div class="p"><div class="v">R$ 19,90</div><div class="d">36 páginas<br>pra imprimir</div></div><div class="cta">LINK NA BIO</div><div class="u">jogos.beaterista.com.br</div><div class="hd">@jogos.beaterista</div><div class="s">compra pela hotmart, pdf na hora</div></div><img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"><img class="paul" src="file://${__dirname}/paul_final.png">`;
   else h=`<style>${css}</style><div class="bg" style="background-image:url(file://${K}/${s.img});background-position:${s.pos};transform:scale(${s.z});transform-origin:${s.pos}"></div><div class="sh"></div><div class="box"><div class="tag">bateria kids</div>${s.l.map(x=>`<div class="l ${x[0]=='*'?'hl':''}">${x.replace('*','')}</div>`).join('')}</div><div class="n">${i+1}/6 →</div>`;
   fs.writeFileSync('t.html',h);await p.goto('file://'+process.cwd()+'/t.html');await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(300);await p.screenshot({path:`kids_carrossel_${i+1}.jpg`,type:'jpeg',quality:92});}
  await b.close();})();

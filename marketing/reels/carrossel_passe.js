@@ -23,10 +23,11 @@ const css=`@font-face{font-family:Anton;src:url(file://${A}/fonts/Anton-latin.wo
 .p{margin-top:26px;display:flex;align-items:flex-end;gap:24px}.p .v{font:400 150px/.9 Anton;color:#f6b93b}.p .d{font:700 38px/1.25 HG;color:#f4ecdf;padding-bottom:8px}
 .cta{margin-top:40px;display:inline-block;background:#c0152f;color:#fff;font:400 64px/1 Anton;padding:26px 36px 30px;border-radius:24px;box-shadow:9px 9px 0 rgba(0,0,0,.35)}
 .u{margin-top:28px;font:800 42px HG;color:#f4ecdf}.s{margin-top:8px;font:600 34px HG;color:#f6b93b}
-.paul{position:absolute;right:50px;bottom:40px;width:400px}`;
+.paul{position:absolute;right:6px;bottom:-4px;width:470px}
+.selo{position:absolute;left:60px;bottom:56px;width:132px}.marca{position:absolute;left:205px;bottom:46px;width:290px}.hd{margin-top:6px;font:800 38px HG;color:#f6b93b}`;
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});
  for(let i=0;i<slides.length;i++){const s=slides[i];let h;
-  if(s.end) h=`<style>${css}</style><div class="e"><div class="tag">jogos + estudos + álbum</div><h1>PASSE<br><b>BEATERISTA</b></h1><div class="p"><div class="v">R$ 49,90</div><div class="d">12 meses de acesso<br>pagamento único</div></div><div class="cta">JOGUE GRÁTIS · LINK NA BIO</div><div class="u">jogos.beaterista.com.br</div><div class="s">+ de 15 jogos e estudos</div></div><img class="paul" src="file://${A}/originals/artes-beaterista/kit-roboterista/img/paul.png">`;
+  if(s.end) h=`<style>${css}</style><div class="e"><div class="tag">jogos + estudos + álbum</div><h1>PASSE<br><b>BEATERISTA</b></h1><div class="p"><div class="v">R$ 49,90</div><div class="d">12 meses de acesso<br>pagamento único</div></div><div class="cta">JOGUE GRÁTIS · LINK NA BIO</div><div class="u">jogos.beaterista.com.br</div><div class="hd">@jogos.beaterista</div><div class="s">+ de 15 jogos e estudos</div></div><img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"><img class="paul" src="file://${__dirname}/paul_final.png">`;
   else{const m=Math.max(...s.l.map(x=>x.length));const size=m>24?58:m>19?68:80;
    h=`<style>${css.replace('SIZE',size)}</style><div class="img" style="background-image:url('file://${K}/${s.img}');background-position:${s.pos}"></div><div class="box"><div class="tag">passe beaterista</div>${s.l.map(x=>`<div class="l ${x[0]=='*'?'hl':''}">${x.replace('*','')}</div>`).join('')}</div><div class="n">${i+1}/${slides.length} →</div>`;}
   const f=path.join(O,'t.html');fs.writeFileSync(f,h);await p.goto('file://'+f);await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(300);await p.screenshot({path:path.join(O,`passe_carrossel_${i+1}.jpg`),type:'jpeg',quality:92});}

@@ -72,6 +72,12 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - `audio: "raw"` usa o som da gravação. Como não dá pra ouvir daqui, a Bea precisa escutar antes de postar.
 - Precisa de ffmpeg, node com playwright e python com numpy.
 
+## Cartão final (padrão pedido pela Bea em 13/nov/2026)
+- O desenho do Paul é cortado na cintura: ele entra **grande e encostado na borda de baixo** (`paul_final.png`), nunca solto no meio com o corte aparecendo.
+- Sempre com os dois logos ao lado dele: selo "Escola de Música Beaterista" (`assets/logo-512.png`) e a marca "Beaterista" com coroa (`assets/logo-menu-beaterista.webp`).
+- Mostra o endereço e o @ (`@jogos.beaterista`; no Mood, `@beaterista_`).
+- Os 3 primeiros vídeos (os da moldura) agora também têm spec (`layout: moldura`).
+
 ## Reels já feitos
 | arquivo | público | ideia |
 |---|---|---|
@@ -101,7 +107,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 
 ## Diagnóstico de venda (resumo)
 - TikTok @beaterista ~294 mil seguidores, mas vídeos recentes com 600 a 1,7 mil views (covers com legenda só de hashtag).
-- Instagram @beaterista_ ~32 mil. Perfil novo do Paul no Instagram (pegar o @ com a Bea).
+- Instagram @beaterista_ ~32 mil. Perfil do Paul no Instagram: **@jogos.beaterista**.
 - beaterista.com.br (GoDaddy): curso "Aprenda do Zero" R$ 79,90; falta garantia visível, depoimentos, lista de aulas e vídeo; muitos produtos competindo.
 - Regra de toda peça: 1 promessa + 1 chamada ("link na bio" ou palavra pra comentar), hashtags só no fim, um produto por peça.
 - Preços e fatos pra usar: passe anual R$ 49,90 (pagamento único, 12 meses), mais de 15 jogos e estudos, mais de 100 figurinhas, combo Robôterista R$ 79,90 (4 PDFs, de R$ 99,60); avulsos em `js/loja-config.js`: Ritmo e Figuras, Harmonia e Melodia, Mood e Violão do Zero R$ 29,90; Na Prática, Memória e Bateria Kids R$ 19,90, jogar grátis em jogos.beaterista.com.br. Nunca inventar depoimento, número ou escassez.

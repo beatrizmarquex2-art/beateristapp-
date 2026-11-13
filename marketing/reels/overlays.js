@@ -27,8 +27,11 @@ html,body{width:1080px;height:1920px;background:transparent;overflow:hidden}
 .price .v{font:400 150px/0.9 Anton;color:#f6b93b}
 .price .d{font:700 38px/1.25 HG;color:#f4ecdf;padding-bottom:8px}
 .cta{margin-top:40px;display:inline-block;background:#c0152f;color:#fff;font:400 70px/1 Anton;padding:28px 40px 32px;border-radius:26px;box-shadow:10px 10px 0 rgba(0,0,0,.35);letter-spacing:.02em}
-.url{margin-top:34px;font:800 46px HG;color:#f4ecdf}
-.sub{margin-top:10px;font:600 36px HG;color:#f6b93b}`;
+.url{margin-top:28px;font:800 46px HG;color:#f4ecdf}
+.sub{margin-top:6px;font:600 36px HG;color:#f6b93b}
+.hd{margin-top:6px;font:800 42px HG;color:#f6b93b}
+.selo{position:absolute;left:84px;top:1268px;width:190px}
+.marca{position:absolute;left:50px;top:1462px;width:350px}`;
 function clip(i){const s=spec.segs[i];const ls=s.lines;const max=Math.max(...ls.map(x=>x.length));
  const size=max>17?92:max>13?108:124; const n=spec.segs.length;
  return `<style>${css.replace('SIZE',size)}</style>${s.layout==='h'?'':'<div class="shade"></div>'}
@@ -39,7 +42,8 @@ function end(){const e=spec.end;return `<style>${css}</style><div class="end"><d
  <div class="tag">${e.tag}</div><h1>${e.h[0]}<br><b>${e.h[1]}</b></h1>
  <div class="price"><div class="v">${e.price||'R$ 49,90'}</div><div class="d">${e.priceNote||'passe anual<br>pagamento único'}</div></div>
  <div class="cta">${e.cta||'JOGUE GRÁTIS · LINK NA BIO'}</div>
- <div class="url">${e.url||'jogos.beaterista.com.br'}</div><div class="sub">${e.sub||'comece grátis hoje'}</div></div></div>`}
+ <div class="url">${e.url||'jogos.beaterista.com.br'}</div><div class="hd">${e.handle||'@jogos.beaterista'}</div><div class="sub">${e.sub||'comece grátis hoje'}</div></div>
+ <img class="selo" src="file://${A}/logo-512.png"><img class="marca" src="file://${A}/logo-menu-beaterista.webp"></div>`}
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1920}});
  const shot=async(html,name,opaque)=>{const f=path.join(out,'t.html');fs.writeFileSync(f,html);await p.goto('file://'+path.resolve(f));await p.evaluate(()=>document.fonts.ready);await p.screenshot({path:path.join(out,name),omitBackground:!opaque});};
  for(let i=0;i<spec.segs.length;i++) await shot(clip(i),`t${i}.png`);

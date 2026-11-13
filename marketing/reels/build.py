@@ -25,6 +25,8 @@ for i,s in enumerate(segs):
         v=f"scale=-2:1700:flags=lanczos,crop=1080:1700:(iw-1080)*{s.get('cx',0.5)}:0,eq=contrast=1.05:saturation=1.1,pad=1080:1920:0:220:color=0x101f47,fps=30"
     elif lay=='fit':  # arte pronta (quadrada ou 4:5): inteira, largura cheia, com a frase na faixa azul em cima
         v=f"scale=1000:-2:flags=lanczos,pad=1080:1920:40:{s.get('y',700)}:color=0x101f47,fps=30"
+    elif lay=='moldura':  # video antigo com a filmagem dentro de uma moldura: recorta so a filmagem
+        v=f"fps=30,crop=444:790:150:215,scale=1188:2112:flags=lanczos,{z},eq=contrast=1.07:brightness=0.035:saturation=1.2:gamma=1.06,unsharp=5:5:0.7"
     elif lay=='rot':
         v=f"fps=30,transpose={s.get('transpose',2)},scale=1188:2112:flags=lanczos,{z},{eq}"
     else:
@@ -40,8 +42,9 @@ for i,s in enumerate(segs):
 if end:
     cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(tmp,'end.png')]
     fc+=f"[{k}:v]format=rgba,fade=in:st={clipT}:d=0.15:alpha=1[oe];[{prev}][oe]overlay=enable='gte(t,{clipT})'[ve];"; k+=1
-    cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(here,'../../assets/originals/artes-beaterista/kit-roboterista/img/paul.png')]
-    fc+=f"[{k}:v]scale=540:-1,format=rgba[pl];[ve][pl]overlay=x=W-w-70:y='H-h-170+900*pow(max(0,1-(t-{clipT+0.1})/0.35),2)':enable='gte(t,{clipT+0.1})'[vout];"; k+=1
+    # paul grande, encostado na borda de baixo (o desenho e cortado na cintura, entao a borda esconde o corte)
+    cmd+=['-loop','1','-framerate','30','-t',str(T),'-i',os.path.join(here,'paul_final.png')]
+    fc+=f"[{k}:v]scale=680:-1,format=rgba[pl];[ve][pl]overlay=x=W-w-6:y='H-h+4+900*pow(max(0,1-(t-{clipT+0.1})/0.35),2)':enable='gte(t,{clipT+0.1})'[vout];"; k+=1
 else:
     fc+=f"[{prev}]null[vout];"
 if spec.get('audio')=='raw':
