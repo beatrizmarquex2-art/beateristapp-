@@ -655,3 +655,22 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Aulinha nas 3 primeiras fases**: Figurix abre numa tela "aulinha rápida do Paul" (frase do tipo da fase + tabela "colinha das figuras" + "jogar a fase" + link `#/estudos/aulas` + aviso de que concluir as aulas lá dá estrela). pauLta: nas fases 1 a 3 de cada mundo, embaixo das cartas "o Paul vai te apresentar", entra o mesmo link e aviso (`.pl-aulinha`).
 - Testes antigos ajustados: `figurix.mjs` e `figurix-novas.mjs` (aluno do teste já com 3 ★ e passam pela aulinha), `paulta.mjs` (mundos trancados). `sw.js` v494.
 - **Toca Aqui: a nota da fase é a do ÚLTIMO compasso, não a média** (pedido da Bea, com foto: aparecia "os 3 compassos: 100 · 66 · 71 · 100 · 100 → média 87%"). Em `js/views/treinos.js` a nota final, as estrelas e o "passou" usam o resultado do 3º compasso; tocar de novo depois do 3º troca o último em vez de somar mais um (era o que fazia a lista passar de 3). `sw.js` v495.
+- **Figurix: "↻ recomeçar pra ganhar 3 ★"** (pedido da Bea): aparece no topo da fase assim que o aluno erra uma vez (um erro já tira as 3 ★ da rodada) e recomeça a mesma fase do zero, sem passar pela aulinha. Na tela de fim, com menos de 3 ★, o "jogar de novo" vira o mesmo texto. Teste `tests/e2e/figurix-recomeca.mjs`. `sw.js` v496.
+
+## Quais jogos dão até 3 ★ por fase (resumo pra Bea, conferido no código em 13/nov/2026)
+| Jogo | Tem mundo com fases? | Estrelas por fase | Como ganha as 3 |
+|---|---|---|---|
+| pauLta | sim (Selva, Deserto, Vulcão, Sol, Fá, Duelo) | até 3 | 60% = 1, 80% = 2, 100% = 3 (vale o melhor entre nomes e imagens) |
+| Figurix | sim (Floresta, Deserto, Mar, Espaço) | até 3 | 60/80/100% de acertos: um erro já tira a 3ª |
+| Detetive Note | sim (12 fases por modo) | até 3 | 60/80/100% dos ritmos acertados de primeira |
+| Toca Aqui | sim (Bosque, Maré, Órbita) | até 3 | na tela 60/80/100% do último compasso; no microfone vale no mínimo 2 ★ (3 ★ no intermediário de 120 BPM pra cima e no avançado de 100 pra cima) |
+| Fases dos Kids (Figuras, Eco etc.) | sim | até 3 | 60/80/100% |
+| Taiko (rudimentos) | lista de 11 fases | até 24 por fase | cada combinação de figura (2) × andamento (4) vale até 3: 70% = 1, 85% = 2, 100% = 3 |
+| Eco de Groove (novo) | lista de 10 fases | até 3 | 60/80/100% |
+| Copia Aí, pauLta ao Vivo, Clique Fantasma (novos) | não (níveis) | até 3 por nível | ver a seção "Tocar de verdade" |
+| Beat Hero | não (músicas) | estrelas por música | pela precisão; música de 2 min vale em dobro |
+| Cara a Cara, Stop | não | 3 por vitória | ganhar a partida |
+| Velha, Memória, Uno Musical, quiz do Uno | não | 1 por vitória | ganhar a partida |
+| Quebra-cabeça | não | 3 na 1ª vez de cada imagem | depois 2 e 1 nas voltas seguintes |
+- **Trava de mundo por 3 ★** existe só na pauLta e no Figurix. Toca Aqui e Detetive Note têm mundos, mas hoje não trancam.
+- Toda estrela soma pro giro da roleta: 15 ★ = 1 giro; + 1 giro a cada 4 fases concluídas (pauLta, Kids, Figurix, Detetive).

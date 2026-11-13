@@ -46,10 +46,12 @@ export function mount(host) {
       starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };
-  const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
+  // errou uma vez = já não dá 3 ★ nesta rodada: aparece o botão de recomeçar a fase (pedido da Bea)
+  const btnRecomeca = () => h('button', { class: 'btn small fx-recomeca', type: 'button', onclick: () => joga(fase) }, '↻ recomeçar pra ganhar 3 ★');
+  const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'), jogando && erros > 0 ? btnRecomeca() : null,
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
   const acerto = (el) => { acertos++; try { FB.win(el); } catch { /* ok */ } };
-  const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } };
+  const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } if (jogando && !root.querySelector('.fx-recomeca')) { const hd = root.querySelector('.tr-fasehead'); const b = btnRecomeca(); if (hd) hd.querySelector('button').after(b); else root.prepend(b); } };
   const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
   /** Aulinha das 3 primeiras fases: a colinha das figuras, a dica do Paul e o caminho pras aulas nos Estudos (lá vale estrela). */
   const aulinha = (n) => {
@@ -73,7 +75,7 @@ export function mount(host) {
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' acertando tudo de primeira, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
       h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,
-        fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: 'btn', type: 'button', onclick: () => comeca(fase) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
+        fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: `btn${est < 3 ? ' fx-recomeca' : ''}`, type: 'button', onclick: () => joga(fase) }, est < 3 ? '↻ recomeçar pra ganhar 3 ★' : 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 
   /* ---------- as fases ---------- */

@@ -1258,3 +1258,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fx-aula-fala{font-weight:700}.fx-aula-nota{font-size:13px;opacity:.85}.fx-trava{font-weight:700}
 .tm-tabs button.lock{opacity:.6}
 .pl-aulinha{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}.pl-aulinha small{font-size:12px}.pl-regra{font-weight:700;text-align:center}
+
+.fx-recomeca{font-weight:800;border-color:#8e1b2c!important;box-shadow:2px 2px 0 #8e1b2c}
