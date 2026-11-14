@@ -11,7 +11,7 @@ export function contar(mesa, jogo, dia = hoje(), n = 1) {
   return { mesa: { ...m, total: m.total + g, dias: { ...m.dias, [jogo]: d } }, ganhou: g, resta: LIMITE_DIA - d.n };
 }
 /** Jogos e estudos de APRENDER: NÃO têm o limite de 30 ★ por dia (pedido da Bea). O limite vale só pros jogos de mesa (velha, memória, cara a cara, stop, bingo, quebra-cabeça), que dão 1 ★ por vez. */
-export const APRENDER = ['cartas', 'quizuno', 'quiz', 'caca', 'cruzadinha', 'toca', 'figurix', 'detetive', 'rudimentos', 'estudos', 'beathero', 'arte', 'checkin', 'missao'];
+export const APRENDER = ['cartas', 'quizuno', 'quiz', 'caca', 'cruzadinha', 'toca', 'figurix', 'detetive', 'rudimentos', 'copia', 'paultavivo', 'groove', 'fantasma', 'estudos', 'beathero', 'arte', 'checkin', 'missao'];
 /** Jogos que ENSINAM valem até 3 estrelas por partida; os outros, 1. As estrelas de um quiz/caça/cruzadinha vêm do desempenho. */
 export const ENSINAM = ['cartas', 'quiz', 'caca', 'cruzadinha'];
 export const starsPct = (certas, total) => { const p = total ? certas / total : 0; return p >= 0.9 ? 3 : p >= 0.7 ? 2 : p >= 0.4 ? 1 : 0; };

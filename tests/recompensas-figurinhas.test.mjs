@@ -39,3 +39,21 @@ test('cada aluno sorteia diferente (o check-in do dia não dá a mesma carta pra
   for (let i = 0; i < 60; i++) { const s = L.grantPack(L.emptyState(), id); const r = L.openPack(s, cat, id); vistos.add(r.codes.join(',')); assert.ok(r.state.seed); assert.deepEqual(L.openPack(r.state, cat, id).codes, r.codes); }
   assert.ok(vistos.size > 20, `só ${vistos.size} resultados diferentes em 60 alunos`);
 });
+
+test('sem figurinha repetida: pacote novo nunca traz carta que o aluno já tem, até o álbum completar', () => {
+  let s = L.emptyState(); let abertas = 0;
+  for (let i = 0; i < 400 && Object.keys({ ...s.inv, ...s.pasted }).length < cat.length; i++) {
+    const id = `roleta:rep:${i}`; const antes = new Set([...Object.keys(s.inv), ...Object.keys(s.pasted)]);
+    const r = L.openPack(L.grantPack(s, id), cat, id); assert.ok(r.fresh);
+    assert.equal(new Set(r.codes).size, r.codes.length, 'repetida dentro do mesmo pacote');
+    for (const c of r.codes) assert.ok(!antes.has(c), `veio repetida: ${c} no pacote ${i}`);
+    s = i % 3 === 0 ? L.pasteAll(r.state) : r.state; abertas += r.codes.length;
+  }
+  assert.equal(L.repeated(s), 0); assert.equal(abertas, cat.length, 'cada carta do catálogo saiu exatamente uma vez');
+  const fim = L.openPack(L.grantPack(s, 'roleta:rep:fim'), cat, 'roleta:rep:fim'); assert.ok(fim.codes.length >= 1, 'álbum completo: aí sim pode repetir');
+});
+test('semRepetir troca pela mesma seção quando dá e não mexe no que o aluno não tem', () => {
+  const sec = (c) => cat.find((x) => x.codigo === c).secao; const a = cat[0].codigo; const b = cat[1].codigo;
+  assert.deepEqual(L.semRepetir(cat, [a, b], new Set()), [a, b]);
+  const t = L.semRepetir(cat, [a, a], new Set([b])); assert.equal(t[0], a); assert.notEqual(t[1], a); assert.notEqual(t[1], b); assert.equal(sec(t[1]), sec(a));
+});

@@ -17,7 +17,7 @@ check('pensamentos de Lojinha e de jogos existem', itens.some((h) => h === '#/lo
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(1500);
 await page.evaluate(async () => { const m = await import('/js/paul-talk.js'); m.think(m.THOUGHTS.find((t) => t[1] === '#/lojinha'), 20000); });
 await sleep(300);
-const a = page.locator('.pt-cloud'); check('a nuvem é um link interno (abre no mesmo app)', (await a.getAttribute('href')) === '#/lojinha' && (await a.getAttribute('target')) === null);
+const a = page.locator('.pt-cloud .pt-ver'); check('a nuvem é um link interno (abre no mesmo app)', (await a.getAttribute('href')) === '#/lojinha' && (await a.getAttribute('target')) === null);
 await a.click(); await sleep(800);
 check('tocar na nuvem leva pra Lojinha', (await page.evaluate(() => location.hash)) === '#/lojinha' && (await page.locator('.lj-card').count()) === 6);
 check('sem erros de página', errs.length === 0, errs.join(' | '));

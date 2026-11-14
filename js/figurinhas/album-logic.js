@@ -90,10 +90,69 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   }
   return out;
 }
+/**
+ * Sem figurinha repetida (pedido da Bea): troca cada carta que o aluno JÁ TEM (colada ou na mão), ou que veio duas vezes no mesmo pacote,
+ * por uma que ainda falta. Procura primeiro do mesmo tipo (mesma seção e mesma letra do código), depois da mesma seção, depois qualquer uma que falte.
+ * Se faltam menos cartas do que o pacote traria, o pacote vem menor. Só repete quando o álbum inteiro já está completo. `tem` = Set dos códigos que o aluno já tem; `r` = gerador de números (0 a 1).
+ */
+/** Degrau de raridade da carta: comum 0, Beatlemania 1, rara 2, exclusiva da Beaterista 3. */
+export const degrau = (e) => (!e ? 0 : e.raridade === 'Exclusiva' ? 3 : e.raridade === 'Rara' ? 2 : ehBeatles(e) ? 1 : 0);
+/**
+ * De onde sai a carta que entra no lugar de uma repetida (pedido da Bea: troca pela MESMA raridade).
+ * 1º a mesma raridade (mesmo tipo de carta quando dá); se dessa raridade já não falta nenhuma, a mais alta que falta ABAIXO dela.
+ * Nunca sobe de raridade: repetida comum não vira rara nem exclusiva. Sem nada pra pôr no lugar devolve undefined.
+ */
+export function poolTroca(livres, e, code, sobe = false) {
+  const d = degrau(e); const mesma = livres.filter((c) => degrau(c) === d);
+  if (mesma.length) return [mesma.filter((c) => e && c.secao === e.secao && c.codigo[0] === code[0]), mesma.filter((c) => e && c.secao === e.secao), mesma].find((l) => l.length);
+  for (let k = d - 1; k >= 0; k--) { const l = livres.filter((c) => degrau(c) === k); if (l.length) return l; }
+  if (sobe) for (let k = d + 1; k <= 3; k++) { const l = livres.filter((c) => degrau(c) === k); if (l.length) return l; } // pacote NOVO: melhor uma carta mais rara do que vir repetida ou vazio
+  return undefined;
+}
+export function semRepetir(catalog, codes, tem, r = Math.random) {
+  const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const usados = new Set(tem); const out = [];
+  for (const code of codes) {
+    if (!usados.has(code)) { usados.add(code); out.push(code); continue; }
+    const e = by[code]; const livres = catalog.filter((c) => !usados.has(c.codigo));
+    const pool = poolTroca(livres, e, code, true);
+    if (!pool) continue; // não sobrou carta nova: o pacote vem menor em vez de trazer repetida
+    const novo = pool[Math.floor(r() * pool.length)].codigo; usados.add(novo); out.push(novo);
+  }
+  return out.length ? out : [...new Set(codes)]; // álbum completo: aí o pacote vem como foi sorteado
+}
+/**
+ * Quem já tinha figurinha repetida (de antes da regra "sem repetir"): cada cópia a mais vira uma carta NOVA que ainda falta (pedido da Bea).
+ * Percorre os pacotes já abertos em ordem; a 1ª vez de cada carta fica, as repetidas são trocadas (mesmo tipo quando dá). Presentes da Bea (`dado:`) não mudam.
+ * Só sobra repetida se o álbum inteiro já estiver completo. Devolve { state, trocadas } (o mesmo state se não havia nada pra trocar).
+ */
+export function trocarRepetidas(state, catalog) {
+  if (!repeated(state)) return { state, trocadas: 0 };
+  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12);
+  const by = Object.fromEntries(catalog.map((c) => [c.codigo, c])); const r = rng(hashSeed(`trocarep|${s.seed}`)); const ids = Object.keys(s.opened).sort();
+  // `tem` = tudo que o aluno já tem em qualquer pacote ou colado (a carta nova nunca pode ser uma dessas); `vistos` = as que já apareceram nesta passada
+  const tem = new Set([...Object.keys(s.pasted || {}), ...Object.keys(s.inv || {}), ...ids.flatMap((id) => s.opened[id] || [])]);
+  const vistos = new Set(); for (const id of ids) if (String(id).startsWith('dado:')) for (const c of s.opened[id] || []) vistos.add(c); // os presentes contam como "já tem"
+  const opened = {}; let trocadas = 0;
+  for (const id of ids) {
+    const codes = s.opened[id] || []; if (String(id).startsWith('dado:')) { opened[id] = codes; continue; }
+    opened[id] = codes.map((code) => {
+      if (!vistos.has(code)) { vistos.add(code); return code; }
+      const e = by[code]; const livres = catalog.filter((c) => !tem.has(c.codigo));
+      const pool = poolTroca(livres, e, code);
+      if (!pool) return code; // álbum completo: não tem o que pôr no lugar
+      if ((s.inv[code] || 0) <= 0) return code; // essa cópia não está na mão (dado antigo): não mexe
+      const novo = pool[Math.floor(r() * pool.length)].codigo; vistos.add(novo); tem.add(novo); trocadas++;
+      s.inv[code] -= 1; if (s.inv[code] <= 0) delete s.inv[code]; s.inv[novo] = (s.inv[novo] || 0) + 1; return novo; // sai a repetida da mão, entra a nova
+    });
+  }
+  if (!trocadas) return { state, trocadas: 0 };
+  s.opened = opened; return { state: s, trocadas };
+}
 /** Abre o pacote: as figurinhas vão pra "mão" (ainda não coladas). Abrir de novo o mesmo id não faz nada. */
 export function openPack(state, catalog, packId) {
   if (!state.granted?.includes(packId) || state.opened?.[packId]) return { state, codes: state.opened?.[packId] || null, fresh: false };
-  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12); const codes = drawPack(catalog, packId, PACK_SIZE, s.seed); // sorteio diferente pra cada aluno
+  const s = clone(state); if (!s.seed) s.seed = Math.random().toString(36).slice(2, 12); let codes = drawPack(catalog, packId, PACK_SIZE, s.seed); // sorteio diferente pra cada aluno
+  if (!String(packId).startsWith('dado:')) codes = semRepetir(catalog, codes, new Set([...Object.keys(s.inv).filter((c) => s.inv[c] > 0), ...Object.keys(s.pasted)]), rng(hashSeed(`troca|${packId}|${s.seed}`))); // presente da Bea (cartas escolhidas) vem como ela mandou
   s.opened[packId] = codes; for (const c of codes) s.inv[c] = (s.inv[c] || 0) + 1;
   return { state: s, codes, fresh: true };
 }

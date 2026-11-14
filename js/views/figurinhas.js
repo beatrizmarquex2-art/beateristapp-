@@ -1,5 +1,6 @@
 // Álbum de figurinhas da Beaterista: coleções, espaços numerados, pacotes, colar, detalhe com zoom.
 // Progresso salvo no registro 'figurinhas-album' do app (IndexedDB; sincroniza pela conta como o resto, quando há login).
+import { ultimoJogo } from '../ultimo-jogo.js';
 import { h, todayKey } from '../util.js';
 import { banner, sheet, toast } from '../ui.js';
 import * as store from '../store.js';
@@ -17,7 +18,8 @@ import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
 
 const LENDARIAS_ON = true; // aba Lendárias liberada (pedido da Bea): por enquanto os espaços ficam trancados até as figurinhas chegarem
-const TABS = [...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Minhas', 'Pacotes'];
+const TABS = ['Na mão', ...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Minhas', 'Pacotes']; // "minhas figurinhas" (as da mão, pra colar) é a primeira aba
+const ROTULO = { 'Na mão': 'minhas figurinhas', Minhas: 'criadas por mim' }; // nome na aba (o resto usa o próprio nome)
 const NOTE = { Comum: 'o mundo da música: bandas, bateristas e ídolos', Beatlemania: 'edição psicodélica dos quatro de Liverpool', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Raras: 'as mais difíceis de achar, incluindo as duplas' };
 let catalog = null;
 // catálogo completo = as 125 originais + as figurinhas do Paul (arquivo separado, pra não mexer no catálogo original)
@@ -28,14 +30,15 @@ const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: red
 
 export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
-  host.append(banner('Álbum', 'cole todas as figurinhas'), wrap);
+  const ult = ultimoJogo(); // pra ninguém se perder: o Álbum mostra o caminho de volta pro jogo em que o aluno estava
+  host.append(banner('Álbum', 'cole todas as figurinhas'), ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
   const ID = D.albumId(); // o álbum é de quem está com o nome agora
   let state = { ...L.emptyState(), ...D.albumDados() };
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
   const guardarNaNuvem = () => { if (!nuvem) return; clearTimeout(tSave); tSave = setTimeout(() => opts.salvar(state), 700); };
   if (opts.estado) state = L.mergeStates(state, opts.estado); // junta o que está salvo no Supabase com o deste aparelho
   const explicita = TABS.includes(parts[0]) || !!L.SECAO_ANTIGA[parts[0]];
-  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || TABS[0], artist = '';
+  let tab = TABS.includes(parts[0]) ? parts[0] : L.SECAO_ANTIGA[parts[0]] || L.SECOES[0], artist = '';
   let alive = true; let io = null; let justPasted = null;
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
@@ -80,6 +83,7 @@ export function mount(host, parts = [], opts = {}) {
     try { await loadCatalog(); } catch { wrap.replaceChildren(h('p', { class: 'fig-note' }, 'não consegui abrir o catálogo agora. tente de novo com internet.')); return; }
     if (!alive) return;
     // sem pacote de boas-vindas. Check-in: 1 giro grátis da roleta por dia (id do dia, então abrir de novo não entrega outro); o resto vem jogando (roleta a cada 30 ★ e prêmio de jogo completo).
+    { const t = L.trocarRepetidas(state, catalog); if (t.trocadas) { state = t.state; store.upsert('figurinhas', ID, state); guardarNaNuvem(); toast(`suas ${t.trocadas} repetida${t.trocadas === 1 ? ' virou carta nova' : 's viraram cartas novas'}! olha em minhas figurinhas`, { ms: 5000 }); } } // as repetidas de antes viram cartas que faltam
     let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
     // check-in de 7 dias seguidos: pacote com 1 exclusiva da Bea + 10 ★ + festa (só 1x por dia entra na conta)
@@ -101,15 +105,15 @@ export function mount(host, parts = [], opts = {}) {
     if (!catalog) return;
     const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
     const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
-      const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : '';
-      return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, t.toLowerCase() + badge);
+      const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : t === 'Na mão' ? (L.inHand(state) ? ` ${L.inHand(state)}` : '') : '';
+      return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => { tab = t; artist = ''; draw(); } }, (ROTULO[t] || t.toLowerCase()) + badge);
     }));
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => { tab = 'Pacotes'; draw(); } }, '🎡 você tem cartas para resgatar') : null;
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
       h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!')),
-      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
-    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
+      tabs, aviso, tab === 'Pacotes' ? packsView() : tab === 'Na mão' ? maoView() : tab === 'Minhas' ? minhasView() : tab === 'Lendárias' ? lendariasView() : collectionView());
+    if (tab !== 'Pacotes' && tab !== 'Minhas' && tab !== 'Lendárias' && tab !== 'Na mão') requestAnimationFrame(() => { const b = books[tab]; if (!b) return; if (b.novo) { b.novo = false; b.jump(b.firstTarget()); } else b.go(b.current(), false); }); // reanexar o livro zera a rolagem: volta pra mesma página
   }
 
   /* ---------- coleção: o livro ---------- */
@@ -132,6 +136,22 @@ export function mount(host, parts = [], opts = {}) {
     justPasted = e.codigo;
     save(L.paste(state, e.codigo));
     toast(`${e.artista_banda} colada no álbum`);
+  }
+
+  /* ---------- minhas figurinhas: as que estão na mão, pra colar no álbum ---------- */
+  function maoView() {
+    const hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
+    const pastable = hand.filter((e) => L.canPaste(state, e.codigo)), rep = hand.length - pastable.length;
+    const cell = (e) => {
+      const pode = L.canPaste(state, e.codigo); const th = h('button', { type: 'button', class: 'fig-mao-img', 'aria-label': `ver ${e.artista_banda}`, onclick: () => detail(e) }); th.innerHTML = svgOf(e, `m${e.codigo}`);
+      return h('div', { class: `fig-mao-it${pode ? '' : ' rep'}` }, th, h('b', {}, e.artista_banda),
+        pode ? h('button', { type: 'button', class: 'btn small primary', onclick: () => doPaste(e) }, 'colar no álbum') : h('em', {}, 'repetida · já está no álbum'));
+    };
+    return h('section', { class: 'fig-col fig-mao' },
+      h('h2', { class: 'tag' }, `minhas figurinhas (${hand.length})`),
+      h('p', { class: 'muted' }, hand.length ? `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}. toque na figurinha pra ver grande.` : 'nenhuma figurinha na mão. ganhe estrelas nos jogos e gire a roleta pra pegar mais!'),
+      pastable.length ? h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo no álbum (${pastable.length})`) : null,
+      hand.length ? h('div', { class: 'fig-mao-grid' }, ...hand.map(cell)) : h('button', { type: 'button', class: 'btn wide', onclick: () => { tab = 'Pacotes'; draw(); } }, 'ir pra roleta'));
   }
 
   /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */
@@ -157,7 +177,7 @@ export function mount(host, parts = [], opts = {}) {
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
   let mcView = null;
   function minhasView() {
-    if (mcView) mcView.cleanup(); mcView = Minhas.colecao({ titulo: 'minhas cartinhas', vazio: 'nenhuma ainda. crie a sua na aba Perfil e toque em "guardar na minha coleção".' });
+    if (mcView) mcView.cleanup(); let nomeAluno = ''; try { nomeAluno = (localStorage.getItem('beaterista-aluno-nome') || '').trim(); } catch { /* sem nome */ } mcView = Minhas.album({ nome: nomeAluno }); // álbum de verdade só do aluno, só neste aparelho
     return h('section', { class: 'fig-col' }, mcView.el, h('a', { class: 'btn wide', href: '#/perfil' }, 'criar uma cartinha (Perfil)'));
   }
 
@@ -175,18 +195,16 @@ export function mount(host, parts = [], opts = {}) {
       h('div', { class: 'fig-pack-card' },
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
         h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
+        h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote'),
+        h('details', { class: 'fig-mais' }, h('summary', {}, 'ganhe mais ★ (missões com print e check-in)'),
+          h('div', {}, 
         h('div', { class: 'fig-missoes' }, h('b', {}, `missões com print: +${RS.ESTRELAS_MISSAO} ★ cada`), h('small', {}, 'faça, tire um print e envie. a professora Bea confere e a estrela chega.'),
           ...RS.MISSOES.map((m) => h('div', { class: 'fig-missao' }, h('span', {}, h('b', {}, m.titulo), h('small', {}, m.dica)),
             h('span', { class: 'fig-missao-bt' }, m.tipo === 'amigo' ? h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, m.rotulo) : h('a', { class: 'btn small ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo), ...(m.extras || []).map(([t, u]) => h('a', { class: 'btn small ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
               statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))),
-        h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`)),
-        h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
-        h('ul', { class: 'fig-regras' },
-          h('li', {}, '★ todo jogo dá estrela: a cada ', h('b', {}, '15 ★'), ' você ganha ', h('b', {}, '1 giro da roleta'), ' (qualquer figurinha pode sair!)'),
-          h('li', {}, '📚 ', h('b', {}, 'jogos de aprender dão figurinha extra'), ': a cada ', h('b', {}, '4 fases concluídas'), ' você ganha ', h('b', {}, '+1 giro'), me ? ` (${EST.faltamFases3(me.id)} pra o próximo)` : ''),
-          h('li', {}, '🎯 acertou 5 seguidas no quiz Uno Musical: 1 giro (até 3 por dia)'),
-          h('li', {}, '✨ ', h('b', {}, 'o álbum ainda vai mudar'), ': vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!'))),
-        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote')),
+          h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`))
+          ))),
       h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
         h('p', { class: 'fig-note' }, `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}`),

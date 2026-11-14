@@ -18,7 +18,8 @@ const txt = () => page.evaluate(() => document.querySelector('#view').innerText)
 
 check('nome do jogo aparece como pauLta (L maiúsculo)', (await txt()).includes('pauLta'));
 check('6 mundos: selva, cidade e vulcão da bateria, sol, fá e duelo (trancado)', (await page.$$('.kx-cards .kx-g')).length === 6 && !!(await page.$('.kx-g.pl-locked')) && /Selva da Bateria/.test(await txt()) && /Deserto das Colcheias/.test(await txt()) && /Vulcão das Semicolcheias/.test(await txt()));
-for (const [w, n] of [['drumF', 12], ['drumI', 12], ['drumD', 12], ['sol', 15], ['fa', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.mp-node')).length === n); }
+for (const [w, n] of [['drumF', 12], ['sol', 15]]) { await go(`#/paulta/${w}`); check(`mapa ${w}: ${n} fases`, (await page.$$('.mp-node')).length === n); }
+for (const w of ['drumI', 'drumD', 'fa']) { await go(`#/paulta/${w}`); check(`regra das 3 estrelas (aluno): ${w} fica trancado sem 3 estrelas no mundo anterior e volta pro início`, (await page.$$('.mp-node')).length === 0 && await page.evaluate(() => location.hash === '#/paulta')); }
 await go('#/paulta/drumF/2/nomes'); check('fase 2 trancada redireciona pro mapa', (await page.$$('.mp')).length === 1);
 
 // errar mostra explicação específica e exige "entendi"

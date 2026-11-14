@@ -6,9 +6,11 @@ import * as S from './score.js';
 
 export const KEY = 'setting-paulta';
 const raw = () => (store.get(KEY) ? store.get(KEY).data : {}) || {};
-export const getP = (pid) => S.norm((raw().players || {})[pid]);
+/** Na área dos alunos a regra das 3 ★ vale SEMPRE (pedido da Bea: o aluno não passa de mundo sem 3 ★ em todas as fases). No app da Bea é um botão. */
+export const regraFixa = () => typeof document !== 'undefined' && document.documentElement.classList.contains('aluno-on');
+export const getP = (pid) => { const p = S.norm((raw().players || {})[pid]); return regraFixa() ? { ...p, exig: true } : p; };
 export async function commit(pid, fn) {
-  const r = raw(); const cur = S.norm((r.players || {})[pid]); const next = fn(cur);
+  const r = raw(); const cur = S.norm((r.players || {})[pid]); const next = fn(cur); if (regraFixa() && next && next.exig && !cur.exig) delete next.exig; // a regra fixa do aluno não fica gravada no progresso
   await store.upsert('setting', KEY, { players: { ...(r.players || {}), [pid]: next } });
   return next;
 }

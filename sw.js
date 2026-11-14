@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v490';
+const VERSION = 'beaterista-v518';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -56,7 +56,7 @@ const EXTRA = [
   'assets/jogos/icones/relatorio.svg',
   'assets/jogos/icones/ritmo.svg',
   'assets/jogos/icones/stop.webp',
-  'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
+  'js/ultimo-jogo.js', 'js/jogos/vivo-logic.js', 'js/jogos/vivo-ui.js', 'js/jogos/copia.js', 'js/jogos/paulta-vivo.js', 'js/jogos/groove.js', 'js/jogos/fantasma.js', 'assets/jogos/icones/copia.svg', 'assets/jogos/icones/pauta-vivo.svg', 'assets/jogos/icones/groove.svg', 'assets/jogos/icones/fantasma.svg', 'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
   'assets/jogos/icones/velha.webp',
   'assets/jogos/instrumentos/acordeao.webp',
   'assets/jogos/instrumentos/baixo.webp',
@@ -163,6 +163,8 @@ const EXTRA = [
   'assets/mural/tape.svg',
   'assets/mural/underline.svg',
   'assets/mural/vinyl.svg',
+  'assets/paul/colorido/paul-baquetas-pra-cima.webp', 'assets/paul/colorido/paul-bateria.webp', 'assets/paul/colorido/paul-estudando.webp', 'assets/paul/colorido/paul-guitarra.webp', 'assets/paul/colorido/paul-lendo-partitura.webp', 'assets/paul/colorido/paul-metronomo.webp', 'assets/paul/colorido/paul-microfone.webp', 'assets/paul/colorido/paul-ouvindo.webp', 'assets/paul/colorido/paul-pandeiro.webp', 'assets/paul/colorido/paul-teclado.webp',
+  'assets/paul/stk/amp.webp', 'assets/paul/stk/baquetas.webp', 'assets/paul/stk/caixa.webp', 'assets/paul/stk/calendario.webp', 'assets/paul/stk/caneca.webp', 'assets/paul/stk/cassete.webp', 'assets/paul/stk/coracao.webp', 'assets/paul/stk/equalizador.webp', 'assets/paul/stk/estrela-ouro.webp', 'assets/paul/stk/estrela.webp', 'assets/paul/stk/fone.webp', 'assets/paul/stk/lampada.webp', 'assets/paul/stk/laptop.webp', 'assets/paul/stk/livros.webp', 'assets/paul/stk/meta.webp', 'assets/paul/stk/mic.webp', 'assets/paul/stk/nota.webp', 'assets/paul/stk/nota2.webp', 'assets/paul/stk/onda.webp', 'assets/paul/stk/palheta.webp', 'assets/paul/stk/piano.webp', 'assets/paul/stk/raio.webp', 'assets/paul/stk/sorriso.webp', 'assets/paul/stk/vinil.webp',
   'assets/paul/el/balao.webp',
   'assets/paul/el/coracao-cheio.webp',
   'assets/paul/el/coracao.webp',

@@ -1,0 +1,25 @@
+// Último jogo: depois de abrir um jogo, a aba Jogos e o Álbum mostram "voltar pro jogo" (pedido da Bea: o aluno ia colar figurinha e se perdia).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
+await page.goto(url + '/aluno.html#/jogos'); await sleep(1800);
+check('sem jogo aberto ainda: não mostra o botão', await page.evaluate(() => !document.querySelector('.jg-continuar')));
+await page.evaluate(() => { location.hash = '#/jogos/velha'; }); await sleep(1200);
+await page.evaluate(() => { location.hash = '#/album'; }); await sleep(2500);
+const alb = await page.evaluate(() => { const a = document.querySelector('.fig-volta-btn'); return a ? [a.textContent, a.getAttribute('href')] : null; });
+check('o Álbum mostra "voltar pro jogo: Jogo da velha"', !!alb && /voltar pro jogo: Jogo da velha/.test(alb[0]) && alb[1] === '#/jogos/velha', JSON.stringify(alb));
+await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/ultimo-album.png` });
+await page.evaluate(() => { location.hash = '#/jogos'; }); await sleep(1200);
+const jg = await page.evaluate(() => { const a = document.querySelector('.jg-continuar'); return a ? [a.textContent, a.getAttribute('href')] : null; });
+check('a aba Jogos mostra "voltar pro último jogo: Jogo da velha"', !!jg && /último jogo: Jogo da velha/.test(jg[0]) && jg[1] === '#/jogos/velha', JSON.stringify(jg));
+await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/ultimo-jogos.png` });
+await page.evaluate(() => document.querySelector('.fig-volta-btn, .jg-continuar').click()); await sleep(1000);
+check('o botão leva de volta pro jogo', await page.evaluate(() => location.hash === '#/jogos/velha'));
+await page.evaluate(() => { location.hash = '#/paulta'; }); await sleep(1200); await page.evaluate(() => { location.hash = '#/jogos'; }); await sleep(1200);
+check('vale pra jogo de outra tela também (PauLta)', await page.evaluate(() => /PauLta/.test((document.querySelector('.jg-continuar') || {}).textContent || '')));
+check('sem erro de página', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

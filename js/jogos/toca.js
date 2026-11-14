@@ -8,6 +8,7 @@ import { leitura, progressoToca } from '../views/treinos.js';
 import { PATH, TIERS } from '../reading.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
+import { toast } from '../ui.js';
 
 /** Os 3 modos viram 3 mundos, cada um com o seu cenário (o id do modo continua o mesmo: ini, int, ava). */
 const MUNDOS = {
@@ -44,7 +45,7 @@ export function mount(host) {
   };
   const jogar = (n) => {
     clean(); view = 'jogo'; musicaPausa(); const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);
-    off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: drawMapa });
+    off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: (info) => { drawMapa(); if (info && info.andou != null) { const f = PATH[info.andou].n; toast(f < 12 ? `você andou no mundinho: fase ${f} concluída, a fase ${f + 1} abriu!` : `você chegou ao fim do ${MUNDOS[tier].nome}!`, { ms: 3600 }); } } });
   };
   drawMapa();
   return {

@@ -4,7 +4,7 @@ import { PHASES, MUNDOS, mundoDe, montesDe, peçasDe, arvore } from '../../js/jo
 import { FIGS } from '../../js/kids/figs.js';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } }); await alunoComCodigo(ctx);
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
-await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch (e) {} });
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); localStorage.setItem('beaterista-figurix-sem-tempo', '1'); if (!localStorage.getItem('beaterista-jogos:teste')) localStorage.setItem('beaterista-jogos:teste', JSON.stringify({ v: 1, sound: true, games: { figurix: { est: Object.fromEntries(Array.from({ length: 62 }, (_, i) => [i + 1, 3])) } } })); /* regra das 3 ★: o aluno do teste já tem tudo com 3 ★ pra poder abrir qualquer mundo */ } catch (e) {} });
 const abre = async (n) => { const m = mundoDe(n); await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
   await page.locator('.tm-tabs button').nth(MUNDOS.indexOf(m)).click(); await sleep(700); await page.waitForSelector('.mp-node');
   await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).scrollIntoView({ block: 'center' }), n - m.de); await sleep(150); await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), n - m.de); await sleep(500); };
