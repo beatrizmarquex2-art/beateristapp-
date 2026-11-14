@@ -9,7 +9,7 @@ export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok B
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente
-const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-microfone', 'p-point': 'colorido/paul-lendo-partitura', 'p-cool': 'colorido/paul-guitarra', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-estudando' };
+const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-microfone', 'p-point': 'colorido/paul-professor', 'p-cool': 'colorido/paul-oculos', 'p-drink': 'colorido/paul-agua', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-estudando' };
 const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
@@ -36,6 +36,7 @@ export const DICAS = [
   ['estudar em casa', '10 minutinhos todo dia valem mais que 1 hora só no sábado. bora treinar hoje?', 'n-walk'],
   ['estudar em casa', 'sem bateria em casa? bate na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'n-squat'],
   ['estudar em casa', 'liga o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'n-amp'],
+  ['estudar em casa', 'pausa também é treino: bebe uma água, respira e volta. o cérebro guarda o que você tocou enquanto descansa.', 'p-drink'],
   ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'n-skate'],
   // toque simples
   ['toque simples', 'toque simples é uma mão de cada vez: D E D E D E D E (direita, esquerda). comece devagar e igual.', 'n-stick'],
@@ -44,7 +45,7 @@ export const DICAS = [
   // outros instrumentos
   ['outros instrumentos', 'piano: a escala de dó maior só usa as teclas brancas: dó ré mi fá sol lá si.', 'n-amp'],
   ['outros instrumentos', 'violão: as 6 cordas soltas são mi lá ré sol si mi, da mais grossa pra mais fina.', 'n-walk'],
-  ['outros instrumentos', 'cajón: grave no meio, agudo perto da borda. é uma caixa que vira banda inteira!', 'n-squat'],
+  ['outros instrumentos', 'cajón: grave no meio, agudo perto da borda. é uma caixa que vira banda inteira!', 'colorido/paul-cajon'],
   ['outros instrumentos', 'ukulele: sol dó mi lá. só 4 cordas e dá pra tocar muita música fácil.', 'n-skate'],
   ['outros instrumentos', 'xilofone: cada lâmina é uma nota. as maiores são mais graves e as menores mais agudas.', 'n-break'],
   // marcas e parceiros

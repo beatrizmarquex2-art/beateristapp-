@@ -75,6 +75,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Rabiscos recortados: `assets/paul/el/*.webp`. O Paul fica **parado**; os rabiscos em volta é que se mexem.
 - Folhas originais enviadas pela Bea: `assets/originals/paul/` (não vão para o site dos alunos).
 - **Artes de divulgação + recortes do Paul (referência)**: `assets/originals/artes-beaterista/` (feed, stories, banner e 9 recortes PNG transparentes; estilo descrito no `LEIA-ME.md` da pasta). Usar de modelo pra novas artes/posts.
+- **Pauls coloridos em ALTA (14/nov/2026, v520)**: a Bea mandou 9 Pauls de corpo inteiro, 1254×1254, fundo transparente, e liberou usar em tudo (site e pôsteres). São: **bateria, guitarra, teclado, microfone, estudando** (substituem os coloridos pequenos de mesmo nome) e 4 poses novas: **cajon, oculos, agua (bebendo água com toalha), professor (apontando a lousa)**.
+  - Originais: `assets/originals/paul-png/coloridos-hd/paul-*.png` (não vão pro site dos alunos). Cópia no Drive: pasta **"Paul colorido em alta (recortes PNG, nov 2026)"** dentro de "Beaterista - mídia bruta (vídeos pra reels)".
+  - No app: `assets/paul/colorido/paul-*.webp` (560 px, branco sólido). Lista em `POSES` de `js/paul-cor.js` (agora 14). Onde cada novo aparece: `cool` = oculos e `point` = professor (mapas e aulinha), Eco = cajon, Quebra-cabeça = oculos, cartão azul "o Paul conta" (`BOM` em `js/paul-dicas.js`: p-point = professor, p-cool = oculos, p-drink = agua; dica do cajón com o Paul do cajón e dica nova "pausa também é treino"), e o sorteio do quadro "jogar junto" (`PAULS` em `js/views/jogos.js`). Os Pauls adolescentes (n-*) e os da entrada (`assets/aluno/`) **não mudaram** (a Bea gosta dos dois).
+  - **Pôsteres**: 9 cartazes 1080×1350 em `marketing/prontos/cartazes-paul/` (um por Paul, 3 temas: creme, noite e palco). Gerados por `NODE_PATH=$(npm root -g) node scripts/cartazes-paul-colorido.mjs`; frase e tema ficam na lista `CARTAZES` do script. Ainda **não postados** (postar só com o ok da Bea em cada peça).
+  - Ainda em baixa (se a Bea mandar em alta, é só repetir o processo): pandeiro, lendo-partitura, ouvindo, baquetas-pra-cima, metronomo.
+  - Só na branch `claude/exciting-lovelace-ygequf`: **não publicado** (nem app da Bea nem alunos).
 - Cuidado ao recortar imagens: nunca por grade fixa (cortava orelhas e laterais); usar o contorno do desenho.
 
 ## Testes

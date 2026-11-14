@@ -5,6 +5,7 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 
 - Vídeos: `marketing/prontos/reels/` (1080x1920, verticais, 7 a 16 s)
 - Carrosséis: `marketing/prontos/carrosseis/` (1080x1350, numerados na ordem dos slides)
+- Cartazes do Paul: `marketing/prontos/cartazes-paul/` (9 imagens 1080x1350, uma por Paul colorido)
 - Como foram feitos e de onde veio cada clipe: `marketing/README.md`
 
 ## Regras antes de postar
@@ -92,3 +93,18 @@ Hashtags (escolher até 5): #bateria #aulademusica #educacaomusical #musicalizac
 ## Ainda não dá pra usar
 - Artes com erro que foram pra lixeira do Drive (combo com 182 páginas, memória com 61 cartas, capa do curso escrita "baterista start", capa com 70 páginas, robô antigo).
 - Qualquer imagem das figurinhas com foto de banda (Beatles, Radiohead, Rolling Stones): fora das peças de venda.
+
+## Cartazes do Paul (novos, 14/nov/2026)
+Perfil do Paul (`@jogos.beaterista`). Servem soltos no feed, em story ou como carrossel "frases do Paul" (ordem dos números). Feitos com `scripts/cartazes-paul-colorido.mjs`.
+
+| arquivo | frase | legenda sugerida |
+|---|---|---|
+| `paul-01-bateria.jpg` | tum tá tum tum tá! | canta o ritmo antes de tocar: a mão aprende mais rápido. bora treinar no app? link na bio |
+| `paul-02-professor.jpg` | hoje tem aula com o Paul. | bateria, teclado e violão, passo a passo, com o Paul. a aulinha tá no app. link na bio |
+| `paul-03-oculos.jpg` | estudou? então brilha. | cada jogo dá estrela, e estrela vira cartinha pro álbum. joga hoje? link na bio |
+| `paul-04-cajon.jpg` | toda caixa vira banda. | cajón: grave no meio, agudo perto da borda. conhece outro instrumento assim? conta aqui |
+| `paul-05-microfone.jpg` | solta a voz, o ritmo vem. | cantar o ritmo também é estudar música. experimenta no próximo treino |
+| `paul-06-estudando.jpg` | 10 minutinhos todo dia. | valem mais que 1 hora só no sábado. marca quem precisa ler isso |
+| `paul-07-guitarra.jpg` | aumenta o som. bora tocar! | devagar e certo hoje, rápido amanhã. qual música você quer aprender? |
+| `paul-08-agua.jpg` | pausa também é treino. | bebe uma água, respira e volta: o cérebro guarda o que você tocou enquanto descansa |
+| `paul-09-teclado.jpg` | tecla por tecla vira música. | dó ré mi fá sol lá si: começa pelas brancas. tem teclado pra tocar no app. link na bio |

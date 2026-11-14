@@ -153,7 +153,7 @@ function atalhoSala() {
   const nada = (txt, t) => h('button', { type: 'button', class: 'jg-pil off', disabled: true, title: t }, txt);
   const voltaSala = voltas.length === 1 ? h('button', { type: 'button', class: 'jg-pil', onclick: () => prepararEAbrir(voltas[0][0], voltas[0][1], voltas[0][2].code, true) }, `↩ sala ${voltas[0][2].code}`) : voltas.length ? pil('↩ salas', salas) : nada('↩', 'nenhuma sala aberta');
   const continuar = ult ? h('a', { class: 'jg-pil go', href: `#/jogos/${ult.id}` }, `▶ ${ult.nome}`) : nada('▶', 'nenhum jogo em andamento');
-  const PAULS = ['bateria', 'guitarra', 'teclado', 'microfone', 'pandeiro', 'lendo-partitura', 'ouvindo', 'estudando', 'baquetas-pra-cima', 'metronomo']; // o Paul colorido (adesivos da Bea, sem moldura) muda a cada vez
+  const PAULS = ['bateria', 'guitarra', 'teclado', 'microfone', 'pandeiro', 'lendo-partitura', 'ouvindo', 'estudando', 'baquetas-pra-cima', 'metronomo', 'cajon', 'oculos', 'agua', 'professor']; // o Paul colorido (adesivos da Bea, sem moldura) muda a cada vez
   const paul = PAULS[Math.floor(Math.random() * PAULS.length)];
   return h('section', { class: 'card pad jg-sala-atalho', 'aria-label': 'jogar com amigos' },
     h('img', { class: 'jg-sala-paul', src: `assets/paul/colorido/paul-${paul}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }),
