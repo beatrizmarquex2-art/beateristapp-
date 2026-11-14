@@ -8,6 +8,9 @@ const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.c
 export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok Brasil' };
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
+// os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente
+const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-microfone', 'p-point': 'colorido/paul-lendo-partitura', 'p-cool': 'colorido/paul-guitarra', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-estudando' };
+const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
@@ -109,7 +112,7 @@ export function paulDica({ compacto = false } = {}) {
     const [t, tx, pose, href, rot] = it;
     if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL);
     const interno = href && String(href).startsWith('#');
-    img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
+    img.src = poseSrc(pose);
     tag.textContent = t; text.textContent = tx;
     row.replaceChildren(h('button', { class: 'pd-btn', type: 'button', onclick: () => { chirp(); mostrar(sortear()); } }, 'outra ▸'),
       href ? h('a', { class: 'pd-btn go', href, ...(interno ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, rot || 'abrir') : null);

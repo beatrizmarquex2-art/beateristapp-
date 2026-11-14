@@ -91,7 +91,7 @@ export function mountProgressionMap(host, cfg) {
 
   /* ---- Paul ---- */
   const paul = h('div', { class: 'mp-paul' }); const say = h('span', { class: 'mp-say', hidden: true });
-  const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = `<img class="mp-cor" src="${corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; };
+  const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = `<img class="mp-cor" src="${corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; const im = paulImg.firstChild; let n = 0; im.onerror = () => { n++; if (n === 1) im.src = `${im.src.split('?')[0]}?r=${Date.now()}`; else if (n === 2) im.src = corSrc('ouvindo'); else { im.onerror = null; im.style.visibility = 'hidden'; } }; };
   paul.append(paulImg, say); world.append(paul);
   let saidT = 0; const speak = (t, ms = 2400) => { say.textContent = t; say.hidden = false; S.cancel(saidT); saidT = S.later(() => { say.hidden = true; }, ms); };
   const place = (i) => { const w = world.clientWidth || 360; const k = w / L.W; const p = pos$(i); const side = p.x > 180 ? -1 : 1; const lado = side < 0 ? 'l' : 'r'; for (const d of decorEls) d.el.style.visibility = d.side === lado && Math.abs(d.y - p.y) < 64 ? 'hidden' : ''; paul.style.transform = `translate(${(p.x + side * 62) * k}px, ${(p.y - 40) * k}px)`; paul.dataset.at = String(i); paul.classList.toggle('flip', side < 0); };
