@@ -1,5 +1,5 @@
 // Fundos de página A4 (2480×3508) pras folhas de colorir da Lojinha. O desenho entra depois, na área livre do meio.
-// Todos levam, com os LOGOS em preto e branco (pedido da Bea: selo + beaterista escola de música, e Robôterista escola de música + Paul): beaterista · jogos.beaterista.com.br · Robôterista Paul.
+// Todos levam, com os LOGOS em preto e branco (pedido da Bea: selo + beaterista escola de música, e logo Robôterista Paul): beaterista · jogos.beaterista.com.br · Robôterista Paul.
 // Uso: NODE_PATH=$(npm root -g) node scripts/paul-colorir-fundos.mjs [PASTA_SAIDA] [desenho.png pra ver como fica]
 // Área livre do desenho (em px da folha final): ver AREA de cada fundo, impressa no fim.
 import fs from 'node:fs';
@@ -13,7 +13,7 @@ const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const OUT = path.resolve(process.argv[2] || path.join(ROOT, 'assets/originals/paul-png/pra-colorir/fundos'));
 const DESENHO = process.argv[3] ? pathToFileURL(path.resolve(process.argv[3])).href : null;
 const L = (n) => u(`assets/originals/paul-png/pra-colorir/logos-pb/${n}.png`);
-const ROBO = (h) => `<span style="display:inline-flex;align-items:center;gap:${h * .12}px"><img src="${L('roboterista-escola-de-musica-pb')}" style="height:${h}px"><span class="paul" style="font-size:${h * .42}px;transform:rotate(-3deg)">Paul</span></span>`;
+const ROBO = (h) => `<img src="${L('roboterista-paul-pb')}" style="height:${h * 1.15}px;display:block">`;
 const BEA = (h) => `<span style="display:inline-flex;align-items:center;gap:${h * .22}px"><img src="${L('selo-beaterista-pb')}" style="height:${h}px"><img src="${L('beaterista-escola-de-musica-pb')}" style="height:${h * .72}px"></span>`;
 const URL_ = 'jogos.beaterista.com.br';
 
