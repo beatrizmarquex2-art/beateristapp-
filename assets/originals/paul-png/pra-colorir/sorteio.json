@@ -25,5 +25,12 @@
  "selfie": "4-quadro",
  "microfone": "3-caderno",
  "bastidores": "2-rabiscos",
- "sonhando": "4-quadro"
+ "sonhando": "4-quadro",
+ "baixo": "1-limpo",
+ "cajon-dupla": "2-rabiscos",
+ "cajon-palco": "3-caderno",
+ "ensinando": "1-limpo",
+ "ouvindo-musica": "4-quadro",
+ "pad-treino": "1-limpo",
+ "teclado-dupla": "3-caderno"
 }

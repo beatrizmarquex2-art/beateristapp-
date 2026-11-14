@@ -12,7 +12,7 @@ const P = 'assets/originals/paul-png/pra-colorir';
 const pg = (n) => u(`${P}/paginas/colorir-paul-${n}.png`), ex = (n) => u(`${P}/extras/colorir-${n}.png`);
 const hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`);
 const OUT = path.join(ROOT, 'marketing/prontos/colorir'); fs.mkdirSync(OUT, { recursive: true });
-const N = 43;
+const N = 50;
 const base = (w, h, bg, cor) => `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')}) format('woff2')}
 @font-face{font-family:Gochi;src:url(${u('assets/fonts/GochiHand-latin.woff2')}) format('woff2')}
