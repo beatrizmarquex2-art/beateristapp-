@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Monta as folhas de colorir A4 (2480×3508): desenho em linha da Bea + um dos 4 fundos, sorteado (sorteio fixo, sempre igual).
+"""Monta as folhas de colorir A4 (2480×3508): desenho em linha da Bea + um dos 4 fundos, sorteado (o sorteio fica em sorteio.json e não muda).
 Desenhos originais: assets/originals/paul-png/pra-colorir/desenhos-originais/paul-NOME.png (fundo branco, como a Bea mandou).
 Uso: python3 scripts/paul-colorir-montar.py   -> pra-colorir/desenhos/ (linha preta, fundo transparente, 2×), pra-colorir/paginas/ e o PDF."""
 import glob, os, random
@@ -8,7 +8,14 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); P = os.path.
 # área livre de cada fundo (x0, y0, x1, y1), a mesma que scripts/paul-colorir-fundos.mjs imprime
 FUNDOS = {'1-limpo': (140, 440, 2340, 3108), '2-rabiscos': (330, 620, 2150, 2990), '3-caderno': (160, 700, 2320, 2828), '4-quadro': (240, 400, 2240, 3108)}
 nomes = sorted(os.path.basename(f)[5:-4] for f in glob.glob(os.path.join(P, 'desenhos-originais/paul-*.png')))
-ordem = (list(FUNDOS) * (len(nomes) // 4 + 1))[:len(nomes)]; random.Random(7).shuffle(ordem)
+# o fundo de cada desenho fica guardado em sorteio.json: quem já tem fundo não muda; desenho novo pega um dos menos usados
+import json
+ARQ = os.path.join(P, 'sorteio.json'); sorteio = json.load(open(ARQ)) if os.path.exists(ARQ) else {}
+rnd = random.Random(7)
+for n in nomes:
+    if n not in sorteio:
+        uso = {f: list(sorteio.values()).count(f) for f in FUNDOS}; sorteio[n] = rnd.choice([f for f in FUNDOS if uso[f] == min(uso.values())])
+json.dump(sorteio, open(ARQ, 'w'), indent=1, ensure_ascii=False); ordem = [sorteio[n] for n in nomes]
 for d in ('desenhos', 'paginas'): os.makedirs(os.path.join(P, d), exist_ok=True)
 pags = []
 for nome, fundo in zip(nomes, ordem):
