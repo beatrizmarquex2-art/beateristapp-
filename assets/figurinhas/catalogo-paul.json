@@ -136,5 +136,166 @@
    0.875
   ],
   "secao": "Beaterista"
+ },
+ {
+  "codigo": "P07",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E03",
+  "sha256": "a54d95ee210cbd2a6125b1496a1f6898f195eac24d0f0121f9cd22130f6e35a2",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "regendo a banda",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P07.jpeg",
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.139,
+   0.197,
+   0.86,
+   0.882
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P08",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E04",
+  "sha256": "c8239e3d6f0e24314b9639e5d13427e9347f6ad8b68e8d2a7a4136357d83325f",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "no toca-discos",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P08.jpeg",
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.142,
+   0.197,
+   0.858,
+   0.882
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P09",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E01",
+  "sha256": "afd43d50acb6a16164d94c22fd4b1e51e8bfc656c925d50c6e4d31700d42bd65",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "gravando a voz",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P09.jpeg",
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.09,
+   0.197,
+   0.909,
+   0.882
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P10",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E02",
+  "sha256": "97d74fb567f7bcd3e8491719de704c79a07282509fcd0e576a59c4a54d08320c",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "dando aula",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P10.jpeg",
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.061,
+   0.209,
+   0.939,
+   0.869
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P11",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E03",
+  "sha256": "30214b1ad0718890d2e73327a4e66b3f9fd28fad080bb314ced52d88875511d2",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "selfie com o case",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P11.jpeg",
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.115,
+   0.197,
+   0.884,
+   0.882
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P12",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E04",
+  "sha256": "6d3254b9cbee71c048bca73d8acc4b4fca53b6ca02e3b8b85e4ee430f6be28ad",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "de óculos escuros",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P12.jpeg",
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.178,
+   0.197,
+   0.821,
+   0.882
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "P13",
+  "artista_banda": "Robôterista Paul",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E01",
+  "sha256": "3d9bd1aa73456f804cdbb9aeefb7fcf73bd194a5957d95615cd93a2cef2242de",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "no tempo do metrônomo",
+  "criterio_raridade": "Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)",
+  "foto": "assets/figurinhas/fotos/P13.jpeg",
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.097,
+   0.197,
+   0.903,
+   0.882
+  ],
+  "secao": "Beaterista"
  }
 ]

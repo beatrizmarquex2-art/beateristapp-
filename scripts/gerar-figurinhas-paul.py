@@ -1,4 +1,4 @@
-"""Gera as 6 figurinhas do Paul (fotos P01..P06 em assets/figurinhas/fotos, miniaturas em mini e catalogo-paul.json).
+"""Gera as figurinhas do Paul (fotos P01..P13 em assets/figurinhas/fotos, miniaturas em mini e catalogo-paul.json).
 Uso: python3 scripts/gerar-figurinhas-paul.py PASTA_COM_AS_6_ARTES_PNG_TRANSPARENTES   (os PNGs na ordem: amp, andando, breakdance, baqueta, agachado, skate)
 O fundo (papel creme, retícula, bloco de cor, raios e rabiscos) é desenhado aqui; o Paul entra por cima com contorno creme e sombra."""
 import sys, os, json, glob, hashlib, math, random
@@ -7,10 +7,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = sys.argv[1]
 W, H = 1152, 1536
 NAVY, VINHO, CREME, MOSTARDA = (20, 40, 75), (154, 18, 38), (251, 243, 224), (246, 213, 106)
-NOMES = ['amp', 'andando', 'breakdance', 'baqueta', 'agachado', 'skate']
-FRASES = ['encostado no amp', 'indo pro ensaio', 'passo de breakdance', 'a baqueta no dedo', 'no groove', 'virando o skate']
-TEMAS = [(NAVY, VINHO), (VINHO, NAVY), (NAVY, MOSTARDA), (VINHO, CREME), (NAVY, VINHO), (VINHO, MOSTARDA)]
-MODELOS = [('E01', 'M7'), ('E02', 'M8'), ('E03', 'M7'), ('E04', 'M8'), ('E01', 'M7'), ('E02', 'M8')]
+NOMES = ['amp', 'andando', 'breakdance', 'baqueta', 'agachado', 'skate', 'maestro', 'dj', 'gravando', 'professor', 'selfie', 'oculos', 'metronomo']
+FRASES = ['encostado no amp', 'indo pro ensaio', 'passo de breakdance', 'a baqueta no dedo', 'no groove', 'virando o skate', 'regendo a banda', 'no toca-discos', 'gravando a voz', 'dando aula', 'selfie com o case', 'de óculos escuros', 'no tempo do metrônomo']
+TEMAS = [(NAVY, VINHO), (VINHO, NAVY), (NAVY, MOSTARDA), (VINHO, CREME), (NAVY, VINHO), (VINHO, MOSTARDA), (MOSTARDA, VINHO), (NAVY, MOSTARDA), (VINHO, MOSTARDA), (NAVY, CREME), (MOSTARDA, NAVY), (VINHO, NAVY), (NAVY, VINHO)]
+MODELOS = [('E01', 'M7'), ('E02', 'M8'), ('E03', 'M7'), ('E04', 'M8'), ('E01', 'M7'), ('E02', 'M8'), ('E03', 'M7'), ('E04', 'M8'), ('E01', 'M7'), ('E02', 'M8'), ('E03', 'M7'), ('E04', 'M8'), ('E01', 'M7')]
+# 2º argumento (opcional): a partir de qual figurinha gerar (0 = P01). Com 6, gera só P07 em diante e junta no catálogo sem refazer as antigas.
+INI = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 
 def fundo(i, bloco, acento):
     rnd = random.Random(300 + i)
@@ -37,9 +39,10 @@ def contorno(img, raio, cor):
     base = Image.new('RGBA', img.size, cor + (0,)); base.putalpha(a); return base
 
 arquivos = sorted(glob.glob(os.path.join(SRC, '*.png')))
-assert len(arquivos) == 6, f'esperava 6 PNGs em {SRC}, achei {len(arquivos)}'
-cat = []
-for i, f in enumerate(arquivos):
+assert len(arquivos) == len(NOMES) - INI, f'esperava {len(NOMES) - INI} PNGs em {SRC}, achei {len(arquivos)}'
+CAT = os.path.join(ROOT, 'assets/figurinhas/catalogo-paul.json')
+cat = json.load(open(CAT))[:INI] if INI else []
+for i, f in enumerate(arquivos, INI):
     bloco, acento = TEMAS[i]; im = fundo(i, bloco, acento)
     p = Image.open(f).convert('RGBA'); p = p.crop(p.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox())
     s = min(980 / p.width, 1020 / p.height); p = p.resize((round(p.width * s), round(p.height * s)), Image.LANCZOS)
@@ -57,4 +60,4 @@ for i, f in enumerate(arquivos):
         'criterio_raridade': 'Paul, o robozinho da Beaterista: exclusivas junto com as fotos da Bea (pedido da Bea)', 'foto': f'assets/figurinhas/fotos/{cod}.jpeg',
         'modelo2': mod2, 'rostos': [], 'foco': [round(fx0, 3), round(fy0, 3), round(fx1, 3), round(fy1, 3)], 'secao': 'Beaterista'})
     print(cod, FRASES[i], os.path.getsize(foto) // 1024, 'KB')
-json.dump(cat, open(os.path.join(ROOT, 'assets/figurinhas/catalogo-paul.json'), 'w'), ensure_ascii=False, indent=1)
+json.dump(cat, open(CAT, 'w'), ensure_ascii=False, indent=1)
