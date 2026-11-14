@@ -60,6 +60,20 @@ body{width:1240px;height:1754px;background:#fff;position:relative;overflow:hidde
 <div class="d"><img src="${D('bateria')}"></div><div class="n">${n} páginas pra pintar do seu jeito</div>
 <div class="pe"><img src="${L('selo-beaterista-pb')}"><img src="${L('beaterista-escola-de-musica-pb')}"><span>· jogos.beaterista.com.br</span></div>`;
 
+// a mesma capa, colorida (a Bea escolheu esta como capa do produto): logo e selo originais, Paul da bateria colorido, fundo creme. q = quadrada (1000×1000)
+const capaCor = (n, q) => `<!doctype html><meta charset="utf-8"><style>${fontes}
+body{width:${q ? 1000 : 1240}px;height:${q ? 1000 : 1754}px;background:#f4ead8;position:relative;overflow:hidden;color:#10234a;text-align:center}
+.p{position:absolute;inset:0;background:radial-gradient(#10234a22 2px,transparent 2.6px) 0 0/30px 30px}
+.q{position:absolute;inset:${q ? 30 : 56}px;border:8px solid #10234a;border-radius:48px}.q2{position:absolute;inset:${q ? 48 : 76}px;border:3px solid #a8182e;border-radius:32px}
+.lg{position:absolute;left:0;right:0;top:${q ? 70 : 120}px}.lg img{height:${q ? 210 : 330}px}
+.pc{position:absolute;left:0;right:0;top:${q ? 285 : 455}px;font:400 ${q ? 66 : 96}px/1 Gochi,cursive;transform:rotate(-3deg)}.pc span{background:#a8182e;color:#f4ead8;padding:6px 34px 12px;border-radius:22px;box-shadow:6px 6px 0 #10234a}
+.d{position:absolute;left:${q ? 190 : 130}px;right:${q ? 190 : 130}px;top:${q ? 370 : 610}px;bottom:${q ? 170 : 300}px;display:flex;align-items:center;justify-content:center}.d img{max-width:100%;max-height:100%;filter:drop-shadow(10px 12px 0 rgba(16,35,74,.18))}
+.n{position:absolute;left:0;right:0;bottom:${q ? 122 : 210}px;font:400 ${q ? 36 : 46}px/1 Gochi,cursive}
+.pe{position:absolute;left:0;right:0;bottom:${q ? 62 : 104}px;display:flex;justify-content:center;align-items:center;gap:${q ? 14 : 22}px}.pe img{height:${q ? 56 : 86}px}.pe img+img{height:${q ? 40 : 62}px}.pe span{font:700 ${q ? 21 : 30}px Hanken,sans-serif}</style>
+<div class="p"></div><div class="q"></div><div class="q2"></div><div class="lg"><img src="${u('assets/originals/logo-roboterista-paul.png')}"></div><div class="pc"><span>para colorir</span></div>
+<div class="d"><img src="${u('assets/originals/paul-png/coloridos-hd/paul-bateria.png')}"></div><div class="n">${n} páginas pra pintar do seu jeito</div>
+<div class="pe"><img src="${u('assets/originals/logo_beaterista_original.png')}"><img src="${u('assets/logo-nome.png')}"><span>· jogos.beaterista.com.br</span></div>`;
+
 // capa quadrada da Lojinha/Hotmart (1000×1000, colorida): metade do Paul pintada, metade em linha
 const TEMAS = { creme: ['#f4ead8', '#10234a', '#a8182e', '#10234a22'], noite: ['#0d1a36', '#f4ead8', '#f2b632', '#ffffff18'], vinho: ['#a8182e', '#f4ead8', '#f2b632', '#ffffff22'] };
 const capaLoja = (tema, n) => { const [bg, a, b2, pt] = TEMAS[tema]; return `<!doctype html><meta charset="utf-8"><style>${fontes}
@@ -86,5 +100,7 @@ const tira = async (html, arq, w, h, escala, tipo = 'png') => {
 for (const d of ['extras', 'capas']) fs.mkdirSync(path.join(ROOT, P, d), { recursive: true });
 for (const e of EXTRAS) await tira(pagina(e), path.join(ROOT, P, 'extras', `colorir-${e[0]}.png`), 1240, 1754, 2);
 await tira(capaPdf(N), path.join(ROOT, P, 'capas', 'capa-pdf-pb.png'), 1240, 1754, 2);
+await tira(capaCor(N, false), path.join(ROOT, P, 'capas', 'capa-colorida-a4.png'), 1240, 1754, 2);
+await tira(capaCor(N, true), path.join(ROOT, P, 'capas', 'capa-colorida-quadrada.jpg'), 1000, 1000, 1.5, 'jpeg');
 for (const t of Object.keys(TEMAS)) await tira(capaLoja(t, N), path.join(ROOT, P, 'capas', `capa-lojinha-${t}.jpg`), 1000, 1000, 1, 'jpeg');
 await browser.close();
