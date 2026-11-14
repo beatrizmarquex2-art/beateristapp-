@@ -1,5 +1,6 @@
 // Cartazes 1080×1350 com os Pauls coloridos em alta (assets/originals/paul-png/coloridos-hd).
 // Uso: NODE_PATH=$(npm root -g) node scripts/cartazes-paul-colorido.mjs [pasta de saída]
+// Pra sair em PNG: FORMATO=png na frente do comando.
 // Saída padrão: marketing/prontos/cartazes-paul/ (jpg pra postar). Pra mudar frase ou cor, edite a lista CARTAZES.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -84,7 +85,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   for (const c of CARTAZES) {
     fs.writeFileSync(tmp, html(c));
     await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(150);
-    await page.screenshot({ path: path.join(OUT, `paul-${c.id}.jpg`), type: 'jpeg', quality: 92 });
+    if (process.env.FORMATO === 'png') await page.screenshot({ path: path.join(OUT, `paul-${c.id}.png`), type: 'png' });
+    else await page.screenshot({ path: path.join(OUT, `paul-${c.id}.jpg`), type: 'jpeg', quality: 92 });
     console.log('ok', c.id);
   }
   fs.rmSync(tmp); await browser.close();
