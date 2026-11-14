@@ -2,6 +2,7 @@
 // Os dois ficam prontos, a contagem 3-2-1 roda nos dois, cada um preenche no próprio aparelho e quem bate STOP primeiro para o outro também.
 // Texto digitado só entra na tela como texto (textContent / value), nunca como HTML. Respostas e tempo ficam também no localStorage (por sala e rodada) pra poder voltar.
 import { h } from '../util.js';
+import { placar, poseDisponivel } from './placar.js';
 import { sheet } from '../ui.js';
 import * as S from './stop-logic.js';
 import * as Q from './stop-sim-logic.js';
@@ -203,12 +204,12 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     const [s0, s1] = [R.sc.sums[me], R.sc.sums[outro]]; const v = R.vencedor; const euVenci = v === me;
     const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : 'o outro venceu desta vez';
     root.replaceChildren(...[badge.el,
-      h('div', { class: `jg-result st-final${v === -1 ? ' tie' : ''}`, role: 'status' }, h('h3', { class: 'hand' }, titulo), h('p', { class: 'ss-quem' }, p0),
-        h('div', { class: 'ss-pl' }, ...[[me, s0], [outro, s1]].map(([i, s]) => h('div', { class: `ss-j${i === me ? ' eu' : ''}${v === i ? ' win' : ''}` }, h('small', {}, quem(i)), h('b', {}, String(s)), h('small', {}, 'pontos')))),
-        R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? 'quem criou a sala decide.' : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
-        semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, 'o outro celular não mandou as respostas. placar só com as suas.') : null,
-        e.wins[0] + e.wins[1] + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, `vitórias: você ${e.wins[me]} · o outro ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')),
+      placar({ classe: `jg-result st-final${v === -1 ? ' tie' : ''}`, estado: v === -1 ? 'tie' : euVenci ? 'win' : 'lose', pose: v === -1 ? poseDisponivel('agua', 'ouvindo') : euVenci ? poseDisponivel('gravando', 'microfone') : poseDisponivel('meditando', 'ouvindo'), titulo, sub: p0,
+        quadros: [[me, s0], [outro, s1]].map(([i, s]) => ({ n: s, l: quem(i), win: v === i })),
+        extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? 'quem criou a sala decide.' : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
+          semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, 'o outro celular não mandou as respostas. placar só com as suas.') : null,
+          e.wins[0] + e.wins[1] + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, `vitórias: você ${e.wins[me]} · o outro ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null],
+        acoes: [h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')] }),
       h('h3', { class: 'hand' }, `rodada com a letra ${e.letter}`), ...cards,
       RO ? h('p', { class: 'jg-p muted' }, 'quem criou a sala revisa as respostas. as marcas aparecem aqui.') : null].filter(Boolean));
     if (v != null && somRodada !== round) { somRodada = round; FX.play(v === -1 ? 'tie' : euVenci ? 'win' : 'bad'); }

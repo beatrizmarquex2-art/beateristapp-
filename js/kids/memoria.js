@@ -1,5 +1,6 @@
 // Jogo da memória, só com imagens: escolhe o tema e quantos pares (4, 8 ou 12) e joga. Sem fases: o que vale é achar tudo com poucas tentativas.
 import { h } from '../util.js';
+import { placar, poseDisponivel } from '../jogos/placar.js';
 import * as store from '../store.js';
 import { shuffle } from '../kids-logic.js';
 import { robo } from './robo.js';
@@ -166,10 +167,12 @@ export function mountMemoria(host, opts) {
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {
         if (gone) return;
-        stage.replaceChildren(h('div', { class: 'kx-result' }, h('h2', {}, two ? win : 'Achou todos!'),
-          two ? h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, score.join(' × ')), h('small', {}, ' pares')) : h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(tries)), h('small', {}, ' tentativas')),
-          h('p', { class: 'muted' }, `${pairs} pares de ${th.title.toLowerCase()}${two ? (vsPaul ? ` · você: ${score[0]} · Paul: ${score[1]}` : ` · ${score.map((x, i) => `jogador ${i + 1}: ${x}`).join(' · ')}`) : record ? ' · recorde novo!' : prev ? ` · seu recorde: ${prev}` : ''}`),
-          h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs, players, again) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho'))));
+        const empate = topo.length > 1; const euGanhei = !two || (!empate && (vsPaul ? topo[0] === 0 : true));
+        stage.replaceChildren(placar({ classe: 'kx-result', estado: two && empate ? 'tie' : euGanhei ? 'win' : 'lose', pose: two && empate ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('professor', 'estudando') : poseDisponivel('meditando', 'ouvindo'),
+          titulo: two ? win : 'Achou todos!', sub: `${pairs} pares de ${th.title.toLowerCase()}${!two && record ? ' · recorde novo!' : !two && prev ? ` · seu recorde: ${prev}` : ''}`,
+          quadros: two ? score.map((x, i) => ({ n: x, l: vsPaul ? (i === 0 ? 'você' : 'paul') : `jogador ${i + 1}`, win: !empate && i === topo[0] })) : [{ n: pairs, l: 'pares', win: true }, { n: tries, l: 'tentativas' }],
+          estrelas: '+1 ★ pra roleta',
+          acoes: [h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs, players, again) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho')] }));
       }, 1800);
     };
     paint(); bot.set('think', 'onde será?');

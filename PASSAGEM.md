@@ -45,6 +45,13 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Publicar em rede social só com o ok da Bea em cada peça. O vídeo 21 tem prazo (promoção até 30/nov/2026).
 - Material bruto e artes: pasta do Drive "Beaterista - mídia bruta (vídeos pra reels)". Dá pra baixar vídeo do Drive direto até 10 MB por arquivo.
 
+## Placar de fim de jogo (14/nov/2026, v522)
+- Desenho aprovado pela Bea ("opção A"): cartão azul com borda amarela, Paul colorido em cima, quadros com os números, botão amarelo grande. Componente único: `js/jogos/placar.js` (`placar({...})`), estilo no fim de `css/jogos.css` (com `!important` de propósito, porque entra por cima de `jg-result`, `cx-result`, `kx-result` e `st-final`).
+- Aplicado em: Uno (`cartas.js`), jogo da velha, quebra-cabeça, bingo (`bingo1.js`), cara a cara (`cara.js`), memória (`kids/memoria.js`), Stop (`stop.js`) e Stop de 2 celulares. Os nomes dos botões e os títulos não mudaram (os testes procuram por eles).
+- `poseDisponivel('nova', 'atual')`: cada jogo pede primeiro um Paul novo (meditando, agua, maestro, oculos, professor, gravando, produtor, dj, selfie) e usa o atual enquanto o novo não estiver em `POSES` de `js/paul-cor.js`. Quando o branch dos Pauls novos entrar, a troca é automática.
+- Cartão de dicas do Paul (`js/paul-dicas.js`): os rabiscos antigos `p-*` (vazados) apontam pros coloridos. Regra da Bea: sempre o Paul de melhor qualidade. Ainda há `p-*` em home, lojinha, violão, ui e feedback.
+- Testes que já falhavam antes e continuam (não são do placar): `stop.mjs` e `stop-simultaneo.mjs` (categorias/opções), `memoria-artistas.mjs` (temas abertos), `mesa-estrelas.mjs` e `estrelas-jogos.mjs` (esperam 3 ★ na memória, o app dá 1), `cartas.mjs` (legenda com 10 figuras, o app tem 12). O fim de jogo do Stop não está coberto por teste.
+
 ## Marketing e reels (nov/2026)
 - Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
 - Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).

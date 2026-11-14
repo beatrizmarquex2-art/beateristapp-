@@ -1,5 +1,6 @@
 // Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Sem drag-and-drop nativo (toque: peça e depois posição; mouse também arrasta).
 import { h } from '../util.js';
+import { placar, poseDisponivel } from './placar.js';
 import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as Q from './quebra-logic.js';
@@ -129,9 +130,9 @@ export function mount(host, opts) {
     const r = Q.recordBest(best, g); best = r.best; record = r.record; setGame(ID, { ...prefs, best, game: null }); sfx('win'); draw();
   }
   function result() {
-    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, 'montou! 🤘'),
-      h('p', {}, g.free ? 'modo livre: sem tempo' : `tempo: ${Q.fmtTime(g.elapsed)}${record ? ' · novo recorde!' : ''}`), h('p', { class: 'muted' }, `${g.hints} dica${g.hints === 1 ? '' : 's'} · ${g.errors} tentativa${g.errors === 1 ? '' : 's'} errada${g.errors === 1 ? '' : 's'}`),
-      M ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    return placar({ classe: 'jg-result', estado: 'win', pose: poseDisponivel('produtor', 'lendo-partitura'), titulo: 'montou! 🤘', sub: g.free ? 'modo livre: sem tempo' : record ? 'novo recorde!' : '',
+      quadros: [g.free ? null : { n: Q.fmtTime(g.elapsed), l: 'tempo', win: true }, { n: g.hints, l: g.hints === 1 ? 'dica' : 'dicas' }, { n: g.errors, l: g.errors === 1 ? 'erro' : 'erros' }],
+      acoes: M ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
 
   /* ---------- arrastar: mouse/caneta na hora; no toque, arrastar pra cima (ou segurar um instante e arrastar). Arrastar pro lado continua rolando a bandeja ---------- */

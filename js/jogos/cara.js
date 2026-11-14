@@ -1,5 +1,6 @@
 // Cara a cara dos instrumentos: tela. Dados em cara-data.js, regras em cara-logic.js.
 import { h } from '../util.js';
+import { placar, poseDisponivel } from './placar.js';
 import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
 import * as K from './cara-logic.js';
@@ -96,10 +97,11 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   }
   function result() {
     const s = BY_ID[g.secret]; const r = g.result;
-    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, r.win ? 'acertou! 🤘' : 'acabaram os chutes'),
-      h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${s.img}.webp`, alt: s.name }),
-      h('p', {}, `o paul tinha escolhido: ${s.name}`), h('p', { class: 'muted' }, `${r.questions} pergunta${r.questions === 1 ? '' : 's'} · ${r.wrong} chute${r.wrong === 1 ? '' : 's'} errado${r.wrong === 1 ? '' : 's'}`),
-      mission ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    return placar({ classe: 'jg-result', estado: r.win ? 'win' : 'lose', pose: r.win ? poseDisponivel('selfie', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: r.win ? 'acertou! 🤘' : 'acabaram os chutes', sub: `o paul tinha escolhido: ${s.name}`,
+      extra: [h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${s.img}.webp`, alt: s.name })],
+      quadros: [{ n: r.questions, l: r.questions === 1 ? 'pergunta' : 'perguntas', win: r.win }, { n: r.wrong, l: r.wrong === 1 ? 'chute errado' : 'chutes errados' }],
+      estrelas: r.win && !mission ? '+3 ★ pra roleta' : '',
+      acoes: mission ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
   if (mission) begin(K.newGame({ manual: prefs.manual, pool: Array.isArray(MP.pool) ? MP.pool : null })); else intro();
   return {

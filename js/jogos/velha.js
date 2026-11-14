@@ -1,5 +1,6 @@
 // Jogo da velha musical: tela. Regras e perguntas em velha-logic.js / velha-data.js.
 import { bq } from './bonequinhos.js';
+import { placar, poseDisponivel } from './placar.js';
 import { h } from '../util.js';
 import { confirmSheet } from '../ui.js';
 import * as V from './velha-logic.js';
@@ -154,9 +155,13 @@ export function mount(host, opts) {
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
     const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
-    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title), g.result.early ? h('p', {}, 'encerrada em empate depois de muitos erros') : null, g.result.exhausted ? h('p', {}, 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.') : null,
-      mission ? (outcomes.length < rounds ? h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); mv = null; msg = ''; fb = null; draw(); afterTurn(); } }, 'próxima rodada')) : null)
-        : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); mv = null; msg = ''; fb = null; persist(); sync(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    const eu = g.mode === 'online' ? me0() : 0; const euGanhei = w != null && (g.mode === 'local' ? true : w === eu);
+    return placar({ classe: 'jg-result', estado: w == null ? 'tie' : euGanhei ? 'win' : 'lose', pose: w == null ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('oculos', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: title,
+      sub: g.result.early ? 'encerrada em empate depois de muitos erros' : g.result.exhausted ? 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.' : w == null ? 'ninguém fechou a linha' : '',
+      quadros: [{ n: g.scores[0], l: names[0], win: w === 0 }, { n: g.draws, l: 'empates' }, { n: g.scores[1], l: names[1], win: w === 1 }],
+      estrelas: !mission && pago === g.round ? '+1 ★ pra roleta' : '',
+      acoes: mission ? (outcomes.length < rounds ? [h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); mv = null; msg = ''; fb = null; draw(); afterTurn(); } }, 'próxima rodada')] : [])
+        : [h('button', { class: 'btn primary', type: 'button', onclick: () => { g = V.nextRound(g); mv = null; msg = ''; fb = null; persist(); sync(); draw(); afterTurn(); } }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
 
   const onVis = () => { if (document.hidden) stop(); else afterTurn(); };
