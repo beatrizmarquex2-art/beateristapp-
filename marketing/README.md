@@ -1,5 +1,7 @@
 # Marketing da Beaterista (reels, copy e catálogo de mídia)
 
+**Os arquivos finais pra postar ficam em `marketing/prontos/` (ver `INDICE.md` lá).**
+
 Tudo que a Bea precisa pra continuar a produção de conteúdo de venda sem explicar de novo. Atualizado em 13/nov/2026.
 
 ## Onde ficam os vídeos crus
@@ -99,6 +101,9 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Dentro da identidade: azul-marinho, vermelho, creme e amarelo; fontes do app; o Paul atual; capas de `assets/loja` e do kit Robôterista.
 - Fora: robô antigo (cinza, sem boné do Paul), personagens que não são o Paul, artes com número ou nome errado ("capa site 01" escrita BATERISTA START, "capa site 06" com 70 páginas, arte do combo com 182 páginas, arte da memória com 61 cartas).
 - A Bea não quer reel com áudio de depoimento.
+- **Cabeça de aluno pode aparecer** (Bea, 14/nov): não dá pra identificar ninguém. Rosto de frente continua fora.
+- **Som real**: antes de usar `audio: raw`, rodar o detector de voz (silero-vad em ONNX; o modelo vem dentro do pacote pip `silero-vad`, roda só com onnxruntime). Sem voz nos trechos: 9349, 9351, 9353, 9355, 9356, 9358, 9359, 9362, 9373. Com voz: 9268 (60%), 9357, 9352 (9,5 a 11,7 s), 9246, 9375, 9376. É detector, não ouvido: a Bea escuta antes de postar.
+- Lote de 14/nov enviado pelo chat (originais): 9348, 9352, 9354, 9355 = mesma cena do tablet na bateria, takes mais longos; 9356 = mãos no tablet deitado sobre a caixa (tela amarela, 23 s); 9357 = roleta com figurinha de banda; 9362 = mãos jogando Rudimentix.
 - **A Bea aprovou tudo de antemão (13/nov): pode puxar material do Drive e montar sem pedir.** Continua valendo confirmar antes de publicar em rede social ou apagar coisas dela.
 - Em 13/nov foram pra lixeira do Drive, a pedido dela, 6 artes erradas: combo com 182 páginas, memória com 61 cartas, robô antigo, capa site 01 (BATERISTA START), capa site 06 (70 páginas) e o banner "conheça o curso on-line" com letras sobrepostas.
 - **O jogo Taiko agora se chama Rudimentix** (escolha da Bea, 13/nov). Trocado no rótulo da lista de jogos, nas falas do Paul, nos testes e no reel 11; cache v490. Só o nome visível mudou: rota `#/jogos/rudimentos`, arquivos e o ícone `taiko.svg` seguem iguais. Já na `main` e publicado em jogos.beaterista.com.br (v490).
@@ -108,7 +113,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 |---|---|---|
 | 01_pais_v2, 02_professores_v2, 03_passe_anual_v2 | pais / profs / geral | versões "anúncio" refeitas a partir dos vídeos com moldura |
 | 04_pais_parece_so_joguinho | pais | "parece só joguinho… mas ele tá treinando ritmo, coordenação, escuta" |
-| 05_prova_ouve_le_toca | geral | "como meus alunos estudam ritmo: ouvem, leem, tocam" (som real) |
+| 05_prova_ouve_le_toca | geral | "como meus alunos estudam ritmo: ouvem, leem, tocam" (era som real; trocado pela batida em 14/nov porque o detector achou voz nos trechos) |
 | 06_album_figurinhas | crianças e pais | estuda pra ganhar figurinha; refeito em 13/nov sem foto de banda (roleta + figurinha da Bea) |
 | 07_prof_3_atividades | professores | 3 atividades prontas pra aula de amanhã |
 | 08_loop_tempo_de_tela | pais | 7s em loop, "o tempo de tela que eu deixo" |
@@ -131,6 +136,8 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 22_material_pra_cada_fase | geral | 6 capas da lojinha (`assets/loja`: kids, memória, apostila, curso, violão, mood), "material pra cada fase", sem preço. Refeito em 13/nov sem as "capas site" (erro de texto e fora da identidade) |
 | 23_o_jogo_foi_pra_bateria | pais e iniciantes | "o jogo saiu do sofá e foi pra bateria": tablet na bateria, aluno tocando na caixa |
 | 24_rudimentix_na_caixa | iniciantes | "rudimentix: primeiro na tela, depois na caixa" |
+| 25_jogando_ou_estudando | pais | um plano só de 9349, som real (sem voz no detector) |
+| 26_aperta_o_play | iniciantes | 9355, aperta o play e toca junto, som real (sem voz no detector) |
 | 14_combo_4_apostilas | pais e profs | as 4 capas em sequência, fecha no combo R$ 79,90 (de R$ 99,60) |
 | 10_bateria_kids_impresso | pais | "pa-to, ga-to, bor-bo-le-ta: isso já é ritmo", fecha no Bateria Kids R$ 19,90 |
 | kids_carrossel_1 a 6 (imagens 1080x1350) | pais | mesmo tema em carrossel; gerado por `marketing/reels/carrossel_kids.js PASTA_DAS_FOTOS` |

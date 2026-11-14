@@ -37,6 +37,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 ## Rudimentix (era "Taiko", 13/nov/2026)
 - A Bea trocou o nome visível do jogo de rudimentos de "Taiko" pra **Rudimentix** (`js/views/jogos.js`, `js/paul-talk.js`, testes `jogos-letras` e `acesso`). Rota, arquivos e ícone não mudaram. Cache v490. Já está na `main` e publicado em jogos.beaterista.com.br (repo `beaterista-jogos`, v490) em 13/nov.
 
+## Conteúdo pronto pra postar (comece aqui se for montar stories, destaques ou publicações)
+- **`marketing/prontos/INDICE.md`**: lista de tudo que está editado, com legenda, perfil certo, ordem sugerida de postagem e sugestão de destaques.
+- `marketing/prontos/reels/` (26 vídeos verticais) e `marketing/prontos/carrosseis/` (6 carrosséis, 37 imagens).
+- Publicar em rede social só com o ok da Bea em cada peça. O vídeo 21 tem prazo (promoção até 30/nov/2026).
+- Material bruto e artes: pasta do Drive "Beaterista - mídia bruta (vídeos pra reels)". Dá pra baixar vídeo do Drive direto até 10 MB por arquivo.
+
 ## Marketing e reels (nov/2026)
 - Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
 - Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).
