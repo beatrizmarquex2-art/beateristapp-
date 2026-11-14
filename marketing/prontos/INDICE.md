@@ -7,6 +7,11 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 - Carrosséis: `marketing/prontos/carrosseis/` (1080x1350, numerados na ordem dos slides)
 - Como foram feitos e de onde veio cada clipe: `marketing/README.md`
 
+**Plano pronto de sábado 14 a segunda 16/nov: `PLANO_3_DIAS.md`** (horários, perfil, legenda e observação de cada peça).
+
+- Stories de venda e enquete: `marketing/prontos/stories/` (1080x1920)
+- Capas de destaque: `marketing/prontos/destaques/` (o Instagram mostra só o círculo do meio)
+
 ## Regras antes de postar
 - **Perfis**: `@jogos.beaterista` (perfil do Paul: jogos, passe, materiais pra imprimir) e `@beaterista_` (perfil da Bea: curso, apostila, Mood). TikTok `@beaterista`.
 - Toda legenda: 1 promessa + 1 chamada, hashtags só no fim, um produto por peça.
@@ -14,7 +19,7 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 - Aparecem mãos, braços e, em alguns, cabeça de aluno de costas. A Bea liberou (14/nov) por não dar pra identificar ninguém.
 - **Som**: quase todos usam uma batida de bateria gerada (sem direito autoral). O 25 e o 26 usam o som real da sala; um detector automático de voz não achou fala neles, mas ninguém ouviu: a Bea precisa escutar antes de postar.
 - **Com prazo**: o 21 (apostila a R$ 14,90) só vale até 30/nov/2026. Depois, não postar.
-- Preços usados: passe R$ 49,90 · combo Robôterista R$ 79,90 (de R$ 99,60) · curso Bateria Start R$ 79,90 · Mood R$ 29,90 · memória e Bateria Kids R$ 19,90 · apostila Bateria Start R$ 14,90 (promoção).
+- Preços usados: passe R$ 49,90 · combo Robôterista R$ 79,90 (de R$ 99,60) · curso Bateria Start R$ 79,90 · Mood R$ 29,90 · memória e Bateria Kids R$ 19,90 · apostila Bateria Start R$ 14,90 (promoção) · gibi do Paul vol. 1 R$ 9,90.
 
 ## Ordem sugerida (1 por dia)
 | dia | peça | perfil |
@@ -77,6 +82,7 @@ Depois: 26, 05, 11, 20, 06, 10, 15, 18, 13, 07, 02, 01, 03, 09, 22, 16, 08.
 | 25_jogando_ou_estudando | pais | um plano só, som real da caixa | ele tá jogando ou estudando? os dois 🥁 link na bio. |
 | 26_aperta_o_play | iniciantes | aperta o play no tablet e toca junto, som real | aperta o play no tablet e toca junto na caixa de verdade. começa grátis, link na bio. |
 | 27_jornal_do_paul_13 | geral (série semanal) | historinha #13 do Jornal do Paul: bumbo e caixa em dupla, com o desafio da semana | o paul tocou o bumbo com o pé e respondeu na caixa. os dois sons viraram uma conversa 🥁 faz o desafio da semana e me marca. |
+| 28_gibi_do_paul | pais e profs | "por que o violão tem dois mis?", gibi a R$ 9,90 | por que o violão tem dois mis? o paul descobriu, e essa é só 1 das 20 histórias do gibi dele. cada uma termina num desafio pra tocar de verdade. R$ 9,90, link na bio. |
 
 Hashtags (escolher até 5): #bateria #aulademusica #educacaomusical #musicalizacaoinfantil #aprendermusica #baterista #jogosmusicais #professordemusica #maternidade
 
@@ -89,6 +95,7 @@ Hashtags (escolher até 5): #bateria #aulademusica #educacaomusical #musicalizac
 | quiz_chimbal_1 a 3 | os dois | pergunta do jogo da velha, pra gerar comentário | qual equipamento abre e fecha os pratos do chimbal? comenta tua resposta 👇 |
 | curso_start_1 a 6 | Bea | o que tem dentro do curso Bateria Start | o que tem dentro do bateria start: módulos, aulas curtas, bônus e apostila. do zero à sua primeira música por R$ 79,90. link na bio. |
 | depoimentos_1 a 8 | Bea | 6 mensagens reais de alunos do curso | o que diz quem já estuda comigo. 6 mensagens, do jeito que chegaram. link na bio. |
+| gibi_carrossel_1 a 7 | Paul | lançamento do gibi, com a história #10 inteira de amostra | o paul virou gibi 🥁 20 histórias em quadrinhos, 20 desafios da semana e uma página pra criança desenhar a dela. arrasta pra ler uma inteira. R$ 9,90, link na bio. |
 
 ## Ainda não dá pra usar
 - Artes com erro que foram pra lixeira do Drive (combo com 182 páginas, memória com 61 cartas, capa do curso escrita "baterista start", capa com 70 páginas, robô antigo).
