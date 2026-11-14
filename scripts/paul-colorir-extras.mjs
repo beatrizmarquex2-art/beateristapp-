@@ -22,7 +22,12 @@ export const EXTRAS = [
   ['caminho-do-baterista', '1-limpo', 'o caminho do baterista', 'primeiro ouve, depois lê, depois treina, depois toca', [['meditando', '1 · ouve'], ['estudando', '2 · lê'], ['pad-metronomo', '3 · treina no pad'], ['bateria', '4 · toca bateria']]],
   ['estilo-do-paul', '4-quadro', 'o estilo do Paul', 'cada dia de um jeito', [['oculos', 'de óculos'], ['breakdance', 'dançando'], ['selfie', 'na selfie'], ['amplificador', 'no amplificador']]],
   ['dia-de-musica', '1-limpo', 'um dia de música', 'o que o Paul faz no dia', [['case', 'vai pra aula'], ['professor', 'aprende'], ['colorindo', 'colore'], ['metronomo', 'marca o tempo']]],
+  ['voce-na-banda', '1-limpo', 'você na banda', 'desenhe você tocando com o Paul', [['microfone', 'Paul'], ['?', 'você'], ['guitarra', 'Paul'], ['?', 'seu instrumento']]],
+  ['meu-favorito', '4-quadro', 'qual é o seu favorito?', 'pinte primeiro o instrumento que você mais gosta', [['bateria', 'bateria'], ['violino', 'violino'], ['teclado', 'teclado'], ['sax', 'saxofone'], ['guitarra', 'guitarra'], ['pandeiro', 'pandeiro']]],
+  ['paul-e-as-baquetas', '1-limpo', 'Paul e as baquetas', 'tudo o que ele toca com baqueta', [['baqueta', 'baqueta'], ['pad-metronomo', 'pad'], ['xilofone', 'xilofone'], ['bateria', 'bateria']]],
+  ['show-do-paul', '4-quadro', 'o show do Paul', 'pinte o palco inteiro', [['microfone', 'voz'], ['sax', 'sax'], ['trompete', 'trompete']]],
   ['turma-toda', '4-quadro', 'todos os Pauls', 'pinte cada um de uma cor', 'TODOS'],
+  ['pintado-por', '1-limpo', 'este livro foi pintado por', '', 'FIM'],
 ];
 const AREA = { '1-limpo': [70, 220, 70, 200], '4-quadro': [120, 200, 120, 200] };
 const fontes = `@font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')}) format('woff2')}
@@ -32,8 +37,8 @@ const fontes = `@font-face{font-family:Marker;src:url(${u('assets/fonts/Permanen
 const todos = () => fs.readdirSync(path.join(ROOT, P, 'desenhos')).map((f) => f.slice(5, -4)).sort();
 
 function pagina([, fundo, titulo, sub, itens]) {
-  const [l, t, r, b] = AREA[fundo]; const tudo = itens === 'TODOS'; const lista = tudo ? todos().map((n) => [n, '']) : itens;
-  const col = tudo ? 5 : lista.length <= 2 ? 1 : 2; const lin = Math.ceil(lista.length / col);
+  const [l, t, r, b] = AREA[fundo]; const tudo = itens === 'TODOS'; const lista = tudo ? todos().map((n) => [n, '']) : itens === 'FIM' ? [] : itens;
+  const col = tudo ? 5 : lista.length <= 2 ? 1 : 2; if (itens === 'FIM') return fim(fundo, titulo, l, t, r, b); const lin = Math.ceil(lista.length / col);
   return `<!doctype html><meta charset="utf-8"><style>${fontes}
 body{width:1240px;height:1754px;background:#fff url(${u(`${P}/fundos/fundo-a4-${fundo}.png`)}) 0 0/1240px 1754px no-repeat;position:relative;overflow:hidden;color:#111}
 .a{position:absolute;left:${l}px;top:${t}px;right:${r}px;bottom:${b}px;display:flex;flex-direction:column}
@@ -41,12 +46,20 @@ h1{font:400 ${titulo.length > 20 ? 70 : 84}px/1 Marker,cursive;text-align:center
 h2{font:400 40px/1.1 Gochi,cursive;text-align:center;margin:14px 0 10px}
 .g{flex:1;min-height:0;display:grid;grid-template-columns:repeat(${col},1fr);grid-template-rows:repeat(${lin},1fr);gap:${tudo ? '6px 4px' : '16px 14px'}}
 .g div{min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center}
+.g i{flex:1;width:92%;border:5px dashed #111;border-radius:30px}
 .g img{flex:1;min-height:0;max-width:100%;object-fit:contain}
 .g b{font:400 ${col === 1 ? 50 : 44}px/1 Gochi,cursive;margin-top:6px;white-space:nowrap}
 ${lista.length === 3 ? '.g div:first-child{grid-column:1 / 3}' : ''}</style>
-<div class="a"><h1>${titulo}</h1><h2>${sub}</h2><div class="g">${lista.map(([n, t2]) => `<div><img src="${D(n)}">${t2 ? `<b>${t2}</b>` : ''}</div>`).join('')}</div></div>`;
+<div class="a"><h1>${titulo}</h1><h2>${sub}</h2><div class="g">${lista.map(([n, t2]) => `<div>${n === '?' ? '<i></i>' : `<img src="${D(n)}">`}${t2 ? `<b>${t2}</b>` : ''}</div>`).join('')}</div></div>`;
 }
 
+const fim = (fundo, titulo, l, t, r, b) => `<!doctype html><meta charset="utf-8"><style>${fontes}
+body{width:1240px;height:1754px;background:#fff url(${u(`${P}/fundos/fundo-a4-${fundo}.png`)}) 0 0/1240px 1754px no-repeat;position:relative;overflow:hidden;color:#111;text-align:center}
+.a{position:absolute;left:${l}px;top:${t}px;right:${r}px;bottom:${b}px;display:flex;flex-direction:column;align-items:center}
+h1{font:400 76px/1 Marker,cursive;transform:rotate(-2deg);margin-top:10px}.ln{width:80%;border-bottom:5px solid #111;height:120px}
+.x{font:400 44px/1.2 Gochi,cursive;margin-top:26px}.d{flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;gap:10px;width:100%;margin-top:20px}.d img{max-height:100%;max-width:48%}</style>
+<div class="a"><h1>${titulo}</h1><div class="ln"></div><div class="x">idade: ______ &nbsp; data: ____ / ____ / ______</div><div class="x">meu Paul favorito: ____________________</div>
+<div class="d"><img src="${D('oculos')}"><img src="${D('selfie')}"></div></div>`;
 const L = (n) => u(`${P}/logos-pb/${n}.png`);
 const capaPdf = (n) => `<!doctype html><meta charset="utf-8"><style>${fontes}
 body{width:1240px;height:1754px;background:#fff;position:relative;overflow:hidden;color:#111;text-align:center}
