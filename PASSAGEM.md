@@ -70,7 +70,8 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Cartão de dicas do Paul (`js/paul-dicas.js`): os rabiscos antigos `p-*` (vazados) apontam pros coloridos. Regra da Bea: sempre o Paul de melhor qualidade. Ainda há `p-*` em home, lojinha, violão, ui e feedback.
 - Testes que já falhavam antes e continuam (não são do placar): `stop.mjs` e `stop-simultaneo.mjs` (categorias/opções), `memoria-artistas.mjs` (temas abertos), `mesa-estrelas.mjs` e `estrelas-jogos.mjs` (esperam 3 ★ na memória, o app dá 1), `cartas.mjs` (legenda com 10 figuras, o app tem 12). O fim de jogo do Stop não está coberto por teste.
 
-## Marketing e reels (nov/2026)
+## Marketing e reels
+- **Figurinhas animadas pro GIPHY (14/nov)**: 5 GIFs do Paul com fundo transparente e contorno branco (600x600, 16 quadros) em `marketing/prontos/figurinhas-giphy/`, com `TAGS.txt`. Gerador: `marketing/ferramentas/figurinhas_giphy.py DIR_POSES DIR_SAIDA`. Pra aparecer na busca de GIF dos stories do Instagram a Bea precisa de canal de marca/artista aprovado no GIPHY (ela sobe; não foi enviado por aqui). (nov/2026)
 - Tudo em `marketing/README.md`: catálogo dos vídeos crus da Bea (o que cada IMG mostra), pesquisa do que funciona, diagnóstico de venda e a lista dos reels já feitos.
 - Montagem automática de reel vertical: `python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTOS PASTA_DE_SAIDA` (um json por vídeo em `marketing/reels/specs/`).
 - Os vídeos crus **não ficam no repo** (público, tem aluno criança). Pasta no Drive da Bea: "Beaterista - mídia bruta (vídeos pra reels)". A Bea vai mandando mais clipes; a cada leva, atualizar o catálogo.
