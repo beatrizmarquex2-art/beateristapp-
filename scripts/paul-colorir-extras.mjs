@@ -85,7 +85,7 @@ body{width:${q ? 1000 : 1240}px;height:${q ? 1000 : 1754}px;background:#f4ead8;p
 .n{position:absolute;left:0;right:0;bottom:${q ? 122 : 210}px;font:400 ${q ? 36 : 46}px/1 Gochi,cursive}
 .pe{position:absolute;left:0;right:0;bottom:${q ? 62 : 104}px;display:flex;justify-content:center;align-items:center;gap:${q ? 14 : 22}px}.pe img{height:${q ? 56 : 86}px}.pe img+img{height:${q ? 40 : 62}px}.pe span{font:700 ${q ? 21 : 30}px Hanken,sans-serif}</style>
 <div class="p"></div><div class="q"></div><div class="q2"></div><div class="lg"><img src="${u('assets/originals/logo-roboterista-paul.png')}"></div><div class="pc"><span>para colorir</span></div>
-<div class="d"><img src="${u('assets/originals/paul-png/coloridos-hd/paul-bateria.png')}"></div><div class="n">pra pintar do seu jeito</div>
+<div class="d"><img src="${u('assets/originals/paul-png/coloridos-hd/paul-bateria.png')}"></div><div class="n">${n} páginas pra pintar do seu jeito</div>
 <div class="pe"><img src="${u('assets/originals/logo_beaterista_original.png')}"><img src="${u('assets/logo-nome.png')}"><span>· jogos.beaterista.com.br</span></div>`;
 
 // capa quadrada da Lojinha/Hotmart (1000×1000, colorida): metade do Paul pintada, metade em linha
