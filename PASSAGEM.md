@@ -736,3 +736,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Trava de mundo por 3 ★** existe só na pauLta e no Figurix. Toca Aqui e Detetive Note têm mundos, mas hoje não trancam.
 - Toda estrela soma pro giro da roleta: 15 ★ = 1 giro; + 1 giro a cada 4 fases concluídas (pauLta, Kids, Figurix, Detetive).
 - (v515) Botão fixo **‹ jogos** (embaixo à esquerda, `voltarJogos` em `js/aluno.js`) dentro de todos os jogos; a barra de baixo continua escondida lá (toque perto da borda caía na Lojinha). Some nas telas de jogo cheias (`rz-lock`). Teste: `tests/e2e/voltar-jogos.mjs`.
+
+- **Livro de colorir na Lojinha (14/nov, v523, só na branch)**: produto `colorir` em `js/loja-config.js` (R$ 14,90, 50 páginas, https://pay.hotmart.com/H108493301A), capa `assets/loja/colorir.webp` e foto `d-colorir.webp`. Falta a Bea mandar publicar. O teste `tests/e2e/lojinha-paul.mjs` já falhava antes em 2 itens (espera 6 ebooks; nuvem → Lojinha).
