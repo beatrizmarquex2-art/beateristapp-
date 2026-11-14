@@ -9,7 +9,7 @@ export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok B
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente
-const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-microfone', 'p-point': 'colorido/paul-professor', 'p-cool': 'colorido/paul-oculos', 'p-drink': 'colorido/paul-agua', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-estudando' };
+const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-selfie', 'p-point': 'colorido/paul-professor', 'p-cool': 'colorido/paul-oculos', 'p-drink': 'colorido/paul-agua', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-produtor' };
 const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
@@ -37,7 +37,8 @@ export const DICAS = [
   ['estudar em casa', 'sem bateria em casa? bate na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'n-squat'],
   ['estudar em casa', 'liga o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'n-amp'],
   ['estudar em casa', 'pausa também é treino: bebe uma água, respira e volta. o cérebro guarda o que você tocou enquanto descansa.', 'p-drink'],
-  ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'n-skate'],
+  ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'colorido/paul-selfie'],
+  ['estudar em casa', 'antes de tocar, respira fundo 3 vezes. corpo calmo segura melhor o tempo.', 'colorido/paul-meditando'],
   // toque simples
   ['toque simples', 'toque simples é uma mão de cada vez: D E D E D E D E (direita, esquerda). comece devagar e igual.', 'n-stick'],
   ['toque simples', 'no toque simples, o som das duas mãos precisa ficar igual. ouve com atenção: a esquerda soa tão bonita quanto a direita?', 'n-break'],

@@ -5,7 +5,7 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 
 - Vídeos: `marketing/prontos/reels/` (1080x1920, verticais, 7 a 16 s)
 - Carrosséis: `marketing/prontos/carrosseis/` (1080x1350, numerados na ordem dos slides)
-- Cartazes do Paul: `marketing/prontos/cartazes-paul/` (9 imagens 1080x1350, uma por Paul colorido)
+- Cartazes do Paul: `marketing/prontos/cartazes-paul/` (16 imagens 1080x1350, uma por Paul colorido)
 - Como foram feitos e de onde veio cada clipe: `marketing/README.md`
 
 ## Regras antes de postar
@@ -108,3 +108,10 @@ Perfil do Paul (`@jogos.beaterista`). Servem soltos no feed, em story ou como ca
 | `paul-07-guitarra.jpg` | aumenta o som. bora tocar! | devagar e certo hoje, rápido amanhã. qual música você quer aprender? |
 | `paul-08-agua.jpg` | pausa também é treino. | bebe uma água, respira e volta: o cérebro guarda o que você tocou enquanto descansa |
 | `paul-09-teclado.jpg` | tecla por tecla vira música. | dó ré mi fá sol lá si: começa pelas brancas. tem teclado pra tocar no app. link na bio |
+| `paul-10-meditando.jpg` | respira fundo. depois toca. | 3 respirações antes de começar: corpo calmo segura melhor o tempo. testa hoje |
+| `paul-11-selfie.jpg` | grava o seu treino! | grava, assiste e repara no que já melhorou. marca a Bea no seu vídeo |
+| `paul-12-pandeiro.jpg` | o ritmo mora no corpo. | bate o pé, bate palma e deixa o pandeiro falar. qual instrumento você toca? |
+| `paul-13-maestro.jpg` | um, dois, três e... | contar em voz alta é o jeito mais rápido de não se perder no tempo |
+| `paul-14-produtor.jpg` | sua ideia vira música. | dá pra criar seu próprio ritmo no app e mostrar pra todo mundo. link na bio |
+| `paul-15-gravando.jpg` | ouve antes de cantar. | quem escuta bem toca e canta melhor. o ouvido também se treina |
+| `paul-16-dj.jpg` | solta o beat! a pista é sua. | cada batida no lugar. bora treinar o tempo nos jogos de ritmo? link na bio |

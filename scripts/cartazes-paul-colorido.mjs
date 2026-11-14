@@ -24,6 +24,13 @@ export const CARTAZES = [
   { id: '07-guitarra', paul: 'guitarra', tema: 'palco', t1: 'aumenta o som.', t2: 'bora tocar!', sub: 'devagar e certo hoje,\nrápido amanhã.' },
   { id: '08-agua', paul: 'agua', tema: 'noite', t1: 'pausa também', t2: 'é treino.', sub: 'bebe uma água, respira e volta.\no cérebro guarda o que você tocou.' },
   { id: '09-teclado', paul: 'teclado', tema: 'creme', t1: 'tecla por tecla', t2: 'vira música.', sub: 'dó ré mi fá sol lá si.\ncomeça pelas brancas!' },
+  { id: '10-meditando', paul: 'meditando', tema: 'noite', t1: 'respira fundo.', t2: 'depois toca.', sub: 'corpo calmo segura\nmelhor o tempo.' },
+  { id: '11-selfie', paul: 'selfie', tema: 'creme', t1: 'grava o seu', t2: 'treino!', sub: 'assiste depois: dá pra ver\no que já melhorou.' },
+  { id: '12-pandeiro', paul: 'pandeiro', tema: 'palco', t1: 'o ritmo mora', t2: 'no corpo.', sub: 'bate o pé, bate palma\ne deixa o pandeiro falar.' },
+  { id: '13-maestro', paul: 'maestro', tema: 'creme', t1: 'um, dois,', t2: 'três e...', sub: 'conta em voz alta:\no tempo é o seu maestro.' },
+  { id: '14-produtor', paul: 'produtor', tema: 'noite', t1: 'sua ideia', t2: 'vira música.', sub: 'cria um ritmo no app\ne mostra pra todo mundo.' },
+  { id: '15-gravando', paul: 'gravando', tema: 'creme', t1: 'ouve antes', t2: 'de cantar.', sub: 'quem escuta bem\ntoca e canta melhor.' },
+  { id: '16-dj', paul: 'dj', tema: 'palco', t1: 'solta o beat!', t2: 'a pista é sua.', sub: 'cada batida no lugar.\nbora treinar o tempo?' },
 ];
 
 const TEMAS = {
