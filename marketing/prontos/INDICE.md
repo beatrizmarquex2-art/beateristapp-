@@ -76,6 +76,7 @@ Depois: 26, 05, 11, 20, 06, 10, 15, 18, 13, 07, 02, 01, 03, 09, 22, 16, 08.
 | 24_rudimentix_na_caixa | iniciantes | Rudimentix na tela e depois na caixa | rudimentix: primeiro na tela, depois na caixa. mão esquerda, mão direita, no tempo. joga grátis, link na bio. |
 | 25_jogando_ou_estudando | pais | um plano só, som real da caixa | ele tá jogando ou estudando? os dois 🥁 link na bio. |
 | 26_aperta_o_play | iniciantes | aperta o play no tablet e toca junto, som real | aperta o play no tablet e toca junto na caixa de verdade. começa grátis, link na bio. |
+| 27_jornal_do_paul_13 | geral (série semanal) | historinha #13 do Jornal do Paul: bumbo e caixa em dupla, com o desafio da semana | o paul tocou o bumbo com o pé e respondeu na caixa. os dois sons viraram uma conversa 🥁 faz o desafio da semana e me marca. |
 
 Hashtags (escolher até 5): #bateria #aulademusica #educacaomusical #musicalizacaoinfantil #aprendermusica #baterista #jogosmusicais #professordemusica #maternidade
 
