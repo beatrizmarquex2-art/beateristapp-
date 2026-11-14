@@ -45,6 +45,13 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Publicar em rede social só com o ok da Bea em cada peça. O vídeo 21 tem prazo (promoção até 30/nov/2026).
 - Material bruto e artes: pasta do Drive "Beaterista - mídia bruta (vídeos pra reels)". Dá pra baixar vídeo do Drive direto até 10 MB por arquivo.
 
+## Jornal do Robôterista Paul (historinhas, série semanal)
+- Formato: página dupla 3:2 (1536x1024). Esquerda = capa (número, título, historinha de 2 ou 3 linhas). Direita = conceito num bilhete, exemplo visual e "desafio da semana". Lema: "pequenas ideias para grandes evoluções".
+- Edições que a Bea já tem: **#01** Estudar hoje é tocar amanhã (figuras rítmicas; `assets/originals/paul/jornal.webp`), **#07** Cadê o dó? (teclado), **#08** O grave que segura a banda (baixo), **#09** O riff do Paul (guitarra), **#10** O mistério dos dois Mis (violão). As #02 a #06 a Bea ainda não mandou (perguntar se existem).
+- Onde estão: Drive, pasta "Jornal do Robôterista Paul (historinhas)" dentro de "Beaterista - mídia bruta" (https://drive.google.com/drive/folders/1TCfjgP8iKgSYx5NfABXm982bytvE6eJC). Ainda não estão no app nem no repo.
+- Ideias de uso (14/nov, aguardando a Bea escolher): carrossel semanal de 3 imagens no Instagram do Paul (capa, conceito, desafio); aba "Jornal" na área dos alunos, com uma edição por semana e ★ por cumprir o desafio; folha A4 pra imprimir como isca ou extra do combo; roteiro de reel curto (o Paul conta a historinha).
+- Cuidado ao recortar: os textos são desenhados na arte. Conferir o conteúdo musical antes de publicar (os 4 estão corretos: dó à esquerda das 2 teclas pretas; baixo Mi Lá Ré Sol; riff 0-0-3-0 na corda Mi; violão Mi Lá Ré Sol Si Mi).
+
 ## Figurinhas exclusivas novas (14/nov/2026, v523): álbum com 146
 - Exclusivas (seção Beaterista) agora são **31**: 18 fotos da Bea (10 antigas no `catalogo.json` + 8 novas `F133..F140` em `assets/figurinhas/catalogo-bea.json`) e **13 do Paul** (`P01..P13` em `catalogo-paul.json`; novas: maestro, dj, gravando, professor, selfie, óculos, metrônomo).
 - `TOTAL_FIGURINHAS = 146` (`js/figurinhas/album-logic.js`); os três catálogos são juntados em `js/views/figurinhas.js`. O `catalogo.json` de 125 continua intocado.
