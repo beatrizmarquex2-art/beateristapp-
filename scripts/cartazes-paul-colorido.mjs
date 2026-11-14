@@ -31,7 +31,12 @@ export const CARTAZES = [
   { id: '14-produtor', paul: 'produtor', tema: 'noite', t1: 'sua ideia', t2: 'vira música.', sub: 'cria um ritmo no app\ne mostra pra todo mundo.' },
   { id: '15-gravando', paul: 'gravando', tema: 'creme', t1: 'ouve antes', t2: 'de cantar.', sub: 'quem escuta bem\ntoca e canta melhor.' },
   { id: '16-dj', paul: 'dj', tema: 'palco', t1: 'solta o beat!', t2: 'a pista é sua.', sub: 'cada batida no lugar.\nbora treinar o tempo?' },
+  { id: '17-colorindo', paul: 'colorindo', tema: 'creme', t1: 'música também', t2: 'se pinta.', sub: 'colorir a bateria ajuda\na decorar cada peça.' },
+  { id: '18-metronomo', paul: 'metronomo', tema: 'noite', t1: 'devagar e certo.', t2: 'depois rápido.', sub: 'liga o metrônomo\ne começa bem devagar.' },
+  { id: '19-treino', tema: 'creme', t1: 'o treino do Paul', t2: 'em 8 passos.', sub: 'qual deles você fez hoje?',
+    grade: [['lendo-partitura', 'ler'], ['ouvindo', 'ouvir'], ['pad', 'tocar'], ['escrevendo', 'escrever'], ['colorindo', 'colorir'], ['pad-metronomo', 'no tempo'], ['mostrando-partitura', 'mostrar'], ['estante', 'ensinar']] },
 ];
+const arte = (n) => fs.existsSync(path.join(ROOT, `assets/originals/paul-png/coloridos-hd/paul-${n}.png`)) ? u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`) : u(`assets/originals/paul-png/coloridos-media/paul-${n}.png`);
 
 const TEMAS = {
   creme: { bg: '#f4ead8', a: '#10234a', b: '#a8182e', sub: '#10234a', risco: '#e9a820', ponto: '#10234a22', logo: 'creme' },
@@ -49,7 +54,7 @@ function html(c) {
   const T = TEMAS[c.tema];
   const moldura = c.tema === 'palco'
     ? `<path d="M30 40 L1048 26 L1054 1322 L26 1326 Z M42 54 L38 1312 M1040 40 L1046 1308" fill="none" stroke="#b0162b" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>` : '';
-  const dood = c.tema === 'noite'
+  const dood = c.grade ? estrela(968, 350, 1.05, T.b, 14) : c.tema === 'noite'
     ? estrela(968, 350, 1.05, T.risco, 12) + estrela(70, 640, .75, '#f4ead8', -14) + zigue(948, 1090, '#c2233a', 8) + raios(990, 640, T.risco, 40) + coroa(52, 1150, T.risco, -10)
     : c.tema === 'palco'
       ? estrela(96, 660, .85, T.risco, -10) + estrela(972, 600, 1.05, T.risco, 16) + zigue(930, 1090, '#10234a', 6) + zigue(66, 1060, '#b0162b', -12) + coroa(900, 400, T.risco, 10)
@@ -67,6 +72,9 @@ h1{position:absolute;left:78px;top:92px;right:60px;font:400 ${c.fs || 112}px/1.0
 h1 em{display:block;font-style:normal;color:${T.b};padding-left:34px}
 .palco{position:absolute;left:60px;right:60px;top:500px;bottom:150px;display:flex;align-items:flex-end;justify-content:center}
 .paul{max-width:100%;max-height:100%;filter:drop-shadow(10px 14px 0 rgba(0,0,0,${c.tema === 'noite' ? '.45' : '.16'}))}
+.grade{position:absolute;left:54px;right:54px;top:500px;bottom:160px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:14px 8px}
+.grade div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:0}.grade img{max-width:100%;min-height:0;flex:1;object-fit:contain;object-position:bottom;filter:drop-shadow(5px 7px 0 rgba(0,0,0,.14))}
+.grade b{font:400 38px/1 Gochi,cursive;color:${T.a};margin-top:10px;display:flex;align-items:center;gap:8px;white-space:nowrap}.grade i{font:400 26px/40px Marker;width:40px;height:40px;border-radius:50%;background:${T.b};color:${T.bg};text-align:center;font-style:normal}
 .sub{position:absolute;left:92px;top:392px;right:80px;font:400 46px/1.1 Gochi,cursive;color:${T.sub};white-space:pre-line;transform:rotate(-3deg);transform-origin:0 0}
 .pe{position:absolute;left:0;right:0;bottom:${c.tema === 'palco' ? 22 : 8}px;height:122px;display:flex;align-items:center;justify-content:space-between;padding:0 70px}
 .logo{font:400 66px/1 Gochi,cursive;color:${T.a};transform:rotate(-5deg);position:relative;-webkit-text-stroke:1.6px ${T.a}}
@@ -78,7 +86,7 @@ h1 em{display:block;font-style:normal;color:${T.b};padding-left:34px}
 <div class="papel"></div><svg class="grao" width="1080" height="1350"><rect width="1080" height="1350" filter="url(#gr)"/></svg>
 <svg class="d" viewBox="0 0 1080 1350">${moldura}${dood}${risco(88, 372, c.rw || 430, T.risco, -5)}</svg>
 <h1>${c.t1}<em>${c.t2}</em></h1>
-<div class="palco"><img class="paul" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${c.paul}.png`)}"></div>
+${c.grade ? `<div class="grade">${c.grade.map(([n, t], i) => `<div><img src="${arte(n)}"><b><i>${i + 1}</i>${t}</b></div>`).join('')}</div>` : `<div class="palco"><img class="paul" src="${arte(c.paul)}"></div>`}
 <p class="sub">${c.sub}</p>
 <div class="pe"><span class="logo">beaterista</span><span class="url">jogos.beaterista.com.br</span></div>
 </body></html>`;

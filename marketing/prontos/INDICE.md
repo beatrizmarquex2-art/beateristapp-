@@ -5,7 +5,7 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 
 - Vídeos: `marketing/prontos/reels/` (1080x1920, verticais, 7 a 16 s)
 - Carrosséis: `marketing/prontos/carrosseis/` (1080x1350, numerados na ordem dos slides)
-- Cartazes do Paul: `marketing/prontos/cartazes-paul/` (16 imagens 1080x1350, uma por Paul colorido)
+- Cartazes do Paul: `marketing/prontos/cartazes-paul/` (19 imagens 1080x1350)
 - Como foram feitos e de onde veio cada clipe: `marketing/README.md`
 
 ## Regras antes de postar
@@ -115,3 +115,6 @@ Perfil do Paul (`@jogos.beaterista`). Servem soltos no feed, em story ou como ca
 | `paul-14-produtor.jpg` | sua ideia vira música. | dá pra criar seu próprio ritmo no app e mostrar pra todo mundo. link na bio |
 | `paul-15-gravando.jpg` | ouve antes de cantar. | quem escuta bem toca e canta melhor. o ouvido também se treina |
 | `paul-16-dj.jpg` | solta o beat! a pista é sua. | cada batida no lugar. bora treinar o tempo nos jogos de ritmo? link na bio |
+| `paul-17-colorindo.jpg` | música também se pinta. | colorir a bateria ajuda a decorar o nome de cada peça. quem aí gosta de pintar? |
+| `paul-18-metronomo.jpg` | devagar e certo. depois rápido. | liga o metrônomo e começa bem devagar. primeiro certo, depois rápido, nunca ao contrário |
+| `paul-19-treino.jpg` | o treino do Paul em 8 passos. | ler, ouvir, tocar, escrever, colorir, no tempo, mostrar e ensinar. qual deles você fez hoje? conta aqui |

@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v521';
+const VERSION = 'beaterista-v522';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -163,6 +163,7 @@ const EXTRA = [
   'assets/mural/tape.svg',
   'assets/mural/underline.svg',
   'assets/mural/vinyl.svg',
+  'assets/paul/colorido/paul-colorindo.webp', 'assets/paul/colorido/paul-pad.webp', 'assets/paul/colorido/paul-escrevendo.webp', 'assets/paul/colorido/paul-pad-metronomo.webp', 'assets/paul/colorido/paul-mostrando-partitura.webp', 'assets/paul/colorido/paul-estante.webp',
   'assets/paul/colorido/paul-meditando.webp', 'assets/paul/colorido/paul-selfie.webp', 'assets/paul/colorido/paul-maestro.webp', 'assets/paul/colorido/paul-produtor.webp', 'assets/paul/colorido/paul-gravando.webp', 'assets/paul/colorido/paul-dj.webp',
   'assets/paul/colorido/paul-cajon.webp', 'assets/paul/colorido/paul-oculos.webp', 'assets/paul/colorido/paul-agua.webp', 'assets/paul/colorido/paul-professor.webp',
   'assets/paul/colorido/paul-baquetas-pra-cima.webp', 'assets/paul/colorido/paul-bateria.webp', 'assets/paul/colorido/paul-estudando.webp', 'assets/paul/colorido/paul-guitarra.webp', 'assets/paul/colorido/paul-lendo-partitura.webp', 'assets/paul/colorido/paul-metronomo.webp', 'assets/paul/colorido/paul-microfone.webp', 'assets/paul/colorido/paul-ouvindo.webp', 'assets/paul/colorido/paul-pandeiro.webp', 'assets/paul/colorido/paul-teclado.webp',
