@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const P = 'assets/originals/paul-png/pra-colorir';
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
-const D = (n) => u(`${P}/desenhos/paul-${n}.png`);
+const D = (n) => n[0] === '@' ? u(`${P}/desenhos-partes/${n.slice(1)}.png`) : u(`${P}/desenhos/paul-${n}.png`); // '@nome' = pedaço recortado de uma folha (folhas-originais/)
 
 // [id, fundo, título, subtítulo, [[desenho, legenda], ...]]
 export const EXTRAS = [
@@ -25,6 +25,7 @@ export const EXTRAS = [
   ['voce-na-banda', '1-limpo', 'você na banda', 'desenhe você tocando com o Paul', [['microfone', 'Paul'], ['?', 'você'], ['guitarra', 'Paul'], ['?', 'seu instrumento']]],
   ['meu-favorito', '4-quadro', 'qual é o seu favorito?', 'pinte primeiro o instrumento que você mais gosta', [['bateria', 'bateria'], ['violino', 'violino'], ['teclado', 'teclado'], ['sax', 'saxofone'], ['guitarra', 'guitarra'], ['pandeiro', 'pandeiro']]],
   ['paul-e-as-baquetas', '1-limpo', 'Paul e as baquetas', 'tudo o que ele toca com baqueta', [['baqueta', 'baqueta'], ['pad-metronomo', 'pad'], ['xilofone', 'xilofone'], ['bateria', 'bateria']]],
+  ['percussao-corporal', '1-limpo', 'percussão corporal', 'o corpo também é instrumento', [['@pc-palmas', 'palmas'], ['@pc-estalo', 'estalo de dedo'], ['@pc-coxa', 'bate na coxa'], ['@pc-pe', 'pé no chão']]],
   ['show-do-paul', '4-quadro', 'o show do Paul', 'pinte o palco inteiro', [['microfone', 'voz'], ['sax', 'sax'], ['trompete', 'trompete']]],
   ['turma-toda', '4-quadro', 'todos os Pauls', 'pinte cada um de uma cor', 'TODOS'],
   ['pintado-por', '1-limpo', 'este livro foi pintado por', '', 'FIM'],
@@ -102,7 +103,7 @@ body{width:1000px;height:1000px;background:${bg};position:relative;overflow:hidd
 <div class="f"><img src="${D('bateria')}"></div><img class="c" src="${u('assets/originals/paul-png/coloridos-hd/paul-colorindo.png')}">
 <div class="n">${n} páginas A4<small>pra imprimir e pintar</small></div><div class="s">beaterista</div>`; };
 
-const N = 25 + EXTRAS.length + 1; // folhas de 1 Paul + temáticas + capa
+const N = fs.readdirSync(path.join(ROOT, P, 'paginas')).length + EXTRAS.length + 1; // folhas de 1 Paul + temáticas + capa
 const browser = await chromium.launch();
 const tira = async (html, arq, w, h, escala, tipo = 'png') => {
   const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: escala });
