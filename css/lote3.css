@@ -993,3 +993,8 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 [data-kit-theme] .tk-art .kp text.rt-claro { fill: #fff; }
 [data-kit-theme] .tk-art .kp text:not(.rt-escuro):not(.rt-claro) { fill: #5a2a0c; }
 [data-kit-theme] .tk-art .kp circle[stroke], [data-kit-theme] .tk-art .kp rect[stroke] { stroke: #6a604a; }
+
+/* Bateria de toque (v3, a partir de fotos): letras escuras nas etiquetas claras e no logo da Spark; o tema não repinta */
+[data-kit-theme] .tk-art .kp text.rt-preto, [data-kit-theme] .tk-art text.rt-fica:not(.rt-claro) { fill: #1c1710; }
+[data-kit-theme] .tk-art .kp text.rt-claro.rt-fica { fill: #fff; }
+.tk-art text.rt-fica { stroke: none !important; }
