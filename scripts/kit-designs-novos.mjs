@@ -62,7 +62,7 @@ for (const [pasta, pre, serie] of [['v2-bea', 'bea', SERIE], ['v2-marca', 'marca
   const OUT = path.isAbsolute(pasta) ? pasta : path.join(ROOT, 'marketing/prontos/apresentacao', pasta); fs.mkdirSync(OUT, { recursive: true }); let k = 0;
   for (const [nome, d] of Object.entries(serie)) {
     // foto deitada -> gibi (quadro largo); as outras alternam foto cheia e polaroid
-    const des = d.larga ? 'C-gibi' : (k++ % 2 ? 'B-polaroid' : 'A-foto-cheia');
+    const des = d.des || (d.larga ? 'C-gibi' : (k++ % 2 ? 'B-polaroid' : 'A-foto-cheia'));
     const sub = des === 'B-polaroid' ? limpa(d.fim) : des === 'C-gibi' ? d.corpo.replace(/\.$/, '!') : d.corpo;
     const html = DESIGNS[des]({ f: pre === 'alunos' ? path.join(FA, d.foto + '.jpg') : d.foto, pos: d.pos, t1: d.t1, t2: d.t2, sub, paul: d.paul || 'bateria' });
     const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } }); const tmp = path.join(OUT, '.tmp.html'); fs.writeFileSync(tmp, '<!doctype html><meta charset="utf-8">' + html);

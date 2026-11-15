@@ -41,6 +41,10 @@ export const SERIE = {
   '9-dia-do-baterista': { foto: 'bea-dia-do-baterista', pos: '55% 30%', cor: 'azul', t1: 'feliz dia', t2: 'do baterista', e1: 'pra quem toca', e2: 'e pra quem vai tocar', corpo: 'o melhor instrumento do mundo merece um dia só dele.', fim: 'marca um<br>baterista!' },
   '10-ukulele': { foto: 'bea-ukulele', pos: '50% 45%', cor: 'creme', t1: 'hoje é dia', t2: 'de ukulele', e1: 'quatro cordas', e2: 'um sorrisão', corpo: 'na Beaterista tem instrumento de todo tamanho.', fim: 'qual você<br>quer aprender?', paul: 'guitarra' },
   '11-tambem-tem-teclado': { foto: 'bea-teclado', pos: '45% 50%', cor: 'vinho', t1: 'também tem', t2: 'teclado', e1: 'teclas', e2: 'e acordes', corpo: 'a baterista também se aventura nas teclas.', fim: 'já tentou?', paul: 'teclado' },
+  // frases que a Bea APROVOU (15/nov), palavra por palavra: não reescrever
+  '12-a-beaterista-sou-eu': { des: 'A-foto-cheia', foto: 'bea-casaco-close-claro', pos: '50% 20%', cor: 'azul', t1: 'a beaterista', t2: 'sou eu', e1: '', e2: '', corpo: 'estudando, lendo, testando com aluno e refazendo até ficar bom. cada jogo que você abre aqui passou por isso.', fim: '' },
+  '13-troco-o-sono-pelo-site': { des: 'A-foto-cheia', foto: 'bea-casaco-gola', pos: '50% 20%', cor: 'vinho', t1: 'tem noite que eu', t2: 'troco o sono pelo site', e1: '', e2: '', corpo: 'porque eu sei exatamente onde meu aluno trava, e quero que o jogo resolva isso.', fim: '', paul: 'produtor' },
+  '14-parece-muita-coisa': { des: 'A-foto-cheia', foto: 'bea-pb-banquinho', pos: '50% 35%', cor: 'azul', t1: 'parece muita coisa', t2: 'e é', e1: '', e2: '', corpo: 'estudo, leitura, live, parceria, YouTube, aula e palco. mas é assim que nasce cada material que chega na sua casa.', fim: '', paul: 'estudando' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
