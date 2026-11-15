@@ -290,3 +290,13 @@ html.kb-open .rz-jogar{bottom:8px}
 .rzv.rz-playing .rz-stage.rz-st-tiles{height:calc(100dvh - 185px - var(--rzpalco))!important;min-height:210px}
 @media (max-height:520px){.rz-palco{display:none}.rzv.rz-playing .rz-stage,.rzv.rz-playing .rz-stage.rz-st-tiles{height:calc(100dvh - 110px)!important}}
 @media (prefers-reduced-motion:reduce){.rz-cena{transition:none}}
+
+/* Nível à vista no menu (fácil 3 teclas · médio 4 · difícil 5) */
+.bmr .rz-difs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 4px}
+.bmr .rz-dif{align-items:flex-start;min-height:0;padding:10px 8px;border-radius:12px}
+.bmr .rz-dif b{font-size:16px}
+.bmr .rz-dif .rz-dif-k{font-weight:800;font-size:13px;color:inherit}
+.bmr .rz-dif span{font-size:11px;line-height:1.2}
+.bmr .rz-dif .rz-dif-s{font-size:15px;letter-spacing:1px;color:#e8a92b;margin-top:2px}
+.bmr .rz-dif.on .rz-dif-s{color:#ffd84a}
+.bmr .rz-dif-hint{margin:0 0 8px}
