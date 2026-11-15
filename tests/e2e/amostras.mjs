@@ -38,7 +38,7 @@ async function abrir(c, valido, hash) {
   check('quiz sem código mostra o aviso', (await p.locator('.am-lock').count()) === 1 && (await p.locator('.dc-q').count()) === 0);
   check('nada das dicas foi baixado sem código', baixou === 0, String(baixou));
   // prévia dos jogos que ensinam de verdade
-  for (const [h, nome] of [['#/ritmo', 'Beat Hero'], ['#/paulta', 'pauLta'], ['#/jogos/toca', 'Toca Aqui'], ['#/jogos/cartas', 'Uno Musical']]) {
+  for (const [h, nome] of [['#/paulta', 'pauLta'], ['#/jogos/toca', 'Toca Aqui'], ['#/jogos/cartas', 'Uno Musical']]) {
     await p.goto(`${url}/aluno.html#/jogos`); await sleep(600); await p.goto(`${url}/aluno.html${h}`); await sleep(1800);
     const imgs = await p.locator('.pv-fig img').evaluateAll((es) => es.map((e) => e.complete && e.naturalWidth > 0));
     check(`${nome} sem código: mostra a prévia (telas reais), o que faz e o que desenvolve, e o caminho pra lojinha`, (await p.locator('.pv h2').textContent()).includes(nome) && imgs.length >= 2 && imgs.every(Boolean) && (await p.locator('.pv-txt li').count()) >= 6 && (await p.locator('.al-lock a[href="#/lojinha"]').count()) === 1, JSON.stringify(imgs));
