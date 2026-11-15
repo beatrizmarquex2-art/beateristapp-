@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v538';
+const VERSION = 'beaterista-v539';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -56,7 +56,7 @@ const EXTRA = [
   'assets/jogos/icones/relatorio.svg',
   'assets/jogos/icones/ritmo.svg',
   'assets/jogos/icones/stop.webp',
-  'js/conquista.js', 'js/kids/teoria-figuras.js', 'js/jogos/paulbox.js', 'js/jogos/paulbox-gravar.js', 'assets/jogos/icones/paulbox.webp', 'assets/jogos/paulbox/bateria.webp', 'assets/jogos/paulbox/baixo.webp', 'assets/jogos/paulbox/teclado.webp', 'assets/jogos/paulbox/guitarra.webp', 'assets/jogos/paulbox/voz.webp', 'assets/jogos/paulbox/dj.webp', 'assets/jogos/paulbox/trompete.webp', 'assets/jogos/paulbox/pandeiro.webp', 'assets/jogos/paulbox/violino.webp', 'assets/jogos/paulbox/metronomo.webp', 'assets/jogos/paulbox/chegou.webp',
+  'js/conquista.js', 'js/kids/teoria-figuras.js', 'js/kids/teoria-temas.js', 'js/jogos/paulbox.js', 'js/jogos/paulbox-gravar.js', 'assets/jogos/icones/paulbox.webp', 'assets/jogos/paulbox/bateria.webp', 'assets/jogos/paulbox/baixo.webp', 'assets/jogos/paulbox/teclado.webp', 'assets/jogos/paulbox/guitarra.webp', 'assets/jogos/paulbox/voz.webp', 'assets/jogos/paulbox/dj.webp', 'assets/jogos/paulbox/trompete.webp', 'assets/jogos/paulbox/pandeiro.webp', 'assets/jogos/paulbox/violino.webp', 'assets/jogos/paulbox/metronomo.webp', 'assets/jogos/paulbox/chegou.webp',
   'js/ultimo-jogo.js', 'js/jogos/vivo-logic.js', 'js/jogos/vivo-ui.js', 'js/jogos/copia.js', 'js/jogos/paulta-vivo.js', 'js/jogos/groove.js', 'js/jogos/fantasma.js', 'assets/jogos/icones/copia.svg', 'assets/jogos/icones/pauta-vivo.svg', 'assets/jogos/icones/groove.svg', 'assets/jogos/icones/fantasma.svg', 'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
   'assets/jogos/icones/velha.webp',
   'assets/jogos/instrumentos/acordeao.webp',

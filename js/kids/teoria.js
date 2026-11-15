@@ -7,6 +7,7 @@ import { audio, click } from '../audio.js';
 import { symbolEl } from '../jogos/cartas-simbolos.js';
 import { epiano } from '../synth.js';
 import { FASES_FIGURAS, notas } from './teoria-figuras.js';
+import { FASES_PAUSAS, FASES_CLAVES, FASES_TEMPO, FASES_LEITURA } from './teoria-temas.js';
 
 const NSV = 'http://www.w3.org/2000/svg';
 const svgEl = (w, hh, inner) => { const e = document.createElementNS(NSV, 'svg'); e.setAttribute('viewBox', `0 0 ${w} ${hh}`); e.setAttribute('class', 'tf-sym'); e.setAttribute('aria-hidden', 'true'); e.innerHTML = inner; return e; };
@@ -20,55 +21,11 @@ const batidas = (n, bpm = 90) => { const c = audio(); const t = c.currentTime + 
 
 /** Uma sessão: cards = [{ t: título, ic: emoji ou função que desenha, txt: explicação, som?: fn }], quiz = [{ q, ops:[3], ok:índice }, …] (sorteia 3). */
 export const SESSOES = [
-  { id: 'figuras', ic: '🎵', li: () => notas('ee'), nome: 'Figuras', sub: 'quanto dura cada som', cor: '#d3122f', paul: FASES_FIGURAS[0].paul, fases: FASES_FIGURAS }, // 30 aulinhas em 6 fases (teoria-figuras.js); os outros temas ainda têm 1 fase de 5
-  { id: 'pausas', ic: '🤫', li: () => symbolEl('p_seminima', 'tf-sym'), nome: 'Pausas', sub: 'o silêncio também conta', cor: '#17365B', paul: 'o silêncio também tem tempo! cada figura tem a sua pausa.', cards: [
-    { t: 'Pausa de semínima', ic: () => symbolEl('p_seminima', 'tf-sym'), txt: 'é um silêncio de 1 tempo, igual à semínima. a gente conta, mas não toca.' },
-    { t: 'Pausa de colcheia', ic: () => symbolEl('p_colcheia', 'tf-sym'), txt: 'silêncio de meio tempo, igual à colcheia. parece um "7".' },
-    { t: 'Pausa de semicolcheia', ic: () => symbolEl('p_semicolcheia', 'tf-sym'), txt: 'silêncio de um quarto de tempo, igual à semicolcheia. tem dois "ganchinhos".' },
-    { t: 'Pausa de mínima', ic: () => h('b', { class: 'tf-big' }, '▬'), txt: 'silêncio de 2 tempos: um retângulo EM CIMA da 3ª linha (como um chapéu).' },
-    { t: 'Pausa de semibreve', ic: () => h('b', { class: 'tf-big' }, '▬'), txt: 'silêncio de 4 tempos, ou um compasso inteiro de silêncio: um retângulo PENDURADO na 4ª linha.' }],
-    quiz: [
-      { q: 'o que é uma pausa?', ops: ['um silêncio que tem duração', 'uma nota bem forte', 'o fim da música'], ok: 0 },
-      { q: 'uma pausa de semínima dura…', ops: ['1 tempo', '2 tempos', '4 tempos'], ok: 0 },
-      { q: 'quando tem pausa, o que a gente faz?', ops: ['conta o tempo e não toca', 'toca bem baixinho', 'para de contar'], ok: 0 },
-      { q: 'a pausa de colcheia tem a mesma duração de…', ops: ['uma colcheia', 'uma semibreve', 'uma mínima'], ok: 0 },
-      { q: 'um compasso todo de silêncio usa a pausa de…', ops: ['semibreve', 'colcheia', 'semicolcheia'], ok: 0 }] },
-  { id: 'claves', ic: '🔑', li: () => symbolEl('clave_sol', 'tf-sym'), nome: 'Claves', sub: 'a chave que abre a pauta', cor: '#EBA332', paul: 'a clave diz quais são as notas de cada linha da pauta!', cards: [
-    { t: 'A pauta', ic: () => h('b', { class: 'tf-big' }, '☰'), txt: 'a pauta tem 5 linhas e 4 espaços. a gente conta de baixo pra cima: 1ª linha, 2ª linha…' },
-    { t: 'Clave de sol', ic: () => clv('G'), txt: 'a clave de sol nasceu da letra G: a espiral termina na 2ª linha, onde mora a nota SOL. é a clave das notas mais agudas (voz, guitarra, mão direita do piano).' },
-    { t: 'Clave de fá', ic: () => clv('F'), txt: 'a clave de fá nasceu da letra F: os dois pontinhos ficam em volta da 4ª linha, onde mora a nota FÁ. é a clave das notas graves (baixo, mão esquerda do piano).' },
-    { t: 'Clave de dó', ic: () => clv('C'), txt: 'a clave de dó nasceu da letra C: o centro dela marca a nota DÓ. aparece mais pra viola, que fica no meio do caminho entre graves e agudos.' },
-    { t: 'Bateria', ic: () => h('b', { class: 'tf-big small' }, '‖ ‖'), txt: 'a bateria usa a clave de percussão (dois traços em pé): cada linha é uma peça, e não uma nota.' }],
-    quiz: [
-      { q: 'a clave de sol marca a nota sol em qual linha?', ops: ['2ª linha', '4ª linha', '1ª linha'], ok: 0 },
-      { q: 'qual clave é a das notas GRAVES?', ops: ['fá', 'sol', 'percussão'], ok: 0 },
-      { q: 'quantas linhas tem a pauta?', ops: ['5', '4', '6'], ok: 0 },
-      { q: 'na bateria, cada linha da pauta representa…', ops: ['uma peça', 'uma nota de piano', 'um acorde'], ok: 0 },
-      { q: 'a clave de sol é boa pra notas…', ops: ['agudas', 'graves', 'só de percussão'], ok: 0 }] },
-  { id: 'tempo', ic: '⏱️', li: () => h('b', { class: 'tf-li-t' }, '4/4'), nome: 'Tempo e compasso', sub: 'o pulso e a fórmula', cor: '#2a9d8f', paul: 'o pulso é o coração da música: ele bate sempre igual!', cards: [
-    { t: 'Pulso', ic: () => h('b', { class: 'tf-big' }, '💓'), txt: 'é a batida constante da música, igual ao coração. a gente bate o pé no pulso.', som: () => batidas(8, 80) },
-    { t: 'BPM', ic: () => h('b', { class: 'tf-big' }, '⏲️'), txt: 'BPM = batidas por minuto. 60 BPM é uma batida por segundo; 120 BPM é o dobro, bem mais rápido.', som: () => batidas(8, 120) },
-    { t: 'Compasso', ic: () => h('b', { class: 'tf-big' }, '|'), txt: 'é um grupinho de tempos, separado por uma barrinha. no 4/4 cada compasso tem 4 tempos: 1, 2, 3, 4.', som: () => batidas(8, 90) },
-    { t: 'Fórmula 4/4', ic: () => h('b', { class: 'tf-big' }, '4/4'), txt: 'o número de CIMA diz quantos tempos tem o compasso; o de BAIXO diz qual figura vale 1 tempo (4 = semínima).' },
-    { t: 'Tempo forte', ic: () => h('b', { class: 'tf-big' }, '1 2 3 4'), txt: 'no 4/4 o 1 é o mais forte, o 3 é meio forte e o 2 e o 4 são fracos. a caixa do rock bate no 2 e no 4!', som: () => { const c = audio(); const t = c.currentTime + 0.05; [2, 1, 1.4, 1].forEach((v, i) => click(t + i * 0.55, v > 1.5 ? 2 : 1, v > 1.2 ? 1 : 0.5)); } }],
-    quiz: [
-      { q: 'o que é o pulso?', ops: ['a batida constante da música', 'a nota mais aguda', 'o nome da música'], ok: 0 },
-      { q: 'no compasso 4/4 quantos tempos tem cada compasso?', ops: ['4', '2', '3'], ok: 0 },
-      { q: '120 BPM é…', ops: ['mais rápido que 60 BPM', 'mais devagar que 60 BPM', 'igual a 60 BPM'], ok: 0 },
-      { q: 'o número de cima da fórmula de compasso diz…', ops: ['quantos tempos tem o compasso', 'a velocidade', 'a clave'], ok: 0 },
-      { q: 'no 4/4, qual tempo é o mais forte?', ops: ['o 1', 'o 2', 'o 4'], ok: 0 }] },
-  { id: 'leitura', ic: '🎼', li: () => svgEl(56, 56, '<g stroke="currentColor" stroke-width="2.4">' + [12, 20, 28, 36, 44].map((y) => `<line x1="4" x2="52" y1="${y}" y2="${y}"/>`).join('') + '</g><ellipse cx="30" cy="32" rx="7" ry="5" transform="rotate(-20 30 32)" fill="currentColor"/><line x1="36.4" y1="30" x2="36.4" y2="6" stroke="currentColor" stroke-width="2.6"/>'), nome: 'Leitura de notas', sub: 'os nomes das notas', cor: '#7b3fe4', paul: 'sete nomes e um ciclo que se repete: dó ré mi fá sol lá si!', cards: [
-    { t: 'As 7 notas', ic: () => h('b', { class: 'tf-big small' }, 'dó ré mi fá sol lá si'), txt: 'são só 7 nomes. depois do si, volta o dó, mais agudo. cada volta completa é uma oitava.', som: () => { const c = audio(); const t = c.currentTime + 0.05; [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => epiano(t + i * 0.32, [m], 0.5, 1)); } },
-    { t: 'Linhas e espaços', ic: () => h('b', { class: 'tf-big' }, '☰'), txt: 'a nota pode ficar na linha ou no espaço entre as linhas. subindo, vai alternando: linha, espaço, linha, espaço…' },
-    { t: 'Mais agudo, mais alto', ic: () => h('b', { class: 'tf-big' }, '⬆️'), txt: 'quanto mais alta a nota na pauta, mais AGUDO é o som. quanto mais baixa, mais GRAVE.', som: () => { nota(52, 0.6); setTimeout(() => nota(76, 0.6), 700); } },
-    { t: 'Sustenido e bemol', ic: () => h('b', { class: 'tf-big' }, '♯ ♭'), txt: '♯ (sustenido) sobe meio tom e ♭ (bemol) desce meio tom. são as teclas pretas do piano.', som: () => { nota(60, 0.5); setTimeout(() => nota(61, 0.5), 600); } },
-    { t: 'Ordem das notas', ic: () => h('b', { class: 'tf-big small' }, 'fá sol lá…'), txt: 'a ordem nunca muda: dó, ré, mi, fá, sol, lá, si e de novo dó. se você sabe a nota anterior, descobre a próxima!' }],
-    quiz: [
-      { q: 'qual nota vem depois do MI?', ops: ['fá', 'ré', 'sol'], ok: 0 },
-      { q: 'quantos nomes de nota existem?', ops: ['7', '5', '12'], ok: 0 },
-      { q: 'quanto mais alta a nota na pauta, mais…', ops: ['agudo é o som', 'grave é o som', 'longo é o som'], ok: 0 },
-      { q: 'o que o sustenido (♯) faz?', ops: ['sobe meio tom', 'desce meio tom', 'segura a nota'], ok: 0 },
-      { q: 'depois do SI volta qual nota?', ops: ['dó', 'lá', 'fá'], ok: 0 }] },
+  { id: 'figuras', ic: '🎵', li: () => notas('ee'), nome: 'Figuras', sub: 'quanto dura cada som', cor: '#d3122f', paul: FASES_FIGURAS[0].paul, fases: FASES_FIGURAS }, // cada tema: 30 aulinhas em 6 fases de 5 (teoria-figuras.js e teoria-temas.js)
+  { id: 'pausas', ic: '🤫', li: () => symbolEl('p_seminima', 'tf-sym'), nome: 'Pausas', sub: 'o silêncio também conta', cor: '#17365B', paul: FASES_PAUSAS[0].paul, fases: FASES_PAUSAS },
+  { id: 'claves', ic: '🔑', li: () => symbolEl('clave_sol', 'tf-sym'), nome: 'Claves', sub: 'a chave que abre a pauta', cor: '#EBA332', paul: FASES_CLAVES[0].paul, fases: FASES_CLAVES },
+  { id: 'tempo', ic: '⏱️', li: () => h('b', { class: 'tf-li-t' }, '4/4'), nome: 'Tempo e compasso', sub: 'o pulso e a fórmula', cor: '#2a9d8f', paul: FASES_TEMPO[0].paul, fases: FASES_TEMPO },
+  { id: 'leitura', ic: '🎼', li: () => svgEl(56, 56, '<g stroke="currentColor" stroke-width="2.4">' + [12, 20, 28, 36, 44].map((y) => `<line x1="4" x2="52" y1="${y}" y2="${y}"/>`).join('') + '</g><ellipse cx="30" cy="32" rx="7" ry="5" transform="rotate(-20 30 32)" fill="currentColor"/><line x1="36.4" y1="30" x2="36.4" y2="6" stroke="currentColor" stroke-width="2.6"/>'), nome: 'Leitura de notas', sub: 'os nomes das notas', cor: '#7b3fe4', paul: FASES_LEITURA[0].paul, fases: FASES_LEITURA },
 ];
 export const sessaoPorId = (id) => SESSOES.find((s) => s.id === id);
 
