@@ -722,6 +722,39 @@ const RZ_ARROW=[['←','#c24bd9','ArrowLeft','a'],['↓','#2fc4e8','ArrowDown','
 const RZ_NEON=['#ff6ad5','#ffd84a','#5ee0ff','#7fe7a6','#ff9d4a'];
 /* pistas do jogo unificado: 3, 4 ou 5 teclas. No modo ritmo cada tecla é uma peça da bateria; na melodia são só cores. */
 function rzBeatLanes(){const K=RZ.keys,kit=RZ_KITS[K];return kit.map((x,i)=>RZ.modeEff==='ritmo'?[x[0],x[1],x[2]]:[RZ_NEON[i],x[1],''])}
+
+/* ===== Pista do Hero Drum no padrão dos jogos clássicos (Guitar Hero: ~105 / 146 / 206 notas por minuto no fácil / médio / difícil; Beatstar: poucas colunas, notas grandes).
+   A levada inteira continua SOANDO; na pista vai só uma "linha" tocável dela:
+   fácil = bumbo e caixa só nos tempos, uma nota de cada vez · médio = + contratempos (colcheias) e prato junto com o bumbo · difícil = + chimbal nos tempos livres e algumas semicolcheias.
+   Se ainda passar do limite de notas por segundo, sai uma classe inteira de notas por vez (assim o desenho se repete igual em todo compasso e dá pra decorar). ===== */
+var RZ_NPS={facil:1.75,medio:2.45,dificil:3.4},RZ_GAP={facil:.36,medio:.24,dificil:.15},RZ_GAPL={facil:.5,medio:.2,dificil:.15};
+function rzDrumLine(drums,bg,st,diff,sw){
+  const easy=diff==='facil',hard=diff==='dificil';
+  const cls=d=>{const x=((Math.round(d.t/st)%4)+4)%4;return x===0?0:((sw?x===3:x===2)?1:2)};
+  const typ=d=>d.snd==='kick'?'k':(d.snd==='snare'||d.snd==='clap'||d.snd==='rim')?'s':(d.snd==='tom1'||d.snd==='tom2'||d.snd==='floor')?'t':d.snd==='crash'?'c':d.snd==='hho'?'o':'h';
+  const RANK={s:0,k:1,t:2,c:3,o:4,h:5};
+  const out=[];const drop=d=>{bg.push({t:d.t,k:'drum',snd:d.snd,v:(d.v==null?1:d.v)*.85})};
+  let L=drums.map(d=>({d:d,c:cls(d),y:typ(d)})).sort((a,b)=>a.d.t-b.d.t);
+  /* 1) o que cada nível pode ter */
+  L=L.filter(x=>{const ghost=x.y==='s'&&x.d.v<.5;let ok;
+    if(ghost) ok=false;
+    else if(easy) ok=(x.y==='k'||x.y==='s'||x.y==='t'||x.y==='c')&&x.c===0;
+    else if(!hard) ok=(x.y==='k'||x.y==='s'||x.y==='t'||x.y==='c'||x.y==='o')&&x.c<=1;
+    else ok=x.y!=='h'||x.c===0;
+    if(!ok) drop(x.d);return ok});
+  /* 2) notas no mesmo instante: fácil 1; médio e difícil só bumbo + prato juntos */
+  let i=0,M=[];while(i<L.length){let j=i+1;while(j<L.length&&L[j].d.t-L[i].d.t<.045) j++;const g=L.slice(i,j).sort((a,b)=>RANK[a.y]-RANK[b.y]);
+    const keep=[g[0]];{const k=g.find(x=>x.y==='k'),c=g.find(x=>x.y==='c');if(c&&easy){keep.length=0;keep.push(c)}else if(k&&c){keep.length=0;keep.push(k,c)}}
+    g.forEach(x=>{if(keep.indexOf(x)<0) drop(x.d)});keep.forEach(x=>M.push(x));i=j}
+  /* 3) tira classes inteiras até caber no limite de notas por segundo */
+  const nps=A=>{if(A.length<2) return 0;const ts=A.map(x=>x.d.t);return A.length/Math.max(1,ts[ts.length-1]-ts[0])};
+  const CUT=[x=>x.c===2&&x.y!=='s',x=>x.c===2,x=>x.y==='h',x=>x.c===1&&x.y==='o',x=>x.c===1&&x.y==='t',x=>x.c===1&&x.y==='k',x=>x.c===1];
+  /* primeiro tenta tirar só nos compassos ímpares (o desenho passa a se repetir de 2 em 2 compassos); se não bastar, tira de todos */
+  for(let k=0;k<CUT.length&&nps(M)>RZ_NPS[diff];k++){for(let h=0;h<2&&nps(M)>RZ_NPS[diff];h++){M=M.filter(x=>{if(CUT[k](x)&&(h===1||(x.d.bar|0)%2===1)){drop(x.d);return false}return true})}}
+  /* 4) distância mínima entre notas (e na mesma tecla): some a menos importante */
+  const gap=RZ_GAP[diff],gapL=RZ_GAPL[diff],last={};let prev=null;
+  M.forEach(x=>{const same=prev&&x.d.t-prev.d.t<.045;if(prev&&!same&&x.d.t-prev.d.t<gap){drop(x.d);return}const ly=x.y;if(last[ly]!=null&&x.d.t-last[ly]<gapL&&!same){drop(x.d);return}last[ly]=x.d.t;if(!same) prev=x;out.push(x.d)});
+  return out}
 /* "só usamos os polegares": nunca mais que `max` notas ao mesmo tempo; as que sobram viram som de fundo */
 function rzThumbs(notes,max,bg){notes.sort((a,b)=>a.t-b.t);const pr={kick:0,snare:1,crash:max===1?-1:2,ride:3,hho:3,tom1:3,tom2:3,floor:3,hhc:4};const out=[];let i=0;
   const drop=n=>{if(n.snd) bg.push({t:n.t,k:'drum',snd:n.snd,v:(n.v||.8)*.8})};
@@ -786,8 +819,7 @@ function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.
   else if(RZ.game==='beat'){const K=RZ.keys;
     let mode=RZ.mode;if(mode==='ritmo'&&A.drums.length<8&&A.mel.length>=8) mode='melodia';else if(mode==='melodia'&&A.mel.length<8&&A.drums.length>=8) mode='ritmo';RZ.modeEff=mode;
     if(mode==='ritmo'){const LM=RZ_KIT_LANE[K];const fast=(S.bpm||0)>=116,q4=d=>Math.round((d.t-A.lead*0)/st)%4===0;
-      /* fácil: bumbo e caixa (sem nota fantasma) · médio: + chimbal só no tempo · difícil: tudo, mas em música rápida o chimbal fica só no tempo (o resto continua soando no fundo) */
-      notes=A.drums.filter(d=>(dif||d.v>=.5)&&(easy?(d.lane<=1||d.snd==='crash'):dif?(d.lane!==2||!fast||d.snd==='hho'||d.snd==='crash'||q4(d)):(d.lane!==2||q4(d)))).map(d=>({t:d.t,lane:LM[d.snd]!=null?LM[d.snd]:Math.min(d.lane,K-1),snd:d.snd,v:d.v}));
+      notes=rzDrumLine(A.drums,bg,st,RZ.diff,(RK_STY[S.rkStyle||S.style]||{}).sw||0).map(d=>({t:d.t,lane:LM[d.snd]!=null?LM[d.snd]:Math.min(d.lane,K-1),snd:d.snd,v:d.v}));RZ._line=1;
       A.mel.forEach(n=>bg.push({t:n.t,k:'lead',m:n.m,d:n.d}))}
     else{notes=melF;rzPhraseLanes(notes,K,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.85});
       A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
@@ -801,7 +833,7 @@ function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.
     by.forEach(arr=>arr.forEach((n,i)=>{const nx=arr[i+1];const gap=nx?nx.t-n.t:9;const maxF=Math.max(.05,gap*spd*.88);n.hf=n.sus?Math.min(maxF,n.sus*spd+.05):Math.min(.17,maxF)}));
     A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
   {const nl=RZ.game==='hero'?(RZ.inst==='guitarra'?5:RZ.kn[RZ.inst]):RZ.game==='beat'?RZ.keys:4;const kk=RZ.game==='beat'&&RZ.modeEff==='ritmo'?RZ.keys:RZ.game==='hero'&&RZ.inst==='bateria'?RZ.kn.bateria:0;let fam=null;if(kk){const LM=RZ_KIT_LANE[kk];fam=[LM.snare,LM.tom1].filter((x,i,a)=>a.indexOf(x)===i);if(fam.length<2) fam=null}
-   notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st,RZ.diff);
+   if(!(RZ.game==='beat'&&RZ.modeEff==='ritmo')){notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st,RZ.diff)}
    const lt=rzLeadTrim(A,notes,bg,S);if(lt.shifted){notes=lt.notes;bg=lt.bg;A.dur=Math.max(A.lead*16*st+1.5,A.dur-lt.shifted)}}
   if(RZ.game==='beat'||RZ.game==='tiles'||RZ.game==='setas'){const c2=rzClip(A,notes,bg,S);notes=c2.notes;bg=c2.bg} // Piano Hero também respeita 1 min / 2 min
   if(RZ.game==='beat'||RZ.game==='tiles') rzStars(notes,A,S);
@@ -931,22 +963,23 @@ function rzDrawHero(g,W,H,dpr){const T=rzTh();const L=rzL(),n=L.length;const s=r
       g.fillStyle='rgba(255,255,255,.9)';g.beginPath();g.ellipse(x,y,r*.38,r*.15,0,0,7);g.fill();if(nt.lh){g.strokeStyle='#141015';g.lineWidth=2*dpr;g.beginPath();g.ellipse(x,y,r*.7,r*.28,0,0,7);g.stroke()}g.globalAlpha=1}}
   rzPopsFx(g,l=>xOf(l,hitY),hitY,dpr);
   if(RZ.stats&&RZ.stats.combo>=10){g.fillStyle=T.txt;g.font='800 '+(18*dpr)+'px system-ui';g.textAlign='left';g.fillText('×'+rzMult(),10*dpr,hitY-14*dpr)}rzCountdown(g,W,H,dpr,s)}
-function rzDrawBeat(g,W,H,dpr){const T=rzTh();const s=rzSNow();const now=performance.now();const K=RZ.keys,hitY=H*.8,lw=W*.8/K,x0=W*.1;const speed=H*.55*RZ_WIN[RZ.diff].spd;const C=rzBeatLanes().map(l=>l[0]);
+function rzDrawBeat(g,W,H,dpr){const T=rzTh();const s=rzSNow();const now=performance.now();const K=RZ.keys,hitY=H*.84,lw=W/K,x0=0;const speed=hitY/({facil:2.1,medio:1.75,dificil:1.45}[RZ.diff]||1.75);const C=rzBeatLanes().map(l=>l[0]);
   rzBackdrop(g,W,H,dpr);
   for(let i=0;i<K;i++){g.fillStyle=T.lane[i===1?1:0];g.fillRect(x0+i*lw+2*dpr,0,lw-4*dpr,H);const fl=RZ.flash[i]&&now-RZ.flash[i]<160;if(fl||RZ.held.has(i)){const gr=g.createLinearGradient(0,hitY,0,hitY-H*.5);gr.addColorStop(0,C[i]+'88');gr.addColorStop(1,C[i]+'00');g.fillStyle=gr;g.fillRect(x0+i*lw+2*dpr,hitY-H*.5,lw-4*dpr,H*.5)}}
   const pl=RZ.pops.length?RZ.pops[RZ.pops.length-1]:null;const lc=pl&&now-pl.t<300?rzPopCol(pl.res):T.hit;g.fillStyle=lc;g.fillRect(x0,hitY-2*dpr,lw*K,4*dpr);g.shadowColor=lc;g.shadowBlur=12*dpr;g.fillRect(x0,hitY-1*dpr,lw*K,2*dpr);g.shadowBlur=0;
   if(s>-1){for(const nt of RZ.chart){const y=hitY-(nt.t-s)*speed;if(y<-60*dpr) break;if(nt.sus){const y2=hitY-(nt.t+nt.sus-s)*speed;if(y2<hitY&&(!nt.hit||nt.holding)){g.fillStyle=C[nt.lane]+(nt.holding?'cc':'66');g.fillRect(x0+nt.lane*lw+lw*.36,Math.max(0,y2),lw*.28,Math.min(hitY,y)-Math.max(0,y2))}}
-      if(nt.hit||y>H+20) continue;const x=x0+nt.lane*lw+6*dpr,w=lw-12*dpr,h=Math.max(16*dpr,lw*.28);g.globalAlpha=nt.res==='miss'?.25:1;g.shadowColor=C[nt.lane];g.shadowBlur=14*dpr;const r=8*dpr;g.fillStyle=C[nt.lane];g.beginPath();g.moveTo(x+r,y-h/2);g.arcTo(x+w,y-h/2,x+w,y+h/2,r);g.arcTo(x+w,y+h/2,x,y+h/2,r);g.arcTo(x,y+h/2,x,y-h/2,r);g.arcTo(x,y-h/2,x+w,y-h/2,r);g.closePath();g.fill();g.shadowBlur=0;
+      if(nt.hit||y>H+20) continue;const x=x0+nt.lane*lw+5*dpr,w=lw-10*dpr,h=Math.max(26*dpr,Math.min(lw*.42,44*dpr));g.globalAlpha=nt.res==='miss'?.25:1;g.shadowColor=C[nt.lane];g.shadowBlur=14*dpr;const r=10*dpr;g.fillStyle=C[nt.lane];g.beginPath();g.moveTo(x+r,y-h/2);g.arcTo(x+w,y-h/2,x+w,y+h/2,r);g.arcTo(x+w,y+h/2,x,y+h/2,r);g.arcTo(x,y+h/2,x,y-h/2,r);g.arcTo(x,y-h/2,x+w,y-h/2,r);g.closePath();g.fill();g.shadowBlur=0;
       g.fillStyle='rgba(255,255,255,.5)';g.fillRect(x+r,y-h/2+3*dpr,w-2*r,3*dpr);if(nt.star&&nt.res!=='miss') rzStarMark(g,x,y,w,h,dpr);if(nt.sw){g.fillStyle='#1a0b2e';g.font='800 '+(h*.8)+'px system-ui';g.textAlign='center';g.fillText({u:'⇧',l:'⇦',r:'⇨'}[nt.sw],x+w/2,y+h*.3)}g.globalAlpha=1}}
+  for(let i=0;i<K;i++){const cx=x0+i*lw+5*dpr,cw=lw-10*dpr,ch=Math.max(26*dpr,Math.min(lw*.42,44*dpr));g.strokeStyle=C[i];g.globalAlpha=.55;g.lineWidth=3*dpr;g.beginPath();if(g.roundRect) g.roundRect(cx,hitY-ch/2,cw,ch,10*dpr);else g.rect(cx,hitY-ch/2,cw,ch);g.stroke();g.globalAlpha=1}
   rzStarBar(g,W,dpr);
   rzPopsFx(g,l=>x0+l*lw+lw/2,hitY,dpr);rzCountdown(g,W,H,dpr,s)}
 
 /* Barra de precisão do Beat Hero: mostra a precisão até agora e as 3 estrelas de verdade (65%, 85% e 95%, as mesmas do fim da música). Antes eram 5 estrelas que viravam 3. */
 function rzStarBar(g,W,dpr){const st=RZ.stats;if(!st) return;const judged=st.pp+st.perfect+st.great+st.good+st.miss;const cur=judged?(st.pp+st.perfect+st.great*.9+st.good*.75)/judged:0;
-  const bw=Math.min(W*.62,190*dpr),bh=9*dpr,x=W/2-bw/2,y=36*dpr,pos=p=>Math.max(0,Math.min(1,(p-.5)/.5));
+  const bw=Math.min(W*.5,150*dpr),bh=6*dpr,x=W/2-bw/2,y=20*dpr,pos=p=>Math.max(0,Math.min(1,(p-.5)/.5));
   g.save();g.fillStyle='rgba(20,32,54,.82)';g.fillRect(x-3*dpr,y-3*dpr,bw+6*dpr,bh+6*dpr);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x,y,bw,bh);
   const free=!MISSION;g.fillStyle=free?(cur>=RZ_STAR_MIN?'#ffd84a':'#ff6f6f'):(cur>=.95?'#ffd84a':cur>=.85?'#8be05a':cur>=.65?'#4cc3ff':'#ff6f6f');g.fillRect(x,y,bw*pos(cur),bh);
-  g.textAlign='center';g.font='900 '+(20*dpr)+'px system-ui';g.lineJoin='round';
+  g.textAlign='center';g.font='900 '+(13*dpr)+'px system-ui';g.lineJoin='round';
   (free?[RZ_STAR_MIN]:[.65,.85,.95]).forEach(p=>{const on=judged>=6&&cur>=p;const px=x+bw*pos(p);const tx=free?'★'.repeat(rzStarMax()):'★';g.fillStyle='rgba(255,255,255,.7)';g.fillRect(px-1*dpr,y-3*dpr,2*dpr,bh+6*dpr);g.lineWidth=4*dpr;g.strokeStyle='rgba(20,32,54,.9)';g.strokeText(tx,px,y-7*dpr);g.fillStyle=on?'#ffd84a':'rgba(255,255,255,.55)';g.fillText(tx,px,y-7*dpr)});
   g.font='800 '+(12*dpr)+'px system-ui';const t=judged?Math.round(cur*100)+'%':'—';g.lineWidth=4*dpr;g.strokeStyle='rgba(20,32,54,.9)';g.strokeText(t,W/2,y+bh+15*dpr);g.fillStyle='#fff';g.fillText(t,W/2,y+bh+15*dpr);g.restore()}
 
