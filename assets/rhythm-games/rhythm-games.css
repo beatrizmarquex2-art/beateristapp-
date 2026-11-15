@@ -362,3 +362,10 @@ html.kb-open .rz-jogar{bottom:8px}
 
 /* JOGAR não flutua mais por cima da lista: fica logo depois das músicas (são só 5 por ritmo) */
 .bmr .rz-jogar{position:static!important}
+
+/* "Como jogar" do Piano Hero: curto, com o botão em cima */
+.bmr .rz-howto-c{gap:10px;color:#142036;background:#fbf3e6}
+.bmr .rz-howto-c .h2{color:#142036;margin:0}
+.bmr .rz-howto-c .rz-howsvg{max-width:230px}
+.bmr .rz-howto-c .rz-steps{gap:6px;font-size:15px;color:#142036}
+.bmr .rz-howto-c .actions{display:flex;flex-wrap:wrap;gap:8px}

@@ -1123,14 +1123,13 @@ function rzTilesHowto(){const fromStart=RZ.howFrom==='start';
     +'<rect x="60" y="111" width="30" height="4" fill="#2fc4e8"/><rect x="0" y="118" width="200" height="3" fill="#2fc4e8"/><rect x="0" y="100" width="200" height="30" fill="rgba(47,196,232,.12)"/>'
     +'<text x="100" y="142" text-anchor="middle" font-size="9" fill="#17141b" font-family="system-ui">linha de toque</text><text x="75" y="80" text-anchor="middle" font-size="30">👆</text><path d="M75 82 v-1" stroke="#17141b"/>'
     +'<text x="175" y="132" text-anchor="middle" font-size="8" fill="#fff" font-family="system-ui">segure</text></svg>';
-  return '<section class="panel rz-howto"><span class="tag">Na Batida</span><h2 class="h2">Como jogar</h2>'+svg
-    +'<ol class="rz-steps"><li><b>Os blocos descem</b> e cada um é uma nota da música. Você toca a melodia.</li>'
-    +'<li><b>Toque na coluna do bloco</b> quando a faixa azul da base dele encostar na <b style="color:#12a3c2">linha azul</b>. Não precisa acertar o bloco em cheio: vale qualquer lugar da coluna.</li>'
-    +'<li><b>Bloco comprido?</b> Segure o dedo nele até acabar.</li>'
-    +'<li><b>Se um bloco passar</b> sem você tocar, o combo zera. Tocar em coluna vazia também.</li>'
-    +'<li><b>Nota que você não toca fica muda.</b> A bateria e o baixo seguem tocando sozinhos.</li></ol>'
-    +'<p class="small muted">No iPad, apoie as duas mãos e use os polegares. Dá pra tocar com vários dedos ao mesmo tempo. Com teclado: A S D F.</p>'
-    +'<div class="actions">'+(fromStart?'<button type="button" class="btn btn-red rz-bigbtn" data-act="rz-go">Entendi, bora tocar</button>':'')+'<button type="button" class="btn btn-ghost" data-act="rz-menu">'+(fromStart?'Voltar':'Voltar ao menu')+'</button></div></section>'}
+  /* tela curta: o botão vem primeiro, cabe tudo sem rolar */
+  return '<section class="panel rz-howto rz-howto-c"><h2 class="h2">Como jogar</h2>'
+    +'<div class="actions">'+(fromStart?'<button type="button" class="btn btn-red rz-bigbtn" data-act="rz-go">Entendi, bora tocar</button>':'')+'<button type="button" class="btn btn-ghost" data-act="rz-menu">'+(fromStart?'Voltar':'Voltar ao menu')+'</button></div>'
+    +svg
+    +'<ol class="rz-steps"><li><b>Toque na coluna</b> quando o bloco encostar na <b style="color:#12a3c2">linha azul</b>.</li>'
+    +'<li><b>Bloco comprido:</b> segure até acabar.</li>'
+    +'<li><b>Deixou passar:</b> o combo zera.</li></ol></section>'}
 function rzCalHTML(){const C=RZ.cal;return '<section class="panel rz-cal"><b>Calibrar o atraso</b><p class="small">Ouça os cliques e toque no botão <b>junto com cada um</b>. Os 4 primeiros são só pra ouvir; depois valem 8.</p><button type="button" class="rz-calpad" id="rz-calpad">TOQUE NO CLIQUE</button><p class="small" id="rz-calmsg">'+(C.msg||'Começando…')+'</p><div class="actions"><button type="button" class="btn btn-sm btn-ghost" data-act="rz-calx">Cancelar</button></div></section>'}
 function rzCalStart(){AE.unlock();const c=AE.get();const bpm=100,spb=60/bpm,N=12,t0=c.currentTime+.9;RZ.cal={t0,spb,N,taps:[],msg:'Escute os 4 primeiros cliques…'};for(let i=0;i<N;i++) AE.drum('click',t0+i*spb,i%4===0?1:.7);
   clearTimeout(RZ.calT);RZ.calT=setTimeout(rzCalDone,(.9+N*spb+.7)*1000);rzRe()}
