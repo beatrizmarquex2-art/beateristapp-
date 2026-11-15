@@ -87,8 +87,8 @@ ${img ? `<div class="im"><img src="${u(img)}"></div><div class="fita"></div>` : 
 export const VENDA = [
   ['enquete-1', { tag: 'me conta', t1: 'tem criança', t2: 'aprendendo música aí?', linhas: [], paul: 'bateria', cor: 'azul', fim: 'responde na enquete!' }],
   ['enquete-2', { tag: 'você escolhe', t1: 'qual instrumento', t2: 'o Paul aprende agora?', linhas: [], paul: 'guitarra', cor: 'creme', fim: 'manda na caixinha!' }],
-  ['passe', { tag: 'passe beaterista', t1: 'mais de 15 jogos', t2: 'de música', preco: 'R$ 49,90', linhas: ['o ano inteiro', 'pagamento único', 'dá pra começar grátis'], paul: 'selfie', cor: 'azul' }],
-  ['apostila-prazo', { tag: 'só até 30 de novembro', t1: 'apostila', t2: 'bateria start', img: 'assets/loja/bateria-start.webp', preco: 'R$ 14,90', de: 'de R$ 29,90', linhas: ['44 páginas pra começar do zero'], paul: 'oculos', cor: 'vinho' }],
+  ['passe', { tag: 'passe beaterista', t1: 'mais de 15 jogos', t2: 'de música', linhas: ['o ano inteiro', 'pagamento único', 'dá pra começar grátis'], paul: 'selfie', cor: 'azul', fim: 'conhece o passe!' }],
+  ['apostila', { tag: 'apostila do curso', t1: 'apostila', t2: 'bateria start', img: 'assets/loja/bateria-start.webp', linhas: ['44 páginas pra começar do zero'], paul: 'oculos', cor: 'vinho' }],
 ];
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch(); let n = 0;

@@ -23,13 +23,11 @@ DIAS = [
  ('lendo partitura brincando', [('reel', ['reels/12_achar_na_pauta.mp4'], 'seu filho lendo partitura. e achando que é jogo 🎼 começa grátis, link na bio.', '')]),
  ('o que tem no livro de colorir', [('post', ['colorir/colorir-post-2-o-que-tem.jpg'], 'o que tem no livro de colorir do paul? baterista, guitarrista, a banda inteira, percussão corporal e uma página pra você se desenhar na banda. 50 páginas, link na bio.', ''),
    ('story', ['colorir/colorir-story-2-pinte.jpg'], '', f'figurinha de link: {HOT}')]),
- ('o gibi do Paul', [('carrossel', car('gibi_carrossel', 7), 'o paul virou gibi 🥁 20 histórias em quadrinhos, 20 desafios da semana e uma página pra criança desenhar a dela. arrasta pra ler uma inteira. R$ 9,90, link na bio.', 'SÓ postar depois que o gibi estiver na Hotmart com o link na bio.'),
-   ('story', ['stories/story_gibi_1.jpg'], '', 'figurinha de link pro gibi.')]),
- ('apostila pela metade do preço', [('reel', ['reels/21_apostila_bateria_start.mp4'], 'a apostila do meu curso de bateria pela metade do preço: R$ 14,90, só até 30 de novembro. 44 páginas pra começar do zero. link na bio.', 'TEM PRAZO: postar até 30/nov. depois disso, pular este dia.'),
+ ('apostila pela metade do preço', [('reel', ['reels/21_apostila_bateria_start.mp4'], 'a apostila do meu curso de bateria: 44 páginas pra começar do zero. link na bio.', ''),
    ('story', ['stories/story_apostila_prazo.jpg'], '', 'figurinha de link pra apostila na lojinha.')]),
- ('o que tem no passe', [('carrossel', car('passe_carrossel', 7), 'o que tem dentro do passe beaterista? arrasta pra ver. R$ 49,90 por 12 meses, link na bio.', ''),
+ ('o que tem no passe', [('carrossel', car('passe_carrossel', 7), 'o que tem dentro do passe beaterista? arrasta pra ver. link na bio.', ''),
    ('story', ['stories/story_passe.jpg'], '', 'figurinha de link pro app.')]),
- ('combo de apostilas', [('reel', ['reels/14_combo_4_apostilas.mp4'], '4 apostilas pra aprender música brincando: ritmo, harmonia, 48 atividades e jogo da memória. combo por R$ 79,90, link na bio.', '')]),
+ ('combo de apostilas', [('reel', ['reels/14_combo_4_apostilas.mp4'], '4 apostilas pra aprender música brincando: ritmo, harmonia, 48 atividades e jogo da memória. tudo num combo só, link na bio.', '')]),
 ]
 # série "a Bea e a escola" (fotos novas) entra intercalada; a apostila sobe na fila por causa do prazo (30/nov)
 B = lambda n: [f'apresentacao/serie-bea/bea-{n}.jpg']
@@ -53,7 +51,7 @@ open(p0 + '/LEIA.txt', 'w').write("""PERFIL @jogos.beaterista: arrumar antes do 
    👇 jogue grátis e explore os materiais
 2. LINK DA BIO: jogos.beaterista.com.br
 3. DESTAQUES: criar com as capas da pasta "capas dos destaques" (o Instagram mostra só o círculo do meio).
-   ordem: o que é · jogos · pais · profs · álbum · lojinha · gibi
+   ordem: o que é · jogos · pais · profs · álbum · lojinha
 4. FIXADOS: os 3 posts de apresentação (dias 01, 02 e 03) ficam fixados no topo, nessa ordem.
 5. HORÁRIO: postar na hora em que seus seguidores estão online (Insights do Instagram ou "melhores horários" do Metricool).
 """)
@@ -85,10 +83,10 @@ h1{font-size:30pt;margin:0 0 4pt}h2{font-size:15pt;margin:0 0 6pt;color:#a8182e}
 .pc{display:flex;gap:5mm;margin-top:3mm}.pc img{width:26mm;border-radius:2mm;border:1pt solid #999;align-self:flex-start}.t{display:inline-block;background:#a8182e;color:#fff;border-radius:99px;padding:1pt 8pt;font-size:9.5pt;font-weight:700;text-transform:uppercase}
 .l{background:#f4ead8;border-radius:2mm;padding:3mm;margin:2mm 0;font-size:11pt}.o{font-size:10pt;color:#a8182e;font-weight:700}.a{font-size:9.5pt;color:#555}li{margin-bottom:2mm}.q{break-before:page}</style>
 <div class="capa"><p>KIT DO PERFIL</p><h1>@jogos.beaterista</h1><p>a ordem dos primeiros 18 dias: o que postar, em que sequência, com a legenda pronta.</p><p style="font-size:11pt;margin-top:20mm">Beaterista escola de música · jogos.beaterista.com.br</p></div>
-<div class="q"><h2>antes de postar</h2><ol><li><b>bio:</b> a sua já está boa (jogos musicais com o Robôterista Paul · aprenda na tela, depois mão na massa · jogue grátis e explore os materiais).</li><li><b>link da bio:</b> jogos.beaterista.com.br</li><li><b>destaques:</b> criar com as capas da pasta "00 - perfil". ordem: o que é · jogos · pais · profs · álbum · lojinha · gibi.</li><li><b>fixados:</b> os posts dos dias 01, 02 e 03 ficam fixados no topo. quem chega no perfil entende em 3 quadros: quem é o Paul, o que é a Beaterista e quem é você.</li><li><b>horário:</b> use os horários em que os seguidores estão online (Insights do Instagram ou "melhores horários" do Metricool).</li></ol>
-<h2>a lógica da ordem</h2><ol><li><b>dias 01 a 03, apresentação:</b> o Paul, a escola e a Bea. nada de venda.</li><li><b>dias 04 a 10, o que é e pra quem é:</b> o jogo funcionando, o lema da escola, o que cada jogo ensina, a história do nome. quase sem vender.</li><li><b>dias 11 a 18, os materiais:</b> livro de colorir, gibi, passe e combo, intercalados com posts seus (eu ensino o que eu toco, não é só bateria).</li></ol>
+<div class="q"><h2>antes de postar</h2><ol><li><b>bio:</b> a sua já está boa (jogos musicais com o Robôterista Paul · aprenda na tela, depois mão na massa · jogue grátis e explore os materiais).</li><li><b>link da bio:</b> jogos.beaterista.com.br</li><li><b>destaques:</b> criar com as capas da pasta "00 - perfil". ordem: o que é · jogos · pais · profs · álbum · lojinha.</li><li><b>fixados:</b> os posts dos dias 01, 02 e 03 ficam fixados no topo. quem chega no perfil entende em 3 quadros: quem é o Paul, o que é a Beaterista e quem é você.</li><li><b>horário:</b> use os horários em que os seguidores estão online (Insights do Instagram ou "melhores horários" do Metricool).</li></ol>
+<h2>a lógica da ordem</h2><ol><li><b>dias 01 a 03, apresentação:</b> o Paul, a escola e a Bea. nada de venda.</li><li><b>dias 04 a 10, o que é e pra quem é:</b> o jogo funcionando, o lema da escola, o que cada jogo ensina, a história do nome. quase sem vender.</li><li><b>dias 11 em diante, os materiais:</b> livro de colorir, apostila, passe e combo, intercalados com posts seus (eu ensino o que eu toco, não é só bateria).</li></ol>
 <h2>como usar o zip</h2><p>cada pasta é um dia. dentro, os arquivos estão numerados na ordem de postar e o <b>LEGENDA.txt</b> traz o texto pronto pra copiar. carrossel: subir as imagens na ordem dos números.</p>
-<h2>avisos</h2><ul><li><b>dia 15 (gibi):</b> só depois de o gibi estar na Hotmart.</li><li><b>dia 07 (apostila):</b> a promoção vale até 30/nov, por isso ela vem cedo na fila.</li><li><b>livro de colorir:</b> o link direto é ''' + HOT + '''</li><li>a conta está com restrição temporária pra conectar aplicativos: enquanto isso, postar na mão. os posts em si não são afetados.</li></ul></div><div class="q"></div>''']
+<h2>avisos</h2><ul><li>sem preço e sem data em nenhuma peça (pedido da Bea); o gibi/jornal não entra no kit.</li><li><b>livro de colorir:</b> o link direto é ''' + HOT + '''</li><li>a conta está com restrição temporária pra conectar aplicativos: enquanto isso, postar na mão. os posts em si não são afetados.</li></ul></div><div class="q"></div>''']
 for i, tit, cel in linhas:
     H.append(f'<div class="d"><div class="n">dia {i:02d} · {e(tit)}</div>')
     for tipo, nomes, texto, obs, m in cel:
