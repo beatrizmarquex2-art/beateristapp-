@@ -1,0 +1,61 @@
+/* Perfil do álbum: 3 opções de desenho pra Bea escolher (15/nov/2026). Só mockup: liga pondo pfx-a, pfx-b ou pfx-c no <html>. */
+
+/* ===== A · PALCO À NOITE: o mesmo clima do PaulBox e do Dicionário. Foto no holofote, código em pílula dourada ===== */
+html.pfx-a body,html.pfx-a{background:radial-gradient(120% 50% at 50% 0,#31408a 0,#162146 42%,#0a0f26 100%) fixed!important}
+html.pfx-a #view{color:#fff7e6}
+html.pfx-a #view .card,html.pfx-a #view .pf-top{background:rgb(255 255 255/.07)!important;border:0!important;box-shadow:none!important;border-radius:22px!important;color:#fff7e6!important}
+html.pfx-a #view .pf-top{background:radial-gradient(60% 60% at 24% 30%,rgb(242 169 27/.28),transparent 70%),rgb(255 255 255/.07)!important}
+html.pfx-a .pf-avatar{border:4px solid #f2a91b!important;border-radius:50%!important;box-shadow:0 0 0 6px rgb(242 169 27/.18),0 0 34px rgb(242 169 27/.45)!important;background:#162146!important}
+html.pfx-a .pf-codigo{background:#f2a91b!important;color:#162146!important;border-radius:16px!important;padding:6px 10px 8px!important;width:100%!important;aspect-ratio:auto!important;height:auto!important}
+html.pfx-a .pf-codigo small{color:#162146!important;opacity:.8}html.pfx-a .pf-codnum{color:#162146!important;font-size:20px!important}
+html.pfx-a .pf-codguardar{background:transparent!important;border:2px solid #f2a91b!important;color:#f2a91b!important;border-radius:99px!important;box-shadow:none!important}
+html.pfx-a .pf-info label{color:#f2a91b!important;font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+html.pfx-a .pf-info input{background:rgb(255 255 255/.1)!important;border:0!important;border-radius:14px!important;color:#fff7e6!important;font:400 24px/1.1 "Anton",sans-serif!important;text-transform:uppercase;letter-spacing:.02em}
+html.pfx-a #view .btn{background:rgb(255 255 255/.12)!important;color:#fff7e6!important;border:0!important;border-radius:99px!important;box-shadow:none!important;font-weight:800}
+html.pfx-a #view .btn.primary{background:#c81e2d!important;color:#fff!important}
+html.pfx-a #view h2,html.pfx-a #view .tag,html.pfx-a #view .hand{font:400 22px/1 "Anton",sans-serif!important;text-transform:uppercase;color:#f2a91b!important;letter-spacing:.03em;transform:none!important}
+html.pfx-a .pf-priv,html.pfx-a #view .muted{color:#c9c6e2!important}
+
+/* ===== B · CARTEIRINHA DE BACKSTAGE: crachá creme com faixa vermelha, foto quadrada e o código como número do passe ===== */
+html.pfx-b body,html.pfx-b{background:#f3ecdc url(../assets/zine/textura-fundo-creme.webp) center/cover fixed!important}
+html.pfx-b #view{color:#162146}
+html.pfx-b #view .card{background:#fffaf0!important;border:3px solid #162146!important;border-radius:16px!important;box-shadow:5px 5px 0 #162146!important;color:#162146!important}
+html.pfx-b #view .pf-top{position:relative;padding-top:52px!important;overflow:hidden}
+html.pfx-b .pf-top::before{content:"BEATERISTA · PASSE DO ALUNO";position:absolute;left:0;right:0;top:0;height:36px;background:#c81e2d;color:#fff;font:400 14px/36px "Anton",sans-serif;letter-spacing:.16em;text-align:center}
+html.pfx-b .pf-top::after{content:"";position:absolute;left:50%;top:9px;width:42px;height:9px;margin-left:-21px;border-radius:9px;background:#fffaf0;box-shadow:inset 0 1px 2px rgb(0 0 0/.35)}
+html.pfx-b .pf-avatar{border:3px solid #162146!important;border-radius:14px!important;box-shadow:3px 3px 0 #c81e2d!important;background:#f3ecdc!important}
+html.pfx-b .pf-codigo{background:transparent!important;color:#162146!important;border:2.5px dashed #162146!important;border-radius:10px!important}
+html.pfx-b .pf-codigo small{color:#c81e2d!important;opacity:1;font-weight:800}.pfx-b .pf-codnum,html.pfx-b .pf-codnum{color:#162146!important;font:400 24px/1.1 "Special Elite",monospace!important;letter-spacing:.1em}
+html.pfx-b .pf-codguardar{background:#fffaf0!important;color:#162146!important;border:2.5px solid #162146!important;border-radius:10px!important;box-shadow:2px 2px 0 #162146!important}
+html.pfx-b .pf-info label{color:#c81e2d!important;font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+html.pfx-b .pf-info input{background:transparent!important;border:0!important;border-bottom:3px solid #162146!important;border-radius:0!important;color:#162146!important;font:400 28px/1.1 "Permanent Marker",cursive!important}
+html.pfx-b #view .btn{background:#fffaf0!important;color:#162146!important;border:2.5px solid #162146!important;border-radius:12px 16px 10px 15px/15px 10px 16px 12px!important;box-shadow:3px 3px 0 #162146!important;font-weight:800}
+html.pfx-b #view .btn.primary{background:#162146!important;color:#fffaf0!important}
+html.pfx-b #view h2,html.pfx-b #view .tag,html.pfx-b #view .hand{font:400 24px/1 "Permanent Marker",cursive!important;color:#c81e2d!important;transform:none!important;background:linear-gradient(transparent 58%,#ffe27a 58%);display:inline}
+html.pfx-b .pf-priv,html.pfx-b #view .muted{color:#4a4f6a!important}
+html.pfx-b .topwrap,html.pfx-b header.top{background:#f3ecdc!important}
+
+/* ===== C · FIGURINHA HOLOGRÁFICA: o perfil vira a sua própria figurinha (moldura holo, foto grande, nome em destaque) ===== */
+html.pfx-c body,html.pfx-c{background:radial-gradient(100% 40% at 50% 0,#3a2a78 0,#14102e 55%,#0b0920 100%) fixed!important}
+html.pfx-c #view{color:#f4efff}
+html.pfx-c #view .card{background:rgb(255 255 255/.05)!important;border:1.5px solid transparent!important;background-clip:padding-box!important;border-radius:20px!important;box-shadow:0 0 0 1.5px rgb(143 252 255/.35),0 0 24px rgb(155 140 255/.25)!important;color:#f4efff!important}
+html.pfx-c #view .pf-top{display:grid!important;grid-template-columns:1fr!important;justify-items:center;text-align:center;padding:18px 16px 20px!important;background:linear-gradient(160deg,rgb(143 252 255/.2),rgb(255 155 232/.18) 45%,rgb(155 140 255/.22))!important;box-shadow:0 0 0 2px #8ffcff,0 0 0 5px rgb(255 155 232/.5),0 0 40px rgb(155 140 255/.55)!important;border-radius:26px!important}
+html.pfx-c .pf-left{gap:10px!important;width:100%}
+html.pfx-c .pf-avatar{width:150px!important;height:190px!important;border-radius:18px!important;border:3px solid #fff!important;box-shadow:0 10px 30px rgb(0 0 0/.5),inset 0 0 0 3px rgb(143 252 255/.6)!important;background:linear-gradient(135deg,#8ffcff,#ff9be8,#9b8cff)!important;position:relative}
+html.pfx-c .pf-avatar::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgb(255 255 255/.45) 50%,transparent 65%);pointer-events:none}
+html.pfx-c .pf-codigo{background:rgb(255 255 255/.14)!important;color:#fff!important;border-radius:99px!important;padding:4px 16px 5px!important;width:auto!important}
+html.pfx-c .pf-codigo small{color:#8ffcff!important;opacity:1}html.pfx-c .pf-codnum{color:#fff!important;font-size:18px!important}
+html.pfx-c .pf-codguardar{background:transparent!important;border:1.5px solid #8ffcff!important;color:#8ffcff!important;border-radius:99px!important;box-shadow:none!important}
+html.pfx-c .pf-info{width:100%;justify-items:center}html.pfx-c .pf-info label{color:#8ffcff!important;font:800 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase}
+html.pfx-c .pf-info input{background:transparent!important;border:0!important;text-align:center;color:#fff!important;font:400 30px/1.1 "Anton",sans-serif!important;text-transform:uppercase;letter-spacing:.03em;text-shadow:0 0 18px rgb(255 155 232/.7)}
+html.pfx-c .pf-btns{justify-content:center}
+html.pfx-c #view .btn{background:linear-gradient(135deg,#8ffcff,#ff9be8)!important;color:#1b1340!important;border:0!important;border-radius:99px!important;box-shadow:0 4px 14px rgb(155 140 255/.4)!important;font-weight:800}
+html.pfx-c #view .btn.ghost{background:transparent!important;color:#8ffcff!important;border:1.5px solid #8ffcff!important;box-shadow:none!important}
+html.pfx-c #view h2,html.pfx-c #view .tag,html.pfx-c #view .hand{font:400 22px/1 "Anton",sans-serif!important;text-transform:uppercase;letter-spacing:.04em;background:linear-gradient(90deg,#8ffcff,#ff9be8);-webkit-background-clip:text;background-clip:text;color:transparent!important;transform:none!important}
+html.pfx-c .pf-priv,html.pfx-c #view .muted{color:#c4bde8!important}
+
+html.pfx-a .pf-left{gap:12px!important}
+html.pfx-a #view .btn.ghost{background:transparent!important;border:2px solid #f2a91b!important;color:#f2a91b!important}
+html.pfx-b #view .btn.ghost{background:#fffaf0!important;color:#162146!important;border:2.5px solid #162146!important;box-shadow:3px 3px 0 #162146!important}
+html.pfx-b .pf-codguardar{width:100%}
+html.pfx-c #view .btn.ghost{background:transparent!important;color:#8ffcff!important;border:1.5px solid #8ffcff!important}
