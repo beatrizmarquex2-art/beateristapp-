@@ -28,7 +28,7 @@ h1{position:absolute;left:60px;top:70px;font:400 100px/.98 Marker,cursive;transf
 <div class="s" style="left:60px;top:650px;width:420px">quando um aluno trava, eu penso: como transformar isso num desafio que ele queira tentar de novo?</div>
 <div class="s" style="left:60px;top:1120px;font-size:58px;color:${AMARELO};transform:rotate(-2deg)">foi assim que<br>nasceram os jogos.</div>
 <img class="c" src="${u('assets/originals/paul-png/coloridos-hd/paul-bateria.png')}">`;
-const FOTOS = { baquetas: ['bea-baquetas-rindo', '50% 15%'], sorriso: ['bea-casaco-close', '50% 25%'] };
+const FOTOS = { baquetas: ['bea-baquetas-rindo-claro', '50% 15%'], sorriso: ['bea-casaco-close-claro', '50% 25%'] };
 const OPC = {}; let n = 0; for (const [fn, fv] of Object.entries(FOTOS)) for (const cor of Object.keys(CORES)) OPC[`${++n}-${fn}-${cor}`] = [...fv, CORES[cor]];
 const browser = await chromium.launch();
 for (const [nome, [foto, pos, cores]] of Object.entries(OPC)) {
