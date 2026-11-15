@@ -37,6 +37,7 @@ export const SERIE = {
   '4-eu-ensino-o-que-eu-toco': { foto: 'bea-palco-vermelha', pos: '30% 40%', cor: 'azul', t1: 'eu ensino', t2: 'o que eu toco', e1: 'baterista', e2: 'e professora', corpo: 'os exercícios que eu estudo são os mesmos que eu ensino e levo pro palco.', fim: 'do palco<br>pra aula.' },
   '6-o-ritmo-cabe-numa-caixa': { foto: 'bea-cajon', pos: '50% 20%', cor: 'creme', t1: 'o ritmo cabe', t2: 'numa caixa', e1: 'cajón', e2: 'percussão', corpo: 'bateria, cajón ou pandeiro: tudo começa no mesmo pulso.', fim: 'já tocou um?', paul: 'cajon' },
   '7-rindo-na-bateria': { foto: 'bea-bateria-rindo', pos: '45% 40%', cor: 'azul', larga: true, t1: 'meu lugar', t2: 'favorito', e1: 'atrás da bateria', e2: 'com a camiseta da escola', corpo: 'é daqui que saem as ideias pros jogos e pras aulas.', fim: 'bora tocar?' },
+  '8-depois-do-show': { foto: 'bea-palco-rindo', pos: '50% 45%', cor: 'vinho', larga: true, t1: 'quando o show', t2: 'dá certo', e1: 'microfone na mão', e2: 'sorriso no rosto', corpo: 'ver aluno no palco é a melhor parte de ser professora.', fim: 'obrigada, turma!', paul: 'microfone' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
@@ -58,6 +59,13 @@ export const ALUNOS = {
   '6-do-acorde-ao-palco': { foto: 'violao-palco', pos: '50% 35%', cor: 'azul', t1: 'do primeiro acorde', t2: 'ao palco', e1: 'violão', e2: 'apresentação', corpo: 'na Beaterista o aluno estuda na sala e mostra no palco.', fim: 'qual música<br>você tocaria?', paul: 'guitarra' },
   '7-palco-e-diversao': { foto: 'palco-risada', pos: '45% 25%', cor: 'vinho', t1: 'palco também', t2: 'é diversão', e1: 'aluno e professor', e2: 'juntos no palco', corpo: 'aqui o professor sobe junto, e o medo vai embora.', fim: 'olha essa<br>alegria!', paul: 'microfone' },
   '8-fone-e-baqueta': { foto: 'fone-pad', pos: '70% 40%', cor: 'azul', t1: 'fone no ouvido', t2: 'baqueta na mão', e1: 'treino no pad', e2: 'antes da bateria', corpo: 'primeiro ouve, depois treina no pad, depois vai pra bateria.', fim: 'igual nos<br>jogos do Paul.', paul: 'metronomo' },
+  '9-duas-baterias': { foto: 'duas-baterias', pos: '55% 60%', cor: 'vinho', t1: 'duas baterias', t2: 'um show só', e1: 'aluno na frente', e2: 'a Bea logo atrás', corpo: 'no palco ninguém toca sozinho: a professora vai junto.', fim: 'olha o sorriso<br>dela!' },
+  '10-vai-com-medo-mesmo': { foto: 'plaquinhas', pos: '50% 40%', cor: 'azul', larga: true, t1: 'vai com', t2: 'medo mesmo', e1: 'se der errado', e2: 'foi improviso', corpo: 'as plaquinhas do nosso show dizem tudo.', fim: 'hoje é dia de rock!', paul: 'oculos' },
+  '11-musica-nao-tem-idade': { foto: 'adulta-bateria', pos: '50% 25%', cor: 'creme', t1: 'música', t2: 'não tem idade', e1: 'bateria', e2: 'no palco', corpo: 'na Beaterista tem lugar pra quem começa cedo e pra quem começa agora.', fim: 'e você,<br>começa quando?' },
+  '12-cada-sino-uma-nota': { foto: 'sinos', pos: '30% 50%', cor: 'azul', larga: true, t1: 'cada sino', t2: 'uma nota', e1: 'musicalização', e2: 'infantil', corpo: 'os pequenos tocam junto com o violão do professor.', fim: 'olha esse olhar!', paul: 'pandeiro' },
+  '13-dia-de-show': { foto: 'dia-de-show', pos: '50% 50%', cor: 'vinho', larga: true, t1: 'dia de', t2: 'show', e1: 'a plateia filma', e2: 'a gente toca', corpo: 'é no palco que o estudo do ano inteiro aparece.', fim: 'educação musical com propósito.', paul: 'microfone' },
+  '14-lugar-de-menina': { foto: 'menina-bateria', pos: '45% 30%', cor: 'azul', t1: 'lugar de menina', t2: 'é na bateria', e1: 'baqueta na mão', e2: 'foco total', corpo: 'aqui toda criança escolhe o instrumento que quiser.', fim: 'bora tocar?' },
+  '15-beaterista-team': { foto: 'team-moldura', pos: '50% 40%', cor: 'creme', larga: true, t1: 'beaterista', t2: '#team', e1: 'quem toca junto', e2: 'ri junto', corpo: 'dia de show também é dia de foto na moldura.', fim: 'vem pro time!', paul: 'selfie' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
