@@ -5,6 +5,8 @@ import { h } from '../util.js';
 import { audio, isMuted } from '../audio.js';
 import { getGame, setGame } from './base.js';
 import { musicaPausa, musicaVolta } from './musica.js';
+import { gravar, podeGravar, LINK } from './paulbox-gravar.js';
+import { toast } from '../ui.js';
 
 const IMG = 'assets/jogos/paulbox/';
 export const TRACKS = [
@@ -22,6 +24,7 @@ export const TRACKS = [
 const LABEL = ['desligado', 'ritmo A', 'ritmo B', 'ritmo C', 'ritmo D'];
 const N = TRACKS.length;
 const BPM_MIN = 70; const BPM_MAX = 130;
+const SEG = 20; // duração da gravação pra postar
 
 export function mount(host) {
   const salvo = getGame('paulbox');
@@ -41,6 +44,8 @@ export function mount(host) {
   const hintEl = h('p', { class: 'pbx-hint', role: 'status', 'aria-live': 'polite' });
   const bpmV = h('span', {}, String(bpm));
   const sl = h('input', { type: 'range', min: String(BPM_MIN), max: String(BPM_MAX), value: String(bpm), 'aria-label': 'andamento', oninput: () => { bpm = Number(sl.value); bpmV.textContent = sl.value; }, onchange: () => setGame('paulbox', { bpm }) });
+  const pulsos = TRACKS.map(() => 0); let grav = null; // gravação em andamento
+  const btnRec = podeGravar() ? h('button', { type: 'button', class: 'pbx-act pbx-rec', 'aria-label': `gravar ${SEG} segundos pra postar`, onclick: () => (grav ? grav.cancelar() : comecaGravar()) }, `● gravar ${SEG}s`) : null;
   const act = (txt, fn, main) => h('button', { type: 'button', class: `pbx-act${main ? ' main' : ''}`, onclick: fn }, txt);
   const root = h('div', { class: 'pbx' }, glow,
     h('div', { class: 'pbx-head' },
@@ -50,6 +55,7 @@ export function mount(host) {
       act('Banda base', () => { unlock(); for (let i = 0; i < N; i++) setState(i, i < 4 ? 1 : 0); }, true),
       act('Surpresa', () => { unlock(); let n = 0; for (let i = 0; i < N; i++) { const s = Math.random() < 0.5 ? 1 + Math.floor(Math.random() * 4) : 0; setState(i, s); if (s) n++; } if (!n) setState(0, 1); }),
       act('Silêncio', () => { for (let i = 0; i < N; i++) setState(i, 0); }),
+      btnRec,
       h('label', { class: 'pbx-tempo' }, h('span', { class: 'pbx-beat', 'aria-hidden': 'true' }, ...dots), sl, bpmV, ' bpm')),
     stage, hintEl);
   host.replaceChildren(root);
@@ -312,6 +318,7 @@ export function mount(host) {
     }
   }
   function pulse(i) {
+    pulsos[i] = performance.now();
     glow.style.setProperty('--g', TRACKS[i].cor); glow.classList.add('on'); setTimeout(function () { glow.classList.remove('on'); }, 60);
     var b = els[i]; b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
     var a = b.querySelector('.pbx-art'), n = document.createElement('span'); n.className = 'pbx-note'; n.textContent = Math.random() < 0.5 ? '♪' : '♫';
@@ -322,13 +329,48 @@ export function mount(host) {
   hint();
   window.__paulbox = { get state() { return state.slice(); }, get tocando() { return !!timer; }, get bpm() { return bpm; } }; // só pra teste
 
+  /* ---------- gravar 20 s pra postar ou baixar ---------- */
+  const pausar = () => { parado = true; para(); ligaSaida(); };
+  const voltar = () => { parado = false; ligaSaida(); musicaPausa(); if (state.some(Boolean)) unlock(); };
+  let fimEl = null; let urlVideo = '';
+  function fechaFim() { if (fimEl) { fimEl.remove(); fimEl = null; } if (urlVideo) { URL.revokeObjectURL(urlVideo); urlVideo = ''; } }
+  function comecaGravar() {
+    if (gone || grav) return; unlock(); if (!ctx || !saida) { toast('não deu pra ligar o som neste aparelho'); return; }
+    if (!state.some(Boolean)) for (let i = 0; i < 4; i++) setState(i, 1); // palco vazio: entra a banda base
+    const seg = Number(window.__pbxSeg) > 0 ? Number(window.__pbxSeg) : SEG; // (__pbxSeg: só pra teste)
+    const g = gravar({ ctx, fonte: saida, tracks: TRACKS, imgs: els.map((b) => b.querySelector('img')), estado: () => state, pulsos, seg, onTick: (r) => { btnRec.textContent = `■ gravando ${r}s`; } });
+    grav = g; g.canvas.className = 'pbx-rec-cv'; g.canvas.setAttribute('aria-hidden', 'true'); root.append(g.canvas); btnRec.classList.add('on'); root.classList.add('gravando');
+    hintEl.textContent = 'gravando! vai tocando nos Pauls: tudo o que você mudar entra no vídeo.';
+    g.fim.then((blob) => {
+      grav = null; g.canvas.remove(); if (gone) return; btnRec.classList.remove('on'); root.classList.remove('gravando'); btnRec.textContent = `● gravar ${SEG}s`; hint();
+      if (!blob) return; mostraFim(blob);
+    });
+  }
+  function mostraFim(blob) {
+    fechaFim(); pausar(); const ext = /mp4/.test(blob.type) ? 'mp4' : 'webm'; const arq = new File([blob], `paulbox-beaterista.${ext}`, { type: blob.type });
+    urlVideo = URL.createObjectURL(blob); window.__paulbox.video = blob;
+    const texto = `montei minha banda no PaulBox 🎶 faça a sua: https://${LINK}`;
+    let pode = false; try { pode = !!(navigator.canShare && navigator.canShare({ files: [arq] })); } catch { pode = false; }
+    const sair = () => { fechaFim(); voltar(); };
+    fimEl = h('div', { class: 'pbx-fim', role: 'dialog', 'aria-label': 'seu vídeo do PaulBox' },
+      h('b', { class: 'pbx-fim-t' }, 'seu vídeo ficou pronto!'),
+      h('video', { class: 'pbx-fim-v', src: urlVideo, controls: true, playsinline: true, loop: true, preload: 'auto' }),
+      h('div', { class: 'pbx-fim-b' },
+        pode ? h('button', { type: 'button', class: 'pbx-act main', onclick: async () => { try { await navigator.share({ files: [arq], text: texto }); } catch (e) { if (!e || e.name !== 'AbortError') toast('não abriu o compartilhar. use o baixar.'); } } }, 'postar') : null,
+        h('a', { class: `pbx-act${pode ? '' : ' main'}`, href: urlVideo, download: arq.name }, 'baixar'),
+        h('button', { type: 'button', class: 'pbx-act', onclick: () => { sair(); comecaGravar(); } }, 'gravar de novo'),
+        h('button', { type: 'button', class: 'pbx-act', onclick: sair }, 'fechar')),
+      h('small', { class: 'pbx-fim-l' }, `o vídeo já sai com o logo e o link ${LINK}`));
+    root.append(fimEl);
+  }
+
   return {
     inProgress: () => false, // brinquedo livre: sair não perde partida
-    pause() { parado = true; para(); ligaSaida(); },
-    resume() { parado = false; ligaSaida(); musicaPausa(); if (state.some(Boolean)) unlock(); },
+    pause() { if (grav) grav.cancelar(); pausar(); },
+    resume() { if (!fimEl) voltar(); },
     restart() { for (let i = 0; i < N; i++) setState(i, 0); },
     destroy() {
-      gone = true; para(); window.removeEventListener('bt-mute', onMute);
+      gone = true; if (grav) grav.cancelar(); fechaFim(); para(); window.removeEventListener('bt-mute', onMute);
       if (master) { try { master.gain.value = 0; } catch { /* ok */ } const s = saida; setTimeout(() => { try { s.disconnect(); } catch { /* já saiu */ } }, 120); }
       delete window.__paulbox; musicaVolta();
     },

@@ -36,6 +36,19 @@ check('pausa cala a banda', (await page.evaluate(() => window.__peak(700))) < 0.
 await page.evaluate(() => document.querySelector('.jg-pausa .btn.primary').click()); await sleep(500);
 check('continuar volta a tocar', await page.evaluate(() => window.__paulbox.tocando) && (await page.evaluate(() => window.__peak(1500))) > 0.01);
 
+/* gravar um trecho (no teste, 3 s em vez de 20) */
+await page.evaluate(() => { window.__pbxSeg = 3; document.querySelector('.pbx-rec').click(); }); await sleep(1200);
+check('gravando: botão avisa e a banda segue tocando', await page.evaluate(() => /gravando/.test(document.querySelector('.pbx-rec').textContent) && window.__paulbox.tocando));
+await page.click('.pbx-slot[data-id="guitarra"]');
+await page.waitForSelector('.pbx-fim video', { timeout: 15000 });
+const vid = await page.evaluate(async () => { const b = window.__paulbox.video; const u = new Uint8Array(await b.arrayBuffer()); let s = ''; for (let i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return { tipo: b.type, n: b.size, b64: btoa(s) }; });
+check('o vídeo sai gravado de verdade (com tamanho)', /^video\//.test(vid.tipo) && vid.n > 30000, `${vid.tipo} ${vid.n}`);
+if (process.env.SHOTS) (await import('node:fs')).writeFileSync(`${process.env.SHOTS}/paulbox-video.${/mp4/.test(vid.tipo) ? 'mp4' : 'webm'}`, Buffer.from(vid.b64, 'base64'));
+check('tela do vídeo: baixar, gravar de novo e fechar; a banda cala enquanto isso', await page.evaluate(() => { const t = [...document.querySelectorAll('.pbx-fim .pbx-act')].map((b) => b.textContent); return t.includes('baixar') && t.includes('gravar de novo') && t.includes('fechar') && !window.__paulbox.tocando && /paulbox-beaterista\./.test(document.querySelector('.pbx-fim a[download]').download); }));
+await shot('4-video-pronto');
+await page.evaluate(() => [...document.querySelectorAll('.pbx-fim .pbx-act')].find((b) => b.textContent === 'fechar').click()); await sleep(400);
+check('fechar volta pra banda tocando', await page.evaluate(() => !document.querySelector('.pbx-fim') && window.__paulbox.tocando));
+
 await page.evaluate(() => [...document.querySelectorAll('.jg-top .btn')].find((b) => b.textContent === 'nova partida').click()); await sleep(200);
 check('"nova partida" zera a banda', await page.evaluate(() => window.__paulbox.state.every((s) => s === 0)));
 await page.click('.pbx-slot[data-id="baixo"]'); await sleep(400);

@@ -1361,3 +1361,16 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pbx .pbx-tag{flex-direction:column;gap:2px;min-height:36px;justify-content:flex-start}
 .pbx .pbx-name{font-size:11px}.pbx .pbx-chip{font-size:9.5px;padding:2px 5px}.pbx .pbx-lvl b{width:9px}.pbx .pbx-lvl{gap:3px}
 @container (min-width:600px){.pbx .pbx-name{font-size:14px}.pbx .pbx-chip{font-size:11px;padding:2px 8px}.pbx .pbx-lvl b{width:16px}.pbx .pbx-stage{gap:14px 10px}.pbx .pbx-art{aspect-ratio:1/1}}
+
+/* PaulBox: gravar 20 s (botão, miniatura do vídeo enquanto grava e tela do vídeo pronto) */
+.pbx .pbx-rec{background:rgb(255 255 255/.14);color:#fff7e6}.pbx .pbx-rec.on{background:#c81e2d;color:#fff;animation:pbx-pisca 1s steps(2) infinite}
+@keyframes pbx-pisca{50%{opacity:.7}}
+.pbx-rec-cv{position:absolute!important;top:8px;right:8px;width:46px;height:auto;border-radius:6px!important;border:2px solid #c81e2d;z-index:5!important;pointer-events:none}
+.pbx.gravando .pbx-walker{visibility:hidden}
+.pbx-fim{position:absolute!important;inset:0;z-index:8!important;background:rgb(10 15 38/.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:22px!important;color:#fff7e6;text-align:center;overflow:hidden}.pbx:has(.pbx-fim){min-height:430px}
+.pbx-fim-t{font:400 20px/1.1 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.pbx-fim-v{flex:0 1 auto;min-height:0;max-height:min(46vh,380px);max-width:100%;aspect-ratio:9/16;border-radius:14px!important;background:#000}
+.pbx-fim-b{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.pbx-fim a.pbx-act{text-decoration:none;display:inline-flex;align-items:center}
+.pbx-fim-l{font-size:11.5px;opacity:.8}
+@media(prefers-reduced-motion:reduce){.pbx .pbx-rec.on{animation:none}}
