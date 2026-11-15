@@ -301,13 +301,14 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-dif.on .rz-dif-s{color:#ffd84a}
 .bmr .rz-dif-hint{margin:0 0 8px}
 
-/* Lista de músicas à vista no menu: uma por linha, com as estrelas que ela vale no nível */
-.bmr .rz-tiers.rz-list{grid-template-columns:1fr!important;gap:6px;margin:6px 0 10px}
-.bmr .rz-list .rz-tier{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto;justify-items:start;align-items:center;align-content:center;gap:8px;min-height:46px!important;padding:8px 12px;text-align:left}
-.bmr .rz-list .rz-tier .rz-lv{font-size:15px}
-.bmr .rz-list .rz-tier b{font-size:15px}
-.bmr .rz-list .rz-tier .small{white-space:nowrap}
+/* Músicas à vista no menu: cartões lado a lado (3 por linha), da mais fácil pra mais difícil, com as estrelas que cada uma vale no nível */
+.bmr .rz-tiers.rz-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px;margin:6px 0 10px}
+.bmr .rz-list .rz-tier{min-height:104px!important;padding:8px 4px;gap:2px}
+.bmr .rz-list .rz-tier .rz-lv{font-size:14px}
+.bmr .rz-list .rz-tier b{font-size:13.5px;line-height:1.12}
+.bmr .rz-list .rz-tier .small{font-size:12px}
 .bmr .rz-list .rz-tier .rz-pbar{display:none}
-.bmr .rz-list .rz-tier .rz-b{font-size:17px;letter-spacing:1px;white-space:nowrap;color:#ffd84a}
+.bmr .rz-list .rz-tier .rz-b{font-size:16px;letter-spacing:1px;white-space:nowrap;color:#ffd84a}
 .bmr .rz-list .rz-tier .rz-b .rz-off{color:inherit;opacity:.3}
 .bmr .rz-tierhint{margin:8px 0 0}
+@media (max-width:339px){.bmr .rz-tiers.rz-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
