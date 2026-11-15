@@ -36,7 +36,8 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
-## Paulbox: a banda do Paul (15/nov/2026, v529, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
+## PaulBox: a banda do Paul (15/nov/2026, v530; publicado no app da Bea em 15/nov, FALTA publicar na área dos alunos)
+- **Nome visível: PaulBox** (com B maiúsculo, escolha da Bea; endereço e arquivos continuam `paulbox`). Em 15/nov foi pra `main` (app da Bea). **A área dos alunos (`beaterista-jogos`) não foi publicada**: a sessão não teve acesso àquele repositório; é só seguir "Publicar a área dos alunos" acima.
 - A Bea mandou o zip `paulbox-jogos` (página solta, com desenho e sons já prontos dela) e pediu pra entrar nos Jogos. Virou jogo de verdade: `js/jogos/paulbox.js` (`#/jogos/paulbox`), imagens em `assets/jogos/paulbox/` (10 Pauls + `chegou.webp`), ícone `assets/jogos/icones/paulbox.webp` (o Paul DJ), estilo no fim de `css/jogos.css` (classes `.pbx-*`).
 - Como funciona: 10 Pauls (bateria, baixo, teclado, guitarra, voz, DJ, trompete, pandeiro, violino, metrônomo). Cada toque liga o instrumento e troca o ritmo (A a D); no 5º toque ele sai. Botões: Banda base, Surpresa, Silêncio e andamento (70 a 130; o aparelho lembra). Tudo sintetizado no aparelho, funciona sem internet.
 - **Os sons não foram mexidos** (o motor de áudio é o da página dela, copiado igual). O que mudou pra caber no app: usa o áudio do app (respeita o alto-falante do topo), a pausa da moldura cala a banda, "nova partida" = silêncio, sair cala tudo, a música de fundo dos jogos fica quieta ali. Os botões subiram pra cima do palco (no iPhone ficam sempre à vista; no iPad deitado cabe tudo numa tela, 5 por fileira).

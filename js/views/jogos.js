@@ -50,7 +50,7 @@ const GAMES = [
   ['paultavivo', 'pauLta ao Vivo', 'pauta-vivo.svg', paultavivo, 'leia a nota e toque de verdade'],
   ['groove', 'Eco de Groove', 'groove.svg', groove, 'repita a levada do Paul · bumbo, caixa e chimbal'],
   ['fantasma', 'Clique Fantasma', 'fantasma.svg', fantasma, 'o clique some: você segura o tempo?'],
-  ['paulbox', 'Paulbox', 'paulbox.webp', paulbox, 'monte a banda do Paul · 10 instrumentos, 4 ritmos cada'],
+  ['paulbox', 'PaulBox', 'paulbox.webp', paulbox, 'monte a banda do Paul · 10 instrumentos, 4 ritmos cada'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
   ['un', 'UN🚫', 'cartas.webp', un, 'regras diferentes · robô, mesmo celular ou 2 celulares'],
   ['quizuno', 'Quiz Uno Musical', 'cartas.webp', quizuno, '5 perguntas · acerte todas e ganhe 1 giro da roleta'],
