@@ -42,24 +42,34 @@ const FONTES = `@font-face{font-family:Marker;src:url(${u('assets/fonts/Permanen
 // chamadas: só as frases dela, mescladas (pre + botão). Nunca "joga grátis".
 const TELAS = { beathero: '59f03481c1a887c9', toque: '53c9b526fedbefb3', paulta: 'a6053f0358e0bd84', figurix: 'c0c549a9b88ef20b', acordes: '02eded2a16dc87b7', detetive: '7dfe2be6cd132427' };
 const CTAS = [['tá esperando o quê?', 'acesse o site e jogue já!'], ['baixe o material e', 'jogue grátis'], ['acesse o site e', 'garanta seu acesso'], ['tá esperando o quê?', 'garanta seu acesso']];
-const final = ({ fim, paul, marca, cta = 0, telas = ['beathero', 'toque'], capas = ['ritmo', 'colorir'] }) => `<!doctype html><meta charset="utf-8"><style>${FONTES}*{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;background:#0d1a36;color:#f4ead8;position:relative;overflow:hidden}
+// página de dentro de cada material (print), pra aparecer atrás da capa no mockup
+const DENTRO = (id) => fs.existsSync(path.join(ROOT, `assets/loja/d-${id}-2.webp`)) ? `assets/loja/d-${id}-2.webp` : `assets/loja/d-${id}.webp`;
+// celular (print do jogo) e livro (capa + página de dentro), em CSS
+const cel = (tela, x, r) => `<div class="cel" style="left:${x}px;transform:rotate(${r}deg)"><i></i><img src="${u('vendas/assets/' + TELAS[tela] + '.webp')}"></div>`;
+const livro = (id, y, r) => `<div class="lv" style="top:${y}px;transform:rotate(${r}deg)"><img class="pg" src="${u(DENTRO(id))}"><div class="cp"><img src="${u('assets/loja/' + id + '.webp')}"></div></div>`;
+// SÓ a escola no final (sem logo de parceiro) e NADA por cima do Paul (regras da Bea)
+const final = ({ fim, paul, cta = 0, telas = ['beathero', 'toque'], capas = ['ritmo', 'colorir'] }) => `<!doctype html><meta charset="utf-8"><style>${FONTES}*{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;background:#0d1a36;color:#f4ead8;position:relative;overflow:hidden}
 .p{position:absolute;inset:0;background:radial-gradient(#f4ead81c 2px,transparent 2.6px) 0 0/34px 34px}
-h1{position:absolute;left:70px;top:240px;font:400 116px/.98 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;display:block;color:#d8b879;padding-left:50px}
-.s{position:absolute;left:70px;right:70px;top:520px;font:400 50px/1.12 Gochi,cursive;text-wrap:balance}
-.t{position:absolute;top:680px;width:300px;height:520px;border-radius:30px;border:8px solid #f4ead8;overflow:hidden;box-shadow:10px 12px 0 rgba(0,0,0,.4);background:#f4ead8}.t img{width:100%;display:block}
-.k{position:absolute;left:740px;width:270px;height:250px;border-radius:18px;border:6px solid #f4ead8;overflow:hidden;box-shadow:10px 12px 0 rgba(0,0,0,.4)}.k img{width:100%;height:100%;object-fit:cover;display:block}
-.et{position:absolute;font:400 34px Gochi,cursive;background:#d8b879;color:#0d1a36;padding:2px 18px 6px;border-radius:12px;transform:rotate(-4deg)}
-.pre{position:absolute;left:70px;top:1236px;font:400 56px Gochi,cursive;color:#d8b879}
-.b{position:absolute;left:70px;top:1306px;white-space:nowrap;font:800 54px Hanken,sans-serif;background:#a8182e;padding:22px 44px;border-radius:99px;box-shadow:8px 8px 0 #f4ead8}
-.u{position:absolute;left:70px;top:1428px;font:700 40px Hanken,sans-serif}
-.c{position:absolute;right:20px;top:1190px;height:280px;filter:drop-shadow(10px 12px 0 rgba(0,0,0,.4))}
-.m{position:absolute;left:70px;right:70px;bottom:330px;display:flex;align-items:center;gap:18px;font:800 32px/1.15 Hanken,sans-serif}.m .sl{height:92px}.m .mk{margin-left:auto}</style>
-<div class="p"></div><h1>materiais<em>e jogos</em></h1><div class="s">${fim[2]}</div>
-<div class="t" style="left:70px;transform:rotate(-3deg)"><img src="${u('vendas/assets/' + TELAS[telas[0]] + '.webp')}"></div><div class="t" style="left:400px;transform:rotate(2deg)"><img src="${u('vendas/assets/' + TELAS[telas[1]] + '.webp')}"></div>
-<div class="k" style="top:680px;transform:rotate(3deg)"><img src="${u('assets/loja/' + capas[0] + '.webp')}"></div><div class="k" style="top:950px;transform:rotate(-3deg)"><img src="${u('assets/loja/' + capas[1] + '.webp')}"></div>
-<div class="et" style="left:90px;top:650px">jogos</div><div class="et" style="left:770px;top:650px">materiais</div>
+h1{position:absolute;left:70px;top:236px;font:400 112px/.98 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;display:block;color:#d8b879;padding-left:50px}
+.sub{position:absolute;right:70px;top:300px;font:800 34px/1.2 Hanken,sans-serif;background:#f4ead8;color:#0d1a36;padding:12px 26px;border-radius:99px;transform:rotate(4deg);text-align:center}
+.s{position:absolute;left:70px;right:70px;top:520px;font:400 48px/1.12 Gochi,cursive;text-wrap:balance}
+.cel{position:absolute;top:690px;width:290px;height:500px;border-radius:38px;border:12px solid #05070d;outline:3px solid #f4ead855;overflow:hidden;background:#f4ead8;box-shadow:12px 14px 0 rgba(0,0,0,.45)}
+.cel img{width:100%;display:block}.cel i{position:absolute;left:50%;top:8px;width:84px;height:20px;margin-left:-42px;border-radius:99px;background:#05070d;z-index:2}
+.lv{position:absolute;left:730px;width:280px;height:236px}
+.lv .pg{position:absolute;left:54px;top:-14px;width:210px;height:236px;object-fit:cover;object-position:50% 0;border:3px solid #fff;border-radius:6px;transform:rotate(7deg);box-shadow:6px 8px 0 rgba(0,0,0,.35)}
+.lv .cp{position:absolute;left:0;top:0;width:230px;height:236px;border-radius:6px 12px 12px 6px;overflow:hidden;box-shadow:inset 14px 0 14px -8px rgba(0,0,0,.55),10px 12px 0 rgba(0,0,0,.45);border-left:8px solid #05070d}
+.lv .cp img{width:100%;height:100%;object-fit:cover;display:block}.lv .cp:after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,255,255,.28),rgba(255,255,255,0) 32%)}
+.et{position:absolute;font:400 34px Gochi,cursive;background:#d8b879;color:#0d1a36;padding:2px 18px 6px;border-radius:12px;transform:rotate(-4deg);z-index:3}
+.pre{position:absolute;left:70px;top:1242px;font:400 54px Gochi,cursive;color:#d8b879}
+.b{position:absolute;left:70px;top:1310px;white-space:nowrap;font:800 46px Hanken,sans-serif;background:#a8182e;padding:22px 40px;border-radius:99px;box-shadow:8px 8px 0 #f4ead8}
+.u{position:absolute;left:70px;top:1424px;font:700 38px Hanken,sans-serif}
+.c{position:absolute;right:26px;top:1236px;height:236px}
+.m{position:absolute;left:70px;right:70px;bottom:330px;display:flex;align-items:center;gap:18px;font:800 32px/1.15 Hanken,sans-serif}.m .sl{height:92px}</style>
+<div class="p"></div><h1>robôterista<em>ensina</em></h1><div class="sub">materiais<br>e jogos</div><div class="s">${fim[2]}</div>
+${cel(telas[0], 70, -3)}${cel(telas[1], 388, 2)}${livro(capas[0], 700, 2)}${livro(capas[1], 962, -2)}
+<div class="et" style="left:84px;top:656px">jogos</div><div class="et" style="left:760px;top:656px">materiais</div>
 <div class="pre">${CTAS[cta][0]}</div><div class="b">${CTAS[cta][1]}</div><div class="u">jogos.beaterista.com.br</div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">
-<div class="m"><img class="sl" src="${u('assets/originals/logo-beaterista-dourado.png')}"><span>Beaterista<br><span style="font-weight:500;font-size:26px">educação musical com propósito</span></span>${marca ? `<img class="mk" src="${u(MARCAS[marca][0])}" style="${MARCAS[marca][1]}">` : ''}</div>`;
+<div class="m"><img class="sl" src="${u('assets/originals/logo-beaterista-dourado.png')}"><span>Beaterista<br><span style="font-weight:500;font-size:26px">educação musical com propósito</span></span></div>`;
 const capa = ({ t1, t2, paul, marca }) => `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${u('assets/fonts/HankenGrotesk-latin.woff2')})}
 *{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;position:relative;overflow:hidden;background:transparent}
