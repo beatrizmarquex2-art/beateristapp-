@@ -13,7 +13,7 @@ const ANTON = '"Anton","Arial Black",Impact,sans-serif'; const HANKEN = '"Hanken
 
 /** O que cada jogo desenvolve, em 3 linhas curtas (pra mãe e pro pai lerem no post). A chave é o nome do jogo em minúsculas. */
 export const BENEFICIOS = {
-  'uno musical': ['soma e comparação das figuras rítmicas', 'planejamento e tomada de decisão', 'atenção às regras e à vez do outro'],
+  'uno musical': ['decorar as figuras musicais com mais facilidade', 'somar e comparar a duração das figuras', 'planejamento e tomada de decisão'],
   'jogo da velha': ['raciocínio estratégico', 'revisão do conteúdo com perguntas', 'saber ganhar e saber perder'],
   'quebra-cabeça': ['percepção visual e espacial', 'persistência pra resolver problemas', 'foco e concentração'],
   'cara a cara': ['conhecer as famílias dos instrumentos', 'raciocínio por eliminação', 'fazer boas perguntas'],
