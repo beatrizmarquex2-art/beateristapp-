@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Cards do Paul · teoria musical</title>
+<link rel="stylesheet" href="../../css/fonts.css">
+<style>
+/* Cards do Paul: os 150 cartões da Teoria do app em PDF pra imprimir e recortar (produto da Bea). A4 em pé, 9 cartas de 63×88 mm por folha. */
+@page{size:210mm 297mm;margin:0}
+*{box-sizing:border-box;margin:0}
+html,body{background:#fff;color:#162146;font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;break-after:page}
+.grade{position:absolute;left:10.5mm;top:16.5mm;display:grid;grid-template-columns:repeat(3,63mm);grid-auto-rows:88mm}
+.rodape{position:absolute;left:0;right:0;bottom:5mm;text-align:center;font-size:7.5pt;color:#6b6f80}
+.card{width:63mm;height:88mm;border:.2mm dashed #9aa0b5;padding:2.2mm;position:relative}
+.in{height:100%;border-radius:3.2mm;border:.7mm solid var(--c);background:#fffdf7;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.topo{background:var(--c);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:1.3mm 2.4mm 1.1mm;font:400 8.6pt/1 "Anton",sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.topo small{font:800 6.4pt/1 "Hanken Grotesk",sans-serif;letter-spacing:.06em;opacity:.95}
+.des{height:31mm;display:flex;align-items:center;justify-content:center;color:var(--c);padding:1.5mm 2mm 0}
+.des svg.tf-sym{height:25mm;width:auto;max-width:100%}.des svg.tf-pt{height:29mm}
+.tf-fila{display:flex;align-items:center;justify-content:center;gap:1.2mm;width:100%}.tf-fila svg.tf-sym{height:18mm;max-width:46%}.tf-fila svg.tf-pt{height:20mm;max-width:48%}.tf-fila>b{font:800 15pt/1 "Hanken Grotesk",sans-serif}
+.tf-big{font:400 32pt/1 "Anton",sans-serif}.tf-big.small{font-size:15pt;letter-spacing:.02em}.tf-big.tf-acid{font:400 34pt/1 "Noto Music","DejaVu Sans",serif}
+h3{font:400 14pt/1.05 "Anton",sans-serif;text-transform:uppercase;text-align:center;padding:1mm 2.4mm .6mm;color:#162146;letter-spacing:.01em}
+p.tx{font-size:8.7pt;line-height:1.3;text-align:center;padding:0 2.6mm;font-weight:600;color:#262b45}
+.pe{margin-top:auto;display:flex;align-items:flex-end;gap:1.4mm;padding:0 2mm 1.4mm}
+.pe .selo{width:8.5mm;height:8.5mm;flex:none}
+.pe .mm{flex:1;min-width:0;line-height:1.1}
+.pe .mm img{height:4.6mm;display:block}
+.pe .mm span{display:block;font:800 5.6pt/1.15 "Hanken Grotesk",sans-serif;color:var(--c)}
+.pe .mm i{display:block;font-style:normal;font-size:5pt;color:#6b6f80;font-weight:700}
+.pe .paul{height:15mm;width:auto;flex:none;margin-bottom:-.6mm}
+.num{position:absolute;right:2.2mm;top:9.2mm;font:800 5.6pt/1 "Hanken Grotesk",sans-serif;color:#9aa0b5}
+/* capa e páginas de texto */
+.capa{background:radial-gradient(120% 60% at 50% 0,#31408a 0,#162146 45%,#0a0f26 100%);color:#fff7e6;display:flex;flex-direction:column;align-items:center;text-align:center;padding:22mm 18mm}
+.capa .placa{background:#fffaf0;border-radius:99px;padding:4mm 9mm 4mm 5mm;display:flex;align-items:center;gap:4mm}.capa .placa img:first-child{height:24mm}.capa .placa img:last-child{height:15mm}
+.capa h1{font:400 78pt/.9 "Anton",sans-serif;text-transform:uppercase;margin-top:12mm}.capa h1 b{color:#f2a91b;font-weight:400}
+.capa h2{font:800 17pt/1.25 "Hanken Grotesk",sans-serif;margin-top:5mm}
+.capa .pauls{display:flex;align-items:flex-end;justify-content:center;gap:2mm;margin-top:10mm}.capa .pauls img{height:62mm}.capa .pauls img:nth-child(2){height:78mm}
+.capa .temas{display:flex;flex-wrap:wrap;gap:2.5mm;justify-content:center;margin-top:8mm}.capa .temas span{font:400 11pt/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.05em;padding:2.4mm 4.5mm 2mm;border-radius:99px;color:#fff}
+.capa .site{margin-top:auto;background:#c81e2d;color:#fff;font:400 22pt/1 "Anton",sans-serif;padding:4mm 10mm 3.4mm;border-radius:99px}
+.capa .autora{margin-top:4mm;font:700 10.5pt/1.3 "Hanken Grotesk",sans-serif;opacity:.9}
+.txt{padding:22mm 20mm;display:flex;flex-direction:column;gap:5mm}
+.txt h1{font:400 34pt/1 "Anton",sans-serif;text-transform:uppercase;color:#162146}.txt h1 b{color:#c81e2d;font-weight:400}
+.txt h4{font:400 15pt/1 "Anton",sans-serif;text-transform:uppercase;color:#c81e2d;margin-top:3mm;letter-spacing:.03em}
+.txt p,.txt li{font-size:11.5pt;line-height:1.45;font-weight:600}.txt ul{padding-left:6mm;display:grid;gap:1.6mm}
+.txt .lista{display:grid;grid-template-columns:1fr 1fr;gap:3mm 8mm}.txt .lista div{border-left:2mm solid var(--c);padding-left:3mm}.txt .lista b{font:400 13pt/1.1 "Anton",sans-serif;text-transform:uppercase;display:block}.txt .lista small{font-size:9.5pt;font-weight:600;line-height:1.35;display:block}
+.txt .fim{margin-top:auto;display:flex;align-items:center;gap:6mm;border-top:.5mm solid #162146;padding-top:5mm}.txt .fim img{height:34mm}.txt .fim small{font-size:8.6pt;line-height:1.4;font-weight:600;color:#3b3f55}
+/* verso */
+.verso .card .in{background:radial-gradient(120% 70% at 50% 0,#31408a 0,#162146 55%,#0a0f26 100%);border-color:#f2a91b;align-items:center;justify-content:center;gap:2mm;color:#fff7e6}
+.verso .in img.p{height:36mm}.verso .in b{font:400 17pt/1 "Anton",sans-serif;text-transform:uppercase}.verso .in b i{font-style:normal;color:#f2a91b}.verso .in small{font:800 6.6pt/1.2 "Hanken Grotesk",sans-serif;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<script type="module">
+import { FASES_FIGURAS } from '../../js/kids/teoria-figuras.js';
+import { FASES_PAUSAS, FASES_CLAVES, FASES_TEMPO, FASES_LEITURA } from '../../js/kids/teoria-temas.js';
+// o que vai impresso em toda carta (trocar aqui e gerar de novo)
+const AUTORA = new URLSearchParams(location.search).get('autora') || 'professora Bea';
+const SITE = 'jogos.beaterista.com.br'; const A = '../../assets/';
+const TEMAS = [
+  ['Figuras', 'quanto dura cada som', '#c81e2d', FASES_FIGURAS, 'bateria'],
+  ['Pausas', 'o silêncio também conta', '#17365B', FASES_PAUSAS, 'ouvindo'],
+  ['Claves', 'a chave que abre a pauta', '#b57a12', FASES_CLAVES, 'lendo-partitura'],
+  ['Tempo e compasso', 'o pulso e a fórmula', '#1f7f73', FASES_TEMPO, 'metronomo'],
+  ['Leitura de notas', 'os nomes das notas', '#6a35c9', FASES_LEITURA, 'teclado'],
+];
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const paul = (pose) => `${A}paul/colorido/paul-${pose}.webp`;
+const total = TEMAS.reduce((n, t) => n + t[3].reduce((m, f) => m + f.cards.length, 0), 0);
+
+// capa
+document.body.append(el('section', 'pg capa', `<div class="placa"><img src="${A}logo-512.png" alt=""><img src="${A}logo-nome.png" alt=""></div>
+  <h1>Cards<br>do <b>Paul</b></h1><h2>${total} cartas de teoria musical pra aprender brincando</h2>
+  <div class="pauls"><img src="${paul('lendo-partitura')}" alt=""><img src="${paul('professor')}" alt=""><img src="${paul('bateria')}" alt=""></div>
+  <div class="temas">${TEMAS.map(([n, , c]) => `<span style="background:${c}">${n}</span>`).join('')}</div>
+  <div class="site">${SITE}</div><p class="autora">criado por ${AUTORA} · Beaterista escola de música</p>`));
+// como usar
+document.body.append(el('section', 'pg txt', `<h1>como usar os <b>cards do Paul</b></h1>
+  <p>São ${total} cartas, em 5 temas de 30. Cada carta ensina uma coisinha só, com o desenho de verdade e uma explicação curta, do jeito que o Robôterista Paul ensina no app.</p>
+  <h4>pra montar</h4><ul><li>imprima em papel mais grosso (180 g ou mais), em A4, sem "ajustar à página".</li><li>recorte na linha tracejada: cada carta tem 63 × 88 mm, o tamanho de carta de baralho.</li><li>se quiser verso, imprima a última página no lado de trás das folhas.</li></ul>
+  <h4>5 jeitos de brincar</h4><ul><li><b>uma por dia:</b> a criança tira uma carta, lê e explica com as palavras dela.</li><li><b>professor por um minuto:</b> ela ensina a carta pra alguém da família.</li><li><b>qual é a carta?</b> você lê a explicação e ela diz o nome.</li><li><b>em ordem:</b> embaralhe uma fase (5 cartas) e peça pra pôr na sequência.</li><li><b>bate e fala:</b> nas cartas de ritmo, bata palma no que está escrito.</li></ul>
+  <h4>os 5 temas</h4><div class="lista">${TEMAS.map(([n, s, c, fs]) => `<div style="--c:${c}"><b style="color:${c}">${n}</b><small>${s}<br>${fs.map((f) => f.nome).join(' · ')}</small></div>`).join('')}</div>
+  <div class="fim"><img src="${paul('professor')}" alt=""><small><b>Quer ouvir cada carta e ganhar estrelas?</b><br>No app, toda carta toca o som e cada fase tem um mini quiz: <b>${SITE}</b><br><br>© Beaterista escola de música · ${AUTORA}. Todos os direitos reservados. Material de uso pessoal e em sala de aula por quem comprou; proibida a revenda e a distribuição. @beaterista_</small></div>`));
+// cartas, 9 por folha
+const cartas = [];
+TEMAS.forEach(([nome, , cor, fases, pose]) => { let n = 0; fases.forEach((f, fi) => f.cards.forEach((c) => { n++; cartas.push({ nome, cor, pose, fase: fi + 1, faseNome: f.nome, n, c }); })); });
+for (let i = 0; i < cartas.length; i += 9) {
+  const pg = el('section', 'pg'); const g = el('div', 'grade');
+  cartas.slice(i, i + 9).forEach((k) => {
+    const card = el('div', 'card'); card.style.setProperty('--c', k.cor); const inn = el('div', 'in');
+    inn.append(el('div', 'topo', `<span>${k.nome}</span><small>fase ${k.fase} · ${k.faseNome}</small>`));
+    const des = el('div', 'des'); try { des.append(k.c.ic()); } catch (e) { des.textContent = '♪'; } inn.append(des);
+    inn.append(el('h3', '', k.c.t), el('p', 'tx', k.c.txt));
+    inn.append(el('div', 'pe', `<img class="selo" src="${A}logo-512.png" alt=""><div class="mm"><img src="${A}logo-nome.png" alt=""><span>${SITE}</span><i>${AUTORA}</i></div><img class="paul" src="${paul(k.pose)}" alt="">`));
+    inn.append(el('span', 'num', `${String(k.n).padStart(2, '0')}/30`));
+    card.append(inn); g.append(card);
+  });
+  pg.append(g, el('p', 'rodape', `Cards do Paul · ${SITE} · © Beaterista escola de música · ${AUTORA}`)); document.body.append(pg);
+}
+// verso (opcional)
+{ const pg = el('section', 'pg verso'); const g = el('div', 'grade'); for (let i = 0; i < 9; i++) { const card = el('div', 'card'); card.append(el('div', 'in', `<img class="p" src="${paul('baquetas-pra-cima')}" alt=""><b>Cards do <i>Paul</i></b><small>${SITE}</small>`)); g.append(card); } pg.append(g, el('p', 'rodape', 'verso das cartas (opcional): imprima esta página atrás de cada folha')); document.body.append(pg); }
+await Promise.all([...document.images].map((im) => (im.complete ? 0 : new Promise((ok) => { im.onload = im.onerror = ok; }))));
+await document.fonts.ready; window.__pronto = { cartas: cartas.length, paginas: document.querySelectorAll('.pg').length };
+</script>
+</body>
+</html>
