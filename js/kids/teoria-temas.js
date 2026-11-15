@@ -31,8 +31,9 @@ export function pauta(cfg = {}) {
   else if (cfg.clave === 'fa') s += `<svg x="4" y="14" width="38" height="54" viewBox="0 0 48 64">${SYM_SVG.clave_fa}</svg>`;
   else if (cfg.clave === 'perc') s += '<rect x="14" y="34" width="5" height="20" fill="currentColor"/><rect x="24" y="34" width="5" height="20" fill="currentColor"/>';
   else if (cfg.clave === 'do') s += '<rect x="8" y="24" width="5" height="40" fill="currentColor"/><rect x="16" y="24" width="2" height="40" fill="currentColor"/><path d="M20 44q10 -2 10 -10t-8 -9M20 44q10 2 10 10t-8 9" fill="none" stroke="currentColor" stroke-width="4"/>';
-  if (cfg.nums) for (let l = 0; l < 5; l++) s += `<text x="${W - 14}" y="${Y(l * 2) - 2}" font-size="11" font-weight="800" text-anchor="middle" fill="currentColor">${l + 1}ª</text>`;
-  if (cfg.esp) for (let l = 0; l < 4; l++) s += `<text x="${W / 2}" y="${Y(l * 2 + 1) + 4}" font-size="11" font-weight="800" text-anchor="middle" fill="currentColor">${l + 1}º</text>`;
+  // números das linhas (à esquerda de cada linha, que fica mais curta) e dos espaços (no meio), pequenos pra não encostar um no outro
+  if (cfg.nums) for (let l = 0; l < 5; l++) s += `<rect x="0" y="${Y(l * 2) - 5}" width="22" height="10" fill="var(--tf-papel,#fffdf7)"/><text x="11" y="${Y(l * 2) + 3.2}" font-size="9" font-weight="800" text-anchor="middle" fill="currentColor">${l + 1}ª</text>`;
+  if (cfg.esp) for (let l = 0; l < 4; l++) s += `<text x="${W / 2}" y="${Y(l * 2 + 1) + 2.8}" font-size="8" font-weight="800" text-anchor="middle" fill="currentColor">${l + 1}º</text>`;
   ns.forEach(([p, rot, tipo], i) => {
     const cx = x0 + i * passo + 10; const y = Y(p);
     for (let q = -2; q >= p; q -= 2) s += `<line x1="${cx - 13}" x2="${cx + 13}" y1="${Y(q)}" y2="${Y(q)}" stroke="currentColor" stroke-width="1.8"/>`;
