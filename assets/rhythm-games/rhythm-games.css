@@ -353,3 +353,5 @@ html.kb-open .rz-jogar{bottom:8px}
 .rz-palco.rz-duelo{padding-top:22px}
 .rz-palco.rz-duelo .rz-paul{height:auto;width:40%;max-height:88%;align-self:flex-end}
 .rz-palco.rz-duelo .rz-vs{font-size:28px}
+
+.bmr .rz-list .rz-tier b .rz-levn{display:block;font-style:normal;font-weight:600;font-size:11.5px;opacity:.75;margin-top:1px}

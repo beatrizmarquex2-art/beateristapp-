@@ -330,6 +330,7 @@ const RK_STY={
   S:[{n:'Xote da Manhã',key:7,bpm:84,g:0,mv:1,mc:1},{n:'Zabumba no Pé',key:2,bpm:90,g:0,mv:0,mc:0},{n:'Sanfona Feliz',key:9,bpm:96,g:1,mv:3,mc:1},{n:'Forró do Paul',key:4,bpm:102,g:0,mv:2,mc:3},
      {n:'Triângulo Dourado',key:0,bpm:108,g:1,mv:0,mc:2},{n:'Festa Junina',key:7,bpm:114,g:1,mv:3,mc:0},{n:'Asa do Sertão',key:2,bpm:120,g:0,mv:2,mc:2},{n:'Baião Arretado',key:9,bpm:128,g:1,mv:1,mc:3}]};
  const Y=RK_STY.baiao;Y.S.forEach((d,i)=>{d.sh=0;d.sc='mix';d.lead=i%2?'flauta':'gaita';d.p=i%2?P([0,0,3,0],[3,0,4,0],[3,3,0,0]):P([0,3,0,0],[0,3,4,0],[4,3,0,0])});Y.tiers=Y.S.map(d=>d.bpm)})();
+
 function rkThird(m,root){const T={0:4,2:3,4:3,5:4,7:4,9:3,11:3};return T[(((m-root)%12)+12)%12]||3}
 function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 /* ===== 3 músicas COMPLEXAS por estilo (semicolcheias, caixa fantasma, bumbo sincopado, baixo e guitarra em 16 passos) =====
@@ -383,12 +384,56 @@ function rkN(style){return RK_STY[style]?RK_STY[style].S.length:3}
 (function(){RK_STY.rock.S.forEach(d=>{if(d.n==='Relâmpago'||d.n==='Amplificador no Dez') d.lead='guitarra'})})();
 /* lo-fi: melodia em flauta e marimba (alternando) com pad no fundo */
 (function(){const Y=RK_STY.lofi;Y.g.forEach(g=>{g.ci='pad'});Y.S.forEach(d=>{d.lead=d.lead==='8bit'?'marimba':'flauta'})})();
+/* ===== Curadoria (Bea, nov/2026): 5 músicas por ritmo, cada uma com UMA levada de bateria de verdade, da mais simples pra mais difícil.
+   O andamento sobe junto. Formato de cada levada: [nome da levada, bpm, verso (2 compassos), refrão (2 compassos), ponte]; cada compasso = 'bumbo|caixa|chimbal' em 16 semicolcheias.
+   As melodias, tons e acordes vêm das músicas que já existiam (PICK = quais ficam, pelo lugar na lista por andamento). ===== */
+(function(){
+ const IN='x.......x.......|........|x...x...x...x...';
+ const LEV={
+  rock:[
+   ['bumbo e caixa',88,['x.......x.......|....s.......s...|x...x...x...x...','x.......x.......|....s.......s...|x...x...x...x...'],['x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.','x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],'x.......x.......|........s.......|x...x...x...x...'],
+   ['colcheias no chimbal',100,['x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.','x.......x.x.....|....s.......s...|x.x.x.x.x.x.x.x.'],['x.......x.x.....|....s.......s...|x.x.x.x.x.x.x.x.','x.......x.x.....|....s.......s...|x.x.x.x.x.x.x.xo'],'x.......x.......|....s.......s...|x...x...x...x...'],
+   ['bumbo no "e" do 2',112,['x.....x.x.......|....s.......s...|x.x.x.x.x.x.x.x.','x.....x.x.x.....|....s.......s...|x.x.x.x.x.x.x.x.'],['x.....x.x.x.....|....s.......s...|r.r.r.r.r.r.r.r.','x.....x.x.x...x.|....s.......s...|r.r.r.r.r.r.r.r.'],'x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],
+   ['bumbo sincopado',124,['x..x..x.x.......|....s.......s...|x.x.x.x.x.x.x.x.','x..x..x.x.....x.|....s.......s...|x.x.x.x.x.x.x.xo'],['x..x..x.x.x...x.|....s.......s...|r.r.r.r.r.r.r.r.','x..x..x.x.x...x.|....s.......s..g|r.r.r.r.r.r.r.r.'],'x.....x.x.......|....s.......s...|x.x.x.x.x.x.x.x.'],
+   ['caixa fantasma e bumbo duplo',132,['x.....x.x.x.....|....s..g....s..g|x.x.x.x.x.x.x.x.','x..x..x.x.x...x.|....s..g....s..g|x.x.x.x.x.x.x.xo'],['x.x...x.x.x.....|....s..g....s..g|r.r.r.r.r.r.r.r.','x.x...x.x.xx..x.|....s..g....s..g|r.r.r.r.r.r.r.r.'],'x.......x.......|....s.......s.g.|x.x.x.x.x.x.x.x.']],
+  pop:[
+   ['quatro no chão',96,['x...x...x...x...|....c.......c...|x...x...x...x...','x...x...x...x...|....c.......c...|x...x...x...x...'],['x...x...x...x...|....c.......c...|x.x.x.x.x.x.x.x.','x...x...x...x...|....c.......c...|x.x.x.x.x.x.x.x.'],'x.......x.......|....c.......c...|x...x...x...x...'],
+   ['chimbal aberto no contratempo',104,['x...x...x...x...|....c.......c...|x.o.x.o.x.o.x.o.','x...x...x...x...|....c.......c...|x.o.x.o.x.o.x.o.'],['x...x...x...x...|....c.......c...|x.o.x.o.x.o.x.o.','x...x...x...x.x.|....c.......c...|x.o.x.o.x.o.x.o.'],'x...x...x...x...|........c.......|x...x...x...x...'],
+   ['bumbo antecipado',112,['x.....x.x.......|....c.......c...|x.x.x.x.x.x.x.x.','x.....x.x.....x.|....c.......c...|x.x.x.x.x.x.x.x.'],['x.x...x.x.x...x.|....c.......c...|x.o.x.o.x.o.x.o.','x.x...x.x.x...x.|....c.......c...|x.o.x.o.x.o.x.o.'],'x.......x.......|....c.......c...|x.x.x.x.x.x.x.x.'],
+   ['pop dançante',120,['x..x..x.x...x...|....c.......c...|x.x.x.x.x.x.x.x.','x..x..x.x...x.x.|....c.......c...|x.x.x.x.x.x.x.xo'],['x...x..xx...x...|....c.......c...|x.o.x.o.x.o.x.o.','x...x..xx...x.x.|....c.......c..g|x.o.x.o.x.o.x.o.'],'x...x...x...x...|....c.......c...|x.x.x.x.x.x.x.x.'],
+   ['caixa fantasma',126,['x.....x.x.......|....c..g....c...|x.x.x.x.x.x.x.x.','x.....x.x.x.....|....c..g....c..g|x.x.x.x.x.x.x.xo'],['x.x...x.x...x...|....c..g....c..g|x.o.x.o.x.o.x.o.','x.x...x.x.x...x.|....c..g....c..g|x.o.x.o.x.o.x.o.'],'x...............|........c.......|x.x.x.x.x.x.x.x.']],
+  blues:[
+   ['pulso do blues',70,['x.......x.......|....s.......s...|x...x...x...x...'],['x.......x.......|....s.......s...|x...x...x...x...'],'x.......x.......|....s.......s...|x...x...x...x...'],
+   ['shuffle no chimbal',80,['x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],['x.......x.x.....|....s.......s...|x.x.x.x.x.x.x.x.'],'x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],
+   ['shuffle com bumbo duplo',90,['x.....x.x.......|....s.......s...|x.x.x.x.x.x.x.x.'],['x.....x.x.....x.|....s.......s...|x.x.x.x.x.x.x.x.'],'x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],
+   ['shuffle com caixa fantasma',100,['x.......x.x.....|....s.g.....s.g.|x.x.x.x.x.x.x.x.'],['x.x.....x.x...x.|....s.g.....s.g.|x.x.x.x.x.x.x.x.'],'x.......x.......|....s.......s...|x.x.x.x.x.x.x.x.'],
+   ['boogie',110,['x.x...x.x.x...x.|....s.g...g.s.g.|x.x.x.x.x.x.x.x.'],['x.x...x.x.x.x.x.|....s.g...g.s.g.|x.x.x.x.x.x.x.x.'],'x.......x.......|....s.......s.g.|x.x.x.x.x.x.x.x.']],
+  reggaeton:[
+   ['bumbo no tempo',84,['x...x...x...x...|......m.......m.|x...x...x...x...','x...x...x...x...|......m.......m.|x...x...x...x...'],['x...x...x...x...|...m..m.......m.|x...x...x...x...','x...x...x...x...|...m..m.......m.|x...x...x...x...'],'x.......x.......|......m.......m.|x...x...x...x...'],
+   ['dembow',90,['x...x...x...x...|...m..m....m..m.|x...x...x...x...','x...x...x...x...|...m..m....m..m.|x...x...x...x...'],['x...x...x...x...|...m..m....m..m.|x.x.x.x.x.x.x.x.','x...x...x...x...|...m..m....m..m.|x.x.x.x.x.x.x.x.'],'x.......x.......|...m..m....m..m.|x...x...x...x...'],
+   ['dembow com chimbal',96,['x...x...x...x...|...m..m....m..m.|x.x.x.x.x.x.x.x.','x...x...x...x...|...m..m....m..m.|x.x.x.x.x.x.x.xo'],['x...x...x...x...|...c..c....c..c.|x.x.x.x.x.x.x.x.','x...x...x...x...|...c..c....c.cc.|x.x.x.x.x.x.x.xo'],'x.......x.......|...m..m....m..m.|x.x.x.x.x.x.x.x.'],
+   ['dembow com variação',102,['x...x...x...x...|...m..m....m.mm.|x.x.x.x.x.x.x.x.','x...x..xx...x...|...m..m....m..m.|x.x.x.x.x.x.x.xo'],['x...x..xx...x...|...c..c....c..c.|x.o.x.o.x.o.x.o.','x...x..xx...x.x.|...c..c....c.cc.|x.o.x.o.x.o.x.o.'],'x...x...x...x...|...m..m....m..m.|x.x.x.x.x.x.x.x.'],
+   ['perreo',108,['x...x..xx...x...|...m..m..g.m..m.|x.x.x.x.x.x.x.x.','x...x..xx...x.x.|...m..m..g.m.mm.|x.x.x.x.x.x.x.xo'],['x..xx...x..xx...|...c..c....c..c.|x.o.x.o.x.o.x.o.','x..xx..xx..xx...|...c..c..g.c.cc.|x.o.x.o.x.o.x.o.'],'x.......x.......|...m..m....m..m.|x.x.x.x.x.x.x.x.']],
+  baiao:[
+   ['zabumba',84,['x..x....x..x....|........|x...x...x...x...','x..x....x..x....|........|x...x...x...x...'],['x..x....x..x....|......m.......m.|x...x...x...x...','x..x....x..x....|......m.......m.|x...x...x...x...'],'x.......x.......|......m.......m.|x...x...x...x...'],
+   ['zabumba com bacalhau',92,['x..x....x..x....|......m.......m.|x...x...x...x...','x..x....x..x....|......m.......m.|x...x...x...x...'],['x..x....x..x....|......m.......m.|x.x.x.x.x.x.x.x.','x..x....x..x..x.|......m.......m.|x.x.x.x.x.x.x.x.'],'x..x....x..x....|........m.......|x...x...x...x...'],
+   ['baião com triângulo',100,['x..x....x..x....|......m.......m.|x.x.x.x.x.x.x.x.','x..x....x..x..x.|......m.......m.|x.x.x.x.x.x.x.xo'],['x..x..x.x..x..x.|......m.......m.|x.x.x.x.x.x.x.x.','x..x..x.x..x..x.|......m.......m.|x.x.x.x.x.x.x.xo'],'x.......x.......|......m.......m.|x...x...x...x...'],
+   ['baião cheio',110,['x..x..x.x..x..x.|......m.......m.|x.x.x.x.x.x.x.x.','x..x..x.x..x..x.|......m..g....m.|x.x.x.x.x.x.x.xo'],['x..x..x.x..x..x.|......m..g....m.|x.xox.xox.xox.xo','x..x..x.x..x..x.|......m..g....m.|x.xox.xox.xox.xo'],'x..x....x..x....|........m.......|x.x.x.x.x.x.x.x.'],
+   ['forró arretado',120,['x..x..x.x..x..x.|......m..g....m.|x.xox.xox.xox.xo','x..xx.x.x..xx.x.|......m..g....m.|x.xox.xox.xox.xo'],['x..xx.x.x..xx.x.|......m..g..g.m.|x.xox.xox.xox.xo','x..xx.x.x..xx.x.|......m.gg....m.|x.xox.xox.xox.xo'],'x..x....x..x....|......m.......m.|x.x.x.x.x.x.x.x.']]};
+ const PICK={rock:[0,1,2,5,8],pop:[0,2,4,6,7],blues:[0,1,3,5,7],reggaeton:[0,1,3,6,8],baiao:[0,1,2,4,7]};
+ Object.keys(LEV).forEach(function(st){const Y=RK_STY[st];if(!Y) return;const base=Y.g[0],alt=Y.g[1]||Y.g[0];
+  const ord=Y.S.map(function(d,i){return {d:d,b:Y.tiers[i]||d.bpm||0,i:i}}).sort(function(a,b){return a.b-b.b||a.i-b.i});
+  Y.g=LEV[st].map(function(L,k){const src=k%2?alt:base;return {ci:src.ci,lev:L[0],drum:{intro:[IN],verso:L[2],refrao:L[3],ponte:[L[4]]},bass:src.bass,ch:src.ch}});
+  Y.S=LEV[st].map(function(L,k){const o=ord[Math.min(ord.length-1,PICK[st][k])];const d=Object.assign({},o.d);d.g=k;d.bpm=L[1];d.lev=L[0];delete d.cx;return d});
+  Y.tiers=Y.S.map(function(d){return d.bpm})});
+})();
+
 /* pop: melodia no sinte com piano dobrando, acompanhamento de piano + violão */
 (function(){const Y=RK_STY.pop;Y.g.forEach(g=>{g.ci='piano+violao'});Y.S.forEach(d=>{d.lead='sinte';d.lead2=[{k:'piano',off:0,v:1}]})})();
 /* reggaeton: 3 conjuntos de instrumentos (flauta, steel drum, pluck, sempre com piano elétrico) e 2 baterias (seca e apertada, congas) alternando */
 (function(){const Y=RK_STY.reggaeton,sets=[['flauta','epiano'],['steeldrum','epiano'],['pluck','epiano']];Y.S.forEach((d,i)=>{d.lead=sets[i%3][0];d.ci=sets[i%3][1];d.kit=['seca','conga'][i%2]})})();
 const RK_TIER_NAMES=['calminha','devagar','médio','rápido','turbo'];
-function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:D.kit||Y.kit,lead:D.lead,lead2:D.lead2,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
+function rkStyleSong(style,i){const Y=RK_STY[style],D=Y.S[i%Y.S.length],G=Y.g[D.g];return {id:style+'-'+i,style,i,name:D.n,lev:D.lev||'',bpm:Y.tiers[i%Y.S.length],root:48+D.key,minor:D.sc==='min'||style==='blues',seed:hash('rk-'+style+i),rk:i,rkStyle:style,kit:D.kit||Y.kit,lead:D.lead,lead2:D.lead2,pv:D.p.v,pc:D.p.c,pb:D.p.b}}
 /* arranjo: devolve o mesmo formato de rsArrange ({st,mel,drums,ev,chords,dur,bars,lead}) */
 const RK_OVR={};
 function rkArrange(S,short,minSec){const Y=RK_STY[S.rkStyle],D=Y.S[S.rk%Y.S.length],G=Object.assign({},Y.g[D.g],D.ci?{ci:D.ci}:{},RK_OVR.ci?{ci:RK_OVR.ci}:{});const st=60/S.bpm/4;const sc=RK_SC[D.sc];const SEC=Y.sec;const sw=Y.sw||0;
@@ -664,7 +709,8 @@ function rzBackdrop(g,W,H,dpr){const id=rzThemeId(),k=id+'|'+W+'|'+H;
   g.drawImage(RZ._bgc,0,0)}
 /* Estrelas do Beat Hero (jogo livre): terminou com 80% ou mais = 1 no fácil, 2 no médio, 3 no difícil */
 const RZ_STAR_MIN=.8,RZ_STAR_N={facil:1,medio:2,dificil:3};function rzStarMax(){return MISSION?3:(RZ_STAR_N[RZ.diff]||1)}
-const RZ_WIN={facil:{pf:.13,gd:.28,spd:.6,k:1.7,n:'Fácil'},medio:{pf:.1,gd:.2,k:1.5,spd:.85,n:'Médio'},dificil:{pf:.055,gd:.12,spd:1.12,k:1.25,n:'Difícil'}};
+/* folga pedida pela Bea: janelas de acerto maiores em todos os níveis (k multiplica as do Hero Drum; pf/gd são as do Piano Hero e do Beat Hero) */
+const RZ_WIN={facil:{pf:.15,gd:.30,spd:.6,k:2,n:'Fácil'},medio:{pf:.12,gd:.24,k:1.75,spd:.85,n:'Médio'},dificil:{pf:.08,gd:.17,spd:1.12,k:1.45,n:'Difícil'}};
 /* teclado com 3, 4, 5, 7 ou 8 teclas: 3 a 5 viram acorde/pentatônica, 7 é a escala, 8 fecha a oitava */
 function rzPSemis(k,minor){const sc=minor?RS_MIN:RS_MAJ;if(k===7) return sc.slice();if(k===8) return sc.concat([12]);
   return k===3?(minor?[0,3,7]:[0,4,7]):k===4?(minor?[0,3,7,10]:[0,4,7,9]):(minor?[0,3,5,7,10]:[0,2,4,7,9])}
@@ -738,8 +784,9 @@ function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.
     const seen=new Set();notes=notes.filter(n=>{const k=n.lane+'|'+Math.round(n.t*1000);if(seen.has(k)) return false;seen.add(k);return true})}
   else if(RZ.game==='beat'){const K=RZ.keys;
     let mode=RZ.mode;if(mode==='ritmo'&&A.drums.length<8&&A.mel.length>=8) mode='melodia';else if(mode==='melodia'&&A.mel.length<8&&A.drums.length>=8) mode='ritmo';RZ.modeEff=mode;
-    if(mode==='ritmo'){const LM=RZ_KIT_LANE[K];
-      notes=A.drums.filter(d=>easy?(d.lane<=1||d.snd==='crash'):(dif||(d.lane!==2||Math.round(d.t/st)%4===0))).map(d=>({t:d.t,lane:LM[d.snd]!=null?LM[d.snd]:Math.min(d.lane,K-1),snd:d.snd,v:d.v}));
+    if(mode==='ritmo'){const LM=RZ_KIT_LANE[K];const fast=(S.bpm||0)>=116,q4=d=>Math.round((d.t-A.lead*0)/st)%4===0;
+      /* fácil: bumbo e caixa (sem nota fantasma) · médio: + chimbal só no tempo · difícil: tudo, mas em música rápida o chimbal fica só no tempo (o resto continua soando no fundo) */
+      notes=A.drums.filter(d=>(dif||d.v>=.5)&&(easy?(d.lane<=1||d.snd==='crash'):dif?(d.lane!==2||!fast||d.snd==='hho'||d.snd==='crash'||q4(d)):(d.lane!==2||q4(d)))).map(d=>({t:d.t,lane:LM[d.snd]!=null?LM[d.snd]:Math.min(d.lane,K-1),snd:d.snd,v:d.v}));
       A.mel.forEach(n=>bg.push({t:n.t,k:'lead',m:n.m,d:n.d}))}
     else{notes=melF;rzPhraseLanes(notes,K,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.85});
       A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
@@ -851,7 +898,7 @@ function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase=
       if(ch) rzHud();if((RZ.game==='setas'&&RZ.duel&&RZ.health<=0)){rzEnd(true);return}if(!RZ.fade&&s>RZ.A.dur-2.2){RZ.fade=1;AE.fadeOut(Math.max(.6,RZ.A.dur-s))}if(s>RZ.A.dur){rzEnd();return}}}
   rzDraw();RZ.raf=requestAnimationFrame(rzFrame)}
 function rzEnd(lost){rzWake(false);document.body.classList.remove('rz-lock');clearInterval(RZ.iv);RZ.phase='end';AE.allOff();const S=RZ.stats;const tot=RZ.chart.filter(n=>!n.cpu).length||1;
-  let acc;acc=(S.pp+S.perfect+S.great*.75+S.good*.5)/tot;S.acc=acc;S.lost=!!lost;
+  let acc;acc=(S.pp+S.perfect+S.great*.9+S.good*.75)/tot;S.acc=acc;S.lost=!!lost;
   if(!lost) rzFx('fim da música');S.grade=lost?'—':acc>=.96&&!S.miss?'S':acc>=.9?'A':acc>=.78?'B':acc>=.6?'C':'D';S.stars=RZ.game==='beat'?(MISSION?(acc>=.95?3:acc>=.85?2:acc>=.65?1:0):(acc>=RZ_STAR_MIN?rzStarMax():0)):0;
   const R=ensureRitmo();const k=rzKey();const prev=R.best[k];const val=S.score;S.record=!MISSION&&!lost&&(!prev||val>prev.score);if(S.record) R.best[k]={score:val,acc:Math.round(acc*100),grade:S.grade,stars:S.stars,at:nowIso()};if(!MISSION){R.plays++;save()}
   S.hallKey=rzKey();S.hallQ=false;S.hallDone=false;if(!MISSION&&!lost&&OPTS.hallTop&&OPTS.autoName&&OPTS.hallAdd&&S.score>0){var an=OPTS.autoName();if(an){var at0=nowIso();OPTS.hallAdd(S.hallKey,{name:an,score:S.score,acc:Math.round(acc*100),grade:S.grade,stars:S.stars,at:at0});S.hallDone=true;S.hallMe=at0+an}}else if(!MISSION&&!lost&&OPTS.hallTop){var ht=OPTS.hallTop(S.hallKey)||[];S.hallQ=S.score>0&&(ht.length<5||S.score>ht[ht.length-1].score)}
@@ -894,7 +941,7 @@ function rzDrawBeat(g,W,H,dpr){const T=rzTh();const s=rzSNow();const now=perform
   rzPopsFx(g,l=>x0+l*lw+lw/2,hitY,dpr);rzCountdown(g,W,H,dpr,s)}
 
 /* Barra de precisão do Beat Hero: mostra a precisão até agora e as 3 estrelas de verdade (65%, 85% e 95%, as mesmas do fim da música). Antes eram 5 estrelas que viravam 3. */
-function rzStarBar(g,W,dpr){const st=RZ.stats;if(!st) return;const judged=st.pp+st.perfect+st.great+st.good+st.miss;const cur=judged?(st.pp+st.perfect+st.great*.75+st.good*.5)/judged:0;
+function rzStarBar(g,W,dpr){const st=RZ.stats;if(!st) return;const judged=st.pp+st.perfect+st.great+st.good+st.miss;const cur=judged?(st.pp+st.perfect+st.great*.9+st.good*.75)/judged:0;
   const bw=Math.min(W*.62,190*dpr),bh=9*dpr,x=W/2-bw/2,y=36*dpr,pos=p=>Math.max(0,Math.min(1,(p-.5)/.5));
   g.save();g.fillStyle='rgba(20,32,54,.82)';g.fillRect(x-3*dpr,y-3*dpr,bw+6*dpr,bh+6*dpr);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x,y,bw,bh);
   const free=!MISSION;g.fillStyle=free?(cur>=RZ_STAR_MIN?'#ffd84a':'#ff6f6f'):(cur>=.95?'#ffd84a':cur>=.85?'#8be05a':cur>=.65?'#4cc3ff':'#ff6f6f');g.fillRect(x,y,bw*pos(cur),bh);
@@ -942,7 +989,7 @@ function rzDrawSetas(g,W,H,dpr){const s=rzSNow();const now=performance.now();con
   if(RZ.duel){const by=4*dpr,bh=0;
   if(turn){g.textAlign='center';g.font='400 '+(22*dpr)+"px Anton,Impact,sans-serif";g.fillStyle=turn==='voce'?'#a8182e':'#5a6478';g.fillText(turn==='voce'?'SUA VEZ!':'vez do rival…',W/2,by+bh+40*dpr)}}
   rzPopsFx(g,l=>l*lw+lw/2,hitY-sz*1.3,dpr);rzCountdown(g,W,H,dpr,s)}
-function rzHud(){const S=RZ.stats;if(!S) return;const set=(id,v)=>{const e=$(id);if(e) e.textContent=v};set('#rz-score',S.score.toLocaleString('pt-BR'));set('#rz-combo',S.combo);const judged=S.pp+S.perfect+S.great+S.good+S.miss;set('#rz-acc',judged?Math.round((S.pp+S.perfect+S.great*.75+S.good*.5)/judged*100)+'%':'—');const pb=$('#rz-pause');if(pb) pb.textContent=RZ.phase==='pause'?'Continuar':'Pausar'}
+function rzHud(){const S=RZ.stats;if(!S) return;const set=(id,v)=>{const e=$(id);if(e) e.textContent=v};set('#rz-score',S.score.toLocaleString('pt-BR'));set('#rz-combo',S.combo);const judged=S.pp+S.perfect+S.great+S.good+S.miss;set('#rz-acc',judged?Math.round((S.pp+S.perfect+S.great*.9+S.good*.75)/judged*100)+'%':'—');const pb=$('#rz-pause');if(pb) pb.textContent=RZ.phase==='pause'?'Continuar':'Pausar'}
 /* ---------- telas ---------- */
 function rzFoldHTML(){var fs=(OPTS.folders?OPTS.folders():[]);var n=IMP.length,sem=IMP.filter(function(x){return !x.folder}).length;
   var chip=function(v,l,c){return '<button type="button" class="rz-fc'+((RZ.fold||'__all__')===v?' on':'')+'" data-act="rz-fold" data-v="'+esc(v)+'">'+esc(l)+' <span class="muted">'+c+'</span></button>'};
@@ -1001,7 +1048,7 @@ function rzMenu(){rzSyncKeys();const R=ensureRitmo();const G=RZ_GAMES.find(x=>x[
   h+=rzDifCards();
   /* ritmos sempre à vista, lado a lado (pílulas coloridas); a lista embaixo é a do ritmo escolhido */
   if(styles.length>1) h+='<p class="rz-lbl rz-pills-l">ritmo</p><div class="rz-pills" role="group" aria-label="Ritmo">'+styles.map(([k,l,c])=>'<button type="button" class="rz-pill'+(RZ.style===k?' on':'')+'" style="--sc:'+c+'" data-act="rz-style" data-v="'+k+'" aria-pressed="'+(RZ.style===k)+'">'+esc(l)+'</button>').join('')+'</div>';
-  if(builtin) h+='<p class="small muted rz-tierhint">da mais fácil pra mais difícil'+(RZ.game==='beat'?' · com 80% ou mais cada uma vale '+'★'.repeat(rzStarMax()):'')+':</p><div class="rz-tiers rz-list" style="--sc:'+((RS_BUILTIN.filter(function(q){return q[0]===RZ.style})[0]||[])[2]||'#d92031')+'">'+Array.from({length:rkN(RZ.style)},function(_,i){return i}).sort(function(x,y){return rsSong(RZ.style,x).bpm-rsSong(RZ.style,y).bpm||x-y}).map(function(k,pos){var sg=rsSong(RZ.style,k);var bk=[RZ.game,(RZ.game==='beat')?rzInstKey():'',RZ.diff,sg.id].join('|');var b=R.best[bk];return '<button type="button" class="rz-tier'+(RZ.tier===k?' on':'')+(rzFreeOk(RZ.style,k,RZ.diff)?'':' rz-fechada')+'" data-act="rz-tier" data-v="'+k+'"><span class="rz-lv" aria-hidden="true">'+(pos+1)+'<i>'+''+'</i></span><b>'+(rzFreeOk(RZ.style,k,RZ.diff)?'':'🔒 ')+esc(sg.name)+'</b><span class="small">'+sg.bpm+' bpm</span>'+rzPBar(b)+(RZ.game==='beat'?(function(){var mx=rzStarMax(),got=Math.min(mx,((R.sticker&&R.sticker.best)||{})[String(sg.id)+'|'+RZ.diff]||0);return '<span class="rz-b" aria-label="'+got+' de '+mx+' estrelas">'+'★'.repeat(got)+'<span class="rz-off">'+'★'.repeat(mx-got)+'</span></span>'})():(b?'<span class="rz-b">'+b.grade+'</span>':''))+'</button>'}).join('')+'</div>';
+  if(builtin) h+='<p class="small muted rz-tierhint">da mais fácil pra mais difícil'+(RZ.game==='beat'?' · com 80% ou mais cada uma vale '+'★'.repeat(rzStarMax()):'')+':</p><div class="rz-tiers rz-list" style="--sc:'+((RS_BUILTIN.filter(function(q){return q[0]===RZ.style})[0]||[])[2]||'#d92031')+'">'+Array.from({length:rkN(RZ.style)},function(_,i){return i}).sort(function(x,y){return rsSong(RZ.style,x).bpm-rsSong(RZ.style,y).bpm||x-y}).map(function(k,pos){var sg=rsSong(RZ.style,k);var bk=[RZ.game,(RZ.game==='beat')?rzInstKey():'',RZ.diff,sg.id].join('|');var b=R.best[bk];return '<button type="button" class="rz-tier'+(RZ.tier===k?' on':'')+(rzFreeOk(RZ.style,k,RZ.diff)?'':' rz-fechada')+'" data-act="rz-tier" data-v="'+k+'"><span class="rz-lv" aria-hidden="true">'+(pos+1)+'<i>'+''+'</i></span><b>'+(rzFreeOk(RZ.style,k,RZ.diff)?'':'🔒 ')+esc(sg.name)+(RZ.game==='beat'&&sg.lev?'<i class="rz-levn">'+esc(sg.lev)+'</i>':'')+'</b><span class="small">'+sg.bpm+' bpm</span>'+rzPBar(b)+(RZ.game==='beat'?(function(){var mx=rzStarMax(),got=Math.min(mx,((R.sticker&&R.sticker.best)||{})[String(sg.id)+'|'+RZ.diff]||0);return '<span class="rz-b" aria-label="'+got+' de '+mx+' estrelas">'+'★'.repeat(got)+'<span class="rz-off">'+'★'.repeat(mx-got)+'</span></span>'})():(b?'<span class="rz-b">'+b.grade+'</span>':''))+'</button>'}).join('')+'</div>';
   h+=rzAcc('ajustes','⚙','Ajustes','andamento '+(RZ.tempoPct||100)+'%'+((RZ.game==='beat'||RZ.game==='tiles')?' · '+(RZ.maxLen/60)+' min':''),rzAjustesBody());
   if(RZ.game==='tiles') h+=rzAcc('cores','🎨','Estilo',rzTilesStyle()==='colorido'?'Colorido':'Clássico',rzTilesRow());
   if(builtin&&!rzFreeOk(RZ.style,RZ.tier,RZ.diff)) h+=rzLockHTML();else if(builtin){const sg=rsSong(RZ.style,RZ.tier);h+='<button type="button" class="rz-jogar" data-act="rz-play" data-v="'+RZ.tier+'"><span class="rz-jogar-p" aria-hidden="true">▶</span><span><b>JOGAR</b><small>'+esc(sg.name)+' · '+Math.round(sg.bpm*(RZ.tempoPct||100)/100)+' bpm'+((RZ.tempoPct||100)!==100?' ('+RZ.tempoPct+'%)':'')+(RZ.game==='beat'?' · vale '+'★'.repeat(rzStarMax()):'')+'</small></span></button>'}

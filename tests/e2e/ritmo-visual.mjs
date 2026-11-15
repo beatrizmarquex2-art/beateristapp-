@@ -10,7 +10,7 @@ await p.goto(`${url}/aluno.html#/ritmo/drum`); await sleep(1500); // 3 jogos sep
 check('Beat Hero abre no tema vinil mesmo com outro tema salvo', (await theme()) === 'vinil', await theme());
 check('Beat Hero não tem escolha de cores', (await p.locator('[data-act="rz-theme"]').count()) === 0 && !/Cores/.test(await p.locator('.rg-host').innerText()));
 await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click().catch(() => {}); await sleep(300);
-check('menu mostra as músicas do rock (6 + 3 complexas)', (await p.locator('[data-act="rz-tier"]').count()) === 9, String(await p.locator('[data-act="rz-tier"]').count()));
+check('menu mostra as 5 músicas do rock (curadoria: 5 por ritmo)', (await p.locator('[data-act="rz-tier"]').count()) === 5, String(await p.locator('[data-act="rz-tier"]').count()));
 const estilos = (await p.locator('[data-act="rz-style"]').allInnerTexts()).join(',');
 check('estilos: rock, pop, reggaeton, blues e lo-fi', /Rock/.test(estilos) && /Blues/.test(estilos) && !/Balada|Bossa/.test(estilos), estilos);
 await p.locator('[data-act="rz-play"]').first().click(); await sleep(6500);
