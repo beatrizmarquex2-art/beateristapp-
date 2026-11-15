@@ -10,7 +10,7 @@ import { rolar } from './rolar-opcoes.js';
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'guitarra limpa'], ['rock', '🤘', 'guitarra rock']]; // o padrão é o violão 🎸
 const GROSS = [4, 3.6, 3, 2.3, 1.7, 1.2]; // espessura das 6 cordas (mi grave em cima)
-const COR = { 0: '#b5162b', 2: '#1d3566', 4: '#4a79b4', 5: '#2a7f86', 7: '#e8a92c', 9: '#6e1423', 11: '#f5ead2' }; // as cores das notas (as mesmas do xilofone)
+import { corNota, notaClara } from '../cores-notas.js';
 const ESCALAS = { maior: [0, 2, 4, 5, 7, 9, 11], penta: [0, 2, 4, 7, 9], todas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] };
 const NOMES_CORDA = ['Mi', 'Lá', 'Ré', 'Sol', 'Si', 'Mi'];
 const CASAS = 6; // corda solta + 5 casas
@@ -76,7 +76,7 @@ export function mount(host) {
     const linhas = GUITAR_OPEN.flatMap((base, r) => [h('i', { class: 'ti-fl' }, NOMES_CORDA[r]), ...Array.from({ length: CASAS }, (_, c) => {
       const m = base + c; const pc = ((m % 12) + 12) % 12; const on = pcOk(m);
       const e = h('div', { class: `ti-fc${on ? '' : ' fora'}`, 'data-m': String(m), role: 'button', 'aria-label': `${nome(m)}, corda ${NOMES_CORDA[r]}, ${c === 0 ? 'solta' : `casa ${c}`}` }, nome(m));
-      e.style.setProperty('--nc', COR[pc] || '#8a7f6b'); if (pc === 11) e.classList.add('light'); return e;
+      e.style.setProperty('--nc', corNota(m)); if (notaClara(m)) e.classList.add('light'); return e;
     })]);
     frets.replaceChildren(...cab, ...linhas);
   };

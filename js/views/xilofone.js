@@ -10,7 +10,7 @@ import { rolar } from './rolar-opcoes.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 const SCALES = { penta: [60, 62, 64, 67, 69, 72, 74, 76, 79, 81], maior: [60, 62, 64, 65, 67, 69, 71, 72] };
-const COR = { 0: '#b5162b', 2: '#1d3566', 4: '#4a79b4', 5: '#2a7f86', 7: '#e8a92c', 9: '#6e1423', 11: '#f5ead2' }; // vinho, azul-marinho, azul, petróleo, mostarda, bordô, creme (as cores da bateria)
+import { corNota, notaClara } from '../cores-notas.js';
 const SOUNDS = MALLETS;
 const XK = 'asdfghjklç';
 
@@ -38,8 +38,8 @@ export function mount(host) {
   const drawXy = () => {
     const ms = SCALES[scale]; const n = ms.length;
     xy.replaceChildren(...ms.map((m, i) => {
-      const pc = ((m % 12) + 12) % 12; const e = h('button', { type: 'button', class: `ti-bar${pc === 11 ? ' light' : ''}`, 'data-m': m, 'aria-label': `${nome(m)}${Math.floor(m / 12) - 1}` }, h('span', {}, nome(m)));
-      e.style.setProperty('--bc', COR[pc] || '#2a7f86'); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
+      const pc = ((m % 12) + 12) % 12; const e = h('button', { type: 'button', class: `ti-bar${notaClara(m) ? ' light' : ''}`, 'data-m': m, 'aria-label': `${nome(m)}${Math.floor(m / 12) - 1}` }, h('span', {}, nome(m)));
+      e.style.setProperty('--bc', corNota(m)); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
     }));
   };
   const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'pads (sem nota)']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
@@ -72,7 +72,7 @@ export function mount(host) {
   host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), stage,
     h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow), rolar(themeBox)),
     backingBar(),
-    h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó é vinho, ré azul-marinho, mi azul, sol mostarda…), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
+    h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();
   return () => { document.removeEventListener('keydown', onKey); backing.leave(); };
 }
