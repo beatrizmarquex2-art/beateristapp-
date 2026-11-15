@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const OUT = path.resolve(process.argv[2]); fs.mkdirSync(OUT, { recursive: true });
-const F = (n) => u(`assets/fonts/${n}`), hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`), foto = (n) => u(`marketing/fotos-bea/${n}.jpg`);
+const F = (n) => u(`assets/fonts/${n}`), hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`), foto = (n) => path.isAbsolute(n) ? pathToFileURL(n).href : u(`marketing/fotos-bea/${n}.jpg`);
 const AZ = '#0d1a36', VI = '#a8182e', CR = '#f4ead8', AM = '#f2b632';
 const css = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${F('GochiHand-latin.woff2')})}
 @font-face{font-family:Anton;src:url(${F('Anton-latin.woff2')})}@font-face{font-family:Anton;src:url(${F('Anton-latin-ext.woff2')});unicode-range:U+0100-024F}
@@ -50,12 +50,17 @@ body{background:${AM}}.p{position:absolute;inset:0;background:radial-gradient(${
 <div class="p"></div><div class="q"><img src="${foto(f)}"></div><div class="tt">${t1} <em>${t2}</em></div>
 <div class="bl">${sub}</div><img class="c" src="${hd(paul)}">`,
 };
-const EX = { f: 'bea-camiseta-baquetas', pos: '70% 25%', t1: 'oi, eu sou', t2: 'a bea!', paul: 'bateria' };
-const SUB = { 'A-foto-cheia': 'professora de bateria e fundadora da Beaterista', 'B-polaroid': 'professora e fundadora', 'C-gibi': 'essa é a Bea! professora de bateria e fundadora da Beaterista.' };
+const FA = process.env.FOTOS_ALUNOS || ''; const al = (n) => path.join(FA, n + '.jpg');
+const EXS = [['A-foto-cheia', 'bea', { f: 'bea-camiseta-baquetas', pos: '70% 25%', t1: 'oi, eu sou', t2: 'a bea!', paul: 'bateria', sub: 'professora de bateria e fundadora da Beaterista' }],
+  ['B-polaroid', 'bea', { f: 'bea-camiseta-baquetas', pos: '70% 25%', t1: 'oi, eu sou', t2: 'a bea!', paul: 'bateria', sub: 'professora e fundadora' }],
+  ['C-gibi', 'bea', { f: 'bea-camiseta-baquetas', pos: '70% 25%', t1: 'oi, eu sou', t2: 'a bea!', paul: 'bateria', sub: 'essa é a Bea! professora de bateria e fundadora da Beaterista.' }],
+  ...(FA ? [['A-foto-cheia', 'aluno', { f: al('rockstar'), pos: '25% 30%', t1: 'olhar de', t2: 'rockstar', paul: 'oculos', sub: 'tem foto que parece capa de disco' }],
+    ['B-polaroid', 'aluno', { f: al('cajon-dela'), pos: '55% 45%', t1: 'o cajón', t2: 'é dela', paul: 'cajon', sub: 'percussão no palco' }],
+    ['C-gibi', 'aluno', { f: al('missao-cumprida'), pos: '45% 25%', t1: 'missão', t2: 'cumprida!', paul: 'bateria', sub: 'tocou, agradeceu e ainda ganhou abraço da prof!' }]] : [])];
 const browser = await chromium.launch();
-for (const [nome, fn] of Object.entries(DESIGNS)) {
+for (const [nome, tag, ex] of EXS) { const fn = DESIGNS[nome];
   const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } }); const tmp = path.join(OUT, '.tmp.html');
-  fs.writeFileSync(tmp, '<!doctype html><meta charset="utf-8">' + fn({ ...EX, sub: SUB[nome] })); await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
-  await page.screenshot({ path: path.join(OUT, `design-${nome}.jpg`), type: 'jpeg', quality: 92 }); await page.close(); fs.rmSync(tmp); console.log('ok', nome);
+  fs.writeFileSync(tmp, '<!doctype html><meta charset="utf-8">' + fn(ex)); await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(OUT, `design-${nome}-${tag}.jpg`), type: 'jpeg', quality: 92 }); await page.close(); fs.rmSync(tmp); console.log('ok', nome);
 }
 await browser.close();

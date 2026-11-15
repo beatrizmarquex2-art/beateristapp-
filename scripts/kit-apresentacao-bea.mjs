@@ -40,6 +40,7 @@ export const SERIE = {
   '8-depois-do-show': { foto: 'bea-palco-rindo', pos: '50% 45%', cor: 'vinho', larga: true, t1: 'quando o show', t2: 'dá certo', e1: 'microfone na mão', e2: 'sorriso no rosto', corpo: 'ver aluno no palco é a melhor parte de ser professora.', fim: 'obrigada, turma!', paul: 'microfone' },
   '9-dia-do-baterista': { foto: 'bea-dia-do-baterista', pos: '55% 30%', cor: 'azul', t1: 'feliz dia', t2: 'do baterista', e1: 'pra quem toca', e2: 'e pra quem vai tocar', corpo: 'o melhor instrumento do mundo merece um dia só dele.', fim: 'marca um<br>baterista!' },
   '10-ukulele': { foto: 'bea-ukulele', pos: '50% 45%', cor: 'creme', t1: 'hoje é dia', t2: 'de ukulele', e1: 'quatro cordas', e2: 'um sorrisão', corpo: 'na Beaterista tem instrumento de todo tamanho.', fim: 'qual você<br>quer aprender?', paul: 'guitarra' },
+  '11-tambem-tem-teclado': { foto: 'bea-teclado', pos: '45% 50%', cor: 'vinho', t1: 'também tem', t2: 'teclado', e1: 'teclas', e2: 'e acordes', corpo: 'a baterista também se aventura nas teclas.', fim: 'já tentou?', paul: 'teclado' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
@@ -50,6 +51,7 @@ export const MARCA = {
   '4-bastidores': { foto: 'marca-cracha-producao', pos: '50% 35%', cor: 'azul', t1: 'bastidores', t2: 'do show', e1: 'Beaterista Team', e2: 'produção', corpo: 'por trás de cada apresentação dos alunos tem um time inteiro.', fim: 'bora pro palco?', paul: 'microfone' },
   '5-vem-conhecer': { foto: 'marca-cartao', pos: '55% 40%', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', e1: 'Araçatuba, SP', e2: 'aulas presenciais', corpo: 'a Beaterista também existe fora da tela.', fim: '@beaterista<br>.escolademusica', paul: 'professor' },
   '7-veste-a-camiseta': { foto: 'marca-camisetas-arara', pos: '40% 35%', cor: 'vinho', t1: 'veste', t2: 'a camiseta', e1: 'azul, amarela', e2: 'ou branca', corpo: 'tem do tamanho bebê ao tamanho adulto.', fim: 'qual é a sua cor?', paul: 'oculos' },
+  '8-tem-bone-tambem': { foto: 'marca-bones', pos: '50% 40%', cor: 'creme', t1: 'tem boné', t2: 'também', e1: 'azul-marinho', e2: 'bordado dourado', corpo: 'mais um item com a marca da Beaterista.', fim: 'quem quer?', paul: 'oculos' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):
@@ -81,7 +83,15 @@ export const ALUNOS = {
   '24-baqueta-no-alto': { foto: 'menina-baqueta-alto', pos: '45% 35%', cor: 'vinho', t1: 'baqueta', t2: 'no alto', e1: 'bateria azul', e2: 'olho no prato', corpo: 'ela sabe exatamente onde vai bater.', fim: 'toca muito!' },
   '25-gente-grande': { foto: 'menino-serio', pos: '50% 35%', cor: 'azul', t1: 'concentração', t2: 'de gente grande', e1: 'duas baquetas', e2: 'um objetivo', corpo: 'quando a música começa, ele nem pisca.', fim: 'respeita o<br>baterista!' },
   '26-aprende-brincando': { foto: 'sinos-bea', pos: '45% 50%', cor: 'creme', larga: true, t1: 'música se aprende', t2: 'brincando', e1: 'sinos coloridos', e2: 'cada cor, um som', corpo: 'é assim que os pequenos descobrem as notas.', fim: 'toca mais um!', paul: 'pandeiro' },
-  '27-o-time': { foto: 'time-bolo', pos: '50% 8%', cor: 'azul', larga: true, t1: 'o time', t2: 'da beaterista', e1: 'professores', e2: 'e um bolo', corpo: 'por trás de cada aula tem essa turma.', fim: 'parabéns pra nós!', paul: 'professor' },
+  '27-o-time': { foto: 'time-bolo', pos: '50% 15%', cor: 'azul', larga: true, t1: 'o time', t2: 'da beaterista', e1: 'professores', e2: 'e um bolo', corpo: 'por trás de cada aula tem essa turma.', fim: 'parabéns pra nós!', paul: 'professor' },
+  '28-pose-de-artista': { foto: 'pose-artista', pos: '50% 30%', cor: 'azul', t1: 'pose de', t2: 'artista', e1: 'bandana azul', e2: 'camiseta amarela', corpo: 'depois do show, a foto com a prof é obrigatória.', fim: 'arrasou!', paul: 'selfie' },
+  '29-missao-cumprida': { foto: 'missao-cumprida', pos: '45% 35%', cor: 'vinho', t1: 'missão', t2: 'cumprida', e1: 'baquetas na mão', e2: 'sorriso no rosto', corpo: 'tocou, agradeceu e ainda ganhou abraço da prof.', fim: 'isso aí!' },
+  '30-quem-apresenta': { foto: 'bea-apresenta', pos: '50% 35%', cor: 'creme', larga: true, t1: 'quem apresenta', t2: 'é a bea', e1: 'microfone', e2: 'e muita risada', corpo: 'no nosso show a prof apresenta e a turma se diverte.', fim: 'próximo!', paul: 'microfone' },
+  '31-pequeno-gigante': { foto: 'pequeno-gigante', pos: '60% 30%', cor: 'azul', t1: 'pequeno', t2: 'gigante', e1: 'baqueta no alto', e2: 'olhar de fera', corpo: 'ele mal aparece atrás dos pratos, mas o som chega longe.', fim: 'que fera!' },
+  '32-no-embalo': { foto: 'no-embalo', pos: '50% 35%', cor: 'vinho', t1: 'no embalo', t2: 'da música', e1: 'caixa e tom', e2: 'no tempo certo', corpo: 'quando o aluno entra no groove, a foto até sai torta.', fim: 'bora tocar!' },
+  '33-olhar-de-rockstar': { foto: 'rockstar', pos: '20% 25%', cor: 'azul', t1: 'olhar de', t2: 'rockstar', e1: 'luz de palco', e2: 'bateria azul', corpo: 'tem foto que parece capa de disco.', fim: 'e é aluno nosso!', paul: 'oculos' },
+  '34-o-cajon-e-dela': { foto: 'cajon-dela', pos: '55% 45%', cor: 'creme', t1: 'o cajón', t2: 'é dela', e1: 'duas mãos', e2: 'um batuque', corpo: 'percussão também tem vez no nosso palco.', fim: 'toca, menina!', paul: 'cajon' },
+  '35-colorir-e-musica': { foto: 'colorindo', pos: '50% 50%', cor: 'azul', t1: 'colorir também', t2: 'é música', e1: 'lápis de cor', e2: 'e instrumentos', corpo: 'tem folha de colorir com a marca da escola.', fim: 'igual ao livro<br>do Paul!', paul: 'colorindo' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
