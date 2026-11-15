@@ -981,3 +981,15 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 [data-kit-theme] .tk-art.modelo-eletronica .kp [stroke] { stroke: #1b1818; }
 [data-kit-theme] .tk-art.modelo-eletronica .kp text { fill: #fff; }
 [data-kit-theme] .tk-art.modelo-cajon .kp text { fill: #1b1818; }
+
+/* Bateria de toque (v2): peças redondas vistas de cima; o brilho ao tocar vem do anel .km-brilha (o tema não repinta mais nada do desenho) */
+.tk-art .kp { cursor: pointer; }
+.tk-art .kp.hit .km-brilha { stroke-opacity: .95; }
+.tk-art .kp.hit { transform: scale(1.03); transform-box: fill-box; transform-origin: center; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp ellipse[fill-opacity] { fill-opacity: 1; }
+/* os temas repintam tudo que tem [stroke]/[fill]: os rótulos e os traços finos do desenho novo ficam como foram desenhados */
+[data-kit-theme] .tk-art .kp text { stroke: none !important; paint-order: normal; }
+[data-kit-theme] .tk-art .kp text.rt-escuro { fill: #5b513a; }
+[data-kit-theme] .tk-art .kp text.rt-claro { fill: #fff; }
+[data-kit-theme] .tk-art .kp text:not(.rt-escuro):not(.rt-claro) { fill: #5a2a0c; }
+[data-kit-theme] .tk-art .kp circle[stroke], [data-kit-theme] .tk-art .kp rect[stroke] { stroke: #6a604a; }

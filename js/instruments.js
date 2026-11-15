@@ -131,11 +131,10 @@ function cajAbafado(t, v) {
 export const DRUM_CAJON = {
   bd: (t, v = 1) => { C = init(); cajGrave(t, v * vr()); },
   sn: (t, v = 1) => { C = init(); cajSlap(t, v * vr()); },
-  hh: (t, v = 1) => { C = init(); cajSeco(t, v * vr()); },
-  tt: (t, v = 1) => { C = init(); cajAbafado(t, v * vr()); },
 };
-// o cajón só tem 4 zonas: as outras peças da bateria caem na zona mais parecida (assim uma gravação feita em outro modelo ainda toca)
-['mt', 'ft'].forEach((k) => { DRUM_CAJON[k] = DRUM_CAJON.tt; }); DRUM_CAJON.ho = DRUM_CAJON.hh; DRUM_CAJON.hf = DRUM_CAJON.hh; DRUM_CAJON.cr = DRUM_CAJON.sn; DRUM_CAJON.rd = DRUM_CAJON.hh;
+// O cajón só tem GRAVE (bd) e AGUDO (sn): as outras peças da bateria caem na mais parecida (assim uma gravação feita em outro modelo ainda toca).
+for (const k of ['tt', 'mt', 'ft']) DRUM_CAJON[k] = DRUM_CAJON.bd;
+for (const k of ['hh', 'ho', 'hf', 'cr', 'rd']) DRUM_CAJON[k] = DRUM_CAJON.sn;
 export const MODELOS_BATERIA = [['acustica', 'acústica'], ['eletronica', 'eletrônica'], ['cajon', 'cajón']];
 export const kitSom = (modelo) => (modelo === 'eletronica' ? DRUM_ELET : modelo === 'cajon' ? DRUM_CAJON : DRUM);
 /** Força pela posição do dedo: no centro 1, na borda ~0.72, com uma variaçãozinha. */

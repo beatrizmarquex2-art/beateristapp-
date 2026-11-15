@@ -47,7 +47,7 @@ export function mount(host) {
   };
   /** Distância do toque ao centro da peça (pelo desenho do "tampo": elipse da pele ou do prato). */
   const drOf = (g, e) => {
-    const t = g.querySelector('ellipse[fill-opacity], circle[fill-opacity]'); if (!t) return 0.4;
+    const t = g.querySelector('[data-head]') || g.querySelector('ellipse[fill-opacity], circle[fill-opacity]'); if (!t) return 0.4;
     const r = t.getBoundingClientRect(); if (!r.width || !r.height) return 0.4;
     const q = Math.hypot((e.clientX - (r.left + r.width / 2)) / (r.width / 2), (e.clientY - (r.top + r.height / 2)) / (r.height / 2));
     return q > 1.15 ? 0.55 : Math.min(1, q); // fora do tampo (no casco ou no pé) vale como toque médio
