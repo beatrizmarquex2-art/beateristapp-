@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const OUT = path.join(ROOT, 'marketing/prontos/apresentacao/serie-bea'); fs.mkdirSync(OUT, { recursive: true });
-const CORES = { azul: ['#0d1a36', '#f4ead8', '#f2b632', '#a8182e'], vinho: ['#a8182e', '#f4ead8', '#f2b632', '#10234a'], creme: ['#f4ead8', '#10234a', '#a8182e', '#10234a'] }; // fundo, texto, destaque, etiqueta 2
+const CORES = { azul: ['#0d1a36', '#f4ead8', '#d8b879', '#a8182e'], vinho: ['#a8182e', '#f4ead8', '#d8b879', '#10234a'], creme: ['#f4ead8', '#10234a', '#a8182e', '#10234a'] }; // fundo, texto, destaque, etiqueta 2
 const arte = ({ foto, pos, cor, t1, t2, e1, e2, corpo, fim, paul = 'bateria', larga = false, dir = '' }) => { const [BG, TX, DQ, ET2] = CORES[cor]; return `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')}) format('woff2')}
 @font-face{font-family:Gochi;src:url(${u('assets/fonts/GochiHand-latin.woff2')}) format('woff2')}

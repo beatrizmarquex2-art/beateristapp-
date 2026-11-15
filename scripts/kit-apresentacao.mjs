@@ -22,12 +22,12 @@ h1{position:absolute;font:400 104px/.98 Marker,cursive;transform:rotate(-3deg);t
 .s{position:absolute;font:400 52px/1.12 Gochi,cursive}.b{position:absolute;font:700 32px/1 Hanken;padding:18px 30px;border-radius:999px}
 .c{position:absolute;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))}.li{position:absolute;font:400 50px/1.1 Gochi,cursive;padding:10px 26px 16px;border-radius:18px}
 .sel{position:absolute;height:120px}</style><div class="p"></div>`;
-const selo = u('assets/originals/logo_beaterista_original.png');
+const selo = u('assets/originals/logo-beaterista-dourado.png');
 const ARTES = { // o post 3 (a Bea) agora sai de scripts/kit-apresentacao-bea.mjs (serie-bea)
-  'apresentacao-1-paul': base('#0d1a36', '#f4ead8') + `<h1 style="left:64px;top:84px">oi, eu sou<em style="color:#f2b632;padding-left:50px">o paul!</em></h1>
+  'apresentacao-1-paul': base('#0d1a36', '#f4ead8') + `<h1 style="left:64px;top:84px">oi, eu sou<em style="color:#d8b879;padding-left:50px">o paul!</em></h1>
 <img class="c" src="${hd('selfie')}" style="right:10px;top:250px;height:800px">
 <div class="s" style="left:64px;top:400px;width:440px">o robô baterista<br>da Beaterista</div>
-<div class="li" style="left:54px;top:620px;background:#f2b632;color:#0d1a36;transform:rotate(-2deg)">aqui a gente joga</div>
+<div class="li" style="left:54px;top:620px;background:#d8b879;color:#0d1a36;transform:rotate(-2deg)">aqui a gente joga</div>
 <div class="li" style="left:84px;top:730px;background:#f4ead8;color:#0d1a36;transform:rotate(1.5deg)">aprende música</div>
 <div class="li" style="left:54px;top:840px;background:#a8182e;color:#f4ead8;transform:rotate(-1.5deg)">e toca de verdade</div>
 <div class="s" style="left:64px;top:1090px;font-size:46px">começa grátis, é só entrar:</div>
@@ -41,11 +41,11 @@ const ARTES = { // o post 3 (a Bea) agora sai de scripts/kit-apresentacao-bea.mj
 <div class="s" style="left:64px;top:950px;width:500px;font-size:48px">e agora também na tela: jogos e materiais pra estudar em casa.</div>
 <img class="c" src="${hd('professor')}" style="right:30px;bottom:30px;height:400px">
 <div class="b" style="left:64px;top:1200px;background:#10234a;color:#f4ead8;font-size:36px">jogos.beaterista.com.br</div>`,
-  'apresentacao-3-bea': base('#a8182e', '#f4ead8') + `<h1 style="left:64px;top:76px">oi, eu sou<em style="color:#f2b632;padding-left:50px">a bea!</em></h1>
+  'apresentacao-3-bea': base('#a8182e', '#f4ead8') + `<h1 style="left:64px;top:76px">oi, eu sou<em style="color:#d8b879;padding-left:50px">a bea!</em></h1>
 <div class="f" style="left:70px;top:330px;width:940px;height:520px;transform:rotate(-2deg)"><img src="${u('vendas/assets/d46fe097df0f9ef3.webp')}" style="object-position:50% 30%"></div>
 <div class="li" style="left:54px;top:880px;background:#f4ead8;color:#10234a;transform:rotate(1.5deg);font-size:46px">professora de bateria e fundadora da Beaterista</div>
 <div class="s" style="left:64px;top:1010px;width:760px;font-size:44px">quando um aluno trava, eu penso: como transformar isso num desafio que ele queira tentar de novo?</div>
-<div class="s" style="left:64px;top:1230px;font-size:52px;color:#f2b632">foi assim que nasceram os jogos.</div>
+<div class="s" style="left:64px;top:1230px;font-size:52px;color:#d8b879">foi assim que nasceram os jogos.</div>
 <img class="c" src="${hd('bateria')}" style="right:16px;bottom:16px;height:300px">`,
 };
 const browser = await chromium.launch();
