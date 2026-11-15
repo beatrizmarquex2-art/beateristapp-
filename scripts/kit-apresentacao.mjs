@@ -23,7 +23,7 @@ h1{position:absolute;font:400 104px/.98 Marker,cursive;transform:rotate(-3deg);t
 .c{position:absolute;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))}.li{position:absolute;font:400 50px/1.1 Gochi,cursive;padding:10px 26px 16px;border-radius:18px}
 .sel{position:absolute;height:120px}</style><div class="p"></div>`;
 const selo = u('assets/originals/logo_beaterista_original.png');
-const ARTES = {
+const ARTES = { // o post 3 (a Bea) agora sai de scripts/kit-apresentacao-bea.mjs (serie-bea)
   'apresentacao-1-paul': base('#0d1a36', '#f4ead8') + `<h1 style="left:64px;top:84px">oi, eu sou<em style="color:#f2b632;padding-left:50px">o paul!</em></h1>
 <img class="c" src="${hd('selfie')}" style="right:10px;top:250px;height:800px">
 <div class="s" style="left:64px;top:400px;width:440px">o robô baterista<br>da Beaterista</div>
