@@ -20,6 +20,9 @@ export const REELS = {
   'aula-3-dia-de-show': { t1: 'dia de show', t2: 'na escola', paul: 'microfone', clipes: [['IMG_6045', 1, 3.5], ['IMG_6054', 2, 4]] },
   'aula-4-bateria-de-tapete': { t1: 'bateria', t2: 'de tapete', paul: 'bateria', clipes: [['IMG_4477', 0.5, 4], ['IMG_4944', 0.5, 4]] },
   'aula-6-a-bea-no-palco': { t1: 'a bea', t2: 'no palco', paul: 'bateria', clipes: [['MVI_8419', 0, 3.5, { gira: true }], ['MVI_8407', 0.5, 5, { gira: true }]] },
+  'teclado-1-aula-de-teclado': { t1: 'aula de', t2: 'teclado', paul: 'teclado', clipes: [['IMG_7845', 0.5, 3], ['IMG_7847', 1, 3.5], ['IMG_7848', 1, 3], ['IMG_7849', 3, 4]] },
+  'teclado-2-lendo-a-partitura': { t1: 'lendo', t2: 'a partitura', paul: 'estudando', clipes: [['IMG_7850', 0.5, 3], ['IMG_7851', 2, 5], ['IMG_7852', 0, 3.5]] },
+  'teclado-3-primeiras-notas': { t1: 'primeiras', t2: 'notas', paul: 'teclado', clipes: [['IMG_3878', 0, 2.5], ['IMG_3879', 0.5, 4.5], ['IMG_3962', 0.5, 4.5]] },
   'aula-5-musica-desde-pequeno': { t1: 'música', t2: 'desde pequeno', paul: 'pandeiro', clipes: [['IMG_8788', 2, 5], ['IMG_1441', 2, 4, { crop: [0, 0.16, 0.65, 0.65] }]] },
 };
 const capa = ({ t1, t2, paul }) => `<!doctype html><meta charset="utf-8"><style>
@@ -32,7 +35,8 @@ h1{position:absolute;left:64px;top:150px;font:400 112px/.98 Marker,cursive;color
 .c{position:absolute;right:20px;bottom:300px;height:380px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.35))}</style>
 <div class="g1"></div><div class="g2"></div><h1>${t1}<em>${t2}</em></h1><div class="u">jogos.beaterista.com.br</div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">`;
 const browser = await chromium.launch();
-for (const [nome, r] of Object.entries(REELS)) {
+const SO = process.env.SO; // SO=teclado -> só os reels cujo nome começa assim
+for (const [nome, r] of Object.entries(REELS)) { if (SO && !nome.startsWith(SO)) continue;
   const png = path.join(OUT, nome + '.png'), tmp = path.join(OUT, '.tmp.html'); fs.writeFileSync(tmp, capa(r));
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } }); await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
   await page.screenshot({ path: png, omitBackground: true }); await page.close(); fs.rmSync(tmp);
