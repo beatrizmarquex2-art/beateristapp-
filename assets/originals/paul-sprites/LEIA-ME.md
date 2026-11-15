@@ -5,6 +5,9 @@ Enviados pela Bea em nov/2026. Cada pasta tem 6 PNGs transparentes de 512×512 (
 - `danca/`: Paul de óculos escuros dançando
 - `guitarra/`: Paul tocando guitarra vermelha
 - `bateria/`: Paul na bateria
+- `cajon/`: Paul sentado no cajón
+- `microfone/`: Paul cantando com microfone
+- `teclado/`: Paul no teclado
 
 Quadros: `idle_01` (espera), `idle_02` (joelhos flexionados), `left`, `down`, `up`, `right` (as 4 setas, pensado pra jogo de ritmo).
 
