@@ -28,7 +28,8 @@ h1{position:absolute;left:60px;top:70px;font:400 100px/.98 Marker,cursive;transf
 <div class="s" style="left:60px;top:650px;width:420px">quando um aluno trava, eu penso: como transformar isso num desafio que ele queira tentar de novo?</div>
 <div class="s" style="left:60px;top:1120px;font-size:58px;color:${AMARELO};transform:rotate(-2deg)">foi assim que<br>nasceram os jogos.</div>
 <img class="c" src="${u('assets/originals/paul-png/coloridos-hd/paul-bateria.png')}">`;
-const OPC = { 'A-baquetas': ['bea-baquetas-rindo', '50% 15%'], 'B-sorriso': ['bea-casaco-close', '50% 25%'], 'C-banquinho': ['bea-pb-banquinho', '50% 45%'] };
+const OPC = { 'A-baquetas': ['bea-baquetas-rindo', '50% 15%'], 'B-sorriso': ['bea-casaco-close', '50% 25%'], 'C-banquinho': ['bea-pb-banquinho', '50% 45%'],
+  'D-casaco-lado': ['bea-casaco-lado', '50% 35%'], 'E-bone': ['bea-bone-perfil', '50% 30%'], 'F-gola': ['bea-casaco-gola', '50% 30%'] };
 const browser = await chromium.launch();
 for (const [nome, [foto, pos]] of Object.entries(OPC)) {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } }); const tmp = path.join(OUT, '.tmp.html'); fs.writeFileSync(tmp, arte(foto, pos));
