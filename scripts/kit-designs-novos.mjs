@@ -1,4 +1,5 @@
 // Em TODO post: logo dourado + "Beaterista · educação musical com propósito" (pedido da Bea). Destaque = dourado do logo; NUNCA laranja.
+// NUNCA cortar a cabeça da Bea (nem de ninguém): no gibi o título fica ACIMA da foto, não por cima; conferir a folha de posts com gente antes de entregar.
 // Designs novos (A foto cheia, B polaroid, C gibi) aprovados pela Bea em 15/nov: refaz as séries de kit-apresentacao-bea.mjs neles.
 // Uso: [FOTOS_ALUNOS=pasta SAIDA_ALUNOS=pasta] node scripts/kit-designs-teste.mjs  -> marketing/prontos/apresentacao/v2-bea e v2-marca (alunos só fora do repo)
 // Cores da marca, sem verde, Paul em todos.
@@ -37,7 +38,7 @@ body{background:${CR};color:${AZ}}.p{position:absolute;inset:0;background:repeat
 .fx{position:absolute;left:0;right:0;top:0;height:300px;background:${VI}}
 h1{position:absolute;left:60px;top:54px;font:400 ${Math.max(t1.length, t2.length) > 17 ? 60 : Math.max(t1.length, t2.length) > 12 ? 78 : 104}px/1 Marker,cursive;color:${CR};transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;color:${AM};display:block;padding-left:50px}
 .po{position:absolute;left:190px;top:330px;width:660px;background:#fff;padding:26px 26px 130px;transform:rotate(3deg);box-shadow:14px 18px 0 rgba(13,26,54,.22)}
-.po img{width:100%;height:640px;object-fit:cover;object-position:${pos};display:block}.po b{position:absolute;left:10px;right:10px;bottom:26px;text-align:center;white-space:nowrap;font:400 ${sub.length > 24 ? 40 : 54}px Gochi,cursive;color:${AZ}}
+.po img{width:100%;height:700px;object-fit:cover;object-position:${pos};display:block}.po b{position:absolute;left:10px;right:10px;bottom:26px;text-align:center;white-space:nowrap;font:400 ${sub.length > 24 ? 40 : 54}px Gochi,cursive;color:${AZ}}
 .tape{position:absolute;left:420px;top:300px;width:230px;height:66px;background:${AZ}55;transform:rotate(-5deg)}
 .c{position:absolute;right:-6px;bottom:6px;height:300px;filter:drop-shadow(8px 10px 0 rgba(13,26,54,.25))}
 .u{position:absolute;left:60px;bottom:60px;font:700 32px Hanken,sans-serif;background:${AZ};color:${CR};padding:16px 28px;border-radius:99px}</style>
@@ -46,8 +47,8 @@ h1{position:absolute;left:60px;top:54px;font:400 ${Math.max(t1.length, t2.length
   // C: quadrinho, o Paul fala no balão
   'C-gibi': ({ f, pos, t1, t2, sub, paul }) => `<style>${css}
 body{background:${CR}}.p{position:absolute;inset:0;background:radial-gradient(${AZ}33 5px,transparent 5.6px) 0 0/34px 34px}
-.q{position:absolute;left:50px;right:50px;top:50px;height:820px;border:10px solid ${AZ};background:#fff;box-shadow:14px 14px 0 ${AZ};overflow:hidden}.q img{width:100%;height:100%;object-fit:cover;object-position:${pos}}
-.tt{position:absolute;left:30px;top:90px;background:${VI};color:${CR};max-width:1000px;font:400 ${(t1 + t2).length > 26 ? 62 : (t1 + t2).length > 18 ? 76 : 96}px/1 Anton,sans-serif;text-transform:uppercase;padding:14px 30px 18px;border:8px solid ${AZ};transform:rotate(-4deg);box-shadow:8px 8px 0 ${AZ}}.tt em{font-style:normal;color:${AM}}
+.q{position:absolute;left:50px;right:50px;top:190px;height:700px;border:10px solid ${AZ};background:#fff;box-shadow:14px 14px 0 ${AZ};overflow:hidden}.q img{width:100%;height:100%;object-fit:cover;object-position:${pos}}
+.tt{position:absolute;left:40px;top:44px;z-index:2;background:${VI};color:${CR};max-width:1000px;font:400 ${(t1 + t2).length > 26 ? 62 : (t1 + t2).length > 18 ? 76 : 96}px/1 Anton,sans-serif;text-transform:uppercase;padding:14px 30px 18px;border:8px solid ${AZ};transform:rotate(-4deg);box-shadow:8px 8px 0 ${AZ}}.tt em{font-style:normal;color:${AM}}
 .bl{position:absolute;left:60px;bottom:130px;width:620px;background:#fff;border:8px solid ${AZ};border-radius:60px;padding:34px 40px 40px;font:400 54px/1.12 Gochi,cursive;color:${AZ};box-shadow:8px 8px 0 ${AZ}}
 .bl:after{content:'';position:absolute;right:-58px;bottom:70px;border:30px solid transparent;border-left:44px solid ${AZ}}.bl:before{content:'';position:absolute;right:-38px;bottom:78px;border:22px solid transparent;border-left:34px solid #fff;z-index:1}
 .c{position:absolute;right:0;bottom:10px;height:470px;filter:drop-shadow(8px 10px 0 rgba(13,26,54,.3))}</style>
