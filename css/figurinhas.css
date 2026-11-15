@@ -493,3 +493,23 @@
 .hj-tp{width:74px;height:74px;object-fit:contain;display:block;margin:0 auto 2px;filter:drop-shadow(0 2px 0 rgb(0 0 0/.18))}
 .hj-duplo{cursor:default}.hj-duplo-b{display:flex;gap:6px;justify-content:center;margin-top:2px}
 .hj-duplo-b a{font:800 12.5px/1 var(--body);padding:7px 10px;border-radius:10px;border:2px solid #14111a;background:#fffdf7;color:#14111a;text-decoration:none;box-shadow:2px 2px 0 #14111a}
+
+/* Teoria (15/nov/2026, pedido da Bea): letra um pouco maior, figura desenhada grande, aviso claro de onde tocar, fases por tema e ícones legíveis na lista */
+.tf-card{min-height:172px;gap:5px;padding:14px 8px 10px;position:relative}
+.tf-card b{font-size:17.5px;line-height:1.15}.tf-card small{font-size:14px;line-height:1.35}
+.tf-ic{height:66px}.tf-sym{height:64px;max-width:100%}.tf-card .tf-ic{width:100%}
+.tf-toque{font-style:normal;font:800 12.5px/1 var(--body,inherit);padding:6px 10px;border-radius:99px;background:#14111a;color:#fff;margin-top:auto}
+.tf-card.visto .tf-toque{background:transparent;color:var(--c,#17365B);padding:2px 0;font-size:12px}.tf-card.visto .tf-toque:empty{display:none}
+.tf-card.vez{box-shadow:3px 3px 0 var(--c,#17365B),0 0 0 4px color-mix(in srgb,var(--c,#17365B) 30%,transparent)}
+.tf-card.vez .tf-toque{background:var(--c,#17365B);animation:tf-pisca 1s ease-in-out infinite alternate}
+@keyframes tf-pisca{to{transform:scale(1.12)}}
+.btn.tf-vez{animation:tf-pisca .8s ease-in-out infinite alternate}
+.tf-fases{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tf-fase{font:inherit;display:grid;justify-items:center;min-width:44px;padding:5px 6px 3px;border:2.5px solid #14111a;border-radius:12px;background:#fffdf7;color:#14111a;cursor:pointer;box-shadow:2px 2px 0 #14111a}
+.tf-fase b{font:400 18px/1 "Anton",sans-serif}.tf-fase i{font-style:normal;font-size:11px;line-height:1.1;color:#EBA332}
+.tf-fase.on{background:var(--c,#17365B);color:#fff}.tf-fase.on i{color:#ffd166}
+.tf-fase-t{margin:0;text-align:center;font:800 14px/1.2 var(--body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--c,#17365B)}
+.tf-li{color:#fff;width:60px;height:60px}.tf-li .tf-sym{height:40px;width:auto;max-width:50px}.tf-li-t{font:400 24px/1 "Anton",sans-serif;color:#fff}
+.tf-tema b{font-size:18px}.tf-tema small{font-size:13.5px}.tf-tema-st{color:#EBA332;letter-spacing:1px}
+@media(prefers-reduced-motion:reduce){.tf-card.vez .tf-toque,.btn.tf-vez{animation:none}}
+.tf-ic{height:74px}.tf-card .tf-sym{height:72px}
