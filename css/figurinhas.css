@@ -517,3 +517,4 @@
 .tf-fila{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;height:100%}
 .tf-card .tf-fila .tf-sym{height:58px;max-width:46%}.tf-fila>b{font:800 24px/1 var(--body,inherit)}
 .tf-card .tf-ic{height:auto;min-height:74px}.tf-card .tf-sym.tf-pt{height:98px}.tf-card .tf-fila .tf-sym.tf-pt{height:66px;max-width:48%}
+.tf-big.tf-acid{font:400 68px/1 'Noto Music','Segoe UI Symbol','Apple Symbols','DejaVu Sans',serif}

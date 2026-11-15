@@ -333,9 +333,9 @@ export const FASES_LEITURA = [
       { q: 'notas subindo na pauta deixam o som mais…', ops: ['agudo', 'grave', 'fraco'], ok: 0 },
       { q: 'notas na mesma altura são…', ops: ['a mesma nota repetida', 'notas diferentes', 'pausas'], ok: 0 }] },
   { nome: 'sinais e letras', paul: 'pra fechar: os sinais que mudam a nota e as letras da cifra.', cards: [
-    { t: 'Sustenido', ic: () => txt('♯'), txt: 'o sustenido sobe a nota meio tom. no piano, é a tecla preta logo à direita.', som: midis([60, 61], 0.6) },
-    { t: 'Bemol', ic: () => txt('♭'), txt: 'o bemol desce a nota meio tom. no piano, é a tecla preta logo à esquerda.', som: midis([64, 63], 0.6) },
-    { t: 'Bequadro', ic: () => txt('♮'), txt: 'o bequadro cancela o sustenido ou o bemol: a nota volta ao normal.', som: midis([61, 60], 0.6) },
+    { t: 'Sustenido', ic: () => h('b', { class: 'tf-big tf-acid' }, '♯'), txt: 'o sustenido sobe a nota meio tom. no piano, é a tecla preta logo à direita.', som: midis([60, 61], 0.6) },
+    { t: 'Bemol', ic: () => h('b', { class: 'tf-big tf-acid' }, '♭'), txt: 'o bemol desce a nota meio tom. no piano, é a tecla preta logo à esquerda.', som: midis([64, 63], 0.6) },
+    { t: 'Bequadro', ic: () => h('b', { class: 'tf-big tf-acid' }, '♮'), txt: 'o bequadro cancela o sustenido ou o bemol: a nota volta ao normal.', som: midis([61, 60], 0.6) },
     { t: 'Vizinhas coladas', ic: PN('sol', [0, 1]), txt: 'mi e fá são coladinhas, e si e dó também: entre elas não tem tecla preta no piano.', som: midis([64, 65, 71, 72], 0.5) },
     { t: 'Letras da cifra', ic: () => txt('C D E F G A B', true), txt: 'as notas também têm letras: C é dó, D é ré, E é mi, F é fá, G é sol, A é lá e B é si. é o que aparece nos acordes.', som: midis([60, 62, 64, 65, 67, 69, 71], 0.3) }],
     quiz: [
