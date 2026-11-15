@@ -36,11 +36,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
-## Paulbox: a banda do Paul (15/nov/2026, v526, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
+## Paulbox: a banda do Paul (15/nov/2026, v527, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
 - A Bea mandou o zip `paulbox-jogos` (página solta, com desenho e sons já prontos dela) e pediu pra entrar nos Jogos. Virou jogo de verdade: `js/jogos/paulbox.js` (`#/jogos/paulbox`), imagens em `assets/jogos/paulbox/` (10 Pauls + `chegou.webp`), ícone `assets/jogos/icones/paulbox.webp` (o Paul DJ), estilo no fim de `css/jogos.css` (classes `.pbx-*`).
 - Como funciona: 10 Pauls (bateria, baixo, teclado, guitarra, voz, DJ, trompete, pandeiro, violino, metrônomo). Cada toque liga o instrumento e troca o ritmo (A a D); no 5º toque ele sai. Botões: Banda base, Surpresa, Silêncio e andamento (70 a 130; o aparelho lembra). Tudo sintetizado no aparelho, funciona sem internet.
 - **Os sons não foram mexidos** (o motor de áudio é o da página dela, copiado igual). O que mudou pra caber no app: usa o áudio do app (respeita o alto-falante do topo), a pausa da moldura cala a banda, "nova partida" = silêncio, sair cala tudo, a música de fundo dos jogos fica quieta ali. Os botões subiram pra cima do palco (no iPhone ficam sempre à vista; no iPad deitado cabe tudo numa tela, 5 por fileira).
 - Fica em **Ritmo e bateria**, **aberto pra todo mundo** (sem código, sem cadeado) e **sem estrelas**: é brinquedo livre, serve de isca. Decisão minha, a Bea pode mudar: pra trancar, pôr `b === 'paulbox'` na lista de `js/acesso.js`; pra deixar só no app dela, `[...inner('paulbox'), undefined, 'bea']` em `js/views/jogos.js`.
+- **Desenho (v527): a Bea escolheu a opção A, "palco à noite"**, entre 3 mockups (A palco à noite, B zine de adesivos, C vitrola; as 3 estão em `prototipos/paulbox-opcoes.css`). Palco azul-marinho, Pauls soltos sem moldura: fora da banda ficam cinza na sombra, quem entra ganha cor e holofote da cor do instrumento; 4 tracinhos embaixo mostram o ritmo (A a D). No `css/jogos.css` o bloco A vem depois do desenho amarelo antigo e passa por cima dele.
 - Teste: `NODE_PATH=$(npm root -g) node tests/e2e/paulbox.mjs` (14 checagens, mede o som que sai).
 - Ideias que ficaram pra ela escolher: gravar/compartilhar a banda montada, "desafio do Paul" (monte a banda que ele pede) valendo ★, e reel mostrando o brinquedo.
 

@@ -1330,3 +1330,27 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pbx-tempo{display:flex;align-items:center;gap:6px;margin-left:auto;font-weight:800;font-size:12.5px;white-space:nowrap}
 .pbx-tempo input{width:74px;accent-color:var(--pbx-red)}
 @media(prefers-reduced-motion:reduce){.pbx-slot.hit .pbx-art,.pbx-walker{animation:none}.pbx-note{animation:none;opacity:0}}
+
+/* Paulbox, desenho escolhido pela Bea em 15/nov/2026 (opção A, "palco à noite"; entra por cima do desenho antigo acima): Pauls soltos no palco escuro; quem entra ganha holofote da sua cor, quem está fora fica na sombra */
+.pbx{background:radial-gradient(120% 70% at 50% 0,#31408a 0,#162146 45%,#0a0f26 100%)!important;border:0!important;border-radius:22px!important;color:#fff7e6;padding:14px 12px!important;box-shadow:inset 0 -40px 60px -30px #000}
+.pbx .pbx-sub{color:#fff7e6}
+.pbx .pbx-art{background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;border-radius:0!important}
+.pbx .pbx-art::before{content:"";position:absolute;left:8%;right:8%;bottom:0;height:22%;border-radius:50%!important;background:radial-gradient(closest-side,rgb(255 255 255/.16),transparent);z-index:0}
+.pbx .pbx-art::after{content:"";position:absolute;left:50%;top:-12%;width:120%;height:118%;transform:translateX(-50%);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);background:linear-gradient(to bottom,color-mix(in srgb,var(--ink) 75%,#fff),transparent 92%);opacity:0;transition:opacity .25s;z-index:0;pointer-events:none}
+.pbx .pbx-slot:not([data-s="0"]) .pbx-art::after{opacity:.6}
+.pbx .pbx-slot:not([data-s="0"]) .pbx-art::before{background:radial-gradient(closest-side,var(--ink),transparent);height:26%}
+.pbx .pbx-art img{z-index:1;inset:2% 4% 4%;width:92%;height:94%;filter:grayscale(1) brightness(.8) opacity(.6);transition:filter .25s}
+.pbx .pbx-slot:not([data-s="0"]) .pbx-art img{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ink) 70%,transparent))}
+.pbx .pbx-lvl{top:auto;bottom:-2px;left:50%;transform:translateX(-50%);gap:4px}
+.pbx .pbx-lvl b{width:14px;height:5px;border-radius:3px!important;border:0;background:rgb(255 255 255/.22)}
+.pbx .pbx-tag{justify-content:center;gap:6px;margin-top:4px}
+.pbx .pbx-name{color:#fff7e6;font-size:13px}
+.pbx .pbx-chip{border:0;background:rgb(255 255 255/.14);color:#fff7e6;border-radius:99px!important;font-size:10px}
+.pbx .pbx-slot[data-s="0"] .pbx-chip{display:none}
+.pbx .pbx-slot[data-s="0"] .pbx-name{opacity:.55}
+.pbx .pbx-hint{background:rgb(255 255 255/.08);border:0;color:#fff7e6;border-radius:12px!important;text-align:center}
+.pbx .pbx-act{border-radius:99px!important;border:0;box-shadow:none;background:rgb(255 255 255/.14);color:#fff7e6}
+.pbx .pbx-act.main{background:#c81e2d;color:#fff}
+.pbx .pbx-beat i{background:#fff7e6;border-radius:50%!important}.pbx .pbx-beat i.on{background:#f2a91b}
+.pbx .pbx-tempo{color:#fff7e6}.pbx .pbx-tempo input{accent-color:#f2a91b}
+.pbx .pbx-note{color:#fff}
