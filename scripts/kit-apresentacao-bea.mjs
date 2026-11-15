@@ -52,6 +52,8 @@ export const MARCA = {
   '5-vem-conhecer': { foto: 'marca-cartao', pos: '55% 40%', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', e1: 'Araçatuba, SP', e2: 'aulas presenciais', corpo: 'a Beaterista também existe fora da tela.', fim: '@beaterista<br>.escolademusica', paul: 'professor' },
   '7-veste-a-camiseta': { foto: 'marca-camisetas-arara', pos: '40% 35%', cor: 'vinho', t1: 'veste', t2: 'a camiseta', e1: 'azul, amarela', e2: 'ou branca', corpo: 'tem do tamanho bebê ao tamanho adulto.', fim: 'qual é a sua cor?', paul: 'oculos' },
   '8-tem-bone-tambem': { foto: 'marca-bones', pos: '50% 40%', cor: 'creme', t1: 'tem boné', t2: 'também', e1: 'azul-marinho', e2: 'bordado dourado', corpo: 'mais um item com a marca da Beaterista.', fim: 'quem quer?', paul: 'oculos' },
+  '9-aprenda-com-a-gente': { foto: 'marca-fachada-cursos', pos: '20% 50%', cor: 'azul', t1: 'aprenda a tocar', t2: 'com a gente', e1: 'bateria, violão, guitarra', e2: 'contrabaixo e teclado', corpo: 'e musicalização infantil pros pequenos.', fim: 'chama no direct!', paul: 'professor' },
+  '10-caca-palavras': { foto: 'marca-caca-palavras', pos: '50% 50%', cor: 'vinho', t1: 'caça-palavras', t2: 'musical', e1: 'flauta, harpa, tuba', e2: 'pandeiro e violino', corpo: 'atividade da nossa apostila. achou todas?', fim: 'tem mais nos jogos!', paul: 'estudando' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):
@@ -92,6 +94,17 @@ export const ALUNOS = {
   '33-olhar-de-rockstar': { foto: 'rockstar', pos: '20% 25%', cor: 'azul', t1: 'olhar de', t2: 'rockstar', e1: 'luz de palco', e2: 'bateria azul', corpo: 'tem foto que parece capa de disco.', fim: 'e é aluno nosso!', paul: 'oculos' },
   '34-o-cajon-e-dela': { foto: 'cajon-dela', pos: '55% 45%', cor: 'creme', t1: 'o cajón', t2: 'é dela', e1: 'duas mãos', e2: 'um batuque', corpo: 'percussão também tem vez no nosso palco.', fim: 'toca, menina!', paul: 'cajon' },
   '35-colorir-e-musica': { foto: 'colorindo', pos: '50% 50%', cor: 'azul', t1: 'colorir também', t2: 'é música', e1: 'lápis de cor', e2: 'e instrumentos', corpo: 'tem folha de colorir com a marca da escola.', fim: 'igual ao livro<br>do Paul!', paul: 'colorindo' },
+  '36-bateria-em-cena': { foto: 'luz-azul', pos: '55% 35%', cor: 'vinho', t1: 'bateria', t2: 'em cena', e1: 'luz de palco', e2: 'baqueta na mão', corpo: 'olha pro lado, respira e manda ver.', fim: 'vai com tudo!' },
+  '37-a-prof-no-violao': { foto: 'violao-dupla', pos: '55% 45%', cor: 'azul', larga: true, t1: 'a prof também', t2: 'toca violão', e1: 'dois violões', e2: 'um som só', corpo: 'professores da Beaterista tocando juntos.', fim: 'que dupla!', paul: 'guitarra' },
+  '38-cabe-mais-um': { foto: 'moldura-menino', pos: '35% 45%', cor: 'creme', larga: true, t1: 'cabe mais um', t2: 'na moldura', e1: 'educação musical', e2: 'com propósito', corpo: 'sorriso de quem acabou de tocar.', fim: 'beaterista #team', paul: 'selfie' },
+  '39-piano-de-cauda': { foto: 'piano-cauda', pos: '60% 40%', cor: 'vinho', larga: true, t1: 'piano de cauda', t2: 'e coragem', e1: 'recital', e2: 'de piano', corpo: 'ela toca, a prof apresenta e comemora junto.', fim: 'bravo!', paul: 'teclado' },
+  '40-lembrancinha': { foto: 'lembrancinha', pos: '50% 35%', cor: 'azul', t1: 'lembrancinha', t2: 'do show', e1: 'sacolinha de música', e2: 'camiseta amarela', corpo: 'ninguém vai embora de mão vazia.', fim: 'até o próximo!', paul: 'selfie' },
+  '41-solo-de-guitarra': { foto: 'solo-guitarra', pos: '45% 30%', cor: 'creme', t1: 'solo de', t2: 'guitarra', e1: 'palco', e2: 'e amplificador', corpo: 'concentrado em cada nota.', fim: 'toca muito!', paul: 'guitarra' },
+  '42-a-prof-vibra': { foto: 'prof-vibra', pos: '40% 30%', cor: 'azul', t1: 'a prof vibra', t2: 'junto', e1: 'ele toca', e2: 'ela comemora', corpo: 'cada batida certa vira festa.', fim: 'boa!' },
+  '43-violao-grande': { foto: 'violao-grande', pos: '60% 40%', cor: 'vinho', t1: 'o violão é grande', t2: 'o talento também', e1: 'banquinho amarelo', e2: 'luz de palco', corpo: 'ele quase some atrás do violão.', fim: 'e toca!', paul: 'guitarra' },
+  '44-aluno-e-professor': { foto: 'aluno-professor', pos: '50% 50%', cor: 'creme', t1: 'aluno e professor', t2: 'no mesmo som', e1: 'guitarra', e2: 'e violão', corpo: 'no palco o professor toca junto e sorri junto.', fim: 'isso é aula!', paul: 'guitarra' },
+  '45-sorriso-de-baterista': { foto: 'sorriso-baterista', pos: '35% 40%', cor: 'azul', t1: 'sorriso de', t2: 'baterista', e1: 'bateria azul', e2: 'duas baquetas', corpo: 'olhou pra câmera e não perdeu o tempo.', fim: 'craque!' },
+  '46-banda-formada': { foto: 'banda-pb', pos: '55% 50%', cor: 'vinho', larga: true, t1: 'banda', t2: 'formada', e1: 'duas baterias', e2: 'e uma guitarra', corpo: 'a prof numa bateria, os alunos no resto do palco.', fim: 'som na caixa!', paul: 'oculos' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
