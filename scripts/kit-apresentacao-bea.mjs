@@ -18,7 +18,7 @@ const arte = ({ foto, pos, cor, t1, t2, e1, e2, corpo, fim, paul = 'bateria' }) 
 .p{position:absolute;inset:0;background:radial-gradient(${TX}1c 2px,transparent 2.6px) 0 0/30px 30px}
 .f{position:absolute;right:54px;top:250px;width:520px;height:780px;background:#fff;border-radius:16px;box-shadow:12px 14px 0 rgba(0,0,0,.35);padding:12px;transform:rotate(3deg)}
 .f img{width:100%;height:100%;object-fit:cover;object-position:${pos};display:block;border-radius:8px}
-h1{position:absolute;left:60px;top:70px;font:400 ${Math.max(t1.length, t2.length) > 12 ? 78 : 100}px/.98 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;display:block;color:${DQ};padding-left:44px}
+h1{position:absolute;left:60px;top:70px;font:400 ${Math.max(t1.length, t2.length) > 10 ? 78 : 100}px/.98 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;display:block;color:${DQ};padding-left:44px}
 .li{position:absolute;font:400 46px/1.1 Gochi,cursive;padding:8px 22px 14px;border-radius:16px;white-space:nowrap}
 .s{position:absolute;font:400 44px/1.14 Gochi,cursive}
 .c{position:absolute;right:20px;bottom:14px;height:250px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.3))}</style><div class="p"></div>
@@ -36,12 +36,21 @@ export const SERIE = {
   '4-eu-ensino-o-que-eu-toco': { foto: 'bea-palco-vermelha', pos: '30% 40%', cor: 'azul', t1: 'eu ensino', t2: 'o que eu toco', e1: 'baterista', e2: 'e professora', corpo: 'os exercícios que eu estudo são os mesmos que eu ensino e levo pro palco.', fim: 'do palco<br>pra aula.' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
+// série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
+export const MARCA = {
+  '1-desenha-o-som': { foto: 'marca-desenhando-figuras', pos: '40% 40%', cor: 'creme', t1: 'aqui a gente', t2: 'desenha o som', e1: 'semínima, colcheia', e2: 'fusa e semifusa', corpo: 'antes de tocar, o aluno aprende a reconhecer e desenhar cada figura.', fim: 'depois vira jogo.', paul: 'colorindo' },
+  '2-ate-a-palheta': { foto: 'marca-palhetas', pos: '60% 60%', cor: 'azul', t1: 'até a palheta', t2: 'é beaterista', e1: 'pra violão', e2: 'e guitarra', corpo: 'cada detalhe da escola leva a nossa marca.', fim: 'qual é o seu<br>instrumento?', paul: 'guitarra' },
+  '3-cada-detalhe': { foto: 'marca-copo-adesivo', pos: '50% 45%', cor: 'vinho', t1: 'cada detalhe', t2: 'tem a nossa cara', e1: 'copo e adesivo', e2: 'camiseta e palheta', corpo: 'quem estuda aqui leva a Beaterista pra casa.', fim: 'é time!', paul: 'oculos' },
+  '4-bastidores': { foto: 'marca-cracha-producao', pos: '50% 35%', cor: 'azul', t1: 'bastidores', t2: 'do show', e1: 'Beaterista Team', e2: 'produção', corpo: 'por trás de cada apresentação dos alunos tem um time inteiro.', fim: 'bora pro palco?', paul: 'microfone' },
+  '5-vem-conhecer': { foto: 'marca-cartao', pos: '55% 40%', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', e1: 'Araçatuba, SP', e2: 'aulas presenciais', corpo: 'a Beaterista também existe fora da tela.', fim: '@beaterista<br>.escolademusica', paul: 'professor' },
+};
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
-  for (const [nome, d] of Object.entries(SERIE)) {
+  for (const [pasta, pre, serie] of [['serie-bea', 'bea', SERIE], ['serie-marca', 'marca', MARCA]]) for (const [nome, d] of Object.entries(serie)) {
+    const OUT = path.join(ROOT, 'marketing/prontos/apresentacao', pasta); fs.mkdirSync(OUT, { recursive: true });
     const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } }); const tmp = path.join(OUT, '.tmp.html'); fs.writeFileSync(tmp, arte(d));
     await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
-    await page.screenshot({ path: path.join(OUT, `bea-${nome}.jpg`), type: 'jpeg', quality: 92 }); await page.close(); fs.rmSync(tmp); console.log('ok', nome);
+    await page.screenshot({ path: path.join(OUT, `${pre}-${nome}.jpg`), type: 'jpeg', quality: 92 }); await page.close(); fs.rmSync(tmp); console.log('ok', nome);
   }
   await browser.close();
 }
