@@ -32,6 +32,7 @@ export const RECORTES = {
   '2-tem-bone': { rec: 'bones', cor: 'creme', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 780, giro: 4 },
   '3-palhetas': { rec: 'palhetas', cor: 'azul', t1: 'até a palheta', t2: 'é beaterista', sub: 'qual é o seu instrumento?', paul: 'guitarra', alt: 700, giro: -4 },
   '4-folha-pecas': { rec: 'folha-pecas', cor: 'vinho', modo: 'palavra', t1: 'toda peça', t2: 'tem nome', sub: 'sabe todas?', paul: 'bateria', alt: 820, giro: 4 },
+  '6-pad-de-estudo': { rec: 'pad-de-estudo', cor: 'azul', t1: 'pad de', t2: 'estudo', sub: 'página da nossa apostila', paul: 'metronomo', alt: 820, giro: 4 },
   '5-camisetas': { rec: 'camisetas', cor: 'creme', t1: 'veste', t2: 'a camiseta', sub: 'qual é a sua cor?', paul: 'oculos', alt: 820, giro: 0 },
 };
 const RA = process.env.RECORTES_ALUNOS, SA = process.env.SAIDA_ALUNOS;

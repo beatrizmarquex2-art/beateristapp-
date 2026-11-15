@@ -56,6 +56,12 @@ export const MARCA = {
   '10-caca-palavras': { foto: 'marca-caca-palavras', pos: '50% 50%', cor: 'vinho', t1: 'caça-palavras', t2: 'musical', e1: 'flauta, harpa, tuba', e2: 'pandeiro e violino', corpo: 'atividade da nossa apostila. achou todas?', fim: 'tem mais nos jogos!', paul: 'estudando' },
   '11-domino': { foto: 'marca-domino', pos: '50% 60%', cor: 'vinho', t1: 'aqui se aprende', t2: 'jogando', e1: 'dominó de figuras', e2: 'e de claves', corpo: 'o jogo sai do chão da sala e vai parar na tela.', fim: 'bora jogar?', paul: 'estudando' },
   '12-tablet-na-bateria': { foto: 'marca-tablet-bateria', pos: '50% 45%', cor: 'azul', t1: 'do tablet', t2: 'pra bateria', e1: 'paradiddle', e2: 'no Bateria Start', corpo: 'primeiro lê na tela, depois toca de verdade.', fim: 'é assim que a gente estuda.', paul: 'bateria' },
+  '13-castelo-de-domino': { foto: 'marca-castelo-domino', pos: '50% 50%', cor: 'azul', t1: 'castelo', t2: 'de dominó', e1: 'figuras e claves', e2: 'empilhadas', corpo: 'quando a aula acaba e o jogo vira arquitetura.', fim: 'quem derruba?', paul: 'estudando' },
+  '14-quebra-cabeca': { foto: 'marca-quebra-cabeca', pos: '50% 50%', cor: 'vinho', t1: 'quebra-cabeça', t2: 'do paul', e1: '6, 12 ou 24 peças', e2: 'no tablet', corpo: 'monta o Paul baterista peça por peça.', fim: 'joga grátis!', paul: 'bateria' },
+  '15-complete-o-tempo': { foto: 'marca-jogo-figuras', pos: '50% 50%', cor: 'azul', t1: 'complete', t2: 'o tempo', e1: 'semínima, colcheia', e2: 'semicolcheia', corpo: 'qual figura falta pra fechar o compasso?', fim: 'testa no app!', paul: 'metronomo' },
+  '16-camiseta-preta': { foto: 'marca-camiseta-preta', pos: '50% 50%', cor: 'creme', t1: 'preta', t2: 'com dourado', e1: 'camiseta', e2: 'da Beaterista', corpo: 'a versão que brilha na luz do estúdio.', fim: 'quem quer?', paul: 'oculos' },
+  '17-sala-de-bateria': { foto: 'marca-sala-bateria', pos: '50% 60%', cor: 'azul', t1: 'a sala onde', t2: 'tudo acontece', e1: 'duas baterias', e2: 'e muito neon', corpo: 'é aqui que nascem as aulas e os jogos.', fim: 'vem conhecer!', paul: 'bateria' },
+  '18-sala-de-violao': { foto: 'marca-sala-violao', pos: '40% 50%', cor: 'creme', larga: true, t1: 'a sala', t2: 'de violão', e1: 'violões na parede', e2: 'e mesinha dos pequenos', corpo: 'tem sala pra corda, pra tecla e pros pequenos.', fim: 'escolhe a sua!', paul: 'guitarra' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):
@@ -109,6 +115,9 @@ export const ALUNOS = {
   '46-banda-formada': { foto: 'banda-pb', pos: '55% 50%', cor: 'vinho', larga: true, t1: 'banda', t2: 'formada', e1: 'duas baterias', e2: 'e uma guitarra', corpo: 'a prof numa bateria, os alunos no resto do palco.', fim: 'som na caixa!', paul: 'oculos' },
   '47-domino-musical': { foto: 'domino-menino', pos: '50% 40%', cor: 'azul', t1: 'dominó', t2: 'musical', e1: 'claves e figuras', e2: 'no chão da sala', corpo: 'ele montou a trilha inteira antes de ir pra bateria.', fim: 'sua vez!', paul: 'estudando' },
   '48-memoria-na-aula': { foto: 'memoria-menino', pos: '40% 50%', cor: 'creme', t1: 'jogo da memória', t2: 'na aula', e1: 'instrumentos', e2: 'em pares', corpo: 'antes de tocar, a gente brinca de reconhecer cada instrumento.', fim: 'achou o par?', paul: 'professor' },
+  '49-tubos-coloridos': { foto: 'tubos-coloridos', pos: '30% 50%', cor: 'azul', t1: 'cada cor', t2: 'uma nota', e1: 'tubos sonoros', e2: 'do grave ao agudo', corpo: 'ele bate no tubo e descobre o som de cada nota.', fim: 'dó, ré, mi!', paul: 'maestro' },
+  '50-dupla-no-domino': { foto: 'domino-maos', pos: '50% 50%', cor: 'vinho', t1: 'dupla', t2: 'no dominó', e1: 'clave de sol', e2: 'clave de fá', corpo: 'pra encaixar a peça tem que reconhecer a figura.', fim: 'quem ganhou?', paul: 'estudando' },
+  '51-cantinho-de-colorir': { foto: 'mesa-colorir', pos: '50% 55%', cor: 'creme', t1: 'cantinho', t2: 'de colorir', e1: 'lápis de cor', e2: 'e canetinha', corpo: 'enquanto espera a aula, a criançada pinta.', fim: 'igual ao livro<br>do Paul!', paul: 'colorindo' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
