@@ -123,6 +123,7 @@ export function leitura(host, opts = {}) {
         lastResult.compassoNota = nota;
       }
       passedNow = final && !livre && lastResult.score >= PASS_SCORE;
+      if (passedNow && step === PATH.length - 1) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Toca Aqui', caminho: 'o caminho todo', chave: 'toca', pose: 'pad' })).catch(() => {}), 900); // terminou o caminho: festa + postar
       const est = livre || !final ? 0 : estrelasFase({ score: lastResult.score, mic: useMic, tier: PATH[step].tier, bpm: c.bpm }); lastResult.est = est; lastResult.mic = useMic; lastResult.parcial = !final;
       await store.upsert(KIND, null, { mode: 'leitura', lv: lvNow, bpm: c.bpm, bars: nb, score: lastResult.score, at: Date.now() });
       if (!livre && final) { const antes = (c.pstars || {})[step] ?? ((bestOf(c)[step] || 0) >= PASS_SCORE ? 1 : 0); const ganho = ganhoEstrelas(est, antes); if (est > antes) await save({ pstars: { ...(c.pstars || {}), [step]: est } }); if (ganho > 0) import('../figurinhas/mesa.js').then((M) => M.vitoria('toca', ganho)).catch(() => {}); }

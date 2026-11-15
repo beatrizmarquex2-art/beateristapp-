@@ -11,6 +11,13 @@ export const MISSOES = [
   { tipo: 'youtube', titulo: 'seguiu no YouTube ou nas redes', dica: 'siga a Bea no YouTube, no Instagram ou no TikTok e tire um print mostrando que você segue', link: 'https://www.youtube.com/@beateristadrummer', rotulo: 'YouTube', extras: [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista']] },
   { tipo: 'amigo', titulo: 'mandou pra um amigo', dica: 'mande o app pra um amigo e tire um print da conversa', link: 'https://jogos.beaterista.com.br', rotulo: 'copiar o link do app' },
 ];
+/** Missão de postar (pedido da Bea, 15/nov/2026): postou um jogo, marcou a escola, mandou o print = 5 ★. Vale 1 vez POR JOGO (o tipo vai como `post:<jogo>`). */
+export const ARROBA = '@beaterista_';
+export const JOGOS_POST = [['paulbox', 'PaulBox'], ['uno', 'Uno Musical'], ['velha', 'Jogo da velha'], ['quebra', 'Quebra-cabeça'], ['cara', 'Cara a cara'], ['stop', 'Stop'], ['memoria', 'Jogo da memória'], ['bingo', 'Bingo'],
+  ['paulta', 'pauLta'], ['figurix', 'Figurix'], ['detetive', 'Detetive Note'], ['rudimentix', 'Rudimentix'], ['toca', 'Toca Aqui'], ['beathero', 'Beat Hero'], ['figurinha', 'figurinha do álbum'], ['outro', 'outro jogo']];
+export const tipoPost = (jogo) => `post:${jogo}`;
+/** Nome legível de qualquer tipo de resgate (inclui `post:<jogo>`). */
+export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
 export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 

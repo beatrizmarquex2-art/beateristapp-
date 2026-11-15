@@ -72,6 +72,7 @@ export function mount(host) {
     }
     if (est > antes) { guarda(fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('figurix', est - antes)).catch(() => {}); }
     sfx.play('win');
+    if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Figurix', caminho: 'todas as fases', chave: 'figurix', pose: 'estante' })).catch(() => {}), 700); // terminou o caminho: festa + postar
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' acertando tudo de primeira, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
       h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,

@@ -43,6 +43,7 @@ export function mount(host, parts = [], opts = {}) {
 
   const save = (next) => { state = next; store.upsert('figurinhas', ID, state); guardarNaNuvem(); draw(); };
   let semanaFesta = false; let rsLista = [];
+  let area = null; // área aberta da aba roleta: null = automática (segue o que tem pra abrir) | 'roleta' | 'bau' | 'resgate'
   /** Resgates por print aprovados pela Bea: entrega a recompensa neste aparelho (uma vez; o servidor confirma). Também atualiza os status mostrados. */
   async function resgatesDoAluno() {
     if (!CODE.saved()) return;
@@ -191,25 +192,55 @@ export function mount(host, parts = [], opts = {}) {
     const partes = [n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
     const me = (() => { try { return P.active(); } catch { return null; } })();
     const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 15 ★ nos jogos pra liberar uma roleta de figurinhas';
-    return h('section', { class: 'fig-packs' },
-      h('div', { class: 'fig-pack-card' },
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, next === 'roleta' ? '🎡' : next === 'jogo' ? '🏆' : 'beaterista'), h('span', {}, next === 'roleta' ? '1 a 3 figurinhas' : next === 'jogo' ? '1 pacote com uma rara' : `${next === 'pacote' ? L.packSize(pend[0]) : L.PACK_SIZE} figurinhas`)),
-        h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.'),
-        h('p', { class: 'fig-note' }, `${prog}. 1 giro grátis por dia (check-in) e, ao terminar um jogo inteiro, 1 pacote com uma rara!`),
-        h('button', { type: 'button', class: 'btn primary wide', disabled: pend.length ? null : true, onclick: () => openIt(pend[0]) }, next === 'roleta' ? 'girar a roleta' : next === 'jogo' ? 'abrir o prêmio' : 'abrir pacote'),
-        h('details', { class: 'fig-mais' }, h('summary', {}, 'ganhe mais ★ (missões com print e check-in)'),
-          h('div', {}, 
-        h('div', { class: 'fig-missoes' }, h('b', {}, `missões com print: +${RS.ESTRELAS_MISSAO} ★ cada`), h('small', {}, 'faça, tire um print e envie. a professora Bea confere e a estrela chega.'),
-          ...RS.MISSOES.map((m) => h('div', { class: 'fig-missao' }, h('span', {}, h('b', {}, m.titulo), h('small', {}, m.dica)),
-            h('span', { class: 'fig-missao-bt' }, m.tipo === 'amigo' ? h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, m.rotulo) : h('a', { class: 'btn small ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo), ...(m.extras || []).map(([t, u]) => h('a', { class: 'btn small ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
-              statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))),
-          h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`))
-          ))),
-      h('div', { class: 'fig-hand' },
+    // 3 áreas (pedido da Bea, 15/nov/2026): ROLETA (girar) · BAÚ (abrir pacotinho, com o porquê de cada um) · RESGATE (★ com print)
+    const giros = pend.filter((id) => L.packKind(id) === 'roleta'); const bau = pend.filter((id) => L.packKind(id) !== 'roleta');
+    const auto = next === 'roleta' ? 'roleta' : next ? 'bau' : 'roleta'; const qual = area || auto;
+    const chip = (id, txt, qtd) => h('button', { type: 'button', role: 'tab', class: `fig-area${qual === id ? ' on' : ''}`, 'aria-selected': String(qual === id), onclick: () => { area = id; draw(); } }, txt, qtd ? h('i', {}, String(qtd)) : null);
+    const resumo = h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.');
+    const porque = (lista) => (lista.length ? h('ul', { class: 'fig-porque' }, ...lista.slice(0, 6).map((id) => h('li', {}, h('b', {}, L.packKind(id) === 'roleta' ? '🎡 giro' : L.packKind(id) === 'jogo' ? '🏆 prêmio' : '🎁 pacotinho'), ` ${L.motivoDoPacote(id)}`)), lista.length > 6 ? h('li', {}, `e mais ${lista.length - 6}…`) : null) : null);
+    const semana = h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`));
+    let corpo;
+    if (qual === 'roleta') {
+      corpo = h('div', { class: 'fig-pack-card' },
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '🎡'), h('span', {}, '1 a 3 figurinhas por giro')),
+        resumo,
+        h('p', { class: 'fig-note' }, `${prog}. você também ganha 1 giro grátis por dia (check-in) e 1 giro a cada 4 fases concluídas.`),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: giros.length ? null : true, onclick: () => openIt(giros[0]) }, 'girar a roleta'),
+        giros.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(giros)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar giros'), h('small', {}, `junte ${L.ESTRELAS_POR_ROLETA} ★ jogando, conclua 4 fases ou entre no app todo dia.`)),
+        semana);
+    } else if (qual === 'bau') {
+      const prox = bau[0]; const k = prox ? L.packKind(prox) : null;
+      corpo = h('div', { class: 'fig-pack-card' },
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, k === 'jogo' ? '🏆' : '🎁'), h('span', {}, k === 'jogo' ? '1 pacote com uma rara' : `${prox ? L.packSize(prox) : L.PACK_SIZE} figurinhas`)),
+        resumo,
+        h('p', { class: 'fig-note' }, 'o baú guarda os pacotinhos que você conquistou. cada pacotinho é um prêmio por terminar um jogo, um mundo ou uma semana de check-in.'),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: prox ? null : true, onclick: () => openIt(prox) }, k === 'jogo' ? 'abrir o prêmio' : 'abrir pacotinho'),
+        bau.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(bau)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar pacotinhos'), h('small', {}, 'termine todas as fases de um jogo, um mundo da pauLta ou 7 dias seguidos de check-in.'))),
+      corpo = h('div', {}, corpo, h('div', { class: 'fig-hand' },
         h('h2', {}, `na mão (${L.inHand(state)})`),
         h('p', { class: 'fig-note' }, `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}`),
         pastable.length ? h('button', { type: 'button', class: 'btn primary', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo (${pastable.length})`) : null,
-        h('div', { class: 'fig-hand-list' }, hand.map((e) => h('button', { type: 'button', class: 'fig-chip', onclick: () => (L.canPaste(state, e.codigo) ? doPaste(e) : detail(e)) }, h('b', {}, e.codigo), ` ${e.artista_banda}`, h('em', {}, state.pasted[e.codigo] ? ' · repetida' : ' · colar'))))),
+        h('div', { class: 'fig-hand-list' }, hand.map((e) => h('button', { type: 'button', class: 'fig-chip', onclick: () => (L.canPaste(state, e.codigo) ? doPaste(e) : detail(e)) }, h('b', {}, e.codigo), ` ${e.artista_banda}`, h('em', {}, state.pasted[e.codigo] ? ' · repetida' : ' · colar'))))));
+    } else {
+      const sel = h('select', { class: 'fig-post-sel', 'aria-label': 'qual jogo você postou' }, ...RS.JOGOS_POST.map(([id, nome]) => h('option', { value: id, disabled: statusRs(RS.tipoPost(id)) ? true : null }, statusRs(RS.tipoPost(id)) ? `${nome} (${statusRs(RS.tipoPost(id))})` : nome)));
+      const primeiro = RS.JOGOS_POST.find(([id]) => !statusRs(RS.tipoPost(id))); if (primeiro) sel.value = primeiro[0];
+      const postados = RS.JOGOS_POST.filter(([id]) => statusRs(RS.tipoPost(id)));
+      corpo = h('div', { class: 'fig-pack-card fig-resgate' },
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '★'), h('span', {}, `+${RS.ESTRELAS_MISSAO} ★ por print`)),
+        h('p', {}, h('b', {}, 'resgate estrelas com print')),
+        h('p', { class: 'fig-note' }, 'faça a missão, tire um print e envie. a professora Bea confere e as estrelas chegam aqui. precisa do código de aluno.'),
+        h('div', { class: 'fig-post' }, h('b', {}, `postei meu jogo e marquei a escola: +${RS.ESTRELAS_MISSAO} ★ por jogo`),
+          h('small', {}, `no fim de cada jogo tem o botão "compartilhar". poste nos stories ou no feed, marque ${RS.ARROBA} e mande aqui o print do post. vale 1 vez por jogo.`),
+          h('div', { class: 'fig-post-linha' }, sel, h('button', { type: 'button', class: 'btn small', disabled: primeiro ? null : true, onclick: () => enviarPrint(RS.tipoPost(sel.value)) }, 'enviar print do post')),
+          postados.length ? h('small', { class: 'fig-post-st' }, postados.map(([id, nome]) => `${nome}: ${statusRs(RS.tipoPost(id))}`).join(' · ')) : null),
+        h('div', { class: 'fig-missoes' }, h('b', {}, `outras missões: +${RS.ESTRELAS_MISSAO} ★ cada`),
+          ...RS.MISSOES.map((m) => h('div', { class: 'fig-missao' }, h('span', {}, h('b', {}, m.titulo), h('small', {}, m.dica)),
+            h('span', { class: 'fig-missao-bt' }, m.tipo === 'amigo' ? h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, m.rotulo) : h('a', { class: 'btn small ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo), ...(m.extras || []).map(([t, u]) => h('a', { class: 'btn small ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
+              statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))));
+    }
+    return h('section', { class: 'fig-packs' },
+      h('div', { class: 'fig-areas', role: 'tablist', 'aria-label': 'roleta, baú e resgate' }, chip('roleta', '🎡 roleta', giros.length), chip('bau', '🎁 baú', bau.length), chip('resgate', '★ resgate', 0)),
+      corpo,
       h('label', { class: 'fig-opt' }, h('input', { type: 'checkbox', checked: state.reduzir ? true : null, onchange: (e) => save({ ...state, reduzir: e.target.checked }) }), ' animações reduzidas (sem giros ao abrir pacote)'));
   }
 

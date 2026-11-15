@@ -473,3 +473,14 @@
 .ma-nav { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 14px; } .ma-nav .btn { min-width: 44px; min-height: 44px; }
 .ma-solta:focus-visible, .ma-esp:focus-visible { outline: 3px solid #e3a82f; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ma-esp.colou img { animation: none; } .ma-solta { transition: none; } }
+
+/* aba roleta em 3 áreas: roleta · baú · resgate (js/views/figurinhas.js, packsView) */
+.fig-areas{display:flex;gap:6px;justify-content:center;margin:0 0 10px}
+.fig-area{font:inherit;font-size:13px;font-weight:800;min-height:34px;padding:5px 12px;border-radius:10px;border:2px solid currentColor;background:transparent;color:inherit;cursor:pointer;box-shadow:2px 2px 0 currentColor;display:inline-flex;align-items:center;gap:6px}
+.fig-area.on{background:#f6b93b;color:#101f47;border-color:#101f47;box-shadow:2px 2px 0 #101f47}
+.fig-area i{font-style:normal;font-size:11px;min-width:18px;height:18px;border-radius:9px;background:#c81e2d;color:#fff;display:inline-grid;place-items:center;padding:0 4px}
+.fig-explica{display:grid;gap:4px;text-align:left;margin-top:10px;padding:10px 12px;border-radius:12px;background:rgb(127 127 127/.14);font-size:13px}
+.fig-porque{margin:0;padding:0;list-style:none;display:grid;gap:4px}.fig-porque b{font-weight:800}
+.fig-post{display:grid;gap:6px;text-align:left;margin:10px 0;padding:12px;border-radius:12px;border:2px dashed #f6b93b}
+.fig-post-linha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.fig-post-sel{flex:1 1 150px;min-height:38px;border-radius:10px;padding:4px 8px;font:inherit;font-size:14px}
+.fig-post-st{opacity:.85}

@@ -1374,3 +1374,14 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pbx-fim a.pbx-act{text-decoration:none;display:inline-flex;align-items:center}
 .pbx-fim-l{font-size:11.5px;opacity:.8}
 @media(prefers-reduced-motion:reduce){.pbx .pbx-rec.on{animation:none}}
+
+/* ---------- conquista pra postar (js/conquista.js): botão no placar azul e festa de "terminei o caminho" ---------- */
+.pl-card .pl-act .cq-bt{flex:1 1 100%!important;background:transparent!important;color:#fff!important;border:2px dashed #f6b93b!important;font-size:14px!important;min-height:38px!important}
+.cq .cq-box{gap:6px;max-width:min(90vw,380px);max-height:92vh;overflow:auto}
+.cq-paul{width:128px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
+.cq-selo{font:800 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:#f2a91b}
+.cq-t{font:400 26px/1.05 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.cq-bens{display:grid;gap:3px;justify-items:start;text-align:left;background:rgb(255 255 255/.1);border-radius:14px;padding:10px 12px;font-size:13.5px;font-weight:700;width:100%}
+.cq-bens small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f2a91b}
+.cq-acoes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:4px}
+.cq-dica{font-size:11.5px;opacity:.85;line-height:1.3}
