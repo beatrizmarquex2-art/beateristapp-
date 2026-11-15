@@ -23,7 +23,7 @@ export const DESIGNS = {
   'A-foto-cheia': ({ f, pos, t1, t2, sub, paul }) => `<style>${css}
 body{background:${AZ}}.ft{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${pos}}
 .g{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,26,54,.0) 42%,rgba(13,26,54,.95) 76%)}
-.bx{position:absolute;left:60px;right:310px;bottom:70px;display:flex;flex-direction:column;gap:14px}h1{font:400 ${Math.max(t1.length, t2.length) > 15 ? 76 : Math.max(t1.length, t2.length) > 11 ? 96 : 118}px/.96 Anton,sans-serif;color:${CR};text-transform:uppercase;letter-spacing:.01em}h1 em{font-style:normal;color:${AM};display:block}
+.bx{position:absolute;left:60px;right:380px;bottom:70px;display:flex;flex-direction:column;gap:14px}h1{font:400 ${Math.max(t1.length, t2.length) > 15 ? 76 : Math.max(t1.length, t2.length) > 11 ? 96 : 118}px/.96 Anton,sans-serif;color:${CR};text-transform:uppercase;letter-spacing:.01em}h1 em{font-style:normal;color:${AM};display:block}
 .s{font:400 ${sub.length > 70 ? 38 : 48}px/1.1 Gochi,cursive;color:${CR}}
 .c{position:absolute;right:10px;bottom:20px;height:340px;filter:drop-shadow(0 0 0 #fff) drop-shadow(8px 10px 0 rgba(0,0,0,.35))}
 .tp{position:absolute;left:60px;top:56px;display:flex;align-items:center;gap:16px;font:800 30px Hanken,sans-serif;color:${CR};background:rgba(13,26,54,.75);padding:12px 26px 12px 12px;border-radius:99px}.tp img{height:64px}</style>
