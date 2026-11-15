@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
-import { SERIE, MARCA, ALUNOS } from './kit-apresentacao-bea.mjs';
+import { SERIE, MARCA, ALUNOS, INTRO, PAULFALA } from './kit-apresentacao-bea.mjs';
 const F = (n) => u(`assets/fonts/${n}`), hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`), foto = (n) => path.isAbsolute(n) ? pathToFileURL(n).href : u(`marketing/fotos-bea/${n}.jpg`);
 const AZ = '#0d1a36', VI = '#a8182e', CR = '#f4ead8', AM = '#d8b879';
 const selo = u('assets/originals/logo-beaterista-dourado.png');
@@ -59,7 +59,7 @@ body{background:${CR}}.p{position:absolute;inset:0;background:radial-gradient(${
 const FA = process.env.FOTOS_ALUNOS, SA = process.env.SAIDA_ALUNOS;
 const limpa = (s) => s.replace(/<br>/g, ' ');
 const browser = await chromium.launch(); let n = 0;
-for (const [pasta, pre, serie] of [['v2-bea', 'bea', SERIE], ['v2-marca', 'marca', MARCA], ...(FA && SA ? [[SA, 'alunos', ALUNOS]] : [])]) {
+for (const [pasta, pre, serie] of [['v2-bea', 'bea', SERIE], ['v2-marca', 'marca', MARCA], ['v2-intro', 'intro', INTRO], ['v2-paul-fala', 'paul', PAULFALA], ...(FA && SA ? [[SA, 'alunos', ALUNOS]] : [])]) {
   const OUT = path.isAbsolute(pasta) ? pasta : path.join(ROOT, 'marketing/prontos/apresentacao', pasta); fs.mkdirSync(OUT, { recursive: true }); let k = 0;
   for (const [nome, d] of Object.entries(serie)) {
     // foto deitada -> gibi (quadro largo); as outras alternam foto cheia e polaroid

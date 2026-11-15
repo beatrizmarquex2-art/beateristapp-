@@ -47,6 +47,22 @@ export const SERIE = {
   '14-parece-muita-coisa': { des: 'A-foto-cheia', foto: 'bea-pb-banquinho', pos: '50% 35%', cor: 'azul', t1: 'parece muito?', t2: 'e é mesmo.', e1: '', e2: '', corpo: 'estudo, leitura, live, parceria, YouTube, aula e palco. mas é assim que nasce cada material que chega na sua casa.', fim: '', paul: 'estudando' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
+// 7 versões do "oi, eu sou a bea!", uma pra cada frase que a Bea aprovou (15/nov; a 2 ela recusou). Frases palavra por palavra.
+export const INTRO = {
+  '1-por-tras-dos-jogos': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-camiseta-baquetas', pos: '70% 25%', corpo: 'professora de bateria, fundadora da Beaterista e a pessoa por trás dos jogos do Paul.' },
+  '3-com-proposito': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-moldura-proposito', pos: '50% 30%', corpo: 'eu acredito em educação musical com propósito: na sala de aula, no palco e na tela.', paul: 'professor' },
+  '4-apaixonar-por-musica': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-ukulele', pos: '50% 45%', corpo: 'meu trabalho é fazer criança e adulto se apaixonarem por música.', paul: 'guitarra' },
+  '5-toco-ensino-crio': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-palco-vermelha', pos: '30% 40%', corpo: 'eu toco, eu ensino e eu crio os jogos que meus alunos jogam.' },
+  '6-levo-pro-palco': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-palco-rindo', pos: '50% 45%', corpo: 'tudo que eu ensino aqui eu também levo pro palco.', paul: 'microfone' },
+  '7-quando-um-aluno-trava': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-dia-do-baterista', pos: '55% 30%', corpo: 'quando um aluno trava na pauta, eu penso: como transformar isso num desafio que ele queira tentar de novo? foi assim que nasceram os jogos.', paul: 'estudando' },
+  '8-prazer': { des: 'A-foto-cheia', cor: 'azul', t1: 'oi, eu sou', t2: 'a bea!', e1: '', e2: '', fim: '', foto: 'bea-cajon', pos: '50% 20%', corpo: 'dou aula de bateria, invento jogo de música e ainda toco no palco. prazer!', paul: 'cajon' },
+};
+// exemplo de como fica "o Paul falando da Bea" (no lugar das 3 frases que o assistente tinha escrito na voz dela)
+export const PAULFALA = {
+  '1-lugar-favorito': { des: 'C-gibi', foto: 'bea-bateria-rindo', pos: '45% 40%', cor: 'azul', t1: 'o lugar favorito', t2: 'da bea', e1: '', e2: '', corpo: 'é daqui, de trás da bateria, que saem as ideias pros jogos e pras aulas.', fim: '' },
+  '2-show-da-certo': { des: 'C-gibi', foto: 'bea-palco-rindo', pos: '50% 45%', cor: 'vinho', t1: 'quando o show', t2: 'dá certo', e1: '', e2: '', corpo: 'a Bea diz que ver aluno no palco é a melhor parte de ser professora.', fim: '', paul: 'microfone' },
+  '3-ensina-o-que-toca': { des: 'C-gibi', foto: 'bea-palco-vermelha', pos: '30% 35%', cor: 'azul', t1: 'a bea ensina', t2: 'o que ela toca', e1: '', e2: '', corpo: 'os exercícios que ela estuda são os mesmos que ela ensina e leva pro palco.', fim: '' },
+};
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
 export const MARCA = {
   '1-desenha-o-som': { foto: 'marca-desenhando-figuras', pos: '40% 40%', cor: 'creme', t1: 'aqui a gente', t2: 'desenha o som', e1: 'semínima, colcheia', e2: 'fusa e semifusa', corpo: 'antes de tocar, o aluno aprende a reconhecer e desenhar cada figura.', fim: 'depois vira jogo.', paul: 'colorindo' },
