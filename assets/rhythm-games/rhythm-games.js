@@ -755,6 +755,20 @@ function rzDrumLine(drums,bg,st,diff,sw){
   const gap=RZ_GAP[diff],gapL=RZ_GAPL[diff],last={};let prev=null;
   M.forEach(x=>{const same=prev&&x.d.t-prev.d.t<.045;if(prev&&!same&&x.d.t-prev.d.t<gap){drop(x.d);return}const ly=x.y;if(last[ly]!=null&&x.d.t-last[ly]<gapL&&!same){drop(x.d);return}last[ly]=x.d.t;if(!same) prev=x;out.push(x.d)});
   return out}
+
+/* ===== Linha tocável da melodia (Piano Hero e Beat Hero), na mesma ideia do Hero Drum: limite de notas por segundo por nível, distância mínima entre notas
+   e sem pulo grande de coluna. A nota que sai da pista continua soando no fundo. Primeiro saem as semicolcheias, depois os contratempos (nos compassos ímpares antes). ===== */
+var RZ_MNPS={facil:1.25,medio:1.8,dificil:2.4},RZ_MGAP={facil:.46,medio:.3,dificil:.2};
+function rzMelLine(notes,bg,st,diff,nl){
+  const drop=n=>{if(n.m!=null) bg.push({t:n.t,k:'lead',m:n.m,d:n.d||st*2})};
+  let M=notes.slice().sort((a,b)=>a.t-b.t);const c=n=>{const x=((n.step|0)%4+4)%4;return x===0?0:x===2?1:2};
+  const nps=A=>A.length<2?0:A.length/Math.max(1,A[A.length-1].t-A[0].t);
+  const CUT=[n=>c(n)===2,n=>c(n)===1&&(n.step|0)%8!==6&&(n.step|0)%8!==2,n=>c(n)===1,n=>(n.step|0)%8===4];
+  for(let k=0;k<CUT.length&&nps(M)>RZ_MNPS[diff];k++){for(let h=0;h<2&&nps(M)>RZ_MNPS[diff];h++){M=M.filter(n=>{if(CUT[k](n)&&(h===1||(n.bar|0)%2===1)){drop(n);return false}return true})}}
+  const out=[];let prev=null;M.forEach(n=>{if(prev&&n.t-prev.t<RZ_MGAP[diff]){drop(n);return}out.push(n);prev=n});
+  /* pulo de no máximo 2 colunas entre notas vizinhas (se a pausa for curta) */
+  const mx=diff==='dificil'?2:diff==='medio'?2:1;prev=null;out.forEach(n=>{if(prev&&n.t-prev.t<st*8){const d=n.lane-prev.lane;if(Math.abs(d)>mx) n.lane=Math.max(0,Math.min(nl-1,prev.lane+(d>0?mx:-mx)))}prev=n});
+  return out}
 /* "só usamos os polegares": nunca mais que `max` notas ao mesmo tempo; as que sobram viram som de fundo */
 function rzThumbs(notes,max,bg){notes.sort((a,b)=>a.t-b.t);const pr={kick:0,snare:1,crash:max===1?-1:2,ride:3,hho:3,tom1:3,tom2:3,floor:3,hhc:4};const out=[];let i=0;
   const drop=n=>{if(n.snd) bg.push({t:n.t,k:'drum',snd:n.snd,v:(n.v||.8)*.8})};
@@ -824,16 +838,16 @@ function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.
     else{notes=melF;rzPhraseLanes(notes,K,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.85});
       A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
     notes=rzThumbs(notes,RZ.diff==='facil'?1:2,bg)}
-  else if(RZ.game==='setas'&&!RZ.duel){notes=melF;rzPhraseLanes(notes,RZ.keys,n=>Math.floor(n.bar/2));notes.forEach(n=>{n.m=(n.m||60)+12});if(dif) notes.filter(n=>n.kind==='refrao'&&n.step===0).forEach(n=>{notes.push({t:n.t,lane:(n.lane+2)%RZ.keys,m:n.m-5,idx:n.idx,d:n.d,bar:n.bar,step:n.step,kind:n.kind})});A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}));RZ.health=.5}
+  else if(RZ.game==='setas'&&!RZ.duel){notes=melF;rzPhraseLanes(notes,RZ.keys,n=>Math.floor(n.bar/2));notes.forEach(n=>{n.m=(n.m||60)+12});notes=rzMelLine(notes,bg,st,RZ.diff,RZ.keys);if(dif) notes.filter(n=>n.kind==='refrao'&&n.step===0&&(n.bar|0)%2===0).forEach(n=>{notes.push({t:n.t,lane:n.lane>=2?n.lane-2:n.lane+2,m:n.m-5,idx:n.idx,d:n.d,bar:n.bar,step:n.step,kind:n.kind})});A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}));RZ.health=.5}
   else if(RZ.game==='setas'){const bar=16*st;const groups={};melF.forEach(n=>{const g=Math.floor((n.bar-2)/4);if(g<0) return;(groups[g]=groups[g]||[]).push(n)});
     Object.keys(groups).map(Number).filter(g=>g%2===0).forEach(g=>{const G=groups[g];const f=rzRank(G.map(n=>n.idx),RZ.keys);G.forEach(n=>{const l=f(n.idx);const sus=n.ds>=6?n.d*.8:0;notes.push({t:n.t,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus,cpu:true});notes.push({t:n.t+4*bar,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus})})});
     notes.filter(n=>n.cpu).forEach(n=>bg.push({t:n.t,k:'voice',m:n.m,d:Math.max(.12,n.sus||n.d)}));A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}));RZ.health=.5}
-  else if(RZ.game==='tiles'){notes=melF;rzPhraseLanes(notes,RZ.keys,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.9});
+  else if(RZ.game==='tiles'){notes=melF;rzPhraseLanes(notes,RZ.keys,n=>Math.floor(n.bar/2));notes=rzMelLine(notes,bg,st,RZ.diff,RZ.keys);notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.9});
     const spd=.5*RZ_WIN[RZ.diff].spd,by=Array.from({length:RZ.keys},()=>[]);notes.forEach(n=>by[n.lane].push(n));
     by.forEach(arr=>arr.forEach((n,i)=>{const nx=arr[i+1];const gap=nx?nx.t-n.t:9;const maxF=Math.max(.05,gap*spd*.88);n.hf=n.sus?Math.min(maxF,n.sus*spd+.05):Math.min(.17,maxF)}));
     A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}))}
   {const nl=RZ.game==='hero'?(RZ.inst==='guitarra'?5:RZ.kn[RZ.inst]):RZ.game==='beat'||RZ.game==='tiles'||RZ.game==='setas'?RZ.keys:4;const kk=RZ.game==='beat'&&RZ.modeEff==='ritmo'?RZ.keys:RZ.game==='hero'&&RZ.inst==='bateria'?RZ.kn.bateria:0;let fam=null;if(kk){const LM=RZ_KIT_LANE[kk];fam=[LM.snare,LM.tom1].filter((x,i,a)=>a.indexOf(x)===i);if(fam.length<2) fam=null}
-   if(!(RZ.game==='beat'&&RZ.modeEff==='ritmo')){notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st,RZ.diff)}
+   if(!(RZ.game==='beat'&&RZ.modeEff==='ritmo')&&RZ.game!=='tiles'&&!(RZ.game==='setas'&&!RZ.duel)){notes=rzNoFast(notes,bg,st,nl,fam);if(RZ.game==='beat') notes=rzSpread(notes,bg,st,RZ.diff)}
    const lt=rzLeadTrim(A,notes,bg,S);if(lt.shifted){notes=lt.notes;bg=lt.bg;A.dur=Math.max(A.lead*16*st+1.5,A.dur-lt.shifted)}}
   if(RZ.game==='beat'||RZ.game==='tiles'||RZ.game==='setas'){const c2=rzClip(A,notes,bg,S);notes=c2.notes;bg=c2.bg} // Piano Hero também respeita 1 min / 2 min
   if(RZ.game==='beat'||RZ.game==='tiles') rzStars(notes,A,S);
