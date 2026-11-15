@@ -300,3 +300,14 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-dif .rz-dif-s{font-size:15px;letter-spacing:1px;color:#e8a92b;margin-top:2px}
 .bmr .rz-dif.on .rz-dif-s{color:#ffd84a}
 .bmr .rz-dif-hint{margin:0 0 8px}
+
+/* Lista de músicas à vista no menu: uma por linha, com as estrelas que ela vale no nível */
+.bmr .rz-tiers.rz-list{grid-template-columns:1fr!important;gap:6px;margin:6px 0 10px}
+.bmr .rz-list .rz-tier{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto;justify-items:start;align-items:center;align-content:center;gap:8px;min-height:46px!important;padding:8px 12px;text-align:left}
+.bmr .rz-list .rz-tier .rz-lv{font-size:15px}
+.bmr .rz-list .rz-tier b{font-size:15px}
+.bmr .rz-list .rz-tier .small{white-space:nowrap}
+.bmr .rz-list .rz-tier .rz-pbar{display:none}
+.bmr .rz-list .rz-tier .rz-b{font-size:17px;letter-spacing:1px;white-space:nowrap;color:#ffd84a}
+.bmr .rz-list .rz-tier .rz-b .rz-off{color:inherit;opacity:.3}
+.bmr .rz-tierhint{margin:8px 0 0}
