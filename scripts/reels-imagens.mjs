@@ -80,11 +80,11 @@ export const REELS = {
 const so = process.argv[2]; const browser = await chromium.launch();
 for (const [nome, r] of Object.entries(REELS)) { if (so && !nome.includes(so)) continue;
   const dur = r.cenas.reduce((s, c) => s + c.d, 0), FIM = 3.5; const ins = [], fl = []; const shot = async (html, arq) => { const tmp = path.join(OUT, '.tmp.html'); fs.writeFileSync(tmp, html); const p = await browser.newPage({ viewport: { width: 1080, height: 1920 } }); await p.goto(pathToFileURL(tmp).href); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(500); await p.screenshot({ path: arq }); await p.close(); fs.rmSync(tmp); };
-  for (const [i, c] of r.cenas.entries()) { const png = path.join(OUT, `${nome}-c${i}.png`); await shot(cena({ ...c, paul: r.paul }), png); ins.push('-loop', '1', '-t', String(c.d + 0.1), '-i', png);
-    fl.push(`[${i}:v]scale=1188:2112,zoompan=z='1+0.05*on/${Math.round(c.d * 30)}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${Math.round(c.d * 30)}:s=1080x1920:fps=30,setsar=1,format=yuv420p[v${i}]`); }
-  const pf = path.join(OUT, `${nome}-fim.png`); await shot(FINAL(r.fim, r.paul, r.cta, r.telas, r.capas), pf); ins.push('-loop', '1', '-t', String(FIM + 0.1), '-i', pf); const n = r.cenas.length;
+  for (const [i, c] of r.cenas.entries()) { const png = path.join(OUT, `${nome}-c${i}.png`); await shot(cena({ ...c, paul: r.paul }), png); ins.push('-loop', '1', '-framerate', '30', '-t', String(c.d + 0.1), '-i', png);
+    fl.push(`[${i}:v]fps=30,scale=1134:2016:flags=lanczos,crop=1080:1920:'27+27*t/${c.d}':'48+0*t',setsar=1,format=yuv420p[v${i}]`); }
+  const pf = path.join(OUT, `${nome}-fim.png`); await shot(FINAL(r.fim, r.paul, r.cta, r.telas, r.capas), pf); ins.push('-loop', '1', '-framerate', '30', '-t', String(FIM + 0.1), '-i', pf); const n = r.cenas.length;
   fl.push(`[${n}:v]fps=30,format=yuv420p,setsar=1[vf]`, r.cenas.map((_, i) => `[v${i}]`).join('') + `[vf]concat=n=${n + 1}:v=1:a=0[out]`);
-  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...ins, '-filter_complex', fl.join(';'), '-map', '[out]', '-an', '-c:v', 'libx264', '-crf', '21', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-movflags', '+faststart', path.join(OUT, nome + '.mp4')]);
+  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...ins, '-filter_complex', fl.join(';'), '-map', '[out]', '-an', '-c:v', 'libx264', '-crf', '24', '-maxrate', '3500k', '-bufsize', '7000k', '-preset', 'fast', '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-movflags', '+faststart', path.join(OUT, nome + '.mp4')]);
   for (const f of fs.readdirSync(OUT).filter((x) => x.startsWith(nome + '-') && x.endsWith('.png'))) fs.rmSync(path.join(OUT, f));
   console.log('ok', nome, dur + FIM + 's'); }
 await browser.close();
