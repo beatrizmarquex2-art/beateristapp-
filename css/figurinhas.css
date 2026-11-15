@@ -519,3 +519,4 @@
 .tf-card .tf-ic{height:auto;min-height:74px}.tf-card .tf-sym.tf-pt{height:98px}.tf-card .tf-fila .tf-sym.tf-pt{height:66px;max-width:48%}
 .tf-big.tf-acid{font:400 68px/1 'Noto Music','Segoe UI Symbol','Apple Symbols','DejaVu Sans',serif}
 .tf-card.visto{--tf-papel:color-mix(in srgb,var(--c,#17365B) 10%,#fffdf7)}
+.al-sec{margin:6px 0 -4px;font:400 20px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.03em;color:#162146}
