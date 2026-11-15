@@ -13,6 +13,7 @@ await shot('0-catalogo');
 await page.goto(url + '/aluno.html#/jogos/paulbox'); await sleep(1500);
 check('10 Pauls no palco, todos desligados e com imagem carregada', await page.evaluate(() => { const s = [...document.querySelectorAll('.pbx-slot')]; return s.length === 10 && s.every((b) => b.dataset.s === '0' && b.querySelector('img').naturalWidth > 0); }));
 check('os botões e a 1ª fileira de Pauls aparecem sem rolar', await page.evaluate(() => document.querySelector('.pbx-bar').getBoundingClientRect().bottom < window.innerHeight && document.querySelector('.pbx-slot').getBoundingClientRect().bottom < window.innerHeight));
+check('os 10 Pauls ficam numa fileira só, um do lado do outro', await page.evaluate(() => new Set([...document.querySelectorAll('.pbx-slot')].map((b) => Math.round(b.getBoundingClientRect().top))).size === 1));
 await shot('1-vazio');
 
 await page.click('.pbx-slot[data-id="bateria"]'); await sleep(300);

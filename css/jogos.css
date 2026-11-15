@@ -1354,3 +1354,11 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pbx .pbx-beat i{background:#fff7e6;border-radius:50%!important}.pbx .pbx-beat i.on{background:#f2a91b}
 .pbx .pbx-tempo{color:#fff7e6}.pbx .pbx-tempo input{accent-color:#f2a91b}
 .pbx .pbx-note{color:#fff}
+
+/* Paulbox: os 10 Pauls SEMPRE numa fileira só, um do lado do outro, em pé ou deitado (pedido da Bea, 15/nov/2026). A fileira desliza pro lado com o dedo. */
+.pbx .pbx-stage{display:flex!important;gap:6px;height:auto!important;container-type:inline-size;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:20px 6px 4px;margin:0 -6px}
+.pbx .pbx-stage::-webkit-scrollbar{display:none}
+.pbx .pbx-slot{flex:0 0 auto;width:78px;width:max(72px,23cqw);scroll-snap-align:center}
+@container (min-width:600px){.pbx .pbx-slot{width:calc((100cqw - 54px)/10)}.pbx .pbx-name{font-size:11px}.pbx .pbx-lvl b{width:10px}}
+.pbx .pbx-art{flex:none;aspect-ratio:1/1.3;width:100%}
+.pbx .pbx-tag{flex-direction:column;gap:2px;min-height:38px;justify-content:flex-start}.pbx .pbx-name{font-size:12px}

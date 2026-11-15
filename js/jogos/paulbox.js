@@ -68,18 +68,6 @@ export function mount(host) {
         : `Banda cheia com ${n} Pauls! Tente trocar só um deles pro ritmo D.`;
   }
 
-  /* cabe numa tela só: o palco ocupa o que sobra entre o topo e a barra de baixo */
-  function fit() {
-    if (gone) return;
-    const topo = stage.getBoundingClientRect().top + window.scrollY;
-    const embaixo = root.getBoundingClientRect().bottom - stage.getBoundingClientRect().bottom;
-    const nav = document.querySelector('.tabbar, .navbar, nav.bottom'); const navH = nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
-    const linhas = Math.ceil(N / (getComputedStyle(stage).gridTemplateColumns.split(' ').length || 2));
-    const livre = window.innerHeight - topo - embaixo - navH - 34;
-    stage.style.height = `${Math.round(Math.max(linhas * 88, Math.min(livre, linhas * 210)))}px`;
-  }
-  window.addEventListener('resize', fit); requestAnimationFrame(fit); const fitT = setTimeout(fit, 400);
-
   /* ---------- áudio (motor da página original, sem mudar os sons) ---------- */
   var ctx=null, master=null, saida=null, noiseBuf=null, timer=null, step=0, nextT=0, visT=[];
   var CH=[{r:48,t:[0,4,7]},{r:45,t:[0,3,7]},{r:41,t:[0,4,7]},{r:43,t:[0,4,7]}]; // C Am F G
@@ -340,7 +328,7 @@ export function mount(host) {
     resume() { parado = false; ligaSaida(); musicaPausa(); if (state.some(Boolean)) unlock(); },
     restart() { for (let i = 0; i < N; i++) setState(i, 0); },
     destroy() {
-      gone = true; para(); clearTimeout(fitT); window.removeEventListener('resize', fit); window.removeEventListener('bt-mute', onMute);
+      gone = true; para(); window.removeEventListener('bt-mute', onMute);
       if (master) { try { master.gain.value = 0; } catch { /* ok */ } const s = saida; setTimeout(() => { try { s.disconnect(); } catch { /* já saiu */ } }, 120); }
       delete window.__paulbox; musicaVolta();
     },
