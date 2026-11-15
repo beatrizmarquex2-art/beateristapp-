@@ -316,3 +316,17 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-list .rz-tier .rz-b{font-size:16px;letter-spacing:1px;white-space:nowrap;color:#ffd84a}
 .bmr .rz-list .rz-tier .rz-b .rz-off{color:inherit;opacity:.3}
 .bmr .rz-tierhint{margin:8px 0 0}
+
+/* 3 jogos separados: fases grátis, escolha do Paul e duelo (Beat Hero de setas) */
+.bmr .rz-free{display:grid;gap:6px;margin:4px 0 10px;padding:10px 12px;border-radius:12px;border:2px dashed #e8a92b}
+.bmr .rz-free-b{display:flex;flex-wrap:wrap;gap:6px}
+.bmr .rz-list .rz-tier.rz-fechada{opacity:.55}
+.bmr .rz-pauls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:0 0 6px}
+.bmr .rz-pp{display:grid;justify-items:center;gap:2px;padding:4px 2px;border:2px solid transparent;border-radius:12px;background:rgba(255,255,255,.08);color:inherit;font:inherit;cursor:pointer}
+.bmr .rz-pp img{width:100%;height:auto;aspect-ratio:1;object-fit:contain;pointer-events:none}
+.bmr .rz-pp span{font-size:10.5px;font-weight:700}
+.bmr .rz-pp.on{border-color:#e8a92b;background:rgba(232,169,43,.22)}
+.rz-palco.rz-duelo{justify-content:space-around}
+.rz-palco.rz-duelo .rz-paul{height:92%}
+.rz-palco .rz-rival{transform:scaleX(-1);filter:drop-shadow(0 5px 0 rgba(0,0,0,.28)) saturate(.75)}
+.rz-vs{position:relative;align-self:center;font:400 34px 'Anton',Impact,sans-serif;color:#ffd84a;text-shadow:0 3px 0 #0f2347}

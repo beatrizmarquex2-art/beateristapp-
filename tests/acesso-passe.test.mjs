@@ -9,7 +9,7 @@ test('sem código: Uno trancado; código completo: tudo aberto', () => {
 test('passe de um jogo: libera só o que foi escolhido, o resto continua como visitante, e não conta como código completo', () => {
   localStorage.setItem('beaterista-aluno-escopo', JSON.stringify(['#/jogos/cartas'])); AC.definir(true);
   assert.equal(AC.trancado('#/jogos/cartas'), false); assert.equal(AC.trancado('#/jogos/cartas/qualquer'), false); assert.equal(AC.trancado('#/jogos/cartas?sala=ABCDE'), false);
-  assert.equal(AC.trancado('#/jogos/toca'), true, 'outro jogo trancado'); assert.equal(AC.trancado('#/album'), true); assert.equal(AC.trancado('#/ritmo'), true);
+  assert.equal(AC.trancado('#/jogos/toca'), true, 'outro jogo trancado'); assert.equal(AC.trancado('#/album'), true); assert.equal(AC.trancado('#/ritmo'), false, 'o ritmo abre com 2 fases grátis e trava o resto por dentro');
   assert.equal(AC.liberado(), false, 'passe não libera estrelas/álbum'); assert.equal(AC.comCodigo(), true);
 });
 test('passe do Modo Aventura vale em qualquer jogo; test drive (sem escopo) libera tudo', () => {
