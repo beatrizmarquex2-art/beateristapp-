@@ -66,7 +66,7 @@ import * as jogos from './views/jogos.js';
 import * as figurinhas from './views/figurinhas.js';
 import * as notify from './notify.js';
 import { silence } from './audio.js';
-import { soundButton } from './sound-btn.js';
+import { soundButton, musicButton } from './sound-btn.js';
 import { openMenu } from './views/menu.js';
 import { getSpace, setSpace } from './space.js';
 import { startScroller } from './scroller.js';
@@ -131,7 +131,7 @@ function statusBar() {
     h('button', { type: 'button', class: 'icon-btn top-search', 'aria-label': 'Buscar no app todo', title: 'Buscar', onclick: openSearch }, icon('search', 20)),
     h('button', { type: 'button', class: 'icon-btn top-undo', 'aria-label': 'Desfazer a última mudança', title: 'Desfazer', disabled: true, onclick: doUndo }, icon('undo', 20)),
     h('button', { type: 'button', class: 'icon-btn top-redo', 'aria-label': 'Refazer', title: 'Refazer', hidden: true, onclick: doRedo }, icon('redo', 20)));
-  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, h('div', { class: 'sb-row1' }, time, tools), h('span', { class: 'sb-right' }, net, syn, handsToggle(), soundButton()));
+  return h('div', { class: 'statusbar', role: 'status', 'aria-label': 'Data, hora e estado de conexão' }, h('div', { class: 'sb-row1' }, time, tools), h('span', { class: 'sb-right' }, net, syn, handsToggle(), soundButton(), musicButton()));
 }
 
 /* ---------- voltar: botão no topo + arrastar da borda esquerda ---------- */

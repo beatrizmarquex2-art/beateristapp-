@@ -12,7 +12,8 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, noteMarkup, svgEl, tone } from '../kids/art.js';
 import { robo } from '../kids/robo.js';
 import { wordsearch, lineCells, EASY_DIRS, DIRS } from '../tips.js';
-import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix } from './figurix-logic.js';
+import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha, tempoPergunta, novoLugar } from './figurix-logic.js';
+import { toast } from '../ui.js';
 
 const fig = (id, cls = 'fx-fig') => svgEl(figureMarkup(id), cls);
 const pausa = (id, cls = 'fx-fig') => svgEl(restMarkup(id), cls);
@@ -23,6 +24,10 @@ export function mount(host) {
   const S = session(); const sfx = mapSfx(); let off = null; let gone = false; let jogando = false;
   let fase = 1; let erros = 0; let acertos = 0; const salvo = getGame('figurix'); let mundo = MUNDOS.some((m) => m.id === salvo.mundo) ? salvo.mundo : MUNDOS[0].id;
   const estOf = (n) => ((getGame('figurix').est || {})[n] || 0);
+  // regra da Bea (área dos alunos): o próximo mundo só abre com 3 ★ em todas as fases do anterior. No app da Bea fica tudo aberto.
+  const REGRA = document.documentElement.classList.contains('aluno-on'); const aberto = (id) => !REGRA || mundoLiberado(getGame('figurix').est || {}, id);
+  const motivo = (id) => { const ant = MUNDOS[MUNDOS.findIndex((x) => x.id === id) - 1]; const f = faltam3Mundo(getGame('figurix').est || {}, ant.id); return `faltam 3 ★ em ${f} fase${f === 1 ? '' : 's'} de ${ant.nome}`; };
+  if (!aberto(mundo)) mundo = MUNDOS[0].id;
   const guarda = (n, v) => { const g = getGame('figurix'); setGame('figurix', { ...g, est: { ...(g.est || {}), [n]: v } }); };
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } S.reset(); };
   window.__figurix = { get erros() { return erros; } }; // só pros testes automáticos
@@ -34,18 +39,29 @@ export function mount(host) {
     const box = h('div', { class: 'tm-map' });
     const fases = PHASES.slice(M.de - 1, M.ate);
     const levels = fases.map((p, i) => ({ id: `fx:${p.n}`, index: i + 1, label: String(i + 1), tag: '', boss: i === fases.length - 1 }));
-    const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: m.id === mundo ? 'on' : '', 'aria-label': `mundo ${i + 1}: ${m.nome}`,
-      onclick: () => { mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${i + 1} · ${m.curto}`)));
+    const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => { const ok = aberto(m.id); return h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: `${m.id === mundo ? 'on' : ''}${ok ? '' : ' lock'}`, 'data-lock': ok ? null : '1', 'aria-label': `mundo ${i + 1}: ${m.nome}${ok ? '' : `, trancado: ${motivo(m.id)}`}`,
+      onclick: () => { if (!ok) { toast(`mundo trancado: ${motivo(m.id)}`, { ms: 3400 }); return; } mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${ok ? '' : '🔒 '}${i + 1} · ${m.curto}`); }));
     root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul'), box);
     off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `mundo-${M.tema}`, name: M.nome, regions: M.regioes },
       starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };
-  const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
+  // errou uma vez = já não dá 3 ★ nesta rodada: aparece o botão de recomeçar a fase (pedido da Bea)
+  const btnRecomeca = () => h('button', { class: 'btn small fx-recomeca', type: 'button', onclick: () => joga(fase) }, '↻ recomeçar pra ganhar 3 ★');
+  const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'), jogando && erros > 0 ? btnRecomeca() : null,
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
   const acerto = (el) => { acertos++; try { FB.win(el); } catch { /* ok */ } };
-  const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } };
-  const comeca = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
+  const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } if (jogando && !root.querySelector('.fx-recomeca')) { const hd = root.querySelector('.tr-fasehead'); const b = btnRecomeca(); if (hd) hd.querySelector('button').after(b); else root.prepend(b); } };
+  const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
+  /** Aulinha das 3 primeiras fases: a colinha das figuras, a dica do Paul e o caminho pras aulas nos Estudos (lá vale estrela). */
+  const aulinha = (n) => {
+    limpa(); jogando = false; const p = PHASES[n - 1];
+    root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'aulinha rápida do Paul'), h('p', { class: 'jg-p fx-aula-fala' }, FALA_AULINHA[p.tipo] || ''),
+      h('table', { class: 'fx-colinha' }, h('caption', {}, 'colinha das figuras'), h('tbody', {}, ...COLINHA.map(([id, dura]) => h('tr', {}, h('td', { class: 'fx-col-fig' }, fig(id, 'fx-fig fx-fig-mini')), h('th', { scope: 'row' }, FIG_NAME[id]), h('td', {}, dura))))),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary fx-aula-jogar', type: 'button', onclick: () => joga(n) }, `jogar a fase ${n} ▶`), h('a', { class: 'btn', href: '#/estudos/aulas' }, '📖 o Paul explica nas aulas (Estudos)')),
+      h('p', { class: 'jg-p fx-aula-nota' }, 'concluindo as aulas do Paul nos Estudos você ganha estrela.'));
+  };
+  const comeca = (n) => { if (!aberto(mundoDe(n).id)) { toast(`mundo trancado: ${motivo(mundoDe(n).id)}`, { ms: 3400 }); mapa(); return; } if (temAulinha(n)) aulinha(n); else joga(n); };
 
   /* ---------- fim da fase ---------- */
   const fim = () => {
@@ -58,19 +74,30 @@ export function mount(host) {
     sfx.play('win');
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' acertando tudo de primeira, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
-      h('div', { class: 'jg-actions' }, fase < FASES ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null, h('button', { class: 'btn', type: 'button', onclick: () => comeca(fase) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
+      h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,
+        fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: `btn${est < 3 ? ' fx-recomeca' : ''}`, type: 'button', onclick: () => joga(fase) }, est < 3 ? '↻ recomeçar pra ganhar 3 ★' : 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 
   /* ---------- as fases ---------- */
   // uma pergunta de cada vez: `render(i)` devolve { el, ok(btn)... }; aqui o padrão é "escolher a certa entre cartões" (rápida, lenta, quiz)
+  // pedido da Bea (estava fácil demais): a pergunta não se repete na fase, a resposta certa NUNCA fica no mesmo lugar duas vezes seguidas,
+  // e cada pergunta tem um tempo que vai ficando mais curto (acabou o tempo = conta como erro e passa pra próxima).
   const perguntas = (titulo, total, fazer) => {
-    let i = 0;
+    let i = 0; let lugar = -1; const usadas = new Set(); const nivel = (PHASES[fase - 1] || {}).nivel || 1;
+    const chaveDe = (q) => `${q.titulo || ''}|${(q.opcoes.find((o) => o.certo) || {}).label}|${q.opcoes.map((o) => o.label).sort().join(',')}`;
     const mostra = () => {
-      const q = fazer(i); S.reset(); window.__figurix.certa = (q.opcoes.find((o) => o.certo) || {}).label; // só pros testes
-      const cartoes = q.opcoes.map((o) => { const b = h('button', { type: 'button', class: `fx-op${o.cls ? ` ${o.cls}` : ''}`, 'aria-label': o.label, onclick: () => {
-        if (b.classList.contains('feito')) return; sfx.play('click');
-        if (o.certo) { b.classList.add('ok', 'feito'); acerto(b); S.later(() => { i++; if (i >= total) fim(); else mostra(); }, 800); } else { erro(b); b.disabled = true; } } }, o.face); return b; });
-      root.replaceChildren(topo(i, total), h('p', { class: 'fx-q' }, q.titulo || titulo), q.destaque || null, h('div', { class: `fx-ops n${q.opcoes.length}` }, ...cartoes));
+      let q = fazer(i); for (let t = 0; t < 12 && usadas.has(chaveDe(q)); t++) q = fazer(i); usadas.add(chaveDe(q)); S.reset();
+      const ops = q.opcoes.slice(); const onde = novoLugar(ops.findIndex((o) => o.certo), lugar, ops.length); { const c = ops.findIndex((o) => o.certo); if (c >= 0 && onde !== c) { const tmp = ops[onde]; ops[onde] = ops[c]; ops[c] = tmp; } } lugar = onde;
+      window.__figurix.certa = (ops.find((o) => o.certo) || {}).label; window.__figurix.lugar = lugar; // só pros testes
+      const vez = i; let fechada = false; const seg = tempoPergunta(i, nivel); window.__figurix.seg = seg;
+      const segue = () => { i++; if (i >= total) fim(); else mostra(); };
+      const cartoes = ops.map((o) => { const b = h('button', { type: 'button', class: `fx-op${o.cls ? ` ${o.cls}` : ''}`, 'aria-label': o.label, 'data-certo': o.certo ? '1' : null, onclick: () => {
+        if (fechada || b.classList.contains('feito')) return; sfx.play('click');
+        if (o.certo) { fechada = true; barra.classList.add('parada'); b.classList.add('ok', 'feito'); acerto(b); S.later(segue, 800); } else { erro(b); b.disabled = true; } } }, o.face); return b; });
+      const barra = h('div', { class: 'fx-tempo', role: 'timer', 'aria-label': `${Math.round(seg)} segundos pra responder` }, h('i', { style: `animation-duration:${seg}s` }));
+      root.replaceChildren(topo(i, total), barra, h('p', { class: 'fx-q' }, q.titulo || titulo), q.destaque || null, h('div', { class: `fx-ops n${ops.length}` }, ...cartoes));
+      let semTempo = false; try { semTempo = localStorage.getItem('beaterista-figurix-sem-tempo') === '1'; } catch { /* ok */ } // só os testes de tela antigos usam (eles respondem devagar)
+      if (semTempo) barra.hidden = true; else S.later(() => { if (fechada || vez !== i || !jogando) return; fechada = true; barra.classList.add('acabou'); erro(null); const certo = cartoes.find((b) => b.dataset.certo); if (certo) certo.classList.add('ok'); cartoes.forEach((b) => { b.disabled = true; }); S.later(segue, 1100); }, seg * 1000);
     };
     mostra();
   };

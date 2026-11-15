@@ -94,7 +94,7 @@ const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0
 export function leitura(host, opts = {}) {
   let fixedStep = opts.mapa && !opts.livre ? opts.step : undefined; // dentro do mapa a fase vem de fora (nada de escolher aqui)
   let beats = null; let run = null; let lastResult = null; let micBlocked = false; let micErro = null; let passedNow = false;
-  const RODADAS_FASE = 3; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (nota = média); no modo livre segue 1 por vez
+  const RODADAS_FASE = 3; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (a nota da fase é a do ÚLTIMO compasso tocado, não a média); no modo livre segue 1 por vez
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   let testeAtivo = null; // microfone do "testar" (precisa fechar ao sair da tela)
@@ -117,9 +117,9 @@ export function leitura(host, opts = {}) {
       lastResult = evaluate(taps, expected, c.bpm, { mic: useMic });
       let final = true;
       if (fase3) { // fase do mapa: junta os 3 compassos; só no último vale nota, estrelas e passar de fase
-        const nota = lastResult.score; notasFase = [...notasFase, nota];
+        const nota = lastResult.score; notasFase = notasFase.length >= RODADAS_FASE ? [...notasFase.slice(0, RODADAS_FASE - 1), nota] : [...notasFase, nota]; // tocou de novo depois do 3º: troca o último (nunca passa de 3)
         if (notasFase.length < RODADAS_FASE) final = false;
-        else { const media = Math.round(notasFase.reduce((s, x) => s + x, 0) / notasFase.length); lastResult.compassos = notasFase.slice(); lastResult.score = media; }
+        else { lastResult.compassos = notasFase.slice(); lastResult.score = nota; } // pedido da Bea: NÃO é média; vale sempre o último resultado
         lastResult.compassoNota = nota;
       }
       passedNow = final && !livre && lastResult.score >= PASS_SCORE;
@@ -178,13 +178,13 @@ export function leitura(host, opts = {}) {
       // logo EMBAIXO do lugar de tocar: a nota (100%) do lado e o botão da próxima fase; a explicação fica mais abaixo
       const temProx = passedNow && step < PATH.length - 1 && (!opts.mapa || PATH[step + 1].tier === PATH[step].tier); const nest = r.est || 0;
       quick = h('section', { class: `tr-quick${passedNow ? ' ok' : ''}`, 'aria-live': 'polite' },
-        h('div', { class: 'tr-big' }, h('b', {}, `${r.parcial ? r.compassoNota : r.score}%`), h('span', {}, r.parcial ? `compasso ${notasFase.length} de ${RODADAS_FASE}` : fase3 ? 'média dos 3 compassos' : 'precisão'), !livre && !r.parcial ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
+        h('div', { class: 'tr-big' }, h('b', {}, `${r.parcial ? r.compassoNota : r.score}%`), h('span', {}, r.parcial ? `compasso ${notasFase.length} de ${RODADAS_FASE}` : fase3 ? 'vale o último compasso' : 'precisão'), !livre && !r.parcial ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
         r.parcial ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { rodada++; lastResult = null; draw(true); } }, `próximo compasso ▶ (${notasFase.length + 1} de ${RODADAS_FASE})`)
-          : temProx ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { if (opts.mapa) { fixedStep = step + 1; rodada = 0; notasFase = []; lastResult = null; draw(true); } else save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }); } }, 'próxima fase ▶')
-          : passedNow && opts.mapa ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => opts.onBack && opts.onBack() }, 'voltar ao mapa ▶')
+          : temProx && !opts.mapa ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }); } }, 'próxima fase ▶')
+          : passedNow && opts.mapa ? h('button', { class: 'btn primary tr-next tr-andou', type: 'button', onclick: () => opts.onBack && opts.onBack({ andou: step }) }, 'você andou no mundinho! ver o mapa ▶') // pedido da Bea: passou de fase = avisa e mostra o mapa (não pula direto pra próxima)
           : h('button', { class: 'btn tr-next', type: 'button', onclick: () => { if (livre) draw(true); else if (fase3) { rodada = 0; notasFase = []; lastResult = null; draw(true); } else start(); } }, livre ? '🔀 outro compasso' : fase3 ? '↻ tentar a fase de novo' : '↻ tentar de novo'));
       summary = h('section', { class: 'card pad tr-res' },
-        fase3 && !r.parcial && r.compassos ? h('p', {}, `os 3 compassos: ${r.compassos.map((x) => `${x}%`).join(' · ')} → média ${r.score}%`) : null,
+        fase3 && !r.parcial && r.compassos ? h('p', {}, `os 3 compassos: ${r.compassos.map((x) => `${x}%`).join(' · ')} → vale o último: ${r.score}%`) : null,
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}${fase3 ? ` (compasso ${r.parcial ? notasFase.length : RODADAS_FASE})` : ''}`),
         r.ajuste ? h('p', { class: 'muted' }, r.mic ? `o microfone demora uns ${Math.abs(r.ajuste)} ms pra ouvir (normal): já descontei isso da sua nota.` : `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,

@@ -4,7 +4,7 @@ import { h } from '../util.js';
 import { audio, click, kick, snare, hihat } from '../audio.js';
 import { epiano, guitar } from '../synth.js';
 import { session } from '../session.js';
-import { robo } from './robo.js';
+import { corSrc, poseDe, stkSrc } from '../paul-cor.js';
 import { alunoSemCodigo, GRATIS, avisoCodigo } from '../amostra.js';
 
 const t0now = () => audio().currentTime + 0.12;
@@ -90,28 +90,41 @@ const violao = [
   { mood: 'cheer', say: 'agora é com você! no violão da aba Tocar escolhe o acorde e passa o dedo nas cordas. depois treina a batida devagar!', make: () => h('div', { class: 'au-box au-center' }, h('a', { class: 'kd-btn', href: '#/violao' }, 'tocar violão')) },
 ];
 
+// `pose` = Paul colorido do instrumento · `cor` = classe de cor (css/lote3.css, .au-cor-*) · `adesivos` = elementos que flutuam no topo da aula
 export const AULAS = {
-  bateria: { titulo: 'Bateria', sub: 'as peças, a levada de rock e a postura', passos: bateria, tempo: '10 min' },
-  teclado: { titulo: 'Teclado', sub: 'teclas, notas, escala e acordes', passos: teclas, tempo: '10 min' },
-  violao: { titulo: 'Violão', sub: 'cordas, acorde e batida', passos: violao, tempo: '8 min' },
+  bateria: { titulo: 'Bateria', sub: 'as peças, a levada de rock e a postura', passos: bateria, tempo: '10 min', pose: 'bateria', cor: 'bateria', adesivos: ['baquetas', 'caixa', 'nota', 'raio'] },
+  teclado: { titulo: 'Teclado', sub: 'teclas, notas, escala e acordes', passos: teclas, tempo: '10 min', pose: 'teclado', cor: 'teclado', adesivos: ['piano', 'nota2', 'estrela-ouro', 'fone'] },
+  violao: { titulo: 'Violão', sub: 'cordas, acorde e batida', passos: violao, tempo: '8 min', pose: 'guitarra', cor: 'violao', adesivos: ['palheta', 'nota', 'amp', 'raio'] },
 };
+export const EMOJI_PASSO = { wave: '👋', point: '👉', music: '🎵', cool: '😎', idea: '💡', cheer: '🎉' };
 
 /** Monta uma aula no `host`. `onPasso(i)` avisa cada passo visto (pra meta do dia). Devolve a função de limpeza. */
 export function montarAula(host, id, { onPasso } = {}) {
   const A = AULAS[id]; if (!A) return () => {};
-  const S = session(); let step = 0; const bot = robo({ mood: 'wave', size: 92 });
-  const say = h('p', { class: 'au-say', 'aria-live': 'polite' }); const body = h('div', { class: 'au-body' }); const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' });
+  const S = session(); let step = 0;
+  const paulImg = h('img', { class: 'au-paul', src: corSrc(A.pose), alt: 'Paul', draggable: 'false' });
+  const say = h('p', { class: 'au-say', 'aria-live': 'polite' }); const body = h('div', { class: 'au-body' }); const dots = h('div', { class: 'au-passos', 'aria-hidden': 'true' });
+  const conta = h('b', { class: 'au-conta' });
   const btn = (t, fn, cls = 'kd-btn') => h('button', { type: 'button', class: cls, onclick: fn }, t);
+  const festa = () => { // último passo: chuva de adesivos (some sozinha; sem animação se a pessoa pediu menos movimento)
+    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch { /* ok */ }
+    const box = h('div', { class: 'au-chuva', 'aria-hidden': 'true' }, ...['estrela', 'nota', 'estrela-ouro', 'nota2', 'coracao', 'estrela', 'raio', 'nota'].map((n, k) => h('img', { src: stkSrc(n), alt: '', style: `left:${6 + k * 12}%;animation-delay:${k * 0.15}s` })));
+    top.append(box); S.later(() => box.remove(), 2600);
+  };
   const draw = () => {
     const trancada = alunoSemCodigo() && step >= GRATIS.aulinha;
-    S.reset(); const s = A.passos[step]; bot.set(trancada ? 'wave' : s.mood, ''); say.textContent = trancada ? 'você quer exercícios e imprimir atividades? acesse a lojinha!' : s.say;
+    S.reset(); const s = A.passos[step]; const humor = trancada ? 'wave' : s.mood; say.textContent = trancada ? 'você quer exercícios e imprimir atividades? acesse a lojinha!' : s.say;
+    paulImg.src = corSrc(humor === 'cheer' ? 'baquetas-pra-cima' : poseDe(humor === 'wave' ? 'wave' : humor, A.pose)); paulImg.classList.remove('pula'); void paulImg.offsetWidth; paulImg.classList.add('pula');
+    conta.textContent = `passo ${step + 1} de ${A.passos.length}`;
     if (!trancada && onPasso) onPasso(step);
-    dots.replaceChildren(...A.passos.map((_, k) => h('i', { class: k < step ? 'done' : k === step ? 'now' : '' })));
+    dots.replaceChildren(...A.passos.map((_, k) => h('i', { class: k < step ? 'done' : k === step ? 'now' : '' }, k < step ? '✓' : String(k + 1))));
     body.replaceChildren(trancada ? avisoCodigo(`a aula de ${A.titulo.toLowerCase()} tem ${A.passos.length} passos e os ${GRATIS.aulinha} primeiros são de graça. pra continuar, acesse a lojinha!`, 'acessar a lojinha') : s.make(), h('div', { class: 'row kx-act au-nav' },
       step > 0 ? btn('‹ voltar', () => { step--; draw(); }, 'kd-chip') : null,
       step < A.passos.length - 1 && !trancada ? btn('próximo ›', () => { step++; draw(); }, 'kd-btn') : null));
+    if (!trancada && step === A.passos.length - 1) festa();
   };
-  host.append(h('div', { class: 'au' }, h('div', { class: 'au-top' }, bot.el, h('div', { class: 'au-bubble' }, say)), dots, body));
+  const top = h('div', { class: 'au-top' }, ...A.adesivos.map((n, k) => h('img', { class: `au-adv a${k}`, src: stkSrc(n), alt: '', 'aria-hidden': 'true', draggable: 'false' })), paulImg, h('div', { class: 'au-bubble' }, say));
+  host.append(h('div', { class: `au au-cor-${A.cor}` }, top, h('div', { class: 'au-barra' }, conta, dots), body));
   draw();
   return () => S.dispose();
 }

@@ -16,7 +16,7 @@ let st = await states();
 check('entrada no mapa: 11 discos na ordem 0..10', st.length === 11 && (await page.evaluate(() => [...document.querySelectorAll('.mp-node .mp-lab')].map((x) => x.textContent).join(',') === '0,1,2,3,4,5,6,7,8,9,10')));
 check('sem progresso: fase 0 é a atual e as outras estão trancadas', st[0] === 'current' && st.slice(1).every((x) => x === 'locked'), st.join());
 check('fase atual aparece centralizada na tela', await page.evaluate(() => { const r = document.querySelector('.st-current').getBoundingClientRect(); return r.top > 0 && r.bottom < innerHeight; }));
-check('Paul usa o arquivo oficial', await page.evaluate(() => /assets\/paul\/e\d+\.webp/.test(document.querySelector('.mp-paul img').getAttribute('src'))));
+check('Paul colorido (adesivo da Bea, PNG sem moldura)', await page.evaluate(() => /assets\/paul\/colorido\/paul-[a-z-]+\.webp/.test(document.querySelector('.mp-paul img').getAttribute('src'))));
 
 await page.evaluate(() => document.querySelectorAll('.mp-node')[3].scrollIntoView({ block: 'center' })); await sleep(100);
 await page.evaluate(() => document.querySelectorAll('.mp-node')[3].click()); await sleep(300);

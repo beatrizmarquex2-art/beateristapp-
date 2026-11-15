@@ -147,3 +147,23 @@ export const MUNDOS = [
   { id: 'espaco', tema: 'espaco', nome: 'Espaço das Semifusas', curto: 'espaço', sub: 'o mais rápido de todos', de: 48, ate: 62, regioes: regioesDoTema('espaco', [['orbita', 'Órbita das Fusas', 'rápido como um foguete'], ['estacao', 'Estação do Ritmo', 'só quem treinou chega']]) },
 ];
 export const mundoDe = (n) => MUNDOS.find((m) => n >= m.de && n <= m.ate) || MUNDOS[0];
+
+/** Regra das 3 estrelas (alunos): quantas fases do mundo ainda não têm 3 ★. `est` = { fase: estrelas }. */
+export const faltam3Mundo = (est, id) => { const m = MUNDOS.find((x) => x.id === id); return m ? PHASES.slice(m.de - 1, m.ate).filter((p) => ((est || {})[p.n] || 0) < 3).length : 0; };
+/** O mundo abre quando o anterior tem 3 ★ em todas as fases (o 1º sempre abre). */
+export const mundoLiberado = (est, id) => { const i = MUNDOS.findIndex((x) => x.id === id); return i <= 0 || faltam3Mundo(est, MUNDOS[i - 1].id) === 0; };
+/** Aulinha das 3 primeiras fases: a "colinha" (tabela das figuras) e a frase do Paul pra cada tipo de fase. */
+export const COLINHA = [['semibreve', '4 tempos'], ['minima', '2 tempos'], ['seminima', '1 tempo'], ['colcheia', 'meio tempo'], ['semicolcheia', 'um quarto de tempo']];
+export const FALA_AULINHA = { rapida: 'quanto MENOS tempo a figura dura, mais RÁPIDA ela é. a semicolcheia é a mais rápida desta tabela.', lenta: 'quanto MAIS tempo a figura dura, mais LENTA ela é. a semibreve é a mais lenta desta tabela.', monte: 'toda figura tem até 3 partes: a cabeça (cheia ou vazia), a haste e os colchetes. cada colchete deixa a figura mais rápida.' };
+export const temAulinha = (n) => n <= 3;
+
+/** Tempo (s) pra responder a pergunta `i` (0, 1, 2…) do nível: começa folgado e encurta a cada pergunta, até o piso do nível. */
+export function tempoPergunta(i, nivel = 1) {
+  const [ini, piso] = nivel <= 1 ? [10, 5] : nivel === 2 ? [9, 4.5] : nivel <= 4 ? [8, 4] : [7, 3.5];
+  return Math.max(piso, ini - i * 0.6);
+}
+/** Lugar da resposta certa: nunca o mesmo da pergunta anterior. `atual` = onde ela caiu no sorteio; `anterior` = lugar da pergunta passada; `n` = quantas opções. */
+export function novoLugar(atual, anterior, n, rnd = Math.random) {
+  if (atual < 0 || n < 2 || atual !== anterior) return atual;
+  const livres = Array.from({ length: n }, (_, k) => k).filter((k) => k !== anterior); return livres[Math.floor(rnd() * livres.length)];
+}

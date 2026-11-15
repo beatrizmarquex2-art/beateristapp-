@@ -48,11 +48,12 @@ function homeScreen(host, rerender) {
   const say = !p.started ? `oi, ${me.name}! escolhe um mundo pra começar. pode ser qualquer um!` : S.mainDone(p) >= 3 ? 'você leu o mundo inteiro! falta o duelo!' : `bora, ${me.name}! já são ${pts} pontos.`;
   const r = robo({ mood: p.started ? 'happy' : 'wave', tier, size: 96, say });
   const card = (w) => {
-    const W = WORLDS[w]; const done = S.worldProgress(p, w); const lock = w === 'duel' && !S.duelUnlocked(p); const full = S.worldDone(p, w);
+    const W = WORLDS[w]; const done = S.worldProgress(p, w); const lock = !livre() && !S.worldOpen(p, w); const full = S.worldDone(p, w); const ant = S.ANTERIOR[w]; const por3 = lock && !(w === 'duel' && !S.duelUnlocked(p)); // trancado pela regra das 3 ★
+    const motivo = por3 ? `faltam 3 ★ em ${S.faltam3(p, ant)} fase${S.faltam3(p, ant) === 1 ? '' : 's'} de ${WORLDS[ant].short}` : 'conclua sol e fá';
     const ico = h('span', { class: 'kx-gi' }); ico.innerHTML = worldIcon(w);
     const kids = [cardBg(), ico, h('b', { class: 'kx-gt' }, lock ? `🔒 ${W.short}` : W.short), h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((done / W.count) * 100)}%` })),
-      h('span', { class: 'kx-gm' }, lock ? 'conclua sol e fá' : full ? `🏅 concluído · ${W.count} fases` : `${done}/${W.count} fases`)];
-    return lock ? h('button', { type: 'button', class: 'kx-g pl-locked', onclick: () => toast('conclua os mundos de sol e fá pra liberar o duelo', { ms: 2600 }) }, ...kids)
+      h('span', { class: 'kx-gm' }, lock ? motivo : full ? `🏅 concluído · ${W.count} fases` : `${done}/${W.count} fases`)];
+    return lock ? h('button', { type: 'button', class: 'kx-g pl-locked', onclick: () => toast(por3 ? `regra das 3 ★: ${motivo} pra abrir este mundo` : 'conclua os mundos de sol e fá pra liberar o duelo', { ms: 3200 }) }, ...kids)
       : h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}`, 'data-mundo': w }, ...kids);
   };
   host.append(topBar('#/jogos'), gtitle(worldIcon('sol'), LOGO(), 'o jogo da leitura musical · com o Paul'),
@@ -60,6 +61,7 @@ function homeScreen(host, rerender) {
     h('div', { class: 'kx-hello' }, r.el),
     h('h2', { class: 'kx-h' }, 'mundos'), h('div', { class: 'kx-cards' }, ...['drumF', 'drumI', 'drumD', 'sol', 'fa', 'duel'].map(card)),
     h('div', { class: 'pl-links' }, h('a', { class: 'kd-chip', href: `${BASE}/perfil` }, '👤 perfil e títulos'), h('a', { class: 'kd-chip', href: `${BASE}/ranking` }, '🏆 ranking'), h('a', { class: 'kd-chip', href: `${BASE}/reforco/${getMode()}` }, '🎯 revisão do Paul'), h('a', { class: 'kd-chip', href: `${BASE}/legenda` }, '📖 legenda')),
+    livre() ? null : V.regraFixa() ? h('p', { class: 'lib-note pl-regra' }, '★★★ pra abrir o próximo mundo você precisa de 3 estrelas em todas as fases do mundo anterior.') : h('div', { class: 'pl-links pl-exig', role: 'group', 'aria-label': 'regra das 3 estrelas' }, h('button', { type: 'button', class: `kd-chip pl-exig-btn${p.exig ? ' on' : ''}`, 'aria-pressed': String(!!p.exig), onclick: async () => { await V.commit(me.id, (c) => ({ ...c, exig: !c.exig })); rerender(); } }, p.exig ? '★★★ regra das 3 estrelas: ligada' : '☆ regra das 3 estrelas: desligada'), h('small', { class: 'lib-note' }, p.exig ? 'o próximo mundo só abre com 3 ★ em todas as fases do anterior.' : 'ligue pra só abrir o próximo mundo com 3 ★ em todas as fases.')),
     h('p', { class: 'lib-note' }, 'cada mundo tem o seu caminho: comece por onde quiser. as fases mostram o símbolo na pauta; você responde pelo nome ou pela imagem. cada fase vale até 3 estrelas (60% = 1, 80% = 2, 100% = 3).'));
 }
 
@@ -72,6 +74,7 @@ function levelScreen(host) {
   const card = (w) => {
     const [dot, nome, txt] = info[w]; const done = S.worldProgress(p, w); const full = S.worldDone(p, w); const t = RW.totalDoModo(w);
     const ico = h('span', { class: 'kx-gi' }); ico.innerHTML = worldIcon(w);
+    if (!livre() && !S.worldOpen(p, w)) { const ant = S.ANTERIOR[w]; const f = S.faltam3(p, ant); return h('button', { type: 'button', class: 'kx-g pl-locked', onclick: () => toast(`regra das 3 ★: faltam 3 ★ em ${f} fase${f === 1 ? '' : 's'} do modo ${info[ant][1]}`, { ms: 3200 }) }, cardBg(), ico, h('b', { class: 'kx-gt' }, `🔒 ${nome}`), h('span', { class: 'kx-gm' }, `faltam 3 ★ em ${f} fase${f === 1 ? '' : 's'} do ${info[ant][1]}`)); }
     return h('a', { class: `kx-g${done ? ' on' : ''}`, href: `${BASE}/${w}` }, cardBg(), ico, h('b', { class: 'kx-gt' }, `${dot} ${nome}`),
       h('span', { class: 'kx-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((done / 12) * 100)}%` })),
       h('span', { class: 'kx-gm' }, full ? '🏅 concluído · 12 fases' : `${done}/12 fases`), h('span', { class: 'kx-gm pl-lvtxt' }, txt));
@@ -86,7 +89,7 @@ function levelScreen(host) {
 function worldScreen(host, w, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const W = WORLDS[w]; const p = V.getP(me.id); const mode = modeArg === 'imagens' || modeArg === 'nomes' ? modeArg : getMode(); setMode(mode);
-  if (w === 'duel' && !S.duelUnlocked(p) && !livre()) { location.hash = BASE; return () => {}; }
+  if (!S.worldOpen(p, w) && !livre()) { location.hash = BASE; return () => {}; }
   let stars = 0; for (let k = 1; k <= W.count; k++) stars += (p.ph[S.phKey(w, k, mode)] || {}).s || 0;
   const holder = h('div', { class: 'pl-mapa' });
   host.append(h('div', { class: 'row kd-modes pl-modes' }, ...MODES.map(([k, t]) => h('a', { class: `kd-chip${mode === k ? ' on' : ''}`, href: `${BASE}/${w}/-/${k}` }, t))), holder);
@@ -159,6 +162,7 @@ function phaseScreen(host, w, n, modeArg) {
   const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${mode}`; if (k === n) rerenderHook(); } };
   const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, mode) || (() => {}); };
   const intro = h('div', { class: 'pl-introbox' }, teachCards(w, n) ? h('p', { class: 'pl-new' }, '🆕 o Paul vai te apresentar:') : null, teachCards(w, n),
+    n <= 3 ? h('p', { class: 'pl-aulinha' }, h('a', { class: 'kd-chip', href: '#/estudos/aulas' }, '📖 o Paul explica nas aulas (Estudos)'), h('small', {}, ' concluindo as aulas lá você ganha estrela.')) : null, // primeiras fases: caminho pra aulinha
     isDrum(w) && /colcheia|figura|Técnica|Tudo|Misto|Mestre|semicolcheia/i.test(sp.title) ? h('p', { class: 'muted' }, 'lembrete: X = prato/chimbal · bolinha = tambor · parênteses = fantasma · > = acento.') : null);
   const hist = [];
   let off = runSession({

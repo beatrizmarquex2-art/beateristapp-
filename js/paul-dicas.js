@@ -8,22 +8,37 @@ const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.c
 export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok Brasil' };
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
+// os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente
+const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-selfie', 'p-point': 'colorido/paul-professor', 'p-cool': 'colorido/paul-oculos', 'p-drink': 'colorido/paul-agua', 'p-run': 'colorido/paul-pandeiro', 'p-book': 'colorido/paul-estudando', 'p-drum2': 'colorido/paul-bateria', 'p-guitar': 'colorido/paul-guitarra', 'p-laptop': 'colorido/paul-produtor' };
+const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
+  // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
+  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
+  ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
+  ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
+  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
+  ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
+  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
+  ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
+  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
+  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procura no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
   // frases musicais e curiosidades
   ['curiosidade', 'a pausa também é música: o silêncio entre as notas dá o balanço do groove.', 'n-amp'],
   ['curiosidade', 'o bumbo marca o chão, a caixa marca o meio e o chimbal é o relógio do groove.', 'n-stick'],
-  ['curiosidade', 'bpm é quantas batidas cabem em 1 minuto. 60 bpm = 1 batida por segundo.', 'n-skate'],
-  ['curiosidade', '4 por 4 quer dizer: 4 tempos em cada compasso, e a semínima vale 1 tempo.', 'n-squat'],
+  ['curiosidade', 'bpm é quantas batidas cabem em 1 minuto. 60 bpm = 1 batida por segundo.', 'colorido/paul-metronomo'],
+  ['curiosidade', '4 por 4 quer dizer: 4 tempos em cada compasso, e a semínima vale 1 tempo.', 'colorido/paul-estante'],
   ['frase musical', 'devagar e certo: quem toca devagar hoje toca rápido amanhã.', 'n-walk'],
   ['frase musical', 'errou? ótimo! é o erro que mostra o que o cérebro ainda precisa aprender.', 'n-break'],
   ['frase musical', 'tum tá tum tum tá! canta o ritmo antes de tocar, a mão aprende mais rápido.', 'n-stick'],
   // estudar em casa
   ['estudar em casa', '10 minutinhos todo dia valem mais que 1 hora só no sábado. bora treinar hoje?', 'n-walk'],
-  ['estudar em casa', 'sem bateria em casa? bate na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'n-squat'],
-  ['estudar em casa', 'liga o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'n-amp'],
-  ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'n-skate'],
+  ['estudar em casa', 'sem bateria em casa? bate na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'colorido/paul-pad'],
+  ['estudar em casa', 'liga o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'colorido/paul-pad-metronomo'],
+  ['estudar em casa', 'pausa também é treino: bebe uma água, respira e volta. o cérebro guarda o que você tocou enquanto descansa.', 'p-drink'],
+  ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'colorido/paul-selfie'],
+  ['estudar em casa', 'antes de tocar, respira fundo 3 vezes. corpo calmo segura melhor o tempo.', 'colorido/paul-meditando'],
   // toque simples
   ['toque simples', 'toque simples é uma mão de cada vez: D E D E D E D E (direita, esquerda). comece devagar e igual.', 'n-stick'],
   ['toque simples', 'no toque simples, o som das duas mãos precisa ficar igual. ouve com atenção: a esquerda soa tão bonita quanto a direita?', 'n-break'],
@@ -31,7 +46,7 @@ export const DICAS = [
   // outros instrumentos
   ['outros instrumentos', 'piano: a escala de dó maior só usa as teclas brancas: dó ré mi fá sol lá si.', 'n-amp'],
   ['outros instrumentos', 'violão: as 6 cordas soltas são mi lá ré sol si mi, da mais grossa pra mais fina.', 'n-walk'],
-  ['outros instrumentos', 'cajón: grave no meio, agudo perto da borda. é uma caixa que vira banda inteira!', 'n-squat'],
+  ['outros instrumentos', 'cajón: grave no meio, agudo perto da borda. é uma caixa que vira banda inteira!', 'colorido/paul-cajon'],
   ['outros instrumentos', 'ukulele: sol dó mi lá. só 4 cordas e dá pra tocar muita música fácil.', 'n-skate'],
   ['outros instrumentos', 'xilofone: cada lâmina é uma nota. as maiores são mais graves e as menores mais agudas.', 'n-break'],
   // marcas e parceiros
@@ -80,8 +95,18 @@ function sortear() {
   last = bag.pop(); return DICAS[last];
 }
 
+const ROD = 'beaterista-paul-rodizio';
+/** Carta da vez: anda 1 a cada vez que a aba é aberta (guarda o ponto no aparelho), então nunca repete a de antes. O vídeo novo entra na fila como as outras. */
+function cartaDaVez() {
+  const ok = DICAS.filter((d) => d[5] !== 'aluno' || document.documentElement.classList.contains('aluno-on'));
+  const app = ok.filter((d) => d[5] === 'aluno' || d[3] === VIDEO_URL), gerais = ok.filter((d) => !(d[5] === 'aluno' || d[3] === VIDEO_URL));
+  const lista = []; for (let i = 0; i < Math.max(app.length, gerais.length); i++) { if (app[i]) lista.push(app[i]); if (gerais[i]) lista.push(gerais[i]); } // intercala: convite do app, frase, convite, frase…
+  let n = 0; try { n = Number(localStorage.getItem(ROD)) || 0; localStorage.setItem(ROD, String(n + 1)); } catch { n = Math.floor(Math.random() * lista.length); }
+  return lista[n % lista.length];
+}
+
 /** Cartão do Paul. `soBeaterista` não é usado: serve igual pro aluno e pra Bea. */
-export function paulDica() {
+export function paulDica({ compacto = false } = {}) {
   const img = h('img', { class: 'pd-img', alt: '', 'aria-hidden': 'true', draggable: 'false', decoding: 'async' });
   const tag = h('small', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
   let sec = null;
@@ -89,14 +114,14 @@ export function paulDica() {
     const [t, tx, pose, href, rot] = it;
     if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL);
     const interno = href && String(href).startsWith('#');
-    img.src = `assets/paul/${pose || POSES[Math.floor(Math.random() * POSES.length)]}.webp`;
+    img.src = poseSrc(pose);
     tag.textContent = t; text.textContent = tx;
     row.replaceChildren(h('button', { class: 'pd-btn', type: 'button', onclick: () => { chirp(); mostrar(sortear()); } }, 'outra ▸'),
       href ? h('a', { class: 'pd-btn go', href, ...(interno ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, rot || 'abrir') : null);
   };
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
-  mostrar(DICAS[0]); // a primeira carta é sempre o vídeo novo
+  const inicial = cartaDaVez(); mostrar(inicial); // uma carta diferente a cada vez que a aba é aberta
   // modelo "quadrinho": Paul grande saindo da borda, etiqueta do assunto e balão de fala
-  sec = h('section', { class: `pd pd-q${DICAS[0][3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
+  sec = h('section', { class: `pd pd-q${compacto ? ' pd-compacto' : ''}${inicial[3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
   return sec;
 }

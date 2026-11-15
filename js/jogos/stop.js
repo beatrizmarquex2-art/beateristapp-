@@ -1,6 +1,7 @@
 // STOP musical Beaterista: tela. Regras em stop-logic.js, banco/validação em stop-valid.js, sons em stop-sfx.js.
 // Texto digitado só entra na tela como texto (textContent / value), nunca como HTML.
 import { h } from '../util.js';
+import { placar, poseDisponivel } from './placar.js';
 import { confirmSheet, sheet, stars, toast } from '../ui.js';
 import * as S from './stop-logic.js';
 import { addCustom, bankSize } from './stop-valid.js';
@@ -341,12 +342,13 @@ export function mount(host, opts) {
     const title = g.players.length === 1 ? `total: ${g.totals[0]} pontos` : w.tie ? 'empate!' : `${pn(w.winners[0])} venceu!`;
     FX.play(g.players.length > 1 && w.tie ? 'tie' : 'win'); FX.duck(2500); FX.vibrate([60, 40, 60, 40, 120]);
     root.replaceChildren(...[g.online ? badge.el : null,
-      h('div', { class: `jg-result st-final${w && w.tie ? ' tie' : ''}`, role: 'status' }, h('img', { class: 'st-fpaul', src: `${PAUL}${w && w.tie ? 'e26' : 'e03'}.webp`, alt: '', draggable: 'false' }), h('h3', { class: 'hand' }, title), recordMsg ? h('p', { class: 'st-rec' }, recordMsg) : null,
-        h('ol', { class: `st-rank${w && w.tie ? ' side' : ''}` }, ...order.map(([p, t], i) => h('li', { class: w && w.winners.includes(p) && g.players.length > 1 ? 'first' : '' }, h('span', {}, g.players.length > 1 ? `${i + 1}º` : '★'), h('b', {}, pn(p)), h('em', {}, `${t} pts`))))),
+      placar({ classe: `jg-result st-final${w && w.tie ? ' tie' : ''}`, estado: g.players.length > 1 && w.tie ? 'tie' : g.players.length === 1 || !g.online || w.winners[0] === me0() ? 'win' : 'lose', pose: g.players.length > 1 && w.tie ? poseDisponivel('agua', 'ouvindo') : poseDisponivel('gravando', 'microfone'), titulo: title, sub: recordMsg,
+        quadros: order.slice(0, 4).map(([p, t]) => ({ n: t, l: g.players.length > 1 ? pn(p) : 'pontos', win: g.players.length === 1 || (w && !w.tie && w.winners.includes(p)) })),
+        estrelas: !M && (g.players.length === 1 ? g.totals[0] > 0 : g.online && !w.tie && w.winners[0] === me0()) ? '+3 ★ pra roleta' : '',
+        acoes: M ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: () => rematch() }, g.players.length > 1 ? 'revanche' : 'jogar de novo'),
+          h('button', { class: 'btn', type: 'button', onclick: historyPanel }, 'histórico'), h('button', { class: 'btn ghost', type: 'button', onclick: setup }, 'voltar às opções')] }),
       h('h3', { class: 'hand' }, 'rodadas'), ...g.history.map((x) => h('details', { class: 'jg-rules' }, h('summary', {}, `letra ${x.letter} · ${x.sums.join(' x ')}${x.perfect.some(Boolean) ? ' · perfeita!' : ''}`), table(x))),
-      M ? null : h('div', { class: 'jg-actions' },
-        h('button', { class: 'btn primary', type: 'button', onclick: () => rematch() }, g.players.length > 1 ? 'revanche' : 'jogar de novo'),
-        h('button', { class: 'btn', type: 'button', onclick: historyPanel }, 'histórico'), h('button', { class: 'btn ghost', type: 'button', onclick: setup }, 'voltar às opções'))].filter(Boolean));
+      ].filter(Boolean));
     if (motion() && (!w || !w.tie)) { const el = root.querySelector('.st-final'); stars(el); later(() => { if (token === my) stars(el); }, 700); }
     if (M && !reported && g.stage === 'done') { reported = true; if (opts.onResult) opts.onResult(S.matchSummary(g)); } // fim REAL da partida: uma vez só
   }

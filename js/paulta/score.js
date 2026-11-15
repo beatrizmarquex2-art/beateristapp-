@@ -20,9 +20,21 @@ export const worldDone = (p, w) => (w === 'drum' ? DRUMS.some((d) => worldDone(p
 export const worldProgress = (p, w) => (w === 'drum' ? Math.max(...DRUMS.map((d) => worldProgress(p, d))) : Array.from({ length: COUNT[w] }, (_, i) => p.done[`${w}:${i + 1}`]).filter(Boolean).length);
 export const mainDone = (p) => MAIN.filter((w) => worldDone(p, w)).length;
 export const duelUnlocked = (p) => worldDone(p, 'sol') && worldDone(p, 'fa'); // não depende da bateria
+/** Regra das 3 estrelas (opção `p.exig`, desligada por padrão): o mundo só abre com 3 ★ em TODAS as fases do mundo anterior do mesmo caminho. */
+export const ANTERIOR = { drumI: 'drumF', drumD: 'drumI', fa: 'sol', duel: 'fa' };
+/** Melhor número de estrelas da fase em qualquer formato (nomes ou imagens). */
+export const bestStars = (p, w, n) => Object.entries(p.ph || {}).reduce((m, [k, v]) => (k.startsWith(`${w}:${n}:`) ? Math.max(m, v.s || 0) : m), 0);
+/** Quantas fases do mundo ainda não têm 3 ★. */
+export const faltam3 = (p, w) => Array.from({ length: COUNT[w] }, (_, i) => bestStars(p, w, i + 1)).filter((s) => s < 3).length;
+/** O mundo está aberto? Sem a regra: todos (o Duelo pede sol e fá concluídos). Com a regra: precisa de 3 ★ em todas as fases do anterior. */
+export function worldOpen(p, w) {
+  if (w === 'duel' && !duelUnlocked(p)) return false;
+  if (!p.exig) return true;
+  const a = ANTERIOR[w]; return !a || faltam3(p, a) === 0;
+}
 /** A fase está aberta? 1ª fase sempre; depois só se a anterior foi concluída (em qualquer formato). `mig.open` = fases liberadas pela migração do jogo antigo. */
 export function unlocked(p, w, n) {
-  if (w === 'duel' && !duelUnlocked(p)) return false;
+  if (!worldOpen(p, w)) return false;
   if (n <= 1) return true;
   return !!p.done[`${w}:${n - 1}`] || n <= ((p.mig && p.mig.open && p.mig.open[w]) || 1);
 }

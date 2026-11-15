@@ -68,6 +68,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   const mk = async (codigo) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 780 }, hasTouch: true });
     await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(r.request().postDataJSON().p_code)) }));
+    await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => { const okc = valid.has(r.request().postDataJSON().p_code); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(okc ? { ok: true, tipo: 'aluno' } : { ok: false, motivo: 'codigo' }) }); }); // a função nova de acesso também é simulada: sem isso o teste perguntava ao servidor de verdade
     await ctx.route('**/rest/v1/rpc/midis_publicos_lista', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
     await ctx.route('**/rest/v1/rpc/dicas_lista', (r) => { const c = r.request().postDataJSON().p_code; chamadas.push(c); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(valid.has(c) ? tips : []) }); });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -96,7 +97,7 @@ const trancada = (p) => p.locator('.al-lock').count();
   await go(p, '#/jogos/cartas'); check('Uno Musical trancado sem código', (await trancada(p)) === 1);
   await go(p, '#/jogos');
   const lk = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo: Toca Aqui, PauLta, Uno, Detetive Note e Taiko com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'PauLta', 'Uno', 'Detetive Note', 'Taiko'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
+  check('no catálogo: Toca Aqui, PauLta, Uno, Detetive Note e Rudimentix com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'PauLta', 'Uno', 'Detetive Note', 'Rudimentix'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
   for (const g of ['memart', 'bingo', 'velha', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
   check('sem erros de página', errs.length === 0, errs.join(' | '));
   await ctx.close();

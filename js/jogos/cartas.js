@@ -8,6 +8,7 @@ import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { bq } from './bonequinhos.js';
+import { placar, poseDisponivel } from './placar.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
@@ -527,10 +528,12 @@ export function mount(host, opts) {
   function result() {
     const r = g.result; const w = r.winner;
     const title = w == null ? 'empate' : g.mode === 'paul' ? (w === 0 ? 'você venceu!' : `${NAMES[w - 1]} venceu`) : `${PL(w)} venceu!`;
-    return h('div', { class: `cx-result${w === 0 && g.mode === 'paul' ? ' win' : ''}`, role: 'status' }, h('h3', { class: 'hand' }, title),
-      h('p', {}, w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`),
-      h('p', { class: 'muted' }, `cartas restantes: ${r.counts.map((n, i) => `${PL(i)} ${n}`).join(' · ')}`),
-      adv ? null : h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('a', { class: 'btn', href: '#/jogos/quizuno' }, 'quiz do Uno Musical'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    const euGanhei = w != null && (g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : true);
+    return placar({ classe: 'cx-result', estado: w == null ? 'tie' : euGanhei ? 'win' : 'lose', pose: w == null ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('maestro', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: title,
+      sub: w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`,
+      quadros: r.counts.map((n, i) => ({ n, l: PL(i), win: i === w })),
+      estrelas: !adv && w != null && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) ? '+1 ★ pra roleta' : '',
+      acoes: adv ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('a', { class: 'btn', href: '#/jogos/quizuno' }, 'quiz do Uno Musical'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
 
   /* ----- ciclo de vida ----- */

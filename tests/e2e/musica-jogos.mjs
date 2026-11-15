@@ -8,8 +8,12 @@ await page.goto(url + '/aluno.html#/jogos/velha'); await page.waitForSelector('.
 const com = await pico(1500);
 check('entrar num jogo com o som ligado toca a musiquinha', com > 0.002, String(com));
 await page.locator('.jg-snd').click(); await sleep(900);
-check('botão de som desliga a música', (await pico(1200)) < 0.001);
-await page.locator('.jg-snd').click(); await sleep(900);
+check('desligar os EFEITOS não desliga a música', (await pico(1500)) > 0.002);
+await page.locator('.jg-snd').click(); await sleep(300);
+await page.locator('.jg-mus').click(); await sleep(900);
+check('botão da música desliga a música', (await pico(1200)) < 0.001);
+check('e os efeitos continuam ligados', await page.evaluate(() => document.querySelector('.jg-snd').getAttribute('aria-pressed') === 'true' && document.querySelector('.jg-mus').getAttribute('aria-pressed') === 'false'));
+await page.locator('.jg-mus').click(); await sleep(900);
 check('ligar de novo traz a música de volta', (await pico(1500)) > 0.002);
 await page.goto(url + '/aluno.html#/jogos'); await sleep(600);
 check('sair do jogo para a música', (await pico(1200)) < 0.001);

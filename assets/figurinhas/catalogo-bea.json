@@ -1,0 +1,221 @@
+[
+ {
+  "codigo": "F133",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E03",
+  "sha256": "45e1774616e5181f0afbf47597f9b26bacba5f5d580b9ba740fdf48ccea94cec",
+  "largura_px": 1280,
+  "altura_px": 853,
+  "status": "identificado",
+  "nota": "cabelo voando na bateria",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F133.jpeg",
+  "modelo2": "M7",
+  "rostos": [],
+  "foco": [
+   0.2,
+   0.08,
+   0.85,
+   0.95
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F134",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E04",
+  "sha256": "d173619860e34dd3d33b8d4831876fd59396854a749faf8c8767b406a3f150c4",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "passagem de som",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F134.jpeg",
+  "modelo2": "M8",
+  "rostos": [
+   [
+    0.46,
+    0.325,
+    0.1,
+    0.08
+   ]
+  ],
+  "foco": [
+   0.25,
+   0.3,
+   0.75,
+   0.62
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F135",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E01",
+  "sha256": "f351c74885983b0329fc286531cb1d832221774293b9696fac1eb664e25454e5",
+  "largura_px": 1536,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "guitarra e sorriso",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F135.jpeg",
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.42,
+    0.16,
+    0.11,
+    0.1
+   ]
+  ],
+  "foco": [
+   0.3,
+   0.1,
+   0.78,
+   0.95
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F136",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E02",
+  "sha256": "d2da2d9d3ff2eceb28f94a02396cc48ce46726f6caa7e107915ee57b1113c020",
+  "largura_px": 708,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "luzes e fumaça",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F136.jpeg",
+  "modelo2": "M8",
+  "rostos": [
+   [
+    0.5,
+    0.365,
+    0.1,
+    0.04
+   ]
+  ],
+  "foco": [
+   0.25,
+   0.33,
+   0.8,
+   0.62
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F137",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E03",
+  "sha256": "895045d2e3980f9c3849cd9c3f48d48035a5245aa2b16995370ea0e701c5f40d",
+  "largura_px": 1536,
+  "altura_px": 1024,
+  "status": "identificado",
+  "nota": "rindo no palco",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F137.jpeg",
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.55,
+    0.27,
+    0.06,
+    0.1
+   ]
+  ],
+  "foco": [
+   0.3,
+   0.2,
+   0.78,
+   0.95
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F138",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E04",
+  "sha256": "520bcd9ac363591dc60fec7adc05d6ddbd6596c5d5a30c03365ddf146405dc30",
+  "largura_px": 1024,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "no baixo, de gravata",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F138.jpeg",
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.0,
+   0.1,
+   1.0,
+   0.95
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F139",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E01",
+  "sha256": "f7c239a0270657d89a31ab629e8acb662a63cb18409600ac499261c307b144fd",
+  "largura_px": 1152,
+  "altura_px": 1536,
+  "status": "identificado",
+  "nota": "batucando na rua",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F139.jpeg",
+  "modelo2": "M7",
+  "rostos": [
+   [
+    0.53,
+    0.3,
+    0.1,
+    0.075
+   ]
+  ],
+  "foco": [
+   0.3,
+   0.25,
+   0.8,
+   0.78
+  ],
+  "secao": "Beaterista"
+ },
+ {
+  "codigo": "F140",
+  "artista_banda": "Beaterista",
+  "colecao": "Beaterista",
+  "raridade": "Exclusiva",
+  "modelo": "E02",
+  "sha256": "7e4e671ccf2aeedcebd7156fdc421ecdafcbcac094f07ba407008686e269cd44",
+  "largura_px": 1179,
+  "altura_px": 766,
+  "status": "identificado",
+  "nota": "cantando na bateria",
+  "criterio_raridade": "foto da Bea: exclusiva da Beaterista (enviada por ela em nov/2026)",
+  "foto": "assets/figurinhas/fotos/F140.jpeg",
+  "modelo2": "M8",
+  "rostos": [],
+  "foco": [
+   0.2,
+   0.1,
+   0.75,
+   0.95
+  ],
+  "secao": "Beaterista"
+ }
+]

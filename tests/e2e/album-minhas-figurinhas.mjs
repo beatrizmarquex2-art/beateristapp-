@@ -1,0 +1,21 @@
+// Aba "minhas figurinhas": mostra as da mão, cola no álbum, e o menu de baixo fica preso na borda.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true }); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/album`); await sleep(2500);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const D = await import('/js/figurinhas/dono.js'); const cat = await (await fetch('assets/figurinhas/catalogo.json')).json(); const l = (cat.figurinhas || cat).slice(0, 3).map((c) => c.codigo); const inv = {}; l.forEach((c) => { inv[c] = 1; }); inv[l[0]] = 2; await S.upsert('figurinhas', D.albumId(), { v: 1, inv, pasted: { [l[0]]: 1 }, granted: [], opened: {}, reduzir: false }); window.__l = l; });
+await page.reload(); await sleep(2500);
+await page.getByRole('tab', { name: /minhas figurinhas/ }).click(); await sleep(800);
+const n = await page.locator('.fig-mao-it').count(); check('3 figurinhas na mão aparecem', n === 3, String(n));
+check('uma é repetida e duas podem colar', (await page.locator('.fig-mao-it.rep').count()) === 1 && (await page.locator('.fig-mao-it .btn.primary').count()) === 2);
+await page.locator('.fig-mao-it .btn.primary').first().click(); await sleep(700);
+check('depois de colar sobra 1 pra colar', (await page.locator('.fig-mao-it .btn.primary').count()) === 1);
+await page.getByRole('button', { name: /colar tudo/ }).click(); await sleep(700);
+check('colar tudo deixa nenhuma pra colar', (await page.locator('.fig-mao-it .btn.primary').count()) === 0);
+await page.screenshot({ path: '/tmp/claude-0/ex2/mao.png' });
+const r = await page.evaluate(() => { const b = document.querySelector('.bottom-nav').getBoundingClientRect(); return Math.round(innerHeight - b.bottom); });
+check('menu de baixo colado na borda', r === 0, String(r));
+check('sem erros', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close(); done();

@@ -9,15 +9,18 @@ await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos'); await sleep(2200);
 const txt = await page.evaluate(() => document.body.innerText);
-for (const n of ['Radar Musical', 'Cruzadinha', 'Quiz do Paul', 'Taiko']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
+for (const n of ['Radar Musical', 'Cruzadinha', 'Quiz do Paul', 'Rudimentix']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
 check('não tem card de duelo nem "Rudimentos" na lista', !/Duelo/.test(txt) && !/Rudimentos/.test(txt));
 check('a lista não tem mais o card "Letras" nem o "quiz Uno Musical"', !/^Letras$/m.test(txt) && !/quiz Uno Musical/i.test(txt));
 check('Uno Musical continua na lista', /Uno Musical/.test(txt));
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
 check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agora são o Paul falando)', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|★ Favoritos');
 await sleep(1800);
-const nuvem = await page.evaluate(() => { const c = document.querySelector('.pt-cloud'); return c ? { t: c.textContent, h: c.getAttribute('href') } : null; });
-check('o Paul fala numa nuvem de pensamento ao abrir a aba Jogos (jogo novo ou mais estrelas), com link', !!nuvem && /jogo novo|estrela|★/.test(nuvem.t) && /^#\//.test(nuvem.h || ''), JSON.stringify(nuvem));
+check('na aba Jogos o Paul fala só pelo cartão azul (sem balão solto por cima)', (await page.locator('.pt-cloud').count()) === 0 && (await page.locator('.pd-q').count()) === 1);
+await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-lista.png' : '/tmp/jogos-lista.png', fullPage: true });
+check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agora são o Paul falando)', (await page.evaluate(() => [...document.querySelectorAll('.jgx-bar .jgx-chip')].map((c) => c.textContent.replace(/\s*\(\d+\)/, '')).filter((x) => x !== 'editar').join('|'))) === 'Todos|★ Favoritos');
+await sleep(1800);
+const nuvem = await page.evaluate(() => { const c = document.querySelector('.pt-cloud'); return c ? { t: c.textContent, h: ((c.querySelector('.pt-ver') || c).getAttribute('href')) } : null; });
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-paul.png' : '/tmp/jogos-paul.png' });
 for (const [nome, hash] of [['Cruzadinha', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Radar Musical', '#/dicas/caca']]) {
   await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);

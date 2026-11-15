@@ -1,5 +1,6 @@
 // Bingo musical: tela (solo, dupla e modo professor). Regras em bingo-logic.js.
 import { h } from '../util.js';
+import { placar, poseDisponivel } from './placar.js';
 import { confirmSheet } from '../ui.js';
 import * as B from './bingo1-logic.js';
 import { artEl } from './bingo-art.js';
@@ -128,8 +129,9 @@ export function mount(host, opts) {
     if (M) return h('p', { class: 'jg-msg', role: 'status' }, g.result.reason === 'bingo' ? 'bingo! a combinação vencedora está destacada.' : 'tentativa encerrada.');
     const w = g.result.winners;
     const title = g.result.tie ? 'empate! as duas cartelas valem' : g.cards.length > 1 ? `cartela ${w[0] + 1} venceu!` : 'bingo! você venceu 🤘';
-    return h('div', { class: 'jg-result', role: 'status' }, h('h3', { class: 'hand' }, title), h('p', {}, 'a combinação vencedora está destacada. dá para revisar a cartela.'),
-      h('div', { class: 'jg-actions row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => begin(B.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')));
+    return placar({ classe: 'jg-result', estado: g.result.tie ? 'tie' : 'win', pose: poseDisponivel('dj', 'pandeiro'), titulo: title, sub: 'a combinação vencedora está destacada. dá para revisar a cartela.',
+      quadros: [{ n: g.drawn, l: 'sorteios', win: true }],
+      acoes: [h('button', { class: 'btn primary', type: 'button', onclick: () => begin(B.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
 
   const onVis = () => { if (document.hidden) stop(); else if (auto) schedule(); };
