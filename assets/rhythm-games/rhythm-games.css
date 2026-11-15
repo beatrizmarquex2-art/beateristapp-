@@ -301,14 +301,18 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-dif.on .rz-dif-s{color:#ffd84a}
 .bmr .rz-dif-hint{margin:0 0 8px}
 
-/* Músicas à vista no menu: cartões lado a lado (3 por linha), da mais fácil pra mais difícil, com as estrelas que cada uma vale no nível */
-.bmr .rz-tiers.rz-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px;margin:6px 0 10px}
-.bmr .rz-list .rz-tier{min-height:104px!important;padding:8px 4px;gap:2px}
-.bmr .rz-list .rz-tier .rz-lv{font-size:14px}
-.bmr .rz-list .rz-tier b{font-size:13.5px;line-height:1.12}
-.bmr .rz-list .rz-tier .small{font-size:12px}
+/* Menu (design A): ritmos em pílulas coloridas lado a lado; músicas em lista, uma por linha, com a faixa da cor do ritmo, da mais fácil pra mais difícil */
+.bmr .rz-pills-l{margin:10px 0 6px}
+.bmr .rz-pills{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 4px}
+.bmr .rz-pill{border:2px solid var(--sc);background:transparent;color:inherit;border-radius:999px;padding:7px 10px;min-height:36px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;box-shadow:none}
+.bmr .rz-pill.on{background:var(--sc);color:#14101a}
+.bmr .rz-tiers.rz-list{grid-template-columns:1fr!important;gap:6px;margin:6px 0 10px}
+.bmr .rz-list .rz-tier{display:grid;grid-template-columns:24px minmax(0,1fr) auto auto;justify-items:start;align-items:center;align-content:center;gap:8px;min-height:44px!important;padding:8px 10px 8px 14px;text-align:left;border-radius:10px;box-shadow:inset 4px 0 0 var(--sc)!important}
+.bmr .rz-list .rz-tier.on{box-shadow:inset 4px 0 0 var(--sc),0 0 0 2px var(--sc)!important}
+.bmr .rz-list .rz-tier .rz-lv{font-size:15px;font-weight:800;color:var(--sc)}
+.bmr .rz-list .rz-tier b{font-size:15px}
+.bmr .rz-list .rz-tier .small{white-space:nowrap}
 .bmr .rz-list .rz-tier .rz-pbar{display:none}
 .bmr .rz-list .rz-tier .rz-b{font-size:16px;letter-spacing:1px;white-space:nowrap;color:#ffd84a}
 .bmr .rz-list .rz-tier .rz-b .rz-off{color:inherit;opacity:.3}
 .bmr .rz-tierhint{margin:8px 0 0}
-@media (max-width:339px){.bmr .rz-tiers.rz-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
