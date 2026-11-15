@@ -373,11 +373,11 @@ function opcoes(name) {
     const code = CODE.saved();
     const bt = (rot, fn, cls = 'btn wide') => h('button', { type: 'button', class: cls, onclick: () => { close(); fn(); } }, rot);
     return h('div', { class: 'sheet-body al-opcoes' },
-      h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${code}`) : h('span', {}, 'ainda sem código')),
+      h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${CODE.mascarar(code)}`) : h('span', {}, 'ainda sem código')),
       bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
       code ? null : bt('🔑 tenho código', abrirCodigo),
       bt('🚪 sair', sairDoApp, 'btn wide ghost'),
-      code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto.') : null);
+      code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto. por segurança o código nunca aparece inteiro na tela.') : null);
   });
 }
 
@@ -401,18 +401,12 @@ function shell(name) {
   if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })()), h('small', { class: 'al-cod-top' }, CODE.saved() ? `código ${CODE.mascarar(CODE.saved())}` : 'sem código'))),
     soundButton(), musicButton(),
     tenhoCodigo,
     h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', onclick: () => opcoes(name) }, 'opções ▾'));
-  // faixa fixa em cima da abinha: quem está jogando e o código dela (toque abre as opções). Some junto com a abinha dentro dos jogos.
-  const quem = h('button', { type: 'button', class: 'al-id', onclick: () => opcoes(name) });
-  const desenhaQuem = () => { const c = CODE.saved(); quem.textContent = c ? `👤 ${name} · código ${c}` : `👤 ${name} · sem código`; quem.setAttribute('aria-label', `${name}, ${c ? `código ${c}` : 'sem código'}. abrir opções`); };
-  desenhaQuem(); document.addEventListener('aluno-acesso', desenhaQuem);
-  const alinhaQuem = () => { const r = nav.getBoundingClientRect(); if (r.height) quem.style.bottom = `${Math.round(innerHeight - r.top + 5)}px`; };
-  window.addEventListener('resize', alinhaQuem); window.addEventListener('hashchange', () => setTimeout(alinhaQuem, 60)); setTimeout(alinhaQuem, 300); setTimeout(alinhaQuem, 1200);
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
-  app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav, quem);
+  app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();

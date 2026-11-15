@@ -1,4 +1,4 @@
-// Topo "opções ▾" (trocar aluno · compartilhar jogo · sair), faixa fixa com nome e código acima da abinha, e o login que fica salvo.
+// Topo "opções ▾" (trocar aluno · compartilhar jogo · sair), nome + código ESCONDIDO no topo (o código nunca aparece inteiro) e o login que fica salvo.
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false });
 await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
@@ -7,17 +7,19 @@ const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.pu
 await p.goto(`${url}/aluno.html#/estudos`); await sleep(1200);
 await p.evaluate(() => { localStorage.setItem('beaterista-aluno-nome', 'Beatriz'); localStorage.setItem('beaterista-aluno-codigo', 'BEA0404'); localStorage.setItem('beaterista-aluno-codigo-ok', String(Date.now())); localStorage.setItem('bt-mute', '1'); });
 await p.reload(); await sleep(2200);
-check('faixa fixa mostra o nome e o código', (await p.locator('.al-id').innerText()).includes('Beatriz') && (await p.locator('.al-id').innerText()).includes('BEA0404'));
-check('a faixa fica acima da abinha, sem encostar', await p.evaluate(() => document.querySelector('.al-id').getBoundingClientRect().bottom <= document.querySelector('.bottom-nav').getBoundingClientRect().top));
+const topo = await p.locator('.top').first().innerText();
+check('o topo mostra o nome e o código ESCONDIDO (B•••••4)', /Beatriz/.test(topo) && /B•+4/.test(topo), topo.replace(/\s+/g, ' '));
+check('o código inteiro não aparece em lugar nenhum da tela', !(await p.evaluate(() => document.body.innerText)).includes('BEA0404'));
+check('não existe mais a faixa fixa embaixo', (await p.locator('.al-id').count()) === 0);
 await p.click('.al-opt'); await sleep(500);
 const ops = await p.locator('.al-opcoes button').allInnerTexts();
 check('opções: trocar aluno, compartilhar jogo e sair', ops.some((t) => /trocar aluno/.test(t)) && ops.some((t) => /compartilhar jogo/.test(t)) && ops.some((t) => /sair/.test(t)), ops.join('|'));
-check('as opções mostram o nome e o código', /Beatriz/.test(await p.locator('.al-quem').innerText()) && /BEA0404/.test(await p.locator('.al-quem').innerText()));
+check('as opções mostram o nome e o código escondido, nunca inteiro', /Beatriz/.test(await p.locator('.al-quem').innerText()) && /B•+4/.test(await p.locator('.al-quem').innerText()) && !(await p.evaluate(() => document.body.innerText)).includes('BEA0404'));
 await p.keyboard.press('Escape'); await p.evaluate(() => { const x = document.querySelector('.sheet [aria-label*="echar"], .sheet .close, .sheet-x'); if (x) x.click(); }); await sleep(300);
 await p.reload(); await sleep(2200);
-check('depois de fechar e abrir de novo: entra direto, sem pedir o código', (await p.locator('.al-id').count()) === 1 && (await p.locator('.al-entry, .login').count()) === 0);
+check('depois de fechar e abrir de novo: entra direto, sem pedir o código', /Beatriz/.test(await p.locator('.top').first().innerText()) && (await p.locator('.al-entry, .login').count()) === 0);
 await p.click('.al-opt'); await sleep(400); await p.evaluate(() => [...document.querySelectorAll('.al-opcoes button')].find((b) => /sair/.test(b.textContent)).click()); await sleep(500);
 await p.evaluate(() => [...document.querySelectorAll('button')].filter((b) => /^sair$/i.test(b.textContent.trim())).pop().click()); await sleep(2000);
-check('sair: o aparelho esquece nome e código e volta pra entrada', await p.evaluate(() => !localStorage.getItem('beaterista-aluno-nome') && !localStorage.getItem('beaterista-aluno-codigo')) && (await p.locator('.al-id').count()) === 0);
+check('sair: o aparelho esquece nome e código e volta pra entrada', await p.evaluate(() => !localStorage.getItem('beaterista-aluno-nome') && !localStorage.getItem('beaterista-aluno-codigo')) && (await p.locator('.top').count()) === 0);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

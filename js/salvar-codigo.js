@@ -28,22 +28,27 @@ function baixar(code, nome) {
   try { const url = URL.createObjectURL(new Blob([`${texto(code)}\naluno: ${nome || ''}\n`], { type: 'text/plain' })); const a = h('a', { href: url, download: 'codigo-beaterista.txt' }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); toast('arquivo baixado!', { ms: 2200 }); } catch { /* sem download */ }
 }
 
-/** Abre a pergunta "quer guardar o seu código?". `tipo` = 'entrada' (acabou de entrar) ou 'instalado' (adicionou à tela de início). Pergunta 1 vez por tipo e por código. */
-export function perguntarSalvar(tipo, nome) {
-  const code = CODE.saved(); if (!code || jaPerguntou(tipo, code)) return false;
-  marcar(tipo, code);
+/** A folha "guardar o seu código": salva, envia, copia ou baixa SEM mostrar o código na tela (só escondido). */
+function folhaGuardar(tipo, nome, code) {
   sheet(tipo === 'instalado' ? 'app na tela de início! 🎉' : 'guardar o seu código?', (close) => {
     const ok = (msg) => { toast(msg, { ms: 2600 }); };
     return h('div', { class: 'sheet-body al-guardar' },
       h('p', {}, tipo === 'instalado' ? 'agora o app está na sua tela de início. quer guardar o seu código em algum lugar, pra não perder?' : 'quer guardar o seu código em algum lugar, pra não perder?'),
-      h('div', { class: 'al-lock-code', role: 'status', 'aria-label': `seu código ${code.split('').join(' ')}` }, code),
+      h('div', { class: 'al-lock-code', role: 'status', 'aria-label': 'seu código, escondido por segurança' }, CODE.mascarar(code)),
+      h('small', { class: 'muted' }, 'por segurança o código não aparece inteiro. os botões abaixo guardam ele certinho.'),
       h('button', { class: 'btn primary wide', type: 'button', onclick: async () => { await guardarNoGerenciador(nome, code); ok('pronto! se o aparelho perguntar, toque em “salvar senha”.'); close(); } }, 'salvar senha (neste aparelho)'),
       h('button', { class: 'btn wide', type: 'button', onclick: async () => { if (await compartilhar(code)) close(); } }, 'enviar pra mim (Notas, WhatsApp…)'),
       h('div', { class: 'row', style: 'gap:8px' }, h('button', { class: 'btn small', type: 'button', style: 'flex:1', onclick: () => copiar(code) }, 'copiar'), h('button', { class: 'btn small', type: 'button', style: 'flex:1', onclick: () => baixar(code, nome) }, 'baixar')),
       h('button', { class: 'btn ghost wide', type: 'button', onclick: close }, 'agora não'));
   });
-  return true;
 }
+/** Abre a pergunta "quer guardar o seu código?". `tipo` = 'entrada' (acabou de entrar) ou 'instalado' (adicionou à tela de início). Pergunta 1 vez por tipo e por código. */
+export function perguntarSalvar(tipo, nome) {
+  const code = CODE.saved(); if (!code || jaPerguntou(tipo, code)) return false;
+  marcar(tipo, code); folhaGuardar(tipo, nome, code); return true;
+}
+/** Botão "guardar meu código" do Perfil: abre a mesma folha quando a pessoa quiser, sem a regra de perguntar só 1 vez. */
+export function guardarAgora(nome) { const code = CODE.saved(); if (code) folhaGuardar('entrada', nome, code); else toast('ainda sem código neste aparelho.'); }
 
 /** Liga os gatilhos: logo depois que a pessoa libera o acesso com um código, quando o app é instalado (Android/Chrome: appinstalled) e na 1ª abertura como ícone (iPhone/iPad). */
 const FLAG = 'beaterista-perguntar-codigo';

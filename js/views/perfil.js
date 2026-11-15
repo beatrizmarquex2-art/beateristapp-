@@ -60,8 +60,8 @@ export function mount(host) {
   const codigoDoAluno = () => { let v = ''; try { v = CODE.saved() || localStorage.getItem('beaterista-album-code') || ''; } catch { /* ok */ } return v ? { c: v, ok: true } : (CODE.pendente() ? { c: CODE.pendente(), ok: false } : null); };
   const cod = codigoDoAluno();
   const codBox = h('div', { class: 'pf-codigo', role: 'group', 'aria-label': 'Seu código de acesso' }, h('small', {}, cod ? (cod.ok ? 'seu código' : 'seu código (aguardando a professora)') : 'seu código'),
-    cod ? h('b', { class: 'pf-codnum', 'aria-label': `código ${cod.c.split('').join(' ')}` }, cod.c) : h('a', { class: 'pf-codnone', href: '#/lojinha' }, 'ainda sem código · toque pra pegar na lojinha'),
-    cod ? h('span', { class: 'pf-codhint' }, 'decore esse número!') : null);
+    cod ? h('b', { class: 'pf-codnum', 'aria-label': 'código escondido por segurança' }, CODE.mascarar(cod.c)) : h('a', { class: 'pf-codnone', href: '#/lojinha' }, 'ainda sem código · toque pra pegar na lojinha'),
+    cod ? h('button', { type: 'button', class: 'btn small ghost pf-codguardar', onclick: () => import('../salvar-codigo.js').then((M) => M.guardarAgora(nomeAtual ? nomeAtual() : '')) }, 'guardar meu código') : null);
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
