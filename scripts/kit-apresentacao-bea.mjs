@@ -62,6 +62,7 @@ export const MARCA = {
   '16-camiseta-preta': { foto: 'marca-camiseta-preta', pos: '50% 50%', cor: 'creme', t1: 'preta', t2: 'com dourado', e1: 'camiseta', e2: 'da Beaterista', corpo: 'a versão que brilha na luz do estúdio.', fim: 'quem quer?', paul: 'oculos' },
   '17-sala-de-bateria': { foto: 'marca-sala-bateria', pos: '50% 60%', cor: 'azul', t1: 'a sala onde', t2: 'tudo acontece', e1: 'duas baterias', e2: 'e muito neon', corpo: 'é aqui que nascem as aulas e os jogos.', fim: 'vem conhecer!', paul: 'bateria' },
   '18-sala-de-violao': { foto: 'marca-sala-violao', pos: '40% 50%', cor: 'creme', larga: true, t1: 'a sala', t2: 'de violão', e1: 'violões na parede', e2: 'e mesinha dos pequenos', corpo: 'tem sala pra corda, pra tecla e pros pequenos.', fim: 'escolhe a sua!', paul: 'guitarra' },
+  '19-camisetas-na-mesa': { foto: 'marca-camisetas-mesa', pos: '50% 50%', cor: 'azul', t1: 'camiseta nova', t2: 'chegou', e1: 'azul-marinho', e2: 'com amarelo', corpo: 'mesa cheia no dia do evento.', fim: 'já garantiu a sua?', paul: 'oculos' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):

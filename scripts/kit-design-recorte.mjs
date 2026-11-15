@@ -28,7 +28,14 @@ ${modo === 'raios' ? '<div class="r"></div><div class="o"></div>' : `<div class=
 <div class="s">${sub}</div><img class="c" src="${hd(paul)}">`; };
 // SÓ OBJETOS: a Bea não quer recorte de pessoa (15/nov). Pessoas vão nos designs de kit-designs-novos.mjs.
 // 15/nov: a Bea não gostou dos recortes automáticos (nem de objeto). Ela manda os PNGs já recortados; pôr em marketing/fotos-bea/recortes/ e listar aqui.
-export const RECORTES = {};
+export const RECORTES = { // PNGs que a Bea mandou já recortados (sem contorno automático)
+  '1-copo': { rec: 'copo', cor: 'amarelo', t1: 'o copo', t2: 'da beaterista', sub: 'preto com dourado', paul: 'agua', alt: 860, giro: 0 },
+  '2-bones': { rec: 'bones', cor: 'creme', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 820, giro: 0 },
+  '3-camiseta-preta': { rec: 'camiseta-preta', cor: 'amarelo', modo: 'palavra', t1: 'preta', t2: 'com dourado', sub: 'tem do tamanho dos pequenos', paul: 'oculos', alt: 860, giro: 0 },
+  '4-adesivos': { rec: 'adesivos', cor: 'vinho', t1: 'adesivo', t2: 'pra colar em tudo', sub: 'no caderno, no case, na bateria', paul: 'selfie', alt: 820, giro: 0 },
+  '5-cartoes': { rec: 'cartoes', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', sub: 'Araçatuba, SP', paul: 'professor', alt: 880, giro: 0 },
+  '6-arara': { rec: 'arara', cor: 'amarelo', t1: 'veste', t2: 'a camiseta', sub: 'qual é a sua cor?', paul: 'oculos', alt: 880, giro: 0 },
+};
 const RA = process.env.RECORTES_ALUNOS, SA = process.env.SAIDA_ALUNOS;
 const browser = await chromium.launch(); let n = 0;
 for (const [out, dir, pre, serie] of [[path.join(ROOT, 'marketing/prontos/apresentacao/v3-recortes'), path.join(ROOT, 'marketing/fotos-bea/recortes'), 'recorte', RECORTES]]) {
