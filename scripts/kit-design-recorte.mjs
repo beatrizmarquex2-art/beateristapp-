@@ -26,24 +26,17 @@ h1{position:absolute;left:56px;right:56px;top:54px;font:400 ${Math.max(t1.length
 ${modo === 'raios' ? '<div class="r"></div><div class="o"></div>' : `<div class="gg">${grande}</div>`}
 <h1>${t1}<em>${t2 || ''}</em></h1><div class="ft"><img src="${pathToFileURL(path.join(dir, rec + '.png')).href}"></div>
 <div class="s">${sub}</div><img class="c" src="${hd(paul)}">`; };
+// SÓ OBJETOS: a Bea não quer recorte de pessoa (15/nov). Pessoas vão nos designs de kit-designs-novos.mjs.
 export const RECORTES = {
-  '1-oi-eu-sou-a-bea': { rec: 'bea-baquetas', cor: 'vinho', t1: 'oi, eu sou', t2: 'a bea!', sub: 'professora e fundadora da Beaterista', alt: 760, giro: 0 },
-  '2-educacao-com-proposito': { rec: 'bea-moldura', cor: 'azul', t1: 'educação musical', t2: 'com propósito', sub: 'vem tocar com a gente!', paul: 'selfie', alt: 900 },
-  '3-caca-palavras': { rec: 'caderno', cor: 'amarelo', modo: 'palavra', t1: 'caça-palavras', t2: 'musical', sub: 'achou todas?', paul: 'estudando', alt: 820, giro: 5 },
-  '4-tem-bone': { rec: 'bones', cor: 'creme', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 780, giro: 4 },
-  '5-hoje-e-dia-de-violao': { rec: 'bea-violao', cor: 'amarelo', t1: 'hoje é dia', t2: 'de violão', sub: 'a baterista também se aventura nas cordas', paul: 'guitarra', alt: 820 },
-  '6-ukulele': { rec: 'bea-ukulele', cor: 'vinho', modo: 'palavra', t1: 'hoje é dia', t2: 'de ukulele', sub: 'qual você quer aprender?', paul: 'guitarra', alt: 860, giro: 0 },
-  '7-dia-do-baterista': { rec: 'bea-bateria', cor: 'azul', t1: 'feliz dia', t2: 'do baterista', sub: 'marca um baterista!', alt: 860, giro: 0 },
-};
-export const RECORTES_ALUNOS = {
-  '1-cabe-mais-um': { rec: 'moldura-oculos', cor: 'amarelo', t1: 'cabe mais um', t2: 'na moldura', sub: 'beaterista #team', paul: 'selfie', alt: 880 },
-  '2-o-violao-e-grande': { rec: 'violao-menino', cor: 'azul', t1: 'o violão é grande', t2: 'o talento também', sub: 'e toca!', paul: 'guitarra', alt: 880, giro: 0 },
-  '3-time-completo': { rec: 'moldura-dupla', cor: 'vinho', t1: 'time', t2: 'completo', sub: 'sorriso de quem acabou de tocar', paul: 'selfie', alt: 620 },
-  '4-primeiro-acorde': { rec: 'violao-menina', cor: 'creme', modo: 'palavra', t1: 'cada nota', t2: 'com capricho', sub: 'olha a concentração', paul: 'guitarra', alt: 860, giro: 0 },
+  '1-caca-palavras': { rec: 'caderno', cor: 'amarelo', modo: 'palavra', t1: 'caça-palavras', t2: 'musical', sub: 'achou todas?', paul: 'estudando', alt: 820, giro: 5 },
+  '2-tem-bone': { rec: 'bones', cor: 'creme', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 780, giro: 4 },
+  '3-palhetas': { rec: 'palhetas', cor: 'azul', t1: 'até a palheta', t2: 'é beaterista', sub: 'qual é o seu instrumento?', paul: 'guitarra', alt: 700, giro: -4 },
+  '4-folha-pecas': { rec: 'folha-pecas', cor: 'vinho', modo: 'palavra', t1: 'toda peça', t2: 'tem nome', sub: 'sabe todas?', paul: 'bateria', alt: 820, giro: 4 },
+  '5-camisetas': { rec: 'camisetas', cor: 'creme', t1: 'veste', t2: 'a camiseta', sub: 'qual é a sua cor?', paul: 'oculos', alt: 820, giro: 0 },
 };
 const RA = process.env.RECORTES_ALUNOS, SA = process.env.SAIDA_ALUNOS;
 const browser = await chromium.launch(); let n = 0;
-for (const [out, dir, pre, serie] of [[path.join(ROOT, 'marketing/prontos/apresentacao/v3-recortes'), path.join(ROOT, 'marketing/fotos-bea/recortes'), 'recorte', RECORTES], ...(RA && SA ? [[SA, RA, 'recorte-alunos', RECORTES_ALUNOS]] : [])]) {
+for (const [out, dir, pre, serie] of [[path.join(ROOT, 'marketing/prontos/apresentacao/v3-recortes'), path.join(ROOT, 'marketing/fotos-bea/recortes'), 'recorte', RECORTES]]) {
   fs.mkdirSync(out, { recursive: true });
   for (const [nome, d] of Object.entries(serie)) {
     const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } }); const tmp = path.join(out, '.tmp.html'); fs.writeFileSync(tmp, arte(d, dir));
