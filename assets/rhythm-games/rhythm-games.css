@@ -330,3 +330,9 @@ html.kb-open .rz-jogar{bottom:8px}
 .rz-palco.rz-duelo .rz-paul{height:92%}
 .rz-palco .rz-rival{transform:scaleX(-1);filter:drop-shadow(0 5px 0 rgba(0,0,0,.28)) saturate(.75)}
 .rz-vs{position:relative;align-self:center;font:400 34px 'Anton',Impact,sans-serif;color:#ffd84a;text-shadow:0 3px 0 #0f2347}
+
+/* Beat Hero (setas): botões grandes nas cores da marca, como no protótipo */
+.bmr .rz-setas .rz-pad{opacity:1;border:3px solid #0f2347;border-radius:16px!important;box-shadow:0 5px 0 #0f2347;color:#fffaf0}
+.bmr .rz-setas .rz-pad.on{transform:translateY(4px);box-shadow:0 1px 0 #0f2347;filter:none}
+.bmr .rz-setas .rz-pad:nth-child(1){background:#a8182e}.bmr .rz-setas .rz-pad:nth-child(2){background:#0f2347}.bmr .rz-setas .rz-pad:nth-child(3){background:#b07d12}.bmr .rz-setas .rz-pad:nth-child(4){background:#1f6f78}
+.rz-st-setas{border:3px solid #0f2347;border-radius:18px;overflow:hidden;box-shadow:6px 6px 0 #e8a92b;background:#fffaf0!important}

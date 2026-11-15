@@ -923,16 +923,25 @@ function rzDrawTiles(g,W,H,dpr){const s=rzSNow(),now=performance.now();const hit
   if(RZ.phase==='pause'){g.fillStyle='rgba(13,11,13,.72)';g.fillRect(0,0,W,H);g.fillStyle='#F3E7D4';g.font='800 '+(30*dpr)+'px system-ui,sans-serif';g.textAlign='center';g.fillText('PAUSA',W/2,H*.45)}
   if(s>0&&RZ.A){g.fillStyle='rgba(217,32,49,.9)';g.fillRect(0,0,W*Math.min(1,s/RZ.A.dur),3*dpr)}}
 function rzArrow(g,x,y,r,lane,col,fill){g.save();g.translate(x,y);g.rotate([Math.PI,Math.PI/2,-Math.PI/2,0][lane]);g.beginPath();g.moveTo(r,0);g.lineTo(0,-r);g.lineTo(0,-r*.45);g.lineTo(-r,-r*.45);g.lineTo(-r,r*.45);g.lineTo(0,r*.45);g.lineTo(0,r);g.closePath();if(fill){g.fillStyle=col;g.fill();g.lineWidth=r*.16;g.strokeStyle='rgba(0,0,0,.6)';g.stroke()}else{g.lineWidth=r*.18;g.strokeStyle=col;g.stroke()}g.restore()}
-function rzDrawSetas(g,W,H,dpr){const s=rzSNow();const now=performance.now();const top=H*.12,speed=H*.62*RZ_WIN[RZ.diff].spd;const lw=W/9,r=lw*.4;const colX=(side,l)=>side?W/2+lw*.5+l*lw+lw/2:lw*.5+l*lw;
-  rzBackdrop(g,W,H,dpr);
-  const stage=H*.78;g.fillStyle=rzTh().floor;g.fillRect(0,stage,W,H-stage);g.fillStyle='#d92031';g.fillRect(0,stage,W,3*dpr);
-  const bob=Math.sin(now/180)*3*dpr;const fig=(x,flip,c1,c2,hair,ex)=>{g.save();g.translate(x,stage-4*dpr+bob*(ex?1:-1));g.scale(flip?-1:1,1);const u=dpr;g.fillStyle=c2;g.fillRect(-10*u,-50*u,20*u,30*u);g.fillStyle='#f0c9a5';g.beginPath();g.arc(0,-62*u,11*u,0,7);g.fill();g.fillStyle=hair;g.beginPath();g.arc(0,-66*u,12*u,Math.PI,2*Math.PI);g.fill();g.fillRect(-12*u,-66*u,5*u,18*u);g.fillStyle=c1;g.fillRect(-10*u,-20*u,8*u,20*u);g.fillRect(2*u,-20*u,8*u,20*u);g.fillStyle='#141015';g.fillRect(-14*u,-48*u,6*u,4*u);g.beginPath();g.arc(4*u,-62*u,1.6*u,0,7);g.fill();g.restore()};
-  /* os dois Pauls ficam no palco de cima (rzPaul) */
-  g.fillStyle='rgba(255,255,255,.12)';g.fillRect(W*.2,H*.94,W*.6,8*dpr);g.fillStyle='#5b8dd6';g.fillRect(W*.2,H*.94,W*.6*(1-RZ.health),8*dpr);g.fillStyle='#3ed16a';g.fillRect(W*.2+W*.6*(1-RZ.health),H*.94,W*.6*RZ.health,8*dpr);
-  [0,1].forEach(side=>{for(let l=0;l<4;l++){const x=colX(side,l);const fl=side?(RZ.flash[l]&&now-RZ.flash[l]<130)||RZ.held.has(l):RZ.flash['c'+l]&&now-RZ.flash['c'+l]<130;rzArrow(g,x,top,r,l,fl?RZ_ARROW[l][1]:'rgba(200,210,230,.55)',fl)}});
-  if(s>-1){for(const nt of RZ.chart){const y=top+(nt.t-s)*speed;if(y>H+40*dpr) break;const side=nt.cpu?0:1;const x=colX(side,nt.lane);if(nt.sus){const y2=top+(nt.t+nt.sus-s)*speed;const show=nt.cpu?nt.t+nt.sus>s:(!nt.hit||nt.holding);if(show&&y2>top){g.fillStyle=RZ_ARROW[nt.lane][1]+'aa';g.fillRect(x-r*.22,Math.max(top,y),r*.44,y2-Math.max(top,y))}}
-      if(nt.hit||nt.res==='cpu'||y<top-r*1.2) continue;g.globalAlpha=nt.res==='miss'?.3:1;rzArrow(g,x,y,r,nt.lane,RZ_ARROW[nt.lane][1],true);g.globalAlpha=1}}
-  rzPopsFx(g,l=>colX(1,l),top+80*dpr,dpr);rzCountdown(g,W,H,dpr,s)}
+/* Beat Hero (setas) no visual do protótipo "Dança com o Paul": pista creme, 4 colunas largas, setas em cartões nas cores da marca descendo até a linha de baixo.
+   Vez do rival: cartões vazados (só contorno). Sua vez: cartões cheios. */
+var RZ_SCOL=['#a8182e','#0f2347','#b07d12','#1f6f78'];
+function rzSCard(g,x,y,sz,lane,fill,stroke,alpha,hollow){g.save();g.translate(x,y);g.globalAlpha=alpha==null?1:alpha;var r=sz*.22;g.lineWidth=Math.max(2,sz*.07);g.beginPath();if(g.roundRect) g.roundRect(-sz/2,-sz/2,sz,sz,r);else g.rect(-sz/2,-sz/2,sz,sz);if(!hollow){g.fillStyle=fill;g.fill()}else{g.fillStyle='rgba(255,250,240,.85)';g.fill()}g.strokeStyle=stroke;g.stroke();
+  g.rotate([0,-Math.PI/2,Math.PI/2,Math.PI][lane]);var k=sz*.0075;g.fillStyle=hollow?stroke:'#fffaf0';g.beginPath();g.moveTo(-38*k,0);g.lineTo(0,-36*k);g.lineTo(0,-14*k);g.lineTo(38*k,-14*k);g.lineTo(38*k,14*k);g.lineTo(0,14*k);g.lineTo(0,36*k);g.closePath();g.fill();g.restore()}
+function rzDrawSetas(g,W,H,dpr){const s=rzSNow();const now=performance.now();const lw=W/4,sz=Math.min(lw*.72,70*dpr),hitY=H-sz*.95,speed=H*.5*RZ_WIN[RZ.diff].spd;
+  g.fillStyle='#fffaf0';g.fillRect(0,0,W,H);
+  for(let l=0;l<4;l++){if(l%2===0){g.fillStyle='rgba(15,35,71,.05)';g.fillRect(l*lw,0,lw,H)}const fp=RZ.flash[l]&&now-RZ.flash[l]<160,fc=RZ.flash['c'+l]&&now-RZ.flash['c'+l]<160;if(fp||fc||RZ.held.has(l)){g.fillStyle=fc&&!fp?'rgba(15,35,71,.10)':'rgba(232,169,43,.30)';g.fillRect(l*lw,0,lw,H)}}
+  g.strokeStyle='rgba(15,35,71,.3)';g.lineWidth=2*dpr;g.setLineDash([6*dpr,8*dpr]);g.beginPath();g.moveTo(0,hitY);g.lineTo(W,hitY);g.stroke();g.setLineDash([]);
+  for(let l=0;l<4;l++) rzSCard(g,l*lw+lw/2,hitY,sz,l,'rgba(0,0,0,0)',RZ_SCOL[l],.4,true);
+  let turn='';
+  if(s>-1){for(const nt of RZ.chart){const y=hitY-(nt.t-s)*speed;if(y<-sz) break;const x=nt.lane*lw+lw/2;if(!turn&&nt.t>s-.2&&!nt.hit&&nt.res!=='cpu') turn=nt.cpu?'rival':'voce';
+      if(nt.sus){const y2=hitY-(nt.t+nt.sus-s)*speed;const show=nt.cpu?nt.t+nt.sus>s:(!nt.hit||nt.holding);if(show&&y2<hitY){g.fillStyle=RZ_SCOL[nt.lane]+'88';g.fillRect(x-sz*.14,y2,sz*.28,Math.min(hitY,y)-y2)}}
+      if(nt.hit||nt.res==='cpu'||y>H+sz) continue;rzSCard(g,x,y,sz,nt.lane,RZ_SCOL[nt.lane],nt.cpu?RZ_SCOL[nt.lane]:'#0f2347',nt.res==='miss'?.25:1,!!nt.cpu)}}
+  /* de quem é a vez + barra do duelo no topo */
+  const bx=W*.14,bw=W*.72,by=10*dpr,bh=9*dpr;g.fillStyle='rgba(15,35,71,.85)';g.fillRect(bx-3*dpr,by-3*dpr,bw+6*dpr,bh+6*dpr);g.fillStyle='#8a94a8';g.fillRect(bx,by,bw*(1-RZ.health),bh);g.fillStyle='#e8a92b';g.fillRect(bx+bw*(1-RZ.health),by,bw*RZ.health,bh);
+  g.font='800 '+(11*dpr)+'px system-ui,sans-serif';g.fillStyle='#0f2347';g.textAlign='left';g.fillText('rival',bx,by+bh+14*dpr);g.textAlign='right';g.fillText('você',bx+bw,by+bh+14*dpr);
+  if(turn){g.textAlign='center';g.font='400 '+(22*dpr)+"px Anton,Impact,sans-serif";g.fillStyle=turn==='voce'?'#a8182e':'#5a6478';g.fillText(turn==='voce'?'SUA VEZ!':'vez do rival…',W/2,by+bh+40*dpr)}
+  rzPopsFx(g,l=>l*lw+lw/2,hitY-sz*1.3,dpr);rzCountdown(g,W,H,dpr,s)}
 function rzHud(){const S=RZ.stats;if(!S) return;const set=(id,v)=>{const e=$(id);if(e) e.textContent=v};set('#rz-score',S.score.toLocaleString('pt-BR'));set('#rz-combo',S.combo);const judged=S.pp+S.perfect+S.great+S.good+S.miss;set('#rz-acc',judged?Math.round((S.pp+S.perfect+S.great*.75+S.good*.5)/judged*100)+'%':'—');const pb=$('#rz-pause');if(pb) pb.textContent=RZ.phase==='pause'?'Continuar':'Pausar'}
 /* ---------- telas ---------- */
 function rzFoldHTML(){var fs=(OPTS.folders?OPTS.folders():[]);var n=IMP.length,sem=IMP.filter(function(x){return !x.folder}).length;
