@@ -54,6 +54,8 @@ export const MARCA = {
   '8-tem-bone-tambem': { foto: 'marca-bones', pos: '50% 40%', cor: 'creme', t1: 'tem boné', t2: 'também', e1: 'azul-marinho', e2: 'bordado dourado', corpo: 'mais um item com a marca da Beaterista.', fim: 'quem quer?', paul: 'oculos' },
   '9-aprenda-com-a-gente': { foto: 'marca-fachada-cursos', pos: '20% 50%', cor: 'azul', t1: 'aprenda a tocar', t2: 'com a gente', e1: 'bateria e violão', e2: 'guitarra e teclado', corpo: 'contrabaixo e musicalização infantil também.', fim: 'chama no direct!', paul: 'professor' },
   '10-caca-palavras': { foto: 'marca-caca-palavras', pos: '50% 50%', cor: 'vinho', t1: 'caça-palavras', t2: 'musical', e1: 'flauta, harpa, tuba', e2: 'pandeiro e violino', corpo: 'atividade da nossa apostila. achou todas?', fim: 'tem mais nos jogos!', paul: 'estudando' },
+  '11-domino': { foto: 'marca-domino', pos: '50% 60%', cor: 'vinho', t1: 'aqui se aprende', t2: 'jogando', e1: 'dominó de figuras', e2: 'e de claves', corpo: 'o jogo sai do chão da sala e vai parar na tela.', fim: 'bora jogar?', paul: 'estudando' },
+  '12-tablet-na-bateria': { foto: 'marca-tablet-bateria', pos: '50% 45%', cor: 'azul', t1: 'do tablet', t2: 'pra bateria', e1: 'paradiddle', e2: 'no Bateria Start', corpo: 'primeiro lê na tela, depois toca de verdade.', fim: 'é assim que a gente estuda.', paul: 'bateria' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):
@@ -105,6 +107,8 @@ export const ALUNOS = {
   '44-aluno-e-professor': { foto: 'aluno-professor', pos: '50% 50%', cor: 'creme', t1: 'aluno e professor', t2: 'no mesmo som', e1: 'guitarra', e2: 'e violão', corpo: 'no palco o professor toca junto e sorri junto.', fim: 'isso é aula!', paul: 'guitarra' },
   '45-sorriso-de-baterista': { foto: 'sorriso-baterista', pos: '35% 40%', cor: 'azul', t1: 'sorriso de', t2: 'baterista', e1: 'bateria azul', e2: 'duas baquetas', corpo: 'olhou pra câmera e não perdeu o tempo.', fim: 'craque!' },
   '46-banda-formada': { foto: 'banda-pb', pos: '55% 50%', cor: 'vinho', larga: true, t1: 'banda', t2: 'formada', e1: 'duas baterias', e2: 'e uma guitarra', corpo: 'a prof numa bateria, os alunos no resto do palco.', fim: 'som na caixa!', paul: 'oculos' },
+  '47-domino-musical': { foto: 'domino-menino', pos: '50% 40%', cor: 'azul', t1: 'dominó', t2: 'musical', e1: 'claves e figuras', e2: 'no chão da sala', corpo: 'ele montou a trilha inteira antes de ir pra bateria.', fim: 'sua vez!', paul: 'estudando' },
+  '48-memoria-na-aula': { foto: 'memoria-menino', pos: '40% 50%', cor: 'creme', t1: 'jogo da memória', t2: 'na aula', e1: 'instrumentos', e2: 'em pares', corpo: 'antes de tocar, a gente brinca de reconhecer cada instrumento.', fim: 'achou o par?', paul: 'professor' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
