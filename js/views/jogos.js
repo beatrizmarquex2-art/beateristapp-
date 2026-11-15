@@ -59,7 +59,7 @@ const SECTIONS = [
   ['Ritmo e bateria', [
     link('#/ritmo/drum', 'Hero Drum', 'hero-drum.webp', 'bateria: toque no tempo e ganhe estrelas'),
     link('#/ritmo/piano', 'Piano Hero', 'piano-hero.webp', 'toque a melodia no ritmo da música'),
-    link('#/ritmo/setas', 'Beat Hero', 'beat-hero.webp', 'duelo de setas: escolha o seu Paul'),
+    link('#/ritmo/setas', 'Beat Hero', 'beat-hero.webp', 'siga as setas e dance com o Paul'),
     inner('toca'),
     inner('detetive'),
     inner('figurix'),

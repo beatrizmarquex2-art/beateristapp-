@@ -336,3 +336,11 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-setas .rz-pad.on{transform:translateY(4px);box-shadow:0 1px 0 #0f2347;filter:none}
 .bmr .rz-setas .rz-pad:nth-child(1){background:#a8182e}.bmr .rz-setas .rz-pad:nth-child(2){background:#0f2347}.bmr .rz-setas .rz-pad:nth-child(3){background:#b07d12}.bmr .rz-setas .rz-pad:nth-child(4){background:#1f6f78}
 .rz-st-setas{border:3px solid #0f2347;border-radius:18px;overflow:hidden;box-shadow:6px 6px 0 #e8a92b;background:#fffaf0!important}
+
+/* Beat Hero (setas) como o protótipo: Paul maior e seleção do Paul legível no tema claro */
+.rzv.rz-setas-v.rz-playing{--rzpalco:clamp(170px,31dvh,300px)}
+.rg-host[data-rz-theme="colagem"] .rz-pp{background:rgba(15,35,71,.06)}
+.rg-host[data-rz-theme="colagem"] .rz-pp.on{background:rgba(232,169,43,.35);border-color:#0f2347}
+.rg-host[data-rz-theme="colagem"] .rz-cena{color:#0f2347;text-shadow:none}
+.rzv.rz-setas-v{--rzp:clamp(72px,11dvh,96px)}
+.bmr .rz-setas .rz-pad b{font-size:clamp(30px,8vw,44px)!important}

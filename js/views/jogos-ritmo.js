@@ -202,7 +202,7 @@ export function mount(host, opts = {}) {
   // Duelo (#/ritmo/duelo): a mesma música ao mesmo tempo em dois celulares, por código de sala
   if (opts.parts && opts.parts[0] === 'duelo') { location.hash = '#/ritmo'; return () => {}; } // o duelo de 2 celulares saiu: só o modo normal
   // 3 jogos separados, cada um na sua tela: #/ritmo/drum (Hero Drum, bateria), #/ritmo/piano (Piano Hero, melodia) e #/ritmo/setas (Beat Hero, duelo de setas). #/ritmo sozinho abre o Hero Drum.
-  const JOGO = { drum: ['beat', 'Hero Drum', 'toque a bateria no tempo e ganhe estrelas'], piano: ['tiles', 'Piano Hero', 'toque a melodia no ritmo da música'], setas: ['setas', 'Beat Hero', 'duelo de setas: escolha o seu Paul'] };
+  const JOGO = { drum: ['beat', 'Hero Drum', 'toque a bateria no tempo e ganhe estrelas'], piano: ['tiles', 'Piano Hero', 'toque a melodia no ritmo da música'], setas: ['setas', 'Beat Hero', 'siga as setas e dance com o Paul'] };
   const jg = JOGO[(opts.parts || [])[0]] || JOGO.drum;
   const student = !!opts.student;
   let mounted = false; let gone = false;
