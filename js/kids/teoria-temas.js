@@ -173,12 +173,12 @@ export const FASES_CLAVES = [
     { t: 'Dó central (fá)', ic: P({ clave: 'fa', notas: [[10, 'dó']] }), txt: 'na clave de fá, o mesmo dó fica numa linha extra ACIMA da pauta. é o mesmo som!', som: tons('fa', [10], 0.8) },
     { t: 'Pauta dupla', ic: () => fila(pauta({ clave: 'sol' }), pauta({ clave: 'fa' })), txt: 'o piano usa as duas claves juntas: a de sol pra mão direita e a de fá pra mão esquerda.' },
     { t: 'Mesma linha, outro nome', ic: () => fila(pauta({ clave: 'sol', notas: [[2, 'sol']] }), pauta({ clave: 'fa', notas: [[2, 'si']] })), txt: 'a mesma linha muda de nome conforme a clave. na 2ª linha mora o sol (clave de sol) ou o si (clave de fá).', som: () => { tons('sol', [2], 0.6)(); setTimeout(tons('fa', [2], 0.6), 700); } },
-    { t: 'Clave de dó', ic: P({ clave: 'do', notas: [[4, 'dó']] }), txt: 'nasceu da letra C. o meio dela aponta o dó. quem mais usa é a viola, que fica entre o grave e o agudo.', som: midis([60], 0.8) }],
+    { t: 'Saindo do dó', ic: PN('sol', [-2, -1, 0]), txt: 'o dó do meio é o ponto de partida. subindo de vizinha em vizinha vem o ré e depois o mi.', som: tons('sol', [-2, -1, 0], 0.5) }],
     quiz: [
       { q: 'na clave de sol, o dó central fica…', ops: ['numa linha extra abaixo da pauta', 'na 5ª linha', 'no 1º espaço'], ok: 0 },
       { q: 'o piano usa…', ops: ['as duas claves juntas', 'só a clave de sol', 'só a de percussão'], ok: 0 },
       { q: 'a mesma linha da pauta pode ter outro nome quando muda…', ops: ['a clave', 'o andamento', 'a pausa'], ok: 0 },
-      { q: 'a clave de dó nasceu de qual letra?', ops: ['C', 'G', 'F'], ok: 0 }] },
+      { q: 'saindo do dó central e subindo, a próxima nota é…', ops: ['ré', 'si', 'fá'], ok: 0 }] },
   { nome: 'clave de percussão', paul: 'a bateria tem a clave dela. cada linha é uma peça!', cards: [
     { t: 'Dois traços', ic: P({ clave: 'perc' }), txt: 'a clave de percussão são dois traços em pé. aqui a pauta não mostra notas: mostra PEÇAS da bateria.' },
     { t: 'Bumbo', ic: P({ clave: 'perc', notas: [[1, 'bumbo']] }), txt: 'o bumbo mora no 1º espaço, lá embaixo. é o som mais grave, tocado com o pé.', som: bateria((t, q) => { kick(t, 0.95); kick(t + q, 0.95); }) },
@@ -255,23 +255,23 @@ export const FASES_TEMPO = [
     { t: 'Casa 1 e casa 2', ic: () => txt('1.   2.', true), txt: 'na primeira vez você toca a casa 1. na repetição, pula a casa 1 e toca a casa 2.' },
     { t: 'Do começo', ic: () => txt('D.C.'), txt: 'D.C. é "da capo", italiano pra "do começo". quando aparece, volte lá pro início da música.' },
     { t: 'Fermata', ic: fermata, txt: 'segure a nota (ou a pausa) por mais tempo que o normal. o pulso espera você.' },
-    { t: 'Anacruse', ic: P({ notas: [[4], [4, '1']], barras: ['meio'] }), txt: 'é quando a música começa um pouquinho ANTES do tempo 1, como em "Parabéns pra você".', som: rit([0.75, 0.25, 1, 1, 1, 2], 100) }],
+    { t: 'Seguindo a partitura', ic: P({ notas: [[4], [4], [4], [4]], barras: ['fim'] }), txt: 'leia da esquerda pra direita, um compasso de cada vez. se errar, continue: o pulso não espera ninguém.', som: pulso([2, 1, 1, 1, 2, 1, 1, 1]) }],
     quiz: [
       { q: 'o ritornelo manda…', ops: ['repetir o trecho', 'parar de tocar', 'tocar mais rápido'], ok: 0 },
       { q: 'D.C. quer dizer…', ops: ['volte pro começo', 'acabou', 'toque baixinho'], ok: 0 },
       { q: 'na repetição, qual casa a gente toca?', ops: ['a casa 2', 'a casa 1', 'nenhuma'], ok: 0 },
-      { q: 'anacruse é quando a música começa…', ops: ['antes do tempo 1', 'no tempo 4 do fim', 'em silêncio'], ok: 0 }] },
+      { q: 'se você errar no meio da música, o melhor é…', ops: ['continuar no pulso', 'parar e começar tudo de novo', 'tocar mais rápido'], ok: 0 }] },
   { nome: 'mudando o tempo', paul: 'o tempo também pode mudar no meio da música!', cards: [
     { t: 'Acelerando', ic: () => txt('accel.', true), txt: '"accelerando" manda ir ficando cada vez mais rápido, aos poucos.', som: () => { const c = audio(); let t = c.currentTime + 0.05; let d = 0.7; for (let i = 0; i < 8; i++) { click(t, 1, 0.6); t += d; d *= 0.86; } } },
     { t: 'Ralentando', ic: () => txt('rit.', true), txt: '"ritardando" manda ir ficando cada vez mais devagar. é muito usado no fim da música.', som: () => { const c = audio(); let t = c.currentTime + 0.05; let d = 0.32; for (let i = 0; i < 8; i++) { click(t, 1, 0.6); t += d; d *= 1.16; } } },
     { t: 'A tempo', ic: () => txt('a tempo', true), txt: 'depois de acelerar ou ralentar, "a tempo" manda voltar pra velocidade normal.' },
-    { t: '6/8', ic: () => notas('eee eee'), txt: 'seis colcheias em dois grupos de três: "UM dois três, QUA tro cin co". dá um balanço de roda.', som: pulso([2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1], 200) },
+    { t: 'Devagar primeiro', ic: () => txt('60 → 90', true), txt: 'pra tocar rápido, comece devagar. só aumente o andamento quando sair sem erro.', som: () => { pulso([2, 1, 1, 1], 60)(); setTimeout(pulso([2, 1, 1, 1], 90), 4300); } },
     { t: 'Segurar o tempo', ic: () => notas('q q q q'), txt: 'músico bom mantém o tempo mesmo sem ouvir o clique. é o que você treina no Beat Hero e no Rudimentix.', som: pulso([2, 1, 0, 0, 2, 1, 0, 0], 100) }],
     quiz: [
       { q: '"accelerando" manda…', ops: ['ir ficando mais rápido', 'ir ficando mais devagar', 'parar'], ok: 0 },
       { q: '"ritardando" é muito usado…', ops: ['no fim da música', 'na contagem', 'na afinação'], ok: 0 },
       { q: '"a tempo" manda…', ops: ['voltar pra velocidade normal', 'tocar mais forte', 'repetir'], ok: 0 },
-      { q: 'no 6/8 as colcheias ficam em grupos de…', ops: ['3', '2', '4'], ok: 0 }] },
+      { q: 'pra conseguir tocar rápido, o melhor é…', ops: ['começar devagar e ir aumentando', 'começar já bem rápido', 'tocar sem contar'], ok: 0 }] },
 ];
 
 /* ======================= LEITURA DE NOTAS ======================= */
@@ -335,13 +335,13 @@ export const FASES_LEITURA = [
   { nome: 'sinais e letras', paul: 'pra fechar: os sinais que mudam a nota e as letras da cifra.', cards: [
     { t: 'Sustenido', ic: () => h('b', { class: 'tf-big tf-acid' }, '♯'), txt: 'o sustenido sobe a nota meio tom. no piano, é a tecla preta logo à direita.', som: midis([60, 61], 0.6) },
     { t: 'Bemol', ic: () => h('b', { class: 'tf-big tf-acid' }, '♭'), txt: 'o bemol desce a nota meio tom. no piano, é a tecla preta logo à esquerda.', som: midis([64, 63], 0.6) },
-    { t: 'Bequadro', ic: () => h('b', { class: 'tf-big tf-acid' }, '♮'), txt: 'o bequadro cancela o sustenido ou o bemol: a nota volta ao normal.', som: midis([61, 60], 0.6) },
+    { t: 'Teclas pretas', ic: () => h('b', { class: 'tf-big tf-acid' }, '♯ ♭'), txt: 'as teclas pretas do piano são os sustenidos e os bemóis. a mesma tecla tem dois nomes: dó sustenido ou ré bemol.', som: midis([60, 61, 62], 0.5) },
     { t: 'Vizinhas coladas', ic: PN('sol', [0, 1]), txt: 'mi e fá são coladinhas, e si e dó também: entre elas não tem tecla preta no piano.', som: midis([64, 65, 71, 72], 0.5) },
     { t: 'Letras da cifra', ic: () => txt('C D E F G A B', true), txt: 'as notas também têm letras: C é dó, D é ré, E é mi, F é fá, G é sol, A é lá e B é si. é o que aparece nos acordes.', som: midis([60, 62, 64, 65, 67, 69, 71], 0.3) }],
     quiz: [
       { q: 'o que o sustenido (♯) faz?', ops: ['sobe meio tom', 'desce meio tom', 'segura a nota'], ok: 0 },
       { q: 'o que o bemol (♭) faz?', ops: ['desce meio tom', 'sobe meio tom', 'repete a nota'], ok: 0 },
       { q: 'na cifra, a letra C é a nota…', ops: ['dó', 'lá', 'si'], ok: 0 },
-      { q: 'o bequadro (♮) serve pra…', ops: ['voltar a nota ao normal', 'deixar a nota mais longa', 'marcar uma pausa'], ok: 0 },
+      { q: 'as teclas pretas do piano são…', ops: ['os sustenidos e os bemóis', 'as notas mais graves', 'as pausas'], ok: 0 },
       { q: 'quais notas são vizinhas coladas (sem tecla preta no meio)?', ops: ['mi e fá', 'dó e ré', 'sol e lá'], ok: 0 }] },
 ];
