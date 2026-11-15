@@ -925,3 +925,20 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 /* Percussão: a arte de "congas" e "bongôs" vem com o nome cortado embaixo. Uma etiqueta cobre a base e escreve o nome inteiro, no jeito das outras cartas. */
 .ti-pp-foto[data-p="cg"], .ti-pp-foto[data-p="bg"] { position: relative; }
 .ti-pp-foto[data-p="cg"]::after, .ti-pp-foto[data-p="bg"]::after { content: attr(aria-label); position: absolute; left: 0; right: 0; bottom: 0; height: 20%; display: flex; align-items: center; justify-content: center; padding: 0 4px 7px; box-sizing: border-box; background: #fcf1e0; color: #1b2a4a; font: 400 clamp(12px, 4.1vw, 17px)/1.25 'Gochi Hand', 'Comic Sans MS', cursive; white-space: nowrap; text-decoration: underline; text-decoration-color: #d92031; text-decoration-thickness: 2px; text-underline-offset: 2px; pointer-events: none; }
+
+/* Violão: modo notas (melodia) com o braço, e troca dos acordes de cima */
+.ti-modo { margin: 12px 0 10px; }
+.ti-fret { display: grid; grid-template-columns: 40px repeat(6, minmax(0, 1fr)); gap: 4px; padding: 6px 8px 8px; background: #521622; border: 3px solid #1b1818; border-radius: 6px; box-shadow: 3px 3px 0 rgba(0, 0, 0, .35); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.ti-fret .ti-fh { font: 700 11px var(--body); font-style: normal; color: #f5ead2; text-align: center; opacity: .85; align-self: end; }
+.ti-fret .ti-fl { font: 700 12px var(--body); font-style: normal; color: #f5ead2; display: grid; place-items: center; }
+.ti-fc { min-height: 40px; min-width: 0; display: grid; place-items: center; border-radius: 10px; background: var(--nc); color: #fff; font: 700 13px var(--body); border: 2px solid rgba(0, 0, 0, .45); box-shadow: 0 3px 0 rgba(0, 0, 0, .4); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ti-fc.light { color: #1b1818; }
+.ti-fc.fora { background: rgba(245, 234, 210, .12); color: rgba(245, 234, 210, .55); box-shadow: none; border-color: rgba(245, 234, 210, .16); }
+.ti-fc.hit { filter: brightness(1.4); transform: translateY(2px); box-shadow: none; }
+.ti-bandeja { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+.ti-chord.peq { min-height: 44px; font-size: 19px; }
+.ti-chord.atual { outline: 3px solid #e8a92c; outline-offset: -3px; }
+.ti-chord.ed { border-style: dashed; }
+.ti-edbar { display: grid; gap: 8px; margin: 0 0 10px; color: #1b1818; font: 600 13px var(--body); }
+.ti-edb { display: flex; gap: 8px; flex-wrap: wrap; }
+.ti-fret[hidden], .ti-bandeja[hidden], .ti-edbar[hidden], .ti-neck[hidden], .ti-chords[hidden] { display: none !important; }
