@@ -89,10 +89,19 @@ body{background:var(--creme);color:var(--marinho);font-family:var(--f-texto);fon
       <button class="modo" id="m-nor" aria-pressed="true">normal</button>
     </div>
     <button class="go" id="bora">bora dançar</button>
+    <div class="modos"><button class="modo" id="cal-btn">calibrar o som</button></div>
+    <div class="dica" id="off"></div>
     <div class="dica">no computador: setas do teclado ou A S W D</div>
     <div class="rec" id="rec-ini"></div>
   </div>
 
+  <div class="tela" id="cal" hidden>
+    <h2>calibrar<span>o som</span></h2>
+    <p id="cal-msg">vai tocar uns tiques. toque na tela junto com cada tique, 8 vezes.</p>
+    <div class="estrelas" id="cal-n" style="font-size:40px;color:var(--marinho);text-shadow:none">0 / 8</div>
+    <button class="go" id="cal-go">começar</button>
+    <button class="modo" id="cal-x">voltar</button>
+  </div>
   <div class="tela" id="fim" hidden>
     <img id="fim-paul" src="sprites/danca-idle_01.webp" alt="">
     <div class="estrelas" id="fim-est" aria-label="estrelas"></div>
@@ -112,7 +121,7 @@ var CENAS=['agora é dança! 🕶','agora é guitarra!','agora é bateria!'];
 var COR=['#a8182e','#0f2347','#b07d12','#1f6f78'];
 var $=function(s){return document.querySelector(s)};
 var paul=$('#paul'), cv=$('#cv'), g=cv.getContext('2d');
-var modo='normal', ctx=null, t0=0, beat=.5, running=false, notes=[], S={}, raf=0, timer=0, nextBeat=0, auto=false;
+var OFF=0, modo='normal', ctx=null, t0=0, beat=.5, running=false, notes=[], S={}, raf=0, timer=0, nextBeat=0, auto=false;
 var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 // pré-carrega os 18 quadros
 SETS.forEach(function(s){['idle_01','idle_02','left','down','up','right'].forEach(function(f){var i=new Image();i.src='sprites/'+s+'-'+f+'.webp'})});
@@ -123,13 +132,13 @@ function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var SEQ=['-','L','D','-','U','R','L','-','D','D','U','U','L','R','-','-'];
 var LANE={L:0,D:1,U:2,R:3};
 function chart(m){
-  var out=[],cfg=m==='infantil'?{bpm:100,win:[.11,.21],travel:2.2}:{bpm:120,win:[.07,.14],travel:1.7};
+  var out=[],cfg=m==='infantil'?{bpm:100,win:[.11,.21],travel:2.2}:{bpm:110,win:[.09,.17],travel:1.9};
   for(var b=0;b<48;b++){
     var c=SEQ[b%16];
     if(m==='infantil'){ if(b%2) continue; if(c==='-') c='LDUR'[(b/2)%4|0]; }
     if(c!=='-') out.push({b:b,lane:LANE[c]});
-    if(m==='normal'&&b>=16&&(b%4===1||b%4===3)) out.push({b:b+.5,lane:(b*3+1)%4});
-    if(m==='normal'&&b>=32&&b%4===0) out.push({b:b+.5,lane:(b+2)%4});
+    if(m==='normal'&&b>=16&&b%8===7) out.push({b:b+.5,lane:(b*3+1)%4});
+    if(m==='normal'&&b>=32&&b%8===3) out.push({b:b+.5,lane:(b+2)%4});
   }
   return {notes:out,cfg:cfg};
 }
@@ -174,6 +183,8 @@ function arrow(x,y,s,lane,fill,stroke,alpha){
   g.restore();
 }
 function now(){return ctx.currentTime-t0}
+function loadOff(){var v=load('paul-danca-off');OFF=(typeof v==='number')?v:Math.min(.25,((ctx&&ctx.outputLatency)||0)+((ctx&&ctx.baseLatency)||0));showOff()}
+function showOff(){var e=$('#off');if(e)e.textContent='atraso do som: '+Math.round(OFF*1000)+' ms'}
 function draw(){
   var W=S.W,H=S.H,lw=W/4,sz=Math.min(lw*.78,64),hitY=H-sz*.9,tr=S.cfg.travel,n=now();
   g.clearRect(0,0,W,H);
@@ -194,7 +205,7 @@ function hud(){$('#s-pts').textContent=S.score.toLocaleString('pt-BR');$('#s-com
 function loop(){
   if(!running) return;
   var n=now(),bp=n/beat-4;
-  if(auto){for(var i=0;i<notes.length;i++){var nt=notes[i];if(!nt.done&&Math.abs(nt.t-n)<.012){press(nt.lane)}}}
+  if(auto){for(var i=0;i<notes.length;i++){var nt=notes[i];if(!nt.done&&Math.abs(nt.t+OFF-n)<.012){press(nt.lane)}}}
   var cd=$('#contagem');
   if(bp<0){var k=Math.ceil(-bp);cd.textContent=k;cd.style.opacity=1-((-bp)%1)*.6}else{cd.style.opacity=0}
   var sc=bp<0?0:Math.min(2,Math.floor(bp/16));
@@ -203,31 +214,32 @@ function loop(){
   if(bi!==S.lastBeat){S.lastBeat=bi;if(bi>=0)bounce()}
   if(n>=S.until){setFrame(bi>=0&&bi%2?'idle_02':'idle_01')}
   // erros: nota passou da janela
-  for(var j=0;j<notes.length;j++){var m=notes[j];if(!m.done&&n-m.t>S.cfg.win[1]){m.done=true;m.res='miss';S.miss++;S.combo=0;S.pops.push({t:n,txt:'ops',c:'#a8182e',x:(m.lane+.5)*S.W/4});S.until=n+.36;setFrame('idle_02');hud()}}
+  for(var j=0;j<notes.length;j++){var m=notes[j];if(!m.done&&n-OFF-m.t>S.cfg.win[1]){m.done=true;m.res='miss';S.miss++;S.combo=0;S.pops.push({t:n,txt:'ops',c:'#a8182e',x:(m.lane+.5)*S.W/4});S.until=n+.36;setFrame('idle_02');hud()}}
   draw();
   if(n>(4+48)*beat+1.2){finish();return}
   raf=requestAnimationFrame(loop);
 }
 function press(lane){
   if(!running||!ctx) return;
-  var n=now(),best=null,bd=9;
+  var n=now()-OFF,best=null,bd=9;
   for(var i=0;i<notes.length;i++){var nt=notes[i];if(nt.done||nt.lane!==lane) continue;var d=Math.abs(nt.t-n);if(d<bd){bd=d;best=nt}}
   var pad=document.querySelector('.pad[data-lane="'+lane+'"]');pad.classList.add('on');setTimeout(function(){pad.classList.remove('on')},90);
-  S.flash[lane]=n+.25;
+  S.flash[lane]=now()+.25;
   if(!best||bd>S.cfg.win[1]+.03){return}
   best.done=true;var perf=bd<=S.cfg.win[0];best.res=perf?'p':'g';
   if(perf)S.perf++;else S.good++;
   S.combo++;S.maxc=Math.max(S.maxc,S.combo);
   S.score+=(perf?100:60)*Math.min(4,1+Math.floor(S.combo/10));
-  S.pops.push({t:n,txt:perf?'perfeito!':'bom!',c:perf?'#1f6f78':'#b07d12',x:(lane+.5)*S.W/4});
-  S.until=n+.3;setFrame(POSES[lane]);blip(lane,perf);hud();
+  S.pops.push({t:now(),txt:perf?'perfeito!':'bom!',c:perf?'#1f6f78':'#b07d12',x:(lane+.5)*S.W/4});
+  S.until=now()+.3;setFrame(POSES[lane]);blip(lane,perf);hud();
   if(!reduce&&paul.animate)paul.animate([{transform:'scale(1)'},{transform:'scale(1.06) rotate('+(lane===0?-3:lane===3?3:0)+'deg)'},{transform:'scale(1)'}],{duration:180,easing:'ease-out'});
 }
 function start(){
   if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();NZ=noise(.5)}
   if(ctx.state==='suspended') ctx.resume();
+  loadOff();
   var c=chart(modo);beat=60/c.cfg.bpm;
-  $('#inicio').hidden=true;$('#fim').hidden=true;
+  $('#inicio').hidden=true;$('#fim').hidden=true;$('#cal').hidden=true;
   resize();
   S={cfg:c.cfg,score:0,combo:0,maxc:0,perf:0,good:0,miss:0,pops:[],flash:[0,0,0,0],scene:0,first:true,until:0,lastBeat:-99,W:S.W,H:S.H};
   notes=c.notes.map(function(x){return {t:(4+x.b)*beat,lane:x.lane,done:false,res:null}});
@@ -249,6 +261,33 @@ function finish(){
   $('#fim-paul').src='sprites/'+SETS[st===3?2:st===2?1:0]+'-'+(st>=2?'up':'idle_02')+'.webp';
   $('#fim').hidden=false;
 }
+// ---------- calibrar o atraso do som ----------
+var CAL=null;
+function calStart(){
+  if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();NZ=noise(.5)}
+  if(ctx.state==='suspended') ctx.resume();
+  var base=ctx.currentTime+.8,ticks=[];
+  for(var i=0;i<8;i++){var t=base+i*.6;ticks.push(t);tick(t,true)}
+  CAL={ticks:ticks,d:[],end:base+8*.6+.6};
+  $('#cal-n').textContent='0 / 8';$('#cal-msg').textContent='toque junto com o tique...';$('#cal-go').hidden=true;
+  setTimeout(calEnd,(CAL.end-ctx.currentTime)*1000+100);
+}
+function calTap(){
+  if(!CAL) return;
+  var n=ctx.currentTime,best=null,bd=9;
+  CAL.ticks.forEach(function(t){var d=n-t;if(Math.abs(d)<Math.abs(bd)){bd=d;best=t}});
+  if(Math.abs(bd)<.4){CAL.d.push(bd);$('#cal-n').textContent=Math.min(8,CAL.d.length)+' / 8'}
+}
+function calEnd(){
+  if(!CAL) return;var d=CAL.d.slice(-6).sort(function(a,b){return a-b});CAL=null;$('#cal-go').hidden=false;
+  if(d.length<3){$('#cal-msg').textContent='não deu pra medir. toque junto com cada tique e tente de novo.';return}
+  OFF=Math.max(-.1,Math.min(.35,d[d.length>>1]));save('paul-danca-off',OFF);showOff();
+  $('#cal-msg').textContent='pronto! atraso do som: '+Math.round(OFF*1000)+' ms. já está salvo.';$('#cal-go').textContent='medir de novo';
+}
+$('#cal-btn').onclick=function(){$('#inicio').hidden=true;$('#cal').hidden=false;$('#cal-go').textContent='começar'};
+$('#cal-go').onclick=calStart;
+$('#cal-x').onclick=function(){CAL=null;$('#cal').hidden=true;$('#inicio').hidden=false};
+$('#cal').addEventListener('pointerdown',function(e){if(e.target.closest('button')) return;calTap()});
 // ---------- controles ----------
 function setModo(m){modo=m;$('#m-inf').setAttribute('aria-pressed',m==='infantil');$('#m-nor').setAttribute('aria-pressed',m==='normal');showRec()}
 function showRec(){var b=load('paul-danca-'+modo);$('#rec-ini').textContent=b&&b.score?'seu recorde: '+b.score.toLocaleString('pt-BR')+' · '+'★'.repeat(b.stars):''}
@@ -262,6 +301,6 @@ var KEYS={ArrowLeft:0,a:0,A:0,ArrowDown:1,s:1,S:1,ArrowUp:2,w:2,W:2,ArrowRight:3
 window.addEventListener('keydown',function(e){if(e.repeat) return;if(e.key in KEYS){e.preventDefault();press(KEYS[e.key])}else if((e.key==='Enter'||e.key===' ')&&!$('#inicio').hidden){e.preventDefault();start()}});
 document.addEventListener('visibilitychange',function(){if(document.hidden&&running){running=false;clearInterval(timer);cancelAnimationFrame(raf);if(ctx)ctx.suspend();$('#inicio').hidden=false}});
 window.__danca={autoplay:function(v){auto=v!==false},state:function(){return S}};
-setModo('normal');resize();
+setModo('normal');resize();(function(){var v=load('paul-danca-off');if(typeof v==='number')OFF=v})();showOff();
 })();
 </script>
