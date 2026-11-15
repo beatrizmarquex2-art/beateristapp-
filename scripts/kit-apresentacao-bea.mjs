@@ -38,6 +38,8 @@ export const SERIE = {
   '6-o-ritmo-cabe-numa-caixa': { foto: 'bea-cajon', pos: '50% 20%', cor: 'creme', t1: 'o ritmo cabe', t2: 'numa caixa', e1: 'cajón', e2: 'percussão', corpo: 'bateria, cajón ou pandeiro: tudo começa no mesmo pulso.', fim: 'já tocou um?', paul: 'cajon' },
   '7-rindo-na-bateria': { foto: 'bea-bateria-rindo', pos: '45% 40%', cor: 'azul', larga: true, t1: 'meu lugar', t2: 'favorito', e1: 'atrás da bateria', e2: 'com a camiseta da escola', corpo: 'é daqui que saem as ideias pros jogos e pras aulas.', fim: 'bora tocar?' },
   '8-depois-do-show': { foto: 'bea-palco-rindo', pos: '50% 45%', cor: 'vinho', larga: true, t1: 'quando o show', t2: 'dá certo', e1: 'microfone na mão', e2: 'sorriso no rosto', corpo: 'ver aluno no palco é a melhor parte de ser professora.', fim: 'obrigada, turma!', paul: 'microfone' },
+  '9-dia-do-baterista': { foto: 'bea-dia-do-baterista', pos: '55% 30%', cor: 'azul', t1: 'feliz dia', t2: 'do baterista', e1: 'pra quem toca', e2: 'e pra quem vai tocar', corpo: 'o melhor instrumento do mundo merece um dia só dele.', fim: 'marca um<br>baterista!' },
+  '10-ukulele': { foto: 'bea-ukulele', pos: '50% 35%', cor: 'creme', t1: 'hoje é dia', t2: 'de ukulele', e1: 'quatro cordas', e2: 'um sorrisão', corpo: 'na Beaterista tem instrumento de todo tamanho.', fim: 'qual você<br>quer aprender?', paul: 'guitarra' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
@@ -47,6 +49,7 @@ export const MARCA = {
   '3-cada-detalhe': { foto: 'marca-copo-adesivo', pos: '50% 45%', cor: 'vinho', t1: 'cada detalhe', t2: 'tem a nossa cara', e1: 'copo e adesivo', e2: 'camiseta e palheta', corpo: 'quem estuda aqui leva a Beaterista pra casa.', fim: 'é time!', paul: 'oculos' },
   '4-bastidores': { foto: 'marca-cracha-producao', pos: '50% 35%', cor: 'azul', t1: 'bastidores', t2: 'do show', e1: 'Beaterista Team', e2: 'produção', corpo: 'por trás de cada apresentação dos alunos tem um time inteiro.', fim: 'bora pro palco?', paul: 'microfone' },
   '5-vem-conhecer': { foto: 'marca-cartao', pos: '55% 40%', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', e1: 'Araçatuba, SP', e2: 'aulas presenciais', corpo: 'a Beaterista também existe fora da tela.', fim: '@beaterista<br>.escolademusica', paul: 'professor' },
+  '7-veste-a-camiseta': { foto: 'marca-camisetas-arara', pos: '40% 35%', cor: 'vinho', t1: 'veste', t2: 'a camiseta', e1: 'azul, amarela', e2: 'ou branca', corpo: 'tem do tamanho bebê ao tamanho adulto.', fim: 'qual é a sua cor?', paul: 'oculos' },
   '6-toda-peca-tem-nome': { foto: 'marca-folha-pecas', pos: '45% 40%', cor: 'azul', t1: 'toda peça', t2: 'tem nome', e1: 'bumbo, caixa, surdo', e2: 'chimbal, tons e pratos', corpo: 'a primeira folha de quem começa bateria na Beaterista.', fim: 'sabe todas?', paul: 'bateria' },
 };
 // série "nossos alunos": a Bea confirmou (15/nov) que os pais autorizam. As FOTOS e as ARTES com criança NÃO entram no repositório (é público):
@@ -73,6 +76,12 @@ export const ALUNOS = {
   '19-canta-e-toca': { foto: 'microfone-fone', pos: '50% 40%', cor: 'azul', t1: 'canta, toca', t2: 'e se diverte', e1: 'microfone', e2: 'fone e baqueta', corpo: 'aula de música também é hora de brincar.', fim: 'solta a voz!', paul: 'microfone' },
   '20-o-rock-mora-aqui': { foto: 'rock-oculos-escuros', pos: '30% 45%', cor: 'vinho', larga: true, t1: 'o rock', t2: 'mora aqui', e1: 'colete jeans', e2: 'óculos escuros', corpo: 'na Beaterista cada um toca com o seu estilo.', fim: 'qual é o seu?', paul: 'oculos' },
   '21-foco-total': { foto: 'foco-azul', pos: '55% 40%', cor: 'creme', t1: 'foco', t2: 'total', e1: 'olho na caixa', e2: 'baqueta na mão', corpo: 'quem estuda durante o ano toca tranquilo no dia do show.', fim: 'bora estudar?' },
+  '22-ja-tem-camiseta': { foto: 'bebes', pos: '50% 40%', cor: 'creme', t1: 'ainda não tocam', t2: 'mas já têm camiseta', e1: 'azul ou amarela?', e2: 'as duas!', corpo: 'os menores da turma já vestem a Beaterista.', fim: 'que dupla!', paul: 'selfie' },
+  '23-sorteio': { foto: 'sorteio', pos: '50% 35%', cor: 'azul', larga: true, t1: 'teve sorteio', t2: 'de camiseta', e1: 'dia de evento', e2: 'dia de presente', corpo: 'olha a cara de quem ganhou.', fim: 'parabéns!', paul: 'oculos' },
+  '24-baqueta-no-alto': { foto: 'menina-baqueta-alto', pos: '45% 35%', cor: 'vinho', t1: 'baqueta', t2: 'no alto', e1: 'bateria azul', e2: 'olho no prato', corpo: 'ela sabe exatamente onde vai bater.', fim: 'toca muito!' },
+  '25-gente-grande': { foto: 'menino-serio', pos: '50% 35%', cor: 'azul', t1: 'concentração', t2: 'de gente grande', e1: 'duas baquetas', e2: 'um objetivo', corpo: 'quando a música começa, ele nem pisca.', fim: 'respeita o<br>baterista!' },
+  '26-aprende-brincando': { foto: 'sinos-bea', pos: '45% 50%', cor: 'creme', larga: true, t1: 'música se aprende', t2: 'brincando', e1: 'sinos coloridos', e2: 'cada cor, um som', corpo: 'é assim que os pequenos descobrem as notas.', fim: 'toca mais um!', paul: 'pandeiro' },
+  '27-o-time': { foto: 'time-bolo', pos: '50% 35%', cor: 'azul', larga: true, t1: 'o time', t2: 'da beaterista', e1: 'professores', e2: 'e um bolo', corpo: 'por trás de cada aula tem essa turma.', fim: 'parabéns pra nós!', paul: 'professor' },
 };
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const browser = await chromium.launch();
