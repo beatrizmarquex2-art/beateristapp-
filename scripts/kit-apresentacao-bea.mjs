@@ -34,6 +34,7 @@ export const SERIE = {
   '2-educacao-com-proposito': { foto: 'bea-moldura-proposito', pos: '50% 40%', cor: 'azul', t1: 'educação musical', t2: 'com propósito', e1: 'esse é o nosso lema', e2: 'na Beaterista', corpo: 'na sala de aula, no palco e agora também na tela.', fim: 'vem tocar<br>com a gente.', paul: 'professor' },
   '3-da-sala-pro-palco': { foto: 'bea-palco-rindo', pos: '40% 30%', cor: 'creme', t1: 'da sala de aula', t2: 'pro palco', e1: 'escola de música', e2: 'em Araçatuba, SP', corpo: 'na Beaterista a música acontece em sala de aula e no palco.', fim: 'bora tocar?', paul: 'microfone' },
   '4-eu-ensino-o-que-eu-toco': { foto: 'bea-palco-vermelha', pos: '30% 40%', cor: 'azul', t1: 'eu ensino', t2: 'o que eu toco', e1: 'baterista', e2: 'e professora', corpo: 'os exercícios que eu estudo são os mesmos que eu ensino e levo pro palco.', fim: 'do palco<br>pra aula.' },
+  '6-o-ritmo-cabe-numa-caixa': { foto: 'bea-cajon', pos: '50% 20%', cor: 'creme', t1: 'o ritmo cabe', t2: 'numa caixa', e1: 'cajón', e2: 'percussão', corpo: 'bateria, cajón ou pandeiro: tudo começa no mesmo pulso.', fim: 'já tocou um?', paul: 'cajon' },
   '5-nao-e-so-bateria': { foto: 'bea-guitarra', pos: '62% 60%', cor: 'vinho', t1: 'não é só', t2: 'bateria', e1: 'violão e guitarra', e2: 'baixo e teclado', corpo: 'na escola e nos jogos tem lugar pra mais de um instrumento.', fim: 'qual é o seu?', paul: 'guitarra' },
 };
 // série "a marca" (perfil do Paul): só objetos e mãos, sem rosto de aluno
