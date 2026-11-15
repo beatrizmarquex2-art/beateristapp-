@@ -36,7 +36,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
-## Postar conquistas, festa de caminho e roleta em 3 áreas (15/nov/2026, v532, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
+## Postar conquistas, festa de caminho e roleta em 3 áreas (15/nov/2026, v534, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
 - **Cartão de conquista pra postar** (`js/conquista.js`): imagem em pé 1080×1920 com o logo da escola, o Paul, o que a pessoa conquistou, **"o que este jogo desenvolve"** (3 linhas por jogo, lista `BENEFICIOS`; é o texto pra mãe/pai) e o link `jogos.beaterista.com.br` + `@beaterista_`. Sem foto e sem sobrenome. Compartilha pelo celular ou baixa.
   - **3 estilos prontos** em `ESTILOS`: `palco` (noite, igual ao PaulBox), `creme`, `azul` (o do placar). Está valendo `palco` (`ESTILO_PADRAO`); **a Bea ainda vai escolher** (mostrei as 3 lado a lado). Trocar = mudar essa constante.
 - **Botão "↗ compartilhar" no cartão azul de fim de jogo** (`js/jogos/placar.js`): aparece em vitória e empate nos 8 jogos que usam o placar. O nome do jogo vem da faixa de título (ou do parâmetro `jogo`).
@@ -46,6 +46,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - **Missão nova: postou um jogo e marcou a escola = 5 ★, 1 vez por jogo** (`JOGOS_POST`/`tipoPost` em `js/resgate.js`; o tipo vai como `post:<jogo>`). Mesma fila da Bea em **Resgates**, que aprova ou recusa. Precisa de código de aluno (regra que já existia: sem código não ganha estrela).
 - **ANTES DE PUBLICAR: aplicar `supabase/017_resgates_post.sql`** (só passa a aceitar `post:<jogo>` no tipo). Sem isso o print de postagem volta "não consegui enviar". Não foi aplicado.
 - Testes: `resgate-logica.test.mjs` (2 novos), `e2e/resgate-print.mjs` (3 áreas + missão de postar). `album-pacotes`, `figurinhas` e `album-aluno` já paravam antes desta mudança, no mesmo ponto (dependem do Supabase, que o sandbox não alcança).
+- **Jogos Ensinam e Dicionário com desenho novo (v534)**: a Bea escolheu a **opção B, "palco à noite"**, pros dois (as 3 opções estão em `prototipos/ensinam-dicionario-opcoes.css`). Regras no fim de `css/jogos.css`; no "salvar em PDF" o Jogos Ensinam volta pro papel branco. As listas "desenvolve" do Uno, velha, quebra-cabeça, cara a cara e memória foram alinhadas com as correções dela. **Regra de texto da Bea: sempre ligar a algo musical e não usar "figura" solto (pai e mãe não sabem o que é).** Textos do cartão em `BENEFICIOS` (`js/conquista.js`), PaulBox incluído. Pendente: ela decidir se o título "Dicionário da bateria" vira "Dicionário musical" e qual estilo do cartão de postar (A palco está valendo).
 - Monte seu ritmo (a Bea perguntou): `#/kids/ritmo`, aberto sem código, fora do catálogo de Jogos. Candidato a ganhar "gravar e postar" como o PaulBox.
 
 ## PaulBox: a banda do Paul (15/nov/2026, v531, publicado no app da Bea e na área dos alunos)
