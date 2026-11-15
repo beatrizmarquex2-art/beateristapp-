@@ -5,6 +5,7 @@ import { banner } from '../ui.js';
 import { kitTheme, themeRow } from '../kids/kit-theme.js';
 import { CHORDS, pluck, warmGuitar, backing } from '../instruments.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
+import { rolar } from './rolar-opcoes.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'guitarra limpa'], ['rock', '🤘', 'guitarra rock']]; // o padrão é o violão 🎸
@@ -67,7 +68,7 @@ export function mount(host) {
   const syncOff = () => { offMsg.hidden = !isMuted(); }; window.addEventListener('bt-mute', syncOff); syncOff();
   stage.append(chordsEl, h('div', { class: 'ti-neck' }, notes, strs));
   host.append(banner('Cordas', 'violão e guitarra: passe o dedo nas cordas'), tocarTabs('violao'), offMsg, stage,
-    h('section', { class: 'card pad ti-panel' }, soundRow, h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' })), themeBox),
+    h('section', { class: 'card pad ti-panel' }, rolar(soundRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' })), rolar(themeBox)),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. 🔉 (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));
   drawChords(); drawSound(); drawTheme();

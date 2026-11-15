@@ -6,6 +6,7 @@ import { kitTheme, themeRow } from '../kids/kit-theme.js';
 import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
+import { rolar } from './rolar-opcoes.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 const SCALES = { penta: [60, 62, 64, 67, 69, 72, 74, 76, 79, 81], maior: [60, 62, 64, 65, 67, 69, 71, 72] };
@@ -69,7 +70,7 @@ export function mount(host) {
 
   stage.append(xy, pads);
   host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), stage,
-    h('section', { class: 'card pad ti-panel' }, modeRow, scaleRow, soundRow, themeBox),
+    h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow), rolar(themeBox)),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó é vinho, ré azul-marinho, mi azul, sol mostarda…), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();

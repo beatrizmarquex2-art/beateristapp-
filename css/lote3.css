@@ -908,3 +908,20 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 /* botão fixo de voltar à lista, dentro dos jogos (a barra de baixo continua escondida lá, pra o toque perto da borda não cair na Lojinha) */
 .voltar-jogos { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(14px + var(--safe-b)); z-index: 60; display: inline-flex; align-items: center; min-height: 44px; padding: 6px 18px; border: 2.5px solid #1b1818; border-radius: 999px !important; background: #fffdf8; color: #1b1818; font: 800 15px var(--body); text-decoration: none; box-shadow: 3px 3px 0 #1b1818; }
 .voltar-jogos[hidden] { display: none !important; } body.rz-lock .voltar-jogos, html:not(.em-jogo) .voltar-jogos, html.kb-open .voltar-jogos { display: none !important; }
+
+/* Painel dos instrumentos (Tocar): cada fileira de opções é UMA linha que arrasta pro lado, com setinhas ‹ › (antes quebrava em 4 linhas) */
+.ti-panel .kd-rolar { position: relative; min-width: 0; }
+.ti-panel .kd-rolar > .kd-modes { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; gap: 8px; padding: 2px 40px 8px 2px; margin: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.ti-panel .kd-rolar > .kd-modes::-webkit-scrollbar { display: none; }
+.ti-panel .kd-rolar .kd-modes > * { flex: 0 0 auto; white-space: nowrap; scroll-snap-align: start; }
+.ti-panel .kd-rolar .kd-themes { display: flex; }
+.ti-panel .kd-rolar-b { position: absolute; top: 0; bottom: 6px; margin: auto 0; width: 34px; height: 34px; padding: 0 0 3px; border: 2px solid #1b1818; border-radius: 50%; background: #ffd166; color: #1b1818; font: 900 24px/1 var(--body, system-ui); box-shadow: 2px 2px 0 #1b1818; cursor: pointer; z-index: 2; }
+.ti-panel .kd-rolar-b.dir { right: 2px; } .ti-panel .kd-rolar-b.esq { left: 2px; }
+.ti-panel .kd-rolar-b[hidden] { display: none; }
+.ti-panel .kd-rolar:has(> .kd-modes[hidden]) { display: none; }
+.ti-panel .kd-rolar-b:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1b1818; }
+@media (prefers-reduced-motion: reduce) { .ti-panel .kd-rolar > .kd-modes { scroll-behavior: auto; } }
+
+/* Percussão: a arte de "congas" e "bongôs" vem com o nome cortado embaixo. Uma etiqueta cobre a base e escreve o nome inteiro, no jeito das outras cartas. */
+.ti-pp-foto[data-p="cg"], .ti-pp-foto[data-p="bg"] { position: relative; }
+.ti-pp-foto[data-p="cg"]::after, .ti-pp-foto[data-p="bg"]::after { content: attr(aria-label); position: absolute; left: 0; right: 0; bottom: 0; height: 15%; display: flex; align-items: center; justify-content: center; background: #fcf1e0; color: #1b2a4a; font: 400 clamp(15px, 5.2vw, 22px)/1 'Gochi Hand', 'Comic Sans MS', cursive; text-decoration: underline; text-decoration-color: #d92031; text-decoration-thickness: 2px; text-underline-offset: 3px; pointer-events: none; }
