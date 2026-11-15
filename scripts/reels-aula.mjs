@@ -12,6 +12,8 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const V = process.env.VIDEOS, OUT = process.env.SAIDA; fs.mkdirSync(OUT, { recursive: true });
+const hdr = (f) => /arib-std-b67|smpte2084/.test(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=color_transfer', '-of', 'csv=p=0', f]).toString());
+const SDR = 'zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,';
 const dura = (f) => parseFloat(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).toString());
 // melhor trecho: 4 quadros/s em 48×48 cinza, soma da diferença entre quadros; devolve o início (múltiplo de 0,25 s) da janela de d segundos com mais movimento
 const melhor = (f, d) => { const b = execFileSync('ffmpeg', ['-loglevel', 'error', '-i', f, '-vf', 'fps=4,scale=48:48,format=gray', '-f', 'rawvideo', '-'], { maxBuffer: 1 << 28 }); const N = Math.floor(b.length / 2304), df = [];
@@ -34,7 +36,8 @@ export const REELS = {
   'teclado-3-primeiras-notas': { fim: ['as primeiras', 'notas', 'começa hoje, na tela'],  t1: 'primeiras', t2: 'notas', paul: 'teclado', clipes: [['IMG_3878', 0, 2.5], ['IMG_3879', 0.5, 4.5], ['IMG_3962', 0.5, 4.5]] },
   'aula-5-musica-desde-pequeno': { fim: ['música', 'desde cedo', 'jogos pra aprender brincando'],  t1: 'música', t2: 'desde pequeno', paul: 'pandeiro', clipes: [['IMG_8788', 2, 5], ['IMG_1441', 2, 4, { crop: [0, 0.16, 0.65, 0.65] }]] },
 };
-const MARCAS = { gorilla: ['assets/originals/pad_gorilla_original.webp', 'height:56px'], spark: ['assets/originals/spark_original.jpeg', 'height:150px;width:300px;object-fit:cover'], nagano: ['assets/originals/nagano_original.png', 'height:120px;border-radius:14px'] };
+// logos dos parceiros SEMPRE em branco, PNG sem fundo (pedido da Bea): assets/parceiros-branco/
+const MARCAS = { gorilla: ['assets/parceiros-branco/pad-gorilla.png', 'height:84px'], spark: ['assets/parceiros-branco/spark.png', 'height:84px'], nagano: ['assets/parceiros-branco/nagano.png', 'height:120px'] };
 const FONTES = `@font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${u('assets/fonts/GochiHand-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${u('assets/fonts/HankenGrotesk-latin.woff2')})}`;
 // cartão final (2,5 s) pra converter: promessa + "joga grátis" + site + parceiro
 const final = ({ fim, paul, marca }) => `<!doctype html><meta charset="utf-8"><style>${FONTES}*{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;background:#0d1a36;color:#f4ead8;position:relative;overflow:hidden}
@@ -44,7 +47,7 @@ h1{position:absolute;left:70px;top:300px;font:400 124px/.98 Marker,cursive;trans
 .b{position:absolute;left:70px;top:900px;font:800 70px Hanken,sans-serif;background:#a8182e;padding:26px 50px;border-radius:99px;box-shadow:10px 10px 0 #f4ead8}
 .u{position:absolute;left:70px;top:1090px;font:700 50px Hanken,sans-serif}.u small{display:block;font:400 46px Gochi,cursive;margin-top:10px;color:#d8b879}
 .c{position:absolute;right:30px;bottom:560px;height:440px;filter:drop-shadow(10px 12px 0 rgba(0,0,0,.4))}
-.m{position:absolute;left:70px;bottom:360px;display:flex;align-items:center;gap:24px;font:400 44px Gochi,cursive}.m span{background:#000;border-radius:20px;padding:14px 22px;display:flex;align-items:center;overflow:hidden}.m img{display:block}.m .sl{height:110px}</style>
+.m{position:absolute;left:70px;bottom:360px;display:flex;align-items:center;gap:24px;font:400 44px Gochi,cursive}.m span{display:flex;align-items:center}.m img{display:block}.m .sl{height:110px}</style>
 <div class="p"></div><h1>${fim[0]}<em>${fim[1]}</em></h1><div class="s">${fim[2]}</div><div class="b">joga grátis</div><div class="u">jogos.beaterista.com.br<small>link na bio</small></div>
 <div class="m"><img class="sl" src="${u('assets/originals/logo-beaterista-dourado.png')}"><span style="background:none;padding:0;font:800 40px/1.15 Hanken,sans-serif;display:block">Beaterista<br><span style="font-weight:500;font-size:32px;background:none;padding:0;display:inline">educação musical com propósito</span></span></div><div class="m" style="bottom:210px">${marca ? `<span style="background:none;padding:0">com</span> <span><img src="${u(MARCAS[marca][0])}" style="${MARCAS[marca][1]}"></span>` : ''}</div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">`;
 const capa = ({ t1, t2, paul, marca }) => `<!doctype html><meta charset="utf-8"><style>
@@ -55,7 +58,7 @@ const capa = ({ t1, t2, paul, marca }) => `<!doctype html><meta charset="utf-8">
 h1{position:absolute;left:64px;top:150px;font:400 112px/.98 Marker,cursive;color:#f4ead8;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;display:block;color:#d8b879;padding-left:46px}
 .u{position:absolute;left:64px;bottom:330px;font:700 38px Hanken,sans-serif;background:#0d1a36;color:#f4ead8;padding:18px 32px;border-radius:99px}
 .c{position:absolute;right:20px;bottom:300px;height:380px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.35))}</style>
-<div class="g1"></div><div class="g2"></div><h1>${t1}<em>${t2}</em></h1>${marca ? `<div style="position:absolute;left:64px;bottom:470px;display:flex;align-items:center;gap:16px;font:400 40px 'Marker',cursive;color:#f4ead8"><span style="background:#000;border-radius:18px;padding:10px 18px;display:flex;overflow:hidden"><img src="${u(MARCAS[marca][0])}" style="${MARCAS[marca][1].replace('150px', '90px').replace('300px', '200px').replace('120px', '90px').replace('56px', '44px')}"></span></div>` : ''}<div class="u" style="display:flex;align-items:center;gap:18px;padding:10px 34px 10px 10px;font:800 36px/1.15 Hanken,sans-serif"><img src="${u('assets/originals/logo-beaterista-dourado.png')}" style="height:96px"><span>Beaterista<br><span style="font-weight:500;font-size:29px">educação musical com propósito</span></span></div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">`;
+<div class="g1"></div><div class="g2"></div><h1>${t1}<em>${t2}</em></h1>${marca ? `<div style="position:absolute;left:64px;bottom:470px;display:flex;align-items:center;gap:16px;font:400 40px 'Marker',cursive;color:#f4ead8"><span style="display:flex"><img src="${u(MARCAS[marca][0])}" style="${MARCAS[marca][1].replace('150px', '90px').replace('300px', '200px').replace('120px', '90px').replace('56px', '44px')}"></span></div>` : ''}<div class="u" style="display:flex;align-items:center;gap:18px;padding:10px 34px 10px 10px;font:800 36px/1.15 Hanken,sans-serif"><img src="${u('assets/originals/logo-beaterista-dourado.png')}" style="height:96px"><span>Beaterista<br><span style="font-weight:500;font-size:29px">educação musical com propósito</span></span></div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">`;
 const browser = await chromium.launch();
 const SO = process.env.SO; // SO=teclado -> só os reels cujo nome começa assim
 for (const [nome, r] of Object.entries(REELS)) { if (SO && !SO.split(',').some((s) => nome.startsWith(s))) continue;
@@ -72,13 +75,13 @@ for (const [nome, r] of Object.entries(REELS)) { if (SO && !SO.split(',').some((
     ins.push('-ss', String(ini), '-t', String(d), '-i', arq);
     const ro = o.gira ? 'transpose=2,' : ''; // vídeo gravado deitado: gira pra ficar em pé
     const cr = o.crop ? `crop=iw*${o.crop[2]}:ih*${o.crop[3]}:iw*${o.crop[0]}:ih*${o.crop[1]},` : '';
-    fl.push(`[${i}:v]${ro}${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[v${i}]`);
+    fl.push(`[${i}:v]${ro}${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,${hdr(arq) ? SDR : ''}setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[v${i}]`);
   });
   const n = r.clipes.length;
-  fl.push(r.clipes.map((_, i) => `[v${i}]`).join('') + `concat=n=${n}:v=1:a=0[vv]`, `[vv][${n}:v]overlay=0:0${FIM ? '[cl]' : '[out]'}`);
-  if (FIM) { ins.push('-loop', '1', '-t', String(FIM), '-i', pngF); fl.push(`[${n + 2}:v]scale=1080:1920,fps=30,format=yuv420p,setsar=1[fc]`, `[cl]format=yuv420p[cl2]`, `[cl2][fc]concat=n=2:v=1:a=0[out]`); }
+  fl.push(r.clipes.map((_, i) => `[v${i}]`).join('') + `concat=n=${n}:v=1:a=0[vv]`, `[${n}:v]scale=out_color_matrix=bt709:out_range=tv,format=yuva420p[ov]`, `[vv][ov]overlay=0:0${FIM ? '[cl]' : '[out]'}`);
+  if (FIM) { ins.push('-loop', '1', '-t', String(FIM), '-i', pngF); fl.push(`[${n + 2}:v]scale=1080:1920:out_color_matrix=bt709:out_range=tv,fps=30,format=yuv420p,setsar=1[fc]`, `[cl]format=yuv420p[cl2]`, `[cl2][fc]concat=n=2:v=1:a=0[out]`); }
   const base = ins.splice(0, n * 6), resto = ins;
-  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...base, '-i', png, '-i', wav, ...resto, '-filter_complex', fl.join(';'), '-map', '[out]', '-map', `${n + 1}:a`, '-t', String(dur), '-c:v', 'libx264', '-crf', '21', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', path.join(OUT, nome + '.mp4')]);
+  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...base, '-i', png, '-i', wav, ...resto, '-filter_complex', fl.join(';'), '-map', '[out]', '-map', `${n + 1}:a`, '-t', String(dur), '-c:v', 'libx264', '-crf', '21', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', path.join(OUT, nome + '.mp4')]);
   fs.rmSync(tmp); fs.rmSync(png); fs.rmSync(wav); if (FIM) fs.rmSync(pngF); console.log('ok', nome, dur + 's');
 }
 await browser.close();
