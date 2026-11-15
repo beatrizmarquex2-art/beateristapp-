@@ -34,7 +34,7 @@ html,body{width:1080px;height:1920px;background:transparent;overflow:hidden}
 .marca{position:absolute;left:50px;top:1462px;width:350px}`;
 function clip(i){const s=spec.segs[i];const ls=s.lines;const max=Math.max(...ls.map(x=>x.length));
  const size=max>17?92:max>13?108:124; const n=spec.segs.length;
- return `<style>${css.replace('SIZE',size)}</style>${s.layout==='h'?'':'<div class="shade"></div>'}
+ return `<style>${css.replace('SIZE',size)}</style>${(s.layout==='h'||s.layout==='tela')?'':'<div class="shade"></div>'}
  ${n>1?`<div class="bar">${spec.segs.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div>`:''}
  <div class="box"><div class="tag">${spec.tag}</div>${ls.map(x=>`<div class="l ${x[0]=='*'?'hl':''}">${x.replace('*','')}</div>`).join('')}</div>
  ${s.foot?`<div class="foot">${s.foot}</div>`:''}`}

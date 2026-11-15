@@ -1266,3 +1266,25 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fx-tempo i{display:block;height:100%;width:100%;background:#1f6f78;transform-origin:left center;animation:fx-tempo linear forwards}
 .fx-tempo.parada i{animation-play-state:paused}.fx-tempo.acabou i{background:#8e1b2c}
 @keyframes fx-tempo{0%{transform:scaleX(1)}70%{background:#1f6f78}100%{transform:scaleX(0);background:#8e1b2c}}
+
+/* ---------- placar de fim de jogo (js/jogos/placar.js) ---------- */
+/* !important de propósito: o placar entra por cima das classes antigas de cada jogo (jg-result, cx-result, kx-result, st-final) */
+.pl-card{position:relative!important;box-sizing:border-box;display:block!important;width:auto!important;max-width:420px!important;margin:92px auto 14px!important;background:#101f47!important;border:4px solid #f6b93b!important;border-radius:22px!important;padding:64px 16px 16px!important;color:#f4ecdf!important;text-align:center!important;box-shadow:0 14px 30px rgb(0 0 0/.45)!important;overflow:visible!important}
+.pl-card.win{box-shadow:0 0 0 6px rgb(246 185 59/.25),0 14px 30px rgb(0 0 0/.45)!important}
+.pl-card .pl-paul{position:absolute!important;left:50%;top:-92px;height:150px!important;width:auto!important;max-width:none!important;margin:0!important;translate:-50% 0;pointer-events:none;filter:drop-shadow(0 4px 4px rgb(0 0 0/.35))}
+.pl-card h3,.pl-card h2{margin:0!important;font-size:32px!important;line-height:1.05!important;color:#f4ecdf!important}.pl-card.win h3,.pl-card.win h2{color:#f6b93b!important}
+.pl-card p{color:#cfd8ee!important}.pl-card .muted{color:#aeb9d6!important}
+.pl-card .pl-sub{margin:6px 0 12px!important;font-weight:600}
+.pl-card .pl-q{display:flex!important;gap:10px;margin:10px 0 12px!important}
+.pl-card .pl-q>div{flex:1 1 0!important;min-width:0;background:#1d3166!important;border-radius:14px!important;padding:8px 4px!important}
+.pl-card .pl-q b{display:block!important;font-family:'Anton','Abril Fatface',sans-serif!important;font-weight:400!important;font-size:44px!important;line-height:1.1!important;color:#f6b93b!important}.pl-card .pl-q b.m{font-size:30px!important;line-height:48px!important}
+.pl-card .pl-q small{display:block!important;font-weight:800;font-size:12px!important;letter-spacing:.05em;text-transform:uppercase;color:#f4ecdf!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-card .pl-q .w{background:#c0152f!important}.pl-card .pl-q .w b{color:#fff!important}
+.pl-card .pl-st{display:inline-block!important;margin:0 0 12px!important;background:#f6b93b!important;color:#101f47!important;font-weight:800;padding:4px 14px!important;border-radius:999px!important}
+.pl-card .pl-act{display:flex!important;flex-wrap:wrap;gap:10px;justify-content:center;margin:4px 0 0!important}
+.pl-card .pl-act .btn,.pl-card .pl-act .kd-btn,.pl-card .pl-act .kd-chip{flex:1 1 40%;width:auto!important;min-height:44px!important;margin:0!important;padding:10px 12px!important;font-size:16px!important;font-weight:800!important;border:3px solid #f4ecdf!important;border-radius:12px!important;background:transparent!important;color:#f4ecdf!important;box-shadow:3px 3px 0 rgb(0 0 0/.4)!important;text-decoration:none!important;display:inline-flex!important;align-items:center;justify-content:center;opacity:1!important}
+.pl-card .pl-act .btn.primary,.pl-card .pl-act .kd-btn{flex:1 1 100%;font-size:19px!important;background:#f6b93b!important;color:#101f47!important}
+.pl-card .jg-qimg{max-height:110px;width:auto;margin:6px auto;display:block;background:#fbf4e4;border-radius:12px;padding:4px}
+.cx-result.pl-card{position:absolute!important;left:10px;right:10px;top:50%;translate:0 -42%;z-index:50;margin:0!important;max-width:none!important;animation:cxPop .4s both}
+.pl-card h3,.pl-card h2{font-family:'Permanent Marker','Gochi Hand',cursive!important;font-weight:400!important}
+.pl-card .pl-q{width:100%!important;align-items:stretch;justify-content:stretch}.pl-card .pl-q>div{width:auto!important;max-width:none!important;margin:0!important}

@@ -13,7 +13,7 @@ clipT=sum(s['dur'] for s in segs); T=clipT+ENDD
 cmd=['ffmpeg','-v','error','-y']; fc=''
 for i,s in enumerate(segs):
     f=glob.glob(os.path.join(raw,f"*{s['src']}*"))[0]
-    if s.get('layout') in ('img','fit'): cmd+=['-loop','1','-framerate','30','-t',str(s['dur']+0.2),'-i',f]
+    if s.get('layout') in ('img','fit','tela'): cmd+=['-loop','1','-framerate','30','-t',str(s['dur']+0.2),'-i',f]
     else: cmd+=['-ss',str(s['ss']),'-t',str(s['dur']+0.2),'-i',f]
     g=s.get('gamma',1.06); eq=f"eq=contrast=1.07:brightness={s.get('bright',0.03)}:saturation=1.18:gamma={g},unsharp=5:5:0.5"
     d=s['dur']; z=f"zoompan=z='1+0.05*on/{int(d*30)}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920:fps=30"
@@ -27,6 +27,8 @@ for i,s in enumerate(segs):
         v=f"scale=1000:-2:flags=lanczos,pad=1080:1920:40:{s.get('y',700)}:color=0x101f47,fps=30"
     elif lay=='moldura':  # video antigo com a filmagem dentro de uma moldura: recorta so a filmagem
         v=f"fps=30,crop=444:790:150:215,scale=1188:2112:flags=lanczos,{z},eq=contrast=1.07:brightness=0.035:saturation=1.2:gamma=1.06,unsharp=5:5:0.7"
+    elif lay=='tela':  # imagem já pronta em 1080x1920 (ex.: página do Jornal do Paul): entra inteira, com zoom lento
+        v=f"scale=1188:2112:flags=lanczos,{z}"
     elif lay=='rot':
         v=f"fps=30,transpose={s.get('transpose',2)},scale=1188:2112:flags=lanczos,{z},{eq}"
     else:
