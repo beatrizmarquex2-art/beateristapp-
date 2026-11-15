@@ -16,7 +16,7 @@ import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
 import * as teoriaBasica from './kids/teoria.js';
-import { cartoesDosTemas } from './kids/teoria.js';
+import { cartoesDosTemas, sessaoPorId, estrelasTema } from './kids/teoria.js';
 import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
@@ -40,7 +40,7 @@ function marcarEstudo(id) {
 import * as SALVAR from './salvar-codigo.js';
 import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
 import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
-import { AULAS, montarAula } from './kids/aulas-paul.js';
+import { AULAS } from './kids/aulas-paul.js';
 const TERMS_QTD = TERMS.length;
 import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
@@ -251,21 +251,13 @@ function voltarJogos(on) {
 }
 function aulasView(view) {
   const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
-    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, `grátis: ${GRATIS.aulinha} passos`) : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
-  // a Teoria do Paul (5 temas × 30 aulinhas) mora AQUI (pedido da Bea: "é o robôterista ensina"), junto das aulas de instrumento
+    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
+  // Pedido da Bea (15/nov/2026): "teoria" (5 temas × 30 aulinhas) e uma aula de 30 aulinhas pra cada instrumento (bateria, teclado, violão), tudo AQUI.
+  const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
   view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
-    h('h2', { class: 'al-sec' }, 'teoria com o Paul · 150 aulinhas'), ...cartoesDosTemas(),
-    h('h2', { class: 'al-sec' }, 'aulas de instrumento'),
-    ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo, a.cor, a.pose, a.adesivos[0])),
-    lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min', 'figuras', 'metronomo', 'nota2')));
+    h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
+    h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
-function aulaView(view, id) {
-  if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
-  view.append(banner(`Aula de ${AULAS[id].titulo.toLowerCase()}`, 'com o Paul'), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ aulas')));
-  const box = h('div', { class: 'pad-x' }); view.append(box);
-  return montarAula(box, id, { onPasso: () => { marcarEstudo('aula'); marcarVisto('aulas'); } });
-}
-
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
@@ -424,7 +416,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'acordes') acordesView(view, r.parts.slice(1));
     else if (r.name === 'estudos' && r.parts[0] === 'ritmos') c = ritmosView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
-    else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? (AULAS[r.parts[1]] ? teoriaBasica.mount(view, [r.parts[1]], { aoFim: () => marcarVisto('aulas') }) : (location.hash = '#/estudos/aulas', null)) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);

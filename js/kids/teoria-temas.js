@@ -25,7 +25,7 @@ const Y = (p) => 64 - p * 5;
  * 'x' = cabeça em X (prato), 'o' = vazia, sem 3º item = cheia. O rótulo sai embaixo da nota.
  */
 export function pauta(cfg = {}) {
-  const ns = cfg.notas || []; const x0 = cfg.clave ? 44 : 14; const passo = ns.length > 6 ? 22 : 28; const W = Math.max(96, x0 + Math.max(ns.length, 1) * passo + 12 + (cfg.barras ? 24 : 0)); let s = '';
+  const ns = cfg.notas || []; const x0 = cfg.clave ? 44 : 14; /* nome comprido embaixo da nota precisa de mais espaço */ const rotLongo = ns.some((n) => n[1] && n[1].length > 3); const passo = rotLongo ? 44 : ns.length > 6 ? 22 : 28; const W = Math.max(96, x0 + Math.max(ns.length, 1) * passo + 12 + (cfg.barras ? 24 : 0)); let s = '';
   for (let l = 0; l < 5; l++) s += `<line x1="4" x2="${W - 4}" y1="${Y(l * 2)}" y2="${Y(l * 2)}" stroke="currentColor" stroke-width="1.8"/>`;
   if (cfg.clave === 'sol') s += `<svg x="2" y="8" width="42" height="72" viewBox="0 0 48 64">${SYM_SVG.clave_sol}</svg>`;
   else if (cfg.clave === 'fa') s += `<svg x="4" y="14" width="38" height="54" viewBox="0 0 48 64">${SYM_SVG.clave_fa}</svg>`;

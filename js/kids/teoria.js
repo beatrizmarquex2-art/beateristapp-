@@ -1,13 +1,15 @@
 // Teoria básica com o Paul: cada sessão tem cartões clicáveis (toque pra virar e ver a explicação) e, no fim, um mini quiz de 3 perguntas.
 // Estrelas: 3 de 3 = 2 ★, 2 de 3 = 1 ★ (1 vez por sessão por dia; limite de 30 ★/dia do jogo "estudos").
 import { h } from '../util.js';
-import { banner } from '../ui.js';
+import { banner, toast } from '../ui.js';
+import { alunoSemCodigo } from '../amostra.js';
 import { robo } from './robo.js';
 import { audio, click } from '../audio.js';
 import { symbolEl } from '../jogos/cartas-simbolos.js';
 import { epiano } from '../synth.js';
 import { FASES_FIGURAS, notas } from './teoria-figuras.js';
 import { FASES_PAUSAS, FASES_CLAVES, FASES_TEMPO, FASES_LEITURA } from './teoria-temas.js';
+import { FASES_BATERIA, FASES_TECLADO, FASES_VIOLAO } from './teoria-instrumentos.js';
 
 const NSV = 'http://www.w3.org/2000/svg';
 const svgEl = (w, hh, inner) => { const e = document.createElementNS(NSV, 'svg'); e.setAttribute('viewBox', `0 0 ${w} ${hh}`); e.setAttribute('class', 'tf-sym'); e.setAttribute('aria-hidden', 'true'); e.innerHTML = inner; return e; };
@@ -26,8 +28,14 @@ export const SESSOES = [
   { id: 'claves', ic: '🔑', li: () => symbolEl('clave_sol', 'tf-sym'), nome: 'Claves', sub: 'a chave que abre a pauta', cor: '#EBA332', paul: FASES_CLAVES[0].paul, fases: FASES_CLAVES },
   { id: 'tempo', ic: '⏱️', li: () => h('b', { class: 'tf-li-t' }, '4/4'), nome: 'Tempo e compasso', sub: 'o pulso e a fórmula', cor: '#2a9d8f', paul: FASES_TEMPO[0].paul, fases: FASES_TEMPO },
   { id: 'leitura', ic: '🎼', li: () => svgEl(56, 56, '<g stroke="currentColor" stroke-width="2.4">' + [12, 20, 28, 36, 44].map((y) => `<line x1="4" x2="52" y1="${y}" y2="${y}"/>`).join('') + '</g><ellipse cx="30" cy="32" rx="7" ry="5" transform="rotate(-20 30 32)" fill="currentColor"/><line x1="36.4" y1="30" x2="36.4" y2="6" stroke="currentColor" stroke-width="2.6"/>'), nome: 'Leitura de notas', sub: 'os nomes das notas', cor: '#7b3fe4', paul: FASES_LEITURA[0].paul, fases: FASES_LEITURA },
+  // aulas por instrumento (grupo 'instrumento'): moram em #/estudos/aulas/<id>; sem código só a 1ª fase abre (amostra grátis)
+  { id: 'bateria', grupo: 'instrumento', ic: '🥁', nome: 'Bateria', sub: 'peças, levada e partitura', cor: '#8e1b22', paul: FASES_BATERIA[0].paul, fases: FASES_BATERIA, gratis: 1 },
+  { id: 'teclado', grupo: 'instrumento', ic: '🎹', nome: 'Teclado', sub: 'teclas, escala e acordes', cor: '#17365B', paul: FASES_TECLADO[0].paul, fases: FASES_TECLADO, gratis: 1 },
+  { id: 'violao', grupo: 'instrumento', ic: '🎸', nome: 'Violão', sub: 'cordas, acordes e batida', cor: '#b57a12', paul: FASES_VIOLAO[0].paul, fases: FASES_VIOLAO, gratis: 1 },
 ];
 export const sessaoPorId = (id) => SESSOES.find((s) => s.id === id);
+/** Onde mora cada sessão: os 5 temas em #/estudos/basica/<id>, as aulas de instrumento em #/estudos/aulas/<id>. */
+export const hrefDe = (s) => (s.grupo === 'instrumento' ? `#/estudos/aulas/${s.id}` : `#/estudos/basica/${s.id}`);
 
 const FEITAS = 'beaterista-teoria-feitas';
 const feitas = () => { try { return JSON.parse(localStorage.getItem(FEITAS) || '{}'); } catch { return {}; } };
@@ -50,16 +58,17 @@ async function darEstrelas(id, n) { // cada sessão paga até 2 ★ na vida (só
 export function mount(host, parts = [], { aoFim } = {}) {
   const s = sessaoPorId(parts[0]);
   if (!s) return lista(host);
-  const FS = fasesDe(s); let fi = Math.max(0, FS.findIndex((_, k) => !melhor(chaveFase(s.id, k)))); if (fi < 0) fi = 0; // abre na 1ª fase ainda sem quiz feito
+  const FS = fasesDe(s); const livres = s.gratis || FS.length; const trancada = (k) => alunoSemCodigo() && k >= livres; // sem código só as primeiras fases abrem
+  let fi = Math.max(0, FS.findIndex((_, k) => !melhor(chaveFase(s.id, k)))); if (fi < 0 || trancada(fi)) fi = 0; // abre na 1ª fase ainda sem quiz feito
   const bot = robo({ mood: 'wave', size: 84, say: '' }); let fase = 'cards'; let vistos = new Set(); let i = 0; let certas = 0; let perguntas = [];
   const corpo = h('div', { class: 'tf-corpo' }); const fala = h('p', { class: 'au-say', 'aria-live': 'polite' });
   const cabeca = h('div', { class: 'au-top' }, bot.el, h('div', { class: 'au-bubble' }, fala));
   const F = () => FS[fi];
   const quizOn = () => { fase = 'quiz'; perguntas = emb(F().quiz).slice(0, 3); i = 0; certas = 0; desenha(); };
-  const irFase = (k) => { fi = k; fase = 'cards'; vistos = new Set(); desenha(); try { cabeca.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } };
+  const irFase = (k) => { if (trancada(k)) { toast('esta fase é só pra alunos com código. a 1ª é grátis!'); return; } fi = k; fase = 'cards'; vistos = new Set(); desenha(); try { cabeca.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } };
   /** Trilha das fases (só quando o tema tem mais de uma): número, nome e as estrelas já ganhas. */
   const trilha = () => (FS.length < 2 ? null : h('div', { class: 'tf-fases', role: 'tablist', 'aria-label': `fases de ${s.nome}` }, ...FS.map((f, k) => { const e = estrelasQuiz(melhor(chaveFase(s.id, k)));
-    return h('button', { type: 'button', role: 'tab', class: `tf-fase${k === fi ? ' on' : ''}${e ? ' feita' : ''}`, 'aria-selected': String(k === fi), 'aria-label': `fase ${k + 1}: ${f.nome}${e ? `, ${e} de 2 estrelas` : ''}`, onclick: () => irFase(k) }, h('b', {}, String(k + 1)), h('i', {}, e ? '★'.repeat(e) : '·')); })));
+    return h('button', { type: 'button', role: 'tab', class: `tf-fase${k === fi ? ' on' : ''}${e ? ' feita' : ''}`, 'aria-selected': String(k === fi), 'aria-label': `fase ${k + 1}: ${f.nome}${e ? `, ${e} de 2 estrelas` : ''}`, onclick: () => irFase(k) }, h('b', {}, String(k + 1)), h('i', {}, trancada(k) ? '🔒' : e ? '★'.repeat(e) : '·')); })));
   function desenha() {
     corpo.style.setProperty('--c', s.cor); const f = F();
     if (fase === 'cards') {
@@ -85,16 +94,16 @@ export function mount(host, parts = [], { aoFim } = {}) {
   async function fim() {
     fase = 'fim'; const ch = chaveFase(s.id, fi); marca(ch, certas); const est = estrelasQuiz(certas); const ganhou = await darEstrelas(ch, est); if (aoFim) aoFim(s.id);
     bot.set(certas >= 2 ? 'cheer' : 'happy', ''); fala.textContent = certas === 3 ? 'perfeito! você mandou muito bem!' : certas === 2 ? 'muito bom! mais uma e fica perfeito.' : 'bora rever os cartões e tentar de novo!';
-    const proxFase = fi + 1 < FS.length ? fi + 1 : -1; const prox = SESSOES[SESSOES.findIndex((x) => x.id === s.id) + 1];
+    const proxFase = fi + 1 < FS.length && !trancada(fi + 1) ? fi + 1 : -1; const mesmo = SESSOES.filter((x) => (x.grupo || '') === (s.grupo || '')); const prox = fi + 1 < FS.length ? null : mesmo[mesmo.findIndex((x) => x.id === s.id) + 1];
     corpo.replaceChildren(...[trilha(), h('div', { class: 'jg-result' }, h('h3', { class: 'hand' }, `${certas} de 3`), h('p', { class: 'tf-estrelas' }, '★'.repeat(est) + '☆'.repeat(2 - est)), ganhou ? h('p', {}, `+${ganhou} ★ nas suas estrelas!`) : est ? h('p', { class: 'muted' }, 'as estrelas desta fase você já ganhou.') : null),
-      h('div', { class: 'jg-actions' }, proxFase >= 0 ? h('button', { class: 'btn primary', type: 'button', onclick: () => irFase(proxFase) }, `próxima fase: ${FS[proxFase].nome} ▶`) : null, h('button', { class: `btn${proxFase >= 0 ? '' : ' primary'}`, type: 'button', onclick: () => { fase = 'cards'; vistos = new Set(); desenha(); } }, 'rever os cartões'), h('button', { class: 'btn', type: 'button', onclick: quizOn }, 'quiz de novo'), proxFase < 0 ? (prox ? h('a', { class: 'btn', href: `#/estudos/basica/${prox.id}` }, `próxima: ${prox.nome} ▶`) : h('a', { class: 'btn', href: '#/estudos/aulas' }, 'todos os temas')) : null)].filter(Boolean));
+      h('div', { class: 'jg-actions' }, proxFase >= 0 ? h('button', { class: 'btn primary', type: 'button', onclick: () => irFase(proxFase) }, `próxima fase: ${FS[proxFase].nome} ▶`) : null, h('button', { class: `btn${proxFase >= 0 ? '' : ' primary'}`, type: 'button', onclick: () => { fase = 'cards'; vistos = new Set(); desenha(); } }, 'rever os cartões'), h('button', { class: 'btn', type: 'button', onclick: quizOn }, 'quiz de novo'), proxFase < 0 ? (prox ? h('a', { class: 'btn', href: hrefDe(prox) }, `próxima: ${prox.nome} ▶`) : h('a', { class: 'btn', href: '#/estudos/aulas' }, 'todos os temas')) : null)].filter(Boolean));
   }
-  host.append(banner(s.nome, 'teoria básica com o Paul'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ robôterista ensina'), cabeca, corpo));
+  host.append(banner(s.nome, s.grupo === 'instrumento' ? 'aula do Paul' : 'teoria básica com o Paul'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ robôterista ensina'), cabeca, corpo));
   desenha();
   return () => {};
 }
 /** Os cartões dos 5 temas (com aulinhas e estrelas), pra aparecerem dentro do "Robôterista ensina". */
-export const cartoesDosTemas = () => SESSOES.map((s) => { const [tem, max] = estrelasTema(s); const n = fasesDe(s).reduce((q, f) => q + f.cards.length, 0); return h('a', { class: 'es-modo tf-tema', href: `#/estudos/basica/${s.id}`, style: `--c:${s.cor};--f:#fff` }, h('span', { class: 'es-mi tf-li', 'aria-hidden': 'true' }, s.li ? s.li() : s.ic), h('span', { class: 'es-mt' }, h('b', {}, s.nome), h('small', {}, `${s.sub} · ${n} aulinhas`), h('small', { class: 'tf-tema-st' }, `${'★'.repeat(tem)}${'☆'.repeat(max - tem)}`)), h('span', { class: 'es-go' }, '▶')); });
+export const cartoesDosTemas = () => SESSOES.filter((s) => s.grupo !== 'instrumento').map((s) => { const [tem, max] = estrelasTema(s); const n = fasesDe(s).reduce((q, f) => q + f.cards.length, 0); return h('a', { class: 'es-modo tf-tema', href: hrefDe(s), style: `--c:${s.cor};--f:#fff` }, h('span', { class: 'es-mi tf-li', 'aria-hidden': 'true' }, s.li ? s.li() : s.ic), h('span', { class: 'es-mt' }, h('b', {}, s.nome), h('small', {}, `${s.sub} · ${n} aulinhas`), h('small', { class: 'tf-tema-st' }, `${'★'.repeat(tem)}${'☆'.repeat(max - tem)}`)), h('span', { class: 'es-go' }, '▶')); });
 function lista(host) { // endereço antigo (#/estudos/basica): leva pro Robôterista ensina, onde os temas moram agora
   location.replace('#/estudos/aulas'); return () => {};
 }

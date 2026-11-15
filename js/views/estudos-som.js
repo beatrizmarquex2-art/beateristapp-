@@ -20,7 +20,7 @@ export const VIOLAO = [
   ['Gm', 'Sol menor (pestana)', [3, 5, 5, 3, 3, 3]], ['Am', 'Lá menor', [-1, 0, 2, 2, 1, 0]], ['Bm', 'Si menor (pestana)', [-1, 2, 4, 4, 3, 2]],
 ];
 const ABERTAS = [40, 45, 50, 55, 59, 64];
-function diagrama(frets) {
+export function diagrama(frets) {
   const x = (i) => 26 + i * 17; const y = (f) => 30 + f * 21; let s = '';
   for (let i = 0; i < 6; i++) s += `<line x1="${x(i)}" y1="${y(0)}" x2="${x(i)}" y2="${y(5)}" stroke="#14111a" stroke-width="${2.4 - i * 0.28}"/>`;
   for (let f = 0; f <= 5; f++) s += `<line x1="${x(0)}" y1="${y(f)}" x2="${x(5)}" y2="${y(f)}" stroke="#14111a" stroke-width="${f === 0 ? 5 : 1.5}"/>`;

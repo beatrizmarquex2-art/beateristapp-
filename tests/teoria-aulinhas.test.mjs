@@ -1,7 +1,7 @@
-// Teoria: cada tema tem 30 aulinhas em 6 fases de 5, e cada fase tem quiz que dá pra sortear 3 perguntas com 1 resposta certa.
+// Teoria e aulas de instrumento (bateria, teclado, violão): cada tema tem 30 aulinhas em 6 fases de 5, e cada fase tem quiz que dá pra sortear 3 perguntas com 1 resposta certa.
 import test from 'node:test'; import assert from 'node:assert/strict';
-const F = await import('../js/kids/teoria-figuras.js'); const T = await import('../js/kids/teoria-temas.js');
-const TEMAS = { figuras: F.FASES_FIGURAS, pausas: T.FASES_PAUSAS, claves: T.FASES_CLAVES, tempo: T.FASES_TEMPO, leitura: T.FASES_LEITURA };
+const F = await import('../js/kids/teoria-figuras.js'); const T = await import('../js/kids/teoria-temas.js'); const I = await import('../js/kids/teoria-instrumentos.js');
+const TEMAS = { figuras: F.FASES_FIGURAS, pausas: T.FASES_PAUSAS, claves: T.FASES_CLAVES, tempo: T.FASES_TEMPO, leitura: T.FASES_LEITURA, bateria: I.FASES_BATERIA, teclado: I.FASES_TECLADO, violao: I.FASES_VIOLAO };
 for (const [nome, fases] of Object.entries(TEMAS)) {
   test(`${nome}: 6 fases de 5 aulinhas = 30`, () => {
     assert.equal(fases.length, 6); for (const f of fases) { assert.equal(f.cards.length, 5, f.nome); assert.ok(f.nome && f.paul, f.nome); }

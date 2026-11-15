@@ -520,3 +520,8 @@
 .tf-big.tf-acid{font:400 68px/1 'Noto Music','Segoe UI Symbol','Apple Symbols','DejaVu Sans',serif}
 .tf-card.visto{--tf-papel:color-mix(in srgb,var(--c,#17365B) 10%,#fffdf7)}
 .al-sec{margin:6px 0 -4px;font:400 20px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.03em;color:#162146}
+.tf-card .tf-sym.tf-diag{height:104px;width:auto}.tf-fila .tf-sym.tf-diag{height:84px}
+
+/* texto-ícone das aulinhas (C F G, 1 2 3 4, ♯ ♭, setas…): a regra '.tf-card b' deixava tudo pequeno */
+.tf-card .tf-ic .tf-big{font-size:40px;line-height:1.1;font-weight:400}.tf-card .tf-ic .tf-big.small{font-size:26px}.tf-card .tf-ic .tf-big.tf-acid{font-size:62px}
+.tf-card .tf-sym.tf-grade{height:auto;width:100%;max-height:104px}
