@@ -24,6 +24,7 @@ const acha = (id) => path.join(V, fs.readdirSync(V).find((f) => f.includes(id)))
 // A Bea pediu pra NÃO misturar: pad com pad, bateria com bateria.
 export const REELS = {
   // ini 'auto' = pega o trecho com mais movimento do vídeo (a Bea pediu "só a melhor parte")
+  'teste-aba-treino-no-pad': { cta: 1, telas: ['beathero', 'detetive'], capas: ['ritmo', 'pratica'], t1: 'treino', t2: 'no pad', paul: 'metronomo', marca: 'gorilla', fim: ['o treino segue', 'no jogo', 'o treino do pad continua no jogo: rudimentos e ritmo pra estudar em casa'], clipes: [['IMG_6973', 'auto', 4, { nota: ['didática', 'no pad a mão aprende o movimento antes de se preocupar com o volume.'] }], ['IMG_9033', 'auto', 4, { nota: ['música', 'rudimento é o alfabeto da bateria: com ele se escreve qualquer ritmo.'] }], ['IMG_9007', 'auto', 4, { nota: ['educação', 'repetir devagar e certo fixa mais do que repetir rápido e errado.'] }], ['IMG_9004', 'auto', 4, { nota: ['criatividade', 'depois da técnica vem a parte boa: inventar o próprio ritmo.'] }], ['a0e5e4cb', 'auto', 4, { verde: true, nota: ['educação', 'tocar em grupo ensina a ouvir o outro, e não só a si mesmo.'] }]] },
   'pad-1-treino-no-pad': { cta: 1, telas: ['beathero', 'detetive'], capas: ['ritmo', 'pratica'], t1: 'treino', t2: 'no pad', paul: 'metronomo', marca: 'gorilla', fim: ['o treino segue', 'no jogo', 'o treino do pad continua no jogo: rudimentos e ritmo pra estudar em casa'], clipes: [['IMG_6973', 'auto', 3], ['IMG_9033', 'auto', 3], ['IMG_9007', 'auto', 3], ['IMG_9004', 'auto', 3], ['a0e5e4cb', 'auto', 3, { verde: true }]] },
   'eletronica-1-bateria-eletronica': { marca: 'nagano', cta: 0, telas: ['toque', 'beathero'], t1: 'bateria', t2: 'eletrônica', paul: 'bateria', fim: ['sem bateria', 'em casa?', 'sem bateria em casa? toca na tela e treina com os jogos'], clipes: [['IMG_7199', 'auto', 3], ['IMG_7207', 'auto', 4], ['IMG_7198', 0, 2.5]] },
   'eletronica-2-bateria-de-tapete': { cta: 2, telas: ['toque', 'beathero'], capas: ['bateria-kids', 'ritmo'], t1: 'bateria', t2: 'de tapete', paul: 'bateria', fim: ['cabe na', 'mochila', 'cabe na mochila, e o treino cabe no celular'], clipes: [['IMG_4462', 'auto', 3.5], ['IMG_4477', 'auto', 3.5], ['IMG_4944', 'auto', 3.5]] },
@@ -70,6 +71,12 @@ ${cel(telas[0], 70, -3)}${cel(telas[1], 388, 2)}${livro(capas[0], 700, 2)}${livr
 <div class="et" style="left:84px;top:656px">jogos</div><div class="et" style="left:760px;top:656px">materiais</div>
 <div class="pre">${CTAS[cta][0]}</div><div class="b">${CTAS[cta][1]}</div><div class="u">jogos.beaterista.com.br</div><img class="c" src="${u(`assets/originals/paul-png/coloridos-hd/paul-${paul}.png`)}">
 <div class="m"><img class="sl" src="${u('assets/originals/logo-beaterista-dourado.png')}"><span>Beaterista<br><span style="font-weight:500;font-size:26px">educação musical com propósito</span></span></div>`;
+// ABA DE CONTEXTO (pedido da Bea): em cada corte, uma abinha pequena com uma frase sobre música / didática / criatividade / educação.
+// opção do clipe: nota: ['etiqueta', 'texto curto, até ~12 palavras'] — fica acima da assinatura, à esquerda, sem encostar no Paul.
+const aba = ([tag, txt]) => `<!doctype html><meta charset="utf-8"><style>${FONTES}*{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;background:transparent;position:relative;overflow:hidden}
+.a{position:absolute;left:54px;bottom:462px;width:590px;background:rgba(244,234,216,.96);color:#0d1a36;border-left:12px solid #d8b879;border-radius:6px 22px 22px 6px;padding:16px 24px 20px;box-shadow:8px 8px 0 rgba(0,0,0,.35)}
+.a b{display:inline-block;font:800 22px Hanken,sans-serif;text-transform:uppercase;letter-spacing:.08em;background:#a8182e;color:#f4ead8;padding:3px 14px;border-radius:99px;margin-bottom:8px}
+.a p{font:600 31px/1.25 Hanken,sans-serif;text-wrap:balance}</style><div class="a"><b>${tag}</b><p>${txt}</p></div>`;
 const capa = ({ t1, t2, paul, marca }) => `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${u('assets/fonts/HankenGrotesk-latin.woff2')})}
 *{margin:0;box-sizing:border-box}body{width:1080px;height:1920px;position:relative;overflow:hidden;background:transparent}
@@ -89,19 +96,23 @@ for (const [nome, r] of Object.entries(REELS)) { if (SO && !SO.split(',').some((
   if (FIM) { fs.writeFileSync(tmp, final(r)); const p2 = await browser.newPage({ viewport: { width: 1080, height: 1920 } }); await p2.goto(pathToFileURL(tmp).href); await p2.evaluate(() => document.fonts.ready); await p2.waitForTimeout(300); await p2.screenshot({ path: pngF }); await p2.close(); }
   const durC = r.clipes.reduce((s, c) => s + c[2], 0), dur = durC + FIM, wav = path.join(OUT, nome + '.wav');
   execFileSync('python3', [path.join(ROOT, 'marketing/reels/beat.py'), wav, String(dur), ...(FIM ? [String(durC)] : [])]);
+  const notas = [];
+  for (const [i, c] of r.clipes.entries()) { const o = c[3] || {}; if (!o.nota) continue; const pn = path.join(OUT, `${nome}-nota${i}.png`); fs.writeFileSync(tmp, aba(o.nota));
+    const p3 = await browser.newPage({ viewport: { width: 1080, height: 1920 } }); await p3.goto(pathToFileURL(tmp).href); await p3.evaluate(() => document.fonts.ready); await p3.waitForTimeout(200); await p3.screenshot({ path: pn, omitBackground: true }); await p3.close(); notas.push([i, pn]); }
   const ins = [], fl = [];
   r.clipes.forEach(([id, ini, d, o = {}], i) => {
     const arq = acha(id); if (ini === 'auto') ini = melhor(arq, d);
     ins.push('-ss', String(ini), '-t', String(d), '-i', arq);
     const ro = o.gira ? 'transpose=2,' : ''; // vídeo gravado deitado: gira pra ficar em pé
     const cr = o.crop ? `crop=iw*${o.crop[2]}:ih*${o.crop[3]}:iw*${o.crop[0]}:ih*${o.crop[1]},` : '';
-    fl.push(`[${i}:v]${ro}${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,${hdr(arq) ? SDR : ''}setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[v${i}]`);
+    fl.push(`[${i}:v]${ro}${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,${hdr(arq) ? SDR : ''}setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[${o.nota ? 'w' : 'v'}${i}]`);
   });
   const n = r.clipes.length;
   fl.push(r.clipes.map((_, i) => `[v${i}]`).join('') + `concat=n=${n}:v=1:a=0[vv]`, `[${n}:v]scale=out_color_matrix=bt709:out_range=tv,format=yuva420p[ov]`, `[vv][ov]overlay=0:0${FIM ? '[cl]' : '[out]'}`);
   if (FIM) { ins.push('-loop', '1', '-t', String(FIM), '-i', pngF); fl.push(`[${n + 2}:v]scale=1080:1920:out_color_matrix=bt709:out_range=tv,fps=30,format=yuv420p,setsar=1[fc]`, `[cl]format=yuv420p[cl2]`, `[cl2][fc]concat=n=2:v=1:a=0[out]`); }
+  notas.forEach(([i, pn], k) => { const ix = n + 2 + (FIM ? 1 : 0) + k; ins.push('-i', pn); fl.push(`[${ix}:v]scale=out_color_matrix=bt709:out_range=tv,format=yuva420p[nt${i}]`, `[w${i}][nt${i}]overlay=0:0[v${i}]`); });
   const base = ins.splice(0, n * 6), resto = ins;
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...base, '-i', png, '-i', wav, ...resto, '-filter_complex', fl.join(';'), '-map', '[out]', '-map', `${n + 1}:a`, '-t', String(dur), '-c:v', 'libx264', '-crf', '21', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', path.join(OUT, nome + '.mp4')]);
-  fs.rmSync(tmp); fs.rmSync(png); fs.rmSync(wav); if (FIM) fs.rmSync(pngF); console.log('ok', nome, dur + 's');
+  fs.rmSync(tmp); fs.rmSync(png); fs.rmSync(wav); if (FIM) fs.rmSync(pngF); notas.forEach(([, pn]) => fs.rmSync(pn)); console.log('ok', nome, dur + 's');
 }
 await browser.close();
