@@ -3,7 +3,8 @@ import { h } from '../util.js';
 import { audio, isMuted, setMuted } from '../audio.js';
 import { banner } from '../ui.js';
 import { kitTheme, themeRow } from '../kids/kit-theme.js';
-import { CHORDS, CHORDS_ALL, GUITAR_OPEN, pluck, warmGuitar, warmNotes, backing } from '../instruments.js';
+import { pluck, warmNotes, backing } from '../instruments.js';
+import { ACORDES, ABERTAS as GUITAR_OPEN, acharAcorde, PADRAO, diagramaSVG } from '../acordes.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 
@@ -19,8 +20,7 @@ const gravarLS = (k, v) => { try { localStorage.setItem(k, v); } catch { /* sem 
 
 export function mount(host) {
   let chord = 0; let sound = 'acoustic'; let mute = false; const st = new Map();
-  const achar = (n) => CHORDS_ALL.find(([x]) => x === n);
-  let slots = (() => { try { const a = JSON.parse(lerLS('bt-violao-acordes', 'null')); if (Array.isArray(a) && a.length === 8 && a.every(achar)) return a.map(achar); } catch { /* usa o padrão */ } return CHORDS.slice(); })();
+  let slots = (() => { try { const a = JSON.parse(lerLS('bt-violao-acordes2', 'null')); if (Array.isArray(a) && a.length === 8 && a.every((id) => acharAcorde(id))) return a.map(acharAcorde); } catch { /* usa o padrão */ } return PADRAO.map(acharAcorde); })();
   let modo = lerLS('bt-violao-modo', 'acordes') === 'notas' ? 'notas' : 'acordes'; let escala = ESCALAS[lerLS('bt-violao-escala', 'maior')] ? lerLS('bt-violao-escala', 'maior') : 'maior';
   let editando = false; let selSlot = 0;
   const stage = h('div', { class: 'ti-stage ti-gt', 'data-kit-theme': kitTheme() });
@@ -32,9 +32,14 @@ export function mount(host) {
   const muteBtn = h('button', { class: 'kd-chip ti-sym', type: 'button', 'aria-pressed': 'false', 'aria-label': 'abafar (segure)', title: 'abafar (segure)' }, '🔉'); // só o símbolo, pequeno
   const themeBox = h('div');
 
+  const carta = (ac, ativo, ed, onclick) => {
+    const e = h('button', { class: `ti-chord ti-carta${ed ? ' ed' : ''}${ativo ? ' on' : ''}`, type: 'button', 'aria-pressed': String(ativo), 'aria-label': `${ac.nome} ${ac.tipo}`, onclick }, h('b', {}, ac.nome), h('em', {}, ac.tipo), h('span', { class: 'ti-mao' }));
+    e.querySelector('.ti-mao').innerHTML = diagramaSVG(ac); return e;
+  };
+  const strumAc = (ac, delay0 = 0.005) => { const c = audio(); ac.notas.forEach((m, i) => { if (m != null) pluck(m, 0.8, c.currentTime + delay0 + i * 0.012, sound, false); }); };
   const drawChords = () => {
-    chordsEl.replaceChildren(...slots.map(([n], i) => h('button', { class: `ti-chord${editando ? ' ed' : ''}`, type: 'button', 'aria-pressed': String(editando ? i === selSlot : i === chord), onclick: () => { audio(); if (editando) { selSlot = i; } else { chord = i; } drawChords(); } }, n)));
-    notes.replaceChildren(...slots[chord][1].map((m, i) => { strEls[i].classList.toggle('off', m == null); return h('div', { class: 'ti-gnote' }, m == null ? '×' : nome(m)); }));
+    chordsEl.replaceChildren(...slots.map((ac, i) => carta(ac, editando ? i === selSlot : i === chord, editando, () => { audio(); if (editando) { selSlot = i; } else { chord = i; strumAc(slots[i]); } drawChords(); if (editando) drawBandeja(); })));
+    notes.replaceChildren(...slots[chord].notas.map((m, i) => { strEls[i].classList.toggle('off', m == null); return h('div', { class: 'ti-gnote' }, m == null ? '×' : nome(m)); }));
   };
   const drawSound = () => soundRow.replaceChildren(...SOUNDS.map(([v, l, nm]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { sound = v; audio(); warmGuitar(); drawSound(); } }, `${l} ${nm}`)));
   const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
@@ -44,7 +49,7 @@ export function mount(host) {
     const a = d.animate([{ transform: 'scale(.6)', opacity: 0.8 }, { transform: `scale(${big ? 3.4 : 1.8})`, opacity: 0 }], { duration: 440, easing: 'ease-out' }); a.onfinish = () => d.remove();
   };
   const pluckString = (i, vel, delay = 0) => {
-    const m = slots[chord][1][i]; const el = strEls[i].firstChild;
+    const m = slots[chord].notas[i]; const el = strEls[i].firstChild;
     if (m == null) { el.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(1px)' }, { transform: 'translateY(0)' }], { duration: 80 }); return; }
     const c = audio(); pluck(m, vel, c.currentTime + delay + 0.005, sound, mute);
     const amp = 2 + vel * 7; setTimeout(() => el.animate([{ transform: `translateY(${amp}px)` }, { transform: `translateY(${-amp * 0.7}px)` }, { transform: `translateY(${amp * 0.4}px)` }, { transform: `translateY(${-amp * 0.2}px)` }, { transform: 'translateY(0)' }], { duration: mute ? 120 : 520, easing: 'ease-out' }), delay * 1000);
@@ -89,21 +94,21 @@ export function mount(host) {
   for (const ev of ['pointerup', 'pointercancel']) frets.addEventListener(ev, (e) => vivo.delete(e.pointerId));
   const drawEscala = () => escalaRow.replaceChildren(h('small', {}, 'notas'), ...[['maior', 'dó maior'], ['penta', 'pentatônica'], ['todas', 'todas']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${escala === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(escala === v), onclick: () => { escala = v; gravarLS('bt-violao-escala', v); drawEscala(); drawFrets(); } }, l)));
 
-  /* ---------- trocar os acordes de cima ---------- */
-  const strum = (ch) => { const c = audio(); ch[1].forEach((m, i) => { if (m != null) pluck(m, 0.8, c.currentTime + 0.005 + i * 0.012, sound, false); }); };
-  const salvaSlots = () => gravarLS('bt-violao-acordes', JSON.stringify(slots.map(([n]) => n)));
+  /* ---------- trocar os acordes de cima: os 24 (maiores e menores) ---------- */
+  const salvaSlots = () => gravarLS('bt-violao-acordes2', JSON.stringify(slots.map((a) => a.id)));
   const drawBandeja = () => {
-    bandeja.replaceChildren(...CHORDS_ALL.map((ch) => h('button', { class: `ti-chord peq${slots[selSlot][0] === ch[0] ? ' atual' : ''}`, type: 'button', onclick: () => { slots[selSlot] = ch; salvaSlots(); warmNotes(ch[1]); strum(ch); selSlot = (selSlot + 1) % 8; drawChords(); drawBandeja(); } }, ch[0])));
-    edBar.replaceChildren(h('small', {}, `trocando o ${selSlot + 1}º acorde: escolha o novo (ou toque num acorde de cima pra escolher outro lugar)`),
+    const sec = (tipo) => h('div', { class: 'ti-bsec' }, h('small', {}, `${tipo}es`), h('div', { class: 'ti-bgrade' }, ...ACORDES.filter((a) => a.tipo === tipo).map((ac) => h('button', { class: `ti-chord ti-peq${slots[selSlot].id === ac.id ? ' atual' : ''}`, type: 'button', 'aria-label': `${ac.nome} ${ac.tipo}`, onclick: () => { slots[selSlot] = ac; salvaSlots(); warmNotes(ac.notas); strumAc(ac); selSlot = (selSlot + 1) % 8; drawChords(); drawBandeja(); } }, ac.nome))));
+    bandeja.replaceChildren(sec('maior'), sec('menor'));
+    edBar.replaceChildren(h('small', {}, `trocando o ${selSlot + 1}º acorde: escolha o novo abaixo (ou toque num de cima pra mudar outro lugar)`),
       h('div', { class: 'ti-edb' }, h('button', { type: 'button', class: 'kd-chip on', onclick: () => { editando = false; drawModo(); } }, 'pronto'),
-        h('button', { type: 'button', class: 'kd-chip', onclick: () => { slots = CHORDS.slice(); salvaSlots(); drawChords(); drawBandeja(); } }, 'voltar aos acordes de sempre')));
+        h('button', { type: 'button', class: 'kd-chip', onclick: () => { slots = PADRAO.map(acharAcorde); salvaSlots(); drawChords(); drawBandeja(); } }, 'voltar aos de sempre')));
   };
   const drawModo = () => {
     const notas = modo === 'notas';
     modoBar.replaceChildren(
       h('button', { type: 'button', class: `kd-chip${!notas ? ' on' : ''}`, role: 'radio', 'aria-checked': String(!notas), onclick: () => { modo = 'acordes'; gravarLS('bt-violao-modo', modo); drawModo(); } }, '🎸 acordes'),
-      h('button', { type: 'button', class: `kd-chip${notas ? ' on' : ''}`, role: 'radio', 'aria-checked': String(notas), onclick: () => { modo = 'notas'; editando = false; gravarLS('bt-violao-modo', modo); warmNotes(GUITAR_OPEN.flatMap((b) => Array.from({ length: CASAS }, (_, c) => b + c))); drawModo(); } }, '🎵 notas (melodia)'),
-      notas ? null : h('button', { type: 'button', class: `kd-chip${editando ? ' on' : ''}`, 'aria-pressed': String(editando), onclick: () => { editando = !editando; selSlot = chord; drawModo(); } }, '✎ trocar acordes'));
+      h('button', { type: 'button', class: `kd-chip${notas ? ' on' : ''}`, role: 'radio', 'aria-checked': String(notas), onclick: () => { modo = 'notas'; editando = false; gravarLS('bt-violao-modo', modo); warmNotes(GUITAR_OPEN.flatMap((b) => Array.from({ length: CASAS }, (_, c) => b + c))); drawModo(); } }, '🎵 notas'),
+      notas ? null : h('button', { type: 'button', class: `kd-chip${editando ? ' on' : ''}`, 'aria-pressed': String(editando), onclick: () => { editando = !editando; selSlot = chord; drawModo(); } }, '✎ trocar'));
     chordsEl.hidden = notas; neck.hidden = notas || editando; frets.hidden = !notas; bandeja.hidden = notas || !editando; edBar.hidden = notas || !editando; escalaRow.parentElement && (escalaRow.parentElement.hidden = !notas);
     drawChords(); if (editando) drawBandeja(); if (notas) { drawEscala(); drawFrets(); }
   };

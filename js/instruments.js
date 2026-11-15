@@ -234,13 +234,6 @@ export function pluck(midi, vel, t, kind = 'acoustic', mute = false) {
 /** Acordes abertos: uma nota (MIDI) por corda, da mais grave (de cima) pra mais aguda; null = corda abafada. */
 export const CHORDS = [['C', [null, 48, 52, 55, 60, 64]], ['G', [43, 47, 50, 55, 59, 67]], ['Am', [null, 45, 52, 57, 60, 64]], ['F', [41, 48, 53, 57, 60, 65]],
   ['D', [null, null, 50, 57, 62, 66]], ['Em', [40, 47, 52, 55, 59, 64]], ['A', [null, 45, 52, 57, 61, 64]], ['E', [40, 47, 52, 56, 59, 64]]];
-/** Biblioteca pra trocar os acordes do violão na tela (os 8 primeiros são os de sempre). Uma nota por corda, da grave pra aguda; null = corda não tocada. */
-export const CHORDS_ALL = [...CHORDS,
-  ['Dm', [null, null, 50, 57, 62, 65]], ['E7', [40, 47, 50, 56, 59, 64]], ['A7', [null, 45, 52, 55, 61, 64]], ['D7', [null, null, 50, 57, 60, 66]],
-  ['G7', [43, 47, 50, 55, 59, 65]], ['C7', [null, 48, 52, 58, 60, 64]], ['B7', [null, 47, 51, 57, 59, 66]], ['Bm', [null, 47, 54, 59, 62, 66]],
-  ['Am7', [null, 45, 52, 55, 60, 64]], ['Em7', [40, 47, 52, 55, 62, 64]], ['Cmaj7', [null, 48, 52, 55, 59, 64]], ['Fmaj7', [null, null, 53, 57, 60, 64]], ['Gm', [43, 50, 55, 58, 62, 67]]];
-/** Cordas soltas do violão (Mi Lá Ré Sol Si Mi), da mais grave pra mais aguda. */
-export const GUITAR_OPEN = [40, 45, 50, 55, 59, 64];
 /** Calcula as cordas num intervalo livre pra o primeiro toque não engasgar. */
 export function warmGuitar() { warmNotes(CHORDS.flatMap(([, ms]) => ms)); }
 export function warmNotes(list) {

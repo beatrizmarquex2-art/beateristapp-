@@ -926,19 +926,42 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .ti-pp-foto[data-p="cg"], .ti-pp-foto[data-p="bg"] { position: relative; }
 .ti-pp-foto[data-p="cg"]::after, .ti-pp-foto[data-p="bg"]::after { content: attr(aria-label); position: absolute; left: 0; right: 0; bottom: 0; height: 20%; display: flex; align-items: center; justify-content: center; padding: 0 4px 7px; box-sizing: border-box; background: #fcf1e0; color: #1b2a4a; font: 400 clamp(12px, 4.1vw, 17px)/1.25 'Gochi Hand', 'Comic Sans MS', cursive; white-space: nowrap; text-decoration: underline; text-decoration-color: #d92031; text-decoration-thickness: 2px; text-underline-offset: 2px; pointer-events: none; }
 
-/* Violão: modo notas (melodia) com o braço, e troca dos acordes de cima */
-.ti-modo { margin: 12px 0 10px; }
-.ti-fret { display: grid; grid-template-columns: 40px repeat(6, minmax(0, 1fr)); gap: 4px; padding: 6px 8px 8px; background: #521622; border: 3px solid #1b1818; border-radius: 6px; box-shadow: 3px 3px 0 rgba(0, 0, 0, .35); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-.ti-fret .ti-fh { font: 700 11px var(--body); font-style: normal; color: #f5ead2; text-align: center; opacity: .85; align-self: end; }
-.ti-fret .ti-fl { font: 700 12px var(--body); font-style: normal; color: #f5ead2; display: grid; place-items: center; }
-.ti-fc { min-height: 40px; min-width: 0; display: grid; place-items: center; border-radius: 10px; background: var(--nc); color: #fff; font: 700 13px var(--body); border: 2px solid rgba(0, 0, 0, .45); box-shadow: 0 3px 0 rgba(0, 0, 0, .4); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.ti-fc.light { color: #1b1818; }
-.ti-fc.fora { background: rgba(245, 234, 210, .12); color: rgba(245, 234, 210, .55); box-shadow: none; border-color: rgba(245, 234, 210, .16); }
-.ti-fc.hit { filter: brightness(1.4); transform: translateY(2px); box-shadow: none; }
-.ti-bandeja { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
-.ti-chord.peq { min-height: 44px; font-size: 19px; }
-.ti-chord.atual { outline: 3px solid #e8a92c; outline-offset: -3px; }
-.ti-chord.ed { border-style: dashed; }
-.ti-edbar { display: grid; gap: 8px; margin: 0 0 10px; color: #1b1818; font: 600 13px var(--body); }
+/* ===== Violão no estilo colagem da marca (escolha da Bea, opção B): cartas de acorde com o desenho da mão, botões tortinhos, braço claro, notas em bolinhas ===== */
+.ti-modo { margin: 12px 0 10px; display: flex; gap: 8px; flex-wrap: nowrap; justify-content: stretch; }
+.ti-modo .kd-chip { flex: 1 1 0; min-width: 0; padding: 9px 4px; border: 2.5px solid #0f2347; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; background: #fffaf0; color: #0f2347; font: 400 19px/1.1 'Gochi Hand', 'Comic Sans MS', cursive; box-shadow: 3px 3px 0 #a8182e; white-space: nowrap; }
+.ti-modo .kd-chip:nth-child(1) { transform: rotate(-1.5deg); } .ti-modo .kd-chip:nth-child(2) { transform: rotate(1deg); } .ti-modo .kd-chip:nth-child(3) { transform: rotate(-1deg); }
+.ti-modo .kd-chip.on { background: #a8182e; color: #fffaf0; box-shadow: 3px 3px 0 #0f2347; transform: none; }
+.ti-gt .ti-chords { grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.ti-carta { position: relative; display: grid; justify-items: center; align-content: start; gap: 0; min-height: 0; padding: 5px 2px 3px; border: 2.5px solid #0f2347; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; background: #fffaf0; color: #0f2347; box-shadow: 3px 3px 0 #e8a92b; font: inherit; letter-spacing: 0; }
+.ti-carta b { font: 400 22px/1 Anton, Impact, sans-serif; }
+.ti-carta em { font: 400 13px/1 'Gochi Hand', 'Comic Sans MS', cursive; font-style: normal; color: #a8182e; margin: 1px 0 1px; }
+.ti-carta .ti-mao { display: block; width: 100%; }
+.ti-carta .ti-mao svg { display: block; width: 100%; height: auto; max-height: 52px; }
+.ti-carta .dedo { fill: #a8182e; }
+.ti-carta.on, .ti-carta[aria-pressed="true"] { background: #0f2347; color: #fffaf0; box-shadow: 3px 3px 0 #a8182e; transform: translate(1px, 1px); }
+.ti-carta.on em, .ti-carta[aria-pressed="true"] em { color: #e8a92b; }
+.ti-carta.on .dedo, .ti-carta[aria-pressed="true"] .dedo { fill: #e8a92b; }
+.ti-carta.ed { border-style: dashed; }
+.ti-bandeja { display: grid; gap: 8px; margin-bottom: 12px; }
+.ti-bsec small { display: block; font: 800 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #0f2347; opacity: .75; margin: 0 0 4px; }
+.ti-bgrade { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.ti-chord.ti-peq { min-height: 40px; padding: 0; font: 400 15px Anton, Impact, sans-serif; border: 2.5px solid #0f2347; border-radius: 10px 14px 9px 13px / 13px 9px 14px 10px; background: #fffaf0; color: #0f2347; box-shadow: 2px 2px 0 #e8a92b; letter-spacing: 0; }
+.ti-chord.ti-peq.atual { background: #e8a92b; }
+.ti-edbar { display: grid; gap: 8px; margin: 0 0 10px; color: #0f2347; font: 600 13px var(--body); }
 .ti-edb { display: flex; gap: 8px; flex-wrap: wrap; }
+/* braço de cordas (tocar o acorde passando o dedo) em papel claro */
+.ti-gt .ti-neck { background: #fffaf0; border: 2.5px solid #0f2347; border-radius: 10px; box-shadow: 4px 4px 0 #1f6f78; }
+.ti-gt .ti-neck::before { background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 2px), rgba(15, 35, 71, .22) calc(25% - 2px) 25%); }
+.ti-gt .ti-gnotes { background: #0f2347; border-right: 2.5px solid #0f2347; }
+.ti-gt .ti-gnote { color: #fffaf0; }
+.ti-gt .ti-str i { background: linear-gradient(#5a6b8c, #0f2347); box-shadow: 0 1px 2px rgba(15, 35, 71, .45); }
+.ti-gt .ti-str.wound i { background: repeating-linear-gradient(90deg, #8a97b4 0 3px, #0f2347 3px 6px); }
+/* modo notas: grade de bolinhas (corda × casa) */
+.ti-fret { display: grid; grid-template-columns: 38px repeat(6, minmax(0, 1fr)); gap: 6px; padding: 8px 8px 10px; background: #fffaf0; border: 2.5px solid #0f2347; border-radius: 12px; box-shadow: 4px 4px 0 #1f6f78; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.ti-fret .ti-fh { font: 800 11px var(--body); font-style: normal; color: #0f2347; text-align: center; opacity: .7; align-self: end; }
+.ti-fret .ti-fl { font: 800 12px var(--body); font-style: normal; color: #0f2347; display: grid; place-items: center; }
+.ti-fc { aspect-ratio: 1; min-width: 0; min-height: 0; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: #fff; font: 800 11.5px var(--body); border: 2.5px solid #0f2347; box-shadow: 0 3px 0 #0f2347; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ti-fc.light { color: #1b1818; }
+.ti-fc.fora { background: transparent; border: 2px dashed rgba(15, 35, 71, .3); color: rgba(15, 35, 71, .4); box-shadow: none; }
+.ti-fc.hit { filter: brightness(1.2); transform: translateY(2px); box-shadow: none; }
 .ti-fret[hidden], .ti-bandeja[hidden], .ti-edbar[hidden], .ti-neck[hidden], .ti-chords[hidden] { display: none !important; }
