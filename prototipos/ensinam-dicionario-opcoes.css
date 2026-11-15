@@ -1,0 +1,73 @@
+/* Jogos Ensinam + Dicionário musical: 3 opções de desenho pra Bea escolher (15/nov/2026). Só mockup: liga pondo op-a, op-b ou op-c no <body>. */
+
+/* ===== A · CARTÕES COLORIDOS: cada jogo num cartão, o que desenvolve em etiquetas, cor por grupo ===== */
+.op-a .jg-doc{background:#f3ecdc!important;border:0!important}
+.op-a .rel-page{padding:6px 12px 20px}
+.op-a .rel-title h1{font:400 34px/1 "Anton",sans-serif;text-transform:uppercase;color:#162146;letter-spacing:.01em}
+.op-a .rel-intro{background:#162146;color:#fff7e6;padding:14px;border-radius:16px;font-size:14.5px;line-height:1.4}
+.op-a .rel-grp{--g:#a6192e}.op-a .rel-grp:nth-of-type(2){--g:#0e4a52}.op-a .rel-grp:nth-of-type(3){--g:#162146}.op-a .rel-grp:nth-of-type(4){--g:#b57a12}.op-a .rel-grp:nth-of-type(5){--g:#6a2c70}
+.op-a .rel-grp h2{font:400 15px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:var(--g);display:inline-block;padding:7px 14px 6px;border:0;border-radius:99px;margin:20px 0 8px}
+.op-a .rel-game{grid-template-columns:1fr;gap:6px;background:#fffaf0;border:0;border-top:6px solid var(--g);border-radius:16px;padding:14px;margin:0 0 12px;box-shadow:0 3px 0 rgb(22 33 70/.14)}
+.op-a .rel-ico{width:58px;float:left;margin-right:10px;background:color-mix(in srgb,var(--g) 14%,#fff);border-radius:50%;padding:6px;aspect-ratio:1;object-fit:contain}
+.op-a .rel-game{position:relative}.op-a .rel-ico{position:absolute;top:12px;left:12px;float:none}
+.op-a .rel-body h3{font:400 22px/1.05 "Anton",sans-serif;text-transform:uppercase;color:var(--g);margin:6px 0 2px 70px;min-height:26px}
+.op-a .rel-what{font-style:normal;font-size:14px;margin:0 0 0 70px!important;min-height:34px;color:#3b3f55}
+.op-a .rel-k{color:var(--g);margin-top:12px!important}
+.op-a .rel-body ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.op-a .rel-body li{background:color-mix(in srgb,var(--g) 13%,#fff);color:#162146;font-weight:700;font-size:13px;padding:5px 10px;border-radius:99px}
+.op-a .rel-body li::before{content:"✓ ";color:var(--g)}
+.op-a .rel-k+p:last-child{font-size:13.5px;color:#3b3f55}
+.op-a .dc-term{background:#fffaf0!important;border:0!important;border-left:8px solid var(--g,#a6192e)!important;border-radius:14px!important;box-shadow:0 3px 0 rgb(22 33 70/.14)!important}
+.op-a .dc-term:nth-child(3n+2){--g:#0e4a52}.op-a .dc-term:nth-child(3n){--g:#b57a12}
+.op-a .dc-head strong{font:400 22px/1 "Anton",sans-serif!important;text-transform:uppercase;color:var(--g,#a6192e)}
+.op-a .dc-cat{background:color-mix(in srgb,var(--g,#a6192e) 14%,#fff);color:#162146!important;padding:3px 8px;border-radius:99px;font-size:10px!important}
+.op-a .lib-tab{border-radius:99px!important;background:#fffaf0!important;color:#162146!important;border:2px solid #162146!important;min-height:34px!important;font-size:13px!important}
+.op-a .lib-tab.on{background:#162146!important;color:#fff!important}
+.op-a .dc-search input{border-radius:99px!important;border:2px solid #162146!important}
+
+/* ===== B · PALCO À NOITE: o mesmo clima do PaulBox, fundo azul-noite, holofote e dourado ===== */
+.op-b .jg-doc{background:radial-gradient(120% 40% at 50% 0,#31408a 0,#162146 40%,#0a0f26 100%)!important;border:0!important;border-radius:22px!important;color:#fff7e6}
+.op-b .jg-doc::before,.op-b .jg-doc::after{display:none!important}
+.op-b .rel-actions .jg-link{color:#f2a91b!important}
+.op-b .rel-title h1{font:400 38px/1 "Anton",sans-serif;text-transform:uppercase;color:#fff7e6}.op-b .rel-title h1::first-line{color:#f2a91b}
+.op-b .rel-title .muted,.op-b .rel-intro{color:#d9d6ea!important}
+.op-b .rel-intro{border-left:4px solid #f2a91b;padding-left:12px}
+.op-b .rel-grp h2{font:400 20px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#f2a91b;border-bottom:2px solid rgb(242 169 27/.4);margin-top:22px}
+.op-b .rel-game{grid-template-columns:64px 1fr;background:rgb(255 255 255/.07);border:0;border-radius:16px;padding:12px;margin:10px 0}
+.op-b .rel-ico{width:64px;background:#fff7e6;border-radius:14px;padding:5px;filter:drop-shadow(0 0 10px rgb(242 169 27/.5))}
+.op-b .rel-body h3{font:400 21px/1.05 "Anton",sans-serif;text-transform:uppercase;color:#fff}
+.op-b .rel-what{font-style:normal;color:#d9d6ea;font-size:14px}
+.op-b .rel-k{color:#f2a91b!important}
+.op-b .rel-body ul{list-style:none;padding:0}.op-b .rel-body li{font-weight:700;padding:2px 0}.op-b .rel-body li::before{content:"✓ ";color:#f2a91b}
+.op-b .rel-k+p:last-child{color:#d9d6ea;font-size:13.5px}
+.op-b .dc-fundo{background:#0a0f26}
+.op-b .dc-term{background:#1a2452!important;color:#fff7e6!important;border:0!important;border-radius:16px!important;box-shadow:none!important}
+.op-b .dc-head strong{font:400 22px/1 "Anton",sans-serif!important;text-transform:uppercase;color:#f2a91b}
+.op-b .dc-head small,.op-b .dc-cat{color:#b9b6d6!important}.op-b .dc-def{color:#fff7e6!important}
+.op-b .lib-tab{border-radius:99px!important;background:rgb(22 33 70/.12)!important;color:#162146!important;border:0!important;min-height:34px!important;font-size:13px!important}
+.op-b .lib-tab.on{background:#162146!important;color:#f2a91b!important}
+.op-b .dc-search input{border-radius:14px!important;background:#162146!important;color:#fff!important;border:0!important}.op-b .dc-search input::placeholder{color:#b9b6d6}
+
+/* ===== C · CADERNO DE MÚSICA: papel pautado, título à mão, marca-texto no que desenvolve, fichas com fita ===== */
+.op-c .jg-doc{background:#fffdf5 repeating-linear-gradient(#fffdf5 0 27px,#c9d6ee 27px 28px)!important;border:0!important;box-shadow:inset 34px 0 0 -32px #e58b9a}
+.op-c .rel-page{padding:6px 14px 20px 26px;line-height:28px}
+.op-c .rel-title h1{font:400 34px/1.1 "Permanent Marker",cursive;color:#162146;transform:rotate(-1.5deg)}
+.op-c .rel-intro{font-family:"Special Elite",monospace;font-size:14px}
+.op-c .rel-grp h2{font:400 22px/28px "Permanent Marker",cursive;color:#a6192e;border:0;margin:28px 0 0;background:linear-gradient(transparent 55%,#ffe27a 55%);display:inline}
+.op-c .rel-game{grid-template-columns:62px 1fr;border:0;padding:14px 0 0;margin-top:14px;position:relative}
+.op-c .rel-ico{width:62px;transform:rotate(-4deg);background:#fff;padding:5px;box-shadow:2px 3px 0 rgb(22 33 70/.25)}
+.op-c .rel-game::before{content:"";position:absolute;left:8px;top:4px;width:46px;height:16px;background:rgb(242 169 27/.75);transform:rotate(-8deg);z-index:1}
+.op-c .rel-body h3{font:400 21px/28px "Permanent Marker",cursive;color:#162146}
+.op-c .rel-what{font-style:normal;font-family:"Special Elite",monospace;font-size:13.5px;line-height:22px}
+.op-c .rel-k{color:#a6192e!important;font-family:"Special Elite",monospace;letter-spacing:.1em}
+.op-c .rel-body ul{list-style:none;padding:0;margin:0}
+.op-c .rel-body li{display:table;background:linear-gradient(transparent 20%,#bfe8c5 20% 85%,transparent 85%);font-weight:700;padding:0 4px;margin:0;line-height:28px}
+.op-c .rel-body li:nth-child(2){background:linear-gradient(transparent 20%,#ffe27a 20% 85%,transparent 85%)}.op-c .rel-body li:nth-child(3){background:linear-gradient(transparent 20%,#f9c4cf 20% 85%,transparent 85%)}
+.op-c .dc-term{background:#fffdf5 repeating-linear-gradient(#fffdf5 0 25px,#c9d6ee 25px 26px)!important;border:0!important;border-radius:2px!important;box-shadow:3px 4px 0 rgb(22 33 70/.2)!important;position:relative}
+.op-c .dc-term:nth-child(odd){transform:rotate(-.8deg)}.op-c .dc-term:nth-child(even){transform:rotate(.7deg)}
+.op-c .dc-term::before{content:"";position:absolute;left:50%;top:-8px;width:64px;height:18px;margin-left:-32px;background:rgb(242 169 27/.75);transform:rotate(-2deg)}
+.op-c .dc-head strong{font:400 22px/1.2 "Permanent Marker",cursive!important;color:#a6192e;background:linear-gradient(transparent 60%,#ffe27a 60%)}
+.op-c .dc-def{font-family:"Special Elite",monospace;font-size:14px;line-height:26px}
+.op-c .lib-tab{font-family:"Permanent Marker",cursive!important;background:#fffdf5!important;color:#162146!important;border:2px solid #162146!important;border-radius:12px 16px 10px 15px/15px 10px 16px 12px!important;box-shadow:2px 2px 0 #162146;min-height:34px!important;font-size:13px!important;font-weight:400!important}
+.op-c .lib-tab.on{background:#ffe27a!important}
+.op-c .dc-search input{font-family:"Special Elite",monospace;border:0!important;border-bottom:3px solid #162146!important;border-radius:0!important;background:transparent!important}

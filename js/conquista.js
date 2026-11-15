@@ -13,21 +13,23 @@ const ANTON = '"Anton","Arial Black",Impact,sans-serif'; const HANKEN = '"Hanken
 
 /** O que cada jogo desenvolve, em 3 linhas curtas (pra mãe e pro pai lerem no post). A chave é o nome do jogo em minúsculas. */
 export const BENEFICIOS = {
-  'uno musical': ['decorar as figuras musicais com mais facilidade', 'somar e comparar a duração das figuras', 'planejamento e tomada de decisão'],
-  'jogo da velha': ['raciocínio estratégico', 'revisão do conteúdo com perguntas', 'saber ganhar e saber perder'],
-  'quebra-cabeça': ['percepção visual e espacial', 'persistência pra resolver problemas', 'foco e concentração'],
-  'cara a cara': ['conhecer as famílias dos instrumentos', 'raciocínio por eliminação', 'fazer boas perguntas'],
-  'jogo da memória': ['memória visual e de trabalho', 'atenção e concentração', 'vocabulário e cultura musical'],
-  bingo: ['reconhecer instrumentos e símbolos', 'atenção auditiva e visual', 'espera e autocontrole'],
+  // regra da Bea: falar sempre ligando a algo musical e sem jargão solto (pai e mãe não sabem o que é "figura")
+  'uno musical': ['decorar as figuras musicais com mais facilidade', 'somar e comparar quanto dura cada som', 'planejamento e tomada de decisão'],
+  'jogo da velha': ['curiosidades sobre música', 'teoria musical em perguntas rápidas', 'artistas, bandas e muito mais'],
+  'quebra-cabeça': ['imaginação e percepção visual', 'persistência pra resolver problemas', 'foco e concentração com cenas de música'],
+  'cara a cara': ['conhecer os instrumentos musicais', 'raciocínio por eliminação', 'descobrir novas bandas e artistas'],
+  'jogo da memória': ['cultura musical: profissionais da música e shows', 'equipamentos de palco e percussão', 'símbolos de som e de silêncio da partitura'],
+  bingo: ['reconhecer instrumentos e símbolos musicais', 'atenção auditiva e visual', 'espera e autocontrole'],
   stop: ['vocabulário musical na ponta da língua', 'rapidez de raciocínio', 'repertório de artistas e instrumentos'],
-  paulta: ['leitura das notas na pauta', 'ligação entre o que se lê e o que se toca', 'atenção e memória visual'],
-  'figuras rítmicas': ['leitura de figuras e pausas', 'proporção e frações (1, 1/2, 1/4)', 'contagem dos tempos'],
-  figurix: ['leitura de figuras e pausas', 'proporção e frações (1, 1/2, 1/4)', 'contagem dos tempos'],
-  'detetive note': ['memória auditiva e rítmica', 'escuta ativa', 'ligar o som à escrita do ritmo'],
-  rudimentix: ['coordenação entre as duas mãos', 'os rudimentos, base da bateria', 'pulso firme e regularidade'],
-  'toca aqui': ['leitura rítmica de verdade', 'precisão de tempo', 'tocar olhando a partitura'],
-  'beat hero': ['coordenação motora e precisão de tempo', 'atenção e tempo de reação', 'percepção de pulso e andamento'],
-  'monte seu ritmo': ['sílabas, duração e subdivisão', 'criatividade e composição', 'noção de compasso'],
+  paulta: ['teoria musical na prática', 'ler as notas na partitura em várias claves', 'ligar o que se lê ao que se toca'],
+  'figuras rítmicas': ['ler os símbolos que mostram quanto dura cada som', 'ler as pausas: os silêncios da música', 'contar os tempos da música'],
+  figurix: ['ler os símbolos que mostram quanto dura cada som', 'ler as pausas: os silêncios da música', 'contar os tempos da música'],
+  'detetive note': ['memória auditiva: guardar um ritmo de ouvido', 'escuta ativa da música', 'ligar o som à escrita do ritmo'],
+  rudimentix: ['coordenação entre as duas mãos na bateria', 'os rudimentos, base de todo baterista', 'pulso firme e regularidade'],
+  'toca aqui': ['ler um ritmo na partitura e tocar', 'precisão de tempo', 'tocar olhando a partitura'],
+  'beat hero': ['coordenação motora no tempo da música', 'atenção e tempo de reação', 'sentir o pulso e o andamento'],
+  'monte seu ritmo': ['criar ritmos com palavras do dia a dia', 'criatividade e composição musical', 'noção de compasso'],
+  paulbox: ['noção de arranjo: como uma banda se monta', 'ouvir vários instrumentos tocando juntos', 'criatividade musical'],
 };
 const GERAL = ['atenção e concentração', 'memória e raciocínio', 'gosto por aprender música'];
 /** Benefícios de um jogo pelo nome que aparece na tela (tolera maiúsculas, emoji e sobras). */
