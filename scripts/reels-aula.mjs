@@ -19,6 +19,7 @@ export const REELS = {
   'aula-2-na-bateria': { t1: 'agora', t2: 'na bateria', paul: 'bateria', clipes: [['IMG_6629', 1, 4], ['IMG_9326', 1, 3.5, { verde: true }], ['IMG_6050', 4, 3.5]] },
   'aula-3-dia-de-show': { t1: 'dia de show', t2: 'na escola', paul: 'microfone', clipes: [['IMG_6045', 1, 3.5], ['IMG_6054', 2, 4]] },
   'aula-4-bateria-de-tapete': { t1: 'bateria', t2: 'de tapete', paul: 'bateria', clipes: [['IMG_4477', 0.5, 4], ['IMG_4944', 0.5, 4]] },
+  'aula-6-a-bea-no-palco': { t1: 'a bea', t2: 'no palco', paul: 'bateria', clipes: [['MVI_8419', 0, 3.5, { gira: true }], ['MVI_8407', 0.5, 5, { gira: true }]] },
   'aula-5-musica-desde-pequeno': { t1: 'música', t2: 'desde pequeno', paul: 'pandeiro', clipes: [['IMG_8788', 2, 5], ['IMG_1441', 2, 4, { crop: [0, 0.16, 0.65, 0.65] }]] },
 };
 const capa = ({ t1, t2, paul }) => `<!doctype html><meta charset="utf-8"><style>
@@ -40,8 +41,9 @@ for (const [nome, r] of Object.entries(REELS)) {
   const ins = [], fl = [];
   r.clipes.forEach(([id, ini, d, o = {}], i) => {
     ins.push('-ss', String(ini), '-t', String(d), '-i', acha(id));
+    const ro = o.gira ? 'transpose=2,' : ''; // vídeo gravado deitado: gira pra ficar em pé
     const cr = o.crop ? `crop=iw*${o.crop[2]}:ih*${o.crop[3]}:iw*${o.crop[0]}:ih*${o.crop[1]},` : '';
-    fl.push(`[${i}:v]${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[v${i}]`);
+    fl.push(`[${i}:v]${ro}${cr}scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,setsar=1${o.verde ? ',huesaturation=hue=105:saturation=-0.25:colors=g,huesaturation=hue=40:colors=c' : ''},eq=brightness=0.04:saturation=1.08[v${i}]`);
   });
   const n = r.clipes.length;
   fl.push(r.clipes.map((_, i) => `[v${i}]`).join('') + `concat=n=${n}:v=1:a=0[vv]`, `[vv][${n}:v]overlay=0:0[out]`);
