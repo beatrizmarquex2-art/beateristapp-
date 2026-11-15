@@ -1,5 +1,6 @@
 // Em TODO post: logo dourado + "Beaterista · educação musical com propósito" (pedido da Bea). Destaque = dourado do logo; NUNCA laranja.
 // NUNCA cortar a cabeça da Bea (nem de ninguém): no gibi o título fica ACIMA da foto, não por cima; conferir a folha de posts com gente antes de entregar.
+// SEM PALAVRA SOZINHA na última linha (Bea, 15/nov): text-wrap:balance em título e texto; 2ª linha curtinha ("e é") sobe pra mesma linha.
 // Designs novos (A foto cheia, B polaroid, C gibi) aprovados pela Bea em 15/nov: refaz as séries de kit-apresentacao-bea.mjs neles.
 // Uso: [FOTOS_ALUNOS=pasta SAIDA_ALUNOS=pasta] node scripts/kit-designs-teste.mjs  -> marketing/prontos/apresentacao/v2-bea e v2-marca (alunos só fora do repo)
 // Cores da marca, sem verde, Paul em todos.
@@ -20,7 +21,7 @@ const SG = (cor, fundo) => `<span style="display:inline-flex;align-items:center;
 const css = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${F('GochiHand-latin.woff2')})}
 @font-face{font-family:Anton;src:url(${F('Anton-latin.woff2')})}@font-face{font-family:Anton;src:url(${F('Anton-latin-ext.woff2')});unicode-range:U+0100-024F}
 @font-face{font-family:Hanken;font-weight:400 800;src:url(${F('HankenGrotesk-latin.woff2')})}
-*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;position:relative;overflow:hidden}`;
+*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;position:relative;overflow:hidden}h1,h1 em,.s,.bl,.tt,.po b{text-wrap:balance}`;
 export const DESIGNS = {
   // A: foto ocupando tudo, título gigante por cima
   'A-foto-cheia': ({ f, pos, t1, t2, sub, paul }) => `<style>${css}
@@ -31,7 +32,7 @@ body{background:${AZ}}.ft{position:absolute;inset:0;width:100%;height:100%;objec
 .c{position:absolute;right:10px;bottom:20px;height:340px;filter:drop-shadow(0 0 0 #fff) drop-shadow(8px 10px 0 rgba(0,0,0,.35))}
 .tp{position:absolute;left:60px;top:56px;display:flex;align-items:center;gap:16px;font:800 30px Hanken,sans-serif;color:${CR};background:rgba(13,26,54,.75);padding:12px 26px 12px 12px;border-radius:99px}.tp img{height:64px}</style>
 <img class="ft" src="${foto(f)}"><div class="g"></div><div style="position:absolute;left:50px;top:46px">${SG(CR, "rgba(13,26,54,.82)")}</div>
-<div class="bx"><h1>${t1}<em>${t2}</em></h1><div class="s">${sub}</div></div><img class="c" src="${hd(paul)}">`,
+<div class="bx"><h1>${t1}<em${t2.length <= 5 ? ' style="display:inline"' : ''}> ${t2}</em></h1><div class="s">${sub}</div></div><img class="c" src="${hd(paul)}">`,
   // B: polaroid com fita, papel creme, tudo "feito à mão"
   'B-polaroid': ({ f, pos, t1, t2, sub, paul }) => `<style>${css}
 body{background:${CR};color:${AZ}}.p{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 58px,${AZ}14 58px 60px)}
