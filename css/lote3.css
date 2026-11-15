@@ -965,3 +965,19 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .ti-fc.fora { background: transparent; border: 2px dashed rgba(15, 35, 71, .3); color: rgba(15, 35, 71, .4); box-shadow: none; }
 .ti-fc.hit { filter: brightness(1.2); transform: translateY(2px); box-shadow: none; }
 .ti-fret[hidden], .ti-bandeja[hidden], .ti-edbar[hidden], .ti-neck[hidden], .ti-chords[hidden] { display: none !important; }
+
+/* Plano grátis do Tocar: faixa no alto e cadeados */
+.tp-faixa { margin: 10px 0; padding: 10px 12px; border: 2.5px dashed #e8a92b; border-radius: 12px; background: #fffaf0; color: #0f2347; font: 600 14px/1.35 var(--body); display: grid; gap: 8px; }
+.tp-faixa p { margin: 0; } .tp-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.tp-lock { font-style: normal; margin-left: 4px; font-size: .85em; }
+.kd-chip.travado, .ti-carta.travado, .ti-bar-trava { opacity: .6; }
+.ti-carta.travado { position: relative; filter: grayscale(.5); } .ti-carta.travado .tp-lock { position: absolute; top: 2px; right: 3px; margin: 0; font-size: 13px; }
+
+/* Bateria de toque: 3 modelos. Eletrônica = pads escuros com anel colorido; cajón = madeira com 4 zonas */
+.tk-art svg { display: block; width: 100%; height: auto; }
+.kd-modelos { margin-top: 6px; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp ellipse[fill-opacity] { fill: #2a2730; fill-opacity: 1; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp.hit circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp.hit ellipse[fill-opacity] { fill: #4a4560; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp [stroke] { stroke: #1b1818; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp text { fill: #fff; }
+[data-kit-theme] .tk-art.modelo-cajon .kp text { fill: #1b1818; }

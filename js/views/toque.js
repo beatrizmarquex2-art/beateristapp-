@@ -8,18 +8,22 @@ import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
 import { audio, click, perfToCtx } from '../audio.js';
 import { banner, toast, stars } from '../ui.js';
-import { DRUM, velAt, backing } from '../instruments.js';
+import { kitSom, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
+import { arte } from '../kids/kit-modelos.js';
+import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 import { playDoc, stopAll } from './partitura.js';
 import { quantize, countNotes } from '../touchkit.js';
-import { kitMarkup, svgEl } from '../kids/art.js';
+import { svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
 import { kitTheme, putLogo, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
 
 const KEY = 'setting-toque';
-const conf = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
+// sem código só a bateria acústica (a escolha antiga guardada no aparelho não vale)
+const conf = () => { const c = conf0(); return pago() || GRATIS.bateria.modelos.includes(c.modelo) ? c : { ...c, modelo: 'acustica' }; };
 const setConf = (p) => store.upsert('setting', KEY, p);
 // teclas do computador (no iPhone é só tocar na bateria): cada letra uma peça
 const KEYS = { u: 'cr', i: 'rd', j: 'hh', h: 'ho', k: 'tt', o: 'mt', f: 'sn', l: 'ft', ' ': 'bd' };
@@ -32,7 +36,7 @@ export function mount(host) {
 
   /** `dr` = onde o dedo caiu na peça (0 = no meio, 1 = na borda): no meio bate mais forte; na borda da caixa vira aro; no meio da condução, sino. */
   const hit = (id, perfMs, dr = 0.3, pt) => {
-    const c = audio(); const v = velAt(dr); if (DRUM[id]) DRUM[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
+    const c = audio(); const v = velAt(dr); const som = kitSom(modeloAtual); if (som[id]) som[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
     const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (pt) spark(pt.x, pt.y, el);
     if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id, v, dr });
   };
@@ -49,13 +53,16 @@ export function mount(host) {
     return q > 1.15 ? 0.55 : Math.min(1, q); // fora do tampo (no casco ou no pé) vale como toque médio
   };
   // a bateria é o mesmo desenho do "explorar a bateria": cada dedo vale um toque, então dá pra tocar com vários ao mesmo tempo
+  let modeloAtual = conf().modelo;
   const drawKit = () => {
-    const c = conf();
+    const c = conf(); modeloAtual = c.modelo;
     kit.classList.toggle('left', !!c.left);
-    const art = svgEl(kitMarkup(), 'tk-art'); putLogo(art);
+    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); if (c.modelo !== 'cajon') putLogo(art);
     kit.dataset.kitTheme = kitTheme();
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
-    kit.replaceChildren(art, themeRow(drawKit));
+    const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
+      ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
+    kit.replaceChildren(art, modelos, themeRow(drawKit));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
@@ -112,7 +119,7 @@ export function mount(host) {
     const evs = hits.map((x) => ({ t: x.t, id: x.id, v: x.v, dr: x.dr }));
     if (c.click) for (let b = 0; b * q < len - 0.01; b++) evs.push({ t: b * q, click: b % 4 === 0 ? 2 : 1 });
     evs.sort((x, y) => x.t - y.t); const n = evs.length; const start = ac.currentTime + 0.12;
-    const run = scheduler((i) => { const e = evs[i % n]; return { at: Math.floor(i / n) * len + e.t, play: (t) => { if (e.click) click(t, e.click, 0.5); else if (DRUM[e.id]) DRUM[e.id](t, e.v ?? 1, e.dr ?? 0.3); }, ui: e.id ? () => flash(kit.querySelector(`[data-p="${e.id}"]`)) : undefined }; });
+    const run = scheduler((i) => { const e = evs[i % n]; return { at: Math.floor(i / n) * len + e.t, play: (t) => { if (e.click) click(t, e.click, 0.5); else if (kitSom(modeloAtual)[e.id]) kitSom(modeloAtual)[e.id](t, e.v ?? 1, e.dr ?? 0.3); }, ui: e.id ? () => flash(kit.querySelector(`[data-p="${e.id}"]`)) : undefined }; });
     loop = { run, len, raf: 0 };
     const frame = () => { if (!loop) return; prog.style.width = `${((((ac.currentTime - start) % len) + len) % len / len) * 100}%`; loop.raf = requestAnimationFrame(frame); }; frame();
     status.className = 'tr-status'; status.textContent = `em loop · ${fmt(len)} · ${hits.length} toques`;
@@ -136,7 +143,7 @@ export function mount(host) {
     const mainBtns = rec ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: finishRec }, icon('stop', 16), ' parar'), h('button', { class: 'btn', type: 'button', onclick: () => { cancel(); status.textContent = 'gravação cancelada.'; drawPanel(); } }, 'cancelar')]
       : loop ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: () => { stopLoop(); status.textContent = 'parado.'; drawPanel(); } }, icon('stop', 16), ' parar'), h('button', { class: 'btn tk-big', type: 'button', onclick: record }, '↺ recomeçar')]
       : last ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: startLoop }, icon('play', 16), ' tocar em loop'), h('button', { class: 'btn tk-big', type: 'button', onclick: record }, '↺ recomeçar')]
-      : [h('button', { class: 'btn primary tk-big tk-rec', type: 'button', onclick: record }, h('i', { class: 'tk-dot' }), ` gravar (até ${MAX} s)`)];
+      : [h('button', { class: 'btn primary tk-big tk-rec', type: 'button', onclick: () => { if (!pago()) { pedir('gravar'); return; } record(); } }, h('i', { class: 'tk-dot' }), ` gravar (até ${MAX} s)`, pago() ? null : cadeado())];
     panel.replaceChildren(...[
       h('section', { class: 'card pad tk-panel' },
         h('div', { class: 'row tk-line tk-ctrls' }, ...mainBtns),
@@ -164,8 +171,9 @@ export function mount(host) {
     ].filter(Boolean));
   };
 
-  host.append(banner('Bateria de Toque', 'toca com os dedos'), tocarTabs('toque'), kit, panel, backingBar(),
+  host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel, backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “ouvir o tempo” liga o clique no andamento escolhido; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
   drawKit(); drawPanel(); tipBox(host, 'toque');
-  return () => { cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };
+  const solta = aoLiberar(() => { drawKit(); drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
+  return () => { solta(); cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };
 }

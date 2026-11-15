@@ -7,15 +7,18 @@ import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
+import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
-const SCALES = { penta: [60, 62, 64, 67, 69, 72, 74, 76, 79, 81], maior: [60, 62, 64, 65, 67, 69, 71, 72] };
+// Escalas: começa na dó maior (dó ré mi fá sol lá si dó). As outras ficam numa fileira que arrasta pro lado.
+const SCALES = { maior: [60, 62, 64, 65, 67, 69, 71, 72], penta: [60, 62, 64, 67, 69, 72, 74, 76, 79, 81], menor: [57, 59, 60, 62, 64, 65, 67, 69], pentamenor: [57, 60, 62, 64, 67, 69, 72, 74, 76, 79], blues: [57, 60, 62, 63, 64, 67, 69, 72], cromatica: [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72] };
+const ESCALAS = [['maior', 'dó maior'], ['penta', 'pentatônica'], ['menor', 'lá menor'], ['pentamenor', 'penta menor'], ['blues', 'blues'], ['cromatica', 'cromática']];
 import { corNota, notaClara } from '../cores-notas.js';
 const SOUNDS = MALLETS;
 const XK = 'asdfghjklç';
 
 export function mount(host) {
-  let scale = 'penta'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
+  let scale = 'maior'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
   const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
   const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão sem nota', hidden: true },
     ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
@@ -42,10 +45,10 @@ export function mount(host) {
       e.style.setProperty('--bc', corNota(m)); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
     }));
   };
-  const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'pads (sem nota)']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
+  const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'percussão (sem nota)']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}${v === 'pads' && !pago() ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { if (v === 'pads' && !pago()) { pedir('a percussão'); return; } mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
   const drawRows = () => {
-    scaleRow.replaceChildren(h('small', {}, 'escala'), ...[['penta', 'pentatônica'], ['maior', 'dó maior']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { scale = v; drawXy(); drawRows(); } }, l)));
-    soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { sound = v; audio(); drawRows(); } }, l)));
+    scaleRow.replaceChildren(h('small', {}, 'escala'), ...ESCALAS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.escalas.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { if (!pago() && !GRATIS.xilofone.escalas.includes(v)) { pedir('as outras escalas'); return; } scale = v; drawXy(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.escalas.includes(v) ? cadeado() : null)));
+    soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { pedir('os outros sons'); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
   };
   const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
   const ripple = (x, y) => {
@@ -69,10 +72,11 @@ export function mount(host) {
   document.addEventListener('keydown', onKey);
 
   stage.append(xy, pads);
-  host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), stage,
+  host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), stage,
     h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow), rolar(themeBox)),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();
-  return () => { document.removeEventListener('keydown', onKey); backing.leave(); };
+  const solta = aoLiberar(() => { drawRows(); drawMode(); drawXy(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
+  return () => { solta(); document.removeEventListener('keydown', onKey); backing.leave(); };
 }
