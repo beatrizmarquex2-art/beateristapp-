@@ -36,14 +36,14 @@ body{background:${CR};color:${AZ}}.p{position:absolute;inset:0;background:repeat
 h1{position:absolute;left:60px;top:54px;font:400 ${Math.max(t1.length, t2.length) > 17 ? 60 : Math.max(t1.length, t2.length) > 12 ? 78 : 104}px/1 Marker,cursive;color:${CR};transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap}h1 em{font-style:normal;color:${AM};display:block;padding-left:50px}
 .po{position:absolute;left:190px;top:330px;width:660px;background:#fff;padding:26px 26px 130px;transform:rotate(3deg);box-shadow:14px 18px 0 rgba(13,26,54,.22)}
 .po img{width:100%;height:640px;object-fit:cover;object-position:${pos};display:block}.po b{position:absolute;left:10px;right:10px;bottom:26px;text-align:center;white-space:nowrap;font:400 ${sub.length > 24 ? 40 : 54}px Gochi,cursive;color:${AZ}}
-.tape{position:absolute;left:420px;top:300px;width:230px;height:66px;background:${AM}cc;transform:rotate(-5deg)}
+.tape{position:absolute;left:420px;top:300px;width:230px;height:66px;background:${AZ}55;transform:rotate(-5deg)}
 .c{position:absolute;right:-6px;bottom:6px;height:300px;filter:drop-shadow(8px 10px 0 rgba(13,26,54,.25))}
 .u{position:absolute;left:60px;bottom:60px;font:700 32px Hanken,sans-serif;background:${AZ};color:${CR};padding:16px 28px;border-radius:99px}</style>
 <div class="p"></div><div class="fx"></div><h1>${t1}<em>${t2}</em></h1>
 <div class="po"><img src="${foto(f)}"><b>${sub}</b></div><div class="tape"></div><img class="c" src="${hd(paul)}"><div class="u">jogos.beaterista.com.br</div>`,
   // C: quadrinho, o Paul fala no balão
   'C-gibi': ({ f, pos, t1, t2, sub, paul }) => `<style>${css}
-body{background:${AM}}.p{position:absolute;inset:0;background:radial-gradient(${VI}55 5px,transparent 5.6px) 0 0/34px 34px}
+body{background:${CR}}.p{position:absolute;inset:0;background:radial-gradient(${AZ}33 5px,transparent 5.6px) 0 0/34px 34px}
 .q{position:absolute;left:50px;right:50px;top:50px;height:820px;border:10px solid ${AZ};background:#fff;box-shadow:14px 14px 0 ${AZ};overflow:hidden}.q img{width:100%;height:100%;object-fit:cover;object-position:${pos}}
 .tt{position:absolute;left:30px;top:90px;background:${VI};color:${CR};max-width:1000px;font:400 ${(t1 + t2).length > 26 ? 62 : (t1 + t2).length > 18 ? 76 : 96}px/1 Anton,sans-serif;text-transform:uppercase;padding:14px 30px 18px;border:8px solid ${AZ};transform:rotate(-4deg);box-shadow:8px 8px 0 ${AZ}}.tt em{font-style:normal;color:${AM}}
 .bl{position:absolute;left:60px;bottom:90px;width:620px;background:#fff;border:8px solid ${AZ};border-radius:60px;padding:34px 40px 40px;font:400 54px/1.12 Gochi,cursive;color:${AZ};box-shadow:8px 8px 0 ${AZ}}

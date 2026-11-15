@@ -1,3 +1,4 @@
+// SEM LARANJA (Bea, 15/nov): nada de fundo amarelo/alaranjado; fundos só azul, vinho e creme.
 // Design D "recorte": foto sem fundo (scripts/foto-recorta.py), com contorno de figurinha, sobre raios ou palavra gigante. Cores da marca, Paul em todos.
 // Uso: [RECORTES_ALUNOS=pasta SAIDA_ALUNOS=pasta] node scripts/kit-design-recorte.mjs -> marketing/prontos/apresentacao/v3-recortes
 import fs from 'node:fs';
@@ -10,7 +11,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const F = (n) => u(`assets/fonts/${n}`), hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`);
 const AZ = '#0d1a36', VI = '#a8182e', CR = '#f4ead8', AM = '#f2b632';
-const CORES = { azul: [AZ, CR, AM, VI], vinho: [VI, CR, AM, AZ], creme: [CR, AZ, VI, AM], amarelo: [AM, AZ, VI, CR] }; // fundo, texto, destaque, raio
+const CORES = { azul: [AZ, CR, AM, VI], vinho: [VI, CR, AM, AZ], creme: [CR, AZ, VI, '#e3d3b4'], claro: [CR, AZ, VI, '#e3d3b4'] }; // fundo, texto, destaque, raio
 const css = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${F('GochiHand-latin.woff2')})}
 @font-face{font-family:Anton;src:url(${F('Anton-latin.woff2')})}@font-face{font-family:Anton;src:url(${F('Anton-latin-ext.woff2')});unicode-range:U+0100-024F}
 *{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;position:relative;overflow:hidden}`;
@@ -29,12 +30,12 @@ ${modo === 'raios' ? '<div class="r"></div><div class="o"></div>' : `<div class=
 // SÓ OBJETOS: a Bea não quer recorte de pessoa (15/nov). Pessoas vão nos designs de kit-designs-novos.mjs.
 // 15/nov: a Bea não gostou dos recortes automáticos (nem de objeto). Ela manda os PNGs já recortados; pôr em marketing/fotos-bea/recortes/ e listar aqui.
 export const RECORTES = { // PNGs que a Bea mandou já recortados (sem contorno automático)
-  '1-copo': { rec: 'copo', cor: 'amarelo', t1: 'o copo', t2: 'da beaterista', sub: 'preto com dourado', paul: 'agua', alt: 860, giro: 0 },
-  '2-bones': { rec: 'bones', cor: 'creme', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 820, giro: 0 },
-  '3-camiseta-preta': { rec: 'camiseta-preta', cor: 'amarelo', modo: 'palavra', t1: 'preta', t2: 'com dourado', sub: 'tem do tamanho dos pequenos', paul: 'oculos', alt: 860, giro: 0 },
-  '4-adesivos': { rec: 'adesivos', cor: 'vinho', t1: 'adesivo', t2: 'pra colar em tudo', sub: 'no caderno, no case, na bateria', paul: 'selfie', alt: 820, giro: 0 },
-  '5-cartoes': { rec: 'cartoes', cor: 'creme', t1: 'vem conhecer', t2: 'a escola', sub: 'Araçatuba, SP', paul: 'professor', alt: 880, giro: 0 },
-  '6-arara': { rec: 'arara', cor: 'amarelo', t1: 'veste', t2: 'a camiseta', sub: 'qual é a sua cor?', paul: 'oculos', alt: 880, giro: 0 },
+  '1-copo': { rec: 'copo', cor: 'claro', t1: 'o copo', t2: 'da beaterista', sub: 'preto com dourado', paul: 'agua', alt: 860, giro: 0 },
+  '2-bones': { rec: 'bones', cor: 'vinho', t1: 'tem boné', t2: 'também', sub: 'quem quer?', paul: 'oculos', alt: 820, giro: 0 },
+  '3-camiseta-preta': { rec: 'camiseta-preta', cor: 'claro', modo: 'palavra', t1: 'preta', t2: 'com dourado', sub: 'tem do tamanho dos pequenos', paul: 'oculos', alt: 860, giro: 0 },
+  '4-adesivos': { rec: 'adesivos', cor: 'azul', t1: 'adesivo', t2: 'pra colar em tudo', sub: 'no caderno, no case, na bateria', paul: 'selfie', alt: 820, giro: 0 },
+  '5-cartoes': { rec: 'cartoes', cor: 'vinho', t1: 'vem conhecer', t2: 'a escola', sub: 'Araçatuba, SP', paul: 'professor', alt: 880, giro: 0 },
+  '6-arara': { rec: 'arara', cor: 'claro', t1: 'veste', t2: 'a camiseta', sub: 'qual é a sua cor?', paul: 'oculos', alt: 880, giro: 0 },
 };
 const RA = process.env.RECORTES_ALUNOS, SA = process.env.SAIDA_ALUNOS;
 const browser = await chromium.launch(); let n = 0;

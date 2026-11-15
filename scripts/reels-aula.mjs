@@ -13,10 +13,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const u = (p) => pathToFileURL(path.join(ROOT, p)).href;
 const V = process.env.VIDEOS, OUT = process.env.SAIDA; fs.mkdirSync(OUT, { recursive: true });
 const acha = (id) => path.join(V, fs.readdirSync(V).find((f) => f.includes(id)));
+// A Bea pediu pra NÃO misturar: pad com pad, bateria com bateria.
 export const REELS = {
-  'aula-1-aqui-a-aula-e-assim': { t1: 'aqui a aula', t2: 'é assim', paul: 'bateria', clipes: [['IMG_9033', 0.5, 2.5], ['IMG_9004', 2, 2.5], ['IMG_6629', 1, 2.5], ['IMG_4477', 1, 2.5], ['IMG_5269', 2, 2.5, { verde: true }], ['IMG_9326', 1, 2.5, { verde: true }]] },
-  'aula-2-dia-de-show': { t1: 'dia de show', t2: 'na escola', paul: 'microfone', clipes: [['IMG_6045', 1, 3], ['IMG_6050', 4, 3.5], ['IMG_6054', 2, 3]] },
-  'aula-3-musica-desde-pequeno': { t1: 'música', t2: 'desde pequeno', paul: 'pandeiro', clipes: [['IMG_8788', 3, 4], ['IMG_4944', 0.5, 3.5], ['IMG_1441', 2, 3.5, { crop: [0, 0.16, 0.65, 0.65] }]] },
+  'aula-1-treino-no-pad': { t1: 'treino', t2: 'no pad', paul: 'metronomo', clipes: [['IMG_9033', 0.5, 3], ['IMG_9004', 2, 3], ['IMG_5269', 2, 3, { verde: true }], ['IMG_5268', 1, 3, { verde: true }]] },
+  'aula-2-na-bateria': { t1: 'agora', t2: 'na bateria', paul: 'bateria', clipes: [['IMG_6629', 1, 4], ['IMG_9326', 1, 3.5, { verde: true }], ['IMG_6050', 4, 3.5]] },
+  'aula-3-dia-de-show': { t1: 'dia de show', t2: 'na escola', paul: 'microfone', clipes: [['IMG_6045', 1, 3.5], ['IMG_6054', 2, 4]] },
+  'aula-4-bateria-de-tapete': { t1: 'bateria', t2: 'de tapete', paul: 'bateria', clipes: [['IMG_4477', 0.5, 4], ['IMG_4944', 0.5, 4]] },
+  'aula-5-musica-desde-pequeno': { t1: 'música', t2: 'desde pequeno', paul: 'pandeiro', clipes: [['IMG_8788', 2, 5], ['IMG_1441', 2, 4, { crop: [0, 0.16, 0.65, 0.65] }]] },
 };
 const capa = ({ t1, t2, paul }) => `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:Marker;src:url(${u('assets/fonts/PermanentMarker-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${u('assets/fonts/HankenGrotesk-latin.woff2')})}
