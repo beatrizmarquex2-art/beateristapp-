@@ -9,11 +9,10 @@ const tot = () => p.evaluate(async () => { const P = await import('/js/kids/prog
 check('só abrir os Estudos não dá estrela', (await tot()) === 0, String(await tot()));
 check('sem meta do dia: o Paul já chega falando uma dica ou curiosidade', (await p.locator('.hj-meta, .hj-m').count()) === 0 && (await p.locator('.hj-fala-txt').innerText()).length > 20 && /dica do paul|curiosidade de músico/i.test(await p.locator('.hj-fala-tag').innerText()));
 check('4 cartões na ordem da Bea: dicionário, robôterista ensina, acordes e ritmos, jogos ensinam', (await p.evaluate(() => [...document.querySelectorAll('.hj-big .hj-tile b')].map((b) => b.textContent.replace(/[🔒✓]/g, '').trim()).join('|'))) === 'dicionário musical|robôterista ensina|acordes e ritmos|jogos ensinam');
-await p.locator('.hj-fala-li').click(); await sleep(1500);
-check('"li!" vale 1 ★ e o botão trava', (await tot()) === 1 && await p.locator('.hj-fala-li').isDisabled(), String(await tot()));
+check('não tem mais botão "li!": ler a fala do Paul não dá estrela', (await p.locator('.hj-fala-li').count()) === 0);
 const antes = await p.locator('.hj-fala-txt').innerText(); await p.locator('.hj-fala .btn.ghost').click(); await sleep(300);
 check('"outra" troca a fala do Paul', (await p.locator('.hj-fala-txt').innerText()) !== antes);
 await p.reload(); await p.waitForSelector('.hj-fala'); await sleep(1500);
-check('abrir de novo no mesmo dia não dá outra estrela sozinho', (await tot()) === 1, String(await tot()));
+check('abrir de novo não dá estrela', (await tot()) === 0, String(await tot()));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

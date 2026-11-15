@@ -219,18 +219,15 @@ function estudosView(view) {
   const v = vistos(); const lock = (href) => AC.trancado(href);
   const ALT = 'beaterista-estudos-fala'; let vez = 0; try { vez = Number(localStorage.getItem(ALT) || 0) || 0; localStorage.setItem(ALT, String(vez + 1)); } catch { /* sem armazenamento */ }
   let tipo = vez % 2 === 0 ? 'dica' : 'curiosidade'; let di = dicaDeHoje() + Math.floor(vez / 2); let ci = curiosidadeDeHoje() + Math.floor(vez / 2);
-  const tag = h('small', { class: 'hj-fala-tag' }); const txt = h('p', { class: 'hj-fala-txt' }); const li = h('button', { type: 'button', class: 'btn small hj-fala-li' });
-  const feitaHoje = () => META.ler().feitas.includes(tipo);
+  const tag = h('small', { class: 'hj-fala-tag' }); const txt = h('p', { class: 'hj-fala-txt' }); // sem botão "li!" (a Bea tirou: a criança só clicava sem ler); estrela de estudo vem de quiz (Teoria)
   const desenha = () => {
     if (tipo === 'dica') { const [tema, t] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; tag.textContent = `dica do Paul · ${tema}`; txt.textContent = t; }
     else { const [quem, toca, t] = CURIOSIDADES[ci % CURIOSIDADES.length]; tag.textContent = `curiosidade de músico · ${quem} (${toca})`; txt.textContent = t; }
-    li.textContent = feitaHoje() ? 'li ✓' : 'li! +1★'; li.disabled = feitaHoje();
   };
-  li.addEventListener('click', () => { marcarEstudo(tipo); desenha(); });
   const outra = h('button', { type: 'button', class: 'btn small ghost', onclick: () => { if (tipo === 'dica') { tipo = 'curiosidade'; ci++; } else { tipo = 'dica'; di++; } desenha(); } }, 'outra ›');
   desenha();
   const hero = h('div', { class: 'hj-hero hj-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false' }),
-    h('div', { class: 'hj-bub', role: 'status', 'aria-live': 'polite' }, tag, txt, h('div', { class: 'hj-dica-b' }, outra, li)));
+    h('div', { class: 'hj-bub', role: 'status', 'aria-live': 'polite' }, tag, txt, h('div', { class: 'hj-dica-b' }, outra)));
   const tile = (href, pose, nome, sub, vid) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
     h('img', { class: 'hj-tp', src: corSrc(pose), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub));
   const duplo = h('div', { class: 'hj-tile hj-duplo', role: 'group', 'aria-label': 'acordes e ritmos' }, h('img', { class: 'hj-tp', src: corSrc('guitarra'), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, 'acordes e ritmos'),
