@@ -344,3 +344,12 @@ html.kb-open .rz-jogar{bottom:8px}
 .rg-host[data-rz-theme="colagem"] .rz-cena{color:#0f2347;text-shadow:none}
 .rzv.rz-setas-v{--rzp:clamp(72px,11dvh,96px)}
 .bmr .rz-setas .rz-pad b{font-size:clamp(30px,8vw,44px)!important}
+
+/* Beat Hero: modo (sozinho / contra o rival) e barra do duelo em cima dos Pauls */
+.bmr .rz-difs.rz-modos{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rz-vida{position:absolute;z-index:3;top:2px;left:4%;right:4%;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:800 12px system-ui,sans-serif;color:#0f2347}
+.rz-vida-b{height:14px;border:3px solid #0f2347;border-radius:999px;background:#8a94a8;overflow:hidden;display:flex;justify-content:flex-end}
+.rz-vida-b i{display:block;height:100%;background:#e8a92b;transition:width .15s}
+.rz-palco.rz-duelo{padding-top:22px}
+.rz-palco.rz-duelo .rz-paul{height:auto;width:40%;max-height:88%;align-self:flex-end}
+.rz-palco.rz-duelo .rz-vs{font-size:28px}
