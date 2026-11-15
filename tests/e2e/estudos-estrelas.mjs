@@ -1,18 +1,19 @@
-// Estudos dão estrela: cada meta do dia vale 1 ★ (ver a dica já conta) e cumprir as 3 vale +3 ★; só com código; nada em dobro no mesmo dia.
+// Estudos dão estrela: o Paul chega falando (dica ou curiosidade) e o "li!" vale 1 ★, uma vez por dia de cada tipo; só com código. (A "meta do dia" saiu em 15/nov/2026.)
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: true });
 await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: r.request().url().includes('aluno_codigo_ok') ? 'true' : '[]' }));
 const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 900 }); const errs = []; p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
 await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'T'); localStorage.setItem('beaterista-aluno-codigo', 'ABC123'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
-await p.goto(`${url}/aluno.html#/estudos`); await p.waitForSelector('.hj-meta', { timeout: 20000 }); await sleep(1500);
+await p.goto(`${url}/aluno.html#/estudos`); await p.waitForSelector('.hj-fala', { timeout: 20000 }); await sleep(1500);
 const tot = () => p.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); return E.estrelasTotais(P.active().id); });
 check('só abrir os Estudos não dá estrela', (await tot()) === 0, String(await tot()));
-check('a tela Hoje mostra 3 missões e o anel 0/3', (await p.locator('.hj-m').count()) === 3 && /0\/3/.test(await p.locator('.hj-meta').innerText()));
-await p.locator('button.hj-m').first().click(); await p.locator('.hj-dica .btn:not(.ghost)').click(); await sleep(1500);
-check('ler a dica do dia vale 1 ★ e acende o anel 1/3', (await tot()) === 1 && /1\/3/.test(await p.locator('.hj-meta').innerText()), String(await tot()));
-await p.reload(); await p.waitForSelector('.hj-meta'); await sleep(1500);
-check('abrir de novo no mesmo dia não dá outra estrela', (await tot()) === 1, String(await tot()));
-const apos = await p.evaluate(async () => { const m = await import('/js/estudos-meta.js'); const { ganhou } = await import('/js/jogos/estrelas-jogo.js'); m.marcar('aula'); m.marcar('curiosidade'); return m.cumprida(m.ler()); });
-check('as 3 metas do dia fecham (cumprida)', apos === true);
+check('sem meta do dia: o Paul já chega falando uma dica ou curiosidade', (await p.locator('.hj-meta, .hj-m').count()) === 0 && (await p.locator('.hj-fala-txt').innerText()).length > 20 && /dica do paul|curiosidade de músico/i.test(await p.locator('.hj-fala-tag').innerText()));
+check('4 cartões na ordem da Bea: dicionário, robôterista ensina, acordes e ritmos, jogos ensinam', (await p.evaluate(() => [...document.querySelectorAll('.hj-big .hj-tile b')].map((b) => b.textContent.replace(/[🔒✓]/g, '').trim()).join('|'))) === 'dicionário musical|robôterista ensina|acordes e ritmos|jogos ensinam');
+await p.locator('.hj-fala-li').click(); await sleep(1500);
+check('"li!" vale 1 ★ e o botão trava', (await tot()) === 1 && await p.locator('.hj-fala-li').isDisabled(), String(await tot()));
+const antes = await p.locator('.hj-fala-txt').innerText(); await p.locator('.hj-fala .btn.ghost').click(); await sleep(300);
+check('"outra" troca a fala do Paul', (await p.locator('.hj-fala-txt').innerText()) !== antes);
+await p.reload(); await p.waitForSelector('.hj-fala'); await sleep(1500);
+check('abrir de novo no mesmo dia não dá outra estrela sozinho', (await tot()) === 1, String(await tot()));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

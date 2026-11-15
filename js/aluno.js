@@ -196,7 +196,7 @@ const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbu
 
 /** Conteúdo de cada item da aba Estudos: o que tem dentro (a prévia que aparece antes de abrir) e o que desenvolve. */
 const ESTUDOS = {
-  aulas: { href: '#/estudos/aulas', titulo: 'Aulas do Paul', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
+  aulas: { href: '#/estudos/aulas', titulo: 'Robôterista ensina', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
   curiosidades: { href: '#/estudos/curiosidades', titulo: 'Curiosidades de músicos', sub: 'histórias de quem tocou antes de você', dentro: ['bateristas, pianistas, guitarristas e compositores', 'uma curiosidade por vez, com “outra” pra seguir', 'conta pra meta do dia'], dev: 'repertório e inspiração', tempo: '1 min', aberto: true },
   dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
   dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
@@ -214,38 +214,32 @@ const EXPLORAR = [
   ['#/estudos/basica/figuras', '🎼', 'teoria', null], ['#/estudos/dicas', '🧠', 'dicas', 'dicas'], ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam']];
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 function estudosView(view) {
-  const v = vistos();
-  const mt = META.ler(); const seq = META.sequencia(mt); const feitas = mt.feitas.length; const total = META.METAS.length; const ok = META.cumprida(mt);
-  const ring = (n) => { const C = 188.5; const svg = `<svg width="74" height="74" viewBox="0 0 74 74" aria-hidden="true"><circle cx="37" cy="37" r="30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="9"/><circle cx="37" cy="37" r="30" fill="none" stroke="#ffd166" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C * n / total).toFixed(1)} ${C}" transform="rotate(-90 37 37)"/><text x="37" y="44" text-anchor="middle" fill="#fff" font-family="Anton,sans-serif" font-size="20">${n}/${total}</text></svg>`; const d = h('span', { class: 'hj-ringsvg' }); d.innerHTML = svg; return d; };
-  const falta = total - feitas;
-  const fala = ok ? 'você arrasou! as 3 coisinhas de hoje estão feitas 😎' : feitas ? `falta${falta > 1 ? 'm' : ''} só ${falta}! já, já você fecha o dia 💪` : 'hoje são só 3 coisinhas, leva uns 12 minutinhos 💪';
-  const hero = h('div', { class: 'hj-hero' }, h('img', { src: `assets/paul/${ok ? 'e03' : 'p-book'}.webp`, alt: '', draggable: 'false' }), h('p', { class: 'hj-bub' }, fala));
-  const prize = h('div', { class: 'hj-prize' }, h('big', {}, '★'), '+3 bônus');
-  const card = h('div', { class: `hj-meta${ok ? ' ok' : ''}`, role: 'status', 'aria-label': `meta de hoje: ${feitas} de ${total}` }, ring(feitas), h('div', {}, h('h3', {}, ok ? 'META CUMPRIDA' : 'META DO DIA'), h('p', {}, ok ? 'as 3 estrelinhas de hoje já são suas' : 'faça as 3 e ganhe +3 ★ de bônus')), prize);
-  const MISSOES = { dica: ['💡', 'dica do dia', '1 min · um jeito de estudar melhor', null], aula: ['🥁', 'um passo de aula', 'bateria, teclado ou violão com o Paul', '#/estudos/aulas'], curiosidade: ['🎸', 'curiosidade de músico', 'uma história de quem tocou antes de você', '#/estudos/curiosidades'] };
-  const proxima = META.METAS.find(([k]) => !mt.feitas.includes(k));
-  const dicaBox = h('div', { class: 'hj-dica', hidden: true });
-  let di = dicaDeHoje(); const dTxt = h('p', {}); const dTag = h('small', {});
-  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica · ${tema}`; dTxt.textContent = txt; };
-  desenhaDica();
-  const lerDica = () => { marcarEstudo('dica'); estudosView.reabrir(); };
-  dicaBox.append(dTag, dTxt, h('div', { class: 'hj-dica-b' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { di++; desenhaDica(); } }, 'outra'), h('button', { type: 'button', class: 'btn small', onclick: lerDica }, 'li! ✓')));
-  const cartoes = META.METAS.map(([k, t]) => { const [ic, titulo, sub, href] = MISSOES[k]; const feito = mt.feitas.includes(k); const agora = proxima && proxima[0] === k;
-    const corpo = [h('span', { class: 'hj-ic', 'aria-hidden': 'true' }, feito ? '✓' : ic), h('span', { class: 'hj-mt' }, h('b', {}, titulo), h('small', {}, feito ? 'feito ✓' : sub)), h('span', { class: 'hj-rw' }, '+1★'), feito ? null : h('span', { class: 'hj-go', 'aria-hidden': 'true' }, '▶')];
-    const cls = `hj-m${feito ? ' done' : ''}${agora ? ' now' : ''}`;
-    return href ? h('a', { class: cls, href, 'aria-label': `${titulo}${feito ? ', feito' : ''}` }, ...corpo)
-      : h('button', { type: 'button', class: cls, 'aria-label': `${titulo}${feito ? ', feito' : ''}`, onclick: () => { if (!feito) dicaBox.hidden = !dicaBox.hidden; } }, ...corpo); });
-  const idxDica = META.METAS.findIndex(([k]) => k === 'dica');
-  cartoes.splice(idxDica + 1, 0, dicaBox);
-  const GRANDES = [['#/estudos/aulas', '📚', 'aulas do Paul', 'bateria, teclado e violão', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', 'veja e ouça', null], ['#/estudos/acordes/violao', '🎸', 'acordes', 'violão e teclado', null], ['#/dicionario', '📖', 'dicionário musical', 'busque um termo', 'dicionario']];
-  const OUTROS = EXPLORAR.filter(([href]) => !GRANDES.some((g) => g[0] === href));
-  const lock = (href) => AC.trancado(href);
+  // Pedido da Bea (15/nov/2026): sem "meta do dia". 4 cartões na ordem dela (dicionário · robôterista ensina · acordes e ritmos · jogos ensinam)
+  // e o Paul já chega falando: toda vez que abre Estudos ele conta uma dica ou uma curiosidade de músico (uma de cada, alternando).
+  const v = vistos(); const lock = (href) => AC.trancado(href);
+  const ALT = 'beaterista-estudos-fala'; let vez = 0; try { vez = Number(localStorage.getItem(ALT) || 0) || 0; localStorage.setItem(ALT, String(vez + 1)); } catch { /* sem armazenamento */ }
+  let tipo = vez % 2 === 0 ? 'dica' : 'curiosidade'; let di = dicaDeHoje() + Math.floor(vez / 2); let ci = curiosidadeDeHoje() + Math.floor(vez / 2);
+  const tag = h('small', { class: 'hj-fala-tag' }); const txt = h('p', { class: 'hj-fala-txt' }); const li = h('button', { type: 'button', class: 'btn small hj-fala-li' });
+  const feitaHoje = () => META.ler().feitas.includes(tipo);
+  const desenha = () => {
+    if (tipo === 'dica') { const [tema, t] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; tag.textContent = `dica do Paul · ${tema}`; txt.textContent = t; }
+    else { const [quem, toca, t] = CURIOSIDADES[ci % CURIOSIDADES.length]; tag.textContent = `curiosidade de músico · ${quem} (${toca})`; txt.textContent = t; }
+    li.textContent = feitaHoje() ? 'li ✓' : 'li! +1★'; li.disabled = feitaHoje();
+  };
+  li.addEventListener('click', () => { marcarEstudo(tipo); desenha(); });
+  const outra = h('button', { type: 'button', class: 'btn small ghost', onclick: () => { if (tipo === 'dica') { tipo = 'curiosidade'; ci++; } else { tipo = 'dica'; di++; } desenha(); } }, 'outra ›');
+  desenha();
+  const hero = h('div', { class: 'hj-hero hj-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false' }),
+    h('div', { class: 'hj-bub', role: 'status', 'aria-live': 'polite' }, tag, txt, h('div', { class: 'hj-dica-b' }, outra, li)));
+  const tile = (href, pose, nome, sub, vid) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
+    h('img', { class: 'hj-tp', src: corSrc(pose), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub));
+  const duplo = h('div', { class: 'hj-tile hj-duplo', role: 'group', 'aria-label': 'acordes e ritmos' }, h('img', { class: 'hj-tp', src: corSrc('guitarra'), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, 'acordes e ritmos'),
+    h('span', { class: 'hj-duplo-b' }, h('a', { href: '#/estudos/acordes/violao' }, 'acordes'), h('a', { href: '#/estudos/ritmos' }, 'ritmos')));
   const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
-    h('div', { class: 'hj-big' }, ...GRANDES.map(([href, ic, nome, sub, vid]) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
-      h('span', { class: 'hj-ti', 'aria-hidden': 'true' }, ic), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub)))),
-    h('div', { class: 'hj-chips' }, ...OUTROS.map(([href, ic, nome, vid]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`))));
+    h('div', { class: 'hj-big' }, tile('#/dicionario', 'lendo-partitura', 'dicionário musical', 'busque um termo', 'dicionario'), tile('#/estudos/aulas', 'professor', 'robôterista ensina', 'bateria, teclado e violão', 'aulas'), duplo, tile('#/jogos/relatorio', 'oculos', 'jogos ensinam', 'pra que serve cada jogo', 'ensinam')),
+    h('div', { class: 'hj-chips' }, ...[['#/estudos/basica/figuras', 'teoria'], ['#/estudos/dicas', 'todas as dicas'], ['#/estudos/curiosidades', 'todas as curiosidades']].map(([href, nome]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}`))));
   const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, '🎡'), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
-  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'HOJE'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`), seq ? h('span', { class: 'hj-fogo' }, `🔥 ${seq}`) : null), chips, hero, card, ...cartoes, sorte));
+  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'ESTUDOS'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`)), hero, chips, sorte));
   import('./figurinhas/estrelas.js').then(async (E) => { try { const P = await import('./kids/progress.js'); const me = P.active(); if (!me) return; const f = E.faltamParaRoleta(E.estrelasTotais(me.id)); const el = sorte.querySelector('.hj-rt'); if (el && f) el.textContent = `faltam ${f} ★ pra roleta`; } catch { /* sem o álbum */ } }).catch(() => {});
 }
 
@@ -260,7 +254,7 @@ function voltarJogos(on) {
 function aulasView(view) {
   const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
     h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, `grátis: ${GRATIS.aulinha} passos`) : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
-  view.append(banner('Aulas do Paul', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+  view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo, a.cor, a.pose, a.adesivos[0])),
     lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min', 'figuras', 'metronomo', 'nota2')));
 }

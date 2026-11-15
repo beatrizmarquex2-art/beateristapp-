@@ -87,7 +87,7 @@ function tecladoLista() {
 // 16 passos (semicolcheias): 1 e & a 2 e & a 3 e & a 4 e & a
 export const RITMOS = [
   { id: 'rock1', nome: 'Rock 1', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 8] },
-  { id: 'rock2', nome: 'Rock 2', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 4, 8] },
+  { id: 'rock2', nome: 'Rock 2', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 6, 8] }, // bumbo no 1, no "e" do 2 e no 3 (antes o 2º bumbo caía junto da caixa e soava igual ao Rock 1)
   { id: 'rock3', nome: 'Rock 3', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 8, 10] },
   { id: 'pop', nome: 'Pop', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 4, 8, 12] },
   { id: 'reggaeton', nome: 'Reggaeton', bpm: 94, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [3, 6, 11, 14], bd: [0, 4, 8, 12] },
