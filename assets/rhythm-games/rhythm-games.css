@@ -359,3 +359,6 @@ html.kb-open .rz-jogar{bottom:8px}
 /* Hero Drum: pista mais alta (dá pra tocar direto nela), botões mais baixos */
 .rzv.rz-beat-v{--rzp:clamp(84px,13dvh,124px)}
 .rzv.rz-beat-v.rz-playing{--rzpalco:clamp(120px,21dvh,210px)}
+
+/* JOGAR não flutua mais por cima da lista: fica logo depois das músicas (são só 5 por ritmo) */
+.bmr .rz-jogar{position:static!important}
