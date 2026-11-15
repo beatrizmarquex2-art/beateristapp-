@@ -746,7 +746,7 @@ function rzTempo(song){var base=song&&song._base||song;if(!base) return song;var
   if(base.arr){var A=base.arr;o.arr=Object.assign({},A,{st:A.st*k,dur:A.dur*k,mel:A.mel.map(function(n){return Object.assign({},n,{t:n.t*k,d:n.d*k})}),drums:A.drums.map(function(d){return Object.assign({},d,{t:d.t*k})}),ev:A.ev.map(function(e){return Object.assign({},e,{t:e.t*k},e.d!=null?{d:e.d*k}:{})}),chords:(A.chords||[]).map(function(c){return Object.assign({},c,{t:c.t*k},c.d!=null?{d:c.d*k}:{})})})}
   return o}
 function rzStart(song){song=rzTempo(song||RZ.song);rzPreviewStop();rzStop(true);try{if(OPTS.onPlay) OPTS.onPlay([RZ.game,(RZ.game==='hero'||RZ.game==='beat')?rzInstKey():'',RZ.diff,(song||RZ.song).id].join('|'))}catch(e){}AE.unlock();const c=AE.get();RZ.song=song||RZ.song;rzBuild();RZ.stats={pp:0,perfect:0,good:0,great:0,miss:0,stray:0,combo:0,maxCombo:0,score:0,hold:0,specials:0};RZ.fx=[];RZ.pops=[];RZ.sp=null;RZ.fade=0;RZ.cin=null;RZ.ptr=0;RZ.held.clear();RZ.flash={};RZ.badf={};RZ.lives=3;MDONE=false;
-  RZ.t0=c.currentTime+.3;RZ.phase='play';rzWake(true);document.body.classList.add('rz-lock');rzRe();rzBind();RZ.iv=setInterval(rzSched,30);rzSched();RZ.raf=requestAnimationFrame(rzFrame)}
+  RZ.t0=c.currentTime+.3;RZ.phase='play';rzPaulReset();rzWake(true);document.body.classList.add('rz-lock');rzRe();rzBind();RZ.iv=setInterval(rzSched,30);rzSched();RZ.raf=requestAnimationFrame(rzFrame)}
 let RZ_WL=null;
 async function rzWake(on){try{if(on){if(navigator.wakeLock&&!RZ_WL){RZ_WL=await navigator.wakeLock.request('screen');RZ_WL.addEventListener('release',()=>{RZ_WL=null})}}else if(RZ_WL){await RZ_WL.release();RZ_WL=null}}catch(e){RZ_WL=null}}
 window.addEventListener('resize',()=>{if(route()==='ritmo'&&(RZ.phase==='play'||RZ.phase==='pause')) setTimeout(rzBind,80)});
@@ -775,7 +775,24 @@ function rzSpecialFx(g,W,H,dpr){if(!RZ.sp||RZ.phase==='end') return;const s=rzSN
 /* contagem ao continuar depois da pausa */
 function rzCinFx(g,W,H,dpr){const c=RZ.cin;if(!c) return;const now=performance.now();if(now>=c.until){RZ.cin=null;return}const el=now-c.start;g.save();g.fillStyle='rgba(20,32,54,.42)';g.fillRect(0,0,W,H);
   if(el>=0){const i=Math.min(c.n-1,Math.floor(el/c.spb));const f=(el-i*c.spb)/c.spb;g.textAlign='center';g.fillStyle='#fff';g.font='900 '+((92-26*f)*dpr)+'px system-ui';g.fillText(String(c.n-i),W/2,H*.44);g.font='700 '+(18*dpr)+'px system-ui';g.fillText('voltando no tempo da música…',W/2,H*.52)}g.restore()}
-function rzJudge(n,res){const S=RZ.stats;n.res=res;n.at=performance.now();n.hit=res!=='miss';if(res!=='miss'&&n.star){try{const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur};S.specials=(S.specials||0)+1;AE.drum('crash',AE.ctx.currentTime,.6);rzFx('nota estrela')}catch(e){}}
+
+/* ---- Paul no palco (sprites em assets/paul/sprites): 3 cenas por música (bateria, cajón, bateria / teclado, microfone, teclado), pose de espera no andamento,
+   pose da seta ao acertar (esq, baixo, cima, dir pela coluna) e joelhos dobrados ao errar ---- */
+var RZP={until:0,scene:-1,bi:-99};
+var RZ_PSETS={beat:['bateria','cajon','bateria'],tiles:['teclado','microfone','teclado']};
+var RZ_PCENA={beat:['','agora é no cajón!','de volta na bateria!'],tiles:['','agora é no microfone!','de volta no teclado!']};
+function rzPaulSets(){return RZ_PSETS[RZ.game]||RZ_PSETS.beat}
+function rzPaulReset(){RZP.until=0;RZP.scene=-1;RZP.bi=-99}
+function rzPaulImg(f){var el=document.getElementById('rz-paul');if(!el) return;var set=rzPaulSets()[Math.max(0,RZP.scene)],k=set+'-'+f;if(el.dataset.k===k) return;el.dataset.k=k;el.src='assets/paul/sprites/'+k+'.webp'}
+function rzPaulTick(s){
+  var A=RZ.A,dur=(A&&A.dur)||1,sc=s<0?0:Math.min(2,Math.floor(s/dur*3));
+  if(sc!==RZP.scene){RZP.scene=sc;RZP.until=0;var c=document.getElementById('rz-cena');if(c){var t=(RZ_PCENA[RZ.game]||RZ_PCENA.beat)[sc];c.textContent=t;c.classList.toggle('on',!!t);clearTimeout(RZP.ct);if(t) RZP.ct=setTimeout(function(){c.classList.remove('on')},2400)}}
+  var bpm=(RZ.song&&RZ.song.bpm)||100,bi=Math.floor(s/(60/bpm));
+  if(bi!==RZP.bi){RZP.bi=bi;var el=document.getElementById('rz-paul');if(el&&el.animate&&bi>=0&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)) el.animate([{transform:'translateY(0)'},{transform:'translateY(-10px)'},{transform:'translateY(0)'}],{duration:Math.min(360,60000/bpm*.7),easing:'ease-out'})}
+  if(performance.now()>=RZP.until) rzPaulImg(bi>=0&&bi%2?'idle_02':'idle_01');
+}
+function rzPaulReact(res,lane){rzPaulImg(res==='miss'?'idle_02':['left','down','up','right'][((lane|0)%4+4)%4]);RZP.until=performance.now()+(res==='miss'?380:260)}
+function rzJudge(n,res){const S=RZ.stats;n.res=res;n.at=performance.now();n.hit=res!=='miss';try{rzPaulReact(res,n.lane)}catch(e){}if(res!=='miss'&&n.star){try{const s0=rzTime(),dur=3*16*RZ.A.st;RZ.sp={from:s0,until:s0+dur,dur:dur};S.specials=(S.specials||0)+1;AE.drum('crash',AE.ctx.currentTime,.6);rzFx('nota estrela')}catch(e){}}
   if(res==='miss'){S.miss++;if(S.combo>=5) rzFx('perdeu a nota');S.combo=0;if(RZ.game==='setas') RZ.health=Math.max(0,RZ.health-.07);}
   else{S[res]++;S.combo++;if(S.combo>0&&S.combo%10===0) rzFx('combo');S.maxCombo=Math.max(S.maxCombo,S.combo);const base={pp:100,perfect:90,great:60,good:40}[res];S.score+=base*rzMult()+(RZ.game==='beat'?Math.min(50,S.combo):0)*(rzSpOn()?2:1);if(RZ.game==='setas') RZ.health=Math.min(1,RZ.health+(res==='good'?.012:.025))}
   const txt=res!=='miss'&&n.star?'ESPECIAL ×2!':{pp:'PERFEITO+',perfect:'Perfeito',great:'Ótimo',good:'Bom',miss:'Errou'}[res];RZ.pops.push({lane:n.lane,txt,res,t:performance.now()});if(RZ.pops.length>10) RZ.pops.shift()}
@@ -802,7 +819,7 @@ function rzHit(lane,dir){if(RZ.phase!=='play') return;if(RZ.cin&&performance.now
   RZ.flash[lane]=performance.now();rzHud()}
 function rzRelease(lane){RZ.chart.forEach(n=>{if(n.holding&&n.lane===lane){n.holding=false}})}
 function rzLaneCol(l){if(RZ.game==='hero') return rzL()[l][0];if(RZ.game==='tiles') return '#2fc4e8';if(RZ.game==='setas') return RZ_ARROW[l][1];if(RZ.game==='beat') return rzBeatLanes()[l][0];return '#141015'}
-function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase==='play'){
+function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase==='play'){try{rzPaulTick(rzTime())}catch(e){}
     {const s=rzTime(),W=RZ.game==='beat'?.13*(RZ_WIN[RZ.diff].k||1):RZ_WIN[RZ.diff].gd;let ch=false;
       for(const n of RZ.chart){if(n.res){if(n.holding){if(s<n.t+n.sus){RZ.stats.score+=2*rzMult();RZ.stats.hold++}else{n.holding=false}}continue}if(n.cpu){if(n.t<=s){n.res='cpu';RZ.flash['c'+n.lane]=performance.now()}continue}if(n.t<s-W){rzJudge(n,'miss');ch=true}else if(n.t>s+1) break}
       if(ch) rzHud();if((RZ.game==='setas'&&RZ.health<=0)){rzEnd(true);return}if(!RZ.fade&&s>RZ.A.dur-2.2){RZ.fade=1;AE.fadeOut(Math.max(.6,RZ.A.dur-s))}if(s>RZ.A.dur){rzEnd();return}}}
@@ -959,6 +976,7 @@ function rzPlayView(){const L=RZ.game==='hero'?rzL():RZ.game==='beat'?rzBeatLane
   else if(RZ.game==='beat') pads='<div class="rz-pads rz-beat" style="--n:'+L.length+'">'+L.map((l,i)=>'<button type="button" class="rz-pad" data-rl="'+i+'" style="--c:'+l[0]+'"><span>'+(l[2]||'')+'</span></button>').join('')+'</div>';
   else if(RZ.game==='setas') pads='<div class="rz-pads rz-setas" style="--n:4">'+L.map((l,i)=>'<button type="button" class="rz-pad" data-rl="'+i+'" style="--c:'+l[0]+'"><b>'+l[1]+'</b></button>').join('')+'</div>';
   return '<div class="rz-hud"><span>'+esc(RZ.song.name)+'</span><span>Pontos <b id="rz-score">0</b></span><span>Combo <b id="rz-combo">0</b></span><span>Precisão <b id="rz-acc">—</b></span>'+'<button type="button" class="btn btn-sm" id="rz-pause" data-act="rz-pause">Pausar</button><button type="button" class="btn btn-sm btn-ghost" data-act="rz-quit">Sair</button></div>'
+    +'<div class="rz-palco" aria-hidden="true"><span class="rz-cena" id="rz-cena"></span><img id="rz-paul" class="rz-paul" src="assets/paul/sprites/'+rzPaulSets()[0]+'-idle_01.webp" alt="" draggable="false"></div>'
     +'<div class="rz-stage rz-st-'+RZ.game+'"><canvas id="rz-cv" role="img" aria-label="Pista do jogo de ritmo"></canvas></div>'+pads}
 /* ---- Modo Aventura: menu e fim de partida simplificados (nenhuma música é trancada; a missão só diz qual jogo/ajuste usar) ---- */
 function rzMissionMenu(){var M=MISSION;var G=RZ_GAMES.find(function(x){return x[0]===RZ.game})||RZ_GAMES[0];var picks=M.songs||[];
