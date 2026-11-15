@@ -1,4 +1,4 @@
-// Gera o PDF "Cards do Paul" (os 150 cartões da Teoria pra imprimir e recortar; produto da Bea).
+// Gera o PDF "Cards do Robôterista Paul" (os 150 cartões da Teoria pra imprimir e recortar; produto da Bea).
 // Uso: NODE_PATH=$(npm root -g) node scripts/cards-paul-pdf.mjs SAIDA.pdf ["nome da autora"] [cartas por tema na amostra]
 //   completo: ... completo.pdf      amostra de 3 por tema: ... amostra.pdf "" 3
 // O PDF NÃO vai pro repositório (o repo é público e o PDF é produto à venda): gerar numa pasta de fora.
