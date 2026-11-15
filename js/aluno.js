@@ -355,6 +355,32 @@ function trocarAluno() {
   });
 }
 
+/** Compartilhar o jogo (o link da área dos alunos): folha de compartilhar do celular; sem ela, copia o link. Nada do aluno vai junto (nem nome, nem código). */
+const LINK_JOGO = 'https://jogos.beaterista.com.br';
+async function compartilharJogo() {
+  const texto = 'jogos de música pra aprender brincando, da Beaterista escola de música: bora jogar?';
+  try { if (navigator.share) { await navigator.share({ title: 'Beaterista · jogos de música', text: texto, url: LINK_JOGO }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(`${texto} ${LINK_JOGO}`); toast('link copiado! cole e mande pra quem você quiser.'); } catch { toast(LINK_JOGO, { ms: 6000 }); }
+}
+/** Sair: este aparelho esquece o nome e o código (a vaga do código é liberada). Dá pra voltar depois pela lista do "trocar aluno". */
+async function sairDoApp() {
+  if (!(await confirmSheet('sair?', 'este aparelho esquece o nome e o código. pra voltar é só escolher o seu nome na lista do "trocar aluno" ou digitar o código de novo.', 'sair'))) return;
+  CONTAS.semConta(); location.reload();
+}
+/** Opções do topo: trocar aluno · compartilhar jogo · sair, com o nome e o código de quem está jogando. */
+function opcoes(name) {
+  sheet('opções', (close) => {
+    const code = CODE.saved();
+    const bt = (rot, fn, cls = 'btn wide') => h('button', { type: 'button', class: cls, onclick: () => { close(); fn(); } }, rot);
+    return h('div', { class: 'sheet-body al-opcoes' },
+      h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${code}`) : h('span', {}, 'ainda sem código')),
+      bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
+      code ? null : bt('🔑 tenho código', abrirCodigo),
+      bt('🚪 sair', sairDoApp, 'btn wide ghost'),
+      code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto.') : null);
+  });
+}
+
 /** "tenho código": folha rápida (aberta do topo de qualquer tela) pra digitar o código de acesso sem procurar a Lojinha. */
 function abrirCodigo() {
   sheet('já tenho meu código', (close) => {
@@ -378,8 +404,15 @@ function shell(name) {
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
     soundButton(), musicButton(),
     tenhoCodigo,
-    h('button', { type: 'button', class: 'btn small ghost', onclick: trocarAluno }, 'trocar aluno'));
-  app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
+    h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', onclick: () => opcoes(name) }, 'opções ▾'));
+  // faixa fixa em cima da abinha: quem está jogando e o código dela (toque abre as opções). Some junto com a abinha dentro dos jogos.
+  const quem = h('button', { type: 'button', class: 'al-id', onclick: () => opcoes(name) });
+  const desenhaQuem = () => { const c = CODE.saved(); quem.textContent = c ? `👤 ${name} · código ${c}` : `👤 ${name} · sem código`; quem.setAttribute('aria-label', `${name}, ${c ? `código ${c}` : 'sem código'}. abrir opções`); };
+  desenhaQuem(); document.addEventListener('aluno-acesso', desenhaQuem);
+  const alinhaQuem = () => { const r = nav.getBoundingClientRect(); if (r.height) quem.style.bottom = `${Math.round(innerHeight - r.top + 5)}px`; };
+  window.addEventListener('resize', alinhaQuem); window.addEventListener('hashchange', () => setTimeout(alinhaQuem, 60)); setTimeout(alinhaQuem, 300); setTimeout(alinhaQuem, 1200);
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
+  app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav, quem);
 
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();

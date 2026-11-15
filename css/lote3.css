@@ -908,3 +908,10 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 /* botão fixo de voltar à lista, dentro dos jogos (a barra de baixo continua escondida lá, pra o toque perto da borda não cair na Lojinha) */
 .voltar-jogos { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(14px + var(--safe-b)); z-index: 60; display: inline-flex; align-items: center; min-height: 44px; padding: 6px 18px; border: 2.5px solid #1b1818; border-radius: 999px !important; background: #fffdf8; color: #1b1818; font: 800 15px var(--body); text-decoration: none; box-shadow: 3px 3px 0 #1b1818; }
 .voltar-jogos[hidden] { display: none !important; } body.rz-lock .voltar-jogos, html:not(.em-jogo) .voltar-jogos, html.kb-open .voltar-jogos { display: none !important; }
+
+/* topo com "opções ▾" e faixa fixa com nome + código acima da abinha (15/nov/2026, pedido da Bea) */
+.al-opt{white-space:nowrap}
+.al-id{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;z-index:29;max-width:calc(100% - 24px);padding:5px 12px;border-radius:99px;border:1.5px solid #162146;background:rgb(255 250 240/.96);color:#162146;font:800 12px/1.2 var(--body,system-ui);letter-spacing:.02em;box-shadow:2px 2px 0 rgb(22 33 70/.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+#app{padding-bottom:calc(138px + var(--safe-b))}
+html.em-jogo .al-id,html.hands .al-id,body.rz-lock .al-id,html.kb-open .al-id{display:none!important}
+.al-opcoes{display:grid;gap:10px}.al-quem{margin:0;display:grid;gap:2px;text-align:center}.al-quem b{font-size:20px}.al-quem span{font:800 14px/1.2 var(--body,system-ui);letter-spacing:.06em;color:var(--muted,#5f5752)}
