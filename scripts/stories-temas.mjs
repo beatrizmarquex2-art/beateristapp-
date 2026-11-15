@@ -1,5 +1,7 @@
 // Stories e posts no MOLDE NOVO (15/nov): textura de papel + rabiscos (coroa, estrela, raio, coração, nota), dourado do logo, sem laranja,
 // logo dourado + "Beaterista · educação musical com propósito" em todos.
+// ATENÇÃO: a Bea NÃO quis os TEMAS neste molde (15/nov): ela gosta do desenho original; a versão que vale é marketing/prontos/stories-temas-original/ (marketing/ferramentas/tira_semana.py).
+// Os TEMAS abaixo ficam só de histórico e não são mais gerados. VENDA continua valendo.
 // TEMAS = os 12 temas da série do Robôterista Paul, agora SEM "semana NN" (a Bea não vai soltar por semana) e com o Paul colorido em alta.
 // VENDA = os stories que eram só escrito em fundo azul, refeitos com textura e elementos.
 // Uso: NODE_PATH=$(npm root -g) node scripts/stories-temas.mjs  -> marketing/prontos/stories-temas/ (story 1080×1920 + post 1080×1350) e marketing/prontos/stories-v2/
@@ -94,7 +96,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const page = await browser.newPage({ viewport: { width: w, height: h } }); await page.goto(pathToFileURL(tmp).href); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
     await page.screenshot({ path: arq, type: 'jpeg', quality: 92 }); await page.close(); fs.rmSync(tmp); n++; };
   const P = path.join(ROOT, 'marketing/prontos');
-  for (const [i, [nome, d]] of TEMAS.entries()) { const k = String(i + 1).padStart(2, '0');
+  for (const [i, [nome, d]] of (process.env.COM_TEMAS ? TEMAS : []).entries()) { const k = String(i + 1).padStart(2, '0');
     await tira(tema(d, 1080, 1920, i), path.join(P, 'stories-temas', `tema-${k}-${nome}-story.jpg`), 1080, 1920);
     await tira(tema(d, 1080, 1350, i), path.join(P, 'stories-temas', `tema-${k}-${nome}-post.jpg`), 1080, 1350); }
   for (const [i, [nome, d]] of VENDA.entries()) await tira(venda(d, i), path.join(P, 'stories-v2', `story-${nome}.jpg`), 1080, 1920);
