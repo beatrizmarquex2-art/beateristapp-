@@ -726,6 +726,9 @@ function rzBuild(){rzSyncKeys();const S=RZ.song,dif=RZ.diff==='dificil',easy=RZ.
     notes=rzThumbs(notes,RZ.diff==='facil'?1:2,bg)}
   else if(RZ.game==='setas'){const bar=16*st;const groups={};melF.forEach(n=>{const g=Math.floor((n.bar-2)/4);if(g<0) return;(groups[g]=groups[g]||[]).push(n)});
     Object.keys(groups).map(Number).filter(g=>g%2===0).forEach(g=>{const G=groups[g];const f=rzRank(G.map(n=>n.idx),4);G.forEach(n=>{const l=f(n.idx);const sus=n.ds>=6?n.d*.8:0;notes.push({t:n.t,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus,cpu:true});notes.push({t:n.t+4*bar,lane:l,m:n.m+12,d:Math.min(n.d,.3),sus})})});
+    /* DIFÍCIL = batalha complexa: além da melodia, na vez do jogador entram setas da BATERIA (bumbo na esquerda, caixa na direita), que soam como bateria (menos melódico) */
+    if(dif){const lastL={};Object.keys(groups).map(Number).filter(g=>g%2===0).forEach(g=>{const G=groups[g];const t0=Math.min.apply(null,G.map(n=>n.t))+4*bar-.01,t1=Math.max.apply(null,G.map(n=>n.t))+4*bar+.01;
+      A.drums.forEach(d=>{if((d.snd!=='kick'&&d.snd!=='snare')||d.t<t0||d.t>t1) return;const l=d.snd==='kick'?0:3;if(notes.some(n=>Math.abs(n.t-d.t)<st*1.5&&n.lane===l)) return;if(lastL[l]!=null&&d.t-lastL[l]<st*2) return;lastL[l]=d.t;notes.push({t:d.t,lane:l,snd:d.snd,m:48,d:.1,sus:0})})})}
     notes.filter(n=>n.cpu).forEach(n=>bg.push({t:n.t,k:'voice',m:n.m,d:Math.max(.12,n.sus||n.d)}));A.drums.forEach(d=>bg.push({t:d.t,k:'drum',snd:d.snd,v:d.v*.8}));RZ.health=.5}
   else if(RZ.game==='tiles'){notes=melF;rzPhraseLanes(notes,4,n=>Math.floor(n.bar/2));notes.forEach(n=>{if(n.ds>=6) n.sus=n.d*.9});
     const spd=.5*RZ_WIN[RZ.diff].spd,by=[[],[],[],[]];notes.forEach(n=>by[n.lane].push(n));
@@ -795,7 +798,7 @@ function rzHitSound(n,lane){const c=AE.ctx;
     else if(RZ.inst==='piano'){const m=n?n.m:RZ.song.root+12+rzPSemis(RZ.kn.piano,RZ.song.minor)[lane];AE.noteOn(m,.7);AE.later(()=>AE.noteOff(m),n&&n.sus?n.sus*1000:260)}
     else if(n) rzGuitar(n.m,c.currentTime,n.sus||n.d||.25,.6,RZ.song.style!=='rock')}
   else if(RZ.game==='tiles'){if(n){const m=n.m;AE.noteOn(m,.75);AE.later(()=>AE.noteOff(m),n.sus?n.sus*1000:320)}}
-  else if(RZ.game==='setas'&&n) rzVoice(n.m,c.currentTime,Math.max(.12,n.sus||.15),.6,.5);else if(RZ.game==='beat'){if(n&&n.snd) AE.drum(n.snd,c.currentTime,.95);else if(n&&n.m!=null){const m=n.m;AE.noteOn(m,.75);AE.later(()=>AE.noteOff(m),n.sus?n.sus*1000:300)}else if(!n) AE.drum('wood',c.currentTime,.3)}}
+  else if(RZ.game==='setas'&&n){if(n.snd) AE.drum(n.snd,c.currentTime,.95);else rzVoice(n.m,c.currentTime,Math.max(.12,n.sus||.15),.6,.5)}else if(RZ.game==='beat'){if(n&&n.snd) AE.drum(n.snd,c.currentTime,.95);else if(n&&n.m!=null){const m=n.m;AE.noteOn(m,.75);AE.later(()=>AE.noteOff(m),n.sus?n.sus*1000:300)}else if(!n) AE.drum('wood',c.currentTime,.3)}}
 function rzHit(lane,dir){if(RZ.phase!=='play') return;if(RZ.cin&&performance.now()<RZ.cin.until) return;const s=rzTime();const W=RZ.game==='beat'?.13*(RZ_WIN[RZ.diff].k||1):RZ_WIN[RZ.diff].gd;
   let best=null,bd=9;for(const n of RZ.chart){if(n.res||n.cpu||n.lane!==lane) continue;const d=Math.abs(n.t-s);if(d<bd){bd=d;best=n}if(n.t>s+W) break}
   const tier=best&&bd<=W?rzTier(bd):null;
