@@ -2,7 +2,7 @@
 import { h } from '../util.js';
 import { audio } from '../audio.js';
 import { banner } from '../ui.js';
-import { kitTheme, themeRow } from '../kids/kit-theme.js';
+import { kitTheme } from '../kids/kit-theme.js';
 import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
@@ -36,7 +36,6 @@ export function mount(host) {
   const xy = h('div', { class: 'ti-xy', role: 'group', 'aria-label': 'Barras do xilofone' });
   const scaleRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Escala' });
   const soundRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Som' });
-  const themeBox = h('div');
 
   const drawXy = () => {
     const ms = SCALES[scale]; const n = ms.length;
@@ -50,7 +49,7 @@ export function mount(host) {
     scaleRow.replaceChildren(h('small', {}, 'escala'), ...ESCALAS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.escalas.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { if (!pago() && !GRATIS.xilofone.escalas.includes(v)) { pedir('as outras escalas'); return; } scale = v; drawXy(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.escalas.includes(v) ? cadeado() : null)));
     soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { pedir('os outros sons'); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
   };
-  const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
+  const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); }; // o tema não é mais uma escolha
   const ripple = (x, y) => {
     const r = stage.getBoundingClientRect(); const d = h('i', { class: 'ti-rip' }); d.style.left = `${x - r.left}px`; d.style.top = `${y - r.top}px`; stage.append(d);
     const a = d.animate([{ transform: 'scale(.6)', opacity: 0.8 }, { transform: 'scale(3.6)', opacity: 0 }], { duration: 460, easing: 'ease-out' }); a.onfinish = () => d.remove();
@@ -73,7 +72,7 @@ export function mount(host) {
 
   stage.append(xy, pads);
   host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), stage,
-    h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow), rolar(themeBox)),
+    h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow)),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();
   const solta = aoLiberar(() => { drawRows(); drawMode(); drawXy(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });

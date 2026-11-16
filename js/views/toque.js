@@ -18,7 +18,7 @@ import { svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
-import { kitTheme, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
+import { kitTheme, flash, pieceAt } from '../kids/kit-theme.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
@@ -72,8 +72,7 @@ export function mount(host) {
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos pil', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
       ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
-    const temas = themeRow(drawKit); temas.classList.add('pil');
-    kit.replaceChildren(art, nomeEl, modelos, temas);
+    kit.replaceChildren(art, nomeEl, modelos); // sem escolha de tema (colagem, vinil, pôster)
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;

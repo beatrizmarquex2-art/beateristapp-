@@ -13,7 +13,7 @@ import { mountRitmo } from '../kids/ritmo.js';
 import { aulaFiguras } from '../kids/aula-figuras.js';
 import { mountMemoria } from '../kids/memoria.js';
 import { kitMarkup, svgEl, play } from '../kids/art.js';
-import { kitTheme, putLogo, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
+import { kitTheme, putLogo, flash, pieceAt } from '../kids/kit-theme.js';
 import { robo, tierOf } from '../kids/robo.js';
 import { AGES, MAX_LEVEL, levelSpec, levelTag } from '../kids/levels.js';
 import * as P from '../kids/progress.js';
@@ -54,8 +54,7 @@ function explorar(box) {
     box.replaceChildren(
       h('div', { class: 'row kd-modes' }, ...[['tocar', '🥁 tocar livre'], ['nomes', '🔤 nomes das peças']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${tab === k ? ' on' : ''}`, onclick: () => { tab = k; draw(); } }, t))),
       h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toque em qualquer peça, do jeito que quiser!' : 'toque numa peça pra ver o nome dela'),
-      kit, name,
-      themeRow(draw));
+      kit, name);
     box.dataset.kitTheme = kitTheme(); // o mesmo tema dos jogos de ritmo
   };
   draw();

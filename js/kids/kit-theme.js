@@ -3,7 +3,8 @@
 import { h } from '../util.js';
 
 export const KIT_THEMES = [['colagem', 'colagem'], ['vinil', 'vinil'], ['poster', 'pôster']];
-export const kitTheme = () => { try { const t = localStorage.getItem('bt-rz-theme'); return KIT_THEMES.some((x) => x[0] === t) ? t : 'colagem'; } catch { return 'colagem'; } };
+/** O tema do instrumento é sempre "colagem" (a escolha colagem / vinil / pôster saiu das telas de Tocar). Os jogos de ritmo têm o seu próprio estilo. */
+export const kitTheme = () => 'colagem';
 
 /** Troca a palavra do bumbo pelo logo do Beaterista (a imagem não recebe toque: tocar nela toca o bumbo). */
 export function putLogo(root) {
