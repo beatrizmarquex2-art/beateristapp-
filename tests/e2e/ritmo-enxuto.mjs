@@ -9,7 +9,7 @@ const r = await p.evaluate(() => { let simult = 0, close = 0, runMax = 0, n = 0;
   for (let i = 1; i < ch.length; i++) { const d = ch[i].t - ch[i - 1].t; if (d < 0.045) simult++; if (d >= 0.045 && d < s * 1.9) { close++; run++; runMax = Math.max(runMax, run); } else run = 0; } } return { simult, close, runMax, n }; });
 check('Beat Hero fácil: nenhuma nota junto de outra, em todos os estilos', r.simult === 0, JSON.stringify(r));
 check('Beat Hero: notas coladas só em virada alternando (poucas e no máximo 4 seguidas)', r.close < r.n * 0.02 && r.runMax <= 3, JSON.stringify(r));
-await p.locator('button', { hasText: 'Na Batida' }).first().click(); await sleep(600);
+await p.goto(`${url}/aluno.html#/ritmo/piano`); await sleep(1800); // Piano Hero (antigo Na Batida) tem a tela dele
 await p.locator('summary, button', { hasText: 'Ajustes' }).first().click(); await sleep(400);
 const bodyTxt = await p.locator('body').innerText(); check('sem opção de duração (música sempre de 1 min)', (await p.locator('[data-act="rz-len"]').count()) === 0, (bodyTxt.match(/.{0,40}2 min.{0,40}/) || [''])[0]);
 const src = await (await fetch(`${url}/assets/rhythm-games/rhythm-games.js`)).text();

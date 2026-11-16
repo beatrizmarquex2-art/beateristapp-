@@ -6,11 +6,14 @@ import { audio, out } from '../audio.js';
 import { banner, toast } from '../ui.js';
 import { backing } from '../instruments.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
+import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
 
 const KEY = 'setting-piano';
 const SOUNDS = [['piano', 'piano'], ['epiano', 'elétrico'], ['organ', 'órgão'], ['pad', 'cordas']];
-const conf = () => ({ sound: 'piano', labels: 'pt', octaves: innerWidth < 520 ? 1 : 2, oct: innerWidth < 520 ? 4 : 3, pedal: false, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const conf0 = () => ({ sound: 'piano', labels: 'pt', octaves: innerWidth < 520 ? 1 : 2, oct: innerWidth < 520 ? 4 : 3, pedal: false, ...(store.get(KEY) ? store.get(KEY).data : {}) });
+// sem código só o som de piano (a escolha antiga guardada no aparelho não vale)
+const conf = () => { const c = conf0(); return pago() || GRATIS.teclas.sons.includes(c.sound) ? c : { ...c, sound: 'piano' }; };
 const setConf = (p) => store.upsert('setting', KEY, p);
 
 /** Toca uma nota. Devolve { off(sustain) }. */
@@ -115,11 +118,11 @@ export function mount(host) {
   };
   const drawPanel = () => {
     const c = conf();
-    const seg = (label, opts, cur, on) => h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, label),
-      h('div', { class: 'pn-chips', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, l]) => h('button', { type: 'button', class: `pn-chip${String(cur) === String(v) ? ' on' : ''}`, role: 'radio', 'aria-checked': String(String(cur) === String(v)), onclick: () => on(v) }, l))));
+    const seg = (label, opts, cur, on, trava) => h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, label),
+      h('div', { class: 'pn-chips', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, l]) => { const t = trava && trava(v); return h('button', { type: 'button', class: `pn-chip${String(cur) === String(v) ? ' on' : ''}${t ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(String(cur) === String(v)), onclick: () => { if (t) { pedir('os outros sons'); return; } on(v); } }, l, t ? cadeado() : null); })));
     const chg = (p) => () => setConf(p).then(() => { drawKb(); drawPanel(); });
     panel.replaceChildren(h('section', { class: 'card pad tk-panel' },
-      seg('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel)),
+      seg('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel), (v) => !pago() && !GRATIS.teclas.sons.includes(v)),
       seg('nomes das notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); })),
       seg('oitavas na tela', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); })),
       h('div', { class: 'row tk-line pn-octs' }, h('span', { class: 'tp-lab' }, 'mais grave / mais agudo'),
@@ -134,9 +137,10 @@ export function mount(host) {
         h('button', { class: 'btn ghost', type: 'button', disabled: !take.length, onclick: () => { stopPlay(); take = []; recording = false; drawTake(); drawPanel(); } }, 'limpar'))));
   };
 
-  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), shown, kb, takeBox, panel, backingBar(),
+  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), shown, kb, takeBox, panel, backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawPanel(); drawTake();
+  const solta = aoLiberar(() => { drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   const onResize = () => {}; window.addEventListener('resize', onResize);
-  return () => { stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
+  return () => { solta(); stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
 }

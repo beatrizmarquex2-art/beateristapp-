@@ -8,9 +8,10 @@ export const kitTheme = () => { try { const t = localStorage.getItem('bt-rz-them
 /** Troca a palavra do bumbo pelo logo do Beaterista (a imagem não recebe toque: tocar nela toca o bumbo). */
 export function putLogo(root) {
   const bd = root.querySelector('[data-p="bd"]'); if (!bd || bd.querySelector('image')) return;
-  const tx = bd.querySelector('text'); if (tx) tx.remove();
+  const tx = bd.querySelector('text:not(.rt-fica)'); if (tx) tx.remove();
+  const [lx, ly, lw, lh] = (bd.dataset.logo || '160,192,100,51').split(',').map(Number);
   const im = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-  for (const [k, v] of Object.entries({ href: 'assets/logo-menu-beaterista.webp', x: 160, y: 192, width: 100, height: 51, 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v));
+  for (const [k, v] of Object.entries({ href: 'assets/logo-menu-beaterista.webp', x: lx, y: ly, width: lw, height: lh, 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v));
   bd.append(im);
 }
 /** Faz a peça "brilhar" sem forçar o navegador a recalcular a tela a cada toque (era o que deixava o iPhone pesado). */

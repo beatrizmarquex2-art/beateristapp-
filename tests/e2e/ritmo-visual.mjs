@@ -6,17 +6,17 @@ const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 844
 await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'T'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); localStorage.setItem('beater-rhythm-v1', JSON.stringify({ ritmo: { tilesSeen: true } })); localStorage.setItem('bt-rz-theme', 'colagem'); } catch { /* ok */ } });
 await p.goto(`${url}/aluno.html#/ritmo`); await sleep(3000);
 const theme = () => p.evaluate(() => document.querySelector('.rg-host') && document.querySelector('.rg-host').getAttribute('data-rz-theme'));
-await p.locator('button', { hasText: 'Beat Hero' }).first().click(); await sleep(500);
+await p.goto(`${url}/aluno.html#/ritmo/drum`); await sleep(1500); // 3 jogos separados: o Hero Drum (antigo Beat Hero) tem a tela dele
 check('Beat Hero abre no tema vinil mesmo com outro tema salvo', (await theme()) === 'vinil', await theme());
 check('Beat Hero não tem escolha de cores', (await p.locator('[data-act="rz-theme"]').count()) === 0 && !/Cores/.test(await p.locator('.rg-host').innerText()));
 await p.locator('[data-act="rz-acc"][data-v="ritmo"]').click().catch(() => {}); await sleep(300);
-check('menu mostra as músicas do rock (6 + 3 complexas)', (await p.locator('[data-act="rz-tier"]').count()) === 9, String(await p.locator('[data-act="rz-tier"]').count()));
+check('menu mostra as 5 músicas do rock (curadoria: 5 por ritmo)', (await p.locator('[data-act="rz-tier"]').count()) === 5, String(await p.locator('[data-act="rz-tier"]').count()));
 const estilos = (await p.locator('[data-act="rz-style"]').allInnerTexts()).join(',');
 check('estilos: rock, pop, reggaeton, blues e lo-fi', /Rock/.test(estilos) && /Blues/.test(estilos) && !/Balada|Bossa/.test(estilos), estilos);
 await p.locator('[data-act="rz-play"]').first().click(); await sleep(6500);
 if (process.env.SHOTS) await p.screenshot({ path: `${process.env.SHOTS}/beat-play.png` });
 await p.locator('[data-act="rz-quit"]').first().click().catch(() => {}); await sleep(500);
-await p.locator('button', { hasText: 'Na Batida' }).first().click(); await sleep(500);
+await p.goto(`${url}/aluno.html#/ritmo/piano`); await sleep(1500); // Piano Hero (antigo Na Batida)
 check('Na Batida clássico usa o tema claro', (await theme()) === 'colagem', await theme());
 await p.locator('[data-act="rz-acc"][data-v="cores"]').click(); await sleep(300);
 check('Na Batida tem Clássico e Colorido', (await p.locator('[data-act="rz-theme"]').count()) === 2);

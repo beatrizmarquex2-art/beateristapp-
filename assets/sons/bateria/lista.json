@@ -1,0 +1,152 @@
+{
+ "acustica": {
+  "bd": {
+   "s": [
+    "acustica_bd_s1.wav",
+    "acustica_bd_s2.wav"
+   ],
+   "f": [
+    "acustica_bd_f1.wav",
+    "acustica_bd_f2.wav"
+   ],
+   "rate": 1.3
+  },
+  "sn": {
+   "s": [
+    "acustica_sn_s1.wav",
+    "acustica_sn_s2.wav"
+   ],
+   "f": [
+    "acustica_sn_f1.wav",
+    "acustica_sn_f2.wav"
+   ],
+   "rate": 1.0
+  },
+  "sn_aro": {
+   "s": [
+    "acustica_sn_aro_s1.wav"
+   ],
+   "f": [
+    "acustica_sn_aro_f1.wav"
+   ],
+   "rate": 1.0
+  },
+  "tt": {
+   "s": [
+    "acustica_tt_s1.wav",
+    "acustica_tt_s2.wav"
+   ],
+   "f": [
+    "acustica_tt_f1.wav",
+    "acustica_tt_f2.wav"
+   ],
+   "rate": 1.12
+  },
+  "mt": {
+   "s": [
+    "acustica_mt_s1.wav",
+    "acustica_mt_s2.wav"
+   ],
+   "f": [
+    "acustica_mt_f1.wav",
+    "acustica_mt_f2.wav"
+   ],
+   "rate": 0.9
+  },
+  "ft": {
+   "s": [
+    "acustica_ft_s1.wav",
+    "acustica_ft_s2.wav"
+   ],
+   "f": [
+    "acustica_ft_f1.wav",
+    "acustica_ft_f2.wav"
+   ],
+   "rate": 0.85
+  },
+  "hh": {
+   "s": [
+    "acustica_hh_s1.wav",
+    "acustica_hh_s2.wav"
+   ],
+   "f": [
+    "acustica_hh_f1.wav",
+    "acustica_hh_f2.wav"
+   ],
+   "rate": 1.0
+  },
+  "hf": {
+   "s": [
+    "acustica_hf_s1.wav",
+    "acustica_hf_s2.wav"
+   ],
+   "f": [
+    "acustica_hf_f1.wav"
+   ],
+   "rate": 1.0
+  },
+  "ho": {
+   "s": [
+    "acustica_ho_s1.wav",
+    "acustica_ho_s2.wav"
+   ],
+   "f": [
+    "acustica_ho_f1.wav"
+   ],
+   "rate": 1.0
+  },
+  "cr": {
+   "s": [
+    "acustica_cr_s1.wav",
+    "acustica_cr_s2.wav"
+   ],
+   "f": [
+    "acustica_cr_f1.wav",
+    "acustica_cr_f2.wav"
+   ],
+   "rate": 1.0
+  },
+  "rd": {
+   "s": [
+    "acustica_rd_s1.wav"
+   ],
+   "f": [
+    "acustica_rd_f1.wav"
+   ],
+   "rate": 1.0
+  },
+  "rd_sino": {
+   "s": [
+    "acustica_rd_sino_s1.wav"
+   ],
+   "f": [
+    "acustica_rd_sino_f1.wav"
+   ],
+   "rate": 1.0
+  }
+ },
+ "cajon": {
+  "bd": {
+   "s": [
+    "cajon_bd_s1.wav",
+    "cajon_bd_s2.wav"
+   ],
+   "f": [
+    "cajon_bd_f1.wav",
+    "cajon_bd_f2.wav"
+   ],
+   "rate": 1.0
+  },
+  "sn": {
+   "s": [
+    "cajon_sn_s1.wav",
+    "cajon_sn_s2.wav"
+   ],
+   "f": [
+    "cajon_sn_f1.wav",
+    "cajon_sn_f2.wav"
+   ],
+   "rate": 1.0
+  }
+ }
+}

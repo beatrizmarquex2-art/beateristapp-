@@ -78,6 +78,116 @@ export const DRUM = {
   cr: (t, v = 1) => { C = init(); crash(t, v); },
   rd: (t, v = 1, dr = 0.5) => { C = init(); ride(t, v, dr < 0.28); },
 };
+/* ---------- bateria ELETRÔNICA (pads, tipo 808/909) e CAJÓN ---------- */
+const vr = () => 0.94 + Math.random() * 0.12;
+// Bateria eletrônica: receitas de caixa de ritmo clássica (808/909): sem som gravado, tudo calculado.
+let satCurve = null;
+const sat = (k = 2.2) => { const w = C.createWaveShaper(); if (!satCurve) { satCurve = new Float32Array(1024); for (let i = 0; i < 1024; i++) { const x = (i / 511.5) - 1; satCurve[i] = Math.tanh(x * 2.2) / Math.tanh(2.2); } } w.curve = satCurve; w.oversample = '2x'; return w; };
+function eKick(t, v) { // bumbo seco e socado (estilo 909): queda rápida de afinação, corpo curto de ~55 Hz, saturado, com clique forte de ataque pra aparecer no celular
+  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(210, t); o.frequency.exponentialRampToValueAtTime(95, t + 0.025); o.frequency.exponentialRampToValueAtTime(56, t + 0.09); o.frequency.exponentialRampToValueAtTime(48, t + 0.3);
+  env(g, t, 1.25 * v, 0.001, 0.32); o.connect(sat()).connect(g); route(g, 0.015); o.start(t); o.stop(t + 0.4);
+  const o2 = C.createOscillator(); const g2 = gn(); o2.type = 'sine'; o2.frequency.setValueAtTime(115, t); o2.frequency.exponentialRampToValueAtTime(70, t + 0.06); env(g2, t, 0.5 * v, 0.001, 0.09); o2.connect(sat()).connect(g2); route(g2); o2.start(t); o2.stop(t + 0.14);
+  const n = noiseSrc(t, 0.02); const ng = gn(); n.connect(bq('bandpass', 3000, 0.9)).connect(ng); env(ng, t, 0.4 * v, 0.001, 0.012); route(ng);
+  const o3 = C.createOscillator(); const g3 = gn(); o3.type = 'triangle'; o3.frequency.setValueAtTime(900, t); o3.frequency.exponentialRampToValueAtTime(180, t + 0.012); env(g3, t, 0.3 * v, 0.0005, 0.014); o3.connect(g3); route(g3); o3.start(t); o3.stop(t + 0.03);
+}
+function eSnare(t, v) { // 909: dois tons (corpo) + ruído filtrado com ataque rápido (esteira) + estalo
+  for (const [f, a, d] of [[185, 0.75, 0.13], [330, 0.42, 0.09]]) { const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(f * 1.5, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.03); env(og, t, a * v, 0.001, d); o.connect(og); route(og, 0.05); o.start(t); o.stop(t + d + 0.05); }
+  const n = noiseSrc(t, 0.3); const g = gn(); n.connect(bq('highpass', 1800)).connect(bq('peaking', 5200, 0.8, 5)).connect(g); env(g, t, 0.85 * v, 0.001, 0.2); route(g, 0.12);
+  const n2 = noiseSrc(t, 0.03); const g2 = gn(); n2.connect(bq('bandpass', 3200, 1.2)).connect(g2); env(g2, t, 0.5 * v, 0.001, 0.012); route(g2);
+}
+function eTom(t, f, v) { // tom de caixa de ritmo: seno com queda de afinação rápida, corpo médio e um toque de saturação
+  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(f * 2.1, t); o.frequency.exponentialRampToValueAtTime(f * 1.05, t + 0.06); o.frequency.exponentialRampToValueAtTime(f, t + 0.3);
+  env(g, t, 1.0 * v, 0.002, 0.55); o.connect(sat()).connect(g); route(g, 0.1); o.start(t); o.stop(t + 0.65);
+  const n = noiseSrc(t, 0.02); const ng = gn(); n.connect(bq('bandpass', 3800, 1)).connect(ng); env(ng, t, 0.18 * v, 0.001, 0.012); route(ng);
+}
+/** Banco metálico clássico (808): 6 ondas quadradas desafinadas somadas, filtradas. É o que dá o "tssst" de chimbal/prato de caixa de ritmo. */
+const BANCO = [205.3, 304.4, 369.6, 522.7, 540, 800];
+function banco(t, v, { dur, mul = 1, hp = 7000, bp = 10200, gain = 0.3, ruido = 0.5 }) {
+  const g = gn(); const f1 = bq('bandpass', bp, 0.7); const f2 = bq('highpass', hp, 0.7);
+  for (const f of BANCO) { const o = C.createOscillator(); o.type = 'square'; o.frequency.value = f * mul * 2; const og = gn(0.16); o.connect(og).connect(f1); o.start(t); o.stop(t + dur + 0.05); }
+  const n = noiseSrc(t, dur); const ng = gn(ruido * 0.5); n.connect(ng).connect(f1);
+  f1.connect(f2).connect(g); env(g, t, gain * v, 0.001, dur); route(g, 0.08); return g;
+}
+let eOpen = null; let eCrash = null; let eRide = null;
+export const DRUM_ELET = {
+  bd: (t, v = 1) => { C = init(); eKick(t, v * vr()); },
+  sn: (t, v = 1) => { C = init(); eSnare(t, v * vr()); },
+  tt: (t, v = 1) => { C = init(); eTom(t, jit(190), v * vr()); },
+  mt: (t, v = 1) => { C = init(); eTom(t, jit(145), v * vr()); },
+  ft: (t, v = 1) => { C = init(); eTom(t, jit(105), v * vr()); },
+  hh: (t, v = 1) => { C = init(); if (eOpen) { fade(eOpen, t, 0.008); eOpen = null; } banco(t, v * vr(), { dur: 0.05, gain: 1.5 }); },
+  ho: (t, v = 1) => { C = init(); if (eOpen) fade(eOpen, t, 0.008); eOpen = banco(t, v * vr(), { dur: 0.45, gain: 1.2 }); },
+  hf: (t, v = 1) => { C = init(); banco(t, v * 0.55, { dur: 0.035, gain: 1.0, hp: 8500 }); },
+  cr: (t, v = 1) => { C = init(); if (eCrash) fade(eCrash, t, 0.015); eCrash = banco(t, v, { dur: 1.4, gain: 1.1, hp: 4200, bp: 8200, mul: 0.9, ruido: 1.1 }); },
+  rd: (t, v = 1, dr = 0.5) => { C = init(); if (eRide) fade(eRide, t, 0.02); eRide = banco(t, v, { dur: dr < 0.28 ? 0.9 : 0.7, gain: 0.9, hp: 5200, bp: 9000, mul: 1.15, ruido: 0.25 }); const o = C.createOscillator(); const g = gn(); o.type = 'triangle'; o.frequency.value = dr < 0.28 ? 2600 : 3300; env(g, t, 0.2 * v, 0.001, dr < 0.28 ? 0.5 : 0.25); o.connect(g); route(g, 0.1); o.start(t); o.stop(t + 0.7); },
+};
+// Cajón: as 4 zonas usam os mesmos ids da bateria (bd = grave no meio, sn = agudo/slap no alto, hh = toque seco nas laterais, tt = abafado/palma) pra gravação e partitura funcionarem igual.
+function cajGrave(t, v) {
+  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(118, t); o.frequency.exponentialRampToValueAtTime(64, t + 0.07); env(g, t, 1.0 * v, 0.002, 0.3); o.connect(g); route(g, 0.06); o.start(t); o.stop(t + 0.4);
+  const o2 = C.createOscillator(); const g2 = gn(); o2.type = 'triangle'; o2.frequency.value = 148; env(g2, t, 0.4 * v, 0.002, 0.11); o2.connect(g2); route(g2); o2.start(t); o2.stop(t + 0.2);
+  const n = noiseSrc(t, 0.1); const ng = gn(); n.connect(bq('bandpass', 190, 2)).connect(ng); env(ng, t, 0.5 * v, 0.001, 0.09); route(ng);
+  const n2 = noiseSrc(t, 0.02); const g3 = gn(); n2.connect(bq('bandpass', 1400, 0.9)).connect(g3); env(g3, t, 0.22 * v, 0.001, 0.012); route(g3);
+}
+function cajSlap(t, v) {
+  const n = noiseSrc(t, 0.2); const g = gn(); n.connect(bq('highpass', 2600)).connect(g); env(g, t, 0.62 * v, 0.001, 0.1); route(g, 0.08);
+  const n2 = noiseSrc(t, 0.25); const g2 = gn(); n2.connect(bq('bandpass', 4300, 1.6)).connect(g2); env(g2, t, 0.36 * v, 0.002, 0.17); route(g2, 0.05); // as cordinhas por dentro do cajón
+  const o = C.createOscillator(); const og = gn(); o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(285, t + 0.05); env(og, t, 0.5 * v, 0.001, 0.07); o.connect(og); route(og); o.start(t); o.stop(t + 0.12);
+}
+function cajSeco(t, v) {
+  const o = C.createOscillator(); const g = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(560, t); o.frequency.exponentialRampToValueAtTime(430, t + 0.03); env(g, t, 0.45 * v, 0.001, 0.06); o.connect(g); route(g, 0.04); o.start(t); o.stop(t + 0.1);
+  const n = noiseSrc(t, 0.03); const ng = gn(); n.connect(bq('bandpass', 3000, 1.2)).connect(ng); env(ng, t, 0.3 * v, 0.001, 0.025); route(ng);
+}
+function cajAbafado(t, v) {
+  const o = C.createOscillator(); const g = gn(); o.frequency.setValueAtTime(215, t); o.frequency.exponentialRampToValueAtTime(155, t + 0.04); env(g, t, 0.6 * v, 0.001, 0.08); o.connect(g); route(g, 0.03); o.start(t); o.stop(t + 0.14);
+  const n = noiseSrc(t, 0.05); const ng = gn(); n.connect(bq('lowpass', 1000)).connect(ng); env(ng, t, 0.35 * v, 0.001, 0.045); route(ng);
+}
+export const DRUM_CAJON = {
+  bd: (t, v = 1) => { C = init(); cajGrave(t, v * vr()); },
+  sn: (t, v = 1) => { C = init(); cajSlap(t, v * vr()); },
+};
+// O cajón só tem GRAVE (bd) e AGUDO (sn): as outras peças da bateria caem na mais parecida (assim uma gravação feita em outro modelo ainda toca).
+for (const k of ['tt', 'mt', 'ft']) DRUM_CAJON[k] = DRUM_CAJON.bd;
+for (const k of ['hh', 'ho', 'hf', 'cr', 'rd']) DRUM_CAJON[k] = DRUM_CAJON.sn;
+export const MODELOS_BATERIA = [['acustica', 'acústica'], ['eletronica', 'eletrônica'], ['cajon', 'cajón']];
+/* ---------- amostras de verdade (acústica e cajón) ----------
+   Gravações livres (CC0, domínio público) da Versilian Community Sample Library (github.com/sgossner/VCSL), cortadas e normalizadas
+   por scripts/ (assets/sons/bateria/lista.json diz qual arquivo é de qual peça). Duas forças (suave/forte), 1–2 variações cada.
+   Se o arquivo não carregar (sem internet na 1ª vez), toca o som sintético de antes. */
+const AMOSTRAS = {}; const carregando = {};
+export function warmKit(modelo) {
+  if ((modelo !== 'acustica' && modelo !== 'cajon') || AMOSTRAS[modelo]) return Promise.resolve();
+  if (carregando[modelo]) return carregando[modelo];
+  return (carregando[modelo] = (async () => {
+    try {
+      const c = init(); const lista = await (await fetch('assets/sons/bateria/lista.json')).json(); const out = {};
+      const dec = async (f) => c.decodeAudioData(await (await fetch(`assets/sons/bateria/${f}`)).arrayBuffer());
+      for (const [pc, d] of Object.entries(lista[modelo])) out[pc] = { rate: d.rate, s: await Promise.all(d.s.map(dec)), f: await Promise.all(d.f.map(dec)) };
+      AMOSTRAS[modelo] = out;
+    } catch { /* fica o sintético */ }
+    delete carregando[modelo];
+  })());
+}
+function toca(modelo, pc, t, v) {
+  const k = AMOSTRAS[modelo] && AMOSTRAS[modelo][pc]; if (!k) return null;
+  const lista = v > 0.78 && k.f.length ? k.f : k.s; const s = C.createBufferSource(); s.buffer = lista[Math.floor(Math.random() * lista.length)];
+  s.playbackRate.value = k.rate * (1 + (Math.random() - 0.5) * 0.012); const g = gn(0.55 + 0.45 * Math.min(1, v));
+  s.connect(g); route(g, 0.05); s.start(t); return g;
+}
+let rAberto = null; let rCrash = null; let rRide = null;
+const comFallback = (modelo, pc, base, id) => (t, v = 1, dr = 0.3) => { C = init(); if (!toca(modelo, pc, t, v)) base[id](t, v, dr); };
+export const DRUM_REAL = {
+  bd: comFallback('acustica', 'bd', DRUM, 'bd'), tt: comFallback('acustica', 'tt', DRUM, 'tt'), mt: comFallback('acustica', 'mt', DRUM, 'mt'), ft: comFallback('acustica', 'ft', DRUM, 'ft'),
+  sn: (t, v = 1, dr = 0.3) => { C = init(); if (!toca('acustica', dr > 0.8 ? 'sn_aro' : 'sn', t, v)) DRUM.sn(t, v, dr); },
+  hh: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) { fade(rAberto, t, 0.015); rAberto = null; } if (!toca('acustica', 'hh', t, v)) DRUM.hh(t, v, dr); },
+  hf: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) { fade(rAberto, t, 0.015); rAberto = null; } if (!toca('acustica', 'hf', t, v)) DRUM.hf(t, v, dr); },
+  ho: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) fade(rAberto, t, 0.01); const g = toca('acustica', 'ho', t, v); if (g) rAberto = g; else DRUM.ho(t, v, dr); },
+  cr: (t, v = 1, dr = 0.3) => { C = init(); if (rCrash) fade(rCrash, t, 0.03); const g = toca('acustica', 'cr', t, v); if (g) rCrash = g; else DRUM.cr(t, v, dr); },
+  rd: (t, v = 1, dr = 0.5) => { C = init(); if (rRide) fade(rRide, t, 0.04); const g = toca('acustica', dr < 0.28 ? 'rd_sino' : 'rd', t, v); if (g) rRide = g; else DRUM.rd(t, v, dr); },
+};
+export const DRUM_CAJON_REAL = { ...DRUM_CAJON, bd: comFallback('cajon', 'bd', DRUM_CAJON, 'bd'), sn: comFallback('cajon', 'sn', DRUM_CAJON, 'sn') };
+for (const k of ['tt', 'mt', 'ft']) DRUM_CAJON_REAL[k] = DRUM_CAJON_REAL.bd;
+for (const k of ['hh', 'ho', 'hf', 'cr', 'rd']) DRUM_CAJON_REAL[k] = DRUM_CAJON_REAL.sn;
+export const kitSom = (modelo) => (modelo === 'eletronica' ? DRUM_ELET : modelo === 'cajon' ? DRUM_CAJON_REAL : DRUM_REAL);
 /** Força pela posição do dedo: no centro 1, na borda ~0.72, com uma variaçãozinha. */
 export const velAt = (dr) => (1 - 0.28 * Math.min(1, Math.max(0, dr))) * (0.94 + Math.random() * 0.12);
 
@@ -235,9 +345,10 @@ export function pluck(midi, vel, t, kind = 'acoustic', mute = false) {
 export const CHORDS = [['C', [null, 48, 52, 55, 60, 64]], ['G', [43, 47, 50, 55, 59, 67]], ['Am', [null, 45, 52, 57, 60, 64]], ['F', [41, 48, 53, 57, 60, 65]],
   ['D', [null, null, 50, 57, 62, 66]], ['Em', [40, 47, 52, 55, 59, 64]], ['A', [null, 45, 52, 57, 61, 64]], ['E', [40, 47, 52, 56, 59, 64]]];
 /** Calcula as cordas num intervalo livre pra o primeiro toque não engasgar. */
-export function warmGuitar() {
+export function warmGuitar() { warmNotes(CHORDS.flatMap(([, ms]) => ms)); }
+export function warmNotes(list) {
   C = init(); const todo = [];
-  for (const k of ['a', 'e']) for (const [, ms] of CHORDS) for (const m of ms) if (m != null && !ks.has(k + m)) todo.push([m, k]);
+  for (const k of ['a', 'e']) for (const m of new Set(list)) if (m != null && !ks.has(k + m)) todo.push([m, k]);
   const step = () => { for (let i = 0; i < 4 && todo.length; i++) { const [m, k] = todo.shift(); try { ksBuf(m, k); } catch { return; } } if (todo.length) setTimeout(step, 0); };
   setTimeout(step, 300);
 }
@@ -283,3 +394,4 @@ export function grooveBeat(style) {
   const out = par ? Object.fromEntries(Object.entries(rows).map(([id, r]) => [id, r.filter((_, i) => i % 2 === 0)])) : rows;
   return { id: `fundo-${style}`, name: style, style: '', bpm: backing.bpm, steps: par ? 8 : 16, kind: 'groove', rows: out };
 }
+export const amostrasOk = (modelo) => !!AMOSTRAS[modelo];

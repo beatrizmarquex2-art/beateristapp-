@@ -1,3 +1,4 @@
+import { COLORS } from '../beats.js';
 // Ícones "neon" de linha (estilo arcade): jogos da Kids e instrumentos. Duas cores: `a` (principal) e `b` (detalhe).
 // No app as cores vêm do CSS (var(--vio) e var(--mint)); no PDF passam cores fixas.
 const svg = (inner, a, b, label = '') => `<svg viewBox="0 0 64 64" class="kx-ico" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"${label ? ` role="img" aria-label="${label}"` : ' aria-hidden="true"'}>${inner.replace(/<(\w+) class="a"/g, `<$1 style="stroke:${a}"`).replace(/<(\w+) class="b"/g, `<$1 style="stroke:${b}"`).replace(/<(\w+) class="af"/g, `<$1 style="stroke:${a};fill:${a};fill-opacity:.18"`).replace(/<(\w+) class="bf"/g, `<$1 style="stroke:${b};fill:${b};fill-opacity:.18"`)}</svg>`;
@@ -34,7 +35,8 @@ export const gameIcon = (id, a = 'var(--ia, #1b1818)', b = 'var(--ib, #a31d30)',
 export const instrumentIcon = gameIcon;
 
 /* ---- bateria completa (jogo "que peça é essa?"): cada peça é um <g class="kp" data-p> clicável ---- */
-export const KIT_COLORS = { bd: '#a31d30', sn: '#e3a82f', hh: '#1b1818', tt: '#14284b', mt: '#4a6a9c', ft: '#6e1423', cr: '#b8860b', rd: '#8a5a14' };
+// as cores da partitura colorida (as mesmas do Beat Lab): bumbo verde, caixa vermelha, chimbal azul, tom laranja, surdo roxo, prato dourado, condução azul-petróleo
+export const KIT_COLORS = { bd: COLORS.bd, sn: COLORS.sn, hh: COLORS.hh, tt: COLORS.tt, mt: COLORS.mt, ft: COLORS.ft, cr: COLORS.cr, rd: COLORS.rd };
 /** `only`: pinta só essa peça e deixa o resto cinza (cartas da memória). */
 export function kitSvg(hl, hide, only) {
   const set = only ? String(only).split('+') : null; // `only` pode ser mais de uma peça ("hh+bd")

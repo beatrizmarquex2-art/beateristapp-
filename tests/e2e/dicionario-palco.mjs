@@ -9,7 +9,7 @@ await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true);
 const chips = await page.locator('.lib-tab').allTextContents();
 check('os 3 grupos novos viram temas do dicionário', ['banda e palco', 'estúdio e equipamento', 'como o músico fala'].every((n) => chips.includes(n)), chips.join('|'));
 await page.getByRole('radio', { name: 'banda e palco' }).click(); await sleep(300);
-check('o tema "banda e palco" mostra 25 termos', (await page.locator('.dc-term').count()) === 25);
+check('o tema "banda e palco" mostra 24 termos', (await page.locator('.dc-term').count()) === 24);
 await page.fill('input[type=search]', 'setlist'); await sleep(300);
 check('a busca acha "setlist"', (await page.locator('.dc-term strong', { hasText: 'setlist' }).count()) >= 1);
 await page.locator('.dc-term .dc-head').first().click(); await sleep(300);

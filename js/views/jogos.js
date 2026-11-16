@@ -69,7 +69,9 @@ const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
 const SECTIONS = [
   ['Ritmo e bateria', [
-    link('#/ritmo', 'Beat Hero', 'ritmo.svg', 'toca no tempo e ganha estrelas'),
+    link('#/ritmo/drum', 'Hero Drum', 'hero-drum.webp', 'bateria: toque no tempo e ganhe estrelas'),
+    link('#/ritmo/piano', 'Piano Hero', 'piano-hero.webp', 'toque a melodia no ritmo da música'),
+    link('#/ritmo/setas', 'Beat Hero', 'beat-hero.webp', 'siga as setas e dance com o Paul'),
     inner('toca'),
     inner('detetive'),
     inner('figurix'),

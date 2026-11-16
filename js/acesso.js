@@ -19,7 +19,7 @@ export function trancado(hash) {
   if (/\/aventura(\/|$)/.test(String(hash || ''))) return true; // Modo Aventura (mapas, missões, estrelas e medalhas) só com código; o Modo Livre de cada jogo fica aberto
   const m = /^#\/([^/?]+)(?:\/([^/?]*))?/.exec(String(hash || '')); if (!m) return false;
   const [, a, b] = m;
-  if (['ranking', 'album', 'ritmo', 'paulta'].includes(a)) return true; // o ritmo todo (Beat Hero, Piano Hero, músicas) e a pauLta só com código. Dicionário, Letras e a aulinha abrem com AMOSTRA grátis (js/amostra.js)
+  if (['ranking', 'album', 'paulta'].includes(a)) return true; // a pauLta só com código. O ritmo (Hero Drum, Piano Hero e Beat Hero) abre com 2 fases grátis e trava o resto por dentro (rzFreeOk no pacote de ritmo). Dicionário, Letras e a aulinha abrem com AMOSTRA grátis (js/amostra.js)
   if (a === 'estudos' && b === 'dicas') return true; // a lista de dicas do método pra estudar: só com código
   if (a === 'jogos' && (b === 'toca' || b === 'cartas' || b === 'un' || b === 'quizuno' || b === 'figurix' || b === 'rudimentos' || b === 'detetive' || b === 'copia' || b === 'paultavivo' || b === 'groove' || b === 'fantasma')) return true; // Toca Aqui, Uno Musical, UN🚫, Quiz do Uno, Figurix, Taiko (rudimentos) e Detetive Note ensinam de verdade: só com código (o Taiko é só pros alunos, a Bea confirmou)
   if (a === 'kids' && b === 'figuras' && /^#\/kids\/figuras\/aula(\/|$)/.test(String(hash || ''))) return false; // aulinha do Paul: amostra grátis

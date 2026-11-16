@@ -44,7 +44,7 @@ export function mount(host) {
   const stage = h('section', { class: 'pbx-stage', 'aria-label': 'Banda do Paul' }, ...els);
   const hintEl = h('p', { class: 'pbx-hint', role: 'status', 'aria-live': 'polite' });
   const bpmV = h('span', {}, String(bpm));
-  const sl = h('input', { type: 'range', min: String(BPM_MIN), max: String(BPM_MAX), value: String(bpm), 'aria-label': 'andamento', oninput: () => { bpm = Number(sl.value); bpmV.textContent = sl.value; }, onchange: () => setGame('paulbox', { bpm }) });
+  const sl = h('input', { type: 'range', min: String(BPM_MIN), max: String(BPM_MAX), value: String(bpm), 'aria-label': 'andamento', oninput: () => { bpm = Number(sl.value); bpmV.textContent = sl.value; mudouBpm(); }, onchange: () => setGame('paulbox', { bpm }) });
   const pulsos = TRACKS.map(() => 0); let grav = null; // gravação em andamento
   const btnRec = podeGravar() ? h('button', { type: 'button', class: 'pbx-act pbx-rec', 'aria-label': `gravar ${SEG} segundos pra postar`, onclick: () => (grav ? grav.cancelar() : comecaGravar()) }, `● gravar ${SEG}s`) : null;
   const act = (txt, fn, main) => h('button', { type: 'button', class: `pbx-act${main ? ' main' : ''}`, onclick: fn }, txt);
@@ -63,7 +63,7 @@ export function mount(host) {
   musicaPausa(); // a banda do Paul é a música: o fundo dos jogos fica quieto aqui
 
   function setState(i, s) {
-    state[i] = s; const b = els[i]; b.dataset.s = String(s);
+    state[i] = s; const b = els[i]; b.dataset.s = String(s); if (timer) tocaTrilha(i);
     b.querySelector('.pbx-chip').textContent = LABEL[s];
     b.setAttribute('aria-label', `${TRACKS[i].nome}: ${LABEL[s]}`);
     hint();
@@ -92,8 +92,40 @@ export function mount(host) {
       var len = ctx.sampleRate; noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
       var d = noiseBuf.getChannelData(0); for (var k = 0; k < len; k++) d[k] = Math.random() * 2 - 1;
     } else audio(); // destrava de novo depois de tela bloqueada (iPhone)
-    if (!timer && !parado) { step = 0; nextT = ctx.currentTime + 0.08; timer = setInterval(sched, 25); }
+    if (!timer && !parado) { step = 0; nextT = ctx.currentTime + 0.08; T0 = nextT; timer = setInterval(sched, 25); for (var z = 0; z < N; z++) tocaTrilha(z); }
   }
+
+  /* ---------- trechos prontos (o jeito do Incredibox/Sprunki): cada Paul + ritmo é desenhado UMA vez num trecho de 4 compassos e depois só repete.
+     Antes, com os 10 Pauls ligados, o app criava centenas de sons novos por segundo ao vivo e o celular travava. Agora são no máximo 10 trechos tocando.
+     Se o aparelho não conseguir preparar o trecho, aquele Paul toca ao vivo como antes (aoVivo). ---------- */
+  var T0 = 0, trechos = {}, tocando = [], aoVivo = [], bpmT = null;
+  function fazTrecho(i, st) {
+    var chave = i + '_' + st + '_' + bpm; if (trechos[chave]) return trechos[chave];
+    var OC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OC || !ctx) return (trechos[chave] = Promise.resolve(null));
+    var sc = secs(), sr = ctx.sampleRate, volta = Math.round(64 * sc * sr), total = volta + Math.round(2.5 * sr), real = ctx, realM = master, off;
+    try { off = new OC(1, total, sr); } catch (e) { return (trechos[chave] = Promise.resolve(null)); }
+    try { ctx = off; master = off.createGain(); master.connect(off.destination); for (var k = 0; k < 64; k++) P[TRACKS[i].id][st - 1](k, 0.02 + k * sc, Math.floor(k / 16) % 4); }
+    catch (e) { ctx = real; master = realM; return (trechos[chave] = Promise.resolve(null)); }
+    ctx = real; master = realM;
+    var pr = new Promise(function (ok) { var feito = false, fim = function (b) { if (feito) return; feito = true; ok(b || null); };
+      try { off.oncomplete = function (ev) { fim(ev.renderedBuffer); }; var r = off.startRendering(); if (r && r.then) r.then(fim, function () { fim(null); }); } catch (e) { fim(null); } })
+      .then(function (buf) { if (!buf) return null; // a sobra do fim (nota que ainda está soando) entra no começo, pra emenda não dar estalo
+        var a = buf.getChannelData(0), o = real.createBuffer(1, volta, sr), d = o.getChannelData(0), ini = Math.round(0.02 * sr), x;
+        for (x = 0; x < volta; x++) d[x] = a[x + ini] || 0; for (x = 0; x + ini + volta < a.length && x < volta; x++) d[x] += a[x + ini + volta]; return o; });
+    return (trechos[chave] = pr);
+  }
+  function calaTrilha(i) { var c = tocando[i]; tocando[i] = null; if (!c || !ctx) return; try { c.g.gain.setTargetAtTime(0, ctx.currentTime, 0.015); c.s.stop(ctx.currentTime + 0.1); } catch (e) { /* já parou */ } }
+  function calaTudo() { for (var i = 0; i < N; i++) { calaTrilha(i); aoVivo[i] = false; } }
+  function tocaTrilha(i) {
+    if (!ctx || gone) return; var st = state[i], b0 = bpm; calaTrilha(i); aoVivo[i] = false; if (!st) return;
+    fazTrecho(i, st).then(function (buf) {
+      if (gone || !timer || state[i] !== st || bpm !== b0 || tocando[i]) return;
+      if (!buf) { aoVivo[i] = true; return; }
+      var s = ctx.createBufferSource(), g = ctx.createGain(), L = buf.duration, quando = ctx.currentTime + 0.04, pos = (((quando - T0) % L) + L) % L;
+      s.buffer = buf; s.loop = true; g.gain.setValueAtTime(0, quando); g.gain.linearRampToValueAtTime(1, quando + 0.02); s.connect(g); g.connect(master); s.start(quando, pos); tocando[i] = { s: s, g: g };
+    });
+  }
+  function mudouBpm() { clearTimeout(bpmT); bpmT = setTimeout(function () { trechos = {}; if (!timer || gone) return; calaTudo(); step = 0; nextT = ctx.currentTime + 0.08; T0 = nextT; for (var i = 0; i < N; i++) tocaTrilha(i); }, 180); }
   function env(g,t,a,d,peak){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d);}
   function noise(t,dur,freq,peak,type,q){
     var s=ctx.createBufferSource(); s.buffer=noiseBuf; var f=ctx.createBiquadFilter(); f.type=type||'highpass'; f.frequency.value=freq; if(q)f.Q.value=q;
@@ -299,11 +331,11 @@ export function mount(host) {
 
   function sched() {
     if (!ctx || gone) return;
-    if (nextT < ctx.currentTime - 0.2) nextT = ctx.currentTime + 0.08; // o app ficou em segundo plano: retoma daqui, sem despejar o atraso
+    if (nextT < ctx.currentTime - 0.2) { var k0 = Math.ceil((ctx.currentTime + 0.08 - T0) / secs()); nextT = T0 + k0 * secs(); step = ((k0 % 64) + 64) % 64; } // o app ficou em segundo plano: retoma no mesmo compasso dos trechos, sem despejar o atraso
     var sc = secs();
     while (nextT < ctx.currentTime + 0.14) {
       var bar = Math.floor(step / 16) % 4;
-      for (var i = 0; i < N; i++) { if (state[i]) { P[TRACKS[i].id][state[i] - 1](step, nextT, bar); } }
+      for (var i = 0; i < N; i++) { if (state[i] && aoVivo[i]) { P[TRACKS[i].id][state[i] - 1](step, nextT, bar); } } // só quem não conseguiu virar trecho pronto toca ao vivo
       (function (st, when) { visT.push(setTimeout(function () { visT.shift(); visual(st); }, Math.max(0, (when - ctx.currentTime) * 1000))); })(step, nextT);
       nextT += sc; step = (step + 1) % 64;
     }
@@ -325,10 +357,10 @@ export function mount(host) {
     var a = b.querySelector('.pbx-art'), n = document.createElement('span'); n.className = 'pbx-note'; n.textContent = Math.random() < 0.5 ? '♪' : '♫';
     n.style.left = (15 + Math.random() * 65) + '%'; n.style.bottom = '14%'; a.appendChild(n); setTimeout(function () { n.remove(); }, 1100);
   }
-  function para() { clearInterval(timer); timer = null; visT.forEach(clearTimeout); visT = []; dots.forEach(function (d) { d.classList.remove('on'); }); }
+  function para() { calaTudo(); clearInterval(timer); timer = null; visT.forEach(clearTimeout); visT = []; dots.forEach(function (d) { d.classList.remove('on'); }); }
   var onMute = function () { ligaSaida(); }; window.addEventListener('bt-mute', onMute);
   hint();
-  window.__paulbox = { get state() { return state.slice(); }, get tocando() { return !!timer; }, get bpm() { return bpm; } }; // só pra teste
+  window.__paulbox = { get trechos() { return tocando.filter(Boolean).length; }, get aoVivo() { return aoVivo.filter(Boolean).length; }, get state() { return state.slice(); }, get tocando() { return !!timer; }, get bpm() { return bpm; } }; // só pra teste
 
   /* ---------- gravar 20 s pra postar ou baixar ---------- */
   const pausar = () => { parado = true; para(); ligaSaida(); };

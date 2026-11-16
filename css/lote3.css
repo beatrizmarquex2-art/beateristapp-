@@ -915,3 +915,100 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .al-opcoes{display:grid;gap:10px}.al-quem{margin:0;display:grid;gap:2px;text-align:center}.al-quem b{font-size:20px}.al-quem span{font:800 14px/1.2 var(--body,system-ui);letter-spacing:.06em;color:var(--muted,#5f5752)}
 /* folha "guardar o seu código": texto sempre escuro (no tema escuro do álbum ele ficava claro no papel creme) */
 .sheet .al-guardar,.sheet .al-guardar p{color:#14111a}.sheet .al-guardar .muted{color:#5f5752}.sheet .al-guardar .al-lock-code{color:#14111a;font-weight:800;letter-spacing:.14em;text-align:center}
+/* Painel dos instrumentos (Tocar): cada fileira de opções é UMA linha que arrasta pro lado, com setinhas ‹ › (antes quebrava em 4 linhas) */
+.ti-panel .kd-rolar { position: relative; min-width: 0; }
+.ti-panel .kd-rolar > .kd-modes { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; gap: 8px; padding: 2px 40px 8px 2px; margin: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.ti-panel .kd-rolar > .kd-modes::-webkit-scrollbar { display: none; }
+.ti-panel .kd-rolar .kd-modes > * { flex: 0 0 auto; white-space: nowrap; scroll-snap-align: start; }
+.ti-panel .kd-rolar .kd-themes { display: flex; }
+.ti-panel .kd-rolar-b { position: absolute; top: 0; bottom: 6px; margin: auto 0; width: 34px; height: 34px; padding: 0 0 3px; border: 2px solid #1b1818; border-radius: 50%; background: #ffd166; color: #1b1818; font: 900 24px/1 var(--body, system-ui); box-shadow: 2px 2px 0 #1b1818; cursor: pointer; z-index: 2; }
+.ti-panel .kd-rolar-b.dir { right: 2px; } .ti-panel .kd-rolar-b.esq { left: 2px; }
+.ti-panel .kd-rolar-b[hidden] { display: none; }
+.ti-panel .kd-rolar:has(> .kd-modes[hidden]) { display: none; }
+.ti-panel .kd-rolar-b:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1b1818; }
+@media (prefers-reduced-motion: reduce) { .ti-panel .kd-rolar > .kd-modes { scroll-behavior: auto; } }
+
+/* Percussão: a arte de "congas" e "bongôs" vem com o nome cortado embaixo. Uma etiqueta cobre a base e escreve o nome inteiro, no jeito das outras cartas. */
+.ti-pp-foto[data-p="cg"], .ti-pp-foto[data-p="bg"] { position: relative; }
+.ti-pp-foto[data-p="cg"]::after, .ti-pp-foto[data-p="bg"]::after { content: attr(aria-label); position: absolute; left: 0; right: 0; bottom: 0; height: 20%; display: flex; align-items: center; justify-content: center; padding: 0 4px 7px; box-sizing: border-box; background: #fcf1e0; color: #1b2a4a; font: 400 clamp(12px, 4.1vw, 17px)/1.25 'Gochi Hand', 'Comic Sans MS', cursive; white-space: nowrap; text-decoration: underline; text-decoration-color: #d92031; text-decoration-thickness: 2px; text-underline-offset: 2px; pointer-events: none; }
+
+/* ===== Violão no estilo colagem da marca (escolha da Bea, opção B): cartas de acorde com o desenho da mão, botões tortinhos, braço claro, notas em bolinhas ===== */
+.ti-modo { margin: 12px 0 10px; display: flex; gap: 8px; flex-wrap: nowrap; justify-content: stretch; }
+.ti-modo .kd-chip { flex: 1 1 0; min-width: 0; padding: 9px 4px; border: 2.5px solid #0f2347; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; background: #fffaf0; color: #0f2347; font: 400 19px/1.1 'Gochi Hand', 'Comic Sans MS', cursive; box-shadow: 3px 3px 0 #a8182e; white-space: nowrap; }
+.ti-modo .kd-chip:nth-child(1) { transform: rotate(-1.5deg); } .ti-modo .kd-chip:nth-child(2) { transform: rotate(1deg); } .ti-modo .kd-chip:nth-child(3) { transform: rotate(-1deg); }
+.ti-modo .kd-chip.on { background: #a8182e; color: #fffaf0; box-shadow: 3px 3px 0 #0f2347; transform: none; }
+.ti-gt .ti-chords { grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.ti-carta { position: relative; display: grid; justify-items: center; align-content: start; gap: 0; min-height: 0; padding: 5px 2px 3px; border: 2.5px solid #0f2347; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; background: #fffaf0; color: #0f2347; box-shadow: 3px 3px 0 #e8a92b; font: inherit; letter-spacing: 0; }
+.ti-carta b { font: 400 22px/1 Anton, Impact, sans-serif; }
+.ti-carta em { font: 400 13px/1 'Gochi Hand', 'Comic Sans MS', cursive; font-style: normal; color: #a8182e; margin: 1px 0 1px; }
+.ti-carta .ti-mao { display: block; width: 100%; }
+.ti-carta .ti-mao svg { display: block; width: 100%; height: auto; max-height: 52px; }
+.ti-carta .dedo { fill: #a8182e; }
+.ti-carta.on, .ti-carta[aria-pressed="true"] { background: #0f2347; color: #fffaf0; box-shadow: 3px 3px 0 #a8182e; transform: translate(1px, 1px); }
+.ti-carta.on em, .ti-carta[aria-pressed="true"] em { color: #e8a92b; }
+.ti-carta.on .dedo, .ti-carta[aria-pressed="true"] .dedo { fill: #e8a92b; }
+.ti-carta.ed { border-style: dashed; }
+.ti-bandeja { display: grid; gap: 8px; margin-bottom: 12px; }
+.ti-bsec small { display: block; font: 800 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #0f2347; opacity: .75; margin: 0 0 4px; }
+.ti-bgrade { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.ti-chord.ti-peq { min-height: 40px; padding: 0; font: 400 15px Anton, Impact, sans-serif; border: 2.5px solid #0f2347; border-radius: 10px 14px 9px 13px / 13px 9px 14px 10px; background: #fffaf0; color: #0f2347; box-shadow: 2px 2px 0 #e8a92b; letter-spacing: 0; }
+.ti-chord.ti-peq.atual { background: #e8a92b; }
+.ti-edbar { display: grid; gap: 8px; margin: 0 0 10px; color: #0f2347; font: 600 13px var(--body); }
+.ti-edb { display: flex; gap: 8px; flex-wrap: wrap; }
+/* braço de cordas (tocar o acorde passando o dedo) em papel claro */
+.ti-gt .ti-neck { background: #fffaf0; border: 2.5px solid #0f2347; border-radius: 10px; box-shadow: 4px 4px 0 #1f6f78; }
+.ti-gt .ti-neck::before { background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 2px), rgba(15, 35, 71, .22) calc(25% - 2px) 25%); }
+.ti-gt .ti-gnotes { background: #0f2347; border-right: 2.5px solid #0f2347; }
+.ti-gt .ti-gnote { color: #fffaf0; }
+.ti-gt .ti-str i { background: linear-gradient(#5a6b8c, #0f2347); box-shadow: 0 1px 2px rgba(15, 35, 71, .45); }
+.ti-gt .ti-str.wound i { background: repeating-linear-gradient(90deg, #8a97b4 0 3px, #0f2347 3px 6px); }
+/* modo notas: grade de bolinhas (corda × casa) */
+.ti-fret { display: grid; grid-template-columns: 38px repeat(6, minmax(0, 1fr)); gap: 6px; padding: 8px 8px 10px; background: #fffaf0; border: 2.5px solid #0f2347; border-radius: 12px; box-shadow: 4px 4px 0 #1f6f78; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.ti-fret .ti-fh { font: 800 11px var(--body); font-style: normal; color: #0f2347; text-align: center; opacity: .7; align-self: end; }
+.ti-fret .ti-fl { font: 800 12px var(--body); font-style: normal; color: #0f2347; display: grid; place-items: center; }
+.ti-fc { aspect-ratio: 1; min-width: 0; min-height: 0; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: #fff; font: 800 11.5px var(--body); border: 2.5px solid #0f2347; box-shadow: 0 3px 0 #0f2347; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ti-fc.light { color: #1b1818; }
+.ti-fc.fora { background: transparent; border: 2px dashed rgba(15, 35, 71, .3); color: rgba(15, 35, 71, .4); box-shadow: none; }
+.ti-fc.hit { filter: brightness(1.2); transform: translateY(2px); box-shadow: none; }
+.ti-fret[hidden], .ti-bandeja[hidden], .ti-edbar[hidden], .ti-neck[hidden], .ti-chords[hidden] { display: none !important; }
+
+/* Plano grátis do Tocar: faixa no alto e cadeados */
+.tp-faixa { margin: 10px 0; padding: 10px 12px; border: 2.5px dashed #e8a92b; border-radius: 12px; background: #fffaf0; color: #0f2347; font: 600 14px/1.35 var(--body); display: grid; gap: 8px; }
+.tp-faixa p { margin: 0; } .tp-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.tp-lock { font-style: normal; margin-left: 4px; font-size: .85em; }
+.kd-chip.travado, .ti-carta.travado, .ti-bar-trava { opacity: .6; }
+.ti-carta.travado { position: relative; filter: grayscale(.5); } .ti-carta.travado .tp-lock { position: absolute; top: 2px; right: 3px; margin: 0; font-size: 13px; }
+
+/* Bateria de toque: 3 modelos. Eletrônica = pads escuros com anel colorido; cajón = madeira com 4 zonas */
+.tk-art svg { display: block; width: 100%; height: auto; }
+.kd-modelos { margin-top: 6px; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp ellipse[fill-opacity] { fill: #2a2730; fill-opacity: 1; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp.hit circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp.hit ellipse[fill-opacity] { fill: #4a4560; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp [stroke] { stroke: #1b1818; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp text { fill: #fff; }
+[data-kit-theme] .tk-art.modelo-cajon .kp text { fill: #1b1818; }
+
+/* Bateria de toque (v2): peças redondas vistas de cima; o brilho ao tocar vem do anel .km-brilha (o tema não repinta mais nada do desenho) */
+.tk-art .kp { cursor: pointer; }
+.tk-art .kp.hit .km-brilha { stroke-opacity: .95; }
+.tk-art .kp.hit { transform: scale(1.03); transform-box: fill-box; transform-origin: center; }
+[data-kit-theme] .tk-art.modelo-eletronica .kp circle[fill-opacity], [data-kit-theme] .tk-art.modelo-eletronica .kp ellipse[fill-opacity] { fill-opacity: 1; }
+/* os temas repintam tudo que tem [stroke]/[fill]: os rótulos e os traços finos do desenho novo ficam como foram desenhados */
+[data-kit-theme] .tk-art .kp text { stroke: none !important; paint-order: normal; }
+[data-kit-theme] .tk-art .kp text.rt-escuro { fill: #5b513a; }
+[data-kit-theme] .tk-art .kp text.rt-claro { fill: #fff; }
+[data-kit-theme] .tk-art .kp text:not(.rt-escuro):not(.rt-claro) { fill: #5a2a0c; }
+[data-kit-theme] .tk-art .kp circle[stroke], [data-kit-theme] .tk-art .kp rect[stroke] { stroke: #6a604a; }
+
+/* Bateria de toque (v3, a partir de fotos): letras escuras nas etiquetas claras e no logo da Spark; o tema não repinta */
+[data-kit-theme] .tk-art .kp text.rt-preto, [data-kit-theme] .tk-art text.rt-fica:not(.rt-claro) { fill: #1c1710; }
+[data-kit-theme] .tk-art .kp text.rt-claro.rt-fica { fill: #fff; }
+.tk-art text.rt-fica { stroke: none !important; }
+
+/* nome da peça: só aparece embaixo da bateria quando toca */
+.tk-nome { min-height: 30px; margin: 8px auto 0; padding: 3px 16px; width: fit-content; border-radius: 999px !important; font: 700 18px 'Gochi Hand', 'Comic Sans MS', cursive; color: #fff; opacity: 0; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tk-nome:empty { visibility: hidden; }
+.tk-nome.on { animation: tk-nome-vai 1.1s ease-out forwards; }
+@keyframes tk-nome-vai { 0% { opacity: 1; transform: scale(1.12); } 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+.tk-art .marca-img { filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.55)); }
+.tk-art .marca-img.claro { filter: drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 1px 1.5px rgba(0,0,0,.5)); }
