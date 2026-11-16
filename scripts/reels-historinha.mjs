@@ -21,14 +21,14 @@ const FONTES = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin
 const tela = (n) => u(`marketing/telas-app/app-${n}.jpg`);
 const assin = `<div style="display:inline-flex;align-items:center;gap:16px;background:${AZ};color:${CR};padding:8px 30px 8px 8px;border-radius:99px;font:800 30px/1.15 Hanken,sans-serif;box-shadow:6px 6px 0 ${OU}"><img src="${LOGO}" style="height:84px"><span>Beaterista<br><span style="font-weight:500;font-size:25px">educação musical com propósito</span></span></div>`;
 const mk = (s) => `<mark style="background:${OU};color:${AZ};padding:0 .2em;border-radius:6px;-webkit-box-decoration-break:clone;box-decoration-break:clone">${s}</mark>`;
-const css = (bg) => `${FONTES}*{box-sizing:border-box;margin:0}body{width:1080px;height:1920px;background:${bg};color:${CR};position:relative;overflow:hidden;font-family:Hanken,sans-serif}.pt{position:absolute;inset:0;background:radial-gradient(${CR}1c 2px,transparent 2.6px) 0 0/34px 34px}`;
+const css = (bg, fg = CR) => `${FONTES}*{box-sizing:border-box;margin:0}body{width:1080px;height:1920px;background:${bg};color:${fg};position:relative;overflow:hidden;font-family:Hanken,sans-serif}.pt{position:absolute;inset:0;background:radial-gradient(${fg}1c 2px,transparent 2.6px) 0 0/34px 34px}`;
 
 // cena: passo, título, balão (o Paul fica no meio, o GIF entra por cima no ffmpeg), cor de fundo
-const cena = ({ passo, t1, t2, fala, cor = 'azul' }) => { const bg = cor === 'vinho' ? VI : AZ, dq = OU;
-  return `<!doctype html><meta charset="utf-8"><style>${css(bg)}</style><div class="pt"></div>
-<div style="position:absolute;left:64px;top:96px;font:800 28px Hanken;letter-spacing:.1em;text-transform:uppercase;background:${dq};color:${AZ};padding:8px 20px;border-radius:99px">${passo}</div>
+const cena = ({ passo, t1, t2, fala, cor = 'azul' }) => { const branco = cor === 'branco'; const bg = branco ? '#fbfbfa' : cor === 'vinho' ? VI : AZ, dq = branco ? VI : OU, fg = branco ? AZ : CR;
+  return `<!doctype html><meta charset="utf-8"><style>${css(bg, fg)}</style><div class="pt"></div>
+<div style="position:absolute;left:64px;top:96px;font:800 28px Hanken;letter-spacing:.1em;text-transform:uppercase;background:${dq};color:${branco ? CR : AZ};padding:8px 20px;border-radius:99px">${passo}</div>
 <h1 style="position:absolute;left:64px;top:190px;font:400 112px/.98 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0;white-space:nowrap">${t1}<em style="font-style:normal;display:block;color:${dq};padding-left:50px">${t2}</em></h1>
-<div style="position:absolute;left:64px;right:64px;top:1330px;background:${CR};color:${AZ};border-radius:26px;padding:26px 34px 30px;box-shadow:10px 10px 0 rgba(0,0,0,.35)"><p style="font:400 52px/1.2 Gochi,cursive">${fala}</p></div>
+<div style="position:absolute;left:64px;right:64px;top:1330px;background:${branco ? AZ : CR};color:${branco ? CR : AZ};border-radius:26px;padding:26px 34px 30px;box-shadow:10px 10px 0 rgba(0,0,0,.35)"><p style="font:400 52px/1.2 Gochi,cursive">${fala}</p></div>
 <div style="position:absolute;left:54px;bottom:60px">${assin}</div>`; };
 const CTAS = [['tá esperando o quê?', 'acesse o site e jogue já!'], ['baixe o material e', 'jogue grátis'], ['acesse o site e', 'garanta seu acesso'], ['tá esperando o quê?', 'garanta seu acesso']];
 const phone = (n, x, y, w, r) => `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${Math.round(w * 1.72)}px;border:9px solid #05070d;border-radius:${w / 8}px;overflow:hidden;background:${CR};transform:rotate(${r}deg);box-shadow:14px 16px 0 rgba(0,0,0,.4)"><img src="${tela(n)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block"></div>`;
@@ -43,7 +43,7 @@ ${phone(telas[0], 70, 560, 330, -3)}${phone(telas[1], 420, 620, 330, 2)}
 
 const REELS = {
   'historia-1-um-dia-de-estudo': { cta: 2, telas: ['estudos-home', 'acordes-teclado'], fimGif: 'palmas', cenas: [
-    { gif: 'estudando-sem-fundo', passo: 'cena 1', t1: 'hoje tem', t2: 'estudo!', fala: `vou fazer uma ${mk('aulinha')} de música.`, cor: 'azul' },
+    { gif: 'estudando', passo: 'cena 1', t1: 'hoje tem', t2: 'estudo!', fala: `vou fazer uma ${mk('aulinha')} de música.`, cor: 'branco' },
     { gif: 'agua', passo: 'cena 2', t1: 'pausa pra', t2: 'beber água', fala: `${mk('meta pequena')} por dia rende mais que treino solto.`, cor: 'vinho' },
     { gif: 'teclado', passo: 'cena 3', t1: 'agora é hora', t2: 'de treinar', fala: `ouvir o acorde e ${mk('tocar junto')}.`, cor: 'azul' },
     { gif: 'palmas', passo: 'cena 4', t1: 'consegui!', t2: 'eu evoluí', fala: `um passo de cada vez, e ${mk('a música aparece')}.`, cor: 'vinho' }] },
@@ -54,7 +54,7 @@ const REELS = {
     { gif: 'bateria', passo: 'cena 4', t1: 'a bateria', t2: 'segura a base', fala: `quem toca bateria ${mk('conduz')} a música.`, cor: 'vinho' },
     { gif: 'microfone', passo: 'cena 5', t1: 'e agora', t2: 'eu canto!', fala: `${mk('monte a banda')} do Paul no PaulBox.`, cor: 'azul' }] },
   'historia-3-do-estudo-ao-palco': { cta: 3, telas: ['palco-bateria', 'hero-drum'], fimGif: 'danca-v2', cenas: [
-    { gif: 'estudando-sem-fundo', passo: 'cena 1', t1: 'primeiro', t2: 'eu estudo', fala: `ler, ouvir e entender ${mk('devagar')}.`, cor: 'azul' },
+    { gif: 'estudando', passo: 'cena 1', t1: 'primeiro', t2: 'eu estudo', fala: `ler, ouvir e entender ${mk('devagar')}.`, cor: 'branco' },
     { gif: 'bateria', passo: 'cena 2', t1: 'depois', t2: 'eu treino', fala: `treinar ${mk('toda semana')} deixa o ritmo no corpo.`, cor: 'vinho' },
     { gif: 'palmas', passo: 'cena 3', t1: 'e a plateia', t2: 'aplaude', fala: `errar faz parte. o importante é ${mk('continuar')}.`, cor: 'azul' },
     { gif: 'cantando', passo: 'cena 4', t1: 'agora é', t2: 'a minha vez!', fala: `quem ${mk('se apresenta')} cedo perde o medo do palco.`, cor: 'vinho' }] },
