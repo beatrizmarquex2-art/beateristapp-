@@ -23,6 +23,7 @@ export function desenhoDoTermo(x) {
     nota: () => pauta({ clave: 'sol', notas: [[-2], [-1], [0], [1], [2], [3], [4]] }), oitava: () => pauta({ clave: 'sol', notas: [[-2, 'dó'], [5, 'dó']] }),
     'agudo-grave': () => pauta({ clave: 'sol', notas: [[-2], [8]] }), 'tom-semitom': () => teclado({ de: 60, ate: 67, marca: [64, 65], nomes: true }),
     sustenido: () => sinal('♯'), bemol: () => sinal('♭'), escala: () => teclado({ de: 60, ate: 72, nomes: true }), melodia: () => pauta({ clave: 'sol', notas: [[0], [2], [1], [3], [2], [4]] }),
+    ritmo: () => notas('q ee q q'),
     harmonia: () => teclado({ de: 60, ate: 67, marca: [60, 64, 67] }), timbre: () => peca('prato'),
     teclas: () => teclado({ de: 60, ate: 72 }), 'do-central': () => teclado({ de: 60, ate: 67, marca: [60], nomes: true }), dedilhado: () => teclado({ de: 60, ate: 67, nomes: true, dedos: { 60: 1, 62: 2, 64: 3, 65: 4, 67: 5 } }),
     'passar-polegar': () => teclado({ de: 60, ate: 72, nomes: true, dedos: { 60: 1, 62: 2, 64: 3, 65: 1, 67: 2, 69: 3, 71: 4, 72: 5 } }), acorde: () => teclado({ de: 60, ate: 67, nomes: true, marca: [60, 64, 67] }),
