@@ -14,6 +14,6 @@ await p.locator('summary, button', { hasText: 'Ajustes' }).first().click(); awai
 const bodyTxt = await p.locator('body').innerText(); check('sem opção de duração (música sempre de 1 min)', (await p.locator('[data-act="rz-len"]').count()) === 0, (bodyTxt.match(/.{0,40}2 min.{0,40}/) || [''])[0]);
 const src = await (await fetch(`${url}/assets/rhythm-games/rhythm-games.js`)).text();
 check('sem corações no Piano Hero (nem vidas no HUD)', !src.includes('RZ.lives=Math.max') && !src.includes('id="rz-lives"') && !src.includes("fillText('♥'"));
-check('a nota dourada especial mostra ×2 em vez de ★', src.includes("g.fillText('×2'") && !src.includes("g.fillText('★',x+w/2"));
+check('a nota dourada especial mostra ✦ (não ×2 nem ★)', src.includes("g.fillText('✦',x+w/2") && !src.includes("g.fillText('×2'"));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);
