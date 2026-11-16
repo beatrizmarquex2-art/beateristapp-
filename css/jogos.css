@@ -1374,3 +1374,24 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pbx-fim a.pbx-act{text-decoration:none;display:inline-flex;align-items:center}
 .pbx-fim-l{font-size:11.5px;opacity:.8}
 @media(prefers-reduced-motion:reduce){.pbx .pbx-rec.on{animation:none}}
+
+/* ===== Achar o 1 (a1-): botão grande com o 1, barra do tempo e régua do resultado ===== */
+.vv-achar1 .a1-pad{min-height:150px;font:400 84px/1 var(--vv-tit);color:var(--vv-vinho)}
+.vv-achar1 .a1-pad[hidden]{display:none}
+.vv-achar1 .a1-pad.um{animation:a1-um .35s ease-out}
+@keyframes a1-um{0%{background:var(--vv-most);transform:scale(1.04)}100%{background:#fff;transform:none}}
+.a1-tempo{height:8px;border:1.5px solid var(--vv-ink);background:#fff;overflow:hidden}
+.a1-tempo i{display:block;height:100%;width:0;background:var(--vv-navy)}
+.a1-tempo.vai i{animation:a1-barra var(--dur,8s) linear forwards}
+@keyframes a1-barra{to{width:100%}}
+.a1-res{display:grid;gap:8px;justify-items:center}
+.a1-veredito{font:400 22px/1 var(--vv-tit);text-transform:uppercase;letter-spacing:.04em}
+.a1-veredito.ok{color:#1f7a4d}.a1-veredito.bad{color:var(--vv-vinho)}
+.a1-regua{position:relative;width:100%;height:64px;border:2px solid var(--vv-ink);background:#fff;box-shadow:3px 3px 0 var(--vv-navy)}
+.a1-regua::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px dashed var(--vv-ink);opacity:.25}
+.a1-um{position:absolute;top:0;bottom:0;width:0;border-left:3px solid var(--vv-vinho)}
+.a1-um b{position:absolute;top:2px;left:4px;font:400 22px/1 var(--vv-tit);color:var(--vv-vinho)}
+.a1-toque{position:absolute;bottom:8px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid var(--vv-ink)}
+.a1-toque.ok{background:#3aa66b}.a1-toque.bad{background:#d8503f}
+.a1-botoes{margin-top:4px}
+@media (prefers-reduced-motion:reduce){.a1-tempo.vai i{animation:none;width:100%}.vv-achar1 .a1-pad.um{animation:none}}

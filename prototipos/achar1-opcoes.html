@@ -1,0 +1,73 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Achar o 1 — 3 opções</title>
+<style>
+:root{--vinho:#9b1b30;--navy:#1f3f6e;--creme:#fffaf0;--most:#e8a93a;--ink:#1c1917}
+*{box-sizing:border-box}body{margin:0;background:#d9d2c3;font:16px system-ui,sans-serif;color:var(--ink);display:flex;gap:28px;padding:28px;width:max-content}
+.tel{width:390px;height:780px;border-radius:26px;overflow:hidden;position:relative;display:grid;grid-template-rows:auto 1fr;box-shadow:0 8px 30px #0003}
+.tit{padding:14px 18px;font:900 15px system-ui;letter-spacing:.08em;text-transform:uppercase}
+.rot{position:absolute;top:-1px;left:0;right:0;text-align:center;font:700 12px system-ui;padding:4px;background:#000;color:#fff;z-index:5}
+.corpo{padding:24px 20px;display:grid;gap:16px;align-content:start;justify-items:center;text-align:center}
+.mini{font:600 13px system-ui;opacity:.85}.frase{font:700 20px/1.2 system-ui}
+.btn{padding:12px 26px;font:900 18px system-ui;text-transform:uppercase;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--navy);background:var(--navy);color:#fff}
+.sec{font:700 11px system-ui;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-top:6px}
+
+/* A — palco à noite */
+.A{background:#0f1c33;color:#fff}.A .tit{background:#0a1426;color:var(--most)}
+.A .holo{width:230px;height:230px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#2c4d86 0,#16294a 62%,#0f1c33 100%);box-shadow:0 0 60px #e8a93a55,inset 0 0 0 4px #e8a93a}
+.A .holo b{font:900 130px/1 system-ui;color:var(--most);text-shadow:0 0 24px #e8a93aaa}
+.A .linha{position:relative;width:100%;height:64px;border-radius:12px;background:#0a1426;border:2px solid #2c4d86}
+.A .um{position:absolute;top:0;bottom:0;width:3px;background:var(--most);box-shadow:0 0 10px var(--most)}.A .um b{position:absolute;top:3px;left:7px;font:900 22px system-ui;color:var(--most)}
+.A .t{position:absolute;bottom:9px;width:16px;height:16px;margin-left:-8px;border-radius:50%}.A .ok{background:#4be08f;box-shadow:0 0 10px #4be08f}.A .no{background:#ff6b5a}
+.A .btn{background:var(--most);color:#0f1c33;border-color:#0a1426;box-shadow:4px 4px 0 #0a1426}
+
+/* B — zine colagem */
+.B{background:#f4e6c4;background-image:radial-gradient(#0001 1px,transparent 1px);background-size:14px 14px}.B .tit{background:var(--vinho);color:#fff;transform:rotate(-1deg);margin:8px 12px 0;box-shadow:3px 3px 0 var(--ink)}
+.B .adesivo{width:210px;height:210px;display:grid;place-items:center;background:var(--vinho);color:#fff;border:6px solid #fff;border-radius:38% 62% 55% 45%/50% 40% 60% 50%;box-shadow:5px 6px 0 var(--ink);transform:rotate(-5deg)}
+.B .adesivo b{font:900 140px/1 "Comic Sans MS",system-ui;transform:rotate(4deg)}
+.B .tira{position:relative;width:100%;height:70px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--navy);transform:rotate(-1deg);background-image:repeating-linear-gradient(90deg,transparent 0 22px,#0001 22px 24px)}
+.B .um{position:absolute;top:-6px;bottom:-6px;width:0;border-left:4px solid var(--vinho)}.B .um b{position:absolute;top:0;left:6px;font:900 26px system-ui;color:var(--vinho)}
+.B .t{position:absolute;bottom:10px;width:20px;height:20px;margin-left:-10px;border-radius:4px;border:3px solid var(--ink);transform:rotate(12deg)}.B .ok{background:#59c27f}.B .no{background:#ef6a58}
+.B .fita{width:90px;height:22px;background:#e8a93acc;transform:rotate(-4deg);margin-bottom:-26px;z-index:2}
+
+/* C — relógio / disco: o compasso é um círculo e o 1 é onde ele recomeça */
+.C{background:var(--creme)}.C .tit{background:var(--navy);color:#fff}
+.C .disco{position:relative;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,var(--creme) 0 20%,#1c1917 20.5% 22%,#2a2f3a 22.5% 100%);border:5px solid var(--ink);box-shadow:5px 5px 0 var(--navy)}
+.C .disco::after{content:"1";position:absolute;inset:0;display:grid;place-items:center;font:900 76px system-ui;color:var(--vinho)}
+.C .pt{position:absolute;left:50%;top:50%;width:0;height:0}
+.C .pt i{position:absolute;width:18px;height:18px;margin:-9px;border-radius:50%;border:2px solid #fff}
+.C .m{position:absolute;left:50%;top:-6px;width:6px;height:56px;margin-left:-3px;background:var(--vinho);border-radius:3px}
+.C .m2{position:absolute;left:50%;top:-14px;margin-left:-30px;width:60px;text-align:center;font:900 15px system-ui;color:var(--vinho);background:var(--creme);border:2px solid var(--ink);border-radius:20px}
+.C .ok{background:#2f9e61}.C .no{background:#d8503f}
+.C .btn{background:var(--vinho)}
+</style>
+<body>
+
+<!-- ============ A ============ -->
+<div class="tel A"><div class="rot">A · palco à noite</div>
+ <div class="tit" style="padding-top:26px">Achar o 1</div>
+ <div class="corpo"><div class="mini">rodada 2 de 5 · pontos 1</div><div class="frase">toque no 1 sempre que sentir!</div>
+  <div class="holo"><b>1</b></div>
+  <div class="sec">depois de cada rodada</div><div class="mini">achou o 1!</div>
+  <div class="linha"><span class="um" style="left:14%"><b>1</b></span><span class="um" style="left:39%"><b>1</b></span><span class="um" style="left:64%"><b>1</b></span><span class="um" style="left:89%"><b>1</b></span>
+   <i class="t ok" style="left:15%"></i><i class="t ok" style="left:40%"></i><i class="t no" style="left:51%"></i><i class="t ok" style="left:65%"></i></div>
+  <div class="btn">próxima ›</div></div></div>
+
+<!-- ============ B ============ -->
+<div class="tel B"><div class="rot">B · zine de adesivos</div>
+ <div class="tit" style="margin-top:30px">Achar o 1</div>
+ <div class="corpo"><div class="mini">rodada 2 de 5 · pontos 1</div><div class="frase">toque no 1 sempre que sentir!</div>
+  <div class="fita"></div><div class="adesivo"><b>1</b></div>
+  <div class="sec">depois de cada rodada</div><div class="mini">achou o 1!</div>
+  <div class="tira"><span class="um" style="left:14%"><b>1</b></span><span class="um" style="left:39%"><b>1</b></span><span class="um" style="left:64%"><b>1</b></span><span class="um" style="left:89%"><b>1</b></span>
+   <i class="t ok" style="left:15%"></i><i class="t ok" style="left:40%"></i><i class="t no" style="left:51%"></i><i class="t ok" style="left:65%"></i></div>
+  <div class="btn" style="background:var(--vinho)">próxima ›</div></div></div>
+
+<!-- ============ C ============ -->
+<div class="tel C"><div class="rot">C · disco (o compasso é um círculo)</div>
+ <div class="tit" style="padding-top:26px">Achar o 1</div>
+ <div class="corpo"><div class="mini">rodada 2 de 5 · pontos 1</div><div class="frase">toque no 1 sempre que sentir!</div>
+  <div class="disco"><span class="m"></span><span class="m2">1</span>
+   <div class="pt"><i class="ok" style="transform:translate(2px,-107px)"></i><i class="ok" style="transform:translate(-1px,-106px)"></i><i class="no" style="transform:translate(92px,-20px)"></i><i class="ok" style="transform:translate(4px,-108px)"></i></div></div>
+  <div class="mini">o disco gira: o 1 é onde ele recomeça.<br>bolinha verde = acertou · vermelha = fora</div>
+  <div class="btn">próxima ›</div></div></div>
+</body></html>
