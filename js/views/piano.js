@@ -121,16 +121,16 @@ export function mount(host) {
     const seg = (label, opts, cur, on, trava) => h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, label),
       h('div', { class: 'pn-chips', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, l]) => { const t = trava && trava(v); return h('button', { type: 'button', class: `pn-chip${String(cur) === String(v) ? ' on' : ''}${t ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(String(cur) === String(v)), onclick: () => { if (t) { pedir('os outros sons'); return; } on(v); } }, l, t ? cadeado() : null); })));
     const chg = (p) => () => setConf(p).then(() => { drawKb(); drawPanel(); });
-    panel.replaceChildren(h('section', { class: 'card pad tk-panel' },
+    panel.replaceChildren(h('section', { class: 'card pad tk-panel pn-pan' },
       seg('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel), (v) => !pago() && !GRATIS.teclas.sons.includes(v)),
-      seg('nomes das notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); })),
-      seg('oitavas na tela', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); })),
-      h('div', { class: 'row tk-line pn-octs' }, h('span', { class: 'tp-lab' }, 'mais grave / mais agudo'),
+      seg('notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); })),
+      seg('oitavas', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); })),
+      h('div', { class: 'row tk-line pn-octs' }, h('span', { class: 'tp-lab' }, 'registro'),
         h('button', { class: 'btn small', type: 'button', 'aria-label': 'oitava mais grave', disabled: c.oct <= 1, onclick: chg({ oct: clampOct(c.oct - 1, c.octaves) }) }, '◀'),
         h('output', { class: 'pn-oct' }, `${nameOf((c.oct + 1) * 12)} – ${nameOf((c.oct + 1 + c.octaves) * 12)}`),
         h('button', { class: 'btn small', type: 'button', 'aria-label': 'oitava mais aguda', disabled: c.oct >= 7 - c.octaves, onclick: chg({ oct: clampOct(c.oct + 1, c.octaves) }) }, '▶'),
         h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(!!c.pedal), onclick: () => setConf({ pedal: !c.pedal }).then(drawPanel) }, c.pedal ? 'pedal ✓' : 'pedal')),
-      h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'gravar frase'),
+      h('div', { class: 'row tk-line pn-rec' }, h('span', { class: 'tp-lab' }, 'frase'),
         recording ? h('button', { class: 'btn primary', type: 'button', onclick: () => { recording = false; drawTake(); drawPanel(); } }, '■ parar')
           : h('button', { class: 'btn', type: 'button', onclick: () => { stopPlay(); take = []; recording = true; rt0 = performance.now(); drawTake(); drawPanel(); } }, '● gravar'),
         h('button', { class: 'btn', type: 'button', disabled: !take.length || recording, onclick: play }, '▶ ouvir'),

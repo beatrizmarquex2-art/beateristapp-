@@ -1421,3 +1421,11 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .vv-achar1 .vv-res p{color:#fff}
 .vv-achar1{padding-top:34px}
 .vv-achar1 button.vv-padzao.a1-pad{border-radius:50%;aspect-ratio:1}
+
+/* ===== pauLta: cartões "o Paul vai te apresentar" menores, claros e lado a lado (o .pl-card grande é o do resultado) ===== */
+.pl-teach, .pl-legend { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; margin: 10px 0 !important; }
+.pl-teach .pl-card, .pl-legend .pl-card { display: grid !important; align-content: start; gap: 2px; width: auto !important; max-width: none !important; margin: 0 !important; padding: 8px 6px 10px !important; background: #fffaf0 !important; color: #17224a !important; border: 2.5px solid #17224a !important; border-radius: 14px !important; box-shadow: 3px 3px 0 #9b1b30 !important; overflow: hidden !important; }
+.pl-teach .pl-card .pl-mini, .pl-legend .pl-card .pl-mini { display: block; width: 100%; height: auto; max-height: 78px; }
+.pl-teach .pl-card b, .pl-legend .pl-card b { display: block; margin-top: 4px; font: 800 15px/1.1 'Hanken Grotesk', system-ui, sans-serif; color: #17224a; text-transform: lowercase; }
+.pl-teach .pl-card small, .pl-legend .pl-card small { display: block; font: 600 11px/1.2 'Hanken Grotesk', system-ui, sans-serif; color: #5a5348 !important; }
+.pl-teach .pl-card.wide, .pl-legend .pl-card.wide { grid-column: 1 / -1; }

@@ -1006,3 +1006,15 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 @keyframes tk-nome-vai { 0% { opacity: 1; transform: scale(1.12); } 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
 .tk-art .marca-img { filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.55)); }
 .tk-art .marca-img.claro { filter: drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 1px 1.5px rgba(0,0,0,.5)); }
+
+/* ===== Piano: painel de opções compacto (rótulo à esquerda, botões na mesma linha) ===== */
+.pn-pan { padding: 12px !important; }
+.pn-pan .tk-line { display: grid !important; grid-template-columns: 70px minmax(0, 1fr); align-items: center; gap: 8px; margin: 0 0 9px !important; padding: 0 !important; }
+.pn-pan .tp-lab { font: 800 11px/1.1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: #6b6258; margin: 0; }
+.pn-pan .pn-chips { gap: 6px; }
+.pn-pan .pn-chip { min-height: 34px; padding: 0 11px; font-size: 15px; }
+.pn-pan .pn-octs, .pn-pan .pn-rec { display: flex !important; flex-wrap: nowrap !important; align-items: center; gap: 6px; }
+.pn-pan .pn-octs .tp-lab, .pn-pan .pn-rec .tp-lab { flex: 0 0 64px; }
+.pn-pan .btn.small, .pn-pan .pn-rec .btn { min-height: 34px; padding: 0 10px; font-size: 14px; flex: 0 0 auto; white-space: nowrap; }
+.pn-pan .pn-octs .pn-oct { min-width: 66px; font-size: 15px; }
+.pn-pan .pn-octs .btn.small { padding: 0 11px; }
