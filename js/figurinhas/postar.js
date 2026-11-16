@@ -241,7 +241,7 @@ const blob = (c) => new Promise((ok, no) => c.toBlob((b) => (b ? ok(b) : no(new 
 export const nomeArquivo = (e, formato, modelo = 'colagem') => `${e.codigo || 'MINHA'}_${String(e.artista_banda || 'figurinha').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').toUpperCase().slice(0, 40)}_${formato}${formato === 'carta' || formato === 'perfil' || modelo === 'colagem' ? '' : `_${modelo}`}.png`;
 /** Canvas do formato/modelo pedido (formato 'carta' = só a figurinha). */
 export async function desenhar(e, formato, modelo) {
-  if (formato === 'carta') return cartaCanvas(e, { escala: 3 });
+  if (formato === 'carta') return cartaCanvas(e.semSelo ? { ...e, seloTexto: SITE } : e, { escala: 3 }); // só a cartinha: no lugar de BEATERISTA TEAM vai o endereço do jogo
   if (formato === 'perfil') return desenharPerfil(e, formato, await cartaCanvas(e, { escala: 3 }));
   return postCanvas(e, formato, modelo);
 }
