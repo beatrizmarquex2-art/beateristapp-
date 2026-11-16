@@ -1,0 +1,23 @@
+// A marca "jogos.beaterista.com.br" nos cartões das aulas e do dicionário, o termo de uso e os temas do dicionário em uma fileira.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/*.supabase.co/**', (r) => r.abort());
+await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('i')) { sessionStorage.setItem('i', '1'); localStorage.setItem('beaterista-aluno-nome', 'Ana Clara'); localStorage.setItem('beaterista-aluno-codigo', 'ANA123'); } } catch { /* sem storage */ } });
+const SHOT = process.env.SHOT || '/tmp';
+const marca = (sel) => page.evaluate((s) => { const e = document.querySelector(s); return e ? getComputedStyle(e, '::after').content : null; }, sel);
+await page.goto(url + '/aluno.html#/dicionario'); await page.waitForSelector('.dc-list', { timeout: 10000 });
+await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true); }); await sleep(500); await page.getByRole('button', { name: 'agora não' }).click({ timeout: 2500 }).catch(() => {}); await sleep(300);
+check('cada termo do dicionário traz a marca', /jogos\.beaterista\.com\.br/.test(await marca('.dc-term:not(.locked)')));
+check('os temas do dicionário ficam em UMA fileira que arrasta', await page.evaluate(() => { const c = document.querySelector('.dc-chips'); const t = [...c.querySelectorAll('.lib-tab')].map((b) => b.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 6 && c.scrollWidth > c.clientWidth; }));
+await page.getByRole('radio', { name: 'banda e palco' }).click(); await page.locator('.dc-term .dc-head').first().click(); await sleep(300);
+await page.screenshot({ path: `${SHOT}/mc-dic.png` });
+await page.getByRole('button', { name: /opções/ }).click(); await sleep(400);
+check('o termo de uso aparece nas opções', /copiar, vender ou compartilhar sem permissão/.test(await page.locator('.al-opcoes').innerText()));
+await page.mouse.click(190, 60); await sleep(300);
+await page.goto(url + '/aluno.html#/estudos/aulas/bateria'); await page.waitForSelector('.tf-card', { timeout: 10000 }); await sleep(600);
+check('cada cartão da aula traz a marca', /jogos\.beaterista\.com\.br/.test(await marca('.tf-card')));
+await page.screenshot({ path: `${SHOT}/mc-aula.png` });
+check('a marca não cobre o botão (o cartão continua clicável)', await page.evaluate(() => { const c = document.querySelector('.tf-card'); const r = c.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return c.contains(e); }));
+check('sem erro de JS', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

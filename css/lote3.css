@@ -1013,10 +1013,11 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .tk-art .marca-img { filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.55)); }
 .tk-art .marca-img.claro { filter: drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 1px 1.5px rgba(0,0,0,.5)); }
 
-/* marca d'água do aluno nas aulas, teoria e dicionário (js/marca-dagua.js): clarinha, não bloqueia o toque */
-#marca-dagua { position: fixed; inset: 0; z-index: 30; pointer-events: none; background-repeat: repeat; }
-#marca-dagua[hidden] { display: none; }
-@media print { #marca-dagua { display: none; } }
+/* marca "jogos.beaterista.com.br" em cada cartão das aulas, da teoria e do dicionário (ideia da Bea): pequena, em negrito, na cor do próprio cartão; só CSS, aparece em print e não bloqueia o toque */
+.tf-card::after, .dc-term:not(.locked)::after { content: "jogos.beaterista.com.br"; display: block; font: 800 10.5px/1 var(--body, system-ui, sans-serif); letter-spacing: .02em; opacity: .8; pointer-events: none; }
+.tf-card::after { margin-top: 8px; text-align: center; }
+.dc-term:not(.locked)::after { margin-top: 10px; text-align: right; }
+@media print { .tf-card::after, .dc-term::after { display: none; } }
 
 /* dicionário: os temas viram UMA fileira que arrasta pro lado (antes eram 12 botões em várias linhas) */
 .dc-chips { flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 6px; }
