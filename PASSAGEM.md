@@ -830,3 +830,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v554**: pedais da eletrônica de novo, maiores (46x60, prato do pé com 4 frisos, coluna com mola, batedor); pad do bumbo subiu mais.
 - **v555**: símbolo da Nagano no meio da pele do bumbo e no prato do pé do pedal; pedal da acústica refeito (base preta, trilhos, prato cromado com o logo, coluna com mola).
 - **v556**: tirei o logo Nagano do meio da pele do bumbo (fica só no pedal e no topo da tela).
+- **v557**: sem o logo grande da Spark em cima do cajón (fica o da frente); Nagano pequeno no canto de cima à direita da eletrônica. Gerei amostras de áudio (render offline) dos 3 modelos pra a Bea ouvir. Ela perguntou se dá pra escolher o som dentro de cada modelo (rock/jazz/pop; 808/909/trap): proposta feita, esperando a resposta.

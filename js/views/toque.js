@@ -22,11 +22,11 @@ import { kitTheme, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
-  const svg = art.querySelector('svg') || art; const escuro = kitTheme() !== 'colagem';
+  const svg = art.querySelector('svg') || art;
   const img = (src, x, y, w, h, cls = '') => { const im = document.createElementNS('http://www.w3.org/2000/svg', 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v)); svg.append(im); };
   img('assets/marcas/beaterista.png', 4, 2, 44, 44);
   if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro');
-  if (modelo === 'cajon') img(`assets/marcas/spark-${escuro ? 'branco' : 'preto'}.png`, 150, 4, 120, 38);
+  if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro');
 };
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
