@@ -115,7 +115,6 @@ function bumbo(cx, cy, R) {
     <circle cx="${hx}" cy="${hy}" r="13.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="11.5" fill="#fbf6e8"/><circle cx="${hx + 2}" cy="${hy + 3}" r="8" fill="url(#km-sombra)" opacity=".35"/>
     <rect x="${cx - 2.2}" y="${cy + 42}" width="4.4" height="${R - 38}" rx="2" fill="#2a2c35"/>
     <circle cx="${cx}" cy="${cy + 38}" r="8" fill="#16161a"/><circle cx="${cx}" cy="${cy + 38}" r="6.6" fill="#ece1bb"/><circle cx="${cx - 2}" cy="${cy + 36}" r="3" fill="#fff" opacity=".6"/>
-    <image href="assets/marcas/nagano.png" x="${cx - 24}" y="${cy - 34}" width="48" height="48" pointer-events="none" preserveAspectRatio="xMidYMid meet"/>
     <rect x="${cx - 24}" y="${cy + R + 22}" width="48" height="8" rx="3" fill="#0e0e12"/>
     <path d="M${cx - 19} ${cy + R + 1} L${cx - 15} ${cy + R + 26} M${cx + 19} ${cy + R + 1} L${cx + 15} ${cy + R + 26}" style="stroke:#15151a;stroke-width:4;stroke-linecap:round"/>
     <path d="M${cx - 15} ${cy + R + 2} h30 l4 22 h-38 Z" fill="url(#km-cromo2)"/>
