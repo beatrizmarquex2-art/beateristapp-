@@ -1094,3 +1094,10 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 /* sem setinhas: a pílula arrasta com o dedo e uma sombra suave no canto direito avisa que tem mais */
 .ti-panel .kd-rolar-b { display: none !important; }
 .ti-panel .kd-rolar > .kd-modes { padding-right: 30px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent); }
+/* cordas: o "abafar" fica dentro da pílula do som; o Paul e a linha vazia saíram */
+.ti-panel .kd-modes .pn-mute { flex: 0 0 auto; padding: 0 12px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ti-panel .kd-modes .pn-mute.on { background: #9b1b30 !important; color: #fff !important; }
+.ti-panel .kd-rolar .kd-chip { padding: 0 11px; }
+.ti-gt ~ .ti-panel .kd-rolar > .kd-modes, .ti-panel:has(.pn-mute) .kd-rolar > .kd-modes { -webkit-mask-image: none; mask-image: none; padding-right: 4px; }
+.ti-panel:has(.pn-mute) .kd-chip { padding: 0 8px; font-size: 13px !important; }
+.ti-panel:has(.pn-mute) .kd-chip.pn-mute { padding: 0 9px; }
