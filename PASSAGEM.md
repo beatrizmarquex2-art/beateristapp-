@@ -805,3 +805,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - reels-imagens: novo elemento `foto()` (polaroid) e celulares do cartão final limitados a 500px de altura (antes cobriam o "tá esperando o quê?").
 - 26 "aperta o play" NÃO feito: IMG_9355 tem 10,5 MB e o Drive só deixa baixar até 10 MB. Precisa que a Bea mande uma versão menor.
 - Reels 01–03 antigos seguem sem vídeo de origem.
+
+## correção do resultado dos jogos de ritmo (16/nov, v526, só na branch)
+- Bug (print da Bea): na tela de fim do Beat Hero, nos temas **colagem** e **pôster**, o painel `.bmr .panel` continuava escuro (`rgba(35,32,38,.8)`) com texto escuro por cima e o resultado sumia. Corrigido no fim de `assets/rhythm-games/rhythm-games.css` (painel creme, texto navy, nota/estrelas legíveis). Tema vinil não muda (é escuro de propósito). Reproduzido e conferido por screenshot nos 3 temas.
+- Entrada nova (D) e aba Tocar → **Palco** no app do aluno; nomes finais: Jogos, Estudos, Palco, Álbum, Lojinha.
