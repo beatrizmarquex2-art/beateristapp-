@@ -5,10 +5,11 @@ import { TERMS, CATS, byId } from '../js/glossary.js';
 import { GRUPOS_PALCO } from '../js/glossary-palco.js';
 
 const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-test('75 termos novos em 3 grupos de 25, com as categorias no dicionário', () => {
+test('70 termos novos em 3 grupos (24, 24 e 22), com as categorias no dicionário', () => {
   assert.equal(GRUPOS_PALCO.length, 3);
-  for (const g of GRUPOS_PALCO) { assert.equal(g.t.length, 25); assert.ok(CATS.some((c) => c[0] === g.id), g.id); }
-  assert.equal(TERMS.filter((x) => GRUPOS_PALCO.some((g) => g.id === x.cat)).length, 75);
+  for (const g of GRUPOS_PALCO) { assert.ok(CATS.some((c) => c[0] === g.id), g.id); }
+  assert.deepEqual(GRUPOS_PALCO.map((g) => g.t.length), [24, 24, 22]);
+  assert.equal(TERMS.filter((x) => GRUPOS_PALCO.some((g) => g.id === x.cat)).length, 70);
 });
 test('ids únicos e todo termo novo tem explicação, exemplo de uso e ícone', () => {
   const ids = TERMS.map((x) => x.id); assert.equal(new Set(ids).size, ids.length, 'id repetido');

@@ -1,4 +1,4 @@
-// Vocabulário de quem vive de música (16/nov/2026): 75 termos em 3 grupos, sem repetir os baralhos de teoria e de instrumentos.
+// Vocabulário de quem vive de música (16/nov/2026): 70 termos em 3 grupos, sem repetir os baralhos de teoria e de instrumentos.
 // FONTE ÚNICA: alimenta o Dicionário do app (js/glossary.js) e o baralho em PDF (marketing/cards-paul/dicionario-novo.html).
 // Cada termo: [nome, em inglês, explicação, frase de exemplo, ícone (chave do desenho no PDF)].
 export const GRUPOS_PALCO = [
@@ -12,7 +12,6 @@ export const GRUPOS_PALCO = [
   ['camarim','dressing room','a sala dos músicos antes do show: ali eles se arrumam, aquecem e descansam.','"a banda espera no camarim."','door'],
   ['bis','encore','quando a plateia pede mais e a banda volta pra tocar mais uma música.','"a plateia gritou: bis!"','repeat'],
   ['repertório','repertoire','o conjunto de músicas que a banda sabe tocar. dele sai o setlist de cada show.','"nosso repertório já tem 30 músicas."','book'],
-  ['banda','band','grupo de músicos que tocam juntos. cada um cuida de uma parte do som.','"a banda tem bateria, baixo, guitarra e voz."','people'],
   ['vocalista','lead singer','quem canta a música na frente da banda, normalmente com o microfone na mão.','"a vocalista puxou o refrão."','mic'],
   ['baterista','drummer','quem toca a bateria e segura o ritmo pra banda inteira não se perder.','"o baterista contou quatro tempos."','drum'],
   ['backline','backline','os equipamentos que ficam no palco pra banda usar: amplificadores, bateria e teclado.','"o backline já está montado."','amp'],
@@ -42,7 +41,6 @@ export const GRUPOS_PALCO = [
   ['reverb','reverb','efeito que faz o som ecoar, como se estivesse num salão grande.','"põe um pouco de reverb na voz."','wave'],
   ['delay','delay','efeito que repete o som várias vezes, cada vez mais baixinho, como um eco.','"o delay repetiu a nota."','repeat'],
   ['equalizador','equalizer (EQ)','controle que deixa o som mais grave, mais médio ou mais agudo.','"aumenta o grave no equalizador."','sliders'],
-  ['volume','volume','o quanto o som está alto ou baixo.','"abaixa o volume do teclado."','knob'],
   ['mesa de som','mixer','aparelho cheio de botões onde o técnico ajusta o volume de cada instrumento e da voz.','"o técnico mexe na mesa de som."','sliders'],
   ['interface de áudio','audio interface','caixinha que liga microfones e instrumentos ao computador pra gravar.','"liga o microfone na interface."','knob'],
   ['estúdio','studio','sala preparada pra gravar música com som limpinho, sem barulho de fora.','"a banda gravou no estúdio."','studio'],
@@ -68,7 +66,6 @@ export const GRUPOS_PALCO = [
   ['dar a deixa','give the cue','avisar com um gesto ou um olhar que algo vai começar ou mudar.','"o baterista deu a deixa pro final."','baton'],
   ['fechar junto','finish together','terminar a música todos juntos, no mesmo instante.','"vamos fechar junto no último acorde."','tick'],
   ['desafinar','go out of tune','cantar ou tocar uma nota um pouco acima ou abaixo da certa.','"a corda desafinou."','jag'],
-  ['afinar','tune','acertar as notas do instrumento ou da voz.','"afina o violão antes."','tuner'],
   ['dar o tom','give the key','dizer ou tocar a primeira nota pra todo mundo começar na altura certa.','"dá o tom pro coral."','fork'],
   ['segunda voz','harmony','uma voz que canta notas diferentes, junto da principal, pra encorpar.','"eu faço a segunda voz."','duo'],
   ['coro','choir','um grupo grande de vozes cantando junto.','"o coro cantou no final."','people'],
@@ -76,10 +73,8 @@ export const GRUPOS_PALCO = [
   ['a cappella','a cappella','cantar sem nenhum instrumento, só com as vozes.','"cantamos a cappella."','sing'],
   ['arranjo','arrangement','o jeito de organizar uma música: quem toca o quê e em qual momento.','"o arranjo tem violão e bateria."','bars'],
   ['compor','compose','criar uma música nova, com melodia e letra ou só instrumental.','"ela compôs uma música."','pencil'],
-  ['letra','lyrics','as palavras que se cantam em uma música.','"decorei a letra."','lines'],
   ['ouvido musical','musical ear','a facilidade de reconhecer notas, ritmos e melodias. dá pra treinar.','"ela tem ouvido musical."','ear'],
   ['ao vivo','live','tocando na hora, com público, sem ser gravado.','"a música ao vivo é diferente."','rec'],
   ['banda de garagem','garage band','grupo de amigos que se junta pra tocar por diversão, às vezes na garagem de casa.','"nossa banda de garagem ensaia sábado."','house'],
   ['aquecer','warm up','tocar ou cantar de leve antes, pra preparar as mãos e a voz.','"aquece a voz antes do show."','flame'],
-  ['decorar','memorize','aprender a música de cabeça pra tocar sem olhar.','"vou decorar essa música."','head']
  ]}];
