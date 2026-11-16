@@ -1024,3 +1024,6 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .dc-chips::-webkit-scrollbar { display: none; }
 .dc-chips .lib-tab { flex: none; white-space: nowrap; }
 .al-termo { font-size: 12px; line-height: 1.35; opacity: .8; }
+
+/* dicionário: o nome do termo na OUTRA língua (inglês ↔ português) em branco forte, ao lado do termo: é importante saber os dois (pedido da Bea) */
+.dc-list .dc-head small[lang="en"] { color: #fff !important; opacity: 1; font-style: normal; font-weight: 800; font-size: 15px; letter-spacing: .01em; }
