@@ -72,6 +72,7 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import { iniciarMarcaDagua } from './marca-dagua.js';
 import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
@@ -462,7 +463,7 @@ function shell(name) {
   }
   addEventListener('hashchange', go);
   document.addEventListener('aluno-acesso', () => go());
-  go();
+  go(); iniciarMarcaDagua();
 }
 
 function askName() {

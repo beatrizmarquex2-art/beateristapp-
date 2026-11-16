@@ -1,0 +1,22 @@
+// Marca d'água com o nome do aluno nas aulas, teoria e dicionário (e só ali).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/*.supabase.co/**', (r) => r.abort());
+await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('i')) { sessionStorage.setItem('i', '1'); localStorage.setItem('beaterista-aluno-nome', 'Ana Clara'); localStorage.setItem('beaterista-aluno-codigo', 'ANA123'); } } catch { /* sem storage */ } });
+const SHOT = process.env.SHOT || '/tmp';
+const solta = async () => { await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true); }); await sleep(500); await page.getByRole('button', { name: 'agora não' }).click({ timeout: 2500 }).catch(() => {}); await sleep(300); };
+await page.goto(url + '/aluno.html#/dicionario'); await page.waitForSelector('.dc-list', { timeout: 10000 }); await solta();
+const visivel = () => page.evaluate(() => { const e = document.getElementById('marca-dagua'); return !!e && !e.hidden && getComputedStyle(e).display !== 'none'; });
+check('o dicionário tem a marca d\'água', await visivel());
+check('a marca usa o nome do aluno e não o código', await page.evaluate(() => { const b = decodeURIComponent(document.getElementById('marca-dagua').style.backgroundImage); return b.includes('Ana Clara') && !b.includes('ANA123'); }));
+check('não bloqueia o toque (pointer-events: none)', await page.evaluate(() => getComputedStyle(document.getElementById('marca-dagua')).pointerEvents === 'none'));
+await page.getByRole('radio', { name: 'banda e palco' }).click(); await page.locator('.dc-term .dc-head').first().click(); await sleep(300);
+await page.screenshot({ path: `${SHOT}/marca-dicionario.png` });
+await page.goto(url + '/aluno.html#/estudos/aulas/bateria'); await page.waitForSelector('.jg-actions, .tr-card, .ks-card, main', { timeout: 10000 }); await sleep(900);
+check('a aula do Paul tem a marca d\'água', await visivel());
+await page.screenshot({ path: `${SHOT}/marca-aula.png` });
+await page.goto(url + '/aluno.html#/jogos'); await sleep(700);
+check('os jogos ficam sem marca d\'água', !(await visivel()));
+check('sem erro de JS', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();
