@@ -11,11 +11,11 @@ body{width:390px;margin:0 auto;font-family:"Hanken Grotesk",system-ui,sans-serif
 .red{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#b8162b;box-shadow:0 4px 0 rgba(0,0,0,.35);font-size:16px}
 .hero{position:relative;text-align:center;padding:4px 18px 0}
 .hero:before{content:"";position:absolute;left:50%;top:70px;width:360px;height:380px;margin-left:-180px;background:conic-gradient(from 160deg at 50% 0,transparent 0 0deg,rgba(255,236,170,.17) 0 40deg,transparent 40deg);pointer-events:none}
-h1{position:relative;font:400 31px/1.05 Anton,sans-serif;text-transform:uppercase;letter-spacing:.01em;margin-top:8px}h1 span{color:#f2a91b}
+.logo{position:relative;display:block;width:300px;margin:8px auto 0;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}.mao{position:relative;font:400 25px/1.1 "Gochi Hand",cursive;margin:8px 8px 0;color:#fff7e6}.mao b{font-weight:400;color:#f2a91b}
 .paul{position:relative;display:block;height:215px;margin:6px auto 0}
 .tiles{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 16px 0}
 .tiles div,.tiles a{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:14px;padding:9px 2px 8px;text-align:center;font:800 11.5px/1.1 "Hanken Grotesk";color:#fff7e6;text-decoration:none}
-.tiles b{display:block;font-size:23px;margin-bottom:3px}
+.tiles b{display:flex;justify-content:center;margin-bottom:5px}.tiles svg{width:30px;height:30px}
 .tiles a{background:#f2a91b;border-color:#f2a91b;color:#162146;box-shadow:0 4px 0 rgba(0,0,0,.35)}.tiles a small{display:block;font:800 8.5px/1 "Hanken Grotesk";margin-top:3px;opacity:.85}
 .box{position:relative;margin:16px 16px 0;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.22);border-radius:20px;padding:16px}
 .box h2{font:400 21px/1 Anton;text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px}.box h2 span{color:#f2a91b}
@@ -32,24 +32,28 @@ h1{position:relative;font:400 31px/1.05 Anton,sans-serif;text-transform:uppercas
 .tel{flex:none;width:176px;scroll-snap-align:center;text-align:center;font:800 11px/1.2 "Hanken Grotesk"}
 .tel div{background:#14111a;border-radius:26px;padding:6px;box-shadow:0 8px 0 rgba(0,0,0,.4)}.tel img{display:block;width:100%;border-radius:20px}.tel p{margin-top:9px;opacity:.9}
 .prod{flex:none;width:150px;scroll-snap-align:start;background:#fff7e6;color:#162146;border-radius:16px;overflow:hidden;box-shadow:0 6px 0 rgba(0,0,0,.4);font:800 12px/1.2 "Hanken Grotesk"}.prod img{display:block;width:100%;aspect-ratio:1;object-fit:cover}.prod p{padding:8px 9px 10px}.prod small{display:block;font:700 10.5px/1.2 "Hanken Grotesk";opacity:.7;margin-top:2px}
-.sobre{position:relative;margin:26px 16px 0;font:600 14px/1.45 "Hanken Grotesk"}.sobre p{margin-bottom:10px}.sobre .par{display:flex;align-items:center;justify-content:center;background:#fffdf7;border-radius:14px;padding:10px;margin-top:6px}.sobre .par img{width:100%}
+.sobre{position:relative;margin:26px 16px 0;font:600 14px/1.45 "Hanken Grotesk"}.sobre p{margin-bottom:10px}.sobre .par{display:flex;justify-content:center;margin-top:10px}.sobre .par img{width:88%}.bea{display:flex;align-items:center;gap:14px;margin-bottom:14px}.bea .foto{flex:none;width:92px;height:92px;border-radius:50%;border:2.5px dashed #f2a91b;display:flex;align-items:center;justify-content:center;text-align:center;font:800 11px/1.2 "Hanken Grotesk";color:#f2a91b}.bea b{font:400 20px/1 Anton;text-transform:uppercase;letter-spacing:.04em}.bea .fr{font:400 19px/1.15 "Gochi Hand",cursive;margin:6px 0 0;color:#fff7e6}
 .dir{position:relative;margin:24px 20px 28px;text-align:center;font:600 11px/1.45 "Hanken Grotesk";opacity:.75}.dir u{font-weight:800}
 </style></head><body>
 <div id="r"></div>
-<script>
+<script type="module">
+import { icon } from '../js/util.js';
+var ic=function(n,s){return icon(n,s||28).outerHTML;};
+var SOC={ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',tt:'<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2 4.3 5 4.5"/>',yt:'<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l5-2.8z" fill="currentColor" stroke="none"/>'};
+var soc=function(k){return '<span class="red"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+SOC[k]+'</svg></span>';};
 var q=new URLSearchParams(location.search), PAULS=[['../assets/paul/colorido/paul-meditando.webp',170],['../assets/originals/paul-professor-quadro-hd.png',215],['cards-paul/img/paul-guitarra-1000.webp',215]];
 var pi=Number(q.get('p'))||(1+Math.floor(Math.random()*3)), P=PAULS[pi-1];
 var tel=function(f,t){return '<div class="tel"><div><img src="entrada-telas/'+f+'.jpg" alt=""></div><p>'+t+'</p></div>';};
 var prod=function(src,t,s){return '<div class="prod"><img src="'+src+'" alt=""><p>'+t+'<small>'+s+'</small></p></div>';};
 document.getElementById('r').innerHTML=
-'<div class="top"><img class="s" src="../assets/logo-512.png"><img class="n" src="../assets/logo-nome.png"><span class="sp"></span><span class="red">◎</span><span class="red">♪</span><span class="red">▶</span></div>'+
-'<div class="hero"><h1><span>Robôterista Paul</span>, te ajuda a tocar e aprender música através de Aulas, Jogos e mais</h1><img class="paul" style="height:'+P[1]+'px" src="'+P[0]+'" alt=""></div>'+
-'<div class="tiles"><div><b>🎮</b>Jogos</div><div><b>📚</b>Estudos</div><div><b>🎵</b>Palco</div><a href="#/lojinha"><b>🛍️</b>Lojinha<small>toque aqui</small></a></div>'+
+'<div class="top"><img class="s" src="../assets/logo-512.png"><img class="n" src="../assets/logo-nome.png"><span class="sp"></span>'+soc('ig')+soc('tt')+soc('yt')+'</div>'+
+'<div class="hero"><img class="logo" src="cards-paul/img/logo-roboterista-paul-branco.png" alt="Robôterista Paul"><p class="mao">te ajuda a tocar e aprender música através de <b>Aulas</b>, <b>Jogos</b> e mais</p><img class="paul" style="height:'+P[1]+'px" src="'+P[0]+'" alt=""></div>'+
+'<div class="tiles"><div><b>'+ic('bulb')+'</b>Jogos</div><div><b>'+ic('study')+'</b>Estudos</div><div><b>'+ic('nota')+'</b>Palco</div><a href="#/lojinha"><b>'+ic('bag')+'</b>Lojinha<small>toque aqui</small></a></div>'+
 '<div class="box"><h2>experimentar <span>grátis</span></h2><div class="f">seu nome</div><div class="q">por onde você conheceu a gente?</div><div class="chips"><span class="on">Escola Beaterista</span><span>TikTok Live</span><span>Instagram</span><span>YouTube</span><span>Outro: ______</span></div><div class="btn y">experimentar</div></div>'+
 '<div class="box"><h2>já sou <span>aluno</span></h2><div class="f">código de aluno</div><div class="btn r">entrar</div></div>'+
 '<div class="box"><h2>acesso <span>completo</span></h2><div class="plano"><div><b>R$ 14,90</b><small>mensal</small></div><div class="dest"><b>R$ 9,90</b><small>anual</small></div></div></div>'+
 '<div class="sec"><h3>veja <span>por dentro</span></h3><div class="rol">'+tel('jogos','vários jogos pra treinar ritmo')+tel('paulbox','PaulBox: monte a banda do Paul')+tel('figurix','Figurix: leitura de figuras')+tel('memoria','memória musical')+tel('aula','aulas do Paul')+tel('dicionario','dicionário musical')+tel('palco','palco: bateria, teclado e violão')+tel('album','álbum de figurinhas')+'</div></div>'+
-'<div class="sobre"><h3 style="padding:0 0 10px;font:400 22px/1 Anton;text-transform:uppercase;letter-spacing:.03em">quem faz <span style="color:#f2a91b">o Paul</span></h3><p>O Robôterista Paul é o assistente da Beaterista escola de música: ele ensina, joga junto e transforma estudar música em brincadeira.</p><p>Feito com carinho pela equipe #BeateristaTeam, com instrumentos dos nossos parceiros:</p><div class="par"><img src="../assets/parceiros-preto.png" alt="Pad Gorilla, Spark Cajons e Nagano Drums"></div></div>'+
+'<div class="sobre"><h3 style="padding:0 0 12px;font:400 22px/1 Anton;text-transform:uppercase;letter-spacing:.03em">quem <span style="color:#f2a91b">ensina</span></h3><div class="bea"><div class="foto">sua foto<br>aqui</div><div><b>prof. Bea</b><p class="fr">[sua frase de relevância aqui]</p></div></div><p>O Robôterista Paul é o assistente da Beaterista escola de música: ele ensina, joga junto e transforma estudar música em brincadeira.</p><p>Feito pela equipe #BeateristaTeam, com instrumentos dos nossos parceiros:</p><div class="par"><img src="entrada-telas/parceiros-branco.png" alt="Pad Gorilla, Spark Cajons e Nagano Drums"></div></div>'+
 '<div class="sec"><h3>produtos <span>do Paul</span></h3><div class="rol">'+prod('../assets/loja/roboterista.webp','Combo Robôterista','4 apostilas pra imprimir')+prod('../assets/loja/colorir.webp','Pra colorir','o Paul em desenhos')+prod('entrada-telas/cards-teoria.jpg','Cards do Paul: Teoria','150 cartas · em breve')+prod('entrada-telas/cards-instrumentos.jpg','Cards do Paul: Instrumentos','90 cartas · em breve')+prod('entrada-telas/cards-dicionario.jpg','Cards do Paul: Dicionário','120 cartas · em breve')+'</div></div>'+
 '<div class="dir">© Beaterista escola de música. Todos os direitos reservados.<br>O conteúdo é de uso pessoal: copiar, vender ou compartilhar sem permissão não é permitido. <u>ler tudo</u></div>';
 Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});
