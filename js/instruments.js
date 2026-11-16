@@ -83,11 +83,12 @@ const vr = () => 0.94 + Math.random() * 0.12;
 // Bateria eletrônica: receitas de caixa de ritmo clássica (808/909): sem som gravado, tudo calculado.
 let satCurve = null;
 const sat = (k = 2.2) => { const w = C.createWaveShaper(); if (!satCurve) { satCurve = new Float32Array(1024); for (let i = 0; i < 1024; i++) { const x = (i / 511.5) - 1; satCurve[i] = Math.tanh(x * 2.2) / Math.tanh(2.2); } } w.curve = satCurve; w.oversample = '2x'; return w; };
-function eKick(t, v) { // 808: seno que cai de ~170 Hz até ~48 Hz, cauda longa de subgrave, um pouquinho de saturação (harmônicos pra ouvir no celular) e um clique de ataque
-  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(175, t); o.frequency.exponentialRampToValueAtTime(58, t + 0.07); o.frequency.exponentialRampToValueAtTime(46, t + 0.45);
-  env(g, t, 1.15 * v, 0.002, 0.85); o.connect(sat()).connect(g); route(g, 0.02); o.start(t); o.stop(t + 0.95);
-  const o2 = C.createOscillator(); const g2 = gn(); o2.type = 'triangle'; o2.frequency.setValueAtTime(320, t); o2.frequency.exponentialRampToValueAtTime(90, t + 0.03); env(g2, t, 0.4 * v, 0.001, 0.035); o2.connect(g2); route(g2); o2.start(t); o2.stop(t + 0.06);
-  const n = noiseSrc(t, 0.012); const ng = gn(); n.connect(bq('bandpass', 2400, 1)).connect(ng); env(ng, t, 0.22 * v, 0.001, 0.007); route(ng);
+function eKick(t, v) { // bumbo seco e socado (estilo 909): queda rápida de afinação, corpo curto de ~55 Hz, saturado, com clique forte de ataque pra aparecer no celular
+  const o = C.createOscillator(); const g = C.createGain(); o.frequency.setValueAtTime(210, t); o.frequency.exponentialRampToValueAtTime(95, t + 0.025); o.frequency.exponentialRampToValueAtTime(56, t + 0.09); o.frequency.exponentialRampToValueAtTime(48, t + 0.3);
+  env(g, t, 1.25 * v, 0.001, 0.32); o.connect(sat()).connect(g); route(g, 0.015); o.start(t); o.stop(t + 0.4);
+  const o2 = C.createOscillator(); const g2 = gn(); o2.type = 'sine'; o2.frequency.setValueAtTime(115, t); o2.frequency.exponentialRampToValueAtTime(70, t + 0.06); env(g2, t, 0.5 * v, 0.001, 0.09); o2.connect(sat()).connect(g2); route(g2); o2.start(t); o2.stop(t + 0.14);
+  const n = noiseSrc(t, 0.02); const ng = gn(); n.connect(bq('bandpass', 3000, 0.9)).connect(ng); env(ng, t, 0.4 * v, 0.001, 0.012); route(ng);
+  const o3 = C.createOscillator(); const g3 = gn(); o3.type = 'triangle'; o3.frequency.setValueAtTime(900, t); o3.frequency.exponentialRampToValueAtTime(180, t + 0.012); env(g3, t, 0.3 * v, 0.0005, 0.014); o3.connect(g3); route(g3); o3.start(t); o3.stop(t + 0.03);
 }
 function eSnare(t, v) { // 909: dois tons (corpo) + ruído filtrado com ataque rápido (esteira) + estalo
   for (const [f, a, d] of [[185, 0.75, 0.13], [330, 0.42, 0.09]]) { const o = C.createOscillator(); const og = gn(); o.type = 'triangle'; o.frequency.setValueAtTime(f * 1.5, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.03); env(og, t, a * v, 0.001, d); o.connect(og); route(og, 0.05); o.start(t); o.stop(t + d + 0.05); }
