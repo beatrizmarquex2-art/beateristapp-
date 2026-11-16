@@ -1,0 +1,182 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fundos de story e post — rodada 3 (10 variações do caderno e do céu de estrelas)</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+:root{--vinho:#9b1b30;--navy:#1f3f6e;--petro:#1c6b73;--creme:#f7efdc;--ink:#17130f;--ouro:#f2c14e;--osso:#f3ead3}
+*{box-sizing:border-box;margin:0}body{background:#d9d2c3;font-family:'Hanken Grotesk',system-ui,sans-serif}
+.linha{display:grid;grid-template-columns:repeat(5,320px);gap:22px;padding:22px;width:max-content}
+.st{position:relative;width:320px;height:569px;overflow:hidden;border-radius:16px;box-shadow:0 8px 24px #0004}
+.rot{position:absolute;top:0;left:0;right:0;z-index:30;text-align:center;font:700 11px system-ui;padding:3px;background:#000;color:#fff}
+.logo{position:absolute;top:30px;left:50%;transform:translateX(-50%);width:170px;z-index:6}
+.tit{position:absolute;top:104px;left:0;right:0;text-align:center;font:400 34px/1 'Anton';z-index:6}
+.carta{position:absolute;left:50%;top:160px;width:200px;transform:translateX(-50%);z-index:6}
+.faixa{position:absolute;left:16px;right:16px;bottom:22px;padding:9px 8px 8px;text-align:center;z-index:6}
+.faixa b{display:block;font:400 25px/1 'Anton'}.faixa small{display:block;font:700 9px system-ui;margin-top:3px;letter-spacing:.04em}
+svg.d{position:absolute;z-index:3;overflow:visible}
+.deco{position:absolute;inset:0;z-index:2;pointer-events:none}
+.deco svg{position:absolute;overflow:visible}
+.clara .logo{filter:none}.escura .logo{filter:brightness(0) invert(1)}
+
+/* ===== CADERNO ===== */
+/* 1 pauta de música */
+.n1{background:#fbf6e8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='96'%3E%3Cg stroke='%231f3f6e' stroke-opacity='.38' stroke-width='1.4'%3E%3Cpath d='M0 20h320M0 30h320M0 40h320M0 50h320M0 60h320'/%3E%3C/g%3E%3C/svg%3E");}
+.n1 .tit{font:400 40px/1 'Gochi Hand';color:var(--vinho);transform:rotate(-3deg)}
+.n1 .carta{transform:translateX(-50%) rotate(-3deg);background:#fff;padding:7px;width:210px;border:2px solid var(--ink);filter:drop-shadow(5px 6px 0 #17130f44)}
+.n1 .faixa{background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--navy);color:var(--navy);transform:rotate(1deg)}.n1 .faixa small{color:var(--vinho)}
+/* 2 lousa */
+.n2{background:radial-gradient(circle at 30% 20%,#2a5a5f,#1c4549 70%);}
+.n2::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at 70% 80%,#ffffff12 0,transparent 40%),radial-gradient(ellipse at 20% 60%,#ffffff0d 0,transparent 35%)}
+.n2::after{content:"";position:absolute;inset:0;z-index:7;border:12px solid #6b4a2b;border-radius:16px;box-shadow:inset 0 0 0 2px #3d2a18;pointer-events:none}
+.n2 .tit{font:400 40px/1 'Gochi Hand';color:#fff;transform:rotate(-2deg);text-shadow:0 0 6px #fff6}
+.n2 .carta{transform:translateX(-50%) rotate(2deg);background:#fff;padding:6px;width:206px;border:2px solid #fff;filter:drop-shadow(4px 6px 0 #0006)}
+.n2 .faixa{border:2px dashed #fff;color:#fff;left:26px;right:26px}.n2 .faixa small{color:#f2c14e}
+/* 3 kraft */
+.n3{background:#c9a878;background-image:radial-gradient(#00000012 1px,transparent 1.5px),radial-gradient(#ffffff18 1px,transparent 1.5px);background-size:9px 9px,13px 13px;background-position:0 0,4px 6px}
+.n3 .tit{font:400 27px/1 'Permanent Marker';white-space:nowrap;color:var(--ink);transform:rotate(-2deg)}
+.n3 .carta{width:204px;border:6px solid #fbf6e8;transform:translateX(-50%) rotate(-2deg);filter:drop-shadow(4px 6px 0 #0004)}
+.n3 .faixa{background:#fbf6e8;border:2px solid var(--ink);color:var(--navy);transform:rotate(-1deg);box-shadow:4px 4px 0 var(--vinho)}.n3 .faixa small{color:var(--vinho)}
+.fita{position:absolute;width:88px;height:24px;background:#f2e3b8b0;z-index:8}
+/* 4 post-its */
+.n4{background:#f7efdc;background-image:linear-gradient(#1f3f6e1c 1px,transparent 1px),linear-gradient(90deg,#1f3f6e1c 1px,transparent 1px);background-size:20px 20px}
+.n4 .tit{display:none}
+.n4 .carta{width:196px;top:196px;background:#fff;padding:6px;border:2px solid var(--ink);filter:drop-shadow(5px 6px 0 #17130f44);transform:translateX(-50%) rotate(2deg)}
+.post{position:absolute;z-index:5;padding:10px 10px 12px;font:400 22px/1.05 'Gochi Hand';color:var(--ink);box-shadow:3px 5px 8px #0003}
+.n4 .faixa{background:var(--navy);color:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--vinho);transform:rotate(-1deg)}
+/* 5 espiral */
+.n5{background:#fffaf0;background-image:repeating-linear-gradient(#1f3f6e2a 0 1px,transparent 1px 22px);background-position:0 30px}
+.n5::before{content:"";position:absolute;left:46px;top:0;bottom:0;border-left:2px solid #9b1b3066;z-index:1}
+.espiral{position:absolute;left:0;top:0;bottom:0;width:34px;z-index:7;background:radial-gradient(circle at 22px 12px,#17130f 0 4px,transparent 4.5px) 0 0/34px 30px repeat-y,linear-gradient(90deg,#d9d2c3,#fbf6e8 70%,#d9d2c3);box-shadow:2px 0 6px #0003}
+.n5 .logo{left:58%}.n5 .tit{font:400 38px/1 'Gochi Hand';color:var(--petro);transform:rotate(-2deg);left:20px}
+.n5 .carta{transform:translateX(-46%) rotate(-3deg);background:#fff;padding:7px;width:206px;border:2px solid var(--ink);filter:drop-shadow(5px 6px 0 #17130f44)}
+.n5 .faixa b{font-size:21px}.n5 .faixa{left:52px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--petro);color:var(--navy)}.n5 .faixa small{color:var(--vinho)}
+
+/* ===== CÉU DE ESTRELAS ===== */
+.ceuBase{position:absolute;inset:0;z-index:1;background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#ffffffaa 1px,transparent 1.5px),radial-gradient(#f2c14e 1.4px,transparent 2px);background-size:46px 46px,71px 71px,113px 113px;background-position:0 0,17px 29px,41px 11px;opacity:.8}
+.e .tit{color:var(--ouro);text-shadow:0 0 18px #f2c14e88}
+.e .faixa{background:#0a1224cc;color:var(--ouro);border:2px solid var(--ouro);border-radius:12px}.e .faixa small{color:#fff}
+.e .carta{filter:drop-shadow(0 0 26px #f2c14e99)}
+/* 6 lua e constelação */
+.e6{background:radial-gradient(100% 70% at 50% 35%,#27498a 0,#101f3d 60%,#070d1a 100%)}
+.lua{position:absolute;right:26px;top:92px;width:54px;height:54px;border-radius:50%;background:#f3ead3;box-shadow:0 0 30px #f3ead388;z-index:2}
+.lua::after{content:"";position:absolute;left:-9px;top:-6px;width:54px;height:54px;border-radius:50%;background:#16294a}
+/* 7 galáxia petróleo */
+.e7{background:radial-gradient(90% 60% at 30% 25%,#2a8a93 0,#1c5a73 45%,#0f2347 100%)}
+.anel{position:absolute;left:50%;top:210px;width:420px;height:120px;margin-left:-210px;border-radius:50%;border:6px solid #f3ead3aa;transform:rotate(-14deg);z-index:2;box-shadow:0 0 24px #f3ead355}
+/* 8 estrelas cadentes */
+.e8{background:linear-gradient(165deg,#0b1527 0,#16294a 55%,#27498a 100%)}
+.rastro{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#f2c14e);transform-origin:right center;z-index:2}
+/* 9 refletores e confete */
+.e9{background:radial-gradient(100% 70% at 50% 40%,#1e3a6e 0,#0b1527 75%)}
+.e9::before{content:"";position:absolute;inset:0;z-index:1;background:conic-gradient(from 195deg at 50% -6%,transparent 0 3deg,#ffffff24 3deg 14deg,transparent 14deg 22deg,#ffffff1a 22deg 32deg,transparent 32deg 148deg,#ffffff1a 148deg 158deg,transparent 158deg 166deg,#ffffff24 166deg 177deg,transparent 177deg)}
+/* 10 planeta-disco */
+.e10{background:radial-gradient(100% 70% at 50% 25%,#27498a 0,#101f3d 60%,#070d1a 100%)}
+.planeta{position:absolute;left:50%;bottom:-210px;width:560px;height:560px;margin-left:-280px;border-radius:50%;z-index:2;background:radial-gradient(circle,var(--vinho) 0 9%,#0b0b0e 9.5% 10.5%,transparent 11%),repeating-radial-gradient(circle,#15151b 0 3px,#0a0a0e 3px 6px);box-shadow:0 0 60px #f2c14e55,0 0 0 4px #f2c14e88}
+.orbita{position:absolute;left:50%;top:150px;width:330px;height:330px;margin-left:-165px;border-radius:50%;border:1.5px dashed #ffffff55;z-index:2}
+</style>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+ <symbol id="estrela" viewBox="-50 -50 100 100"><path d="M0-48 12-14 48-12 20 10 30 46 0 26-30 46-20 10-48-12-12-14Z"/></symbol>
+ <symbol id="brilho" viewBox="-50 -50 100 100"><path d="M0-48C4-14 14-4 48 0 14 4 4 14 0 48-4 14-14 4-48 0-14-4-4-14 0-48Z"/></symbol>
+ <symbol id="contorno" viewBox="-50 -50 100 100"><path d="M0-44 11-13 44-11 18 9 27 42 0 24-27 42-18 9-44-11-11-13Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></symbol>
+ <symbol id="disquinho" viewBox="-50 -50 100 100"><circle r="46" fill="none" stroke="currentColor" stroke-width="5"/><circle r="34" fill="none" stroke="currentColor" stroke-width="3"/><circle r="22" fill="none" stroke="currentColor" stroke-width="3"/><circle r="9" fill="currentColor"/></symbol>
+ <symbol id="vinil" viewBox="-50 -50 100 100"><circle r="47" fill="#15151b"/><circle r="38" fill="none" stroke="#2c2c35" stroke-width="2"/><circle r="29" fill="none" stroke="#2c2c35" stroke-width="2"/><circle r="17" fill="#9b1b30"/><circle r="3" fill="#f3ead3"/></symbol>
+ <symbol id="nota" viewBox="0 0 40 60"><path d="M14 8v34" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><ellipse cx="9" cy="44" rx="9" ry="7" fill="currentColor" transform="rotate(-20 9 44)"/><path d="M14 8c8 2 14 6 14 14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<!-- ====================== CADERNO (1–5) ====================== -->
+<div class="linha">
+
+<div class="st n1 clara"><div class="rot">1 · caderno de pauta de música</div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">nova figurinha!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:10px;top:150px;width:34px;height:50px;color:#9b1b30;transform:rotate(-10deg)" viewBox="0 0 40 60"><use href="#nota"/></svg>
+ <svg class="d" style="right:12px;top:230px;width:30px;height:46px;color:#1f3f6e;transform:rotate(12deg)" viewBox="0 0 40 60"><use href="#nota"/></svg>
+ <svg class="d" style="left:12px;top:360px;width:44px;height:44px;fill:#f2c14e;stroke:#17130f;stroke-width:2"><use href="#estrela"/></svg>
+ <svg class="d" style="right:16px;top:410px;width:58px;height:58px;color:#1c6b73" viewBox="-50 -50 100 100"><use href="#disquinho"/></svg>
+ <svg class="d" style="left:20px;top:455px;width:26px;height:26px;fill:#9b1b30"><use href="#brilho"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>joga lá! beaterista escola de música</small></div></div>
+
+<div class="st n2 escura"><div class="rot">2 · lousa de giz</div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">nova figurinha!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:18px;top:148px;width:40px;height:40px;color:#fff;transform:rotate(-12deg)" viewBox="-50 -50 100 100"><use href="#contorno"/></svg>
+ <svg class="d" style="right:20px;top:226px;width:56px;height:56px;color:#fff" viewBox="-50 -50 100 100"><use href="#disquinho"/></svg>
+ <svg class="d" style="left:20px;top:380px;width:50px;height:50px;color:#fff" viewBox="-50 -50 100 100"><use href="#disquinho"/></svg>
+ <svg class="d" style="right:22px;top:386px;width:36px;height:36px;color:#f2c14e;transform:rotate(14deg)" viewBox="-50 -50 100 100"><use href="#contorno"/></svg>
+ <svg class="d" style="left:60px;top:470px;width:18px;height:18px;fill:#fff"><use href="#brilho"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música</small></div></div>
+
+<div class="st n3 clara"><div class="rot">3 · papel kraft e colagem</div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><span class="fita" style="left:64px;top:166px;transform:rotate(-30deg)"></span><span class="fita" style="right:62px;top:176px;transform:rotate(32deg)"></span><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:6px;top:130px;width:50px;height:50px;fill:#9b1b30;stroke:#fbf6e8;stroke-width:4;transform:rotate(-14deg)"><use href="#estrela"/></svg>
+ <svg class="d" style="right:8px;top:240px;width:62px;height:62px;stroke:#fbf6e8;stroke-width:3"><use href="#vinil"/></svg>
+ <svg class="d" style="left:6px;top:350px;width:70px;height:70px;stroke:#fbf6e8;stroke-width:3"><use href="#vinil"/></svg>
+ <svg class="d" style="right:14px;top:400px;width:46px;height:46px;fill:#1f3f6e;stroke:#fbf6e8;stroke-width:4;transform:rotate(12deg)"><use href="#estrela"/></svg>
+ <svg class="d" style="left:40px;top:446px;width:32px;height:32px;fill:#fbf6e8;stroke:#17130f;stroke-width:3"><use href="#estrela"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música</small></div></div>
+
+<div class="st n4 clara"><div class="rot">4 · post-its</div>
+ <img class="logo" src="../assets/logo-nome.png" alt="">
+ <div class="post" style="left:14px;top:104px;width:140px;background:#f7e7c0;transform:rotate(-5deg)">chegou<br>figurinha<br>nova! ★</div>
+ <div class="post" style="right:14px;top:112px;width:132px;background:#bfe0dc;transform:rotate(4deg)">toca o<br>disco e<br>coleciona ♪</div>
+ <img class="carta" src="exemplo-carta.jpg" alt="">
+ <div class="post" style="left:10px;top:436px;width:104px;background:#c4d4ee;transform:rotate(5deg);z-index:7;font-size:19px">joga lá<br>no site ➜</div>
+ <svg class="d" style="right:14px;top:392px;width:60px;height:60px;color:#9b1b30" viewBox="-50 -50 100 100"><use href="#disquinho"/></svg>
+ <svg class="d" style="right:74px;top:440px;width:34px;height:34px;fill:#f2c14e;stroke:#17130f;stroke-width:2"><use href="#estrela"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música</small></div></div>
+
+<div class="st n5 clara"><div class="rot">5 · caderno espiral</div><div class="espiral"></div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">nova figurinha!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="right:12px;top:150px;width:40px;height:40px;fill:#f2c14e;stroke:#17130f;stroke-width:2;transform:rotate(10deg)"><use href="#estrela"/></svg>
+ <svg class="d" style="left:58px;top:420px;width:50px;height:50px;color:#1c6b73" viewBox="-50 -50 100 100"><use href="#disquinho"/></svg>
+ <svg class="d" style="right:14px;top:340px;width:30px;height:46px;color:#9b1b30;transform:rotate(14deg)" viewBox="0 0 40 60"><use href="#nota"/></svg>
+ <svg class="d" style="right:36px;top:430px;width:24px;height:24px;fill:#1f3f6e"><use href="#brilho"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>joga lá! beaterista escola de música</small></div></div>
+</div>
+
+<!-- ====================== CÉU DE ESTRELAS (6–10) ====================== -->
+<div class="linha">
+
+<div class="st e e6 escura"><div class="rot">6 · lua e constelação</div><div class="ceuBase"></div><div class="lua"></div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:0;top:0;width:320px;height:569px;z-index:4;pointer-events:none" viewBox="0 0 320 569"><g stroke="#f2c14e" stroke-width="1.6" stroke-dasharray="2 5" fill="none"><path d="M26 160 70 228 40 300 88 372 44 454"/><path d="M280 300 252 376 296 448"/></g><g fill="#f2c14e"><use href="#estrela" x="12" y="146" width="28" height="28"/><use href="#estrela" x="56" y="214" width="28" height="28"/><use href="#estrela" x="26" y="286" width="28" height="28"/><use href="#estrela" x="74" y="358" width="28" height="28"/><use href="#estrela" x="30" y="440" width="28" height="28"/><use href="#estrela" x="266" y="286" width="28" height="28"/><use href="#estrela" x="238" y="362" width="28" height="28"/><use href="#estrela" x="282" y="434" width="28" height="28"/></g></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+
+<div class="st e e7 escura"><div class="rot">7 · galáxia com planeta-disco</div><div class="ceuBase" style="opacity:.55"></div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><div class="anel"></div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:-18px;top:420px;width:96px;height:96px;z-index:4" viewBox="-50 -50 100 100"><use href="#vinil"/></svg>
+ <svg class="d" style="right:12px;top:150px;width:44px;height:44px;z-index:4" viewBox="-50 -50 100 100"><use href="#vinil"/></svg>
+ <svg class="d" style="right:14px;top:380px;width:36px;height:36px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="left:16px;top:150px;width:24px;height:24px;fill:#fff;z-index:4"><use href="#brilho"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+
+<div class="st e e8 escura"><div class="rot">8 · chuva de estrelas cadentes</div><div class="ceuBase" style="opacity:.6"></div>
+ <span class="rastro" style="left:30px;top:150px;width:110px;transform:rotate(28deg)"></span><span class="rastro" style="left:170px;top:190px;width:140px;transform:rotate(28deg)"></span><span class="rastro" style="left:20px;top:340px;width:90px;transform:rotate(28deg)"></span><span class="rastro" style="left:190px;top:400px;width:120px;transform:rotate(28deg)"></span><span class="rastro" style="left:80px;top:470px;width:80px;transform:rotate(28deg)"></span>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <svg class="d" style="left:132px;top:164px;width:22px;height:22px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="left:298px;top:204px;width:20px;height:20px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="left:100px;top:354px;width:20px;height:20px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="left:300px;top:414px;width:22px;height:22px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="left:152px;top:484px;width:18px;height:18px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+
+<div class="st e e9 escura"><div class="rot">9 · refletores e confete de estrelas</div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <div class="deco" id="confete"></div>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+
+<div class="st e e10 escura"><div class="rot">10 · planeta-disco no horizonte</div><div class="ceuBase"></div><div class="orbita"></div><div class="planeta"></div>
+ <img class="logo" src="../assets/logo-nome.png" alt=""><div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="" style="top:154px">
+ <svg class="d" style="left:14px;top:150px;width:34px;height:34px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <svg class="d" style="right:12px;top:262px;width:24px;height:24px;fill:#fff;z-index:4"><use href="#brilho"/></svg>
+ <svg class="d" style="right:20px;top:366px;width:42px;height:42px;fill:#f2c14e;z-index:4"><use href="#estrela"/></svg>
+ <div class="faixa" style="background:#0a1224f0"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+</div>
+
+<script>
+// confete de estrelas pro nº 9 (sorteio fixo: sempre o mesmo desenho)
+(function(){ let s=7; const r=()=> (s=(s*16807)%2147483647)/2147483647; const cores=['#f2c14e','#ffffff','#9b1b30','#1c6b73','#f3ead3']; const el=document.getElementById('confete');
+ for(let i=0;i<46;i++){ const x=r()*300, y=130+r()*400, t=10+r()*16, c=cores[Math.floor(r()*cores.length)], rot=Math.floor(r()*360), k=r()<.55?'estrela':r()<.5?'brilho':'';
+  const sv=document.createElementNS('http://www.w3.org/2000/svg','svg'); sv.setAttribute('style',`left:${x}px;top:${y}px;width:${t}px;height:${t}px;fill:${c};transform:rotate(${rot}deg);${k?'' :''}`);
+  if(k){ const u=document.createElementNS('http://www.w3.org/2000/svg','use'); u.setAttribute('href','#'+k); sv.appendChild(u);} else { sv.setAttribute('viewBox','0 0 10 10'); sv.innerHTML='<rect x="1" y="3" width="8" height="4" rx="1"/>'; }
+  el.appendChild(sv); } })();
+</script>
+</body></html>
