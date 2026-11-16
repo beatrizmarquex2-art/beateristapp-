@@ -894,11 +894,11 @@ html[data-mic="on"] .statusbar::after { content: "🎙 microfone ligado"; positi
 .drawer-item svg { color: var(--accent); flex: none; }
 
 /* ---------- rolagem: barra arrastável + voltar ao topo ---------- */
-html { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+html { scrollbar-width: thin; scrollbar-color: #9b1b30 transparent; }
+::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #9b1b30; border-radius: 4px; }
 .scroll-track { position: fixed; right: 2px; top: calc(70px + var(--safe-t)); bottom: calc(96px + var(--safe-b)); width: 22px; z-index: 25; pointer-events: none; opacity: 0; transition: opacity .3s; }
 .scroll-track.on { opacity: 1; } .scroll-track.none { display: none; }
-.scroll-thumb { position: absolute; right: 3px; top: 0; width: 7px; border-radius: 6px; background: var(--accent); box-shadow: 0 0 0 1.5px #fff; pointer-events: auto; touch-action: none; cursor: grab; }
+.scroll-thumb { position: absolute; right: 3px; top: 0; width: 7px; border-radius: 6px; background: #9b1b30; box-shadow: 0 0 0 1.5px #fff; pointer-events: auto; touch-action: none; cursor: grab; }
 .scroll-thumb::before { content: ""; position: absolute; inset: -6px -12px -6px -14px; } /* área de toque maior que o desenho */
 .scroll-track.drag .scroll-thumb { width: 11px; cursor: grabbing; }
 .to-top { position: fixed; right: 14px; bottom: calc(92px + var(--safe-b)); z-index: 29; width: 44px; height: 44px; display: grid; place-items: center; border: 2px solid #1b1818; background: #fff; color: #1b1818; border-radius: 50%; box-shadow: 3px 3px 0 #1b1818; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .2s, transform .2s; cursor: pointer; }
