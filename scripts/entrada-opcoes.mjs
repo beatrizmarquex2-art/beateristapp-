@@ -15,7 +15,7 @@ const tela = (k) => `${V}${TELA[k]}.webp`;
 const capa = (k) => `${A}loja/${k}.webp`;
 const TELAS_APP = (k) => `../../marketing/telas-app/${k}.jpg`;
 // nomes propostos das abas do app (hoje: Jogos, Estudos, Tocar, Álbum, Lojinha). Troque aqui.
-const NOMES = { jogos: ['Arena', 'jogos'], estudos: ['Aula do Paul', 'estudos'], tocar: ['Palco', 'tocar'], album: ['Álbum', 'figurinhas'] };
+const NOMES = { jogos: ['Jogos', 'jogar'], estudos: ['Estudos', 'aulas e dicas'], tocar: ['Palco', 'tocar'], album: ['Álbum', 'figurinhas'] };
 const WA = (t) => `https://wa.me/5518991804150?text=${encodeURIComponent(t)}`;
 const JOGOS = [['Beat Hero', 'beathero', 'toque no tempo certo e ganhe XP'], ['Detetive Note', 'detetive', 'ouça e repita o ritmo com cartas'], ['Figurix', 'figurix', '62 fases pra dominar as figuras'], ['pauLta', 'paulta', 'ache as notas na pauta e leia as claves'], ['Uno Musical', 'uno', 'jogue contra o Paul ou com amigos'], ['Tocar', 'toque', 'toque na tela e grave seu ritmo']];
 const ESTUDOS = [['Dicionário musical', 'dicio'], ['Acordes de violão', 'acordes'], ['Ritmos de bateria', 'ritmos']];

@@ -8,7 +8,7 @@ await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-no
 const go = async (h) => { await page.goto(url + '/aluno.html' + h); await sleep(1500); };
 await go('#/estudos');
 const abas = await page.evaluate(() => [...document.querySelectorAll('nav .nav-item')].map((a) => a.textContent.trim()));
-check('barra de baixo: Jogos, Estudos, Tocar, Álbum, Lojinha (sem Ranking; a Lojinha entrou no lugar do Perfil)', ['Jogos', 'Estudos', 'Tocar', 'Álbum', 'Lojinha'].every((x, i) => (abas[i] || '').includes(x)), abas.join('|'));
+check('barra de baixo: Jogos, Estudos, Palco, Álbum, Lojinha (sem Ranking; a Lojinha entrou no lugar do Perfil)', ['Jogos', 'Estudos', 'Palco', 'Álbum', 'Lojinha'].every((x, i) => (abas[i] || '').includes(x)), abas.join('|'));
 check('as 5 abas cabem em uma linha', await page.evaluate(() => { const t = [...document.querySelectorAll('nav .nav-item')].map((a) => a.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 3; }));
 check('Estudos: acende a aba e mostra as 3 áreas com os modos de estudo', (await page.locator('nav .nav-item.on').textContent()).includes('Estudos') && (await page.locator('#view .es-area').count()) === 3 && (await page.locator('#view .es-modo').count()) >= 4);
 const txt = await page.textContent('#view');
