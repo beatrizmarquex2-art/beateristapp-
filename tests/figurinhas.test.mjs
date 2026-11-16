@@ -57,9 +57,9 @@ test('raridade das figurinhas sorteadas respeita o catálogo (não existem códi
 /* ---------- modelos novos (M1..M8): foto cabe inteira na janela ---------- */
 import { MODELOS2 } from '../js/figurinhas/modelos2-data.js';
 import { planoFoto, caixaRostos, fitLabel } from '../js/figurinhas/card2.js';
-test('modelo novo combina com a raridade (M1-M4 e M9 Comum, M5-M6 Rara, M7-M8 Exclusiva)', () => {
+test('modelo novo combina com a raridade (M1-M4 e M9-M11 Comum, M5-M6 Rara, M7-M8 Exclusiva)', () => {
   for (const c of cat) assert.equal(MODELOS2[c.modelo2].raridade, c.raridade, c.codigo);
-  assert.equal(Object.keys(MODELOS2).length, 9); // M9 = arte nova da Bea (16/nov), só no criador de cartinha
+  assert.equal(Object.keys(MODELOS2).length, 11); // M9, M10 e M11 = artes novas da Bea (16/nov), só no criador de cartinha
   for (const id of Object.keys(MODELOS2)) assert.ok(fs.existsSync(new URL(`assets/figurinhas/modelos2/${id}.webp`, root)), id);
 });
 test('zoom: a foto mantém a proporção, preenche a janela quando dá e nunca corta rosto nem a área de ação', () => {
