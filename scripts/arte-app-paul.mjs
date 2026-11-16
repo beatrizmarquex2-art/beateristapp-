@@ -88,19 +88,19 @@ const BANNERS = {
 };
 // reels: cenas (3,6 s cada) + cartão final (3,5 s) e o Paul animado (GIF) no canto de baixo à direita, sempre
 const REELS = {
-  'reel-1-o-app-por-dentro': { gif: 'danca', cta: 0, cenas: [
+  'reel-1-o-app-por-dentro': { gif: 'danca-v1', cta: 0, cenas: [
     { t1: 'jogue', t2: 'e aprenda', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'] },
     { t1: 'estude', t2: 'com o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea: teoria, bateria, teclado e violão.'] },
     { t1: 'toque', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'] }] },
-  'reel-2-estudar-jogando': { gif: 'palmas', cta: 2, cenas: [
+  'reel-2-estudar-jogando': { gif: 'teclado', cta: 2, cenas: [
     { t1: 'figuras', t2: 'rítmicas', phones: [['figurix', 70, 470, 440, -3], ['uno', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'reconhecer as figuras é o segredo: no Figurix e no Uno Musical.'] },
     { t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['PaulBox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'] },
     { t1: 'e tem aulas', t2: 'também', phones: [['estudos-home', 70, 470, 440, -3], ['estudos-lista', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'dicas do Paul, dicionário musical e aulinhas de instrumento.'] }] },
-  'reel-3-toca-na-tela': { gif: 'danca', cta: 3, cenas: [
+  'reel-3-toca-na-tela': { gif: 'cajon', cta: 3, cenas: [
     { t1: 'bateria', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['hero-drum', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'acústica, eletrônica ou cajón: escolha o modelo e toque.'] },
     { t1: 'toque os', t2: 'acordes', phones: [['palco-acordes', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['acordes', 90, 440, -5]], nota: ['música', 'monte a sequência de acordes e ouça o resultado.'] },
     { t1: 'veja as notas', t2: 'no braço', phones: [['palco-notas', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['notas', 90, 440, -5]], nota: ['educação', 'o nome de cada nota no braço do violão, corda por corda.'] }] },
-  'reel-4-estude-com-o-paul': { gif: 'oculos', cta: 2, cenas: [
+  'reel-4-estude-com-o-paul': { gif: 'microfone', cta: 2, cenas: [
     { t1: 'estude com', t2: 'o Paul', phones: [['estudos-home', 70, 470, 440, -3], ['estudos-lista', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea.'] },
     { t1: 'teoria em', t2: 'aulinhas curtas', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['didática', 'um passo de cada vez: bateria, teclado e violão.'] },
     { t1: 'veja e ouça', t2: 'os acordes', phones: [['acordes-violao', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['acordes', 90, 440, -5]], nota: ['música', 'cada acorde com o desenho e o som.'] }] },
