@@ -1,4 +1,4 @@
-// 13 miniaturas (1280x720) do canal Robôterista Paul no YouTube, na identidade dos posts novos (azul, vinho, dourado, creme).
+// 17 miniaturas (1280x720) do canal Robôterista Paul no YouTube, na identidade dos posts novos (azul, vinho, dourado, creme).
 // Uso: SAIDA=/pasta NODE_PATH=$(npm root -g) node scripts/miniaturas-youtube-paul.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,6 +17,7 @@ const EPS = [
   ['A batida', 'sumiu', 'bateria'], ['O clique', 'teimoso', 'metronomo'], ['Cadê', 'o dó?', 'teclado'], ['A caixa que', 'falava', 'cajon'],
   ['A banda', 'do barulho', 'guitarra'], ['O som de', 'elástico', 'meditando'], ['O pandeiro de', 'duas surpresas', 'pandeiro'], ['A corrida', 'das palmas', 'maestro'],
   ['O robô que', 'acordou a banda', 'produtor'], ['A música', 'em camadas', 'dj'], ['O eco da', 'garagem', 'gravando'], ['O elevador', 'das notas', 'estudando'], ['O ônibus dos', 'quatro tempos', 'professor'],
+  ['Bumbo e caixa', 'em dupla', 'bateria'], ['O riff', 'do Paul', 'guitarra'], ['O pedaço que', 'não saía', 'oculos'], ['Os sinos', 'que cantam', 'microfone'],
 ];
 const tam = (a, b) => Math.max(a.length, b.length) > 12 ? 70 : Math.max(a.length, b.length) >= 10 ? 84 : 104;
 const html = (i, [a, b, pose]) => { const bg = i % 3 === 0 ? AZ : i % 3 === 1 ? VI : '#14264f'; const disco = i % 3 === 1 ? '#c8374b' : OU; const n = String(i + 1).padStart(2, '0');
