@@ -169,17 +169,17 @@ function pratoE(id, cx, cy, R, { extra = '' } = {}) {
 }
 export function eletronica() {
   const tubo = (d, w = 6) => `<path d="${d}" stroke="#1d1d22" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
-  /** Pedal visto de cima: base escura, prato do pé cromado com frisos, coluna e mola (como o das fotos). */
-  const pedal = (x, y, rot = 0, comp = 34) => `<g transform="rotate(${rot} ${x} ${y})"><rect x="${x - 17}" y="${y - 4}" width="34" height="${comp + 10}" rx="6" fill="#15151a"/><path d="M${x - 12} ${y + 8} h24 l4 ${comp - 8} h-32 Z" fill="url(#km-cromo2)"/><path d="M${x - 9} ${y + 16} h18 M${x - 10} ${y + 23} h20 M${x - 11} ${y + 30} h22" style="stroke:#3a3a44;stroke-width:2;stroke-linecap:round"/><rect x="${x - 7}" y="${y - 12}" width="14" height="20" rx="4" fill="#26262d"/><rect x="${x - 4}" y="${y - 9}" width="3" height="14" rx="1.5" fill="url(#km-cromo)"/><path d="M${x + 3} ${y - 8} q4 6 0 12 q-4 6 0 10" fill="none" style="stroke:#9a9ca8;stroke-width:1.6"/></g>`;
-  const pedalHH = pedal(54, 244, 12, 34);
-  const pedalBD = pedal(240, 252, 0, 34);
+  /** Pedal visto de cima, grande como o da foto: base preta, prato do pé cromado com frisos, coluna com mola e batedor. */
+  const pedal = (x, y, rot = 0, comp = 56) => `<g transform="rotate(${rot} ${x} ${y})"><rect x="${x - 23}" y="${y - 2}" width="46" height="${comp + 8}" rx="8" fill="#101014"/><path d="M${x - 16} ${y + 20} h32 l5 ${comp - 20} h-42 Z" fill="url(#km-cromo2)"/><path d="M${x - 12} ${y + 30} h24 M${x - 13} ${y + 38} h26 M${x - 14} ${y + 46} h28 M${x - 15} ${y + 54} h30" style="stroke:#3a3a44;stroke-width:2.4;stroke-linecap:round"/><rect x="${x - 10}" y="${y - 8}" width="20" height="30" rx="5" fill="#24242b"/><rect x="${x - 6}" y="${y - 4}" width="4" height="22" rx="2" fill="url(#km-cromo)"/><path d="M${x + 3} ${y - 3} l5 5 l-5 5 l5 5 l-5 5" fill="none" style="stroke:#b4b6c0;stroke-width:1.8;stroke-linejoin:round"/><circle cx="${x}" cy="${y - 10}" r="6" fill="#ece1bb"/><circle cx="${x - 1.5}" cy="${y - 11.5}" r="2.4" fill="#fff" opacity=".6"/></g>`;
+  const pedalHH = pedal(58, 226, 10, 56);
+  const pedalBD = pedal(240, 240, 0, 52);
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria eletrônica">${DEFS}
     ${tapeteCima()}
     ${tubo('M40 96 L40 84 L394 84 L394 236', 7)}${tubo('M40 150 L22 236', 7)}${tubo('M394 236 L402 282', 7)}
     ${tubo('M118 84 V52', 5)}${tubo('M310 84 V52', 5)}${tubo('M50 124 L40 96', 5)}${tubo('M330 154 L394 154', 5)}
     <rect x="176" y="10" width="62" height="34" rx="5" fill="#101013"/><rect x="182" y="16" width="30" height="16" rx="3" fill="#e9b73a"/><circle cx="224" cy="22" r="4" fill="#4a4a54"/><circle cx="224" cy="35" r="3" fill="#4a4a54"/><rect x="184" y="36" width="24" height="3" rx="1.5" fill="#4a4a54"/>
     ${pratoE('cr', 118, 46, 40)}${pratoE('rd', 310, 46, 40)}${pratoE('hh', 52, 124, 36, { extra: pedalHH })}
-    ${pad('tt', 190, 100, 30)}${pad('mt', 256, 100, 30)}${pad('ft', 330, 154, 33)}${pad('sn', 160, 178, 38)}${pad('bd', 240, 212, 40, { extra: pedalBD })}
+    ${pad('tt', 190, 100, 30)}${pad('mt', 256, 100, 30)}${pad('ft', 330, 154, 33)}${pad('sn', 160, 178, 38)}${pad('bd', 240, 198, 38, { extra: pedalBD })}
   </svg>`;
 }
 

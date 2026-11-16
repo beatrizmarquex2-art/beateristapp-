@@ -827,3 +827,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v551**: logos de verdade em PNG sem fundo (assets/marcas: beaterista.png = selo da escola, nagano.png, spark-branco/preto.png) no lugar do logo antigo e dos selos de texto. Beaterista no canto de cima, Nagano (acústica) e Spark (cajón, branco em tema escuro / preto no amarelo) em cima; Spark preto também na frente do cajón. `logoFora(art, modelo)` em toque.js; assets/marcas entrou no sw-extra.
 - **v552**: bumbo da acústica com pedal de verdade (prato do pé com frisos, coluna com mola, haste e batedor de feltro), no lugar do batedor solto.
 - **v553**: eletrônica com pedais refeitos (pedal de bumbo e de chimbal vistos de cima: base, prato do pé com frisos, coluna e mola); pad do bumbo subiu um pouco pra caber o pedal.
+- **v554**: pedais da eletrônica de novo, maiores (46x60, prato do pé com 4 frisos, coluna com mola, batedor); pad do bumbo subiu mais.
