@@ -115,9 +115,14 @@ function bumbo(cx, cy, R) {
     <circle cx="${hx}" cy="${hy}" r="13.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="11.5" fill="#fbf6e8"/><circle cx="${hx + 2}" cy="${hy + 3}" r="8" fill="url(#km-sombra)" opacity=".35"/>
     <rect x="${cx - 2.2}" y="${cy + 42}" width="4.4" height="${R - 38}" rx="2" fill="#2a2c35"/>
     <circle cx="${cx}" cy="${cy + 38}" r="8" fill="#16161a"/><circle cx="${cx}" cy="${cy + 38}" r="6.6" fill="#ece1bb"/><circle cx="${cx - 2}" cy="${cy + 36}" r="3" fill="#fff" opacity=".6"/>
-    <rect x="${cx - 6}" y="${cy + R - 10}" width="12" height="16" rx="3" fill="#1d1e25"/><rect x="${cx - 4}" y="${cy + R - 8}" width="3" height="12" rx="1.5" fill="url(#km-cromo)"/>
-    <path d="M${cx - 12} ${cy + R + 4} h24 l5 24 h-34 Z" fill="url(#km-cromo2)"/><path d="M${cx - 9} ${cy + R + 9} h18 M${cx - 10} ${cy + R + 15} h20 M${cx - 11} ${cy + R + 21} h22" style="stroke:#3a3a44;stroke-width:2;stroke-linecap:round"/>
-    <rect x="${cx - 21}" y="${cy + R + 28}" width="42" height="6" rx="3" fill="#15151a"/>
+    <image href="assets/marcas/nagano.png" x="${cx - 24}" y="${cy - 34}" width="48" height="48" pointer-events="none" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="${cx - 24}" y="${cy + R + 22}" width="48" height="8" rx="3" fill="#0e0e12"/>
+    <path d="M${cx - 19} ${cy + R + 1} L${cx - 15} ${cy + R + 26} M${cx + 19} ${cy + R + 1} L${cx + 15} ${cy + R + 26}" style="stroke:#15151a;stroke-width:4;stroke-linecap:round"/>
+    <path d="M${cx - 15} ${cy + R + 2} h30 l4 22 h-38 Z" fill="url(#km-cromo2)"/>
+    <path d="M${cx - 15} ${cy + R + 2} h30 l.8 5 h-31.6 Z" fill="#fff" opacity=".5"/>
+    <image href="assets/marcas/nagano.png" x="${cx - 9}" y="${cy + R + 7}" width="18" height="18" pointer-events="none" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="${cx - 7}" y="${cy + R - 12}" width="14" height="16" rx="4" fill="#1d1e25"/><rect x="${cx - 4.5}" y="${cy + R - 10}" width="3" height="11" rx="1.5" fill="url(#km-cromo)"/>
+    <path d="M${cx + 10} ${cy + R - 8} q5 4 0 8 q-5 4 0 8 q5 4 0 8" fill="none" style="stroke:#b4b6c0;stroke-width:1.8"/><path d="M${cx + 10} ${cy + R - 8} v-3" style="stroke:#b4b6c0;stroke-width:1.8"/>
     ${brilhaC(cx, cy, R + 6, c)}
   </g>`;
 }

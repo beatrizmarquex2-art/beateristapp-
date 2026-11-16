@@ -828,3 +828,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v552**: bumbo da acústica com pedal de verdade (prato do pé com frisos, coluna com mola, haste e batedor de feltro), no lugar do batedor solto.
 - **v553**: eletrônica com pedais refeitos (pedal de bumbo e de chimbal vistos de cima: base, prato do pé com frisos, coluna e mola); pad do bumbo subiu um pouco pra caber o pedal.
 - **v554**: pedais da eletrônica de novo, maiores (46x60, prato do pé com 4 frisos, coluna com mola, batedor); pad do bumbo subiu mais.
+- **v555**: símbolo da Nagano no meio da pele do bumbo e no prato do pé do pedal; pedal da acústica refeito (base preta, trilhos, prato cromado com o logo, coluna com mola).
