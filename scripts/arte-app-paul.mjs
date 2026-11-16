@@ -17,7 +17,7 @@ const AZ = '#0d1a36', VI = '#a8182e', CR = '#f4ead8', OU = '#d8b879';
 const hd = (n) => u(`assets/originals/paul-png/coloridos-hd/paul-${n}.png`);
 const tela = (n) => u(`marketing/telas-app/app-${n}.jpg`);
 const LOGO = u('assets/originals/logo-beaterista-dourado.png');
-const GIF = { danca: path.join(ROOT, 'assets/paul/animado/paul-danca.gif'), palmas: path.join(ROOT, 'assets/paul/animado/paul-palmas.gif') };
+const GIF = Object.fromEntries(fs.readdirSync(path.join(ROOT, 'assets/paul/animado')).filter((n) => n.endsWith('.gif')).map((n) => [n.replace(/^paul-|\.gif$/g, ''), path.join(ROOT, 'assets/paul/animado', n)]));
 const F = (n) => u(`assets/fonts/${n}`);
 const FONTES = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${F('GochiHand-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${F('HankenGrotesk-latin.woff2')})}`;
 const URLSITE = 'jogos.beaterista.com.br';
@@ -32,9 +32,9 @@ const baseCss = (w, h) => `${FONTES}*{box-sizing:border-box;margin:0}body{width:
 const doc = (w, h, inner) => `<!doctype html><meta charset="utf-8"><style>${baseCss(w, h)}</style><div class="pt"></div>${inner}`;
 
 // ---------- STORY / CENA DE REEL (1080×1920). paul: PNG parado (story) ou null (no reel o Paul animado entra por cima, no canto de baixo à direita) ----------
-const story = ({ t1, t2, phones, nota, paul = null, tags = [] }) => doc(1080, 1920, `<h1 style="left:64px;top:150px">${t1}<em>${t2}</em></h1>
+const story = ({ t1, t2, phones, nota, paul = null, tags = [], ps = 1, aw = 0 }) => doc(1080, 1920, `<h1 style="left:64px;top:150px">${t1}<em>${t2}</em></h1>
 ${phones.map(([n, x, y, w, r]) => phone(n, x, y, w, r)).join('')}${tags.map(([t, x, y, r]) => etiqueta(t, x, y, r)).join('')}
-${abinha(nota, 64, 1400, 500)}${paul ? `<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:110px;height:520px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
+${abinha(nota, 64, 1400, aw || (ps > 1 ? 500 : 640))}${paul ? `<img src="${hd(paul)}" style="position:absolute;right:${ps > 1 ? -10 : 20}px;bottom:${ps > 1 ? 110 : 130}px;height:${Math.round(430 * ps)}px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
 <div style="position:absolute;left:54px;bottom:60px">${assin()}</div>`);
 const finalCard = ({ cta = 0, paul = null, phones = [['hero-drum', 70, 560, 330, -3], ['figurix', 420, 620, 330, 2]] }) => doc(1080, 1920, `<h1 style="left:70px;top:200px">robôterista<em>ensina</em></h1>
 <div style="position:absolute;right:70px;top:270px;font:800 34px/1.2 Hanken;background:${CR};color:${AZ};padding:12px 26px;border-radius:99px;transform:rotate(4deg);text-align:center">jogos<br>e estudos</div>
@@ -42,13 +42,13 @@ ${phones.map(([n, x, y, w, r]) => phone(n, x, y, w, r)).join('')}
 <div style="position:absolute;left:70px;top:1260px;font:400 56px Gochi,cursive;color:${OU}">${CTAS[cta][0]}</div>
 <div style="position:absolute;left:70px;top:1340px;font:800 48px Hanken;background:${VI};padding:22px 42px;border-radius:99px;box-shadow:8px 8px 0 ${CR};white-space:nowrap">${CTAS[cta][1]}</div>
 <div style="position:absolute;left:70px;top:1470px;font:700 40px Hanken">${URLSITE}</div>
-${paul ? `<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:90px;height:480px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
+${paul ? `<img src="${hd(paul)}" style="position:absolute;right:20px;bottom:100px;height:390px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
 <div style="position:absolute;left:54px;bottom:60px">${assin()}</div>`);
 
 // ---------- POST (1080×1350) ----------
-const post = ({ t1, t2, phone: [n, x, y, w, r], nota, paul, rodape = true }) => doc(1080, 1350, `<h1 style="left:64px;top:84px;font-size:96px">${t1}<em>${t2}</em></h1>
-${phone(n, x, y, w, r)}<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:150px;height:490px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">
-${abinha(nota, 64, 1065, 560)}${rodape ? `<div style="position:absolute;left:54px;bottom:36px">${assin(.8)}</div>` : ''}`);
+const post = ({ t1, t2, phone: [n, x, y, w, r], nota, paul, rodape = true, ps = 1 }) => doc(1080, 1350, `<h1 style="left:64px;top:84px;font-size:96px">${t1}<em>${t2}</em></h1>
+${phone(n, x, y, w, r)}<img src="${hd(paul)}" style="position:absolute;right:${ps > 1 ? -10 : 10}px;bottom:${ps > 1 ? 150 : 170}px;height:${Math.round(400 * ps)}px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">
+${abinha(nota, 64, 1065, ps > 1 ? 560 : 640)}${rodape ? `<div style="position:absolute;left:54px;bottom:36px">${assin(.8)}</div>` : ''}`);
 
 // ---------- BANNER do site (1200×600) ----------
 const banner = ({ t1, t2, sub, phones, cta = 'jogar agora' }) => doc(1200, 600, `<h1 style="left:60px;top:70px;font-size:84px">${t1}<em>${t2}</em></h1>
@@ -70,15 +70,15 @@ const STORIES = {
   'story-2-jogos': () => story({ t1: 'jogue e aprenda', t2: 'ao mesmo tempo', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
   'story-3-estudos': () => story({ t1: 'estude com', t2: 'o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea: teoria, bateria, teclado e violão.'], paul: 'professor' }),
   'story-4-palco': () => story({ t1: 'toque na tela', t2: 'de verdade', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
-  'story-5-banda-do-paul': () => story({ t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['PaulBox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro' }),
+  'story-5-banda-do-paul': () => story({ t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['PaulBox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro', ps: 1.25 }),
   'story-6-jogue-agora': () => finalCard({ cta: 0, paul: 'selfie' }),
 };
 const POSTS = {
   'post-1-jogos': () => post({ t1: 'jogue e aprenda', t2: 'ao mesmo tempo', phone: ['hero-drum', 100, 290, 420, -2], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
   'post-2-estudos': () => post({ t1: 'estude com', t2: 'o Paul', phone: ['estudos-lista', 100, 290, 420, 2], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea.'], paul: 'professor' }),
   'post-3-palco': () => post({ t1: 'toque na tela', t2: 'de verdade', phone: ['palco-bateria', 100, 290, 420, -2], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
-  'post-4-acordes': () => post({ t1: 'veja, ouça', t2: 'e toque o acorde', phone: ['acordes-violao', 100, 290, 420, 2], nota: ['música', 'violão, guitarra, baixo e teclado: o desenho e o som.'], paul: 'guitarra' }),
-  'post-5-banda': () => post({ t1: 'monte a banda', t2: 'do Paul', phone: ['paulbox', 100, 290, 420, -2], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro' }),
+  'post-4-acordes': () => post({ t1: 'veja, ouça', t2: 'e toque o acorde', phone: ['acordes-violao', 100, 290, 420, 2], nota: ['música', 'violão, guitarra, baixo e teclado: o desenho e o som.'], paul: 'guitarra', ps: 1.25 }),
+  'post-5-banda': () => post({ t1: 'monte a banda', t2: 'do Paul', phone: ['paulbox', 100, 290, 420, -2], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro', ps: 1.25 }),
 };
 const BANNERS = {
   'banner-1-joga-aprende-toca': () => banner({ t1: 'jogue, aprenda', t2: 'e toque', sub: 'jogos, estudos e palco com o Robôterista Paul, assistente da Bea', phones: [['hero-drum', 700, 60, 250, -3], ['figurix', 940, 110, 250, 3]] }),
@@ -100,6 +100,16 @@ const REELS = {
     { t1: 'bateria', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['hero-drum', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'acústica, eletrônica ou cajón: escolha o modelo e toque.'] },
     { t1: 'toque os', t2: 'acordes', phones: [['palco-acordes', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['acordes', 90, 440, -5]], nota: ['música', 'monte a sequência de acordes e ouça o resultado.'] },
     { t1: 'veja as notas', t2: 'no braço', phones: [['palco-notas', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['notas', 90, 440, -5]], nota: ['educação', 'o nome de cada nota no braço do violão, corda por corda.'] }] },
+  'reel-4-estude-com-o-paul': { gif: 'oculos', cta: 2, cenas: [
+    { t1: 'estude com', t2: 'o Paul', phones: [['estudos-home', 70, 470, 440, -3], ['estudos-lista', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea.'] },
+    { t1: 'teoria em', t2: 'aulinhas curtas', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['didática', 'um passo de cada vez: bateria, teclado e violão.'] },
+    { t1: 'veja e ouça', t2: 'os acordes', phones: [['acordes-violao', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['acordes', 90, 440, -5]], nota: ['música', 'cada acorde com o desenho e o som.'] }] },
+  'reel-5-toque-a-bateria': { gif: 'bateria', cta: 3, ps: 520, cenas: [
+    { t1: 'toque a', t2: 'bateria na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['hero-drum', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'acústica, eletrônica ou cajón: escolha o modelo e toque.'] },
+    { t1: 'jogue e', t2: 'siga o ritmo', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'o jogo mostra o ritmo e você toca junto.'] }] },
+  'reel-6-acordes-e-notas': { gif: 'guitarra', cta: 0, cenas: [
+    { t1: 'toque os', t2: 'acordes', phones: [['palco-acordes', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'monte a sequência de acordes e ouça o resultado.'] },
+    { t1: 'veja as notas', t2: 'no braço', phones: [['palco-notas', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['notas', 90, 440, -5]], nota: ['educação', 'o nome de cada nota no braço do violão, corda por corda.'] }] },
 };
 
 const SO = process.argv[2];
@@ -118,7 +128,7 @@ if (!SO || SO === 'reels') {
   const D = 3.6, FIM = 3.5;
   for (const [nome, r] of Object.entries(REELS)) {
     const dir = sub('reels-cenas/' + nome); const png = [];
-    for (const [i, c] of r.cenas.entries()) { const p = path.join(dir, `c${i + 1}.png`); await shot(story(c), 1080, 1920, p); png.push([p, D]); }
+    for (const [i, c] of r.cenas.entries()) { const p = path.join(dir, `c${i + 1}.png`); await shot(story({ ...c, aw: (r.ps || 430) > 430 ? 470 : 540 }), 1080, 1920, p); png.push([p, D]); }
     const pf = path.join(dir, 'fim.png'); await shot(finalCard({ cta: r.cta }), 1080, 1920, pf); png.push([pf, FIM]);
     const total = png.reduce((s, x) => s + x[1], 0);
     const args = ['-loglevel', 'error', '-y'];
@@ -127,8 +137,8 @@ if (!SO || SO === 'reels') {
     const g = png.length;
     const fl = png.map(([, d], i) => `[${i}:v]scale=1080:1920,setsar=1,format=yuv420p,fade=t=in:st=0:d=0.25,fade=t=out:st=${d - 0.25}:d=0.25[v${i}]`);
     fl.push(`${png.map((_, i) => `[v${i}]`).join('')}concat=n=${g}:v=1:a=0[bg]`);
-    fl.push(`[${g}:v]scale=520:-1:flags=lanczos,format=rgba[pa]`);
-    fl.push(`[bg][pa]overlay=x=W-w+10:y=H-h-90:shortest=0,format=yuv420p[out]`);
+    fl.push(`[${g}:v]scale=${r.ps || 430}:-1:flags=lanczos,format=rgba[pa]`);
+    fl.push(`[bg][pa]overlay=x=W-w+${(r.ps || 430) > 430 ? 10 : -10}:y=H-h-${(r.ps || 430) > 430 ? 90 : 110}:shortest=0,format=yuv420p[out]`);
     args.push('-filter_complex', fl.join(';'), '-map', '[out]', '-t', String(total), '-an', '-r', '30', '-c:v', 'libx264', '-crf', '23', '-preset', 'medium', '-movflags', '+faststart', path.join(sub('reels'), nome + '.mp4'));
     execFileSync('ffmpeg', args); console.log('ok', nome, total + 's');
   }
