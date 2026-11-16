@@ -72,7 +72,7 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
-import { iniciarMarcaDagua } from './marca-dagua.js';
+import { iniciarMarcaDagua, TERMO_DE_USO } from './marca-dagua.js';
 import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
@@ -378,6 +378,7 @@ function opcoes(name) {
       bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
       code ? null : bt('🔑 tenho código', abrirCodigo),
       bt('🚪 sair', sairDoApp, 'btn wide ghost'),
+      h('small', { class: 'muted al-termo' }, TERMO_DE_USO),
       code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto. por segurança o código nunca aparece inteiro na tela.') : null);
   });
 }
@@ -509,7 +510,8 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     codBox, err,
     h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
-    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
+    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'),
+    h('p', { class: 'muted center al-termo' }, TERMO_DE_USO));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
   setTimeout(() => input.focus(), 100);

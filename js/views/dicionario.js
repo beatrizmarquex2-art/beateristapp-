@@ -21,7 +21,7 @@ export function mount(host, parts = []) {
   const list = h('div', { class: 'dc-list' });
   const search = h('input', { type: 'search', placeholder: 'buscar: síncope, setlist, BPM…', 'aria-label': 'Buscar no dicionário' });
   search.addEventListener('input', () => { q = search.value; draw(); });
-  const chips = h('div', { class: 'chips lib-tabs pad-x', role: 'radiogroup', 'aria-label': 'Temas' });
+  const chips = h('div', { class: 'chips lib-tabs pad-x dc-chips', role: 'radiogroup', 'aria-label': 'Temas' });
   // sem código (área dos alunos): só os primeiros termos abrem; os outros mostram o nome com cadeado
   const FREE = new Set(TERMS.slice(0, GRATIS.termos).map((x) => x.id));
   const aviso = avisoCodigo(`só ${GRATIS.termos} termos abrem de graça. com o código de aluno você vê todos os ${TERMS.length}, com dica e exemplo tocando.`); aviso.hidden = true;
@@ -48,6 +48,7 @@ export function mount(host, parts = []) {
   };
   const draw = () => {
     chips.replaceChildren(...[['', 'todos'], ...CATS].map(([id, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cat === id), class: `lib-tab${cat === id ? ' on' : ''}`, onclick: () => { cat = id; draw(); } }, t)));
+    setTimeout(() => { const on = chips.querySelector('.lib-tab.on'); if (on && on.scrollIntoView) on.scrollIntoView({ inline: 'center', block: 'nearest' }); }, 0);
     const shown = searchTerms(q, TERMS.filter((x) => !cat || x.cat === cat));
     list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
   };

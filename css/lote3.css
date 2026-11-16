@@ -1014,6 +1014,12 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .tk-art .marca-img.claro { filter: drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 1px 1.5px rgba(0,0,0,.5)); }
 
 /* marca d'água do aluno nas aulas, teoria e dicionário (js/marca-dagua.js): clarinha, não bloqueia o toque */
-#marca-dagua { position: fixed; inset: 0; z-index: 30; pointer-events: none; background-repeat: repeat; background-size: 250px 150px; }
+#marca-dagua { position: fixed; inset: 0; z-index: 30; pointer-events: none; background-repeat: repeat; }
 #marca-dagua[hidden] { display: none; }
 @media print { #marca-dagua { display: none; } }
+
+/* dicionário: os temas viram UMA fileira que arrasta pro lado (antes eram 12 botões em várias linhas) */
+.dc-chips { flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 6px; }
+.dc-chips::-webkit-scrollbar { display: none; }
+.dc-chips .lib-tab { flex: none; white-space: nowrap; }
+.al-termo { font-size: 12px; line-height: 1.35; opacity: .8; }

@@ -9,7 +9,9 @@ const solta = async () => { await page.evaluate(async () => { (await import('/js
 await page.goto(url + '/aluno.html#/dicionario'); await page.waitForSelector('.dc-list', { timeout: 10000 }); await solta();
 const visivel = () => page.evaluate(() => { const e = document.getElementById('marca-dagua'); return !!e && !e.hidden && getComputedStyle(e).display !== 'none'; });
 check('o dicionário tem a marca d\'água', await visivel());
-check('a marca usa o nome do aluno e não o código', await page.evaluate(() => { const b = decodeURIComponent(document.getElementById('marca-dagua').style.backgroundImage); return b.includes('Ana Clara') && !b.includes('ANA123'); }));
+check('a marca é uma imagem desenhada no aparelho (sem o código dentro da página)', await page.evaluate(() => document.getElementById('marca-dagua').style.backgroundImage.startsWith('url("data:image/png') && !document.getElementById('marca-dagua').textContent.includes('ANA123')));
+check('o dicionário mostra os temas em UMA fileira que arrasta', await page.evaluate(() => { const c = document.querySelector('.dc-chips'); const t = [...c.querySelectorAll('.lib-tab')].map((b) => b.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 6 && c.scrollWidth > c.clientWidth; }));
+check('o termo de uso aparece nas opções', await (async () => { await page.getByRole('button', { name: /opções/ }).click(); await sleep(400); const ok = /copiar, vender ou compartilhar sem permissão/.test(await page.locator('.al-opcoes').innerText()); await page.keyboard.press('Escape'); await page.mouse.click(190, 60); await sleep(300); return ok; })());
 check('não bloqueia o toque (pointer-events: none)', await page.evaluate(() => getComputedStyle(document.getElementById('marca-dagua')).pointerEvents === 'none'));
 await page.getByRole('radio', { name: 'banda e palco' }).click(); await page.locator('.dc-term .dc-head').first().click(); await sleep(300);
 await page.screenshot({ path: `${SHOT}/marca-dicionario.png` });
