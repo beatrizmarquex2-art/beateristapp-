@@ -34,7 +34,7 @@ const doc = (w, h, inner) => `<!doctype html><meta charset="utf-8"><style>${base
 // ---------- STORY / CENA DE REEL (1080×1920). paul: PNG parado (story) ou null (no reel o Paul animado entra por cima, no canto de baixo à direita) ----------
 const story = ({ t1, t2, phones, nota, paul = null, tags = [] }) => doc(1080, 1920, `<h1 style="left:64px;top:150px">${t1}<em>${t2}</em></h1>
 ${phones.map(([n, x, y, w, r]) => phone(n, x, y, w, r)).join('')}${tags.map(([t, x, y, r]) => etiqueta(t, x, y, r)).join('')}
-${abinha(nota, 64, 1400, 540)}${paul ? `<img src="${hd(paul)}" style="position:absolute;right:20px;bottom:130px;height:430px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
+${abinha(nota, 64, 1400, 500)}${paul ? `<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:110px;height:520px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
 <div style="position:absolute;left:54px;bottom:60px">${assin()}</div>`);
 const finalCard = ({ cta = 0, paul = null, phones = [['hero-drum', 70, 560, 330, -3], ['figurix', 420, 620, 330, 2]] }) => doc(1080, 1920, `<h1 style="left:70px;top:200px">robôterista<em>ensina</em></h1>
 <div style="position:absolute;right:70px;top:270px;font:800 34px/1.2 Hanken;background:${CR};color:${AZ};padding:12px 26px;border-radius:99px;transform:rotate(4deg);text-align:center">jogos<br>e estudos</div>
@@ -42,12 +42,12 @@ ${phones.map(([n, x, y, w, r]) => phone(n, x, y, w, r)).join('')}
 <div style="position:absolute;left:70px;top:1260px;font:400 56px Gochi,cursive;color:${OU}">${CTAS[cta][0]}</div>
 <div style="position:absolute;left:70px;top:1340px;font:800 48px Hanken;background:${VI};padding:22px 42px;border-radius:99px;box-shadow:8px 8px 0 ${CR};white-space:nowrap">${CTAS[cta][1]}</div>
 <div style="position:absolute;left:70px;top:1470px;font:700 40px Hanken">${URLSITE}</div>
-${paul ? `<img src="${hd(paul)}" style="position:absolute;right:20px;bottom:100px;height:390px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
+${paul ? `<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:90px;height:480px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">` : ''}
 <div style="position:absolute;left:54px;bottom:60px">${assin()}</div>`);
 
 // ---------- POST (1080×1350) ----------
 const post = ({ t1, t2, phone: [n, x, y, w, r], nota, paul, rodape = true }) => doc(1080, 1350, `<h1 style="left:64px;top:84px;font-size:96px">${t1}<em>${t2}</em></h1>
-${phone(n, x, y, w, r)}<img src="${hd(paul)}" style="position:absolute;right:10px;bottom:170px;height:400px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">
+${phone(n, x, y, w, r)}<img src="${hd(paul)}" style="position:absolute;right:-10px;bottom:150px;height:490px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.25))">
 ${abinha(nota, 64, 1065, 560)}${rodape ? `<div style="position:absolute;left:54px;bottom:36px">${assin(.8)}</div>` : ''}`);
 
 // ---------- BANNER do site (1200×600) ----------
@@ -127,8 +127,8 @@ if (!SO || SO === 'reels') {
     const g = png.length;
     const fl = png.map(([, d], i) => `[${i}:v]scale=1080:1920,setsar=1,format=yuv420p,fade=t=in:st=0:d=0.25,fade=t=out:st=${d - 0.25}:d=0.25[v${i}]`);
     fl.push(`${png.map((_, i) => `[v${i}]`).join('')}concat=n=${g}:v=1:a=0[bg]`);
-    fl.push(`[${g}:v]scale=430:-1:flags=lanczos,format=rgba[pa]`);
-    fl.push(`[bg][pa]overlay=x=W-w-10:y=H-h-110:shortest=0,format=yuv420p[out]`);
+    fl.push(`[${g}:v]scale=520:-1:flags=lanczos,format=rgba[pa]`);
+    fl.push(`[bg][pa]overlay=x=W-w+10:y=H-h-90:shortest=0,format=yuv420p[out]`);
     args.push('-filter_complex', fl.join(';'), '-map', '[out]', '-t', String(total), '-an', '-r', '30', '-c:v', 'libx264', '-crf', '23', '-preset', 'medium', '-movflags', '+faststart', path.join(sub('reels'), nome + '.mp4'));
     execFileSync('ffmpeg', args); console.log('ok', nome, total + 's');
   }
