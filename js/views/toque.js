@@ -18,7 +18,7 @@ import { svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
-import { kitTheme, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
+import { flash, pieceAt } from '../kids/kit-theme.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
@@ -68,11 +68,11 @@ export function mount(host) {
     const c = conf(); modeloAtual = c.modelo; warmKit(c.modelo);
     kit.classList.toggle('left', !!c.left);
     const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art, c.modelo);
-    kit.dataset.kitTheme = kitTheme();
+    kit.dataset.kitTheme = 'colagem'; // um fundo só (a Bea não quer escolher tema na bateria de toque)
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
       ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
-    kit.replaceChildren(art, nomeEl, modelos, themeRow(drawKit));
+    kit.replaceChildren(art, nomeEl, modelos);
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
