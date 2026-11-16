@@ -1051,3 +1051,24 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .ti-tabs .ti-tab:nth-child(2):not(.on) { border-color: #1c6b73; box-shadow: 2px 2px 0 #1c6b73; }
 .ti-tabs .ti-tab:nth-child(3):not(.on) { border-color: #1f3f6e; box-shadow: 2px 2px 0 #1f3f6e; }
 .ti-tabs .ti-tab:nth-child(4):not(.on) { border-color: #c98a12; box-shadow: 2px 2px 0 #c98a12; }
+
+/* ===== Piano minimalista: pílulas, tudo lado a lado ===== */
+.pn-pan2 { display: grid; gap: 10px; margin: 10px 16px; padding: 12px; background: #fffaf0; border: 2px solid #17224a; border-radius: 22px; box-shadow: 0 5px 0 #17224a22; }
+.pn-pan2 .pn-seg { display: flex; align-items: center; gap: 3px; padding: 4px; background: #efe6d3; border-radius: 999px; min-width: 0; }
+.pn-pan2 .pn-sg { flex: 1 1 0; min-width: 0; min-height: 38px; padding: 0 6px; border: 0; border-radius: 999px; background: transparent; color: #17224a; font: 800 14px/1 var(--body); white-space: nowrap; box-shadow: none; }
+.pn-pan2 .pn-sg.on { color: #fff; background: #17224a; box-shadow: 0 2px 0 #0003; }
+.pn-pan2 .pn-sons .pn-sg[data-k="piano"].on { background: #9b1b30; }
+.pn-pan2 .pn-sons .pn-sg[data-k="epiano"].on { background: #1c6b73; }
+.pn-pan2 .pn-sons .pn-sg[data-k="organ"].on { background: #1f3f6e; }
+.pn-pan2 .pn-sons .pn-sg[data-k="pad"].on { background: #f2b632; color: #17130f; }
+.pn-pan2 .pn-sg.travado { opacity: .55; }
+.pn-pan2 .pn-linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pn-pan2 .pn-step { flex: 1 1 150px; display: flex; align-items: center; gap: 4px; padding: 4px; background: #efe6d3; border-radius: 999px; }
+.pn-pan2 .pn-stb { flex: 0 0 38px; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: #fff; color: #17224a; font: 800 24px/1 var(--body); box-shadow: 0 2px 0 #0002; }
+.pn-pan2 .pn-stb:disabled { opacity: .35; }
+.pn-pan2 .pn-oct { flex: 1; text-align: center; font: 800 15px/1 var(--body); color: #17224a; }
+.pn-pan2 .pn-oit { flex: 1 1 120px; }
+.pn-pan2 .pn-cap { padding: 0 4px 0 8px; font: 800 10px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: #8a7f6e; }
+.pn-pan2 .pn-nomes { flex: 1 1 190px; }
+.pn-pan2 .pn-pedal { flex: 0 0 auto; min-height: 46px; padding: 0 16px; border: 2px solid #17224a; border-radius: 999px; background: #fffaf0; color: #17224a; font: 800 14px/1 var(--body); }
+.pn-pan2 .pn-pedal.on { background: #9b1b30; border-color: #9b1b30; color: #fff; }

@@ -49,11 +49,10 @@ function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
 
 export function mount(host) {
   const live = new Map(); // id (ponteiro/tecla) -> { midi, v, t0 }
-  let take = []; let recording = false; let rt0 = 0; let timers = []; const playing = new Set(); // vozes da gravação em reprodução
+  let timers = []; const playing = new Set(); // (sobras da antiga gravação de frase: só a limpeza ao sair ainda usa)
   const kb = h('div', { class: 'pn-kb', role: 'group', 'aria-label': 'Teclado do piano' });
   const shown = h('output', { class: 'pn-now', 'aria-live': 'polite' }, '— toque uma tecla —');
   const panel = h('div');
-  const takeBox = h('p', { class: 'pn-take muted' });
   const keyEl = (m) => kb.querySelector(`[data-m="${m}"]`);
 
   const down = (id, midi) => {
@@ -61,12 +60,10 @@ export function mount(host) {
     const v = voice(midi, c.sound); live.set(id, { midi, v, t0: performance.now() });
     const el = keyEl(midi); if (el) el.classList.add('on');
     shown.textContent = `${nameOf(midi, 'pt')} · ${nameOf(midi, 'cifra')} · ${Math.round(hzOf(midi))} Hz`;
-    if (recording && take.length < 200) take.push({ midi, at: (performance.now() - rt0) / 1000, len: 0.4 });
   };
   const up = (id) => {
     const n = live.get(id); if (!n) return; live.delete(id);
     n.v.off(conf().pedal); const el = keyEl(n.midi); if (el && ![...live.values()].some((x) => x.midi === n.midi)) el.classList.remove('on');
-    if (recording) { const last = [...take].reverse().find((x) => x.midi === n.midi); if (last) last.len = Math.max(0.12, (performance.now() - rt0) / 1000 - last.at); }
   };
 
   const drawKb = () => {
@@ -106,45 +103,27 @@ export function mount(host) {
   const releaseAll = () => { for (const id of [...live.keys()]) up(id); };
   const onHide = () => { if (document.hidden) releaseAll(); };
   document.addEventListener('visibilitychange', onHide); window.addEventListener('blur', releaseAll);
-  const play = () => {
-    stopPlay(); if (!take.length) return; const c = conf();
-    take.forEach((n) => timers.push(setTimeout(() => {
-      const v = voice(n.midi, c.sound); playing.add(v); const el = keyEl(n.midi); if (el) el.classList.add('on');
-      timers.push(setTimeout(() => { v.off(c.pedal); playing.delete(v); if (el) el.classList.remove('on'); }, n.len * 1000));
-      shown.textContent = nameOf(n.midi, 'pt');
-    }, n.at * 1000)));
-  };
-  const drawTake = () => {
-    takeBox.textContent = take.length ? take.map((n) => nameOf(n.midi, 'pt').replace(/\d+$/, '')).join(' · ') : recording ? 'gravando… toque a melodia' : 'grave uma frase curta pra ouvir de novo e conferir os nomes das notas.';
-  };
-  let maisAberto = false; // "mais opções" lembra se estava aberto quando o painel se redesenha
   const drawPanel = () => {
     const c = conf();
-    const seg = (label, opts, cur, on, trava) => h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, label),
-      h('div', { class: 'pn-chips', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, l]) => { const t = trava && trava(v); return h('button', { type: 'button', 'data-k': String(v), class: `pn-chip${String(cur) === String(v) ? ' on' : ''}${t ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(String(cur) === String(v)), onclick: () => { if (t) { pedir('os outros sons'); return; } on(v); } }, l, t ? cadeado() : null); })));
     const chg = (p) => () => setConf(p).then(() => { drawKb(); drawPanel(); });
-    const sons = seg('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel), (v) => !pago() && !GRATIS.teclas.sons.includes(v)); sons.classList.add('pn-sons');
-    const frase = h('div', { class: 'row tk-line pn-rec' }, h('span', { class: 'tp-lab' }, 'frase'),
-      recording ? h('button', { class: 'btn primary pn-grava', type: 'button', onclick: () => { recording = false; drawTake(); drawPanel(); } }, '■ parar')
-        : h('button', { class: 'btn pn-grava', type: 'button', onclick: () => { stopPlay(); take = []; recording = true; rt0 = performance.now(); drawTake(); drawPanel(); } }, '● gravar'),
-      h('button', { class: 'btn pn-ouve', type: 'button', disabled: !take.length || recording, onclick: play }, '▶ ouvir'),
-      h('button', { class: 'btn ghost pn-limpa', type: 'button', disabled: !take.length, onclick: () => { stopPlay(); take = []; recording = false; drawTake(); drawPanel(); } }, 'limpar'));
-    const mais = h('details', { class: 'pn-mais' },
-      h('summary', {}, 'mais opções'),
-      seg('notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); })),
-      seg('oitavas', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); })),
-      h('div', { class: 'row tk-line pn-octs' }, h('span', { class: 'tp-lab' }, 'registro'),
-        h('button', { class: 'btn small', type: 'button', 'aria-label': 'oitava mais grave', disabled: c.oct <= 1, onclick: chg({ oct: clampOct(c.oct - 1, c.octaves) }) }, '◀'),
-        h('output', { class: 'pn-oct' }, `${nameOf((c.oct + 1) * 12)} – ${nameOf((c.oct + 1 + c.octaves) * 12)}`),
-        h('button', { class: 'btn small', type: 'button', 'aria-label': 'oitava mais aguda', disabled: c.oct >= 7 - c.octaves, onclick: chg({ oct: clampOct(c.oct + 1, c.octaves) }) }, '▶'),
-        h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(!!c.pedal), onclick: () => setConf({ pedal: !c.pedal }).then(drawPanel) }, c.pedal ? 'pedal ✓' : 'pedal')));
-    mais.open = maisAberto; mais.addEventListener('toggle', () => { maisAberto = mais.open; });
-    panel.replaceChildren(h('section', { class: 'card pad tk-panel pn-pan' }, sons, frase, mais));
+    /** Controle em pílula: todas as opções lado a lado, nenhuma sozinha embaixo. */
+    const pill = (label, opts, cur, on, cls, trava, legenda) => h('div', { class: `pn-seg bmr ${cls}`, role: 'radiogroup', 'aria-label': label },
+      legenda ? h('span', { class: 'pn-cap' }, legenda) : null,
+      ...opts.map(([v, l]) => { const t = trava && trava(v); const ativo = String(cur) === String(v); return h('button', { type: 'button', role: 'radio', 'data-k': String(v), class: `pn-sg bmr${ativo ? ' on' : ''}${t ? ' travado' : ''}`, 'aria-checked': String(ativo), onclick: () => { if (t) { pedir('os outros sons'); return; } if (!ativo) on(v); } }, l, t ? cadeado() : null); }));
+    const registro = h('div', { class: 'pn-step bmr' },
+      h('button', { class: 'pn-stb bmr', type: 'button', 'aria-label': 'oitava mais grave', disabled: c.oct <= 1, onclick: chg({ oct: clampOct(c.oct - 1, c.octaves) }) }, '‹'),
+      h('output', { class: 'pn-oct' }, `${nameOf((c.oct + 1) * 12)} – ${nameOf((c.oct + 1 + c.octaves) * 12)}`),
+      h('button', { class: 'pn-stb bmr', type: 'button', 'aria-label': 'oitava mais aguda', disabled: c.oct >= 7 - c.octaves, onclick: chg({ oct: clampOct(c.oct + 1, c.octaves) }) }, '›'));
+    const pedal = h('button', { class: `pn-pedal bmr${c.pedal ? ' on' : ''}`, type: 'button', 'aria-pressed': String(!!c.pedal), onclick: () => setConf({ pedal: !c.pedal }).then(drawPanel) }, 'pedal');
+    panel.replaceChildren(h('section', { class: 'pn-pan2 bmr' },
+      pill('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel), 'pn-sons', (v) => !pago() && !GRATIS.teclas.sons.includes(v)),
+      h('div', { class: 'pn-linha' }, registro, pill('oitavas na tela', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); }), 'pn-oit', null, 'oitavas')),
+      h('div', { class: 'pn-linha' }, pill('nomes das notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); }), 'pn-nomes'), pedal)));
   };
 
-  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), shown, kb, takeBox, panel,
+  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), shown, kb, panel,
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
-  drawKb(); drawPanel(); drawTake();
+  drawKb(); drawPanel();
   const solta = aoLiberar(() => { drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   const onResize = () => {}; window.addEventListener('resize', onResize);
   return () => { solta(); stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
