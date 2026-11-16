@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Capa · Cards do Robôterista Paul · Dicionário Musical</title>
+<link rel="stylesheet" href="../../css/fonts.css">
+<style>
+@page{size:210mm 297mm;margin:0}*{box-sizing:border-box;margin:0}
+html,body{background:#fff;color:#162146;font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;height:297mm;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;padding:16mm 16mm 12mm}
+.moldura{position:absolute;inset:7mm;border:.5mm solid #162146;border-radius:6mm;pointer-events:none}
+.placa{display:flex;align-items:center;gap:4mm}.placa img:first-child{height:18mm}.placa img:last-child{height:11mm}
+.cards-de{font:400 26pt/1 Anton;letter-spacing:.2em;margin-top:9mm;color:#162146}
+.logo{height:56mm;margin-top:3mm;display:block}
+.pauta{position:relative;width:100%;margin-top:5mm;padding:4mm 0}
+.pauta:before{content:"";position:absolute;left:-9mm;right:-9mm;top:50%;height:21mm;margin-top:-10.5mm;background:repeating-linear-gradient(#9aa2bb 0 .35mm,transparent .35mm 5.2mm)}
+.pauta b{position:relative;display:inline-block;background:#fff;padding:1.5mm 9mm;font:400 34pt/1 Anton;letter-spacing:.06em;text-transform:uppercase;color:#162146;border:.5mm solid #162146;border-radius:99mm}
+.sub{margin-top:6mm;font:700 12pt/1.4 "Hanken Grotesk";max-width:140mm;color:#262b45}
+.paul{height:95mm;margin-top:5mm;display:block}
+.grupos{display:flex;gap:3mm;margin-top:3mm}.grupos span{font:800 8pt/1 "Hanken Grotesk";letter-spacing:.12em;text-transform:uppercase;padding:2mm 4mm;border:.4mm solid #162146;border-radius:99mm}
+.site{margin-top:auto;font:400 17pt/1 Anton;letter-spacing:.06em}.aut{font:700 8pt/1.4 "Hanken Grotesk";margin-top:2mm;color:#4b5068}
+</style></head><body>
+<section class="pg"><div class="moldura"></div>
+<div class="placa"><img src="../../assets/logo-512.png"><img src="../../assets/logo-nome.png"></div>
+<div class="cards-de">CARDS DO</div>
+<img class="logo" src="../../assets/originals/logo-roboterista-paul-alta.png" alt="Robôterista Paul">
+<div class="pauta"><b>dicionário musical</b></div>
+<p class="sub">75 palavras de quem vive de música, explicadas com desenho, exemplo e uma dica. imprime, recorta e brinca.</p>
+<img class="paul" src="img/paul-estudando-pb.png" alt="">
+<div class="grupos"><span>banda e palco</span><span>estúdio e equipamento</span><span>como o músico fala</span></div>
+<div class="site">jogos.beaterista.com.br</div><div class="aut">criado por prof. Bea · Beatriz Marques · Beaterista escola de música</div>
+</section>
+<script>Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});</script>
+</body></html>
