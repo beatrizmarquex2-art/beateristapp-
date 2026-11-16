@@ -608,7 +608,7 @@ function rzPlayEv(e,at,mute){switch(e.k){case 'click':AE.drum('click',at,e.v);br
 /* ===== jogos ===== */
 /* ================= jogos de ritmo: Palco (guitarra, bateria, piano), Beatstar e Setinhas ================= */
 const RZ={acc:null,tier:1,game:'beat',mode:'ritmo',modeEff:'ritmo',keys:4,maxLen:60,inst:'guitarra',diff:'medio',style:'imp',song:null,phase:'menu',chart:[],bg:[],A:null,t0:0,ptr:0,iv:0,raf:0,cv:null,dpr:1,stats:null,held:new Set(),press:new Map(),fx:[],pops:[],flash:{},pauseS:0,health:.5,q:'',fold:'',sel:null,vis:[],tl:null,kn:{bateria:4,piano:7},lives:3,badf:{},cal:null,howFrom:'menu'};
-const RZ_GAMES=[['beat','Beat Hero','batidas e percussão da música','#7a1226'],['tiles','Na Batida','toque a melodia no ritmo da música','#1f5a63']];
+const RZ_GAMES=[['beat','Beat Hero','batidas e percussão da música','#7a1226'],['tiles','Na Batida','toque a melodia no ritmo da música','#1f5a63'],['setas','Setinhas','a rival toca, você responde (estilo FNF)','#a8182e']];
 const RZ_GTR=[['#5fbf6a','A'],['#e2554f','S'],['#f2c14e','D'],['#5b8dd6','F'],['#ff9d4a','G']];
 /* cores fixas por peça: bumbo verde, caixa vermelho, chimbal azul, tom roxo, prato dourado */
 const RZ_C_BUMBO='#3fae5a',RZ_C_CAIXA='#e2554f',RZ_C_CHIMBAL='#5b8dd6',RZ_C_TOM='#a77bff',RZ_C_PRATO='#e0b043';
