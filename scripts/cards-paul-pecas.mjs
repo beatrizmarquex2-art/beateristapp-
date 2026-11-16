@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const saida = process.argv[2]; if (!saida) { console.error('informe a pasta de saída'); process.exit(1); }
 const decks = process.argv[3] ? [process.argv[3]] : ['teoria', 'instrumentos', 'dicionario'];
-const TITULOS = { teoria: ['Semibreve', 'Pausa de semínima', 'Pulso'], instrumentos: ['Pratos', 'Dó maior', 'Mi menor (Em)'], dicionario: ['síncope', 'clave de sol', 'tablatura'] };
+const TITULOS = { teoria: ['Semibreve', 'Pausa de semínima', 'Pulso'], instrumentos: ['Pratos', 'Dó maior', 'Mi menor (Em)'], dicionario: ['setlist', 'microfone', 'tirar de ouvido'] };
 const slug = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const { srv, url } = await serve(); const browser = await chromium.launch();
 const tmp = path.join(ROOT, 'marketing/cards-paul/_out'); // a página das peças lê os cards daqui (pasta ignorada pelo git)
@@ -17,10 +17,11 @@ for (const deck of decks) {
   fs.mkdirSync(path.join(tmp, deck), { recursive: true }); const dir = path.join(saida, deck); fs.mkdirSync(dir, { recursive: true });
   // 1) fotografa as 3 cartas (transparente, 4x)
   const c1 = await browser.newContext({ deviceScaleFactor: 4, viewport: { width: 820, height: 1200 } }); const p1 = await c1.newPage();
-  await p1.goto(`${url}/marketing/cards-paul/cards.html?deck=${deck}`); await p1.waitForFunction(() => window.__pronto, null, { timeout: 60000 });
-  await p1.addStyleTag({ content: 'html,body,.pg{background:transparent!important}.card{border:0!important}' });
+  const NOVO = deck === 'dicionario'; // o dicionário novo tem a própria página (modelo D)
+  await p1.goto(NOVO ? `${url}/marketing/cards-paul/dicionario-novo.html` : `${url}/marketing/cards-paul/cards.html?deck=${deck}`); await p1.waitForFunction(() => window.__pronto, null, { timeout: 60000 });
+  await p1.addStyleTag({ content: 'html,body,.pg{background:transparent!important}.card{border:0!important}.cut{border:0!important}' });
   for (const t of TITULOS[deck]) {
-    const el = await p1.evaluateHandle((t) => [...document.querySelectorAll('.card')].find((c) => (c.querySelector('h3') || {}).textContent.trim().toLowerCase() === t.toLowerCase())?.querySelector('.in'), t);
+    const el = await p1.evaluateHandle(([t, novo]) => { const c = [...document.querySelectorAll(novo ? '.k' : '.card')].find((x) => (x.querySelector('h3') || {}).textContent.trim().toLowerCase() === t.toLowerCase()); return c ? (novo ? c : c.querySelector('.in')) : null; }, [t, NOVO]);
     const e = el.asElement(); if (!e) throw new Error('carta não achada: ' + t);
     await e.screenshot({ path: path.join(tmp, deck, `card-${slug(t)}.png`), omitBackground: true });
   }
@@ -31,6 +32,7 @@ for (const deck of decks) {
   const NOMES = { hotmart: `capa-hotmart-${deck}`, s1: `carrossel-1-${deck}`, s2: `carrossel-2-${deck}`, s3: `carrossel-3-${deck}`, s4: `carrossel-4-${deck}`, s5: `carrossel-5-${deck}`, s6: `carrossel-6-${deck}`, r1: `cena-1-${deck}`, r2: `cena-2-${deck}`, r3: `cena-3-${deck}`, r4: `cena-4-${deck}`, r5: `cena-5-${deck}` };
   for (const [k, [w, h]] of Object.entries(PECAS)) {
     await p2.setViewportSize({ width: w, height: h }); await p2.goto(`${url}/marketing/cards-paul/pecas.html?deck=${deck}&peca=${k}`); await p2.waitForFunction(() => window.__pronto, null, { timeout: 30000 });
+    if (deck === 'dicionario' && k === 'hotmart') { await p2.goto(`${url}/marketing/cards-paul/dicionario-hotmart.html`); await p2.waitForFunction(() => window.__pronto, null, { timeout: 30000 }); }
     await p2.screenshot({ path: path.join(dir, `${NOMES[k]}.jpg`), type: 'jpeg', quality: 90 });
   }
   await c2.close();

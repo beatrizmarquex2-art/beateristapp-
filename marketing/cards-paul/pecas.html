@@ -27,6 +27,15 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
 .passo b{flex:none;width:92px;height:92px;border-radius:50%;background:#f2a91b;color:#162146;font:400 60px/92px "Anton",sans-serif;text-align:center}
 .passo span{font:800 40px/1.2 "Hanken Grotesk",sans-serif}
 .sw{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:800 30px/1 "Hanken Grotesk",sans-serif;letter-spacing:.04em;opacity:.9}
+
+/* dicionário: visual leve (fundo branco, pouca tinta), no modelo D do baralho */
+body.leve,body.leve html{background:#fff;color:#162146}
+.leve .st{background:#fff}.leve .st::before{background:radial-gradient(rgba(22,33,70,.07) 2px,transparent 2.4px) 0 0/34px 34px}
+.leve .st::after{content:"";position:absolute;inset:26px;border:5px solid #162146;border-radius:54px;pointer-events:none}
+.leve .placa{background:none;box-shadow:none}.leve .logo{filter:none}
+.leve h1,.leve h2,.leve .an{color:#162146}.leve .ouro,.leve .pill,.leve .num{color:#c81e2d}.leve .sw{color:#162146}
+.leve .bx,.leve .passo{background:none;border:4px solid #162146}.leve .passo b{background:#c81e2d;color:#fff}
+.leve .cardimg{box-shadow:0 12px 0 rgba(22,33,70,.15)}
 </style>
 </head>
 <body>
@@ -35,8 +44,9 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
 (function(){
   var Q=new URLSearchParams(location.search), DECK=Q.get('deck')||'instrumentos', PECA=Q.get('peca')||'hotmart';
   var A='../../assets/', OUT='_out/'+DECK+'/';
-  var LOGO='img/logo-roboterista-paul-branco.png', SELO=A+'logo-512.png', NOME=A+'logo-nome.png';
-  var HD={bateria:'img/paul-bateria-1000.webp',teclado:'img/paul-teclado-1000.webp',guitarra:'img/paul-guitarra-1000.webp',quadro:A+'originals/paul-professor-quadro-hd.png',partitura:A+'paul/colorido/paul-lendo-partitura.webp',ouvindo:A+'paul/colorido/paul-ouvindo.webp'};
+  var LEVE=DECK==='dicionario'; if(LEVE){document.body.classList.add('leve');document.documentElement.style.background='#fff';}
+  var LOGO=LEVE?A+'originals/logo-roboterista-paul-alta.png':'img/logo-roboterista-paul-branco.png', SELO=A+'logo-512.png', NOME=A+'logo-nome.png';
+  var HD={bateria:'img/paul-bateria-1000.webp',teclado:'img/paul-teclado-1000.webp',guitarra:'img/paul-guitarra-1000.webp',quadro:A+'originals/paul-professor-quadro-hd.png',pb:'img/paul-estudando-pb.png',partitura:A+'paul/colorido/paul-lendo-partitura.webp',ouvindo:A+'paul/colorido/paul-ouvindo.webp'};
   var SITE='jogos.beaterista.com.br';
   var D={
     instrumentos:{
@@ -60,14 +70,14 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
       reel:['150 CARTINHAS DE TEORIA','SEMIBREVE','PAUSA DE SEMÍNIMA','PULSO']
     },
     dicionario:{
-      nome:'DICIONÁRIO MUSICAL', total:75, sing:'termos', ganchoA:['SÍNCOPE, CLAVE,','TABLATURA...'], ganchoB:'ALGUÉM JÁ EXPLICOU DE VERDADE?',
-      pauls:['partitura','quadro','ouvindo'], hero:'quadro',
-      stats:[['75','termos'],['4','grupos'],['dica','em cada carta']],
-      grupos:[['Bateria','#8e1b22','44 termos de quem toca'],['Teoria','#6a35c9','notas, claves e escalas'],['Teclado','#17365B','teclas, dedos e acordes'],['Violão','#b57a12','cordas, acordes e batida']],
-      cards:['síncope','clave de sol','tablatura'], legendas:['síncope, com a grade do ritmo','a clave de sol, na pauta','a tablatura, pra ler no violão'],
-      cta:'comenta CARDS e eu te mando a amostra grátis', passos:['imprime e recorta: cada carta é um termo','lê a explicação e adivinha a palavra','mostra no instrumento ou explica pra alguém'],
-      beneficio:'cada palavra com desenho, explicação curta e uma dica',
-      reel:['75 PALAVRAS DE MÚSICA','SÍNCOPE','CLAVE DE SOL','TABLATURA']
+      nome:'DICIONÁRIO MUSICAL', total:75, sing:'termos', ganchoA:['SETLIST, BIS,','MICROFONIA...'], ganchoB:'VOCÊ SABE O QUE É?',
+      pauls:['pb'], hero:'pb',
+      stats:[['75','termos'],['3','grupos'],['exemplo','em cada carta']],
+      grupos:[['Banda e palco','#c81e2d','setlist, ensaio, bis, solo...'],['Estúdio','#17365B','microfone, pedal, mixagem...'],['Como o músico fala','#6a35c9','tirar de ouvido, jam, dar a deixa...']],
+      cards:['setlist','microfone','tirar de ouvido'], legendas:['setlist: a lista do show','microfone: pega a voz e manda pra caixa de som','tirar de ouvido: descobrir a música só escutando'],
+      passos:['imprime e recorta: cada carta é uma palavra','lê a explicação e adivinha a palavra','usa a palavra na hora certa, tipo "dá a deixa!"'],
+      beneficio:'o vocabulário de quem vive de música, com desenho e exemplo',
+      reel:['75 PALAVRAS DE MÚSICA','SETLIST','MICROFONE','TIRAR DE OUVIDO']
     }
   }[DECK];
   var slug=function(t){return t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');};
@@ -86,7 +96,7 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
       '<img class="abs cardimg" src="'+card(1)+'" style="left:50%;top:610px;width:520px;margin-left:-260px;z-index:2">'+
       '<div class="abs an" style="left:40px;top:40px;width:250px;height:250px;border-radius:50%;background:#f2a91b;color:#162146;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-8deg);z-index:5;box-shadow:0 8px 0 rgba(0,0,0,.28)"><span style="font-size:112px;line-height:1">'+D.total+'</span><span style="font-size:42px;letter-spacing:.06em">'+D.sing+'</span></div>'+
       '<div class="abs" style="left:0;right:0;bottom:0;height:150px;background:#c81e2d;display:flex;align-items:center;justify-content:center;gap:40px;z-index:6"><span class="an" style="font-size:54px;letter-spacing:.05em">PDF PRA IMPRIMIR E RECORTAR</span></div>'+
-      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-40px;bottom:60px;height:270px;z-index:7"><img class="abs" src="'+HD[D.pauls[2]]+'" style="right:-40px;bottom:60px;height:270px;z-index:7">'+
+      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-40px;bottom:60px;height:270px;z-index:7"><img class="abs" src="'+HD[D.pauls[D.pauls.length-1]]+'" style="right:-40px;bottom:60px;height:270px;z-index:7">'+
       '</div>';
   } else if(PECA==='s1'){
     h='<div class="st" style="width:1080px;height:1350px">'+topo()+
@@ -116,7 +126,7 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
       '<div class="abs" style="left:0;right:0;top:520px;text-align:center"><span class="cta" style="font-size:54px;line-height:1.15;padding:26px 46px 22px">fale com a equipe<br>#BeateristaTeam</span></div>'+
       '<div class="abs" style="left:60px;right:60px;top:760px;text-align:center;font:800 44px/1.3 Hanken Grotesk">pelo <span class="ouro">WhatsApp (18) 99180-4150</span><br>ou acesse <span class="ouro">jogos.beaterista.com.br</span><br>na aba <b>Lojinha</b></div>'+
       '<div class="abs logo" style="left:50%;top:1040px;width:460px;margin-left:-230px"><img src="'+LOGO+'"></div>'+
-      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-30px;bottom:30px;height:260px"><img class="abs" src="'+HD[D.pauls[2]]+'" style="right:-30px;bottom:30px;height:260px"></div>';
+      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-30px;bottom:30px;height:260px"><img class="abs" src="'+HD[D.pauls[D.pauls.length-1]]+'" style="right:-30px;bottom:30px;height:260px"></div>';
   } else if(PECA==='r1'){
     h='<div class="st" style="width:1080px;height:1920px">'+topo()+
       '<div class="abs" style="left:50px;right:50px;top:330px;text-align:center"><h1 style="font-size:190px">'+D.ganchoA[0]+'<br><span class="ouro">'+D.ganchoA[1]+'</span></h1><h2 style="font-size:72px;margin-top:40px;line-height:1.1">'+D.ganchoB+'</h2></div>'+
@@ -133,7 +143,7 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
       '<div class="abs" style="left:0;right:0;top:790px;text-align:center"><span class="cta" style="font-size:72px;line-height:1.15;padding:30px 56px 26px">fale com a equipe<br>#BeateristaTeam</span></div>'+
       '<div class="abs" style="left:60px;right:60px;top:1110px;text-align:center;font:800 52px/1.3 Hanken Grotesk">pelo <span class="ouro">WhatsApp (18) 99180-4150</span><br>ou acesse <span class="ouro">jogos.beaterista.com.br</span><br>na aba <b>Lojinha</b></div>'+
       '<div class="abs logo" style="left:50%;top:1450px;width:520px;margin-left:-260px"><img src="'+LOGO+'"></div>'+
-      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-30px;bottom:60px;height:330px"><img class="abs" src="'+HD[D.pauls[2]]+'" style="right:-30px;bottom:60px;height:330px"></div>';
+      '<img class="abs" src="'+HD[D.pauls[0]]+'" style="left:-30px;bottom:60px;height:330px"><img class="abs" src="'+HD[D.pauls[D.pauls.length-1]]+'" style="right:-30px;bottom:60px;height:330px"></div>';
   }
   document.getElementById('r').innerHTML=h;
   Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});
