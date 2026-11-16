@@ -107,8 +107,8 @@ body.leve,body.leve html{background:#fff;color:#162146}
     h='<div class="st" style="width:1080px;height:1350px">'+topo()+
       '<div class="abs" style="left:60px;right:60px;top:230px;text-align:center"><h2 style="font-size:96px">O QUE VEM <span class="ouro">NO PACOTE</span></h2></div>'+
       '<div class="abs" style="left:60px;right:60px;top:410px;display:flex;gap:24px">'+D.stats.map(function(s){return '<div class="bx" style="flex:1;text-align:center;padding:30px 10px"><div class="num" style="font-size:'+(s[0].length>3?96:150)+'px">'+s[0]+'</div><div style="font:800 34px/1.1 Hanken Grotesk">'+s[1]+'</div></div>';}).join('')+'</div>'+
-      '<div class="abs" style="left:60px;right:60px;top:790px;display:grid;gap:16px">'+D.grupos.map(function(g){return '<div style="display:flex;align-items:center;gap:22px"><span class="chip" style="background:'+g[1]+';min-width:240px;text-align:center">'+g[0]+'</span><span style="font:800 36px/1.15 Hanken Grotesk">'+g[2]+'</span></div>';}).join('')+'</div>'+
-      '<img class="abs" src="'+HD[D.hero]+'" style="right:-10px;bottom:-10px;height:320px"></div>';
+      '<div class="abs" style="left:60px;right:60px;top:'+(LEVE?720:790)+'px;display:grid;gap:16px">'+D.grupos.map(function(g){return '<div style="display:flex;align-items:center;gap:22px"><span class="chip" style="background:'+g[1]+';min-width:240px;text-align:center">'+g[0]+'</span><span style="font:800 36px/1.15 Hanken Grotesk">'+g[2]+'</span></div>';}).join('')+'</div>'+
+      '<img class="abs" src="'+HD[D.hero]+'" style="right:-10px;bottom:-10px;height:'+(LEVE?250:320)+'px"></div>';
   } else if(PECA==='s3'||PECA==='s4'){
     var i=PECA==='s3'?0:1;
     h='<div class="st" style="width:1080px;height:1350px">'+topo()+
