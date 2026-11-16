@@ -10,7 +10,7 @@ import { tocarTabs, backingBar } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
-const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'guitarra limpa'], ['rock', '🤘', 'guitarra rock']]; // o padrão é o violão 🎸
+const SOUNDS = [['acoustic', '🎸', 'violão'], ['clean', '⚡', 'limpa'], ['rock', '🤘', 'rock']]; // o padrão é o violão 🎸
 const GROSS = [4, 3.6, 3, 2.3, 1.7, 1.2]; // espessura das 6 cordas (mi grave em cima)
 import { corNota, notaClara } from '../cores-notas.js';
 const ESCALAS = { maior: [0, 2, 4, 5, 7, 9, 11], penta: [0, 2, 4, 7, 9], todas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] };

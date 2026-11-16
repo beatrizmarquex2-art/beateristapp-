@@ -1072,3 +1072,25 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .pn-pan2 .pn-nomes { flex: 1 1 190px; }
 .pn-pan2 .pn-pedal { flex: 0 0 auto; min-height: 46px; padding: 0 16px; border: 2px solid #17224a; border-radius: 999px; background: #fffaf0; color: #17224a; font: 800 14px/1 var(--body); }
 .pn-pan2 .pn-pedal.on { background: #9b1b30; border-color: #9b1b30; color: #fff; }
+
+/* ===== Cordas, Percussão e Bateria: opções em pílulas (igual ao piano), tudo numa linha, sem caixas pretas ===== */
+.ti-panel .kd-rolar > .kd-modes, .ti-modo, .kd-modes.pil { display: flex !important; flex-wrap: nowrap !important; align-items: center; justify-content: flex-start; gap: 3px; margin: 0 0 8px; padding: 4px 40px 4px 4px; background: #efe6d3; border-radius: 999px !important; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
+.ti-modo, .kd-modes.pil { padding-right: 4px; }
+.ti-panel .kd-rolar > .kd-modes::-webkit-scrollbar, .kd-modes.pil::-webkit-scrollbar { display: none; }
+.ti-panel .kd-modes small, .kd-modes.pil small { flex: 0 0 auto; padding: 0 4px 0 10px; font: 800 10px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: #8a7f6e; }
+.ti-panel .kd-chip, .ti-modo .kd-chip, .kd-modes.pil .kd-chip { flex: 1 0 auto; min-width: 0; min-height: 38px; padding: 0 14px; border: 0 !important; border-radius: 999px !important; background: transparent !important; color: #17224a !important; font: 800 14px/1 var(--body) !important; box-shadow: none !important; transform: none !important; white-space: nowrap; scroll-snap-align: center; }
+.ti-modo .kd-chip { flex: 1 1 0; padding: 0 6px; }
+.ti-panel .kd-chip.on, .ti-modo .kd-chip.on, .kd-modes.pil .kd-chip.on { background: #17224a !important; color: #fff !important; box-shadow: 0 2px 0 #0003 !important; }
+.ti-modo .kd-chip.on, .kd-modelos.pil .kd-chip.on { background: #9b1b30 !important; }
+.ti-panel > .kd-rolar:nth-of-type(1) .kd-chip.on { background: #9b1b30 !important; }
+.ti-panel > .kd-rolar:nth-of-type(2) .kd-chip.on { background: #1c6b73 !important; }
+.ti-panel > .kd-rolar:nth-of-type(3) .kd-chip.on { background: #1f3f6e !important; }
+.ti-panel > .kd-rolar:nth-of-type(4) .kd-chip.on { background: #f2b632 !important; color: #17130f !important; }
+.kd-modes.pil:not(.kd-modelos) .kd-chip.on { background: #1c6b73 !important; }
+.ti-panel .kd-chip.travado, .kd-modes.pil .kd-chip.travado { opacity: .55; }
+.ti-panel .kd-rolar-b { top: 0; bottom: 8px; width: 30px; height: 30px; padding: 0 0 2px; border: 0; border-radius: 50% !important; background: #fff; color: #17224a; box-shadow: 0 2px 0 #0003; font-size: 20px; }
+.ti-panel .kd-rolar-b.dir { right: 5px; } .ti-panel .kd-rolar-b.esq { left: 5px; }
+.ti-panel { background: #fffaf0 !important; border: 2px solid #17224a !important; border-radius: 22px !important; box-shadow: 0 5px 0 #17224a22 !important; }
+/* sem setinhas: a pílula arrasta com o dedo e uma sombra suave no canto direito avisa que tem mais */
+.ti-panel .kd-rolar-b { display: none !important; }
+.ti-panel .kd-rolar > .kd-modes { padding-right: 30px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent); }

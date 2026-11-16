@@ -70,9 +70,10 @@ export function mount(host) {
     const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art, c.modelo);
     kit.dataset.kitTheme = kitTheme();
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
-    const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
+    const modelos = h('div', { class: 'row kd-modes kd-modelos pil', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
       ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
-    kit.replaceChildren(art, nomeEl, modelos, themeRow(drawKit));
+    const temas = themeRow(drawKit); temas.classList.add('pil');
+    kit.replaceChildren(art, nomeEl, modelos, temas);
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
