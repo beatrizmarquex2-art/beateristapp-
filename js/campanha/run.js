@@ -89,6 +89,7 @@ export function mountAdventure(host, cfg) {
       try { await CS.saveGame(pid, gameId, out.g); } catch (e) { console.warn('aventura: não salvou', e); } // tentativa de verdade (vitória ou derrota) sempre conta
       let premio = null; if (out.done) { try { const A = await import('../kids/album.js'); premio = A.rewardEl({ roletas: await A.sincronizar(pid), jogos: await A.premioAventura(pid, gameId, spec) }); } catch (e) { console.warn('aventura: recompensa de figurinhas', e); } } // roleta a cada 30 ★ e prêmio de jogo completo
       if (!stage || !stage.isConnected) return;
+      if (out.done && CS.completo(pid, gameId, spec)) { const NOMES = { cartas: 'Uno Musical', velha: 'Jogo da velha', quebra: 'Quebra-cabeça', cara: 'Cara a cara', stop: 'Stop', bingo: 'Bingo', memoria: 'Jogo da memória', monte: 'Monte seu ritmo', noritmo: 'No Ritmo' }; setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: NOMES[gameId] || spec.title || gameId, caminho: 'Modo Aventura', chave: `av:${gameId}:${pid}` })).catch(() => {}), 1400); } // terminou o mapa inteiro: festa + postar
       sfx.play(out.done ? 'win' : 'lose'); if (out.done) S.later(() => sfx.play('star'), 450); if (out.newMedals.length) S.later(() => sfx.play('medal'), 1000);
       const bot = robo({ mood: out.done ? (out.stars >= 2 ? 'cheer' : 'happy') : 'oops', tier, size: 84, say: out.done ? (out.stars === 3 ? 'perfeito!' : 'missão cumprida!') : 'quase! tenta de novo?' });
       const nextOk = out.done && index + 1 < spec.missions.length;

@@ -14,7 +14,7 @@ export function mount(host) {
     if (!rows.length) { lista.replaceChildren(h('section', { class: 'card pad' }, h('b', {}, 'nenhum resgate esperando'), h('p', { class: 'muted' }, 'quando um aluno mandar um print, ele aparece aqui e você recebe um aviso ao abrir o app.'))); return; }
     lista.replaceChildren(...rows.map((r) => {
       const card = h('section', { class: 'card pad rs-card' },
-        h('b', {}, `${r.nome || 'aluno'} · código ${r.code}`), h('p', { class: 'muted' }, `${R.TIPO_NOME[r.tipo] || r.tipo} · ${quando(r.criado_em)}`),
+        h('b', {}, `${r.nome || 'aluno'} · código ${r.code}`), h('p', { class: 'muted' }, `${R.nomeTipo(r.tipo)} · ${quando(r.criado_em)}`),
         r.print_b64 ? h('img', { class: 'rs-img', src: `data:image/jpeg;base64,${r.print_b64}`, alt: 'print enviado' }) : h('p', { class: 'muted' }, '(sem imagem)'),
         r.tipo === 'lendaria' ? h('p', { class: 'muted' }, 'quantos produtos diferentes aparecem na compra? 1 produto libera 1 lendária · 2 liberam 3 · 3 liberam as 5.') : null,
         h('div', { class: 'row', style: 'flex-wrap:wrap' },

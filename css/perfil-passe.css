@@ -1,0 +1,19 @@
+/* Perfil = CARTEIRINHA DE BACKSTAGE (opção B escolhida pela Bea em 15/nov/2026): crachá creme com faixa vermelha, foto quadrada e o código ESCONDIDO como número do passe.
+   Só vale na tela Perfil (html.perfil-pass, ligado em js/aluno.js). O Álbum e a Roleta seguem com o visual néon do album-tema.css. */
+html.perfil-pass #view .pf-top{position:relative;padding-top:54px!important;overflow:hidden;background:#fffaf0!important;border:3px solid #162146!important;border-radius:16px!important;box-shadow:5px 5px 0 #162146!important}
+html.perfil-pass .pf-top::before{display:block!important;content:"BEATERISTA · PASSE DO ALUNO";position:absolute;left:0;right:0;top:0;height:38px;background:#c81e2d;color:#fff;font:400 14px/38px "Anton",sans-serif;letter-spacing:.16em;text-align:center}
+html.perfil-pass .pf-top::after{display:block!important;content:"";position:absolute;left:50%;top:3px;width:34px;height:7px;margin-left:-17px;border-radius:7px;background:#f3ecdc;box-shadow:inset 0 1px 3px rgb(0 0 0/.4)}
+html.perfil-pass .pf-avatar{border:3px solid #162146!important;border-radius:14px!important;box-shadow:3px 3px 0 #c81e2d!important;background:#f3ecdc!important;color:#162146}
+html.perfil-pass .pf-codigo{background:transparent!important;color:#162146!important;border:2.5px dashed #162146!important;border-radius:10px!important}
+html.perfil-pass .pf-codigo small{color:#c81e2d!important;opacity:1;font-weight:800}
+html.perfil-pass .pf-codnum{color:#162146!important;font:400 24px/1.1 "Special Elite","Courier New",monospace!important;letter-spacing:.1em}
+html.perfil-pass .pf-codguardar{width:100%;background:#fffaf0!important;color:#162146!important;border:2.5px solid #162146!important;border-radius:10px!important;box-shadow:2px 2px 0 #162146!important}
+html.perfil-pass .pf-info label{color:#c81e2d!important;font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+html.perfil-pass .pf-info input{background:transparent!important;border:0!important;border-bottom:3px solid #162146!important;border-radius:0!important;color:#162146!important;font:400 28px/1.1 "Permanent Marker",cursive!important;box-shadow:none!important}
+html.perfil-pass .pf-btns .btn{background:#fffaf0!important;color:#162146!important;border:2.5px solid #162146!important;border-radius:12px 16px 10px 15px/15px 10px 16px 12px!important;box-shadow:3px 3px 0 #162146!important;font-weight:800}
+html.perfil-pass .pf-priv{color:#4a4f6a!important}
+/* os outros cartões da tela (minha figurinha, minha coleção, compartilhar) no mesmo desenho de papel */
+html.perfil-pass #view .card:not(.pf-top){background:#fffaf0!important;border:3px solid #162146!important;border-radius:16px!important;box-shadow:5px 5px 0 #162146!important;color:#162146}
+html.perfil-pass #view h2.tag,html.perfil-pass #view .card .tag,html.perfil-pass #view .card h2{font:400 24px/1.1 "Permanent Marker",cursive!important;color:#c81e2d!important;background:linear-gradient(transparent 58%,#ffe27a 58%);display:inline;transform:none!important}
+html.perfil-pass #view .card .btn:not(.primary){background:#fffaf0;color:#162146;border:2.5px solid #162146;border-radius:12px 16px 10px 15px/15px 10px 16px 12px;box-shadow:3px 3px 0 #162146;font-weight:800}
+html.perfil-pass #view .card .btn.primary{background:#162146;color:#fffaf0;border:2.5px solid #162146;border-radius:12px 16px 10px 15px/15px 10px 16px 12px;box-shadow:3px 3px 0 #c81e2d;font-weight:800}

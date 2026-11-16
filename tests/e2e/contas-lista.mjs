@@ -11,7 +11,7 @@ check('entrou direto: já está na lista de alunos do aparelho', contas.length =
 check('o servidor recebeu o id do aparelho', corpos.some((c) => /"p_aparelho":"[0-9a-f]{16,}"/.test(c)), String(corpos[0]));
 await p.evaluate(() => localStorage.setItem('beaterista-aluno-contas', JSON.stringify([['Ana', 'AAAA11'], ['Beto', 'BBBB22'], ['Caio', 'CCCC33'], ['Duda', 'DDDD44'], ['Maria', 'ABC123']].map(([nome, code]) => ({ nome, code })))));
 await p.reload(); await sleep(2500);
-await p.locator('button:has-text("trocar aluno")').first().click(); await sleep(600);
+await p.locator('.al-opt').click(); await sleep(500); await p.locator('.al-opcoes button:has-text("trocar aluno")').click(); await sleep(600); // o "trocar aluno" agora mora no menu "opções"
 const vis = await p.locator('.sheet .lc > .row').count();
 check('trocar aluno: só 2 nomes aparecem', vis === 2, String(vis));
 check('tem a setinha com +2', (await p.locator('.sheet .lc-seta').innerText()).includes('+2'));

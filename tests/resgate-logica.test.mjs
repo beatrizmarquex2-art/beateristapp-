@@ -19,3 +19,16 @@ test('completar lendárias: sobe de faixa sem repetir e nunca tira', () => {
   r = completarLendarias(r.state, 5); assert.deepEqual(r.novas, ['L04', 'L05']); assert.equal(r.state.lend.length, 5); assert.deepEqual(completarLendarias(r.state, 5).novas, []);
   assert.deepEqual(completarLendarias({ lend: ['L05'] }, 3).state.lend, ['L05', 'L01', 'L02']);
 });
+
+test('missão de postar: tipo por jogo e nome legível pra Bea', async () => {
+  const R = await import('../js/resgate.js');
+  assert.equal(R.tipoPost('uno'), 'post:uno'); assert.match(R.tipoPost('paulbox'), /^post:[a-z0-9-]{1,24}$/);
+  assert.ok(R.JOGOS_POST.every(([id]) => /^[a-z0-9-]{1,24}$/.test(id)), 'todo id de jogo passa na regra do banco (017)');
+  assert.equal(new Set(R.JOGOS_POST.map((x) => x[0])).size, R.JOGOS_POST.length);
+  assert.equal(R.nomeTipo('post:uno'), 'postou e marcou a escola: Uno Musical'); assert.equal(R.nomeTipo('google'), 'avaliou no Google');
+});
+test('baú e roleta explicam por que a pessoa ganhou', async () => {
+  const L = await import('../js/figurinhas/album-logic.js');
+  assert.match(L.motivoDoPacote('roleta:dia:2026-11-15'), /check-in/); assert.match(L.motivoDoPacote('roleta:p1:3'), /15 ★/); assert.match(L.motivoDoPacote('roleta:fases3:p1:1'), /4 fases/);
+  assert.match(L.motivoDoPacote('jogo:kids-figuras:p1'), /jogo inteiro/); assert.match(L.motivoDoPacote('jogo:av-cartas:p1'), /Aventura/); assert.match(L.motivoDoPacote('plf:drumF:a:p1'), /Bateria/); assert.match(L.motivoDoPacote('semana:3'), /7 dias/);
+});

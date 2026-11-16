@@ -473,3 +473,55 @@
 .ma-nav { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 14px; } .ma-nav .btn { min-width: 44px; min-height: 44px; }
 .ma-solta:focus-visible, .ma-esp:focus-visible { outline: 3px solid #e3a82f; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ma-esp.colou img { animation: none; } .ma-solta { transition: none; } }
+
+/* aba roleta em 3 áreas: roleta · baú · resgate (js/views/figurinhas.js, packsView) */
+.fig-areas{display:flex;gap:6px;justify-content:center;margin:0 0 10px}
+.fig-area{font:inherit;font-size:13px;font-weight:800;min-height:34px;padding:5px 12px;border-radius:10px;border:2px solid currentColor;background:transparent;color:inherit;cursor:pointer;box-shadow:2px 2px 0 currentColor;display:inline-flex;align-items:center;gap:6px}
+.fig-area.on{background:#f6b93b;color:#101f47;border-color:#101f47;box-shadow:2px 2px 0 #101f47}
+.fig-area i{font-style:normal;font-size:11px;min-width:18px;height:18px;border-radius:9px;background:#c81e2d;color:#fff;display:inline-grid;place-items:center;padding:0 4px}
+.fig-explica{display:grid;gap:4px;text-align:left;margin-top:10px;padding:10px 12px;border-radius:12px;background:rgb(127 127 127/.14);font-size:13px}
+.fig-porque{margin:0;padding:0;list-style:none;display:grid;gap:4px}.fig-porque b{font-weight:800}
+.fig-post{display:grid;gap:6px;text-align:left;margin:10px 0;padding:12px;border-radius:12px;border:2px dashed #f6b93b}
+.fig-post-linha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.fig-post-sel{flex:1 1 150px;min-height:38px;border-radius:10px;padding:4px 8px;font:inherit;font-size:14px}
+.fig-post-st{opacity:.85}
+
+/* aba Estudos (15/nov/2026): o Paul já chega falando (dica ou curiosidade) e os 4 cartões usam o Paul colorido no lugar do emoji */
+.hj-fala{align-items:flex-start}.hj-fala>img{width:96px;height:auto;flex:none}
+.hj-fala .hj-bub{display:grid;gap:6px;text-align:left}
+.hj-fala-tag{font:800 11px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#a6192e}
+.hj-fala-txt{margin:0;font-size:15px;line-height:1.35}
+.hj-tp{width:74px;height:74px;object-fit:contain;display:block;margin:0 auto 2px;filter:drop-shadow(0 2px 0 rgb(0 0 0/.18))}
+.hj-duplo{cursor:default}.hj-duplo-b{display:flex;gap:6px;justify-content:center;margin-top:2px}
+.hj-duplo-b a{font:800 12.5px/1 var(--body);padding:7px 10px;border-radius:10px;border:2px solid #14111a;background:#fffdf7;color:#14111a;text-decoration:none;box-shadow:2px 2px 0 #14111a}
+
+/* Teoria (15/nov/2026, pedido da Bea): letra um pouco maior, figura desenhada grande, aviso claro de onde tocar, fases por tema e ícones legíveis na lista */
+.tf-card{min-height:172px;gap:5px;padding:14px 8px 10px;position:relative}
+.tf-card b{font-size:17.5px;line-height:1.15}.tf-card small{font-size:14px;line-height:1.35}
+.tf-ic{height:66px}.tf-sym{height:64px;max-width:100%}.tf-card .tf-ic{width:100%}
+.tf-toque{font-style:normal;font:800 12.5px/1 var(--body,inherit);padding:6px 10px;border-radius:99px;background:#14111a;color:#fff;margin-top:auto}
+.tf-card.visto .tf-toque{background:transparent;color:var(--c,#17365B);padding:2px 0;font-size:12px}.tf-card.visto .tf-toque:empty{display:none}
+.tf-card.vez{box-shadow:3px 3px 0 var(--c,#17365B),0 0 0 4px color-mix(in srgb,var(--c,#17365B) 30%,transparent)}
+.tf-card.vez .tf-toque{background:var(--c,#17365B);animation:tf-pisca 1s ease-in-out infinite alternate}
+@keyframes tf-pisca{to{transform:scale(1.12)}}
+.btn.tf-vez{animation:tf-pisca .8s ease-in-out infinite alternate}
+.tf-fases{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tf-fase{font:inherit;display:grid;justify-items:center;min-width:44px;padding:5px 6px 3px;border:2.5px solid #14111a;border-radius:12px;background:#fffdf7;color:#14111a;cursor:pointer;box-shadow:2px 2px 0 #14111a}
+.tf-fase b{font:400 18px/1 "Anton",sans-serif}.tf-fase i{font-style:normal;font-size:11px;line-height:1.1;color:#EBA332}
+.tf-fase.on{background:var(--c,#17365B);color:#fff}.tf-fase.on i{color:#ffd166}
+.tf-fase-t{margin:0;text-align:center;font:800 14px/1.2 var(--body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--c,#17365B)}
+.tf-li{color:#fff;width:60px;height:60px}.tf-li .tf-sym{height:40px;width:auto;max-width:50px}.tf-li-t{font:400 24px/1 "Anton",sans-serif;color:#fff}
+.tf-tema b{font-size:18px}.tf-tema small{font-size:13.5px}.tf-tema-st{color:#EBA332;letter-spacing:1px}
+@media(prefers-reduced-motion:reduce){.tf-card.vez .tf-toque,.btn.tf-vez{animation:none}}
+.tf-ic{height:74px}.tf-card .tf-sym{height:72px}
+
+.tf-fila{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;height:100%}
+.tf-card .tf-fila .tf-sym{height:58px;max-width:46%}.tf-fila>b{font:800 24px/1 var(--body,inherit)}
+.tf-card .tf-ic{height:auto;min-height:74px}.tf-card .tf-sym.tf-pt{height:98px}.tf-card .tf-fila .tf-sym.tf-pt{height:66px;max-width:48%}
+.tf-big.tf-acid{font:400 68px/1 'Noto Music','Segoe UI Symbol','Apple Symbols','DejaVu Sans',serif}
+.tf-card.visto{--tf-papel:color-mix(in srgb,var(--c,#17365B) 10%,#fffdf7)}
+.al-sec{margin:6px 0 -4px;font:400 20px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.03em;color:#162146}
+.tf-card .tf-sym.tf-diag{height:104px;width:auto}.tf-fila .tf-sym.tf-diag{height:84px}
+
+/* texto-ícone das aulinhas (C F G, 1 2 3 4, ♯ ♭, setas…): a regra '.tf-card b' deixava tudo pequeno */
+.tf-card .tf-ic .tf-big{font-size:40px;line-height:1.1;font-weight:400}.tf-card .tf-ic .tf-big.small{font-size:26px}.tf-card .tf-ic .tf-big.tf-acid{font-size:62px}
+.tf-card .tf-sym.tf-grade{height:auto;width:100%;max-height:104px}

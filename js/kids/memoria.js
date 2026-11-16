@@ -168,7 +168,7 @@ export function mountMemoria(host, opts) {
       later(() => {
         if (gone) return;
         const empate = topo.length > 1; const euGanhei = !two || (!empate && (vsPaul ? topo[0] === 0 : true));
-        stage.replaceChildren(placar({ classe: 'kx-result', estado: two && empate ? 'tie' : euGanhei ? 'win' : 'lose', pose: two && empate ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('professor', 'estudando') : poseDisponivel('meditando', 'ouvindo'),
+        stage.replaceChildren(placar({ jogo: 'Jogo da memória', classe: 'kx-result', estado: two && empate ? 'tie' : euGanhei ? 'win' : 'lose', pose: two && empate ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('professor', 'estudando') : poseDisponivel('meditando', 'ouvindo'),
           titulo: two ? win : 'Achou todos!', sub: `${pairs} pares de ${th.title.toLowerCase()}${!two && record ? ' · recorde novo!' : !two && prev ? ` · seu recorde: ${prev}` : ''}`,
           quadros: two ? score.map((x, i) => ({ n: x, l: vsPaul ? (i === 0 ? 'você' : 'paul') : `jogador ${i + 1}`, win: !empate && i === topo[0] })) : [{ n: pairs, l: 'pares', win: true }, { n: tries, l: 'tentativas' }],
           estrelas: '+1 ★ pra roleta',

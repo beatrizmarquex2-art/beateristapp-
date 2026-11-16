@@ -15,6 +15,19 @@ export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); r
  *  (fácil = rara, médio = do robô Paul, difícil = exclusiva da Bea). a = Beatles + comum, b = Beatles + comum, c = comum + a especial. */
 export const plfPack = (id) => { const m = /^plf:(drum[FID]):([abc]):/.exec(String(id)); return m ? { modo: m[1], k: m[2] } : null; };
 export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') ? 1 : PACK_SIZE);
+/** Por que a pessoa ganhou este giro ou pacotinho (texto curto pra criança), tirado do próprio id. */
+export function motivoDoPacote(id) {
+  const s = String(id);
+  if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
+  if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
+  if (s.startsWith('roleta:')) return `você juntou ${ESTRELAS_POR_ROLETA} ★ nos jogos`;
+  if (s.startsWith('jogo:av-')) return 'você terminou um Modo Aventura inteiro';
+  if (s.startsWith('jogo:')) return 'você terminou um jogo inteiro, com todas as fases';
+  if (s.startsWith('plf:')) return 'você terminou um modo inteiro do Mundo da Bateria (pauLta)';
+  if (s.startsWith('pl:')) return 'você passou de um marco no Mundo da Bateria (pauLta)';
+  if (s.startsWith('semana:')) return 'você entrou 7 dias seguidos (check-in da semana)';
+  return 'presente da Beaterista';
+}
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Capa Hotmart · Dicionário Musical</title>
+<link rel="stylesheet" href="../../css/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0}html,body{width:1500px;height:1500px;background:#fff;color:#162146;font-family:"Hanken Grotesk",sans-serif}
+.st{position:relative;width:1500px;height:1500px;overflow:hidden}
+.moldura{position:absolute;inset:34px;border:5px solid #162146;border-radius:60px}
+.placa{position:absolute;left:0;right:0;top:80px;display:flex;justify-content:center;align-items:center;gap:30px}.placa img:first-child{height:130px}.placa img:last-child{height:80px}
+.cd{position:absolute;left:0;right:0;top:250px;text-align:center;font:400 62px/1 Anton;letter-spacing:.2em}
+.logo{position:absolute;left:50%;top:310px;width:640px;margin-left:-320px}
+.pauta{position:absolute;left:34px;right:34px;top:590px;height:150px}
+.pauta:before{content:"";position:absolute;left:0;right:0;top:20px;height:110px;background:repeating-linear-gradient(#9aa2bb 0 3px,transparent 3px 26px)}
+.pauta b{position:absolute;left:50%;top:10px;transform:translateX(-50%);white-space:nowrap;background:#fff;border:5px solid #162146;border-radius:99px;padding:14px 70px;font:400 96px/1.05 Anton;letter-spacing:.05em;text-transform:uppercase}
+.card{position:absolute;width:360px;border-radius:26px;box-shadow:0 10px 0 rgba(22,33,70,.18)}
+.paul{position:absolute;left:20px;bottom:150px;height:440px;z-index:1}
+.sel{position:absolute;right:70px;top:70px;width:230px;height:230px;border-radius:50%;background:#f2a91b;color:#162146;display:flex;flex-direction:column;align-items:center;justify-content:center;font:400 40px/1 Anton;letter-spacing:.06em;transform:rotate(8deg);border:5px solid #162146;z-index:5}.sel span{font-size:96px;line-height:.95}
+.fita{position:absolute;left:34px;right:34px;bottom:34px;height:110px;background:#162146;color:#fff;border-radius:0 0 56px 56px;display:flex;align-items:center;justify-content:center;font:400 50px/1 Anton;letter-spacing:.07em;z-index:6}
+</style></head><body><div class="st">
+<div class="moldura"></div>
+<div class="placa"><img src="../../assets/logo-512.png"><img src="../../assets/logo-nome.png"></div>
+<div class="cd">CARDS DO</div>
+<img class="logo" src="../../assets/originals/logo-roboterista-paul-alta.png">
+<div class="pauta"><b>dicionário musical</b></div>
+<img class="paul" src="img/paul-estudando-pb.png">
+<img class="card" src="_out/dicionario/card-setlist.png" style="left:430px;top:800px;transform:rotate(-6deg);z-index:2">
+<img class="card" src="_out/dicionario/card-tirar-de-ouvido.png" style="left:990px;top:800px;transform:rotate(6deg);z-index:2">
+<img class="card" src="_out/dicionario/card-microfone.png" style="left:710px;top:770px;z-index:3">
+<div class="sel"><span>120</span>TERMOS</div>
+<div class="fita">PDF PRA IMPRIMIR E RECORTAR</div>
+</div>
+<script>Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});</script>
+</body></html>

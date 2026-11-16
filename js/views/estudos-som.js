@@ -20,7 +20,7 @@ export const VIOLAO = [
   ['Gm', 'Sol menor (pestana)', [3, 5, 5, 3, 3, 3]], ['Am', 'Lá menor', [-1, 0, 2, 2, 1, 0]], ['Bm', 'Si menor (pestana)', [-1, 2, 4, 4, 3, 2]],
 ];
 const ABERTAS = [40, 45, 50, 55, 59, 64];
-function diagrama(frets) {
+export function diagrama(frets) {
   const x = (i) => 26 + i * 17; const y = (f) => 30 + f * 21; let s = '';
   for (let i = 0; i < 6; i++) s += `<line x1="${x(i)}" y1="${y(0)}" x2="${x(i)}" y2="${y(5)}" stroke="#14111a" stroke-width="${2.4 - i * 0.28}"/>`;
   for (let f = 0; f <= 5; f++) s += `<line x1="${x(0)}" y1="${y(f)}" x2="${x(5)}" y2="${y(f)}" stroke="#14111a" stroke-width="${f === 0 ? 5 : 1.5}"/>`;
@@ -87,7 +87,7 @@ function tecladoLista() {
 // 16 passos (semicolcheias): 1 e & a 2 e & a 3 e & a 4 e & a
 export const RITMOS = [
   { id: 'rock1', nome: 'Rock 1', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 8] },
-  { id: 'rock2', nome: 'Rock 2', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 4, 8] },
+  { id: 'rock2', nome: 'Rock 2', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 6, 8] }, // bumbo no 1, no "e" do 2 e no 3 (antes o 2º bumbo caía junto da caixa e soava igual ao Rock 1)
   { id: 'rock3', nome: 'Rock 3', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 8, 10] },
   { id: 'pop', nome: 'Pop', bpm: 100, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [4, 12], bd: [0, 4, 8, 12] },
   { id: 'reggaeton', nome: 'Reggaeton', bpm: 94, hh: [0, 2, 4, 6, 8, 10, 12, 14], sn: [3, 6, 11, 14], bd: [0, 4, 8, 12] },

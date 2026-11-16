@@ -7,6 +7,7 @@ import { getGame, setGame } from './base.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { gravar, podeGravar, LINK } from './paulbox-gravar.js';
 import { toast } from '../ui.js';
+import { beneficiosDe } from '../conquista.js';
 
 const IMG = 'assets/jogos/paulbox/';
 export const TRACKS = [
@@ -381,7 +382,7 @@ export function mount(host) {
   function mostraFim(blob) {
     fechaFim(); pausar(); const ext = /mp4/.test(blob.type) ? 'mp4' : 'webm'; const arq = new File([blob], `paulbox-beaterista.${ext}`, { type: blob.type });
     urlVideo = URL.createObjectURL(blob); window.__paulbox.video = blob;
-    const texto = `montei minha banda no PaulBox 🎶 faça a sua: https://${LINK}`;
+    const texto = `montei minha banda no PaulBox 🎶 (${beneficiosDe('PaulBox')[0]}) faça a sua: https://${LINK}`;
     let pode = false; try { pode = !!(navigator.canShare && navigator.canShare({ files: [arq] })); } catch { pode = false; }
     const sair = () => { fechaFim(); voltar(); };
     fimEl = h('div', { class: 'pbx-fim', role: 'dialog', 'aria-label': 'seu vídeo do PaulBox' },
@@ -392,6 +393,7 @@ export function mount(host) {
         h('a', { class: `pbx-act${pode ? '' : ' main'}`, href: urlVideo, download: arq.name }, 'baixar'),
         h('button', { type: 'button', class: 'pbx-act', onclick: () => { sair(); comecaGravar(); } }, 'gravar de novo'),
         h('button', { type: 'button', class: 'pbx-act', onclick: sair }, 'fechar')),
+      h('small', { class: 'pbx-fim-l' }, `o PaulBox desenvolve: ${beneficiosDe('PaulBox').join(' · ')}`),
       h('small', { class: 'pbx-fim-l' }, `o vídeo já sai com o logo e o link ${LINK}`));
     root.append(fimEl);
   }

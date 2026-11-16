@@ -58,7 +58,7 @@ const MENU_B = [
     ['', [['#/ritmo', 'kit', 'Beat Hero'], ['#/jogos/toca', 'kit', 'Toca Aqui'], ['#/kids/explorar', 'drummer', 'Explorar a bateria'], ['#/ferramentas/um', 'timer', 'Achar o 1']]],
   ]],
   ['estudar', 'estudos', [
-    ['', [['#/dicionario', 'book', 'Dicionário da bateria']]],
+    ['', [['#/dicionario', 'book', 'Dicionário Musical']]],
   ]],
   ['tocar', 'tocar', [
     ['', [['#/ferramentas', 'metro', 'Todas as ferramentas'], ['#/hub/ritmo', 'kit', 'Criar ritmos'], ['#/hub/tempo', 'timer', 'Tempo']]],

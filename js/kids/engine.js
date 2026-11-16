@@ -106,7 +106,8 @@ export function runLevel(game, ctx) {
 export async function showResult({ game, ctx, bot, stage, spec, right, total, stars, misses, mode = '', restarts = 0, pct: pctIn, note = '' }) {
   const { level, profile } = ctx; const pct = pctIn != null ? pctIn : pctOf(right, total);
   const { gain } = await P.record(profile.id, { game: game.id, level, right, total, stars, misses, mode });
-  const won = await Album.depoisDaFase(profile.id, game.id); // roleta a cada 30 ★ e 3 figurinhas tops ao completar o jogo
+  const won = await Album.depoisDaFase(profile.id, game.id);
+  if (won && won.jogos) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: game.title || game.nome || game.name || game.id, caminho: 'todas as fases', chave: `kids:${game.id}:${profile.id}` })).catch(() => {}), 1200); // terminou o jogo inteiro: festa + postar // roleta a cada 30 ★ e 3 figurinhas tops ao completar o jogo
   const next$ = level < MAX_LEVEL && stars >= 1;
   bot.set(stars >= 2 ? 'cheer' : stars === 1 ? 'happy' : 'oops', stars === 3 ? FB.line('great') : stars >= 1 ? FB.line('win') : FB.line('lose'));
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, '0'), h('small', {}, '%'));

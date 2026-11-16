@@ -1,9 +1,13 @@
-// Dicionário da bateria: termos com explicação curta, dica de estudo, nome em inglês (quando o mundo usa o inglês),
+// Dicionário musical (começou só de bateria; em 16/nov/2026 ganhou teoria, teclado e violão): termos com explicação curta, dica de estudo, nome em inglês (quando o mundo usa o inglês),
 // exemplo que toca (grade do Beat Lab) e ligação com os textos da Mente Musical. Puro, testado em tests/glossary.test.mjs.
 
+import { GRUPOS_PALCO } from './glossary-palco.js';
+
 export const CATS = [
-  ['tempo', 'tempo e pulso'], ['figuras', 'figuras e contagem'], ['levadas', 'levadas e estilos'],
+  ['tempo', 'tempo e pulso'], ['figuras', 'duração e contagem'], ['levadas', 'levadas e estilos'],
   ['tecnica', 'técnica e rudimentos'], ['som', 'dinâmica e som'], ['forma', 'forma e estrutura'],
+  ['teoria', 'notas e teoria'], ['teclado', 'teclado'], ['violao', 'violão'],
+  ['palco', 'banda e palco'], ['estudio', 'estúdio e equipamento'], ['fala', 'como o músico fala'],
 ];
 
 const on = (n, s) => Array.from({ length: n }, (_, i) => (s.includes(i) ? 1 : 0));
@@ -62,7 +66,45 @@ export const TERMS = [
   { id: 'forma', t: 'forma', en: 'song form', cat: 'forma', d: 'o mapa da música: intro, verso, pré-refrão, refrão, ponte, final. cada parte costuma ter 4, 8 ou 16 compassos.', dica: 'monte o mapa da música antes de ensaiar: Ferramentas → Mapa da música.', link: '#/ferramentas/mapa', see: ['virada', 'convencao'] },
   { id: 'convencao', t: 'convenção', en: 'hits / kicks', cat: 'forma', d: 'aquele trecho em que a banda inteira ataca junto as mesmas notas. o baterista marca com prato e bumbo.', dica: 'anote as convenções no mapa da música pra não errar no show.', see: ['forma'] },
   { id: 'contagem-entrada', t: 'contagem de entrada', en: 'count-in', cat: 'forma', d: 'o "1, 2, 3, 4" (ou as baquetadas) que o baterista dá pra banda começar junto, já no andamento certo.', dica: 'pense o andamento antes de contar: cante o refrão por dentro e conte nele.', art: 'audiation-voluntary-musical-imagery', see: ['bpm'] },
+  // notas e teoria (a Bea pediu em 16/nov/2026: o dicionário é MUSICAL, não só de bateria)
+  { id: 'pauta', t: 'pauta', en: 'staff', cat: 'teoria', d: 'as 5 linhas onde a música é escrita. as notas ficam nas linhas ou nos espaços entre elas.', dica: 'conte as linhas de baixo pra cima: 1ª, 2ª, 3ª, 4ª e 5ª.', link: '#/estudos/basica/claves', see: ['clave-sol', 'clave-fa'] },
+  { id: 'clave-sol', t: 'clave de sol', en: 'treble clef', cat: 'teoria', d: 'o sinal no começo da pauta que mostra as notas mais agudas. a espiral dela abraça a linha onde mora o sol.', dica: 'violino, flauta, voz, guitarra e a mão direita do piano leem na clave de sol.', link: '#/estudos/basica/claves', see: ['clave-fa', 'pauta'] },
+  { id: 'clave-fa', t: 'clave de fá', en: 'bass clef', cat: 'teoria', d: 'o sinal que mostra as notas mais graves. os dois pontinhos ficam em volta da linha onde mora o fá.', dica: 'baixo, tuba e a mão esquerda do piano leem na clave de fá.', link: '#/estudos/basica/claves', see: ['clave-sol', 'pauta'] },
+  { id: 'nota', t: 'nota musical', en: 'note', cat: 'teoria', d: 'cada um dos 7 nomes que o som pode ter: dó, ré, mi, fá, sol, lá, si. depois do si, volta o dó.', dica: 'cante as 7 notas subindo e descendo: dó ré mi fá sol lá si lá sol fá mi ré dó.', link: '#/estudos/basica/leitura', see: ['oitava', 'escala'] },
+  { id: 'oitava', t: 'oitava', en: 'octave', cat: 'teoria', d: 'a distância entre uma nota e a próxima com o mesmo nome: de um dó até o outro são 8 notas. elas soam parecidas, uma mais fina e outra mais grossa.', dica: 'no piano, ache dois dós e toque os dois juntos pra ouvir uma oitava.', see: ['nota', 'agudo-grave'] },
+  { id: 'agudo-grave', t: 'agudo e grave', en: 'high / low', cat: 'teoria', d: 'agudo é o som fino, grave é o som grosso. na pauta, quanto mais alta a nota, mais aguda ela é.', dica: 'no piano, quanto mais pra direita, mais agudo; pra esquerda, mais grave.', see: ['oitava', 'timbre'] },
+  { id: 'tom-semitom', t: 'tom e meio tom', en: 'whole step / half step', cat: 'teoria', d: 'o meio tom é a menor distância entre duas notas: de uma tecla do piano pra vizinha. dois meios tons formam um tom inteiro.', dica: 'entre mi e fá, e entre si e dó, não tem tecla preta no meio: ali a distância é de meio tom.', see: ['sustenido', 'bemol', 'escala'] },
+  { id: 'sustenido', t: 'sustenido (♯)', en: 'sharp', cat: 'teoria', d: 'o sinal que sobe a nota meio tom. no piano, é a tecla preta logo à direita da nota.', see: ['bemol', 'tom-semitom'] },
+  { id: 'bemol', t: 'bemol (♭)', en: 'flat', cat: 'teoria', d: 'o sinal que desce a nota meio tom. no piano, é a tecla preta logo à esquerda. a mesma tecla preta pode ter dois nomes: dó sustenido ou ré bemol.', see: ['sustenido', 'tom-semitom'] },
+  { id: 'escala', t: 'escala', en: 'scale', cat: 'teoria', d: 'uma escadinha de notas em ordem, subindo ou descendo. a escala de dó maior usa só as teclas brancas do piano.', dica: 'toque a escala devagar, uma nota por batida, antes de tentar rápido.', link: '#/estudos/aulas/teclado', see: ['nota', 'tom-semitom'] },
+  { id: 'ritmo', t: 'ritmo', en: 'rhythm', cat: 'teoria', d: 'a forma como os sons e os silêncios se organizam no tempo. é o que a gente bate com a mão quando escuta uma música.', dica: 'bata palma no ritmo de uma música que você conhece, sem cantar a letra.', link: '#/estudos/basica/figuras', see: ['pulso', 'melodia', 'compasso'] },
+  { id: 'melodia', t: 'melodia', en: 'melody', cat: 'teoria', d: 'a linha de notas que a gente canta ou assobia. é a parte da música que fica na cabeça.', see: ['harmonia'] },
+  { id: 'harmonia', t: 'harmonia', en: 'harmony', cat: 'teoria', d: 'as notas tocadas juntas, que formam o fundo da melodia. um acorde é um pedacinho de harmonia.', see: ['melodia', 'acorde'] },
+  { id: 'timbre', t: 'timbre', en: 'timbre', cat: 'teoria', d: 'a "cor" do som: o que faz a gente reconhecer um violão e um piano tocando a mesma nota.', dica: 'feche os olhos e tente descobrir qual instrumento está tocando: é o seu ouvido treinando o timbre.', see: ['agudo-grave'] },
+  // teclado
+  { id: 'teclas', t: 'teclas brancas e pretas', en: 'white and black keys', cat: 'teclado', d: 'as brancas são as 7 notas e as pretas ficam em grupos de 2 e de 3. esses grupos ajudam a achar cada nota.', dica: 'o dó fica sempre antes do grupo de 2 teclas pretas.', link: '#/estudos/aulas/teclado', see: ['do-central', 'sustenido'] },
+  { id: 'do-central', t: 'dó central', en: 'middle C', cat: 'teclado', d: 'o dó que fica no meio do teclado. serve de ponto de partida pra achar as outras notas.', see: ['teclas', 'oitava'] },
+  { id: 'dedilhado', t: 'dedilhado', en: 'fingering', cat: 'teclado', d: 'os números dos dedos: polegar é 1, indicador 2, médio 3, anelar 4 e mindinho 5. as duas mãos usam os mesmos números.', dica: 'escreva o número do dedo em cima das primeiras notas de uma música nova.', see: ['passar-polegar'] },
+  { id: 'passar-polegar', t: 'passagem do polegar', en: 'thumb crossing', cat: 'teclado', d: 'na escala, depois do dedo 3 o polegar passa por baixo da mão pra alcançar as próximas teclas sem pular.', dica: 'faça devagar e com a mão relaxada: o polegar anda sozinho, sem o pulso torcer.', see: ['dedilhado', 'escala'] },
+  { id: 'acorde', t: 'acorde', en: 'chord', cat: 'teclado', d: 'três ou mais notas tocadas ao mesmo tempo. dó, mi e sol juntos formam o acorde de dó maior.', link: '#/estudos/acordes/teclado', see: ['maior-menor', 'arpejo', 'harmonia'] },
+  { id: 'maior-menor', t: 'acorde maior e menor', en: 'major / minor', cat: 'teclado', d: 'o maior soa alegre e aberto, o menor soa mais sério e triste. a diferença é só uma nota do meio, meio tom mais baixa.', dica: 'toque dó maior e depois dó menor e escute a mudança de clima.', link: '#/estudos/acordes/teclado', see: ['acorde', 'tom-semitom'] },
+  { id: 'arpejo', t: 'arpejo', en: 'arpeggio', cat: 'teclado', d: 'tocar as notas de um acorde uma de cada vez, em vez de todas juntas. soa como uma cascatinha.', see: ['acorde'] },
+  { id: 'pedal', t: 'pedal de sustentação', en: 'sustain pedal', cat: 'teclado', d: 'o pedal do piano que deixa as notas soando depois que você solta as teclas. deixa o som cheio e emendado.', dica: 'solte o pedal quando o acorde mudar, pra um som não misturar com o outro.', see: ['acorde'] },
+  // violão
+  { id: 'cordas', t: 'cordas do violão', en: 'guitar strings', cat: 'violao', d: 'o violão tem 6 cordas, da mais grossa (grave) pra mais fina (aguda): mi, lá, ré, sol, si, mi.', dica: 'decore com a frase "mi lá ré sol si mi".', link: '#/estudos/aulas/violao', see: ['afinacao', 'traste'] },
+  { id: 'traste', t: 'traste', en: 'fret', cat: 'violao', d: 'as barrinhas de metal no braço. o espaço entre duas delas é uma casa. cada casa que você sobe, o som sobe meio tom.', see: ['cordas', 'pestana'] },
+  { id: 'afinacao', t: 'afinação', en: 'tuning', cat: 'violao', d: 'deixar cada corda com a nota certa. violão desafinado soa estranho mesmo tocando tudo certo.', dica: 'use um afinador (aparelho ou app) antes de cada ensaio.', see: ['cordas'] },
+  { id: 'palheta', t: 'palheta', en: 'pick', cat: 'violao', d: 'a plaquinha que a gente usa pra tocar as cordas. também dá pra tocar só com os dedos.', see: ['batida-violao'] },
+  { id: 'pestana', t: 'pestana', en: 'barre', cat: 'violao', d: 'quando um dedo, quase sempre o indicador, aperta várias cordas de uma vez na mesma casa. é o desafio do acorde de fá.', dica: 'não desanime: a pestana é difícil pra todo mundo no começo e melhora com os dias.', see: ['traste', 'cifra'] },
+  { id: 'cifra', t: 'cifra', en: 'chord chart', cat: 'violao', d: 'as letras que representam os acordes: C é dó, D é ré, E é mi, F é fá, G é sol, A é lá e B é si. um "m" depois da letra quer dizer menor.', dica: 'Am é lá menor e Em é mi menor, os primeiros acordes que a gente aprende.', link: '#/estudos/acordes/violao', see: ['acorde', 'maior-menor'] },
+  { id: 'tablatura', t: 'tablatura', en: 'tab', cat: 'violao', d: 'um jeito fácil de ler música no violão: as 6 linhas são as 6 cordas e o número diz qual casa apertar. o 0 é corda solta.', link: '#/estudos/aulas/violao', see: ['cordas', 'traste'] },
+  { id: 'batida-violao', t: 'batida de violão', en: 'strumming', cat: 'violao', d: 'o movimento da mão direita nas cordas: seta pra baixo e seta pra cima. a mão nunca para de balançar, mesmo quando não toca.', dica: 'comece só com a batida pra baixo, uma por tempo, e depois acrescente as pra cima.', see: ['palheta', 'pulso'] },
+  { id: 'capotraste', t: 'capotraste', en: 'capo', cat: 'violao', d: 'uma peça que prende todas as cordas numa mesma casa. deixa o violão mais agudo sem mudar o jeito de tocar os acordes.', see: ['traste', 'afinacao'] },
 ];
+
+// vocabulário de banda, estúdio e do jeito de falar dos músicos (fonte única: glossary-palco.js, a mesma do baralho em PDF); vêm depois dos termos de bateria, teoria, teclado e violão
+const slug = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+for (const g of GRUPOS_PALCO) for (const [t, en, d, uso] of g.t) TERMS.push({ id: slug(t), t, en, cat: g.id, d, uso: uso.replace(/^"|"$/g, '') });
 
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 /** Busca sem acento no termo, no nome em inglês e na explicação (termo vem primeiro). */

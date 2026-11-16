@@ -16,6 +16,7 @@ import { GRATIS } from './amostra.js';
 import { TERMS } from './glossary.js';
 import * as META from './estudos-meta.js';
 import * as teoriaBasica from './kids/teoria.js';
+import { cartoesDosTemas, sessaoPorId, estrelasTema } from './kids/teoria.js';
 import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
@@ -39,7 +40,7 @@ function marcarEstudo(id) {
 import * as SALVAR from './salvar-codigo.js';
 import { DICAS_MUSICAIS, dicaDeHoje } from './estudos-dicas.js';
 import { CURIOSIDADES, curiosidadeDeHoje } from './curiosidades.js';
-import { AULAS, montarAula } from './kids/aulas-paul.js';
+import { AULAS } from './kids/aulas-paul.js';
 const TERMS_QTD = TERMS.length;
 import { previa, previaDaRota, tituloDaPrevia } from './previas.js';
 import { tipList } from './tipbox.js';
@@ -71,12 +72,13 @@ import * as ALBUMACESSO from './figurinhas/acesso.js';
 import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
+import { TERMO_DE_USO } from './termo-de-uso.js';
 import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Tocar'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
+const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
@@ -196,9 +198,9 @@ const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbu
 
 /** Conteúdo de cada item da aba Estudos: o que tem dentro (a prévia que aparece antes de abrir) e o que desenvolve. */
 const ESTUDOS = {
-  aulas: { href: '#/estudos/aulas', titulo: 'Aulas do Paul', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
+  aulas: { href: '#/estudos/aulas', titulo: 'Robôterista ensina', sub: 'bateria, teclado, violão e as figuras rítmicas', dentro: ['4 aulas curtinhas: bateria (peças, levada de rock e postura), teclado (notas, escala e acordes), violão (cordas, acorde e batida) e as figuras rítmicas', 'em cada passo o Paul fala e você ouve o som', 'no fim, a aula leva pro instrumento na aba Tocar'], dev: 'ler, ouvir e tocar com base', tempo: '10 min por aula', amostra: () => `${GRATIS.aulinha} passos de cada` },
   curiosidades: { href: '#/estudos/curiosidades', titulo: 'Curiosidades de músicos', sub: 'histórias de quem tocou antes de você', dentro: ['bateristas, pianistas, guitarristas e compositores', 'uma curiosidade por vez, com “outra” pra seguir', 'conta pra meta do dia'], dev: 'repertório e inspiração', tempo: '1 min', aberto: true },
-  dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos da bateria em 6 temas: tempo, figuras, levadas, técnica, som e forma`, 'cada termo tem explicação simples e exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
+  dicionario: { href: '#/dicionario', titulo: 'Dicionário musical', sub: 'busca, explicação e exemplo tocando', dentro: [`${TERMS_QTD} termos de bateria, teclado, violão, teoria e vida de banda, em 12 temas: tempo, duração, levadas, técnica, som, forma, notas, teclado, violão, banda e palco, estúdio e o jeito de falar dos músicos`, 'cada termo tem explicação simples, e os de bateria têm exemplo tocando', 'busca rápida pelo nome'], dev: 'falar a língua dos músicos', tempo: '5 min', amostra: () => `${GRATIS.termos} termos` },
   dicas: { href: '#/estudos/dicas', titulo: 'Dicas do método', sub: 'as dicas da professora Bea pra estudar com calma', dentro: ['dicas curtas, uma por cartão, de como a Bea estuda e ensina', 'errar sem desistir, treinar o corpo todo, respeitar a música original', 'depois dá pra treinar tudo no jogo Letras'], dev: 'estudar melhor em menos tempo', tempo: '3 min por dica' },
   erros: { href: '#/erros', titulo: '5 erros', sub: 'material em PDF da professora Bea', dentro: ['PDF pra ler e baixar', 'os 5 erros mais comuns de quem está começando e como evitar cada um'], dev: 'evitar vícios desde o começo', tempo: '5 min', aberto: true },
   ensinam: { href: '#/jogos/relatorio', titulo: 'Jogos Ensinam', sub: 'o que cada jogo desenvolve, aberto pra pais e responsáveis', dentro: ['uma folha por jogo: o que a criança faz e o que desenvolve', 'serve pra mostrar pra família por que brincar também é estudar'], dev: 'entender o que cada jogo treina', tempo: '5 min', aberto: true },
@@ -214,38 +216,29 @@ const EXPLORAR = [
   ['#/estudos/basica/figuras', '🎼', 'teoria', null], ['#/estudos/dicas', '🧠', 'dicas', 'dicas'], ['#/estudos/curiosidades', '💡', 'curiosidades', 'curiosidades'], ['#/jogos/relatorio', '👨‍👩‍👧', 'jogos ensinam', 'ensinam']];
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 function estudosView(view) {
-  const v = vistos();
-  const mt = META.ler(); const seq = META.sequencia(mt); const feitas = mt.feitas.length; const total = META.METAS.length; const ok = META.cumprida(mt);
-  const ring = (n) => { const C = 188.5; const svg = `<svg width="74" height="74" viewBox="0 0 74 74" aria-hidden="true"><circle cx="37" cy="37" r="30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="9"/><circle cx="37" cy="37" r="30" fill="none" stroke="#ffd166" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C * n / total).toFixed(1)} ${C}" transform="rotate(-90 37 37)"/><text x="37" y="44" text-anchor="middle" fill="#fff" font-family="Anton,sans-serif" font-size="20">${n}/${total}</text></svg>`; const d = h('span', { class: 'hj-ringsvg' }); d.innerHTML = svg; return d; };
-  const falta = total - feitas;
-  const fala = ok ? 'você arrasou! as 3 coisinhas de hoje estão feitas 😎' : feitas ? `falta${falta > 1 ? 'm' : ''} só ${falta}! já, já você fecha o dia 💪` : 'hoje são só 3 coisinhas, leva uns 12 minutinhos 💪';
-  const hero = h('div', { class: 'hj-hero' }, h('img', { src: `assets/paul/${ok ? 'e03' : 'p-book'}.webp`, alt: '', draggable: 'false' }), h('p', { class: 'hj-bub' }, fala));
-  const prize = h('div', { class: 'hj-prize' }, h('big', {}, '★'), '+3 bônus');
-  const card = h('div', { class: `hj-meta${ok ? ' ok' : ''}`, role: 'status', 'aria-label': `meta de hoje: ${feitas} de ${total}` }, ring(feitas), h('div', {}, h('h3', {}, ok ? 'META CUMPRIDA' : 'META DO DIA'), h('p', {}, ok ? 'as 3 estrelinhas de hoje já são suas' : 'faça as 3 e ganhe +3 ★ de bônus')), prize);
-  const MISSOES = { dica: ['💡', 'dica do dia', '1 min · um jeito de estudar melhor', null], aula: ['🥁', 'um passo de aula', 'bateria, teclado ou violão com o Paul', '#/estudos/aulas'], curiosidade: ['🎸', 'curiosidade de músico', 'uma história de quem tocou antes de você', '#/estudos/curiosidades'] };
-  const proxima = META.METAS.find(([k]) => !mt.feitas.includes(k));
-  const dicaBox = h('div', { class: 'hj-dica', hidden: true });
-  let di = dicaDeHoje(); const dTxt = h('p', {}); const dTag = h('small', {});
-  const desenhaDica = () => { const [tema, txt] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; dTag.textContent = `dica · ${tema}`; dTxt.textContent = txt; };
-  desenhaDica();
-  const lerDica = () => { marcarEstudo('dica'); estudosView.reabrir(); };
-  dicaBox.append(dTag, dTxt, h('div', { class: 'hj-dica-b' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { di++; desenhaDica(); } }, 'outra'), h('button', { type: 'button', class: 'btn small', onclick: lerDica }, 'li! ✓')));
-  const cartoes = META.METAS.map(([k, t]) => { const [ic, titulo, sub, href] = MISSOES[k]; const feito = mt.feitas.includes(k); const agora = proxima && proxima[0] === k;
-    const corpo = [h('span', { class: 'hj-ic', 'aria-hidden': 'true' }, feito ? '✓' : ic), h('span', { class: 'hj-mt' }, h('b', {}, titulo), h('small', {}, feito ? 'feito ✓' : sub)), h('span', { class: 'hj-rw' }, '+1★'), feito ? null : h('span', { class: 'hj-go', 'aria-hidden': 'true' }, '▶')];
-    const cls = `hj-m${feito ? ' done' : ''}${agora ? ' now' : ''}`;
-    return href ? h('a', { class: cls, href, 'aria-label': `${titulo}${feito ? ', feito' : ''}` }, ...corpo)
-      : h('button', { type: 'button', class: cls, 'aria-label': `${titulo}${feito ? ', feito' : ''}`, onclick: () => { if (!feito) dicaBox.hidden = !dicaBox.hidden; } }, ...corpo); });
-  const idxDica = META.METAS.findIndex(([k]) => k === 'dica');
-  cartoes.splice(idxDica + 1, 0, dicaBox);
-  const GRANDES = [['#/estudos/aulas', '📚', 'aulas do Paul', 'bateria, teclado e violão', 'aulas'], ['#/estudos/ritmos', '🥁', 'ritmos', 'veja e ouça', null], ['#/estudos/acordes/violao', '🎸', 'acordes', 'violão e teclado', null], ['#/dicionario', '📖', 'dicionário musical', 'busque um termo', 'dicionario']];
-  const OUTROS = EXPLORAR.filter(([href]) => !GRANDES.some((g) => g[0] === href));
-  const lock = (href) => AC.trancado(href);
+  // Pedido da Bea (15/nov/2026): sem "meta do dia". 4 cartões na ordem dela (dicionário · robôterista ensina · acordes e ritmos · jogos ensinam)
+  // e o Paul já chega falando: toda vez que abre Estudos ele conta uma dica ou uma curiosidade de músico (uma de cada, alternando).
+  const v = vistos(); const lock = (href) => AC.trancado(href);
+  const ALT = 'beaterista-estudos-fala'; let vez = 0; try { vez = Number(localStorage.getItem(ALT) || 0) || 0; localStorage.setItem(ALT, String(vez + 1)); } catch { /* sem armazenamento */ }
+  let tipo = vez % 2 === 0 ? 'dica' : 'curiosidade'; let di = dicaDeHoje() + Math.floor(vez / 2); let ci = curiosidadeDeHoje() + Math.floor(vez / 2);
+  const tag = h('small', { class: 'hj-fala-tag' }); const txt = h('p', { class: 'hj-fala-txt' }); // sem botão "li!" (a Bea tirou: a criança só clicava sem ler); estrela de estudo vem de quiz (Teoria)
+  const desenha = () => {
+    if (tipo === 'dica') { const [tema, t] = DICAS_MUSICAIS[di % DICAS_MUSICAIS.length]; tag.textContent = `dica do Paul · ${tema}`; txt.textContent = t; }
+    else { const [quem, toca, t] = CURIOSIDADES[ci % CURIOSIDADES.length]; tag.textContent = `curiosidade de músico · ${quem} (${toca})`; txt.textContent = t; }
+  };
+  const outra = h('button', { type: 'button', class: 'btn small ghost', onclick: () => { if (tipo === 'dica') { tipo = 'curiosidade'; ci++; } else { tipo = 'dica'; di++; } desenha(); } }, 'outra ›');
+  desenha();
+  const hero = h('div', { class: 'hj-hero hj-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false' }),
+    h('div', { class: 'hj-bub', role: 'status', 'aria-live': 'polite' }, tag, txt, h('div', { class: 'hj-dica-b' }, outra)));
+  const tile = (href, pose, nome, sub, vid) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
+    h('img', { class: 'hj-tp', src: corSrc(pose), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub));
+  const duplo = h('div', { class: 'hj-tile hj-duplo', role: 'group', 'aria-label': 'acordes e ritmos' }, h('img', { class: 'hj-tp', src: corSrc('guitarra'), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, 'acordes e ritmos'),
+    h('span', { class: 'hj-duplo-b' }, h('a', { href: '#/estudos/acordes/violao' }, 'acordes'), h('a', { href: '#/estudos/ritmos' }, 'ritmos')));
   const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
-    h('div', { class: 'hj-big' }, ...GRANDES.map(([href, ic, nome, sub, vid]) => h('a', { class: `hj-tile${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome },
-      h('span', { class: 'hj-ti', 'aria-hidden': 'true' }, ic), h('b', {}, nome, lock(href) ? ' 🔒' : '', vid && v.includes(vid) ? ' ✓' : ''), h('small', {}, sub)))),
-    h('div', { class: 'hj-chips' }, ...OUTROS.map(([href, ic, nome, vid]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, onclick: () => { if (vid) marcarVisto(vid); }, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}${vid && v.includes(vid) ? ' ✓' : ''}`))));
+    h('div', { class: 'hj-big' }, tile('#/dicionario', 'lendo-partitura', 'dicionário musical', 'busque um termo', 'dicionario'), tile('#/estudos/aulas', 'professor', 'robôterista ensina', 'teoria, bateria, teclado e violão', 'aulas'), duplo, tile('#/jogos/relatorio', 'oculos', 'jogos ensinam', 'pra que serve cada jogo', 'ensinam')),
+    h('div', { class: 'hj-chips' }, ...[['#/estudos/dicas', 'todas as dicas'], ['#/estudos/curiosidades', 'todas as curiosidades']].map(([href, nome]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}`))));
   const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, '🎡'), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
-  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'HOJE'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`), seq ? h('span', { class: 'hj-fogo' }, `🔥 ${seq}`) : null), chips, hero, card, ...cartoes, sorte));
+  view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'ESTUDOS'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`)), hero, chips, sorte));
   import('./figurinhas/estrelas.js').then(async (E) => { try { const P = await import('./kids/progress.js'); const me = P.active(); if (!me) return; const f = E.faltamParaRoleta(E.estrelasTotais(me.id)); const el = sorte.querySelector('.hj-rt'); if (el && f) el.textContent = `faltam ${f} ★ pra roleta`; } catch { /* sem o álbum */ } }).catch(() => {});
 }
 
@@ -259,18 +252,13 @@ function voltarJogos(on) {
 }
 function aulasView(view) {
   const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
-    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, `grátis: ${GRATIS.aulinha} passos`) : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
-  view.append(banner('Aulas do Paul', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
-    ...Object.entries(AULAS).map(([id, a]) => lk(`#/estudos/aulas/${id}`, a.titulo, a.sub, a.tempo, a.cor, a.pose, a.adesivos[0])),
-    lk('#/kids/figuras/aula', 'Figuras rítmicas', 'o tempo, as pausas, a tercina e a sextina', '10 min', 'figuras', 'metronomo', 'nota2')));
+    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
+  // Pedido da Bea (15/nov/2026): "teoria" (5 temas × 30 aulinhas) e uma aula de 30 aulinhas pra cada instrumento (bateria, teclado, violão), tudo AQUI.
+  const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
+  view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+    h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
+    h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
-function aulaView(view, id) {
-  if (!AULAS[id]) { location.hash = '#/estudos/aulas'; return () => {}; }
-  view.append(banner(`Aula de ${AULAS[id].titulo.toLowerCase()}`, 'com o Paul'), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ aulas')));
-  const box = h('div', { class: 'pad-x' }); view.append(box);
-  return montarAula(box, id, { onPasso: () => { marcarEstudo('aula'); marcarVisto('aulas'); } });
-}
-
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
@@ -335,7 +323,7 @@ function errosView(view) {
 }
 
 function tocarView(view) {
-  view.append(banner('Tocar', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x' }, deckView()));
+  view.append(banner('Palco', 'bateria, cordas, teclas e percussão'), h('div', { class: 'pad-x' }, deckView()));
 }
 
 /** Trocar de aluno no mesmo aparelho: voltar a uma conta já conectada, conectar outro código ou entrar com outro nome. */
@@ -368,6 +356,33 @@ function trocarAluno() {
   });
 }
 
+/** Compartilhar o jogo (o link da área dos alunos): folha de compartilhar do celular; sem ela, copia o link. Nada do aluno vai junto (nem nome, nem código). */
+const LINK_JOGO = 'https://jogos.beaterista.com.br';
+async function compartilharJogo() {
+  const texto = 'jogos de música pra aprender brincando, da Beaterista escola de música: bora jogar?';
+  try { if (navigator.share) { await navigator.share({ title: 'Beaterista · jogos de música', text: texto, url: LINK_JOGO }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(`${texto} ${LINK_JOGO}`); toast('link copiado! cole e mande pra quem você quiser.'); } catch { toast(LINK_JOGO, { ms: 6000 }); }
+}
+/** Sair: este aparelho esquece o nome e o código (a vaga do código é liberada). Dá pra voltar depois pela lista do "trocar aluno". */
+async function sairDoApp() {
+  if (!(await confirmSheet('sair?', 'este aparelho esquece o nome e o código. pra voltar é só escolher o seu nome na lista do "trocar aluno" ou digitar o código de novo.', 'sair'))) return;
+  CONTAS.semConta(); location.reload();
+}
+/** Opções do topo: trocar aluno · compartilhar jogo · sair, com o nome e o código de quem está jogando. */
+function opcoes(name) {
+  sheet('opções', (close) => {
+    const code = CODE.saved();
+    const bt = (rot, fn, cls = 'btn wide') => h('button', { type: 'button', class: cls, onclick: () => { close(); fn(); } }, rot);
+    return h('div', { class: 'sheet-body al-opcoes' },
+      h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${CODE.mascarar(code)}`) : h('span', {}, 'ainda sem código')),
+      bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
+      code ? null : bt('🔑 tenho código', abrirCodigo),
+      bt('🚪 sair', sairDoApp, 'btn wide ghost'),
+      h('small', { class: 'muted al-termo' }, TERMO_DE_USO),
+      code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto. por segurança o código nunca aparece inteiro na tela.') : null);
+  });
+}
+
 /** "tenho código": folha rápida (aberta do topo de qualquer tela) pra digitar o código de acesso sem procurar a Lojinha. */
 function abrirCodigo() {
   sheet('já tenho meu código', (close) => {
@@ -388,16 +403,17 @@ function shell(name) {
   if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on', style: 'padding:6px 12px' }, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })())),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })()), h('small', { class: 'al-cod-top' }, CODE.saved() ? `código ${CODE.mascarar(CODE.saved())}` : 'sem código'))),
     soundButton(), musicButton(),
     tenhoCodigo,
-    h('button', { type: 'button', class: 'btn small ghost', onclick: trocarAluno }, 'trocar aluno'));
+    h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', onclick: () => opcoes(name) }, 'opções ▾'));
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
-    { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album' || r.name === 'perfil') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; } // aba Álbum com visual próprio (css/album-tema.css)
+    { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; document.documentElement.classList.toggle('perfil-pass', r.name === 'perfil'); } // aba Álbum com visual próprio (css/album-tema.css); o PERFIL tem o visual "carteirinha de backstage" (css/perfil-passe.css), escolhido pela Bea em 15/nov/2026
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
@@ -429,7 +445,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'acordes') acordesView(view, r.parts.slice(1));
     else if (r.name === 'estudos' && r.parts[0] === 'ritmos') c = ritmosView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
-    else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? aulaView(view, r.parts[1]) : aulasView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? (AULAS[r.parts[1]] ? teoriaBasica.mount(view, [r.parts[1]], { aoFim: () => marcarVisto('aulas') }) : (location.hash = '#/estudos/aulas', null)) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
@@ -494,7 +510,8 @@ function askName() {
     h('label', { class: 'field' }, h('span', {}, 'nome'), input),
     codBox, err,
     h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
-    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'));
+    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'),
+    h('p', { class: 'muted center al-termo' }, TERMO_DE_USO));
     app.replaceChildren(h('main', { class: 'login al-entry' },
     h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
   setTimeout(() => input.focus(), 100);

@@ -113,6 +113,7 @@ export function mount(host) {
         h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa'))); return;
     }
     sfx.play('win'); S.later(() => sfx.play('star'), 450); if (est === 3) S.later(() => sfx.play('medal'), 950); // som de fase concluída (mais festa com 3 estrelas)
+    if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Detetive Note', caminho: MUNDOS_DET[modo] ? MUNDOS_DET[modo].nome : 'todas as fases', chave: `detetive:${modo}`, pose: 'ouvindo' })).catch(() => {}), 700); // terminou o caminho: festa + postar
     if (est > antes) { guardaEst(modo, fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('detetive', est - antes)).catch(() => {}); } // só ganha a diferença sobre o melhor da fase
     root.replaceChildren(topo(), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, `${primeira} de ${RODADAS} ritmos de primeira.${est < 3 ? ' acertando todos de primeira, são 3 estrelas.' : ' perfeito!'}`),

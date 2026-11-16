@@ -9,6 +9,8 @@ const OK_KEY = 'beaterista-aluno-codigo-ok'; // última vez que o código foi co
 const OFFLINE_DAYS = 365; // o código fica salvo 1 ano neste aparelho (a Bea desativa quando quiser; vale na próxima vez que ele abrir com internet)
 
 export const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+/** O código escondido pra mostrar na tela (pedido da Bea, 15/nov/2026: nenhum aluno pode ter o código inteiro à vista, nem num print): só o 1º e o último caractere. */
+export const mascarar = (c) => { const v = norm(c); return v.length <= 2 ? '••' : `${v[0]}${'•'.repeat(v.length - 2)}${v[v.length - 1]}`; };
 export const saved = () => { try { return localStorage.getItem(KEY) || ''; } catch { return window.__alunoCodigo || ''; } };
 const ESC_KEY = 'beaterista-aluno-escopo'; // telas que o passe libera (null = tudo)
 function guardarEscopo(j) { try { if (Array.isArray(j) && j.length) localStorage.setItem(ESC_KEY, JSON.stringify(j)); else localStorage.removeItem(ESC_KEY); } catch { /* ok */ } }
