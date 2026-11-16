@@ -126,3 +126,12 @@ Perfil do Paul (`@jogos.beaterista`). Servem soltos no feed, em story ou como ca
 | `paul-17-colorindo.jpg` | música também se pinta. | colorir a bateria ajuda a decorar o nome de cada peça. quem aí gosta de pintar? |
 | `paul-18-metronomo.jpg` | devagar e certo. depois rápido. | liga o metrônomo e começa bem devagar. primeiro certo, depois rápido, nunca ao contrário |
 | `paul-19-treino.jpg` | o treino do Paul em 8 passos. | ler, ouvir, tocar, escrever, colorir, no tempo, mostrar e ensinar. qual deles você fez hoje? conta aqui |
+
+## Reels "aula do Paul" (novos, 16/nov/2026)
+O Paul animado ensinando, com o som batendo com o que acende na tela. Perfil do Paul (`@jogos.beaterista`) ou da Bea. Feitos com `marketing/reels/aula/aula.py`. Ordem sugerida: 29, 31, 30.
+
+| arquivo | aula | legenda sugerida |
+|---|---|---|
+| `reels/29_aula_do_paul_batida.mp4` | a batida mais famosa do mundo em 3 passos | bumbo no 1 e no 3, caixa no 2 e no 4, chimbal em todos. toca na mesa, grava e me marca. salva pra treinar depois |
+| `reels/30_aula_do_paul_cade_o_do.mp4` | cadê o dó no teclado | acha as 2 teclas pretas juntinhas: o dó mora à esquerda delas. vale pra todo teclado do mundo. marca quem tá começando |
+| `reels/31_aula_do_paul_ta_e_titi.mp4` | TA e TI-TI (semínima e colcheias) | 1 som no tempo é TA, 2 sons no tempo é TI-TI. lê em voz alta, bate palma e me conta se acertou o último desafio |

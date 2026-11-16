@@ -2,15 +2,15 @@
 // quadros com os números e um botão amarelo grande. Vale pra todos os jogos de mesa.
 // placar({ classe, estado: 'win'|'lose'|'tie', pose, titulo, sub, quadros: [{ n, l, win }], estrelas, extra: [nós], acoes: [nós] })
 import { h } from '../util.js';
-import { POSES, corSrc } from '../paul-cor.js';
+import { POSES, corSrc, animSrc } from '../paul-cor.js';
 import { botaoPostar, beneficiosDe } from '../conquista.js';
 
 /** Primeira pose da lista que existe no app (as novas entram sozinhas quando chegarem em `POSES`). */
 export const poseDisponivel = (...nomes) => nomes.find((n) => POSES.includes(n)) || 'ouvindo';
 
 export function placar({ classe = '', estado = '', pose = 'ouvindo', titulo = '', sub = '', quadros = [], estrelas = '', extra = [], acoes = [], jogo = '' } = {}) {
-  const img = h('img', { class: 'pl-paul', src: corSrc(pose), alt: '', 'aria-hidden': 'true', draggable: 'false' });
-  img.onerror = () => { img.onerror = null; img.style.visibility = 'hidden'; };
+  const img = h('img', { class: 'pl-paul', src: animSrc(pose), alt: '', 'aria-hidden': 'true', draggable: 'false' });
+  img.onerror = () => { if (!img.src.endsWith(corSrc(pose))) { img.src = corSrc(pose); return; } img.onerror = null; img.style.visibility = 'hidden'; };
   const qs = quadros.filter(Boolean);
   const btns = acoes.filter(Boolean);
   // compartilhar a conquista (imagem com logo e link): em vitória e empate. O nome do jogo vem de `jogo` ou da faixa de título da moldura.

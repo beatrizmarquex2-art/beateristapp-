@@ -3,7 +3,7 @@
 // Sai do placar azul de fim de jogo (js/jogos/placar.js) e da festa de caminho concluído (festaCaminho, aqui embaixo).
 // Nada de foto nem sobrenome: só o desenho do Paul. Quem posta e marca a escola resgata ★ com o print (aba roleta › resgate).
 import { h } from './util.js';
-import { corSrc } from './paul-cor.js';
+import { corSrc, animSrc } from './paul-cor.js';
 import { toast } from './ui.js';
 
 export const LINK = 'jogos.beaterista.com.br';
@@ -143,7 +143,7 @@ export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baqu
   const dados = { selo: 'terminei o caminho', titulo, beneficios: bens, pose };
   const NOTAS = ['♪', '♫', '★', '♬', '✦']; const CORES = ['#2d8cff', '#7a5cff', '#f2a91b', '#ff3d57', '#ffffff'];
   const parts = reduz() ? [] : Array.from({ length: 48 }, (_, i) => h('i', { class: 'pf-p', 'aria-hidden': 'true', style: `--x:${Math.round(Math.random() * 100)}%;--d:${(2.4 + Math.random() * 2.4).toFixed(2)}s;--w:${(Math.random() * 1.6).toFixed(2)}s;--s:${Math.round(18 + Math.random() * 26)}px;--c:${CORES[i % CORES.length]};--r:${Math.round(Math.random() * 360)}deg` }, NOTAS[i % NOTAS.length]));
-  const img = h('img', { class: 'cq-paul', src: corSrc(pose), alt: '', draggable: 'false' });
+  const img = h('img', { class: 'cq-paul', src: animSrc(pose), alt: '', draggable: 'false' });
   const fecha = () => { el.remove(); };
   const caixa = h('div', { class: 'pf-box cq-box', role: 'dialog', 'aria-label': `terminei o caminho: ${titulo}` }, img,
     h('small', { class: 'cq-selo' }, 'terminei o caminho'), h('b', { class: 'cq-t' }, titulo),

@@ -1,0 +1,111 @@
+<!doctype html><meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(../../../assets/fonts/Anton-latin.woff2)}
+@font-face{font-family:HG;src:url(../../../assets/fonts/HankenGrotesk-latin.woff2);font-weight:100 900}
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#101f47;font-family:HG}
+#bg{position:absolute;inset:0;background:radial-gradient(900px 760px at 50% 68%,rgba(246,185,59,.20),transparent 70%),#101f47}
+#bg:after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(244,236,223,.07) 2px,transparent 2.5px);background-size:44px 44px}
+.topo{position:absolute;left:0;right:0;top:0;height:22px;background:#c0152f}
+.bar{position:absolute;left:64px;right:64px;top:170px;display:flex;gap:10px}
+.bar i{flex:1;height:8px;border-radius:8px;background:rgba(255,255,255,.3);overflow:hidden}
+.bar i b{display:block;height:100%;background:#f6b93b}
+#box{position:absolute;left:64px;top:226px;transform:rotate(-2deg);transform-origin:left top}
+.tag{display:inline-block;font:800 34px HG;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#c0152f;padding:10px 22px;border-radius:999px;margin-bottom:22px}
+.l{display:table;font:400 104px/1 Anton;color:#f4ecdf;background:#0b1636;padding:16px 26px 20px;margin-bottom:-4px;letter-spacing:.01em;box-shadow:8px 8px 0 rgba(0,0,0,.35);border:3px solid rgba(244,236,223,.14)}
+.l.hl{background:#f6b93b;color:#101f47;border-color:#f6b93b}
+.l.p{font-size:84px}.l.t{font-size:80px}
+#board{position:absolute;left:54px;right:54px;top:668px;height:330px;display:flex;align-items:center;justify-content:center}
+#paul{position:absolute;left:50%;bottom:262px;width:690px;height:690px;transform-origin:50% 100%}
+#paul img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+/* grade da bateria */
+.grid{width:100%;background:#f4ecdf;border-radius:26px;padding:18px 22px 20px;box-shadow:10px 10px 0 rgba(0,0,0,.35)}
+.grow{display:flex;align-items:center;gap:8px;margin-top:8px}
+.grow .nm{width:186px;font:400 38px/1 Anton;color:#101f47;letter-spacing:.02em}
+.grow.off{opacity:.22}
+.c{flex:1;height:62px;border-radius:14px;background:#e4d9c6;position:relative}
+.c.on{background:#101f47}
+.c.on.k{background:#c0152f}.c.on.h{background:#d59a1e}
+.c i{position:absolute;inset:0;border-radius:14px;background:#fff;opacity:0}
+.hd{flex:1;text-align:center;font:400 40px/1 Anton;color:#101f47;border-radius:10px;padding:4px 0 6px}
+.hd.mid{font:800 28px HG;color:#8d8576;padding-top:10px}
+/* teclado */
+.keys{position:relative;width:952px;height:320px;background:#0b1636;border-radius:22px;padding:14px;box-shadow:10px 10px 0 rgba(0,0,0,.35)}
+.wk{position:absolute;top:14px;width:64px;height:292px;background:#f4ecdf;border-radius:0 0 12px 12px;border:2px solid #101f47;overflow:hidden}
+.wk span{position:absolute;left:0;right:0;bottom:12px;text-align:center;font:400 30px/1 Anton;color:#101f47}
+.wk i,.bk i{position:absolute;inset:0;background:#f6b93b;opacity:0}
+.wk.m{background:#f6b93b}
+.bk{position:absolute;top:14px;width:42px;height:178px;background:#14161c;border-radius:0 0 9px 9px;overflow:hidden}
+.bk i{background:#c0152f}
+.bk.m{background:#c0152f}
+/* figuras */
+.notes{width:100%;background:#f4ecdf;border-radius:26px;padding:22px 18px 18px;box-shadow:10px 10px 0 rgba(0,0,0,.35);display:flex;justify-content:space-around}
+.nt{position:relative;width:210px;text-align:center;border-radius:18px;padding:10px 0 8px}
+.nt svg{width:150px;height:170px}
+.nt .sy{font:400 52px/1 Anton;color:#101f47;letter-spacing:.02em;display:flex;justify-content:center;gap:6px}
+.nt .sy b{font-weight:400;border-radius:8px;padding:2px 8px 6px}
+.nt .num{font:800 26px HG;color:#8d8576;margin-bottom:2px}
+/* cartao final */
+#end{position:absolute;inset:0;background:#101f47;display:none}
+#end:before{content:'';position:absolute;inset:0;background:radial-gradient(900px 700px at 50% 80%,rgba(246,185,59,.24),transparent 70%)}
+.e{position:absolute;left:80px;right:80px;top:190px}
+.e h1{font:400 150px/1.02 Anton;color:#f4ecdf;letter-spacing:.01em}
+.e h1 b{font-weight:400;color:#f6b93b}
+.cta{margin-top:36px;display:inline-block;background:#c0152f;color:#fff;font:400 66px/1 Anton;padding:26px 38px 30px;border-radius:26px;box-shadow:10px 10px 0 rgba(0,0,0,.35);letter-spacing:.02em}
+.sub{margin-top:30px;font:700 40px/1.25 HG;color:#f4ecdf}
+.url{margin-top:8px;font:800 44px HG;color:#f6b93b}
+#paulE{position:absolute;left:50%;bottom:300px;width:700px;height:700px;transform-origin:50% 100%}
+#paulE img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+</style>
+<div id="bg"></div><div class="topo"></div><div class="bar" id="bar"></div>
+<div id="box"></div><div id="board"></div><div id="paul"></div>
+<div id="end"><div class="topo"></div><div class="e" id="etxt"></div><div id="paulE"></div></div>
+<script>
+let S=null,cur=-1,flash=[];
+const $=id=>document.getElementById(id);
+const esc=s=>s;
+function load(spec,dir){S=spec;
+  $('bar').innerHTML=S.scenes.map((_,i)=>`<i><b id="pb${i}" style="width:0"></b></i>`).join('');
+  const imgs=(p)=>Array.from({length:9},(_,i)=>`<img src="${dir}/${p}/${i}.png">`).join('');
+  $('paul').innerHTML=imgs(S.paul); $('paulE').innerHTML=imgs(S.end.paul||'selfie');
+  const e=S.end;$('etxt').innerHTML=`<div class="tag">${e.tag}</div><h1>${e.h.map(x=>x[0]=='*'?`<b>${x.slice(1)}</b>`:x).join('<br>')}</h1><div class="cta">${e.cta}</div><div class="sub">${e.sub}</div><div class="url">jogos.beaterista.com.br · @beaterista_</div>`;
+  return Promise.all([...document.images].map(im=>im.decode().catch(()=>0))).then(()=>document.fonts.ready);
+}
+const Q='<svg viewBox="0 0 150 170"><ellipse cx="62" cy="136" rx="30" ry="21" transform="rotate(-22 62 136)" fill="COL"/><rect x="85" y="18" width="9" height="116" rx="3" fill="COL"/></svg>';
+const E2='<svg viewBox="0 0 150 170"><ellipse cx="34" cy="136" rx="26" ry="18" transform="rotate(-22 34 136)" fill="C1"/><rect x="53" y="22" width="8" height="112" fill="C1"/><ellipse cx="108" cy="136" rx="26" ry="18" transform="rotate(-22 108 136)" fill="C2"/><rect x="127" y="22" width="8" height="112" fill="C2"/><rect x="53" y="18" width="82" height="20" fill="#101f47"/></svg>';
+function board(b){ if(!b) return '';
+  if(b.type=='grid'){const hd=['1','e','2','e','3','e','4','e'];
+    return `<div class="grid"><div class="grow"><div class="nm"></div>${hd.map((x,i)=>`<div class="hd ${i%2?'mid':''}" data-id="h${i}">${x}</div>`).join('')}</div>`+
+      b.rows.map((r,ri)=>`<div class="grow ${r.off?'off':''}"><div class="nm">${r.label}</div>${[0,1,2,3,4,5,6,7].map(c=>`<div class="c ${r.on.includes(c)?'on '+r.k:''}"><i data-id="r${ri}c${c}"></i></div>`).join('')}</div>`).join('')+'</div>';}
+  if(b.type=='keys'){let h='<div class="keys">';const lab=b.labels||{};
+    for(let i=0;i<14;i++)h+=`<div class="wk ${(b.mark||[]).includes(i)?'m':''}" style="left:${14+i*66}px"><i data-id="w${i}"></i><span>${lab[i]||''}</span></div>`;
+    [0,1,3,4,5,7,8,10,11,12].forEach((p,k)=>{h+=`<div class="bk ${(b.blackMark||[]).includes(k)?'m':''}" style="left:${14+(p+1)*66-21}px"><i data-id="b${k}"></i></div>`});
+    return h+'</div>';}
+  if(b.type=='notes'){return '<div class="notes">'+b.items.map((it,i)=>`<div class="nt"><div class="num">${i+1}</div><div data-svg="${it}" data-n="${i}"></div><div class="sy">${it=='q'?`<b data-id="n${i}a">TA</b>`:`<b data-id="n${i}a">TI</b><b data-id="n${i}b">TI</b>`}</div></div>`).join('')+'</div>';}
+}
+function paulFrame(el,t,ms){const k=Math.floor(t*1000/ms)%9;[...el.children].forEach((im,i)=>im.style.visibility=i==k?'visible':'hidden')}
+const ease=x=>1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+window.setT=function(t){
+  const beat=60/S.bpm, ph=(t%beat)/beat, pulse=Math.exp(-ph*5);
+  if(t>=S.clipT){ $('end').style.display='block'; const u=t-S.clipT;
+    $('etxt').style.transform=`translateY(${(1-ease(u/0.35))*-60}px)`; $('etxt').style.opacity=ease(u/0.25);
+    paulFrame($('paulE'),t,S.endMs||140); $('paulE').style.transform=`translate(-50%,${(1-ease((u-0.1)/0.4))*900}px) scale(${1+0.025*pulse})`; return; }
+  $('end').style.display='none';
+  let i=S.scenes.findIndex(s=>t<s.t0+s.dur); if(i<0)i=S.scenes.length-1; const s=S.scenes[i], u=t-s.t0;
+  if(i!=cur){cur=i; const big=Math.max(...s.lines.map(x=>x.length))>16;
+    $('box').innerHTML=`<div class="tag">${S.tag}</div>`+s.lines.map(x=>`<div class="l ${x[0]=='*'?'hl':''} ${s.lines.length>2?'t':big?'p':''}">${x.replace('*','')}</div>`).join('');
+    $('board').innerHTML=board(s.board); flash=[...document.querySelectorAll('[data-id]')]; }
+  S.scenes.forEach((sc,k)=>{$('pb'+k).style.width=(k<i?100:k>i?0:Math.min(100,u/sc.dur*100))+'%'});
+  [...$('box').children].forEach((el,k)=>{const a=ease((u-k*0.07)/0.22); el.style.opacity=k==0?1:a; el.style.transform=k==0?'':`translateX(${(1-a)*-50}px)`});
+  $('board').style.opacity=ease(u/0.25); $('board').style.transform=`translateY(${(1-ease(u/0.3))*40}px)`;
+  const lv={}; for(const h of S.hits){const d=t-h.t; if(d>=-0.001&&d<0.45&&h.t>=s.t0-0.001){const v=Math.exp(-d*7); for(const id of h.ids) lv[id]=Math.max(lv[id]||0,v);}}
+  for(const el of flash){const v=lv[el.dataset.id]||0;
+    if(el.classList.contains('hd')){el.style.background=`rgba(246,185,59,${v})`}
+    else if(el.tagName=='B'){el.style.background=`rgba(246,185,59,${v})`; el.style.transform=`scale(${1+0.25*v})`; el.style.display='inline-block'}
+    else {el.style.opacity=v*0.85; if(el.parentElement.classList.contains('c')) el.parentElement.style.transform=`scale(${1+0.16*v})`;}}
+  document.querySelectorAll('[data-svg]').forEach(el=>{const n=el.dataset.n,a=lv['n'+n+'a']||0,b=lv['n'+n+'b']||0;const col=v=>v>0.25?'#c0152f':'#101f47';
+    el.innerHTML=el.dataset.svg=='q'?Q.replace(/COL/g,col(a)):E2.replace(/C1/g,col(a)).replace(/C2/g,col(b)); el.style.transform=`scale(${1+0.1*Math.max(a,b)})`});
+  paulFrame($('paul'),t,S.paulMs);
+  $('paul').style.transform=`translate(-50%,${(1-ease(t/0.4))*700}px) scale(${1+0.022*pulse},${1+0.03*pulse})`;
+};
+</script>

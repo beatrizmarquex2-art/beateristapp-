@@ -2,6 +2,11 @@
 // Regra da Bea: o Paul sempre colorido ou PNG, nunca dentro de círculo/moldura.
 export const POSES = ['bateria', 'guitarra', 'teclado', 'microfone', 'pandeiro', 'lendo-partitura', 'ouvindo', 'estudando', 'baquetas-pra-cima', 'metronomo', 'cajon', 'oculos', 'agua', 'professor', 'meditando', 'selfie', 'maestro', 'produtor', 'gravando', 'dj', 'colorindo', 'pad', 'escrevendo', 'pad-metronomo', 'mostrando-partitura', 'estante'];
 export const corSrc = (pose) => `assets/paul/colorido/paul-${POSES.includes(pose) ? pose : 'ouvindo'}.webp`;
+/** Poses que têm versão animada (GIFs da Bea, nov/2026, fundo recortado). Gerar mais: marketing/ferramentas/paul_animado.py */
+export const ANIMADOS = ['bateria', 'guitarra', 'teclado', 'pandeiro', 'cajon', 'professor', 'meditando', 'selfie', 'maestro', 'produtor', 'dj', 'colorindo', 'escrevendo'];
+const semMovimento = () => { try { return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); } catch { return false; } };
+/** Paul animado quando a pose tem (e o aparelho não pede "reduzir movimento"); senão o parado de sempre. */
+export const animSrc = (pose) => (ANIMADOS.includes(pose) && !semMovimento() ? `assets/paul/animado/paul-${pose}.webp` : corSrc(pose));
 export const stkSrc = (nome) => `assets/paul/stk/${nome}.webp`;
 export const ELEMENTOS = ['baquetas', 'caixa', 'piano', 'equalizador', 'fone', 'amp', 'mic', 'caneca', 'livros', 'laptop', 'calendario', 'palheta', 'estrela', 'raio', 'nota', 'nota2', 'cassete', 'vinil', 'lampada', 'coracao', 'estrela-ouro', 'onda'];
 /** Pose do Paul por humor (para telas que falam de "humor"); `base` é a pose natural do lugar (ex.: o instrumento da aula). */
