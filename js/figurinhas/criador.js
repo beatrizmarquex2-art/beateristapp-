@@ -6,13 +6,10 @@ import { janelaLocal } from './card2.js';
 import { cartaCanvas } from './postar.js';
 import { shareUI } from './share-ui.js';
 
-// M9 = o 4 em amarelo e M10 = o 5 em azul (16/nov, pedido da Bea). M4 e M5 continuam existindo nas figurinhas do álbum, só saíram da escolha.
-export const IDS = ['M1', 'M2', 'M3', 'M9', 'M10', 'M6', 'M7', 'M8'];
-const NOVO = { M4: 'M9', M5: 'M10' };
+export const IDS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'];
 /** opts: { cfg (objeto salvo pelo chamador), salvar(), nome() -> texto do rótulo, titulo, extra() -> campos do post (ex.: tituloPost) } */
 export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloShare = 'baixar minha figurinha', extra = () => ({}), aoGuardar = null }) {
   let fotoImg = null, share = null, alive = true, raf = 0, guardada = false;
-  if (NOVO[cfg.modelo]) { cfg.modelo = NOVO[cfg.modelo]; try { salvar(); } catch { /* ok */ } } // quem tinha o 4 ou o 5 escolhido passa pro amarelo / azul
   const entry = () => ({ modelo2: cfg.modelo, artista_banda: (nome() || '').trim() || 'SEU NOME', fotoImg, ajuste: { zoom: cfg.zoom, ox: cfg.ox, oy: cfg.oy }, raridade: MODELOS2[cfg.modelo].raridade, semSelo: true, secao: 'Comum', codigo: '', ...extra() });
   const cv = h('canvas', { class: 'pf-canvas', width: 720, height: 950, role: 'img', 'aria-label': 'Prévia da cartinha. Arraste para mover a foto.' });
   const zoom = h('input', { type: 'range', min: 1, max: 3, step: 0.02, value: cfg.zoom, 'aria-label': 'Zoom da foto', oninput: (ev) => { cfg.zoom = Number(ev.target.value); limita(); salvar(); pintar(); } });
