@@ -2,7 +2,6 @@
 import { h } from '../util.js';
 import { audio } from '../audio.js';
 import { banner } from '../ui.js';
-import { kitTheme, themeRow } from '../kids/kit-theme.js';
 import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
@@ -32,11 +31,10 @@ export function mount(host) {
     b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
     for (let k = 0; k < 3; k++) { const n = h('i', { class: 'ti-note' }, NOTAS[(Math.random() * NOTAS.length) | 0]); n.style.left = `${r.left + r.width * (0.25 + Math.random() * 0.5)}px`; n.style.top = `${r.top + r.height * 0.3}px`; document.body.append(n); const a = n.animate([{ transform: 'translateY(0) scale(.7)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 40}px,-60px) scale(1.2)`, opacity: 0 }], { duration: 700 + k * 120, easing: 'ease-out' }); a.onfinish = () => n.remove(); }
   });
-  const stage = h('div', { class: 'ti-stage ti-xy-stage', 'data-kit-theme': kitTheme() });
+  const stage = h('div', { class: 'ti-stage ti-xy-stage', 'data-kit-theme': 'colagem' });
   const xy = h('div', { class: 'ti-xy', role: 'group', 'aria-label': 'Barras do xilofone' });
   const scaleRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Escala' });
   const soundRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Som' });
-  const themeBox = h('div');
 
   const drawXy = () => {
     const ms = SCALES[scale]; const n = ms.length;
@@ -50,7 +48,7 @@ export function mount(host) {
     scaleRow.replaceChildren(h('small', {}, 'escala'), ...ESCALAS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.escalas.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { if (!pago() && !GRATIS.xilofone.escalas.includes(v)) { pedir('as outras escalas'); return; } scale = v; drawXy(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.escalas.includes(v) ? cadeado() : null)));
     soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { pedir('os outros sons'); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
   };
-  const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
+  const drawTheme = () => { stage.dataset.kitTheme = 'colagem'; }; // um fundo só
   const ripple = (x, y) => {
     const r = stage.getBoundingClientRect(); const d = h('i', { class: 'ti-rip' }); d.style.left = `${x - r.left}px`; d.style.top = `${y - r.top}px`; stage.append(d);
     const a = d.animate([{ transform: 'scale(.6)', opacity: 0.8 }, { transform: 'scale(3.6)', opacity: 0 }], { duration: 460, easing: 'ease-out' }); a.onfinish = () => d.remove();
@@ -73,7 +71,7 @@ export function mount(host) {
 
   stage.append(xy, pads);
   host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), stage,
-    h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow), rolar(themeBox)),
+    h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow)),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();

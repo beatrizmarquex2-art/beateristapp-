@@ -2,7 +2,6 @@
 import { h } from '../util.js';
 import { audio, isMuted, setMuted } from '../audio.js';
 import { banner } from '../ui.js';
-import { kitTheme, themeRow } from '../kids/kit-theme.js';
 import { pluck, warmNotes, backing } from '../instruments.js';
 import { ACORDES, ABERTAS as GUITAR_OPEN, acharAcorde, PADRAO, diagramaSVG } from '../acordes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
@@ -24,14 +23,13 @@ export function mount(host) {
   let slots = !pago() ? PADRAO.map(acharAcorde) : (() => { try { const a = JSON.parse(lerLS('bt-violao-acordes2', 'null')); if (Array.isArray(a) && a.length === 8 && a.every((id) => acharAcorde(id))) return a.map(acharAcorde); } catch { /* usa o padrão */ } return PADRAO.map(acharAcorde); })();
   let modo = pago() && lerLS('bt-violao-modo', 'acordes') === 'notas' ? 'notas' : 'acordes'; let escala = ESCALAS[lerLS('bt-violao-escala', 'maior')] ? lerLS('bt-violao-escala', 'maior') : 'maior';
   let editando = false; let selSlot = 0;
-  const stage = h('div', { class: 'ti-stage ti-gt', 'data-kit-theme': kitTheme() });
+  const stage = h('div', { class: 'ti-stage ti-gt', 'data-kit-theme': 'colagem' });
   const chordsEl = h('div', { class: 'ti-chords', role: 'group', 'aria-label': 'Acordes' });
   const notes = h('div', { class: 'ti-gnotes' });
   const strs = h('div', { class: 'ti-gstr', 'aria-label': 'Cordas: passe o dedo' });
   const strEls = GROSS.map((w, i) => { const e = h('div', { class: `ti-str${i < 3 ? ' wound' : ''}` }, h('i', {})); e.firstChild.style.setProperty('--w', `${w}px`); strs.append(e); return e; });
   const soundRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Som' });
   const muteBtn = h('button', { class: 'kd-chip ti-sym', type: 'button', 'aria-pressed': 'false', 'aria-label': 'abafar (segure)', title: 'abafar (segure)' }, '🔉'); // só o símbolo, pequeno
-  const themeBox = h('div');
 
   const carta = (ac, ativo, ed, onclick) => {
     const trav = !pago() && slots.indexOf(ac) >= GRATIS.violao.acordes;
@@ -44,7 +42,7 @@ export function mount(host) {
     notes.replaceChildren(...slots[chord].notas.map((m, i) => { strEls[i].classList.toggle('off', m == null); return h('div', { class: 'ti-gnote' }, m == null ? '×' : nome(m)); }));
   };
   const drawSound = () => soundRow.replaceChildren(...SOUNDS.map(([v, l, nm]) => { const trav = !pago() && v !== 'acoustic'; return h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { if (trav) { pedir('a guitarra'); return; } sound = v; audio(); warmNotes(ACORDES.flatMap((a) => a.notas)); drawSound(); } }, `${l} ${nm}`, trav ? cadeado() : null); }));
-  const drawTheme = () => { stage.dataset.kitTheme = kitTheme(); themeBox.replaceChildren(themeRow(drawTheme)); };
+  const drawTheme = () => { stage.dataset.kitTheme = 'colagem'; }; // um fundo só
 
   const ripple = (x, y, big) => {
     const r = stage.getBoundingClientRect(); const d = h('i', { class: 'ti-rip' }); d.style.left = `${x - r.left}px`; d.style.top = `${y - r.top}px`; d.style.borderColor = '#f5ead2'; stage.append(d);
@@ -130,7 +128,7 @@ export function mount(host) {
   const neck = h('div', { class: 'ti-neck' }, notes, strs);
   stage.append(chordsEl, edBar, bandeja, neck, frets);
   host.append(banner('Cordas', 'violão e guitarra: acordes ou melodia'), tocarTabs('violao'), offMsg, ...(faixaPlano(GRATIS.violao.texto) ? [faixaPlano(GRATIS.violao.texto)] : []), modoBar, stage,
-    h('section', { class: 'card pad ti-panel' }, rolar(escalaRow), rolar(soundRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' })), rolar(themeBox)),
+    h('section', { class: 'card pad ti-panel' }, rolar(escalaRow), rolar(soundRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
     backingBar(),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. 🔉 (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));
   drawChords(); drawSound(); drawTheme(); drawModo();
