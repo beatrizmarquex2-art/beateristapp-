@@ -6,7 +6,8 @@ import { janelaLocal } from './card2.js';
 import { cartaCanvas } from './postar.js';
 import { shareUI } from './share-ui.js';
 
-export const IDS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'];
+// M9 = arte nova da Bea (rasgado, baquetas, notas e raios; 16/nov). Pra acrescentar outra: salvar o png em assets/figurinhas/modelos2/(e limpo/), pôr em modelos2-data.js e em selo-team.js e aqui.
+export const IDS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9'];
 /** opts: { cfg (objeto salvo pelo chamador), salvar(), nome() -> texto do rótulo, titulo, extra() -> campos do post (ex.: tituloPost) } */
 export function criador({ cfg, salvar, nome, titulo = 'minha figurinha', tituloShare = 'baixar minha figurinha', extra = () => ({}), aoGuardar = null }) {
   let fotoImg = null, share = null, alive = true, raf = 0, guardada = false;
