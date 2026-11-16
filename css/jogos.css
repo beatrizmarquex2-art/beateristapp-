@@ -1395,3 +1395,29 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .a1-toque.ok{background:#3aa66b}.a1-toque.bad{background:#d8503f}
 .a1-botoes{margin-top:4px}
 @media (prefers-reduced-motion:reduce){.a1-tempo.vai i{animation:none;width:100%}.vv-achar1 .a1-pad.um{animation:none}}
+
+/* Achar o 1 — visual "palco à noite" (opção A escolhida pela Bea): azul-marinho, o 1 dourado num holofote, régua escura com marcas que brilham */
+.vv-achar1{--a1-noite:#0f1c33;--a1-fundo:#0a1426;--a1-azul:#2c4d86;--a1-ouro:#e8a93a;background:var(--a1-noite);color:#fff;border-radius:14px;padding:16px 14px 18px;box-shadow:inset 0 0 0 2px var(--a1-fundo)}
+.vv-achar1 .vv-quem,.vv-achar1 .vv-msg,.vv-achar1 .vv-lab,.vv-achar1 .vv-leg,.vv-achar1 .a1-res small{color:#fff}
+.vv-achar1 .vv-quem{opacity:.85}
+.vv-achar1 .vv-msg{font-size:18px}
+.vv-achar1 .vv-chip{background:var(--a1-fundo);color:#fff;border-color:var(--a1-azul);box-shadow:2px 2px 0 #000}
+.vv-achar1 .vv-chip.on{background:var(--a1-ouro);color:var(--a1-noite);border-color:var(--a1-ouro);box-shadow:2px 2px 0 #000}
+.vv-achar1 .vv-go{background:var(--a1-ouro);color:var(--a1-noite);border-color:var(--a1-fundo);box-shadow:4px 4px 0 var(--a1-fundo)}
+.vv-achar1 .a1-pad{justify-self:center;width:min(240px,70vw);height:min(240px,70vw);min-height:0;border-radius:50%;border:4px solid var(--a1-ouro);color:var(--a1-ouro);font:900 130px/1 var(--vv-tit,system-ui);background:radial-gradient(circle,#2c4d86 0,#16294a 62%,#0f1c33 100%);box-shadow:0 0 60px #e8a93a55,inset 0 0 24px #0006;text-shadow:0 0 24px #e8a93aaa;touch-action:manipulation}
+.vv-achar1 .a1-pad.hit{background:radial-gradient(circle,#4468a8 0,#1f386a 62%,#16294a 100%);transform:scale(.97);box-shadow:0 0 80px #e8a93a99,inset 0 0 24px #0006}
+.vv-achar1 .a1-pad:disabled{opacity:.9}
+@keyframes a1-um{0%{box-shadow:0 0 110px #e8a93acc,inset 0 0 24px #0006;transform:scale(1.05)}100%{box-shadow:0 0 60px #e8a93a55,inset 0 0 24px #0006;transform:none}}
+.vv-achar1 .a1-tempo{border-color:var(--a1-azul);background:var(--a1-fundo);border-radius:6px}
+.vv-achar1 .a1-tempo i{background:var(--a1-ouro);box-shadow:0 0 10px var(--a1-ouro)}
+.vv-achar1 .a1-veredito.ok{color:#4be08f;text-shadow:0 0 12px #4be08f66}.vv-achar1 .a1-veredito.bad{color:#ff8a7a}
+.vv-achar1 .a1-regua{background:var(--a1-fundo);border:2px solid var(--a1-azul);border-radius:12px;box-shadow:none}
+.vv-achar1 .a1-regua::before{border-top-color:#fff;opacity:.15}
+.vv-achar1 .a1-um{border-left:3px solid var(--a1-ouro);box-shadow:0 0 10px var(--a1-ouro)}
+.vv-achar1 .a1-um b{color:var(--a1-ouro);font-family:system-ui;font-weight:900}
+.vv-achar1 .a1-toque{border:0}.vv-achar1 .a1-toque.ok{background:#4be08f;box-shadow:0 0 10px #4be08f}.vv-achar1 .a1-toque.bad{background:#ff6b5a;box-shadow:0 0 8px #ff6b5a88}
+.vv-achar1 .vv-res{background:var(--a1-fundo);color:#fff;border-color:var(--a1-azul);box-shadow:none}
+.vv-achar1 .vv-res-n,.vv-achar1 .vv-res-est{color:var(--a1-ouro)}
+.vv-achar1 .vv-res p{color:#fff}
+.vv-achar1{padding-top:34px}
+.vv-achar1 button.vv-padzao.a1-pad{border-radius:50%;aspect-ratio:1}

@@ -34,7 +34,7 @@ export function mount(host) {
     const nv = nivelDe(nivelId); const lista = pool(nv.lv);
     const topo = h('b', { class: 'vv-quem' }); const msg = h('p', { class: 'vv-msg', role: 'status', 'aria-live': 'polite' });
     const barra = h('div', { class: 'a1-tempo', 'aria-hidden': 'true' }, h('i', {}));
-    const pad = h('button', { type: 'button', class: 'vv-padzao a1-pad', 'aria-label': 'toque no 1' }, '1');
+    const pad = h('button', { type: 'button', class: 'vv-padzao a1-pad bmr', 'aria-label': 'toque no 1' }, '1');
     const res = h('div', { class: 'a1-res' });
     const placar = () => { topo.textContent = `rodada ${Math.min(rodada + 1, RODADAS)} de ${RODADAS} · pontos ${pontos}`; };
     root.replaceChildren(topo, barra, msg, pad, res); placar();
@@ -64,7 +64,7 @@ export function mount(host) {
       const x = (t) => `${Math.max(0, Math.min(100, (t / r.total) * 100))}%`;
       return h('div', { class: 'a1-regua', role: 'img', 'aria-label': `os 1 estavam nos segundos ${r.uns.map((t) => t.toFixed(1)).join(', ')}; você tocou ${r.toques.length} vez(es), ${r.hits} no 1` },
         ...r.uns.map((t) => h('span', { class: 'a1-um', style: { left: x(t) } }, h('b', {}, '1'))),
-        ...r.toques.map((p) => h('i', { class: `a1-toque${p.ok ? ' ok' : ' bad'}`, style: { left: x(Math.max(0, p.t)) } })));
+        ...r.toques.map((p) => h('i', { class: `a1-toque bmr${p.ok ? ' ok' : ' bad'}`, style: { left: x(Math.max(0, p.t)) } })));
     }
 
     function botoes(depoisDaMarca) {
