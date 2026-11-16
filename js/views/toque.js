@@ -20,11 +20,13 @@ import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
 import { kitTheme, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
 
-/** O logo da Beaterista fica na "tela", fora da bateria (canto de cima). */
-const logoFora = (art) => {
-  const im = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-  for (const [k, v] of Object.entries({ href: 'assets/logo-menu-beaterista.webp', x: 4, y: 2, width: 72, height: 37, 'pointer-events': 'none', preserveAspectRatio: 'xMinYMin meet' })) im.setAttribute(k, String(v));
-  (art.querySelector('svg') || art).append(im);
+/** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
+const logoFora = (art, modelo) => {
+  const svg = art.querySelector('svg') || art; const escuro = kitTheme() !== 'colagem';
+  const img = (src, x, y, w, h, cls = '') => { const im = document.createElementNS('http://www.w3.org/2000/svg', 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v)); svg.append(im); };
+  img('assets/marcas/beaterista.png', 4, 2, 44, 44);
+  if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro');
+  if (modelo === 'cajon') img(`assets/marcas/spark-${escuro ? 'branco' : 'preto'}.png`, 150, 4, 120, 38);
 };
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -65,7 +67,7 @@ export function mount(host) {
   const drawKit = () => {
     const c = conf(); modeloAtual = c.modelo;
     kit.classList.toggle('left', !!c.left);
-    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art);
+    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art, c.modelo);
     kit.dataset.kitTheme = kitTheme();
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),

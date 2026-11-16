@@ -123,7 +123,7 @@ const haste = (x, y1, y2) => `<path d="M${x} ${y1} V${y2} M${x} ${y2} L${x - 26}
 
 export function acustica() {
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria acústica preta">${DEFS}
-    ${tapete()}${marca(210, 16, 'NAGANO')}
+    ${tapete()}
     ${haste(98, 62, 248)}${haste(352, 74, 250)}${haste(36, 128, 262)}
     <path d="M326 232 V268 M366 232 V268" stroke="#a3a5b0" stroke-width="3.2" stroke-linecap="round"/><rect x="321" y="266" width="10" height="6" rx="2" fill="#111"/><rect x="361" y="266" width="10" height="6" rx="2" fill="#111"/>
     ${bumbo(208, 196, 62)}
@@ -183,7 +183,6 @@ export function cajon() {
   const furos = [[112, 69], [150, 66], [190, 66], [230, 67], [262, 71], [106, 114], [104, 170], [100, 226], [108, 270], [148, 271], [188, 271], [228, 271], [268, 267], [270, 130], [272, 190], [274, 240]];
   const veios = volta(9, (_, i) => `<path d="M${114 + i * 18} 70 C ${110 + i * 18} 140, ${120 + i * 18} 200, ${114 + i * 18} 270" fill="none" style="stroke:#8a5420;stroke-opacity:${i % 2 ? 0.1 : 0.17};stroke-width:${i % 3 ? 1 : 1.5}"/>`);
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Cajón Spark">${DEFS}
-    ${marca(210, 16, 'SPARK')}
     ${marca(46, 104, 'AGUDO')}<path d="M72 104 l12 -6 v12 Z" fill="#121216"/>${marca(46, 190, 'GRAVE')}<path d="M72 190 l12 -6 v12 Z" fill="#121216"/>
     <ellipse cx="200" cy="284" rx="130" ry="10" fill="url(#km-sombra)"/>
     <path d="M272 58 L322 44 C332 110 334 200 326 262 L278 278 Z" fill="url(#km-lateral)"/>
@@ -193,7 +192,7 @@ export function cajon() {
     <path d="M100 58 L272 58 L278 278 L94 278 Z" fill="url(#km-pinho)"/>
     ${veios}
     ${furos.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.3" fill="#16110b"/>`).join('')}
-    <g transform="translate(106 252)"><text class="rt-fica" x="0" y="11.5" font-family="'Arial Black',Impact,sans-serif" font-size="14" font-weight="900" fill="#16110b" stroke="none">SPARK</text><text class="rt-fica" x="60" y="1" font-family="Arial,sans-serif" font-size="5.5" font-weight="700" fill="#16110b" stroke="none" transform="rotate(90 60 1)">CAJONS</text></g>
+    <image href="assets/marcas/spark-preto.png" x="112" y="238" width="82" height="26" preserveAspectRatio="xMinYMid meet" pointer-events="none"/>
     <g class="kp" data-p="sn" style="--c:${COR.sn}">
       <rect x="118" y="76" width="140" height="56" rx="12" fill="#c58f50"/>
       <rect x="121" y="79" width="134" height="50" rx="10" fill="${COR.sn}"/>

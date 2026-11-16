@@ -1,7 +1,7 @@
 // Refaz a lista EXTRA do sw.js (artes dos jogos, memória, mural, zine…): tudo o que esses jogos pedem tem que estar no cache pra rodar sem internet.
 // Uso: node scripts/sw-extra.mjs   (rode depois de adicionar arquivos nessas pastas)
 import fs from 'node:fs'; import path from 'node:path';
-const dirs = ['assets/jogos', 'assets/mural', 'assets/memoria', 'assets/zine', 'assets/paul', 'assets/rhythm-games', 'assets/arsenal', 'assets/instrumentos', 'assets/aluno'];
+const dirs = ['assets/jogos', 'assets/mural', 'assets/memoria', 'assets/zine', 'assets/paul', 'assets/rhythm-games', 'assets/arsenal', 'assets/instrumentos', 'assets/aluno', 'assets/marcas'];
 const walk = (d) => (fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)])) : []);
 let sw = fs.readFileSync('sw.js', 'utf8');
 const shell = new Set([...sw.match(/const SHELL = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map((m) => m[1]));
