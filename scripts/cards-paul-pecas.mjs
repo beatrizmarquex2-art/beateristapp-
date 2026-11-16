@@ -1,5 +1,5 @@
 // Peças de divulgação dos baralhos Cards do Robôterista Paul: capa da Hotmart (quadrada, até 5 MB), carrossel do Instagram (1080×1350),
-// cenas de story/reel (1080×1920) e o reel em mp4. Uso: NODE_PATH=$(npm root -g) node scripts/cards-paul-pecas.mjs PASTA_DE_SAIDA [instrumentos|dicionario]
+// cenas de story/reel (1080×1920) e o reel em mp4. Uso: NODE_PATH=$(npm root -g) node scripts/cards-paul-pecas.mjs PASTA_DE_SAIDA [teoria|instrumentos|dicionario]
 // Os cards são fotografados direto do cards.html (as mesmas cartas do PDF). A saída NÃO vai pro repositório.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,8 +8,8 @@ import { serve, ROOT } from '../tests/e2e/harness.mjs';
 import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const saida = process.argv[2]; if (!saida) { console.error('informe a pasta de saída'); process.exit(1); }
-const decks = process.argv[3] ? [process.argv[3]] : ['instrumentos', 'dicionario'];
-const TITULOS = { instrumentos: ['Pratos', 'Dó maior', 'Mi menor (Em)'], dicionario: ['síncope', 'clave de sol', 'tablatura'] };
+const decks = process.argv[3] ? [process.argv[3]] : ['teoria', 'instrumentos', 'dicionario'];
+const TITULOS = { teoria: ['Semibreve', 'Pausa de semínima', 'Pulso'], instrumentos: ['Pratos', 'Dó maior', 'Mi menor (Em)'], dicionario: ['síncope', 'clave de sol', 'tablatura'] };
 const slug = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const { srv, url } = await serve(); const browser = await chromium.launch();
 const tmp = path.join(ROOT, 'marketing/cards-paul/_out'); // a página das peças lê os cards daqui (pasta ignorada pelo git)
