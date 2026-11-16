@@ -7,6 +7,8 @@ export const SELO_TEAM = {
   M3: { cx: 179.8, cy: 439.5, w: 88, ang: 0, cor: '#ebe4d2' },
   M4: { cx: 192.3, cy: 440, w: 92, ang: 0, cor: '#f1e6c9' },
   M5: { cx: 183.2, cy: 430.5, w: 84, ang: 0, cor: '#f1e3c6' },
+  M9: { cx: 192.3, cy: 440, w: 92, ang: 0, cor: '#f1e6c9' },
+  M10: { cx: 183.2, cy: 430.5, w: 84, ang: 0, cor: '#e8f0fb' },
   M6: { cx: 180.1, cy: 430, w: 80, ang: -2.8, cor: '#e3c6f0' },
   M7: { cx: 177.3, cy: 425, w: 140, ang: -0.8, cor: '#1a160e' },
   M8: { cx: 171.1, cy: 414.5, w: 112, ang: -5, cor: '#e6c274' },
