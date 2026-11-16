@@ -52,10 +52,10 @@ ${abinha(nota, 64, 1065, 560)}${rodape ? `<div style="position:absolute;left:54p
 
 // ---------- BANNER do site (1200×600) ----------
 const banner = ({ t1, t2, sub, phones, cta = 'jogar agora' }) => doc(1200, 600, `<h1 style="left:60px;top:70px;font-size:84px">${t1}<em>${t2}</em></h1>
-<div style="position:absolute;left:60px;top:300px;width:560px;font:400 38px/1.2 Gochi,cursive">${sub}</div>
-<div style="position:absolute;left:60px;top:430px;font:800 36px Hanken;background:${OU};color:${AZ};padding:16px 34px;border-radius:99px;box-shadow:6px 6px 0 rgba(0,0,0,.35)">${cta}</div>
+<div style="position:absolute;left:60px;top:290px;width:600px;font:400 36px/1.2 Gochi,cursive">${sub}</div>
+<div style="position:absolute;left:60px;top:485px;font:800 34px Hanken;background:${OU};color:${AZ};padding:16px 34px;border-radius:99px;box-shadow:6px 6px 0 rgba(0,0,0,.35)">${cta}</div>
 ${phones.map(([n, x, y, w, r]) => phone(n, x, y, w, r)).join('')}
-<img src="${LOGO}" style="position:absolute;left:430px;top:445px;height:110px">`);
+<img src="${LOGO}" style="position:absolute;left:430px;top:470px;height:100px">`);
 
 const STORIES = {
   'story-1-oi-eu-sou-o-paul': () => doc(1080, 1920, `<h1 style="left:70px;top:150px">oi, eu sou<em>o paul!</em></h1>
@@ -67,39 +67,39 @@ const STORIES = {
 <div style="position:absolute;left:70px;top:1560px;font:400 50px Gochi,cursive">começa grátis, é só entrar:</div>
 <div style="position:absolute;left:70px;top:1640px;font:800 44px Hanken;background:${CR};color:${AZ};padding:20px 36px;border-radius:99px">${URLSITE}</div>
 <img src="${LOGO}" style="position:absolute;right:60px;bottom:60px;height:120px">`),
-  'story-2-jogos': () => story({ t1: 'joga e aprende', t2: 'ao mesmo tempo', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
-  'story-3-estudos': () => story({ t1: 'estuda com', t2: 'o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'teoria, bateria, teclado e violão em aulinhas curtas.'], paul: 'professor' }),
-  'story-4-palco': () => story({ t1: 'toca na tela', t2: 'de verdade', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
-  'story-5-banda-do-paul': () => story({ t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['paulbox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro' }),
+  'story-2-jogos': () => story({ t1: 'jogue e aprenda', t2: 'ao mesmo tempo', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
+  'story-3-estudos': () => story({ t1: 'estude com', t2: 'o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea: teoria, bateria, teclado e violão.'], paul: 'professor' }),
+  'story-4-palco': () => story({ t1: 'toque na tela', t2: 'de verdade', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
+  'story-5-banda-do-paul': () => story({ t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['PaulBox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro' }),
   'story-6-jogue-agora': () => finalCard({ cta: 0, paul: 'selfie' }),
 };
 const POSTS = {
-  'post-1-jogos': () => post({ t1: 'joga e aprende', t2: 'ao mesmo tempo', phone: ['hero-drum', 100, 290, 420, -2], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
-  'post-2-estudos': () => post({ t1: 'estuda com', t2: 'o Paul', phone: ['estudos-lista', 100, 290, 420, 2], nota: ['educação', 'teoria, bateria, teclado e violão em aulinhas curtas.'], paul: 'professor' }),
-  'post-3-palco': () => post({ t1: 'toca na tela', t2: 'de verdade', phone: ['palco-bateria', 100, 290, 420, -2], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
+  'post-1-jogos': () => post({ t1: 'jogue e aprenda', t2: 'ao mesmo tempo', phone: ['hero-drum', 100, 290, 420, -2], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'], paul: 'oculos' }),
+  'post-2-estudos': () => post({ t1: 'estude com', t2: 'o Paul', phone: ['estudos-lista', 100, 290, 420, 2], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea.'], paul: 'professor' }),
+  'post-3-palco': () => post({ t1: 'toque na tela', t2: 'de verdade', phone: ['palco-bateria', 100, 290, 420, -2], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'], paul: 'bateria' }),
   'post-4-acordes': () => post({ t1: 'veja, ouça', t2: 'e toque o acorde', phone: ['acordes-violao', 100, 290, 420, 2], nota: ['música', 'violão, guitarra, baixo e teclado: o desenho e o som.'], paul: 'guitarra' }),
   'post-5-banda': () => post({ t1: 'monte a banda', t2: 'do Paul', phone: ['paulbox', 100, 290, 420, -2], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'], paul: 'maestro' }),
 };
 const BANNERS = {
-  'banner-1-joga-aprende-toca': () => banner({ t1: 'joga, aprende', t2: 'e toca', sub: 'jogos, estudos e palco com o Robôterista Paul', phones: [['hero-drum', 700, 60, 250, -3], ['figurix', 940, 110, 250, 3]] }),
-  'banner-2-estudos': () => banner({ t1: 'estuda com', t2: 'o Paul', sub: 'teoria, bateria, teclado e violão em aulinhas curtas', phones: [['estudos-lista', 700, 60, 250, -3], ['acordes-violao', 940, 110, 250, 3]] }),
-  'banner-3-palco': () => banner({ t1: 'toca na tela', t2: 'de verdade', sub: 'bateria, acordes e notas no celular ou no tablet', phones: [['palco-bateria', 700, 60, 250, -3], ['palco-acordes', 940, 110, 250, 3]] }),
+  'banner-1-joga-aprende-toca': () => banner({ t1: 'jogue, aprenda', t2: 'e toque', sub: 'jogos, estudos e palco com o Robôterista Paul, assistente da Bea', phones: [['hero-drum', 700, 60, 250, -3], ['figurix', 940, 110, 250, 3]] }),
+  'banner-2-estudos': () => banner({ t1: 'estude com', t2: 'o Paul', sub: 'com o Paul, o Robôterista assistente da Bea: teoria, bateria, teclado e violão', phones: [['estudos-lista', 700, 60, 250, -3], ['acordes-violao', 940, 110, 250, 3]] }),
+  'banner-3-palco': () => banner({ t1: 'toque na tela', t2: 'de verdade', sub: 'bateria, acordes e notas para tocar no celular ou no tablet', phones: [['palco-bateria', 700, 60, 250, -3], ['palco-acordes', 940, 110, 250, 3]] }),
   'banner-4-banda-do-paul': () => banner({ t1: 'monte a banda', t2: 'do Paul', sub: 'escolha os instrumentos e troque o ritmo de cada um', phones: [['paulbox', 700, 60, 250, -3], ['mapa', 940, 110, 250, 3]] }),
 };
 // reels: cenas (3,6 s cada) + cartão final (3,5 s) e o Paul animado (GIF) no canto de baixo à direita, sempre
 const REELS = {
   'reel-1-o-app-por-dentro': { gif: 'danca', cta: 0, cenas: [
-    { t1: 'joga', t2: 'e aprende', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'] },
-    { t1: 'estuda', t2: 'com o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'teoria, bateria, teclado e violão em aulinhas curtas.'] },
-    { t1: 'toca', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'] }] },
+    { t1: 'jogue', t2: 'e aprenda', phones: [['hero-drum', 70, 470, 440, -3], ['figurix', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'cada jogo treina uma coisa: ritmo, figuras, escuta.'] },
+    { t1: 'estude', t2: 'com o Paul', phones: [['estudos-lista', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'com a ajuda do Paul, o Robôterista assistente da Bea: teoria, bateria, teclado e violão.'] },
+    { t1: 'toque', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['palco-acordes', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'bateria, acordes e notas pra tocar no celular ou no tablet.'] }] },
   'reel-2-estudar-jogando': { gif: 'palmas', cta: 2, cenas: [
     { t1: 'figuras', t2: 'rítmicas', phones: [['figurix', 70, 470, 440, -3], ['uno', 570, 560, 440, 3]], tags: [['jogos', 90, 440, -5]], nota: ['didática', 'reconhecer as figuras é o segredo: no Figurix e no Uno Musical.'] },
-    { t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['paulbox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'] },
-    { t1: 'tem aula', t2: 'também', phones: [['estudos-home', 70, 470, 440, -3], ['estudos-lista', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'dicas do Paul, dicionário musical e aulinhas de instrumento.'] }] },
+    { t1: 'monte a banda', t2: 'do Paul', phones: [['paulbox', 70, 470, 440, -3], ['mapa', 570, 560, 440, 3]], tags: [['PaulBox', 90, 440, -5]], nota: ['criatividade', 'escolha os instrumentos e troque o ritmo de cada um.'] },
+    { t1: 'e tem aulas', t2: 'também', phones: [['estudos-home', 70, 470, 440, -3], ['estudos-lista', 570, 560, 440, 3]], tags: [['estudos', 90, 440, -5]], nota: ['educação', 'dicas do Paul, dicionário musical e aulinhas de instrumento.'] }] },
   'reel-3-toca-na-tela': { gif: 'danca', cta: 3, cenas: [
     { t1: 'bateria', t2: 'na tela', phones: [['palco-bateria', 70, 470, 440, -3], ['hero-drum', 570, 560, 440, 3]], tags: [['palco', 90, 440, -5]], nota: ['música', 'acústica, eletrônica ou cajón: escolha o modelo e toque.'] },
     { t1: 'toque os', t2: 'acordes', phones: [['palco-acordes', 70, 470, 440, -3], ['acordes-teclado', 570, 560, 440, 3]], tags: [['acordes', 90, 440, -5]], nota: ['música', 'monte a sequência de acordes e ouça o resultado.'] },
-    { t1: 'e as notas', t2: 'do braço', phones: [['palco-notas', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['notas', 90, 440, -5]], nota: ['educação', 'o nome de cada nota no braço do violão, corda por corda.'] }] },
+    { t1: 'veja as notas', t2: 'no braço', phones: [['palco-notas', 70, 470, 440, -3], ['acordes-violao', 570, 560, 440, 3]], tags: [['notas', 90, 440, -5]], nota: ['educação', 'o nome de cada nota no braço do violão, corda por corda.'] }] },
 };
 
 const SO = process.argv[2];
