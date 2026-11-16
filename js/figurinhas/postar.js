@@ -136,7 +136,7 @@ async function desenharColagem(e, formato, carta) {
   ctx.save(); ctx.translate(W / 2, cy); ctx.rotate((-3.2 * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 38; ctx.shadowOffsetY = 20; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.shadowColor = 'transparent';
   fita(ctx, -cw / 2 - 26, -ch / 2 - 6, 150, 46, -34, '#e9d9a8'); fita(ctx, cw / 2 - 120, ch / 2 - 40, 150, 46, -34, '#e9d9a8'); ctx.restore();
   const fy = story ? H - 410 : H - 242, fh = story ? 240 : 200, fw = W - 90;
-  ctx.save(); ctx.translate(W / 2, fy + fh / 2); ctx.rotate((-1.2 * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 8; ctx.fillStyle = t.faixa;
+  ctx.save(); ctx.translate(W / 2, fy + fh / 2); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 8; ctx.fillStyle = t.faixa; /* faixa do site reta (antes inclinava 1,2°) */
   const R = O.rng(7); ctx.beginPath(); for (let x = -fw / 2; x <= fw / 2; x += 26) ctx.lineTo(x, -fh / 2 + (R() - 0.5) * 8); for (let y = -fh / 2; y <= fh / 2; y += 26) ctx.lineTo(fw / 2 + (R() - 0.5) * 8, y); for (let x = fw / 2; x >= -fw / 2; x -= 26) ctx.lineTo(x, fh / 2 + (R() - 0.5) * 8); for (let y = fh / 2; y >= -fh / 2; y -= 26) ctx.lineTo(-fw / 2 + (R() - 0.5) * 8, y);
   ctx.closePath(); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.textAlign = 'center';
   ctx.fillStyle = '#17224a'; fitText(ctx, SITE, fw - 70, story ? 70 : 64, ANTON); ctx.fillText(SITE, 0, -fh * 0.2);
