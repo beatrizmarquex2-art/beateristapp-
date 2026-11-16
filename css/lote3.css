@@ -1018,3 +1018,9 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 .pn-pan .btn.small, .pn-pan .pn-rec .btn { min-height: 34px; padding: 0 10px; font-size: 14px; flex: 0 0 auto; white-space: nowrap; }
 .pn-pan .pn-octs .pn-oct { min-width: 66px; font-size: 15px; }
 .pn-pan .pn-octs .btn.small { padding: 0 11px; }
+@media (max-width: 360px) { /* iPhone SE: rótulo em cima, botões embaixo (não cabe lado a lado) */
+  .pn-pan .tk-line { grid-template-columns: 1fr; gap: 4px; }
+  .pn-pan .pn-octs, .pn-pan .pn-rec { flex-wrap: wrap !important; }
+  .pn-pan .pn-octs .tp-lab, .pn-pan .pn-rec .tp-lab { flex: 1 0 100%; }
+  .pn-pan .pn-chip { padding: 0 9px; font-size: 14px; }
+}
