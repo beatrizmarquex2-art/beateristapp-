@@ -1,0 +1,135 @@
+// 4 opções de PÁGINA DE ENTRADA ÚNICA (protótipos navegáveis, só teste, nada publicado).
+// Uso: node scripts/entrada-opcoes.mjs  -> prototipos/entrada/opcao-{a,b,c,d}.html
+// Só usa o que já existe no projeto (textos de vendas/index.html, telas reais, capas, logos). Preços: mensal 14,90 e anual 119,90 (valores em teste, decisão da Bea 16/nov).
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = path.join(ROOT, 'prototipos/entrada'); fs.mkdirSync(OUT, { recursive: true });
+const A = '../../assets/', V = '../../vendas/assets/';
+const paul = (n) => `${A}originals/paul-png/coloridos-hd/paul-${n}.png`;
+const logo = `${A}originals/logo-beaterista-dourado.png`;
+const MARCA = { gorilla: `${A}parceiros-branco/pad-gorilla.png`, spark: `${A}parceiros-branco/spark.png`, nagano: `${A}parceiros-branco/nagano.png` };
+const TELA = { beathero: '59f03481c1a887c9', detetive: '7dfe2be6cd132427', figurix: 'c0c549a9b88ef20b', paulta: 'a6053f0358e0bd84', uno: 'c4d98b45bb28c88a', toque: '53c9b526fedbefb3', acordes: '02eded2a16dc87b7', ritmos: '6741ad560bcf30ff', dicio: '012e4c6bd66c4ad6' };
+const tela = (k) => `${V}${TELA[k]}.webp`;
+const capa = (k) => `${A}loja/${k}.webp`;
+const WA = (t) => `https://wa.me/5518991804150?text=${encodeURIComponent(t)}`;
+const JOGOS = [['Beat Hero', 'beathero', 'toque no tempo certo e ganhe XP'], ['Detetive Note', 'detetive', 'ouça e repita o ritmo com cartas'], ['Figurix', 'figurix', '62 fases pra dominar as figuras'], ['pauLta', 'paulta', 'ache as notas na pauta e leia as claves'], ['Uno Musical', 'uno', 'jogue contra o Paul ou com amigos'], ['Tocar', 'toque', 'toque na tela e grave seu ritmo']];
+const ESTUDOS = [['Dicionário musical', 'dicio'], ['Acordes de violão', 'acordes'], ['Ritmos de bateria', 'ritmos']];
+const MATERIAIS = [['ritmo', 'ritmo e figuras'], ['harmonia', 'harmonia'], ['pratica', 'na prática'], ['memoria', 'memória'], ['colorir', 'pra colorir'], ['bateria-kids', 'bateria kids']];
+const FAQ = [['precisa instalar alguma coisa?', 'não. abre direto no navegador. se quiser, dá pra adicionar o ícone na tela inicial do celular ou tablet.'], ['preciso ter bateria?', 'não. dá pra tocar na tela. alguns jogos aceitam o microfone se você tiver instrumento, mas não é obrigatório.'], ['preciso saber música pra começar?', 'não. tem jogos pra quem nunca tocou e fases que sobem de nível aos poucos.'], ['o que é o código de aluno?', 'ele libera o acesso completo. alunos da escola pedem o código à Bea. quem estuda por conta própria assina o passe.']];
+const MSG = { mensal: 'Oi, Bea! Quero assinar o Beaterista no plano mensal.', anual: 'Oi, Bea! Quero assinar o Beaterista no plano anual.' };
+const BASE_FONTS = `@font-face{font-family:Marker;src:url(${A}fonts/PermanentMarker-latin.woff2)}@font-face{font-family:Gochi;src:url(${A}fonts/GochiHand-latin.woff2)}@font-face{font-family:Hanken;font-weight:400 800;src:url(${A}fonts/HankenGrotesk-latin.woff2)}`;
+
+// ---------- blocos que funcionam igual nas 4 opções ----------
+const entrar = (cls = '') => `<form class="entrar ${cls}" onsubmit="event.preventDefault();location.href='../../aluno.html'">
+  <h3>já sou aluno</h3><input placeholder="seu nome" aria-label="seu nome"><input placeholder="código de acesso" aria-label="código de acesso">
+  <button class="btn">entrar</button><small>sem código? <a href="${WA('Oi, Bea! Quero o código de aluno.')}">peça à Bea</a></small></form>`;
+const planos = (cls = '') => `<div class="planos ${cls}" id="planos">
+  <div class="tg" role="tablist"><button class="on" data-p="anual">anual</button><button data-p="mensal">mensal</button></div>
+  <div class="pl on" data-p="anual"><span class="tag">4 meses de graça</span><b class="pr">R$ 119,90</b><span class="pm">12x de R$ 9,99 · economize R$ 58,90</span><ul><li>todas as fases e estudos</li><li>roleta e álbum de figurinhas</li><li>jogos novos o ano todo</li></ul><a class="btn" href="${WA(MSG.anual)}">quero o anual</a></div>
+  <div class="pl" data-p="mensal"><b class="pr">R$ 14,90</b><span class="pm">por mês · cancele quando quiser</span><ul><li>todas as fases e estudos</li><li>roleta e álbum de figurinhas</li><li>comece e veja se gosta</li></ul><a class="btn" href="${WA(MSG.mensal)}">quero o mensal</a></div>
+  <p class="inc">aluno da escola Beaterista: <b>acesso incluso</b>, é só pedir o código à Bea.</p></div>`;
+const marcas = () => `<div class="marcas"><p>parceiros da Bea</p><div><img src="${MARCA.gorilla}" alt="Pad Gorilla" style="height:46px"><img src="${MARCA.spark}" alt="Spark Cajons" style="height:46px"><img src="${MARCA.nagano}" alt="Nagano Drums" style="height:62px"></div></div>`;
+const nomePaul = () => `<details class="nomepaul"><summary>por que "Robôterista"?</summary><p>[texto da Bea: de onde vem o nome do Paul e o que ele significa. quando você me contar, eu escrevo aqui.]</p></details>`;
+const faq = () => `<div class="faq"><h2>perguntas</h2>${FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
+const provas = () => `<div class="provas"><h2>alunos tocando</h2><p>aqui entram os depoimentos e os vídeos dos alunos, só com autorização dos pais.</p></div>`;
+const rodape = () => `<footer><img src="${logo}" alt="Beaterista"><p><b>Beaterista</b> · educação musical com propósito</p><p><a href="https://www.instagram.com/beaterista.escolademusica">@beaterista.escolademusica</a> · Araçatuba, SP</p></footer>`;
+const JS = `<script>document.querySelectorAll('.planos').forEach(g=>g.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{g.querySelectorAll('.tg button,.pl').forEach(e=>e.classList.toggle('on',e.dataset.p===b.dataset.p));}));
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{const w=b.closest('[data-tabs]');w.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('on',x===b));w.querySelectorAll('[data-pane]').forEach(p=>p.classList.toggle('on',p.dataset.pane===b.dataset.tab));});</script>`;
+const doc = (titulo, css, body) => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${titulo}</title><style>${BASE_FONTS}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}body{font-family:Hanken,sans-serif;font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}a{color:inherit}h1,h2{font-family:Marker,cursive;font-weight:400;line-height:1}
+.btn{display:inline-block;font:800 18px Hanken;padding:16px 28px;border-radius:99px;border:0;text-decoration:none;cursor:pointer;text-align:center}
+.entrar{display:grid;gap:10px}.entrar input{font:500 17px Hanken;padding:14px 16px;border-radius:14px;border:2px solid #0d1a36;width:100%}.entrar small{opacity:.8}
+.planos .tg{display:flex;gap:6px;margin-bottom:14px}.planos .tg button{flex:1;font:800 16px Hanken;padding:11px;border-radius:99px;border:2px solid currentColor;background:none;color:inherit;cursor:pointer}
+.planos .pl{display:none;text-align:center}.planos .pl.on{display:block}.planos .pr{display:block;font:400 54px Marker;margin:6px 0}.planos .pm{display:block;opacity:.85;margin-bottom:10px}
+.planos ul{list-style:none;padding:0;margin:12px 0 16px;display:grid;gap:6px}.planos li:before{content:"✓ ";font-weight:800}.planos .tag{display:inline-block;font:800 14px Hanken;padding:5px 14px;border-radius:99px}.planos .inc{margin-top:14px;font-size:15px;text-align:center}
+.marcas{text-align:center}.marcas p{font:400 24px Gochi;margin-bottom:10px}.marcas div{display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap}
+.nomepaul{border-radius:16px;padding:14px 18px}.nomepaul summary{font:800 17px Hanken;cursor:pointer}.nomepaul p{margin-top:8px;font:400 22px/1.2 Gochi}
+.faq details{border-top:1px solid #8884;padding:12px 0}.faq summary{font-weight:800;cursor:pointer}.faq p{margin-top:6px;opacity:.9}.faq h2,.provas h2{font-size:34px;margin-bottom:10px}.provas{padding:20px;border:2px dashed currentColor;border-radius:18px;text-align:center}.provas p{opacity:.85}
+footer{text-align:center;padding:30px 20px 40px;font-size:15px}footer img{height:70px;margin:0 auto 10px}footer a{text-decoration:none;opacity:.85}
+.fixa{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:10px}.fixa .btn{flex:1;padding:14px 10px;font-size:16px}
+${css}</style></head><body>${body}${JS}</body></html>`;
+const sel = (o) => `<div class="sel"><img src="${logo}" alt="Beaterista"><span>${o}</span></div>`;
+
+// ---------- A: PALCO (azul, ouro, Paul grande, barra fixa) ----------
+const OA = doc('Entrada A · palco', `body{background:#0d1a36;color:#f4ead8;padding-bottom:84px}.w{max-width:520px;margin:0 auto;padding:0 20px}
+.top{display:flex;align-items:center;gap:10px;padding:18px 0}.top img{height:56px}.top span{font-size:14px;opacity:.85;line-height:1.2}
+.hero{position:relative;padding:10px 0 20px}.hero h1{font-size:54px;transform:rotate(-2deg);margin-bottom:14px}.hero .lin{display:flex;align-items:flex-end;gap:6px}.hero h1 em{font-style:normal;color:#d8b879;display:block;padding-left:26px}.hero p{flex:1;font:400 26px/1.15 Gochi;padding-bottom:20px}.hero img.pa{height:250px;flex:0 0 auto;filter:drop-shadow(6px 8px 0 #0006)}
+.cams{display:grid;gap:12px;margin:14px 0 30px}.cam{display:block;padding:18px 20px;border-radius:20px;text-decoration:none;font-weight:800;box-shadow:6px 7px 0 #0006}.cam small{display:block;font-weight:500;opacity:.85;font-size:15px}.c1{background:#d8b879;color:#0d1a36}.c2{background:#f4ead8;color:#0d1a36}.c3{background:#a8182e;color:#f4ead8}
+section{padding:26px 0}section h2{font-size:38px;color:#d8b879;margin-bottom:14px}.g{display:flex;gap:14px;overflow:auto;padding-bottom:12px;scroll-snap-type:x mandatory}.g article{flex:0 0 210px;scroll-snap-align:start;background:#f4ead8;color:#0d1a36;border-radius:20px;padding:10px;box-shadow:6px 7px 0 #0006}.g img{border-radius:12px;height:260px;width:100%;object-fit:cover;object-position:top}.g b{display:block;margin-top:8px}.g span{font-size:14px}
+.mat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mat figure{text-align:center;font-size:13px}.mat img{border-radius:8px;box-shadow:4px 5px 0 #0006;margin-bottom:6px}
+.planos{background:#f4ead8;color:#0d1a36;border-radius:26px;padding:22px;box-shadow:8px 9px 0 #d8b879}.planos .tag{background:#a8182e;color:#fff}.planos .btn{background:#a8182e;color:#fff}
+.entrar{background:#f4ead8;color:#0d1a36;border-radius:22px;padding:20px}.entrar h3{font:400 30px Marker}.entrar .btn{background:#0d1a36;color:#f4ead8}
+.nomepaul{background:#ffffff14}.provas,.marcas{margin-top:8px}.fixa{background:#0d1a36ee;backdrop-filter:blur(8px)}.fixa .btn:first-child{background:#d8b879;color:#0d1a36}.fixa .btn:last-child{background:#f4ead8;color:#0d1a36}`,
+`<div class="w"><div class="top"><img src="${logo}" alt=""><span><b>Beaterista</b><br>educação musical com propósito</span></div>
+<div class="hero"><h1>joga,<em>aprende</em>toca de verdade</h1><div class="lin"><p>jogos, estudos e materiais da escola, com o Robôterista Paul</p><img class="pa" src="${paul('selfie')}" alt="Robôterista Paul"></div></div>
+<div class="cams"><a class="cam c1" href="#entrar">já sou aluno<small>nome e código, entra direto</small></a><a class="cam c2" href="https://jogos.beaterista.com.br/#/jogos/detetive">quero experimentar<small>jogue o Detetive Note agora</small></a><a class="cam c3" href="#planos">quero o acesso completo<small>mensal ou anual</small></a></div>
+<section><h2>mais de 15 jogos e estudos</h2><div class="g">${JOGOS.map(([n, k, d]) => `<article><img src="${tela(k)}" alt="${n}"><b>${n}</b><span>${d}</span></article>`).join('')}</div></section>
+<section><h2>materiais pra imprimir</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<figure><img src="${capa(k)}" alt="${n}">${n}</figure>`).join('')}</div></section>
+<section>${marcas()}</section>
+<section id="entrar"><h2>entrar</h2>${entrar()}</section>
+<section><h2>escolha seu acesso</h2>${planos()}</section>
+<section>${nomePaul()}</section><section>${provas()}</section><section>${faq()}</section></div>${rodape()}
+<div class="fixa"><a class="btn" href="#entrar">entrar</a><a class="btn" href="#planos">ver planos</a></div>`);
+
+// ---------- B: COLAGEM (creme, polaroids, adesivos) ----------
+const OB = doc('Entrada B · colagem', `body{background:#f4ead8;color:#10234a;background-image:radial-gradient(#10234a14 2px,transparent 2.6px);background-size:30px 30px}.w{max-width:520px;margin:0 auto;padding:0 20px 30px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 0}.top img{height:60px}.top a{font:800 14px Hanken;background:#10234a;color:#f4ead8;padding:10px 18px;border-radius:99px;text-decoration:none}
+h1{font-size:38px;transform:rotate(-3deg);margin:14px 0 6px}.hd{display:flex;align-items:flex-end;gap:6px}.hd .pa{height:210px;flex:0 0 auto;filter:drop-shadow(6px 7px 0 #0003)}h1 em{font-style:normal;color:#a8182e;display:block;padding-left:30px}.sub{font:400 25px/1.15 Gochi}
+.col{position:relative;height:340px;margin:14px 0}.col .f{position:absolute;background:#fff;padding:9px 9px 26px;box-shadow:7px 9px 0 #0003}.col .f img{width:100%;height:100%;object-fit:cover;object-position:top}.col .f1{left:0;top:30px;width:190px;height:260px;transform:rotate(-5deg)}.col .f2{right:6px;top:0;width:170px;height:230px;transform:rotate(4deg)}.col .f3{left:110px;top:150px;width:190px;height:190px;transform:rotate(3deg)}
+.st{position:absolute;font:400 24px Gochi;background:#a8182e;color:#f4ead8;padding:2px 14px 5px;border-radius:10px;z-index:3}
+.cams{display:grid;gap:12px;margin:14px 0 30px}.cam{display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:18px;text-decoration:none;font:400 30px Marker;box-shadow:6px 7px 0 #0003}.cam small{display:block;font:500 15px Hanken}.cam i{font:normal 800 34px Hanken}.c1{background:#10234a;color:#f4ead8;transform:rotate(-1deg)}.c2{background:#d8b879;color:#10234a;transform:rotate(1deg)}.c3{background:#a8182e;color:#f4ead8;transform:rotate(-.5deg)}
+section{padding:22px 0}section h2{font-size:40px;color:#a8182e;margin-bottom:12px;transform:rotate(-1.5deg)}.lista{display:grid;gap:12px}.lista article{display:flex;gap:14px;background:#fff;border-radius:16px;padding:10px;box-shadow:5px 6px 0 #0002;align-items:center}.lista img{width:84px;height:100px;object-fit:cover;object-position:top;border-radius:10px}.lista b{display:block}.lista span{font-size:15px}
+.mat{display:flex;gap:12px;overflow:auto;padding-bottom:10px}.mat img{width:130px;border-radius:6px;box-shadow:5px 6px 0 #0003}
+.marcas{background:#0d1a36;color:#f4ead8;border-radius:20px;padding:20px;box-shadow:6px 7px 0 #0003}
+.planos{background:#fff;border-radius:22px;padding:22px;box-shadow:7px 8px 0 #a8182e}.planos .tag{background:#d8b879}.planos .btn{background:#a8182e;color:#fff}.entrar{background:#fff;border-radius:20px;padding:20px;box-shadow:7px 8px 0 #10234a}.entrar h3{font:400 30px Marker;color:#a8182e}.entrar .btn{background:#10234a;color:#f4ead8}.nomepaul{background:#fff;box-shadow:5px 6px 0 #0002}`,
+`<div class="w"><div class="top"><img src="${logo}" alt="Beaterista"><a href="#entrar">entrar</a></div>
+<div class="hd"><div><h1>oi, eu sou<em>o paul!</em></h1><p class="sub">aqui você joga, aprende música e toca de verdade.</p></div><img class="pa" src="${paul('bateria')}" alt="Paul"></div>
+<div class="col"><div class="f f1"><img src="${tela('beathero')}" alt=""></div><div class="f f2"><img src="${tela('figurix')}" alt=""></div><div class="f f3"><img src="${tela('toque')}" alt=""></div><span class="st" style="left:10px;top:0">jogos</span><span class="st" style="right:20px;top:240px;transform:rotate(4deg)">estudos</span></div>
+<div class="cams"><a class="cam c1" href="#entrar"><i>→</i><span>já sou aluno<small>nome e código</small></span></a><a class="cam c2" href="https://jogos.beaterista.com.br/#/jogos/detetive"><i>♪</i><span>quero experimentar<small>jogue o Detetive Note</small></span></a><a class="cam c3" href="#planos"><i>★</i><span>acesso completo<small>mensal ou anual</small></span></a></div>
+<section><h2>o que tem aqui</h2><div class="lista">${JOGOS.map(([n, k, d]) => `<article><img src="${tela(k)}" alt=""><div><b>${n}</b><span>${d}</span></div></article>`).join('')}</div></section>
+<section><h2>materiais</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<img src="${capa(k)}" alt="${n}">`).join('')}</div></section>
+<section>${marcas()}</section><section id="entrar"><h2>entrar</h2>${entrar()}</section><section><h2>acesso</h2>${planos()}</section>
+<section>${nomePaul()}</section><section>${provas()}</section><section>${faq()}</section></div>${rodape()}`);
+
+// ---------- C: VITRINE (vinho, abas jogos/estudos/materiais, carrossel de celulares) ----------
+const OC = doc('Entrada C · vitrine', `body{background:#521622;color:#f4ead8}.w{max-width:520px;margin:0 auto;padding:0 18px 30px}
+.top{display:flex;align-items:center;gap:12px;padding:16px 0}.top img{height:54px}.top b{font-family:Marker;font-weight:400;font-size:26px;color:#d8b879}
+.hero{background:linear-gradient(160deg,#a8182e,#7a1228);border-radius:28px;padding:26px 22px 0;position:relative;overflow:hidden;box-shadow:0 10px 0 #0004}.hero h1{font-size:50px;margin-bottom:10px}.hero h1 em{font-style:normal;color:#d8b879}.hero p{font:400 25px/1.15 Gochi}.hero .pa{height:185px;flex:0 0 auto;filter:drop-shadow(5px 6px 0 #0004)}.hero .row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-bottom:22px;margin-top:10px}.hero .bt{display:grid;gap:10px;flex:1}
+.btn.o{background:#d8b879;color:#0d1a36}.btn.c{background:#f4ead8;color:#0d1a36}.btn.v{background:#0d1a36;color:#f4ead8}
+.abas{margin:26px 0}.abas nav{display:flex;gap:8px;margin-bottom:14px}.abas nav button{flex:1;font:800 16px Hanken;padding:12px 6px;border-radius:14px;border:2px solid #d8b879;background:none;color:#d8b879;cursor:pointer}.abas nav button.on{background:#d8b879;color:#0d1a36}[data-pane]{display:none}[data-pane].on{display:block}
+.car{display:flex;gap:16px;overflow:auto;padding:6px 4px 16px;scroll-snap-type:x mandatory}.car .ph{flex:0 0 190px;scroll-snap-align:center;text-align:center}.ph .cel{border:9px solid #05070d;border-radius:30px;overflow:hidden;height:340px;background:#f4ead8;box-shadow:6px 8px 0 #0005}.ph img{width:100%;height:100%;object-fit:cover;object-position:top}.ph b{display:block;margin-top:10px}.ph span{font-size:14px;opacity:.85}
+.car.m .ph{flex-basis:150px}.car.m img{height:auto;border-radius:6px}.car.m .cel{height:auto;border:0;background:none;box-shadow:none;border-radius:6px}.car.m .cel img{box-shadow:5px 6px 0 #0005}
+.num{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 26px;text-align:center}.num div{background:#ffffff12;border-radius:16px;padding:14px 6px}.num b{display:block;font:400 34px Marker;color:#d8b879}.num span{font-size:13px}
+section h2{font-size:36px;color:#d8b879;margin-bottom:12px}section{padding:20px 0}.planos{background:#f4ead8;color:#0d1a36;border-radius:24px;padding:22px;box-shadow:7px 8px 0 #d8b879}.planos .tag{background:#a8182e;color:#fff}.planos .btn{background:#a8182e;color:#fff}.entrar{background:#f4ead8;color:#0d1a36;border-radius:22px;padding:20px}.entrar h3{font:400 30px Marker}.entrar .btn{background:#521622;color:#f4ead8}.nomepaul{background:#ffffff14}`,
+`<div class="w"><div class="top"><img src="${logo}" alt=""><b>Beaterista</b></div>
+<div class="hero"><h1>a música<br>que <em>joga</em><br>com você</h1><p>jogos, estudos e materiais da escola, com o Robôterista Paul</p><div class="row"><div class="bt"><a class="btn o" href="#entrar">entrar</a><a class="btn c" href="https://jogos.beaterista.com.br/#/jogos/detetive">experimentar</a></div><img class="pa" src="${paul('professor')}" alt="Paul"></div></div>
+<div class="num"><div><b>15+</b><span>jogos e estudos</span></div><div><b>62</b><span>fases só no Figurix</span></div><div><b>3</b><span>marcas parceiras da Bea</span></div></div>
+<div class="abas" data-tabs><nav><button class="on" data-tab="j">jogos</button><button data-tab="e">estudos</button><button data-tab="m">materiais</button></nav>
+<div data-pane="j" class="on"><div class="car">${JOGOS.map(([n, k, d]) => `<div class="ph"><div class="cel"><img src="${tela(k)}" alt=""></div><b>${n}</b><span>${d}</span></div>`).join('')}</div></div>
+<div data-pane="e"><div class="car">${ESTUDOS.map(([n, k]) => `<div class="ph"><div class="cel"><img src="${tela(k)}" alt=""></div><b>${n}</b></div>`).join('')}</div></div>
+<div data-pane="m"><div class="car m">${MATERIAIS.map(([k, n]) => `<div class="ph"><div class="cel"><img src="${capa(k)}" alt=""></div><b>${n}</b></div>`).join('')}</div></div></div>
+<section>${marcas()}</section><section id="entrar"><h2>entrar</h2>${entrar()}</section><section><h2>escolha seu acesso</h2>${planos()}</section>
+<section>${nomePaul()}</section><section>${provas()}</section><section>${faq()}</section></div>${rodape()}`);
+
+// ---------- D: HISTÓRIA (telas cheias com snap, uma ideia por vez) ----------
+const sl = (id, bg, fg, inner) => `<section class="sl" id="${id}" style="background:${bg};color:${fg}"><div class="in">${inner}</div></section>`;
+const OD = doc('Entrada D · história', `body{background:#0d1a36;color:#f4ead8;scroll-snap-type:y proximity}.sl{min-height:100svh;scroll-snap-align:start;display:flex;align-items:center;padding:70px 22px 40px;position:relative;overflow:hidden}.in{max-width:520px;margin:0 auto;width:100%}
+.bar{position:fixed;top:0;left:0;right:0;z-index:9;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#0d1a36d9;backdrop-filter:blur(8px)}.bar img{height:42px}.bar a{font:800 14px Hanken;background:#d8b879;color:#0d1a36;padding:9px 18px;border-radius:99px;text-decoration:none}
+h1{font-size:64px;transform:rotate(-2deg)}h1 em{font-style:normal;color:#d8b879;display:block;padding-left:24px}h2{font-size:42px;margin-bottom:16px;color:#d8b879}.big{font:400 28px/1.15 Gochi;margin:14px 0 20px}
+.pa{height:320px;margin:10px auto 0;filter:drop-shadow(6px 7px 0 #0005)}.cams{display:grid;gap:10px}.cam{display:block;padding:16px 20px;border-radius:18px;text-decoration:none;font-weight:800;text-align:center}.c1{background:#d8b879;color:#0d1a36}.c2{background:#f4ead8;color:#0d1a36}.c3{background:#a8182e;color:#f4ead8}
+.sw{display:flex;gap:14px;overflow:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px}.sw .p{flex:0 0 200px;scroll-snap-align:center}.sw .cel{border:9px solid #05070d;border-radius:30px;overflow:hidden;height:360px;background:#f4ead8}.sw img{width:100%;height:100%;object-fit:cover;object-position:top}.sw b{display:block;margin-top:8px}.sw span{font-size:14px;opacity:.85}
+.mat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mat img{border-radius:8px;box-shadow:4px 5px 0 #0005}
+.planos{background:#f4ead8;color:#0d1a36;border-radius:26px;padding:22px;box-shadow:8px 9px 0 #d8b879}.planos .tag{background:#a8182e;color:#fff}.planos .btn{background:#a8182e;color:#fff}.entrar{background:#f4ead8;color:#0d1a36;border-radius:22px;padding:20px}.entrar h3{font:400 30px Marker}.entrar .btn{background:#0d1a36;color:#f4ead8}.nomepaul{background:#ffffff14}.dots{position:fixed;right:8px;top:50%;transform:translateY(-50%);display:grid;gap:10px;z-index:9}.dots a{width:10px;height:10px;border-radius:50%;background:#f4ead855}.dots a:hover{background:#d8b879}.faq details,.provas{color:inherit}`,
+`<div class="bar"><img src="${logo}" alt="Beaterista"><a href="#entrar">entrar</a></div><nav class="dots">${['oi', 'jogos', 'materiais', 'marcas', 'acesso', 'entrar'].map((s, i) => `<a href="#s${i}" title="${s}"></a>`).join('')}</nav>
+${sl('s0', '#0d1a36', '#f4ead8', `<h1>oi, eu sou<em>o paul!</em></h1><p class="big">o robô baterista da Beaterista. aqui você joga, aprende música e toca de verdade.</p><img class="pa" src="${paul('selfie')}" alt="Paul"><div class="cams"><a class="cam c1" href="#entrar">já sou aluno</a><a class="cam c2" href="https://jogos.beaterista.com.br/#/jogos/detetive">quero experimentar</a><a class="cam c3" href="#planos">ver os planos</a></div>`)}
+${sl('s1', '#0d1a36', '#f4ead8', `<h2>mais de 15 jogos e estudos</h2><div class="sw">${[...JOGOS, ...ESTUDOS.map(([n, k]) => [n, k, ''])].map(([n, k, d]) => `<div class="p"><div class="cel"><img src="${tela(k)}" alt=""></div><b>${n}</b><span>${d}</span></div>`).join('')}</div><p class="big">sem instalar, sem bateria em casa. toca na tela.</p>`)}
+${sl('s2', '#a8182e', '#f4ead8', `<h2 style="color:#f4ead8">materiais pra levar pra aula</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<img src="${capa(k)}" alt="${n}">`).join('')}</div><p class="big">apostilas e cadernos do Robôterista Paul, pra imprimir ou estudar na tela.</p>`)}
+${sl('s3', '#0d1a36', '#f4ead8', `${marcas()}<p class="big" style="text-align:center;margin-top:24px">e a escola Beaterista, em Araçatuba, SP: educação musical com propósito.</p><img src="${logo}" alt="" style="height:130px;margin:0 auto">`)}
+${sl('s4', '#f4ead8', '#0d1a36', `<h2 style="color:#a8182e">escolha seu acesso</h2>${planos()}`)}
+${sl('s5', '#0d1a36', '#f4ead8', `<h2 id="entrar">entrar</h2>${entrar()}<div style="height:18px"></div>${nomePaul()}<div style="height:18px"></div>${provas()}<div style="height:18px"></div>${faq()}${rodape()}`)}`);
+
+for (const [n, h] of [['a', OA], ['b', OB], ['c', OC], ['d', OD]]) fs.writeFileSync(path.join(OUT, `opcao-${n}.html`), h);
+console.log('ok 4 opções em', OUT);
