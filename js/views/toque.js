@@ -18,8 +18,14 @@ import { svgEl } from '../kids/art.js';
 import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
-import { kitTheme, putLogo, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
+import { kitTheme, flash, themeRow, pieceAt } from '../kids/kit-theme.js';
 
+/** O logo da Beaterista fica na "tela", fora da bateria (canto de cima). */
+const logoFora = (art) => {
+  const im = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  for (const [k, v] of Object.entries({ href: 'assets/logo-menu-beaterista.webp', x: 4, y: 2, width: 72, height: 37, 'pointer-events': 'none', preserveAspectRatio: 'xMinYMin meet' })) im.setAttribute(k, String(v));
+  (art.querySelector('svg') || art).append(im);
+};
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
 // sem código só a bateria acústica (a escolha antiga guardada no aparelho não vale)
@@ -59,7 +65,7 @@ export function mount(host) {
   const drawKit = () => {
     const c = conf(); modeloAtual = c.modelo;
     kit.classList.toggle('left', !!c.left);
-    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); if (c.modelo !== 'cajon') putLogo(art);
+    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art);
     kit.dataset.kitTheme = kitTheme();
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),

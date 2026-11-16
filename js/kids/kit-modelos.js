@@ -52,12 +52,9 @@ const marca = (x, y, txt) => { const w = txt.length * 9 + 22; return `<g class="
 const tapete = () => `<g>
   <ellipse cx="210" cy="250" rx="204" ry="46" fill="#5a0f1e"/><ellipse cx="210" cy="248" rx="198" ry="42" fill="#8f1b2f"/>
   <ellipse cx="210" cy="248" rx="184" ry="37" fill="#f1e2c4"/><ellipse cx="210" cy="248" rx="176" ry="34" fill="#7a1527"/>
-  ${volta(14, (a) => `<ellipse cx="${210 + Math.cos((a * Math.PI) / 180) * 150}" cy="${248 + Math.sin((a * Math.PI) / 180) * 24}" rx="9" ry="3.6" fill="#e9c46a"/>`)}
-  <ellipse cx="210" cy="248" rx="120" ry="22" fill="#a32138"/><ellipse cx="210" cy="248" rx="112" ry="19" fill="#5a0f1e"/>
 </g>`;
 /** Tapete visto de cima (eletrônica). */
-const tapeteCima = () => `<g><rect x="6" y="58" width="408" height="238" rx="22" fill="#5a0f1e"/><rect x="12" y="64" width="396" height="226" rx="18" fill="#8f1b2f"/><rect x="20" y="72" width="380" height="210" rx="14" fill="#f1e2c4"/><rect x="26" y="78" width="368" height="198" rx="11" fill="#7a1527"/>
-  ${volta(18, (_, i) => `<rect x="${40 + i * 20}" y="86" width="9" height="5" rx="2" fill="#e9c46a"/><rect x="${40 + i * 20}" y="262" width="9" height="5" rx="2" fill="#e9c46a"/>`)}</g>`;
+const tapeteCima = () => `<g><rect x="6" y="58" width="408" height="238" rx="22" fill="#5a0f1e"/><rect x="12" y="64" width="396" height="226" rx="18" fill="#8f1b2f"/><rect x="20" y="72" width="380" height="210" rx="14" fill="#f1e2c4"/><rect x="26" y="78" width="368" height="198" rx="11" fill="#7a1527"/></g>`;
 
 /* ================= ACÚSTICA (vista de frente, preta laqueada) ================= */
 /** Tambor (tom, caixa, surdo): casco preto laqueado, aro cromado, aro da pele na cor da peça, pele branca em cima, parafusos nas laterais. */
@@ -99,12 +96,12 @@ function prato(id, cx, cy, rx, ry, { rot = 0, chimbal = false } = {}) {
     </g>
   </g>`;
 }
-/** Bumbo de frente: círculo grande, casco preto, aro cromado, aro verde, pele fumê com furo, pedal. O logo da Beaterista entra por cima (putLogo). */
+/** Bumbo de frente: círculo grande, casco preto, aro cromado, aro verde, pele fumê com furo, pedal. */
 function bumbo(cx, cy, R) {
   const c = COR.bd;
   const parafusos = volta(10, (a) => `<g transform="rotate(${a} ${cx} ${cy})"><rect x="${cx - 3}" y="${cy - R + 0.5}" width="6" height="9" rx="2" fill="url(#km-cromo)"/><circle cx="${cx}" cy="${cy - R + 5}" r="1.2" fill="#3a3a44"/></g>`);
   const hx = cx - 18; const hy = cy + 30;
-  return `<g class="kp" data-p="bd" data-logo="${cx - 40},${cy - 33},80,41" style="--c:${c}">
+  return `<g class="kp" data-p="bd" style="--c:${c}">
     <ellipse cx="${cx + 5}" cy="${cy + R * 0.92}" rx="${R + 4}" ry="${R * 0.26}" fill="url(#km-sombra)"/>
     <circle cx="${cx}" cy="${cy}" r="${R + 1.6}" fill="#0b0b0e"/>
     <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#km-laca-r)"/>
@@ -139,7 +136,7 @@ export function acustica() {
 /** Pad de malha branca, aro grosso preto e anel na cor da peça (na foto é laranja). Sensor no meio. */
 function pad(id, cx, cy, R, { extra = '' } = {}) {
   const c = COR[id]; const rm = R - 10;
-  return `<g class="kp" data-p="${id}" ${id === 'bd' ? `data-logo="${cx - 26},${cy - 22},52,27" ` : ''}style="--c:${c}">
+  return `<g class="kp" data-p="${id}" style="--c:${c}">
     ${extra}
     <circle cx="${cx + 4}" cy="${cy + 7}" r="${R + 7}" fill="url(#km-sombra)"/>
     <circle cx="${cx}" cy="${cy}" r="${R + 1.5}" fill="#050507"/>
@@ -148,7 +145,7 @@ function pad(id, cx, cy, R, { extra = '' } = {}) {
     <circle cx="${cx}" cy="${cy}" r="${rm + 1.6}" fill="#0b0b0e"/>
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-malhaE)" data-head="1"/>
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-trama)"/>
-    ${id === 'bd' ? `<rect x="${cx - 29}" y="${cy - 25}" width="58" height="32" rx="9" fill="#16161a"/>` : `<circle cx="${cx}" cy="${cy - rm * 0.2}" r="${rm * 0.13}" fill="#c9cad4"/>`}
+    ${id === 'bd' ? '' : `<circle cx="${cx}" cy="${cy - rm * 0.2}" r="${rm * 0.13}" fill="#c9cad4"/>`}
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-brilho)"/>
     ${brilhaC(cx, cy, R + 5, c)}
   </g>`;
