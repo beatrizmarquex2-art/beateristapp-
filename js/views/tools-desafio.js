@@ -41,7 +41,7 @@ async function card(ch, beat) {
   g.fillStyle = ink; g.font = '400 50px "Gochi Hand", cursive'; g.fillText(`+ ${ch.twist}`, 90, y2);
   g.font = '400 40px "Special Elite", "Courier New", monospace'; g.fillStyle = '#444'; g.fillText(ch.warm, 90, y2 + 64);
   g.fillStyle = ink; g.fillRect(0, H - 120, W, 120); g.fillStyle = '#fff'; g.font = '700 46px "Hanken Grotesk", Arial, sans-serif'; g.fillText('@beaterista', 90, H - 46);
-  g.font = '400 34px "Gochi Hand", cursive'; g.textAlign = 'right'; g.fillText('posta e me marca!', W - 90, H - 48); g.textAlign = 'left';
+  g.font = '400 34px "Gochi Hand", cursive'; g.textAlign = 'right'; g.fillText('poste e me marque!', W - 90, H - 48); g.textAlign = 'left';
   const logo = await loadImg('assets/logo-512.png'); if (logo) g.drawImage(logo, W - 250, 60, 170, 170);
   return c;
 }

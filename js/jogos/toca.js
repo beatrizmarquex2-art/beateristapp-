@@ -45,7 +45,7 @@ export function mount(host) {
   };
   const jogar = (n) => {
     clean(); view = 'jogo'; musicaPausa(); const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);
-    off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: (info) => { drawMapa(); if (info && info.andou != null) { const f = PATH[info.andou].n; toast(f < 12 ? `você andou no mundinho: fase ${f} concluída, a fase ${f + 1} abriu!` : `você chegou ao fim do ${MUNDOS[tier].nome}!`, { ms: 3600 }); } } });
+    off = leitura(stage, n == null ? { mapa: true, livre: true, lv: TIERS.find((t) => t.id === tier).lv, onBack: drawMapa } : { mapa: true, step: idxOf(tier, n), onBack: (info) => { drawMapa(); if (info && info.andou != null) { const f = PATH[info.andou].n; toast(f < 12 ? `você andou no mundinho: fase ${f} concluída, a fase ${f + 1} abriu!` : `você terminou o mundo ${MUNDOS[tier].nome}!`, { ms: 3600 }); } } });
   };
   drawMapa();
   return {

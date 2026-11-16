@@ -61,7 +61,7 @@ export function mountUm(host) {
           h('div', { class: 'row ft-row' }, h('button', { class: 'btn', type: 'button', onclick: () => play(true) }, 'ouvir com o 1 marcado'),
             !over ? h('button', { class: 'btn primary', type: 'button', onclick: () => { stop(); next(); draw(); } }, 'próxima') : null)) : null,
         over ? h('div', { class: 'empty' }, h('p', { class: 'hand' }, `fim: ${pts} de ${ROUNDS}`), h('button', { class: 'btn primary', type: 'button', onclick: () => { stop(); round = 0; pts = 0; next(); draw(); } }, 'jogar de novo')) : null),
-      h('p', { class: 'pad-x lib-note' }, 'dica: o 1 costuma ter bumbo e vem depois da caixa do 4. respira, ouve 1 compasso inteiro antes de tocar.')].filter(Boolean));
+      h('p', { class: 'pad-x lib-note' }, 'dica: o 1 costuma ter bumbo e vem depois da caixa do 4. respire, ouça 1 compasso inteiro antes de tocar.')].filter(Boolean));
   };
   next();
   host.append(banner('Achar o 1', 'o groove começa no meio. cadê o 1?'), back(), body);

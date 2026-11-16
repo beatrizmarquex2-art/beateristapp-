@@ -25,8 +25,8 @@ export function runMemory(game, ctx) {
   const clear = () => S.reset();
 
   const intro = () => {
-    bot.set('happy', mode === 'som' ? 'ouve o som e acha o desenho!' : 'acha os pares iguais!');
-    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${pairs} pares · ${mode === 'som' ? 'vira a carta do som (🔊) e acha o desenho do instrumento' : 'vira duas cartas e acha as figuras iguais'}`),
+    bot.set('happy', mode === 'som' ? 'ouça o som e ache o desenho!' : 'ache os pares iguais!');
+    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${pairs} pares · ${mode === 'som' ? 'vire a carta do som (🔊) e ache o desenho do instrumento' : 'vire duas cartas e ache as figuras iguais'}`),
       totalSecs ? h('p', { class: 'muted' }, `⏱ você tem ${totalSecs} segundos no total.`) : null, spec.sudden ? h('p', { class: 'muted' }, `💥 no máximo ${maxMiss} erros, senão a fase recomeça.`) : null,
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };
@@ -61,7 +61,7 @@ export function runMemory(game, ctx) {
         open = []; lock = false; stage._paint();
         if (matched === pairs) { S.reset(false); tocarEfeito('memoria', 'terminou'); finishUp(false); }
       } else {
-        beep(false); miss++; misses.push(a._c.id, b._c.id); a.classList.add('no'); b.classList.add('no'); bot.set('oops', 'ops, tenta de novo');
+        beep(false); miss++; misses.push(a._c.id, b._c.id); a.classList.add('no'); b.classList.add('no'); bot.set('oops', 'ops, tente de novo');
         S.later(() => { a.classList.remove('up', 'no'); b.classList.remove('up', 'no'); open = []; lock = false; stage._paint(); if (miss > maxMiss) restart(); }, 700);
       }
     }, 650);

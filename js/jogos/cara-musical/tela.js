@@ -60,7 +60,7 @@ export function mountMusical(host, { onTema } = {}) {
     const lista = Contestar.listar();
     sheet(`respostas contestadas (${lista.length})`, (close) => h('div', { class: 'sheet-body cm-contesta-sheet' },
       lista.length ? h('ol', { class: 'cm-contesta-lista' }, ...lista.map((r) => h('li', {}, h('b', {}, r.carta), ` · "${r.pergunta}" · Paul: ${r.paul} · ${r.parecer === 'errado' ? 'acho errado' : 'em dúvida'}`, r.nota ? h('small', {}, ` (${r.nota})`) : null))) : h('p', { class: 'muted' }, 'nenhuma por enquanto.'),
-      h('div', { class: 'jg-actions' }, lista.length ? h('button', { class: 'btn', type: 'button', onclick: async () => { const t = Contestar.textoParaCopiar(); try { await navigator.clipboard.writeText(t); toast('copiado! manda pra Bea.', { ms: 2200 }); } catch { toast('não deu pra copiar neste aparelho.', { ms: 2600 }); } } }, 'copiar a lista pra Bea') : null,
+      h('div', { class: 'jg-actions' }, lista.length ? h('button', { class: 'btn', type: 'button', onclick: async () => { const t = Contestar.textoParaCopiar(); try { await navigator.clipboard.writeText(t); toast('copiado! mande pra Bea.', { ms: 2200 }); } catch { toast('não deu pra copiar neste aparelho.', { ms: 2600 }); } } }, 'copiar a lista pra Bea') : null,
         lista.length ? h('button', { class: 'btn ghost', type: 'button', onclick: async () => { if (await confirmSheet('limpar a lista?', 'as respostas voltam a valer neste aparelho.', 'limpar')) { Contestar.limpar(); close(); menu(); } } }, 'limpar') : null)));
   }
 

@@ -33,7 +33,7 @@ export function mount(host) {
   const time = h('input', { type: 'time', value: '09:00', 'aria-label': 'Hora' });
   const rep = h('select', { 'aria-label': 'Repetir' }, ...Object.entries(REPEAT).map(([v, t]) => h('option', { value: v }, t)));
   const add = async () => {
-    const t = text.value.trim(); if (!t) { toast('escreve o lembrete'); return; }
+    const t = text.value.trim(); if (!t) { toast('escreva o lembrete'); return; }
     await store.upsert('reminder', null, { text: t, date: date.value || todayKey(), time: time.value || '09:00', repeat: rep.value, created: Date.now() });
     text.value = ''; toast('lembrete criado ✓', { ms: 1400 });
   };

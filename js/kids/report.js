@@ -9,7 +9,7 @@ import { AGES } from './levels.js';
 import { INSTRUMENTS, nameOf as instName, artColored } from './instruments.js';
 import { FIGURES, PIECES, BUMBO_SPOTS, nameOf as pieceName } from '../kids-logic.js';
 import { figureMarkup } from './art.js';
-import { ROW_NAME } from './groove.js';
+import { ROW_ART } from './groove.js';
 
 const W = 1240, H = 1754, MM = W / 210; const SIDE = Math.round(16 * MM);
 const FONT = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
@@ -45,7 +45,7 @@ const MISS = (game, key) => {
   if (game === 'figuras') return `${TITLES[game]}: ${key === 'dura' ? 'comparar a duração' : key === 'tempos' ? 'quantos tempos cada figura dura' : 'o nome das figuras'}`;
   if (game === 'bumbos') return `${TITLES[game]}: contar os bumbos`;
   if (game === 'memoria') return `${TITLES[game]}: ${instName(key)}`;
-  if (game === 'detetive') return `${TITLES[game]}: ouvir o ${ROW_NAME[key] || key}`;
+  if (game === 'detetive') return `${TITLES[game]}: ouvir ${ROW_ART[key] || key}`;
   if (game === 'toque') return `${TITLES[game]}: ${key === 'figuras' ? 'ler e tocar semínima, colcheias e pausas' : 'ler e tocar semicolcheias e variações'}`;
   if (game === 'eco') return `${TITLES[game]}: ${key === 'figuras' ? 'ritmos com pão, bo-lo e cho-co-la-te' : 'ritmos com contratempo'}`;
   return `${TITLES[game] || game}`;

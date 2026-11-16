@@ -99,7 +99,7 @@ export function runSession(cfg) {
       i++; S_.later(next, 1250); return;
     }
     streak = 0; for (const t of tagsFor(id)) misses.push(t); if (!misses.length) misses.push(q.key);
-    bot.set('oops', id === null ? 'o tempo acabou!' : 'quase! olha a dica'); fb.className = 'kd-fb kx-fb pl-fb no'; if (btn) btn.classList.add('shake');
+    bot.set('oops', id === null ? 'o tempo acabou!' : 'quase! olhe a dica'); fb.className = 'kd-fb kx-fb pl-fb no'; if (btn) btn.classList.add('shake');
     const why = id === null ? `O tempo acabou! A resposta era ${revealOf(q)}.` : `${q.explain(id)} (Era: ${revealOf(q)}.)`;
     fb.replaceChildren(h('p', { class: 'pl-why' }, why));
     const go = h('button', { class: 'kd-btn pl-continue', type: 'button', disabled: true, onclick: () => { if (spec.sudden) restart(); else { i++; next(); } } }, spec.sudden ? 'recomeçar a fase' : 'entendi, próxima →');

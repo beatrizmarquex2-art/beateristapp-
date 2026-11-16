@@ -107,7 +107,7 @@ function recordSheet(bpm0, onUse, label) {
       for (let b = 0; b < 4; b++) metro.push(click(t0 + b * q, b === 0 ? 2 : 1, 0.6));
       rec = { t0, hits: [], bpm }; take = null; body.clock = () => perfToCtx(performance.now()) - t0;
       status.textContent = 'conta 4… e toca!'; draw();
-      rec.timer = setTimeout(() => { const r = rec; rec = null; take = quantize(r.hits, { bpm: r.bpm, bars: 1 }); status.textContent = take.dropped ? `${take.dropped} toque(s) longe da grade ficaram de fora.` : 'pronto! confere aí embaixo.'; draw(); }, (t0 - c.currentTime + 4 * q + 0.35) * 1000);
+      rec.timer = setTimeout(() => { const r = rec; rec = null; take = quantize(r.hits, { bpm: r.bpm, bars: 1 }); status.textContent = take.dropped ? `${take.dropped} toque(s) longe da grade ficaram de fora.` : 'pronto! confira aí embaixo.'; draw(); }, (t0 - c.currentTime + 4 * q + 0.35) * 1000);
     };
     const draw = () => {
       const prev = take ? h('figure', { class: 'cb-bar' }) : null; if (prev) prev.innerHTML = N.toSVG(N.layout(take.bars[0], { width: 340, full: false }));
@@ -117,7 +117,7 @@ function recordSheet(bpm0, onUse, label) {
         pads, status,
         h('div', { class: 'row ft-row' }, rec ? h('button', { class: 'bl-play on', type: 'button', 'aria-label': 'Gravando', disabled: true }, icon('stop', 24)) : h('button', { class: 'bl-play tk-rec', type: 'button', 'aria-label': 'Gravar', onclick: go }, h('i', { class: 'tk-dot' }))),
         prev, take ? h('div', { class: 'row ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: (e) => { stars(e.currentTarget); onUse(take.bars[0]); close(); } }, label), h('button', { class: 'btn', type: 'button', onclick: go }, 'gravar de novo')) : null,
-        h('p', { class: 'muted' }, 'o app arredonda pra semicolcheia mais perto: é um rascunho, ajusta na grade se precisar. no computador: J chimbal, F caixa, espaço bumbo.'));
+        h('p', { class: 'muted' }, 'o app arredonda pra semicolcheia mais perto: é um rascunho, ajuste na grade se precisar. no computador: J chimbal, F caixa, espaço bumbo.'));
     };
     draw();
     body.cleanup = () => { document.removeEventListener('keydown', onKey); if (rec) clearTimeout(rec.timer); metro.forEach((o) => { try { o.stop(); } catch { /* já parou */ } }); };
@@ -268,7 +268,7 @@ function mountList(host) {
     box.replaceChildren(all.length ? h('section', { class: 'card sl-index pt-index' }, ...all.map((r) => h('div', { class: 'pt-row' }, h('a', { class: 'sl-item', href: `#/partitura/${r.id}` },
       h('strong', {}, r.data.title), h('small', {}, `${r.data.bars.length} compassos · ♩ ${r.data.bpm}${r.data.color ? ' · colorido' : ''}${r.data.metodo ? ` · método Beaterista${r.data.review ? ' · a revisar' : ' · conferido ✓'}` : ''}`)),
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Apagar ${r.data.title}`, onclick: async () => { if (await confirmSheet('Apagar partitura?', r.data.title, 'Apagar')) { await store.remove(r.id); toast('partitura apagada', { ms: 1500 }); } } }, icon('trash', 18)))))
-      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma partitura ainda.'), h('p', { class: 'muted' }, 'cria uma na hora: escolhe os compassos, a figura e escreve na grade.')));
+      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma partitura ainda.'), h('p', { class: 'muted' }, 'crie uma na hora: escolha os compassos, a figura e escreva na grade.')));
   };
   host.append(banner('Montar Partitura', 'compasso por compasso'), ptTabs('partituras'), h('div', { class: 'bl-actions pad-x' },
     h('button', { class: 'btn primary', type: 'button', onclick: () => newScoreSheet() }, '+ nova partitura')), box);

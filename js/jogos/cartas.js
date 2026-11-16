@@ -137,7 +137,7 @@ export function mount(host, opts) {
     clearTimers(); busy = false; leave(); g = null; picking = null; stage = null; handEl = null; deckEl = null; pileEl = null; tip = null; S.stopAll();
     const resume = C.validGame(saved.game) && !saved.game.over ? saved.game : null; const r = rec();
     const seg = (name, opts, cur, on) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': name }, ...opts.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${cur === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { on(v); intro(); } }, ic ? bq(ic) : l)));
-    const legend = h('div', { class: 'cx-legend', role: 'list', 'aria-label': 'as dez figuras das cartas' }, ...SYMS.map((s, i) => {
+    const legend = h('div', { class: 'cx-legend', role: 'list', 'aria-label': 'as 12 figuras das cartas' }, ...SYMS.map((s, i) => {
       const card = cardEl({ id: `lg${i}`, color: C.COLORS[i % 4], kind: 'fig', sym: s });
       const b = h('button', { type: 'button', class: 'cx-leg', role: 'listitem', 'aria-label': SYM_NAME[s], onclick: () => { snd('tap'); showTip(b, SYM_NAME[s], 1500); } }, card, h('small', {}, SYM_NAME[s]));
       return b;

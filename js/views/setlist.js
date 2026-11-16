@@ -30,7 +30,7 @@ function songSheet(rec, song, onSaved) {
       h('div', { class: 'row between' },
         song ? h('button', { class: 'btn ghost danger', type: 'button', onclick: async () => { if (await confirmSheet('Tirar música?', s.title, 'Tirar')) { await store.upsert(KIND, rec.id, { songs: rec.data.songs.filter((x) => x.id !== s.id) }); close(); } } }, 'tirar') : h('span'),
         h('button', { class: 'btn primary', type: 'button', onclick: async () => {
-          if (!title.value.trim()) { toast('dá um nome pra música'); return; }
+          if (!title.value.trim()) { toast('dê um nome pra música'); return; }
           const item = { id: s.id || uid(), title: title.value.trim(), dur: L.parseDur(dur.value), bpm: +bpm.value || null, key: key.value.trim(), notes: notes.value.trim(), trans: trans.value.trim(), gap: +gap.value || 0 };
           const songs = store.get(rec.id).data.songs || [];
           await store.upsert(KIND, rec.id, { songs: song ? songs.map((x) => (x.id === s.id ? item : x)) : [...songs, item] });
@@ -77,7 +77,7 @@ function stage(rec) {
   root.addEventListener('touchend', (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 60) { i = Math.max(0, Math.min(songs.length - 1, i + (dx < 0 ? 1 : -1))); stopPulse(); draw(); } }, { passive: true });
   document.addEventListener('visibilitychange', onVis);
   root.close = close; document.body.append(root); draw(); keepAwake();
-  if (!('wakeLock' in navigator)) toast('dica: este aparelho não deixa o app segurar a tela acesa. aumenta o “bloqueio automático” nos ajustes durante o show.', { ms: 5000 });
+  if (!('wakeLock' in navigator)) toast('dica: este aparelho não deixa o app segurar a tela acesa. aumente o “bloqueio automático” nos ajustes durante o show.', { ms: 5000 });
 }
 
 function mountEdit(host, id) {
@@ -94,10 +94,10 @@ function mountEdit(host, id) {
         h('select', { 'aria-label': 'Espaço', onchange: (e) => store.upsert(KIND, id, { space: e.target.value }) }, ...Object.entries(SPACE).map(([k, t]) => h('option', { value: k, selected: (d.space || 'bea') === k }, t)))),
       h('div', { class: 'sl-total' }, h('strong', {}, L.fmt(L.total(songs))), h('span', {}, `${songs.length} música${songs.length === 1 ? '' : 's'}`))));
     list.replaceChildren(...songs.map((s, i) => h('li', { class: 'sl-song', 'data-i': i },
-      h('span', { class: 'sl-grip', 'aria-hidden': 'true', title: 'arrasta pra mudar de lugar' }, '⋮⋮'),
+      h('span', { class: 'sl-grip', 'aria-hidden': 'true', title: 'arraste pra mudar de lugar' }, '⋮⋮'),
       h('button', { class: 'sl-song-main', type: 'button', onclick: () => songSheet(store.get(id), s, null) },
         h('strong', {}, `${i + 1}. ${s.title}`),
-        h('small', {}, [s.dur ? L.fmt(s.dur) : '', s.bpm ? `${s.bpm} BPM` : '', s.key || ''].filter(Boolean).join(' · ') || 'toca pra completar'),
+        h('small', {}, [s.dur ? L.fmt(s.dur) : '', s.bpm ? `${s.bpm} BPM` : '', s.key || ''].filter(Boolean).join(' · ') || 'toque pra completar'),
         s.notes ? h('small', { class: 'sl-notes' }, s.notes) : null,
         s.trans && i < songs.length - 1 ? h('small', { class: 'sl-trans' }, `↳ ${s.trans}${s.gap ? ` (${s.gap}s)` : ''}`) : null),
       h('span', { class: 'sl-move' },
@@ -123,8 +123,8 @@ function mountEdit(host, id) {
     if (to !== from) store.upsert(KIND, id, { songs: L.move(songs, from, to) });
   };
   list.addEventListener('pointerup', end); list.addEventListener('pointercancel', end);
-  host.append(banner('Setlist', 'monta, ensaia, sobe no palco'), head, h('section', { class: 'card sl-list' }, list), foot,
-    h('p', { class: 'pad-x lib-note' }, 'arrasta pelo ⋮⋮ (ou usa as setas) pra mudar a ordem. o tempo total soma músicas + transições. no modo palco: arrasta pro lado pra trocar de música.'));
+  host.append(banner('Setlist', 'monte, ensaie, suba no palco'), head, h('section', { class: 'card sl-list' }, list), foot,
+    h('p', { class: 'pad-x lib-note' }, 'arraste pelo ⋮⋮ (ou use as setas) pra mudar a ordem. o tempo total soma músicas + transições. no modo palco: arraste pro lado pra trocar de música.'));
   draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === KIND) draw(); });
 }
@@ -136,9 +136,9 @@ function mountList(host) {
     box.replaceChildren(all.length ? h('section', { class: 'card sl-index' }, ...all.map((r) => h('a', { class: 'sl-item', href: `#/setlist/${r.id}` },
       h('strong', {}, r.data.name || 'setlist'),
       h('small', {}, `${fmtDate(r.data.date)} · ${SPACE[r.data.space || 'bea']} · ${(r.data.songs || []).length} músicas · ${L.fmt(L.total(r.data.songs || []))}`))))
-      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma setlist ainda.'), h('p', { class: 'muted' }, 'monta a do próximo show ou da apresentação da turma.')));
+      : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma setlist ainda.'), h('p', { class: 'muted' }, 'monte a do próximo show ou da apresentação da turma.')));
   };
-  host.append(banner('Setlist', 'monta, ensaia, sobe no palco'), h('div', { class: 'bl-actions pad-x' },
+  host.append(banner('Setlist', 'monte, ensaie, suba no palco'), h('div', { class: 'bl-actions pad-x' },
     h('button', { class: 'btn primary', type: 'button', onclick: async () => { const r = await store.upsert(KIND, null, { name: 'novo show', date: todayKey(), space: 'bea', songs: [] }); location.hash = `#/setlist/${r.id}`; } }, '+ nova setlist')), box);
   draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === KIND) draw(); });

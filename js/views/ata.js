@@ -36,7 +36,7 @@ function mountEdit(host, id) {
   const D = () => store.get(id).data;
   const save = (patch) => store.upsert(KIND, id, patch);
   const setItem = (iid, patch) => save({ items: D().items.map((x) => (x.id === iid ? { ...x, ...patch } : x)) });
-  const empty = () => { if (!D().items.length && !(D().sections || []).some((s) => s.on !== false && (s.text || '').trim())) { toast('escreve alguma coisa ou adiciona uma atividade'); return true; } return false; };
+  const empty = () => { if (!D().items.length && !(D().sections || []).some((s) => s.on !== false && (s.text || '').trim())) { toast('escreva alguma coisa ou adicione uma atividade'); return true; } return false; };
   const draw = () => {
     const d = D(); const sts = students();
     const title = h('input', { type: 'text', maxlength: 80, value: d.title || '', 'aria-label': 'Título da ata' }); title.addEventListener('change', () => save({ title: title.value.trim() || 'Ata de reunião' }));

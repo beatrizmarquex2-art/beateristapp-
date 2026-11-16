@@ -119,7 +119,7 @@ export function mount(host) {
       res.hidden = false; try { res.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch { /* sem rolagem */ }
       res.replaceChildren(h('b', {}, `${pct}%`), h('p', {}, `${s.hits} de ${s.total} toques certos`), h('small', {}, `perfeito ${s.perfeito} · bom ${s.bom} · mão trocada ${s.lado} · faltou ${s.faltou}`),
         h('p', { class: 'rd-ok' }, passou ? (depoisCel > antesCel ? `ganhou ${depoisCel - antesCel} ★ (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)} neste andamento)` : `passou! (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)}) — 85% = 2 ★ · 100% = 3 ★`) : `precisa de ${MIN_ACERTO}% de toques certos pra ganhar estrela`));
-      info.textContent = passou ? 'muito bom!' : pct >= 50 ? 'quase lá! na próxima eu dou uma folguinha a mais' : 'bora de novo: olha o padrão escrito. na próxima eu dou uma folguinha a mais';
+      info.textContent = passou ? 'muito bom!' : pct >= 50 ? 'quase lá! na próxima eu dou uma folguinha a mais' : 'bora de novo: olhe o padrão escrito. na próxima eu dou uma folguinha a mais';
       go.textContent = '↻ jogar de novo'; go.disabled = false; topo.querySelector('.rd-est').textContent = estrelasTxt(depois);
       extra.replaceChildren();
       if (passou && tempoIdx < TEMPOS.length - 1) extra.append(h('button', { type: 'button', class: 'btn small', onclick: () => jogo(f, { tempo: tempoIdx + 1 }) }, `${TEMPOS[tempoIdx + 1][1]} BPM ▶`));

@@ -13,17 +13,17 @@ const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-self
 const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
-  ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
+  ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corra lá pra assistir e deixe o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
   // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
-  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
-  ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
-  ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
-  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
+  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dê uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
+  ['avaliação no Google', 'curte a Beaterista? avalie a escola no Google e mande o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
+  ['atividades extras', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extras que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
+  ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gire a roleta e pegue cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
   ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
-  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
+  ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? venha tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
   ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
-  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
-  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procura no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
+  ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. comece por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],
+  ['dicionário musical', 'esqueceu o que quer dizer uma palavra de música? procure no dicionário musical!', 'p-laptop', '#/dicionario', 'abrir o dicionário', 'aluno'],
   // frases musicais e curiosidades
   ['curiosidade', 'a pausa também é música: o silêncio entre as notas dá o balanço do groove.', 'n-amp'],
   ['curiosidade', 'o bumbo marca o chão, a caixa marca o meio e o chimbal é o relógio do groove.', 'n-stick'],
@@ -31,18 +31,18 @@ export const DICAS = [
   ['curiosidade', '4 por 4 quer dizer: 4 tempos em cada compasso, e a semínima vale 1 tempo.', 'colorido/paul-estante'],
   ['frase musical', 'devagar e certo: quem toca devagar hoje toca rápido amanhã.', 'n-walk'],
   ['frase musical', 'errou? ótimo! é o erro que mostra o que o cérebro ainda precisa aprender.', 'n-break'],
-  ['frase musical', 'tum tá tum tum tá! canta o ritmo antes de tocar, a mão aprende mais rápido.', 'n-stick'],
+  ['frase musical', 'tum tá tum tum tá! cante o ritmo antes de tocar, a mão aprende mais rápido.', 'n-stick'],
   // estudar em casa
   ['estudar em casa', '10 minutinhos todo dia valem mais que 1 hora só no sábado. bora treinar hoje?', 'n-walk'],
-  ['estudar em casa', 'sem bateria em casa? bate na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'colorido/paul-pad'],
-  ['estudar em casa', 'liga o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'colorido/paul-pad-metronomo'],
-  ['estudar em casa', 'pausa também é treino: bebe uma água, respira e volta. o cérebro guarda o que você tocou enquanto descansa.', 'p-drink'],
-  ['estudar em casa', 'grava um vídeo do seu treino e assiste: dá pra ver o que melhorou e o que dá pra ajustar.', 'colorido/paul-selfie'],
-  ['estudar em casa', 'antes de tocar, respira fundo 3 vezes. corpo calmo segura melhor o tempo.', 'colorido/paul-meditando'],
+  ['estudar em casa', 'sem bateria em casa? bata na perna, na almofada ou num pad de estudo: o que vale é o movimento.', 'colorido/paul-pad'],
+  ['estudar em casa', 'ligue o metrônomo e comece bem devagar. primeiro certo, depois rápido, nunca ao contrário.', 'colorido/paul-pad-metronomo'],
+  ['estudar em casa', 'pausa também é treino: beba uma água, respire e volte. o cérebro guarda o que você tocou enquanto descansa.', 'p-drink'],
+  ['estudar em casa', 'grave um vídeo do seu treino e assista: dá pra ver o que melhorou e o que dá pra ajustar.', 'colorido/paul-selfie'],
+  ['estudar em casa', 'antes de tocar, respire fundo 3 vezes. corpo calmo segura melhor o tempo.', 'colorido/paul-meditando'],
   // toque simples
   ['toque simples', 'toque simples é uma mão de cada vez: D E D E D E D E (direita, esquerda). comece devagar e igual.', 'n-stick'],
-  ['toque simples', 'no toque simples, o som das duas mãos precisa ficar igual. ouve com atenção: a esquerda soa tão bonita quanto a direita?', 'n-break'],
-  ['toque simples', 'ensina um amigo o toque simples! quem ensina aprende duas vezes.', 'n-walk'],
+  ['toque simples', 'no toque simples, o som das duas mãos precisa ficar igual. ouça com atenção: a esquerda soa tão bonita quanto a direita?', 'n-break'],
+  ['toque simples', 'ensine a um amigo o toque simples! quem ensina aprende duas vezes.', 'n-walk'],
   // outros instrumentos
   ['outros instrumentos', 'piano: a escala de dó maior só usa as teclas brancas: dó ré mi fá sol lá si.', 'n-amp'],
   ['outros instrumentos', 'violão: as 6 cordas soltas são mi lá ré sol si mi, da mais grossa pra mais fina.', 'n-walk'],
@@ -52,15 +52,15 @@ export const DICAS = [
   // marcas e parceiros
   ['parceiros da Bea', 'a Bea tem parceria com a Pad Gorilla: pad de estudo pra treinar em casa. conhece?', 'n-stick'],
   ['parceiros da Bea', 'Spark Cajons: instrumento de percussão que cabe em qualquer rodinha de música.', 'n-squat'],
-  ['parceiros da Bea', 'Nagano Drums é outra parceira da Bea. dá uma olhada nos perfis das marcas lá embaixo!', 'n-amp'],
+  ['parceiros da Bea', 'Nagano Drums é outra parceira da Bea. dê uma olhada nos perfis das marcas lá embaixo!', 'n-amp'],
   // Lojinha e jogos (só na área dos alunos)
   ['lojinha', 'tem ebook novo na Lojinha! são materiais digitais: dá pra estudar na tela e imprimir pra treinar no papel.', 'n-walk', '#/lojinha', 'ver a lojinha', 'aluno'],
   ['promoção black friday', 'PROMOÇÃO BLACK FRIDAY: o ebook Bateria Start está pela metade do preço! 44 páginas pra começar do zero.', 'n-amp', '#/lojinha', 'aproveitar', 'aluno'],
-  ['jogos', 'bora jogar? tem bingo, velha, STOP, quebra-cabeça e mais. escolhe um e me desafia!', 'n-skate', '#/jogos', 'ver os jogos', 'aluno'],
+  ['jogos', 'bora jogar? tem bingo, velha, STOP, quebra-cabeça e mais. escolha um e me desafie!', 'n-skate', '#/jogos', 'ver os jogos', 'aluno'],
   // beaterista, redes
-  ['siga a Bea', 'segue a Bea no instagram pra ver os treinos e as novidades da Beaterista!', 'n-walk', IG, 'seguir no instagram'],
-  ['canal', 'curtiu? deixa o like e se inscreve no canal do YouTube da Bea!', 'n-skate', YT, 'ver o canal'],
-  ['beaterista', 'quer aula com a Bea? conhece a Beaterista Escola de Música!', 'n-break', SITE, 'abrir o site'],
+  ['siga a Bea', 'siga a Bea no instagram pra ver os treinos e as novidades da Beaterista!', 'n-walk', IG, 'seguir no instagram'],
+  ['canal', 'curtiu? deixe o like e se inscreva no canal do YouTube da Bea!', 'n-skate', YT, 'ver o canal'],
+  ['beaterista', 'quer aula com a Bea? conheça a Beaterista Escola de Música!', 'n-break', SITE, 'abrir o site'],
 ];
 
 /** Cartão compacto com uma arte do Paul: toque abre a arte inteira numa janela (sem ocupar a tela toda). */

@@ -8,7 +8,7 @@ export const DICAS_MUSICAIS = [
   ['estudo', 'não faça um exercício só por 30 minutos. troque a cada 5 ou 10 minutos e volte depois: o cérebro aprende mais quando precisa se readaptar.'],
   ['estudo', 'escolha uma meta pequena por dia, tipo "a virada do refrão". treino com meta pequena rende mais que treino solto.'],
   ['estudo', 'estude a música à noite e depois durma: é dormindo que o cérebro guarda o que você tocou. de manhã, a música já está mais firme.'],
-  ['metrônomo', 'liga o metrônomo bem devagar. primeiro certo, depois rápido, nunca ao contrário.'],
+  ['metrônomo', 'ligue o metrônomo bem devagar. primeiro certo, depois rápido, nunca ao contrário.'],
   ['metrônomo', 'quando o ritmo ficar fácil, tire o clique de alguns tempos: o metrônomo só toca no 1 e você segura o resto sozinho.'],
   ['mente', 'antes de tocar, feche os olhos e imagine a música inteira, mãos e pés. quem ensaia na mente chega mais seguro no instrumento.'],
   ['mente', 'acertou o que errava ontem? comemore! a alegria do pequeno avanço faz o cérebro querer voltar amanhã.'],

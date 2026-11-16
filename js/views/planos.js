@@ -141,13 +141,13 @@ function mountEdit(host, id) {
           h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Papel' }, ...[['timbrado', 'timbrado Beaterista'], ['branco', 'branco']].map(([k, t]) => h('button', { type: 'button', class: `lib-tab${(p.paper || 'timbrado') === k ? ' on' : ''}`, role: 'radio', 'aria-checked': String((p.paper || 'timbrado') === k), onclick: () => save({ paper: k }) }, t)))),
         h('div', { class: 'row sp-actions' },
           h('button', { class: 'btn primary', type: 'button', onclick: async (e) => {
-            if (!p.items.length) { toast('adiciona pelo menos uma atividade'); return; }
+            if (!p.items.length) { toast('adicione pelo menos uma atividade'); return; }
             const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'gerando…';
-            try { const r = await downloadPdf(P()); toast(r.shared ? 'PDF pronto ✓' : `baixado: ${r.name} ✓`, { ms: 2200 }); } catch { toast('não consegui gerar o PDF aqui. tenta “imprimir”.'); }
+            try { const r = await downloadPdf(P()); toast(r.shared ? 'PDF pronto ✓' : `baixado: ${r.name} ✓`, { ms: 2200 }); } catch { toast('não consegui gerar o PDF aqui. tente “imprimir”.'); }
             btn.disabled = false; btn.textContent = 'baixar PDF';
           } }, 'baixar PDF'),
-          h('button', { class: 'btn', type: 'button', onclick: () => { if (!p.items.length) { toast('adiciona pelo menos uma atividade'); return; } printPlan(P()); } }, 'imprimir'),
-          h('button', { class: 'btn', type: 'button', onclick: async (e) => { if (!p.items.length) { toast('adiciona pelo menos uma atividade'); return; } const btn = e.currentTarget; btn.disabled = true; try { const pl = P(); await sendCanvases(await renderPages(pl), `${pl.title || 'Plano'}${pl.studentName ? ` - ${pl.studentName}` : ''}`); } catch { toast('não consegui enviar pra pasta.'); } btn.disabled = false; } }, '📁 enviar pra pasta'),
+          h('button', { class: 'btn', type: 'button', onclick: () => { if (!p.items.length) { toast('adicione pelo menos uma atividade'); return; } printPlan(P()); } }, 'imprimir'),
+          h('button', { class: 'btn', type: 'button', onclick: async (e) => { if (!p.items.length) { toast('adicione pelo menos uma atividade'); return; } const btn = e.currentTarget; btn.disabled = true; try { const pl = P(); await sendCanvases(await renderPages(pl), `${pl.title || 'Plano'}${pl.studentName ? ` - ${pl.studentName}` : ''}`); } catch { toast('não consegui enviar pra pasta.'); } btn.disabled = false; } }, '📁 enviar pra pasta'),
           h('button', { class: 'btn', type: 'button', onclick: () => sheet('Copiar pra outro aluno', (close) => h('div', { class: 'sheet-body' }, h('ul', { class: 'sp-list' }, ...students().filter((s) => s.id !== p.studentId).map((s) => h('li', {}, h('button', { type: 'button', class: 'sp-opt', onclick: async () => { const rec = await store.upsert(KIND, null, copyFor(P(), { id: s.id, name: s.data.name })); close(); toast(`copiado pra ${s.data.name} ✓`); location.hash = `#/planos/${rec.id}`; } }, h('b', {}, s.data.name))))))) }, 'copiar pra outro aluno'),
           h('button', { class: 'btn ghost danger-txt', type: 'button', onclick: async () => { if (await confirmSheet('Apagar plano?', p.title, 'Apagar')) { await store.remove(id); location.hash = '#/planos'; } } }, 'apagar'))));
   };

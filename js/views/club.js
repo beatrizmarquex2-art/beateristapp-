@@ -55,7 +55,7 @@ function editor(rec, close, pre = {}) {
   drawSec();
   const coverBtn = h('button', { class: 'btn small', type: 'button', onclick: async () => { const [b] = await pickImages(false); if (b) { coverId = await saveImage(b); coverBtn.textContent = 'capa escolhida ✓'; } } }, coverId ? 'trocar capa' : 'escolher capa');
   const save = async (status) => {
-    if (!title.value.trim()) { toast('dá um título, nem que seja provisório.'); title.focus(); return; }
+    if (!title.value.trim()) { toast('dê um título, nem que seja provisório.'); title.focus(); return; }
     const v = { title: title.value.trim(), artist: artist.value.trim(), album: album.value.trim(), body: body.value, sources: sources.value.trim(), section, cover: coverId, mbid: d.mbid || null, status, date: d.date || Date.now() };
     const r = await store.upsert('clubpost', rec ? rec.id : null, v);
     close(); toast(status === 'publicado' ? 'publicado no seu clube ✓' : 'rascunho guardado');
@@ -108,7 +108,7 @@ function fichaEl(d, save) {
     box.replaceChildren(...[
       h('div', { class: 'row between' }, h('h2', { class: 'tag' }, 'ficha técnica'), d.mbid ? h('button', { class: 'btn small', type: 'button', disabled: busy, onclick: load }, busy ? 'buscando…' : f ? 'atualizar' : 'trazer ficha técnica') : null),
       !d.mbid ? h('p', { class: 'muted' }, 'esse texto não está ligado a um disco. escreva a partir de “meus álbuns” pra ter a ficha automática.') : null,
-      err ? h('p', { class: 'muted' }, 'não consegui buscar agora (sem internet?). tenta de novo depois.') : null,
+      err ? h('p', { class: 'muted' }, 'não consegui buscar agora (sem internet?). tente de novo depois.') : null,
       f ? h('div', { class: 'cl-ficha-grid' },
         h('div', {}, h('h3', {}, 'faixas'), f.tracks.length ? h('ol', { class: 'cl-tracks' }, ...f.tracks.map((t) => h('li', {}, h('span', {}, t.title), h('small', {}, t.len)))) : h('p', { class: 'muted' }, 'sem faixas na fonte.')),
         h('div', {}, h('h3', {}, 'quem tocou e quem fez'), f.people.length ? h('ul', { class: 'cl-people' }, ...f.people.map((x) => h('li', {}, h('b', {}, x.name), ` · ${x.roles.join(', ')}`))) : h('p', { class: 'muted' }, 'a fonte ainda não tem os créditos dos músicos desse disco.'),
@@ -181,7 +181,7 @@ function pickTexts() {
     toast('lendo os textos…', { id: 'lc-imp', ms: 30000 });
     try {
       const { n: t, col: c } = await importTexts(list);
-      toast(c ? `coleção importada ✓ ${c} fichas${t ? ` + ${t} texto(s) nos rascunhos` : ''}` : t ? `${t} texto(s) nos rascunhos ✓ revisa e publica` : 'não achei textos (.md, .txt ou .docx) aí dentro', { id: 'lc-imp', ms: 3000 });
+      toast(c ? `coleção importada ✓ ${c} fichas${t ? ` + ${t} texto(s) nos rascunhos` : ''}` : t ? `${t} texto(s) nos rascunhos ✓ revise e publique` : 'não achei textos (.md, .txt ou .docx) aí dentro', { id: 'lc-imp', ms: 3000 });
     }
     catch (e) { toast(`não consegui ler: ${e.message || 'arquivo estranho'}`, { id: 'lc-imp', ms: 4000 }); }
   });
@@ -219,7 +219,7 @@ export function mountClub(host, tabs) {
     box.replaceChildren(h('a', { class: 'card pad cl-col', href: '#/estudos/club/arsenal' }, h('span', { class: 'lib-kicker' }, 'novo'), h('strong', {}, 'Arsenal discos'), h('small', { class: 'muted' }, 'todos os álbuns de A a Z, com busca')), ...(cols.length ? cols.map((c) => h('a', { class: 'card pad cl-col', href: `#/estudos/club/c:${colSlug(c.name)}` },
       h('span', { class: 'lib-kicker' }, 'coleção'), h('strong', {}, c.name),
       h('small', { class: 'muted' }, [c.n.album && `${c.n.album} álbuns`, c.n.faixa && `${c.n.faixa} faixas`, c.n.lancamento && `${c.n.lancamento} lançamentos`, c.n.guia && `${c.n.guia} guias`].filter(Boolean).join(' · '))))
-      : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma coleção ainda.'), h('p', { class: 'muted' }, 'importa um pacote de textos (.zip) pra ele aparecer aqui.'))]));
+      : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma coleção ainda.'), h('p', { class: 'muted' }, 'importe um pacote de textos (.zip) pra ele aparecer aqui.'))]));
   };
   clubTop(host, tabs); host.append(box);
   draw();

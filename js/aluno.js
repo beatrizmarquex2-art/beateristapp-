@@ -171,7 +171,7 @@ function lockView(view, what, pv) {
   const check = async (quiet) => {
     if (!CODE.pendente()) return;
     if (!quiet) msg.textContent = 'conferindo…';
-    try { if (await CODE.conferirPedido()) return done(); if (!quiet) msg.textContent = 'ainda não liberou. fala o código pra professora Bea.'; } catch { if (!quiet) msg.textContent = 'sem internet agora. tente de novo.'; }
+    try { if (await CODE.conferirPedido()) return done(); if (!quiet) msg.textContent = 'ainda não liberou. fale o código pra professora Bea.'; } catch { if (!quiet) msg.textContent = 'sem internet agora. tente de novo.'; }
   };
   const enter = async () => {
     msg.textContent = 'conferindo…';
@@ -189,7 +189,7 @@ function lockView(view, what, pv) {
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
   draw(); start();
-  view.append(banner(pv ? tituloDaPrevia(pv) : 'Só pra alunos', pv ? 'dá uma olhada antes de jogar' : 'libere com o seu código de acesso'), pv ? previa(pv) : null, h('div', { class: 'pad-x' }, box));
+  view.append(banner(pv ? tituloDaPrevia(pv) : 'Só pra alunos', pv ? 'dê uma olhada antes de jogar' : 'libere com o seu código de acesso'), pv ? previa(pv) : null, h('div', { class: 'pad-x' }, box));
   return () => { gone = true; clearInterval(timer); };
 }
 const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', paulta: 'a pauLta' };

@@ -130,7 +130,7 @@ export function mountProgressionMap(host, cfg) {
     const n = nodes[i]; if (!n || busy) return;
     if (n.state === ST.LOCKED) {
       const el = nodeEls[i]; el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); sfx.play('locked'); speak('ainda trancada!', 1800);
-      toast(cfg.lockedMsg || 'ganha 1 estrela na fase anterior pra abrir', { ms: 2200, id: 'mp-lock' }); return;
+      toast(cfg.lockedMsg || 'ganhe 1 estrela na fase anterior pra abrir', { ms: 2200, id: 'mp-lock' }); return;
     }
     busy = true; sess(lastKey, { pos: i, t: Date.now() }); sfx.play('disc');
     const el = nodeEls[i]; el.classList.add('press');

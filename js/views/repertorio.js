@@ -64,19 +64,19 @@ function songSheet(rec) {
     // partituras da música: cria uma (com detalhes por compasso: intro, virada, dica…) ou liga uma que já existe
     const scores = h('div', { class: 'rp-scores' });
     const drawScores = () => {
-      if (!rec) { scores.replaceChildren(h('p', { class: 'muted' }, 'salva a música primeiro: aí dá pra criar a partitura dela.')); return; }
+      if (!rec) { scores.replaceChildren(h('p', { class: 'muted' }, 'salve a música primeiro: aí dá pra criar a partitura dela.')); return; }
       const mine = store.list('partitura').filter((x) => x.data.songId === rec.id); const free = store.list('partitura').filter((x) => !x.data.songId);
       const pick = h('select', { 'aria-label': 'Ligar uma partitura que já existe' }, h('option', { value: '' }, 'ligar uma que já existe…'), ...free.map((x) => h('option', { value: x.id }, x.data.title)));
       pick.addEventListener('change', async () => { if (pick.value) { await store.upsert('partitura', pick.value, { songId: rec.id }); drawScores(); } });
       scores.replaceChildren(
         ...mine.map((x) => { const notes = (x.data.bars || []).map((b, i) => (b.note ? `${i + 1}: ${b.note}` : null)).filter(Boolean);
-          return h('div', { class: 'rp-score' }, h('a', { class: 'link', href: `#/partitura/${x.id}`, onclick: () => close() }, h('strong', {}, x.data.title), ` · ${(x.data.bars || []).length} compassos`), notes.length ? h('small', { class: 'muted' }, `detalhes — ${notes.join(' · ')}`) : h('small', { class: 'muted' }, 'sem detalhes ainda: abre e escreve embaixo de cada compasso'),
+          return h('div', { class: 'rp-score' }, h('a', { class: 'link', href: `#/partitura/${x.id}`, onclick: () => close() }, h('strong', {}, x.data.title), ` · ${(x.data.bars || []).length} compassos`), notes.length ? h('small', { class: 'muted' }, `detalhes — ${notes.join(' · ')}`) : h('small', { class: 'muted' }, 'sem detalhes ainda: abra e escreva embaixo de cada compasso'),
             h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Desligar da música', onclick: async () => { await store.upsert('partitura', x.id, { songId: null }); drawScores(); } }, icon('x', 16))); }),
         h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => { close(); newScoreSheet({ title: d.title, songId: rec.id }); } }, '+ criar partitura'), free.length ? pick : null));
     };
     drawScores();
     const save = async () => {
-      const t = title.value.trim(); if (!t) { toast('dá um nome pra música'); return; }
+      const t = title.value.trim(); if (!t) { toast('dê um nome pra música'); return; }
       const patch = { title: t, artist: artist.value.trim(), bpm: Number(bpm.value) || '', link: link.value.trim(), notes: notes.value.trim(), stage, groove };
       if (group) patch.group = group.value.trim();
       if (!rec) patch.created = Date.now();

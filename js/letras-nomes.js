@@ -2,6 +2,6 @@
 export const LETRAS = {
   caca: ['Radar Musical', 'ache as palavras na grade'],
   cruzadinha: ['Cruzadinha', 'preencha as pistas'],
-  quiz: ['Quiz do Paul', 'completa e liga'],
+  quiz: ['Quiz do Paul', 'complete e ligue'],
 };
 export const nomeLetras = (k) => (LETRAS[k] || ['Letras'])[0];

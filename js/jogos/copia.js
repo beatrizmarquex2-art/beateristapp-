@@ -44,7 +44,7 @@ export function mount(host) {
       seq.replaceChildren(...spans); seq.setAttribute('aria-label', c.nomes ? `notas: ${alvo.slice(0, len).map(nomeNota).join(' ')}` : `${len} notas`);
     };
     const exemplo = () => {
-      estado = 'paul'; kb.trava(true); if (mic) mic.surdo(true); pos = 0; escreve(); placarTxt(); msg.textContent = 'escuta o Paul…';
+      estado = 'paul'; kb.trava(true); if (mic) mic.surdo(true); pos = 0; escreve(); placarTxt(); msg.textContent = 'escute o Paul…';
       alvo.slice(0, len).forEach((m, i) => depois(() => { tocaNota(m, 0, PASSO * 0.85); spans.forEach((s, k) => s.classList.toggle('now', k === i)); if (c.nomes) kb.acende(m, 'on', PASSO * 700); }, 350 + i * PASSO * 1000));
       depois(() => { spans.forEach((s) => s.classList.remove('now')); estado = 'vez'; kb.trava(c.mic); if (mic) mic.surdo(false); if (spans[0]) spans[0].classList.add('vez'); msg.textContent = c.mic ? 'sua vez: toque no instrumento' : 'sua vez!'; }, 350 + len * PASSO * 1000 + 200);
     };
@@ -52,7 +52,7 @@ export function mount(host) {
       estado = 'fim'; kb.trava(true); if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta();
       const est = estrelasCopia(c.tipo, feitas, alvo.length, erros); const best = { ...(getGame('copia').best || {}) }; if (feitas > (best[chave] || 0)) best[chave] = feitas; setGame('copia', { best });
       premiar('copia', est, `copia:${chave}`);
-      res.replaceChildren(quadro(`${feitas} notas`, est, ganhou ? (c.tipo === 'melodia' ? `você tocou ${melodia.nome} inteira!` : 'chegou ao fim: memória de ouro!') : feitas ? 'boa! na próxima vai mais longe.' : 'bora de novo: escuta com calma e canta as notas.',
+      res.replaceChildren(quadro(`${feitas} notas`, est, ganhou ? (c.tipo === 'melodia' ? `você tocou ${melodia.nome} inteira!` : 'chegou ao fim: memória de ouro!') : feitas ? 'boa! na próxima vai mais longe.' : 'bora de novo: escute com calma e cante as notas.',
         h('small', {}, c.tipo === 'melodia' ? 'metade da música = 1 ★ · inteira = 2 ★ · inteira sem errar = 3 ★' : '4 notas = 1 ★ · 6 = 2 ★ · 8 = 3 ★')));
       go.textContent = '↻ jogar de novo'; go.hidden = false; msg.textContent = ''; try { res.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { /* sem rolagem */ }
     };
@@ -68,7 +68,7 @@ export function mount(host) {
       }
       somErro(); vidas--; erros++; spans[pos].classList.add('bad'); kb.acende(certa, 'certa', 800); placarTxt(); estado = 'pausa';
       if (vidas <= 0) { msg.textContent = `era ${nomeNota(certa)}.`; depois(() => fim(false), 900); return; }
-      msg.textContent = `era ${nomeNota(certa)}. escuta de novo…`; depois(exemplo, 1300);
+      msg.textContent = `era ${nomeNota(certa)}. escute de novo…`; depois(exemplo, 1300);
     }
     async function comeca() {
       go.hidden = true; res.replaceChildren(); musicaPausa(); ops.hidden = true;

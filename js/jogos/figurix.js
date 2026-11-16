@@ -159,7 +159,7 @@ export function mount(host) {
         if (mesmoParN(a.c, c)) { feitos.add(a.c.k); feitos.add(c.k); a.b.classList.add('ok'); b.classList.add('ok'); acerto(b); if (feitos.size === cartas.length) S.later(fim, 900); }
         else { erro(b); trava = true; S.later(() => { a.b.classList.remove('aberta'); b.classList.remove('aberta', 'no'); trava = false; }, 900); }
       };
-      const dica = { fp: 'olha bem: cada figura tem a sua pausa (o silêncio dela). guarde!', fv: 'olha bem: cada figura e quanto ela vale. guarde!', pn: 'olha bem: cada pausa e o nome da figura dela. guarde!', fn: 'olha bem: cada figura e o nome dela. guarde!' }[cfg.modo];
+      const dica = { fp: 'olhe bem: cada figura tem a sua pausa (o silêncio dela). guarde!', fv: 'olhe bem: cada figura e quanto ela vale. guarde!', pn: 'olhe bem: cada pausa e o nome da figura dela. guarde!', fn: 'olhe bem: cada figura e o nome dela. guarde!' }[cfg.modo];
       const msg = h('p', { class: 'fx-q' }, dica);
       root.replaceChildren(topo(0, 0), msg, h('div', { class: 'fx-mem' }, ...B));
       S.later(() => { B.forEach((b) => b.classList.remove('aberta')); trava = false; msg.textContent = 'agora ache os pares!'; }, 5000);

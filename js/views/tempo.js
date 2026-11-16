@@ -84,23 +84,23 @@ const clampBpm = (v) => Math.max(40, Math.min(220, Math.round(v)));
 function calibrate(mic, listen, done) {
   const c = cfg();
   sheet('Calibrar meu iPhone', (close) => {
-    const status = h('p', { class: 'tp-cal-status' }, c.fone ? 'põe o fone. vão tocar 10 cliques: bate junto em cada um (na mesa, no pad ou no tambor).' : 'fica em silêncio: vão tocar 10 cliques no alto-falante e o app mede quanto o seu iPhone demora pra ouvir o próprio som.');
+    const status = h('p', { class: 'tp-cal-status' }, c.fone ? 'ponha o fone. vão tocar 10 cliques: bata junto em cada um (na mesa, no pad ou no tambor).' : 'fique em silêncio: vão tocar 10 cliques no alto-falante e o app mede quanto o seu iPhone demora pra ouvir o próprio som.');
     const go = h('button', { class: 'btn primary', type: 'button', onclick: () => {
-      go.disabled = true; status.textContent = c.fone ? 'bate junto…' : 'shhh… medindo';
+      go.disabled = true; status.textContent = c.fone ? 'bata junto…' : 'shhh… medindo';
       const got = []; const cl = clicks(mic.ctx, { bpm: 100, beats: 10 });
       listen((ev) => got.push(ev.t));
       setTimeout(async () => {
         listen(null);
         const r = T.calibrate(got, cl.times);
-        if (r && r.spreadMs > 40) { status.textContent = c.fone ? 'as batidas ficaram muito espalhadas em relação aos cliques. tenta de novo, bem junto do clique.' : 'ouvi barulho demais junto com os cliques. tenta num lugar mais quieto.'; go.disabled = false; go.textContent = 'tentar de novo'; return; }
-        if (!r) { status.textContent = c.fone ? 'não ouvi batidas suficientes. tenta de novo, batendo mais forte.' : 'não consegui ouvir os cliques. aumenta o volume, tira o fone e tenta de novo.'; go.disabled = false; go.textContent = 'tentar de novo'; return; }
+        if (r && r.spreadMs > 40) { status.textContent = c.fone ? 'as batidas ficaram muito espalhadas em relação aos cliques. tente de novo, bem junto do clique.' : 'ouvi barulho demais junto com os cliques. tente num lugar mais quieto.'; go.disabled = false; go.textContent = 'tentar de novo'; return; }
+        if (!r) { status.textContent = c.fone ? 'não ouvi batidas suficientes. tente de novo, batendo mais forte.' : 'não consegui ouvir os cliques. aumente o volume, tire o fone e tente de novo.'; go.disabled = false; go.textContent = 'tentar de novo'; return; }
         await save({ lat: { ...cfg().lat, [c.fone ? 'fone' : 'alto']: { ms: r.ms, spread: r.spreadMs, at: Date.now() } } });
         status.textContent = `pronto: ${r.ms} ms de atraso ${r.ok ? '✓' : `(variou ${r.spreadMs} ms: dá pra refazer num lugar mais quieto)`}`;
         go.textContent = 'fechar'; go.disabled = false; go.onclick = () => { close(); done && done(); };
       }, (cl.times[9] - mic.ctx.currentTime + 0.7) * 1000);
     } }, 'começar (10 cliques)');
     return h('div', { class: 'sheet-body' }, status, go,
-      h('p', { class: 'muted' }, 'a calibração fica guardada (uma pra alto-falante, outra pra fone). fone bluetooth atrasa bem mais que fone com fio: calibra de novo se trocar.'));
+      h('p', { class: 'muted' }, 'a calibração fica guardada (uma pra alto-falante, outra pra fone). fone bluetooth atrasa bem mais que fone com fio: calibre de novo se trocar.'));
   });
 }
 
@@ -127,7 +127,7 @@ function judgeTab(mic, listen) {
   };
   function start() {
     const c = cfg(); const lat = latOf(c);
-    if (!lat) toast('dica: calibra antes pra medir certinho. sem calibrar, o número vem com o atraso do aparelho.', { ms: 3500 });
+    if (!lat) toast('dica: calibre antes pra medir certinho. sem calibrar, o número vem com o atraso do aparelho.', { ms: 3500 });
     const beatsTotal = 4 + c.bars * 4;
     const cl = clicks(mic.ctx, { bpm: c.bpm, beats: beatsTotal, audibleBeats: c.fone ? beatsTotal : 4 });
     const exStart = cl.start + 4 * (60 / c.bpm);
@@ -142,7 +142,7 @@ function judgeTab(mic, listen) {
       got.push(ev.t); count.textContent = `${got.length} batida${got.length > 1 ? 's' : ''} ouvida${got.length > 1 ? 's' : ''}`;
     });
     const stopPulse = pulse(mic.ctx, cl.times, light, finish, 60 / c.bpm + 0.2); // espera a última nota do último tempo
-    const flip = setInterval(() => { if (mic.ctx.currentTime >= exStart) { msg.textContent = c.fone ? 'toca junto!' : 'o clique sumiu: segura o tempo!'; clearInterval(flip); } }, 50);
+    const flip = setInterval(() => { if (mic.ctx.currentTime >= exStart) { msg.textContent = c.fone ? 'toque junto!' : 'o clique sumiu: segure o tempo!'; clearInterval(flip); } }, 50);
     run = { cancel: () => { clearInterval(flip); cl.cancel(); stopPulse(); } };
     async function finish() {
       clearInterval(flip); listen(null); run = null;
@@ -164,7 +164,7 @@ function judgeTab(mic, listen) {
             h('p', { class: 'tp-summary' }, `${name} ${tend(d.mean)} · ±${d.sd} ms${d.missed ? ` · ${d.missed} sem batida` : ''}`),
             record ? h('span', { class: 'tp-record' }, '★ recorde!') : null)),
         timeline(d), posBars(d),
-        !d.calibrated ? h('p', { class: 'tp-hint' }, 'sem calibração: o número inclui o atraso do aparelho. calibra pra ficar justo.') : null,
+        !d.calibrated ? h('p', { class: 'tp-hint' }, 'sem calibração: o número inclui o atraso do aparelho. calibre pra ficar justo.') : null,
         h('div', { class: 'bl-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: draw }, 'de novo'))),
       history());
     if (record) FB.great(scoreEl); else if (d.score >= 70) FB.win(scoreEl); else FB.lose(scoreEl);
@@ -230,7 +230,7 @@ function transcribeTab(mic, listen) {
       line('clique', chips([[false, 'alto-falante'], [true, 'fone']], c.fone, (v) => save({ fone: v }).then(draw), 'Como ouvir o clique')),
       h('p', { class: 'tp-hint' }, `${B.GRIDS[c.steps].name} · conta 1, grava 1 compasso${lat ? ` · calibrado ${lat.ms} ms` : ''}`),
       h('button', { class: 'btn primary wide', type: 'button', onclick: record }, icon('mic', 18), ' gravar')),
-    notes.length ? result() : h('p', { class: 'pad-x lib-note' }, 'bate uma frase na mesa, no pad ou na bateria: o app acha cada golpe, encaixa na grade e tenta adivinhar a peça pelo som (grave = bumbo, médio = caixa, agudo = chimbal/prato). quando não tiver certeza, marca “?” e você decide.'));
+    notes.length ? result() : h('p', { class: 'pad-x lib-note' }, 'bata uma frase na mesa, no pad ou na bateria: o app acha cada golpe, encaixa na grade e tenta adivinhar a peça pelo som (grave = bumbo, médio = caixa, agudo = chimbal/prato). quando não tiver certeza, marca “?” e você decide.'));
   };
   function record() {
     const c = cfg(); const lat = latOf(c);
@@ -244,10 +244,10 @@ function transcribeTab(mic, listen) {
       listen(null); run = null;
       notes = T.quantize(got, { start, bpm: c.bpm, steps: c.steps, latency: lat ? lat.ms / 1000 : 0 });
       const seen = new Set(); notes = notes.filter((n) => { const k = `${n.step}|${n.piece}`; if (seen.has(k)) return false; seen.add(k); return true; });
-      if (!notes.length) toast('não ouvi nenhuma batida dentro do compasso. bate mais forte ou chega o celular mais perto.');
+      if (!notes.length) toast('não ouvi nenhuma batida dentro do compasso. bata mais forte ou chegue o celular mais perto.');
       draw();
     }, 60 / c.bpm + 0.2);
-    const flip = setInterval(() => { if (mic.ctx.currentTime >= start) { msg.textContent = 'grava! toca a frase'; clearInterval(flip); } }, 50);
+    const flip = setInterval(() => { if (mic.ctx.currentTime >= start) { msg.textContent = 'gravando! toque a frase'; clearInterval(flip); } }, 50);
     run = { cancel: () => { clearInterval(flip); cl.cancel(); stopPulse(); } };
   }
   const beatOf = () => { const c = cfg(); return { id: 'transcrito', name: 'Transcrito', style: '', kind: 'groove', bpm: c.bpm, steps: c.steps, rows: { ...B.clear({ steps: c.steps, rows: {} }).rows, ...T.toRows(notes, c.steps) } }; };
@@ -276,13 +276,13 @@ function transcribeTab(mic, listen) {
     const score = h('figure', { class: 'bl-score' }); score.innerHTML = N.toSVG(N.layout(beatOf(), { width: 360, full: false, color: true }));
     return h('section', { class: 'card pad tp-out' },
       h('h2', { class: 'tag' }, 'o que eu ouvi'),
-      h('p', { class: 'tp-summary' }, `${notes.length} nota${notes.length === 1 ? '' : 's'} (${notes.filter((n) => !n.manual).length} pelo som)${unk ? ` · ${unk} com “?”: toca nelas e escolhe a peça` : ' · toca numa nota pra trocar a peça ou apagar'}`),
+      h('p', { class: 'tp-summary' }, `${notes.length} nota${notes.length === 1 ? '' : 's'} (${notes.filter((n) => !n.manual).length} pelo som)${unk ? ` · ${unk} com “?”: toque nelas e escolha a peça` : ' · toque numa nota pra trocar a peça ou apagar'}`),
       h('div', { class: 'tp-tgrid-wrap' }, grid), score,
       h('div', { class: 'bl-actions' },
         h('button', { class: 'btn', type: 'button', onclick: () => { stopBeat(); playBeat(beatOf()); setTimeout(stopBeat, (60 / c.bpm) * 4 * 2 * 1000 + 200); } }, icon('play', 16), ' tocar'),
         h('button', { class: 'btn primary', type: 'button', disabled: !!unk, onclick: saveIt }, 'salvar em meus ritmos'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { notes = []; draw(); } }, 'descartar')),
-      unk ? h('p', { class: 'tp-hint' }, 'resolve os “?” pra salvar (eu não invento a peça).') : null);
+      unk ? h('p', { class: 'tp-hint' }, 'resolva os “?” pra salvar (eu não invento a peça).') : null);
   }
   const saveIt = () => sheet('Salvar em meus ritmos', (close) => {
     const name = h('input', { type: 'text', maxlength: 60, placeholder: 'ex.: frase da mesa', 'aria-label': 'Nome do ritmo' });

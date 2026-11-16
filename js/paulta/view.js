@@ -45,7 +45,7 @@ function homeScreen(host, rerender) {
     return;
   }
   const p = V.getP(me.id); const tier = tierOf(P.totalStars(me.id)); const pts = S.points(p);
-  const say = !p.started ? `oi, ${me.name}! escolhe um mundo pra começar. pode ser qualquer um!` : S.mainDone(p) >= 3 ? 'você leu o mundo inteiro! falta o duelo!' : `bora, ${me.name}! já são ${pts} pontos.`;
+  const say = !p.started ? `oi, ${me.name}! escolha um mundo pra começar. pode ser qualquer um!` : S.mainDone(p) >= 3 ? 'você leu o mundo inteiro! falta o duelo!' : `bora, ${me.name}! já são ${pts} pontos.`;
   const r = robo({ mood: p.started ? 'happy' : 'wave', tier, size: 96, say });
   const card = (w) => {
     const W = WORLDS[w]; const done = S.worldProgress(p, w); const lock = !livre() && !S.worldOpen(p, w); const full = S.worldDone(p, w); const ant = S.ANTERIOR[w]; const por3 = lock && !(w === 'duel' && !S.duelUnlocked(p)); // trancado pela regra das 3 ★
@@ -69,7 +69,7 @@ function homeScreen(host, rerender) {
 function levelScreen(host) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const p = V.getP(me.id);
-  const r = robo({ mood: 'happy', size: 90, say: 'escolhe o seu modo! todos têm 12 fases e pacotinhos de figurinhas.' });
+  const r = robo({ mood: 'happy', size: 90, say: 'escolha o seu modo! todos têm 12 fases e pacotinhos de figurinhas.' });
   const info = { drumF: ['🟢', 'fácil', 'peças e combinações, só com semínimas e colcheias. sem acento, nota fantasma, chimbal aberto nem semicolcheia.'], drumI: ['🟡', 'intermediário', 'todos os símbolos, só com colcheias. tem tempo e fases “sem errar”.'], drumD: ['🔴', 'difícil', 'tudo misturado, inclusive semicolcheias.'] };
   const card = (w) => {
     const [dot, nome, txt] = info[w]; const done = S.worldProgress(p, w); const full = S.worldDone(p, w); const t = RW.totalDoModo(w);
@@ -118,7 +118,7 @@ async function finishPhase(ctx, res, spec) {
   const gainedTitle = out.gained.filter((t) => t.id !== 'aprendiz' || before.started === 0 ? true : false);
   const worldEv = out.events.find((e) => e.type === 'world'); const duelOpen = !wasOpen && S.duelUnlocked(saved);
   const big = !!worldEv || gainedTitle.length;
-  bot.set(out.passed ? (big ? 'crown' : stars >= 2 ? 'cheer' : 'happy') : 'oops', out.passed ? (worldEv ? 'mundo concluído! 🎉' : 'fase concluída!') : 'quase lá! olha o que treinar');
+  bot.set(out.passed ? (big ? 'crown' : stars >= 2 ? 'cheer' : 'happy') : 'oops', out.passed ? (worldEv ? 'mundo concluído! 🎉' : 'fase concluída!') : 'quase lá! olhe o que treinar');
   if (big) sfx.fanfare(true); else if (out.passed) sfx.fanfare();
   const next$ = out.passed && n < WORLDS[world].count;
   const pctEl = h('b', { class: 'kx-pct' }, h('span', { class: 'n' }, String(pct)), h('small', {}, '%'));
@@ -179,7 +179,7 @@ function reinforceScreen(host, modeArg) {
   const me = P.active(); if (!me) { location.hash = BASE; return () => {}; }
   const mode = modeArg === 'imagens' ? 'imagens' : 'nomes'; const p = V.getP(me.id); const d = S.difficulties(p);
   const tags = d.all.map((x) => x.tag).filter((t) => reinforceQuestion(t, mode, () => 0.3));
-  const r = robo({ mood: tags.length ? 'idea' : 'happy', size: 90, say: tags.length ? 'montei 10 perguntas só com o que você errou! acerte tudo e ganhe 3 figurinhas.' : 'nenhuma dificuldade registrada ainda. joga umas fases e eu volto com um treino!' });
+  const r = robo({ mood: tags.length ? 'idea' : 'happy', size: 90, say: tags.length ? 'montei 10 perguntas só com o que você errou! acerte tudo e ganhe 3 figurinhas.' : 'nenhuma dificuldade registrada ainda. jogue umas fases e eu volto com um treino!' });
   if (!tags.length) { host.append(topBar(BASE), pageH1('Revisão do Paul'), h('div', { class: 'kx-hello' }, r.el), h('a', { class: 'kd-btn kx-go', href: BASE }, 'voltar')); return () => {}; }
   const order = RW.ordemRevisao(tags, 10); const hist = []; const seen = []; let off = null;
   const done = async (res) => {
@@ -191,7 +191,7 @@ function reinforceScreen(host, modeArg) {
       h('div', { class: 'pl-rev-stars', 'aria-label': `${res.right} de 10 estrelas` }, ...Array.from({ length: 10 }, (_, k) => h('span', { class: `kx-star${k < res.right ? ' on' : ''}`, style: `--d:${k * 0.12}s` }, '★'))),
       h('p', { class: 'muted' }, `${res.right} de ${res.total} certas · cada acerto vale 1 ★ e alivia uma dificuldade da sua lista.`),
       free ? h('p', { class: 'pl-livre', role: 'status' }, '🔓 modo livre: as figurinhas só contam com o seu código de acesso.') : null,
-      !free && all ? (ganhou ? h('div', { class: 'kx-reward pl-packs' }, h('p', { class: 'kx-reward-t' }, '🎁 3 figurinhas pra você!'), h('a', { class: 'kd-btn', href: Album.albumHref('Pacotes') }, 'abrir agora')) : h('p', { class: 'muted' }, 'as 3 figurinhas da revisão já foram entregues hoje. volta amanhã!')) : !free ? h('p', { class: 'muted' }, 'acerte as 10 pra ganhar 3 figurinhas (1 prêmio por dia).') : null,
+      !free && all ? (ganhou ? h('div', { class: 'kx-reward pl-packs' }, h('p', { class: 'kx-reward-t' }, '🎁 3 figurinhas pra você!'), h('a', { class: 'kd-btn', href: Album.albumHref('Pacotes') }, 'abrir agora')) : h('p', { class: 'muted' }, 'as 3 figurinhas da revisão já foram entregues hoje. volte amanhã!')) : !free ? h('p', { class: 'muted' }, 'acerte as 10 pra ganhar 3 figurinhas (1 prêmio por dia).') : null,
       h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: () => { location.hash = `${BASE}/perfil`; } }, 'ver meu perfil'), h('button', { class: 'kd-chip', type: 'button', onclick: () => { off(); host.replaceChildren(); off = reinforceScreen(host, mode); } }, 'outra revisão'))));
   };
   off = runSession({ host, profile: me, mode, world: 'reforco', title: 'Revisão do Paul', sub: 'Revisão do Paul · 10 estrelas', spec: { rounds: 10, secs: null, sudden: false, need: 0 }, say: 'o que você mais erra, em um treino só', noScore: true,

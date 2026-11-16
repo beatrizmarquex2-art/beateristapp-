@@ -35,8 +35,8 @@ export function runEco(game, ctx) {
   const clear = () => { S.reset(); if (cap) { cap.cancel(); cap = null; } };
 
   const intro = () => {
-    bot.set('kit', 'ouve e repete!');
-    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${spec.rounds} ritmos · ${mode === 'mic' ? '🎙 toca no seu pad de estudo ou na bateria de verdade (o microfone escuta; sem tocar na tela)' : '📱 toca na tela'}`),
+    bot.set('kit', 'ouça e repita!');
+    stage.replaceChildren(introBox(spec, [h('p', { class: 'muted' }, `${spec.rounds} ritmos · ${mode === 'mic' ? '🎙 toque no seu pad de estudo ou na bateria de verdade (o microfone escuta; sem tocar na tela)' : '📱 toque na tela'}`),
       spec.secs ? h('p', { class: 'muted' }, `⏱ você tem ${spec.secs} segundos depois de ouvir.`) : null, spec.sudden ? h('p', { class: 'muted' }, '💥 se errar um ritmo, a fase recomeça.') : null,
       h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { audio(); start(); } }, 'bora!')].filter(Boolean)));
   };
@@ -51,8 +51,8 @@ export function runEco(game, ctx) {
     const hear = h('button', { class: 'kd-btn kd-listen', type: 'button', disabled: true, onclick: () => listen() }, '▶ ouvir de novo');
     const bar = spec.secs ? h('div', { class: 'kx-time', style: `--secs:${spec.secs}s`, hidden: true }, h('i')) : null;
     const padBox = h('div', { class: 'kx-padbox' });
-    stage.replaceChildren(...[dots, bar, h('div', { class: 'kx-q' }, show ? scoreOf(p) : h('p', { class: 'kd-q' }, 'só de ouvido: escuta com atenção'), h('div', { class: 'row kx-act' }, hear, turn), padBox, status)].filter(Boolean));
-    bot.set('think', 'escuta primeiro');
+    stage.replaceChildren(...[dots, bar, h('div', { class: 'kx-q' }, show ? scoreOf(p) : h('p', { class: 'kd-q' }, 'só de ouvido: escute com atenção'), h('div', { class: 'row kx-act' }, hear, turn), padBox, status)].filter(Boolean));
+    bot.set('think', 'escute primeiro');
     let listened = 0;
     const listen = () => {
       if (spec.secs && listened >= 1) return; listened++; hear.disabled = true; turn.disabled = true; status.textContent = '🎧 ouvindo…';

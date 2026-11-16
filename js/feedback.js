@@ -4,8 +4,8 @@ import { h, reducedMotion } from './util.js';
 import { audio, out } from './audio.js';
 import { stars as sparkle } from './ui.js';
 
-export const WIN_LINES = ['isso aí! 🤘', 'mandou bem!', 'na veia!', 'perfeito!', 'arrasou!', 'é assim que se faz!', 'você é fera!', 'boa! continua assim!', 'que groove!', 'acertou em cheio!'];
-export const LOSE_LINES = ['quase! tenta de novo', 'sem stress, errar faz parte', 'ouve de novo, você chega lá', 'respira e tenta outra vez', 'tudo bem! bora de novo', 'está pertinho!', 'o erro ensina, continua!', 'calma, vai no seu tempo'];
+export const WIN_LINES = ['isso aí! 🤘', 'mandou bem!', 'na veia!', 'perfeito!', 'arrasou!', 'é assim que se faz!', 'você é fera!', 'boa! continue assim!', 'que groove!', 'acertou em cheio!'];
+export const LOSE_LINES = ['quase! tente de novo', 'sem stress, errar faz parte', 'ouça de novo, você chega lá', 'respire e tente outra vez', 'tudo bem! bora de novo', 'está pertinho!', 'o erro ensina, continue!', 'calma, vá no seu tempo'];
 export const GREAT_LINES = ['rodada incrível! 🏆', 'você está voando!', 'que evolução!', 'nota máxima de atitude!'];
 // qual desenho do Paul aparece em cada reação (assets/paul/…)
 const PAUL = { win: ['e20', 'e02', 'e26', 'e03'], lose: ['e25', 'e17', 'e05'], great: ['e26', 'e20', 'e09'] };

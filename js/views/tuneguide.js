@@ -41,7 +41,7 @@ export function guideTab(mic) {
   const live = h('div', { class: 'tg-live', 'aria-live': 'polite' });
 
   function paintLive() {
-    if (!last) { live.replaceChildren(h('small', { class: 'muted' }, 'bate uma vez e deixa soar…')); return; }
+    if (!last) { live.replaceChildren(h('small', { class: 'muted' }, 'bata uma vez e deixe soar…')); return; }
     const tg = target(); const cents = P.centsBetween(last, tg); const t = G.turnHint(cents);
     live.replaceChildren(h('strong', { class: `tg-read ${t.dir === 0 ? 'ok' : t.dir > 0 ? 'low' : 'high'}` }, `${P.noteOf(last).label} · ${Math.round(last)} Hz`),
       h('span', {}, `${cents > 0 ? '+' : ''}${cents} cents do alvo`), h('b', { class: 'tg-turn' }, t.text));
@@ -63,7 +63,7 @@ export function guideTab(mic) {
           h('button', { type: 'button', class: 'tg-step-txt', onclick: () => { step = i; draw(); } }, txt)))),
         stepId === 'fino' || stepId === 'igualar' ? live : null,
         stepId === 'igualar' ? h('div', { class: 'tg-lugbar' },
-          h('span', {}, `bate a 3 dedos do parafuso ${order[lugStep]} (${lugStep + 1} de ${n})`),
+          h('span', {}, `bata a 3 dedos do parafuso ${order[lugStep]} (${lugStep + 1} de ${n})`),
           h('button', { class: 'btn small', type: 'button', disabled: !last, onclick: () => { perLug = { ...perLug, [order[lugStep]]: last }; last = null; readings.length = 0; lugStep = Math.min(lugStep + 1, n - 1); draw(); } }, 'anotar e próximo'),
           h('button', { class: 'btn small ghost', type: 'button', onclick: () => { perLug = {}; lugStep = 0; draw(); } }, 'recomeçar')) : null,
         stepId === 'igualar' && Object.keys(marks).length ? h('p', { class: 'tg-hint' }, Object.entries(marks).filter(([, m]) => m.hint !== 'ok').map(([lug, m]) => `parafuso ${lug}: ${m.hint} (${m.cents > 0 ? '+' : ''}${m.cents})`).join(' · ') || 'todos iguais ✓') : null,
@@ -72,11 +72,11 @@ export function guideTab(mic) {
           step < G.STEPS.length - 1 ? h('button', { class: 'btn small', type: 'button', onclick: () => { step++; draw(); } }, 'próximo passo') : null,
           stepId === 'fino' || stepId === 'igualar' ? h('button', { class: 'btn small primary', type: 'button', onclick: finish }, 'salvar como alvo') : null)),
       sessionCard(),
-      h('p', { class: 'pad-x lib-note' }, 'a quantidade de volta é uma estimativa: muda com a pele e o tamanho do tambor. abafa os outros tambores e bate sempre com a mesma força.'));
+      h('p', { class: 'pad-x lib-note' }, 'a quantidade de volta é uma estimativa: muda com a pele e o tamanho do tambor. abafe os outros tambores e bata sempre com a mesma força.'));
     paintLive();
   }
   async function finish(e) {
-    if (!last) { toast('bate no tambor primeiro.'); return; }
+    if (!last) { toast('bata no tambor primeiro.'); return; }
     const btn = e.currentTarget;
     await store.upsert('tuning', null, { piece: drum, freq: +last.toFixed(2), note: P.noteOf(last).label, at: Date.now() });
     done[drum] = [...new Set([...(done[drum] || []), ...G.STEPS.map((x) => x[0])])];

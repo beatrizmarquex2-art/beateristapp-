@@ -34,7 +34,7 @@ export function createLooper({ max = 30, bpm, opts, play, flash, onChange, statu
     clearTimeout(r.timer); clearInterval(r.tick); rec = null; stopMetro(); clearTimers(); setProg(0);
     const o = opts(); const bar4 = 4 * (60 / bpm()); const el = Math.min(max, perfToCtx(performance.now()) - r.t0);
     const hits = r.hits.filter((x) => x.t > -0.08 && x.t <= max).map((x) => ({ ...x, t: Math.max(0, x.t) }));
-    if (!hits.length || el <= 0.2) { status(el <= 0.2 ? 'gravação cancelada.' : 'não peguei nenhum toque. tenta de novo!', ''); onChange(); return; }
+    if (!hits.length || el <= 0.2) { status(el <= 0.2 ? 'gravação cancelada.' : 'não peguei nenhum toque. tente de novo!', ''); onChange(); return; }
     let len; if (o.grid) { const maxBars = Math.max(1, Math.floor(max / bar4)); len = Math.min(maxBars, Math.max(1, Math.ceil((el - 0.05) / bar4))) * bar4; } else len = Math.max(0.5, el);
     last = { len, hits: hits.filter((x) => x.t < len) };
     start();

@@ -20,8 +20,8 @@ import { mountGroovebox } from './tools-groovebox.js';
 import { mountDesafio } from './tools-desafio.js';
 
 export const TOOLS = [
-  ['tap', 'Tap tempo', 'bate na tela e descobre o BPM', '👆'],
-  ['bpm', 'BPM pelo microfone', 'toca a música perto e ele estima', '🎙'],
+  ['tap', 'Tap tempo', 'bata na tela e descubra o BPM', '👆'],
+  ['bpm', 'BPM pelo microfone', 'toque a música perto e ele estima', '🎙'],
   ['mapa', 'Mapa da música', 'intro, verso, refrão: o app avisa a troca', '🗺'],
   ['loop', 'Play-along em loop', 'trecho do YouTube repetindo e mais lento', '🔁'],
   ['groovebox', 'Groovebox', '12 pads de bateria e percussão', '🎛'],
@@ -52,7 +52,7 @@ function tap(host) {
   const pad = h('button', { class: 'ft-pad', type: 'button', 'aria-label': 'Toque no tempo', onpointerdown: (e) => { e.preventDefault(); hit(e.timeStamp || performance.now()); } }, 'toque aqui');
   const onKey = (e) => { if (e.code === 'Space' && !e.repeat && document.activeElement === document.body) { e.preventDefault(); hit(e.timeStamp); } };
   document.addEventListener('keydown', onKey);
-  host.append(banner('Tap tempo', 'descobre o BPM batendo junto'), back(),
+  host.append(banner('Tap tempo', 'descubra o BPM batendo junto'), back(),
     h('section', { class: 'card pad ft-center' }, out, h('span', { class: 'tp-unit' }, 'BPM'), sub, pad,
       h('div', { class: 'row ft-row' }, use, h('button', { class: 'btn ghost', type: 'button', onclick: () => { times = []; show(); } }, 'zerar'))),
     h('p', { class: 'pad-x lib-note' }, 'dica: bata no tempo (semínima), não em cada nota. no computador, a barra de espaço também bate.'));
@@ -64,9 +64,9 @@ const LISTEN = 15; // segundos
 function bpmMic(host) {
   let stream = null, src = null, timer = 0, est = 0, startAt = 0; let frames = []; let result = null; let factor = 1; let opening = false; let gone = false;
   const out = h('output', { class: 'ft-big', 'aria-live': 'polite' }, '—');
-  const sub = h('p', { class: 'muted ft-sub' }, 'coloca a música pra tocar perto do celular e aperta ouvir.');
+  const sub = h('p', { class: 'muted ft-sub' }, 'coloque a música pra tocar perto do celular e aperte ouvir.');
   const bar = h('div', { class: 'ft-prog' }, h('i'));
-  const conf = (c) => (c > 0.5 ? 'certeza alta' : c > 0.25 ? 'certeza média' : 'certeza baixa: confere no tap tempo');
+  const conf = (c) => (c > 0.5 ? 'certeza alta' : c > 0.25 ? 'certeza média' : 'certeza baixa: confira no tap tempo');
   const paint = () => {
     if (!result) return; const b = Math.round(result.bpm * factor); out.textContent = String(b);
     sub.textContent = `${conf(result.conf)}${stream ? ' · ouvindo…' : ''}`; use.disabled = false;
@@ -113,7 +113,7 @@ function bpmMic(host) {
     h('section', { class: 'card pad ft-center' }, out, h('span', { class: 'tp-unit' }, 'BPM'), sub, bar,
       h('div', { class: 'row ft-row' }, go, use),
       h('div', { class: 'row ft-row' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { factor /= 2; paint(); } }, '÷2 (tá rápido demais)'), h('button', { class: 'btn small ghost', type: 'button', onclick: () => { factor *= 2; paint(); } }, '×2 (tá lento demais)'))),
-    h('p', { class: 'pad-x lib-note' }, 'o som não sai do celular: o app só mede onde estão os ataques. músicas com bateria marcada dão resultado melhor. em dúvida, confirma no tap tempo.'));
+    h('p', { class: 'pad-x lib-note' }, 'o som não sai do celular: o app só mede onde estão os ataques. músicas com bateria marcada dão resultado melhor. em dúvida, confirme no tap tempo.'));
   return () => { gone = true; stop(); };
 }
 
@@ -163,7 +163,7 @@ function roleta(host) {
   let spinning = false; let lastItem = null; let raf = 0;
   const go = () => {
     if (spinning) return; const items = itemsOf(conf().src);
-    if (!items.length) { toast(conf().src === 'minha' ? 'escreve sua lista primeiro' : 'nada pra sortear aqui ainda'); return; }
+    if (!items.length) { toast(conf().src === 'minha' ? 'escreva sua lista primeiro' : 'nada pra sortear aqui ainda'); return; }
     spinning = true; open.replaceChildren(); audio(); const pick = T.spin(items, lastItem);
     // a roda mostra até 12 fatias: a sorteada + outras, embaralhadas (se tem poucos itens, repete pra a roda não ficar vazia)
     const others = T.spin ? items.filter((x) => x !== pick).sort(() => Math.random() - 0.5) : [];
@@ -184,7 +184,7 @@ function roleta(host) {
     };
     raf = requestAnimationFrame(frame);
   };
-  host.append(banner('Roleta da aula', 'deixa a sorte escolher o próximo'), back(),
+  host.append(banner('Roleta da aula', 'deixe a sorte escolher o próximo'), back(),
     h('section', { class: 'card pad ft-center' }, chips, h('label', { class: 'field ft-custom' }, h('span', {}, 'minha lista'), custom), wheel, show,
       h('div', { class: 'row ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: go }, 'girar'), open)),
     h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, 'últimos'), hist));

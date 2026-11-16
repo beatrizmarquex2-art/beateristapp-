@@ -9,7 +9,7 @@ export function mount(host) {
   const head = h('div', { class: 'card pad row between' });
   function draw() {
     const items = store.trashList();
-    head.replaceChildren(h('span', {}, items.length ? `${items.length} item${items.length > 1 ? 's' : ''} · somem sozinhos em ${store.TRASH_DAYS} dias` : 'lixeira vazia'),
+    head.replaceChildren(h('span', {}, items.length ? `${items.length} ${items.length > 1 ? 'itens' : 'item'} · somem sozinhos em ${store.TRASH_DAYS} dias` : 'lixeira vazia'),
       items.length ? h('button', { class: 'btn small danger', type: 'button', onclick: async () => {
         if (!(await confirmSheet('Esvaziar a lixeira?', 'Isso apaga de vez, não dá pra desfazer.', 'Esvaziar'))) return;
         await store.purgeTrash(); toast('Lixeira esvaziada');

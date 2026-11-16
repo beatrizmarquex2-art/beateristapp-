@@ -25,6 +25,6 @@ export function depoimentos() {
   };
   desenha();
   return h('div', { class: 'pv' },
-    h('h2', { class: 'pv-h' }, 'alunos da Beaterista'), h('p', { class: 'pv-s' }, 'o que dizem quem já estuda com a gente'),
+    h('h2', { class: 'pv-h' }, 'alunos da Beaterista'), h('p', { class: 'pv-s' }, 'o que diz quem já estuda com a gente'),
     chips, chat);
 }

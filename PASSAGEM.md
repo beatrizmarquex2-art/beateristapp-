@@ -831,3 +831,11 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v555**: símbolo da Nagano no meio da pele do bumbo e no prato do pé do pedal; pedal da acústica refeito (base preta, trilhos, prato cromado com o logo, coluna com mola).
 - **v556**: tirei o logo Nagano do meio da pele do bumbo (fica só no pedal e no topo da tela).
 - **v557**: sem o logo grande da Spark em cima do cajón (fica o da frente); Nagano pequeno no canto de cima à direita da eletrônica. Gerei amostras de áudio (render offline) dos 3 modelos pra a Bea ouvir. Ela perguntou se dá pra escolher o som dentro de cada modelo (rock/jazz/pop; 808/909/trap): proposta feita, esperando a resposta.
+
+## Revisão de português do app inteiro (16/nov/2026, v558, branch `claude/modest-brahmagupta-gonbpm`, NÃO publicado)
+- A Bea viu "conhece a Beaterista" no cartão azul e pediu revisão geral. **Regra que vale daqui pra frente: o app fala com "você", então ordem/convite é sempre "conheça, toque, escolha, ouça, tente, venha, dê, vá"** (nunca "conhece, toca, escolhe, ouve, tenta, vem, dá, vai"). Nome de jogo não muda (Toca Aqui, Copia Aí). Frase em 3ª pessoa também não ("o Paul toca", "quem acerta joga de novo").
+- Foram ~290 trocas em 88 arquivos (quase tudo imperativo). Fora isso: "Paul" com maiúscula no Cara a Cara e na Velha, "Robôterista" com acento no Figurix, "itens" (saía "items") na lixeira e no mural, "atividades extras", "faltam só o último" → "falta", crase em "serve à música", "as dez figuras" → 12, `.md` → `.mid` no aviso do zip de MIDI.
+- **"o caixa" → "a caixa"**: `ROW_ART` em `js/kids/groove.js` (o chimbal / a caixa / o bumbo), usado no Detetive do groove e no relatório.
+- **Curiosidade de "Love Me Do" estava invertida** (`js/music-facts.js`): no 1º single é o Ringo na bateria; na versão do álbum é o Andy White, com o Ringo no pandeiro.
+- **Não mexi (a Bea decide)**: botão "toca aqui!" do pad (Eco e Toca Aqui, ecoa o nome do jogo); "semi-colcheia" com hífen no rótulo curto da carta do Uno (pode ser pra quebrar linha); textos dentro de imagens (página de vendas); respostas aceitas do STOP (`stop-bank-*`, não revisadas); "cajon" sem acento em `velha-data.js`.
+- `tests/e2e/routes.mjs` já falhava antes desta sessão nas rotas `#/jogos/*` (igual com e sem as mudanças).

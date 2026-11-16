@@ -64,12 +64,12 @@ function requestSheet(seed = {}, rec = null) {
     const data = () => ({ idea: idea.value.trim(), text: text.value.trim(), photos: photos.value.trim(), format, base: d.base || '' });
     const send = async () => {
       const v = data();
-      if (!v.idea) { toast('escreve a ideia em uma frase, só isso.'); idea.focus(); return; }
+      if (!v.idea) { toast('escreva a ideia em uma frase, só isso.'); idea.focus(); return; }
       const msg = requestText(v);
       if (rec) await store.upsert('pedido', rec.id, v); else await store.upsert('pedido', null, { ...v, status: 'pedido' });
       try { await navigator.clipboard.writeText(msg); } catch { /* sem permissão de cópia */ }
       open(claudeLink(msg), '_blank', 'noopener');
-      toast('pedido guardado e copiado. no Claude, anexa as fotos e envia.');
+      toast('pedido guardado e copiado. no Claude, anexe as fotos e envie.');
       close();
     };
     return h('div', { class: 'sheet-body' },
@@ -98,7 +98,7 @@ export function mount(host) {
       ...(all.length ? all.map((r) => h('div', { class: `cl-req${r.data.status === 'chegou' ? ' done' : ''}` },
         h('button', { class: 'link cl-req-t', type: 'button', onclick: () => requestSheet({}, r) }, r.data.idea || 'sem título', h('small', {}, ` · ${(FORMATS.find(([k]) => k === r.data.format) || FORMATS[0])[1]}`)),
         h('button', { class: `fd-pill ${r.data.status === 'chegou' ? 'publicado' : 'pendente'}`, type: 'button', 'aria-label': `Status: ${r.data.status}. Tocar para trocar.`, onclick: () => store.upsert('pedido', r.id, { status: r.data.status === 'chegou' ? 'pedido' : 'chegou' }) }, r.data.status)))
-        : [h('p', { class: 'muted' }, 'quer uma arte nova? toca em "+ pedir colagem", escreve a ideia e o app abre o Claude com tudo pronto.')]));
+        : [h('p', { class: 'muted' }, 'quer uma arte nova? toque em "+ pedir colagem", escreva a ideia e o app abre o Claude com tudo pronto.')]));
   };
   host.append(banner('Colagens', 'as artes prontas para postar'), tabs('colagens'), reqs, grid,
     h('p', { class: 'pad-x lib-note' }, 'toque numa arte para ver grande, salvar no celular ou pedir uma variação. os arquivos editáveis no Canva ficam no zip que a gente gerou.'));

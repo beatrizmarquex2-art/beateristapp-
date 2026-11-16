@@ -44,7 +44,7 @@ export function mount(host) {
       if (estado !== 'vez') return; const certa = seq[i]; const ok = c.mic ? mesmaNota(m, certa) : m === certa;
       if (ok) { kb.acende(certa, 'ok', 380); if (!tentativas) primeira++; msg.textContent = `isso: ${nomeNota(certa)}!`; i++; estado = 'pausa'; depois(proxima, 520); return; }
       tentativas++; somErro(); kb.acende(m, 'bad', 380);
-      if (tentativas >= 2) { kb.acende(certa, 'certa', 900); msg.textContent = `essa é ${nomeNota(certa)}. toque ela.`; } else msg.textContent = `você tocou ${nomeNota(m)}. tenta de novo.`;
+      if (tentativas >= 2) { kb.acende(certa, 'certa', 900); msg.textContent = `essa é ${nomeNota(certa)}. toque ela.`; } else msg.textContent = `você tocou ${nomeNota(m)}. tente de novo.`;
     }
     async function comeca() {
       go.hidden = true; res.replaceChildren(); musicaPausa(); ops.hidden = true;

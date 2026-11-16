@@ -39,7 +39,7 @@ export function mount(host) {
         h('div', { class: 'row' }, h('label', { class: 'muted' }, 'dias '), diasIn, h('button', { class: 'btn primary', type: 'button', onclick: doPasse }, 'gerar passe')),
         h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn', type: 'button', onclick: doTestDrive }, 'test drive: site todo por 1 dia (BEASITE)'))),
       out,
-      h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'tabela atualizada'), h('span', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(list), 'tabela copiada (cola na planilha)'), }, 'copiar tabela'), h('button', { class: 'btn small ghost', type: 'button', onclick: load }, 'atualizar'))), tableBox)));
+      h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'tabela atualizada'), h('span', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(list), 'tabela copiada (cole na planilha)'), }, 'copiar tabela'), h('button', { class: 'btn small ghost', type: 'button', onclick: load }, 'atualizar'))), tableBox)));
   const tsv = (rows) => ['nome\tcódigo\tativo\tusos\tvalido ate', ...rows.map((x) => `${x.nome || ''}\t${x.code}\t${x.ativo ? 'sim' : 'não'}\t${x.usos ?? 0}\t${dia(x.expira_em)}`)].join('\n');
   async function load() {
     try { list = await CODE.listar(); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : e.message === '404' ? 'a tabela de códigos ainda não foi criada no Supabase' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 4000 }); }
@@ -58,19 +58,19 @@ export function mount(host) {
   async function run(fn, okMsg) { if (busy) return; busy = true; try { await fn(); toast(okMsg, { id: 'cod-ok', ms: 2200 }); await load(); } catch (e) { toast(`não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); } busy = false; draw(); }
   function show(rows, titulo) {
     last = rows;
-    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, titulo), h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(rows), 'tabela copiada (cola na planilha)') }, 'copiar só essas')),
+    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, titulo), h('button', { class: 'btn small', type: 'button', onclick: () => copy(tsv(rows), 'tabela copiada (cole na planilha)') }, 'copiar só essas')),
       h('div', { class: 'cod-wrap' }, h('table', { class: 'cod-tbl' }, h('thead', {}, h('tr', {}, h('th', {}, 'nome'), h('th', {}, 'código'))), h('tbody', {}, ...rows.map((x) => h('tr', {}, h('td', {}, x.nome || '—'), h('td', {}, h('b', { class: 'rg-code' }, x.code))))))))); }
   const msgPasse = (code, o, dias) => `oi! aqui está o seu passe da Beaterista (${o}): ${code}\nvale ${dias} dia${dias === 1 ? '' : 's'} a partir da 1ª vez que você usar, em até 2 aparelhos.\nentre em ${SITE} e toque em "tenho código".`;
   function mostraPasse(code, o, dias) {
     const m = msgPasse(code, o, dias);
-    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe: ${o}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cola no WhatsApp)') }, 'copiar mensagem')),
+    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe: ${o}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cole no WhatsApp)') }, 'copiar mensagem')),
       h('p', { class: 'rg-code', style: 'font-size:28px;margin:6px 0' }, code), h('p', { class: 'muted' }, m)));
   }
   async function doAnual() {
     const nome = nomeIn.value.trim(); if (!nome) return toast('escreva o nome de quem pagou', { id: 'cod-err', ms: 2600 }); if (busy) return; busy = true;
     try {
       const { code, expira } = await CODE.criarPasseAnual({ nome }); const P = await import('../passe-anual.js'); const m = P.mensagemPasse({ nome, code, expira, site: SITE }); const wa = P.linkWhatsapp(telIn.value, m);
-      out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe anual: ${nome}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cola no WhatsApp)') }, 'copiar mensagem')),
+      out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe anual: ${nome}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cole no WhatsApp)') }, 'copiar mensagem')),
         h('p', { class: 'rg-code', style: 'font-size:28px;margin:6px 0' }, code), h('p', { class: 'muted', style: 'white-space:pre-line' }, m), wa ? h('a', { class: 'btn primary', href: wa, target: '_blank', rel: 'noopener' }, 'abrir no WhatsApp') : null));
       nomeIn.value = ''; telIn.value = ''; toast('passe anual gerado ✓', { id: 'cod-ok', ms: 2200 }); await load();
     } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }

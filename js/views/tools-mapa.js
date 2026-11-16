@@ -33,7 +33,7 @@ function editor(rec, onDone) {
     };
     drawList();
     const save = async () => {
-      if (!d.sections.length) { toast('põe pelo menos uma parte'); return; }
+      if (!d.sections.length) { toast('ponha pelo menos uma parte'); return; }
       const data = { name: name.value.trim() || 'Sem nome', bpm: Math.max(30, Math.min(260, Number(bpm.value) || 100)), meter: meter.value, sections: d.sections.filter((s) => s.name.trim()).map((s) => ({ name: s.name.trim(), bars: Math.max(1, Number(s.bars) || 1) })) };
       const r = await store.upsert('songmap', rec ? rec.id : null, data); close(); onDone && onDone(r ? r.id : null);
     };
@@ -99,7 +99,7 @@ export function mountMapa(host) {
         rec ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { stop(); editor(rec, (id) => { cur = id; draw(); }); } }, 'editar') : null),
       rec ? h('section', { class: 'card pad mp-card' }, h('h2', { class: 'tag' }, rec.data.name, h('small', { class: 'muted' }, ` · ${rec.data.bpm} BPM · ${rec.data.meter}`)), blocks, live,
         h('div', { class: 'row ft-row' }, h('button', { class: `bl-play${run ? ' on' : ''}`, type: 'button', 'aria-label': run ? 'Parar' : 'Tocar o mapa', onclick: () => (run ? stop() : play()) }, icon(run ? 'stop' : 'play', 28))))
-        : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhum mapa ainda.'), h('p', { class: 'muted' }, 'cria um com a estrutura da música que você vai tocar: o app conta os compassos por você.'),
+        : h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhum mapa ainda.'), h('p', { class: 'muted' }, 'crie um com a estrutura da música que você vai tocar: o app conta os compassos por você.'),
           h('button', { class: 'btn primary', type: 'button', onclick: async () => { const r = await store.upsert('songmap', null, EXAMPLE); cur = r ? r.id : null; draw(); } }, 'começar com um exemplo')),
       h('p', { class: 'pad-x lib-note' }, 'prato no começo de cada parte e o clique fica mais forte no último compasso antes da troca. 1 compasso de contagem antes.')].filter(Boolean));
     paint();
@@ -158,7 +158,7 @@ export function mountForma(host) {
           h('span', { class: 'tr-count' }, `acertos ${s.ok}/${s.n}`)),
         h('p', { class: 'tp-lab' }, `quantos compassos tem o ${q.sections[q.ask].name} marcado?`),
         h('div', { class: 'mp-opts' }, ...q.opts.map((v) => h('button', { type: 'button', class: `tr-pal${picked != null ? (v === q.right ? ' ok' : v === picked ? ' no' : '') : ''}`, onclick: () => answer(v) }, String(v)))),
-        picked != null ? h('p', { class: `tr-status ${picked === q.right ? 'good' : 'bad'}` }, picked === q.right ? 'isso! ✓' : `eram ${q.right}. ouve de novo contando 1, 2, 3, 4 a cada prato.`) : null,
+        picked != null ? h('p', { class: `tr-status ${picked === q.right ? 'good' : 'bad'}` }, picked === q.right ? 'isso! ✓' : `eram ${q.right}. ouça de novo contando 1, 2, 3, 4 a cada prato.`) : null,
         picked != null ? h('button', { class: 'btn primary', type: 'button', onclick: () => { stop(); q = T.formQuiz(); picked = null; draw(); } }, 'próxima música') : null));
   };
   q = T.formQuiz();

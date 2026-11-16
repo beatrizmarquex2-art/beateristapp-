@@ -44,5 +44,5 @@ export function backingBar() {
     h('div', { class: 'bl-tempo' }, h('button', { class: 'bl-step', type: 'button', 'aria-label': 'menos 5 BPM', onclick: () => step(-5) }, '−'), bpm,
       h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => step(5) }, '+'), h('span', { class: 'tp-lab' }, 'BPM')),
     h('p', { class: 'lab ti-lab' }, 'partitura da batida (cada peça tem a sua cor)'), staff, names,
-    h('p', { class: 'muted ti-hint' }, 'liga a batida e toca por cima, em qualquer instrumento. ela continua quando você troca de aba.'));
+    h('p', { class: 'muted ti-hint' }, 'ligue a batida e toque por cima, em qualquer instrumento. ela continua quando você troca de aba.'));
 }

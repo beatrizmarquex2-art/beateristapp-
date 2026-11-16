@@ -42,7 +42,7 @@ export function openSearch() {
       if (!q) { box.replaceChildren(h('p', { class: 'muted' }, 'procura em atividades, tarefas, notas, partituras, alunos, ideias, links…')); return; }
       const r = find(index, q);
       box.replaceChildren(...(r.length ? r.map((it) => h('a', { class: 'srch-item', href: it.href, role: 'listitem', onclick: close },
-        h('span', { class: 'srch-type' }, it.type), h('span', { class: 'srch-title' }, it.title))) : [h('p', { class: 'muted' }, 'nada encontrado. tenta outra palavra.')]));
+        h('span', { class: 'srch-type' }, it.type), h('span', { class: 'srch-title' }, it.title))) : [h('p', { class: 'muted' }, 'nada encontrado. tente outra palavra.')]));
     };
     input.addEventListener('input', draw);
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const a = box.querySelector('a'); if (a) { a.click(); } } });

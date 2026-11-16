@@ -53,7 +53,7 @@ export function mount(host) {
       for (let k = 0; k < JUNTO; k++) { click(t0 + k * q, k % 4 === 0 ? 2 : 1, 0.45); em(t0 + k * q, pisca); }
       for (let k = 0; k < VOLTA; k++) { click(fimMudo + k * q, k % 4 === 0 ? 2 : 1, 0.45); em(fimMudo + k * q, pisca); }
       em(t0 - 0.05, () => { fase.textContent = 'toque junto com o clique'; fase.className = 'vv-quem paul'; msg.textContent = 'uma batida por tempo.'; });
-      em(t0 + JUNTO * q - 0.05, () => { fase.textContent = 'o clique sumiu: continue!'; fase.className = 'vv-quem vez'; luz.classList.add('mudo'); msg.textContent = 'segura o tempo sozinho…'; });
+      em(t0 + JUNTO * q - 0.05, () => { fase.textContent = 'o clique sumiu: continue!'; fase.className = 'vv-quem vez'; luz.classList.add('mudo'); msg.textContent = 'segure o tempo sozinho…'; });
       em(fimMudo - 0.05, () => { fase.textContent = 'voltou! você ainda está junto?'; fase.className = 'vv-quem paul'; luz.classList.remove('mudo'); msg.textContent = ''; });
       timers.push(setTimeout(() => { if (!gone && estado === 'play') fim(); }, Math.max(0, (fimMudo + VOLTA * q + 0.3 - a.currentTime) * 1000)));
       window.__vivo.t0 = t0;

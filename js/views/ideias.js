@@ -23,7 +23,7 @@ function recorder(onDone) {
   const stopAll = () => { clearInterval(timer); if (stream) stream.getTracks().forEach((t) => t.stop()); stream = null; delete document.documentElement.dataset.mic; };
   btn.addEventListener('click', async () => {
     if (rec && rec.state === 'recording') { rec.stop(); return; }
-    if (!window.MediaRecorder || !navigator.mediaDevices) { toast('este navegador não grava áudio. escreve a ideia mesmo :)'); return; }
+    if (!window.MediaRecorder || !navigator.mediaDevices) { toast('este navegador não grava áudio. escreva a ideia mesmo :)'); return; }
     try { stream = await getMic({ plain: true }); } catch (e) { toast(micToast(e)); return; }
     document.documentElement.dataset.mic = 'on';
     chunks = []; rec = new MediaRecorder(stream); rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
@@ -49,7 +49,7 @@ export function ideaForm(close) {
   const rec = recorder((blob, secs) => { audio = blob; audioInfo.textContent = `voz gravada (${secs}s) · fica só neste aparelho`; });
   const save = async (e) => {
     const btn = e.currentTarget;
-    if (!text.value.trim() && !audio && !picked.length) { toast('escreve, grava ou anexa alguma coisa.'); return; }
+    if (!text.value.trim() && !audio && !picked.length) { toast('escreva, grave ou anexe alguma coisa.'); return; }
     let audioId = null;
     if (audio) { audioId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`; await db.metaSet(AUDIO(audioId), audio); }
     const attach = [];
@@ -99,7 +99,7 @@ export function mount(host) {
   // depois de guardar, limpa o formulário
   const off0 = store.subscribe((i) => { if (i.kind === KIND && form.isConnected) { form.querySelector('textarea').value = ''; } });
   search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); draw(); });
-  host.append(banner('Caixa de Ideias', 'anota antes que fuja'), h('section', { class: 'card pad' }, form), chips, h('div', { class: 'pad-x' }, search), list,
+  host.append(banner('Caixa de Ideias', 'anote antes que fuja'), h('section', { class: 'card pad' }, form), chips, h('div', { class: 'pad-x' }, search), list,
     h('p', { class: 'pad-x lib-note' }, 'o texto da ideia sincroniza com a sua conta. a nota de voz fica só neste aparelho (nunca sobe pra internet). fotos e documentos anexados ficam guardados na sua pasta privada.'));
   draw();
   const off = store.subscribe((i) => { if (!i.kind || i.kind === KIND) draw(); });

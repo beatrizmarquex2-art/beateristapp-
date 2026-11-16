@@ -34,7 +34,7 @@ import { modeChooser, mountAdventure } from '../campanha/run.js';
 /** Área do aluno (aluno.html): só o que não depende da conta da Bea. */
 const ALUNO = () => document.documentElement.classList.contains('aluno-on');
 const FREE = [
-  ['explorar', 'Explorar a bateria', 'toca livre e descobre os nomes', 'explorar'],
+  ['explorar', 'Explorar a bateria', 'toque livre e descubra os nomes', 'explorar'],
   ['memoria', 'Jogo da memória', '4, 8 ou 12 pares · 4 temas', 'memoria'],
   ['ritmo', 'Monte seu ritmo', 'pão, bolo, chocolate, céu, bola, pato…', 'ritmo'],
 ];
@@ -43,7 +43,7 @@ const FREE = [
 function explorar(box) {
   let tab = 'tocar'; let timer = 0;
   const draw = () => {
-    const name = h('p', { class: `kd-big kd-name${tab === 'tocar' ? ' off' : ''}`, 'aria-live': 'polite' }, tab === 'nomes' ? 'toca numa peça!' : '');
+    const name = h('p', { class: `kd-big kd-name${tab === 'tocar' ? ' off' : ''}`, 'aria-live': 'polite' }, tab === 'nomes' ? 'toque numa peça!' : '');
     const kit = svgEl(kitMarkup(), 'kd-kit kd-kit-free');
     putLogo(kit); // o logo do Beaterista no bumbo
     kit.addEventListener('pointerdown', (e) => { // cada dedo vale um toque, então dá pra tocar com os dois ao mesmo tempo
@@ -53,7 +53,7 @@ function explorar(box) {
     });
     box.replaceChildren(
       h('div', { class: 'row kd-modes' }, ...[['tocar', '🥁 tocar livre'], ['nomes', '🔤 nomes das peças']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${tab === k ? ' on' : ''}`, onclick: () => { tab = k; draw(); } }, t))),
-      h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toca em qualquer peça, do jeito que quiser!' : 'toca numa peça pra ver o nome dela'),
+      h('p', { class: 'kd-q' }, tab === 'tocar' ? 'toque em qualquer peça, do jeito que quiser!' : 'toque numa peça pra ver o nome dela'),
       kit, name,
       themeRow(draw));
     box.dataset.kitTheme = kitTheme(); // o mesmo tema dos jogos de ritmo

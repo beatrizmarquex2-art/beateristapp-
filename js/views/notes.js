@@ -11,7 +11,7 @@ export function noteEditor(rec, close) {
   let id = rec ? rec.id : null;
   const d = rec ? rec.data : { title: '', body: '' };
   const title = h('input', { type: 'text', value: d.title || '', placeholder: 'título (opcional)', maxlength: 120, 'aria-label': 'Título da nota' });
-  const body = h('textarea', { rows: 9, placeholder: 'escreve aí, sem pressão…', 'aria-label': 'Texto da nota' }, d.body || '');
+  const body = h('textarea', { rows: 9, placeholder: 'escreva aí, sem pressão…', 'aria-label': 'Texto da nota' }, d.body || '');
   const status = h('small', { class: 'saved', 'aria-live': 'polite' }, id ? 'salvo automaticamente' : '');
   const save = debounce(async () => {
     if (!id && !title.value.trim() && !body.value.trim()) return;

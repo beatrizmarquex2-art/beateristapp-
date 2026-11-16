@@ -90,7 +90,7 @@ export function mountAdventure(host, cfg) {
       let premio = null; if (out.done) { try { const A = await import('../kids/album.js'); premio = A.rewardEl({ roletas: await A.sincronizar(pid), jogos: await A.premioAventura(pid, gameId, spec) }); } catch (e) { console.warn('aventura: recompensa de figurinhas', e); } } // roleta a cada 30 ★ e prêmio de jogo completo
       if (!stage || !stage.isConnected) return;
       sfx.play(out.done ? 'win' : 'lose'); if (out.done) S.later(() => sfx.play('star'), 450); if (out.newMedals.length) S.later(() => sfx.play('medal'), 1000);
-      const bot = robo({ mood: out.done ? (out.stars >= 2 ? 'cheer' : 'happy') : 'oops', tier, size: 84, say: out.done ? (out.stars === 3 ? 'perfeito!' : 'missão cumprida!') : 'quase! tenta de novo?' });
+      const bot = robo({ mood: out.done ? (out.stars >= 2 ? 'cheer' : 'happy') : 'oops', tier, size: 84, say: out.done ? (out.stars === 3 ? 'perfeito!' : 'missão cumprida!') : 'quase! tente de novo?' });
       const nextOk = out.done && index + 1 < spec.missions.length;
       const panel = h('div', { class: 'av-res', role: 'dialog', 'aria-label': 'resultado da missão' }, h('div', { class: 'av-res-in' },
         h('h2', { class: 'av-h' }, out.done ? 'Missão concluída!' : 'Ainda não deu'),

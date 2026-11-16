@@ -48,7 +48,7 @@ export function mount(host, parts = []) {
   const draw = () => {
     chips.replaceChildren(...[['', 'todos'], ...CATS].map(([id, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cat === id), class: `lib-tab${cat === id ? ' on' : ''}`, onclick: () => { cat = id; draw(); } }, t)));
     const shown = searchTerms(q, TERMS.filter((x) => !cat || x.cat === cat));
-    list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
+    list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me peça que eu coloco!')]));
   };
   host.append(banner('Dicionário da bateria', alunoSemCodigo() ? `veja ${GRATIS.termos} de ${TERMS.length} termos de graça` : `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, h('div', { class: 'pad-x' }, aviso), list,
     h('p', { class: 'pad-x lib-note' }, 'toque no termo pra abrir a dica e o exemplo. o nome em inglês aparece porque é assim que você vai achar em vídeo e partitura de fora.'));

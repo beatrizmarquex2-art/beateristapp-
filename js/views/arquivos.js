@@ -45,7 +45,7 @@ async function open(r) {
     sheet(r.data.name, () => {
       const box = h('div', { class: 'ar-preview' }, h('p', { class: 'muted' }, 'abrindo…'));
       files.getBlob(r.data.fileId).then((b) => {
-        if (!b) { box.replaceChildren(h('p', { class: 'muted' }, 'esse arquivo ainda não chegou neste aparelho. abre com internet.')); return; }
+        if (!b) { box.replaceChildren(h('p', { class: 'muted' }, 'esse arquivo ainda não chegou neste aparelho. abra com internet.')); return; }
         const u = URL.createObjectURL(b);
         box.replaceChildren(k === 'imagem' ? h('img', { src: u, alt: r.data.name }) : h(k === 'audio' ? 'audio' : 'video', { src: u, controls: true, playsinline: true }),
           h('a', { class: 'btn small', href: u, download: r.data.name }, icon('down', 16), ' baixar'));
@@ -56,7 +56,7 @@ async function open(r) {
   }
   const w = window.open('', '_blank'); // abre já no toque (senão o iPhone bloqueia a janela)
   const u = await files.openUrl(r.data.fileId);
-  if (!u) { w && w.close(); toast('esse arquivo ainda não chegou neste aparelho. abre com internet.'); return; }
+  if (!u) { w && w.close(); toast('esse arquivo ainda não chegou neste aparelho. abra com internet.'); return; }
   if (w) w.location.href = u; else location.href = u;
 }
 
@@ -100,7 +100,7 @@ function folderSheet(f) {
 function selectBar(list, folderName) {
   const byId = new Map(list.map((r) => [r.id, r]));
   const go = async (e) => {
-    const picked = SEL.ids.map((id) => byId.get(id)).filter(Boolean); if (!picked.length) { toast('toca nos itens pra escolher a ordem das páginas', { ms: 2500 }); return; }
+    const picked = SEL.ids.map((id) => byId.get(id)).filter(Boolean); if (!picked.length) { toast('toque nos itens pra escolher a ordem das páginas', { ms: 2500 }); return; }
     const btn = e.currentTarget; btn.disabled = true; toast('montando o PDF…', { id: 'ar-pdf', ms: 60000 });
     try {
       const date = new Date().toISOString().slice(0, 10).split('-').reverse().join('-');

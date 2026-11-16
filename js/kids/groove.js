@@ -3,6 +3,8 @@ import { shuffle } from '../kids-logic.js';
 
 export const ROWS = ['hh', 'sn', 'bd'];
 export const ROW_NAME = { hh: 'chimbal', sn: 'caixa', bd: 'bumbo' };
+// com artigo, pra frase não sair "o caixa"
+export const ROW_ART = { hh: 'o chimbal', sn: 'a caixa', bd: 'o bumbo' };
 export const STEP_LABEL = ['1', 'e', '2', 'e', '3', 'e', '4', 'e'];
 const on = (idx) => Array.from({ length: 8 }, (_, i) => (idx.includes(i) ? 1 : 0));
 const pick = (a, rnd) => a[Math.floor(rnd() * a.length)];

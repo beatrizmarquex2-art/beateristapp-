@@ -5,8 +5,8 @@ import { VOICE } from './beatlab.js';
 import { figureMarkup, restMarkup, svgEl } from '../kids/art.js';
 
 const FIGS = [
-  { id: 'semibreve', name: 'semibreve', beats: 4, value: '4 tempos', frac: 'o maior valor: dura o compasso inteiro', count: '1 · 2 · 3 · 4 (uma nota só, segura)', per: 1, para: 'segura a nota durante os 4 tempos do compasso.' },
-  { id: 'minima', name: 'mínima', beats: 2, value: '2 tempos', frac: 'metade da semibreve', count: '1 · 2 (e depois 3 · 4)', per: 2, para: 'toca no 1 e deixa soar até o 3.' },
+  { id: 'semibreve', name: 'semibreve', beats: 4, value: '4 tempos', frac: 'o maior valor: dura o compasso inteiro', count: '1 · 2 · 3 · 4 (uma nota só, segure)', per: 1, para: 'segure a nota durante os 4 tempos do compasso.' },
+  { id: 'minima', name: 'mínima', beats: 2, value: '2 tempos', frac: 'metade da semibreve', count: '1 · 2 (e depois 3 · 4)', per: 2, para: 'toque no 1 e deixe soar até o 3.' },
   { id: 'seminima', name: 'semínima', beats: 1, value: '1 tempo', frac: 'é o pulso: a figura que a gente bate o pé', count: '1 · 2 · 3 · 4', per: 4, para: 'uma nota em cada número da contagem.' },
   { id: 'colcheia', name: 'colcheia', beats: 0.5, value: 'meio tempo', frac: 'duas colcheias cabem em 1 tempo', count: '1 e 2 e 3 e 4 e', per: 8, para: 'uma nota em cada número e outra em cada “e”.' },
   { id: 'semicolcheia', name: 'semicolcheia', beats: 0.25, value: 'um quarto de tempo', frac: 'quatro semicolcheias cabem em 1 tempo', count: '1 e & a 2 e & a…', per: 16, para: 'quatro notas rápidas dentro de cada tempo.' },

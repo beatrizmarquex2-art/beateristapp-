@@ -71,7 +71,7 @@ export function mountArsenal(host, tabs) {
   };
   search.addEventListener('input', () => { q = search.value; draw(); });
   host.append(tabs, banner('Arsenal discos', 'todos os álbuns, de A a Z'), h('div', { class: 'pad-x' }, prog, h('label', { class: 'field' }, search), chips, count), resume, list);
-  const refresh = () => { load().then((b) => { all = merge(b, imported()); draw(); }).catch(() => { count.textContent = 'não consegui abrir os discos agora. tenta de novo com internet.'; }); };
+  const refresh = () => { load().then((b) => { all = merge(b, imported()); draw(); }).catch(() => { count.textContent = 'não consegui abrir os discos agora. tente de novo com internet.'; }); };
   refresh();
   return store.subscribe((i) => { if (all.length && (!i.kind || i.kind === 'clubref' || i.kind === 'arsenal')) refresh(); });
 }
@@ -110,6 +110,6 @@ export function mountArsenalAlbum(host, slug, tabs) {
     const onScroll = () => { const r = content.getBoundingClientRect(); const total = r.height - innerHeight * 0.6; const p = Math.max(0, Math.min(1, total > 0 ? -r.top / total : 1)); if (p > best + 0.02) { best = p; saveProg(); } };
     addEventListener('scroll', onScroll, { passive: true });
     offScroll = () => { removeEventListener('scroll', onScroll); saveProg.flush(); };
-  }).catch(() => wrap.replaceChildren(h('p', { class: 'muted pad-x' }, 'não consegui abrir agora. tenta de novo com internet.')));
+  }).catch(() => wrap.replaceChildren(h('p', { class: 'muted pad-x' }, 'não consegui abrir agora. tente de novo com internet.')));
   return () => { offScroll(); offHl(); };
 }

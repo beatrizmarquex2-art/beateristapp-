@@ -5,10 +5,10 @@ import { paulDica } from '../paul-dicas.js';
 
 export const HUBS = {
   ritmo: { title: 'Criar ritmos', ic: 'kit', blurb: 'montar, tocar e escrever ritmo', items: [
-    ['#/beatlab', 'kit', 'Beat Lab', 'monta o ritmo numa grade e escuta'],
-    ['#/toque', 'kit', 'Bateria de Toque', 'toca na tela e grava o que você tocou'],
+    ['#/beatlab', 'kit', 'Beat Lab', 'monte o ritmo numa grade e escute'],
+    ['#/toque', 'kit', 'Bateria de Toque', 'toque na tela e grave o que você tocou'],
     ['#/ferramentas/groovebox', 'kit', 'Groovebox', 'pads de bateria e percussão'],
-    ['#/partitura', 'staff', 'Montar Partitura', 'escreve compasso por compasso'],
+    ['#/partitura', 'staff', 'Montar Partitura', 'escreva compasso por compasso'],
   ] },
   tempo: { title: 'Tempo', ic: 'timer', blurb: 'pulso, andamento e precisão', items: [
     ['#/metronomo', 'metro', 'Metrônomo', 'clique, subdivisões e acentos'],

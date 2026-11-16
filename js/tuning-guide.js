@@ -13,7 +13,7 @@ export function turnHint(cents) {
   const a = Math.abs(cents);
   if (a <= 8) return { dir: 0, text: 'afinado ✓' };
   const amt = a <= 30 ? '1/8 de volta' : a <= 80 ? '1/4 de volta' : a <= 200 ? '1/2 volta' : '1 volta';
-  return { dir: cents < 0 ? 1 : -1, amt, text: `${cents < 0 ? '↑ aperta' : '↓ afrouxa'} ~${amt} em cada parafuso (em estrela)` };
+  return { dir: cents < 0 ? 1 : -1, amt, text: `${cents < 0 ? '↑ aperte' : '↓ afrouxe'} ~${amt} em cada parafuso (em estrela)` };
 }
 
 /** Alvos sugeridos quando ainda não tem "afinação do meu kit" (faixa média de kit 10/12/14/16/22). */
@@ -32,9 +32,9 @@ export function evenness(perLug) {
 }
 
 export const STEPS = [
-  ['soltar', 'solta os parafusos e encosta todos com o dedo, por igual'],
+  ['soltar', 'solte os parafusos e encoste todos com o dedo, por igual'],
   ['baixo', 'pele de baixo: mesma volta em cada parafuso, na ordem da estrela'],
-  ['cima', 'pele de cima: meia volta por parafuso, em estrela, até sumir as rugas'],
-  ['fino', 'ajuste fino: bate no meio e segue a seta até o alvo'],
-  ['igualar', 'igualar: bate perto de cada parafuso e acerta os que fugiram'],
+  ['cima', 'pele de cima: meia volta por parafuso, em estrela, até sumirem as rugas'],
+  ['fino', 'ajuste fino: bata no meio e siga a seta até o alvo'],
+  ['igualar', 'igualar: bata perto de cada parafuso e acerte os que fugiram'],
 ];

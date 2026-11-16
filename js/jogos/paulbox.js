@@ -372,7 +372,7 @@ export function mount(host) {
     const seg = Number(window.__pbxSeg) > 0 ? Number(window.__pbxSeg) : SEG; // (__pbxSeg: só pra teste)
     const g = gravar({ ctx, fonte: saida, tracks: TRACKS, imgs: els.map((b) => b.querySelector('img')), estado: () => state, pulsos, seg, onTick: (r) => { btnRec.textContent = `■ gravando ${r}s`; } });
     grav = g; g.canvas.className = 'pbx-rec-cv'; g.canvas.setAttribute('aria-hidden', 'true'); root.append(g.canvas); btnRec.classList.add('on'); root.classList.add('gravando');
-    hintEl.textContent = 'gravando! vai tocando nos Pauls: tudo o que você mudar entra no vídeo.';
+    hintEl.textContent = 'gravando! vá tocando nos Pauls: tudo o que você mudar entra no vídeo.';
     g.fim.then((blob) => {
       grav = null; g.canvas.remove(); if (gone) return; btnRec.classList.remove('on'); root.classList.remove('gravando'); btnRec.textContent = `● gravar ${SEG}s`; hint();
       if (!blob) return; mostraFim(blob);

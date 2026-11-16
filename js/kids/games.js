@@ -9,7 +9,7 @@ import { pieceQ, pairName, figureQ, bumboQ, hintOf } from './quiz.js';
 import { FIGS, FIG_NAME, FIG_BY, GROUPS, VAR_BY, beatsLabel, specOf, contaOf } from './figs.js';
 import { layoutRhythm } from '../reading.js';
 import { click } from '../audio.js';
-import { ROW_NAME } from './groove.js';
+import { ROW_ART } from './groove.js';
 import { KIT_COLORS } from './icons.js';
 import { kitMarkup, figureMarkup, noteMarkup, restMarkup, groupMarkup, svgEl, play, tone } from './art.js';
 import { runMemory } from './memory.js';
@@ -39,11 +39,11 @@ export const GAMES = {
     render: (q) => {
       const big = (m) => svgEl(m, 'kd-fig-svg kx-bigfig');
       switch (q.kind) {
-        case 'dura': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, 'qual vale mais tempo? (toca pra ouvir)'));
+        case 'dura': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, 'qual vale mais tempo? (toque pra ouvir)'));
         case 'tempos': return h('div', { class: 'kx-q' }, big(figureMarkup(q.fig)), h('p', { class: 'kd-q' }, `quanto vale a ${FIG_NAME[q.fig]}?`));
         case 'nome': return h('div', { class: 'kx-q' }, big(figureMarkup(q.fig)), h('p', { class: 'kd-q' }, 'qual é o nome dessa figura?'));
         case 'desenho': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual é o desenho da ${FIG_NAME[q.fig]}?`));
-        case 'montar': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual desenho está montado certinho para a ${FIG_NAME[q.fig]}?`), h('p', { class: 'muted' }, 'olha a cabeça (vazia ou cheia), a haste e as bandeirinhas.'));
+        case 'montar': return h('div', { class: 'kx-q' }, h('p', { class: 'kd-q' }, `qual desenho está montado certinho para a ${FIG_NAME[q.fig]}?`), h('p', { class: 'muted' }, 'olhe a cabeça (vazia ou cheia), a haste e as bandeirinhas.'));
         case 'pausa': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, 'qual é o nome dessa pausa?'));
         case 'pausaValor': return h('div', { class: 'kx-q' }, big(restMarkup(q.fig)), h('p', { class: 'kd-q' }, `quanto tempo de silêncio vale a pausa de ${FIG_NAME[q.fig]}?`));
         case 'variacao': return h('div', { class: 'kx-q' }, svgEl(N.toSVG(layoutRhythm([q.cell], { width: 220, count: true, clef: false })), 'kd-score'), h('p', { class: 'kd-q' }, 'como se chama esse tempo?'));
@@ -72,7 +72,7 @@ export const GAMES = {
     hint: (k) => hintOf('figuras', k),
   },
   bumbos: {
-    id: 'bumbos', title: 'Quantos bumbos?', blurb: 'escuta e conta', emoji: '👂', ages: 'a partir de 5 anos',
+    id: 'bumbos', title: 'Quantos bumbos?', blurb: 'escute e conte', emoji: '👂', ages: 'a partir de 5 anos',
     makeQuestion: (rnd, d) => bumboQ(rnd, d),
     render: (q) => h('div', { class: 'kx-q' }, h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBumbos(q) }, '▶ ouvir de novo'), h('p', { class: 'kd-q' }, 'quantos bumbos tem em cada compasso?')),
     onShow: (q) => later(() => playBumbos(q), 250),
@@ -87,7 +87,7 @@ function playBumbos(q) {
 }
 GAMES.memoria = { id: 'memoria', title: 'Memória dos instrumentos', blurb: 'som + imagem ou imagem + imagem', emoji: '🧠', ages: 'a partir de 4 anos',
   modes: [['som', '🔊 som + imagem'], ['imagem', '🖼 imagem + imagem']], mode: 'som', run: runMemory, hint: (k) => `treinar: ${instName(k)}` };
-GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clica, escreve e toca o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir o ${ROW_NAME[k] || k}` };
-GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouve e repete na tela ou no seu pad / bateria (o microfone escuta)', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runEco,
+GAMES.detetive = { id: 'detetive', title: 'Detetive do groove', blurb: 'clique, escreva e toque o groove', emoji: '🕵️', ages: 'a partir de 7 anos', run: runDetetive, hint: (k) => `treinar: ouvir ${ROW_ART[k] || k}` };
+GAMES.eco = { id: 'eco', title: 'Eco rítmico', blurb: 'ouça e repita na tela ou no seu pad / bateria (o microfone escuta)', emoji: '📣', ages: 'a partir de 5 anos', modes: [['tela', '📱 na tela'], ['mic', '🎙 pad de estudo ou bateria de verdade']], mode: 'tela', run: runEco,
   hint: (k) => (k === 'figuras' ? 'repetir os ritmos com pão, bo-lo e cho-co-la-te' : 'repetir ritmos com contratempo') };
 export const ORDER = ['figuras', 'eco']; // a memória virou jogo livre (sem fases); peças, bumbos, detetive, pauta e toque saíram da lista (o código e o progresso ficam guardados)

@@ -43,7 +43,7 @@ export function mountRitmo(box, opts) {
       h('div', { class: 'row kd-modes' }, ...[['criar', '🎨 criar'], ['adivinha', '🕵️ adivinha']].map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, onclick: () => { Play.reset(); UI.reset(); cur = -1; mode = k; slots = []; secret = k === 'adivinha' ? randomFoods() : null; fb.textContent = ''; draw(); } }, t)),
         h('span', { class: 'kd-bpm' }, h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'menos 5 BPM', onclick: () => { bpm = Math.max(40, bpm - 5); draw(); } }, '−'), h('output', { class: 'kd-bpmv', 'aria-label': `${bpm} BPM` }, `${bpm} BPM`), h('button', { type: 'button', class: 'kd-chip', 'aria-label': 'mais 5 BPM', onclick: () => { bpm = Math.min(BPM_MAX, bpm + 5); draw(); } }, '+'))),
       h('div', { class: 'row kd-modes kd-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...VELOCIDADES.map(([k, v]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(velocidadeDe(bpm) === k), 'aria-label': k, title: k, class: `kd-chip kd-vic${velocidadeDe(bpm) === k ? ' on' : ''}`, onclick: () => { bpm = v; draw(); } }, vinil(k, 'vinil sm'), h('small', {}, String(v))))),
-      mode === 'adivinha' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBar(secret) }, '▶ ouvir o ritmo secreto') : h('p', { class: 'kd-q' }, 'monta 4 tempos e toca!'),
+      mode === 'adivinha' ? h('button', { class: 'kd-btn kd-listen', type: 'button', onclick: () => playBar(secret) }, '▶ ouvir o ritmo secreto') : h('p', { class: 'kd-q' }, 'monte 4 tempos e toque!'),
       h('div', { class: 'kd-slots' }, ...slotEls),
       ...palette,
       score,
@@ -51,7 +51,7 @@ export function mountRitmo(box, opts) {
         full ? h('button', { class: 'kd-btn', type: 'button', onclick: () => playBar(slots, () => box.querySelectorAll('.kd-slot').forEach((s, i) => s.classList.toggle('now', i === cur))) }, '▶ tocar') : null,
         mode === 'adivinha' && full ? h('button', { class: 'kd-btn', type: 'button', onclick: (e) => {
           if (sameRhythm(slots, secret)) { feedback(fb, true, 'acertou o ritmo secreto! ⭐ +1 ★'); FB.great(e.currentTarget); import('../jogos/estrelas-jogo.js').then((E) => E.ganhou('toca', 1, `ritmo-secreto|${JSON.stringify(secret)}`)).catch(() => {}); /* cada fase completada no Toca Aqui vale 1 ★ */ secret = randomFoods(Math.random, 2); slots = []; UI.later(draw, 1800); }
-          else { feedback(fb, false, 'quase! ouve de novo e troca uma carta'); FB.lose(e.currentTarget); }
+          else { feedback(fb, false, 'quase! ouça de novo e troque uma carta'); FB.lose(e.currentTarget); }
         } }, 'conferir') : null,
         slots.length ? h('button', { class: 'kd-chip', type: 'button', onclick: () => { slots = []; draw(); } }, 'limpar') : null),
       fb);

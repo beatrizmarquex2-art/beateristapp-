@@ -29,7 +29,7 @@ export function mountLoop(host) {
   }, 50);
 
   const url = h('input', { type: 'url', inputmode: 'url', placeholder: 'link do YouTube', 'aria-label': 'Link do YouTube' });
-  const box = h('div', { class: 'lp-video' }, h('p', { class: 'muted' }, 'cola um link e toca em carregar.'));
+  const box = h('div', { class: 'lp-video' }, h('p', { class: 'muted' }, 'cole um link e toque em carregar.'));
   const clock = h('output', { class: 'lp-clock' }, '0:00');
   const aIn = h('input', { type: 'text', inputmode: 'numeric', placeholder: '0:00', 'aria-label': 'Início do trecho' });
   const bIn = h('input', { type: 'text', inputmode: 'numeric', placeholder: '0:00', 'aria-label': 'Fim do trecho' });
@@ -60,7 +60,7 @@ export function mountLoop(host) {
     box.replaceChildren(frame); paint(); return true;
   };
   const saveLoop = async () => {
-    if (!id) { toast('carrega um vídeo primeiro'); return; }
+    if (!id) { toast('carregue um vídeo primeiro'); return; }
     sheet('Salvar trecho', (close) => {
       const name = h('input', { type: 'text', maxlength: 60, placeholder: 'ex.: refrão de Billie Jean', 'aria-label': 'Nome do trecho' });
       return h('div', { class: 'sheet-body' }, h('label', { class: 'field' }, h('span', {}, 'nome'), name), h('button', { class: 'btn primary', type: 'button', onclick: async () => {
@@ -74,7 +74,7 @@ export function mountLoop(host) {
     saved.replaceChildren(h('h2', { class: 'tag' }, 'trechos salvos'),
       l.length ? h('ul', { class: 'rp-list' }, ...l.map((r) => h('li', { class: 'rm-item' }, h('span', { class: 'rm-time' }, `${Math.round((r.data.rate || 1) * 100)}%`),
         h('button', { type: 'button', class: 'rp-t', onclick: () => { A = r.data.a; B = r.data.b; rate = r.data.rate || 1; load(r.data.url, true); } }, h('strong', {}, r.data.name), h('small', {}, `${r.data.a != null ? T.fmtTime(r.data.a) : '0:00'}–${r.data.b != null ? T.fmtTime(r.data.b) : 'fim'}`)),
-        h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `Apagar ${r.data.name}`, onclick: async () => { if (await confirmSheet('Apagar trecho?', r.data.name, 'Apagar')) store.remove(r.id); } }, 'apagar')))) : h('p', { class: 'muted' }, 'nenhum ainda. marca um trecho e toca em "salvar trecho".'),
+        h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `Apagar ${r.data.name}`, onclick: async () => { if (await confirmSheet('Apagar trecho?', r.data.name, 'Apagar')) store.remove(r.id); } }, 'apagar')))) : h('p', { class: 'muted' }, 'nenhum ainda. marque um trecho e toque em "salvar trecho".'),
       songs.length ? h('div', {}, h('p', { class: 'tp-lab' }, 'do repertório (com link)'), h('div', { class: 'chips lib-tabs' }, ...songs.map((r) => h('button', { type: 'button', class: 'lib-tab', onclick: () => load(r.data.link) }, r.data.title)))) : null);
   };
   host.append(banner('Play-along em loop', 'repete o trecho difícil até sair'), back(),

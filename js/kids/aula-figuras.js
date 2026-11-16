@@ -39,8 +39,8 @@ export function aulaFiguras(host, { onPlay } = {}) {
       h('p', {}, 'a figura é o desenho que diz ', h('b', {}, 'quanto tempo'), ' o som dura.'), btn('▶ ouvir o pulso (4 tempos)', () => { S.reset(); pulse(4); }, 'kd-btn kd-listen')) },
     { mood: 'point', say: 'a semínima é a nossa medida: ela vale 1 tempo. todas as outras são comparadas com ela!', make: () => h('div', { class: 'au-box' },
       h('div', { class: 'au-center' }, fig('seminima', 'au-fig big'), h('b', {}, 'semínima = 1 tempo')),
-      h('p', {}, 'conta: 1 · 2 · 3 · 4 e uma semínima em cada número.'), btn('▶ ouvir 4 semínimas', () => { S.reset(); const t0 = t0now(); for (let i = 0; i < 4; i++) { click(t0 + i, i === 0 ? 2 : 1, 0.3); VOICE.sn(t0 + i, 0.9); } }, 'kd-btn kd-listen')) },
-    { mood: 'idea', say: 'a escadinha: cada figura vale a metade da de cima! toca no ▶ pra ouvir quanto cada uma dura.', make: () => h('div', { class: 'au-box' },
+      h('p', {}, 'conte: 1 · 2 · 3 · 4 e uma semínima em cada número.'), btn('▶ ouvir 4 semínimas', () => { S.reset(); const t0 = t0now(); for (let i = 0; i < 4; i++) { click(t0 + i, i === 0 ? 2 : 1, 0.3); VOICE.sn(t0 + i, 0.9); } }, 'kd-btn kd-listen')) },
+    { mood: 'idea', say: 'a escadinha: cada figura vale a metade da de cima! toque no ▶ pra ouvir quanto cada uma dura.', make: () => h('div', { class: 'au-box' },
       ...FIGS.map((f) => h('div', { class: 'au-row' }, fig(f.id, 'au-fig sm'), h('div', { class: 'au-info' }, h('b', {}, f.name), h('small', {}, `vale ${beatsLabel(f.beats)} · ${f.frac}`),
         h('span', { class: 'au-meter', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.max(2, (f.beats / 4) * 100)}%` }))), h('button', { type: 'button', class: 'kd-chip', 'aria-label': `Ouvir ${f.name}`, onclick: () => { S.reset(); hearFig(f, 'nota'); } }, '▶'))),
       h('p', { class: 'muted' }, '1 semibreve = 2 mínimas = 4 semínimas = 8 colcheias = 16 semicolcheias = 32 fusas = 64 semifusas.')) },
@@ -51,11 +51,11 @@ export function aulaFiguras(host, { onPlay } = {}) {
         a.replaceChildren(h('div', { class: 'au-pair' }, h('button', { type: 'button', class: 'kd-btn au-card', onclick: () => { S.reset(); hearFig(fx, 'nota'); } }, fig(x, 'au-fig sm'), h('small', {}, fx.name)), h('b', {}, 'ou'), h('button', { type: 'button', class: 'kd-btn au-card', onclick: () => { S.reset(); hearFig(fy, 'nota'); } }, fig(y, 'au-fig sm'), h('small', {}, fy.name))),
           h('p', {}, h('b', {}, `${win.name} vale mais`), ` (${beatsLabel(win.beats)} contra ${beatsLabel((win === fx ? fy : fx).beats)}).`), btn('outro par', () => { k++; draw(); }, 'kd-chip')); };
       draw(); return h('div', { class: 'au-box' }, h('p', {}, 'toque em cada uma pra ouvir e comparar:'), a); } },
-    { mood: 'laptop', say: 'montar o desenho é fácil: três peças! a cabeça (vazia ou cheia), a haste e as bandeirinhas. mexe aí!', make: () => {
+    { mood: 'laptop', say: 'montar o desenho é fácil: três peças! a cabeça (vazia ou cheia), a haste e as bandeirinhas. mexa aí!', make: () => {
       const st = { open: false, stem: true, flags: 0 }; const view = h('div', { class: 'au-center' }); const name = h('b', { class: 'au-name' }); const ctl = h('div', { class: 'au-ctl' });
       const draw = () => {
         view.replaceChildren(svgEl(noteMarkup(st, 'desenho montado'), 'au-fig big')); const f = figBySpec(st);
-        name.textContent = f ? `${f.name} · vale ${beatsLabel(f.beats)}` : 'esse desenho não existe na música! tenta outro.';
+        name.textContent = f ? `${f.name} · vale ${beatsLabel(f.beats)}` : 'esse desenho não existe na música! tente outro.';
         ctl.replaceChildren(
           h('div', { class: 'row kd-modes' }, h('span', { class: 'au-lab' }, 'cabeça'), ...[[true, 'vazia'], [false, 'cheia']].map(([v, t]) => h('button', { type: 'button', class: `kd-chip${st.open === v ? ' on' : ''}`, onclick: () => { st.open = v; draw(); } }, t))),
           h('div', { class: 'row kd-modes' }, h('span', { class: 'au-lab' }, 'haste'), ...[[false, 'sem'], [true, 'com']].map(([v, t]) => h('button', { type: 'button', class: `kd-chip${st.stem === v ? ' on' : ''}`, onclick: () => { st.stem = v; if (!v) st.flags = 0; draw(); } }, t))),

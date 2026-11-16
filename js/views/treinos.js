@@ -174,7 +174,7 @@ export function leitura(host, opts = {}) {
       const r = lastResult; const devs = r.notes.filter((n) => n.ms != null).map((n) => n.ms);
       const avg = devs.length ? Math.round(devs.reduce((s, x) => s + x, 0) / devs.length) : 0;
       const spread = devs.length ? Math.round(Math.sqrt(devs.reduce((s, x) => s + (x - avg) ** 2, 0) / devs.length)) : 0;
-      const tip = r.hits < r.total ? 'faltaram notas: leia o compasso em voz alta (“1 e & a”) antes de tocar.' : Math.abs(avg) > 25 ? (avg < 0 ? `você está adiantando (${avg} ms em média). respira e espera o clique.` : `você está atrasando (+${avg} ms em média). toque mais junto do clique.`) : r.extra ? 'cuidado com toques a mais nas pausas.' : 'leitura limpa! pra desafiar, sobe 5 BPM.';
+      const tip = r.hits < r.total ? 'faltaram notas: leia o compasso em voz alta (“1 e & a”) antes de tocar.' : Math.abs(avg) > 25 ? (avg < 0 ? `você está adiantando (${avg} ms em média). respire e espere o clique.` : `você está atrasando (+${avg} ms em média). toque mais junto do clique.`) : r.extra ? 'cuidado com toques a mais nas pausas.' : 'leitura limpa! pra desafiar, suba 5 BPM.';
       // logo EMBAIXO do lugar de tocar: a nota (100%) do lado e o botão da próxima fase; a explicação fica mais abaixo
       const temProx = passedNow && step < PATH.length - 1 && (!opts.mapa || PATH[step + 1].tier === PATH[step].tier); const nest = r.est || 0;
       quick = h('section', { class: `tr-quick${passedNow ? ' ok' : ''}`, 'aria-live': 'polite' },
@@ -190,7 +190,7 @@ export function leitura(host, opts = {}) {
         devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
-        !livre && !r.parcial ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(nest)}${'☆'.repeat(3 - nest)} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra passar. na tela vale 1 ★; no microfone vale mais. tenta de novo!`) : null,
+        !livre && !r.parcial ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(nest)}${'☆'.repeat(3 - nest)} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra passar. na tela vale 1 ★; no microfone vale mais. tente de novo!`) : null,
         null);
     }
     const modeLine = line('jeito', chips([['caminho', 'caminho'], ['livre', 'livre (aleatório)']], livre ? 'livre' : 'caminho', (v) => save({ mode: v }).then(() => { lastResult = null; draw(true); }), 'Modo'));
@@ -249,7 +249,7 @@ function escuta(host) {
       const st = !done ? '' : i === q.okIdx ? ' ok' : i === q.picked ? ' no' : '';
       return h('button', { class: `tr-opt${st}`, type: 'button', 'aria-label': `Opção ${'ABCD'[i]}`, onclick: () => pick(i) }, h('b', {}, 'ABCD'[i]), score([b]));
     });
-    const feedback = done ? h('p', { class: `tr-status ${q.picked === q.okIdx ? 'good' : 'bad'}`, 'aria-live': 'polite' }, q.picked === q.okIdx ? 'isso! ✓' : `era a ${'ABCD'[q.okIdx]}. ouve de novo comparando.`) : h('p', { class: 'tr-status' }, 'aperte ▶, ouça (pode repetir) e escolha a partitura.');
+    const feedback = done ? h('p', { class: `tr-status ${q.picked === q.okIdx ? 'good' : 'bad'}`, 'aria-live': 'polite' }, q.picked === q.okIdx ? 'isso! ✓' : `era a ${'ABCD'[q.okIdx]}. ouça de novo comparando.`) : h('p', { class: 'tr-status' }, 'aperte ▶, ouça (pode repetir) e escolha a partitura.');
     const finished = n >= QUESTIONS;
     body.replaceChildren(...[controls(c, () => draw(true), { bars: false }),
       h('div', { class: 'row tr-actions' },
@@ -298,7 +298,7 @@ function montar(host) {
           h('button', { class: 'bl-play tr-go', type: 'button', 'aria-label': 'Ouvir o ditado', onclick: play }, icon('play', 26)),
           h('button', { class: 'btn', type: 'button', 'aria-label': 'Desfazer', onclick: () => { const k = firstEmpty < 0 ? 3 : firstEmpty - 1; if (k >= 0) { guess[k] = null; marks = null; draw(); } } }, '↺'),
           h('button', { class: 'btn primary', type: 'button', onclick: conferir }, 'conferir')),
-      over ? null : h('p', { class: `tr-status${marks ? (marks.every(Boolean) ? ' good' : ' bad') : ''}`, 'aria-live': 'polite' }, marks ? (marks.every(Boolean) ? 'isso! ✓ lá vem o próximo' : 'os vermelhos estão errados: ouve de novo e troca') : 'aperte ▶, ouça (pode repetir) e monte os 4 tempos tocando nas células.'),
+      over ? null : h('p', { class: `tr-status${marks ? (marks.every(Boolean) ? ' good' : ' bad') : ''}`, 'aria-live': 'polite' }, marks ? (marks.every(Boolean) ? 'isso! ✓ lá vem o próximo' : 'os vermelhos estão errados: ouça de novo e troque') : 'aperte ▶, ouça (pode repetir) e monte os 4 tempos tocando nas células.'),
       over ? null : h('div', { class: 'tr-palette' }, ...pal), history('montar')].filter(Boolean));
   };
   host.append(body); draw(true);

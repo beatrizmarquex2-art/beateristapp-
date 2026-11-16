@@ -14,12 +14,12 @@ const BASE = [
   { n: 7, tipo: 'quiz', nivel: 1, titulo: 'quiz' },
   { n: 8, tipo: 'caca', nivel: 1, titulo: 'caça-palavras' },
   { n: 9, tipo: 'notas', nivel: 1, titulo: 'monte as notas' },
-  { n: 10, tipo: 'tetris', nivel: 1, titulo: 'tetris do Roboterista' },
+  { n: 10, tipo: 'tetris', nivel: 1, titulo: 'tetris do Robôterista' },
   { n: 11, tipo: 'quiz', nivel: 2, titulo: 'quiz difícil' },
   { n: 12, tipo: 'tetris', nivel: 2, titulo: 'tetris rápido' },
 ];
 export const CICLO = ['rapida', 'lenta', 'monte', 'ligar', 'memoria', 'quiz', 'caca', 'notas', 'tetris', 'quiz'];
-const TITULOS = { rapida: 'qual é a mais rápida?', lenta: 'qual é a mais lenta?', monte: 'monte a figura', ligar: 'ligue', memoria: 'memória', quiz: 'quiz', caca: 'caça-palavras', notas: 'monte as notas', tetris: 'tetris do Roboterista' };
+const TITULOS = { rapida: 'qual é a mais rápida?', lenta: 'qual é a mais lenta?', monte: 'monte a figura', ligar: 'ligue', memoria: 'memória', quiz: 'quiz', caca: 'caça-palavras', notas: 'monte as notas', tetris: 'tetris do Robôterista' };
 export const PHASES = [...BASE, ...Array.from({ length: 50 }, (_, i) => { const tipo = CICLO[i % 10]; return { n: 13 + i, tipo, nivel: 3 + Math.floor(i / 10), titulo: TITULOS[tipo] }; })];
 export const FASES = PHASES.length; // 62
 export const ids = FIGS.map((f) => f.id);

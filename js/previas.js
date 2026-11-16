@@ -40,7 +40,7 @@ export const tituloDaPrevia = (k) => (PREVIAS[k] ? PREVIAS[k].titulo : '');
 export function previa(k) {
   const p = PREVIAS[k]; if (!p) return null;
   return h('section', { class: 'pv', 'aria-label': `Prévia: ${p.titulo}` },
-    h('p', { class: 'pv-tag' }, 'dá uma olhada por dentro'),
+    h('p', { class: 'pv-tag' }, 'dê uma olhada por dentro'),
     h('div', { class: 'pv-gal', role: 'group', 'aria-label': 'Telas do jogo' }, ...p.imgs.map(([f, leg]) => h('figure', { class: 'pv-fig' }, h('img', { src: `${IMG}${f}.webp`, alt: `${p.titulo}: ${leg}`, draggable: 'false' }), h('figcaption', {}, leg)))),
     h('div', { class: 'card pad pv-txt' }, h('h2', { class: 'tag' }, p.titulo), h('p', {}, p.sobre),
       h('b', {}, 'o que você faz'), h('ul', {}, ...p.faz.map((x) => h('li', {}, x))),

@@ -20,7 +20,7 @@ export const THEMES = {
     R('torrel', 'Torre dos Livros', 'o topo da biblioteca', ['#5c1626', '#8e1f4a', '#ffd23f', '#ffd23f'], [['trophy', 'r', 0.3], ['book', 'l', 0.55], ['star', 'r', 0.85]]),
   ] },
   velha: { id: 'velha', name: 'Arena de Duelos', accent: '#ff4fa3', regions: [
-    R('portao', 'Portão da Arena', 'quem entra, duela', ['#0f2a47', '#5c1626', '#ff4fa3', '#ff8bc4'], [['sticks', 'l', 0.3], ['lamp', 'r', 0.55], ['sticks', 'r', 0.85]]),
+    R('portao', 'Portão da Arena', 'quem entra duela', ['#0f2a47', '#5c1626', '#ff4fa3', '#ff8bc4'], [['sticks', 'l', 0.3], ['lamp', 'r', 0.55], ['sticks', 'r', 0.85]]),
     R('patio', 'Pátio dos Duelos', 'treino de verdade', ['#5c1626', '#1f6f78', '#ffd23f', '#ff4fa3'], [['drum', 'r', 0.3], ['sticks', 'l', 0.55], ['star', 'r', 0.85]]),
     R('arquib', 'Arquibancada', 'a torcida chegou', ['#1b2f6a', '#17406a', '#4fd2ff', '#4fd2ff'], [['amp', 'l', 0.3], ['heart', 'r', 0.55], ['amp', 'r', 0.85]]),
     R('ringue', 'Ringue Final', 'só um vence', ['#6a1a3a', '#8e1f4a', '#ffd23f', '#ffd23f'], [['trophy', 'l', 0.35], ['sticks', 'r', 0.55], ['star', 'l', 0.85]]),

@@ -6,7 +6,7 @@ import { P, B, C, R, FOOD_OF_CELL, check, mergeReq, CELL_SHORT } from './monte-l
 const ALL3 = [P, B, R];
 // [id, título, tag, objetivo, req, extra]
 const DEF = [
-  ['monte-00', 'Complete o compasso', 'completar', 'complete o compasso: faltam só o último tempo', { fixed: { 0: P, 1: P, 2: P }, cells: ALL3 }, { minRests: 1 }, 'termine com um shhh (pausa)'],
+  ['monte-00', 'Complete o compasso', 'completar', 'complete o compasso: falta só o último tempo', { fixed: { 0: P, 1: P, 2: P }, cells: ALL3 }, { minRests: 1 }, 'termine com um shhh (pausa)'],
   ['monte-01', 'Pão e bolo', '2 figuras', 'monte 4 tempos usando pão e bolo', { cells: ALL3, use: [P, B] }, { minRests: 1 }, 'use também um shhh'],
   ['monte-02', 'Silêncio também é música', 'pausa', 'monte 4 tempos com pelo menos um shhh, começando com som', { cells: ALL3, minRests: 1, startSound: true }, { minDistinct: 2 }, 'use pão e bolo no mesmo compasso'],
   ['monte-03', 'Compasso incompleto', 'completar', 'complete os tempos livres: o compasso precisa de uma pausa', { fixed: { 0: B, 2: P }, cells: ALL3, minRests: 1 }, { endRest: true }, 'termine com shhh'],

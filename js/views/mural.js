@@ -124,7 +124,7 @@ export function mount(host) {
     }
     empty.hidden = list.length > 0;
     wall.classList.toggle('editing', !!sel);
-    count.textContent = list.length ? `${list.length} item${list.length > 1 ? 's' : ''} na parede` : '';
+    count.textContent = list.length ? `${list.length} ${list.length > 1 ? 'itens' : 'item'} na parede` : '';
     drawTray();
   }
   function syncHandles(el, id) {

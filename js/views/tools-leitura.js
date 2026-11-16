@@ -61,7 +61,7 @@ function lineSheet(initial, { lv, onSave, title }) {
     };
     const palette = h('div', { class: 'tr-palette ft-pal' }, ...CELLS.map((c) => h('button', { type: 'button', class: 'tr-pal', title: c.name, 'aria-label': c.name, onclick: () => { cells[at] = c.p; at = Math.min(7, at + 1); paint(); } }, cellSvg(c.p))));
     paint();
-    return h('div', { class: 'sheet-body' }, prev, h('p', { class: 'muted' }, 'toca num tempo e escolhe a figura embaixo (ele já pula pro próximo).'), slots, palette,
+    return h('div', { class: 'sheet-body' }, prev, h('p', { class: 'muted' }, 'toque num tempo e escolha a figura embaixo (ele já pula pro próximo).'), slots, palette,
       h('div', { class: 'row' },
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { const nb = [...genBar(lv), ...genBar(lv)]; nb.forEach((p, i) => { cells[i] = p; }); paint(); } }, '🎲 sortear a linha'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { cells.fill(REST); at = 0; paint(); } }, 'limpar')),
@@ -92,7 +92,7 @@ export function mountLeitura(host) {
     const c = conf(); const cu = c.custom;
     if (cu) { pg = Math.min(pg, cu.pages.length - 1); }
     opts.replaceChildren(...(cu ? [
-      h('p', { class: 'muted tr-lvname' }, 'folha montada à mão: toca numa linha pra mudar as figuras.'),
+      h('p', { class: 'muted tr-lvname' }, 'folha montada à mão: toque numa linha pra mudar as figuras.'),
       chip('folhas', 'pages', [[1, '1'], [2, '2'], [3, '3'], [5, '5']], (v) => save({ pages: v, custom: fit(cu, v, cu.pages[0].length) }).then(draw)),
       chip('linhas', 'lines', [[6, '6'], [8, '8'], [10, '10'], [12, '12']], (v) => save({ lines: v, custom: fit(cu, cu.pages.length, v) }).then(draw)),
     ] : [chip('nível', 'lv', [[1, '1'], [2, '2'], [3, '3']]), h('p', { class: 'muted tr-lvname' }, LEVEL_NAMES[c.lv]),
@@ -100,7 +100,7 @@ export function mountLeitura(host) {
       chip('papel', 'paper', [['timbrado', 'timbrado'], ['branco', 'branco']]), chip('contagem', 'count', [[true, 'com 1 e & a'], [false, 'sem']]));
     mine.replaceChildren(
       !cu ? h('button', { class: 'btn', type: 'button', onclick: async () => { await startCustom(true); draw(); toast('agora é só tocar numa linha pra mudar ✏️', { ms: 2500 }); } }, '✏️ editar esta folha') : null,
-      !cu ? h('button', { class: 'btn', type: 'button', onclick: async () => { await startCustom(false); draw(); toast('folha em branco: toca numa linha pra escrever', { ms: 2500 }); } }, '📝 criar a minha folha') : null,
+      !cu ? h('button', { class: 'btn', type: 'button', onclick: async () => { await startCustom(false); draw(); toast('folha em branco: toque numa linha pra escrever', { ms: 2500 }); } }, '📝 criar a minha folha') : null,
       cu ? h('button', { class: 'btn ghost', type: 'button', onclick: async () => { if (await confirmSheet('Voltar pra folha sorteada?', 'o que você montou nesta folha será descartado.', 'Voltar')) { await save({ custom: null }); draw(); } } }, 'voltar pra folha sorteada') : null);
     const pages = sheetBars(c, seed); const lines = pages[Math.min(pg, pages.length - 1)];
     const mk = (cells, li) => { const f = h(cu ? 'button' : 'figure', { class: `tr-bar${cu ? ' ft-edit' : ''}`, type: cu ? 'button' : null, 'aria-label': cu ? `Editar linha ${li + 1}` : null, onclick: cu ? () => edit(pg, li) : null });
@@ -108,7 +108,7 @@ export function mountLeitura(host) {
     prev.replaceChildren(
       cu && pages.length > 1 ? h('div', { class: 'chips lib-tabs' }, ...pages.map((_, i) => h('button', { type: 'button', class: `lib-tab${i === pg ? ' on' : ''}`, onclick: () => { pg = i; draw(); } }, `folha ${i + 1}`))) : null,
       ...(cu ? lines : lines.slice(0, 4)).map((cells, li) => { const el = mk(cells, li); if (!cu) { el.classList.add('ft-edit'); el.setAttribute('role', 'button'); el.tabIndex = 0; const go = async () => { await startCustom(true); draw(); edit(0, li); }; el.addEventListener('click', go); el.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); }); } return el; }),
-      h('p', { class: 'muted' }, cu ? `folha ${pg + 1} de ${pages.length} · ${lines.length} linhas · toca numa linha pra editar` : `prévia: 4 de ${c.lines} linhas da folha 1 · toca numa linha pra mexer nela`));
+      h('p', { class: 'muted' }, cu ? `folha ${pg + 1} de ${pages.length} · ${lines.length} linhas · toque numa linha pra editar` : `prévia: 4 de ${c.lines} linhas da folha 1 · toque numa linha pra mexer nela`));
   };
   const nameOf = (c) => fileName(c.title || 'Leitura', student.value.trim(), c.custom ? 'montada a mao' : `nivel ${c.lv} - ${seed}`);
   const pdf = async (e) => {
@@ -132,7 +132,7 @@ export function mountLeitura(host) {
     h('section', { class: 'card pad tr-ctrl' }, h('label', { class: 'field' }, h('span', {}, 'título'), title), opts, h('div', { class: 'row ft-row' }, mine), h('label', { class: 'field' }, h('span', {}, 'aluno'), student), codeField),
     h('div', { class: 'row pad-x ft-row' }, h('button', { class: 'btn primary', type: 'button', onclick: pdf }, 'baixar PDF'), h('button', { class: 'btn', type: 'button', onclick: toFolder }, '📁 enviar pra pasta'), h('button', { class: 'btn', type: 'button', onclick: () => { seed = Math.floor(Math.random() * 90000) + 10000; code.value = String(seed); if (conf().custom) { save({ custom: null }).then(draw); } else draw(); } }, 'outra folha')),
     h('section', { class: 'card pad' }, prev),
-    h('p', { class: 'pad-x lib-note' }, 'o mesmo código gera a mesma folha sorteada: anota o código pra repetir a leitura com outro aluno. a folha que você monta à mão fica guardada aqui até você voltar pra sorteada.'));
+    h('p', { class: 'pad-x lib-note' }, 'o mesmo código gera a mesma folha sorteada: anote o código pra repetir a leitura com outro aluno. a folha que você monta à mão fica guardada aqui até você voltar pra sorteada.'));
   draw();
   const off = store.subscribe((i) => { if (i.kind === 'setting' && i.id === KEY) draw(); });
   return off;

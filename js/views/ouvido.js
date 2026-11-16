@@ -84,8 +84,8 @@ function tunerTab(mic) {
     g.set(cents);
     const ref = tg ? `do alvo ${P.noteOf(tg.freq).label}` : `de ${n.label}`;
     if (Math.abs(cents) <= 8) { tell.textContent = `✓ afinado (${cents >= 0 ? '+' : ''}${cents} cents ${ref})`; tell.className = 'ov-tell ok'; }
-    else if (cents < 0) { tell.textContent = `↑ sobe a tensão: ${-cents} cents abaixo ${ref}`; tell.className = 'ov-tell low'; }
-    else { tell.textContent = `↓ desce a tensão: ${cents} cents acima ${ref}`; tell.className = 'ov-tell high'; }
+    else if (cents < 0) { tell.textContent = `↑ suba a tensão: ${-cents} cents abaixo ${ref}`; tell.className = 'ov-tell low'; }
+    else { tell.textContent = `↓ desça a tensão: ${cents} cents acima ${ref}`; tell.className = 'ov-tell high'; }
   }
   function drawKit() {
     const rows = P.PIECES.map((p) => { const r = store.list(TUNE).filter((x) => x.data.piece === p.id).sort((a, b) => b.data.at - a.data.at); return { p, cur: r[0], prev: r[1] }; }).filter((x) => x.cur);

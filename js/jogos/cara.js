@@ -45,7 +45,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
         onTema ? linha('tema', chips([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'instrumentos', (v) => { if (v !== 'instrumentos') onTema(v); }, 'tema')) : null,
         linha('cartas', chips([[false, 'automático'], [true, 'manual']], prefs.manual, (v) => { prefs.manual = v; setGame(ID, { manual: v }); intro(); }, 'eliminar cartas'),
           ajuda('Eliminar cartas', prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.')),
-        linha('regras', ajuda('Como jogar', 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'))),
+        linha('regras', ajuda('Como jogar', 'o Paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'))),
       saved.best ? h('p', { class: 'jg-p muted' }, `seu recorde: ${saved.best} pergunta${saved.best === 1 ? '' : 's'}`) : null,
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, 'continuar partida') : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(K.newGame(prefs)) }, resume ? 'nova partida' : 'iniciar')),
@@ -89,7 +89,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   }
   function doGuess(id) {
     const ok = id === g.secret; g = K.guess(g, id); picked = null;
-    if (ok) { msg = ''; sfx('win'); } else { msg = g.over ? '' : `não era o ${BY_ID[id].name}. ele sai do jogo.`; sfx(g.over ? 'lose' : 'bad'); }
+    if (ok) { msg = ''; sfx('win'); } else { msg = g.over ? '' : `não era ${BY_ID[id].name}. essa carta sai do jogo.`; sfx(g.over ? 'lose' : 'bad'); }
     if (g.over && g.result.win && !mission) MESA.vitoria('cara');
     if (g.over && g.result.win && (!saved.best || g.asked.length < saved.best)) saved.best = g.asked.length;
     persist(); draw();
@@ -97,7 +97,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   }
   function result() {
     const s = BY_ID[g.secret]; const r = g.result;
-    return placar({ classe: 'jg-result', estado: r.win ? 'win' : 'lose', pose: r.win ? poseDisponivel('selfie', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: r.win ? 'acertou! 🤘' : 'acabaram os chutes', sub: `o paul tinha escolhido: ${s.name}`,
+    return placar({ classe: 'jg-result', estado: r.win ? 'win' : 'lose', pose: r.win ? poseDisponivel('selfie', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: r.win ? 'acertou! 🤘' : 'acabaram os chutes', sub: `o Paul tinha escolhido: ${s.name}`,
       extra: [h('img', { class: 'jg-qimg', src: `assets/jogos/instrumentos/${s.img}.webp`, alt: s.name })],
       quadros: [{ n: r.questions, l: r.questions === 1 ? 'pergunta' : 'perguntas', win: r.win }, { n: r.wrong, l: r.wrong === 1 ? 'chute errado' : 'chutes errados' }],
       estrelas: r.win && !mission ? '+3 ★ pra roleta' : '',

@@ -44,7 +44,7 @@ export function mountMemoria(host, opts) {
   const MS = opts && opts.mission ? opts.mission : null; const MP = MS ? MS.params || {} : null;
   let gone = false; let paused = false; let started = false; let reported = false; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
-  const bot = robo({ mood: 'happy', size: 84, say: 'escolhe o tema e quantos pares!' });
+  const bot = robo({ mood: 'happy', size: 84, say: 'escolha o tema e quantos pares!' });
   const stage = h('div', { class: 'mem-stage' });
   const botrow = h('div', { class: 'kx-botrow' }, bot.el); host.replaceChildren(botrow, stage); // o Paul só aparece durante a partida (na escolha do tema não gasta espaço de tela)
   const preload = (th) => th.items.forEach((x) => { const i = new Image(); i.src = x.img; }); // as cartas do tema já ficam prontas
@@ -87,7 +87,7 @@ export function mountMemoria(host, opts) {
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
       players === 'sala' ? h('div', { class: 'jg ms-lobby' }, (lob = lobby({ jogo: JOGO_SALA, makeState: () => mesaNova(th, Math.min(pairs, maxPairs), c.again !== false), onStart: startSala })).el)
         : h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
-    botrow.hidden = true; bot.set('happy', 'escolhe o tema e quantos pares!');
+    botrow.hidden = true; bot.set('happy', 'escolha o tema e quantos pares!');
   };
 
   /** Os dois celulares entram na mesma mesa: tudo vem do estado da sala (tema, pares, regra, semente, vez, cartas viradas, pares achados). */

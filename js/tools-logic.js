@@ -109,7 +109,7 @@ export function weekChallenge(wk, pools, salt = 0) {
   const ru = pools.ruds.length ? pools.ruds[(r >>> 8) % pools.ruds.length] : { name: 'Paradiddle simples' };
   const twist = TWISTS[(r >>> 16) % TWISTS.length];
   const bpm = Math.round(((g.bpm || 100) + ((r >>> 4) % 3) * 10) / 5) * 5;
-  return { wk, groove: g.name, rud: ru.name, bpm, twist, title: `${g.name} a ${bpm} BPM`, sub: twist, warm: `aquece com ${ru.name}` };
+  return { wk, groove: g.name, rud: ru.name, bpm, twist, title: `${g.name} a ${bpm} BPM`, sub: twist, warm: `aqueça com ${ru.name}` };
 }
 
 /* ---------- loop do YouTube ---------- */

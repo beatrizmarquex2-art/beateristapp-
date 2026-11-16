@@ -184,7 +184,7 @@ export function mount(host, parts = []) {
     box.replaceChildren();
     if (limited) { if ((tab === 'caca' || tab === 'cruzadinha') && !porCodigo) (tab === 'caca' ? caca : cruzadinha)(box); else box.append(avisoCodigo(`${porCodigo ? 'jogar com código' : nomeLetras('quiz')} é pra alunos da Beaterista: usa as dicas do método. ${nomeLetras('caca')} e ${nomeLetras('cruzadinha')} têm ${GRATIS.caca} partidas grátis cada.`)); return; }
     const n = items().length;
-    if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abre o app com internet uma vez e volta aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
+    if (n < 6) { box.append(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'elas vêm do seu Plano de Estudo quando sincronizar. abra o app com internet uma vez e volte aqui.'), h('a', { class: 'btn', href: '#/plano' }, 'abrir o Plano de Estudo'))); return; }
     if (porCodigo) { import('../jogos/duelo-letras.js').then((m) => { if (!gone) stopDuelo = m.mountDueloLetras(box, JOGOS_LETRAS.includes(tab) ? tab : null); }); return; }
     ({ quiz: () => quiz(box, ['blank', 'continua'], 'quiz'), caca: () => caca(box), cruzadinha: () => cruzadinha(box) })[tab]();
   };

@@ -113,7 +113,7 @@ export function mount(host) {
     const c = conf(); const q = 60 / c.bpm; const bar4 = 4 * q; const el = Math.min(MAX, perfToCtx(performance.now()) - r.t0);
     const hits = r.hits.filter((x) => x.t > -0.08 && x.t <= MAX).map((x) => ({ ...x, t: Math.max(0, x.t) }));
     status.className = 'tr-status';
-    if (!hits.length || el <= 0.2) { status.textContent = el <= 0.2 ? 'gravação cancelada.' : 'não peguei nenhum toque. tenta de novo!'; drawPanel(); return; }
+    if (!hits.length || el <= 0.2) { status.textContent = el <= 0.2 ? 'gravação cancelada.' : 'não peguei nenhum toque. tente de novo!'; drawPanel(); return; }
     let len; let bars = 0;
     if (c.grid) { const maxBars = Math.max(1, Math.floor(MAX / bar4)); bars = Math.min(maxBars, Math.max(1, Math.ceil((el - 0.05) / bar4))); len = bars * bar4; } else len = Math.max(0.5, el);
     const kept = hits.filter((x) => x.t < len);
@@ -182,7 +182,7 @@ export function mount(host) {
   };
 
   host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel, backingBar(),
-    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “ouvir o tempo” liga o clique no andamento escolhido; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
+    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “ouvir o tempo” liga o clique no andamento escolhido; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confira antes de usar em aula.'));
   drawKit(); drawPanel(); tipBox(host, 'toque');
   const solta = aoLiberar(() => { drawKit(); drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   return () => { solta(); cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };

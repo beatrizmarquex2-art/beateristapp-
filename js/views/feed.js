@@ -52,7 +52,7 @@ function editor(rec, close) {
       per[k], h('button', { class: 'btn small ghost', type: 'button', onclick: () => { per[k].value = base.value; } }, 'copiar da base'), st, linkIn[k]);
   }));
   const submit = async () => {
-    if (!title.value.trim()) { toast('dá um nome para o conteúdo.'); title.focus(); return; }
+    if (!title.value.trim()) { toast('dê um nome para o conteúdo.'); title.focus(); return; }
     const links = { ...(d.links || {}) };
     for (const [k] of NETS) { const u = normUrl(linkIn[k].value); if (u) { links[k] = u; if ((status[k] || 'pendente') !== 'publicado') status[k] = 'publicado'; targets.add(k); } else delete links[k]; }
     const data = { links, title: title.value.trim(), stage: stage.value, brand: brand.value, due: due.value, file: file.value.trim(), script: script.value, caption: base.value, hashtags: tags.value, captions: Object.fromEntries(NETS.map(([k]) => [k, per[k].value])), targets: [...targets], status, thumbId, created: d.created || Date.now() };
@@ -78,9 +78,9 @@ function postedForm(all) {
   const title = h('input', { type: 'text', maxlength: 100, placeholder: 'título (se for novo)', 'aria-label': 'Título do post' });
   which.addEventListener('change', () => { title.hidden = !!which.value; });
   const save = async (e) => {
-    const btn = e.currentTarget; const u = normUrl(url.value); if (!u) { toast('cola o link do post'); return; }
+    const btn = e.currentTarget; const u = normUrl(url.value); if (!u) { toast('cole o link do post'); return; }
     const net = netOf(u); const rec = which.value ? store.get(which.value) : null; const d = rec ? rec.data : {};
-    if (!rec && !title.value.trim()) { toast('dá um título pro post'); title.focus(); return; }
+    if (!rec && !title.value.trim()) { toast('dê um título pro post'); title.focus(); return; }
     const targets = [...new Set([...(d.targets || []), ...(net !== 'outra' ? [net] : [])])];
     const status = { ...(d.status || {}), ...(net !== 'outra' ? { [net]: 'publicado' } : {}) };
     const data = { ...(rec ? {} : { title: title.value.trim(), brand: 'Beaterista', caption: '', hashtags: '', captions: {}, created: Date.now() }), targets, status, links: { ...(d.links || {}), [net]: u }, postedAt: Date.now() };

@@ -66,7 +66,7 @@ const RAW = [
   [130, 'facil', 'bandas', 'qual banda lançou Believer e Enemy?', 'Imagine Dragons', ['OneRepublic', 'Coldplay'], 'Believer e Enemy são do Imagine Dragons.'],
   [131, 'facil', 'rock', "qual é o guitarrista da banda Guns N' Roses?", 'Slash', ['Axl Rose', 'Angus Young'], "Slash é o guitarrista do Guns N' Roses."],
   [132, 'facil', 'rock', 'quem canta as músicas TNT e Back in Black?', 'AC/DC', ['Metallica', 'Black Sabbath'], 'TNT e Back in Black são do AC/DC.'],
-  [133, 'intermediario', 'pop', 'Uptown Funk toca no filme do?', 'Sonic e Alvin e os esquilos', ['Shrek', 'Toy Story', 'Madagascar'], 'Uptown Funk toca no filme do Sonic e Alvin e os esquilos.'],
+  [133, 'intermediario', 'pop', 'Uptown Funk toca no filme do?', 'Sonic e Alvin e os Esquilos', ['Shrek', 'Toy Story', 'Madagascar'], 'Uptown Funk toca no filme do Sonic e Alvin e os Esquilos.'],
   [134, 'facil', 'rock', 'Kurt Cobain era vocalista da banda?', 'Nirvana', ['Pearl Jam', 'Foo Fighters'], 'Kurt Cobain era vocalista do Nirvana.'],
   [135, 'intermediario', 'pop', 'qual música toca no filme do Homem-Aranha no Aranhaverso?', 'Sunflower (Post Malone)', ['Blinding Lights (The Weeknd)', 'bad guy (Billie Eilish)', 'Believer (Imagine Dragons)'], 'Sunflower, do Post Malone, toca no Aranhaverso.'],
   [136, 'facil', 'pop', 'quem é considerado o Rei do Pop?', 'Michael Jackson', ['Bruno Mars', 'Justin Bieber'], 'Michael Jackson é o Rei do Pop.'],

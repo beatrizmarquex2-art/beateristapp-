@@ -45,7 +45,7 @@ export function mount(host) {
   const notesOf = (c) => { const n = flatten(parse(c.stick)); return c.left ? swap(n) : n; };
   const stop = () => { if (run) { run.stop(); run = null; } curStep = -1; liveBpm = null; };
   const start = () => {
-    stop(); audio(); const c = conf(); const notes = notesOf(c); if (!notes.length) { toast('escreve a manulação com D, E e B'); return; }
+    stop(); audio(); const c = conf(); const notes = notesOf(c); if (!notes.length) { toast('escreva a manulação com D, E e B'); return; }
     const per = c.sub; const steps = per * 4; let bpm = c.bpm; let t = 0; let bar = 0; const span = steps * (c.bars || barsFor(notes.length, per)); // depois de `span` passos o padrão recomeça
     run = scheduler((i) => {
       if (i > 0 && i % steps === 0) { bar++; if (c.prog && bar % 4 === 0) bpm = clampBpm(bpm + 5); }
@@ -128,7 +128,7 @@ export function mount(host) {
           h('button', { class: 'btn', type: 'button', onclick: () => saveScore(c, bars, opts) }, '🎼 salvar como partitura'),
           c.pick.startsWith('mine:') && !src ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Apagar meu rudimento', onclick: async () => { const id = c.pick.slice(5); if (await confirmSheet('Apagar rudimento?', (store.get(id) || { data: {} }).data.name || '', 'Apagar')) { await store.remove(id); await setConf({ pick: 'livre' }); } } }, icon('trash', 18)) : null),
         history(c)),
-      h('p', { class: 'pad-x lib-note' }, 'escreve do jeito do método: “Dede” é acento na 1ª semicolcheia, “(e)” é nota fantasma, B é bumbo. a pauta e o som saem da mesma escrita. o BPM limpo fica guardado por exercício, pra você ver a evolução.'));
+      h('p', { class: 'pad-x lib-note' }, 'escreva do jeito do método: “Dede” é acento na 1ª semicolcheia, “(e)” é nota fantasma, B é bumbo. a pauta e o som saem da mesma escrita. o BPM limpo fica guardado por exercício, pra você ver a evolução.'));
     paint();
   };
   const history = (c) => {

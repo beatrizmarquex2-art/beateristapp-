@@ -145,7 +145,7 @@ export const QUESTION = {
   'alex-turner': 'trocar a ferramenta de compor muda o vocabulário que a mente oferece',
   'kanye-west': 'dezenas de colaboradores e ainda assim uma direção autoral forte',
   'justin-bieber': 'o que tocar vários instrumentos de ouvido faz com o fraseado pop',
-  'john-mayer': 'quando o virtuosismo serve a música e quando compete com ela',
+  'john-mayer': 'quando o virtuosismo serve à música e quando compete com ela',
   'thom-yorke': 'quando a produção deixa de ser acabamento e vira composição',
   'tyler-the-creator': 'música, roupa, cor, capa e personagem como uma só composição',
   'bad-bunny': 'preservar instinto e identidade local dentro do pop global',

@@ -101,7 +101,7 @@ function mountEbooks(el) {
   const openBook = async (r) => {
     const w = window.open('', '_blank'); // abre já no toque (senão o iPhone bloqueia a janela)
     const u = await files.openUrl(r.data.fileId);
-    if (!u) { w && w.close(); return toast('esse arquivo ainda não chegou neste aparelho. abre com internet.'); }
+    if (!u) { w && w.close(); return toast('esse arquivo ainda não chegou neste aparelho. abra com internet.'); }
     if (w) w.location.href = u; else location.href = u;
   };
   const rename = (r) => sheet('Renomear', (close) => {
@@ -168,7 +168,7 @@ function mountMidia(el) {
     }));
   };
   el.append(h('div', { class: 'row pad-x kit-foot' }, h('button', { class: 'btn primary', type: 'button', onclick: () => editMidia(null) }, '+ adicionar matéria')), grid,
-    h('p', { class: 'pad-x lib-note' }, 'dica: tira um print da matéria e coloca como imagem no lápis. os links vieram do seu dossiê de imprensa.'));
+    h('p', { class: 'pad-x lib-note' }, 'dica: tire um print da matéria e coloque como imagem no lápis. os links vieram do seu dossiê de imprensa.'));
   draw();
   return store.subscribe((i) => { if (!i.kind || i.kind === 'midia') draw(); });
 }
@@ -195,7 +195,7 @@ function mountFotos(el) {
       const b = h('button', { class: 'kit-photo', type: 'button', 'aria-label': 'Abrir foto', onclick: () => view(r) });
       imageUrl(r.data.imgId).then((u) => { if (u) b.append(h('img', { src: u, alt: '', loading: 'lazy' })); });
       return b;
-    }) : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma foto ainda.'), h('p', { class: 'muted' }, 'importa as suas fotos profissionais aqui, até 12 por vez.'))]));
+    }) : [h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'nenhuma foto ainda.'), h('p', { class: 'muted' }, 'importe as suas fotos profissionais aqui, até 12 por vez.'))]));
   };
   el.append(h('div', { class: 'row pad-x kit-foot' }, h('button', { class: 'btn primary', type: 'button', onclick: async () => {
     const blobs = await pickImages(true);

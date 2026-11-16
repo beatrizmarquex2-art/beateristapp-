@@ -37,7 +37,7 @@ export const SEEDS = [63, 188, 48, 235, 144, 170, 87, 209, 237, 118]; // escolhi
 const mission = ([title, tag, style, hint, , l1, l2, l3], i) => {
   const o = OPP[style]; const L1 = lim(l1), L2 = { ...L1, ...lim(l2) }, L3 = { ...L2, ...lim(l3) };
   const goal = [`vença o ${o.name}`, ...extras(L1)].join(', ');
-  const rules = [`adversário: ${o.name} — ${o.how}`, hint ? 'as cartas que servem ficam destacadas.' : 'sem dica: você precisa achar sozinho as cartas que servem.', 'as regras são as do Uno Musical de sempre: 7 cartas cada, vence quem esvaziar a mão. ficou com uma carta? aperte UNO! (esquecer custa 2 cartas).', 'o +4 só vale se você não tiver a cor da mesa.', 'a partida é a mesma a cada tentativa (mesmas cartas): quem pensa melhor, ganha.'];
+  const rules = [`adversário: ${o.name} — ${o.how}`, hint ? 'as cartas que servem ficam destacadas.' : 'sem dica: você precisa achar sozinho as cartas que servem.', 'as regras são as do Uno Musical de sempre: 7 cartas cada, vence quem esvaziar a mão. ficou com uma carta? aperte UNO! (esquecer custa 2 cartas).', 'o +4 só vale se você não tiver a cor da mesa.', 'a partida é a mesma a cada tentativa (mesmas cartas): quem pensa melhor ganha.'];
   return {
     id: `cartas-${String(i).padStart(2, '0')}`, title, goal, tag, rules,
     stars: [limText(L1), `${limText(L2)}`, `${limText(L3)}`],

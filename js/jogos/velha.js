@@ -46,7 +46,7 @@ export function mount(host, opts) {
       h('h2', { class: 'jg-h hand' }, 'jogo da velha'),
       h('ol', { class: 'jg-big' },
         h('li', {}, prefs.variant === 'desafio' ? 'toque numa casa e responda a pergunta' : 'toque numa casa vazia'),
-        h('li', {}, '3 marcas em linha ganha'),
+        h('li', {}, '3 marcas em linha ganham'),
         h('li', {}, h('b', {}, '1 vez por rodada'), ' você pode mudar uma marca de lugar')),
       h('p', { class: 'jg-lab big' }, 'quem joga?'), seg('mode', MODES),
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => V.newMatch({ ...prefs, mode: 'online' }), onStart: startOnline })).el
@@ -65,7 +65,7 @@ export function mount(host, opts) {
   function draw() {
     const names = NAMES(g.mode); const w = g.result && g.result.line; const q = g.pending ? V.questionById(g.pending.qid) : null;
     const canTap = human() && !g.pending; const mvOn = !!mv && canTap && V.canMove(g);
-    const status = g.over ? '' : g.offer ? 'muitos erros seguidos…' : V.isPaulTurn(g) ? 'vez do paul…' : g.mode === 'online' && g.turn !== me0() ? 'vez do outro celular…' : `vez de ${names[g.turn]} (${V.MARK_NAME[g.turn]})`;
+    const status = g.over ? '' : g.offer ? 'muitos erros seguidos…' : V.isPaulTurn(g) ? 'vez do Paul…' : g.mode === 'online' && g.turn !== me0() ? 'vez do outro celular…' : `vez de ${names[g.turn]} (${V.MARK_NAME[g.turn]})`;
     const cells = g.board.map((v, i) => h('button', { type: 'button', class: `jg-cell${w && w.includes(i) ? ' win' : ''}${mvOn && mv.from === i ? ' ask' : ''}${g.pending && g.pending.cell === i ? ' ask' : ''}`, disabled: mvOn ? !(mv.from == null ? v === g.turn : (v == null || v === g.turn)) : !(canTap && v == null),
       'aria-label': `casa ${i + 1}, linha ${Math.floor(i / 3) + 1} coluna ${(i % 3) + 1}: ${v == null ? 'vazia' : V.MARK_NAME[v]}`, onclick: () => tap(i) }, v == null ? null : mark(v)));
     root.replaceChildren(...[
@@ -139,7 +139,7 @@ export function mount(host, opts) {
   function paulStep() {
     timer = 0; if (gone || !g || g.over || !V.isPaulTurn(g) || document.hidden) return;
     const cell = mission ? V.aiMove(MP.ai, g.board, 1) : V.paulMove(g.mode, g.board);
-    g = V.applyMark(g, cell); msg = `paul marcou a casa ${cell + 1}`; sfx('place'); after();
+    g = V.applyMark(g, cell); msg = `Paul marcou a casa ${cell + 1}`; sfx('place'); after();
   }
   /** Aventura: registra o fim de cada rodada; no fim da última, avisa o resultado UMA vez. */
   function missionRound() {
@@ -154,7 +154,7 @@ export function mount(host, opts) {
   function finish() { missionRound(); const w = g.result.winner; if (!mission && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', 1); } /* 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea); no mesmo aparelho não conta */ sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
-    const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
+    const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o Paul venceu') : `${names[w]} venceu!`;
     const eu = g.mode === 'online' ? me0() : 0; const euGanhei = w != null && (g.mode === 'local' ? true : w === eu);
     return placar({ classe: 'jg-result', estado: w == null ? 'tie' : euGanhei ? 'win' : 'lose', pose: w == null ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('oculos', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: title,
       sub: g.result.early ? 'encerrada em empate depois de muitos erros' : g.result.exhausted ? 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.' : w == null ? 'ninguém fechou a linha' : '',

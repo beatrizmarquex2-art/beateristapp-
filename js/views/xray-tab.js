@@ -31,7 +31,7 @@ export function xrayTab(mic, listen) {
         metro ? P.line('compassos', P.chips([[8, '8', '8 compassos'], [16, '16', '16 compassos'], [32, '32', '32 compassos']], c.xbars, (v) => P.save({ xbars: v }).then(draw), 'Compassos')) : null,
         metro ? P.line('clique', P.chips([[false, 'alto-falante'], [true, 'fone']], c.fone, (v) => P.save({ fone: v }).then(draw), 'Como ouvir o clique')) : null,
         P.line('quem', who),
-        h('p', { class: 'tp-hint' }, metro ? `${T.SUBS[c.sub]} · ${c.xbars} compassos (${Math.round((c.xbars * 4 * 60) / c.bpm)} s) · ${c.fone ? 'clique no fone' : 'clique só na contagem'}` : 'dá play numa música (em outro aparelho ou caixinha) e toca junto. até 3 minutos. no fim: se correu ou arrastou.'),
+        h('p', { class: 'tp-hint' }, metro ? `${T.SUBS[c.sub]} · ${c.xbars} compassos (${Math.round((c.xbars * 4 * 60) / c.bpm)} s) · ${c.fone ? 'clique no fone' : 'clique só na contagem'}` : 'dê play numa música (em outro aparelho ou caixinha) e toque junto. até 3 minutos. no fim: se correu ou arrastou.'),
         h('div', { class: 'tp-foot' },
           metro ? h('button', { class: 'tp-cal', type: 'button', onclick: () => P.calibrate(mic, listen, draw) }, icon('mic', 15), lat ? ` calibrado ${lat.ms} ms` : ' calibrar meu iPhone') : h('span'),
           h('button', { class: 'bl-play tp-go', type: 'button', 'aria-label': 'Começar raio-x', onclick: metro ? startMetro : startFree }, icon('play', 26)))),
@@ -48,7 +48,7 @@ export function xrayTab(mic, listen) {
     el.replaceChildren(h('div', { class: 'card pad tp-running' }, light, msg, barEl, count, h('button', { class: 'btn', type: 'button', onclick: () => { run && run.cancel(); listen(null); draw(); } }, 'parar')));
     listen((ev) => { if (ev.t - latS < exStart - step * 0.45) return; got.push(ev.t); count.textContent = `${got.length} batidas`; });
     const stopPulse = P.pulse(mic.ctx, cl.times, light, finish, 60 / c.bpm + 0.2);
-    const tick = setInterval(() => { const t = mic.ctx.currentTime; if (t >= exStart) { msg.textContent = c.fone ? 'toca junto!' : 'segura o tempo!'; barEl.textContent = `compasso ${Math.min(c.xbars, Math.floor((t - exStart) / (240 / c.bpm)) + 1)} de ${c.xbars}`; } }, 120);
+    const tick = setInterval(() => { const t = mic.ctx.currentTime; if (t >= exStart) { msg.textContent = c.fone ? 'toque junto!' : 'segure o tempo!'; barEl.textContent = `compasso ${Math.min(c.xbars, Math.floor((t - exStart) / (240 / c.bpm)) + 1)} de ${c.xbars}`; } }, 120);
     run = { cancel: () => { clearInterval(tick); cl.cancel(); stopPulse(); } };
     async function finish() {
       clearInterval(tick); listen(null); run = null;
@@ -71,7 +71,7 @@ export function xrayTab(mic, listen) {
     async function finish() {
       if (!run) return; clearInterval(tick); listen(null); run = null;
       const tc = X.tempoCurve(got);
-      if (!tc.points.length) { toast('preciso de mais batidas pra ver a curva (toca uns 20 segundos).'); draw(); return; }
+      if (!tc.points.length) { toast('preciso de mais batidas pra ver a curva (toque uns 20 segundos).'); draw(); return; }
       // "desvio" no modo livre: quanto cada intervalo fugiu do pulso daquele trecho (vira a impressão digital)
       const devs = []; for (let i = 1; i < got.length; i++) { const w = got.filter((t) => Math.abs(t - got[i]) < 3); const r = tempoOf(w); if (r) { const beat = 60 / r.exact; const ioi = got[i] - got[i - 1]; const units = Math.max(1, Math.round(ioi / (beat / 2))); devs.push(Math.round((ioi - units * beat / 2) * 1000)); } }
       const rec = { mode: 'livre', at: Date.now(), who: c.who || '', dur: Math.round(got[got.length - 1] - got[0]), hits: got.length, start: Math.round(tc.start), end: Math.round(tc.end), slopePerMin: Math.round(tc.slopePerMin * 10) / 10, points: tc.points.map((p) => [Math.round(p.t * 10) / 10, Math.round(p.bpm * 10) / 10]), devs: devs.slice(0, 256) };
