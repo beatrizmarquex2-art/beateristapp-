@@ -256,7 +256,7 @@ export function mount(host, parts = [], opts = {}) {
         const hue = Math.floor(Math.random() * 360);
         if (skin === 'vinil') { disc.style.background = ''; disc.querySelector('.fig-wheel-hub').style.background = coresRoleta(); extras.push(h('i', { class: 'fig-arm', 'aria-hidden': 'true' })); }
         else if (skin === 'neon') {
-          const neon = ['#ff2d95', '#ffd23f', '#2dd4ff', '#7cff6b', '#b388ff', '#ff7a2d'].sort(() => Math.random() - 0.5).slice(0, 4);
+          const neon = ['#c4182c', '#ffd23f', '#2dd4ff', '#7cff6b', '#2d6bd8', '#ff7a2d'].sort(() => Math.random() - 0.5).slice(0, 4);
           disc.style.background = `conic-gradient(${Array.from({ length: 8 }, (_, k) => `${k % 2 ? '#14111a' : neon[(k / 2) % 4]} 0 ${(k + 1) * 12.5}%`).join(', ')})`;
           for (let k = 0; k < 12; k++) disc.append(h('i', { class: 'fig-luz', style: `--a:${k * 30}deg`, 'aria-hidden': 'true' }));
         } else {

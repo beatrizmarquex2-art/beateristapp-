@@ -185,7 +185,7 @@
 .fig-wheelbox { text-align: center; }
 .fig-wheel { position: relative; width: 240px; height: 250px; margin: 6px auto 12px; }
 .fig-wheel-disc { position: absolute; left: 10px; top: 20px; width: 220px; height: 220px; border-radius: 50%; border: 6px solid #14111a; box-shadow: 0 8px 22px #0006, inset 0 0 0 5px #efe2c6;
-  background: conic-gradient(#c4182c 0 12.5%, #efe2c6 0 25%, #17224a 0 37.5%, #e9b824 0 50%, #c4182c 0 62.5%, #efe2c6 0 75%, #17224a 0 87.5%, #ff9ec7 0 100%); display: grid; place-items: center; }
+  background: conic-gradient(#c4182c 0 12.5%, #efe2c6 0 25%, #17224a 0 37.5%, #e9b824 0 50%, #c4182c 0 62.5%, #efe2c6 0 75%, #17224a 0 87.5%, #1c6b73 0 100%); display: grid; place-items: center; }
 .fig-wheel-disc.prize { background: conic-gradient(#d9a63c 0 12.5%, #14111a 0 25%, #f6d77a 0 37.5%, #14111a 0 50%, #d9a63c 0 62.5%, #14111a 0 75%, #f6d77a 0 87.5%, #14111a 0 100%); }
 .fig-wheel-disc.spin { transition: transform 3.2s cubic-bezier(.1, .75, .12, 1); }
 .fig-wheel-hub { width: 74px; height: 74px; border-radius: 50%; background: #fbf4e2; border: 5px solid #14111a; display: grid; place-items: center; font-size: 34px; }
@@ -473,3 +473,11 @@
 .ma-nav { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 14px; } .ma-nav .btn { min-width: 44px; min-height: 44px; }
 .ma-solta:focus-visible, .ma-esp:focus-visible { outline: 3px solid #e3a82f; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ma-esp.colou img { animation: none; } .ma-solta { transition: none; } }
+
+/* ===== folha de prêmio/roleta: texto legível no papel (os temas escuros do álbum deixavam o texto lilás claro) e figurinha maior ===== */
+html .sheet .fig-note { color: #17224a !important; opacity: 1 !important; font-weight: 700; font-size: 16px; }
+html .sheet .icon-btn, html .sheet .sheet-head .icon-btn { color: #17224a !important; opacity: 1 !important; }
+html .sheet .fig-reveal { gap: 10px; }
+html .sheet .fig-reveal.fig-n1 { grid-template-columns: minmax(0, 250px); }
+html .sheet .fig-reveal.fig-n2 { grid-template-columns: repeat(2, minmax(0, 168px)); }
+html .sheet .fig-reveal.fig-n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
