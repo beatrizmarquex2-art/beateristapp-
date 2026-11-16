@@ -799,3 +799,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Zoom de imagem em reel**: `zoompan` sobre imagem estática gera arquivo de 100+ MB e trava; usar `crop` animado (`reels-imagens.mjs`). Vídeo deitado: `fit: true` mostra inteiro (crop fecha demais e borra).
 - **Produto novo da Bea**: ela vai mandar artes; criar os posts/reels nesse mesmo padrão (dourado, azul, vinho, creme; Paul; sem preço/data).
 - **Cada cena tem que mostrar o que o título diz** (Bea, 15/nov): no reel da roleta, "a sua foto vira figurinha" mostra a tela **minha figurinha** e a **carta de figurinha de verdade** (`marketing/cartas/`, `marketing/telas-app/`: roleta, minha-figurinha, album, tiradas do Drive IMG_9326/9327/9330). Nunca tela de outro jogo no lugar. Figurinhas de banda (Queen, Beatles...) ficam fora das peças de venda.
+
+## reels antigos que faltavam (16/nov) — 06, 08, 10, 25 feitos; 26 pendente
+- 06 álbum de figurinhas (`antigo-06-album-figurinhas`, reels-aula, final com telas reais roleta/álbum: `LOCAIS` agora também em reels-aula), 08 tempo de tela, 25 jogando ou estudando (reels-aula) e 10 bateria kids impresso (`img-10-bateria-kids` em reels-imagens, fotos em `marketing/fotos-produtos/` = Bateria Kids, sem crianças).
+- reels-imagens: novo elemento `foto()` (polaroid) e celulares do cartão final limitados a 500px de altura (antes cobriam o "tá esperando o quê?").
+- 26 "aperta o play" NÃO feito: IMG_9355 tem 10,5 MB e o Drive só deixa baixar até 10 MB. Precisa que a Bea mande uma versão menor.
+- Reels 01–03 antigos seguem sem vídeo de origem.

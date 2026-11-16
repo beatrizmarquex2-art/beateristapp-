@@ -16,6 +16,7 @@ const TELAS = { beathero: '59f03481c1a887c9', toque: '53c9b526fedbefb3', paulta:
 const LOCAIS = { roleta: 'marketing/telas-app/roleta.jpg', minhafig: 'marketing/telas-app/minha-figurinha.jpg', album: 'marketing/telas-app/album.jpg' };
 const tela = (k) => LOCAIS[k] ? u(LOCAIS[k]) : u(`vendas/assets/${TELAS[k]}.webp`);
 const carta = (id, x, y, r, w = 300) => `<img src="${u('marketing/cartas/' + id + '.png')}" style="position:absolute;left:${x}px;top:${y}px;width:${w}px;transform:rotate(${r}deg);filter:drop-shadow(12px 14px 0 rgba(0,0,0,.4));border-radius:18px">`;
+const foto = (arq, x, y, r, w = 520) => `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;background:#fff;padding:16px 16px 20px;transform:rotate(${r}deg);box-shadow:14px 16px 0 rgba(0,0,0,.4)"><img src="${u('marketing/fotos-produtos/' + arq + '.jpg')}" style="width:100%;display:block"></div>`;
 const capa = (id) => u(`assets/loja/${id}.webp`);
 const dentro = (id) => u(fs.existsSync(path.join(ROOT, `assets/loja/d-${id}-2.webp`)) ? `assets/loja/d-${id}-2.webp` : `assets/loja/d-${id}.webp`);
 const fontes = `@font-face{font-family:Marker;src:url(${F('PermanentMarker-latin.woff2')})}@font-face{font-family:Gochi;src:url(${F('GochiHand-latin.woff2')})}@font-face{font-family:Hanken;font-weight:400 800;src:url(${F('HankenGrotesk-latin.woff2')})}`;
@@ -44,7 +45,7 @@ const FINAL = (fim, paul, cta, telas, capas) => { const C = [['tá esperando o q
 .u{position:absolute;left:70px;top:1424px;font:700 38px Hanken,sans-serif}.c{position:absolute;right:26px;top:1236px;height:236px}.m{position:absolute;left:70px;right:70px;bottom:330px}
 .et{position:absolute;font:400 34px Gochi,cursive;background:${OU};color:${AZ};padding:2px 18px 6px;border-radius:12px;transform:rotate(-4deg);z-index:3}</style>
 <div class="p"></div><h1>robôterista<em>ensina</em></h1><div class="sub">materiais<br>e jogos</div><div class="s">${fim}</div>
-${cel(telas[0], 70, 690, -3, 290)}${cel(telas[1], 388, 690, 2, 290)}${livro(capas[0], 730, 700, 2, 270)}${livro(capas[1], 730, 962, -2, 270)}
+${cel(telas[0], 70, 690, -3, 290).replace('border-radius:40px', 'max-height:500px;border-radius:40px')}${cel(telas[1], 388, 690, 2, 290).replace('border-radius:40px', 'max-height:500px;border-radius:40px')}${livro(capas[0], 730, 700, 2, 270)}${livro(capas[1], 730, 962, -2, 270)}
 <div class="et" style="left:84px;top:656px">jogos</div><div class="et" style="left:760px;top:656px">materiais</div>
 <div class="pre">${C[0]}</div><div class="b">${C[1]}</div><div class="u">jogos.beaterista.com.br</div><img class="c" src="${hd(paul)}"><div class="m">${assin}</div>`; };
 // REELS: cada cena dura `d` s; zoom lento (Ken Burns) feito no ffmpeg
@@ -69,6 +70,11 @@ export const REELS = {
       { d: 3, cor: 'azul', tag: 'pra família', t1: 'jogo da', t2: 'memória', nota: ['educação', 'um jogo pra mesa de casa com instrumentos e figuras.'], els: livro('memoria', 280, 560, 3, 520) },
       { d: 3, cor: 'vinho', tag: 'pra começar', t1: 'bateria', t2: 'start', nota: ['didática', 'a apostila do curso pra dar o primeiro passo.'], els: livro('bateria-start', 280, 560, -3, 520) },
       { d: 3, cor: 'azul', tag: 'pra evoluir', t1: 'beaterista', t2: 'mood', nota: ['música', 'exercícios de estudo pra quem já toca.'], els: livro('mood', 280, 560, 3, 520) }] },
+  'img-10-bateria-kids': { paul: 'oculos', cta: 3, telas: ['toque', 'beathero'], capas: ['bateria-kids', 'colorir'], fim: 'ritmo se aprende brincando',
+    cenas: [{ d: 4, cor: 'creme', tag: 'bateria kids', t1: 'pa-to é 2 sons', t2: 'bor-bo-le-ta é 4', nota: ['pra pais', 'seu filho já fala em ritmo: cada palavra tem seus sons.'], els: foto('kids-pato-gato', 270, 480, -3, 540) },
+      { d: 4, cor: 'azul', tag: 'bateria kids', t1: 'formas de', t2: 'tocar na caixa', nota: ['didática', 'meio da pele ou no aro: o mesmo toque, sons diferentes.'], els: foto('kids-formas-na-caixa', 270, 480, 3, 540) },
+      { d: 4, cor: 'vinho', tag: 'bateria kids', t1: 'a partitura', t2: 'da bateria', nota: ['música', 'cada peça tem o seu lugar na pauta.'], els: foto('kids-partitura', 270, 480, -3, 540) },
+      { d: 4, cor: 'azul', tag: 'bateria kids', t1: 'agora', t2: 'vamos tocar', nota: ['educação', 'contar 1 e 2 e 3 e 4 é o primeiro passo pra tocar.'], els: foto('kids-vamos-tocar', 270, 480, 3, 540) }] },
   'img-18-toca-na-tela': { paul: 'bateria', cta: 0, telas: ['toque', 'beathero'], capas: ['ritmo', 'pratica'], fim: 'sem instrumento em casa? toca na tela e treina de verdade',
     cenas: [{ d: 4, cor: 'azul', tag: 'toca na tela', t1: 'sem instrumento', t2: 'em casa?', nota: ['pra pais', 'bateria, cordas, teclas e percussão no tablet ou no celular.'], els: cel('toque', 120, 520, -4, 330) + cel('beathero', 560, 600, 4, 330) },
       { d: 4, cor: 'vinho', tag: 'toca na tela', t1: 'ouve, vê', t2: 'e toca', nota: ['didática', 'o corpo aprende o gesto antes de pegar no instrumento.'], els: cel('toque', 330, 520, 2, 420) }] },
