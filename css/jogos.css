@@ -1411,3 +1411,27 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* no PDF (salvar em PDF) volta pro papel branco: fundo escuro gasta tinta e some na impressão */
 @media print{.jg-doc{background:#fff!important;color:#162146!important}.jg-doc .rel-title h1,.jg-doc .rel-body h3{color:#162146!important}.jg-doc .rel-title .muted,.jg-doc .rel-intro,.jg-doc .rel-what,.jg-doc .rel-k+p:last-child{color:#333!important}.jg-doc .rel-grp h2,.jg-doc .rel-k{color:#a6192e!important}.jg-doc .rel-game{background:#fff!important;border:1px solid #ccc!important}.jg-doc .rel-ico{filter:none!important}.jg-doc .rel-body li::before{color:#a6192e!important}}
 .dc-list .dc-term .muted,.dc-list .dc-term small,.dc-list .dc-term label{color:#b9b6d6!important}
+
+/* ---------- Acordes e ritmos: desenho "palco à noite" (a Bea mandou passar pro novo em 16/nov/2026; mesmo clima do Dicionário e do Jogos Ensinam) ---------- */
+.ac-card{background:#1a2452!important;border:0!important;border-radius:18px!important;box-shadow:none!important;color:#fff7e6!important}
+.ac-card *{color:inherit}
+.ac-cifra{font:400 36px/1 "Anton","Arial Black",sans-serif!important;color:#f2a91b!important;letter-spacing:.02em}
+.ac-card .ac-diag,.ac-card .ac-teclado{background:#fffdf7;border-radius:12px;padding:6px;box-sizing:content-box}
+.ac-card .ac-ouvir{background:rgb(255 255 255/.12)!important;color:#fff7e6!important;border:0!important;border-radius:99px!important;box-shadow:none!important;font-weight:800}
+.ac-card .ac-ouvir:active{background:#c81e2d!important}
+.es-areas .es-area{border-radius:99px!important;border:0!important;box-shadow:none!important;background:rgb(22 33 70/.14)!important;color:#162146!important;min-height:44px}
+.es-areas .es-area.on{background:#162146!important;color:#f2a91b!important}
+.es-areas .es-area b{font:800 14px/1.1 var(--body,system-ui)}
+.rt-box.card{background:#1a2452!important;border:0!important;border-radius:20px!important;box-shadow:none!important;color:#fff7e6!important}
+.rt-box.card *{color:inherit}
+.rt-t{font:400 32px/1.05 "Anton","Arial Black",sans-serif!important;color:#f2a91b!important;text-transform:uppercase;letter-spacing:.03em}
+.rt-dots i{background:rgb(255 255 255/.28)!important}.rt-dots i.on{background:#f2a91b!important}
+.rt-seta{background:#f2a91b!important;color:#162146!important;border:0!important;box-shadow:0 3px 0 rgb(0 0 0/.35)!important}
+.rt-grade{background:#fffdf7;border-radius:14px;padding:8px}.rt-grade *{color:#14111a}.rt-grade .rt-conta i.forte{color:#BD1733}
+.rt-pauta{background:#fffdf7!important;border:0!important;border-radius:14px!important}
+.rt-box .rt-play{background:#c81e2d!important;color:#fff!important;border:0!important;border-radius:99px!important;box-shadow:none!important}
+.rt-box .mem-step button{background:rgb(255 255 255/.14)!important;color:#fff7e6!important;border:0!important;border-radius:99px!important}
+.rt-box .rt-bpm{color:#fff7e6!important}
+.rt-box .rt-grade .rt-n,.rt-box .rt-grade .rt-conta i{color:#14111a!important}.rt-box .rt-grade .rt-conta i.forte{color:#BD1733!important}
+.jg-seg[aria-label="tipo de acorde"] button{border:0!important;border-radius:99px!important;background:rgb(22 33 70/.14)!important;color:#162146!important;font-weight:800;box-shadow:none!important;transform:none!important;min-height:40px}
+.jg-seg[aria-label="tipo de acorde"] button[aria-checked="true"]{background:#162146!important;color:#f2a91b!important}

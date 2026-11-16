@@ -26,9 +26,9 @@ const PECAS = {
   baquetas: `<line x1="14" y1="54" x2="62" y2="10" ${L()} stroke-width="5"/><line x1="66" y1="54" x2="18" y2="10" ${L()} stroke-width="5"/><circle cx="62" cy="10" r="4.5" fill="currentColor"/><circle cx="18" cy="10" r="4.5" fill="currentColor"/>`,
   banco: `<rect x="14" y="20" width="52" height="12" rx="6" fill="currentColor"/><path d="M24 32l-6 26M56 32l6 26M40 32v26" ${L()} stroke-width="4"/>`,
 };
-const peca = (id, extra = '') => svg(80, 64, PECAS[id] + extra);
+export const peca = (id, extra = '') => svg(80, 64, PECAS[id] + extra);
 /** Grade de levada: linhas [nome, bits]; cada coluna é uma batida (1 e 2 e…). */
-function grade(linhas, cols = 8, nomes = null) {
+export function grade(linhas, cols = 8, nomes = null) {
   const W = 22; const x0 = 56; const w = x0 + cols * W + 4; let s = '';
   const cont = nomes || (cols === 8 ? ['1', 'e', '2', 'e', '3', 'e', '4', 'e'] : Array.from({ length: cols }, (_, i) => String(i + 1)));
   cont.forEach((c, i) => { s += `<text x="${x0 + i * W + W / 2}" y="12" font-size="12" font-weight="800" text-anchor="middle" fill="currentColor" opacity="${/\d/.test(c) ? 1 : .55}">${c}</text>`; });
@@ -50,7 +50,7 @@ const D = (fn) => () => fn(agora(), 0.5);
 /* ===================== desenhos: teclado ===================== */
 const BR = [0, 2, 4, 5, 7, 9, 11]; const NOM = { 0: 'dó', 2: 'ré', 4: 'mi', 5: 'fá', 7: 'sol', 9: 'lá', 11: 'si' };
 /** Teclado desenhado. de/ate = notas MIDI (brancas nas pontas), marca = teclas coloridas, nomes = escreve dó ré mi…, dedos = { midi: número }. */
-function teclado({ de = 60, ate = 72, marca = [], nomes = false, dedos = {} } = {}) {
+export function teclado({ de = 60, ate = 72, marca = [], nomes = false, dedos = {} } = {}) {
   const W = 24; let br = ''; let pr = ''; let n = 0; const pos = [];
   for (let m = de; m <= ate; m++) if (BR.includes(m % 12)) { pos.push(m); const x = n * W; const on = marca.includes(m);
     br += `<rect x="${x + 1}" y="2" width="${W - 2}" height="88" rx="3" fill="${on ? 'currentColor' : '#fffdf7'}" fill-opacity="${on ? 0.4 : 1}" stroke="#14111a" stroke-width="1.8"/>`;
@@ -82,13 +82,13 @@ const acorde = (frets) => () => acordeV(frets);
 const cifra = (c) => VIOLAO.find((x) => x[0] === c)[2];
 const DIAG = (c) => () => { const e = diagrama(cifra(c)); e.setAttribute('class', 'tf-sym tf-diag'); e.setAttribute('aria-hidden', 'true'); e.removeAttribute('role'); return e; };
 /** As 6 cordas desenhadas (1ª em cima, 6ª embaixo), com nomes. `marca` = índices (0 = 6ª) destacados. */
-function cordasSVG(marca = []) {
+export function cordasSVG(marca = []) {
   let s = ''; for (let k = 0; k < 6; k++) { const i = 5 - k; const y = 10 + k * 11; const on = marca.includes(i);
     s += `<line x1="36" x2="136" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="${1 + k * 0.45}" ${on ? '' : 'opacity=".7"'}/>` + (on ? `<circle cx="140" cy="${y}" r="3.4" fill="currentColor"/>` : '') + `<text x="2" y="${y + 3.5}" font-size="10" font-weight="800" fill="currentColor">${k + 1}ª ${NCORDA[i]}</text>`; }
   return svg(148, 72, s);
 }
 /** Braço visto de lado: 6 cordas e 5 casas; pontos = [[corda 1..6, casa, dedo?]]. */
-function braco(pontos = [], { numeros = false } = {}) {
+export function braco(pontos = [], { numeros = false } = {}) {
   let s = ''; const x0 = 22; const W = 30;
   for (let f = 0; f <= 5; f++) s += `<line x1="${x0 + f * W}" x2="${x0 + f * W}" y1="8" y2="60" stroke="currentColor" stroke-width="${f === 0 ? 5 : 2}" opacity="${f === 0 ? 1 : .6}"/>` + (numeros && f > 0 ? `<text x="${x0 + f * W - W / 2}" y="73" font-size="9.5" font-weight="800" text-anchor="middle" fill="currentColor">casa ${f}</text>` : '');
   for (let k = 0; k < 6; k++) s += `<line x1="${x0}" x2="${x0 + 5 * W}" y1="${10 + k * 10}" y2="${10 + k * 10}" stroke="currentColor" stroke-width="${1 + k * 0.4}" opacity=".8"/>`;
@@ -96,7 +96,7 @@ function braco(pontos = [], { numeros = false } = {}) {
   return svg(x0 + 5 * W + 8, numeros ? 78 : 66, s);
 }
 /** Tablatura: 6 linhas (1ª em cima) e os números das casas, uma nota por coluna. */
-function tab(lista) {
+export function tab(lista) {
   let s = ''; for (let k = 0; k < 6; k++) s += `<line x1="22" x2="${30 + lista.length * 26}" y1="${12 + k * 11}" y2="${12 + k * 11}" stroke="currentColor" stroke-width="1.6" opacity=".75"/>`;
   s += '<text x="2" y="34" font-size="13" font-weight="800" fill="currentColor">T</text><text x="2" y="47" font-size="13" font-weight="800" fill="currentColor">A</text><text x="2" y="60" font-size="13" font-weight="800" fill="currentColor">B</text>';
   lista.forEach(([c, f], i) => { const x = 40 + i * 26; const y = 12 + (c - 1) * 11; s += `<rect x="${x - 8}" y="${y - 7}" width="16" height="14" rx="3" fill="var(--tf-papel,#fffdf7)"/><text x="${x}" y="${y + 4.5}" font-size="13" font-weight="800" text-anchor="middle" fill="currentColor">${f}</text>`; });

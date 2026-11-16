@@ -7,7 +7,7 @@ import { serve } from '../tests/e2e/harness.mjs';
 import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const saida = process.argv[2]; if (!saida) { console.error('informe o arquivo de saída'); process.exit(1); }
-const qs = new URLSearchParams(); if (process.argv[3]) qs.set('autora', process.argv[3]); if (Number(process.argv[4])) qs.set('amostra', process.argv[4]); if (process.argv[5]) qs.set('deck', process.argv[5]); // 4º argumento: 'instrumentos' = baralho dos instrumentos (90 cartas)
+const qs = new URLSearchParams(); if (process.argv[3]) qs.set('autora', process.argv[3]); if (Number(process.argv[4])) qs.set('amostra', process.argv[4]); if (process.argv[5]) qs.set('deck', process.argv[5]); // 4º argumento: 'instrumentos' = baralho dos instrumentos (90 cartas) · 'dicionario' = baralho do Dicionário Musical (74 termos)
  // 3º argumento: quantas cartas por tema na AMOSTRA (vazio = completo)
 const autora = qs.toString() ? `?${qs}` : '';
 const { srv, url } = await serve(); const browser = await chromium.launch(); const page = await browser.newPage();
