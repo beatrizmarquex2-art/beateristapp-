@@ -1024,3 +1024,30 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
   .pn-pan .pn-octs .tp-lab, .pn-pan .pn-rec .tp-lab { flex: 1 0 100%; }
   .pn-pan .pn-chip { padding: 0 9px; font-size: 14px; }
 }
+
+/* ===== Piano colorido: teclas com a cor da nota, painel com cores da marca e "mais opções" recolhido ===== */
+.pn-w { position: relative; }
+.pn-w::after { content: ""; position: absolute; left: 16%; right: 16%; bottom: 38px; height: 7px; border-radius: 4px; background: var(--nc, #999); pointer-events: none; }
+.pn-pan { background: #fffaf0 !important; border: 3px solid #17224a !important; box-shadow: 5px 5px 0 #9b1b30 !important; }
+.pn-pan .tp-lab { color: #17224a; }
+.pn-pan .pn-chip { border: 2px solid #17224a; background: #fffdf8; color: #17224a; font-weight: 700; box-shadow: 2px 2px 0 #17224a; }
+.pn-pan .pn-chip.on { color: #fff; border-color: #17130f; box-shadow: 2px 2px 0 #17130f; background: #17224a; }
+.pn-sons .pn-chip[data-k="piano"] { border-color: #9b1b30; box-shadow: 2px 2px 0 #9b1b30; } .pn-sons .pn-chip[data-k="piano"].on { background: #9b1b30; }
+.pn-sons .pn-chip[data-k="epiano"] { border-color: #1c6b73; box-shadow: 2px 2px 0 #1c6b73; } .pn-sons .pn-chip[data-k="epiano"].on { background: #1c6b73; }
+.pn-sons .pn-chip[data-k="organ"] { border-color: #1f3f6e; box-shadow: 2px 2px 0 #1f3f6e; } .pn-sons .pn-chip[data-k="organ"].on { background: #1f3f6e; }
+.pn-sons .pn-chip[data-k="pad"] { border-color: #c98a12; box-shadow: 2px 2px 0 #c98a12; } .pn-sons .pn-chip[data-k="pad"].on { background: #f2b632; color: #17130f; }
+.pn-pan .pn-grava { background: #9b1b30; color: #fff; border: 2px solid #17130f; box-shadow: 3px 3px 0 #17130f; }
+.pn-pan .pn-ouve { background: #1c6b73; color: #fff; border: 2px solid #17130f; box-shadow: 3px 3px 0 #17130f; }
+.pn-pan .pn-ouve:disabled, .pn-pan .pn-limpa:disabled { opacity: .45; }
+.pn-mais { margin-top: 2px; border-top: 2px dashed #17224a55; padding-top: 8px; }
+.pn-mais > summary { cursor: pointer; list-style: none; font: 800 13px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: #9b1b30; padding: 6px 0; }
+.pn-mais > summary::-webkit-details-marker { display: none; }
+.pn-mais > summary::before { content: "▸ "; } .pn-mais[open] > summary::before { content: "▾ "; }
+.pn-mais[open] > summary { margin-bottom: 8px; }
+
+/* abas dos instrumentos (bateria, cordas, teclas, percussão) em cores da marca */
+.ti-tabs .ti-tab { border: 2px solid #17224a; background: #fffaf0; color: #17224a; box-shadow: 2px 2px 0 #17224a; font-weight: 800; }
+.ti-tabs .ti-tab.on { background: #9b1b30; color: #fff; border-color: #17130f; box-shadow: 2px 2px 0 #17130f; }
+.ti-tabs .ti-tab:nth-child(2):not(.on) { border-color: #1c6b73; box-shadow: 2px 2px 0 #1c6b73; }
+.ti-tabs .ti-tab:nth-child(3):not(.on) { border-color: #1f3f6e; box-shadow: 2px 2px 0 #1f3f6e; }
+.ti-tabs .ti-tab:nth-child(4):not(.on) { border-color: #c98a12; box-shadow: 2px 2px 0 #c98a12; }
