@@ -11,7 +11,7 @@ export const SYM_NAME = {
 };
 
 /** Nome curto (cabe em 2 linhas na carta) e o que a figura significa (tela de aprender). */
-export const SYM_SHORT = { seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semi-colcheia', fusa: 'fusa', p_seminima: 'pausa semínima', p_colcheia: 'pausa colcheia', p_semicolcheia: 'pausa semi-colcheia', p_fusa: 'pausa fusa', acento: 'acento', fantasma: 'fantasma', clave_sol: 'clave de sol', clave_fa: 'clave de fá', ritornelo: 'ritornelo' };
+export const SYM_SHORT = { seminima: 'semínima', colcheia: 'colcheia', semicolcheia: 'semicolcheia', fusa: 'fusa', p_seminima: 'pausa semínima', p_colcheia: 'pausa colcheia', p_semicolcheia: 'pausa semicolcheia', p_fusa: 'pausa fusa', acento: 'acento', fantasma: 'fantasma', clave_sol: 'clave de sol', clave_fa: 'clave de fá', ritornelo: 'ritornelo' };
 export const SYM_LEARN = {
   seminima: 'dura 1 tempo. é a nota que a gente conta: 1, 2, 3, 4.',
   colcheia: 'dura meio tempo: duas colcheias cabem em 1 tempo ("1 e").',
