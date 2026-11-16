@@ -67,10 +67,10 @@ section{padding:26px 0}section h2{font-size:38px;color:#d8b879;margin-bottom:14p
 .entrar{background:#f4ead8;color:#0d1a36;border-radius:22px;padding:20px}.entrar h3{font:400 30px Marker}.entrar .btn{background:#0d1a36;color:#f4ead8}
 .nomepaul{background:#ffffff14}.provas,.marcas{margin-top:8px}.fixa{background:#0d1a36ee;backdrop-filter:blur(8px)}.fixa .btn:first-child{background:#d8b879;color:#0d1a36}.fixa .btn:last-child{background:#f4ead8;color:#0d1a36}`,
 `<div class="w"><div class="top"><img src="${logo}" alt=""><span><b>Beaterista</b><br>educação musical com propósito</span></div>
-<div class="hero"><h1>joga,<em>aprende</em>toca de verdade</h1><div class="lin"><p>jogos, estudos e materiais da escola, com o Robôterista Paul</p><img class="pa" src="${paul('selfie')}" alt="Robôterista Paul"></div></div>
+<div class="hero"><h1>joga,<em>aprende</em>toca de verdade</h1><div class="lin"><p>jogos, estudos e material da escola, com o Robôterista Paul</p><img class="pa" src="${paul('selfie')}" alt="Robôterista Paul"></div></div>
 <div class="cams"><a class="cam c1" href="#entrar">já sou aluno<small>nome e código, entra direto</small></a><a class="cam c2" href="https://jogos.beaterista.com.br/#/jogos/detetive">quero experimentar<small>jogue o Detetive Note agora</small></a><a class="cam c3" href="#planos">quero o acesso completo<small>mensal ou anual</small></a></div>
 <section><h2>mais de 15 jogos e estudos</h2><div class="g">${JOGOS.map(([n, k, d]) => `<article><img src="${tela(k)}" alt="${n}"><b>${n}</b><span>${d}</span></article>`).join('')}</div></section>
-<section><h2>materiais pra imprimir</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<figure><img src="${capa(k)}" alt="${n}">${n}</figure>`).join('')}</div></section>
+<section><h2>material pra imprimir</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<figure><img src="${capa(k)}" alt="${n}">${n}</figure>`).join('')}</div></section>
 <section>${marcas()}</section>
 <section id="entrar"><h2>entrar</h2>${entrar()}</section>
 <section><h2>escolha seu acesso</h2>${planos()}</section>
@@ -93,7 +93,7 @@ section{padding:22px 0}section h2{font-size:40px;color:#a8182e;margin-bottom:12p
 <div class="col"><div class="f f1"><img src="${tela('beathero')}" alt=""></div><div class="f f2"><img src="${tela('figurix')}" alt=""></div><div class="f f3"><img src="${tela('toque')}" alt=""></div><span class="st" style="left:10px;top:0">jogos</span><span class="st" style="right:20px;top:240px;transform:rotate(4deg)">estudos</span></div>
 <div class="cams"><a class="cam c1" href="#entrar"><i>→</i><span>já sou aluno<small>nome e código</small></span></a><a class="cam c2" href="https://jogos.beaterista.com.br/#/jogos/detetive"><i>♪</i><span>quero experimentar<small>jogue o Detetive Note</small></span></a><a class="cam c3" href="#planos"><i>★</i><span>acesso completo<small>mensal ou anual</small></span></a></div>
 <section><h2>o que tem aqui</h2><div class="lista">${JOGOS.map(([n, k, d]) => `<article><img src="${tela(k)}" alt=""><div><b>${n}</b><span>${d}</span></div></article>`).join('')}</div></section>
-<section><h2>materiais</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<img src="${capa(k)}" alt="${n}">`).join('')}</div></section>
+<section><h2>material</h2><div class="mat">${MATERIAIS.map(([k, n]) => `<img src="${capa(k)}" alt="${n}">`).join('')}</div></section>
 <section>${marcas()}</section><section id="entrar"><h2>entrar</h2>${entrar()}</section><section><h2>acesso</h2>${planos()}</section>
 <section>${nomePaul()}</section><section>${provas()}</section><section>${faq()}</section></div>${rodape()}`);
 
@@ -108,9 +108,9 @@ const OC = doc('Entrada C · vitrine', `body{background:#521622;color:#f4ead8}.w
 .num{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 26px;text-align:center}.num div{background:#ffffff12;border-radius:16px;padding:14px 6px}.num b{display:block;font:400 34px Marker;color:#d8b879}.num span{font-size:13px}
 section h2{font-size:36px;color:#d8b879;margin-bottom:12px}section{padding:20px 0}.planos{background:#f4ead8;color:#0d1a36;border-radius:24px;padding:22px;box-shadow:7px 8px 0 #d8b879}.planos .tag{background:#a8182e;color:#fff}.planos .btn{background:#a8182e;color:#fff}.entrar{background:#f4ead8;color:#0d1a36;border-radius:22px;padding:20px}.entrar h3{font:400 30px Marker}.entrar .btn{background:#521622;color:#f4ead8}.nomepaul{background:#ffffff14}`,
 `<div class="w"><div class="top"><img src="${logo}" alt=""><b>Beaterista</b></div>
-<div class="hero"><h1>a música<br>que <em>joga</em><br>com você</h1><p>jogos, estudos e materiais da escola, com o Robôterista Paul</p><div class="row"><div class="bt"><a class="btn o" href="#entrar">entrar</a><a class="btn c" href="https://jogos.beaterista.com.br/#/jogos/detetive">experimentar</a></div><img class="pa" src="${paul('professor')}" alt="Paul"></div></div>
+<div class="hero"><h1>a música<br>que <em>joga</em><br>com você</h1><p>jogos, estudos e material da escola, com o Robôterista Paul</p><div class="row"><div class="bt"><a class="btn o" href="#entrar">entrar</a><a class="btn c" href="https://jogos.beaterista.com.br/#/jogos/detetive">experimentar</a></div><img class="pa" src="${paul('professor')}" alt="Paul"></div></div>
 <div class="num"><div><b>15+</b><span>jogos e estudos</span></div><div><b>62</b><span>fases só no Figurix</span></div><div><b>3</b><span>marcas parceiras da Bea</span></div></div>
-<div class="abas" data-tabs><nav><button class="on" data-tab="j">jogos</button><button data-tab="e">estudos</button><button data-tab="m">materiais</button></nav>
+<div class="abas" data-tabs><nav><button class="on" data-tab="j">jogos</button><button data-tab="e">estudos</button><button data-tab="m">material</button></nav>
 <div data-pane="j" class="on"><div class="car">${JOGOS.map(([n, k, d]) => `<div class="ph"><div class="cel"><img src="${tela(k)}" alt=""></div><b>${n}</b><span>${d}</span></div>`).join('')}</div></div>
 <div data-pane="e"><div class="car">${ESTUDOS.map(([n, k]) => `<div class="ph"><div class="cel"><img src="${tela(k)}" alt=""></div><b>${n}</b></div>`).join('')}</div></div>
 <div data-pane="m"><div class="car m">${MATERIAIS.map(([k, n]) => `<div class="ph"><div class="cel"><img src="${capa(k)}" alt=""></div><b>${n}</b></div>`).join('')}</div></div></div>
