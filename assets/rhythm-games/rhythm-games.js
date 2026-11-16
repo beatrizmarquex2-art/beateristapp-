@@ -662,12 +662,13 @@ function rzThumbs(notes,max,bg){notes.sort((a,b)=>a.t-b.t);const pr={kick:0,snar
     u.sort((a,b)=>(pr[a.snd]==null?5:pr[a.snd])-(pr[b.snd]==null?5:pr[b.snd]));u.forEach((n,k)=>{if(k<max) out.push(n);else drop(n)});i=j}
   return out}
 /* trecho: o do usuário (song.trim, em segundos de música) ou os primeiros `maxLen` segundos. Tudo é deslocado pro começo, mantendo a contagem. */
-function rzClip(A,notes,bg,song){const bar=16*A.st,cl=A.lead*bar;let a,b;const tr=song.trim;
-  if(tr&&tr.b>tr.a){a=cl+Math.floor(tr.a/bar)*bar;b=cl+tr.b}else if(RZ.maxLen>0){a=cl;b=cl+RZ.maxLen}else return{notes,bg};
+function rzClip(A,notes,bg,song){const bar=16*A.st,cl=A.lead*bar;let a,b,fin=false;const tr=song.trim;
+  if(tr&&tr.b>tr.a){a=cl+Math.floor(tr.a/bar)*bar;b=cl+tr.b}else if(RZ.maxLen>0){a=cl;b=cl+RZ.maxLen;/* termina numa frase inteira (8, 4 ou 2 compassos) em vez de cortar no meio: o fim cai na batida 1 de um compasso, com batida de fechamento */const tot=A.dur-1.5-cl;for(const P of [8,4,2]){const pb=P*bar,cand=Math.round(RZ.maxLen/pb)*pb;if(cand>=RZ.maxLen*.75&&cand<=RZ.maxLen*1.25&&cand<=tot+.01){b=cl+cand;fin=true;break}}}else return{notes,bg};
   if(a<=cl+.01&&b>=A.dur-1.6) return{notes,bg};
   const sh=a-cl,inw=t=>t>=a-.001&&t<b;
   const n2=notes.filter(n=>inw(n.t)).map(n=>Object.assign({},n,{t:n.t-sh}));
   const b2=bg.filter(e=>e.k==='click'||inw(e.t)).map(e=>e.k==='click'?e:Object.assign({},e,{t:e.t-sh}));
+  if(fin){b2.push({t:b-sh,k:'drum',snd:'crash',v:.95},{t:b-sh,k:'drum',snd:'kick',v:.95});A.finale=1}
   A.dur=(b-a)+cl+1.5;return{notes:n2,bg:b2}}
 function rzKey(){return [RZ.game,(RZ.game==='hero'||RZ.game==='beat')?rzInstKey():'',RZ.diff,RZ.song?RZ.song.id:''].join('|')}
 function rzRank(list,val){const u=[...new Set(list)].sort((a,b)=>a-b);return x=>u.length<2?Math.floor(val/2):Math.round(u.indexOf(x)/(u.length-1)*(val-1))}
@@ -805,7 +806,7 @@ function rzLaneCol(l){if(RZ.game==='hero') return rzL()[l][0];if(RZ.game==='tile
 function rzFrame(){if(RZ.phase!=='play'&&RZ.phase!=='pause') return;if(RZ.phase==='play'){
     {const s=rzTime(),W=RZ.game==='beat'?.13*(RZ_WIN[RZ.diff].k||1):RZ_WIN[RZ.diff].gd;let ch=false;
       for(const n of RZ.chart){if(n.res){if(n.holding){if(s<n.t+n.sus){RZ.stats.score+=2*rzMult();RZ.stats.hold++}else{n.holding=false}}continue}if(n.cpu){if(n.t<=s){n.res='cpu';RZ.flash['c'+n.lane]=performance.now()}continue}if(n.t<s-W){rzJudge(n,'miss');ch=true}else if(n.t>s+1) break}
-      if(ch) rzHud();if((RZ.game==='setas'&&RZ.health<=0)){rzEnd(true);return}if(!RZ.fade&&s>RZ.A.dur-2.2){RZ.fade=1;AE.fadeOut(Math.max(.6,RZ.A.dur-s))}if(s>RZ.A.dur){rzEnd();return}}}
+      if(ch) rzHud();if((RZ.game==='setas'&&RZ.health<=0)){rzEnd(true);return}if(!RZ.fade&&!RZ.A.finale&&s>RZ.A.dur-2.2){RZ.fade=1;AE.fadeOut(Math.max(.6,RZ.A.dur-s))}if(s>RZ.A.dur){rzEnd();return}}}
   rzDraw();RZ.raf=requestAnimationFrame(rzFrame)}
 function rzEnd(lost){rzWake(false);document.body.classList.remove('rz-lock');clearInterval(RZ.iv);RZ.phase='end';AE.allOff();const S=RZ.stats;const tot=RZ.chart.filter(n=>!n.cpu).length||1;
   let acc;acc=(S.pp+S.perfect+S.great*.75+S.good*.5)/tot;S.acc=acc;S.lost=!!lost;

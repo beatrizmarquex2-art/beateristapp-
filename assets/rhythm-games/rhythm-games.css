@@ -284,3 +284,10 @@ html.kb-open .rz-jogar{bottom:8px}
 .rg-host[data-rz-theme="colagem"] .bmr .panel .tag,.rg-host[data-rz-theme="poster"] .bmr .panel .tag{color:#7a4a10}
 .rg-host[data-rz-theme="colagem"] .bmr .panel .muted,.rg-host[data-rz-theme="poster"] .bmr .panel .muted{color:#4d5468}
 .rg-host[data-rz-theme="colagem"] .bmr .panel .rz-big,.rg-host[data-rz-theme="poster"] .bmr .panel .rz-big{color:#a8182e}.rg-host[data-rz-theme="colagem"] .bmr .panel .rz-big .rz-off,.rg-host[data-rz-theme="poster"] .bmr .panel .rz-big .rz-off{color:#c9bfae}
+
+/* resultado: cartão creme em TODOS os temas (inclusive vinil), e espaço embaixo pro botão fixo "‹ jogos" não cobrir os botões */
+.rg-host .bmr .panel.rz-end{background:#fffdf7;color:#142036;border:2.5px solid #142036;border-radius:14px;box-shadow:4px 5px 0 #142036;margin-bottom:84px}
+.rg-host .bmr .panel.rz-end .tag{color:#7a4a10}.rg-host .bmr .panel.rz-end .muted,.rg-host .bmr .panel.rz-end .small{color:#4d5468}
+.rg-host .bmr .panel.rz-end .rz-big{color:#a8182e}.rg-host .bmr .panel.rz-end .rz-big .rz-off{color:#c9bfae}
+.rg-host .bmr .panel.rz-end .btn{background:#fffdf7;color:#142036;border:2.5px solid #142036;box-shadow:3px 3px 0 #142036}.rg-host .bmr .panel.rz-end .btn-red{background:#1d3a6b;color:#fff}
+.rg-host .bmr .panel.rz-end .rz-hall li{background:#f6ebd9;color:#142036}
