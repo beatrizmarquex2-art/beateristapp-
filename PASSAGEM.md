@@ -220,7 +220,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 
 ## Pendências (a Bea leva pra o chat novo)
 1. **Publicar a área dos alunos** (ainda não publicada nesta rodada: ela quer entender antes). Isso leva o Paul embaixo, as cores novas, jogos sem amarelo, "Onde mora na pauta?" com desenho e a aba "Músicas MIDI". Passos em "Publicar a área dos alunos" acima. Explicar pra ela em linguagem simples o que muda.
-2. **MIDIs pros alunos**: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.
+2. ~~MIDIs pros alunos~~ **CANCELADO pela Bea em 16/nov/2026 ("não vai ter mais"): ver a seção "MIDI saiu do app" no fim.** Texto antigo: testar com 1 ou 2 músicas marcadas (✓ em Jogos de ritmo → músicas importadas) antes de marcar as 355. Nunca testado com o Supabase de verdade.
 3. **Quebra-cabeça**: já tem 10 imagens (palco, guitarra, baixo, teclado, sax, praça à noite, terraço, estúdio, parque e garagem; 1536×1024 em `assets/jogos/`; no `sw.js` ficam em EXTRA, baixam em segundo plano). Se vierem mais, é só acrescentar em `IMAGES` (`js/jogos/quebra.js`), em `sw.js` e na lista `ORDEM` de `js/campanha/jogos/quebra.js`.
 4. **Aba Beaterista** (a Bea deixou pra depois): revisar visual como fizemos na Bea.
 5. **Ferramentas**: metrônomo com vazio no meio; Juiz de Tempo e Estúdio de Ouvido abrem com o aviso do microfone ocupando a tela toda.
@@ -839,3 +839,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Curiosidade de "Love Me Do" estava invertida** (`js/music-facts.js`): no 1º single é o Ringo na bateria; na versão do álbum é o Andy White, com o Ringo no pandeiro.
 - **Não mexi (a Bea decide)**: botão "toca aqui!" do pad (Eco e Toca Aqui, ecoa o nome do jogo); "semi-colcheia" com hífen no rótulo curto da carta do Uno (pode ser pra quebrar linha); textos dentro de imagens (página de vendas); respostas aceitas do STOP (`stop-bank-*`, não revisadas); "cajon" sem acento em `velha-data.js`.
 - `tests/e2e/routes.mjs` já falhava antes desta sessão nas rotas `#/jogos/*` (igual com e sem as mudanças).
+
+## MIDI saiu do app (16/nov/2026, v559, mesma branch, NÃO publicado)
+- A Bea cancelou: **não vai ter música MIDI** (nem importar no app dela, nem aba "Músicas MIDI" pros alunos). Os jogos de ritmo ficam só com as músicas prontas.
+- Apagados: `js/midi.js`, `js/midi-chart.js`, `js/midis-publicos.js`, `tests/e2e/midi-alunos.mjs` e, em `js/views/jogos-ritmo.js`, tudo de importar, pastas, cortar, publicar pros alunos e baixar zip. O pacote recebe `songs: []`. Textos dos códigos agora dizem "quem tem código usa os jogos de ritmo".
+- **Não mexi**: o leitor de MIDI que vem dentro do pacote `assets/rhythm-games/rhythm-games.js` (gerado, desligado por `midiImport: false`); o botão **"exportar MIDI" do Groovebox** (é outra ferramenta; perguntei pra Bea); a tabela `midis_publicos` no Supabase e as músicas que ela já tinha importado (registros `midisong`): continuam guardados, só não aparecem. Apagar de vez só com o ok dela.
+- Também saíram, a pedido dela: a fala "tem jogo novo na aba Jogos, vá lá!" (ficou sem o "vá lá"), o trecho do clipe de "What's My Age Again?" (os três correndo pelados) e a pergunta da Velha sobre Uptown Funk foi reescrita ("toca em quais filmes?" → Sonic 2 e Alvin e os Esquilos).
+- Testes `tests/e2e/ritmo.mjs` e `ritmo-pista.mjs` já estavam quebrados antes (esperam botões que não existem mais); conferi os 3 jogos de ritmo abrindo num navegador de teste: carregam sem erro.

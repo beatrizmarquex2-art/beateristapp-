@@ -47,7 +47,7 @@ export const FACTS = [
   ['você sabia?', 'o Travis Barker entrou no blink-182 em 1998 e gravou seu primeiro disco com a banda, o “Enema of the State”, em 1999. foi aí que o som deles explodiu.'],
   ['você sabia?', 'o nome “blink” foi complementado com “182” depois que uma banda irlandesa de mesmo nome ameaçou processar. o número não quer dizer nada de especial.'],
   ['a canção diz', '“All the Small Things” (blink-182) = “todas as pequenas coisas”. é um pop punk de 2 minutos e meio, com bateria rápida e refrão grudento.'],
-  ['a canção diz', '“What’s My Age Again?” (blink-182) = “qual é a minha idade de novo?”. é uma brincadeira com quem não quer crescer, e o clipe tem os três correndo pelados numa rua de Los Angeles.'],
+  ['a canção diz', '“What’s My Age Again?” (blink-182) = “qual é a minha idade de novo?”. é uma brincadeira com quem não quer crescer.'],
   ['a canção diz', '“I Miss You” (blink-182) = “sinto sua falta”. foge do punk acelerado: clima sombrio e um groove de bateria mais lento e marcado.'],
   ['a canção diz', '“Adam’s Song” (blink-182) = “a canção do Adam”. fala de um dia muito pesado, mas termina com esperança.'],
   ['você sabia?', 'o Travis Barker mistura a velocidade do punk com a pegada do hip-hop e do drum’n’bass. por isso as viradas dele têm um groove próprio.'],

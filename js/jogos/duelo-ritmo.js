@@ -28,7 +28,6 @@ export function mountDuelo(host, opts = {}) {
     jogo: 'beathero', titulo: 'Duelo', sub: 'a mesma música, ao mesmo tempo, em dois celulares', voltar: ['#/ritmo', '‹ Beat Hero'], frameClass: 'rg-host', boxId: 'jogos',
     async carregar() {
       J = await import('../views/jogos-ritmo.js'); BR = await J.loadPackage();
-      if (opts.student) { try { const C = await import('../codigo.js'); pub = await J.publicadasParaAluno(C.saved()); } catch { pub = []; } }
       cat = catalogo(pub);
     },
     config({ redraw }) {

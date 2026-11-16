@@ -4,12 +4,8 @@
 import { h } from '../util.js';
 import * as store from '../store.js';
 import { banner, toast, confirmSheet, sheet } from '../ui.js';
-import { parseMidi } from '../midi.js';
-import { toChart, nameFromFile } from '../midi-chart.js';
-import { readZip, writeZip } from '../zip.js';
 import * as FB from '../feedback.js';
 import * as RK from '../ranking.js';
-import * as PUB from '../midis-publicos.js';
 import * as CODE from '../codigo.js';
 import * as P from '../kids/progress.js';
 import * as Album from '../kids/album.js';
@@ -19,152 +15,8 @@ import { portal } from '../rg-portal.js';
 const BASE = 'assets/rhythm-games/';
 const XP = 'setting-xp';
 const HALL = 'setting-ritmo-hall'; // ranking estilo fliperama: { boards: { 'jogo|instrumento|dificuldade|musica': [{ name, score, acc, grade, at }] } }
-const FOLDERS = 'setting-midi-folders'; // pastas criadas (inclusive as vazias); a pasta de cada música fica em data.folder
-const KIND = 'midisong';
-const MAX = 2 * 1024 * 1024; // MIDI maior que isso não é música, é susto
 let loading = null;
 
-/* ---------- MIDIs importados (privados: registro "midisong" com o arquivo em base64) ---------- */
-const toB64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
-const fromB64 = (b) => Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
-const cache = new Map();
-/** As fases das músicas importadas (converte uma vez por sessão). */
-export function importedSongs() {
-  const out = [];
-  for (const r of store.list(KIND)) {
-    const k = `${r.id}|${r.updated_at}`;
-    if (!cache.has(k)) { try { cache.set(k, toChart(parseMidi(fromB64(r.data.b64)), r.data.name).song); } catch { cache.set(k, null); } }
-    const sg = cache.get(k); if (sg) out.push({ ...sg, id: r.id, name: r.data.name, folder: r.data.folder || '', trim: r.data.trim && r.data.trim.b > r.data.trim.a ? r.data.trim : null, hid: 1 });
-  }
-  return out.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-}
-/** Músicas que a Bea publicou pros alunos, já convertidas em fases (aba "Músicas MIDI"). */
-export async function publicadasParaAluno(code) {
-  const out = [];
-  for (const r of await PUB.lista(code)) {
-    try {
-      const sg = toChart(parseMidi(fromB64(r.b64)), r.name).song;
-      out.push({ ...sg, id: `pub-${r.id}`, name: r.name, folder: r.folder || '', trim: r.corte && r.corte.b > r.corte.a ? r.corte : null, hid: 1 });
-    } catch { /* arquivo que não abre fica de fora */ }
-  }
-  return out.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-}
-/** Importa arquivos .mid/.midi/.kar (soltos ou dentro de .zip). Devolve { ok:[{name, drums, melody}], bad:[{name, why}] }. */
-export async function importMidis(files) {
-  const items = [];
-  for (const f of files) {
-    if (/\.zip$/i.test(f.name)) { for (const e of await readZip(await f.arrayBuffer())) if (/\.(mid|midi|kar)$/i.test(e.name) && !/(^|\/)(__MACOSX|\.)/.test(e.name)) { const pp = e.name.split('/'); items.push({ name: e.name, folder: pp.length > 1 ? pp[pp.length - 2] : '', read: async () => new Uint8Array(await e.read()) }); } }
-    else if (/\.(mid|midi|kar)$/i.test(f.name)) items.push({ name: f.name, read: async () => new Uint8Array(await f.arrayBuffer()) });
-  }
-  const ok = [], bad = [];
-  for (const it of items) {
-    const name = nameFromFile(it.name);
-    try {
-      const bytes = await it.read(); if (bytes.length > MAX) throw new Error('arquivo grande demais');
-      const { song, report } = toChart(parseMidi(bytes), name);
-      await store.upsert(KIND, `midi-${song.id.slice(4)}`, { name, file: it.name.split('/').pop(), b64: toB64(bytes), size: bytes.length, bpm: report.bpm, drums: report.drums, melody: report.melody, seconds: report.seconds, added: Date.now(), ...(it.folder ? { folder: it.folder } : {}) });
-      if (it.folder && !folderNames().includes(it.folder)) await store.upsert('setting', FOLDERS, { list: [...folderNames(), it.folder] });
-      ok.push({ name, ...report });
-    } catch (e) { bad.push({ name, why: e.message || 'não consegui ler' }); }
-  }
-  return { ok, bad };
-}
-
-/** Nomes das pastas: as criadas + as que alguma música usa (assim uma pasta nunca "some"). */
-export function folderNames() {
-  const set = new Set(store.get(FOLDERS) ? store.get(FOLDERS).data.list || [] : []);
-  for (const r of store.list(KIND)) if (r.data.folder) set.add(r.data.folder);
-  return [...set].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-}
-const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 60);
-/** Pergunta um texto numa folha (celular-friendly). Resolve com o texto ou null se cancelar. */
-function askText(title, label, initial = '', okLabel = 'Salvar') {
-  return new Promise((resolve) => {
-    let done = false; const finish = (v) => { if (!done) { done = true; resolve(v); } };
-    sheet(title, (close) => {
-      const inp = h('input', { class: 'field', type: 'text', value: initial, maxlength: 60, 'aria-label': label, placeholder: label });
-      const go = () => { const v = cleanName(inp.value); if (!v) return; finish(v); close(); };
-      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-      setTimeout(() => { inp.focus(); inp.select(); }, 50);
-      return h('div', { class: 'sheet-body' }, inp, h('div', { class: 'row end' },
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => { finish(null); close(); } }, 'Cancelar'),
-        h('button', { class: 'btn primary', type: 'button', onclick: go }, okLabel)));
-    }, { onClose: () => finish(null) });
-  });
-}
-export async function renameSong(id) {
-  const r = store.get(id); if (!r) return;
-  const name = await askText('Renomear música', 'novo nome', r.data.name);
-  if (name && name !== r.data.name) { await store.upsert(KIND, id, { name }); toast('renomeada ✓', { id: 'rg-ren', ms: 1800 }); }
-}
-export async function addFolder() {
-  const name = await askText('Nova pasta', 'nome da pasta', '', 'Criar');
-  if (!name) return null;
-  const list = folderNames();
-  if (list.some((f) => f.toLowerCase() === name.toLowerCase())) { toast('essa pasta já existe', { id: 'rg-fold', ms: 2200 }); return list.find((f) => f.toLowerCase() === name.toLowerCase()); }
-  await store.upsert('setting', FOLDERS, { list: [...list, name] });
-  toast(`pasta "${name}" criada ✓`, { id: 'rg-fold', ms: 2200 });
-  return name;
-}
-/** Folha pra escolher a pasta (ou criar uma na hora). Resolve com o nome ('' = sem pasta) ou null se cancelar. */
-function pickFolder(title, cur = '') {
-  return new Promise((resolve) => {
-    let done = false; const finish = (v) => { if (!done) { done = true; resolve(v); } };
-    sheet(title, (close) => {
-      const opt = (label, folder, on) => h('button', { class: `btn${on ? '' : ' ghost'}`, type: 'button', onclick: () => { finish(folder); close(); } }, label);
-      return h('div', { class: 'sheet-body' }, h('div', { style: 'display:grid;gap:6px' },
-        opt('sem pasta', '', !cur), ...folderNames().map((f) => opt(`📁 ${f}`, f, f === cur)),
-        h('button', { class: 'btn ghost', type: 'button', onclick: async () => { close(); finish(await addFolder()); } }, '+ nova pasta')));
-    }, { onClose: () => finish(null) });
-  });
-}
-export async function moveSong(id) {
-  const r = store.get(id); if (!r) return;
-  const folder = await pickFolder(`Pasta de "${r.data.name}"`, r.data.folder || '');
-  if (folder === null) return;
-  await store.upsert(KIND, id, { folder }); toast(folder ? `na pasta ${folder} ✓` : 'sem pasta ✓', { id: 'rg-mov', ms: 1800 });
-}
-/** Move várias de uma vez. done(true) se moveu (a tela sai do modo seleção). */
-export async function moveMany(ids, done) {
-  const folder = await pickFolder(`Mover ${ids.length} música(s) pra…`);
-  if (folder === null) return;
-  toast(`movendo ${ids.length}…`, { id: 'rg-mov', ms: 30000 });
-  for (const id of ids) if (store.get(id)) await store.upsert(KIND, id, { folder });
-  toast(`${ids.length} música(s) ${folder ? `na pasta ${folder}` : 'sem pasta'} ✓`, { id: 'rg-mov', ms: 2500 }); done(true);
-}
-export async function renameFolder(old, done) {
-  const name = await askText('Renomear pasta', 'novo nome da pasta', old);
-  if (!name || name === old) return;
-  const clash = folderNames().find((f) => f.toLowerCase() === name.toLowerCase() && f !== old);
-  if (clash) { toast(`já existe a pasta "${clash}"`, { id: 'rg-fold', ms: 2500 }); return; }
-  await store.upsert('setting', FOLDERS, { list: folderNames().map((f) => (f === old ? name : f)) });
-  for (const r of store.list(KIND)) if (r.data.folder === old) await store.upsert(KIND, r.id, { folder: name });
-  toast('pasta renomeada ✓', { id: 'rg-fold', ms: 2000 }); done(name);
-}
-/** Apaga a pasta; as músicas dela NÃO são apagadas, só ficam sem pasta. */
-export async function deleteFolder(name, done) {
-  const n = store.list(KIND).filter((r) => r.data.folder === name).length;
-  if (!(await confirmSheet(`Apagar a pasta "${name}"?`, n ? `as ${n} música(s) dentro dela continuam no app, só ficam sem pasta.` : 'a pasta está vazia.', 'Apagar pasta'))) return;
-  await store.upsert('setting', FOLDERS, { list: folderNames().filter((f) => f !== name) });
-  for (const r of store.list(KIND)) if (r.data.folder === name) await store.upsert(KIND, r.id, { folder: '' });
-  toast('pasta apagada ✓', { id: 'rg-fold', ms: 2000 }); done(true);
-}
-
-/** Baixa todas as músicas importadas num .zip (as pastas viram pastas do zip; serve de backup e pra importar nos outros sites). */
-export function exportAll() {
-  const used = new Set(); const files = [];
-  for (const r of store.list(KIND).sort((a, b) => a.data.name.localeCompare(b.data.name, 'pt-BR'))) {
-    const safe = (t) => String(t).replace(/[\\/:*?"<>|]+/g, '-').trim();
-    const dir = r.data.folder ? `${safe(r.data.folder)}/` : '';
-    let base = safe(r.data.name) || 'musica'; let n = base, i = 2; while (used.has(`${dir}${n}`.toLowerCase())) n = `${base} (${i++})`; used.add(`${dir}${n}`.toLowerCase());
-    try { files.push({ name: `${dir}${n}.mid`, data: fromB64(r.data.b64) }); } catch { /* registro sem arquivo legível */ }
-  }
-  if (!files.length) { toast('nenhuma música pra baixar', { id: 'rg-zip', ms: 2500 }); return; }
-  const url = URL.createObjectURL(writeZip(files));
-  const a = h('a', { href: url, download: `musicas-midi-${new Date().toISOString().slice(0, 10)}.zip` }); document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 30000);
-  toast(`${files.length} música(s) no zip ✓`, { id: 'rg-zip', ms: 3000 });
-}
 export const hallTop = (key) => { const b = store.get(HALL); return (b && b.data.boards && b.data.boards[key]) || []; };
 export function hallAdd(key, entry) {
   const b = store.get(HALL); const boards = { ...((b && b.data.boards) || {}) };
@@ -195,7 +47,7 @@ export function loadPackage() {
   return loading;
 }
 
-/** opts.student: área do aluno (sem importar MIDI; músicas originais do app; ranking compartilhado com o nome do aluno). */
+/** opts.student: área do aluno (ranking compartilhado com o nome do aluno). Só as músicas prontas do app. */
 export function mount(host, opts = {}) {
   // Modo Aventura (#/ritmo/aventura[/n]): tela própria, o jogo normal abaixo não é montado. Nada do modo livre muda.
   if (opts.parts && opts.parts[0] === 'aventura') { location.hash = '#/ritmo'; return () => {}; } // o Modo Aventura do Beat Hero/Piano Hero foi removido (links antigos voltam pro jogo)
@@ -212,10 +64,7 @@ export function mount(host, opts = {}) {
   const box = h('div', { id: 'jogos' }, h('p', { class: 'muted rg-wait' }, 'carregando os jogos…'));
   const frame = h('div', { class: 'rg-host' }, box);
   const stopPortal = portal(frame); // iPad: na hora de jogar, a tela do jogo vai pro <body> (senão fica cortada)
-  // importar MIDI: vira a aba "Importados" do pacote (a busca do próprio pacote filtra pelo nome)
-  const input = h('input', { type: 'file', accept: '.mid,.midi,.kar,.zip,audio/midi,audio/x-midi,application/zip', multiple: true, hidden: true, 'aria-label': 'Arquivos MIDI' });
-  const manage = h('details', { class: 'card pad rg-manage' });
-  // ---- códigos dos alunos (só a Bea): quem tem código acessa o Beat Hero e as músicas MIDI ----
+  // ---- códigos dos alunos (só a Bea): quem tem código acessa os jogos de ritmo ----
   const codes = h('details', { class: 'card pad rg-manage rg-codes' });
   let codeList = []; let codeLoaded = false; let codeBusy = false;
   async function loadCodes() { try { codeList = await CODE.listar(); codeLoaded = true; } catch (e) { toast(`não consegui ler os códigos (${e.message})`, { id: 'rg-cod', ms: 3500 }); } drawCodes(); }
@@ -225,7 +74,7 @@ export function mount(host, opts = {}) {
   function drawCodes() {
     const n = codeList.filter((c) => c.ativo).length;
     codes.replaceChildren(h('summary', {}, `códigos dos alunos${codeLoaded ? ` (${n} ativo${n === 1 ? '' : 's'})` : ''}`),
-      h('p', { class: 'muted rg-pubnote' }, 'quem tem código usa o Beat Hero e a aba "Músicas MIDI". crie um código por aluno e passe pra ele. desativar tira o acesso na hora.'),
+      h('p', { class: 'muted rg-pubnote' }, 'quem tem código usa os jogos de ritmo. crie um código por aluno e passe pra ele. desativar tira o acesso na hora.'),
       h('div', { class: 'row rg-pubbar' }, nameIn, h('button', { class: 'btn small', type: 'button', disabled: codeBusy, onclick: () => { const nm = nameIn.value.trim(); codeDo(async () => { const c = await CODE.criar(nm); try { await navigator.clipboard.writeText(c); } catch { /* sem área de transferência */ } nameIn.value = ''; toast(`código ${c} criado${nm ? ` pra ${nm}` : ''} (copiado)`, { id: 'rg-cod2', ms: 6000 }); }, 'código criado ✓'); } }, '+ novo código')),
       h('ul', { class: 'rg-list' }, ...codeList.map((c) => h('li', {}, h('span', {}, h('b', { class: 'rg-code' }, c.code), h('small', { class: 'muted' }, ` · ${c.nome || 'sem nome'} · ${c.usos} uso${c.usos === 1 ? '' : 's'} · último ${when(c.ultimo_uso)} · até ${c.expira_em ? new Date(c.expira_em).toLocaleDateString('pt-BR') : '—'}${c.ativo ? '' : ' · DESATIVADO'}`)),
         h('span', { class: 'row' }, h('button', { class: 'btn small ghost', type: 'button', disabled: codeBusy, onclick: async () => { try { await navigator.clipboard.writeText(c.code); toast('código copiado', { id: 'rg-cod', ms: 1500 }); } catch { toast(c.code, { id: 'rg-cod', ms: 6000 }); } } }, 'copiar'),
@@ -235,87 +84,15 @@ export function mount(host, opts = {}) {
   }
   codes.addEventListener('toggle', () => { if (codes.open && !codeLoaded) loadCodes(); });
   drawCodes();
-  const refresh = (go) => {
-    if (student) return; // no site dos alunos a lista vem pronta (músicas que a Bea publicou)
-    const songs = importedSongs();
-    if (window.BeaterRhythm && mounted) {
-      window.BeaterRhythm.setSongs(songs);
-      if (go) { const tab = document.querySelector('#jogos [data-act="rz-style"][data-v="imp"]'); if (tab && !tab.classList.contains('on')) tab.click(); }
-    }
-    drawManage();
-  };
-  // ---- músicas importadas: marcar quais aparecem na área dos alunos ----
-  let mq = ''; let busyPub = false;
-  const mFilter = h('input', { type: 'search', class: 'rg-mfilter', placeholder: 'buscar na lista', 'aria-label': 'Buscar nas músicas importadas' });
-  mFilter.addEventListener('input', () => { mq = mFilter.value; drawManage(); });
-  const normq = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const published = new Map(); // id -> assinatura do que está lá nos alunos (pra reenviar quando renomeia, move ou corta)
-  async function setPub(ids, on) {
-    if (busyPub) return; busyPub = true; let ok = 0; let fail = 0; let why = '';
-    const todo = ids.map((id) => store.get(id)).filter((r) => r && !!r.data.pub !== on);
-    toast(`${on ? 'enviando pros alunos' : 'tirando dos alunos'}… 0/${todo.length}`, { id: 'rg-pub', ms: 600000 });
-    for (let i = 0; i < todo.length; i += 3) {
-      await Promise.all(todo.slice(i, i + 3).map(async (r) => {
-        try { if (on) await PUB.publicar(r); else await PUB.tirar(r.id); await store.upsert(KIND, r.id, { pub: on }); if (on) published.set(r.id, PUB.assinatura(r.data)); else published.delete(r.id); ok++; } catch (e) { fail++; why = e.message; }
-      }));
-      toast(`${on ? 'enviando pros alunos' : 'tirando dos alunos'}… ${ok + fail}/${todo.length}`, { id: 'rg-pub', ms: 600000 });
-    }
-    busyPub = false;
-    toast(fail ? `${ok} deu certo, ${fail} não (${why})` : `${ok} música(s) ${on ? 'agora aparecem pros alunos ✓' : 'saíram da área dos alunos ✓'}`, { id: 'rg-pub', ms: 4000 });
-    drawManage();
-  }
-  function drawManage() {
-    const recs = store.list(KIND).sort((a, b) => a.data.name.localeCompare(b.data.name, 'pt-BR'));
-    manage.hidden = !recs.length;
-    const vis = recs.filter((r) => !mq.trim() || normq(`${r.data.name} ${r.data.folder || ''}`).includes(normq(mq.trim())));
-    const nPub = recs.filter((r) => r.data.pub).length;
-    const bar = h('div', { class: 'row rg-pubbar' },
-      h('button', { class: 'btn small', type: 'button', disabled: busyPub || !vis.length, onclick: () => setPub(vis.map((r) => r.id), true) }, `marcar ${mq.trim() ? 'as ' + vis.length + ' da busca' : 'todas (' + vis.length + ')'} pros alunos`),
-      h('button', { class: 'btn small ghost', type: 'button', disabled: busyPub || !nPub, onclick: () => setPub(recs.filter((r) => r.data.pub).map((r) => r.id), false) }, 'tirar todas dos alunos'));
-    manage.replaceChildren(h('summary', {}, `músicas importadas (${recs.length}) · ${nPub} pros alunos`),
-      h('p', { class: 'muted rg-pubnote' }, 'marque ✓ as que os alunos podem jogar. elas aparecem na aba "Músicas MIDI" do site dos alunos. dá pra desmarcar a qualquer hora.'),
-      mFilter, bar,
-      h('ul', { class: 'rg-list' }, ...vis.map((r) => h('li', {},
-        h('label', { class: 'rg-pubck' }, h('input', { type: 'checkbox', checked: !!r.data.pub, disabled: busyPub, 'aria-label': `${r.data.name} pros alunos`, onchange: (e) => setPub([r.id], e.target.checked) }),
-          h('span', {}, h('b', {}, r.data.name), h('small', { class: 'muted' }, ` · ${r.data.bpm} bpm${r.data.drums ? ` · ${r.data.drums} notas de bateria` : ' · sem bateria (ritmo criado)'}${r.data.trim ? ' · ✂ cortada' : ''}${r.data.folder ? ' · 📁 ' + r.data.folder : ''}`))),
-        h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `Apagar ${r.data.name}`, onclick: async () => { if (await confirmSheet('Apagar música importada?', r.data.name + (r.data.pub ? ' (ela também sai da área dos alunos)' : ''), 'Apagar')) { if (r.data.pub) { try { await PUB.tirar(r.id); } catch { /* fica pra tirar depois */ } } await store.remove(r.id); refresh(); } } }, 'apagar')))));
-    for (const r of recs) if (r.data.pub && !published.has(r.id)) published.set(r.id, PUB.assinatura(r.data));
-  }
-  // renomeou, mudou de pasta ou cortou uma música que os alunos já veem: reenvia sozinho
-  let resyncT = 0;
-  const resync = () => {
-    clearTimeout(resyncT);
-    resyncT = setTimeout(async () => {
-      if (busyPub || gone) return;
-      for (const r of store.list(KIND)) {
-        if (!r.data.pub || !published.has(r.id) || published.get(r.id) === PUB.assinatura(r.data)) continue;
-        try { await PUB.publicar(r); published.set(r.id, PUB.assinatura(r.data)); } catch { /* tenta de novo na próxima mudança */ }
-      }
-    }, 1200);
-  };
-  input.addEventListener('change', async () => {
-    const list = [...input.files]; input.value = ''; if (!list.length) return;
-    toast('lendo os MIDIs…', { id: 'rg-imp', ms: 60000 });
-    try {
-      const { ok, bad } = await importMidis(list);
-      const noDrums = ok.filter((x) => !x.drums).length;
-      toast(ok.length ? `${ok.length} música(s) em "Importados" ✓${noDrums ? ` · ${noDrums} sem bateria (o app cria um ritmo)` : ''}${bad.length ? ` · ${bad.length} não deu` : ''}` : `nenhum MIDI deu certo${bad.length ? `: ${bad[0].why}` : ''}`, { id: 'rg-imp', ms: 5000 });
-      refresh(ok.length > 0);
-    } catch (e) { toast(`não consegui importar: ${e.message}`, { id: 'rg-imp', ms: 4000 }); }
-  });
-  const tools = h('div', { class: 'row pad-x rg-tools' }, h('button', { class: 'btn small', type: 'button', onclick: () => input.click() }, '+ importar MIDI'), h('button', { class: 'btn small ghost', type: 'button', onclick: exportAll }, '⬇ baixar tudo (.zip)'), h('small', { class: 'muted' }, '.mid, .midi ou um .zip com vários'), input);
-  host.append(banner(jg[1], jg[2]), h('div', { class: 'row between pad-x rg-top' }, student ? h('a', { class: 'btn small rg-voltar', href: '#/jogos' }, '← voltar pros jogos') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos')), frame, ...(student ? [] : [codes])); // sem importar MIDI nem lista de MIDI: só as músicas prontas
+  host.append(banner(jg[1], jg[2]), h('div', { class: 'row between pad-x rg-top' }, student ? h('a', { class: 'btn small rg-voltar', href: '#/jogos' }, '← voltar pros jogos') : h('a', { class: 'link', href: '#/kids' }, '← kids e jogos')), frame, ...(student ? [] : [codes]));
   document.documentElement.classList.add('rg-on');
   // o pacote avisa quando acerta/erra (figuras) e quando fecha uma música: aqui entram o Paul e a frase
   window.__bfb = (kind, withSound) => { const msg = FB.line(kind); if (withSound) FB.sound(kind); FB.paul(kind, msg, 1600); };
   let unlocked = false; let BRref = null;
   const gate = { ok: () => unlocked || AC.liberado(), pedir: () => CODE.pedir(), pendente: () => CODE.pendente(),
-    check: async (c) => { const ok = await CODE.entrar(c); if (ok) { unlocked = true; AC.definir(true); await loadPub(); } return ok; },
-    conferir: async () => { const ok = await CODE.conferirPedido(); if (ok) { unlocked = true; AC.definir(true); await loadPub(); } return ok; } };
-  async function loadPub() { // com código: baixa as músicas liberadas e avisa o pacote
-    try { const songs = await publicadasParaAluno(CODE.saved()); if (BRref && BRref.setSongs) { BRref.setSongs(songs); if (BRref.refresh) BRref.refresh(); } return songs; } catch { return []; }
-  }
-  Promise.all([loadPackage(), student ? CODE.revalidar().then(async (ok) => { if (!ok && CODE.pendente()) ok = await CODE.conferirPedido().catch(() => false); unlocked = ok; if (ok) AC.definir(true); return ok ? publicadasParaAluno(CODE.saved()).catch(() => []) : []; }) : Promise.resolve([])]).then(([BR, pubSongs]) => {
+    check: async (c) => { const ok = await CODE.entrar(c); if (ok) { unlocked = true; AC.definir(true); } return ok; },
+    conferir: async () => { const ok = await CODE.conferirPedido(); if (ok) { unlocked = true; AC.definir(true); } return ok; } };
+  Promise.all([loadPackage(), student ? CODE.revalidar().then(async (ok) => { if (!ok && CODE.pendente()) ok = await CODE.conferirPedido().catch(() => false); unlocked = ok; if (ok) AC.definir(true); return ok; }) : Promise.resolve(true)]).then(([BR]) => {
     if (gone) return;
     BRref = BR;
     box.replaceChildren();
@@ -324,14 +101,13 @@ export function mount(host, opts = {}) {
       if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 15 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
       else toast(`★ ${Album.progressoTxt(me.id)}`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = !student ? { builtin: true } : { builtin: true, readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) };
-    BR.mount('#jogos', { only: jg[0], storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { await addXp(n, why); /* XP não aparece mais pra ninguém (pedido da Bea): só fica guardado em silêncio */ } });
-    mounted = true; refresh();
+    BR.mount('#jogos', { only: jg[0], storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: [], hallTop, hallAdd, ...studentOpts, onStars, onXp: async (n, why) => { await addXp(n, why); /* XP não aparece mais pra ninguém (pedido da Bea): só fica guardado em silêncio */ } });
+    mounted = true;
   }).catch((e) => {
     if (gone) return;
     box.replaceChildren(h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'os jogos ainda não foram instalados.'), h('p', { class: 'muted' }, `faltam os arquivos rhythm-games.js e rhythm-games.css em ${BASE} (${e.message}).`)));
   });
-  // MIDI importado em outro aparelho chega pela sincronização
-  const off = store.subscribe((i) => { if (student) return; if ((!i.kind || i.kind === KIND || i.kind === 'setting') && mounted && !document.body.classList.contains('rz-lock')) refresh(); if (!i.kind || i.kind === KIND) resync(); });
+  const off = () => {};
   return () => {
     stopPortal(); off(); gone = true; window.__bfb = null; document.documentElement.classList.remove('rg-on'); document.body.classList.remove('rz-lock');
     if (mounted && window.BeaterRhythm && window.BeaterRhythm.unmount) { try { window.BeaterRhythm.unmount(); } catch { /* o pacote já desmontou */ } }

@@ -61,7 +61,7 @@ export const THOUGHTS = [
   ['tum tá tum tum tá!'],
   ['bateristas nunca chegam atrasados, chegam no tempo'],
   ['eu sou só um robozinho, mas sei contar até 4'],
-  ['tem jogo novo na aba Jogos, vá lá!', '#/jogos', 'aluno'],
+  ['tem jogo novo na aba Jogos!', '#/jogos', 'aluno'],
   ['beba água, baterista também se hidrata'],
   ['que tal ensinar um ritmo pra um amigo?'],
   ['música boa é a que você toca com vontade'],

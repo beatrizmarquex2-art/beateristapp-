@@ -1,5 +1,5 @@
 // Importar código de aluno (Beaterista / escola): cola uma lista, o app gera os códigos que faltam e mostra a tabela atualizada pra copiar. cada código vale 1 ano e você desativa quando quiser.
-// O aluno usa o código no site dos alunos pra liberar o Beat Hero e as Músicas MIDI. Só a conta da Bea mexe aqui.
+// O aluno usa o código no site dos alunos pra liberar os jogos de ritmo. Só a conta da Bea mexe aqui.
 import { h } from '../util.js';
 import { banner, toast, confirmSheet } from '../ui.js';
 import * as CODE from '../codigo.js';
@@ -26,7 +26,7 @@ export function mount(host) {
   const tableBox = h('div', {});
   const nomeIn = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome de quem pagou', autocomplete: 'off', 'aria-label': 'Nome de quem pagou' });
   const telIn = h('input', { class: 'field', type: 'tel', inputmode: 'tel', maxlength: 20, placeholder: 'WhatsApp com DDD (opcional)', autocomplete: 'off', 'aria-label': 'WhatsApp de quem pagou' });
-  host.append(banner('Importar código de aluno', 'quem tem código usa o Beat Hero e as Músicas MIDI'),
+  host.append(banner('Importar código de aluno', 'quem tem código usa os jogos de ritmo'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
       h('section', { class: 'card pad' }, h('b', {}, 'passe anual (pagou no PIX)'), h('p', { class: 'muted' }, 'R$ 49,90 · o site todo por 12 meses a partir de hoje · 2 aparelhos. confirmou o PIX? escreva o nome, gere e mande a mensagem pronta no WhatsApp.'), nomeIn, telIn,
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doAnual }, 'gerar passe anual'))),
