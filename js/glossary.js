@@ -1,10 +1,13 @@
 // Dicionário musical (começou só de bateria; em 16/nov/2026 ganhou teoria, teclado e violão): termos com explicação curta, dica de estudo, nome em inglês (quando o mundo usa o inglês),
 // exemplo que toca (grade do Beat Lab) e ligação com os textos da Mente Musical. Puro, testado em tests/glossary.test.mjs.
 
+import { GRUPOS_PALCO } from './glossary-palco.js';
+
 export const CATS = [
   ['tempo', 'tempo e pulso'], ['figuras', 'duração e contagem'], ['levadas', 'levadas e estilos'],
   ['tecnica', 'técnica e rudimentos'], ['som', 'dinâmica e som'], ['forma', 'forma e estrutura'],
   ['teoria', 'notas e teoria'], ['teclado', 'teclado'], ['violao', 'violão'],
+  ['palco', 'banda e palco'], ['estudio', 'estúdio e equipamento'], ['fala', 'como o músico fala'],
 ];
 
 const on = (n, s) => Array.from({ length: n }, (_, i) => (s.includes(i) ? 1 : 0));
@@ -98,6 +101,10 @@ export const TERMS = [
   { id: 'batida-violao', t: 'batida de violão', en: 'strumming', cat: 'violao', d: 'o movimento da mão direita nas cordas: seta pra baixo e seta pra cima. a mão nunca para de balançar, mesmo quando não toca.', dica: 'comece só com a batida pra baixo, uma por tempo, e depois acrescente as pra cima.', see: ['palheta', 'pulso'] },
   { id: 'capotraste', t: 'capotraste', en: 'capo', cat: 'violao', d: 'uma peça que prende todas as cordas numa mesma casa. deixa o violão mais agudo sem mudar o jeito de tocar os acordes.', see: ['traste', 'afinacao'] },
 ];
+
+// vocabulário de banda, estúdio e do jeito de falar dos músicos (fonte única: glossary-palco.js, a mesma do baralho em PDF); vêm depois dos termos de bateria, teoria, teclado e violão
+const slug = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+for (const g of GRUPOS_PALCO) for (const [t, en, d, uso] of g.t) TERMS.push({ id: slug(t), t, en, cat: g.id, d, uso: uso.replace(/^"|"$/g, '') });
 
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 /** Busca sem acento no termo, no nome em inglês e na explicação (termo vem primeiro). */

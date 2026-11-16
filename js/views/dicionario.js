@@ -19,7 +19,7 @@ export const beatOf = (x) => x.ex && {
 export function mount(host, parts = []) {
   let q = ''; let cat = ''; let open = parts[0] || null;
   const list = h('div', { class: 'dc-list' });
-  const search = h('input', { type: 'search', placeholder: 'buscar: síncope, ghost note, BPM…', 'aria-label': 'Buscar no dicionário' });
+  const search = h('input', { type: 'search', placeholder: 'buscar: síncope, setlist, BPM…', 'aria-label': 'Buscar no dicionário' });
   search.addEventListener('input', () => { q = search.value; draw(); });
   const chips = h('div', { class: 'chips lib-tabs pad-x', role: 'radiogroup', 'aria-label': 'Temas' });
   // sem código (área dos alunos): só os primeiros termos abrem; os outros mostram o nome com cadeado
@@ -35,6 +35,7 @@ export function mount(host, parts = []) {
       h('p', { class: 'dc-def' }, x.d),
       isOpen ? h('div', { class: 'dc-more' },
         x.dica ? h('p', { class: 'dc-tip' }, '💡 ', x.dica) : null,
+        x.uso ? h('p', { class: 'dc-tip' }, '💬 ', `“${x.uso}”`) : null,
         mini,
         b ? h('div', { class: 'row ft-row' },
           h('button', { class: `bl-play small${playing ? ' on' : ''}`, type: 'button', 'aria-label': playing ? 'Parar exemplo' : `Ouvir exemplo de ${x.t}`, onclick: () => { if (playing) stopBeat(); else playBeat(b, { onStop: draw }); draw(); } }, icon(playing ? 'stop' : 'play', 18)),
