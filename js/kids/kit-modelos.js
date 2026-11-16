@@ -45,6 +45,20 @@ const FONTE = "'Gochi Hand','Comic Sans MS',cursive";
 const brilhaE = (cx, cy, rx, ry, c) => `<ellipse class="km-brilha" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke-opacity="0" style="stroke:${claro(c, 0.3)};stroke-width:5"/>`;
 const brilhaC = (cx, cy, r, c) => brilhaE(cx, cy, r, r, c).replace('<ellipse', '<circle').replace(` rx="${r}" ry="${r}"`, ` r="${r}"`);
 
+
+/** Selo com a marca, escrito na "tela" (fundo do tema). Fundo escuro pra ler em qualquer tema. */
+const marca = (x, y, txt) => { const w = txt.length * 9 + 22; return `<g class="marca"><rect x="${x - w / 2}" y="${y - 11}" width="${w}" height="22" rx="11" fill="#121216"/><text class="rt-claro rt-fica" x="${x}" y="${y + 5.5}" text-anchor="middle" font-family="'Arial Black',Impact,sans-serif" font-size="14" font-weight="900" letter-spacing="1.5" fill="#fff" stroke="none">${txt}</text></g>`; };
+/** Tapete embaixo da bateria (vista de frente: elipse achatada). */
+const tapete = () => `<g>
+  <ellipse cx="210" cy="250" rx="204" ry="46" fill="#5a0f1e"/><ellipse cx="210" cy="248" rx="198" ry="42" fill="#8f1b2f"/>
+  <ellipse cx="210" cy="248" rx="184" ry="37" fill="#f1e2c4"/><ellipse cx="210" cy="248" rx="176" ry="34" fill="#7a1527"/>
+  ${volta(14, (a) => `<ellipse cx="${210 + Math.cos((a * Math.PI) / 180) * 150}" cy="${248 + Math.sin((a * Math.PI) / 180) * 24}" rx="9" ry="3.6" fill="#e9c46a"/>`)}
+  <ellipse cx="210" cy="248" rx="120" ry="22" fill="#a32138"/><ellipse cx="210" cy="248" rx="112" ry="19" fill="#5a0f1e"/>
+</g>`;
+/** Tapete visto de cima (eletrônica). */
+const tapeteCima = () => `<g><rect x="6" y="58" width="408" height="238" rx="22" fill="#5a0f1e"/><rect x="12" y="64" width="396" height="226" rx="18" fill="#8f1b2f"/><rect x="20" y="72" width="380" height="210" rx="14" fill="#f1e2c4"/><rect x="26" y="78" width="368" height="198" rx="11" fill="#7a1527"/>
+  ${volta(18, (_, i) => `<rect x="${40 + i * 20}" y="86" width="9" height="5" rx="2" fill="#e9c46a"/><rect x="${40 + i * 20}" y="262" width="9" height="5" rx="2" fill="#e9c46a"/>`)}</g>`;
+
 /* ================= ACÚSTICA (vista de frente, preta laqueada) ================= */
 /** Tambor (tom, caixa, surdo): casco preto laqueado, aro cromado, aro da pele na cor da peça, pele branca em cima, parafusos nas laterais. */
 function casco(id, cx, top, w, h, ry, { lugs = 3, snare = false } = {}) {
@@ -89,8 +103,8 @@ function prato(id, cx, cy, rx, ry, { rot = 0, chimbal = false } = {}) {
 function bumbo(cx, cy, R) {
   const c = COR.bd;
   const parafusos = volta(10, (a) => `<g transform="rotate(${a} ${cx} ${cy})"><rect x="${cx - 3}" y="${cy - R + 0.5}" width="6" height="9" rx="2" fill="url(#km-cromo)"/><circle cx="${cx}" cy="${cy - R + 5}" r="1.2" fill="#3a3a44"/></g>`);
-  const hx = cx - 15; const hy = cy + 21;
-  return `<g class="kp" data-p="bd" data-logo="${cx - 40},${cy - 46},80,41" style="--c:${c}">
+  const hx = cx - 18; const hy = cy + 30;
+  return `<g class="kp" data-p="bd" data-logo="${cx - 40},${cy - 33},80,41" style="--c:${c}">
     <ellipse cx="${cx + 5}" cy="${cy + R * 0.92}" rx="${R + 4}" ry="${R * 0.26}" fill="url(#km-sombra)"/>
     <circle cx="${cx}" cy="${cy}" r="${R + 1.6}" fill="#0b0b0e"/>
     <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#km-laca-r)"/>
@@ -101,8 +115,8 @@ function bumbo(cx, cy, R) {
     <circle cx="${cx}" cy="${cy}" r="${R - 14}" fill="${c}"/>
     <circle cx="${cx}" cy="${cy}" r="${R - 17}" fill="url(#km-fumaca)" data-head="1"/>
     <circle cx="${cx}" cy="${cy}" r="${R - 17}" fill="url(#km-brilho)"/>
-    <circle cx="${hx}" cy="${hy}" r="17.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="15" fill="#fbf6e8"/><circle cx="${hx + 3}" cy="${hy + 4}" r="11" fill="url(#km-sombra)" opacity=".35"/>
-    <rect x="${hx - 6}" y="${hy - 4}" width="11" height="9" rx="2" fill="#16161a"/><rect x="${hx - 5}" y="${hy + 4}" width="9" height="9" rx="2.4" fill="#ece1bb"/>
+    <circle cx="${hx}" cy="${hy}" r="13.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="11.5" fill="#fbf6e8"/><circle cx="${hx + 2}" cy="${hy + 3}" r="8" fill="url(#km-sombra)" opacity=".35"/>
+    <rect x="${hx - 5}" y="${hy - 4}" width="9" height="7" rx="2" fill="#16161a"/><rect x="${hx - 4}" y="${hy + 3}" width="7" height="7" rx="2" fill="#ece1bb"/>
     <path d="M${cx - 22} ${cy + R - 6} h26 l4 12 h-34 Z" fill="#2a2c35"/><rect x="${cx - 20}" y="${cy + R + 2}" width="22" height="6" rx="2" fill="#8a8c97"/>
     ${brilhaC(cx, cy, R + 6, c)}
   </g>`;
@@ -112,6 +126,7 @@ const haste = (x, y1, y2) => `<path d="M${x} ${y1} V${y2} M${x} ${y2} L${x - 26}
 
 export function acustica() {
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria acústica preta">${DEFS}
+    ${tapete()}${marca(210, 16, 'NAGANO')}
     ${haste(98, 62, 248)}${haste(352, 74, 250)}${haste(36, 128, 262)}
     <path d="M326 232 V268 M366 232 V268" stroke="#a3a5b0" stroke-width="3.2" stroke-linecap="round"/><rect x="321" y="266" width="10" height="6" rx="2" fill="#111"/><rect x="361" y="266" width="10" height="6" rx="2" fill="#111"/>
     ${bumbo(208, 196, 62)}
@@ -133,7 +148,7 @@ function pad(id, cx, cy, R, { extra = '' } = {}) {
     <circle cx="${cx}" cy="${cy}" r="${rm + 1.6}" fill="#0b0b0e"/>
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-malhaE)" data-head="1"/>
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-trama)"/>
-    ${id === 'bd' ? '' : `<circle cx="${cx}" cy="${cy - rm * 0.2}" r="${rm * 0.13}" fill="#c9cad4"/>`}
+    ${id === 'bd' ? `<rect x="${cx - 29}" y="${cy - 25}" width="58" height="32" rx="9" fill="#16161a"/>` : `<circle cx="${cx}" cy="${cy - rm * 0.2}" r="${rm * 0.13}" fill="#c9cad4"/>`}
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-brilho)"/>
     ${brilhaC(cx, cy, R + 5, c)}
   </g>`;
@@ -157,6 +172,7 @@ export function eletronica() {
   const pedalHH = '<g transform="rotate(10 60 262)"><rect x="40" y="236" width="40" height="52" rx="7" fill="#1d1d22"/><rect x="45" y="242" width="30" height="38" rx="5" fill="url(#km-cromo2)"/><path d="M50 250 h20 M50 258 h20 M50 266 h20" style="stroke:#3a3a44;stroke-width:2"/></g>';
   const pedalBD = '<rect x="222" y="262" width="36" height="34" rx="7" fill="#1d1d22"/><rect x="227" y="267" width="26" height="24" rx="5" fill="url(#km-cromo2)"/><path d="M231 274 h18 M231 281 h18" style="stroke:#3a3a44;stroke-width:2"/>';
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Bateria eletrônica">${DEFS}
+    ${tapeteCima()}
     ${tubo('M40 96 L40 84 L394 84 L394 236', 7)}${tubo('M40 150 L22 236', 7)}${tubo('M394 236 L402 282', 7)}
     ${tubo('M118 84 V52', 5)}${tubo('M310 84 V52', 5)}${tubo('M50 124 L40 96', 5)}${tubo('M330 154 L394 154', 5)}
     <rect x="176" y="10" width="62" height="34" rx="5" fill="#101013"/><rect x="182" y="16" width="30" height="16" rx="3" fill="#e9b73a"/><circle cx="224" cy="22" r="4" fill="#4a4a54"/><circle cx="224" cy="35" r="3" fill="#4a4a54"/><rect x="184" y="36" width="24" height="3" rx="1.5" fill="#4a4a54"/>
@@ -170,6 +186,8 @@ export function cajon() {
   const furos = [[112, 69], [150, 66], [190, 66], [230, 67], [262, 71], [106, 114], [104, 170], [100, 226], [108, 270], [148, 271], [188, 271], [228, 271], [268, 267], [270, 130], [272, 190], [274, 240]];
   const veios = volta(9, (_, i) => `<path d="M${114 + i * 18} 70 C ${110 + i * 18} 140, ${120 + i * 18} 200, ${114 + i * 18} 270" fill="none" style="stroke:#8a5420;stroke-opacity:${i % 2 ? 0.1 : 0.17};stroke-width:${i % 3 ? 1 : 1.5}"/>`);
   return `<svg viewBox="0 0 420 300" role="img" aria-label="Cajón Spark">${DEFS}
+    ${marca(210, 16, 'SPARK')}
+    ${marca(46, 104, 'AGUDO')}<path d="M72 104 l12 -6 v12 Z" fill="#121216"/>${marca(46, 190, 'GRAVE')}<path d="M72 190 l12 -6 v12 Z" fill="#121216"/>
     <ellipse cx="200" cy="284" rx="130" ry="10" fill="url(#km-sombra)"/>
     <path d="M272 58 L322 44 C332 110 334 200 326 262 L278 278 Z" fill="url(#km-lateral)"/>
     <path d="M290 74 C 298 120 298 200 292 252" fill="none" style="stroke:#fff;stroke-opacity:.08;stroke-width:3"/>
