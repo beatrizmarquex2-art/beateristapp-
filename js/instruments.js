@@ -136,7 +136,45 @@ export const DRUM_CAJON = {
 for (const k of ['tt', 'mt', 'ft']) DRUM_CAJON[k] = DRUM_CAJON.bd;
 for (const k of ['hh', 'ho', 'hf', 'cr', 'rd']) DRUM_CAJON[k] = DRUM_CAJON.sn;
 export const MODELOS_BATERIA = [['acustica', 'acústica'], ['eletronica', 'eletrônica'], ['cajon', 'cajón']];
-export const kitSom = (modelo) => (modelo === 'eletronica' ? DRUM_ELET : modelo === 'cajon' ? DRUM_CAJON : DRUM);
+/* ---------- amostras de verdade (acústica e cajón) ----------
+   Gravações livres (CC0, domínio público) da Versilian Community Sample Library (github.com/sgossner/VCSL), cortadas e normalizadas
+   por scripts/ (assets/sons/bateria/lista.json diz qual arquivo é de qual peça). Duas forças (suave/forte), 1–2 variações cada.
+   Se o arquivo não carregar (sem internet na 1ª vez), toca o som sintético de antes. */
+const AMOSTRAS = {}; const carregando = {};
+export function warmKit(modelo) {
+  if ((modelo !== 'acustica' && modelo !== 'cajon') || AMOSTRAS[modelo]) return Promise.resolve();
+  if (carregando[modelo]) return carregando[modelo];
+  return (carregando[modelo] = (async () => {
+    try {
+      const c = init(); const lista = await (await fetch('assets/sons/bateria/lista.json')).json(); const out = {};
+      const dec = async (f) => c.decodeAudioData(await (await fetch(`assets/sons/bateria/${f}`)).arrayBuffer());
+      for (const [pc, d] of Object.entries(lista[modelo])) out[pc] = { rate: d.rate, s: await Promise.all(d.s.map(dec)), f: await Promise.all(d.f.map(dec)) };
+      AMOSTRAS[modelo] = out;
+    } catch { /* fica o sintético */ }
+    delete carregando[modelo];
+  })());
+}
+function toca(modelo, pc, t, v) {
+  const k = AMOSTRAS[modelo] && AMOSTRAS[modelo][pc]; if (!k) return null;
+  const lista = v > 0.78 && k.f.length ? k.f : k.s; const s = C.createBufferSource(); s.buffer = lista[Math.floor(Math.random() * lista.length)];
+  s.playbackRate.value = k.rate * (1 + (Math.random() - 0.5) * 0.012); const g = gn(0.55 + 0.45 * Math.min(1, v));
+  s.connect(g); route(g, 0.05); s.start(t); return g;
+}
+let rAberto = null; let rCrash = null; let rRide = null;
+const comFallback = (modelo, pc, base, id) => (t, v = 1, dr = 0.3) => { C = init(); if (!toca(modelo, pc, t, v)) base[id](t, v, dr); };
+export const DRUM_REAL = {
+  bd: comFallback('acustica', 'bd', DRUM, 'bd'), tt: comFallback('acustica', 'tt', DRUM, 'tt'), mt: comFallback('acustica', 'mt', DRUM, 'mt'), ft: comFallback('acustica', 'ft', DRUM, 'ft'),
+  sn: (t, v = 1, dr = 0.3) => { C = init(); if (!toca('acustica', dr > 0.8 ? 'sn_aro' : 'sn', t, v)) DRUM.sn(t, v, dr); },
+  hh: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) { fade(rAberto, t, 0.015); rAberto = null; } if (!toca('acustica', 'hh', t, v)) DRUM.hh(t, v, dr); },
+  hf: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) { fade(rAberto, t, 0.015); rAberto = null; } if (!toca('acustica', 'hf', t, v)) DRUM.hf(t, v, dr); },
+  ho: (t, v = 1, dr = 0.3) => { C = init(); if (rAberto) fade(rAberto, t, 0.01); const g = toca('acustica', 'ho', t, v); if (g) rAberto = g; else DRUM.ho(t, v, dr); },
+  cr: (t, v = 1, dr = 0.3) => { C = init(); if (rCrash) fade(rCrash, t, 0.03); const g = toca('acustica', 'cr', t, v); if (g) rCrash = g; else DRUM.cr(t, v, dr); },
+  rd: (t, v = 1, dr = 0.5) => { C = init(); if (rRide) fade(rRide, t, 0.04); const g = toca('acustica', dr < 0.28 ? 'rd_sino' : 'rd', t, v); if (g) rRide = g; else DRUM.rd(t, v, dr); },
+};
+export const DRUM_CAJON_REAL = { ...DRUM_CAJON, bd: comFallback('cajon', 'bd', DRUM_CAJON, 'bd'), sn: comFallback('cajon', 'sn', DRUM_CAJON, 'sn') };
+for (const k of ['tt', 'mt', 'ft']) DRUM_CAJON_REAL[k] = DRUM_CAJON_REAL.bd;
+for (const k of ['hh', 'ho', 'hf', 'cr', 'rd']) DRUM_CAJON_REAL[k] = DRUM_CAJON_REAL.sn;
+export const kitSom = (modelo) => (modelo === 'eletronica' ? DRUM_ELET : modelo === 'cajon' ? DRUM_CAJON_REAL : DRUM_REAL);
 /** Força pela posição do dedo: no centro 1, na borda ~0.72, com uma variaçãozinha. */
 export const velAt = (dr) => (1 - 0.28 * Math.min(1, Math.max(0, dr))) * (0.94 + Math.random() * 0.12);
 
@@ -343,3 +381,4 @@ export function grooveBeat(style) {
   const out = par ? Object.fromEntries(Object.entries(rows).map(([id, r]) => [id, r.filter((_, i) => i % 2 === 0)])) : rows;
   return { id: `fundo-${style}`, name: style, style: '', bpm: backing.bpm, steps: par ? 8 : 16, kind: 'groove', rows: out };
 }
+export const amostrasOk = (modelo) => !!AMOSTRAS[modelo];

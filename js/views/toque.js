@@ -8,7 +8,7 @@ import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
 import { audio, click, perfToCtx } from '../audio.js';
 import { banner, toast, stars } from '../ui.js';
-import { kitSom, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
+import { kitSom, warmKit, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
 import { arte, NOME_PECA } from '../kids/kit-modelos.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
@@ -65,7 +65,7 @@ export function mount(host) {
   // a bateria é o mesmo desenho do "explorar a bateria": cada dedo vale um toque, então dá pra tocar com vários ao mesmo tempo
   let modeloAtual = conf().modelo;
   const drawKit = () => {
-    const c = conf(); modeloAtual = c.modelo;
+    const c = conf(); modeloAtual = c.modelo; warmKit(c.modelo);
     kit.classList.toggle('left', !!c.left);
     const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art, c.modelo);
     kit.dataset.kitTheme = kitTheme();
