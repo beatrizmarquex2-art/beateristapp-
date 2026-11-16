@@ -368,3 +368,19 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-howto-c .rz-howsvg{max-width:230px}
 .bmr .rz-howto-c .rz-steps{gap:6px;font-size:15px;color:#142036}
 .bmr .rz-howto-c .actions{display:flex;flex-wrap:wrap;gap:8px}
+/* resultado e demais painéis nos temas claros: o fundo ficava escuro (rgba(35,32,38,.8)) com texto escuro por cima e sumia (bug 16/nov) */
+.rg-host[data-rz-theme="colagem"] .bmr .panel,.rg-host[data-rz-theme="poster"] .bmr .panel{background:#fffdf7;color:#142036}
+.rg-host[data-rz-theme="colagem"] .bmr .panel .tag,.rg-host[data-rz-theme="poster"] .bmr .panel .tag{color:#7a4a10}
+.rg-host[data-rz-theme="colagem"] .bmr .panel .muted,.rg-host[data-rz-theme="poster"] .bmr .panel .muted{color:#4d5468}
+.rg-host[data-rz-theme="colagem"] .bmr .panel .rz-big,.rg-host[data-rz-theme="poster"] .bmr .panel .rz-big{color:#a8182e}.rg-host[data-rz-theme="colagem"] .bmr .panel .rz-big .rz-off,.rg-host[data-rz-theme="poster"] .bmr .panel .rz-big .rz-off{color:#c9bfae}
+
+/* resultado do ritmo usa o placar azul (.pl-card, css/jogos.css): ranking e estrelas combinando e espaço pro botão fixo "‹ jogos" */
+.rg-host .pl-card.rz-end{margin-bottom:96px!important}
+.pl-card.rz-end .rz-big{font-size:48px;margin:4px 0 6px;color:#f6b93b!important}.pl-card.rz-end .rz-big .rz-off{color:#3a4a7c}
+.pl-card.rz-end .rz-hall{margin:8px 0}.pl-card.rz-end .rz-hall-t{color:#f6b93b!important;font-weight:800}
+.pl-card.rz-end .rz-hall li{background:#1d3166!important;color:#f4ecdf!important;border-radius:10px}.pl-card.rz-end .rz-hall li.me{background:#c0152f!important}
+.pl-card.rz-end .rz-hall-new{background:#1d3166!important;color:#f4ecdf!important;border-radius:12px}
+.pl-card.rz-end .small{color:#cfd8ee!important}.pl-card.rz-end .muted{color:#aeb9d6!important}
+.pl-card.rz-end .pl-sync{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:10px 0;text-align:left;font-size:14px;color:#cfd8ee}
+.pl-card.rz-end .pl-sync b{color:#f6b93b}.pl-card.rz-end .pl-sync .btn{flex:0 0 52px!important;min-height:44px;font-size:24px!important;padding:0!important}
+.pl-card.rz-end .pl-sync small{color:#aeb9d6!important}
