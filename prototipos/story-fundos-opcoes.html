@@ -1,0 +1,62 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fundos de story e post — 3 direções</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+:root{--vinho:#9b1b30;--navy:#1f3f6e;--petro:#1c6b73;--creme:#f7efdc;--ink:#17130f}
+*{box-sizing:border-box;margin:0}body{background:#d9d2c3;display:flex;gap:26px;padding:26px;width:max-content;font-family:'Hanken Grotesk',system-ui,sans-serif}
+.st{position:relative;width:360px;height:640px;overflow:hidden;border-radius:18px;box-shadow:0 8px 28px #0004}
+.rot{position:absolute;top:0;left:0;right:0;z-index:9;text-align:center;font:700 12px system-ui;padding:4px;background:#000;color:#fff}
+.logo{position:absolute;top:44px;left:50%;transform:translateX(-50%);width:210px}
+.tit{position:absolute;top:138px;left:0;right:0;text-align:center;font:400 40px/1 'Anton'}
+.carta{position:absolute;left:50%;top:196px;width:226px;transform:translateX(-50%)}
+.faixa{position:absolute;left:18px;right:18px;bottom:30px;padding:12px 10px 10px;text-align:center}
+.faixa b{display:block;font:400 30px/1 'Anton'}.faixa small{display:block;font:700 10px system-ui;margin-top:4px;letter-spacing:.04em}
+
+/* 1 — faixas da marca: cartaz geométrico em vinho, navy, petróleo e creme */
+.d1{background:var(--creme)}
+.d1::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 0 38%,var(--vinho) 38% 52%,transparent 52% 56%,var(--navy) 56% 70%,transparent 70% 74%,var(--petro) 74% 88%,transparent 88%)}
+.d1::after{content:"";position:absolute;left:-60px;bottom:-60px;width:230px;height:230px;border-radius:50%;background:var(--navy)}
+.d1 .tit{color:var(--navy);transform:rotate(-2deg);margin:0 40px;background:var(--creme);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--vinho);padding:4px 0}
+.d1 .carta{filter:drop-shadow(8px 10px 0 var(--ink))}
+.d1 .faixa{background:var(--navy);color:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--vinho);z-index:3}
+.d1 .logo{z-index:3}.d1 .tit,.d1 .carta{z-index:3}
+
+/* 2 — caderno do Paul: papel quadriculado, fita, rabiscos */
+.d2{background:#fbf6e8;background-image:linear-gradient(#1f3f6e22 1px,transparent 1px),linear-gradient(90deg,#1f3f6e22 1px,transparent 1px);background-size:24px 24px}
+.d2::before{content:"";position:absolute;left:34px;top:0;bottom:0;border-left:3px solid #9b1b3055}
+.d2 .tit{font:400 44px/1 'Gochi Hand';color:var(--vinho);transform:rotate(-3deg)}
+.d2 .carta{transform:translateX(-50%) rotate(3deg);filter:drop-shadow(5px 6px 0 #17130f55);background:#fff;padding:8px;width:240px;border:2px solid var(--ink)}
+.fita{position:absolute;width:96px;height:26px;background:#e6c46aa8;z-index:5}
+.d2 .fita.a{left:66px;top:200px;transform:rotate(-34deg)}.d2 .fita.b{right:58px;top:214px;transform:rotate(30deg)}
+.d2 .faixa{background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--navy);transform:rotate(-1deg);color:var(--navy)}
+.d2 .faixa small{color:var(--vinho)}
+.rab{position:absolute;font:400 30px 'Gochi Hand';color:var(--petro);transform:rotate(-8deg)}
+
+/* 3 — palco azul: sem rosa e sem roxo, só azul-marinho, branco e ouro */
+.d3{background:radial-gradient(120% 80% at 50% 38%,#2d5598 0,#16294a 55%,#0b1527 100%)}
+.d3::before{content:"";position:absolute;inset:0;background:conic-gradient(from 200deg at 50% -8%,transparent 0 6deg,#ffffff1c 6deg 16deg,transparent 16deg 26deg,#ffffff14 26deg 36deg,transparent 36deg 150deg,#ffffff14 150deg 160deg,transparent 160deg 170deg,#ffffff1c 170deg 180deg,transparent 180deg)}
+.d3::after{content:"";position:absolute;left:0;right:0;bottom:0;height:260px;background-image:radial-gradient(#ffffff22 1.4px,transparent 1.6px);background-size:11px 11px}
+.d3 .tit{color:#f2c14e;text-shadow:0 0 22px #f2c14e88}
+.d3 .carta{filter:drop-shadow(0 0 26px #f2c14e88)}
+.d3 .faixa{background:#0b1527;color:#f2c14e;border:2px solid #f2c14e;box-shadow:0 0 18px #f2c14e55;z-index:3}
+.d3 .faixa small{color:#fff}
+.d3 .logo{filter:brightness(0) invert(1)}.d3 .tit,.d3 .carta,.d3 .logo{z-index:3}
+</style>
+<body>
+
+<div class="st d1"><div class="rot">1 · faixas da marca</div>
+ <img class="logo" src="../assets/logo-nome.png" alt="">
+ <div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+
+<div class="st d2"><div class="rot">2 · caderno do Paul</div>
+ <img class="logo" src="../assets/logo-nome.png" alt="">
+ <div class="tit">nova figurinha!</div><span class="fita a"></span><span class="fita b"></span><img class="carta" src="exemplo-carta.jpg" alt="">
+ <span class="rab" style="left:22px;top:128px">★</span><span class="rab" style="right:26px;top:430px;transform:rotate(10deg)">♪ ♫</span>
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>joga lá! beaterista escola de música</small></div></div>
+
+<div class="st d3"><div class="rot">3 · palco azul</div>
+ <img class="logo" src="../assets/logo-nome.png" alt="">
+ <div class="tit">NOVA FIGURINHA!</div><img class="carta" src="exemplo-carta.jpg" alt="">
+ <div class="faixa"><b>jogos.beaterista.com.br</b><small>beaterista escola de música · @beaterista_</small></div></div>
+</body></html>
