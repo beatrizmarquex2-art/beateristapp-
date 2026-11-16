@@ -189,13 +189,13 @@ const ZINES = {
   'zine-vermelho': { bg: 'zine-vermelho.webp', claro: true, tit: '#fbf4e2', sombra: '#17224a', moldura: '#fbf4e2', fx: [340, 350], dir: 60, rod: ['#17224a', '#fbf4e2', '#e9b824', '#fbf4e2'], tira: ['#e9b824', '#fbf4e2'] },
   'zine-azul': { bg: 'zine-azul.webp', claro: true, tit: '#fbf4e2', sombra: '#c4182c', moldura: '#fbf4e2', fx: [340, 350], dir: 255, rod: ['#fbf4e2', '#17224a', '#c4182c', '#17224a'], tira: ['#c4182c', '#e9b824'] },
 };
-async function desenharZine(e, formato, carta, tema = 'zine') {
+async function desenharZine(e, formato, carta, tema = 'zine') { // título em Gochi Hand, tamanho menor (escolha da Bea, 16/nov)
   const T = ZINES[tema] || ZINES.zine, { W, H, story } = geo(formato), c = canvas(W, H), ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
   const bg = await img(`assets/figurinhas/fundos/${T.bg}`);
   if (story) { const s = Math.max(W / bg.width, H / bg.height), w = bg.width * s, h = bg.height * s; ctx.drawImage(bg, (W - w) / 2, (H - h) / 2, w, h); }
   else { const s = W / bg.width, meia = H / 2 / s; ctx.drawImage(bg, 0, 0, bg.width, meia, 0, 0, W, H / 2); ctx.drawImage(bg, 0, bg.height - meia, bg.width, meia, 0, H / 2, W, H / 2); } // post 4:5: junta a metade de cima e a de baixo da arte (o meio é liso)
   const lw = story ? 460 : 360, lh = (lw * 175) / 900, lx = story ? 290 : 400, ly = story ? 250 : 120, lg = await logoCanvas(T.claro); ctx.drawImage(lg, lx, ly, lw, lh);
-  const ty = ly + lh + (story ? 90 : 78); const TIT = e.tituloPost || 'Nova figurinha!'; ctx.save(); ctx.textAlign = 'center'; const FT = e.fonteTitulo || "'Abril Fatface', " + ANTON, TX = e.fonteMaiuscula ? TIT.toUpperCase() : TIT; fitText(ctx, TX, W - 200, story ? 100 : 80, FT); const tx = W / 2 + 20; ctx.fillStyle = T.sombra; ctx.fillText(TX, tx + 5, ty + 5); ctx.fillStyle = T.tit; ctx.fillText(TX, tx, ty); ctx.restore();
+  const ty = ly + lh + (story ? 76 : 64); const TIT = e.tituloPost || 'Nova figurinha!'; ctx.save(); ctx.textAlign = 'center'; const FT = e.fonteTitulo || "'Gochi Hand', cursive", TX = e.fonteMaiuscula ? TIT.toUpperCase() : TIT; fitText(ctx, TX, W - 200, story ? 76 : 62, FT); const tx = W / 2 + 20; ctx.fillStyle = T.sombra; ctx.fillText(TX, tx + 5, ty + 5); ctx.fillStyle = T.tit; ctx.fillText(TX, tx, ty); ctx.restore();
   const cw = story ? 720 : 500, ch = (cw * H2) / W2, cy = story ? ty + 55 + ch / 2 : ty + 54 + ch / 2; // story: tudo mais pra cima e a cartinha maior (pedido da Bea)
   ctx.save(); ctx.translate(W / 2 + 10, cy); ctx.rotate((-2 * Math.PI) / 180); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 16; ctx.fillStyle = T.moldura; rr(ctx, -cw / 2 - 20, -ch / 2 - 20, cw + 40, ch + 40, 14); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.drawImage(carta, -cw / 2, -ch / 2, cw, ch); ctx.restore();
   const fx = story ? T.fx[1] : T.fx[1] - 15, fw = W - fx - T.dir, fh = story ? 230 : 200, fy = story ? H - 360 : H - 236, [cf, ct, c1, cr] = T.rod;
