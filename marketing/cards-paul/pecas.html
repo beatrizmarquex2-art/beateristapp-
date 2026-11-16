@@ -14,7 +14,7 @@ body{font-family:"Hanken Grotesk",system-ui,sans-serif;font-weight:700;color:#ff
 .abs{position:absolute}
 .placa{background:#fffaf0;border-radius:999px;display:flex;align-items:center;gap:18px;padding:12px 34px 12px 16px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
 .placa img:first-child{height:84px}.placa img:last-child{height:52px}
-.logo{background:#fffaf0;border-radius:44px;padding:26px 44px;box-shadow:0 8px 0 rgba(0,0,0,.28)}.logo img{display:block;width:100%}
+.logo{background:none;padding:0;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}.logo img{display:block;width:100%}
 h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.98}
 .ouro{color:#f2a91b}.verm{color:#c81e2d}
 .pill{display:inline-block;font:400 44px/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.16em;color:#f2a91b}
@@ -35,7 +35,7 @@ h1,h2,.an{font-family:"Anton","Arial Black",Impact,sans-serif;font-weight:400;te
 (function(){
   var Q=new URLSearchParams(location.search), DECK=Q.get('deck')||'instrumentos', PECA=Q.get('peca')||'hotmart';
   var A='../../assets/', OUT='_out/'+DECK+'/';
-  var LOGO=A+'originals/logo-roboterista-paul-alta.png', SELO=A+'logo-512.png', NOME=A+'logo-nome.png';
+  var LOGO='img/logo-roboterista-paul-branco.png', SELO=A+'logo-512.png', NOME=A+'logo-nome.png';
   var HD={bateria:'img/paul-bateria-1000.webp',teclado:'img/paul-teclado-1000.webp',guitarra:'img/paul-guitarra-1000.webp',quadro:A+'originals/paul-professor-quadro-hd.png',partitura:A+'paul/colorido/paul-lendo-partitura.webp',ouvindo:A+'paul/colorido/paul-ouvindo.webp'};
   var SITE='jogos.beaterista.com.br';
   var D={

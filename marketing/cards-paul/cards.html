@@ -35,7 +35,7 @@ p.tx{font-size:8.7pt;line-height:1.3;text-align:center;padding:0 2.6mm;font-weig
 .capa .placa{background:#fffaf0;border-radius:99px;padding:4mm 9mm 4mm 5mm;display:flex;align-items:center;gap:4mm}.capa .placa img:first-child{height:24mm}.capa .placa img:last-child{height:15mm}
 .capa{padding:15mm 16mm 14mm}.capa .placa{padding:3mm 8mm 3mm 4mm}.capa .placa img:first-child{height:19mm}.capa .placa img:last-child{height:12mm}
 .capa .cards-de{font:400 40pt/1 "Anton",sans-serif;letter-spacing:.12em;margin-top:10mm;color:#fff7e6}
-.capa .plate-logo{background:#fffaf0;border-radius:9mm;padding:5mm 9mm;margin-top:3mm;box-shadow:0 1.5mm 0 rgb(0 0 0/.25)}.capa .plate-logo img{height:50mm;display:block}
+.capa .plate-logo{background:none;padding:0;margin-top:3mm;filter:drop-shadow(0 1.2mm 0 rgb(0 0 0/.35))}.capa .plate-logo img{height:50mm;display:block}
 .capa .selo-am{margin-top:4mm;background:#f2a91b;color:#162146;font:400 20pt/1 "Anton",sans-serif;text-transform:uppercase;letter-spacing:.06em;padding:3mm 9mm 2.4mm;border-radius:99px;transform:rotate(-3deg)}
 .capa h2{font:800 15pt/1.25 "Hanken Grotesk",sans-serif;margin-top:4mm}
 .capa .pauls{display:flex;align-items:flex-end;justify-content:center;gap:0;margin-top:6mm}.capa .pauls img{height:50mm}.capa .pauls img.heroi{height:86mm;margin:0 -2mm}
@@ -60,7 +60,7 @@ body.deck .des{padding-top:4.4mm}body.deck .des svg.tf-sym{height:21mm}body.deck
 .txt .fim{margin-top:auto;display:flex;align-items:center;gap:6mm;border-top:.5mm solid #162146;padding-top:5mm}.txt .fim img{height:27mm}.txt .fim small{font-size:8.6pt;line-height:1.4;font-weight:600;color:#3b3f55}
 /* verso */
 .verso .card .in{background:radial-gradient(120% 70% at 50% 0,#31408a 0,#162146 55%,#0a0f26 100%);border-color:#f2a91b;align-items:center;justify-content:center;gap:2mm;color:#fff7e6}
-.verso .in img.p{height:40mm}.verso .in .lg{background:#fffaf0;border-radius:3mm;padding:1.6mm 3mm}.verso .in .lg img{height:12mm;display:block}.verso .in b{font:400 11pt/1.1 "Anton",sans-serif;text-transform:uppercase;text-align:center}.verso .in b i{font-style:normal;color:#f2a91b}.verso .in small{font:800 6.6pt/1.2 "Hanken Grotesk",sans-serif;letter-spacing:.04em}
+.verso .in img.p{height:40mm}.verso .in .lg{background:none;padding:0}.verso .in .lg img{height:12mm;display:block}.verso .in b{font:400 11pt/1.1 "Anton",sans-serif;text-transform:uppercase;text-align:center}.verso .in b i{font-style:normal;color:#f2a91b}.verso .in small{font:800 6.6pt/1.2 "Hanken Grotesk",sans-serif;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -75,6 +75,7 @@ const AMOSTRA = Number(QS.get('amostra')) || 0; // ?amostra=3 = PDF de amostra c
 const DICT = QS.get('deck') === 'dicionario'; // ?deck=dicionario = baralho do DICIONÁRIO MUSICAL (um card por termo)
 const DECK = QS.get('deck') === 'instrumentos'; // ?deck=instrumentos = baralho dos INSTRUMENTOS (90 cartas: bateria, teclado, violão); sem isso = baralho de TEORIA (150)
 const SITE = 'jogos.beaterista.com.br'; const A = '../../assets/';
+const LOGO_BRANCO = 'img/logo-roboterista-paul-branco.png'; // versão clara pra fundo escuro (capa e verso)
 const LOGO = `${A}originals/logo-roboterista-paul-alta.png`; // logo "Robôterista Paul" (mandado pela Bea)
 const PAUL_QUADRO = `${A}originals/paul-professor-quadro-hd.png`; // Paul ensinando no quadro, em alta (mandado pela Bea)
 const TEMAS_INST = [
@@ -99,7 +100,7 @@ const total = TEMAS.reduce((n, t) => n + t[3].reduce((m, f) => m + f.cards.lengt
 
 // capa
 document.body.append(el('section', 'pg capa', `<div class="placa"><img src="${A}logo-512.png" alt=""><img src="${A}logo-nome.png" alt=""></div>
-  <div class="cards-de">CARDS DO</div><div class="plate-logo"><img src="${LOGO}" alt="Robôterista Paul"></div>${DECK ? '<div class="sub-inst">INSTRUMENTOS</div>' : DICT ? '<div class="sub-inst">DICIONÁRIO MUSICAL</div>' : ''}${AMOSTRA ? '<div class="selo-am">amostra grátis</div>' : ''}
+  <div class="cards-de">CARDS DO</div><div class="plate-logo"><img src="${LOGO_BRANCO}" alt="Robôterista Paul"></div>${DECK ? '<div class="sub-inst">INSTRUMENTOS</div>' : DICT ? '<div class="sub-inst">DICIONÁRIO MUSICAL</div>' : ''}${AMOSTRA ? '<div class="selo-am">amostra grátis</div>' : ''}
   <h2>${AMOSTRA ? `${naAmostra} das ${total} cartas de ${ASSUNTO} pra você experimentar` : `${total} cartas de ${ASSUNTO} pra aprender brincando`}</h2>
   ${DICT ? `<div class="pauls"><img src="${paul('lendo-partitura')}" alt=""><img class="heroi" src="${PAUL_QUADRO}" alt="Paul ensinando no quadro"><img src="${paul('ouvindo')}" alt=""></div>` : DECK ? `<div class="pauls trio3"><img src="${paul('guitarra')}" alt="Paul tocando guitarra"><img class="heroi" src="${paul('teclado')}" alt="Paul tocando teclado"><img src="${paul('bateria')}" alt="Paul tocando bateria"></div>` : `<div class="pauls"><img src="${paul('lendo-partitura')}" alt=""><img class="heroi" src="${PAUL_QUADRO}" alt="Paul ensinando no quadro"><img src="${paul('bateria')}" alt=""></div>`}
   <div class="temas">${TEMAS.map(([n, , c]) => `<span style="background:${c}">${n}</span>`).join('')}</div>
@@ -135,7 +136,7 @@ if (AMOSTRA) document.body.append(el('section', 'pg txt', `<div class="logo-topo
   <div class="lista" style="grid-template-columns:1fr">${TEMAS.map(([n, s2, c, fs]) => `<div style="--c:${c}"><b style="color:${c}">${n} · ${fs.reduce((m, f) => m + f.cards.length, 0)} ${DICT ? 'termos' : 'cartas'}</b><small>${s2}: ${fs.map((f) => f.nome).join(' · ')}</small></div>`).join('')}</div>
   <h4>como conseguir o completo</h4><p>Fale com a equipe <b>#BeateristaTeam</b> pelo WhatsApp <b>(18) 99180-4150</b> ou acesse <b>jogos.beaterista.com.br</b> na aba <b>Lojinha</b>.</p>
   <div class="fim"><img src="${DECK ? paul('teclado') : PAUL_QUADRO}" alt=""><small><b>E no app tem mais:</b> toda carta toca o som, cada fase tem um mini quiz e a criança ganha estrelas e figurinhas.<br>Fale com a equipe <b>#BeateristaTeam</b> pelo WhatsApp <b>(18) 99180-4150</b> ou acesse <b>jogos.beaterista.com.br</b> na aba <b>Lojinha</b>.<br><br>© Beaterista escola de música · ${AUTORA}. Amostra de distribuição livre; proibida a venda.</small></div>`));
-else { const pg = el('section', 'pg verso'); const g = el('div', 'grade'); for (let i = 0; i < 9; i++) { const card = el('div', 'card'); card.append(el('div', 'in', `${DECK ? `<div class="trio"><img src="${paul('guitarra')}" alt=""><img src="${paul('teclado')}" alt=""><img src="${paul('bateria')}" alt=""></div>` : `<img class="p" src="${PAUL_QUADRO}" alt="">`}<div class="lg"><img src="${LOGO}" alt=""></div><b>Cards do <i>Robôterista Paul</i></b><small>${DECK ? 'INSTRUMENTOS · ' : DICT ? 'DICIONÁRIO MUSICAL · ' : ''}${SITE}</small>`)); g.append(card); } pg.append(g, el('p', 'rodape', 'verso das cartas (opcional): imprima esta página atrás de cada folha')); document.body.append(pg); }
+else { const pg = el('section', 'pg verso'); const g = el('div', 'grade'); for (let i = 0; i < 9; i++) { const card = el('div', 'card'); card.append(el('div', 'in', `${DECK ? `<div class="trio"><img src="${paul('guitarra')}" alt=""><img src="${paul('teclado')}" alt=""><img src="${paul('bateria')}" alt=""></div>` : `<img class="p" src="${PAUL_QUADRO}" alt="">`}<div class="lg"><img src="${LOGO_BRANCO}" alt=""></div><b>Cards do <i>Robôterista Paul</i></b><small>${DECK ? 'INSTRUMENTOS · ' : DICT ? 'DICIONÁRIO MUSICAL · ' : ''}${SITE}</small>`)); g.append(card); } pg.append(g, el('p', 'rodape', 'verso das cartas (opcional): imprima esta página atrás de cada folha')); document.body.append(pg); }
 await Promise.all([...document.images].map((im) => (im.complete ? 0 : new Promise((ok) => { im.onload = im.onerror = ok; }))));
 await document.fonts.ready; window.__pronto = { cartas: cartas.length, paginas: document.querySelectorAll('.pg').length };
 </script>
