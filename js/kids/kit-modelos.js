@@ -42,13 +42,6 @@ const DEFS = `<defs>
 
 const volta = (n, f) => Array.from({ length: n }, (_, i) => f((i * 360) / n, i)).join('');
 const FONTE = "'Gochi Hand','Comic Sans MS',cursive";
-/** Etiqueta com o nome da peça, na cor dela (a cor da partitura). `fundo` pode ser trocado (pads escuros). */
-function pilula(x, y, txt, fundo, { escura = false, extra = '' } = {}) {
-  const w = Math.round(txt.length * 7 + 15);
-  const fg = escura ? 'rt-claro' : lum(fundo) > 0.6 ? 'rt-preto' : 'rt-claro';
-  const cor = escura ? '#fff' : lum(fundo) > 0.6 ? '#1c1710' : '#fff';
-  return `<g><rect x="${x - w / 2}" y="${y - 9}" width="${w}" height="18" rx="9" fill="${escura ? '#121216' : fundo}"/><text class="${fg} rt-fica" x="${x}" y="${y + 4.6}" text-anchor="middle" font-family="${FONTE}" font-size="13" font-weight="700" fill="${cor}" stroke="none"${extra}>${txt}</text></g>`;
-}
 const brilhaE = (cx, cy, rx, ry, c) => `<ellipse class="km-brilha" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke-opacity="0" style="stroke:${claro(c, 0.3)};stroke-width:5"/>`;
 const brilhaC = (cx, cy, r, c) => brilhaE(cx, cy, r, r, c).replace('<ellipse', '<circle').replace(` rx="${r}" ry="${r}"`, ` r="${r}"`);
 
@@ -69,7 +62,6 @@ function casco(id, cx, top, w, h, ry, { lugs = 3, snare = false } = {}) {
     <ellipse cx="${cx}" cy="${yc}" rx="${rx - 3}" ry="${ry - 2.2}" fill="${c}"/>
     <ellipse cx="${cx}" cy="${yc}" rx="${rx - 5.2}" ry="${ry - 3.6}" fill="url(#km-pele)" data-head="1"/>
     <ellipse cx="${cx}" cy="${yc}" rx="${rx - 5.2}" ry="${ry - 3.6}" fill="url(#km-brilho)"/>
-    ${pilula(cx, yc + h * 0.55, NOME[id], c)}
     ${brilhaE(cx, yc, rx + 6, ry + 5, c)}
   </g>`;
 }
@@ -91,7 +83,6 @@ function prato(id, cx, cy, rx, ry, { rot = 0, chimbal = false } = {}) {
       <ellipse cx="${cx - rx * 0.04}" cy="${cy - ry * 0.22}" rx="${rx * 0.08}" ry="${ry * 0.2}" fill="#fff" opacity=".6"/>
       ${brilhaE(cx, cy, rx + 5, ry + 5, c)}
     </g>
-    ${pilula(cx, cy + ry + (chimbal ? 20 : 15), NOME[id], c)}
   </g>`;
 }
 /** Bumbo de frente: círculo grande, casco preto, aro cromado, aro verde, pele fumê com furo, pedal. O logo da Beaterista entra por cima (putLogo). */
@@ -113,7 +104,6 @@ function bumbo(cx, cy, R) {
     <circle cx="${hx}" cy="${hy}" r="17.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="15" fill="#fbf6e8"/><circle cx="${hx + 3}" cy="${hy + 4}" r="11" fill="url(#km-sombra)" opacity=".35"/>
     <rect x="${hx - 6}" y="${hy - 4}" width="11" height="9" rx="2" fill="#16161a"/><rect x="${hx - 5}" y="${hy + 4}" width="9" height="9" rx="2.4" fill="#ece1bb"/>
     <path d="M${cx - 22} ${cy + R - 6} h26 l4 12 h-34 Z" fill="#2a2c35"/><rect x="${cx - 20}" y="${cy + R + 2}" width="22" height="6" rx="2" fill="#8a8c97"/>
-    ${pilula(cx + 26, cy + 36, NOME.bd, c)}
     ${brilhaC(cx, cy, R + 6, c)}
   </g>`;
 }
@@ -145,7 +135,6 @@ function pad(id, cx, cy, R, { extra = '' } = {}) {
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-trama)"/>
     ${id === 'bd' ? '' : `<circle cx="${cx}" cy="${cy - rm * 0.2}" r="${rm * 0.13}" fill="#c9cad4"/>`}
     <circle cx="${cx}" cy="${cy}" r="${rm}" fill="url(#km-brilho)"/>
-    ${pilula(cx, cy + rm * 0.55, NOME[id], c, { escura: true })}
     ${brilhaC(cx, cy, R + 5, c)}
   </g>`;
 }
@@ -160,7 +149,6 @@ function pratoE(id, cx, cy, R, { extra = '' } = {}) {
     <g transform="rotate(-24 ${cx} ${cy})"><path d="M${cx - R} ${cy} A${R} ${R} 0 0 1 ${cx + R} ${cy} Z" fill="#17171b"/></g>
     <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#km-brilho)"/>
     <circle cx="${cx}" cy="${cy}" r="${R * 0.22}" fill="#0b0b0e"/><circle cx="${cx - R * 0.05}" cy="${cy - R * 0.06}" r="${R * 0.09}" fill="#fff" opacity=".5"/>
-    ${pilula(cx + R * 0.1, cy + R * 0.55, NOME[id], c, { escura: true })}
     ${brilhaC(cx, cy, R + 5, c)}
   </g>`;
 }
@@ -185,27 +173,25 @@ export function cajon() {
     <ellipse cx="200" cy="284" rx="130" ry="10" fill="url(#km-sombra)"/>
     <path d="M272 58 L322 44 C332 110 334 200 326 262 L278 278 Z" fill="url(#km-lateral)"/>
     <path d="M290 74 C 298 120 298 200 292 252" fill="none" style="stroke:#fff;stroke-opacity:.08;stroke-width:3"/>
-    <g transform="rotate(-7 304 160)"><rect x="293" y="138" width="24" height="40" rx="4" fill="#f4f4f6"/><text class="rt-fica" x="305" y="170" text-anchor="middle" font-family="'Arial Black',Impact,sans-serif" font-size="30" font-weight="900" fill="#121216" stroke="none">S</text></g>
     <path d="M96 40 C 140 18, 262 16, 322 34 L 326 48 L 274 60 L 98 60 Z" fill="url(#km-banco)"/>
     <path d="M122 34 C 170 24, 246 24, 306 36" fill="none" style="stroke:#fff;stroke-opacity:.22;stroke-width:2.2;stroke-linecap:round"/>
     <path d="M100 58 L272 58 L278 278 L94 278 Z" fill="url(#km-pinho)"/>
     ${veios}
     ${furos.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.3" fill="#16110b"/>`).join('')}
-    <g transform="translate(106 252)"><rect x="0" y="0" width="12" height="12" rx="2" fill="#16110b"/><path d="M9 3 h-6 v2.4 h6 v3.6 h-6 v1 h6" fill="none" style="stroke:#f4d9a8;stroke-width:1.6"/><text class="rt-fica" x="16" y="11.5" font-family="'Arial Black',Impact,sans-serif" font-size="14" font-weight="900" fill="#16110b" stroke="none">SPARK</text><text class="rt-fica" x="76" y="1" font-family="Arial,sans-serif" font-size="5.5" font-weight="700" fill="#16110b" stroke="none" transform="rotate(90 76 1)">CAJONS</text></g>
+    <g transform="translate(106 252)"><text class="rt-fica" x="0" y="11.5" font-family="'Arial Black',Impact,sans-serif" font-size="14" font-weight="900" fill="#16110b" stroke="none">SPARK</text><text class="rt-fica" x="60" y="1" font-family="Arial,sans-serif" font-size="5.5" font-weight="700" fill="#16110b" stroke="none" transform="rotate(90 60 1)">CAJONS</text></g>
     <g class="kp" data-p="sn" style="--c:${COR.sn}">
       <rect x="118" y="76" width="140" height="56" rx="12" fill="#c58f50"/>
       <rect x="121" y="79" width="134" height="50" rx="10" fill="${COR.sn}"/>
       <rect x="125" y="83" width="126" height="42" rx="8" fill="#efc88f" data-head="1"/><rect x="125" y="83" width="126" height="42" rx="8" fill="url(#km-brilho)"/>
-      ${pilula(188, 104, 'agudo', COR.sn)}
       <rect class="km-brilha" x="114" y="72" width="148" height="64" rx="14" fill="none" stroke-opacity="0" style="stroke:${claro(COR.sn, 0.3)};stroke-width:5"/>
     </g>
     <g class="kp" data-p="bd" style="--c:${COR.bd}">
       <circle cx="188" cy="190" r="54" fill="#c58f50"/><circle cx="188" cy="190" r="50" fill="${COR.bd}"/>
       <circle cx="188" cy="190" r="44" fill="#efc88f" data-head="1"/><circle cx="188" cy="190" r="44" fill="url(#km-brilho)"/>
-      ${pilula(188, 192, 'grave', COR.bd)}
       <circle class="km-brilha" cx="188" cy="190" r="60" fill="none" stroke-opacity="0" style="stroke:${claro(COR.bd, 0.3)};stroke-width:5"/>
     </g>
     <rect x="102" y="276" width="26" height="8" rx="4" fill="#1a1a1e"/><rect x="246" y="276" width="26" height="8" rx="4" fill="#1a1a1e"/>
   </svg>`;
 }
+export const NOME_PECA = NOME;
 export const arte = (modelo) => (modelo === 'eletronica' ? eletronica() : modelo === 'cajon' ? cajon() : acustica());

@@ -998,3 +998,9 @@ section.card.jg-sala-atalho { background: #f2c14e !important; border: 2px solid 
 [data-kit-theme] .tk-art .kp text.rt-preto, [data-kit-theme] .tk-art text.rt-fica:not(.rt-claro) { fill: #1c1710; }
 [data-kit-theme] .tk-art .kp text.rt-claro.rt-fica { fill: #fff; }
 .tk-art text.rt-fica { stroke: none !important; }
+
+/* nome da peça: só aparece embaixo da bateria quando toca */
+.tk-nome { min-height: 30px; margin: 8px auto 0; padding: 3px 16px; width: fit-content; border-radius: 999px !important; font: 700 18px 'Gochi Hand', 'Comic Sans MS', cursive; color: #fff; opacity: 0; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.tk-nome:empty { visibility: hidden; }
+.tk-nome.on { animation: tk-nome-vai 1.1s ease-out forwards; }
+@keyframes tk-nome-vai { 0% { opacity: 1; transform: scale(1.12); } 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }

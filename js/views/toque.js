@@ -9,7 +9,7 @@ import { clampBpm } from '../music.js';
 import { audio, click, perfToCtx } from '../audio.js';
 import { banner, toast, stars } from '../ui.js';
 import { kitSom, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
-import { arte } from '../kids/kit-modelos.js';
+import { arte, NOME_PECA } from '../kids/kit-modelos.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { tocarTabs, backingBar } from './tocar-nav.js';
 import { playDoc, stopAll } from './partitura.js';
@@ -33,11 +33,13 @@ export function mount(host) {
   const kit = h('div', { class: 'tk-kit tk-svgkit', role: 'group', 'aria-label': 'Bateria' });
   const panel = h('div');
   const status = h('p', { class: 'tr-status', 'aria-live': 'polite' });
+  const nomeEl = h('div', { class: 'tk-nome', 'aria-live': 'off' }); // o nome da peça só aparece quando toca
 
   /** `dr` = onde o dedo caiu na peça (0 = no meio, 1 = na borda): no meio bate mais forte; na borda da caixa vira aro; no meio da condução, sino. */
   const hit = (id, perfMs, dr = 0.3, pt) => {
     const c = audio(); const v = velAt(dr); const som = kitSom(modeloAtual); if (som[id]) som[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
     const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (pt) spark(pt.x, pt.y, el);
+    nomeEl.textContent = (modeloAtual === 'cajon' && { bd: 'grave', sn: 'agudo' }[id]) || NOME_PECA[id] || (id === 'ho' ? 'chimbal aberto' : ''); nomeEl.style.background = (el && el.style.getPropertyValue('--c')) || '#b5162b'; nomeEl.classList.remove('on'); void nomeEl.offsetWidth; nomeEl.classList.add('on');
     if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id, v, dr });
   };
   /** Onda que sai do ponto do toque, na cor da peça. */
@@ -62,7 +64,7 @@ export function mount(host) {
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
       ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
-    kit.replaceChildren(art, modelos, themeRow(drawKit));
+    kit.replaceChildren(art, nomeEl, modelos, themeRow(drawKit));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
