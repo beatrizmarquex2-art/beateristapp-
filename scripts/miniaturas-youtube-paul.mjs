@@ -25,7 +25,7 @@ const html = (i, [a, b, pose]) => { const bg = i % 3 === 0 ? AZ : i % 3 === 1 ? 
 .d{position:absolute;left:-150px;top:130px;width:600px;height:600px;border-radius:50%;background:${disco};opacity:${i % 3 === 1 ? .9 : .95}}.p{position:absolute;left:-30px;bottom:-6px;height:600px;max-width:560px;object-fit:contain;object-position:left bottom;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.28))}
 .ep{position:absolute;left:600px;top:70px;font:800 30px Hanken;letter-spacing:.12em;text-transform:uppercase;background:${OU};color:${AZ};padding:8px 22px;border-radius:99px}
 .t{position:absolute;left:600px;top:160px;width:660px;white-space:nowrap;font:400 ${tam(a,b)}px/1.02 Marker,cursive;transform:rotate(-3deg);transform-origin:0 0}.t em{display:block;font-style:normal;color:${OU};padding-left:36px}
-.s{position:absolute;left:606px;bottom:70px;font:400 46px Gochi,cursive}.l{position:absolute;right:36px;top:30px;height:92px}.u{position:absolute;right:36px;bottom:30px;font:700 26px Hanken;background:${CR};color:${AZ};padding:8px 20px;border-radius:99px}
+.s{position:absolute;left:606px;bottom:140px;font:400 46px Gochi,cursive}.l{position:absolute;right:36px;top:30px;height:92px}.u{position:absolute;right:36px;bottom:30px;font:700 26px Hanken;background:${CR};color:${AZ};padding:8px 20px;border-radius:99px}
 .r{position:absolute;left:566px;top:96px;display:none}</style><div class="pt"></div><div class="d"></div><img class="p" src="${hd(pose)}"><div class="ep">episódio ${n}</div>
 <div class="t">${a}<em>${b}</em></div><div class="s">com o Robôterista Paul</div><img class="l" src="${LOGO}"><div class="u">jogos.beaterista.com.br</div>`; };
 const browser = await chromium.launch();
