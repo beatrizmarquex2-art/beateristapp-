@@ -113,8 +113,11 @@ function bumbo(cx, cy, R) {
     <circle cx="${cx}" cy="${cy}" r="${R - 17}" fill="url(#km-fumaca)" data-head="1"/>
     <circle cx="${cx}" cy="${cy}" r="${R - 17}" fill="url(#km-brilho)"/>
     <circle cx="${hx}" cy="${hy}" r="13.5" fill="#d9b27c"/><circle cx="${hx}" cy="${hy}" r="11.5" fill="#fbf6e8"/><circle cx="${hx + 2}" cy="${hy + 3}" r="8" fill="url(#km-sombra)" opacity=".35"/>
-    <rect x="${hx - 5}" y="${hy - 4}" width="9" height="7" rx="2" fill="#16161a"/><rect x="${hx - 4}" y="${hy + 3}" width="7" height="7" rx="2" fill="#ece1bb"/>
-    <path d="M${cx - 22} ${cy + R - 6} h26 l4 12 h-34 Z" fill="#2a2c35"/><rect x="${cx - 20}" y="${cy + R + 2}" width="22" height="6" rx="2" fill="#8a8c97"/>
+    <rect x="${cx - 2.2}" y="${cy + 42}" width="4.4" height="${R - 38}" rx="2" fill="#2a2c35"/>
+    <circle cx="${cx}" cy="${cy + 38}" r="8" fill="#16161a"/><circle cx="${cx}" cy="${cy + 38}" r="6.6" fill="#ece1bb"/><circle cx="${cx - 2}" cy="${cy + 36}" r="3" fill="#fff" opacity=".6"/>
+    <rect x="${cx - 6}" y="${cy + R - 10}" width="12" height="16" rx="3" fill="#1d1e25"/><rect x="${cx - 4}" y="${cy + R - 8}" width="3" height="12" rx="1.5" fill="url(#km-cromo)"/>
+    <path d="M${cx - 12} ${cy + R + 4} h24 l5 24 h-34 Z" fill="url(#km-cromo2)"/><path d="M${cx - 9} ${cy + R + 9} h18 M${cx - 10} ${cy + R + 15} h20 M${cx - 11} ${cy + R + 21} h22" style="stroke:#3a3a44;stroke-width:2;stroke-linecap:round"/>
+    <rect x="${cx - 21}" y="${cy + R + 28}" width="42" height="6" rx="3" fill="#15151a"/>
     ${brilhaC(cx, cy, R + 6, c)}
   </g>`;
 }
