@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Arte dos Cards · combo em verde</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+/* A arte de venda dos Cards do Paul (mandada pela Bea) com a faixa do combo refeita em VERDE (vermelho parece "errado/cancelar"). Fundo = a arte original em entrada-telas/cards-venda-original.png */
+*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;position:relative;overflow:hidden;background:#0d1a3a}
+img.bg{position:absolute;inset:0;width:1080px;height:1350px}
+.faixa{position:absolute;left:48px;top:989px;width:984px;height:160px;border-radius:40px;background:#1fa35c;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.t{position:absolute;left:42px;top:34px;font:400 46px/1 Anton,sans-serif;color:#fff;letter-spacing:.02em;text-transform:uppercase}
+.s{position:absolute;left:42px;top:98px;font:600 22px/1 "Hanken Grotesk",sans-serif;color:#eafff2}
+.de{position:absolute;right:42px;top:28px;font:700 24px/1 "Hanken Grotesk",sans-serif;color:#eafff2;text-decoration:line-through}
+.p{position:absolute;right:42px;top:50px;font:400 84px/1 Anton,sans-serif;color:#fff27a}
+</style></head><body>
+<img class="bg" src="entrada-telas/cards-venda-original.png" alt="">
+<div class="faixa"><div class="t">combo os 3 baralhos</div><div class="s">360 cartas em PDF pra imprimir e recortar</div><div class="de">de R$ 59,70</div><div class="p">R$ 49,90</div></div>
+<script>Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});</script>
+</body></html>
