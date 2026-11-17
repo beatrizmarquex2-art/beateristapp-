@@ -13,6 +13,8 @@ export const DECK_SIZE = 128; // 4 cores × (12 figuras × 2 + 3 ações × 2) +
 export const isFig = (c) => c.kind === 'fig';
 export const isWild = (c) => c.kind === 'curinga' || c.kind === 'mais4';
 export const isAction = (c) => !isFig(c);
+/** O nome em duas partes (figura/ação + cor) pra mesa mostrar a cor como faixa. Curinga não tem cor. */
+export const cardParts = (c) => (c.kind === 'curinga' ? ['curinga', 'muda a cor'] : c.kind === 'mais4' ? ['curinga +4', ''] : [isFig(c) ? SYM_NAME[c.sym] : ACTION_NAME[c.kind], COLOR_NAME[c.color]]);
 export const cardName = (c) => (c.kind === 'curinga' ? 'curinga (muda a cor)' : c.kind === 'mais4' ? 'curinga +4' : `${isFig(c) ? SYM_NAME[c.sym] : ACTION_NAME[c.kind]} ${COLOR_NAME[c.color]}`);
 
 /** Figuras do baralho ANTIGO (112 cartas, com a nota fantasma): só o Modo Aventura do Uno usa, pra manter as missões e sementes de sempre. */

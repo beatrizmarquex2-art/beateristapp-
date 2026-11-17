@@ -159,7 +159,7 @@ export function mount(host, opts) {
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
         h('li', {}, 'pular: o próximo perde a vez. inverter: muda o sentido (com 2 jogadores, vale como pular). +2: o próximo compra 2 e perde a vez.'),
         h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa.'),
-        h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas.'),
+        h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas. com mais gente, o botão UNO! aparece pra todos: quem apertar primeiro vale. se o outro for mais rápido, quem ficou com 1 carta compra 2.'),
         h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.')))]),
       ...(UN ? [h('details', { class: 'jg-rules', open: true }, h('summary', {}, 'regras do UN🚫'), h('ul', {},
         h('li', {}, 'cartas iguais (mesma cor e mesma figura) podem ser jogadas juntas.'),
@@ -273,11 +273,11 @@ export function mount(host, opts) {
         h('div', { class: `cx-opps n${opps.length}` }, ...opps.map(seat)),
         h('div', { class: 'cx-table' }, deckEl,
           h('div', { class: 'cx-mid' }, pileEl,
-            prefs.help ? h('p', { class: 'cx-name', 'aria-live': 'polite' }, C.cardName(top)) : null),
+            prefs.help ? (() => { const [nm, cor] = C.cardParts(top); return h('p', { class: 'cx-name', 'aria-live': 'polite', 'aria-label': C.cardName(top), style: { '--ac': `var(--k-${top.color || 'azul'})` } }, h('b', {}, nm), cor ? h('em', { class: top.kind === 'curinga' ? 'any' : '' }, cor) : null); })() : null),
           h('div', { class: 'cx-side' },
             h('div', { class: `cx-ac c-${g.color}`, 'aria-label': `cor ativa: ${C.COLOR_NAME[g.color]}` }, h('span', { class: 'cx-dot' }), h('b', {}, C.COLOR_NAME[g.color])),
             svgIcon(ICON.dir, `cx-dir${g.dir === -1 ? ' rev' : ''}`), toolbar(),
-            UN ? h('button', { class: 'cx-uno sm', type: 'button', disabled: hidden || undefined, onclick: uno }, 'UNO') : (mustUno ? h('button', { class: 'cx-uno sm', type: 'button', onclick: uno }, 'UNO!') : null))),
+            UN ? h('button', { class: 'cx-uno sm', type: 'button', disabled: hidden || undefined, onclick: uno }, 'UNO') : (!hidden && corridaUno() != null ? h('button', { class: 'cx-uno sm', type: 'button', onclick: uno }, 'UNO!') : null))),
         h('p', { class: 'cx-msg', 'aria-live': 'polite' }, g.over ? '' : msgFor(g.ev))),
       adv ? h('p', { class: 'jg-p muted cx-advinfo', role: 'status', style: 'font-size:12px;margin:2px 0;text-align:center' }, `adversário: ${mp.oppName || 'Paul'} · rodada ${Math.max(1, stats.rounds)} · compras ${stats.draws} · especiais jogadas ${stats.specials}`) : null,
       h('div', { class: 'cx-me' },
@@ -388,7 +388,9 @@ export function mount(host, opts) {
     commit(nd);
   }
   function pass1() { if (!human() || !C.canPass(g)) return; const np = C.applyPass(g, g.turn); if (adv) C.track(stats, g, np, { type: 'pass' }, 0); commit(np); }
-  function uno() { if (gone || !g) return; if (!C.mustUno(g, meIdx())) { if (UN) { snd('tap'); flash('você não precisa de UNO agora', 1200); } return; } commit(C.callUno(g, meIdx()), { fromBusy: true }); }
+  /** Quem está com UMA carta e ainda não avisou (fora do UN🚫). Em 2 celulares e no mesmo aparelho o botão UNO! aparece pra TODOS: quem apertar primeiro vale. Contra o Paul ele avisa sozinho. */
+  const corridaUno = () => (UN || !g || g.over || g.unoPending == null || !C.mustUno(g, g.unoPending) || (g.mode === 'paul' && g.unoPending !== 0) ? null : g.unoPending);
+  function uno() { if (gone || !g) return; const dono = corridaUno(); if (!UN && dono != null && dono !== meIdx()) { commit(C.catchUno(g, dono, rnd), { fromBusy: true }); return; } /* apertou antes de quem ficou com 1 carta: ele compra 2 */ if (!C.mustUno(g, meIdx())) { if (UN) { snd('tap'); flash('você não precisa de UNO agora', 1200); } return; } commit(C.callUno(g, meIdx()), { fromBusy: true }); }
   /** UN🚫: “pegou!”. Acertou = o outro compra 2; errou = quem acusou compra 2. */
   function pegou() {
     if (gone || !g || !UN || !human() || busy) return; const me = meIdx(); const t = C.catchable(g, me);
