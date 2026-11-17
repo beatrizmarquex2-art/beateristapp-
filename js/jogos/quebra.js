@@ -10,6 +10,7 @@ import { sementeRnd } from './semente.js';
 import { salaAutoPara } from './online.js';
 import { alunoSemCodigo } from '../amostra.js';
 import { toast } from '../ui.js';
+import { NAGANO_FABRICA } from '../marcas-links.js';
 
 const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
@@ -27,6 +28,8 @@ export const IMAGES = [
   { id: 'show-guitarra', src: 'assets/jogos/show-guitarra.webp', nome: 'Paul tocando guitarra no show' },
   { id: 'bateria-palco', src: 'assets/jogos/bateria-palco.webp', nome: 'Paul tocando bateria no palco' },
   { id: 'terraco', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
+  // foto da Bea no estande da Nagano (a Bea mandou, 17/nov/2026). Ao montar, mostra o link da visita dela na fábrica.
+  { id: 'nagano', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
 ];
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
 
@@ -132,7 +135,7 @@ export function mount(host, opts) {
   function result() {
     return placar({ classe: 'jg-result', estado: 'win', pose: poseDisponivel('produtor', 'lendo-partitura'), titulo: 'montou! 🤘', sub: g.free ? 'modo livre: sem tempo' : record ? 'novo recorde!' : '',
       quadros: [g.free ? null : { n: Q.fmtTime(g.elapsed), l: 'tempo', win: true }, { n: g.hints, l: g.hints === 1 ? 'dica' : 'dicas' }, { n: g.errors, l: g.errors === 1 ? 'erro' : 'erros' }],
-      acoes: M ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
+      acoes: M ? [] : [...(pick(imgId).link ? [h('a', { class: 'btn primary wide qb-link', href: pick(imgId).link, target: '_blank', rel: 'noopener noreferrer' }, pick(imgId).linkTxt || 'ver mais ›')] : []), h('button', { class: pick(imgId).link ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(Q.newGame(prefs)) }, 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });
   }
 
   /* ---------- arrastar: mouse/caneta na hora; no toque, arrastar pra cima (ou segurar um instante e arrastar). Arrastar pro lado continua rolando a bandeja ---------- */
