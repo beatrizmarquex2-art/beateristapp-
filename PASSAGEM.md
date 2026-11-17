@@ -926,3 +926,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v596**: no Xilofone, o modo 'percussão (sem nota)' virou só 'Percussão'.
 - **v597**: dicionário em blocos de 5 (prova de 3 perguntas, 1 ★ cada, chave `dic|blocoN`); segredo da melodia agora é só Dó Ré Mi Fá; links TDT e Spark (Instagram) em `js/marcas-links.js`.
 - **v598**: **A Fuga do Estúdio** (`js/jogos/fuga.js`, rota `#/dicas/fuga`): 3 portas em ordem (quiz 3/5, caça-palavras, cruzadinha) reaproveitando os 3 jogos pelo modo D do duelo; vale até 3 ★ (30/dia) e guarda o recorde de tempo. Os 3 cards soltos saíram da lista de Jogos e do menu (as rotas `#/dicas/quiz|caca|cruzadinha` e o duelo por código continuam existindo). Sem código: só o aviso.
+- **v599**: visual da Fuga do Estúdio: corredor escuro neon, portas com cadeado e lasers (SVG/CSS), lâmpada ON AIR na porta da vez, luz verde nas abertas, alarme vermelho quando erra o quiz.

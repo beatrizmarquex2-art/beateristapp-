@@ -20,10 +20,29 @@ const seg = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 
 
 export function mount(host) {
   const box = h('div', { class: 'dc-box' }); let gone = false; let t0 = 0; let abertas = 0; let tentativas = 0;
-  const wrap = h('div', { class: 'jg jg-wrap dc-wrap fg-wrap' });
+  const wrap = h('div', { class: 'jg jg-wrap dc-wrap escuro fg-wrap' });
   host.append(banner('A Fuga do Estúdio', 'o Paul está trancado!'), wrap);
-  const portas = () => h('div', { class: 'fg-portas', role: 'list' }, ...PORTAS.map((p, i) => h('div', { role: 'listitem', class: `fg-porta${i < abertas ? ' aberta' : i === abertas ? ' vez' : ''}`, 'aria-label': `${p.nome}, ${i < abertas ? 'aberta' : i === abertas ? 'a da vez' : 'trancada'}` },
-    h('span', { class: 'fg-i' }, i < abertas ? '🔓' : i === abertas ? p.ic : '🔒'), h('small', {}, p.nome))));
+  /** A cena: corredor escuro do estúdio com 3 portas. Trancada = cadeado + lasers; a da vez = lâmpada ON AIR acesa; aberta = luz saindo pela porta e sem laser. */
+  const cena = (alarme = false) => {
+    const D = [{ x: 22 }, { x: 132 }, { x: 242 }];
+    const porta = (p, i) => {
+      const { x } = D[i]; const st = i < abertas ? 'a' : i === abertas ? 'v' : 't'; const cor = st === 'a' ? '#3cff9a' : st === 'v' ? '#ffd23f' : '#ff3b5c';
+      const painel = st === 'a'
+        ? `<polygon points="${x + 8},34 ${x + 36},26 ${x + 36},128 ${x + 8},126" fill="#171233" stroke="${cor}" stroke-width="2"/><polygon class="fg-luz" points="${x + 40},30 ${x + 98},4 ${x + 98},150 ${x + 40},124" fill="url(#fgLuz)"/>`
+        : `<rect x="${x + 8}" y="30" width="72" height="98" rx="4" fill="#241c4a" stroke="${cor}" stroke-width="2"/><rect x="${x + 16}" y="40" width="56" height="30" rx="3" fill="#150f33" stroke="#5b4fa8"/><rect x="${x + 16}" y="78" width="56" height="42" rx="3" fill="#150f33" stroke="#5b4fa8"/>`;
+      const cad = st === 'a' ? '' : `<g class="fg-cad ${st}" transform="translate(${x + 44} 86)"><path d="M-9 -2v-8a9 9 0 0118 0v8" fill="none" stroke="${cor}" stroke-width="3.5" stroke-linecap="round"/><rect x="-13" y="-3" width="26" height="22" rx="4" fill="${cor}"/><circle cx="0" cy="7" r="3" fill="#150f33"/><rect x="-1.4" y="8" width="2.8" height="7" fill="#150f33"/></g>`;
+      const onair = st === 'v' ? `<g class="fg-onair"><rect x="${x + 22}" y="6" width="44" height="14" rx="3" fill="#ff3b5c"/><text x="${x + 44}" y="16.5" text-anchor="middle" font-size="8.5" font-weight="900" fill="#fff" font-family="Anton,sans-serif" letter-spacing="1.5">ON AIR</text></g>` : st === 'a' ? `<text x="${x + 44}" y="16" text-anchor="middle" font-size="9" font-weight="900" fill="#3cff9a" font-family="sans-serif">ABERTA</text>` : '';
+      const lasers = st === 'a' ? '' : [0, 1, 2].map((k) => `<line class="fg-lz l${k}" x1="${x - 4}" x2="${x + 92}" y1="${44 + k * 30}" y2="${44 + k * 30}"/>`).join('');
+      return `<rect x="${x}" y="22" width="88" height="112" rx="6" fill="#0e0a24" stroke="#4a3d9a" stroke-width="3"/>${painel}${cad}${onair}${lasers}<text x="${x + 44}" y="150" text-anchor="middle" font-size="9.5" font-weight="800" fill="${st === 't' ? '#8a85b8' : '#fff6e0'}" font-family="sans-serif">${i + 1} · ${p.nome}</text>`;
+    };
+    const pronto = abertas >= PORTAS.length;
+    const el = h('div', { class: `fg-cena${alarme ? ' alarme' : ''}${pronto ? ' livre' : ''}`, role: 'img', 'aria-label': `${abertas} de ${PORTAS.length} portas abertas` });
+    el.innerHTML = `<svg viewBox="0 0 352 158" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fgLuz" x1="0" x2="1"><stop offset="0" stop-color="#b8ffd8" stop-opacity=".95"/><stop offset="1" stop-color="#3cff9a" stop-opacity="0"/></linearGradient><linearGradient id="fgChao" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c1450"/><stop offset="1" stop-color="#07041a"/></linearGradient></defs>
+<rect width="352" height="158" fill="url(#fgChao)"/>${Array.from({ length: 12 }, (_, k) => `<line x1="${k * 32}" y1="134" x2="${176 + (k - 5.5) * 80}" y2="158" stroke="#5b4fa8" stroke-opacity=".35"/>`).join('')}
+${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="352" y1="0" y2="0"/>'}</svg>`;
+    return el;
+  };
+  const portas = (alarme) => cena(alarme);
   const topo = () => h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'));
   const fala = (txt, ...extra) => h('section', { class: 'card pad fg-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false', width: 84, height: 84 }), h('p', {}, txt), ...extra);
   const comeca = () => { abertas = 0; tentativas = 0; t0 = Date.now(); fase(); };
@@ -34,7 +53,7 @@ export function mount(host) {
     const its = mod.items(); box.replaceChildren(); let api = null; let feito = false;
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const resolve = () => {
-      if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; wrap.replaceChildren(topo(), portas(), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
+      if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; wrap.replaceChildren(topo(), portas(true), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
       abertas++; if (abertas >= PORTAS.length) { vitoria(); return; }
       wrap.replaceChildren(topo(), portas(), fala(`porta aberta! 🔓 agora: ${PORTAS[abertas].nome}. ${PORTAS[abertas].fala}`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'próxima porta')));
     };
