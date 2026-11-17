@@ -11,6 +11,8 @@ import * as AC from '../acesso.js';
 import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
 import { submarino } from '../figurinhas/ornaments.js';
+import { PRODUTOS } from '../loja-config.js';
+const LINK_MEMORIA = (PRODUTOS.find((p) => p.id === 'memoria') || {}).link || '#/lojinha'; // a página de compra do Jogo da Memória (abre em outra aba, fora do jogo)
 import { lobby, salaAutoPara } from '../jogos/online.js';
 import { confirmSheet } from '../ui.js';
 import { ganhou } from '../jogos/estrelas-jogo.js';
@@ -67,7 +69,7 @@ export function mountMemoria(host, opts) {
   const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
     verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
   /** Sobra de casas na última linha da grade (4 por linha): o Paul ocupa o espaço em branco, com o chamado pra Lojinha (pedido da Bea). */
-  const vago = (n) => { const falta = (4 - (n % 4)) % 4; return falta ? h('a', { class: 'mem-vago', href: '#/lojinha/memoria', style: `grid-column: span ${falta}`, 'aria-label': 'adquira na lojinha' }, h('img', { src: 'assets/memoria/adquira-lojinha.webp', alt: 'Paul mostrando o Jogo da Memória: na lojinha', draggable: 'false', decoding: 'async' })) : null; }; // arte da Bea: o Paul com a caixa do jogo e a faixa "na lojinha"
+  const vago = (n) => { const falta = (4 - (n % 4)) % 4; return falta ? h('a', { class: 'mem-vago', href: LINK_MEMORIA, target: '_blank', rel: 'noopener', style: `grid-column: span ${falta}`, 'aria-label': 'adquira na lojinha' }, h('img', { src: 'assets/memoria/adquira-lojinha.webp', alt: 'Paul mostrando o Jogo da Memória: na lojinha', draggable: 'false', decoding: 'async' })) : null; }; // arte da Bea: o Paul com a caixa do jogo e a faixa "na lojinha"
   const grupos = (list, th) => [h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas' }, ...list.map((t) => tile(t, th)), vago(list.length))]; // todos os temas do mesmo tamanho, numa grade só (os abertos primeiro)
 
   const setup = () => {
