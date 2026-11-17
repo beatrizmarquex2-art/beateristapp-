@@ -32,7 +32,7 @@ const logoFora = (art, modelo) => {
   img('assets/marcas/beaterista.png', 4, 2, 44, 44, '', 'beaterista');
   if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro', 'nagano');
   if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro', 'nagano');
-  if (modelo === 'cajon') img('assets/marcas/spark-branco.png', 318, 2, 90, 28, 'claro', 'spark'); // a marca do cajón também fica de fora do instrumento, pra poder virar link
+  // cajón: sem o logo branco da Spark na tela (pedido da Bea, 17/nov/2026); fica só o logo preto desenhado na frente do cajón (kit-modelos.js)
 };
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
