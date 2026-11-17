@@ -261,24 +261,38 @@ function aulasView(view) {
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
+/** Pergunta rápida depois de ler a curiosidade: "que instrumento essa pessoa toca?" (1 ★, uma vez por curiosidade). */
+async function perguntaCuriosidade(i) {
+  const n = CURIOSIDADES.length; const k = ((i % n) + n) % n; const [quem, ins] = CURIOSIDADES[k]; const P = await import('./views/estudos-prova.js');
+  const outros = P.sorteia([...new Set(CURIOSIDADES.map((x) => x[1]).filter((x) => x !== ins))]).slice(0, 3);
+  P.abrirProva({ chave: `curio|${k}`, titulo: 'curiosidade', max: 1, rodadas: [{ enun: `${quem} toca o quê?`, opcoes: [ins, ...outros].map((x) => ({ rot: x, ok: x === ins })) }] });
+}
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
   const nome = h('h2', { class: 'tag' }); const inst = h('p', { class: 'es-tag' }); const txt = h('p', { class: 'es-dica' }); const pos = h('small', { class: 'muted' });
   const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; marcarEstudo('curiosidade'); marcarVisto('curiosidades'); };
   view.append(banner('Curiosidades de músicos', 'quem tocou antes de você'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('article', { class: 'card pad es-cur' }, inst, nome, txt, pos),
+    h('div', {}, h('button', { type: 'button', class: 'btn small', onclick: () => perguntaCuriosidade(i) }, '🎯 pergunta rápida · 1 ★')),
     h('div', { class: 'row', style: 'gap:8px' }, h('button', { type: 'button', class: 'btn', onclick: () => { i--; draw(); } }, '‹ anterior'), h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => { i++; draw(); } }, 'outra curiosidade ›'))));
   draw();
 }
 
 /** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Letras. */
+/** Pergunta rápida da dica: completa a frase com a palavra que falta (1 ★, uma vez por dica). */
+async function perguntaDica(num) {
+  const [P, M, T] = await Promise.all([import('./views/estudos-prova.js'), import('./views/dicas.js'), import('./tips.js')]); const its = M._duelo.items(); const idx = its.findIndex((x) => x.n === num);
+  if (idx < 0) { toast('essa dica não tem pergunta ainda'); return; }
+  const q = T.question(its, 'blank', () => (idx + 0.5) / its.length);
+  P.abrirProva({ chave: `dica|${num}`, titulo: `dica ${num}`, max: 1, rodadas: [{ enun: h('span', {}, 'que palavra completa a dica?', h('em', { style: 'font-weight:600;font-style:normal;display:block;margin-top:6px' }, q.prompt)), opcoes: q.options.map((o) => ({ rot: o.label, ok: o.id === q.ans })) }] });
+}
 function dicasEstudoView(view) {
   const box = h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'carregando as dicas…'));
   view.append(banner('Dicas do método', 'pra estudar com calma'), box); let dead = false;
   DA.carregar(CODE.saved()).finally(() => {
     if (dead) return; const list = tipList();
     box.replaceChildren(h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
-      ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
+      ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text), h('button', { type: 'button', class: 'btn small', onclick: () => perguntaDica(t.n) }, '🎯 pergunta rápida · 1 ★'))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
       h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (Letras)'));
   });
   return () => { dead = true; };

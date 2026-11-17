@@ -4,7 +4,7 @@ import { h } from '../util.js';
 const emb = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 export const sorteia = emb;
 /** Estrelas pelo número de acertos (3 perguntas = 0 a 3 ★). Puro. */
-export const estrelasProva = (acertos, total = 3) => Math.max(0, Math.min(3, Math.round((acertos / Math.max(1, total)) * 3)));
+export const estrelasProva = (acertos, total = 3, max = 3) => Math.max(0, Math.min(max, Math.round((acertos / Math.max(1, total)) * max)));
 let css = false;
 function estilo() {
   if (css) return; css = true; const s = document.createElement('style');
@@ -30,12 +30,12 @@ export function abrirProva(cfg, aoFim) {
     if (r.ouvir) setTimeout(() => { try { r.ouvir(); } catch { /* sem áudio */ } }, 250);
   };
   const fim = async () => {
-    const est = estrelasProva(acertos, cfg.rodadas.length);
-    ov.replaceChildren(h('div', { class: 'pv-box' }, h('h2', {}, est === 3 ? 'mandou bem demais! 🎉' : est ? 'boa, quase lá!' : 'ainda não foi, mas ouve de novo e tenta'), h('div', { class: 'pv-st', 'aria-label': `${est} estrelas` }, '★'.repeat(est) + '☆'.repeat(3 - est)),
-      h('p', {}, `${acertos} de ${cfg.rodadas.length} certas · cada prova paga até 3 ★ na vida`), h('button', { type: 'button', class: 'btn primary', onclick: fecha }, 'fechar'), h('button', { type: 'button', class: 'btn ghost', onclick: () => { i = 0; acertos = 0; tela(); } }, 'tentar de novo')));
+    const MAX = cfg.max || 3; const est = estrelasProva(acertos, cfg.rodadas.length, MAX);
+    ov.replaceChildren(h('div', { class: 'pv-box' }, h('h2', {}, est === MAX ? 'mandou bem demais! 🎉' : est ? 'boa, quase lá!' : 'ainda não foi, mas ouve de novo e tenta'), h('div', { class: 'pv-st', 'aria-label': `${est} de ${MAX} estrelas` }, '★'.repeat(est) + '☆'.repeat(MAX - est)),
+      h('p', {}, `${acertos} de ${cfg.rodadas.length} certas · essa pergunta paga até ${MAX} ★ na vida`), h('button', { type: 'button', class: 'btn primary', onclick: fecha }, 'fechar'), h('button', { type: 'button', class: 'btn ghost', onclick: () => { i = 0; acertos = 0; tela(); } }, 'tentar de novo')));
     if (est) { try { const E = await import('../jogos/estrelas-jogo.js'); await E.ganhou('estudos', est, cfg.chave); } catch { /* sem estrela */ } }
     if (aoFim) aoFim(est);
   };
   document.body.append(ov); tela();
 }
-export const botaoProva = (onclick) => h('button', { type: 'button', class: 'btn small', onclick }, '🎯 prova do Paul · até 3 ★');
+export const botaoProva = (onclick, rotulo = '🎯 prova do Paul · até 3 ★') => h('button', { type: 'button', class: 'btn small', onclick }, rotulo);

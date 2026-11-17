@@ -7,7 +7,19 @@ import * as FB from '../feedback.js';
 import { alunoSemCodigo, avisoCodigo } from '../amostra.js';
 import { corSrc } from '../paul-cor.js';
 import { ganhou } from './estrelas-jogo.js';
+import { audio, out } from '../audio.js';
 
+/** Efeitos sintetizados na hora (sem arquivo): laser, alarme, porta abrindo e fanfarra de vitória. Respeitam o botão de som do app. */
+export function sfx(tipo) {
+  try {
+    const c = audio(); const o = out(); const t = c.currentTime + 0.02;
+    const voz = (tp, f0, f1, ini, dur, vol, filtro) => { const x = c.createOscillator(); const g = c.createGain(); x.type = tp; x.frequency.setValueAtTime(f0, t + ini); x.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + ini + dur); g.gain.setValueAtTime(0.0001, t + ini); g.gain.exponentialRampToValueAtTime(vol, t + ini + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + ini + dur); let n = x; if (filtro) { const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = filtro; x.connect(f); n = f; } n.connect(g); g.connect(o); x.start(t + ini); x.stop(t + ini + dur + 0.05); };
+    if (tipo === 'laser') { voz('sawtooth', 1500, 180, 0, 0.22, 0.12, 4000); voz('square', 3000, 400, 0.02, 0.15, 0.04); }
+    else if (tipo === 'alarme') { for (let k = 0; k < 4; k++) voz('square', k % 2 ? 520 : 780, k % 2 ? 500 : 760, k * 0.16, 0.15, 0.1, 2500); }
+    else if (tipo === 'porta') { voz('sawtooth', 110, 55, 0, 0.55, 0.16, 500); voz('triangle', 70, 40, 0.05, 0.5, 0.2); [659, 880, 1319].forEach((f, k) => voz('sine', f, f, 0.5 + k * 0.1, 0.35, 0.12)); }
+    else if (tipo === 'vitoria') { [523, 659, 784, 1047, 1319].forEach((f, k) => { voz('triangle', f, f, k * 0.11, 0.45, 0.14); voz('sine', f * 2, f * 2, k * 0.11, 0.3, 0.04); }); }
+  } catch { /* sem áudio */ }
+}
 export const PORTAS = [
   { id: 'quiz', nome: 'sala de controle', ic: '🎛️', fala: 'acerte 3 de 5 perguntas pra destravar a mesa de som!' },
   { id: 'caca', nome: 'cabine de gravação', ic: '🎙️', fala: 'ache todas as palavras escondidas na grade!' },
@@ -50,11 +62,11 @@ ${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="
     h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'abrir as portas'), melhor() ? h('p', { class: 'muted' }, `seu recorde: ${seg(melhor())}`) : null));
   const fase = async () => {
     if (gone) return; const P = PORTAS[abertas]; const mod = (await import('../views/dicas.js'))._duelo; const T = await import('../tips.js'); if (gone) return;
-    const its = mod.items(); box.replaceChildren(); let api = null; let feito = false;
+    const its = mod.items(); box.replaceChildren(); let api = null; let feito = false; sfx('laser');
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const resolve = () => {
-      if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; wrap.replaceChildren(topo(), portas(true), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
-      abertas++; if (abertas >= PORTAS.length) { vitoria(); return; }
+      if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; sfx('alarme'); wrap.replaceChildren(topo(), portas(true), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
+      abertas++; sfx('porta'); if (abertas >= PORTAS.length) { setTimeout(() => sfx('vitoria'), 700); vitoria(); return; }
       wrap.replaceChildren(topo(), portas(), fala(`porta aberta! 🔓 agora: ${PORTAS[abertas].nome}. ${PORTAS[abertas].fala}`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'próxima porta')));
     };
     wrap.replaceChildren(topo(), portas(), h('p', { class: 'tr-count' }, `${P.nome} · ${P.fala}`), box);
