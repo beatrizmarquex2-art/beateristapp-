@@ -19,10 +19,10 @@ await page.reload(); await page.waitForSelector('.fig-blocos', { timeout: 20000 
 const pk2 = await page.evaluate(async () => { const R = await import('/js/figurinhas/rewards.js'); return R.stateOf().granted.filter((i) => i.startsWith('epico:')).length; });
 check('abrir de novo não entrega em dobro', pk2 === 2, String(pk2));
 check('o botão mostra o ganho do giro épico', /3 figurinhas garantidas/.test(await page.locator('.fig-pack-card .btn.primary').first().innerText()));
-await page.locator('.fig-pack-card .btn.primary').first().click(); await page.waitForSelector('.fig-wheel-disc', { timeout: 5000 });
-check('um toque só: a roleta abre e gira sozinha, com o Paul no meio', (await page.locator('.sheet .fig-hub-paul').count()) === 1 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 0);
+await page.locator('.fig-pack-card .btn.primary').first().click(); await page.waitForSelector('.sl-maq', { timeout: 5000 });
+check('um toque só: o giro épico abre a máquina caça-níquel e gira sozinha', (await page.locator('.sheet .sl-rolos .sl-janela').count()) === 3 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 0);
 await page.waitForSelector('.fig-reveal', { timeout: 12000 });
-check('o 1º giro épico dá exatamente 3 figurinhas', (await page.locator('.fig-flip').count()) === 3, String(await page.locator('.fig-flip').count()));
+check('o 1º giro épico dá exatamente 3 figurinhas: clássica, exclusiva e rara', (await page.locator('.fig-flip').count()) === 3 && /Beatlemania/.test(await page.locator('.sheet .fig-note').innerText()) && /Exclusiva/.test(await page.locator('.sheet .fig-note').innerText()) && /Rara/.test(await page.locator('.sheet .fig-note').innerText()), await page.locator('.sheet .fig-note').innerText());
 check('botões: colar automaticamente e guardar no baú', (await page.locator('.sheet .fig-open .btn').allInnerTexts()).join('|') === 'colar automaticamente|guardar no baú');
 await page.locator('.sheet').getByRole('button', { name: 'guardar no baú' }).click(); await sleep(500);
 await page.locator('.fig-bloco.b-resgate').click(); await sleep(400);
