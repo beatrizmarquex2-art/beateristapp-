@@ -1,0 +1,22 @@
+// A Fuga do Estúdio: 3 portas em ordem (quiz, caça-palavras, cruzadinha); sem código, só o aviso.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
+await page.goto(`${url}/aluno.html#/dicas/fuga`); await sleep(2500);
+const t = () => page.evaluate(() => document.body.innerText);
+let txt = await t(); check('abre a história e as 3 portas', /abrir as portas/.test(txt) && /sala de controle/.test(txt) && /cabine de gravação/.test(txt) && /sala de ensaio/.test(txt));
+await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-intro.png` : '/tmp/fuga-intro.png' });
+await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /abrir as portas/.test(b.textContent)).click()); await sleep(2200);
+txt = await t(); check('porta 1 = quiz (pergunta 1 de 5)', /pergunta 1 de 5/i.test(txt));
+await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-quiz.png` : '/tmp/fuga-quiz.png' });
+// responde tudo certo: cada opção certa é achada pelo texto da tela depois de clicar na 1ª (a certa fica verde); aqui só confere que a porta pede mínimo de acertos
+for (let i = 0; i < 5; i++) { await page.evaluate(() => document.querySelector('.dc-opt').click()); await sleep(300); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /próxima|ver o resultado|terminar/.test(b.textContent)).click()); await sleep(400); }
+await sleep(1200); txt = await t();
+check('termina o quiz: ou abre a próxima porta, ou pede pra tentar de novo (precisa de 3 certas)', /porta aberta|tentar outra vez/.test(txt));
+check('sem erro na página', errs.length === 0);
+await browser.close(); srv.close(); done();

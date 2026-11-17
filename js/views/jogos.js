@@ -92,10 +92,8 @@ const SECTIONS = [
     inner('memart'),
     ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // UN🚫 ESCONDIDO (pedido da Bea em 13/nov/2026: precisa de conserto); o código e o endereço #/jogos/un continuam, é só pôr 'un' de volta nesta lista // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
-  ['Palavras e quiz', [
-    link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
-    link('#/dicas/cruzadinha', LETRAS.cruzadinha[0], 'cruza.svg', LETRAS.cruzadinha[1]),
-    link('#/dicas/quiz', LETRAS.quiz[0], 'quiz.svg', LETRAS.quiz[1]),
+  ['Aventura de palavras', [
+    link('#/dicas/fuga', 'A Fuga do Estúdio', 'cruza.svg', 'abra as 3 portas: quiz, caça e cruzadinha'),
   ]],
 ];
 

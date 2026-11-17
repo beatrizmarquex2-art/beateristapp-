@@ -1448,3 +1448,12 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .ss-pausa, .ms-veu { border: 3px solid #14111a !important; border-radius: 20px !important; background: #fff6e0 !important; box-shadow: 0 0 0 5px #f6c93b, 6px 8px 0 5px rgb(0 0 0 / .3) !important; padding: 18px !important; color: #14111a !important; }
 .ss-pausa b, .ms-veu b { font: 400 36px/1 Anton, Impact, sans-serif !important; text-transform: uppercase; letter-spacing: .04em; color: #c4182c !important; }
 .ss-pausa .btn.primary, .ms-veu .kd-btn { background: linear-gradient(180deg, #ffd23f, #f6a81f) !important; color: #14111a !important; border: 3px solid #14111a !important; box-shadow: 0 4px 0 #14111a !important; font: 800 18px var(--body, system-ui) !important; border-radius: 14px; padding: 10px 18px; }
+
+/* A Fuga do Estúdio: 3 portas em fila + o Paul falando */
+.fg-portas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.fg-porta{display:grid;justify-items:center;gap:2px;padding:10px 4px;border-radius:14px;border:2px dashed #8a8fa8;background:#ffffff14;text-align:center}
+.fg-porta .fg-i{font-size:28px}.fg-porta small{font-weight:800;font-size:11px}
+.fg-porta.vez{border-style:solid;border-color:#ffd23f;background:#ffd23f26;animation:fgPulso 1.4s ease-in-out infinite}
+.fg-porta.aberta{border-style:solid;border-color:#1c8a3a;background:#1c8a3a22}
+.fg-fala{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center}.fg-fala>:nth-child(n+3){grid-column:1/-1}
+@keyframes fgPulso{50%{transform:scale(1.04)}}@media (prefers-reduced-motion:reduce){.fg-porta.vez{animation:none}}

@@ -157,6 +157,7 @@ const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg', duel
 const SUB = Object.fromEntries(Object.entries(NOMES_LETRAS).map(([k, v]) => [k, v[1]]));
 
 export function mount(host, parts = []) {
+  if (parts[0] === 'fuga') { let off = () => {}; import('../jogos/fuga.js').then((m) => { off = m.mount(host); }); return () => off(); } // A Fuga do Estúdio junta quiz + caça + cruzadinha
   const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
   const tab = TABS.some(([k]) => k === parts[0]) || parts[0] === 'duelo' ? parts[0] : limited ? 'caca' : 'quiz';
   const porCodigo = tab === 'duelo' || (JOGOS_LETRAS.includes(tab) && parts[1] === 'codigo'); // duelo de 2 celulares por código de sala
