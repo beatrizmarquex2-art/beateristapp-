@@ -4,6 +4,7 @@ import { audio, out, kick, snare, hihat, tom } from '../audio.js';
 import { pluck } from '../instruments.js';
 import { epiano, rim, bass } from '../synth.js';
 import { banner } from '../ui.js';
+import { abrirProva, botaoProva, sorteia } from './estudos-prova.js';
 
 const NOMES = ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'];
 const CIFRA = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
@@ -66,18 +67,34 @@ export function acordesView(host, parts = []) {
     aba === 'violao' ? violaoLista() : tecladoLista()));
 }
 const ouvirBtn = (t, fn, aria) => h('button', { type: 'button', class: 'ac-ouvir', 'aria-label': aria, onclick: fn }, t);
+const pegaOutros = (arr, atual, n) => sorteia(arr.filter((x) => x !== atual)).slice(0, n);
+function provaViolao(item) {
+  const [cifra, nome, frets] = item; const menor = /m$/.test(cifra);
+  abrirProva({ chave: `acorde|violao|${cifra}`, titulo: `acorde ${cifra}`, rodadas: [
+    { enun: h('span', {}, 'qual é o nome deste acorde?', diagrama(frets)), opcoes: [item, ...pegaOutros(VIOLAO, item, 3)].map((x) => ({ rot: `${x[0]} · ${x[1].replace(/ \(.*/, '')}`, ok: x === item })) },
+    { enun: `qual é o desenho do acorde ${cifra} (${nome.replace(/ \(.*/, '')})?`, opcoes: [item, ...pegaOutros(VIOLAO, item, 2)].map((x) => ({ rot: () => diagrama(x[2]), ok: x === item })) },
+    { enun: 'ouça: este acorde é maior ou menor?', ouvir: () => tocaViolao(frets, 'acoustic'), opcoes: [{ rot: 'maior (alegre)', ok: !menor }, { rot: 'menor (triste)', ok: menor }] }] });
+}
 function violaoLista() {
   const lista = h('div', { class: 'ac-grid' });
   lista.replaceChildren(...VIOLAO.map(([cifra, nome, frets]) => h('div', { class: 'ac-card' },
     h('b', { class: 'ac-cifra' }, cifra), diagrama(frets), h('small', {}, nome),
-    h('div', { class: 'ac-sons' }, ouvirBtn('🪕 violão', () => tocaViolao(frets, 'acoustic'), `ouvir ${nome} no violão`), ouvirBtn('⚡ guitarra', () => tocaViolao(frets, 'clean'), `ouvir ${nome} na guitarra`), ouvirBtn('🎵 baixo', () => tocaViolao(frets, 'baixo'), `ouvir ${nome} no baixo`)))));
+    h('div', { class: 'ac-sons' }, ouvirBtn('🪕 violão', () => tocaViolao(frets, 'acoustic'), `ouvir ${nome} no violão`), ouvirBtn('⚡ guitarra', () => tocaViolao(frets, 'clean'), `ouvir ${nome} na guitarra`), ouvirBtn('🎵 baixo', () => tocaViolao(frets, 'baixo'), `ouvir ${nome} no baixo`)), botaoProva(() => provaViolao([cifra, nome, frets])))));
   return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, '× = não toca a corda · ○ = corda solta · bolinha azul = onde pôr o dedo. escolha em qual instrumento ouvir.'), lista);
+}
+function provaTeclado(r, tipo) {
+  const cod = (a, b) => `${a}|${b}`; const todos = NOMES.flatMap((_, k) => TIPOS.map((_t, t) => [k, t])); const eu = todos.find(([k, t]) => k === r && t === tipo);
+  const nm = ([k, t]) => `${CIFRA[k]}${TIPOS[t][2]} · ${NOMES[k]} ${TIPOS[t][0]}`; const outros = (n) => sorteia(todos.filter((x) => x !== eu)).slice(0, n);
+  abrirProva({ chave: `acorde|teclado|${cod(r, tipo)}`, titulo: `acorde ${CIFRA[r]}${TIPOS[tipo][2]}`, rodadas: [
+    { enun: h('span', {}, 'qual é o nome deste acorde?', tecladoSVG(acorde(r, tipo))), opcoes: [eu, ...outros(3)].map((x) => ({ rot: nm(x), ok: x === eu })) },
+    { enun: `qual teclado mostra o acorde ${nm(eu)}?`, opcoes: [eu, ...outros(2)].map((x) => ({ rot: () => tecladoSVG(acorde(x[0], x[1])), ok: x === eu })) },
+    { enun: 'ouça: este acorde é maior ou menor?', ouvir: () => piano(audio().currentTime + 0.05, acorde(r, tipo)), opcoes: TIPOS.map(([n], t) => ({ rot: n, ok: t === tipo })) }] });
 }
 function tecladoLista() {
   const grade = h('div', { class: 'ac-grid' });
   const card = (r, tipo) => { const notas = acorde(r, tipo); const nome = `${NOMES[r]} ${TIPOS[tipo][0]}`;
     return h('div', { class: 'ac-card wide' }, h('b', { class: 'ac-cifra' }, `${CIFRA[r]}${TIPOS[tipo][2]}`), tecladoSVG(notas), h('small', {}, nome),
-      h('div', { class: 'ac-sons' }, ouvirBtn('🎹 piano', () => piano(audio().currentTime + 0.05, notas), `ouvir ${nome} no piano`), ouvirBtn('⚡ elétrico', () => epiano(audio().currentTime + 0.05, notas, 1.4, 1), `ouvir ${nome} no piano elétrico`))); };
+      h('div', { class: 'ac-sons' }, ouvirBtn('🎹 piano', () => piano(audio().currentTime + 0.05, notas), `ouvir ${nome} no piano`), ouvirBtn('⚡ elétrico', () => epiano(audio().currentTime + 0.05, notas, 1.4, 1), `ouvir ${nome} no piano elétrico`)), botaoProva(() => provaTeclado(r, tipo))); };
   let tipo = 0; const draw = () => grade.replaceChildren(...NOMES.map((_, r) => card(r, tipo))); draw();
   return h('div', { style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'as teclas douradas e vermelhas formam o acorde. escolha piano ou elétrico pra ouvir.'),
     h('div', { class: 'jg jg-seg', role: 'radiogroup', 'aria-label': 'tipo de acorde' }, ...TIPOS.map(([nome], i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(tipo === i), onclick: (e) => { tipo = i; e.currentTarget.parentElement.querySelectorAll('button').forEach((b, k) => b.setAttribute('aria-checked', String(k === i))); draw(); } }, nome))), grade);
@@ -130,6 +147,16 @@ function partitura(r) {
   return svg(352, 130, s, 'rt-part');
 }
 
+const ROT = (xs) => xs.map((i) => CONTA[i]).join(' · ') || '—';
+function provaRitmo(r) {
+  const base = r.sn || r.su || r.rm || r.bd; const nomeBase = r.sn ? 'caixa' : r.su ? 'surdo' : r.rm ? 'aro' : 'bumbo'; const outros = RITMOS.filter((x) => x !== r);
+  const distr = (campo, cert) => { const v = new Set([ROT(cert)]); for (const x of sorteia(outros)) { const t = ROT(x[campo] || x.bd); if (!v.has(t)) v.add(t); if (v.size >= 3) break; } return [...v]; };
+  const nb = r.bd.length; const nums = [...new Set([nb, nb + 1, Math.max(1, nb - 1), nb + 2])].slice(0, 4);
+  abrirProva({ chave: `ritmo|${r.id}`, titulo: r.nome, rodadas: [
+    { enun: 'ouça: que ritmo é este?', ouvir: () => { const c = audio(); const t0 = c.currentTime + 0.05; const sp = 60 / r.bpm / 4; for (let i = 0; i < 16; i++) tocaPasso(r, i, t0 + i * sp); }, opcoes: [r, ...sorteia(outros).slice(0, 3)].map((x) => ({ rot: x.nome, ok: x === r })) },
+    { enun: `em quais momentos do compasso cai a ${nomeBase}?`, opcoes: distr(r.sn ? 'sn' : r.su ? 'su' : r.rm ? 'rm' : 'bd', base).map((t) => ({ rot: t, ok: t === ROT(base) })) },
+    { enun: `quantas batidas de bumbo tem neste compasso do ${r.nome}?`, opcoes: nums.map((n) => ({ rot: String(n), ok: n === nb })) }] });
+}
 export function ritmosView(host) {
   let idx = 0; let atual = RITMOS[0]; let bpm = atual.bpm; let tocando = false; let timer = 0; let step = 0; let next = 0; let celulas = [];
   const grade = h('div', { class: 'rt-grade', role: 'table', 'aria-label': 'ritmo em 16 passos' }); const titulo = h('h2', { class: 'rt-t', 'aria-live': 'polite' });
@@ -154,7 +181,7 @@ export function ritmosView(host) {
     h('section', { class: 'card pad rt-box' },
       h('div', { class: 'rt-nav' }, seta(-1, '‹', 'ritmo anterior'), h('div', { class: 'rt-cur' }, titulo, pontos), seta(1, '›', 'próximo ritmo')),
       grade, pauta,
-      h('div', { class: 'rt-ctl' }, botao, h('span', { class: 'mem-step' }, h('button', { type: 'button', 'aria-label': 'mais devagar', onclick: () => { bpm = Math.max(50, bpm - 5); bpmOut.textContent = `${bpm} BPM`; } }, '−'), bpmOut, h('button', { type: 'button', 'aria-label': 'mais rápido', onclick: () => { bpm = Math.min(160, bpm + 5); bpmOut.textContent = `${bpm} BPM`; } }, '+'))))));
+      h('div', { class: 'rt-ctl' }, botao, botaoProva(() => provaRitmo(atual)), h('span', { class: 'mem-step' }, h('button', { type: 'button', 'aria-label': 'mais devagar', onclick: () => { bpm = Math.max(50, bpm - 5); bpmOut.textContent = `${bpm} BPM`; } }, '−'), bpmOut, h('button', { type: 'button', 'aria-label': 'mais rápido', onclick: () => { bpm = Math.min(160, bpm + 5); bpmOut.textContent = `${bpm} BPM`; } }, '+'))))));
   botao.textContent = '▶ ouvir'; desenha();
   return () => { parar(); };
 }
