@@ -101,7 +101,7 @@ const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0
 export function leitura(host, opts = {}) {
   let fixedStep = opts.mapa && !opts.livre ? opts.step : undefined; // dentro do mapa a fase vem de fora (nada de escolher aqui)
   let beats = null; let run = null; let lastResult = null; let micBlocked = false; let micErro = null; let passedNow = false;
-  const RODADAS_FASE = 3; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (a nota da fase é a do ÚLTIMO compasso tocado, não a média); no modo livre segue 1 por vez
+  const RODADAS_FASE = 1; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (a nota da fase é a do ÚLTIMO compasso tocado, não a média); no modo livre segue 1 por vez
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   let testeAtivo = null; // microfone do "testar" (precisa fechar ao sair da tela)
@@ -118,7 +118,7 @@ export function leitura(host, opts = {}) {
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
       : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'pode tocar com as duas mãos na tela · ou aperte qualquer tecla'));
-    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : fase3 ? `compasso ${rodada + 1} de ${RODADAS_FASE} · ▶ toque depois do “4”` : '▶ vai direto pra sua vez (toque depois do “4”) · “ouvir e depois tocar” toca o ritmo antes.');
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ “tocar”: conta 4 e é a sua vez (toque depois do “4”) · “ouvir” toca o ritmo antes.');
     const conclude = async (taps) => {
       const g = S.gen; run = null;
       lastResult = evaluate(taps, expected, c.bpm, { mic: useMic });
@@ -168,8 +168,6 @@ export function leitura(host, opts = {}) {
     };
     const listen = () => { stop(); const t0 = schedule(beats, c.bpm, { play: true }); acenderDemo(S, body, beats, c.bpm, t0); status.textContent = 'ouvindo como é…'; };
     // ouvir primeiro e, quando acabar, já entra a vez da Bea (contagem + clique + o som de cada toque)
-    // No microfone o iPhone/iPad só deixa abrir o microfone logo depois de um TOQUE (não dentro de um temporizador): então depois de ouvir, quem toca aperta "tocar direto".
-    const listenThenPlay = () => { stop(); const q = 60 / c.bpm; const t0d = schedule(beats, c.bpm, { play: true }); acenderDemo(S, body, beats, c.bpm, t0d); if (useMic) { status.textContent = 'ouça primeiro… depois aperte “tocar direto” e toque no seu pad ou bateria.'; return; } status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
     // "testar o microfone": 10 s ouvindo, e cada batida que o app escuta acende o pad (pra saber se o aparelho está ouvindo antes de jogar)
     const testeMic = !useMic ? null : h('button', { class: 'btn small ghost tr-testmic', type: 'button', onclick: async (ev) => {
       const b = ev.currentTarget; if (testeAtivo) { testeAtivo.stop(); testeAtivo = null; b.textContent = '🎙 testar o microfone'; status.textContent = ''; return; }
@@ -187,16 +185,16 @@ export function leitura(host, opts = {}) {
       // logo EMBAIXO do lugar de tocar: a nota (100%) do lado e o botão da próxima fase; a explicação fica mais abaixo
       const temProx = passedNow && step < PATH.length - 1 && (!opts.mapa || PATH[step + 1].tier === PATH[step].tier); const nest = r.est || 0;
       quick = h('section', { class: `tr-quick${passedNow ? ' ok' : ''}`, 'aria-live': 'polite' },
-        h('div', { class: 'tr-big' }, h('b', {}, `${r.parcial ? r.compassoNota : r.score}%`), h('span', {}, r.parcial ? `compasso ${notasFase.length} de ${RODADAS_FASE}` : fase3 ? 'vale o último compasso' : 'precisão'), !livre && !r.parcial ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
+        h('div', { class: 'tr-big' }, h('b', {}, `${r.score}%`), h('span', {}, 'precisão'), !livre && !r.parcial ? h('em', { class: 'tr-stars', 'aria-label': `${nest} de 3 estrelas` }, '★'.repeat(nest), h('i', {}, '★'.repeat(3 - nest))) : null),
         r.parcial ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { rodada++; lastResult = null; draw(true); } }, `próximo compasso ▶ (${notasFase.length + 1} de ${RODADAS_FASE})`)
           : temProx && !opts.mapa ? h('button', { class: 'btn primary tr-next', type: 'button', onclick: () => { save({ pstep: step + 1 }).then(() => { lastResult = null; draw(true); }); } }, 'próxima fase ▶')
           : passedNow && opts.mapa ? h('button', { class: 'btn primary tr-next tr-andou', type: 'button', onclick: () => opts.onBack && opts.onBack({ andou: step }) }, 'você andou no mundinho! ver o mapa ▶') // pedido da Bea: passou de fase = avisa e mostra o mapa (não pula direto pra próxima)
           : h('button', { class: 'btn tr-next', type: 'button', onclick: () => { if (livre) draw(true); else if (fase3) { rodada = 0; notasFase = []; lastResult = null; draw(true); } else start(); } }, livre ? '🔀 outro compasso' : fase3 ? '↻ tentar a fase de novo' : '↻ tentar de novo'));
       summary = h('section', { class: 'card pad tr-res' },
-        fase3 && !r.parcial && r.compassos ? h('p', {}, `os 3 compassos: ${r.compassos.map((x) => `${x}%`).join(' · ')} → vale o último: ${r.score}%`) : null,
+        null,
         h('p', {}, `${r.hits}/${r.total} notas · ${r.notes.filter((n) => n.st === 'ok').length} no tempo${r.extra ? ` · ${r.extra} a mais` : ''}${fase3 ? ` (compasso ${r.parcial ? notasFase.length : RODADAS_FASE})` : ''}`),
         r.ajuste ? h('p', { class: 'muted' }, r.mic ? `o microfone demora uns ${Math.abs(r.ajuste)} ms pra ouvir (normal): já descontei isso da sua nota.` : `o aparelho atrasa uns ${Math.abs(r.ajuste)} ms (normal em andamento rápido): já descontei isso da sua nota.`) : null,
-        devs.length ? h('p', { class: 'muted' }, `média ${avg > 0 ? '+' : ''}${avg} ms (${avg < -15 ? 'adiantada' : avg > 15 ? 'atrasada' : 'no tempo'}) · oscilação ±${spread} ms`) : null,
+        devs.length ? null : null,
         h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou'),
         h('p', { class: 'muted' }, tip),
         !livre && !r.parcial ? h('p', { class: passedNow ? 'tr-status good' : 'muted' }, passedNow ? (`${'★'.repeat(nest)}${'☆'.repeat(3 - nest)} · ` + (step < PATH.length - 1 ? '✓ passou! o próximo exercício abriu.' : '✓ passou! você terminou o caminho todo.')) : `precisa de ${PASS_SCORE}% pra passar. na tela vale 1 ★; no microfone vale mais. tenta de novo!`) : null,
@@ -221,9 +219,8 @@ export function leitura(host, opts = {}) {
       micBlocked && c.input === 'mic' ? h('div', { class: 'tr-status bad tr-micerro', role: 'alert' }, h('b', {}, (micMessage(micErro)[0] || 'microfone indisponível agora') + ' vou usar a tela.'), h('p', { class: 'muted' }, `${micMessage(micErro)[1]}${micErro && micErro.name ? ` (${micErro.name})` : ''}`),
         h('button', { class: 'btn small', type: 'button', onclick: () => { micBlocked = false; micErro = null; draw(false); } }, '🎙 tentar o microfone de novo')) : null,
       h('div', { class: 'tr-modos', role: 'group', 'aria-label': 'Como começar' },
-        h('button', { class: 'tr-card go', type: 'button', onclick: start }, icone('play', 'tr-ic'), h('b', {}, 'tocar direto'), h('small', {}, 'conta 4 e toca')),
-        h('button', { class: 'tr-card', type: 'button', onclick: listenThenPlay }, icone('ouvir', 'tr-ic'), h('b', {}, 'ouvir e tocar'), h('small', {}, 'escuta antes')),
-        h('button', { class: 'tr-card', type: 'button', onclick: listen }, icone('fone', 'tr-ic'), h('b', {}, 'só ouvir'), h('small', {}, 'sem tocar'))),
+        h('button', { class: 'tr-card', type: 'button', onclick: listen }, icone('fone', 'tr-ic'), h('b', {}, 'ouvir'), h('small', {}, 'escuta o ritmo')),
+        h('button', { class: 'tr-card go', type: 'button', onclick: start }, icone('play', 'tr-ic'), h('b', {}, 'tocar'), h('small', {}, 'conta 4 e toca'))),
       livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
       status, pad, testeMic, quick, summary, history('leitura')].filter(Boolean));
   };
