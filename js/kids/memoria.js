@@ -66,8 +66,8 @@ export function mountMemoria(host, opts) {
   // os 3 temas de artistas ficam em destaque (3 capas grandes); os outros temas vêm logo abaixo, menores
   const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
     verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
-  /** Sobra de casas na última linha da grade (4 por linha): o Paul ocupa o espaço em branco. */
-  const vago = (n) => { const falta = (4 - (n % 4)) % 4; return falta ? h('div', { class: 'mem-vago', style: `grid-column: span ${falta}`, 'aria-hidden': 'true' }, h('img', { src: 'assets/paul/colorido/paul-ouvindo.webp', alt: '', draggable: 'false', decoding: 'async' })) : null; };
+  /** Sobra de casas na última linha da grade (4 por linha): o Paul ocupa o espaço em branco, com o chamado pra Lojinha (pedido da Bea). */
+  const vago = (n) => { const falta = (4 - (n % 4)) % 4; return falta ? h('a', { class: 'mem-vago', href: '#/lojinha', style: `grid-column: span ${falta}`, 'aria-label': 'adquira na lojinha' }, h('span', { class: 'mem-vago-img', 'aria-hidden': 'true' }, h('img', { src: 'assets/paul/colorido/paul-ouvindo.webp', alt: '', draggable: 'false', decoding: 'async' })), h('b', {}, 'adquira na lojinha')) : null; };
   const grupos = (list, th) => [h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas' }, ...list.map((t) => tile(t, th)), vago(list.length))]; // todos os temas do mesmo tamanho, numa grade só (os abertos primeiro)
 
   const setup = () => {
