@@ -71,6 +71,7 @@ export function mount(host) {
         h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa'))); return;
     }
     if (est > antes) { guarda(fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('figurix', est - antes)).catch(() => {}); }
+    { const Mw = mundoDe(fase); if (PHASES.slice(Mw.de - 1, Mw.ate).every((p) => estOf(p.n) >= 1)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`figurix:${Mw.id}`)).catch(() => {}); } // mundo concluído (todas as fases dele com estrela) = pacote de bandas e artistas
     sfx.play('win');
     if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Figurix', caminho: 'todas as fases', chave: 'figurix', pose: 'estante' })).catch(() => {}), 700); // terminou o caminho: festa + postar
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),

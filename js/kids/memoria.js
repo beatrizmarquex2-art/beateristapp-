@@ -10,6 +10,9 @@ import { seeded } from '../campanha/jogos/memoria-logic.js';
 import * as AC from '../acesso.js';
 import { bq } from '../jogos/bonequinhos.js';
 import { loadPhotoThemes } from './memory-photos.js';
+import { submarino } from '../figurinhas/ornaments.js';
+import { PRODUTOS } from '../loja-config.js';
+const LINK_MEMORIA = (PRODUTOS.find((p) => p.id === 'memoria') || {}).link || '#/lojinha'; // a página de compra do Jogo da Memória (abre em outra aba, fora do jogo)
 import { lobby, salaAutoPara } from '../jogos/online.js';
 import { confirmSheet } from '../ui.js';
 import { ganhou } from '../jogos/estrelas-jogo.js';
@@ -22,11 +25,13 @@ const cols = (n) => (n <= 8 ? 4 : n <= 12 ? 4 : 4);
 
 /** O verso da carta é o botão do tema; "tudo misturado" não tem verso próprio, então mostra um leque de três. */
 const MIX = ['rock', 'percussao', 'figuras'].map((k) => `assets/memoria/${k}/verso.webp`);
-const verso = (t) => (t.cover
-  ? h('span', { class: `mem-vt cat cat-${t.id}` }, h('span', { class: 'mc-t' }, t.title), h('span', { class: 'mc-fan' }, ...t.cover.map((src, i) => h('img', { class: `m${i}`, src, alt: '', draggable: 'false', decoding: 'async' }))),
-    h('img', { class: 'mc-paul', src: 'assets/paul/paul-memoria.webp', alt: '', draggable: 'false' }), h('small', { class: 'mc-b' }, 'beaterista'))
-  : t.verso
-    ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
+const polaroid = (t) => { const enf = h('span', { class: 'mc-enf', 'aria-hidden': 'true' }); enf.innerHTML = t.id === 'beatles' ? `<svg viewBox="-170 -120 300 180">${submarino(0, 0, 1, 4)}</svg>` : '<svg viewBox="0 0 24 24"><path fill="#e9b824" stroke="#14111a" stroke-width="2" stroke-linejoin="round" d="M12 1l3.3 7.7L23 12l-7.7 3.3L12 23l-3.3-7.7L1 12l7.7-3.3z"/></svg>';
+  return h('span', { class: `mem-vt cat pol cat-${t.id}` }, h('span', { class: 'mc-faixa' }, h('span', { class: 'mc-t' }, t.title)),
+    ...t.cover.slice(0, 2).map((src, i) => h('span', { class: `mc-p p${i}` }, h('img', { src, alt: '', draggable: 'false', decoding: 'async' }))), enf, h('span', { class: 'mc-ache' }, 'ache os pares!'), h('small', { class: 'mc-b' }, 'beaterista')); };
+const verso = (t) => (t.verso
+  ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' })) // verso desenhado (com o Paul)
+  : t.cover
+    ? polaroid(t) // The Beatles: polaroids presas com fita no papel do álbum
     : h('span', { class: 'mem-vt' }, h('img', { src: MIX[0], alt: '', draggable: 'false', decoding: 'async' }))); // "tudo misturado": só uma carta de verso (antes era um leque de 3)
 /** A carta: desenho da Bea (a imagem já traz nome e borda) ou foto de artista (recortada no rosto, com o nome embaixo quando tem). */
 const face = (it) => (it.photo
@@ -63,7 +68,9 @@ export function mountMemoria(host, opts) {
   // os 3 temas de artistas ficam em destaque (3 capas grandes); os outros temas vêm logo abaixo, menores
   const tile = (t, th) => { const lk = locked(t); return h('button', { type: 'button', role: 'radio', class: `mem-theme${t.id === th.id ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-checked': String(t.id === th.id), 'aria-label': `${t.title}${lk ? ', só pra alunos com código' : `: ${t.blurb}`}`, onclick: () => { if (lk) { lockNote = true; setup(); return; } lockNote = false; save({ theme: t.id }).then(setup); } },
     verso(t), lk ? h('i', { class: 'mem-lk', 'aria-hidden': 'true' }, '🔒') : null, h('b', {}, t.title)); };
-  const grupos = (list, th) => [h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas' }, ...list.map((t) => tile(t, th)))]; // todos os temas do mesmo tamanho, numa grade só (os abertos primeiro)
+  /** Sobra de casas na última linha da grade (4 por linha): o Paul ocupa o espaço em branco, com o chamado pra Lojinha (pedido da Bea). */
+  const vago = (n) => { const falta = (4 - (n % 4)) % 4; return falta ? h('a', { class: 'mem-vago', href: LINK_MEMORIA, target: '_blank', rel: 'noopener', style: `grid-column: span ${falta}`, 'aria-label': 'adquira na lojinha' }, h('img', { src: 'assets/memoria/adquira-lojinha.webp', alt: 'Paul mostrando o Jogo da Memória: na lojinha', draggable: 'false', decoding: 'async' })) : null; }; // arte da Bea: o Paul com a caixa do jogo e a faixa "na lojinha"
+  const grupos = (list, th) => [h('div', { class: 'mem-themes hero', role: 'radiogroup', 'aria-label': 'Temas' }, ...list.map((t) => tile(t, th)), vago(list.length))]; // todos os temas do mesmo tamanho, numa grade só (os abertos primeiro)
 
   const setup = () => {
     if (sala) { sala.destroy(); sala = null; } if (lob) { lob.close(); lob = null; }

@@ -1,0 +1,21 @@
+// Álbum em lista (nível de cada coleção), capa vinil das Exclusivas e página de explicação por nível.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/album`); await page.waitForSelector('.fig-lista', { timeout: 20000 }); await sleep(1200);
+const linhas = (await page.locator('.fig-li').allInnerTexts()).map((t) => t.replace(/\n+/g, '|'));
+check('o Álbum abre numa lista de 6 coleções, cada uma com o nível', linhas.length === 6 && /BEATLEMANIA.*CLÁSSICO/.test(linhas[0]) && /BANDAS.*COMUM/.test(linhas[1]) && /ARTISTAS.*RARO/.test(linhas[2]) && /BEATERISTA & PAUL.*EXCLUSIVO/.test(linhas[3]) && /SUPER PAUL.*LENDÁRIA/.test(linhas[4]) && /MINHAS FIGURINHAS.*ÉPICO/.test(linhas[5]), linhas.join(' / '));
+check('sem a fileira de abas antiga', (await page.locator('.fig-tabs').count()) === 0);
+await page.locator('.fig-li', { hasText: 'Beaterista & Paul' }).click(); await sleep(1500);
+check('Beaterista & Paul abre o livro com a capa vinil da foto da Bea', (await page.locator('.lv .cv-vinil image[href*="capa-beaterista-paul"]').count()) === 1);
+await page.evaluate(() => { const t = document.querySelector('.lv-track'); t.scrollTo({ left: t.clientWidth, behavior: 'auto' }); }); await sleep(800);
+check('a explicação vem logo depois da capa', /da escola pro seu álbum/i.test(await page.locator('.lv-intro h3').first().innerText()));
+await page.locator('.fig-lista-volta').click(); await sleep(500);
+check('o botão "‹ álbum" volta pra lista', (await page.locator('.fig-lista').count()) === 1);
+await page.locator('.fig-li', { hasText: 'Bandas' }).click(); await sleep(1200); await page.evaluate(() => { const t = document.querySelector('.lv-track'); t.scrollTo({ left: t.clientWidth, behavior: 'auto' }); }); await sleep(800);
+check('Bandas (comum) também tem a explicação', /música em todo lugar/i.test(await page.locator('.lv-intro h3').first().innerText()));
+check('sem erros de página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

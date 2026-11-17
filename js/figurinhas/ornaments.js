@@ -98,3 +98,13 @@ export const underline = (w, color, sw = 5) => `<path d="M0 6Q${w * 0.3} -2 ${w 
 export function filmHoles(x, y, n, step, color = C.paper) {
   return Array.from({ length: n }, (_, i) => `<rect x="${x}" y="${y + i * step}" width="22" height="30" rx="5" fill="${color}"/>`).join('');
 }
+
+/** Submarino amarelo (desenho próprio, homenagem à música dos Beatles). Centro em (x, y); `s` = escala; `rot` em graus. */
+export const submarino = (x, y, s = 1, rot = 0) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">
+  <path d="M-98 0 L-124 -22 L-124 22Z" fill="#c4182c" stroke="#14111a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M-25 -42 L-19 -80 L31 -80 L37 -42Z" fill="#ffd21f" stroke="#14111a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M8 -80 V-106 H30" stroke="#14111a" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="-106" r="6" fill="#8fd3ff" stroke="#14111a" stroke-width="3"/>
+  <path d="M-100 0 C-100 -38 -50 -46 10 -46 C70 -46 112 -30 112 0 C112 30 70 46 10 46 C-50 46 -100 38 -100 0Z" fill="#ffd21f" stroke="#14111a" stroke-width="5"/>
+  <path d="M-95 16 C-40 32 60 32 106 14" stroke="#c4182c" stroke-width="7" fill="none" stroke-linecap="round"/>
+  ${[-52, -12, 28, 68].map((cx) => `<circle cx="${cx}" cy="-6" r="13" fill="#8fd3ff" stroke="#14111a" stroke-width="4"/><path d="M${cx - 7} -11 a9 9 0 0 1 8 -5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`).join('')}
+  <circle cx="-140" cy="-20" r="6" fill="none" stroke="#fbf6ea" stroke-width="3"/><circle cx="-156" cy="-40" r="9" fill="none" stroke="#fbf6ea" stroke-width="3"/><circle cx="-146" cy="8" r="4" fill="none" stroke="#fbf6ea" stroke-width="3"/></g>`;

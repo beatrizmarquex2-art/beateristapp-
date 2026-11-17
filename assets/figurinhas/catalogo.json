@@ -176,7 +176,7 @@
   "altura_px": 920,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F013.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -205,7 +205,7 @@
    0.859,
    0.894
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F014",
@@ -277,7 +277,7 @@
   "altura_px": 2136,
   "status": "identificado",
   "nota": "Foto conjunta de Justin Bieber e Billie Eilish; não separar em artistas diferentes",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F016.jpeg",
   "modelo2": "M5",
   "rostos": [],
@@ -287,22 +287,22 @@
    0.824,
    0.846
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F017",
   "artista_banda": "John Bonham",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C01",
+  "raridade": "Rara",
+  "modelo": "R02",
   "sha256": "9429d08ef01e14ef91e34856b04ab6e96dd38b10f449422c27d77d1e656d527b",
   "largura_px": 615,
   "altura_px": 409,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F017.jpeg",
-  "modelo2": "M3",
+  "modelo2": "M6",
   "rostos": [
    [
     0.4467,
@@ -317,7 +317,7 @@
    0.926,
    0.943
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F018",
@@ -330,7 +330,7 @@
   "altura_px": 467,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F018.jpeg",
   "modelo2": "M6",
   "rostos": [
@@ -347,22 +347,22 @@
    0.94,
    0.935
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F020",
   "artista_banda": "Restart",
   "colecao": "Geral",
-  "raridade": "Rara",
-  "modelo": "R01",
+  "raridade": "Comum",
+  "modelo": "C02",
   "sha256": "1ca338b8a3316ac429486d8e76f09cc33b8ae0462319afba88c20a0c39c1f6d8",
   "largura_px": 1200,
   "altura_px": 1800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F020.jpeg",
-  "modelo2": "M5",
+  "modelo2": "M2",
   "rostos": [
    [
     0.1683,
@@ -389,7 +389,7 @@
    0.788,
    0.754
   ],
-  "secao": "Raras"
+  "secao": "Bandas"
  },
  {
   "codigo": "F021",
@@ -402,7 +402,7 @@
   "altura_px": 937,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F021.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -443,22 +443,22 @@
    0.911,
    0.884
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F022",
   "artista_banda": "Mamonas Assassinas",
   "colecao": "Geral",
-  "raridade": "Rara",
-  "modelo": "R02",
+  "raridade": "Comum",
+  "modelo": "C02",
   "sha256": "667e37e338a83ab1f9fdc7bea3fee466671426a4444920f98607a49892829f08",
   "largura_px": 512,
   "altura_px": 519,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F022.jpeg",
-  "modelo2": "M6",
+  "modelo2": "M4",
   "rostos": [
    [
     0.2939,
@@ -473,7 +473,7 @@
    0.904,
    0.919
   ],
-  "secao": "Raras"
+  "secao": "Bandas"
  },
  {
   "codigo": "F023",
@@ -486,7 +486,7 @@
   "altura_px": 1123,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F023.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -521,7 +521,7 @@
    0.922,
    0.892
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F024",
@@ -534,7 +534,7 @@
   "altura_px": 123,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F024.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -569,7 +569,7 @@
    0.862,
    0.916
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F025",
@@ -582,7 +582,7 @@
   "altura_px": 853,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F025.jpeg",
   "modelo2": "M5",
   "rostos": [
@@ -599,7 +599,7 @@
    0.84,
    0.928
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F026",
@@ -612,7 +612,7 @@
   "altura_px": 1422,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F026.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -629,7 +629,7 @@
    0.878,
    0.92
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F027",
@@ -642,7 +642,7 @@
   "altura_px": 1500,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F027.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -671,7 +671,7 @@
    0.927,
    0.97
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F028",
@@ -684,7 +684,7 @@
   "altura_px": 960,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F028.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -701,7 +701,7 @@
    0.9,
    0.918
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F029",
@@ -714,7 +714,7 @@
   "altura_px": 1200,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F029.jpeg",
   "modelo2": "M2",
   "rostos": [],
@@ -724,7 +724,7 @@
    0.925,
    0.893
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F030",
@@ -737,7 +737,7 @@
   "altura_px": 1800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F030.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -778,7 +778,7 @@
    0.892,
    0.868
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F031",
@@ -791,7 +791,7 @@
   "altura_px": 900,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F031.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -801,7 +801,7 @@
    0.926,
    0.864
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F032",
@@ -814,7 +814,7 @@
   "altura_px": 800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F032.jpeg",
   "modelo2": "M1",
   "rostos": [],
@@ -824,7 +824,7 @@
    0.917,
    0.884
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F033",
@@ -837,7 +837,7 @@
   "altura_px": 600,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F033.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -854,7 +854,7 @@
    0.847,
    0.899
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F034",
@@ -867,7 +867,7 @@
   "altura_px": 1329,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F034.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -884,7 +884,7 @@
    0.857,
    0.898
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F035",
@@ -897,7 +897,7 @@
   "altura_px": 1216,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F035.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -932,7 +932,7 @@
    0.869,
    0.854
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F036",
@@ -945,7 +945,7 @@
   "altura_px": 896,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F036.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -962,7 +962,7 @@
    0.857,
    0.949
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F037",
@@ -975,7 +975,7 @@
   "altura_px": 600,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F037.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -998,7 +998,7 @@
    0.893,
    0.813
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F038",
@@ -1011,7 +1011,7 @@
   "altura_px": 960,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F038.jpeg",
   "modelo2": "M3",
   "rostos": [],
@@ -1021,7 +1021,7 @@
    0.803,
    0.913
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F039",
@@ -1034,7 +1034,7 @@
   "altura_px": 1560,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F039.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -1057,7 +1057,7 @@
    0.852,
    0.899
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F040",
@@ -1070,7 +1070,7 @@
   "altura_px": 900,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F040.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -1111,7 +1111,7 @@
    0.886,
    0.843
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F041",
@@ -1124,7 +1124,7 @@
   "altura_px": 1630,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F041.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -1165,7 +1165,7 @@
    0.927,
    0.937
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F042",
@@ -1178,7 +1178,7 @@
   "altura_px": 1920,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F042.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -1201,7 +1201,7 @@
    0.848,
    0.923
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F043",
@@ -1214,7 +1214,7 @@
   "altura_px": 1057,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F043.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -1224,7 +1224,7 @@
    0.867,
    0.932
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F044",
@@ -1237,7 +1237,7 @@
   "altura_px": 2185,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F044.jpeg",
   "modelo2": "M6",
   "rostos": [],
@@ -1247,7 +1247,7 @@
    0.783,
    0.886
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F045",
@@ -1260,7 +1260,7 @@
   "altura_px": 1799,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F045.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -1295,7 +1295,7 @@
    0.903,
    0.92
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F046",
@@ -1308,7 +1308,7 @@
   "altura_px": 1457,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F046.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -1337,22 +1337,22 @@
    0.882,
    0.853
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F047",
   "artista_banda": "Queen",
   "colecao": "Geral",
-  "raridade": "Rara",
-  "modelo": "R01",
+  "raridade": "Comum",
+  "modelo": "C01",
   "sha256": "fe8a29eb6fb51506917b99e3649ef535e651cc7aec0cc578c998ddebc72a085b",
   "largura_px": 1080,
   "altura_px": 1346,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F047.jpeg",
-  "modelo2": "M5",
+  "modelo2": "M3",
   "rostos": [
    [
     0.0623,
@@ -1373,7 +1373,7 @@
    0.905,
    0.86
   ],
-  "secao": "Raras"
+  "secao": "Bandas"
  },
  {
   "codigo": "F048",
@@ -1386,7 +1386,7 @@
   "altura_px": 1430,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F048.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -1403,7 +1403,7 @@
    0.881,
    0.882
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F049",
@@ -1416,7 +1416,7 @@
   "altura_px": 1280,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F049.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -1445,7 +1445,7 @@
    0.878,
    0.869
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F050",
@@ -1458,7 +1458,7 @@
   "altura_px": 1025,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F050.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -1499,7 +1499,7 @@
    0.9,
    0.92
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F051",
@@ -1512,7 +1512,7 @@
   "altura_px": 1500,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F051.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -1541,7 +1541,7 @@
    0.908,
    0.82
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F052",
@@ -1554,7 +1554,7 @@
   "altura_px": 990,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F052.jpeg",
   "modelo2": "M6",
   "rostos": [],
@@ -1564,7 +1564,7 @@
    0.871,
    0.908
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F053",
@@ -1577,7 +1577,7 @@
   "altura_px": 685,
   "status": "identificado",
   "nota": "Campo não visível no print; legenda original da própria fotografia indica AC/DC, Angus Young e Brian Johnson",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F053.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -1594,7 +1594,7 @@
    0.867,
    0.924
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F054",
@@ -1607,7 +1607,7 @@
   "altura_px": 893,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F054.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -1636,7 +1636,7 @@
    0.89,
    0.907
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F055",
@@ -1649,7 +1649,7 @@
   "altura_px": 762,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F055.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -1678,7 +1678,7 @@
    0.874,
    0.921
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F056",
@@ -1691,7 +1691,7 @@
   "altura_px": 1800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F056.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -1714,7 +1714,7 @@
    0.872,
    0.896
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F057",
@@ -1727,7 +1727,7 @@
   "altura_px": 750,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F057.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -1756,7 +1756,7 @@
    0.989,
    0.926
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F058",
@@ -1769,7 +1769,7 @@
   "altura_px": 1344,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F058.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -1779,7 +1779,7 @@
    0.88,
    0.883
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F059",
@@ -1792,7 +1792,7 @@
   "altura_px": 716,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F059.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -1821,7 +1821,7 @@
    0.891,
    0.86
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F060",
@@ -2517,7 +2517,7 @@
   "altura_px": 881,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F076.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -2546,7 +2546,7 @@
    0.901,
    0.85
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F077",
@@ -2559,7 +2559,7 @@
   "altura_px": 800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F077.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -2582,7 +2582,7 @@
    0.838,
    0.878
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F078",
@@ -2595,7 +2595,7 @@
   "altura_px": 1752,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F078.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -2630,7 +2630,7 @@
    0.922,
    0.916
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F079",
@@ -2643,7 +2643,7 @@
   "altura_px": 1674,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F079.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -2666,7 +2666,7 @@
    0.918,
    0.938
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F080",
@@ -2679,7 +2679,7 @@
   "altura_px": 938,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F080.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -2714,7 +2714,7 @@
    0.915,
    0.903
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F081",
@@ -2727,7 +2727,7 @@
   "altura_px": 960,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F081.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -2762,7 +2762,7 @@
    0.891,
    0.905
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F082",
@@ -2775,7 +2775,7 @@
   "altura_px": 750,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F082.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -2816,7 +2816,7 @@
    0.867,
    0.93
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F083",
@@ -2829,7 +2829,7 @@
   "altura_px": 1920,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F083.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -2852,7 +2852,7 @@
    0.884,
    0.95
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F084",
@@ -2865,7 +2865,7 @@
   "altura_px": 912,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F084.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -2894,7 +2894,7 @@
    0.819,
    0.933
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F085",
@@ -2907,7 +2907,7 @@
   "altura_px": 1498,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F085.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -2936,22 +2936,22 @@
    0.875,
    0.828
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F086",
   "artista_banda": "Tim Henson",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R01",
   "sha256": "adf95e5c06431960473073d7027e00506e66e32c21d9ce4bcbea34a52bf61449",
   "largura_px": 960,
   "altura_px": 1200,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F086.jpeg",
-  "modelo2": "M4",
+  "modelo2": "M5",
   "rostos": [
    [
     0.2139,
@@ -2972,7 +2972,7 @@
    0.779,
    0.953
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F087",
@@ -3043,16 +3043,16 @@
   "codigo": "F089",
   "artista_banda": "Flea",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R02",
   "sha256": "0750f28ac2a42c8d6b88b383e6c264f8328ff59c29a9deb335d4355881d7df8f",
   "largura_px": 828,
   "altura_px": 1036,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F089.jpeg",
-  "modelo2": "M2",
+  "modelo2": "M6",
   "rostos": [],
   "foco": [
    0.078,
@@ -3060,7 +3060,7 @@
    0.905,
    0.956
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F090",
@@ -3103,7 +3103,7 @@
   "altura_px": 750,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F091.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -3113,7 +3113,7 @@
    0.917,
    0.913
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F092",
@@ -3126,7 +3126,7 @@
   "altura_px": 1021,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F092.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -3149,7 +3149,7 @@
    0.894,
    0.836
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F093",
@@ -3162,7 +3162,7 @@
   "altura_px": 2047,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F093.jpeg",
   "modelo2": "M6",
   "rostos": [],
@@ -3172,22 +3172,22 @@
    0.727,
    0.941
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F094",
   "artista_banda": "Bad Bunny",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R02",
   "sha256": "7fed255484ee3ed8b99d69e651deca8619285fb6f61b0a22c3fcf54bba6572d4",
   "largura_px": 819,
   "altura_px": 1024,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F094.jpeg",
-  "modelo2": "M2",
+  "modelo2": "M6",
   "rostos": [
    [
     0.35,
@@ -3202,7 +3202,7 @@
    0.908,
    0.872
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F095",
@@ -3215,7 +3215,7 @@
   "altura_px": 681,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F095.jpeg",
   "modelo2": "M3",
   "rostos": [],
@@ -3225,7 +3225,7 @@
    0.903,
    0.896
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F096",
@@ -3238,7 +3238,7 @@
   "altura_px": 1752,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F096.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -3248,7 +3248,7 @@
    0.782,
    0.95
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F097",
@@ -3284,7 +3284,7 @@
   "altura_px": 1920,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F098.jpeg",
   "modelo2": "M2",
   "rostos": [],
@@ -3294,7 +3294,7 @@
    0.886,
    0.97
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F099",
@@ -3307,7 +3307,7 @@
   "altura_px": 1326,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F099.jpeg",
   "modelo2": "M3",
   "rostos": [],
@@ -3317,22 +3317,22 @@
    0.879,
    0.914
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F100",
   "artista_banda": "John Mayer",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R01",
   "sha256": "fa2c00fe3f48e051105f25932d27e94acca6d08dee4b87243407c917a8cd69f1",
   "largura_px": 367,
   "altura_px": 550,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F100.jpeg",
-  "modelo2": "M4",
+  "modelo2": "M5",
   "rostos": [
    [
     0.3494,
@@ -3347,7 +3347,7 @@
    0.835,
    0.944
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F101",
@@ -3360,7 +3360,7 @@
   "altura_px": 900,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F101.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -3377,22 +3377,22 @@
    0.844,
    0.842
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F102",
   "artista_banda": "Jimi Hendrix",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R02",
   "sha256": "cfa076cdfde35c6ad5ace6606a57301976df3d28327356e11f02c03a9adc9d34",
   "largura_px": 1023,
   "altura_px": 1498,
   "status": "identificado",
   "nota": "Identificação confirmada pela usuária em 05/11/2026.",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F102.jpeg",
-  "modelo2": "M2",
+  "modelo2": "M6",
   "rostos": [
    [
     0.3724,
@@ -3407,7 +3407,7 @@
    0.869,
    0.851
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F103",
@@ -3450,7 +3450,7 @@
   "altura_px": 1500,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F104.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -3473,7 +3473,7 @@
    0.885,
    0.822
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F105",
@@ -3486,7 +3486,7 @@
   "altura_px": 733,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F105.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -3521,22 +3521,22 @@
    0.908,
    0.858
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F106",
   "artista_banda": "Bad Bunny",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R01",
   "sha256": "281f4a6c545aed4e9e0ee9cca0040a96dadc4066281dcaa7ca46381579144344",
   "largura_px": 1179,
   "altura_px": 1666,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F106.jpeg",
-  "modelo2": "M2",
+  "modelo2": "M5",
   "rostos": [
    [
     0.3203,
@@ -3551,7 +3551,7 @@
    0.917,
    0.797
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F107",
@@ -3564,7 +3564,7 @@
   "altura_px": 684,
   "status": "identificado",
   "nota": "Rótulo escrito como Dave Groll Nirvana; grafia padronizada para Dave Grohl",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F107.jpeg",
   "modelo2": "M5",
   "rostos": [
@@ -3581,7 +3581,7 @@
    0.942,
    0.93
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F108",
@@ -3594,7 +3594,7 @@
   "altura_px": 640,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F108.jpeg",
   "modelo2": "M6",
   "rostos": [],
@@ -3604,7 +3604,7 @@
    0.936,
    0.852
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F109",
@@ -3617,7 +3617,7 @@
   "altura_px": 750,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F109.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -3640,7 +3640,7 @@
    0.782,
    0.97
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F110",
@@ -3653,7 +3653,7 @@
   "altura_px": 1920,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F110.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -3682,7 +3682,7 @@
    0.882,
    0.894
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F111",
@@ -3695,7 +3695,7 @@
   "altura_px": 960,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F111.jpeg",
   "modelo2": "M1",
   "rostos": [],
@@ -3705,7 +3705,7 @@
    0.918,
    0.937
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F112",
@@ -3718,7 +3718,7 @@
   "altura_px": 720,
   "status": "identificado",
   "nota": "A usuária marcou esta foto como RARA: Paul e Michael juntos, uma única figurinha",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F112.jpeg",
   "modelo2": "M5",
   "rostos": [
@@ -3741,7 +3741,7 @@
    0.922,
    0.916
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F113",
@@ -3754,7 +3754,7 @@
   "altura_px": 335,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F113.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -3771,7 +3771,7 @@
    0.892,
    0.938
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F114",
@@ -3784,7 +3784,7 @@
   "altura_px": 854,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F114.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -3801,7 +3801,7 @@
    0.903,
    0.919
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F115",
@@ -3814,7 +3814,7 @@
   "altura_px": 1200,
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F115.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -3831,7 +3831,7 @@
    0.899,
    0.841
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F116",
@@ -3844,7 +3844,7 @@
   "altura_px": 554,
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F116.jpeg",
   "modelo2": "M1",
   "rostos": [],
@@ -3854,22 +3854,22 @@
    0.854,
    0.886
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F117",
   "artista_banda": "Eminem",
   "colecao": "Geral",
-  "raridade": "Comum",
-  "modelo": "C02",
+  "raridade": "Rara",
+  "modelo": "R01",
   "sha256": "81137575bb750e5dea214dbcc0860b6a241b81e9527ca0a6b1eec02f9a7a0dc4",
   "largura_px": 736,
   "altura_px": 736,
   "status": "identificado",
   "nota": "Pose nu metal, manter foto original sem edição",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F117.jpeg",
-  "modelo2": "M2",
+  "modelo2": "M5",
   "rostos": [
    [
     0.2744,
@@ -3884,7 +3884,7 @@
    0.846,
    0.889
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F118",
@@ -3897,7 +3897,7 @@
   "altura_px": 1258,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F118.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -3920,7 +3920,7 @@
    0.864,
    0.892
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F119",
@@ -3933,7 +3933,7 @@
   "altura_px": 1200,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F119.jpeg",
   "modelo2": "M4",
   "rostos": [
@@ -3950,7 +3950,7 @@
    0.932,
    0.862
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F120",
@@ -3963,7 +3963,7 @@
   "altura_px": 1350,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F120.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -3980,7 +3980,7 @@
    0.922,
    0.897
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F121",
@@ -3993,7 +3993,7 @@
   "altura_px": 1800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F121.jpeg",
   "modelo2": "M2",
   "rostos": [
@@ -4010,7 +4010,7 @@
    0.838,
    0.924
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F122",
@@ -4023,7 +4023,7 @@
   "altura_px": 2026,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F122.jpeg",
   "modelo2": "M3",
   "rostos": [],
@@ -4033,7 +4033,7 @@
    0.786,
    0.893
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F123",
@@ -4046,7 +4046,7 @@
   "altura_px": 1536,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F123.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -4056,7 +4056,7 @@
    0.849,
    0.93
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F124",
@@ -4069,7 +4069,7 @@
   "altura_px": 1024,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Seleção expressa de rara da usuária",
+  "criterio_raridade": "músico/artista escolhido pela Bea: rara (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F124.jpeg",
   "modelo2": "M6",
   "rostos": [],
@@ -4079,7 +4079,7 @@
    0.781,
    0.902
   ],
-  "secao": "Raras"
+  "secao": "Artistas"
  },
  {
   "codigo": "F125",
@@ -4092,7 +4092,7 @@
   "altura_px": 612,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F125.jpeg",
   "modelo2": "M1",
   "rostos": [
@@ -4109,7 +4109,7 @@
    0.887,
    0.87
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F126",
@@ -4122,7 +4122,7 @@
   "altura_px": 904,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F126.jpeg",
   "modelo2": "M2",
   "rostos": [],
@@ -4132,7 +4132,7 @@
    0.867,
    0.883
   ],
-  "secao": "Comum"
+  "secao": "Bandas"
  },
  {
   "codigo": "F127",
@@ -4145,7 +4145,7 @@
   "altura_px": 895,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F127.jpeg",
   "modelo2": "M3",
   "rostos": [
@@ -4162,7 +4162,7 @@
    0.804,
    0.938
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F128",
@@ -4175,7 +4175,7 @@
   "altura_px": 1800,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F128.jpeg",
   "modelo2": "M4",
   "rostos": [],
@@ -4185,7 +4185,7 @@
    0.898,
    0.864
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F129",
@@ -4228,7 +4228,7 @@
   "altura_px": 1455,
   "status": "identificado",
   "nota": "",
-  "criterio_raridade": "Comum por exclusão da lista de raras e exclusivas",
+  "criterio_raridade": "banda ou cantor: comum (regra de nov/2026)",
   "foto": "assets/figurinhas/fotos/F130.jpeg",
   "modelo2": "M1",
   "rostos": [],
@@ -4238,7 +4238,7 @@
    0.874,
    0.921
   ],
-  "secao": "Comum"
+  "secao": "Artistas"
  },
  {
   "codigo": "F131",

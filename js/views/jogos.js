@@ -92,10 +92,8 @@ const SECTIONS = [
     inner('memart'),
     ...['cartas', 'velha', 'quebra', 'cara', 'stop'].map(inner), // UN🚫 ESCONDIDO (pedido da Bea em 13/nov/2026: precisa de conserto); o código e o endereço #/jogos/un continuam, é só pôr 'un' de volta nesta lista // o quiz do Uno (#/jogos/quizuno) não aparece aqui: ele é aberto no fim do Uno Musical; o bingo está INATIVO (ninguém joga): fora da lista, o código e o endereço #/jogos/bingo continuam no app pra voltar quando quiserem
   ]],
-  ['Palavras e quiz', [
-    link('#/dicas/caca', LETRAS.caca[0], 'caca.svg', `${LETRAS.caca[1]} · 2 partidas grátis`),
-    link('#/dicas/cruzadinha', LETRAS.cruzadinha[0], 'cruza.svg', LETRAS.cruzadinha[1]),
-    link('#/dicas/quiz', LETRAS.quiz[0], 'quiz.svg', LETRAS.quiz[1]),
+  ['Aventura de palavras', [
+    link('#/dicas/fuga', 'A Fuga do Estúdio', 'cruza.svg', 'abra as 3 portas: quiz, caça e cruzadinha'),
   ]],
 ];
 
@@ -170,7 +168,7 @@ function atalhoSala() {
 /* ---- último jogo: todo jogo aberto fica lembrado e a tela de Jogos (e o Álbum) oferecem "voltar pro jogo" ---- */
 const JOGO_ULT = 'beaterista-jogo-antigo'; const VALE = 12 * 3600 * 1000;
 /** Qual jogo do catálogo é este endereço? (o mais específico ganha: #/dicas/caca antes de #/dicas) */
-function jogoDoEndereco(hash) { const hsh = String(hash || ''); let melhor = null; for (const x of SECTIONS.flatMap(([, l]) => l)) { const k = keyOf(x); if ((hsh === k || hsh.startsWith(`${k}/`) || hsh.startsWith(`${k}?`)) && (!melhor || k.length > keyOf(melhor).length)) melhor = x; } return melhor; }
+export function jogoDoEndereco(hash) { const hsh = String(hash || ''); let melhor = null; for (const x of SECTIONS.flatMap(([, l]) => l)) { const k = keyOf(x); if ((hsh === k || hsh.startsWith(`${k}/`) || hsh.startsWith(`${k}?`)) && (!melhor || k.length > keyOf(melhor).length)) melhor = x; } return melhor; }
 function anotarUltimo() { const x = jogoDoEndereco(location.hash); if (x) lembrarUltimo(location.hash, x[1], x[0]); }
 if (typeof window !== 'undefined' && window.addEventListener) { window.addEventListener('hashchange', anotarUltimo); anotarUltimo(); }
 function lembrarJogo(id, nome) { try { localStorage.setItem(JOGO_ULT, JSON.stringify({ id, nome, at: Date.now() })); } catch { /* sem armazenamento */ } }
@@ -240,8 +238,8 @@ function game(host, entry) {
   const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const pausar = () => {
     if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); body.inert = true;
-    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('h2', { class: 'hand' }, 'pausado ⏸'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
-      h('button', { class: 'btn primary wide', type: 'button', onclick: despausar }, 'continuar'),
+    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('img', { class: 'jg-pausa-paul', src: 'assets/paul/colorido/paul-agua.webp', alt: '', draggable: 'false' }), h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
+      h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: despausar }, '▶ continuar'),
       h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
     wrap.append(pausa); const b = pausa.querySelector('button'); if (b) b.focus();
   };

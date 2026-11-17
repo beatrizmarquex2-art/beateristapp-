@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v566';
+const VERSION = 'beaterista-v600';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -69,8 +69,9 @@ const EXTRA = [
   'assets/jogos/icones/relatorio.svg',
   'assets/jogos/icones/ritmo.svg',
   'assets/jogos/icones/stop.webp',
-  'js/conquista.js', 'js/kids/teoria-figuras.js', 'js/kids/teoria-temas.js', 'js/kids/teoria-instrumentos.js', 'js/kids/dicionario-cards.js', 'js/jogos/paulbox.js', 'js/jogos/paulbox-gravar.js', 'assets/jogos/icones/paulbox.webp', 'assets/jogos/paulbox/bateria.webp', 'assets/jogos/paulbox/baixo.webp', 'assets/jogos/paulbox/teclado.webp', 'assets/jogos/paulbox/guitarra.webp', 'assets/jogos/paulbox/voz.webp', 'assets/jogos/paulbox/dj.webp', 'assets/jogos/paulbox/trompete.webp', 'assets/jogos/paulbox/pandeiro.webp', 'assets/jogos/paulbox/violino.webp', 'assets/jogos/paulbox/metronomo.webp', 'assets/jogos/paulbox/chegou.webp',
-  'js/ultimo-jogo.js', 'js/jogos/vivo-logic.js', 'js/jogos/vivo-ui.js', 'js/jogos/copia.js', 'js/jogos/paulta-vivo.js', 'js/jogos/groove.js', 'js/jogos/fantasma.js', 'assets/jogos/icones/copia.svg', 'assets/jogos/icones/pauta-vivo.svg', 'assets/jogos/icones/groove.svg', 'assets/jogos/icones/fantasma.svg', 'assets/jogos/icones/toca.svg', 'assets/jogos/icones/toca2.svg', 'assets/jogos/icones/taiko.svg', 'assets/figurinhas/lendarias/L01.webp', 'assets/figurinhas/lendarias/L02.webp', 'assets/figurinhas/lendarias/L03.webp', 'assets/figurinhas/lendarias/L04.webp', 'assets/figurinhas/lendarias/L05.webp',
+  'assets/jogos/icones/taiko.svg',
+  'assets/jogos/icones/toca.svg',
+  'assets/jogos/icones/toca2.svg',
   'assets/jogos/icones/velha.webp',
   'assets/jogos/instrumentos/acordeao.webp',
   'assets/jogos/instrumentos/baixo.webp',
@@ -105,6 +106,7 @@ const EXTRA = [
   'assets/marcas/nagano.png',
   'assets/marcas/spark-branco.png',
   'assets/marcas/spark-preto.png',
+  'assets/memoria/adquira-lojinha.webp',
   'assets/memoria/bateria/01_bumbo.webp',
   'assets/memoria/bateria/02_caixa.webp',
   'assets/memoria/bateria/03_tom1.webp',
@@ -174,6 +176,11 @@ const EXTRA = [
   'assets/memoria/sinais/02_nota_fantasma.webp',
   'assets/memoria/sinais/03_metronomo.webp',
   'assets/memoria/sinais/verso.webp',
+  'assets/memoria/verso-artistas.webp',
+  'assets/memoria/verso-bandas.webp',
+  'assets/memoria/verso-beatles.webp',
+  'assets/memoria/verso-instrumentos.webp',
+  'assets/memoria/verso-misturado.webp',
   'assets/mural/bolt-ink.svg',
   'assets/mural/bolt-red.svg',
   'assets/mural/brush-gold.svg',

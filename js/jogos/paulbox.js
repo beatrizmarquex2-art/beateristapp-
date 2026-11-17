@@ -64,9 +64,21 @@ export function mount(host) {
 
   function setState(i, s) {
     state[i] = s; const b = els[i]; b.dataset.s = String(s); if (timer) tocaTrilha(i);
+    segredos();
     b.querySelector('.pbx-chip').textContent = LABEL[s];
     b.setAttribute('aria-label', `${TRACKS[i].nome}: ${LABEL[s]}`);
     hint();
+  }
+  /** Segredo (figurinha exclusiva): ligar bateria + metrônomo + pandeiro juntos, e SÓ esses 3.
+   *  Estrela (regra da Bea): ligar TODOS os instrumentos juntos = 1 ★, no máximo 1 a cada 2 horas (por aluno, neste aparelho). */
+  function segredos() {
+    const on = TRACKS.filter((t, k) => state[k]).map((t) => t.id).sort().join(',');
+    if (on === 'bateria,metronomo,pandeiro') import('../figurinhas/bonus.js').then((B) => B.egg('paulbox')).catch(() => {});
+    if (state.every(Boolean)) {
+      let nome = ''; try { nome = localStorage.getItem('beaterista-aluno-nome') || ''; } catch { /* sem armazenamento */ }
+      const k = `beaterista-paulbox-estrela:${nome}`; let ult = 0; try { ult = Number(localStorage.getItem(k) || 0); } catch { /* ok */ }
+      if (Date.now() - ult >= 2 * 3600 * 1000) { try { localStorage.setItem(k, String(Date.now())); } catch { /* ok */ } import('./estrelas-jogo.js').then((E) => E.ganhou('paulbox', 1, `paulbox|${Date.now()}`)).catch(() => {}); }
+    }
   }
   function hint() {
     const n = state.filter(Boolean).length;

@@ -23,9 +23,9 @@ check('código que não existe: avisa e continua trancado', (await page.textCont
 await page.fill('.al-lock-have input', ' bea-0404 '); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
 check('código válido (BEA-0404 com traço e espaços): abre o álbum direto na coleção', (await page.locator('.lv').count()) === 1);
 check('manda o nome e de onde veio pro relatório da Bea', entradas.some((e) => e.p_aluno === 'Ana' && e.p_origem === 'tik tok live' && norm(e.p_code) === 'BEA0404'), JSON.stringify(entradas[0]));
-await page.getByRole('tab', { name: /pacotes/ }).click(); await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 }); await sleep(300);
+await page.evaluate(() => { location.hash = '#/album/Pacotes'; }); await page.waitForSelector('.fig-blocos', { timeout: 15000 }); await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 12000 }); await sleep(300);
 // (a roleta já mostra as cartas abertas)
-await page.getByRole('button', { name: 'colar tudo no álbum' }).click(); await sleep(1800);
+await page.getByRole('button', { name: 'colar automaticamente' }).click(); await sleep(1800);
 const ultimo = salvos[salvos.length - 1];
 check('progresso salvo sozinho no Supabase', !!ultimo && norm(ultimo.p_code) === 'BEA0404' && Object.keys(ultimo.p_estado.pasted || {}).length >= 1, String(salvos.length));
 const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 } }); await mocks(ctx2);

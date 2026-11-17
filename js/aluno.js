@@ -55,6 +55,7 @@ import * as piano from './views/piano.js';
 import * as violao from './views/violao.js';
 import * as xilofone from './views/xilofone.js';
 import * as roleta from './views/roleta.js';
+import * as parceria from './views/parceria.js';
 import * as metronome from './views/metronome.js';
 import * as ouvido from './views/ouvido.js';
 import * as focus from './views/focus.js';
@@ -79,7 +80,7 @@ import { arteDoPaul } from './paul-dicas.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
-const TAB_OF = { perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
+const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
@@ -260,24 +261,38 @@ function aulasView(view) {
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
+/** Pergunta rápida depois de ler a curiosidade: "que instrumento essa pessoa toca?" (1 ★, uma vez por curiosidade). */
+async function perguntaCuriosidade(i) {
+  const n = CURIOSIDADES.length; const k = ((i % n) + n) % n; const [quem, ins] = CURIOSIDADES[k]; const P = await import('./views/estudos-prova.js');
+  const outros = P.sorteia([...new Set(CURIOSIDADES.map((x) => x[1]).filter((x) => x !== ins))]).slice(0, 3);
+  P.abrirProva({ chave: `curio|${k}`, titulo: 'curiosidade', max: 1, rodadas: [{ enun: `${quem} toca o quê?`, opcoes: [ins, ...outros].map((x) => ({ rot: x, ok: x === ins })) }] });
+}
 function curiosidadesView(view) {
   let i = curiosidadeDeHoje();
   const nome = h('h2', { class: 'tag' }); const inst = h('p', { class: 'es-tag' }); const txt = h('p', { class: 'es-dica' }); const pos = h('small', { class: 'muted' });
   const draw = () => { const [n, ins, t] = CURIOSIDADES[((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length]; nome.textContent = n; inst.textContent = ins; txt.textContent = t; pos.textContent = `${(((i % CURIOSIDADES.length) + CURIOSIDADES.length) % CURIOSIDADES.length) + 1} de ${CURIOSIDADES.length}`; marcarEstudo('curiosidade'); marcarVisto('curiosidades'); };
   view.append(banner('Curiosidades de músicos', 'quem tocou antes de você'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('article', { class: 'card pad es-cur' }, inst, nome, txt, pos),
+    h('div', {}, h('button', { type: 'button', class: 'btn small', onclick: () => perguntaCuriosidade(i) }, '🎯 pergunta rápida · 1 ★')),
     h('div', { class: 'row', style: 'gap:8px' }, h('button', { type: 'button', class: 'btn', onclick: () => { i--; draw(); } }, '‹ anterior'), h('button', { type: 'button', class: 'btn primary', style: 'flex:1', onclick: () => { i++; draw(); } }, 'outra curiosidade ›'))));
   draw();
 }
 
 /** Dicas do método pra estudar (só com código): a lista inteira, uma por cartão. Os jogos com elas ficam na aba Jogos > Letras. */
+/** Pergunta rápida da dica: completa a frase com a palavra que falta (1 ★, uma vez por dica). */
+async function perguntaDica(num) {
+  const [P, M, T] = await Promise.all([import('./views/estudos-prova.js'), import('./views/dicas.js'), import('./tips.js')]); const its = M._duelo.items(); const idx = its.findIndex((x) => x.n === num);
+  if (idx < 0) { toast('essa dica não tem pergunta ainda'); return; }
+  const q = T.question(its, 'blank', () => (idx + 0.5) / its.length);
+  P.abrirProva({ chave: `dica|${num}`, titulo: `dica ${num}`, max: 1, rodadas: [{ enun: h('span', {}, 'que palavra completa a dica?', h('em', { style: 'font-weight:600;font-style:normal;display:block;margin-top:6px' }, q.prompt)), opcoes: q.options.map((o) => ({ rot: o.label, ok: o.id === q.ans })) }] });
+}
 function dicasEstudoView(view) {
   const box = h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('p', { class: 'muted' }, 'carregando as dicas…'));
   view.append(banner('Dicas do método', 'pra estudar com calma'), box); let dead = false;
   DA.carregar(CODE.saved()).finally(() => {
     if (dead) return; const list = tipList();
     box.replaceChildren(h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
-      ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
+      ...(list.length ? list.map((t) => h('article', { class: 'card pad dc-tipbox' }, h('p', { class: 'dc-n' }, `dica ${t.n} de ${list.length}`), h('p', { class: 'dc-text' }, t.text), h('button', { type: 'button', class: 'btn small', onclick: () => perguntaDica(t.n) }, '🎯 pergunta rápida · 1 ★'))) : [h('p', { class: 'muted' }, 'as dicas ainda não chegaram. abra o app com internet e volte aqui.')]),
       h('a', { class: 'btn small', href: '#/dicas' }, 'jogar com as dicas (Letras)'));
   });
   return () => { dead = true; };
@@ -287,6 +302,7 @@ function dicasEstudoView(view) {
 function lojinhaView(view, parts = []) {
   // os depoimentos (só texto) aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js)
   const aba = LOJA_ABERTA && parts[0] === 'depoimentos' ? parts[0] : 'loja';
+  const secaoLoja = ['cards', 'ensina', 'evoluir'].includes(parts[0]) ? parts[0] : ''; // `#/lojinha/<seção>` abre os produtos daquela seção
   const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
   if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
@@ -298,7 +314,7 @@ function lojinhaView(view, parts = []) {
   const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
   drawPedido();
   const vitrineBox = h('div');
-  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine()); });
+  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine(secaoLoja)); });
   view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
@@ -410,9 +426,15 @@ function shell(name) {
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
+  // "voltar para ___": quem sai de uma área sem querer (toca na barra de baixo, num atalho...) vê no topo o caminho de volta pro lugar onde estava
+  let atual = null; let voltarA = null; let voltouNaFaixa = false;
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    { const tab = tabOf(r); const jg = (() => { try { return jogos.jogoDoEndereco(location.hash); } catch { return null; } })(); const nome = jg ? jg[1] : (NAV.find(([hr]) => hr === `#/${tab}`) || [])[2] || 'o app';
+      if (voltouNaFaixa) { voltouNaFaixa = false; voltarA = null; } // tocou em "voltar para": chegou lá, a faixa some (não fica indo e voltando)
+      else if (atual && atual.hash !== location.hash) { if (atual.tab !== tab) voltarA = { hash: atual.hash, nome: atual.nome, tab: atual.tab }; else if (voltarA && voltarA.hash === location.hash) voltarA = null; }
+      if (voltarA && voltarA.tab === tab) voltarA = null; atual = { hash: location.hash, tab, nome }; }
     { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; document.documentElement.classList.toggle('perfil-pass', r.name === 'perfil'); } // aba Álbum com visual próprio (css/album-tema.css); o PERFIL tem o visual "carteirinha de backstage" (css/perfil-passe.css), escolhido pela Bea em 15/nov/2026
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
@@ -437,6 +459,7 @@ function shell(name) {
     else if (r.name === 'violao') c = violao.mount(view);
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
+    else if (r.name === 'nagano') c = parceria.mount(view);
     else if (r.name === 'metronomo') c = metronome.mount(view);
     else if (r.name === 'ouvido') c = ouvido.mount(view);
     else if (r.name === 'foco') c = focus.mount(view);
@@ -452,17 +475,25 @@ function shell(name) {
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
-    if (r.name === 'album') view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
+    if (r.name === 'album' && !(r.parts && r.parts[0] === 'Pacotes')) view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
     if (r.name === 'album' || r.name === 'perfil') { // 3 abas: ÁLBUM · ROLETA · PERFIL (a roleta é a aba "Pacotes" do álbum; o perfil mora junto)
       const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
       let pend = 0; try { pend = FRpend() || 0; } catch { pend = 0; }
       const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
-      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, roleta e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '🃏'), aba('#/album/Pacotes', 'roleta', roleta, '🎡', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, stars e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '📔'), aba('#/album/Pacotes', 'stars', roleta, '⭐️', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '📸')));
     }
+    if (voltarA && !/^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash)) { const vA = voltarA; view.prepend(h('a', { class: 'al-voltar', href: vA.hash, onclick: () => { voltouNaFaixa = true; } }, `‹ voltar para ${vA.nome}`)); } // dentro de um jogo já existe o botão flutuante "‹ jogos"
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }
   addEventListener('hashchange', go);
+  // Voltar arrastando: no app instalado na tela inicial do iPhone NÃO existe o gesto de voltar do navegador. Arrastar do cantinho esquerdo pra direita = voltar uma tela
+  // (só se começar bem na borda e for um arrasto reto, pra não atrapalhar quem arrasta peças, notas ou palavras).
+  { let g0 = null; const emBorda = (t) => t.clientX <= 22;
+    document.addEventListener('touchstart', (e) => { const t = e.touches && e.touches[0]; g0 = e.touches.length === 1 && t && emBorda(t) ? { x: t.clientX, y: t.clientY, ok: true } : null; }, { passive: true });
+    document.addEventListener('touchend', (e) => { if (!g0) return; const t = e.changedTouches && e.changedTouches[0]; const dx = t ? t.clientX - g0.x : 0, dy = t ? Math.abs(t.clientY - g0.y) : 99; g0 = null; if (dx > 70 && dy < 50 && history.length > 1 && !document.querySelector('dialog[open], .sheet-back')) history.back(); }, { passive: true }); }
+  // tocar na aba em que a pessoa JÁ está (mesmo endereço) não dispara hashchange: recarrega a tela, senão o botão parece quebrado (ex.: voltar da roleta pro álbum)
+  document.addEventListener('click', (ev) => { const a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#/"]') : null; if (a && a.getAttribute('href') === location.hash && (nav.contains(a) || a.closest('.al-subnav'))) go(); });
   document.addEventListener('aluno-acesso', () => go());
   go();
 }

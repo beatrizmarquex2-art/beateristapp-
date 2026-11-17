@@ -71,15 +71,13 @@ export const THOUGHTS = [
 export const NOVIDADES_JOGOS = [
   [
     ['jogo novo! o Rudimentix: toque E e D no tempo', '#/jogos/rudimentos', 'aluno'],
-    ['jogo novo! Radar Musical: ache as palavras na grade', '#/dicas/caca', 'aluno'],
-    ['jogo novo! Cruzadinha musical, vem preencher', '#/dicas/cruzadinha', 'aluno'],
-    ['jogo novo! Quiz do Paul: será que você acerta?', '#/dicas/quiz', 'aluno'],
+    ['jogo novo! A Fuga do Estúdio: me ajuda a abrir as 3 portas?', '#/dicas/fuga', 'aluno'],
   ],
   [
     ['quer mais chances de ganhar estrelas? joga o Uno Musical!', '#/jogos/cartas', 'aluno'],
     ['mais estrelas: Cara a cara e Stop dão até 3 ★ por vitória!', '#/jogos/cara', 'aluno'],
     ['o Rudimentix dá estrela em cada fase: bora?', '#/jogos/rudimentos', 'aluno'],
-    ['Radar Musical, Cruzadinha e Quiz do Paul valem até 3 ★ por partida', '#/dicas/caca', 'aluno'],
+    ['A Fuga do Estúdio vale até 3 ★ por fuga', '#/dicas/fuga', 'aluno'],
   ],
 ];
 
@@ -118,7 +116,7 @@ export function think(item, ms = 6500) {
   if (busy()) return;
   const [text, href] = item || pick();
   if (!box) { box = h('div', { class: 'pt-think', role: 'status' }); document.body.append(box); }
-  // a nuvem deixa o toque passar (antes ela cobria os botões de jogar e levava a criança pro Radar sem querer); só o botãozinho "ver" abre o link
+  // a nuvem deixa o toque passar (antes ela cobria os botões de jogar e levava a criança pro Caça Musical sem querer); só o botãozinho "ver" abre o link
   const bubble = href
     ? h('span', { class: 'pt-cloud' }, text, h('a', { class: 'pt-ver', href, ...(String(href).startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }, 'ver ›'))
     : h('span', { class: 'pt-cloud' }, text);

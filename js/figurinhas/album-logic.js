@@ -14,13 +14,17 @@ export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); r
 /** Pacotinhos de FIM de modo da pauLta (pedido da Bea): `plf:<drumF|drumI|drumD>:<a|b|c>:...` = 2 cartas cada; os 3 juntos dão 2 Beatles + 3 comuns + 1 especial
  *  (fácil = rara, médio = do robô Paul, difícil = exclusiva da Bea). a = Beatles + comum, b = Beatles + comum, c = comum + a especial. */
 export const plfPack = (id) => { const m = /^plf:(drum[FID]):([abc]):/.exec(String(id)); return m ? { modo: m[1], k: m[2] } : null; };
-export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') ? 1 : PACK_SIZE);
+export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') || /^(egg|bonus):/.test(String(id)) ? 1 : PACK_SIZE);
 /** Por que a pessoa ganhou este giro ou pacotinho (texto curto pra criança), tirado do próprio id. */
 export function motivoDoPacote(id) {
   const s = String(id);
+  if (s.startsWith('egg:')) return 'você achou um segredo do Paul!';
+  if (s.startsWith('bonus:')) return 'bônus: 5 vitórias seguidas jogando online';
+  if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
   if (s.startsWith('roleta:')) return `você juntou ${ESTRELAS_POR_ROLETA} ★ nos jogos`;
+  if (s.startsWith('jogo:mundo-')) return 'você concluiu um mundo (Modo Aventura)';
   if (s.startsWith('jogo:av-')) return 'você terminou um Modo Aventura inteiro';
   if (s.startsWith('jogo:')) return 'você terminou um jogo inteiro, com todas as fases';
   if (s.startsWith('plf:')) return 'você terminou um modo inteiro do Mundo da Bateria (pauLta)';
@@ -28,15 +32,23 @@ export function motivoDoPacote(id) {
   if (s.startsWith('semana:')) return 'você entrou 7 dias seguidos (check-in da semana)';
   return 'presente da Beaterista';
 }
-export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
-export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
-// Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
+export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('epico:') ? 'epico' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
+/** GIRO ÉPICO (Desafio do Paul aprovado pela Bea): `epico:<id do resgate>:<1|2>`. O 1º giro dá SEMPRE 3 figurinhas; o 2º sorteia de 1 a 5 e, se vier só 1, ela é exclusiva (Beaterista e Paul). */
+export const EPICO_QTD = [[1, 15], [2, 20], [3, 30], [4, 20], [5, 15]];
+export const EPICO_PESOS = [['Comum', 60], ['Raras', 32], ['Beatlemania', 5], ['Beaterista', 3]]; // 2º giro épico: prioriza comuns e raras
+export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(id)); return m ? { n: Number(m[1]) } : null; };
+/** Pacote do giro épico: sem o 1º giro de 3, o 2º tem de 1 a 5. */
+export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de jogo a Exclusiva não existe: o grupo só tem Comum e Rara) // chance de cada figurinha do pacote ser dessa raridade
+// Seções do álbum (cada figurinha está em UMA; regra da Bea, nov/2026): Beatlemania = coleção Beatles; Beaterista = exclusivas da Bea e do Paul; Bandas = os grupos; Artistas = as pessoas.
+// A raridade é outra coisa: banda e cantor = Comum; músico/instrumentista e os cantores que a Bea escolheu = Rara; Bea e Paul = Exclusiva; Lendárias = só pela Lojinha (lendarias.js).
 /** Nome que aparece pra cada raridade. Os Beatles NÃO são "comum": o nome deles é Beatlemania. (Os outros nomes podem ser trocados aqui quando a Bea escolher a lista nova.) */
 export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva' };
 export const ehBeatles = (e) => !!e && (e.colecao === 'Beatles' || e.secao === 'Beatlemania');
 export const nomeRaridade = (e) => (ehBeatles(e) ? 'Beatlemania' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
-export const SECOES = ['Beatlemania', 'Beaterista', 'Comum', 'Raras'];
-export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Comum', Especial: 'Raras' }; // links e abas de antes
+export const SECOES = ['Beatlemania', 'Beaterista', 'Bandas', 'Artistas'];
+export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Bandas', Especial: 'Artistas', Comum: 'Bandas', Raras: 'Artistas' }; // links e abas de antes
+/** Grupo de SORTEIO da figurinha (não é a seção): Beatlemania, Beaterista, Raras (raridade Rara) ou Comum. Os pesos da roleta e dos pacotes usam isto. */
+export const grupo = (c) => (!c ? '' : ehBeatles(c) ? 'Beatlemania' : c.colecao === 'Beaterista' || c.secao === 'Beaterista' ? 'Beaterista' : c.raridade === 'Rara' ? 'Raras' : 'Comum');
 export const COLECOES = SECOES;
 export const emptyState = () => ({ v: 1, inv: {}, pasted: {}, granted: [], opened: {}, reduzir: false });
 
@@ -67,7 +79,7 @@ export const pendingPacks = (state) => (state.granted || []).filter((id) => !sta
 const pickWeighted = (r, pesos) => { const t = pesos.reduce((a, [, w]) => a + w, 0); let x = r() * t; for (const [k, w] of pesos) { if (x < w) return k; x -= w; } return pesos[0][0]; };
 /** Sorteia `n` códigos distintos, cada um de uma seção escolhida pelos pesos (mesma seed = mesmo resultado). */
 function drawBySection(catalog, r, n, pesos) {
-  const by = {}; for (const c of catalog) (by[c.secao] ||= []).push(c.codigo);
+  const by = {}; for (const c of catalog) (by[grupo(c)] ||= []).push(c.codigo);
   const out = []; let guard = 0;
   while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
   return out;
@@ -75,11 +87,20 @@ function drawBySection(catalog, r, n, pesos) {
 /** Sorteio do pacote. `roleta:*` = 1 a 3 figurinhas; `jogo:*` = pacote de 3 com 1 rara garantida; o resto = pacote de 3 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
+  const ep = epicoPack(packId);
+  if (ep) { // giro épico (Desafio do Paul): 1º = 3 figurinhas sempre; 2º = 1 a 5, e se for só 1 vem uma exclusiva
+    const grp = (g) => catalog.filter((c) => grupo(c) === g).map((c) => c.codigo); const um = (g) => { const l = grp(g); return l.length ? l[Math.floor(r() * l.length)] : null; };
+    if (ep.n === 1) return ['Beatlemania', 'Beaterista', 'Raras'].map(um).filter(Boolean); // 1º giro: SEMPRE 3 = 1 clássica (Beatlemania) + 1 exclusiva + 1 rara
+    const qtd = pickWeighted(r, EPICO_QTD);
+    if (qtd === 1) { const e1 = um('Beaterista'); return e1 ? [e1] : []; }
+    return drawBySection(catalog, r, qtd, EPICO_PESOS); // 2º giro: aleatório, até 5, priorizando comuns e raras
+  }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
+  if (/^(egg|bonus):/.test(String(packId))) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // segredos e bônus: 1 exclusiva (Beaterista e Paul)
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
   if (plf) {
-    const sec = (s, ok = () => true) => catalog.filter((c) => c.secao === s && ok(c)).map((c) => c.codigo); const um = (lista, fora = []) => { const l = lista.filter((x) => !fora.includes(x)); const pool = l.length ? l : lista; return pool.length ? pool[Math.floor(r() * pool.length)] : null; };
+    const sec = (s, ok = () => true) => catalog.filter((c) => grupo(c) === s && ok(c)).map((c) => c.codigo); const um = (lista, fora = []) => { const l = lista.filter((x) => !fora.includes(x)); const pool = l.length ? l : lista; return pool.length ? pool[Math.floor(r() * pool.length)] : null; };
     const especial = plf.modo === 'drumF' ? () => um(sec('Raras')) : plf.modo === 'drumI' ? (f) => um(sec('Beaterista', (c) => /^P/.test(c.codigo)), f) : (f) => um(sec('Beaterista', (c) => /^F/.test(c.codigo)), f);
     const out = plf.k === 'c' ? [um(sec('Comum'))] : [um(sec('Beatlemania')), um(sec('Comum'))];
     if (plf.k === 'c') out.push(especial(out)); return out.filter(Boolean);
@@ -88,8 +109,9 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, pickWeighted(r, ROLETA_QTD), ROLETA_PESOS);
   if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 3 com uma RARA garantida
-    const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
-    const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+    // prêmio de jogo só dá cartas de BANDAS e ARTISTAS (comum e rara): as exclusivas e os Beatles têm outros caminhos (regra da Bea, nov/2026)
+    const pool0 = catalog.filter((c) => grupo(c) === 'Comum' || grupo(c) === 'Raras'); const raras = pool0.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
+    const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of pool0) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
     while (out.length < size && guard++ < 800) { let x = r() * total, rar = 'Comum'; for (const [k, w] of Object.entries(WEIGHTS)) { if (x < w) { rar = k; break; } x -= w; } const pool = by[rar]; if (!pool?.length) continue; const c = pool[Math.floor(r() * pool.length)]; if (!out.includes(c)) out.push(c); }
     return out;
   }

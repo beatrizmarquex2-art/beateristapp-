@@ -2,7 +2,7 @@
 // Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, COMBO, AVISO_DIGITAL } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBO, SECOES, AVISO_DIGITAL } from '../loja-config.js';
 
 const comprar = (item) => () => {
   if (item.link) { window.open(item.link, '_blank', 'noopener'); return; }
@@ -30,18 +30,37 @@ function destaqueCombo() {
     h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
 }
 
-export function vitrine() {
+const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
+  h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),
+  h('h3', {}, p.nome), h('p', {}, p.desc), p.selo ? h('span', { class: 'lj-selo' }, p.selo) : null, p.preco ? h('b', { class: 'lj-preco lj-preco-card' }, p.precoDe ? [h('s', { class: 'lj-de', 'aria-label': `de ${p.precoDe}` }, p.precoDe), ' por '] : null, p.preco) : null, botao('Adquirir', p));
+
+/** Cartão grande de uma seção: três capas em leque + o nome. Cada seção tem a sua cara (classe `lj-sec-<id>`). */
+function tile(s) {
+  const capas = s.capas.map((id) => PRODUTOS.find((p) => p.id === id)).filter(Boolean);
+  const emBreve = PRODUTOS.filter((p) => p.secao === s.id).every((p) => !p.link);
+  return h('a', { class: `lj-sec lj-sec-${s.id}`, href: `#/lojinha/${s.id}`, 'aria-label': `${s.nome}: ${s.chamada}` },
+    h('span', { class: 'lj-sec-txt' }, emBreve ? h('i', { class: 'lj-sec-breve' }, 'em breve') : null, h('b', {}, s.nome), h('small', {}, s.chamada), h('em', { 'aria-hidden': 'true' }, 'ver ›')),
+    h('span', { class: 'lj-sec-leque', 'aria-hidden': 'true' }, ...capas.map((p, i) => h('img', { class: `l${i}`, src: p.img, alt: '', loading: 'lazy', draggable: 'false' }))));
+}
+
+/** `secao` vazio = a vitrine inicial (combo + as 3 seções). `secao` = 'cards' | 'ensina' | 'evoluir' abre os produtos daquela seção. */
+export function vitrine(secao = '') {
+  const S = SECOES.find((x) => x.id === secao);
+  if (S) {
+    return h('div', { class: `lj lj-pg lj-pg-${S.id}` },
+      h('a', { class: 'lj-volta', href: '#/lojinha' }, '‹ lojinha'),
+      h('header', { class: 'lj-pg-top' }, h('h2', {}, S.titulo), h('p', {}, S.sub)),
+      h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
+      h('div', { class: 'lj-grid' }, ...PRODUTOS.filter((p) => p.secao === S.id).map(cartao)),
+      h('a', { class: 'lj-volta lj-volta-b', href: '#/lojinha' }, '‹ ver as outras seções'));
+  }
   return h('div', { class: 'lj' },
     destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
-    h('h2', { class: 'lj-esc' }, h('span', {}, 'Escolha seu material')),
-    h('p', { class: 'lj-apostila' }, 'Apostila Didática Beaterista', h('small', {}, 'para evolução musical')),
+    h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
+    h('div', { class: 'lj-secs' }, ...SECOES.map(tile)),
     h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
-    h('div', { class: 'lj-grid' }, ...PRODUTOS.map((p) => h('article', { class: 'lj-card', 'data-id': p.id },
-      h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),
-      h('h3', {}, p.nome), h('p', {}, p.desc), p.selo ? h('span', { class: 'lj-selo' }, p.selo) : null, p.preco ? h('b', { class: 'lj-preco lj-preco-card' }, p.precoDe ? [h('s', { class: 'lj-de', 'aria-label': `de ${p.precoDe}` }, p.precoDe), ' por '] : null, p.preco) : null, botao('Adquirir', p)))),
     PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }
-

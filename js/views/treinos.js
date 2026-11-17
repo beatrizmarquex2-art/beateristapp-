@@ -123,6 +123,7 @@ export function leitura(host, opts = {}) {
         lastResult.compassoNota = nota;
       }
       passedNow = final && !livre && lastResult.score >= PASS_SCORE;
+      if (passedNow && (step === PATH.length - 1 || (PATH[step + 1] && PATH[step + 1].tier !== PATH[step].tier))) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`toca:${PATH[step].tier}`)).catch(() => {}); // acabou o último passo de um mundo (nível) = pacote de bandas e artistas
       if (passedNow && step === PATH.length - 1) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Toca Aqui', caminho: 'o caminho todo', chave: 'toca', pose: 'pad' })).catch(() => {}), 900); // terminou o caminho: festa + postar
       const est = livre || !final ? 0 : estrelasFase({ score: lastResult.score, mic: useMic, tier: PATH[step].tier, bpm: c.bpm }); lastResult.est = est; lastResult.mic = useMic; lastResult.parcial = !final;
       await store.upsert(KIND, null, { mode: 'leitura', lv: lvNow, bpm: c.bpm, bars: nb, score: lastResult.score, at: Date.now() });

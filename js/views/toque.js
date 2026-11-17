@@ -1,6 +1,7 @@
 // Bateria de toque: kit na tela com vários dedos ao mesmo tempo (e teclado no computador).
 // Modo gravar: conta 4, você toca N compassos com o clique e o app arredonda pra grade de semicolcheias
 // (vira ritmo do Beat Lab ou partitura). É um rascunho do que você tocou, não transcrição perfeita.
+import * as SEG from '../figurinhas/segredos-palco.js';
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
@@ -19,14 +20,19 @@ import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
 import { flash, pieceAt } from '../kids/kit-theme.js';
+import { MARCAS } from '../marcas-links.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
   const svg = art.querySelector('svg') || art;
-  const img = (src, x, y, w, h, cls = '') => { const im = document.createElementNS('http://www.w3.org/2000/svg', 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v)); svg.append(im); };
-  img('assets/marcas/beaterista.png', 4, 2, 44, 44);
-  if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro');
-  if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro');
+  // `marca` = chave em js/marcas-links.js: com endereço, o logo vira link (abre o site da marca em outra aba); sem endereço fica só desenhado. Só os logos de FORA da bateria viram link, pra um toque na bateria nunca abrir site sem querer.
+  // (endereço do app, que começa com #/, abre na mesma aba; site de fora abre em outra)
+  const img = (src, x, y, w, h, cls = '', marca = '') => { const NS = 'http://www.w3.org/2000/svg'; const url = marca ? MARCAS[marca] : ''; const im = document.createElementNS(NS, 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': url ? 'all' : 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v));
+    if (!url) { svg.append(im); return; } const a = document.createElementNS(NS, 'a'); a.setAttribute('href', url); if (!url.startsWith('#')) { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); } a.setAttribute('aria-label', `abrir o site: ${marca}`); a.style.cursor = 'pointer'; a.append(im); svg.append(a); };
+  img('assets/marcas/beaterista.png', 4, 2, 44, 44, '', 'beaterista');
+  if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro', 'nagano');
+  if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro', 'nagano');
+  if (modelo === 'cajon') img('assets/marcas/spark-branco.png', 318, 2, 90, 28, 'claro', 'spark'); // a marca do cajón também fica de fora do instrumento, pra poder virar link
 };
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -46,6 +52,7 @@ export function mount(host) {
   /** `dr` = onde o dedo caiu na peça (0 = no meio, 1 = na borda): no meio bate mais forte; na borda da caixa vira aro; no meio da condução, sino. */
   const hit = (id, perfMs, dr = 0.3, pt) => {
     const c = audio(); const v = velAt(dr); const som = kitSom(modeloAtual); if (som[id]) som[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
+    SEG.bateria(modeloAtual, id); // segredos do Palco
     const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (pt) spark(pt.x, pt.y, el);
     nomeEl.textContent = (modeloAtual === 'cajon' && { bd: 'grave', sn: 'agudo' }[id]) || NOME_PECA[id] || (id === 'ho' ? 'chimbal aberto' : ''); nomeEl.style.background = (el && el.style.getPropertyValue('--c')) || '#b5162b'; nomeEl.classList.remove('on'); void nomeEl.offsetWidth; nomeEl.classList.add('on');
     if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id, v, dr });

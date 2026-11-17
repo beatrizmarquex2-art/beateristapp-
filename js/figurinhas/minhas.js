@@ -7,7 +7,8 @@ import { sheet, toast, confirmSheet } from '../ui.js';
 import { cartaCanvas } from './postar.js';
 import * as AC from '../acesso.js';
 import { shareUI } from './share-ui.js';
-import { LIMITE_IGUAIS, contaIguais, ESPACOS, ESPACOS_PAGINA, PAGINAS, proximoEspaco, colar, descolar, praColar, coladas, paginaDe } from './minhas-regras.js';
+import { livroMeu, paginaDoEspaco } from './livro-meu.js';
+import { LIMITE_IGUAIS, contaIguais, ESPACOS, proximoEspaco, colar, descolar, praColar, coladas } from './minhas-regras.js';
 export { LIMITE_IGUAIS, contaIguais };
 
 const LISTA = 'minhas-cartinhas', IMG = (id) => `minha-carta:${id}`, MAX = 40;
@@ -73,12 +74,13 @@ export function colecao({ titulo = 'minha coleção', vazio = 'ainda não tem ne
  * Fica SÓ neste aparelho e é de quem está com o nome agora (não vai pra conta, pro iPad da professora nem pra outro celular).
  */
 export function album({ nome = '' } = {}) {
-  const urls = []; let alive = true; let pag = 1; let escolhida = null; // cartinha escolhida pra colar num espaço
+  const urls = []; let alive = true; let escolhida = null; // cartinha escolhida pra colar num espaço
+  const livro = livroMeu({ reduzir: typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches }); // as páginas, em formato de livro (igual aos álbuns oficiais)
   const titulo = h('h2', { class: 'ma-tit' }, nome ? `álbum de ${nome}` : 'meu álbum'); const cont = h('p', { class: 'ma-cont' });
-  const mao = h('div', { class: 'ma-mao' }); const folha = h('div', { class: 'ma-folha' }); const nav = h('div', { class: 'ma-nav' });
-  const el = h('section', { class: 'ma' }, titulo, cont, mao, folha, nav, h('p', { class: 'muted pf-priv' }, 'este álbum fica só neste celular e é só seu: não aparece em outro aparelho nem pra outra pessoa. se limpar os dados do navegador, ele some — baixe as cartinhas que quiser guardar pra sempre.'));
+  const mao = h('div', { class: 'ma-mao' });
+  const el = h('section', { class: 'ma' }, titulo, cont, mao, livro.el, h('p', { class: 'muted pf-priv' }, 'este álbum fica só neste celular e é só seu: não aparece em outro aparelho nem pra outra pessoa. se limpar os dados do navegador, ele some — baixe as cartinhas que quiser guardar pra sempre.'));
   const urlDe = async (it) => { const b = await db.metaGet(IMG(it.id)); if (!b) return null; const u = URL.createObjectURL(b); urls.push(u); return { b, u }; };
-  async function colaEm(l, id, slot) { const n = colar(l, id, slot); if (n === l) return false; await gravaLista(n); escolhida = null; const it = n.find((x) => x.id === id); pag = paginaDe(it.slot); await desenha(it.slot); return true; }
+  async function colaEm(l, id, slot) { const n = colar(l, id, slot); if (n === l) return false; await gravaLista(n); escolhida = null; const it = n.find((x) => x.id === id); await desenha(it.slot); return true; }
   async function desenha(novo = 0) {
     urls.splice(0).forEach((u) => URL.revokeObjectURL(u)); const l = await listar(); if (!alive) return;
     const soltas = praColar(l); const presas = coladas(l); cont.textContent = `${presas.length} colada${presas.length === 1 ? '' : 's'} · ${soltas.length} pra colar · ${ESPACOS} espaços`;
@@ -89,16 +91,14 @@ export function album({ nome = '' } = {}) {
       for (const it of soltas) { const r = await urlDe(it); if (!r || !alive) continue; fila.append(h('button', { type: 'button', class: `ma-solta${escolhida === it.id ? ' on' : ''}`, 'data-id': it.id, 'aria-pressed': String(escolhida === it.id), 'aria-label': `${it.nome || 'cartinha'}: escolher pra colar`, onclick: () => { escolhida = escolhida === it.id ? null : it.id; desenha(); } }, h('img', { src: r.u, alt: '', width: 360, height: 475 }), h('span', {}, it.nome || '—'))); }
       mao.append(h('div', { class: 'ma-mao-top' }, h('b', {}, escolhida ? 'agora toque num espaço vazio' : 'pra colar: toque numa cartinha'), h('button', { type: 'button', class: 'btn small ma-todas', onclick: async () => { let cur = await listar(); for (const it of praColar(cur)) cur = colar(cur, it.id); await gravaLista(cur); escolhida = null; toast('tudo colado no seu álbum!'); await desenha(); } }, 'colar todas')), fila);
     }
-    // --- a página ---
-    const de = (pag - 1) * ESPACOS_PAGINA + 1; folha.replaceChildren(h('div', { class: 'ma-pag-t' }, `página ${pag}`));
-    const grade = h('div', { class: 'ma-grade' }); folha.append(grade);
-    for (let n = de; n < de + ESPACOS_PAGINA; n++) {
-      const it = presas.find((x) => x.slot === n);
-      if (!it) { grade.append(h('button', { type: 'button', class: `ma-esp${escolhida ? ' alvo' : ''}`, 'data-slot': String(n), 'aria-label': `espaço ${n}, vazio`, onclick: async () => { const cur = await listar(); if (escolhida) { await colaEm(cur, escolhida, n); return; } const s = praColar(cur)[0]; if (s) await colaEm(cur, s.id, n); else toast('crie uma cartinha no Perfil pra colar aqui'); } }, h('i', {}, String(n)))); continue; }
-      const r = await urlDe(it); if (!alive) return;
-      grade.append(h('button', { type: 'button', class: `ma-esp cheia${novo === n ? ' colou' : ''}`, 'data-slot': String(n), 'aria-label': `espaço ${n}: ${it.nome || 'cartinha'}, abrir`, onclick: () => r && abrir(it, r.b) }, r ? h('img', { src: r.u, alt: it.nome || 'cartinha', width: 360, height: 475 }) : null, h('span', {}, it.nome || '—')));
-    }
-    nav.replaceChildren(h('button', { type: 'button', class: 'btn small ghost', disabled: pag <= 1, 'aria-label': 'página anterior', onclick: () => { pag--; desenha(); } }, '‹'), h('span', {}, `${pag} de ${PAGINAS}`), h('button', { type: 'button', class: 'btn small ghost', disabled: pag >= PAGINAS, 'aria-label': 'próxima página', onclick: () => { pag++; desenha(); } }, '›'));
+    // --- o livro ---
+    const blobs = {}, urlMap = {};
+    for (const it of presas) { const r = await urlDe(it); if (!r || !alive) continue; blobs[it.id] = r.b; urlMap[it.id] = r.u; }
+    if (!alive) return;
+    livro.render({ nome, presas, urls: urlMap, escolhida, novo,
+      aoAbrir: (it) => blobs[it.id] && abrir(it, blobs[it.id]),
+      aoEspaco: async (n) => { const cur = await listar(); if (escolhida) { await colaEm(cur, escolhida, n); return; } const sl = praColar(cur)[0]; if (sl) await colaEm(cur, sl.id, n); else toast('crie uma cartinha no Perfil pra colar aqui'); } });
+    if (novo) livro.jump(paginaDoEspaco(novo));
   }
   function abrir(it, b) {
     sheet(it.nome || 'cartinha', (close) => {

@@ -19,7 +19,7 @@ export const DICAS = [
   ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
   ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
   ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
-  ['jogos novos', 'tem jogo novo no app: Radar Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
+  ['jogos novos', 'tem jogo novo no app: Caça Musical, Taiko, Toca Aqui e mais. bora testar um?', 'p-run', '#/jogos', 'ver os jogos', 'aluno'],
   ['instrumentos', 'sabia que dá pra tocar bateria, violão, teclado e percussão aqui no app? vem tocar!', 'p-guitar', '#/tocar', 'ir tocar', 'aluno'],
   ['curiosidades', 'quer saber a história de quem tocou antes de você? tem curiosidade de músicos na aba Estudos.', 'p-book', '#/estudos/curiosidades', 'ler curiosidades', 'aluno'],
   ['aulinha do Paul', 'tem aulinha do Paul no app: bateria, teclado e violão, passo a passo. começa por uma!', 'p-drum2', '#/estudos/aulas', 'ver as aulinhas', 'aluno'],

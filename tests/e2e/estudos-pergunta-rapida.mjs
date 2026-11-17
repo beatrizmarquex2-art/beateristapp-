@@ -1,0 +1,21 @@
+// Pergunta rápida (1 ★) nas curiosidades e nas dicas do método; a estrela vale uma vez por item.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
+const estrelas = () => page.evaluate(async () => { const P = await import('/js/kids/progress.js'); const me = P.active(); return (P.progOf(me.id).mesa || {}).total || 0; });
+const responde = async () => { await sleep(500); const antes = await page.evaluate(() => document.querySelector('.pv-bar')?.textContent || ''); await page.evaluate(() => document.querySelector('.pv-op').click()); await sleep(1300); return antes; };
+await page.goto(`${url}/aluno.html#/estudos/curiosidades`); await sleep(2000);
+await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /pergunta rápida/.test(b.textContent)).click()); const a = await responde();
+check('curiosidade: abre 1 pergunta e termina', /pergunta 1 de 1/.test(a) && /de 1 certas/.test(await page.evaluate(() => document.querySelector('.pv-box')?.textContent || '')));
+await page.evaluate(() => document.querySelector('.pv-ov')?.remove());
+await page.goto(`${url}/aluno.html#/estudos/dicas`); await sleep(3500);
+await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /pergunta rápida/.test(b.textContent)).click()); const b = await responde();
+check('dica: abre 1 pergunta e termina', /pergunta 1 de 1/.test(b) && /de 1 certas/.test(await page.evaluate(() => document.querySelector('.pv-box')?.textContent || '')));
+check('cada pergunta paga no máximo 1 ★', (await estrelas()) <= 2);
+check('sem erro na página', errs.length === 0);
+await browser.close(); srv.close(); done();

@@ -26,7 +26,7 @@ check('cada rodada sorteia perguntas de figura→nome ou nome→figura', ['figur
 const ant = JSON.parse(await p.evaluate(() => localStorage.getItem('beaterista-quizuno-recentes')));
 check('a rodada seguinte foge das figuras da anterior (5 recentes guardadas)', Array.isArray(ant) && ant.length === 5);
 await p.goto(`${url}/aluno.html#/album/Pacotes`); await p.waitForSelector('.al-subnav', { timeout: 10000 });
-check('3 abas: álbum · roleta (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()).includes('roleta'));
+check('3 abas: álbum · stars (acesa) · perfil', (await p.locator('.al-subnav a').count()) === 3 && (await p.locator('.al-subnav a.on').innerText()).includes('stars'));
 const app = await ctx.newPage(); await app.setViewportSize({ width: 390, height: 844 }); await fakeLogin(ctx, app, url);
 await app.evaluate(() => { location.hash = '#/figurinhas/Pacotes'; }); await app.waitForSelector('.fig-regras', { timeout: 10000 });
 const regras = await app.locator('.fig-regras').innerText();

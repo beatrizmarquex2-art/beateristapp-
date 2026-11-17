@@ -21,7 +21,8 @@ const ROTAS = ['#/kids/memoria/aventura', '#/kids/ritmo/aventura']; // (o Modo A
 }
 {
   const { ctx, p } = await phone(true);
-  for (const r of ['#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} abre o mapa`, await p.evaluate(() => !document.querySelector('.al-lock') && !!document.querySelector('.mp-node'))); }
+  // regra da Bea (17/nov/2026): Modo Aventura SÓ nos jogos de aprender (Toca Aqui, Detetive Note, Figurix, pauLta). A memória do Kids perdeu a aventura: o endereço abre o jogo livre.
+  for (const r of ['#/kids/memoria/aventura']) { await go(p, r); check(`com código: ${r} não tem mais mapa de aventura (abre o jogo livre)`, await p.evaluate(() => !document.querySelector('.al-lock') && !document.querySelector('.mp-node'))); }
   await go(p, '#/jogos/toca'); check('com código: o Toca Aqui abre (sem trava)', await p.evaluate(() => !document.querySelector('.al-lock')));
   await ctx.close();
 }

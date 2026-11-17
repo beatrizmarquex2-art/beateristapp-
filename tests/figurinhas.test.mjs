@@ -11,21 +11,23 @@ test('125 registros únicos, cada um com sua foto original intacta (SHA256)', ()
 });
 test('distribuição de coleções e raridades fechadas', () => {
   assert.deepEqual(count('colecao'), { Geral: 91, Beatles: 22, Beaterista: 10, Especial: 2 });
-  assert.deepEqual(count('raridade'), { Comum: 101, Rara: 14, Exclusiva: 10 });
+  assert.deepEqual(count('raridade'), { Comum: 96, Rara: 19, Exclusiva: 10 });
   assert.equal(cat.find((c) => c.codigo === 'F102').artista_banda, 'Jimi Hendrix');
 });
-test('seções do álbum: Beatlemania 22, Beaterista 10, Comum 80, Raras 13 (cada figurinha em uma só)', () => {
-  assert.deepEqual(count('secao'), { Beatlemania: 22, Beaterista: 10, Comum: 80, Raras: 13 });
+test('seções do álbum: Beatlemania 22, Beaterista 10, Bandas 47, Artistas 46 (cada figurinha em uma só)', () => {
+  assert.deepEqual(count('secao'), { Beatlemania: 22, Beaterista: 10, Bandas: 47, Artistas: 46 });
   for (const c of cat) assert.ok(L.SECOES.includes(c.secao), c.codigo);
-  assert.ok(cat.filter((c) => c.secao === 'Raras').every((c) => c.raridade === 'Rara'));
-  assert.ok(cat.filter((c) => c.secao === 'Comum').every((c) => c.raridade === 'Comum'));
+  assert.ok(cat.filter((c) => c.secao === 'Bandas').every((c) => c.raridade === 'Comum'), 'banda é sempre comum');
+  assert.ok(cat.filter((c) => c.raridade === 'Rara' && c.colecao !== 'Beatles').every((c) => c.secao === 'Artistas'), 'fora dos Beatles, rara é sempre artista');
+  assert.equal(cat.filter((c) => L.grupo(c) === 'Raras').length, 18); assert.equal(cat.filter((c) => L.grupo(c) === 'Comum').length, 75);
+  assert.equal(L.SECAO_ANTIGA.Comum, 'Bandas'); assert.equal(L.SECAO_ANTIGA.Raras, 'Artistas');
   assert.equal(cat.find((c) => c.codigo === 'F087').secao, 'Beatlemania');
   assert.equal(L.SECAO_ANTIGA.Beatles, 'Beatlemania');
 });
 test('raridades conforme a decisão da usuária', () => {
   const ids = (r) => cat.filter((c) => c.raridade === r).map((c) => c.codigo).sort().join();
   assert.equal(ids('Exclusiva'), 'F001,F004,F005,F010,F011,F012,F015,F129,F131,F132');
-  assert.equal(ids('Rara'), 'F016,F018,F020,F022,F025,F044,F047,F052,F087,F093,F107,F108,F112,F124');
+  assert.equal(ids('Rara'), 'F016,F017,F018,F025,F044,F052,F086,F087,F089,F093,F094,F100,F102,F106,F107,F108,F112,F117,F124');
   for (const c of cat.filter((c) => c.colecao === 'Beaterista')) assert.equal(c.raridade, 'Exclusiva');
   for (const c of cat.filter((c) => /Justin/.test(c.artista_banda))) assert.equal(c.raridade, 'Rara', c.codigo);
   assert.equal(cat.find((c) => c.codigo === 'F053').raridade, 'Comum');
