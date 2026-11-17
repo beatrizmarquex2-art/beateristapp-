@@ -16,8 +16,10 @@ export const ARROBA = '@beaterista_';
 export const JOGOS_POST = [['paulbox', 'PaulBox'], ['uno', 'Uno Musical'], ['velha', 'Jogo da velha'], ['quebra', 'Quebra-cabeça'], ['cara', 'Cara a cara'], ['stop', 'Stop'], ['memoria', 'Jogo da memória'], ['bingo', 'Bingo'],
   ['paulta', 'pauLta'], ['figurix', 'Figurix'], ['detetive', 'Detetive Note'], ['rudimentix', 'Rudimentix'], ['toca', 'Toca Aqui'], ['beathero', 'Beat Hero'], ['figurinha', 'figurinha do álbum'], ['outro', 'outro jogo']];
 export const tipoPost = (jogo) => `post:${jogo}`;
+/** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. Aprovado pela Bea = GIRO DUPLO ÉPICO (2 giros). O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
+export const TIPO_DESAFIO = 'post:desafio';
 /** Nome legível de qualquer tipo de resgate (inclui `post:<jogo>`). */
-export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
+export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro duplo épico)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
 export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 

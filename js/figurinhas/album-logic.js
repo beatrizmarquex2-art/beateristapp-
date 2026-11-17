@@ -18,6 +18,7 @@ export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : S
 /** Por que a pessoa ganhou este giro ou pacotinho (texto curto pra criança), tirado do próprio id. */
 export function motivoDoPacote(id) {
   const s = String(id);
+  if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
   if (s.startsWith('roleta:')) return `você juntou ${ESTRELAS_POR_ROLETA} ★ nos jogos`;
@@ -28,8 +29,12 @@ export function motivoDoPacote(id) {
   if (s.startsWith('semana:')) return 'você entrou 7 dias seguidos (check-in da semana)';
   return 'presente da Beaterista';
 }
-export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
-export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
+export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('epico:') ? 'epico' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
+/** GIRO ÉPICO (Desafio do Paul aprovado pela Bea): `epico:<id do resgate>:<1|2>`. O 1º giro dá SEMPRE 3 figurinhas; o 2º sorteia de 1 a 5 e, se vier só 1, ela é exclusiva (Beaterista e Paul). */
+export const EPICO_QTD = [[1, 15], [2, 20], [3, 30], [4, 20], [5, 15]];
+export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(id)); return m ? { n: Number(m[1]) } : null; };
+/** Pacote do giro épico: sem o 1º giro de 3, o 2º tem de 1 a 5. */
+export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de jogo a Exclusiva não existe: o grupo só tem Comum e Rara) // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA; regra da Bea, nov/2026): Beatlemania = coleção Beatles; Beaterista = exclusivas da Bea e do Paul; Bandas = os grupos; Artistas = as pessoas.
 // A raridade é outra coisa: banda e cantor = Comum; músico/instrumentista e os cantores que a Bea escolheu = Rara; Bea e Paul = Exclusiva; Lendárias = só pela Lojinha (lendarias.js).
 /** Nome que aparece pra cada raridade. Os Beatles NÃO são "comum": o nome deles é Beatlemania. (Os outros nomes podem ser trocados aqui quando a Bea escolher a lista nova.) */
@@ -78,6 +83,12 @@ function drawBySection(catalog, r, n, pesos) {
 /** Sorteio do pacote. `roleta:*` = 1 a 3 figurinhas; `jogo:*` = pacote de 3 com 1 rara garantida; o resto = pacote de 3 por raridade. Mesma seed = mesmas figurinhas. */
 export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
+  const ep = epicoPack(packId);
+  if (ep) { // giro épico (Desafio do Paul): 1º = 3 figurinhas sempre; 2º = 1 a 5, e se for só 1 vem uma exclusiva
+    const qtd = ep.n === 1 ? 3 : pickWeighted(r, EPICO_QTD);
+    if (qtd === 1) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; }
+    return drawBySection(catalog, r, qtd, ROLETA_PESOS);
+  }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
@@ -91,8 +102,9 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   if (pl) return drawBySection(catalog, r, pl.n, [['Comum', 62], ['Raras', 16], ['Beatlemania', 18], ['Beaterista', pl.bea]].filter(([, w]) => w > 0));
   if (kind === 'roleta') return drawBySection(catalog, r, pickWeighted(r, ROLETA_QTD), ROLETA_PESOS);
   if (kind === 'jogo') { // prêmio de jogo completo: 1 pacote de 3 com uma RARA garantida
-    const raras = catalog.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
-    const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of catalog) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+    // prêmio de jogo só dá cartas de BANDAS e ARTISTAS (comum e rara): as exclusivas e os Beatles têm outros caminhos (regra da Bea, nov/2026)
+    const pool0 = catalog.filter((c) => grupo(c) === 'Comum' || grupo(c) === 'Raras'); const raras = pool0.filter((c) => c.raridade === 'Rara').map((c) => c.codigo); const garantida = raras[Math.floor(r() * raras.length)];
+    const out = garantida ? [garantida] : []; let guard = 0; const by = {}; for (const c of pool0) (by[c.raridade] ||= []).push(c.codigo); const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
     while (out.length < size && guard++ < 800) { let x = r() * total, rar = 'Comum'; for (const [k, w] of Object.entries(WEIGHTS)) { if (x < w) { rar = k; break; } x -= w; } const pool = by[rar]; if (!pool?.length) continue; const c = pool[Math.floor(r() * pool.length)]; if (!out.includes(c)) out.push(c); }
     return out;
   }

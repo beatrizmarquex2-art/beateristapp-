@@ -30,7 +30,7 @@ check('jogo completo dá o prêmio uma vez só; outro jogo incompleto não dá',
 check('roletas e prêmio somam à lista de pacotes pra abrir', r.depois === r.antes + 4, JSON.stringify(r));
 await page.locator('.al-lock-have summary').click(); await page.fill('.al-lock-have input', 'bea-0404'); await page.getByRole('button', { name: 'liberar' }).click(); await page.waitForSelector('.fig-tabs', { timeout: 10000 });
 check('com o código, a aba Pacotes mostra os pacotes ganhos', /[3-9]/.test(await page.locator('.fig-tabs [role=tab]').last().textContent()), await page.locator('.fig-tabs [role=tab]').last().textContent());
-await page.getByRole('tab', { name: /pacotes/ }).click(); await sleep(300);
+await page.evaluate(() => { location.hash = '#/album/Pacotes'; }); await page.waitForSelector('.fig-blocos', { timeout: 15000 }); await sleep(300);
 check('a aba mostra roletas e prêmio', (await page.textContent('.fig-pack-card')).includes('roleta') && (await page.textContent('.fig-pack-card')).includes('prêmio'), await page.textContent('.fig-pack-card'));
 check('o prêmio de jogo completo vem primeiro, depois as roletas, depois os pacotes', (await page.getByRole('button', { name: 'abrir o prêmio' }).count()) === 1);
 await page.getByRole('button', { name: 'abrir o prêmio' }).click(); await page.waitForSelector('.fig-wheel-disc', { timeout: 5000 });
@@ -38,11 +38,11 @@ check('prêmio: cena própria, ainda não gastou', (await page.locator('.fig-rev
 await page.locator('.sheet').getByRole('button', { name: 'abrir o prêmio' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 });
 const top = await page.evaluate(async () => { const cat = await (await fetch('assets/figurinhas/catalogo.json')).json(); const nomes = [...document.querySelectorAll('.fig-reveal .fig-flip svg')].map((x) => x.getAttribute('aria-label') || ''); const rar = nomes.map((n) => (cat.find((c) => n.includes(`figurinha ${c.codigo}`)) || {}).raridade); return { n: nomes.length, rar }; });
 check('prêmio: pacote de 3 com pelo menos 1 rara', top.n === 3 && top.rar.includes('Rara'), JSON.stringify(top));
-await page.locator('.sheet').getByRole('button', { name: 'colar depois' }).click(); await page.waitForSelector('.sheet-back', { state: 'detached', timeout: 5000 }).catch(() => {}); await sleep(400);
+await page.locator('.sheet').getByRole('button', { name: 'guardar no baú' }).click(); await page.waitForSelector('.sheet-back', { state: 'detached', timeout: 5000 }).catch(() => {}); await sleep(400);
 check('depois do prêmio, o botão passa a ser "girar a roleta"', (await page.getByRole('button', { name: 'girar a roleta' }).count()) === 1);
 await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.waitForSelector('.fig-wheel-disc', { timeout: 5000 });
-check('abre a cena da roleta (ainda não gastou)', (await page.locator('.fig-reveal').count()) === 0 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 1);
-await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 });
+check('abre a cena da roleta e já gira sozinha (um toque só)', (await page.locator('.sheet .fig-wheel-disc').count()) === 1 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 0);
+await page.waitForSelector('.fig-reveal', { timeout: 12000 });
 const nCartas = await page.locator('.fig-reveal .fig-flip').count();
 check('depois de girar: ganha de 1 a 3 figurinhas', nCartas >= 1 && nCartas <= 3, String(nCartas));
 check('as cartas já vêm abertas e o texto diz o que ganhou', (await page.locator('.fig-reveal .fig-flip.open').count()) === nCartas && (await page.textContent('.sheet')).includes('você ganhou'));

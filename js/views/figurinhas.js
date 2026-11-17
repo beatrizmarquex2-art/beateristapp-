@@ -32,7 +32,7 @@ const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: red
 export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
   const ult = ultimoJogo(); // pra ninguém se perder: o Álbum mostra o caminho de volta pro jogo em que o aluno estava
-  host.append(banner('Álbum', 'cole todas as figurinhas'), ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
+  host.append(parts[0] === 'Pacotes' ? banner('Stars', 'suas estrelas, a roleta e o baú') : banner('Álbum', 'cole todas as figurinhas'), ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
   const ID = D.albumId(); // o álbum é de quem está com o nome agora
   let state = { ...L.emptyState(), ...D.albumDados() };
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;
@@ -60,6 +60,10 @@ export function mount(host, parts = [], opts = {}) {
     for (const r of rsLista) {
       if (r.status !== 'aprovado' || r.entregue) continue;
       let ok = false; try { ok = await RS.entregar(r.id); } catch { /* tenta na próxima */ } if (!ok) continue; r.entregue = true;
+      if (r.tipo === RS.TIPO_DESAFIO) { // Desafio do Paul aprovado: 2 giros ÉPICOS (ids do resgate, então nunca entrega em dobro)
+        const s2 = L.grantPack(L.grantPack(state, `epico:${r.id}:1`), `epico:${r.id}:2`); if (s2 !== state) save(s2);
+        toast('a Bea aprovou o Desafio do Paul: GIRO DUPLO ÉPICO liberado!', { ms: 5000 }); import('../paulta/festa.js').then((F) => F.festa({ titulo: 'giro duplo épico!', sub: 'você ganhou 2 giros especiais. olha em Stars › roleta' })).catch(() => {}); continue;
+      }
       if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (1 produto = 1 · 2 = 3 · 3 = 5)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
     }
@@ -114,11 +118,12 @@ export function mount(host, parts = [], opts = {}) {
   function draw() {
     if (!catalog) return;
     const pend = L.pendingPacks(state).length, hand = L.inHand(state), all = L.stats(state, catalog);
-    const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.map((t) => {
+    const tabs = h('div', { class: 'fig-tabs', role: 'tablist' }, TABS.filter((t) => t !== 'Pacotes').map((t) => { // a roleta/baú/resgate moram na aba STARS (não é mais uma aba do álbum)
       const badge = t === 'Pacotes' ? (pend ? ` ${pend}` : '') : t === 'Na mão' ? (L.inHand(state) ? ` ${L.inHand(state)}` : '') : '';
       return h('button', { type: 'button', role: 'tab', class: `chip-btn${t === tab ? ' on' : ''}`, 'aria-selected': String(t === tab), onclick: () => irAba(t) }, (ROTULO[t] || t.toLowerCase()) + badge);
     }));
     const aviso = pend && tab !== 'Pacotes' ? h('button', { type: 'button', class: 'btn fig-giro', onclick: () => irAba('Pacotes') }, '🎡 você tem cartas para resgatar') : null;
+    if (tab === 'Pacotes') { wrap.replaceChildren(starsHeader(), packsView()); return; }
     wrap.replaceChildren(
       h('p', { class: 'fig-total' }, h('b', {}, `${all.got}/${all.total}`), ' coladas no total · ', `${all.missing} faltam · ${hand} na mão`),
       h('p', { class: 'fig-vaimudar', role: 'note' }, '✨ o álbum ainda vai mudar: vão chegar figurinhas novas e, pra completar de verdade, serão ', h('b', { class: 'fig-300' }, '300 figurinhas!')),
@@ -192,22 +197,32 @@ export function mount(host, parts = [], opts = {}) {
     return h('section', { class: 'fig-col' }, mcView.el, h('a', { class: 'btn wide', href: '#/perfil' }, 'criar uma cartinha (Perfil)'));
   }
 
+  /* ---------- STARS: quantas estrelas você tem e quantas faltam pra próxima roleta (fica no topo, antes de tudo) ---------- */
+  function starsHeader() {
+    const me = (() => { try { return P.active(); } catch { return null; } })();
+    if (!me) return h('section', { class: 'fig-stars' }, h('p', { class: 'fig-stars-sem' }, 'jogue com o seu nome pra juntar estrelas ★ e girar a roleta'));
+    const tot = EST.estrelasTotais(me.id), falta = EST.faltamParaRoleta(tot), feito = L.ESTRELAS_POR_ROLETA - falta;
+    return h('section', { class: 'fig-stars', 'aria-label': `${tot} estrelas, faltam ${falta} pra próxima roleta` },
+      h('div', { class: 'fig-stars-n' }, h('b', {}, String(tot)), h('span', {}, '★ estrelas')),
+      h('div', { class: 'fig-stars-meio' }, h('div', { class: 'fig-stars-bar', role: 'progressbar', 'aria-valuenow': feito, 'aria-valuemin': 0, 'aria-valuemax': L.ESTRELAS_POR_ROLETA }, h('i', { style: { width: `${Math.round((feito / L.ESTRELAS_POR_ROLETA) * 100)}%` } })), h('p', {}, h('b', {}, `faltam ${falta} ★`), ' pra próxima roleta')));
+  }
+
   /* ---------- pacotes ---------- */
   function packsView() {
-    const ordem = { jogo: 0, roleta: 1, pacote: 2 }; // prêmio de jogo e roleta primeiro, depois os pacotes
+    const ordem = { epico: 0, jogo: 1, roleta: 2, pacote: 3 }; // prêmio de jogo e roleta primeiro, depois os pacotes
     const pend = [...L.pendingPacks(state)].sort((a, b) => ordem[L.packKind(a)] - ordem[L.packKind(b)]), hand = Object.keys(state.inv).map((c) => catalog.find((x) => x.codigo === c)).filter(Boolean);
     const pastable = hand.filter((e) => L.canPaste(state, e.codigo));
     const rep = L.repeated(state);
-    const n = (k) => pend.filter((id) => L.packKind(id) === k).length, next = pend[0] ? L.packKind(pend[0]) : null;
-    const partes = [n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
+    const n = (k) => pend.filter((id) => L.packKind(id) === k).length, next = pend[0] ? (L.packKind(pend[0]) === 'epico' ? 'roleta' : L.packKind(pend[0])) : null;
+    const partes = [n('epico') ? `⚡ ${n('epico')} giro${n('epico') > 1 ? 's' : ''} épico${n('epico') > 1 ? 's' : ''}` : '', n('roleta') ? `🎡 ${n('roleta')} roleta${n('roleta') > 1 ? 's' : ''}` : '', n('jogo') ? `🏆 ${n('jogo')} prêmio${n('jogo') > 1 ? 's' : ''} de jogo` : '', n('pacote') ? `🎁 ${n('pacote')} pacote${n('pacote') > 1 ? 's' : ''}` : ''].filter(Boolean);
     const me = (() => { try { return P.active(); } catch { return null; } })();
     const prog = me ? `faltam ${EST.faltamParaRoleta(EST.estrelasTotais(me.id))} ★ pra próxima roleta (${EST.estrelasTotais(me.id)} ★ no total)` : 'junte 15 ★ nos jogos pra liberar uma roleta de figurinhas';
     // 3 áreas (pedido da Bea, 15/nov/2026): ROLETA (girar) · BAÚ (abrir pacotinho, com o porquê de cada um) · RESGATE (★ com print)
-    const giros = pend.filter((id) => L.packKind(id) === 'roleta'); const bau = pend.filter((id) => L.packKind(id) !== 'roleta');
+    const giros = pend.filter((id) => ['roleta', 'epico'].includes(L.packKind(id))); const bau = pend.filter((id) => !['roleta', 'epico'].includes(L.packKind(id)));
     const auto = next === 'roleta' ? 'roleta' : next ? 'bau' : 'roleta'; const qual = area || auto;
     const chip = (id, txt, qtd) => h('button', { type: 'button', role: 'tab', class: `fig-area${qual === id ? ' on' : ''}`, 'aria-selected': String(qual === id), onclick: () => { area = id; draw(); } }, txt, qtd ? h('i', {}, String(qtd)) : null);
     const resumo = h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.');
-    const porque = (lista) => (lista.length ? h('ul', { class: 'fig-porque' }, ...lista.slice(0, 6).map((id) => h('li', {}, h('b', {}, L.packKind(id) === 'roleta' ? '🎡 giro' : L.packKind(id) === 'jogo' ? '🏆 prêmio' : '🎁 pacotinho'), ` ${L.motivoDoPacote(id)}`)), lista.length > 6 ? h('li', {}, `e mais ${lista.length - 6}…`) : null) : null);
+    const porque = (lista) => (lista.length ? h('ul', { class: 'fig-porque' }, ...lista.slice(0, 6).map((id) => h('li', {}, h('b', {}, L.packKind(id) === 'epico' ? '⚡ giro épico' : L.packKind(id) === 'roleta' ? '🎡 giro' : L.packKind(id) === 'jogo' ? '🏆 prêmio' : '🎁 pacotinho'), ` ${L.motivoDoPacote(id)}`)), lista.length > 6 ? h('li', {}, `e mais ${lista.length - 6}…`) : null) : null);
     const semana = h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 figurinha exclusiva da Bea`));
     let corpo;
     if (qual === 'roleta') {
@@ -215,7 +230,7 @@ export function mount(host, parts = [], opts = {}) {
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '🎡'), h('span', {}, '1 a 3 figurinhas por giro')),
         resumo,
         h('p', { class: 'fig-note' }, `${prog}. você também ganha 1 giro grátis por dia (check-in) e 1 giro a cada 4 fases concluídas.`),
-        h('button', { type: 'button', class: 'btn primary wide', disabled: giros.length ? null : true, onclick: () => openIt(giros[0]) }, 'girar a roleta'),
+        h('button', { type: 'button', class: 'btn primary wide', disabled: giros.length ? null : true, onclick: () => openIt(giros[0]) }, giros.length && L.packKind(giros[0]) === 'epico' ? (L.epicoPack(giros[0]).n === 1 ? 'girar · 3 figurinhas garantidas' : 'girar · de 1 a 5 figurinhas') : 'girar a roleta'),
         giros.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(giros)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar giros'), h('small', {}, `junte ${L.ESTRELAS_POR_ROLETA} ★ jogando, conclua 4 fases ou entre no app todo dia.`)),
         semana);
     } else if (qual === 'bau') {
@@ -227,7 +242,7 @@ export function mount(host, parts = [], opts = {}) {
         h('button', { type: 'button', class: 'btn primary wide', disabled: prox ? null : true, onclick: () => openIt(prox) }, k === 'jogo' ? 'abrir o prêmio' : 'abrir pacotinho'),
         bau.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(bau)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar pacotinhos'), h('small', {}, 'termine todas as fases de um jogo, um mundo da pauLta ou 7 dias seguidos de check-in.'))),
       corpo = h('div', {}, corpo, h('div', { class: 'fig-hand' },
-        h('h2', {}, `na mão (${L.inHand(state)})`),
+        h('h2', {}, `guardadas no baú (${L.inHand(state)})`),
         h('p', { class: 'fig-note' }, `${pastable.length} pra colar · ${rep} repetida${rep === 1 ? '' : 's'}`),
         pastable.length ? h('button', { type: 'button', class: 'btn primary', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo (${pastable.length})`) : null,
         h('div', { class: 'fig-hand-list' }, hand.map((e) => h('button', { type: 'button', class: 'fig-chip', onclick: () => (L.canPaste(state, e.codigo) ? doPaste(e) : detail(e)) }, h('b', {}, e.codigo), ` ${e.artista_banda}`, h('em', {}, state.pasted[e.codigo] ? ' · repetida' : ' · colar'))))));
@@ -235,7 +250,14 @@ export function mount(host, parts = [], opts = {}) {
       const sel = h('select', { class: 'fig-post-sel', 'aria-label': 'qual jogo você postou' }, ...RS.JOGOS_POST.map(([id, nome]) => h('option', { value: id, disabled: statusRs(RS.tipoPost(id)) ? true : null }, statusRs(RS.tipoPost(id)) ? `${nome} (${statusRs(RS.tipoPost(id))})` : nome)));
       const primeiro = RS.JOGOS_POST.find(([id]) => !statusRs(RS.tipoPost(id))); if (primeiro) sel.value = primeiro[0];
       const postados = RS.JOGOS_POST.filter(([id]) => statusRs(RS.tipoPost(id)));
-      corpo = h('div', { class: 'fig-pack-card fig-resgate' },
+      const stD = statusRs(RS.TIPO_DESAFIO); const jaGanhou = rsLista.some((x) => x.tipo === RS.TIPO_DESAFIO && x.status === 'aprovado');
+      const desafio = h('section', { class: 'fig-desafio' }, h('h3', {}, '⚡ Desafio do Paul'),
+        h('p', {}, 'Cole sua figurinha no álbum e escolha se aceita o Desafio do Paul!'),
+        h('p', { class: 'fig-note' }, 'Vale uma nova carta de perfil colada, uma pontuação recorde, um selo por completar um mundo musical ou um Estudo do Paul.'),
+        h('p', { class: 'fig-note' }, `Poste sua conquista e marque @beaterista.escolademusica, ${RS.ARROBA} ou @jogos.beaterista. Depois toque em “importar foto” e mande o print pra professora aprovar.`),
+        h('p', {}, h('b', {}, 'Depois de aprovado: GIRO DUPLO ÉPICO!'), ' São 2 giros especiais: o primeiro dá 3 figurinhas garantidas e o segundo pode liberar até 5. Boa sorte! Aceita o desafio?'),
+        jaGanhou ? h('p', { class: 'fig-desafio-st ok' }, '✓ aprovado · giro duplo épico liberado (olha na roleta)') : stD ? h('p', { class: 'fig-desafio-st' }, `⏳ ${stD}`) : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint(RS.TIPO_DESAFIO) }, '📷 importar foto e aceitar o desafio'));
+      corpo = h('div', { class: 'fig-pack-card fig-resgate' }, desafio,
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '★'), h('span', {}, `+${RS.ESTRELAS_MISSAO} ★ por print`)),
         h('p', {}, h('b', {}, 'resgate estrelas com print')),
         h('p', { class: 'fig-note' }, 'faça a missão, tire um print e envie. a professora Bea confere e as estrelas chegam aqui. precisa do código de aluno.'),
@@ -248,8 +270,10 @@ export function mount(host, parts = [], opts = {}) {
             h('span', { class: 'fig-missao-bt' }, m.tipo === 'amigo' ? h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, m.rotulo) : h('a', { class: 'btn small ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo), ...(m.extras || []).map(([t, u]) => h('a', { class: 'btn small ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
               statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))));
     }
+    const ico = { roleta: '<svg viewBox="0 0 64 64"><path d="M40 4L26 18M24 4l14 14" stroke="#14111a" stroke-width="5" stroke-linecap="round"/><ellipse cx="32" cy="24" rx="25" ry="9" fill="#fff6e0" stroke="#14111a" stroke-width="3"/><path d="M7 24v23c0 5 11 9 25 9s25-4 25-9V24" fill="#c4182c" stroke="#14111a" stroke-width="3"/><path d="M13 31l10 22M25 34l6 22M39 34l-6 22M51 31L41 53" stroke="#f6c93b" stroke-width="2.6"/></svg>', bau: '<svg viewBox="0 0 64 64"><path d="M7 30a25 20 0 0 1 50 0z" fill="#8a4b1d" stroke="#14111a" stroke-width="3"/><rect x="7" y="30" width="50" height="26" rx="3" fill="#b06a22" stroke="#14111a" stroke-width="3"/><path d="M7 42h50" stroke="#14111a" stroke-width="3"/><rect x="26" y="26" width="12" height="16" rx="2" fill="#f6c93b" stroke="#14111a" stroke-width="3"/><circle cx="32" cy="34" r="2" fill="#14111a"/></svg>', resgate: '<svg viewBox="0 0 64 64"><path d="M20 38l-8 20 12-6 6 8 6-22M44 38l8 20-12-6-6 8-6-22" fill="#c4182c" stroke="#14111a" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="26" r="20" fill="#f6c93b" stroke="#14111a" stroke-width="3.5"/><path d="M32 11l4.6 9.6 10.4 1.4-7.6 7.3 1.9 10.4L32 34.6l-9.3 5.1 1.9-10.4L17 22l10.4-1.4z" fill="#fff6e0" stroke="#14111a" stroke-width="2.4" stroke-linejoin="round"/></svg>' };
+    const bloco = (id, titulo, sub, qtd) => { const b = h('button', { type: 'button', role: 'tab', class: `fig-bloco b-${id}${qual === id ? ' on' : ''}`, 'aria-selected': String(qual === id), onclick: () => { area = id; draw(); } }, h('span', { class: 'fig-bloco-ic', 'aria-hidden': 'true' }), h('b', {}, titulo), h('small', {}, sub), qtd ? h('i', {}, String(qtd)) : null); b.querySelector('.fig-bloco-ic').innerHTML = ico[id]; return b; };
     return h('section', { class: 'fig-packs' },
-      h('div', { class: 'fig-areas', role: 'tablist', 'aria-label': 'roleta, baú e resgate' }, chip('roleta', '🎡 roleta', giros.length), chip('bau', '🎁 baú', bau.length), chip('resgate', '★ resgate', 0)),
+      h('div', { class: 'fig-blocos', role: 'tablist', 'aria-label': 'roleta, baú e resgate' }, bloco('roleta', 'roleta', 'gire e ganhe', giros.length), bloco('bau', 'baú', 'pacotinhos e guardadas', bau.length + (hand.length ? 0 : 0)), bloco('resgate', 'resgatar', 'print + desafio', 0)),
       corpo,
       h('label', { class: 'fig-opt' }, h('input', { type: 'checkbox', checked: state.reduzir ? true : null, onchange: (e) => save({ ...state, reduzir: e.target.checked }) }), ' animações reduzidas (sem giros ao abrir pacote)'));
   }
@@ -269,8 +293,8 @@ export function mount(host, parts = [], opts = {}) {
     });
     const nomes = cards.map((e) => `${e.artista_banda} (${L.nomeRaridade(e)})`).join(', ');
     return h('div', { class: 'fig-open' }, aberto ? h('p', { class: 'fig-note', role: 'status' }, `você ganhou: ${nomes}`) : live, row,
-      h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar tudo no álbum'),
-      h('button', { type: 'button', class: 'btn wide', onclick: close }, 'colar depois'));
+      h('button', { type: 'button', class: 'btn primary wide', onclick: () => { save(L.pasteAll(state)); close(); toast('coladas no álbum'); } }, 'colar automaticamente'),
+      h('button', { type: 'button', class: 'btn wide', onclick: () => { const q = cards.filter((e) => L.canPaste(state, e.codigo)).length; close(); toast(q ? `${q} figurinha${q > 1 ? 's' : ''} guardada${q > 1 ? 's' : ''} no baú` : 'tudo certo, nada novo pra guardar'); } }, 'guardar no baú'));
   }
   /** Paleta aleatória da roleta (nunca igual de uma vez pra outra): 8 fatias, 2 a 4 cores vivas combinadas com o creme e o azul-marinho da marca. */
   function coresRoleta() {
@@ -287,10 +311,10 @@ export function mount(host, parts = [], opts = {}) {
       const r = L.openPack(state, catalog, packId); if (!r.fresh) return; save(r.state);
       sheet('seu pacote', (close) => revealUI(r.codes, close, true)); return; // as figurinhas já aparecem viradas: ninguém precisa tocar pra descobrir
     }
-    const roleta = kind === 'roleta';
-    sheet(roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
+    const roleta = kind === 'roleta' || kind === 'epico'; const ep = L.epicoPack(packId);
+    sheet(kind === 'epico' ? '⚡ giro épico' : roleta ? '🎡 roleta de figurinhas' : '🏆 prêmio do jogo completo', (close) => {
       const box = h('div', { class: 'fig-open fig-wheelbox' });
-      const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? '🎡' : '🏆'));
+      const disc = h('div', { class: 'fig-wheel-disc' + (roleta ? '' : ' prize'), 'aria-hidden': 'true' }, h('span', { class: 'fig-wheel-hub' }, roleta ? h('img', { class: 'fig-hub-paul', src: 'assets/paul/colorido/paul-ouvindo.webp', alt: '', draggable: 'false' }) : '🏆'));
       // 3 desenhos de roleta, sorteados a cada vez (e cores sempre diferentes): disco de vinil, roleta néon e pele de tambor
       const skin = roleta ? ['vinil', 'neon', 'tambor'][Math.floor(Math.random() * 3)] : 'premio'; box.classList.add(`sk-${skin}`); const extras = [];
       if (roleta) {
@@ -306,15 +330,16 @@ export function mount(host, parts = [], opts = {}) {
           for (let k = 0; k < 8; k++) disc.append(h('i', { class: 'fig-parafuso', style: `--a:${k * 45}deg`, 'aria-hidden': 'true' }));
           extras.push(h('i', { class: 'fig-stick l', 'aria-hidden': 'true' }), h('i', { class: 'fig-stick r', 'aria-hidden': 'true' }));
         }
-        disc.querySelector('.fig-wheel-hub').textContent = skin === 'tambor' ? '🥁' : skin === 'vinil' ? '🎵' : '🎡'; void hue;
+        void hue; // no meio da roleta fica o rosto do Paul (pedido da Bea), em qualquer desenho
       }
       const go = h('button', { type: 'button', class: 'btn primary wide', onclick: () => {
         go.disabled = true; const r = L.openPack(state, catalog, packId); if (!r.fresh) { close(); return; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
         if (wantsLess(state)) { mostra(); return; }
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
-      } }, roleta ? 'girar!' : 'abrir o prêmio');
-      box.append(h('p', { class: 'fig-note' }, roleta ? 'gire pra ganhar de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      } }, roleta ? 'girando…' : 'abrir o prêmio');
+      if (roleta) setTimeout(() => { if (go.isConnected && !go.disabled) go.click(); }, 450); // um toque só: abre e já gira
+      box.append(h('p', { class: 'fig-note' }, kind === 'epico' ? (ep.n === 1 ? 'giro épico 1 de 2: 3 figurinhas garantidas!' : 'giro épico 2 de 2: de 1 a 5 figurinhas. se vier só uma, é exclusiva!') : roleta ? 'de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

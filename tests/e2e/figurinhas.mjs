@@ -11,20 +11,20 @@ check('abre o álbum', /^0\/\d+/.test((await page.textContent('.fig-total')).tri
 await page.getByRole('tab', { name: /bandas/ }).click(); await sleep(500);
 check('livro Bandas: capa + sumário + 12 páginas (47 figurinhas, 4 por página)', (await page.locator('.lv-page').count()) === 14);
 await page.screenshot({ path: '/tmp/claude-0/fig-album.png' });
-await page.getByRole('tab', { name: /pacotes/ }).click();
+await page.evaluate(() => { location.hash = '#/album/Pacotes'; }); await page.waitForSelector('.fig-blocos', { timeout: 15000 });
 check('check-in: 1 giro grátis da roleta (sem pacote de boas-vindas)', (await page.textContent('.fig-pack-card p')).includes('1 roleta') && !(await page.textContent('.fig-pack-card p')).includes('pacote'));
-await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.locator('.sheet').getByRole('button', { name: 'girar!' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 9000 }); await sleep(300);
+await page.getByRole('button', { name: 'girar a roleta' }).click(); await page.waitForSelector('.fig-reveal', { timeout: 12000 }); await sleep(300);
 await page.screenshot({ path: '/tmp/claude-0/fig-pack.png' });
 check('roleta dá 1 a 3 cartas', [1, 2, 3].includes(await page.locator('.fig-flip').count()));
 // (a roleta já mostra as cartas abertas)
 await sleep(700); await page.screenshot({ path: '/tmp/claude-0/fig-pack2.png' });
-await page.getByRole('button', { name: 'colar tudo no álbum' }).click(); await sleep(400);
+await page.getByRole('button', { name: 'colar automaticamente' }).click(); await sleep(400);
 const after = await page.textContent('.fig-total');
 check('colou (pelo menos 1 de 125)', /^[1-3]\/\d+/.test(after.trim()), after);
 await page.reload(); await page.waitForSelector('.fig-tabs'); await sleep(600);
 const again = await page.textContent('.fig-total');
 check('progresso persiste ao recarregar', /^[1-3]\/\d+/.test(again.trim()), again);
-await page.getByRole('tab', { name: /pacotes/ }).click();
+await page.evaluate(() => { location.hash = '#/album/Pacotes'; }); await page.waitForSelector('.fig-blocos', { timeout: 15000 });
 check('reabrir o app não devolve o pacote já aberto', (await page.textContent('.fig-pack-card p')).includes('nada pra abrir'));
 await page.getByRole('tab', { name: /bandas/ }).click(); await sleep(800);
 await page.locator('.lv-idx').click(); await sleep(500);
