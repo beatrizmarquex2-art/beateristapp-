@@ -31,7 +31,7 @@ export function buildPhotoThemes(catalogo, { pos = () => '50% 30%', rnd = Math.r
   const solo = artistas.filter((a) => a.tipo === 'solo' && sem(a)).map((a) => item(a.id, a.curto, a.fotoPrincipal, a.curto));
   const mk = (id, title, blurb, items, back, open = false, verso = null) => ({ id, title, blurb, items, verso, back, photo: true, open, cover: sample(items, 3, rnd).map((x) => x.img) }); // back: o verso das cartas (assets/cards)
   return [
-    mk('beatles', 'The Beatles', 'ache as fotos iguais da banda', beatles, 'assets/cards/b02.webp', true),
+    mk('beatles', 'The Beatles', 'ache as fotos iguais da banda', beatles, 'assets/cards/b02.webp', true, 'assets/memoria/verso-beatles.webp'), // arte da Bea: os Pauls atravessando a faixa
     mk('bandas', 'Bandas', 'Queen, Nirvana, Coldplay…', bandas, 'assets/cards/b01.webp', false, 'assets/memoria/verso-bandas.webp'), // verso com o Paul (pedido da Bea); os Beatles seguem na polaroid
     mk('solo', 'Artistas', 'Rita Lee, Michael Jackson, Pitty…', solo, 'assets/cards/b03.webp', false, 'assets/memoria/verso-artistas.webp'),
   ].filter((t) => t.items.length >= 6);
