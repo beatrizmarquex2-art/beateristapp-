@@ -537,3 +537,10 @@
 .lv-intro-paul { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; margin-top: 14px; padding: 10px 12px 10px 6px; background: #fbf6ea; border: 2.5px solid #17130f; border-radius: 14px; box-shadow: 4px 4px 0 #e9b824; transform: rotate(1deg); }
 .lv-intro-paul img { width: 104px; height: 104px; object-fit: contain; } .lv-intro-paul p { margin: 0; font-size: 15.5px; }
 .fig-mao-sep { margin-top: 26px; }
+
+/* "Meu álbum" em formato de livro: a coluna não pode crescer com as páginas (senão o livro vaza da tela) */
+.ma { grid-template-columns: minmax(0, 1fr); max-width: 440px; margin-left: auto; margin-right: auto; }
+.lv-meu { min-width: 0; max-width: 100%; } .lv-meu .lv-idx { font-size: 24px; font-weight: 800; }
+.lv-card img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.lv-capa.cv-meu { padding: 0; } .lv-intro-pg .lv-intro-cta { margin-top: 16px; text-align: center; text-decoration: none; display: block; }
+.lv-intro-pg .lv-intro h3 { margin-top: 10px; }

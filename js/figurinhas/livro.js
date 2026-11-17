@@ -6,8 +6,8 @@ import { cardSVG } from './card.js';
 import * as L from './album-logic.js';
 
 const PER = 4;
-const TAPES = ['#e9b824', '#c4182c', '#17224a', '#e7d9ae', '#f1b9b0', '#7fb7a4'];
-const rot = (code, k = 1) => ((O.hashSeed(code + k) % 700) / 100 - 3.5).toFixed(2); // -3.5 .. +3.5 graus, sempre o mesmo pra mesma figurinha
+export const TAPES = ['#e9b824', '#c4182c', '#17224a', '#e7d9ae', '#f1b9b0', '#7fb7a4'];
+export const rot = (code, k = 1) => ((O.hashSeed(code + k) % 700) / 100 - 3.5).toFixed(2); // -3.5 .. +3.5 graus, sempre o mesmo pra mesma figurinha
 const DOODLES = [
   (c) => `<g transform="rotate(${c.r} 0 0)">${O.star(0, 0, 15, '#e9b824', '#14111a', 2.5, -90, c.s)}</g>`,
   (c) => `<g transform="rotate(${c.r}) scale(.38)">${O.note('#14111a')}</g>`,
@@ -26,7 +26,7 @@ export function pagesOf(catalog, colecao) {
   return { pages, cards };
 }
 
-function deco(seed) {
+export function deco(seed) {
   const r = O.rng(O.hashSeed(seed)); const spots = [...SPOTS].sort(() => r() - 0.5).slice(0, 4);
   return `<svg class="lv-deco" viewBox="0 0 360 520" aria-hidden="true">${spots.map(([x, y], i) => `<g transform="translate(${x} ${y})">${DOODLES[Math.floor(r() * DOODLES.length)]({ r: Math.round(r() * 50 - 25), s: i + 3 })}</g>`).join('')}</svg>`;
 }

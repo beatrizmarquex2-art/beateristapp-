@@ -97,6 +97,9 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - 3 desenhos de colorir do Paul no Drive (bastidores, estudando na mesa, percussão corporal em 4 poses): servem de isca "comenta COLORIR" e de extra do Bateria Kids.
 - Cuidado ao recortar: os textos são desenhados na arte. Conferir o conteúdo musical antes de publicar (os 4 estão corretos: dó à esquerda das 2 teclas pretas; baixo Mi Lá Ré Sol; riff 0-0-3-0 na corda Mi; violão Mi Lá Ré Sol Si Mi).
 
+## Meu álbum em formato de livro (17/nov/2026, v580)
+Pedido da Bea: "o álbum nosso de pôr nossas figurinhas, com páginas normal igual um livro". As cartinhas criadas pelo aluno (Perfil) agora são coladas num **livro igual aos oficiais** (`js/figurinhas/livro-meu.js`, usado por `album()` em `js/figurinhas/minhas.js`): capa "MEU ÁLBUM de <nome>" com o Paul de selfie e o placar, página "como funciona" (3 passos + botão pro Perfil), e 11 páginas de colagem com 4 espaços (42 no total), com fitas, rabiscos e deslizar pra folhear. As regras não mudaram (`minhas-regras.js`: 42 espaços, máx. 40 cartinhas, 2 da mesma foto por modelo; só neste aparelho). O "pra colar" continua em cima do livro; tocar numa cartinha e depois num espaço cola; "colar todas" também. Ao colar, o livro pula pra página do espaço. Teste: `tests/e2e/meu-album.mjs` (7/7).
+
 ## Álbum: seções e raridades novas, capa da Beatlemania, roleta (17/nov/2026, v568)
 Pedido da Bea, com prints. O que mudou:
 - **Bug da roleta**: dentro do Álbum, entrar na roleta pela aba de dentro ("pacotes" ou o aviso "você tem cartas pra resgatar") não mudava o endereço; aí o botão "álbum" lá de cima apontava pro endereço em que a pessoa já estava e não fazia nada (tinha que sair e voltar). Agora entrar e sair da roleta muda o endereço (`irAba` em `js/views/figurinhas.js`) e tocar numa aba que já é a atual recarrega a tela (`js/aluno.js`).
