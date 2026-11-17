@@ -8,8 +8,8 @@ await fakeLogin(ctx, page, url);
 const go = (h) => page.evaluate((x) => { location.hash = x; }, h);
 await go('#/figurinhas'); await page.waitForSelector('.fig-tabs', { timeout: 8000 });
 check('abre o álbum', /^0\/\d+/.test((await page.textContent('.fig-total')).trim()));
-await page.getByRole('tab', { name: /comum/ }).click(); await sleep(500);
-check('livro Comum: capa + sumário + 20 páginas (80 figurinhas, 4 por página)', (await page.locator('.lv-page').count()) === 22);
+await page.getByRole('tab', { name: /bandas/ }).click(); await sleep(500);
+check('livro Bandas: capa + sumário + 12 páginas (47 figurinhas, 4 por página)', (await page.locator('.lv-page').count()) === 14);
 await page.screenshot({ path: '/tmp/claude-0/fig-album.png' });
 await page.getByRole('tab', { name: /pacotes/ }).click();
 check('check-in: 1 giro grátis da roleta (sem pacote de boas-vindas)', (await page.textContent('.fig-pack-card p')).includes('1 roleta') && !(await page.textContent('.fig-pack-card p')).includes('pacote'));
@@ -26,7 +26,7 @@ const again = await page.textContent('.fig-total');
 check('progresso persiste ao recarregar', /^[1-3]\/\d+/.test(again.trim()), again);
 await page.getByRole('tab', { name: /pacotes/ }).click();
 check('reabrir o app não devolve o pacote já aberto', (await page.textContent('.fig-pack-card p')).includes('nada pra abrir'));
-await page.getByRole('tab', { name: /comum/ }).click(); await sleep(800);
+await page.getByRole('tab', { name: /bandas/ }).click(); await sleep(800);
 await page.locator('.lv-idx').click(); await sleep(500);
 const gotPage = await page.evaluate(() => { const hit = [...document.querySelectorAll('.lv-slot.got')]; return hit.length; });
 for (let i = 0; i < 22 && !(await page.locator('.lv-slot.got').count()); i++) { await page.locator('.lv-nav[aria-label="Próxima página"]').click(); await sleep(450); }
@@ -44,7 +44,7 @@ check('modelo Palco no nome do arquivo', /_post_palco\.png$/.test(palco), palco)
 check('nome do arquivo com código e artista', /^F\d{3}_[A-Z0-9_]+_post\.png$/.test(post.nome), post.nome);
 await page.keyboard.press('Escape'); await sleep(400);
 await page.getByRole('tab', { name: /beatlemania/ }).click(); await sleep(300);
-check('livro Beatlemania: capa + sumário + 6 páginas (22 figurinhas)', (await page.locator('.lv-page').count()) === 8);
+check('livro Beatlemania: capa + a história + sumário + 6 páginas (22 figurinhas)', (await page.locator('.lv-page').count()) === 9);
 await page.getByRole('tab', { name: /minhas/ }).click(); await sleep(400);
 check('aba Minhas no álbum (vazia, com atalho pro Perfil)', (await page.textContent('.mc')).includes('nenhuma ainda') && (await page.locator('a[href="#/perfil"]').count()) >= 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));

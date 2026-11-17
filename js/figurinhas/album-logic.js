@@ -30,13 +30,16 @@ export function motivoDoPacote(id) {
 }
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // chance de cada figurinha do pacote ser dessa raridade
-// Seções do álbum (cada figurinha está em UMA): Beatlemania = coleção Beatles; Beaterista = as da Bea; Raras = raridade Rara (fora Beatles/Beaterista); Comum = o resto.
+// Seções do álbum (cada figurinha está em UMA; regra da Bea, nov/2026): Beatlemania = coleção Beatles; Beaterista = exclusivas da Bea e do Paul; Bandas = os grupos; Artistas = as pessoas.
+// A raridade é outra coisa: banda e cantor = Comum; músico/instrumentista e os cantores que a Bea escolheu = Rara; Bea e Paul = Exclusiva; Lendárias = só pela Lojinha (lendarias.js).
 /** Nome que aparece pra cada raridade. Os Beatles NÃO são "comum": o nome deles é Beatlemania. (Os outros nomes podem ser trocados aqui quando a Bea escolher a lista nova.) */
 export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva' };
 export const ehBeatles = (e) => !!e && (e.colecao === 'Beatles' || e.secao === 'Beatlemania');
 export const nomeRaridade = (e) => (ehBeatles(e) ? 'Beatlemania' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
-export const SECOES = ['Beatlemania', 'Beaterista', 'Comum', 'Raras'];
-export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Comum', Especial: 'Raras' }; // links e abas de antes
+export const SECOES = ['Beatlemania', 'Beaterista', 'Bandas', 'Artistas'];
+export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Bandas', Especial: 'Artistas', Comum: 'Bandas', Raras: 'Artistas' }; // links e abas de antes
+/** Grupo de SORTEIO da figurinha (não é a seção): Beatlemania, Beaterista, Raras (raridade Rara) ou Comum. Os pesos da roleta e dos pacotes usam isto. */
+export const grupo = (c) => (!c ? '' : ehBeatles(c) ? 'Beatlemania' : c.colecao === 'Beaterista' || c.secao === 'Beaterista' ? 'Beaterista' : c.raridade === 'Rara' ? 'Raras' : 'Comum');
 export const COLECOES = SECOES;
 export const emptyState = () => ({ v: 1, inv: {}, pasted: {}, granted: [], opened: {}, reduzir: false });
 
@@ -67,7 +70,7 @@ export const pendingPacks = (state) => (state.granted || []).filter((id) => !sta
 const pickWeighted = (r, pesos) => { const t = pesos.reduce((a, [, w]) => a + w, 0); let x = r() * t; for (const [k, w] of pesos) { if (x < w) return k; x -= w; } return pesos[0][0]; };
 /** Sorteia `n` códigos distintos, cada um de uma seção escolhida pelos pesos (mesma seed = mesmo resultado). */
 function drawBySection(catalog, r, n, pesos) {
-  const by = {}; for (const c of catalog) (by[c.secao] ||= []).push(c.codigo);
+  const by = {}; for (const c of catalog) (by[grupo(c)] ||= []).push(c.codigo);
   const out = []; let guard = 0;
   while (out.length < n && guard++ < 500) { const pool = by[pickWeighted(r, pesos)] || []; const c = pool[Math.floor(r() * pool.length)]; if (c && !out.includes(c)) out.push(c); }
   return out;
@@ -79,7 +82,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
   if (plf) {
-    const sec = (s, ok = () => true) => catalog.filter((c) => c.secao === s && ok(c)).map((c) => c.codigo); const um = (lista, fora = []) => { const l = lista.filter((x) => !fora.includes(x)); const pool = l.length ? l : lista; return pool.length ? pool[Math.floor(r() * pool.length)] : null; };
+    const sec = (s, ok = () => true) => catalog.filter((c) => grupo(c) === s && ok(c)).map((c) => c.codigo); const um = (lista, fora = []) => { const l = lista.filter((x) => !fora.includes(x)); const pool = l.length ? l : lista; return pool.length ? pool[Math.floor(r() * pool.length)] : null; };
     const especial = plf.modo === 'drumF' ? () => um(sec('Raras')) : plf.modo === 'drumI' ? (f) => um(sec('Beaterista', (c) => /^P/.test(c.codigo)), f) : (f) => um(sec('Beaterista', (c) => /^F/.test(c.codigo)), f);
     const out = plf.k === 'c' ? [um(sec('Comum'))] : [um(sec('Beatlemania')), um(sec('Comum'))];
     if (plf.k === 'c') out.push(especial(out)); return out.filter(Boolean);

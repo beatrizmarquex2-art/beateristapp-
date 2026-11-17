@@ -15,7 +15,7 @@ test('roleta: de 1 a 3 figurinhas distintas, mesma id = mesmo resultado', () => 
 });
 test('roleta: maioria comum, às vezes rara e Beatlemania, exclusiva só bem raramente', () => {
   const n = {}; let tot = 0, dois = 0, tres = 0; const N = 6000;
-  for (let i = 0; i < N; i++) { const d = L.drawPack(cat, `roleta:t:${i}`); if (d.length === 2) dois++; if (d.length === 3) tres = (tres || 0) + 1; for (const c of d) { n[by[c].secao] = (n[by[c].secao] || 0) + 1; tot++; } }
+  for (let i = 0; i < N; i++) { const d = L.drawPack(cat, `roleta:t:${i}`); if (d.length === 2) dois++; if (d.length === 3) tres = (tres || 0) + 1; for (const c of d) { n[L.grupo(by[c])] = (n[L.grupo(by[c])] || 0) + 1; tot++; } }
   assert.ok(n.Comum / tot > 0.5 && n.Comum / tot < 0.75, `comum ${n.Comum / tot}`);
   assert.ok(n.Raras > 0 && n.Beatlemania > 0, 'raras e beatles aparecem');
   assert.ok(n.Beaterista > 0 && n.Beaterista / tot < 0.08, `exclusiva rara ${n.Beaterista / tot}`);

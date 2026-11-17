@@ -105,7 +105,7 @@
 .cv-geral { background: radial-gradient(90% 60% at 20% 10%, #c4182c 0 24%, transparent 25%), radial-gradient(80% 50% at 90% 95%, #17224a 0 30%, transparent 31%), #ecdfc2 !important; color: #17130f; }
 .cv-geral .cv-in h2 { color: #17130f; text-shadow: 3px 3px 0 #e9b824; }
 .cv-geral .cv-ring::before { background: #ecdfc2; } .cv-geral .cv-ring { background: conic-gradient(#c4182c calc(var(--p) * 1%), #17130f22 0); }
-.cv-beatles { background: conic-gradient(from 20deg at 50% 40%, #ff3d81, #ffb02e, #ffe94d, #3ddc97, #35b4ff, #9b5cff, #ff3d81) !important; } .cv-beatles::before { display: none; }
+.cv-beatles { background: #17224a !important; } .cv-beatles::before { display: none; }
 .cv-beatles::after { display: none; } .cv-beatles .cv-in h2 { font-family: 'Abril Fatface', serif; text-shadow: 3px 3px 0 #14111a; font-size: 48px; }
 .cv-beatles .cv-in { background: #14111aa6; border-radius: 18px; padding: 22px 26px; backdrop-filter: blur(2px); }
 .cv-bea { background: radial-gradient(70% 50% at 50% 0%, #5b1424, #14101a 70%) !important; color: #efe2c6; } .cv-bea .cv-in h2 { color: #d9a63c; text-shadow: 3px 3px 0 #000; }
@@ -525,3 +525,15 @@
 /* texto-ícone das aulinhas (C F G, 1 2 3 4, ♯ ♭, setas…): a regra '.tf-card b' deixava tudo pequeno */
 .tf-card .tf-ic .tf-big{font-size:40px;line-height:1.1;font-weight:400}.tf-card .tf-ic .tf-big.small{font-size:26px}.tf-card .tf-ic .tf-big.tf-acid{font-size:62px}
 .tf-card .tf-sym.tf-grade{height:auto;width:100%;max-height:104px}
+
+/* ---- acabamento do livro (nov/2026): cabeçalho legível, página "a história" e separador das criadas ---- */
+.lv-page .lv-head, .lv-page .lv-head b, .lv-page .lv-head span { color: #17130f !important; text-shadow: none !important; }
+.lv-page .lv-head b { font-size: 26px; letter-spacing: 2px; } .lv-page .lv-head span { font-size: 13px; opacity: .75; font-family: 'Hanken Grotesk', sans-serif; font-weight: 800; }
+.lv-page .lv-head::after { content: ""; position: absolute; left: 12px; bottom: -7px; width: 64px; height: 4px; background: #c4182c; border-radius: 2px; }
+.lv-page .lv-cap { color: #17130f !important; }
+.lv-intro { position: relative; z-index: 2; padding: 2px 10px 0 14px; color: #17130f; }
+.lv-intro h3 { font-family: 'Permanent Marker', 'Anton', sans-serif; font-weight: 400; font-size: 23px; line-height: 1.1; margin: 4px 0 12px; color: #c4182c !important; transform: rotate(-1.5deg); }
+.lv-intro p { font-size: 16.5px; line-height: 1.42; margin: 0 0 11px; color: #17130f !important; } .lv-intro p b { color: #17224a !important; }
+.lv-intro-paul { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; margin-top: 14px; padding: 10px 12px 10px 6px; background: #fbf6ea; border: 2.5px solid #17130f; border-radius: 14px; box-shadow: 4px 4px 0 #e9b824; transform: rotate(1deg); }
+.lv-intro-paul img { width: 104px; height: 104px; object-fit: contain; } .lv-intro-paul p { margin: 0; font-size: 15.5px; }
+.fig-mao-sep { margin-top: 26px; }

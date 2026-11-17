@@ -97,6 +97,18 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - 3 desenhos de colorir do Paul no Drive (bastidores, estudando na mesa, percussão corporal em 4 poses): servem de isca "comenta COLORIR" e de extra do Bateria Kids.
 - Cuidado ao recortar: os textos são desenhados na arte. Conferir o conteúdo musical antes de publicar (os 4 estão corretos: dó à esquerda das 2 teclas pretas; baixo Mi Lá Ré Sol; riff 0-0-3-0 na corda Mi; violão Mi Lá Ré Sol Si Mi).
 
+## Álbum: seções e raridades novas, capa da Beatlemania, roleta (17/nov/2026, v568)
+Pedido da Bea, com prints. O que mudou:
+- **Bug da roleta**: dentro do Álbum, entrar na roleta pela aba de dentro ("pacotes" ou o aviso "você tem cartas pra resgatar") não mudava o endereço; aí o botão "álbum" lá de cima apontava pro endereço em que a pessoa já estava e não fazia nada (tinha que sair e voltar). Agora entrar e sair da roleta muda o endereço (`irAba` em `js/views/figurinhas.js`) e tocar numa aba que já é a atual recarrega a tela (`js/aluno.js`).
+- **Regra de raridade (da Bea)**: Bea e Paul = exclusivas · bandas e cantores = comuns · músicos/instrumentistas (Slash, Angus, Eloy, Bonham, Flea, Hendrix, Dave Grohl, Tim Henson) = raras · cantores que ela escolheu pra serem raros: Michael Jackson, Justin Bieber, Chorão, John Mayer, Bad Bunny, Eminem (+ as duas duplas) · lendárias = só da Lojinha. Aplicada por `scripts/reclassificar-figurinhas.py` (lista de bandas e de raros está lá; rodar de novo não muda nada). Mudaram: Bonham, Tim Henson, Flea, Bad Bunny (2), John Mayer, Hendrix e Eminem viraram raras; **Restart, Mamonas e Queen viraram comuns** (são bandas). Total: 96 comuns, 19 raras, 10 exclusivas no catálogo original.
+- **Faltam fotos pra completar a lista dela**: **Beyoncé** e **Paul McCartney solo** não existem no catálogo (ela precisa mandar). Os nomes já estão na lista de raros do script.
+- **Seções**: saíram "Comum" e "Raras"; agora são **Beatlemania · Exclusivas (Bea e Paul) · Bandas (47) · Artistas (46)**. O sorteio (roleta, pacotes, pauLta) continua pelos mesmos pesos, mas pelo **grupo** da carta (`L.grupo`: Beatlemania, Beaterista, Raras, Comum), não pela seção. Links antigos (`#/album/Comum`, `#/album/Raras`) caem em Bandas e Artistas.
+- **Abas**: "criadas por mim" entrou dentro de "minhas figurinhas" (uma aba só). `#/album/Minhas` continua abrindo.
+- **Beatlemania**: capa nova (azul-marinho, bumbo com placar, John · Paul · George · Ringo), sem o arco-íris psicodélico; página nova "a história" depois da capa (primeira banda a virar febre mundial, são gigantes, o nome do Robôterista Paul veio do Paul McCartney). O texto está em `INTRO` no `js/figurinhas/livro.js`: dá pra criar página de história pra outras seções do mesmo jeito.
+- **Acabamento**: o título no alto de cada página do livro estava em azul-claro sobre papel creme (ilegível no tema escuro do álbum): agora preto, maior, com risco vermelho e "pág X de Y".
+- **Lendárias**: continuam 5. A Bea vai fazer a 6ª; quando chegar, incluir em `lendarias.js` e decidir a regra (hoje 1 produto = 1, 2 = 3, 3 = as 5).
+- Testes: unidade 531/531. Tela: `figurinhas.mjs` e `album-pacotes.mjs` já falhavam antes (não por isto).
+
 ## Figurinhas exclusivas novas (14/nov/2026, v523): álbum com 146
 - Exclusivas (seção Beaterista) agora são **31**: 18 fotos da Bea (10 antigas no `catalogo.json` + 8 novas `F133..F140` em `assets/figurinhas/catalogo-bea.json`) e **13 do Paul** (`P01..P13` em `catalogo-paul.json`; novas: maestro, dj, gravando, professor, selfie, óculos, metrônomo).
 - `TOTAL_FIGURINHAS = 146` (`js/figurinhas/album-logic.js`); os três catálogos são juntados em `js/views/figurinhas.js`. O `catalogo.json` de 125 continua intocado.

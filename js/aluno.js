@@ -463,6 +463,8 @@ function shell(name) {
     window.scrollTo(0, 0);
   }
   addEventListener('hashchange', go);
+  // tocar na aba em que a pessoa JÁ está (mesmo endereço) não dispara hashchange: recarrega a tela, senão o botão parece quebrado (ex.: voltar da roleta pro álbum)
+  document.addEventListener('click', (ev) => { const a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#/"]') : null; if (a && a.getAttribute('href') === location.hash && (nav.contains(a) || a.closest('.al-subnav'))) go(); });
   document.addEventListener('aluno-acesso', () => go());
   go();
 }

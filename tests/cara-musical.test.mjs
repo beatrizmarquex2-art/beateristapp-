@@ -16,8 +16,8 @@ test('elenco: 86 entidades, 125 fotos do catálogo (cada foto em exatamente 1 en
   for (const c of cat) assert.ok(c.codigo in FOTOS && [true, false, null].includes(FOTOS[c.codigo].preto_e_branco));
   const origem = new Set(elenco.entidades.map((x) => x.entidade_id)); for (const e of ENTIDADES) assert.ok(origem.has(e.origem), e.id);
 });
-test('o álbum não foi alterado: catálogo com 125 fotos, 101 comuns, 14 raras, 10 exclusivas e todas as imagens existem', () => {
-  const n = (r) => cat.filter((c) => c.raridade === r).length; assert.deepEqual([n('Comum'), n('Rara'), n('Exclusiva')], [101, 14, 10]);
+test('o álbum segue inteiro: catálogo com 125 fotos, 96 comuns, 19 raras, 10 exclusivas (regra de nov/2026) e todas as imagens existem', () => {
+  const n = (r) => cat.filter((c) => c.raridade === r).length; assert.deepEqual([n('Comum'), n('Rara'), n('Exclusiva')], [96, 19, 10]);
   for (const c of cat) assert.ok(fs.existsSync(new URL(`../assets/figurinhas/fotos/${c.codigo}.jpeg`, import.meta.url)), c.codigo);
 });
 test('entidades próprias: Beatles (banda) e integrantes são alvos diferentes; duplas são entidades próprias; sem raridade nas perguntas (a pergunta "é uma mulher?" foi pedida pela Bea, por dados públicos)', () => {

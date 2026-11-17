@@ -16,12 +16,12 @@ const DOODLES = [
   (c) => `<g transform="rotate(${c.r})">${O.scribble('#17224a', 3, 48)}</g>`,
   (c) => `<g transform="rotate(${c.r}) scale(.28)">${O.vinyl('#c4182c', 50)}</g>`,
 ];
-const SPOTS = [[24, 22], [336, 24], [22, 500], [338, 498], [180, 12], [180, 508], [14, 262], [348, 270]];
+const SPOTS = [[22, 500], [338, 498], [180, 512], [14, 262], [348, 270], [330, 560]]; // nada em cima: o cabeçalho da página fica limpo
 
 /** Páginas de uma coleção: capa, sumário e as páginas de figurinhas, artistas em ordem alfabética (as repetidas ficam juntas). */
 export function pagesOf(catalog, colecao) {
   const cards = catalog.filter((c) => c.secao === colecao).sort((a, b) => a.artista_banda.localeCompare(b.artista_banda, 'pt') || a.codigo.localeCompare(b.codigo));
-  const pages = [{ tipo: 'capa' }, { tipo: 'indice' }];
+  const pages = [{ tipo: 'capa' }, ...(INTRO[colecao] ? [{ tipo: 'intro' }] : []), { tipo: 'indice' }];
   for (let i = 0; i < cards.length; i += PER) pages.push({ tipo: 'pagina', cards: cards.slice(i, i + PER) });
   return { pages, cards };
 }
@@ -32,35 +32,47 @@ function deco(seed) {
 }
 
 const COVER = {
-  Comum: { titulo: 'Comum', sub: 'o mundo da música', cls: 'cv-geral' },
-  Beatlemania: { titulo: 'Beatlemania', sub: 'edição psicodélica', cls: 'cv-beatles' },
-  Beaterista: { titulo: 'Beaterista', sub: 'edição exclusiva da Bea e do Paul', cls: 'cv-bea' },
-  Raras: { titulo: 'Raras', sub: 'as mais difíceis de achar', cls: 'cv-esp' },
+  Bandas: { titulo: 'Bandas', sub: 'os grupos que fizeram história', cls: 'cv-geral' },
+  Beatlemania: { titulo: 'Beatlemania', sub: 'os quatro de Liverpool', cls: 'cv-beatles' },
+  Beaterista: { titulo: 'Exclusivas', sub: 'a Bea e o Paul, só aqui', cls: 'cv-bea' },
+  Artistas: { titulo: 'Artistas', sub: 'cantores e músicos: as raras moram aqui', cls: 'cv-esp' },
 };
 
 
-/** Capa psicodélica dos Beatles: raios coloridos, o tambor da banda (desenhado aqui), margaridas e estrelas. */
+/** Capa da Beatlemania (pedido da Bea: sem o arco-íris psicodélico): azul-marinho, pontilhado de gibi, o bumbo da banda com o placar e os quatro nomes. */
 function beatlesArt(got, total) {
-  const rays = Array.from({ length: 28 }, (_, i) => { const a1 = (i * 360) / 28, a2 = ((i + 1) * 360) / 28, p = (a) => `${(180 + 520 * Math.cos((a * Math.PI) / 180)).toFixed(1)},${(335 + 520 * Math.sin((a * Math.PI) / 180)).toFixed(1)}`; return `<polygon points="180,335 ${p(a1)} ${p(a2)}" fill="${['#ff3d81', '#ffb02e', '#ffe94d', '#3ddc97', '#35b4ff', '#9b5cff', '#ff7a3d'][i % 7]}"/>`; }).join('');
-  const waves = [150, 190, 235, 290].map((r, i) => `<circle cx="180" cy="335" r="${r}" fill="none" stroke="${['#ffffff', '#14111a', '#ffffff', '#14111a'][i]}" stroke-opacity=".22" stroke-width="${7 - i}" stroke-dasharray="${10 + i * 6} ${8 + i * 3}"/>`).join('');
-  const daisy = (x, y, r, c, k = 8) => `<g transform="translate(${x} ${y})">${Array.from({ length: k }, (_, i) => `<ellipse cx="0" cy="${-r * 0.62}" rx="${r * 0.28}" ry="${r * 0.46}" fill="${c}" stroke="#14111a" stroke-width="2" transform="rotate(${(360 / k) * i})"/>`).join('')}<circle r="${r * 0.3}" fill="#ffe94d" stroke="#14111a" stroke-width="2.4"/></g>`;
-  const flowers = [[44, 520, 24, '#ff3d81'], [92, 560, 20, '#ffffff'], [150, 546, 26, '#35b4ff'], [214, 562, 21, '#ff7a3d'], [270, 540, 26, '#ffffff'], [322, 566, 22, '#9b5cff'], [22, 585, 18, '#ffe94d'], [338, 520, 22, '#ff3d81']].map(([x, y, r, c]) => daisy(x, y, r, c)).join('');
-  const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="335" x2="180" y2="203" stroke="${i % 2 ? '#c4182c' : '#fbf6ea'}" stroke-width="9.5" stroke-linecap="butt" transform="rotate(${i * 10} 180 335)"/>`).join('');
+  const dots = Array.from({ length: 13 }, (_, r) => Array.from({ length: 9 }, (_, c) => `<circle cx="${c * 44 + (r % 2 ? 22 : 0)}" cy="${r * 50 + 10}" r="${1.6 + (r / 13) * 4.2}" fill="#fbf6ea" opacity=".07"/>`).join('')).join('');
+  const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="330" x2="180" y2="198" stroke="${i % 2 ? '#c4182c' : '#fbf6ea'}" stroke-width="9.5" stroke-linecap="butt" transform="rotate(${i * 10} 180 330)"/>`).join('');
+  const star = (x, y, r, f) => `<path transform="translate(${x} ${y})" fill="${f}" stroke="#14111a" stroke-width="2.2" stroke-linejoin="round" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`;
+  const nomes = ['JOHN', 'PAUL', 'GEORGE', 'RINGO'].map((n, i) => `<g transform="translate(${54 + i * 84} 548)">${star(0, -22, 9, i === 1 ? '#e9b824' : '#fbf6ea')}<text font-family="'Anton',sans-serif" font-size="17" letter-spacing="1.5" fill="${i === 1 ? '#e9b824' : '#fbf6ea'}" text-anchor="middle">${n}</text></g>`).join('');
   return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <rect width="360" height="610" fill="#14111a"/>${rays}${waves}
-  <circle cx="180" cy="335" r="146" fill="#14111a" opacity=".35" transform="translate(5 8)"/>
-  <circle cx="180" cy="335" r="140" fill="#fbf6ea" stroke="#14111a" stroke-width="4"/>${rim}
-  <circle cx="180" cy="335" r="118" fill="#e9b824" stroke="#14111a" stroke-width="4"/><circle cx="180" cy="335" r="105" fill="#fbf6ea" stroke="#14111a" stroke-width="3"/>
-  <circle cx="180" cy="335" r="70" fill="none" stroke="#c4182c" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round"/>
-  <path id="bt-top" d="M 94 335 A 86 86 0 0 1 266 335" fill="none"/><path id="bt-bot" d="M 80 335 A 100 100 0 0 0 280 335" fill="none"/>
-  <text font-family="'Abril Fatface',serif" font-size="21" letter-spacing="2.5" fill="#14111a" text-anchor="middle"><textPath href="#bt-top" startOffset="50%">THE BEATLES</textPath></text>
+  <rect width="360" height="610" fill="#17224a"/>${dots}
+  <path d="M-10 128 L370 96 L370 150 L-10 182 Z" fill="#c4182c"/><path d="M-10 190 L370 158" stroke="#e9b824" stroke-width="4" fill="none"/>
+  <text x="180" y="78" font-family="'Anton',sans-serif" font-size="54" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="6" paint-order="stroke" stroke-linejoin="round" textLength="320" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
+  <text x="180" y="143" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="5" text-anchor="middle" fill="#fbf6ea" transform="rotate(-4.8 180 140)">OS QUATRO DE LIVERPOOL</text>
+  <circle cx="180" cy="330" r="146" fill="#0b1026" opacity=".55" transform="translate(6 9)"/>
+  <circle cx="180" cy="330" r="140" fill="#fbf6ea" stroke="#14111a" stroke-width="4"/>${rim}
+  <circle cx="180" cy="330" r="118" fill="#e9b824" stroke="#14111a" stroke-width="4"/><circle cx="180" cy="330" r="105" fill="#fbf6ea" stroke="#14111a" stroke-width="3"/>
+  <circle cx="180" cy="330" r="70" fill="none" stroke="#c4182c" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round"/>
+  <path id="bt-top" d="M 94 330 A 86 86 0 0 1 266 330" fill="none"/><path id="bt-bot" d="M 80 330 A 100 100 0 0 0 280 330" fill="none"/>
+  <text font-family="'Anton',sans-serif" font-size="21" letter-spacing="3" fill="#14111a" text-anchor="middle"><textPath href="#bt-top" startOffset="50%">THE BEATLES</textPath></text>
   <text font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="4" fill="#c4182c" text-anchor="middle"><textPath href="#bt-bot" startOffset="50%">★ BEATERISTA ★</textPath></text>
-  <g transform="translate(180 333)"><circle r="46" fill="#17224a" stroke="#14111a" stroke-width="3"/><text y="-2" font-family="'Anton',sans-serif" font-size="38" fill="#fbf6ea" text-anchor="middle">${got}</text><text y="19" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="12" fill="#fbf6ea" text-anchor="middle" letter-spacing="1">de ${total}</text></g>
-  ${flowers}
-  <g fill="#fbf6ea" stroke="#14111a" stroke-width="2.4" stroke-linejoin="round">${[[34, 150, 18], [330, 186, 15], [58, 262, 11], [312, 300, 12]].map(([x, y, r]) => `<path transform="translate(${x} ${y})" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`).join('')}</g>
-  <text x="180" y="60" font-family="'Abril Fatface',serif" font-size="37" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="7" paint-order="stroke" stroke-linejoin="round" textLength="332" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
-  <text x="180" y="94" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="6" text-anchor="middle" fill="#14111a">EDIÇÃO PSICODÉLICA</text></svg>`;
+  <g transform="translate(180 328)"><circle r="46" fill="#17224a" stroke="#14111a" stroke-width="3"/><text y="-2" font-family="'Anton',sans-serif" font-size="38" fill="#fbf6ea" text-anchor="middle">${got}</text><text y="19" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="12" fill="#fbf6ea" text-anchor="middle" letter-spacing="1">de ${total}</text></g>
+  ${star(40, 236, 13, '#e9b824')}${star(322, 250, 10, '#fbf6ea')}${star(330, 440, 12, '#e9b824')}${star(30, 452, 9, '#fbf6ea')}
+  <path d="M30 500 H330" stroke="#fbf6ea" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>${nomes}</svg>`;
 }
+
+/** Página "a história" da Beatlemania: por que os Beatles abrem o álbum e de onde veio o nome do Paul. */
+const INTRO = {
+  Beatlemania: `<header class="lv-head"><b>beatlemania</b><span>a história</span></header>
+  <div class="lv-intro">
+   <h3>por que eles abrem o álbum?</h3>
+   <p>Em 1960, quatro garotos de Liverpool, na Inglaterra, montaram uma banda: <b>John, Paul, George e Ringo</b>.</p>
+   <p>Eles foram a primeira banda a virar febre no mundo inteiro. A gritaria dos fãs era tanta que ganhou nome: <b>Beatlemania</b>.</p>
+   <p>Até hoje são gigantes: quase toda banda que você ouve aprendeu alguma coisa com eles.</p>
+   <div class="lv-intro-paul"><img src="assets/paul/colorido/paul-guitarra.webp" alt="" width="120" height="120" loading="lazy"><p><b>e o nosso Paul?</b> O Robôterista Paul ganhou esse nome por causa do <b>Paul McCartney</b>, o baixista dos Beatles.</p></div>
+  </div>`,
+};
 
 export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir }) {
   const { pages, cards } = pagesOf(catalog, colecao);
@@ -69,9 +81,10 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
   const label = h('span', { class: 'lv-label', 'aria-live': 'polite' });
   const prev = h('button', { type: 'button', class: 'lv-nav', 'aria-label': 'Página anterior', onclick: () => go(cur - 1) }, '‹');
   const next = h('button', { type: 'button', class: 'lv-nav', 'aria-label': 'Próxima página', onclick: () => go(cur + 1) }, '›');
-  const idxBtn = h('button', { type: 'button', class: 'lv-nav lv-idx', onclick: () => go(1) }, 'sumário');
+  const OFF = pages.findIndex((p) => p.tipo === 'pagina'), IDX = pages.findIndex((p) => p.tipo === 'indice'), NPAG = pages.length - OFF; // onde começam as páginas de figurinhas
+  const idxBtn = h('button', { type: 'button', class: 'lv-nav lv-idx', onclick: () => go(IDX) }, 'sumário');
   el.append(track, h('div', { class: 'lv-bar' }, prev, label, next, idxBtn));
-  let cur = 0, st = state, last = null; const rendered = new Set(), drawn = new Set(); const nodes = pages.map((p, i) => h('section', { class: `lv-page lv-${p.tipo}`, 'data-i': i, 'aria-label': p.tipo === 'pagina' ? `Página ${i - 1}` : p.tipo }));
+  let cur = 0, st = state, last = null; const rendered = new Set(), drawn = new Set(); const nodes = pages.map((p, i) => h('section', { class: `lv-page lv-${p.tipo}`, 'data-i': i, 'aria-label': p.tipo === 'pagina' ? `Página ${i - pages.findIndex((q) => q.tipo === 'pagina') + 1}` : p.tipo === 'intro' ? 'a história' : p.tipo }));
   nodes.forEach((n) => track.append(n));
   const pageOfArtist = (a) => pages.findIndex((p) => p.tipo === 'pagina' && p.cards.some((c) => c.artista_banda === a));
 
@@ -95,13 +108,14 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
       node.innerHTML = `<div class="cv-in"><img class="cv-logo" src="assets/logo-nome.png" alt="Beaterista" width="200" height="57"><h2>${cv.titulo}</h2><p>${cv.sub}</p><div class="cv-ring" style="--p:${Math.round((tot.got / tot.total) * 100)}"><b>${tot.got}</b><span>de ${tot.total}</span></div><small>deslize pra folhear ›</small></div>${deco(colecao)}`;
       return;
     }
+    if (p.tipo === 'intro') { node.innerHTML = INTRO[colecao] + deco(`${colecao}intro`); return; }
     if (p.tipo === 'indice') {
       const by = new Map(); for (const c of cards) { const o = by.get(c.artista_banda) || { n: 0, g: 0 }; o.n++; if (st.pasted[c.codigo]) o.g++; by.set(c.artista_banda, o); }
       node.innerHTML = `<header class="lv-head"><b>sumário</b><span>${tot.got}/${tot.total}</span></header><ol class="lv-ix">${[...by].map(([a, o]) => `<li><button type="button" data-a="${a.replace(/"/g, '&quot;')}" class="${o.g === o.n ? 'full' : ''}"><span>${a}</span><em>${o.g}/${o.n}</em></button></li>`).join('')}</ol>`;
       node.querySelectorAll('button[data-a]').forEach((b) => b.addEventListener('click', () => go(pageOfArtist(b.dataset.a))));
       return;
     }
-    node.replaceChildren(h('header', { class: 'lv-head' }, h('b', {}, colecao.toLowerCase()), h('span', {}, `pág ${i - 1}`)), h('div', { class: 'lv-slots' }, p.cards.map((e, k) => slot(e, i, k))));
+    node.replaceChildren(h('header', { class: 'lv-head' }, h('b', {}, (COVER[colecao] ? COVER[colecao].titulo : colecao).toLowerCase()), h('span', {}, `pág ${i - OFF + 1} de ${NPAG}`)), h('div', { class: 'lv-slots' }, p.cards.map((e, k) => slot(e, i, k))));
     drawn.add(i);
     node.insertAdjacentHTML('beforeend', deco(`${colecao}${i}`));
   }
@@ -110,7 +124,7 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
   function go(i, smooth = true) { i = Math.max(0, Math.min(pages.length - 1, i)); ensure(i); track.scrollTo({ left: i * W(), behavior: smooth && !reduzir ? 'smooth' : 'auto' }); }
   function setCur(i) {
     cur = i; ensure(i);
-    label.textContent = pages[i].tipo === 'pagina' ? `pág ${i - 1} de ${pages.length - 2}` : pages[i].tipo === 'capa' ? 'capa' : 'sumário';
+    label.textContent = pages[i].tipo === 'pagina' ? `pág ${i - OFF + 1} de ${NPAG}` : pages[i].tipo === 'capa' ? 'capa' : pages[i].tipo === 'intro' ? 'a história' : 'sumário';
     prev.disabled = i === 0; next.disabled = i === pages.length - 1;
     nodes.forEach((n, j) => n.classList.toggle('in', Math.abs(j - i) === 0));
   }
