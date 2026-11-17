@@ -26,7 +26,7 @@ const COLECOES = [
   { tab: 'Beatlemania', nome: 'Beatlemania', nivel: 'Clássico', cor: '#17224a', fg: '#ffd23f', ic: '🪲' },
   { tab: 'Bandas', nome: 'Bandas', nivel: 'Comum', cor: '#c4182c', fg: '#fff6e0', ic: '🎸' },
   { tab: 'Artistas', nome: 'Artistas', nivel: 'Raro', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
-  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusivo', cor: '#241032', fg: '#f4c8ff', ic: '⭐' },
+  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusivo', cor: '#ff8a1f', fg: '#14111a', ic: '⭐' },
   { tab: 'Lendárias', nome: 'SUPER PAUL', nivel: 'Lendária', cor: '#0b0b10', fg: '#ffd23f', ic: '⚡' },
   { tab: 'Na mão', nome: 'Minhas figurinhas', nivel: 'Épico', cor: '#5a2bb8', fg: '#ffffff', ic: '📸' },
 ]; // a aba "criadas por mim" foi pra dentro de "minhas figurinhas"
