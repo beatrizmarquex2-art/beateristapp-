@@ -17,7 +17,7 @@ const all = (...mods) => mods.flatMap((x) => x.items);
 
 export const THEMES = [
   { id: 'bandas', title: 'Bandas e artistas', emoji: '🎸', blurb: 'Beatles, Queen, Nirvana…', items: all(M.rock), verso: M.rock.verso },
-  { id: 'instrumentos', title: 'Instrumentos musicais', emoji: '🥁', blurb: 'percussão e o Paul músico', items: all(M.percussao, M.paul), verso: M.percussao.verso },
+  { id: 'instrumentos', title: 'Instrumentos musicais', emoji: '🥁', blurb: 'percussão e o Paul músico', items: all(M.percussao, M.paul), verso: 'assets/memoria/verso-instrumentos.webp' }, // verso próprio (antes usava o de percussão, que dizia "percussão")
   { id: 'figuras', title: 'Figuras rítmicas', emoji: '🎵', blurb: 'figuras, pausas e sinais', items: all(M.figuras, M.sinais), verso: M.figuras.verso },
   { id: 'partitura', title: 'Partitura e peças', emoji: '🎼', blurb: 'a peça e a posição na pauta', items: all(M.bateria), verso: M.bateria.verso },
   { id: 'profissoes', title: 'Profissões da música', emoji: '🎤', blurb: 'maestro, DJ, baterista…', items: all(M.profissoes), verso: M.profissoes.verso },

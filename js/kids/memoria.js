@@ -26,10 +26,10 @@ const MIX = ['rock', 'percussao', 'figuras'].map((k) => `assets/memoria/${k}/ver
 const polaroid = (t) => { const enf = h('span', { class: 'mc-enf', 'aria-hidden': 'true' }); enf.innerHTML = t.id === 'beatles' ? `<svg viewBox="-170 -120 300 180">${submarino(0, 0, 1, 4)}</svg>` : '<svg viewBox="0 0 24 24"><path fill="#e9b824" stroke="#14111a" stroke-width="2" stroke-linejoin="round" d="M12 1l3.3 7.7L23 12l-7.7 3.3L12 23l-3.3-7.7L1 12l7.7-3.3z"/></svg>';
   return h('span', { class: `mem-vt cat pol cat-${t.id}` }, h('span', { class: 'mc-faixa' }, h('span', { class: 'mc-t' }, t.title)),
     ...t.cover.slice(0, 2).map((src, i) => h('span', { class: `mc-p p${i}` }, h('img', { src, alt: '', draggable: 'false', decoding: 'async' }))), enf, h('span', { class: 'mc-ache' }, 'ache os pares!'), h('small', { class: 'mc-b' }, 'beaterista')); };
-const verso = (t) => (t.cover
-  ? polaroid(t) // os 3 temas de fotos (Beatles, Bandas, Artistas): polaroids presas com fita no papel do álbum (escolha da Bea, opção C)
-  : t.verso
-    ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' }))
+const verso = (t) => (t.verso
+  ? h('span', { class: 'mem-vt' }, h('img', { src: t.verso, alt: '', draggable: 'false', decoding: 'async' })) // verso desenhado (com o Paul)
+  : t.cover
+    ? polaroid(t) // The Beatles: polaroids presas com fita no papel do álbum
     : h('span', { class: 'mem-vt' }, h('img', { src: MIX[0], alt: '', draggable: 'false', decoding: 'async' }))); // "tudo misturado": só uma carta de verso (antes era um leque de 3)
 /** A carta: desenho da Bea (a imagem já traz nome e borda) ou foto de artista (recortada no rosto, com o nome embaixo quando tem). */
 const face = (it) => (it.photo
