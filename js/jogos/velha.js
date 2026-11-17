@@ -8,6 +8,7 @@ import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
 import { symbolEl } from './cartas-simbolos.js';
 import { LEVELS } from './velha-data.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
+import { camposNomes, nomeDe } from './nomes.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'velha';
@@ -31,7 +32,7 @@ export function mount(host, opts) {
   let g = null; let msg = ''; let fb = null; let mv = null; // mv: null | { from: null | número } = escolhendo a troca de lugar
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
-  const NAMES = (mode) => (mode === 'local' ? ['jogador 1', 'jogador 2'] : mode === 'online' ? (me0() === 0 ? ['você', 'o outro'] : ['o outro', 'você']) : ['você', 'Paul']);
+  const NAMES = (mode) => (mode === 'local' ? [nomeDe(0), nomeDe(1)] : mode === 'online' ? (me0() === 0 ? ['você', 'o outro'] : ['o outro', 'você']) : ['você', 'Paul']);
   const root = h('div', { class: `jg jg-velha${mission ? ' jg-game' : ''}` }); host.replaceChildren(root);
   const persist = () => { if (mission || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, match: g }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
@@ -49,6 +50,7 @@ export function mount(host, opts) {
         h('li', {}, '3 marcas em linha ganha'),
         h('li', {}, h('b', {}, '1 vez por rodada'), ' você pode mudar uma marca de lugar')),
       h('p', { class: 'jg-lab big' }, 'quem joga?'), seg('mode', MODES),
+      prefs.mode === 'local' ? camposNomes(2) : null,
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => V.newMatch({ ...prefs, mode: 'online' }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, `continuar (rodada ${resume.round})`) : null,
           h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(V.newMatch(prefs)) }, resume ? 'novo placar' : 'iniciar')));

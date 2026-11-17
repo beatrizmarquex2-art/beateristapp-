@@ -220,11 +220,11 @@ function lessonScreen(host, w0) {
 function legendScreen(host) {
   const r = robo({ mood: 'read', size: 84, say: 'essa é a legenda do jogo: uma convenção só, pra não confundir.' });
   host.append(topBar(BASE), pageH1('Legenda da bateria'), h('div', { class: 'kx-hello' }, r.el),
-    h('div', { class: 'pl-legend' }, ...legendHtml().map((x) => h('div', { class: 'pl-card' }, svgEl(x.svg, 'pl-mini'), h('b', {}, x.name), h('small', {}, x.where)))),
+    h('div', { class: 'pl-legend' }, ...legendHtml().map((x) => h('div', { class: 'pl-tcard' }, svgEl(x.svg, 'pl-mini'), h('b', {}, x.name), h('small', {}, x.where)))),
     h('p', { class: 'lib-note' }, 'X = pratos e chimbal · bolinha = tambores · parênteses = nota fantasma (bem baixinha) · > = acento (mais forte) · X no lugar da caixa = aro (cross-stick: a baqueta bate no aro). Rimshot é outra técnica: bate na pele e no aro ao mesmo tempo; ela não aparece nos exercícios. Notas alinhadas na vertical = tocadas juntas.'),
     h('h2', { class: 'kx-h' }, 'claves'), h('div', { class: 'pl-legend' },
-      h('div', { class: 'pl-card wide' }, svgEl(clefStaff('sol', [28 + 2, 28 + 4]), 'pl-mini'), h('b', {}, 'clave de sol'), h('small', {}, 'linhas: mi, sol, si, ré, fá · espaços: fá, lá, dó, mi')),
-      h('div', { class: 'pl-card wide' }, svgEl(clefStaff('fa', [14 + 4, 14 + 6]), 'pl-mini'), h('b', {}, 'clave de fá'), h('small', {}, 'linhas: sol, si, ré, fá, lá · espaços: lá, dó, mi, sol'))));
+      h('div', { class: 'pl-tcard wide' }, svgEl(clefStaff('sol', [28 + 2, 28 + 4]), 'pl-mini'), h('b', {}, 'clave de sol'), h('small', {}, 'linhas: mi, sol, si, ré, fá · espaços: fá, lá, dó, mi')),
+      h('div', { class: 'pl-tcard wide' }, svgEl(clefStaff('fa', [14 + 4, 14 + 6]), 'pl-mini'), h('b', {}, 'clave de fá'), h('small', {}, 'linhas: sol, si, ré, fá, lá · espaços: lá, dó, mi, sol'))));
 }
 
 /* ---------- perfil ---------- */

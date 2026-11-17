@@ -1472,3 +1472,12 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-wrap .btn.primary{background:linear-gradient(180deg,#ffd23f,#ff9d00);color:#1b1230;box-shadow:0 0 18px #ffd23f66}
 .fg-wrap .tr-count{color:#ffd23f;font-weight:800;text-align:center}
 @media (prefers-reduced-motion:reduce){.fg-lz,.fg-varre,.fg-cad,.fg-onair,.fg-luz,.fg-cena.alarme{animation:none}}
+/* ---------- nomes de quem joga no mesmo aparelho (js/jogos/nomes.js): campinhos pequenos "jogador 1 ____" ---------- */
+.jg-nomes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:420px;margin:10px auto}
+.jg-nomes label{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:inherit;opacity:.95}
+.jg-nomes input{box-sizing:border-box;width:100%;min-width:0;min-height:40px;padding:6px 10px;font:700 16px/1.2 inherit;font-family:inherit;text-transform:none;letter-spacing:0;color:#142036;background:#fffdf7;border:2.5px solid #142036;border-radius:10px 14px 9px 13px;box-shadow:3px 3px 0 #c0152f}
+.jg-nomes input::placeholder{color:#8d8577;font-weight:500}
+/* placar do Uno: entra na mesa (e não por cima), então o Paul aparece inteiro e todos os botões cabem, até o compartilhar */
+.cx-stage:has(>.cx-result.pl-card){overflow:visible;min-height:0}
+.cx-stage:has(>.cx-result.pl-card)>:not(.cx-result):not(.cx-confetti){display:none!important}
+.cx-result.pl-card{position:relative!important;left:auto;right:auto;top:auto;translate:none;margin:96px 8px 10px!important}

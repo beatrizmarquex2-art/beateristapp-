@@ -9,6 +9,7 @@ import * as S from './cartas-sfx.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { bq } from './bonequinhos.js';
 import { placar, poseDisponivel } from './placar.js';
+import { camposNomes, nomeDe, deNome, paraNome, nomeDigitado } from './nomes.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
@@ -76,7 +77,7 @@ export function mount(host, opts) {
   const me0 = () => (conn ? conn.me : 0);
   const meIdx = () => (!g ? 0 : g.mode === 'paul' ? 0 : g.mode === 'online' ? me0() : viewer);
   const isCpu = (p) => g && g.mode === 'paul' && p !== 0;
-  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : `jogador ${p + 1}`);
+  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : nomeDe(p));
   const human = () => !!g && !g.over && !busy && !hidden && g.turn === meIdx() && !(g.mode === 'local' && g.turn !== viewer);
   const persist = () => { if (adv || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
@@ -152,6 +153,7 @@ export function mount(host, opts) {
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
       prefs.mode === 'local' ? seg('pessoas', [[2, '2'], [3, '3'], [4, '4']], prefs.opps + 1, (v) => { prefs.opps = v - 1; keepPrefs(); }) : null,
+      prefs.mode === 'local' ? camposNomes(prefs.opps + 1) : null,
       ...(UN ? [] : [h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
@@ -242,7 +244,7 @@ export function mount(host, opts) {
     const top = C.topOf(g); const canMove = human();
     const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
     const mine = hidden ? [] : sortHand(g.hands[me]);
-    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : 'vez do outro celular…') : `vez do ${PL(g.turn)}`;
+    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : 'vez do outro celular…') : `vez ${deNome(g.turn)}`;
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const under = [...g.discard].slice(-4, -1); // cartas de baixo (só enfeite)
     const prevTurn = stage ? stage.dataset.turn : ''; const turnChanged = String(prevTurn) !== String(g.turn);
@@ -285,8 +287,8 @@ export function mount(host, opts) {
           UN ? h('button', { class: 'btn small', type: 'button', disabled: hidden || !human() || undefined, onclick: pegou }, 'pegou!') : null)),
       handEl, pickEl, dupEl(),
       !g.over && g.mode === 'local' && hidden ? h('div', { class: 'cx-cover', role: 'dialog', 'aria-label': 'passe o aparelho' },
-        h('p', { class: 'hand' }, `passe o aparelho para o ${PL(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
-        h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; viewer = g.turn; snd('flip'); paint(); } }, `sou o ${PL(g.turn)}, mostrar minha mão`)) : null,
+        h('p', { class: 'hand' }, `passe o aparelho ${paraNome(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
+        h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; viewer = g.turn; snd('flip'); paint(); } }, `sou ${nomeDigitado(g.turn) || `o ${PL(g.turn)}`}, mostrar minha mão`)) : null,
       g.over && !busy ? result() : null);
     root.replaceChildren(...[g.mode === 'online' ? badge.el : null, stage].filter(Boolean));
     if (tip) root.append(tip);

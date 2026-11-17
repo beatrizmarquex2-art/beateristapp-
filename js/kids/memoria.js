@@ -17,6 +17,7 @@ import { lobby, salaAutoPara } from '../jogos/online.js';
 import { confirmSheet } from '../ui.js';
 import { ganhou } from '../jogos/estrelas-jogo.js';
 import { mostrarSala, mesaNova, JOGO as JOGO_SALA } from './memoria-sala.js';
+import { camposNomes, nomeDe, deNome } from '../jogos/nomes.js';
 
 const KEY = 'setting-memoria';
 const conf = () => ({ theme: 'beatles', pairs: 8, players: 1, again: true, best: {}, ...(store.get(KEY) ? store.get(KEY).data : {}) });
@@ -92,6 +93,7 @@ export function mountMemoria(host, opts) {
           h('button', { type: 'button', 'aria-label': 'mais pares', disabled: PICK.indexOf(pairs) >= PICK.length - 1 || PICK[PICK.indexOf(pairs) + 1] > maxPairs || null, onclick: () => save({ pairs: PICK[PICK.indexOf(pairs) + 1] }).then(setup) }, '›')),
         players !== 1 ? h('button', { type: 'button', class: `mem-ic${c.again !== false ? ' on' : ''}`, 'aria-pressed': String(c.again !== false), 'aria-label': 'quem acerta joga de novo', title: 'quem acerta joga de novo', onclick: () => save({ again: c.again === false }).then(setup) }, '↻') : null),
       ...(() => { const b = players === 1 && c.best[`${th.id}:${pairs}`]; return b ? [h('p', { class: 'muted mem-best' }, `seu recorde: ${b} tentativas`)] : []; })(),
+      typeof players === 'number' && players >= 2 ? camposNomes(players) : null,
       players === 'sala' ? h('div', { class: 'jg ms-lobby' }, (lob = lobby({ jogo: JOGO_SALA, makeState: () => mesaNova(th, Math.min(pairs, maxPairs), c.again !== false), onStart: startSala })).el)
         : h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => play(th, Math.min(pairs, maxPairs), players, c.again !== false) }, 'jogar'));
     botrow.hidden = true; bot.set('happy', 'escolhe o tema e quantos pares!');
@@ -114,7 +116,7 @@ export function mountMemoria(host, opts) {
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => {
       if (MS) { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}${MP.goalTries ? ` · meta ${MP.goalTries}` : ''}${MP.secs ? ` · ⏱ ${t0 ? Math.min(Math.floor((Date.now() - t0) / 1000), 9999) : 0}/${MP.secs} s (opcional)` : ''}`; return; }
-      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez do jogador ${turn + 1}`} · ${score.join(' × ')}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
+      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez ${deNome(turn)}`} · ${score.join(' × ')}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
       status.classList.toggle('mem-p2', two && turn % 2 === 1);
     };
     const board = h('div', { class: `kx-board mem-board n${pairs}`, style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
@@ -170,14 +172,14 @@ export function mountMemoria(host, opts) {
       if (record) save({ best: { ...c.best, [k]: tries } });
       ganhou('memoria', 1); // 1 ★ por partida completada em qualquer tema (pedido da Bea: todo jogo dá estrela); o limite de 30 ★ por jogo por dia continua
       // achou todos (ou ganhou do Paul): 3 ★
-      const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `jogador ${topo[0] + 1} venceu!`;
+      const maxS = Math.max(...score); const topo = score.map((x, i) => (x === maxS ? i : -1)).filter((i) => i >= 0); const win = topo.length > 1 ? 'empate!' : vsPaul ? (topo[0] === 0 ? 'você venceu!' : 'o Paul venceu!') : `${nomeDe(topo[0])} venceu!`;
       FB.great(board, { msg: two ? win : record ? 'novo recorde! 🏆' : FB.line('great') }); bot.set('cheer', two ? win : record ? 'novo recorde!' : 'achou todos!');
       later(() => {
         if (gone) return;
         const empate = topo.length > 1; const euGanhei = !two || (!empate && (vsPaul ? topo[0] === 0 : true));
         stage.replaceChildren(placar({ jogo: 'Jogo da memória', classe: 'kx-result', estado: two && empate ? 'tie' : euGanhei ? 'win' : 'lose', pose: two && empate ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('professor', 'estudando') : poseDisponivel('meditando', 'ouvindo'),
           titulo: two ? win : 'Achou todos!', sub: `${pairs} pares de ${th.title.toLowerCase()}${!two && record ? ' · recorde novo!' : !two && prev ? ` · seu recorde: ${prev}` : ''}`,
-          quadros: two ? score.map((x, i) => ({ n: x, l: vsPaul ? (i === 0 ? 'você' : 'paul') : `jogador ${i + 1}`, win: !empate && i === topo[0] })) : [{ n: pairs, l: 'pares', win: true }, { n: tries, l: 'tentativas' }],
+          quadros: two ? score.map((x, i) => ({ n: x, l: vsPaul ? (i === 0 ? 'você' : 'paul') : nomeDe(i), win: !empate && i === topo[0] })) : [{ n: pairs, l: 'pares', win: true }, { n: tries, l: 'tentativas' }],
           estrelas: '+1 ★ pra roleta',
           acoes: [h('button', { class: 'kd-btn', type: 'button', onclick: () => play(th, pairs, players, again) }, 'jogar de novo'), h('button', { class: 'kd-chip', type: 'button', onclick: setup }, 'trocar tema ou tamanho')] }));
       }, 1800);

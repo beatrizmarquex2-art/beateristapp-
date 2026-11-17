@@ -36,6 +36,13 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Nomes dos jogadores, placar do Uno e cartões do pauLta (17/nov/2026, v602, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Nomes de quem joga no mesmo aparelho** (`js/jogos/nomes.js`, pedido da Bea): campinhos "jogador 1 ____" na memória (2 a 4), no Uno (mesmo celular) e na velha (dois no aparelho). O jogo chama pelo nome na vez, no "passe o aparelho" e no placar; vazio = "jogador N". Ficam no aparelho (`beaterista-nomes-jogadores`) e valem pros 3 jogos. Stop e bingo já tinham nomes próprios (não mexi). **Em 2 celulares ainda aparece "você / o outro"** (o nome do outro não viaja pela sala).
+- **Compartilhar o placar em qualquer resultado** (`placar.js`): antes só em vitória e empate.
+- **Placar do Uno**: o cartão azul entrava por cima da mesa e estourava a altura (cortava a cabeça do Paul e escondia o compartilhar). Agora entra no lugar da mesa.
+- **Cartões "o Paul vai te apresentar" do pauLta estavam azul-escuros**: a classe `.pl-card` deles batia com a do placar azul. Viraram `.pl-tcard`, com fundo branco (pauta legível). **Não reutilizar `.pl-card` fora do placar.**
+- Testes: `e2e/nomes-jogadores.mjs` (novo). Já falhavam antes: `cartas.mjs` (espera 10 figuras na legenda, são 12) e `estrelas-jogos.mjs` (espera 3 ★ na memória, o jogo dá 1).
+
 ## Postar conquistas, festa de caminho e roleta em 3 áreas (15/nov/2026, v546, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
 - **Cartão de conquista pra postar** (`js/conquista.js`): imagem em pé 1080×1920 com o logo da escola, o Paul, o que a pessoa conquistou, **"o que este jogo desenvolve"** (3 linhas por jogo, lista `BENEFICIOS`; é o texto pra mãe/pai) e o link `jogos.beaterista.com.br` + `@beaterista_`. Sem foto e sem sobrenome. Compartilha pelo celular ou baixa.
   - **3 estilos prontos** em `ESTILOS`: `palco` (noite, igual ao PaulBox), `creme`, `azul` (o do placar). Está valendo `palco` (`ESTILO_PADRAO`); **a Bea ainda vai escolher** (mostrei as 3 lado a lado). Trocar = mudar essa constante.
