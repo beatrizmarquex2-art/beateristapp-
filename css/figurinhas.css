@@ -595,3 +595,5 @@
 .lj-pg-evoluir .lj-preco-card { white-space: nowrap; font-size: 21px; } .lj-pg-evoluir .lj-btn.breve { background: #2a3048; color: #8a90a5; } .lj-pg-evoluir .lj-volta { color: #c9a24a; }
 @media (min-width: 700px) { .lj-secs, .lj-pg { max-width: 560px; margin-left: auto; margin-right: auto; } .lj-pg-cards .lj-grid, .lj-pg-ensina .lj-grid { max-width: none; } }
 @media (prefers-reduced-motion: reduce) { .lj-sec { transition: none; } }
+
+.cv-meu .cv-hint, #view .cv-meu small.cv-hint { color: #17224a !important; text-shadow: none; opacity: .75; }

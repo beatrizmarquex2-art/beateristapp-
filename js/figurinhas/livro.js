@@ -48,7 +48,7 @@ function beatlesArt(got, total) {
   const cy = 300, R = 112, k = R / 140;
   const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="${cy}" x2="180" y2="${cy - R + 8 * k}" stroke="${i % 2 ? RED : CR}" stroke-width="${9.5 * k}" transform="rotate(${i * 10} 180 ${cy})"/>`).join('');
   const onda = (y, c, op) => `<path d="M-10 ${y} q 22 -14 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 V 620 H -10 Z" fill="${c}" opacity="${op}"/>`;
-  const nomes = ['JOHN', 'PAUL', 'GEORGE', 'RINGO'].map((n, i) => `<text x="${54 + i * 84}" y="588" font-family="'Anton',sans-serif" font-size="17" letter-spacing="1.5" fill="${i === 1 ? '#ffd21f' : CR}" text-anchor="middle">${n}</text>`).join('');
+  const nomes = ['JOHN', 'PAUL', 'GEORGE', 'RINGO'].map((n, i) => `<text x="${54 + i * 84}" y="566" font-family="'Anton',sans-serif" font-size="17" letter-spacing="1.5" fill="${i === 1 ? '#ffd21f' : CR}" text-anchor="middle">${n}</text>`).join('');
   return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="360" height="610" fill="${NAVY}"/>${dots(CR, 0.07)}
   <path d="M-10 128 L370 96 L370 150 L-10 182 Z" fill="${RED}"/><path d="M-10 190 L370 158" stroke="${YEL}" stroke-width="4" fill="none"/>
   <text x="180" y="78" font-family="'Anton',sans-serif" font-size="54" text-anchor="middle" fill="${CR}" stroke="${K}" stroke-width="6" paint-order="stroke" stroke-linejoin="round" textLength="320" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
