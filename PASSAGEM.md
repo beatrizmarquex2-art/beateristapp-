@@ -920,3 +920,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Testes: `ritmo.mjs` tem 4 falhas de "pico 0.000" (áudio medido em navegador sem som) e `aluno-estudos-tocar.mjs` falha em "Estudos: acende a aba" — ambos já falhavam antes.
 - **v562**: tirei a linha de 3 temas também do violão e do xilofone (a Bea mandou print do Palco ainda com 'tema colagem/vinil/pôster'): fundo fixo 'colagem'. Só o 'explorar a bateria' do Jogos (kids.js) ainda tem temas.
 - **v592**: 6ª lendária `L06` "Tambor Jurássico" (`assets/figurinhas/lendarias/L06.webp`). Nova regra: cada produto da Lojinha libera 1 lendária; combo libera as 6. A Bea aprova o print em `js/views/resgates.js` (1–5 produtos ou combo) e o `obs` guarda `compras:N` ou `combo` (o antigo `produtos:N` ainda vale; sem migração no banco). Capa das exclusivas voltou ao azul (título menor mantido), faixa "Carreira Beaterista".
+- **v593**: ícones das 3 abas do Álbum: 📔 álbum · ⭐️ stars · 📸 perfil.
