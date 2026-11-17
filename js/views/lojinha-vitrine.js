@@ -23,6 +23,9 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
+/** Abre a janela de um produto pelo id (link direto `#/lojinha/<id>`, ex.: o Jogo da Memória chama `#/lojinha/memoria`). */
+export function abrir(id) { const p = PRODUTOS.find((x) => x.id === id); if (p && p.fotos && p.fotos.length) detalhe(p); return !!p; }
+
 /** Destaque do combo Black Friday: primeira coisa da Lojinha. */
 function destaqueCombo() {
   return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },

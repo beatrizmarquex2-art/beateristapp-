@@ -298,7 +298,7 @@ function lojinhaView(view, parts = []) {
   const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
   drawPedido();
   const vitrineBox = h('div');
-  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine()); });
+  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (gone) return; vitrineBox.replaceChildren(m.vitrine()); if (parts[0] && parts[0] !== 'depoimentos') m.abrir(parts[0]); }); // `#/lojinha/memoria` abre direto a janela do produto
   view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
