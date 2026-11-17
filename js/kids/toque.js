@@ -59,7 +59,7 @@ export function runToque(game, ctx) {
       turn.disabled = true; hear.disabled = true; S.reset();
       const pad = mode === 'tela' ? h('button', { class: 'kx-pad', type: 'button' }, 'toca aqui!') : h('div', { class: 'kx-pad mic' }, '🎙 escutando…');
       padBox.replaceChildren(pad);
-      cap = capture({ mode, pad: mode === 'tela' ? pad : null, bpm: p.bpm, beats: p.beats, clickBeats: mode === 'tela', tapSound: () => VOICE.sn(audio().currentTime, 0.9), onCount: (n) => { status.textContent = n < 4 ? `contando… ${n + 1}` : '🎯 agora!'; } });
+      cap = capture({ mode, pad: mode === 'tela' ? pad : null, bpm: p.bpm, beats: p.beats, clickBeats: true, tapSound: () => VOICE.sn(audio().currentTime, 0.9), onCount: (n) => { status.textContent = n < 4 ? `contando… ${n + 1}` : '🎯 agora!'; } });
       if (window.__kidsTest) window.__kidsTest.expected = ecoTimes(p, 0);
       let res;
       try { res = await cap.done; } catch (e) {

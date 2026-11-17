@@ -91,13 +91,15 @@ export const chaveFalhas = (n, figIdx, tempoIdx) => `${n}:${figIdx ? 1 : 0}:${te
 /** Novo contador de falhas depois de uma tentativa (puro). */
 export const contaFalhas = (falhas, chave, passou) => { const f = { ...(falhas || {}) }; f[chave] = passou ? 0 : Math.min(AJUDA_MAX, (f[chave] | 0) + 1); return f; };
 
-/** Microfone: o app só ouve QUANDO o aluno bateu (não sabe qual mão). Cada ataque (`onsets`, s desde o 1º tempo) marca a nota mais próxima,
- *  dentro da folga, como 'perfeito' ou 'bom' (qualquer mão). O que sobra vira 'faltou'; ataques a mais vão em `extras`. */
-export function judgeOnsets(chart, onsets, win = 0.16, late = win) {
-  let extras = 0;
-  for (const t of [...onsets].sort((a, b) => a - b)) {
+/** Microfone: cada ataque (`onsets`, s desde o 1º tempo) marca a nota mais próxima, dentro da folga, como 'perfeito' ou 'bom'. Se o app conseguiu separar grave de agudo
+ *  (`lados`: 'E'/'D'/null por ataque, de mic-timbre.js), o ataque no lado errado vira 'lado' (mão trocada); sem `lados` vale qualquer mão. O que sobra vira 'faltou'; ataques a mais vão em `extras`. */
+export const PERFEITO_MIC = 0.09; // s: microfone tem mais atraso e mais variação que o toque na tela
+export function judgeOnsets(chart, onsets, win = 0.16, late = win, { lados = null, perfeito = PERFEITO } = {}) {
+  let extras = 0; const ord = onsets.map((t, k) => ({ t, k })).sort((a, b) => a.t - b.t);
+  for (const { t, k } of ord) {
     let best = -1; let bd = Infinity; chart.forEach((n, i) => { if (n.res) return; const d = t - n.t; if (d < -win || d > late) return; const a = Math.abs(d); if (a < bd) { bd = a; best = i; } });
-    if (best < 0) { extras++; continue; } chart[best].res = bd <= PERFEITO ? 'perfeito' : 'bom';
+    if (best < 0) { extras++; continue; }
+    const lado = lados ? lados[k] : null; chart[best].res = lado && lado !== chart[best].side ? 'lado' : bd <= perfeito ? 'perfeito' : 'bom';
   }
   sweep(chart, Infinity, win, late); return { extras };
 }
