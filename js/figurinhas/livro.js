@@ -68,7 +68,7 @@ const titulo = (t, x, y, w, size, fill, st = '') => `<text x="${x}" y="${y}" fon
 const FOTOS = 'assets/figurinhas/fotos/';
 const VINIL = {
   Bandas: { id: 'ba', nome: 'BANDAS', sub: 'os grupos que fizeram história', cor: RED, tcor: CR, fotos: ['F047'], nomes: ['Queen', 'Nirvana', 'Led Zeppelin', 'Linkin Park'], base: FOTOS },
-  Beaterista: { id: 'be', nome: ['BEATERISTA', '& PAUL'], sub: 'exclusivas · da escola pro seu álbum', cor: RED, tcor: CR, bg: ['#ffe27a', '#ffb21f', '#ff7a1a'], txt: NAVY, ac: '#c4182c', fotos: [], foto: 'assets/figurinhas/capa-beaterista-paul.webp', nomes: ['A Bea e o Paul', 'Paul, o robôterista', 'Momentos da escola'], base: FOTOS },
+  Beaterista: { id: 'be', nome: ['BEATERISTA', '& PAUL'], sub: 'exclusivas · da escola pro seu álbum', cor: RED, tcor: CR, fotos: [], foto: 'assets/figurinhas/capa-beaterista-paul.webp', nomes: ['A Bea e o Paul', 'Paul, o robôterista', 'Carreira Beaterista'], base: FOTOS },
   Artistas: { id: 'ar', nome: 'ARTISTAS', sub: 'cantores e músicos', cor: YEL, tcor: NAVY, fotos: ['F032'], nomes: ['Rita Lee', 'Michael Jackson', 'Pitty', 'Slash'], base: FOTOS },
 };
 /** Capa "disco de vinil" de Bandas e Artistas (escolha da Bea, nov/2026): o LP sai da capa quadrada com a foto, com a lista das primeiras faixas. */

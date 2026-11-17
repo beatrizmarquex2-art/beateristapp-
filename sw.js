@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v591';
+const VERSION = 'beaterista-v592';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js',
   'js/paulta/mapa.js',
@@ -106,7 +106,7 @@ const EXTRA = [
   'assets/marcas/nagano.png',
   'assets/marcas/spark-branco.png',
   'assets/marcas/spark-preto.png',
-  'assets/memoria/adquira-lojinha.webp', 'assets/memoria/verso-beatles.webp', 'assets/memoria/verso-misturado.webp', 'assets/memoria/verso-instrumentos.webp', 'assets/memoria/verso-bandas.webp', 'assets/memoria/verso-artistas.webp',
+  'assets/memoria/adquira-lojinha.webp',
   'assets/memoria/bateria/01_bumbo.webp',
   'assets/memoria/bateria/02_caixa.webp',
   'assets/memoria/bateria/03_tom1.webp',
@@ -176,6 +176,11 @@ const EXTRA = [
   'assets/memoria/sinais/02_nota_fantasma.webp',
   'assets/memoria/sinais/03_metronomo.webp',
   'assets/memoria/sinais/verso.webp',
+  'assets/memoria/verso-artistas.webp',
+  'assets/memoria/verso-bandas.webp',
+  'assets/memoria/verso-beatles.webp',
+  'assets/memoria/verso-instrumentos.webp',
+  'assets/memoria/verso-misturado.webp',
   'assets/mural/bolt-ink.svg',
   'assets/mural/bolt-red.svg',
   'assets/mural/brush-gold.svg',
@@ -227,7 +232,7 @@ const EXTRA = [
   'assets/paul/colorido/paul-pandeiro.webp',
   'assets/paul/colorido/paul-produtor.webp',
   'assets/paul/colorido/paul-professor.webp',
-  'assets/paul/colorido/paul-selfie.webp', 'js/figurinhas/livro-meu.js', 'js/figurinhas/bonus.js', 'js/figurinhas/mundos-premio.js', 'js/views/parceria.js', 'js/marcas-links.js', 'assets/figurinhas/capa-beaterista-paul.webp',
+  'assets/paul/colorido/paul-selfie.webp',
   'assets/paul/colorido/paul-teclado.webp',
   'assets/paul/el/balao.webp',
   'assets/paul/el/coracao-cheio.webp',

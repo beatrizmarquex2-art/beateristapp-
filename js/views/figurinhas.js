@@ -26,7 +26,7 @@ const COLECOES = [
   { tab: 'Beatlemania', nome: 'Beatlemania', nivel: 'Clássico', cor: '#17224a', fg: '#ffd23f', ic: '🪲' },
   { tab: 'Bandas', nome: 'Bandas', nivel: 'Comum', cor: '#c4182c', fg: '#fff6e0', ic: '🎸' },
   { tab: 'Artistas', nome: 'Artistas', nivel: 'Raro', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
-  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusivo', cor: '#ff8a1f', fg: '#14111a', ic: '⭐' },
+  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusivo', cor: '#2d3d7a', fg: '#ffd23f', ic: '⭐' },
   { tab: 'Lendárias', nome: 'SUPER PAUL', nivel: 'Lendária', cor: '#0b0b10', fg: '#ffd23f', ic: '⚡' },
   { tab: 'Na mão', nome: 'Minhas figurinhas', nivel: 'Épico', cor: '#5a2bb8', fg: '#ffffff', ic: '📸' },
 ]; // a aba "criadas por mim" foi pra dentro de "minhas figurinhas"
@@ -73,7 +73,7 @@ export function mount(host, parts = [], opts = {}) {
         const s2 = L.grantPack(L.grantPack(state, `epico:${r.id}:1`), `epico:${r.id}:2`); if (s2 !== state) save(s2);
         toast('a Bea aprovou o Desafio do Paul: GIRO DUPLO ÉPICO liberado!', { ms: 5000 }); import('../paulta/festa.js').then((F) => F.festa({ titulo: 'giro duplo épico!', sub: 'você ganhou 2 giros especiais. olha em Stars › roleta' })).catch(() => {}); continue;
       }
-      if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (1 produto = 1 · 2 = 3 · 3 = 5)
+      if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (cada produto = 1 · combo = todas)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
     }
     // lendárias: vale a maior compra aprovada; completa até esse total (sem repetir) e festeja só as novas
@@ -196,14 +196,14 @@ export function mount(host, parts = [], opts = {}) {
       h('h2', { class: 'tag' }, '⚡ SUPER PAUL · lendária'),
       h('p', { class: 'muted' }, `a coleção mais rara: figurinhas lendárias de quem compra na Lojinha da Beaterista. não saem na roleta. você tem ${n} de ${LEND.LENDARIAS.length}.`),
       h('div', { class: 'ld-grid' }, ...LEND.LENDARIAS.map(slot)),
-      h('p', { class: 'fig-note' }, 'quanto mais produtos da Lojinha, mais lendárias: 1 produto libera 1 · 2 produtos liberam 3 · 3 produtos liberam as 5.'),
-      rsLista.some((x) => x.tipo === 'lendaria' && x.status === 'pendente') ? h('p', { class: 'fig-note' }, 'seu resgate: esperando a Bea') : n >= LEND.LENDARIAS.length ? h('p', { class: 'fig-note' }, 'você já tem as 5 lendárias! 🎉')
+      h('p', { class: 'fig-note' }, `cada produto da Lojinha libera 1 lendária · o combo libera todas as ${LEND.LENDARIAS.length}.`),
+      rsLista.some((x) => x.tipo === 'lendaria' && x.status === 'pendente') ? h('p', { class: 'fig-note' }, 'seu resgate: esperando a Bea') : n >= LEND.LENDARIAS.length ? h('p', { class: 'fig-note' }, 'você já tem todas as lendárias! 🎉')
         : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint('lendaria') }, n ? 'comprei mais produtos (mandar outro print)' : 'resgatar por print (mostre suas compras)'),
       h('a', { class: 'btn wide', href: '#/lojinha' }, 'ver a Lojinha'));
   }
   function verLendaria(c) {
     sheet(c.nome, (close) => h('div', { class: 'ld-ver' }, h('img', { class: LEND.temLendaria(state, c.codigo) ? '' : 'ld-bloq', src: c.img, alt: c.nome }),
-      h('p', { class: 'muted' }, LEND.temLendaria(state, c.codigo) ? 'lendária sua!' : 'trancada: 1 produto da Lojinha libera 1 lendária, 2 liberam 3 e 3 liberam as 5.'), h('button', { type: 'button', class: 'btn wide', onclick: close }, 'fechar')));
+      h('p', { class: 'muted' }, LEND.temLendaria(state, c.codigo) ? 'lendária sua!' : 'trancada: cada produto da Lojinha libera 1 lendária e o combo libera todas.'), h('button', { type: 'button', class: 'btn wide', onclick: close }, 'fechar')));
   }
 
   /* ---------- minhas: as cartinhas criadas com foto e nome (o mesmo que a coleção do Perfil) ---------- */
