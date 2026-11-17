@@ -1,6 +1,6 @@
 // Música de fundo dos jogos: escolhe a música pelo endereço (musica-dados.js), sintetiza no aparelho e toca baixinho em loop.
 // Respeita o som do topo (alto-falante) e o som dos jogos; só começa depois do primeiro toque (regra do navegador); para ao sair do jogo ou ao esconder o app.
-import { audio, isMuted, lastAudioUse } from '../audio.js';
+import { audio, destino, isMuted, lastAudioUse } from '../audio.js';
 import { soundOn } from './base.js';
 import { TRACKS, trackDe } from './musica-dados.js';
 import './efeitos.js'; // registra o som próprio de cada jogo
@@ -56,7 +56,7 @@ function start(id) {
   try {
     const c = audio(false); if (!c) return; stop(false);
     // a música vai direto pro destino: o silence() do app (troca de tela, de fase) troca o master e não pode matar a música
-    bus = c.createGain(); bus.gain.value = VOL; bus.connect(c.destination); cur = id; step = 0; nextT = c.currentTime + 0.1;
+    bus = c.createGain(); bus.gain.value = VOL; bus.connect(destino()); cur = id; step = 0; nextT = c.currentTime + 0.1;
     const tick = () => { if (!bus) return; ajusta(c, p); while (nextT < c.currentTime + 0.18) { schedule(c, p, step % 16, nextT); nextT += 60 / p.bpm / 4; step++; } };
     timer = setInterval(tick, 40); tick();
   } catch { stop(false); }

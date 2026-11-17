@@ -7,3 +7,5 @@ export const MARCAS = {
   nagano: TDT_LINK ? '#/nagano' : '',
   spark: SPARK_VIDEO,
 };
+// Quebra-cabeça "Nagano Drums & Beaterista": ao montar, aparece um link pra visita da Bea na fábrica da Nagano (reel do Instagram que a Bea mandou, 17/nov/2026).
+export const NAGANO_FABRICA = 'https://www.instagram.com/reel/DbRtnCuJjGX/';
