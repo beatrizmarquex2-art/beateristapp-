@@ -88,8 +88,8 @@ export function evaluate(taps, expected, bpm, { mic = false } = {}) {
 function avaliar(taps, expected, bpm, { mic = false } = {}) {
   // Janela de cada nota: nos andamentos lentos ~0,11 s; nos rápidos (turbo 170 BPM) a semicolcheia dura só 88 ms, então a janela nunca cai abaixo de 0,075 s
   // (toque na tela tem ~50 a 80 ms de atraso no iPad). Cada toque vai pra nota MAIS PRÓXIMA, então janela maior não confunde as notas.
-  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.2, Math.max(sub * 0.8, 0.12)) : Math.max(Math.min(0.15, sub * 0.6), 0.09); // folgada de propósito (pedido da Bea)
-  const okMs = mic ? 70 : Math.round(Math.min(70, Math.max(50, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
+  const sub = 60 / bpm / 4; const win = mic ? Math.min(0.24, Math.max(sub * 0.9, 0.15)) : Math.max(Math.min(0.15, sub * 0.6), 0.09); // folgada de propósito (pedido da Bea)
+  const okMs = mic ? 90 : Math.round(Math.min(70, Math.max(50, sub * 1000 * 0.5))); // 'no tempo': até 35 ms (lento) ou ~44 ms (turbo); microfone tem mais folga
   const used = new Set(); const res = expected.map(() => ({ st: 'faltou', ms: null }));
   let extra = 0;
   for (const t of [...taps].sort((a, b) => a - b)) {

@@ -38,7 +38,7 @@ export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
     const start = () => {
       stopRun(); phase = 'run'; last = null; const ac = audio();
       if (useMic) {
-        const cap = capture({ mode: 'mic', pad: null, bpm, beats: bar.length, clickBeats: false, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
+        const cap = capture({ mode: 'mic', pad: null, bpm, beats: bar.length, clickBeats: true, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
         pad.classList.add('live'); status.textContent = 'abrindo o microfone…'; run = { off: () => cap.cancel() }; const gen = S.gen;
         cap.done.then((r) => { if (!S.alive || gen !== S.gen) return; finish(r.onsets, true); }, (e) => {
           if (!S.alive || gen !== S.gen) return; run = null; phase = 'idle'; micBlocked = true;

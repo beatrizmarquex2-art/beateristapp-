@@ -11,7 +11,8 @@ import { musicaPausa, musicaVolta } from './musica.js';
 import { capture } from '../kids/capture.js';
 import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
-import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
+import { ladosDosToques } from '../kids/mic-timbre.js';
+import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, PERFEITO_MIC, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
 
 const LOOK = 1.15; // s que a nota leva pra descer
 const COR = { E: '#ff3d57', D: '#2d8cff' }; // LED: vermelho = caixa (esquerda, E), azul = bumbo (direita, D)
@@ -46,9 +47,10 @@ export function mount(host) {
   /* ---------- a fase ---------- */
   const jogo = (f, o = {}) => {
     limpa(); musicaPausa(); jogando = true; const sv = getGame('rudimentos'); const clamp = (v, n) => Math.max(0, Math.min(n - 1, v | 0));
-    const tempoIdx = clamp(o.tempo ?? sv.tempo ?? 0, TEMPOS.length); const figIdx = clamp(o.fig ?? sv.fig ?? 0, FIGURAS.length); let modo = (o.modo ?? sv.modo) === 'mic' ? 'mic' : 'tela';
-    setGame('rudimentos', { tempo: tempoIdx, fig: figIdx, modo });
-    const bpm = TEMPOS[tempoIdx][1]; const por = FIGURAS[figIdx][1]; const sq = f.seq; const p = passo(bpm, por); const chaveF = chaveFalhas(f.n, figIdx, tempoIdx); const { win, late, nivel: ajuda } = folgas(bpm, por, (sv.falhas || {})[chaveF] || 0);
+    const tempoIdx = clamp(o.tempo ?? sv.tempo ?? 0, TEMPOS.length); const figIdx = clamp(o.fig ?? sv.fig ?? 0, FIGURAS.length); let modo = (o.modo ?? sv.modo) === 'mic' ? 'mic' : 'tela'; const graveEm = (o.grave ?? sv.grave) === 'E' ? 'E' : 'D';
+    setGame('rudimentos', { tempo: tempoIdx, fig: figIdx, modo, grave: graveEm });
+    const bpm = TEMPOS[tempoIdx][1]; const por = FIGURAS[figIdx][1]; const sq = f.seq; const p = passo(bpm, por); const chaveF = chaveFalhas(f.n, figIdx, tempoIdx); const fol = folgas(bpm, por, (sv.falhas || {})[chaveF] || 0); const { nivel: ajuda } = fol; const micModo = modo === 'mic'; const win = micModo ? Math.min(0.26, fol.win * 1.35) : fol.win; const late = micModo ? Math.min(0.32, fol.late * 1.35) : fol.late; // microfone: folga maior (o som demora e varia mais que o toque na tela)
+    let ultLados = null;
     let chart = []; let raf = 0; let t0 = 0; let state = 'idle'; let pop = null; let ultimo = -1; let cap = null;
     const melhores = melhoresDe(est(), f.n)[figIdx ? 's' : 'c']; const mic = modo === 'mic';
     const topo = h('div', { class: 'rd-topo' }, h('button', { type: 'button', class: 'btn small ghost rd-volta', onclick: () => { state = 'idle'; lista(); } }, '‹ fases'), h('b', { class: 'rd-titulo' }, `${f.n} · ${f.nome}`), h('span', { class: 'rd-est' }, estrelasTxt(estrelas(est(), f.n))));
@@ -60,7 +62,9 @@ export function mount(host) {
       ...TEMPOS.map(([nome, b], i) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(i === tempoIdx), class: `rd-vin${i === tempoIdx ? ' on' : ''}`, title: `${nome}, ${b} BPM`, 'aria-label': `${nome}, ${b} BPM${melhores[i] >= MIN_ACERTO ? `, ${estrelasCel(melhores[i])} de 3 estrelas` : ''}`, onclick: () => { if (i !== tempoIdx) jogo(f, { tempo: i }); } }, vinil(nome, 'vinil sm'), h('small', {}, `${b}${melhores[i] >= MIN_ACERTO ? ' ' + '★'.repeat(estrelasCel(melhores[i])) : ''}`))));
     const modos = h('div', { class: 'rd-linha', role: 'radiogroup', 'aria-label': 'como jogar' }, h('span', { class: 'rd-lab' }, 'como jogar'), chip('jogar na tela', !mic, () => { if (mic) jogo(f, { modo: 'tela' }); }), chip('microfone', mic, () => { if (!mic) jogo(f, { modo: 'mic' }); }));
     const cv = h('canvas', { class: 'rd-cv', 'aria-label': 'Notas descendo: esquerda é a mão esquerda (E), direita é a mão direita (D)' });
-    const micAviso = h('div', { class: 'rd-micaviso' }, h('b', {}, 'microfone ligado'), h('small', {}, 'toque o padrão no seu pad ou na sua bateria (ou bata palma). o app escuta depois da contagem e confere o tempo; ele não separa mão esquerda de direita.'));
+    const trocaBtn = (lado, rot) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(graveEm === lado), class: `rd-chip${graveEm === lado ? ' on' : ''}`, onclick: () => { if (graveEm !== lado) jogo(f, { grave: lado }); } }, rot);
+    const micAviso = h('div', { class: 'rd-micaviso' }, h('b', {}, 'microfone ligado'), h('small', {}, 'toque o padrão no seu pad ou na sua bateria. o app escuta depois da contagem, o metrônomo continua e as notas acendem quando eu ouço você. som GRAVE conta como uma mão e som AGUDO como a outra (se os dois sons forem iguais, eu aceito qualquer mão).'),
+      h('div', { class: 'rd-linha', role: 'radiogroup', 'aria-label': 'qual mão é o grave' }, h('span', { class: 'rd-lab' }, 'grave (bumbo)'), trocaBtn('D', 'direita (D)'), trocaBtn('E', 'esquerda (E)')));
     const pads = [LADO_E, LADO_D].map((s) => h('button', { type: 'button', class: `rd-pad ${s}`, 'data-side': s, 'data-inst': s === LADO_E ? 'caixa' : 'bumbo', 'aria-label': `mão ${s === LADO_E ? 'esquerda, caixa' : 'direita, bumbo'} (${s})` }, drumSvg(s === LADO_E ? 'caixa' : 'bumbo', 'rd-drum'), h('b', { class: 'rd-letra' }, s), h('small', {}, s === LADO_E ? '◀ caixa' : 'bumbo ▶')));
     const info = h('p', { class: 'rd-info', 'aria-live': 'polite' }, ajuda ? 'folguinha a mais ligada: pode tocar um pouquinho atrasado' : 'esquerda = E (caixa) · direita = D (bumbo)');
     const prog = h('div', { class: 'rd-prog', 'aria-hidden': 'true' }, h('i', {}));
@@ -99,7 +103,7 @@ export function mount(host) {
           if (n.res && n.res !== 'faltou' && n.res !== 'lado') continue; const dt = n.t + t0 - now; if (dt > LOOK || dt < -0.4) continue;
           const y = hitY - (dt / LOOK) * hitY; const x = cx[n.side];
           const tr = g.createLinearGradient(0, y - rad * 3.2, 0, y); tr.addColorStop(0, `rgba(${RGB[n.side]},0)`); tr.addColorStop(1, `rgba(${RGB[n.side]},.28)`); g.fillStyle = tr; g.fillRect(x - rad * 0.4, y - rad * 3.2, rad * 0.8, rad * 3.2);
-          orb(g, x, y, rad, n.side, n.res ? 0.3 : 1, n.side);
+          orb(g, x, y, rad, n.side, n.res || n.vi ? 0.3 : 1, n.side);
         }
         if (pop && now - pop.at < 0.6) { g.save(); g.shadowColor = pop.cor || '#fff'; g.shadowBlur = 16; g.fillStyle = '#fff'; g.font = `800 ${W * 0.06}px system-ui,sans-serif`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText(pop.txt, W / 2, hitY - W * 0.17 - (now - pop.at) * 40); g.restore(); }
         const k = Math.floor((now - t0 + 0.0001) / p); const pos = k >= 0 ? k % sq.length : -1;
@@ -119,7 +123,7 @@ export function mount(host) {
       if (passou && FASES.every((x) => estrelas(novo, x.n) > 0)) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Rudimentix', caminho: 'todas as fases', chave: 'rudimentix', pose: 'pad-metronomo' })).catch(() => {}), 800); // todas as fases com estrela: festa + postar (só na 1ª vez)
       if (depoisCel > antesCel) import('../figurinhas/mesa.js').then((M) => M.vitoria('rudimentos', depoisCel - antesCel, `rud:${f.n}:${figIdx}:${tempoIdx}`)).catch(() => { /* sem estrelas da mesa */ }); // cada célula (fase × figura × andamento) paga até 3 ★ na vida
       res.hidden = false; try { res.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch { /* sem rolagem */ }
-      res.replaceChildren(h('b', {}, `${pct}%`), h('p', {}, `${s.hits} de ${s.total} toques certos`), h('small', {}, `perfeito ${s.perfeito} · bom ${s.bom} · mão trocada ${s.lado} · faltou ${s.faltou}`),
+      res.replaceChildren(h('b', {}, `${pct}%`), h('p', {}, `${s.hits} de ${s.total} toques certos`), h('small', {}, `perfeito ${s.perfeito} · bom ${s.bom} · mão trocada ${s.lado} · faltou ${s.faltou}`), mic ? h('small', {}, ultLados ? `separei grave (${graveEm}) e agudo (${graveEm === 'D' ? 'E' : 'D'})` : 'os dois sons ficaram parecidos: contei qualquer mão') : null,
         h('p', { class: 'rd-ok' }, passou ? (depoisCel > antesCel ? `ganhou ${depoisCel - antesCel} ★ (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)} neste andamento)` : `passou! (${'★'.repeat(depoisCel)}${'☆'.repeat(3 - depoisCel)}) — 85% = 2 ★ · 100% = 3 ★`) : `precisa de ${MIN_ACERTO}% de toques certos pra ganhar estrela`));
       info.textContent = passou ? 'muito bom!' : pct >= 50 ? 'quase lá! na próxima eu dou uma folguinha a mais' : 'bora de novo: olha o padrão escrito. na próxima eu dou uma folguinha a mais';
       go.textContent = '↻ jogar de novo'; go.disabled = false; topo.querySelector('.rd-est').textContent = estrelasTxt(depois);
@@ -132,8 +136,10 @@ export function mount(host) {
       const c = audio(); chart = buildChart(sq, bpm, por); res.hidden = true; extra.replaceChildren(); pop = null; ultimo = -1; const q = 60 / bpm; const total = chart[chart.length - 1].t + p;
       if (mic) {
         state = 'play'; go.disabled = true; info.textContent = 'abrindo o microfone…';
-        cap = capture({ mode: 'mic', pad: null, bpm, beats: Math.ceil(total / q) + 1, clickBeats: false, onCount: (n) => { info.textContent = n < 4 ? `conta: ${n + 1}…` : 'agora!'; } }); t0 = cap.t0;
-        const mine = cap; cap.done.then((r) => { if (mine !== cap || state !== 'play') return; judgeOnsets(chart, r.onsets, win, late); finish(); }, (e) => { if (mine !== cap) return; state = 'idle'; go.disabled = false; toast(`${micToast(e)} vou usar a tela`); jogo(f, { modo: 'tela' }); });
+        cap = capture({ mode: 'mic', pad: null, bpm, beats: Math.ceil(total / q) + 1, clickBeats: true, onCount: (n) => { info.textContent = n < 4 ? `conta: ${n + 1}…` : 'agora!'; }, onHit: (rel) => { // acende a nota mais próxima na hora (só visual; a nota final sai no fim)
+          let best = -1; let bd = Infinity; chart.forEach((n, i) => { if (n.vi) return; const d = rel - n.t; if (d < -win || d > late) return; if (Math.abs(d) < bd) { bd = Math.abs(d); best = i; } });
+          const now = audio(false).currentTime; if (best >= 0) { chart[best].vi = true; faisca(chart[best].side, now, 8); pop = { at: now, txt: 'ouvi!', cor: COR[chart[best].side] }; } } }); t0 = cap.t0;
+        const mine = cap; cap.done.then((r) => { if (mine !== cap || state !== 'play') return; ultLados = r.eventos && r.eventos.length === r.onsets.length ? ladosDosToques(r.eventos, { graveEm }) : null; judgeOnsets(chart, r.onsets, win, late, { lados: ultLados, perfeito: PERFEITO_MIC }); finish(); }, (e) => { if (mine !== cap) return; state = 'idle'; go.disabled = false; toast(`${micToast(e)} vou usar a tela`); jogo(f, { modo: 'tela' }); });
         return;
       }
       state = 'play'; t0 = c.currentTime + 0.2 + 4 * q; for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1, 0.5);

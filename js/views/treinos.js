@@ -138,7 +138,7 @@ export function leitura(host, opts = {}) {
     const start = () => {
       stop(); const ac = audio(); const q = 60 / c.bpm;
       if (useMic) {
-        const cap = capture({ mode: 'mic', pad: null, bpm: c.bpm, beats: beats.length, clickBeats: false, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
+        const cap = capture({ mode: 'mic', pad: null, bpm: c.bpm, beats: beats.length, clickBeats: true, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
         pad.classList.add('live'); status.textContent = 'abrindo o microfone…';
         run = { pad, off: () => cap.cancel() };
         const g = S.gen;
