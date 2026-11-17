@@ -17,7 +17,7 @@ const botao = (txt, item, cls) => (item.link
 function detalhe(p) {
   const dlg = h('dialog', { class: 'lj-dlg', 'aria-label': p.nome },
     h('div', { class: 'lj-dtop' }, h('b', {}, p.nome), h('button', { type: 'button', class: 'lj-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
-    h('div', { class: 'lj-fotos' }, ...p.fotos.map((f, i) => h('img', { src: f, alt: `${p.nome}, imagem ${i + 1}`, loading: 'lazy' }))),
+    h('div', { class: 'lj-fotos', oncontextmenu: (e) => e.preventDefault() }, ...p.fotos.slice(0, 3).map((f, i) => h('img', { src: f, alt: `${p.nome}, imagem ${i + 1}`, loading: 'lazy', draggable: 'false' })), h('p', { class: 'lj-previa' }, 'prévia: só algumas páginas, o material completo é bem maior')),
     h('div', { class: 'lj-dbot' }, botao('Adquirir', p)));
   dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');

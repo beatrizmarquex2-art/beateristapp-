@@ -653,3 +653,6 @@
 .fig-li-txt { display: grid; gap: 2px; } .fig-li-txt b { font: 400 21px/1 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .03em; } .fig-li-txt small { font: 800 11px var(--body, system-ui); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
 .fig-li-prog { font: 800 14px var(--body, system-ui); opacity: .95; white-space: nowrap; } .fig-li > i { font-style: normal; font-size: 22px; font-weight: 800; opacity: .8; }
 .fig-lista-volta { margin: 0 0 8px; padding: 8px 14px; border-radius: 999px; border: 2px solid currentColor; background: transparent; color: inherit; font: 800 14px var(--body, system-ui); cursor: pointer; }
+
+/* prévia da Lojinha: só 3 imagens com marca d'água; sem arrastar, selecionar nem segurar pra salvar */
+.lj-fotos img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}.lj-previa{margin:2px 0 6px;text-align:center;font-size:13px;font-weight:700;opacity:.75}
