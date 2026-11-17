@@ -20,7 +20,7 @@ const XK = 'asdfghjklç';
 export function mount(host) {
   let scale = 'maior'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
   const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
-  const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão sem nota', hidden: true },
+  const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão', hidden: true },
     ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
   const NOTAS = ['♪', '♫', '♩', '✦'];
   pads.addEventListener('pointerdown', (e) => {
@@ -44,7 +44,7 @@ export function mount(host) {
       e.style.setProperty('--bc', corNota(m)); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
     }));
   };
-  const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'percussão (sem nota)']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}${v === 'pads' && !pago() ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { if (v === 'pads' && !pago()) { pedir('a percussão'); return; } mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
+  const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'Percussão']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}${v === 'pads' && !pago() ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { if (v === 'pads' && !pago()) { pedir('a percussão'); return; } mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
   const drawRows = () => {
     scaleRow.replaceChildren(h('small', {}, 'escala'), ...ESCALAS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.escalas.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { if (!pago() && !GRATIS.xilofone.escalas.includes(v)) { pedir('as outras escalas'); return; } scale = v; drawXy(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.escalas.includes(v) ? cadeado() : null)));
     soundRow.replaceChildren(h('small', {}, 'som'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { pedir('os outros sons'); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
