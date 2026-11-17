@@ -66,7 +66,8 @@ const put = (el, ...kids) => el.replaceChildren(...kids.filter(Boolean)); // rep
 function ritmo(box) { return mountRitmo(box); }
 
 const RUN = { explorar, ritmo, memoria: mountMemoria };
-const ADV = { memoria: 'memoria', ritmo: 'monte' }; // jogos livres do Kids que têm Modo Aventura (id da campanha)
+// Modo Aventura SÓ nos jogos de APRENDER (regra da Bea, 17/nov/2026): Toca Aqui, Detetive Note, Figurix e pauLta. O Jogo da memória e o Monte seu ritmo do Kids perderam o Modo Aventura (antes: { memoria: 'memoria', ritmo: 'monte' }); abrem direto no jogo livre.
+const ADV = {};
 
 const ageLabel = (a) => (ALUNO() ? 'jogador' : (AGES.find((x) => x[0] === a) || AGES[1])[1]);
 const wait$ = (txt) => h('span', { class: 'kx-wait' }, txt);

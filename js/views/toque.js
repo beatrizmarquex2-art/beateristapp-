@@ -25,8 +25,9 @@ import { MARCAS } from '../marcas-links.js';
 const logoFora = (art, modelo) => {
   const svg = art.querySelector('svg') || art;
   // `marca` = chave em js/marcas-links.js: com endereço, o logo vira link (abre o site da marca em outra aba); sem endereço fica só desenhado. Só os logos de FORA da bateria viram link, pra um toque na bateria nunca abrir site sem querer.
+  // (endereço do app, que começa com #/, abre na mesma aba; site de fora abre em outra)
   const img = (src, x, y, w, h, cls = '', marca = '') => { const NS = 'http://www.w3.org/2000/svg'; const url = marca ? MARCAS[marca] : ''; const im = document.createElementNS(NS, 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': url ? 'all' : 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v));
-    if (!url) { svg.append(im); return; } const a = document.createElementNS(NS, 'a'); a.setAttribute('href', url); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); a.setAttribute('aria-label', `abrir o site: ${marca}`); a.style.cursor = 'pointer'; a.append(im); svg.append(a); };
+    if (!url) { svg.append(im); return; } const a = document.createElementNS(NS, 'a'); a.setAttribute('href', url); if (!url.startsWith('#')) { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); } a.setAttribute('aria-label', `abrir o site: ${marca}`); a.style.cursor = 'pointer'; a.append(im); svg.append(a); };
   img('assets/marcas/beaterista.png', 4, 2, 44, 44, '', 'beaterista');
   if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro', 'nagano');
   if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro', 'nagano');

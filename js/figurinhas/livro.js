@@ -34,7 +34,7 @@ export function deco(seed) {
 const COVER = {
   Bandas: { titulo: 'Bandas', sub: 'os grupos que fizeram história', cls: 'cv-geral' },
   Beatlemania: { titulo: 'Beatlemania', sub: 'os quatro de Liverpool', cls: 'cv-beatles' },
-  Beaterista: { titulo: 'Exclusivas', sub: 'a Bea e o Paul, só aqui', cls: 'cv-bea' },
+  Beaterista: { titulo: 'Beaterista & Paul', sub: 'da escola pro seu álbum', cls: 'cv-bea' },
   Artistas: { titulo: 'Artistas', sub: 'cantores e músicos: as raras moram aqui', cls: 'cv-esp' },
 };
 
@@ -68,6 +68,7 @@ const titulo = (t, x, y, w, size, fill, st = '') => `<text x="${x}" y="${y}" fon
 const FOTOS = 'assets/figurinhas/fotos/';
 const VINIL = {
   Bandas: { id: 'ba', nome: 'BANDAS', sub: 'os grupos que fizeram história', cor: RED, tcor: CR, fotos: ['F047'], nomes: ['Queen', 'Nirvana', 'Led Zeppelin', 'Linkin Park'], base: FOTOS },
+  Beaterista: { id: 'be', nome: ['BEATERISTA', '& PAUL'], sub: 'exclusivas · da escola pro seu álbum', cor: RED, tcor: CR, fotos: [], foto: 'assets/figurinhas/capa-beaterista-paul.webp', nomes: ['A Bea e o Paul', 'Paul, o robôterista', 'Momentos da escola'], base: FOTOS },
   Artistas: { id: 'ar', nome: 'ARTISTAS', sub: 'cantores e músicos', cor: YEL, tcor: NAVY, fotos: ['F032'], nomes: ['Rita Lee', 'Michael Jackson', 'Pitty', 'Slash'], base: FOTOS },
 };
 /** Capa "disco de vinil" de Bandas e Artistas (escolha da Bea, nov/2026): o LP sai da capa quadrada com a foto, com a lista das primeiras faixas. */
@@ -81,13 +82,35 @@ function vinilArt(got, total, P) {
   <g filter="url(#${id}s)"><circle cx="${cx}" cy="${cy}" r="146" fill="#0c0c11"/></g>${sulcos}<circle cx="${cx}" cy="${cy}" r="146" fill="url(#${id}b)"/><circle cx="${cx}" cy="${cy}" r="146" fill="none" stroke="#000" stroke-width="3"/>
   <circle cx="${cx}" cy="${cy}" r="50" fill="${P.cor}" stroke="#000" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="48" fill="none" stroke="${P.tcor}" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="2 5"/>
   <text x="${cx}" y="${cy - 8}" font-family="'Anton',sans-serif" font-size="32" fill="${P.tcor}" text-anchor="middle">${got}</text><text x="${cx}" y="${cy + 10}" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="10" fill="${P.tcor}" text-anchor="middle" letter-spacing="1">DE ${total}</text><circle cx="${cx}" cy="${cy + 26}" r="4" fill="#0c0c11"/>
-  <g transform="rotate(-4 126 226)" filter="url(#${id}s)"><rect x="16" y="116" width="220" height="220" fill="${CR}"/><g clip-path="url(#${id}p)"><image href="${P.base}${P.fotos[0]}.jpeg" x="24" y="124" width="204" height="204" preserveAspectRatio="xMidYMid slice"/></g><rect x="24" y="124" width="204" height="204" fill="none" stroke="${K}" stroke-opacity=".5" stroke-width="1.5"/>${star(226, 126, 14, YEL, 2.4, 14)}</g>
-  ${titulo(P.nome, 184, 462, 316, 116, YEL, `stroke="${K}" stroke-width="4" paint-order="stroke" stroke-linejoin="round"`)}
+  <g transform="rotate(-4 126 226)" filter="url(#${id}s)"><rect x="16" y="116" width="220" height="220" fill="${CR}"/><g clip-path="url(#${id}p)"><image href="${P.foto || `${P.base}${P.fotos[0]}.jpeg`}" x="24" y="124" width="204" height="204" preserveAspectRatio="xMidYMid slice"/></g><rect x="24" y="124" width="204" height="204" fill="none" stroke="${K}" stroke-opacity=".5" stroke-width="1.5"/>${star(226, 126, 14, YEL, 2.4, 14)}</g>
+  ${Array.isArray(P.nome) ? P.nome.map((t, i) => titulo(t, 184, 424 + i * 62, 316, 64, YEL, `stroke="${K}" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round"`)).join('') : titulo(P.nome, 184, 462, 316, 116, YEL, `stroke="${K}" stroke-width="4" paint-order="stroke" stroke-linejoin="round"`)}
   <line x1="30" y1="476" x2="330" y2="476" stroke="${CR}" stroke-opacity=".5" stroke-width="2"/><text x="180" y="498" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="12" letter-spacing="3.2" text-anchor="middle" fill="${CR}" textLength="300" lengthAdjust="spacing">${esc(P.sub.toUpperCase())}</text>${lista}</svg>`;
 }
 
 /** Página "a história" da Beatlemania: por que os Beatles abrem o álbum e de onde veio o nome do Paul. */
 const INTRO = {
+  Bandas: `<header class="lv-head"><b>bandas</b><span>nível comum</span></header>
+  <div class="lv-intro">
+   <h3>música em todo lugar!</h3>
+   <p>Tem música no caminho pra escola, na festa, no fone e na aula.</p>
+   <p>As cartas <b>comuns</b> lembram a gente de dar valor às bandas e às músicas que já fazem parte da nossa vida.</p>
+   <div class="lv-intro-paul"><img src="assets/paul/colorido/paul-ouvindo.webp" alt="" width="120" height="120" loading="lazy"><p><b>colecione todas!</b> Cada banda tem a sua história pra você descobrir.</p></div>
+  </div>`,
+  Artistas: `<header class="lv-head"><b>artistas</b><span>nível raro</span></header>
+  <div class="lv-intro">
+   <h3>olhe a banda toda!</h3>
+   <p>Quem está na frente chama a atenção primeiro.</p>
+   <p>Ouça também quem <b>segura o ritmo</b>, cria a <b>linha de baixo</b>, faz a <b>harmonia</b> e canta junto.</p>
+   <p>Cada pessoa ajuda a construir o som da banda. As cartas <b>raras</b> mostram quem faz isso.</p>
+   <div class="lv-intro-paul"><img src="assets/paul/colorido/paul-baquetas-pra-cima.webp" alt="" width="120" height="120" loading="lazy"><p><b>ouvido de músico:</b> da próxima vez, tente escutar só o baixo.</p></div>
+  </div>`,
+  Beaterista: `<header class="lv-head"><b>beaterista & paul</b><span>nível exclusivo</span></header>
+  <div class="lv-intro">
+   <h3>da escola pro seu álbum!</h3>
+   <p>Estas figurinhas guardam <b>momentos da Beaterista</b> e <b>aventuras do Robôterista Paul</b>.</p>
+   <p>São <b>exclusivas</b>: só quem joga e descobre os segredos do Paul consegue juntar todas.</p>
+   <div class="lv-intro-paul"><img src="assets/paul/colorido/paul-selfie.webp" alt="" width="120" height="120" loading="lazy"><p><b>psiu!</b> O Paul esconde surpresas por todo o app.</p></div>
+  </div>`,
   Beatlemania: `<header class="lv-head"><b>beatlemania</b><span>a história</span></header>
   <div class="lv-intro">
    <h3>por que eles abrem o álbum?</h3>

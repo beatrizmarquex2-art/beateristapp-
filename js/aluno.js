@@ -55,6 +55,7 @@ import * as piano from './views/piano.js';
 import * as violao from './views/violao.js';
 import * as xilofone from './views/xilofone.js';
 import * as roleta from './views/roleta.js';
+import * as parceria from './views/parceria.js';
 import * as metronome from './views/metronome.js';
 import * as ouvido from './views/ouvido.js';
 import * as focus from './views/focus.js';
@@ -79,7 +80,7 @@ import { arteDoPaul } from './paul-dicas.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
-const TAB_OF = { perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
+const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
@@ -444,6 +445,7 @@ function shell(name) {
     else if (r.name === 'violao') c = violao.mount(view);
     else if (r.name === 'xilofone') c = xilofone.mount(view);
     else if (r.name === 'roleta') c = roleta.mount(view);
+    else if (r.name === 'nagano') c = parceria.mount(view);
     else if (r.name === 'metronomo') c = metronome.mount(view);
     else if (r.name === 'ouvido') c = ouvido.mount(view);
     else if (r.name === 'foco') c = focus.mount(view);
