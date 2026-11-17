@@ -39,27 +39,28 @@ const COVER = {
 };
 
 
-/** Capa da Beatlemania (pedido da Bea: sem o arco-íris psicodélico): azul-marinho, pontilhado de gibi, o bumbo da banda com o placar e os quatro nomes. */
+const K = '#14111a', CR = '#fbf6ea', RED = '#c4182c', NAVY = '#17224a', YEL = '#e9b824';
+const star = (x, y, r, f, sw = 2.2) => `<path transform="translate(${x} ${y})" fill="${f}" stroke="${K}" stroke-width="${sw}" stroke-linejoin="round" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`;
+const placar = (cx, cy, got, total, r = 46, fundo = NAVY) => `<g transform="translate(${cx} ${cy})"><circle r="${r}" fill="${fundo}" stroke="${K}" stroke-width="3"/><text y="${r * -0.04}" font-family="'Anton',sans-serif" font-size="${r * 0.83}" fill="${CR}" text-anchor="middle">${got}</text><text y="${r * 0.42}" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="${r * 0.27}" fill="${CR}" text-anchor="middle" letter-spacing="1">de ${total}</text></g>`;
+const dots = (cor, op) => Array.from({ length: 13 }, (_, r) => Array.from({ length: 9 }, (_, c) => `<circle cx="${c * 44 + (r % 2 ? 22 : 0)}" cy="${r * 50 + 10}" r="${1.6 + (r / 13) * 4.2}" fill="${cor}" opacity="${op}"/>`).join('')).join('');
+/** Beatlemania com o submarino amarelo: o bumbo sobe, o submarino atravessa o mar embaixo. */
 function beatlesArt(got, total) {
-  const dots = Array.from({ length: 13 }, (_, r) => Array.from({ length: 9 }, (_, c) => `<circle cx="${c * 44 + (r % 2 ? 22 : 0)}" cy="${r * 50 + 10}" r="${1.6 + (r / 13) * 4.2}" fill="#fbf6ea" opacity=".07"/>`).join('')).join('');
-  const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="330" x2="180" y2="198" stroke="${i % 2 ? '#c4182c' : '#fbf6ea'}" stroke-width="9.5" stroke-linecap="butt" transform="rotate(${i * 10} 180 330)"/>`).join('');
-  const star = (x, y, r, f) => `<path transform="translate(${x} ${y})" fill="${f}" stroke="#14111a" stroke-width="2.2" stroke-linejoin="round" d="M0 ${-r}L${r * 0.3} ${-r * 0.3}L${r} 0L${r * 0.3} ${r * 0.3}L0 ${r}L${-r * 0.3} ${r * 0.3}L${-r} 0L${-r * 0.3} ${-r * 0.3}Z"/>`;
-  const nomes = ['JOHN', 'PAUL', 'GEORGE', 'RINGO'].map((n, i) => `<g transform="translate(${54 + i * 84} 548)">${star(0, -22, 9, i === 1 ? '#e9b824' : '#fbf6ea')}<text font-family="'Anton',sans-serif" font-size="17" letter-spacing="1.5" fill="${i === 1 ? '#e9b824' : '#fbf6ea'}" text-anchor="middle">${n}</text></g>`).join('');
-  return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <rect width="360" height="610" fill="#17224a"/>${dots}
-  <path d="M-10 128 L370 96 L370 150 L-10 182 Z" fill="#c4182c"/><path d="M-10 190 L370 158" stroke="#e9b824" stroke-width="4" fill="none"/>
-  <text x="180" y="78" font-family="'Anton',sans-serif" font-size="54" text-anchor="middle" fill="#fbf6ea" stroke="#14111a" stroke-width="6" paint-order="stroke" stroke-linejoin="round" textLength="320" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
-  <text x="180" y="143" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="5" text-anchor="middle" fill="#fbf6ea" transform="rotate(-4.8 180 140)">OS QUATRO DE LIVERPOOL</text>
-  <circle cx="180" cy="330" r="146" fill="#0b1026" opacity=".55" transform="translate(6 9)"/>
-  <circle cx="180" cy="330" r="140" fill="#fbf6ea" stroke="#14111a" stroke-width="4"/>${rim}
-  <circle cx="180" cy="330" r="118" fill="#e9b824" stroke="#14111a" stroke-width="4"/><circle cx="180" cy="330" r="105" fill="#fbf6ea" stroke="#14111a" stroke-width="3"/>
-  <circle cx="180" cy="330" r="70" fill="none" stroke="#c4182c" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round"/>
-  <path id="bt-top" d="M 94 330 A 86 86 0 0 1 266 330" fill="none"/><path id="bt-bot" d="M 80 330 A 100 100 0 0 0 280 330" fill="none"/>
-  <text font-family="'Anton',sans-serif" font-size="21" letter-spacing="3" fill="#14111a" text-anchor="middle"><textPath href="#bt-top" startOffset="50%">THE BEATLES</textPath></text>
-  <text font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="4" fill="#c4182c" text-anchor="middle"><textPath href="#bt-bot" startOffset="50%">★ BEATERISTA ★</textPath></text>
-  <g transform="translate(180 328)"><circle r="46" fill="#17224a" stroke="#14111a" stroke-width="3"/><text y="-2" font-family="'Anton',sans-serif" font-size="38" fill="#fbf6ea" text-anchor="middle">${got}</text><text y="19" font-family="'Hanken Grotesk',sans-serif" font-weight="700" font-size="12" fill="#fbf6ea" text-anchor="middle" letter-spacing="1">de ${total}</text></g>
-  ${star(40, 236, 13, '#e9b824')}${star(322, 250, 10, '#fbf6ea')}${star(330, 440, 12, '#e9b824')}${star(30, 452, 9, '#fbf6ea')}
-  <path d="M30 500 H330" stroke="#fbf6ea" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>${nomes}</svg>`;
+  const cy = 300, R = 112, k = R / 140;
+  const rim = Array.from({ length: 36 }, (_, i) => `<line x1="180" y1="${cy}" x2="180" y2="${cy - R + 8 * k}" stroke="${i % 2 ? RED : CR}" stroke-width="${9.5 * k}" transform="rotate(${i * 10} 180 ${cy})"/>`).join('');
+  const onda = (y, c, op) => `<path d="M-10 ${y} q 22 -14 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 t 45 0 V 620 H -10 Z" fill="${c}" opacity="${op}"/>`;
+  const nomes = ['JOHN', 'PAUL', 'GEORGE', 'RINGO'].map((n, i) => `<text x="${54 + i * 84}" y="588" font-family="'Anton',sans-serif" font-size="17" letter-spacing="1.5" fill="${i === 1 ? '#ffd21f' : CR}" text-anchor="middle">${n}</text>`).join('');
+  return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="360" height="610" fill="${NAVY}"/>${dots(CR, 0.07)}
+  <path d="M-10 128 L370 96 L370 150 L-10 182 Z" fill="${RED}"/><path d="M-10 190 L370 158" stroke="${YEL}" stroke-width="4" fill="none"/>
+  <text x="180" y="78" font-family="'Anton',sans-serif" font-size="54" text-anchor="middle" fill="${CR}" stroke="${K}" stroke-width="6" paint-order="stroke" stroke-linejoin="round" textLength="320" lengthAdjust="spacingAndGlyphs">BEATLEMANIA</text>
+  <text x="180" y="143" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="13" letter-spacing="5" text-anchor="middle" fill="${CR}" transform="rotate(-4.8 180 140)">OS QUATRO DE LIVERPOOL</text>
+  <circle cx="180" cy="${cy}" r="${R + 5}" fill="#0b1026" opacity=".55" transform="translate(5 8)"/><circle cx="180" cy="${cy}" r="${R}" fill="${CR}" stroke="${K}" stroke-width="4"/>${rim}
+  <circle cx="180" cy="${cy}" r="${118 * k}" fill="${YEL}" stroke="${K}" stroke-width="4"/><circle cx="180" cy="${cy}" r="${105 * k}" fill="${CR}" stroke="${K}" stroke-width="3"/>
+  <path id="bt-top" d="M ${180 - 70 * k * 1.22} ${cy} A ${86 * k} ${86 * k} 0 0 1 ${180 + 70 * k * 1.22} ${cy}" fill="none"/><path id="bt-bot" d="M ${180 - 100 * k} ${cy} A ${100 * k} ${100 * k} 0 0 0 ${180 + 100 * k} ${cy}" fill="none"/>
+  <text font-family="'Anton',sans-serif" font-size="17" letter-spacing="2.5" fill="${K}" text-anchor="middle"><textPath href="#bt-top" startOffset="50%">THE BEATLES</textPath></text>
+  <text font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="10.5" letter-spacing="3" fill="${RED}" text-anchor="middle"><textPath href="#bt-bot" startOffset="50%">★ BEATERISTA ★</textPath></text>
+  ${placar(180, cy - 2, got, total, 38)}
+  ${star(38, 232, 12, YEL)}${star(326, 246, 9, CR)}${star(322, 392, 10, YEL)}
+  ${onda(470, '#2f5fb3', 0.55)}${O.submarino(196, 478, 0.72, -5)}${onda(512, '#3f7fd6', 0.75)}${onda(540, '#0f1a3d', 0.9)}${nomes}</svg>`;
 }
 
 /** Página "a história" da Beatlemania: por que os Beatles abrem o álbum e de onde veio o nome do Paul. */

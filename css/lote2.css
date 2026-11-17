@@ -165,3 +165,18 @@
 /* aula ao vivo (Toca Aqui) */
 .au-toca { display: grid; gap: 12px; } .au-esc { display: grid; gap: 8px; } .au-cels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 8px; } .au-cel-l { display: grid; gap: 2px; min-width: 0; } .au-cel-l small { font: 700 10px var(--body); opacity: .7; } .au-cel { min-width: 0; }
 .au-dica { margin: 4px 0 0; font-size: 12px; } .au-sala { display: grid; gap: 8px; } .au-cab { display: grid; gap: 2px; }
+
+/* ---- temas de fotos da memória (Beatles, Bandas, Artistas): cartão "polaroid" no papel do álbum (escolha da Bea, nov/2026) ---- */
+.mem-vt.cat.pol { display: block; padding: 0; container-type: inline-size; color: #17130f; background: #f3e9d2; --c: #17224a; --tc: #ffd21f;
+  background-image: repeating-linear-gradient(0deg, transparent 0 9px, #7f95b833 9px 10px), repeating-linear-gradient(90deg, transparent 0 9px, #7f95b833 9px 10px); }
+.mem-vt.pol.cat-bandas { --c: #c4182c; --tc: #fbf6ea; } .mem-vt.pol.cat-solo { --c: #e9b824; --tc: #17224a; }
+.mem-vt.pol .mc-faixa { position: absolute; left: -4%; right: -4%; top: 5%; height: 19%; display: grid; place-items: center; background: var(--c); border-block: 3px solid #1b1818; transform: rotate(-3deg); z-index: 3; }
+.mem-vt.pol .mc-t, .mem-themes.hero .mem-vt.pol .mc-t { font: 400 22px/1 'Anton', var(--display, sans-serif); font-size: 17cqw; color: var(--tc); text-transform: uppercase; text-shadow: none; letter-spacing: .02em; white-space: nowrap; }
+.mem-vt.pol.cat-beatles .mc-t, .mem-themes.hero .mem-vt.pol.cat-beatles .mc-t { font-size: 13.5cqw; }
+.mem-vt.pol .mc-p { position: absolute; width: 55%; padding: 3% 3% 10%; background: #fff; border: 1px solid #0002; box-shadow: 0 3px 8px #0006; z-index: 1; }
+.mem-vt.pol .mc-p::before { content: ""; position: absolute; left: 30%; top: -6%; width: 40%; height: 10%; background: var(--c); opacity: .85; transform: rotate(-4deg); }
+.mem-vt.pol .p0 { left: 4%; top: 28%; transform: rotate(-7deg); } .mem-vt.pol .p1 { left: 42%; top: 38%; transform: rotate(6deg); z-index: 2; } .mem-vt.pol .p1::before { background: #e9b824; transform: rotate(5deg); }
+.mem-vt.pol .mc-p img { position: static; width: 100%; height: auto; aspect-ratio: 1 / 1.02; object-fit: cover; border: 0; border-radius: 0; box-shadow: none; display: block; }
+.mem-vt.pol .mc-enf { position: absolute; left: 3%; bottom: 3%; width: 14%; z-index: 3; } .mem-vt.pol.cat-beatles .mc-enf { width: 36%; left: 2%; bottom: 2%; } .mem-vt.pol .mc-enf svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mem-vt.pol .mc-ache { position: absolute; right: 4%; bottom: 8%; font: 400 12px/1 'Permanent Marker', cursive; font-size: 9.5cqw; color: #c4182c; transform: rotate(-4deg); z-index: 3; white-space: nowrap; }
+.mem-vt.pol .mc-b, .mem-themes.hero .mem-vt.pol .mc-b { position: absolute; right: 5%; bottom: 3%; font: 700 7px var(--body); font-size: 3.6cqw; letter-spacing: .12em; text-transform: uppercase; opacity: .8; z-index: 3; }
