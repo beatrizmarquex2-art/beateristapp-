@@ -9,7 +9,7 @@ await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos'); await sleep(2200);
 const txt = await page.evaluate(() => document.body.innerText);
-for (const n of ['Radar Musical', 'Cruzadinha', 'Quiz do Paul', 'Rudimentix']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
+for (const n of ['Caça Musical', 'Cruzadinha', 'Quiz do Paul', 'Rudimentix']) check(`a lista de jogos tem "${n}"`, txt.includes(n));
 check('não tem card de duelo nem "Rudimentos" na lista', !/Duelo/.test(txt) && !/Rudimentos/.test(txt));
 check('a lista não tem mais o card "Letras" nem o "quiz Uno Musical"', !/^Letras$/m.test(txt) && !/quiz Uno Musical/i.test(txt));
 check('Uno Musical continua na lista', /Uno Musical/.test(txt));
@@ -22,11 +22,11 @@ check('os filtros são só Todos e Favoritos (o "novos" e o "mais estrelas" agor
 await sleep(1800);
 const nuvem = await page.evaluate(() => { const c = document.querySelector('.pt-cloud'); return c ? { t: c.textContent, h: ((c.querySelector('.pt-ver') || c).getAttribute('href')) } : null; });
 await page.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/jogos-paul.png' : '/tmp/jogos-paul.png' });
-for (const [nome, hash] of [['Cruzadinha', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Radar Musical', '#/dicas/caca']]) {
+for (const [nome, hash] of [['Cruzadinha', '#/dicas/cruzadinha'], ['Quiz do Paul', '#/dicas/quiz'], ['Caça Musical', '#/dicas/caca']]) {
   await page.goto(url + '/aluno.html#/jogos'); await sleep(1200);
-  await page.evaluate((n) => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes(n)); if (a) a.click(); }, nome); await sleep(1200);
+  await page.evaluate((n) => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes(n)); if (a) a.click(); }, nome); await sleep(2800);
   check(`"${nome}" abre ${hash}`, (await page.evaluate(() => location.hash)).startsWith(hash), await page.evaluate(() => location.hash));
-  check(`a tela de ${nome} tem o nome no título`, (await page.evaluate(() => document.body.innerText)).includes(nome));
+  check(`a tela de ${nome} tem o nome no título (e só o jogo escolhido, sem a fileira dos 3)`, (await page.evaluate(() => (document.querySelector('.dc-atual b') || {}).textContent || '')).trim().toLowerCase() === nome.toLowerCase() && (await page.locator('.dc-pick').count()) === 0);
 }
 for (const k of ['caca', 'cruzadinha', 'quiz']) {
   await page.goto(url + `/aluno.html#/dicas/${k}`); await sleep(1500);

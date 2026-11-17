@@ -8,7 +8,7 @@ await page.goto(url + '/aluno.html#/dicas/cruzadinha'); await sleep(2500);
 check('a cruzadinha abre sem código: tem a grade e as 5 pistas', (await page.locator('.dc-cw').count()) === 1 && (await page.locator('.dc-clues input').count()) === 5);
 check('não mostra o aviso de código', (await page.locator('.am-lock').count()) === 0);
 check('mostra o banco de palavras (a criança vê como é)', (await page.locator('.dc-chip').count()) === 5);
-check('as outras abas continuam com cadeado, a cruzadinha e o Radar Musical não', await page.evaluate(() => { const t = [...document.querySelectorAll('.dc-pick b')].map((b) => b.textContent.trim()); return t.some((x) => x.startsWith('🔒') && x.includes('Quiz do Paul')) && !t.some((x) => /🔒.*(Cruzadinha|Radar)/.test(x)); }));
+check('a tela mostra só o jogo escolhido (sem a fileira de abas dos outros jogos)', (await page.locator('.dc-pick').count()) === 0 && (await page.locator('.dc-atual').count()) === 1);
 await page.locator('.dc-clues input').first().fill('xxxxxxxx'); await sleep(300);
 check('a primeira tentativa conta uma cruzadinha grátis', (await page.evaluate(() => localStorage.getItem('beaterista-cruzadinha-gratis'))) === '1');
 await page.evaluate(() => localStorage.setItem('beaterista-cruzadinha-gratis', '2')); await page.goto(url + '/aluno.html#/dicas/caca'); await sleep(800); await page.goto(url + '/aluno.html#/dicas/cruzadinha'); await sleep(1800);

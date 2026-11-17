@@ -97,6 +97,8 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - 3 desenhos de colorir do Paul no Drive (bastidores, estudando na mesa, percussão corporal em 4 poses): servem de isca "comenta COLORIR" e de extra do Bateria Kids.
 - Cuidado ao recortar: os textos são desenhados na arte. Conferir o conteúdo musical antes de publicar (os 4 estão corretos: dó à esquerda das 2 teclas pretas; baixo Mi Lá Ré Sol; riff 0-0-3-0 na corda Mi; violão Mi Lá Ré Sol Si Mi).
 
+**Nome do jogo (17/nov, v588): o "Radar Musical" NÃO existe; o nome certo é "Caça Musical" (o caça-palavras, `#/dicas/caca`).** Corrigido em `js/letras-nomes.js`, nas falas do Paul e nos testes. (Nas seções mais antigas deste arquivo o nome errado ainda aparece.)
+
 ## Giro épico em caça-níquel e ícones novos (17/nov/2026, v587)
 O **giro épico** agora é uma **máquina caça-níquel** (3 rolos que param em **7 · 7 · 7 JACKPOT**, `maquinaEpica()` em `js/views/figurinhas.js`, estilos `.sl-*`), em vez da roleta. **1º giro épico = SEMPRE 3 cartas: 1 clássica (Beatlemania) + 1 exclusiva + 1 rara.** **2º giro = aleatório, de 1 a 5, priorizando comuns e raras** (`EPICO_PESOS` em `album-logic.js`: comum 60, rara 32, Beatles 5, exclusiva 3; se vier só 1, é exclusiva). Ícones da roleta (caixa de bateria), do baú e de resgatar (medalha com raio) redesenhados com degradê e brilho. Teste: `tests/bonus.test.mjs`.
 
