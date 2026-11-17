@@ -24,9 +24,9 @@ const cadeado = () => { const s = document.createElement('span'); s.className = 
 
 export function mount(host) {
   const root = h('div', { class: 'jg jg-rud' }); host.replaceChildren(root);
-  let off = null; let gone = false; let jogando = false; const stateRef = { get: () => 'idle', stop: () => {} };
+  let off = null; let gone = false; let jogando = false; const stateRef = { get: () => 'idle', stop: () => {}, recomeca: null, voltaFase: null }; let estavaJogando = false;
   const est = () => getGame('rudimentos').est || {};
-  const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } jogando = false; stateRef.get = () => 'idle'; stateRef.stop = () => {}; };
+  const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } jogando = false; stateRef.get = () => 'idle'; stateRef.stop = () => {}; stateRef.recomeca = null; stateRef.voltaFase = null; };
 
   /* ---------- lista de fases ---------- */
   const lista = () => {
@@ -51,9 +51,10 @@ export function mount(host) {
     setGame('rudimentos', { tempo: tempoIdx, fig: figIdx, modo, grave: graveEm });
     const bpm = TEMPOS[tempoIdx][1]; const por = FIGURAS[figIdx][1]; const sq = f.seq; const p = passo(bpm, por); const chaveF = chaveFalhas(f.n, figIdx, tempoIdx); const fol = folgas(bpm, por, (sv.falhas || {})[chaveF] || 0); const { nivel: ajuda } = fol; const micModo = modo === 'mic'; const win = micModo ? Math.min(0.26, fol.win * 1.35) : fol.win; const late = micModo ? Math.min(0.32, fol.late * 1.35) : fol.late; // microfone: folga maior (o som demora e varia mais que o toque na tela)
     let ultLados = null;
-    let chart = []; let raf = 0; let t0 = 0; let state = 'idle'; let pop = null; let ultimo = -1; let cap = null;
+    let chart = []; let raf = 0; let t0 = 0; let state = 'idle'; let pop = null; let ultimo = -1; let cap = null; let oscs = [];
+    const calaClicks = () => { oscs.forEach((o) => { try { o.stop(); } catch { /* já tocou */ } }); oscs = []; }; // o metrônomo agendado também para quando a pessoa pausa, volta ou sai
     const melhores = melhoresDe(est(), f.n)[figIdx ? 's' : 'c']; const mic = modo === 'mic';
-    const topo = h('div', { class: 'rd-topo' }, h('button', { type: 'button', class: 'btn small ghost rd-volta', onclick: () => { state = 'idle'; lista(); } }, '‹ fases'), h('b', { class: 'rd-titulo' }, `${f.n} · ${f.nome}`), h('span', { class: 'rd-est' }, estrelasTxt(estrelas(est(), f.n))));
+    const topo = h('div', { class: 'rd-topo' }, h('button', { type: 'button', class: 'btn small ghost rd-volta', onclick: () => { state = 'idle'; calaClicks(); if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } lista(); } }, '‹ fases'), h('b', { class: 'rd-titulo' }, `${f.n} · ${f.nome}`), h('span', { class: 'rd-est' }, estrelasTxt(estrelas(est(), f.n))));
     const spans = [...sq].map((c) => h('i', { class: `rd-l ${c}` }, c));
     const seqEl = h('p', { class: 'rd-seq', 'aria-label': `padrão: ${[...sq].join(' ')}` }, ...grupos(spans).map((g) => h('span', { class: 'rd-g' }, ...g)));
     const chip = (txt, on, fn, extra = '') => h('button', { type: 'button', role: 'radio', 'aria-checked': String(on), class: `rd-chip${on ? ' on' : ''}${extra}`, onclick: fn }, txt);
@@ -142,8 +143,8 @@ export function mount(host) {
         const mine = cap; cap.done.then((r) => { if (mine !== cap || state !== 'play') return; ultLados = r.eventos && r.eventos.length === r.onsets.length ? ladosDosToques(r.eventos, { graveEm }) : null; judgeOnsets(chart, r.onsets, win, late, { lados: ultLados, perfeito: PERFEITO_MIC }); finish(); }, (e) => { if (mine !== cap) return; state = 'idle'; go.disabled = false; toast(`${micToast(e)} vou usar a tela`); jogo(f, { modo: 'tela' }); });
         return;
       }
-      state = 'play'; t0 = c.currentTime + 0.2 + 4 * q; for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1, 0.5);
-      for (let b = 0; b * q < total; b++) click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.22);
+      calaClicks(); state = 'play'; t0 = c.currentTime + 0.2 + 4 * q; for (let i = 0; i < 4; i++) oscs.push(click(t0 - (4 - i) * q, i === 0 ? 2 : 1, 0.5));
+      for (let b = 0; b * q < total; b++) oscs.push(click(t0 + b * q, b % 4 === 0 ? 2 : 1, 0.22));
       info.textContent = 'contando… esquerda E (caixa), direita D (bumbo)'; go.disabled = true;
     };
     const tap = (side, ts) => {
@@ -159,13 +160,20 @@ export function mount(host) {
     document.addEventListener('keydown', onKey); go.addEventListener('click', () => { audio(); start(); });
     window.__rud = { get chart() { return chart; }, tap, get t0() { return t0; }, get state() { return state; }, get fase() { return f.n; }, get bpm() { return bpm; }, get por() { return por; }, get modo() { return modo; }, get ajuda() { return ajuda; }, get win() { return win; }, get late() { return late; } }; // só pra teste
     raf = requestAnimationFrame(draw);
-    off = () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', onKey); if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } state = 'idle'; delete window.__rud; };
-    stateRef.get = () => state; stateRef.stop = () => { if (state === 'play') { state = 'idle'; if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } go.disabled = false; go.textContent = '▶ jogar'; info.textContent = 'parou. toque em jogar pra começar de novo'; spans.forEach((s) => s.classList.remove('now')); } };
+    off = () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', onKey); calaClicks(); if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } state = 'idle'; delete window.__rud; };
+    stateRef.get = () => state; stateRef.recomeca = () => { calaClicks(); if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } state = 'idle'; res.hidden = true; go.disabled = false; audio(); start(); };
+    stateRef.voltaFase = () => jogo(f, { tempo: tempoIdx, fig: figIdx, modo, grave: graveEm });
+    stateRef.stop = () => { calaClicks(); if (state === 'play') { state = 'idle'; if (cap) { try { cap.cancel(); } catch { /* ok */ } cap = null; } go.disabled = false; go.textContent = '▶ jogar'; info.textContent = 'parou. toque em jogar pra começar de novo'; spans.forEach((s) => s.classList.remove('now')); } };
   };
   lista();
   return {
     inProgress: () => jogando && stateRef.get() === 'play',
-    pause: () => stateRef.stop(),
+    pause: () => { estavaJogando = stateRef.get() === 'play'; stateRef.stop(); },
+    // continuar depois da pausa: a tocada recomeça do começo (o metrônomo e o microfone não congelam no meio); se não estava tocando, só volta pra tela
+    resume: () => { if (estavaJogando && stateRef.recomeca) { musicaPausa(); stateRef.recomeca(); } estavaJogando = false; },
+    pausaNota: 'a tocada recomeça do começo quando você continuar.',
+    // botões extras do menu de pausa (o resto, "continuar" e "sair do jogo", vem do próprio menu dos jogos)
+    pausaExtras: () => [...(stateRef.recomeca ? [['↻ recomeçar', () => stateRef.recomeca()], ['‹ voltar (andamento, figura e microfone)', () => stateRef.voltaFase()]] : []), ['🥁 escolher rudimento', () => lista()]],
     restart: () => { if (!gone) lista(); },
     destroy() { gone = true; limpa(); musicaVolta(); },
   };

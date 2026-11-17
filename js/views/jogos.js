@@ -238,10 +238,11 @@ function game(host, entry) {
   const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const pausar = () => {
     if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); body.inert = true;
-    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('img', { class: 'jg-pausa-paul', src: 'assets/paul/colorido/paul-agua.webp', alt: '', draggable: 'false' }), h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
+    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('img', { class: 'jg-pausa-paul', src: 'assets/paul/colorido/paul-agua.webp', alt: '', draggable: 'false' }), h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, ctl.pausaNota ? `o jogo está parado. ${ctl.pausaNota}` : 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: despausar }, '▶ continuar'),
-      h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, 'sair do jogo')));
-    wrap.append(pausa); const b = pausa.querySelector('button'); if (b) b.focus();
+      ...((ctl.pausaExtras && ctl.pausaExtras()) || []).map(([rot, fn]) => h('button', { class: 'btn wide', type: 'button', onclick: () => { if (pausa) { pausa.remove(); pausa = null; body.inert = false; } musicaVolta(); try { fn(); } catch { /* jogo mudou */ } } }, rot)),
+      h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, '🚪 sair (voltar pros jogos)')));
+    wrap.append(pausa); try { pausa.scrollIntoView({ block: 'start' }); } catch { /* sem rolagem */ } const b = pausa.querySelector('button'); if (b) b.focus();
   };
   const btnPausa = h('button', { class: 'btn small ghost jg-pausa-btn', type: 'button', 'aria-label': 'pausar o jogo', onclick: pausar }, '⏸ pausa');
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },

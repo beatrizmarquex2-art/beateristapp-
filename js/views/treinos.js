@@ -50,6 +50,13 @@ export function score(bar4s, marks = []) {
 export const chunk = (beats) => { const out = []; for (let i = 0; i < beats.length; i += 4) out.push(beats.slice(i, i + 4)); return out; };
 
 
+/** Na demonstração ("ouvir"), cada nota da pauta acende na hora em que toca. `raiz` = elemento que contém a pauta (.tr-score); `S` = session() da tela (reset cancela). */
+export function acenderDemo(S, raiz, beats, bpm, t0) {
+  const ac = audio(); const ons = onsets(beats, bpm); const cor = '#ffb000';
+  const pinta = (i) => { const el = raiz && raiz.querySelector('.tr-score'); if (el) el.replaceWith(score(chunk(beats), ons.map((_, j) => (j === i ? cor : null)))); };
+  ons.forEach((e, i) => S.later(() => pinta(i), Math.max(0, (t0 + e.t - ac.currentTime) * 1000)));
+  S.later(() => pinta(-1), Math.max(0, (t0 + beats.length * (60 / bpm) - ac.currentTime) * 1000 + 200));
+}
 /** Agenda contagem (4 cliques) + cliques nos tempos (+ caixa, se `play`). Devolve o instante do 1º tempo (relógio do áudio). */
 export function schedule(beats, bpm, { play = false, clickAll = true, tail = false } = {}) {
   const c = audio(); const q = 60 / bpm; const t0 = c.currentTime + 0.25 + 4 * q;
@@ -159,10 +166,10 @@ export function leitura(host, opts = {}) {
       run = { pad, off, timer: S.later(() => { off(); conclude(taps); }, end) };
       S.later(() => { if (run && run.pad === pad) status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
     };
-    const listen = () => { stop(); schedule(beats, c.bpm, { play: true }); status.textContent = 'ouvindo como é…'; };
+    const listen = () => { stop(); const t0 = schedule(beats, c.bpm, { play: true }); acenderDemo(S, body, beats, c.bpm, t0); status.textContent = 'ouvindo como é…'; };
     // ouvir primeiro e, quando acabar, já entra a vez da Bea (contagem + clique + o som de cada toque)
     // No microfone o iPhone/iPad só deixa abrir o microfone logo depois de um TOQUE (não dentro de um temporizador): então depois de ouvir, quem toca aperta "tocar direto".
-    const listenThenPlay = () => { stop(); const q = 60 / c.bpm; schedule(beats, c.bpm, { play: true }); if (useMic) { status.textContent = 'ouça primeiro… depois aperte “tocar direto” e toque no seu pad ou bateria.'; return; } status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
+    const listenThenPlay = () => { stop(); const q = 60 / c.bpm; const t0d = schedule(beats, c.bpm, { play: true }); acenderDemo(S, body, beats, c.bpm, t0d); if (useMic) { status.textContent = 'ouça primeiro… depois aperte “tocar direto” e toque no seu pad ou bateria.'; return; } status.textContent = 'ouça primeiro…'; S.later(start, ((4 + beats.length) * q + 0.9) * 1000); };
     // "testar o microfone": 10 s ouvindo, e cada batida que o app escuta acende o pad (pra saber se o aparelho está ouvindo antes de jogar)
     const testeMic = !useMic ? null : h('button', { class: 'btn small ghost tr-testmic', type: 'button', onclick: async (ev) => {
       const b = ev.currentTarget; if (testeAtivo) { testeAtivo.stop(); testeAtivo = null; b.textContent = '🎙 testar o microfone'; status.textContent = ''; return; }

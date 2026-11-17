@@ -1,0 +1,27 @@
+// Rudimentix: o menu de pausa tem continuar, recomeçar, voltar, escolher rudimento e sair; pausar para a tocada.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/jogos/rudimentos`); await sleep(2000);
+await page.evaluate(() => document.querySelector('.rd-fase[data-fase="1"]').click()); await sleep(400);
+await page.evaluate(() => document.querySelector('.rd-go').click()); await sleep(1200);
+check('está tocando', await page.evaluate(() => window.__rud.state === 'play'));
+await page.evaluate(() => document.querySelector('.jg-pausa-btn').click()); await sleep(400);
+const botoes = await page.evaluate(() => [...document.querySelectorAll('.jg-pausa-box button')].map((b) => b.textContent.trim()));
+check('menu de pausa: continuar, recomeçar, voltar, escolher rudimento e sair', ['continuar', 'recomeçar', 'voltar', 'escolher rudimento', 'sair'].every((t) => botoes.some((b) => b.includes(t))), botoes.join(' | '));
+check('a pausa interrompeu a tocada', await page.evaluate(() => window.__rud.state !== 'play'));
+await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/rud-pausa.png` : '/tmp/rud-pausa.png' });
+await page.evaluate(() => [...document.querySelectorAll('.jg-pausa-box button')].find((b) => /recomeçar/.test(b.textContent)).click()); await sleep(1200);
+check('recomeçar começa a tocada de novo', await page.evaluate(() => !document.querySelector('.jg-pausa') && window.__rud.state === 'play'));
+await page.evaluate(() => document.querySelector('.jg-pausa-btn').click()); await sleep(300);
+await page.evaluate(() => [...document.querySelectorAll('.jg-pausa-box button')].find((b) => /escolher rudimento/.test(b.textContent)).click()); await sleep(500);
+check('escolher rudimento volta pra lista de fases', await page.evaluate(() => document.querySelectorAll('.rd-fase').length === 11 && !document.querySelector('.jg-pausa')));
+await page.evaluate(() => document.querySelector('.rd-fase[data-fase="1"]').click()); await sleep(300);
+await page.evaluate(() => document.querySelector('.jg-pausa-btn').click()); await sleep(300);
+await page.evaluate(() => [...document.querySelectorAll('.jg-pausa-box button')].find((b) => /voltar \(/.test(b.textContent)).click()); await sleep(500);
+check('voltar abre a tela da fase (andamento e figura)', await page.evaluate(() => !!document.querySelector('.rd-go') && !!document.querySelector('.rd-andamento')));
+check('sem erro na página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

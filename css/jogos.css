@@ -1472,3 +1472,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-wrap .btn.primary{background:linear-gradient(180deg,#ffd23f,#ff9d00);color:#1b1230;box-shadow:0 0 18px #ffd23f66}
 .fg-wrap .tr-count{color:#ffd23f;font-weight:800;text-align:center}
 @media (prefers-reduced-motion:reduce){.fg-lz,.fg-varre,.fg-cad,.fg-onair,.fg-luz,.fg-cena.alarme{animation:none}}
+
+/* menu de pausa com vários botões (Rudimentix): cobre a tela toda, rola se precisar e os botões ficam mais compactos */
+.jg-pausa{align-content:start!important;padding:130px 16px 24px!important}
+.jg-pausa-box .btn.wide:not(.jg-pausa-go){min-height:46px;font-size:16px}

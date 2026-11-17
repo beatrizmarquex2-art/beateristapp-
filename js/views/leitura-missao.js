@@ -6,7 +6,7 @@ import { session } from '../session.js';
 import { toast } from '../ui.js';
 import { onsets, evaluate } from '../reading.js';
 import { capture } from '../kids/capture.js';
-import { score as scoreEl, chunk, schedule, MARK } from './treinos.js';
+import { score as scoreEl, chunk, schedule, MARK, acenderDemo } from './treinos.js';
 
 const KEY = 'beaterista-toca-aventura';
 const loadMic = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}').mic === true; } catch { return false; } };
@@ -55,8 +55,8 @@ export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
       S.later(() => { if (phase === 'run') status.textContent = 'agora!'; }, (t0 - ac.currentTime) * 1000);
       S.later(() => { off(); finish(taps, false); }, (t0 - ac.currentTime + bar.length * q + 0.4) * 1000);
     };
-    const listen = () => { stopRun(); phase = 'idle'; schedule(bar, bpm, { play: true }); status.textContent = 'ouvindo como é…'; };
-    const listenThenPlay = () => { stopRun(); phase = 'idle'; schedule(bar, bpm, { play: true }); status.textContent = 'ouça primeiro…'; S.later(start, ((4 + bar.length) * q + 0.9) * 1000); };
+    const listen = () => { stopRun(); phase = 'idle'; const t0d = schedule(bar, bpm, { play: true }); acenderDemo(S, root, bar, bpm, t0d); status.textContent = 'ouvindo como é…'; };
+    const listenThenPlay = () => { stopRun(); phase = 'idle'; const t0d = schedule(bar, bpm, { play: true }); acenderDemo(S, root, bar, bpm, t0d); status.textContent = 'ouça primeiro…'; S.later(start, ((4 + bar.length) * q + 0.9) * 1000); };
     const summary = last ? h('section', { class: 'card pad tr-res' }, h('div', { class: 'tr-big' }, h('b', {}, `${last.res.score}%`), h('span', {}, 'precisão')),
       h('p', {}, `${last.res.hits}/${last.res.total} notas · ${last.res.notes.filter((n) => n.st === 'ok').length} no tempo${last.res.extra ? ` · ${last.res.extra} a mais` : ''}`),
       h('p', { class: 'muted' }, `média ${last.avg > 0 ? '+' : ''}${last.avg} ms`),
