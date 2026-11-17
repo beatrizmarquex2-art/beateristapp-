@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Capa Hotmart · baralho individual (colorida)</title>
+<link rel="stylesheet" href="../../css/fonts.css">
+<style>
+/* Capa quadrada da Hotmart de cada baralho, no mesmo estilo colorido do combo. ?deck=teoria|instrumentos|dicionario */
+*{box-sizing:border-box;margin:0}html,body{width:1500px;height:1500px;background:#0a0f26;color:#fff7e6;font-family:"Hanken Grotesk",sans-serif;font-weight:800;overflow:hidden}
+.st{position:relative;width:1500px;height:1500px;overflow:hidden;background:radial-gradient(60% 40% at 12% 62%,var(--a1),transparent 70%),radial-gradient(60% 40% at 50% 70%,var(--a2),transparent 70%),radial-gradient(60% 40% at 90% 62%,var(--a3),transparent 70%),radial-gradient(120% 55% at 50% 0,#31408a 0,#162146 42%,#0a0f26 100%)}
+.st:before{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.06) 2px,transparent 2.4px) 0 0/34px 34px}
+.abs{position:absolute}
+.cd{left:0;right:0;top:44px;text-align:center;font:400 58px/1 Anton;letter-spacing:.2em}
+.logo{left:50%;top:116px;width:560px;margin-left:-280px;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
+.nome{left:0;right:0;top:384px;text-align:center;font:400 118px/1 Anton;letter-spacing:.05em;text-transform:uppercase;background:linear-gradient(90deg,#f2a91b,#ff7a1a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 5px 0 rgba(0,0,0,.35))}
+.sub{left:0;right:0;top:520px;text-align:center;font:400 46px/1 Anton;letter-spacing:.12em;text-transform:uppercase}
+.blob{position:absolute;width:470px;height:640px;border-radius:44px;z-index:1}
+.card{position:absolute;width:430px;border-radius:26px;box-shadow:0 22px 46px rgba(0,0,0,.5);z-index:2}
+.sel{left:44px;top:44px;width:270px;height:270px;border-radius:50%;background:#f2a91b;color:#162146;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-8deg);border:6px solid #162146;font:400 46px/1 Anton;letter-spacing:.06em;z-index:5}.sel span{font-size:128px;line-height:.95}
+.lab{position:absolute;top:1240px;z-index:8;width:430px;text-align:center;font:400 36px/1 Anton;letter-spacing:.04em;text-transform:uppercase;border-radius:99px;padding:12px 0 10px;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.faixa3{position:absolute;left:0;right:0;bottom:150px;height:14px;z-index:6;background:linear-gradient(90deg,var(--a1) 0 25%,#f2a91b 25% 50%,var(--a2) 50% 75%,var(--a3) 75%)}
+.fita{left:0;right:0;bottom:0;height:150px;background:#fff7e6;color:#162146;display:flex;align-items:center;justify-content:center;font:400 54px/1 Anton;letter-spacing:.07em;z-index:6}
+.p1,.p2{position:absolute;bottom:140px;height:250px;z-index:7}.p1{left:-40px}.p2{right:-40px}
+</style></head><body><div class="st" id="st"></div>
+<script>
+var D=new URLSearchParams(location.search).get('deck')||'teoria';
+var A={
+ teoria:{nome:'teoria musical',sub:'figuras · pausas · claves · compasso · leitura',n:'150',un:'cartas',cs:['#c81e2d','#2f6bff','#17a2b8'],cards:['teoria/card-semibreve','teoria/card-pausa-de-seminima','teoria/card-pulso'],labs:['figuras','pausas','tempo e compasso'],p:['paul-guitarra-1000.webp','paul-bateria-1000.webp']},
+ instrumentos:{nome:'instrumentos',sub:'bateria · teclado · violão',n:'90',un:'cartas',cs:['#c81e2d','#2f6bff','#f2a91b'],cards:['instrumentos/card-pratos','instrumentos/card-do-maior','instrumentos/card-mi-menor-em'],labs:['bateria','teclado','violão'],p:['paul-bateria-1000.webp','paul-guitarra-1000.webp']},
+ dicionario:{nome:'dicionário musical',sub:'banda e palco · estúdio · como o músico fala',n:'120',un:'termos',cs:['#c81e2d','#2f6bff','#6a35c9'],cards:['dicionario/card-setlist','dicionario/card-microfone','dicionario/card-tirar-de-ouvido'],labs:['banda e palco','estúdio','como o músico fala'],p:['paul-teclado-1000.webp','paul-guitarra-1000.webp']}
+}[D];
+var st=document.getElementById('st'); st.style.setProperty('--a1',A.cs[0]+'99'); st.style.setProperty('--a2',A.cs[1]+'99'); st.style.setProperty('--a3',A.cs[2]+'99');
+var X=[66,535,1004], B=[46,515,984], T=[628,598,628], R=['-7deg','0deg','7deg'];
+var h='<div class="abs cd">CARDS DO</div><img class="abs logo" src="img/logo-roboterista-paul-branco.png" alt=""><div class="abs nome">'+A.nome+'</div><div class="abs sub">'+A.sub+'</div>';
+for(var i=0;i<3;i++){h+='<div class="blob" style="left:'+B[i]+'px;top:'+(T[i]-20)+'px;background:'+A.cs[i]+';transform:rotate('+R[i]+')"></div><img class="card" src="_out/'+A.cards[i]+'.png" style="left:'+X[i]+'px;top:'+T[i]+'px;transform:rotate('+R[i]+')"'+(i==1?' style="z-index:3"':'')+'>';}
+for(var j=0;j<3;j++){h+='<div class="lab" style="left:'+X[j]+'px;background:'+A.cs[j]+'">'+A.labs[j]+'</div>';}
+h+='<div class="abs sel"><span>'+A.n+'</span>'+A.un.toUpperCase()+'</div><div class="faixa3"></div><div class="abs fita">PDF PRA IMPRIMIR E RECORTAR</div><img class="p1" src="img/'+A.p[0]+'" alt=""><img class="p2" src="img/'+A.p[1]+'" alt="">';
+st.innerHTML=h;
+Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});
+</script></body></html>
