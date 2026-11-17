@@ -7,7 +7,7 @@ await ctx.route('**/rest/v1/rpc/**', (r) => r.fulfill({ status: 200, contentType
 await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } window.__sess = []; let t = 'auto'; Object.defineProperty(navigator, 'audioSession', { value: { get type() { return t; }, set type(v) { t = v; window.__sess.push(v); } }, configurable: true }); });
 await p.goto(`${url}/aluno.html#/jogos/toca/livre`); await p.waitForSelector('.tr-pad', { timeout: 20000 }); await sleep(800);
 await p.locator('[role=radio]:has-text("microfone")').click(); await sleep(300);
-await p.locator('button:has-text("tocar direto")').click(); await sleep(1800);
+await p.locator('.tr-card.go').click(); await sleep(1800);
 const durante = await p.evaluate(() => navigator.audioSession.type);
 check('com o microfone aberto, a sessão de áudio é "play-and-record"', durante === 'play-and-record', durante);
 await p.locator('.tr-pad').click({ force: true }); await sleep(300); // um toque qualquer na tela não derruba a sessão de volta pra "playback"
