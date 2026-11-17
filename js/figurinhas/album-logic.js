@@ -34,6 +34,7 @@ export function motivoDoPacote(id) {
 export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : String(id).startsWith('epico:') ? 'epico' : String(id).startsWith('jogo:') ? 'jogo' : 'pacote');
 /** GIRO ÉPICO (Desafio do Paul aprovado pela Bea): `epico:<id do resgate>:<1|2>`. O 1º giro dá SEMPRE 3 figurinhas; o 2º sorteia de 1 a 5 e, se vier só 1, ela é exclusiva (Beaterista e Paul). */
 export const EPICO_QTD = [[1, 15], [2, 20], [3, 30], [4, 20], [5, 15]];
+export const EPICO_PESOS = [['Comum', 60], ['Raras', 32], ['Beatlemania', 5], ['Beaterista', 3]]; // 2º giro épico: prioriza comuns e raras
 export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(id)); return m ? { n: Number(m[1]) } : null; };
 /** Pacote do giro épico: sem o 1º giro de 3, o 2º tem de 1 a 5. */
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de jogo a Exclusiva não existe: o grupo só tem Comum e Rara) // chance de cada figurinha do pacote ser dessa raridade
@@ -87,9 +88,11 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const r = rng(hashSeed(`pack|${packId}${salt ? `|${salt}` : ''}`)); const kind = packKind(packId);
   const ep = epicoPack(packId);
   if (ep) { // giro épico (Desafio do Paul): 1º = 3 figurinhas sempre; 2º = 1 a 5, e se for só 1 vem uma exclusiva
-    const qtd = ep.n === 1 ? 3 : pickWeighted(r, EPICO_QTD);
-    if (qtd === 1) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; }
-    return drawBySection(catalog, r, qtd, ROLETA_PESOS);
+    const grp = (g) => catalog.filter((c) => grupo(c) === g).map((c) => c.codigo); const um = (g) => { const l = grp(g); return l.length ? l[Math.floor(r() * l.length)] : null; };
+    if (ep.n === 1) return ['Beatlemania', 'Beaterista', 'Raras'].map(um).filter(Boolean); // 1º giro: SEMPRE 3 = 1 clássica (Beatlemania) + 1 exclusiva + 1 rara
+    const qtd = pickWeighted(r, EPICO_QTD);
+    if (qtd === 1) { const e1 = um('Beaterista'); return e1 ? [e1] : []; }
+    return drawBySection(catalog, r, qtd, EPICO_PESOS); // 2º giro: aleatório, até 5, priorizando comuns e raras
   }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   if (/^(egg|bonus):/.test(String(packId))) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // segredos e bônus: 1 exclusiva (Beaterista e Paul)

@@ -625,3 +625,18 @@
 
 /* Radar/Quiz/Cruzadinha: só o jogo escolhido, com o nome em cima (sem a fileira dos 3 jogos) */
 .dc-atual { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; } .dc-atual img { width: 44px; height: 44px; object-fit: contain; } .dc-atual b { font: 400 24px/1 Anton, Impact, sans-serif; text-transform: uppercase; } .dc-atual small { opacity: .8; font-weight: 700; margin-left: auto; text-align: right; max-width: 14ch; }
+
+/* ====== caça-níquel do giro épico ====== */
+.sl-maq { position: relative; margin: 8px auto 4px; padding: 12px 12px 14px; width: min(320px, 100%); border-radius: 22px; border: 4px solid #14111a; background: linear-gradient(180deg, #e5304b, #8a0f25); box-shadow: 0 0 0 4px #f6c93b, 6px 8px 0 4px rgb(0 0 0 / .35); color: #fff; text-align: center; }
+.sl-topo { font: 400 26px/1 Anton, Impact, sans-serif; letter-spacing: .06em; color: #ffe27a; text-shadow: 2px 2px 0 #14111a; margin: 0 0 10px; }
+.sl-luzes { position: absolute; inset: -9px; pointer-events: none; } .sl-luzes i { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #fff4c9; box-shadow: 0 0 8px #ffd23f; animation: sl-pisca 1s calc(var(--k) * 70ms) infinite alternate; }
+.sl-luzes i:nth-child(-n+5) { top: 0; left: calc(8% + var(--k) * 20%); } .sl-luzes i:nth-child(n+6):nth-child(-n+7) { top: calc(30% + (var(--k) - 5) * 45%); right: 0; } .sl-luzes i:nth-child(n+8):nth-child(-n+12) { bottom: 0; left: calc(8% + (var(--k) - 7) * 20%); } .sl-luzes i:nth-child(n+13) { top: calc(30% + (var(--k) - 12) * 45%); left: 0; }
+@keyframes sl-pisca { from { opacity: .35; transform: scale(.8); } to { opacity: 1; transform: scale(1.15); } }
+.sl-rolos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; border-radius: 14px; background: #14111a; }
+.sl-janela { height: 84px; overflow: hidden; border-radius: 9px; background: linear-gradient(180deg, #fff6e0 0, #fff 40%, #fff6e0 100%); border: 2px solid #f6c93b; box-shadow: inset 0 8px 10px rgb(0 0 0 / .25), inset 0 -8px 10px rgb(0 0 0 / .25); }
+.sl-tira { will-change: transform; } .sl-sim { height: 84px; display: grid; place-items: center; font-size: 46px; line-height: 1; color: #17224a; }
+.sl-sim.sete { font: 400 66px/1 Anton, Impact, sans-serif; color: #d3122f; text-shadow: 2px 2px 0 #14111a; }
+.sl-placa { margin-top: 12px; font: 800 17px var(--body, system-ui); letter-spacing: .08em; color: #fff6e0; text-transform: uppercase; min-height: 22px; }
+.sl-maq.jackpot { animation: sl-pula .5s ease 2; } .sl-maq.jackpot .sl-placa { color: #ffe27a; font-size: 20px; text-shadow: 0 0 10px #ffd23f; } .sl-maq.jackpot .sl-janela { border-color: #fff; box-shadow: 0 0 16px #ffd23f, inset 0 0 12px #ffd23f; }
+@keyframes sl-pula { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05) rotate(-1deg); } }
+@media (prefers-reduced-motion: reduce) { .sl-luzes i, .sl-maq.jackpot { animation: none; } }
