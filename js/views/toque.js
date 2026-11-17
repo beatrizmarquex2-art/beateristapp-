@@ -19,14 +19,18 @@ import * as FB from '../feedback.js';
 import { tipBox } from '../tipbox.js';
 import { scheduler } from '../audio.js';
 import { flash, pieceAt } from '../kids/kit-theme.js';
+import { MARCAS } from '../marcas-links.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
   const svg = art.querySelector('svg') || art;
-  const img = (src, x, y, w, h, cls = '') => { const im = document.createElementNS('http://www.w3.org/2000/svg', 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v)); svg.append(im); };
-  img('assets/marcas/beaterista.png', 4, 2, 44, 44);
-  if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro');
-  if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro');
+  // `marca` = chave em js/marcas-links.js: com endereço, o logo vira link (abre o site da marca em outra aba); sem endereço fica só desenhado. Só os logos de FORA da bateria viram link, pra um toque na bateria nunca abrir site sem querer.
+  const img = (src, x, y, w, h, cls = '', marca = '') => { const NS = 'http://www.w3.org/2000/svg'; const url = marca ? MARCAS[marca] : ''; const im = document.createElementNS(NS, 'image'); for (const [k, v] of Object.entries({ href: src, x, y, width: w, height: h, class: `marca-img ${cls}`.trim(), 'pointer-events': url ? 'all' : 'none', preserveAspectRatio: 'xMidYMid meet' })) im.setAttribute(k, String(v));
+    if (!url) { svg.append(im); return; } const a = document.createElementNS(NS, 'a'); a.setAttribute('href', url); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); a.setAttribute('aria-label', `abrir o site: ${marca}`); a.style.cursor = 'pointer'; a.append(im); svg.append(a); };
+  img('assets/marcas/beaterista.png', 4, 2, 44, 44, '', 'beaterista');
+  if (modelo === 'acustica') img('assets/marcas/nagano.png', 190, 0, 40, 40, 'claro', 'nagano');
+  if (modelo === 'eletronica') img('assets/marcas/nagano.png', 378, 4, 34, 34, 'claro', 'nagano');
+  if (modelo === 'cajon') img('assets/marcas/spark-branco.png', 318, 2, 90, 28, 'claro', 'spark'); // a marca do cajón também fica de fora do instrumento, pra poder virar link
 };
 const KEY = 'setting-toque';
 const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });

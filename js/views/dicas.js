@@ -174,8 +174,7 @@ export function mount(host, parts = []) {
     wrap);
   wrap.append(
       h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), h('span', { style: 'flex:1' }), tg),
-      h('div', { class: 'dc-picks', role: 'tablist', 'aria-label': 'Jogo' }, ...TABS.map(([k, t]) => h('a', { class: `dc-pick${tab === k ? ' on' : ''}`, role: 'tab', 'aria-selected': String(tab === k), href: `#/dicas/${k}` },
-        h('img', { src: `assets/jogos/icones/${ICON[k]}`, alt: '', draggable: 'false' }), h('b', {}, limited && !['caca', 'cruzadinha'].includes(k) ? `🔒 ${t}` : t), h('small', {}, SUB[k])))),
+      ICON[tab] ? h('div', { class: 'dc-atual' }, h('img', { src: `assets/jogos/icones/${ICON[tab]}`, alt: '', draggable: 'false' }), h('b', {}, nomeLetras(tab)), h('small', {}, SUB[tab])) : null, // só o jogo escolhido (antes abria junto a fileira dos 3 jogos; eles já têm cartão próprio na lista)
       JOGOS_LETRAS.includes(tab) ? h('div', { class: 'jg-seg dc-modos', role: 'radiogroup', 'aria-label': 'como jogar' },
         h('button', { type: 'button', role: 'radio', 'aria-checked': String(!porCodigo), class: porCodigo ? '' : 'on', onclick: () => { location.hash = `#/dicas/${tab}`; } }, 'sozinho'),
         h('button', { type: 'button', role: 'radio', 'aria-checked': String(porCodigo), class: porCodigo ? 'on' : '', onclick: () => { location.hash = `#/dicas/${tab}/codigo`; } }, limited ? 'com código (alunos)' : 'com código · 2 celulares')) : null,

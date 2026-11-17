@@ -618,3 +618,10 @@
 .fig-hub-paul { width: 100%; height: 100%; object-fit: cover; object-position: 50% 8%; border-radius: 50%; display: block; } .fig-wheel-hub { overflow: hidden; }
 .sheet .fig-open, .sheet .fig-open p, .sheet .fig-wheelbox p, .sheet .fig-note, .sheet .fig-reveal + p { color: #17130f !important; text-shadow: none !important; }
 .sheet .fig-open .btn:not(.primary) { color: #17130f !important; }
+
+/* "voltar para ___": faixa fixa no topo da tela, só aparece quando a pessoa saiu de outra área */
+.al-voltar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 6px; margin: 0 0 8px; padding: 10px 14px; border-radius: 0 0 14px 14px; background: #17224a; color: #fff6e0 !important; font: 800 14px var(--body, system-ui); text-decoration: none; box-shadow: 0 3px 10px #0005; border: 2px solid #f6c93b; border-top: 0; -webkit-tap-highlight-color: transparent; }
+.al-voltar:active { transform: translateY(1px); } .al-voltar:focus-visible { outline: 3px solid #f6c93b; outline-offset: 2px; }
+
+/* Radar/Quiz/Cruzadinha: só o jogo escolhido, com o nome em cima (sem a fileira dos 3 jogos) */
+.dc-atual { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; } .dc-atual img { width: 44px; height: 44px; object-fit: contain; } .dc-atual b { font: 400 24px/1 Anton, Impact, sans-serif; text-transform: uppercase; } .dc-atual small { opacity: .8; font-weight: 700; margin-left: auto; text-align: right; max-width: 14ch; }

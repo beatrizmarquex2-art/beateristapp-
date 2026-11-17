@@ -411,9 +411,15 @@ function shell(name) {
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
+  // "voltar para ___": quem sai de uma área sem querer (toca na barra de baixo, num atalho...) vê no topo o caminho de volta pro lugar onde estava
+  let atual = null; let voltarA = null; let voltouNaFaixa = false;
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
     const r = route(); view.dataset.page = r.name;
+    { const tab = tabOf(r); const jg = (() => { try { return jogos.jogoDoEndereco(location.hash); } catch { return null; } })(); const nome = jg ? jg[1] : (NAV.find(([hr]) => hr === `#/${tab}`) || [])[2] || 'o app';
+      if (voltouNaFaixa) { voltouNaFaixa = false; voltarA = null; } // tocou em "voltar para": chegou lá, a faixa some (não fica indo e voltando)
+      else if (atual && atual.hash !== location.hash) { if (atual.tab !== tab) voltarA = { hash: atual.hash, nome: atual.nome, tab: atual.tab }; else if (voltarA && voltarA.hash === location.hash) voltarA = null; }
+      if (voltarA && voltarA.tab === tab) voltarA = null; atual = { hash: location.hash, tab, nome }; }
     { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; document.documentElement.classList.toggle('perfil-pass', r.name === 'perfil'); } // aba Álbum com visual próprio (css/album-tema.css); o PERFIL tem o visual "carteirinha de backstage" (css/perfil-passe.css), escolhido pela Bea em 15/nov/2026
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
@@ -460,10 +466,16 @@ function shell(name) {
       const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
       view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, stars e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '🃏'), aba('#/album/Pacotes', 'stars', roleta, '⭐', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '👤')));
     }
+    if (voltarA && !/^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash)) { const vA = voltarA; view.prepend(h('a', { class: 'al-voltar', href: vA.hash, onclick: () => { voltouNaFaixa = true; } }, `‹ voltar para ${vA.nome}`)); } // dentro de um jogo já existe o botão flutuante "‹ jogos"
     cleanup = typeof c === 'function' ? c : null;
     window.scrollTo(0, 0);
   }
   addEventListener('hashchange', go);
+  // Voltar arrastando: no app instalado na tela inicial do iPhone NÃO existe o gesto de voltar do navegador. Arrastar do cantinho esquerdo pra direita = voltar uma tela
+  // (só se começar bem na borda e for um arrasto reto, pra não atrapalhar quem arrasta peças, notas ou palavras).
+  { let g0 = null; const emBorda = (t) => t.clientX <= 22;
+    document.addEventListener('touchstart', (e) => { const t = e.touches && e.touches[0]; g0 = e.touches.length === 1 && t && emBorda(t) ? { x: t.clientX, y: t.clientY, ok: true } : null; }, { passive: true });
+    document.addEventListener('touchend', (e) => { if (!g0) return; const t = e.changedTouches && e.changedTouches[0]; const dx = t ? t.clientX - g0.x : 0, dy = t ? Math.abs(t.clientY - g0.y) : 99; g0 = null; if (dx > 70 && dy < 50 && history.length > 1 && !document.querySelector('dialog[open], .sheet-back')) history.back(); }, { passive: true }); }
   // tocar na aba em que a pessoa JÁ está (mesmo endereço) não dispara hashchange: recarrega a tela, senão o botão parece quebrado (ex.: voltar da roleta pro álbum)
   document.addEventListener('click', (ev) => { const a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#/"]') : null; if (a && a.getAttribute('href') === location.hash && (nav.contains(a) || a.closest('.al-subnav'))) go(); });
   document.addEventListener('aluno-acesso', () => go());

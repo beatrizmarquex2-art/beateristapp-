@@ -1435,3 +1435,16 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .rt-box .rt-grade .rt-n,.rt-box .rt-grade .rt-conta i{color:#14111a!important}.rt-box .rt-grade .rt-conta i.forte{color:#BD1733!important}
 .jg-seg[aria-label="tipo de acorde"] button{border:0!important;border-radius:99px!important;background:rgb(22 33 70/.14)!important;color:#162146!important;font-weight:800;box-shadow:none!important;transform:none!important;min-height:40px}
 .jg-seg[aria-label="tipo de acorde"] button[aria-checked="true"]{background:#162146!important;color:#f2a91b!important}
+
+/* ===== Pausa dos jogos: um visual só (nov/2026): fundo desfocado, cartão com o Paul tomando água, título grande e o botão de continuar em destaque ===== */
+.jg-pausa { background: radial-gradient(90% 70% at 50% 25%, rgb(58 27 120 / .92), rgb(14 23 71 / .96)) !important; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.jg-pausa-box { position: relative; width: min(330px, 100%) !important; padding: 62px 20px 20px !important; border: 3px solid #14111a !important; border-radius: 22px !important; background: #fff6e0 !important; box-shadow: 0 0 0 5px #f6c93b, 8px 10px 0 5px rgb(0 0 0 / .35) !important; gap: 10px !important; }
+.jg-pausa-paul { position: absolute; left: 50%; top: -88px; height: 128px; width: auto; transform: translateX(-50%); filter: drop-shadow(0 6px 0 rgb(0 0 0 / .25)); pointer-events: none; }
+.jg-pausa-box h2 { margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font: 400 44px/1 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .04em; color: #c4182c; }
+.jg-pausa-box h2 i { border-radius: 50% !important; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #17224a; color: #f6c93b; font-size: 18px; font-style: normal; }
+.jg-pausa-box .jg-p { margin: 0 0 4px; color: #3b3b3b; font-size: 14px; }
+.jg-pausa-go { background: linear-gradient(180deg, #ffd23f, #f6a81f) !important; color: #14111a !important; border: 3px solid #14111a !important; box-shadow: 0 4px 0 #14111a !important; font: 800 20px var(--body, system-ui) !important; letter-spacing: .02em; }
+.jg-pausa-box .btn.ghost { background: transparent !important; color: #17224a !important; border: 2px solid #17224a !important; min-height: 46px; font-size: 16px; box-shadow: none !important; }
+.ss-pausa, .ms-veu { border: 3px solid #14111a !important; border-radius: 20px !important; background: #fff6e0 !important; box-shadow: 0 0 0 5px #f6c93b, 6px 8px 0 5px rgb(0 0 0 / .3) !important; padding: 18px !important; color: #14111a !important; }
+.ss-pausa b, .ms-veu b { font: 400 36px/1 Anton, Impact, sans-serif !important; text-transform: uppercase; letter-spacing: .04em; color: #c4182c !important; }
+.ss-pausa .btn.primary, .ms-veu .kd-btn { background: linear-gradient(180deg, #ffd23f, #f6a81f) !important; color: #14111a !important; border: 3px solid #14111a !important; box-shadow: 0 4px 0 #14111a !important; font: 800 18px var(--body, system-ui) !important; border-radius: 14px; padding: 10px 18px; }
