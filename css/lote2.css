@@ -180,3 +180,11 @@
 .mem-vt.pol .mc-enf { position: absolute; left: 3%; bottom: 3%; width: 14%; z-index: 3; } .mem-vt.pol.cat-beatles .mc-enf { width: 36%; left: 2%; bottom: 2%; } .mem-vt.pol .mc-enf svg { display: block; width: 100%; height: auto; overflow: visible; }
 .mem-vt.pol .mc-ache { position: absolute; right: 4%; bottom: 8%; font: 400 12px/1 'Permanent Marker', cursive; font-size: 9.5cqw; color: #c4182c; transform: rotate(-4deg); z-index: 3; white-space: nowrap; }
 .mem-vt.pol .mc-b, .mem-themes.hero .mem-vt.pol .mc-b { position: absolute; right: 5%; bottom: 3%; font: 700 7px var(--body); font-size: 3.6cqw; letter-spacing: .12em; text-transform: uppercase; opacity: .8; z-index: 3; }
+
+/* memória: grade de temas toda alinhada (mesma altura de nome, nada sobe ou gira ao escolher) e o Paul na casa que sobra */
+.mem-themes.hero { align-items: start; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-inline: -8px; gap: 12px 8px; }
+.mem-themes.hero .mem-theme { grid-template-rows: auto minmax(2.4em, auto); align-content: start; }
+.mem-themes.hero .mem-theme b { display: block; min-height: 2.4em; line-height: 1.2; font-size: clamp(8.5px, 2.45vw, 12px); letter-spacing: -.015em; max-width: 100%; overflow-wrap: break-word; }
+.mem-themes.hero .mem-theme.on .mem-vt { transform: none; box-shadow: 3px 3px 0 #a31d30; }
+.mem-vago { display: grid; justify-items: center; align-items: end; aspect-ratio: auto; align-self: stretch; padding-bottom: 2.4em; pointer-events: none; }
+.mem-vago img { width: min(100%, 120px); height: auto; max-height: 100%; object-fit: contain; filter: drop-shadow(0 3px 0 #0002); }
