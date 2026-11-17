@@ -24,6 +24,7 @@ export function motivoDoPacote(id) {
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
   if (s.startsWith('roleta:')) return `você juntou ${ESTRELAS_POR_ROLETA} ★ nos jogos`;
+  if (s.startsWith('jogo:mundo-')) return 'você concluiu um mundo (Modo Aventura)';
   if (s.startsWith('jogo:av-')) return 'você terminou um Modo Aventura inteiro';
   if (s.startsWith('jogo:')) return 'você terminou um jogo inteiro, com todas as fases';
   if (s.startsWith('plf:')) return 'você terminou um modo inteiro do Mundo da Bateria (pauLta)';

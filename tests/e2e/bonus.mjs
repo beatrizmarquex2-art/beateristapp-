@@ -14,6 +14,8 @@ const r = await page.evaluate(async () => {
   await B.online('uno', 'win'); out.apos5 = g().filter((i) => i.startsWith('bonus:')).length;
   for (let i = 0; i < 40; i++) await B.online('velha', 'win'); out.limite = g().filter((i) => i.startsWith('bonus:')).length;
   out.empate = (await (async () => { for (let i = 0; i < 4; i++) await B.online('memoria', 'win'); await B.online('memoria', 'tie'); const antes = g().filter((i) => i.startsWith('bonus:')).length; await B.online('memoria', 'win'); return [antes, g().filter((i) => i.startsWith('bonus:')).length]; })());
+  const X = await import('/js/figurinhas/mundos-premio.js'); out.m1 = await X.premiarMundo('figurix:floresta'); out.m2 = await X.premiarMundo('figurix:floresta'); out.m3 = await X.premiarMundo('detetive:comida');
+  out.mundos = g().filter((i) => i.startsWith('jogo:mundo-')).length;
   return out;
 });
 check('segredo vale 1 vez só', r.eggs === 1, JSON.stringify(r));
@@ -22,5 +24,6 @@ check('uma derrota zera a sequência', r.derrotaZera === 0);
 check('a 5ª vitória seguida dá 1 exclusiva', r.apos5 === 1);
 check('no máximo 3 bônus por mês', r.limite === 3, String(r.limite));
 check('empate não zera nem soma (e o limite já foi atingido)', r.empate[0] === 3 && r.empate[1] === 3, JSON.stringify(r.empate));
+check('concluir um mundo dá 1 pacote, uma vez só por mundo', r.m1 === 1 && r.m2 === 0 && r.m3 === 1 && r.mundos === 2, JSON.stringify([r.m1, r.m2, r.m3, r.mundos]));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
