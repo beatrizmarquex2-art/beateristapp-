@@ -61,7 +61,7 @@ const RAW = [
   [86, 'intermediario', 'bateria', 'qual componente circular mantém a pele presa ao tambor?', 'aro', ['esteira', 'casco', 'pedal'], 'o aro prende a pele no tambor.'],
   [99, 'facil', 'marcas', 'qual produto da Pad Gorilla utilizamos para treinar com as baquetas sem precisar de uma bateria completa?', 'pad de estudo', ['pad de bumbo', 'metrônomo digital'], 'o pad de estudo deixa treinar com baquetas em qualquer lugar.'],
   [101, 'facil', 'marcas', 'qual modelo de cajon da Spark pode ser tocado apoiado nas pernas do músico?', 'cajon de colo', ['cajon de assento', 'pad de colo'], 'o cajon de colo toca apoiado nas pernas.'],
-  [102, 'facil', 'marcas', 'além das baterias acústicas, qual outro tipo de bateria a Nagano fabrica?', 'bateria eletrônica', ['guitarra elétrica', 'teclado digital'], 'a Nagano também faz bateria eletrônica.'],
+  [102, 'facil', 'marcas', 'além das baterias acústicas, qual outro tipo de bateria a Nagano fabrica?', 'bateria eletrônica', ['bateria de carro', 'bateria de tapete'], 'a Nagano também faz bateria eletrônica. a Bea utiliza os modelos Nagano Tech Expression e Advanced.', INS('bateria-eletronica-nagano')],
   [104, 'facil', 'marcas', 'qual produto da Pad Gorilla permite praticar golpes de pedal de bumbo?', 'pad de bumbo', ['pad de estudo', 'cajon de colo'], 'o pad de bumbo serve pra treinar o pedal.'],
   [130, 'facil', 'bandas', 'qual banda lançou Believer e Enemy?', 'Imagine Dragons', ['OneRepublic', 'Coldplay'], 'Believer e Enemy são do Imagine Dragons.'],
   [131, 'facil', 'rock', "qual é o guitarrista da banda Guns N' Roses?", 'Slash', ['Axl Rose', 'Angus Young'], "Slash é o guitarrista do Guns N' Roses."],
