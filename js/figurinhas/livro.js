@@ -63,6 +63,29 @@ function beatlesArt(got, total) {
   ${onda(470, '#2f5fb3', 0.55)}${O.submarino(196, 478, 0.72, -5)}${onda(512, '#3f7fd6', 0.75)}${onda(540, '#0f1a3d', 0.9)}${nomes}</svg>`;
 }
 
+const esc = (s) => String(s).replace(/&/g, '&amp;');
+const titulo = (t, x, y, w, size, fill, st = '') => `<text x="${x}" y="${y}" font-family="'Anton',sans-serif" font-size="${size}" text-anchor="middle" fill="${fill}" ${st} textLength="${w}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text>`;
+const FOTOS = 'assets/figurinhas/fotos/';
+const VINIL = {
+  Bandas: { id: 'ba', nome: 'BANDAS', sub: 'os grupos que fizeram história', cor: RED, tcor: CR, fotos: ['F047'], nomes: ['Queen', 'Nirvana', 'Led Zeppelin', 'Linkin Park'], base: FOTOS },
+  Artistas: { id: 'ar', nome: 'ARTISTAS', sub: 'cantores e músicos', cor: YEL, tcor: NAVY, fotos: ['F032'], nomes: ['Rita Lee', 'Michael Jackson', 'Pitty', 'Slash'], base: FOTOS },
+};
+/** Capa "disco de vinil" de Bandas e Artistas (escolha da Bea, nov/2026): o LP sai da capa quadrada com a foto, com a lista das primeiras faixas. */
+function vinilArt(got, total, P) {
+  const id = P.id + 'c2'; const cx = 214, cy = 252;
+  const sulcos = Array.from({ length: 17 }, (_, i) => `<circle cx="${cx}" cy="${cy}" r="${58 + i * 5.4}" fill="none" stroke="${i % 3 ? '#262631' : '#34343f'}" stroke-width="${i % 3 ? 1 : 1.6}"/>`).join('');
+  const defs = `<radialGradient id="${id}g" cx="30%" cy="20%" r="95%"><stop offset="0" stop-color="#2d3d7a"/><stop offset=".55" stop-color="${NAVY}"/><stop offset="1" stop-color="#0b1130"/></radialGradient><linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/><stop offset=".75" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></linearGradient><clipPath id="${id}p"><rect x="24" y="124" width="204" height="204" rx="3"/></clipPath><filter id="${id}s"><feDropShadow dx="6" dy="10" stdDeviation="7" flood-color="#000" flood-opacity=".55"/></filter>`;
+  const lista = P.nomes.slice(0, 3).map((n, i) => `<text x="34" y="${542 + i * 17}" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="11.5" letter-spacing="2" fill="${CR}"><tspan fill="${YEL}">0${i + 1}</tspan>  ${esc(n.toUpperCase())}</text>`).join('');
+  return `<svg class="cv-art" viewBox="0 0 360 610" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>${defs}</defs><rect width="360" height="610" fill="url(#${id}g)"/>${[...Array(9)].map((_, i) => `<circle cx="${20 + i * 42}" cy="${22 + (i % 2) * 14}" r="2" fill="${CR}" opacity=".22"/>`).join('')}
+  <text x="26" y="64" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="11" letter-spacing="5" fill="${YEL}">BEATERISTA RECORDS · LADO A</text>
+  <g filter="url(#${id}s)"><circle cx="${cx}" cy="${cy}" r="146" fill="#0c0c11"/></g>${sulcos}<circle cx="${cx}" cy="${cy}" r="146" fill="url(#${id}b)"/><circle cx="${cx}" cy="${cy}" r="146" fill="none" stroke="#000" stroke-width="3"/>
+  <circle cx="${cx}" cy="${cy}" r="50" fill="${P.cor}" stroke="#000" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="48" fill="none" stroke="${P.tcor}" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="2 5"/>
+  <text x="${cx}" y="${cy - 8}" font-family="'Anton',sans-serif" font-size="32" fill="${P.tcor}" text-anchor="middle">${got}</text><text x="${cx}" y="${cy + 10}" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="10" fill="${P.tcor}" text-anchor="middle" letter-spacing="1">DE ${total}</text><circle cx="${cx}" cy="${cy + 26}" r="4" fill="#0c0c11"/>
+  <g transform="rotate(-4 126 226)" filter="url(#${id}s)"><rect x="16" y="116" width="220" height="220" fill="${CR}"/><g clip-path="url(#${id}p)"><image href="${P.base}${P.fotos[0]}.jpeg" x="24" y="124" width="204" height="204" preserveAspectRatio="xMidYMid slice"/></g><rect x="24" y="124" width="204" height="204" fill="none" stroke="${K}" stroke-opacity=".5" stroke-width="1.5"/>${star(226, 126, 14, YEL, 2.4, 14)}</g>
+  ${titulo(P.nome, 184, 462, 316, 116, YEL, `stroke="${K}" stroke-width="4" paint-order="stroke" stroke-linejoin="round"`)}
+  <line x1="30" y1="476" x2="330" y2="476" stroke="${CR}" stroke-opacity=".5" stroke-width="2"/><text x="180" y="498" font-family="'Hanken Grotesk',sans-serif" font-weight="800" font-size="12" letter-spacing="3.2" text-anchor="middle" fill="${CR}" textLength="300" lengthAdjust="spacing">${esc(P.sub.toUpperCase())}</text>${lista}</svg>`;
+}
+
 /** Página "a história" da Beatlemania: por que os Beatles abrem o álbum e de onde veio o nome do Paul. */
 const INTRO = {
   Beatlemania: `<header class="lv-head"><b>beatlemania</b><span>a história</span></header>
@@ -105,6 +128,7 @@ export function createBook({ catalog, colecao, state, onPaste, onDetail, reduzir
     if (p.tipo === 'capa') {
       const cv = COVER[colecao];
       node.className = `lv-page lv-capa ${cv.cls}`;
+      if (VINIL[colecao]) { node.className = `lv-page lv-capa cv-vinil`; node.innerHTML = `${vinilArt(tot.got, tot.total, VINIL[colecao])}<small class="cv-hint">deslize pra folhear ›</small>`; return; }
       if (colecao === 'Beatlemania') { node.innerHTML = `${beatlesArt(tot.got, tot.total)}<small class="cv-hint">deslize pra folhear ›</small>`; return; }
       node.innerHTML = `<div class="cv-in"><img class="cv-logo" src="assets/logo-nome.png" alt="Beaterista" width="200" height="57"><h2>${cv.titulo}</h2><p>${cv.sub}</p><div class="cv-ring" style="--p:${Math.round((tot.got / tot.total) * 100)}"><b>${tot.got}</b><span>de ${tot.total}</span></div><small>deslize pra folhear ›</small></div>${deco(colecao)}`;
       return;

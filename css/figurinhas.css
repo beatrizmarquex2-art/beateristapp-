@@ -132,6 +132,7 @@
 .cv-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .cv-hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; z-index: 3; color: #fbf6ea; font-size: 13px; text-shadow: 0 1px 3px #000; animation: lv-nudge 1.6s ease-in-out infinite; }
 .cv-beatles.lv-capa { padding: 0; }
+.cv-vinil.lv-capa { padding: 0; background: #17224a !important; animation: none !important; } .cv-vinil::before, .cv-vinil::after { display: none; }
 
 /* telas grandes (iPad, paisagem): o livro fica do tamanho de um álbum de verdade, centralizado */
 .fig-col, .fig-packs { max-width: 440px; margin-left: auto; margin-right: auto; }
@@ -567,7 +568,7 @@
 .lj-sec-ensina .lj-sec-txt { padding-left: 62px; } .lj-sec-ensina .lj-sec-txt small { max-width: 15ch; }
 /* para evoluir: escuro e sóbrio, dourado (conversa com jovens e adultos) */
 .lj-sec-evoluir { background: linear-gradient(160deg, #11172b, #07090f); color: #e9e3d3; border: 1.5px solid #c9a24a; box-shadow: 0 8px 22px #0007, inset 0 0 0 1px #c9a24a33; border-radius: 12px; }
-.lj-sec-evoluir .lj-sec-txt b { font: 400 25px/1.05 'Bodoni Moda', Georgia, serif; letter-spacing: .1em; color: #e9d7a0; } .lj-sec-evoluir .lj-sec-txt small { color: #aeb4c6; font-weight: 500; max-width: 22ch; } .lj-sec-evoluir .lj-sec-txt em { color: #c9a24a; }
+.lj-sec-evoluir .lj-sec-txt b { font: 800 22px/1.1 'Hanken Grotesk', system-ui, sans-serif; letter-spacing: .16em; color: #e9d7a0; } .lj-sec-evoluir .lj-sec-txt small { color: #aeb4c6; font-weight: 500; max-width: 22ch; } .lj-sec-evoluir .lj-sec-txt em { color: #c9a24a; }
 .lj-sec-evoluir .lj-sec-leque img { border-radius: 3px; box-shadow: 0 8px 18px #000a; }
 .lj-sec-evoluir .lj-sec-leque .l0, .lj-sec-evoluir .lj-sec-leque .l2 { transform: rotate(0); } .lj-sec-evoluir .lj-sec-leque .l0 { left: 0; bottom: 0; filter: brightness(.82); } .lj-sec-evoluir .lj-sec-leque .l2 { left: 62px; bottom: 0; filter: brightness(.82); }
 
@@ -582,12 +583,12 @@
 .lj-pg-ensina { background: linear-gradient(170deg, #fff4d6, #ffe3e3); border: 3px solid #14284b; box-shadow: 5px 5px 0 #c4182c; color: #14284b; } .lj-pg-ensina .lj-pg-top h2 { color: #c4182c; }
 /* evoluir: uma coluna, cartões horizontais, tipografia de revista, sem "pílulas" */
 .lj-pg-evoluir { background: linear-gradient(170deg, #10162a, #06080e); border: 1.5px solid #c9a24a; border-radius: 12px; color: #e9e3d3; box-shadow: 0 10px 26px #0008; }
-.lj-pg-evoluir .lj-pg-top h2 { font: 400 30px/1.05 'Bodoni Moda', Georgia, serif; letter-spacing: .1em; color: #e9d7a0; padding-bottom: 8px; border-bottom: 1px solid #c9a24a66; } .lj-pg-evoluir .lj-pg-top p { color: #aeb4c6; font-weight: 500; margin-top: 8px; }
+.lj-pg-evoluir .lj-pg-top h2 { font: 800 26px/1.1 'Hanken Grotesk', system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #e9d7a0; padding-bottom: 8px; border-bottom: 1px solid #c9a24a66; } .lj-pg-evoluir .lj-pg-top p { color: #aeb4c6; font-weight: 500; margin-top: 8px; }
 .lj-pg-evoluir .lj-digital { background: transparent; border: 1px solid #c9a24a55; color: #aeb4c6; border-radius: 8px; font-size: 13px; } .lj-pg-evoluir .lj-digital b { color: #e9d7a0; }
 .lj-pg-evoluir .lj-grid { grid-template-columns: 1fr; gap: 14px; max-width: none; }
 .lj-pg-evoluir .lj-card { display: grid; grid-template-columns: 112px 1fr; grid-template-rows: auto auto auto auto 1fr; gap: 3px 14px; align-items: start; text-align: left; padding: 12px; border-radius: 8px; background: #151b30; border: 1px solid #c9a24a66; }
 .lj-pg-evoluir .lj-capa { grid-row: 1 / span 6; } .lj-pg-evoluir .lj-capa img { border-radius: 3px; box-shadow: 0 8px 18px #000a; }
-.lj-pg-evoluir .lj-card h3 { font: 400 20px/1.1 'Bodoni Moda', Georgia, serif; letter-spacing: .04em; color: #f1e7c6; margin: 0; } .lj-pg-evoluir .lj-card p { color: #aeb4c6; font-size: 13.5px; margin: 2px 0 6px; flex: none; }
+.lj-pg-evoluir .lj-card h3 { font: 800 17px/1.15 'Hanken Grotesk', system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #f1e7c6; margin: 0; } .lj-pg-evoluir .lj-card p { color: #aeb4c6; font-size: 13.5px; margin: 2px 0 6px; flex: none; }
 .lj-pg-evoluir .lj-selo { justify-self: start; background: transparent; border: 1px solid #c9a24a; color: #e9d7a0; border-radius: 3px; letter-spacing: .1em; font-size: 10px; }
 .lj-pg-evoluir .lj-preco, .lj-pg-evoluir .lj-preco-card { justify-self: start; background: transparent; color: #e9d7a0; border: 0; padding: 0; font: 700 22px var(--body, system-ui); border-radius: 0; } .lj-pg-evoluir .lj-de { color: #8a90a5; font-size: 14px; }
 .lj-pg-evoluir .lj-btn { justify-self: start; width: auto; min-width: 150px; background: #c9a24a; color: #0b0f1c; border-radius: 4px; box-shadow: none; font: 800 14px var(--body, system-ui); letter-spacing: .1em; text-transform: uppercase; padding: 11px 16px; }
