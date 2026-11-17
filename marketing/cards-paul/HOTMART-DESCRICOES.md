@@ -1,7 +1,7 @@
 # Descrições para a Hotmart — Cards do Robôterista Paul
 
 Itens entre [colchetes] eu não sei com certeza (formato da folha, número de páginas): confira no PDF antes de publicar.
-Preços e quantidades vêm de `js/loja-config.js`: Teoria 150 cartas R$ 19,90 · Instrumentos 90 cartas R$ 19,90 · Dicionário 120 termos R$ 19,90 · Combo 360 cartas R$ 49,90 (de R$ 59,70).
+Preços e quantidades vêm de `js/loja-config.js`: Teoria 150 cartas R$ 19,90 · Instrumentos 90 cartas R$ 19,90 · Dicionário 75 termos R$ 19,90 · Combo 315 cartas R$ 49,90 (de R$ 59,70).
 
 ---
 ## 1) Cards: Teoria Musical — R$ 19,90
@@ -39,14 +39,14 @@ Quer que a criança (ou você) conheça de verdade o instrumento? São 90 cartas
 
 ---
 ## 3) Cards: Dicionário Musical — R$ 19,90
-**Título:** Cards Dicionário Musical — 120 termos da música (PDF para imprimir)
+**Título:** Cards Dicionário Musical — 75 termos da música (PDF para imprimir)
 **Subtítulo:** os termos que todo músico precisa saber, em cartas fáceis de entender.
 
 **Descrição:**
-Andamento, síncope, compasso, setlist... Reunimos 120 termos da música em cartas com explicação curta e a arte do Robôterista Paul. Imprima, recorte e aprenda brincando.
+Setlist, microfone, ensaio, palco... Reunimos 75 termos da música em cartas com explicação curta e a arte do Robôterista Paul. Imprima, recorte e aprenda brincando.
 
 **O que você recebe:**
-- 120 cartas de termos musicais em PDF
+- 75 cartas de termos musicais em PDF
 - explicação simples em cada carta
 - arquivo pronto para imprimir e recortar
 
@@ -56,14 +56,14 @@ Andamento, síncope, compasso, setlist... Reunimos 120 termos da música em cart
 
 ---
 ## 4) Combo dos 3 Baralhos — R$ 49,90 (de R$ 59,70)
-**Título:** Combo Cards do Robôterista Paul — 360 cartas (Teoria + Instrumentos + Dicionário)
+**Título:** Combo Cards do Robôterista Paul — 315 cartas (Teoria + Instrumentos + Dicionário)
 **Subtítulo:** os 3 baralhos juntos, em PDF para imprimir, com desconto.
 
 **Descrição:**
-Leve a coleção completa: Teoria Musical (150 cartas), Instrumentos (90) e Dicionário Musical (120 termos). São 360 cartas do Robôterista Paul para imprimir, recortar e usar quantas vezes quiser, pagando menos do que comprando separado.
+Leve a coleção completa: Teoria Musical (150 cartas), Instrumentos (90) e Dicionário Musical (75 termos). São 315 cartas do Robôterista Paul para imprimir, recortar e usar quantas vezes quiser, pagando menos do que comprando separado.
 
 **O que você recebe:**
-- 3 baralhos em PDF (360 cartas no total)
+- 3 baralhos em PDF (315 cartas no total)
 - economia de R$ 9,80 em relação à compra separada
 
 **Para quem é:** quem quer a coleção inteira para estudar, ensinar ou dar de presente.
