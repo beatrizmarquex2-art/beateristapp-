@@ -544,3 +544,53 @@
 .lv-card img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 .lv-capa.cv-meu { padding: 0; } .lv-intro-pg .lv-intro-cta { margin-top: 16px; text-align: center; text-decoration: none; display: block; }
 .lv-intro-pg .lv-intro h3 { margin-top: 10px; }
+
+/* ====== Lojinha em seções (nov/2026): Cards · Robôterista ensina · Para evoluir — cada uma com a sua cara ====== */
+.lj-secs { display: grid; gap: 14px; }
+.lj-sec { position: relative; display: grid; grid-template-columns: 1fr 138px; align-items: center; gap: 8px; min-height: 148px; padding: 14px 12px 14px 16px; border-radius: 18px; overflow: hidden; text-decoration: none; -webkit-tap-highlight-color: transparent; transition: transform .15s; }
+.lj-sec:active { transform: scale(.985); } .lj-sec:focus-visible { outline: 3px solid #f6c93b; outline-offset: 3px; }
+.lj-sec-txt { display: grid; gap: 5px; align-content: center; position: relative; z-index: 2; }
+.lj-sec-txt b { font: 400 30px/.95 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+.lj-sec-txt small { font: 600 13.5px/1.25 var(--body, system-ui); max-width: 19ch; } .lj-sec-txt em { font: 800 13px var(--body, system-ui); font-style: normal; letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
+.lj-sec-breve { justify-self: start; font: 800 10.5px var(--body, system-ui); font-style: normal; letter-spacing: .14em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: #f6c93b; color: #14284b; }
+.lj-sec-leque { position: relative; display: block; height: 124px; z-index: 1; }
+.lj-sec-leque img { position: absolute; bottom: 0; width: 70px; height: auto; border-radius: 6px; box-shadow: 0 5px 12px #0006; background: #fff; }
+.lj-sec-leque .l0 { left: 0; transform: rotate(-12deg); bottom: 6px; } .lj-sec-leque .l1 { left: 32px; z-index: 1; bottom: 0; width: 76px; } .lj-sec-leque .l2 { left: 66px; transform: rotate(12deg); bottom: 6px; }
+/* cards: azul e roxo, cara de jogo */
+.lj-sec-cards { background: radial-gradient(120% 90% at 85% 0%, #7a3fe0, transparent 60%), linear-gradient(145deg, #16286d, #3a1b78); color: #fff; border: 3px solid #0e1747; box-shadow: 5px 5px 0 #0e1747; }
+.lj-sec-cards .lj-sec-txt b { color: #ffc63d; } .lj-sec-cards .lj-sec-txt small, .lj-sec-cards .lj-sec-txt em { color: #e7e2ff; }
+.lj-sec-cards::after { content: "★ ♠ ♥ ♦ ♣"; position: absolute; left: 14px; bottom: 6px; font-size: 13px; letter-spacing: 6px; color: #ffffff40; }
+/* robôterista ensina: quente, colorido, com o Paul professor */
+.lj-sec-ensina { background: linear-gradient(135deg, #fff0c6, #ffd9d9); color: #14284b; border: 3px solid #14284b; box-shadow: 5px 5px 0 #c4182c; }
+.lj-sec-ensina .lj-sec-txt b { color: #c4182c; } .lj-sec-ensina .lj-sec-txt em { color: #14284b; }
+.lj-sec-ensina::before { content: ""; position: absolute; left: -10px; bottom: -6px; width: 86px; height: 96px; background: url(../assets/paul/colorido/paul-professor.webp) left bottom / contain no-repeat; opacity: .9; z-index: 0; }
+.lj-sec-ensina .lj-sec-txt { padding-left: 62px; } .lj-sec-ensina .lj-sec-txt small { max-width: 15ch; }
+/* para evoluir: escuro e sóbrio, dourado (conversa com jovens e adultos) */
+.lj-sec-evoluir { background: linear-gradient(160deg, #11172b, #07090f); color: #e9e3d3; border: 1.5px solid #c9a24a; box-shadow: 0 8px 22px #0007, inset 0 0 0 1px #c9a24a33; border-radius: 12px; }
+.lj-sec-evoluir .lj-sec-txt b { font: 400 25px/1.05 'Bodoni Moda', Georgia, serif; letter-spacing: .1em; color: #e9d7a0; } .lj-sec-evoluir .lj-sec-txt small { color: #aeb4c6; font-weight: 500; max-width: 22ch; } .lj-sec-evoluir .lj-sec-txt em { color: #c9a24a; }
+.lj-sec-evoluir .lj-sec-leque img { border-radius: 3px; box-shadow: 0 8px 18px #000a; }
+.lj-sec-evoluir .lj-sec-leque .l0, .lj-sec-evoluir .lj-sec-leque .l2 { transform: rotate(0); } .lj-sec-evoluir .lj-sec-leque .l0 { left: 0; bottom: 0; filter: brightness(.82); } .lj-sec-evoluir .lj-sec-leque .l2 { left: 62px; bottom: 0; filter: brightness(.82); }
+
+/* páginas das seções */
+.lj-pg { padding: 14px 12px 18px; border-radius: 18px; } .lj-volta { display: inline-block; font: 800 14px var(--body, system-ui); text-decoration: none; color: inherit; opacity: .85; padding: 6px 2px; } .lj-volta-b { justify-self: center; margin-top: 4px; }
+.lj-pg-top h2 { margin: 2px 0 4px; font: 400 36px/1 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; } .lj-pg-top p { margin: 0 0 8px; font: 600 15px/1.3 var(--body, system-ui); }
+.lj-pg-cards { background: radial-gradient(120% 70% at 90% 0%, #6a35c8aa, transparent 60%), linear-gradient(170deg, #14246a, #2d1668); color: #fff; border: 3px solid #0e1747; }
+.lj-pg-cards .lj-pg-top h2 { color: #ffc63d; } .lj-pg-cards .lj-digital { background: #ffffff14; border-color: #ffffff40; color: #e7e2ff; }
+.lj-pg-cards .lj-card { background: #ffffff12; border: 1.5px solid #9d86ff80; } .lj-pg-cards .lj-card h3 { color: #fff; } .lj-pg-cards .lj-card p { color: #d9d4ff; }
+.lj-pg-cards .lj-btn { background: #ffb21f; color: #17205a; box-shadow: 0 3px 0 #b07200; } .lj-pg-cards .lj-btn.breve { background: #4a4f86; color: #c9ccee; box-shadow: none; }
+.lj-pg-cards .lj-selo { background: #ffc63d; color: #17205a; } .lj-pg-cards .lj-preco { background: #ffffff; color: #2d1668; } .lj-pg-cards .lj-de { color: #6b6b8a; }
+.lj-pg-ensina { background: linear-gradient(170deg, #fff4d6, #ffe3e3); border: 3px solid #14284b; box-shadow: 5px 5px 0 #c4182c; color: #14284b; } .lj-pg-ensina .lj-pg-top h2 { color: #c4182c; }
+/* evoluir: uma coluna, cartões horizontais, tipografia de revista, sem "pílulas" */
+.lj-pg-evoluir { background: linear-gradient(170deg, #10162a, #06080e); border: 1.5px solid #c9a24a; border-radius: 12px; color: #e9e3d3; box-shadow: 0 10px 26px #0008; }
+.lj-pg-evoluir .lj-pg-top h2 { font: 400 30px/1.05 'Bodoni Moda', Georgia, serif; letter-spacing: .1em; color: #e9d7a0; padding-bottom: 8px; border-bottom: 1px solid #c9a24a66; } .lj-pg-evoluir .lj-pg-top p { color: #aeb4c6; font-weight: 500; margin-top: 8px; }
+.lj-pg-evoluir .lj-digital { background: transparent; border: 1px solid #c9a24a55; color: #aeb4c6; border-radius: 8px; font-size: 13px; } .lj-pg-evoluir .lj-digital b { color: #e9d7a0; }
+.lj-pg-evoluir .lj-grid { grid-template-columns: 1fr; gap: 14px; max-width: none; }
+.lj-pg-evoluir .lj-card { display: grid; grid-template-columns: 112px 1fr; grid-template-rows: auto auto auto auto 1fr; gap: 3px 14px; align-items: start; text-align: left; padding: 12px; border-radius: 8px; background: #151b30; border: 1px solid #c9a24a66; }
+.lj-pg-evoluir .lj-capa { grid-row: 1 / span 6; } .lj-pg-evoluir .lj-capa img { border-radius: 3px; box-shadow: 0 8px 18px #000a; }
+.lj-pg-evoluir .lj-card h3 { font: 400 20px/1.1 'Bodoni Moda', Georgia, serif; letter-spacing: .04em; color: #f1e7c6; margin: 0; } .lj-pg-evoluir .lj-card p { color: #aeb4c6; font-size: 13.5px; margin: 2px 0 6px; flex: none; }
+.lj-pg-evoluir .lj-selo { justify-self: start; background: transparent; border: 1px solid #c9a24a; color: #e9d7a0; border-radius: 3px; letter-spacing: .1em; font-size: 10px; }
+.lj-pg-evoluir .lj-preco, .lj-pg-evoluir .lj-preco-card { justify-self: start; background: transparent; color: #e9d7a0; border: 0; padding: 0; font: 700 22px var(--body, system-ui); border-radius: 0; } .lj-pg-evoluir .lj-de { color: #8a90a5; font-size: 14px; }
+.lj-pg-evoluir .lj-btn { justify-self: start; width: auto; min-width: 150px; background: #c9a24a; color: #0b0f1c; border-radius: 4px; box-shadow: none; font: 800 14px var(--body, system-ui); letter-spacing: .1em; text-transform: uppercase; padding: 11px 16px; }
+.lj-pg-evoluir .lj-preco-card { white-space: nowrap; font-size: 21px; } .lj-pg-evoluir .lj-btn.breve { background: #2a3048; color: #8a90a5; } .lj-pg-evoluir .lj-volta { color: #c9a24a; }
+@media (min-width: 700px) { .lj-secs, .lj-pg { max-width: 560px; margin-left: auto; margin-right: auto; } .lj-pg-cards .lj-grid, .lj-pg-ensina .lj-grid { max-width: none; } }
+@media (prefers-reduced-motion: reduce) { .lj-sec { transition: none; } }

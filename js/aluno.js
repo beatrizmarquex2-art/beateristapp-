@@ -287,6 +287,7 @@ function dicasEstudoView(view) {
 function lojinhaView(view, parts = []) {
   // os depoimentos (só texto) aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js)
   const aba = LOJA_ABERTA && parts[0] === 'depoimentos' ? parts[0] : 'loja';
+  const secaoLoja = ['cards', 'ensina', 'evoluir'].includes(parts[0]) ? parts[0] : ''; // `#/lojinha/<seção>` abre os produtos daquela seção
   const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
   if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
@@ -298,7 +299,7 @@ function lojinhaView(view, parts = []) {
   const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
   drawPedido();
   const vitrineBox = h('div');
-  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine()); });
+  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine(secaoLoja)); });
   view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
