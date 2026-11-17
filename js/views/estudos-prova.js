@@ -32,7 +32,7 @@ export function abrirProva(cfg, aoFim) {
   const fim = async () => {
     const est = estrelasProva(acertos, cfg.rodadas.length);
     ov.replaceChildren(h('div', { class: 'pv-box' }, h('h2', {}, est === 3 ? 'mandou bem demais! 🎉' : est ? 'boa, quase lá!' : 'ainda não foi, mas ouve de novo e tenta'), h('div', { class: 'pv-st', 'aria-label': `${est} estrelas` }, '★'.repeat(est) + '☆'.repeat(3 - est)),
-      h('p', {}, `${acertos} de ${cfg.rodadas.length} certas · cada acorde ou ritmo paga até 3 ★ na vida`), h('button', { type: 'button', class: 'btn primary', onclick: fecha }, 'fechar'), h('button', { type: 'button', class: 'btn ghost', onclick: () => { i = 0; acertos = 0; tela(); } }, 'tentar de novo')));
+      h('p', {}, `${acertos} de ${cfg.rodadas.length} certas · cada prova paga até 3 ★ na vida`), h('button', { type: 'button', class: 'btn primary', onclick: fecha }, 'fechar'), h('button', { type: 'button', class: 'btn ghost', onclick: () => { i = 0; acertos = 0; tela(); } }, 'tentar de novo')));
     if (est) { try { const E = await import('../jogos/estrelas-jogo.js'); await E.ganhou('estudos', est, cfg.chave); } catch { /* sem estrela */ } }
     if (aoFim) aoFim(est);
   };

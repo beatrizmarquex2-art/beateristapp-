@@ -7,6 +7,7 @@ import { CATS, TERMS, searchTerms, byId } from '../glossary.js';
 import { TITLE_PT } from '../catalog.js';
 import { playBeat, stopBeat, playingId } from './beatlab.js';
 import { banner } from '../ui.js';
+import { abrirProva, botaoProva, sorteia } from './estudos-prova.js';
 import { alunoSemCodigo, GRATIS, avisoCodigo } from '../amostra.js';
 
 /** Exemplo do termo vira um ritmo completo do Beat Lab (todas as linhas da grade). */
@@ -15,6 +16,14 @@ export const beatOf = (x) => x.ex && {
   rows: Object.fromEntries(B.ROWS.map((r) => [r.id, x.ex.rows[r.id] || Array(x.ex.steps).fill(0)])),
   acc: x.ex.acc || Array(x.ex.steps).fill(0),
 };
+
+const BLOCO = 5; const blocoDe = (x) => Math.floor(TERMS.indexOf(x) / BLOCO);
+/** Prova de um bloco de 5 termos: 3 perguntas ("que termo é este?"), 1 ★ por acerto. A chave é do bloco (ordem fixa do dicionário), então filtrar por tema não repete a estrela. */
+function provaBloco(n) {
+  const termos = TERMS.slice(n * BLOCO, n * BLOCO + BLOCO); const alvos = sorteia(termos).slice(0, 3);
+  abrirProva({ chave: `dic|bloco${n + 1}`, titulo: `dicionário · bloco ${n + 1}`, rodadas: alvos.map((x) => ({ enun: h('span', {}, 'que termo é este?', h('em', { style: 'font-weight:600;font-style:normal;display:block;margin-top:6px' }, `“${x.d}”`)),
+    opcoes: [x, ...sorteia([...termos.filter((y) => y !== x), ...sorteia(TERMS.filter((y) => !termos.includes(y)))]).slice(0, 3)].map((y) => ({ rot: y.t, ok: y === x })) })) });
+}
 
 export function mount(host, parts = []) {
   let q = ''; let cat = ''; let open = parts[0] || null;
@@ -50,7 +59,9 @@ export function mount(host, parts = []) {
     chips.replaceChildren(...[['', 'todos'], ...CATS].map(([id, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cat === id), class: `lib-tab${cat === id ? ' on' : ''}`, onclick: () => { cat = id; draw(); } }, t)));
     setTimeout(() => { const on = chips.querySelector('.lib-tab.on'); if (on && on.scrollIntoView) on.scrollIntoView({ inline: 'center', block: 'nearest' }); }, 0);
     const shown = searchTerms(q, TERMS.filter((x) => !cat || x.cat === cat));
-    list.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
+    const nodes = []; let atual = -1;
+    shown.forEach((x) => { const b = blocoDe(x); if (b !== atual) { atual = b; nodes.push(h('div', { class: 'pad-x dc-bloco', style: 'display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 2px' }, h('b', {}, `bloco ${b + 1} · ${b * BLOCO + 1}–${Math.min(TERMS.length, (b + 1) * BLOCO)}`), alunoSemCodigo() ? null : botaoProva(() => provaBloco(b)))); } nodes.push(card(x)); });
+    list.replaceChildren(...(shown.length ? nodes : [h('p', { class: 'pad-x muted' }, 'não achei esse termo. me pede que eu coloco!')]));
   };
   host.append(banner('Dicionário Musical', alunoSemCodigo() ? `veja ${GRATIS.termos} de ${TERMS.length} termos de graça` : `${TERMS.length} termos explicados, com exemplo tocando`), h('div', { class: 'pad-x dc-search' }, search), chips, h('div', { class: 'pad-x' }, aviso), list,
     h('p', { class: 'pad-x lib-note' }, 'toque no termo pra abrir a dica e o exemplo. o nome em inglês aparece porque é assim que você vai achar em vídeo e partitura de fora.'));

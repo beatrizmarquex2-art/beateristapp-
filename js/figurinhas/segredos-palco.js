@@ -1,12 +1,12 @@
 // Segredos do Palco (easter eggs): toque certo = 3 ★ na 1ª vez (nome grande na tela) e, nas outras, só um brilhinho com notinhas.
 //  · bateria / eletrônica: Believer = 4 no surdo + caixa · We Will Rock You = surdo, tom, surdo, tom + caixa · Sunflower = 4 no chimbal + caixa
 //  · cajón (só grave e agudo): Believer = 4 graves + agudo · We Will Rock You = 2 graves + agudo · Sunflower = 4 agudos + grave
-//  · teclado, xilofone e violão (notas): Dó Ré Mi Fá Fá Fá
+//  · teclado, xilofone e violão (notas): Dó Ré Mi Fá
 // A estrela vem de `ganhou('palco', 3, 'segredo|id')`: cada segredo paga uma vez na vida (sem repetir), e sem código só aparece o efeito.
 const DRUM = { believer: 'FFFFS', wwry: 'FTFTS', sunflower: 'HHHHS' };
 const CAJON = { believer: 'FFFFS', wwry: 'FFS', sunflower: 'SSSSF' };
-const NOMES = { believer: 'Believer', wwry: 'We Will Rock You', sunflower: 'Sunflower', melodia: 'Dó Ré Mi Fá Fá Fá' };
-const MELODIA = [0, 2, 4, 5, 5, 5];
+const NOMES = { believer: 'Believer', wwry: 'We Will Rock You', sunflower: 'Sunflower', melodia: 'Dó Ré Mi Fá' };
+const MELODIA = [0, 2, 4, 5];
 const ORDEM = ['believer', 'wwry', 'sunflower'];
 const JANELA = 1300; // ms entre uma batida e a outra
 let buf = '', ult = 0, nbuf = [], nult = 0;
