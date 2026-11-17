@@ -40,6 +40,7 @@ export function mount(host) {
     };
     root.replaceChildren(
       h('p', { class: 'rd-intro' }, 'toque o padrão das mãos: ', h('b', {}, 'E'), ' = mão esquerda, ', h('b', {}, 'D'), ' = mão direita. toque na tela ou com o microfone, em colcheias ou semicolcheias. ', `${MIN_ACERTO}% de acerto passa.`),
+      h('div', { class: 'rd-parc' }, h('img', { src: 'assets/marcas/padgorilla-branco.png', alt: 'Pad Gorilla', width: 74, height: 38, decoding: 'async' }), h('span', {}, 'Rudimentix com a parceira da Bea, a Pad Gorilla. bora treinar os rudimentos!')),
       h('p', { class: 'rd-total' }, `★ ${totalEstrelas(e)}/${FASES.length * 24}`),
       ...BLOCOS.map((b) => h('section', { class: 'rd-bloco' }, h('h3', { class: 'rd-bloco-h' }, `${b.n}. ${b.nome}`), h('div', { class: 'rd-fases' }, ...FASES.filter((f) => f.bloco === b.n).map(card)))));
   };

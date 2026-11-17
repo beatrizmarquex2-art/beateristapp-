@@ -1,6 +1,6 @@
 // Áudio do app: um único AudioContext, cliques e caixa sintetizados (sem amostras de terceiros, funciona offline).
 // Agendamento pelo relógio do AudioContext (olha 120 ms à frente a cada 25 ms) — nunca setInterval tocando som direto.
-let ctx = null, master = null, noiseBuf = null;
+let ctx = null, master = null, noiseBuf = null, lim = null;
 
 // iPhone: o Web Audio fica mudo com o botão de silencioso ligado. Tocar um <audio> mudo em loop (e pedir sessão 'playback') faz o som sair mesmo assim.
 let muted = false;
@@ -64,13 +64,27 @@ if (typeof document !== 'undefined') {
   });
 }
 
+/** Saída final de TUDO que toca no app (efeitos, música de fundo, ambiente, voz do Paul): um limitador antes do alto-falante.
+ *  Antes, as várias fontes (efeitos + música + ambiente) somavam direto no destino e passavam de 1.0: o som "estourava" e, no iPhone, a saída ficava
+ *  distorcida e travada (relatado pela Bea, 17/nov/2026). O limitador segura o pico sem mudar o volume de quem toca baixinho. */
+export function destino() {
+  const c = ctx || audio(false); if (!c) return null;
+  if (!lim || lim.context !== c) {
+    lim = c.createDynamicsCompressor();
+    lim.threshold.value = -10; lim.knee.value = 3; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.12;
+    const folga = c.createGain(); folga.gain.value = 0.75; // folga depois do limitador: o pico que escapa no ataque não encosta no teto
+    lim.connect(folga); folga.connect(c.destination);
+  }
+  return lim;
+}
+
 export function audio(mark = true) {
   if (mark) lastUse = Date.now();
   if (!ctx) {
     playbackMode();
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({ latencyHint: 'interactive' });
-    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(destino());
     ana = ctx.createAnalyser(); ana.fftSize = 256; master.connect(ana);
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
@@ -198,7 +212,7 @@ export function silence() {
   if (!ctx || !master) return;
   const old = master; const t = ctx.currentTime;
   old.gain.setTargetAtTime(0, t, 0.01); setTimeout(() => { try { old.disconnect(); } catch { /* já saiu */ } }, 80);
-  master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ctx.destination);
+  master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(destino());
 }
 
 /** Converte um instante do relógio da tela (event.timeStamp / performance.now) pro relógio do som que está SAINDO no alto-falante. */

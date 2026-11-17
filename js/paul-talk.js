@@ -1,7 +1,7 @@
 // O Paul fala: clicar nele faz um barulhinho de robô e, de vez em quando, um pensamento dele aparece numa nuvem.
 // Os pensamentos com link abrem a rede/site da Bea. Não aparecem no meio de uma música (jogo em tela cheia).
 import { h } from './util.js';
-import { audio } from './audio.js';
+import { audio, destino } from './audio.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer';
 // Link da avaliação no Google: quando a Bea mandar o endereço, é só colocar aqui (vazio = a nuvem aparece sem link).
@@ -92,7 +92,7 @@ export function chirp() {
       const t = t0 + i * 0.085; const o = c.createOscillator(); const g = c.createGain();
       o.type = i % 2 ? 'triangle' : 'square'; o.frequency.setValueAtTime(base * m, t); o.frequency.exponentialRampToValueAtTime(base * m * 1.18, t + 0.07);
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-      if (localStorage.getItem('bt-mute') !== '1') o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.1);
+      if (localStorage.getItem('bt-mute') !== '1') o.connect(g).connect(destino()); o.start(t); o.stop(t + 0.1);
     });
   } catch { /* sem áudio */ }
 }

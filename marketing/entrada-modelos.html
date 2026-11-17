@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Entrada da área dos alunos · 3 modelos</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+/* Maquetes da nova entrada (não é o app): ?m=A|B|C · 390×844 */
+*{box-sizing:border-box;margin:0}
+body{width:390px;height:844px;overflow:hidden;font-family:"Hanken Grotesk",system-ui,sans-serif;font-weight:700;color:#14111a}
+.top{display:flex;align-items:center;gap:10px;padding:14px 16px 0}.top img.s{height:42px}.top img.n{height:30px}.top .sp{flex:1}
+.red{display:inline-flex;width:40px;height:40px;border-radius:50%;background:#b8162b;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.paul{display:block}
+.f{display:block;width:100%;border:3px solid #14111a;background:#fffdf7;border-radius:12px;padding:14px 16px;font:700 16px "Hanken Grotesk";color:#8a8478}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font:400 24px/1 Anton,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:#b8162b;box-shadow:0 5px 0 rgba(0,0,0,.35);text-align:center}
+.termo{font:600 11px/1.35 "Hanken Grotesk";opacity:.75;text-align:center}.termo u{font-weight:800}
+.parc{display:flex;justify-content:center;align-items:center;gap:18px;opacity:.9}.parc img{height:34px}
+/* A · palco */
+.A{background:radial-gradient(120% 60% at 50% 0,#3a4aa0 0,#162146 52%,#0a0f26 100%);color:#fff7e6;position:relative}
+.A:before{content:"";position:absolute;left:50%;top:60px;width:340px;height:340px;margin-left:-170px;background:conic-gradient(from 160deg at 50% 0,transparent 0 0deg,rgba(255,236,170,.18) 0 40deg,transparent 40deg)}
+.A .top .n{filter:brightness(0) invert(1)}
+.A h1{font:400 40px/1 Anton;text-transform:uppercase;text-align:center;margin-top:6px;letter-spacing:.01em;position:relative}.A h1 span{color:#f2a91b}
+.A .sub{text-align:center;font:700 15px/1.3 "Hanken Grotesk";margin:6px 28px 0;position:relative;opacity:.9}
+.A .paul{height:210px;margin:6px auto 0;position:relative}
+.A .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 16px 0;position:relative}
+.A .tiles div{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:14px;padding:8px 2px;text-align:center;font:800 11px/1.1 "Hanken Grotesk"}.A .tiles b{display:block;font-size:22px;margin-bottom:3px}
+.A .form{margin:14px 16px 0;display:grid;gap:9px;position:relative}.A .f{border-color:#fff7e6;background:#fffdf7}
+.A .btn{background:#f2a91b;color:#162146;box-shadow:0 5px 0 rgba(0,0,0,.4)}
+.A .termo{margin:10px 24px 0;position:relative;color:#f1ead8}
+.A .link{text-align:center;font:800 13px "Hanken Grotesk";margin-top:8px;text-decoration:underline;position:relative}
+/* B · papel (igual ao app de hoje, mais limpo) */
+.B{background:#f1ebe0 url() ;background-image:repeating-linear-gradient(#f1ebe0 0 27px,#e6dfd0 27px 28px)}
+.B .card{margin:14px 16px 0;border:2px solid #b8162b;background:#fffdf7;border-radius:6px;box-shadow:0 8px 0 rgba(0,0,0,.12);padding:16px}
+.B .head{display:flex;align-items:center;gap:8px}.B .head img{height:150px;margin:-6px 0 -6px -6px}
+.B .bal{font:700 21px/1.15 "Permanent Marker","Hanken Grotesk";color:#14111a;transform:rotate(-2deg)}.B .bal b{color:#b8162b}
+.B .tiles{display:flex;gap:8px;margin:6px 0 12px}.B .tiles div{flex:1;border:2px solid #14111a;border-radius:10px;background:#fff;text-align:center;padding:7px 2px;font:800 11px/1.1 "Hanken Grotesk"}.B .tiles b{display:block;font-size:20px}
+.B .form{display:grid;gap:9px}.B .cod{display:flex;gap:8px;align-items:center;background:#ffe08a;border:3px solid #14111a;border-radius:12px;padding:10px}.B .cod .f{padding:10px 12px;flex:1;border-width:2px}.B .cod small{font:800 12px/1.15 "Hanken Grotesk";width:78px;text-align:center}
+.B .termo{margin:12px 22px}.B .parc{margin-top:16px}
+/* C · passe de backstage */
+.C{background:#14111a;color:#14111a}
+.C .top .n{filter:brightness(0) invert(1)}
+.C .passe{position:relative;margin:16px 22px 0;background:#fffdf7;border-radius:22px;padding:0 0 16px;box-shadow:0 10px 0 rgba(0,0,0,.45);overflow:hidden}
+.C .passe:before{content:"";position:absolute;left:50%;top:10px;width:64px;height:10px;margin-left:-32px;border-radius:9px;background:#14111a;opacity:.85}
+.C .faixa{background:#b8162b;color:#fff;margin-top:30px;padding:8px 16px;display:flex;justify-content:space-between;font:400 15px/1 Anton;letter-spacing:.14em;text-transform:uppercase}
+.C .foto{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:12px 16px 0}.C .foto img{height:120px}
+.C .foto .q{flex:1;font:400 28px/1 Anton;text-transform:uppercase;letter-spacing:.01em}.C .foto .q small{display:block;font:700 13px/1.25 "Hanken Grotesk";margin-top:6px;text-transform:none;opacity:.8}
+.C .pr{margin:12px 16px 0;display:grid;gap:9px}.C .f{border-color:#14111a;border-style:solid;border-radius:6px}
+.C .sel{display:flex;gap:6px;margin:12px 16px 0;font:800 11px/1 "Hanken Grotesk"}.C .sel span{flex:1;border:2px dashed #b8162b;color:#b8162b;border-radius:99px;padding:7px 2px;text-align:center}
+.C .btn{margin:14px 16px 0;width:calc(100% - 32px)}
+.C .termo{margin:12px 24px 0;color:#e8e2d4}.C .parc{margin-top:14px;filter:invert(1);opacity:.85}
+</style></head><body>
+<div id="r"></div>
+<script>
+var m=new URLSearchParams(location.search).get('m')||'A';
+var P='../assets/paul/colorido/', ICO='../assets/icons/', S='../assets/logo-512.png', N='../assets/logo-nome.png';
+var topo='<div class="top"><img class="s" src="'+S+'"><img class="n" src="'+N+'"><span class="sp"></span><span class="red"></span><span class="red"></span></div>';
+var parc='<div class="parc"><img src="../assets/marcas/beaterista.png" style="display:none"><img src="../assets/marcas/nagano.png"><img src="../assets/marcas/beaterista.png"></div>';
+var TERMO='o conteúdo da Beaterista é de uso pessoal. copiar, vender ou compartilhar sem permissão não é permitido. <u>ler tudo</u>';
+var H={
+A:'<div class="A" style="height:844px">'+topo+'<h1>bora <span>tocar?</span></h1><div class="sub">jogos, aulas do Paul e um dicionário de música. entra só com o seu nome.</div><img class="paul" src="'+P+'paul-microfone.webp"><div class="tiles"><div><b>🎮</b>jogos</div><div><b>📚</b>aulas</div><div><b>📖</b>dicionário</div><div><b>🃏</b>figurinhas</div></div><div class="form"><div class="f">seu nome</div><div class="f">código de aluno (se tiver)</div><div class="btn">entrar</div></div><div class="link">entrar sem código</div><div class="termo">'+TERMO+'</div></div>',
+B:'<div class="B" style="height:844px">'+topo+'<div class="card"><div class="head"><img src="'+P+'paul-oculos.webp"><div class="bal">oi! eu sou o <b>Paul</b>, assistente da Bea. <br>bora tocar?</div></div><div class="tiles"><div><b>🎮</b>jogos</div><div><b>📚</b>aulas</div><div><b>📖</b>dicionário</div><div><b>🃏</b>figurinhas</div></div><div class="form"><div class="f">seu nome</div><div class="cod"><div class="f">código de aluno</div><small>não tem? <br>entre sem código</small></div><div class="btn">entrar</div></div></div><div class="termo">'+TERMO+'</div>'+parc+'</div>',
+C:'<div class="C" style="height:844px">'+topo+'<div class="passe"><div class="faixa"><span>passe de aluno</span><span>no. 0001</span></div><div class="foto"><img src="'+P+'paul-guitarra.webp"><div class="q">seu passe pra<br>entrar no show<small>jogos, aulas do Paul e dicionário de música</small></div></div><div class="pr"><div class="f">seu nome</div><div class="f">código de aluno (se tiver)</div></div><div class="sel"><span>🎮 jogos</span><span>📚 aulas</span><span>📖 dicionário</span><span>🃏 figurinhas</span></div><div class="btn">entrar no show</div></div><div class="termo">'+TERMO+'</div>'+parc+'</div>'};
+document.getElementById('r').innerHTML=H[m];
+Promise.all([].slice.call(document.images).map(function(im){return im.complete?0:new Promise(function(ok){im.onload=im.onerror=ok;});})).then(function(){return document.fonts.ready;}).then(function(){window.__pronto=true;});
+</script></body></html>

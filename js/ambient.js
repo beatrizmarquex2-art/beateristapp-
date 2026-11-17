@@ -1,6 +1,6 @@
 // Motor do estúdio de ambiente: sons gerados aqui no aparelho (ruído filtrado + eventos aleatórios), sem baixar áudio de ninguém.
 // Fica vivo no módulo: trocar de tela não para o som. O player do YouTube mora no "dock" (fora da tela que troca).
-import { audio } from './audio.js';
+import { audio, destino } from './audio.js';
 import { clean, ytEmbed, sleepLeft } from './ambient-logic.js';
 
 let out = null; let mix = {}; let playing = false; let sleepAt = 0; let sleepTimer = 0; let yt = null;
@@ -51,7 +51,7 @@ const BUILD = {
 
 function ensureOut(c) {
   if (out) return out;
-  out = c.createGain(); out.gain.value = 0.0001; out.connect(c.destination);
+  out = c.createGain(); out.gain.value = 0.0001; out.connect(destino());
   return out;
 }
 function setChan(c, id, v) {
