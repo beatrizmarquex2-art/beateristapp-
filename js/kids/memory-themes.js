@@ -22,7 +22,7 @@ export const THEMES = [
   { id: 'partitura', title: 'Partitura e peças', emoji: '🎼', blurb: 'a peça e a posição na pauta', items: all(M.bateria), verso: M.bateria.verso },
   { id: 'profissoes', title: 'Profissões da música', emoji: '🎤', blurb: 'maestro, DJ, baterista…', items: all(M.profissoes), verso: M.profissoes.verso },
   { id: 'palco', title: 'Palco e estúdio', emoji: '🎚️', blurb: 'microfone, mesa de som, pedal…', items: all(M.palco), verso: M.palco.verso },
-  { id: 'misturado', title: 'Tudo misturado', emoji: '🌈', blurb: 'todas as cartas juntas', items: all(...Object.values(M)), verso: null },
+  { id: 'misturado', title: 'Tudo misturado', emoji: '🌈', blurb: 'todas as cartas juntas', items: all(...Object.values(M)), verso: 'assets/memoria/verso-misturado.webp' }, // arte da Bea (a tela do jogo com todos os temas)
 ];
 /** Tema só do modo livre (não entra em THEMES, que a aventura usa): só os 8 instrumentos de percussão. Aberto pra todos (pedido da Bea). */
 export const TEMA_PERCUSSAO = { id: 'percussao', title: 'Percussão', emoji: '🥁', blurb: 'pandeiro, tamborim, agogô…', items: all(M.percussao), verso: M.percussao.verso };
