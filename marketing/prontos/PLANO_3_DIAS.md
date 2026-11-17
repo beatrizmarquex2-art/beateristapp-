@@ -1,5 +1,7 @@
 # Plano de 3 dias (sábado 14 a segunda 16/nov/2026)
 
+> **ATUALIZAÇÃO (17/nov): o gibi NÃO vai pro ar.** Não postar nada do gibi (reel 28, carrossel `gibi_carrossel_*`, stories `story_gibi_*`, destaque "gibi"). A Bea decidiu que entram no lugar os **Cards do Robôterista Paul** (baralhos de teoria, instrumentos e dicionário), por enquanto "em breve" na Lojinha. Os stories de pergunta (`story_gibi_2` e `story_gibi_3`, "por que o violão tem dois mis?") não citam o gibi pelo preço, mas a resposta mostra a página do gibi: também é melhor não usar.
+
 Feito em 14/nov. Horários de Brasília, são sugestão: ajustar pelos horários em que os seguidores estão online (Insights do Instagram).
 
 - Cada dia tem um pacote `.zip` (entregue à Bea pelo chat) com os arquivos numerados na ordem e um `LEGENDAS.txt`.
