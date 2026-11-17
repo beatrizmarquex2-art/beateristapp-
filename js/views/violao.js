@@ -1,4 +1,5 @@
 // Violão na tela: escolhe o acorde e passa o dedo nas cordas (pra baixo e pra cima). Corda de verdade (ver instruments.js).
+import * as SEG from '../figurinhas/segredos-palco.js';
 import { h } from '../util.js';
 import { audio, isMuted, setMuted } from '../audio.js';
 import { banner } from '../ui.js';
@@ -85,7 +86,7 @@ export function mount(host) {
     })]);
     frets.replaceChildren(...cab, ...linhas);
   };
-  const toca = (m, vel) => { const c = audio(); pluck(m, vel, c.currentTime + 0.005, sound, mute); };
+  const toca = (m, vel) => { SEG.nota(m); const c = audio(); pluck(m, vel, c.currentTime + 0.005, sound, mute); };
   const brilha = (el) => { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 200); };
   const celula = (e) => { const t = document.elementFromPoint(e.clientX, e.clientY); const el = t && t.closest && t.closest('.ti-fc'); return el && frets.contains(el) ? el : null; };
   const vivo = new Map();

@@ -1,4 +1,5 @@
 // Xilofone na tela: barras coloridas (cada nota tem a sua cor em qualquer oitava), dá pra deslizar o dedo. Escala pentatônica = nenhuma nota soa errada.
+import * as SEG from '../figurinhas/segredos-palco.js';
 import { h } from '../util.js';
 import { audio } from '../audio.js';
 import { banner } from '../ui.js';
@@ -57,7 +58,7 @@ export function mount(host) {
   const at = (e) => { const t = document.elementFromPoint(e.clientX, e.clientY); const el = t && t.closest && t.closest('.ti-bar'); return el && xy.contains(el) ? el : null; };
   const strike = (el, e, glide) => {
     const r = el.getBoundingClientRect(); const cen = 1 - Math.min(1, Math.abs(e.clientY - (r.top + r.height / 2)) / (r.height / 2));
-    mallet(+el.dataset.m, (glide ? 0.7 : 0.8) + cen * 0.25, sound); squish(el); ripple(e.clientX, e.clientY);
+    SEG.nota(+el.dataset.m); mallet(+el.dataset.m, (glide ? 0.7 : 0.8) + cen * 0.25, sound); squish(el); ripple(e.clientX, e.clientY);
   };
   xy.addEventListener('pointerdown', (e) => { audio(); e.preventDefault(); try { xy.setPointerCapture(e.pointerId); } catch { /* sem captura */ } const el = at(e); live.set(e.pointerId, el); if (el) strike(el, e, false); });
   xy.addEventListener('pointermove', (e) => { if (!live.has(e.pointerId)) return; const el = at(e); if (el !== live.get(e.pointerId)) { live.set(e.pointerId, el); if (el) strike(el, e, true); } });

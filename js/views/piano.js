@@ -1,5 +1,6 @@
 // Piano de referência: um teclado na tela pra tirar melodia de ouvido e conferir nota. Sons sintetizados aqui (sem amostras),
 // vários dedos ao mesmo tempo, teclado do computador, nome das notas e um gravador de frase curta.
+import * as SEG from '../figurinhas/segredos-palco.js';
 import { h } from '../util.js';
 import * as store from '../store.js';
 import { audio, out } from '../audio.js';
@@ -57,7 +58,7 @@ export function mount(host) {
 
   const down = (id, midi) => {
     if (live.has(id)) return; const c = conf();
-    const v = voice(midi, c.sound); live.set(id, { midi, v, t0: performance.now() });
+    SEG.nota(midi); const v = voice(midi, c.sound); live.set(id, { midi, v, t0: performance.now() });
     const el = keyEl(midi); if (el) el.classList.add('on');
     shown.textContent = `${nameOf(midi, 'pt')} · ${nameOf(midi, 'cifra')} · ${Math.round(hzOf(midi))} Hz`;
     if (recording && take.length < 200) take.push({ midi, at: (performance.now() - rt0) / 1000, len: 0.4 });

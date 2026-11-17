@@ -1,6 +1,7 @@
 // Bateria de toque: kit na tela com vários dedos ao mesmo tempo (e teclado no computador).
 // Modo gravar: conta 4, você toca N compassos com o clique e o app arredonda pra grade de semicolcheias
 // (vira ritmo do Beat Lab ou partitura). É um rascunho do que você tocou, não transcrição perfeita.
+import * as SEG from '../figurinhas/segredos-palco.js';
 import { h, icon } from '../util.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
@@ -51,6 +52,7 @@ export function mount(host) {
   /** `dr` = onde o dedo caiu na peça (0 = no meio, 1 = na borda): no meio bate mais forte; na borda da caixa vira aro; no meio da condução, sino. */
   const hit = (id, perfMs, dr = 0.3, pt) => {
     const c = audio(); const v = velAt(dr); const som = kitSom(modeloAtual); if (som[id]) som[id](c.currentTime, v, dr); // o som primeiro: nada pode atrasar a batida
+    SEG.bateria(modeloAtual, id); // segredos do Palco
     const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (pt) spark(pt.x, pt.y, el);
     nomeEl.textContent = (modeloAtual === 'cajon' && { bd: 'grave', sn: 'agudo' }[id]) || NOME_PECA[id] || (id === 'ho' ? 'chimbal aberto' : ''); nomeEl.style.background = (el && el.style.getPropertyValue('--c')) || '#b5162b'; nomeEl.classList.remove('on'); void nomeEl.offsetWidth; nomeEl.classList.add('on');
     if (rec) rec.hits.push({ t: perfToCtx(perfMs) - rec.t0, id, v, dr });
