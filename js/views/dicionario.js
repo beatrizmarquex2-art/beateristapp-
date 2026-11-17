@@ -30,7 +30,7 @@ export function mount(host, parts = []) {
     const isOpen = open === x.id; const b = beatOf(x); const playing = b && playingId() === b.id;
     const mini = b && isOpen ? (() => { const f = h('figure', { class: 'tr-bar' }); f.innerHTML = N.toSVG(N.layout(b, { width: 340, full: false })); return f; })() : null;
     return h('article', { class: `card pad dc-term${isOpen ? ' open' : ''}`, id: `t-${x.id}` },
-      h('button', { type: 'button', class: 'dc-head', 'aria-expanded': String(isOpen), onclick: () => { open = isOpen ? null : x.id; draw(); } },
+      h('button', { type: 'button', class: 'dc-head', 'aria-expanded': String(isOpen), onclick: () => { open = isOpen ? null : x.id; if (open === 'paradiddle') import('../figurinhas/bonus.js').then((B) => B.egg('paradiddle')).catch(() => {}); draw(); } },
         h('strong', {}, x.t), x.en && x.en !== x.t ? h('small', { lang: 'en' }, x.en) : null, h('span', { class: 'dc-cat' }, (CATS.find((c) => c[0] === x.cat) || ['', ''])[1])),
       h('p', { class: 'dc-def' }, x.d),
       isOpen ? h('div', { class: 'dc-more' },

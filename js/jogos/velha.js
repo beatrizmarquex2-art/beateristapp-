@@ -150,8 +150,8 @@ export function mount(host, opts) {
     let best = 0; let run = 0; for (const o of outcomes) { run = o === 'W' ? run + 1 : 0; best = Math.max(best, run); }
     mission.onResult({ outcomes: outcomes.slice(), rounds, wins, losses, draws: rounds - wins - losses, bestStreak: best, errors: g.errors, answered: stat.answered, correct: stat.correct, ai: MP.ai, variant: prefs.variant, level: prefs.level });
   }
-  let pago = -1;
-  function finish() { missionRound(); const w = g.result.winner; if (!mission && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', 1); } /* 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea); no mesmo aparelho não conta */ sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
+  let pago = -1; let bonusRodada = -1;
+  function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode === 'online' && bonusRodada !== g.round) { bonusRodada = g.round; import('../figurinhas/bonus.js').then((B) => B.online('velha', w == null ? 'tie' : w === me0() ? 'win' : 'loss')).catch(() => {}); } /* 5 vitórias seguidas online = bônus escondido */ if (!mission && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', 1); } /* 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea); no mesmo aparelho não conta */ sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
     const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;

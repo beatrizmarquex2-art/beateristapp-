@@ -30,7 +30,7 @@ const SEG = 20; // duração da gravação pra postar
 export function mount(host) {
   const salvo = getGame('paulbox');
   let bpm = Number(salvo.bpm) >= BPM_MIN && Number(salvo.bpm) <= BPM_MAX ? Number(salvo.bpm) : 96;
-  let gone = false; let parado = false; // parado = pausa da moldura
+  let tEstrela = 0; let gone = false; let parado = false; // parado = pausa da moldura
   const state = TRACKS.map(() => 0);
   const glow = h('div', { class: 'pbx-glow', 'aria-hidden': 'true' });
   const dots = [0, 1, 2, 3].map(() => h('i', {}));
@@ -64,9 +64,18 @@ export function mount(host) {
 
   function setState(i, s) {
     state[i] = s; const b = els[i]; b.dataset.s = String(s); if (timer) tocaTrilha(i);
+    segredos();
     b.querySelector('.pbx-chip').textContent = LABEL[s];
     b.setAttribute('aria-label', `${TRACKS[i].nome}: ${LABEL[s]}`);
     hint();
+  }
+  /** Segredo (figurinha exclusiva): ligar bateria + metrônomo + pandeiro juntos, e SÓ esses 3. Estrela: banda com 3 ou mais Pauls tocando por 30 s = 1 ★ por dia. */
+  function segredos() {
+    const on = TRACKS.filter((t, k) => state[k]).map((t) => t.id).sort().join(',');
+    if (on === 'bateria,metronomo,pandeiro') import('../figurinhas/bonus.js').then((B) => B.egg('paulbox')).catch(() => {});
+    const n = state.filter(Boolean).length;
+    if (n >= 3 && !tEstrela) tEstrela = setTimeout(() => { tEstrela = 0; if (gone || state.filter(Boolean).length < 3) return; const d = new Date(); import('./estrelas-jogo.js').then((E) => E.ganhou('paulbox', 1, `paulbox|${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`)).catch(() => {}); }, 30000);
+    if (n < 3 && tEstrela) { clearTimeout(tEstrela); tEstrela = 0; }
   }
   function hint() {
     const n = state.filter(Boolean).length;
@@ -404,6 +413,7 @@ export function mount(host) {
     resume() { if (!fimEl) voltar(); },
     restart() { for (let i = 0; i < N; i++) setState(i, 0); },
     destroy() {
+      clearTimeout(tEstrela); tEstrela = 0;
       gone = true; if (grav) grav.cancelar(); fechaFim(); para(); window.removeEventListener('bt-mute', onMute);
       if (master) { try { master.gain.value = 0; } catch { /* ok */ } const s = saida; setTimeout(() => { try { s.disconnect(); } catch { /* já saiu */ } }, 120); }
       delete window.__paulbox; musicaVolta();
