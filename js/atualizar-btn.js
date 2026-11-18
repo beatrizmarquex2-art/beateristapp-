@@ -11,6 +11,8 @@ export async function atualizarAgora() {
 
 export function atualizarButton() {
   const b = h('button', { type: 'button', class: 'icon-btn top-snd top-atu', 'aria-label': 'Atualizar o app: baixa a versão mais nova', title: 'atualizar o app' }, h('span', { class: 'atu-ico', 'aria-hidden': 'true' }, '⟳'));
+  // quando chega versão nova, aparece um pino vermelhinho no botão (pra ninguém esquecer de atualizar)
+  try { const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { b.classList.add('tem-novo'); b.title = 'tem versão nova: toque pra atualizar'; } }); } catch { /* sem service worker */ }
   b.onclick = () => { b.disabled = true; b.classList.add('girando'); atualizarAgora(); };
   return b;
 }

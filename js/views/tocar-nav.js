@@ -1,8 +1,7 @@
 // Peças comuns das telas da aba Tocar: as 4 abas de instrumento (bateria, violão, piano, xilofone) e a batida de fundo.
 import { h } from '../util.js';
-import { audio } from '../audio.js';
-import * as N from '../notation.js';
-import { backing, STYLES, grooveBeat, wake } from '../instruments.js';
+import { audio, click } from '../audio.js';
+import { backing, wake } from '../instruments.js';
 import { UTIL_DOODLE } from './tocar-art.js';
 
 export const INSTRUMENTOS = [['toque', 'bateria', '#/toque'], ['violao', 'cordas', '#/violao'], ['piano', 'teclas', '#/piano'], ['xilofone', 'percussão', '#/xilofone']];
@@ -22,27 +21,25 @@ export const tocarTabs = (atual) => h('div', { class: 'ti-wrap' },
     ...INSTRUMENTOS.map(([id, label, href]) => h('a', { href, class: `ti-tab${id === atual ? ' on' : ''}`, 'aria-current': id === atual ? 'page' : null, onpointerdown: wake }, label))),
   utilTiles());
 
-/** Batida de fundo: liga uma base (rock 1, rock 2, pop, samba) pra tocar por cima, com andamento ajustável. */
-export function backingBar() {
-  const go = h('button', { class: 'btn ti-go', type: 'button', 'aria-pressed': 'false' });
-  const styles = h('div', { class: 'ti-styles', role: 'radiogroup', 'aria-label': 'Estilo da batida' });
+/** Contagem (em vez do metrônomo): um botão que conta 4 tempos no andamento escolhido e aí você começa a tocar. Vale pra bateria, cordas, teclas e percussão. */
+export function contagemBar() {
   const bpm = h('output', { class: 'bl-bpm' }, String(backing.bpm));
-  const staff = h('figure', { class: 'cb-bar ti-staff' }); const names = h('ul', { class: 'ti-names' });
-  const draw = () => {
-    go.setAttribute('aria-pressed', String(backing.on)); go.textContent = backing.on ? '■ parar a batida' : '▶ ligar a batida';
-    styles.replaceChildren(...STYLES.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${backing.style === v ? ' on' : ''}`, role: 'radio', 'aria-checked': String(backing.style === v), onclick: () => { backing.style = v; backing.save(); draw(); } }, l)));
-    bpm.textContent = String(backing.bpm);
-    const b = grooveBeat(backing.style); staff.innerHTML = N.toSVG(N.layout(b, { width: 340, full: true, color: true }));
-    names.replaceChildren(...N.legend(b).map(([n, c]) => h('li', {}, h('i', { style: `background:${c}` }), n)));
+  const num = h('output', { class: 'ct-num', role: 'status', 'aria-live': 'polite' }, '');
+  const go = h('button', { class: 'btn primary ti-go ct-go', type: 'button' }, '🥁 contagem');
+  let timers = []; let rodando = false;
+  const parar = () => { timers.forEach(clearTimeout); timers = []; rodando = false; go.textContent = '🥁 contagem'; };
+  const contar = () => {
+    if (rodando) { parar(); num.textContent = ''; return; }
+    const ac = audio(); const q = 60 / backing.bpm; const t0 = ac.currentTime + 0.15; rodando = true; go.textContent = '■ parar a contagem';
+    for (let i = 0; i < 4; i++) { click(t0 + i * q, i === 0 ? 2 : 1, 0.8); timers.push(setTimeout(() => { if (go.isConnected) num.textContent = String(i + 1); }, (0.15 + i * q) * 1000)); }
+    timers.push(setTimeout(() => { if (go.isConnected) num.textContent = 'vai!'; }, (0.15 + 4 * q) * 1000));
+    timers.push(setTimeout(() => { parar(); if (go.isConnected) setTimeout(() => { if (!rodando) num.textContent = ''; }, 900); }, (0.15 + 4 * q + 0.1) * 1000));
   };
-  const step = (d) => { backing.bpm = Math.max(60, Math.min(160, backing.bpm + d)); backing.save(); draw(); };
-  go.addEventListener('click', () => { audio(); if (backing.on) backing.stop(); else backing.start(); draw(); });
-  draw();
-  return h('section', { class: 'card pad ti-backing' },
-    h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'batida de fundo'), go),
-    styles,
+  go.addEventListener('click', contar);
+  const step = (d) => { backing.bpm = Math.max(60, Math.min(160, backing.bpm + d)); backing.save(); bpm.textContent = String(backing.bpm); };
+  return h('section', { class: 'card pad ti-backing ti-conta' },
+    h('div', { class: 'row tk-line' }, go, num),
     h('div', { class: 'bl-tempo' }, h('button', { class: 'bl-step', type: 'button', 'aria-label': 'menos 5 BPM', onclick: () => step(-5) }, '−'), bpm,
       h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => step(5) }, '+'), h('span', { class: 'tp-lab' }, 'BPM')),
-    h('p', { class: 'lab ti-lab' }, 'partitura da batida (cada peça tem a sua cor)'), staff, names,
-    h('p', { class: 'muted ti-hint' }, 'liga a batida e toca por cima, em qualquer instrumento. ela continua quando você troca de aba.'));
+    h('p', { class: 'muted ti-hint' }, 'toca em “contagem”: ela conta 4 tempos e aí você começa a tocar, sem metrônomo ligado.'));
 }
