@@ -1094,3 +1094,8 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 /* Paul "NA LOJINHA" (arte da Bea, 18/nov/2026): acima do botão de compra da entrada e no topo da seção Cards da Lojinha */
 .en-nalojinha { display: block; width: 62%; max-width: 260px; height: auto; margin: 18px auto -6px; filter: drop-shadow(0 6px 0 rgba(0,0,0,.3)); position: relative; z-index: 1; }
 .lj-paul-cards { display: block; width: 58%; max-width: 240px; height: auto; margin: 10px auto 0; }
+
+/* Passe anual na entrada (texto da Bea, 18/nov/2026) */
+.en-box.passe h2 { font-size: 22px; line-height: 1.05; }.en-box.passe .p1 { margin: 0 0 8px; font: 600 14px/1.4 "Hanken Grotesk"; }.en-box.passe .p2 { margin: 0 0 10px; font: 800 14px/1.3 "Hanken Grotesk"; color: #f2a91b; }
+.en-box.passe .pr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 12px; text-align: center; }.en-box.passe .pr > div { background: rgba(255,255,255,.08); border-radius: 12px; padding: 10px 6px; }.en-box.passe .pr small { display: block; margin-top: 4px; }.en-box.passe .pr b { font: 400 28px/1 Anton; }.en-box.passe .pr b.pix { color: #f2a91b; }.en-box.passe .pr small { font: 700 11px/1.2 "Hanken Grotesk"; opacity: .9; }.en-box.passe .pr em { font-style: normal; color: #f2a91b; font-weight: 800; }
+.en-passe-btn { text-decoration: none; }.en-box.passe .p3 { margin: 12px 0 0; font: 600 12.5px/1.4 "Hanken Grotesk"; opacity: .95; }.en-box.passe .p3 a { color: #f2a91b; font-weight: 800; }
