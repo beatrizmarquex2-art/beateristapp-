@@ -1101,3 +1101,6 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .en-passe-btn { text-decoration: none; }.en-box.passe .p3 { margin: 12px 0 0; font: 600 12.5px/1.4 "Hanken Grotesk"; opacity: .95; }.en-box.passe .p3 a { color: #f2a91b; font-weight: 800; }
 
 .en-box.passe .pr.solo { grid-template-columns: 1fr; }
+
+.en-box.passe .pr .bf { display: inline-block; margin-bottom: 4px; background: #b8162b; color: #fff; border-radius: 99px; padding: 4px 10px; font: 800 11px/1 "Hanken Grotesk"; text-transform: uppercase; letter-spacing: .06em; }
+.en-box.passe .pr s { display: block; opacity: .75; font: 700 13px/1.2 "Hanken Grotesk"; }

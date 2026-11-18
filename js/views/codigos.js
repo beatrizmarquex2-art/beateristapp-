@@ -3,6 +3,7 @@
 import { h } from '../util.js';
 import { banner, toast, confirmSheet } from '../ui.js';
 import * as CODE from '../codigo.js';
+import { precoPasse } from '../passe-preco.js';
 
 const when = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)) : 'nunca');
 const dia = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(t)) : '—');
@@ -28,7 +29,7 @@ export function mount(host) {
   const telIn = h('input', { class: 'field', type: 'tel', inputmode: 'tel', maxlength: 20, placeholder: 'WhatsApp com DDD (opcional)', autocomplete: 'off', 'aria-label': 'WhatsApp de quem pagou' });
   host.append(banner('Importar código de aluno', 'quem tem código usa o Beat Hero e as Músicas MIDI'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      h('section', { class: 'card pad' }, h('b', {}, 'passe anual (pagou no PIX)'), h('p', { class: 'muted' }, 'R$ 49,90 · o site todo por 12 meses a partir de hoje · 2 aparelhos. confirmou o PIX? escreva o nome, gere e mande a mensagem pronta no WhatsApp.'), nomeIn, telIn,
+      h('section', { class: 'card pad' }, h('b', {}, 'passe anual (pagou no PIX)'), h('p', { class: 'muted' }, `${precoPasse().atual}${precoPasse().oferta ? ' (oferta Black Friday até 15/dez; depois R$ 79,90)' : ''} · o site todo por 12 meses a partir de hoje · 2 aparelhos. confirmou o PIX? escreva o nome, gere e mande a mensagem pronta no WhatsApp.`), nomeIn, telIn,
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doAnual }, 'gerar passe anual'))),
       h('section', { class: 'card pad' }, h('b', {}, 'importar'), h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. cole aqui "nome ; código" (de uma planilha também) e ele é liberado sozinho. quem vier só com o nome ganha um código aleatório.'), ta,
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doImport }, 'importar'), h('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = ''; } }, 'limpar'))),

@@ -4,10 +4,11 @@
 import { h } from './util.js';
 import { icon } from './util.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
+import { precoPasse } from './passe-preco.js';
 
 const A = 'assets/entrada/';
 // Passe anual: ainda não existe link de pagamento (Hotmart); até lá o botão chama a equipe no WhatsApp com a mensagem pronta. Quando tiver o link, é só trocar aqui.
-const PASSE_LINK = 'https://wa.me/5518991804150?text=' + encodeURIComponent('Oi! Quero o passe anual do Robôterista Paul (12 meses de acesso), R$ 79,90 no pix.');
+const PASSE_LINK = (preco) => 'https://wa.me/5518991804150?text=' + encodeURIComponent(`Oi! Quero o passe anual do Robôterista Paul (12 meses de acesso), ${preco} no pix.`);
 const PAULS = [[`${A}paul-meditando.webp`, 'Paul meditando', 170], [`${A}paul-professor.webp`, 'Paul ensinando no quadro', 215], [`${A}paul-guitarra.webp`, 'Paul tocando guitarra', 215]];
 const KEY = 'beaterista-entrada-paul';
 const sorteia = () => { let ult = -1; try { ult = Number(sessionStorage.getItem(KEY) ?? localStorage.getItem(KEY) ?? -1); } catch { /* sem storage */ } let i = Math.floor(Math.random() * PAULS.length); if (i === ult) i = (i + 1) % PAULS.length; try { localStorage.setItem(KEY, String(i)); sessionStorage.setItem(KEY, String(i)); } catch { /* ok */ } return PAULS[i]; };
@@ -37,6 +38,7 @@ const svg = (inner, n = 22) => { const s = document.createElementNS('http://www.
 
 /** Monta a entrada. `p`: { links: [[nome, href]], onExperimentar(nome), onEntrar(nome, codigo), onLojinha(), pedido: elemento (código que a professora ainda vai liberar) }. Devolve { el, foco() }. */
 export function entradaNova(p) {
+  const PP = precoPasse();
   const [pSrc, pAlt, pH] = sorteia();
   const nome1 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const nome2 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
@@ -76,8 +78,8 @@ export function entradaNova(p) {
     h('section', { class: 'en-box passe', id: 'en-passe' }, h('h2', {}, 'um ano inteiro de ', h('span', {}, 'música, jogos e descobertas!')),
       h('p', { class: 'p1' }, 'aprenda brincando com o Robôterista Paul! explore jogos educativos, desafios musicais, colecione figurinhas e aprenda no seu ritmo.'),
       h('p', { class: 'p2' }, 'um único pagamento. 12 meses de acesso.'),
-      h('div', { class: 'pr solo' }, h('div', {}, h('b', { class: 'pix' }, 'R$ 79,90'), h('small', {}, 'à vista no pix'))),
-      h('a', { class: 'en-btn y en-passe-btn', href: PASSE_LINK, target: '_blank', rel: 'noopener noreferrer' }, '🎮 quero meu passe anual'),
+      h('div', { class: 'pr solo' }, h('div', {}, PP.oferta ? h('span', { class: 'bf' }, 'oferta black friday · até ', PP.ate) : null, PP.oferta ? h('s', {}, `de ${PP.de}`) : null, h('b', { class: 'pix' }, PP.atual), h('small', {}, 'à vista no pix'))),
+      h('a', { class: 'en-btn y en-passe-btn', href: PASSE_LINK(PP.atual), target: '_blank', rel: 'noopener noreferrer' }, '🎮 quero meu passe anual'),
       h('p', { class: 'p3' }, 'já é aluno da escola Beaterista? seu acesso anual está incluso! ', h('a', { href: '#en-experimentar', onclick: (e) => { e.preventDefault(); boxAluno.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => cod.focus({ preventScroll: true }), 450); } }, 'entre com seu código.'))),
     h('section', { class: 'en-sec' }, h('h3', {}, 'veja ', h('span', {}, 'por dentro')), h('p', { class: 'en-pq' }, 'telas reais do app. cada jogo diz o que desenvolve.'),
       rol('', ...JOGOS.map(([f, n, d]) => h('div', { class: 'en-jg' }, h('div', { class: 'ph' }, h('img', { src: `${A}${f}.jpg`, alt: `Tela: ${n}`, loading: 'lazy' })), h('b', {}, n), h('p', {}, d))))),
