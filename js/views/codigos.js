@@ -26,7 +26,7 @@ export function mount(host) {
   const ta = h('textarea', { class: 'field cod-ta', rows: 6, 'aria-label': 'Lista de alunos e códigos', placeholder: 'um aluno por linha\nMaria Souza ; K7M2QX   (já tem código)\nJoão Pedro             (só o nome: eu gero o código)', spellcheck: 'false' });
   const qtd = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 100, value: 5, inputmode: 'numeric', 'aria-label': 'Quantos códigos' });
   const out = h('div', { class: 'cod-out' });
-  const diasIn = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: 30, inputmode: 'numeric', 'aria-label': 'Quantos dias vale o passe' });
+  const diasIn = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: 3, inputmode: 'numeric', 'aria-label': 'Quantos dias vale o passe' });
   const tableBox = h('div', {});
   const umNome = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome do aluno (opcional)', autocomplete: 'off', 'aria-label': 'Nome do aluno (opcional)' });
   const nomeIn = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome de quem pagou', autocomplete: 'off', 'aria-label': 'Nome de quem pagou' });
@@ -99,7 +99,7 @@ export function mount(host) {
   }
   async function doPasse() {
     const ids = [...host.querySelectorAll('.cod-passes input:checked')].map((x) => x.dataset.id); if (!ids.length) return toast('marque pelo menos uma aba', { id: 'cod-err', ms: 2600 });
-    const dias = Math.max(1, Math.min(365, Math.round(Number(diasIn.value) || 30))); if (busy) return; busy = true;
+    const dias = Math.max(1, Math.min(365, Math.round(Number(diasIn.value) || 3))); if (busy) return; busy = true;
     const nomes = ABAS.filter((x) => ids.includes(x[0])).map((x) => x[1]).join(' + ');
     try { const code = await CODE.criarPasse({ prefixo: '', tam: 6, nome: `libera ${nomes}`, dias, jogos: rotasDe(ids) }); mostraPasse(code, nomes, dias); toast('código gerado ✓', { id: 'cod-ok', ms: 2200 }); await load(); }
     catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
@@ -107,11 +107,11 @@ export function mount(host) {
   }
   // muda as abas e os dias de um código já criado (amigos, marcas, parceiros)
   function editar(x) {
-    const marcadas = abasDe(x.jogos); const di = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: x.dias || 30, inputmode: 'numeric', 'aria-label': 'Dias' });
+    const marcadas = abasDe(x.jogos); const di = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: x.dias || 3, inputmode: 'numeric', 'aria-label': 'Dias' });
     sheet(`editar ${x.code}`, (close) => h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'o que ficar desmarcado fecha pra esse código (igual a quem entra sem acesso). a Lojinha é sempre livre.'),
       h('div', { class: 'cod-passes' }, ...ABAS.map(([id, nome]) => h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', 'data-id': id, checked: marcadas.includes(id) }), ` ${nome}`))),
       h('div', { class: 'row' }, h('label', { class: 'muted' }, 'dias a partir de hoje '), di),
-      h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { const ids = [...document.querySelectorAll('.sheet-body .cod-passes input:checked')].map((i) => i.dataset.id); if (!ids.length) return toast('marque pelo menos uma aba', { id: 'cod-err', ms: 2400 }); const dias = Math.max(1, Math.min(365, Math.round(Number(di.value) || 30))); close(); run(() => CODE.alterar(x.code, { jogos: rotasDe(ids), dias, ...(x.ultimo_uso || x.expira_em ? { expira_em: new Date(Date.now() + dias * 864e5).toISOString() } : {}), ativo: true }), 'código atualizado'); } }, 'salvar'))));
+      h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: () => { const ids = [...document.querySelectorAll('.sheet-body .cod-passes input:checked')].map((i) => i.dataset.id); if (!ids.length) return toast('marque pelo menos uma aba', { id: 'cod-err', ms: 2400 }); const dias = Math.max(1, Math.min(365, Math.round(Number(di.value) || 3))); close(); run(() => CODE.alterar(x.code, { jogos: rotasDe(ids), dias, ...(x.ultimo_uso || x.expira_em ? { expira_em: new Date(Date.now() + dias * 864e5).toISOString() } : {}), ativo: true }), 'código atualizado'); } }, 'salvar'))));
   }
   async function doTestDrive() {
     if (busy) return; busy = true;
