@@ -1711,3 +1711,8 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .cod-item-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.cod-tag{font:800 11px var(--body);background:rgb(var(--ink-rgb) / .1);border-radius:999px;padding:3px 9px}
 .cod-item-mid{display:grid;gap:2px}.cod-item-act{flex-wrap:wrap;gap:6px}
 .cod-mais summary{cursor:pointer;font-weight:800}.cod-mais-in{margin-top:10px}
+
+/* abas liberadas (seleção múltipla com setinha) */
+.cod-abas-btn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;cursor:pointer}
+.cod-abas-lista{display:grid;gap:4px;margin-top:6px;padding:8px 10px;border:1.5px solid rgb(var(--ink-rgb) / .3);border-radius:10px;background:#fff}
+.cod-aba{padding:6px 0;font-weight:700}

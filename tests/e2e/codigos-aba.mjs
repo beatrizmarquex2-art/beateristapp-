@@ -31,8 +31,12 @@ await page.selectOption('select[aria-label="Filtrar por situação"]', ''); awai
 check('filtro por tempo (7 dias)', (await page.locator('.cod-item').count()) === 1);
 await page.selectOption('select[aria-label="Filtrar por tempo"]', '');
 await page.selectOption('select[aria-label="Tipo do código"]', 'marca'); await page.selectOption('select[aria-label="Tempo de acesso"]', '90'); await page.fill('input[aria-label="Nome"]', 'Spark'); await page.click('button:has-text("desativado")'); await sleep(200);
+await page.click('.cod-abas-btn'); await sleep(200);
+check('menu de abas: Todas as Abas, Jogos, Estudos, Palco, Álbum', (await page.locator('.cod-aba').allTextContents()).map((t) => t.trim()).join('|') === 'Todas as abas|Jogos|Estudos|Palco|Álbum');
+await page.locator('.cod-aba input[data-aba="jogos"]').check(); await sleep(150); await page.locator('.cod-aba input[data-aba="tocar"]').check(); await sleep(150);
+check('marcar mais de uma aba desmarca "Todas as abas" e o resumo lista as escolhidas', /Jogos, Palco/.test(await page.textContent('.cod-abas-btn')) && !(await page.locator('.cod-aba input[data-aba="todas"]').isChecked()));
 await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /copiar código/.test(b.textContent)).click()); await sleep(900);
-check('copiar código salva: tipo marca, 90 dias, nome, desativado, passe de 2 aparelhos', posts.length === 1 && posts[0].categoria === 'marca' && posts[0].dias === 90 && posts[0].nome === 'Spark' && posts[0].ativo === false && posts[0].tipo === 'passe' && /^[A-Z0-9]{6}$/.test(posts[0].code), JSON.stringify(posts[0]));
+check('copiar código salva: tipo marca, 90 dias, nome, desativado, passe de 2 aparelhos', posts.length === 1 && posts[0].categoria === 'marca' && posts[0].dias === 90 && posts[0].nome === 'Spark' && posts[0].ativo === false && posts[0].tipo === 'passe' && Array.isArray(posts[0].jogos) && posts[0].jogos.includes('#/jogos') && posts[0].jogos.includes('#/tocar') && !posts[0].jogos.includes('#/estudos') && /^[A-Z0-9]{6}$/.test(posts[0].code), JSON.stringify(posts[0]));
 await page.evaluate(() => [...document.querySelectorAll('.cod-item')].find((i) => /Maria/.test(i.textContent)).querySelectorAll('button')[1].click()); await sleep(700);
 check('desativar manda ativo=false', patches.some((p) => p.body.ativo === false && /AAAA11/.test(p.url)), JSON.stringify(patches));
 await page.evaluate(() => [...document.querySelectorAll('.cod-item')].find((i) => /Maria/.test(i.textContent)).querySelectorAll('button')[2].click()); await sleep(500);
