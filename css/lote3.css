@@ -1090,3 +1090,7 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .en-dir { margin: 24px 20px 12px; text-align: center; font: 600 11px/1.45 "Hanken Grotesk"; opacity: .75; }
 .en-fixo { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 460px); z-index: 30; padding: 10px 16px 16px; background: linear-gradient(transparent, rgba(10,15,38,.95) 40%); }
 .en-fixo button { display: block; width: 100%; border: 0; background: #f2a91b; color: #162146; text-align: center; border-radius: 14px; padding: 15px; font: 400 22px/1 Anton, sans-serif; letter-spacing: .05em; text-transform: uppercase; box-shadow: 0 5px 0 rgba(0,0,0,.4); cursor: pointer; }
+
+/* Paul "NA LOJINHA" (arte da Bea, 18/nov/2026): acima do botão de compra da entrada e no topo da seção Cards da Lojinha */
+.en-nalojinha { display: block; width: 62%; max-width: 260px; height: auto; margin: 18px auto -6px; filter: drop-shadow(0 6px 0 rgba(0,0,0,.3)); position: relative; z-index: 1; }
+.lj-paul-cards { display: block; width: 58%; max-width: 240px; height: auto; margin: 10px auto 0; }

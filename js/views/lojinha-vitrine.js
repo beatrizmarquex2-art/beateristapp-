@@ -58,7 +58,7 @@ export function vitrine(secao = '') {
   if (S) {
     return h('div', { class: `lj lj-pg lj-pg-${S.id}` },
       h('a', { class: 'lj-volta', href: '#/lojinha' }, '‹ lojinha'),
-      h('header', { class: 'lj-pg-top' }, h('h2', {}, S.titulo), h('p', {}, S.sub)),
+      h('header', { class: 'lj-pg-top' }, h('h2', {}, S.titulo), h('p', {}, S.sub), S.id === 'cards' ? h('img', { class: 'lj-paul-cards', src: 'assets/entrada/paul-na-lojinha.webp', alt: 'Paul segurando os 3 baralhos: Teoria, Instrumentos e Dicionário', width: 318, height: 350 }) : null),
       h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
       h('div', { class: 'lj-grid' }, ...PRODUTOS.filter((p) => p.secao === S.id).map(cartao)),
       h('a', { class: 'lj-volta lj-volta-b', href: '#/lojinha' }, '‹ ver as outras seções'));

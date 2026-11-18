@@ -60,6 +60,7 @@ export function entradaNova(p) {
     h('div', { class: 'en-cv' }, h('img', { src: `${A}cards-venda.jpg`, alt: 'Cards do Robôterista Paul: Teoria 150 cartas, Instrumentos 90 cartas e Dicionário musical 120 palavras, R$ 19,90 cada. Combo dos 3 baralhos R$ 49,90.', loading: 'lazy' })),
     h('h4', { class: 'en-ibr' }, 'imprima, recorte e ', h('span', {}, 'aprenda brincando')),
     h('div', { class: 'en-passos' }, ...PASSOS.map(([t, d], i) => h('div', { class: 'en-c3' }, h('i', {}, String(i + 1)), h('b', {}, t), h('p', {}, d)))),
+    h('img', { class: 'en-nalojinha', src: `${A}paul-na-lojinha.webp`, alt: 'Paul segurando os 3 baralhos: Teoria, Instrumentos e Dicionário. Na Lojinha.', width: 318, height: 350, loading: 'lazy' }),
     h('a', { class: 'en-adq', href: '#/lojinha', onclick: irLoja }, 'adquira já na lojinha'));
   const el = h('div', { class: 'en' },
     h('div', { class: 'en-top' }, h('img', { class: 's', src: 'assets/logo-512.png', alt: '', width: 42, height: 42 }), h('img', { class: 'n', src: 'assets/logo-nome.png', alt: 'Beaterista, escola de música', width: 88, height: 30 }), h('span', { class: 'sp' }),
