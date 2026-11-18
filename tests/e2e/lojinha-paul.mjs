@@ -16,7 +16,7 @@ const start = page.locator('.lj-card[data-id="start"]');
 check('Bateria Start: PROMOÇÃO BLACK FRIDAY, de R$ 29,90 por R$ 14,90', (await start.locator('.lj-selo').textContent()).includes('BLACK FRIDAY') && (await start.locator('.lj-de').textContent()) === 'R$ 29,90' && (await start.locator('.lj-preco-card').textContent()).includes('R$ 14,90'));
 check('aviso de materiais digitais (estudar e imprimir)', /digitais/.test(await page.locator('.lj-digital').first().textContent()) && /imprimir/.test(await page.locator('.lj-digital').first().textContent()));
 await page.goto(`${url}/aluno.html#/lojinha/cards`); await sleep(1500);
-check('só os 4 baralhos (Cards) estão "em breve"; o Passe está escondido', (await page.locator('.lj-card[data-id^="cards-"] .lj-btn.breve').count()) === 4 && (await page.locator('.lj-btn.breve').count()) === 4 && (await page.locator('.lj-passe').count()) === 0);
+check('os 4 baralhos (Cards) já têm link da Hotmart (nenhum "em breve"); o Passe está escondido', (await page.locator('.lj-btn.breve').count()) === 0 && (await page.locator('.lj-card[data-id^="cards-"]').count()) === 4 && (await page.locator('.lj-passe').count()) === 0);
 await page.goto(`${url}/aluno.html#/lojinha/ensina`); await sleep(1500);
 check('os materiais de Robôterista ensina têm link (nenhum "em breve")', (await page.locator('.lj-btn.breve').count()) === 0);
 // pensamentos do Paul
