@@ -36,6 +36,13 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Velha sem mover peça, volta na mesma pergunta, pausa em 2 celulares e Beat Hero com amigo (18/nov/2026, v608, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Velha: saiu a "troca de lugar"** (clicou, já era). A lógica (`moveMark`/`canMove` em `velha-logic.js`) ficou, só a tela não usa mais.
+- **Volta na MESMA pergunta**: a pergunta aberta agora é gravada (e vai pra sala em 2 celulares). Mesmo aparelho: ao reabrir o jogo cai direto na pergunta (`intro(true)`; "nova partida" do menu continua levando pras opções). 2 celulares: "voltar pra sala" restaura a pergunta. A pergunta só aparece no celular de quem joga; o outro vê "o outro está respondendo uma pergunta…".
+- **2 celulares: "⏸ pausar pros dois" e "👋 avisar que vou sair"** (`pausaBar` em `velha.js`; o estado fica em `g.pausa = { by, tipo }` dentro da sala). Quem avisou que vai sair e volta pela sala tira o aviso sozinho. Só na velha; Uno/memória ainda não têm.
+- **Beat Hero (setas)**: o menu agora tem 3 jeitos: sozinho · contra o Paul · **com um amigo** (código de sala, `#/ritmo/setas/amigo`, sala `beathero-setas`). Os dois celulares tocam a mesma fase de setas e quem fizer mais pontos ganha (`mountDuelo(..., { game: 'setas' })` em `duelo-ritmo.js`; o motor `assets/rhythm-games/rhythm-games.js` aceita `mission.game = 'setas'` e o botão `rz-friend`). É disputa por pontos, não turno a turno em tempo real.
+- Testes novos: `e2e/velha-volta-pergunta.mjs`, `e2e/setas-amigo.mjs` (as salas são simuladas, sem Supabase).
+
 ## Nomes dos jogadores, placar do Uno e cartões do pauLta (17/nov/2026, v602, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
 - **Nomes de quem joga no mesmo aparelho** (`js/jogos/nomes.js`, pedido da Bea): campinhos "jogador 1 ____" na memória (2 a 4), no Uno (mesmo celular) e na velha (dois no aparelho). O jogo chama pelo nome na vez, no "passe o aparelho" e no placar; vazio = "jogador N". Ficam no aparelho (`beaterista-nomes-jogadores`) e valem pros 3 jogos. Stop e bingo já tinham nomes próprios (não mexi). **Em 2 celulares ainda aparece "você / o outro"** (o nome do outro não viaja pela sala).
 - **Compartilhar o placar em qualquer resultado** (`placar.js`): antes só em vitória e empate.
