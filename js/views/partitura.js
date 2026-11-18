@@ -8,7 +8,7 @@ import * as N from '../notation.js';
 import { audio, click, scheduler, perfToCtx } from '../audio.js';
 import { quantize } from '../touchkit.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
-import { gridEl, VOICE, velOf, stopBeat } from './beatlab.js';
+import { gridEl, VOICE, velOf, stopBeat, tocaPasso } from './beatlab.js';
 import { renderWav } from '../wav.js';
 import { sendCanvases } from '../send-folder.js';
 import { tipBox } from '../tipbox.js';
@@ -36,7 +36,7 @@ export function playDoc(doc, { loop, withClick, onBar, onEnd }) {
   run = scheduler((k) => {
     if (!loop && k >= evs.length) return null;
     const e = evs[k % evs.length]; const lap = Math.floor(k / evs.length);
-    return { at: lap * total + e.at, play: (tt) => { B.hitsAt(e.beat, e.i).forEach((r) => VOICE[r](tt, velOf(e.beat, e.i))); if (withClick && e.beatStart) click(tt, e.first ? 2 : 1, 0.55); }, ui: () => onBar && onBar(e.bar) };
+    return { at: lap * total + e.at, play: (tt) => { tocaPasso(e.beat, e.i, tt); if (withClick && e.beatStart) click(tt, e.first ? 2 : 1, 0.55); }, ui: () => onBar && onBar(e.bar) };
   }, { onEnd: () => { run = null; onEnd && onEnd(); } });
   return run;
 }
@@ -84,7 +84,8 @@ function printDoc(doc) {
 
 /* ---------- escrever tocando (chimbal, caixa e bumbo) ---------- */
 const QKEY = 'setting-partitura';
-const quick = () => (store.get(QKEY) ? store.get(QKEY).data.quick !== false : true);
+const quick = () => (store.get(QKEY) ? store.get(QKEY).data.quick !== false && !store.get(QKEY).data.kit : true);
+const kitDet = () => !!(store.get(QKEY) && store.get(QKEY).data.kit === 'detalhe');
 const REC_PADS = [['hh', 'chimbal', 'j'], ['sn', 'caixa', 'f'], ['bd', 'bumbo', ' ']];
 /** Folha com 3 pads grandes: conta 4, você toca 1 compasso e o app escreve (arredonda pra semicolcheia). */
 function recordSheet(bpm0, onUse, label) {
@@ -196,8 +197,8 @@ function mountEdit(host, id) {
       h('div', { class: 'row between' }, h('strong', {}, `compasso ${sel + 1}`),
         h('div', { class: 'chips lib-tabs tp-chips' }, ...[[8, 'colch.'], [12, 'terc.'], [16, 'semic.']].map(([n, t]) => h('button', { type: 'button', class: `lib-tab${bar.steps === n ? ' on' : ''}`, onclick: () => upd(B.resize(bar, n)) }, t)))),
       h('div', { class: 'chips lib-tabs pt-mode', role: 'radiogroup', 'aria-label': 'Peças na grade' },
-        ...[[true, 'chimbal, caixa e bumbo'], [false, 'pauta completa']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(quick() === v), class: `lib-tab${quick() === v ? ' on' : ''}`, onclick: () => store.upsert('setting', QKEY, { quick: v }).then(drawEditor) }, t))),
-      gridEl(bar, (r, i) => upd(B.toggle(bar, r, i)), { ...(quick() ? { full: false } : { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }), color: !!d.color, hands: true, onHand: (i) => { const hs = (bar.hands || Array(bar.steps).fill('')).slice(); hs[i] = HANDS[(HANDS.indexOf(hs[i] || '') + 1) % HANDS.length]; upd({ ...bar, hands: hs }); } }),
+        ...[[true, 'chimbal, caixa e bumbo', ''], [false, 'pauta completa', ''], [false, 'kit detalhado', 'detalhe']].map(([v, t, k]) => { const on = k ? kitDet() : (!kitDet() && quick() === v); return h('button', { type: 'button', role: 'radio', 'aria-checked': String(on), class: `lib-tab${on ? ' on' : ''}`, onclick: () => store.upsert('setting', QKEY, { quick: v, kit: k }).then(drawEditor) }, t); })),
+      gridEl(bar, (r, i, p) => upd(kitDet() && p && p !== 'n' ? B.setDet(bar, r, i, p) : B.toggle(bar, r, i)), { ...(kitDet() ? { full: true, kit: 'detalhe' } : quick() ? { full: false } : { full: true, accent: true, onAccent: (i) => upd(B.toggleAcc(bar, i)) }), color: !!d.color, hands: true, onHand: (i) => { const hs = (bar.hands || Array(bar.steps).fill('')).slice(); hs[i] = HANDS[(HANDS.indexOf(hs[i] || '') + 1) % HANDS.length]; upd({ ...bar, hands: hs }); } }),
       h('div', { class: 'row pt-hands' }, h('small', { class: 'muted' }, 'letras em cima das notas: toque na linha “Mão” (D direita · E esquerda · B bumbo)'),
         h('button', { class: 'btn small', type: 'button', onclick: () => upd({ ...bar, hands: autoHands(bar) }) }, 'preencher sozinho'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => upd({ ...bar, hands: Array(bar.steps).fill('') }) }, 'limpar letras')),
