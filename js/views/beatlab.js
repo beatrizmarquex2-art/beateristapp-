@@ -40,9 +40,15 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
+/** "Tudo menor": os 16 (ou 12) passos numa linha só, com as casinhas menores. Sem escolha guardada, liga sozinho em tela larga (celular deitado, tablet, computador). */
+const KU = 'bt-grade-uma-linha';
+const umaLinha = () => { let v = null; try { v = localStorage.getItem(KU); } catch { /* sem armazenamento */ } return v == null ? (typeof window !== 'undefined' && window.innerWidth >= 700) : v === '1'; };
+const setUmaLinha = (on) => { try { localStorage.setItem(KU, on ? '1' : '0'); } catch { /* sem armazenamento */ } };
 export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null, hands = false, onHand = null } = {}) {
-  const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat; const n = perLine(beat.steps);
-  const box = h('div', { class: 'bl-lines' });
+  const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat;
+  const box = h('div', { class: 'bl-lines' }); const podeUma = beat.steps >= 12;
+  const monta = () => {
+  box.querySelectorAll('.bl-grid').forEach((g) => g.remove()); const uma = podeUma && umaLinha(); const n = uma ? beat.steps : perLine(beat.steps); box.classList.toggle('uma-linha', uma);
   for (let a = 0; a < beat.steps; a += n) {
     const wrap = h('div', { class: 'bl-grid', role: 'grid', 'aria-label': beat.steps > n ? `Grade, tempos ${a / per + 1} a ${(a + n) / per}` : `Grade de ${beat.steps} passos` });
     wrap.style.setProperty('--steps', n);
@@ -61,6 +67,9 @@ export function gridEl(beat, onToggle, { full = false, color = false, accent = f
     wrap.append(h('span', { 'aria-hidden': 'true' }), ...labels.slice(a, a + n).map((l, k) => h('span', { class: `bl-count${(a + k) % per === 0 ? ' beat' : ''}`, 'aria-hidden': 'true' }, l)));
     box.append(wrap);
   }
+  };
+  if (podeUma) { const t = h('button', { type: 'button', class: 'btn small ghost bl-uma', 'aria-pressed': 'false' }); const pinta = () => { const u = umaLinha(); t.textContent = u ? '⇆ voltar pra 2 linhas' : '⇆ tudo menor: numa linha só'; t.setAttribute('aria-pressed', String(u)); }; t.addEventListener('click', () => { setUmaLinha(!umaLinha()); pinta(); monta(); }); pinta(); box.append(t); }
+  monta();
   return box;
 }
 

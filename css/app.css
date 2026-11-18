@@ -1688,3 +1688,11 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 
 .top-snd { flex: none; }
 @media (max-width: 380px) { .top { gap: 4px; } .top .icon-btn { min-width: 38px; } }
+
+/* grade "tudo menor": 16 passos (ou 12) numa linha só */
+.bl-uma{justify-self:start}
+.bl-lines.uma-linha .bl-grid{grid-template-columns:46px repeat(var(--steps),minmax(0,1fr));gap:2px}
+.bl-lines.uma-linha .bl-cell{aspect-ratio:auto;min-height:0;height:clamp(22px,4.2vw,36px);max-height:none;border-width:1.2px}
+.bl-lines.uma-linha .bl-row-label{font-size:10.5px}
+.bl-lines.uma-linha .bl-count{font-size:9.5px}
+.bl-lines.uma-linha .bl-cell.acc,.bl-lines.uma-linha .bl-cell.hand{font-size:10px}
