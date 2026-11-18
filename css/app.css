@@ -1702,3 +1702,12 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .bl-pc{border:1.5px solid rgb(var(--ink-rgb) / .5);background:#fff;border-radius:999px;padding:5px 10px;font:700 12.5px var(--body);cursor:pointer;color:inherit}
 .bl-pc.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .bl-cell.on{font:800 12px var(--body);color:#fff;display:grid;place-items:center}
+
+/* aba Códigos */
+.cod-big{font-size:34px;margin:4px 0 10px;letter-spacing:.14em;text-align:center}
+.cod-form{display:grid;gap:8px;margin:8px 0}.cod-imp{align-items:center;gap:10px;margin:6px 0 10px}
+.cod-filtros{display:grid;gap:8px;margin:8px 0}.cod-lista{display:grid;gap:8px}
+.cod-item{border:1.5px solid rgb(var(--ink-rgb) / .25);border-radius:12px;padding:10px;display:grid;gap:6px;background:#fff}.cod-item.off{opacity:.55}
+.cod-item-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.cod-tag{font:800 11px var(--body);background:rgb(var(--ink-rgb) / .1);border-radius:999px;padding:3px 9px}
+.cod-item-mid{display:grid;gap:2px}.cod-item-act{flex-wrap:wrap;gap:6px}
+.cod-mais summary{cursor:pointer;font-weight:800}.cod-mais-in{margin-top:10px}

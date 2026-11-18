@@ -58,9 +58,9 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
-/** "Tudo menor": os 16 (ou 12) passos numa linha só, com as casinhas menores. Sem escolha guardada, liga sozinho em tela larga (celular deitado, tablet, computador). */
+/** "Tudo menor": os 16 (ou 12) passos numa linha só, com as casinhas menores. Por padrão já vem numa linha só (modo A). */
 const KU = 'bt-grade-uma-linha';
-const umaLinha = () => { let v = null; try { v = localStorage.getItem(KU); } catch { /* sem armazenamento */ } return v == null ? (typeof window !== 'undefined' && window.innerWidth >= 700) : v === '1'; };
+const umaLinha = () => { let v = null; try { v = localStorage.getItem(KU); } catch { /* sem armazenamento */ } return v == null ? true : v === '1'; }; // modo A (escolha da Bea, 18/nov/2026): uma linha por padrão, também com o celular em pé; o botão volta pras 2 linhas
 const setUmaLinha = (on) => { try { localStorage.setItem(KU, on ? '1' : '0'); } catch { /* sem armazenamento */ } };
 /** Pincel do kit detalhado: qual detalhe a próxima casinha recebe ('n' = nota normal). Fica guardado enquanto o app está aberto. */
 let pincel = 'n';
