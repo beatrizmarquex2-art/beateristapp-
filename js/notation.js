@@ -3,7 +3,7 @@
 // Gera uma lista de traços que vira SVG na tela e desenho no canvas na exportação, então as duas saídas são idênticas.
 // Simplificação honesta: nota sozinha no começo do tempo vira semínima; tempo que começa vazio ganha uma pausa antes da 1ª nota;
 // fora isso, cada tempo é escrito na subdivisão da grade (sem pausas no meio do tempo).
-import { GRIDS, ROWS, COLORS, cell, isAcc } from './beats.js';
+import { GRIDS, ROWS, COLORS, cell, isAcc, detOf } from './beats.js';
 
 // altura de cada peça (0 = linha de cima, cada 1 = meio espaço). Padrão de notação de bateria (PAS/Weinberg).
 export const POS = { cr: -3, rd: 0, hh: -1, ho: -1, tt: 1, mt: 2, sn: 3, ft: 5, bd: 7, hf: 9 };
@@ -45,8 +45,12 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
         for (const id of on) {
           const y = posY(POS[id]);
           if (POS[id] <= -2) ops.push({ t: 'line', x1: x - 9, y1: lineY(0) - GAP, x2: x + 9, y2: lineY(0) - GAP, w: 1 }); // linha suplementar do prato
-          ops.push({ t: 'head', x, y, kind: X_HEAD.has(id) ? 'x' : 'n', c: tint(id) });
-          if (id === 'sn' && beat.ghost && beat.ghost[i]) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
+          const dt = detOf(beat, id, i);
+          ops.push({ t: 'head', x, y, kind: dt === 'c' ? 'diamond' : (X_HEAD.has(id) || dt === 'r') ? 'x' : 'n', c: tint(id) });
+          if (dt === 'a' && !isAcc(beat, i)) ops.push({ t: 'acc', x, y: upTop - (per === 3 ? 20 : 10) }); // acento só nessa nota
+          if (dt === 'o') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // chimbal aberto dentro do kit detalhado
+          if (dt === 'r') ops.push({ t: 'text', x: x - 4, y: y - 8, s: 'aro', size: 8, weight: 800, c: tint(id) });
+          if (id === 'sn' && ((beat.ghost && beat.ghost[i]) || dt === 'f')) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
           if (id === 'ho') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // "o" = chimbal aberto
           if (id === 'cr' && color) ops.push({ t: 'circle', x, y, r: 7, c: tint(id), ring: true });
         }
@@ -85,7 +89,7 @@ export function toSVG({ w, h, ops }) {
       case 'line': return `<line x1="${o.x1}" y1="${o.y1}" x2="${o.x2}" y2="${o.y2}" stroke="${ink(o)}" stroke-width="${o.w}"/>`;
       case 'rect': return `<rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" fill="currentColor"/>`;
       case 'circle': return `<circle cx="${o.x}" cy="${o.y}" r="${o.r}" fill="none" stroke="${ink(o)}" stroke-width="${o.ring ? 1.4 : 1.6}"/>`;
-      case 'head': return o.kind === 'x'
+      case 'head': return o.kind === 'diamond' ? `<path d="M${o.x} ${o.y - 5.5}l5.5 5.5-5.5 5.5-5.5-5.5z" fill="none" stroke="${ink(o)}" stroke-width="${o.c ? 2.2 : 1.7}"/>` : o.kind === 'x'
         ? `<path d="M${o.x - 4.5} ${o.y - 4.5}l9 9M${o.x + 4.5} ${o.y - 4.5}l-9 9" stroke="${ink(o)}" stroke-width="${o.c ? 2.4 : 1.8}"/>`
         : `<ellipse cx="${o.x}" cy="${o.y}" rx="5.8" ry="4.2" transform="rotate(-20 ${o.x} ${o.y})" fill="${ink(o)}"/>`;
       case 'beam': return `<rect x="${o.x1 - 0.8}" y="${o.y}" width="${o.x2 - o.x1 + 1.6}" height="4" fill="currentColor"/>`;
@@ -113,7 +117,8 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
       case 'rect': g.fillStyle = ink; g.fillRect(o.x, o.y, o.w, o.h); break;
       case 'circle': g.lineWidth = o.ring ? 1.4 : 1.6; g.arc(o.x, o.y, o.r, 0, Math.PI * 2); g.stroke(); break;
       case 'head':
-        if (o.kind === 'x') { g.lineWidth = o.c ? 2.4 : 1.8; g.moveTo(o.x - 4.5, o.y - 4.5); g.lineTo(o.x + 4.5, o.y + 4.5); g.moveTo(o.x + 4.5, o.y - 4.5); g.lineTo(o.x - 4.5, o.y + 4.5); g.stroke(); }
+        if (o.kind === 'diamond') { g.lineWidth = o.c ? 2.2 : 1.7; g.moveTo(o.x, o.y - 5.5); g.lineTo(o.x + 5.5, o.y); g.lineTo(o.x, o.y + 5.5); g.lineTo(o.x - 5.5, o.y); g.closePath(); g.stroke(); }
+        else if (o.kind === 'x') { g.lineWidth = o.c ? 2.4 : 1.8; g.moveTo(o.x - 4.5, o.y - 4.5); g.lineTo(o.x + 4.5, o.y + 4.5); g.moveTo(o.x + 4.5, o.y - 4.5); g.lineTo(o.x - 4.5, o.y + 4.5); g.stroke(); }
         else { g.ellipse(o.x, o.y, 5.8, 4.2, -20 * Math.PI / 180, 0, Math.PI * 2); g.fill(); }
         break;
       case 'beam': g.fillStyle = ink; g.fillRect(o.x1 - 0.8, o.y, o.x2 - o.x1 + 1.6, 4); break;

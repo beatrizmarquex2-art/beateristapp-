@@ -6,7 +6,8 @@ import * as store from '../store.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
 import { clampBpm } from '../music.js';
-import { audio, click, snare, kick, hihat, tom, cymbal, scheduler } from '../audio.js';
+import { audio, click, snare, kick, hihat, tom, cymbal, scheduler, out } from '../audio.js';
+import { rim } from '../synth.js';
 import { banner, sheet, toast, confirmSheet, stars } from '../ui.js';
 import { mountCombo } from './combo.js';
 
@@ -18,6 +19,23 @@ const save = (patch) => store.upsert('setting', KEY, patch);
 const favs = () => (store.get(FAV) ? store.get(FAV).data.ids || [] : []);
 const mine = () => store.list('beat').filter((r) => !r.data.metodo).sort((a, b) => b.updated_at - a.updated_at);
 export const VOICE = { cr: (t, v = 1) => cymbal(t, false, v), rd: (t, v = 1) => cymbal(t, true, v), hh: (t, v = 1) => hihat(t, 0.9 * v), ho: (t, v = 1) => hihat(t, 0.9 * v, true), sn: (t, v = 1) => snare(t, 0.9 * v), tt: (t, v = 1) => tom(t, 210, v), mt: (t, v = 1) => tom(t, 160, v), ft: (t, v = 1) => tom(t, 110, v), bd: (t, v = 1) => kick(t, v), hf: (t, v = 1) => hihat(t, 0.45 * v) };
+/** Cúpula do ride (o "sino"): parciais agudos de sino, curtos, com um tiquinho de prato por baixo. */
+export function cupula(t, v = 1) {
+  const c = audio(); const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22 * v, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7); g.connect(out());
+  for (const [f, a] of [[1180, 1], [1760, 0.55], [2790, 0.35], [4020, 0.2]]) { const o = c.createOscillator(); const og = c.createGain(); o.type = 'sine'; o.frequency.value = f; og.gain.value = a; o.connect(og).connect(g); o.start(t); o.stop(t + 0.75); }
+  cymbal(t, true, 0.25 * v);
+}
+/** Toca o passo `i` do ritmo, com os detalhes do kit detalhado: acento (mais forte), fantasma (bem fraquinho), aro de caixa, chimbal aberto e cúpula. */
+export function tocaPasso(beat, i, t) {
+  const s = i % beat.steps;
+  B.hitsAt(beat, s).forEach((r) => {
+    const d = B.detOf(beat, r, s); let v = velOf(beat, s);
+    if (d === 'c') { cupula(t, v); return; }
+    if (d === 'r') { rim(t, v); return; }
+    if (d === 'a') v *= 1.3; if (d === 'f') v *= 0.28;
+    VOICE[d === 'o' && r === 'hh' ? 'ho' : r](t, v);
+  });
+}
 /** Volume da nota: com acentos no compasso, o acento sai cheio e o resto mais baixo. */
 export const velOf = (beat, i) => (beat.acc && beat.acc.some(Boolean) ? (B.isAcc(beat, i) ? 1.1 : 0.55) : 1);
 
@@ -29,7 +47,7 @@ export function playBeat(beat, { withClick = false, onStep, onStop } = {}) {
   const dur = B.stepSec(clampBpm(beat.bpm), beat.steps); const per = B.GRIDS[beat.steps].perBeat;
   const run = scheduler((i) => ({
     at: i * dur,
-    play: (t) => { B.hitsAt(beat, i).forEach((r) => VOICE[r](t, velOf(beat, i % beat.steps))); if (withClick && i % per === 0) click(t, i % beat.steps === 0 ? 2 : 1, 0.6); },
+    play: (t) => { tocaPasso(beat, i, t); if (withClick && i % per === 0) click(t, i % beat.steps === 0 ? 2 : 1, 0.6); },
     ui: () => onStep && onStep(i % beat.steps),
   }));
   player = { run, onStop, beat };
@@ -40,15 +58,24 @@ export const playingId = () => (player ? player.beat.id : null);
 /* ---------- grade ---------- */
 // 16 e 12 passos quebram em duas linhas (8 ou 6 por linha): cabe na tela do celular sem arrastar pro lado.
 const perLine = (steps) => (steps === 12 ? 6 : 8);
-export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null, hands = false, onHand = null } = {}) {
-  const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat; const n = perLine(beat.steps);
-  const box = h('div', { class: 'bl-lines' });
+/** "Tudo menor": os 16 (ou 12) passos numa linha só, com as casinhas menores. Por padrão já vem numa linha só (modo A). */
+const KU = 'bt-grade-uma-linha';
+const umaLinha = () => { let v = null; try { v = localStorage.getItem(KU); } catch { /* sem armazenamento */ } return v == null ? true : v === '1'; }; // modo A (escolha da Bea, 18/nov/2026): uma linha por padrão, também com o celular em pé; o botão volta pras 2 linhas
+const setUmaLinha = (on) => { try { localStorage.setItem(KU, on ? '1' : '0'); } catch { /* sem armazenamento */ } };
+/** Pincel do kit detalhado: qual detalhe a próxima casinha recebe ('n' = nota normal). Fica guardado enquanto o app está aberto. */
+let pincel = 'n';
+export const getPincel = () => pincel;
+export function gridEl(beat, onToggle, { full = false, color = false, accent = false, onAccent = null, hands = false, onHand = null, kit = '' } = {}) {
+  const labels = B.countLabels(beat.steps); const per = B.GRIDS[beat.steps].perBeat;
+  const box = h('div', { class: 'bl-lines' }); const podeUma = beat.steps >= 12; const detalhe = kit === 'detalhe'; const linhasDe = () => (detalhe ? B.KIT_DETALHE.map(([id, label]) => ({ id, label, short: id === 'hf' ? 'Ch. pé' : label })) : B.usedRows(beat, full));
+  const monta = () => {
+  box.querySelectorAll('.bl-grid').forEach((g) => g.remove()); const uma = podeUma && umaLinha(); const n = uma ? beat.steps : perLine(beat.steps); box.classList.toggle('uma-linha', uma);
   for (let a = 0; a < beat.steps; a += n) {
     const wrap = h('div', { class: 'bl-grid', role: 'grid', 'aria-label': beat.steps > n ? `Grade, tempos ${a / per + 1} a ${(a + n) / per}` : `Grade de ${beat.steps} passos` });
     wrap.style.setProperty('--steps', n);
-    for (const r of B.usedRows(beat, full)) {
+    for (const r of linhasDe()) {
       wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader', style: color ? { color: B.COLORS[r.id] } : null, title: r.label }, r.short || r.label));
-      for (let i = a; i < a + n; i++) { const v = B.cell(beat, r.id, i); wrap.append(h('button', { type: 'button', style: color && v ? { background: B.COLORS[r.id], borderColor: B.COLORS[r.id] } : null, class: `bl-cell${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'data-step': i, role: 'gridcell', 'aria-pressed': String(!!v), 'aria-label': `${r.label}, ${labels[i]} (passo ${i + 1})`, onclick: () => onToggle(r.id, i) })); }
+      for (let i = a; i < a + n; i++) { const v = B.cell(beat, r.id, i); wrap.append(h('button', { type: 'button', style: color && v ? { background: B.COLORS[r.id], borderColor: B.COLORS[r.id] } : null, class: `bl-cell${v ? ' on' : ''}${i % per === 0 ? ' beat' : ''}`, 'data-step': i, role: 'gridcell', 'aria-pressed': String(!!v), 'aria-label': `${r.label}, ${labels[i]} (passo ${i + 1})`, onclick: () => onToggle(r.id, i, detalhe ? pincel : 'n') }, detalhe && v ? (B.DETALHES.find((x) => x[0] === B.detOf(beat, r.id, i)) || [])[2] || '' : null)); }
     }
     if (accent) { // linha de acentos (>)
       wrap.append(h('span', { class: 'bl-row-label', role: 'rowheader' }, 'Acento'));
@@ -61,6 +88,14 @@ export function gridEl(beat, onToggle, { full = false, color = false, accent = f
     wrap.append(h('span', { 'aria-hidden': 'true' }), ...labels.slice(a, a + n).map((l, k) => h('span', { class: `bl-count${(a + k) % per === 0 ? ' beat' : ''}`, 'aria-hidden': 'true' }, l)));
     box.append(wrap);
   }
+  };
+  if (detalhe) {
+    const pal = h('div', { class: 'bl-pincel', role: 'radiogroup', 'aria-label': 'Detalhe da próxima nota' });
+    const desenhaPal = () => pal.replaceChildren(h('small', {}, 'detalhe'), ...[['n', 'normal', ''], ...B.DETALHES.map(([c, nome, sim]) => [c, nome, sim])].map(([c, nome, sim]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(pincel === c), class: `bl-pc${pincel === c ? ' on' : ''}`, title: nome, onclick: () => { pincel = c; desenhaPal(); } }, sim ? `${sim} ` : '', nome)));
+    desenhaPal(); box.append(pal);
+  }
+  if (podeUma) { const t = h('button', { type: 'button', class: 'btn small ghost bl-uma', 'aria-pressed': 'false' }); const pinta = () => { const u = umaLinha(); t.textContent = u ? '⇆ voltar pra 2 linhas' : '⇆ tudo menor: numa linha só'; t.setAttribute('aria-pressed', String(u)); }; t.addEventListener('click', () => { setUmaLinha(!umaLinha()); pinta(); monta(); }); pinta(); box.append(t); }
+  monta();
   return box;
 }
 

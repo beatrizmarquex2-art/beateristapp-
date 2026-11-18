@@ -25,7 +25,7 @@ export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
     const marks = last ? last.res.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
       : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'toque aqui no tempo · ou aperte qualquer tecla'));
-    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, last ? `precisão ${last.res.score}%` : `${bpm} BPM · ▶ vai direto pra sua vez (toque depois do “4”) ou ouça antes.`);
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, last ? `precisão ${last.res.score}%` : `${bpm} BPM · “tocar”: conta 4 e é a sua vez (toque depois do “4”) · “ouvir” toca o ritmo antes.`);
     const busy = phase === 'run';
     const mode = h('div', { class: 'chips lib-tabs', role: 'radiogroup', 'aria-label': 'Como você toca' }, ...[[false, 'na tela'], [true, 'microfone']].map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(wantMic === v), disabled: busy, class: `lib-tab${wantMic === v ? ' on' : ''}`, onclick: () => { wantMic = v; micBlocked = false; saveMic(v); draw(); } }, t)));
 
@@ -56,15 +56,13 @@ export function mountLeituraMissao(host, { bar, bpm, onResult, mic }) {
       S.later(() => { off(); finish(taps, false); }, (t0 - ac.currentTime + bar.length * q + 0.4) * 1000);
     };
     const listen = () => { stopRun(); phase = 'idle'; const t0d = schedule(bar, bpm, { play: true }); acenderDemo(S, root, bar, bpm, t0d); status.textContent = 'ouvindo como é…'; };
-    const listenThenPlay = () => { stopRun(); phase = 'idle'; const t0d = schedule(bar, bpm, { play: true }); acenderDemo(S, root, bar, bpm, t0d); status.textContent = 'ouça primeiro…'; S.later(start, ((4 + bar.length) * q + 0.9) * 1000); };
     const summary = last ? h('section', { class: 'card pad tr-res' }, h('div', { class: 'tr-big' }, h('b', {}, `${last.res.score}%`), h('span', {}, 'precisão')),
       h('p', {}, `${last.res.hits}/${last.res.total} notas · ${last.res.notes.filter((n) => n.st === 'ok').length} no tempo${last.res.extra ? ` · ${last.res.extra} a mais` : ''}`),
-      h('p', { class: 'muted' }, `média ${last.avg > 0 ? '+' : ''}${last.avg} ms`),
+      
       h('p', { class: 'tr-legend' }, h('i', { style: { background: MARK.ok } }), 'no tempo ', h('i', { style: { background: MARK.cedo } }), 'cedo/tarde ', h('i', { style: { background: MARK.faltou } }), 'faltou')) : null;
     root.replaceChildren(...[scoreEl(chunk(bar), marks), h('div', { class: 'row tr-actions' },
-      h('button', { class: 'btn primary', type: 'button', disabled: busy, onclick: start }, '▶ tocar direto'),
-      h('button', { class: 'btn', type: 'button', disabled: busy, onclick: listenThenPlay }, 'ouvir e depois tocar'),
-      h('button', { class: 'btn', type: 'button', disabled: busy, onclick: listen }, 'só ouvir')),
+      h('button', { class: 'btn', type: 'button', disabled: busy, onclick: listen }, '🎧 ouvir'),
+      h('button', { class: 'btn primary', type: 'button', disabled: busy, onclick: start }, '▶ tocar')),
       mode, status, pad, summary].filter(Boolean));
   };
   draw();

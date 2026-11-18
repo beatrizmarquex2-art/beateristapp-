@@ -5,7 +5,7 @@ import { audio } from '../audio.js';
 import { banner } from '../ui.js';
 import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
-import { tocarTabs, backingBar } from './tocar-nav.js';
+import { tocarTabs, contagemBar } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 
@@ -73,7 +73,7 @@ export function mount(host) {
   stage.append(xy, pads);
   host.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), stage,
     h('section', { class: 'card pad ti-panel' }, rolar(modeRow), rolar(scaleRow), rolar(soundRow)),
-    backingBar(),
+    contagemBar(),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();
   const solta = aoLiberar(() => { drawRows(); drawMode(); drawXy(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });

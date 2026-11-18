@@ -16,26 +16,19 @@ await page.locator('.tm-tabs button').nth(0).click(); await sleep(400);
 await page.evaluate(() => document.querySelector('.mp-node[data-pos="0"]').click()); await page.waitForSelector('.tr-fasehead', { timeout: 8000 });
 check('fase aberta: só o botão de voltar no topo (sem texto de fase) e sem escolha de nível/caminho', !/fase/i.test(await page.textContent('.tr-fasehead')) && /mapa/.test(await page.textContent('.tr-fasehead')) && (await page.locator('.tr-path').count()) === 0 && (await page.locator('.tr-ctrl > .tp-line').count()) === 0);
 check('tem velocidades 80 a 160 e pad com o aviso das duas mãos', (await page.locator('.tr-vel button').count()) === 5 && /duas mãos/.test(await page.textContent('.tr-pad')));
-// cada fase tem 3 compassos seguidos: toca todas as notas na hora certa, pela tela, em cada um
+// cada fase é 1 compasso: toca todas as notas na hora certa, pela tela
 const tocaCompasso = async () => {
-  await page.getByRole('button', { name: /direto/ }).click(); await sleep(800);
+  await page.locator('.tr-card.go').click(); await sleep(800);
   return page.evaluate(async () => {
     const pad = document.querySelector('.tr-pad'); const ons = JSON.parse(pad.dataset.onsets);
     for (const t of ons) { while (pad.clock() < t - 0.004) await new Promise((r) => setTimeout(r, 2)); pad.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, timeStamp: performance.now() })); }
     return ons.length;
   });
 };
-check('a fase começa avisando "compasso 1 de 3"', /compasso 1 de 3/.test(await page.textContent('.tr-status')));
-await tocaCompasso(); await page.waitForSelector('.tr-quick', { timeout: 15000 });
-check('depois do 1º compasso: sem estrelas ainda e botão do próximo compasso', (await page.locator('.tr-stars').count()) === 0 && (await page.getByRole('button', { name: /próximo compasso/ }).count()) === 1);
-await page.getByRole('button', { name: /próximo compasso/ }).click(); await sleep(500);
-check('2º compasso é outra pauta e avisa "compasso 2 de 3"', /compasso 2 de 3/.test(await page.textContent('.tr-status')));
-await tocaCompasso(); await page.waitForSelector('.tr-quick', { timeout: 15000 });
-await page.getByRole('button', { name: /próximo compasso/ }).click(); await sleep(500);
-check('3º compasso avisa "compasso 3 de 3"', /compasso 3 de 3/.test(await page.textContent('.tr-status')));
+check('a fase mostra só "ouvir" e "tocar"', (await page.locator('.tr-modos .tr-card').count()) === 2 && /ouvir/.test(await page.textContent('.tr-modos')) && !/só ouvir|ouvir e tocar|direto/.test(await page.textContent('.tr-modos')));
 await tocaCompasso(); await page.waitForSelector('.tr-stars', { timeout: 15000 });
 const est = await page.evaluate(() => document.querySelector('.tr-stars') ? document.querySelector('.tr-stars').getAttribute('aria-label') : '');
-check('tocando tudo certinho na tela vale 3 estrelas (vale o último compasso, não a média)', /^3 de 3/.test(est) && /vale o último compasso/.test(await page.textContent('.tr-big')), est);
+check('tocando tudo certinho na tela vale 3 estrelas já no 1º compasso (a nota é só dessa tocada, sem média nem compassos anteriores)', /^3 de 3/.test(est) && !/média|vale o último/.test(await page.textContent('.tr-res')), est);
 check('passou de fase: NÃO tem "próxima fase" direto; o botão avisa que andou no mundinho', (await page.getByRole('button', { name: /próxima fase/ }).count()) === 0 && (await page.getByRole('button', { name: /andou no mundinho/ }).count()) === 1);
 await page.getByRole('button', { name: /andou no mundinho/ }).click(); await page.waitForSelector('.mp-node');
 check('o botão leva ao mapa e o aviso diz que a fase 2 abriu', (await page.locator('.mp-node').count()) === 12 && /fase 1 concluída, a fase 2 abriu/.test(await page.evaluate(() => (document.getElementById('toasts') || document.body).textContent)));

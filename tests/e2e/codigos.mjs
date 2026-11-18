@@ -8,12 +8,12 @@ await ctx.unroute('**/*.supabase.co/**');
 await ctx.route('**/rest/v1/alunos_codigos**', async (r) => {
   const req = r.request(); const m = req.method();
   if (m === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(db.map((x) => ({ ...x }))) });
-  if (m === 'POST') { for (const x of [].concat(req.postDataJSON())) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null, tipo: x.tipo, expira_em: x.expira_em, max_aparelhos: x.max_aparelhos, tem_jogos: 'jogos' in x }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
+  if (m === 'POST') { for (const x of [].concat(req.postDataJSON())) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null, tipo: x.tipo, expira_em: x.expira_em, max_aparelhos: x.max_aparelhos, tem_jogos: 'jogos' in x, dias: x.dias, jogos: x.jogos }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
   if (m === 'PATCH') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) Object.assign(db[i], req.postDataJSON()); return r.fulfill({ status: 204, body: '' }); }
   if (m === 'DELETE') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) db.splice(i, 1); return r.fulfill({ status: 204, body: '' }); }
   return r.continue();
 });
-await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200);
+await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200); await page.locator('.cod-mais summary').click(); await sleep(1500); // as ferramentas antigas ficam em "mais ferramentas"
 check('a tela abre', (await page.locator('#view .banner, #view h1, #view h2').count()) > 0 && (await page.locator('.cod-ta').count()) === 1);
 await page.locator('.cod-ta').fill('Maria Souza ; K7M2QX\nJoão Pedro\nAna Lima\tHQ9ZT4\nCarlos'); await page.locator('button:has-text("importar")').first().click(); await sleep(1200);
 check('importou os 4 alunos', db.length === 4, String(db.length));
@@ -22,13 +22,13 @@ check('quem veio só com o nome ganhou código aleatório de 6', /^[A-Z0-9]{6}$/
 check('mostra a tabela atualizada', (await page.locator('.cod-tbl').count()) >= 1 && (await page.locator('.cod-tbl tbody tr').count()) >= 4);
 await page.locator('input[aria-label="Quantos códigos"]').fill('3'); await page.locator('button:text-is("gerar")').click(); await sleep(1200);
 check('gerou 3 códigos novos (7 no total, todos diferentes)', db.length === 7 && new Set(db.map((x) => x.code)).size === 7, String(db.length));
-await page.locator('.cod-act button:has-text("desativar")').first().click(); await sleep(900);
+await page.evaluate(() => [...document.querySelectorAll('.cod-act button')].find((b) => /^desativar$/.test(b.textContent.trim())).click()); await sleep(900);
 check('desativar funciona', db.some((x) => x.ativo === false));
-await page.evaluate(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; }); await page.locator('button:has-text("copiar tabela")').click(); await sleep(300);
+await page.evaluate(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; }); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /copiar tabela/.test(b.textContent)).click()); await sleep(300);
 const copied = await page.evaluate(() => window.__copied || '');
 check('copiar tabela: cabeçalho nome/código e uma linha por aluno', copied.startsWith('nome\tcódigo\tativo\tusos') && copied.split('\n').length === 8, copied.split('\n').length + ' linhas');
 // passe anual (PIX): gera código, 12 meses, 2 aparelhos, sem a coluna jogos, mensagem pronta e link do WhatsApp
-await page.locator('input[aria-label="Nome de quem pagou"]').fill('Maria Souza'); await page.locator('input[aria-label="WhatsApp de quem pagou"]').fill('(18) 99180-4150'); await page.locator('button:has-text("gerar passe anual")').click(); await sleep(1200);
+await page.locator('input[aria-label="Nome de quem pagou"]').fill('Maria Souza'); await page.locator('input[aria-label="WhatsApp de quem pagou"]').fill('(18) 99180-4150'); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /gerar passe anual/.test(b.textContent)).click()); await sleep(1200);
 const pa = db.find((x) => x.tipo === 'passe');
 check('passe anual criado: P + 9, nome "Passe Maria Souza", 2 aparelhos', pa && /^P[A-HJ-NP-Z2-9]{9}$/.test(pa.code) && pa.nome === 'Passe Maria Souza' && pa.max_aparelhos === 2, JSON.stringify(pa));
 check('vence em ~12 meses e não manda a coluna jogos', pa && Math.abs(new Date(pa.expira_em) - (Date.now() + 365 * 864e5)) < 3 * 864e5 && pa.tem_jogos === false);
@@ -39,8 +39,23 @@ for (const sp of ['bea', 'beaterista']) {
   await page.evaluate((s) => { localStorage.setItem('bt-space', s); }, sp); await page.evaluate(() => { location.hash = '#/inicio'; }); await page.reload(); await sleep(1200);
   await page.locator('button[aria-label*="enu"], .menu-btn, #menu-btn').first().click().catch(() => {}); await sleep(500);
   const tabAulas = page.locator('.drawer-tab:has-text("aulas")'); if (await tabAulas.count()) { await tabAulas.first().click(); await sleep(300); }
-  const has = await page.locator('.drawer a:has-text("Importar código de aluno")').count();
-  check(`menu (${sp}) tem "Importar código de aluno"`, has >= 1, String(has));
+  const has = await page.locator('.drawer a:has-text("Códigos")').count();
+  check(`menu (${sp}) tem "Códigos"`, has >= 1, String(has));
 }
 check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join(' | '));
+// "gerar novo código aleatório": um toque, 1 código de 6 (igual aos dos alunos), com nome opcional e mensagem pronta
+{ await page.evaluate(() => { location.hash = '#/inicio'; }); await sleep(500); await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1500); await page.evaluate(() => { const d = document.querySelector('.cod-mais'); if (d && !d.open) d.querySelector('summary').click(); }); await sleep(1500); const antes = db.length; await page.locator('input[aria-label="Nome do aluno (opcional)"]').fill('Bia Teste'); await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
+  const novo = db.find((x) => x.nome === 'Bia Teste');
+  check('gerar novo código aleatório: cria 1 código de 6 com o nome, liberado', db.length === antes + 1 && novo && /^[A-Z0-9]{6}$/.test(novo.code) && novo.ativo === true, JSON.stringify(novo));
+  check('mostra o código grande e a mensagem pronta pro aluno', (await page.locator('.cod-new .rg-code').first().textContent()).trim() === novo.code && /já sou aluno/.test(await page.locator('.cod-new').innerText()));
+  await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
+  check('gerar de novo cria outro código diferente', db.length === antes + 2 && new Set(db.map((x) => x.code)).size === db.length); }
+// "gerar código alunos, amigos e marcas": só as abas marcadas, código aleatório de 6, dias; depois "editar"
+{ await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200);
+  for (const id of ['jogos', 'tocar', 'album']) await page.locator(`.cod-passes input[data-id="${id}"]`).evaluate((c) => { c.checked = false; });
+  await page.locator('input[aria-label="Quantos dias vale o passe"]').fill('10');
+  await page.locator('button:has-text("gerar código alunos, amigos e marcas")').evaluate((b) => b.click()); await sleep(1200);
+  const pz = db.filter((x) => x.tipo === 'passe').pop();
+  check('código de amigos/marcas: 6 aleatórios, 10 dias, só a aba Estudos', pz && /^[A-Z0-9]{6}$/.test(pz.code) && pz.dias === 10 && pz.jogos.includes('#/estudos') && !pz.jogos.includes('#/jogos') && !pz.jogos.includes('#/album'), JSON.stringify(pz));
+  check('a seção antiga de escolher jogo por jogo saiu', (await page.locator('.cod-passes input').count()) === 4); }
 await browser.close(); srv.close(); done();

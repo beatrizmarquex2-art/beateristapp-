@@ -9,14 +9,14 @@ await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome'
   navigator.mediaDevices.getUserMedia = (c) => (window.__nega ? Promise.reject(Object.assign(new Error('negado'), { name: 'NotAllowedError' })) : real(c)); });
 await p.goto(`${url}/aluno.html#/jogos/toca`); await p.waitForSelector('.mp-node', { timeout: 20000 }); await p.evaluate(() => document.querySelector('.mp-node[data-pos="0"]').click()); await p.waitForSelector('.tr-pad', { timeout: 20000 }); await sleep(600);
 await p.locator('[role=radio]:has-text("microfone")').click(); await sleep(300);
-await p.locator('button:has-text("tocar direto")').click(); await p.waitForSelector('.tr-micerro', { timeout: 8000 });
+await p.locator('.tr-card.go').click(); await p.waitForSelector('.tr-micerro', { timeout: 8000 });
 const txt = await p.locator('.tr-micerro').innerText();
 check('mostra o motivo (sem permissão) e como resolver, e avisa que vai usar a tela', /sem permissão/.test(txt) && /Ajustes/.test(txt) && /vou usar a tela/.test(txt), txt.replace(/\s+/g, ' '));
 check('tem o botão "tentar o microfone de novo"', (await p.locator('.tr-micerro button').count()) === 1);
 await p.evaluate(() => { window.__nega = false; });
 await p.locator('.tr-micerro button').click(); await sleep(400);
 check('depois de tentar de novo o aviso some e o toque volta pro modo microfone', (await p.locator('.tr-micerro').count()) === 0 && (await p.locator('.tr-pad.mic').count()) === 1);
-await p.locator('button:has-text("tocar direto")').click(); await sleep(2000);
+await p.locator('.tr-card.go').click(); await sleep(2000);
 check('com a permissão liberada o microfone abre (pad "live")', (await p.locator('.tr-pad.live').count()) === 1 && (await p.locator('.tr-micerro').count()) === 0);
 await p.evaluate(() => { window.__nega = false; });
 await p.locator('.tr-testmic').click(); await sleep(1500);

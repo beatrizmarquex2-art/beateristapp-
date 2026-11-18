@@ -5,7 +5,7 @@
 export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
-export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 49,90', info: ['12 meses de acesso', 'Pagamento único'], img: 'assets/loja/passe.webp', link: '' };
+export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 79,90', info: ['12 meses de acesso', 'Pagamento único'], img: 'assets/loja/passe.webp', link: '' };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [
@@ -18,11 +18,11 @@ export const PRODUTOS = [
   { id: 'start', secao: 'evoluir', nome: 'Bateria Start', desc: 'ebook para iniciantes: peças, figuras rítmicas, partitura e rudimentos', preco: 'R$ 14,90', precoDe: 'R$ 29,90', selo: 'PROMOÇÃO BLACK FRIDAY · metade do preço', tag: '44 páginas', img: 'assets/loja/bateria-start.webp', fotos: ['assets/loja/previa/d-bateria-start.webp'], link: 'https://pay.hotmart.com/K66533032H' },
   { id: 'mood', secao: 'evoluir', nome: 'Beaterista Mood', desc: 'exercícios que eu estudo, ensino e levo pro palco', tag: '55 páginas', preco: 'R$ 29,90', img: 'assets/loja/mood.webp', fotos: ['assets/loja/previa/d-mood.webp', 'assets/loja/previa/d-mood-2.webp', 'assets/loja/previa/d-mood-3.webp', 'assets/loja/previa/d-mood-4.webp', 'assets/loja/previa/d-mood-5.webp'], link: 'https://pay.hotmart.com/G103615712R' },
   { id: 'violao', secao: 'evoluir', nome: 'Violão do Zero', desc: 'da primeira corda à primeira música', tag: '47 páginas', preco: 'R$ 29,90', img: 'assets/loja/violao.webp', fotos: ['assets/loja/previa/d-violao.webp', 'assets/loja/previa/d-violao-2.webp', 'assets/loja/previa/d-violao-3.webp', 'assets/loja/previa/d-violao-4.webp', 'assets/loja/previa/d-violao-5.webp'], link: 'https://pay.hotmart.com/D108261763C' },
-  // Cards do Robôterista Paul (baralhos em PDF pra imprimir e recortar): EM BREVE (sem `link`, o botão mostra "em breve" e não faz nada). Quando a Hotmart estiver pronta, é só preencher o `link` e tirar o `selo`.
-  { id: 'cards-teoria', secao: 'cards', nome: 'Cards: Teoria Musical', desc: 'baralho pra imprimir e recortar: figuras, pausas, pulso e mais', tag: '150 cartas', preco: 'R$ 19,90', selo: 'em breve', img: 'assets/loja/cards-teoria.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-teoria.webp', 'assets/loja/previa/d-cards.webp'], link: '' },
-  { id: 'cards-instrumentos', secao: 'cards', nome: 'Cards: Instrumentos', desc: 'baralho: bateria, teclado, violão, acordes e peças', tag: '90 cartas', preco: 'R$ 19,90', selo: 'em breve', img: 'assets/loja/cards-instrumentos.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-instrumentos.webp', 'assets/loja/previa/d-cards.webp'], link: '' },
-  { id: 'cards-dicionario', secao: 'cards', nome: 'Cards: Dicionário Musical', desc: 'baralho com 120 termos da música pra imprimir e recortar', tag: '120 termos', preco: 'R$ 19,90', selo: 'em breve', img: 'assets/loja/cards-dicionario.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-dicionario.webp', 'assets/loja/previa/d-cards.webp'], link: '' },
-  { id: 'cards-combo', secao: 'cards', nome: 'Combo dos 3 Baralhos', desc: 'teoria, instrumentos e dicionário: 360 cartas em PDF', tag: '360 cartas', preco: 'R$ 49,90', precoDe: 'R$ 59,70', selo: 'em breve', img: 'assets/loja/cards-combo.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-combo.webp', 'assets/loja/previa/d-cards.webp'], link: '' },
+  // Cards do Robôterista Paul (baralhos em PDF pra imprimir e recortar): links da Hotmart preenchidos em 18/nov/2026 (conferidos: cada link abre o produto certo; o combo mostra R$ 49,90 de R$ 59,70).
+  { id: 'cards-teoria', secao: 'cards', nome: 'Cards: Teoria Musical', desc: 'baralho pra imprimir e recortar: figuras, pausas, pulso e mais', tag: '150 cartas', preco: 'R$ 19,90', img: 'assets/loja/cards-teoria.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-teoria.webp', 'assets/loja/previa/d-cards.webp'], link: 'https://pay.hotmart.com/L108540773V' },
+  { id: 'cards-instrumentos', secao: 'cards', nome: 'Cards: Instrumentos', desc: 'baralho: bateria, teclado, violão, acordes e peças', tag: '90 cartas', preco: 'R$ 19,90', img: 'assets/loja/cards-instrumentos.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-instrumentos.webp', 'assets/loja/previa/d-cards.webp'], link: 'https://pay.hotmart.com/G108540829U' },
+  { id: 'cards-dicionario', secao: 'cards', nome: 'Cards: Dicionário Musical', desc: 'baralho com 120 termos da música pra imprimir e recortar', tag: '120 termos', preco: 'R$ 19,90', img: 'assets/loja/cards-dicionario.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-dicionario.webp', 'assets/loja/previa/d-cards.webp'], link: 'https://pay.hotmart.com/K108544926Y' },
+  { id: 'cards-combo', secao: 'cards', nome: 'Combo dos 3 Baralhos', desc: 'teoria, instrumentos e dicionário: 360 cartas em PDF', tag: '360 cartas', preco: 'R$ 49,90', precoDe: 'R$ 59,70', img: 'assets/loja/cards-combo.webp', w: 800, h: 800, fotos: ['assets/loja/previa/d-cards-combo.webp', 'assets/loja/previa/d-cards.webp'], link: 'https://pay.hotmart.com/F108547827R' },
 ];
 
 /** Seções da Lojinha (a vitrine abre por elas): cada uma tem o seu visual e o seu público. `#/lojinha/<id>` abre direto na seção. */
@@ -31,3 +31,20 @@ export const SECOES = [
   { id: 'ensina', nome: 'Robôterista ensina', titulo: 'Robôterista ensina', sub: 'apostilas, jogos e atividades pra aprender música brincando', chamada: 'aprender música brincando', capas: ['ritmo', 'memoria', 'bateria-kids'] },
   { id: 'evoluir', nome: 'Para evoluir', titulo: 'Para evoluir', sub: 'materiais pra jovens e adultos: bateria, violão e os exercícios que a Bea leva pro palco', chamada: 'pra jovens e adultos que querem tocar de verdade', capas: ['start', 'mood', 'violao'] },
 ];
+
+// "O que tem dentro" de cada material (aparece na janela do produto). Só fatos já escritos pela Bea nas descrições, no caderninho de materiais e nas capas; nada inventado.
+export const DENTRO = {
+  ritmo: ['100 páginas em PDF, pra imprimir em preto e branco (pouca tinta)', 'figuras rítmicas e pausas', 'levadas de rock'],
+  harmonia: ['102 páginas em PDF', 'notas e acordes no teclado', 'notas e acordes no violão'],
+  pratica: ['48 atividades em PDF pra imprimir', 'jogos', 'cruzadinhas', 'labirintos'],
+  memoria: ['61 pares de cartas pra imprimir, recortar e embaralhar', 'jogo da memória musical'],
+  'bateria-kids': ['36 páginas pra colorir, aprender e se divertir', 'peças da bateria, baquetas, postura e partitura', 'figuras rítmicas, labirinto e metrônomo', 'caça-palavras, cruzadinha e mais', 'brinde: desenhos pra colorir'],
+  colorir: ['50 páginas com o Paul pra imprimir e pintar do seu jeito', 'só desenhos pra colorir (não é aula)'],
+  start: ['44 páginas, ebook pra quem está começando', 'peças da bateria', 'figuras rítmicas', 'partitura e rudimentos'],
+  mood: ['55 páginas', 'exercícios que a Bea estuda, ensina e leva pro palco', 'estudos, prática e musicalidade'],
+  violao: ['47 páginas, da primeira corda à primeira música'],
+  'cards-teoria': ['150 cartas em PDF: 5 temas de 30 cartas', 'figuras, pausas, claves, tempo e compasso e leitura de notas', '9 cartas por folha A4 (63 × 88 mm), com linhas de corte e verso opcional'],
+  'cards-instrumentos': ['90 cartas em PDF: 30 de bateria, 30 de teclado e 30 de violão', '9 cartas por folha A4 (63 × 88 mm), com linhas de corte e verso opcional'],
+  'cards-dicionario': ['120 cartas em PDF com palavras de música', 'bateria, teoria, teclado, violão, banda e palco, estúdio e o jeito de falar dos músicos', 'cada carta com desenho, explicação, nome em inglês e uma dica ou exemplo', 'feito com pouca tinta'],
+  'cards-combo': ['os 3 baralhos: Teoria (150), Instrumentos (90) e Dicionário (120)', '360 cartas em PDF, cada baralho com capa, "como usar" e verso opcional', 'R$ 49,90 em vez de R$ 59,70 separados'],
+};
