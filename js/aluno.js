@@ -3,6 +3,7 @@
 import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
 import { h, icon, uid } from './util.js';
 import { soundButton, musicButton } from './sound-btn.js';
+import { atualizarButton } from './atualizar-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
@@ -422,7 +423,7 @@ function shell(name) {
   const head = h('header', { class: 'top' },
     h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })()), h('small', { class: 'al-cod-top' }, CODE.saved() ? `código ${CODE.mascarar(CODE.saved())}` : 'sem código'))),
-    soundButton(), musicButton(),
+    soundButton(), musicButton(), atualizarButton(),
     tenhoCodigo,
     h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', onclick: () => opcoes(name) }, 'opções ▾'));
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos

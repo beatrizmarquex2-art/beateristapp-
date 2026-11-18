@@ -3,6 +3,7 @@ import { h, icon, clock, longDate, shortDate } from './util.js';
 import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
+import { atualizarButton } from './atualizar-btn.js';
 import * as sync from './sync.js';
 import { banner, toast, closeSheets } from './ui.js';
 import { mountLogin } from './views/login.js';
@@ -239,6 +240,7 @@ function shell() {
     h('button', { type: 'button', class: 'icon-btn top-back', 'aria-label': 'Voltar', onclick: goBack }, icon('back', 26)),
     h('a', { href: '#/inicio', class: 'brand', 'aria-label': 'Beaterista — início' }, h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 })),
     h('div', { class: 'ws', role: 'tablist', 'aria-label': 'Espaço de trabalho' }),
+    atualizarButton(),
     h('button', { type: 'button', class: 'icon-btn top-add', 'aria-label': 'Captura rápida: nota, tarefa ou link', onclick: openCapture }, icon('plus', 24)),
     h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Personalizar: tema e organização do início', onclick: openPersonalize }, icon('palette', 22)),
     h('a', { href: '#/ajustes', class: 'icon-btn gear', 'aria-label': 'Ajustes' }, icon('gear', 22)));
