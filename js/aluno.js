@@ -75,6 +75,7 @@ import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
 import { entradaNova } from './entrada.js';
+import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
@@ -543,6 +544,7 @@ async function start() {
   await ensureKidsPlayer(name);
   logVisit(name);
   await refreshAccess();
+  if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
   sendScores();
