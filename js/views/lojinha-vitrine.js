@@ -27,7 +27,7 @@ function detalhe(p) {
     h('div', { class: 'lj-dtop' }, h('b', {}, p.nome), h('button', { type: 'button', class: 'lj-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
     info,
     // sem loading="lazy": dentro da janela (dialog) o iPhone não carregava as fotos e a tela ficava vazia
-    h('div', { class: 'lj-fotos' }, ...fotos.map((f, i) => h('img', { src: f, alt: `${p.nome}, imagem ${i + 1}`, decoding: 'async', onerror: (e) => { e.target.hidden = true; } }))),
+    h('div', { class: 'lj-fotos' }, ...fotos.map((f, i) => h('div', { class: 'lj-foto', oncontextmenu: (e) => e.preventDefault() }, h('img', { src: f, alt: `${p.nome}, imagem ${i + 1}`, decoding: 'async', draggable: 'false', onerror: (e) => { e.target.parentNode.hidden = true; } })))),
     h('div', { class: 'lj-dbot' }, botao('Adquirir', p)));
   dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');

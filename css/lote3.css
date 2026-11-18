@@ -1106,3 +1106,8 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .en-box.passe .pr s { display: block; opacity: .75; font: 700 13px/1.2 "Hanken Grotesk"; }
 
 .lj-dentro { background: rgba(0,0,0,.06); border-radius: 10px; padding: 8px 12px; }.lj-dentro b { font: 800 12px/1 var(--body, system-ui, sans-serif); text-transform: uppercase; letter-spacing: .08em; }.lj-dentro ul { margin: 6px 0 0; padding-left: 18px; font: 600 13px/1.4 var(--body, system-ui, sans-serif); }
+
+/* Lojinha: páginas de amostra com o endereço GRANDE por cima (pedido da Bea: ninguém copia as páginas) */
+.lj-foto { position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.lj-foto img { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
+.lj-foto::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' preserveAspectRatio='xMidYMid slice'%3E%3Cg transform='rotate%28-28 200 200%29' font-family='Arial Black%2CArial%2Csans-serif' font-weight='900' text-anchor='middle'%3E%3Ctext x='200' y='130' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3Ctext x='200' y='210' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3Ctext x='200' y='290' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat; }
