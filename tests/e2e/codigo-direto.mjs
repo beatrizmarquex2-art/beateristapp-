@@ -8,8 +8,9 @@ const mk = async () => { const ctx = await context(browser, { viewport: { width:
   const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(String(e).slice(0, 160))); return p; };
 // primeira tela: nome + código, sem escolher a opção
 let p = await mk(); await p.goto(`${url}/aluno.html`); await sleep(1500);
-check('primeira tela mostra o campo do código direto', await p.locator('.al-cod').isVisible());
-await p.locator('input[aria-label="Seu nome"]').fill('Bea'); await p.locator('.al-cod').fill('MEU1234'); await p.locator('button:has-text("entrar")').first().click(); await sleep(2500);
+const AL = p.locator('.en-box').nth(1);
+check('primeira tela mostra o campo do código direto', await AL.locator('.en-cod').isVisible());
+await AL.locator('input').first().fill('Bea'); await AL.locator('.en-cod').fill('MEU1234'); await AL.locator('.en-btn').click(); await sleep(2500);
 check('entrou só com nome + código (sem escolher "como chegou")', (await p.evaluate(() => location.hash)).includes('jogos') || (await p.locator('nav .nav-item').count()) >= 4);
 check('já entrou liberado: sem botão "código" no topo e sem cadeado na aba Álbum', (await p.locator('.al-tenho:visible').count()) === 0 && (await p.locator('.nav-item.locked').count()) === 0);
 // aba Jogos: campo direto enquanto não tem código

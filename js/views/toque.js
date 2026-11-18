@@ -12,7 +12,7 @@ import { banner, toast, stars } from '../ui.js';
 import { kitSom, warmKit, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
 import { arte, NOME_PECA } from '../kids/kit-modelos.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
-import { tocarTabs, backingBar } from './tocar-nav.js';
+import { tocarTabs, contagemBar } from './tocar-nav.js';
 import { playDoc, stopAll } from './partitura.js';
 import { quantize, countNotes } from '../touchkit.js';
 import { svgEl } from '../kids/art.js';
@@ -35,7 +35,7 @@ const logoFora = (art, modelo) => {
   // cajón: sem o logo branco da Spark na tela (pedido da Bea, 17/nov/2026); fica só o logo preto desenhado na frente do cajón (kit-modelos.js)
 };
 const KEY = 'setting-toque';
-const conf0 = () => ({ bpm: 80, left: false, count: true, click: true, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
+const conf0 = () => ({ bpm: 80, left: false, count: true, click: false, grid: true, modelo: 'acustica', ...(store.get(KEY) ? store.get(KEY).data : {}) });
 // sem código só a bateria acústica (a escolha antiga guardada no aparelho não vale)
 const conf = () => { const c = conf0(); return pago() || GRATIS.bateria.modelos.includes(c.modelo) ? c : { ...c, modelo: 'acustica' }; };
 const setConf = (p) => store.upsert('setting', KEY, p);
@@ -98,7 +98,7 @@ export function mount(host) {
   /** Gravar: conta 4 (se ligado) e grava até 30 s com o clique. Parou (ou deu 30 s)? Já toca em loop, sem esperar. */
   const record = () => {
     stopAll(); stopMetro(); stopTempo(); stopLoop(); cancelRec(); listening = false; timers.forEach(clearTimeout); timers.length = 0; take = null; last = null;
-    const c = conf(); const ac = audio(); const q = 60 / c.bpm; const lead = c.count ? 4 * q : 0.2;
+    const c = { ...conf(), click: false }; const ac = audio(); const q = 60 / c.bpm; const lead = c.count ? 4 * q : 0.2;
     const t0 = ac.currentTime + 0.3 + lead;
     metro = [];
     if (c.count) for (let i = 0; i < 4; i++) metro.push(click(t0 - (4 - i) * q, i === 0 ? 2 : 1));
@@ -132,7 +132,7 @@ export function mount(host) {
   /** Toca o que você gravou em loop (as peças acendem junto). */
   const startLoop = () => {
     if (!last) return; stopLoop(); stopAll(); stopTempo(); listening = false;
-    const c = conf(); const ac = audio(); const q = 60 / c.bpm; const { len, hits } = last;
+    const c = { ...conf(), click: false }; const ac = audio(); const q = 60 / c.bpm; const { len, hits } = last;
     const evs = hits.map((x) => ({ t: x.t, id: x.id, v: x.v, dr: x.dr }));
     if (c.click) for (let b = 0; b * q < len - 0.01; b++) evs.push({ t: b * q, click: b % 4 === 0 ? 2 : 1 });
     evs.sort((x, y) => x.t - y.t); const n = evs.length; const start = ac.currentTime + 0.12;
@@ -169,8 +169,8 @@ export function mount(host) {
           h('button', { class: 'bl-step', type: 'button', 'aria-label': 'menos 5 BPM', onclick: () => setBpm(c.bpm - 5) }, '−'), h('output', { class: 'bl-bpm' }, String(c.bpm)),
           h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => setBpm(c.bpm + 5) }, '+'),
           h('span', { class: 'tp-lab' }, 'BPM')),
-        h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', 'contagem'), chip('click', 'clique'), chip('grid', 'ao compasso')),
-        h('div', { class: 'row tk-line' }, h('button', { class: `btn small${tempoRun ? ' primary' : ''}`, type: 'button', 'aria-pressed': String(!!tempoRun), onclick: toggleTempo }, tempoRun ? '■ parar o tempo' : '🔊 ouvir o tempo'),
+        h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', 'contagem ao gravar'), chip('grid', 'ao compasso')),
+        h('div', { class: 'row tk-line' },
           h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(!!c.left), onclick: () => setConf({ left: !c.left }).then(() => { drawKit(); drawPanel(); }) }, c.left ? 'canhota ✓' : 'canhota'))),
       status,
       take ? h('section', { class: 'card pad tk-take' },
@@ -188,8 +188,8 @@ export function mount(host) {
     ].filter(Boolean));
   };
 
-  host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel, backingBar(),
-    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “ouvir o tempo” liga o clique no andamento escolhido; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
+  host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel, contagemBar(),
+    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “contagem” conta 4 tempos e aí você começa; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
   drawKit(); drawPanel(); tipBox(host, 'toque');
   const solta = aoLiberar(() => { drawKit(); drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   return () => { solta(); cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };

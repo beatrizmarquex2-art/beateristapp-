@@ -118,7 +118,7 @@ export function leitura(host, opts = {}) {
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
       : h('button', { class: 'tr-pad', type: 'button', 'aria-label': 'Toque aqui no ritmo' }, h('small', {}, 'pode tocar com as duas mãos na tela · ou aperte qualquer tecla'));
-    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ “tocar”: conta 4 e é a sua vez (toque depois do “4”) · “ouvir” toca o ritmo antes.');
+    const status = h('p', { class: 'tr-status', 'aria-live': 'polite' }, lastResult ? '' : '▶ “contagem”: conta 4 tempos e aí é a sua vez (toque depois do “4”), sem metrônomo · “ouvir” toca o ritmo antes.');
     const conclude = async (taps) => {
       const g = S.gen; run = null;
       lastResult = evaluate(taps, expected, c.bpm, { mic: useMic });
@@ -145,7 +145,7 @@ export function leitura(host, opts = {}) {
     const start = () => {
       stop(); const ac = audio(); const q = 60 / c.bpm;
       if (useMic) {
-        const cap = capture({ mode: 'mic', pad: null, bpm: c.bpm, beats: beats.length, clickBeats: true, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
+        const cap = capture({ mode: 'mic', pad: null, bpm: c.bpm, beats: beats.length, clickBeats: false, onCount: (n) => { status.textContent = n < 4 ? `conta: ${n + 1}…` : '🎯 agora!'; } });
         pad.classList.add('live'); status.textContent = 'abrindo o microfone…';
         run = { pad, off: () => cap.cancel() };
         const g = S.gen;
@@ -154,7 +154,7 @@ export function leitura(host, opts = {}) {
         });
         return;
       }
-      const t0 = schedule(beats, c.bpm, { tail: true });
+      const t0 = schedule(beats, c.bpm, { clickAll: false }); // só a contagem de 4: durante o toque, sem metrônomo
       const taps = [];
       const onTap = (e) => { if (e.type === 'keydown' && (e.repeat || e.metaKey || e.ctrlKey)) return; if (e.cancelable) e.preventDefault(); voz(audio().currentTime, 0.5); taps.push(perfToCtx(e.timeStamp || performance.now()) - t0); pad.classList.remove('hit'); void pad.offsetWidth; pad.classList.add('hit'); };
       pad.addEventListener('pointerdown', onTap); document.addEventListener('keydown', onTap);
@@ -220,7 +220,7 @@ export function leitura(host, opts = {}) {
         h('button', { class: 'btn small', type: 'button', onclick: () => { micBlocked = false; micErro = null; draw(false); } }, '🎙 tentar o microfone de novo')) : null,
       h('div', { class: 'tr-modos', role: 'group', 'aria-label': 'Como começar' },
         h('button', { class: 'tr-card', type: 'button', onclick: listen }, icone('fone', 'tr-ic'), h('b', {}, 'ouvir'), h('small', {}, 'escuta o ritmo')),
-        h('button', { class: 'tr-card go', type: 'button', onclick: start }, icone('play', 'tr-ic'), h('b', {}, 'tocar'), h('small', {}, 'conta 4 e toca'))),
+        h('button', { class: 'tr-card go', type: 'button', onclick: start }, icone('play', 'tr-ic'), h('b', {}, 'contagem'), h('small', {}, 'conta 4 e aí você toca'))),
       livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
       status, pad, testeMic, quick, summary, history('leitura')].filter(Boolean));
   };

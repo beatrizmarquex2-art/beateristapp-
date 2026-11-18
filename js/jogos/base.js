@@ -22,7 +22,10 @@ function write() { try { localStorage.setItem(chaveJ(), JSON.stringify(mem)); } 
 export const soundOn = () => read().sound;
 export function setSound(on) { read().sound = !!on; write(); }
 export const getGame = (id) => { const g = read().games[id]; return g && typeof g === 'object' ? g : {}; };
-export function setGame(id, patch) { const s = read(); s.games[id] = { ...getGame(id), ...patch }; write(); }
+export function setGame(id, patch) { const s = read(); s.games[id] = { ...getGame(id), ...patch, __t: Date.now() }; write(); } // __t = quando mexeu por último (a nuvem do aluno fica com o mais novo de cada jogo)
+/** Progresso dos jogos pra nuvem (js/progresso-nuvem.js): lê o bloco atual e troca por um mesclado. */
+export const jogosParaNuvem = () => { const s = read(); return { games: s.games }; };
+export function jogosDaNuvem(games) { const s = read(); s.games = games && typeof games === 'object' ? games : s.games; write(); }
 
 let perfilSom = null;
 /** efeitos.js registra aqui o jeito de tocar o som PRÓPRIO do jogo da tela atual (devolve true se tratou o efeito). */
