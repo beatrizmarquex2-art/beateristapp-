@@ -18,10 +18,10 @@ const abrir = async (nome, rota) => {
   await p.goto(`${url}/aluno.html#${rota}`); await sleep(2500); return p;
 };
 const A = await abrir('Ana', '/ritmo/setas');
-await A.waitForSelector('.rz-modos', { timeout: 20000 });
-const rot = await A.locator('.rz-modos button').allInnerTexts();
-check('3 jeitos de jogar: sozinho, contra o Paul e com um amigo', rot.length === 3 && /Paul/.test(rot[1]) && /amigo/i.test(rot[2]), rot.join(' | ').replace(/\n/g, ' '));
-await A.locator('.rz-modos button').nth(2).click(); await sleep(1500);
+await A.waitForSelector('.rz-ics', { timeout: 20000 });
+const rot = await A.locator('.rz-ics button').evaluateAll((l) => l.map((b) => b.getAttribute('aria-label')));
+check('3 ícones: sozinho, contra o Paul e com um amigo (sem texto)', rot.length === 3 && /Paul/.test(rot[1]) && /amigo/i.test(rot[2]) && (await A.locator('.rz-ics').innerText()).trim() === '', rot.join(' | '));
+await A.locator('.rz-ics button').nth(2).click(); await sleep(1500);
 check('abre a sala por código', /amigo/.test(await A.evaluate(() => location.hash)) && (await A.locator('.jg-lobby').count()) === 1);
 await A.locator('.jg-lobby .btn.primary').first().click(); await sleep(1500);
 const B = await abrir('Bia', '/ritmo/setas/amigo');

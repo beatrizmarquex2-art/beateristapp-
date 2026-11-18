@@ -95,8 +95,8 @@ export function mount(host, opts) {
     if (!g || g.mode !== 'online' || g.over) return null;
     const mine = g.pausa && g.pausa.by === me0(); const tipo = g.pausa && g.pausa.tipo;
     if (!g.pausa) return h('div', { class: 'jg-seg vl-ctl', role: 'group', 'aria-label': 'pausa e saída' },
-      h('button', { type: 'button', onclick: () => setPausa({ by: me0(), tipo: 'pausa' }) }, '⏸ pausar pros dois'),
-      h('button', { type: 'button', onclick: () => setPausa({ by: me0(), tipo: 'saida' }) }, '👋 avisar que vou sair'));
+      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'pausar o jogo pros dois', title: 'pausar o jogo pros dois', onclick: () => setPausa({ by: me0(), tipo: 'pausa' }) }, '⏸'),
+      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'avisar o outro que vou sair', title: 'avisar o outro que vou sair', onclick: () => setPausa({ by: me0(), tipo: 'saida' }) }, '👋'));
     const texto = tipo === 'saida'
       ? (mine ? 'você avisou que vai sair. pode ir estudar! quando voltar, entre em “voltar pra sala” e a partida continua do mesmo ponto, na mesma pergunta.' : 'o outro vai sair um pouquinho (pra estudar). a partida fica guardada e continua quando ele voltar.')
       : (mine ? 'você pausou o jogo pros dois.' : 'o outro pausou o jogo pros dois.');
