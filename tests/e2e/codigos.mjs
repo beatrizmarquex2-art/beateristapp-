@@ -13,7 +13,7 @@ await ctx.route('**/rest/v1/alunos_codigos**', async (r) => {
   if (m === 'DELETE') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) db.splice(i, 1); return r.fulfill({ status: 204, body: '' }); }
   return r.continue();
 });
-await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200);
+await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200); await page.locator('.cod-mais summary').click(); await sleep(1500); // as ferramentas antigas ficam em "mais ferramentas"
 check('a tela abre', (await page.locator('#view .banner, #view h1, #view h2').count()) > 0 && (await page.locator('.cod-ta').count()) === 1);
 await page.locator('.cod-ta').fill('Maria Souza ; K7M2QX\nJoão Pedro\nAna Lima\tHQ9ZT4\nCarlos'); await page.locator('button:has-text("importar")').first().click(); await sleep(1200);
 check('importou os 4 alunos', db.length === 4, String(db.length));
@@ -22,13 +22,13 @@ check('quem veio só com o nome ganhou código aleatório de 6', /^[A-Z0-9]{6}$/
 check('mostra a tabela atualizada', (await page.locator('.cod-tbl').count()) >= 1 && (await page.locator('.cod-tbl tbody tr').count()) >= 4);
 await page.locator('input[aria-label="Quantos códigos"]').fill('3'); await page.locator('button:text-is("gerar")').click(); await sleep(1200);
 check('gerou 3 códigos novos (7 no total, todos diferentes)', db.length === 7 && new Set(db.map((x) => x.code)).size === 7, String(db.length));
-await page.locator('.cod-act button:has-text("desativar")').first().click(); await sleep(900);
+await page.evaluate(() => [...document.querySelectorAll('.cod-act button')].find((b) => /^desativar$/.test(b.textContent.trim())).click()); await sleep(900);
 check('desativar funciona', db.some((x) => x.ativo === false));
-await page.evaluate(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; }); await page.locator('button:has-text("copiar tabela")').click(); await sleep(300);
+await page.evaluate(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; }); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /copiar tabela/.test(b.textContent)).click()); await sleep(300);
 const copied = await page.evaluate(() => window.__copied || '');
 check('copiar tabela: cabeçalho nome/código e uma linha por aluno', copied.startsWith('nome\tcódigo\tativo\tusos') && copied.split('\n').length === 8, copied.split('\n').length + ' linhas');
 // passe anual (PIX): gera código, 12 meses, 2 aparelhos, sem a coluna jogos, mensagem pronta e link do WhatsApp
-await page.locator('input[aria-label="Nome de quem pagou"]').fill('Maria Souza'); await page.locator('input[aria-label="WhatsApp de quem pagou"]').fill('(18) 99180-4150'); await page.locator('button:has-text("gerar passe anual")').click(); await sleep(1200);
+await page.locator('input[aria-label="Nome de quem pagou"]').fill('Maria Souza'); await page.locator('input[aria-label="WhatsApp de quem pagou"]').fill('(18) 99180-4150'); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /gerar passe anual/.test(b.textContent)).click()); await sleep(1200);
 const pa = db.find((x) => x.tipo === 'passe');
 check('passe anual criado: P + 9, nome "Passe Maria Souza", 2 aparelhos', pa && /^P[A-HJ-NP-Z2-9]{9}$/.test(pa.code) && pa.nome === 'Passe Maria Souza' && pa.max_aparelhos === 2, JSON.stringify(pa));
 check('vence em ~12 meses e não manda a coluna jogos', pa && Math.abs(new Date(pa.expira_em) - (Date.now() + 365 * 864e5)) < 3 * 864e5 && pa.tem_jogos === false);
@@ -39,12 +39,12 @@ for (const sp of ['bea', 'beaterista']) {
   await page.evaluate((s) => { localStorage.setItem('bt-space', s); }, sp); await page.evaluate(() => { location.hash = '#/inicio'; }); await page.reload(); await sleep(1200);
   await page.locator('button[aria-label*="enu"], .menu-btn, #menu-btn').first().click().catch(() => {}); await sleep(500);
   const tabAulas = page.locator('.drawer-tab:has-text("aulas")'); if (await tabAulas.count()) { await tabAulas.first().click(); await sleep(300); }
-  const has = await page.locator('.drawer a:has-text("Importar código de aluno")').count();
-  check(`menu (${sp}) tem "Importar código de aluno"`, has >= 1, String(has));
+  const has = await page.locator('.drawer a:has-text("Códigos")').count();
+  check(`menu (${sp}) tem "Códigos"`, has >= 1, String(has));
 }
 check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join(' | '));
 // "gerar novo código aleatório": um toque, 1 código de 6 (igual aos dos alunos), com nome opcional e mensagem pronta
-{ await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200); const antes = db.length; await page.locator('input[aria-label="Nome do aluno (opcional)"]').fill('Bia Teste'); await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
+{ await page.evaluate(() => { location.hash = '#/inicio'; }); await sleep(500); await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1500); await page.evaluate(() => { const d = document.querySelector('.cod-mais'); if (d && !d.open) d.querySelector('summary').click(); }); await sleep(1500); const antes = db.length; await page.locator('input[aria-label="Nome do aluno (opcional)"]').fill('Bia Teste'); await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
   const novo = db.find((x) => x.nome === 'Bia Teste');
   check('gerar novo código aleatório: cria 1 código de 6 com o nome, liberado', db.length === antes + 1 && novo && /^[A-Z0-9]{6}$/.test(novo.code) && novo.ativo === true, JSON.stringify(novo));
   check('mostra o código grande e a mensagem pronta pro aluno', (await page.locator('.cod-new .rg-code').first().textContent()).trim() === novo.code && /já sou aluno/.test(await page.locator('.cod-new').innerText()));
