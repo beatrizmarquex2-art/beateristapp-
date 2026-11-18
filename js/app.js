@@ -87,6 +87,7 @@ let started = false;
 
 const NAV = [...NAV_DEFAULT]; // as 4 abas de baixo (a Bea pode trocar: navbar.js)
 const RITMO = ['beatlab', 'toque', 'partitura', 'groovebox'];
+const VISUAL_C = new Set(['codigos', 'beaterista', 'acessos', 'resgates', 'planos', 'album-alunos', 'ata']); // telas com o visual C (css/app.css, no fim)
 /** A aba de baixo "acesa" pra tela atual: Criar ritmos vale também pro Beat Lab, Bateria de Toque etc. */
 const navOn = (href, r) => {
   if (href === '#/hub/ritmo') return (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name);
@@ -276,6 +277,7 @@ function shell() {
     silence(); // trocou de tela: nada da tela anterior continua tocando (o ambiente e o YouTube do mini-player seguem)
     view.replaceChildren();
     const r0 = route(); view.dataset.page = r0.name; view.dataset.sub = r0.arg || ''; // cada tela ganha o seu desenho
+    view.classList.toggle('bmr', VISUAL_C.has(r0.name)); // visual C (claro e suave, cantos arredondados): só nas telas da lista (a regra global deixa tudo quadrado, `.bmr` libera)
     const r = route();
     const here = location.hash || '#/inicio';
     cameBack = false;
