@@ -1104,3 +1104,5 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 
 .en-box.passe .pr .bf { display: inline-block; margin-bottom: 4px; background: #b8162b; color: #fff; border-radius: 99px; padding: 4px 10px; font: 800 11px/1 "Hanken Grotesk"; text-transform: uppercase; letter-spacing: .06em; }
 .en-box.passe .pr s { display: block; opacity: .75; font: 700 13px/1.2 "Hanken Grotesk"; }
+
+.lj-dentro { background: rgba(0,0,0,.06); border-radius: 10px; padding: 8px 12px; }.lj-dentro b { font: 800 12px/1 var(--body, system-ui, sans-serif); text-transform: uppercase; letter-spacing: .08em; }.lj-dentro ul { margin: 6px 0 0; padding-left: 18px; font: 600 13px/1.4 var(--body, system-ui, sans-serif); }

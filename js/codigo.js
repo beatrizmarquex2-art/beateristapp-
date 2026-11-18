@@ -76,7 +76,7 @@ async function head(extra = {}) { const auth = await import('./auth.js'); const 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const gerar = () => { const a = new Uint32Array(6); crypto.getRandomValues(a); return [...a].map((x) => ABC[x % ABC.length]).join(''); };
 export async function listar() {
-  const r = await fetch(`${base}/alunos_codigos?select=code,nome,ativo,usos,criado_em,ultimo_uso,expira_em&order=criado_em.desc`, { headers: await head() });
+  const r = await fetch(`${base}/alunos_codigos?select=code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos&order=criado_em.desc`, { headers: await head() });
   if (!r.ok) throw new Error(String(r.status)); return r.json();
 }
 export async function criar(nome) {
@@ -94,10 +94,10 @@ export async function apagar(code) {
 
 /** Passe: código de um jogo/aba só (ou test drive do site todo). Código = prefixo + 4 letras/números; vale `dias` dias a partir do primeiro uso; 2 aparelhos.
  *  `jogos` = telas liberadas (prefixos de endereço, ex.: ['#/jogos/cartas']) ou null = o site todo. Devolve o código. */
-export async function criarPasse({ prefixo = 'BEA', nome = '', dias = 3, jogos = null } = {}) {
+export async function criarPasse({ prefixo = 'BEA', nome = '', dias = 3, jogos = null, tam = 4 } = {}) {
   const A4 = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   for (let i = 0; i < 6; i++) {
-    const r4 = new Uint32Array(4); crypto.getRandomValues(r4); const code = norm(prefixo) + [...r4].map((x) => A4[x % A4.length]).join('');
+    const r4 = new Uint32Array(tam); crypto.getRandomValues(r4); const code = norm(prefixo) + [...r4].map((x) => A4[x % A4.length]).join('');
     const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify({ code, nome: String(nome).slice(0, 60), tipo: 'passe', dias, jogos: jogos && jogos.length ? jogos : null, max_aparelhos: 2, ativo: true }) });
     if (r.ok) return code; if (r.status !== 409) throw new Error(String(r.status));
   }

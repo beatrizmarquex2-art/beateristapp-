@@ -8,7 +8,7 @@ await ctx.unroute('**/*.supabase.co/**');
 await ctx.route('**/rest/v1/alunos_codigos**', async (r) => {
   const req = r.request(); const m = req.method();
   if (m === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(db.map((x) => ({ ...x }))) });
-  if (m === 'POST') { for (const x of [].concat(req.postDataJSON())) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null, tipo: x.tipo, expira_em: x.expira_em, max_aparelhos: x.max_aparelhos, tem_jogos: 'jogos' in x }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
+  if (m === 'POST') { for (const x of [].concat(req.postDataJSON())) { const i = db.findIndex((y) => y.code === x.code); const row = { code: x.code, nome: x.nome, ativo: true, usos: i >= 0 ? db[i].usos : 0, criado_em: new Date().toISOString(), ultimo_uso: null, tipo: x.tipo, expira_em: x.expira_em, max_aparelhos: x.max_aparelhos, tem_jogos: 'jogos' in x, dias: x.dias, jogos: x.jogos }; if (i >= 0) db[i] = row; else db.push(row); } return r.fulfill({ status: 201, body: '' }); }
   if (m === 'PATCH') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) Object.assign(db[i], req.postDataJSON()); return r.fulfill({ status: 204, body: '' }); }
   if (m === 'DELETE') { const code = new URL(req.url()).searchParams.get('code').replace('eq.', ''); const i = db.findIndex((y) => y.code === code); if (i >= 0) db.splice(i, 1); return r.fulfill({ status: 204, body: '' }); }
   return r.continue();
@@ -50,4 +50,12 @@ check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join(' | '));
   check('mostra o código grande e a mensagem pronta pro aluno', (await page.locator('.cod-new .rg-code').first().textContent()).trim() === novo.code && /já sou aluno/.test(await page.locator('.cod-new').innerText()));
   await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
   check('gerar de novo cria outro código diferente', db.length === antes + 2 && new Set(db.map((x) => x.code)).size === db.length); }
+// "gerar código alunos, amigos e marcas": só as abas marcadas, código aleatório de 6, dias; depois "editar"
+{ await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200);
+  for (const id of ['jogos', 'tocar', 'album']) await page.locator(`.cod-passes input[data-id="${id}"]`).evaluate((c) => { c.checked = false; });
+  await page.locator('input[aria-label="Quantos dias vale o passe"]').fill('10');
+  await page.locator('button:has-text("gerar código alunos, amigos e marcas")').evaluate((b) => b.click()); await sleep(1200);
+  const pz = db.filter((x) => x.tipo === 'passe').pop();
+  check('código de amigos/marcas: 6 aleatórios, 10 dias, só a aba Estudos', pz && /^[A-Z0-9]{6}$/.test(pz.code) && pz.dias === 10 && pz.jogos.includes('#/estudos') && !pz.jogos.includes('#/jogos') && !pz.jogos.includes('#/album'), JSON.stringify(pz));
+  check('a seção antiga de escolher jogo por jogo saiu', (await page.locator('.cod-passes input').count()) === 4); }
 await browser.close(); srv.close(); done();

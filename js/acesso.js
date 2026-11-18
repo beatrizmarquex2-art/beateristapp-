@@ -5,7 +5,7 @@ const ESC_KEY = 'beaterista-aluno-escopo';
 /** Passe com escopo: lista de telas liberadas (prefixos de endereço, ex.: '#/jogos/cartas'). null = código completo (tudo). */
 export const escopo = () => { try { const e = JSON.parse(localStorage.getItem(ESC_KEY) || 'null'); return Array.isArray(e) && e.length ? e.map(String) : null; } catch { return null; } };
 /** Vale tudo (código de aluno, professora ou test drive)? Passe de um jogo só NÃO conta: estrelas, álbum e o resto seguem trancados. */
-export const liberado = () => ok && !escopo();
+export const liberado = () => ok && (!escopo() || noEscopo((typeof location !== 'undefined' && location.hash) || '#/jogos')); // passe por abas: dentro de uma aba liberada vale tudo dela; nas outras segue como quem não tem código
 /** Tem algum código válido (mesmo que só de um jogo)? */
 export const comCodigo = () => ok;
 const noEscopo = (hash) => { const e = escopo(); const h = String(hash || ''); return !!e && e.some((p) => (p === '/aventura' ? h.includes('/aventura') : h === p || h.startsWith(`${p}/`) || h.startsWith(`${p}?`))); };

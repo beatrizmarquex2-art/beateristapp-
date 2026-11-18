@@ -31,3 +31,20 @@ export const SECOES = [
   { id: 'ensina', nome: 'Robôterista ensina', titulo: 'Robôterista ensina', sub: 'apostilas, jogos e atividades pra aprender música brincando', chamada: 'aprender música brincando', capas: ['ritmo', 'memoria', 'bateria-kids'] },
   { id: 'evoluir', nome: 'Para evoluir', titulo: 'Para evoluir', sub: 'materiais pra jovens e adultos: bateria, violão e os exercícios que a Bea leva pro palco', chamada: 'pra jovens e adultos que querem tocar de verdade', capas: ['start', 'mood', 'violao'] },
 ];
+
+// "O que tem dentro" de cada material (aparece na janela do produto). Só fatos já escritos pela Bea nas descrições, no caderninho de materiais e nas capas; nada inventado.
+export const DENTRO = {
+  ritmo: ['100 páginas em PDF, pra imprimir em preto e branco (pouca tinta)', 'figuras rítmicas e pausas', 'levadas de rock'],
+  harmonia: ['102 páginas em PDF', 'notas e acordes no teclado', 'notas e acordes no violão'],
+  pratica: ['48 atividades em PDF pra imprimir', 'jogos', 'cruzadinhas', 'labirintos'],
+  memoria: ['61 pares de cartas pra imprimir, recortar e embaralhar', 'jogo da memória musical'],
+  'bateria-kids': ['36 páginas pra colorir, aprender e se divertir', 'peças da bateria, baquetas, postura e partitura', 'figuras rítmicas, labirinto e metrônomo', 'caça-palavras, cruzadinha e mais', 'brinde: desenhos pra colorir'],
+  colorir: ['50 páginas com o Paul pra imprimir e pintar do seu jeito', 'só desenhos pra colorir (não é aula)'],
+  start: ['44 páginas, ebook pra quem está começando', 'peças da bateria', 'figuras rítmicas', 'partitura e rudimentos'],
+  mood: ['55 páginas', 'exercícios que a Bea estuda, ensina e leva pro palco', 'estudos, prática e musicalidade'],
+  violao: ['47 páginas, da primeira corda à primeira música'],
+  'cards-teoria': ['150 cartas em PDF: 5 temas de 30 cartas', 'figuras, pausas, claves, tempo e compasso e leitura de notas', '9 cartas por folha A4 (63 × 88 mm), com linhas de corte e verso opcional'],
+  'cards-instrumentos': ['90 cartas em PDF: 30 de bateria, 30 de teclado e 30 de violão', '9 cartas por folha A4 (63 × 88 mm), com linhas de corte e verso opcional'],
+  'cards-dicionario': ['120 cartas em PDF com palavras de música', 'bateria, teoria, teclado, violão, banda e palco, estúdio e o jeito de falar dos músicos', 'cada carta com desenho, explicação, nome em inglês e uma dica ou exemplo', 'feito com pouca tinta'],
+  'cards-combo': ['os 3 baralhos: Teoria (150), Instrumentos (90) e Dicionário (120)', '360 cartas em PDF, cada baralho com capa, "como usar" e verso opcional', 'R$ 49,90 em vez de R$ 59,70 separados'],
+};
