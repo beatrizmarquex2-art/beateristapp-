@@ -74,6 +74,7 @@ import { silence } from './audio.js';
 import { startScroller } from './scroller.js';
 import { startPaul } from './paul-talk.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
+import { entradaNova } from './entrada.js';
 import { corSrc, stkSrc } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
@@ -499,53 +500,35 @@ function shell(name) {
 }
 
 function askName() {
-  const input = h('input', { class: 'field', type: 'text', name: 'username', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', required: true, 'aria-label': 'Seu nome', placeholder: 'seu nome' });
-  const pose = pickPose();
-  const err = h('p', { class: 'form-err', role: 'alert' });
-  const cod = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de acesso', placeholder: 'código de acesso' }); // letras sempre visíveis (sem tipo senha)
-  const pedido = h('div', { class: 'al-pedido', role: 'status' });
-  const gen = h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'não tenho: gerar código');
-  const codBox = h('div', { class: 'al-codbox al-amarelo' }, h('p', { class: 'al-lock-l' }, 'já tem código de aluno?'), h('div', { class: 'al-codrow' }, cod, gen), pedido);
-  const temCodigoDigitado = () => CODE.norm(cod.value).length >= 4;
-  function drawPedido() { const c = CODE.pendente(); gen.hidden = !!c; cod.hidden = !!c; pedido.replaceChildren(...(c ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'pode entrar agora: quando ela cadastrar, libera sozinho.')] : [])); }
+  document.documentElement.classList.add('en-on'); // fundo escuro da entrada nova (js/entrada.js)
+  const pedido = h('div', { class: 'en-pedido', role: 'status' });
+  const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(...(c ? [h('p', {}, 'seu código: ', h('b', {}, c)), h('p', { class: 'muted' }, 'informe à professora. você já pode entrar agora.')] : [])); };
   drawPedido();
   let indo = false;
-  const entrarAgora = async () => { if (indo) return; indo = true; try {
-    const n = cleanName(input.value);
+  // comCodigo = true: "já sou aluno" (confere o código); false: "experimentar grátis" (só o nome, modo livre)
+  const entrar = async (nomeV, codV, comCodigo, err) => { if (indo) return; indo = true; try {
+    const n = cleanName(nomeV);
     if (n.length < 2) { err.textContent = 'escreva pelo menos 2 letras.'; return; }
-    const modo = temCodigoDigitado() || CODE.pendente() ? 'codigo' : 'sem código'; // digitou o código? libera tudo; sem código entra no modo livre
-    if (modo === 'codigo') { // código de acesso: libera tudo que a professora liberou pra quem é aluno (vale 1 ano neste aparelho)
-      if (!CODE.pendente()) { // digitou um código que a professora já deu: confere
-        if (CODE.norm(cod.value).length < 4) { err.textContent = 'digite o seu código de acesso ou toque em "gerar meu código".'; return; }
+    const modo = (comCodigo && CODE.norm(codV).length >= 4) || CODE.pendente() ? 'codigo' : 'sem código';
+    if (comCodigo && modo !== 'codigo') { err.textContent = 'digite o seu código de aluno (4 a 12 letras e números).'; return; }
+    if (modo === 'codigo') {
+      if (!CODE.pendente()) {
         err.textContent = 'conferindo o código…';
-        try { if (!(await CODE.entrar(cod.value))) { err.textContent = CODE.msgFalha(); return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
+        try { if (!(await CODE.entrar(codV))) { err.textContent = CODE.msgFalha(); return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
       }
       err.textContent = '';
     }
     const o = modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : 'não informou';
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
-    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); } // já entra na lista de "trocar aluno" na hora
-    try { localStorage.setItem(NAME_KEY, n); } catch { /* sem armazenamento: vale só nesta sessão */ window.__alunoNome = n; }
+    logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); }
+    try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; }
     start();
   } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
-  for (const campo of [input, cod]) campo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); entrarAgora(); } }); // sem botão "submit", o Enter precisa ser tratado aqui
-  const form = h('form', { class: 'login-card', noValidate: true, onsubmit: (e) => { e.preventDefault(); entrarAgora(); } },
-    h('div', { class: 'al-hero' },
-      h('div', { class: 'al-paulbox' },
-        h('img', { class: 'al-paul-img', src: `assets/aluno/paul-${pose[0]}.webp`, alt: `Paul, o robôterista, ${pose[1]}` }),
-        // o Paul fica parado; o que se mexe são os rabiscos em volta dele
-        ...[['estrela-ouro', 'a'], ['nota-vermelha', 'b'], ['coracao', 'c'], ['raio', 'd'], ['estrela-azul-p', 'e'], ['nota-preta', 'f']].map(([n, k]) => h('img', { class: `al-el el-${k}`, src: `assets/paul/el/${n}.webp`, alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
-      h('div', { class: 'al-hero-txt' },
-        h('img', { class: 'al-robo', src: 'assets/robo-logo.png', alt: 'Robôterista', width: 900, height: 326 }),
-        h('p', { class: 'al-bubble' }, 'oi! sou o paul,', h('br'), 'assistente da bea,', h('br'), 'vamos jogar juntos', h('br'), 'e aprender!'))),
-    h('label', { class: 'field' }, h('span', {}, 'nome'), input),
-    codBox, err,
-    h('button', { class: 'btn primary wide', type: 'button', onclick: () => entrarAgora() }, 'entrar'), // botão comum (não 'submit'): no Safari do iPad o envio de formulário falhava; o Enter no teclado continua enviando
-    h('p', { class: 'muted center al-note' }, 'seu nome aparece no ranking e a escola registra a entrada'),
-    h('p', { class: 'muted center al-termo' }, TERMO_DE_USO));
-    app.replaceChildren(h('main', { class: 'login al-entry' },
-    h('div', { class: 'al-top' }, brandEl(), socialRow('al-mini')), form, footerBlock()));
-  setTimeout(() => input.focus(), 100);
+  // Lojinha clicável já na entrada: entra como visitante (nada é guardado) e abre a aba Lojinha
+  const lojinha = () => { window.__alunoNome = 'visitante'; location.hash = '#/lojinha'; start(); };
+  const E = entradaNova({ links: LINKS, pedido, onExperimentar: (nome, err) => entrar(nome, '', false, err), onEntrar: (nome, cod, err) => entrar(nome, cod, true, err), onLojinha: lojinha });
+  app.replaceChildren(h('main', { class: 'login al-entry en-main' }, E.el));
+  window.scrollTo(0, 0);
 }
 
 /** Ao abrir: o código guardado (ou o pedido que a professora já cadastrou) ainda vale? */
@@ -554,6 +537,7 @@ async function refreshAccess() {
 }
 
 async function start() {
+  document.documentElement.classList.remove('en-on');
   const name = getName() || window.__alunoNome || '';
   if (!name) { askName(); return; }
   await ensureKidsPlayer(name);

@@ -1,0 +1,23 @@
+// Entrada nova (js/entrada.js): experimentar grátis, já sou aluno, Lojinha clicável, "por que Paul?", botão fixo e o texto da Beatriz Marques.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser } = await launch();
+const novo = async () => { const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true }); await ctx.route('**/*.supabase.co/**', (r) => r.abort()); const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(String(e).slice(0, 160))); return p; };
+let p = await novo(); await p.goto(`${url}/aluno.html`); await p.waitForSelector('.en', { timeout: 10000 }); await sleep(800);
+check('a entrada mostra o logo do Paul, os atalhos e a Lojinha amarela clicável', (await p.locator('.en-logo').count()) === 1 && (await p.locator('.en-tile').count()) === 4 && (await p.locator('a.en-tile.am').count()) === 1);
+check('sem pergunta "por onde conheceu" e sem preço de assinatura', !/por onde você conheceu|\b14,90\b|R\$ 9,90/.test(await p.locator('.en').innerText()));
+check('o acesso completo diz "em breve"', /para quem ainda não é aluno: em breve/i.test(await p.locator('.en-box.soon').innerText()));
+check('texto da Beatriz Marques e os 15 celulares do "veja por dentro"', /Beatriz Marques/i.test(await p.locator('.en-nome').innerText()) && (await p.locator('.en-jg').count()) === 15);
+check('produtos: 4 apostilas, "imprima, recorte e aprenda brincando" e "adquira já na lojinha"', (await p.locator('.en-prod').count()) === 4 && /aprenda brincando/i.test(await p.locator('.en-ibr').innerText()) && /adquira já na lojinha/i.test(await p.locator('.en-adq').innerText()));
+await p.click('.en-pqp'); check('"por que Paul?" abre a arte', !(await p.locator('.en-modal').evaluate((e) => e.hidden))); await p.click('.en-modal');
+await p.click('.en-fixo button'); await sleep(800); check('o botão fixo leva ao campo do nome', (await p.evaluate(() => document.activeElement && document.activeElement.getAttribute('placeholder'))) === 'seu nome');
+await p.fill('#en-experimentar input', 'a'); await p.click('#en-experimentar .en-btn'); await sleep(400);
+check('nome curto demais: avisa e não entra', /pelo menos 2 letras/.test(await p.locator('#en-experimentar .en-err').innerText()) && (await p.locator('.en').count()) === 1);
+await p.fill('#en-experimentar input', 'Ana'); await p.click('#en-experimentar .en-btn'); await sleep(2500);
+check('experimentar grátis entra no app só com o nome', (await p.locator('.en').count()) === 0 && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-nome'))) === 'Ana' && (await p.locator('nav .nav-item').count()) >= 4);
+check('sem erros de JS (experimentar)', p.errs.length === 0, p.errs.join('|')); await p.context().close();
+p = await novo(); await p.goto(`${url}/aluno.html`); await p.waitForSelector('.en'); await sleep(500);
+await p.click('a.en-tile.am'); await sleep(2500);
+check('a Lojinha da entrada abre a aba Lojinha, sem pedir nome', (await p.evaluate(() => location.hash)).startsWith('#/lojinha') && (await p.locator('.en').count()) === 0);
+check('visitante não fica salvo no aparelho', (await p.evaluate(() => localStorage.getItem('beaterista-aluno-nome'))) === null);
+check('sem erros de JS (lojinha)', p.errs.length === 0, p.errs.join('|')); await p.context().close();
+await browser.close(); srv.close(); done();
