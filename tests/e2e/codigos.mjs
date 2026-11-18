@@ -43,4 +43,11 @@ for (const sp of ['bea', 'beaterista']) {
   check(`menu (${sp}) tem "Importar código de aluno"`, has >= 1, String(has));
 }
 check('sem erros de JS', errs.length === 0, errs.slice(0, 2).join(' | '));
+// "gerar novo código aleatório": um toque, 1 código de 6 (igual aos dos alunos), com nome opcional e mensagem pronta
+{ await page.evaluate(() => { location.hash = '#/codigos'; }); await sleep(1200); const antes = db.length; await page.locator('input[aria-label="Nome do aluno (opcional)"]').fill('Bia Teste'); await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
+  const novo = db.find((x) => x.nome === 'Bia Teste');
+  check('gerar novo código aleatório: cria 1 código de 6 com o nome, liberado', db.length === antes + 1 && novo && /^[A-Z0-9]{6}$/.test(novo.code) && novo.ativo === true, JSON.stringify(novo));
+  check('mostra o código grande e a mensagem pronta pro aluno', (await page.locator('.cod-new .rg-code').first().textContent()).trim() === novo.code && /já sou aluno/.test(await page.locator('.cod-new').innerText()));
+  await page.locator('button:has-text("gerar novo código aleatório")').evaluate((b) => b.click()); await sleep(1200);
+  check('gerar de novo cria outro código diferente', db.length === antes + 2 && new Set(db.map((x) => x.code)).size === db.length); }
 await browser.close(); srv.close(); done();

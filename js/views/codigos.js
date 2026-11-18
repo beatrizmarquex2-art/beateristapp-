@@ -25,10 +25,13 @@ export function mount(host) {
   const out = h('div', { class: 'cod-out' });
   const diasIn = h('input', { type: 'number', class: 'field cod-qtd', min: 1, max: 365, value: 3, inputmode: 'numeric', 'aria-label': 'Quantos dias vale o passe' });
   const tableBox = h('div', {});
+  const umNome = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome do aluno (opcional)', autocomplete: 'off', 'aria-label': 'Nome do aluno (opcional)' });
   const nomeIn = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome de quem pagou', autocomplete: 'off', 'aria-label': 'Nome de quem pagou' });
   const telIn = h('input', { class: 'field', type: 'tel', inputmode: 'tel', maxlength: 20, placeholder: 'WhatsApp com DDD (opcional)', autocomplete: 'off', 'aria-label': 'WhatsApp de quem pagou' });
   host.append(banner('Importar código de aluno', 'quem tem código usa o Beat Hero e as Músicas MIDI'),
     h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+      h('section', { class: 'card pad' }, h('b', {}, 'novo código de aluno'), h('p', { class: 'muted' }, 'um toque: eu crio um código aleatório (6 letras e números), igual aos que os alunos geram sozinhos, e já deixo liberado. vale o site todo, em até 2 aparelhos, por 1 ano.'), umNome,
+        h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doUm }, 'gerar novo código aleatório'))),
       h('section', { class: 'card pad' }, h('b', {}, 'passe anual (pagou no PIX)'), h('p', { class: 'muted' }, `${precoPasse().atual}${precoPasse().oferta ? ' (oferta Black Friday até 15/dez; depois R$ 79,90)' : ''} · o site todo por 12 meses a partir de hoje · 2 aparelhos. confirmou o PIX? escreva o nome, gere e mande a mensagem pronta no WhatsApp.`), nomeIn, telIn,
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: doAnual }, 'gerar passe anual'))),
       h('section', { class: 'card pad' }, h('b', {}, 'importar'), h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. cole aqui "nome ; código" (de uma planilha também) e ele é liberado sozinho. quem vier só com o nome ganha um código aleatório.'), ta,
@@ -66,6 +69,20 @@ export function mount(host) {
     const m = msgPasse(code, o, dias);
     out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, `passe: ${o}`), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cola no WhatsApp)') }, 'copiar mensagem')),
       h('p', { class: 'rg-code', style: 'font-size:28px;margin:6px 0' }, code), h('p', { class: 'muted' }, m)));
+  }
+  const msgCodigo = (code) => `oi! aqui está o seu código de aluno da Beaterista: ${code}\nentre em ${SITE}, toque em "já sou aluno" e digite o código. vale o site todo, em até 2 aparelhos, por 1 ano. anote o código: na tela ele aparece escondido, por segurança.`;
+  function mostraCodigo(code, nome) {
+    const m = msgCodigo(code);
+    out.replaceChildren(h('section', { class: 'card pad cod-new' }, h('div', { class: 'row between' }, h('b', {}, nome ? `código de ${nome}` : 'novo código'), h('span', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: () => copy(code, 'código copiado') }, 'copiar código'), h('button', { class: 'btn small', type: 'button', onclick: () => copy(m, 'mensagem copiada (cola no WhatsApp)') }, 'copiar mensagem'))),
+      h('p', { class: 'rg-code', style: 'font-size:32px;margin:6px 0;letter-spacing:.12em' }, code), h('p', { class: 'muted' }, m)));
+  }
+  async function doUm() {
+    if (busy) return; busy = true;
+    const nome = String(umNome.value || '').trim().slice(0, 50); const usados = new Set(list.map((x) => x.code));
+    let code; do code = CODE.gerar(); while (usados.has(code));
+    try { await CODE.importar([{ code, nome }]); mostraCodigo(code, nome); umNome.value = ''; toast('código criado ✓', { id: 'cod-ok', ms: 2500 }); await load(); }
+    catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
+    busy = false; draw();
   }
   async function doAnual() {
     const nome = nomeIn.value.trim(); if (!nome) return toast('escreva o nome de quem pagou', { id: 'cod-err', ms: 2600 }); if (busy) return; busy = true;
