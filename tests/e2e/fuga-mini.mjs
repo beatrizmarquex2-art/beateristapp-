@@ -70,13 +70,13 @@ check('4 notas caindo: faixa certa nas 8 = 0 erros, 3 ★ e chama fim', (await p
 // ---- lote 2: pesca, mira e bolinha, montar nota ----
 const joga2 = async (fn, nivel) => { await page.evaluate(async ([fn, nivel]) => { window.__fim = 0; const m = await import('/js/jogos/fuga-mini.js'); document.body.innerHTML = '<div id="b"></div>'; window.__api = m[fn](document.getElementById('b'), { nivel, fim: () => { window.__fim = (window.__fim || 0) + 1; } }); }, [fn, nivel]); const go = page.locator('.fgm-go'); if (await go.count()) await go.click(); await sleep(300); };
 const stats = () => page.evaluate(() => JSON.stringify(window.__api.stats()));
-// pesca (fácil: 5 rodadas, 3 peixes): 1 peixe errado no começo = 1 erro; o resto certo = 3 ★
+// pesca (fácil: 3 rodadas, 3 peixes): 1 peixe errado no começo = 1 erro; o resto certo = 3 ★
 await joga2('pesca', 'facil');
 check('pesca: 3 peixes nadando e a pergunta aparece', (await page.locator('.fgp-peixe').count()) === 3 && /pesque/.test(await page.textContent('.fgp-q')));
 await page.evaluate(() => { const r = window.__api.rodada(); window.__api.pega((r.ok + 1) % 3); }); await sleep(900);
 check('pesca: peixe errado conta 1 erro e some (a rodada continua)', JSON.parse(await stats()).erros === 1 && (await page.locator('.fgp-peixe').count()) === 2);
 for (let i = 0; i < 12 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const r = window.__api.rodada(); if (r) window.__api.pega(r.ok); }); await sleep(1200); }
-check('pesca: 5 pescados = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":5,"total":5,"estrelas":3}', await stats());
+check('pesca: 3 pescados = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":3}', await stats());
 // mira: um arrasto de verdade (mouse) no alvo certo, depois pelo gancho de teste
 await joga2('mira', 'facil');
 const mouseNo = async (i) => { const pt = await page.evaluate((i) => { const p = window.__api.alvos()[i]; const rc = document.querySelector('.fgx-svg').getBoundingClientRect(); return { x: rc.left + (p.x / 300) * rc.width, y: rc.top + (p.y / 330) * rc.height }; }, i); await page.mouse.move(pt.x - 30, pt.y + 80); await page.mouse.down(); await page.mouse.move(pt.x, pt.y, { steps: 4 }); await page.mouse.up(); };
@@ -86,7 +86,7 @@ check('mira: alvo errado conta 1 erro e escurece', JSON.parse(await stats()).err
 await mouseNo(await page.evaluate(() => window.__api.rodada().ok)); await sleep(1300);
 check('mira: arrastar e soltar no alvo certo acerta (1ª rodada passa)', JSON.parse(await stats()).found === 1, await stats());
 for (let i = 0; i < 10 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const r = window.__api.rodada(); if (r) window.__api.atira(r.ok); }); await sleep(1300); }
-check('mira: 4 acertos = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":4,"total":4,"estrelas":3}', await stats());
+check('mira: 3 acertos = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":3}', await stats());
 // montar: 1ª tentativa errada (1 erro), depois monta certo as 3 figuras
 await joga2('montar', 'facil');
 const clicaPecas = async (p) => { for (const [g, v] of [['cabeca', p.cabeca], ['haste', p.haste], ['colchetes', p.colchetes]]) await page.locator(`.fgn-peca[data-g="${g}"][data-v="${v}"]`).click(); };

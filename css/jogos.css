@@ -1903,3 +1903,19 @@ body.bv-aberta { overflow: hidden; }
 .fgc-pc .fgc-svg svg,.fgc-op .fgc-svg svg,.fgc-pc svg,.fgc-op svg{filter:none!important;color:#0b1020}
 .fgc-pc svg,.fgc-op svg{width:100%;height:100%;max-height:70px}
 .fg-wrap .tr-count{text-shadow:0 2px 0 #000}
+
+/* ===== pesca e mira no visual do laboratório (trilhas de teoria e cordas; pedido da Bea, v706) ===== */
+.fg-wrap:has(.fg-cena) .fgp-mar{background:linear-gradient(#04141c 0,#082a38 35%,#061c28 70%,#030d14)!important;box-shadow:inset 0 0 40px rgba(60,255,138,.12),inset 0 -14px 28px #000b,0 0 0 2px #1b2438!important}
+.fg-wrap:has(.fg-cena) .fgp-mar::before{background:repeating-linear-gradient(90deg,#3cff8a22 0 1px,transparent 1px 34px),repeating-linear-gradient(0deg,#3cff8a22 0 1px,transparent 1px 34px)!important;border-bottom:2px solid #3cff8a55!important;height:100%!important;opacity:.6}
+.fg-wrap:has(.fg-cena) .fgp-peixe{filter:drop-shadow(0 0 8px var(--c))}
+.fg-wrap:has(.fg-cena) .fgp-peixe b{font:700 10px Silkscreen,monospace!important;color:#0b1020!important;text-shadow:none!important;text-transform:lowercase}
+.fg-wrap:has(.fg-cena) .fgp-linha{background:var(--lab-rd,#ff2d3d)!important;box-shadow:0 0 8px var(--lab-rd,#ff2d3d)}
+.fg-wrap:has(.fg-cena) .fgp-anzol{border-color:var(--lab-am2,#ffd45c)!important;border-top-color:transparent!important}
+.fg-wrap:has(.fg-cena) .fgp-q{font:700 12px Silkscreen,monospace;line-height:1.5;color:#e8f0ff;text-transform:lowercase}
+.fg-wrap:has(.fg-cena) .fgx-campo{background:#071426!important;border:3px solid var(--lab-st)!important;border-radius:10px!important;box-shadow:inset 0 0 40px rgba(0,0,0,.7),0 0 0 2px #1b2438!important;background-image:repeating-linear-gradient(90deg,#4aa8ff1c 0 1px,transparent 1px 30px),repeating-linear-gradient(0deg,#4aa8ff1c 0 1px,transparent 1px 30px)!important}
+.fg-wrap:has(.fg-cena) .fgx-anel{fill:#0b1020!important;stroke:var(--lab-am,#f2b632)!important;stroke-width:3.5!important}
+.fg-wrap:has(.fg-cena) .fgx-disco{stroke:#0b1020!important}
+.fg-wrap:has(.fg-cena) .fgx-tx{font:700 10px Silkscreen,monospace!important;text-transform:lowercase}
+.fg-wrap:has(.fg-cena) .fgx-alvo.certo .fgx-anel{stroke:var(--lab-gn,#3cff8a)!important;fill:#3cff8a44!important}.fg-wrap:has(.fg-cena) .fgx-alvo.certo{filter:drop-shadow(0 0 10px var(--lab-gn,#3cff8a))!important}
+.fg-wrap:has(.fg-cena) .fgx-mira{stroke:var(--lab-rd,#ff2d3d)!important}
+.fg-wrap:has(.fg-cena) .fgm-regra{background:#121a30!important;border:1px dashed var(--lab-am,#f2b632)!important;color:var(--lab-am2,#ffd45c)!important;border-radius:6px!important;font:700 10px Silkscreen,monospace!important}
