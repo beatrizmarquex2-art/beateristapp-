@@ -6,7 +6,11 @@ import { audio, kick, snare, hihat, cymbal, tom } from '../audio.js';
 import { epiano } from '../synth.js';
 import { symbolEl } from './cartas-simbolos.js';
 import { NIVEL_CFG } from './fuga-logic.js';
-import { padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria } from './fuga-mini-logic.js';
+import { itensTetrisN } from './figurix-logic.js';
+import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
+import { figureMarkup, restMarkup, svgEl } from '../kids/art.js';
+import { corSrc } from '../paul-cor.js';
+import { estrelasPorErros, padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria } from './fuga-mini-logic.js';
 
 const viva = (box) => box.isConnected; // timers de uma porta que já foi fechada não fazem mais nada
 const agora = () => audio().currentTime + 0.02;
@@ -104,5 +108,43 @@ export function memoria(box, { nivel = 'facil', fim = () => {} } = {}) {
   return { stats: () => ({ erros, found: achados, total: pares.length, estrelas: estrelasMemoria(erros, pares.length) }) };
 }
 
+/* ---------- notas caindo: a figura cai e o Paul vai pro lado do nome certo (o "tetris" do Figurix) ---------- */
+const NIVEL_QUEDA = { facil: 2, medio: 4, dificil: 5 }; // nível do Figurix: 2 = nome da figura · 4 = quanto vale · 5 = de qual figura é a pausa
+export function queda(box, { nivel = 'facil', fim = () => {} } = {}) {
+  const T = itensTetrisN(NIVEL_QUEDA[nivel] || 2); const itens = T.itens; const ms = T.queda * 1000;
+  let k = 0; let lado = 'esq'; let t0 = 0; let raf = 0; let erros = 0; let acertos = 0; let acabou = false;
+  const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, { nome: 'leve o Paul até o nome certo antes da figura cair!', valor: 'leve o Paul até quanto a figura vale antes dela cair!', pausa: 'essa pausa é de qual figura? leve o Paul até ela!' }[T.jeito]);
+  const nomeEsq = h('b', { class: 'fgq-nome esq' }); const nomeDir = h('b', { class: 'fgq-nome dir' }); const cai = h('div', { class: 'fgq-cai' });
+  const paul = h('div', { class: 'fgq-paul esq' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' }));
+  const campo = h('div', { class: 'fgq-campo bmr', role: 'application', 'aria-label': 'toque ou arraste pro lado certo' }, cai, paul, nomeEsq, nomeDir);
+  const vai = (s) => { if (lado !== s) { lado = s; paul.className = `fgq-paul ${s}`; } };
+  const lado$ = (e) => { const r = campo.getBoundingClientRect(); vai(e.clientX < r.left + r.width / 2 ? 'esq' : 'dir'); };
+  campo.addEventListener('pointerdown', (e) => { if (campo.setPointerCapture) { try { campo.setPointerCapture(e.pointerId); } catch { /* ok */ } } lado$(e); });
+  campo.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType === 'touch') lado$(e); });
+  const rot = (it, f) => (it.rot === 'valor' ? beatsLabel(FIG_BY[f].beats) : FIG_NAME[f]);
+  const pinta = () => { conta.textContent = `${Math.min(k + 1, itens.length)} de ${itens.length} · ${erros} erro${erros === 1 ? '' : 's'}`; };
+  const para = () => { acabou = true; cancelAnimationFrame(raf); };
+  const proximo = () => {
+    if (k >= itens.length) { para(); pinta(); setTimeout(() => { if (viva(box)) fim(); }, 500); return; }
+    const it = itens[k]; nomeEsq.textContent = rot(it, it.esq); nomeDir.textContent = rot(it, it.dir);
+    cai.replaceChildren(svgEl(it.face === 'pausa' ? restMarkup(it.fig) : figureMarkup(it.fig), 'fgq-fig')); cai.style.top = '0%'; t0 = performance.now(); pinta();
+  };
+  const passo = (agora) => {
+    if (acabou || !viva(box)) { para(); return; }
+    const it = itens[k]; const f = Math.min(1, (agora - t0) / ms); cai.style.top = `${f * 72}%`;
+    if (f >= 1) {
+      const certo = lado === it.ok; campo.classList.remove('certo', 'errado'); void campo.offsetWidth; campo.classList.add(certo ? 'certo' : 'errado');
+      if (certo) { acertos++; toca({ midi: 60 + (k % 7) * 2 }); } else { erros++; erroSom(); }
+      k++; proximo();
+    }
+    if (!acabou) raf = requestAnimationFrame(passo);
+  };
+  const onKey = (e) => { if (!viva(box)) { document.removeEventListener('keydown', onKey); return; } if (e.key === 'ArrowLeft') vai('esq'); else if (e.key === 'ArrowRight') vai('dir'); };
+  document.addEventListener('keydown', onKey);
+  const comecar = h('button', { type: 'button', class: 'btn primary wide fgm-go', onclick: () => { comecar.remove(); proximo(); raf = requestAnimationFrame(passo); } }, 'começar ▶');
+  box.replaceChildren(h('section', { class: 'card pad fgm' }, conta, msg, campo, comecar)); pinta();
+  return { stats: () => ({ erros, found: acertos, total: itens.length, estrelas: estrelasPorErros(erros, 1, 3) }), vai: (s) => vai(s), item: () => itens[k] };
+}
+
 /** Registro dos jogos de toque: o `tipo` da porta (fuga-logic.js TIPOS) aponta pra função daqui. */
-export const MINI = { genius, caminho, memoria };
+export const MINI = { genius, caminho, memoria, queda };

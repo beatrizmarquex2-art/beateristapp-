@@ -56,5 +56,10 @@ check('memória: virar 2 cartas diferentes conta 1 erro e desvira', (await page.
 for (const p of ps) { const ids = await page.evaluate((p) => [...document.querySelectorAll('.fgm-carta')].map((e, i) => (e.dataset.par === p ? i : -1)).filter((i) => i >= 0), p); for (const i of ids) { await page.locator('.fgm-carta').nth(i).click(); await sleep(150); } await sleep(200); }
 await sleep(900);
 check('memória: achar os 4 pares chama fim; 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await page.evaluate(() => window.__api.stats().estrelas)) === 3 && (await page.locator('.fgm-carta.par').count()) === 8, JSON.stringify(await page.evaluate(() => window.__api.stats())));
+// notas caindo: 8 figuras; levar o Paul pro lado certo em todas = 0 erros, 3 ★, e chama fim
+await page.evaluate(async () => { window.__fim = 0; const m = await import('/js/jogos/fuga-mini.js'); document.body.innerHTML = '<div id="b"></div>'; window.__api = m.queda(document.getElementById('b'), { nivel: 'facil', fim: () => { window.__fim = (window.__fim || 0) + 1; } }); });
+await page.locator('.fgm-go').click();
+for (let i = 0; i < 120 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const it = window.__api.item(); if (it) window.__api.vai(it.ok); }); await sleep(250); }
+check('notas caindo: certo nas 8 figuras = 0 erros, 3 ★ e chama fim', (await page.evaluate(() => window.__fim)) === 1 && (await page.evaluate(() => JSON.stringify(window.__api.stats()))) === '{"erros":0,"found":8,"total":8,"estrelas":3}', await page.evaluate(() => JSON.stringify(window.__api.stats())));
 check('sem erro na página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

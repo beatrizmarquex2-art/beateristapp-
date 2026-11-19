@@ -19,7 +19,7 @@ test('progresso: 1ª fase aberta, as outras só depois de 1 ★; mundo 2 só com
 });
 test('desenho da Bea: portas por fase 2·2·3·3·3·1·1·3·3·3·4·4; fases 6 e 7 são desafios de 1 porta; porta B só depois da fase 12', () => {
   assert.deepEqual(PORTAS_FASE, [2, 2, 3, 3, 3, 1, 1, 3, 3, 3, 4, 4]); assert.deepEqual([1, 2, 3, 6, 7, 8, 11, 12].map(qtdPortas), [2, 2, 3, 1, 1, 3, 4, 4]);
-  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['quiz', 'memoria']); assert.deepEqual(portasDaFase(0, 5).map((p) => p.tipo), ['genius', 'caca', 'cruz']); assert.deepEqual(portasDaFase(0, 11).map((p) => p.tipo), ['genius', 'quiz', 'caca', 'cruz']);
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['quiz', 'memoria']); assert.deepEqual(portasDaFase(0, 5).map((p) => p.tipo), ['genius', 'caca', 'cruz']); assert.deepEqual(portasDaFase(0, 11).map((p) => p.tipo), ['genius', 'queda', 'caca', 'cruz']);
   const f6 = portasDaFase(0, 6); assert.equal(f6.length, 1); assert.equal(f6[0].maxErros, 0); assert.ok(f6[0].desafio && f6[0].limite === 90); assert.equal(portasDaFase(0, 7)[0].tipo, 'caca');
   assert.deepEqual([30, 40, 41, 65, 66, 200].map((t) => estrelasDesafio(t, DESAFIOS[6])), [3, 3, 2, 2, 1, 1]);
   assert.equal(BONUS.maxErros, 1); assert.equal(BONUS.perguntas, 7); assert.equal(bonusAberto({}, 'estudio'), false); assert.equal(bonusAberto({ 'estudio:12': 1 }, 'estudio'), true);
