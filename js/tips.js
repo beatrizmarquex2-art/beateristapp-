@@ -139,7 +139,12 @@ export function cutTip(text) {
 const clip = (t, n = 84) => (t.length > n ? `${t.slice(0, n - 1).trim()}…` : t);
 /** Uma pergunta: kind 'blank' (qual palavra completa?), 'match' (qual dica fala disso?) ou 'embaralhada' (desembaralhe). */
 export function question(items, kind, rnd = Math.random) {
+  // itens do banco verificado (banco: true) já trazem as 3 respostas erradas escolhidas com cuidado; "continua" e "match" (que sorteiam erradas de outras dicas) só usam as dicas do método
+  if (kind === 'continua' || kind === 'match') { const nb = items.filter((x) => !x.banco); if (nb.length >= 6) items = nb; else kind = 'blank'; }
   const it = items[Math.floor(rnd() * items.length)]; const others = shuffle(items.filter((x) => x.n !== it.n), rnd);
+  if (it.banco && Array.isArray(it.o) && it.o.length >= 3 && (kind === 'blank' || kind === 'match' || kind === 'continua')) {
+    return { kind: 'blank', item: it, prompt: clueOf(it), options: shuffle([{ id: it.w, label: it.shown }, ...it.o.slice(0, 3).map((t) => ({ id: norm(t), label: t }))], rnd), ans: it.w };
+  }
   if (kind === 'match') {
     const wrong = others.filter((x) => !wordsOf(x.text).some((y) => y.w === it.w)).slice(0, 3);
     return { kind, item: it, prompt: `qual dica fala de “${it.shown}”?`, options: shuffle([it, ...wrong], rnd).map((x) => ({ id: String(x.n), label: snippet(x.text) })), ans: String(it.n) };

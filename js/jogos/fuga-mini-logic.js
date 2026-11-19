@@ -1,4 +1,5 @@
 // Jogos de toque da Fuga do Estúdio (lote 1): Genius, caminho 3×3 e memória de notas. Lógica pura (sem tela), testada em tests/fuga-mini.test.mjs.
+import { paresDoBanco, qaDoBanco } from '../banco.js';
 import { montesDe, maxColchetes } from './figurix-logic.js';
 import { FIGS, beatsLabel } from '../kids/figs.js';
 // O conteúdo mistura 3 áreas: ritmo (figuras, bateria, rudimentos), teoria (notas, cifras, claves, intervalos) e cordas (instrumentos).
@@ -64,7 +65,9 @@ export const areasDe = (assuntos) => { const l = (assuntos || []).filter((a) => 
 /** `n` pares sorteados misturando as 3 áreas (ao menos 1 de cada quando n >= 3), sem repetir. */
 export function paresMemoria(n, rnd = Math.random, assuntos = null) {
   const emb = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-  const areas = areasDe(assuntos); const por = areas.map((k) => emb(PARES[k].map((p) => ({ ...p, area: k })))); const out = [];
+  // pares do banco verificado (termo ↔ inglês, figura ↔ valor) primeiro; os desenhos (sym) são arte do app e ficam sempre; os pares de TEXTO escritos à mão só entram se o banco tiver menos de 10 pares da área
+  const poolDe = (k) => { const b = paresDoBanco(k).map((p) => ({ ...p, area: k })); const sym = PARES[k].filter((p) => p.sym).map((p) => ({ ...p, area: k })); const man = PARES[k].filter((p) => !p.sym).map((p) => ({ ...p, area: k })); return b.length >= 10 ? [...b, ...sym] : [...b, ...sym, ...man]; };
+  const areas = areasDe(assuntos); const por = areas.map((k) => emb(poolDe(k))); const out = [];
   for (let i = 0; out.length < n && i < 60; i++) { const lista = por[i % por.length]; const p = lista.shift(); if (p) out.push(p); }
   return out;
 }
@@ -86,7 +89,9 @@ export const estrelasMontar = (erros) => estrelasPorErros(erros, 1, 3);
 export function bancoQA() {
   const vistos = new Set(); const out = [];
   const add = (area, a, b) => { if (!a || !b || vistos.has(a)) return; vistos.add(a); out.push({ area, certo: a, q: b }); };
-  for (const area of AREAS) for (const p of PARES[area]) if (p.a) add(area, p.a, p.b);
+  const doBanco = qaDoBanco(); const temBanco = (area) => doBanco.filter((x) => x.area === area).length >= 8; // com 8 perguntas do banco numa área, as escritas à mão dela não entram
+  for (const x of doBanco) add(x.area, x.certo, x.q);
+  for (const area of AREAS) if (!temBanco(area)) for (const p of PARES[area]) if (p.a) add(area, p.a, p.b);
   for (const f of FIGS.slice(0, 5)) add('ritmo', f.name, beatsLabel(f.beats));
   return out;
 }
