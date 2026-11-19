@@ -9,7 +9,9 @@ import { botaoPostar, beneficiosDe } from '../conquista.js';
 export const poseDisponivel = (...nomes) => nomes.find((n) => POSES.includes(n)) || 'ouvindo';
 
 export function placar({ classe = '', estado = '', pose = 'ouvindo', titulo = '', sub = '', quadros = [], estrelas = '', extra = [], acoes = [], jogo = '' } = {}) {
-  const img = h('img', { class: 'pl-paul', src: corSrc(pose), alt: '', 'aria-hidden': 'true', draggable: 'false' });
+  // vitória: Paul comemorando com confete; derrota: Paul pensativo ("e agora?"); empate e o resto seguem a pose do jogo
+  const poseFinal = estado === 'win' ? poseDisponivel('festa', pose) : estado === 'lose' ? poseDisponivel('duvida', pose) : pose;
+  const img = h('img', { class: 'pl-paul', src: corSrc(poseFinal), alt: '', 'aria-hidden': 'true', draggable: 'false' });
   img.onerror = () => { img.onerror = null; img.style.visibility = 'hidden'; };
   const qs = quadros.filter(Boolean);
   const btns = acoes.filter(Boolean);
