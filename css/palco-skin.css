@@ -1,0 +1,34 @@
+/* Palco (bateria, cordas, teclas, percussão): nada de cantos quadrados. 3 jeitos de escolher: data-skin="a" (suave) · "b" (vidro escuro) · "c" (colagem). */
+.tocar-raiz{--pk-ink:#17365B;--pk-red:#a31d30;--pk-cream:#fffdf7}
+.tocar-raiz .kd-chip,.tocar-raiz .pn-chip,.tocar-raiz .btn,.tocar-raiz .ti-tab,.tocar-raiz .bl-step,.tocar-raiz .bl-bpm,.tocar-raiz .card.pad,.tocar-raiz .ti-ut,.tocar-raiz .ti-chord{border-radius:18px}
+.tocar-raiz .kd-chip,.tocar-raiz .pn-chip,.tocar-raiz .ti-tab{border-radius:99px}
+.tocar-raiz .bl-step{border-radius:50%}
+/* A · suave: creme, pílulas com sombrinha */
+.tocar-raiz[data-skin="a"] .kd-chip,.tocar-raiz[data-skin="a"] .pn-chip,.tocar-raiz[data-skin="a"] .ti-tab{background:#fff;color:var(--pk-ink);border:2px solid #17365B33;box-shadow:0 3px 0 #17365B22;font-weight:800}
+.tocar-raiz[data-skin="a"] .kd-chip.on,.tocar-raiz[data-skin="a"] .pn-chip.on,.tocar-raiz[data-skin="a"] .ti-tab.on{background:var(--pk-ink);color:#fff;border-color:var(--pk-ink);box-shadow:0 3px 0 #0a1b30}
+.tocar-raiz[data-skin="a"] .card.pad{background:linear-gradient(180deg,#fffdf7,#fbf3e2);border:2px solid #17365B22;box-shadow:0 10px 26px #17365B1f,inset 0 2px 0 #fff}
+.tocar-raiz[data-skin="a"] .btn{border:2px solid #17365B33;box-shadow:0 3px 0 #17365B22}
+.tocar-raiz[data-skin="a"] .btn.primary{background:linear-gradient(180deg,#d41f3a,#a31d30);color:#fff;border:0;box-shadow:0 4px 0 #6d1220}
+/* B · vidro escuro: caixa preta brilhante, botões que acendem */
+.tocar-raiz[data-skin="b"] .kd-chip,.tocar-raiz[data-skin="b"] .pn-chip,.tocar-raiz[data-skin="b"] .ti-tab{color:#fff;background:linear-gradient(180deg,#3a4170,#1b2040);border:2px solid #05060f;box-shadow:inset 0 2px 0 #ffffff33,inset 0 -5px 10px #0008,0 4px 0 #05060f;font-weight:800;text-shadow:0 2px 2px #000a}
+.tocar-raiz[data-skin="b"] .kd-chip.on,.tocar-raiz[data-skin="b"] .pn-chip.on,.tocar-raiz[data-skin="b"] .ti-tab.on{background:linear-gradient(180deg,#ff6b81,#d41f3a 55%,#8c1024);box-shadow:inset 0 2px 0 #ffffff88,0 0 18px #ff3b5c99,0 4px 0 #05060f}
+.tocar-raiz[data-skin="b"] .card.pad{background:radial-gradient(120% 100% at 50% 0,#2a2f4a,#0c0f1f 75%);color:#fff;border:3px solid #05060f;box-shadow:inset 0 2px 0 #ffffff22,0 10px 24px #0009,0 0 0 2px #3a4170}
+.tocar-raiz[data-skin="b"] .card.pad .tp-lab,.tocar-raiz[data-skin="b"] .card.pad small{color:#b9c0e8}
+.tocar-raiz[data-skin="b"] .btn{background:linear-gradient(180deg,#3a4170,#1b2040);color:#fff;border:2px solid #05060f;box-shadow:inset 0 2px 0 #ffffff33,0 4px 0 #05060f}
+.tocar-raiz[data-skin="b"] .btn.primary{background:linear-gradient(180deg,#ff6b81,#d41f3a 55%,#8c1024)}
+.tocar-raiz[data-skin="b"] .bl-step,.tocar-raiz[data-skin="b"] .bl-bpm{background:#0c0f1f;color:#ffd23f;border:2px solid #3a4170}
+/* C · colagem: contorno grosso e sombra dura, que nem as figurinhas */
+.tocar-raiz[data-skin="c"] .kd-chip,.tocar-raiz[data-skin="c"] .pn-chip,.tocar-raiz[data-skin="c"] .ti-tab{background:#fffdf7;color:#1b1818;border:3px solid #1b1818;box-shadow:3px 3px 0 #1b1818;border-radius:14px;font-weight:900}
+.tocar-raiz[data-skin="c"] .kd-chip.on,.tocar-raiz[data-skin="c"] .pn-chip.on,.tocar-raiz[data-skin="c"] .ti-tab.on{background:#ffd23f;box-shadow:3px 3px 0 var(--pk-red)}
+.tocar-raiz[data-skin="c"] .card.pad{background:#fffdf7;border:3px solid #1b1818;box-shadow:5px 5px 0 #1b1818;border-radius:20px}
+.tocar-raiz[data-skin="c"] .btn{border:3px solid #1b1818;box-shadow:3px 3px 0 #1b1818;border-radius:14px}
+.tocar-raiz[data-skin="c"] .btn.primary{background:var(--pk-red);color:#fff}
+.tocar-raiz[data-skin="c"] .bl-step,.tocar-raiz[data-skin="c"] .bl-bpm{border:3px solid #1b1818;box-shadow:2px 2px 0 #1b1818}
+/* as opções da gravação (contagem ao gravar · ao compasso) seguem o mesmo jeito */
+.tocar-raiz .tk-opts button{border-radius:99px;font-weight:800}
+.tocar-raiz[data-skin="a"] .tk-opts button{background:#fff;color:var(--pk-ink);border:2px solid #17365B33;box-shadow:0 3px 0 #17365B22}
+.tocar-raiz[data-skin="a"] .tk-opts button[aria-pressed="true"],.tocar-raiz[data-skin="a"] .tk-opts button.on{background:var(--pk-ink);color:#fff}
+.tocar-raiz[data-skin="b"] .tk-opts button{background:linear-gradient(180deg,#3a4170,#1b2040);color:#fff;border:2px solid #05060f}
+.tocar-raiz[data-skin="b"] .tk-opts button[aria-pressed="true"],.tocar-raiz[data-skin="b"] .tk-opts button.on{background:linear-gradient(180deg,#ff6b81,#d41f3a 55%,#8c1024);box-shadow:0 0 14px #ff3b5c99}
+.tocar-raiz[data-skin="c"] .tk-opts button{background:#fffdf7;color:#1b1818;border:3px solid #1b1818;box-shadow:3px 3px 0 #1b1818;border-radius:14px}
+.tocar-raiz[data-skin="c"] .tk-opts button[aria-pressed="true"],.tocar-raiz[data-skin="c"] .tk-opts button.on{background:#ffd23f}
