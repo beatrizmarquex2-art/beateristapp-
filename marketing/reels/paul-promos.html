@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paul promos: reels e artes (salas de 4 e Black Friday)</title>
+<link rel="stylesheet" href="../../css/fonts.css">
+<style>
+:root{--navy:#17365B;--deep:#0f2547;--sun:#f6b93b;--red:#bd1733;--cream:#fff6e3;--ink:#142036}
+*{box-sizing:border-box;margin:0}html,body{background:#000;overflow:hidden}
+#s{position:relative;overflow:hidden;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--cream);background:var(--navy)}
+.reel,.story{width:1080px;height:1920px}.post{width:1080px;height:1080px}
+.bg{position:absolute;inset:0;background:radial-gradient(130% 80% at 50% 0,#2a5a96 0,var(--navy) 55%,var(--deep) 100%)}
+.bg::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.09) 3px,transparent 3.6px);background-size:46px 46px}
+.stripe{position:absolute;left:-10%;right:-10%;height:150px;background:var(--red);transform:rotate(-6deg);box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.T{font-family:Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;line-height:.98}
+.M{font-family:"Permanent Marker","Gochi Hand",cursive}
+.abs{position:absolute}.c{left:0;right:0;text-align:center}
+.paul{position:absolute;filter:drop-shadow(0 14px 0 rgba(0,0,0,.28))}
+/* animações: tudo começa quando <body class="go"> (os 9 s do reel) */
+.pop{opacity:0;transform:scale(.4) rotate(-6deg)}.go .pop{animation:pop .55s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:var(--d,0s)}
+@keyframes pop{to{opacity:1;transform:none}}
+.up{opacity:0;transform:translateY(80px)}.go .up{animation:up .6s ease-out forwards;animation-delay:var(--d,0s)}
+@keyframes up{to{opacity:1;transform:none}}
+.fromR{opacity:0;transform:translateX(420px)}.go .fromR{animation:fr .8s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}
+@keyframes fr{to{opacity:1;transform:none}}
+.fromL{opacity:0;transform:translateX(-420px)}.go .fromL{animation:fl .8s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}
+@keyframes fl{to{opacity:1;transform:none}}
+.bob{animation:bob 1.1s ease-in-out infinite alternate}@keyframes bob{to{transform:translateY(-16px) rotate(1.5deg)}}
+.pulse{animation:pulse .9s ease-in-out infinite alternate}@keyframes pulse{to{transform:scale(1.06)}}
+.conf i{position:absolute;top:-60px;width:22px;height:34px;border-radius:4px;opacity:0}.go .conf i{animation:fall var(--t,3s) linear infinite;animation-delay:var(--d,0s)}
+@keyframes fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:1;transform:translateY(2000px) rotate(720deg)}}
+.chip{display:inline-block;padding:18px 34px;border-radius:26px;border:6px solid var(--ink);box-shadow:0 10px 0 var(--ink);font:400 56px/1 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--ink)}
+.price{background:var(--sun);color:var(--ink);border:8px solid var(--ink);border-radius:36px;box-shadow:0 14px 0 var(--ink);padding:26px 40px;text-align:center}
+.cta{display:inline-block;background:var(--cream);color:var(--ink);border:6px solid var(--ink);border-radius:999px;padding:22px 50px;font:400 54px/1 Anton,Impact,sans-serif;text-transform:uppercase;box-shadow:0 10px 0 var(--ink)}
+.badge{position:absolute;background:var(--red);color:#fff;border:6px solid #fff;border-radius:999px;font:400 50px/1 Anton,Impact,sans-serif;text-transform:uppercase;padding:18px 40px;box-shadow:0 10px 0 rgba(0,0,0,.3)}
+.sign{position:absolute;display:grid;place-items:center;text-align:center;color:var(--ink);padding:0 3%}
+.sign .T{color:var(--ink)}
+.typed{overflow:hidden;white-space:nowrap;border-right:0;max-width:0}.go .typed{animation:typed 1.2s steps(22) forwards;animation-delay:var(--d,0s)}@keyframes typed{to{max-width:100%}}
+</style></head><body>
+<div id="s"></div>
+<script>
+const Q=new URLSearchParams(location.search); const M=Q.get('m')||'reelA';
+const P=(n)=>`../../assets/paul/colorido/paul-${n}.webp`;
+const S=document.getElementById('s');
+const el=(cls,html,style='')=>`<div class="${cls}" style="${style}">${html}</div>`;
+const conf=(n=26)=>`<div class="conf abs" style="inset:0;pointer-events:none">${Array.from({length:n},(_,i)=>`<i style="left:${(i*37)%100}%;background:${['#f6b93b','#bd1733','#2d8cff','#fff6e3','#7a5cff'][i%5]};--d:${(i%9)*.25}s;--t:${2.6+(i%5)*.4}s"></i>`).join('')}</div>`;
+const mk={
+  /* REEL A: Paul na placa (salas de 4) */
+  reelA:()=>({cls:'reel',html:`<div class="bg"></div><div class="stripe" style="top:150px"></div>
+    ${el('abs c T up','jogos da beaterista','top:182px;font-size:62px;--d:.1s;color:#fff')}
+    <img class="paul fromL" src="${P('placa')}" style="left:-20px;top:380px;width:900px;--d:.4s">
+    <div class="sign" style="left:calc(-20px + 900px*.51);top:calc(380px + 900px*.637*.18);width:calc(900px*.42);height:calc(900px*.637*.31)">
+      ${el('T pop','agora dá pra jogar em 4!','font-size:50px;--d:1.3s')}</div>
+    ${el('abs c M up','cada um na sua casa, na mesma sala','top:1280px;font-size:60px;--d:2.4s;color:var(--sun)')}
+    ${el('abs c up','<span class="chip" style="background:#fff6e3;font-size:46px">memória</span> <span class="chip" style="background:var(--sun);font-size:46px">uno</span> <span class="chip" style="background:#9fe3ff;font-size:46px">stop</span> <span class="chip" style="background:#ffb3c1;font-size:46px">cara a cara</span>','top:1420px;--d:3.4s;line-height:2.1;padding:0 40px')}
+    ${el('abs c up','<span class="cta pulse">jogos.beaterista.com.br</span>','top:1700px;--d:5.2s')}`}),
+  /* REEL B: Paul espiando (Black Friday) */
+  reelB:()=>({cls:'reel',html:`<div class="bg"></div><div class="stripe" style="top:1500px;transform:rotate(5deg)"></div>
+    <img class="paul fromR" src="${P('espiando')}" style="right:-10px;top:250px;width:520px;--d:.2s">
+    ${el('abs T up','psiu…','left:70px;top:420px;font-size:190px;color:var(--sun);--d:1.2s;transform:rotate(-6deg)')}
+    ${el('badge pop','black friday','left:70px;top:720px;--d:2s')}
+    ${el('abs T up','passe anual','left:70px;top:860px;font-size:92px;--d:2.8s;color:#fff')}
+    <div class="abs price pop" style="left:70px;right:70px;top:1270px;--d:3.6s">
+      ${el('M','um ano inteiro de música, jogos e descobertas','font-size:42px;color:var(--ink)')}
+      ${el('T','R$ 49,90','font-size:170px;color:var(--red);margin:6px 0')}
+      ${el('T','só até 15/12 · à vista no pix','font-size:50px;color:var(--ink)')}</div>
+    ${el('abs c up','<span class="cta pulse">jogos.beaterista.com.br</span>','top:1730px;--d:5.6s')}`}),
+  /* REEL C: 4 amigos, 1 sala */
+  reelC:()=>({cls:'reel',html:`<div class="bg"></div>${conf(30)}
+    ${el('abs c T up','4 amigos','top:150px;font-size:210px;color:var(--sun);--d:.2s')}
+    ${el('abs c T up','1 sala','top:360px;font-size:210px;color:#fff;--d:.8s')}
+    ${el('abs c up',`<span class="chip pop" style="background:#fff6e3;--d:1.6s">ana</span><br><span class="chip pop" style="background:var(--sun);--d:2.1s;margin-top:34px">bia</span><br><span class="chip pop" style="background:#9fe3ff;--d:2.6s;margin-top:34px">cris</span><br><span class="chip pop" style="background:#ffb3c1;--d:3.1s;margin-top:34px">duda</span>`,'top:590px;--d:1.4s')}
+    <img class="paul pop" src="${P('festa')}" style="left:50%;margin-left:-240px;top:1250px;width:480px;--d:3.6s">
+    ${el('abs c M up','quem ganha leva ★ ✨','top:1160px;font-size:62px;color:var(--sun);--d:4s')}
+    ${el('abs c up','<span class="cta pulse">memória · uno · stop · cara a cara</span>','top:1810px;--d:4.8s;font-size:36px')}`}),
+  /* ARTES: Black Friday (placa), baú e presente — post (1080²) e story (1080×1920) */
+  'bf-post':()=>({cls:'post',html:`<div class="bg"></div>
+    <img class="paul" src="${P('placa')}" style="left:20px;top:190px;width:700px">
+    <div class="sign" style="left:calc(20px + 700px*.51);top:calc(190px + 700px*.637*.18);width:calc(700px*.42);height:calc(700px*.637*.31)">${el('T','passe anual','font-size:34px')}${el('T','R$ 49,90','font-size:56px;color:var(--red);white-space:nowrap')}</div>
+    ${el('badge','black friday','left:60px;top:50px;font-size:64px')}
+    ${el('abs T','só até 15/12 · pix','right:60px;top:84px;font-size:56px;color:var(--sun)')}
+    ${el('abs c M','um ano inteiro de música, jogos e descobertas','bottom:140px;font-size:46px;color:var(--cream)')}
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:44px;font-size:34px')}`}),
+  'bf-story':()=>({cls:'story',html:`<div class="bg"></div><div class="stripe" style="top:170px"></div>
+    ${el('badge','black friday','left:50%;margin-left:-250px;top:150px;font-size:80px')}
+    <img class="paul" src="${P('placa')}" style="left:20px;top:520px;width:900px">
+    <div class="sign" style="left:calc(20px + 900px*.51);top:calc(520px + 900px*.637*.18);width:calc(900px*.42);height:calc(900px*.637*.31)">${el('T','passe anual','font-size:42px')}${el('T','R$ 49,90','font-size:70px;color:var(--red);white-space:nowrap')}</div>
+    ${el('abs c T','só até 15/12 · à vista no pix','top:1360px;font-size:80px;color:var(--sun)')}
+    ${el('abs c M','um ano inteiro de música, jogos e descobertas','top:1500px;font-size:62px;padding:0 60px')}
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','top:1710px')}`}),
+  'bau-post':()=>({cls:'post',html:`<div class="bg"></div>
+    <img class="paul" src="${P('bau')}" style="left:50%;margin-left:-350px;top:190px;width:700px">
+    ${el('abs c T','juntou ★? abriu o baú!','top:60px;font-size:96px;color:var(--sun)')}
+    ${el('abs c M','a cada jogo ganho, uma estrela. a cada 15, uma roleta.','bottom:140px;font-size:44px')}
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:34px;font-size:34px')}`}),
+  'bau-story':()=>({cls:'story',html:`<div class="bg"></div><div class="stripe" style="top:200px"></div>
+    ${el('abs c T','juntou ★?','top:170px;font-size:190px;color:var(--sun)')}${el('abs c T','abriu o baú!','top:380px;font-size:190px;color:#fff')}
+    <img class="paul" src="${P('bau')}" style="left:50%;margin-left:-440px;top:640px;width:880px">
+    ${el('abs c M','a cada jogo ganho, uma estrela. a cada 15, uma roleta.','top:1530px;font-size:62px;padding:0 70px')}
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','top:1730px')}`}),
+  'presente-post':()=>({cls:'post',html:`<div class="bg"></div>${conf(20)}
+    <img class="paul" src="${P('presente')}" style="left:60px;top:200px;width:520px">
+    ${el('abs T','um ano inteiro de','right:50px;top:150px;width:480px;font-size:58px;color:#fff;white-space:nowrap')}
+    ${el('abs T','música, jogos e descobertas','right:50px;top:300px;width:470px;font-size:84px;color:var(--sun)')}
+    ${el('abs M','passe anual do robôterista paul','right:50px;top:620px;width:470px;font-size:40px')}
+    <div class="abs price" style="right:50px;top:760px;width:470px;padding:16px 26px">${el('T','R$ 49,90 pix','font-size:76px;color:var(--red)')}${el('T','black friday · até 15/12','font-size:34px')}</div>
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:34px;font-size:34px')}`}),
+  'presente-story':()=>({cls:'story',html:`<div class="bg"></div>${conf(28)}<div class="stripe" style="top:1500px;transform:rotate(5deg)"></div>
+    ${el('abs c T','um ano inteiro de','top:150px;font-size:96px;color:#fff')}${el('abs c T','música, jogos','top:260px;font-size:150px;color:var(--sun)')}${el('abs c T','e descobertas!','top:410px;font-size:150px;color:var(--sun)')}
+    <img class="paul" src="${P('presente')}" style="left:50%;margin-left:-260px;top:560px;width:520px">
+    <div class="abs price" style="left:80px;right:80px;top:1400px">${el('T','black friday','font-size:56px;color:var(--ink)')}${el('T','R$ 49,90 no pix','font-size:130px;color:var(--red)')}${el('T','só até 15/12','font-size:56px;color:var(--ink)')}</div>
+    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','top:1770px')}`}),
+};
+const f=(mk[M]||mk.reelA)(); S.className=f.cls; S.innerHTML=f.html;
+const imgs=[...document.images]; Promise.all([document.fonts.ready,...imgs.map((i)=>i.complete?1:new Promise((r)=>{i.onload=i.onerror=r;}))]).then(()=>{document.body.classList.add('go'); window.__ready=true;});
+</script></body></html>
