@@ -1563,10 +1563,11 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .top-a .al-cod-top{display:flex!important;align-items:center;gap:4px}.top-a .cod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}
 /* pausa geral (todos os celulares da sala): recados em chips pequenos dentro da caixa de pausa */
-.jg-pausa-sala{display:grid;gap:8px;justify-items:center;padding:10px 8px 12px;border:2px dashed #17224a;border-radius:14px;background:#fffdf7}
+.jg-pausa-sala{display:grid;gap:6px;justify-items:center;margin-top:2px}
 .jg-pausa-sala b{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#17224a}
 .jg-pausa-chips{justify-content:center;gap:8px}
 .jg-pausa-box .jg-pausa-chips button{min-height:34px;padding:5px 10px;font-size:13px;font-weight:700;line-height:1.15;border:2px solid #14111a;border-radius:9px;background:#fff;color:#14111a;box-shadow:2px 3px 0 #c4182c}
 .jg-pausa-box .jg-pausa-chips button:active{transform:translate(2px,3px);box-shadow:none}
 .jg-pausa-resp{margin:0;padding:8px 10px;border-radius:10px;background:#17224a;color:#fff6e0;font-weight:700;font-size:14px;line-height:1.3}
 .jg-pausa-geral .jg-pausa-box h2{font-size:38px}
+.jg-pausa-box .jg-pausa-saidas{margin-top:2px}.jg-pausa-box .jg-pausa-saidas button{background:transparent;box-shadow:2px 3px 0 #17224a;border-color:#17224a;color:#17224a}

@@ -241,15 +241,15 @@ function game(host, entry) {
   const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; geral = false; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
   const irJogos = () => { deVez = true; location.hash = '#/jogos'; };
   const deixar = async (s) => { if (!s || !(await confirmSheet('deixar a sala?', 'quem está na sala é avisado e a partida acaba aqui.', 'deixar a sala'))) return; await Promise.race([s.conn.deixarSala(), new Promise((r) => setTimeout(r, 2500))]); esquecerSala(s.jogo); irJogos(); };
-  const btnDeixar = (s) => h('button', { class: 'btn ghost wide jg-deixar', type: 'button', onclick: () => deixar(s) }, 'deixar a sala');
+  const chipDeixar = (s) => h('button', { class: 'jg-deixar', type: 'button', onclick: () => deixar(s) }, 'deixar a sala');
+  const saidas = (...chips) => h('div', { class: 'jg-seg jg-pausa-chips jg-pausa-saidas', role: 'group', 'aria-label': 'sair' }, ...chips.filter(Boolean)); // saídas em chips pequenos, lado a lado (pedido da Bea: sem botão grande quadrado)
   const pausar = () => {
     if (pausa) return; const s = salaAtual(); geral = false;
     mostra(caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, ctl.pausaNota ? `o jogo está parado. ${ctl.pausaNota}` : s ? 'o jogo está parado só neste celular.' : 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: despausar }, '▶ continuar'),
       ...((ctl.pausaExtras && ctl.pausaExtras()) || []).map(([rot, fn]) => h('button', { class: 'btn wide', type: 'button', onclick: () => { if (pausa) { pausa.remove(); pausa = null; body.inert = false; } musicaVolta(); try { fn(); } catch { /* jogo mudou */ } } }, rot)),
       s ? h('div', { class: 'jg-pausa-sala' }, h('b', {}, 'pausar pra todos da sala'), h('div', { class: 'jg-seg jg-pausa-chips', role: 'group', 'aria-label': 'pausar pra todos da sala' }, ...PAUSA_TIPOS.map(([id, rot]) => h('button', { type: 'button', onclick: () => { s.conn.pausarTodos(id); } }, rot)))) : null,
-      s ? btnDeixar(s) : null,
-      h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) irJogos(); } }, '🚪 sair (voltar pros jogos)')));
+      saidas(s ? chipDeixar(s) : null, h('button', { class: 'jg-sair', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) irJogos(); } }, 'voltar pros jogos'))));
   };
   // pausa geral: alguém da sala pausou pra todos (ou deixou a sala). Cobre o jogo em todos os celulares; quem recebe responde, quem pausou continua pra todos.
   const rotulo = (lista, id) => (lista.find((x) => x[0] === id) || ['', ''])[1];
@@ -258,12 +258,12 @@ function game(host, entry) {
     if (p.tipo === 'saiu') return caixa(h('h2', {}, 'fim da sala'), h('p', { class: 'jg-p' }, meu ? 'você deixou a sala.' : `${quem} deixou a sala. a partida acaba aqui.`), h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { esquecerSala(s.jogo); irJogos(); } }, 'voltar pros jogos'));
     if (meu) return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `você pausou pra todos: ${frase}`),
       h('p', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, p.resp[outro] ? `${c.nomeDe(outro)} respondeu: “${rotulo(PAUSA_RESP, p.resp[outro])}”` : 'esperando a resposta…'),
-      h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { c.retomarTodos(); } }, '▶ voltei, continuar pra todos'), btnDeixar(s));
+      h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { c.retomarTodos(); } }, '▶ voltei, continuar pra todos'), saidas(chipDeixar(s)));
     const minha = p.resp[c.me];
     return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `${quem} pausou pra todos: ${frase}`),
       minha ? h('p', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, `você respondeu: “${rotulo(PAUSA_RESP, minha)}”. o jogo volta quando ${quem} continuar.`)
         : h('div', { class: 'jg-seg jg-pausa-chips', role: 'group', 'aria-label': 'responder' }, ...PAUSA_RESP.map(([id, rot]) => h('button', { type: 'button', onclick: () => { const ida = c.responderPausa(id); if (id === 'tchau') Promise.race([ida, new Promise((r) => setTimeout(r, 2500))]).then(irJogos); } }, rot))), // "blz tchau" responde e já sai (a sala fica guardada em "voltar pra sala")
-      btnDeixar(s));
+      saidas(chipDeixar(s)));
   };
   const aoPausaSala = () => { const s = salaAtual(); const p = s && s.conn.pausa(); if (!p) { if (geral) despausar(); return; } geral = true; mostra(telaGeral(s, p)); };
   const aoPedir = (e) => { if (e.detail === 'deixar') deixar(salaAtual()); else pausar(); }; // os botões redondos da velha (pausa e porta) abrem este mesmo menu

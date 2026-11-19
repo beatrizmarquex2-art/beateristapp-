@@ -60,7 +60,7 @@ const modo = (p, rotulo) => p.locator(`.jg-seg button[aria-label^="${rotulo}"]`)
   await foto(A, '1-menu');
   await chip(A, 'tenho que sair'); await sleep(2500);
   check('o outro celular recebe a pausa geral com o recado', /Ana pausou pra todos: “tenho que sair”/.test(await geral(B).innerText()) && (await B.evaluate(() => document.querySelector('.jg-body').inert)) === true, await geral(B).innerText().catch(() => 'sem tela'));
-  check('quem recebe tem 3 respostas', (await B.locator('.jg-pausa-geral .jg-pausa-chips button').allInnerTexts()).join('|') === 'beleza|blz tchau|não consigo');
+  check('quem recebe tem 3 respostas', (await B.locator('.jg-pausa-geral .jg-pausa-chips:not(.jg-pausa-saidas) button').allInnerTexts()).join('|') === 'beleza|blz tchau|não consigo');
   await foto(B, '2-recebe');
   await chip(B, 'beleza'); await sleep(2500);
   check('quem pausou vê a resposta', /Bia respondeu: “beleza”/.test(await geral(A).innerText()), await geral(A).innerText());
