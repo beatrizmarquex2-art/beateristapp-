@@ -141,9 +141,9 @@ export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baqu
   if (chave) { try { localStorage.setItem(KEY, JSON.stringify([...new Set([...feitos(), String(chave)])].slice(-200))); } catch { /* sem armazenamento */ } }
   const bens = beneficiosDe(jogo); const titulo = caminho && limpa(caminho).toLowerCase() !== limpa(jogo).toLowerCase() ? `${jogo}: ${caminho}` : jogo;
   const dados = { selo: 'terminei o caminho', titulo, beneficios: bens, pose };
-  const NOTAS = ['♪', '♫', '★', '♬', '✦']; const CORES = ['#2d8cff', '#7a5cff', '#f2a91b', '#ff3d57', '#ffffff'];
+  const NOTAS = ['♪', '♫', '★', '♬', '✦']; const CORES = ['#00e5ff', '#2d8cff', '#f2a91b', '#ff3d57', '#ffffff'];
   const parts = reduz() ? [] : Array.from({ length: 48 }, (_, i) => h('i', { class: 'pf-p', 'aria-hidden': 'true', style: `--x:${Math.round(Math.random() * 100)}%;--d:${(2.4 + Math.random() * 2.4).toFixed(2)}s;--w:${(Math.random() * 1.6).toFixed(2)}s;--s:${Math.round(18 + Math.random() * 26)}px;--c:${CORES[i % CORES.length]};--r:${Math.round(Math.random() * 360)}deg` }, NOTAS[i % NOTAS.length]));
-  const img = h('img', { class: 'cq-paul', src: corSrc(pose), alt: '', draggable: 'false' });
+  const img = h('img', { class: 'cq-paul', src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: '', draggable: 'false' });
   const fecha = () => { el.remove(); };
   const caixa = h('div', { class: 'pf-box cq-box', role: 'dialog', 'aria-label': `terminei o caminho: ${titulo}` }, img,
     h('small', { class: 'cq-selo' }, 'terminei o caminho'), h('b', { class: 'cq-t' }, titulo),
