@@ -1607,12 +1607,12 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fm-no .fm-lab{position:absolute;left:50%;top:104%;transform:translateX(-50%);white-space:nowrap;font:800 clamp(8px,2.3vw,11px) var(--body,system-ui);background:#0b0e1cd9;border:1px solid #34437a;border-radius:99px;padding:2px 7px;color:#cdd6f0}
 .fm-no.st-locked{border-color:#5a6074;color:#8d93a8;filter:saturate(.5);opacity:.85}
 .fm-no.st-open{border-color:#ffd23f;color:#ffd23f;box-shadow:0 0 0 3px #ffd23f55,0 0 22px #ffd23faa}.fm-no.st-open.cur{animation:fmCur 1.3s ease-in-out infinite}
-.fm-no.st-done{border-color:#fff;color:#fff;box-shadow:0 0 0 3px #3cff9a66,0 0 14px #3cff9a66}
+.fm-no.st-done{border-color:#fff;color:#fff;box-shadow:0 0 0 3px #ff3b5c88,0 0 14px #ff3b5c88}
 .fm-no.des .fm-lab{border-color:#ff3b5c;color:#ffb3bf}
 @keyframes fmCur{50%{transform:translate(-50%,-50%) scale(1.07)}}
 .fm-saida{position:absolute;width:34%;height:7.6%;transform:translate(-50%,-50%);border:0;background:transparent;cursor:pointer;border-radius:10px;display:grid;place-items:end center;padding:0}
 .fm-saida small{transform:translateY(125%);background:#0b0e1cf0;border:1px solid #ffd23f;border-radius:99px;padding:3px 9px;font:800 clamp(9px,2.6vw,12px) var(--body,system-ui);color:#ffd23f;white-space:nowrap}
-.fm-saida.st-open{box-shadow:0 0 0 3px #ffd23f88,0 0 26px #ffd23f;animation:fmCur 1.3s ease-in-out infinite}.fm-saida.st-done{box-shadow:0 0 0 3px #3cff9a99,0 0 24px #3cff9a88}.fm-saida.st-done small{border-color:#3cff9a;color:#3cff9a}
+.fm-saida.st-open{box-shadow:0 0 0 3px #ffd23f88,0 0 26px #ffd23f;animation:fmCur 1.3s ease-in-out infinite}.fm-saida.st-done{box-shadow:0 0 0 3px #ffd23faa,0 0 24px #ffd23f88}.fm-saida.st-done small{border-color:#ffd23f;color:#ffd23f}
 .fm-saida.st-locked small{border-color:#5a6074;color:#9aa1b8}
 .fm-paul{position:absolute;width:19%;transform:translate(-50%,-62%);pointer-events:none;transition:none;z-index:3}.fm-paul.anda{transition:left 1.4s ease-in-out,top 1.4s ease-in-out}
 .fm-paul img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 4px #000a)}
