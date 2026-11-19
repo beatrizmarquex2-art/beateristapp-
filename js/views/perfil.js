@@ -45,6 +45,8 @@ export function mount(host) {
   setTimeout(() => { if (alive) { const s = compartilhaEst(); if (s) body.append(s); } }, 0);
 
   const avatar = h('div', { class: 'pf-avatar', 'aria-label': 'Sua foto' });
+  const moldPerfil = h('img', { class: 'pf-mold', alt: '', hidden: true, draggable: 'false', 'aria-hidden': 'true' }); let offMold = () => {}; import('../molduras.js').then((M) => { offMold = M.ligarImg(moldPerfil); }).catch(() => {});
+  const avatarWrap = h('div', { class: 'pf-av-wrap' }, avatar, moldPerfil);
   const nome = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'off', 'aria-label': 'Seu nome na figurinha', placeholder: 'seu nome', value: nomeAtual(), oninput: (ev) => { cfg.nome = ev.target.value; salvarCfg(); cri && cri.refresh(); } });
   const fotoInput = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
@@ -73,7 +75,7 @@ export function mount(host) {
     return h('div', { class: 'pf-onde', role: 'radiogroup', 'aria-label': 'onde fica a sua foto' }, op('aqui', 'foto só nesse aparelho'), op('todos', 'foto em todos os meus aparelhos', 'ao clicar, sempre que acessar, sua foto estará com você'));
   })();
   if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.remove();
-  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
+  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
       priv), fotoInput, selfie, todos);
@@ -84,5 +86,11 @@ export function mount(host) {
   cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); return true; } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : err.message === 'repetida' ? 'essa figurinha já está na sua coleção. mude a foto, o modelo ou o nome pra criar outra.' : err.message === 'limite2' ? 'só dá pra ter 2 figurinhas da mesma foto no mesmo modelo de card. troque a foto ou o modelo.' : 'não consegui guardar agora.'); return err.message === 'repetida' || err.message === 'limite2'; } } }); const area = cri.el;
   body.append(topo, area, mc.el);
   (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
-  return () => { alive = false; cri.cleanup(); mc.cleanup(); };
+  // molduras que ganhou nos jogos (aparece quando tem alguma): toque pra usar ou tirar
+  (async () => { try { const M = await import('../molduras.js'); const lista = M.MOLDURAS.filter((m) => M.tem(m.id)); if (!lista.length || !alive) return;
+    const caixa = h('section', { class: 'card pad pf-molduras' }, h('b', {}, 'minhas molduras'), h('p', { class: 'muted' }, 'enfeites que você ganhou nos jogos. toque pra usar ou tirar.'));
+    const pinta = () => caixa.querySelectorAll('button[data-mold]').forEach((b) => { const on = M.ativa() === b.dataset.mold; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('on', on); });
+    lista.forEach((m) => caixa.append(h('button', { type: 'button', class: 'pf-mold-btn', 'data-mold': m.id, onclick: () => { M.escolher(M.ativa() === m.id ? '' : m.id); pinta(); } }, h('img', { src: m.img, alt: '', width: 56, height: 56 }), h('span', {}, m.nome))));
+    pinta(); topo.after(caixa); window.addEventListener('moldura-mudou', pinta); } catch { /* sem molduras */ } })();
+  return () => { alive = false; offMold(); cri.cleanup(); mc.cleanup(); };
 }

@@ -9,7 +9,9 @@ import { audio, out } from '../audio.js';
 import { getGame, setGame } from './base.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { temaDoMundo } from './mundos-tema.js';
-import { MUNDOS, FASES, NOME_TIPO, MIN_QUIZ, portasDaFase, estrelasPorta, estrelasFase, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase } from './fuga-logic.js';
+import { MUNDOS, FASES, NOME_TIPO, MIN_QUIZ, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
+import { mountFugaMapa } from './fuga-mapa.js';
+import * as MOLD from '../molduras.js';
 export { MIN_QUIZ, estrelasPorta };
 
 /** Efeitos sintetizados na hora (sem arquivo): laser, alarme, porta abrindo e fanfarra de vitória. Respeitam o botão de som do app. */
@@ -53,47 +55,69 @@ export function mount(host) {
   // regra dos alunos: o próximo mundo só abre com 1 ★ em todas as fases do anterior. No app da Bea fica tudo aberto.
   const REGRA = document.documentElement.classList.contains('aluno-on'); const aberto = (id) => !REGRA || mundoLiberado(est(), id);
   if (!aberto(mundo)) mundo = MUNDOS[0].id;
-  const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } };
+  let relogio = 0; // contagem regressiva dos desafios (some ao sair da tela)
+  const limpa = () => { clearInterval(relogio); relogio = 0; if (off) { try { off(); } catch { /* ok */ } off = null; } };
   const topo = (extra) => h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'), extra || null);
 
   /* ---------- mapa ---------- */
   const mapa = () => {
     limpa(); const M = MUNDOS.find((m) => m.id === mundo) || MUNDOS[0]; const mi = MUNDOS.indexOf(M);
-    const box = h('div', { class: 'tm-map' });
+    const box = h('div', { class: M.mapa === 'lab' ? 'fm bmr' : 'tm-map' });
     const levels = Array.from({ length: FASES }, (_, i) => ({ id: idFase(M.id, i + 1), index: i + 1, label: String(i + 1), tag: '', boss: i === FASES - 1 }));
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => { const ok = aberto(m.id);
       return h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: `${m.id === mundo ? 'on' : ''}${ok ? '' : ' lock'}`, 'data-mundo': m.id, onclick: () => { if (!ok) { toast(`mundo trancado: abra todas as portas do mundo anterior (1 ★ em cada)`, { ms: 3400 }); return; } mundo = m.id; setGame('fuga', { mundo }); mapa(); } }, `${ok ? '' : '🔒 '}${i + 1} · ${m.curto}`); }));
-    wrap.replaceChildren(topo(), h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}. cada disco é uma fase com várias portas!`), box);
+    wrap.replaceChildren(topo(), h('div', { class: 'tm-bar fg-abas' }, tabs), h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}. cada disco é uma fase com várias portas!`), box);
+    if (M.mapa === 'lab') {
+      const fases = Array.from({ length: FASES }, (_, i) => { const n = i + 1; const e = estOf(est(), M.id, n); return { n, portas: qtdPortas(n), desafio: !!DESAFIOS[n], stars: e, state: e > 0 ? 'done' : faseAberta(est(), M.id, n) ? 'open' : 'locked' }; });
+      const bonus = { state: bonusFeito(est(), M.id) ? 'done' : bonusAberto(est(), M.id) ? 'open' : 'locked' };
+      mountFugaMapa(box, { titulo: 'Escape Room', subtitulo: M.nome, fases, bonus, lastKey: `beaterista-fuga-paul:${M.id}`, onOpen: (n) => joga(M, mi, n), onBonus: () => joga(M, mi, 'B'), onLocked: (n) => toast(n === 'B' ? 'a porta B abre quando você terminar a fase 12' : 'abra a fase anterior primeiro (1 ★ nela)', { ms: 2800 }) });
+      return;
+    }
     off = mountProgressionMap(box, { gameId: `fuga-${M.id}`, levels, profileId: 'fuga', unitName: 'Fase', tier: 0, stars: { have: estMundo(est(), M.id), max: FASES * 3 }, theme: temaDoMundo(M.tema, M.nome, [['a', M.regioes[0].name, M.regioes[0].sub], ['b', M.regioes[1].name, M.regioes[1].sub]]),
       starsOf: (id) => estOf(est(), M.id, Number(id.split(':')[1])), unlockedOf: (id) => faseAberta(est(), M.id, Number(id.split(':')[1])), lockedMsg: 'abra a porta anterior primeiro', onOpen: (lv) => joga(M, mi, lv.index) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };
 
-  /* ---------- uma fase: várias portas em sequência (a 1ª fase tem 2, depois 3, depois 4) ---------- */
+  /* ---------- uma fase: várias portas em sequência (ou 1 só, nos desafios 6 e 7) · n = 1..12 ou 'B' (porta bônus) ---------- */
   async function joga(M, mi, n) {
-    limpa(); if (gone) return; const portas = portasDaFase(mi, n); const N = portas.length; const mod = (await import('../views/dicas.js'))._duelo; const T = await import('../tips.js'); if (gone) return;
-    const its = mod.items(); const caixa = h('div', { class: 'dc-box' }); let k = 0; let api = null; let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = [];
-    const voltar = () => topo(h('button', { type: 'button', class: 'btn small ghost', onclick: mapa }, '‹ mapa'));
-    const cab = (alarme) => [voltar(), cena(k, N, alarme), h('p', { class: 'tr-count' }, `${M.curto} · fase ${n} · porta ${k + 1} de ${N} · ${NOME_TIPO[portas[k].tipo]}`)];
+    limpa(); if (gone) return; const bonusB = n === 'B'; const portas = bonusB ? [{ ...BONUS, desafio: true }] : portasDaFase(mi, n); const N = portas.length;
+    const mod = (await import('../views/dicas.js'))._duelo; const T = await import('../tips.js'); if (gone) return;
+    const its = mod.items(); const caixa = h('div', { class: 'dc-box' }); let k = 0; let api = null; let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = []; let tPorta = 0;
+    const rel = h('p', { class: 'fg-rel', role: 'timer', hidden: true });
+    const paraRelogio = () => { clearInterval(relogio); relogio = 0; };
+    const sair = () => { paraRelogio(); mapa(); };
+    const voltar = () => topo(h('button', { type: 'button', class: 'btn small ghost', onclick: sair }, '‹ mapa'));
+    const rotulo = () => (bonusB ? `${M.curto} · porta B · ${BONUS.titulo}` : portas[k].desafio ? `${M.curto} · fase ${n} · ${portas[k].titulo}` : `${M.curto} · fase ${n} · porta ${k + 1} de ${N} · ${NOME_TIPO[portas[k].tipo]}`);
+    const cab = (alarme) => [voltar(), cena(k, N, alarme), h('p', { class: 'tr-count' }, rotulo()), rel];
+    const falha = (msg) => { paraRelogio(); feito = true; tentativas++; sfx('alarme'); wrap.replaceChildren(voltar(), cena(k, N, true), fala(msg, h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'tentar outra vez'))); };
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const comeca = () => {
-      const cfg = portas[k]; feito = false; api = null; caixa.replaceChildren(); wrap.replaceChildren(...cab(false), caixa); sfx('laser');
-      if (cfg.tipo === 'quiz') { const qs = []; const vistos = new Set(); for (let q = 0; q < 80 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, ['blank', 'continua'][q % 2]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } api = mod.quiz(caixa, ['blank', 'continua'], 'fuga', { qs, fim, ajuda: true }); }
-      else if (cfg.tipo === 'caca') api = mod.caca(caixa, { pick: T.easyPick(its, cfg.palavras), mk: () => Math.random, fim, dica: true });
+      const cfg = portas[k]; feito = false; api = null; caixa.replaceChildren(); rel.hidden = !cfg.limite; wrap.replaceChildren(...cab(false), caixa); sfx('laser'); tPorta = Date.now(); paraRelogio();
+      if (cfg.limite) { const pinta = () => { const s = (Date.now() - tPorta) / 1000; const resta = Math.max(0, Math.ceil(cfg.limite - s)); rel.textContent = `⏱ ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}`; rel.classList.toggle('pouco', resta <= 10); if (s >= cfg.limite && !feito) falha('o tempo acabou! ⏱ tente de novo, mais rápido.'); }; pinta(); relogio = setInterval(pinta, 250); }
+      if (cfg.tipo === 'quiz') { const qs = []; const vistos = new Set(); for (let q = 0; q < 120 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, ['blank', 'continua'][q % 2]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } api = mod.quiz(caixa, ['blank', 'continua'], 'fuga', { qs, fim, ajuda: !cfg.desafio, maxErros: cfg.maxErros }); }
+      else if (cfg.tipo === 'caca') api = mod.caca(caixa, { pick: T.easyPick(its, cfg.palavras), mk: () => Math.random, fim, dica: !cfg.desafio });
       else api = mod.cruzadinha(caixa, { pick: T.easyPick(its, cfg.cruz, { min: 4, max: 8 }), mk: () => Math.random, fim });
     };
     const resolve = () => {
-      const cfg = portas[k]; const s = api && api.stats ? api.stats() : {};
-      if (cfg.tipo === 'quiz' && s.found < MIN_QUIZ) { tentativas++; sfx('alarme'); wrap.replaceChildren(voltar(), cena(k, N, true), fala(`só ${s.found} certa${s.found === 1 ? '' : 's'}: a porta precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'tentar outra vez'))); return; }
-      const ganho = estrelasPorta(cfg.tipo, s); ganhos[k] = ganho; const kp = idPorta(M.id, n, k + 1); const antes = Number(est()[kp]) || 0;
-      if (ganho > antes) { setGame('fuga', { est: { ...est(), [kp]: ganho }, mundo: M.id }); import('./estrelas-jogo.js').then((E) => E.ganhou('fuga', ganho, `fuga|${M.id}|${n}|${k + 1}`)).catch(() => {}); } // cada porta paga as suas ★ uma vez (só a melhora conta)
+      const cfg = portas[k]; const s = api && api.stats ? api.stats() : {}; const seg1 = (Date.now() - tPorta) / 1000; paraRelogio();
+      if (cfg.maxErros != null) { if (s.erros > cfg.maxErros) { falha(cfg.maxErros === 0 ? 'você errou: nesse desafio não pode errar nenhuma! tente de novo.' : `você errou ${s.erros}: aqui só pode errar ${cfg.maxErros}. tente de novo!`); return; } }
+      else if (cfg.tipo === 'quiz' && s.found < MIN_QUIZ) { falha(`só ${s.found} certa${s.found === 1 ? '' : 's'}: a porta precisa de ${MIN_QUIZ}. tenta de novo!`); return; }
+      const ganho = bonusB ? (s.erros === 0 ? 3 : 2) : cfg.limite ? estrelasDesafio(seg1, cfg) : estrelasPorta(cfg.tipo, s); ganhos[k] = ganho;
+      const kp = bonusB ? idFase(M.id, 'B') : idPorta(M.id, n, k + 1); const antes = Number(est()[kp]) || 0; const chave = bonusB ? `fuga|${M.id}|B` : `fuga|${M.id}|${n}|${k + 1}`;
+      if (ganho > antes) { setGame('fuga', { est: { ...est(), [kp]: ganho }, mundo: M.id }); import('./estrelas-jogo.js').then((E) => E.ganhou('fuga', ganho, chave)).catch(() => {}); } // cada porta paga as suas ★ uma vez (só a melhora conta)
       k++; sfx('porta');
       if (k < N) { wrap.replaceChildren(voltar(), cena(k, N, false), fala(`porta aberta! 🔓 ${estTxt(ganho)} · agora: porta ${k + 1} de ${N} (${NOME_TIPO[portas[k].tipo]}).`, h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'próxima porta ▶'))); return; }
+      if (bonusB) { // porta bônus: ★ + a moldura do perfil
+        const nova = MOLD.dar(BONUS.moldura); const m = MOLD.MOLDURAS.find((x) => x.id === BONUS.moldura);
+        const tela = fala(`🏆 você abriu a SAÍDA! ${estTxt(ganho)} ${nova ? '· você ganhou uma moldura pro seu perfil!' : '· (a moldura você já tinha)'}`, h('img', { class: 'fg-molduraimg', src: m.img, alt: `moldura ${m.nome}`, width: 160, height: 160 }),
+          h('p', { class: 'muted' }, `moldura "${m.nome}": ela já aparece em volta da sua foto. dá pra tirar ou pôr de novo na aba Perfil.`), h('button', { class: 'btn primary wide', type: 'button', onclick: mapa }, 'voltar ao mapa'));
+        wrap.replaceChildren(voltar(), cena(N, N, false), tela); FB.great(tela); sfx('vitoria'); return;
+      }
       // abriu todas: a fase conta no mapa (1 a 3 ★ = média das portas) e o Paul anda quando você voltar pro mapa
       const fase = estrelasFase(ganhos); const antesFase = estOf(est(), M.id, n); if (fase > antesFase) setGame('fuga', { est: { ...est(), [idFase(M.id, n)]: fase }, mundo: M.id });
       const soma = ganhos.reduce((a, b) => a + b, 0); const prox = proximaFase(n); const mundoFeito = Array.from({ length: FASES }, (_, q) => estOf(est(), M.id, q + 1)).every((x) => x >= 1);
-      const tela = fala(`💥 fase ${n} completa! ${N} portas abertas · ${estTxt(Math.max(fase, antesFase))} no mapa · +${soma} ★ nas portas · ${seg(Date.now() - t0)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`,
-        h('button', { class: 'btn primary wide', type: 'button', onclick: mapa }, 'voltar ao mapa (o Paul anda!)'), prox ? h('button', { class: 'btn ghost wide', type: 'button', onclick: () => joga(M, mi, prox) }, `próxima fase ▶ (${prox})`) : h('p', { class: 'muted' }, mundoFeito ? `🏆 você libertou o Paul no ${M.nome}! ${mi < MUNDOS.length - 1 ? 'o próximo mundo abriu.' : 'último mundo concluído!'}` : 'faltam fases com 1 ★ neste mundo.'));
+      const tela = fala(`💥 fase ${n} completa! ${N === 1 ? 'desafio vencido' : `${N} portas abertas`} · ${estTxt(Math.max(fase, antesFase))} no mapa · +${soma} ★ nas portas · ${seg(Date.now() - t0)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'}` : ''}`,
+        h('button', { class: 'btn primary wide', type: 'button', onclick: mapa }, 'voltar ao mapa (o Paul anda!)'), prox ? h('button', { class: 'btn ghost wide', type: 'button', onclick: () => joga(M, mi, prox) }, `próxima fase ▶ (${prox})`) : h('p', { class: 'muted' }, mundoFeito ? `🏆 você terminou o ${M.nome}! ${M.mapa === 'lab' ? 'a SAÍDA (porta bônus B) abriu: toque nela no mapa pra ganhar a moldura!' : mi < MUNDOS.length - 1 ? 'o próximo mundo abriu.' : 'último mundo concluído!'}` : 'faltam fases com 1 ★ neste mundo.'));
       wrap.replaceChildren(voltar(), cena(N, N, false), tela); FB.great(tela); if (ganho === 3) sfx('vitoria');
     };
     comeca();

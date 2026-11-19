@@ -437,6 +437,8 @@ function shell(name) {
   // a foto que a pessoa pôs no Perfil (só neste aparelho); sem foto, o Paul. Tocar nela abre a aba Perfil.
   const fotoTopo = h('img', { src: corSrc('ouvindo'), alt: '', width: 46, height: 46, draggable: 'false' });
   const avatarTopo = h('a', { class: 'top-av', href: '#/perfil', 'aria-label': 'meu perfil: ver e trocar a minha foto', title: 'meu perfil' }, fotoTopo);
+  const moldTopo = h('img', { class: 'top-mold', alt: '', hidden: true, draggable: 'false', 'aria-hidden': 'true' }); import('./molduras.js').then((M) => M.ligarImg(moldTopo)).catch(() => {});
+  const avatarWrap = h('span', { class: 'top-av-wrap' }, avatarTopo, moldTopo); // a moldura (se ganhou) fica por fora da fotinha
   let urlFotoTopo = '';
   const pintaFotoTopo = async () => {
     try {
@@ -447,7 +449,7 @@ function shell(name) {
   };
   pintaFotoTopo(); window.addEventListener('bt-foto-perfil', pintaFotoTopo);
   const head = h('header', { class: 'top top-a' }, // topo da Bea (opção A, 19/nov/2026): Paul, etiqueta amarela com o nome e botões redondos de ícone de linha
-    avatarTopo,
+    avatarWrap,
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `${name} · ${t}` : name; })()), codigoTopo)),
     tenhoCodigo,
     soundButton({ linha: true }), musicButton('icon-btn top-snd top-mus', { linha: true }), atualizarButton({ linha: true }),
