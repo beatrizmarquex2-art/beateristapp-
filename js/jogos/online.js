@@ -92,6 +92,9 @@ function connection(code, me, ver, onPeer) {
 }
 
 const QUANTOS = {}; // jogo → quantas pessoas a pessoa que cria escolheu (2, 3 ou 4)
+/* Salas de 3 e 4 celulares só aparecem quando o banco já tem as funções novas (supabase/020_salas_n.sql). Sem elas o seletor 2/3/4 nem é mostrado (só sala de 2), em vez de oferecer uma opção que falha. */
+let SALA_N = null;
+const sondaN = () => (SALA_N !== null ? Promise.resolve(SALA_N) : rpc('sala_ler_n', { p_code: 'AAAAA', p_ver: 0 }).then(() => true).catch(() => false).then((v) => { SALA_N = v; return v; }));
 /** Tela de entrada da sala. `makeState()` gera a partida nova de quem cria. `onStart(conn, state)` roda nos dois celulares. */
 export function lobby({ jogo, makeState, onStart: aoComecar, n: opN = null }) {
   // opN = { makeState(num, nomes) }: o jogo também aceita 3 e 4 celulares (a pessoa que cria escolhe 2, 3 ou 4 e todos põem o nome)
@@ -177,15 +180,16 @@ export function lobby({ jogo, makeState, onStart: aoComecar, n: opN = null }) {
     h('input', { type: 'text', maxlength: 14, value: meuNomeSala(), placeholder: 'seu nome (opcional)', autocomplete: 'off', autocapitalize: 'words', enterkeyhint: 'done', 'aria-label': 'Adicionar nome: o outro jogador vê o seu nome', oninput: (e) => guardarNomeSala(e.target.value) })); // o outro jogador vê esse nome no lugar de "o outro"
   function home() {
     paraEspera(); live = false; entrando = false; if (conn) { conn.close(); conn = null; }
+    if (opN && SALA_N === null) sondaN().then((ok) => { if (ok && !live && !conn && !esperaT) home(); }); // descobre se o banco tem as salas de 3 e 4; se tiver, redesenha com o seletor
     const ult = salaLembrada(jogo);
     const inp = h('input', { type: 'text', class: 'jg-code-in jg-code-big', maxlength: 5, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'código da sala', 'aria-label': 'código da sala', inputmode: 'text',
       oninput: (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); }, onkeydown: (e) => { if (e.key === 'Enter') entrarCom(inp.value); } });
     box.replaceChildren(
       campoNome(),
       ult ? h('div', { class: 'jg-volta' }, h('button', { class: 'btn primary wide', type: 'button', onclick: () => voltar(ult) }, `voltar pra sala ${ult.code}`), h('small', { class: 'muted' }, 'você saiu de uma partida? volte por aqui.')) : null,
-      opN ? h('div', { class: 'jg-quantos' }, h('p', { class: 'jg-lab jg-lab-peq' }, 'quantas pessoas jogam?'),
+      opN && SALA_N ? h('div', { class: 'jg-quantos' }, h('p', { class: 'jg-lab jg-lab-peq' }, 'quantas pessoas jogam?'),
         h('div', { class: 'chips', role: 'radiogroup', 'aria-label': 'Quantas pessoas jogam' }, ...[2, 3, 4].map((q) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(q === quantos), class: `lib-tab jg-q${q === quantos ? ' on' : ''}`, 'aria-label': `${q} jogadores`, onclick: () => { quantos = q; QUANTOS[jogo] = q; home(); } }, String(q))))) : null,
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary wide', type: 'button', onclick: opN && quantos > 2 ? criarN : create }, 'criar sala')), // criar sala vem primeiro, lá em cima
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary wide', type: 'button', onclick: opN && SALA_N && quantos > 2 ? criarN : create }, 'criar sala')), // criar sala vem primeiro, lá em cima
       h('p', { class: 'jg-lab jg-lab-peq' }, 'ou entre com o código da sala'),
       h('div', { class: 'jg-actions row jg-entrar' }, inp, h('button', { class: 'btn', type: 'button', onclick: () => entrarCom(inp.value) }, 'entrar')),
       msg);
