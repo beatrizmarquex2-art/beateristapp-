@@ -591,6 +591,16 @@ async function start() {
   try { await store.init(); } catch {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
+  // Link "reinicia a entrada" (jogos.beaterista.com.br/?entrar): quem só tinha EXPERIMENTAR (nome, sem código) sai do modo experimento e vê a tela de entrada limpa;
+  // quem já é aluno (tem código guardado ou pedido) NUNCA é desconectado e cai direto na aba principal (Jogos). Em qualquer caso, depois de entrar o destino é a aba principal.
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has('entrar')) {
+      if (!CODE.saved() && !CODE.pendente()) { try { localStorage.removeItem(NAME_KEY); localStorage.removeItem(ORIGEM_KEY); } catch { /* ok */ } window.__alunoNome = ''; }
+      q.delete('entrar'); const resto = q.toString();
+      history.replaceState(null, '', `${location.pathname}${resto ? `?${resto}` : ''}#/jogos`);
+    }
+  } catch { /* link comum: segue normal */ }
   startScroller();
   // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
   startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
