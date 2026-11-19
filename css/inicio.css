@@ -62,3 +62,20 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .in-pick-it.on { border-color: #c81e2d; } .in-pick-it:disabled { opacity: .35; }
 .in-pick-it .in-fav-foto { border: 3px solid #162146; background: #fff7e6; width: 64px; height: 64px; }
 .in-pick-it small { display: block; margin-top: 4px; font: 700 11px/1.15 "Hanken Grotesk", sans-serif; }
+
+/* novidades do Paul: carrossel que desliza pro lado */
+.in-nov[hidden] { display: none; }
+.in-nov h3 { margin: 0 0 10px; font: 400 15px "Anton", sans-serif; letter-spacing: .08em; text-transform: uppercase; display: flex; justify-content: space-between; color: #fff; }
+.in-nov h3 span { font: 700 12px "Hanken Grotesk", sans-serif; color: #ffd36e; letter-spacing: 0; }
+.in-rail { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -18px; padding: 0 18px 6px; scrollbar-width: none; }
+.in-rail::-webkit-scrollbar { display: none; }
+.in-nv { flex: none; width: 176px; min-height: 176px; scroll-snap-align: start; border-radius: 18px !important; padding: 13px; color: #fff !important; text-decoration: none; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,.2); box-shadow: 0 8px 16px rgba(0,0,0,.35); }
+.in-nv.c-azul { background: linear-gradient(160deg, #2a3a8a, #141c4d); } .in-nv.c-vinho { background: linear-gradient(160deg, #c81e2d, #7d1020); }
+.in-nv.c-verde { background: linear-gradient(160deg, #1b9aa8, #0f4a60); } .in-nv.c-roxo { background: linear-gradient(160deg, #6f43d6, #35207a); } .in-nv.c-ouro { background: linear-gradient(160deg, #e0a232, #8a5a0e); }
+.in-nv small { font: 700 10px "Hanken Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #ffd9a0; }
+.in-nv b { display: block; margin-top: 4px; font: 400 21px/1.05 "Anton", sans-serif; text-transform: uppercase; }
+.in-nv p { margin: 6px 0 0; font: 600 12px/1.3 "Hanken Grotesk", sans-serif; opacity: .92; }
+.in-nv-bt { margin-top: auto; align-self: flex-start; background: #fff7e6; color: #162146; font: 400 13px "Anton", sans-serif; border-radius: 99px !important; padding: 6px 12px 4px; text-transform: uppercase; }
+.inicio > * { min-width: 0; }
+.inicio { overflow-x: clip; }
+.in-rail { margin: 0 !important; padding: 0 0 6px !important; }

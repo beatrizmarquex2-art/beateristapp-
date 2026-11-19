@@ -1570,6 +1570,9 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .top-a .al-cod-top{display:flex!important;align-items:center;gap:4px}.top-a .cod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}
 
+.dc-seta{font-size:26px;line-height:1;vertical-align:middle;color:#c4182c}
+
+.dc-desistir-btns{display:grid;gap:8px;margin-top:10px}
 .dc-grid.dc-easy .dc-c.dica-linha{background:#fff6d6}
 /* pausa geral (todos os celulares da sala): recados em chips pequenos dentro da caixa de pausa */
 .jg-pausa-sala{display:grid;gap:6px;justify-items:center;margin-top:2px}

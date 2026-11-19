@@ -47,6 +47,7 @@ export function mountDuelo(host, opts = {}) {
     desbloquear() { if (BR && BR.unlock) BR.unlock(); },
     nota: (r) => r.score,
     aoVencer(c) { import('./estrelas-jogo.js').then((E) => E.ganhou('beathero', 3, `${setas ? 'beathero-setas' : 'beathero'}|duelo|${c && c.song && c.song.id}|${c && c.diff}`)).catch(() => {}); }, // ganhou o duelo: 3 ★
+    aoParticipar(c) { import('./estrelas-jogo.js').then((E) => E.ganhou('beathero', 1, `${setas ? 'beathero-setas' : 'beathero'}|duelo-part|${c && c.song && c.song.id}|${c && c.diff}`)).catch(() => {}); }, // participação: 1 ★
     placar: (r) => [r.desistiu ? 'saiu' : `${r.score.toLocaleString('pt-BR')} pts`, r.desistiu ? '' : `precisão ${r.acc}% · combo ${r.combo}`],
     jogar(box, c, fim) {
       const song = c.song; startedAt = Date.now(); acabou = false; document.documentElement.classList.add('rg-on');

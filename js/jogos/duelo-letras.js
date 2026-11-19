@@ -37,7 +37,8 @@ export function mountDueloLetras(host, fixo = null) {
     desbloquear() { /* nada a liberar */ },
     nota: (r) => notaLetras(r.modo || 'primeiro')(r),
     placar: (r) => [`${r.found}/${r.total}`, r.done ? `terminou em ${seg(r.ms)}` : `${r.erros} erro${r.erros === 1 ? '' : 's'} · ${seg(r.ms)}`],
-    aoVencer() { ganhou(cfg.jogo === 'quiz' ? 'quiz' : cfg.jogo, 3); },
+    aoVencer() { ganhou(cfg.jogo === 'quiz' ? 'quiz' : cfg.jogo, 3); }, // quem acha primeiro (ou acha mais) leva 3 ★ por rodada
+    aoParticipar() { ganhou(cfg.jogo === 'quiz' ? 'quiz' : cfg.jogo, 1); }, // o outro leva 1 ★ de participação (no duelo não tem dica)
     jogar(box, c, fim) {
       cfg.jogo = c.jogo; // pra dar a estrela do jogo certo quem entrou na sala
       const t0 = Date.now(); let acabou = false; let tick = 0; let api = null;
