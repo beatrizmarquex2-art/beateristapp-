@@ -8,12 +8,25 @@ export const MUNDOS = [
   { id: 'vulcao', tema: 'laser', nome: 'Camarim do Paul', curto: 'camarim', sub: 'espelho, luzes e frio na barriga', regioes: regioesDoTema('laser', [['espelho', 'Espelho das Luzes', 'ajeita o figurino'], ['coxia', 'Coxia', 'quase na hora de entrar']]) },
   { id: 'espaco', tema: 'laser', nome: 'Palco Principal', curto: 'palco', sub: 'a plateia tá esperando', regioes: regioesDoTema('laser', [['plateia', 'Fosso da Plateia', 'luz nos olhos'], ['solo', 'Solo Final', 'o último refrão']]) },
 ];
-export const TIPOS = ['quiz', 'caca', 'cruz'];
-export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)' };
-export const tipoDa = (n) => TIPOS[(n - 1) % 3]; // (legado) tipo da 1ª porta da fase
+/** Os tipos de porta (registro: pra criar um novo jogo é só pôr aqui o nome, o rótulo e a função em fuga-mini.js). Os 3 principais são quiz, caça-palavras e cruzadinha. */
+export const TIPOS = ['quiz', 'caca', 'cruz', 'genius', 'caminho', 'memoria'];
+export const PRINCIPAIS = TIPOS.slice(0, 3);
+export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)', genius: 'mesa de som (genius)', caminho: 'corredor de notas (caminho 3×3)', memoria: 'arquivo de discos (memória)' };
+export const tipoDa = (n) => PRINCIPAIS[(n - 1) % 3]; // (legado) tipo da 1ª porta da fase
 export const idFase = (mundo, n) => `${mundo}:${n}`;
-/** O que cada fase pede: o quiz tem sempre 5 perguntas; a caça tem de 4 a 8 palavras e a cruzadinha de 4 a 6, e aumentam com a fase e com o mundo. */
-export function faseCfg(mundoIdx, n) { return { tipo: tipoDa(n), perguntas: 5, palavras: Math.min(8, 4 + Math.floor((n - 1) / 3) + mundoIdx), cruz: Math.min(6, 4 + Math.floor((n - 1) / 6) + (mundoIdx > 0 ? 1 : 0)) }; }
+/** 3 níveis em todos os jogos das portas: fácil (fases 1-4), médio (5-8) e difícil (9-12). Os mundos 2 e 3 sobem 1 nível (teto: difícil); as fases-desafio são no mínimo médio e a porta B é difícil. */
+export const NIVEIS = ['facil', 'medio', 'dificil'];
+export const NOME_NIVEL = { facil: 'fácil', medio: 'médio', dificil: 'difícil' };
+export function nivelDaFase(n, mundoIdx = 0) {
+  let i = n <= 4 ? 0 : n <= 8 ? 1 : 2; if (DESAFIOS[n]) i = Math.max(i, 1); if (mundoIdx > 0) i = Math.min(2, i + 1); return NIVEIS[i];
+}
+/** O que cada nível pede. quiz: tipos de pergunta · caça: palavras, tamanho da grade e direções (0 = → ↓, 1 = + ↘, 2 = todas) · cruzadinha: palavras e tamanho delas · genius: rodadas e botões · caminho: casas e caminhos · memória: pares. */
+export const NIVEL_CFG = {
+  facil: { quiz: ['blank'], palavras: 4, grade: 9, dirs: 0, cruz: 4, cruzMax: 6, genius: { rodadas: 4, pads: 4, ms: 700 }, caminho: { len: 4, caminhos: 2 }, memoria: { pares: 4 } },
+  medio: { quiz: ['blank', 'continua'], palavras: 6, grade: 10, dirs: 1, cruz: 5, cruzMax: 8, genius: { rodadas: 6, pads: 4, ms: 550 }, caminho: { len: 5, caminhos: 3 }, memoria: { pares: 6 } },
+  dificil: { quiz: ['continua', 'match'], palavras: 8, grade: 11, dirs: 2, cruz: 6, cruzMax: 9, genius: { rodadas: 8, pads: 6, ms: 420 }, caminho: { len: 7, caminhos: 3 }, memoria: { pares: 8 } },
+};
+export function faseCfg(mundoIdx, n) { const nivel = nivelDaFase(n, mundoIdx); const c = NIVEL_CFG[nivel]; return { tipo: tipoDa(n), nivel, perguntas: 5, palavras: c.palavras, cruz: c.cruz, cruzMax: c.cruzMax, grade: c.grade, dirs: c.dirs, kinds: c.quiz }; }
 /** Quantas portas cada fase tem (desenho da Bea): 1 e 2 → 2 portas · 3, 4 e 5 → 3 · 6 e 7 → 1 só, mas é um DESAFIO (tempo / sem errar) · 8, 9 e 10 → 3 · 11 e 12 → 4. */
 export const PORTAS_FASE = [2, 2, 3, 3, 3, 1, 1, 3, 3, 3, 4, 4];
 export const qtdPortas = (n) => PORTAS_FASE[n - 1] || 3;
@@ -23,12 +36,18 @@ export const DESAFIOS = {
   7: { tipo: 'caca', limite: 120, ouro: 50, prata: 85, titulo: 'desafio contra o relógio: ache todas as palavras, sem dica' },
 };
 /** Porta bônus "B" (a SAÍDA): quiz de 7 perguntas, no máximo 1 erro. Abre depois da fase 12 e dá a moldura do perfil. */
-export const BONUS = { tipo: 'quiz', perguntas: 7, maxErros: 1, titulo: 'porta bônus: 7 perguntas, no máximo 1 erro', moldura: 'lab' };
+export const BONUS = { tipo: 'quiz', nivel: 'dificil', kinds: NIVEL_CFG.dificil.quiz, perguntas: 7, maxErros: 1, titulo: 'porta bônus: 7 perguntas, no máximo 1 erro', moldura: 'lab' };
 export const estrelasDesafio = (seg, d) => (seg <= d.ouro ? 3 : seg <= d.prata ? 2 : 1);
 export const bonusAberto = (est, mundo) => estOf(est, mundo, FASES) >= 1;
 export const bonusFeito = (est, mundo) => (Number((est || {})[idFase(mundo, 'B')]) || 0) > 0;
-/** As portas da fase, em ordem: cada uma é um dos 3 jogos (quiz → caça → cruzadinha → quiz…), com a dificuldade da fase e do mundo; as fases-desafio têm 1 porta com regra própria. */
-export const portasDaFase = (mundoIdx, n) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n), ...DESAFIOS[n], desafio: true }] : Array.from({ length: qtdPortas(n) }, (_, k) => { const c = faseCfg(mundoIdx, n); return { ...c, tipo: TIPOS[k % 3] }; }));
+/** Que jogo é cada porta (desenho fechado: nada de 2 quizzes seguidos na fase 11/12; fases 6 e 7 são os desafios). Cada fase tem a quantidade de PORTAS_FASE. */
+export const TIPOS_FASE = [
+  ['quiz', 'memoria'], ['caca', 'quiz'], ['quiz', 'caca', 'genius'], ['cruz', 'quiz', 'genius'], ['genius', 'caca', 'cruz'],
+  ['quiz'], ['caca'], ['caminho', 'quiz', 'caca'], ['memoria', 'caminho', 'genius'], ['caca', 'caminho', 'cruz'],
+  ['genius', 'quiz', 'caca', 'cruz'], ['memoria', 'caminho', 'caca', 'cruz'],
+];
+/** As portas da fase, em ordem: cada uma é um dos jogos de TIPOS_FASE, com o nível da fase e do mundo; as fases-desafio têm 1 porta com regra própria. A "área" do genius alterna entre notas e bateria. */
+export const portasDaFase = (mundoIdx, n) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n), ...DESAFIOS[n], desafio: true }] : TIPOS_FASE[n - 1].map((tipo, k) => ({ ...faseCfg(mundoIdx, n), tipo, area: (n + k + mundoIdx) % 2 ? 'bateria' : 'notas' })));
 export const idPorta = (mundo, n, k) => `${mundo}:${n}:${k}`;
 /** ★ da fase no mapa (1 a 3) = média das ★ das portas, arredondada pra cima na metade, nunca abaixo de 1 se passou por todas. */
 export const estrelasFase = (lista) => { const v = (lista || []).filter((x) => x > 0); if (!v.length) return 0; return Math.max(1, Math.min(3, Math.round(v.reduce((a, b) => a + b, 0) / v.length))); };
@@ -36,7 +55,7 @@ export const MIN_QUIZ = 3;
 /** ★ de uma porta: quiz = 5 certas 3 ★ · 4 certas 2 ★ · 3 certas 1 ★ (se gastou a dica do "desistir das ⭐⭐⭐", no máximo 2 ★); caça = 3 ★ menos 1 por dica (mínimo 1); cruzadinha = 3 ★. */
 export function estrelasPorta(tipo, s = {}) {
   if (tipo === 'quiz') { const base = s.found >= 5 ? 3 : s.found === 4 ? 2 : 1; return s.ajuda ? Math.min(base, 2) : base; }
-  if (tipo === 'caca' && s.estrelas) return s.estrelas;
+  if (s.estrelas) return Math.max(1, Math.min(3, s.estrelas)); // caça (menos 1 por dica) e os jogos de toque (genius, caminho, memória: pelos erros)
   return 3;
 }
 /** Estrelas guardadas: `est` = { 'estudio:3': 2, … }. */

@@ -9,7 +9,8 @@ import { audio, out } from '../audio.js';
 import { getGame, setGame } from './base.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { temaDoMundo } from './mundos-tema.js';
-import { MUNDOS, FASES, NOME_TIPO, MIN_QUIZ, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
+import { MINI } from './fuga-mini.js';
+import { MUNDOS, FASES, NOME_TIPO, NOME_NIVEL, MIN_QUIZ, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
 import { mountFugaMapa } from './fuga-mapa.js';
 import * as MOLD from '../molduras.js';
 export { MIN_QUIZ, estrelasPorta };
@@ -87,16 +88,17 @@ export function mount(host) {
     const paraRelogio = () => { clearInterval(relogio); relogio = 0; };
     const sair = () => { paraRelogio(); mapa(); };
     const voltar = () => topo(h('button', { type: 'button', class: 'btn small ghost', onclick: sair }, '‹ mapa'));
-    const rotulo = () => (bonusB ? `${M.curto} · porta B · ${BONUS.titulo}` : portas[k].desafio ? `${M.curto} · fase ${n} · ${portas[k].titulo}` : `${M.curto} · fase ${n} · porta ${k + 1} de ${N} · ${NOME_TIPO[portas[k].tipo]}`);
+    const rotulo = () => (bonusB ? `${M.curto} · porta B · ${BONUS.titulo}` : portas[k].desafio ? `${M.curto} · fase ${n} · ${portas[k].titulo}` : `${M.curto} · fase ${n} · porta ${k + 1} de ${N} · ${NOME_TIPO[portas[k].tipo]} · ${NOME_NIVEL[portas[k].nivel] || ''}`);
     const cab = (alarme) => [voltar(), cena(k, N, alarme), h('p', { class: 'tr-count' }, rotulo()), rel];
     const falha = (msg) => { paraRelogio(); feito = true; tentativas++; sfx('alarme'); wrap.replaceChildren(voltar(), cena(k, N, true), fala(msg, h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'tentar outra vez'))); };
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const comeca = () => {
       const cfg = portas[k]; feito = false; api = null; caixa.replaceChildren(); rel.hidden = !cfg.limite; wrap.replaceChildren(...cab(false), caixa); sfx('laser'); tPorta = Date.now(); paraRelogio();
       if (cfg.limite) { const pinta = () => { const s = (Date.now() - tPorta) / 1000; const resta = Math.max(0, Math.ceil(cfg.limite - s)); rel.textContent = `⏱ ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}`; rel.classList.toggle('pouco', resta <= 10); if (s >= cfg.limite && !feito) falha('o tempo acabou! ⏱ tente de novo, mais rápido.'); }; pinta(); relogio = setInterval(pinta, 250); }
-      if (cfg.tipo === 'quiz') { const qs = []; const vistos = new Set(); for (let q = 0; q < 120 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, ['blank', 'continua'][q % 2]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } api = mod.quiz(caixa, ['blank', 'continua'], 'fuga', { qs, fim, ajuda: !cfg.desafio, maxErros: cfg.maxErros }); }
-      else if (cfg.tipo === 'caca') api = mod.caca(caixa, { pick: T.easyPick(its, cfg.palavras), mk: () => Math.random, fim, dica: !cfg.desafio });
-      else api = mod.cruzadinha(caixa, { pick: T.easyPick(its, cfg.cruz, { min: 4, max: 8 }), mk: () => Math.random, fim });
+      if (cfg.tipo === 'quiz') { const kinds = cfg.kinds || ['blank', 'continua']; const qs = []; const vistos = new Set(); for (let q = 0; q < 120 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, kinds[q % kinds.length]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } api = mod.quiz(caixa, kinds, 'fuga', { qs, fim, ajuda: !cfg.desafio, maxErros: cfg.maxErros }); }
+      else if (cfg.tipo === 'caca') api = mod.caca(caixa, { pick: T.easyPick(its, cfg.palavras), mk: () => Math.random, fim, dica: !cfg.desafio, size: cfg.grade, dirs: cfg.dirs });
+      else if (cfg.tipo === 'cruz') api = mod.cruzadinha(caixa, { pick: T.easyPick(its, cfg.cruz, { min: 4, max: cfg.cruzMax || 8 }), mk: () => Math.random, fim });
+      else if (MINI[cfg.tipo]) api = MINI[cfg.tipo](caixa, { nivel: cfg.nivel, area: cfg.area, fim }); // jogos de toque (genius, caminho 3×3, memória): fuga-mini.js
     };
     const resolve = () => {
       const cfg = portas[k]; const s = api && api.stats ? api.stats() : {}; const seg1 = (Date.now() - tPorta) / 1000; paraRelogio();

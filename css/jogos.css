@@ -1627,3 +1627,17 @@ button.dc-chip{cursor:pointer;min-height:36px}
 @media (prefers-reduced-motion:reduce){.fm-glow.on,.fm-no.st-open.cur,.fm-saida.st-open{animation:none}.fm-paul.anda{transition:none}}
 .fg-rel{text-align:center;font:900 22px var(--body,system-ui);color:#ffd23f;margin:2px 0}.fg-rel.pouco{color:#ff6b83;animation:fmPulso 0.6s steps(2,end) infinite}
 .fg-molduraimg{display:block;margin:6px auto;background:radial-gradient(circle,#10162e 0 62%,transparent 63%);border-radius:0}
+
+/* ===== Fuga: jogos de toque (js/jogos/fuga-mini.js): Genius, caminho 3×3, memória ===== */
+.fgm{text-align:center}.fgm-msg{font-weight:800;min-height:1.5em;margin:6px 0 12px}.fgm-go{margin-top:6px}
+.fgm-pads,.fgm-grade{display:grid;gap:12px;max-width:340px;margin:0 auto 14px;grid-template-columns:repeat(2,1fr)}.fgm-pads.n6{grid-template-columns:repeat(3,1fr);gap:9px}.fgm-grade{grid-template-columns:repeat(3,1fr);gap:9px}
+.fgm-pad,.fgm-cel{aspect-ratio:1;border-radius:20px;border:3px solid var(--c,#4fd8ff);background:color-mix(in srgb,var(--c,#4fd8ff) 24%,#0b0e1c);color:#fff;font:800 clamp(12px,3.6vw,16px) var(--body,system-ui);box-shadow:0 4px 0 #0007;transition:transform .08s,box-shadow .08s,background .08s;padding:4px;cursor:pointer}
+.fgm-pad.on,.fgm-cel.on{background:var(--c,#4fd8ff);color:#0b0e1c;box-shadow:0 0 26px var(--c,#4fd8ff);transform:scale(1.06)}
+.fgm-pad:disabled,.fgm-cel:disabled{cursor:default}.fgm-cel.ok{background:#ffd23f;color:#0b0e1c;border-color:#ffd23f}.fgm-cel.ruim{background:#ff3b5c;border-color:#ff3b5c;animation:fgmTrem .3s}
+@keyframes fgmTrem{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.fgm-mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto 10px}
+.fgm-carta{aspect-ratio:.82;border-radius:12px;border:3px solid #4a3d9a;background:#1a1445;color:#ffd23f;font:800 clamp(10px,2.9vw,13px) var(--body,system-ui);padding:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 0 #0007;line-height:1.15}
+.fgm-costas{font-size:clamp(20px,6vw,30px)}.fgm-carta.up{background:#fff6e0;color:#150f33;border-color:#ffd23f}.fgm-carta.par{background:#ffd23f;color:#150f33;border-color:#fff;animation:fgmPop .35s}
+.fgm-sym{width:70%;height:70%;color:#150f33}.fgm-carta.up .fgm-sym{color:#150f33}
+@keyframes fgmPop{50%{transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.fgm-cel.ruim,.fgm-carta.par{animation:none}.fgm-pad,.fgm-cel{transition:none}}
