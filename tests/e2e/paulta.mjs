@@ -54,7 +54,7 @@ check('nome do aluno aparece com o título no topo', await page.evaluate(() => /
 await go('#/paulta/drumF'); check('fases 1 a 5 concluídas e a 6 aberta, a 7 trancada', (await page.$$('.mp-node:not(.st-locked)')).length === 6);
 await go('#/paulta/perfil'); check('perfil mostra o título e os pontos', /Explorador/.test(await txt()) && /pts/.test(await txt()));
 await go('#/paulta/ranking'); check('ranking local lista o aluno', /Teste/.test(await txt()));
-await go('#/paulta/legenda'); check('legenda de bateria tem 13 símbolos', (await page.$$('.pl-legend .pl-card')).length >= 13);
+await go('#/paulta/legenda'); check('legenda de bateria tem 13 símbolos', (await page.$$('.pl-legend .pl-tcard')).length >= 13);
 await go('#/paulta/aula/drumF'); check('aulinha trancada até concluir o mundo', !(await page.$('.pl-lesson')));
 await go('#/paulta/drum'); check('Mundo da Bateria mostra os 3 modos', (await page.$$('.kx-cards .kx-g')).length === 3 && /fácil/.test(await txt()) && /intermediário/.test(await txt()) && /difícil/.test(await txt()));
 await go('#/paulta/drumF/1/nomes'); await click('.kx-go'); await sleep(250);

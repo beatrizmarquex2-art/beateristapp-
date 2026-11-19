@@ -1480,6 +1480,37 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .atu-ico{font-size:24px;line-height:1;font-weight:700;display:inline-block}.top-atu.girando .atu-ico{animation:atu-gira .8s linear infinite}@keyframes atu-gira{to{transform:rotate(360deg)}}
 .top-atu{position:relative}.top-atu.tem-novo::after{content:"";position:absolute;top:3px;right:3px;width:11px;height:11px;background:#e5322d;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);animation:atu-pino 1.2s ease-in-out infinite}@keyframes atu-pino{50%{transform:rotate(-45deg) scale(1.25)}}
 .ct-num{font:400 44px/1 Anton,system-ui;color:var(--red,#b5122a);min-width:80px;text-align:center}
+/* ---------- nomes de quem joga no mesmo aparelho (js/jogos/nomes.js): campinhos pequenos "jogador 1 ____" ---------- */
+.jg-nomes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:420px;margin:10px auto}
+.jg-nomes label{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:inherit;opacity:.95}
+.jg-nomes input{box-sizing:border-box;width:100%;min-width:0;min-height:40px;padding:6px 10px;font:700 16px/1.2 inherit;font-family:inherit;text-transform:none;letter-spacing:0;color:#142036;background:#fffdf7;border:2.5px solid #142036;border-radius:10px 14px 9px 13px;box-shadow:3px 3px 0 #c0152f}
+.jg-nomes input::placeholder{color:#8d8577;font-weight:500}
+/* placar do Uno: entra na mesa (e não por cima), então o Paul aparece inteiro e todos os botões cabem, até o compartilhar */
+.cx-stage:has(>.cx-result.pl-card){overflow:visible;min-height:0}
+.cx-stage:has(>.cx-result.pl-card)>:not(.cx-result):not(.cx-confetti){display:none!important}
+.cx-result.pl-card{position:relative!important;left:auto;right:auto;top:auto;translate:none;margin:96px 8px 10px!important}
+
+/* nome da carta da mesa (versão B da Bea): letreiro em letra de marcador + faixa com a cor da carta; um pouco mais pra baixo */
+.cx-name{max-width:none!important;margin-top:12px!important;background:transparent!important;padding:0!important;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:0!important}
+.cx-name b{font:400 24px/1 'Permanent Marker','Gochi Hand',cursive;color:#fff;text-shadow:2px 2px 0 #0b1b33;text-align:center}
+.cx-name em{font-style:normal;font:800 12px/1.3 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#142036;background:var(--ac);padding:2px 12px;border-radius:999px;border:2px solid #fffdf7}
+@media (max-width:360px){.cx-name b{font-size:20px}}
+.cx-name em.any{background:#fffdf7}
+
+
+/* menu de pausa com vários botões (Rudimentix): cobre a tela toda, rola se precisar e os botões ficam mais compactos */
+.jg-pausa{align-content:start!important;padding:130px 16px 24px!important}
+.jg-pausa-box .btn.wide:not(.jg-pausa-go){min-height:46px;font-size:16px}
+/* jogo da velha em 2 celulares: pausar pros dois e avisar que vai sair */
+.vl-ctl{justify-content:center;margin:6px 0}
+.vl-pausa{margin:8px 0;padding:12px 14px;border:3px solid #142036;border-radius:14px;background:#fffdf7;color:#142036;text-align:center;box-shadow:4px 4px 0 var(--jg-red,#c0152f);display:grid;gap:8px;justify-items:center}
+.vl-pausa p{margin:0;font-weight:600;line-height:1.3}
+.jg-seg button.jg-ic.vl-ico{font-size:22px;line-height:1}
+.cx-name small{font:700 12px/1.2 system-ui,sans-serif;color:#cfe0ff;text-shadow:none;text-align:center;max-width:150px}
+.cx-name.lg b{font-size:18px;line-height:1.05}
+.jg-nome-sala{display:flex;flex-direction:column;gap:2px;max-width:320px;margin:0 auto 10px;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.jg-nome-sala input{box-sizing:border-box;width:100%;min-height:40px;padding:6px 10px;font:700 16px/1.2 inherit;font-family:inherit;text-transform:none;letter-spacing:0;color:#142036;background:#fffdf7;border:2.5px solid #142036;border-radius:10px 14px 9px 13px;box-shadow:3px 3px 0 #c0152f}
+
 
 /* ===== Figurix v2 — acertou fica verde, errou fica vermelho (forte) ===== */
 .jg-figurix .ok{background:#6fd08c!important;border-color:#14693a!important;color:#0b3a1f}.jg-figurix .no{background:#ff8a8f!important;border-color:#a51a28!important;color:#5a0710}
@@ -1512,3 +1543,24 @@ button.dc-chip{cursor:pointer;min-height:36px}
 
 /* salas de 3 e 4 celulares: escolha de quantos jogam e lista de quem entrou */
 .jg-quantos .chips{display:flex;gap:8px}.jg-q{min-width:64px;font:400 22px Anton,Impact,sans-serif}.jg-nomes{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px}.jg-nomes li{padding:8px 12px;border:2px solid #142036;border-radius:12px;background:#fffdf7;font-weight:800}.jg-nomes li.vazio{opacity:.5;border-style:dashed}
+/* ---------- topo da área dos alunos, opção A (Bea, 19/nov/2026): Paul + etiqueta amarela + botões redondos com sombra vermelha ---------- */
+.top.top-a{gap:7px;padding:6px 10px}
+.top-a .top-av{width:46px!important;height:46px!important;flex:none;border-radius:50%!important;border:3px solid #17365B;background:#fffdf7;box-shadow:3px 3px 0 #bd1733;overflow:hidden;display:block}
+.top-a .top-av img{width:100%!important;height:100%!important;border-radius:0!important;max-width:none;object-fit:cover;object-position:50% 12%;display:block}
+.top-a .ws{flex:1;min-width:0;background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+.top-a .ws .al-quem-top{background:#f6b93b!important;color:#142036!important;border:3px solid #142036!important;border-radius:6px!important;padding:3px 10px 4px!important;transform:rotate(-1.5deg);box-shadow:3px 3px 0 #142036!important;min-width:0}
+.top-a .ws .al-quem-top>span{font:400 19px/1.05 'Permanent Marker','Gochi Hand',cursive;color:#142036;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-a .al-cod-top{font:800 9px/1.3 ui-monospace,Menlo,monospace!important;letter-spacing:.1em;color:#142036;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-a .icon-btn,.top-a .al-opt{width:36px!important;height:36px!important;min-width:36px!important;min-height:0!important;padding:0!important;border-radius:50%!important;border:2.5px solid #17365B!important;background:#fffdf7!important;color:#17365B!important;box-shadow:2px 2px 0 #bd1733!important;display:inline-grid!important;place-items:center;flex:none;font-size:0}
+.top-a .ic-top svg{width:20px;height:20px;display:block}
+.top-a .ic-top .ac{stroke:#bd1733}
+.top-a .atu-ico{font-size:0;line-height:0}
+.top-a .top-atu.tem-novo::after{top:-3px;right:-3px}
+.top-a .al-tenho{width:36px!important;height:36px!important;min-width:36px!important;padding:0!important;border-radius:50%!important;font-size:0!important;display:inline-grid;place-items:center;border:2.5px solid #17365B!important;background:#fffdf7!important;box-shadow:2px 2px 0 #bd1733!important;flex:none}
+.top-a .al-tenho[hidden]{display:none!important}
+@media (max-width:360px){.top.top-a{gap:5px;padding:6px 8px}.top-a .top-av{width:40px;height:40px}.top-a .ws .al-quem-top>span{font-size:17px}.top-a .icon-btn,.top-a .al-opt,.top-a .al-tenho{width:33px!important;height:33px!important;min-width:33px!important}}
+.jg-seg button.jg-ic.vl-ico{width:50px;height:50px;min-width:50px;box-shadow:3px 3px 0 #bd1733}.vl-ico .ic-top svg{width:28px;height:28px;display:block}.vl-ico .ic-top .ac{stroke:#bd1733}.vl-ico .ic-top rect.ac{fill:#bd1733}
+.top-a a.top-av{cursor:pointer;text-decoration:none;color:inherit}.top-a a.top-av:active{transform:scale(.95)}.top-a .top-av.com-foto{border-color:#f6b93b}.top-a .top-av.com-foto img{object-position:50% 50%}
+.top-a .al-tenho{color:#17365B!important}
+.top-a .al-cod-top{display:flex!important;align-items:center;gap:4px}.top-a .cod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}

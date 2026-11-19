@@ -345,7 +345,7 @@ html.kb-open .rz-jogar{bottom:8px}
 .bmr .rz-setas .rz-pad b{font-size:clamp(30px,8vw,44px)!important}
 
 /* Beat Hero: modo (sozinho / contra o rival) e barra do duelo em cima dos Pauls */
-.bmr .rz-difs.rz-modos{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bmr .rz-difs.rz-modos{grid-template-columns:repeat(2,minmax(0,1fr))}.bmr .rz-difs.rz-modos .rz-g:nth-child(3){grid-column:1 / -1}
 .rz-vida{position:absolute;z-index:3;top:2px;left:4%;right:4%;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:800 12px system-ui,sans-serif;color:#0f2347}
 .rz-vida-b{height:14px;border:3px solid #0f2347;border-radius:999px;background:#8a94a8;overflow:hidden;display:flex;justify-content:flex-end}
 .rz-vida-b i{display:block;height:100%;background:#e8a92b;transition:width .15s}
@@ -384,3 +384,9 @@ html.kb-open .rz-jogar{bottom:8px}
 .pl-card.rz-end .pl-sync{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:10px 0;text-align:left;font-size:14px;color:#cfd8ee}
 .pl-card.rz-end .pl-sync b{color:#f6b93b}.pl-card.rz-end .pl-sync .btn{flex:0 0 52px!important;min-height:44px;font-size:24px!important;padding:0!important}
 .pl-card.rz-end .pl-sync small{color:#aeb9d6!important}
+/* quem joga (Beat Hero setas): só ícones redondos, como nas outras salas */
+.bmr .rz-ics{display:flex;gap:12px;justify-content:center;margin:10px 0 6px}
+.bmr .rz-ic{width:50px;height:50px;padding:0;border-radius:50%;display:inline-grid;place-items:center;border:2.5px solid #17365B;background:#fffdf7;color:#17365B;box-shadow:3px 3px 0 #bd1733;cursor:pointer}
+.bmr .rz-ic svg{width:30px;height:30px}
+.bmr .rz-ic .ac{stroke:#bd1733}.bmr .rz-ic .fa{fill:#bd1733;stroke:none}
+.bmr .rz-ic.on{background:#17365B;color:#fff;box-shadow:none}.bmr .rz-ic.on .ac{stroke:#ffd23f}.bmr .rz-ic.on .fa{fill:#ffd23f}

@@ -21,7 +21,7 @@ await p.locator('.mem-ic[aria-label^="pessoas no mesmo"]').click(); await sleep(
 await p.locator('button[aria-label="mais jogadores"]').click(); await sleep(300);
 check('Memória: mostra "3 jogadores"', /3 jogadores/.test(await p.locator('.mem-opts').innerText()));
 await p.locator('.kx-go').click(); await sleep(1000);
-check('Memória com 3: placar com 3 números (0 × 0 × 0)', /0 × 0 × 0/.test(await p.locator('.kx-memstat').innerText()), await p.locator('.kx-memstat').innerText());
+check('Memória com 3: placar com os 3 nomes e pontos', /jogador 1 0 · jogador 2 0 · jogador 3 0/.test(await p.locator('.kx-memstat').innerText()), await p.locator('.kx-memstat').innerText());
 const idx = await p.evaluate(() => { const m = {}; [...document.querySelectorAll('.kx-mem')].forEach((b, i) => { const im = b.querySelector('img.mem-card-img'); (m[im.getAttribute('src')] ||= []).push(i); }); return Object.values(m); });
 const errar = async (a, b) => { await p.locator('.kx-mem').nth(a).click(); await p.locator('.kx-mem').nth(b).click(); await sleep(1500); };
 await errar(idx[0][0], idx[1][0]);

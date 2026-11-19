@@ -20,7 +20,7 @@ const errs = [];
 async function phone(nome) {
   const ctx = await context(browser); await ctx.route('**/rest/v1/rpc/sala_*', mock);
   const p = await ctx.newPage(); await p.setViewportSize({ width: 390, height: 844 }); p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-  await p.addInitScript((n) => { try { localStorage.setItem('beaterista-aluno-nome', n); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } }, nome);
+  await p.addInitScript((n) => { try { localStorage.setItem('beaterista-aluno-nome', n); localStorage.setItem('beaterista-nome-sala', n); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } }, nome);
   await p.goto(`${url}/aluno.html#/jogos/memart`); await p.waitForSelector('.mem-theme', { timeout: 15000 }); await sleep(500); return p;
 }
 const vez = async (p) => (await p.locator('.ms-vez').innerText()).trim().toLowerCase(); // o CSS põe tudo em minúscula na tela

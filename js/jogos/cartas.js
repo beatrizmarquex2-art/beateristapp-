@@ -9,6 +9,7 @@ import * as S from './cartas-sfx.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
 import { bq } from './bonequinhos.js';
 import { placar, poseDisponivel } from './placar.js';
+import { camposNomes, nomeDe, deNome, paraNome, nomeDigitado } from './nomes.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
 
 const ID = 'cartas';
@@ -76,7 +77,7 @@ export function mount(host, opts) {
   const me0 = () => (conn ? conn.me : 0);
   const meIdx = () => (!g ? 0 : g.mode === 'paul' ? 0 : g.mode === 'online' ? me0() : viewer);
   const isCpu = (p) => g && g.mode === 'paul' && p !== 0;
-  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : `jogador ${p + 1}`);
+  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (conn ? conn.nomeDe(p) : (p === me0() ? 'você' : 'o outro')) : nomeDe(p));
   const human = () => !!g && !g.over && !busy && !hidden && g.turn === meIdx() && !(g.mode === 'local' && g.turn !== viewer);
   const persist = () => { if (adv || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
@@ -152,12 +153,13 @@ export function mount(host, opts) {
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
       prefs.mode === 'local' ? seg('pessoas', [[2, '2'], [3, '3'], [4, '4']], prefs.opps + 1, (v) => { prefs.opps = v - 1; keepPrefs(); }) : null,
+      prefs.mode === 'local' ? camposNomes(prefs.opps + 1) : null,
       ...(UN ? [] : [h('details', { class: 'jg-rules' }, h('summary', {}, 'regras rápidas'), h('ul', {},
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
         h('li', {}, 'pular: o próximo perde a vez. inverter: muda o sentido (com 2 jogadores, vale como pular). +2: o próximo compra 2 e perde a vez.'),
         h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa.'),
-        h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas.'),
+        h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas. com mais gente, o botão UNO! aparece pra todos: quem apertar primeiro vale. se o outro for mais rápido, quem ficou com 1 carta compra 2.'),
         h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.')))]),
       ...(UN ? [h('details', { class: 'jg-rules', open: true }, h('summary', {}, 'regras do UN🚫'), h('ul', {},
         h('li', {}, 'cartas iguais (mesma cor e mesma figura) podem ser jogadas juntas.'),
@@ -175,7 +177,7 @@ export function mount(host, opts) {
   function startOnline(c, state) {
     conn = c; lob = null; badge.set(true);
     c.on.link = (v) => badge.set(v);
-    c.on.state = (st) => incoming(st);
+    c.on.state = (st) => incoming(st); c.on.nomes = () => { if (!gone && g && !busy) paint(); };
     begin(state);
   }
   /** estado novo vindo do outro celular */
@@ -242,7 +244,7 @@ export function mount(host, opts) {
     const top = C.topOf(g); const canMove = human();
     const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
     const mine = hidden ? [] : sortHand(g.hands[me]);
-    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : 'vez do outro celular…') : `vez do ${PL(g.turn)}`;
+    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : `${conn ? conn.vezDe(g.turn) : 'vez do outro'}…`) : `vez ${deNome(g.turn)}`;
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const under = [...g.discard].slice(-4, -1); // cartas de baixo (só enfeite)
     const prevTurn = stage ? stage.dataset.turn : ''; const turnChanged = String(prevTurn) !== String(g.turn);
@@ -271,11 +273,11 @@ export function mount(host, opts) {
         h('div', { class: `cx-opps n${opps.length}` }, ...opps.map(seat)),
         h('div', { class: 'cx-table' }, deckEl,
           h('div', { class: 'cx-mid' }, pileEl,
-            prefs.help ? h('p', { class: 'cx-name', 'aria-live': 'polite' }, C.cardName(top)) : null),
+            prefs.help ? (() => { const [nm] = C.cardParts(top); const m = /^(.*?)\s*(\(.*\))$/.exec(nm); const grande = m ? m[1] : nm; return h('p', { class: `cx-name${grande.length > 15 ? ' lg' : ''}`, 'aria-live': 'polite', 'aria-label': C.cardName(top) }, h('b', {}, grande), m ? h('small', {}, m[2]) : null); })() /* nome grande; o que vem entre parênteses (ex.: sinal de repetição) fica pequeno embaixo; nome comprido encolhe */ /* só a figura: a cor já aparece no indicador ao lado */ : null),
           h('div', { class: 'cx-side' },
             h('div', { class: `cx-ac c-${g.color}`, 'aria-label': `cor ativa: ${C.COLOR_NAME[g.color]}` }, h('span', { class: 'cx-dot' }), h('b', {}, C.COLOR_NAME[g.color])),
             svgIcon(ICON.dir, `cx-dir${g.dir === -1 ? ' rev' : ''}`), toolbar(),
-            UN ? h('button', { class: 'cx-uno sm', type: 'button', disabled: hidden || undefined, onclick: uno }, 'UNO') : (mustUno ? h('button', { class: 'cx-uno sm', type: 'button', onclick: uno }, 'UNO!') : null))),
+            UN ? h('button', { class: 'cx-uno sm', type: 'button', disabled: hidden || undefined, onclick: uno }, 'UNO') : (!hidden && corridaUno() != null ? h('button', { class: 'cx-uno sm', type: 'button', onclick: uno }, 'UNO!') : null))),
         h('p', { class: 'cx-msg', 'aria-live': 'polite' }, g.over ? '' : msgFor(g.ev))),
       adv ? h('p', { class: 'jg-p muted cx-advinfo', role: 'status', style: 'font-size:12px;margin:2px 0;text-align:center' }, `adversário: ${mp.oppName || 'Paul'} · rodada ${Math.max(1, stats.rounds)} · compras ${stats.draws} · especiais jogadas ${stats.specials}`) : null,
       h('div', { class: 'cx-me' },
@@ -285,8 +287,8 @@ export function mount(host, opts) {
           UN ? h('button', { class: 'btn small', type: 'button', disabled: hidden || !human() || undefined, onclick: pegou }, 'pegou!') : null)),
       handEl, pickEl, dupEl(),
       !g.over && g.mode === 'local' && hidden ? h('div', { class: 'cx-cover', role: 'dialog', 'aria-label': 'passe o aparelho' },
-        h('p', { class: 'hand' }, `passe o aparelho para o ${PL(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
-        h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; viewer = g.turn; snd('flip'); paint(); } }, `sou o ${PL(g.turn)}, mostrar minha mão`)) : null,
+        h('p', { class: 'hand' }, `passe o aparelho ${paraNome(g.turn)}`), h('p', { class: 'muted' }, 'as cartas estão escondidas'),
+        h('button', { class: 'btn primary', type: 'button', onclick: () => { hidden = false; viewer = g.turn; snd('flip'); paint(); } }, `sou ${nomeDigitado(g.turn) || `o ${PL(g.turn)}`}, mostrar minha mão`)) : null,
       g.over && !busy ? result() : null);
     root.replaceChildren(...[g.mode === 'online' ? badge.el : null, stage].filter(Boolean));
     if (tip) root.append(tip);
@@ -386,7 +388,9 @@ export function mount(host, opts) {
     commit(nd);
   }
   function pass1() { if (!human() || !C.canPass(g)) return; const np = C.applyPass(g, g.turn); if (adv) C.track(stats, g, np, { type: 'pass' }, 0); commit(np); }
-  function uno() { if (gone || !g) return; if (!C.mustUno(g, meIdx())) { if (UN) { snd('tap'); flash('você não precisa de UNO agora', 1200); } return; } commit(C.callUno(g, meIdx()), { fromBusy: true }); }
+  /** Quem está com UMA carta e ainda não avisou (fora do UN🚫). Em 2 celulares e no mesmo aparelho o botão UNO! aparece pra TODOS: quem apertar primeiro vale. Contra o Paul ele avisa sozinho. */
+  const corridaUno = () => (UN || !g || g.over || g.unoPending == null || !C.mustUno(g, g.unoPending) || (g.mode === 'paul' && g.unoPending !== 0) ? null : g.unoPending);
+  function uno() { if (gone || !g) return; const dono = corridaUno(); if (!UN && dono != null && dono !== meIdx()) { commit(C.catchUno(g, dono, rnd), { fromBusy: true }); return; } /* apertou antes de quem ficou com 1 carta: ele compra 2 */ if (!C.mustUno(g, meIdx())) { if (UN) { snd('tap'); flash('você não precisa de UNO agora', 1200); } return; } commit(C.callUno(g, meIdx()), { fromBusy: true }); }
   /** UN🚫: “pegou!”. Acertou = o outro compra 2; errou = quem acusou compra 2. */
   function pegou() {
     if (gone || !g || !UN || !human() || busy) return; const me = meIdx(); const t = C.catchable(g, me);

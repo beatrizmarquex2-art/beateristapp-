@@ -36,6 +36,32 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Topo novo (opção A) e ícones da pausa (19/nov/2026, v636, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Topo da área dos alunos, opção A da Bea** (`shell()` em `js/aluno.js`, estilos no fim de `css/jogos.css`, classe `.top-a`): carinha do Paul redonda, **etiqueta amarela** tortinha com "oi, Nome!" em letra de marcador e o código miúdo embaixo, e **botões redondos de ícone de linha** (som, música, atualizar, engrenagem no lugar de "opções ▾") com sombra vermelha. "tenho código" virou uma chavinha redonda. Os ícones ficam em `js/top-icons.js` (`iconeTopo`); `soundButton`, `musicButton` e `atualizarButton` ganharam a opção `{ linha: true }` (o app da Bea continua com os ícones antigos). Classes `.top-snd` e `.al-opt` continuam (testes usam).
+- **Ajustes (19/nov, v637)**: o topo mostra só o nome (sem "oi"), a chave de "tenho código" é ícone de linha, e o avatar é a **foto de perfil** da pessoa (`perfil-foto`, guardada só no aparelho; sem foto fica o Paul). Tocar nele abre `#/perfil`. O Perfil avisa o topo pelo evento `bt-foto-perfil`.
+- **Pausa e saída da velha (2 celulares)**: botões redondos com ícone de linha (duas barras e porta com seta), sem emoji.
+- Falhavam ANTES na `main` (não são desta mudança): `layout` (iPhone SE 320 #/estudos) e `contas-lista`.
+
+## "Adicionar nome" nas salas por código (19/nov/2026, v634, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Tela de entrada da sala (`lobby` em `js/jogos/online.js`)** tem o campo **"adicionar nome"** (opcional, 14 letras; guardado em `beaterista-nome-sala`). O nome viaja dentro do estado da sala (`estado.nomes = [nome do 0, nome do 1]`); a conexão (`connection`) injeta o meu nome em toda jogada e guarda o do outro. Os jogos chamam `conn.nomeDe(i)` ("você" / nome / "o outro") e `conn.vezDe(i)` ("vez de Ana" / "vez do outro"). Se só o nome mudou, a conexão chama `conn.on.nomes()` em vez de `on.state` (não mexe na partida).
+- Usado em: velha, Uno, Stop (revezando e ao mesmo tempo), base dos duelos (Beat Hero com amigo, letras, toca, quebra-cabeça) e memória em sala. Bingo já tinha nomes próprios.
+- Falhavam ANTES na `main` (não são desta mudança): `duelo-letras`, `duelo-ritmo`, `stop-simultaneo` ("opções"), `salas` (velha), `pausa-sala`.
+- **Lição**: depois de juntar a `main`, conferir cada JS mudado com `node --experimental-default-type=module --check` (o `--check` simples não pega erro em módulo) e nunca escrever `open(f,'w').write(ler(f))` (apaga o arquivo antes de ler).
+
+## Velha sem mover peça, volta na mesma pergunta, pausa em 2 celulares e Beat Hero com amigo (18/nov/2026, v608, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Velha: saiu a "troca de lugar"** (clicou, já era). A lógica (`moveMark`/`canMove` em `velha-logic.js`) ficou, só a tela não usa mais.
+- **Volta na MESMA pergunta**: a pergunta aberta agora é gravada (e vai pra sala em 2 celulares). Mesmo aparelho: ao reabrir o jogo cai direto na pergunta (`intro(true)`; "nova partida" do menu continua levando pras opções). 2 celulares: "voltar pra sala" restaura a pergunta. A pergunta só aparece no celular de quem joga; o outro vê "o outro está respondendo uma pergunta…".
+- **2 celulares: "⏸ pausar pros dois" e "👋 avisar que vou sair"** (`pausaBar` em `velha.js`; o estado fica em `g.pausa = { by, tipo }` dentro da sala). Quem avisou que vai sair e volta pela sala tira o aviso sozinho. Só na velha; Uno/memória ainda não têm.
+- **Beat Hero (setas)**: o menu agora tem 3 jeitos: sozinho · contra o Paul · **com um amigo** (código de sala, `#/ritmo/setas/amigo`, sala `beathero-setas`). Os dois celulares tocam a mesma fase de setas e quem fizer mais pontos ganha (`mountDuelo(..., { game: 'setas' })` em `duelo-ritmo.js`; o motor `assets/rhythm-games/rhythm-games.js` aceita `mission.game = 'setas'` e o botão `rz-friend`). É disputa por pontos, não turno a turno em tempo real.
+- Testes novos: `e2e/velha-volta-pergunta.mjs`, `e2e/setas-amigo.mjs` (as salas são simuladas, sem Supabase).
+
+## Nomes dos jogadores, placar do Uno e cartões do pauLta (17/nov/2026, v602, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Nomes de quem joga no mesmo aparelho** (`js/jogos/nomes.js`, pedido da Bea): campinhos "jogador 1 ____" na memória (2 a 4), no Uno (mesmo celular) e na velha (dois no aparelho). O jogo chama pelo nome na vez, no "passe o aparelho" e no placar; vazio = "jogador N". Ficam no aparelho (`beaterista-nomes-jogadores`) e valem pros 3 jogos. Stop e bingo já tinham nomes próprios (não mexi). **Em 2 celulares ainda aparece "você / o outro"** (o nome do outro não viaja pela sala).
+- **Compartilhar o placar em qualquer resultado** (`placar.js`): antes só em vitória e empate.
+- **Placar do Uno**: o cartão azul entrava por cima da mesa e estourava a altura (cortava a cabeça do Paul e escondia o compartilhar). Agora entra no lugar da mesa.
+- **Cartões "o Paul vai te apresentar" do pauLta estavam azul-escuros**: a classe `.pl-card` deles batia com a do placar azul. Viraram `.pl-tcard`, com fundo branco (pauta legível). **Não reutilizar `.pl-card` fora do placar.**
+- Testes: `e2e/nomes-jogadores.mjs` (novo). Já falhavam antes: `cartas.mjs` (espera 10 figuras na legenda, são 12) e `estrelas-jogos.mjs` (espera 3 ★ na memória, o jogo dá 1).
+
 ## Postar conquistas, festa de caminho e roleta em 3 áreas (15/nov/2026, v546, branch `claude/youthful-hawking-b1i0jj`, NÃO publicado)
 - **Cartão de conquista pra postar** (`js/conquista.js`): imagem em pé 1080×1920 com o logo da escola, o Paul, o que a pessoa conquistou, **"o que este jogo desenvolve"** (3 linhas por jogo, lista `BENEFICIOS`; é o texto pra mãe/pai) e o link `jogos.beaterista.com.br` + `@beaterista_`. Sem foto e sem sobrenome. Compartilha pelo celular ou baixa.
   - **3 estilos prontos** em `ESTILOS`: `palco` (noite, igual ao PaulBox), `creme`, `azul` (o do placar). Está valendo `palco` (`ESTILO_PADRAO`); **a Bea ainda vai escolher** (mostrei as 3 lado a lado). Trocar = mudar essa constante.

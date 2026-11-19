@@ -29,7 +29,7 @@ export function mostrarSala(c, conn, estado) {
   css();
   let e = estado; let gone = false; let paused = false; let rt = 0; let retry = 0; let key = ''; const me = conn.me;
   const badge = linkBadge(L.jogadoresDe(e)); badge.set(true);
-  const nome = (i) => (i === me ? 'você' : (e && e.nomes && e.nomes[i]) || 'o outro'); // nomes só nas salas de 3 e 4 (e nas novas de 2); sem nome, 'o outro'
+  const nome = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : (e && e.nomes && e.nomes[i]) || 'o outro')); // nomes de quem pôs nome (2 a 4 jogadores); (conn de teste pode não ter nomeDe)
   const th = () => c.themes().find((t) => t.id === e.tema);
   const cards = (t) => { const m = new Map(t.items.map((x) => [x.id, x])); return e.deck.every((id) => m.has(id)) ? e.deck.map((id) => m.get(id)) : null; };
   const stage = c.stage; let refs = null;
@@ -94,7 +94,7 @@ export function mostrarSala(c, conn, estado) {
     } else {
       fim.replaceChildren(); delete fim.dataset.k;
       const minha = e.vez === me;
-      banner.textContent = minha ? 'sua vez' : `vez ${e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`; banner.className = `ms-vez${minha ? ' mine' : ''}`;
+      banner.textContent = minha ? 'sua vez' : (conn.vezDe ? conn.vezDe(e.vez) : `vez ${e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`); banner.className = `ms-vez${minha ? ' mine' : ''}`;
       aviso.textContent = erro ? 'não é par…' : pen ? 'achou um par!' : minha ? (e.virou.length === 1 ? 'vire mais uma carta' : 'vire duas cartas') : '';
     }
   }
@@ -127,7 +127,7 @@ export function mostrarSala(c, conn, estado) {
     if (!e.fim) return; const t = th(); enviar(L.revanche(e, t ? t.items.map((x) => x.id) : null));
   }
 
-  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); };
+  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); }; conn.on.nomes = () => { if (!gone && e) pintar(); };
   conn.on.link = (v) => badge.set(v);
   pintar(); agenda();
   c.bot.set('think', e && e.vez === me ? 'sua vez!' : `vez ${e && e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`);

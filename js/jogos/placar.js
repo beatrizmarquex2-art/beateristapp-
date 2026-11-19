@@ -13,8 +13,8 @@ export function placar({ classe = '', estado = '', pose = 'ouvindo', titulo = ''
   img.onerror = () => { img.onerror = null; img.style.visibility = 'hidden'; };
   const qs = quadros.filter(Boolean);
   const btns = acoes.filter(Boolean);
-  // compartilhar a conquista (imagem com logo e link): em vitória e empate. O nome do jogo vem de `jogo` ou da faixa de título da moldura.
-  if (estado !== 'lose') btns.push(botaoPostar(() => { const el = document.querySelector('.jg-title'); const nome = jogo || (el && el.textContent) || 'jogos da Beaterista'; return { selo: estado === 'win' ? 'ganhei no' : 'joguei', titulo: nome, sub: titulo, numeros: qs.map((q) => ({ n: q.n, l: q.l })), beneficios: beneficiosDe(nome), pose }; }));
+  // compartilhar o placar (imagem com logo e link): em qualquer resultado, se a pessoa quiser. O nome do jogo vem de `jogo` ou da faixa de título da moldura.
+  btns.push(botaoPostar(() => { const el = document.querySelector('.jg-title'); const nome = jogo || (el && el.textContent) || 'jogos da Beaterista'; return { selo: estado === 'win' ? 'ganhei no' : 'joguei', titulo: nome, sub: titulo, numeros: qs.map((q) => ({ n: q.n, l: q.l })), beneficios: beneficiosDe(nome), pose }; }));
   return h('div', { class: `pl-card ${estado} ${classe}`.trim(), role: 'status' }, ...[img,
     h('h3', { class: 'hand' }, titulo),
     sub ? h('p', { class: 'pl-sub' }, sub) : null,

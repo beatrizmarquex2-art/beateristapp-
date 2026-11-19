@@ -42,7 +42,7 @@ export function mount(host, opts) {
   let clk = 0; let deadline = 0; let timeEl = null; let live = null; let lastSec = -1; let locked = false; let revealed = false; let skipReveal = false; const timers = new Set();
   const root = h('div', { class: 'jg jg-stop st' }); host.replaceChildren(root);
   const me0 = () => (conn ? conn.me : 0);
-  const pn = (p) => (g.online ? (p === me0() ? 'você' : 'o outro') : g.players[p]);
+  const pn = (p) => (g.online ? (conn ? conn.nomeDe(p) : (p === me0() ? 'você' : 'o outro')) : g.players[p]);
   const ro = () => !!(g && g.online && me0() !== 0); // 2 celulares: quem criou a sala revisa; o outro acompanha
   const later = (fn, ms) => { const id = sleepToken(ms, () => { timers.delete(id); if (!gone) fn(); }); timers.add(id); return id; };
   const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
