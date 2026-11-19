@@ -4,7 +4,6 @@ import { h } from '../util.js';
 import { banner, toast } from '../ui.js';
 import * as FB from '../feedback.js';
 import { alunoSemCodigo, avisoCodigo } from '../amostra.js';
-import { corSrc } from '../paul-cor.js';
 import { audio, out } from '../audio.js';
 import { getGame, setGame } from './base.js';
 import { mountProgressionMap } from '../kids/mapa.js';
@@ -146,7 +145,7 @@ export function mount(host) {
     };
     comeca();
   }
-  const fala = (txt, ...extra) => h('section', { class: 'card pad fg-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false', width: 84, height: 84 }), h('p', {}, txt), ...extra);
+  const fala = (txt, ...extra) => h('section', { class: 'card pad fg-fala' }, h('img', { class: 'fg-det', src: 'assets/paul/animacoes/web/paul-detetive.webp', alt: '', draggable: 'false', width: 84, height: 84 }), h('p', {}, txt), ...extra);
 
   if (alunoSemCodigo()) wrap.replaceChildren(topo(), avisoCodigo('a Fuga do Estúdio é pra alunos da Beaterista: usa as dicas do método. peça seu código pra professora Bea!'));
   else import('../views/dicas.js').then((m) => { if (gone) return; if (m._duelo.items().length < 6) wrap.replaceChildren(topo(), h('div', { class: 'empty' }, h('p', { class: 'hand' }, 'as dicas ainda não chegaram.'), h('p', { class: 'muted' }, 'abre o app com internet uma vez e volta aqui.'))); else mapa(); });

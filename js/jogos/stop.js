@@ -256,7 +256,7 @@ export function mount(host, opts) {
         const r = sc.res[p][c]; const pt = sc.points[p][c]; const txt = g.cur.answers[p][c].trim(); const [lab, ico] = STATUS[r.status];
         const empty = r.empty;
         return h('div', { class: `st-ans ${r.status}${revealed ? '' : ' hid'}`, 'data-st': r.status, 'data-pt': pt == null ? '' : String(pt) },
-          h('span', { class: 'st-who' }, pn(p)), h('span', { class: 'st-txt' }, empty ? '(vazio)' : txt),
+          h('span', { class: 'st-who' }, pn(p)), h('span', { class: 'st-txt' }, empty ? '(vazio)' : txt), empty ? h('img', { class: 'st-penso', src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: '', draggable: 'false', width: 56, height: 56 }) : null,
           h('span', { class: 'st-badge', role: 'status' }, h('i', { 'aria-hidden': 'true' }, ico), ` ${empty ? 'vazia' : lab}`, h('b', {}, pt == null ? ' ?' : ` +${pt}`.replace('+0', '0'))),
           h('small', { class: 'muted' }, r.manual ? `decisão da revisão: ${r.why}` : r.status === 'valida' ? (r.name && keyDiff(r.name, txt) ? `reconhecida como “${r.name}”` : '') : r.why),
           r.suggest && !r.manual && !RO ? h('button', { class: 'btn small', type: 'button', onclick: () => { g = S.decide(g, p, c, 'valida', { why: `grafia corrigida pra “${r.suggest}”`, by: byWho(), canon: r.suggestId }); persist(); sync(); reviewView(); } }, `era “${r.suggest}”`) : null,

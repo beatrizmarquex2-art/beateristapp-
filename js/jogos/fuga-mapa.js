@@ -1,7 +1,6 @@
 // Mapa "Escape Room · Laboratório do Paul" (mundo 1 da Fuga do Estúdio): uma sala comprida de laboratório com lasers (arte da Bea, assets/jogos/fuga/lab-sala.webp),
 // 12 discos de vinil ligados por um raio laser até a porta SAÍDA (a porta bônus B). O Paul fica no disco da vez e anda até o próximo quando a fase é concluída.
 import { h } from '../util.js';
-import { corSrc } from '../paul-cor.js';
 
 export const IMG = { w: 1023, h: 1894 };
 const XS = [32, 66, 38, 68, 30, 62, 36, 70, 34, 64, 40, 60]; // x de cada disco (% da largura): zigue-zague pelo meio da sala
@@ -46,7 +45,7 @@ export function mountFugaMapa(host, cfg) {
   const key = cfg.lastKey || 'beaterista-fuga-paul'; let antes = -1; try { antes = Number(sessionStorage.getItem(key)); if (!Number.isFinite(antes)) antes = -1; } catch { antes = -1; }
   // o Paul fica do lado contrário ao do próximo disco (não tapa o caminho nem o número do vizinho)
   const noP = (i) => { const prox = i + 1 < fases.length ? POS[i + 1] : POS_SAIDA; const lado = prox.x >= POS[i].x ? -1 : 1; return { left: `${POS[i].x + lado * 15}%`, top: `${POS[i].y - 1.2}%` }; };
-  const paul = h('div', { class: 'fm-paul' }, h('span', { class: 'fm-fala' }, 'bora!'), h('img', { src: corSrc('baquetas-pra-cima'), alt: '', draggable: 'false' }));
+  const paul = h('div', { class: 'fm-paul' }, h('span', { class: 'fm-fala' }, 'bora!'), h('img', { src: 'assets/paul/animacoes/web/paul-detetive.webp', alt: '', draggable: 'false' }));
   const anda = antes >= 0 && antes < atual && !reduced(); const ini = noP(anda ? antes : atual); paul.style.left = ini.left; paul.style.top = ini.top; sala.append(paul);
   try { sessionStorage.setItem(key, String(atual)); } catch { /* sem armazenamento */ }
   if (anda) setTimeout(() => { const f = noP(atual); paul.classList.add('anda'); paul.style.left = f.left; paul.style.top = f.top; }, 350);

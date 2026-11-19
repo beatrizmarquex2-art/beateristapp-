@@ -252,7 +252,7 @@ export function mount(host, parts = [], opts = {}) {
     } else if (qual === 'bau') {
       const prox = bau[0]; const k = prox ? L.packKind(prox) : null;
       corpo = h('div', { class: 'fig-pack-card' },
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, k === 'jogo' ? '🏆' : '🎁'), h('span', {}, k === 'jogo' ? '1 pacote com uma rara' : `${prox ? L.packSize(prox) : L.PACK_SIZE} figurinhas`)),
+        h('div', { class: 'fig-pack-art fig-bau-art', 'aria-hidden': 'true' }, h('img', { class: 'fig-bau-anim', src: 'assets/paul/animacoes/web/paul-bau.webp', alt: '', draggable: 'false', width: 170, height: 170 }), h('span', {}, k === 'jogo' ? '🏆 1 pacote com uma rara' : `🎁 ${prox ? L.packSize(prox) : L.PACK_SIZE} figurinhas`)),
         resumo,
         h('p', { class: 'fig-note' }, 'o baú guarda os pacotinhos que você conquistou. cada pacotinho é um prêmio por terminar um jogo, um mundo ou uma semana de check-in.'),
         h('button', { type: 'button', class: 'btn primary wide', disabled: prox ? null : true, onclick: () => openIt(prox) }, k === 'jogo' ? 'abrir o prêmio' : 'abrir pacotinho'),

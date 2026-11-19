@@ -89,6 +89,7 @@ export function runLevel(game, ctx) {
       misses.push(q.key || q.ans); bot.set('oops', id === null ? 'o tempo acabou!' : FB.line('lose')); fb.className = 'kd-fb kx-fb no';
       fb.textContent = id === null ? `acabou o tempo! ${game.noText ? game.noText(q) : ''}` : (game.noText ? game.noText(q) : 'quase!'); if (btn) btn.classList.add('shake');
     }
+    if (!ok) fb.prepend(h('img', { class: 'kx-penso', src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: '', draggable: 'false', width: 64, height: 64 })); // não sabia: o Paul fica pensativo junto
     if (!ok && spec.sudden) { S.later(restart, 1500); return; }
     i++; S.later(next, ok ? 1000 : 1700);
   };

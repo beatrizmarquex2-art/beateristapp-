@@ -1795,3 +1795,9 @@ body.bv-aberta { overflow: hidden; }
 .bv-ir { border: 0; border-radius: 99px !important; padding: 14px; font: 400 20px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .03em; background: #c81e2d; color: #fff; box-shadow: 0 4px 0 #7d1019; cursor: pointer; }
 .bv-cod { background: none; border: 0; color: #fff7e6; font: 700 14px "Hanken Grotesk", sans-serif; text-decoration: underline; padding: 8px; cursor: pointer; }
 .bv-tela > .bv-luz { position: absolute; width: min(360px, 90vw); }
+
+/* Paul animado (19/nov): detetive na Fuga, baú na aba baú, pensativo quando não sabe (quiz e Stop) */
+.fg-fala .fg-det{flex:none;width:84px;height:84px;object-fit:contain}
+.fig-bau-art{display:grid;justify-items:center;gap:2px}.fig-bau-anim{width:170px;height:auto;display:block;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}
+.kx-fb .kx-penso{width:64px;height:64px;vertical-align:middle;margin-right:6px}
+.st-ans .st-penso{width:56px;height:56px;justify-self:start}
