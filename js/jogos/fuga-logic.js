@@ -17,8 +17,8 @@ export const idFase = (mundo, n) => `${mundo}:${n}`;
 /** 3 níveis em todos os jogos das portas: fácil (fases 1-4), médio (5-8) e difícil (9-12). Os mundos 2 e 3 sobem 1 nível (teto: difícil); as fases-desafio são no mínimo médio e a porta B é difícil. */
 export const NIVEIS = ['facil', 'medio', 'dificil'];
 export const NOME_NIVEL = { facil: 'fácil', medio: 'médio', dificil: 'difícil' };
-export function nivelDaFase(n, mundoIdx = 0) {
-  let i = n <= 4 ? 0 : n <= 8 ? 1 : 2; if (DESAFIOS[n]) i = Math.max(i, 1); if (mundoIdx > 0) i = Math.min(2, i + 1); return NIVEIS[i];
+export function nivelDaFase(n, mundoIdx = 0, shift = 0) {
+  let i = n <= 4 ? 0 : n <= 8 ? 1 : 2; if (DESAFIOS[n]) i = Math.max(i, 1); if (mundoIdx > 0) i = Math.min(2, i + 1); return NIVEIS[Math.min(2, i + shift)];
 }
 /** O que cada nível pede. quiz: tipos de pergunta · caça: palavras, tamanho da grade e direções (0 = → ↓, 1 = + ↘, 2 = todas) · cruzadinha: palavras e tamanho delas · genius: rodadas e botões · caminho: casas e caminhos · memória: pares. */
 export const NIVEL_CFG = {
@@ -26,7 +26,21 @@ export const NIVEL_CFG = {
   medio: { quiz: ['blank', 'continua'], palavras: 6, grade: 10, dirs: 1, cruz: 5, cruzMax: 8, genius: { rodadas: 6, pads: 4, ms: 550 }, caminho: { len: 5, caminhos: 3 }, memoria: { pares: 6 }, pesca: { rodadas: 6, peixes: 4, vel: 62 }, mira: { rodadas: 5, alvos: 4, move: 0 }, montar: {} },
   dificil: { quiz: ['continua', 'match'], palavras: 8, grade: 11, dirs: 2, cruz: 6, cruzMax: 9, genius: { rodadas: 8, pads: 6, ms: 420 }, caminho: { len: 7, caminhos: 3 }, memoria: { pares: 8 }, pesca: { rodadas: 8, peixes: 5, vel: 92 }, mira: { rodadas: 6, alvos: 4, move: 1 }, montar: {} },
 };
-export function faseCfg(mundoIdx, n) { const nivel = nivelDaFase(n, mundoIdx); const c = NIVEL_CFG[nivel]; return { tipo: tipoDa(n), nivel, perguntas: 5, palavras: c.palavras, cruz: c.cruz, cruzMax: c.cruzMax, grade: c.grade, dirs: c.dirs, kinds: c.quiz }; }
+/** `tr` = a trilha (fuga-trilhas-logic.js trilhaCfg): `assuntos`, `extra` (a infinita sobe um pouco a cada volta: mais palavras, sequências maiores…) e `nivelShift`. Sem `tr` = a Fuga de sempre. */
+export function faseCfg(mundoIdx, n, tr = {}) {
+  const nivel = nivelDaFase(n, mundoIdx, tr.nivelShift || 0); const c = NIVEL_CFG[nivel]; const x = tr.extra || 0;
+  return { tipo: tipoDa(n), nivel, perguntas: 5, palavras: Math.min(9, c.palavras + x), cruz: Math.min(7, c.cruz + x), cruzMax: c.cruzMax, grade: Math.min(12, c.grade + (x > 1 ? 1 : 0)), dirs: c.dirs, kinds: c.quiz, extra: x, assuntos: tr.assuntos || null };
+}
+/** A config de um jogo de toque (genius, caminho, memória, pesca, mira) no nível `nivel`, com o `extra` da trilha infinita (tetos pra não quebrar a tela). */
+export function cfgMini(nivel, jogo, extra = 0) {
+  const c = { ...NIVEL_CFG[nivel][jogo] }; if (!extra) return c;
+  if (jogo === 'genius') { c.rodadas = Math.min(10, c.rodadas + extra); c.ms = Math.max(300, Math.round(c.ms * (1 - 0.06 * extra))); }
+  else if (jogo === 'caminho') { c.len = Math.min(8, c.len + extra); }
+  else if (jogo === 'memoria') { c.pares = Math.min(8, c.pares + extra); }
+  else if (jogo === 'pesca') { c.rodadas = Math.min(10, c.rodadas + extra); c.peixes = Math.min(6, c.peixes + (extra > 1 ? 1 : 0)); c.vel = Math.round(c.vel * (1 + 0.07 * extra)); }
+  else if (jogo === 'mira') { c.rodadas = Math.min(8, c.rodadas + extra); c.move = 1; }
+  return c;
+}
 /** Quantas portas cada fase tem (desenho da Bea): 1 e 2 → 2 portas · 3, 4 e 5 → 3 · 6 e 7 → 1 só, mas é um DESAFIO (tempo / sem errar) · 8, 9 e 10 → 3 · 11 e 12 → 4. */
 export const PORTAS_FASE = [2, 2, 3, 3, 3, 1, 1, 3, 3, 3, 4, 4];
 export const qtdPortas = (n) => PORTAS_FASE[n - 1] || 3;
@@ -47,7 +61,8 @@ export const TIPOS_FASE = [
   ['pesca', 'queda', 'caca', 'cruz'], ['memoria', 'caminho', 'queda4', 'cruz'],
 ];
 /** As portas da fase, em ordem: cada uma é um dos jogos de TIPOS_FASE, com o nível da fase e do mundo; as fases-desafio têm 1 porta com regra própria. A "área" do genius alterna entre notas e bateria. */
-export const portasDaFase = (mundoIdx, n) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n), ...DESAFIOS[n], desafio: true }] : TIPOS_FASE[n - 1].map((tipo, k) => ({ ...faseCfg(mundoIdx, n), tipo, area: (n + k + mundoIdx) % 2 ? 'bateria' : 'notas' })));
+export const portasDaFase = (mundoIdx, n, tr = {}) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n, tr), ...DESAFIOS[n], desafio: true }]
+  : TIPOS_FASE[n - 1].map((tipo, k) => ({ ...faseCfg(mundoIdx, n, tr), tipo: (tr.subst && tr.subst[tipo]) || tipo, area: tr.area || ((n + k + mundoIdx) % 2 ? 'bateria' : 'notas') })));
 export const idPorta = (mundo, n, k) => `${mundo}:${n}:${k}`;
 /** ★ da fase no mapa (1 a 3) = média das ★ das portas, arredondada pra cima na metade, nunca abaixo de 1 se passou por todas. */
 export const estrelasFase = (lista) => { const v = (lista || []).filter((x) => x > 0); if (!v.length) return 0; return Math.max(1, Math.min(3, Math.round(v.reduce((a, b) => a + b, 0) / v.length))); };

@@ -59,11 +59,13 @@ export const PARES = {
   ],
 };
 export const AREAS = Object.keys(PARES);
+/** As áreas de uma trilha (`assuntos`); sem assunto ou assunto desconhecido = as 3. */
+export const areasDe = (assuntos) => { const l = (assuntos || []).filter((a) => AREAS.includes(a)); return l.length ? l : AREAS; };
 /** `n` pares sorteados misturando as 3 áreas (ao menos 1 de cada quando n >= 3), sem repetir. */
-export function paresMemoria(n, rnd = Math.random) {
+export function paresMemoria(n, rnd = Math.random, assuntos = null) {
   const emb = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-  const por = AREAS.map((k) => emb(PARES[k].map((p) => ({ ...p, area: k })))); const out = [];
-  for (let i = 0; out.length < n && i < 40; i++) { const lista = por[i % por.length]; const p = lista.shift(); if (p) out.push(p); }
+  const areas = areasDe(assuntos); const por = areas.map((k) => emb(PARES[k].map((p) => ({ ...p, area: k })))); const out = [];
+  for (let i = 0; out.length < n && i < 60; i++) { const lista = por[i % por.length]; const p = lista.shift(); if (p) out.push(p); }
   return out;
 }
 /** As cartas viradas pra baixo: cada par vira 2 cartas ({ id, par, lado: 'A'|'B' }) embaralhadas. */
@@ -89,9 +91,9 @@ export function bancoQA() {
   return out;
 }
 /** `total` rodadas sem repetir a pergunta (alternando as 3 áreas); cada uma com `nOpcoes` respostas (1 certa + erradas da MESMA área), embaralhadas, e `ok` = posição da certa. */
-export function rodadasQA(total, nOpcoes, rnd = Math.random) {
+export function rodadasQA(total, nOpcoes, rnd = Math.random, assuntos = null) {
   const emb = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-  const banco = bancoQA(); const por = AREAS.map((k) => emb(banco.filter((x) => x.area === k))); const out = [];
+  const areas = areasDe(assuntos); const banco = bancoQA().filter((x) => areas.includes(x.area)); const por = areas.map((k) => emb(banco.filter((x) => x.area === k))); const out = [];
   for (let i = 0; out.length < total && i < total * 6; i++) {
     const p = por[i % por.length].shift(); if (!p) continue;
     const pool = emb(banco.filter((x) => x.area === p.area && x.certo !== p.certo)).slice(0, nOpcoes - 1);

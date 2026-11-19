@@ -93,6 +93,9 @@ export function mount(host) {
   cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); return true; } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : err.message === 'repetida' ? 'essa figurinha já está na sua coleção. mude a foto, o modelo ou o nome pra criar outra.' : err.message === 'limite2' ? 'só dá pra ter 2 figurinhas da mesma foto no mesmo modelo de card. troque a foto ou o modelo.' : 'não consegui guardar agora.'); return err.message === 'repetida' || err.message === 'limite2'; } } }); const area = cri.el;
   body.append(topo, area, mc.el);
   (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
+  // títulos que ganhou terminando trilhas da Fuga do Estúdio (aparece quando tem algum)
+  (async () => { try { const B = await import('../jogos/base.js'); const lista = (B.getGame('fuga').titulos || []); if (!lista.length || !alive) return;
+    const caixa = h('section', { class: 'card pad pf-titulos' }, h('b', {}, 'meus títulos'), h('p', { class: 'muted' }, 'você ganha um título a cada trilha que termina na Fuga do Estúdio.'), h('div', {}, ...lista.map((t) => h('span', { class: 'pf-tit', 'data-titulo': t.id }, `🏅 ${t.nome}`)))); topo.after(caixa); } catch { /* sem títulos */ } })();
   // molduras que ganhou nos jogos (aparece quando tem alguma): toque pra usar ou tirar
   (async () => { try { const M = await import('../molduras.js'); const lista = M.MOLDURAS.filter((m) => M.tem(m.id)); if (!lista.length || !alive) return;
     const caixa = h('section', { class: 'card pad pf-molduras' }, h('b', {}, 'minhas molduras'), h('p', { class: 'muted' }, 'enfeites que você ganhou nos jogos. toque pra usar ou tirar.'));
