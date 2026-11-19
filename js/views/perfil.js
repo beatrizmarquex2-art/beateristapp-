@@ -72,11 +72,11 @@ export function mount(host) {
       return h('label', { class: 'pf-todos' }, inp, h('span', {}, texto, dica ? h('small', {}, dica) : null)); };
     return h('div', { class: 'pf-onde', role: 'radiogroup', 'aria-label': 'onde fica a sua foto' }, op('aqui', 'foto só nesse aparelho'), op('todos', 'foto em todos os meus aparelhos', 'ao clicar, sempre que acessar, sua foto estará com você'));
   })();
-  if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.hidden = true;
+  if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.remove();
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
-      todos, priv), fotoInput, selfie);
+      priv), fotoInput, selfie, todos);
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */

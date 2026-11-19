@@ -1122,3 +1122,8 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 
 .pf-onde { margin-top: 10px; display: grid; gap: 6px; }
 .pf-todos small { display: block; margin-top: 2px; font: 600 12px/1.25 "Hanken Grotesk", sans-serif !important; color: #5a6075 !important; }
+
+/* escolha da foto: as 2 opções lado a lado, embaixo do passe inteiro */
+.pf-onde { grid-column: 1 / -1; display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px !important; margin-top: 4px !important; }
+.pf-todos { margin: 0 !important; align-items: flex-start !important; gap: 8px !important; }
+.pf-todos input { margin-top: 2px; }
