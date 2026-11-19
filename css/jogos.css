@@ -1741,3 +1741,21 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-trilha-info{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center}.fg-trilha-info b{color:#ffd23f}
 .fg-reiniciar{font-size:12px;padding:4px 10px}.fg-trilha-nova{font-weight:900;color:#ffd23f;text-align:center;margin:8px 0}
 .pf-titulos .pf-tit{display:inline-flex;align-items:center;gap:6px;margin:4px 6px 0 0;padding:6px 12px;border-radius:99px;background:#1a1445;color:#ffd23f;border:2px solid #ffd23f;font-weight:800;font-size:13px}
+
+/* boas-vindas da primeira vez (opção B, palco à noite) */
+body.bv-aberta { overflow: hidden; }
+.bv-tela { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px 20px; text-align: center; color: #fff7e6; background: radial-gradient(120% 60% at 50% 18%, #31408a, #162146 55%, #0a0f26); overflow-y: auto; animation: bvIn .3s ease both; }
+.bv-tela.out { animation: bvOut .22s forwards; }
+@keyframes bvIn { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } } @keyframes bvOut { to { opacity: 0; } }
+.bv-luz { position: absolute; left: 50%; top: 50%; width: min(360px, 90vw); height: min(360px, 90vw); transform: translate(-50%, -66%); background: radial-gradient(closest-side, rgb(255 224 140 / .28), rgb(255 224 140 / .08) 60%, transparent); pointer-events: none; }
+.bv-tela > * { position: relative; max-width: 420px; width: 100%; }
+.bv-tag { margin: 0; font: 700 11px "Hanken Grotesk", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #f2a91b; }
+.bv-paul { width: min(190px, 46vw); height: auto; margin: 0 auto; display: block; }
+.bv-oi { margin: 0; font: 400 40px/1 "Anton", sans-serif; text-transform: uppercase; color: #f2a91b; }
+.bv-sub { margin: 0 0 6px; font-size: 15px; }
+.bv-tres { display: flex; gap: 8px; margin: 6px 0 12px; }
+.bv-card { flex: 1; border-radius: 16px !important; background: rgb(255 255 255 / .09); border: 2px solid rgb(242 169 27 / .75); padding: 10px 4px; color: #fff7e6; font: 700 13px "Hanken Grotesk", sans-serif; cursor: pointer; }
+.bv-card span { display: block; font: 400 28px/1.1 "Anton", sans-serif; color: #f2a91b; } .bv-card b { display: block; text-transform: uppercase; letter-spacing: .04em; } .bv-card small { display: block; color: #fff7e6 !important; opacity: .9; font-weight: 600; }
+.bv-ir { border: 0; border-radius: 99px !important; padding: 14px; font: 400 20px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .03em; background: #c81e2d; color: #fff; box-shadow: 0 4px 0 #7d1019; cursor: pointer; }
+.bv-cod { background: none; border: 0; color: #fff7e6; font: 700 14px "Hanken Grotesk", sans-serif; text-decoration: underline; padding: 8px; cursor: pointer; }
+.bv-tela > .bv-luz { position: absolute; width: min(360px, 90vw); }

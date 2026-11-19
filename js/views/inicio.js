@@ -131,13 +131,20 @@ export function mount(host, { nome = '' } = {}) {
   desenhaFav();
   figurinhasGanhas().then((r) => { ganhas = r.ganhas; todas = r.todas; fav = FAV.favoritos(); desenhaFav(); }).catch(() => { /* fica sem figurinhas */ });
 
+  // foto do passe (opção C, escolha da Bea): quadro redondo com aro; mostra a foto de perfil (ou o Paul que a pessoa escolheu); sem nada escolhido, o Paul na bateria. Toca e abre o Perfil.
+  const paulBateria = 'assets/paul/sprites/bateria-idle_02.webp';
+  const imgPasse = h('img', { src: paulBateria, alt: '' });
+  const fotoPasse = h('a', { class: 'in-foto in-foto-redonda', href: '#/perfil', 'aria-label': 'sua foto do perfil. toque pra mudar' }, imgPasse);
+  let urlFoto = '';
+  const carregaFoto = async () => { try { const bl = await D.metaLer('perfil-foto'); if (urlFoto) URL.revokeObjectURL(urlFoto); urlFoto = bl ? URL.createObjectURL(bl) : ''; imgPasse.src = urlFoto || paulBateria; fotoPasse.classList.toggle('com-foto', !!urlFoto); } catch { /* fica o Paul */ } };
+  carregaFoto(); window.addEventListener('bt-foto-perfil', carregaFoto);
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
     h('p', { class: 'in-tag' }, 'beaterista · passe do aluno'),
     h('h1', { class: 'in-nome' }, nome || 'aluno'),
     h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
     slots,
-    h('div', { class: 'in-foto' }, h('img', { src: 'assets/paul/sprites/bateria-idle_02.webp', alt: '' })),
+    fotoPasse,
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));
 
@@ -159,7 +166,7 @@ export function mount(host, { nome = '' } = {}) {
     h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
       h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'pegue o seu giro grátis de hoje'),
       h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente, só por entrar')),
-    h('span', { class: 'in-roleta-bts' }, h('a', { class: 'in-btn', href: '#/album/Pacotes' }, girou ? 'ver ▶' : 'girar ▶'), h('button', { type: 'button', class: 'in-mais', onclick: () => abrirComoGanhar(faltam) }, '★ quero + estrelas')));
+    h('span', { class: 'in-roleta-bts' }, h('a', { class: 'in-btn', href: '#/album/Pacotes' }, girou ? 'ver ▶' : 'girar ▶'), h('button', { type: 'button', class: 'in-mais', onclick: () => abrirComoGanhar(faltam) }, '★ quero ', h('b', { class: 'in-mais-plus', 'aria-hidden': 'true' }, '+'), ' estrelas')));
 
   // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)
   const rail = h('div', { class: 'in-rail', role: 'list' });
@@ -177,5 +184,5 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
   host.append(h('div', { class: 'inicio' }, passe, tres, continuar, roleta, novidades, atalhos));
-  return () => {};
+  return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }

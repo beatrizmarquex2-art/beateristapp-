@@ -114,3 +114,12 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .in-ganhar-q { margin: 0 0 10px; font: 700 15px "Hanken Grotesk", sans-serif; }
 .in-ganhar-h { margin: 6px 0 4px; font: 400 26px "Anton", sans-serif; text-transform: uppercase; }
 .in-ganhar-volta { background: none; border: 0; padding: 4px 0; font: 700 15px "Hanken Grotesk", sans-serif; color: #c81e2d; cursor: pointer; }
+/* roleta do card "roleta grátis diária": imagem da Bea */
+.in-roleta-ic { width: 72px !important; height: 72px !important; }
+/* foto do passe: quadro redondo com aro (opção C) */
+.in-passe .in-foto.in-foto-redonda { right: 14px; top: 34px; width: 120px; height: 120px; border-radius: 50% !important; border: 4px solid #2a1a05; background: #fff7e6; box-shadow: 3px 4px 0 rgba(42,26,5,.45); display: block; }
+.in-passe .in-foto-redonda img { width: 100%; height: 100%; margin: 0; object-fit: contain; display: block; border-radius: 50% !important; }
+.in-passe .in-foto-redonda.com-foto img { object-fit: cover; }
+/* o + do "quero + estrelas" bem maior */
+.in-mais { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.in-mais-plus { font: 400 30px/0.7 "Anton", sans-serif; color: #ffd24a; display: inline-block; position: relative; top: -4px; }

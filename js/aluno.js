@@ -83,8 +83,8 @@ import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-// aba INÍCIO (prévia): só aparece pra quem abriu o app com ?inicio=1 (fica guardado no aparelho; ?inicio=0 desliga). A barra de sempre não muda.
-const INICIO_ON = (() => { try { if (/[?&]inicio=1\b/.test(location.search)) localStorage.setItem('bt-inicio', '1'); if (/[?&]inicio=0\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') === '1'; } catch { return false; } })();
+// aba INÍCIO: liga pra todos (publicada em nov/2026). `?inicio=0` desliga neste aparelho (pra teste); `?inicio=1` volta a ligar.
+const INICIO_ON = (() => { try { if (/[?&]inicio=0\b/.test(location.search)) localStorage.setItem('bt-inicio', '0'); if (/[?&]inicio=1\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') !== '0'; } catch { return true; } })();
 const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
@@ -552,6 +552,7 @@ function askName() {
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); }
     try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; }
+    if (modo !== 'codigo') window.__primeiraVez = true; // "experimentar grátis": mostra as boas-vindas uma vez (js/boas-vindas.js)
     start();
   } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
   // Lojinha clicável já na entrada: entra como visitante (nada é guardado) e abre a aba Lojinha
@@ -576,6 +577,7 @@ async function start() {
   if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
+  if (window.__primeiraVez) { window.__primeiraVez = false; import('./boas-vindas.js').then((M) => M.mostrar({ nome: name, aoCodigo: abrirCodigo })).catch(() => { /* sem boas-vindas */ }); }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
 }
