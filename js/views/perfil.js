@@ -82,10 +82,10 @@ export function mount(host) {
   // sem querer pôr a própria foto? escolhe um Paul: ele vira a foto do perfil (topo, figurinha e sala)
   const paules = h('div', { class: 'pf-paules', role: 'group', 'aria-label': 'ou escolha um Paul' }, h('p', { class: 'muted' }, 'ou escolha um Paul'),
     h('div', { class: 'pf-paules-lista' }, ...[1, 2, 3, 4, 5, 6].map((n) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': `Paul ${n}`, onclick: async () => { try { const blob = await (await fetch(`assets/paul/perfil/paul-${n}.webp`)).blob(); await escolher(new File([blob], `paul-${n}.webp`, { type: 'image/webp' }), { value: '' }); } catch { toast('não consegui abrir esse Paul agora'); } } }, h('img', { src: `assets/paul/perfil/paul-${n}.webp`, alt: '', width: 52, height: 52, loading: 'lazy' })))));
-  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox),
+  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox, paules),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
-      priv, salaOpt), fotoInput, selfie, paules, todos);
+      priv, salaOpt), fotoInput, selfie, todos);
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */

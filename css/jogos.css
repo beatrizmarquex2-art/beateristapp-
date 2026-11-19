@@ -1697,3 +1697,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pf-sala small{display:block;font-weight:600;margin-top:2px}
 .pf-top .pf-paules{grid-column:1/-1}.pf-paules-lista{justify-content:space-between;flex-wrap:nowrap}
 .pf-paules .pf-paul-op{width:42px;height:42px;flex:none;aspect-ratio:1}
+/* Pauls: embaixo do código, na coluna da esquerda, 2 por linha (pedido da Bea) */
+.pf-left .pf-paules{width:100%}.pf-left .pf-paules p{text-align:center}
+.pf-left .pf-paules-lista{display:grid;grid-template-columns:repeat(2,52px);gap:10px 8px;justify-content:center}
+.pf-left .pf-paules .pf-paul-op{width:52px;height:52px}
