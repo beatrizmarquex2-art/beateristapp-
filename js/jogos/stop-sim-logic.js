@@ -8,6 +8,23 @@ const grade = (np, nc, v) => Array.from({ length: np }, () => Array(nc).fill(v))
 export const revVazio = (nc, n = 2) => ({ over: grade(n, nc, null), canon: grade(n, nc, null), equiv: Array(nc).fill(false), log: [] });
 /** Quantos jogadores tem a sala (2 a 4; sem `n` no estado = 2, como era antes). */
 export const jogadoresDe = (e) => (e && Number.isInteger(e.n) && e.n >= 2 && e.n <= 4 ? e.n : 2);
+/* ---------- saída de jogador (a maioria votou "continuar sem"): `e.fora` = lugares que saíram da partida ---------- */
+export const foraDe = (e) => (Array.isArray(e && e.fora) ? e.fora : []);
+export const ativosDe = (e) => Array.from({ length: jogadoresDe(e) }, (_, i) => i).filter((i) => !foraDe(e).includes(i));
+/** Quem decide a revisão das respostas: o menor lugar que continua na partida (normalmente quem criou a sala). */
+export const revisorDe = (e) => (ativosDe(e)[0] ?? 0);
+/** Quem saiu fica sempre pronto e com resposta vazia (vale 0): não segura a contagem, o STOP nem a revisão. Vale pra rodada de agora e pras próximas. */
+export function aplicarFora(e) {
+  const nc = e.cats.length;
+  for (const p of foraDe(e)) { e.ready[p] = true; e.pausa[p] = false; if (!e.res[p]) e.res[p] = { answers: Array(nc).fill(''), usado: 0, motivo: 'saiu' }; }
+  if (ativosDe(e).length <= 1) e.fim = true; // sobrou só uma pessoa: a sala acaba
+}
+/** Tira os lugares `lugares` da partida (muda `e` e devolve false se não havia nada novo). Quem saiu guarda os pontos que já tinha. */
+export function tirar(e, lugares) {
+  const novos = [...new Set(lugares)].filter((p) => Number.isInteger(p) && p >= 0 && p < jogadoresDe(e) && !foraDe(e).includes(p));
+  if (!novos.length) return false;
+  e.fora = [...foraDe(e), ...novos].sort((a, b) => a - b); aplicarFora(e); return true;
+}
 export const SEM_RESPOSTA_MS = 25000; // depois disso o placar pode sair sem as respostas do outro (app fechado)
 
 /** Estado novo da sala: categorias, tempo e a letra da rodada 1 (a mesma nos dois celulares). */
@@ -24,6 +41,7 @@ export function estadoValido(e) {
   try {
     return !!e && e.sim === true && S.catsOk(e.cats) && S.LETTERS.includes(e.letter) && Number.isInteger(e.seconds) && e.seconds >= 10 && e.seconds <= 600 && Number.isInteger(e.round) && e.round >= 1
       && Array.isArray(e.ready) && e.ready.length === jogadoresDe(e) && Array.isArray(e.res) && e.res.length === jogadoresDe(e) && Array.isArray(e.wins) && e.wins.length === jogadoresDe(e)
+      && (e.fora === undefined || (Array.isArray(e.fora) && e.fora.every((p) => Number.isInteger(p) && p >= 0 && p < jogadoresDe(e))))
       && !!e.rev && e.rev.over.length === jogadoresDe(e) && e.rev.equiv.length === e.cats.length
       && e.res.every((r) => r === null || (Array.isArray(r.answers) && r.answers.length === e.cats.length));
   } catch { return false; }
@@ -62,7 +80,7 @@ export function rodadaG(e) {
 /** { g, sc, completo, vencedor (índice de quem ganhou | -1 empate no topo | null se falta alguém), pend } */
 export function resultado(e, { semOutro = false } = {}) {
   const g = rodadaG(e); const sc = S.scoreRound(g); const completo = e.res.every(Boolean);
-  const pronto2 = completo || semOutro; const top = Math.max(...sc.sums); const lideres = sc.sums.map((x, i) => (x === top ? i : -1)).filter((i) => i >= 0);
+  const pronto2 = completo || semOutro; const ativos = ativosDe(e); const top = Math.max(...ativos.map((i) => sc.sums[i])); const lideres = ativos.filter((i) => sc.sums[i] === top); // quem saiu não ganha a rodada
   return { g, sc, completo, vencedor: pronto2 ? (lideres.length > 1 ? -1 : lideres[0]) : null, pend: sc.pending.reduce((t, x) => t + x, 0) };
 }
 /** Decisão da revisão (quem criou a sala): vale pros dois celulares. */
@@ -73,10 +91,12 @@ export function equivalente(e, c, on) { if (!!e.rev.equiv[c] === !!on) return fa
 
 /** Revanche: nova letra, tudo zerado, placar de vitórias acumulado. Quem pediu já fica pronto. Só vale pra rodada atual (quem chega depois não repete). */
 export function proximaRodada(e, me, rnd = Math.random) {
+  if (e.fim) return false; // sobrou só uma pessoa na sala: não tem revanche
   const r = resultado(e); const el = S.lettersFor(e.cats);
   if (r.completo && r.vencedor >= 0) e.wins[r.vencedor]++; else if (r.completo) e.empates = (e.empates || 0) + 1;
   const { letters, cycle } = S.drawLetters(1, e.usadas || [], rnd, el);
   e.letter = letters[0]; e.usadas = cycle; const n = jogadoresDe(e); e.round++; e.ready = Array(n).fill(false); e.ready[me] = true; e.res = Array(n).fill(null); e.stop = null; e.rev = revVazio(e.cats.length, n); e.pausa = Array(n).fill(false);
+  aplicarFora(e); // quem saiu continua fora na revanche
   return true;
 }
 

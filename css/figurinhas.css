@@ -656,3 +656,8 @@
 
 /* prévia da Lojinha: só 3 imagens com marca d'água; sem arrastar, selecionar nem segurar pra salvar */
 .lj-fotos img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}.lj-previa{margin:2px 0 6px;text-align:center;font-size:13px;font-weight:700;opacity:.75}
+
+/* moldura do perfil (foto grande) */
+.pf-av-wrap{position:relative;width:96px;height:96px}.pf-mold{position:absolute;inset:-14px;width:124px;height:124px;max-width:none;pointer-events:none}
+.pf-molduras{display:grid;gap:8px}.pf-mold-btn{display:flex;align-items:center;gap:12px;border:2px solid rgb(0 0 0 / .2);border-radius:14px;background:#fff;padding:8px 12px;cursor:pointer;font:800 14px var(--body,system-ui);text-align:left}
+.pf-mold-btn.on{border-color:#ffd23f;box-shadow:0 0 0 2px #ffd23f66}.pf-mold-btn img{background:#0c1020;border-radius:50%}

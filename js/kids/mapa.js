@@ -13,6 +13,7 @@ import { session } from '../session.js';
 import { corSrc, poseDe, poseDoJogo, stkSrc, ELEMENTOS } from '../paul-cor.js';
 import { temaButton } from '../campanha/tema.js';
 import { sprite, DECOR } from './mapa-art.js';
+import { temaDoMapa } from './mapa-tema.js';
 import { mapSfx, soundOn, setSound } from './mapa-sfx.js';
 import { ST, REGIONS, computeNodes, chaptersFor, layoutMap, pathThrough, newlyDone, doneIds, regionOf, checkLevels } from './mapa-logic.js';
 
@@ -102,7 +103,8 @@ export function mountProgressionMap(host, cfg) {
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => place(Number(paul.dataset.at))) : null; if (ro) { ro.observe(world); S.add(() => ro.disconnect()); }
 
   const root = h('div', { class: 'mp bmr', 'data-game': gameId, 'data-theme': theme ? theme.id : null, style: null }, head, world);
-  host.replaceChildren(root); // bmr: fora da regra global de cantos retos (os discos são redondos)
+  host.replaceChildren(root); S.add(temaDoMapa(world, gameId)); // arte do pacote de mapas (fundo por mundo + aro no avatar do topo)
+  // bmr: fora da regra global de cantos retos (os discos são redondos)
   const tw = document.querySelector('.topwrap'); if (tw) head.style.top = `${Math.round(tw.getBoundingClientRect().height)}px`; // o cabeçalho do mapa gruda logo abaixo do topo do app
 
   /* ---- grade das fases (ícone ▦): todas as fases de uma vez, 3 por linha, por região; toca e vai direto (sem andar pela trilha) ---- */

@@ -11,6 +11,7 @@ import * as D from '../figurinhas/dono.js';
 import * as FN from '../foto-perfil-nuvem.js';
 import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as PROG from '../kids/progress.js';
+import * as PS from '../jogos/perfil-sala.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
@@ -45,6 +46,8 @@ export function mount(host) {
   setTimeout(() => { if (alive) { const s = compartilhaEst(); if (s) body.append(s); } }, 0);
 
   const avatar = h('div', { class: 'pf-avatar', 'aria-label': 'Sua foto' });
+  const moldPerfil = h('img', { class: 'pf-mold', alt: '', hidden: true, draggable: 'false', 'aria-hidden': 'true' }); let offMold = () => {}; import('../molduras.js').then((M) => { offMold = M.ligarImg(moldPerfil); }).catch(() => {});
+  const avatarWrap = h('div', { class: 'pf-av-wrap' }, avatar, moldPerfil);
   const nome = h('input', { class: 'field', type: 'text', maxlength: 20, autocomplete: 'off', 'aria-label': 'Seu nome na figurinha', placeholder: 'seu nome', value: nomeAtual(), oninput: (ev) => { cfg.nome = ev.target.value; salvarCfg(); cri && cri.refresh(); } });
   const fotoInput = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
@@ -72,11 +75,17 @@ export function mount(host) {
       return h('label', { class: 'pf-todos' }, inp, h('span', {}, texto, dica ? h('small', {}, dica) : null)); };
     return h('div', { class: 'pf-onde', role: 'radiogroup', 'aria-label': 'onde fica a sua foto' }, op('aqui', 'foto só nesse aparelho'), op('todos', 'foto em todos os meus aparelhos', 'ao clicar, sempre que acessar, sua foto estará com você'));
   })();
-  if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.remove();
-  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
+  if (!todos) priv.textContent = 'sua foto fica só neste aparelho. só aparece na sala se você ligar a opção abaixo.'; else priv.remove();
+  // mostrar o perfil (foto em miniatura + 3 favoritos) pra quem joga na mesma sala por código. Desligado por padrão.
+  const salaChk = h('input', { type: 'checkbox', checked: PS.ligado(), onchange: (ev) => { PS.ligar(ev.target.checked); toast(ev.target.checked ? 'quem estiver na sala vai poder ver sua foto e seus favoritos' : 'seu perfil não aparece mais nas salas'); } });
+  const salaOpt = h('label', { class: 'pf-todos pf-sala' }, salaChk, h('span', {}, 'mostrar meu perfil na sala', h('small', {}, 'foto pequena e 3 favoritos aparecem pra quem joga com você por código. desligado por padrão')));
+  // sem querer pôr a própria foto? escolhe um Paul: ele vira a foto do perfil (topo, figurinha e sala)
+  const paules = h('div', { class: 'pf-paules', role: 'group', 'aria-label': 'ou escolha um Paul' }, h('p', { class: 'muted' }, 'ou escolha um Paul'),
+    h('div', { class: 'pf-paules-lista' }, ...[1, 2, 3, 4, 5, 6].map((n) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': `Paul ${n}`, onclick: async () => { try { const blob = await (await fetch(`assets/paul/perfil/paul-${n}.webp`)).blob(); await escolher(new File([blob], `paul-${n}.webp`, { type: 'image/webp' }), { value: '' }); } catch { toast('não consegui abrir esse Paul agora'); } } }, h('img', { src: `assets/paul/perfil/paul-${n}.webp`, alt: '', width: 52, height: 52, loading: 'lazy' })))));
+  const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox, paules),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
-      priv), fotoInput, selfie, todos);
+      priv, salaOpt), fotoInput, selfie, todos);
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */
@@ -84,5 +93,14 @@ export function mount(host) {
   cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); return true; } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : err.message === 'repetida' ? 'essa figurinha já está na sua coleção. mude a foto, o modelo ou o nome pra criar outra.' : err.message === 'limite2' ? 'só dá pra ter 2 figurinhas da mesma foto no mesmo modelo de card. troque a foto ou o modelo.' : 'não consegui guardar agora.'); return err.message === 'repetida' || err.message === 'limite2'; } } }); const area = cri.el;
   body.append(topo, area, mc.el);
   (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
-  return () => { alive = false; cri.cleanup(); mc.cleanup(); };
+  // títulos que ganhou terminando trilhas da Fuga do Estúdio (aparece quando tem algum)
+  (async () => { try { const B = await import('../jogos/base.js'); const lista = (B.getGame('fuga').titulos || []); if (!lista.length || !alive) return;
+    const caixa = h('section', { class: 'card pad pf-titulos' }, h('b', {}, 'meus títulos'), h('p', { class: 'muted' }, 'você ganha um título a cada trilha que termina na Fuga do Estúdio.'), h('div', {}, ...lista.map((t) => h('span', { class: 'pf-tit', 'data-titulo': t.id }, `🏅 ${t.nome}`)))); topo.after(caixa); } catch { /* sem títulos */ } })();
+  // molduras que ganhou nos jogos (aparece quando tem alguma): toque pra usar ou tirar
+  (async () => { try { const M = await import('../molduras.js'); const lista = M.MOLDURAS.filter((m) => M.tem(m.id)); if (!lista.length || !alive) return;
+    const caixa = h('section', { class: 'card pad pf-molduras' }, h('b', {}, 'minhas molduras'), h('p', { class: 'muted' }, 'enfeites que você ganhou nos jogos. toque pra usar ou tirar.'));
+    const pinta = () => caixa.querySelectorAll('button[data-mold]').forEach((b) => { const on = M.ativa() === b.dataset.mold; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('on', on); });
+    lista.forEach((m) => caixa.append(h('button', { type: 'button', class: 'pf-mold-btn', 'data-mold': m.id, onclick: () => { M.escolher(M.ativa() === m.id ? '' : m.id); pinta(); } }, h('img', { src: m.img, alt: '', width: 56, height: 56 }), h('span', {}, m.nome))));
+    pinta(); topo.after(caixa); window.addEventListener('moldura-mudou', pinta); } catch { /* sem molduras */ } })();
+  return () => { alive = false; offMold(); cri.cleanup(); mc.cleanup(); };
 }

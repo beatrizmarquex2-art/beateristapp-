@@ -1,6 +1,6 @@
 // Aba INÍCIO (prévia, aparece só com ?inicio=1): o "passe do aluno" com 3 bandas/cantores favoritos (das figurinhas que o aluno já ganhou),
-// dias seguidos, estrelas, faltam pra roleta, a faixa amarela "continuar de onde parou" e o desafio de hoje (rascunho).
-import { h } from '../util.js';
+// dias seguidos, estrelas, faltam pra roleta, a faixa amarela "continuar de onde parou" a roleta grátis diária e "ganhar mais estrelas" (abre uma folha).
+import { h, todayKey } from '../util.js';
 import * as CODE from '../codigo.js';
 import * as P from '../kids/progress.js';
 import * as ESTRELAS from '../figurinhas/estrelas.js';
@@ -66,6 +66,34 @@ async function figurinhasGanhas() {
 }
 const rostoPos = (r) => (r ? `${Math.round((r[0] + r[2] / 2) * 100)}% ${Math.round((r[1] + r[3] / 2) * 100)}%` : '50% 20%');
 
+/** "quero + estrelas": folha com 3 menus (jogos, estudos, palco); tocar num mostra como ganhar estrelas ali. */
+function abrirComoGanhar(faltam) {
+  const AJUDA = {
+    jogos: { ic: '🎮', t: 'jogos', sub: 'os de aprender dão mais estrelas', itens: [
+      ['🥁', 'Hero Drum, Piano Hero e Beat Hero', 'termine a fase com 80% ou mais: fácil dá 1 ★, médio 2 ★ e difícil 3 ★.', '#/jogos', 'jogar'],
+      ['🎼', 'Toca Aqui, Figurix e pauLta', 'cada fase concluída vale estrela, e quanto mais você acerta, mais estrelas.', '#/jogos', 'ver os jogos'],
+      ['🕵️', 'Detetive, quiz e os outros', 'quem ganha leva até 3 ★ (e participar já vale 1 ★ nos duelos).', '#/jogos', 'ver os jogos'],
+      ['🎁', 'bônus', 'a cada 4 fases concluídas você ganha mais 1 giro de presente.', '#/jogos', 'jogar']] },
+    estudos: { ic: '📚', t: 'estudos', sub: 'aulas com o Paul', itens: [
+      ['❓', 'mini quiz de cada fase', 'no fim de cada fase tem 3 perguntas: 3 acertos dão 2 ★ e 2 acertos dão 1 ★ (até 30 ★ por dia nos estudos).', '#/estudos/aulas', 'estudar'],
+      ['🎁', 'tema completo', 'acertou as 3 perguntas em todas as fases de um tema? ganha também uma figurinha exclusiva!', '#/estudos/aulas', 'ver os temas'],
+      ['📖', 'dicionário e curiosidades', 'servem pra aprender mais, mas não dão estrelas.', '#/estudos', 'abrir estudos']] },
+    palco: { ic: '🎸', t: 'palco', sub: 'segredos do Paul', itens: [
+      ['🥁', 'bateria, eletrônica e cajón', 'toque os 3 segredos do Paul: Believer, We Will Rock You e Sunflower. Cada um dá 3 ★ na primeira vez. Dica: Believer é 4 batidas no surdo e depois a caixa (no cajón: 4 graves e 1 agudo).', '#/tocar', 'ir pro palco'],
+      ['🎹', 'teclado, xilofone e violão', 'toque as notas Dó, Ré, Mi, Fá em sequência pra achar o segredo e ganhar 3 ★.', '#/tocar', 'ir pro palco'],
+      ['⭐', 'tocar livre', 'o resto do palco é pra praticar e se divertir, sem estrelas.', '#/tocar', 'ir pro palco']] },
+  };
+  sheet('quero + estrelas', (close) => {
+    const raiz = h('div', { class: 'in-ganhar' });
+    const topo = h('p', { class: 'in-ganhar-t' }, `a cada ${L.ESTRELAS_POR_ROLETA} ★ juntas você ganha 1 giro na roleta.${faltam == null ? '' : ` faltam ${faltam} ★ pra próxima!`}`);
+    const menu = () => raiz.replaceChildren(topo, h('p', { class: 'in-ganhar-q' }, 'onde você quer ganhar estrelas?'),
+      h('div', { class: 'in-menus' }, ...Object.entries(AJUDA).map(([k, m]) => h('button', { type: 'button', class: `in-menu m-${k}`, onclick: () => detalhe(k) }, h('span', { 'aria-hidden': 'true' }, m.ic), h('b', {}, m.t), h('small', {}, m.sub)))));
+    const detalhe = (k) => { const m = AJUDA[k]; raiz.replaceChildren(h('button', { type: 'button', class: 'in-ganhar-volta', onclick: menu }, '‹ voltar'), h('h3', { class: 'in-ganhar-h' }, `${m.ic} ${m.t}`),
+      ...m.itens.map(([ic, tit, txt, href, bt]) => h('div', { class: 'in-ganhar-it' }, h('span', { 'aria-hidden': 'true' }, ic), h('div', {}, h('b', {}, tit), h('p', {}, txt), h('a', { class: 'btn small', href, onclick: close }, bt))))); };
+    menu(); return raiz;
+  });
+}
+
 export function mount(host, { nome = '' } = {}) {
   let pid = null; try { const a = P.active(); pid = a && a.id; } catch { /* sem perfil ainda */ }
   let estrelas = 0; try { estrelas = pid ? ESTRELAS.estrelasTotais(pid) : 0; } catch { estrelas = 0; }
@@ -103,13 +131,20 @@ export function mount(host, { nome = '' } = {}) {
   desenhaFav();
   figurinhasGanhas().then((r) => { ganhas = r.ganhas; todas = r.todas; fav = FAV.favoritos(); desenhaFav(); }).catch(() => { /* fica sem figurinhas */ });
 
+  // foto do passe (opção C, escolha da Bea): quadro redondo com aro; mostra a foto de perfil (ou o Paul que a pessoa escolheu); sem nada escolhido, o Paul na bateria. Toca e abre o Perfil.
+  const paulBateria = 'assets/paul/sprites/bateria-idle_02.webp';
+  const imgPasse = h('img', { src: paulBateria, alt: '' });
+  const fotoPasse = h('a', { class: 'in-foto in-foto-redonda', href: '#/perfil', 'aria-label': 'sua foto do perfil. toque pra mudar' }, imgPasse);
+  let urlFoto = '';
+  const carregaFoto = async () => { try { const bl = await D.metaLer('perfil-foto'); if (urlFoto) URL.revokeObjectURL(urlFoto); urlFoto = bl ? URL.createObjectURL(bl) : ''; imgPasse.src = urlFoto || paulBateria; fotoPasse.classList.toggle('com-foto', !!urlFoto); } catch { /* fica o Paul */ } };
+  carregaFoto(); window.addEventListener('bt-foto-perfil', carregaFoto);
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
     h('p', { class: 'in-tag' }, 'beaterista · passe do aluno'),
     h('h1', { class: 'in-nome' }, nome || 'aluno'),
     h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
     slots,
-    h('div', { class: 'in-foto' }, h('img', { src: 'assets/paul/sprites/bateria-idle_02.webp', alt: '' })),
+    fotoPasse,
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));
 
@@ -123,13 +158,15 @@ export function mount(host, { nome = '' } = {}) {
     h('span', { class: 'in-cont-tx' }, h('small', {}, 'continuar de onde parou'), h('b', {}, u.nome)),
     h('span', { class: 'in-cont-q' }, haQuanto(u.at))) : null;
 
-  // RASCUNHO: a Bea e eu ainda vamos estruturar o desafio do dia (ver proposta no chat)
-  const desafio = h('section', { class: 'in-hoje' },
-    h('small', {}, 'desafio de hoje'),
-    h('h2', {}, 'jogue uma fase do Hero Drum'),
-    h('p', {}, 'rascunho: aqui vai entrar o desafio do dia'),
-    h('a', { class: 'in-btn', href: '#/ritmo/drum' }, 'jogar ▶'),
-    h('img', { src: 'assets/paul/sprites/danca-up.webp', alt: '', 'aria-hidden': 'true' }));
+  // roleta grátis diária: o giro de hoje (1 por dia, entregue ao abrir o Stars) está esperando, já foi girado ou ainda não foi pego
+  const st = { ...L.emptyState(), ...D.albumDados() }; const idDia = L.checkinId(todayKey());
+  const girou = !!(st.opened && st.opened[idDia]); const esperando = !!(st.granted || []).includes(idDia) && !girou;
+  const roleta = h('section', { class: `in-roleta${girou ? ' feito' : ''}` },
+    h('img', { class: 'in-roleta-ic', src: 'assets/inicio/roleta.png', alt: '', 'aria-hidden': 'true', onerror: (e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'assets/icons/tambor-96.png'; } }), // ícone da roleta: a Bea vai gerar um (assets/inicio/roleta.png); até lá, o tambor
+    h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
+      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'pegue o seu giro grátis de hoje'),
+      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente, só por entrar')),
+    h('span', { class: 'in-roleta-bts' }, h('a', { class: 'in-btn', href: '#/album/Pacotes' }, girou ? 'ver ▶' : 'girar ▶'), h('button', { type: 'button', class: 'in-mais', onclick: () => abrirComoGanhar(faltam) }, '★ quero ', h('b', { class: 'in-mais-plus', 'aria-hidden': 'true' }, '+'), ' estrelas')));
 
   // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)
   const rail = h('div', { class: 'in-rail', role: 'list' });
@@ -146,6 +183,6 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
-  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, desafio, novidades, atalhos));
-  return () => {};
+  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, roleta, novidades, atalhos));
+  return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }

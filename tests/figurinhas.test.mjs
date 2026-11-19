@@ -91,3 +91,27 @@ test('juntar progresso de dois aparelhos: união, sem perder nada, e a mão é r
   const total = Object.values(m.inv).reduce((x, y) => x + y, 0) + Object.keys(m.pasted).length;
   assert.equal(total, 6, 'nenhuma figurinha some nem aparece do nada (2 pacotes x 3)');
 });
+
+test('juntar com a nuvem NÃO perde o check-in da semana, as lendárias nem a semente (era o que zerava o check-in todo dia)', () => {
+  const local = { ...L.emptyState(), sem: { ult: '2026-11-19', seq: 3, ciclo: 0 }, lend: ['L1'], seed: 'bbb' };
+  const nuvem = { ...L.emptyState(), sem: { ult: '2026-11-18', seq: 2, ciclo: 0 }, lend: ['L2'], seed: 'aaa' };
+  const m = L.mergeStates(local, nuvem);
+  assert.deepEqual(m.sem, { ult: '2026-11-19', seq: 3, ciclo: 0 }, 'vale o check-in mais adiantado');
+  assert.deepEqual(m.lend, ['L1', 'L2'], 'lendárias: união');
+  assert.equal(m.seed, 'aaa');
+  assert.deepEqual(L.mergeStates(local, nuvem), L.mergeStates(nuvem, local), 'ordem não importa');
+  assert.deepEqual(L.mergeStates(m, local), m, 'idempotente');
+  // dia seguinte: o check-in continua de onde parou (dia 4), mesmo depois de juntar com a nuvem
+  assert.equal(L.checkinSemana(L.mergeStates(local, nuvem).sem, '2026-11-20').sem.seq, 4);
+  // um ciclo novo (7 dias completos) ganha de um velho
+  assert.equal(L.mergeStates({ ...L.emptyState(), sem: { ult: '2026-11-01', seq: 6, ciclo: 0 } }, { ...L.emptyState(), sem: { ult: '2026-11-02', seq: 0, ciclo: 1 } }).sem.ciclo, 1);
+});
+
+test('pacote "estudo:": terminar um tema dos estudos dá 1 exclusiva (da Bea ou do Paul), de novo o mesmo id não entrega outro', () => {
+  const paul = JSON.parse(fs.readFileSync(new URL('assets/figurinhas/catalogo-paul.json', root), 'utf8')); const todas = [...cat, ...paul];
+  assert.equal(L.packSize('estudo:figuras'), 1);
+  const cods = L.drawPack(todas, 'estudo:figuras', 1); assert.equal(cods.length, 1); assert.ok(todas.find((c) => c.codigo === cods[0]).secao === 'Beaterista', cods[0]);
+  const tipos = new Set(); for (let i = 0; i < 60; i++) tipos.add(L.drawPack(todas, `estudo:t${i}`, 1)[0][0]); assert.ok(tipos.has('F') && tipos.has('P'), 'sai exclusiva da Bea (F) e do Paul (P)');
+  assert.ok(L.motivoDoPacote('estudo:figuras').includes('tema'));
+  let st = L.grantPack(L.emptyState(), 'estudo:figuras'); st = L.grantPack(st, 'estudo:figuras'); assert.equal(st.granted.filter((x) => x === 'estudo:figuras').length, 1);
+});

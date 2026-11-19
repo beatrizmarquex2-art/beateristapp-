@@ -50,7 +50,6 @@ import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import { initMusica } from './jogos/musica.js';
 initMusica(); // música de fundo dos jogos (escolhida pela Bea)
-import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
@@ -79,13 +78,13 @@ import { startPaul } from './paul-talk.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
 import { entradaNova } from './entrada.js';
 import * as PROG from './progresso-nuvem.js';
-import { corSrc, stkSrc } from './paul-cor.js';
+import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-// aba INÍCIO (prévia): só aparece pra quem abriu o app com ?inicio=1 (fica guardado no aparelho; ?inicio=0 desliga). A barra de sempre não muda.
-const INICIO_ON = (() => { try { if (/[?&]inicio=1\b/.test(location.search)) localStorage.setItem('bt-inicio', '1'); if (/[?&]inicio=0\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') === '1'; } catch { return false; } })();
+// aba INÍCIO: liga pra todos (publicada em nov/2026). `?inicio=0` desliga neste aparelho (pra teste); `?inicio=1` volta a ligar.
+const INICIO_ON = (() => { try { if (/[?&]inicio=0\b/.test(location.search)) localStorage.setItem('bt-inicio', '0'); if (/[?&]inicio=1\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') !== '0'; } catch { return true; } })();
 const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
@@ -263,7 +262,7 @@ function aulasView(view) {
     h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
   // Pedido da Bea (15/nov/2026): "teoria" (5 temas × 30 aulinhas) e uma aula de 30 aulinhas pra cada instrumento (bateria, teclado, violão), tudo AQUI.
   const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
-  view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
+  view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('img', { class: 'est-logo-paul', src: LOGO_PAUL, alt: 'Robôterista Paul', draggable: 'false', decoding: 'async' }), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
@@ -437,6 +436,8 @@ function shell(name) {
   // a foto que a pessoa pôs no Perfil (só neste aparelho); sem foto, o Paul. Tocar nela abre a aba Perfil.
   const fotoTopo = h('img', { src: corSrc('ouvindo'), alt: '', width: 46, height: 46, draggable: 'false' });
   const avatarTopo = h('a', { class: 'top-av', href: '#/perfil', 'aria-label': 'meu perfil: ver e trocar a minha foto', title: 'meu perfil' }, fotoTopo);
+  const moldTopo = h('img', { class: 'top-mold', alt: '', hidden: true, draggable: 'false', 'aria-hidden': 'true' }); import('./molduras.js').then((M) => M.ligarImg(moldTopo)).catch(() => {});
+  const avatarWrap = h('span', { class: 'top-av-wrap' }, avatarTopo, moldTopo); // a moldura (se ganhou) fica por fora da fotinha
   let urlFotoTopo = '';
   const pintaFotoTopo = async () => {
     try {
@@ -447,8 +448,8 @@ function shell(name) {
   };
   pintaFotoTopo(); window.addEventListener('bt-foto-perfil', pintaFotoTopo);
   const head = h('header', { class: 'top top-a' }, // topo da Bea (opção A, 19/nov/2026): Paul, etiqueta amarela com o nome e botões redondos de ícone de linha
-    avatarTopo,
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `${name} · ${t}` : name; })()), codigoTopo)),
+    avatarWrap,
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, name), codigoTopo)),
     tenhoCodigo,
     soundButton({ linha: true }), musicButton('icon-btn top-snd top-mus', { linha: true }), atualizarButton({ linha: true }),
     h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', title: 'opções', onclick: () => opcoes(name) }, iconeTopo('engrenagem')));
@@ -551,6 +552,7 @@ function askName() {
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); }
     try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; }
+    if (modo !== 'codigo') window.__primeiraVez = true; // "experimentar grátis": mostra as boas-vindas uma vez (js/boas-vindas.js)
     start();
   } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
   // Lojinha clicável já na entrada: entra como visitante (nada é guardado) e abre a aba Lojinha
@@ -575,6 +577,7 @@ async function start() {
   if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
+  if (window.__primeiraVez) { window.__primeiraVez = false; import('./boas-vindas.js').then((M) => M.mostrar({ nome: name, aoCodigo: abrirCodigo })).catch(() => { /* sem boas-vindas */ }); }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
 }
@@ -607,6 +610,6 @@ async function start() {
   } catch { /* link comum: segue normal */ }
   startScroller();
   // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
-  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
   start();
 })();

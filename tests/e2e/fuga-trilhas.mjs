@@ -1,0 +1,50 @@
+// Trilhas da Fuga: seletor, trilhas trancadas até terminar a anterior, desbloqueio, recomeçar, 1 ★ por trilha (da 4 em diante, uma vez só) e títulos no perfil.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const SHOTS = process.env.SHOTS || '/tmp';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/paulta`); await page.waitForSelector('.kx-cards .kx-g'); await sleep(500);
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(1500);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 40; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
+const abre = async () => { await page.goto(`${url}/aluno.html#/jogos`); await sleep(400); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await page.waitForSelector('.fg-trilhas', { timeout: 15000 }); await sleep(900); };
+const tudo = (n, skip) => Object.fromEntries(['estudio', 'vulcao', 'espaco'].flatMap((m) => Array.from({ length: 12 }, (_, i) => [`${n > 1 ? `t${n}:` : ''}${m}:${i + 1}`, 1])).filter(([k]) => k !== skip));
+const poe = (est) => page.evaluate(async (e) => { const B = await import('/js/jogos/base.js'); B.setGame('fuga', { est: e, trilha: 1 }); }, est);
+const estrelas = () => page.evaluate(async () => { const P = await import('/js/kids/progress.js'); const E = await import('/js/figurinhas/estrelas.js'); return E.estrelasTotais(P.active().id); });
+await abre();
+check('seletor de trilhas: 5 trilhas, a 1 (geral) marcada', (await page.locator('[data-trilha]').count()) >= 5 && (await page.getAttribute('[data-trilha="1"]', 'aria-checked')) === 'true' && /geral/.test(await page.textContent('[data-trilha="1"]')));
+check('trilhas 2, 3 e 4 trancadas com 🔒 e o nome do assunto', await page.evaluate(() => ['2', '3', '4'].every((n) => { const b = document.querySelector(`[data-trilha="${n}"]`); return b.classList.contains('lock') && /🔒/.test(b.textContent); }) && /ritmo/.test(document.querySelector('[data-trilha="2"]').textContent) && /teoria/.test(document.querySelector('[data-trilha="3"]').textContent) && /cordas/.test(document.querySelector('[data-trilha="4"]').textContent)));
+await page.evaluate(() => document.querySelector('.fg-trilhas').scrollIntoView({ block: 'start' })); await page.evaluate(() => window.scrollBy(0, -90)); await sleep(300); await page.screenshot({ path: `${SHOTS}/trilhas-seletor.png` });
+await page.locator('[data-trilha="2"]').click(); await sleep(400);
+check('clicar na trilha 2 trancada não troca (avisa o motivo)', (await page.getAttribute('[data-trilha="1"]', 'aria-checked')) === 'true' && /trilha trancada/.test(await page.evaluate(() => document.body.innerText)));
+check('o cabeçalho mostra "trilha 1 · geral" e 0/36 fases', /trilha 1 · geral/.test(await page.textContent('.fg-trilha-info')) && /0\/36/.test(await page.textContent('.fg-trilha-info')));
+// termina a trilha 1 (simulado): trilha 2 abre e o título aparece
+await poe(tudo(1)); await abre();
+check('trilha 1 completa: dá o título "Mestre das Portas I" (uma vez) e abre a trilha 2', await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const g = B.getGame('fuga'); return (g.titulos || []).filter((t) => t.nome === 'Mestre das Portas I').length === 1 && (g.trilhasFeitas || []).includes(1); }) && !(await page.evaluate(() => document.querySelector('[data-trilha="2"]').classList.contains('lock'))) && (await page.evaluate(() => document.querySelector('[data-trilha="3"]').classList.contains('lock'))));
+await page.locator('[data-trilha="2"]').click(); await sleep(900);
+check('trilha 2 (ritmo): cabeçalho 0/36, mapa começa do zero', /trilha 2 · ritmo/.test(await page.textContent('.fg-trilha-info')) && /0\/36/.test(await page.textContent('.fg-trilha-info')) && (await page.locator('.fm-no.st-open').count()) === 1 && (await page.locator('.fm-no.st-done').count()) === 0);
+await page.evaluate(() => document.querySelector('.fg-trilhas').scrollIntoView({ block: 'start' })); await page.evaluate(() => window.scrollBy(0, -90)); await sleep(300); await page.screenshot({ path: `${SHOTS}/trilhas-ritmo.png` });
+await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
+const txt = await page.evaluate(() => document.body.innerText);
+check('abre a fase 1 da trilha 2 com 2 portas (quiz do assunto)', /fase 1 · porta 1 de 2/.test(txt) && /pergunta 1 de 5/i.test(txt));
+await page.screenshot({ path: `${SHOTS}/trilhas-jogo.png` });
+// recomeçar a trilha 2 não mexe na 1
+await abre(); await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const g = B.getGame('fuga'); B.setGame('fuga', { trilha: 2, est: { ...g.est, 't2:estudio:1': 2, 't2:estudio:2': 1 } }); }); await abre();
+check('trilha 2 com 2 fases feitas: 2/36', /2\/36/.test(await page.textContent('.fg-trilha-info')));
+page.once('dialog', (d) => d.accept()); await page.locator('[data-acao="reiniciar"]').click(); await sleep(900);
+check('recomeçar a trilha 2: volta pra 0/36 e a trilha 1 continua completa', /0\/36/.test(await page.textContent('.fg-trilha-info')) && await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const e = B.getGame('fuga').est; return Object.keys(e).filter((k) => !k.startsWith('t')).length === 36 && !Object.keys(e).some((k) => k.startsWith('t2:')); }));
+// trilha 4: as portas não pagam, terminar a trilha dá 1 ★ uma vez só
+await poe({ ...tudo(1), ...tudo(2), ...tudo(3), ...tudo(4) }); await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); B.setGame('fuga', { trilhasFeitas: [1, 2, 3], titulos: [{ id: 'portas-1', nome: 'Mestre das Portas I', trilha: 1 }, { id: 'portas-2', nome: 'Mestre das Portas II', trilha: 2 }, { id: 'assunto-ritmo', nome: 'Mestre do Ritmo', trilha: 2 }, { id: 'portas-3', nome: 'Mestre das Portas III', trilha: 3 }, { id: 'assunto-teoria', nome: 'Mestre da Teoria', trilha: 3 }], trilha: 4 }); });
+const antes = await estrelas(); await abre(); await sleep(1200); const depois = await estrelas();
+check('terminar a trilha 4 paga exatamente 1 ★', depois - antes === 1, `${antes} → ${depois}`);
+await abre(); await sleep(800); await page.locator('[data-trilha="1"]').click(); await sleep(500); await page.locator('[data-trilha="4"]').click(); await sleep(900);
+check('voltar na trilha 4 não paga de novo', (await estrelas()) === depois, String(await estrelas()));
+check('títulos "Mestre das Portas IV" e "Mestre das Cordas" ganhos', await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const n = (B.getGame('fuga').titulos || []).map((t) => t.nome); return n.includes('Mestre das Portas IV') && n.includes('Mestre das Cordas'); }));
+check('trilha 5 (infinita) abriu depois da 4', !(await page.evaluate(() => document.querySelector('[data-trilha="5"]').classList.contains('lock'))) && /∞/.test(await page.textContent('[data-trilha="5"]')));
+await page.goto(`${url}/aluno.html#/perfil`); await sleep(2500);
+check('o perfil mostra "meus títulos" com os títulos ganhos', /meus títulos/.test(await page.evaluate(() => document.body.innerText)) && (await page.locator('.pf-tit').count()) >= 3, String(await page.locator('.pf-tit').count()));
+await page.evaluate(() => { const t = document.querySelector('.pf-titulos'); if (t) t.scrollIntoView({ block: 'center' }); }); await sleep(300); await page.screenshot({ path: `${SHOTS}/trilhas-perfil.png` });
+check('sem erro na página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

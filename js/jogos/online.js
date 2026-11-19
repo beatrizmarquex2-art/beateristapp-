@@ -2,9 +2,11 @@
 // (funções sala_criar / sala_entrar / sala_ler / sala_enviar, veja supabase/006_salas.sql). Sem login; quem tem o código joga.
 import { h } from '../util.js';
 import { CONFIG } from '../config.js';
+import { ligarSaida } from './online-saida.js';
+import { meu as meuPerfil, preparar as prepararPerfil, limpa as limpaPerfil } from './perfil-sala.js';
 
 const head = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
-async function rpc(fn, body) {
+export async function rpc(fn, body) {
   const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers: head, body: JSON.stringify(body) });
   if (!r.ok) { const e = new Error(String(r.status)); try { e.corpo = await r.text(); } catch { e.corpo = ''; } throw e; }
   return r.json();
@@ -17,7 +19,7 @@ const limpoNome = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 14
 export const meuNomeSala = () => { try { return limpoNome(localStorage.getItem(NOME_KEY)); } catch { return ''; } };
 export const guardarNomeSala = (v) => { try { localStorage.setItem(NOME_KEY, limpoNome(v)); } catch { /* sem armazenamento */ } };
 const objeto = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
-const semNomes = (x) => { const { nomes, pausaSala, ...resto } = x; return JSON.stringify(resto); }; // nomes e pausa geral não são jogada
+const semNomes = (x) => { const { nomes, pausaSala, perfis, ...resto } = x; return JSON.stringify(resto); }; // nomes e pausa geral não são jogada
 
 /* ---- pausa geral (vale pra todos os celulares da sala): viaja em `estado.pausaSala = { by, tipo, resp: { [quem]: resposta } }` ----
    tipo: 'ja-volto' | 'sair' | 'aguarda' (quem pausou escolhe) ou 'saiu' (deixou a sala). Quem recebe responde 'beleza' | 'tchau' | 'nao'. */
@@ -27,6 +29,7 @@ const limpaPausa = (p) => { if (!objeto(p) || ![0, 1, 2, 3].includes(p.by)) retu
 let ativa = null; // a sala em que este celular está jogando agora: { conn, jogo }
 /** A sala em que este celular está agora (ou null). A moldura dos jogos usa pra mostrar a pausa geral. */
 export const salaAtual = () => ativa;
+const avisaPerfis = () => { try { document.dispatchEvent(new CustomEvent('bt-perfis-sala')); } catch { /* fora do navegador */ } };
 const avisaPausa = () => { try { document.dispatchEvent(new CustomEvent('bt-pausa-sala')); } catch { /* fora do navegador */ } };
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -54,10 +57,14 @@ export async function acharJogoDaSala(code) {
 
 /** Conexão com uma sala já criada/entrada. `me` = 0 (quem criou) ou 1 (quem entrou). */
 function connection(code, me, ver, onPeer) {
-  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', '']; let pausa = null;
+  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', '']; let pausa = null; let perfis = [];
+  prepararPerfil(); // monta a miniatura do meu perfil (se eu ligei "mostrar meu perfil na sala"); vai junto da próxima jogada
   const on = {}; // o jogo pendura aqui: on.state(estado), on.link(true|false) e (opcional) on.nomes() quando só os nomes mudaram
   const absorve = (st) => {
-    if (!objeto(st)) return; if (Array.isArray(st.nomes)) nomes = Array.from({ length: Math.max(2, Math.min(4, st.nomes.length)) }, (_, i) => limpoNome(st.nomes[i])); // 2 a 4 nomes (salas de 3 e 4 celulares)
+    if (!objeto(st)) return; const antes = JSON.stringify([nomes, perfis]);
+    if (Array.isArray(st.perfis)) perfis = Array.from({ length: Math.min(4, st.perfis.length) }, (_, i) => limpaPerfil(st.perfis[i])); // perfis de quem ligou (nunca confia no que chega)
+    if (Array.isArray(st.nomes)) nomes = Array.from({ length: Math.max(2, Math.min(4, st.nomes.length)) }, (_, i) => limpoNome(st.nomes[i])); // 2 a 4 nomes (salas de 3 e 4 celulares)
+    if (JSON.stringify([nomes, perfis]) !== antes) avisaPerfis();
     const p = limpaPausa(st.pausaSala); const mudou = JSON.stringify(p) !== JSON.stringify(pausa); pausa = p; if (mudou) avisaPausa();
   };
   /** muda a pausa geral e manda pra sala; se o outro mexeu ao mesmo tempo, pega o estado dele e tenta de novo */
@@ -82,7 +89,7 @@ function connection(code, me, ver, onPeer) {
         if (row.convidado && !peer) { peer = true; if (onPeer) onPeer(); }
         if (row.ver !== ver && row.estado) {
           const soNomes = objeto(row.estado) && objeto(ultimo) && semNomes(row.estado) === semNomes(ultimo); // só o nome de alguém mudou: não mexe na partida
-          ver = row.ver; absorve(row.estado); ultimo = row.estado;
+          ver = row.ver; absorve(row.estado); ultimo = row.estado; if (api.progresso) api.progresso(); // chegou jogada: zera o relógio de "demorando"
           if (soNomes) { if (on.nomes) on.nomes(); } else if (on.state) on.state(row.estado);
         }
       }
@@ -95,6 +102,8 @@ function connection(code, me, ver, onPeer) {
     code, me, on,
     /** os nomes de quem está na sala ([nome do 0, nome do 1], '' = não pôs nome) e o jeito de chamar cada um */
     nomes: () => nomes.slice(),
+    /** o perfil que a pessoa do lugar `i` mostra na sala ({ f: [favoritos], d: foto }) ou null se ela não ligou */
+    perfilDe: (i) => perfis[i] || null,
     nomeDe: (i, padrao = 'o outro') => (i === me ? 'você' : (nomes[i] || padrao)),
     /** "vez de Ana" (ou "vez do outro" se ela não pôs nome) */
     vezDe: (i) => (nomes[i] ? `vez de ${nomes[i]}` : 'vez do outro'),
@@ -104,10 +113,10 @@ function connection(code, me, ver, onPeer) {
     async push(state) {
       busy = true;
       try {
-        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, ...resto } = state; state = pausa ? { ...resto, nomes: n, pausaSala: pausa } : { ...resto, nomes: n }; } // o meu nome vai junto de toda jogada
+        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, perfis: _pv, ...resto } = state; const pf = perfis.slice(); const eu = meuPerfil(); pf[me] = eu || null; state = { ...resto, nomes: n }; if (pf.some(Boolean)) state.perfis = Array.from(pf, (x) => x || null); if (pausa) state.pausaSala = pausa; } // o meu nome vai junto de toda jogada
         const n = await rpc('sala_enviar', { p_code: code, p_ver: ver, p_estado: state });
         link(true);
-        if (n > 0) { ver = n; absorve(state); ultimo = state; return true; }
+        if (n > 0) { ver = n; absorve(state); ultimo = state; if (api.progresso) api.progresso(); return true; }
       } catch { link(false); return false; } finally { busy = false; }
       poll(); return false;
     },
@@ -117,8 +126,13 @@ function connection(code, me, ver, onPeer) {
     responderPausa: (r) => mudaPausa((p) => (p && p.by !== me ? { ...p, resp: { ...p.resp, [me]: r } } : p)),
     retomarTodos: () => mudaPausa(() => null),
     deixarSala: () => mudaPausa(() => ({ by: me, tipo: 'saiu', resp: {} })),
-    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
+    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (api.parouSaida) api.parouSaida(); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
   };
+  // saída de jogador (online-saida.js): só liga quando o jogo pede (`conn.avisoSaida()`), pra aula ao vivo e duelos não darem sinal à toa.
+  // O jogo põe o elemento na tela, chama `conn.esperaDe(lugar)` (jogos por turno) e trata `conn.on.saiu(lista)`.
+  let saida = null; const liga = () => { if (!saida) saida = ligarSaida(api, rpc); return saida; };
+  api.avisoSaida = () => liga().el; api.esperaDe = (seat) => liga().esperaDe(seat);
+  api.progresso = () => { if (saida) saida.progresso(); }; api.saiu = () => (saida ? saida.saiu() : []); api.souSindico = () => (saida ? saida.souSindico() : me === 0); api.parouSaida = () => { if (saida) saida.parar(); };
   return api;
 }
 
@@ -210,6 +224,7 @@ export function lobby({ jogo, makeState, onStart: aoComecar, n: opN = null }) {
   const campoNome = () => h('label', { class: 'jg-nome-sala' }, h('span', {}, 'adicionar nome'),
     h('input', { type: 'text', maxlength: 14, value: meuNomeSala(), placeholder: 'seu nome (opcional)', autocomplete: 'off', autocapitalize: 'words', enterkeyhint: 'done', 'aria-label': 'Adicionar nome: o outro jogador vê o seu nome', oninput: (e) => guardarNomeSala(e.target.value) })); // o outro jogador vê esse nome no lugar de "o outro"
   function home() {
+    prepararPerfil();
     paraEspera(); live = false; entrando = false; if (conn) { conn.close(); conn = null; }
     if (opN && SALA_N === null) sondaN().then((ok) => { if (ok && !live && !conn && !esperaT) home(); }); // descobre se o banco tem as salas de 3 e 4; se tiver, redesenha com o seletor
     const ult = salaLembrada(jogo);
@@ -229,7 +244,7 @@ export function lobby({ jogo, makeState, onStart: aoComecar, n: opN = null }) {
   async function create() {
     err('criando a sala…');
     try {
-      let state = makeState(); if (objeto(state) && meuNomeSala()) state = { ...state, nomes: [meuNomeSala(), ''] };
+      let state = makeState(); if (objeto(state) && meuNomeSala()) state = { ...state, nomes: [meuNomeSala(), ''] }; { const eu = meuPerfil(); if (objeto(state) && eu) state = { ...state, perfis: [eu, null] }; }
       const code = await rpc('sala_criar', { p_jogo: jogo, p_estado: state });
       const c = connection(code, 0, 1, () => { if (conn === c) { live = true; onStart(c, state); } }); c.veja(state);
       conn = c; lembrarSala(jogo, code, 0);
@@ -264,5 +279,5 @@ export async function reenter(code, me) {
 /** Faixa de status da conexão ("online" / "sem conexão…") para pôr no topo do jogo. */
 export function linkBadge(n = 2) {
   const el = h('p', { class: 'jg-link-badge', role: 'status' }, `● ${n} celulares`);
-  return { el, set(okay) { el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } };
+  return { el, set(okay, quantos) { if (quantos >= 2) n = quantos; el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } }; // `quantos`: salas de 3 e 4 mostram o número certo
 }
