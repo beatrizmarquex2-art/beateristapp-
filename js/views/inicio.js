@@ -6,8 +6,9 @@ import * as P from '../kids/progress.js';
 import * as ESTRELAS from '../figurinhas/estrelas.js';
 import * as D from '../figurinhas/dono.js';
 import { sheet } from '../ui.js';
+import * as FAV from '../inicio-fav.js';
 
-const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar'; const FAV_KEY = 'bt-inicio-favoritos';
+const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const lerDias = () => { try { const a = JSON.parse(localStorage.getItem(DIAS_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch { return []; } };
 /** Conta o dia de hoje como "dia de uso" (chamado a cada tela que o aluno abre). */
@@ -36,18 +37,19 @@ const lugar = () => { try { const u = JSON.parse(localStorage.getItem(LUGAR_KEY)
 const haQuanto = (t) => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); if (m < 2) return 'agora há pouco'; if (m < 60) return `há ${m} min`; const hh = Math.round(m / 60); if (hh < 24) return `há ${hh} h`; const d = Math.round(hh / 24); return d === 1 ? 'ontem' : `há ${d} dias`; };
 
 /* ---------- bandas e cantores favoritos (das figurinhas que o aluno já tem) ---------- */
-const lerFav = () => { try { const a = JSON.parse(D.lsLer(FAV_KEY) || '[]'); return Array.isArray(a) ? a.slice(0, 3) : []; } catch { return []; } };
-const gravarFav = (a) => D.lsGravar(FAV_KEY, JSON.stringify(a.slice(0, 3)));
 let catCache = null;
+/** `todas`: foto e rosto de cada banda/cantor do catálogo (pra mostrar um favorito que veio de outro celular); `ganhas`: só as que este aluno já tem. */
 async function figurinhasGanhas() {
   catCache ||= await fetch('assets/figurinhas/catalogo.json').then((r) => r.json()).catch(() => []);
   const st = D.albumDados(); const tem = new Set([...Object.keys(st.pasted || {}), ...Object.keys(st.inv || {}).filter((c) => st.inv[c] > 0)]);
-  const por = new Map(); // artista -> { nome, foto, rosto, qtd }
+  const todas = new Map(); const por = new Map(); // artista -> { nome, foto, rosto, qtd }
   for (const e of catCache) {
-    if (!tem.has(e.codigo) || e.secao === 'Beaterista') continue;
+    if (e.secao === 'Beaterista') continue;
+    if (!todas.has(e.artista_banda)) todas.set(e.artista_banda, { nome: e.artista_banda, foto: e.foto, rosto: (e.rostos || [])[0] || null });
+    if (!tem.has(e.codigo)) continue;
     const a = por.get(e.artista_banda) || { nome: e.artista_banda, foto: e.foto, rosto: (e.rostos || [])[0] || null, secao: e.secao, qtd: 0 }; a.qtd++; por.set(e.artista_banda, a);
   }
-  return [...por.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+  return { todas, ganhas: [...por.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt')) };
 }
 const rostoPos = (r) => (r ? `${Math.round((r[0] + r[2] / 2) * 100)}% ${Math.round((r[1] + r[3] / 2) * 100)}%` : '50% 20%');
 
@@ -60,13 +62,13 @@ export function mount(host, { nome = '' } = {}) {
   const u = lugar();
 
   /* favoritos */
-  let ganhas = []; let fav = lerFav();
+  let ganhas = []; let todas = new Map(); let fav = FAV.favoritos();
   const slots = h('div', { class: 'in-favs', role: 'group', 'aria-label': 'bandas e cantores favoritos' });
   const desenhaFav = () => {
     slots.replaceChildren(...[0, 1, 2].map((i) => {
-      const nomeF = fav[i]; const a = nomeF && ganhas.find((x) => x.nome === nomeF);
+      const nomeF = fav[i]; const a = nomeF && (todas.get(nomeF) || { nome: nomeF, foto: '', rosto: null });
       return h('button', { type: 'button', class: `in-fav${a ? ' tem' : ''}`, 'aria-label': a ? `favorito ${i + 1}: ${a.nome}. tocar pra trocar` : `escolher favorito ${i + 1}`, onclick: () => escolher(i) },
-        h('span', { class: 'in-fav-foto' }, a ? h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` }) : h('i', {}, '+')),
+        h('span', { class: 'in-fav-foto' }, a ? (a.foto ? h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` }) : h('i', {}, '♪')) : h('i', {}, '+')),
         h('small', {}, a ? a.nome : 'escolher'));
     }));
   };
@@ -77,16 +79,16 @@ export function mount(host, { nome = '' } = {}) {
       box.append(h('p', { class: 'in-pick-t' }, `escolha o favorito ${i + 1} (só aparecem as que você já tem):`));
       const grade = h('div', { class: 'in-pick-grade' }, ...ganhas.map((a) => {
         const usado = fav.includes(a.nome) && fav[i] !== a.nome;
-        return h('button', { type: 'button', class: `in-pick-it${fav[i] === a.nome ? ' on' : ''}`, disabled: usado ? '' : null, onclick: () => { fav[i] = a.nome; fav = fav.filter(Boolean); gravarFav(fav); desenhaFav(); close(); } },
+        return h('button', { type: 'button', class: `in-pick-it${fav[i] === a.nome ? ' on' : ''}`, disabled: usado ? '' : null, onclick: () => { fav[i] = a.nome; fav = fav.filter(Boolean); FAV.gravar(fav); desenhaFav(); close(); } },
           h('span', { class: 'in-fav-foto' }, h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` })), h('small', {}, a.nome));
       }));
       box.append(grade);
-      if (fav[i]) box.append(h('button', { type: 'button', class: 'btn wide', onclick: () => { fav.splice(i, 1); gravarFav(fav); desenhaFav(); close(); } }, 'tirar este favorito'));
+      if (fav[i]) box.append(h('button', { type: 'button', class: 'btn wide', onclick: () => { fav.splice(i, 1); FAV.gravar(fav); desenhaFav(); close(); } }, 'tirar este favorito'));
       return box;
     });
   }
   desenhaFav();
-  figurinhasGanhas().then((l) => { ganhas = l; fav = fav.filter((n) => l.some((x) => x.nome === n)); desenhaFav(); }).catch(() => { /* fica sem figurinhas */ });
+  figurinhasGanhas().then((r) => { ganhas = r.ganhas; todas = r.todas; fav = FAV.favoritos(); desenhaFav(); }).catch(() => { /* fica sem figurinhas */ });
 
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
@@ -116,12 +118,21 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { class: 'in-btn', href: '#/ritmo/drum' }, 'jogar ▶'),
     h('img', { src: 'assets/paul/sprites/danca-up.webp', alt: '', 'aria-hidden': 'true' }));
 
+  // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)
+  const rail = h('div', { class: 'in-rail', role: 'list' });
+  const novidades = h('section', { class: 'in-nov', hidden: '' }, h('h3', {}, 'novidades do Paul', h('span', {}, 'deslize →')), rail);
+  fetch('assets/novidades.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : [])).then((l) => {
+    if (!Array.isArray(l) || !l.length) return;
+    rail.replaceChildren(...l.map((n) => h('a', { class: `in-nv c-${n.cor || 'azul'}`, role: 'listitem', href: n.href, target: n.externo ? '_blank' : null, rel: n.externo ? 'noopener' : null },
+      h('small', {}, n.tag), h('b', {}, n.titulo), h('p', {}, n.texto), h('span', { class: 'in-nv-bt' }, n.botao || 'ver')))); novidades.hidden = false;
+  }).catch(() => { /* sem internet: a seção fica escondida */ });
+
   const atalhos = h('div', { class: 'in-prox' },
     h('a', { href: '#/jogos' }, h('b', {}, 'jogos'), 'Hero Drum, Piano Hero, Beat Hero e mais'),
     h('a', { href: '#/estudos' }, h('b', {}, 'estudos'), 'aulas do Paul e dicionário'),
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
-  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, desafio, atalhos));
+  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, desafio, novidades, atalhos));
   return () => {};
 }
