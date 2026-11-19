@@ -148,12 +148,14 @@ export function mount(host, { nome = '' } = {}) {
     const chips = h('div', { class: 'jg-seg in-sobre-chips', role: 'group', 'aria-label': c.nome }, ...c.opcoes.map((o) => h('button', { type: 'button', class: atual === o ? 'on' : '', 'aria-pressed': String(atual === o), onclick: () => pega(o) }, o)));
     const caixa = h('div', { class: 'in-sobre' }, h('p', { class: 'in-sobre-t' }, `escolha o seu ${c.nome}:`), chips);
     if (c.livre) { // "adicionar": a pessoa escreve o dela (até 20 letras); as opções da lista continuam ali
-      const campo = h('input', { class: 'field in-sobre-in', type: 'text', maxlength: 20, autocomplete: 'off', placeholder: 'escreva o seu (até 20 letras)', 'aria-label': `adicionar ${c.nome}`, value: atual && !c.opcoes.includes(atual) ? atual : '' });
-      const ok = h('button', { type: 'button', class: 'btn small primary', onclick: () => { const v = PERF.limpaLivre(campo.value); if (v) pega(v); } }, 'ok');
+      const erro = h('p', { class: 'in-sobre-erro', role: 'alert' });
+      const campo = h('input', { class: 'field in-sobre-in', type: 'text', maxlength: c.max, autocomplete: 'off', placeholder: `escreva o seu (até ${c.max} letras)`, 'aria-label': `adicionar ${c.nome}`, value: atual && !c.opcoes.includes(atual) ? atual : '' });
+      const ok = h('button', { type: 'button', class: 'btn small primary', onclick: () => { const r = PERF.checarLivre(c.k, campo.value); if (r.erro) { erro.textContent = r.erro; return; } pega(r.valor); } }, 'ok');
+      campo.addEventListener('input', () => { erro.textContent = ''; });
       campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') ok.click(); });
       const linha = h('div', { class: 'in-sobre-add', hidden: !(atual && !c.opcoes.includes(atual)) }, campo, ok);
       chips.append(h('button', { type: 'button', class: `in-sobre-mais${linha.hidden ? '' : ' on'}`, onclick: () => { linha.hidden = false; campo.focus(); } }, '+ adicionar'));
-      caixa.append(linha);
+      caixa.append(linha, erro);
     }
     if (atual) caixa.append(h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar'));
     return caixa;
