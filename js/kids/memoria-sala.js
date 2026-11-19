@@ -21,20 +21,20 @@ export const ESPERA_ERRO = 1900; // ms que as duas cartas erradas ficam à vista
 export const ESPERA_RESERVA = 3500; // se quem tem a vez some, o outro celular fecha a jogada depois disso
 
 /** Estado de uma mesa nova com as escolhas de quem cria. `th` = tema ({ id, title, items }). */
-export const mesaNova = (th, pares, again) => L.novaMesa({ tema: th.id, titulo: th.title, pares, again, seed: L.novaSemente(), ids: th.items.map((x) => x.id) });
+export const mesaNova = (th, pares, again, n = 2, nomes = null) => L.novaMesa({ tema: th.id, titulo: th.title, pares, again, seed: L.novaSemente(), ids: th.items.map((x) => x.id), n, nomes });
 
 /** Mostra a mesa. `c` = { stage, themes(), locked(t), face(item), back(), FB?, bot }.
  *  Devolve { destroy, pause, resume, inProgress }. Pode ser chamada de novo com o estado da sala (voltar pra sala): reconstrói tudo só pelo estado. */
 export function mostrarSala(c, conn, estado) {
   css();
   let e = estado; let gone = false; let paused = false; let rt = 0; let retry = 0; let key = ''; const me = conn.me;
-  const badge = linkBadge(); badge.set(true);
-  const nome = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro')); // (conn de teste pode não ter nomeDe)
+  const badge = linkBadge(L.jogadoresDe(e)); badge.set(true);
+  const nome = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : (e && e.nomes && e.nomes[i]) || 'o outro')); // nomes de quem pôs nome (2 a 4 jogadores); (conn de teste pode não ter nomeDe)
   const th = () => c.themes().find((t) => t.id === e.tema);
   const cards = (t) => { const m = new Map(t.items.map((x) => [x.id, x])); return e.deck.every((id) => m.has(id)) ? e.deck.map((id) => m.get(id)) : null; };
   const stage = c.stage; let refs = null;
 
-  const sair = async () => { if (L.valido(e) && !e.fim && (e.achou[0].length || e.achou[1].length || e.virou.length) && !(await confirmSheet('sair da sala?', 'a partida atual será perdida.', 'sair'))) return; destroy(); c.back(); };
+  const sair = async () => { if (L.valido(e) && !e.fim && (e.achou.some((l) => l.length) || e.virou.length) && !(await confirmSheet('sair da sala?', 'a partida atual será perdida.', 'sair'))) return; destroy(); c.back(); };
   const topo = (titulo) => h('div', { class: 'row kd-modes mem-top' }, h('b', {}, titulo), h('button', { class: 'kd-chip', type: 'button', onclick: sair }, 'sair da sala'));
 
   function bloqueio(t, motivo) {
@@ -74,16 +74,16 @@ export function mostrarSala(c, conn, estado) {
     const pen = L.pendente(e); const erro = pen && !L.ePar(e); const sc = L.placar(e);
     wrap.classList.toggle('paused', paused);
     cells.forEach((b, i) => {
-      const ach = L.achada(e, i); const dono = e.achou[0].includes(i) ? 0 : e.achou[1].includes(i) ? 1 : -1; const up = e.virou.includes(i);
+      const ach = L.achada(e, i); const dono = L.donoDe(e, i); const up = e.virou.includes(i);
       b.classList.toggle('up', up); b.classList.toggle('ok', ach || (pen && !erro && up)); b.classList.toggle('no', erro && up);
       b.classList.toggle('ms-eu', dono === me); b.classList.toggle('ms-outro', dono >= 0 && dono !== me);
       b.setAttribute('aria-label', up || ach ? lista[i].name : 'carta virada para baixo');
       b.classList.toggle('ms-fora', !L.podeVirar(e, me, i));
     });
-    placar.textContent = `você ${sc[me]} × ${sc[1 - me]} ${nome(1 - me)}`;
+    placar.textContent = sc.length === 2 ? `você ${sc[me]} × ${sc[1 - me]} ${nome(1 - me)}` : sc.map((x, i) => `${nome(i)} ${x}`).join(' · ');
     if (e.fim) {
       const w = L.vencedor(e);
-      banner.textContent = w === -1 ? 'empate!' : w === me ? 'você venceu!' : `${nome(1 - me)} venceu`;
+      banner.textContent = w === -1 ? 'empate!' : w === me ? 'você venceu!' : `${nome(w)} venceu`;
       banner.className = `ms-vez fim${w === me ? ' mine' : ''}`;
       aviso.textContent = '';
       const jaTem = fim.dataset.k === key; fim.dataset.k = key;
@@ -94,7 +94,7 @@ export function mostrarSala(c, conn, estado) {
     } else {
       fim.replaceChildren(); delete fim.dataset.k;
       const minha = e.vez === me;
-      banner.textContent = minha ? 'sua vez' : (conn.vezDe ? conn.vezDe(1 - me) : 'vez do outro'); banner.className = `ms-vez${minha ? ' mine' : ''}`;
+      banner.textContent = minha ? 'sua vez' : (conn.vezDe ? conn.vezDe(e.vez) : `vez ${e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`); banner.className = `ms-vez${minha ? ' mine' : ''}`;
       aviso.textContent = erro ? 'não é par…' : pen ? 'achou um par!' : minha ? (e.virou.length === 1 ? 'vire mais uma carta' : 'vire duas cartas') : '';
     }
   }
@@ -130,10 +130,10 @@ export function mostrarSala(c, conn, estado) {
   conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); }; conn.on.nomes = () => { if (!gone && e) pintar(); };
   conn.on.link = (v) => badge.set(v);
   pintar(); agenda();
-  c.bot.set('think', e && e.vez === me ? 'sua vez!' : 'vez do outro');
+  c.bot.set('think', e && e.vez === me ? 'sua vez!' : `vez ${e && e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`);
 
   function pause() { if (gone || paused) return; paused = true; clearTimeout(rt); rt = 0; pintar(); }
   function resume() { if (gone || !paused) return; paused = false; pintar(); agenda(); }
   function destroy() { gone = true; clearTimeout(rt); clearTimeout(retry); conn.on.state = null; conn.on.link = null; conn.close(); }
-  return { destroy, pause, resume, inProgress: () => !gone && L.valido(e) && !e.fim && !!(e.achou[0].length || e.achou[1].length || e.virou.length), estado: () => e };
+  return { destroy, pause, resume, inProgress: () => !gone && L.valido(e) && !e.fim && !!(e.achou.some((l) => l.length) || e.virou.length), estado: () => e };
 }
