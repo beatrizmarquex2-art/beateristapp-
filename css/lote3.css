@@ -1119,3 +1119,6 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .pf-todos input { width: 22px; height: 22px; flex: none; accent-color: #c81e2d; }
 .pf-todos { text-transform: none !important; letter-spacing: 0 !important; color: #162146 !important; }
 .pf-todos span { font: 700 14px/1.25 "Hanken Grotesk", sans-serif !important; text-transform: none !important; letter-spacing: 0 !important; color: #162146 !important; }
+
+.pf-onde { margin-top: 10px; display: grid; gap: 6px; }
+.pf-todos small { display: block; margin-top: 2px; font: 600 12px/1.25 "Hanken Grotesk", sans-serif !important; color: #5a6075 !important; }
