@@ -31,7 +31,10 @@ export function computeNodes(levels, { starsOf = () => 0, bestOf = () => null, u
     const stars = Math.max(0, Math.min(3, Number(starsOf(l.id)) || 0)); const unlocked = !!unlockedOf(l.id) || stars > 0;
     return { ...l, pos: i, stars, best: bestOf(l.id), unlocked, state: stars > 0 ? ST.DONE : unlocked ? ST.OPEN : ST.LOCKED };
   });
-  let cur = nodes.findIndex((n) => n.state === ST.OPEN);
+  // o Paul fica na próxima fase aberta DEPOIS da última concluída (nos jogos com tudo aberto, não volta sempre pra fase 1)
+  let ultimaFeita = -1; nodes.forEach((n, i) => { if (n.state === ST.DONE) ultimaFeita = i; });
+  let cur = nodes.findIndex((n, i) => i > ultimaFeita && n.state === ST.OPEN);
+  if (cur < 0) cur = nodes.findIndex((n) => n.state === ST.OPEN);
   const allDone = cur < 0 && nodes.length > 0 && nodes.every((n) => n.state === ST.DONE);
   if (cur < 0) cur = Math.max(0, nodes.length - 1);
   if (nodes[cur] && nodes[cur].state === ST.OPEN) nodes[cur].state = ST.CURRENT;
