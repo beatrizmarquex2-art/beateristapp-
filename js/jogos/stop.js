@@ -17,7 +17,7 @@ import { montarSimultaneo, garantirCss, caixaPausa } from './stop-simultaneo.js'
 
 const ID = 'stop';
 const PAUL = 'assets/paul/';
-const MODE_LABEL = { solo: 'individual', dupla: 'dupla', sala: 'sala de aula', online: '2 celulares' };
+const MODE_LABEL = { solo: 'individual', dupla: 'dupla', sala: 'sala de aula', online: '2 a 4 celulares' };
 const STATUS = { valida: ['válida', '✔'], invalida: ['inválida', '✖'], pendente: ['aguardando revisão', '?'] };
 const clock = (s) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 const sleepToken = (ms, fn) => setTimeout(fn, ms);
@@ -107,13 +107,13 @@ export function mount(host, opts) {
     root.replaceChildren(...[
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
       h('div', { class: 'jo-card' },
-        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['sala', 'sala de aula', 'sala'], ['online', '2 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['sala', 'sala de aula', 'sala'], ['online', '2 a 4 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
         prefs.mode === 'dupla' ? linha('quantos jogam', chips([[2, '2'], [3, '3'], [4, '4']], prefs.nDupla, (v) => { FX.play('tap'); save({ nDupla: v }); setup(); }, 'quantos jogam')) : null,
           ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
             : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'
-            : prefs.mode === 'online' ? (prefs.sim ? 'cada um joga no seu celular ao mesmo tempo, com a mesma letra. quem apertar STOP primeiro para o outro também. quem cria a sala revisa as respostas.' : 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas.')
+            : prefs.mode === 'online' ? (prefs.sim ? 'cada um joga no seu celular ao mesmo tempo, com a mesma letra. quem apertar STOP primeiro para todo mundo. quem cria a sala aprova ou rejeita as respostas.' : 'cada um joga no seu celular, um depois do outro (turnos). quem cria a sala revisa as respostas.')
             : 'escreva uma palavra de cada categoria que comece com a letra sorteada. 10 pontos por resposta válida e única, 5 se outro jogador escreveu a mesma.'))),
-      prefs.mode === 'online' ? h('div', { class: 'jo-card' }, linha('como', chips([['sim', 'ao mesmo tempo'], ['turnos', 'um de cada vez']], prefs.sim ? 'sim' : 'turnos', (v) => { FX.play('tap'); save({ sim: v === 'sim' }); setup(); }, 'como jogar em 2 celulares'))) : null,
+      prefs.mode === 'online' ? h('div', { class: 'jo-card' }, linha('como', chips([['sim', 'ao mesmo tempo'], ['turnos', 'um de cada vez']], prefs.sim ? 'sim' : 'turnos', (v) => { FX.play('tap'); save({ sim: v === 'sim' }); setup(); }, 'como jogar em 2 a 4 celulares'))) : null,
       namesBox(),
       h('details', { class: 'jg-rules' }, h('summary', {}, 'ver regras'), h('ul', {},
         h('li', {}, 'uma letra é sorteada: escreva uma palavra de cada categoria que comece com ela.'),
@@ -121,20 +121,20 @@ export function mount(host, opts) {
         h('li', {}, 'não faz diferença maiúscula, acento ou espaço, e o artigo não conta (“the beatles” vale B).'),
         h('li', {}, 'se o jogo não conhece a resposta, ela fica “aguardando revisão”: você decide.'),
         h('li', {}, 'são 90 segundos por jogador e 3 rodadas.'))),
-      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => (prefs.sim ? newSim() : { ...newMatch('dupla'), online: true }), onStart: startOnline })).el
+      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => (prefs.sim ? newSim() : { ...newMatch('dupla'), online: true }), n: { makeState: (num, nomes) => (prefs.sim ? newSim(num, nomes) : { ...newMatch('dupla', nomes), online: true }) }, onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => resumeMatch(resume) }, 'continuar partida') : null,
           h('button', { class: `btn ${resume ? '' : 'primary'}`, type: 'button', disabled: !okCats || !eligible.length, onclick: start }, resume ? 'nova partida' : 'iniciar')),
     ].filter(Boolean));
   }
   /** Sala 'ao mesmo tempo': mesma letra e mesmas categorias nos dois celulares. */
-  function newSim() {
-    const st = Q.novoEstado({ cats: prefs.cats, seconds: S.SECONDS.includes(prefs.seconds) ? prefs.seconds : 60, usadas: getGame(ID).cycle || [] });
+  function newSim(n = 2, nomes = null) {
+    const st = Q.novoEstado({ cats: prefs.cats, seconds: S.SECONDS.includes(prefs.seconds) ? prefs.seconds : 60, usadas: getGame(ID).cycle || [], n, nomes });
     setGame(ID, { cycle: st.usadas, last: prefs.cats }); return st;
   }
-  function newMatch(forceMode) {
+  function newMatch(forceMode, nomesOnline = null) {
     const mode = forceMode || prefs.mode; const used = getGame(ID).cycle || [];
     const players = mode === 'dupla' ? prefs.names.slice(0, prefs.nDupla) : mode === 'sala' ? prefs.salaNames : [prefs.names[0] === 'jogador 1' ? 'você' : prefs.names[0]];
-    const m = S.newMatch({ mode: mode === 'online' ? 'dupla' : mode, cats: prefs.cats, seconds: prefs.seconds, rounds: prefs.rounds, players: forceMode === 'dupla' && prefs.mode === 'online' ? ['jogador 1', 'jogador 2'] : players, used });
+    const m = S.newMatch({ mode: mode === 'online' ? 'dupla' : mode, cats: prefs.cats, seconds: prefs.seconds, rounds: prefs.rounds, players: forceMode === 'dupla' && prefs.mode === 'online' ? (nomesOnline || ['jogador 1', 'jogador 2']) : players, used });
     setGame(ID, { cycle: m.cycle, last: prefs.cats }); return m;
   }
   /** Modo Aventura: monta a partida individual dos params e vai direto pra primeira vez de jogar. */
@@ -353,7 +353,7 @@ export function mount(host, opts) {
     if (M && !reported && g.stage === 'done') { reported = true; if (opts.onResult) opts.onResult(S.matchSummary(g)); } // fim REAL da partida: uma vez só
   }
   function rematch() {
-    if (g.online) { const ng = { ...newMatch('dupla'), online: true }; g = ng; sync(); return turnStartOrWait(); }
+    if (g.online) { const ng = { ...newMatch('dupla', g.players.length > 2 ? g.players : null), online: true }; g = ng; sync(); return turnStartOrWait(); }
     try { begin(newMatch()); } catch (e) { toast(e.message); }
   }
   const turnStartOrWait = () => (g.turn === me0() ? turnStart() : waiting());
