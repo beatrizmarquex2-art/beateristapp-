@@ -63,12 +63,16 @@ export function mount(host) {
   const codBox = h('div', { class: 'pf-codigo', role: 'group', 'aria-label': 'Seu código de acesso' }, h('small', {}, cod ? (cod.ok ? 'seu código' : 'seu código (aguardando a professora)') : 'seu código'),
     cod ? h('b', { class: 'pf-codnum', 'aria-label': 'código escondido por segurança' }, CODE.mascarar(cod.c)) : h('a', { class: 'pf-codnone', href: '#/lojinha' }, 'ainda sem código · toque pra pegar na lojinha'),
     cod ? h('button', { type: 'button', class: 'btn small ghost pf-codguardar', onclick: () => import('../salvar-codigo.js').then((M) => M.guardarAgora(nomeAtual ? nomeAtual() : '')) }, 'guardar meu código') : null);
-  // "usar minha foto em todos os meus celulares": desligado de começo (a foto só sai do aparelho se o aluno ligar). Só pra quem tem código.
-  const txtPriv = () => (FN.ligado() ? 'uma miniatura da sua foto fica guardada pra aparecer em qualquer celular em que você entrar com o seu código.' : 'sua foto fica só neste aparelho. ninguém mais vê.');
-  const priv = h('p', { class: 'muted pf-priv' }, txtPriv());
-  const todos = (() => { let c = ''; try { c = CODE.saved(); } catch { /* ok */ } if (!c) return null; const inp = h('input', { type: 'checkbox', 'aria-label': 'usar minha foto em todos os meus celulares' }); inp.checked = FN.ligado();
-    inp.addEventListener('change', () => { if (inp.checked) FN.ligar(); else FN.desligar(); priv.textContent = txtPriv(); toast(inp.checked ? 'sua foto vai aparecer nos seus outros celulares' : 'sua foto ficou só neste aparelho'); });
-    return h('label', { class: 'pf-todos' }, inp, h('span', {}, 'usar minha foto em todos os meus celulares')); })();
+  // Onde fica a foto: "só nesse aparelho" (padrão) ou "em todos os meus aparelhos" (só pra quem tem código; a foto sobe em miniatura, ver foto-perfil-nuvem.js).
+  const priv = h('p', { class: 'muted pf-priv' });
+  const todos = (() => {
+    let c = ''; try { c = CODE.saved(); } catch { /* ok */ } if (!c) return null;
+    const grupo = 'pf-onde'; const op = (v, texto, dica) => { const inp = h('input', { type: 'radio', name: grupo, value: v }); inp.checked = (v === 'todos') === FN.ligado();
+      inp.addEventListener('change', () => { if (!inp.checked) return; if (v === 'todos') FN.ligar(); else FN.desligar(); toast(v === 'todos' ? 'sua foto vai estar com você em todos os aparelhos' : 'sua foto ficou só neste aparelho'); });
+      return h('label', { class: 'pf-todos' }, inp, h('span', {}, texto, dica ? h('small', {}, dica) : null)); };
+    return h('div', { class: 'pf-onde', role: 'radiogroup', 'aria-label': 'onde fica a sua foto' }, op('aqui', 'foto só nesse aparelho'), op('todos', 'foto em todos os meus aparelhos', 'ao clicar, sempre que acessar, sua foto estará com você'));
+  })();
+  if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.hidden = true;
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatar, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
