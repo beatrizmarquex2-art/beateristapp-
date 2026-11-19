@@ -1,0 +1,51 @@
+/* .beat-mapa é o corredor existente. data-beat-regiao é opcional. */
+.beat-mapa {
+  --beat-escuro: #10182b;
+  background: var(--beat-escuro);
+  border: 3px solid var(--beat-cor);
+  border-radius: 16px;
+  box-shadow: 0 0 0 3px #131a2b, inset 0 0 20px #060914;
+}
+.beat-mapa:not(:has([data-beat-regiao])),
+.beat-mapa [data-beat-regiao] {
+  background-color: var(--beat-escuro);
+  background-image: linear-gradient(90deg,#0a122340,#0a12237d 48%,#0a12232e), var(--beat-cenario);
+  background-position: center, center;
+  background-size: auto, 100% auto;
+  background-repeat: repeat;
+}
+.beat-mapa [data-beat-regiao] {
+  background-size: cover;
+  background-position: center, var(--beat-pos, center);
+}
+.beat-mapa [data-beat-regiao]:nth-of-type(even) { --beat-pos: center 70%; }
+.beat-mapa [data-beat-regiao] + [data-beat-regiao] {
+  border-block-start: 1px solid #ffffff40;
+}
+.beat-moldura { position: relative; display: inline-grid; aspect-ratio: 1; place-items: center; }
+.beat-moldura > img {
+  width: 79%; aspect-ratio: 1; object-fit: cover; border-radius: 50%;
+}
+.beat-moldura::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: var(--beat-aro) center / contain no-repeat;
+  filter: hue-rotate(var(--beat-matiz, 0deg));
+}
+.beat-moldura[data-aro="dourado"]::after {
+  mix-blend-mode: multiply;
+}
+.beat-moldura[data-aro="dourado"] { isolation: isolate; }
+.beat-mapa[data-beat-mundo] {
+  background-image: linear-gradient(90deg, #0a122325, #0a122360 48%, #0a122325),
+    linear-gradient(color-mix(in srgb, var(--beat-cor) 13%, transparent), transparent),
+    var(--beat-cenario);
+  background-position: center, center, center top;
+  background-size: auto, auto, 100% auto;
+}
+.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) { background-image: none; }
+
+/* ---- encaixe no mapa de discos existente: a arte nova cobre o fundo e os desenhos antigos das regiões ---- */
+.mp-world.beat-mapa { overflow: hidden; }
+.beat-mapa .mp-band::before, .beat-mapa .mp-band::after, .beat-mapa .mp-deco { display: none; }
+.top-av-wrap .top-mold.mapa-aro { object-fit: contain; }
+.mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) { background-image: linear-gradient(90deg, #0a122340, #0a12237d 48%, #0a12232e), var(--beat-cenario); background-size: auto, 100% auto; background-position: center top; background-repeat: repeat; }

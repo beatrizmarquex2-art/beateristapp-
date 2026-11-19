@@ -1033,3 +1033,5 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v678**: Fuga: jogo das notas caindo (figura cai, Paul vai pro nome certo) nas fases 11 e 12 (tipo 'queda' em fuga-mini.js, reaproveita a lógica do tetris do Figurix).
 - **v679**: Fuga: versão de 4 faixas das notas caindo (tipo 'queda4') na fase 12; a fase 11 fica com 2 faixas.
 - **v681**: Fuga lote 2: pesca (peixes nadando, toque ou solte o anzol), mira e bolinha (arraste pra mirar, solte pra jogar) e montar nota (cabeça, haste e colchetes), 3 níveis cada; distribuição: montar nas fases 3-4, pesca em 5/8/9/11, mira em 9/10 (jogos em fuga-mini.js, lógica em fuga-mini-logic.js).
+- **v683**: pacote de mapas da Bea: fundo de cada mundo (assets/mapas, css/mundos.css, js/kids/mapa-tema.js) em todos os mapas de discos + aro colorido no avatar do topo (só se não tiver moldura do perfil). Escape Room fica como está. Camarim/Palco da Fuga usam a arte de estúdio e pôr do sol.
+- **v684**: db.js não quebra mais quando carregado fora do navegador (os testes de node voltam a passar: 614).
