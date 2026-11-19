@@ -552,6 +552,7 @@ function askName() {
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
     logVisit(n); if (modo === 'codigo' && !CODE.pendente()) { SALVAR.agendar(); CONTAS.guardarConta({ nome: n, code: CODE.saved() }); }
     try { localStorage.setItem(NAME_KEY, n); } catch { window.__alunoNome = n; }
+    if (modo !== 'codigo') window.__primeiraVez = true; // "experimentar grátis": mostra as boas-vindas uma vez (js/boas-vindas.js)
     start();
   } catch (ex) { err.textContent = `deu erro: ${String((ex && ex.message) || ex).slice(0, 140)}`; console.error(ex); } finally { indo = false; } };
   // Lojinha clicável já na entrada: entra como visitante (nada é guardado) e abre a aba Lojinha
@@ -576,6 +577,7 @@ async function start() {
   if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
+  if (window.__primeiraVez) { window.__primeiraVez = false; import('./boas-vindas.js').then((M) => M.mostrar({ nome: name, aoCodigo: abrirCodigo })).catch(() => { /* sem boas-vindas */ }); }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
 }
