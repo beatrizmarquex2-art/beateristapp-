@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TEMAS, MODOS, FASES, cartas, poolFase, sortear, conferir, acertou, estrelas } from '../js/jogos/detetive-logic.js';
+import { TEMAS, MODOS, FASES, cartas, poolFase, sortear, conferir, acertou, estrelas, maxPausas, ouvidasMax } from '../js/jogos/detetive-logic.js';
 import { FOODS } from '../js/kids-logic.js';
 
 test('figuras vem em primeiro; os 4 temas têm uma palavra por tempo e ela existe no Monte seu ritmo', () => {
@@ -14,7 +14,8 @@ test('cada fase muda: 1 semínima/colcheias, 2 + pausa, 3-4 + semicolcheias (sem
 });
 test('sortear: 4 tempos só com as células da fase, sem começar com pausa, no máximo 1 pausa, e a fase nova sempre usa a novidade', () => {
   for (let n = 1; n <= FASES; n++) for (let i = 0; i < 80; i++) {
-    const s = sortear(n); assert.equal(s.length, 4); assert.ok(s.every((c) => poolFase(n).includes(c))); assert.notEqual(s[0], '0000'); assert.ok(s.filter((c) => c === '0000').length <= 1); assert.ok(new Set(s).size >= 2);
+    const s = sortear(n); assert.equal(s.length, 4); assert.ok(s.every((c) => poolFase(n).includes(c))); assert.notEqual(s[0], '0000'); assert.ok(s.filter((c) => c === '0000').length <= maxPausas(n)); assert.ok(new Set(s).size >= (n >= 7 ? 3 : 2));
+    if (n >= 7) assert.ok(s.includes('1111')); if (n >= 9) assert.ok(s.includes('0000'));
     if (n === 2) assert.ok(s.includes('0000')); if (n === 3 || n === 4) assert.ok(s.includes('1111') && !s.includes('0000')); if (n === 5 || n === 6) assert.ok(s.includes('1111') && s.includes('0000'));
   }
 });
@@ -30,4 +31,9 @@ test('o compasso novo nunca repete o anterior', () => { for (let n = 1; n <= 12;
 test('velocidades 80, 100 e 120; só o 120 toca direto, sem a contagem', async () => {
   const { BPMS, COM_CONTAGEM } = await import('../js/jogos/detetive-logic.js');
   assert.deepEqual(BPMS, [80, 100, 120]); assert.deepEqual(BPMS.map(COM_CONTAGEM), [true, true, false]);
+});
+
+test('fases 7-12 ficam mais difíceis: ouvidas limitadas e caindo (6, 4, 3, 2), fases 1-6 sem limite', () => {
+  for (let n = 1; n <= 6; n++) assert.equal(ouvidasMax(n), Infinity);
+  assert.deepEqual([7, 8, 9, 10, 11, 12].map(ouvidasMax), [6, 6, 4, 4, 3, 2]); assert.equal(maxPausas(10), 1); assert.equal(maxPausas(11), 2);
 });

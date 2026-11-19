@@ -19,15 +19,21 @@ export const MODOS = ['normal', ...Object.keys(TEMAS)]; // figuras em primeiro
 export const poolFase = (n) => (n <= 1 ? ['1000', '1010'] : n === 2 ? ['1000', '1010', '0000'] : n <= 4 ? ['1000', '1010', '1111'] : ['1000', '1010', '1111', '0000']);
 /** As cartas de um modo nessa fase (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */
 export const cartas = (modo, n = FASES) => poolFase(n).slice().sort((a, b) => ['1000', '1010', '1111', '0000'].indexOf(a) - ['1000', '1010', '1111', '0000'].indexOf(b)).map((cell) => ({ cell, id: modo === 'normal' ? null : cell === '0000' ? 'shh' : TEMAS[modo][cell] }));
-/** Sorteia o compasso secreto da fase `n`: 4 células do conjunto da fase (nunca começa com pausa, no máximo 1 pausa, usa pelo menos 2 tipos, traz a novidade da fase e NUNCA repete o compasso anterior `evitar`). */
+/** Pausas permitidas no compasso: 1 até a fase 10; 2 nas fases 11-12. */
+export const maxPausas = (n) => (n >= 11 ? 2 : 1);
+/** Quantas vezes dá pra OUVIR o ritmo da rodada (a 1ª, automática, já conta): fases 1-6 sem limite; 7-8 = 6; 9-10 = 4; 11 = 3; 12 = 2 (Infinity = sem limite). */
+export const ouvidasMax = (n) => (n <= 6 ? Infinity : n <= 8 ? 6 : n <= 10 ? 4 : n === 11 ? 3 : 2);
+/** Sorteia o compasso secreto da fase `n`: 4 células do conjunto da fase (nunca começa com pausa, no máximo `maxPausas` pausas, usa pelo menos 2 tipos (3 a partir da fase 7), traz a novidade da fase e NUNCA repete o compasso anterior `evitar`). */
 export function sortear(n = FASES, rnd = Math.random, evitar = null) {
   const pool = poolFase(n); const ev = evitar ? evitar.join() : null;
   for (let g = 0; g < 800; g++) {
     const b = Array.from({ length: 4 }, () => pool[Math.floor(rnd() * pool.length)]);
-    if (b[0] === '0000' || b.filter((c) => c === '0000').length > 1 || new Set(b).size < 2 || b.join() === ev) continue;
+    if (b[0] === '0000' || b.filter((c) => c === '0000').length > maxPausas(n) || new Set(b).size < (n >= 7 ? 3 : 2) || b.join() === ev) continue;
     if (n === 2 && !b.includes('0000')) continue; // a fase que apresenta a pausa sempre usa
     if ((n === 3 || n === 4) && !b.includes('1111')) continue; // as que apresentam as semicolcheias sempre usam
     if ((n === 5 || n === 6) && !(b.includes('1111') && b.includes('0000'))) continue; // junta tudo
+    if (n >= 9 && !b.includes('0000')) continue; // fases 9-12: o silêncio sempre aparece (o mais difícil de contar de ouvido)
+    if (n >= 7 && !b.includes('1111')) continue; // fases 7-12: sempre tem as 4 semicolcheias (3 ou mais tipos de tempo, nunca só semínima e colcheia)
     return b;
   }
   return pool.slice(0, 1).concat(pool.slice(1, 2), pool.slice(0, 1), pool.slice(1, 2));

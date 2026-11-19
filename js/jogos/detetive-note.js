@@ -16,7 +16,7 @@ import { vinil } from '../kids/drum-art.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
-import { TEMAS, MODOS, FASES, RODADAS, BPMS, COM_CONTAGEM, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
+import { TEMAS, MODOS, FASES, RODADAS, BPMS, COM_CONTAGEM, ouvidasMax, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 const NOME = (m) => (m === 'normal' ? 'figuras' : `${EMOJI_MODO[m]} ${TEMAS[m].nome}`);
@@ -49,7 +49,7 @@ export function mount(host) {
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
-  let fase = 1; let secreto = null; let slots = []; let rodada = 0; let primeira = 0; let errou = false; let gone = false; let jogando = false; let marcas = null;
+  let fase = 1; let secreto = null; let slots = []; let rodada = 0; let primeira = 0; let errou = false; let gone = false; let jogando = false; let marcas = null; let ouvidas = 0;
   const estOf = (m, n) => ((getGame('detetive').est || {})[`${m}:${n}`] || 0);
   const guardaEst = (m, n, v) => { const g = getGame('detetive'); setGame('detetive', { ...g, est: { ...(g.est || {}), [`${m}:${n}`]: v } }); };
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } S.reset(); Au.reset(); };
@@ -83,8 +83,9 @@ export function mount(host) {
     for (let b = 0; b < 4; b++) Au.later(() => marca(b, 'agora'), espera(t0 + b * q));
     Au.later(limparTempo, espera(t0 + 4 * q + 0.1));
   };
-  const ouvir = () => { Au.reset(); limparTempo(); audio(); const q = 60 / bpm; const t0 = tocaCompasso(secreto, bpm, somDaFase(fase)); anima(t0, q, COM_CONTAGEM(bpm)); };
-  const nova = () => { S.reset(); secreto = sortear(fase, Math.random, ultimo); ultimo = secreto; slots = []; errou = false; marcas = null; desenha(); Au.later(ouvir, 400); };
+  const restam = () => ouvidasMax(fase) - ouvidas;
+  const ouvir = () => { if (restam() <= 0) return; ouvidas++; Au.reset(); limparTempo(); audio(); const q = 60 / bpm; const t0 = tocaCompasso(secreto, bpm, somDaFase(fase)); anima(t0, q, COM_CONTAGEM(bpm)); };
+  const nova = () => { S.reset(); secreto = sortear(fase, Math.random, ultimo); ultimo = secreto; slots = []; errou = false; marcas = null; ouvidas = 0; desenha(); Au.later(() => { ouvir(); desenha(); }, 400); };
   const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
   const desenha = () => {
@@ -94,7 +95,7 @@ export function mount(host) {
         c ? face(c, modo) : h('small', {}, String(i + 1))); });
     const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
     const vel = h('div', { class: 'dn-vel', role: 'radiogroup', 'aria-label': 'Velocidade' }, ...BPMS.map((v, i) => { const b = h('button', { type: 'button', role: 'radio', 'aria-checked': String(bpm === v), 'aria-label': `${v} BPM`, class: `dn-bpm${bpm === v ? ' on' : ''}`, onclick: () => { bpm = v; setGame('detetive', { ...getGame('detetive'), bpm }); ouvir(); desenha(); } }); b.append(vinil(['devagar', 'normal', 'rápido'][i] || 'normal', 'vinil sm'), h('b', {}, String(v))); return b; }));
-    root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', onclick: ouvir }, `▶ ouvir o ritmo (${somDaFase(fase)})`), vel,
+    root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', disabled: restam() <= 0, onclick: () => { ouvir(); desenha(); } }, `▶ ouvir o ritmo (${somDaFase(fase)})${restam() === Infinity ? '' : restam() > 0 ? ` · ${restam()} ${restam() === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!'}`), vel,
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: `dn-wrap${modo === 'normal' ? ' sem' : ''}` }, modo === 'normal' ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),
       h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),
