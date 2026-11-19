@@ -1795,3 +1795,4 @@ body.bv-aberta { overflow: hidden; }
 .bv-ir { border: 0; border-radius: 99px !important; padding: 14px; font: 400 20px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .03em; background: #c81e2d; color: #fff; box-shadow: 0 4px 0 #7d1019; cursor: pointer; }
 .bv-cod { background: none; border: 0; color: #fff7e6; font: 700 14px "Hanken Grotesk", sans-serif; text-decoration: underline; padding: 8px; cursor: pointer; }
 .bv-tela > .bv-luz { position: absolute; width: min(360px, 90vw); }
+.fgm-regra{margin:-4px auto 10px;max-width:340px;padding:6px 10px;border-radius:12px;background:#ffd23f22;border:1px dashed #ffd23f88;color:#ffe9a8;font:800 12px var(--body,system-ui)}

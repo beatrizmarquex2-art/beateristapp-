@@ -66,7 +66,7 @@ export const areasDe = (assuntos) => { const l = (assuntos || []).filter((a) => 
 export function paresMemoria(n, rnd = Math.random, assuntos = null) {
   const emb = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
   // pares do banco verificado (termo ↔ inglês, figura ↔ valor) primeiro; os desenhos (sym) são arte do app e ficam sempre; os pares de TEXTO escritos à mão só entram se o banco tiver menos de 10 pares da área
-  const poolDe = (k) => { const b = paresDoBanco(k).map((p) => ({ ...p, area: k })); const sym = PARES[k].filter((p) => p.sym).map((p) => ({ ...p, area: k })); const man = PARES[k].filter((p) => !p.sym).map((p) => ({ ...p, area: k })); return b.length >= 10 ? [...b, ...sym] : [...b, ...sym, ...man]; };
+  const poolDe = (k) => { const b = paresDoBanco(k).map((p) => ({ ...p, area: k })); const sym = PARES[k].filter((p) => p.sym).map((p) => ({ ...p, area: k })); const man = PARES[k].filter((p) => !p.sym).map((p) => ({ ...p, area: k, ...(/\btempos?\b/i.test(p.b) ? { dur: true } : {}) })); return b.length >= 10 ? [...b, ...sym] : [...b, ...sym, ...man]; };
   const areas = areasDe(assuntos); const por = areas.map((k) => emb(poolDe(k))); const out = [];
   for (let i = 0; out.length < n && i < 60; i++) { const lista = por[i % por.length]; const p = lista.shift(); if (p) out.push(p); }
   return out;
@@ -86,11 +86,14 @@ export const estrelasMira = (erros) => estrelasPorErros(erros, 1, 3);
 export const estrelasMontar = (erros) => estrelasPorErros(erros, 1, 3);
 
 /** Banco de perguntas da pesca e da mira (mistura ritmo, teoria e cordas): `q` = o que pede, `certo` = a resposta, `area`. Só pares com texto (os de símbolo ficam na memória). */
+/** A regra que vem escrita no livro (Robôterista Ensina): toda duração é comparada com a semínima. Aparece na memória e em toda pergunta de duração da pesca e da mira. */
+export const REGRA_TEMPO = 'a semínima vale 1 tempo (compasso 4/4)';
+const comUnidade = (q) => (/\btempos?\b/i.test(q) && !/sem[ií]nima/i.test(q) ? `${q} (${REGRA_TEMPO})` : q);
 export function bancoQA() {
   const vistos = new Set(); const out = [];
-  const add = (area, a, b) => { if (!a || !b || vistos.has(a)) return; vistos.add(a); out.push({ area, certo: a, q: b }); };
+  const add = (area, a, b, ac = []) => { if (!a || !b || vistos.has(a)) return; vistos.add(a); out.push({ area, certo: a, q: comUnidade(b), ac }); };
   const doBanco = qaDoBanco(); const temBanco = (area) => doBanco.filter((x) => x.area === area).length >= 8; // com 8 perguntas do banco numa área, as escritas à mão dela não entram
-  for (const x of doBanco) add(x.area, x.certo, x.q);
+  for (const x of doBanco) add(x.area, x.certo, x.q, x.ac);
   for (const area of AREAS) if (!temBanco(area)) for (const p of PARES[area]) if (p.a) add(area, p.a, p.b);
   for (const f of FIGS.slice(0, 5)) add('ritmo', f.name, beatsLabel(f.beats));
   return out;
@@ -101,7 +104,8 @@ export function rodadasQA(total, nOpcoes, rnd = Math.random, assuntos = null) {
   const areas = areasDe(assuntos); const banco = bancoQA().filter((x) => areas.includes(x.area)); const por = areas.map((k) => emb(banco.filter((x) => x.area === k))); const out = [];
   for (let i = 0; out.length < total && i < total * 6; i++) {
     const p = por[i % por.length].shift(); if (!p) continue;
-    const pool = emb(banco.filter((x) => x.area === p.area && x.certo !== p.certo)).slice(0, nOpcoes - 1);
+    const aceitas = [p.certo, ...(p.ac || [])].map((x) => String(x).toLowerCase()); // nunca uma variante aceita como alternativa errada
+    const pool = emb(banco.filter((x) => x.area === p.area && x.certo !== p.certo && !aceitas.includes(String(x.certo).toLowerCase()) && !(x.ac || []).some((v) => aceitas.includes(String(v).toLowerCase())))).slice(0, nOpcoes - 1);
     const ops = emb([p.certo, ...pool.map((x) => x.certo)]); out.push({ area: p.area, q: p.q, certo: p.certo, opcoes: ops, ok: ops.indexOf(p.certo) });
   }
   return out;

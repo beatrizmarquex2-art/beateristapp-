@@ -25,7 +25,11 @@ export function verificaItens(itens, dir) {
   for (const it of itens) {
     const [cod, pg] = it.f; const arq = path.join(dir, PDFS[cod][0]); if (!fs.existsSync(arq)) continue;
     const pags = (cache[cod] ||= rawPaginas(arq));
-    if (!pags[pg - 1] || !achaNaPagina(pags[pg - 1], it.c)) falhas.push(it.i);
+    if (!pags[pg - 1] || !achaNaPagina(pags[pg - 1], it.c)) { falhas.push(it.i); continue; }
+    if (it.f2) { // 2ª âncora: a regra (unidade de tempo) ou a explicação certa que o feedback mostra
+      const [c2, p2] = it.f2; const arq2 = path.join(dir, PDFS[c2][0]); if (!fs.existsSync(arq2)) continue;
+      const pags2 = (cache[c2] ||= rawPaginas(arq2)); if (!pags2[p2 - 1] || !achaNaPagina(pags2[p2 - 1], it.c2)) falhas.push(`${it.i}#2`);
+    }
   }
   return falhas;
 }

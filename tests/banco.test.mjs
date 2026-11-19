@@ -1,9 +1,9 @@
 // Banco de conteúdo verificado (assets/jogos/banco, gerado por scripts/gera-banco.mjs a partir dos PDFs da Bea).
 import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs'; import path from 'node:path';
-import { _poeNoBanco, _limpaBanco, comoDicas, doBanco, paresDoBanco, qaDoBanco, carregaBanco, bancoCarregado, ASSUNTOS_BANCO } from '../js/banco.js';
+import { _poeNoBanco, _limpaBanco, comoDicas, doBanco, paresDoBanco, qaDoBanco, carregaBanco, bancoCarregado, respostaCerta, ASSUNTOS_BANCO } from '../js/banco.js';
 import { verificaItens, achaNaPagina, NORM } from '../scripts/banco-verifica.mjs';
 import { filtraAssunto } from '../js/jogos/fuga-trilhas-logic.js';
-import { paresMemoria, rodadasQA } from '../js/jogos/fuga-mini-logic.js';
+import { paresMemoria, rodadasQA, bancoQA, REGRA_TEMPO } from '../js/jogos/fuga-mini-logic.js';
 import { keywords, question, easyPick } from '../js/tips.js';
 
 const DIR = 'assets/jogos/banco';
@@ -84,4 +84,60 @@ test('carregaBanco: lê pelos arquivos (leitor trocável), não quebra com falha
   _limpaBanco(); let n = 0; const ler = (a) => { n++; if (a === 'cordas') throw new Error('sem rede'); return LE(a); };
   const l = await carregaBanco(['ritmo', 'cordas'], ler); assert.equal(n, 2); assert.ok(l.length > 0 && l.every((x) => x.a === 'ritmo'));
   await carregaBanco(['ritmo'], ler); assert.equal(n, 2); assert.ok(bancoCarregado(['ritmo']).length > 0); _limpaBanco();
+});
+
+/* ---------- revisão da Bea (pontos 1 a 7) ---------- */
+test('duração: toda pergunta de valor diz a unidade (semínima = 1 tempo, compasso 4/4) e a regra é conferida em uma 2ª âncora', () => {
+  const vale = TODOS.filter((x) => x.k === 'vale'); assert.ok(vale.length >= 10);
+  for (const it of vale) {
+    assert.match(it.q, /(compasso 4\/4)/, it.i); assert.ok(/semínima valendo 1 tempo|no compasso 4\/4/.test(it.q), it.i);
+    assert.ok(it.f2 && it.f2[0] === 'ens' && it.c2, `sem 2ª âncora: ${it.i}`); assert.ok(it.p && it.dur, it.i);
+  }
+  // alternativas de duração são durações e de figura são figuras (nunca misturado)
+  for (const it of vale) { if (/quanto vale/.test(it.q)) for (const o of [it.r, ...it.o]) assert.match(o, /tempo/, it.i); else for (const o of [it.r, ...it.o]) assert.doesNotMatch(o, /tempo/, it.i); }
+});
+test('memória, pesca e mira: durações levam a regra da unidade', () => {
+  _limpaBanco(); for (const a of ASSUNTOS_BANCO) _poeNoBanco(a, LE(a));
+  const pr = paresDoBanco('ritmo'); assert.ok(pr.some((p) => p.dur), 'nenhum par de duração'); assert.ok(pr.filter((p) => p.dur).every((p) => /tempo/.test(p.b)));
+  assert.match(REGRA_TEMPO, /semínima vale 1 tempo/);
+  const qa = bancoQA(); assert.ok(qa.filter((x) => /\btempos?\b/.test(x.q) && !/semínima/i.test(x.q.replace(REGRA_TEMPO, ''))).every((x) => x.q.includes(REGRA_TEMPO)), 'pergunta de duração sem a unidade');
+  assert.ok(qa.some((x) => x.q.includes(REGRA_TEMPO)));
+  _limpaBanco();
+});
+test('caça e cruzadinha: tamanho medido sem acento (4 a 11 letras) e pista com resposta única', () => {
+  const cand = TODOS.filter((x) => 'cc' in x); assert.ok(cand.length > 80);
+  for (const it of cand) { assert.equal(it.w, NORM(it.r).normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z]/g, ''), it.i); if (it.cc === 1) assert.match(it.w, /^[A-Z]{4,11}$/, it.i); else assert.ok(!/^[A-Z]{4,11}$/.test(it.w) || it.amb, `cc 0 sem motivo: ${it.i}`); }
+  assert.ok(TODOS.some((x) => x.amb), 'nenhuma pista ambígua foi barrada (cover/autoral)'); const w = (it) => sem(it.q);
+  const ok1 = cand.filter((x) => x.cc === 1); assert.equal(new Set(ok1.map((x) => `${x.w}|${w(x)}`)).size, ok1.length);
+  _limpaBanco(); for (const a of ASSUNTOS_BANCO) _poeNoBanco(a, LE(a)); const d = comoDicas(); assert.equal(d.length, ok1.length); assert.ok(d.every((x) => /^[A-Z]{4,11}$/.test(x.w))); _limpaBanco();
+});
+test('alternativas: nada passa de 60 caracteres, o mesmo tipo da resposta, e variantes aceitas (ac) nunca viram alternativa errada', () => {
+  const nw = (s) => String(s).trim().replace(/^(o|a|os|as|um|uma) /i, '').split(/\s+/).filter((t) => /[\p{L}\d]/u.test(t)).length;
+  for (const it of TODOS) { if (it.t === 'vf') continue; assert.ok(String(it.r).length <= 60, it.i); for (const o of it.o) { assert.ok(o.length <= 60, it.i); assert.ok(Math.abs(nw(o) - nw(it.r)) <= 1, `forma diferente: ${it.i} · ${it.r} × ${o}`); } }
+  const com = TODOS.filter((x) => x.ac); assert.ok(com.length >= 3);
+  for (const it of com) { for (const v of it.ac) { assert.ok(respostaCerta(it, v), it.i); for (const o of it.o) assert.ok(!sem(o).includes(sem(v)) && !sem(v).includes(sem(o)), `distrator = variante: ${it.i} · ${o}`); } }
+  assert.ok(respostaCerta({ r: 'offbeat / upbeat', ac: ['offbeat', 'upbeat'] }, ' UpBeat ')); assert.ok(!respostaCerta({ r: 'groove' }, 'swing'));
+});
+test('pesca e mira: variante aceita nunca aparece como peixe/alvo errado', () => {
+  _limpaBanco(); _poeNoBanco('ritmo', [{ i: 'a', a: 'ritmo', t: 'definicao', n: 'f', q: 'pergunta a', r: 'offbeat / upbeat', o: ['x', 'y', 'z'], ac: ['upbeat'], f: ['dic', 1], c: 'abc' }, { i: 'b', a: 'ritmo', t: 'definicao', n: 'f', q: 'pergunta b', r: 'upbeat', o: ['x', 'y', 'z'], f: ['dic', 1], c: 'abd' }]);
+  for (let k = 0; k < 40; k++) for (const r of rodadasQA(4, 2, Math.random, ['ritmo'])) { const t = r.opcoes.map((x) => String(x).toLowerCase()); assert.ok(!(t.includes('offbeat / upbeat') && t.includes('upbeat')), 'variante aceita virou alternativa errada'); }
+  _limpaBanco();
+});
+test('verdadeiro/falso: afirmação completa, feedback com a correção, 2ª âncora na falsa e nenhuma afirmação que se entrega', () => {
+  const vf = TODOS.filter((x) => x.t === 'vf'); assert.ok(vf.length >= 60);
+  for (const it of vf) {
+    assert.match(it.q, /^(“[^”]+” significa: |sobre “[^”]+”: )/, `afirmação incompleta: ${it.i}`); assert.match(it.q, /[.!?]$/, it.i); assert.ok(it.fb && it.fb.length >= 15 && it.fb.length <= 220, it.i);
+    if (it.r === 0) { assert.match(it.fb, /^na verdade, /, it.i); assert.ok(it.f2 && it.c2, `falsa sem a correção conferida: ${it.i}`); } else assert.match(it.fb, /^certo!/, it.i);
+    if (/^“/.test(it.q) && it.r === 1) { const termo = /^“([^”]+)”/.exec(it.q)[1]; const pal = (x) => sem(x).split(/[^a-z0-9]+/).filter((w) => w.length >= 4); assert.ok(!pal(termo).some((w) => pal(it.q.replace(/^“[^”]+” significa: /, '')).includes(w)), `verdadeiro que se entrega: ${it.i}`); }
+  }
+});
+test('assunto e nível: dinâmica é teoria (não ritmo) e o nível das definições segue 80/110 caracteres', () => {
+  assert.ok(LE('teoria').some((x) => /dinâmica/.test(x.r) || /dinâmica/.test(x.q)), 'dinâmica fora da teoria'); assert.ok(!LE('ritmo').some((x) => x.r === 'dinâmica'));
+  for (const it of TODOS.filter((x) => x.f[0] === 'dic' && x.t === 'definicao' && !x.k)) assert.equal(it.n, it.q.length <= 80 ? 'f' : it.q.length <= 110 ? 'm' : 'd', it.i);
+  const dif = TODOS.filter((x) => x.n === 'd').length; assert.ok(dif / TODOS.length < 0.2, `muita coisa “difícil”: ${dif}`);
+  const idx = JSON.parse(fs.readFileSync(path.join(DIR, 'indice.json'), 'utf8')); assert.equal(idx.total, TODOS.length);
+});
+test('docs: as duas cópias do dicionário foram comparadas e o resultado está na folha (sem escolher cópia oficial)', () => {
+  const md = fs.readFileSync('docs/BANCO-CONTEUDO.md', 'utf8'); assert.match(md, /Dicionário: as duas cópias do PDF/); assert.match(md, /cartas com título diferente \| \d+/); assert.match(md, /Itens pendentes/); assert.match(md, /PENDENTES/);
+  assert.match(md, /Eu não escolhi uma cópia como oficial/);
 });

@@ -11,7 +11,7 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, svgEl, noteMarkup } from '../kids/art.js';
 import { peçasDe, confereMonte } from './figurix-logic.js';
 import { corSrc } from '../paul-cor.js';
-import { estrelasPesca, estrelasMira, estrelasMontar, rodadasQA, acertaMira, alvoX, montarCfg, estrelasPorErros, padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria } from './fuga-mini-logic.js';
+import { estrelasPesca, estrelasMira, estrelasMontar, rodadasQA, acertaMira, alvoX, montarCfg, estrelasPorErros, padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria, REGRA_TEMPO } from './fuga-mini-logic.js';
 
 const viva = (box) => box.isConnected; // timers de uma porta que já foi fechada não fazem mais nada
 const agora = () => audio().currentTime + 0.02;
@@ -105,7 +105,7 @@ export function memoria(box, { nivel = 'facil', fim = () => {}, extra = 0, assun
     if (formaPar(a.c, c)) { a.b.classList.add('par'); b.classList.add('par'); achados++; pinta(); if (achados >= pares.length) { trava = true; later(() => fim(), 600); } return; }
     erros++; trava = true; pinta(); later(() => { esconde(a.b); esconde(b); trava = false; }, 1000);
   }
-  pinta(); box.replaceChildren(h('section', { class: 'card pad fgm' }, conta, h('p', { class: 'fgm-msg' }, 'vire duas cartas: símbolo ou nome combinam com a explicação?'), h('div', { class: `fgm-mem bmr c${cartas.length}` }, ...els)));
+  pinta(); box.replaceChildren(h('section', { class: 'card pad fgm' }, conta, h('p', { class: 'fgm-msg' }, 'vire duas cartas: símbolo ou nome combinam com a explicação?'), pares.some((p) => p.dur) ? h('p', { class: 'fgm-regra' }, `regra: ${REGRA_TEMPO}`) : null, h('div', { class: `fgm-mem bmr c${cartas.length}` }, ...els)));
   return { stats: () => ({ erros, found: achados, total: pares.length, estrelas: estrelasMemoria(erros, pares.length) }) };
 }
 
