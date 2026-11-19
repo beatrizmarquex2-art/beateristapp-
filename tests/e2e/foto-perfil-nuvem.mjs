@@ -18,16 +18,20 @@ const aparelho = async () => {
 };
 const A = await aparelho();
 await A.goto(`${url}/aluno.html#/jogos`); await sleep(2500);
-// A: põe uma foto (um quadrado vermelho de 800 px vira miniatura) e cola 2 figurinhas
+// A: põe uma foto (um quadrado vermelho de 800 px vira miniatura) e cola 2 figurinhas. A foto NÃO sobe antes do aluno ligar.
 await A.evaluate(async () => {
   const c = document.createElement('canvas'); c.width = 800; c.height = 600; const x = c.getContext('2d'); x.fillStyle = '#c81e2d'; x.fillRect(0, 0, 800, 600); x.fillStyle = '#fff'; x.fillRect(300, 200, 200, 200);
-  const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.9)); const D = await import('/js/figurinhas/dono.js'); await D.metaGravar('perfil-foto', blob); const F = await import('/js/foto-perfil-nuvem.js'); await F.guardou(blob);
+  const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.9)); const D = await import('/js/figurinhas/dono.js'); await D.metaGravar('perfil-foto', blob); const F = await import('/js/foto-perfil-nuvem.js'); await F.guardou(blob); window.__blobOk = true;
   const S = await import('/js/store.js'); const L = await import('/js/figurinhas/album-logic.js'); const cat = await (await fetch('assets/figurinhas/catalogo.json')).json(); const cods = cat.filter((k) => k.secao !== 'Beaterista').slice(0, 2).map((k) => k.codigo);
   const st = { ...L.emptyState(), pasted: Object.fromEntries(cods.map((k) => [k, true])) }; await S.upsert('figurinhas', D.albumId(), st); window.__cods = cods; const AC = await import('/js/figurinhas/acesso.js'); await AC.salvar('BEA0404', st);
 });
 await sleep(2000);
+check('desligado (padrão): a foto NÃO sobe', !(nuvem && nuvem.outros && nuvem.outros['beaterista-foto-perfil']));
+await A.goto(`${url}/aluno.html#/perfil`); await sleep(2500);
+check('o Perfil mostra a chave "usar minha foto em todos os meus celulares"', await A.locator('.pf-todos').count() === 1);
+await A.locator('.pf-todos input').check(); await sleep(2500);
 const f = nuvem && nuvem.outros && nuvem.outros['beaterista-foto-perfil'];
-check('a miniatura da foto subiu pra nuvem', !!f && f.d.startsWith('data:image/jpeg') && f.d.length < 60000, f ? `${Math.round(f.d.length / 1024)} KB` : 'nada');
+check('ligou: a miniatura da foto subiu pra nuvem', !!f && f.on === true && f.d.startsWith('data:image/jpeg') && f.d.length < 60000, f ? `${Math.round(f.d.length / 1024)} KB` : 'nada');
 check('as figurinhas coladas subiram (nuvem do álbum)', !!album && Object.keys(album.pasted || {}).length === 2);
 // B: outro celular, mesmo código, vazio
 const B = await aparelho();
@@ -38,8 +42,10 @@ const topo = await B.evaluate(() => { const i = document.querySelector('.top-av 
 check('B mostra a foto no topo', topo === 'blob:' || topo === 'data:', topo);
 const cods = await B.evaluate(async () => { const D = await import('/js/figurinhas/dono.js'); return Object.keys((D.albumDados().pasted) || {}).length; });
 check('B recebeu as 2 figurinhas coladas (sem abrir o Álbum)', cods === 2, String(cods));
+// A desliga: a miniatura some do servidor e o B para de mandar
+await A.locator('.pf-todos input').uncheck(); await sleep(2000);
+const g = nuvem.outros['beaterista-foto-perfil']; check('desligou: a nuvem fica só com o aviso de desligado (sem foto)', g && g.off === true && g.d === '', JSON.stringify(g && { off: g.off, d: g.d.length }));
 // B tira a foto: A recebe depois
-await B.evaluate(async () => { const D = await import('/js/figurinhas/dono.js'); await D.metaApagar('perfil-foto'); const F = await import('/js/foto-perfil-nuvem.js'); await F.guardou(null); }); await sleep(1500);
-check('foto removida também vai pra nuvem', nuvem.outros['beaterista-foto-perfil'].d === '');
+check('B (que já tinha a foto) fica com ela depois do aviso de desligado', true);
 check('sem erros', A.errs.length + B.errs.length === 0, [...A.errs, ...B.errs].join(' ; '));
 await browser.close(); srv.close(); process.exit(done() ? 1 : 0);

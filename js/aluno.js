@@ -572,7 +572,7 @@ async function start() {
   await ensureKidsPlayer(name);
   logVisit(name);
   await refreshAccess();
-  if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); import('./foto-perfil-nuvem.js').then((m) => m.garantir()).catch(() => {}); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
+  if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
   sendScores();

@@ -1113,3 +1113,9 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .lj-foto.marca::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' preserveAspectRatio='xMidYMid slice'%3E%3Cg transform='rotate%28-28 200 200%29' font-family='Arial Black%2CArial%2Csans-serif' font-weight='900' text-anchor='middle'%3E%3Ctext x='200' y='130' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3Ctext x='200' y='210' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3Ctext x='200' y='290' font-size='34' fill='white' fill-opacity='.55' stroke='%23162146' stroke-opacity='.55' stroke-width='1.6'%3Ejogos.beaterista.com.br%3C/text%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat; }
 .top .top-atu{width:36px;min-width:36px}.top .al-opt{padding-inline:8px}.top .al-quem-top{min-width:0;overflow:hidden}.top .al-quem-top span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:420px){.top .top-snd{width:34px;min-width:34px;padding-inline:0}.top .ws{min-width:0}}
 @media(max-width:420px){.top>img{display:none}}
+
+/* Perfil: "usar minha foto em todos os meus celulares" */
+.pf-todos { display: flex; align-items: center; gap: 10px; margin: 10px 0 2px; font-weight: 700; cursor: pointer; }
+.pf-todos input { width: 22px; height: 22px; flex: none; accent-color: #c81e2d; }
+.pf-todos { text-transform: none !important; letter-spacing: 0 !important; color: #162146 !important; }
+.pf-todos span { font: 700 14px/1.25 "Hanken Grotesk", sans-serif !important; text-transform: none !important; letter-spacing: 0 !important; color: #162146 !important; }
