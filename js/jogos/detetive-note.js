@@ -40,9 +40,9 @@ function tocaCompasso(cells, bpm, som) {
 }
 
 const MUNDOS_DET = {
-  m1: { tema: 'espaco', nome: 'Espaço do Pulso', regioes: [['orbita', 'Órbita da Semínima', 'semínima e colcheias'], ['estacao', 'Estação das Pausas', 'pausa de semínima e de colcheia']] },
-  m2: { tema: 'floresta', nome: 'Floresta das Semicolcheias', regioes: [['gramado', 'Gramado das Semis', '4 semicolcheias'], ['ciclovia', 'Trilha das Pausas', 'pausa no 1, 2, 3 ou 4']] },
-  m3: { tema: 'vulcao', nome: 'Vulcão das Pontuadas', regioes: [['cratera', 'Cratera do Ponto', 'colcheia pontuada'], ['forja', 'Forja do Flam', 'nota com flam']] },
+  m1: { tema: 'espaco', nome: 'Espaço do Pulso', regioes: [['orbita', 'Órbita da Semínima', 'o pulso e as colcheias'], ['estacao', 'Estação das Pausas', 'pausa de semínima'], ['cinturao', 'Cinturão do Silêncio', 'pausa de colcheia'], ['lua', 'Lua dos Contrastes', 'tudo misturado'], ['nebulosa', 'Nebulosa Veloz', 'mais rápido'], ['planeta', 'Planeta Final', 'o último caso']] },
+  m2: { tema: 'floresta', nome: 'Floresta das Semicolcheias', regioes: [['gramado', 'Gramado das Semis', '4 por tempo'], ['trilha', 'Trilha das Pausas', 'pausa no 1, 2, 3 ou 4'], ['bosque', 'Bosque Vazio', 'o silêncio escondido'], ['riacho', 'Riacho Veloz', 'mais rápido'], ['clareira', 'Clareira Escura', 'tudo misturado'], ['topo', 'Topo da Floresta', 'o último caso']] },
+  m3: { tema: 'vulcao', nome: 'Vulcão das Pontuadas', regioes: [['cratera', 'Cratera do Ponto', 'colcheia pontuada'], ['forja', 'Forja do Flam', 'nota com flam'], ['lava', 'Rio de Lava', 'pontuadas rápidas'], ['gruta', 'Gruta do Ornamento', 'flam e pausas'], ['pico', 'Pico Ardente', 'bem rápido'], ['coracao', 'Coração do Vulcão', 'o último caso']] },
 };
 
 export function mount(host) {
