@@ -270,5 +270,5 @@ export async function reenter(code, me) {
 /** Faixa de status da conexão ("online" / "sem conexão…") para pôr no topo do jogo. */
 export function linkBadge(n = 2) {
   const el = h('p', { class: 'jg-link-badge', role: 'status' }, `● ${n} celulares`);
-  return { el, set(okay) { el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } };
+  return { el, set(okay, quantos) { if (quantos >= 2) n = quantos; el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } }; // `quantos`: salas de 3 e 4 mostram o número certo
 }

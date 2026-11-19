@@ -175,8 +175,8 @@ export function mount(host, opts) {
   }
 
   function startOnline(c, state) {
-    conn = c; lob = null; badge.set(true);
-    c.on.link = (v) => badge.set(v);
+    conn = c; lob = null; const nSala = (state && state.n) || 2; badge.set(true, nSala);
+    c.on.link = (v) => badge.set(v, nSala);
     c.on.state = (st) => incoming(st); c.on.nomes = () => { if (!gone && g && !busy) paint(); };
     begin(state);
   }
