@@ -1,0 +1,21 @@
+// Caça Musical: botão "💡 dica" pisca a 1ª letra de uma palavra que falta (3 por grade) e diz pra que lado ela vai.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
+await page.goto(`${url}/aluno.html#/dicas/caca`); await sleep(2500);
+const btn = () => page.locator('.dc-dicabar button');
+check('o botão aparece com 3 dicas', /dica \(3\)/.test(await btn().textContent()));
+check('nenhuma casa piscando antes de pedir', (await page.locator('.dc-c.dica').count()) === 0);
+await btn().click(); await sleep(300);
+check('pedir dica pisca 1 casa e explica o lado', (await page.locator('.dc-c.dica').count()) === 1 && /começa na casa que pisca e vai pra [→↓]/.test(await page.textContent('.dc-dicabar')));
+check('sobram 2', /dica \(2\)/.test(await btn().textContent()));
+await btn().click(); await sleep(200); await btn().click(); await sleep(200);
+check('depois de 3 dicas o botão desliga', await btn().isDisabled() && /dica \(0\)/.test(await btn().textContent()));
+check('a casa da dica é mesmo a 1ª letra de uma palavra da lista', await page.evaluate(() => { const c = document.querySelector('.dc-c.dica'); const t = document.querySelector('.dc-dicatxt').textContent; const w = (t.match(/“(.+?)”/) || [])[1] || ''; return !!c && c.textContent.trim().toLowerCase() === w.trim()[0].toLowerCase(); }));
+check('sem erro na página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

@@ -1480,6 +1480,11 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .atu-ico{font-size:24px;line-height:1;font-weight:700;display:inline-block}.top-atu.girando .atu-ico{animation:atu-gira .8s linear infinite}@keyframes atu-gira{to{transform:rotate(360deg)}}
 .top-atu{position:relative}.top-atu.tem-novo::after{content:"";position:absolute;top:3px;right:3px;width:11px;height:11px;background:#e5322d;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);animation:atu-pino 1.2s ease-in-out infinite}@keyframes atu-pino{50%{transform:rotate(-45deg) scale(1.25)}}
 .ct-num{font:400 44px/1 Anton,system-ui;color:var(--red,#b5122a);min-width:80px;text-align:center}
+
+/* caça-palavras: botão e destaque da dica */
+.dc-dicabar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 8px}.dc-dicatxt{font-weight:800;color:var(--jg-ink,#17224a)}
+.dc-grid.dc-easy .dc-c.dica{background:#fff2a8;outline:3px solid #ffb21f;outline-offset:-2px;animation:dcDica .9s ease-in-out infinite}
+@keyframes dcDica{50%{transform:scale(1.14);background:#ffd23f}}@media (prefers-reduced-motion:reduce){.dc-grid.dc-easy .dc-c.dica{animation:none}}
 /* ---------- nomes de quem joga no mesmo aparelho (js/jogos/nomes.js): campinhos pequenos "jogador 1 ____" ---------- */
 .jg-nomes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:420px;margin:10px auto}
 .jg-nomes label{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:inherit;opacity:.95}
