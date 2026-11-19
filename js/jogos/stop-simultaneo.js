@@ -38,9 +38,13 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   const stopClock = () => { clearInterval(clk); clk = 0; };
   const sr = (t) => { if (live) live.textContent = t; };
   const quem = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro'));
+  const avisoEl = conn.avisoSaida ? conn.avisoSaida() : null; // aviso de saída de jogador (sinal de vida + votação), igual pra todos; só liga o sinal de vida quando o jogo pede
+  const av = () => (avisoEl ? [avisoEl] : []);
+  const rot = (i) => `${quem(i)}${Q.foraDe(latest).includes(i) ? ' (saiu)' : ''}`;
   
-  const vitoriasTxt = (e) => `vitórias: ${[me, ...outros].map((i) => `${quem(i)} ${e.wins[i]}`).join(' · ')}${e.empates ? ` · empates ${e.empates}` : ''}`;
-  conn.on.state = (novo) => { if (Q.estadoValido(novo)) { latest = novo; aoMudar(); } };
+  const vitoriasTxt = (e) => `vitórias: ${[me, ...outros].map((i) => `${rot(i)} ${e.wins[i]}`).join(' · ')}${e.empates ? ` · empates ${e.empates}` : ''}`;
+  conn.on.state = (novo) => { if (Q.estadoValido(novo)) { latest = novo; aoMudar(); aplicaSaida(); } };
+  conn.on.saiu = () => aplicaSaida();
   conn.on.link = (ok) => badge.set(ok);
 
   /** Grava só o que é meu. Se o outro gravou na frente a versão não bate: espera o estado dele chegar e tenta de novo (fn roda sobre o estado novo). Sem rede, continua tentando. */
@@ -54,8 +58,18 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     }
     return false;
   }
+  /** a maioria decidiu continuar sem alguém: só um celular (o menor lugar que ficou) escreve `fora` no estado; os outros recebem */
+  function aplicaSaida() {
+    if (gone || !conn.saiu) return; const novos = conn.saiu().filter((s) => s < N && !Q.foraDe(latest).includes(s));
+    if (novos.length && conn.souSindico()) gravar((s) => Q.tirar(s, novos)).then(() => aoMudar());
+  }
+  function renderFora() { // eu fui tirado da partida: guardo o que ganhei e posso sair
+    ph = 'fora'; stopClock(); timers.forEach(clearTimeout); timers.clear();
+    root.replaceChildren(...[badge.el, ...av(), h('div', { class: 'jg-cover2', role: 'status' }, h('p', { class: 'hand' }, 'a partida seguiu sem você'), h('p', { class: 'muted' }, 'você ficou um tempo sem responder e os outros decidiram continuar. as ★ que você já ganhou ficam com você 🌟')), h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: sairDaSala }, 'sair da sala'))]);
+  }
   function aoMudar() {
     if (gone) return;
+    if (Q.foraDe(latest).includes(me)) { if (ph !== 'fora') renderFora(); return; }
     if (latest.round !== round) return novaRodada();
     if (ph === 'sala' && Q.todosProntos(latest) && !latest.res[me]) return contagem();
     if (ph === 'sala') return renderSala();
@@ -70,7 +84,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   /* ================= sala: "estou pronto" ================= */
   function renderSala() {
     const e = latest; const jaPronto = e.ready[me] || meuPronto; const v = e.wins.reduce((t, x) => t + x, 0) + (e.empates || 0) > 0;
-    root.replaceChildren(...[badge.el,
+    root.replaceChildren(...[badge.el, ...av(),
       h('section', { class: 'card pad ss-cab' }, h('b', {}, 'ao mesmo tempo'), h('small', { class: 'muted' }, `${e.cats.length} categorias · ${clock(e.seconds)} · a letra aparece na contagem`),
         v ? h('small', { class: 'ss-wins', role: 'status' }, vitoriasTxt(e)) : null,
         h('ul', { class: 'ss-cats' }, ...e.cats.map((c) => h('li', {}, S.CAT[c].label)))),
@@ -86,7 +100,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   function contagem() {
     ph = 'contagem'; FX.stopMusic(); const L = latest.letter;
     const num = h('div', { class: 'st-count', role: 'status', 'aria-live': 'assertive' }, '3');
-    root.replaceChildren(...[badge.el, h('div', { class: 'st-drawbox' }, h('p', { class: 'hand' }, `letra ${L}`), h('div', { class: 'st-reel land' }, L), num)]);
+    root.replaceChildren(...[badge.el, ...av(), h('div', { class: 'st-drawbox' }, h('p', { class: 'hand' }, `letra ${L}`), h('div', { class: 'st-reel land' }, L), num)]);
     const my = round;
     const step = (n) => { if (gone || ph !== 'contagem' || round !== my) return; if (n === 0) { FX.play('count', 'go'); num.textContent = 'valendo!'; return later(() => { if (ph === 'contagem' && round === my) jogar(null); }, 350); }
       num.textContent = String(n); num.classList.remove('pop'); void num.offsetWidth; num.classList.add('pop'); FX.play('count'); later(() => step(n - 1), motion() ? 750 : 500); };
@@ -111,7 +125,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     });
     const timeEl = h('b', { class: 'st-time', role: 'timer', 'aria-label': 'tempo restante' }, clock(e.seconds));
     const stopBtn = h('button', { class: 'st-stop', type: 'button', onclick: () => stopPress(stopBtn) }, 'STOP!');
-    root.replaceChildren(...[badge.el, live,
+    root.replaceChildren(...[badge.el, ...av(), live,
       h('div', { class: 'st-top' }, h('div', { class: 'jg-who' }, h('b', {}, 'você'), h('span', {}, `ao mesmo tempo`)), h('div', { class: 'st-letter', 'aria-label': `letra ${L}` }, L), h('div', { class: 'jg-who st-timebox' }, h('b', {}, 'tempo'), timeEl)),
       h('p', { class: 'ss-aviso', role: 'status', 'aria-live': 'assertive' }),
       h('div', { class: 'st-progress' }, h('span', {}, count, ` de ${nc} preenchidos`), h('div', { class: 'st-bar' }, bar)),
@@ -183,17 +197,17 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     if (gone) return; const e = latest; const faltam = Q.faltam(e).filter((i) => i !== me); const faltaOutro = faltam.length > 0;
     if (faltaOutro && !semOutro) {
       const passou = Date.now() - esperaDesde >= Q.SEM_RESPOSTA_MS;
-      root.replaceChildren(...[badge.el, h('div', { class: 'jg-cover2', role: 'status' }, h('p', { class: 'hand' }, 'suas respostas foram enviadas'), h('p', { class: 'muted' }, N > 2 ? `esperando ${faltam.map(quem).join(', ')} mandar${faltam.length > 1 ? 'em' : ''} as respostas…` : 'esperando o outro celular mandar as dele…'),
+      root.replaceChildren(...[badge.el, ...av(), h('div', { class: 'jg-cover2', role: 'status' }, h('p', { class: 'hand' }, 'suas respostas foram enviadas'), h('p', { class: 'muted' }, N > 2 ? `esperando ${faltam.map(quem).join(', ')} mandar${faltam.length > 1 ? 'em' : ''} as respostas…` : 'esperando o outro celular mandar as dele…'),
         passou ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: () => { semOutro = true; renderResultado(); } }, N > 2 ? 'alguém sumiu? ver o placar assim mesmo' : 'o outro sumiu? ver o placar assim mesmo')) : null)].filter(Boolean));
       if (!passou) later(() => { if (ph === 'resultado' && Q.faltam(latest).some((i) => i !== me)) renderResultado(); }, Q.SEM_RESPOSTA_MS - (Date.now() - esperaDesde) + 100);
       return;
     }
-    const R = Q.resultado(e, { semOutro }); const RO = me !== 0; const p0 = quemParouTxt(e);
+    const R = Q.resultado(e, { semOutro }); const RO = me !== Q.revisorDe(e); const p0 = quemParouTxt(e);
     const cards = e.cats.map((cid, c) => {
       const rows = [me, ...outros].map((p) => {
         const r = R.sc.res[p][c]; const pt = R.sc.points[p][c]; const txt = R.g.cur.answers[p][c].trim(); const [lab, ico] = STATUS[r.status];
         return h('div', { class: `st-ans ${r.status}`, 'data-st': r.status, 'data-pt': pt == null ? '' : String(pt) },
-          h('span', { class: 'st-who' }, quem(p)), h('span', { class: 'st-txt' }, r.empty ? '(vazio)' : txt),
+          h('span', { class: 'st-who' }, rot(p)), h('span', { class: 'st-txt' }, r.empty ? '(vazio)' : txt),
           h('span', { class: 'st-badge', role: 'status' }, h('i', { 'aria-hidden': 'true' }, ico), ` ${r.empty ? 'vazia' : lab}`, h('b', {}, pt == null ? ' ?' : ` +${pt}`.replace('+0', '0'))),
           h('small', { class: 'muted' }, r.manual ? `decisão da revisão: ${r.why}` : r.status === 'valida' ? '' : r.why),
           r.suggest && !r.manual && !RO ? h('button', { class: 'btn small', type: 'button', onclick: () => aplicar(p, c, 'valida', { why: `grafia corrigida pra “${r.suggest}”`, by: 'quem criou a sala', canon: r.suggestId }) }, `era “${r.suggest}”`) : null,
@@ -204,15 +218,15 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     });
     const v = R.vencedor; const euVenci = v === me;
     const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : `${quem(v)} venceu desta vez`;
-    root.replaceChildren(...[badge.el,
+    root.replaceChildren(...[badge.el, ...av(),
       placar({ classe: `jg-result st-final${v === -1 ? ' tie' : ''}`, estado: v === -1 ? 'tie' : euVenci ? 'win' : 'lose', pose: v === -1 ? poseDisponivel('agua', 'ouvindo') : euVenci ? poseDisponivel('gravando', 'microfone') : poseDisponivel('meditando', 'ouvindo'), titulo, sub: p0,
-        quadros: [me, ...outros].map((i) => ({ n: R.sc.sums[i], l: quem(i), win: v === i })),
-        extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? `${quem(0)} (quem criou a sala) decide.` : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
+        quadros: [me, ...outros].map((i) => ({ n: R.sc.sums[i], l: rot(i), win: v === i })),
+        extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? `${quem(Q.revisorDe(e))}${Q.revisorDe(e) === 0 ? ' (quem criou a sala)' : ''} decide.` : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
           semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, N > 2 ? 'alguém não mandou as respostas. placar só com as que chegaram.' : 'o outro celular não mandou as respostas. placar só com as suas.') : null,
           e.wins.reduce((t, x) => t + x, 0) + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, vitoriasTxt(e)) : null],
-        acoes: [h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')] }),
+        acoes: [e.fim ? null : h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')].filter(Boolean) }),
       h('h3', { class: 'hand' }, `rodada com a letra ${e.letter}`), ...cards,
-      RO ? h('p', { class: 'jg-p muted' }, `${N > 2 ? `${quem(0)}, que criou a sala,` : 'quem criou a sala'} aprova ou rejeita as respostas. as marcas aparecem aqui.`) : null].filter(Boolean));
+      RO ? h('p', { class: 'jg-p muted' }, `${N > 2 ? `${quem(Q.revisorDe(e))}${Q.revisorDe(e) === 0 ? ', que criou a sala,' : ''}` : 'quem criou a sala'} aprova ou rejeita as respostas. as marcas aparecem aqui.`) : null].filter(Boolean));
     if (v != null && somRodada !== round) { somRodada = round; FX.play(v === -1 ? 'tie' : euVenci ? 'win' : 'bad'); }
     if (N > 2 && !R.pend && (euVenci || R.sc.sums[me] > 0)) { const k = `beaterista-stop-estrela:${conn.code}:${round}`; let ja = false; try { ja = !!localStorage.getItem(k); if (!ja) localStorage.setItem(k, '1'); } catch { /* sem armazenamento */ } if (!ja) ganhou('stop', euVenci ? 3 : 1); } // 3 e 4 jogadores: quem ganha a rodada leva 3 ★ (3 rodadas = 9); quem não ganhou mas não zerou leva 1 ★. Paga uma vez por rodada e só quando não falta revisar resposta
   }
@@ -240,7 +254,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   const onVis = () => { if (!document.hidden && ph === 'jogando' && !locked && !paused && deadline - Date.now() <= 0) timeUp(); };
   document.addEventListener('visibilitychange', onVis);
   function entrar() { // decide em que ponto a pessoa está (vale também pra quem volta pra sala no meio da rodada)
-    const e = latest; const sv = ler(key());
+    const e = latest; if (Q.foraDe(e).includes(me)) return renderFora(); const sv = ler(key());
     if (e.res[me]) { ph = 'resultado'; esperaDesde = Date.now(); return renderResultado(); }
     if (sv && sv.fin) { // fechou a rodada mas a gravação não chegou: manda de novo
       ph = 'resultado'; esperaDesde = Date.now(); gravar((s) => Q.finalizar(s, me, sv.answers, sv.fin.usado, sv.fin.como)).then(() => aoMudar()); return renderResultado();
@@ -248,7 +262,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     if (Q.todosProntos(e)) { if (sv && (sv.deadline != null || sv.pausadoRest != null)) return jogar(sv); return contagem(); }
     ph = 'sala'; renderSala();
   }
-  root.className = 'jg jg-stop st ss'; entrar();
+  root.className = 'jg jg-stop st ss'; entrar(); aplicaSaida();
   return {
     pause, resume, isPaused: () => paused,
     inProgress: () => ph === 'contagem' || ph === 'jogando' || ph === 'encerrando',
