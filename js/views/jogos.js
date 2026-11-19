@@ -8,6 +8,7 @@ import { dragSort } from '../dragsort.js';
 import { attachFesta } from '../jogos/festa.js';
 import { soundOn, setSound } from '../jogos/base.js';
 import { silence } from '../audio.js';
+import { salaAtual, esquecerSala, PAUSA_TIPOS, PAUSA_RESP } from '../jogos/online.js';
 import * as CODE from '../codigo.js';
 import { listaCurta } from '../lista-curta.js';
 import * as cartas from '../jogos/cartas.js';
@@ -234,16 +235,39 @@ function game(host, entry) {
   } }, soundOn() ? '🔊' : '🔇');
   const ctl = mod.mount(body);
   // pausa (vale pra todos os jogos): cobre o jogo, para o som e chama ctl.pause()/resume() quando o jogo tem relógio ou sorteio automático. Em sala de 2 celulares a pausa é só deste celular.
-  let pausa = null; let deVez = false; // deVez: a pessoa escolheu sair (não oferece "continuar")
-  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  let pausa = null; let geral = false; let deVez = false; // geral: a tela aberta é a da pausa de todos os celulares da sala; deVez: a pessoa escolheu sair (não oferece "continuar")
+  const caixa = (...filhos) => h('div', { class: `jg-pausa${geral ? ' jg-pausa-geral' : ''}`, role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('img', { class: 'jg-pausa-paul', src: 'assets/paul/colorido/paul-agua.webp', alt: '', draggable: 'false' }), ...filhos.filter(Boolean)));
+  const mostra = (el) => { if (pausa) pausa.remove(); else { try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); } pausa = el; body.inert = true; wrap.append(el); try { el.scrollIntoView({ block: 'start' }); } catch { /* sem rolagem */ } const b = el.querySelector('button'); if (b) b.focus(); };
+  const despausar = () => { if (!pausa) return; pausa.remove(); pausa = null; geral = false; body.inert = false; musicaVolta(); try { ctl.resume && ctl.resume(); } catch { /* jogo sem retomar */ } };
+  const irJogos = () => { deVez = true; location.hash = '#/jogos'; };
+  const deixar = async (s) => { if (!s || !(await confirmSheet('deixar a sala?', 'quem está na sala é avisado e a partida acaba aqui.', 'deixar a sala'))) return; await Promise.race([s.conn.deixarSala(), new Promise((r) => setTimeout(r, 2500))]); esquecerSala(s.jogo); irJogos(); };
+  const chipDeixar = (s) => h('button', { class: 'jg-deixar', type: 'button', onclick: () => deixar(s) }, 'deixar a sala');
+  const saidas = (...chips) => h('div', { class: 'jg-seg jg-pausa-chips jg-pausa-saidas', role: 'group', 'aria-label': 'sair' }, ...chips.filter(Boolean)); // saídas em chips pequenos, lado a lado (pedido da Bea: sem botão grande quadrado)
   const pausar = () => {
-    if (pausa) return; try { ctl.pause && ctl.pause(); } catch { /* jogo sem pausa própria */ } try { silence(); } catch { /* sem áudio */ } musicaPausa(); body.inert = true;
-    pausa = h('div', { class: 'jg-pausa', role: 'dialog', 'aria-label': 'jogo pausado' }, h('div', { class: 'jg-pausa-box' }, h('img', { class: 'jg-pausa-paul', src: 'assets/paul/colorido/paul-agua.webp', alt: '', draggable: 'false' }), h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, ctl.pausaNota ? `o jogo está parado. ${ctl.pausaNota}` : 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
+    if (pausa) return; const s = salaAtual(); geral = false;
+    mostra(caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa'), h('p', { class: 'jg-p' }, ctl.pausaNota ? `o jogo está parado. ${ctl.pausaNota}` : s ? 'o jogo está parado só neste celular.' : 'o jogo está parado neste celular. em sala de 2 celulares, o outro continua.'),
       h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: despausar }, '▶ continuar'),
       ...((ctl.pausaExtras && ctl.pausaExtras()) || []).map(([rot, fn]) => h('button', { class: 'btn wide', type: 'button', onclick: () => { if (pausa) { pausa.remove(); pausa = null; body.inert = false; } musicaVolta(); try { fn(); } catch { /* jogo mudou */ } } }, rot)),
-      h('button', { class: 'btn ghost wide', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } }, '🚪 sair (voltar pros jogos)')));
-    wrap.append(pausa); try { pausa.scrollIntoView({ block: 'start' }); } catch { /* sem rolagem */ } const b = pausa.querySelector('button'); if (b) b.focus();
+      s ? h('div', { class: 'jg-pausa-sala' }, h('b', {}, 'pausar pra todos da sala'), h('div', { class: 'jg-seg jg-pausa-chips', role: 'group', 'aria-label': 'pausar pra todos da sala' }, ...PAUSA_TIPOS.map(([id, rot]) => h('button', { type: 'button', onclick: () => { s.conn.pausarTodos(id); } }, rot)))) : null,
+      saidas(s ? chipDeixar(s) : null, h('button', { class: 'jg-sair', type: 'button', onclick: async () => { if (!(ctl.inProgress && ctl.inProgress()) || await confirmSheet('sair do jogo?', 'dá pra voltar depois pelo botão “continuar” na tela de jogos.', 'sair')) irJogos(); } }, 'voltar pros jogos'))));
   };
+  // pausa geral: alguém da sala pausou pra todos (ou deixou a sala). Cobre o jogo em todos os celulares; quem recebe responde, quem pausou continua pra todos.
+  const rotulo = (lista, id) => (lista.find((x) => x[0] === id) || ['', ''])[1];
+  const telaGeral = (s, p) => {
+    const c = s.conn; const meu = p.by === c.me; const quem = c.nomeDe(p.by); const outros = c.nomes().map((_, i) => i).filter((i) => i !== c.me); const frase = `“${rotulo(PAUSA_TIPOS, p.tipo)}”`;
+    if (p.tipo === 'saiu') return caixa(h('h2', {}, 'fim da sala'), h('p', { class: 'jg-p' }, meu ? 'você deixou a sala.' : `${quem} deixou a sala. a partida acaba aqui.`), h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { esquecerSala(s.jogo); irJogos(); } }, 'voltar pros jogos'));
+    if (meu) return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `você pausou pra todos: ${frase}`),
+      h('div', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, ...outros.filter((i) => p.resp[i]).map((i) => h('span', {}, `${c.nomeDe(i, outros.length > 1 ? `jogador ${i + 1}` : 'o outro')} respondeu: “${rotulo(PAUSA_RESP, p.resp[i])}”`)), outros.some((i) => !p.resp[i]) ? h('span', { class: 'esp' }, outros.some((i) => p.resp[i]) ? 'esperando os outros…' : 'esperando a resposta…') : null),
+      h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { c.retomarTodos(); } }, '▶ voltei, continuar pra todos'), saidas(chipDeixar(s)));
+    const minha = p.resp[c.me];
+    return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `${quem} pausou pra todos: ${frase}`),
+      minha ? h('p', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, `você respondeu: “${rotulo(PAUSA_RESP, minha)}”. o jogo volta quando ${quem} continuar.`)
+        : h('div', { class: 'jg-seg jg-pausa-chips', role: 'group', 'aria-label': 'responder' }, ...PAUSA_RESP.map(([id, rot]) => h('button', { type: 'button', onclick: () => { const ida = c.responderPausa(id); if (id === 'tchau') Promise.race([ida, new Promise((r) => setTimeout(r, 2500))]).then(irJogos); } }, rot))), // "blz tchau" responde e já sai (a sala fica guardada em "voltar pra sala")
+      saidas(chipDeixar(s)));
+  };
+  const aoPausaSala = () => { const s = salaAtual(); const p = s && s.conn.pausa(); if (!p) { if (geral) despausar(); return; } geral = true; mostra(telaGeral(s, p)); };
+  const aoPedir = (e) => { if (e.detail === 'deixar') deixar(salaAtual()); else pausar(); }; // os botões redondos da velha (pausa e porta) abrem este mesmo menu
+  document.addEventListener('bt-pausa-sala', aoPausaSala); document.addEventListener('bt-pausa-abrir', aoPedir);
   const btnPausa = h('button', { class: 'btn small ghost jg-pausa-btn', type: 'button', 'aria-label': 'pausar o jogo', onclick: pausar }, '⏸ pausa');
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
     h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
@@ -251,7 +275,7 @@ function game(host, entry) {
     body);
   host.replaceChildren(wrap);
   const offFesta = attachFesta(wrap);
-  return () => { musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  return () => { document.removeEventListener('bt-pausa-sala', aoPausaSala); document.removeEventListener('bt-pausa-abrir', aoPedir); musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */
