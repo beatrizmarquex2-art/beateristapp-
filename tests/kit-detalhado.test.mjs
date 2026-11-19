@@ -27,8 +27,8 @@ test('pauta: cúpula vira losango, aro vira x com "aro", chimbal aberto ganha o 
   assert.match(N.toSVG({ w: 100, h: 50, ops: [{ t: 'head', x: 10, y: 10, kind: 'diamond' }] }), /<path/);
 });
 
-test('pivô (técnica de pedal) só vale no bumbo e vira seta na diagonal na pauta', () => {
+test('pivô = flam: só vale no bumbo e vira notinha de ornamento antes da nota na pauta', () => {
   let b = B.setDet(B.emptyBeat(16), 'bd', 0, 'p'); assert.equal(B.detOf(b, 'bd', 0), 'p'); assert.equal(B.cell(b, 'bd', 0), 1);
   assert.equal(B.detOf(B.setDet(B.emptyBeat(16), 'sn', 0, 'p'), 'sn', 0), '', 'na caixa vira nota normal');
-  const ops = N.layout(b, { full: true }).ops; assert.ok(ops.some((o) => o.t === 'seta')); assert.match(N.toSVG({ w: 100, h: 50, ops: [{ t: 'seta', x: 10, y: 10 }] }), /<path/);
+  const ops = N.layout(b, { full: true }).ops; assert.ok(ops.some((o) => o.t === 'grace')); assert.match(N.toSVG({ w: 100, h: 50, ops: [{ t: 'grace', x: 10, y: 10, mx: 22, my: 10 }] }), /<ellipse/);
 });

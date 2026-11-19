@@ -28,7 +28,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
   ops.push({ t: 'text', x: 27, y: lineY(2) - 1, s: '4', size: 19, weight: 800 }, { t: 'text', x: 27, y: lineY(4) - 1, s: '4', size: 19, weight: 800 });
   ops.push({ t: 'line', x1: width - right, y1: lineY(0), x2: width - right, y2: lineY(4), w: 2 });
   const xOf = (i) => left + i * sw + sw / 2;
-  const upTop = top - GAP * 2.6, downBot = lineY(4) + GAP * 3.4; const pivos = [];
+  const upTop = top - GAP * 2.6, downBot = lineY(4) + GAP * 3.4;
   // completa: duas vozes (mãos pra cima, pés pra baixo). simples: tudo numa voz, hastes pra cima (mais fácil de ler pra iniciante).
   const voices = full ? [
     { ids: ROWS.map((r) => r.id).filter((id) => !FEET.has(id)), up: true },
@@ -49,7 +49,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
           ops.push({ t: 'head', x, y, kind: dt === 'c' ? 'diamond' : (X_HEAD.has(id) || dt === 'r') ? 'x' : 'n', c: tint(id) });
           if (dt === 'a' && !isAcc(beat, i)) ops.push({ t: 'acc', x, y: upTop - (per === 3 ? 20 : 10) }); // acento só nessa nota
           if (dt === 'o') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // chimbal aberto dentro do kit detalhado
-          if (dt === 'p') pivos.push(sx); // pivô (técnica de pedal): seta na diagonal EMBAIXO da nota, abaixo do traço (desenhada depois que a haste e o traço existem)
+          if (dt === 'p') ops.push({ t: 'grace', x: x - 14, y, mx: x, my: y }); // pivô = flam: notinha de ornamento (menor, com o risquinho na haste e a ligadura) um pouco antes da nota
           if (dt === 'r') ops.push({ t: 'text', x: x - 4, y: y - 8, s: 'aro', size: 8, weight: 800, c: tint(id) });
           if (id === 'sn' && ((beat.ghost && beat.ghost[i]) || dt === 'f')) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
           if (id === 'ho') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // "o" = chimbal aberto
@@ -74,8 +74,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
   if (hasHands) for (let i = 0; i < beat.steps; i++) { const w = beat.hands[i]; if (w) ops.push({ t: 'text', x: xOf(i) - 4, y: upTop - (beat.acc && beat.acc.some(Boolean) ? 24 : 8), s: w, size: 13, weight: 800, fill: color ? HAND_COLOR[w] : null }); }
   // acentos (>) em cima de tudo, na coluna do passo
   for (let i = 0; i < beat.steps; i++) if (isAcc(beat, i)) ops.push({ t: 'acc', x: xOf(i), y: upTop - (per === 3 ? 20 : 10) });
-  for (const sx of pivos) ops.push({ t: 'seta', x: sx - 6, y: downBot + 12 }); // abaixo do traço/bandeirola, centrada na haste
-  return { w: width, h: full ? downBot + 10 + (pivos.length ? 18 : 0) : lineY(4) + 26, ops };
+  return { w: width, h: full ? downBot + 10 : lineY(4) + 26, ops };
 }
 
 /** Legenda de cores (só das peças que aparecem no ritmo). */
@@ -95,6 +94,7 @@ export function toSVG({ w, h, ops }) {
         ? `<path d="M${o.x - 4.5} ${o.y - 4.5}l9 9M${o.x + 4.5} ${o.y - 4.5}l-9 9" stroke="${ink(o)}" stroke-width="${o.c ? 2.4 : 1.8}"/>`
         : `<ellipse cx="${o.x}" cy="${o.y}" rx="5.8" ry="4.2" transform="rotate(-20 ${o.x} ${o.y})" fill="${ink(o)}"/>`;
       case 'seta': return `<path d="M${o.x} ${o.y + 8}L${o.x + 12} ${o.y - 4}M${o.x + 5} ${o.y - 4}h7v7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+      case 'grace': return `<ellipse cx="${o.x}" cy="${o.y}" rx="4.1" ry="3" transform="rotate(-20 ${o.x} ${o.y})" fill="currentColor"/><path d="M${o.x - 3.6} ${o.y + 1}V${o.y + 15}M${o.x - 7} ${o.y + 9}l7 -3.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M${o.x} ${o.y + 6}Q${(o.x + o.mx) / 2} ${o.y + 14} ${o.mx} ${o.my + 6}" stroke="currentColor" stroke-width="1.2" fill="none"/>`;
       case 'beam': return `<rect x="${o.x1 - 0.8}" y="${o.y}" width="${o.x2 - o.x1 + 1.6}" height="4" fill="currentColor"/>`;
       case 'flag': return `<path d="M${o.x} ${o.y}c2 ${o.down ? -5 : 5} 9 ${o.down ? -6 : 6} 7 ${o.down ? -14 : 14}" stroke="currentColor" stroke-width="2" fill="none"/>`;
       case 'acc': return `<path d="M${o.x - 5} ${o.y - 4}L${o.x + 5} ${o.y}L${o.x - 5} ${o.y + 4}" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="miter" class="acc"/>`;
@@ -125,6 +125,7 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
         else { g.ellipse(o.x, o.y, 5.8, 4.2, -20 * Math.PI / 180, 0, Math.PI * 2); g.fill(); }
         break;
       case 'seta': g.strokeStyle = ink; g.lineWidth = 1.8; g.lineCap = 'round'; g.moveTo(o.x, o.y + 8); g.lineTo(o.x + 12, o.y - 4); g.moveTo(o.x + 5, o.y - 4); g.lineTo(o.x + 12, o.y - 4); g.lineTo(o.x + 12, o.y + 3); g.stroke(); g.lineCap = 'butt'; break;
+      case 'grace': g.fillStyle = ink; g.strokeStyle = ink; g.ellipse(o.x, o.y, 4.1, 3, -20 * Math.PI / 180, 0, Math.PI * 2); g.fill(); g.beginPath(); g.lineWidth = 1.4; g.moveTo(o.x - 3.6, o.y + 1); g.lineTo(o.x - 3.6, o.y + 15); g.moveTo(o.x - 7, o.y + 9); g.lineTo(o.x, o.y + 5.5); g.stroke(); g.beginPath(); g.lineWidth = 1.2; g.moveTo(o.x, o.y + 6); g.quadraticCurveTo((o.x + o.mx) / 2, o.y + 14, o.mx, o.my + 6); g.stroke(); break;
       case 'beam': g.fillStyle = ink; g.fillRect(o.x1 - 0.8, o.y, o.x2 - o.x1 + 1.6, 4); break;
       case 'flag': { const d = o.down ? -1 : 1; g.strokeStyle = ink; g.lineWidth = 2; g.moveTo(o.x, o.y); g.bezierCurveTo(o.x + 2, o.y + 5 * d, o.x + 9, o.y + 6 * d, o.x + 7, o.y + 14 * d); g.stroke(); break; }
       case 'acc': g.strokeStyle = ink; g.lineWidth = 1.8; g.moveTo(o.x - 5, o.y - 4); g.lineTo(o.x + 5, o.y); g.lineTo(o.x - 5, o.y + 4); g.stroke(); break;
