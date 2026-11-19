@@ -148,7 +148,7 @@ export function mount(host, opts) {
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
       h('p', { class: 'jg-lab' }, 'as 12 figuras (toque pra ver o nome)'), legend,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
-      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['online', '2 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
+      seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['online', '2 a 4 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
       prefs.mode === 'paul' ? seg('adversários', [[1, '1'], [2, '2'], [3, '3']], prefs.opps, (v) => { prefs.opps = v; keepPrefs(); }) : null,
       prefs.mode === 'local' ? h('p', { class: 'jg-lab' }, 'quantas pessoas?') : null,
@@ -167,7 +167,7 @@ export function mount(host, opts) {
         h('li', {}, 'o +2 acumula com outro +2 e o +4 com outro +4: quem recebe responde com o mesmo ou compra tudo e perde a vez. o +4 sai quando você quiser.'),
         h('li', {}, 'ficou com uma carta? aperte UNO. ninguém avisa: se você esquecer e outro apertar “pegou!” antes da próxima jogada, você compra 2. mas se acusar sem ninguém ter esquecido, quem acusou compra 2.'),
         h('li', {}, 'nada brilha: você descobre quais cartas servem.')))] : []),
-      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online', un: UN }), onStart: startOnline })).el
+      prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online', un: UN }), n: { makeState: (num, nomes) => ({ ...C.newGame({ mode: 'online', players: num, un: UN }), nomes: nomes.map((x) => String(x || '').slice(0, 14)) }) }, onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume, true) }, 'continuar partida') : null,
           h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN })) }, resume ? 'nova partida' : 'iniciar')),
       r.w + r.l + r.e ? h('p', { class: 'jg-p muted' }, `contra o computador: ${r.w} vitória${r.w === 1 ? '' : 's'} · ${r.l} derrota${r.l === 1 ? '' : 's'} · ${r.e} empate${r.e === 1 ? '' : 's'}`) : null,
@@ -191,8 +191,11 @@ export function mount(host, opts) {
     else { paint(); if (st.over) finishUp(); }
   }
   /** manda a jogada pro outro celular (só no modo 2 celulares) */
-  function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok && !gone) flash('o outro celular jogou ao mesmo tempo, veja a mesa'); }); }
-  function again() { const ng = C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }); if (prefs.mode === 'online') { begin(ng); sync(); } else begin(ng); }
+  function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok && !gone) flash('outro jogador jogou ao mesmo tempo, veja a mesa'); }); }
+  function again() {
+    if (prefs.mode === 'online') { const ng = C.newGame({ mode: 'online', players: g ? g.n : 2, un: UN }); if (g && g.nomes) ng.nomes = g.nomes; begin(ng); sync(); return; } // revanche na sala: mesma quantidade de jogadores e os mesmos nomes
+    begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }));
+  }
 
   /* ----- começo de partida: embaralhar e distribuir ----- */
   function begin(game, resume = false) {
@@ -510,7 +513,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
-      if ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) MESA.vitoria('cartas', 1); // 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea: todo jogo dá estrela). No mesmo aparelho (2 jogadores) não conta.
+      if ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) MESA.vitoria('cartas', g.mode === 'online' && g.n > 2 ? 3 : 1); // 3 ou 4 em sala por código: 3 ★ pra quem ganha a partida; // 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea: todo jogo dá estrela). No mesmo aparelho (2 jogadores) não conta.
       if (g.mode === 'online') import('../figurinhas/bonus.js').then((B) => B.online('uno', w == null ? 'tie' : w === me0() ? 'win' : 'loss')).catch(() => {}); // 5 vitórias seguidas online = bônus escondido
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');

@@ -1,6 +1,6 @@
 // Cara a Cara Musical: telas. Regras em regras.js (puras), elenco em elenco.js, perguntas em perguntas.js, falas do Paul em falas.js.
 // Fluxo: menu (Kids ou Clássico, Solo com Paul / Contra Paul / Dupla) → (tutorial Kids) → partida → ficha da rodada → placar (melhor de 3 nos duelos).
-// Não dá figurinha, pacote nem recompensa; não mexe em ranking nem estrelas.
+// Não dá figurinha, pacote nem recompensa; não mexe em classificacao nem estrelas.
 import { h } from '../../util.js';
 import { bq } from '../bonequinhos.js';
 import { sheet, confirmSheet, toast } from '../../ui.js';
@@ -10,7 +10,8 @@ import { BY_Q, textoDe } from './perguntas.js';
 import * as R from './regras.js';
 import { falador } from './falas.js';
 import { fatosDe } from './fichas.js';
-import { lobby, reenter, salaAutoPara } from '../online.js';
+import { lobby, reenter, salaAutoPara, esquecerSala } from '../online.js';
+import * as CR from './corrida.js';
 import * as O from './online-regras.js';
 import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
@@ -72,7 +73,7 @@ export function mountMusical(host, { onTema } = {}) {
       h('h2', { class: 'jg-h hand' }, 'cara a cara musical'), 
       h('p', { class: 'jg-p' }, 'Faça uma pergunta. O Paul responde. Tire as cartas que não combinam. Descubra o artista!'),
       h('p', { class: 'jg-lab' }, 'modo'), seg([['kids', 'kids (cartas grandes)'], ['classico', 'clássico']], cfg.modo, (v) => { cfg.modo = v; cfg.tamanho = 0; cfg.auto = v === 'kids'; salvar(); menu(); }, 'modo'),
-      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul', 'um'], ['paul', 'contra o Paul', 'paul'], ['dupla', 'dupla (mesmo aparelho)', 'dois'], ['online', '2 celulares (código)', 'celular']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
+      h('p', { class: 'jg-lab' }, 'como jogar'), seg([['solo', 'solo com o Paul', 'um'], ['paul', 'contra o Paul', 'paul'], ['dupla', 'dupla (mesmo aparelho)', 'dois'], ['online', '2 a 4 celulares (código)', 'celular']], cfg.jogo, (v) => { cfg.jogo = v; salvar(); menu(); }, 'jogo'),
       cfg.jogo === 'paul' ? h('div', {}, h('p', { class: 'jg-lab' }, 'nível do Paul'), seg([['iniciante', 'iniciante'], ['desafio', 'desafio']], cfg.nivel, (v) => { cfg.nivel = v; salvar(); menu(); }, 'nível')) : null,
       h('p', { class: 'jg-p muted' }, kids ? `kids: ${tam} cartas, o jogo tira as cartas sozinho, ${cfg.jogo === 'solo' ? 'o Paul ajuda você' : 'duelo com melhor de 3'}, 2 palpites e dica depois do primeiro erro.` : `clássico: ${tam} artistas, manual (toque no ✕ das cartas que não combinam), 1 palpite${cfg.jogo === 'solo' ? ' e contador de perguntas' : ' e melhor de 3 (menos perguntas vence)'}.`),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: cfg.jogo === 'online' ? salaOnline : iniciar }, cfg.jogo === 'online' ? 'criar ou entrar numa sala' : 'jogar'), voltarSala(), kids ? h('button', { class: 'btn ghost', type: 'button', onclick: tutorial }, 'como jogar (20s)') : null),
@@ -81,12 +82,82 @@ export function mountMusical(host, { onTema } = {}) {
   }
 
   /* ---------------- 2 celulares (sala com código) ---------------- */
-  let online = null;
-  const iniciarOnline = async (conn, estado) => { if (gone) { conn.close(); return; } online = await mountOnline(root, { conn, estado, sair: (limpar) => { if (limpar) { try { localStorage.removeItem(ULTIMA); } catch { /* */ } } online = null; menu(); } }); };
+  let online = null; let corrida = null;
+  /* ---------------- corrida (sala de 3 ou 4 celulares): todos procuram a MESMA carta do Paul ---------------- */
+  /** Tira os caracteres que não são nome (o nome vem da sala). */
+  const nomeCorr = (i) => (corrida.e.nomes && corrida.e.nomes[i]) || (corrida.conn.nomeDe ? corrida.conn.nomeDe(i, `jogador ${i + 1}`) : `jogador ${i + 1}`);
+  const statusCorr = (x) => (x.fim ? (x.ok ? `acertou em ${x.p} pergunta${x.p === 1 ? '' : 's'}` : 'não acertou') : x.p ? `${x.p} pergunta${x.p === 1 ? '' : 's'}…` : 'jogando…');
+  /** A faixa com o andamento de todo mundo (fica no topo da partida e some junto com a tela). */
+  function pintaBar() {
+    if (!corrida) return; const e = corrida.e;
+    corrida.bar.replaceChildren(h('b', {}, 'a sala'), h('ul', {}, ...e.prog.map((x, i) => h('li', { class: `${i === corrida.me ? 'eu' : ''}${x.fim ? ' fim' : ''}` }, h('span', {}, i === corrida.me ? `${nomeCorr(i)} (você)` : nomeCorr(i)), h('small', {}, statusCorr(x))))));
+  }
+  /** Conta pra sala o meu andamento. Todo mundo joga ao mesmo tempo, então se outro avisou antes eu pego o estado dele e aviso de novo (cada um só mexe no próprio lugar). */
+  async function corridaAvisa() {
+    const C = corrida; if (!C || C.enviando) { if (C) C.de = true; return; } C.enviando = true;
+    try {
+      for (let k = 0; k < 8 && corrida === C; k++) {
+        if (C.e.rodada !== C.rodada) break; // a sala já passou pra outra rodada: o meu andamento velho não vale mais
+        C.de = false; const novo = CR.aplicar(C.e, C.me, st.lados[0]); const ok = await C.conn.push(novo);
+        if (ok) { C.e = novo; break; }
+        await new Promise((r) => setTimeout(r, 350 + Math.random() * 250)); // o estado do outro celular chega por conn.on.state
+      }
+    } finally { C.enviando = false; if (C.de && corrida === C) corridaAvisa(); }
+    if (corrida === C) { pintaBar(); if (C.telaFim) pintaFim(); }
+  }
+  function comecarCorrida() {
+    const C = corrida; const e = C.e; C.rodada = e.rodada; C.telaFim = false; C.premiou = false; cfg.modo = e.modo; cfg.auto = e.modo === 'kids'; cfg.jogo = 'solo';
+    const ids = e.mesa.cartas.map((c) => c.id);
+    st = { mesa: e.mesa, palpites: e.palpites, serie: null, turno: 0, sel: null, palpitando: false, descartadas: false, fala: fala('abertura'), msg: '', dica: '', evitar: [...ids], fim: null, secretos: [] };
+    st.lados = [R.novoLado({ mesa: e.mesa, segredo: e.segredo, palpites: e.palpites })]; sfx('tap'); jogo();
+  }
+  function iniciarCorrida(conn, estado) {
+    if (corrida) { try { corrida.conn.close(); } catch { /* ok */ } }
+    const C = { conn, me: conn.me, e: estado, rodada: estado.rodada, telaFim: false, enviando: false, de: false, premiou: false, som: '', antes: { modo: cfg.modo, auto: cfg.auto, jogo: 'online' }, bar: h('div', { class: 'cm-corrida', role: 'status', 'aria-live': 'polite' }) };
+    corrida = C;
+    conn.on.state = (s) => { if (gone || corrida !== C || !CR.valida(s)) return; C.e = s; if (s.rodada !== C.rodada) { comecarCorrida(); return; } pintaBar(); if (C.telaFim) pintaFim(); };
+    conn.on.nomes = () => { pintaBar(); if (C.telaFim) pintaFim(); };
+    const meu = estado.prog[C.me];
+    if (meu && meu.fim) { // voltei pra sala depois de terminar (caiu a internet, fechei o app): mostra a classificação
+      comecarCorrida(); st.lados[0].terminou = true; st.lados[0].acertou = !!meu.ok; st.lados[0].perguntas = Array.from({ length: meu.p }, () => ({ id: null, sim: false })); C.telaFim = true; pintaFim(); return;
+    }
+    comecarCorrida(); corridaAvisa(); // aviso de que entrei (zera o meu andamento se eu tinha caído no meio)
+  }
+  function sairCorrida() {
+    const C = corrida; if (!C) return; corrida = null; try { C.conn.close(); } catch { /* ok */ }
+    esquecerSala('cara-musical'); try { localStorage.removeItem(ULTIMA); } catch { /* */ }
+    cfg.modo = C.antes.modo; cfg.auto = C.antes.auto; cfg.jogo = 'online'; menu();
+  }
+  /** Quando eu termino: classificação da sala. Enquanto falta gente, só o meu resultado e a espera (a carta do Paul só aparece no fim, pra ninguém soprar a resposta). */
+  function pintaFim() {
+    const C = corrida; if (!C || !C.telaFim) return; const e = C.e; const meu = e.prog[C.me]; const todos = CR.todosTerminaram(e); const rk = CR.classificacao(e); const w = CR.vencedor(e);
+    const secreto = e.mesa.cartas.find((c) => c.id === e.segredo);
+    if (todos && !C.premiou) { C.premiou = true; try { if (w === C.me) ganhou('cara', 3); else if (meu.ok) ganhou('cara', 1); } catch { /* sem estrelas agora */ } } // quem acertou 1 ★; quem acertou e ficou em 1º lugar 3 ★
+    const titulo = !todos ? (meu.ok ? 'você acertou! 🤘' : 'não foi dessa vez') : w === -1 ? 'ninguém acertou' : w === C.me ? 'você venceu!' : `${nomeCorr(w)} venceu!`;
+    const somChave = todos ? `todos${e.rodada}` : `eu${e.rodada}`; if (C.som !== somChave) { C.som = somChave; sfx(todos ? (w === C.me ? 'win' : w === -1 ? 'tie' : 'lose') : meu.ok ? 'win' : 'lose'); } // o som toca uma vez por etapa (a tela se refaz a cada aviso da sala)
+    const linha = (x, pos) => h('li', { class: x.i === C.me ? 'eu' : '' }, h('b', {}, `${x.fim ? `${pos + 1}º` : '…'} ${x.i === C.me ? `${nomeCorr(x.i)} (você)` : nomeCorr(x.i)}`), h('small', {}, statusCorr(x)));
+    const ficha = todos && secreto ? (() => { const en = BY_ID[secreto.id]; const fatos = fatosDe(secreto.id); return h('div', { class: 'cm-ficha' }, h('small', {}, 'a carta do Paul'), h('img', { src: grande(secreto.foto), alt: `foto de ${en.curto}`, onerror: (ev) => { ev.target.src = mini(secreto.foto); } }), h('b', {}, en.nome === 'Beaterista' ? 'Beaterista' : en.curto), fatos.length ? h('ul', {}, ...fatos.map((f) => h('li', {}, f))) : null); })() : null;
+    root.replaceChildren(...[
+      h('h3', { class: 'hand' }, titulo),
+      h('p', { class: 'jg-p' }, todos ? `rodada ${e.rodada} · ganha quem acertou com menos perguntas (empate: quem acabou primeiro)` : `você terminou: ${statusCorr(meu)}. esperando os outros (${CR.terminaram(e)} de ${e.n} terminaram)…`),
+      h('ol', { class: 'cm-classif', 'aria-label': 'classificação da sala' }, ...rk.map(linha)),
+      ficha,
+      h('div', { class: 'jg-actions row' }, todos && C.me === 0 ? h('button', { class: 'btn primary', type: 'button', onclick: () => proximaCorrida() }, 'próxima rodada') : null, h('button', { class: 'btn ghost', type: 'button', onclick: sairCorrida }, 'sair da sala')),
+      todos && C.me !== 0 ? h('p', { class: 'jg-p muted' }, `${nomeCorr(0)} (quem criou a sala) escolhe a próxima rodada.`) : null,
+    ].filter(Boolean));
+  }
+  async function proximaCorrida() {
+    const C = corrida; if (!C || C.me !== 0 || !CR.todosTerminaram(C.e)) return; await loadCat(); if (gone || corrida !== C) return;
+    const mesa = R.novaMesa({ modo: C.e.modo, tamanho: tamanhoPadrao() }); const novo = CR.proximaRodada(C.e, mesa, R.shuffle(mesa.cartas.map((c) => c.id))[0]);
+    for (let k = 0; k < 6 && corrida === C; k++) { if (await C.conn.push(novo)) { C.e = novo; comecarCorrida(); return; } await new Promise((r) => setTimeout(r, 400)); }
+  }
+  const iniciarOnline = async (conn, estado) => { if (gone) { conn.close(); return; } if (CR.valida(estado)) { iniciarCorrida(conn, estado); return; } online = await mountOnline(root, { conn, estado, sair: (limpar) => { if (limpar) { try { localStorage.removeItem(ULTIMA); } catch { /* */ } } online = null; menu(); } }); };
   async function salaOnline() {
     await loadCat(); if (gone) return; const modo = cfg.modo; const tam = tamanhoPadrao();
-    const lob = lobby({ jogo: 'cara-musical', makeState: () => O.novoEstado({ modo, mesa: R.novaMesa({ modo, tamanho: tam }) }), onStart: iniciarOnline });
-    root.replaceChildren(h('h2', { class: 'jg-h hand' }, '2 celulares'), h('p', { class: 'jg-p muted' }, `quem cria a sala escolhe o modo (${modo === 'kids' ? 'kids' : 'clássico'}, ${tam} cartas). a sua carta secreta fica só no seu celular.`), lob.el, h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => { lob.close(); menu(); } }, 'voltar')));
+    const palp = modo === 'kids' ? 2 : 1; // com 3 ou 4 celulares: todos procuram a MESMA carta do Paul (corrida)
+    const novaCorrida = (num, nomes) => { const mesa = R.novaMesa({ modo, tamanho: tam }); return CR.novoEstadoCorrida({ modo, mesa, segredo: R.shuffle(mesa.cartas.map((c) => c.id))[0], palpites: palp, num, nomes }); };
+    const lob = lobby({ jogo: 'cara-musical', makeState: () => O.novoEstado({ modo, mesa: R.novaMesa({ modo, tamanho: tam }) }), n: { makeState: novaCorrida }, onStart: iniciarOnline });
+    root.replaceChildren(h('h2', { class: 'jg-h hand' }, '2 a 4 celulares'), h('p', { class: 'jg-p muted' }, `quem cria a sala escolhe o modo (${modo === 'kids' ? 'kids' : 'clássico'}, ${tam} cartas) e quantas pessoas jogam. com 2 celulares cada um tem a sua carta secreta (fica só no seu celular); com 3 ou 4, todos procuram a mesma carta do Paul e ganha quem acertar com menos perguntas.`), lob.el, h('div', { class: 'jg-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => { lob.close(); menu(); } }, 'voltar')));
   }
   /** botão pra voltar a uma sala em que este celular já estava (caiu a internet ou fechou o app) */
   function voltarSala() {
@@ -158,8 +229,9 @@ export function mountMusical(host, { onTema } = {}) {
     const meu = cfg.jogo === 'solo' ? null : st.lados[cfg.jogo === 'dupla' ? 1 - st.turno : 1].segredo; // minha carta (o que o outro procura)
     const placar = st.serie ? h('div', { class: 'cm-placar', 'aria-label': 'placar' }, h('b', {}, `${nomeJ(0)} ${st.serie.vitorias[0]} × ${st.serie.vitorias[1]} ${nomeJ(1)}`), st.serie.empates ? h('small', {}, `${st.serie.empates} empate${st.serie.empates > 1 ? 's' : ''}`) : null, h('small', {}, 'melhor de 3')) : null;
     const quem = cfg.jogo === 'dupla' ? h('p', { class: 'cm-vez' }, `vez de ${nomeJ(st.turno)}`) : null;
+    if (corrida) pintaBar();
     root.replaceChildren(...[
-      placar, quem,
+      placar, quem, corrida ? corrida.bar : null,
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
       meu ? h('p', { class: 'cm-minha' }, h('img', { src: mini(st.mesa.cartas.find((c) => c.id === meu).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[meu].curto}`)) : null,
       paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,
@@ -171,7 +243,7 @@ export function mountMusical(host, { onTema } = {}) {
       st.aguardaVirar == null && !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
         !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
-      h('div', { class: 'cm-acoes' }, h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) menu(); } }, 'Sair')),
+      h('div', { class: 'cm-acoes' }, corrida ? null : h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet(corrida ? 'sair da sala?' : 'sair da partida?', 'a partida atual será perdida.', 'sair')) { if (corrida) sairCorrida(); else menu(); } } }, corrida ? 'Sair da sala' : 'Sair')),
       lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => contestar(BY_Q[a.id], a, lado.segredo) }, '⚑ contestar'))))) : null,
     ].filter(Boolean));
   }
@@ -204,6 +276,7 @@ export function mountMusical(host, { onTema } = {}) {
   /** Depois de uma ação: decide de quem é a próxima vez (Paul joga sozinho; dupla pede pra passar o aparelho) ou fecha a rodada. */
   function fimDeAcao(i, foiPalpite = false) {
     const lados = st.lados; const todosTerminaram = lados.every((l) => l.terminou);
+    if (corrida) corridaAvisa(); // sala de 3 ou 4: conta pra sala quantas perguntas já fiz e se terminei
     if (todosTerminaram) { return later(fecharRodada, 900); }
     if (cfg.jogo === 'solo') return jogo();
     const outro = 1 - i;
@@ -224,6 +297,7 @@ export function mountMusical(host, { onTema } = {}) {
 
   /* ---------------- fim da rodada / série ---------------- */
   function fecharRodada() {
+    if (corrida) { corrida.telaFim = true; return pintaFim(); } // corrida de 3 ou 4: a tela de fim é a classificação da sala
     const lados = st.lados; const solo = cfg.jogo === 'solo'; let res = null; let serie = st.serie;
     if (!solo) { res = R.resultadoRodada(lados[0], lados[1]); serie = R.fecharRodada(st.serie, res); st.serie = serie; }
     sfx(solo ? (lados[0].acertou ? 'win' : 'lose') : res.vencedor === 0 ? 'win' : res.vencedor === 1 ? 'lose' : 'tie');
@@ -256,6 +330,6 @@ export function mountMusical(host, { onTema } = {}) {
   return {
     inProgress: () => !!(st && st.lados && st.lados.some((l) => l.perguntas.length || l.erros.length) && !st.lados.every((l) => l.terminou)),
     restart: async () => { if (st && st.lados && st.lados.some((l) => l.perguntas.length) && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'recomeçar'))) return; menu(); },
-    destroy() { gone = true; if (online) online.destroy(); for (const t of timers) clearTimeout(t); timers.clear(); },
+    destroy() { gone = true; if (corrida) { try { corrida.conn.close(); } catch { /* ok */ } corrida = null; } if (online) online.destroy(); for (const t of timers) clearTimeout(t); timers.clear(); },
   };
 }

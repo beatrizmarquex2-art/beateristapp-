@@ -87,7 +87,8 @@ export function mostrarSala(c, conn, estado) {
       banner.className = `ms-vez fim${w === me ? ' mine' : ''}`;
       aviso.textContent = '';
       const jaTem = fim.dataset.k === key; fim.dataset.k = key;
-      if (!jaTem && w === me) ganhou('memoria', 1); // ganhou a partida em 2 celulares logados: 1 ★
+      if (!jaTem && L.jogadoresDe(e) > 2 && sc[me] > 0 && sc[me] === Math.max(...sc)) ganhou(`memoria:${e.tema}`, 1); // 3 e 4 jogadores: 1 ★ por rodada pra quem acertou mais pares (empate no topo: todos do topo)
+      else if (!jaTem && L.jogadoresDe(e) === 2 && w === me) ganhou(`memoria:${e.tema}`, 1); // ganhou a partida em 2 celulares logados: 1 ★ (10 por dia por tema)
       if (!jaTem) import('../figurinhas/bonus.js').then((B) => B.online('memoria', w === me ? 'win' : w === -1 ? 'tie' : 'loss')).catch(() => {}); // 5 vitórias seguidas online = bônus escondido
       if (!jaTem) { FB.great(refs.board, { msg: w === me ? FB.line('great') : '' }); c.bot.set(w === -1 || w === me ? 'cheer' : 'happy', w === me ? 'você venceu!' : w === -1 ? 'empate!' : 'boa partida!'); }
       fim.replaceChildren(h('div', { class: 'row kx-act' }, h('button', { class: 'kd-btn', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'kd-chip', type: 'button', onclick: sair }, 'sair da sala')));

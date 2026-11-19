@@ -32,7 +32,7 @@ const L = (p, sel) => p.locator(`#t ${sel}`);
 const txt = async (p, sel) => (await L(p, sel).first().innerText().catch(() => '')).toLowerCase();
 const salaDe = (code) => salas.get(code).estado;
 
-for (const p of [A, B]) { await L(p, 'button:has-text("JOGAR")').click(); await sleep(400); await L(p, 'button[role=radio][aria-label="2 celulares"]').click(); await sleep(300); }
+for (const p of [A, B]) { await L(p, 'button:has-text("JOGAR")').click(); await sleep(400); await L(p, 'button[role=radio][aria-label="2 a 4 celulares"]').click(); await sleep(300); }
 check('[opções] chips "ao mesmo tempo" e "um de cada vez", com ao mesmo tempo marcado', (await L(A, 'button[role=radio]:has-text("ao mesmo tempo")').getAttribute('aria-checked')) === 'true' && (await L(A, 'button[role=radio]:has-text("um de cada vez")').getAttribute('aria-checked')) === 'false');
 check('[opções] ao mesmo tempo não mostra "rodadas" e tem os tempos', (await L(A, '.jo-rot:text-is("rodadas")').count()) === 0 && (await L(A, 'button[role=radio]:has-text("30 s")').count()) === 1);
 check('[opções] a palavra Kids não aparece', !(await L(A, '*').first().innerText()).toLowerCase().includes('kids'));

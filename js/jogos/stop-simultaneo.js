@@ -1,4 +1,4 @@
-// STOP musical "ao mesmo tempo" em 2 celulares: tela. Regras do estado em stop-sim-logic.js; pontuação em stop-logic.js.
+// STOP musical "ao mesmo tempo" em 2 a 4 celulares: tela. Regras do estado em stop-sim-logic.js; pontuação em stop-logic.js.
 // Os dois ficam prontos, a contagem 3-2-1 roda nos dois, cada um preenche no próprio aparelho e quem bate STOP primeiro para o outro também.
 // Texto digitado só entra na tela como texto (textContent / value), nunca como HTML. Respostas e tempo ficam também no localStorage (por sala e rodada) pra poder voltar.
 import { h } from '../util.js';
@@ -7,6 +7,7 @@ import { sheet } from '../ui.js';
 import * as S from './stop-logic.js';
 import * as Q from './stop-sim-logic.js';
 import * as FX from './stop-sfx.js';
+import { ganhou } from './estrelas-jogo.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -28,7 +29,7 @@ export const caixaPausa = (onResume, nota = 'o relógio parou. as respostas fica
  */
 export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   garantirCss(); podarAntigos();
-  const me = conn.me; const outro = 1 - me; let latest = estado; let gone = false; let ph = 'sala'; let round = estado.round;
+  const me = conn.me; const N = Q.jogadoresDe(estado); const todos = Array.from({ length: N }, (_, i) => i); const outros = todos.filter((i) => i !== me); const outro = outros[0]; let latest = estado; let gone = false; let ph = 'sala'; let round = estado.round;
   const timers = new Set(); let clk = 0; let deadline = 0; let paused = false; let remain = 0; let locked = false; let tickFn = null; let lastSec = -1;
   let inputs = []; let answers = []; let live = null; let esperaDesde = 0; let semOutro = false; let somRodada = 0; let meuPronto = false; let saveT = 0;
   const key = () => Q.chaveLocal(conn.code, round);
@@ -37,8 +38,8 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   const stopClock = () => { clearInterval(clk); clk = 0; };
   const sr = (t) => { if (live) live.textContent = t; };
   const quem = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro'));
-  const euSou = () => (me === 0 ? 'quem criou' : 'quem entrou');
-
+  
+  const vitoriasTxt = (e) => `vitórias: ${[me, ...outros].map((i) => `${quem(i)} ${e.wins[i]}`).join(' · ')}${e.empates ? ` · empates ${e.empates}` : ''}`;
   conn.on.state = (novo) => { if (Q.estadoValido(novo)) { latest = novo; aoMudar(); } };
   conn.on.link = (ok) => badge.set(ok);
 
@@ -56,7 +57,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   function aoMudar() {
     if (gone) return;
     if (latest.round !== round) return novaRodada();
-    if (ph === 'sala' && latest.ready[0] && latest.ready[1] && !latest.res[me]) return contagem();
+    if (ph === 'sala' && Q.todosProntos(latest) && !latest.res[me]) return contagem();
     if (ph === 'sala') return renderSala();
     if (ph === 'jogando') { if (!locked && Q.stopDoOutro(latest, me)) return pararForcado(); return avisoOutro(); }
     if (ph === 'resultado') return renderResultado();
@@ -68,14 +69,14 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
 
   /* ================= sala: "estou pronto" ================= */
   function renderSala() {
-    const e = latest; const jaPronto = e.ready[me] || meuPronto; const v = e.wins[0] + e.wins[1] + (e.empates || 0) > 0;
+    const e = latest; const jaPronto = e.ready[me] || meuPronto; const v = e.wins.reduce((t, x) => t + x, 0) + (e.empates || 0) > 0;
     root.replaceChildren(...[badge.el,
       h('section', { class: 'card pad ss-cab' }, h('b', {}, 'ao mesmo tempo'), h('small', { class: 'muted' }, `${e.cats.length} categorias · ${clock(e.seconds)} · a letra aparece na contagem`),
-        v ? h('small', { class: 'ss-wins', role: 'status' }, `vitórias: você ${e.wins[me]} · o outro ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null,
+        v ? h('small', { class: 'ss-wins', role: 'status' }, vitoriasTxt(e)) : null,
         h('ul', { class: 'ss-cats' }, ...e.cats.map((c) => h('li', {}, S.CAT[c].label)))),
-      h('div', { class: 'ss-pl' }, ...[me, outro].map((i) => h('div', { class: `ss-j${i === me ? ' eu' : ''}` }, h('small', {}, quem(i)), h('b', { class: e.ready[i] || (i === me && meuPronto) ? '' : 'muted' }, e.ready[i] || (i === me && meuPronto) ? 'pronto ✓' : 'esperando…')))),
-      jaPronto ? h('p', { class: 'jg-p', role: 'status' }, 'você está pronto. esperando o outro celular…') : h('button', { class: 'btn primary jo-go', type: 'button', onclick: pronto }, 'estou pronto'),
-      h('p', { class: 'muted ss-nota' }, 'quando os dois estiverem prontos, começa a contagem. quem apertar STOP primeiro para o outro também.'),
+      h('div', { class: `ss-pl n${N}` }, ...[me, ...outros].map((i) => h('div', { class: `ss-j${i === me ? ' eu' : ''}` }, h('small', {}, quem(i)), h('b', { class: e.ready[i] || (i === me && meuPronto) ? '' : 'muted' }, e.ready[i] || (i === me && meuPronto) ? 'pronto ✓' : 'esperando…')))),
+      jaPronto ? h('p', { class: 'jg-p', role: 'status' }, (N > 2 ? 'você está pronto. esperando os outros celulares…' : 'você está pronto. esperando o outro celular…')) : h('button', { class: 'btn primary jo-go', type: 'button', onclick: pronto }, 'estou pronto'),
+      h('p', { class: 'muted ss-nota' }, (N > 2 ? 'quando todos estiverem prontos, começa a contagem. quem apertar STOP primeiro para todo mundo.' : 'quando os dois estiverem prontos, começa a contagem. quem apertar STOP primeiro para o outro também.')),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn small ghost', type: 'button', onclick: sairDaSala }, 'sair da sala'))].filter(Boolean));
   }
   function pronto() { FX.play('tap'); meuPronto = true; renderSala(); gravar((s) => Q.pronto(s, me)).then(aoMudar); }
@@ -114,7 +115,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
       h('div', { class: 'st-top' }, h('div', { class: 'jg-who' }, h('b', {}, 'você'), h('span', {}, `ao mesmo tempo`)), h('div', { class: 'st-letter', 'aria-label': `letra ${L}` }, L), h('div', { class: 'jg-who st-timebox' }, h('b', {}, 'tempo'), timeEl)),
       h('p', { class: 'ss-aviso', role: 'status', 'aria-live': 'assertive' }),
       h('div', { class: 'st-progress' }, h('span', {}, count, ` de ${nc} preenchidos`), h('div', { class: 'st-bar' }, bar)),
-      caixaPausa(() => resume(), 'o relógio parou só aqui. o outro celular continua jogando.'),
+      caixaPausa(() => resume(), 'o relógio parou só aqui. os outros celulares continuam jogando.'),
       h('div', { class: 'jg-fields st-fields' }, ...fields),
       h('div', { class: 'st-stopbar' }, stopBtn)].filter(Boolean));
     upd(); if (!sv && inputs[0]) inputs[0].focus({ preventScroll: true });
@@ -136,7 +137,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   const aviso = (t) => { const el = root.querySelector('.ss-aviso'); if (el) { el.textContent = t; el.classList.toggle('on', !!t); } };
   function avisoOutro() { // o outro pausou: só informa, nunca trava este celular
     if (ph !== 'jogando' || locked) return; const el = root.querySelector('.ss-aviso'); if (!el || el.dataset.fixo) return;
-    el.textContent = latest.pausa[outro] ? 'o outro pausou' : ''; el.classList.toggle('on', !!latest.pausa[outro]);
+    const quemP = outros.filter((i) => latest.pausa[i]); el.textContent = quemP.length ? (N > 2 ? `${quemP.map(quem).join(', ')} pausou` : 'o outro pausou') : ''; el.classList.toggle('on', quemP.length > 0);
   }
   function freeze() { locked = true; stopClock(); inputs.forEach((i) => { i.readOnly = true; i.blur(); }); const b = root.querySelector('.st-stop'); if (b) b.disabled = true; }
   function fixarAviso(t) { const el = root.querySelector('.ss-aviso'); if (el) { el.dataset.fixo = '1'; el.textContent = t; el.classList.add('on'); } }
@@ -146,7 +147,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     const resp = lerCampos(); const quando = round;
     guardar(key(), { answers: resp, fin: { como, usado }, deadline: null });
     ph = 'encerrando'; esperaDesde = Date.now();
-    gravar((s) => Q.finalizar(s, me, resp, usado, como)).then(() => { if (!gone && round === quando) { if (ph === 'resultado') renderResultado(); else if (Q.quemParou(latest) !== null && Q.quemParou(latest) !== me && como === 'stop') fixarAviso('o outro apertou STOP primeiro!'); } });
+    gravar((s) => Q.finalizar(s, me, resp, usado, como)).then(() => { if (!gone && round === quando) { if (ph === 'resultado') renderResultado(); else if (Q.quemParou(latest) !== null && Q.quemParou(latest) !== me && como === 'stop') fixarAviso(`${N > 2 ? quem(Q.quemParou(latest)) : 'o outro'} apertou STOP primeiro!`); } });
     later(() => { if (round === quando && ph === 'encerrando') { ph = 'resultado'; esperaDesde = Date.now(); renderResultado(); } }, como === 'tempo' ? (motion() ? 1000 : 300) : (motion() ? 1100 : 300));
   }
   function stopPress(btn) {
@@ -157,9 +158,9 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   }
   function pararForcado() { // o outro apertou STOP: trava na hora e manda as respostas como estão
     if (locked || ph !== 'jogando') return; const usado = usedSec(); paused = false; root.classList.remove('ss-pausado'); freeze();
-    FX.play('stop'); FX.duck(2500); FX.vibrate([60, 40, 60]); sr('o outro apertou stop');
+    FX.play('stop'); FX.duck(2500); FX.vibrate([60, 40, 60]); sr(`${N > 2 ? quem(Q.quemParou(latest)) : 'o outro'} apertou stop`);
     if (motion()) { root.classList.add('shake'); later(() => root.classList.remove('shake'), 600); }
-    fixarAviso('o outro apertou STOP!'); encerrar('forcado', usado);
+    fixarAviso(`${N > 2 && Q.quemParou(latest) !== null ? quem(Q.quemParou(latest)) : 'o outro'} apertou STOP!`); encerrar('forcado', usado);
   }
   function timeUp() {
     if (locked || ph !== 'jogando') return; freeze(); FX.play('timeup'); FX.vibrate(180); sr('tempo esgotado'); fixarAviso('tempo! suas respostas foram guardadas.'); encerrar('tempo', latest.seconds);
@@ -179,17 +180,17 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
 
   /* ================= resultado ================= */
   function renderResultado() {
-    if (gone) return; const e = latest; const faltaOutro = !e.res[outro];
+    if (gone) return; const e = latest; const faltam = Q.faltam(e).filter((i) => i !== me); const faltaOutro = faltam.length > 0;
     if (faltaOutro && !semOutro) {
       const passou = Date.now() - esperaDesde >= Q.SEM_RESPOSTA_MS;
-      root.replaceChildren(...[badge.el, h('div', { class: 'jg-cover2', role: 'status' }, h('p', { class: 'hand' }, 'suas respostas foram enviadas'), h('p', { class: 'muted' }, 'esperando o outro celular mandar as dele…'),
-        passou ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: () => { semOutro = true; renderResultado(); } }, 'o outro sumiu? ver o placar assim mesmo')) : null)].filter(Boolean));
-      if (!passou) later(() => { if (ph === 'resultado' && !latest.res[outro]) renderResultado(); }, Q.SEM_RESPOSTA_MS - (Date.now() - esperaDesde) + 100);
+      root.replaceChildren(...[badge.el, h('div', { class: 'jg-cover2', role: 'status' }, h('p', { class: 'hand' }, 'suas respostas foram enviadas'), h('p', { class: 'muted' }, N > 2 ? `esperando ${faltam.map(quem).join(', ')} mandar${faltam.length > 1 ? 'em' : ''} as respostas…` : 'esperando o outro celular mandar as dele…'),
+        passou ? h('div', { class: 'jg-actions' }, h('button', { class: 'btn', type: 'button', onclick: () => { semOutro = true; renderResultado(); } }, N > 2 ? 'alguém sumiu? ver o placar assim mesmo' : 'o outro sumiu? ver o placar assim mesmo')) : null)].filter(Boolean));
+      if (!passou) later(() => { if (ph === 'resultado' && Q.faltam(latest).some((i) => i !== me)) renderResultado(); }, Q.SEM_RESPOSTA_MS - (Date.now() - esperaDesde) + 100);
       return;
     }
     const R = Q.resultado(e, { semOutro }); const RO = me !== 0; const p0 = quemParouTxt(e);
     const cards = e.cats.map((cid, c) => {
-      const rows = [me, outro].map((p) => {
+      const rows = [me, ...outros].map((p) => {
         const r = R.sc.res[p][c]; const pt = R.sc.points[p][c]; const txt = R.g.cur.answers[p][c].trim(); const [lab, ico] = STATUS[r.status];
         return h('div', { class: `st-ans ${r.status}`, 'data-st': r.status, 'data-pt': pt == null ? '' : String(pt) },
           h('span', { class: 'st-who' }, quem(p)), h('span', { class: 'st-txt' }, r.empty ? '(vazio)' : txt),
@@ -201,22 +202,23 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
       return h('div', { class: 'jg-rv st-card' }, h('b', {}, S.CAT[cid].label), ...rows,
         h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', disabled: RO ? true : null, checked: e.rev.equiv[c] ? true : null, onchange: (ev) => aplicarEquiv(c, ev.target.checked) }), ' as respostas válidas são equivalentes (valem 5)'));
     });
-    const [s0, s1] = [R.sc.sums[me], R.sc.sums[outro]]; const v = R.vencedor; const euVenci = v === me;
-    const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : `${quem(outro)} venceu desta vez`;
+    const v = R.vencedor; const euVenci = v === me;
+    const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : `${quem(v)} venceu desta vez`;
     root.replaceChildren(...[badge.el,
       placar({ classe: `jg-result st-final${v === -1 ? ' tie' : ''}`, estado: v === -1 ? 'tie' : euVenci ? 'win' : 'lose', pose: v === -1 ? poseDisponivel('agua', 'ouvindo') : euVenci ? poseDisponivel('gravando', 'microfone') : poseDisponivel('meditando', 'ouvindo'), titulo, sub: p0,
-        quadros: [[me, s0], [outro, s1]].map(([i, s]) => ({ n: s, l: quem(i), win: v === i })),
-        extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? 'quem criou a sala decide.' : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
-          semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, 'o outro celular não mandou as respostas. placar só com as suas.') : null,
-          e.wins[0] + e.wins[1] + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, `vitórias: você ${e.wins[me]} · ${quem(outro)} ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null],
+        quadros: [me, ...outros].map((i) => ({ n: R.sc.sums[i], l: quem(i), win: v === i })),
+        extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? `${quem(0)} (quem criou a sala) decide.` : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
+          semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, N > 2 ? 'alguém não mandou as respostas. placar só com as que chegaram.' : 'o outro celular não mandou as respostas. placar só com as suas.') : null,
+          e.wins.reduce((t, x) => t + x, 0) + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, vitoriasTxt(e)) : null],
         acoes: [h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')] }),
       h('h3', { class: 'hand' }, `rodada com a letra ${e.letter}`), ...cards,
-      RO ? h('p', { class: 'jg-p muted' }, 'quem criou a sala revisa as respostas. as marcas aparecem aqui.') : null].filter(Boolean));
+      RO ? h('p', { class: 'jg-p muted' }, `${N > 2 ? `${quem(0)}, que criou a sala,` : 'quem criou a sala'} aprova ou rejeita as respostas. as marcas aparecem aqui.`) : null].filter(Boolean));
     if (v != null && somRodada !== round) { somRodada = round; FX.play(v === -1 ? 'tie' : euVenci ? 'win' : 'bad'); }
+    if (N > 2 && !R.pend && (euVenci || R.sc.sums[me] > 0)) { const k = `beaterista-stop-estrela:${conn.code}:${round}`; let ja = false; try { ja = !!localStorage.getItem(k); if (!ja) localStorage.setItem(k, '1'); } catch { /* sem armazenamento */ } if (!ja) ganhou('stop', euVenci ? 3 : 1); } // 3 e 4 jogadores: quem ganha a rodada leva 3 ★ (3 rodadas = 9); quem não ganhou mas não zerou leva 1 ★. Paga uma vez por rodada e só quando não falta revisar resposta
   }
   function quemParouTxt(e) {
     const q = Q.quemParou(e); if (q === me) return 'você apertou STOP primeiro';
-    if (q === outro) return 'o outro apertou STOP primeiro';
+    if (q !== null) return `${N > 2 ? quem(q) : 'o outro'} apertou STOP primeiro`;
     return 'acabou o tempo';
   }
   async function aplicar(p, c, d, opts) { await gravar((s) => Q.decidir(s, p, c, d, opts)); renderResultado(); }
@@ -243,7 +245,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
     if (sv && sv.fin) { // fechou a rodada mas a gravação não chegou: manda de novo
       ph = 'resultado'; esperaDesde = Date.now(); gravar((s) => Q.finalizar(s, me, sv.answers, sv.fin.usado, sv.fin.como)).then(() => aoMudar()); return renderResultado();
     }
-    if (e.ready[0] && e.ready[1]) { if (sv && (sv.deadline != null || sv.pausadoRest != null)) return jogar(sv); return contagem(); }
+    if (Q.todosProntos(e)) { if (sv && (sv.deadline != null || sv.pausadoRest != null)) return jogar(sv); return contagem(); }
     ph = 'sala'; renderSala();
   }
   root.className = 'jg jg-stop st ss'; entrar();
