@@ -14,7 +14,7 @@ check('só a porta 1 está aberta no começo', await page.evaluate(() => { const
 check('o contador mostra 0/36', /0\s*\/\s*36/.test(await page.textContent('.mp-head')));
 await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-mapa.png` : '/tmp/fuga-mapa.png' });
 await page.evaluate(() => document.querySelector('.mp-node.st-current, .mp-node.st-open').click()); await sleep(1500);
-check('porta 1 = quiz de 5 perguntas, com a porta trancada na tela', /pergunta 1 de 5/i.test(await page.evaluate(() => document.body.innerText)) && (await page.locator('.fg-cena.fg-uma').count()) === 1);
+check('fase 1 tem 2 portas lado a lado no corredor; a porta 1 é o quiz de 5 perguntas', /pergunta 1 de 5/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2/.test(await page.evaluate(() => document.body.innerText)));
 check('o quiz tem "desistir das minhas ⭐⭐⭐"', (await page.locator('.dc-desistir').count()) === 1);
 await page.locator('.dc-desistir').click(); await sleep(500);
 const bt = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
@@ -23,6 +23,13 @@ await page.evaluate(() => document.querySelector('.sheet button[data-acao="volta
 for (let i = 0; i < 5; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
 await sleep(1500); const txt = await page.evaluate(() => document.body.innerText);
 check('terminou o quiz: abriu a porta (com ★) ou pediu pra tentar de novo (menos de 3 certas)', /porta aberta/.test(txt) || /tentar outra vez/.test(txt));
-if (/porta aberta/.test(txt)) { check('mostra o botão da próxima porta', /próxima porta/.test(txt)); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /voltar ao mapa/.test(b.textContent)).click()); await sleep(1500); check('a porta 2 abriu no mapa', await page.evaluate(() => /st-done/.test(document.querySelectorAll('.mp-node')[0].className))); }
+if (/porta aberta/.test(txt)) check('abriu a porta 1: aparece "próxima porta" e a porta 2 de 2', /próxima porta/.test(txt) && /porta 2 de 2/.test(txt));
+// mais portas nas fases seguintes (progresso simulado): fase 2 = 3 portas, fase 5 = 4 portas
+for (const [fase, portas] of [[2, 3], [5, 4]]) {
+  await page.evaluate(async (f) => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < f; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); }, fase);
+  await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
+  await page.evaluate((f) => document.querySelectorAll('.mp-node')[f - 1].click(), fase); await sleep(1500);
+  check(`fase ${fase} tem ${portas} portas`, new RegExp(`0 de ${portas} portas abertas`).test(await page.getAttribute('.fg-cena', 'aria-label')) && new RegExp(`porta 1 de ${portas}`).test(await page.evaluate(() => document.body.innerText)));
+}
 check('sem erro na página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

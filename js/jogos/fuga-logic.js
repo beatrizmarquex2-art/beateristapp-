@@ -10,10 +10,17 @@ export const MUNDOS = [
 ];
 export const TIPOS = ['quiz', 'caca', 'cruz'];
 export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)' };
-export const tipoDa = (n) => TIPOS[(n - 1) % 3];
+export const tipoDa = (n) => TIPOS[(n - 1) % 3]; // (legado) tipo da 1ª porta da fase
 export const idFase = (mundo, n) => `${mundo}:${n}`;
 /** O que cada fase pede: o quiz tem sempre 5 perguntas; a caça tem de 4 a 8 palavras e a cruzadinha de 4 a 6, e aumentam com a fase e com o mundo. */
 export function faseCfg(mundoIdx, n) { return { tipo: tipoDa(n), perguntas: 5, palavras: Math.min(8, 4 + Math.floor((n - 1) / 3) + mundoIdx), cruz: Math.min(6, 4 + Math.floor((n - 1) / 6) + (mundoIdx > 0 ? 1 : 0)) }; }
+/** Quantas portas a fase tem: a 1ª tem 2, a 2ª a 4ª têm 3, da 5ª em diante 4 (quiz, caça, cruzadinha e de novo quiz). */
+export const qtdPortas = (n) => (n <= 1 ? 2 : n <= 4 ? 3 : 4);
+/** As portas da fase, em ordem: cada uma é um dos 3 jogos (quiz → caça → cruzadinha → quiz…), com a dificuldade da fase e do mundo. */
+export const portasDaFase = (mundoIdx, n) => Array.from({ length: qtdPortas(n) }, (_, k) => { const c = faseCfg(mundoIdx, n); return { ...c, tipo: TIPOS[k % 3] }; });
+export const idPorta = (mundo, n, k) => `${mundo}:${n}:${k}`;
+/** ★ da fase no mapa (1 a 3) = média das ★ das portas, arredondada pra cima na metade, nunca abaixo de 1 se passou por todas. */
+export const estrelasFase = (lista) => { const v = (lista || []).filter((x) => x > 0); if (!v.length) return 0; return Math.max(1, Math.min(3, Math.round(v.reduce((a, b) => a + b, 0) / v.length))); };
 export const MIN_QUIZ = 3;
 /** ★ de uma porta: quiz = 5 certas 3 ★ · 4 certas 2 ★ · 3 certas 1 ★ (se gastou a dica do "desistir das ⭐⭐⭐", no máximo 2 ★); caça = 3 ★ menos 1 por dica (mínimo 1); cruzadinha = 3 ★. */
 export function estrelasPorta(tipo, s = {}) {
