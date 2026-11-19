@@ -259,7 +259,7 @@ function voltarJogos(on) {
 }
 function aulasView(view) {
   const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
-    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, '🔒 com código') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
+    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
   // Pedido da Bea (15/nov/2026): "teoria" (5 temas × 30 aulinhas) e uma aula de 30 aulinhas pra cada instrumento (bateria, teclado, violão), tudo AQUI.
   const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
   view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('img', { class: 'est-logo-paul', src: LOGO_PAUL, alt: 'Robôterista Paul', draggable: 'false', decoding: 'async' }), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
@@ -470,7 +470,7 @@ function shell(name) {
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/estudos\/aulas/.test(location.hash) ? 'as aulas do Paul' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'dicas') { // Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;

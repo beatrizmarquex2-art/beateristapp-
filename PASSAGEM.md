@@ -1058,3 +1058,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v684**: db.js não quebra mais quando carregado fora do navegador (os testes de node voltam a passar: 614).
 - **v691**: Fuga: TRILHAS (1 geral · 2 ritmo · 3 teoria · 4 cordas · 5+ infinita): mesmo mapa com assunto e conteúdo novos; a trilha N+1 abre com 1 ★ nas 36 fases da N; recomeçar trilha; trilhas 1-3 pagam por porta, da 4 em diante terminar a trilha dá 1 ★ (uma vez); títulos 'Mestre das Portas I, II…' e do assunto no perfil. Código: js/jogos/fuga-trilhas-logic.js, fuga.js, perfil.js; testes tests/fuga-trilhas.test.mjs e e2e fuga-trilhas.mjs.
 - **v696**: Estudos: as aulas do Paul (teoria e instrumentos) só abrem com código de acesso; sem código aparece a tela de código (antes a 1ª fase era grátis).
+- **v698**: Estudos: as aulas do Paul voltam a aparecer pra todo mundo, com prévia grátis da 1ª fase (desfeita a trava da v696).
