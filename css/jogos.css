@@ -1381,6 +1381,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .cq-paul{width:170px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
 .cq-selo{font:800 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:#f2a91b}
 .cq-t{font:400 26px/1.05 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.pf-box b.cq-t{font-size:21px;line-height:1.1;color:#e6fdff;text-shadow:0 0 6px #00e5ff,0 0 16px #00e5ff,0 0 30px #00bcd4}
 .cq-bens{display:grid;gap:3px;justify-items:start;text-align:left;background:rgb(255 255 255/.1);border-radius:14px;padding:10px 12px;font-size:13.5px;font-weight:700;width:100%}
 .cq-bens small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f2a91b}
 .cq-acoes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:4px}
