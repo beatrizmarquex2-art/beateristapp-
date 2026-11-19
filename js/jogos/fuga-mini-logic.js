@@ -1,7 +1,7 @@
 // Jogos de toque da Fuga do Estúdio (lote 1): Genius, caminho 3×3 e memória de notas. Lógica pura (sem tela), testada em tests/fuga-mini.test.mjs.
 import { paresDoBanco, qaDoBanco } from '../banco.js';
 import { montesDe, maxColchetes } from './figurix-logic.js';
-import { FIGS, beatsLabel } from '../kids/figs.js';
+import { FIGS, FIG_BY, beatsLabel } from '../kids/figs.js';
 // O conteúdo mistura 3 áreas: ritmo (figuras, bateria, rudimentos), teoria (notas, cifras, claves, intervalos) e cordas (instrumentos).
 // Estrelas pelos ERROS (3 / 2 / 1, nunca menos de 1): o jogo sempre termina, mas quem erra menos ganha mais.
 
@@ -120,3 +120,71 @@ export function acertaMira(o, ponto, alvos, folga = 8) {
 export const alvoX = (base, i, seg, move) => base + (move ? Math.sin(seg * 1.1 + i * 1.9) * 9 : 0);
 /** Montar nota: o que cada nível pede (a figura vem do Figurix: figuras do nível `nivelFig`) e quantos colchetes cabem. */
 export const montarCfg = (nivel) => { const nf = { facil: 1, medio: 3, dificil: 4 }[nivel] || 1; return { figuras: montesDe(nf), maxC: maxColchetes(nf) }; };
+
+/* ================= lote 3: feche o compasso e o intruso (jogos novos, rápidos: 3 rodadas no fácil e no médio, 4 no difícil) ================= */
+/** Tudo em 1/4 de tempo (inteiros, sem erro de número quebrado): semínima = 4, mínima = 8, colcheia = 2, semicolcheia = 1. O compasso é 4/4 = 16. */
+export const COMPASSO_Q = 16;
+export const PECAS_COMPASSO = {
+  seminima: { id: 'seminima', fig: 'seminima', rest: false, q: 4, nome: 'semínima' }, minima: { id: 'minima', fig: 'minima', rest: false, q: 8, nome: 'mínima' },
+  colcheia: { id: 'colcheia', fig: 'colcheia', rest: false, q: 2, nome: 'colcheia' }, semicolcheia: { id: 'semicolcheia', fig: 'semicolcheia', rest: false, q: 1, nome: 'semicolcheia' },
+  'p-seminima': { id: 'p-seminima', fig: 'seminima', rest: true, q: 4, nome: 'pausa de semínima' }, 'p-minima': { id: 'p-minima', fig: 'minima', rest: true, q: 8, nome: 'pausa de mínima' },
+};
+/** As peças da bandeja em cada nível e quanto pode faltar no compasso. */
+export const BANDEJA_COMPASSO = { facil: ['seminima', 'minima', 'p-seminima'], medio: ['seminima', 'minima', 'colcheia', 'p-seminima', 'p-minima'], dificil: ['seminima', 'minima', 'colcheia', 'semicolcheia', 'p-seminima', 'p-minima'] };
+export const FALTAM_COMPASSO = { facil: [4, 8, 12], medio: [4, 6, 8, 10, 12], dificil: [3, 5, 6, 7, 9, 10, 11, 12] };
+export const somaQ = (ids) => ids.reduce((t, id) => t + PECAS_COMPASSO[id].q, 0);
+const embaralhaR = (a, rnd) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+/** Um jeito (sorteado) de somar exatamente `q` com as peças `ids`, em no máximo `max` peças (ou null). */
+export function descompor(q, ids, rnd = Math.random, max = 4) {
+  if (q === 0) return [];
+  if (max === 0) return null;
+  for (const id of embaralhaR(ids, rnd)) { const v = PECAS_COMPASSO[id].q; if (v > q) continue; const r = descompor(q - v, ids, rnd, max - 1); if (r) return [id, ...r]; }
+  return null;
+}
+/** Uma rodada: o compasso já tem peças (`pre`), faltam `faltamQ` (1/4 de tempo) e a criança completa com a bandeja. Sempre dá pra fechar com até 4 peças. */
+export function rodadaCompasso(nivel, rnd = Math.random, evitar = null) {
+  const ids = BANDEJA_COMPASSO[nivel] || BANDEJA_COMPASSO.facil; const opc = FALTAM_COMPASSO[nivel] || FALTAM_COMPASSO.facil;
+  for (let t = 0; t < 200; t++) {
+    const faltamQ = opc[Math.floor(rnd() * opc.length)]; const pre = descompor(COMPASSO_Q - faltamQ, ids, rnd, 4); if (!pre || pre.length < 1 || !descompor(faltamQ, ids, rnd, 4)) continue;
+    if (evitar && pre.join() === evitar.pre.join() && faltamQ === evitar.faltamQ) continue;
+    return { pre, faltamQ, bandeja: ids.slice() };
+  }
+  return { pre: ['minima', 'seminima'], faltamQ: 4, bandeja: ids.slice() };
+}
+/** A criança pôs uma peça: ainda cabe ('cabe'), fechou o compasso certinho ('ok') ou passou dos 4 tempos ('passou'). */
+export function confereCompasso(faltamQ, colocadas) { const s = somaQ(colocadas); return s === faltamQ ? 'ok' : s < faltamQ ? 'cabe' : 'passou'; }
+/** "1 tempo e meio", "¾ de tempo"… (q em 1/4 de tempo). */
+export function textoQ(q) {
+  const inteiro = Math.floor(q / 4); const f = q % 4; const fr = { 1: '¼', 2: 'meio', 3: '¾' }[f] || '';
+  if (!f) return inteiro === 1 ? '1 tempo' : `${inteiro} tempos`;
+  if (!inteiro) return f === 2 ? 'meio tempo' : `${fr} de tempo`;
+  return `${inteiro} ${inteiro === 1 ? 'tempo' : 'tempos'} e ${fr}`;
+}
+export const estrelasCompasso = (erros) => estrelasPorErros(erros, 0, 2);
+export const RODADAS_NOVAS = { facil: 3, medio: 3, dificil: 4 };
+
+/* ---------- o intruso: 4 discos, 3 combinam e 1 não ---------- */
+export const FIGS_INTRUSO = { facil: ['semibreve', 'minima', 'seminima', 'colcheia'], medio: ['semibreve', 'minima', 'seminima', 'colcheia', 'semicolcheia'], dificil: ['semibreve', 'minima', 'seminima', 'colcheia', 'semicolcheia', 'fusa', 'semifusa'] };
+const cartaI = (fig, rest) => ({ id: `${rest ? 'p' : 'f'}:${fig}`, fig, rest, beats: FIG_BY[fig].beats, flags: FIG_BY[fig].flags });
+/** As regras do que combina. `pool`: 'notas' = só figuras que soam. `nome` explica o grupo de 3 e `contra` o intruso. */
+export const REGRAS_INTRUSO = [
+  { id: 'pausas', niveis: ['facil', 'medio', 'dificil'], test: (c) => c.rest, nome: 'são pausas (silêncio)', contra: 'é uma figura: ela soa' },
+  { id: 'figuras', niveis: ['facil', 'medio', 'dificil'], test: (c) => !c.rest, nome: 'são figuras (elas soam)', contra: 'é uma pausa: é silêncio' },
+  { id: 'menos1', niveis: ['medio', 'dificil'], test: (c) => c.beats < 1, nome: 'valem menos de 1 tempo', contra: 'vale 1 tempo ou mais' },
+  { id: 'mais1', niveis: ['medio', 'dificil'], test: (c) => c.beats >= 1, nome: 'valem 1 tempo ou mais', contra: 'vale menos de 1 tempo' },
+  { id: 'colchete', niveis: ['medio', 'dificil'], pool: 'notas', test: (c) => c.flags > 0, nome: 'têm colchete', contra: 'não tem colchete' },
+  { id: 'sem-colchete', niveis: ['dificil'], pool: 'notas', test: (c) => c.flags === 0, nome: 'não têm colchete', contra: 'tem colchete' },
+];
+/** Uma rodada: `cartas` (4, embaralhadas), `intruso` (posição do que não combina) e a `regra` (pra explicar depois). Não repete a regra de `evitar`. */
+export function rodadaIntruso(nivel, rnd = Math.random, evitar = null) {
+  const figs = FIGS_INTRUSO[nivel] || FIGS_INTRUSO.facil; const todas = figs.flatMap((f) => [cartaI(f, false), cartaI(f, true)]);
+  const regras = REGRAS_INTRUSO.filter((g) => g.niveis.includes(nivel)); const opc = regras.filter((g) => !evitar || g.id !== evitar.id); const lista = opc.length ? opc : regras;
+  for (let t = 0; t < 200; t++) {
+    const g = lista[Math.floor(rnd() * lista.length)]; const pool = g.pool === 'notas' ? todas.filter((c) => !c.rest) : todas;
+    const sim = embaralhaR(pool.filter(g.test), rnd); const nao = embaralhaR(pool.filter((c) => !g.test(c)), rnd); if (sim.length < 3 || !nao.length) continue;
+    const tres = sim.slice(0, 3); const intr = nao[0]; const cartas = embaralhaR([...tres, intr], rnd);
+    return { cartas, intruso: cartas.findIndex((c) => c.id === intr.id), regra: { id: g.id, nome: g.nome, contra: g.contra } };
+  }
+  return null;
+}
+export const estrelasIntruso = (erros) => estrelasPorErros(erros, 0, 2);

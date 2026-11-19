@@ -11,7 +11,7 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, svgEl, noteMarkup } from '../kids/art.js';
 import { peçasDe, confereMonte } from './figurix-logic.js';
 import { corSrc } from '../paul-cor.js';
-import { estrelasPesca, estrelasMira, estrelasMontar, rodadasQA, acertaMira, alvoX, montarCfg, estrelasPorErros, padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria, REGRA_TEMPO } from './fuga-mini-logic.js';
+import { PECAS_COMPASSO, rodadaCompasso, somaQ, confereCompasso, textoQ, estrelasCompasso, rodadaIntruso, estrelasIntruso, estrelasPesca, estrelasMira, estrelasMontar, rodadasQA, acertaMira, alvoX, montarCfg, estrelasPorErros, padsDe, sequenciaGenius, confere, estrelasGenius, caminho3x3, NOTAS_3X3, estrelasCaminho, paresMemoria, cartasMemoria, formaPar, estrelasMemoria, REGRA_TEMPO } from './fuga-mini-logic.js';
 
 const viva = (box) => box.isConnected; // timers de uma porta que já foi fechada não fazem mais nada
 const agora = () => audio().currentTime + 0.02;
@@ -277,5 +277,50 @@ export function montar(box, { nivel = 'facil', fim = () => {} } = {}) {
   return { stats: () => ({ erros, found: acertos, total: figs.length, estrelas: estrelasMontar(erros) }), alvo: () => figs[r] || null, certo: () => (figs[r] ? peçasDe(figs[r]) : null) };
 }
 
+
+/* ---------- feche o compasso: complete os 4 tempos com as figuras da bandeja ---------- */
+const figDe = (id) => { const P = PECAS_COMPASSO[id]; return svgEl(P.rest ? restMarkup(P.fig) : figureMarkup(P.fig), 'fgc-svg'); };
+export function compasso(box, { nivel = 'facil', fim = () => {}, extra = 0 } = {}) {
+  const cfg = cfgMini(nivel, 'compasso', extra); const N = cfg.rodadas; const R = []; for (let i = 0; i < N; i++) R.push(rodadaCompasso(nivel, Math.random, R[i - 1] || null));
+  let r = 0; let erros = 0; let acertos = 0; let col = []; let trava = false; let aviso = '';
+  const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }); const medidor = h('div', { class: 'fgc-med', 'aria-hidden': 'true' }); const comp = h('div', { class: 'fgc-comp' }); const bandeja = h('div', { class: 'fgc-bandeja' });
+  const pinta = () => { conta.textContent = `${Math.min(r + 1, N)} de ${N} · ${erros} erro${erros === 1 ? '' : 's'}`; };
+  function desenha() {
+    const rod = R[r]; const pre = somaQ(rod.pre); const sobra = rod.faltamQ - somaQ(col); pinta();
+    msg.textContent = aviso || (sobra > 0 ? `feche o compasso: faltam ${textoQ(sobra)}` : 'compasso fechado!');
+    medidor.replaceChildren(...Array.from({ length: 16 }, (_, i) => h('i', { class: i < pre ? 'pre' : i < pre + somaQ(col) ? 'col' : '', 'data-t': i % 4 === 0 ? String(i / 4 + 1) : null })));
+    comp.replaceChildren(...rod.pre.map((id) => h('div', { class: 'fgc-pc pre', title: PECAS_COMPASSO[id].nome }, figDe(id))), ...col.map((id, i) => h('button', { type: 'button', class: 'fgc-pc col', 'aria-label': `tirar ${PECAS_COMPASSO[id].nome}`, disabled: trava, onclick: () => { if (trava) return; col = col.filter((_, k) => k !== i); aviso = ''; desenha(); } }, figDe(id))), ...(sobra > 0 ? [h('div', { class: 'fgc-pc vazio', 'aria-hidden': 'true' }, '?')] : []));
+    bandeja.replaceChildren(...rod.bandeja.map((id) => h('button', { type: 'button', class: 'fgc-op', 'data-id': id, disabled: trava || sobra <= 0, onclick: () => poe(id) }, figDe(id), h('small', {}, PECAS_COMPASSO[id].nome), h('em', {}, textoQ(PECAS_COMPASSO[id].q)))));
+  }
+  function poe(id) {
+    if (trava) return; const rod = R[r]; col = [...col, id]; const st = confereCompasso(rod.faltamQ, col);
+    if (st === 'ok') { trava = true; acertos++; aviso = ''; toca({ midi: 60 + r * 3 }); desenha(); setTimeout(() => { if (!viva(box)) return; r++; col = []; trava = false; if (r >= N) { pinta(); fim(); return; } desenha(); }, 900); return; }
+    if (st === 'passou') { erros++; erroSom(); aviso = `passou do compasso! as figuras valiam ${textoQ(somaQ(col))} e só faltavam ${textoQ(rod.faltamQ)}. tente de novo`; col = []; comp.classList.remove('errado'); void comp.offsetWidth; comp.classList.add('errado'); }
+    else { aviso = ''; toca({ midi: 64 + col.length }); }
+    desenha();
+  }
+  box.replaceChildren(h('section', { class: 'card pad fgm fgc' }, conta, msg, medidor, comp, bandeja)); desenha();
+  return { stats: () => ({ erros, found: acertos, total: N, estrelas: estrelasCompasso(erros) }), rodada: () => R[r] || null };
+}
+
+/* ---------- o intruso: qual disco não combina com os outros 3? ---------- */
+export function intruso(box, { nivel = 'facil', fim = () => {}, extra = 0 } = {}) {
+  const cfg = cfgMini(nivel, 'intruso', extra); const N = cfg.rodadas; const R = []; for (let i = 0; i < N; i++) R.push(rodadaIntruso(nivel, Math.random, R[i - 1] ? R[i - 1].regra : null));
+  let r = 0; let erros = 0; let acertos = 0; let trava = false; let certo = false; const erradas = new Set(); let aviso = '';
+  const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }); const palco = h('div', { class: 'fgi-palco' });
+  const pinta = () => { conta.textContent = `${Math.min(r + 1, N)} de ${N} · ${erros} erro${erros === 1 ? '' : 's'}`; };
+  function desenha() {
+    const rod = R[r]; pinta(); msg.textContent = aviso || (certo ? `isso! as outras ${rod.regra.nome}; essa ${rod.regra.contra}.` : 'qual disco NÃO combina com os outros?');
+    palco.replaceChildren(...rod.cartas.map((c, i) => h('button', { type: 'button', class: `fgi-disco${certo && i === rod.intruso ? ' certo' : ''}${erradas.has(i) ? ' errado' : ''}`, 'data-i': String(i), 'aria-label': `${c.rest ? 'pausa de ' : ''}${FIG_NAME[c.fig]}`, disabled: trava || erradas.has(i), onclick: () => toque(i) }, h('span', { class: 'fgi-fig' }, svgEl(c.rest ? restMarkup(c.fig) : figureMarkup(c.fig), 'fgi-svg')), certo ? h('small', {}, `${c.rest ? 'pausa de ' : ''}${FIG_NAME[c.fig]}`) : null)));
+  }
+  function toque(i) {
+    if (trava) return; const rod = R[r];
+    if (i === rod.intruso) { trava = true; certo = true; acertos++; aviso = ''; toca({ midi: 60 + r * 3 }); desenha(); setTimeout(() => { if (!viva(box)) return; r++; trava = false; certo = false; erradas.clear(); if (r >= N) { pinta(); fim(); return; } desenha(); }, 1900); return; }
+    erros++; erradas.add(i); erroSom(); aviso = 'não é esse! olhe de novo o que as outras têm igual'; desenha();
+  }
+  box.replaceChildren(h('section', { class: 'card pad fgm fgi' }, conta, msg, palco)); desenha();
+  return { stats: () => ({ erros, found: acertos, total: N, estrelas: estrelasIntruso(erros) }), rodada: () => R[r] || null };
+}
+
 /** Registro dos jogos de toque: o `tipo` da porta (fuga-logic.js TIPOS) aponta pra função daqui. */
-export const MINI = { genius, caminho, memoria, queda, queda4, pesca, mira, montar };
+export const MINI = { genius, caminho, memoria, queda, queda4, pesca, mira, montar, compasso, intruso };
