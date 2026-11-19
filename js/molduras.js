@@ -2,7 +2,7 @@
 // Cada moldura tem o seu jeito de ganhar. Ficam guardadas junto do progresso do jogo (vão pra nuvem com ele); qual usar fica neste aparelho.
 import { getGame, setGame } from './jogos/base.js';
 export const MOLDURAS = [
-  { id: 'lab', nome: 'Laboratório do Paul', img: 'assets/aluno/molduras/lab.webp', como: 'abra a porta bônus (a SAÍDA) do mapa Laboratório do Paul, na Fuga do Estúdio' },
+  { id: 'lab', nome: 'Estúdio do Paul', img: 'assets/aluno/molduras/lab.webp', como: 'abra a porta bônus (a SAÍDA) do mapa Estúdio do Paul, na Fuga do Estúdio' },
 ];
 const KEY = 'beaterista-moldura';
 const avisa = () => { try { window.dispatchEvent(new CustomEvent('moldura-mudou')); } catch { /* sem janela */ } };
