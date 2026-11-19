@@ -1749,3 +1749,6 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .cod-abas-lista { border: 0 !important; background: #f5efe6 !important; border-radius: 14px !important; }
 .cod-item-act .btn { min-height: 38px; padding: 6px 14px; }
 #view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(input, select, textarea):not([type=checkbox]):not([type=radio]):not([type=range]) { width: 100%; min-height: 46px; padding: 10px 14px; font: 600 15px var(--body); color: #1b1818; box-sizing: border-box; }
+/* aba Códigos: importar código do aluno e código bem visível na lista */
+.cod-importar { display: grid; gap: 10px; } .cod-importar .field { display: grid; gap: 4px; } .cod-imp-in { text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
+.cod-item-code { display: block; font: 800 20px/1.1 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .16em; margin: 2px 0; user-select: all; }

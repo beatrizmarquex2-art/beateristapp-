@@ -200,13 +200,31 @@ export function mount(host) {
     listaBox.replaceChildren(h('p', { class: 'muted' }, `${rows.length} de ${list.length} código${list.length === 1 ? '' : 's'} · ${n} ativo${n === 1 ? '' : 's'}`),
       ...(rows.length ? rows.map((x) => h('article', { class: `cod-item${x.ativo ? '' : ' off'}` },
         h('div', { class: 'cod-item-top' }, h('span', { class: `cod-av c-${x.categoria || 'aluno'}`, 'aria-hidden': 'true' }, (x.nome || x.code)[0].toUpperCase()),
-          h('div', { class: 'cod-item-id' }, h('b', {}, x.nome || 'sem nome'), h('small', { class: 'muted' }, `${x.code} · ${tempoDe(x)} · ${venc(x)}`)),
+          h('div', { class: 'cod-item-id' }, h('b', {}, x.nome || 'sem nome'), h('b', { class: 'rg-code cod-item-code' }, x.code), h('small', { class: 'muted' }, `${tempoDe(x)} · ${venc(x)}`)),
           h('span', { class: `cod-tag c-${x.categoria || 'aluno'}` }, nomeCat(x.categoria || 'aluno')),
           interruptor(!!x.ativo, '', () => run(() => CODE.alterar(x.code, { ativo: !x.ativo }), x.ativo ? 'desativado' : 'ativado ✓'), `${x.ativo ? 'Desativar' : 'Ativar'} ${x.nome || x.code}`)),
         h('small', { class: 'muted cod-item-meta' }, `${x.usos ?? 0} uso${x.usos === 1 ? '' : 's'} · ${Array.isArray(x.jogos) && x.jogos.length ? ABAS.filter((a) => abasDe(x.jogos).includes(a[0])).map((a) => a[1].replace(' (tocar)', '').replace('Álbum, roleta e perfil', 'Álbum')).join(', ') : 'todas as abas'}`),
         h('div', { class: 'row cod-item-act' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => copy(x.code, 'código copiado') }, 'copiar'), h('button', { class: 'btn small ghost', type: 'button', disabled: busy, onclick: () => mudarTempo(x) }, 'mudar tempo')))) : [h('p', { class: 'empty muted' }, list.length ? 'nenhum código com esse filtro.' : 'nenhum código ainda.')]));
   };
   const busca = h('input', { class: 'field', type: 'search', placeholder: 'procurar nome ou código', 'aria-label': 'Procurar código' }); busca.addEventListener('input', () => { q = busca.value; desenhaLista(); });
+  // importar o código que o ALUNO gerou ("gerar meu código" no app dele): digita nome + código e toca em "importar agora"; ele entra na lista de baixo
+  const impNome = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome do aluno', autocomplete: 'off', 'aria-label': 'Nome do aluno' });
+  const impCod = h('input', { class: 'field cod-imp-in', type: 'text', maxlength: 12, placeholder: 'código do aluno', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código que o aluno gerou' });
+  const impMsg = h('p', { class: 'muted', role: 'status', 'aria-live': 'polite' });
+  const importarAgora = async () => {
+    const c = CODE.norm(impCod.value); const nome = impNome.value.trim();
+    if (c.length < 4) { impMsg.textContent = 'digite o código do aluno (4 a 12 letras e números).'; return; }
+    const ja = list.find((x) => x.code === c); if (ja && !nome) { impMsg.textContent = `esse código já está na lista (${ja.nome || 'sem nome'}).`; return; }
+    if (busy) return; busy = true; impMsg.textContent = 'importando…';
+    try { await CODE.importar([{ code: c, nome }]); impMsg.textContent = `${nome || c} importado ✓ já está na lista aqui embaixo (código ${c})`; impNome.value = ''; impCod.value = ''; await carrega(); }
+    catch (e) { impMsg.textContent = ''; toast(e.message === 'entre no app' ? 'entre no app pra importar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
+    busy = false; desenhaLista();
+  };
+  impCod.addEventListener('keydown', (e) => { if (e.key === 'Enter') importarAgora(); });
+  const importCard = h('section', { class: 'card pad cod-importar' }, h('b', {}, 'importar código do aluno'),
+    h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. digite aqui e toque em importar agora: ele libera o app do aluno e entra na lista abaixo (pra você achar quando esquecerem).'),
+    h('label', { class: 'field' }, h('span', {}, 'nome'), impNome), h('label', { class: 'field' }, h('span', {}, 'código'), impCod),
+    h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: importarAgora }, 'importar agora')), impMsg);
   const listaCard = h('section', { class: 'card pad' }, h('b', {}, 'códigos'), busca,
     h('div', { class: 'cod-filtros' },
       sel([['', 'todos os tipos'], ...CODE.CATEGORIAS], fTipo, (v) => { fTipo = v; desenhaLista(); }, 'Filtrar por tipo'),
@@ -214,7 +232,7 @@ export function mount(host) {
       sel([['', 'ativos e desativados'], ['ativo', 'só ativos'], ['off', 'só desativados']], fAtivo, (v) => { fAtivo = v; desenhaLista(); }, 'Filtrar por situação')), listaBox);
   async function carrega() { try { list = await CODE.listar(); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 3500 }); } if (!gone) desenhaLista(); }
   const mais = h('details', { class: 'card pad cod-mais' }, h('summary', {}, 'mais ferramentas: importar lista, passe anual, test drive'), h('div', { class: 'cod-mais-in' }));
-  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, novoCard, listaCard, mais));
+  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, novoCard, importCard, listaCard, mais));
   let legado = null; mais.addEventListener('toggle', () => { if (mais.open && !legado) legado = montarLegado(mais.querySelector('.cod-mais-in'), { semBanner: true }); });
   desenhaNovo(); desenhaLista(); carrega().then(() => { if (!salvo && !list.some((x) => x.code === code)) return; });
   return () => { gone = true; if (typeof legado === 'function') legado(); };
