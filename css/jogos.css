@@ -1634,3 +1634,46 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .est-logo-paul{display:block;width:min(170px,52%);height:auto;margin:6px auto 2px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
 .cfg-celular-paul{float:right;width:70px;height:auto;margin:0 0 4px 10px}
 .fx-pergunta{display:inline-flex;align-items:center;gap:4px}.fx-pergunta-p{width:26px;height:auto;margin:-4px 0 -4px -2px}
+/* ===== Fuga: jogos de toque (js/jogos/fuga-mini.js): Genius, caminho 3×3, memória ===== */
+.fgm{text-align:center}.fgm-msg{font-weight:800;min-height:1.5em;margin:6px 0 12px}.fgm-go{margin-top:6px}
+.fgm-pads,.fgm-grade{display:grid;gap:12px;max-width:340px;margin:0 auto 14px;grid-template-columns:repeat(2,1fr)}.fgm-pads.n6{grid-template-columns:repeat(3,1fr);gap:9px}.fgm-grade{grid-template-columns:repeat(3,1fr);gap:9px}
+.fgm-pad,.fgm-cel{aspect-ratio:1;border-radius:20px;border:3px solid var(--c,#4fd8ff);background:color-mix(in srgb,var(--c,#4fd8ff) 24%,#0b0e1c);color:#fff;font:800 clamp(12px,3.6vw,16px) var(--body,system-ui);box-shadow:0 4px 0 #0007;transition:transform .08s,box-shadow .08s,background .08s;padding:4px;cursor:pointer}
+.fgm-pad.on,.fgm-cel.on{background:var(--c,#4fd8ff);color:#0b0e1c;box-shadow:0 0 26px var(--c,#4fd8ff);transform:scale(1.06)}
+.fgm-pad:disabled,.fgm-cel:disabled{cursor:default}.fgm-cel.ok{background:#ffd23f;color:#0b0e1c;border-color:#ffd23f}.fgm-cel.ruim{background:#ff3b5c;border-color:#ff3b5c;animation:fgmTrem .3s}
+@keyframes fgmTrem{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.fgm-mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto 10px}
+.fgm-carta{aspect-ratio:.82;border-radius:12px;border:3px solid #4a3d9a;background:#1a1445;color:#ffd23f;font:800 clamp(10px,2.9vw,13px) var(--body,system-ui);padding:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 0 #0007;line-height:1.15}
+.fgm-costas{font-size:clamp(20px,6vw,30px)}.fgm-carta.up{background:#fff6e0;color:#150f33;border-color:#ffd23f}.fgm-carta.par{background:#ffd23f;color:#150f33;border-color:#fff;animation:fgmPop .35s}
+.fgm-sym{width:70%;height:70%;color:#150f33}.fgm-carta.up .fgm-sym{color:#150f33}
+@keyframes fgmPop{50%{transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.fgm-cel.ruim,.fgm-carta.par{animation:none}.fgm-pad,.fgm-cel{transition:none}}
+
+/* ---- acabamento: Genius em quadrantes brilhantes e caminho 3×3 em pads de bateria eletrônica ---- */
+.fgm-pads,.fgm-grade{position:relative;max-width:330px;padding:16px;border-radius:30px;background:radial-gradient(120% 100% at 50% 0,#2a2f4a,#0c0f1f 70%);border:3px solid #05060f;box-shadow:inset 0 2px 0 #ffffff22,inset 0 -8px 18px #000a,0 10px 24px #0009,0 0 0 2px #3a4170}
+.fgm-pads{gap:10px}.fgm-pads.n6{gap:10px}.fgm-grade{gap:10px}
+.fgm-pad,.fgm-cel{--k:color-mix(in srgb,var(--c,#4fd8ff) 62%,#000);position:relative;overflow:hidden;border:3px solid var(--k);color:#fff;text-shadow:0 2px 3px #000b;filter:brightness(.62) saturate(.9);transition:filter .1s,transform .1s,box-shadow .1s;
+  background:radial-gradient(90% 60% at 30% 14%,#ffffff8c,#fff0 62%),linear-gradient(165deg,color-mix(in srgb,var(--c,#4fd8ff) 78%,#fff),var(--c,#4fd8ff) 46%,color-mix(in srgb,var(--c,#4fd8ff) 62%,#000));box-shadow:inset 0 -9px 14px #0005,inset 0 5px 8px #ffffff55,0 5px 0 #000a}
+.fgm-pad{font:800 clamp(13px,4vw,18px) var(--body,system-ui)}
+.fgm-pads.n4 .fgm-pad:nth-child(1){border-radius:92% 20% 20% 20%}.fgm-pads.n4 .fgm-pad:nth-child(2){border-radius:20% 92% 20% 20%}.fgm-pads.n4 .fgm-pad:nth-child(3){border-radius:20% 20% 20% 92%}.fgm-pads.n4 .fgm-pad:nth-child(4){border-radius:20% 20% 92% 20%}
+.fgm-pads.n6 .fgm-pad{border-radius:26%}
+.fgm-pad:not(:disabled):active,.fgm-cel:not(:disabled):active{filter:brightness(1.05);transform:scale(.97)}
+.fgm-pad.on,.fgm-cel.on{filter:brightness(1.3) saturate(1.15);transform:scale(1.03);background:radial-gradient(90% 60% at 30% 14%,#fffffff2,#fff0 62%),linear-gradient(165deg,color-mix(in srgb,var(--c,#4fd8ff) 55%,#fff),var(--c,#4fd8ff) 55%,color-mix(in srgb,var(--c,#4fd8ff) 80%,#000));color:#fff;box-shadow:inset 0 -6px 12px #0003,inset 0 5px 8px #ffffffaa,0 0 34px var(--c,#4fd8ff),0 0 70px color-mix(in srgb,var(--c,#4fd8ff) 60%,transparent)}
+.fgm-pad:disabled:not(.on){filter:brightness(.55) saturate(.85)}
+.fgm-hub{position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%!important;background:radial-gradient(circle at 35% 28%,#3d4468,#0a0c1a 72%);border:4px solid #05060f;box-shadow:inset 0 3px 6px #ffffff2a,0 0 0 3px #2a2f4a,0 6px 14px #000c;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;color:#ffd23f;line-height:1}
+.fgm-hub b{font:900 clamp(22px,7vw,34px) var(--head,Anton,sans-serif)}.fgm-hub small{font:800 10px var(--body,system-ui);opacity:.75;color:#fff;margin-top:2px}
+.fgm-pads.n6 .fgm-hub{display:none}
+.fgm-cel{border-radius:22%;font:800 clamp(11px,3.3vw,15px) var(--body,system-ui);filter:brightness(.5) saturate(.8)}
+.fgm-grade .fgm-cel:nth-child(1){--c:#ff3b5c}.fgm-grade .fgm-cel:nth-child(2){--c:#ffd23f}.fgm-grade .fgm-cel:nth-child(3){--c:#5b8cff}.fgm-grade .fgm-cel:nth-child(4){--c:#4fd8ff}.fgm-grade .fgm-cel:nth-child(5){--c:#ff9f43}.fgm-grade .fgm-cel:nth-child(6){--c:#b18cff}.fgm-grade .fgm-cel:nth-child(7){--c:#ff6bd6}.fgm-grade .fgm-cel:nth-child(8){--c:#ffe66d}.fgm-grade .fgm-cel:nth-child(9){--c:#ff7a7a}
+.fgm-cel:disabled:not(.on):not(.ok):not(.ruim){filter:brightness(.5) saturate(.8)}
+.fgm-cel.ok{filter:brightness(1.2);background:radial-gradient(90% 60% at 30% 14%,#fffffff2,#fff0 62%),linear-gradient(165deg,#fff3b0,#ffd23f 55%,#c98f00);color:#2a1d00;text-shadow:none;border-color:#fff;box-shadow:inset 0 -6px 10px #0003,0 0 22px #ffd23f}
+.fgm-cel.ruim{filter:none;background:linear-gradient(165deg,#ff8a9b,#ff3b5c 55%,#a3112d);border-color:#ffb3bf}
+
+/* ---- notas caindo (Fuga) ---- */
+.fgq-campo{position:relative;height:340px;max-width:340px;margin:0 auto 12px;overflow:hidden;border:3px solid #05060f;border-radius:22px;background:radial-gradient(120% 90% at 50% 0,#3a2d78,#120d33 70%);box-shadow:inset 0 2px 0 #ffffff22,inset 0 -10px 24px #000a,0 0 0 2px #3a4170,0 10px 22px #0009;touch-action:none;user-select:none}
+.fgq-campo.certo{animation:fgqOk .3s}.fgq-campo.errado{animation:fgqNo .3s}
+@keyframes fgqOk{50%{box-shadow:inset 0 0 40px #ffd23f99,0 0 0 2px #ffd23f}}@keyframes fgqNo{50%{box-shadow:inset 0 0 40px #ff3b5caa,0 0 0 2px #ff3b5c}}
+.fgq-cai{position:absolute;top:0;left:50%;width:80px;transform:translateX(-50%);padding:8px;border-radius:16px;background:linear-gradient(165deg,#fffdf7,#ffe9b0);box-shadow:0 5px 0 #0007,0 0 20px #ffd23f66;z-index:2}
+.fgq-fig svg{width:100%;height:auto;max-height:84px;display:block}
+.fgq-paul{position:absolute;bottom:46px;width:70px;transition:left .15s ease;z-index:3}.fgq-div{position:absolute;top:0;bottom:0;border-left:2px dashed #ffffff26}.fgq-paul img{width:100%;display:block;filter:drop-shadow(0 4px 4px #0009)}
+.fgq-nome{position:absolute;bottom:8px;text-align:center;box-sizing:border-box;padding:8px 2px;border-radius:14px;color:#fff;font:800 clamp(12px,3.6vw,15px) var(--body,system-ui);background:linear-gradient(165deg,#5b4fa8,#2a2060);border:2px solid #8c7bff;box-shadow:inset 0 3px 5px #ffffff33,0 4px 0 #0008}.fgq-campo.q4 .fgq-nome{font-size:clamp(9px,2.7vw,12px);padding:8px 1px}.fgq-campo.q4 .fgq-paul{width:56px}
+@media (prefers-reduced-motion:reduce){.fgq-campo.certo,.fgq-campo.errado{animation:none}.fgq-paul{transition:none}}
