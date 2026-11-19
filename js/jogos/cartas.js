@@ -273,7 +273,7 @@ export function mount(host, opts) {
         h('div', { class: `cx-opps n${opps.length}` }, ...opps.map(seat)),
         h('div', { class: 'cx-table' }, deckEl,
           h('div', { class: 'cx-mid' }, pileEl,
-            prefs.help ? (() => { const [nm] = C.cardParts(top); return h('p', { class: 'cx-name', 'aria-live': 'polite', 'aria-label': C.cardName(top) }, h('b', {}, nm)); })() /* só a figura: a cor já aparece no indicador ao lado */ : null),
+            prefs.help ? (() => { const [nm] = C.cardParts(top); const m = /^(.*?)\s*(\(.*\))$/.exec(nm); const grande = m ? m[1] : nm; return h('p', { class: `cx-name${grande.length > 15 ? ' lg' : ''}`, 'aria-live': 'polite', 'aria-label': C.cardName(top) }, h('b', {}, grande), m ? h('small', {}, m[2]) : null); })() /* nome grande; o que vem entre parênteses (ex.: sinal de repetição) fica pequeno embaixo; nome comprido encolhe */ /* só a figura: a cor já aparece no indicador ao lado */ : null),
           h('div', { class: 'cx-side' },
             h('div', { class: `cx-ac c-${g.color}`, 'aria-label': `cor ativa: ${C.COLOR_NAME[g.color]}` }, h('span', { class: 'cx-dot' }), h('b', {}, C.COLOR_NAME[g.color])),
             svgIcon(ICON.dir, `cx-dir${g.dir === -1 ? ' rev' : ''}`), toolbar(),
