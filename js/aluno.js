@@ -83,8 +83,8 @@ import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-// aba INÍCIO (prévia): só aparece pra quem abriu o app com ?inicio=1 (fica guardado no aparelho; ?inicio=0 desliga). A barra de sempre não muda.
-const INICIO_ON = (() => { try { if (/[?&]inicio=1\b/.test(location.search)) localStorage.setItem('bt-inicio', '1'); if (/[?&]inicio=0\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') === '1'; } catch { return false; } })();
+// aba INÍCIO: liga pra todos (publicada em nov/2026). `?inicio=0` desliga neste aparelho (pra teste); `?inicio=1` volta a ligar.
+const INICIO_ON = (() => { try { if (/[?&]inicio=0\b/.test(location.search)) localStorage.setItem('bt-inicio', '0'); if (/[?&]inicio=1\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') !== '0'; } catch { return true; } })();
 const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
