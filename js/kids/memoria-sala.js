@@ -61,7 +61,7 @@ export function mostrarSala(c, conn, estado) {
     const board = h('div', { class: `kx-board mem-board ms-board n${e.pares}`, style: '--cols:4' }, ...cells);
     const veu = h('div', { class: 'ms-veu', role: 'dialog', 'aria-label': 'pausado' }, h('b', {}, 'pausado'), h('button', { class: 'kd-btn', type: 'button', onclick: () => resume() }, 'continuar'));
     const wrap = h('div', { class: 'ms-mesa' }, board, veu);
-    stage.replaceChildren(topo(t.title), badge.el, banner, placar, wrap, aviso, fim);
+    stage.replaceChildren(topo(t.title), badge.el, conn.avisoSaida ? conn.avisoSaida() : '', banner, placar, wrap, aviso, fim);
     refs = { cells, lista, banner, placar, aviso, fim, wrap, board };
     key = `${e.seed}:${e.mesa}:${e.tema}`;
   }
@@ -80,7 +80,9 @@ export function mostrarSala(c, conn, estado) {
       b.setAttribute('aria-label', up || ach ? lista[i].name : 'carta virada para baixo');
       b.classList.toggle('ms-fora', !L.podeVirar(e, me, i));
     });
-    placar.textContent = sc.length === 2 ? `você ${sc[me]} × ${sc[1 - me]} ${nome(1 - me)}` : sc.map((x, i) => `${nome(i)} ${x}`).join(' · ');
+    const fora = L.foraDe(e); const rot = (i) => `${nome(i)}${fora.includes(i) ? ' (saiu)' : ''}`;
+    placar.textContent = sc.length === 2 && !fora.length ? `você ${sc[me]} × ${sc[1 - me]} ${nome(1 - me)}` : sc.map((x, i) => `${rot(i)} ${x}`).join(' · ');
+    if (conn.esperaDe) conn.esperaDe(e.fim ? null : e.vez); // quem tem a vez: se ela demorar 30 s, aparece o aviso pra todos
     if (e.fim) {
       const w = L.vencedor(e);
       banner.textContent = w === -1 ? 'empate!' : w === me ? 'você venceu!' : `${nome(w)} venceu`;
@@ -128,13 +130,16 @@ export function mostrarSala(c, conn, estado) {
     if (!e.fim) return; const t = th(); enviar(L.revanche(e, t ? t.items.map((x) => x.id) : null));
   }
 
-  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); }; conn.on.nomes = () => { if (!gone && e) pintar(); };
+  /** a maioria decidiu continuar sem alguém: um só celular (o menor lugar que ficou) aplica no estado e manda; os outros recebem */
+  function aplicaSaida() { if (gone || !conn.saiu || !L.valido(e) || e.fim) return; const novos = conn.saiu().filter((s) => !L.foraDe(e).includes(s) && s < L.jogadoresDe(e)); if (novos.length && conn.souSindico()) enviar(L.tirar(e, novos)); }
+  conn.on.saiu = () => aplicaSaida();
+  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); aplicaSaida(); }; conn.on.nomes = () => { if (!gone && e) pintar(); };
   conn.on.link = (v) => badge.set(v);
   pintar(); agenda();
   c.bot.set('think', e && e.vez === me ? 'sua vez!' : `vez ${e && e.nomes && e.nomes[e.vez] ? `de ${nome(e.vez)}` : 'do outro'}`);
 
   function pause() { if (gone || paused) return; paused = true; clearTimeout(rt); rt = 0; pintar(); }
   function resume() { if (gone || !paused) return; paused = false; pintar(); agenda(); }
-  function destroy() { gone = true; clearTimeout(rt); clearTimeout(retry); conn.on.state = null; conn.on.link = null; conn.close(); }
+  function destroy() { gone = true; clearTimeout(rt); clearTimeout(retry); conn.on.state = null; conn.on.link = null; conn.on.saiu = null; conn.close(); }
   return { destroy, pause, resume, inProgress: () => !gone && L.valido(e) && !e.fim && !!(e.achou.some((l) => l.length) || e.virou.length), estado: () => e };
 }

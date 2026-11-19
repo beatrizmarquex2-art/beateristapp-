@@ -24,11 +24,22 @@ export function novaMesa({ tema, titulo = '', pares, again = true, seed, ids, me
 }
 export const valido = (e) => !!e && e.v === 1 && Array.isArray(e.deck) && e.deck.length === e.pares * 2 && Array.isArray(e.virou) && Array.isArray(e.achou) && e.achou.length === jogadoresDe(e);
 
+/** Lugares que saíram da partida (a maioria decidiu continuar sem eles; guardam os pares e as ★ que já tinham). */
+export const foraDe = (e) => (Array.isArray(e.fora) ? e.fora : []);
+/** Próximo lugar depois de `de` que ainda está na partida. */
+export function proximoDe(e, de) { const n = jogadoresDe(e); const fora = foraDe(e); for (let k = 1; k <= n; k++) { const q = (de + k) % n; if (!fora.includes(q)) return q; } return de; }
+/** Tira os lugares `lugares` da partida: quem estava com a vez passa pro próximo; sobrou só uma pessoa = fim. */
+export function tirar(e, lugares) {
+  const fora = [...new Set([...foraDe(e), ...lugares])]; if (fora.length === foraDe(e).length) return e;
+  let n = { ...e, fora }; if (fora.includes(e.vez)) { n = { ...n, virou: [], vez: proximoDe(n, e.vez), jogadas: e.jogadas + 1 }; }
+  if (jogadoresDe(e) - fora.length <= 1) n = { ...n, virou: [], fim: true };
+  return n;
+}
 export const achada = (e, pos) => e.achou.some((l) => l.includes(pos));
 export const donoDe = (e, pos) => e.achou.findIndex((l) => l.includes(pos));
 export const placar = (e) => e.achou.map((l) => l.length / 2);
 /** vencedor: 0, 1 ou -1 (empate); null enquanto a partida não acabou */
-export function vencedor(e) { if (!e.fim) return null; const sc = placar(e); const m = Math.max(...sc); const quem = sc.map((x, i) => (x === m ? i : -1)).filter((i) => i >= 0); return quem.length > 1 ? -1 : quem[0]; }
+export function vencedor(e) { if (!e.fim) return null; const fora = foraDe(e); const sc = placar(e).map((x, i) => (fora.includes(i) ? -1 : x)); const m = Math.max(...sc); const quem = sc.map((x, i) => (x === m ? i : -1)).filter((i) => i >= 0); return quem.length > 1 ? -1 : quem[0]; } // quem saiu guarda os pares e as ★, mas não ganha a partida
 /** tem duas cartas viradas esperando o desfecho (par ou erro) */
 export const pendente = (e) => e.virou.length === 2 && !e.fim;
 /** é par? (só faz sentido com 2 viradas) */
@@ -36,7 +47,7 @@ export const ePar = (e) => e.virou.length === 2 && e.deck[e.virou[0]] === e.deck
 
 /** Só quem tem a vez vira, uma carta de cada vez, até 2; nunca uma já virada ou achada. */
 export function podeVirar(e, quem, pos) {
-  return !e.fim && e.vez === quem && e.virou.length < 2 && Number.isInteger(pos) && pos >= 0 && pos < e.deck.length && !e.virou.includes(pos) && !achada(e, pos);
+  return !e.fim && e.vez === quem && !foraDe(e).includes(quem) && e.virou.length < 2 && Number.isInteger(pos) && pos >= 0 && pos < e.deck.length && !e.virou.includes(pos) && !achada(e, pos);
 }
 /** Vira a carta `pos`. Devolve o estado novo, ou null se a jogada não vale. */
 export function virar(e, quem, pos) {
@@ -50,11 +61,13 @@ export function resolver(e) {
   if (ePar(e)) {
     const achou = e.achou.map((l, i) => (i === e.vez ? [...l, a, b] : l.slice()));
     const fim = achou.reduce((t, l) => t + l.length, 0) === e.deck.length;
-    return { ...e, achou, virou: [], fim, vez: e.again || fim ? e.vez : (e.vez + 1) % jogadoresDe(e), jogadas: e.jogadas + 1 };
+    return { ...e, achou, virou: [], fim, vez: e.again || fim ? e.vez : proximoDe(e, e.vez), jogadas: e.jogadas + 1 };
   }
-  return { ...e, virou: [], vez: (e.vez + 1) % jogadoresDe(e), jogadas: e.jogadas + 1 };
+  return { ...e, virou: [], vez: proximoDe(e, e.vez), jogadas: e.jogadas + 1 };
 }
 /** Revanche: mesa nova (semente nova, igual nos dois celulares), mesmas escolhas; quem começa alterna. `ids` = todas as cartas do tema. */
 export function revanche(e, ids) {
-  return novaMesa({ tema: e.tema, titulo: e.titulo, pares: e.pares, again: e.again, seed: proximaSemente(e.seed), ids: ids && ids.length >= e.pares ? ids : [...new Set(e.deck)].sort(), mesa: e.mesa + 1, n: jogadoresDe(e), nomes: e.nomes || null });
+  const nova = novaMesa({ tema: e.tema, titulo: e.titulo, pares: e.pares, again: e.again, seed: proximaSemente(e.seed), ids: ids && ids.length >= e.pares ? ids : [...new Set(e.deck)].sort(), mesa: e.mesa + 1, n: jogadoresDe(e), nomes: e.nomes || null });
+  return foraDe(e).length ? tirar(nova, foraDe(e)) : nova; // quem saiu continua fora na revanche
 }
+
