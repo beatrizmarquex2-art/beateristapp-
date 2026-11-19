@@ -17,7 +17,10 @@ export const TEMAS = {
 /** 3 mundos de figuras (como o Toca Aqui): o 1 tem semínima, colcheias e pausas de semínima e de colcheia; o 2 tem as semicolcheias com pausa no 1, 2, 3 ou 4; o 3 tem pontuadas e flam. Depois vêm os 4 modos com desenhos. */
 export const MUNDOS = ['m1', 'm2', 'm3'];
 export const ehMundo = (m) => MUNDOS.includes(m);
-export const MODOS = [...MUNDOS, ...Object.keys(TEMAS)];
+export const MODOS = MUNDOS;
+/** Estilo das cartas: só o mundo 1 deixa a criança trocar (figuras ou desenhos); nos mundos 2 e 3 são sempre as figuras. */
+export const ESTILOS = ['figuras', ...Object.keys(TEMAS)];
+export const estiloDe = (modo, escolhido) => (modo === 'm1' && TEMAS[escolhido] ? escolhido : 'figuras');
 /** Célula = 4 semicolcheias do tempo (1 = bate); sufixo "f" = a nota leva um flam (notinha de ornamento um tiquinho antes). */
 export const baseDe = (cell) => cell.slice(0, 4);
 export const temFlam = (cell) => cell.length > 4;
@@ -37,7 +40,7 @@ export const bpmFase = (modo, n) => { const [a, b] = FAIXA[modo] || [70, 120]; r
 /** Células que cada fase usa (a dificuldade sobe e CADA fase muda alguma coisa): 1 só semínima e colcheias; 2 entra a pausa; 3-4 saem as pausas e entram as 4 semicolcheias; 5-6 tudo junto; 7-12 tudo, mais variedade. */
 export const poolFase = (n, modo) => (ehMundo(modo) ? POOLS[modo][n - 1] : n <= 1 ? ['1000', '1010'] : n === 2 ? ['1000', '1010', '0000'] : n <= 4 ? ['1000', '1010', '1111'] : ['1000', '1010', '1111', '0000']);
 /** As cartas de um modo nessa fase (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */
-export const cartas = (modo, n = FASES) => poolFase(n, modo).slice().sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b)).map((cell) => ({ cell, id: !TEMAS[modo] ? null : cell === '0000' ? 'shh' : TEMAS[modo][cell] }));
+export const cartas = (modo, n = FASES, estilo = TEMAS[modo] ? modo : 'figuras') => poolFase(n, modo).slice().sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b)).map((cell) => ({ cell, id: !TEMAS[estilo] ? null : cell === '0000' ? 'shh' : cell === '0010' ? 'shh' : TEMAS[estilo][baseDe(cell)] }));
 /** Pausas permitidas no compasso: 1 até a fase 10; 2 nas fases 11-12. */
 export const maxPausas = (n) => (n >= 11 ? 2 : 1);
 /** Quantas vezes dá pra OUVIR o ritmo da rodada (a 1ª, automática, já conta): fases 1-6 sem limite; 7-8 = 6; 9-10 = 4; 11 = 3; 12 = 2 (Infinity = sem limite). */

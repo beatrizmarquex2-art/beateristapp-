@@ -1599,7 +1599,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-detetive .dn-caderno .jg-msg{margin:14px 0 0;font-size:13px;color:#1b1818}
 .jg-detetive .dn-caderno .dn-slots{gap:10px;margin:10px 0 4px}
 .jg-detetive .dn-caderno .dn-slot{min-height:0;aspect-ratio:3/4;border:2.5px dashed #1b1818;border-radius:6px;background:rgba(255,255,255,.55);position:relative}
-.jg-detetive .dn-caderno .dn-slot small{font:900 26px Georgia,serif;opacity:.25}
+.jg-detetive .dn-caderno .dn-slot:not(.cheia)>small{font:900 26px Georgia,serif;opacity:.25}.jg-detetive .dn-caderno .dn-slot .dn-face small{font-size:10px;font-weight:700;opacity:1}
 .jg-detetive .dn-caderno .dn-slot.cheia{border-style:solid;background:#fffdf7;box-shadow:3px 3px 0 #1b1818;transform:rotate(-1.5deg)}.jg-detetive .dn-caderno .dn-slot.cheia:nth-child(2n){transform:rotate(1.2deg)}
 .jg-detetive .dn-caderno .dn-slot.cheia::before{content:"";position:absolute;top:-9px;left:50%;width:34px;height:14px;background:rgba(227,168,47,.8);transform:translateX(-50%) rotate(-3deg)}
 .jg-detetive .dn-caderno .dn-slot.ok{background:#dff3e6;border-color:#1f7a3f}.jg-detetive .dn-caderno .dn-slot.no{background:#fde4e4;border-color:#a51a28}

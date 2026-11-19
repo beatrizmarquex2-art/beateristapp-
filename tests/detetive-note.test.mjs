@@ -4,7 +4,7 @@ import { TEMAS, MODOS, FASES, cartas, poolFase, sortear, conferir, acertou, estr
 import { FOODS } from '../js/kids-logic.js';
 
 test('figuras vem em primeiro; os 4 temas têm uma palavra por tempo e ela existe no Monte seu ritmo', () => {
-  assert.deepEqual(MODOS, ['m1', 'm2', 'm3', 'comida', 'parque', 'corpo', 'animal']);
+  assert.deepEqual(MODOS, ['m1', 'm2', 'm3']);
   for (const t of ['comida', 'parque', 'corpo', 'animal']) for (const cell of ['1000', '1010', '1111']) { const f = FOODS.find((x) => x.id === TEMAS[t][cell]); assert.ok(f, `${t} ${cell}`); assert.equal(f.cell, cell); }
 });
 test('cada fase muda: 1 semínima/colcheias, 2 + pausa, 3-4 + semicolcheias (sem pausa), 5-6 tudo, 7+ tudo', () => {
@@ -57,4 +57,12 @@ test('o andamento só sobe, em todos os modos: m1 70-100, m2 90-120, m3 100-140'
   const L = await import('../js/jogos/detetive-logic.js');
   for (const m of L.MODOS) for (let n = 2; n <= FASES; n++) assert.ok(L.bpmFase(m, n) >= L.bpmFase(m, n - 1));
   assert.deepEqual([L.bpmFase('m1', 1), L.bpmFase('m1', 12), L.bpmFase('m2', 1), L.bpmFase('m2', 12), L.bpmFase('m3', 1), L.bpmFase('m3', 12), L.bpmFase('comida', 12)], [70, 100, 90, 120, 100, 140, 120]);
+});
+
+test('estilo das cartas: só o mundo 1 troca (comida, parque, corpo, animal); mundos 2 e 3 são sempre figuras; pausa de colcheia vira "shh"', async () => {
+  const L = await import('../js/jogos/detetive-logic.js');
+  assert.deepEqual(L.ESTILOS, ['figuras', 'comida', 'parque', 'corpo', 'animal']);
+  assert.equal(L.estiloDe('m1', 'parque'), 'parque'); assert.equal(L.estiloDe('m2', 'parque'), 'figuras'); assert.equal(L.estiloDe('m3', 'animal'), 'figuras'); assert.equal(L.estiloDe('m1', 'xyz'), 'figuras');
+  for (const e of ['comida', 'parque', 'corpo', 'animal']) for (let n = 1; n <= FASES; n++) { const cs = L.cartas('m1', n, e); assert.ok(cs.every((c) => c.id), `${e} ${n}`); assert.ok(cs.filter((c) => c.cell === '1000').every((c) => c.id === L.TEMAS[e]['1000'])); }
+  assert.ok(L.cartas('m1', 12, 'figuras').every((c) => c.id === null));
 });

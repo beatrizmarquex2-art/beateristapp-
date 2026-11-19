@@ -15,15 +15,17 @@ import * as FB from '../feedback.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
-import { TEMAS, MODOS, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
+import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
-const NOME = (m) => (TEMAS[m] ? `${EMOJI_MODO[m]} ${TEMAS[m].nome}` : `mundo ${m.slice(1)}`);
+const NOME = (m) => `mundo ${m.slice(1)}`;
+const NOME_ESTILO = (e) => (e === 'figuras' ? 'figuras' : `${EMOJI_MODO[e]} ${TEMAS[e].nome}`);
 // figuras SEM pauta: só as notas, hastes, barras e pausas (tira a linha, a clave e o travessão)
 const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o.y1 === o.y2 || (o.x1 === o.x2 && o.w === 2)))) });
 const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { width: 84, count: false, clef: false })); const hd = L.ops.find((o) => o.t === 'head');
   if (temFlam(cell) && hd) L.ops.push({ t: 'grace', x: hd.x - 11, y: hd.y, mx: hd.x, my: hd.y }); return svgEl(N.toSVG(L), 'dn-face-fig'); }; // flam = notinha de ornamento antes da nota
-const face = (card, modo) => (!TEMAS[modo] ? figura(card.cell)
+const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
+  : card.cell === '0010' ? h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
   : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 /** Cada fase toca num som diferente (caixa, tambor, bumbo, chimbal) pra uma fase não se confundir com a outra. */
 const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
@@ -39,16 +41,13 @@ function tocaCompasso(cells, bpm, som) {
 
 const MUNDOS_DET = {
   m1: { tema: 'espaco', nome: 'Espaço do Pulso', regioes: [['orbita', 'Órbita da Semínima', 'semínima e colcheias'], ['estacao', 'Estação das Pausas', 'pausa de semínima e de colcheia']] },
-  m2: { tema: 'gelo', nome: 'Geleira das Semicolcheias', regioes: [['iglu', 'Iglu das Semis', '4 semicolcheias'], ['pico', 'Pico das Pausas', 'pausa no 1, 2, 3 ou 4']] },
+  m2: { tema: 'floresta', nome: 'Floresta das Semicolcheias', regioes: [['gramado', 'Gramado das Semis', '4 semicolcheias'], ['ciclovia', 'Trilha das Pausas', 'pausa no 1, 2, 3 ou 4']] },
   m3: { tema: 'vulcao', nome: 'Vulcão das Pontuadas', regioes: [['cratera', 'Cratera do Ponto', 'colcheia pontuada'], ['forja', 'Forja do Flam', 'nota com flam']] },
-  comida: { tema: 'deserto', nome: 'Cozinha do Deserto', regioes: [['padaria', 'Padaria do Pulso', 'pão quentinho'], ['confeitaria', 'Confeitaria das Semis', 'cho-co-la-te']] },
-  parque: { tema: 'floresta', nome: 'Parque dos Ritmos', regioes: [['gramado', 'Gramado da Bola', 'bo-la'], ['ciclovia', 'Ciclovia', 'bi-ci-cle-ta']] },
-  corpo: { tema: 'vulcao', nome: 'Corpo em Movimento', regioes: [['maos', 'Sala das Mãos', 'palmas no pulso'], ['esqueleto', 'Galeria do Esqueleto', 'es-que-le-to']] },
-  animal: { tema: 'mar', nome: 'Oceano dos Bichos', regioes: [['toca', 'Recife do Cão', 'au au'], ['lago', 'Lagoa da Borboleta', 'bor-bo-le-ta']] },
 };
 
 export function mount(host) {
-  const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'm1'; let bpm = bpmFase(modo, 1); // o andamento sobe a cada fase
+  const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'm1'; let estiloEsc = ESTILOS.includes(saved.estilo) ? saved.estilo : 'figuras';
+  const estilo = () => estiloDe(modo, estiloEsc); let bpm = bpmFase(modo, 1); // o andamento sobe a cada fase
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
@@ -81,7 +80,7 @@ export function mount(host) {
     if (tipo === 'agora') w.querySelectorAll('.dn-slot').forEach((e, k) => e.classList.toggle('agora', k === i));
   };
   const anima = (t0, q, conta) => {
-    if (!TEMAS[modo]) return; limparTempo(); const c = audio(); const espera = (t) => Math.max(0, (t - c.currentTime) * 1000);
+    if (!TEMAS[estilo()]) return; limparTempo(); const c = audio(); const espera = (t) => Math.max(0, (t - c.currentTime) * 1000);
     if (conta) for (let i = 0; i < 4; i++) Au.later(() => marca(i, 'conta'), espera(t0 - (4 - i) * q));
     for (let b = 0; b < 4; b++) Au.later(() => marca(b, 'agora'), espera(t0 + b * q));
     Au.later(limparTempo, espera(t0 + 4 * q + 0.1));
@@ -92,17 +91,18 @@ export function mount(host) {
   const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
     h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
   const desenha = () => {
-    const cs = cartas(modo, fase); const cheio = slots.length === 4;
+    const cs = cartas(modo, fase, estilo()); const est = estilo(); const cheio = slots.length === 4;
     const casas = Array.from({ length: 4 }, (_, i) => { const c = slots[i] != null ? cs.find((x) => x.cell === slots[i]) : null; const m = marcas ? marcas[i] : null;
       return h('button', { type: 'button', class: `dn-slot${c ? ' cheia' : ''}${m === true ? ' ok' : m === false ? ' no' : ''}`, 'aria-label': c ? `tempo ${i + 1}: tirar` : `tempo ${i + 1} vazio`, onclick: () => { if (c) { slots = slots.slice(0, i); marcas = null; desenha(); } } },
-        c ? face(c, modo) : h('small', {}, String(i + 1))); });
-    const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : temFlam(c.cell) ? `${baseDe(c.cell)} com flam` : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
+        c ? face(c, est) : h('small', {}, String(i + 1))); });
+    const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.cell === '0010' ? 'pausa de colcheia e colcheia' : c.id ? foodOf(c.id).word : temFlam(c.cell) ? `${baseDe(c.cell)} com flam` : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, est)));
     const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
       h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
+      modo === 'm1' ? h('div', { class: 'jg-seg sm dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, NOME_ESTILO(e)))) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
-      h('div', { class: `dn-wrap${!TEMAS[modo] ? ' sem' : ''}` }, !TEMAS[modo] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),
+      h('div', { class: `dn-wrap${!TEMAS[est] ? ' sem' : ''}` }, !TEMAS[est] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),
       h('p', { class: 'dn-lab' }, 'suas pistas'),
       h('div', { class: 'dn-baralho', style: `--n:${cs.length > 4 ? 3 : cs.length}` }, ...baralho),
       h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary dn-conferir', type: 'button', disabled: !cheio, onclick: confere }, 'conferir'), slots.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { slots = []; marcas = null; desenha(); } }, 'limpar') : null)));

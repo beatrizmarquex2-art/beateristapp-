@@ -7,7 +7,7 @@ await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-no
 await page.goto(url + '/aluno.html#/jogos/detetive'); await page.waitForSelector('.mp-node', { timeout: 15000 });
 check('abre direto no mapa com 12 fases', (await page.locator('.mp-node').count()) === 12);
 const modos = await page.locator('.tm-tabs button').allTextContents();
-check('modos: mundo 1, 2 e 3, depois comida, parque, corpo e animal', modos.length === 7 && /mundo 1/.test(modos[0]) && /mundo 2/.test(modos[1]) && /mundo 3/.test(modos[2]) && /comida/.test(modos[3]) && /parque/.test(modos[4]) && /corpo/.test(modos[5]) && /animal/.test(modos[6]), modos.join('|'));
+check('só 3 abas: mundo 1, 2 e 3', modos.length === 3 && /mundo 1/.test(modos[0]) && /mundo 2/.test(modos[1]) && /mundo 3/.test(modos[2]), modos.join('|'));
 check('"mundo 1" já vem marcado', (await page.locator('.tm-tabs button.on').textContent()) === 'mundo 1');
 let MODO = 'm1';
 const monta = async (fase, certo = true) => {
@@ -30,11 +30,12 @@ for (let r = 1; r < 3; r++) { await monta(1, true); await page.getByRole('button
 check('3 ritmos acertados: fase concluída com estrelas e botão da próxima fase', /fase 1 concluída/.test(await page.textContent('.jg-detetive')) && (await page.getByRole('button', { name: /próxima fase/ }).count()) === 1);
 check('errou de primeira no 1º ritmo (2 de 3 = 67%): 1 estrela, como na pauLta', (await page.getAttribute('.dn-estrelas', 'aria-label')) === '1 de 3 estrelas', await page.getAttribute('.dn-estrelas', 'aria-label'));
 await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
-await page.locator('.tm-tabs button').nth(4).click(); await page.waitForSelector('.mp-node'); MODO = 'parque'; // parque
-await abre(4); // fase 5: entram as semicolcheias
-check('fase 5 do parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i').count()) === 4);
+await abre(4); // fase 5 do mundo 1
+check('mundo 1 tem os chips figuras, comida, parque, corpo e animal dentro do caso', (await page.locator('.dn-estilos button').count()) === 5);
+await page.locator('.dn-estilos button').nth(2).click(); // parque
+check('fase 5 no estilo parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i').count()) === 4);
 
-check('fase 5 do parque toca mais rápido que a fase 1', /\d+ bpm/.test(await page.textContent('.dn-ouvir')) && Number((await page.textContent('.dn-ouvir')).match(/(\d+) bpm/)[1]) > 70);
+check('fase 5 toca mais rápido que a fase 1', /\d+ bpm/.test(await page.textContent('.dn-ouvir')) && Number((await page.textContent('.dn-ouvir')).match(/(\d+) bpm/)[1]) > 70);
 await monta(5, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('parque: monta e confere', (await page.locator('.dn-slot.ok').count()) === 4);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
