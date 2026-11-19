@@ -1,12 +1,12 @@
 // A Fuga do Estúdio em mapa (como os outros jogos de caminhozinho): 3 mundos × 12 fases × 3 ★ = 36 ★ por mundo. Lógica pura (testada em tests/fuga-logic.test.mjs).
-//  mundo 1 = Estúdio dos Lasers (tema próprio) · mundo 2 = Vulcão · mundo 3 = Estação Espacial. Cada fase é uma PORTA: quiz, caça-palavras ou cruzadinha, em rodízio.
+//  mundo 1 = Estúdio do Paul (escape room) · mundo 2 = Camarim · mundo 3 = Palco (os ids internos estudio/vulcao/espaco ficam, pra não perder o progresso salvo). Cada fase é uma PORTA: quiz, caça-palavras ou cruzadinha, em rodízio.
 import { regioesDoTema } from './mundos-tema.js';
 
 export const FASES = 12;
 export const MUNDOS = [
-  { id: 'estudio', tema: 'laser', nome: 'Laboratório do Paul', curto: 'laboratório', sub: 'escape room: ache a saída', mapa: 'lab', regioes: regioesDoTema('laser', [['corredor', 'Corredor dos Lasers', 'cuidado com o vermelho'], ['cabine', 'Cabine Secreta', 'a saída está perto']]) },
-  { id: 'vulcao', tema: 'vulcao', nome: 'Vulcão das Portas de Pedra', curto: 'vulcão', sub: 'o calor aumenta', regioes: regioesDoTema('vulcao', [['cratera', 'Cratera Quente', 'pedras que se mexem'], ['lava', 'Rio de Lava', 'só os rápidos passam']]) },
-  { id: 'espaco', tema: 'espaco', nome: 'Estação Espacial', curto: 'espaço', sub: 'sem gravidade', regioes: regioesDoTema('espaco', [['orbita', 'Órbita das Escotilhas', 'fora do planeta'], ['estacao', 'Sala de Comando', 'a última escotilha']]) },
+  { id: 'estudio', tema: 'laser', nome: 'Estúdio do Paul', curto: 'estúdio', sub: 'escape room: ache a saída', mapa: 'lab', regioes: regioesDoTema('laser', [['corredor', 'Corredor dos Lasers', 'cuidado com o vermelho'], ['cabine', 'Cabine Secreta', 'a saída está perto']]) },
+  { id: 'vulcao', tema: 'laser', nome: 'Camarim do Paul', curto: 'camarim', sub: 'espelho, luzes e frio na barriga', regioes: regioesDoTema('laser', [['espelho', 'Espelho das Luzes', 'ajeita o figurino'], ['coxia', 'Coxia', 'quase na hora de entrar']]) },
+  { id: 'espaco', tema: 'laser', nome: 'Palco Principal', curto: 'palco', sub: 'a plateia tá esperando', regioes: regioesDoTema('laser', [['plateia', 'Fosso da Plateia', 'luz nos olhos'], ['solo', 'Solo Final', 'o último refrão']]) },
 ];
 export const TIPOS = ['quiz', 'caca', 'cruz'];
 export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)' };

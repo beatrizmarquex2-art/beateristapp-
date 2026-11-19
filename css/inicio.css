@@ -79,3 +79,5 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .inicio > * { min-width: 0; }
 .inicio { overflow-x: clip; }
 .in-rail { margin: 0 !important; padding: 0 0 6px !important; }
+/* o acento do nome (Bê, Zé...) não pode ser cortado */
+.in-nome { line-height: 1.3 !important; top: 44px !important; padding-top: 4px; }

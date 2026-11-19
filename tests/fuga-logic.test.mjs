@@ -23,6 +23,6 @@ test('desenho da Bea: portas por fase 2·2·3·3·3·1·1·3·3·3·4·4; fases 
   const f6 = portasDaFase(0, 6); assert.equal(f6.length, 1); assert.equal(f6[0].maxErros, 0); assert.ok(f6[0].desafio && f6[0].limite === 90); assert.equal(portasDaFase(0, 7)[0].tipo, 'caca');
   assert.deepEqual([30, 40, 41, 65, 66, 200].map((t) => estrelasDesafio(t, DESAFIOS[6])), [3, 3, 2, 2, 1, 1]);
   assert.equal(BONUS.maxErros, 1); assert.equal(BONUS.perguntas, 7); assert.equal(bonusAberto({}, 'estudio'), false); assert.equal(bonusAberto({ 'estudio:12': 1 }, 'estudio'), true);
-  assert.equal(MUNDOS[0].nome, 'Laboratório do Paul');
+  assert.equal(MUNDOS[0].nome, 'Estúdio do Paul');
 });
 test('estrelas da fase = média das portas (1 a 3)', () => { assert.equal(estrelasFase([3, 3, 3]), 3); assert.equal(estrelasFase([3, 2]), 3); assert.equal(estrelasFase([2, 1, 1]), 1); assert.equal(estrelasFase([]), 0); });
