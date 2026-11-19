@@ -1,6 +1,7 @@
 // Vitrine da Lojinha Beaterista (desenho da Bea): materiais em cartões + Passe Beaterista. Textos, imagens e links em js/loja-config.js.
 // Tocar na capa abre as fotos grandes do material (o que tem dentro), com o botão Adquirir.
 import { h } from '../util.js';
+import { iconePaul } from '../icone-paul.js';
 import { toast } from '../ui.js';
 import { PASSE, PRODUTOS, COMBO, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
 import { precoPasse } from '../passe-preco.js';
@@ -72,6 +73,6 @@ export function vitrine(secao = '') {
     h('div', { class: 'lj-secs' }, ...SECOES.map(tile)),
     h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
     PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
-      h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
+      h('div', { class: 'lj-pm' }, h('h3', {}, iconePaul('passe-beaterista', 30), PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
       h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, precoPasse().atual), precoPasse().oferta ? h('small', { class: 'lj-de' }, `de ${precoPasse().de} · oferta até ${precoPasse().ate}`) : null, botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }

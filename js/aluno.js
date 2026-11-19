@@ -80,6 +80,7 @@ import { entradaNova } from './entrada.js';
 import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
+import { iconePaul } from './icone-paul.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -246,7 +247,7 @@ function estudosView(view) {
   const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
     h('div', { class: 'hj-big' }, tile('#/dicionario', 'lendo-partitura', 'dicionário musical', 'busque um termo', 'dicionario'), tile('#/estudos/aulas', 'professor', 'robôterista ensina', 'teoria, bateria, teclado e violão', 'aulas'), duplo, tile('#/jogos/relatorio', 'oculos', 'jogos ensinam', 'pra que serve cada jogo', 'ensinam')),
     h('div', { class: 'hj-chips' }, ...[['#/estudos/dicas', 'todas as dicas'], ['#/estudos/curiosidades', 'todas as curiosidades']].map(([href, nome]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}`))));
-  const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, '🎡'), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
+  const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, iconePaul('roleta-paul', 34)), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
   view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'ESTUDOS'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`)), hero, chips, sorte));
   import('./figurinhas/estrelas.js').then(async (E) => { try { const P = await import('./kids/progress.js'); const me = P.active(); if (!me) return; const f = E.faltamParaRoleta(E.estrelasTotais(me.id)); const el = sorte.querySelector('.hj-rt'); if (el && f) el.textContent = `faltam ${f} ★ pra roleta`; } catch { /* sem o álbum */ } }).catch(() => {});
 }
@@ -414,7 +415,7 @@ function abrirCodigo() {
     const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
     const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
-    return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
+    return h('div', { class: 'sheet-body' }, h('div', { class: 'ic-passe-topo' }, iconePaul('passe-beaterista', 56)), h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
       h('p', { class: 'muted' }, 'ainda não tem? ', h('a', { href: '#/lojinha', onclick: close }, 'veja a Lojinha')));
   });
 }
@@ -513,7 +514,7 @@ function shell(name) {
       const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
       let pend = 0; try { pend = FRpend() || 0; } catch { pend = 0; }
       const aba = (href, nome, on, ic, badge) => h('a', { href, role: 'tab', 'aria-selected': String(on), class: `chip-btn${on ? ' on' : ''}`, 'aria-label': badge ? `${nome}, ${badge} pra abrir` : nome }, h('span', { class: 'al-ic', 'aria-hidden': 'true' }, ic), nome, badge ? h('span', { class: 'al-badge', 'aria-hidden': 'true' }, String(badge)) : null);
-      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, stars e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, '📔'), aba('#/album/Pacotes', 'stars', roleta, '⭐️', pend), aba('#/perfil', 'perfil', r.name === 'perfil', '📸')));
+      view.prepend(h('div', { class: 'al-subnav', role: 'tablist', 'aria-label': 'Álbum, stars e perfil' }, aba('#/album', 'álbum', r.name === 'album' && !roleta, iconePaul('album-figurinhas', 26)), aba('#/album/Pacotes', 'stars', roleta, iconePaul('estrela-recompensa', 26), pend), aba('#/perfil', 'perfil', r.name === 'perfil', iconePaul('perfil-camera', 26))));
     }
     if (voltarA && !/^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash)) { const vA = voltarA; view.prepend(h('a', { class: 'al-voltar', href: vA.hash, onclick: () => { voltouNaFaixa = true; } }, `‹ voltar para ${vA.nome}`)); } // dentro de um jogo já existe o botão flutuante "‹ jogos"
     cleanup = typeof c === 'function' ? c : null;

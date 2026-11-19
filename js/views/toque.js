@@ -3,6 +3,7 @@
 // (vira ritmo do Beat Lab ou partitura). É um rascunho do que você tocou, não transcrição perfeita.
 import * as SEG from '../figurinhas/segredos-palco.js';
 import { h, icon } from '../util.js';
+import { iconePaul } from '../icone-paul.js';
 import * as store from '../store.js';
 import * as B from '../beats.js';
 import * as N from '../notation.js';
@@ -173,7 +174,7 @@ export function mount(host) {
           h('button', { class: 'bl-step', type: 'button', 'aria-label': 'menos 5 BPM', onclick: () => setBpm(c.bpm - 5) }, '−'), h('output', { class: 'bl-bpm' }, String(c.bpm)),
           h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => setBpm(c.bpm + 5) }, '+'),
           h('span', { class: 'tp-lab' }, 'BPM')),
-        h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', 'contagem ao gravar'), chip('grid', 'ao compasso')),
+        h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', h('span', { class: 'ic-lbl' }, iconePaul('contagem-quatro-tempos', 22), 'contagem ao gravar')), chip('grid', 'ao compasso')),
         ),
       status,
       take ? h('section', { class: 'card pad tk-take' },
@@ -181,7 +182,7 @@ export function mount(host) {
         ...take.bars.map((b) => { const f = h('figure', { class: 'cb-bar' }); f.innerHTML = N.toSVG(N.layout(b, { width: 340, full: true })); return f; }),
         h('div', { class: 'row tk-actions' },
           h('button', { class: `btn${listening ? ' primary' : ''}`, type: 'button', onclick: () => { if (listening) { stopAll(); listening = false; drawPanel(); return; } stopLoop(); listening = true; playDoc(doc, { loop: loopOn, withClick: true, onEnd: () => { listening = false; drawPanel(); } }); drawPanel(); } }, icon(listening ? 'stop' : 'play', 14), listening ? ' parar' : ' ouvir na partitura'),
-          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(loopOn), onclick: () => { loopOn = !loopOn; drawPanel(); } }, loopOn ? '↻ em loop ✓' : '↻ em loop'),
+          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(loopOn), onclick: () => { loopOn = !loopOn; drawPanel(); } }, h('span', { class: 'ic-lbl' }, iconePaul('loop-reproducao', 20), loopOn ? 'em loop ✓' : 'em loop')),
           take.bars.length === 1 && !document.documentElement.classList.contains('aluno-on') ? h('button', { class: 'btn', type: 'button', onclick: async (e) => { // o Beat Lab só existe no app da Bea
             const btn = e.currentTarget; const b = take.bars[0]; const beat = { id: 'novo', name: 'Toquei na bateria', style: 'Meus', bpm: take.bpm, steps: 16, kind: 'groove', rows: b.rows, mine: true };
             const r = await store.upsert('beat', null, { beat }); await store.upsert('beat', r.id, { beat: { ...beat, id: r.id, recId: r.id } });

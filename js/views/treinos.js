@@ -3,6 +3,7 @@
 // Escuta (ditado): o app toca um compasso e você escolhe qual das 4 partituras foi.
 // Montar (ditado de células): o app toca 4 tempos e você monta o compasso tocando nas células; 5 vidas e recorde.
 import { h, icon } from '../util.js';
+import { iconePaul } from '../icone-paul.js';
 import * as store from '../store.js';
 import { audio, click, snare, perfToCtx } from '../audio.js';
 import { voz, getSom, setSom, SONS, VELOCIDADES, BPM_MAX, velocidadeDe } from '../toca-som.js';
@@ -220,7 +221,7 @@ export function leitura(host, opts = {}) {
         h('button', { class: 'btn small', type: 'button', onclick: () => { micBlocked = false; micErro = null; draw(false); } }, '🎙 tentar o microfone de novo')) : null,
       h('div', { class: 'tr-modos', role: 'group', 'aria-label': 'Como começar' },
         h('button', { class: 'tr-card', type: 'button', onclick: listen }, icone('fone', 'tr-ic'), h('b', {}, 'ouvir'), h('small', {}, 'escuta o ritmo')),
-        h('button', { class: 'tr-card go', type: 'button', onclick: start }, icone('play', 'tr-ic'), h('b', {}, 'contagem'), h('small', {}, 'conta 4 e aí você toca'))),
+        h('button', { class: 'tr-card go', type: 'button', onclick: start }, iconePaul('contagem-quatro-tempos', 40), h('b', {}, 'contagem'), h('small', {}, 'conta 4 e aí você toca'))),
       livre ? h('div', { class: 'row tr-actions' }, h('button', { class: 'btn ghost', type: 'button', onclick: () => draw(true) }, '🔀 outro compasso')) : null,
       status, pad, testeMic, quick, summary, history('leitura')].filter(Boolean));
   };
