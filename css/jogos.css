@@ -1571,3 +1571,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}
 
 .dc-seta{font-size:26px;line-height:1;vertical-align:middle;color:#c4182c}
+
+.dc-desistir-btns{display:grid;gap:8px;margin-top:10px}

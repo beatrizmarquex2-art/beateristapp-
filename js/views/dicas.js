@@ -2,7 +2,7 @@
 // Os textos vêm dos registros privados "tip" (os mesmos do Plano de Estudo); sem eles os jogos avisam em vez de inventar texto.
 import { h } from '../util.js';
 import * as store from '../store.js';
-import { banner, confirmSheet } from '../ui.js';
+import { banner, confirmSheet, sheet } from '../ui.js';
 import * as T from '../tips.js';
 import * as FB from '../feedback.js';
 import { TERMS } from '../glossary.js';
@@ -29,9 +29,17 @@ const LETRAS = ['A', 'B', 'C', 'D'];
 function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas iguais nos dois celulares, fim() } — sem estrela própria, sem recorde e sem tela final
   const its = D ? [] : items(); const ROUNDS = D ? D.qs.length : Math.min(10, its.length);
   let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = []; let ajudou = false; // ajudou: gastou o "desistir das minhas ⭐⭐⭐" (só no quiz da Fuga, D.ajuda): tira 2 alternativas erradas e a nota máxima cai pra 2 ★
-  const desistir3 = async () => {
-    if (ajudou || answered || !(await confirmSheet('desistir das suas ⭐⭐⭐?', 'eu tiro 2 alternativas erradas, mas esse quiz passa a valer no máximo 2 ★. você ainda precisa acertar pelo menos 3 pra abrir a porta.', 'desistir'))) return;
-    ajudou = true; const erradas = q.options.filter((o) => o.id !== q.ans).sort(() => Math.random() - 0.5).slice(0, 2).map((o) => o.id); q.escondidas = erradas; draw();
+  // "desistir das minhas ⭐⭐⭐": antes de pular, o app pergunta "quer uma dica? ou quer mesmo pular?". Dica (1 por quiz) tira 2 alternativas erradas e o quiz passa a valer no máximo 2 ★;
+  // pular conta como erro (a resposta certa aparece). Em qualquer dos dois, ainda precisa de 3 acertos pra abrir a porta.
+  const pedeDica = () => { ajudou = true; q.escondidas = q.options.filter((o) => o.id !== q.ans).sort(() => Math.random() - 0.5).slice(0, 2).map((o) => o.id); draw(); };
+  const desistir3 = () => {
+    if (answered) return;
+    sheet('quer uma dica?', (close) => h('div', { class: 'sheet-body dc-desistir-sheet' },
+      h('p', { class: 'muted' }, ajudou ? 'a dica desse quiz já foi usada. quer mesmo pular? pular conta como erro: aí não dá mais pra ganhar as ⭐⭐⭐.' : 'ou quer mesmo pular? a dica tira 2 alternativas erradas, mas o quiz passa a valer no máximo 2 ★. pular conta como erro e mostra a resposta.'),
+      h('div', { class: 'dc-desistir-btns' },
+        ajudou ? null : h('button', { type: 'button', class: 'btn primary', 'data-acao': 'dica', onclick: () => { close(); pedeDica(); } }, '💡 quero uma dica'),
+        h('button', { type: 'button', class: 'btn', 'data-acao': 'pular', onclick: () => { close(); done(false, null); } }, '⏭️ pular mesmo'),
+        h('button', { type: 'button', class: 'btn ghost', 'data-acao': 'voltar', onclick: close }, 'voltar'))));
   };
   const next = () => { if (D) q = D.qs[i]; else { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); } answered = false; picked = null; draw(); };
   const dots = () => h('div', { class: 'dc-prog', role: 'img', 'aria-label': `pergunta ${i + 1} de ${ROUNDS}, ${score} certas` }, ...Array.from({ length: ROUNDS }, (_, n) => h('i', { class: n < hist.length ? (hist[n] ? 'ok' : 'no') : n === i ? 'now' : '' })));
@@ -49,8 +57,8 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
     const ask = q.ask || (q.kind === 'blank' ? 'qual palavra completa a dica?' : null);
     const body = [dots(), head, h('p', { class: 'dc-clue' }, q.prompt), ask ? h('p', { class: 'muted' }, ask) : null,
-      D && D.ajuda && !ajudou && !answered ? h('button', { type: 'button', class: 'btn small ghost dc-desistir', onclick: desistir3 }, '🏳️ desistir das minhas ⭐⭐⭐') : null,
-      D && D.ajuda && ajudou ? h('small', { class: 'muted' }, 'você desistiu das ⭐⭐⭐: esse quiz vale no máximo 2 ★') : null,
+      D && D.ajuda && !answered ? h('button', { type: 'button', class: 'btn small ghost dc-desistir', onclick: desistir3 }, '🏳️ desistir das minhas ⭐⭐⭐') : null,
+      D && D.ajuda && ajudou ? h('small', { class: 'muted' }, 'você pegou a dica: esse quiz vale no máximo 2 ★') : null,
       h('div', { class: `dc-opts${q.options.some((o) => o.label.length > 18) ? ' long' : ''}` }, ...q.options.filter((o) => !(q.escondidas || []).includes(o.id)).map((o, n) => h('button', { type: 'button', class: `tr-pal dc-opt dc-op${answered ? (o.id === q.ans ? ' ok' : picked === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = o.id; done(o.id === q.ans, e.currentTarget); } },
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
