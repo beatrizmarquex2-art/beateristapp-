@@ -1130,3 +1130,8 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 /* as 2 opções da foto: uma embaixo da outra, na largura toda, com o texto corrido (a dica continua na mesma linha) */
 .pf-onde { grid-template-columns: 1fr !important; gap: 8px !important; }
 .pf-todos span { display: block; } .pf-todos small { display: inline !important; margin: 0 0 0 6px !important; }
+/* bolinha na mesma linha do texto (1ª linha) */
+.pf-todos { align-items: flex-start !important; }
+.pf-todos input { margin: 0 !important; flex: none; position: relative; top: -2px; }
+.pf-todos span { padding-top: 0 !important; margin: 0 !important; }
+.pf-todos input { width: 22px !important; height: 22px !important; min-height: 0 !important; padding: 0 !important; top: -2px; }
