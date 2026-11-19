@@ -1,6 +1,10 @@
 // Estrelas dos jogos de mesa (regra pura, sem tela): 1 por vitória contra o Paul; limite de 60 por dia só nos jogos de mesa (os de aprender não têm limite).
 export const LIMITE_DIA = 60; // por jogo, por dia (a Bea subiu de 30 pra 60: dá pra zerar um jogo no mesmo dia)
-export const AVISO_PERTO = 6; // faltando só isto pro limite, o app avisa com carinho
+export const LIMITE_MEMORIA = 10; // jogo da memória: 10 ★ por dia POR TEMA (chave `memoria:<tema>`), pedido da Bea
+/** Limite diário de ★ de um jogo de mesa: 60 em geral; na memória, 10 por tema. */
+export const limiteDe = (jogo) => (String(jogo).startsWith('memoria:') ? LIMITE_MEMORIA : LIMITE_DIA);
+/** Faltando tanto pro limite, o app avisa com carinho (6 nos jogos de 60, 2 nos de 10). */
+export const avisoPerto = (jogo) => Math.min(6, Math.max(1, Math.round(limiteDe(jogo) / 5)));
 export const hoje = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const livre = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 /** Conta o dia: devolve o novo estado e se ganhou a estrela (puro, testado em tests/mesa.test.mjs). */
@@ -8,8 +12,8 @@ export function contar(mesa, jogo, dia = hoje(), n = 1) {
   const m = { total: 0, dias: {}, ...(mesa || {}) }; const d = { ...(m.dias[jogo] || { d: dia, n: 0 }) };
   if (d.d !== dia) { d.d = dia; d.n = 0; }
   if (APRENDER.includes(jogo)) { const g = Math.max(0, Math.round(n) || 0); d.n += g; return { mesa: { ...m, total: m.total + g, dias: { ...m.dias, [jogo]: d } }, ganhou: g, resta: Infinity }; } // jogos de APRENDER: sem limite por dia (a Bea)
-  const g = Math.max(0, Math.min(Math.round(n) || 0, LIMITE_DIA - d.n)); d.n += g;
-  return { mesa: { ...m, total: m.total + g, dias: { ...m.dias, [jogo]: d } }, ganhou: g, resta: LIMITE_DIA - d.n, pediu: Math.max(0, Math.round(n) || 0) };
+  const lim = limiteDe(jogo); const g = Math.max(0, Math.min(Math.round(n) || 0, lim - d.n)); d.n += g;
+  return { mesa: { ...m, total: m.total + g, dias: { ...m.dias, [jogo]: d } }, ganhou: g, resta: lim - d.n, pediu: Math.max(0, Math.round(n) || 0) };
 }
 /** Jogos e estudos de APRENDER: NÃO têm o limite de 30 ★ por dia (pedido da Bea). O limite vale só pros jogos de mesa (velha, memória, cara a cara, stop, bingo, quebra-cabeça), que dão 1 ★ por vez. */
 export const APRENDER = ['cartas', 'quizuno', 'quiz', 'caca', 'cruzadinha', 'toca', 'figurix', 'detetive', 'rudimentos', 'copia', 'paultavivo', 'groove', 'fantasma', 'estudos', 'beathero', 'arte', 'checkin', 'missao'];

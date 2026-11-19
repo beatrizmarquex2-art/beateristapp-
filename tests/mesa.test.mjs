@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { contar, LIMITE_DIA, starsPct, starsErros, ENSINAM } from '../js/figurinhas/mesa-logic.js';
+import { contar, LIMITE_DIA, limiteDe, avisoPerto, starsPct, starsErros, ENSINAM } from '../js/figurinhas/mesa-logic.js';
 test('estrelas dos jogos de mesa: 1 por vitória contra o Paul, limite de 60 por jogo por dia', () => {
   let m = null; let ganhas = 0;
   for (let i = 0; i < 80; i++) { const r = contar(m, 'velha', '2026-11-06'); m = r.mesa; ganhas += r.ganhou; }
@@ -56,4 +56,11 @@ test('o aviso sabe quando falta pouco e quando bateu o limite', () => {
   const dps = contar(m, 'stop', '2026-11-20', 3); assert.equal(dps.ganhou, 0); assert.equal(dps.resta, 0); assert.equal(dps.pediu, 3);
   // quem pede 3 ★ com 2 sobrando recebe só 2
   let q = null; for (let i = 0; i < 58; i++) q = contar(q, 'cara', '2026-11-20', 1).mesa; const parc = contar(q, 'cara', '2026-11-20', 3); assert.equal(parc.ganhou, 2); assert.equal(parc.resta, 0);
+});
+
+test('memória: 10 ★ por dia por tema; os outros jogos de mesa seguem com 60', () => {
+  assert.equal(limiteDe('memoria:beatles'), 10); assert.equal(limiteDe('stop'), 60); assert.equal(avisoPerto('memoria:beatles'), 2); assert.equal(avisoPerto('stop'), 6);
+  let m = null; let g = 0; for (let i = 0; i < 15; i++) { const r = contar(m, 'memoria:beatles', '2026-11-20', 1); m = r.mesa; g += r.ganhou; }
+  assert.equal(g, 10, 'trava em 10 neste tema');
+  const outro = contar(m, 'memoria:percussao', '2026-11-20', 1); assert.equal(outro.ganhou, 1, 'outro tema tem o seu próprio limite');
 });

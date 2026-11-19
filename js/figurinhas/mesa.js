@@ -4,7 +4,7 @@ import * as P from '../kids/progress.js';
 import * as AC from '../acesso.js';
 import { toast } from '../ui.js';
 
-import { LIMITE_DIA, AVISO_PERTO, APRENDER, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra, pagarChave } from './mesa-logic.js';
+import { LIMITE_DIA, limiteDe, avisoPerto, APRENDER, contar, hoje, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra, pagarChave } from './mesa-logic.js';
 export { pagarChave, LIMITE_DIA, APRENDER, contar, ENSINAM, starsPct, starsErros, ESTRELAS_JOGO, premioQuebra };
 const livre = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
 export const totalMesa = (pid) => (P.progOf(pid).mesa || {}).total || 0;
@@ -15,16 +15,17 @@ function avisoLimite(jogo, tipo, texto) {
   try { if (localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); } catch { /* sem armazenamento: avisa */ }
   toast(texto, { ms: 5200, id: `lim-${jogo}` }); return true;
 }
-const MSG_CHEGOU = `você completou as ${LIMITE_DIA} ★ de hoje neste jogo! 🎸 amanhã tem mais ★ esperando. por hoje, joga pela diversão: o treino continua valendo e o seu ouvido agradece 🎶`;
-const MSG_PERTO = (resta) => `quase lá! faltam ${resta} ★ pra completar o limite de hoje neste jogo (${LIMITE_DIA}). depois disso o jogo segue igualzinho, só sem ★ até amanhã 🎶`;
-const MSG_DEPOIS = `hoje as ★ deste jogo já estão completas (${LIMITE_DIA}!) 🎸 continue tocando e jogando: é treino de graça. as ★ voltam amanhã 🌟`;
+const onde = (jogo) => (String(jogo).startsWith('memoria:') ? 'neste tema' : 'neste jogo');
+const MSG_CHEGOU = (jogo) => `você completou as ${limiteDe(jogo)} ★ de hoje ${onde(jogo)}! 🎸 amanhã tem mais ★ esperando. por hoje, joga pela diversão: o treino continua valendo e o seu ouvido agradece 🎶`;
+const MSG_PERTO = (jogo, resta) => `quase lá! faltam ${resta} ★ pra completar o limite de hoje ${onde(jogo)} (${limiteDe(jogo)}). depois disso o jogo segue igualzinho, só sem ★ até amanhã 🎶`;
+const MSG_DEPOIS = (jogo) => `hoje as ★ ${onde(jogo)} já estão completas (${limiteDe(jogo)}!) 🎸 continue tocando e jogando: é treino de graça. as ★ voltam amanhã 🌟`;
 async function entregar(me, r, jogo) {
-  if (!r.ganhou) { if (r.pediu > 0 && r.resta === 0) avisoLimite(jogo, 'depois', MSG_DEPOIS); return 0; } // bateu no limite antes: avisa uma vez, com carinho
+  if (!r.ganhou) { if (r.pediu > 0 && r.resta === 0) avisoLimite(jogo, 'depois', MSG_DEPOIS(jogo)); return 0; } // bateu no limite antes: avisa uma vez, com carinho
   let faltam = 0; let nova = 0;
   try { const E = await import('../figurinhas/estrelas.js'); nova = await E.sincronizar(me.id); faltam = E.faltamParaRoleta(E.estrelasTotais(me.id)); } catch { /* sem o álbum, só conta */ }
   toast(`+${r.ganhou} ★ ${nova ? `· 🎡 roleta liberada!` : faltam ? `· faltam ${faltam} pra roleta` : ''}`, { ms: 2600 });
-  if (r.resta === 0) setTimeout(() => avisoLimite(jogo, 'chegou', MSG_CHEGOU), 2800); // zerou o dia neste jogo: parabeniza
-  else if (r.resta <= AVISO_PERTO) setTimeout(() => avisoLimite(jogo, 'perto', MSG_PERTO(r.resta)), 2800); // falta pouco: avisa antes, sem susto
+  if (r.resta === 0) setTimeout(() => avisoLimite(jogo, 'chegou', MSG_CHEGOU(jogo)), 2800); // zerou o dia neste jogo: parabeniza
+  else if (r.resta <= avisoPerto(jogo)) setTimeout(() => avisoLimite(jogo, 'perto', MSG_PERTO(jogo, r.resta)), 2800); // falta pouco: avisa antes, sem susto
   return r.ganhou;
 }
 /** Chame UMA vez por vitória. `n` = quantas estrelas (padrão: a tabela ESTRELAS_JOGO do jogo, senão 1). Devolve quantas ganhou.
