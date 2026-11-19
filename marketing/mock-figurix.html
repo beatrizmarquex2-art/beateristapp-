@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mock Figurix e Fuga</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e3d6;font:600 13px/1.3 "Hanken Grotesk",system-ui,sans-serif;color:#1c1330}
+.board{display:flex;gap:18px;padding:18px;width:1030px;background:#e9e3d6}
+.col{display:flex;flex-direction:column;gap:6px}.lab{font:800 12px/1 system-ui;letter-spacing:.08em;text-transform:uppercase;color:#6b5f4d;padding:0 2px}
+.ph{width:316px;height:560px;border-radius:22px;overflow:hidden;position:relative;padding:12px;display:flex;flex-direction:column;gap:9px}
+.t{font:400 22px/1 Anton,Impact,sans-serif;text-transform:uppercase}.sub{font-size:12px;opacity:.85}
+.top{display:flex;align-items:center;justify-content:space-between}.logo{font:400 18px/1 Anton;padding:4px 9px;border-radius:6px}
+.dots{display:flex;gap:4px}.dots i{width:9px;height:9px;border-radius:50%;display:block}
+.fig{display:flex;align-items:center;justify-content:center}.fig svg{width:100%;height:100%}
+.grid{display:grid;gap:8px}.btn{padding:10px 8px;text-align:center;font-weight:800;border-radius:10px}
+.pg{position:absolute;right:6px;bottom:0;width:90px}.pg img{width:100%}
+/* ===== skin giz: papel amarelo, traço preto, sombra dura ===== */
+.giz{background:#ffd34f;background-image:radial-gradient(#0001 1px,transparent 1.5px);background-size:10px 10px}
+.giz .logo{background:#2b2a8c;color:#fff;transform:rotate(-2deg)}.giz .card,.giz .btn,.giz .cell{background:#fffdf6;border:3px solid #1c1330;box-shadow:3px 3px 0 #1c1330;border-radius:12px}
+.giz .sel{background:#ffb4c0}.giz .ok{background:#bdf0cd}.giz .hot{background:#f2a91b}.giz .dots i{background:#fff;border:2px solid #1c1330}.giz .dots i.on{background:#b5122a}
+.giz .wd{color:#1c1330}.giz .ln{stroke:#1c1330}
+/* ===== skin neon: estúdio escuro, neon ===== */
+.neon{background:radial-gradient(120% 70% at 50% 0,#3a2b86,#150f33 65%);color:#efeaff}
+.neon .logo{background:#ff3b5c;color:#fff;box-shadow:0 0 14px #ff3b5c88}.neon .card,.neon .btn,.neon .cell{background:#241c4a;border:2px solid #5b4fa8;border-radius:12px;box-shadow:0 0 0 1px #0006,0 0 12px #5b4fa855}
+.neon .sel{border-color:#ffd23f;box-shadow:0 0 14px #ffd23f99;background:#3a2f6a}.neon .ok{border-color:#3cff9a;box-shadow:0 0 14px #3cff9a88}.neon .hot{border-color:#ff3b5c;box-shadow:0 0 14px #ff3b5c99}
+.neon .dots i{background:#3a2f6a}.neon .dots i.on{background:#3cff9a;box-shadow:0 0 8px #3cff9a}.neon .chip{background:#fffdf6;border-radius:8px;padding:2px}.neon .ln{stroke:#ffd23f}
+/* ===== skin recorte: adesivos coloridos ===== */
+.recorte{background:#f6efe3;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:22px 22px}
+.recorte .logo{background:#e5322d;color:#fff;border-radius:999px;border:3px solid #fff;box-shadow:0 2px 0 #0003}
+.recorte .card,.recorte .btn,.recorte .cell{background:#fff;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001}
+.recorte .c1{background:#e5322d;color:#fff}.recorte .c2{background:#1fb5a8;color:#fff}.recorte .c3{background:#f2a91b}.recorte .c4{background:#3d6df2;color:#fff}
+.recorte .sel{outline:4px solid #1c1330}.recorte .ok{background:#a8e6b4}.recorte .hot{background:#ffd0d6}.recorte .dots i{background:#ddd}.recorte .dots i.on{background:#1fb5a8}.recorte .ln{stroke:#e5322d}
+.recorte .t{color:#1c1330}
+</style></head><body>
+<div id="out"></div>
+<script type="module">
+import { figureMarkup, restMarkup, noteMarkup } from '../js/kids/art.js';
+const F = (id, s = 64) => `<div class="fig" style="width:${s}px;height:${s}px">${figureMarkup(id)}</div>`;
+const R = (id, s = 64) => `<div class="fig" style="width:${s}px;height:${s}px">${restMarkup(id)}</div>`;
+const N = (o, s = 64) => `<div class="fig" style="width:${s}px;height:${s}px">${noteMarkup(o)}</div>`;
+const chip = (m) => `<span class="chip" style="display:inline-block">${m}</span>`;
+const top = (t) => `<div class="top"><span class="logo">figurix</span><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div><span>★★☆</span></div>${t ? `<div class="t">${t}</div>` : ''}`;
+const paul = (p = 'ouvindo', s = 80) => `<div class="pg" style="width:${s}px"><img src="../assets/paul/colorido/paul-${p}.webp" alt=""></div>`;
+const FIGS = [['semibreve', 'semibreve', 4], ['minima', 'mínima', 2], ['seminima', 'semínima', 1], ['colcheia', 'colcheia', .5], ['semicolcheia', 'semicolcheia', .25]];
+const VAL = (b) => (b >= 2 ? `${b} tempos` : b === 1 ? '1 tempo' : b === .5 ? 'meio tempo' : '¼ de tempo');
+const sk = ['giz', 'neon', 'recorte'];
+const names = { giz: 'A · giz e papel', neon: 'B · estúdio neon', recorte: 'C · adesivos' };
+const wrap = (fn, h = 560) => sk.map((s) => `<div class="col"><div class="lab">${names[s]}</div><div class="ph ${s}" style="height:${h}px">${fn(s)}</div></div>`).join('');
+const cardC = (s, i, extra = '') => `${s === 'recorte' ? ` c${(i % 4) + 1}` : ''}${extra}`;
+const chipIf = (s, m) => (s === 'neon' ? chip(m) : m);
+
+const TABS = {
+  rapida: (s) => `${top('aulinha rápida')}<div class="sub">quanto MENOS tempo a figura dura, mais RÁPIDA ela é. toque na mais rápida!</div>
+    ${FIGS.map(([id, n, b], i) => `<div class="card${cardC(s, i)}" style="display:flex;align-items:center;gap:8px;padding:5px 9px"><div style="width:44px">${chipIf(s, F(id, 40))}</div><b style="flex:0 0 82px">${n}</b><div style="flex:1;height:14px;border-radius:7px;background:${s === 'neon' ? '#3cff9a' : s === 'giz' ? '#b5122a' : '#fff8'};width:${b * 22}%;max-width:100%"></div><small>${VAL(b)}</small></div>`).join('')}
+    <div class="btn hot" style="margin-top:auto">▶ jogar a fase 1</div>${paul('estudando')}`,
+  monte: (s) => `${top('monte a colcheia')}<div class="sub">escolha UMA opção em cada linha, o desenho aparece ao lado</div>
+    <div style="display:flex;gap:8px;align-items:center"><div class="card" style="width:112px;height:112px;padding:6px">${chipIf(s, N({ open: false, stem: true, flags: 1 }, 98))}</div><div style="font-size:11px;line-height:1.35">✔ cabeça <b>preta</b><br>✔ <b>com</b> haste<br>✔ <b>1</b> colchete</div></div>
+    <b>cabeça</b><div class="grid" style="grid-template-columns:1fr 1fr"><div class="btn sel${cardC(s, 0)}">● bolinha preta</div><div class="btn${cardC(s, 1)}">○ bolinha branca</div></div>
+    <b>haste</b><div class="grid" style="grid-template-columns:1fr 1fr"><div class="btn sel${cardC(s, 2)}">| com haste</div><div class="btn${cardC(s, 3)}">sem haste</div></div>
+    <b>colchetes</b><div class="grid" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr"><div class="btn${cardC(s, 0)}" style="font-size:11px">… sem colchete</div><div class="btn sel${cardC(s, 1)}">1</div><div class="btn${cardC(s, 2)}">2</div><div class="btn${cardC(s, 3)}">3</div><div class="btn${cardC(s, 0)}">4</div></div>
+    <div class="btn hot" style="margin-top:auto">conferir</div>`,
+  ligar: (s) => `${top('ligue os pares')}<div class="sub">desenho ↔ nome ↔ quanto vale: figura E pausa</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;position:relative">
+      <div class="col" style="gap:7px">${[F('minima', 46), R('seminima', 46), F('colcheia', 46), R('colcheia', 46)].map((x, i) => `<div class="cell${cardC(s, i)}" style="padding:3px">${chipIf(s, x)}</div>`).join('')}</div>
+      <div class="col" style="gap:7px">${['mínima', 'pausa de semínima', 'colcheia', 'pausa de colcheia'].map((x, i) => `<div class="cell${cardC(s, i + 1)}${i === 0 ? ' ok' : ''}" style="height:52px;display:grid;place-items:center;text-align:center;font-size:11px;padding:2px">${x}</div>`).join('')}</div>
+      <div class="col" style="gap:7px">${['2 tempos', '1 tempo de silêncio', 'meio tempo', 'meio tempo de silêncio'].map((x, i) => `<div class="cell${cardC(s, i + 2)}${i === 0 ? ' sel' : ''}" style="height:52px;display:grid;place-items:center;text-align:center;font-size:11px;padding:2px">${x}</div>`).join('')}</div>
+    </div><div class="sub">1 · toque no desenho · 2 · no nome · 3 · no valor (as 3 colunas fecham juntas)</div>${paul('oculos')}`,
+  memoria: (s) => `${top('memória')}<div class="sub">cada carta tem par: figura ↔ pausa ↔ nome. quanto mais você passa, mais pares!</div>
+    <div class="card" style="padding:6px;font-size:12px;display:flex;justify-content:space-between"><span>pares: <b>4 de 6</b></span><span>fase 6 ★★★ (passou no Figurix = já vale 3★)</span></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">${[['f', 'minima'], ['?'], ['r', 'seminima'], ['n', 'mínima'], ['?'], ['f', 'colcheia'], ['?'], ['n', 'colcheia'], ['r', 'minima'], ['?'], ['n', 'pausa de semínima'], ['?']].map((c, i) => `<div class="cell${cardC(s, i)}${c[0] === '?' ? '' : ' ok'}" style="height:72px;display:grid;place-items:center;font-size:11px;text-align:center">${c[0] === 'f' ? chipIf(s, F(c[1], 52)) : c[0] === 'r' ? chipIf(s, R(c[1], 52)) : c[0] === 'n' ? `<b>${c[1]}</b>` : `<span style="font-size:26px">🥁</span>`}</div>`).join('')}</div>${paul('metronomo', 70)}`,
+  quiz: (s) => `${top('quiz')}<div class="sub">pergunta 3 de 8 · sequência de acertos 🔥 2</div>
+    <div class="card" style="display:grid;place-items:center;padding:12px"><div style="width:96px">${chipIf(s, F('colcheia', 90))}</div><div class="t" style="font-size:17px;margin-top:4px">quantos tempos vale?</div></div>
+    ${['meio tempo', '1 tempo', '2 tempos'].map((x, i) => `<div class="btn${cardC(s, i)}${i === 0 ? ' ok' : ''}" style="font-size:15px">${x}${i === 0 ? ' ✓' : ''}</div>`).join('')}
+    <div class="sub" style="margin-top:auto">também com pausa, nome, valor e desenho</div>${paul('professor')}`,
+  caca: (s) => { const g = ['IASILENCIO', 'IFLIIASELT', 'ACPAUSAMPI', 'AETMINIMAA', 'RSIBVIATRE', 'AFUSADOOME', 'GEBCELSRBA', 'AGOITOEMRU']; const hit = new Set(['5-1', '5-2', '5-3', '5-4']); const diag = new Set(['0-0', '1-1', '2-2']);
+    return `${top('caça-palavras')}<div class="sub">arraste o dedo sobre a palavra · agora tem diagonal e ao contrário</div>
+    <div class="card" style="padding:6px"><div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;font:800 15px/1 'Hanken Grotesk';text-align:center">${g.flatMap((r, y) => [...r].map((l, x) => `<div style="aspect-ratio:1;display:grid;place-items:center;border-radius:6px;${hit.has(y + '-' + x) ? 'background:#1fb5a8;color:#fff' : diag.has(y + '-' + x) ? 'background:#ff3b5c;color:#fff' : ''}">${l}</div>`)).join('')}</div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${[['FUSA', 1], ['PAUSA', 0], ['MINIMA', 0], ['SILENCIO', 2], ['COLCHEIA', 0]].map(([w, d], i) => `<span class="btn${cardC(s, i)}" style="padding:5px 9px;font-size:12px;${d === 1 ? 'text-decoration:line-through;opacity:.6' : ''}">${w}</span>`).join('')}</div><div class="sub">cada palavra com cor forte · a achada risca e muda de cor</div>`; },
+  notas: (s) => `${top('quantas cabem?')}<div class="sub">arraste as notas até completar a barra (uma semibreve = 4 tempos)</div>
+    <div class="card" style="padding:8px"><div style="display:flex;gap:3px;height:46px">${[1, 1, 1, 1].map((_, i) => `<div style="flex:1;border-radius:8px;display:grid;place-items:center;${i < 3 ? (s === 'neon' ? 'background:#3cff9a55;border:2px solid #3cff9a' : 'background:#bdf0cd;border:2px solid #1c1330') : 'border:2px dashed #8886'}">${i < 3 ? '♩' : ''}</div>`).join('')}</div><div class="sub">3 de 4 tempos</div></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">${[['semibreve', '4'], ['minima', '2'], ['seminima', '1'], ['colcheia', '½'], ['semicolcheia', '¼'], ['fusa', '⅛']].map(([id, v], i) => `<div class="cell${cardC(s, i)}" style="padding:4px;text-align:center">${chipIf(s, F(id, 50))}<b>${v}</b></div>`).join('')}</div>${paul('lendo-partitura')}`,
+  tetris: (s) => `${top('')}<div class="sub" style="text-align:center">leve o Paul até o nome certo antes da figura cair!</div>
+    <div class="card" style="flex:1;position:relative;overflow:hidden;padding:0;${s === 'neon' ? 'background:linear-gradient(#150f33,#2a1f5c)' : s === 'recorte' ? 'background:linear-gradient(#bfe8ff,#fff6d6)' : 'background:#fff3b0'}">
+      <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;opacity:.35"><div style="border-right:3px dashed ${s === 'neon' ? '#ffd23f' : '#1c1330'}"></div><div></div></div>
+      <div style="position:absolute;left:50%;top:14%;transform:translateX(-50%);width:80px;filter:drop-shadow(0 0 10px ${s === 'neon' ? '#ffd23f' : '#0003'})">${chipIf(s, F('colcheia', 80))}</div>
+      <div style="position:absolute;left:34%;top:36%;font-size:22px;opacity:.5">⋮</div>
+      <div style="position:absolute;left:6px;right:6px;bottom:6px;display:flex;gap:8px"><div class="btn sel${cardC(s, 0)}" style="flex:1;font-size:15px">semínima</div><div class="btn${cardC(s, 1)}" style="flex:1;font-size:15px">colcheia</div></div>
+      <img src="../assets/paul/colorido/paul-bateria.webp" style="position:absolute;left:18%;bottom:58px;width:120px" alt=""></div>
+    <div class="sub" style="text-align:center">vidas ♥ ♥ ♥ · velocidade sobe a cada acerto</div>`,
+};
+
+/* ===== sala da Fuga: 3 climas ===== */
+const SALA = {
+  giz: () => `<div class="top"><span class="logo">a fuga do estúdio</span><span>🔓 1 de 3</span></div>
+    <div class="card" style="height:220px;position:relative;background:#fff7d6;overflow:hidden"><div style="position:absolute;inset:auto 0 0 0;height:50px;background:#c9a56a;border-top:3px solid #1c1330"></div>
+    ${[0, 1, 2].map((i) => `<div style="position:absolute;left:${14 + i * 94}px;top:34px;width:76px;height:132px;border:3px solid #1c1330;border-radius:8px 8px 0 0;background:${i === 0 ? '#7fe3a1' : i === 1 ? '#ffd34f' : '#ff8f9c'};box-shadow:3px 3px 0 #1c1330"><div style="margin-top:50px;text-align:center;font-size:26px">${i === 0 ? '🔓' : '🔒'}</div></div>`).join('')}<div style="position:absolute;left:100px;top:6px;background:#b5122a;color:#fff;padding:2px 8px;border-radius:4px;font:400 11px Anton">ON AIR</div></div>
+    <div class="card" style="display:flex;gap:8px;align-items:center;padding:8px"><div style="width:70px"><img src="../assets/paul/colorido/paul-ouvindo.webp" style="width:70px"></div><div>socorro! só saio se você abrir as portas 😱</div></div><div class="btn hot" style="margin-top:auto">abrir a próxima porta</div>`,
+  neon: () => `<div class="top"><span class="logo">a fuga do estúdio</span><span>🔓 1 de 3</span></div>
+    <div class="card" style="height:220px;position:relative;overflow:hidden;background:linear-gradient(#0e0a24,#241c4a)">${[0, 1, 2].map((i) => `<div style="position:absolute;left:${14 + i * 94}px;top:34px;width:76px;height:132px;border:2px solid ${i === 0 ? '#3cff9a' : i === 1 ? '#ffd23f' : '#ff3b5c'};border-radius:6px;background:${i === 0 ? 'linear-gradient(90deg,#3cff9a55,transparent)' : '#150f33'};box-shadow:0 0 16px ${i === 0 ? '#3cff9a' : i === 1 ? '#ffd23f' : '#ff3b5c'}88"><div style="margin-top:50px;text-align:center;font-size:26px">${i === 0 ? '🔓' : '🔒'}</div>${i > 0 ? '<div style="position:absolute;left:0;right:0;top:26px;height:2px;background:#ff3b5c;box-shadow:0 0 8px #ff3b5c"></div>' : ''}</div>`).join('')}<div style="position:absolute;left:104px;top:8px;background:#ff3b5c;color:#fff;padding:2px 8px;border-radius:4px;font:400 11px Anton;box-shadow:0 0 12px #ff3b5c">ON AIR</div></div>
+    <div class="card" style="display:flex;gap:8px;align-items:center;padding:8px"><div style="width:70px"><img src="../assets/paul/colorido/paul-ouvindo.webp" style="width:70px"></div><div>socorro! só saio se você abrir as portas 😱</div></div><div class="btn hot" style="margin-top:auto">abrir a próxima porta</div>`,
+  recorte: () => `<div class="top"><span class="logo">a fuga do estúdio</span><span>🔓 1 de 3</span></div>
+    <div class="card" style="height:220px;position:relative;overflow:hidden;background:linear-gradient(#ffd0d6,#fff0c4)"><div style="position:absolute;left:0;right:0;top:0;height:30px;background:repeating-linear-gradient(90deg,#e5322d 0 24px,#b5122a 24px 48px);border-radius:0 0 14px 14px"></div>
+    ${[0, 1, 2].map((i) => `<div style="position:absolute;left:${14 + i * 94}px;top:46px;width:76px;height:132px;border:4px solid #fff;border-radius:38px 38px 8px 8px;background:${['#1fb5a8', '#f2a91b', '#3d6df2'][i]};box-shadow:0 4px 0 #0003;transform:rotate(${[-2, 1.5, -1][i]}deg)"><div style="margin-top:50px;text-align:center;font-size:26px">${i === 0 ? '🔓' : '🔒'}</div></div>`).join('')}</div>
+    <div class="card" style="display:flex;gap:8px;align-items:center;padding:8px"><div style="width:70px"><img src="../assets/paul/colorido/paul-ouvindo.webp" style="width:70px"></div><div>socorro! só saio se você abrir as portas 😱</div></div><div class="btn c3" style="margin-top:auto">abrir a próxima porta</div>`,
+};
+
+/* ===== temas da trilha: 12 fases ===== */
+const nodes = (names, tom, linha) => { const W = 316; let h = ''; names.forEach((n, i) => { const x = i % 2 === 0 ? 70 : 250; const y = 30 + i * 41; h += `<div style="position:absolute;left:${x - 17}px;top:${y}px;width:34px;height:34px;border-radius:50%;background:${i < 2 ? '#3cff9a' : tom};color:#fff;display:grid;place-items:center;font:400 15px Anton;border:3px solid #fff;box-shadow:0 2px 0 #0004">${i + 1}</div><div style="position:absolute;left:${x < 160 ? x + 22 : x - 22 - 108}px;top:${y + 8}px;width:108px;font-size:11px;font-weight:800;text-align:${x < 160 ? 'left' : 'right'}">${n}</div>`; }); return `<svg width="316" height="520" style="position:absolute;left:0;top:0">${names.map((_, i) => i ? `<line x1="${(i - 1) % 2 === 0 ? 70 : 250}" y1="${47 + (i - 1) * 41}" x2="${i % 2 === 0 ? 70 : 250}" y2="${47 + i * 41}" stroke="${linha}" stroke-width="5" stroke-dasharray="2 9" stroke-linecap="round"/>` : '').join('')}</svg>${h}`; };
+const TEMA = {
+  t1: () => `<div class="top"><span class="logo" style="background:#2b2a8c;color:#fff">do estúdio à rua</span></div><div style="position:relative;flex:1;border-radius:16px;background:linear-gradient(#241c4a 0 35%,#7b4b8c 55%,#f2a96b 78%,#ffe0a0);overflow:hidden;color:#fff">${nodes(['sala de gravação', 'cabine', 'mesa de som', 'sala de ensaio', 'camarim', 'palco', 'bastidores', 'corredor', 'saída de emergência', 'calçada', 'a rua', 'roda de samba na praça'], '#e5322d', '#ffffffaa')}</div>`,
+  t2: () => `<div class="top"><span class="logo" style="background:#1fb5a8;color:#fff">a turnê do Paul</span></div><div style="position:relative;flex:1;border-radius:16px;background:linear-gradient(#bfe8ff,#fff6d6 60%,#f6d98a);overflow:hidden;color:#1c1330">${nodes(['casa de show', 'estrada', 'cidade 1 · samba', 'cidade 2 · maracatu', 'cidade 3 · frevo', 'cidade 4 · baião', 'cidade 5 · rock', 'cidade 6 · jazz', 'cidade 7 · funk', 'cidade 8 · MPB', 'cidade 9 · pagode', 'show final'], '#1fb5a8', '#1c133088')}</div>`,
+  t3: () => `<div class="top"><span class="logo" style="background:#3d6df2;color:#fff">prédio da música</span></div><div style="position:relative;flex:1;border-radius:16px;background:linear-gradient(#150f33,#3a2b86);overflow:hidden;color:#fff">${nodes(['andar 1 · percussão', 'andar 2 · tambores', 'andar 3 · pratos', 'andar 4 · cordas', 'andar 5 · violão', 'andar 6 · baixo', 'andar 7 · teclas', 'andar 8 · piano', 'andar 9 · órgão', 'andar 10 · palco', 'andar 11 · cobertura', 'saída no topo'], '#3d6df2', '#ffd23fcc')}</div>`,
+};
+
+const board = (rows) => `<div class="board" data-b>${rows}</div>`;
+const out = document.getElementById('out');
+const blocks = { ...Object.fromEntries(Object.entries(TABS).map(([k, f]) => [k, board(wrap(f))])), sala: board(wrap((s) => SALA[s]())), trilha: board(['t1', 't2', 't3'].map((k, i) => `<div class="col"><div class="lab">${['1 · estúdio → rua', '2 · turnê', '3 · prédio em andares'][i]}</div><div class="ph recorte" style="height:600px;background:#f6efe3">${TEMA[k]()}</div></div>`).join('')) };
+window.__ids = Object.keys(blocks);
+out.innerHTML = Object.entries(blocks).map(([k, v]) => `<div id="b-${k}">${v}</div>`).join('');
+window.__ready = true;
+</script></body></html>

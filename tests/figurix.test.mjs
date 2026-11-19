@@ -67,9 +67,9 @@ test('regra das 3 estrelas: o próximo mundo só abre com 3 ★ em todas as fase
   assert.equal(f3(est, m1.id), 1); assert.ok(!mlib(est, m2.id), 'uma fase com 2 ★ ainda tranca');
   est[m1.ate] = 3; assert.ok(mlib(est, m2.id)); assert.ok(!mlib(est, MS[2].id));
 });
-test('aulinha nas 3 primeiras fases, com fala pra cada tipo e a colinha das figuras', () => {
-  assert.deepEqual([1, 2, 3, 4].map(tA), [true, true, true, false]);
-  for (const n of [1, 2, 3]) assert.ok(FA[PH[n - 1].tipo], `fase ${n}`);
+test('aulinha só na fase 1, com fala e a colinha das figuras', () => {
+  assert.deepEqual([1, 2, 3, 4].map(tA), [true, false, false, false]);
+  for (const n of [1]) assert.ok(FA[PH[n - 1].tipo], `fase ${n}`);
   assert.equal(COL.length, 5); assert.equal(COL[2][0], 'seminima');
 });
 

@@ -77,3 +77,37 @@ test('reconstruir só pelo estado (JSON) dá a mesma partida', () => {
   const volta = JSON.parse(JSON.stringify(e)); assert.deepEqual(volta, e); assert.ok(L.podeVirar(volta, 0, posDe(e, e.deck[5])[0]) || true);
   assert.deepEqual(L.placar(volta), [1, 0]); assert.deepEqual(volta.virou, [0]);
 });
+
+/* ===== 3 e 4 jogadores (cada um no seu celular) ===== */
+test('mesa de 3 e 4: n, placar por jogador e mesa de 2 igual a antes (sem n)', () => {
+  const e2 = mesa(); assert.equal(e2.n, undefined); assert.equal(L.jogadoresDe(e2), 2); assert.equal(e2.achou.length, 2);
+  const e4 = mesa({ n: 4, nomes: ['Ana', 'Bia', 'Cris', 'Duda'] }); assert.equal(e4.n, 4); assert.equal(e4.achou.length, 4); assert.deepEqual(e4.nomes, ['Ana', 'Bia', 'Cris', 'Duda']);
+  assert.ok(L.valido(e4)); assert.deepEqual(L.placar(e4), [0, 0, 0, 0]);
+  assert.deepEqual(JSON.parse(JSON.stringify(e4)), e4);
+});
+test('a vez roda 0 → 1 → 2 → 3 → 0 quando erra; acertou joga de novo (de novo = mesma pessoa)', () => {
+  // giro limpo: duas cartas diferentes seguidas passam a vez pro próximo
+  const lim = mesa({ n: 4 }); const pos = lim.deck.map((x, i) => i); let s = lim; const vezes = [];
+  for (let r = 0; r < 5; r++) {
+    vezes.push(s.vez);
+    const livres = pos.filter((i) => !L.achada(s, i)); const p1 = livres[0]; const p2 = livres.find((i) => s.deck[i] !== s.deck[p1]);
+    s = L.resolver(L.virar(L.virar(s, s.vez, p1), s.vez, p2));
+  }
+  assert.deepEqual(vezes, [0, 1, 2, 3, 0]);
+});
+test('par com "acerta joga de novo": quem acerta continua; sem a regra passa pro próximo; só a vez dele vira', () => {
+  const e = mesa({ n: 3, again: true }); const [a, b] = posDe(e, e.deck[0]);
+  const ok = L.resolver(L.virar(L.virar(e, 0, a), 0, b)); assert.equal(ok.vez, 0); assert.deepEqual(ok.achou[0], [a, b]); assert.equal(L.donoDe(ok, a), 0);
+  const e2 = mesa({ n: 3, again: false }); const ok2 = L.resolver(L.virar(L.virar(e2, 0, a), 0, b)); assert.equal(ok2.vez, 1);
+  assert.equal(L.virar(ok2, 0, 5), null, 'quem acabou de jogar não vira'); assert.ok(L.virar(ok2, 1, 5));
+});
+test('vencedor com 4: maior placar; empate entre os primeiros = -1', () => {
+  const base = { ...mesa({ n: 4 }), fim: true };
+  assert.equal(L.vencedor({ ...base, achou: [[0, 1, 2, 3], [4, 5], [6, 7], [8, 9, 10, 11]] }), -1, 'dois com 2 pares');
+  assert.equal(L.vencedor({ ...base, achou: [[0, 1], [4, 5, 2, 3], [6, 7], [8, 9]] }), 1);
+  assert.equal(L.vencedor({ ...base, fim: false }), null);
+});
+test('revanche mantém n e nomes e muda quem começa', () => {
+  const e = mesa({ n: 4, nomes: ['A', 'B', 'C', 'D'] }); const r = L.revanche(e, ids);
+  assert.equal(r.n, 4); assert.deepEqual(r.nomes, ['A', 'B', 'C', 'D']); assert.equal(r.vez, 1); assert.equal(r.achou.length, 4);
+});

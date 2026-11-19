@@ -201,6 +201,12 @@ export function mount(host, opts = {}) {
   if (opts.parts && opts.parts[0] === 'aventura') { location.hash = '#/ritmo'; return () => {}; } // o Modo Aventura do Beat Hero/Piano Hero foi removido (links antigos voltam pro jogo)
   // Duelo (#/ritmo/duelo): a mesma música ao mesmo tempo em dois celulares, por código de sala
   if (opts.parts && opts.parts[0] === 'duelo') { location.hash = '#/ritmo'; return () => {}; } // o duelo de 2 celulares saiu: só o modo normal
+  // Beat Hero (setas) com um amigo (#/ritmo/setas/amigo): sala por código, a mesma música e as mesmas setas nos dois celulares; quem fizer mais pontos ganha
+  if (opts.parts && opts.parts[0] === 'setas' && opts.parts[1] === 'amigo') {
+    let stop = () => {}; let fechou = false;
+    import('../jogos/duelo-ritmo.js').then((m) => { if (!fechou) stop = m.mountDuelo(host, { student: !!opts.student, game: 'setas' }) || stop; });
+    return () => { fechou = true; try { if (typeof stop === 'function') stop(); } catch { /* ok */ } };
+  }
   // 3 jogos separados, cada um na sua tela: #/ritmo/drum (Hero Drum, bateria), #/ritmo/piano (Piano Hero, melodia) e #/ritmo/setas (Beat Hero, duelo de setas). #/ritmo sozinho abre o Hero Drum.
   const JOGO = { drum: ['beat', 'Hero Drum', 'toque a bateria no tempo e ganhe estrelas'], piano: ['tiles', 'Piano Hero', 'toque a melodia no ritmo da música'], setas: ['setas', 'Beat Hero', 'siga as setas e dance com o Paul'] };
   const jg = JOGO[(opts.parts || [])[0]] || JOGO.drum;
@@ -324,7 +330,7 @@ export function mount(host, opts = {}) {
       if (won) sheet(won === 1 ? '🎡 roleta liberada!' : `🎡 ${won} roletas liberadas!`, () => h('div', { class: 'sheet-body' }, h('p', {}, 'você juntou mais 15 ★. gire a roleta pra ganhar figurinhas!'), h('a', { class: 'kd-btn', href: student ? '#/album/Pacotes' : '#/figurinhas/Pacotes' }, 'abrir agora')));
       else toast(`★ ${Album.progressoTxt(me.id)}`, { id: 'rg-fig', ms: 1800 }); };
     const studentOpts = !student ? { builtin: true } : { builtin: true, readonly: true, gate, autoName: opts.name, hallTop: studentTop, hallAdd: studentAdd, onPlay: (key) => RK.top(`ritmo|${key}`, { fresh: true }).then(() => BR.refresh && BR.refresh()) };
-    BR.mount('#jogos', { only: jg[0], storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { await addXp(n, why); /* XP não aparece mais pra ninguém (pedido da Bea): só fica guardado em silêncio */ } });
+    BR.mount('#jogos', { only: jg[0], onFriend: jg[0] === 'setas' ? () => { location.hash = '#/ritmo/setas/amigo'; } : null, storageKey: student ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, songs: student ? pubSongs : importedSongs(), folders: student ? () => [...new Set(pubSongs.map((x) => x.folder).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'pt-BR')) : folderNames, hallTop, hallAdd, onRename: renameSong, onMove: moveSong, onAddFolder: addFolder, onMoveMany: moveMany, onRenameFolder: renameFolder, onDelFolder: deleteFolder, onTrim: async (id, trim) => { await store.upsert(KIND, id, { trim: trim || null }); toast(trim ? 'corte salvo ✂' : 'corte removido', { id: 'rg-trim', ms: 1800 }); }, ...studentOpts, onStars, onXp: async (n, why) => { await addXp(n, why); /* XP não aparece mais pra ninguém (pedido da Bea): só fica guardado em silêncio */ } });
     mounted = true; refresh();
   }).catch((e) => {
     if (gone) return;

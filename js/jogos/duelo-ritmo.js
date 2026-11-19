@@ -21,11 +21,12 @@ export { estadoInicial };
 export const vencedor = (res) => vencedorBase(res, (r) => r.score);
 
 export function mountDuelo(host, opts = {}) {
+  const setas = opts.game === 'setas'; // Beat Hero (setas) com um amigo: mesma música e mesmas setas nos dois celulares, quem fizer mais pontos ganha
   let BR = null; let J = null; let pub = []; let cat = catalogo([]); let startedAt = 0; let acabou = false; let vigia = 0;
   const cfg = { key: 'pre:rock:1', pct: 100, diff: 'medio', maxLen: 60, keys: 4 };
   const songOf = (key) => cat.todas.find((x) => x.key === key) || cat.prontas[1];
   return mountDueloBase(host, {
-    jogo: 'beathero', titulo: 'Duelo', sub: 'a mesma música, ao mesmo tempo, em dois celulares', voltar: ['#/ritmo', '‹ Beat Hero'], frameClass: 'rg-host', boxId: 'jogos',
+    jogo: setas ? 'beathero-setas' : 'beathero', titulo: setas ? 'Beat Hero com um amigo' : 'Duelo', sub: 'a mesma música, ao mesmo tempo, em dois celulares', voltar: setas ? ['#/ritmo/setas', '‹ Beat Hero'] : ['#/ritmo', '‹ Beat Hero'], frameClass: 'rg-host', boxId: 'jogos',
     async carregar() {
       J = await import('../views/jogos-ritmo.js'); BR = await J.loadPackage();
       if (opts.student) { try { const C = await import('../codigo.js'); pub = await J.publicadasParaAluno(C.saved()); } catch { pub = []; } }
@@ -45,12 +46,12 @@ export function mountDuelo(host, opts = {}) {
     resumo: (c) => [c.song.name, `${bpmEfetivo(c.song, c.pct)} bpm (${c.pct}%) · ${(DIFFS.find((d) => d[0] === c.diff) || [0, ''])[1]} · ${c.maxLen / 60} min`],
     desbloquear() { if (BR && BR.unlock) BR.unlock(); },
     nota: (r) => r.score,
-    aoVencer(c) { import('./estrelas-jogo.js').then((E) => E.ganhou('beathero', 3, `beathero|duelo|${c && c.song && c.song.id}|${c && c.diff}`)).catch(() => {}); }, // ganhou o duelo: 3 ★
+    aoVencer(c) { import('./estrelas-jogo.js').then((E) => E.ganhou('beathero', 3, `${setas ? 'beathero-setas' : 'beathero'}|duelo|${c && c.song && c.song.id}|${c && c.diff}`)).catch(() => {}); }, // ganhou o duelo: 3 ★
     placar: (r) => [r.desistiu ? 'saiu' : `${r.score.toLocaleString('pt-BR')} pts`, r.desistiu ? '' : `precisão ${r.acc}% · combo ${r.combo}`],
     jogar(box, c, fim) {
       const song = c.song; startedAt = Date.now(); acabou = false; document.documentElement.classList.add('rg-on');
       BR.mount(box, { storageKey: /aluno\.html/.test(location.pathname) ? 'beaterista-aluno-ritmo' : 'beaterista-ritmo', midiImport: false, builtin: true, songs: pub,
-        mission: { game: 'beat', keys: c.keys || 4, diff: c.diff, maxLen: c.maxLen, songs: [['rock', 0]], duel: { style: song.style, tier: song.tier, songId: song.tipo === 'midi' ? song.id : null, pct: c.pct } },
+        mission: { game: setas ? 'setas' : 'beat', keys: c.keys || 4, diff: c.diff, maxLen: c.maxLen, songs: [['rock', 0]], duel: { style: song.style, tier: song.tier, songId: song.tipo === 'midi' ? song.id : null, pct: c.pct } },
         onResult: (r) => { acabou = true; setTimeout(() => fim({ score: r.score | 0, acc: Math.round((Number(r.acc) || 0) * 100), combo: r.maxCombo | 0, grade: r.grade || '', perfect: r.perfect | 0, miss: r.miss | 0 }), 1500); } });
       // se a pessoa sair da música no meio, conta como desistência (0 ponto)
       vigia = setInterval(() => { if (Date.now() - startedAt > 4000 && !acabou && !document.body.classList.contains('rz-lock')) { clearInterval(vigia); fim({ score: 0, acc: 0, combo: 0, grade: '', perfect: 0, miss: 0, desistiu: true }); } }, 800);

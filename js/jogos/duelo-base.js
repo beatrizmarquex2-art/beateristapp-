@@ -68,7 +68,7 @@ export function mountDueloBase(host, A) {
   }
   function pronto() { try { A.desbloquear(); } catch { /* ok */ } atualizar((s) => { s.ready[me] = true; }).then(aoMudar); render(); }
   function revanche() { atualizar((s) => { s.ready = [false, false]; s.res = [null, null]; s.round = (s.round || 1) + 1; }).then(() => { seenRound = latest.round; sent = false; phase = 'sala'; render(); }); }
-  const quem = (i) => (i === me ? 'você' : 'o outro');
+  const quem = (i) => (conn ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro'));
 
   function render(n) {
     if (!latest || gone) return;
@@ -81,7 +81,7 @@ export function mountDueloBase(host, A) {
     if (phase === 'contagem') corpo = h('p', { class: 'dl-cont', role: 'status', 'aria-live': 'assertive' }, String(n || 1));
     else if (phase === 'resultado' || latest.res[me]) {
       corpo = v == null ? h('p', { class: 'jg-p', role: 'status' }, 'esperando o resultado do outro celular…')
-        : h('div', { class: 'dl-fim' }, h('h2', { class: 'hand' }, v === -1 ? 'empate!' : v === me ? 'você venceu! 🏆' : 'o outro venceu desta vez'), h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'));
+        : h('div', { class: 'dl-fim' }, h('h2', { class: 'hand' }, v === -1 ? 'empate!' : v === me ? 'você venceu! 🏆' : `${quem(1 - me)} venceu desta vez`), h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'));
     } else corpo = latest.ready[me] ? h('p', { class: 'jg-p', role: 'status' }, 'você está pronto. esperando o outro celular…') : h('button', { class: 'btn primary jo-go', type: 'button', onclick: pronto }, 'estou pronto');
     root.replaceChildren(cab, placar, h('div', { class: 'dl-corpo' }, corpo), h('p', { class: 'muted dl-nota' }, 'quando os dois estiverem prontos, começa uma contagem. cada um joga no seu aparelho.'));
   }

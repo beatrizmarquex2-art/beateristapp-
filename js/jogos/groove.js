@@ -8,6 +8,8 @@ import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { FASES_GROOVE, TEMPOS_GROOVE, PECAS, MIN_GROOVE, folgaGroove, julgaGroove, julgaGrooveMic, notaGroove, grooveLiberada, estrelasPct } from './vivo-logic.js';
+import { mountProgressionMap } from '../kids/mapa.js';
+import { temaDoMundo } from './mundos-tema.js';
 import { chips, ouvirBatidas, premiar, quadro, estrelasTxt } from './vivo-ui.js';
 
 const SOM = { b: (t) => kick(t, 0.95), c: (t) => snare(t, 0.9), h: (t) => hihat(t, 0.9) };
@@ -15,19 +17,20 @@ const ORDEM = ['h', 'c', 'b']; // de cima pra baixo, como na bateria
 
 export function mount(host) {
   const root = h('div', { class: 'jg vv vv-groove' }); host.replaceChildren(root);
-  let gone = false; let mic = null; let timers = []; let estado = 'lista'; let parar = () => {};
-  const limpa = () => { timers.forEach(clearTimeout); timers = []; if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } delete window.__vivo; };
+  let gone = false; let mic = null; let timers = []; let estado = 'lista'; let parar = () => {}; let offMapa = null;
+  const limpa = () => { if (offMapa) { try { offMapa(); } catch { /* ok */ } offMapa = null; } timers.forEach(clearTimeout); timers = []; if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } delete window.__vivo; };
   const est = () => getGame('groove').est || {};
 
+  /** A lista de fases agora é o mapa de discos (trilha, Paul e regiões) com o ícone ▦ das fases em grade. */
   function lista() {
     limpa(); musicaVolta(); estado = 'lista'; const e = est();
-    root.replaceChildren(
-      h('p', { class: 'vv-intro' }, 'o Paul toca um compasso, você repete no seguinte. só semínimas: uma batida por tempo.'),
-      h('div', { class: 'vv-fases' }, ...FASES_GROOVE.map((f) => {
-        const lock = !grooveLiberada(e, f.n); const n = estrelasPct(e[f.n] || 0);
-        return h('button', { type: 'button', class: `vv-fase${lock ? ' lock' : ''}`, disabled: lock, 'data-fase': String(f.n), 'aria-label': `fase ${f.n}, ${f.nome}${lock ? ', trancada' : `, ${n} de 3 estrelas`}`, onclick: () => fase(f) },
-          h('i', { class: 'vv-num' }, String(f.n)), h('span', { class: 'vv-nome' }, f.nome), h('span', { class: 'vv-est' }, lock ? 'ganhe 1 ★ na anterior' : estrelasTxt(n)));
-      })));
+    const box = h('div', { class: 'tm-map' });
+    root.replaceChildren(h('p', { class: 'vv-intro' }, 'o Paul toca um compasso, você repete no seguinte. só semínimas: uma batida por tempo.'), box);
+    const levels = FASES_GROOVE.map((f, i) => ({ id: `gv:${f.n}`, index: i + 1, label: String(f.n), tag: '', boss: i === FASES_GROOVE.length - 1 }));
+    const nOf = (id) => Number(id.split(':')[1]); const total = FASES_GROOVE.reduce((t, f) => t + estrelasPct(e[f.n] || 0), 0);
+    offMapa = mountProgressionMap(box, { gameId: 'groove', levels, profileId: 'groove', unitName: 'Fase', tier: 0, stars: { have: total, max: FASES_GROOVE.length * 3 },
+      theme: temaDoMundo('gelo', 'Eco de Groove', [['batidas', 'Sala das Batidas', 'uma peça de cada vez'], ['levada', 'Palco da Levada', 'as peças juntas']]),
+      starsOf: (id) => estrelasPct(e[nOf(id)] || 0), unlockedOf: (id) => grooveLiberada(e, nOf(id)), lockedMsg: 'ganhe 1 ★ na fase anterior', onOpen: (lv) => fase(FASES_GROOVE[lv.index - 1]) });
   }
 
   function fase(f) {

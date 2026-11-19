@@ -87,12 +87,13 @@ export const maxColchetes = (nivel) => (nivel >= 3 ? 4 : 2);
 /** "ligar" por nível: quantos pares e o que liga com o quê (nome, valor em tempos, pausa↔nome, figura↔pausa). */
 export function ligarCfg(p) {
   if (p.nivel <= 1) return { k: p.k || 3, tipo: 'nome' };
-  return { 2: { k: 4, tipo: 'nome' }, 3: { k: 5, tipo: 'valor' }, 4: { k: 5, tipo: 'pausa' }, 5: { k: 6, tipo: 'figpausa' }, 6: { k: 7, tipo: 'valor' } }[Math.min(6, p.nivel)];
+  if (p.nivel >= 7) return { k: 5, tipo: 'tres' };
+  return { 2: { k: 4, tipo: 'nome' }, 3: { k: 5, tipo: 'valor' }, 4: { k: 5, tipo: 'pausa' }, 5: { k: 6, tipo: 'figpausa' }, 6: { k: 6, tipo: 'mista' } }[Math.min(6, p.nivel)];
 }
 /** Pares do "ligar": esquerda = desenho (figura ou pausa), direita = o que combina (nome, valor, pausa). Cada item tem `id` (o mesmo nos dois lados quando combinam). */
 export function paresLigarN(k, tipo, rnd = Math.random) {
   const fs = pick(ids, k, rnd);
-  const esq = fs.map((id) => ({ id, face: tipo === 'pausa' ? 'pausa' : 'fig' }));
+  const esq = fs.map((id, i) => ({ id, face: tipo === 'pausa' || (tipo === 'mista' && i % 2 === 1) ? 'pausa' : 'fig' }));
   const dir = shuffle(fs, rnd).map((id) => ({ id, face: tipo === 'valor' ? 'valor' : tipo === 'figpausa' ? 'pausa' : 'nome' }));
   return { esq, dir };
 }
@@ -155,7 +156,8 @@ export const mundoLiberado = (est, id) => { const i = MUNDOS.findIndex((x) => x.
 /** Aulinha das 3 primeiras fases: a "colinha" (tabela das figuras) e a frase do Paul pra cada tipo de fase. */
 export const COLINHA = [['semibreve', '4 tempos'], ['minima', '2 tempos'], ['seminima', '1 tempo'], ['colcheia', 'meio tempo'], ['semicolcheia', 'um quarto de tempo']];
 export const FALA_AULINHA = { rapida: 'quanto MENOS tempo a figura dura, mais RÁPIDA ela é. a semicolcheia é a mais rápida desta tabela.', lenta: 'quanto MAIS tempo a figura dura, mais LENTA ela é. a semibreve é a mais lenta desta tabela.', monte: 'toda figura tem até 3 partes: a cabeça (cheia ou vazia), a haste e os colchetes. cada colchete deixa a figura mais rápida.' };
-export const temAulinha = (n) => n <= 3;
+/** Só a fase 1 tem aulinha; depois o aluno pergunta pro Paul (aba nos jogos → Estudos). */
+export const temAulinha = (n) => n <= 1;
 
 /** Tempo (s) pra responder a pergunta `i` (0, 1, 2…) do nível: começa folgado e encurta a cada pergunta, até o piso do nível. */
 export function tempoPergunta(i, nivel = 1) {

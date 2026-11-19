@@ -21,9 +21,9 @@ export { soundBtn };
 /** Cartões do que é novo na fase (Paul apresenta). */
 export function teachCards(world, n) {
   const ids = teachOf(world, n); if (!ids.length) return null;
-  if (isDrum(world)) return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-card' }, svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where))));
+  if (isDrum(world)) return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-tcard' }, svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where))));
   const clef = world;
-  return h('div', { class: 'pl-teach' }, ...ids.map((x) => h('div', { class: 'pl-card' }, svgEl(clefStaff(clef, x), 'pl-mini'), h('b', {}, noteName(x)), h('small', {}, placeText(clef, x)))));
+  return h('div', { class: 'pl-teach' }, ...ids.map((x) => h('div', { class: 'pl-tcard' }, svgEl(clefStaff(clef, x), 'pl-mini'), h('b', {}, noteName(x)), h('small', {}, placeText(clef, x)))));
 }
 
 /**

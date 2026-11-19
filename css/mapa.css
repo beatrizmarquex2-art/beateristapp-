@@ -111,3 +111,30 @@ html.lite .mp-pimg, html.lite .st-current .mp-disc { animation: none; }
 .mp-cor { display: block; width: 100%; height: auto; } .mp-paul { width: 21cqw; }
 html.lite .mp-stk { animation: none; }
 @media (prefers-reduced-motion: reduce) { .mp-anim .mp-stk { animation: none; } }
+
+/* ===== grade das fases (ícone ▦): discos por região, 3 por linha ===== */
+.mp-gradebtn { min-width: 44px; min-height: 44px; border: 3px solid var(--mp-yellow); background: var(--mp-yellow); color: var(--mp-night); font: 700 20px var(--mp-pix); box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; }
+.mp-gradebtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mp-pink); }
+.mp.mp-grade { position: fixed; inset: 0; z-index: 200; margin: 0; padding: 0; overflow: hidden; touch-action: auto; user-select: none; display: flex; flex-direction: column; background: var(--mp-night); color: var(--mp-cream); }
+.mp-gtop { display: flex; align-items: center; justify-content: space-between; padding: calc(12px + env(safe-area-inset-top)) 14px 10px; border-bottom: 3px solid var(--mp-purple); }
+.mp-gtop b { font: 400 22px 'Anton', Impact, sans-serif; text-transform: uppercase; color: var(--mp-yellow); letter-spacing: .04em; }
+.mp-gx { min-width: 44px; min-height: 44px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 16px var(--mp-pix); cursor: pointer; }
+.mp-gbody { flex: 1; overflow-y: auto; padding: 6px 14px 12px; -webkit-overflow-scrolling: touch; }
+.mp-grg { text-transform: none; display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; font: 800 12px var(--mp-pix); letter-spacing: .1em; text-transform: uppercase; color: var(--mp-yellow); }
+.mp-grg::after { content: ""; flex: 1; border-top: 2px dashed var(--mp-purple); }
+.mp-ggrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; }
+.mp-gd { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; font-family: var(--mp-pix); }
+.mp-gdisc { display: grid; place-items: center; width: min(26cqw, 96px); width: 82px; height: 82px; border-radius: 50%; border: 3px solid var(--mp-cream); background: repeating-radial-gradient(circle, #0f2038 0 3px, #10294a 3px 6px); font: 400 28px 'Anton', Impact, sans-serif; color: var(--mp-yellow); box-shadow: 0 3px 0 rgba(0, 0, 0, .35); }
+.mp-gd.cur .mp-gdisc { border-color: var(--mp-yellow); box-shadow: 0 0 0 3px rgba(242, 193, 78, .35), 0 0 18px var(--mp-yellow); }
+.mp-gd.st-locked .mp-gdisc { opacity: .45; font-size: 22px; }
+.mp-gs { min-height: 16px; font-size: 13px; letter-spacing: 2px; color: var(--mp-yellow); }
+.mp-gt { font-size: 10px; line-height: 1.1; opacity: .85; text-align: center; max-width: 92px; }
+.mp-gcont { margin: 8px 14px calc(14px + env(safe-area-inset-bottom)); min-height: 48px; border: 3px solid var(--mp-cream); background: var(--mp-yellow); color: var(--mp-night); font: 800 16px var(--mp-pix); box-shadow: 0 4px 0 var(--mp-pink); cursor: pointer; }
+
+.mp-head.mp-longo { flex-wrap: wrap; } .mp-head.mp-longo .mp-reg { flex: 1 1 100%; } .mp-head.mp-longo .mp-snd { margin-left: auto; }
+
+/* textura da grade: pontinhos + listras suaves, e cada região num "cartão" de pixel */
+.mp.mp-grade { background-color: var(--mp-night); background-image: radial-gradient(rgba(255, 255, 255, .09) 1.4px, transparent 1.8px), repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 14px, transparent 14px 28px); background-size: 22px 22px, auto; }
+.mp-gsec { margin: 12px 0 4px; padding: 4px 10px 12px; border: 3px solid var(--mp-purple); border-top: 3px solid var(--mp-yellow); background: linear-gradient(180deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, .08)); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
+.mp-gsec .mp-grg { margin-top: 10px; text-transform: none; letter-spacing: .04em; font-size: 13px; }
+.mp-gt { font-size: 11px; font-weight: 700; }

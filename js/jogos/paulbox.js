@@ -2,7 +2,7 @@
 // Tudo sintetizado no aparelho (sem amostras), no mesmo AudioContext do app, com saída própria (pausar e sair calam na hora).
 // O desenho e os sons vieram prontos da Bea (página solta "paulbox"); aqui ele só foi encaixado na moldura dos jogos.
 import { h } from '../util.js';
-import { audio, isMuted } from '../audio.js';
+import { audio, isMuted, destino } from '../audio.js';
 import { getGame, setGame } from './base.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { gravar, podeGravar, LINK } from './paulbox-gravar.js';
@@ -100,7 +100,8 @@ export function mount(host) {
     if (!ctx) {
       try { ctx = audio(); } catch (e) { ctx = null; } if (!ctx) return;
       var comp = ctx.createDynamicsCompressor(); master = ctx.createGain(); ligaSaida();
-      master.connect(comp); comp.connect(ctx.destination); saida = comp;
+      comp.threshold.value = -14; comp.knee.value = 6; comp.ratio.value = 14; comp.attack.value = 0.002; comp.release.value = 0.15; // segura o pico quando entram guitarra + bateria + baixo juntos
+      master.connect(comp); comp.connect(destino() || ctx.destination); saida = comp; // e depois passa pelo limitador geral do app
       var len = ctx.sampleRate; noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
       var d = noiseBuf.getChannelData(0); for (var k = 0; k < len; k++) d[k] = Math.random() * 2 - 1;
     } else audio(); // destrava de novo depois de tela bloqueada (iPhone)
@@ -227,11 +228,11 @@ export function mount(host) {
   function pcChord(r,t,dur,peak,lp){
     if(!HG){HG=new Float32Array(1024);for(var i=0;i<1024;i++){var x=i/512-1;HG[i]=Math.tanh(x*30+.35)-Math.tanh(.35);}}
     var bus=ctx.createGain();
-    [0,7,12].forEach(function(n,k){[-9,9].forEach(function(dt){
+    [0,7,12].forEach(function(n,k){(k==0?[-9,9]:[0]).forEach(function(dt){
       var o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=mf(r+n);o.detune.value=dt;
       var gk=ctx.createGain();gk.gain.value=k==0?.5:.35;o.connect(gk);gk.connect(bus);o.start(t);o.stop(t+dur+.1);});});
     var hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=100;
-    var ws=ctx.createWaveShaper();ws.curve=HG;ws.oversample='4x';
+    var ws=ctx.createWaveShaper();ws.curve=HG;ws.oversample='none'; // sem sobreamostragem: era o que mais pesava no celular
     var pk=ctx.createBiquadFilter();pk.type='peaking';pk.frequency.value=1400;pk.gain.value=5;pk.Q.value=.8;
     var cab=ctx.createBiquadFilter();cab.type='lowpass';cab.frequency.value=lp||3200;cab.Q.value=.9;
     var g=ctx.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+.004);g.gain.setValueAtTime(peak,t+Math.max(.01,dur-.04));g.gain.linearRampToValueAtTime(.0001,t+dur);
