@@ -1573,10 +1573,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-seta{font-size:26px;line-height:1;vertical-align:middle;color:#c4182c}
 
 .dc-desistir-btns{display:grid;gap:8px;margin-top:10px}
-<<<<<<< HEAD
 .fg-wrap .dc-chip{color:#17224a;font-weight:800}.fg-wrap .dc-chip.ok{color:#fff}
-=======
-.dc-grid.dc-easy .dc-c.dica-linha{background:#fff6d6}
 /* pausa geral (todos os celulares da sala): recados em chips pequenos dentro da caixa de pausa */
 .jg-pausa-sala{display:grid;gap:6px;justify-items:center;margin-top:2px}
 .jg-pausa-sala b{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#17224a}
@@ -1587,4 +1584,3 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-pausa-geral .jg-pausa-box h2{font-size:38px}
 .jg-pausa-box .jg-pausa-saidas{margin-top:2px}.jg-pausa-box .jg-pausa-saidas button{background:transparent;box-shadow:2px 3px 0 #17224a;border-color:#17224a;color:#17224a}
 .jg-pausa-resp{display:grid;gap:4px}.jg-pausa-resp .esp{font-weight:600;opacity:.8}
->>>>>>> origin/main
