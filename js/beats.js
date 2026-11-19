@@ -96,7 +96,7 @@ export const clear = (b) => ({ ...clone(b), rows: Object.fromEntries(ROWS.map((r
    Os detalhes ficam em `b.det[peça][passo]` (só quem usa o kit detalhado tem isso; o resto dos ritmos nem sabe que existe). */
 export const KIT_DETALHE = [['cr', 'Crash'], ['rd', 'Ride'], ['hh', 'Chimbal'], ['sn', 'Caixa'], ['bd', 'Bumbo'], ['hf', 'Chimbal pé']];
 /** Detalhes: [código, nome, símbolo na casinha, peças onde vale (null = qualquer)]. */
-export const DETALHES = [['a', 'acento', '>', null], ['f', 'fantasma', '( )', ['sn']], ['r', 'aro de caixa', '✕', ['sn']], ['o', 'chimbal aberto', 'o', ['hh']], ['c', 'cúpula', '◆', ['rd']], ['p', 'pivô', '↗', ['bd']]];
+export const DETALHES = [['a', 'acento', '>', null], ['f', 'fantasma', '( )', ['sn']], ['r', 'aro de caixa', '✕', ['sn']], ['o', 'chimbal aberto', 'o', ['hh']], ['c', 'cúpula', '◆', ['rd']], ['p', 'flam (pivô)', 'fl', ['bd']]];
 export const detOf = (b, row, i) => (b.det && b.det[row] && b.det[row][i]) || '';
 export const detValeEm = (code, row) => { const d = DETALHES.find((x) => x[0] === code); return !!d && (!d[3] || d[3].includes(row)); };
 /** Põe a nota com um detalhe (ou tira, se já estava com o mesmo detalhe). Detalhe que não vale pra essa peça é ignorado (vira nota normal). */

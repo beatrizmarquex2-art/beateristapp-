@@ -7,12 +7,14 @@ import { h } from '../util.js';
 import { getGame, setGame } from './base.js';
 import { audio, click, tom, perfToCtx } from '../audio.js';
 import { drumSvg, vinil } from '../kids/drum-art.js';
+import { mountProgressionMap } from '../kids/mapa.js';
+import { temaDoMundo } from './mundos-tema.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { capture } from '../kids/capture.js';
 import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
 import { ladosDosToques } from '../kids/mic-timbre.js';
-import { FASES, FASE_BY, BLOCOS, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, PERFEITO_MIC, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
+import { FASES, FASE_BY, TEMPOS, FIGURAS, MIN_ACERTO, LADO_E, LADO_D, buildChart, passo, janela, judgeTap, judgeOnsets, PERFEITO_MIC, sweep, summary, guardar, melhoresDe, estrelas, estrelasCel, liberada, totalEstrelas, folgas, chaveFalhas, contaFalhas } from './rudimentos-logic.js';
 
 const LOOK = 1.15; // s que a nota leva pra descer
 const COR = { E: '#ff3d57', D: '#2d8cff' }; // LED: vermelho = caixa (esquerda, E), azul = bumbo (direita, D)
@@ -30,19 +32,19 @@ export function mount(host) {
 
   /* ---------- lista de fases ---------- */
   const lista = () => {
-    limpa(); musicaVolta(); const e = est();
-    const card = (f) => {
-      const lock = !liberada(e, f.n); const n = estrelas(e, f.n);
-      return h('button', { type: 'button', class: `rd-fase${lock ? ' lock' : ''}${n ? ' feita' : ''}`, disabled: lock, 'data-fase': String(f.n), 'aria-label': `fase ${f.n}, ${f.nome}${lock ? ', trancada: ganhe uma estrela na fase anterior' : `, ${n} de 3 estrelas`}`, onclick: () => jogo(f) },
-        lock ? cadeado() : h('i', { class: 'rd-num' }, String(f.n)), h('span', { class: 'rd-nome' }, f.nome),
-        h('span', { class: 'rd-prev', 'aria-hidden': 'true' }, [...(f.seq.length > 16 ? f.seq.slice(0, 16) + ' …' : f.seq)].reduce((t, c, i) => t + (i && i % 4 === 0 ? ' ' : '') + c, '')),
-        h('span', { class: 'rd-est' }, estrelasTxt(n)));
-    };
+    limpa(); musicaVolta(); const e = est(); const box = h('div', { class: 'tm-map' });
     root.replaceChildren(
       h('p', { class: 'rd-intro' }, 'toque o padrão das mãos: ', h('b', {}, 'E'), ' = mão esquerda, ', h('b', {}, 'D'), ' = mão direita. toque na tela ou com o microfone, em colcheias ou semicolcheias. ', `${MIN_ACERTO}% de acerto passa.`),
       h('div', { class: 'rd-parc' }, h('img', { src: 'assets/marcas/padgorilla-branco.png', alt: 'Pad Gorilla', width: 74, height: 38, decoding: 'async' }), h('span', {}, 'Rudimentix com a parceira da Bea, a Pad Gorilla. bora treinar os rudimentos!')),
       h('p', { class: 'rd-total' }, `★ ${totalEstrelas(e)}/${FASES.length * 24}`),
-      ...BLOCOS.map((b) => h('section', { class: 'rd-bloco' }, h('h3', { class: 'rd-bloco-h' }, `${b.n}. ${b.nome}`), h('div', { class: 'rd-fases' }, ...FASES.filter((f) => f.bloco === b.n).map(card)))));
+      box);
+    // as fases agora são o mapa de discos (trilha, Paul e regiões); a estrela do disco = 1 a cada 8 das 24 do Rudimentix
+    const CURTO = { 6: 'paradiddle duplo dos dois lados' }; // nomes da Bea embaixo de cada disco (toque simples, toque duplo…)
+    const levels = FASES.map((f, i) => ({ id: `rd:${f.n}`, index: i + 1, label: String(f.n), tag: CURTO[f.n] || f.nome, boss: i === FASES.length - 1 }));
+    const nOf = (id) => Number(id.split(':')[1]);
+    off = mountProgressionMap(box, { gameId: 'rudimentos', levels, profileId: 'rudimentos', unitName: 'Fase', tier: 0, stars: { have: totalEstrelas(e), max: FASES.length * 24 },
+      theme: temaDoMundo('vulcao', 'Rudimentix', [['maos', 'Mãos alternadas, dobras e paradiddles', 'toque simples, duplo…'], ['combina', 'Combinações', 'paradiddle triplo e mais']]),
+      starsOf: (id) => Math.min(3, Math.ceil(estrelas(e, nOf(id)) / 8)), unlockedOf: (id) => liberada(e, nOf(id)), lockedMsg: 'ganhe 1 estrela na fase anterior', onOpen: (lv) => jogo(FASES[lv.index - 1]) });
   };
 
   /* ---------- a fase ---------- */

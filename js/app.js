@@ -87,7 +87,7 @@ let started = false;
 
 const NAV = [...NAV_DEFAULT]; // as 4 abas de baixo (a Bea pode trocar: navbar.js)
 const RITMO = ['beatlab', 'toque', 'partitura', 'groovebox'];
-const VISUAL_C = new Set(['codigos', 'beaterista', 'acessos', 'resgates', 'planos', 'album-alunos', 'ata']); // telas com o visual C (css/app.css, no fim)
+const VISUAL_C = new Set(['codigos', 'beaterista', 'acessos', 'resgates', 'planos', 'album-alunos', 'ata', 'ajustes', 'checklist', 'arquivos', 'notas', 'ideias', 'setlist', 'anotacoes']); // telas com o visual C (css/app.css, no fim)
 /** A aba de baixo "acesa" pra tela atual: Criar ritmos vale também pro Beat Lab, Bateria de Toque etc. */
 const navOn = (href, r) => {
   if (href === '#/hub/ritmo') return (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name);
