@@ -78,3 +78,6 @@
 .cm-root .cm-qc{display:flex;align-items:center;justify-content:center;grid-template-rows:none;min-height:42px;padding:6px 10px;font-size:14px;line-height:1.15}
 .cm-root .cm-qc>span{display:block}
 .cm-carro{align-items:stretch}
+
+/* sala de 3 e 4 celulares: andamento de todo mundo e classificação */
+.cm-corrida{margin:6px 0;padding:6px 10px;background:#fff;border:2px solid var(--jg-navy);border-radius:12px;color:#142036}.cm-corrida b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.cm-corrida ul,.cm-classif{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px}.cm-corrida li,.cm-classif li{display:flex;justify-content:space-between;gap:8px;padding:4px 8px;border-radius:8px;background:#f4efe3;font-weight:800}.cm-corrida li.eu,.cm-classif li.eu{background:#ffe08a}.cm-corrida li.fim{opacity:.85}.cm-corrida li small,.cm-classif li small{font-weight:700;opacity:.8}.cm-classif{margin:8px 0}.cm-classif li{padding:8px 12px;border:2px solid #142036;border-radius:12px;color:#142036}
