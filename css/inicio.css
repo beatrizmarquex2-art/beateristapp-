@@ -1,0 +1,42 @@
+/* Aba Início (prévia): passe dourado, 3 números, desafio, semana e atalhos. Só aparece com ?inicio=1 (ver js/views/inicio.js). */
+html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { background: linear-gradient(180deg, #15183c 0, #0d0f2b 100%); }
+#view[data-page="inicio"] { background: linear-gradient(180deg, #15183c 0, #0d0f2b 100%); color: #fff; min-height: 100%; }
+.inicio { max-width: 520px; margin: 0 auto; padding: 18px 18px 30px; display: grid; gap: 14px; font-family: "Hanken Grotesk", system-ui, sans-serif; }
+.in-passe { position: relative; height: 246px; border-radius: 26px; background: linear-gradient(135deg, #f9d27a 0, #e0a232 38%, #fbe3a3 55%, #c98a1e 100%); color: #2a1a05; box-shadow: 0 24px 34px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.5); overflow: hidden; }
+.in-passe::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.12) 0 2px, transparent 2px 14px); pointer-events: none; }
+.in-furo { position: absolute; left: 50%; top: 10px; width: 58px; height: 10px; margin-left: -29px; border-radius: 99px; background: #0d0f2b; box-shadow: inset 0 2px 3px rgba(0,0,0,.6); }
+.in-tag { position: absolute; left: 18px; top: 30px; margin: 0; font: 700 11px "Hanken Grotesk", sans-serif; letter-spacing: .18em; text-transform: uppercase; }
+.in-nome { position: absolute; left: 18px; top: 50px; right: 140px; margin: 0; font: 400 34px/1 "Anton", sans-serif; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #2a1a05; }
+.in-nivel { position: absolute; left: 18px; top: 98px; margin: 0; font: 700 13px "Hanken Grotesk", sans-serif; }
+.in-xp { position: absolute; left: 18px; right: 140px; top: 124px; height: 14px; border-radius: 99px; background: rgba(42,26,5,.28); overflow: hidden; }
+.in-xp i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #c81e2d, #ff5a4a); }
+.in-xpn { position: absolute; left: 18px; top: 144px; margin: 0; font: 700 11px "Hanken Grotesk", sans-serif; }
+.in-foto { position: absolute; right: 14px; top: 36px; width: 112px; height: 148px; border-radius: 14px; background: #fff7e6; overflow: hidden; box-shadow: 4px 5px 0 rgba(42,26,5,.45); }
+.in-foto img { width: 128px; margin: 6px 0 0 -8px; }
+.in-cod { position: absolute; left: 18px; bottom: 16px; margin: 0; font: 700 12px "Hanken Grotesk", sans-serif; letter-spacing: .14em; }
+.in-selos { position: absolute; right: 14px; bottom: 12px; display: flex; gap: 6px; }
+.in-selos i { width: 26px; height: 26px; border-radius: 50%; background: #2a1a05; color: #ffd36e; font: 400 12px "Anton", sans-serif; font-style: normal; display: flex; align-items: center; justify-content: center; }
+.in-tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.in-tres div { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 12px 8px; text-align: center; }
+.in-tres b { display: block; font: 400 28px/1 "Anton", sans-serif; }
+.in-tres small { font: 600 11px "Hanken Grotesk", sans-serif; color: #aab0e0; }
+.in-hoje { position: relative; border-radius: 22px; padding: 16px; background: linear-gradient(135deg, #c81e2d, #7d1020); box-shadow: 0 14px 24px rgba(0,0,0,.4); min-height: 142px; }
+.in-hoje small { font: 700 11px "Hanken Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #ffd9a0; }
+.in-hoje h2 { margin: 2px 0 0; max-width: 62%; font: 400 24px/1.05 "Anton", sans-serif; text-transform: uppercase; color: #fff; }
+.in-btn { margin-top: 11px; display: inline-block; background: #fff7e6; color: #162146 !important; font: 400 17px/1 "Anton", sans-serif; text-transform: uppercase; padding: 10px 18px 7px; border-radius: 99px; text-decoration: none; }
+.in-hoje img { position: absolute; right: 6px; bottom: 0; width: 108px; }
+.in-semana h3 { margin: 0; font: 400 15px "Anton", sans-serif; letter-spacing: .08em; text-transform: uppercase; display: flex; justify-content: space-between; color: #fff; }
+.in-semana h3 span { font: 700 12px "Hanken Grotesk", sans-serif; color: #ffd36e; letter-spacing: 0; }
+.in-dias { display: flex; justify-content: space-between; margin-top: 10px; }
+.in-dias div { width: 44px; text-align: center; font: 700 11px "Hanken Grotesk", sans-serif; color: #aab0e0; }
+.in-dias i { display: flex; width: 44px; height: 44px; margin-bottom: 5px; border-radius: 50%; border: 2px dashed #4a5090; align-items: center; justify-content: center; font-style: normal; font-size: 20px; }
+.in-dias .f i { background: linear-gradient(160deg, #ffd36e, #e0902a); border: 0; color: #2a1a05; }
+.in-dias .h i { border: 2px solid #ffd36e; box-shadow: 0 0 0 4px rgba(255,211,110,.22); color: #ffd36e; }
+.in-prox { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.in-prox a { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 10px 12px; font: 600 12px/1.25 "Hanken Grotesk", sans-serif; color: #fff; text-decoration: none; }
+.in-prox b { display: block; font: 400 15px "Anton", sans-serif; text-transform: uppercase; color: #ffd36e; }
+/* o tema do app achata cantos e círculos: aqui os raios valem (e o título do passe não encosta na foto) */
+.in-passe { border-radius: 26px !important; } .in-furo, .in-xp, .in-xp i { border-radius: 99px !important; } .in-foto { border-radius: 14px !important; }
+.in-selos i, .in-dias i { border-radius: 50% !important; } .in-tres div { border-radius: 18px !important; } .in-hoje { border-radius: 22px !important; }
+.in-btn { border-radius: 99px !important; } .in-prox a { border-radius: 16px !important; }
+.in-tag { right: 140px; letter-spacing: .12em; font-size: 10px; white-space: nowrap; }
