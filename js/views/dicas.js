@@ -14,7 +14,9 @@ const conf = () => ({ kw: {}, best: {}, ...(store.get(KEY) ? store.get(KEY).data
 const save = (p) => store.upsert('setting', KEY, p);
 import { tipList } from '../tipbox.js';
 import { LETRAS as NOMES_LETRAS, nomeLetras } from '../letras-nomes.js';
-const items = () => T.keywords(tipList(), conf().kw);
+import { carregaBanco, comoDicas } from '../banco.js';
+// as dicas do método + o banco verificado (cartas e livros da Bea); o banco carrega sob demanda e fica vazio até chegar (nunca quebra)
+const items = () => [...T.keywords(tipList(), conf().kw), ...comoDicas()];
 // amostra grátis (sem código): a caça-palavras usa palavras do dicionário musical, não as dicas do método
 const termItems = () => TERMS.filter((x) => /^\p{L}+$/u.test(x.t)).map((x, i) => ({ n: i + 1, text: x.d, w: T.norm(x.t), shown: x.t, termo: true })).filter((x) => x.w.length >= 4 && x.w.length <= 8);
 const TABS = ['quiz', 'caca', 'cruzadinha'].map((k) => [k, nomeLetras(k)]); // 'duelo' (jogar com código) não é mais aba: vive dentro de cada jogo (#/dicas/<jogo>/codigo); #/dicas/duelo segue abrindo pra quem entra numa sala por código
@@ -184,6 +186,7 @@ const ICON = { quiz: 'quiz.svg', caca: 'caca.svg', cruzadinha: 'cruza.svg', duel
 const SUB = Object.fromEntries(Object.entries(NOMES_LETRAS).map(([k, v]) => [k, v[1]]));
 
 export function mount(host, parts = []) {
+  carregaBanco(); // o banco de conteúdo verificado (assets/jogos/banco) chega em segundo plano
   if (parts[0] === 'fuga') { let off = () => {}; import('../jogos/fuga.js').then((m) => { off = m.mount(host); }); return () => off(); } // A Fuga do Estúdio junta quiz + caça + cruzadinha
   const limited = alunoSemCodigo(); // sem código: só a caça-palavras (2 partidas, com palavras do dicionário)
   const tab = TABS.some(([k]) => k === parts[0]) || parts[0] === 'duelo' ? parts[0] : limited ? 'caca' : 'quiz';

@@ -1378,9 +1378,14 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* ---------- conquista pra postar (js/conquista.js): botão no placar azul e festa de "terminei o caminho" ---------- */
 .pl-card .pl-act .cq-bt{flex:1 1 100%!important;background:transparent!important;color:#fff!important;border:2px dashed #f6b93b!important;font-size:14px!important;min-height:38px!important}
 .cq .cq-box{gap:6px;max-width:min(90vw,380px);max-height:92vh;overflow:auto}
-.cq-paul{width:128px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
+.cq-paul{width:170px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
 .cq-selo{font:800 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:#f2a91b}
 .cq-t{font:400 26px/1.05 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.pf-box b.cq-t{font-size:21px;line-height:1.1;color:#e6fdff;text-shadow:0 0 6px #00e5ff,0 0 16px #00e5ff,0 0 30px #00bcd4}
+/* festa de caminho sem roxo: ciano, amarelo e vermelho da marca */
+.pf.cq{background:radial-gradient(120% 70% at 50% 0%,rgba(0,200,230,.38),transparent 60%),radial-gradient(90% 60% at 50% 100%,rgba(255,61,87,.4),transparent 60%),#060818}
+.cq .cq-box{border-color:#00e5ff;animation:pf-pop .55s cubic-bezier(.2,1.4,.4,1);box-shadow:0 0 0 2px #0a0c28,0 0 28px #00e5ff,0 0 60px rgba(0,229,255,.4),inset 0 0 30px rgba(0,229,255,.18)}
+.cq .cq-postar{background:#dd3038;color:#fff;border:0;box-shadow:0 4px 0 #8f1a20,0 0 22px rgba(221,48,56,.55)}
 .cq-bens{display:grid;gap:3px;justify-items:start;text-align:left;background:rgb(255 255 255/.1);border-radius:14px;padding:10px 12px;font-size:13.5px;font-weight:700;width:100%}
 .cq-bens small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f2a91b}
 .cq-acoes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:4px}
@@ -1585,6 +1590,37 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-pausa-box .jg-pausa-saidas{margin-top:2px}.jg-pausa-box .jg-pausa-saidas button{background:transparent;box-shadow:2px 3px 0 #17224a;border-color:#17224a;color:#17224a}
 .jg-pausa-resp{display:grid;gap:4px}.jg-pausa-resp .esp{font-weight:600;opacity:.8}
 
+/* Detetive Note: visual "caderno do detetive" (opção 1 escolhida pela Bea, 19/nov/2026): papel pautado, cartas coladas com fita, sombra deslocada */
+.jg-detetive .dn-caderno{position:relative;padding:14px 14px 16px;border-radius:18px;color:#1b1818;background:#f1ebe1 repeating-linear-gradient(transparent 0 27px,rgba(181,22,43,.12) 27px 28px);box-shadow:0 0 0 2px #1b1818,4px 4px 0 #1b1818}
+.jg-detetive .dn-caderno .tr-fasehead{color:#1b1818}
+.jg-detetive .dn-caderno .tr-fasehead .btn{border:2px solid #1b1818;border-radius:10px;background:#fff;color:#1b1818;box-shadow:2px 2px 0 #1b1818;font-weight:800}
+.jg-detetive .dn-dots i{border-color:#1b1818}.jg-detetive .dn-dots i.on{background:#b5162b;border-color:#1b1818}.jg-detetive .dn-dots i.now{background:#e3a82f}
+.jg-detetive .dn-caso{margin:2px 0 0;font:900 30px/1 Georgia,'Times New Roman',serif;letter-spacing:-.5px;color:#1b1818}.jg-detetive .dn-caso em{color:#b5162b}
+.jg-detetive .dn-sub{margin:2px 0 12px;font-size:12px;color:#5f5752}
+.jg-detetive .dn-ouvir{display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:12px 14px;background:#b5162b;color:#fff;border:2px solid #1b1818;border-radius:16px;box-shadow:4px 4px 0 #1b1818;font:800 16px var(--body,inherit);text-align:left;cursor:pointer}
+.jg-detetive .dn-ouvir:disabled{opacity:.55;cursor:default}
+.jg-detetive .dn-vinil{flex:none;width:44px;height:44px;border-radius:50%!important;border:2px solid #fff;background:radial-gradient(#e3a82f 0 14%,#1b1818 15% 100%)}
+.jg-detetive .dn-ouvir-t small{display:block;margin-top:2px;font-weight:600;font-size:12px;opacity:.92}
+.jg-detetive .dn-caderno .jg-msg{margin:14px 0 0;font-size:13px;color:#1b1818}
+.jg-detetive .dn-caderno .dn-slots{gap:10px;margin:10px 0 4px}
+.jg-detetive .dn-caderno .dn-slot{min-height:0;aspect-ratio:3/4;border:2.5px dashed #1b1818;border-radius:6px;background:rgba(255,255,255,.55);position:relative}
+.jg-detetive .dn-caderno .dn-slot:not(.cheia)>small{font:900 26px Georgia,serif;opacity:.25}.jg-detetive .dn-caderno .dn-slot .dn-face small{font-size:10px;font-weight:700;opacity:1}
+.jg-detetive .dn-caderno .dn-slot.cheia{border-style:solid;background:#fffdf7;box-shadow:3px 3px 0 #1b1818;transform:rotate(-1.5deg)}.jg-detetive .dn-caderno .dn-slot.cheia:nth-child(2n){transform:rotate(1.2deg)}
+.jg-detetive .dn-caderno .dn-slot.cheia::before{content:"";position:absolute;top:-9px;left:50%;width:34px;height:14px;background:rgba(227,168,47,.8);transform:translateX(-50%) rotate(-3deg)}
+.jg-detetive .dn-caderno .dn-slot.ok{background:#dff3e6;border-color:#1f7a3f}.jg-detetive .dn-caderno .dn-slot.no{background:#fde4e4;border-color:#a51a28}
+.jg-detetive .dn-caderno .dn-slot.agora{background:#e3a82f;transform:scale(1.06);box-shadow:0 0 0 4px rgba(227,168,47,.45),3px 3px 0 #1b1818}
+.jg-detetive .dn-lab{margin:16px 0 8px;font:800 11px var(--body,inherit);letter-spacing:.14em;text-transform:uppercase;color:#b5162b}
+.jg-detetive .dn-caderno .dn-baralho{gap:10px;margin:0}
+.jg-detetive .dn-caderno .dn-card{min-height:0;aspect-ratio:4/3;border:2.5px solid #1b1818;border-radius:6px;background:#fffdf7;box-shadow:3px 3px 0 #1b1818;padding:6px}
+.jg-detetive .dn-caderno .dn-card:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 #1b1818}
+.jg-detetive .dn-caderno .dn-face-fig{max-width:84px}
+.jg-detetive .dn-caderno .jg-actions{margin-top:16px;display:flex;gap:10px}
+.jg-detetive .dn-caderno .dn-conferir{flex:1;padding:14px;border:2.5px solid #1b1818;border-radius:14px;background:#e3a82f;color:#1b1818;font:900 17px var(--body,inherit);box-shadow:4px 4px 0 #1b1818}.jg-detetive .dn-caderno .dn-conferir:disabled{opacity:.5}
+/* Detetive Note: os 5 estilos das cartas, todos na mesma linha (emoji em cima, nome embaixo) */
+.jg-detetive .dn-estilos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.jg-detetive .dn-estilos button{display:grid;justify-items:center;gap:1px;min-height:0;padding:6px 2px 5px;border:2px solid #1b1818;border-radius:12px;background:#fffdf7;color:#1b1818;box-shadow:2px 2px 0 #1b1818;font:800 10px/1.1 var(--body,inherit);cursor:pointer;transition:transform .1s,box-shadow .1s}
+.jg-detetive .dn-estilos button i{font-style:normal;font-size:20px;line-height:1.1}
+.jg-detetive .dn-estilos button.on{background:#e3a82f;transform:translate(2px,2px);box-shadow:0 0 0 #1b1818}
 /* aviso de saída de jogador nas salas (supabase/021): aparece pra todos */
 .jg-saiu{margin:8px 0;display:grid;gap:8px}
 .jg-saiu-l{display:grid;gap:4px;padding:10px 12px;border:3px solid #142036;border-radius:14px;background:#ffe9a8;color:#142036;box-shadow:3px 3px 0 #142036}
@@ -1629,7 +1665,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-molduraimg{display:block;margin:6px auto;background:radial-gradient(circle,#10162e 0 62%,transparent 63%);border-radius:0}
 
 /* ===== os 9 Pauls novos (festa, dúvida, detetive, baú, presente, celular, placa, espiando e o logo) ===== */
-.en-box.passe{position:relative}.en-passe-paul{float:right;width:84px;height:auto;margin:0 0 6px 8px;shape-outside:margin-box;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+.en-box.passe{position:relative}.en-passe-paul{float:right;width:104px;height:auto;margin:0 0 6px 8px;shape-outside:margin-box;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
 .fig-bau-paul{display:block;width:150px;height:auto;margin:-6px auto 4px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}
 .est-logo-paul{display:block;width:min(170px,52%);height:auto;margin:6px auto 2px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
 .cfg-celular-paul{float:right;width:70px;height:auto;margin:0 0 4px 10px}
@@ -1759,3 +1795,15 @@ body.bv-aberta { overflow: hidden; }
 .bv-ir { border: 0; border-radius: 99px !important; padding: 14px; font: 400 20px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .03em; background: #c81e2d; color: #fff; box-shadow: 0 4px 0 #7d1019; cursor: pointer; }
 .bv-cod { background: none; border: 0; color: #fff7e6; font: 700 14px "Hanken Grotesk", sans-serif; text-decoration: underline; padding: 8px; cursor: pointer; }
 .bv-tela > .bv-luz { position: absolute; width: min(360px, 90vw); }
+.fgm-regra{margin:-4px auto 10px;max-width:340px;padding:6px 10px;border-radius:12px;background:#ffd23f22;border:1px dashed #ffd23f88;color:#ffe9a8;font:800 12px var(--body,system-ui)}
+
+/* ---- Palco · bateria: painel de gravação mais bonito (cantos redondos, botões em pílula) e linha do canhota ---- */
+.tk-panel.bmr{border-radius:26px;padding:18px 16px;gap:14px;background:linear-gradient(180deg,#fffdf7,#fbf3e2);border:2px solid #17365B22;box-shadow:0 10px 26px #17365B1f,inset 0 2px 0 #fff}
+.tk-panel.bmr .tk-big{border-radius:18px;min-height:56px;font-weight:800}
+.tk-panel.bmr .tk-rec{background:linear-gradient(180deg,#d41f3a,#a31d30);box-shadow:0 5px 0 #6d1220,0 10px 18px #a31d3040;border:0;color:#fff}
+.tk-panel.bmr .bl-tempo{justify-content:center;gap:12px}
+.tk-panel.bmr .bl-step{border-radius:50%;width:52px;height:52px;font-size:26px;font-weight:800;border:2px solid #17365B33;background:#fff;box-shadow:0 3px 0 #17365B22}
+.tk-panel.bmr .bl-bpm{border-radius:18px;border:2px solid #17365B22;background:#fff;box-shadow:inset 0 2px 5px #17365B14}
+.tk-panel.bmr .tk-opts{justify-content:center;gap:8px}
+.tk-panel.bmr .tk-opts .chip,.tk-panel.bmr .tk-opts button{border-radius:99px}
+.kd-canhota{border-radius:99px}

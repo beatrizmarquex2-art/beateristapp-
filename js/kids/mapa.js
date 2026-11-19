@@ -30,7 +30,7 @@ export function mountProgressionMap(host, cfg) {
   const decorOf = (c) => c.decor || DECOR[c.id] || [];
   const bad = checkLevels(levels); if (!bad.ok) console.warn('mapa: fases com problema', bad.errors);
   const { nodes, current, allDone } = computeNodes(levels, cfg);
-  const chapters = chaptersFor(nodes.length, regions); const L = layoutMap(nodes.length);
+  const chapters = chaptersFor(nodes.length, regions); const L = layoutMap(nodes.length, { regions });
   const seenKey = `beaterista-mapa-vistos:${profileId}:${gameId}`; const lastKey = `beaterista-mapa-ultima:${profileId}:${gameId}`;
   const fresh = newlyDone(store(seenKey), nodes); const celebrate = fresh.length ? fresh[fresh.length - 1] : null;
   const pos$ = (i) => L.pts[i];

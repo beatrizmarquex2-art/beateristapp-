@@ -10,6 +10,7 @@ import { getGame, setGame } from './base.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { temaDoMundo } from './mundos-tema.js';
 import { MINI } from './fuga-mini.js';
+import { carregaBanco } from '../banco.js';
 import { MUNDOS, FASES, NOME_TIPO, NOME_NIVEL, MIN_QUIZ, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
 import { mountFugaMapa } from './fuga-mapa.js';
 import { trilhaInfo, trilhaCfg, estDaTrilha, paraTrilha, fasesFeitas, FASES_TRILHA, trilhaCompleta, trilhaLiberada, motivoTrilha, reiniciar, pagaPorPorta, estrelasDaTrilha, chavePorta, chaveTrilha, concluirTrilha, filtraAssunto, semVistos, registraVistos } from './fuga-trilhas-logic.js';
@@ -103,7 +104,7 @@ export function mount(host) {
   async function joga(M, mi, n) {
     limpa(); if (gone) return; const bonusB = n === 'B'; const portas = bonusB ? [{ ...BONUS, desafio: true, assuntos: TR.assuntos, extra: TR.extra }] : portasDaFase(mi, n, TR); const N = portas.length;
     const mod = (await import('../views/dicas.js'))._duelo; const T = await import('../tips.js'); if (gone) return;
-    const todasDicas = mod.items(); const fa = filtraAssunto(todasDicas, TR.assuntos); const vistosG = (getGame('fuga').vistos || {})[trilha] || []; const its = semVistos(fa.itens, vistosG); let usados = []; const caixa = h('div', { class: 'dc-box' }); let k = 0; let api = null; let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = []; let tPorta = 0;
+    await carregaBanco(); if (gone) return; const todasDicas = mod.items(); const fa = filtraAssunto(todasDicas, TR.assuntos); const vistosG = (getGame('fuga').vistos || {})[trilha] || []; const its = semVistos(fa.itens, vistosG); let usados = []; const caixa = h('div', { class: 'dc-box' }); let k = 0; let api = null; let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = []; let tPorta = 0;
     const rel = h('p', { class: 'fg-rel', role: 'timer', hidden: true });
     const paraRelogio = () => { clearInterval(relogio); relogio = 0; };
     const sair = () => { paraRelogio(); mapa(); };

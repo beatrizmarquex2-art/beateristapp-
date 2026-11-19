@@ -18,6 +18,8 @@ export const DECOR_TEMA = {
   vulcao: [L(['volcano', 'l', 0.06], ['flame', 'r', 0.14], ['rock', 'r', 0.25], ['flame', 'l', 0.34], ['volcano', 'r', 0.45], ['rock', 'l', 0.55], ['flame', 'r', 0.66], ['volcano', 'l', 0.76], ['flame', 'l', 0.86], ['rock', 'r', 0.94]),
     L(['flame', 'l', 0.06], ['rock', 'r', 0.15], ['volcano', 'r', 0.26], ['flame', 'l', 0.37], ['rock', 'l', 0.47], ['flame', 'r', 0.57], ['volcano', 'l', 0.68], ['rock', 'r', 0.78], ['flame', 'l', 0.88], ['volcano', 'r', 0.95])],
 };
+// temas novos: mesmos desenhos de outros mundos, só com cores próprias (cores em css/aventura-tema.css), pra não repetir mapa entre jogos
+DECOR_TEMA.outono = DECOR_TEMA.floresta; DECOR_TEMA.porsol = DECOR_TEMA.mar; DECOR_TEMA.noite = DECOR_TEMA.floresta;
 export const TEMAS = Object.keys(DECOR_TEMA);
 /** Regiões de um mundo: `lista` = [[id, nome, subtítulo], ...] (1 a 2 regiões); os enfeites vêm do tema. */
 export const regioesDoTema = (tema, lista) => lista.map(([id, name, sub], i) => ({ id, name, sub, decor: DECOR_TEMA[tema][i % 2] }));

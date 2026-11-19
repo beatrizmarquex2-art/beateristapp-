@@ -52,8 +52,9 @@ export function chaptersFor(count, regions = REGIONS) {
 export const MAP_W = 360;
 const XS = [180, 104, 180, 256]; // vai e volta suave
 /** Posição de cada disco: o começo fica embaixo e a subida vai pra cima. Tudo em unidades de um quadro 360 × altura. */
-export function layoutMap(count, { step = 150, top = 40, bottom = 70, banner = 84 } = {}) {
-  const chapters = chaptersFor(count); const pts = [];
+export function layoutMap(count, { step = 150, top = 40, bottom = 70, banner = 84, regions = REGIONS } = {}) {
+  // as faixas seguem as regiões do mundo (antes eram sempre 6, e mundos com 2 regiões ficavam sem cenário no fim)
+  const chapters = chaptersFor(count, regions); const pts = [];
   // cada região tem uma faixa de título em cima; as faixas empurram os discos
   let y = 0; const bands = [];
   const total = top + bottom + (count - 1) * step + chapters.length * banner;

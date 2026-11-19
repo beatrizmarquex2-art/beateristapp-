@@ -73,3 +73,11 @@ html[data-av="claro"] .mp[data-theme="mundo-mar"]{--avp-sky0:#d8eef8;--avp-sky1:
 html[data-av="claro"] .mp[data-theme="mundo-espaco"]{--avp-sky0:#cfd9f2;--avp-sky1:#b3c2e8;--avp-sky2:#c1cdee;--avp-sky3:#9fb0e0;--avp-edge:#2b3f7a;--avp-dots:#8497cc}
 html[data-av="claro"] .mp[data-theme="mundo-gelo"]{--avp-sky0:#eaf6fd;--avp-sky1:#d2eaf7;--avp-sky2:#dff0fa;--avp-sky3:#bfe0f2;--avp-edge:#3a7ea0;--avp-dots:#a9d3e8}
 html[data-av="claro"] .mp[data-theme="mundo-vulcao"]{--avp-sky0:#ffe1d2;--avp-sky1:#ffc4a3;--avp-sky2:#ffd3b8;--avp-sky3:#ffad82;--avp-edge:#b23a12;--avp-dots:#f08a5c}
+
+/* temas novos (reaproveitam os desenhos de outros mundos, com cores próprias) */
+.mp[data-theme="mundo-outono"]{--avp-sky0:#5a2a12;--avp-sky1:#8a4219;--avp-sky2:#74361a;--avp-sky3:#a85a24;--avp-edge:#ffd08a;--avp-dots:#d98a4a}
+.mp[data-theme="mundo-porsol"]{--avp-sky0:#7a2b3a;--avp-sky1:#b8493f;--avp-sky2:#9c3a40;--avp-sky3:#d9673f;--avp-edge:#ffd9a8;--avp-dots:#f0a070}
+.mp[data-theme="mundo-noite"]{--avp-sky0:#0d1530;--avp-sky1:#1a2650;--avp-sky2:#141f44;--avp-sky3:#26366e;--avp-edge:#a8c4ff;--avp-dots:#5c78c8}
+html[data-av="claro"] .mp[data-theme="mundo-outono"]{--avp-sky0:#fbe3c8;--avp-sky1:#f5cba0;--avp-sky2:#f8d6b2;--avp-sky3:#eeb987;--avp-edge:#9a4a14;--avp-dots:#e0a066}
+html[data-av="claro"] .mp[data-theme="mundo-porsol"]{--avp-sky0:#ffe2da;--avp-sky1:#ffc9b8;--avp-sky2:#ffd5c6;--avp-sky3:#f7b39e;--avp-edge:#b0402c;--avp-dots:#f0a090}
+html[data-av="claro"] .mp[data-theme="mundo-noite"]{--avp-sky0:#dfe6fa;--avp-sky1:#c6d2f3;--avp-sky2:#d3dcf6;--avp-sky3:#b4c4ee;--avp-edge:#2c438f;--avp-dots:#93a8e0}

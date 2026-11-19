@@ -2,10 +2,10 @@
 // Só pinta o corredor que o mapa já montou (assets/mapas/mundos.js · css/mundos.css): fases, posições, nomes de regiões, cliques e progresso ficam do jeito que estão.
 import { aplicarTema, mundos } from '../../assets/mapas/mundos.js';
 
-/** gameId do mapa → id do tema no pacote. (Detetive tem 5 modos e o pacote 3 mundos: comida e animal pegam a arte de deserto e mar. Camarim e Palco da Fuga pegam estúdio e pôr do sol.) */
+/** gameId do mapa → id do tema no pacote. (Detetive: 3 mundos, m1 m2 m3. Camarim e Palco da Fuga pegam estúdio e pôr do sol.) */
 export const TEMA_BEAT = {
   'toca-ini': 'toca-1-geleira', 'toca-int': 'toca-2-estudio', 'toca-ava': 'toca-3-por-do-sol',
-  'detetive-normal': 'detetive-1-espaco', 'detetive-parque': 'detetive-2-floresta', 'detetive-corpo': 'detetive-3-vulcao', 'detetive-comida': 'figurix-2-deserto', 'detetive-animal': 'figurix-3-mar',
+  'detetive-m1': 'detetive-1-espaco', 'detetive-m2': 'detetive-2-floresta', 'detetive-m3': 'detetive-3-vulcao',
   'figurix-floresta': 'figurix-1-floresta', 'figurix-deserto': 'figurix-2-deserto', 'figurix-mar': 'figurix-3-mar', 'figurix-espaco': 'figurix-4-espaco',
   'paulta-drumF': 'paulta-1-selva', 'paulta-drumI': 'paulta-2-deserto', 'paulta-drumD': 'paulta-3-vulcao', 'paulta-sol': 'paulta-4-clave-de-sol', 'paulta-fa': 'paulta-5-clave-de-fa', 'paulta-duel': 'paulta-6-duelo',
   'fuga-estudio': 'fuga-1-estudio', 'fuga-vulcao': 'toca-2-estudio', 'fuga-espaco': 'toca-3-por-do-sol',

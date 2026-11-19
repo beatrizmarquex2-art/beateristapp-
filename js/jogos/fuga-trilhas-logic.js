@@ -87,7 +87,7 @@ const textoDe = (it) => `${it.text || ''} ${it.w || ''} ${it.shown || ''}`;
 export function filtraAssunto(itens, assuntos, min = 10) {
   const todos = !assuntos || !assuntos.length || ASSUNTOS.every((a) => assuntos.includes(a));
   if (todos) return { itens, fallback: false };
-  const ok = itens.filter((it) => assuntos.some((a) => RE[a] && RE[a].test(textoDe(it))));
+  const ok = itens.filter((it) => (it.banco ? assuntos.includes(it.assunto) : assuntos.some((a) => RE[a] && RE[a].test(textoDe(it))))); // itens do banco verificado já vêm com o assunto
   return ok.length >= min ? { itens: ok, fallback: false } : { itens, fallback: true };
 }
 /** Dicas que o aluno ainda não viu nessa trilha (se sobrarem menos de `min`, vale tudo de novo). */

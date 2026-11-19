@@ -12,7 +12,7 @@ import { banner, toast, stars } from '../ui.js';
 import { kitSom, warmKit, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
 import { arte, NOME_PECA } from '../kids/kit-modelos.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
-import { tocarTabs, contagemBar } from './tocar-nav.js';
+import { tocarTabs } from './tocar-nav.js';
 import { playDoc, stopAll } from './partitura.js';
 import { quantize, countNotes } from '../touchkit.js';
 import { svgEl } from '../kids/art.js';
@@ -79,7 +79,9 @@ export function mount(host) {
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
       ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
-    kit.replaceChildren(art, nomeEl, modelos);
+    // canhota sobe pra cá: logo ao lado do modelo (inverte o lado da bateria)
+    const canhota = h('button', { type: 'button', class: `kd-chip kd-canhota${c.left ? ' on' : ''}`, 'aria-pressed': String(!!c.left), onclick: () => setConf({ left: !c.left }).then(() => { drawKit(); drawPanel(); }) }, c.left ? 'canhota ✓' : 'canhota');
+    kit.replaceChildren(art, nomeEl, modelos, h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'jeito'), canhota));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
@@ -162,7 +164,7 @@ export function mount(host) {
       : last ? [h('button', { class: 'btn primary tk-big', type: 'button', onclick: startLoop }, icon('play', 16), ' tocar em loop'), h('button', { class: 'btn tk-big', type: 'button', onclick: record }, '↺ recomeçar')]
       : [h('button', { class: 'btn primary tk-big tk-rec', type: 'button', onclick: () => { if (!pago()) { pedir('gravar'); return; } record(); } }, h('i', { class: 'tk-dot' }), ` gravar (até ${MAX} s)`, pago() ? null : cadeado())];
     panel.replaceChildren(...[
-      h('section', { class: 'card pad tk-panel' },
+      h('section', { class: 'card pad tk-panel bmr' },
         h('div', { class: 'row tk-line tk-ctrls' }, ...mainBtns),
         rec || loop ? progBox : null,
         h('div', { class: 'bl-tempo' },
@@ -170,8 +172,7 @@ export function mount(host) {
           h('button', { class: 'bl-step', type: 'button', 'aria-label': 'mais 5 BPM', onclick: () => setBpm(c.bpm + 5) }, '+'),
           h('span', { class: 'tp-lab' }, 'BPM')),
         h('div', { class: 'chips lib-tabs tk-opts', role: 'group', 'aria-label': 'Opções da gravação' }, chip('count', 'contagem ao gravar'), chip('grid', 'ao compasso')),
-        h('div', { class: 'row tk-line' },
-          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(!!c.left), onclick: () => setConf({ left: !c.left }).then(() => { drawKit(); drawPanel(); }) }, c.left ? 'canhota ✓' : 'canhota'))),
+        ),
       status,
       take ? h('section', { class: 'card pad tk-take' },
         h('p', { class: 'muted' }, `${countNotes(take.bars)} notas em ${take.bars.length === 1 ? '1 compasso' : `${take.bars.length} compassos`} · ${take.bpm} BPM`),
@@ -188,8 +189,8 @@ export function mount(host) {
     ].filter(Boolean));
   };
 
-  host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel, contagemBar(),
-    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “contagem” conta 4 tempos e aí você começa; “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
+  host.append(banner('Bateria de Toque', 'acústica, eletrônica e cajón'), tocarTabs('toque'), ...(faixaPlano(GRATIS.bateria.texto) ? [faixaPlano(GRATIS.bateria.texto)] : []), kit, panel,
+    h('p', { class: 'pad-x lib-note' }, 'dá pra tocar com vários dedos ao mesmo tempo. “gravar” conta 4 e grava até 30 segundos; ao parar, o que você tocou fica em loop (parar / recomeçar). no computador: U prato, I condução, J chimbal, H aberto, K tom 1, O tom 2, F caixa, L surdo, espaço bumbo. no iPhone o som pode atrasar um pouquinho: é do aparelho. o loop toca do jeitinho que você tocou; a partitura (quando cabe em 1, 2 ou 4 compassos) arredonda pra semicolcheia mais perto: confere antes de usar em aula.'));
   drawKit(); drawPanel(); tipBox(host, 'toque');
   const solta = aoLiberar(() => { drawKit(); drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   return () => { solta(); cancel(); stopAll(); stopTempo(); document.removeEventListener('keydown', onKey); backing.leave(); };
