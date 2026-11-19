@@ -165,8 +165,8 @@ export function mount(host, { nome = '' } = {}) {
   const roleta = h('section', { class: `in-roleta${girou ? ' feito' : ''}` },
     h('img', { class: 'in-roleta-ic', src: 'assets/inicio/roleta.png', alt: '', 'aria-hidden': 'true', onerror: (e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'assets/icons/tambor-96.png'; } }), // ícone da roleta: a Bea vai gerar um (assets/inicio/roleta.png); até lá, o tambor
     h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
-      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'pegue o seu giro grátis de hoje'),
-      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente, só por entrar')),
+      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'seu giro grátis de hoje'),
+      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente')),
     h('span', { class: 'in-roleta-bts' }, h('a', { class: 'in-btn', href: '#/album/Pacotes' }, girou ? 'ver ▶' : 'girar ▶'), h('button', { type: 'button', class: 'in-mais', onclick: () => abrirComoGanhar(faltam) }, '★ quero ', h('b', { class: 'in-mais-plus', 'aria-hidden': 'true' }, '+'), ' estrelas')));
 
   // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)

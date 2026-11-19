@@ -130,3 +130,12 @@ body:has(.inicio) .atualiza-bar { display: none !important; }
 .in-atu > span { font-size: 24px; flex: none; }
 .in-atu p { margin: 0; flex: 1; min-width: 0; } .in-atu b { display: block; font: 400 18px/1.1 "Anton", sans-serif; text-transform: uppercase; } .in-atu small { display: block; color: #fff !important; opacity: .92; font-size: 12px; margin-top: 2px; }
 .in-atu .in-atu-bt { margin: 0; flex: none; padding: 9px 14px 6px; font-size: 15px; }
+/* card da roleta mais fino: texto na horizontal em cima, os 2 botões lado a lado embaixo */
+.in-roleta { display: grid !important; grid-template-columns: 64px 1fr; grid-template-areas: "ic tx" "bts bts"; align-items: center; column-gap: 12px; row-gap: 10px; padding: 12px 14px 14px !important; }
+.in-roleta .in-roleta-ic { grid-area: ic; width: 64px !important; height: 64px !important; }
+.in-roleta .in-card-tx { grid-area: tx; min-width: 0; }
+.in-roleta .in-card-tx b { font-size: 20px; line-height: 1.05; }
+.in-roleta .in-card-tx em { display: block; margin-top: 3px; font-size: 12px; }
+.in-roleta .in-roleta-bts { grid-area: bts; flex-direction: row; gap: 8px; }
+.in-roleta .in-roleta-bts > * { flex: 1; text-align: center; white-space: nowrap; }
+.in-roleta .in-roleta-bts .in-btn { padding: 9px 10px 6px; }
