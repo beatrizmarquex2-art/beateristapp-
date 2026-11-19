@@ -19,6 +19,7 @@ import { ST, REGIONS, computeNodes, chaptersFor, layoutMap, pathThrough, newlyDo
 const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 const store = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch { /* sem armazenamento */ } return null; };
 const sess = (k, v) => { try { if (v === undefined) return JSON.parse(sessionStorage.getItem(k)); sessionStorage.setItem(k, JSON.stringify(v)); } catch { /* sem armazenamento */ } return null; };
+const cap = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1) : t);
 const pct = (v, total) => `${(v / total) * 100}%`;
 const SAY = { start: 'bora!', cheer: 'mandou bem!', next: 'próxima!', done: 'turnê completa!' };
 
@@ -85,7 +86,7 @@ export function mountProgressionMap(host, cfg) {
     const el = h('button', { type: 'button', class: `mp-node st-${n.state}${n.boss ? ' boss' : ''}`, style: `${at(p.x, p.y)};--i:${i}`, 'data-id': n.id, 'data-pos': i, 'aria-label': aria(n), 'aria-disabled': locked ? 'true' : null, 'aria-current': n.state === ST.CURRENT ? 'step' : null },
       h('span', { class: 'mp-disc' }, h('span', { class: 'mp-lab' }, String(n.label))),
       n.state === ST.DONE ? h('span', { class: 'mp-stars', 'aria-hidden': 'true' }, ...[1, 2, 3].map((s) => h('i', { class: s <= n.stars ? 'on' : '', style: `--d:${s * 0.12}s` }, '★'))) : null,
-      h('span', { class: 'mp-tag' }, locked ? '' : (n.tag || ''), n.best != null && !locked ? ` ${typeof n.best === 'number' ? `${n.best}%` : n.best}` : ''));
+      h('span', { class: 'mp-tag' }, locked ? '' : cap(n.tag || ''), n.best != null && !locked ? ` ${typeof n.best === 'number' ? `${n.best}%` : n.best}` : ''));
     if (locked) { const l = h('span', { class: 'mp-lock' }); l.innerHTML = sprite('lock'); el.querySelector('.mp-disc').append(l); }
     nodeEls.push(el); world.append(el);
   });
@@ -111,11 +112,11 @@ export function mountProgressionMap(host, cfg) {
     const disco = (n, i) => { const locked = n.state === ST.LOCKED; return h('button', { type: 'button', class: `mp-gd st-${n.state}${i === current ? ' cur' : ''}`, 'data-pos': i, 'aria-label': aria(n), onclick: () => { fecha(); if (locked) { open(i); return; } center(i, false); open(i); } },
       h('span', { class: 'mp-gdisc' }, locked ? '🔒' : String(n.label)),
       h('span', { class: 'mp-gs' }, n.state === ST.DONE ? '★'.repeat(n.stars) + '☆'.repeat(3 - n.stars) : i === current ? '▶' : ''),
-      h('span', { class: 'mp-gt' }, n.tag || '')); };
-    const corpo = h('div', { class: 'mp-gbody' }, ...chapters.flatMap((c) => [h('div', { class: 'mp-grg' }, `região ${chapters.indexOf(c) + 1} · ${c.name}`), h('div', { class: 'mp-ggrid' }, ...nodes.slice(c.from, c.to + 1).map((n, k) => disco(n, c.from + k)))]));
+      h('span', { class: 'mp-gt' }, cap(n.tag || ''))); };
+    const corpo = h('div', { class: 'mp-gbody' }, ...chapters.map((c) => h('section', { class: 'mp-gsec' }, h('div', { class: 'mp-grg' }, `Região ${chapters.indexOf(c) + 1} · ${cap(c.name)}`), h('div', { class: 'mp-ggrid' }, ...nodes.slice(c.from, c.to + 1).map((n, k) => disco(n, c.from + k))))));
     const painel = h('div', { class: 'mp bmr mp-grade', 'data-theme': theme ? theme.id : null, role: 'dialog', 'aria-modal': 'true', 'aria-label': `As ${nodes.length} fases` },
-      h('div', { class: 'mp-gtop' }, h('b', {}, `as ${nodes.length} fases`), h('button', { type: 'button', class: 'mp-gx', 'aria-label': 'Fechar', onclick: fecha }, '✕')),
-      corpo, h('button', { type: 'button', class: 'mp-gcont', onclick: () => { fecha(); open(current); } }, `▶ continuar na fase ${nodes[current] ? nodes[current].label : ''}`));
+      h('div', { class: 'mp-gtop' }, h('b', {}, `As ${nodes.length} fases`), h('button', { type: 'button', class: 'mp-gx', 'aria-label': 'Fechar', onclick: fecha }, '✕')),
+      corpo, h('button', { type: 'button', class: 'mp-gcont', onclick: () => { fecha(); open(current); } }, `▶ Continuar na fase ${nodes[current] ? nodes[current].label : ''}`));
     document.body.append(painel); S.add(fecha); const cur = painel.querySelector('.cur'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'center' });
     const onKey = (e) => { if (e.key === 'Escape') { fecha(); document.removeEventListener('keydown', onKey); } }; document.addEventListener('keydown', onKey); S.add(() => document.removeEventListener('keydown', onKey));
   };
@@ -124,7 +125,7 @@ export function mountProgressionMap(host, cfg) {
   let regI = -1; let armed = false;
   const setRegion = (ci, sound) => {
     if (ci === regI || !chapters[ci]) return; regI = ci; const c = chapters[ci];
-    regionName.textContent = c.name; regionSub.textContent = c.sub; root.dataset.region = c.id; head.classList.toggle('mp-longo', c.name.length > 18); // nome grande ocupa a linha de cima e os botões descem
+    regionName.textContent = c.name; regionSub.textContent = cap(c.sub); root.dataset.region = c.id; head.classList.toggle('mp-longo', c.name.length > 18); // nome grande ocupa a linha de cima e os botões descem
     if (motion) { const r = head.querySelector('.mp-reg'); r.classList.remove('flip'); void r.offsetWidth; r.classList.add('flip'); }
     if (sound && armed) sfx.play('region');
   };
