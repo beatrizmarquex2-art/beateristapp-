@@ -7,6 +7,7 @@ import { audio, out } from '../audio.js';
 import { banner, toast } from '../ui.js';
 import { backing } from '../instruments.js';
 import { tocarTabs, contagemBar } from './tocar-nav.js';
+import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
 
@@ -117,13 +118,14 @@ export function mount(host) {
   const drawTake = () => {
     takeBox.textContent = take.length ? take.map((n) => nameOf(n.midi, 'pt').replace(/\d+$/, '')).join(' · ') : recording ? 'gravando… toque a melodia' : 'grave uma frase curta pra ouvir de novo e conferir os nomes das notas.';
   };
+  const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo do teclado' });
+  const drawModelos = () => { const c = conf(); modelos.replaceChildren(h('small', {}, 'modelo'), ...SOUNDS.map(([v, l]) => { const t = !pago() && !GRATIS.teclas.sons.includes(v); return h('button', { type: 'button', class: `kd-chip${c.sound === v ? ' on' : ''}${t ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.sound === v), onclick: () => { if (t) { pedir('os outros sons'); return; } setConf({ sound: v }).then(drawModelos); } }, l, t ? cadeado() : null); })); };
   const drawPanel = () => {
     const c = conf();
     const seg = (label, opts, cur, on, trava) => h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, label),
       h('div', { class: 'pn-chips', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, l]) => { const t = trava && trava(v); return h('button', { type: 'button', class: `pn-chip${String(cur) === String(v) ? ' on' : ''}${t ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(String(cur) === String(v)), onclick: () => { if (t) { pedir('os outros sons'); return; } on(v); } }, l, t ? cadeado() : null); })));
     const chg = (p) => () => setConf(p).then(() => { drawKb(); drawPanel(); });
     panel.replaceChildren(h('section', { class: 'card pad tk-panel' },
-      seg('som', SOUNDS, c.sound, (v) => setConf({ sound: v }).then(drawPanel), (v) => !pago() && !GRATIS.teclas.sons.includes(v)),
       seg('nomes das notas', [['pt', 'dó ré mi'], ['cifra', 'C D E'], ['off', 'sem']], c.labels, (v) => setConf({ labels: v }).then(() => { drawKb(); drawPanel(); })),
       seg('oitavas na tela', [[1, '1'], [2, '2'], [3, '3']], c.octaves, (v) => setConf({ octaves: v, oct: clampOct(c.oct, v) }).then(() => { drawKb(); drawPanel(); })),
       h('div', { class: 'row tk-line pn-octs' }, h('span', { class: 'tp-lab' }, 'mais grave / mais agudo'),
@@ -138,9 +140,9 @@ export function mount(host) {
         h('button', { class: 'btn ghost', type: 'button', disabled: !take.length, onclick: () => { stopPlay(); take = []; recording = false; drawTake(); drawPanel(); } }, 'limpar'))));
   };
 
-  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), shown, kb, takeBox, panel, contagemBar(),
+  host.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), shown, kb, takeBox, panel, contagemBar(),
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
-  drawKb(); drawPanel(); drawTake();
+  drawKb(); drawModelos(); drawPanel(); drawTake();
   const solta = aoLiberar(() => { drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   const onResize = () => {}; window.addEventListener('resize', onResize);
   return () => { solta(); stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };

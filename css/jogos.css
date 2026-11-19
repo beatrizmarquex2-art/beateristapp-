@@ -1807,3 +1807,6 @@ body.bv-aberta { overflow: hidden; }
 .tk-panel.bmr .tk-opts{justify-content:center;gap:8px}
 .tk-panel.bmr .tk-opts .chip,.tk-panel.bmr .tk-opts button{border-radius:99px}
 .kd-canhota{border-radius:99px}
+
+/* ---- bateria mais tocável no celular: kit ocupa quase a largura toda (peças maiores) ---- */
+@media (max-width:560px){.tk-kit{padding:8px 2px!important}[data-kit-theme] :is(.kd-kit.kd-kit-free,.tk-art){padding:4px!important;border-radius:22px}.tk-kit .kd-modelos{padding:0 10px}}
