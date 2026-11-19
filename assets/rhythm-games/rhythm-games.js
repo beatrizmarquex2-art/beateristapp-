@@ -37,8 +37,8 @@ const AE={
   ctx:null,master:null,rev:null,noise:null,wave:null,voices:new Map(),sustained:new Set(),sustain:false,plucks:new Map(),openHat:null,comp:null,ir:null,timers:new Set(),all:new Set(),
   get(){if(!this.ctx){this.ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});this.build()}return this.ctx},
   build(){
-    const c=this.ctx;const comp=c.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=8;comp.ratio.value=4;comp.attack.value=.003;comp.release.value=.2;
-    const og=c.createGain();og.gain.value=rzMuted()?0:1;og.connect(c.destination);comp.connect(og);this.outG=og;this.comp=comp;window.addEventListener('bt-mute',()=>{og.gain.value=rzMuted()?0:1});
+    const c=this.ctx;const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.knee.value=6;comp.ratio.value=14;comp.attack.value=.002;comp.release.value=.15;
+    const og=c.createGain();og.gain.value=rzMuted()?0:.85;og.connect(c.destination);comp.connect(og);this.outG=og;this.comp=comp;window.addEventListener('bt-mute',()=>{og.gain.value=rzMuted()?0:.85});
     const len=Math.floor(c.sampleRate*2.2),ir=c.createBuffer(2,len,c.sampleRate);
     for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2)}
     this.ir=ir;this.bus();
@@ -607,15 +607,15 @@ function rkKitDrum(kit,name,t,vel){const c=AE.get();const out=c.createGain();out
 /* ---------- sons do rock ---------- */
 let RK_CUR=null;function rkCurve(){if(!RK_CUR){const n=2048,cu=new Float32Array(n);for(let i=0;i<n;i++){const x=i/n*2-1;cu[i]=Math.tanh(x*6.5)*.92+Math.tanh(x*18)*.08}RK_CUR=cu}return RK_CUR}
 /* acorde de força (fundamental + quinta + oitava), distorcido, com caixa de som (filtro) e palm mute (curto e seco) */
-function rkPower(root,t,d,v,mute){const c=AE.get();const gk=RK_SND.gtr;if(gk==='limpa') return rkClean(root,t,d,v,mute);const out=c.createGain();const pk=c.createBiquadFilter();pk.type='peaking';pk.frequency.value=1700;pk.gain.value=5;pk.Q.value=.9;
+let RK_ACT=[];function rkPower(root,t,d,v,mute){const c=AE.get();const gk=RK_SND.gtr;RK_ACT=RK_ACT.filter(e=>e>c.currentTime);if(RK_ACT.length>=4) return;RK_ACT.push(t+(mute?.45:Math.max(d,.1)+.5));if(gk==='limpa') return rkClean(root,t,d,v,mute);const out=c.createGain();const pk=c.createBiquadFilter();pk.type='peaking';pk.frequency.value=1700;pk.gain.value=5;pk.Q.value=.9;
   const lo=c.createBiquadFilter();lo.type='lowshelf';lo.frequency.value=180;lo.gain.value=3;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=mute?2300:3300;lp.Q.value=.6;
-  const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=85;const ws=c.createWaveShaper();ws.curve=rkCurve();ws.oversample='2x';
+  const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=85;const ws=c.createWaveShaper();ws.curve=rkCurve();
   const pre=c.createGain();pre.gain.value=gk==='crunch'?.2:.55;const amp=c.createGain();const lvl=(v||.8)*(mute?.30:.26);
   const dur=mute?Math.min(Math.max(d,.07),.13):Math.max(d,.1);
   amp.gain.setValueAtTime(0,t);amp.gain.linearRampToValueAtTime(lvl,t+.004);
   if(mute){amp.gain.exponentialRampToValueAtTime(lvl*.35,t+.04);amp.gain.setTargetAtTime(0,t+dur*.6,.025)}
   else{amp.gain.setTargetAtTime(lvl*.62,t+.012,.18);amp.gain.setTargetAtTime(0,t+dur,.07)}
-  [[0,0],[7,0],[12,0]].forEach(([iv],k)=>{const f=440*Math.pow(2,(root+iv-69)/12);[-7,7].forEach(dt=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt+(k?0:0);const og=c.createGain();og.gain.value=k===0?1:k===1?.8:.55;o.connect(og);og.connect(pre);o.start(t);o.stop(t+dur+.5)})});
+  [[0,0],[7,0],[12,0]].forEach(([iv],k)=>{const f=440*Math.pow(2,(root+iv-69)/12);(k===0?[-7,7]:[0]).forEach(dt=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt+(k?0:0);const og=c.createGain();og.gain.value=k===0?1:k===1?.8:.55;o.connect(og);og.connect(pre);o.start(t);o.stop(t+dur+.5)})});
   pre.connect(hp);hp.connect(ws);ws.connect(lo);lo.connect(pk);pk.connect(lp);lp.connect(amp);amp.connect(out);out.connect(AE.master);const s=c.createGain();s.gain.value=mute?.05:.18;amp.connect(s);s.connect(AE.rev)}
 /* guitarra solo: serra + vibrato que entra devagar + um pouco de eco (reverb) */
 function rkClean(root,t,d,v,mute){const c=AE.get();const amp=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=mute?1800:3800;const lvl=(v||.8)*(mute?.2:.17);const dur=mute?Math.min(Math.max(d,.07),.13):Math.max(d,.1);
