@@ -106,3 +106,11 @@ test('juntar com a nuvem NÃO perde o check-in da semana, as lendárias nem a se
   // um ciclo novo (7 dias completos) ganha de um velho
   assert.equal(L.mergeStates({ ...L.emptyState(), sem: { ult: '2026-11-01', seq: 6, ciclo: 0 } }, { ...L.emptyState(), sem: { ult: '2026-11-02', seq: 0, ciclo: 1 } }).sem.ciclo, 1);
 });
+
+test('pacote "estudo:": terminar um tema dos estudos dá 1 exclusiva do Paul (P..), de novo o mesmo id não entrega outro', () => {
+  const paul = JSON.parse(fs.readFileSync(new URL('assets/figurinhas/catalogo-paul.json', root), 'utf8')); const todas = [...cat, ...paul];
+  assert.equal(L.packSize('estudo:figuras'), 1);
+  const cods = L.drawPack(todas, 'estudo:figuras', 1); assert.equal(cods.length, 1); assert.ok(/^P/.test(cods[0]), cods[0]);
+  assert.ok(L.motivoDoPacote('estudo:figuras').includes('tema'));
+  let st = L.grantPack(L.emptyState(), 'estudo:figuras'); st = L.grantPack(st, 'estudo:figuras'); assert.equal(st.granted.filter((x) => x === 'estudo:figuras').length, 1);
+});

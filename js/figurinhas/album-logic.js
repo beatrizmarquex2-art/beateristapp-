@@ -14,12 +14,13 @@ export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); r
 /** Pacotinhos de FIM de modo da pauLta (pedido da Bea): `plf:<drumF|drumI|drumD>:<a|b|c>:...` = 2 cartas cada; os 3 juntos dão 2 Beatles + 3 comuns + 1 especial
  *  (fácil = rara, médio = do robô Paul, difícil = exclusiva da Bea). a = Beatles + comum, b = Beatles + comum, c = comum + a especial. */
 export const plfPack = (id) => { const m = /^plf:(drum[FID]):([abc]):/.exec(String(id)); return m ? { modo: m[1], k: m[2] } : null; };
-export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') || /^(egg|bonus):/.test(String(id)) ? 1 : PACK_SIZE);
+export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') || String(id).startsWith('estudo:') || /^(egg|bonus):/.test(String(id)) ? 1 : PACK_SIZE);
 /** Por que a pessoa ganhou este giro ou pacotinho (texto curto pra criança), tirado do próprio id. */
 export function motivoDoPacote(id) {
   const s = String(id);
   if (s.startsWith('egg:')) return 'você achou um segredo do Paul!';
   if (s.startsWith('bonus:')) return 'bônus: 5 vitórias seguidas jogando online';
+  if (s.startsWith('estudo:')) return 'você terminou um tema inteiro dos estudos com o Paul!';
   if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
@@ -97,6 +98,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   if (/^(egg|bonus):/.test(String(packId))) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // segredos e bônus: 1 exclusiva (Beaterista e Paul)
+  if (String(packId).startsWith('estudo:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^P/.test(c.codigo)).map((c) => c.codigo); const todas = ex.length ? ex : catalog.filter((c) => c.secao === 'Beaterista').map((c) => c.codigo); return todas.length ? [todas[Math.floor(r() * todas.length)]] : []; } // terminou um tema dos estudos: 1 exclusiva do Paul
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
   if (plf) {
