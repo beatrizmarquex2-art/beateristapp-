@@ -44,7 +44,8 @@ export function mountProgressionMap(host, cfg) {
     onBack ? h('button', { type: 'button', class: 'mp-back', onclick: () => onBack() }, '‹ jogo') : null,
     h('div', { class: 'mp-reg', 'aria-live': 'polite' }, regionName, regionSub),
     h('span', { class: 'mp-prog', title: 'discos concluídos' }, h('span', { class: 'mp-vinyl-ico', 'aria-hidden': 'true' }), `${doneN}/${nodes.length}`),
-    cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null, temaButton(), snd);
+    cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null,
+    h('button', { type: 'button', class: 'mp-gradebtn', 'aria-haspopup': 'dialog', 'aria-label': `Ver as ${nodes.length} fases de uma vez`, title: `as ${nodes.length} fases`, onclick: () => abreGrade() }, '▦'), temaButton(), snd);
 
   /* ---- mundo ---- */
   const world = h('div', { class: `mp-world${motion ? ' mp-anim' : ''}`, style: `aspect-ratio:${L.W} / ${L.H}` });
@@ -102,6 +103,22 @@ export function mountProgressionMap(host, cfg) {
   const root = h('div', { class: 'mp bmr', 'data-game': gameId, 'data-theme': theme ? theme.id : null, style: null }, head, world);
   host.replaceChildren(root); // bmr: fora da regra global de cantos retos (os discos são redondos)
   const tw = document.querySelector('.topwrap'); if (tw) head.style.top = `${Math.round(tw.getBoundingClientRect().height)}px`; // o cabeçalho do mapa gruda logo abaixo do topo do app
+
+  /* ---- grade das fases (ícone ▦): todas as fases de uma vez, 3 por linha, por região; toca e vai direto (sem andar pela trilha) ---- */
+  const abreGrade = () => {
+    if (document.querySelector('.mp-grade')) return; sfx.play('click');
+    const fecha = () => { const g = document.querySelector('.mp-grade'); if (g) g.remove(); };
+    const disco = (n, i) => { const locked = n.state === ST.LOCKED; return h('button', { type: 'button', class: `mp-gd st-${n.state}${i === current ? ' cur' : ''}`, 'data-pos': i, 'aria-label': aria(n), onclick: () => { fecha(); if (locked) { open(i); return; } center(i, false); open(i); } },
+      h('span', { class: 'mp-gdisc' }, locked ? '🔒' : String(n.label)),
+      h('span', { class: 'mp-gs' }, n.state === ST.DONE ? '★'.repeat(n.stars) + '☆'.repeat(3 - n.stars) : i === current ? '▶' : ''),
+      h('span', { class: 'mp-gt' }, n.tag || '')); };
+    const corpo = h('div', { class: 'mp-gbody' }, ...chapters.flatMap((c) => [h('div', { class: 'mp-grg' }, `região ${chapters.indexOf(c) + 1} · ${c.name}`), h('div', { class: 'mp-ggrid' }, ...nodes.slice(c.from, c.to + 1).map((n, k) => disco(n, c.from + k)))]));
+    const painel = h('div', { class: 'mp bmr mp-grade', 'data-theme': theme ? theme.id : null, role: 'dialog', 'aria-modal': 'true', 'aria-label': `As ${nodes.length} fases` },
+      h('div', { class: 'mp-gtop' }, h('b', {}, `as ${nodes.length} fases`), h('button', { type: 'button', class: 'mp-gx', 'aria-label': 'Fechar', onclick: fecha }, '✕')),
+      corpo, h('button', { type: 'button', class: 'mp-gcont', onclick: () => { fecha(); open(current); } }, `▶ continuar na fase ${nodes[current] ? nodes[current].label : ''}`));
+    document.body.append(painel); S.add(fecha); const cur = painel.querySelector('.cur'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'center' });
+    const onKey = (e) => { if (e.key === 'Escape') { fecha(); document.removeEventListener('keydown', onKey); } }; document.addEventListener('keydown', onKey); S.add(() => document.removeEventListener('keydown', onKey));
+  };
 
   /* ---- regiões ---- */
   let regI = -1; let armed = false;
