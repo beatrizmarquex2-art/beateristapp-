@@ -10,6 +10,8 @@ import * as FAV from '../inicio-fav.js';
 import * as A from '../figurinhas/acesso.js';
 import * as L from '../figurinhas/album-logic.js';
 import * as store from '../store.js';
+import { atualizarAgora } from '../atualizar-btn.js';
+import * as PERF from '../inicio-perfil.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -106,7 +108,7 @@ export function mount(host, { nome = '' } = {}) {
   let ganhas = []; let todas = new Map(); let fav = FAV.favoritos();
   const slots = h('div', { class: 'in-favs', role: 'group', 'aria-label': 'bandas e cantores favoritos' });
   const desenhaFav = () => {
-    slots.replaceChildren(...[0, 1, 2].map((i) => {
+    slots.replaceChildren(...[0, 1, 2, 3, 4, 5].map((i) => {
       const nomeF = fav[i]; const a = nomeF && (todas.get(nomeF) || { nome: nomeF, foto: '', rosto: null });
       return h('button', { type: 'button', class: `in-fav${a ? ' tem' : ''}`, 'aria-label': a ? `favorito ${i + 1}: ${a.nome}. tocar pra trocar` : `escolher favorito ${i + 1}`, onclick: () => escolher(i) },
         h('span', { class: 'in-fav-foto' }, a ? (a.foto ? h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` }) : h('i', {}, '♪')) : h('i', {}, '+')),
@@ -138,10 +140,32 @@ export function mount(host, { nome = '' } = {}) {
   let urlFoto = '';
   const carregaFoto = async () => { try { const bl = await D.metaLer('perfil-foto'); if (urlFoto) URL.revokeObjectURL(urlFoto); urlFoto = bl ? URL.createObjectURL(bl) : ''; imgPasse.src = urlFoto || paulBateria; fotoPasse.classList.toggle('com-foto', !!urlFoto); } catch { /* fica o Paul */ } };
   carregaFoto(); window.addEventListener('bt-foto-perfil', carregaFoto);
+  // "sobre mim": instrumento, estilo e meta em etiquetas; tocar numa abre as opções em chips
+  const pills = h('div', { class: 'in-pills', role: 'group', 'aria-label': 'sobre mim: instrumento, estilo e meta' });
+  const escolherCampo = (c) => sheet(c.nome, (close) => {
+    const atual = PERF.perfil()[c.k];
+    const pega = (v) => { PERF.gravar(c.k, v); desenhaPills(); close(); };
+    const chips = h('div', { class: 'jg-seg in-sobre-chips', role: 'group', 'aria-label': c.nome }, ...c.opcoes.map((o) => h('button', { type: 'button', class: atual === o ? 'on' : '', 'aria-pressed': String(atual === o), onclick: () => pega(o) }, o)));
+    const caixa = h('div', { class: 'in-sobre' }, h('p', { class: 'in-sobre-t' }, `escolha o seu ${c.nome}:`), chips);
+    if (c.livre) { // "adicionar": a pessoa escreve o dela (até 20 letras); as opções da lista continuam ali
+      const erro = h('p', { class: 'in-sobre-erro', role: 'alert' });
+      const campo = h('input', { class: 'field in-sobre-in', type: 'text', maxlength: c.max, autocomplete: 'off', placeholder: `escreva o seu (até ${c.max} letras)`, 'aria-label': `adicionar ${c.nome}`, value: atual && !c.opcoes.includes(atual) ? atual : '' });
+      const ok = h('button', { type: 'button', class: 'btn small primary', onclick: () => { const r = PERF.checarLivre(c.k, campo.value); if (r.erro) { erro.textContent = r.erro; return; } pega(r.valor); } }, 'ok');
+      campo.addEventListener('input', () => { erro.textContent = ''; });
+      campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') ok.click(); });
+      const linha = h('div', { class: 'in-sobre-add', hidden: !(atual && !c.opcoes.includes(atual)) }, campo, ok);
+      chips.append(h('button', { type: 'button', class: `in-sobre-mais${linha.hidden ? '' : ' on'}`, onclick: () => { linha.hidden = false; campo.focus(); } }, '+ adicionar'));
+      caixa.append(linha, erro);
+    }
+    if (atual) caixa.append(h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar'));
+    return caixa;
+  });
+  const desenhaPills = () => { const p = PERF.perfil(); pills.replaceChildren(...PERF.CAMPOS.map((c) => h('button', { type: 'button', class: `in-pill${p[c.k] ? ' tem' : ''}`, 'aria-label': p[c.k] ? `${c.nome}: ${p[c.k]}. tocar pra trocar` : `escolher ${c.nome}`, onclick: () => escolherCampo(c) }, p[c.k] ? `${c.nome}: ${p[c.k]}` : `+ ${c.nome}`))); };
+  desenhaPills();
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
     h('p', { class: 'in-tag' }, 'beaterista · passe do aluno'),
-    h('h1', { class: 'in-nome' }, nome || 'aluno'),
+    h('div', { class: 'in-esq' }, h('h1', { class: 'in-nome' }, nome || 'aluno'), pills),
     h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
     slots,
     fotoPasse,
@@ -164,8 +188,8 @@ export function mount(host, { nome = '' } = {}) {
   const roleta = h('section', { class: `in-roleta${girou ? ' feito' : ''}` },
     h('img', { class: 'in-roleta-ic', src: 'assets/inicio/roleta.png', alt: '', 'aria-hidden': 'true', onerror: (e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'assets/icons/tambor-96.png'; } }), // ícone da roleta: a Bea vai gerar um (assets/inicio/roleta.png); até lá, o tambor
     h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
-      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'pegue o seu giro grátis de hoje'),
-      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente, só por entrar')),
+      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'seu giro grátis de hoje'),
+      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente')),
     h('span', { class: 'in-roleta-bts' }, h('a', { class: 'in-btn', href: '#/album/Pacotes' }, girou ? 'ver ▶' : 'girar ▶'), h('button', { type: 'button', class: 'in-mais', onclick: () => abrirComoGanhar(faltam) }, '★ quero ', h('b', { class: 'in-mais-plus', 'aria-hidden': 'true' }, '+'), ' estrelas')));
 
   // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)
@@ -183,6 +207,11 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
-  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, roleta, novidades, atalhos));
+  // aviso de versão nova: aparece aqui dentro do Início (cartão no topo) e o aviso solto do topo some nesta aba (css/inicio.css)
+  const botAtu = h('button', { type: 'button', class: 'in-btn in-atu-bt', onclick: (e) => { e.currentTarget.disabled = true; atualizarAgora(); } }, 'atualizar');
+  const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
+  const mostraAtu = () => { avisoAtu.hidden = false; };
+  try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
+  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, tres, continuar, roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }

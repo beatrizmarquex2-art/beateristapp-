@@ -123,3 +123,44 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 /* o + do "quero + estrelas" bem maior */
 .in-mais { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 .in-mais-plus { font: 400 30px/0.7 "Anton", sans-serif; color: #ffd24a; display: inline-block; position: relative; top: -4px; }
+/* aviso "tem coisa nova no app" dentro do Início */
+body:has(.inicio) .atualiza-bar { display: none !important; }
+.in-atu { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px !important; background: linear-gradient(135deg, #c81e2d, #8e1b2c); color: #fff; box-shadow: 0 10px 18px rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.25); }
+.in-atu[hidden] { display: none; }
+.in-atu > span { font-size: 24px; flex: none; }
+.in-atu p { margin: 0; flex: 1; min-width: 0; } .in-atu b { display: block; font: 400 18px/1.1 "Anton", sans-serif; text-transform: uppercase; } .in-atu small { display: block; color: #fff !important; opacity: .92; font-size: 12px; margin-top: 2px; }
+.in-atu .in-atu-bt { margin: 0; flex: none; padding: 9px 14px 6px; font-size: 15px; }
+/* card da roleta mais fino: texto na horizontal em cima, os 2 botões lado a lado embaixo */
+.in-roleta { display: grid !important; grid-template-columns: 64px 1fr; grid-template-areas: "ic tx" "bts bts"; align-items: center; column-gap: 12px; row-gap: 10px; padding: 12px 14px 14px !important; }
+.in-roleta .in-roleta-ic { grid-area: ic; width: 64px !important; height: 64px !important; }
+.in-roleta .in-card-tx { grid-area: tx; min-width: 0; }
+.in-roleta .in-card-tx b { font-size: 20px; line-height: 1.05; }
+.in-roleta .in-card-tx em { display: block; margin-top: 3px; font-size: 12px; }
+.in-roleta .in-roleta-bts { grid-area: bts; flex-direction: row; gap: 8px; }
+.in-roleta .in-roleta-bts > * { flex: 1; text-align: center; white-space: nowrap; }
+.in-roleta .in-roleta-bts .in-btn { padding: 9px 10px 6px; }
+
+/* passe com "sobre mim" (etiquetas) e 6 favoritos pequenos numa fileira (opção B6 da Bea) */
+.in-passe { height: 324px; }
+.in-passe .in-esq { position: absolute; left: 18px; top: 44px; width: 192px; }
+.in-passe .in-esq .in-nome { position: static !important; padding-top: 4px; }
+.in-passe .in-favt { position: absolute; left: 18px; top: 180px; margin: 0; }
+.in-passe .in-favs { position: absolute; left: 14px; right: 14px; top: 198px; justify-content: space-between; gap: 2px; }
+.in-passe .in-fav { width: 50px; flex: none; }
+.in-passe .in-fav-foto { width: 42px; height: 42px; border-width: 2px; }
+.in-passe .in-fav.tem .in-fav-foto { border-width: 2px; }
+.in-passe .in-fav-foto i { font-size: 20px; }
+.in-passe .in-fav small { font-size: 9px; margin-top: 3px; }
+.in-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.in-pill { border: 0; border-radius: 99px !important; padding: 4px 9px; font: 700 10.5px "Hanken Grotesk", sans-serif; background: #2a1a05; color: #fbe3a3; cursor: pointer; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.in-pill:not(.tem) { background: transparent; color: rgba(42,26,5,.7); border: 2px dashed rgba(42,26,5,.45); padding: 2px 8px; }
+.in-sobre { display: grid; gap: 12px; } .in-sobre-t { margin: 0; font-weight: 700; }
+.in-sobre-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.in-sobre-add { display: flex; gap: 8px; align-items: center; } .in-sobre-add[hidden] { display: none; } .in-sobre-in { flex: 1; min-width: 0; }
+.in-passe .in-fav small { color: #2a1a05; }
+.in-sobre-erro { margin: 0; min-height: 0; color: #c81e2d; font-weight: 700; font-size: 13px; } .in-sobre-erro:empty { display: none; }
+/* chips da folha "sobre mim": retângulo curto, texto pequeno, sombra deslocada (jeito dos chips da Bea) */
+.in-sobre-chips button { border: 2px solid #162146; background: #fff; color: #162146; border-radius: 10px !important; padding: 6px 12px; font: 700 13px "Hanken Grotesk", sans-serif; box-shadow: 2px 3px 0 #162146; cursor: pointer; }
+.in-sobre-chips button.on, .in-sobre-chips button[aria-pressed="true"] { background: #f2a91b; }
+.in-sobre-chips .in-sobre-mais { border-style: dashed; background: transparent; }
+
