@@ -28,7 +28,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
   ops.push({ t: 'text', x: 27, y: lineY(2) - 1, s: '4', size: 19, weight: 800 }, { t: 'text', x: 27, y: lineY(4) - 1, s: '4', size: 19, weight: 800 });
   ops.push({ t: 'line', x1: width - right, y1: lineY(0), x2: width - right, y2: lineY(4), w: 2 });
   const xOf = (i) => left + i * sw + sw / 2;
-  const upTop = top - GAP * 2.6, downBot = lineY(4) + GAP * 3.4;
+  const upTop = top - GAP * 2.6, downBot = lineY(4) + GAP * 3.4; const pivos = [];
   // completa: duas vozes (mãos pra cima, pés pra baixo). simples: tudo numa voz, hastes pra cima (mais fácil de ler pra iniciante).
   const voices = full ? [
     { ids: ROWS.map((r) => r.id).filter((id) => !FEET.has(id)), up: true },
@@ -49,7 +49,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
           ops.push({ t: 'head', x, y, kind: dt === 'c' ? 'diamond' : (X_HEAD.has(id) || dt === 'r') ? 'x' : 'n', c: tint(id) });
           if (dt === 'a' && !isAcc(beat, i)) ops.push({ t: 'acc', x, y: upTop - (per === 3 ? 20 : 10) }); // acento só nessa nota
           if (dt === 'o') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // chimbal aberto dentro do kit detalhado
-          if (dt === 'p') ops.push({ t: 'seta', x: x + 9, y: y + 1 }); // pivô (técnica de pedal): seta na diagonal ao lado do bumbo
+          if (dt === 'p') pivos.push(sx); // pivô (técnica de pedal): seta na diagonal EMBAIXO da nota, abaixo do traço (desenhada depois que a haste e o traço existem)
           if (dt === 'r') ops.push({ t: 'text', x: x - 4, y: y - 8, s: 'aro', size: 8, weight: 800, c: tint(id) });
           if (id === 'sn' && ((beat.ghost && beat.ghost[i]) || dt === 'f')) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
           if (id === 'ho') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // "o" = chimbal aberto
@@ -74,7 +74,8 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
   if (hasHands) for (let i = 0; i < beat.steps; i++) { const w = beat.hands[i]; if (w) ops.push({ t: 'text', x: xOf(i) - 4, y: upTop - (beat.acc && beat.acc.some(Boolean) ? 24 : 8), s: w, size: 13, weight: 800, fill: color ? HAND_COLOR[w] : null }); }
   // acentos (>) em cima de tudo, na coluna do passo
   for (let i = 0; i < beat.steps; i++) if (isAcc(beat, i)) ops.push({ t: 'acc', x: xOf(i), y: upTop - (per === 3 ? 20 : 10) });
-  return { w: width, h: full ? downBot + 10 : lineY(4) + 26, ops };
+  for (const sx of pivos) ops.push({ t: 'seta', x: sx - 6, y: downBot + 12 }); // abaixo do traço/bandeirola, centrada na haste
+  return { w: width, h: full ? downBot + 10 + (pivos.length ? 18 : 0) : lineY(4) + 26, ops };
 }
 
 /** Legenda de cores (só das peças que aparecem no ritmo). */
