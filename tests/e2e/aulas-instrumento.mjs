@@ -1,4 +1,4 @@
-// Robôterista ensina: teoria (5 temas) + aula de bateria, teclado e violão (30 aulinhas cada); sem código só a 1ª fase de cada instrumento abre.
+// Robôterista ensina: teoria (5 temas) + aula de bateria, teclado e violão (30 aulinhas cada); sem código as aulas ficam trancadas (tela de código).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve();
 async function abre(codigo) {
@@ -23,9 +23,7 @@ async function abre(codigo) {
 {
   const { browser, p, errs } = await abre(false);
   await p.goto(`${url}/aluno.html#/estudos/aulas/bateria`); await sleep(1500);
-  check('sem código: as fases 2 a 6 mostram o cadeado', (await p.locator('.tf-fase i', { hasText: '🔒' }).count()) === 5);
-  await p.locator('.tf-fase').nth(1).click(); await sleep(300);
-  check('sem código: tocar na fase 2 não abre', /fase 1 de 6/i.test(await p.locator('.tf-fase-t').innerText()));
+  check('sem código: a aula nem abre, só pede o código (as aulas são só pra quem tem acesso)', (await p.locator('.al-cod').count()) === 1 && (await p.locator('.tf-fase').count()) === 0);
   check('sem erros de página (sem código)', errs.length === 0, errs.join(' | ')); await browser.close();
 }
 srv.close(); process.exit(done() ? 1 : 0);
