@@ -1569,3 +1569,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .top-a .al-tenho{color:#17365B!important}
 .top-a .al-cod-top{display:flex!important;align-items:center;gap:4px}.top-a .cod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}
+
+.dc-grid.dc-easy .dc-c.dica-linha{background:#fff6d6}
