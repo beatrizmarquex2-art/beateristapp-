@@ -32,7 +32,8 @@ export function mount(host, opts) {
   let g = null; let msg = ''; let fb = null;
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
-  const NAMES = (mode) => (mode === 'local' ? [nomeDe(0), nomeDe(1)] : mode === 'online' ? (me0() === 0 ? ['você', 'o outro'] : ['o outro', 'você']) : ['você', 'Paul']);
+  const outroN = () => (conn ? conn.nomeDe(1 - me0()) : 'o outro'); // o nome que o outro pôs em "adicionar nome" (ou "o outro")
+  const NAMES = (mode) => (mode === 'local' ? [nomeDe(0), nomeDe(1)] : mode === 'online' ? (me0() === 0 ? ['você', outroN()] : [outroN(), 'você']) : ['você', 'Paul']);
   const root = h('div', { class: `jg jg-velha${mission ? ' jg-game' : ''}` }); host.replaceChildren(root);
   const persist = () => { if (mission || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, match: g }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
@@ -57,6 +58,7 @@ export function mount(host, opts) {
   }
   function startOnline(c, state) {
     conn = c; lob = null; badge.set(true); c.on.link = (v) => badge.set(v);
+    c.on.nomes = () => { if (!gone && g) draw(); };
     c.on.state = (st) => { const was = g && g.over; g = st; msg = ''; if (g.over && !was) finish(); else draw(); };
     g = state; msg = '';
     if (g.pausa && g.pausa.by === me0()) { g = { ...g, pausa: null }; sync(); } // voltei pra sala: o aviso de saída some e a partida segue na mesma pergunta
@@ -69,7 +71,7 @@ export function mount(host, opts) {
   function draw() {
     const names = NAMES(g.mode); const w = g.result && g.result.line; const q = g.pending && !(g.mode === 'online' && g.turn !== me0()) ? V.questionById(g.pending.qid) : null; // 2 celulares: a pergunta aparece só no celular de quem joga
     const canTap = human() && !g.pending;
-    const status = g.over ? '' : g.offer ? 'muitos erros seguidos…' : V.isPaulTurn(g) ? 'vez do paul…' : g.mode === 'online' && g.turn !== me0() ? (g.pending ? 'o outro está respondendo uma pergunta…' : 'vez do outro celular…') : `vez de ${names[g.turn]} (${V.MARK_NAME[g.turn]})`;
+    const status = g.over ? '' : g.offer ? 'muitos erros seguidos…' : V.isPaulTurn(g) ? 'vez do paul…' : g.mode === 'online' && g.turn !== me0() ? (g.pending ? `${outroN()} está respondendo uma pergunta…` : `${conn ? conn.vezDe(1 - me0()) : 'vez do outro'}…`) : `vez de ${names[g.turn]} (${V.MARK_NAME[g.turn]})`;
     const cells = g.board.map((v, i) => h('button', { type: 'button', class: `jg-cell${w && w.includes(i) ? ' win' : ''}${g.pending && g.pending.cell === i ? ' ask' : ''}`, disabled: !(canTap && v == null),
       'aria-label': `casa ${i + 1}, linha ${Math.floor(i / 3) + 1} coluna ${(i % 3) + 1}: ${v == null ? 'vazia' : V.MARK_NAME[v]}`, onclick: () => tap(i) }, v == null ? null : mark(v)));
     root.replaceChildren(...[
@@ -98,8 +100,8 @@ export function mount(host, opts) {
       h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'pausar o jogo pros dois', title: 'pausar o jogo pros dois', onclick: () => setPausa({ by: me0(), tipo: 'pausa' }) }, '⏸'),
       h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'avisar o outro que vou sair', title: 'avisar o outro que vou sair', onclick: () => setPausa({ by: me0(), tipo: 'saida' }) }, '👋'));
     const texto = tipo === 'saida'
-      ? (mine ? 'você avisou que vai sair. pode ir estudar! quando voltar, entre em “voltar pra sala” e a partida continua do mesmo ponto, na mesma pergunta.' : 'o outro vai sair um pouquinho (pra estudar). a partida fica guardada e continua quando ele voltar.')
-      : (mine ? 'você pausou o jogo pros dois.' : 'o outro pausou o jogo pros dois.');
+      ? (mine ? 'você avisou que vai sair. pode ir estudar! quando voltar, entre em “voltar pra sala” e a partida continua do mesmo ponto, na mesma pergunta.' : `${outroN()} vai sair um pouquinho (pra estudar). a partida fica guardada e continua quando voltar.`)
+      : (mine ? 'você pausou o jogo pros dois.' : `${outroN()} pausou o jogo pros dois.`);
     return h('div', { class: 'vl-pausa', role: 'alertdialog', 'aria-label': 'jogo pausado' }, h('b', {}, tipo === 'saida' ? '👋 aviso de saída' : '⏸ jogo pausado'), h('p', {}, texto),
       tipo === 'saida' && mine && euAluno() ? h('a', { class: 'btn small', href: '#/estudos' }, 'ir estudar') : null,
       tipo === 'saida' && !mine ? null : h('button', { class: 'btn small primary', type: 'button', onclick: () => setPausa(null) }, tipo === 'saida' ? 'não vou mais sair' : 'continuar pros dois'));
@@ -158,7 +160,7 @@ export function mount(host, opts) {
   function finish() { missionRound(); const w = g.result.winner; if (!mission && g.mode === 'online' && bonusRodada !== g.round) { bonusRodada = g.round; import('../figurinhas/bonus.js').then((B) => B.online('velha', w == null ? 'tie' : w === me0() ? 'win' : 'loss')).catch(() => {}); } /* 5 vitórias seguidas online = bônus escondido */ if (!mission && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) && pago !== g.round) { pago = g.round; MESA.vitoria('velha', 1); } /* 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea); no mesmo aparelho não conta */ sfx(w == null ? 'tie' : g.mode === 'online' ? (w === me0() ? 'win' : 'lose') : g.mode !== 'local' && w === 1 ? 'lose' : 'win'); draw(); }
   function result() {
     const w = g.result.winner; const names = NAMES(g.mode);
-    const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : 'o outro venceu') : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
+    const title = g.result.exhausted ? 'perguntas esgotadas' : w == null ? 'empate' : g.mode === 'online' ? (w === me0() ? 'você venceu! 🤘' : `${outroN()} venceu`) : g.mode !== 'local' ? (w === 0 ? 'você venceu! 🤘' : 'o paul venceu') : `${names[w]} venceu!`;
     const eu = g.mode === 'online' ? me0() : 0; const euGanhei = w != null && (g.mode === 'local' ? true : w === eu);
     return placar({ classe: 'jg-result', estado: w == null ? 'tie' : euGanhei ? 'win' : 'lose', pose: w == null ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('oculos', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: title,
       sub: g.result.early ? 'encerrada em empate depois de muitos erros' : g.result.exhausted ? 'perguntas esgotadas neste nível! o placar fica salvo; jogue de novo ou mude o nível.' : w == null ? 'ninguém fechou a linha' : '',

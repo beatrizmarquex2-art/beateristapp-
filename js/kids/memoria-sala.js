@@ -29,7 +29,7 @@ export function mostrarSala(c, conn, estado) {
   css();
   let e = estado; let gone = false; let paused = false; let rt = 0; let retry = 0; let key = ''; const me = conn.me;
   const badge = linkBadge(); badge.set(true);
-  const nome = (i) => (i === me ? 'você' : 'o outro');
+  const nome = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro')); // (conn de teste pode não ter nomeDe)
   const th = () => c.themes().find((t) => t.id === e.tema);
   const cards = (t) => { const m = new Map(t.items.map((x) => [x.id, x])); return e.deck.every((id) => m.has(id)) ? e.deck.map((id) => m.get(id)) : null; };
   const stage = c.stage; let refs = null;
@@ -80,10 +80,10 @@ export function mostrarSala(c, conn, estado) {
       b.setAttribute('aria-label', up || ach ? lista[i].name : 'carta virada para baixo');
       b.classList.toggle('ms-fora', !L.podeVirar(e, me, i));
     });
-    placar.textContent = `você ${sc[me]} × ${sc[1 - me]} o outro`;
+    placar.textContent = `você ${sc[me]} × ${sc[1 - me]} ${nome(1 - me)}`;
     if (e.fim) {
       const w = L.vencedor(e);
-      banner.textContent = w === -1 ? 'empate!' : w === me ? 'você venceu!' : 'o outro venceu';
+      banner.textContent = w === -1 ? 'empate!' : w === me ? 'você venceu!' : `${nome(1 - me)} venceu`;
       banner.className = `ms-vez fim${w === me ? ' mine' : ''}`;
       aviso.textContent = '';
       const jaTem = fim.dataset.k === key; fim.dataset.k = key;
@@ -94,7 +94,7 @@ export function mostrarSala(c, conn, estado) {
     } else {
       fim.replaceChildren(); delete fim.dataset.k;
       const minha = e.vez === me;
-      banner.textContent = minha ? 'sua vez' : 'vez do outro'; banner.className = `ms-vez${minha ? ' mine' : ''}`;
+      banner.textContent = minha ? 'sua vez' : (conn.vezDe ? conn.vezDe(1 - me) : 'vez do outro'); banner.className = `ms-vez${minha ? ' mine' : ''}`;
       aviso.textContent = erro ? 'não é par…' : pen ? 'achou um par!' : minha ? (e.virou.length === 1 ? 'vire mais uma carta' : 'vire duas cartas') : '';
     }
   }
@@ -127,7 +127,7 @@ export function mostrarSala(c, conn, estado) {
     if (!e.fim) return; const t = th(); enviar(L.revanche(e, t ? t.items.map((x) => x.id) : null));
   }
 
-  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); };
+  conn.on.state = (st) => { if (gone) return; e = st; pintar(); agenda(); }; conn.on.nomes = () => { if (!gone && e) pintar(); };
   conn.on.link = (v) => badge.set(v);
   pintar(); agenda();
   c.bot.set('think', e && e.vez === me ? 'sua vez!' : 'vez do outro');

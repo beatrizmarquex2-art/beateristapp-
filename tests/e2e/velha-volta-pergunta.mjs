@@ -3,7 +3,7 @@
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch();
 const errs = []; const salas = {};
-await ctx.route('**/rest/v1/rpc/**', async (r) => {
+const instala = (c) => c.route('**/rest/v1/rpc/**', async (r) => {
   const fn = r.request().url().split('/rpc/')[1]; let b = {}; try { b = JSON.parse(r.request().postData() || '{}'); } catch { /* ok */ }
   const j = (x) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(x) });
   if (fn === 'aluno_codigo_ok') return j(true);
@@ -14,8 +14,9 @@ await ctx.route('**/rest/v1/rpc/**', async (r) => {
   if (fn === 'sala_enviar') { if (!s || s.ver !== b.p_ver) return j(0); s.estado = b.p_estado; s.ver++; return j(s.ver); }
   return j([]);
 });
-const abrir = async (nome) => {
-  const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+instala(ctx);
+const abrir = async (nome, c = ctx) => {
+  const p = await c.newPage(); p.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
   await p.addInitScript((n) => { try { localStorage.setItem('beaterista-aluno-nome', n); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } }, nome);
   await p.goto(`${url}/aluno.html#/jogos/velha`); await sleep(1200); return p;
 };
@@ -36,17 +37,21 @@ const modo = (p, rotulo) => p.locator(`.jg-seg button[aria-label^="${rotulo}"]`)
 }
 // ---- (3) dois celulares
 {
-  const A = await abrir('Ana'); const B = await abrir('Bia');
+  const ctxB = await context(browser, { viewport: { width: 390, height: 844 } }); instala(ctxB); // 2º celular: armazenamento separado
+  const A = await abrir('Ana'); const B = await abrir('Bia', ctxB);
   await modo(A, '2 celulares'); await modo(B, '2 celulares'); await sleep(300);
+  check('a tela da sala tem o campo "adicionar nome"', (await A.locator('.jg-nome-sala input').count()) === 1);
+  await A.locator('.jg-nome-sala input').fill('Ana'); await B.locator('.jg-nome-sala input').fill('Bia');
   await A.locator('.jg-lobby .btn.primary').first().click(); await sleep(1500);
   await B.locator('.jg-code-in').fill('ABCDE'); await B.locator('.jg-entrar .btn').click(); await sleep(2500);
+  check('cada um vê o nome do outro (no lugar de "o outro")', /Bia/.test(await A.locator('.jg-score').innerText()) && /Ana/.test(await B.locator('.jg-score').innerText()) && !/o outro/.test(await A.locator('.jg-score').innerText()), (await A.locator('.jg-score').innerText()).replace(/\n/g, ' '));
   check('os dois entraram na sala', (await A.locator('.jg-board').count()) === 1 && (await B.locator('.jg-board').count()) === 1);
   check('os dois vêem pausar e avisar que vai sair', (await A.locator('.vl-ctl button').count()) === 2 && (await B.locator('.vl-ctl button').count()) === 2);
   await A.locator('.jg-cell').first().click(); await sleep(2500);
   const q = await A.locator('.jg-qt').innerText();
-  check('a pergunta aparece só no celular de quem joga', (await B.locator('.jg-qt').count()) === 0 && /respondendo/.test(await B.locator('.jg-turn').innerText()), await B.locator('.jg-turn').innerText());
+  check('a pergunta aparece só no celular de quem joga', (await B.locator('.jg-qt').count()) === 0 && /Ana está respondendo/.test(await B.locator('.jg-turn').innerText()), await B.locator('.jg-turn').innerText());
   await A.locator('.vl-ctl button').nth(1).click(); await sleep(2500);
-  check('o outro recebe o aviso de saída', /vai sair/.test(await B.locator('.vl-pausa').innerText()));
+  check('o outro recebe o aviso de saída', /Ana vai sair/.test(await B.locator('.vl-pausa').innerText()));
   check('quem avisou vê o convite pra estudar/voltar', /voltar pra sala/.test(await A.locator('.vl-pausa').innerText()));
   await A.evaluate(() => { location.hash = '#/estudos'; }); await sleep(900);
   await A.evaluate(() => { location.hash = '#/jogos/velha'; }); await sleep(1500);

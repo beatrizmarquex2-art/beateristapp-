@@ -36,7 +36,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); if (!gone) fn(); }, ms); timers.add(id); return id; };
   const stopClock = () => { clearInterval(clk); clk = 0; };
   const sr = (t) => { if (live) live.textContent = t; };
-  const quem = (i) => (i === me ? 'você' : 'o outro');
+  const quem = (i) => (conn.nomeDe ? conn.nomeDe(i) : (i === me ? 'você' : 'o outro'));
   const euSou = () => (me === 0 ? 'quem criou' : 'quem entrou');
 
   conn.on.state = (novo) => { if (Q.estadoValido(novo)) { latest = novo; aoMudar(); } };
@@ -202,13 +202,13 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
         h('label', { class: 'jg-chk' }, h('input', { type: 'checkbox', disabled: RO ? true : null, checked: e.rev.equiv[c] ? true : null, onchange: (ev) => aplicarEquiv(c, ev.target.checked) }), ' as respostas válidas são equivalentes (valem 5)'));
     });
     const [s0, s1] = [R.sc.sums[me], R.sc.sums[outro]]; const v = R.vencedor; const euVenci = v === me;
-    const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : 'o outro venceu desta vez';
+    const titulo = v === -1 ? 'empate!' : euVenci ? 'você venceu! 🏆' : `${quem(outro)} venceu desta vez`;
     root.replaceChildren(...[badge.el,
       placar({ classe: `jg-result st-final${v === -1 ? ' tie' : ''}`, estado: v === -1 ? 'tie' : euVenci ? 'win' : 'lose', pose: v === -1 ? poseDisponivel('agua', 'ouvindo') : euVenci ? poseDisponivel('gravando', 'microfone') : poseDisponivel('meditando', 'ouvindo'), titulo, sub: p0,
         quadros: [[me, s0], [outro, s1]].map(([i, s]) => ({ n: s, l: quem(i), win: v === i })),
         extra: [R.pend ? h('p', { class: 'jg-p muted' }, `${R.pend} resposta${R.pend > 1 ? 's' : ''} aguardando revisão (valem 0 por enquanto). ${RO ? 'quem criou a sala decide.' : 'toque em “contestar resposta” pra aprovar ou rejeitar.'}`) : null,
           semOutro && faltaOutro ? h('p', { class: 'jg-p muted' }, 'o outro celular não mandou as respostas. placar só com as suas.') : null,
-          e.wins[0] + e.wins[1] + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, `vitórias: você ${e.wins[me]} · o outro ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null],
+          e.wins[0] + e.wins[1] + (e.empates || 0) > 0 ? h('p', { class: 'ss-wins' }, `vitórias: você ${e.wins[me]} · ${quem(outro)} ${e.wins[outro]}${e.empates ? ` · empates ${e.empates}` : ''}`) : null],
         acoes: [h('button', { class: 'btn primary jo-go', type: 'button', onclick: revanche }, 'revanche'), h('button', { class: 'btn ghost', type: 'button', onclick: sairDaSala }, 'voltar às opções')] }),
       h('h3', { class: 'hand' }, `rodada com a letra ${e.letter}`), ...cards,
       RO ? h('p', { class: 'jg-p muted' }, 'quem criou a sala revisa as respostas. as marcas aparecem aqui.') : null].filter(Boolean));

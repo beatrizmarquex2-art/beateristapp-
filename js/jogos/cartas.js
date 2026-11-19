@@ -77,7 +77,7 @@ export function mount(host, opts) {
   const me0 = () => (conn ? conn.me : 0);
   const meIdx = () => (!g ? 0 : g.mode === 'paul' ? 0 : g.mode === 'online' ? me0() : viewer);
   const isCpu = (p) => g && g.mode === 'paul' && p !== 0;
-  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (p === me0() ? 'você' : 'o outro') : nomeDe(p));
+  const PL = (p) => (g.mode === 'paul' ? (p === 0 ? 'você' : NAMES[p - 1]) : g.mode === 'online' ? (conn ? conn.nomeDe(p) : (p === me0() ? 'você' : 'o outro')) : nomeDe(p));
   const human = () => !!g && !g.over && !busy && !hidden && g.turn === meIdx() && !(g.mode === 'local' && g.turn !== viewer);
   const persist = () => { if (adv || (g && g.mode === 'online')) return; setGame(ID, { ...prefs, game: g && !g.over ? g : null, rec: saved.rec }); };
   const leave = () => { if (conn) { conn.close(); conn = null; } if (lob) { lob.close(); lob = null; } };
@@ -177,7 +177,7 @@ export function mount(host, opts) {
   function startOnline(c, state) {
     conn = c; lob = null; badge.set(true);
     c.on.link = (v) => badge.set(v);
-    c.on.state = (st) => incoming(st);
+    c.on.state = (st) => incoming(st); c.on.nomes = () => { if (!gone && g && !busy) paint(); };
     begin(state);
   }
   /** estado novo vindo do outro celular */
@@ -244,7 +244,7 @@ export function mount(host, opts) {
     const top = C.topOf(g); const canMove = human();
     const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
     const mine = hidden ? [] : sortHand(g.hands[me]);
-    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : 'vez do outro celular…') : `vez ${deNome(g.turn)}`;
+    const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : `${conn ? conn.vezDe(g.turn) : 'vez do outro'}…`) : `vez ${deNome(g.turn)}`;
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const under = [...g.discard].slice(-4, -1); // cartas de baixo (só enfeite)
     const prevTurn = stage ? stage.dataset.turn : ''; const turnChanged = String(prevTurn) !== String(g.turn);

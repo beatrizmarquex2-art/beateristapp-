@@ -36,6 +36,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## "Adicionar nome" nas salas por código (19/nov/2026, v634, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Tela de entrada da sala (`lobby` em `js/jogos/online.js`)** tem o campo **"adicionar nome"** (opcional, 14 letras; guardado em `beaterista-nome-sala`). O nome viaja dentro do estado da sala (`estado.nomes = [nome do 0, nome do 1]`); a conexão (`connection`) injeta o meu nome em toda jogada e guarda o do outro. Os jogos chamam `conn.nomeDe(i)` ("você" / nome / "o outro") e `conn.vezDe(i)` ("vez de Ana" / "vez do outro"). Se só o nome mudou, a conexão chama `conn.on.nomes()` em vez de `on.state` (não mexe na partida).
+- Usado em: velha, Uno, Stop (revezando e ao mesmo tempo), base dos duelos (Beat Hero com amigo, letras, toca, quebra-cabeça) e memória em sala. Bingo já tinha nomes próprios.
+- Falhavam ANTES na `main` (não são desta mudança): `duelo-letras`, `duelo-ritmo`, `stop-simultaneo` ("opções"), `salas` (velha), `pausa-sala`.
+- **Lição**: depois de juntar a `main`, conferir cada JS mudado com `node --experimental-default-type=module --check` (o `--check` simples não pega erro em módulo) e nunca escrever `open(f,'w').write(ler(f))` (apaga o arquivo antes de ler).
+
 ## Velha sem mover peça, volta na mesma pergunta, pausa em 2 celulares e Beat Hero com amigo (18/nov/2026, v608, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
 - **Velha: saiu a "troca de lugar"** (clicou, já era). A lógica (`moveMark`/`canMove` em `velha-logic.js`) ficou, só a tela não usa mais.
 - **Volta na MESMA pergunta**: a pergunta aberta agora é gravada (e vai pra sala em 2 celulares). Mesmo aparelho: ao reabrir o jogo cai direto na pergunta (`intro(true)`; "nova partida" do menu continua levando pras opções). 2 celulares: "voltar pra sala" restaura a pergunta. A pergunta só aparece no celular de quem joga; o outro vê "o outro está respondendo uma pergunta…".
