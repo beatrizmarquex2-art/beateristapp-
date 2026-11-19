@@ -67,6 +67,7 @@ import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import { pending as FRpend } from './figurinhas/rewards.js'; // quantos giros/pacotes esperando (bolinha vermelha na aba roleta)
 import * as perfil from './views/perfil.js';
+import * as inicio from './views/inicio.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
 import * as CONTAS from './contas.js';
@@ -83,7 +84,9 @@ import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
+// aba INÍCIO (prévia): só aparece pra quem abriu o app com ?inicio=1 (fica guardado no aparelho; ?inicio=0 desliga). A barra de sempre não muda.
+const INICIO_ON = (() => { try { if (/[?&]inicio=1\b/.test(location.search)) localStorage.setItem('bt-inicio', '1'); if (/[?&]inicio=0\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') === '1'; } catch { return false; } })();
+const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
@@ -456,7 +459,7 @@ function shell(name) {
   let atual = null; let voltarA = null; let voltouNaFaixa = false;
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
-    const r = route(); view.dataset.page = r.name;
+    const r = route(); view.dataset.page = r.name; inicio.marcaDia();
     { const tab = tabOf(r); const jg = (() => { try { return jogos.jogoDoEndereco(location.hash); } catch { return null; } })(); const nome = jg ? jg[1] : (NAV.find(([hr]) => hr === `#/${tab}`) || [])[2] || 'o app';
       if (voltouNaFaixa) { voltouNaFaixa = false; voltarA = null; } // tocou em "voltar para": chegou lá, a faixa some (não fica indo e voltando)
       else if (atual && atual.hash !== location.hash) { if (atual.tab !== tab) voltarA = { hash: atual.hash, nome: atual.nome, tab: atual.tab }; else if (voltarA && voltarA.hash === location.hash) voltarA = null; }
@@ -498,6 +501,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
+    else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
