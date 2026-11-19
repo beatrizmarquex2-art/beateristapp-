@@ -10,6 +10,7 @@ import * as FAV from '../inicio-fav.js';
 import * as A from '../figurinhas/acesso.js';
 import * as L from '../figurinhas/album-logic.js';
 import * as store from '../store.js';
+import { atualizarAgora } from '../atualizar-btn.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -183,6 +184,11 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
-  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, roleta, novidades, atalhos));
+  // aviso de versão nova: aparece aqui dentro do Início (cartão no topo) e o aviso solto do topo some nesta aba (css/inicio.css)
+  const botAtu = h('button', { type: 'button', class: 'in-btn in-atu-bt', onclick: (e) => { e.currentTarget.disabled = true; atualizarAgora(); } }, 'atualizar');
+  const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
+  const mostraAtu = () => { avisoAtu.hidden = false; };
+  try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
+  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, tres, continuar, roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }
