@@ -132,3 +132,29 @@ test('validGame rejeita estados quebrados e partidas do formato antigo', () => {
   assert.ok(!C.validGame({ ...g, v: 1 })); assert.ok(!C.validGame({ ...g, hands: [g.hands[0]] })); assert.ok(!C.validGame({ ...g, color: 'mostarda' }));
   assert.ok(!C.validGame({ ...g, draw: g.draw.slice(1) })); assert.ok(!C.validGame(null));
 });
+
+/* ===== saída de jogador (sala de 3 e 4): tirar / adv pulando quem saiu ===== */
+test('tirar: a mão volta pro baralho, a vez pula quem saiu e o sentido continua', () => {
+  const g = C.newGame({ mode: 'online', players: 4, rnd: seeded(3) }); g.turn = 1;
+  const total = g.draw.length + g.discard.length + g.hands.flat().length;
+  const t = C.tirar(g, [2]);
+  assert.deepEqual(t.fora, [2]); assert.equal(t.hands[2].length, 0); assert.equal(t.draw.length, g.draw.length + 7);
+  assert.equal(t.draw.length + t.discard.length + t.hands.flat().length, total, 'nenhuma carta se perde');
+  assert.equal(C.adv(t, 1, 1), 3, 'depois do 1 vem o 3 (o 2 saiu)'); assert.equal(C.adv(t, 3, 2), 1, 'dois passos a partir do 3 (pula o 2): 0 e 1');
+  assert.equal(C.ativos(t), 3); assert.equal(C.tirar(t, [2]), t, 'tirar de novo quem já saiu não muda nada');
+});
+test('tirar quem tem a vez passa a vez pro próximo; sobrou 1 jogador = ele vence', () => {
+  const g = C.newGame({ mode: 'online', players: 3, rnd: seeded(4) }); g.turn = 0;
+  const t = C.tirar(g, [0]); assert.equal(t.turn, 1); assert.equal(t.over, false); assert.equal(t.drawn, null);
+  const f = C.tirar(t, [1]); assert.equal(f.over, true); assert.equal(f.result.winner, 2); assert.equal(f.result.reason, 'saiu');
+  const dois = C.tirar(C.newGame({ mode: 'online', players: 2, rnd: seeded(5) }), [1]); assert.equal(dois.result.winner, 0);
+});
+test('com quem saiu fora da mesa: pular e +2 usam o próximo que ficou; inverter com 2 na mesa vale como pular', () => {
+  const g = C.newGame({ mode: 'online', players: 4, rnd: seeded(2) });
+  const t = C.tirar(g, [2]); t.turn = 1; t.hands[1] = [{ id: 'x1', color: t.color, kind: 'pular', sym: null }, ...t.hands[1]];
+  const p = C.applyPlay(t, 1, 'x1'); assert.equal(p.ev.victim, 3, 'pular: a vítima é o 3 (o 2 saiu)'); assert.equal(p.turn, 0, 'e a vez vai pro 0');
+  const mais = JSON.parse(JSON.stringify(t)); mais.hands[1] = [{ id: 'm2', color: mais.color, kind: 'mais2', sym: null }, { id: 'm3', color: mais.color, kind: 'fig', sym: 'seminima' }]; const antes = mais.hands[3].length;
+  const q = C.applyPlay(mais, 1, 'm2'); assert.equal(q.hands[3].length, antes + 2, '+2 vai pro 3'); assert.equal(q.hands[2].length, 0, 'quem saiu não recebe nada');
+  const dupla = C.tirar(C.tirar(C.newGame({ mode: 'online', players: 4, rnd: seeded(6) }), [2]), [3]); dupla.turn = 0; dupla.hands[0] = [{ id: 'i1', color: dupla.color, kind: 'inverter', sym: null }, ...dupla.hands[0]];
+  assert.equal(C.applyPlay(dupla, 0, 'i1').turn, 0, 'sobraram 2: inverter vale como pular o outro');
+});

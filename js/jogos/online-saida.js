@@ -24,6 +24,7 @@ export function ligarSaida(conn, rpc) {
     if (chave !== saiuAntes) { saiuAntes = chave; if (conn.on && conn.on.saiu) conn.on.saiu(info.saiu.slice()); }
   }
   function suspeitos() {
+    if (falhas > 0 && !Object.keys(info.ha).length) return []; // banco sem as funções de presença (ou sem internet): não acusa ninguém à toa
     const agora = Date.now(); const L = limiteS(); const out = [];
     for (let s = 0; s < info.n; s++) {
       if (s === conn.me || info.saiu.includes(s)) continue;
