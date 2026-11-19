@@ -88,9 +88,24 @@ export const clone = (b) => JSON.parse(JSON.stringify(b));
 /** Liga/desliga uma célula sem mexer no original. */
 export function toggle(b, row, i) {
   const n = clone(b); if (!n.rows[row]) n.rows[row] = Array(b.steps).fill(0); // ritmo salvo antes das peças novas
-  n.rows[row][i] = n.rows[row][i] ? 0 : 1; return n;
+  n.rows[row][i] = n.rows[row][i] ? 0 : 1; if (!n.rows[row][i] && n.det && n.det[row]) delete n.det[row][i]; return n;
 }
-export const clear = (b) => ({ ...clone(b), rows: Object.fromEntries(ROWS.map((r) => [r.id, Array(b.steps).fill(0)])) });
+export const clear = (b) => ({ ...clone(b), rows: Object.fromEntries(ROWS.map((r) => [r.id, Array(b.steps).fill(0)])), det: {} });
+
+/* ---------- kit detalhado: crash, ride, chimbal, caixa, bumbo e chimbal com o pé + detalhes em cada nota ----------
+   Os detalhes ficam em `b.det[peça][passo]` (só quem usa o kit detalhado tem isso; o resto dos ritmos nem sabe que existe). */
+export const KIT_DETALHE = [['cr', 'Crash'], ['rd', 'Ride'], ['hh', 'Chimbal'], ['sn', 'Caixa'], ['bd', 'Bumbo'], ['hf', 'Chimbal pé']];
+/** Detalhes: [código, nome, símbolo na casinha, peças onde vale (null = qualquer)]. */
+export const DETALHES = [['a', 'acento', '>', null], ['f', 'fantasma', '( )', ['sn']], ['r', 'aro de caixa', '✕', ['sn']], ['o', 'chimbal aberto', 'o', ['hh']], ['c', 'cúpula', '◆', ['rd']], ['p', 'flam (pivô)', 'fl', ['bd']]];
+export const detOf = (b, row, i) => (b.det && b.det[row] && b.det[row][i]) || '';
+export const detValeEm = (code, row) => { const d = DETALHES.find((x) => x[0] === code); return !!d && (!d[3] || d[3].includes(row)); };
+/** Põe a nota com um detalhe (ou tira, se já estava com o mesmo detalhe). Detalhe que não vale pra essa peça é ignorado (vira nota normal). */
+export function setDet(b, row, i, code) {
+  if (!code || code === 'n' || !detValeEm(code, row)) return toggle(b, row, i);
+  const n = clone(b); if (!n.rows[row]) n.rows[row] = Array(b.steps).fill(0);
+  if (n.rows[row][i] && detOf(b, row, i) === code) { n.rows[row][i] = 0; if (n.det && n.det[row]) delete n.det[row][i]; return n; }
+  n.rows[row][i] = 1; n.det = n.det || {}; n.det[row] = n.det[row] || {}; n.det[row][i] = code; return n;
+}
 
 /** Troca a resolução mantendo as notas que caem no mesmo lugar do tempo (8 ↔ 16; tercinas recomeçam vazias). */
 export function resize(b, steps) {
@@ -98,6 +113,7 @@ export function resize(b, steps) {
   const n = { ...clone(b), steps };
   if (b.acc) { const out = Array(steps).fill(0); if (b.steps !== 12 && steps !== 12) b.acc.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; }); n.acc = out; }
   if (b.hands) { const out = Array(steps).fill(''); if (b.steps !== 12 && steps !== 12) b.hands.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = v; }); n.hands = out; }
+  if (b.det) { const d = {}; for (const [row, m] of Object.entries(b.det)) { d[row] = {}; if (b.steps !== 12 && steps !== 12) for (const [k, c] of Object.entries(m)) { const pos = Number(k) * steps / b.steps; if (Number.isInteger(pos) && ((n.rows[row] || b.rows[row] || [])[Number(k)])) d[row][pos] = c; } } n.det = d; }
   for (const r of ROWS) {
     const src = b.rows[r.id] || []; const out = Array(steps).fill(0);
     if (b.steps !== 12 && steps !== 12) src.forEach((v, i) => { const pos = i * steps / b.steps; if (v && Number.isInteger(pos)) out[pos] = 1; });

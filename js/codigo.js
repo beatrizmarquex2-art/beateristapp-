@@ -76,9 +76,27 @@ async function head(extra = {}) { const auth = await import('./auth.js'); const 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const gerar = () => { const a = new Uint32Array(6); crypto.getRandomValues(a); return [...a].map((x) => ABC[x % ABC.length]).join(''); };
 export async function listar() {
-  const r = await fetch(`${base}/alunos_codigos?select=code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos&order=criado_em.desc`, { headers: await head() });
+  const q = (cols) => fetch(`${base}/alunos_codigos?select=${cols}&order=criado_em.desc`, { headers: head0 });
+  const head0 = await head();
+  let r = await q('code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos,categoria,iniciado_em');
+  if (r.status === 400) r = await q('code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos'); // servidor ainda sem a coluna `categoria`
   if (!r.ok) throw new Error(String(r.status)); return r.json();
 }
+/** Categorias e tempos de acesso da aba Códigos. */
+export const CATEGORIAS = [['aluno', 'Alunos'], ['amigo', 'Amigos'], ['marca', 'Marcas'], ['outro', 'Outros']];
+export const TEMPOS = [[1, '1 dia'], [3, '3 dias'], [7, '7 dias'], [30, '1 mês'], [90, '3 meses'], [180, '6 meses'], [365, '1 ano']];
+export const nomeTempo = (d) => (TEMPOS.find((t) => t[0] === d) || [d, `${d} dia${d === 1 ? '' : 's'}`])[1];
+/** Cria um código (passe do site todo): a contagem do tempo começa no 1º uso, vale em até 2 aparelhos. `ativo` false = nasce desativado (a Bea ativa depois). */
+export async function criarCodigo({ code, categoria = 'aluno', dias = 365, nome = '', ativo = true, jogos = null }) {
+  const c = norm(code) || gerar();
+  const body = { code: c, nome: String(nome).slice(0, 60), tipo: 'passe', dias, jogos: jogos && jogos.length ? jogos : null, max_aparelhos: 2, ativo, categoria };
+  let r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(body) });
+  if (r.status === 400) { delete body.categoria; r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(body) }); }
+  if (r.status === 409) throw new Error('409');
+  if (!r.ok) throw new Error(String(r.status)); return c;
+}
+/** Muda o tempo de acesso de um código: se já começou a contar, vence daqui a `dias` a partir de hoje; se ainda não foi usado, só troca os dias. */
+export const mudarTempo = (x, dias) => alterar(x.code, x.expira_em || x.iniciado_em ? { dias, expira_em: new Date(Date.now() + dias * 864e5).toISOString() } : { dias });
 export async function criar(nome) {
   const code = gerar(); const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify({ code, nome: String(nome || '').slice(0, 60) }) });
   if (!r.ok) throw new Error(String(r.status)); return code;

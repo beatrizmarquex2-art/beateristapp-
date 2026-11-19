@@ -3,6 +3,7 @@
 import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { PASSE, PRODUTOS, COMBO, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
+import { precoPasse } from '../passe-preco.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
 const comprar = (item) => () => {
@@ -72,5 +73,5 @@ export function vitrine(secao = '') {
     h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
     PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
       h('div', { class: 'lj-pm' }, h('h3', {}, PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
-      h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, PASSE.preco), botao('Adquirir passe', PASSE, 'amarelo'))) : null);
+      h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, precoPasse().atual), precoPasse().oferta ? h('small', { class: 'lj-de' }, `de ${precoPasse().de} · oferta até ${precoPasse().ate}`) : null, botao('Adquirir passe', PASSE, 'amarelo'))) : null);
 }

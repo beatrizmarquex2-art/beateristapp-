@@ -1688,3 +1688,64 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 
 .top-snd { flex: none; }
 @media (max-width: 380px) { .top { gap: 4px; } .top .icon-btn { min-width: 38px; } }
+
+/* grade "tudo menor": 16 passos (ou 12) numa linha só */
+.bl-uma{justify-self:start}
+.bl-lines.uma-linha .bl-grid{grid-template-columns:46px repeat(var(--steps),minmax(0,1fr));gap:2px}
+.bl-lines.uma-linha .bl-cell{aspect-ratio:auto;min-height:0;height:clamp(22px,4.2vw,36px);max-height:none;border-width:1.2px}
+.bl-lines.uma-linha .bl-row-label{font-size:10.5px}
+.bl-lines.uma-linha .bl-count{font-size:9.5px}
+.bl-lines.uma-linha .bl-cell.acc,.bl-lines.uma-linha .bl-cell.hand{font-size:10px}
+
+/* kit detalhado: paleta de detalhes (acento, fantasma, aro, aberto, cúpula) */
+.bl-pincel{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.bl-pincel small{font-weight:800;opacity:.7}
+.bl-pc{border:1.5px solid rgb(var(--ink-rgb) / .5);background:#fff;border-radius:999px;padding:5px 10px;font:700 12.5px var(--body);cursor:pointer;color:inherit}
+.bl-pc.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bl-cell.on{font:800 12px var(--body);color:#fff;display:grid;place-items:center}
+
+/* aba Códigos */
+.cod-big{font-size:34px;margin:4px 0 10px;letter-spacing:.14em;text-align:center}
+.cod-form{display:grid;gap:8px;margin:8px 0}.cod-imp{align-items:center;gap:10px;margin:6px 0 10px}
+.cod-filtros{display:grid;gap:8px;margin:8px 0}.cod-lista{display:grid;gap:8px}
+.cod-item{border:1.5px solid rgb(var(--ink-rgb) / .25);border-radius:12px;padding:10px;display:grid;gap:6px;background:#fff}.cod-item.off{opacity:.55}
+.cod-item-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.cod-tag{font:800 11px var(--body);background:rgb(var(--ink-rgb) / .1);border-radius:999px;padding:3px 9px}
+.cod-item-mid{display:grid;gap:2px}.cod-item-act{flex-wrap:wrap;gap:6px}
+.cod-mais summary{cursor:pointer;font-weight:800}.cod-mais-in{margin-top:10px}
+
+/* abas liberadas (seleção múltipla com setinha) */
+.cod-abas-btn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;cursor:pointer}
+.cod-abas-lista{display:grid;gap:4px;margin-top:6px;padding:8px 10px;border:1.5px solid rgb(var(--ink-rgb) / .3);border-radius:10px;background:#fff}
+.cod-aba{padding:6px 0;font-weight:700}
+
+/* ===== Visual C (claro e suave): cards arredondados, botões macios, bolinhas e interruptores. Vale só nas telas listadas em :is(...) ===== */
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) { --vc-vinho: #7a1022; --vc-vinho2: #a51d34; --vc-soft: #f5efe6; --vc-linha: #e4d8c6; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(.card, .empty) { background: #fff; border: 0; border-radius: 22px; box-shadow: 0 8px 24px #7a102214; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(.card, .empty)::before { display: none; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) .btn { border: 0; border-radius: 14px; background: var(--vc-soft); color: #1b1818; box-shadow: none; font-weight: 800; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) .btn.primary { background: linear-gradient(135deg, var(--vc-vinho2), var(--vc-vinho)); color: #fff; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) .btn.ghost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--vc-linha); }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(input, select, textarea).field, #view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(input, select, textarea):not([type=checkbox]):not([type=radio]) { border: 1.5px solid var(--vc-linha); border-radius: 12px; background: #fffdf9; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) .lib-tab { border: 0; border-radius: 14px; background: var(--vc-soft); }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) .lib-tab.on { background: var(--vc-vinho); color: #fff; }
+/* Códigos */
+.cod-big { background: #7a10220d; border-radius: 16px; padding: 12px; font-size: 32px; }
+.cod-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cod-tile { border: 0; border-radius: 14px; padding: 11px 4px; background: #f5efe6; font: 800 12.5px var(--body); color: #1b1818; cursor: pointer; }
+.cod-tile.on { background: linear-gradient(135deg, #a51d34, #7a1022); color: #fff; }
+.cod-imp { display: flex; justify-content: space-between; align-items: center; margin: 14px 0; font-weight: 800; }
+.cod-sw { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; font: 800 13px var(--body); color: inherit; cursor: pointer; }
+.cod-sw .cod-sw-t { display: inline-block; width: 46px; height: 26px; border-radius: 99px; background: #b9b2a6; position: relative; flex: none; transition: background .15s; }
+.cod-sw .cod-sw-t::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px #0003; }
+.cod-sw.on .cod-sw-t { background: #2f9e5b; } .cod-sw.on .cod-sw-t::after { left: 23px; }
+.cod-item { border: 0; border-bottom: 1px solid #f0e8da; border-radius: 0; background: transparent; padding: 12px 2px; display: grid; gap: 6px; }
+.cod-item.off { opacity: .55; }
+.cod-item-top { display: flex; align-items: center; gap: 12px; } .cod-item-id { flex: 1; min-width: 0; } .cod-item-id b { display: block; } .cod-item-id small { display: block; overflow: hidden; text-overflow: ellipsis; }
+.cod-av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font: 400 19px Anton, Impact, sans-serif; color: #fff; flex: none; }
+.cod-tag { font: 800 10px var(--body); border-radius: 99px; padding: 3px 9px; color: #fff; }
+.c-aluno { background: #7a1022; } .c-amigo { background: #1f6fd1; } .c-marca { background: #d98a00; } .c-outro { background: #7b3fb8; }
+.cod-item-meta { padding-left: 54px; } .cod-item-act { padding-left: 54px; }
+
+.cod-abas-btn { border: 1.5px solid #e4d8c6 !important; border-radius: 12px !important; background: #fffdf9 !important; padding: 12px 14px; font: 600 15px var(--body); color: #1b1818; }
+.cod-abas-lista { border: 0 !important; background: #f5efe6 !important; border-radius: 14px !important; }
+.cod-item-act .btn { min-height: 38px; padding: 6px 14px; }
+#view:is([data-page=codigos],[data-page=beaterista],[data-page=acessos],[data-page=resgates],[data-page=planos],[data-page=album-alunos],[data-page=ata],[data-page=ajustes],[data-page=checklist],[data-page=arquivos],[data-page=notas],[data-page=ideias],[data-page=setlist],[data-page=anotacoes]) :is(input, select, textarea):not([type=checkbox]):not([type=radio]):not([type=range]) { width: 100%; min-height: 46px; padding: 10px 14px; font: 600 15px var(--body); color: #1b1818; box-sizing: border-box; }

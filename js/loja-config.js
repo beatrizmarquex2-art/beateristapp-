@@ -5,7 +5,8 @@
 export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
-export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 79,90', info: ['12 meses de acesso', 'Pagamento único'], img: 'assets/loja/passe.webp', link: '' };
+// Por enquanto o Passe é vendido pelo WhatsApp (mensagem já escrita); a Bea gera o código na aba Códigos e manda. Depois vem a liberação automática pela Hotmart (supabase/functions/hotmart-passe).
+export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 79,90', info: ['12 meses de acesso', 'Pagamento único (pix) pelo WhatsApp'], img: 'assets/loja/passe.webp', link: `https://wa.me/5518991804150?text=${encodeURIComponent('Olá, gostaria de adquirir o passe Anual do site Beaterista')}` };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [
