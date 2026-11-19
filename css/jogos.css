@@ -1664,11 +1664,10 @@ button.dc-chip{cursor:pointer;min-height:36px}
 
 /* ---- notas caindo (Fuga) ---- */
 .fgq-campo{position:relative;height:340px;max-width:340px;margin:0 auto 12px;overflow:hidden;border:3px solid #05060f;border-radius:22px;background:radial-gradient(120% 90% at 50% 0,#3a2d78,#120d33 70%);box-shadow:inset 0 2px 0 #ffffff22,inset 0 -10px 24px #000a,0 0 0 2px #3a4170,0 10px 22px #0009;touch-action:none;user-select:none}
-.fgq-campo::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed #ffffff26}
 .fgq-campo.certo{animation:fgqOk .3s}.fgq-campo.errado{animation:fgqNo .3s}
 @keyframes fgqOk{50%{box-shadow:inset 0 0 40px #ffd23f99,0 0 0 2px #ffd23f}}@keyframes fgqNo{50%{box-shadow:inset 0 0 40px #ff3b5caa,0 0 0 2px #ff3b5c}}
 .fgq-cai{position:absolute;top:0;left:50%;width:80px;transform:translateX(-50%);padding:8px;border-radius:16px;background:linear-gradient(165deg,#fffdf7,#ffe9b0);box-shadow:0 5px 0 #0007,0 0 20px #ffd23f66;z-index:2}
 .fgq-fig svg{width:100%;height:auto;max-height:84px;display:block}
-.fgq-paul{position:absolute;bottom:46px;width:70px;transition:left .15s ease;z-index:3}.fgq-paul.esq{left:calc(25% - 35px)}.fgq-paul.dir{left:calc(75% - 35px)}.fgq-paul img{width:100%;display:block;filter:drop-shadow(0 4px 4px #0009)}
-.fgq-nome{position:absolute;bottom:8px;width:44%;text-align:center;padding:8px 6px;border-radius:14px;color:#fff;font:800 clamp(12px,3.6vw,15px) var(--body,system-ui);background:linear-gradient(165deg,#5b4fa8,#2a2060);border:2px solid #8c7bff;box-shadow:inset 0 3px 5px #ffffff33,0 4px 0 #0008}.fgq-nome.esq{left:3%}.fgq-nome.dir{right:3%}
+.fgq-paul{position:absolute;bottom:46px;width:70px;transition:left .15s ease;z-index:3}.fgq-div{position:absolute;top:0;bottom:0;border-left:2px dashed #ffffff26}.fgq-paul img{width:100%;display:block;filter:drop-shadow(0 4px 4px #0009)}
+.fgq-nome{position:absolute;bottom:8px;text-align:center;box-sizing:border-box;padding:8px 2px;border-radius:14px;color:#fff;font:800 clamp(12px,3.6vw,15px) var(--body,system-ui);background:linear-gradient(165deg,#5b4fa8,#2a2060);border:2px solid #8c7bff;box-shadow:inset 0 3px 5px #ffffff33,0 4px 0 #0008}.fgq-campo.q4 .fgq-nome{font-size:clamp(9px,2.7vw,12px);padding:8px 1px}.fgq-campo.q4 .fgq-paul{width:56px}
 @media (prefers-reduced-motion:reduce){.fgq-campo.certo,.fgq-campo.errado{animation:none}.fgq-paul{transition:none}}

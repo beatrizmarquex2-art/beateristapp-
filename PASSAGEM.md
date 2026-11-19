@@ -1024,3 +1024,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **v676**: Fuga lote 1: 3 níveis (fácil 1-4, médio 5-8, difícil 9-12; mundos 2 e 3 sobem 1) em quiz/caça/cruzadinha; novos jogos de toque nas portas (`js/jogos/fuga-mini.js` + `fuga-mini-logic.js`): Genius (notas ou bateria), caminho 3×3 e memória de notas (ritmo/teoria/cordas). Tabela `TIPOS_FASE` em `fuga-logic.js` define o jogo de cada porta; pra criar jogo novo: função em `MINI` + nome em `TIPOS`/`NOME_TIPO`. Lote 2 (notas caindo, pesca, mira e bolinha, montar nota) ainda não.
 - **v677**: Genius em quadrantes brilhantes com miolo (rodada) e caminho 3×3 em pads de bateria eletrônica (acabamento).
 - **v678**: Fuga: jogo das notas caindo (figura cai, Paul vai pro nome certo) nas fases 11 e 12 (tipo 'queda' em fuga-mini.js, reaproveita a lógica do tetris do Figurix).
+- **v679**: Fuga: versão de 4 faixas das notas caindo (tipo 'queda4') na fase 12; a fase 11 fica com 2 faixas.

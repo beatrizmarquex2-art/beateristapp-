@@ -9,9 +9,9 @@ export const MUNDOS = [
   { id: 'espaco', tema: 'laser', nome: 'Palco Principal', curto: 'palco', sub: 'a plateia tá esperando', regioes: regioesDoTema('laser', [['plateia', 'Fosso da Plateia', 'luz nos olhos'], ['solo', 'Solo Final', 'o último refrão']]) },
 ];
 /** Os tipos de porta (registro: pra criar um novo jogo é só pôr aqui o nome, o rótulo e a função em fuga-mini.js). Os 3 principais são quiz, caça-palavras e cruzadinha. */
-export const TIPOS = ['quiz', 'caca', 'cruz', 'genius', 'caminho', 'memoria', 'queda'];
+export const TIPOS = ['quiz', 'caca', 'cruz', 'genius', 'caminho', 'memoria', 'queda', 'queda4'];
 export const PRINCIPAIS = TIPOS.slice(0, 3);
-export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)', genius: 'mesa de som (genius)', caminho: 'corredor de notas (caminho 3×3)', memoria: 'arquivo de discos (memória)', queda: 'palco das figuras (notas caindo)' };
+export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)', genius: 'mesa de som (genius)', caminho: 'corredor de notas (caminho 3×3)', memoria: 'arquivo de discos (memória)', queda: 'palco das figuras (notas caindo)', queda4: 'palco das figuras (4 notas caindo)' };
 export const tipoDa = (n) => PRINCIPAIS[(n - 1) % 3]; // (legado) tipo da 1ª porta da fase
 export const idFase = (mundo, n) => `${mundo}:${n}`;
 /** 3 níveis em todos os jogos das portas: fácil (fases 1-4), médio (5-8) e difícil (9-12). Os mundos 2 e 3 sobem 1 nível (teto: difícil); as fases-desafio são no mínimo médio e a porta B é difícil. */
@@ -44,7 +44,7 @@ export const bonusFeito = (est, mundo) => (Number((est || {})[idFase(mundo, 'B')
 export const TIPOS_FASE = [
   ['quiz', 'memoria'], ['caca', 'quiz'], ['quiz', 'caca', 'genius'], ['cruz', 'quiz', 'genius'], ['genius', 'caca', 'cruz'],
   ['quiz'], ['caca'], ['caminho', 'quiz', 'caca'], ['memoria', 'caminho', 'genius'], ['caca', 'caminho', 'cruz'],
-  ['genius', 'queda', 'caca', 'cruz'], ['memoria', 'caminho', 'queda', 'cruz'],
+  ['genius', 'queda', 'caca', 'cruz'], ['memoria', 'caminho', 'queda4', 'cruz'],
 ];
 /** As portas da fase, em ordem: cada uma é um dos jogos de TIPOS_FASE, com o nível da fase e do mundo; as fases-desafio têm 1 porta com regra própria. A "área" do genius alterna entre notas e bateria. */
 export const portasDaFase = (mundoIdx, n) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n), ...DESAFIOS[n], desafio: true }] : TIPOS_FASE[n - 1].map((tipo, k) => ({ ...faseCfg(mundoIdx, n), tipo, area: (n + k + mundoIdx) % 2 ? 'bateria' : 'notas' })));
