@@ -608,6 +608,6 @@ async function start() {
   } catch { /* link comum: segue normal */ }
   startScroller();
   // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
-  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
+  startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });
   start();
 })();
