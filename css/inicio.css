@@ -114,5 +114,5 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .in-ganhar-q { margin: 0 0 10px; font: 700 15px "Hanken Grotesk", sans-serif; }
 .in-ganhar-h { margin: 6px 0 4px; font: 400 26px "Anton", sans-serif; text-transform: uppercase; }
 .in-ganhar-volta { background: none; border: 0; padding: 4px 0; font: 700 15px "Hanken Grotesk", sans-serif; color: #c81e2d; cursor: pointer; }
-/* a roleta no lugar da bateria do passe */
-.in-foto img[alt="roleta"] { width: 100%; height: 100%; margin: 0; padding: 8px; object-fit: contain; display: block; }
+/* roleta do card "roleta grátis diária": imagem da Bea */
+.in-roleta-ic { width: 72px !important; height: 72px !important; }
