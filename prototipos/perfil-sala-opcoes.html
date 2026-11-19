@@ -1,0 +1,52 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>perfil na sala · 3 opções</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e2d0;font-family:"Hanken Grotesk",sans-serif;color:#162146;padding:20px}
+h1{font:400 26px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 48px;font-size:14px}
+.row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.fone{width:300px;height:560px;border-radius:30px;background:#fff7e6;border:6px solid #162146;position:relative;overflow:hidden;box-shadow:6px 8px 0 rgba(22,33,70,.35)}
+.rot{position:absolute;top:-30px;left:0;font:700 13px "Hanken Grotesk"}.col{position:relative;padding-top:30px}
+.jogo{padding:14px}.jogo .nomes{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.chip{border:2px solid #162146;border-radius:99px;padding:5px 12px;font:700 13px "Hanken Grotesk";background:#fff;box-shadow:2px 3px 0 #162146;display:flex;gap:6px;align-items:center}
+.chip i{width:20px;height:20px;border-radius:50%;background:#c81e2d;display:inline-block;border:2px solid #162146}
+.chip.v i{background:#f2a91b}
+.tab{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 6px}.tab b{aspect-ratio:1;border:2px solid #162146;border-radius:10px;background:#fff;display:grid;place-items:center;font:400 30px "Anton"}
+.vel{position:absolute;inset:0;background:rgba(10,15,38,.55)}
+.sheet{position:absolute;left:0;right:0;bottom:0;padding:16px 16px 20px;border-radius:26px 26px 0 0}
+.x{position:absolute;right:12px;top:10px;width:30px;height:30px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font:700 14px "Hanken Grotesk"}
+.foto{display:grid;place-items:center;background:#f4d9a8;color:#7a5410;font:400 44px "Anton"}
+.fav{width:62px;text-align:center;font:700 10px/1.1 "Hanken Grotesk"}.fav b{display:grid;place-items:center;width:54px;height:54px;margin:0 auto 4px;border-radius:50%;font:400 22px "Anton"}
+.favs{display:flex;gap:8px}
+.lab{font:700 10px "Hanken Grotesk";letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px}
+/* A · passe dourado (o mesmo do Início) */
+.A{background:linear-gradient(135deg,#f9d27a 0,#e0a232 38%,#fbe3a3 55%,#c98a1e 100%);color:#2a1a05;height:330px}
+.A .foto{position:absolute;right:16px;top:44px;width:104px;height:128px;border-radius:14px;border:3px solid #2a1a05;box-shadow:3px 4px 0 rgba(42,26,5,.4)}
+.A h2{font:400 34px/1 "Anton";text-transform:uppercase;margin:26px 0 0;width:150px}
+.A .favs{position:absolute;left:14px;top:208px}.A .lab{position:absolute;left:18px;top:188px}
+.A .fav b{border:3px solid #2a1a05;background:#fff7e6;box-shadow:2px 3px 0 rgba(42,26,5,.4)}
+.A .fav{color:#2a1a05}
+/* B · palco à noite */
+.B{background:radial-gradient(120% 70% at 50% 0,#31408a,#162146 60%,#0a0f26);color:#fff7e6;height:352px;text-align:center}
+.B .foto{width:112px;height:112px;border-radius:50%;margin:6px auto 12px;border:4px solid #f2a91b;box-shadow:0 0 0 6px rgba(242,169,27,.18),0 0 34px rgba(242,169,27,.45)}
+.B h2{font:400 30px/1 "Anton";text-transform:uppercase;color:#f2a91b;margin:0 0 14px}
+.B .favs{justify-content:center}.B .fav b{background:rgba(255,255,255,.1);border:2px solid #f2a91b;color:#f2a91b}.B .lab{color:#f2a91b}
+/* C · cartão de fã (papel creme, estilo figurinha) */
+.C{background:#f3ecdc;color:#162146;height:344px;border-top:5px solid #c81e2d}
+.C .topo{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.C .foto{width:84px;height:84px;border-radius:16px;border:3px solid #162146;box-shadow:3px 4px 0 #c81e2d;flex:none}
+.C h2{font:400 28px/1 "Anton";text-transform:uppercase;margin:0}.C small{font:700 11px "Hanken Grotesk";color:#c81e2d}
+.C .lista{display:grid;gap:8px}.C .it{display:flex;gap:10px;align-items:center;background:#fff;border:2px solid #162146;border-radius:14px;padding:6px 10px;box-shadow:2px 3px 0 #162146;font:700 14px "Hanken Grotesk"}
+.C .it b{width:34px;height:34px;border-radius:50%;background:#c81e2d;color:#fff;display:grid;place-items:center;font:400 16px "Anton"}
+.C .lab{color:#c81e2d}
+</style></head><body>
+<h1>perfil na sala · 3 opções</h1>
+<p class="s">toque no nome do outro jogador (chip no topo da partida) e abre este cartão por cima do jogo. só aparece pra quem ligou "mostrar meu perfil na sala".</p>
+<div class="row">
+<div class="col"><span class="rot">A · passe dourado (igual ao Início)</span><div class="fone"><div class="jogo"><div class="nomes"><span class="chip"><i></i>você</span><span class="chip v"><i></i>Ana ›</span></div><div class="tab"><b>X</b><b></b><b>O</b><b></b><b>X</b><b></b><b></b><b>O</b><b></b></div></div><div class="vel"></div>
+<div class="sheet A"><span class="x">×</span><div class="foto">A</div><h2>Ana</h2><p class="lab">bandas e cantores favoritos</p><div class="favs"><div class="fav"><b>♪</b>Rita Lee</div><div class="fav"><b>♪</b>Beatles</div><div class="fav"><b>♪</b>Pitty</div></div></div></div></div>
+<div class="col"><span class="rot">B · palco à noite</span><div class="fone"><div class="jogo"><div class="nomes"><span class="chip"><i></i>você</span><span class="chip v"><i></i>Ana ›</span></div><div class="tab"><b>X</b><b></b><b>O</b><b></b><b>X</b><b></b><b></b><b>O</b><b></b></div></div><div class="vel"></div>
+<div class="sheet B"><span class="x">×</span><div class="foto">A</div><h2>Ana</h2><p class="lab">no repertório dela</p><div class="favs"><div class="fav"><b>♪</b>Rita Lee</div><div class="fav"><b>♪</b>Beatles</div><div class="fav"><b>♪</b>Pitty</div></div></div></div></div>
+<div class="col"><span class="rot">C · cartão de fã</span><div class="fone"><div class="jogo"><div class="nomes"><span class="chip"><i></i>você</span><span class="chip v"><i></i>Ana ›</span></div><div class="tab"><b>X</b><b></b><b>O</b><b></b><b>X</b><b></b><b></b><b>O</b><b></b></div></div><div class="vel"></div>
+<div class="sheet C"><span class="x">×</span><div class="topo"><div class="foto">A</div><div><h2>Ana</h2><small>jogando com você agora</small></div></div><p class="lab">3 favoritos</p><div class="lista"><div class="it"><b>1</b>Rita Lee</div><div class="it"><b>2</b>Beatles</div><div class="it"><b>3</b>Pitty</div></div></div></div></div>
+</div></body></html>
