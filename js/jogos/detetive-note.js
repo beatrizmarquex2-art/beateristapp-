@@ -17,9 +17,9 @@ import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
 import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
-const EMOJI_MODO = { comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
+const EMOJI_MODO = { figuras: '🎼', comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 const NOME = (m) => `mundo ${m.slice(1)}`;
-const NOME_ESTILO = (e) => (e === 'figuras' ? 'figuras' : `${EMOJI_MODO[e]} ${TEMAS[e].nome}`);
+
 // figuras SEM pauta: só as notas, hastes, barras e pausas (tira a linha, a clave e o travessão)
 const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o.y1 === o.y2 || (o.x1 === o.x2 && o.w === 2)))) });
 const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { width: 84, count: false, clef: false })); const hd = L.ops.find((o) => o.t === 'head');
@@ -99,7 +99,7 @@ export function mount(host) {
     const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
       h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
-      modo === 'm1' ? h('div', { class: 'jg-seg sm dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, NOME_ESTILO(e)))) : null,
+      modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, h('i', { 'aria-hidden': 'true' }, EMOJI_MODO[e]), h('span', {}, e)))) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: `dn-wrap${!TEMAS[est] ? ' sem' : ''}` }, !TEMAS[est] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),
