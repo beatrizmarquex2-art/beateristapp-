@@ -124,7 +124,7 @@ export function mountProgressionMap(host, cfg) {
   let regI = -1; let armed = false;
   const setRegion = (ci, sound) => {
     if (ci === regI || !chapters[ci]) return; regI = ci; const c = chapters[ci];
-    regionName.textContent = c.name; regionSub.textContent = c.sub; root.dataset.region = c.id;
+    regionName.textContent = c.name; regionSub.textContent = c.sub; root.dataset.region = c.id; head.classList.toggle('mp-longo', c.name.length > 18); // nome grande ocupa a linha de cima e os botões descem
     if (motion) { const r = head.querySelector('.mp-reg'); r.classList.remove('flip'); void r.offsetWidth; r.classList.add('flip'); }
     if (sound && armed) sfx.play('region');
   };

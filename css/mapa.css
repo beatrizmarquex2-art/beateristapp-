@@ -130,3 +130,5 @@ html.lite .mp-stk { animation: none; }
 .mp-gs { min-height: 16px; font-size: 13px; letter-spacing: 2px; color: var(--mp-yellow); }
 .mp-gt { font-size: 10px; line-height: 1.1; opacity: .85; text-align: center; max-width: 92px; }
 .mp-gcont { margin: 8px 14px calc(14px + env(safe-area-inset-bottom)); min-height: 48px; border: 3px solid var(--mp-cream); background: var(--mp-yellow); color: var(--mp-night); font: 800 16px var(--mp-pix); box-shadow: 0 4px 0 var(--mp-pink); cursor: pointer; }
+
+.mp-head.mp-longo { flex-wrap: wrap; } .mp-head.mp-longo .mp-reg { flex: 1 1 100%; } .mp-head.mp-longo .mp-snd { margin-left: auto; }

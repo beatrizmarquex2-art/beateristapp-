@@ -39,10 +39,11 @@ export function mount(host) {
       h('p', { class: 'rd-total' }, `★ ${totalEstrelas(e)}/${FASES.length * 24}`),
       box);
     // as fases agora são o mapa de discos (trilha, Paul e regiões); a estrela do disco = 1 a cada 8 das 24 do Rudimentix
-    const levels = FASES.map((f, i) => ({ id: `rd:${f.n}`, index: i + 1, label: String(f.n), tag: '', boss: i === FASES.length - 1 }));
+    const CURTO = { 6: 'paradiddle duplo dos dois lados' }; // nomes da Bea embaixo de cada disco (toque simples, toque duplo…)
+    const levels = FASES.map((f, i) => ({ id: `rd:${f.n}`, index: i + 1, label: String(f.n), tag: CURTO[f.n] || f.nome, boss: i === FASES.length - 1 }));
     const nOf = (id) => Number(id.split(':')[1]);
     off = mountProgressionMap(box, { gameId: 'rudimentos', levels, profileId: 'rudimentos', unitName: 'Fase', tier: 0, stars: { have: totalEstrelas(e), max: FASES.length * 24 },
-      theme: temaDoMundo('vulcao', 'Rudimentix', [['maos', 'Sala das Mãos', 'E e D alternadas'], ['dobras', 'Palco das Dobras', 'duplos e paradiddles']]),
+      theme: temaDoMundo('vulcao', 'Rudimentix', [['maos', 'Mãos alternadas, dobras e paradiddles', 'toque simples, duplo…'], ['combina', 'Combinações', 'paradiddle triplo e mais']]),
       starsOf: (id) => Math.min(3, Math.ceil(estrelas(e, nOf(id)) / 8)), unlockedOf: (id) => liberada(e, nOf(id)), lockedMsg: 'ganhe 1 estrela na fase anterior', onOpen: (lv) => jogo(FASES[lv.index - 1]) });
   };
 
