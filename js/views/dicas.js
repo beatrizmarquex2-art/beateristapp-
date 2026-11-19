@@ -79,7 +79,8 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   if (free && cacaUsadas() >= GRATIS.caca) { box.replaceChildren(avisoCodigo(`você já jogou as ${GRATIS.caca} partidas grátis de caça-palavras. com o código de aluno tem caça-palavras sem limite, quiz e cruzadinha com as dicas do método.`)); return; }
   let counted = false; // a partida grátis conta quando a aluna faz a primeira jogada
   const pick = D ? D.pick : T.easyPick(free ? termItems() : items(), 6); const byWord = Object.fromEntries(pick.map((x) => [x.w, x]));
-  const ws = T.wordsearch(pick.map((x) => x.w), (D && D.size) || 9, D ? D.mk() : Math.random, D && D.dirs === 1 ? [[1, 0], [0, 1], [1, 1]] : D && D.dirs === 2 ? T.DIRS : T.EASY_DIRS); // D.size / D.dirs: nível da Fuga (0 = → ↓, 1 = + ↘, 2 = todas) const words = ws.placed.map((p) => p.w);
+  const ws = T.wordsearch(pick.map((x) => x.w), (D && D.size) || 9, D ? D.mk() : Math.random, D && D.dirs === 1 ? [[1, 0], [0, 1], [1, 1]] : D && D.dirs === 2 ? T.DIRS : T.EASY_DIRS); // D.size / D.dirs: nível da Fuga (0 = → ↓, 1 = + ↘, 2 = todas)
+  const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let erros = 0; let pagou = false;
   // 💡 dica (2 por grade): a 1ª mostra só a SETINHA (pra que lado a palavra vai) e a 2ª a INICIAL (pisca a 1ª letra). Cada dica tira 1 ★ da partida (3 → 2 → 1, nunca abaixo de 1).
