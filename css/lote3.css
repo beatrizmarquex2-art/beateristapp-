@@ -1127,3 +1127,6 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .pf-onde { grid-column: 1 / -1; display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px !important; margin-top: 4px !important; }
 .pf-todos { margin: 0 !important; align-items: flex-start !important; gap: 8px !important; }
 .pf-todos input { margin-top: 2px; }
+/* as 2 opções da foto: uma embaixo da outra, na largura toda, com o texto corrido (a dica continua na mesma linha) */
+.pf-onde { grid-template-columns: 1fr !important; gap: 8px !important; }
+.pf-todos span { display: block; } .pf-todos small { display: inline !important; margin: 0 0 0 6px !important; }
