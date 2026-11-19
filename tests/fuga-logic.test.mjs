@@ -1,5 +1,5 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { MUNDOS, FASES, tipoDa, faseCfg, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
+import { MUNDOS, FASES, tipoDa, faseCfg, qtdPortas, portasDaFase, estrelasFase, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
 test('3 mundos de 12 fases, 36 ★ cada; as fases giram quiz → caça → cruzadinha', () => {
   assert.deepEqual(MUNDOS.map((m) => m.id), ['estudio', 'vulcao', 'espaco']); assert.equal(FASES * 3, 36);
   assert.deepEqual([1, 2, 3, 4, 5, 6].map(tipoDa), ['quiz', 'caca', 'cruz', 'quiz', 'caca', 'cruz']);
@@ -16,4 +16,9 @@ test('progresso: 1ª fase aberta, as outras só depois de 1 ★; mundo 2 só com
   est[idFase('estudio', 1)] = 1; assert.equal(faseAberta(est, 'estudio', 2), true); assert.equal(estMundo(est, 'estudio'), 1);
   assert.equal(mundoLiberado(est, 'vulcao'), false); for (let n = 1; n <= FASES; n++) est[idFase('estudio', n)] = 1;
   assert.equal(mundoLiberado(est, 'vulcao'), true); assert.equal(mundoLiberado(est, 'espaco'), false); assert.equal(estOf({ 'estudio:1': 9 }, 'estudio', 1), 3);
+});
+test('fase com várias portas: a 1ª tem 2, depois 3 e 4; as portas giram quiz → caça → cruzadinha → quiz; ★ da fase = média das portas (1 a 3)', () => {
+  assert.deepEqual([1, 2, 4, 5, 12].map(qtdPortas), [2, 3, 3, 4, 4]);
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['quiz', 'caca']); assert.deepEqual(portasDaFase(0, 5).map((p) => p.tipo), ['quiz', 'caca', 'cruz', 'quiz']);
+  assert.equal(estrelasFase([3, 3, 3]), 3); assert.equal(estrelasFase([3, 2]), 3); assert.equal(estrelasFase([2, 1, 1]), 1); assert.equal(estrelasFase([1, 1]), 1); assert.equal(estrelasFase([]), 0);
 });
