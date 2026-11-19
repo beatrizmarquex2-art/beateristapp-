@@ -7,6 +7,9 @@ import * as ESTRELAS from '../figurinhas/estrelas.js';
 import * as D from '../figurinhas/dono.js';
 import { sheet } from '../ui.js';
 import * as FAV from '../inicio-fav.js';
+import * as A from '../figurinhas/acesso.js';
+import * as L from '../figurinhas/album-logic.js';
+import * as store from '../store.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -37,9 +40,19 @@ const lugar = () => { try { const u = JSON.parse(localStorage.getItem(LUGAR_KEY)
 const haQuanto = (t) => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); if (m < 2) return 'agora há pouco'; if (m < 60) return `há ${m} min`; const hh = Math.round(m / 60); if (hh < 24) return `há ${hh} h`; const d = Math.round(hh / 24); return d === 1 ? 'ontem' : `há ${d} dias`; };
 
 /* ---------- bandas e cantores favoritos (das figurinhas que o aluno já tem) ---------- */
-let catCache = null;
+let catCache = null; let albumTrazido = false;
+/** Quem tem código: traz as figurinhas coladas da nuvem (as de outro celular) e junta com as daqui, pra escolher favoritos sem abrir o Álbum antes. */
+async function trazerAlbum() {
+  if (albumTrazido) return; albumTrazido = true;
+  try {
+    const c = CODE.saved(); if (!c) return;
+    const r = await Promise.race([A.entrar(c), new Promise((_, no) => setTimeout(() => no(new Error('demorou')), 4000))]);
+    if (r && r.ok && r.estado) await store.upsert('figurinhas', D.albumId(), L.mergeStates({ ...L.emptyState(), ...D.albumDados() }, r.estado));
+  } catch { /* sem internet: fica com as daqui */ }
+}
 /** `todas`: foto e rosto de cada banda/cantor do catálogo (pra mostrar um favorito que veio de outro celular); `ganhas`: só as que este aluno já tem. */
 async function figurinhasGanhas() {
+  await trazerAlbum();
   catCache ||= await fetch('assets/figurinhas/catalogo.json').then((r) => r.json()).catch(() => []);
   const st = D.albumDados(); const tem = new Set([...Object.keys(st.pasted || {}), ...Object.keys(st.inv || {}).filter((c) => st.inv[c] > 0)]);
   const todas = new Map(); const por = new Map(); // artista -> { nome, foto, rosto, qtd }
