@@ -1,6 +1,6 @@
 // A Fuga do Estúdio: o Paul ficou trancado no estúdio e só sai abrindo 3 portas em ordem.
 //  porta 1 · sala de controle = quiz (5 perguntas, precisa de 3 certas) · porta 2 · cabine = caça-palavras · porta 3 · sala de ensaio = cruzadinha.
-// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); no fim paga 3 ★ (limite de 30 ★ por dia, como todo jogo).
+// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); no fim paga 3 ★ (limite de 60 ★ por dia, como todo jogo).
 import { h } from '../util.js';
 import { banner } from '../ui.js';
 import * as FB from '../feedback.js';
@@ -77,7 +77,7 @@ ${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="
   const vitoria = () => {
     const ms = Date.now() - t0; const rec = melhor(); const novo = !rec || ms < rec; if (novo) { try { localStorage.setItem(KB, String(ms)); } catch { /* sem armazenamento */ } }
     ganhou('fuga', 3).catch(() => {});
-    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, '+ até 3 ★ (limite de 30 por dia)'),
+    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, '+ até 3 ★ (limite de 60 por dia)'),
       h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'fugir de novo'), h('a', { class: 'btn ghost wide', href: '#/jogos' }, 'voltar pros jogos'));
     wrap.replaceChildren(topo(), portas(), tela); FB.great(tela);
   };

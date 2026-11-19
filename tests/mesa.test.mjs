@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { contar, LIMITE_DIA, starsPct, starsErros, ENSINAM } from '../js/figurinhas/mesa-logic.js';
-test('estrelas dos jogos de mesa: 1 por vitória contra o Paul, limite de 30 por jogo por dia', () => {
+test('estrelas dos jogos de mesa: 1 por vitória contra o Paul, limite de 60 por jogo por dia', () => {
   let m = null; let ganhas = 0;
-  for (let i = 0; i < 40; i++) { const r = contar(m, 'velha', '2026-11-06'); m = r.mesa; ganhas += r.ganhou; }
-  assert.equal(ganhas, LIMITE_DIA); assert.equal(m.total, 30);
+  for (let i = 0; i < 80; i++) { const r = contar(m, 'velha', '2026-11-06'); m = r.mesa; ganhas += r.ganhou; }
+  assert.equal(ganhas, LIMITE_DIA); assert.equal(m.total, 60); assert.equal(LIMITE_DIA, 60);
   const o = contar(m, 'cartas', '2026-11-06'); assert.equal(o.ganhou, 1, 'cada jogo tem o seu limite');
   const amanha = contar(o.mesa, 'velha', '2026-11-07'); assert.equal(amanha.ganhou, 1, 'no dia seguinte volta a contar');
 });
@@ -39,10 +39,21 @@ test('anti-farm: cada chave (música/nível) paga até 3 ★ na vida, só a dife
   let q = pagarChave({}, 'teoria|x', 1); assert.equal(q.novas, 1); q = pagarChave(q.pago, 'teoria|x', 2); assert.equal(q.novas, 1, 'melhorou: paga só a diferença'); assert.equal(pagarChave(q.pago, 'teoria|x', 2).novas, 0);
   assert.equal(pagarChave({}, 'k', 9).novas, 3, 'nunca passa de 3');
 });
-test('jogos de aprender não têm o limite de 30 por dia; os de mesa têm', async () => {
+test('jogos de aprender não têm o limite de 60 por dia; os de mesa têm', async () => {
   const { contar: c, APRENDER } = await import('../js/figurinhas/mesa-logic.js');
   let m; let ganhas = 0; for (let i = 0; i < 50; i++) { const r = c(m, 'quiz', '2026-11-13', 1); m = r.mesa; ganhas += r.ganhou; } assert.equal(ganhas, 50, 'quiz: 50 estrelas no mesmo dia');
-  let v; let g2 = 0; for (let i = 0; i < 50; i++) { const r = c(v, 'velha', '2026-11-13', 1); v = r.mesa; g2 += r.ganhou; } assert.equal(g2, 30, 'jogo da velha: trava em 30');
+  let v; let g2 = 0; for (let i = 0; i < 80; i++) { const r = c(v, 'velha', '2026-11-13', 1); v = r.mesa; g2 += r.ganhou; } assert.equal(g2, 60, 'jogo da velha: trava em 60');
   assert.ok(APRENDER.includes('rudimentos') && APRENDER.includes('toca') && !APRENDER.includes('velha') && !APRENDER.includes('memoria') && !APRENDER.includes('quebra'));
   assert.equal(c(undefined, 'rudimentos', '2026-11-13', 10).ganhou, 10);
+});
+
+test('o aviso sabe quando falta pouco e quando bateu o limite', () => {
+  let m = null; let r;
+  for (let i = 0; i < 54; i++) { r = contar(m, 'stop', '2026-11-20', 1); m = r.mesa; }
+  assert.equal(r.resta, 6); r = contar(m, 'stop', '2026-11-20', 1); m = r.mesa; assert.equal(r.resta, 5);
+  for (let i = 0; i < 5; i++) { r = contar(m, 'stop', '2026-11-20', 1); m = r.mesa; }
+  assert.equal(r.resta, 0); assert.equal(r.ganhou, 1);
+  const dps = contar(m, 'stop', '2026-11-20', 3); assert.equal(dps.ganhou, 0); assert.equal(dps.resta, 0); assert.equal(dps.pediu, 3);
+  // quem pede 3 ★ com 2 sobrando recebe só 2
+  let q = null; for (let i = 0; i < 58; i++) q = contar(q, 'cara', '2026-11-20', 1).mesa; const parc = contar(q, 'cara', '2026-11-20', 3); assert.equal(parc.ganhou, 2); assert.equal(parc.resta, 0);
 });
