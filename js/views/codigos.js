@@ -152,6 +152,8 @@ export function mount(host) {
   const interruptor = (on, rotulo, onToggle, aria) => h('button', { type: 'button', role: 'switch', 'aria-checked': String(on), 'aria-label': aria, class: `cod-sw${on ? ' on' : ''}`, onclick: onToggle }, h('span', { class: 'cod-sw-t', 'aria-hidden': 'true' }), rotulo ? h('span', {}, rotulo) : null);
   const nomeIn = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome (de quem vai usar)', autocomplete: 'off', 'aria-label': 'Nome' });
   const codeEl = h('p', { class: 'rg-code cod-big', 'aria-live': 'polite' }, code);
+  let modoNovo = 'gerar'; // 'gerar' (código novo) ou 'importar' (o código que o ALUNO gerou no app dele): o mesmo card, os mesmos campos
+  const codeIn = h('input', { class: 'field cod-imp-in', type: 'text', maxlength: 12, placeholder: 'código do aluno', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código que o aluno gerou' });
   const status = h('p', { class: 'muted', role: 'status' });
   const novoCard = h('section', { class: 'card pad cod-novo' });
   const listaBox = h('div', { class: 'cod-lista' });
@@ -162,6 +164,17 @@ export function mount(host) {
     try { await CODE.criarCodigo({ code, categoria: cat, dias, nome: nomeIn.value.trim(), ativo, jogos: abas.length ? rotasDe(abas) : null }); salvo = true; status.textContent = `código salvo ✓ (${nomeCat(cat)} · ${CODE.nomeTempo(dias)} · ${resumoAbas()}${ativo ? '' : ' · desativado'})`; await carrega(); return true; }
     catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra gerar' : e.message === '409' ? 'esse código já existe: gerei outro, toque de novo' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); if (e.message === '409') sorteia(); return false; }
     finally { busy = false; desenhaLista(); }
+  };
+  const importarAgora = async () => {
+    const c = CODE.norm(codeIn.value); if (c.length < 4) { status.textContent = 'digite o código do aluno (4 a 12 letras e números).'; return; }
+    if (busy) return; busy = true; status.textContent = 'importando…';
+    const nomeNovo = nomeIn.value.trim(); const abasRotas = abas.length ? rotasDe(abas) : null;
+    try {
+      const ja = list.find((x) => x.code === c);
+      if (ja) await CODE.alterar(c, { nome: nomeNovo || ja.nome || '', categoria: cat, dias, ativo, jogos: abasRotas }); else await CODE.criarCodigo({ code: c, categoria: cat, dias, nome: nomeNovo, ativo, jogos: abasRotas });
+      status.textContent = `${nomeNovo || c} ${ja ? 'atualizado' : 'importado'} ✓ (${nomeCat(cat)} · ${CODE.nomeTempo(dias)} · ${resumoAbas()}${ativo ? '' : ' · desativado'}) já está na lista aqui embaixo`; codeIn.value = ''; nomeIn.value = ''; await carrega();
+    } catch (e) { status.textContent = ''; toast(e.message === 'entre no app' ? 'entre no app pra importar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
+    busy = false; desenhaLista();
   };
   const copiar = async () => { if (!(await salvar())) return; await copy(code, 'código copiado'); };
   const compartilhar = async () => {
@@ -179,14 +192,17 @@ export function mount(host) {
       abasAberto ? h('div', { class: 'cod-abas-lista', role: 'group', 'aria-label': 'Abas liberadas' }, box('todas', 'Todas as abas', !abas.length), ...ABAS.map(([id, rot]) => box(id, rot.replace(' (tocar)', '').replace('Álbum, roleta e perfil', 'Álbum'), abas.includes(id)))) : null);
   };
   const desenhaNovo = () => novoCard.replaceChildren(
-    h('div', { class: 'row between' }, h('b', {}, 'novo código'), h('button', { class: 'btn small ghost', type: 'button', onclick: novoOutro }, '↻ outro código')), codeEl,
+    h('div', { class: 'row between' }, h('b', {}, 'novo código'), modoNovo === 'gerar' ? h('button', { class: 'btn small ghost', type: 'button', onclick: novoOutro }, '↻ outro código') : null),
+    h('div', { class: 'cod-modo', role: 'group', 'aria-label': 'gerar um código novo ou importar o do aluno' }, ...[['gerar', 'gerar novo'], ['importar', 'importar do aluno']].map(([id, rot]) => h('button', { type: 'button', class: `cod-modo-bt${modoNovo === id ? ' on' : ''}`, 'aria-pressed': String(modoNovo === id), onclick: () => { modoNovo = id; status.textContent = ''; desenhaNovo(); } }, rot))),
+    modoNovo === 'gerar' ? codeEl : h('label', { class: 'field' }, h('span', {}, 'código do aluno (ele toca em "gerar meu código" no app dele e te fala)'), codeIn),
     h('div', { class: 'cod-form' },
       h('div', { class: 'field' }, h('span', {}, 'tipo'), tiles(CODE.CATEGORIAS, cat, (v) => { cat = v; salvo = false; status.textContent = ''; desenhaNovo(); }, 'Tipo do código', 'data-tipo')),
       h('div', { class: 'field' }, h('span', {}, 'tempo de acesso'), tiles(CODE.TEMPOS, dias, (v) => { dias = Number(v); salvo = false; status.textContent = ''; desenhaNovo(); }, 'Tempo de acesso', 'data-tempo')),
       h('div', { class: 'field' }, h('span', {}, 'abas liberadas'), pickAbas()),
       h('label', { class: 'field' }, h('span', {}, 'nome'), nomeIn)),
-    h('div', { class: 'cod-imp' }, h('span', {}, 'importar código'), interruptor(ativo, ativo ? 'ativado' : 'desativado', () => { ativo = !ativo; salvo = false; status.textContent = ''; desenhaNovo(); }, 'Importar código')),
-    h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', disabled: busy, onclick: copiar }, '📋 copiar código'), h('button', { class: 'btn', type: 'button', disabled: busy, onclick: compartilhar }, '📤 compartilhar')),
+    h('div', { class: 'cod-imp' }, h('span', {}, 'código ativo'), interruptor(ativo, ativo ? 'ativado' : 'desativado', () => { ativo = !ativo; salvo = false; status.textContent = ''; desenhaNovo(); }, 'Importar código')),
+    modoNovo === 'gerar' ? h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', disabled: busy, onclick: copiar }, '📋 copiar código'), h('button', { class: 'btn', type: 'button', disabled: busy, onclick: compartilhar }, '📤 compartilhar'))
+      : h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', disabled: busy, onclick: importarAgora }, 'importar agora')),
     status);
   const tempoDe = (x) => (x.dias ? CODE.nomeTempo(x.dias) : '—');
   const venc = (x) => (x.expira_em ? `vence ${dia(x.expira_em)}` : x.tipo === 'passe' ? 'conta a partir do 1º uso' : '—');
@@ -195,6 +211,31 @@ export function mount(host) {
   const mudarTempo = (x) => sheet(`tempo de acesso · ${x.nome || x.code}`, (close) => { let v = x.dias || 365; const s = sel(CODE.TEMPOS, v, (n) => { v = Number(n); }, 'Novo tempo de acesso');
     return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, x.expira_em || x.iniciado_em ? 'o código já começou a contar: o novo tempo vale a partir de hoje.' : 'o código ainda não foi usado: a contagem do novo tempo começa no 1º uso.'), h('label', { class: 'field' }, h('span', {}, 'tempo'), s),
       h('div', { class: 'row end' }, h('button', { class: 'btn ghost', type: 'button', onclick: close }, 'cancelar'), h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); run(() => CODE.mudarTempo(x, v), 'tempo atualizado ✓'); } }, 'salvar'))); });
+  /** Toca no nome: muda nome, tipo, tempo, abas e se está ativo (o código em si não muda). */
+  function editarCodigo(x) {
+    let nome = x.nome || ''; let tipo = x.categoria || 'aluno'; let di = x.dias || 365; let on = !!x.ativo; let ab = Array.isArray(x.jogos) ? abasDe(x.jogos) : []; // [] = todas as abas
+    sheet(`editar · ${x.nome || x.code}`, (close) => {
+      const box = h('div', { class: 'sheet-body cod-edit' });
+      const campoNome = h('input', { class: 'field', type: 'text', maxlength: 50, value: nome, autocomplete: 'off', 'aria-label': 'Nome', placeholder: 'nome' }); campoNome.addEventListener('input', () => { nome = campoNome.value; });
+      const marca = (id) => { if (id === 'todas') ab = []; else { ab = ab.includes(id) ? ab.filter((y) => y !== id) : [...ab, id]; if (ab.length === ABAS.length) ab = []; } desenha(); };
+      const caixa = (id, rot, marcado) => h('label', { class: 'jg-chk cod-aba' }, h('input', { type: 'checkbox', checked: marcado, onchange: () => marca(id) }), ` ${rot}`);
+      const salvarEdicao = () => {
+        const patch = { nome: nome.trim(), categoria: tipo, ativo: on, jogos: ab.length ? rotasDe(ab) : null };
+        if (di !== (x.dias || 365)) { patch.dias = di; if (x.expira_em || x.iniciado_em) patch.expira_em = new Date(Date.now() + di * 864e5).toISOString(); }
+        close(); run(() => CODE.alterar(x.code, patch), 'salvo ✓');
+      };
+      const desenha = () => { campoNome.value = nome; box.replaceChildren(
+        h('p', { class: 'rg-code cod-big' }, x.code),
+        h('label', { class: 'field' }, h('span', {}, 'nome'), campoNome),
+        h('div', { class: 'field' }, h('span', {}, 'tipo'), tiles(CODE.CATEGORIAS, tipo, (v) => { tipo = v; desenha(); }, 'Tipo do código', 'data-tipo')),
+        h('div', { class: 'field' }, h('span', {}, 'tempo de acesso'), tiles(CODE.TEMPOS, di, (v) => { di = Number(v); desenha(); }, 'Tempo de acesso', 'data-tempo'),
+          h('small', { class: 'muted' }, x.expira_em || x.iniciado_em ? 'já começou a contar: se mudar o tempo, vale a partir de hoje.' : 'ainda não foi usado: a contagem começa no 1º uso.')),
+        h('div', { class: 'field' }, h('span', {}, 'abas liberadas'), h('div', { class: 'cod-abas-lista', role: 'group', 'aria-label': 'Abas liberadas' }, caixa('todas', 'Todas as abas', !ab.length), ...ABAS.map(([id, rot]) => caixa(id, rot.replace(' (tocar)', '').replace('Álbum, roleta e perfil', 'Álbum'), ab.includes(id))))),
+        h('div', { class: 'cod-imp' }, h('span', {}, 'código ativo'), interruptor(on, on ? 'ativado' : 'desativado', () => { on = !on; desenha(); }, 'Código ativo')),
+        h('div', { class: 'row end' }, h('button', { class: 'btn ghost', type: 'button', onclick: close }, 'cancelar'), h('button', { class: 'btn primary', type: 'button', onclick: salvarEdicao }, 'salvar'))); };
+      desenha(); return box;
+    });
+  }
   const msgAluno = (x) => `oi${x.nome ? ` ${x.nome.split(' ')[0]}` : ''}! seu código de acesso da Beaterista é ${x.code}\nentre em ${SITE} e digite o código em "já sou aluno" (ou toque em "tenho código" no app). 🥁`;
   const mandar = (x) => window.open(`https://wa.me/?text=${encodeURIComponent(msgAluno(x))}`, '_blank', 'noopener');
   const porNome = (a, b) => ((a.nome || '\uffff').toLowerCase()).localeCompare((b.nome || '\uffff').toLowerCase(), 'pt');
@@ -203,7 +244,7 @@ export function mount(host) {
     const topo = h('p', { class: 'muted' }, `${rows.length} de ${list.length} código${list.length === 1 ? '' : 's'} · ${n} ativo${n === 1 ? '' : 's'}`);
     if (modo === 'lista') {
       listaBox.replaceChildren(topo, rows.length ? h('ul', { class: 'cod-simples' }, ...rows.slice().sort(porNome).map((x) => h('li', { class: x.ativo ? '' : 'off' },
-        h('span', { class: 'cod-s-nome' }, x.nome || 'sem nome', x.ativo ? null : h('small', {}, ' · desativado')),
+        h('button', { type: 'button', class: 'cod-s-nome cod-nome-bt', 'aria-label': `editar ${x.nome || x.code}`, onclick: () => editarCodigo(x) }, x.nome || 'sem nome', x.ativo ? null : h('small', {}, ' · desativado'), h('i', { 'aria-hidden': 'true' }, ' ✎')),
         h('b', { class: 'rg-code cod-s-code' }, x.code),
         h('span', { class: 'cod-s-bt' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => copy(x.code, 'código copiado') }, 'copiar'), h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `mandar o código pra ${x.nome || x.code} no WhatsApp`, onclick: () => mandar(x) }, 'whats'))))) : h('p', { class: 'muted' }, 'nenhum código com esse filtro.'));
       return;
@@ -211,31 +252,13 @@ export function mount(host) {
     listaBox.replaceChildren(topo,
       ...(rows.length ? rows.map((x) => h('article', { class: `cod-item${x.ativo ? '' : ' off'}` },
         h('div', { class: 'cod-item-top' }, h('span', { class: `cod-av c-${x.categoria || 'aluno'}`, 'aria-hidden': 'true' }, (x.nome || x.code)[0].toUpperCase()),
-          h('div', { class: 'cod-item-id' }, h('b', {}, x.nome || 'sem nome'), h('b', { class: 'rg-code cod-item-code' }, x.code), h('small', { class: 'muted' }, `${tempoDe(x)} · ${venc(x)}`)),
+          h('div', { class: 'cod-item-id' }, h('button', { type: 'button', class: 'cod-nome-bt', 'aria-label': `editar ${x.nome || x.code}`, onclick: () => editarCodigo(x) }, x.nome || 'sem nome', h('i', { 'aria-hidden': 'true' }, ' ✎')), h('b', { class: 'rg-code cod-item-code' }, x.code), h('small', { class: 'muted' }, `${tempoDe(x)} · ${venc(x)}`)),
           h('span', { class: `cod-tag c-${x.categoria || 'aluno'}` }, nomeCat(x.categoria || 'aluno')),
           interruptor(!!x.ativo, '', () => run(() => CODE.alterar(x.code, { ativo: !x.ativo }), x.ativo ? 'desativado' : 'ativado ✓'), `${x.ativo ? 'Desativar' : 'Ativar'} ${x.nome || x.code}`)),
         h('small', { class: 'muted cod-item-meta' }, `${x.usos ?? 0} uso${x.usos === 1 ? '' : 's'} · ${Array.isArray(x.jogos) && x.jogos.length ? ABAS.filter((a) => abasDe(x.jogos).includes(a[0])).map((a) => a[1].replace(' (tocar)', '').replace('Álbum, roleta e perfil', 'Álbum')).join(', ') : 'todas as abas'}`),
         h('div', { class: 'row cod-item-act' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => copy(x.code, 'código copiado') }, 'copiar'), h('button', { class: 'btn small ghost', type: 'button', disabled: busy, onclick: () => mudarTempo(x) }, 'mudar tempo')))) : [h('p', { class: 'empty muted' }, list.length ? 'nenhum código com esse filtro.' : 'nenhum código ainda.')]));
   };
   const busca = h('input', { class: 'field', type: 'search', placeholder: 'procurar nome ou código', 'aria-label': 'Procurar código' }); busca.addEventListener('input', () => { q = busca.value; desenhaLista(); });
-  // importar o código que o ALUNO gerou ("gerar meu código" no app dele): digita nome + código e toca em "importar agora"; ele entra na lista de baixo
-  const impNome = h('input', { class: 'field', type: 'text', maxlength: 50, placeholder: 'nome do aluno', autocomplete: 'off', 'aria-label': 'Nome do aluno' });
-  const impCod = h('input', { class: 'field cod-imp-in', type: 'text', maxlength: 12, placeholder: 'código do aluno', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código que o aluno gerou' });
-  const impMsg = h('p', { class: 'muted', role: 'status', 'aria-live': 'polite' });
-  const importarAgora = async () => {
-    const c = CODE.norm(impCod.value); const nome = impNome.value.trim();
-    if (c.length < 4) { impMsg.textContent = 'digite o código do aluno (4 a 12 letras e números).'; return; }
-    const ja = list.find((x) => x.code === c); if (ja && !nome) { impMsg.textContent = `esse código já está na lista (${ja.nome || 'sem nome'}).`; return; }
-    if (busy) return; busy = true; impMsg.textContent = 'importando…';
-    try { await CODE.importar([{ code: c, nome }]); impMsg.textContent = `${nome || c} importado ✓ já está na lista aqui embaixo (código ${c})`; impNome.value = ''; impCod.value = ''; await carrega(); }
-    catch (e) { impMsg.textContent = ''; toast(e.message === 'entre no app' ? 'entre no app pra importar' : `não deu (${e.message})`, { id: 'cod-err', ms: 3500 }); }
-    busy = false; desenhaLista();
-  };
-  impCod.addEventListener('keydown', (e) => { if (e.key === 'Enter') importarAgora(); });
-  const importCard = h('section', { class: 'card pad cod-importar' }, h('b', {}, 'importar código do aluno'),
-    h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. digite aqui e toque em importar agora: ele libera o app do aluno e entra na lista abaixo (pra você achar quando esquecerem).'),
-    h('label', { class: 'field' }, h('span', {}, 'nome'), impNome), h('label', { class: 'field' }, h('span', {}, 'código'), impCod),
-    h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: importarAgora }, 'importar agora')), impMsg);
   const abas2 = h('div', { class: 'cod-modo', role: 'group', 'aria-label': 'jeito de ver a lista' }, ...[['lista', 'lista simples'], ['cartoes', 'detalhada']].map(([id, rot]) => h('button', { type: 'button', class: `cod-modo-bt${modo === id ? ' on' : ''}`, 'aria-pressed': String(modo === id), 'data-modo': id, onclick: (e) => { modo = id; abas2.querySelectorAll('button').forEach((b) => { const on = b.dataset.modo === modo; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); desenhaLista(); } }, rot)));
   const copiarTudo = () => copy(['nome\tcódigo', ...list.slice().sort(porNome).map((x) => `${x.nome || ''}\t${x.code}`)].join('\n'), 'lista copiada (cola na planilha)');
   const listaCard = h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'códigos dos alunos'), h('button', { class: 'btn small ghost', type: 'button', onclick: copiarTudo }, 'copiar tudo')), abas2, busca,
@@ -245,7 +268,7 @@ export function mount(host) {
       sel([['', 'ativos e desativados'], ['ativo', 'só ativos'], ['off', 'só desativados']], fAtivo, (v) => { fAtivo = v; desenhaLista(); }, 'Filtrar por situação')), listaBox);
   async function carrega() { try { list = await CODE.listar(); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 3500 }); } if (!gone) desenhaLista(); }
   const mais = h('details', { class: 'card pad cod-mais' }, h('summary', {}, 'mais ferramentas: importar lista, passe anual, test drive'), h('div', { class: 'cod-mais-in' }));
-  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, novoCard, importCard, listaCard, mais));
+  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, novoCard, listaCard, mais));
   let legado = null; mais.addEventListener('toggle', () => { if (mais.open && !legado) legado = montarLegado(mais.querySelector('.cod-mais-in'), { semBanner: true }); });
   desenhaNovo(); desenhaLista(); carrega().then(() => { if (!salvo && !list.some((x) => x.code === code)) return; });
   return () => { gone = true; if (typeof legado === 'function') legado(); };

@@ -1761,3 +1761,7 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .cod-s-code { grid-area: code; font: 800 18px/1.1 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .16em; user-select: all; }
 .cod-s-bt { grid-area: bt; display: flex; gap: 6px; }
 .home-atu-row { display: flex; justify-content: center; padding: 14px 0 22px; }
+/* nome clicável (editar) e folha de edição */
+.cod-nome-bt { background: none; border: 0; padding: 0; margin: 0; font: inherit; font-weight: 700; color: inherit; text-align: left; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.cod-nome-bt i { font-style: normal; opacity: .55; }
+.cod-edit { display: grid; gap: 14px; }
