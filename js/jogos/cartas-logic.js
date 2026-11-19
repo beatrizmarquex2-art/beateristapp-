@@ -60,7 +60,16 @@ export function canPlayCard(g, card, hand) {
 /** Cartas que ainda dá para comprar (monte + descarte reciclável sem o topo). */
 export const available = (g) => g.draw.length + Math.max(0, g.discard.length - 1);
 /** Jogador que vem `k` passos depois de `p`, no sentido atual. */
-export const adv = (g, p, k = 1) => (((p + g.dir * k) % g.n) + g.n) % g.n;
+/** Lugares que saíram da partida (a maioria da sala decidiu continuar sem eles). Vazio fora das salas. */
+export const foraDe = (g) => (Array.isArray(g.fora) ? g.fora : []);
+/** Quantos ainda jogam (2 a 4 menos quem saiu). */
+export const ativos = (g) => g.n - foraDe(g).length;
+/** Jogador que vem `k` passos depois de `p`, no sentido atual, pulando quem saiu da partida. */
+export const adv = (g, p, k = 1) => {
+  const fora = foraDe(g); let q = p;
+  for (let i = 0; i < k; i++) { for (let t = 0; t < g.n; t++) { q = (((q + g.dir) % g.n) + g.n) % g.n; if (!fora.includes(q)) break; } }
+  return q;
+};
 
 export function newGame({ mode = 'paul', players = 2, rnd = Math.random, un = false, legacy = false } = {}) {
   const n = Math.max(2, Math.min(4, players | 0 || 2)); // contra o computador, no mesmo celular e em sala por código (2 a 4 celulares): 2 a 4 jogadores
@@ -105,7 +114,7 @@ export function applyPlay(g0, p, cardId, color, rnd = Math.random) {
   if (card.kind === 'pular') { ev.victim = first; nxt = adv(g, p, 2); }
   else if (card.kind === 'inverter') {
     g.dir = -g.dir;
-    if (g.n === 2) { ev.victim = first; nxt = p; } else nxt = adv(g, p, 1);
+    if (ativos(g) === 2) { ev.victim = first; nxt = p; } else nxt = adv(g, p, 1); // com só 2 na mesa o inverter vale como pular
   } else if (g.un && (card.kind === 'mais2' || card.kind === 'mais4')) {
     // UN🚫: o +2 e o +4 acumulam; quem recebe responde com o mesmo tipo ou compra tudo
     const add = card.kind === 'mais2' ? 2 : 4; g.pend = { kind: card.kind, n: (g.pend ? g.pend.n : 0) + add };
@@ -146,11 +155,27 @@ export function applyPass(g0, p) {
   const g = clone(g0); if (g.un) fechaJanelaUno(g, p);
   if (g.drawn) { g.drawn = null; g.turn = adv(g, p, 1); return next(g, { t: 'pass', by: p }); }
   g.passes += 1;
-  if (g.passes >= g.n) {
-    const lens = g.hands.map((h) => h.length); const min = Math.min(...lens); const who = lens.flatMap((l, i) => (l === min ? [i] : []));
+  if (g.passes >= ativos(g)) {
+    const fora = foraDe(g); const lens = g.hands.map((h, i) => (fora.includes(i) ? Infinity : h.length)); const min = Math.min(...lens); const who = lens.flatMap((l, i) => (l === min ? [i] : []));
     next(g, { t: 'pass', by: p }); return end(g, who.length === 1 ? who[0] : null, 'bloqueio');
   }
   g.turn = adv(g, p, 1); return next(g, { t: 'pass', by: p });
+}
+
+/** Tira `lugares` da partida (a maioria da sala votou "continuar sem"): a mão volta pro baralho de compra (embaralhado), a vez e o sentido pulam quem saiu;
+ *  se a vez era de quem saiu passa pro próximo; sobrou 1 só jogador = ele vence. Puro: devolve o estado novo (ou o mesmo, se ninguém novo saiu). */
+export function tirar(g0, lugares, rnd = Math.random) {
+  const novos = [...new Set(lugares)].filter((p) => Number.isInteger(p) && p >= 0 && p < g0.n && !foraDe(g0).includes(p));
+  if (!novos.length || g0.over) return g0;
+  const g = clone(g0); const vezAntes = g.turn;
+  for (const p of novos) {
+    g.draw = shuffle([...g.draw, ...g.hands[p]], rnd); g.hands[p] = []; g.fora = [...foraDe(g), p];
+    if (g.unoPending === p) g.unoPending = null; if (g.unoSaid === p) g.unoSaid = null;
+  }
+  if (g.fora.includes(vezAntes)) { g.turn = adv(g, vezAntes, 1); g.drawn = null; g.passes = 0; }
+  next(g, { t: 'saiu', by: novos[0], lugares: novos });
+  if (ativos(g) <= 1) { const resta = Array.from({ length: g.n }, (_, i) => i).find((i) => !g.fora.includes(i)); g.turn = resta; return end(g, resta, 'saiu'); }
+  return g;
 }
 
 /** Quem ficou com 1 carta avisa "UNO!" (botão). Só vale se a carta que sobrou ainda é a única. */
