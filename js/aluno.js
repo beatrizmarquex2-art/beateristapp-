@@ -85,6 +85,8 @@ const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 // aba INÍCIO: liga pra todos (publicada em nov/2026). `?inicio=0` desliga neste aparelho (pra teste); `?inicio=1` volta a ligar.
 const INICIO_ON = (() => { try { if (/[?&]inicio=0\b/.test(location.search)) localStorage.setItem('bt-inicio', '0'); if (/[?&]inicio=1\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') !== '0'; } catch { return true; } })();
+// aba em que o app abre (e pra onde volta numa rota desconhecida): o Início (pedido da Bea); com ?inicio=0 fica Jogos
+const HOME = INICIO_ON ? 'inicio' : 'jogos';
 const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
@@ -132,7 +134,7 @@ function pickPose() {
 }
 const getName = () => { try { return localStorage.getItem(NAME_KEY) || window.__alunoNome || ''; } catch { return window.__alunoNome || ''; } };
 const cleanName = (v) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 20);
-const route = () => { const [, a, ...rest] = (location.hash || '#/jogos').split('/'); return { name: a || 'jogos', parts: rest.filter(Boolean).map(decodeURIComponent) }; };
+const route = () => { const [, a, ...rest] = (location.hash || `#/${HOME}`).split('/'); return { name: a || HOME, parts: rest.filter(Boolean).map(decodeURIComponent) }; };
 
 /** O Kids guarda o progresso por "jogador": cria/seleciona um com o nome do aluno. */
 async function ensureKidsPlayer(name) {
@@ -313,7 +315,7 @@ function lojinhaView(view, parts = []) {
   if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
   const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
-  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = '#/jogos'; }, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+  const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(() => { if (!gone) location.hash = `#/${HOME}`; }, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
   // enquanto a lojinha não abre: a aluna ainda pode pedir um código pra professora Bea cadastrar (aparece nas telas trancadas e no Perfil)
   const pedido = h('div', { class: 'al-pedido' });
@@ -505,7 +507,7 @@ function shell(name) {
     else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
-    else { location.hash = '#/jogos'; return; }
+    else { location.hash = `#/${HOME}`; return; }
     if (r.name === 'album' && !(r.parts && r.parts[0] === 'Pacotes')) view.prepend(arteDoPaul('arte-album', 'jogue. colecione. complete seu álbum.', 'conheça as figurinhas da Beaterista', 'o Paul com uma figurinha na mão e o álbum aberto: jogue, colecione, complete seu álbum'));
     if (r.name === 'album' || r.name === 'perfil') { // 3 abas: ÁLBUM · ROLETA · PERFIL (a roleta é a aba "Pacotes" do álbum; o perfil mora junto)
       const roleta = r.name === 'album' && r.parts && r.parts[0] === 'Pacotes';
@@ -605,7 +607,7 @@ async function start() {
     if (q.has('entrar')) {
       if (!CODE.saved() && !CODE.pendente()) { try { localStorage.removeItem(NAME_KEY); localStorage.removeItem(ORIGEM_KEY); } catch { /* ok */ } window.__alunoNome = ''; }
       q.delete('entrar'); const resto = q.toString();
-      history.replaceState(null, '', `${location.pathname}${resto ? `?${resto}` : ''}#/jogos`);
+      history.replaceState(null, '', `${location.pathname}${resto ? `?${resto}` : ''}#/${HOME}`);
     }
   } catch { /* link comum: segue normal */ }
   startScroller();

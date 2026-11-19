@@ -1,4 +1,4 @@
-// Link "reinicia a entrada" (aluno.html?entrar): quem só experimentou volta pra tela de entrada limpa; quem é aluno (tem código) não é desconectado; os dois terminam na aba principal (Jogos).
+// Link "reinicia a entrada" (aluno.html?entrar): quem só experimentou volta pra tela de entrada limpa; quem é aluno (tem código) não é desconectado; os dois terminam na aba principal (Início).
 import { serve, launch, context, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser } = await launch();
 const mk = async (ini) => {
@@ -14,17 +14,17 @@ await p.goto(`${url}/aluno.html#/ritmo/setas`); await sleep(1500);
 check('antes do link, quem experimentou está dentro do app', (await p.locator('.al-entry').count()) === 0);
 await p.goto(`${url}/aluno.html?entrar#/ritmo/setas`); await sleep(1800);
 check('com o link, quem só experimentou volta pra tela de entrada limpa', (await p.locator('.al-entry').count()) === 1 && !(await p.evaluate(() => localStorage.getItem('beaterista-aluno-nome'))));
-check('o link limpa o ?entrar e deixa a aba principal como destino', (await p.evaluate(() => location.search === '' && location.hash === '#/jogos')));
+check('o link limpa o ?entrar e deixa a aba principal como destino', (await p.evaluate(() => location.search === '' && location.hash === '#/inicio')));
 const AL = p.locator('.en-box').first();
 await p.locator('.en-box').first().locator('input').first().fill('Bia').catch(() => {});
 const exp = p.locator('button:has-text("experimentar")'); if (await exp.count()) { await exp.first().click(); await sleep(2500); }
-check('depois de entrar de novo, cai na aba principal (Jogos)', (await p.evaluate(() => location.hash)).startsWith('#/jogos') && (await p.locator('.al-entry').count()) === 0, await p.evaluate(() => location.hash));
+check('depois de entrar de novo, cai na aba principal (Início)', (await p.evaluate(() => location.hash)).startsWith('#/inicio') && (await p.locator('.al-entry').count()) === 0, await p.evaluate(() => location.hash));
 await p.close();
 // 2) aluno com código: nunca é desconectado
 p = await mk({ 'beaterista-aluno-nome': 'Cris', 'beaterista-aluno-codigo': 'TESTE1' });
 await p.goto(`${url}/aluno.html?entrar#/ritmo/setas`); await sleep(2200);
 check('aluno com código continua dentro (não é desconectado)', (await p.locator('.al-entry').count()) === 0 && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-nome'))) === 'Cris' && (await p.evaluate(() => localStorage.getItem('beaterista-aluno-codigo'))) === 'TESTE1');
-check('e cai direto na aba principal', (await p.evaluate(() => location.hash)) === '#/jogos', await p.evaluate(() => location.hash));
+check('e cai direto na aba principal', (await p.evaluate(() => location.hash)) === '#/inicio', await p.evaluate(() => location.hash));
 await p.close();
 // 3) ninguém logado: entrada normal
 p = await mk({});
