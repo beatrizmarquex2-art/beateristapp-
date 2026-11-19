@@ -46,3 +46,11 @@ test('jogos de aprender não têm o limite de 30 por dia; os de mesa têm', asyn
   assert.ok(APRENDER.includes('rudimentos') && APRENDER.includes('toca') && !APRENDER.includes('velha') && !APRENDER.includes('memoria') && !APRENDER.includes('quebra'));
   assert.equal(c(undefined, 'rudimentos', '2026-11-13', 10).ganhou, 10);
 });
+
+test('a Fuga do Estúdio tem limite de 36 ★ por dia (os outros jogos de mesa seguem com 30)', async () => {
+  const { contar, limiteDe } = await import('../js/figurinhas/mesa-logic.js');
+  assert.equal(limiteDe('fuga'), 36); assert.equal(limiteDe('velha'), 30);
+  let m = null; let tot = 0; for (let i = 0; i < 6; i++) { const r = contar(m, 'fuga', '2026-11-19', 9); m = r.mesa; tot += r.ganhou; }
+  assert.equal(tot, 36, '4 fugas completas (9 ★) e acabou');
+  assert.equal(contar(m, 'fuga', '2026-11-20', 9).ganhou, 9, 'no dia seguinte volta');
+});

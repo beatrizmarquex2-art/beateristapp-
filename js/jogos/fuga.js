@@ -1,6 +1,6 @@
 // A Fuga do Estúdio: o Paul ficou trancado no estúdio e só sai abrindo 3 portas em ordem.
 //  porta 1 · sala de controle = quiz (5 perguntas, precisa de 3 certas) · porta 2 · cabine = caça-palavras · porta 3 · sala de ensaio = cruzadinha.
-// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); cada porta aberta paga 3 ★ na hora (a caça-palavras perde 1 ★ por dica, mínimo 1; limite de 30 ★ por dia).
+// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); cada porta aberta paga 3 ★ na hora (a caça-palavras perde 1 ★ por dica, mínimo 1; limite de 36 ★ por dia).
 import { h } from '../util.js';
 import { banner } from '../ui.js';
 import * as FB from '../feedback.js';
@@ -21,11 +21,18 @@ export function sfx(tipo) {
   } catch { /* sem áudio */ }
 }
 export const PORTAS = [
-  { id: 'quiz', nome: 'sala de controle', ic: '🎛️', fala: 'acerte 3 de 5 perguntas pra destravar a mesa de som!' },
+  { id: 'quiz', nome: 'sala de controle', ic: '🎛️', fala: 'acerte 3 de 5 pra destravar a mesa de som! (5 certas = 3 ★ · 4 = 2 ★ · 3 = 1 ★)' },
   { id: 'caca', nome: 'cabine de gravação', ic: '🎙️', fala: 'ache todas as palavras escondidas na grade!' },
   { id: 'cruz', nome: 'sala de ensaio', ic: '🥁', fala: 'complete a cruzadinha pra abrir a última porta!' },
 ];
 export const MIN_QUIZ = 3;
+/** ★ de cada porta: quiz = 5 certas 3 ★ · 4 certas 2 ★ · 3 certas 1 ★ (e se gastou o "desistir das ⭐⭐⭐", no máximo 2 ★); caça = 3 ★ menos 1 por dica (mínimo 1); cruzadinha = 3 ★. */
+export function estrelasPorta(id, api) {
+  const s = api && api.stats ? api.stats() : {};
+  if (id === 'quiz') { const base = s.found >= 5 ? 3 : s.found === 4 ? 2 : 1; return s.ajuda ? Math.min(base, 2) : base; }
+  if (id === 'caca' && s.estrelas) return s.estrelas;
+  return 3;
+}
 const KB = 'beaterista-fuga-melhor';
 const melhor = () => { try { return Number(localStorage.getItem(KB)) || 0; } catch { return 0; } };
 const seg = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
@@ -66,18 +73,18 @@ ${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const resolve = () => {
       if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; sfx('alarme'); wrap.replaceChildren(topo(), portas(true), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
-      const ganho = P.id === 'caca' && api && api.stats().estrelas ? api.stats().estrelas : 3; totalEst += ganho; ganhou('fuga', ganho).catch(() => {}); // cada porta paga as suas ★ na hora
+      const ganho = estrelasPorta(P.id, api); totalEst += ganho; ganhou('fuga', ganho).catch(() => {}); // cada porta paga as suas ★ na hora
       abertas++; sfx('porta'); if (abertas >= PORTAS.length) { setTimeout(() => sfx('vitoria'), 700); vitoria(); return; }
       wrap.replaceChildren(topo(), portas(), fala(`porta aberta! 🔓 +${ganho} ★ · agora: ${PORTAS[abertas].nome}. ${PORTAS[abertas].fala}`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'próxima porta')));
     };
     wrap.replaceChildren(topo(), portas(), h('p', { class: 'tr-count' }, `${P.nome} · ${P.fala}`), box);
-    if (P.id === 'quiz') { const qs = []; const vistos = new Set(); for (let k = 0; k < 80 && qs.length < Math.min(5, its.length); k++) { const q = T.question(its, ['blank', 'continua'][k % 2]); if (!vistos.has(q.item.n)) { vistos.add(q.item.n); qs.push(q); } } api = mod.quiz(box, ['blank', 'continua'], 'fuga', { qs, fim }); }
+    if (P.id === 'quiz') { const qs = []; const vistos = new Set(); for (let k = 0; k < 80 && qs.length < Math.min(5, its.length); k++) { const q = T.question(its, ['blank', 'continua'][k % 2]); if (!vistos.has(q.item.n)) { vistos.add(q.item.n); qs.push(q); } } api = mod.quiz(box, ['blank', 'continua'], 'fuga', { qs, fim, ajuda: true }); }
     else if (P.id === 'caca') api = mod.caca(box, { pick: T.easyPick(its, 6), mk: () => Math.random, fim, dica: true });
     else api = mod.cruzadinha(box, { pick: T.easyPick(its, 5, { min: 4, max: 8 }), mk: () => Math.random, fim });
   };
   const vitoria = () => {
     const ms = Date.now() - t0; const rec = melhor(); const novo = !rec || ms < rec; if (novo) { try { localStorage.setItem(KB, String(ms)); } catch { /* sem armazenamento */ } }
-    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, `+${totalEst} ★ nesta fuga (3 por porta; a caça perde 1 por dica) · limite de 30 por dia`),
+    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, `+${totalEst} ★ nesta fuga (3 por porta; a caça perde 1 por dica) · limite de 36 por dia`),
       h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'fugir de novo'), h('a', { class: 'btn ghost wide', href: '#/jogos' }, 'voltar pros jogos'));
     wrap.replaceChildren(topo(), portas(), tela); FB.great(tela);
   };
