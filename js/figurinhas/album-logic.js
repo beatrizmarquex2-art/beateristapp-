@@ -222,6 +222,18 @@ export function deriveInv(opened, pasted) {
 export function mergeStates(a, b) {
   const A = { ...emptyState(), ...(a || {}) }, B = { ...emptyState(), ...(b || {}) };
   const opened = { ...A.opened, ...B.opened }, pasted = { ...A.pasted, ...B.pasted };
-  return { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+  const out = { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+  // o que ficava de fora (e se perdia a cada vez que o álbum abria): o check-in da semana (vale o mais adiantado), as lendárias entregues (união) e a semente dos sorteios
+  const sem = semMelhor(A.sem, B.sem); if (sem) out.sem = sem;
+  const lend = [...new Set([...(Array.isArray(A.lend) ? A.lend : []), ...(Array.isArray(B.lend) ? B.lend : [])])].sort(); if (lend.length) out.lend = lend;
+  const seed = [A.seed, B.seed].filter(Boolean).sort()[0]; if (seed) out.seed = seed;
+  return out;
+}
+/** Dos dois check-ins da semana, o mais adiantado (mais ciclos, depois dia mais recente, depois mais dias seguidos). */
+function semMelhor(x, y) {
+  if (!x || typeof x !== 'object') return y && typeof y === 'object' ? y : undefined; if (!y || typeof y !== 'object') return x;
+  const k = (z) => [z.ciclo | 0, String(z.ult || ''), z.seq | 0];
+  const a = k(x), b = k(y); for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i] ? x : y;
+  return x;
 }
 export const sameProgress = (a, b) => JSON.stringify([Object.keys(a.pasted || {}).sort(), Object.keys(a.opened || {}).sort(), [...(a.granted || [])].sort()]) === JSON.stringify([Object.keys(b.pasted || {}).sort(), Object.keys(b.opened || {}).sort(), [...(b.granted || [])].sort()]);
