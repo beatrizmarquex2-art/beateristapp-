@@ -1795,3 +1795,83 @@ body.bv-aberta { overflow: hidden; }
 .bv-ir { border: 0; border-radius: 99px !important; padding: 14px; font: 400 20px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .03em; background: #c81e2d; color: #fff; box-shadow: 0 4px 0 #7d1019; cursor: pointer; }
 .bv-cod { background: none; border: 0; color: #fff7e6; font: 700 14px "Hanken Grotesk", sans-serif; text-decoration: underline; padding: 8px; cursor: pointer; }
 .bv-tela > .bv-luz { position: absolute; width: min(360px, 90vw); }
+
+/* ===== Fuga: visual do laboratório do Paul em todas as portas (aprovado pela Bea em 19/nov/2026) =====
+   Só vale nas telas de porta (a que tem .fg-cena); o mapa Escape Room continua com a arte dele. */
+.fg-wrap:has(.fg-cena){--lab-am:#f2b632;--lab-am2:#ffd45c;--lab-rd:#ff2d3d;--lab-gn:#3cff8a;--lab-nv:#0b1020;--lab-nv2:#121a30;--lab-st:#4b576b;--lab-st2:#6b788e;
+  background:#0b1020 url(../assets/jogos/fuga/lab-sala.webp) top center/100% auto no-repeat!important;padding:92px 12px 16px;border-radius:14px;border:3px solid var(--lab-st2);box-shadow:0 0 0 3px #1b2438,0 0 0 5px var(--lab-st),0 0 26px rgba(255,45,61,.3);color:#e8f0ff}
+.fg-wrap:has(.fg-cena) .jg-top{display:flex;gap:8px;align-items:center;margin:0 0 8px;background:rgba(8,12,26,.88);border-top:2px solid var(--lab-st);border-bottom:2px solid var(--lab-st);padding:7px 10px;margin-left:-12px;margin-right:-12px}
+.fg-wrap:has(.fg-cena) .jg-link,.fg-wrap:has(.fg-cena) .jg-top .btn{font:700 12px Silkscreen,monospace;color:#e8f0ff;text-decoration:none;background:linear-gradient(#2a3550,#161e33);border:2px solid var(--lab-st);border-radius:5px;padding:6px 10px;box-shadow:0 3px 0 #0a0e1a}
+.fg-wrap:has(.fg-cena) .tr-count{font:700 11px Silkscreen,monospace;letter-spacing:.4px;line-height:1.5;color:var(--lab-am2);text-align:center;text-transform:lowercase;margin:6px 0 10px;text-shadow:0 2px 0 #000a}
+/* a fileira de cadeados (portas) */
+.fg-locks{display:flex;gap:10px;justify-content:center;margin:2px 0 10px;border:0!important;box-shadow:none!important;background:none!important;overflow:visible!important;outline:0!important}
+.fg-lk{display:grid;justify-items:center;gap:3px;min-width:62px;padding:8px 8px 5px;border-radius:8px;border:2px solid var(--lab-am);background:rgba(11,16,32,.9);color:var(--lab-am);box-shadow:0 0 12px rgba(242,182,50,.35)}
+.fg-lk small{font:700 9px Silkscreen,monospace;color:#cfe0ff}
+.fg-lk.v{animation:fgLk 1.4s ease-in-out infinite alternate;color:var(--lab-am2);border-color:var(--lab-am2)}.fg-lk.t{opacity:.75}
+.fg-lk.a{color:var(--lab-gn);border-color:var(--lab-gn);box-shadow:0 0 12px rgba(60,255,138,.45)}
+.fg-cena.alarme .fg-lk{border-color:var(--lab-rd);color:var(--lab-rd);box-shadow:0 0 16px rgba(255,45,61,.7)}
+@keyframes fgLk{from{box-shadow:0 0 6px rgba(242,182,50,.3)}to{box-shadow:0 0 22px rgba(242,182,50,.9)}}
+@media (prefers-reduced-motion:reduce){.fg-lk.v{animation:none}}
+/* o "monitor" onde o jogo acontece */
+.fg-wrap:has(.fg-cena) .dc-box,.fg-wrap:has(.fg-cena) .fgm.card{background:linear-gradient(#0e1528,#0a1020)!important;color:#e8f0ff!important;border:3px solid var(--lab-st2)!important;border-radius:10px!important;box-shadow:0 0 0 3px #1b2438,0 0 0 5px var(--lab-st),0 0 26px rgba(255,45,61,.28),inset 0 0 30px rgba(0,0,0,.7)!important}
+.fg-wrap:has(.fg-cena) .fg-rel{color:var(--lab-am2)}
+.fg-wrap:has(.fg-cena) .btn.primary{background:var(--lab-am)!important;color:#0b1020!important;border:0!important;border-radius:6px!important;font:700 13px Silkscreen,monospace!important;box-shadow:0 5px 0 #8a5d00!important}
+.fg-wrap:has(.fg-cena) .btn:not(.primary):not(.ghost){background:linear-gradient(#2a3550,#161e33);color:#e8f0ff;border:2px solid var(--lab-st);border-radius:6px;box-shadow:0 3px 0 #0a0e1a}
+.fg-wrap:has(.fg-cena) .fgm-msg,.fg-wrap:has(.fg-cena) .fgp-q,.fg-wrap:has(.fg-cena) .dc-q,.fg-wrap:has(.fg-cena) .dc-clue{color:#e8f0ff}
+.fg-wrap:has(.fg-cena) .muted{color:#a9b9d6}
+/* quiz */
+.fg-wrap:has(.fg-cena) .dc-opt{background:linear-gradient(#2a3550,#1b2438)!important;border:2px solid var(--lab-st)!important;color:#e8f0ff!important;border-radius:6px!important;box-shadow:0 4px 0 #0a0e1a!important}
+.fg-wrap:has(.fg-cena) .dc-opt .dc-op{background:var(--lab-am)!important;color:#0b1020!important;border-radius:4px!important;font-family:Silkscreen,monospace!important}
+.fg-wrap:has(.fg-cena) .dc-opt.ok{background:linear-gradient(#1c6b46,#12482f)!important;border-color:var(--lab-gn)!important;box-shadow:0 0 14px rgba(60,255,138,.5),0 4px 0 #0a0e1a!important}
+.fg-wrap:has(.fg-cena) .dc-opt.no{background:linear-gradient(#8a1d30,#5c1020)!important;border-color:var(--lab-rd)!important;box-shadow:0 0 14px rgba(255,45,61,.5),0 4px 0 #0a0e1a!important}
+.fg-wrap:has(.fg-cena) .dc-prog i{border-color:var(--lab-st2)}.fg-wrap:has(.fg-cena) .dc-prog i.on{background:var(--lab-gn);border-color:var(--lab-gn)}.fg-wrap:has(.fg-cena) .dc-prog i.now{background:var(--lab-am);border-color:var(--lab-am)}
+.fg-wrap:has(.fg-cena) .dc-desistir{background:none!important;color:#cfe0ff!important;border:0!important;text-decoration:underline;box-shadow:none!important}
+/* caça-palavras */
+.fg-wrap:has(.fg-cena) .dc-chip{background:#121a30!important;color:#e8f0ff!important;border:2px solid var(--lab-st2)!important;border-radius:4px!important;font:700 11px Silkscreen,monospace!important;text-transform:uppercase}
+.fg-wrap:has(.fg-cena) .dc-chip.ok{background:var(--lab-gn)!important;color:#0b1020!important;border-color:var(--lab-gn)!important;text-decoration:line-through}
+.fg-wrap:has(.fg-cena) .dc-grid.dc-easy .dc-c{background:#17213a!important;color:var(--lab-am2)!important;border:1.5px solid #2c3a5a!important;border-radius:3px!important;font-family:Silkscreen,monospace!important;box-shadow:none!important}
+.fg-wrap:has(.fg-cena) .dc-grid.dc-easy .dc-c.sel{background:var(--lab-am)!important;color:#0b1020!important}
+.fg-wrap:has(.fg-cena) .dc-grid.dc-easy .dc-c.found{background:var(--lab-gn)!important;color:#0b1020!important;border-color:var(--lab-gn)!important;box-shadow:0 0 8px rgba(60,255,138,.55)!important}
+/* cruzadinha */
+.fg-wrap:has(.fg-cena) .dc-cell{background:linear-gradient(#cfd8e8,#9fadc4)!important;color:#0b1020!important;border:2px solid #fff3!important;border-radius:3px!important;font-family:Silkscreen,monospace!important}
+.fg-wrap:has(.fg-cena) .dc-cell.on{background:var(--lab-gn)!important}.fg-wrap:has(.fg-cena) .dc-cell.hint{background:var(--lab-am)!important}
+.fg-wrap:has(.fg-cena) .dc-clues li{color:#dfe9ff}.fg-wrap:has(.fg-cena) .dc-clues .dc-dir,.fg-wrap:has(.fg-cena) .dc-cell small{color:var(--lab-am2)}
+.fg-wrap:has(.fg-cena) .dc-clues input{color:#e8f0ff;border-bottom-color:var(--lab-st2)}
+/* genius, caminho e memória */
+.fg-wrap:has(.fg-cena) .fgm-pads,.fg-wrap:has(.fg-cena) .fgm-grade{background:#0a1226!important;border:3px solid var(--lab-st)!important;border-radius:14px!important}
+.fg-wrap:has(.fg-cena) .fgm-hub{background:#0b1020!important;border-color:var(--lab-st2)!important}.fg-wrap:has(.fg-cena) .fgm-hub b{color:var(--lab-am2)}
+.fg-wrap:has(.fg-cena) .fgm-carta{background:linear-gradient(#2a3550,#161e33)!important;border:2px solid var(--lab-st)!important;color:var(--lab-am2)!important;border-radius:8px!important}
+.fg-wrap:has(.fg-cena) .fgm-carta.up{background:#0b2a1c!important;border-color:var(--lab-gn)!important;color:#cfffe3!important;box-shadow:0 0 12px rgba(60,255,138,.4)}.fg-wrap:has(.fg-cena) .fgm-carta.par{background:var(--lab-gn)!important;color:#0b1020!important}
+.fg-wrap:has(.fg-cena) .fgm-sym{color:var(--lab-gn)}.fg-wrap:has(.fg-cena) .fgm-carta.par .fgm-sym{color:#0b1020}
+/* notas caindo, pesca, mira e montar nota (os que ficam nas trilhas de teoria e cordas) */
+.fg-wrap:has(.fg-cena) .fgq-campo,.fg-wrap:has(.fg-cena) .fgp-mar{border:3px solid var(--lab-st)!important;border-radius:10px!important}
+.fg-wrap:has(.fg-cena) .fgq-campo{background:linear-gradient(#0d1730,#0a0f20)!important}.fg-wrap:has(.fg-cena) .fgq-div{border-left:2px dashed var(--lab-rd);box-shadow:0 0 8px var(--lab-rd)}
+.fg-wrap:has(.fg-cena) .fgq-cai{background:#0b2a1c!important;border:2px solid var(--lab-gn);box-shadow:0 0 18px rgba(60,255,138,.5)!important}
+.fg-wrap:has(.fg-cena) .fgq-nome{background:linear-gradient(#2a3550,#161e33)!important;border:2px solid var(--lab-st2);border-radius:6px!important;font-family:Silkscreen,monospace!important;text-transform:lowercase}
+.fg-wrap:has(.fg-cena) .fgn-cena{background:linear-gradient(#e6edf8,#b8c6dc)!important;border:3px solid var(--lab-st2)!important;border-radius:8px!important}
+.fg-wrap:has(.fg-cena) .fgn-peca{background:linear-gradient(#2a3550,#161e33)!important;border:2px solid var(--lab-st)!important;color:#e8f0ff!important;border-radius:5px!important;font-family:Silkscreen,monospace!important}
+.fg-wrap:has(.fg-cena) .fgn-peca.on{background:var(--lab-gn)!important;border-color:var(--lab-gn)!important;color:#0b1020!important}.fg-wrap:has(.fg-cena) .fgn-grupo small{color:var(--lab-am2);font-family:Silkscreen,monospace}
+/* feche o compasso */
+.fgc{text-align:center}
+.fgc-med{display:grid;grid-template-columns:repeat(16,1fr);gap:2px;margin:6px 4px 12px}
+.fgc-med i{height:10px;border-radius:2px;background:#27324a;position:relative}.fgc-med i.pre{background:var(--lab-gn,#3cff8a);box-shadow:0 0 6px rgba(60,255,138,.6)}.fgc-med i.col{background:var(--lab-am,#f2b632);box-shadow:0 0 6px rgba(242,182,50,.7)}
+.fgc-med i[data-t]::after{content:attr(data-t);position:absolute;left:0;top:13px;font:700 9px Silkscreen,monospace;color:#9db8de}
+.fgc-comp{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 14px;min-height:96px}.fgc-comp.errado{animation:fgmTrem .35s}
+.fgc-pc{width:68px;height:88px;border-radius:8px;display:grid;place-items:center;padding:4px;color:#e8f0ff;font:700 26px Silkscreen,monospace;border:2px solid var(--lab-st,#4b576b)}
+.fgc-pc.pre{background:#0b2a1c;border-color:var(--lab-gn,#3cff8a);box-shadow:0 0 10px rgba(60,255,138,.4)}.fgc-pc.col{background:#2c2410;border-color:var(--lab-am,#f2b632);box-shadow:0 0 10px rgba(242,182,50,.45);cursor:pointer}
+.fgc-pc.vazio{border:2px dashed var(--lab-am,#f2b632);background:rgba(242,182,50,.08);color:var(--lab-am2,#ffd45c);box-shadow:0 0 12px rgba(242,182,50,.35)}
+.fgc-svg,.fgi-svg{width:100%;height:100%;display:block}.fgc-svg svg,.fgi-svg svg{width:100%;height:100%;max-height:78px;display:block;color:#fff}
+.fgc-bandeja{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.fgc-op{position:relative;height:104px;border-radius:8px;background:linear-gradient(#2a3550,#161e33);border:2px solid var(--lab-st,#4b576b);color:#fff;display:grid;grid-template-rows:1fr auto auto;justify-items:center;padding:6px 4px 4px;cursor:pointer;box-shadow:0 4px 0 #0a0e1a}
+.fgc-op:disabled{opacity:.5;cursor:default}.fgc-op:not(:disabled):active{transform:translateY(2px);box-shadow:0 2px 0 #0a0e1a}
+.fgc-op small{font:700 10px/1.1 var(--body,system-ui);color:#e8f0ff;text-align:center}.fgc-op em{font:700 9px var(--body,system-ui);font-style:normal;color:var(--lab-am2,#ffd45c)}
+.fgc-op .fgc-svg{height:54px;width:44px}
+/* o intruso */
+.fgi-palco{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 4px 6px}
+.fgi-disco{position:relative;aspect-ratio:1;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;background:repeating-radial-gradient(#101010 0 4px,#232323 4px 5px);box-shadow:0 0 0 3px #1b2438,0 6px 0 #05070f}
+.fgi-disco .fgi-fig{width:56%;height:56%;display:grid;place-items:center;border-radius:50%;background:#e9eef8;box-shadow:inset 0 0 0 4px #b8c6dc}.fgi-disco .fgi-svg svg{color:#0b1020;max-height:70%}
+.fgi-disco small{position:absolute;bottom:6px;font:700 10px Silkscreen,monospace;color:#cfffe3;background:#0b2a1c;padding:2px 6px;border-radius:3px}
+.fgi-disco:not(:disabled):active{transform:scale(.97)}.fgi-disco:disabled{cursor:default}
+.fgi-disco.errado{box-shadow:0 0 0 3px var(--lab-rd,#ff2d3d),0 0 22px rgba(255,45,61,.8);opacity:.55;animation:fgmTrem .3s}
+.fgi-disco.certo{box-shadow:0 0 0 3px var(--lab-gn,#3cff8a),0 0 24px rgba(60,255,138,.85)}
+@media (prefers-reduced-motion:reduce){.fgc-comp.errado,.fgi-disco.errado{animation:none}}
