@@ -85,7 +85,7 @@ export function mount(host) {
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
-      paules, priv, salaOpt), fotoInput, selfie, todos);
+      priv, salaOpt), fotoInput, selfie, paules, todos);
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */

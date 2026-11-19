@@ -1695,3 +1695,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .pf-paul-op{width:52px;height:52px;padding:0;border:2px solid #162146;border-radius:50%!important;overflow:hidden;background:#fff;box-shadow:2px 3px 0 #162146;cursor:pointer}
 .pf-paul-op img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%!important}
 .pf-sala small{display:block;font-weight:600;margin-top:2px}
+.pf-top .pf-paules{grid-column:1/-1}.pf-paules-lista{justify-content:space-between;flex-wrap:nowrap}
+.pf-paules .pf-paul-op{width:42px;height:42px;flex:none;aspect-ratio:1}
