@@ -12,9 +12,9 @@ import { toast } from '../ui.js';
 
 /** Os 3 modos viram 3 mundos, cada um com o seu cenário (o id do modo continua o mesmo: ini, int, ava). */
 const MUNDOS = {
-  ini: { id: 'vila', tema: 'floresta', nome: 'Bosque das Semínimas', curto: 'bosque', sub: 'o pulso e as colcheias', regioes: [['praca', 'Praça do Pulso', 'semínima e pausa'], ['feira', 'Feira das Colcheias', 'duas por tempo']] },
-  int: { id: 'cidade', tema: 'mar', nome: 'Maré das Semicolcheias', curto: 'maré', sub: 'quatro por tempo', regioes: [['avenida', 'Enseada das Semis', 'rápido e firme'], ['metro', 'Recife dos Ritmos', 'mistura de figuras']] },
-  ava: { id: 'palco', tema: 'espaco', nome: 'Órbita das Síncopes', curto: 'órbita', sub: 'pontuadas e contratempos', regioes: [['coxia', 'Anel dos Contratempos', 'o ritmo fora do lugar'], ['palco', 'Estação Principal', 'tudo junto']] },
+  ini: { id: 'vila', tema: 'gelo', nome: 'Geleira das Semínimas', curto: 'geleira', sub: 'o pulso e as colcheias', regioes: [['praca', 'Praça do Pulso', 'semínima e pausa'], ['feira', 'Feira das Colcheias', 'duas por tempo'], ['iglu', 'Vila dos Iglus', 'colcheias misturadas'], ['lago', 'Lago Congelado', 'com pausas'], ['pico', 'Pico Nevado', 'mais rápido'], ['topo', 'Topo da Geleira', 'o último passo']] },
+  int: { id: 'cidade', tema: 'laser', nome: 'Estúdio das Semicolcheias', curto: 'estúdio', sub: 'quatro por tempo', regioes: [['palco', 'Palco das Semis', 'rápido e firme'], ['ampli', 'Sala dos Amplis', 'mistura de figuras'], ['cabine', 'Cabine de Som', 'semis e pausas'], ['pista', 'Pista dos Lasers', 'bem rápido'], ['camarim', 'Camarim', 'tudo misturado'], ['show', 'Show Final', 'o último passo']] },
+  ava: { id: 'palco', tema: 'porsol', nome: 'Pôr do Sol das Síncopes', curto: 'pôr do sol', sub: 'pontuadas e contratempos', regioes: [['praia', 'Praia dos Contratempos', 'o ritmo fora do lugar'], ['deque', 'Deque das Pontuadas', 'colcheia pontuada'], ['onda', 'Ondas Cruzadas', 'síncopes'], ['farol', 'Farol Veloz', 'bem rápido'], ['horizonte', 'Horizonte', 'tudo junto'], ['ocaso', 'Último Raio', 'o último passo']] },
 };
 
 export function mount(host) {
