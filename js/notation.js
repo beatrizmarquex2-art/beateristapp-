@@ -49,6 +49,7 @@ export function layout(beat, { width = 360, title = '', color = false, full = tr
           ops.push({ t: 'head', x, y, kind: dt === 'c' ? 'diamond' : (X_HEAD.has(id) || dt === 'r') ? 'x' : 'n', c: tint(id) });
           if (dt === 'a' && !isAcc(beat, i)) ops.push({ t: 'acc', x, y: upTop - (per === 3 ? 20 : 10) }); // acento só nessa nota
           if (dt === 'o') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // chimbal aberto dentro do kit detalhado
+          if (dt === 'p') ops.push({ t: 'seta', x: x + 9, y: y + 1 }); // pivô (técnica de pedal): seta na diagonal ao lado do bumbo
           if (dt === 'r') ops.push({ t: 'text', x: x - 4, y: y - 8, s: 'aro', size: 8, weight: 800, c: tint(id) });
           if (id === 'sn' && ((beat.ghost && beat.ghost[i]) || dt === 'f')) ops.push({ t: 'text', x: x - 13, y: y + 5, s: '(', size: 15 }, { t: 'text', x: x + 7, y: y + 5, s: ')', size: 15 }); // nota fantasma
           if (id === 'ho') ops.push({ t: 'circle', x, y: upTop - 8, r: 3.6, c: tint(id) }); // "o" = chimbal aberto
@@ -92,6 +93,7 @@ export function toSVG({ w, h, ops }) {
       case 'head': return o.kind === 'diamond' ? `<path d="M${o.x} ${o.y - 5.5}l5.5 5.5-5.5 5.5-5.5-5.5z" fill="none" stroke="${ink(o)}" stroke-width="${o.c ? 2.2 : 1.7}"/>` : o.kind === 'x'
         ? `<path d="M${o.x - 4.5} ${o.y - 4.5}l9 9M${o.x + 4.5} ${o.y - 4.5}l-9 9" stroke="${ink(o)}" stroke-width="${o.c ? 2.4 : 1.8}"/>`
         : `<ellipse cx="${o.x}" cy="${o.y}" rx="5.8" ry="4.2" transform="rotate(-20 ${o.x} ${o.y})" fill="${ink(o)}"/>`;
+      case 'seta': return `<path d="M${o.x} ${o.y + 8}L${o.x + 12} ${o.y - 4}M${o.x + 5} ${o.y - 4}h7v7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
       case 'beam': return `<rect x="${o.x1 - 0.8}" y="${o.y}" width="${o.x2 - o.x1 + 1.6}" height="4" fill="currentColor"/>`;
       case 'flag': return `<path d="M${o.x} ${o.y}c2 ${o.down ? -5 : 5} 9 ${o.down ? -6 : 6} 7 ${o.down ? -14 : 14}" stroke="currentColor" stroke-width="2" fill="none"/>`;
       case 'acc': return `<path d="M${o.x - 5} ${o.y - 4}L${o.x + 5} ${o.y}L${o.x - 5} ${o.y + 4}" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="miter" class="acc"/>`;
@@ -121,6 +123,7 @@ export function draw(g, { ops }, { ink = '#1b1b1b', accent = '#b5162b', scale = 
         else if (o.kind === 'x') { g.lineWidth = o.c ? 2.4 : 1.8; g.moveTo(o.x - 4.5, o.y - 4.5); g.lineTo(o.x + 4.5, o.y + 4.5); g.moveTo(o.x + 4.5, o.y - 4.5); g.lineTo(o.x - 4.5, o.y + 4.5); g.stroke(); }
         else { g.ellipse(o.x, o.y, 5.8, 4.2, -20 * Math.PI / 180, 0, Math.PI * 2); g.fill(); }
         break;
+      case 'seta': g.strokeStyle = ink; g.lineWidth = 1.8; g.lineCap = 'round'; g.moveTo(o.x, o.y + 8); g.lineTo(o.x + 12, o.y - 4); g.moveTo(o.x + 5, o.y - 4); g.lineTo(o.x + 12, o.y - 4); g.lineTo(o.x + 12, o.y + 3); g.stroke(); g.lineCap = 'butt'; break;
       case 'beam': g.fillStyle = ink; g.fillRect(o.x1 - 0.8, o.y, o.x2 - o.x1 + 1.6, 4); break;
       case 'flag': { const d = o.down ? -1 : 1; g.strokeStyle = ink; g.lineWidth = 2; g.moveTo(o.x, o.y); g.bezierCurveTo(o.x + 2, o.y + 5 * d, o.x + 9, o.y + 6 * d, o.x + 7, o.y + 14 * d); g.stroke(); break; }
       case 'acc': g.strokeStyle = ink; g.lineWidth = 1.8; g.moveTo(o.x - 5, o.y - 4); g.lineTo(o.x + 5, o.y); g.lineTo(o.x - 5, o.y + 4); g.stroke(); break;
