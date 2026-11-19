@@ -1875,3 +1875,8 @@ body.bv-aberta { overflow: hidden; }
 .fgi-disco.errado{box-shadow:0 0 0 3px var(--lab-rd,#ff2d3d),0 0 22px rgba(255,45,61,.8);opacity:.55;animation:fgmTrem .3s}
 .fgi-disco.certo{box-shadow:0 0 0 3px var(--lab-gn,#3cff8a),0 0 24px rgba(60,255,138,.85)}
 @media (prefers-reduced-motion:reduce){.fgc-comp.errado,.fgi-disco.errado{animation:none}}
+/* ajustes do visual do laboratório: faixa escura atrás do rótulo e dos cadeados (as máquinas do fundo atrapalhavam a leitura) e figuras claras nos cartões escuros */
+.fg-wrap:has(.fg-cena) .tr-count{background:rgba(8,12,26,.88);border-top:2px solid var(--lab-st);border-bottom:2px solid var(--lab-st);padding:6px 8px;margin-left:-12px;margin-right:-12px}
+.fg-wrap:has(.fg-cena) .fg-locks{background:rgba(8,12,26,.55)!important;padding:8px 0!important;margin-left:-12px;margin-right:-12px}
+.fgc-pc .fgc-svg,.fgc-op .fgc-svg{filter:invert(1) brightness(1.15)}
+.fg-wrap:has(.fg-cena) .fgq-cai{background:linear-gradient(#f4f7fc,#b8c6dc)!important;color:#0b1020}
