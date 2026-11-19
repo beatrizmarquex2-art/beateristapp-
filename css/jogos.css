@@ -1480,3 +1480,32 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .atu-ico{font-size:24px;line-height:1;font-weight:700;display:inline-block}.top-atu.girando .atu-ico{animation:atu-gira .8s linear infinite}@keyframes atu-gira{to{transform:rotate(360deg)}}
 .top-atu{position:relative}.top-atu.tem-novo::after{content:"";position:absolute;top:3px;right:3px;width:11px;height:11px;background:#e5322d;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);animation:atu-pino 1.2s ease-in-out infinite}@keyframes atu-pino{50%{transform:rotate(-45deg) scale(1.25)}}
 .ct-num{font:400 44px/1 Anton,system-ui;color:var(--red,#b5122a);min-width:80px;text-align:center}
+
+/* ===== Figurix v2 — acertou fica verde, errou fica vermelho (forte) ===== */
+.jg-figurix .ok{background:#6fd08c!important;border-color:#14693a!important;color:#0b3a1f}.jg-figurix .no{background:#ff8a8f!important;border-color:#a51a28!important;color:#5a0710}
+.fx-pergunta{font-weight:800}
+.jg-figurix .fx-ligar.tres{grid-template-columns:1fr 1fr 1fr;gap:8px}.jg-figurix .fx-ligar.tres .fx-lig{min-height:64px;padding:3px}.jg-figurix .fx-ligar.tres .fx-lig b{font-size:12px;line-height:1.1}
+/* ===== Figurix v2 — jeito C (adesivos): monte, memória, caça e tetris ===== */
+.jg-figurix[data-skin="c"]{background:#f6efe3;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:22px 22px;border-radius:20px;padding:10px 12px 16px}
+.jg-figurix[data-skin="c"] .fx-q{font:400 21px/1.1 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.jg-figurix[data-skin="c"] .fx-lab{font:400 14px 'Anton',Impact,sans-serif;letter-spacing:.06em}
+.jg-figurix[data-skin="c"] .fx-peca{border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;color:#fff;min-height:54px;font:800 15px var(--body,inherit);text-align:center}
+.jg-figurix[data-skin="c"] .fx-peca.c1{background:#e5322d}.jg-figurix[data-skin="c"] .fx-peca.c2{background:#1fb5a8}.jg-figurix[data-skin="c"] .fx-peca.c3{background:#f2a91b;color:#1c1330}.jg-figurix[data-skin="c"] .fx-peca.c4{background:#3d6df2}
+.jg-figurix[data-skin="c"] .fx-peca.on{outline:4px solid #1c1330;box-shadow:none;transform:scale(1.03)}
+.jg-figurix[data-skin="c"] .fx-peca.on.no{background:#ff8a8f}
+.jg-figurix[data-skin="c"] .fx-big{background:#fff;border-radius:20px;padding:6px;border:4px solid #fff;box-shadow:0 3px 0 #0002}
+/* memória: carta virada mostra o Paul */
+.jg-figurix[data-skin="c"] .fx-card{background:#fff url(../assets/paul/colorido/paul-ouvindo.webp) center/78% no-repeat;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;min-height:88px;color:transparent}
+.jg-figurix[data-skin="c"] .fx-card.aberta{background:#fff}.jg-figurix[data-skin="c"] .fx-card.ok{background:#a8e6b4!important}
+/* caça-palavras: letras e palavras em cores fortes, arrastar o dedo */
+.jg-figurix[data-skin="c"] .fx-grade{touch-action:none;user-select:none;background:#fff;padding:6px;border-radius:18px;box-shadow:0 3px 0 #0002;gap:1px}
+.jg-figurix[data-skin="c"] .fx-c{border:0;background:transparent;border-radius:8px;font-weight:800;color:#1c1330;touch-action:none}
+.jg-figurix[data-skin="c"] .fx-c.sel{background:#ffd34f}
+.jg-figurix[data-skin="c"] .fx-c.ok{color:#fff}.jg-figurix[data-skin="c"] .fx-c.k1,.jg-figurix[data-skin="c"] .fx-pal.k1{background:#1fb5a8!important}.jg-figurix[data-skin="c"] .fx-c.k2,.jg-figurix[data-skin="c"] .fx-pal.k2{background:#e5322d!important}.jg-figurix[data-skin="c"] .fx-c.k3,.jg-figurix[data-skin="c"] .fx-pal.k3{background:#3d6df2!important}.jg-figurix[data-skin="c"] .fx-c.k4,.jg-figurix[data-skin="c"] .fx-pal.k4{background:#f2a91b!important;color:#1c1330}
+.jg-figurix[data-skin="c"] .fx-pal{border:0;background:#fff;color:#1c1330;font-weight:800;font-size:14px;padding:5px 12px;box-shadow:0 2px 0 #0002}.jg-figurix[data-skin="c"] .fx-pal.feita{color:#fff;text-decoration:line-through}
+/* tetris: Paul de fone, campo claro, nomes em botão */
+.jg-figurix[data-skin="c"] .fx-campo{background:linear-gradient(#bfe8ff,#fff6d6);border:4px solid #fff;box-shadow:0 3px 0 #0002;height:380px}
+.jg-figurix[data-skin="c"] .fx-campo::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:3px dashed #1c133055}
+.jg-figurix[data-skin="c"] .fx-cai{width:104px;background:#fff;border-radius:16px;padding:4px;filter:drop-shadow(0 3px 0 #0002)}
+.jg-figurix[data-skin="c"] .fx-nome{bottom:8px;width:46%;background:#e5322d;color:#fff;border:4px solid #fff;border-radius:16px;padding:8px 4px;font:800 16px var(--body,inherit);box-shadow:0 3px 0 #0002}.jg-figurix[data-skin="c"] .fx-nome.dir{background:#1fb5a8}
+.jg-figurix[data-skin="c"] .fx-paul{width:96px;bottom:62px}.jg-figurix[data-skin="c"] .fx-paul.esq{left:calc(25% - 48px)}.jg-figurix[data-skin="c"] .fx-paul.dir{left:calc(75% - 48px)}.jg-figurix[data-skin="c"] .fx-paul img{width:100%;display:block;pointer-events:none}

@@ -10,7 +10,7 @@ import { themeOf } from '../campanha/themes.js';
 import { mapSfx } from '../kids/mapa-sfx.js';
 import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, noteMarkup, svgEl, tone } from '../kids/art.js';
-import { robo } from '../kids/robo.js';
+import { corSrc } from '../paul-cor.js';
 import { wordsearch, lineCells, EASY_DIRS, DIRS } from '../tips.js';
 import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha, tempoPergunta, novoLugar } from './figurix-logic.js';
 import { toast } from '../ui.js';
@@ -35,39 +35,38 @@ export function mount(host) {
   /* ---------- mapa (abre aqui): 4 mundos, cada um com o seu cenário ---------- */
   const estMundo = (m) => PHASES.slice(m.de - 1, m.ate).reduce((t, p) => t + estOf(p.n), 0);
   const mapa = () => {
-    limpa(); jogando = false; const M = MUNDOS.find((x) => x.id === mundo) || MUNDOS[0];
+    limpa(); jogando = false; root.dataset.skin = 'a'; const M = MUNDOS.find((x) => x.id === mundo) || MUNDOS[0];
     const box = h('div', { class: 'tm-map' });
     const fases = PHASES.slice(M.de - 1, M.ate);
     const levels = fases.map((p, i) => ({ id: `fx:${p.n}`, index: i + 1, label: String(i + 1), tag: '', boss: i === fases.length - 1 }));
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => { const ok = aberto(m.id); return h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: `${m.id === mundo ? 'on' : ''}${ok ? '' : ' lock'}`, 'data-lock': ok ? null : '1', 'aria-label': `mundo ${i + 1}: ${m.nome}${ok ? '' : `, trancado: ${motivo(m.id)}`}`,
       onclick: () => { if (!ok) { toast(`mundo trancado: ${motivo(m.id)}`, { ms: 3400 }); return; } mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${ok ? '' : '🔒 '}${i + 1} · ${m.curto}`); }));
-    root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost', href: '#/kids/figuras/aula' }, '📖 aulinha do Paul'), box);
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost fx-pergunta', href: '#/estudos/aulas' }, '🤖 perguntar pro Paul'), box);
     off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `mundo-${M.tema}`, name: M.nome, regions: M.regioes },
       starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
   };
   // errou uma vez = já não dá 3 ★ nesta rodada: aparece o botão de recomeçar a fase (pedido da Bea)
-  const btnRecomeca = () => h('button', { class: 'btn small fx-recomeca', type: 'button', onclick: () => joga(fase) }, '↻ recomeçar pra ganhar 3 ★');
+  const btnRecomeca = () => h('button', { class: 'btn small fx-recomeca', type: 'button', onclick: () => joga(fase) }, '↻ recomeçar');
   const topo = (feitas, total) => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'), jogando && erros > 0 ? btnRecomeca() : null,
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
   const acerto = (el) => { acertos++; try { FB.win(el); } catch { /* ok */ } };
   const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } if (jogando && !root.querySelector('.fx-recomeca')) { const hd = root.querySelector('.tr-fasehead'); const b = btnRecomeca(); if (hd) hd.querySelector('button').after(b); else root.prepend(b); } };
-  const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; (RUN[p.tipo] || RUN.quiz)(p); };
+  const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; root.dataset.skin = ['monte', 'memoria', 'caca', 'tetris'].includes(p.tipo) ? 'c' : 'a'; (RUN[p.tipo] || RUN.quiz)(p); };
   /** Aulinha das 3 primeiras fases: a colinha das figuras, a dica do Paul e o caminho pras aulas nos Estudos (lá vale estrela). */
   const aulinha = (n) => {
-    limpa(); jogando = false; const p = PHASES[n - 1];
+    limpa(); jogando = false; root.dataset.skin = 'a'; const p = PHASES[n - 1];
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'aulinha rápida do Paul'), h('p', { class: 'jg-p fx-aula-fala' }, FALA_AULINHA[p.tipo] || ''),
       h('table', { class: 'fx-colinha' }, h('caption', {}, 'colinha das figuras'), h('tbody', {}, ...COLINHA.map(([id, dura]) => h('tr', {}, h('td', { class: 'fx-col-fig' }, fig(id, 'fx-fig fx-fig-mini')), h('th', { scope: 'row' }, FIG_NAME[id]), h('td', {}, dura))))),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary fx-aula-jogar', type: 'button', onclick: () => joga(n) }, `jogar a fase ${n} ▶`), h('a', { class: 'btn', href: '#/estudos/aulas' }, '📖 o Paul explica nas aulas (Estudos)')),
-      h('p', { class: 'jg-p fx-aula-nota' }, 'concluindo as aulas do Paul nos Estudos você ganha estrela.'));
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary fx-aula-jogar', type: 'button', onclick: () => joga(n) }, `jogar a fase ${n} ▶`), h('a', { class: 'btn', href: '#/estudos/aulas' }, '🤖 perguntar pro Paul')));
   };
   const comeca = (n) => { if (!aberto(mundoDe(n).id)) { toast(`mundo trancado: ${motivo(mundoDe(n).id)}`, { ms: 3400 }); mapa(); return; } if (temAulinha(n)) aulinha(n); else joga(n); };
 
   /* ---------- fim da fase ---------- */
   const fim = () => {
-    limpa(); jogando = false; const est = estrelasFigurix(acertos, erros); const antes = estOf(fase);
+    limpa(); jogando = false; const est = (PHASES[fase - 1] || {}).tipo === 'memoria' ? 3 : estrelasFigurix(acertos, erros); const antes = estOf(fase); // memória: concluiu = 3 ★
     if (est === 0) { // menos de 60% de acertos: não conclui, tenta de novo
-      sfx.play('click'); root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'quase lá!'), h('p', { class: 'jg-p' }, `você acertou ${acertos} de ${acertos + erros} tentativas. com 60% ou mais você ganha a primeira estrela.`),
+      sfx.play('click'); root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'quase lá!'), h('p', { class: 'jg-p' }, `você acertou ${acertos} de ${acertos + erros} tentativas. bora de novo!`),
         h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa'))); return;
     }
     if (est > antes) { guarda(fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('figurix', est - antes)).catch(() => {}); }
@@ -75,9 +74,9 @@ export function mount(host) {
     sfx.play('win');
     if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Figurix', caminho: 'todas as fases', chave: 'figurix', pose: 'estante' })).catch(() => {}), 700); // terminou o caminho: festa + postar
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
-      h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.${est < 3 ? ' acertando tudo de primeira, são 3 estrelas.' : ''}` : 'sem nenhum erro. perfeito!'),
+      h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.` : 'sem nenhum erro. perfeito!'),
       h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,
-        fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: `btn${est < 3 ? ' fx-recomeca' : ''}`, type: 'button', onclick: () => joga(fase) }, est < 3 ? '↻ recomeçar pra ganhar 3 ★' : 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
+        fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: `btn${est < 3 ? ' fx-recomeca' : ''}`, type: 'button', onclick: () => joga(fase) }, est < 3 ? '↻ recomeçar' : 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 
   /* ---------- as fases ---------- */
@@ -118,15 +117,15 @@ export function mount(host) {
     /* monte a figura: cabeça, haste e colchetes */
     monte: (p) => {
       const montes = montesDe(p.nivel); const maxC = maxColchetes(p.nivel); let r = 0; const total = montes.length; let m = { cabeca: null, haste: null, colchetes: null }; let marcas = null;
-      const peca = (grupo, valor, face, rot) => h('button', { type: 'button', class: `fx-peca${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': rot, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, face);
-      const ico = (inner) => svgEl(`<svg viewBox="0 0 60 60" aria-hidden="true">${inner}</svg>`, 'fx-ico');
+      // cada linha (cabeça, haste, colchetes) tem sempre uma opção; sem colchete e sem haste são botões de verdade
+      const peca = (grupo, valor, texto, cor) => h('button', { type: 'button', class: `fx-peca c${cor}${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': texto, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, texto);
       const desenha = () => {
         const alvo = montes[r]; const preview = noteMarkup({ open: m.cabeca === 'vazia', stem: !!m.haste, flags: m.colchetes || 0 }, 'figura montada');
         const cheio = m.cabeca != null && m.haste != null && m.colchetes != null;
         root.replaceChildren(topo(r, total), h('p', { class: 'fx-q' }, `monte a ${FIG_NAME[alvo]}`), svgEl(preview, 'fx-big'),
-          h('p', { class: 'fx-lab' }, 'cabeça'), h('div', { class: 'fx-pecas' }, peca('cabeca', 'cheia', ico('<ellipse cx="30" cy="34" rx="16" ry="11" transform="rotate(-20 30 34)" fill="#1b1818"/>'), 'bolinha pintada'), peca('cabeca', 'vazia', ico('<ellipse cx="30" cy="34" rx="16" ry="11" transform="rotate(-20 30 34)" fill="#fffdf8" stroke="#1b1818" stroke-width="4"/>'), 'bolinha vazia')),
-          h('p', { class: 'fx-lab' }, 'haste'), h('div', { class: 'fx-pecas' }, peca('haste', true, ico('<line x1="30" y1="8" x2="30" y2="52" stroke="#1b1818" stroke-width="5"/>'), 'com haste'), peca('haste', false, ico('<line x1="12" y1="30" x2="48" y2="30" stroke="#b9bec8" stroke-width="3" stroke-dasharray="4 4"/>'), 'sem haste')),
-          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, ico(n === 0 ? '<path d="M14 30h32" stroke="#b9bec8" stroke-width="3" stroke-dasharray="4 4"/>' : Array.from({ length: n }, (_, k) => `<path d="M24 ${12 + k * 14}c6 10 22 10 20 28" stroke="#1b1818" stroke-width="5" fill="none"/>`).join('')), `${n} colchete${n === 1 ? '' : 's'}`))),
+          h('div', { class: 'fx-pecas' }, peca('cabeca', 'cheia', 'preenchida', 1), peca('cabeca', 'vazia', 'não preenchida', 2)),
+          h('p', { class: 'fx-lab' }, 'haste'), h('div', { class: 'fx-pecas' }, peca('haste', true, 'com haste', 3), peca('haste', false, 'sem haste', 4)),
+          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, n === 0 ? 'sem colchete' : `${n} colchete${n === 1 ? '' : 's'}`, (n % 4) + 1))),
           h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir')));
       };
       const confere = () => {
@@ -138,7 +137,20 @@ export function mount(host) {
     },
     /* ligar: figura/pausa de um lado e nome, valor ou pausa do outro */
     ligar: (p) => {
-      const cfg = ligarCfg(p); const { esq, dir } = paresLigarN(cfg.k, cfg.tipo); let sel = null; const feitos = new Set();
+      const cfg = ligarCfg(p);
+      if (cfg.tipo === 'tres') { // fases do fim: liga o desenho, o nome e quanto vale (3 colunas, na ordem)
+        const { esq, dir } = paresLigarN(cfg.k, 'nome'); const valores = esq.map((x) => x.id).sort(() => Math.random() - 0.5); let sel = null; let etapa = 0; const feitos = new Set();
+        const btn = (cls, dados, conteudo, onclick) => h('button', { type: 'button', class: `fx-lig ${cls}`, ...dados, onclick }, conteudo);
+        const flash = (el) => { erro(el); S.later(() => el.classList.remove('no'), 500); };
+        const E = esq.map((it) => btn('', { 'data-f': it.id, 'aria-label': `figura ${nomeFig(it.id)}` }, fig(it.id, 'fx-fig sm'), (e) => { if (feitos.has(it.id) || etapa !== 0) return; sfx.play('click'); sel = it.id; etapa = 1; e.currentTarget.classList.add('sel'); }));
+        const N = dir.map((it) => btn('nome', { 'data-n': it.id }, h('b', {}, nomeFig(it.id)), (e) => { if (feitos.has(it.id) || etapa !== 1) return; if (it.id === sel) { sfx.play('click'); e.currentTarget.classList.add('ok'); etapa = 2; } else flash(e.currentTarget); }));
+        const V = valores.map((id) => btn('valor', { 'data-v': id }, h('b', {}, beatsLabel(FIG_BY[id].beats)), (e) => {
+          if (feitos.has(id) || etapa !== 2) return;
+          if (id === sel) { feitos.add(id); acerto(e.currentTarget); [e.currentTarget, root.querySelector(`.fx-lig[data-f="${id}"]`), root.querySelector(`.fx-lig[data-n="${id}"]`)].forEach((x) => { x.classList.remove('sel'); x.classList.add('ok'); }); sel = null; etapa = 0; if (feitos.size === esq.length) S.later(fim, 900); }
+          else flash(e.currentTarget); }));
+        root.replaceChildren(topo(0, 0), h('p', { class: 'fx-q' }, 'toque no desenho, depois no nome e por fim em quanto ele vale'), h('div', { class: 'fx-ligar tres' }, h('div', { class: 'col' }, ...E), h('div', { class: 'col' }, ...N), h('div', { class: 'col' }, ...V)));
+        return;
+      } const { esq, dir } = paresLigarN(cfg.k, cfg.tipo); let sel = null; const feitos = new Set();
       const faceEsq = (it) => (it.face === 'pausa' ? pausa(it.id, 'fx-fig sm') : fig(it.id, 'fx-fig sm'));
       const faceDir = (it) => (it.face === 'pausa' ? pausa(it.id, 'fx-fig sm') : it.face === 'valor' ? h('b', {}, beatsLabel(FIG_BY[it.id].beats)) : h('b', {}, nomeFig(it.id)));
       const E = esq.map((it) => h('button', { type: 'button', class: 'fx-lig', 'data-f': it.id, 'aria-label': `${it.face === 'pausa' ? 'pausa' : 'figura'} ${nomeFig(it.id)}`, onclick: (e) => { if (feitos.has(it.id)) return; sfx.play('click'); root.querySelectorAll('.fx-lig.sel').forEach((x) => x.classList.remove('sel')); sel = it.id; e.currentTarget.classList.add('sel'); } }, faceEsq(it)));
@@ -151,35 +163,47 @@ export function mount(host) {
     },
     /* memória: primeiro mostra os pares, depois vira e eles acham de novo */
     memoria: (p) => {
-      const cfg = memCfg(p.nivel); const cartas = paresMem(cfg.k, cfg.modo); window.__figurix.cartas = cartas; let aberta = null; let trava = true; const feitos = new Set();
+      const cfg = memCfg(p.nivel); const cartas = paresMem(cfg.k, cfg.modo); window.__figurix.cartas = cartas; let aberta = null; let trava = false; const feitos = new Set();
       const face = (c) => (c.tipo === 'fig' ? fig(c.id, 'fx-fig sm') : c.tipo === 'pausa' ? pausa(c.id, 'fx-fig sm') : h('b', { class: 'fx-txt' }, c.tipo === 'valor' ? beatsLabel(FIG_BY[c.id].beats) : nomeFig(c.id)));
-      const B = cartas.map((c) => h('button', { type: 'button', class: 'fx-card aberta', 'data-k': c.k, 'aria-label': 'carta', onclick: () => vira(c, B[c.k]) }, face(c)));
+      const B = cartas.map((c) => h('button', { type: 'button', class: 'fx-card', 'data-k': c.k, 'aria-label': 'carta', onclick: () => vira(c, B[c.k]) }, face(c)));
       const vira = (c, b) => {
         if (trava || feitos.has(c.k) || (aberta && aberta.c.k === c.k)) return; sfx.play('click'); b.classList.add('aberta');
         if (!aberta) { aberta = { c, b }; return; }
         const a = aberta; aberta = null;
         if (mesmoParN(a.c, c)) { feitos.add(a.c.k); feitos.add(c.k); a.b.classList.add('ok'); b.classList.add('ok'); acerto(b); if (feitos.size === cartas.length) S.later(fim, 900); }
-        else { erro(b); trava = true; S.later(() => { a.b.classList.remove('aberta'); b.classList.remove('aberta', 'no'); trava = false; }, 900); }
+        else { try { FB.lose(b); } catch { /* ok */ } erros++; b.classList.add('no'); trava = true; S.later(() => { a.b.classList.remove('aberta'); b.classList.remove('aberta', 'no'); trava = false; }, 900); }
       };
-      const dica = { fp: 'olha bem: cada figura tem a sua pausa (o silêncio dela). guarde!', fv: 'olha bem: cada figura e quanto ela vale. guarde!', pn: 'olha bem: cada pausa e o nome da figura dela. guarde!', fn: 'olha bem: cada figura e o nome dela. guarde!' }[cfg.modo];
-      const msg = h('p', { class: 'fx-q' }, dica);
+      const msg = h('p', { class: 'fx-q' }, 'ache os pares!');
       root.replaceChildren(topo(0, 0), msg, h('div', { class: 'fx-mem' }, ...B));
-      S.later(() => { B.forEach((b) => b.classList.remove('aberta')); trava = false; msg.textContent = 'agora ache os pares!'; }, 5000);
     },
     /* caça-palavras */
     caca: (p) => {
       const g = wordsearch(palavrasDe(p.nivel).map((w) => w.toUpperCase()), grandeCaca(p.nivel), Math.random, p.nivel <= 2 ? EASY_DIRS : DIRS); let ini = null; const achadas = new Set();
       const cel = (x, y) => root.querySelector(`.fx-c[data-x="${x}"][data-y="${y}"]`);
-      const clica = (x, y) => {
-        sfx.play('click'); if (!ini) { ini = { x, y }; cel(x, y).classList.add('sel'); return; }
-        const linha = lineCells(ini.x, ini.y, x, y); root.querySelectorAll('.fx-c.sel').forEach((e) => e.classList.remove('sel')); const a = ini; ini = null;
+      const limpaSel = () => root.querySelectorAll('.fx-c.sel').forEach((e) => e.classList.remove('sel'));
+      /** confere a linha entre duas letras: achou uma palavra da lista (de frente ou ao contrário)? */
+      const avalia = (a, x, y) => {
+        const linha = lineCells(a.x, a.y, x, y); limpaSel();
         if (!linha) { if (a.x !== x || a.y !== y) erro(cel(x, y)); return; }
         const txt = linha.map((c) => g.grid[c.y][c.x]).join(''); const ach = g.placed.find((p) => !achadas.has(p.w) && (p.w === txt || p.w === [...txt].reverse().join('')));
-        if (ach) { achadas.add(ach.w); linha.forEach((c) => cel(c.x, c.y).classList.add('ok')); root.querySelector(`.fx-pal[data-w="${ach.w}"]`).classList.add('feita'); acerto(cel(x, y)); if (achadas.size === g.placed.length) S.later(fim, 900); }
+        if (ach) { achadas.add(ach.w); const cor = achadas.size % 4 || 4; linha.forEach((c) => { const e = cel(c.x, c.y); e.classList.add('ok', `k${cor}`); }); const pal = root.querySelector(`.fx-pal[data-w="${ach.w}"]`); pal.classList.add('feita', `k${cor}`); acerto(cel(x, y)); if (achadas.size === g.placed.length) S.later(fim, 900); }
         else erro(cel(x, y));
       };
-      root.replaceChildren(topo(0, 0), h('p', { class: 'fx-q' }, 'ache as palavras: toque na primeira e na última letra' + (p.nivel > 2 ? ' (vale na diagonal)' : '')),
-        h('div', { class: 'fx-grade', style: `--n:${g.size}` }, ...g.grid.flatMap((lin, y) => lin.map((l, x) => h('button', { type: 'button', class: 'fx-c', 'data-x': x, 'data-y': y, 'aria-label': l, onclick: () => clica(x, y) }, l)))),
+      const clica = (x, y) => { // jeito antigo (ainda vale): toca na primeira e na última letra
+        sfx.play('click'); if (!ini) { ini = { x, y }; cel(x, y).classList.add('sel'); return; }
+        const a = ini; ini = null; avalia(a, x, y);
+      };
+      // arrastar o dedo: pointerdown na 1ª letra, passa por cima e solta na última
+      let arrasto = null;
+      const celDe = (ev) => { const el = document.elementFromPoint(ev.clientX, ev.clientY); const c = el && el.closest ? el.closest('.fx-c') : null; return c ? { x: Number(c.dataset.x), y: Number(c.dataset.y) } : null; };
+      const pinta = (a, b) => { limpaSel(); const l = lineCells(a.x, a.y, b.x, b.y); (l || [a]).forEach((c) => { const e = cel(c.x, c.y); if (e && !e.classList.contains('ok')) e.classList.add('sel'); }); };
+      const aoSoltar = (ev) => { const a = arrasto; arrasto = null; if (!a) return; document.removeEventListener('pointermove', aoMover); document.removeEventListener('pointerup', aoSoltar); document.removeEventListener('pointercancel', aoSoltar);
+        const f = celDe(ev) || a.fim || { x: a.x, y: a.y }; if (!a.moveu || (f.x === a.x && f.y === a.y)) { limpaSel(); clica(a.x, a.y); return; } sfx.play('click'); ini = null; avalia({ x: a.x, y: a.y }, f.x, f.y); };
+      const aoMover = (ev) => { if (!arrasto) return; const c = celDe(ev); if (!c) return; if (c.x !== arrasto.x || c.y !== arrasto.y) arrasto.moveu = true; arrasto.fim = c; if (arrasto.moveu) pinta(arrasto, c); };
+      const aoApertar = (ev, x, y) => { if (ev.button > 0) return; ev.preventDefault(); arrasto = { x, y, moveu: false, fim: null }; document.addEventListener('pointermove', aoMover); document.addEventListener('pointerup', aoSoltar); document.addEventListener('pointercancel', aoSoltar); };
+      off = () => { document.removeEventListener('pointermove', aoMover); document.removeEventListener('pointerup', aoSoltar); document.removeEventListener('pointercancel', aoSoltar); };
+      root.replaceChildren(topo(0, 0), h('p', { class: 'fx-q' }, 'arraste o dedo sobre a palavra' + (p.nivel > 2 ? ' (vale na diagonal e ao contrário)' : '')),
+        h('div', { class: 'fx-grade', style: `--n:${g.size}` }, ...g.grid.flatMap((lin, y) => lin.map((l, x) => h('button', { type: 'button', class: 'fx-c', 'data-x': x, 'data-y': y, 'aria-label': l, onpointerdown: (ev) => aoApertar(ev, x, y), onclick: (ev) => { if (ev.detail === 0) clica(x, y); } }, l)))),
         h('div', { class: 'fx-pals' }, ...g.placed.map((p) => h('span', { class: 'fx-pal', 'data-w': p.w }, p.w.toLowerCase()))));
       window.__figurix.caca = g;
     },
@@ -199,8 +223,7 @@ export function mount(host) {
     tetris: (p) => {
       const T = itensTetrisN(p.nivel); const itens = T.itens; let k = 0; let lado = 'esq'; let t0 = 0; let raf = 0; let acabou = false;
       const queda = T.queda * 1000;
-      const bot = robo({ mood: 'happy', tier: 0, size: 64, say: '' });
-      const paul = h('div', { class: 'fx-paul esq' }, bot.el);
+      const paul = h('div', { class: 'fx-paul esq' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' })); // o Paul de fone, sem a bateria
       const nomeEsq = h('b', { class: 'fx-nome esq' }); const nomeDir = h('b', { class: 'fx-nome dir' });
       const queda$ = h('div', { class: 'fx-cai' });
       const campo = h('div', { class: 'fx-campo', role: 'application', 'aria-label': 'toque ou arraste pro lado certo' }, queda$, paul, nomeEsq, nomeDir);

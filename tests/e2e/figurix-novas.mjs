@@ -25,8 +25,8 @@ n = nivel('monte', 6); await abre(n); await page.waitForSelector('.fx-peca');
 const alvos = montesDe(6); const NOME = Object.fromEntries(FIGS.map((f) => [f.name, f.id]));
 for (let r = 0; r < alvos.length; r++) {
   const nome = (await page.textContent('.fx-q')).replace('monte a ', '').trim(); const pc = peçasDe(NOME[nome]);
-  await page.getByRole('button', { name: pc.cabeca === 'cheia' ? 'bolinha pintada' : 'bolinha vazia' }).click(); await page.getByRole('button', { name: pc.haste ? 'com haste' : 'sem haste' }).click();
-  await page.getByRole('button', { name: pc.colchetes === 0 ? '0 colchetes' : `${pc.colchetes} colchete${pc.colchetes === 1 ? '' : 's'}` }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1300);
+  await page.getByRole('button', { name: pc.cabeca === 'cheia' ? 'preenchida' : 'não preenchida', exact: true }).click(); await page.getByRole('button', { name: pc.haste ? 'com haste' : 'sem haste', exact: true }).click();
+  await page.getByRole('button', { name: pc.colchetes === 0 ? 'sem colchete' : `${pc.colchetes} colchete${pc.colchetes === 1 ? '' : 's'}` }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1300);
 }
 check(`fase ${n} (monte até a semifusa): montou todas`, /concluída/.test(await page.textContent('.jg-figurix')));
 // árvore com base menor (nível 5)

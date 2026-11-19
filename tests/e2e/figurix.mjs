@@ -11,7 +11,7 @@ await page.locator('.tm-tabs button').nth(0).click(); await sleep(600);
 const abreFase = async (n) => { const m = mundoDe(n); await page.goto(url + '/aluno.html#/jogos'); await sleep(250); await page.goto(url + '/aluno.html#/jogos/figurix'); await page.waitForSelector('.mp-node');
   await page.locator('.tm-tabs button').nth(MUNDOS.indexOf(m)).click(); await sleep(700); await page.waitForSelector('.mp-node');
   await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).scrollIntoView({ block: 'center' }), n - m.de); await sleep(150); await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), n - m.de); await sleep(500);
-  if (n <= 3) { check(`fase ${n}: abre a aulinha do Paul (colinha das figuras, caminho pros Estudos e aviso da estrela)`, await page.evaluate(() => document.querySelectorAll('.fx-colinha tr').length === 5 && !!document.querySelector('a[href="#/estudos/aulas"]') && /ganha estrela/.test(document.querySelector('.fx-aula-nota').textContent))); if (n === 1) await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/figurix-aulinha.png` }); await page.evaluate(() => document.querySelector('.fx-aula-jogar').click()); await sleep(400); } };
+  if (n <= 1) { check(`fase ${n}: abre a aulinha do Paul (colinha das figuras e o caminho pros Estudos)`, await page.evaluate(() => document.querySelectorAll('.fx-colinha tr').length === 5 && !!document.querySelector('a[href="#/estudos/aulas"]'))); if (n === 1) await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/figurix-aulinha.png` }); await page.evaluate(() => document.querySelector('.fx-aula-jogar').click()); await sleep(400); } };
 const abre = async (pos) => { await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await sleep(400); await page.evaluate(() => { const b = document.querySelector('.fx-aula-jogar'); if (b) b.click(); }); await sleep(300); }; // as 3 primeiras fases abrem na aulinha: passa por ela
 const mapa = async () => { await page.getByRole('button', { name: '‹ mapa' }).click(); await page.waitForSelector('.mp-node'); };
 // fase 1: qual é a mais rápida? (semínima, colcheia, semicolcheia -> semicolcheia)
@@ -29,9 +29,9 @@ await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitF
 // fase 3: monte a colcheia
 await abre(2); await page.waitForSelector('.fx-peca');
 check('fase 3: pede pra montar a colcheia', /monte a colcheia/.test(await page.textContent('.fx-q')));
-await page.getByRole('button', { name: 'bolinha vazia' }).click(); await page.getByRole('button', { name: 'sem haste' }).click(); await page.getByRole('button', { name: '2 colchetes' }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
+await page.getByRole('button', { name: 'não preenchida', exact: true }).click(); await page.getByRole('button', { name: 'sem haste', exact: true }).click(); await page.getByRole('button', { name: '2 colchetes' }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('montou errado: peças erradas ficam vermelhas e conta erro', (await page.locator('.fx-peca.no').count()) >= 1 && (await page.evaluate(() => window.__figurix.erros)) === 1);
-await page.getByRole('button', { name: 'bolinha pintada' }).click(); await page.getByRole('button', { name: 'com haste' }).click(); await page.getByRole('button', { name: '1 colchete' }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1500);
+await page.getByRole('button', { name: 'preenchida', exact: true }).click(); await page.getByRole('button', { name: 'com haste', exact: true }).click(); await page.getByRole('button', { name: '1 colchete' }).click(); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(1500);
 check('montou certo: vai pra próxima figura', /monte a semínima/.test(await page.textContent('.fx-q')));
 await mapa();
 // fase 4: ligar 3
@@ -43,8 +43,7 @@ check('ligou tudo: fase concluída', /concluída/.test(await page.textContent('.
 await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
 // fase 6: memória das pausas (mostra, depois vira; acha os pares)
 await abre(5); await page.waitForSelector('.fx-card');
-check('fase 6: 8 cartas abertas de início (pra guardar)', (await page.locator('.fx-card').count()) === 8 && (await page.locator('.fx-card.aberta').count()) === 8);
-await page.waitForFunction(() => document.querySelectorAll('.fx-card.aberta').length === 0, null, { timeout: 9000 });
+check('fase 6: 8 cartas viradas (com o Paul) desde o início', (await page.locator('.fx-card').count()) === 8 && (await page.locator('.fx-card.aberta').count()) === 0);
 const cs = await page.evaluate(() => window.__figurix.cartas);
 for (const id of [...new Set(cs.map((c) => c.par))]) { const [a, b] = cs.filter((c) => c.par === id); await page.locator(`.fx-card[data-k="${a.k}"]`).click(); await page.locator(`.fx-card[data-k="${b.k}"]`).click(); await sleep(200); }
 await sleep(1200);
