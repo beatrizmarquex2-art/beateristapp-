@@ -114,7 +114,7 @@ export function montarAula(host, id, { onPasso } = {}) {
   const draw = () => {
     const trancada = alunoSemCodigo() && step >= GRATIS.aulinha;
     S.reset(); const s = A.passos[step]; const humor = trancada ? 'wave' : s.mood; say.textContent = trancada ? 'você quer exercícios e imprimir atividades? acesse a lojinha!' : s.say;
-    paulImg.src = corSrc(humor === 'cheer' ? 'baquetas-pra-cima' : poseDe(humor === 'wave' ? 'wave' : humor, A.pose)); paulImg.classList.remove('pula'); void paulImg.offsetWidth; paulImg.classList.add('pula');
+    paulImg.src = corSrc(humor === 'cheer' ? 'festa' : poseDe(humor === 'wave' ? 'wave' : humor, A.pose)); paulImg.classList.remove('pula'); void paulImg.offsetWidth; paulImg.classList.add('pula');
     conta.textContent = `passo ${step + 1} de ${A.passos.length}`;
     if (!trancada && onPasso) onPasso(step);
     dots.replaceChildren(...A.passos.map((_, k) => h('i', { class: k < step ? 'done' : k === step ? 'now' : '' }, k < step ? '✓' : String(k + 1))));

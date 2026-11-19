@@ -1,5 +1,5 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { estrelasPorErros, estrelasGenius, estrelasMemoria, padsDe, sequenciaGenius, confere, caminho3x3, saoVizinhas, PARES, paresMemoria, cartasMemoria, formaPar, AREAS } from '../js/jogos/fuga-mini-logic.js';
+import { bancoQA, rodadasQA, acertaMira, alvoX, montarCfg, estrelasPesca, estrelasMira, estrelasMontar, estrelasPorErros, estrelasGenius, estrelasMemoria, padsDe, sequenciaGenius, confere, caminho3x3, saoVizinhas, PARES, paresMemoria, cartasMemoria, formaPar, AREAS } from '../js/jogos/fuga-mini-logic.js';
 import { NIVEIS, nivelDaFase, NIVEL_CFG, TIPOS, TIPOS_FASE, PORTAS_FASE, portasDaFase, faseCfg, estrelasPorta, NOME_TIPO, BONUS, FASES } from '../js/jogos/fuga-logic.js';
 const rnd = (seed = 7) => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 test('estrelas pelos erros: 3 / 2 / 1, nunca menos de 1', () => {
@@ -40,10 +40,42 @@ test('desenho das portas: tipos por fase batem com PORTAS_FASE, tipos conhecidos
   assert.deepEqual([11, 12].map((n) => new Set(TIPOS_FASE[n - 1]).size), [4, 4]);
   const todos = TIPOS_FASE.flat(); assert.equal(todos.length, 32); for (const t of TIPOS) assert.ok(todos.includes(t), `falta ${t}`);
   const por = (t) => todos.filter((x) => x === t).length; assert.ok(por('quiz') >= 6 && por('caca') >= 6 && por('cruz') >= 5, 'quiz, caça e cruzadinha continuam sendo os principais');
-  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['quiz', 'memoria']); assert.deepEqual(portasDaFase(0, 8).map((p) => p.tipo), ['caminho', 'quiz', 'caca']);
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['quiz', 'memoria']); assert.deepEqual(portasDaFase(0, 8).map((p) => p.tipo), ['pesca', 'quiz', 'caca']);
   assert.ok(portasDaFase(0, 3).every((p) => p.nivel === 'facil') && portasDaFase(0, 10).every((p) => p.nivel === 'dificil'));
   assert.ok(portasDaFase(0, 3).filter((p) => p.tipo === 'genius').every((p) => ['notas', 'bateria'].includes(p.area)));
 });
 test('estrelas da porta: jogos de toque usam as estrelas calculadas pelos erros', () => {
   assert.deepEqual([3, 2, 1].map((e) => estrelasPorta('genius', { estrelas: e })), [3, 2, 1]); assert.equal(estrelasPorta('memoria', { estrelas: 0 }), 3); assert.equal(estrelasPorta('caminho', { estrelas: 9 }), 3);
+});
+
+test('lote 2: estrelas da pesca, da mira e do montar (0-1 erro = 3 ★, até 3 = 2 ★, mais = 1 ★)', () => {
+  for (const f of [estrelasPesca, estrelasMira, estrelasMontar]) assert.deepEqual([0, 1, 2, 3, 4, 40].map(f), [3, 3, 2, 2, 1, 1]);
+});
+test('pesca/mira: perguntas sem repetir, resposta certa entre as opções, erradas da mesma área, mistura as 3 áreas', () => {
+  const banco = bancoQA(); assert.ok(banco.length >= 25); assert.equal(new Set(banco.map((x) => x.certo)).size, banco.length, 'respostas repetidas no banco');
+  for (const [n, k] of [[5, 3], [6, 4], [8, 5]]) {
+    const r = rodadasQA(n, k, rnd(n)); assert.equal(r.length, n); assert.equal(new Set(r.map((x) => x.q)).size, n);
+    for (const x of r) { assert.equal(x.opcoes.length, k); assert.equal(new Set(x.opcoes).size, k); assert.equal(x.opcoes[x.ok], x.certo); const area = banco.filter((b) => x.opcoes.includes(b.certo)); assert.ok(area.every((b) => b.area === x.area), 'opções de áreas diferentes'); }
+    if (n >= 3) assert.deepEqual([...new Set(r.map((x) => x.area))].sort(), [...AREAS].sort());
+  }
+});
+test('mira: a bolinha acerta o alvo na linha (o mais perto), tolera um pouco e erra quando passa longe', () => {
+  const O = { x: 150, y: 300 }; const alvos = [{ x: 60, y: 80, r: 20 }, { x: 150, y: 80, r: 20 }, { x: 240, y: 80, r: 20 }];
+  assert.equal(acertaMira(O, { x: 150, y: 10 }, alvos), 1); assert.equal(acertaMira(O, { x: 60, y: 80 }, alvos), 0); assert.equal(acertaMira(O, { x: 240, y: 80 }, alvos), 2);
+  assert.equal(acertaMira(O, { x: 160, y: 10 }, alvos), 1, 'tolerante: quase no centro'); assert.equal(acertaMira(O, { x: 105, y: 10 }, alvos), -1, 'entre dois alvos');
+  assert.equal(acertaMira(O, { x: 150, y: 400 }, alvos), -1, 'pra baixo não acerta'); assert.equal(acertaMira(O, O, alvos), -1);
+  const na_frente = [{ x: 150, y: 200, r: 20 }, { x: 150, y: 80, r: 20 }]; assert.equal(acertaMira(O, { x: 150, y: 0 }, na_frente), 0, 'o alvo mais perto leva');
+  assert.equal(alvoX(100, 0, 3, 0), 100); assert.ok(alvoX(100, 1, 2.2, 1) !== 100); assert.ok(Math.abs(alvoX(100, 2, 5, 1) - 100) <= 9.01);
+});
+test('montar: nível pede figuras do Figurix (3, 4 e 4 figuras) e até 4 colchetes quando precisa', () => {
+  assert.deepEqual(['facil', 'medio', 'dificil'].map((n) => montarCfg(n).figuras.length), [3, 4, 4]);
+  assert.equal(montarCfg('facil').maxC, 2); assert.equal(montarCfg('medio').maxC, 4); assert.equal(montarCfg('dificil').maxC, 4);
+  assert.ok(montarCfg('dificil').figuras.includes('semifusa'));
+});
+test('lote 2: pesca, mira e montar nas fases certas e fases 11/12 sem repetir jogo', () => {
+  const quais = (t) => TIPOS_FASE.flatMap((f, i) => (f.includes(t) ? [i + 1] : []));
+  assert.deepEqual(quais('montar'), [3, 4]); assert.deepEqual(quais('mira'), [9, 10]); assert.ok([5, 8, 9].every((n) => quais('pesca').includes(n))); assert.ok(quais('pesca').includes(11));
+  for (const t of ['pesca', 'mira', 'montar']) for (const nv of ['facil', 'medio', 'dificil']) assert.ok(NIVEL_CFG[nv][t], `${t}/${nv}`);
+  assert.ok(NIVEL_CFG.dificil.pesca.vel > NIVEL_CFG.medio.pesca.vel && NIVEL_CFG.medio.pesca.vel > NIVEL_CFG.facil.pesca.vel);
+  assert.ok(NIVEL_CFG.dificil.pesca.peixes > NIVEL_CFG.facil.pesca.peixes); assert.equal(NIVEL_CFG.dificil.mira.move, 1); assert.equal(NIVEL_CFG.facil.mira.move, 0);
 });

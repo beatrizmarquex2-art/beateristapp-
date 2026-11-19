@@ -41,7 +41,7 @@ const wantsLess = (s) => !!s.reduzir || matchMedia('(prefers-reduced-motion: red
 export function mount(host, parts = [], opts = {}) {
   const wrap = h('div', { class: 'fig' });
   const ult = ultimoJogo(); // pra ninguém se perder: o Álbum mostra o caminho de volta pro jogo em que o aluno estava
-  host.append(parts[0] === 'Pacotes' ? banner('Stars', 'suas estrelas, a roleta e o baú') : banner('Álbum', 'cole todas as figurinhas'), ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
+  host.append(parts[0] === 'Pacotes' ? banner('Stars', 'suas estrelas, a roleta e o baú') : banner('Álbum', 'cole todas as figurinhas'), parts[0] === 'Pacotes' ? h('img', { class: 'fig-bau-paul', src: 'assets/paul/colorido/paul-bau.webp', alt: '', draggable: 'false', decoding: 'async' }) : null, ult ? h('div', { class: 'pad-x fig-volta' }, h('a', { class: 'btn primary wide fig-volta-btn', href: ult.href }, `‹ voltar pro jogo: ${ult.nome}`)) : null, wrap);
   const ID = D.albumId(); // o álbum é de quem está com o nome agora
   let state = { ...L.emptyState(), ...D.albumDados() };
   const nuvem = typeof opts.salvar === 'function'; let tSave = null;

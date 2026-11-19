@@ -1,4 +1,6 @@
 // Jogos de toque da Fuga do Estúdio (lote 1): Genius, caminho 3×3 e memória de notas. Lógica pura (sem tela), testada em tests/fuga-mini.test.mjs.
+import { montesDe, maxColchetes } from './figurix-logic.js';
+import { FIGS, beatsLabel } from '../kids/figs.js';
 // O conteúdo mistura 3 áreas: ritmo (figuras, bateria, rudimentos), teoria (notas, cifras, claves, intervalos) e cordas (instrumentos).
 // Estrelas pelos ERROS (3 / 2 / 1, nunca menos de 1): o jogo sempre termina, mas quem erra menos ganha mais.
 
@@ -72,3 +74,38 @@ export function cartasMemoria(pares, rnd = Math.random) {
 }
 /** Duas cartas viradas formam um par? (mesmo par, lados diferentes) */
 export const formaPar = (a, b) => !!a && !!b && a.id !== b.id && a.par === b.par && a.lado !== b.lado;
+
+/* ================= lote 2: pesca, mira e bolinha, montar nota ================= */
+export const estrelasPesca = (erros) => estrelasPorErros(erros, 1, 3);
+export const estrelasMira = (erros) => estrelasPorErros(erros, 1, 3);
+export const estrelasMontar = (erros) => estrelasPorErros(erros, 1, 3);
+
+/** Banco de perguntas da pesca e da mira (mistura ritmo, teoria e cordas): `q` = o que pede, `certo` = a resposta, `area`. Só pares com texto (os de símbolo ficam na memória). */
+export function bancoQA() {
+  const vistos = new Set(); const out = [];
+  const add = (area, a, b) => { if (!a || !b || vistos.has(a)) return; vistos.add(a); out.push({ area, certo: a, q: b }); };
+  for (const area of AREAS) for (const p of PARES[area]) if (p.a) add(area, p.a, p.b);
+  for (const f of FIGS.slice(0, 5)) add('ritmo', f.name, beatsLabel(f.beats));
+  return out;
+}
+/** `total` rodadas sem repetir a pergunta (alternando as 3 áreas); cada uma com `nOpcoes` respostas (1 certa + erradas da MESMA área), embaralhadas, e `ok` = posição da certa. */
+export function rodadasQA(total, nOpcoes, rnd = Math.random) {
+  const emb = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  const banco = bancoQA(); const por = AREAS.map((k) => emb(banco.filter((x) => x.area === k))); const out = [];
+  for (let i = 0; out.length < total && i < total * 6; i++) {
+    const p = por[i % por.length].shift(); if (!p) continue;
+    const pool = emb(banco.filter((x) => x.area === p.area && x.certo !== p.certo)).slice(0, nOpcoes - 1);
+    const ops = emb([p.certo, ...pool.map((x) => x.certo)]); out.push({ area: p.area, q: p.q, certo: p.certo, opcoes: ops, ok: ops.indexOf(p.certo) });
+  }
+  return out;
+}
+/** Mira: a bolinha sai de `o` ({x,y}) na direção do ponto `alvoPonto` (um ponto qualquer da tela). Qual alvo (círculos {x,y,r}) ela acerta? O mais perto de `o` ao longo do caminho, com `folga` extra no raio (tolerante); -1 = errou. */
+export function acertaMira(o, ponto, alvos, folga = 8) {
+  const dx = ponto.x - o.x; const dy = ponto.y - o.y; const d = Math.hypot(dx, dy); if (d < 1e-6) return -1; const ux = dx / d; const uy = dy / d; let melhor = -1; let t = Infinity;
+  alvos.forEach((a, i) => { const vx = a.x - o.x; const vy = a.y - o.y; const proj = vx * ux + vy * uy; if (proj <= 0) return; const perp = Math.abs(vx * uy - vy * ux); if (perp <= a.r + folga && proj < t) { t = proj; melhor = i; } });
+  return melhor;
+}
+/** Posição horizontal dos alvos: parados (move = 0) ou balançando de leve (move = 1) com fases diferentes. */
+export const alvoX = (base, i, seg, move) => base + (move ? Math.sin(seg * 1.1 + i * 1.9) * 9 : 0);
+/** Montar nota: o que cada nível pede (a figura vem do Figurix: figuras do nível `nivelFig`) e quantos colchetes cabem. */
+export const montarCfg = (nivel) => { const nf = { facil: 1, medio: 3, dificil: 4 }[nivel] || 1; return { figuras: montesDe(nf), maxC: maxColchetes(nf) }; };

@@ -68,7 +68,7 @@ export function mount(host, { onSignedOut }) {
     h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'youtube premium e spotify'),
       h('p', {}, 'Os players que ficam dentro do app (YouTube e Spotify) não enxergam o seu login do Premium: por segurança, o navegador isola cada site, então não dá pra vincular as contas por aqui. Por isso o player embutido pode mostrar anúncio (e o Spotify, só prévia).'),
       h('p', { class: 'muted' }, 'Pra ouvir sem anúncio, use o botão ↗ / “abrir no app” ao lado dos vídeos e links: ele abre o YouTube ou o Spotify de verdade, já logado na sua conta Premium.')),
-    h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'iphone'),
+    h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'iphone'), h('img', { class: 'cfg-celular-paul', src: 'assets/paul/colorido/paul-celular.webp', alt: '', draggable: 'false', decoding: 'async' }),
       h('p', {}, 'Para instalar: abra no Safari → Compartilhar → “Adicionar à Tela de Início”. Com o app instalado e aberto uma vez com internet, o checklist, as notas e os favoritos funcionam offline.')),
     h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'sair'),
       h('button', { class: 'btn danger', type: 'button', onclick: async () => {
