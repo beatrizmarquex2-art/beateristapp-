@@ -23,9 +23,9 @@ export function flash(el) {
 export const themeRow = (onPick) => h('div', { class: 'row kd-modes kd-themes', role: 'group', 'aria-label': 'Tema da bateria' }, h('small', {}, 'tema'),
   ...KIT_THEMES.map(([k, t]) => h('button', { type: 'button', class: `kd-chip${kitTheme() === k ? ' on' : ''}`, 'aria-pressed': String(kitTheme() === k), onclick: () => { try { localStorage.setItem('bt-rz-theme', k); } catch { /* sem armazenamento */ } onPick(); } }, t)));
 /** A peça tocada: a que está sob o dedo ou, se o dedo caiu no espacinho entre as peças, a mais perto (até ~40 px). Assim não "falha" ao tocar quase em cima. */
-export function pieceAt(root, e) {
+export function pieceAt(root, e, raio = 40) {
   const g = e.target.closest && e.target.closest('[data-p]'); if (g) return g;
-  let best = null; let bd = 40;
+  let best = null; let bd = raio;
   for (const k of root.querySelectorAll('.kp')) {
     const r = k.getBoundingClientRect(); const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right); const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
     const d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = k; }

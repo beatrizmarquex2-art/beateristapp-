@@ -70,13 +70,13 @@ check('4 notas caindo: faixa certa nas 8 = 0 erros, 3 ★ e chama fim', (await p
 // ---- lote 2: pesca, mira e bolinha, montar nota ----
 const joga2 = async (fn, nivel) => { await page.evaluate(async ([fn, nivel]) => { window.__fim = 0; const m = await import('/js/jogos/fuga-mini.js'); document.body.innerHTML = '<div id="b"></div>'; window.__api = m[fn](document.getElementById('b'), { nivel, fim: () => { window.__fim = (window.__fim || 0) + 1; } }); }, [fn, nivel]); const go = page.locator('.fgm-go'); if (await go.count()) await go.click(); await sleep(300); };
 const stats = () => page.evaluate(() => JSON.stringify(window.__api.stats()));
-// pesca (fácil: 5 rodadas, 3 peixes): 1 peixe errado no começo = 1 erro; o resto certo = 3 ★
+// pesca (fácil: 3 rodadas, 3 peixes): 1 peixe errado no começo = 1 erro; o resto certo = 3 ★
 await joga2('pesca', 'facil');
 check('pesca: 3 peixes nadando e a pergunta aparece', (await page.locator('.fgp-peixe').count()) === 3 && /pesque/.test(await page.textContent('.fgp-q')));
 await page.evaluate(() => { const r = window.__api.rodada(); window.__api.pega((r.ok + 1) % 3); }); await sleep(900);
 check('pesca: peixe errado conta 1 erro e some (a rodada continua)', JSON.parse(await stats()).erros === 1 && (await page.locator('.fgp-peixe').count()) === 2);
 for (let i = 0; i < 12 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const r = window.__api.rodada(); if (r) window.__api.pega(r.ok); }); await sleep(1200); }
-check('pesca: 5 pescados = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":5,"total":5,"estrelas":3}', await stats());
+check('pesca: 3 pescados = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":3}', await stats());
 // mira: um arrasto de verdade (mouse) no alvo certo, depois pelo gancho de teste
 await joga2('mira', 'facil');
 const mouseNo = async (i) => { const pt = await page.evaluate((i) => { const p = window.__api.alvos()[i]; const rc = document.querySelector('.fgx-svg').getBoundingClientRect(); return { x: rc.left + (p.x / 300) * rc.width, y: rc.top + (p.y / 330) * rc.height }; }, i); await page.mouse.move(pt.x - 30, pt.y + 80); await page.mouse.down(); await page.mouse.move(pt.x, pt.y, { steps: 4 }); await page.mouse.up(); };
@@ -86,7 +86,7 @@ check('mira: alvo errado conta 1 erro e escurece', JSON.parse(await stats()).err
 await mouseNo(await page.evaluate(() => window.__api.rodada().ok)); await sleep(1300);
 check('mira: arrastar e soltar no alvo certo acerta (1ª rodada passa)', JSON.parse(await stats()).found === 1, await stats());
 for (let i = 0; i < 10 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const r = window.__api.rodada(); if (r) window.__api.atira(r.ok); }); await sleep(1300); }
-check('mira: 4 acertos = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":4,"total":4,"estrelas":3}', await stats());
+check('mira: 3 acertos = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":3}', await stats());
 // montar: 1ª tentativa errada (1 erro), depois monta certo as 3 figuras
 await joga2('montar', 'facil');
 const clicaPecas = async (p) => { for (const [g, v] of [['cabeca', p.cabeca], ['haste', p.haste], ['colchetes', p.colchetes]]) await page.locator(`.fgn-peca[data-g="${g}"][data-v="${v}"]`).click(); };
@@ -95,5 +95,25 @@ const montaErr = await page.evaluate(() => { const c = window.__api.certo(); ret
 check('montar: peça errada conta 1 erro e marca a peça', JSON.parse(await stats()).erros === 1 && (await page.locator('.fgn-peca.no').count()) >= 1);
 for (let i = 0; i < 3; i++) { const c = await page.evaluate(() => window.__api.certo()); if (!c) break; await clicaPecas(c); await page.locator('.fgn-ok').click(); await sleep(1200); }
 check('montar: as 3 figuras certas = chama fim, 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":3}', await stats());
+
+// ---- lote 3: feche o compasso e o intruso (jogos novos, 3 rodadas no fácil) ----
+await joga2('compasso', 'facil');
+check('compasso: 3 rodadas, a bandeja tem as 3 peças do fácil e o medidor de 16 casinhas', (await page.locator('.fgc-op').count()) === 3 && (await page.locator('.fgc-med i').count()) === 16 && /faltam/.test(await page.textContent('.fgm-msg')));
+// passar do compasso conta 1 erro: põe a peça maior (mínima) até estourar
+const faltaErr = await page.evaluate(() => window.__api.rodada().faltamQ); // estoura o compasso de propósito (sem fechar a rodada sem querer): 4 → mínima · 8 → semínima + mínima · 12 → mínima + mínima
+for (const id of (faltaErr === 4 ? ['minima'] : faltaErr === 8 ? ['seminima', 'minima'] : ['minima', 'minima'])) { await page.locator(`.fgc-op[data-id="${id}"]`).click(); await sleep(100); }
+check('compasso: passar do compasso conta 1 erro, limpa e avisa', JSON.parse(await stats()).erros === 1 && /passou do compasso/.test(await page.textContent('.fgm-msg')), await stats());
+for (let rod = 0; rod < 3; rod++) {
+  const falta = await page.evaluate(() => window.__api.rodada().faltamQ); let q = 0; // escolhe sempre a maior peça que ainda cabe (mínima 8, semínima 4): no fácil todo "falta" é múltiplo de 4
+  while (q < falta) { const id = falta - q >= 8 ? 'minima' : 'seminima'; await page.locator(`.fgc-op[data-id="${id}"]`).click(); q += id === 'minima' ? 8 : 4; await sleep(80); }
+  await sleep(1300);
+}
+check('compasso: 3 compassos fechados = chama fim, 1 erro = 2 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":2}', await stats());
+await joga2('intruso', 'facil');
+check('intruso: 4 discos e a pergunta', (await page.locator('.fgi-disco').count()) === 4 && /NÃO combina/.test(await page.textContent('.fgm-msg')));
+const discoErr = await page.evaluate(() => { const r = window.__api.rodada(); return r.intruso === 0 ? 1 : 0; }); await page.locator('.fgi-disco').nth(discoErr).click(); await sleep(200);
+check('intruso: disco errado conta 1 erro e fica vermelho', JSON.parse(await stats()).erros === 1 && (await page.locator('.fgi-disco.errado').count()) === 1);
+for (let rod = 0; rod < 3; rod++) { const certo = await page.evaluate(() => window.__api.rodada().intruso); await page.locator('.fgi-disco').nth(certo).click(); await sleep(rod === 0 ? 400 : 400); const msg = await page.textContent('.fgm-msg'); if (rod === 0) check('intruso: acertar explica o porquê', /as outras/.test(msg) && (await page.locator('.fgi-disco.certo').count()) === 1, msg); await sleep(2100); }
+check('intruso: 3 acertos = chama fim, 1 erro = 2 ★', (await page.evaluate(() => window.__fim)) === 1 && (await stats()) === '{"erros":1,"found":3,"total":3,"estrelas":2}', await stats());
 check('sem erro na página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
