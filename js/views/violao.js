@@ -29,7 +29,7 @@ export function mount(host) {
   const notes = h('div', { class: 'ti-gnotes' });
   const strs = h('div', { class: 'ti-gstr', 'aria-label': 'Cordas: passe o dedo' });
   const strEls = GROSS.map((w, i) => { const e = h('div', { class: `ti-str${i < 3 ? ' wound' : ''}` }, h('i', {})); e.firstChild.style.setProperty('--w', `${w}px`); strs.append(e); return e; });
-  const soundRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Som' });
+  const soundRow = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo do violão' });
   const muteBtn = h('button', { class: 'kd-chip ti-sym', type: 'button', 'aria-pressed': 'false', 'aria-label': 'abafar (segure)', title: 'abafar (segure)' }, '🔉'); // só o símbolo, pequeno
 
   const carta = (ac, ativo, ed, onclick) => {
@@ -42,7 +42,7 @@ export function mount(host) {
     chordsEl.replaceChildren(...slots.map((ac, i) => carta(ac, editando ? i === selSlot : i === chord, editando, () => { audio(); if (!pago() && i >= GRATIS.violao.acordes) { pedir('mais acordes'); return; } if (editando) { selSlot = i; } else { chord = i; strumAc(slots[i]); } drawChords(); if (editando) drawBandeja(); })));
     notes.replaceChildren(...slots[chord].notas.map((m, i) => { strEls[i].classList.toggle('off', m == null); return h('div', { class: 'ti-gnote' }, m == null ? '×' : nome(m)); }));
   };
-  const drawSound = () => soundRow.replaceChildren(...SOUNDS.map(([v, l, nm]) => { const trav = !pago() && v !== 'acoustic'; return h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { if (trav) { pedir('a guitarra'); return; } sound = v; audio(); warmNotes(ACORDES.flatMap((a) => a.notas)); drawSound(); } }, `${l} ${nm}`, trav ? cadeado() : null); }));
+  const drawSound = () => soundRow.replaceChildren(h('small', {}, 'modelo'), ...SOUNDS.map(([v, l, nm]) => { const trav = !pago() && v !== 'acoustic'; return h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-label': nm, title: nm, 'aria-checked': String(sound === v), onclick: () => { if (trav) { pedir('a guitarra'); return; } sound = v; audio(); warmNotes(ACORDES.flatMap((a) => a.notas)); drawSound(); } }, `${l} ${nm}`, trav ? cadeado() : null); }));
   const drawTheme = () => { stage.dataset.kitTheme = 'colagem'; }; // um fundo só
 
   const ripple = (x, y, big) => {
@@ -128,8 +128,8 @@ export function mount(host) {
   const syncOff = () => { offMsg.hidden = !isMuted(); }; window.addEventListener('bt-mute', syncOff); syncOff();
   const neck = h('div', { class: 'ti-neck' }, notes, strs);
   stage.append(chordsEl, edBar, bandeja, neck, frets);
-  host.append(banner('Cordas', 'violão e guitarra: acordes ou melodia'), tocarTabs('violao'), offMsg, ...(faixaPlano(GRATIS.violao.texto) ? [faixaPlano(GRATIS.violao.texto)] : []), modoBar, stage,
-    h('section', { class: 'card pad ti-panel' }, rolar(escalaRow), rolar(soundRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
+  host.append(banner('Cordas', 'violão e guitarra: acordes ou melodia'), tocarTabs('violao'), offMsg, ...(faixaPlano(GRATIS.violao.texto) ? [faixaPlano(GRATIS.violao.texto)] : []), rolar(soundRow), modoBar, stage,
+    h('section', { class: 'card pad ti-panel' }, rolar(escalaRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
     contagemBar(),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. 🔉 (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));
   drawChords(); drawSound(); drawTheme(); drawModo();

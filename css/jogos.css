@@ -1808,6 +1808,8 @@ body.bv-aberta { overflow: hidden; }
 .tk-panel.bmr .tk-opts .chip,.tk-panel.bmr .tk-opts button{border-radius:99px}
 .kd-canhota{border-radius:99px}
 
+/* ---- bateria mais tocável no celular: kit ocupa quase a largura toda (peças maiores) ---- */
+@media (max-width:560px){.tk-kit{padding:8px 2px!important}[data-kit-theme] :is(.kd-kit.kd-kit-free,.tk-art){padding:4px!important;border-radius:22px}.tk-kit .kd-modelos{padding:0 10px}}
 /* ===== Fuga: visual do laboratório do Paul em todas as portas (aprovado pela Bea em 19/nov/2026) =====
    Só vale nas telas de porta (a que tem .fg-cena); o mapa Escape Room continua com a arte dele. */
 .fg-wrap:has(.fg-cena){--lab-am:#f2b632;--lab-am2:#ffd45c;--lab-rd:#ff2d3d;--lab-gn:#3cff8a;--lab-nv:#0b1020;--lab-nv2:#121a30;--lab-st:#4b576b;--lab-st2:#6b788e;
