@@ -1378,7 +1378,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 /* ---------- conquista pra postar (js/conquista.js): botão no placar azul e festa de "terminei o caminho" ---------- */
 .pl-card .pl-act .cq-bt{flex:1 1 100%!important;background:transparent!important;color:#fff!important;border:2px dashed #f6b93b!important;font-size:14px!important;min-height:38px!important}
 .cq .cq-box{gap:6px;max-width:min(90vw,380px);max-height:92vh;overflow:auto}
-.cq-paul{width:128px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
+.cq-paul{width:170px;height:auto;filter:drop-shadow(0 0 14px #f2a91b)}
 .cq-selo{font:800 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:#f2a91b}
 .cq-t{font:400 26px/1.05 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
 .cq-bens{display:grid;gap:3px;justify-items:start;text-align:left;background:rgb(255 255 255/.1);border-radius:14px;padding:10px 12px;font-size:13.5px;font-weight:700;width:100%}
@@ -1629,7 +1629,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-molduraimg{display:block;margin:6px auto;background:radial-gradient(circle,#10162e 0 62%,transparent 63%);border-radius:0}
 
 /* ===== os 9 Pauls novos (festa, dúvida, detetive, baú, presente, celular, placa, espiando e o logo) ===== */
-.en-box.passe{position:relative}.en-passe-paul{float:right;width:84px;height:auto;margin:0 0 6px 8px;shape-outside:margin-box;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+.en-box.passe{position:relative}.en-passe-paul{float:right;width:104px;height:auto;margin:0 0 6px 8px;shape-outside:margin-box;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
 .fig-bau-paul{display:block;width:150px;height:auto;margin:-6px auto 4px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}
 .est-logo-paul{display:block;width:min(170px,52%);height:auto;margin:6px auto 2px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
 .cfg-celular-paul{float:right;width:70px;height:auto;margin:0 0 4px 10px}
