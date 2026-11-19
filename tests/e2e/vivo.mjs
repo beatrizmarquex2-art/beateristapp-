@@ -64,11 +64,11 @@ await shot('5-pauta-fim');
 
 /* ---------- Eco de Groove ---------- */
 await page.goto(url + '/aluno.html#/jogos/groove'); await sleep(1500);
-check('Eco de Groove: 10 fases e só a 1 aberta', await page.evaluate(() => { const f = [...document.querySelectorAll('.vv-fase')]; return f.length === 10 && !f[0].disabled && f.slice(1).every((b) => b.disabled); }));
+check('Eco de Groove: 10 fases e só a 1 aberta', await page.evaluate(() => { const f = [...document.querySelectorAll('.mp-node')]; const lk = (b) => b.classList.contains('st-locked'); return f.length === 10 && !lk(f[0]) && f.slice(1).every(lk); }));
 await shot('6-groove-fases');
 await page.evaluate(() => { localStorage.setItem(Object.keys(localStorage).find((k) => k.startsWith('beaterista-jogos')) || 'beaterista-jogos:teste', JSON.stringify({ v: 1, sound: true, games: { groove: { est: { 1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100 }, bpm: 100 } } })); });
 await page.reload(); await sleep(1500);
-await page.evaluate(() => document.querySelector('.vv-fase[data-fase="8"]').click()); await sleep(300);
+await page.evaluate(() => document.querySelector('.mp-node[data-pos="7"]').click()); await sleep(300);
 check('Eco de Groove: grade de 4 tempos com chimbal e bumbo juntos e caixa; 3 pads', await page.evaluate(() => { const t = [0, 1, 2, 3].map((i) => [...document.querySelectorAll(`.vv-cel.on[data-i="${i}"]`)].map((c) => c.dataset.p).join('')); return t.join('|') === 'hb|c|hb|c' && [...document.querySelectorAll('.vv-gl')].map((x) => x.textContent).join() === 'chimbal,caixa,bumbo' && document.querySelectorAll('.vv-pad').length === 3; }));
 await shot('7-groove-fase');
 await page.evaluate(() => document.querySelector('.vv-go').click()); await espera(() => window.__vivo.t0 > 0);
