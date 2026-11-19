@@ -97,11 +97,15 @@ export function mount(host) {
       return h('button', { type: 'button', class: `dn-slot${c ? ' cheia' : ''}${m === true ? ' ok' : m === false ? ' no' : ''}`, 'aria-label': c ? `tempo ${i + 1}: tirar` : `tempo ${i + 1} vazio`, onclick: () => { if (c) { slots = slots.slice(0, i); marcas = null; desenha(); } } },
         c ? face(c, modo) : h('small', {}, String(i + 1))); });
     const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.id ? foodOf(c.id).word : temFlam(c.cell) ? `${baseDe(c.cell)} com flam` : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, modo)));
-    root.replaceChildren(topo(), h('button', { class: 'btn primary wide dn-ouvir', type: 'button', disabled: restam() <= 0, onclick: () => { ouvir(); desenha(); } }, `▶ ouvir o ritmo (${somDaFase(fase)} · ${bpm} bpm)${restam() === Infinity ? '' : restam() > 0 ? ` · ${restam()} ${restam() === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!'}`),
+    const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
+    root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
+      h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
+      h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: `dn-wrap${!TEMAS[modo] ? ' sem' : ''}` }, !TEMAS[modo] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),
-      h('div', { class: 'dn-baralho', style: `--n:${cs.length}` }, ...baralho),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir'), slots.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { slots = []; marcas = null; desenha(); } }, 'limpar') : null));
+      h('p', { class: 'dn-lab' }, 'suas pistas'),
+      h('div', { class: 'dn-baralho', style: `--n:${cs.length > 4 ? 3 : cs.length}` }, ...baralho),
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary dn-conferir', type: 'button', disabled: !cheio, onclick: confere }, 'conferir'), slots.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => { slots = []; marcas = null; desenha(); } }, 'limpar') : null)));
   };
   const confere = () => {
     if (acertou(slots, secreto)) {

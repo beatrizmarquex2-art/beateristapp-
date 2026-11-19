@@ -17,7 +17,7 @@ const monta = async (fase, certo = true) => {
 };
 const abre = async (pos) => { await page.evaluate((p) => document.querySelector(`.mp-node[data-pos="${p}"]`).click(), pos); await page.waitForSelector('.dn-card'); };
 await abre(0);
-check('fase 1: o botão de ouvir diz o som da fase (caixa)', /\(caixa/.test(await page.textContent('.dn-ouvir')));
+check('fase 1: o botão de ouvir diz o som da fase (caixa)', /caixa/.test(await page.textContent('.dn-ouvir')));
 check('fase 1: só 2 cartas e o cabeçalho sem texto de fase (só 3 bolinhas dos ritmos)', (await page.locator('.dn-card').count()) === 2 && !/fase|ritmo/i.test(await page.textContent('.tr-fasehead')) && (await page.locator('.dn-dots i').count()) === 3);
 check('figuras sem pauta: as cartas não têm a linha da pauta', await page.evaluate(() => [...document.querySelectorAll('.dn-card svg')].every((s) => ![...s.querySelectorAll('line')].some((l) => l.getAttribute('y1') === l.getAttribute('y2')))));
 check('fase 1 do mundo 1 toca a 70 bpm, sem escolha de velocidade', /70 bpm/.test(await page.textContent('.dn-ouvir')) && (await page.locator('.dn-bpm').count()) === 0);
