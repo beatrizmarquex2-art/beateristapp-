@@ -1070,3 +1070,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Caça-palavras (bug da v676)**: um comentário engolia o `const words` e o jogo quebrava ao abrir (inclusive a porta de caça da Fuga). Corrigido em `js/views/dicas.js`.
 - Ideia que a Bea gostou e ficou só de amostra: o estilo jazz Blue Note (vinil) pros jogos; ela escolheu o visual do laboratório.
 - **v703**: Tocar: cards de modelo no alto (violão, teclado e percussão como a bateria); bateria: toque pega a peça mais perto (58px), kit mais largo no celular, vibração leve no Android.
+- **v704**: Tocar: cards de modelo no alto (violão, teclado e percussão como a bateria); bateria: toque pega a peça mais perto (58px), kit mais largo no celular, vibração leve no Android.
