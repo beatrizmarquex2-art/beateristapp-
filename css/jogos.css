@@ -1628,6 +1628,12 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-rel{text-align:center;font:900 22px var(--body,system-ui);color:#ffd23f;margin:2px 0}.fg-rel.pouco{color:#ff6b83;animation:fmPulso 0.6s steps(2,end) infinite}
 .fg-molduraimg{display:block;margin:6px auto;background:radial-gradient(circle,#10162e 0 62%,transparent 63%);border-radius:0}
 
+/* ===== os 9 Pauls novos (festa, dúvida, detetive, baú, presente, celular, placa, espiando e o logo) ===== */
+.en-box.passe{position:relative}.en-passe-paul{float:right;width:84px;height:auto;margin:0 0 6px 8px;shape-outside:margin-box;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+.fig-bau-paul{display:block;width:150px;height:auto;margin:-6px auto 4px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}
+.est-logo-paul{display:block;width:min(170px,52%);height:auto;margin:6px auto 2px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+.cfg-celular-paul{float:right;width:70px;height:auto;margin:0 0 4px 10px}
+.fx-pergunta{display:inline-flex;align-items:center;gap:4px}.fx-pergunta-p{width:26px;height:auto;margin:-4px 0 -4px -2px}
 /* ===== Fuga: jogos de toque (js/jogos/fuga-mini.js): Genius, caminho 3×3, memória ===== */
 .fgm{text-align:center}.fgm-msg{font-weight:800;min-height:1.5em;margin:6px 0 12px}.fgm-go{margin-top:6px}
 .fgm-pads,.fgm-grade{display:grid;gap:12px;max-width:340px;margin:0 auto 14px;grid-template-columns:repeat(2,1fr)}.fgm-pads.n6{grid-template-columns:repeat(3,1fr);gap:9px}.fgm-grade{grid-template-columns:repeat(3,1fr);gap:9px}

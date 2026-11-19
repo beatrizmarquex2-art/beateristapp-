@@ -41,7 +41,7 @@ export function mount(host) {
     const levels = fases.map((p, i) => ({ id: `fx:${p.n}`, index: i + 1, label: String(i + 1), tag: '', boss: i === fases.length - 1 }));
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Mundo' }, ...MUNDOS.map((m, i) => { const ok = aberto(m.id); return h('button', { type: 'button', role: 'radio', 'aria-checked': String(m.id === mundo), class: `${m.id === mundo ? 'on' : ''}${ok ? '' : ' lock'}`, 'data-lock': ok ? null : '1', 'aria-label': `mundo ${i + 1}: ${m.nome}${ok ? '' : `, trancado: ${motivo(m.id)}`}`,
       onclick: () => { if (!ok) { toast(`mundo trancado: ${motivo(m.id)}`, { ms: 3400 }); return; } mundo = m.id; setGame('figurix', { ...getGame('figurix'), mundo }); mapa(); } }, `${ok ? '' : '🔒 '}${i + 1} · ${m.curto}`); }));
-    root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost fx-pergunta', href: '#/estudos/aulas' }, '🤖 perguntar pro Paul'), box);
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${M.nome} · ${M.sub}`), h('a', { class: 'btn small ghost fx-pergunta', href: '#/estudos/aulas' }, h('img', { class: 'fx-pergunta-p', src: corSrc('duvida'), alt: '', draggable: 'false' }), ' perguntar pro Paul'), box);
     off = mountProgressionMap(box, { gameId: `figurix-${M.id}`, levels, profileId: 'figurix', unitName: 'Fase', tier: 0, stars: { have: estMundo(M), max: fases.length * 3 }, theme: { id: `mundo-${M.tema}`, name: M.nome, regions: M.regioes },
       starsOf: (id) => estOf(Number(id.split(':')[1])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(fases[lv.index - 1].n) });
     const hd = box.querySelector('.mp-head'); const bar = h('div', { class: 'tm-bar' }, tabs); if (hd) hd.append(bar); else box.prepend(bar);
@@ -58,7 +58,7 @@ export function mount(host) {
     limpa(); jogando = false; root.dataset.skin = 'a'; const p = PHASES[n - 1];
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, 'aulinha rápida do Paul'), h('p', { class: 'jg-p fx-aula-fala' }, FALA_AULINHA[p.tipo] || ''),
       h('table', { class: 'fx-colinha' }, h('caption', {}, 'colinha das figuras'), h('tbody', {}, ...COLINHA.map(([id, dura]) => h('tr', {}, h('td', { class: 'fx-col-fig' }, fig(id, 'fx-fig fx-fig-mini')), h('th', { scope: 'row' }, FIG_NAME[id]), h('td', {}, dura))))),
-      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary fx-aula-jogar', type: 'button', onclick: () => joga(n) }, `jogar a fase ${n} ▶`), h('a', { class: 'btn', href: '#/estudos/aulas' }, '🤖 perguntar pro Paul')));
+      h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary fx-aula-jogar', type: 'button', onclick: () => joga(n) }, `jogar a fase ${n} ▶`), h('a', { class: 'btn fx-pergunta', href: '#/estudos/aulas' }, h('img', { class: 'fx-pergunta-p', src: corSrc('duvida'), alt: '', draggable: 'false' }), ' perguntar pro Paul')));
   };
   const comeca = (n) => { if (!aberto(mundoDe(n).id)) { toast(`mundo trancado: ${motivo(mundoDe(n).id)}`, { ms: 3400 }); mapa(); return; } if (temAulinha(n)) aulinha(n); else joga(n); };
 

@@ -75,7 +75,7 @@ export function entradaNova(p) {
     h('div', { class: 'en-tiles' }, tile('bulb', 'Jogos'), tile('study', 'Estudos'), tile('nota', 'Palco'), tile('bag', 'Lojinha', { href: '#/lojinha', amarelo: true, sub: 'toque aqui' })),
     h('button', { type: 'button', class: 'en-pqp', onclick: () => { modal.hidden = false; } }, h('img', { src: `${A}por-que-paul.jpg`, alt: '' }), h('span', {}, h('b', {}, 'por que Paul?'), h('small', {}, 'o nome tem uma homenagem. toque pra ler.')), h('i', { 'aria-hidden': 'true' }, '›')),
     boxExp, boxAluno,
-    h('section', { class: 'en-box passe', id: 'en-passe' }, h('h2', {}, 'um ano inteiro de ', h('span', {}, 'música, jogos e descobertas!')),
+    h('section', { class: 'en-box passe', id: 'en-passe' }, h('img', { class: 'en-passe-paul', src: 'assets/paul/colorido/paul-presente.webp', alt: '', width: 96, height: 150, draggable: 'false', decoding: 'async' }), h('h2', {}, 'um ano inteiro de ', h('span', {}, 'música, jogos e descobertas!')),
       h('p', { class: 'p1' }, 'aprenda brincando com o Robôterista Paul! explore jogos educativos, desafios musicais, colecione figurinhas e aprenda no seu ritmo.'),
       h('p', { class: 'p2' }, 'um único pagamento. 12 meses de acesso.'),
       h('div', { class: 'pr solo' }, h('div', {}, PP.oferta ? h('span', { class: 'bf' }, 'oferta black friday · até ', PP.ate) : null, PP.oferta ? h('s', {}, `de ${PP.de}`) : null, h('b', { class: 'pix' }, PP.atual), h('small', {}, 'à vista no pix'))),
