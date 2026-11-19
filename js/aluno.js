@@ -67,6 +67,7 @@ import * as jogos from './views/jogos.js';
 import * as album from './views/album-aluno.js';
 import { pending as FRpend } from './figurinhas/rewards.js'; // quantos giros/pacotes esperando (bolinha vermelha na aba roleta)
 import * as perfil from './views/perfil.js';
+import * as inicio from './views/inicio.js';
 import { LOJA_ABERTA } from './loja-config.js';
 import { banner, closeSheets, confirmSheet, sheet, toast } from './ui.js';
 import * as CONTAS from './contas.js';
@@ -83,7 +84,9 @@ import { arteDoPaul } from './paul-dicas.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
-const NAV = [['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
+// aba INÍCIO (prévia): só aparece pra quem abriu o app com ?inicio=1 (fica guardado no aparelho; ?inicio=0 desliga). A barra de sempre não muda.
+const INICIO_ON = (() => { try { if (/[?&]inicio=1\b/.test(location.search)) localStorage.setItem('bt-inicio', '1'); if (/[?&]inicio=0\b/.test(location.search)) localStorage.removeItem('bt-inicio'); return localStorage.getItem('bt-inicio') === '1'; } catch { return false; } })();
+const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
 const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
@@ -456,11 +459,11 @@ function shell(name) {
   let atual = null; let voltarA = null; let voltouNaFaixa = false;
   function go() {
     cleanup && cleanup(); cleanup = null; closeSheets(); silence(); view.replaceChildren();
-    const r = route(); view.dataset.page = r.name;
+    const r = route(); view.dataset.page = r.name; inicio.marcaDia();
     { const tab = tabOf(r); const jg = (() => { try { return jogos.jogoDoEndereco(location.hash); } catch { return null; } })(); const nome = jg ? jg[1] : (NAV.find(([hr]) => hr === `#/${tab}`) || [])[2] || 'o app';
       if (voltouNaFaixa) { voltouNaFaixa = false; voltarA = null; } // tocou em "voltar para": chegou lá, a faixa some (não fica indo e voltando)
       else if (atual && atual.hash !== location.hash) { if (atual.tab !== tab) voltarA = { hash: atual.hash, nome: atual.nome, tab: atual.tab }; else if (voltarA && voltarA.hash === location.hash) voltarA = null; }
-      if (voltarA && voltarA.tab === tab) voltarA = null; atual = { hash: location.hash, tab, nome }; }
+      if (voltarA && voltarA.tab === tab) voltarA = null; atual = { hash: location.hash, tab, nome }; inicio.lembrarLugar(location.hash, jg ? jg[1] : ''); }
     { let t = ''; try { t = localStorage.getItem('beaterista-album-tema') || 'holo'; } catch { t = 'holo'; } if (r.name === 'album') document.documentElement.dataset.alb = ['neon', 'prata', 'holo', 'ouro', 'gelo'].includes(t) ? t : 'holo'; else delete document.documentElement.dataset.alb; document.documentElement.classList.toggle('perfil-pass', r.name === 'perfil'); } // aba Álbum com visual próprio (css/album-tema.css); o PERFIL tem o visual "carteirinha de backstage" (css/perfil-passe.css), escolhido pela Bea em 15/nov/2026
     // Dentro de um jogo a barra de baixo some (um toque perto da borda caía na Lojinha ou em outra aba sem querer). A lista de jogos e as outras telas continuam com a barra.
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
@@ -498,6 +501,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
+    else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = '#/jogos'; return; }
@@ -591,6 +595,16 @@ async function start() {
   try { await store.init(); } catch {
     app.replaceChildren(h('main', { class: 'login' }, h('div', { class: 'login-card' }, h('h1', {}, 'Armazenamento indisponível'), h('p', {}, 'Este navegador bloqueou o armazenamento local (modo privado?). Abra no Safari normal.')))); return;
   }
+  // Link "reinicia a entrada" (jogos.beaterista.com.br/?entrar): quem só tinha EXPERIMENTAR (nome, sem código) sai do modo experimento e vê a tela de entrada limpa;
+  // quem já é aluno (tem código guardado ou pedido) NUNCA é desconectado e cai direto na aba principal (Jogos). Em qualquer caso, depois de entrar o destino é a aba principal.
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has('entrar')) {
+      if (!CODE.saved() && !CODE.pendente()) { try { localStorage.removeItem(NAME_KEY); localStorage.removeItem(ORIGEM_KEY); } catch { /* ok */ } window.__alunoNome = ''; }
+      q.delete('entrar'); const resto = q.toString();
+      history.replaceState(null, '', `${location.pathname}${resto ? `?${resto}` : ''}#/jogos`);
+    }
+  } catch { /* link comum: segue normal */ }
   startScroller();
   // a nuvem só aparece nas abas e na escolha de jogo; dentro de jogo, aula ou instrumento não (cobria botões como o STOP)
   startPaul({ first: 7000, allowed: () => !document.querySelector('.al-entry, .login') && /^(#\/?(inicio|estudos|tocar|album|lojinha|perfil)\/?)$/.test(location.hash) });

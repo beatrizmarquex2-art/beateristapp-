@@ -1,0 +1,26 @@
+// Caça Musical: botão "💡 dica" (2 por grade): a 1ª mostra a posição (linha grifada), a 2ª a inicial (letra que pisca). Cada dica tira 1 ★ (3 → 2 → 1).
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
+await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
+await page.goto(`${url}/aluno.html#/dicas/caca`); await sleep(2500);
+const btn = () => page.locator('.dc-dicabar button');
+check('o botão aparece com 2 dicas', /dica \(2\)/.test(await btn().textContent()));
+check('nada grifado nem piscando antes de pedir', (await page.locator('.dc-c.dica, .dc-c.dica-linha').count()) === 0);
+await btn().click(); await sleep(300);
+const ln = await page.evaluate(() => { const c = [...document.querySelectorAll('.dc-c.dica-linha')]; return { n: c.length, ys: [...new Set(c.map((x) => x.dataset.y))] }; });
+check('1ª dica = a POSIÇÃO: grifa a linha inteira (9 casas) e diz o número da linha', ln.n === 9 && ln.ys.length === 1 && /começa na linha \d/.test(await page.textContent('.dc-dicabar')) && (await page.locator('.dc-c.dica').count()) === 0, JSON.stringify(ln));
+check('sobra 1', /dica \(1\)/.test(await btn().textContent()));
+const alvo1 = await page.evaluate(() => (document.querySelector('.dc-dicatxt').textContent.match(/“(.+?)”/) || [])[1]);
+await btn().click(); await sleep(300);
+check('2ª dica = a INICIAL: 1 letra pisca e diz o lado (mesma palavra da 1ª)', (await page.locator('.dc-c.dica').count()) === 1 && /começa na letra que pisca e vai pra [→↓]/.test(await page.textContent('.dc-dicabar')) && (await page.evaluate(() => (document.querySelector('.dc-dicatxt').textContent.match(/“(.+?)”/) || [])[1])) === alvo1);
+check('depois de 2 dicas o botão desliga', await btn().isDisabled() && /dica \(0\)/.test(await btn().textContent()));
+check('a casa que pisca é mesmo a 1ª letra da palavra', await page.evaluate(() => { const c = document.querySelector('.dc-c.dica'); const t = document.querySelector('.dc-dicatxt').textContent; const w = (t.match(/“(.+?)”/) || [])[1] || ''; return !!c && c.textContent.trim().toLowerCase() === w.trim()[0].toLowerCase(); }));
+const est = await page.evaluate(async () => { const M = await import('/js/views/dicas.js'); const T = await import('/js/tips.js'); const its = M._duelo.items(); const box = document.createElement('div'); document.body.append(box); const out = []; const api = M._duelo.caca(box, { pick: T.easyPick(its, 6), mk: () => Math.random, fim() {}, dica: true }); out.push(api.stats().estrelas); const b = () => box.querySelector('.dc-dicabar button'); b().click(); out.push(api.stats().estrelas); b().click(); out.push(api.stats().estrelas); b().click(); out.push(api.stats().estrelas, api.stats().dicas); const duelo = document.createElement('div'); document.body.append(duelo); M._duelo.caca(duelo, { pick: T.easyPick(its, 6), mk: () => Math.random, fim() {} }); out.push(!!duelo.querySelector('.dc-dicabar')); return out; });
+check('estrelas da caça: sem dica 3 · 1 dica 2 · 2 dicas 1 · nunca abaixo de 1 (a 3ª tentativa não existe)', JSON.stringify(est) === JSON.stringify([3, 2, 1, 1, 2, false]), JSON.stringify(est));
+check('sem erro na página', errs.length === 0, errs.join(' | '));
+await browser.close(); srv.close(); done();

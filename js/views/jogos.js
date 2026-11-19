@@ -254,10 +254,10 @@ function game(host, entry) {
   // pausa geral: alguém da sala pausou pra todos (ou deixou a sala). Cobre o jogo em todos os celulares; quem recebe responde, quem pausou continua pra todos.
   const rotulo = (lista, id) => (lista.find((x) => x[0] === id) || ['', ''])[1];
   const telaGeral = (s, p) => {
-    const c = s.conn; const meu = p.by === c.me; const quem = c.nomeDe(p.by); const outro = 1 - c.me; const frase = `“${rotulo(PAUSA_TIPOS, p.tipo)}”`;
+    const c = s.conn; const meu = p.by === c.me; const quem = c.nomeDe(p.by); const outros = c.nomes().map((_, i) => i).filter((i) => i !== c.me); const frase = `“${rotulo(PAUSA_TIPOS, p.tipo)}”`;
     if (p.tipo === 'saiu') return caixa(h('h2', {}, 'fim da sala'), h('p', { class: 'jg-p' }, meu ? 'você deixou a sala.' : `${quem} deixou a sala. a partida acaba aqui.`), h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { esquecerSala(s.jogo); irJogos(); } }, 'voltar pros jogos'));
     if (meu) return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `você pausou pra todos: ${frase}`),
-      h('p', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, p.resp[outro] ? `${c.nomeDe(outro)} respondeu: “${rotulo(PAUSA_RESP, p.resp[outro])}”` : 'esperando a resposta…'),
+      h('div', { class: 'jg-pausa-resp', 'aria-live': 'polite' }, ...outros.filter((i) => p.resp[i]).map((i) => h('span', {}, `${c.nomeDe(i, outros.length > 1 ? `jogador ${i + 1}` : 'o outro')} respondeu: “${rotulo(PAUSA_RESP, p.resp[i])}”`)), outros.some((i) => !p.resp[i]) ? h('span', { class: 'esp' }, outros.some((i) => p.resp[i]) ? 'esperando os outros…' : 'esperando a resposta…') : null),
       h('button', { class: 'btn primary wide jg-pausa-go', type: 'button', onclick: () => { c.retomarTodos(); } }, '▶ voltei, continuar pra todos'), saidas(chipDeixar(s)));
     const minha = p.resp[c.me];
     return caixa(h('h2', {}, h('i', { 'aria-hidden': 'true' }, '⏸'), 'pausa geral'), h('p', { class: 'jg-p' }, `${quem} pausou pra todos: ${frase}`),

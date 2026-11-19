@@ -1,6 +1,6 @@
 // A Fuga do Estúdio: o Paul ficou trancado no estúdio e só sai abrindo 3 portas em ordem.
 //  porta 1 · sala de controle = quiz (5 perguntas, precisa de 3 certas) · porta 2 · cabine = caça-palavras · porta 3 · sala de ensaio = cruzadinha.
-// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); no fim paga 3 ★ (limite de 30 ★ por dia, como todo jogo).
+// Reaproveita os três jogos de palavras (modo "D" do duelo: sem estrela e sem recorde próprios); cada porta aberta paga 3 ★ na hora (a caça-palavras perde 1 ★ por dica, mínimo 1; limite de 30 ★ por dia).
 import { h } from '../util.js';
 import { banner } from '../ui.js';
 import * as FB from '../feedback.js';
@@ -31,7 +31,7 @@ const melhor = () => { try { return Number(localStorage.getItem(KB)) || 0; } cat
 const seg = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
 
 export function mount(host) {
-  const box = h('div', { class: 'dc-box' }); let gone = false; let t0 = 0; let abertas = 0; let tentativas = 0;
+  const box = h('div', { class: 'dc-box' }); let gone = false; let t0 = 0; let abertas = 0; let tentativas = 0; let totalEst = 0; // totalEst = ★ ganhas nesta fuga (3 por porta; a caça perde 1 por dica)
   const wrap = h('div', { class: 'jg jg-wrap dc-wrap escuro fg-wrap' });
   host.append(banner('A Fuga do Estúdio', 'o Paul está trancado!'), wrap);
   /** A cena: corredor escuro do estúdio com 3 portas. Trancada = cadeado + lasers; a da vez = lâmpada ON AIR acesa; aberta = luz saindo pela porta e sem laser. */
@@ -57,7 +57,7 @@ ${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="
   const portas = (alarme) => cena(alarme);
   const topo = () => h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos' }, '‹ jogos'));
   const fala = (txt, ...extra) => h('section', { class: 'card pad fg-fala' }, h('img', { src: corSrc('professor'), alt: '', draggable: 'false', width: 84, height: 84 }), h('p', {}, txt), ...extra);
-  const comeca = () => { abertas = 0; tentativas = 0; t0 = Date.now(); fase(); };
+  const comeca = () => { abertas = 0; tentativas = 0; totalEst = 0; t0 = Date.now(); fase(); };
   const intro = () => wrap.replaceChildren(topo(), portas(), fala('socorro! a porta do estúdio trancou comigo aqui dentro 😱 só saio se você abrir as 3 portas: quiz, caça-palavras e cruzadinha. bora?',
     h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'abrir as portas'), melhor() ? h('p', { class: 'muted' }, `seu recorde: ${seg(melhor())}`) : null));
   const fase = async () => {
@@ -66,18 +66,18 @@ ${PORTAS.map(porta).join('')}${pronto ? '' : '<line class="fg-varre" x1="0" x2="
     const fim = () => setTimeout(() => { if (gone || feito) return; feito = true; resolve(); }, 700);
     const resolve = () => {
       if (P.id === 'quiz' && api && api.stats().found < MIN_QUIZ) { tentativas++; sfx('alarme'); wrap.replaceChildren(topo(), portas(true), fala(`só ${api.stats().found} certa${api.stats().found === 1 ? '' : 's'}: a mesa de som precisa de ${MIN_QUIZ}. tenta de novo!`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'tentar outra vez'))); return; }
+      const ganho = P.id === 'caca' && api && api.stats().estrelas ? api.stats().estrelas : 3; totalEst += ganho; ganhou('fuga', ganho).catch(() => {}); // cada porta paga as suas ★ na hora
       abertas++; sfx('porta'); if (abertas >= PORTAS.length) { setTimeout(() => sfx('vitoria'), 700); vitoria(); return; }
-      wrap.replaceChildren(topo(), portas(), fala(`porta aberta! 🔓 agora: ${PORTAS[abertas].nome}. ${PORTAS[abertas].fala}`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'próxima porta')));
+      wrap.replaceChildren(topo(), portas(), fala(`porta aberta! 🔓 +${ganho} ★ · agora: ${PORTAS[abertas].nome}. ${PORTAS[abertas].fala}`, h('button', { class: 'btn primary wide', type: 'button', onclick: fase }, 'próxima porta')));
     };
     wrap.replaceChildren(topo(), portas(), h('p', { class: 'tr-count' }, `${P.nome} · ${P.fala}`), box);
     if (P.id === 'quiz') { const qs = []; const vistos = new Set(); for (let k = 0; k < 80 && qs.length < Math.min(5, its.length); k++) { const q = T.question(its, ['blank', 'continua'][k % 2]); if (!vistos.has(q.item.n)) { vistos.add(q.item.n); qs.push(q); } } api = mod.quiz(box, ['blank', 'continua'], 'fuga', { qs, fim }); }
-    else if (P.id === 'caca') api = mod.caca(box, { pick: T.easyPick(its, 6), mk: () => Math.random, fim });
+    else if (P.id === 'caca') api = mod.caca(box, { pick: T.easyPick(its, 6), mk: () => Math.random, fim, dica: true });
     else api = mod.cruzadinha(box, { pick: T.easyPick(its, 5, { min: 4, max: 8 }), mk: () => Math.random, fim });
   };
   const vitoria = () => {
     const ms = Date.now() - t0; const rec = melhor(); const novo = !rec || ms < rec; if (novo) { try { localStorage.setItem(KB, String(ms)); } catch { /* sem armazenamento */ } }
-    ganhou('fuga', 3).catch(() => {});
-    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, '+ até 3 ★ (limite de 30 por dia)'),
+    const tela = fala(`💥 você abriu as 3 portas e libertou o Paul! tempo: ${seg(ms)}${tentativas ? ` · ${tentativas} tentativa${tentativas === 1 ? '' : 's'} na mesa de som` : ''}`, h('p', { class: 'muted' }, novo ? '🏆 novo recorde!' : `seu recorde: ${seg(rec)}`), h('p', { class: 'muted' }, `+${totalEst} ★ nesta fuga (3 por porta; a caça perde 1 por dica) · limite de 30 por dia`),
       h('button', { class: 'btn primary wide', type: 'button', onclick: comeca }, 'fugir de novo'), h('a', { class: 'btn ghost wide', href: '#/jogos' }, 'voltar pros jogos'));
     wrap.replaceChildren(topo(), portas(), tela); FB.great(tela);
   };
