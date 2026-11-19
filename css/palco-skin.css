@@ -32,3 +32,13 @@
 .tocar-raiz[data-skin="b"] .tk-opts button[aria-pressed="true"],.tocar-raiz[data-skin="b"] .tk-opts button.on{background:linear-gradient(180deg,#ff6b81,#d41f3a 55%,#8c1024);box-shadow:0 0 14px #ff3b5c99}
 .tocar-raiz[data-skin="c"] .tk-opts button{background:#fffdf7;color:#1b1818;border:3px solid #1b1818;box-shadow:3px 3px 0 #1b1818;border-radius:14px}
 .tocar-raiz[data-skin="c"] .tk-opts button[aria-pressed="true"],.tocar-raiz[data-skin="c"] .tk-opts button.on{background:#ffd23f}
+.tocar-raiz .kd-rolar { position: relative; min-width: 0; }
+.tocar-raiz .kd-rolar > .kd-modes { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; gap: 8px; padding: 2px 40px 8px 2px; margin: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.tocar-raiz .kd-rolar > .kd-modes::-webkit-scrollbar { display: none; }
+.tocar-raiz .kd-rolar .kd-modes > * { flex: 0 0 auto; white-space: nowrap; scroll-snap-align: start; }
+.tocar-raiz .kd-rolar .kd-themes { display: flex; }
+.tocar-raiz .kd-rolar-b { position: absolute; top: 0; bottom: 6px; margin: auto 0; width: 34px; height: 34px; padding: 0 0 3px; border: 2px solid #1b1818; border-radius: 50%; background: #ffd166; color: #1b1818; font: 900 24px/1 var(--body, system-ui); box-shadow: 2px 2px 0 #1b1818; cursor: pointer; z-index: 2; }
+.tocar-raiz .kd-rolar-b.dir { right: 2px; } .tocar-raiz .kd-rolar-b.esq { left: 2px; }
+.tocar-raiz .kd-rolar-b[hidden] { display: none; }
+.tocar-raiz .kd-rolar > .kd-modes{padding-left:14px}
+.tocar-raiz .kd-modes > small{padding-right:2px}

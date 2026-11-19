@@ -128,7 +128,7 @@ export function mount(host) {
   const syncOff = () => { offMsg.hidden = !isMuted(); }; window.addEventListener('bt-mute', syncOff); syncOff();
   const neck = h('div', { class: 'ti-neck' }, notes, strs);
   stage.append(chordsEl, edBar, bandeja, neck, frets);
-  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'a'; } catch { return 'a'; } })() })); raiz.append(banner('Cordas', 'violão e guitarra: acordes ou melodia'), tocarTabs('violao'), offMsg, ...(faixaPlano(GRATIS.violao.texto) ? [faixaPlano(GRATIS.violao.texto)] : []), rolar(soundRow), modoBar, stage,
+  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Cordas', 'violão e guitarra: acordes ou melodia'), tocarTabs('violao'), offMsg, ...(faixaPlano(GRATIS.violao.texto) ? [faixaPlano(GRATIS.violao.texto)] : []), rolar(soundRow), modoBar, stage,
     h('section', { class: 'card pad ti-panel' }, rolar(escalaRow), h('div', { class: 'row tk-line' }, muteBtn, h('img', { class: 'ti-paul', src: 'assets/paul/p-guitar.webp', alt: '', 'aria-hidden': 'true', draggable: 'false' }))),
     h('p', { class: 'pad-x lib-note' }, 'escolha o acorde e passe o dedo nas cordas, pra baixo e pra cima: quanto mais rápido, mais forte. toque numa corda só pra tirar uma nota. 🔉 (segurando) deixa o som seco, o palm mute. no computador: 1 a 8 trocam o acorde, espaço toca pra baixo e B pra cima. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso e some se o botão lateral estiver no silencioso.'));
   drawChords(); drawSound(); drawTheme(); drawModo();
