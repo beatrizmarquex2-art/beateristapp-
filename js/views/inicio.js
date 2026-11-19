@@ -160,7 +160,7 @@ export function mount(host, { nome = '' } = {}) {
     if (atual) caixa.append(h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar'));
     return caixa;
   });
-  const desenhaPills = () => { const p = PERF.perfil(); pills.replaceChildren(...PERF.CAMPOS.map((c) => h('button', { type: 'button', class: `in-pill${p[c.k] ? ' tem' : ''}`, 'aria-label': p[c.k] ? `${c.nome}: ${p[c.k]}. tocar pra trocar` : `escolher ${c.nome}`, onclick: () => escolherCampo(c) }, p[c.k] ? `${c.nome}: ${p[c.k]}` : `+ ${c.nome}`))); };
+  const desenhaPills = () => { const p = PERF.perfil(); pills.replaceChildren(...PERF.CAMPOS.map((c) => h('button', { type: 'button', class: `in-pill${p[c.k] ? ' tem' : ''}`, 'aria-label': p[c.k] ? `${c.nome}: ${p[c.k]}. tocar pra trocar` : `escolher ${c.nome}`, onclick: () => escolherCampo(c) }, ...(p[c.k] ? [h('b', {}, c.nome), p[c.k]] : [`+ ${c.nome}`])))); };
   desenhaPills();
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),

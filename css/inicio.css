@@ -163,3 +163,12 @@ body:has(.inicio) .atualiza-bar { display: none !important; }
 .in-sobre-chips button { border: 2px solid #162146; background: #fff; color: #162146; border-radius: 10px !important; padding: 6px 12px; font: 700 13px "Hanken Grotesk", sans-serif; box-shadow: 2px 3px 0 #162146; cursor: pointer; }
 .in-sobre-chips button.on, .in-sobre-chips button[aria-pressed="true"] { background: #f2a91b; }
 .in-sobre-chips .in-sobre-mais { border-style: dashed; background: transparent; }
+
+/* etiquetas "adesivo" (opção B da Bea): creme, borda grossa, sombra deslocada e giro leve; o rótulo em vermelho e o valor ao lado */
+.in-pills { gap: 6px; }
+.in-pill.tem { background: #fff7e6; color: #2a1a05; border: 2px solid #2a1a05; border-radius: 10px !important; padding: 3px 9px 4px; font: 700 11px "Hanken Grotesk", sans-serif; box-shadow: 2px 3px 0 #2a1a05; }
+.in-pill.tem b { font: 400 10px "Anton", sans-serif; text-transform: uppercase; letter-spacing: .1em; color: #c81e2d; margin-right: 5px; }
+.in-pill.tem:nth-child(1) { transform: rotate(-2deg); } .in-pill.tem:nth-child(2) { transform: rotate(1.5deg); } .in-pill.tem:nth-child(3) { transform: rotate(-1deg); }
+.in-pill:not(.tem) { border-radius: 10px !important; }
+.in-passe { height: 340px; }
+.in-passe .in-favt { top: 198px; } .in-passe .in-favs { top: 216px; }

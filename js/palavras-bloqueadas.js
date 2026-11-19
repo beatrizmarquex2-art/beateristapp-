@@ -2,13 +2,14 @@
 // É uma lista inicial: a Bea (ou eu) acrescenta ou tira palavras aqui, uma por linha. Escreva sem acento e em minúsculas.
 // Como confere: ignora acento, maiúscula, número no lugar de letra (p0rra), letras repetidas (puuuta) e espaço ou ponto no meio (p u t a).
 const BLOQUEADAS = `
-puta puto putaria putinha porra caralho carai cacete merda bosta foda fode foder fodase fodido fdp vsf vtnc tnc
-cu cuzao cuzinho buceta bct xoxota xana piroca punheta boquete siririca
+puta puto putaria putinha putao porra caralho caraio karalho carai krl cacete merda merdinha bosta bostinha foda fode foder fodase fodido fodida fdp vsf vtnc pqp pnc
+cu cuzao cuzona cuzinho buceta bct xoxota xana piroca punheta boquete siririca tomanocu vaitomanocu
 viado viadinho bicha sapatao traveco vagabunda vagabundo vadia piranha arrombado arrombada desgraca desgracado
-otario otaria idiota imbecil retardado retardada mongol babaca escroto escrota
-sexo sexy porno pornografia nude nudes gostosa gostoso tesao transar estupro estuprador pedofilo pedofilia
-nazista nazismo hitler racista
-suicidio suicida cocaina maconha crack heroina
+otario otaria idiota imbecil retardado retardada mongol babaca escroto escrota burro burra estupido estupida trouxa corno cornudo cretino cretina demente debil lazarento nojento mulambo
+sexo sexy porno pornografia nude nudes tesao transar estupro estuprador pedofilo pedofilia
+nazista nazismo hitler racista crioulo
+suicidio suicida cocaina maconha heroina
+67 sixseven seissete aura farmaaura farmador farmadora farmar farmando farmei sigma skibidi gyatt gyat rizz mewing brainrot ohio
 fuck fucking shit bitch dick pussy cunt asshole nigger nigga faggot porn sex
 `.split(/\s+/).filter(Boolean);
 const SET = new Set(BLOQUEADAS);
@@ -21,6 +22,7 @@ const semRepetir = (t) => t.replace(/(.)\1+/g, '$1');
 /** O texto tem alguma palavra que não pode? */
 export function bloqueada(texto) {
   const base = normaliza(texto);
+  if (/(?:^|\D)6\s*[-.,_]?\s*7(?!\d)/.test(String(texto || ''))) return true; // "67" (também "6 7", "6-7")
   const brutas = base.split(/[^a-z]+/).filter(Boolean);
   const palavras = []; let letras = ''; // letras soltas seguidas (p u t a) viram uma palavra só
   for (const t of brutas) { if (t.length === 1) letras += t; else { if (letras) { palavras.push(letras); letras = ''; } palavras.push(t); } }
