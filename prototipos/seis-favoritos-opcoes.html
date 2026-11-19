@@ -1,0 +1,30 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>6 favoritos</title><link rel="stylesheet" href="../css/fonts.css">
+<style>*{box-sizing:border-box}body{margin:0;background:#0a0f26;color:#fff7e6;font-family:"Hanken Grotesk",sans-serif;padding:16px 16px 28px}
+h1{font:400 22px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 34px;font-size:13px;opacity:.85}.row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.c{position:relative;padding-top:26px}.r{position:absolute;top:0;left:0;font:700 12px "Hanken Grotesk"}
+.passe{position:relative;width:350px;border-radius:26px;background:linear-gradient(135deg,#f9d27a 0,#e0a232 38%,#fbe3a3 55%,#c98a1e 100%);color:#2a1a05;box-shadow:0 18px 28px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.5);overflow:hidden}
+.passe .nome{position:absolute;left:18px;top:20px;font:400 34px/1 "Anton";text-transform:uppercase;margin:0}
+.passe .lab{position:absolute;left:18px;font:700 10px "Hanken Grotesk";letter-spacing:.12em;text-transform:uppercase;margin:0}
+.foto{position:absolute;right:14px;top:30px;width:118px;height:118px;border-radius:50%;border:4px solid #2a1a05;background:#fff7e6 url(../assets/paul/perfil/paul-3.webp) center/cover;box-shadow:3px 4px 0 rgba(42,26,5,.45)}
+.fav{text-align:center;font:700 10px/1.1 "Hanken Grotesk";color:#2a1a05}.fav i{display:block;border-radius:50%;border:3px solid #2a1a05;background-size:cover;background-position:50% 20%;box-shadow:2px 3px 0 rgba(42,26,5,.4);margin:0 auto 3px}
+.mais{border:3px dashed rgba(42,26,5,.5)!important;background:rgba(42,26,5,.16)!important;display:grid;place-items:center;font:400 22px "Anton";color:rgba(42,26,5,.6);box-shadow:none!important}
+/* A: 2 fileiras de 3 */
+.A .passe{height:294px}.A .lab{top:84px}.A .grade{position:absolute;left:14px;top:104px;display:grid;grid-template-columns:repeat(3,66px);gap:8px 6px}.A .fav i{width:54px;height:54px}
+.A .foto{top:34px}
+/* B: 6 pequenos numa fileira só */
+.B .passe{height:250px}.B .lab{top:132px}.B .grade{position:absolute;left:14px;top:152px;display:grid;grid-template-columns:repeat(6,50px);gap:2px}.B .fav i{width:40px;height:40px;border-width:2px}.B .fav{font-size:9px}
+.B .foto{width:96px;height:96px;top:28px}.B .nome{font-size:30px}
+/* C: 3 aparecem e o resto desliza pro lado */
+.C .passe{height:250px}.C .lab{top:132px}.C .grade{position:absolute;left:14px;top:152px;width:322px;display:flex;gap:8px;overflow:hidden;-webkit-mask:linear-gradient(90deg,#000 80%,transparent)}.C .fav{flex:none;width:62px}.C .fav i{width:54px;height:54px}
+.C .foto{width:104px;height:104px;top:26px}
+</style></head><body><h1>6 favoritos no passe</h1><p class="s">hoje são 3 (cada círculo é um cantor ou banda). com 6, o passe precisa de mais espaço. 3 jeitos:</p><div class="row" id="rows"></div>
+<script>
+const NOMES=['Rita Lee','Michael Jackson','Pitty','Slash','Queen','The Beatles'];
+fetch('../assets/figurinhas/catalogo.json').then(r=>r.json()).then(cat=>{
+ const foto=n=>{const e=cat.find(x=>x.artista_banda===n&&x.secao!=='Beaterista');return e?'../'+e.foto:''};
+ const favs=(n)=>NOMES.slice(0,n).map(x=>`<div class="fav"><i style="background-image:url(${foto(x)})"></i>${x.replace('The ','').replace('Michael Jackson','M. Jackson')}</div>`).join('');
+ const mk=(k,tit,html)=>`<div class="c ${k}"><span class="r">${tit}</span><div class="passe"><h2 class="nome">Bê</h2><p class="lab">bandas e cantores favoritos</p><div class="foto"></div><div class="grade">${html}</div></div></div>`;
+ rows.innerHTML=mk('A','A · 2 fileiras de 3 (passe mais alto)',favs(6))+mk('B','B · 6 pequenos numa fileira',favs(6))+mk('C','C · 3 à vista, o resto desliza →',favs(6));
+ setTimeout(()=>document.body.dataset.ok=1,500);
+});
+</script></body></html>
