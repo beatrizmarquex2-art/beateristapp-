@@ -98,7 +98,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   if (/^(egg|bonus):/.test(String(packId))) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // segredos e bônus: 1 exclusiva (Beaterista e Paul)
-  if (String(packId).startsWith('estudo:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^P/.test(c.codigo)).map((c) => c.codigo); const todas = ex.length ? ex : catalog.filter((c) => c.secao === 'Beaterista').map((c) => c.codigo); return todas.length ? [todas[Math.floor(r() * todas.length)]] : []; } // terminou um tema dos estudos: 1 exclusiva do Paul
+  if (String(packId).startsWith('estudo:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // terminou um tema dos estudos (quiz 3 de 3 em todas as fases): 1 exclusiva, da Bea ou do Paul
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
   if (plf) {

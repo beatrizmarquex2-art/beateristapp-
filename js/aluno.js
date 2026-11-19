@@ -50,7 +50,6 @@ import * as kids from './views/kids.js';
 import * as paulta from './paulta/view.js';
 import { initMusica } from './jogos/musica.js';
 initMusica(); // música de fundo dos jogos (escolhida pela Bea)
-import * as PL from './paulta/save.js';
 import * as ritmo from './views/jogos-ritmo.js';
 import * as toque from './views/toque.js';
 import * as piano from './views/piano.js';
@@ -450,7 +449,7 @@ function shell(name) {
   pintaFotoTopo(); window.addEventListener('bt-foto-perfil', pintaFotoTopo);
   const head = h('header', { class: 'top top-a' }, // topo da Bea (opção A, 19/nov/2026): Paul, etiqueta amarela com o nome e botões redondos de ícone de linha
     avatarWrap,
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `${name} · ${t}` : name; })()), codigoTopo)),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, name), codigoTopo)),
     tenhoCodigo,
     soundButton({ linha: true }), musicButton('icon-btn top-snd top-mus', { linha: true }), atualizarButton({ linha: true }),
     h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', title: 'opções', onclick: () => opcoes(name) }, iconeTopo('engrenagem')));
