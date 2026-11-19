@@ -1752,3 +1752,11 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 /* aba Códigos: importar código do aluno e código bem visível na lista */
 .cod-importar { display: grid; gap: 10px; } .cod-importar .field { display: grid; gap: 4px; } .cod-imp-in { text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
 .cod-item-code { display: block; font: 800 20px/1.1 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .16em; margin: 2px 0; user-select: all; }
+/* lista simples dos códigos (nome · código · copiar · whats), em ordem alfabética */
+.cod-modo { display: flex; gap: 8px; margin: 6px 0; } .cod-modo-bt { border: 2px solid #162146; background: #fff; color: #162146; border-radius: 10px !important; padding: 5px 12px; font: 700 13px "Hanken Grotesk", sans-serif; box-shadow: 2px 3px 0 #162146; cursor: pointer; } .cod-modo-bt.on { background: #f2a91b; }
+.cod-simples { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 0; }
+.cod-simples li { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "nome bt" "code bt"; align-items: center; column-gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,.1); }
+.cod-simples li.off { opacity: .55; }
+.cod-s-nome { grid-area: nome; font-weight: 700; min-width: 0; } .cod-s-nome small { font-weight: 600; opacity: .8; }
+.cod-s-code { grid-area: code; font: 800 18px/1.1 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .16em; user-select: all; }
+.cod-s-bt { grid-area: bt; display: flex; gap: 6px; }

@@ -146,7 +146,7 @@ const msgNovo = (code, dias) => `oi! aqui está o seu código da Beaterista: ${c
 export function mount(host) {
   let list = []; let gone = false; let busy = false;
   let code = CODE.gerar(); let salvo = false; let cat = 'aluno'; let dias = 365; let ativo = true; let abas = []; let abasAberto = false; // abas = [] quer dizer "todas as abas" // estado do card "novo código"
-  let q = ''; let fTipo = ''; let fTempo = ''; let fAtivo = '';
+  let q = ''; let fTipo = ''; let fTempo = ''; let fAtivo = ''; let modo = 'lista'; // modo: 'lista' (simples, em ordem alfabética: nome, código, copiar) ou 'cartoes' (detalhada, com tempo e ativar/desativar)
   const sel = (opts, valor, onChange, label) => { const s = h('select', { class: 'field', 'aria-label': label }, ...opts.map(([v, t]) => h('option', { value: String(v), selected: String(v) === String(valor) }, t))); s.addEventListener('change', () => onChange(s.value)); return s; };
   const tiles = (opts, valor, onPick, label, attr) => h('div', { class: 'cod-tiles', role: 'radiogroup', 'aria-label': label }, ...opts.map(([v, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(String(v) === String(valor)), class: `cod-tile${String(v) === String(valor) ? ' on' : ''}`, [attr]: String(v), onclick: () => onPick(v) }, t)));
   const interruptor = (on, rotulo, onToggle, aria) => h('button', { type: 'button', role: 'switch', 'aria-checked': String(on), 'aria-label': aria, class: `cod-sw${on ? ' on' : ''}`, onclick: onToggle }, h('span', { class: 'cod-sw-t', 'aria-hidden': 'true' }), rotulo ? h('span', {}, rotulo) : null);
@@ -195,9 +195,20 @@ export function mount(host) {
   const mudarTempo = (x) => sheet(`tempo de acesso · ${x.nome || x.code}`, (close) => { let v = x.dias || 365; const s = sel(CODE.TEMPOS, v, (n) => { v = Number(n); }, 'Novo tempo de acesso');
     return h('div', { class: 'sheet-body' }, h('p', { class: 'muted' }, x.expira_em || x.iniciado_em ? 'o código já começou a contar: o novo tempo vale a partir de hoje.' : 'o código ainda não foi usado: a contagem do novo tempo começa no 1º uso.'), h('label', { class: 'field' }, h('span', {}, 'tempo'), s),
       h('div', { class: 'row end' }, h('button', { class: 'btn ghost', type: 'button', onclick: close }, 'cancelar'), h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); run(() => CODE.mudarTempo(x, v), 'tempo atualizado ✓'); } }, 'salvar'))); });
+  const msgAluno = (x) => `oi${x.nome ? ` ${x.nome.split(' ')[0]}` : ''}! seu código de acesso da Beaterista é ${x.code}\nentre em ${SITE} e digite o código em "já sou aluno" (ou toque em "tenho código" no app). 🥁`;
+  const mandar = (x) => window.open(`https://wa.me/?text=${encodeURIComponent(msgAluno(x))}`, '_blank', 'noopener');
+  const porNome = (a, b) => ((a.nome || '\uffff').toLowerCase()).localeCompare((b.nome || '\uffff').toLowerCase(), 'pt');
   const desenhaLista = () => {
     const rows = filtrados(); const n = list.filter((x) => x.ativo).length;
-    listaBox.replaceChildren(h('p', { class: 'muted' }, `${rows.length} de ${list.length} código${list.length === 1 ? '' : 's'} · ${n} ativo${n === 1 ? '' : 's'}`),
+    const topo = h('p', { class: 'muted' }, `${rows.length} de ${list.length} código${list.length === 1 ? '' : 's'} · ${n} ativo${n === 1 ? '' : 's'}`);
+    if (modo === 'lista') {
+      listaBox.replaceChildren(topo, rows.length ? h('ul', { class: 'cod-simples' }, ...rows.slice().sort(porNome).map((x) => h('li', { class: x.ativo ? '' : 'off' },
+        h('span', { class: 'cod-s-nome' }, x.nome || 'sem nome', x.ativo ? null : h('small', {}, ' · desativado')),
+        h('b', { class: 'rg-code cod-s-code' }, x.code),
+        h('span', { class: 'cod-s-bt' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => copy(x.code, 'código copiado') }, 'copiar'), h('button', { class: 'btn small ghost', type: 'button', 'aria-label': `mandar o código pra ${x.nome || x.code} no WhatsApp`, onclick: () => mandar(x) }, 'whats'))))) : h('p', { class: 'muted' }, 'nenhum código com esse filtro.'));
+      return;
+    }
+    listaBox.replaceChildren(topo,
       ...(rows.length ? rows.map((x) => h('article', { class: `cod-item${x.ativo ? '' : ' off'}` },
         h('div', { class: 'cod-item-top' }, h('span', { class: `cod-av c-${x.categoria || 'aluno'}`, 'aria-hidden': 'true' }, (x.nome || x.code)[0].toUpperCase()),
           h('div', { class: 'cod-item-id' }, h('b', {}, x.nome || 'sem nome'), h('b', { class: 'rg-code cod-item-code' }, x.code), h('small', { class: 'muted' }, `${tempoDe(x)} · ${venc(x)}`)),
@@ -225,7 +236,9 @@ export function mount(host) {
     h('p', { class: 'muted' }, 'o aluno toca em "gerar meu código" no app dele e te fala o código. digite aqui e toque em importar agora: ele libera o app do aluno e entra na lista abaixo (pra você achar quando esquecerem).'),
     h('label', { class: 'field' }, h('span', {}, 'nome'), impNome), h('label', { class: 'field' }, h('span', {}, 'código'), impCod),
     h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', onclick: importarAgora }, 'importar agora')), impMsg);
-  const listaCard = h('section', { class: 'card pad' }, h('b', {}, 'códigos'), busca,
+  const abas2 = h('div', { class: 'cod-modo', role: 'group', 'aria-label': 'jeito de ver a lista' }, ...[['lista', 'lista simples'], ['cartoes', 'detalhada']].map(([id, rot]) => h('button', { type: 'button', class: `cod-modo-bt${modo === id ? ' on' : ''}`, 'aria-pressed': String(modo === id), 'data-modo': id, onclick: (e) => { modo = id; abas2.querySelectorAll('button').forEach((b) => { const on = b.dataset.modo === modo; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); desenhaLista(); } }, rot)));
+  const copiarTudo = () => copy(['nome\tcódigo', ...list.slice().sort(porNome).map((x) => `${x.nome || ''}\t${x.code}`)].join('\n'), 'lista copiada (cola na planilha)');
+  const listaCard = h('section', { class: 'card pad' }, h('div', { class: 'row between' }, h('b', {}, 'códigos dos alunos'), h('button', { class: 'btn small ghost', type: 'button', onclick: copiarTudo }, 'copiar tudo')), abas2, busca,
     h('div', { class: 'cod-filtros' },
       sel([['', 'todos os tipos'], ...CODE.CATEGORIAS], fTipo, (v) => { fTipo = v; desenhaLista(); }, 'Filtrar por tipo'),
       sel([['', 'todos os tempos'], ...CODE.TEMPOS], fTempo, (v) => { fTempo = v; desenhaLista(); }, 'Filtrar por tempo'),
