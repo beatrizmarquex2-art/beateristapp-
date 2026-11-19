@@ -38,6 +38,7 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 
 ## Topo novo (opção A) e ícones da pausa (19/nov/2026, v636, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
 - **Topo da área dos alunos, opção A da Bea** (`shell()` em `js/aluno.js`, estilos no fim de `css/jogos.css`, classe `.top-a`): carinha do Paul redonda, **etiqueta amarela** tortinha com "oi, Nome!" em letra de marcador e o código miúdo embaixo, e **botões redondos de ícone de linha** (som, música, atualizar, engrenagem no lugar de "opções ▾") com sombra vermelha. "tenho código" virou uma chavinha redonda. Os ícones ficam em `js/top-icons.js` (`iconeTopo`); `soundButton`, `musicButton` e `atualizarButton` ganharam a opção `{ linha: true }` (o app da Bea continua com os ícones antigos). Classes `.top-snd` e `.al-opt` continuam (testes usam).
+- **Ajustes (19/nov, v637)**: o topo mostra só o nome (sem "oi"), a chave de "tenho código" é ícone de linha, e o avatar é a **foto de perfil** da pessoa (`perfil-foto`, guardada só no aparelho; sem foto fica o Paul). Tocar nele abre `#/perfil`. O Perfil avisa o topo pelo evento `bt-foto-perfil`.
 - **Pausa e saída da velha (2 celulares)**: botões redondos com ícone de linha (duas barras e porta com seta), sem emoji.
 - Falhavam ANTES na `main` (não são desta mudança): `layout` (iPhone SE 320 #/estudos) e `contas-lista`.
 

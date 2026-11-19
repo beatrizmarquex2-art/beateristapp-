@@ -48,10 +48,10 @@ export function mount(host) {
   const fotoInput = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: (ev) => escolher(ev.target.files[0], ev.target) });
   async function escolher(file, input) {
-    if (!file) return; try { fotoBlob = await reduzir(file); fotoImg = await blobImg(fotoBlob); await D.metaGravar(FOTO, fotoBlob); cfg.zoom = 1; cfg.ox = 0; cfg.oy = 0; salvarCfg(); desenhaAvatar(); cri.setFoto(fotoImg); toast('foto salva neste aparelho'); } catch { toast('não consegui abrir essa foto, tente outra'); }
+    if (!file) return; try { fotoBlob = await reduzir(file); fotoImg = await blobImg(fotoBlob); await D.metaGravar(FOTO, fotoBlob); window.dispatchEvent(new Event('bt-foto-perfil')); cfg.zoom = 1; cfg.ox = 0; cfg.oy = 0; salvarCfg(); desenhaAvatar(); cri.setFoto(fotoImg); toast('foto salva neste aparelho'); } catch { toast('não consegui abrir essa foto, tente outra'); }
     input.value = '';
   }
-  async function remover() { fotoImg = null; fotoBlob = null; try { await D.metaApagar(FOTO); } catch { /* ok */ } desenhaAvatar(); cri.setFoto(null); }
+  async function remover() { fotoImg = null; fotoBlob = null; try { await D.metaApagar(FOTO); } catch { /* ok */ } window.dispatchEvent(new Event('bt-foto-perfil')); desenhaAvatar(); cri.setFoto(null); }
   function desenhaAvatar() {
     avatar.replaceChildren();
     if (fotoBlob) { const u = URL.createObjectURL(fotoBlob); avatar.append(h('img', { src: u, alt: '', onload: () => URL.revokeObjectURL(u) })); } else avatar.append(icon('id', 44));

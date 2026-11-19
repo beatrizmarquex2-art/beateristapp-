@@ -1555,7 +1555,8 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .top-a .atu-ico{font-size:0;line-height:0}
 .top-a .top-atu.tem-novo::after{top:-3px;right:-3px}
 .top-a .al-tenho{width:36px!important;height:36px!important;min-width:36px!important;padding:0!important;border-radius:50%!important;font-size:0!important;display:inline-grid;place-items:center;border:2.5px solid #17365B!important;background:#fffdf7!important;box-shadow:2px 2px 0 #bd1733!important;flex:none}
-.top-a .al-tenho::before{content:"🔑";font-size:17px}
 .top-a .al-tenho[hidden]{display:none!important}
 @media (max-width:360px){.top.top-a{gap:5px;padding:6px 8px}.top-a .top-av{width:40px;height:40px}.top-a .ws .al-quem-top>span{font-size:17px}.top-a .icon-btn,.top-a .al-opt,.top-a .al-tenho{width:33px!important;height:33px!important;min-width:33px!important}}
 .jg-seg button.jg-ic.vl-ico{width:50px;height:50px;min-width:50px;box-shadow:3px 3px 0 #bd1733}.vl-ico .ic-top svg{width:28px;height:28px;display:block}.vl-ico .ic-top .ac{stroke:#bd1733}.vl-ico .ic-top rect.ac{fill:#bd1733}
+.top-a a.top-av{cursor:pointer;text-decoration:none;color:inherit}.top-a a.top-av:active{transform:scale(.95)}.top-a .top-av.com-foto{border-color:#f6b93b}.top-a .top-av.com-foto img{object-position:50% 50%}
+.top-a .al-tenho{color:#17365B!important}
