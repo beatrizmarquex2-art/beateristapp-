@@ -22,9 +22,9 @@ export function nivelDaFase(n, mundoIdx = 0, shift = 0) {
 }
 /** O que cada nível pede. quiz: tipos de pergunta · caça: palavras, tamanho da grade e direções (0 = → ↓, 1 = + ↘, 2 = todas) · cruzadinha: palavras e tamanho delas · genius: rodadas e botões · caminho: casas e caminhos · memória: pares. */
 export const NIVEL_CFG = {
-  facil: { quiz: ['blank'], palavras: 4, grade: 9, dirs: 0, cruz: 4, cruzMax: 6, genius: { rodadas: 4, pads: 4, ms: 700 }, caminho: { len: 4, caminhos: 2 }, memoria: { pares: 4 }, pesca: { rodadas: 5, peixes: 3, vel: 38 }, mira: { rodadas: 4, alvos: 3, move: 0 }, montar: {}, compasso: { rodadas: 3 }, intruso: { rodadas: 3 } },
-  medio: { quiz: ['blank', 'continua'], palavras: 6, grade: 10, dirs: 1, cruz: 5, cruzMax: 8, genius: { rodadas: 6, pads: 4, ms: 550 }, caminho: { len: 5, caminhos: 3 }, memoria: { pares: 6 }, pesca: { rodadas: 6, peixes: 4, vel: 62 }, mira: { rodadas: 5, alvos: 4, move: 0 }, montar: {}, compasso: { rodadas: 3 }, intruso: { rodadas: 3 } },
-  dificil: { quiz: ['continua', 'match'], palavras: 8, grade: 11, dirs: 2, cruz: 6, cruzMax: 9, genius: { rodadas: 8, pads: 6, ms: 420 }, caminho: { len: 7, caminhos: 3 }, memoria: { pares: 8 }, pesca: { rodadas: 8, peixes: 5, vel: 92 }, mira: { rodadas: 6, alvos: 4, move: 1 }, montar: {}, compasso: { rodadas: 4 }, intruso: { rodadas: 4 } },
+  facil: { quiz: ['blank'], palavras: 4, grade: 9, dirs: 0, cruz: 4, cruzMax: 6, genius: { rodadas: 4, pads: 4, ms: 700 }, caminho: { len: 4, caminhos: 2 }, memoria: { pares: 4 }, pesca: { rodadas: 3, peixes: 3, vel: 38 }, mira: { rodadas: 3, alvos: 3, move: 0 }, montar: {}, compasso: { rodadas: 3 }, intruso: { rodadas: 3 } },
+  medio: { quiz: ['blank', 'continua'], palavras: 6, grade: 10, dirs: 1, cruz: 5, cruzMax: 8, genius: { rodadas: 6, pads: 4, ms: 550 }, caminho: { len: 5, caminhos: 3 }, memoria: { pares: 6 }, pesca: { rodadas: 3, peixes: 4, vel: 62 }, mira: { rodadas: 3, alvos: 4, move: 0 }, montar: {}, compasso: { rodadas: 3 }, intruso: { rodadas: 3 } },
+  dificil: { quiz: ['continua', 'match'], palavras: 8, grade: 11, dirs: 2, cruz: 6, cruzMax: 9, genius: { rodadas: 8, pads: 6, ms: 420 }, caminho: { len: 7, caminhos: 3 }, memoria: { pares: 8 }, pesca: { rodadas: 4, peixes: 5, vel: 92 }, mira: { rodadas: 4, alvos: 4, move: 1 }, montar: {}, compasso: { rodadas: 4 }, intruso: { rodadas: 4 } },
 };
 /** `tr` = a trilha (fuga-trilhas-logic.js trilhaCfg): `assuntos`, `extra` (a infinita sobe um pouco a cada volta: mais palavras, sequências maiores…) e `nivelShift`. Sem `tr` = a Fuga de sempre. */
 export function faseCfg(mundoIdx, n, tr = {}) {
@@ -37,8 +37,8 @@ export function cfgMini(nivel, jogo, extra = 0) {
   if (jogo === 'genius') { c.rodadas = Math.min(10, c.rodadas + extra); c.ms = Math.max(300, Math.round(c.ms * (1 - 0.06 * extra))); }
   else if (jogo === 'caminho') { c.len = Math.min(8, c.len + extra); }
   else if (jogo === 'memoria') { c.pares = Math.min(8, c.pares + extra); }
-  else if (jogo === 'pesca') { c.rodadas = Math.min(10, c.rodadas + extra); c.peixes = Math.min(6, c.peixes + (extra > 1 ? 1 : 0)); c.vel = Math.round(c.vel * (1 + 0.07 * extra)); }
-  else if (jogo === 'mira') { c.rodadas = Math.min(8, c.rodadas + extra); c.move = 1; }
+  else if (jogo === 'pesca') { c.rodadas = Math.min(5, c.rodadas + (extra > 1 ? 1 : 0)); c.peixes = Math.min(6, c.peixes + (extra > 1 ? 1 : 0)); c.vel = Math.round(c.vel * (1 + 0.07 * extra)); }
+  else if (jogo === 'mira') { c.rodadas = Math.min(5, c.rodadas + (extra > 1 ? 1 : 0)); c.move = 1; }
   else if (jogo === 'compasso' || jogo === 'intruso') { c.rodadas = Math.min(5, c.rodadas + (extra > 1 ? 1 : 0)); } // jogos rápidos: no máximo 5 rodadas, mesmo na trilha infinita
   return c;
 }

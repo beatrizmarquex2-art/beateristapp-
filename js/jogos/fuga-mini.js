@@ -160,7 +160,7 @@ export function queda(box, { nivel = 'facil', fim = () => {}, faixas = 2 } = {})
 export const queda4 = (box, o = {}) => queda(box, { ...o, faixas: 4 });
 
 /* ---------- pesca: toque (ou solte o anzol) no peixe certo ---------- */
-const CORES_PEIXE = ['#ff3b5c', '#ffd23f', '#4fd8ff', '#b18cff', '#ff9f43', '#ff7ad9'];
+const CORES_PEIXE = ['#ff4b4b', '#f2b632', '#3cd8ff', '#3cff8a', '#c58cff', '#ff9f43']; // paleta do laboratório do Paul
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const peixeSvg = (cor) => `<svg viewBox="0 0 120 56" aria-hidden="true"><defs><linearGradient id="pg${cor.slice(1)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".45" stop-color="${cor}"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient></defs><path d="M100 28 118 8v40z" fill="${cor}" stroke="#05060f" stroke-width="3" stroke-linejoin="round"/><ellipse cx="54" cy="28" rx="50" ry="24" fill="url(#pg${cor.slice(1)})" stroke="#05060f" stroke-width="3"/><circle cx="14" cy="22" r="4" fill="#fff" stroke="#05060f" stroke-width="2"/></svg>`;
 export function pesca(box, { nivel = 'facil', fim = () => {}, extra = 0, assuntos = null } = {}) {

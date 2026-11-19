@@ -81,8 +81,8 @@ test('lote 2/3: montar, compasso e intruso nas fases certas e fases 11/12 sem re
   assert.ok(NIVEL_CFG.dificil.pesca.vel > NIVEL_CFG.medio.pesca.vel && NIVEL_CFG.medio.pesca.vel > NIVEL_CFG.facil.pesca.vel);
   assert.ok(NIVEL_CFG.dificil.pesca.peixes > NIVEL_CFG.facil.pesca.peixes); assert.equal(NIVEL_CFG.dificil.mira.move, 1); assert.equal(NIVEL_CFG.facil.mira.move, 0);
 });
-test('jogos novos são curtos: 3 rodadas no fácil e no médio, 4 no difícil (nunca mais que 5)', () => {
-  for (const j of ['compasso', 'intruso']) { assert.deepEqual(['facil', 'medio', 'dificil'].map((n) => NIVEL_CFG[n][j].rodadas), [3, 3, 4]); for (const nv of ['facil', 'medio', 'dificil']) for (const ex of [0, 1, 2, 3]) assert.ok(cfgMini(nv, j, ex).rodadas <= 5, `${j} ${nv} +${ex}`); }
+test('portas curtas: compasso, intruso, pesca e mira têm 3 rodadas no fácil e no médio, 4 no difícil (nunca mais que 5)', () => {
+  for (const j of ['compasso', 'intruso', 'pesca', 'mira']) { assert.deepEqual(['facil', 'medio', 'dificil'].map((n) => NIVEL_CFG[n][j].rodadas), [3, 3, 4]); for (const nv of ['facil', 'medio', 'dificil']) for (const ex of [0, 1, 2, 3]) assert.ok(cfgMini(nv, j, ex).rodadas <= 5, `${j} ${nv} +${ex}`); }
 });
 test('feche o compasso: sempre dá pra fechar 4 tempos exatos com até 4 peças da bandeja, e passar do compasso é erro', () => {
   for (const nv of ['facil', 'medio', 'dificil']) for (let i = 0; i < 200; i++) {
