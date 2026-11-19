@@ -116,7 +116,7 @@ export function mountMemoria(host, opts) {
     const status = h('p', { class: 'kx-memstat', 'aria-live': 'polite' });
     const paint = () => {
       if (MS) { status.textContent = `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}${MP.goalTries ? ` · meta ${MP.goalTries}` : ''}${MP.secs ? ` · ⏱ ${t0 ? Math.min(Math.floor((Date.now() - t0) / 1000), 9999) : 0}/${MP.secs} s (opcional)` : ''}`; return; }
-      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez ${deNome(turn)}`} · ${score.join(' × ')}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
+      status.textContent = two ? `${vsPaul ? (turn === 0 ? 'sua vez' : 'vez do Paul') : `vez ${deNome(turn)}`} · ${score.map((x, i) => `${vsPaul ? (i === 0 ? 'você' : 'Paul') : nomeDe(i)} ${x}`).join(' · ')}` : `${matched}/${pairs} pares · ${tries} tentativa${tries === 1 ? '' : 's'}`;
       status.classList.toggle('mem-p2', two && turn % 2 === 1);
     };
     const board = h('div', { class: `kx-board mem-board n${pairs}`, style: `--cols:${cols(deck.length)}` }, ...deck.map((c, i) => {
