@@ -3,126 +3,112 @@
 <title>Paul promos: reels e artes (salas de 4 e Black Friday)</title>
 <link rel="stylesheet" href="../../css/fonts.css">
 <style>
-:root{--navy:#17365B;--deep:#0f2547;--sun:#f6b93b;--red:#bd1733;--cream:#fff6e3;--ink:#142036}
-*{box-sizing:border-box;margin:0}html,body{background:#000;overflow:hidden}
-#s{position:relative;overflow:hidden;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--cream);background:var(--navy)}
+/* ===== sistema de design (1080 de largura): margem 72 · faixa segura vertical 250–1600 · cantos 32 · borda 6 · sombra dura 10 ===== */
+:root{--navy:#17365B;--deep:#0d2142;--ink:#0b1b33;--sun:#f6b93b;--red:#d11f3f;--cream:#fff6e3;--white:#fff;--m:72px}
+*{box-sizing:border-box;margin:0;padding:0}html,body{background:#000;overflow:hidden}
+#s{position:relative;overflow:hidden;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--white)}
 .reel,.story{width:1080px;height:1920px}.post{width:1080px;height:1080px}
-.bg{position:absolute;inset:0;background:radial-gradient(130% 80% at 50% 0,#2a5a96 0,var(--navy) 55%,var(--deep) 100%)}
-.bg::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.09) 3px,transparent 3.6px);background-size:46px 46px}
-.stripe{position:absolute;left:-10%;right:-10%;height:150px;background:var(--red);transform:rotate(-6deg);box-shadow:0 10px 0 rgba(0,0,0,.25)}
-.T{font-family:Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;line-height:.98}
-.M{font-family:"Permanent Marker","Gochi Hand",cursive}
-.abs{position:absolute}.c{left:0;right:0;text-align:center}
-.paul{position:absolute;filter:drop-shadow(0 14px 0 rgba(0,0,0,.28))}
-/* animações: tudo começa quando <body class="go"> (os 9 s do reel) */
-.pop{opacity:0;transform:scale(.4) rotate(-6deg)}.go .pop{animation:pop .55s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:var(--d,0s)}
-@keyframes pop{to{opacity:1;transform:none}}
-.up{opacity:0;transform:translateY(80px)}.go .up{animation:up .6s ease-out forwards;animation-delay:var(--d,0s)}
-@keyframes up{to{opacity:1;transform:none}}
-.fromR{opacity:0;transform:translateX(420px)}.go .fromR{animation:fr .8s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}
-@keyframes fr{to{opacity:1;transform:none}}
-.fromL{opacity:0;transform:translateX(-420px)}.go .fromL{animation:fl .8s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}
-@keyframes fl{to{opacity:1;transform:none}}
-.col{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:270px 60px 330px;text-align:center}
-.pw{position:relative}.pw img{display:block;width:100%;height:auto;filter:drop-shadow(0 14px 0 rgba(0,0,0,.28))}
-.pw .sign{padding:0 2%}
-.bob{animation:bob 1.1s ease-in-out infinite alternate}@keyframes bob{to{transform:translateY(-16px) rotate(1.5deg)}}
-.pulse{animation:pulse .9s ease-in-out infinite alternate}@keyframes pulse{to{transform:scale(1.06)}}
+.bg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 8%,#2c5f9e 0,var(--navy) 52%,var(--deep) 100%)}
+.bg::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 3px,transparent 3.6px);background-size:48px 48px}
+.band{position:absolute;left:-6%;right:-6%;background:var(--red);transform:rotate(-4deg);box-shadow:0 10px 0 rgba(0,0,0,.28)}
+/* tipografia: 3 vozes só. Anton = títulos · Hanken 800 = rótulos e textos · Permanent Marker = UMA palavra de destaque */
+.h1{font:400 var(--fs,160px)/.94 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.005em}
+.lbl{font:800 var(--fs,46px)/1.1 "Hanken Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.07em}
+.txt{font:700 var(--fs,50px)/1.22 "Hanken Grotesk",sans-serif}
+.mk{font:400 var(--fs,120px)/1 "Permanent Marker","Gochi Hand",cursive}
+.c{text-align:center}.sun{color:var(--sun)}.red{color:var(--red)}.ink{color:var(--ink)}
+.a{position:absolute}.row{left:var(--m);right:var(--m)}
+.pill{display:inline-flex;align-items:center;justify-content:center;font:400 var(--fs,52px)/1 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;border:6px solid var(--ink);border-radius:32px;box-shadow:0 10px 0 var(--ink);padding:.42em .9em;color:var(--ink);background:var(--sun)}
+.pill.red{background:var(--red);color:#fff;border-color:#fff;box-shadow:0 10px 0 rgba(0,0,0,.32)}
+.pill.cream{background:var(--cream)}
+.card{background:var(--sun);color:var(--ink);border:8px solid var(--ink);border-radius:36px;box-shadow:0 14px 0 var(--ink);text-align:center}
+.pw{position:absolute}.pw img{display:block;width:100%;height:auto;filter:drop-shadow(0 14px 0 rgba(0,0,0,.30))}
+.pw .sign{position:absolute;left:51.5%;top:18%;width:41%;height:31%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--ink);line-height:1}
+/* animações (só nos reels; começam quando <body class="go">) */
+.pop{opacity:0;transform:scale(.5) rotate(-5deg)}.go .pop{animation:pop .5s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:var(--d,0s)}@keyframes pop{to{opacity:1;transform:none}}
+.up{opacity:0;transform:translateY(70px)}.go .up{animation:up .55s ease-out forwards;animation-delay:var(--d,0s)}@keyframes up{to{opacity:1;transform:none}}
+.fromR{opacity:0;transform:translateX(380px)}.go .fromR{animation:fx .75s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}
+.fromL{opacity:0;transform:translateX(-380px)}.go .fromL{animation:fx .75s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:var(--d,0s)}@keyframes fx{to{opacity:1;transform:none}}
+.fade{animation:fade .4s ease-in forwards;animation-delay:var(--o,0s)}@keyframes fade{to{opacity:0;transform:translateY(-30px)}}
+.pulse{animation:pulse .9s ease-in-out infinite alternate}@keyframes pulse{to{transform:scale(1.05)}}
 .conf i{position:absolute;top:-60px;width:22px;height:34px;border-radius:4px;opacity:0}.go .conf i{animation:fall var(--t,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:1;transform:translateY(2000px) rotate(720deg)}}
-.chip{display:inline-block;padding:18px 34px;border-radius:26px;border:6px solid var(--ink);box-shadow:0 10px 0 var(--ink);font:400 56px/1 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--ink)}
-.price{background:var(--sun);color:var(--ink);border:8px solid var(--ink);border-radius:36px;box-shadow:0 14px 0 var(--ink);padding:26px 40px;text-align:center}
-.cta{display:inline-block;background:var(--cream);color:var(--ink);border:6px solid var(--ink);border-radius:999px;padding:22px 50px;font:400 54px/1 Anton,Impact,sans-serif;text-transform:uppercase;box-shadow:0 10px 0 var(--ink)}
-.badge{position:absolute;background:var(--red);color:#fff;border:6px solid #fff;border-radius:999px;font:400 50px/1 Anton,Impact,sans-serif;text-transform:uppercase;padding:18px 40px;box-shadow:0 10px 0 rgba(0,0,0,.3)}
-.sign{position:absolute;display:grid;place-items:center;text-align:center;color:var(--ink);padding:0 3%}
-.sign .T{color:var(--ink)}
-.typed{overflow:hidden;white-space:nowrap;border-right:0;max-width:0}.go .typed{animation:typed 1.2s steps(22) forwards;animation-delay:var(--d,0s)}@keyframes typed{to{max-width:100%}}
 </style></head><body>
 <div id="s"></div>
 <script>
 const Q=new URLSearchParams(location.search); const M=Q.get('m')||'reelA';
-const P=(n)=>`../../assets/paul/colorido/paul-${n}.webp`;
+const P=(n)=>`../../assets/paul/colorido/paul-${n}.webp`; const URL_='jogos.beaterista.com.br';
 const S=document.getElementById('s');
-const el=(cls,html,style='')=>`<div class="${cls}" style="${style}">${html}</div>`;
-const conf=(n=26)=>`<div class="conf abs" style="inset:0;pointer-events:none">${Array.from({length:n},(_,i)=>`<i style="left:${(i*37)%100}%;background:${['#f6b93b','#bd1733','#2d8cff','#fff6e3','#7a5cff'][i%5]};--d:${(i%9)*.25}s;--t:${2.6+(i%5)*.4}s"></i>`).join('')}</div>`;
+const E=(cls,html,style='')=>`<div class="${cls}" style="${style}">${html}</div>`;
+const conf=(n=26)=>`<div class="conf a" style="inset:0;pointer-events:none">${Array.from({length:n},(_,i)=>`<i style="left:${(i*37)%100}%;background:${['#f6b93b','#d11f3f','#2d8cff','#fff6e3','#7a5cff'][i%5]};--d:${(i%9)*.25}s;--t:${2.6+(i%5)*.4}s"></i>`).join('')}</div>`;
+const CTA=(fs,pos)=>`<div class="a c row" style="${pos}"><span class="pill cream" style="--fs:${fs}px">${URL_}</span></div>`;
+/* Paul + placa: a placa é uma "tela" de 41% × 31% da imagem, então o texto sempre cai no lugar certo */
+const PLACA=(x,y,w,inner,anim='')=>`<div class="pw ${anim}" style="left:${x}px;top:${y}px;width:${w}px"><img src="${P('placa')}"><div class="sign">${inner}</div></div>`;
 const mk={
-  /* placa: o Paul aponta e o texto fica DENTRO da placa (posição em %, não pula de lugar) */
-  /* REELS e STORIES: coluna centralizada na faixa segura (nada se sobrepõe, o espaço se reparte sozinho) */
-  reelA:()=>({cls:'reel',html:`<div class="bg"></div><div class="stripe" style="top:230px"></div>
-    <div class="col">
-      ${el('T up','jogos da beaterista','font-size:58px;color:#fff;--d:.1s')}
-      <div class="pw fromL" style="width:960px;--d:.4s"><img src="${P('placa')}">
-        <div class="sign" style="left:51%;top:18%;width:42%;height:31%">${el('T pop','agora dá pra jogar em 4!','font-size:52px;--d:1.3s')}</div></div>
-      ${el('M up','cada um na sua casa, na mesma sala','font-size:54px;color:var(--sun);--d:2.4s')}
-      ${el('up','<span class="chip" style="background:#fff6e3;font-size:42px">memória</span> <span class="chip" style="background:var(--sun);font-size:42px">uno</span> <span class="chip" style="background:#9fe3ff;font-size:42px">stop</span> <span class="chip" style="background:#ffb3c1;font-size:42px">cara a cara</span>','--d:3.4s;line-height:2.1')}
-      ${el('up','<span class="cta pulse">jogos.beaterista.com.br</span>','--d:5.2s;font-size:48px')}
-    </div>`}),
+  /* ───────── REELS (1080×1920): faixa segura 250–1650 · alturas medidas ───────── */
+  reelA:()=>({cls:'reel',html:`<div class="bg"></div>
+    ${E('a c row up','<span class="pill red" style="--fs:44px">jogos da beaterista</span>','top:262px;--d:.1s')}
+    ${PLACA(90,400,900,E('h1 ink pop','agora dá pra<br>jogar em 4!','--fs:68px;--d:1.3s'),'fromL')}
+    ${E('a c row h1 sun up','cada um na sua casa,<br>na mesma sala','top:1240px;--fs:78px;--d:2.4s')}
+    <div class="a c row" style="top:1470px"><div class="fade" style="--o:6s"><div class="up" style="--d:3.4s;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <span class="pill cream" style="--fs:46px">memória</span><span class="pill" style="--fs:46px">uno</span>
+      <span class="pill" style="--fs:46px;background:#9fe3ff">stop</span><span class="pill" style="--fs:46px;background:#ffb3c1">cara a cara</span></div></div></div>
+    <div class="a c row up" style="top:1500px;--d:6.3s"><span class="pill cream pulse" style="--fs:50px">${URL_}</span></div>`}),
   reelB:()=>({cls:'reel',html:`<div class="bg"></div>
-    <div class="col" style="gap:20px">
-      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0">
-        <div style="text-align:left;flex:1">
-          ${el('T up','psiu…','font-size:170px;color:var(--sun);--d:1.2s;transform:rotate(-5deg);display:block')}
-          ${el('badge pop','black friday','position:relative;display:inline-block;--d:2s;font-size:44px;margin-top:20px')}
-          ${el('T up','passe anual','font-size:88px;color:#fff;--d:2.8s;margin-top:22px')}</div>
-        <img class="paul fromR" src="${P('espiando')}" style="position:relative;width:430px;margin-right:-30px;--d:.2s;flex:none">
-      </div>
-      <div class="price pop" style="width:100%;--d:3.6s">
-        ${el('M','um ano inteiro de música, jogos e descobertas','font-size:38px;color:var(--ink)')}
-        ${el('T','R$ 49,90','font-size:150px;color:var(--red);margin:4px 0')}
-        ${el('T','só até 15/12 · à vista no pix','font-size:46px;color:var(--ink)')}</div>
-      ${el('up','<span class="cta pulse">jogos.beaterista.com.br</span>','--d:5.6s;font-size:48px;margin-top:10px')}
-    </div>`}),
+    ${E('band','','top:1110px;height:140px')}
+    <div class="pw fromR" style="right:-14px;top:290px;width:440px;--d:.2s"><img src="${P('espiando')}"></div>
+    ${E('a mk sun up','psiu…','left:var(--m);top:290px;--fs:200px;--d:1.1s;transform:rotate(-6deg)')}
+    ${E('a up','<span class="pill red" style="--fs:56px">black friday</span>','left:var(--m);top:540px;--d:2s')}
+    ${E('a h1 up','passe<br>anual','left:var(--m);top:730px;--fs:140px;--d:2.8s')}
+    <div class="a card pop row" style="top:1170px;--d:3.6s;padding:26px 30px 30px">
+      ${E('lbl ink','à vista no pix','--fs:42px')}
+      ${E('h1 red','R$ 49,90','--fs:176px;margin:6px 0')}
+      ${E('lbl ink','só até 15/12','--fs:50px')}</div>
+    <div class="a c row up" style="top:1565px;--d:5.4s"><span class="pill cream pulse" style="--fs:44px">${URL_}</span></div>`}),
   reelC:()=>({cls:'reel',html:`<div class="bg"></div>${conf(30)}
-    <div class="col" style="gap:14px">
-      ${el('T up','4 amigos','font-size:170px;color:var(--sun);--d:.2s')}
-      ${el('T up','1 sala','font-size:170px;color:#fff;--d:.8s;margin-top:-14px')}
-      ${el('up',`<span class="chip pop" style="background:#fff6e3;--d:1.6s">ana</span> <span class="chip pop" style="background:var(--sun);--d:2.1s">bia</span><br><span class="chip pop" style="background:#9fe3ff;--d:2.6s;margin-top:30px;display:inline-block">cris</span> <span class="chip pop" style="background:#ffb3c1;--d:3.1s;margin-top:30px;display:inline-block">duda</span>`,'--d:1.4s;line-height:1.4;margin-top:14px')}
-      ${el('M up','quem ganha leva ★ ✨','font-size:58px;color:var(--sun);--d:4s;margin-top:10px')}
-      <div class="pw pop" style="width:380px;--d:3.6s"><img src="${P('festa')}"></div>
-      ${el('up','<span class="cta pulse">memória · uno · stop · cara a cara</span>','--d:4.8s;font-size:32px')}
-    </div>`}),
-  /* ARTES: posts 1080×1080 (margem de 60) */
+    ${E('a c row h1 sun up','4 amigos','top:262px;--fs:190px;--d:.2s')}
+    ${E('a c row h1 up','1 sala','top:446px;--fs:190px;--d:.8s')}
+    <div class="a c row" style="top:690px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      ${['ana|#fff6e3|1.6','bia|#f6b93b|2.1','cris|#9fe3ff|2.6','duda|#ffb3c1|3.1'].map((x)=>{const [n,c,d]=x.split('|');return `<span class="pill pop" style="--fs:62px;background:${c};--d:${d}s;padding:.45em 0">${n}</span>`;}).join('')}</div>
+    <div class="pw pop" style="left:50%;margin-left:-230px;top:1010px;width:460px;--d:3.6s"><img src="${P('festa')}"></div>
+    ${E('a c row mk sun up','quem ganha leva ★','top:1575px;--fs:70px;--d:4.2s')}`}),
+  /* ───────── POSTS (1080×1080, margem 72) — alturas medidas: placa 0,885·L · baú 0,881·L · presente 1,625·L ───────── */
   'bf-post':()=>({cls:'post',html:`<div class="bg"></div>
-    ${el('badge','black friday','left:60px;top:60px;font-size:60px')}
-    ${el('abs T','só até 15/12 · pix','right:60px;top:78px;font-size:54px;color:var(--sun)')}
-    <div class="pw abs" style="left:190px;top:185px;width:700px"><img src="${P('placa')}"><div class="sign" style="left:51%;top:18%;width:42%;height:31%">${el('T','passe anual','font-size:36px')}${el('T','R$ 49,90','font-size:58px;color:var(--red);white-space:nowrap')}</div></div>
-    ${el('abs c M','um ano inteiro de música, jogos e descobertas','top:850px;font-size:40px;color:var(--cream)')}
-    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:60px;font-size:36px')}`}),
+    ${E('a','<span class="pill red" style="--fs:52px">black friday</span>','left:var(--m);top:56px')}
+    ${E('a h1 sun','só até 15/12','right:var(--m);top:72px;--fs:66px;text-align:right')}
+    ${PLACA(190,180,700,`${E('lbl ink','passe anual','--fs:32px')}${E('h1 red','R$ 49,90','--fs:72px;margin-top:6px;white-space:nowrap')}${E('lbl ink','à vista no pix','--fs:28px;margin-top:6px')}`)}
+    ${E('a c row txt','um ano inteiro de música, jogos e descobertas','top:822px;--fs:40px;color:var(--cream)')}
+    ${CTA(40,'bottom:60px')}`}),
   'bau-post':()=>({cls:'post',html:`<div class="bg"></div>
-    ${el('abs c T','juntou ★? abriu o baú!','top:60px;font-size:92px;color:var(--sun)')}
-    <div class="pw abs" style="left:50%;margin-left:-340px;top:185px;width:680px"><img src="${P('bau')}"></div>
-    ${el('abs c M','a cada 15 ★, uma roleta!','top:850px;font-size:48px;padding:0 60px')}
-    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:60px;font-size:36px')}`}),
-  'presente-post':()=>({cls:'post',html:`<div class="bg"></div>${conf(20)}
-    <div class="pw abs" style="left:70px;top:130px;width:470px"><img src="${P('presente')}"></div>
-    ${el('abs T','um ano inteiro de','left:620px;top:130px;font-size:52px;color:#fff;white-space:nowrap')}
-    ${el('abs T','música, jogos e descobertas','left:620px;top:200px;width:400px;font-size:76px;color:var(--sun)')}
-    ${el('abs M','passe anual do robôterista paul','left:620px;top:520px;width:400px;font-size:36px')}
-    <div class="abs price" style="left:620px;top:690px;width:400px;padding:14px 22px">${el('T','R$ 49,90 pix','font-size:64px;color:var(--red);white-space:nowrap')}${el('T','black friday · até 15/12','font-size:30px')}</div>
-    ${el('abs c','<span class="cta">jogos.beaterista.com.br</span>','bottom:60px;font-size:36px')}`}),
-  /* STORIES 1080×1920 */
-  'bf-story':()=>({cls:'story',html:`<div class="bg"></div><div class="stripe" style="top:230px"></div>
-    <div class="col">
-      ${el('badge','black friday','position:relative;font-size:76px')}
-      <div class="pw" style="width:940px"><img src="${P('placa')}"><div class="sign" style="left:51%;top:18%;width:42%;height:31%">${el('T','passe anual','font-size:44px')}${el('T','R$ 49,90','font-size:70px;color:var(--red);white-space:nowrap')}</div></div>
-      ${el('T','só até 15/12 · à vista no pix','font-size:66px;color:var(--sun)')}
-      ${el('M','um ano inteiro de música, jogos e descobertas','font-size:52px')}
-      ${el('','<span class="cta">jogos.beaterista.com.br</span>','font-size:48px')}
-    </div>`}),
-  'bau-story':()=>({cls:'story',html:`<div class="bg"></div><div class="stripe" style="top:230px"></div>
-    <div class="col" style="gap:18px">
-      ${el('T','juntou ★?','font-size:150px;color:var(--sun)')}${el('T','abriu o baú!','font-size:150px;color:#fff;margin-top:-18px')}
-      <div class="pw" style="width:860px"><img src="${P('bau')}"></div>
-      ${el('M','a cada 15 ★, uma roleta!','font-size:56px')}
-      ${el('','<span class="cta">jogos.beaterista.com.br</span>','font-size:48px')}
-    </div>`}),
+    ${E('a c row h1 sun','juntou ★? abriu o baú!','top:60px;--fs:86px')}
+    ${E('pw','<img src="'+P('bau')+'">','left:50%;margin-left:-350px;top:170px;width:700px')}
+    ${E('a c row txt','a cada 15 ★, uma roleta!','top:808px;--fs:52px;font-weight:800')}
+    ${CTA(40,'bottom:60px')}`}),
+  'presente-post':()=>({cls:'post',html:`<div class="bg"></div>${conf(18)}
+    ${E('pw','<img src="'+P('presente')+'">','left:72px;top:150px;width:420px')}
+    ${E('a lbl','um ano inteiro de','left:540px;top:150px;--fs:40px')}
+    ${E('a h1 sun','música,<br>jogos e<br>descobertas','left:540px;top:210px;--fs:80px')}
+    <div class="a card" style="left:540px;right:72px;top:590px;padding:16px 10px 20px">${E('lbl ink','black friday','--fs:30px')}${E('h1 red','R$ 49,90','--fs:100px;margin:4px 0')}${E('lbl ink','pix · até 15/12','--fs:30px')}</div>
+    ${CTA(40,'bottom:60px')}`}),
+  /* ───────── STORIES (1080×1920): faixa segura 250–1650 ───────── */
+  'bf-story':()=>({cls:'story',html:`<div class="bg"></div>${E('band','','top:236px;height:140px')}
+    ${E('a c row','<span class="pill red" style="--fs:60px">black friday</span>','top:262px')}
+    ${E('a c row h1','passe anual','top:412px;--fs:136px')}
+    ${PLACA(170,560,740,`${E('lbl ink','só até','--fs:38px')}${E('h1 red','15/12','--fs:124px;margin-top:4px')}`)}
+    <div class="a card row" style="top:1262px;padding:22px 20px 26px">${E('h1 red','R$ 49,90','--fs:170px')}${E('lbl ink','à vista no pix','--fs:44px;margin-top:6px')}${E('lbl ink','jogos.beaterista.com.br','--fs:36px;margin-top:14px;letter-spacing:.03em')}</div>`}),
+  'bau-story':()=>({cls:'story',html:`<div class="bg"></div>${E('band','','top:236px;height:140px')}
+    ${E('a c row h1 sun','juntou ★?','top:270px;--fs:150px')}
+    ${E('a c row h1','abriu o baú!','top:420px;--fs:150px')}
+    ${E('pw','<img src="'+P('bau')+'">','left:50%;margin-left:-400px;top:610px;width:800px')}
+    ${E('a c row txt','a cada 15 ★, uma roleta!','top:1350px;--fs:62px;font-weight:800')}
+    ${CTA(46,'top:1480px')}`}),
   'presente-story':()=>({cls:'story',html:`<div class="bg"></div>${conf(28)}
-    <div class="col" style="gap:12px">
-      ${el('T','um ano inteiro de','font-size:80px;color:#fff')}${el('T','música, jogos','font-size:126px;color:var(--sun);margin-top:-6px')}${el('T','e descobertas!','font-size:126px;color:var(--sun);margin-top:-10px')}
-      <div class="pw" style="width:360px;margin:8px 0"><img src="${P('presente')}"></div>
-      <div class="price" style="width:880px;padding:18px 28px">${el('T','black friday','font-size:44px;color:var(--ink)')}${el('T','R$ 49,90 no pix','font-size:100px;color:var(--red)')}${el('T','só até 15/12','font-size:44px;color:var(--ink)')}</div>
-      ${el('','<span class="cta">jogos.beaterista.com.br</span>','font-size:46px;margin-top:6px')}
-    </div>`}),
+    ${E('a c row lbl','um ano inteiro de','top:262px;--fs:58px')}
+    ${E('a c row h1 sun','música, jogos','top:338px;--fs:140px')}
+    ${E('a c row h1 sun','e descobertas!','top:482px;--fs:140px')}
+    ${E('pw','<img src="'+P('presente')+'">','left:50%;margin-left:-200px;top:640px;width:400px')}
+    <div class="a card row" style="top:1330px;padding:20px 20px 24px">${E('lbl ink','black friday · só até 15/12','--fs:42px')}${E('h1 red','R$ 49,90 no pix','--fs:124px;margin-top:6px')}</div>
+    ${CTA(44,'top:1552px')}`}),
 };
 const f=(mk[M]||mk.reelA)(); S.className=f.cls; S.innerHTML=f.html;
 const imgs=[...document.images]; Promise.all([document.fonts.ready,...imgs.map((i)=>i.complete?1:new Promise((r)=>{i.onload=i.onerror=r;}))]).then(()=>{document.body.classList.add('go'); window.__ready=true;});
