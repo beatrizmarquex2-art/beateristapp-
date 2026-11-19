@@ -1,6 +1,6 @@
 // "O Paul conta": cartão com uma pose do Paul + frase musical, curiosidade, recado das marcas parceiras ou convite pras redes.
 // Usado nas abas Jogos e Perfil. Cada toque em "outra" mostra a próxima (sorteia sem repetir até passar por todas).
-import { h } from './util.js';
+import { h, todayKey } from './util.js';
 import { chirp } from './paul-talk.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer', SITE = 'https://beaterista.com.br';
@@ -13,6 +13,8 @@ const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-self
 const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
+  // Black Friday (até 15/12/2026, 7º item = data limite): o Paul com o presente fala do passe anual; aparece em 1 de cada 2 aberturas da aba
+  ['black friday', 'black friday no passe anual: R$ 49,90 no pix, só até 15/12! um ano inteiro de música, jogos e descobertas 🎁', 'colorido/paul-presente', '#/lojinha', 'ver o passe', undefined, '2026-12-15'],
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
   // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
   ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
@@ -88,31 +90,36 @@ export function arteDoPaul(arquivo, titulo, sub, alt) {
 let bag = [], last = -1;
 function sortear() {
   if (!bag.length) {
-    bag = DICAS.map((_, i) => i).filter((i) => DICAS[i][5] !== 'aluno' || document.documentElement.classList.contains('aluno-on'));
+    bag = DICAS.map((_, i) => i).filter((i) => (DICAS[i][5] !== 'aluno' || document.documentElement.classList.contains('aluno-on')) && vale(DICAS[i]));
     for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
     if (bag.length > 1 && bag[bag.length - 1] === last) [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
   }
   last = bag.pop(); return DICAS[last];
 }
 
+const vale = (d) => !d[6] || todayKey() <= d[6]; // 7º item: data limite (AAAA-MM-DD); depois dela o cartão some sozinho
 const ROD = 'beaterista-paul-rodizio';
 /** Carta da vez: anda 1 a cada vez que a aba é aberta (guarda o ponto no aparelho), então nunca repete a de antes. O vídeo novo entra na fila como as outras. */
 function cartaDaVez() {
-  const ok = DICAS.filter((d) => d[5] !== 'aluno' || document.documentElement.classList.contains('aluno-on'));
-  const app = ok.filter((d) => d[5] === 'aluno' || d[3] === VIDEO_URL), gerais = ok.filter((d) => !(d[5] === 'aluno' || d[3] === VIDEO_URL));
+  const ok = DICAS.filter((d) => (d[5] !== 'aluno' || document.documentElement.classList.contains('aluno-on')) && vale(d));
+  const bf = ok.find((d) => d[0] === 'black friday');
+  const app = ok.filter((d) => d !== bf && (d[5] === 'aluno' || d[3] === VIDEO_URL)), gerais = ok.filter((d) => d !== bf && !(d[5] === 'aluno' || d[3] === VIDEO_URL));
   const lista = []; for (let i = 0; i < Math.max(app.length, gerais.length); i++) { if (app[i]) lista.push(app[i]); if (gerais[i]) lista.push(gerais[i]); } // intercala: convite do app, frase, convite, frase…
   let n = 0; try { n = Number(localStorage.getItem(ROD)) || 0; localStorage.setItem(ROD, String(n + 1)); } catch { n = Math.floor(Math.random() * lista.length); }
-  return lista[n % lista.length];
+  if (bf && n % 2 === 0) return bf; // Black Friday: 1 de cada 2 aberturas
+  return lista[(bf ? (n - 1) / 2 : n) % lista.length];
 }
 
 /** Cartão do Paul. `soBeaterista` não é usado: serve igual pro aluno e pra Bea. */
 export function paulDica({ compacto = false } = {}) {
   const img = h('img', { class: 'pd-img', alt: '', 'aria-hidden': 'true', draggable: 'false', decoding: 'async' });
   const tag = h('small', { class: 'pd-tag' }), text = h('p', { class: 'pd-text' }), row = h('div', { class: 'pd-row' });
-  let sec = null;
+  let sec = null; const sticker = h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO');
   const mostrar = (it) => {
     const [t, tx, pose, href, rot] = it;
-    if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL);
+    const ehBF = t === 'black friday';
+    if (sec) sec.classList.toggle('pd-novo', href === VIDEO_URL || ehBF);
+    sticker.textContent = ehBF ? '🎁 BLACK FRIDAY' : '▶ NOVO';
     const interno = href && String(href).startsWith('#');
     img.src = poseSrc(pose);
     tag.textContent = t; text.textContent = tx;
@@ -122,6 +129,6 @@ export function paulDica({ compacto = false } = {}) {
   img.addEventListener('click', () => { chirp(); img.classList.add('pd-pop'); setTimeout(() => img.classList.remove('pd-pop'), 260); mostrar(sortear()); });
   const inicial = cartaDaVez(); mostrar(inicial); // uma carta diferente a cada vez que a aba é aberta
   // modelo "quadrinho": Paul grande saindo da borda, etiqueta do assunto e balão de fala
-  sec = h('section', { class: `pd pd-q${compacto ? ' pd-compacto' : ''}${inicial[3] === VIDEO_URL ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, h('span', { class: 'pd-sticker', 'aria-hidden': 'true' }, '▶ NOVO'), h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
+  sec = h('section', { class: `pd pd-q${compacto ? ' pd-compacto' : ''}${inicial[3] === VIDEO_URL || inicial[0] === 'black friday' ? ' pd-novo' : ''}`, 'aria-label': 'o Paul conta' }, sticker, h('i', { class: 'pd-luz', 'aria-hidden': 'true' }), tag, img, h('div', { class: 'pd-bal' }, text, row));
   return sec;
 }

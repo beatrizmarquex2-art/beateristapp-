@@ -114,3 +114,7 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .in-ganhar-q { margin: 0 0 10px; font: 700 15px "Hanken Grotesk", sans-serif; }
 .in-ganhar-h { margin: 6px 0 4px; font: 400 26px "Anton", sans-serif; text-transform: uppercase; }
 .in-ganhar-volta { background: none; border: 0; padding: 4px 0; font: 700 15px "Hanken Grotesk", sans-serif; color: #c81e2d; cursor: pointer; }
+
+/* card com o Paul (ex.: Black Friday com o Paul do presente) */
+.in-nv{position:relative;overflow:hidden}.in-nv-paul{position:absolute;right:-6px;bottom:30px;width:72px;height:auto;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25));pointer-events:none}
+.in-nv:has(.in-nv-paul) p{padding-right:52px}
