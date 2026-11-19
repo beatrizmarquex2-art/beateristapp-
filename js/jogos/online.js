@@ -17,7 +17,18 @@ const limpoNome = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 14
 export const meuNomeSala = () => { try { return limpoNome(localStorage.getItem(NOME_KEY)); } catch { return ''; } };
 export const guardarNomeSala = (v) => { try { localStorage.setItem(NOME_KEY, limpoNome(v)); } catch { /* sem armazenamento */ } };
 const objeto = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
-const semNomes = (x) => { const { nomes, ...resto } = x; return JSON.stringify(resto); };
+const semNomes = (x) => { const { nomes, pausaSala, ...resto } = x; return JSON.stringify(resto); }; // nomes e pausa geral não são jogada
+
+/* ---- pausa geral (vale pra todos os celulares da sala): viaja em `estado.pausaSala = { by, tipo, resp: { [quem]: resposta } }` ----
+   tipo: 'ja-volto' | 'sair' | 'aguarda' (quem pausou escolhe) ou 'saiu' (deixou a sala). Quem recebe responde 'beleza' | 'tchau' | 'nao'. */
+export const PAUSA_TIPOS = [['ja-volto', 'já volto rapidão'], ['sair', 'tenho que sair'], ['aguarda', 'pode aguardar um pouco?']];
+export const PAUSA_RESP = [['beleza', 'beleza'], ['tchau', 'blz tchau'], ['nao', 'não consigo']];
+const limpaPausa = (p) => { if (!objeto(p) || ![0, 1, 2, 3].includes(p.by)) return null; const tipo = p.tipo === 'saiu' || PAUSA_TIPOS.some((t) => t[0] === p.tipo) ? p.tipo : 'ja-volto'; const resp = {}; if (objeto(p.resp)) for (const k of ['0', '1', '2', '3']) if (PAUSA_RESP.some((r) => r[0] === p.resp[k])) resp[k] = p.resp[k]; return { by: p.by, tipo, resp }; };
+let ativa = null; // a sala em que este celular está jogando agora: { conn, jogo }
+/** A sala em que este celular está agora (ou null). A moldura dos jogos usa pra mostrar a pausa geral. */
+export const salaAtual = () => ativa;
+const avisaPausa = () => { try { document.dispatchEvent(new CustomEvent('bt-pausa-sala')); } catch { /* fora do navegador */ } };
+const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---- lembrar a última sala de cada jogo (pra voltar se sair sem querer) e entrada automática por código ---- */
 const ULT = (jogo) => `beaterista-sala-ultima-${jogo}`; const AUTO = 'beaterista-sala-auto'; const VALE_MS = 12 * 3600 * 1000;
@@ -43,9 +54,22 @@ export async function acharJogoDaSala(code) {
 
 /** Conexão com uma sala já criada/entrada. `me` = 0 (quem criou) ou 1 (quem entrou). */
 function connection(code, me, ver, onPeer) {
-  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', ''];
+  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', '']; let pausa = null;
   const on = {}; // o jogo pendura aqui: on.state(estado), on.link(true|false) e (opcional) on.nomes() quando só os nomes mudaram
-  const absorve = (st) => { if (objeto(st) && Array.isArray(st.nomes)) nomes = Array.from({ length: Math.max(2, Math.min(4, st.nomes.length)) }, (_, i) => limpoNome(st.nomes[i])); }; // 2 a 4 nomes (salas de 3 e 4 celulares)
+  const absorve = (st) => {
+    if (!objeto(st)) return; if (Array.isArray(st.nomes)) nomes = Array.from({ length: Math.max(2, Math.min(4, st.nomes.length)) }, (_, i) => limpoNome(st.nomes[i])); // 2 a 4 nomes (salas de 3 e 4 celulares)
+    const p = limpaPausa(st.pausaSala); const mudou = JSON.stringify(p) !== JSON.stringify(pausa); pausa = p; if (mudou) avisaPausa();
+  };
+  /** muda a pausa geral e manda pra sala; se o outro mexeu ao mesmo tempo, pega o estado dele e tenta de novo */
+  async function mudaPausa(fn) {
+    for (let i = 0; i < 4 && !stopped; i++) {
+      if (!objeto(ultimo)) return false;
+      const antes = JSON.stringify(pausa); pausa = limpaPausa(fn(pausa)); if (JSON.stringify(pausa) !== antes) avisaPausa();
+      if (await api.push(ultimo)) return true;
+      await espera(700); while (busy && !stopped) await espera(100);
+    }
+    return false;
+  }
   const link = (v) => { if (v !== ok) { ok = v; if (on.link) on.link(v); } };
   async function poll() {
     if (stopped || busy || document.hidden) return;
@@ -67,7 +91,7 @@ function connection(code, me, ver, onPeer) {
   timer = setInterval(poll, POLL_MS);
   const onVis = () => { if (!document.hidden) poll(); };
   document.addEventListener('visibilitychange', onVis);
-  return {
+  const api = {
     code, me, on,
     /** os nomes de quem está na sala ([nome do 0, nome do 1], '' = não pôs nome) e o jeito de chamar cada um */
     nomes: () => nomes.slice(),
@@ -80,15 +104,22 @@ function connection(code, me, ver, onPeer) {
     async push(state) {
       busy = true;
       try {
-        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; state = { ...state, nomes: n }; } // o meu nome vai junto de toda jogada
+        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, ...resto } = state; state = pausa ? { ...resto, nomes: n, pausaSala: pausa } : { ...resto, nomes: n }; } // o meu nome vai junto de toda jogada
         const n = await rpc('sala_enviar', { p_code: code, p_ver: ver, p_estado: state });
         link(true);
         if (n > 0) { ver = n; absorve(state); ultimo = state; return true; }
       } catch { link(false); return false; } finally { busy = false; }
       poll(); return false;
     },
-    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); },
+    /** pausa geral: a pausa de agora (ou null), pausar pra todos, responder, voltar e deixar a sala */
+    pausa: () => (pausa ? { ...pausa, resp: { ...pausa.resp } } : null),
+    pausarTodos: (tipo) => mudaPausa((p) => (p && p.tipo !== 'saiu' ? p : { by: me, tipo, resp: {} })),
+    responderPausa: (r) => mudaPausa((p) => (p && p.by !== me ? { ...p, resp: { ...p.resp, [me]: r } } : p)),
+    retomarTodos: () => mudaPausa(() => null),
+    deixarSala: () => mudaPausa(() => ({ by: me, tipo: 'saiu', resp: {} })),
+    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
   };
+  return api;
 }
 
 const QUANTOS = {}; // jogo → quantas pessoas a pessoa que cria escolheu (2, 3 ou 4)
@@ -102,7 +133,7 @@ export function lobby({ jogo, makeState, onStart: aoComecar, n: opN = null }) {
   let conn = null; let live = false; let esperaT = 0; let quantos = QUANTOS[jogo] || 2; // lembra a escolha de 2, 3 ou 4 mesmo se o jogo desenhar a tela de novo
   const meuNome = () => meuNomeSala() || 'jogador'; // o nome vem do campo "adicionar nome" (o mesmo das salas de 2)
   const paraEspera = () => { if (esperaT) { clearInterval(esperaT); esperaT = 0; } };
-  const onStart = (c, st) => { lembrarSala(jogo, c.code, c.me); aoComecar(c, st); }; // cada jogo continua recebendo (conn, estado); aqui só guardamos a sala pra dar pra voltar
+  const onStart = (c, st) => { lembrarSala(jogo, c.code, c.me); ativa = { conn: c, jogo }; aoComecar(c, st); const p = c.pausa(); if (p && p.by === c.me) c.retomarTodos(); else avisaPausa(); }; // voltei pra sala: a minha pausa geral (ou o meu aviso de saída) some sozinha. // cada jogo continua recebendo (conn, estado); aqui só guardamos a sala pra dar pra voltar
   const msg = h('p', { class: 'jg-msg', 'aria-live': 'polite' });
   const err = (t) => { msg.textContent = t; };
   let entrando = false;

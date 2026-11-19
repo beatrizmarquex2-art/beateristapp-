@@ -1456,7 +1456,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-lz{stroke:#ff2a55;stroke-width:2.4;stroke-linecap:round;filter:drop-shadow(0 0 4px #ff2a55) drop-shadow(0 0 9px #ff2a55);animation:fgLaser 2.2s ease-in-out infinite alternate}
 .fg-lz.l1{animation-delay:-.7s}.fg-lz.l2{animation-delay:-1.4s}
 .fg-varre{stroke:#ff2a5588;stroke-width:1.6;filter:drop-shadow(0 0 6px #ff2a55);animation:fgVarre 3.4s linear infinite}
-.fg-cad.t{animation:fgTrava 2.6s ease-in-out infinite}.fg-cad.v{animation:fgTrava 1.2s ease-in-out infinite}
+.fg-cad{transform-box:fill-box;transform-origin:center}.fg-cad.t{animation:fgTrava 2.6s ease-in-out infinite}.fg-cad.v{animation:fgTrava 1.2s ease-in-out infinite}
 .fg-onair{animation:fgPisca 1.1s steps(2,end) infinite}
 .fg-luz{animation:fgLuz 2.4s ease-in-out infinite alternate}
 .fg-cena.alarme{animation:fgAlarme .9s ease-out 1}
@@ -1464,7 +1464,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fg-cena.livre{box-shadow:0 0 36px #3cff9a88,inset 0 0 40px #000}
 @keyframes fgLaser{from{transform:translateY(-9px);opacity:.75}to{transform:translateY(9px);opacity:1}}
 @keyframes fgVarre{from{transform:translateY(0)}to{transform:translateY(158px)}}
-@keyframes fgTrava{50%{transform:translate(var(--x,0),0) scale(1.1)}}
+@keyframes fgTrava{50%{scale:1.12}}
 @keyframes fgPisca{50%{opacity:.35}}@keyframes fgLuz{from{opacity:.55}to{opacity:1}}
 @keyframes fgAlarme{0%,40%{box-shadow:0 0 0 4px #ff2a55,0 0 60px #ff2a55}100%{}}
 .fg-fala{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;background:#15103a!important;border:1px solid #4a3d9a;color:#fff6e0}.fg-fala>:nth-child(n+3){grid-column:1/-1}
@@ -1573,3 +1573,14 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .dc-seta{font-size:26px;line-height:1;vertical-align:middle;color:#c4182c}
 
 .dc-desistir-btns{display:grid;gap:8px;margin-top:10px}
+.fg-wrap .dc-chip{color:#17224a;font-weight:800}.fg-wrap .dc-chip.ok{color:#fff}
+/* pausa geral (todos os celulares da sala): recados em chips pequenos dentro da caixa de pausa */
+.jg-pausa-sala{display:grid;gap:6px;justify-items:center;margin-top:2px}
+.jg-pausa-sala b{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#17224a}
+.jg-pausa-chips{justify-content:center;gap:8px}
+.jg-pausa-box .jg-pausa-chips button{min-height:34px;padding:5px 10px;font-size:13px;font-weight:700;line-height:1.15;border:2px solid #14111a;border-radius:9px;background:#fff;color:#14111a;box-shadow:2px 3px 0 #c4182c}
+.jg-pausa-box .jg-pausa-chips button:active{transform:translate(2px,3px);box-shadow:none}
+.jg-pausa-resp{margin:0;padding:8px 10px;border-radius:10px;background:#17224a;color:#fff6e0;font-weight:700;font-size:14px;line-height:1.3}
+.jg-pausa-geral .jg-pausa-box h2{font-size:38px}
+.jg-pausa-box .jg-pausa-saidas{margin-top:2px}.jg-pausa-box .jg-pausa-saidas button{background:transparent;box-shadow:2px 3px 0 #17224a;border-color:#17224a;color:#17224a}
+.jg-pausa-resp{display:grid;gap:4px}.jg-pausa-resp .esp{font-weight:600;opacity:.8}
