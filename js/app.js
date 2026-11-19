@@ -3,7 +3,7 @@ import { h, icon, clock, longDate, shortDate } from './util.js';
 import { db, requestPersistence } from './db.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
-import { atualizarButton } from './atualizar-btn.js';
+import { atualizarButton, atualizarAgora } from './atualizar-btn.js';
 import * as sync from './sync.js';
 import { banner, toast, closeSheets } from './ui.js';
 import { mountLogin } from './views/login.js';
@@ -392,7 +392,12 @@ function startApp() {
 }
 
 async function boot() {
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    // versão nova: o aviso "tem coisa nova no app!" com o botão atualizar (e o pino vermelho no ⟳ do topo, ver atualizar-btn.js); procura versão nova sempre que o app volta pra tela
+    const tinha = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha && !document.querySelector('.atualiza-bar')) document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizarAgora }, 'atualizar'))); });
+    navigator.serviceWorker.register('sw.js').then((reg) => { document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
+  }
   try {
     await store.init();
     initTheme();

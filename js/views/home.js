@@ -16,6 +16,7 @@ import { incentiveFor } from '../hero-text.js';
 import { recents } from '../recent.js';
 import { findStudy, openStudy } from '../study-link.js';
 import { homeStrip } from './lembretes.js';
+import { atualizarAgora } from '../atualizar-btn.js';
 
 const ORDER_KEY = 'setting-shortcuts';
 
@@ -211,7 +212,7 @@ export function mount(host) {
   paintCover(fig);
   function drawLayout() {
     const { order, hidden } = getLayout();
-    host.replaceChildren(top, paulDica(), recentBox, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]));
+    host.replaceChildren(top, paulDica(), recentBox, remStrip, ...order.filter((id) => !hidden.includes(id)).map((id) => parts[id]), h('div', { class: 'home-atu-row' }, h('button', { class: 'btn small ghost home-atu', type: 'button', onclick: (e) => { e.currentTarget.disabled = true; atualizarAgora(); } }, '⟳ atualizar o app')));
   }
   drawLayout();
   drawMini(); drawFavs(); drawGrid();
