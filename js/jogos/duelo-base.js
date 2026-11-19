@@ -10,6 +10,8 @@ const clone = (o) => JSON.parse(JSON.stringify(o));
 
 /** Estado novo da sala: a configuração escolhida por quem criou, ninguém pronto e sem resultados. */
 export const estadoInicial = (cfg) => ({ v: 1, cfg, ready: [false, false], res: [null, null], round: 1 });
+/** Quem leva ★ no duelo: `v` = resultado de `vencedor` (0, 1, -1 = empate, null = ainda não decidiu); `me` = meu lugar. Vencedor: 3 ★ por rodada; o outro (ou os dois, se empatar): 1 ★ de participação. */
+export const quemPaga = (v, me) => ({ vence: v === me, participa: v !== null && v !== undefined && v !== me });
 /** Quem ganhou (0, 1 ou -1 = empate). `nota(res)` devolve um número (ou lista de números, desempate na ordem). Sem resultado dos dois não decide (null). */
 export function vencedor(res, nota = (r) => r.score) {
   if (!res || !res[0] || !res[1]) return null;
@@ -23,7 +25,7 @@ export function vencedor(res, nota = (r) => r.score) {
  *   desbloquear(), jogar(box, cfg, fim(res)):()=>void, nota(res), placar(res):[grande, pequeno], aoSair?() }
  */
 export function mountDueloBase(host, A) {
-  let gone = false; let pagoRodada = 0; let conn = null; let me = 0; let latest = null; let phase = 'config'; let seenRound = 0; let sent = false; let parar = null; const timers = [];
+  let gone = false; let pagoRodada = 0; let pagoPartRodada = 0; let conn = null; let me = 0; let latest = null; let phase = 'config'; let seenRound = 0; let sent = false; let parar = null; const timers = [];
   const badge = linkBadge(); const root = h('div', { class: 'dl' });
   const box = h('div', { class: A.frameClass ? '' : 'dl-play', id: A.boxId || null }); const frame = h('div', { class: `${A.frameClass || 'dl-playframe'} dl-game`, hidden: true }, box);
   if (!A.semCabecalho) host.append(banner(A.titulo, A.sub), h('div', { class: 'pad-x' }, h('a', { class: 'jg-link', href: A.voltar[0] }, A.voltar[1])));
@@ -73,7 +75,9 @@ export function mountDueloBase(host, A) {
   function render(n) {
     if (!latest || gone) return;
     const v = vencedor(latest.res, A.nota); const [l1, l2] = A.resumo(latest.cfg);
-    if (v === me && A.aoVencer && pagoRodada !== (latest.round || 1)) { pagoRodada = latest.round || 1; try { A.aoVencer(latest.cfg); } catch { /* sem estrelas */ } } // vitória: 1 vez por rodada
+    const paga = quemPaga(v, me);
+    if (paga.vence && A.aoVencer && pagoRodada !== (latest.round || 1)) { pagoRodada = latest.round || 1; try { A.aoVencer(latest.cfg); } catch { /* sem estrelas */ } } // vitória: 1 vez por rodada
+    if (paga.participa && A.aoParticipar && pagoPartRodada !== (latest.round || 1)) { pagoPartRodada = latest.round || 1; try { A.aoParticipar(latest.cfg); } catch { /* sem estrelas */ } } // quem perdeu (ou empatou) leva 1 ★ de participação, 1 vez por rodada
     const cab = h('section', { class: 'card pad dl-cab' }, badge.el, h('b', {}, l1), h('small', { class: 'muted' }, l2));
     const placar = h('div', { class: 'dl-pl' }, ...[me, 1 - me].map((i) => { const r = latest.res[i]; const [g, p] = r ? A.placar(r) : ['', '']; return h('div', { class: `dl-j${i === me ? ' eu' : ''}${v === i ? ' win' : ''}` }, h('small', {}, quem(i)),
       r ? h('b', {}, g) : h('b', { class: 'muted' }, latest.ready[i] ? 'pronto ✓' : 'esperando…'), r && p ? h('small', {}, p) : null); }));
