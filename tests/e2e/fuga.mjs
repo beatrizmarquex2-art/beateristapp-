@@ -1,4 +1,4 @@
-// A Fuga do Estúdio: 3 portas em ordem (quiz, caça-palavras, cruzadinha); sem código, só o aviso.
+// A Fuga do Estúdio em mapa: 3 mundos, 12 portas por mundo; abre uma porta (quiz), ganha ★ e libera a próxima.
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
 const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
@@ -7,29 +7,40 @@ await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
 await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
-await page.goto(`${url}/aluno.html#/dicas/fuga`); await sleep(2500);
-const t = () => page.evaluate(() => document.body.innerText);
-let txt = await t(); check('abre a história e as 3 portas', /abrir as portas/.test(txt) && /sala de controle/.test(txt) && /cabine de gravação/.test(txt) && /sala de ensaio/.test(txt));
-await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-intro.png` : '/tmp/fuga-intro.png' });
-await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /abrir as portas/.test(b.textContent)).click()); await sleep(2200);
-txt = await t(); check('porta 1 = quiz (pergunta 1 de 5)', /pergunta 1 de 5/i.test(txt));
-await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-quiz.png` : '/tmp/fuga-quiz.png' });
-check('o quiz tem a opção "desistir das minhas ⭐⭐⭐"', (await page.locator('.dc-desistir').count()) === 1);
-const antesOps = await page.locator('.dc-opt').count();
+await page.goto(`${url}/aluno.html#/dicas/fuga`); await sleep(2800);
+check('abre o mapa Escape Room · Laboratório do Paul com 12 discos e a porta SAÍDA (B)', (await page.locator('.fm-no').count()) === 12 && (await page.locator('.fm-saida').count()) === 1 && /Laboratório do Paul/.test(await page.textContent('.fm-head')));
+check('abas dos 3 mundos', (await page.locator('.tm-tabs button').count()) === 3);
+check('só o disco 1 está aberto; a SAÍDA começa trancada', await page.evaluate(() => { const n = [...document.querySelectorAll('.fm-no')]; return n.filter((x) => x.classList.contains('st-open')).length === 1 && n[0].classList.contains('st-open') && n.slice(1).every((x) => x.classList.contains('st-locked')) && document.querySelector('.fm-saida').classList.contains('st-locked'); }));
+check('rótulos: 1 e 2 → 2 portas · 3 a 5 → 3 · 6 e 7 → desafio · 8 a 10 → 3 · 11 e 12 → 4 portas', await page.evaluate(() => [...document.querySelectorAll('.fm-no .fm-lab')].map((x) => x.textContent.replace(/\D+/g, '') || 'D').join(',') === '2,2,3,3,3,D,D,3,3,3,4,4'));
+check('o contador mostra 0/12 e 0/36', /0\/12/.test(await page.textContent('.fm-head')) && /0\/36/.test(await page.textContent('.fm-head')));
+await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-mapa.png` : '/tmp/fuga-mapa.png' });
+await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
+check('fase 1 tem 2 portas lado a lado no corredor; a porta 1 é o quiz de 5 perguntas', /pergunta 1 de 5/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2/.test(await page.evaluate(() => document.body.innerText)));
+check('o quiz tem "desistir das minhas ⭐⭐⭐"', (await page.locator('.dc-desistir').count()) === 1);
 await page.locator('.dc-desistir').click(); await sleep(500);
-const botoesSheet = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
-check('ao desistir pergunta "quer uma dica? ou quer mesmo pular?" com 3 botões', /quer uma dica/.test(await page.textContent('.sheet')) && botoesSheet.some((t) => /quero uma dica/.test(t)) && botoesSheet.some((t) => /pular mesmo/.test(t)) && botoesSheet.some((t) => /voltar/.test(t)), botoesSheet.join(' | '));
-await page.evaluate(() => document.querySelector('.sheet button[data-acao="dica"]').click()); await sleep(500);
-check('"quero uma dica" tira 2 alternativas erradas e o quiz vale no máximo 2 ★', antesOps === 4 && (await page.locator('.dc-opt').count()) === 2 && /no máximo 2/.test(await page.textContent('.dc-q')));
-await page.evaluate(() => document.querySelector('.dc-opt').click()); await sleep(400); await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => /próxima/.test(b.textContent)).click()); await sleep(400);
-await page.locator('.dc-desistir').click(); await sleep(500);
-check('depois de gastar a dica, só sobra "pular mesmo" (e voltar)', (await page.locator('.sheet button[data-acao="dica"]').count()) === 0 && (await page.locator('.sheet button[data-acao="pular"]').count()) === 1);
-await page.evaluate(() => document.querySelector('.sheet button[data-acao="pular"]').click()); await sleep(500);
-check('pular conta como erro: aparece a resposta certa e o botão de próxima', (await page.locator('.dc-opt.ok').count()) >= 1 && (await page.evaluate(() => [...document.querySelectorAll('button')].some((b) => /próxima/.test(b.textContent)))));
-check('estrelas do quiz: 5 certas 3 ★ · 4 certas 2 ★ · 3 certas 1 ★ · com "desistir" no máximo 2 ★', await page.evaluate(async () => { const { estrelasPorta } = await import('/js/jogos/fuga.js'); const q = (found, ajuda = false) => estrelasPorta('quiz', { stats: () => ({ found, ajuda }) }); return [q(5), q(4), q(3), q(5, true), q(3, true), estrelasPorta('cruz', null), estrelasPorta('caca', { stats: () => ({ estrelas: 2 }) })].join() === '3,2,1,2,1,3,2'; }));
-// responde tudo certo: cada opção certa é achada pelo texto da tela depois de clicar na 1ª (a certa fica verde); aqui só confere que a porta pede mínimo de acertos
-for (let i = 0; i < 5; i++) { const tem = await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); return !!o; }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); if (!tem && i > 2) break; }
-await sleep(1200); txt = await t();
-check('termina o quiz: ou abre a próxima porta, ou pede pra tentar de novo (precisa de 3 certas)', /porta aberta|tentar outra vez/.test(txt));
-check('sem erro na página', errs.length === 0);
+const bt = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
+check('pergunta "quer uma dica? ou quer mesmo pular?" com 3 botões', /quer uma dica/.test(await page.textContent('.sheet')) && bt.some((t) => /quero uma dica/.test(t)) && bt.some((t) => /pular mesmo/.test(t)) && bt.some((t) => /voltar/.test(t)), bt.join(' | '));
+await page.evaluate(() => document.querySelector('.sheet button[data-acao="voltar"]').click()); await sleep(300);
+for (let i = 0; i < 5; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
+await sleep(1500); const txt = await page.evaluate(() => document.body.innerText);
+check('terminou o quiz: abriu a porta (com ★) ou pediu pra tentar de novo (menos de 3 certas)', /porta aberta/.test(txt) || /tentar outra vez/.test(txt));
+if (/porta aberta/.test(txt)) check('abriu a porta 1: aparece "próxima porta" e a porta 2 de 2', /próxima porta/.test(txt) && /porta 2 de 2/.test(txt));
+// mais portas nas fases seguintes (progresso simulado): fase 3 = 3 portas, fase 11 = 4 portas
+for (const [fase, portas] of [[3, 3], [11, 4]]) {
+  await page.evaluate(async (f) => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < f; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); }, fase);
+  await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
+  await page.evaluate((f) => document.querySelectorAll('.fm-no')[f - 1].click(), fase); await sleep(1500);
+  check(`fase ${fase} tem ${portas} portas`, new RegExp(`0 de ${portas} portas abertas`).test(await page.getAttribute('.fg-cena', 'aria-label')) && new RegExp(`porta 1 de ${portas}`).test(await page.evaluate(() => document.body.innerText)));
+}
+// fase 6 = desafio de 1 porta com relógio; fase 7 = caça contra o relógio; SAÍDA abre depois da fase 12
+await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 6; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
+await page.evaluate(() => document.querySelectorAll('.fm-no')[5].click()); await sleep(1500);
+check('fase 6 = desafio: 1 porta, relógio na tela, quiz sem "desistir"', /0 de 1 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /⏱ [01]:\d\d/.test(await page.textContent('.fg-rel')) && (await page.locator('.dc-desistir').count()) === 0 && /sem errar/.test(await page.evaluate(() => document.body.innerText)));
+await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i <= 12; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
+check('depois da fase 12 a SAÍDA (porta B) fica liberada', await page.evaluate(() => document.querySelector('.fm-saida').classList.contains('st-open')));
+await page.evaluate(() => document.querySelector('.fm-saida').click()); await sleep(1500);
+check('porta B = quiz de 7 perguntas, no máximo 1 erro', /pergunta 1 de 7/i.test(await page.evaluate(() => document.body.innerText)) && /no máximo 1 erro/.test(await page.evaluate(() => document.body.innerText)));
+check('sem erro na página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

@@ -14,12 +14,13 @@ export const plPack = (id) => { const m = /^pl:(\d+):(\d+):/.exec(String(id)); r
 /** Pacotinhos de FIM de modo da pauLta (pedido da Bea): `plf:<drumF|drumI|drumD>:<a|b|c>:...` = 2 cartas cada; os 3 juntos dão 2 Beatles + 3 comuns + 1 especial
  *  (fácil = rara, médio = do robô Paul, difícil = exclusiva da Bea). a = Beatles + comum, b = Beatles + comum, c = comum + a especial. */
 export const plfPack = (id) => { const m = /^plf:(drum[FID]):([abc]):/.exec(String(id)); return m ? { modo: m[1], k: m[2] } : null; };
-export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') || /^(egg|bonus):/.test(String(id)) ? 1 : PACK_SIZE);
+export const packSize = (id) => (plPack(id) ? plPack(id).n : plfPack(id) ? 2 : String(id).startsWith('semana:') || String(id).startsWith('estudo:') || /^(egg|bonus):/.test(String(id)) ? 1 : PACK_SIZE);
 /** Por que a pessoa ganhou este giro ou pacotinho (texto curto pra criança), tirado do próprio id. */
 export function motivoDoPacote(id) {
   const s = String(id);
   if (s.startsWith('egg:')) return 'você achou um segredo do Paul!';
   if (s.startsWith('bonus:')) return 'bônus: 5 vitórias seguidas jogando online';
+  if (s.startsWith('estudo:')) return 'você terminou um tema inteiro dos estudos com o Paul!';
   if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
@@ -97,6 +98,7 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   }
   if (String(packId).startsWith('dado:')) { const c = String(packId).split(':')[1].split(','); return c.filter((x) => catalog.some((y) => y.codigo === x)); } // presente da Bea: cartas escolhidas
   if (/^(egg|bonus):/.test(String(packId))) { const ex = catalog.filter((c) => grupo(c) === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // segredos e bônus: 1 exclusiva (Beaterista e Paul)
+  if (String(packId).startsWith('estudo:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista').map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // terminou um tema dos estudos (quiz 3 de 3 em todas as fases): 1 exclusiva, da Bea ou do Paul
   if (String(packId).startsWith('semana:')) { const ex = catalog.filter((c) => c.secao === 'Beaterista' && /^F/.test(c.codigo)).map((c) => c.codigo); return ex.length ? [ex[Math.floor(r() * ex.length)]] : []; } // 1 exclusiva da Bea
   const plf = plfPack(packId);
   if (plf) {
@@ -222,6 +224,18 @@ export function deriveInv(opened, pasted) {
 export function mergeStates(a, b) {
   const A = { ...emptyState(), ...(a || {}) }, B = { ...emptyState(), ...(b || {}) };
   const opened = { ...A.opened, ...B.opened }, pasted = { ...A.pasted, ...B.pasted };
-  return { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+  const out = { ...emptyState(), opened, pasted, granted: [...new Set([...(A.granted || []), ...(B.granted || [])])].sort(), reduzir: !!(A.reduzir || B.reduzir), inv: deriveInv(opened, pasted) };
+  // o que ficava de fora (e se perdia a cada vez que o álbum abria): o check-in da semana (vale o mais adiantado), as lendárias entregues (união) e a semente dos sorteios
+  const sem = semMelhor(A.sem, B.sem); if (sem) out.sem = sem;
+  const lend = [...new Set([...(Array.isArray(A.lend) ? A.lend : []), ...(Array.isArray(B.lend) ? B.lend : [])])].sort(); if (lend.length) out.lend = lend;
+  const seed = [A.seed, B.seed].filter(Boolean).sort()[0]; if (seed) out.seed = seed;
+  return out;
+}
+/** Dos dois check-ins da semana, o mais adiantado (mais ciclos, depois dia mais recente, depois mais dias seguidos). */
+function semMelhor(x, y) {
+  if (!x || typeof x !== 'object') return y && typeof y === 'object' ? y : undefined; if (!y || typeof y !== 'object') return x;
+  const k = (z) => [z.ciclo | 0, String(z.ult || ''), z.seq | 0];
+  const a = k(x), b = k(y); for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i] ? x : y;
+  return x;
 }
 export const sameProgress = (a, b) => JSON.stringify([Object.keys(a.pasted || {}).sort(), Object.keys(a.opened || {}).sort(), [...(a.granted || [])].sort()]) === JSON.stringify([Object.keys(b.pasted || {}).sort(), Object.keys(b.opened || {}).sort(), [...(b.granted || [])].sort()]);

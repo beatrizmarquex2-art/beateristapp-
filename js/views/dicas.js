@@ -31,6 +31,7 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
   let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = []; let ajudou = false; // ajudou: gastou o "desistir das minhas ⭐⭐⭐" (só no quiz da Fuga, D.ajuda): tira 2 alternativas erradas e a nota máxima cai pra 2 ★
   // "desistir das minhas ⭐⭐⭐": antes de pular, o app pergunta "quer uma dica? ou quer mesmo pular?". Dica (1 por quiz) tira 2 alternativas erradas e o quiz passa a valer no máximo 2 ★;
   // pular conta como erro (a resposta certa aparece). Em qualquer dos dois, ainda precisa de 3 acertos pra abrir a porta.
+  const estourou = () => !!(D && D.maxErros != null && hist.filter((x) => !x).length > D.maxErros); // desafio: errou além do limite = acaba na hora
   const pedeDica = () => { ajudou = true; q.escondidas = q.options.filter((o) => o.id !== q.ans).sort(() => Math.random() - 0.5).slice(0, 2).map((o) => o.id); draw(); };
   const desistir3 = () => {
     if (answered) return;
@@ -63,7 +64,7 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
-      answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
+      answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS || estourou()) finish(); else next(); } }, i + 1 >= ROUNDS || estourou() ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
   }
   next();
   return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length, ajuda: ajudou }) };

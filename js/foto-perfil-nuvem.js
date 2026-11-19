@@ -1,11 +1,20 @@
-// A foto de perfil do aluno vai com ele pra qualquer celular (pedido da Bea, 19/nov/2026), junto com o progresso (js/progresso-nuvem.js).
+// A foto de perfil do aluno pode ir com ele pra qualquer celular, MAS SÓ SE ELE LIGAR ("usar minha foto em todos os meus celulares", no Perfil). Desligado é o padrão.
 // O original continua só no aparelho (IndexedDB 'perfil-foto'); pra nuvem vai uma MINIATURA (até 320 px, ~20 KB) guardada num espelho no localStorage.
-// Formato do espelho: { d: dataURL JPEG ('' = sem foto), t: quando mudou }. Em conflito vale o mais recente. O limite do servidor é 200 mil caracteres por aluno (supabase/018).
+// Espelho: { d: dataURL JPEG ('' = sem foto), t: quando mudou, on: ligado? }. Em conflito vale o mais recente. Desligar manda um "aviso de desligado" ({off:true}) que apaga a miniatura
+// do servidor e faz os outros celulares pararem de mandar (a foto que já está em cada celular fica nele). Limite do servidor: 200 mil caracteres por aluno (supabase/018).
 import { chave } from './chave-aluno.js';
 const MIR = 'bt-foto-nuvem'; export const CHAVE_NUVEM = 'beaterista-foto-perfil'; const MAX = 60000;
-const ler = () => { try { const v = JSON.parse(localStorage.getItem(chave(MIR)) || 'null'); return v && typeof v.t === 'number' && typeof v.d === 'string' ? v : null; } catch { return null; } };
 const gravarMir = (o) => { try { localStorage.setItem(chave(MIR), JSON.stringify(o)); } catch { /* sem armazenamento */ } };
-export const paraNuvem = () => ler() || undefined;
+const ler = () => {
+  try {
+    const v = JSON.parse(localStorage.getItem(chave(MIR)) || 'null'); if (!v || typeof v.t !== 'number' || typeof v.d !== 'string') return null;
+    if (v.on === undefined) { const o = { d: '', t: Date.now(), on: false }; gravarMir(o); return o; } // versão de teste (v652-655) subia a foto sem o aluno ligar: vira "desligado" e o servidor apaga
+    return v;
+  } catch { return null; }
+};
+export const ligado = () => { const m = ler(); return !!(m && m.on); };
+/** O que vai pra nuvem: a miniatura (se ligado) ou o aviso de desligado (se já esteve ligado); nada se nunca ligou. */
+export const paraNuvem = () => { const m = ler(); if (!m) return undefined; return m.on ? { d: m.d, t: m.t, on: true } : { d: '', t: m.t, off: true }; };
 async function miniatura(blob) {
   const url = URL.createObjectURL(blob);
   try {
@@ -19,17 +28,23 @@ async function miniatura(blob) {
 }
 /** O aluno trocou (blob) ou tirou (null) a foto neste aparelho: guarda a miniatura e manda pra nuvem. */
 export async function guardou(blob) {
-  try { gravarMir({ d: blob ? await miniatura(blob) : '', t: Date.now() }); } catch { return; }
+  if (!ligado()) return; // desligado: a foto não sai deste aparelho
+  try { gravarMir({ d: blob ? await miniatura(blob) : '', t: Date.now(), on: true }); } catch { return; }
   import('./progresso-nuvem.js').then((m) => m.enviar()).catch(() => { /* sem internet: sobe depois */ });
 }
 const blobDe = (dataUrl) => { const [h, b64] = dataUrl.split(','); const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: (/data:([^;]+)/.exec(h) || [])[1] || 'image/jpeg' }); };
-/** Chegou da nuvem: se é mais recente que a daqui, vira a foto deste aparelho. */
+/** O aluno ligou ("usar minha foto em todos os meus celulares"): sobe a miniatura da foto que ele tem agora. */
+export async function ligar() {
+  let d = ''; try { const D = await import('./figurinhas/dono.js'); const b = await D.metaLer('perfil-foto'); if (b) d = await miniatura(b); } catch { /* sem foto ainda */ }
+  gravarMir({ d, t: Date.now(), on: true }); import('./progresso-nuvem.js').then((m) => m.enviar(true)).catch(() => { /* sobe depois */ });
+}
+/** Desligou: a miniatura sai do servidor e os outros celulares param de mandar. */
+export function desligar() { gravarMir({ d: '', t: Date.now(), on: false }); import('./progresso-nuvem.js').then((m) => m.enviar(true)).catch(() => { /* sobe depois */ }); }
+/** Chegou da nuvem: se é mais recente que a daqui, vira a foto deste aparelho (ou desliga, se veio o aviso de desligado). */
 export async function daNuvem(n) {
   if (!n || typeof n.t !== 'number' || typeof n.d !== 'string') return; const l = ler(); if (l && l.t >= n.t) return;
-  gravarMir({ d: n.d, t: n.t });
+  if (n.off) { gravarMir({ d: '', t: n.t, on: false }); return; }
+  if (n.on !== true) return; // miniatura de teste (v652-655), sem o aluno ter ligado: ignora
+  gravarMir({ d: n.d, t: n.t, on: true });
   try { const D = await import('./figurinhas/dono.js'); if (n.d) await D.metaGravar('perfil-foto', blobDe(n.d)); else await D.metaApagar('perfil-foto'); window.dispatchEvent(new Event('bt-foto-perfil')); } catch { /* ok */ }
-}
-/** Quem já tinha foto antes desta função: cria o espelho uma vez e sobe. */
-export async function garantir() {
-  if (ler()) return; try { const D = await import('./figurinhas/dono.js'); const b = await D.metaLer('perfil-foto'); if (b) await guardou(b); } catch { /* ok */ }
 }

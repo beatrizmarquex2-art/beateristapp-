@@ -73,6 +73,8 @@ Object.assign(SPR, {
   volcano: ['...SSS.........', '..SSSSS..SS....', '...SSS..SSSS...', '.....kkkkk.....', '....kLYYYLk....', '...kHRLLLRHk...', '..kHHHRRRHHHk..', '..kHGHHHHHGHk..', '.kHHHLHHHLHHHk.', '.kHGHHLHHHHGHk.', 'kHHHHHHLHHHHHHk', 'kkkkkkkkkkkkkkk'],
   flame: ['....k....', '...kRk.k.', '..kRLkkRk', '.kRLLRRLk', '.kRLYLLLk', 'kRLLYYYLk', 'kRLYYYYLk', '.kRLYYLk.', '..kkkkk..'],
   rock: ['..kkkkk..', '.kGGSGGk.', 'kGGGGHGGk', 'kHGGGGGHk', 'kHHHGHHHk', 'kkkkkkkkk'],
+  laser: ['kkkk.......', 'kHHkLLLLLLL', 'kHRkRRRRRRR', 'kHHkLLLLLLL', 'kkkk.......'],
+  cadeado: ['..kkkk..', '.kGGGGk.', '.kG..Gk.', 'kkkkkkkk', 'kRRRRRRk', 'kRRkkRRk', 'kRRkkRRk', 'kkkkkkkk'],
 });
 /** SVG de um sprite (`px` = tamanho de cada quadradinho em unidades do viewBox; o tamanho final vem do CSS). */
 export function sprite(name, cls = '') {
