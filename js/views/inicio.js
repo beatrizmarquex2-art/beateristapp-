@@ -137,7 +137,7 @@ export function mount(host, { nome = '' } = {}) {
     h('h1', { class: 'in-nome' }, nome || 'aluno'),
     h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
     slots,
-    h('div', { class: 'in-foto' }, h('img', { src: 'assets/paul/sprites/bateria-idle_02.webp', alt: '' })),
+    h('div', { class: 'in-foto' }, h('img', { src: 'assets/roleta-passe.webp', alt: 'roleta' })),
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));
 
