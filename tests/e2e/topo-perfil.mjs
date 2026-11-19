@@ -18,7 +18,14 @@ await p.evaluate(async () => {
 });
 await sleep(800);
 check('com foto de perfil, o avatar mostra a foto', (await p.locator('.top-av.com-foto').count()) === 1 && /^blob:/.test(await p.locator('.top-av img').getAttribute('src')));
-await p.screenshot({ path: process.argv[2] ? `${process.argv[2]}/topo-foto.png` : '/dev/null', clip: { x: 0, y: 0, width: 390, height: 70 } });
+if (process.argv[2]) await p.screenshot({ path: `${process.argv[2]}/topo-foto.png`, clip: { x: 0, y: 0, width: 390, height: 70 } });
+await p.evaluate(() => { localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); document.dispatchEvent(new CustomEvent('aluno-acesso', { detail: true })); }); await sleep(500);
+const mascara = (await p.locator('.cod-txt').innerText()).trim();
+check('o código aparece só com a 1ª e a última letra', /^código t•+1$/i.test(mascara), mascara);
+await p.locator('.cod-olho').click(); await sleep(300);
+check('o olhinho mostra o código inteiro', (await p.locator('.cod-txt').innerText()).trim().toLowerCase() === 'código teste1', await p.locator('.cod-txt').innerText());
+await p.locator('.cod-olho').click(); await sleep(300);
+check('tocar de novo esconde', /^código t•+1$/i.test((await p.locator('.cod-txt').innerText()).trim()));
 await p.locator('.top-av').click(); await sleep(1200);
 check('tocar na foto abre direto o Perfil', (await p.evaluate(() => location.hash)) === '#/perfil', await p.evaluate(() => location.hash));
 check('sem erros de página', errs.length === 0, errs.join(' | '));

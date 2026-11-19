@@ -1560,3 +1560,5 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-seg button.jg-ic.vl-ico{width:50px;height:50px;min-width:50px;box-shadow:3px 3px 0 #bd1733}.vl-ico .ic-top svg{width:28px;height:28px;display:block}.vl-ico .ic-top .ac{stroke:#bd1733}.vl-ico .ic-top rect.ac{fill:#bd1733}
 .top-a a.top-av{cursor:pointer;text-decoration:none;color:inherit}.top-a a.top-av:active{transform:scale(.95)}.top-a .top-av.com-foto{border-color:#f6b93b}.top-a .top-av.com-foto img{object-position:50% 50%}
 .top-a .al-tenho{color:#17365B!important}
+.top-a .al-cod-top{display:flex!important;align-items:center;gap:4px}.top-a .cod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.top-a .cod-olho{flex:none;width:18px!important;height:18px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%!important;color:#142036!important;display:inline-grid;place-items:center;cursor:pointer}.top-a .cod-olho svg{width:15px;height:15px}.top-a .cod-olho .ic-top .ac{stroke:#bd1733}

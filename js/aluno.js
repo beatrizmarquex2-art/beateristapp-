@@ -421,6 +421,16 @@ function shell(name) {
   const tenhoCodigo = h('button', { type: 'button', class: 'btn small al-tenho', onclick: abrirCodigo, hidden: AC.liberado(), 'aria-label': 'tenho código de acesso', title: 'tenho código' }, iconeTopo('chave'));
   document.addEventListener('aluno-acesso', (ev) => { tenhoCodigo.hidden = !!(ev.detail); });
   if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
+  // código no topo: só a 1ª e a última letra; o olhinho mostra o código inteiro por uns segundos e volta a esconder (pedido da Bea, 19/nov/2026)
+  const codigoTopo = h('small', { class: 'al-cod-top' }); let verCodigo = false; let tmCodigo = 0;
+  const olhoCodigo = h('button', { type: 'button', class: 'cod-olho', onclick: () => { verCodigo = !verCodigo; clearTimeout(tmCodigo); if (verCodigo) tmCodigo = setTimeout(() => { verCodigo = false; pintaCodigo(); }, 8000); pintaCodigo(); } });
+  function pintaCodigo() {
+    const c = CODE.saved();
+    if (!c) { codigoTopo.replaceChildren('sem código'); return; }
+    olhoCodigo.replaceChildren(iconeTopo(verCodigo ? 'olhoOff' : 'olho')); olhoCodigo.setAttribute('aria-pressed', String(verCodigo)); olhoCodigo.setAttribute('aria-label', verCodigo ? 'esconder o código' : 'mostrar o código inteiro'); olhoCodigo.title = verCodigo ? 'esconder o código' : 'ver o código';
+    codigoTopo.replaceChildren(h('span', { class: 'cod-txt' }, `código ${verCodigo ? c : CODE.mascarar(c)}`), olhoCodigo);
+  }
+  pintaCodigo(); document.addEventListener('aluno-acesso', () => { verCodigo = false; pintaCodigo(); });
   // a foto que a pessoa pôs no Perfil (só neste aparelho); sem foto, o Paul. Tocar nela abre a aba Perfil.
   const fotoTopo = h('img', { src: corSrc('ouvindo'), alt: '', width: 46, height: 46, draggable: 'false' });
   const avatarTopo = h('a', { class: 'top-av', href: '#/perfil', 'aria-label': 'meu perfil: ver e trocar a minha foto', title: 'meu perfil' }, fotoTopo);
@@ -435,7 +445,7 @@ function shell(name) {
   pintaFotoTopo(); window.addEventListener('bt-foto-perfil', pintaFotoTopo);
   const head = h('header', { class: 'top top-a' }, // topo da Bea (opção A, 19/nov/2026): Paul, etiqueta amarela com o nome e botões redondos de ícone de linha
     avatarTopo,
-    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `${name} · ${t}` : name; })()), h('small', { class: 'al-cod-top' }, CODE.saved() ? `código ${CODE.mascarar(CODE.saved())}` : 'sem código'))),
+    h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `${name} · ${t}` : name; })()), codigoTopo)),
     tenhoCodigo,
     soundButton({ linha: true }), musicButton('icon-btn top-snd top-mus', { linha: true }), atualizarButton({ linha: true }),
     h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', title: 'opções', onclick: () => opcoes(name) }, iconeTopo('engrenagem')));
