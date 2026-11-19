@@ -7,6 +7,7 @@ import { sheet } from '../ui.js';
 import * as S from './stop-logic.js';
 import * as Q from './stop-sim-logic.js';
 import * as FX from './stop-sfx.js';
+import { ganhou } from './estrelas-jogo.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -213,6 +214,7 @@ export function montarSimultaneo({ root, conn, estado, badge, sair }) {
       h('h3', { class: 'hand' }, `rodada com a letra ${e.letter}`), ...cards,
       RO ? h('p', { class: 'jg-p muted' }, `${N > 2 ? `${quem(0)}, que criou a sala,` : 'quem criou a sala'} aprova ou rejeita as respostas. as marcas aparecem aqui.`) : null].filter(Boolean));
     if (v != null && somRodada !== round) { somRodada = round; FX.play(v === -1 ? 'tie' : euVenci ? 'win' : 'bad'); }
+    if (N > 2 && euVenci && !R.pend) { const k = `beaterista-stop-estrela:${conn.code}:${round}`; let ja = false; try { ja = !!localStorage.getItem(k); if (!ja) localStorage.setItem(k, '1'); } catch { /* sem armazenamento */ } if (!ja) ganhou('stop', 1); } // 3 e 4 jogadores: 1 ★ por rodada ganha (3 rodadas = 3 ★), paga uma vez por rodada e só quando não falta revisar resposta
   }
   function quemParouTxt(e) {
     const q = Q.quemParou(e); if (q === me) return 'você apertou STOP primeiro';

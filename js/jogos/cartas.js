@@ -513,7 +513,7 @@ export function mount(host, opts) {
       if (g.mode !== 'online' && g.mode === 'paul') { const r = rec(); const w = g.result.winner; if (w === 0) r.w++; else if (w == null) r.e++; else r.l++; saved.rec = r; }
       if (g.mode !== 'online') setGame(ID, { ...prefs, game: null, rec: saved.rec });
       const w = g.result.winner; const mineWin = g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : w != null;
-      if ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) MESA.vitoria('cartas', 1); // 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea: todo jogo dá estrela). No mesmo aparelho (2 jogadores) não conta.
+      if ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) MESA.vitoria('cartas', g.mode === 'online' && g.n > 2 ? 3 : 1); // 3 ou 4 em sala por código: 3 ★ pra quem ganha a partida; // 1 ★ por vitória: em 2 celulares ou contra o Paul (pedido da Bea: todo jogo dá estrela). No mesmo aparelho (2 jogadores) não conta.
       if (g.mode === 'online') import('../figurinhas/bonus.js').then((B) => B.online('uno', w == null ? 'tie' : w === me0() ? 'win' : 'loss')).catch(() => {}); // 5 vitórias seguidas online = bônus escondido
       hidden = false; paint();
       snd(w == null ? 'tie' : mineWin ? 'win' : 'lose');

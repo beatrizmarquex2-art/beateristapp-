@@ -132,7 +132,7 @@ export function mountMusical(host, { onTema } = {}) {
   function pintaFim() {
     const C = corrida; if (!C || !C.telaFim) return; const e = C.e; const meu = e.prog[C.me]; const todos = CR.todosTerminaram(e); const rk = CR.classificacao(e); const w = CR.vencedor(e);
     const secreto = e.mesa.cartas.find((c) => c.id === e.segredo);
-    if (todos && w === C.me && !C.premiou) { C.premiou = true; try { ganhou('cara'); } catch { /* sem estrelas agora */ } }
+    if (todos && !C.premiou) { C.premiou = true; try { if (w === C.me) ganhou('cara', 3); else if (meu.ok) ganhou('cara', 1); } catch { /* sem estrelas agora */ } } // quem acertou 1 ★; quem acertou e ficou em 1º lugar 3 ★
     const titulo = !todos ? (meu.ok ? 'você acertou! 🤘' : 'não foi dessa vez') : w === -1 ? 'ninguém acertou' : w === C.me ? 'você venceu!' : `${nomeCorr(w)} venceu!`;
     const somChave = todos ? `todos${e.rodada}` : `eu${e.rodada}`; if (C.som !== somChave) { C.som = somChave; sfx(todos ? (w === C.me ? 'win' : w === -1 ? 'tie' : 'lose') : meu.ok ? 'win' : 'lose'); } // o som toca uma vez por etapa (a tela se refaz a cada aviso da sala)
     const linha = (x, pos) => h('li', { class: x.i === C.me ? 'eu' : '' }, h('b', {}, `${x.fim ? `${pos + 1}º` : '…'} ${x.i === C.me ? `${nomeCorr(x.i)} (você)` : nomeCorr(x.i)}`), h('small', {}, statusCorr(x)));
