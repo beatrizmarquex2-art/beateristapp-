@@ -65,7 +65,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const ws = T.wordsearch(pick.map((x) => x.w), 9, D ? D.mk() : Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let erros = 0; let pagou = false;
-  // 💡 dica (2 por grade): a 1ª mostra a POSIÇÃO (a linha onde a palavra começa, grifada) e a 2ª a INICIAL (pisca a 1ª letra e diz o lado). Cada dica tira 1 ★ da partida (3 → 2 → 1, nunca abaixo de 1).
+  // 💡 dica (2 por grade): a 1ª mostra só a SETINHA (pra que lado a palavra vai) e a 2ª a INICIAL (pisca a 1ª letra). Cada dica tira 1 ★ da partida (3 → 2 → 1, nunca abaixo de 1).
   // Não existe no duelo de 2 celulares; na Fuga do Estúdio (D.dica) existe.
   const MAX_DICAS = 2; let dicasUsadas = 0; let dicaDe = null; let dicaAlvo = null; const podeDica = !D || !!D.dica; const estrelasCaca = () => Math.max(1, 3 - dicasUsadas); const SETA = (dx, dy) => (dx === 1 && dy === 0 ? '→' : dx === 0 && dy === 1 ? '↓' : dx === 1 && dy === 1 ? '↘' : dx === 1 && dy === -1 ? '↗' : dx === -1 ? '←' : '↑');
   const pedirDica = () => {
@@ -105,7 +105,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const draw = () => {
     grid = h('div', { class: 'dc-grid dc-easy', style: `--n:${ws.size}` }, ...ws.grid.flatMap((row, y) => row.map((l, x) => {
       const ck = cellColor.get(key(x, y));
-      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}${dicaDe && dicaDe.nivel === 2 && dicaDe.x === x && dicaDe.y === y ? ' dica' : ''}${dicaDe && dicaDe.nivel === 1 && dicaDe.y === y ? ' dica-linha' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
+      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}${dicaDe && dicaDe.nivel === 2 && dicaDe.x === x && dicaDe.y === y ? ' dica' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
     })));
     grid.addEventListener('pointerdown', (e) => { const c = cellAt(e.target); if (!c) return; drag = { x0: c.x, y0: c.y, el: c.el, end: null }; });
     grid.addEventListener('pointermove', (e) => {
@@ -118,7 +118,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
       : h('span', { class: `dc-chip dc-k${colorOf[w]}` }, byWord[w].shown)));
     const dica = !found.size ? h('p', { class: 'muted' }, 'ache as palavras na grade: arraste o dedo por cima ou toque na primeira e na última letra. quando achar, aparece a dica!') : null;
     const btnDica = !podeDica ? null : h('div', { class: 'dc-dicabar' }, h('button', { type: 'button', class: 'btn small', disabled: dicasUsadas >= MAX_DICAS || found.size === words.length, onclick: pedirDica }, `💡 dica (${MAX_DICAS - dicasUsadas})`),
-      dicaDe ? h('span', { class: 'dc-dicatxt', role: 'status' }, dicaDe.nivel === 1 ? `“${byWord[dicaDe.w].shown}” começa na linha ${dicaDe.y + 1} (a linha grifada)` : `“${byWord[dicaDe.w].shown}” começa na letra que pisca e vai pra ${dicaDe.seta}`) : h('small', { class: 'muted' }, 'ganhe 3 ★ sem dica · 1ª dica: 2 ★ (a linha) · 2ª dica: 1 ★ (a letra)'));
+      dicaDe ? h('span', { class: 'dc-dicatxt', role: 'status' }, h('span', {}, `“${byWord[dicaDe.w].shown}” vai pra `, h('b', { class: 'dc-seta', 'aria-label': 'direção' }, dicaDe.seta), dicaDe.nivel === 2 ? ' · começa na letra que pisca' : '')) : h('small', { class: 'muted' }, 'ganhe 3 ★ sem dica · 1ª dica: 2 ★ (a setinha) · 2ª dica: 1 ★ (a letra)'));
     box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, btnDica, chips, grid].filter(Boolean)), last ? explain(last) : null,
       found.size === words.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
   };

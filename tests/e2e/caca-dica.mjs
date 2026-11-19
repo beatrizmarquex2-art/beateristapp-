@@ -1,4 +1,4 @@
-// Caça Musical: botão "💡 dica" (2 por grade): a 1ª mostra a posição (linha grifada), a 2ª a inicial (letra que pisca). Cada dica tira 1 ★ (3 → 2 → 1).
+// Caça Musical: botão "💡 dica" (2 por grade): a 1ª mostra só a setinha (direção), a 2ª a inicial (letra que pisca). Cada dica tira 1 ★ (3 → 2 → 1).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
 const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
@@ -12,12 +12,11 @@ const btn = () => page.locator('.dc-dicabar button');
 check('o botão aparece com 2 dicas', /dica \(2\)/.test(await btn().textContent()));
 check('nada grifado nem piscando antes de pedir', (await page.locator('.dc-c.dica, .dc-c.dica-linha').count()) === 0);
 await btn().click(); await sleep(300);
-const ln = await page.evaluate(() => { const c = [...document.querySelectorAll('.dc-c.dica-linha')]; return { n: c.length, ys: [...new Set(c.map((x) => x.dataset.y))] }; });
-check('1ª dica = a POSIÇÃO: grifa a linha inteira (9 casas) e diz o número da linha', ln.n === 9 && ln.ys.length === 1 && /começa na linha \d/.test(await page.textContent('.dc-dicabar')) && (await page.locator('.dc-c.dica').count()) === 0, JSON.stringify(ln));
+check('1ª dica = só a SETINHA da direção (nenhuma casa grifada nem piscando)', (await page.locator('.dc-c.dica').count()) === 0 && (await page.locator('.dc-c.dica-linha').count()) === 0 && /^[→↓↘↗]$/.test((await page.textContent('.dc-seta')).trim()) && /vai pra/.test(await page.textContent('.dc-dicabar')));
 check('sobra 1', /dica \(1\)/.test(await btn().textContent()));
 const alvo1 = await page.evaluate(() => (document.querySelector('.dc-dicatxt').textContent.match(/“(.+?)”/) || [])[1]);
 await btn().click(); await sleep(300);
-check('2ª dica = a INICIAL: 1 letra pisca e diz o lado (mesma palavra da 1ª)', (await page.locator('.dc-c.dica').count()) === 1 && /começa na letra que pisca e vai pra [→↓]/.test(await page.textContent('.dc-dicabar')) && (await page.evaluate(() => (document.querySelector('.dc-dicatxt').textContent.match(/“(.+?)”/) || [])[1])) === alvo1);
+check('2ª dica = a INICIAL: 1 letra pisca e a setinha continua (mesma palavra da 1ª)', (await page.locator('.dc-c.dica').count()) === 1 && /começa na letra que pisca/.test(await page.textContent('.dc-dicabar')) && /^[→↓↘↗]$/.test((await page.textContent('.dc-seta')).trim()) && (await page.evaluate(() => (document.querySelector('.dc-dicatxt').textContent.match(/“(.+?)”/) || [])[1])) === alvo1);
 check('depois de 2 dicas o botão desliga', await btn().isDisabled() && /dica \(0\)/.test(await btn().textContent()));
 check('a casa que pisca é mesmo a 1ª letra da palavra', await page.evaluate(() => { const c = document.querySelector('.dc-c.dica'); const t = document.querySelector('.dc-dicatxt').textContent; const w = (t.match(/“(.+?)”/) || [])[1] || ''; return !!c && c.textContent.trim().toLowerCase() === w.trim()[0].toLowerCase(); }));
 const est = await page.evaluate(async () => { const M = await import('/js/views/dicas.js'); const T = await import('/js/tips.js'); const its = M._duelo.items(); const box = document.createElement('div'); document.body.append(box); const out = []; const api = M._duelo.caca(box, { pick: T.easyPick(its, 6), mk: () => Math.random, fim() {}, dica: true }); out.push(api.stats().estrelas); const b = () => box.querySelector('.dc-dicabar button'); b().click(); out.push(api.stats().estrelas); b().click(); out.push(api.stats().estrelas); b().click(); out.push(api.stats().estrelas, api.stats().dicas); const duelo = document.createElement('div'); document.body.append(duelo); M._duelo.caca(duelo, { pick: T.easyPick(its, 6), mk: () => Math.random, fim() {} }); out.push(!!duelo.querySelector('.dc-dicabar')); return out; });
