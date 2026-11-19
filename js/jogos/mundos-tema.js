@@ -13,6 +13,8 @@ export const DECOR_TEMA = {
     L(['moon', 'r', 0.08], ['star', 'l', 0.2], ['rocket', 'l', 0.33], ['star', 'r', 0.45], ['planet', 'r', 0.58], ['star', 'l', 0.7], ['moon', 'l', 0.83], ['star', 'r', 0.94])],
   gelo: [L(['pineS', 'l', 0.05], ['flake', 'r', 0.12], ['igloo', 'r', 0.22], ['pineS', 'l', 0.3], ['flake', 'l', 0.4], ['pineS', 'r', 0.5], ['igloo', 'l', 0.6], ['flake', 'r', 0.7], ['pineS', 'l', 0.8], ['flake', 'r', 0.9]),
     L(['flake', 'l', 0.06], ['pineS', 'r', 0.14], ['pineS', 'l', 0.25], ['igloo', 'r', 0.36], ['flake', 'l', 0.46], ['pineS', 'r', 0.56], ['flake', 'r', 0.66], ['pineS', 'l', 0.76], ['igloo', 'l', 0.86], ['flake', 'r', 0.94])],
+  laser: [L(['laser', 'l', 0.06], ['cadeado', 'r', 0.14], ['amp', 'r', 0.26], ['laser', 'r', 0.36], ['spot', 'l', 0.46], ['cadeado', 'l', 0.56], ['laser', 'l', 0.66], ['mic', 'r', 0.76], ['cadeado', 'r', 0.86], ['laser', 'r', 0.94]),
+    L(['cadeado', 'l', 0.06], ['laser', 'r', 0.15], ['spot', 'r', 0.26], ['amp', 'l', 0.37], ['laser', 'l', 0.47], ['cadeado', 'r', 0.57], ['mic', 'l', 0.68], ['laser', 'r', 0.78], ['cadeado', 'l', 0.88], ['spot', 'r', 0.95])],
   vulcao: [L(['volcano', 'l', 0.06], ['flame', 'r', 0.14], ['rock', 'r', 0.25], ['flame', 'l', 0.34], ['volcano', 'r', 0.45], ['rock', 'l', 0.55], ['flame', 'r', 0.66], ['volcano', 'l', 0.76], ['flame', 'l', 0.86], ['rock', 'r', 0.94]),
     L(['flame', 'l', 0.06], ['rock', 'r', 0.15], ['volcano', 'r', 0.26], ['flame', 'l', 0.37], ['rock', 'l', 0.47], ['flame', 'r', 0.57], ['volcano', 'l', 0.68], ['rock', 'r', 0.78], ['flame', 'l', 0.88], ['volcano', 'r', 0.95])],
 };
