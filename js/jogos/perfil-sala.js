@@ -1,6 +1,6 @@
-// Perfil na sala (opção B "palco à noite", escolhida pela Bea): ao tocar no nome de quem está na sala abre a foto e os 3 favoritos da pessoa.
+// Perfil na sala (opção B "palco à noite", escolhida pela Bea): ao tocar no nome de quem está na sala abre a foto e os favoritos da pessoa.
 // SÓ aparece de quem ligou "mostrar meu perfil na sala" no Perfil (desligado por padrão; muitos alunos são crianças).
-// Do perfil vai pra sala: os nomes dos 3 favoritos e uma MINIATURA da foto (96 px, uns 4 KB). O original continua só no aparelho.
+// Do perfil vai pra sala: os nomes dos favoritos e uma MINIATURA da foto (96 px, uns 4 KB). O original continua só no aparelho.
 import { h } from '../util.js';
 import { sheet } from '../ui.js';
 import * as D from '../figurinhas/dono.js';
@@ -11,7 +11,7 @@ const KEY = 'bt-perfil-sala';
 export const ligado = () => D.lsLer(KEY) === '1';
 export function ligar(v) { D.lsGravar(KEY, v ? '1' : '0'); cache = null; if (v) preparar(); }
 
-let cache = null; // { f: [até 3 nomes], d: 'data:image/jpeg;base64,...' }
+let cache = null; // { f: [até 6 nomes], d: 'data:image/jpeg;base64,...' }
 const MAX_D = 16000;
 /** Miniatura quadrada (centro da foto) de 96 px em JPEG. */
 async function miniatura(blob) {
@@ -29,7 +29,7 @@ export async function preparar() {
   if (!ligado()) { cache = null; return null; }
   let d = ''; try { const b = await D.metaLer('perfil-foto'); if (b) d = await miniatura(b); } catch { /* sem foto */ }
   if (d.length > MAX_D) d = '';
-  const f = (() => { try { return FAV.favoritos().slice(0, 3).map((x) => String(x).slice(0, 40)); } catch { return []; } })();
+  const f = (() => { try { return FAV.favoritos().slice(0, 6).map((x) => String(x).slice(0, 40)); } catch { return []; } })();
   const sobre = (() => { try { const o = PERF.perfil(); return { i: o.i, e: o.e, m: o.m }; } catch { return {}; } })(); // instrumento, estilo e meta do passe
   cache = f.length || d || sobre.i || sobre.e || sobre.m ? { f, d, s: sobre } : null; return cache;
 }
@@ -38,9 +38,9 @@ export const meu = () => (ligado() ? cache : null);
 /** Limpa o que chegou de outro celular (nunca confia no que vem da sala). */
 export function limpa(p) {
   if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
-  const f = Array.isArray(p.f) ? p.f.slice(0, 3).map((x) => String(x || '').replace(/\s+/g, ' ').trim().slice(0, 40)).filter(Boolean) : [];
+  const f = Array.isArray(p.f) ? p.f.slice(0, 6).map((x) => String(x || '').replace(/\s+/g, ' ').trim().slice(0, 40)).filter(Boolean) : [];
   const d = typeof p.d === 'string' && p.d.length <= MAX_D && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.d) ? p.d : '';
-  const so = {}; for (const c of PERF.CAMPOS) { const v = p.s && typeof p.s === 'object' ? p.s[c.k] : ''; so[c.k] = c.opcoes.includes(v) ? v : ''; } // só valores da lista
+  const so = {}; for (const c of PERF.CAMPOS) { const v = p.s && typeof p.s === 'object' ? p.s[c.k] : ''; so[c.k] = PERF.valido(c.k, v); } // só valores da lista (ou texto livre limpo, no estilo)
   return f.length || d || so.i || so.e || so.m ? { f, d, s: so } : null;
 }
 

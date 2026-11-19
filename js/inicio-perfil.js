@@ -6,10 +6,13 @@ export const CHAVE_NUVEM = 'beaterista-inicio-perfil';
 /** Os campos e as opções de cada um. A primeira letra do campo (i, e, m) é a chave guardada. */
 export const CAMPOS = [
   { k: 'i', nome: 'instrumento', opcoes: ['bateria', 'teclado', 'violão', 'voz', 'baixo', 'outro'] },
-  { k: 'e', nome: 'estilo', opcoes: ['rock', 'pop', 'MPB', 'sertanejo', 'funk', 'gospel', 'jazz'] },
+  { k: 'e', nome: 'estilo', livre: true, opcoes: ['rock', 'pop', 'MPB', 'sertanejo', 'funk', 'gospel', 'jazz'] },
   { k: 'm', nome: 'meta', opcoes: ['tocar uma música inteira', 'entrar numa banda', 'perder a vergonha', 'aprender ritmos'] },
 ];
-const valido = (k, v) => { const c = CAMPOS.find((x) => x.k === k); return c && c.opcoes.includes(v) ? v : ''; }; // nunca confia no que vem de fora
+/** Texto livre (só o estilo aceita, pelo chip "adicionar"): letras, números, espaço e & ' + . -, até 20 caracteres. */
+export const limpaLivre = (v) => String(v || '').replace(/[^\p{L}\p{N} &'+.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 20);
+/** O valor serve? Opções da lista sempre; texto livre só nos campos `livre`. Nunca confia no que vem de fora. */
+export const valido = (k, v) => { const c = CAMPOS.find((x) => x.k === k); if (!c) return ''; if (c.opcoes.includes(v)) return v; return c.livre ? limpaLivre(v) : ''; };
 const limpa = (o) => { const r = { t: Number(o && o.t) || 0 }; for (const c of CAMPOS) r[c.k] = valido(c.k, o && o[c.k]); return r; };
 const chave = () => chaveAluno(KEY);
 const lsLer = () => { try { return localStorage.getItem(chave()); } catch { return null; } };

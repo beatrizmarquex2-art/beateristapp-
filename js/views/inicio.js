@@ -108,7 +108,7 @@ export function mount(host, { nome = '' } = {}) {
   let ganhas = []; let todas = new Map(); let fav = FAV.favoritos();
   const slots = h('div', { class: 'in-favs', role: 'group', 'aria-label': 'bandas e cantores favoritos' });
   const desenhaFav = () => {
-    slots.replaceChildren(...[0, 1, 2].map((i) => {
+    slots.replaceChildren(...[0, 1, 2, 3, 4, 5].map((i) => {
       const nomeF = fav[i]; const a = nomeF && (todas.get(nomeF) || { nome: nomeF, foto: '', rosto: null });
       return h('button', { type: 'button', class: `in-fav${a ? ' tem' : ''}`, 'aria-label': a ? `favorito ${i + 1}: ${a.nome}. tocar pra trocar` : `escolher favorito ${i + 1}`, onclick: () => escolher(i) },
         h('span', { class: 'in-fav-foto' }, a ? (a.foto ? h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` }) : h('i', {}, '♪')) : h('i', {}, '+')),
@@ -145,16 +145,27 @@ export function mount(host, { nome = '' } = {}) {
   const escolherCampo = (c) => sheet(c.nome, (close) => {
     const atual = PERF.perfil()[c.k];
     const pega = (v) => { PERF.gravar(c.k, v); desenhaPills(); close(); };
-    return h('div', { class: 'in-sobre' }, h('p', { class: 'in-sobre-t' }, `escolha o seu ${c.nome}:`),
-      h('div', { class: 'jg-seg in-sobre-chips', role: 'group', 'aria-label': c.nome }, ...c.opcoes.map((o) => h('button', { type: 'button', class: atual === o ? 'on' : '', 'aria-pressed': String(atual === o), onclick: () => pega(o) }, o))),
-      atual ? h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar') : null);
+    const chips = h('div', { class: 'jg-seg in-sobre-chips', role: 'group', 'aria-label': c.nome }, ...c.opcoes.map((o) => h('button', { type: 'button', class: atual === o ? 'on' : '', 'aria-pressed': String(atual === o), onclick: () => pega(o) }, o)));
+    const caixa = h('div', { class: 'in-sobre' }, h('p', { class: 'in-sobre-t' }, `escolha o seu ${c.nome}:`), chips);
+    if (c.livre) { // "adicionar": a pessoa escreve o dela (até 20 letras); as opções da lista continuam ali
+      const campo = h('input', { class: 'field in-sobre-in', type: 'text', maxlength: 20, autocomplete: 'off', placeholder: 'escreva o seu (até 20 letras)', 'aria-label': `adicionar ${c.nome}`, value: atual && !c.opcoes.includes(atual) ? atual : '' });
+      const ok = h('button', { type: 'button', class: 'btn small primary', onclick: () => { const v = PERF.limpaLivre(campo.value); if (v) pega(v); } }, 'ok');
+      campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') ok.click(); });
+      const linha = h('div', { class: 'in-sobre-add', hidden: !(atual && !c.opcoes.includes(atual)) }, campo, ok);
+      chips.append(h('button', { type: 'button', class: `in-sobre-mais${linha.hidden ? '' : ' on'}`, onclick: () => { linha.hidden = false; campo.focus(); } }, '+ adicionar'));
+      caixa.append(linha);
+    }
+    if (atual) caixa.append(h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar'));
+    return caixa;
   });
   const desenhaPills = () => { const p = PERF.perfil(); pills.replaceChildren(...PERF.CAMPOS.map((c) => h('button', { type: 'button', class: `in-pill${p[c.k] ? ' tem' : ''}`, 'aria-label': p[c.k] ? `${c.nome}: ${p[c.k]}. tocar pra trocar` : `escolher ${c.nome}`, onclick: () => escolherCampo(c) }, p[c.k] ? `${c.nome}: ${p[c.k]}` : `+ ${c.nome}`))); };
   desenhaPills();
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
     h('p', { class: 'in-tag' }, 'beaterista · passe do aluno'),
-    h('div', { class: 'in-esq' }, h('h1', { class: 'in-nome' }, nome || 'aluno'), pills, h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'), slots),
+    h('div', { class: 'in-esq' }, h('h1', { class: 'in-nome' }, nome || 'aluno'), pills),
+    h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
+    slots,
     fotoPasse,
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));
