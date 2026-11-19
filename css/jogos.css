@@ -1736,3 +1736,8 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .fgn-peca.on{filter:brightness(1.25) saturate(1.1);box-shadow:inset 0 -5px 10px #0003,inset 0 4px 6px #ffffffaa,0 0 22px var(--c)}.fgn-peca.no{animation:fgmTrem .3s;outline:3px solid #ff3b5c}
 .fgn-peca:not(:disabled):active{transform:scale(.96)}.fgn-ok{margin-top:6px}
 @media (prefers-reduced-motion:reduce){.fgp-b,.fgp-peixe.pego,.fgp-peixe.errado,.fgn-cena.certo,.fgn-cena.errado,.fgn-peca.no{animation:none}.fgp-linha,.fgp-anzol{transition:none}}
+/* ---- trilhas da Fuga ---- */
+.fg-trilhas{margin-bottom:6px}.fg-trilhas button{white-space:nowrap}
+.fg-trilha-info{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center}.fg-trilha-info b{color:#ffd23f}
+.fg-reiniciar{font-size:12px;padding:4px 10px}.fg-trilha-nova{font-weight:900;color:#ffd23f;text-align:center;margin:8px 0}
+.pf-titulos .pf-tit{display:inline-flex;align-items:center;gap:6px;margin:4px 6px 0 0;padding:6px 12px;border-radius:99px;background:#1a1445;color:#ffd23f;border:2px solid #ffd23f;font-weight:800;font-size:13px}

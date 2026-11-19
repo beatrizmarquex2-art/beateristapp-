@@ -5,7 +5,7 @@ import { h } from '../util.js';
 import { audio, kick, snare, hihat, cymbal, tom } from '../audio.js';
 import { epiano } from '../synth.js';
 import { symbolEl } from './cartas-simbolos.js';
-import { NIVEL_CFG } from './fuga-logic.js';
+import { NIVEL_CFG, cfgMini } from './fuga-logic.js';
 import { itensTetrisN, ids as figIds } from './figurix-logic.js';
 import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, svgEl, noteMarkup } from '../kids/art.js';
@@ -25,8 +25,8 @@ const toca = (pad) => {
 const erroSom = () => { try { epiano(agora(), [43], 0.35, 0.9); } catch { /* sem áudio */ } };
 
 /* ---------- Genius: repete a sequência de sons ---------- */
-export function genius(box, { nivel = 'facil', fim = () => {}, area = 'notas' } = {}) {
-  const cfg = NIVEL_CFG[nivel].genius; const pads = padsDe(area, cfg.pads); const seq = sequenciaGenius(cfg.rodadas, pads.length);
+export function genius(box, { nivel = 'facil', fim = () => {}, area = 'notas', extra = 0 } = {}) {
+  const cfg = cfgMini(nivel, 'genius', extra); const pads = padsDe(area, cfg.pads); const seq = sequenciaGenius(cfg.rodadas, pads.length);
   let rodada = 1; let pos = 0; let erros = 0; let vez = false; let feitas = 0; let acabou = false; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(() => { if (viva(box)) fn(); }, ms)); };
   const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, 'toque em começar e ouça a sequência');
@@ -57,8 +57,8 @@ export function genius(box, { nivel = 'facil', fim = () => {}, area = 'notas' } 
 }
 
 /* ---------- caminho 3×3: refaça o caminho de notas ---------- */
-export function caminho(box, { nivel = 'facil', fim = () => {} } = {}) {
-  const cfg = NIVEL_CFG[nivel].caminho; let n = 0; let cam = caminho3x3(cfg.len); let pos = 0; let erros = 0; let vez = false; let acabou = false; let feitos = 0; const timers = [];
+export function caminho(box, { nivel = 'facil', fim = () => {}, extra = 0 } = {}) {
+  const cfg = cfgMini(nivel, 'caminho', extra); let n = 0; let cam = caminho3x3(cfg.len); let pos = 0; let erros = 0; let vez = false; let acabou = false; let feitos = 0; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(() => { if (viva(box)) fn(); }, ms)); };
   const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, 'toque em começar: um caminho de notas vai acender');
   const cel = NOTAS_3X3.map(([nome, midi], i) => h('button', { type: 'button', class: 'fgm-cel', 'data-cel': String(i), disabled: true, 'aria-label': nome, onclick: () => toque(i) }, h('span', {}, nome)));
@@ -87,8 +87,8 @@ export function caminho(box, { nivel = 'facil', fim = () => {} } = {}) {
 }
 
 /* ---------- memória de notas: acha os pares ---------- */
-export function memoria(box, { nivel = 'facil', fim = () => {} } = {}) {
-  const cfg = NIVEL_CFG[nivel].memoria; const pares = paresMemoria(cfg.pares); const cartas = cartasMemoria(pares);
+export function memoria(box, { nivel = 'facil', fim = () => {}, extra = 0, assuntos = null } = {}) {
+  const cfg = cfgMini(nivel, 'memoria', extra); const pares = paresMemoria(cfg.pares, Math.random, assuntos); const cartas = cartasMemoria(pares);
   let virada = null; let trava = false; let erros = 0; let achados = 0; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(() => { if (viva(box)) fn(); }, ms)); };
   const conta = h('p', { class: 'tr-count' });
@@ -163,8 +163,8 @@ export const queda4 = (box, o = {}) => queda(box, { ...o, faixas: 4 });
 const CORES_PEIXE = ['#ff3b5c', '#ffd23f', '#4fd8ff', '#b18cff', '#ff9f43', '#ff7ad9'];
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const peixeSvg = (cor) => `<svg viewBox="0 0 120 56" aria-hidden="true"><defs><linearGradient id="pg${cor.slice(1)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".45" stop-color="${cor}"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient></defs><path d="M100 28 118 8v40z" fill="${cor}" stroke="#05060f" stroke-width="3" stroke-linejoin="round"/><ellipse cx="54" cy="28" rx="50" ry="24" fill="url(#pg${cor.slice(1)})" stroke="#05060f" stroke-width="3"/><circle cx="14" cy="22" r="4" fill="#fff" stroke="#05060f" stroke-width="2"/></svg>`;
-export function pesca(box, { nivel = 'facil', fim = () => {} } = {}) {
-  const cfg = NIVEL_CFG[nivel].pesca; const rodadas = rodadasQA(cfg.rodadas, cfg.peixes); let r = 0; let erros = 0; let acertos = 0; let acabou = false; let trava = false; let raf = 0; let tPrev = 0; let peixes = [];
+export function pesca(box, { nivel = 'facil', fim = () => {}, extra = 0, assuntos = null } = {}) {
+  const cfg = cfgMini(nivel, 'pesca', extra); const rodadas = rodadasQA(cfg.rodadas, cfg.peixes, Math.random, assuntos); let r = 0; let erros = 0; let acertos = 0; let acabou = false; let trava = false; let raf = 0; let tPrev = 0; let peixes = [];
   const conta = h('p', { class: 'tr-count' }); const pergunta = h('p', { class: 'fgp-q', role: 'status' });
   const linha = h('div', { class: 'fgp-linha' }); const anzol = h('div', { class: 'fgp-anzol', 'aria-hidden': 'true' });
   const barco = h('div', { class: 'fgp-barco' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' }));
@@ -206,8 +206,8 @@ export function pesca(box, { nivel = 'facil', fim = () => {} } = {}) {
 }
 
 /* ---------- mira e bolinha: arraste pra mirar (linha pontilhada), solte pra jogar a bolinha na resposta certa ---------- */
-export function mira(box, { nivel = 'facil', fim = () => {} } = {}) {
-  const cfg = NIVEL_CFG[nivel].mira; const rodadas = rodadasQA(cfg.rodadas, cfg.alvos); let r = 0; let erros = 0; let acertos = 0; let acabou = false; let trava = false; let raf = 0; let t0 = performance.now();
+export function mira(box, { nivel = 'facil', fim = () => {}, extra = 0, assuntos = null } = {}) {
+  const cfg = cfgMini(nivel, 'mira', extra); const rodadas = rodadasQA(cfg.rodadas, cfg.alvos, Math.random, assuntos); let r = 0; let erros = 0; let acertos = 0; let acabou = false; let trava = false; let raf = 0; let t0 = performance.now();
   const W = 300; const H = 330; const O = { x: W / 2, y: H - 34 }; const R = cfg.alvos > 3 ? 30 : 36;
   const conta = h('p', { class: 'tr-count' }); const pergunta = h('p', { class: 'fgp-q', role: 'status' });
   const el = (tag, attrs = {}) => { const e = document.createElementNS(SVG_NS, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
