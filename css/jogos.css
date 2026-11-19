@@ -1892,5 +1892,14 @@ body.bv-aberta { overflow: hidden; }
 /* ajustes do visual do laboratório: faixa escura atrás do rótulo e dos cadeados (as máquinas do fundo atrapalhavam a leitura) e figuras claras nos cartões escuros */
 .fg-wrap:has(.fg-cena) .tr-count{background:rgba(8,12,26,.88);border-top:2px solid var(--lab-st);border-bottom:2px solid var(--lab-st);padding:6px 8px;margin-left:-12px;margin-right:-12px}
 .fg-wrap:has(.fg-cena) .fg-locks{background:rgba(8,12,26,.55)!important;padding:8px 0!important;margin-left:-12px;margin-right:-12px}
-.fgc-pc .fgc-svg,.fgc-op .fgc-svg{filter:invert(1) brightness(1.15)}
 .fg-wrap:has(.fg-cena) .fgq-cai{background:linear-gradient(#f4f7fc,#b8c6dc)!important;color:#0b1020}
+
+/* feche o compasso: cartões CLAROS com a figura escura (v703: o filtro de inverter cor não pegou em alguns aparelhos e a figura sumia no fundo escuro) */
+.fgc-pc,.fgc-op{background:linear-gradient(#f6f9fd,#c9d4e6)!important;color:#0b1020!important}
+.fgc-pc.pre{border-color:var(--lab-gn,#3cff8a)!important;box-shadow:0 0 0 2px #0b2a1c,0 0 12px rgba(60,255,138,.55)!important}
+.fgc-pc.col{border-color:var(--lab-am,#f2b632)!important;box-shadow:0 0 0 2px #2c2410,0 0 12px rgba(242,182,50,.6)!important}
+.fgc-pc.vazio{background:rgba(242,182,50,.1)!important;color:var(--lab-am2,#ffd45c)!important}
+.fgc-op{border:2px solid #7a8ba8!important}.fgc-op small{color:#0b1020!important;font-weight:800}.fgc-op em{color:#8a5d00!important;font-weight:800}
+.fgc-pc .fgc-svg svg,.fgc-op .fgc-svg svg,.fgc-pc svg,.fgc-op svg{filter:none!important;color:#0b1020}
+.fgc-pc svg,.fgc-op svg{width:100%;height:100%;max-height:70px}
+.fg-wrap .tr-count{text-shadow:0 2px 0 #000}

@@ -1071,3 +1071,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Ideia que a Bea gostou e ficou só de amostra: o estilo jazz Blue Note (vinil) pros jogos; ela escolheu o visual do laboratório.
 - **v703**: Tocar: cards de modelo no alto (violão, teclado e percussão como a bateria); bateria: toque pega a peça mais perto (58px), kit mais largo no celular, vibração leve no Android.
 - **v704**: Tocar: cards de modelo no alto (violão, teclado e percussão como a bateria); bateria: toque pega a peça mais perto (58px), kit mais largo no celular, vibração leve no Android.
+- **v703 (fix, pedido da Bea)**: no iPhone da Bea as figuras do "feche o compasso" sumiam (escuras em fundo escuro; o `filter:invert` não pegou). Agora os cartões do compasso são CLAROS com a figura escura (`.fgc-pc`, `.fgc-op` no fim de `css/jogos.css`), sem depender de filtro. Regra pra jogos novos: **nada de filtro/invert pra deixar figura legível; usar cartão claro**.
