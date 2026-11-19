@@ -36,6 +36,11 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Topo novo (opção A) e ícones da pausa (19/nov/2026, v636, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
+- **Topo da área dos alunos, opção A da Bea** (`shell()` em `js/aluno.js`, estilos no fim de `css/jogos.css`, classe `.top-a`): carinha do Paul redonda, **etiqueta amarela** tortinha com "oi, Nome!" em letra de marcador e o código miúdo embaixo, e **botões redondos de ícone de linha** (som, música, atualizar, engrenagem no lugar de "opções ▾") com sombra vermelha. "tenho código" virou uma chavinha redonda. Os ícones ficam em `js/top-icons.js` (`iconeTopo`); `soundButton`, `musicButton` e `atualizarButton` ganharam a opção `{ linha: true }` (o app da Bea continua com os ícones antigos). Classes `.top-snd` e `.al-opt` continuam (testes usam).
+- **Pausa e saída da velha (2 celulares)**: botões redondos com ícone de linha (duas barras e porta com seta), sem emoji.
+- Falhavam ANTES na `main` (não são desta mudança): `layout` (iPhone SE 320 #/estudos) e `contas-lista`.
+
 ## "Adicionar nome" nas salas por código (19/nov/2026, v634, branch `claude/inspiring-goodall-af9mi9`, NÃO publicado)
 - **Tela de entrada da sala (`lobby` em `js/jogos/online.js`)** tem o campo **"adicionar nome"** (opcional, 14 letras; guardado em `beaterista-nome-sala`). O nome viaja dentro do estado da sala (`estado.nomes = [nome do 0, nome do 1]`); a conexão (`connection`) injeta o meu nome em toda jogada e guarda o do outro. Os jogos chamam `conn.nomeDe(i)` ("você" / nome / "o outro") e `conn.vezDe(i)` ("vez de Ana" / "vez do outro"). Se só o nome mudou, a conexão chama `conn.on.nomes()` em vez de `on.state` (não mexe na partida).
 - Usado em: velha, Uno, Stop (revezando e ao mesmo tempo), base dos duelos (Beat Hero com amigo, letras, toca, quebra-cabeça) e memória em sala. Bingo já tinha nomes próprios.

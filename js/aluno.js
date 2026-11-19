@@ -3,6 +3,7 @@
 import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
 import { h, icon, uid } from './util.js';
 import { soundButton, musicButton } from './sound-btn.js';
+import { iconeTopo } from './top-icons.js';
 import { atualizarButton } from './atualizar-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
@@ -420,12 +421,12 @@ function shell(name) {
   const tenhoCodigo = h('button', { type: 'button', class: 'btn small al-tenho', onclick: abrirCodigo, hidden: AC.liberado(), 'aria-label': 'tenho código de acesso' }, '🔑 código');
   document.addEventListener('aluno-acesso', (ev) => { tenhoCodigo.hidden = !!(ev.detail); });
   if (!window.__salvarLigado) { window.__salvarLigado = true; SALVAR.ligar({ nome: () => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return window.__alunoNome || ''; } } }); }
-  const head = h('header', { class: 'top' },
-    h('img', { src: 'assets/icons/tambor-menu.png', alt: '', width: 40, height: 40 }),
+  const head = h('header', { class: 'top top-a' }, // topo da Bea (opção A, 19/nov/2026): Paul, etiqueta amarela com o nome e botões redondos de ícone de linha
+    h('span', { class: 'top-av' }, h('img', { src: corSrc('ouvindo'), alt: '', width: 46, height: 46, draggable: 'false' })),
     h('div', { class: 'ws', style: 'flex:1' }, h('span', { class: 'on al-quem-top', style: 'padding:5px 12px' }, h('span', {}, (() => { const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase()); const t = me ? PL.titleOf(me.id) : ''; return t ? `oi, ${name} · ${t}` : `oi, ${name}!`; })()), h('small', { class: 'al-cod-top' }, CODE.saved() ? `código ${CODE.mascarar(CODE.saved())}` : 'sem código'))),
-    soundButton(), musicButton(), atualizarButton(),
     tenhoCodigo,
-    h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', onclick: () => opcoes(name) }, 'opções ▾'));
+    soundButton({ linha: true }), musicButton('icon-btn top-snd top-mus', { linha: true }), atualizarButton({ linha: true }),
+    h('button', { type: 'button', class: 'btn small ghost al-opt', 'aria-label': 'opções: trocar aluno, compartilhar jogo, sair', title: 'opções', onclick: () => opcoes(name) }, iconeTopo('engrenagem')));
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch { /* sem pedido de armazenamento fixo */ } // pede pro navegador não apagar o nome e o código salvos
   app.replaceChildren(h('div', { class: 'topwrap' }, head), view, nav);
 
