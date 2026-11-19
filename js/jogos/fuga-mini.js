@@ -26,9 +26,9 @@ export function genius(box, { nivel = 'facil', fim = () => {}, area = 'notas' } 
   const later = (fn, ms) => { timers.push(setTimeout(() => { if (viva(box)) fn(); }, ms)); };
   const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, 'toque em começar e ouça a sequência');
   const botoes = pads.map((p, i) => h('button', { type: 'button', class: 'fgm-pad', 'data-pad': String(i), style: `--c:${p.cor}`, disabled: true, 'aria-label': p.nome, onclick: () => toque(i) }, h('span', {}, p.nome)));
-  const grid = h('div', { class: `fgm-pads bmr n${pads.length}` }, ...botoes);
+  const hub = h('div', { class: 'fgm-hub', 'aria-hidden': 'true' }, h('b', {}, '♪'), h('small', {}, '')); const grid = h('div', { class: `fgm-pads bmr n${pads.length}` }, ...botoes, hub);
   const acende = (i, ms = 260) => { botoes[i].classList.add('on'); later(() => botoes[i].classList.remove('on'), ms); };
-  const pinta = () => { conta.textContent = `rodada ${Math.min(rodada, cfg.rodadas)} de ${cfg.rodadas} · ${erros} erro${erros === 1 ? '' : 's'}`; };
+  const pinta = () => { conta.textContent = `rodada ${Math.min(rodada, cfg.rodadas)} de ${cfg.rodadas} · ${erros} erro${erros === 1 ? '' : 's'}`; hub.firstChild.textContent = String(Math.min(rodada, cfg.rodadas)); hub.lastChild.textContent = `de ${cfg.rodadas}`; };
   const trava = (v) => botoes.forEach((b) => { b.disabled = v; });
   const mostra = () => { // toca os `rodada` primeiros sons
     vez = false; trava(true); pos = 0; msg.textContent = 'ouça…'; pinta();
