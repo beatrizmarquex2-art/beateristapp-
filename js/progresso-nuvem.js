@@ -6,6 +6,7 @@ import { CONFIG } from './config.js';
 import * as CODE from './codigo.js';
 import { jogosParaNuvem, jogosDaNuvem } from './jogos/base.js';
 import * as FAV from './inicio-fav.js';
+import * as PERF from './inicio-perfil.js';
 import * as FOTO from './foto-perfil-nuvem.js';
 
 const OUTROS = ['beaterista-teoria-feitas', 'beaterista-estudos-vistos', 'beaterista-estudos-meta', 'beaterista-caminhos-feitos', 'beaterista-aluno-ritmo', 'beaterista-toca-aventura', 'beaterista-fuga-melhor'];
@@ -39,6 +40,7 @@ export function mesclaJogos(l, r) {
 export function coleta() {
   const outros = {}; for (const k of OUTROS) { const v = ler(k); if (v !== undefined) outros[k] = limpa(v); }
   const foto = FOTO.paraNuvem(); if (foto) outros[FOTO.CHAVE_NUVEM] = foto; // miniatura da foto de perfil (o mais recente ganha, ver foto-perfil-nuvem.js)
+  const sobre = PERF.paraNuvem(); if (sobre) outros[PERF.CHAVE_NUVEM] = sobre; // instrumento, estilo e meta do passe
   const fav = FAV.paraNuvem(); if (fav) outros[FAV.CHAVE_NUVEM] = fav; // bandas favoritas do Início (o mais recente ganha, ver inicio-fav.js)
   return { v: 1, jogos: limpa(jogosParaNuvem().games), outros };
 }
@@ -68,6 +70,7 @@ export async function puxar(ms = 4000) {
       for (const k of OUTROS) { const novo = mescla(local.outros[k], nuvem.outros && nuvem.outros[k]); if (novo !== undefined) { const orig = ler(k); gravar(k, orig && typeof orig === 'object' && !Array.isArray(orig) ? mescla(novo, orig) : novo); } }
     }
     try { FAV.daNuvem(nuvem && nuvem.outros && nuvem.outros[FAV.CHAVE_NUVEM]); } catch { /* ok */ }
+    try { PERF.daNuvem(nuvem && nuvem.outros && nuvem.outros[PERF.CHAVE_NUVEM]); } catch { /* ok */ }
     try { await FOTO.daNuvem(nuvem && nuvem.outros && nuvem.outros[FOTO.CHAVE_NUVEM]); } catch { /* ok */ }
     await enviar(true); // o que só existe neste aparelho sobe agora
     return true;

@@ -1807,3 +1807,4 @@ body.bv-aberta { overflow: hidden; }
 .tk-panel.bmr .tk-opts{justify-content:center;gap:8px}
 .tk-panel.bmr .tk-opts .chip,.tk-panel.bmr .tk-opts button{border-radius:99px}
 .kd-canhota{border-radius:99px}
+.ps-pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.ps-pill{font-style:normal;font:700 11px "Hanken Grotesk",sans-serif;border:2px solid #f2a91b;color:#f2a91b;border-radius:99px!important;padding:3px 10px}

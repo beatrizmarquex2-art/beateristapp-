@@ -11,6 +11,7 @@ import * as A from '../figurinhas/acesso.js';
 import * as L from '../figurinhas/album-logic.js';
 import * as store from '../store.js';
 import { atualizarAgora } from '../atualizar-btn.js';
+import * as PERF from '../inicio-perfil.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -139,12 +140,21 @@ export function mount(host, { nome = '' } = {}) {
   let urlFoto = '';
   const carregaFoto = async () => { try { const bl = await D.metaLer('perfil-foto'); if (urlFoto) URL.revokeObjectURL(urlFoto); urlFoto = bl ? URL.createObjectURL(bl) : ''; imgPasse.src = urlFoto || paulBateria; fotoPasse.classList.toggle('com-foto', !!urlFoto); } catch { /* fica o Paul */ } };
   carregaFoto(); window.addEventListener('bt-foto-perfil', carregaFoto);
+  // "sobre mim": instrumento, estilo e meta em etiquetas; tocar numa abre as opções em chips
+  const pills = h('div', { class: 'in-pills', role: 'group', 'aria-label': 'sobre mim: instrumento, estilo e meta' });
+  const escolherCampo = (c) => sheet(c.nome, (close) => {
+    const atual = PERF.perfil()[c.k];
+    const pega = (v) => { PERF.gravar(c.k, v); desenhaPills(); close(); };
+    return h('div', { class: 'in-sobre' }, h('p', { class: 'in-sobre-t' }, `escolha o seu ${c.nome}:`),
+      h('div', { class: 'jg-seg in-sobre-chips', role: 'group', 'aria-label': c.nome }, ...c.opcoes.map((o) => h('button', { type: 'button', class: atual === o ? 'on' : '', 'aria-pressed': String(atual === o), onclick: () => pega(o) }, o))),
+      atual ? h('button', { type: 'button', class: 'btn small ghost', onclick: () => pega('') }, 'tirar') : null);
+  });
+  const desenhaPills = () => { const p = PERF.perfil(); pills.replaceChildren(...PERF.CAMPOS.map((c) => h('button', { type: 'button', class: `in-pill${p[c.k] ? ' tem' : ''}`, 'aria-label': p[c.k] ? `${c.nome}: ${p[c.k]}. tocar pra trocar` : `escolher ${c.nome}`, onclick: () => escolherCampo(c) }, p[c.k] ? `${c.nome}: ${p[c.k]}` : `+ ${c.nome}`))); };
+  desenhaPills();
   const passe = h('section', { class: 'in-passe', 'aria-label': 'passe do aluno' },
     h('i', { class: 'in-furo', 'aria-hidden': 'true' }),
     h('p', { class: 'in-tag' }, 'beaterista · passe do aluno'),
-    h('h1', { class: 'in-nome' }, nome || 'aluno'),
-    h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'),
-    slots,
+    h('div', { class: 'in-esq' }, h('h1', { class: 'in-nome' }, nome || 'aluno'), pills, h('p', { class: 'in-favt' }, 'bandas e cantores favoritos'), slots),
     fotoPasse,
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));

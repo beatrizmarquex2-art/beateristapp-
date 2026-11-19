@@ -139,3 +139,15 @@ body:has(.inicio) .atualiza-bar { display: none !important; }
 .in-roleta .in-roleta-bts { grid-area: bts; flex-direction: row; gap: 8px; }
 .in-roleta .in-roleta-bts > * { flex: 1; text-align: center; white-space: nowrap; }
 .in-roleta .in-roleta-bts .in-btn { padding: 9px 10px 6px; }
+
+/* passe com "sobre mim" (instrumento · estilo · meta) em etiquetas: o texto da esquerda vira uma coluna */
+.in-passe { height: 300px; }
+.in-passe .in-esq { position: absolute; left: 18px; top: 44px; width: 192px; }
+.in-passe .in-esq .in-nome { position: static !important; padding-top: 4px; }
+.in-passe .in-esq .in-favt { position: static; margin: 10px 0 4px; }
+.in-passe .in-esq .in-favs { position: static; margin-left: -4px; }
+.in-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.in-pill { border: 0; border-radius: 99px !important; padding: 4px 9px; font: 700 10.5px "Hanken Grotesk", sans-serif; background: #2a1a05; color: #fbe3a3; cursor: pointer; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.in-pill:not(.tem) { background: transparent; color: rgba(42,26,5,.7); border: 2px dashed rgba(42,26,5,.45); padding: 2px 8px; }
+.in-sobre { display: grid; gap: 12px; } .in-sobre-t { margin: 0; font-weight: 700; }
+.in-sobre-chips { display: flex; flex-wrap: wrap; gap: 8px; }

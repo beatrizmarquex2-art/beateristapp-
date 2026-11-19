@@ -5,6 +5,7 @@ import { h } from '../util.js';
 import { sheet } from '../ui.js';
 import * as D from '../figurinhas/dono.js';
 import * as FAV from '../inicio-fav.js';
+import * as PERF from '../inicio-perfil.js';
 
 const KEY = 'bt-perfil-sala';
 export const ligado = () => D.lsLer(KEY) === '1';
@@ -29,7 +30,8 @@ export async function preparar() {
   let d = ''; try { const b = await D.metaLer('perfil-foto'); if (b) d = await miniatura(b); } catch { /* sem foto */ }
   if (d.length > MAX_D) d = '';
   const f = (() => { try { return FAV.favoritos().slice(0, 3).map((x) => String(x).slice(0, 40)); } catch { return []; } })();
-  cache = f.length || d ? { f, d } : null; return cache;
+  const sobre = (() => { try { const o = PERF.perfil(); return { i: o.i, e: o.e, m: o.m }; } catch { return {}; } })(); // instrumento, estilo e meta do passe
+  cache = f.length || d || sobre.i || sobre.e || sobre.m ? { f, d, s: sobre } : null; return cache;
 }
 /** O que mando agora (ou null se está desligado ou ainda não preparou). */
 export const meu = () => (ligado() ? cache : null);
@@ -38,7 +40,8 @@ export function limpa(p) {
   if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
   const f = Array.isArray(p.f) ? p.f.slice(0, 3).map((x) => String(x || '').replace(/\s+/g, ' ').trim().slice(0, 40)).filter(Boolean) : [];
   const d = typeof p.d === 'string' && p.d.length <= MAX_D && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.d) ? p.d : '';
-  return f.length || d ? { f, d } : null;
+  const so = {}; for (const c of PERF.CAMPOS) { const v = p.s && typeof p.s === 'object' ? p.s[c.k] : ''; so[c.k] = c.opcoes.includes(v) ? v : ''; } // só valores da lista
+  return f.length || d || so.i || so.e || so.m ? { f, d, s: so } : null;
 }
 
 let catCache = null;
@@ -58,6 +61,8 @@ export function abrirPerfil(nome, perfil) {
     if (!p) { raiz.append(h('p', { class: 'ps-vazio' }, `${nome} não mostra o perfil na sala.`)); return raiz; }
     const favs = h('div', { class: 'ps-favs', role: 'group', 'aria-label': 'favoritos' });
     p.f.forEach((n) => favs.append(h('div', { class: 'ps-fav' }, h('b', { class: 'ps-fav-foto' }, h('i', {}, '♪')), h('small', {}, n))));
+    const etiquetas = PERF.CAMPOS.filter((c) => p.s && p.s[c.k]).map((c) => h('em', { class: 'ps-pill' }, `${c.nome}: ${p.s[c.k]}`));
+    if (etiquetas.length) raiz.append(h('div', { class: 'ps-pills' }, ...etiquetas));
     raiz.append(h('p', { class: 'ps-lab' }, p.f.length ? `no repertório de ${nome}` : 'ainda sem favoritos'), favs);
     fotosArtistas().then((m) => { favs.querySelectorAll('.ps-fav').forEach((el, i) => { const a = m.get(p.f[i]); if (a && a.foto) el.querySelector('.ps-fav-foto').replaceChildren(h('img', { src: a.foto, alt: '', style: `object-position:${rostoPos(a.rosto)}` })); }); });
     return raiz;
