@@ -27,7 +27,8 @@ export function comoDicas(itens = bancoCarregado()) {
   const out = [];
   itens.forEach((it, idx) => {
     if (it.t === 'vf' || it.k === 'ingles' || it.k === 'vale') return;
-    const w = norm(it.r).replace(/\s+/g, ''); if (/\s/.test(it.r) || !LETRAS_OK.test(w)) return;
+    // o gerador já mede a palavra sem acento (4 a 11 letras) e tira as pistas que servem pra mais de uma palavra do banco (`cc`); sem esse campo (dados antigos) a conta é refeita aqui
+    const w = it.w || norm(it.r).replace(/\s+/g, ''); if (/\s/.test(it.r) || !LETRAS_OK.test(w) || ('cc' in it && it.cc !== 1)) return;
     const text = it.t === 'lacuna' ? it.q.replace('_____', it.r) : it.q;
     out.push({ n: 900000 + idx, text, w, shown: it.r, cands: [], termo: true, assunto: it.a, nivel: it.n, banco: true, fonte: it.f, o: it.o });
   });
@@ -43,12 +44,15 @@ export function paresDoBanco(area, itens = bancoCarregado()) {
   for (const it of itens) {
     if (it.a !== area || (it.k !== 'ingles' && it.k !== 'vale')) continue;
     let a; let b = it.r;
-    if (it.k === 'ingles') { const m = /“(.+)”/.exec(it.q); a = m && m[1]; } else { const m = /^quanto vale a (.+)\?$/.exec(it.q); a = m && m[1]; }
-    if (!a || !b || a.length > 24 || b.length > 24 || vistos.has(a) || vistos.has(b)) continue; vistos.add(a); vistos.add(b); out.push({ a, b, banco: true });
+    if (it.p) { a = it.p[0]; b = it.p[1]; } else if (it.k === 'ingles') { const m = /“(.+)”/.exec(it.q); a = m && m[1]; } else { const m = /quanto vale a (.+)\?$/.exec(it.q); a = m && m[1]; }
+    if (!a || !b || a.length > 24 || b.length > 24 || vistos.has(a) || vistos.has(b)) continue; vistos.add(a); vistos.add(b); out.push({ a, b, banco: true, ...(it.dur ? { dur: true } : {}) });
   }
   return out;
 }
 /** Perguntas curtas pra pesca e mira: `{ area, certo, q }` com a resposta ≤ 28 letras e o enunciado ≤ 100. */
 export function qaDoBanco(itens = bancoCarregado()) {
-  return itens.filter((it) => it.t === 'definicao' && !it.k && ['ritmo', 'teoria', 'cordas'].includes(it.a) && it.q.length <= 100 && it.r.length <= 28).map((it) => ({ area: it.a, certo: it.r, q: it.q, banco: true }));
+  return itens.filter((it) => it.t === 'definicao' && !it.k && ['ritmo', 'teoria', 'cordas'].includes(it.a) && it.q.length <= 100 && it.r.length <= 28).map((it) => ({ area: it.a, certo: it.r, q: it.q, banco: true, ac: it.ac || [] }));
 }
+
+/** A resposta `texto` está certa pro item? Vale a resposta do banco ou qualquer variante que o próprio cartão mostra (`ac`), sem ligar pra acento, maiúscula e espaço. */
+export const respostaCerta = (it, texto) => { const t = norm(texto).replace(/\s+/g, ' ').trim(); return [it.r, ...(it.ac || [])].some((x) => norm(x).replace(/\s+/g, ' ').trim() === t); };
