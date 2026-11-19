@@ -19,7 +19,7 @@ export function trilhaInfo(n) {
   return { n: k, id: 'infinita', nome: `infinita · volta ${volta}`, sub: 'mistura tudo, sempre novo', assuntos: ASSUNTOS, paga: 'trilha', extra: Math.min(3, volta), nivelShift: volta >= 3 ? 1 : 0, volta };
 }
 /** Que jogos trocam de lugar nas trilhas de teoria e cordas (montar/queda são de figuras rítmicas): os dois assuntos ganham jogos com notas, nomes e perguntas. */
-export const SUBST = { teoria: { montar: 'caminho', queda: 'mira', queda4: 'genius', compasso: 'mira', intruso: 'pesca' }, cordas: { montar: 'caminho', queda: 'mira', queda4: 'genius', compasso: 'mira', intruso: 'pesca' } };
+export const SUBST = { teoria: { montar: 'caminho', compasso: 'caminho', intruso: 'memoria', queda: 'genius', queda4: 'genius' }, cordas: { montar: 'caminho', compasso: 'caminho', intruso: 'memoria', queda: 'genius', queda4: 'genius' } };
 /** O que a lógica das fases (portasDaFase/faseCfg) precisa saber da trilha. */
 export function trilhaCfg(n) {
   const t = trilhaInfo(n); const solo = t.assuntos.length === 1 ? t.assuntos[0] : null;

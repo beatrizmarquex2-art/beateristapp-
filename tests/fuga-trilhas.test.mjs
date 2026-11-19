@@ -73,17 +73,16 @@ test('portasDaFase por trilha: trilha 1 igual a antes; ritmo usa bateria; teoria
   assert.ok(portasDaFase(0, 3, trilhaCfg(2)).every((p) => p.area === 'bateria')); assert.ok(portasDaFase(0, 3, trilhaCfg(3)).every((p) => p.area === 'notas'));
   for (const t of [3, 4]) for (let n = 1; n <= FASES; n++) { const tipos = portasDaFase(0, n, trilhaCfg(t)).map((p) => p.tipo); assert.ok(!tipos.some((x) => ['montar', 'queda', 'queda4'].includes(x)), `t${t} f${n}`); if (n >= 11) assert.equal(new Set(tipos).size, 4, `t${t} f${n} sem repetir jogo`); assert.equal(tipos.length, TIPOS_FASE[n - 1].length); }
   assert.deepEqual(portasDaFase(0, 12, trilhaCfg(3)).map((p) => p.tipo), ['memoria', 'caminho', 'genius', 'cruz']);
-  assert.deepEqual(portasDaFase(0, 11, trilhaCfg(4)).map((p) => p.tipo), ['pesca', 'mira', 'caca', 'cruz']);
+  assert.deepEqual(portasDaFase(0, 11, trilhaCfg(4)).map((p) => p.tipo), ['memoria', 'genius', 'caca', 'cruz']);
   assert.deepEqual(portasDaFase(0, 3, trilhaCfg(2)).map((p) => p.assuntos), [['ritmo'], ['ritmo'], ['ritmo']]);
   const a = faseCfg(0, 9, trilhaCfg(1)); const b = faseCfg(0, 9, trilhaCfg(7)); assert.ok(b.palavras >= a.palavras && b.palavras <= 9); assert.ok(b.cruz <= 7 && b.grade <= 12);
   assert.equal(faseCfg(2, 12, trilhaCfg(20)).nivel, 'dificil'); assert.equal(faseCfg(0, 1, trilhaCfg(7)).nivel, 'medio');
 });
 
 test('cfgMini: a infinita aumenta um pouco, sempre com teto; sem extra é o NIVEL_CFG de sempre', () => {
-  for (const j of ['genius', 'caminho', 'memoria', 'pesca', 'mira']) assert.deepEqual(cfgMini('medio', j, 0), NIVEL_CFG.medio[j]);
+  for (const j of ['genius', 'caminho', 'memoria', 'compasso', 'intruso']) assert.deepEqual(cfgMini('medio', j, 0), NIVEL_CFG.medio[j]);
   const g = cfgMini('dificil', 'genius', 3); assert.ok(g.rodadas <= 10 && g.rodadas > NIVEL_CFG.dificil.genius.rodadas && g.ms >= 300);
-  assert.ok(cfgMini('dificil', 'memoria', 3).pares <= 8); assert.ok(cfgMini('dificil', 'caminho', 3).len <= 8); const p = cfgMini('dificil', 'pesca', 3); assert.ok(p.peixes <= 6 && p.rodadas <= 10);
-  assert.equal(cfgMini('facil', 'mira', 1).move, 1);
+  assert.ok(cfgMini('dificil', 'memoria', 3).pares <= 8); assert.ok(cfgMini('dificil', 'caminho', 3).len <= 8); const p = cfgMini('dificil', 'intruso', 3); assert.ok(p.rodadas <= 5);
 });
 
 test('mini jogos por assunto: memória e pergunta (pesca/mira) só da área da trilha; cordas tem pares suficientes', () => {
