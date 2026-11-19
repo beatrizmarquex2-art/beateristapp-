@@ -65,6 +65,15 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const ws = T.wordsearch(pick.map((x) => x.w), 9, D ? D.mk() : Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let erros = 0; let pagou = false;
+  // 💡 dica: pisca a 1ª letra de uma palavra que falta e diz pra que lado ela vai. 3 por grade; cada uma conta como 1 erro nas estrelas. Não existe no duelo (D).
+  const MAX_DICAS = 3; let dicasUsadas = 0; let dicaDe = null; const SETA = (dx, dy) => (dx === 1 && dy === 0 ? '→' : dx === 0 && dy === 1 ? '↓' : dx === 1 && dy === 1 ? '↘' : dx === 1 && dy === -1 ? '↗' : dx === -1 ? '←' : '↑');
+  const pedirDica = () => {
+    const faltam = ws.placed.filter((p) => !found.has(p.w)); if (!faltam.length || dicasUsadas >= MAX_DICAS) return;
+    if (free && !counted) { counted = true; cacaUsar(); }
+    const p = faltam[Math.floor(Math.random() * faltam.length)]; dicasUsadas++; erros++; start = null;
+    dicaDe = { x: p.x, y: p.y, w: p.w, seta: SETA(p.dx, p.dy) }; draw();
+    const mine = dicaDe; setTimeout(() => { if (dicaDe === mine) { dicaDe = null; draw(); } }, 6000);
+  };
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
   const key = (x, y) => `${x},${y}`;
   const cellColor = new Map(); // casa -> cor da palavra achada
@@ -95,7 +104,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const draw = () => {
     grid = h('div', { class: 'dc-grid dc-easy', style: `--n:${ws.size}` }, ...ws.grid.flatMap((row, y) => row.map((l, x) => {
       const ck = cellColor.get(key(x, y));
-      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
+      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}${dicaDe && dicaDe.x === x && dicaDe.y === y ? ' dica' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
     })));
     grid.addEventListener('pointerdown', (e) => { const c = cellAt(e.target); if (!c) return; drag = { x0: c.x, y0: c.y, el: c.el, end: null }; });
     grid.addEventListener('pointermove', (e) => {
@@ -107,7 +116,9 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
       ? h('button', { type: 'button', class: `dc-chip ok dc-k${colorOf[w]}`, onclick: () => { last = byWord[w]; draw(); } }, `✓ ${byWord[w].shown}`)
       : h('span', { class: `dc-chip dc-k${colorOf[w]}` }, byWord[w].shown)));
     const dica = !found.size ? h('p', { class: 'muted' }, 'ache as palavras na grade: arraste o dedo por cima ou toque na primeira e na última letra. quando achar, aparece a dica!') : null;
-    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, chips, grid].filter(Boolean)), last ? explain(last) : null,
+    const btnDica = D ? null : h('div', { class: 'dc-dicabar' }, h('button', { type: 'button', class: 'btn small', disabled: dicasUsadas >= MAX_DICAS || found.size === words.length, onclick: pedirDica }, `💡 dica (${MAX_DICAS - dicasUsadas})`),
+      dicaDe ? h('span', { class: 'dc-dicatxt', role: 'status' }, `“${byWord[dicaDe.w].shown}” começa na casa que pisca e vai pra ${dicaDe.seta}`) : h('small', { class: 'muted' }, 'cada dica conta como 1 erro'));
+    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, btnDica, chips, grid].filter(Boolean)), last ? explain(last) : null,
       found.size === words.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
   };
   draw();
