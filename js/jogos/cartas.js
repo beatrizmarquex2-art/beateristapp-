@@ -175,10 +175,11 @@ export function mount(host, opts) {
   }
 
   function startOnline(c, state) {
-    conn = c; lob = null; badge.set(true);
-    c.on.link = (v) => badge.set(v);
+    conn = c; lob = null; const nSala = (state && state.n) || 2; badge.set(true, nSala);
+    c.on.link = (v) => badge.set(v, nSala);
     c.on.state = (st) => incoming(st); c.on.nomes = () => { if (!gone && g && !busy) paint(); };
-    begin(state);
+    c.on.saiu = () => aplicaSaida(); // a maioria da sala decidiu continuar sem alguém
+    begin(state); aplicaSaida();
   }
   /** estado novo vindo do outro celular */
   function incoming(st) {
@@ -189,11 +190,20 @@ export function mount(host, opts) {
     g = st;
     if (!st.over && st.seq !== prev.seq) runEvent(prev, null);
     else { paint(); if (st.over) finishUp(); }
+    aplicaSaida();
+  }
+  /** Sala por código: quem a maioria decidiu tirar sai da mesa. Só UM celular (o menor lugar que ficou) aplica no estado e manda; os outros recebem o estado novo. */
+  function aplicaSaida() {
+    if (gone || !conn || !g || g.mode !== 'online' || g.over || !conn.saiu) return;
+    const novos = conn.saiu().filter((p) => p < g.n && !C.foraDe(g).includes(p));
+    if (!novos.length || !conn.souSindico()) return;
+    if (busy) { later(aplicaSaida, 500); return; } // espera a animação acabar
+    commit(C.tirar(g, novos, rnd));
   }
   /** manda a jogada pro outro celular (só no modo 2 celulares) */
   function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok && !gone) flash('outro jogador jogou ao mesmo tempo, veja a mesa'); }); }
   function again() {
-    if (prefs.mode === 'online') { const ng = C.newGame({ mode: 'online', players: g ? g.n : 2, un: UN }); if (g && g.nomes) ng.nomes = g.nomes; begin(ng); sync(); return; } // revanche na sala: mesma quantidade de jogadores e os mesmos nomes
+    if (prefs.mode === 'online') { const ng = C.newGame({ mode: 'online', players: g ? g.n : 2, un: UN }); if (g && g.nomes) ng.nomes = g.nomes; if (g && C.foraDe(g).length) { const seq = ng.seq; const t = C.tirar(ng, C.foraDe(g), rnd); t.ev = { t: 'start' }; t.seq = seq; Object.assign(ng, t); } begin(ng); sync(); return; } // quem saiu continua fora na revanche // revanche na sala: mesma quantidade de jogadores e os mesmos nomes
     begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }));
   }
 
@@ -235,10 +245,10 @@ export function mount(host, opts) {
   /* ----- desenho da mesa ----- */
   function seat(p) {
     const k = g.hands[p].length; const minis = Math.min(k, 7); const cpu = isCpu(p); // no UN🚫 o número de cartas aparece, mas ninguém avisa quando alguém fica com UNO
-    const on = !g.over && g.turn === p;
-    return h('div', { class: `cx-seat${on ? ' on' : ''}${!UN && g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}: ${k} carta${k === 1 ? '' : 's'}${on ? ', jogando' : ''}` },
+    const on = !g.over && g.turn === p; const saiu = C.foraDe(g).includes(p);
+    return h('div', { class: `cx-seat${on ? ' on' : ''}${saiu ? ' saiu' : ''}${!UN && g.unoSaid === p && k === 1 ? ' uno' : ''}`, 'data-p': p, 'aria-label': `${PL(p)}: ${k} carta${k === 1 ? '' : 's'}${on ? ', jogando' : ''}` },
       h('span', { class: 'cx-minis', 'aria-hidden': 'true' }, ...Array.from({ length: minis }, () => h('i', { class: 'cx-mb' }))),
-      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : PL(p)), h('em', {}, String(k))),
+      h('span', { class: 'cx-sname' }, h('b', {}, g.mode === 'paul' ? NAMES[p - 1] : `${PL(p)}${saiu ? ' (saiu)' : ''}`), h('em', {}, String(k))),
       h('span', { class: 'cx-sstate' }, !UN && g.unoSaid === p && k === 1 ? 'UNO!' : on ? (cpu ? 'pensando…' : 'jogando') : ''));
   }
   function paint(opt = {}) {
@@ -248,6 +258,7 @@ export function mount(host, opts) {
     const legal = new Set(canMove && dica() ? C.legalCards(g, me).map((c) => c.id) : []);
     const mine = hidden ? [] : sortHand(g.hands[me]);
     const turnTxt = g.over ? '' : g.mode === 'paul' ? (g.turn === 0 ? 'sua vez' : `vez do ${NAMES[g.turn - 1]}`) : g.mode === 'online' ? (g.turn === me ? 'sua vez' : `${conn ? conn.vezDe(g.turn) : 'vez do outro'}…`) : `vez ${deNome(g.turn)}`;
+    if (conn && g.mode === 'online' && conn.esperaDe) conn.esperaDe(g.over ? null : g.turn); // se a vez dele demorar 30 s, aparece o aviso pra todos
     const canD = canMove && C.canDraw(g); const canP = canMove && C.canPass(g);
     const under = [...g.discard].slice(-4, -1); // cartas de baixo (só enfeite)
     const prevTurn = stage ? stage.dataset.turn : ''; const turnChanged = String(prevTurn) !== String(g.turn);
@@ -273,6 +284,7 @@ export function mount(host, opts) {
       h('button', { type: 'button', class: 'btn small ghost', onclick: () => { picking = null; paint(); } }, 'cancelar')) : null;
     stage = h('div', { class: `cx-stage${wasPre ? ' cx-pre' : ''}${busy ? ' cx-busy' : ''}`, 'data-turn': String(g.turn) },
       h('div', { class: 'cx-board' },
+        conn && g.mode === 'online' && conn.avisoSaida ? conn.avisoSaida() : null,
         h('div', { class: `cx-opps n${opps.length}` }, ...opps.map(seat)),
         h('div', { class: 'cx-table' }, deckEl,
           h('div', { class: 'cx-mid' }, pileEl,
@@ -348,6 +360,7 @@ export function mount(host, opts) {
     if (ev.t === 'draw' && ev.pend) return `${PL(ev.by)} comprou ${ev.n} e perdeu a vez`;
     if (ev.t === 'draw' && UN && ev.n > 1) return ev.fits && ev.by === meIdx() && g.mode !== 'local' ? `você comprou ${ev.n} até achar uma que serve: jogue ou passe` : `${PL(ev.by)} comprou ${ev.n} cartas${ev.fits ? ' até achar uma que serve' : ' e passou'}`;
     if (ev.t === 'draw') return ev.fits && ev.by === meIdx() && g.mode !== 'local' ? 'a carta comprada serve: jogue ou passe' : ev.fits ? `${PL(ev.by)} comprou uma carta que serve` : `${PL(ev.by)} comprou uma carta e passou`;
+    if (ev.t === 'saiu') { const ls = ev.lugares || [ev.by]; return `${ls.map((q) => PL(q)).join(' e ')} saiu da partida: a mesa segue sem ${ls.length > 1 ? 'eles' : 'essa pessoa'}`; }
     if (ev.t === 'pass') return `${PL(ev.by)} passou`;
     if (ev.t === 'uno') return UN ? '' : `${PL(ev.by)}: UNO!`; // no UN🚫 ninguém avisa
     if (ev.t === 'wrong') return `${PL(ev.by)} acusou sem ninguém ter esquecido o UNO e comprou ${ev.n}`;
@@ -538,7 +551,7 @@ export function mount(host, opts) {
     const title = w == null ? 'empate' : g.mode === 'paul' ? (w === 0 ? 'você venceu!' : `${NAMES[w - 1]} venceu`) : `${PL(w)} venceu!`;
     const euGanhei = w != null && (g.mode === 'paul' ? w === 0 : g.mode === 'online' ? w === me0() : true);
     return placar({ classe: 'cx-result', estado: w == null ? 'tie' : euGanhei ? 'win' : 'lose', pose: w == null ? poseDisponivel('agua', 'ouvindo') : euGanhei ? poseDisponivel('maestro', 'baquetas-pra-cima') : poseDisponivel('meditando', 'ouvindo'), titulo: title,
-      sub: w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : `jogo travado: ${PL(w)} ficou com menos cartas`,
+      sub: w == null ? 'jogo travado com o mesmo número de cartas' : r.reason === 'mao-vazia' ? `${PL(w)} descartou a última carta` : r.reason === 'saiu' ? `${PL(w)} ficou sozinho(a) na mesa: os outros saíram` : `jogo travado: ${PL(w)} ficou com menos cartas`,
       quadros: r.counts.map((n, i) => ({ n, l: PL(i), win: i === w })),
       estrelas: !adv && w != null && ((g.mode === 'online' && w === me0()) || (g.mode === 'paul' && w === 0)) ? '+1 ★ pra roleta' : '',
       acoes: adv ? [] : [h('button', { class: 'btn primary', type: 'button', onclick: again }, 'jogar de novo'), h('a', { class: 'btn', href: '#/jogos/quizuno' }, 'quiz do Uno Musical'), h('button', { class: 'btn ghost', type: 'button', onclick: intro }, 'voltar às opções')] });

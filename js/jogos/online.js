@@ -2,9 +2,10 @@
 // (funções sala_criar / sala_entrar / sala_ler / sala_enviar, veja supabase/006_salas.sql). Sem login; quem tem o código joga.
 import { h } from '../util.js';
 import { CONFIG } from '../config.js';
+import { ligarSaida } from './online-saida.js';
 
 const head = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
-async function rpc(fn, body) {
+export async function rpc(fn, body) {
   const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers: head, body: JSON.stringify(body) });
   if (!r.ok) { const e = new Error(String(r.status)); try { e.corpo = await r.text(); } catch { e.corpo = ''; } throw e; }
   return r.json();
@@ -82,7 +83,7 @@ function connection(code, me, ver, onPeer) {
         if (row.convidado && !peer) { peer = true; if (onPeer) onPeer(); }
         if (row.ver !== ver && row.estado) {
           const soNomes = objeto(row.estado) && objeto(ultimo) && semNomes(row.estado) === semNomes(ultimo); // só o nome de alguém mudou: não mexe na partida
-          ver = row.ver; absorve(row.estado); ultimo = row.estado;
+          ver = row.ver; absorve(row.estado); ultimo = row.estado; if (api.progresso) api.progresso(); // chegou jogada: zera o relógio de "demorando"
           if (soNomes) { if (on.nomes) on.nomes(); } else if (on.state) on.state(row.estado);
         }
       }
@@ -107,7 +108,7 @@ function connection(code, me, ver, onPeer) {
         if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, ...resto } = state; state = pausa ? { ...resto, nomes: n, pausaSala: pausa } : { ...resto, nomes: n }; } // o meu nome vai junto de toda jogada
         const n = await rpc('sala_enviar', { p_code: code, p_ver: ver, p_estado: state });
         link(true);
-        if (n > 0) { ver = n; absorve(state); ultimo = state; return true; }
+        if (n > 0) { ver = n; absorve(state); ultimo = state; if (api.progresso) api.progresso(); return true; }
       } catch { link(false); return false; } finally { busy = false; }
       poll(); return false;
     },
@@ -117,8 +118,13 @@ function connection(code, me, ver, onPeer) {
     responderPausa: (r) => mudaPausa((p) => (p && p.by !== me ? { ...p, resp: { ...p.resp, [me]: r } } : p)),
     retomarTodos: () => mudaPausa(() => null),
     deixarSala: () => mudaPausa(() => ({ by: me, tipo: 'saiu', resp: {} })),
-    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
+    close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (api.parouSaida) api.parouSaida(); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
   };
+  // saída de jogador (online-saida.js): só liga quando o jogo pede (`conn.avisoSaida()`), pra aula ao vivo e duelos não darem sinal à toa.
+  // O jogo põe o elemento na tela, chama `conn.esperaDe(lugar)` (jogos por turno) e trata `conn.on.saiu(lista)`.
+  let saida = null; const liga = () => { if (!saida) saida = ligarSaida(api, rpc); return saida; };
+  api.avisoSaida = () => liga().el; api.esperaDe = (seat) => liga().esperaDe(seat);
+  api.progresso = () => { if (saida) saida.progresso(); }; api.saiu = () => (saida ? saida.saiu() : []); api.souSindico = () => (saida ? saida.souSindico() : me === 0); api.parouSaida = () => { if (saida) saida.parar(); };
   return api;
 }
 
@@ -264,5 +270,5 @@ export async function reenter(code, me) {
 /** Faixa de status da conexão ("online" / "sem conexão…") para pôr no topo do jogo. */
 export function linkBadge(n = 2) {
   const el = h('p', { class: 'jg-link-badge', role: 'status' }, `● ${n} celulares`);
-  return { el, set(okay) { el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } };
+  return { el, set(okay, quantos) { if (quantos >= 2) n = quantos; el.textContent = okay ? `● ${n} celulares` : '○ sem conexão, tentando de novo…'; el.classList.toggle('off', !okay); } }; // `quantos`: salas de 3 e 4 mostram o número certo
 }

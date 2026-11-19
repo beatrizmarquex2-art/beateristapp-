@@ -86,11 +86,11 @@ export function mountMusical(host, { onTema } = {}) {
   /* ---------------- corrida (sala de 3 ou 4 celulares): todos procuram a MESMA carta do Paul ---------------- */
   /** Tira os caracteres que não são nome (o nome vem da sala). */
   const nomeCorr = (i) => (corrida.e.nomes && corrida.e.nomes[i]) || (corrida.conn.nomeDe ? corrida.conn.nomeDe(i, `jogador ${i + 1}`) : `jogador ${i + 1}`);
-  const statusCorr = (x) => (x.fim ? (x.ok ? `acertou em ${x.p} pergunta${x.p === 1 ? '' : 's'}` : 'não acertou') : x.p ? `${x.p} pergunta${x.p === 1 ? '' : 's'}…` : 'jogando…');
+  const statusCorr = (x) => (x.saiu ? 'saiu da partida' : x.fim ? (x.ok ? `acertou em ${x.p} pergunta${x.p === 1 ? '' : 's'}` : 'não acertou') : x.p ? `${x.p} pergunta${x.p === 1 ? '' : 's'}…` : 'jogando…');
   /** A faixa com o andamento de todo mundo (fica no topo da partida e some junto com a tela). */
   function pintaBar() {
     if (!corrida) return; const e = corrida.e;
-    corrida.bar.replaceChildren(h('b', {}, 'a sala'), h('ul', {}, ...e.prog.map((x, i) => h('li', { class: `${i === corrida.me ? 'eu' : ''}${x.fim ? ' fim' : ''}` }, h('span', {}, i === corrida.me ? `${nomeCorr(i)} (você)` : nomeCorr(i)), h('small', {}, statusCorr(x))))));
+    corrida.bar.replaceChildren(h('b', {}, 'a sala'), h('ul', {}, ...e.prog.map((x, i) => h('li', { class: `${i === corrida.me ? 'eu' : ''}${x.fim ? ' fim' : ''}` }, h('span', {}, `${i === corrida.me ? `${nomeCorr(i)} (você)` : nomeCorr(i)}${CR.foraDe(e).includes(i) ? ' (saiu)' : ''}`), h('small', {}, statusCorr(CR.foraDe(e).includes(i) ? { ...x, saiu: true } : x))))));
   }
   /** Conta pra sala o meu andamento. Todo mundo joga ao mesmo tempo, então se outro avisou antes eu pego o estado dele e aviso de novo (cada um só mexe no próprio lugar). */
   async function corridaAvisa() {
@@ -105,6 +105,19 @@ export function mountMusical(host, { onTema } = {}) {
     } finally { C.enviando = false; if (C.de && corrida === C) corridaAvisa(); }
     if (corrida === C) { pintaBar(); if (C.telaFim) pintaFim(); }
   }
+  /** A maioria votou "continuar sem" alguém: o celular síndico (menor lugar que ficou) põe isso no estado e manda; os outros recebem pelo estado. */
+  async function aplicaSaida() {
+    const C = corrida; if (!C || gone || !C.conn.saiu || C.saindo) return; const falta = () => C.conn.saiu().filter((s) => s < C.e.n && !CR.foraDe(C.e).includes(s));
+    if (!falta().length || !C.conn.souSindico()) return; C.saindo = true;
+    try {
+      for (let k = 0; k < 8 && corrida === C && falta().length; k++) {
+        const novo = CR.tirar(C.e, falta()); if (novo === C.e) break;
+        if (await C.conn.push(novo)) { C.e = novo; break; }
+        await new Promise((r) => setTimeout(r, 350 + Math.random() * 250)); // o estado do outro celular chega por conn.on.state
+      }
+    } finally { C.saindo = false; }
+    if (corrida === C) { pintaBar(); if (C.telaFim) pintaFim(); }
+  }
   function comecarCorrida() {
     const C = corrida; const e = C.e; C.rodada = e.rodada; C.telaFim = false; C.premiou = false; cfg.modo = e.modo; cfg.auto = e.modo === 'kids'; cfg.jogo = 'solo';
     const ids = e.mesa.cartas.map((c) => c.id);
@@ -115,7 +128,9 @@ export function mountMusical(host, { onTema } = {}) {
     if (corrida) { try { corrida.conn.close(); } catch { /* ok */ } }
     const C = { conn, me: conn.me, e: estado, rodada: estado.rodada, telaFim: false, enviando: false, de: false, premiou: false, som: '', antes: { modo: cfg.modo, auto: cfg.auto, jogo: 'online' }, bar: h('div', { class: 'cm-corrida', role: 'status', 'aria-live': 'polite' }) };
     corrida = C;
-    conn.on.state = (s) => { if (gone || corrida !== C || !CR.valida(s)) return; C.e = s; if (s.rodada !== C.rodada) { comecarCorrida(); return; } pintaBar(); if (C.telaFim) pintaFim(); };
+    conn.on.state = (s) => { if (gone || corrida !== C || !CR.valida(s)) return; C.e = s; if (s.rodada !== C.rodada) { comecarCorrida(); aplicaSaida(); return; } pintaBar(); if (C.telaFim) pintaFim(); aplicaSaida(); };
+    conn.on.saiu = () => aplicaSaida(); // a maioria decidiu continuar sem alguém
+    if (conn.avisoSaida) conn.avisoSaida(); // liga o sinal de vida da sala (e o aviso pra todos)
     conn.on.nomes = () => { pintaBar(); if (C.telaFim) pintaFim(); };
     const meu = estado.prog[C.me];
     if (meu && meu.fim) { // voltei pra sala depois de terminar (caiu a internet, fechei o app): mostra a classificação
@@ -132,22 +147,23 @@ export function mountMusical(host, { onTema } = {}) {
   function pintaFim() {
     const C = corrida; if (!C || !C.telaFim) return; const e = C.e; const meu = e.prog[C.me]; const todos = CR.todosTerminaram(e); const rk = CR.classificacao(e); const w = CR.vencedor(e);
     const secreto = e.mesa.cartas.find((c) => c.id === e.segredo);
-    if (todos && !C.premiou) { C.premiou = true; try { if (w === C.me) ganhou('cara', 3); else if (meu.ok) ganhou('cara', 1); } catch { /* sem estrelas agora */ } } // quem acertou 1 ★; quem acertou e ficou em 1º lugar 3 ★
+    if (todos && !C.premiou) { C.premiou = true; try { if (!CR.foraDe(e).includes(C.me)) { if (w === C.me) ganhou('cara', 3); else if (meu.ok) ganhou('cara', 1); } } catch { /* sem estrelas agora */ } } // quem acertou 1 ★; quem acertou e ficou em 1º lugar 3 ★
     const titulo = !todos ? (meu.ok ? 'você acertou! 🤘' : 'não foi dessa vez') : w === -1 ? 'ninguém acertou' : w === C.me ? 'você venceu!' : `${nomeCorr(w)} venceu!`;
     const somChave = todos ? `todos${e.rodada}` : `eu${e.rodada}`; if (C.som !== somChave) { C.som = somChave; sfx(todos ? (w === C.me ? 'win' : w === -1 ? 'tie' : 'lose') : meu.ok ? 'win' : 'lose'); } // o som toca uma vez por etapa (a tela se refaz a cada aviso da sala)
-    const linha = (x, pos) => h('li', { class: x.i === C.me ? 'eu' : '' }, h('b', {}, `${x.fim ? `${pos + 1}º` : '…'} ${x.i === C.me ? `${nomeCorr(x.i)} (você)` : nomeCorr(x.i)}`), h('small', {}, statusCorr(x)));
+    const linha = (x, pos) => h('li', { class: x.i === C.me ? 'eu' : '' }, h('b', {}, `${x.saiu ? '✕' : x.fim ? `${pos + 1}º` : '…'} ${x.i === C.me ? `${nomeCorr(x.i)} (você)` : nomeCorr(x.i)}${x.saiu ? ' (saiu)' : ''}`), h('small', {}, statusCorr(x)));
     const ficha = todos && secreto ? (() => { const en = BY_ID[secreto.id]; const fatos = fatosDe(secreto.id); return h('div', { class: 'cm-ficha' }, h('small', {}, 'a carta do Paul'), h('img', { src: grande(secreto.foto), alt: `foto de ${en.curto}`, onerror: (ev) => { ev.target.src = mini(secreto.foto); } }), h('b', {}, en.nome === 'Beaterista' ? 'Beaterista' : en.curto), fatos.length ? h('ul', {}, ...fatos.map((f) => h('li', {}, f))) : null); })() : null;
     root.replaceChildren(...[
+      C.conn.avisoSaida ? C.conn.avisoSaida() : null,
       h('h3', { class: 'hand' }, titulo),
-      h('p', { class: 'jg-p' }, todos ? `rodada ${e.rodada} · ganha quem acertou com menos perguntas (empate: quem acabou primeiro)` : `você terminou: ${statusCorr(meu)}. esperando os outros (${CR.terminaram(e)} de ${e.n} terminaram)…`),
+      h('p', { class: 'jg-p' }, todos ? `rodada ${e.rodada} · ganha quem acertou com menos perguntas (empate: quem acabou primeiro)` : `você terminou: ${statusCorr(meu)}. esperando os outros (${CR.terminaram(e)} de ${CR.nAtivos(e)} terminaram)…`),
       h('ol', { class: 'cm-classif', 'aria-label': 'classificação da sala' }, ...rk.map(linha)),
       ficha,
-      h('div', { class: 'jg-actions row' }, todos && C.me === 0 ? h('button', { class: 'btn primary', type: 'button', onclick: () => proximaCorrida() }, 'próxima rodada') : null, h('button', { class: 'btn ghost', type: 'button', onclick: sairCorrida }, 'sair da sala')),
-      todos && C.me !== 0 ? h('p', { class: 'jg-p muted' }, `${nomeCorr(0)} (quem criou a sala) escolhe a próxima rodada.`) : null,
+      h('div', { class: 'jg-actions row' }, todos && C.me === CR.primeiroAtivo(e) ? h('button', { class: 'btn primary', type: 'button', onclick: () => proximaCorrida() }, 'próxima rodada') : null, h('button', { class: 'btn ghost', type: 'button', onclick: sairCorrida }, 'sair da sala')),
+      todos && C.me !== CR.primeiroAtivo(e) ? h('p', { class: 'jg-p muted' }, `${nomeCorr(CR.primeiroAtivo(e))}${CR.primeiroAtivo(e) === 0 ? ' (quem criou a sala)' : ''} escolhe a próxima rodada.`) : null,
     ].filter(Boolean));
   }
   async function proximaCorrida() {
-    const C = corrida; if (!C || C.me !== 0 || !CR.todosTerminaram(C.e)) return; await loadCat(); if (gone || corrida !== C) return;
+    const C = corrida; if (!C || C.me !== CR.primeiroAtivo(C.e) || !CR.todosTerminaram(C.e)) return; await loadCat(); if (gone || corrida !== C) return;
     const mesa = R.novaMesa({ modo: C.e.modo, tamanho: tamanhoPadrao() }); const novo = CR.proximaRodada(C.e, mesa, R.shuffle(mesa.cartas.map((c) => c.id))[0]);
     for (let k = 0; k < 6 && corrida === C; k++) { if (await C.conn.push(novo)) { C.e = novo; comecarCorrida(); return; } await new Promise((r) => setTimeout(r, 400)); }
   }
@@ -231,7 +247,7 @@ export function mountMusical(host, { onTema } = {}) {
     const quem = cfg.jogo === 'dupla' ? h('p', { class: 'cm-vez' }, `vez de ${nomeJ(st.turno)}`) : null;
     if (corrida) pintaBar();
     root.replaceChildren(...[
-      placar, quem, corrida ? corrida.bar : null,
+      placar, quem, corrida ? corrida.bar : null, corrida && corrida.conn.avisoSaida ? corrida.conn.avisoSaida() : null,
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
       meu ? h('p', { class: 'cm-minha' }, h('img', { src: mini(st.mesa.cartas.find((c) => c.id === meu).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[meu].curto}`)) : null,
       paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,

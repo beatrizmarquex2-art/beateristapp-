@@ -1585,6 +1585,13 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-pausa-box .jg-pausa-saidas{margin-top:2px}.jg-pausa-box .jg-pausa-saidas button{background:transparent;box-shadow:2px 3px 0 #17224a;border-color:#17224a;color:#17224a}
 .jg-pausa-resp{display:grid;gap:4px}.jg-pausa-resp .esp{font-weight:600;opacity:.8}
 
+/* aviso de saída de jogador nas salas (supabase/021): aparece pra todos */
+.jg-saiu{margin:8px 0;display:grid;gap:8px}
+.jg-saiu-l{display:grid;gap:4px;padding:10px 12px;border:3px solid #142036;border-radius:14px;background:#ffe9a8;color:#142036;box-shadow:3px 3px 0 #142036}
+.jg-saiu-l b{font:400 17px Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.jg-saiu-bt{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.jg-saiu:not(:has(.jg-saiu-l)){padding:10px 12px;border:3px solid #142036;border-radius:14px;background:#fde4e4;color:#142036}
+.cx-seat.saiu{opacity:.45;filter:grayscale(.7)}
 /* moldura em volta da foto do topo */
 .top-a .top-av-wrap{position:relative;flex:none;width:46px;height:46px;display:block}.top-a .top-av-wrap .top-av{width:46px!important;height:46px!important}
 .top-a .top-mold{position:absolute;inset:-9px;width:64px;height:64px;max-width:none;pointer-events:none;z-index:2}

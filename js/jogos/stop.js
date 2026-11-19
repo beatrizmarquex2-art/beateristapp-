@@ -147,7 +147,7 @@ export function mount(host, opts) {
 
   /* ================= online (2 celulares, por turnos) ================= */
   function startSim(c, state) {
-    conn = c; lob = null; nextToken(); view = 'sim'; g = null; badge.set(true); FX.stopMusic();
+    conn = c; lob = null; nextToken(); view = 'sim'; g = null; const nSala = Q.jogadoresDe ? Q.jogadoresDe(state) : 2; badge.set(true, nSala); c.on.link = (v) => badge.set(v, nSala); FX.stopMusic();
     if (!Q.estadoValido(state)) { toast('não consegui abrir essa sala'); return setup(); }
     sim = montarSimultaneo({ root, conn: c, estado: state, badge, sair: () => setup() });
   }
