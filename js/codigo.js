@@ -78,8 +78,9 @@ export const gerar = () => { const a = new Uint32Array(6); crypto.getRandomValue
 export async function listar() {
   const q = (cols) => fetch(`${base}/alunos_codigos?select=${cols}&order=criado_em.desc`, { headers: head0 });
   const head0 = await head();
-  let r = await q('code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos,categoria,iniciado_em');
-  if (r.status === 400) r = await q('code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo,dias,jogos'); // servidor ainda sem a coluna `categoria`
+  // `select=*` traz as colunas que existirem: se o servidor ainda não tem `jogos` ou `categoria`, a lista aparece do mesmo jeito (antes a lista ficava vazia)
+  let r = await q('*');
+  if (r.status === 400) r = await q('code,nome,ativo,usos,criado_em,ultimo_uso,expira_em,tipo');
   if (!r.ok) throw new Error(String(r.status)); return r.json();
 }
 /** Categorias e tempos de acesso da aba Códigos. */
@@ -89,7 +90,7 @@ export const nomeTempo = (d) => (TEMPOS.find((t) => t[0] === d) || [d, `${d} dia
 /** Cria um código (passe do site todo): a contagem do tempo começa no 1º uso, vale em até 2 aparelhos. `ativo` false = nasce desativado (a Bea ativa depois). */
 export async function criarCodigo({ code, categoria = 'aluno', dias = 365, nome = '', ativo = true, jogos = null }) {
   const c = norm(code) || gerar();
-  const body = { code: c, nome: String(nome).slice(0, 60), tipo: 'passe', dias, jogos: jogos && jogos.length ? jogos : null, max_aparelhos: 2, ativo, categoria };
+  const body = { code: c, nome: String(nome).slice(0, 60), tipo: 'passe', dias, max_aparelhos: 2, ativo, categoria }; if (jogos && jogos.length) body.jogos = jogos; // sem abas escolhidas = o site todo: não manda a coluna
   let r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(body) });
   if (r.status === 400) { delete body.categoria; r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(body) }); }
   if (r.status === 409) throw new Error('409');
@@ -116,7 +117,7 @@ export async function criarPasse({ prefixo = 'BEA', nome = '', dias = 3, jogos =
   const A4 = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   for (let i = 0; i < 6; i++) {
     const r4 = new Uint32Array(tam); crypto.getRandomValues(r4); const code = norm(prefixo) + [...r4].map((x) => A4[x % A4.length]).join('');
-    const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify({ code, nome: String(nome).slice(0, 60), tipo: 'passe', dias, jogos: jogos && jogos.length ? jogos : null, max_aparelhos: 2, ativo: true }) });
+    const r = await fetch(`${base}/alunos_codigos`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify({ code, nome: String(nome).slice(0, 60), tipo: 'passe', dias, ...(jogos && jogos.length ? { jogos } : {}), max_aparelhos: 2, ativo: true }) });
     if (r.ok) return code; if (r.status !== 409) throw new Error(String(r.status));
   }
   throw new Error('não consegui gerar um código livre');
