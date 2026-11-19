@@ -91,21 +91,13 @@ export function mount(host, opts) {
     ].filter(Boolean));
   }
 
-  /** 2 celulares: "pausar pros dois" e "avisar que vou sair" (o outro vê o aviso na hora). Fica dentro do estado da sala. */
-  function setPausa(p) { g = { ...g, pausa: p }; sync(); draw(); }
-  const euAluno = () => document.documentElement.classList.contains('aluno-on');
+  /** 2 celulares: os botões redondos abrem a pausa da moldura (pausa normal, pausar pra todos com recado, deixar a sala). A pausa geral mora na conexão da sala (online.js). */
+  const pede = (o) => document.dispatchEvent(new CustomEvent('bt-pausa-abrir', { detail: o }));
   function pausaBar() {
     if (!g || g.mode !== 'online' || g.over) return null;
-    const mine = g.pausa && g.pausa.by === me0(); const tipo = g.pausa && g.pausa.tipo;
-    if (!g.pausa) return h('div', { class: 'jg-seg vl-ctl', role: 'group', 'aria-label': 'pausa e saída' },
-      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'pausar o jogo pros dois', title: 'pausar o jogo pros dois', onclick: () => setPausa({ by: me0(), tipo: 'pausa' }) }, iconeTopo('pausa')),
-      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'avisar o outro que vou sair', title: 'avisar o outro que vou sair', onclick: () => setPausa({ by: me0(), tipo: 'saida' }) }, iconeTopo('sair')));
-    const texto = tipo === 'saida'
-      ? (mine ? 'você avisou que vai sair. pode ir estudar! quando voltar, entre em “voltar pra sala” e a partida continua do mesmo ponto, na mesma pergunta.' : `${outroN()} vai sair um pouquinho (pra estudar). a partida fica guardada e continua quando voltar.`)
-      : (mine ? 'você pausou o jogo pros dois.' : `${outroN()} pausou o jogo pros dois.`);
-    return h('div', { class: 'vl-pausa', role: 'alertdialog', 'aria-label': 'jogo pausado' }, h('b', {}, tipo === 'saida' ? 'aviso de saída' : 'jogo pausado'), h('p', {}, texto),
-      tipo === 'saida' && mine && euAluno() ? h('a', { class: 'btn small', href: '#/estudos' }, 'ir estudar') : null,
-      tipo === 'saida' && !mine ? null : h('button', { class: 'btn small primary', type: 'button', onclick: () => setPausa(null) }, tipo === 'saida' ? 'não vou mais sair' : 'continuar pros dois'));
+    return h('div', { class: 'jg-seg vl-ctl', role: 'group', 'aria-label': 'pausa e saída' },
+      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'pausar (só aqui ou pra todos da sala)', title: 'pausar (só aqui ou pra todos da sala)', onclick: () => pede('menu') }, iconeTopo('pausa')),
+      h('button', { type: 'button', class: 'jg-ic vl-ico', 'aria-label': 'deixar a sala', title: 'deixar a sala', onclick: () => pede('deixar') }, iconeTopo('sair')));
   }
 
   function question(q) {

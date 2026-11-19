@@ -1,0 +1,7 @@
+[
+  { "id": "video", "tag": "vídeo novo", "titulo": "vlog na sede do TikTok", "texto": "a Bea no canal do YouTube", "botao": "assistir", "href": "https://www.youtube.com/watch?v=UvdaoUHo3XU", "externo": true, "cor": "azul" },
+  { "id": "cards", "tag": "pra imprimir", "titulo": "Cards do Robôterista Paul", "texto": "3 baralhos em PDF: imprima, recorte e aprenda brincando", "botao": "ver na lojinha", "href": "#/lojinha", "cor": "vinho" },
+  { "id": "baterias", "tag": "no palco", "titulo": "3 baterias novas", "texto": "acústica, eletrônica e cajón, com som de verdade", "botao": "tocar", "href": "#/toque", "cor": "verde" },
+  { "id": "caca", "tag": "jogo", "titulo": "Caça Musical com dicas", "texto": "travou numa palavra? o Paul dá uma força", "botao": "jogar", "href": "#/dicas/caca", "cor": "roxo" },
+  { "id": "dicionario", "tag": "estudos", "titulo": "Dicionário com 145 termos", "texto": "banda, estúdio e jeito de falar de músico", "botao": "abrir", "href": "#/dicionario", "cor": "ouro" }
+]

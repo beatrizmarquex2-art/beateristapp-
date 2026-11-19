@@ -1,8 +1,10 @@
 // Estrelas dos jogos de mesa (regra pura, sem tela): 1 por vitória contra o Paul; limite de 60 por dia só nos jogos de mesa (os de aprender não têm limite).
 export const LIMITE_DIA = 60; // por jogo, por dia (a Bea subiu de 30 pra 60: dá pra zerar um jogo no mesmo dia)
 export const LIMITE_MEMORIA = 10; // jogo da memória: 10 ★ por dia POR TEMA (chave `memoria:<tema>`), pedido da Bea
-/** Limite diário de ★ de um jogo de mesa: 60 em geral; na memória, 10 por tema. */
-export const limiteDe = (jogo) => (String(jogo).startsWith('memoria:') ? LIMITE_MEMORIA : LIMITE_DIA);
+/** Limite por dia de jogos com regra própria (a Fuga do Estúdio paga 9 ★ por fuga: 36 ★ = 4 fugas por dia). */
+export const LIMITES = { fuga: 36 };
+/** Limite diário de ★ de um jogo de mesa: 60 em geral; 36 na Fuga; na memória, 10 por tema. */
+export const limiteDe = (jogo) => LIMITES[jogo] || (String(jogo).startsWith('memoria:') ? LIMITE_MEMORIA : LIMITE_DIA);
 /** Faltando tanto pro limite, o app avisa com carinho (6 nos jogos de 60, 2 nos de 10). */
 export const avisoPerto = (jogo) => Math.min(6, Math.max(1, Math.round(limiteDe(jogo) / 5)));
 export const hoje = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };

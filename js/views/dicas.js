@@ -2,7 +2,7 @@
 // Os textos vêm dos registros privados "tip" (os mesmos do Plano de Estudo); sem eles os jogos avisam em vez de inventar texto.
 import { h } from '../util.js';
 import * as store from '../store.js';
-import { banner } from '../ui.js';
+import { banner, confirmSheet, sheet } from '../ui.js';
 import * as T from '../tips.js';
 import * as FB from '../feedback.js';
 import { TERMS } from '../glossary.js';
@@ -28,7 +28,19 @@ const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' 
 const LETRAS = ['A', 'B', 'C', 'D'];
 function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas iguais nos dois celulares, fim() } — sem estrela própria, sem recorde e sem tela final
   const its = D ? [] : items(); const ROUNDS = D ? D.qs.length : Math.min(10, its.length);
-  let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = [];
+  let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = []; let ajudou = false; // ajudou: gastou o "desistir das minhas ⭐⭐⭐" (só no quiz da Fuga, D.ajuda): tira 2 alternativas erradas e a nota máxima cai pra 2 ★
+  // "desistir das minhas ⭐⭐⭐": antes de pular, o app pergunta "quer uma dica? ou quer mesmo pular?". Dica (1 por quiz) tira 2 alternativas erradas e o quiz passa a valer no máximo 2 ★;
+  // pular conta como erro (a resposta certa aparece). Em qualquer dos dois, ainda precisa de 3 acertos pra abrir a porta.
+  const pedeDica = () => { ajudou = true; q.escondidas = q.options.filter((o) => o.id !== q.ans).sort(() => Math.random() - 0.5).slice(0, 2).map((o) => o.id); draw(); };
+  const desistir3 = () => {
+    if (answered) return;
+    sheet('quer uma dica?', (close) => h('div', { class: 'sheet-body dc-desistir-sheet' },
+      h('p', { class: 'muted' }, ajudou ? 'a dica desse quiz já foi usada. quer mesmo pular? pular conta como erro: aí não dá mais pra ganhar as ⭐⭐⭐.' : 'ou quer mesmo pular? a dica tira 2 alternativas erradas, mas o quiz passa a valer no máximo 2 ★. pular conta como erro e mostra a resposta.'),
+      h('div', { class: 'dc-desistir-btns' },
+        ajudou ? null : h('button', { type: 'button', class: 'btn primary', 'data-acao': 'dica', onclick: () => { close(); pedeDica(); } }, '💡 quero uma dica'),
+        h('button', { type: 'button', class: 'btn', 'data-acao': 'pular', onclick: () => { close(); done(false, null); } }, '⏭️ pular mesmo'),
+        h('button', { type: 'button', class: 'btn ghost', 'data-acao': 'voltar', onclick: close }, 'voltar'))));
+  };
   const next = () => { if (D) q = D.qs[i]; else { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); } answered = false; picked = null; draw(); };
   const dots = () => h('div', { class: 'dc-prog', role: 'img', 'aria-label': `pergunta ${i + 1} de ${ROUNDS}, ${score} certas` }, ...Array.from({ length: ROUNDS }, (_, n) => h('i', { class: n < hist.length ? (hist[n] ? 'ok' : 'no') : n === i ? 'now' : '' })));
   const finish = () => {
@@ -45,14 +57,16 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
     const ask = q.ask || (q.kind === 'blank' ? 'qual palavra completa a dica?' : null);
     const body = [dots(), head, h('p', { class: 'dc-clue' }, q.prompt), ask ? h('p', { class: 'muted' }, ask) : null,
-      h('div', { class: `dc-opts${q.options.some((o) => o.label.length > 18) ? ' long' : ''}` }, ...q.options.map((o, n) => h('button', { type: 'button', class: `tr-pal dc-opt dc-op${answered ? (o.id === q.ans ? ' ok' : picked === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = o.id; done(o.id === q.ans, e.currentTarget); } },
+      D && D.ajuda && !answered ? h('button', { type: 'button', class: 'btn small ghost dc-desistir', onclick: desistir3 }, '🏳️ desistir das minhas ⭐⭐⭐') : null,
+      D && D.ajuda && ajudou ? h('small', { class: 'muted' }, 'você pegou a dica: esse quiz vale no máximo 2 ★') : null,
+      h('div', { class: `dc-opts${q.options.some((o) => o.label.length > 18) ? ' long' : ''}` }, ...q.options.filter((o) => !(q.escondidas || []).includes(o.id)).map((o, n) => h('button', { type: 'button', class: `tr-pal dc-opt dc-op${answered ? (o.id === q.ans ? ' ok' : picked === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = o.id; done(o.id === q.ans, e.currentTarget); } },
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
       answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS) finish(); else next(); } }, i + 1 >= ROUNDS ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
   }
   next();
-  return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length }) };
+  return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length, ajuda: ajudou }) };
 }
 
 /* ---------- caça-palavras (fácil: grade 9×9, 6 palavras curtas, só → e ↓, palavras à vista e cada uma de uma cor) ---------- */
@@ -65,6 +79,16 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const ws = T.wordsearch(pick.map((x) => x.w), 9, D ? D.mk() : Math.random, T.EASY_DIRS); const words = ws.placed.map((p) => p.w);
   const colorOf = Object.fromEntries(words.map((w, i) => [w, i % COLORS]));
   let erros = 0; let pagou = false;
+  // 💡 dica (2 por grade): a 1ª mostra só a SETINHA (pra que lado a palavra vai) e a 2ª a INICIAL (pisca a 1ª letra). Cada dica tira 1 ★ da partida (3 → 2 → 1, nunca abaixo de 1).
+  // Não existe no duelo de 2 celulares; na Fuga do Estúdio (D.dica) existe.
+  const MAX_DICAS = 2; let dicasUsadas = 0; let dicaDe = null; let dicaAlvo = null; const podeDica = !D || !!D.dica; const estrelasCaca = () => Math.max(1, 3 - dicasUsadas); const SETA = (dx, dy) => (dx === 1 && dy === 0 ? '→' : dx === 0 && dy === 1 ? '↓' : dx === 1 && dy === 1 ? '↘' : dx === 1 && dy === -1 ? '↗' : dx === -1 ? '←' : '↑');
+  const pedirDica = () => {
+    const faltam = ws.placed.filter((p) => !found.has(p.w)); if (!faltam.length || dicasUsadas >= MAX_DICAS) return;
+    if (free && !counted) { counted = true; cacaUsar(); }
+    const p = (dicaAlvo && faltam.find((q) => q.w === dicaAlvo)) || faltam[Math.floor(Math.random() * faltam.length)]; dicaAlvo = p.w; dicasUsadas++; start = null;
+    dicaDe = { x: p.x, y: p.y, w: p.w, seta: SETA(p.dx, p.dy), nivel: dicasUsadas }; draw();
+    const mine = dicaDe; setTimeout(() => { if (dicaDe === mine) { dicaDe = null; draw(); } }, 6000);
+  };
   let start = null; const found = new Map(); let last = null; // found: palavra -> casas
   const key = (x, y) => `${x},${y}`;
   const cellColor = new Map(); // casa -> cor da palavra achada
@@ -75,7 +99,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const attempt = (line, el) => {
     const str = line.map((c) => ws.grid[c.y][c.x]).join(''); const rev = [...str].reverse().join('');
     const w = words.find((k) => !found.has(k) && (k === str || k === rev));
-    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (D && done) D.fim(); if (done && !pagou && !free && !D) { pagou = true; MESA.vitoria('caca', MESA.erros(erros)); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
+    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (D && done) D.fim(); if (done && !pagou && !free && !D) { pagou = true; MESA.vitoria('caca', estrelasCaca()); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
     else { erros++; draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
   };
   const up = () => {
@@ -95,7 +119,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const draw = () => {
     grid = h('div', { class: 'dc-grid dc-easy', style: `--n:${ws.size}` }, ...ws.grid.flatMap((row, y) => row.map((l, x) => {
       const ck = cellColor.get(key(x, y));
-      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
+      return h('button', { type: 'button', 'data-x': String(x), 'data-y': String(y), class: `dc-c${ck != null ? ` found dc-k${ck}${cellEnd.has(key(x, y)) ? ' fe' : ''}` : ''}${start && start.x === x && start.y === y ? ' start' : ''}${dicaDe && dicaDe.nivel === 2 && dicaDe.x === x && dicaDe.y === y ? ' dica' : ''}`, 'aria-label': `${l}, linha ${y + 1}, coluna ${x + 1}` }, l);
     })));
     grid.addEventListener('pointerdown', (e) => { const c = cellAt(e.target); if (!c) return; drag = { x0: c.x, y0: c.y, el: c.el, end: null }; });
     grid.addEventListener('pointermove', (e) => {
@@ -107,11 +131,13 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
       ? h('button', { type: 'button', class: `dc-chip ok dc-k${colorOf[w]}`, onclick: () => { last = byWord[w]; draw(); } }, `✓ ${byWord[w].shown}`)
       : h('span', { class: `dc-chip dc-k${colorOf[w]}` }, byWord[w].shown)));
     const dica = !found.size ? h('p', { class: 'muted' }, 'ache as palavras na grade: arraste o dedo por cima ou toque na primeira e na última letra. quando achar, aparece a dica!') : null;
-    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, chips, grid].filter(Boolean)), last ? explain(last) : null,
+    const btnDica = !podeDica ? null : h('div', { class: 'dc-dicabar' }, h('button', { type: 'button', class: 'btn small', disabled: dicasUsadas >= MAX_DICAS || found.size === words.length, onclick: pedirDica }, `💡 dica (${MAX_DICAS - dicasUsadas})`),
+      dicaDe ? h('span', { class: 'dc-dicatxt', role: 'status' }, h('span', {}, `“${byWord[dicaDe.w].shown}” vai pra `, h('b', { class: 'dc-seta', 'aria-label': 'direção' }, dicaDe.seta), dicaDe.nivel === 2 ? ' · começa na letra que pisca' : '')) : h('small', { class: 'muted' }, 'ganhe 3 ★ sem dica · 1ª dica: 2 ★ (a setinha) · 2ª dica: 1 ★ (a letra)'));
+    box.replaceChildren(...[h('section', { class: 'card pad dc-cacabox' }, ...[h('p', { class: 'tr-count' }, `${found.size} de ${words.length} palavras${free ? ` · partida grátis ${counted ? cacaUsadas() : cacaUsadas() + 1} de ${GRATIS.caca}` : ''}`), dica, btnDica, chips, grid].filter(Boolean)), last ? explain(last) : null,
       found.size === words.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); caca(box); } }, 'outra grade') : null].filter(Boolean));
   };
   draw();
-  return { stats: () => ({ found: found.size, total: words.length, erros }) };
+  return { stats: () => ({ found: found.size, total: words.length, erros, dicas: dicasUsadas, estrelas: estrelasCaca() }) };
 }
 
 /* ---------- cruzadinha (fácil: 5 palavras curtas, banco de palavras à vista, 1ª letra de cada uma já na grade, cores) ---------- */

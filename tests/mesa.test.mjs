@@ -64,3 +64,11 @@ test('memória: 10 ★ por dia por tema; os outros jogos de mesa seguem com 60',
   assert.equal(g, 10, 'trava em 10 neste tema');
   const outro = contar(m, 'memoria:percussao', '2026-11-20', 1); assert.equal(outro.ganhou, 1, 'outro tema tem o seu próprio limite');
 });
+
+test('a Fuga do Estúdio tem limite de 36 ★ por dia (os outros jogos de mesa seguem com 60)', async () => {
+  const { contar, limiteDe } = await import('../js/figurinhas/mesa-logic.js');
+  assert.equal(limiteDe('fuga'), 36); assert.equal(limiteDe('velha'), 60);
+  let m = null; let tot = 0; for (let i = 0; i < 6; i++) { const r = contar(m, 'fuga', '2026-11-19', 9); m = r.mesa; tot += r.ganhou; }
+  assert.equal(tot, 36, '4 fugas completas (9 ★) e acabou');
+  assert.equal(contar(m, 'fuga', '2026-11-20', 9).ganhou, 9, 'no dia seguinte volta');
+});
