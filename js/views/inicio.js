@@ -165,10 +165,9 @@ export function mount(host, { nome = '' } = {}) {
   const rail = h('div', { class: 'in-rail', role: 'list' });
   const novidades = h('section', { class: 'in-nov', hidden: '' }, h('h3', {}, 'novidades do Paul', h('span', {}, 'deslize →')), rail);
   fetch('assets/novidades.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : [])).then((l) => {
-    if (!Array.isArray(l)) return; const hoje = todayKey(); l = l.filter((n) => !n.ate || hoje <= n.ate); // `ate` (AAAA-MM-DD): o card some sozinho depois da data (ex.: Black Friday)
-    if (!l.length) return;
+    if (!Array.isArray(l) || !l.length) return;
     rail.replaceChildren(...l.map((n) => h('a', { class: `in-nv c-${n.cor || 'azul'}`, role: 'listitem', href: n.href, target: n.externo ? '_blank' : null, rel: n.externo ? 'noopener' : null },
-      n.img ? h('img', { class: 'in-nv-paul', src: n.img, alt: '', draggable: 'false', decoding: 'async' }) : null, h('small', {}, n.tag), h('b', {}, n.titulo), h('p', {}, n.texto), h('span', { class: 'in-nv-bt' }, n.botao || 'ver')))); novidades.hidden = false;
+      h('small', {}, n.tag), h('b', {}, n.titulo), h('p', {}, n.texto), h('span', { class: 'in-nv-bt' }, n.botao || 'ver')))); novidades.hidden = false;
   }).catch(() => { /* sem internet: a seção fica escondida */ });
 
   const atalhos = h('div', { class: 'in-prox' },

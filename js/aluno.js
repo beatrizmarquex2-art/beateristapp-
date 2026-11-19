@@ -547,7 +547,6 @@ function askName() {
         try { if (!(await CODE.entrar(codV))) { err.textContent = CODE.msgFalha(); return; } } catch { err.textContent = 'sem internet agora. tente de novo.'; return; }
       }
       err.textContent = '';
-      try { sessionStorage.setItem('bt-boasvindas', '1'); } catch { /* ok */ } // acabou de entrar com o código: ganha a festa de boas-vindas (Paul + confete)
     }
     const o = modo === 'codigo' ? (CODE.pendente() ? 'pediu código de acesso' : 'aluno beaterista (código de acesso)') : 'não informou';
     try { localStorage.setItem(ORIGEM_KEY, o); } catch { window.__alunoOrigem = o; }
@@ -577,7 +576,6 @@ async function start() {
   if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
-  try { if (sessionStorage.getItem('bt-boasvindas') === '1') { sessionStorage.removeItem('bt-boasvindas'); setTimeout(() => import('./paulta/festa.js').then((F) => F.festa({ titulo: `bem-vindo, ${name}!`, sub: 'música, jogos e descobertas com o Paul' })).catch(() => {}), 900); } } catch { /* sem armazenamento */ }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
 }
