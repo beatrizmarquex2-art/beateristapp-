@@ -36,6 +36,12 @@ Resumo do que existe, onde fica e como publicar. A Bea trabalha **uma ferramenta
 - Repos `bea-lab` e `bx` foram apagados. Projeto Supabase do BX também.
 - Auth do `bm house`: conferir se `https://beatrizmarquex2-art.github.io/bmup/` está em Authentication > URL configuration.
 
+## Perfil na sala (19/nov/2026, branch `claude/exciting-bell-sgrmxm`, NÃO publicado)
+- **Pedido da Bea**: na sala por código dá pra tocar no nome da outra pessoa e ver a foto e os 3 favoritos dela. Ela escolheu a **opção B, "palco à noite"** (mockup em `prototipos/perfil-sala-opcoes.html`) e que só mostra **quem liga** o chip **"mostrar meu perfil na sala"** no Perfil (desligado por padrão; muitos alunos são crianças).
+- **Onde mora**: `js/jogos/perfil-sala.js` (liga/desliga em `bt-perfil-sala`, monta a miniatura de 96 px e os nomes dos favoritos, `abrirPerfil(nome, perfil)`, `limpa()` sanitiza o que chega). Vai na sala em `estado.perfis = [perfil do 0, ...]` (como os `nomes`; a conexão põe o meu em toda jogada e ignora `perfis` na comparação de jogada). `conn.perfilDe(i)`; evento `bt-perfis-sala` quando nome/perfil muda. A moldura dos jogos (`game()` em `js/views/jogos.js`) ganhou a faixa `.ps-faixa` com um chip por pessoa; tocar abre o cartão. Estilos no fim de `css/jogos.css`.
+- **Limites**: o perfil de quem entrou só chega depois da primeira jogada dela (igual o nome). Não vale nos duelos de ritmo/letras/quebra nem no bingo (outra moldura). Cartão conferido renderizado; **não foi testado numa sala real com 2 celulares**.
+- **Início**: o código está na `main`, mas a aba só aparece com `?inicio=1`; tirar essa trava é o que "publicar a tela de início" significa.
+
 ## Pausa geral da sala com recado e resposta (19/nov/2026, v652, publicado no app da Bea; área dos alunos: ver nota no fim desta seção)
 - **Salas de 3 e 4 celulares**: a pausa geral vale pra todos (`by` e `resp` de 0 a 3); quem pausou vê a resposta de cada um. Não foi testado com 3/4 celulares de ponta a ponta, só com 2.
 - **Menu de pausa (moldura dos jogos, `game()` em `js/views/jogos.js`)**: dentro de uma sala por código ele ganha o bloco **"pausar pra todos da sala"** com 3 chips ("já volto rapidão" · "tenho que sair" · "pode aguardar um pouco?") e o botão **"deixar a sala"**. "▶ continuar" segue sendo a pausa normal (só neste celular).

@@ -11,6 +11,7 @@ import * as D from '../figurinhas/dono.js';
 import * as FN from '../foto-perfil-nuvem.js';
 import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as PROG from '../kids/progress.js';
+import * as PS from '../jogos/perfil-sala.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
@@ -75,10 +76,13 @@ export function mount(host) {
     return h('div', { class: 'pf-onde', role: 'radiogroup', 'aria-label': 'onde fica a sua foto' }, op('aqui', 'foto só nesse aparelho'), op('todos', 'foto em todos os meus aparelhos', 'ao clicar, sempre que acessar, sua foto estará com você'));
   })();
   if (!todos) priv.textContent = 'sua foto fica só neste aparelho. ninguém mais vê.'; else priv.remove();
+  // mostrar o perfil (foto em miniatura + 3 favoritos) pra quem joga na mesma sala por código. Desligado por padrão.
+  const salaChk = h('input', { type: 'checkbox', checked: PS.ligado(), onchange: (ev) => { PS.ligar(ev.target.checked); toast(ev.target.checked ? 'quem estiver na sala vai poder ver sua foto e seus favoritos' : 'seu perfil não aparece mais nas salas'); } });
+  const salaOpt = h('label', { class: 'pf-todos pf-sala' }, salaChk, h('span', {}, 'mostrar meu perfil na sala', h('small', {}, 'foto pequena e 3 favoritos aparecem pra quem joga com você por código. desligado por padrão')));
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),
-      priv), fotoInput, selfie, todos);
+      priv, salaOpt), fotoInput, selfie, todos);
   nome.id = 'pf-nome';
 
   /* ---- a minha figurinha ---- */
