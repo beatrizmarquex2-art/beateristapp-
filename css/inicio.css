@@ -81,3 +81,22 @@ html[data-page="inicio"] body, html:has(#view[data-page="inicio"]) body { backgr
 .in-rail { margin: 0 !important; padding: 0 0 6px !important; }
 /* o acento do nome (Bê, Zé...) não pode ser cortado */
 .in-nome { line-height: 1.3 !important; top: 44px !important; padding-top: 4px; }
+
+/* roleta grátis diária e ganhar mais estrelas */
+.in-roleta, .in-estrelas { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border-radius: 20px !important; padding: 14px; color: #fff !important; text-decoration: none; border: 1px solid rgba(255,255,255,.2); font: inherit; cursor: pointer; }
+.in-roleta { background: linear-gradient(135deg, #1b9aa8, #0f4a60); box-shadow: 0 12px 22px rgba(0,0,0,.4); }
+.in-roleta.feito { background: linear-gradient(135deg, #3b4a72, #222a4a); }
+.in-roleta img { width: 58px; height: 58px; flex: none; filter: drop-shadow(0 4px 4px rgba(0,0,0,.4)); }
+.in-estrelas { background: linear-gradient(135deg, #6f43d6, #35207a); box-shadow: 0 12px 22px rgba(0,0,0,.4); }
+.in-estrelas-ic { flex: none; width: 58px; height: 58px; border-radius: 50% !important; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, #ffe28a, #f2a91b); color: #7a4a00; font-size: 34px; box-shadow: inset 0 0 0 3px rgba(255,255,255,.5), 0 4px 0 rgba(0,0,0,.3); }
+.in-card-tx { flex: 1; min-width: 0; line-height: 1.15; }
+.in-card-tx small { display: block; font: 700 10px "Hanken Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #ffd9a0; }
+.in-card-tx b { display: block; margin-top: 3px; font: 400 19px/1.05 "Anton", sans-serif; text-transform: uppercase; }
+.in-card-tx em { display: block; margin-top: 4px; font: 600 12px/1.25 "Hanken Grotesk", sans-serif; font-style: normal; opacity: .9; }
+.in-roleta .in-btn, .in-estrelas .in-btn { margin: 0; flex: none; padding: 9px 14px 6px; font-size: 15px; }
+/* folha: como ganhar mais estrelas */
+.in-ganhar-t { margin: 0 0 12px; font: 700 14px/1.35 "Hanken Grotesk", sans-serif; }
+.in-ganhar-it { display: flex; gap: 12px; padding: 12px 0; border-top: 2px dashed rgba(22,33,70,.25); }
+.in-ganhar-it > span { font-size: 28px; flex: none; width: 36px; text-align: center; }
+.in-ganhar-it b { display: block; font: 400 18px/1.1 "Anton", sans-serif; text-transform: uppercase; }
+.in-ganhar-it p { margin: 4px 0 8px; font: 600 13px/1.35 "Hanken Grotesk", sans-serif; }

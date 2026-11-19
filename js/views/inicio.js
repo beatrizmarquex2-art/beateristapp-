@@ -1,6 +1,6 @@
 // Aba INÍCIO (prévia, aparece só com ?inicio=1): o "passe do aluno" com 3 bandas/cantores favoritos (das figurinhas que o aluno já ganhou),
-// dias seguidos, estrelas, faltam pra roleta, a faixa amarela "continuar de onde parou" e o desafio de hoje (rascunho).
-import { h } from '../util.js';
+// dias seguidos, estrelas, faltam pra roleta, a faixa amarela "continuar de onde parou" a roleta grátis diária e "ganhar mais estrelas" (abre uma folha).
+import { h, todayKey } from '../util.js';
 import * as CODE from '../codigo.js';
 import * as P from '../kids/progress.js';
 import * as ESTRELAS from '../figurinhas/estrelas.js';
@@ -66,6 +66,22 @@ async function figurinhasGanhas() {
 }
 const rostoPos = (r) => (r ? `${Math.round((r[0] + r[2] / 2) * 100)}% ${Math.round((r[1] + r[3] / 2) * 100)}%` : '50% 20%');
 
+/** Folha "como ganhar mais estrelas": cada jeito de juntar, com o atalho pra ir lá. */
+function abrirComoGanhar(faltam) {
+  sheet('como ganhar mais estrelas', (close) => {
+    const jeitos = [
+      ['🥁', 'jogos de ritmo', 'Hero Drum, Piano Hero e Beat Hero: termine a fase com 80% ou mais. Fácil dá 1 ★, médio 2 ★ e difícil 3 ★.', '#/jogos', 'jogar'],
+      ['📚', 'aulas do Paul', 'no fim de cada fase tem um mini quiz: 3 acertos dão 2 ★ e 2 acertos dão 1 ★ (até 30 ★ por dia nos estudos). Termine um tema com 3 de 3 em todas as fases e ganhe também uma figurinha exclusiva!', '#/estudos/aulas', 'estudar'],
+      ['🎮', 'os outros jogos', 'cada fase concluída nos jogos (Figurix, Detetive, pauLta e mais) rende estrelas. Quanto melhor, mais estrelas.', '#/jogos', 'ver os jogos'],
+      ['🔥', 'entrar todo dia', 'o giro grátis diário já é seu. E entrando 7 dias seguidos no Stars: 10 ★ e uma figurinha exclusiva da Bea.', '#/album/Pacotes', 'ir pra roleta'],
+      ['🎁', 'concluir fases', 'a cada 4 fases concluídas nos jogos você ganha mais 1 giro de presente.', '#/jogos', 'jogar'],
+    ];
+    return h('div', { class: 'in-ganhar' },
+      h('p', { class: 'in-ganhar-t' }, `a cada ${L.ESTRELAS_POR_ROLETA} ★ juntas você ganha 1 giro na roleta.${faltam == null ? '' : ` faltam ${faltam} ★ pra próxima!`}`),
+      ...jeitos.map(([ic, tit, txt, href, bt]) => h('div', { class: 'in-ganhar-it' }, h('span', { 'aria-hidden': 'true' }, ic), h('div', {}, h('b', {}, tit), h('p', {}, txt), h('a', { class: 'btn small', href, onclick: close }, bt)))));
+  });
+}
+
 export function mount(host, { nome = '' } = {}) {
   let pid = null; try { const a = P.active(); pid = a && a.id; } catch { /* sem perfil ainda */ }
   let estrelas = 0; try { estrelas = pid ? ESTRELAS.estrelasTotais(pid) : 0; } catch { estrelas = 0; }
@@ -123,13 +139,21 @@ export function mount(host, { nome = '' } = {}) {
     h('span', { class: 'in-cont-tx' }, h('small', {}, 'continuar de onde parou'), h('b', {}, u.nome)),
     h('span', { class: 'in-cont-q' }, haQuanto(u.at))) : null;
 
-  // RASCUNHO: a Bea e eu ainda vamos estruturar o desafio do dia (ver proposta no chat)
-  const desafio = h('section', { class: 'in-hoje' },
-    h('small', {}, 'desafio de hoje'),
-    h('h2', {}, 'jogue uma fase do Hero Drum'),
-    h('p', {}, 'rascunho: aqui vai entrar o desafio do dia'),
-    h('a', { class: 'in-btn', href: '#/ritmo/drum' }, 'jogar ▶'),
-    h('img', { src: 'assets/paul/sprites/danca-up.webp', alt: '', 'aria-hidden': 'true' }));
+  // roleta grátis diária: o giro de hoje (1 por dia, entregue ao abrir o Stars) está esperando, já foi girado ou ainda não foi pego
+  const st = { ...L.emptyState(), ...D.albumDados() }; const idDia = L.checkinId(todayKey());
+  const girou = !!(st.opened && st.opened[idDia]); const esperando = !!(st.granted || []).includes(idDia) && !girou;
+  const roleta = h('a', { class: `in-roleta${girou ? ' feito' : ''}`, href: '#/album/Pacotes' },
+    h('img', { src: 'assets/icons/tambor-96.png', alt: '', 'aria-hidden': 'true' }),
+    h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
+      h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'pegue o seu giro grátis de hoje'),
+      h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente, só por entrar')),
+    h('span', { class: 'in-btn' }, girou ? 'ver ▶' : 'girar ▶'));
+
+  // ganhar mais estrelas: abre uma folha explicando onde juntar
+  const estrelasCard = h('button', { type: 'button', class: 'in-estrelas', onclick: () => abrirComoGanhar(faltam) },
+    h('span', { class: 'in-estrelas-ic', 'aria-hidden': 'true' }, '★'),
+    h('span', { class: 'in-card-tx' }, h('small', {}, 'ganhar mais estrelas'), h('b', {}, faltam == null ? 'a cada 15 ★ você ganha uma roleta' : `faltam ${faltam} ★ pra próxima roleta`), h('em', {}, 'toque pra ver onde dá pra juntar')),
+    h('span', { class: 'in-btn' }, 'ver como ▶'));
 
   // novidades do Paul: o que aparece vem de assets/novidades.json (a Bea ou eu editamos o arquivo; não precisa mexer no código)
   const rail = h('div', { class: 'in-rail', role: 'list' });
@@ -146,6 +170,6 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
-  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, desafio, novidades, atalhos));
+  host.append(h('div', { class: 'inicio' }, passe, tres, continuar, roleta, estrelasCard, novidades, atalhos));
   return () => {};
 }
