@@ -387,6 +387,7 @@ function startApp() {
   loadNav(NAV); initHands(); store.purgeTrash(null, store.TRASH_DAYS).catch(() => {});
   if (!navHooked) { navHooked = true; store.subscribe((i) => { if (i && (i.remote || i.imported || i.id === NAV_KEY)) { loadNav(NAV); shell.chrome && shell.chrome(); } }); document.addEventListener('keydown', (e) => { if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') && !document.querySelector('#overlay .sheet')) { e.preventDefault(); openSearch(); } }); }
   shell(); undoUi();
+  import('./checkin-entrada.js').then((M) => M.checkinAoEntrar()).catch(() => { /* o Álbum faz depois */ }); // o dia conta só de entrar no app
   setTimeout(avisarResgates, 3000); // aviso: resgates por print esperando a aprovação da Bea
   if (!started) { started = true; sync.start(); photos.start(); startScroller(); notify.start(); startPaul({ allowed: () => /^#\/(ritmo|jogos|kids)/.test(location.hash) }); } else { sync.schedule(100); photos.schedule(300); }
 }

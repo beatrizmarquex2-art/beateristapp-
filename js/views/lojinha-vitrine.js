@@ -3,7 +3,7 @@
 import { h } from '../util.js';
 import { iconePaul } from '../icone-paul.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, COMBO, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBO, ANUAL, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
 import { precoPasse } from '../passe-preco.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
@@ -35,12 +35,21 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
+/** Banner do acesso anual por R$ 49,90 (especial lançamento): fica em cima do combo enquanto vale a oferta. */
+function destaqueAnual() {
+  if (!precoPasse().oferta) return null;
+  return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o acesso anual por R$ 49,90', onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
+    h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
+}
+
 /** Destaque do combo Black Friday: primeira coisa da Lojinha. */
 function destaqueCombo() {
   return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
     h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
     h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
 }
+
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
   h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),
@@ -67,6 +76,7 @@ export function vitrine(secao = '') {
       h('a', { class: 'lj-volta lj-volta-b', href: '#/lojinha' }, '‹ ver as outras seções'));
   }
   return h('div', { class: 'lj' },
+    destaqueAnual(),
     destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
