@@ -15,9 +15,10 @@ const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.
 const ID = 'velha';
 const NS = 'http://www.w3.org/2000/svg';
 const svg = (inner, cls, vb = '0 0 40 40') => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', vb); s.setAttribute('class', cls); s.setAttribute('aria-hidden', 'true'); s.innerHTML = inner; return s; };
+// as marcas são imagens da Bea (assets/velha): baquetas cruzadas (X) e a palheta vermelha com a nota (O)
 const MARKS = [
-  '<path d="M6 6l28 28M34 6L6 34" stroke="#17365B" stroke-width="4" stroke-linecap="round"/><circle cx="6" cy="6" r="3.2" fill="#EBA332"/><circle cx="34" cy="6" r="3.2" fill="#EBA332"/>',
-  '<path d="M20 5c9 0 15 3 15 11 0 9-8 19-15 19S5 25 5 16C5 8 11 5 20 5z" fill="#BD1733" stroke="#142036" stroke-width="2.4"/>',
+  '<image href="assets/velha/baquetas.webp" x="0" y="0" width="40" height="40"/>',
+  '<image href="assets/velha/palheta.webp" x="0" y="0" width="40" height="40"/>',
 ];
 const mark = (who) => svg(MARKS[who], 'jg-mk');
 const MODES = [['local', 'dois no aparelho', 'dois'], ['online', '2 celulares (código)', 'celular'], ['paul', 'jogar contra o Paul (às vezes fácil, às vezes difícil)', 'paul'], ['estrategico', 'jogar contra o Paul no desafio: ele joga sempre bem', '#desafio']]; // 3º item: ícone (só ele aparece; o texto vira dica); '#texto' = pílula pequenininha
