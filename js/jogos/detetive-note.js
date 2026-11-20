@@ -47,7 +47,7 @@ const MUNDOS_DET = {
 
 export function mount(host) {
   const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'm1'; let estiloEsc = ESTILOS.includes(saved.estilo) ? saved.estilo : 'figuras';
-  const estilo = () => estiloDe(modo, estiloEsc); let bpm = bpmFase(modo, 1); // o andamento sobe a cada fase
+  const estilo = () => estiloDe(modo, estiloEsc); let rapido = !!saved.rapido; let bpm = bpmFase(modo, 1, rapido); // o andamento sobe a cada fase (ou 100 bpm direto no mundo 1, opção pra adultos)
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
@@ -72,7 +72,7 @@ export function mount(host) {
   };
 
   /* ---------- uma fase: 3 ritmos ---------- */
-  const comeca = (n) => { limpa(); musicaPausa(); fase = n; bpm = bpmFase(modo, n); rodada = 0; primeira = 0; jogando = true; nova(); };
+  const comeca = (n) => { limpa(); musicaPausa(); fase = n; bpm = bpmFase(modo, n, rapido); rodada = 0; primeira = 0; jogando = true; nova(); };
   /* marcador do tempo (só nos modos de desenho): as casas acendem uma de cada vez no tempo do ritmo e os números 1 2 3 4 acompanham (escolha da Bea) */
   const limparTempo = () => { const w = root.querySelector('.dn-wrap'); if (w) w.querySelectorAll('.agora,.conta').forEach((e) => e.classList.remove('agora', 'conta')); };
   const marca = (i, tipo) => {
@@ -100,6 +100,7 @@ export function mount(host) {
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
       h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
       modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, h('i', { 'aria-hidden': 'true' }, EMOJI_MODO[e]), h('span', {}, e)))) : null,
+      modo === 'm1' ? h('button', { type: 'button', class: `dn-rapido${rapido ? ' on' : ''}`, 'aria-pressed': String(rapido), onclick: () => { rapido = !rapido; setGame('detetive', { ...getGame('detetive'), rapido }); bpm = bpmFase(modo, fase, rapido); desenha(); } }, h('b', {}, '⚡ 100 bpm'), h('small', {}, rapido ? 'ligado: o mundo 1 já toca rápido' : 'pra adultos: já ouvir no andamento rápido')) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: `dn-wrap${!TEMAS[est] ? ' sem' : ''}` }, !TEMAS[est] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),

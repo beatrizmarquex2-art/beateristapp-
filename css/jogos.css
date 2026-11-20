@@ -1915,3 +1915,7 @@ body.bv-aberta { overflow: hidden; }
 .tr-card.go .ic-paul { margin-bottom: 2px; }
 .hj-roleta > span { display: inline-flex; }
 .lj-passe .lj-pm h3 .ic-paul { width: 30px !important; height: 30px !important; max-width: none; margin: 0 8px 0 0; vertical-align: -8px; display: inline-block; }
+/* Detetive Note: opção "100 bpm" pra adultos (mundo 1) */
+.jg-detetive .dn-rapido{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px;padding:7px 10px;border:2px solid #1b1818;border-radius:10px;background:#fffdf7;color:#1b1818;box-shadow:2px 2px 0 #1b1818;text-align:left;cursor:pointer}
+.jg-detetive .dn-rapido b{font:800 13px var(--body,inherit);white-space:nowrap}.jg-detetive .dn-rapido small{font:600 11px var(--body,inherit);opacity:.8}
+.jg-detetive .dn-rapido.on{background:#e3a82f;transform:translate(2px,2px);box-shadow:0 0 0 #1b1818}

@@ -66,3 +66,8 @@ test('estilo das cartas: só o mundo 1 troca (comida, parque, corpo, animal); mu
   for (const e of ['comida', 'parque', 'corpo', 'animal']) for (let n = 1; n <= FASES; n++) { const cs = L.cartas('m1', n, e); assert.ok(cs.every((c) => c.id), `${e} ${n}`); assert.ok(cs.filter((c) => c.cell === '1000').every((c) => c.id === L.TEMAS[e]['1000'])); }
   assert.ok(L.cartas('m1', 12, 'figuras').every((c) => c.id === null));
 });
+test('opção 100 bpm (adultos): só o mundo 1 muda e toca 100 desde a fase 1; os outros mundos seguem iguais', async () => {
+  const L = await import('../js/jogos/detetive-logic.js');
+  for (let n = 1; n <= L.FASES; n++) { assert.equal(L.bpmFase('m1', n, true), 100); assert.equal(L.bpmFase('m2', n, true), L.bpmFase('m2', n)); assert.equal(L.bpmFase('m3', n, true), L.bpmFase('m3', n)); }
+  assert.equal(L.bpmFase('m1', 1), 70); assert.equal(L.bpmFase('m1', 12), 100);
+});
