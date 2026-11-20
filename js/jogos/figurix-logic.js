@@ -132,8 +132,11 @@ export const opcoesCabem = (cabem, rnd = Math.random) => shuffle([cabem, ...pick
 export function tetrisCfg(nivel) { return { itens: 8 + (nivel >= 4 ? 2 : 0) + (nivel >= 6 ? 2 : 0), queda: [6, 3.6, 3.4, 3.1, 2.8, 2.5][Math.min(6, Math.max(1, nivel)) - 1], jeito: nivel <= 2 ? 'nome' : ['nome', 'valor', 'pausa', 'valor', 'pausa'][(nivel - 3) % 5] }; }
 export function itensTetrisN(nivel, rnd = Math.random) {
   const c = tetrisCfg(nivel); const pool = nivel <= 1 ? ids.slice(0, 4) : ids; const out = [];
+  // "saco embaralhado": todas as figuras aparecem antes de qualquer uma repetir, e a mesma figura NUNCA vem duas vezes seguidas
+  let saco = []; let ultima = null;
+  const proxima = () => { if (!saco.length) { saco = shuffle(pool.slice(), rnd); if (saco.length > 1 && saco[0] === ultima) saco.push(saco.shift()); } const f = saco.shift(); ultima = f; return f; };
   for (let i = 0; i < c.itens; i++) {
-    const f = pick(pool, 1, rnd)[0]; const outro = pick(pool.filter((x) => x !== f), 1, rnd)[0]; const certoEsq = rnd() < 0.5;
+    const f = proxima(); const outro = pick(pool.filter((x) => x !== f), 1, rnd)[0]; const certoEsq = rnd() < 0.5;
     out.push({ fig: f, face: c.jeito === 'pausa' ? 'pausa' : 'fig', rot: c.jeito === 'valor' ? 'valor' : 'nome', esq: certoEsq ? f : outro, dir: certoEsq ? outro : f, ok: certoEsq ? 'esq' : 'dir' });
   }
   return { itens: out, queda: c.queda, jeito: c.jeito };

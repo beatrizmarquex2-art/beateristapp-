@@ -72,7 +72,8 @@ check('completou a árvore: fase concluída', /concluída/.test(await page.textC
 await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
 // fase 10: tetris (o Paul vai pro lado do nome certo)
 await abre(9); await page.waitForSelector('.fx-campo');
-for (let i = 0; i < 8; i++) { await page.evaluate(() => { const t = window.__figurix.tetris; t.vai(t.item.ok); }); await page.waitForFunction((k) => !window.__figurix.tetris || window.__figurix.tetris.item !== k, null, null, { timeout: 9000 }).catch(() => {}); await sleep(6200); if (await page.locator('.dn-estrelas').count()) break; }
+check('tetris: 3 faixas (3 nomes) e a figura cai sem fundo branco; o Paul nunca começa na faixa certa', (await page.locator('.fx-nome').count()) === 3 && (await page.evaluate(() => { const c = getComputedStyle(document.querySelector('.fx-cai')); return c.backgroundColor === 'rgba(0, 0, 0, 0)'; })) && (await page.evaluate(() => window.__figurix.tetris.lado !== window.__figurix.tetris.item.ok)));
+for (let i = 0; i < 240; i++) { await page.evaluate(() => { const t = window.__figurix.tetris; if (t) t.vai(t.item.ok); }); await sleep(300); if (/concluída/.test(await page.textContent('.jg-figurix'))) break; } // acompanha o nome certo em todas as figuras
 check('tetris: acompanhou o lado certo e terminou a fase', /concluída/.test(await page.textContent('.jg-figurix')), (await page.textContent('.jg-figurix')).slice(0, 80));
 // as 50 fases novas: abre uma de cada tipo (nível 3 e nível 7) e confere que monta sem erro
 const SEL = { rapida: '.fx-op', lenta: '.fx-op', monte: '.fx-peca', ligar: '.fx-lig', memoria: '.fx-card', quiz: '.fx-op', caca: '.fx-c', notas: '.fx-arv', tetris: '.fx-campo' };

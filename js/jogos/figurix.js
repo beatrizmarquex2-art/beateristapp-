@@ -12,7 +12,7 @@ import { FIG_BY, FIG_NAME, beatsLabel } from '../kids/figs.js';
 import { figureMarkup, restMarkup, noteMarkup, svgEl, tone } from '../kids/art.js';
 import { corSrc } from '../paul-cor.js';
 import { wordsearch, lineCells, EASY_DIRS, DIRS } from '../tips.js';
-import { PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha, tempoPergunta, novoLugar } from './figurix-logic.js';
+import { ids, PHASES, FASES, MUNDOS, mundoDe, rapidaLentaN, montesDe, maxColchetes, peçasDe, confereMonte, ligarCfg, paresLigarN, memCfg, paresMem, mesmoParN, quizN, totalRL, totalQuiz, palavrasDe, grandeCaca, arvore, opcoesCabem, itensTetrisN, estrelasFigurix, faltam3Mundo, mundoLiberado, COLINHA, FALA_AULINHA, temAulinha, tempoPergunta, novoLugar } from './figurix-logic.js';
 import { toast } from '../ui.js';
 
 const fig = (id, cls = 'fx-fig') => svgEl(figureMarkup(id), cls);
@@ -118,14 +118,14 @@ export function mount(host) {
     monte: (p) => {
       const montes = montesDe(p.nivel); const maxC = maxColchetes(p.nivel); let r = 0; const total = montes.length; let m = { cabeca: null, haste: null, colchetes: null }; let marcas = null;
       // cada linha (cabeça, haste, colchetes) tem sempre uma opção; sem colchete e sem haste são botões de verdade
-      const peca = (grupo, valor, texto, cor) => h('button', { type: 'button', class: `fx-peca c${cor}${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': texto, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, texto);
+      const peca = (grupo, valor, texto, cor, aria) => h('button', { type: 'button', 'data-g': grupo, 'data-v': String(valor), class: `fx-peca c${cor}${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': aria || texto, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, texto);
       const desenha = () => {
         const alvo = montes[r]; const preview = noteMarkup({ open: m.cabeca === 'vazia', stem: !!m.haste, flags: m.colchetes || 0 }, 'figura montada');
         const cheio = m.cabeca != null && m.haste != null && m.colchetes != null;
         root.replaceChildren(topo(r, total), h('p', { class: 'fx-q' }, `monte a ${FIG_NAME[alvo]}`), svgEl(preview, 'fx-big'),
           h('div', { class: 'fx-pecas' }, peca('cabeca', 'cheia', 'preenchida', 1), peca('cabeca', 'vazia', 'não preenchida', 2)),
           h('p', { class: 'fx-lab' }, 'haste'), h('div', { class: 'fx-pecas' }, peca('haste', true, 'com haste', 3), peca('haste', false, 'sem haste', 4)),
-          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, n === 0 ? 'sem colchete' : `${n} colchete${n === 1 ? '' : 's'}`, (n % 4) + 1))),
+          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas fx-colch' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, String(n), (n % 4) + 1, n === 0 ? 'sem colchete' : `${n} colchete${n === 1 ? '' : 's'}`))), // só os números 0 1 2 3 4, todos na mesma linha
           h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir')));
       };
       const confere = () => {
@@ -221,22 +221,28 @@ export function mount(host) {
     },
     /* tetris do Roboterista: a figura (ou a pausa) cai e o Paul vai pro lado do nome certo */
     tetris: (p) => {
-      const T = itensTetrisN(p.nivel); const itens = T.itens; let k = 0; let lado = 'esq'; let t0 = 0; let raf = 0; let acabou = false;
-      const queda = T.queda * 1000;
-      const paul = h('div', { class: 'fx-paul esq' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' })); // o Paul de fone, sem a bateria
-      const nomeEsq = h('b', { class: 'fx-nome esq' }); const nomeDir = h('b', { class: 'fx-nome dir' });
+      const T = itensTetrisN(p.nivel); const N = 3; const queda = (T.queda + 0.5) * 1000; let k = 0; let lado = 0; let t0 = 0; let raf = 0; let acabou = false; // SEMPRE 3 faixas (3 nomes, 1 certo): com 2 era fácil demais
+      const rot = (it, f) => (it.rot === 'valor' ? beatsLabel(FIG_BY[f].beats) : nomeFig(f));
+      const emb = (arr) => { const r = arr.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+      const itens = T.itens.map((it) => { const certo = rot(it, it.fig); const outros = emb(ids.filter((f) => f !== it.fig)).map((f) => rot(it, f)).filter((t, i, a) => t !== certo && a.indexOf(t) === i).slice(0, N - 1); const ops = emb([certo, ...outros]); return { ...it, ops, ok: ops.indexOf(certo) }; });
+      itens.forEach((it, i) => { if (i > 0 && it.ok === itens[i - 1].ok) { const j = (it.ok + 1 + Math.floor(Math.random() * (N - 1))) % N; [it.ops[it.ok], it.ops[j]] = [it.ops[j], it.ops[it.ok]]; it.ok = j; } }); // a faixa certa NUNCA é a mesma duas vezes seguidas
+      let inicioAnt = -1;
+      const paul = h('div', { class: 'fx-paul n3' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' })); // o Paul de fone, sem a bateria
+      const nomes = Array.from({ length: N }, (_, i) => h('b', { class: 'fx-nome n3', style: `left:${(i / N) * 100 + 1.5}%;width:${100 / N - 3}%` }));
       const queda$ = h('div', { class: 'fx-cai' });
-      const campo = h('div', { class: 'fx-campo', role: 'application', 'aria-label': 'toque ou arraste pro lado certo' }, queda$, paul, nomeEsq, nomeDir);
-      const vai = (s) => { if (lado !== s) { lado = s; paul.className = `fx-paul ${s}`; sfx.play('click'); } };
-      const lado$ = (e) => { const r = campo.getBoundingClientRect(); vai(e.clientX < r.left + r.width / 2 ? 'esq' : 'dir'); };
+      const campo = h('div', { class: 'fx-campo n3', role: 'application', 'aria-label': 'toque ou arraste pro lado certo' }, ...Array.from({ length: N - 1 }, (_, i) => h('i', { class: 'fx-div', style: `left:${((i + 1) / N) * 100}%` })), queda$, paul, ...nomes);
+      const poe = () => { paul.style.left = `${((lado + 0.5) / N) * 100}%`; };
+      const vai = (s) => { const i = s === 'esq' ? 0 : s === 'dir' ? N - 1 : Number(s); if (i >= 0 && i < N && lado !== i) { lado = i; poe(); sfx.play('click'); } };
+      const lado$ = (e) => { const r = campo.getBoundingClientRect(); vai(Math.min(N - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * N)))); };
       campo.addEventListener('pointerdown', (e) => { campo.setPointerCapture && campo.setPointerCapture(e.pointerId); lado$(e); });
       campo.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType === 'touch') lado$(e); });
-      const onKey = (e) => { if (e.key === 'ArrowLeft') vai('esq'); else if (e.key === 'ArrowRight') vai('dir'); }; document.addEventListener('keydown', onKey);
+      const onKey = (e) => { if (e.key === 'ArrowLeft') vai(Math.max(0, lado - 1)); else if (e.key === 'ArrowRight') vai(Math.min(N - 1, lado + 1)); }; document.addEventListener('keydown', onKey);
       const pronto = () => { acabou = true; cancelAnimationFrame(raf); document.removeEventListener('keydown', onKey); };
-      const rot = (it, f) => (it.rot === 'valor' ? beatsLabel(FIG_BY[f].beats) : nomeFig(f));
       const proximo = () => {
         if (k >= itens.length) { pronto(); fim(); return; }
-        const it = itens[k]; nomeEsq.textContent = rot(it, it.esq); nomeDir.textContent = rot(it, it.dir); queda$.replaceChildren(it.face === 'pausa' ? pausa(it.fig, 'fx-fig sm') : fig(it.fig, 'fx-fig sm')); t0 = performance.now(); window.__figurix.tetris = { item: it, get lado() { return lado; }, vai };
+        const it = itens[k]; nomes.forEach((n, i) => { n.textContent = it.ops[i]; }); queda$.replaceChildren(it.face === 'pausa' ? pausa(it.fig, 'fx-fig sm') : fig(it.fig, 'fx-fig sm')); t0 = performance.now();
+        { const erradas = Array.from({ length: N }, (_, i) => i).filter((i) => i !== it.ok); const outras = erradas.filter((i) => i !== inicioAnt); const lista = outras.length ? outras : erradas; lado = lista[Math.floor(Math.random() * lista.length)]; inicioAnt = lado; poe(); } // o Paul NUNCA começa na faixa certa nem na mesma de onde começou antes
+        window.__figurix.tetris = { item: it, get lado() { return lado; }, vai };
       };
       const passo = (agora) => {
         if (acabou) return; const it = itens[k]; const f = Math.min(1, (agora - t0) / queda); queda$.style.top = `${f * 74}%`;
@@ -245,7 +251,7 @@ export function mount(host) {
       };
       const instr = { nome: 'arraste o Paul pro nome certo antes da figura cair!', valor: 'arraste o Paul pra quanto a figura vale antes dela cair!', pausa: 'essa pausa é de qual figura? leve o Paul até ela!' }[T.jeito];
       root.replaceChildren(topo(0, 0), h('p', { class: 'fx-q' }, instr), campo);
-      proximo(); raf = requestAnimationFrame(passo); off = pronto;
+      poe(); proximo(); raf = requestAnimationFrame(passo); off = pronto;
     },
   };
   mapa();

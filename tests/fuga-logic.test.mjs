@@ -1,14 +1,15 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { MUNDOS, FASES, tipoDa, faseCfg, qtdPortas, portasDaFase, estrelasFase, PORTAS_FASE, DESAFIOS, BONUS, estrelasDesafio, bonusAberto, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
+import { minQuiz, MUNDOS, FASES, tipoDa, faseCfg, qtdPortas, portasDaFase, estrelasFase, PORTAS_FASE, DESAFIOS, BONUS, estrelasDesafio, bonusAberto, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
 test('3 mundos de 12 fases, 36 ★ cada; as fases giram quiz → caça → cruzadinha', () => {
   assert.deepEqual(MUNDOS.map((m) => m.id), ['estudio', 'vulcao', 'espaco']); assert.equal(FASES * 3, 36);
   assert.deepEqual([1, 2, 3, 4, 5, 6].map(tipoDa), ['quiz', 'caca', 'cruz', 'quiz', 'caca', 'cruz']);
 });
 test('dificuldade sobe com a fase e o mundo, com teto', () => {
-  assert.equal(faseCfg(0, 1).palavras, 4); assert.equal(faseCfg(0, 12).palavras, 8); assert.equal(faseCfg(1, 1).palavras, 6); assert.equal(faseCfg(2, 12).cruz, 6); assert.equal(faseCfg(0, 1).perguntas, 5);
+  assert.equal(faseCfg(0, 1).palavras, 4); assert.equal(faseCfg(0, 12).palavras, 8); assert.equal(faseCfg(1, 1).palavras, 6); assert.equal(faseCfg(2, 12).cruz, 6); assert.equal(faseCfg(0, 1).perguntas, 3);
 });
-test('estrelas: quiz 5/4/3 certas = 3/2/1 (dica do desistir limita em 2); caça = 3 - dicas; cruzadinha 3', () => {
-  assert.deepEqual([5, 4, 3].map((f) => estrelasPorta('quiz', { found: f })), [3, 2, 1]); assert.equal(estrelasPorta('quiz', { found: 5, ajuda: true }), 2); assert.equal(estrelasPorta('quiz', { found: 3, ajuda: true }), 1);
+test('estrelas: quiz de 3 perguntas (3 certas = 3 ★, 2 = 2 ★, cada pulada tira 1 ★, a dica limita em 2); caça = 3 - dicas; cruzadinha 3', () => {
+  assert.deepEqual([3, 2].map((f) => estrelasPorta('quiz', { found: f, total: 3 })), [3, 2]); assert.equal(estrelasPorta('quiz', { found: 3, total: 3, ajuda: true }), 2); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, puladas: 1 }), 1); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, puladas: 1, ajuda: true }), 1); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, ajuda: true }), 2);
+  assert.equal(minQuiz(3), 2); assert.equal(minQuiz(7), 3); assert.equal(faseCfg(0, 1).perguntas, 3);
   assert.deepEqual([3, 2, 1].map((e) => estrelasPorta('caca', { estrelas: e })), [3, 2, 1]); assert.equal(estrelasPorta('cruz', {}), 3);
 });
 test('progresso: 1ª fase aberta, as outras só depois de 1 ★; mundo 2 só com o 1 completo', () => {

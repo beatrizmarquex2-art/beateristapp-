@@ -83,3 +83,10 @@ test('a resposta certa nunca fica no mesmo lugar duas vezes seguidas', () => {
   for (let k = 0; k < 200; k++) { const n = k % 2 ? 3 : 4; const ant = k % n; assert.notEqual(nL(ant, ant, n), ant); }
   assert.equal(nL(2, 0, 3), 2, 'já mudou de lugar: fica onde caiu'); assert.equal(nL(-1, 0, 3), -1);
 });
+test('tetris: a mesma figura nunca vem duas vezes seguidas e todas aparecem antes de repetir (saco embaralhado)', async () => {
+  const { itensTetrisN, ids } = await import('../js/jogos/figurix-logic.js');
+  for (const nivel of [1, 2, 3, 4, 5, 6]) for (let r = 0; r < 60; r++) {
+    const { itens } = itensTetrisN(nivel); for (let i = 1; i < itens.length; i++) assert.notEqual(itens[i].fig, itens[i - 1].fig, `nível ${nivel}`);
+    const pool = nivel <= 1 ? 4 : ids.length; const primeiros = itens.slice(0, pool).map((x) => x.fig); assert.equal(new Set(primeiros).size, Math.min(pool, itens.length), `nível ${nivel}: sem repetir antes de passar por todas`);
+  }
+});

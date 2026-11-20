@@ -1927,3 +1927,40 @@ body.bv-aberta { overflow: hidden; }
 /* Detetive Note: ícones da Bea no lugar dos emojis (cartas e chips de estilo) */
 .jg-detetive .dn-face .dn-ico{width:46px;height:46px;object-fit:contain;display:block}
 .jg-detetive .dn-estilos button .dn-ico{width:24px;height:24px;object-fit:contain;display:block}
+/* notas caindo (v726, pedido da Bea): a figura cai SEM o quadro branco (como um PNG transparente), clarinha com um brilho */
+.fgq-cai,.fg-wrap:has(.fg-cena) .fgq-cai{background:none!important;box-shadow:none!important;border:0!important;padding:0!important;filter:drop-shadow(0 0 8px #8fb8ff) drop-shadow(0 3px 2px #000a)}
+.fgq-campo.q4 .fgq-cai{width:66px}
+
+/* FIGURAS SEM O QUADRO BRANCO (v731, pedido da Bea: "em qualquer jogo"): a figura/nota que o jogo mostra sozinha (monte a figura, qual é o nome…) aparece direto no fundo, sem retângulo branco em volta */
+.jg-figurix .fx-big,.jg-figurix[data-skin="c"] .fx-big{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+/* montar nota da Fuga (visual do laboratório): sem painel claro; a figura em branco-azulado direto no monitor escuro */
+.fg-wrap:has(.fg-cena) .fgn-cena{background:none!important;border:0!important;box-shadow:none!important}
+.fg-wrap:has(.fg-cena) .fgn-nota [stroke="#1b1818"]{stroke:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#1b1818"]{fill:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#fffdf8"]{fill:none!important}
+.fg-wrap:has(.fg-cena) .fgn-nota{filter:drop-shadow(0 0 8px #8fb8ff)}
+
+/* Figurix: LETRAS MAIORES (v732, pedido da Bea: "nem dá pra ler"). Tela "monte as notas" (quantas cabem…) e os textos pequenos do jogo */
+.jg-figurix .fx-arv{grid-template-columns:84px 1fr;gap:6px 12px;padding:12px 14px}
+.jg-figurix .fx-arv .fx-fig.sm{width:84px}.jg-figurix .fx-arv .fx-fig.sm svg{max-height:96px}
+.jg-figurix .fx-arv-t b{font-size:26px;line-height:1.1}
+.jg-figurix .fx-arv-t small{font-size:17px;font-weight:700;opacity:1;color:#3a2f2a;line-height:1.25}
+.jg-figurix .fx-arv .fx-opts{gap:10px}.jg-figurix .fx-arv .fx-n{min-height:64px;min-width:76px;font-size:28px;font-weight:800;padding:4px 12px}
+.jg-figurix .fx-arv .fx-num,.jg-figurix .fx-num{font-size:44px;font-weight:800}
+.jg-figurix .fx-q{font-size:26px!important;line-height:1.15}
+.jg-figurix .fx-lab{font-size:17px!important}.jg-figurix .fx-txt{font-size:17px}.jg-figurix .fx-pal{font-size:17px!important}.jg-figurix .fx-duas{font-size:26px}
+
+/* Figurix · tetris (v733, pedido da Bea: "muito feio"): 3 faixas, figura caindo SEM o quadro branco, nomes e Paul maiores */
+.jg-figurix .fx-campo.n3::before{display:none!important}
+.jg-figurix .fx-campo.n3 .fx-div{position:absolute;top:0;bottom:0;border-left:3px dashed #14203666;z-index:1}
+.jg-figurix .fx-campo.n3 .fx-cai,.jg-figurix[data-skin="c"] .fx-campo.n3 .fx-cai{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;width:96px;filter:drop-shadow(0 4px 3px #14203655)}
+.jg-figurix .fx-paul.n3,.jg-figurix[data-skin="c"] .fx-paul.n3{left:50%;transform:translateX(-50%);width:92px;z-index:3;transition:left .15s ease}
+.jg-figurix .fx-nome.n3,.jg-figurix[data-skin="c"] .fx-nome.n3{right:auto;bottom:10px;font-size:19px;line-height:1.1;padding:12px 4px;text-align:center;z-index:2;overflow-wrap:anywhere}
+.jg-figurix[data-skin="c"] .fx-campo.n3{background:linear-gradient(#a9dcff,#fff4cc 75%,#ffe7a0)}
+
+/* Figurix · monte a figura: colchetes 0 1 2 3 4 todos na mesma linha, sem estourar (v735, pedido da Bea) */
+.jg-figurix .fx-colch{display:flex;flex-wrap:nowrap;gap:8px}
+.jg-figurix .fx-colch .fx-peca{flex:1 1 0;min-width:0!important;padding:6px 2px;min-height:66px;font-size:26px!important;font-weight:800;line-height:1}
+
+/* Figurix: botão "conferir" (e os outros do rodapé) GRANDE (v736, pedido da Bea) */
+.jg-figurix .jg-actions{display:flex;gap:10px;margin-top:14px}
+.jg-figurix .jg-actions .btn{flex:1 1 auto;min-height:68px;font-size:26px;font-weight:800;padding:12px 24px;border-radius:16px}
+.jg-figurix .jg-actions .btn.primary:disabled{opacity:.55}
