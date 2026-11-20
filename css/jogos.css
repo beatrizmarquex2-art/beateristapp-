@@ -1964,3 +1964,21 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .jg-actions{display:flex;gap:10px;margin-top:14px}
 .jg-figurix .jg-actions .btn{flex:1 1 auto;min-height:68px;font-size:26px;font-weight:800;padding:12px 24px;border-radius:16px}
 .jg-figurix .jg-actions .btn.primary:disabled{opacity:.55}
+
+/* Figurix · "monte as notas" no jeito C (adesivos), igual ao resto do jogo (v737, pedido da Bea): cartões brancos de borda grossa, botões coloridos, título em Anton e a BARRA que mostra a figura-base dividida */
+.jg-figurix[data-skin="c"] .fx-arvore{gap:12px}
+.jg-figurix[data-skin="c"] .fx-arv{background:#fff;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;color:#1c1330;grid-template-columns:84px 1fr;padding:12px 12px 14px}
+.jg-figurix[data-skin="c"] .fx-arv.ok{background:#a8e6b4}
+.jg-figurix[data-skin="c"] .fx-arv-t b{font:400 28px/1.05 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.jg-figurix[data-skin="c"] .fx-arv-t small{font-size:17px;font-weight:700;color:#3a2f2a}
+.jg-figurix[data-skin="c"] .fx-arv .fx-opts{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.jg-figurix[data-skin="c"] .fx-arv .fx-n{border:4px solid #fff;border-radius:16px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;min-height:68px;min-width:0;font:400 30px 'Anton',Impact,sans-serif;color:#fff;padding:0}
+.jg-figurix[data-skin="c"] .fx-arv .fx-n.c1{background:#e5322d}.jg-figurix[data-skin="c"] .fx-arv .fx-n.c2{background:#1fb5a8}.jg-figurix[data-skin="c"] .fx-arv .fx-n.c3{background:#f2a91b;color:#1c1330}.jg-figurix[data-skin="c"] .fx-arv .fx-n.c4{background:#3d6df2}
+.jg-figurix[data-skin="c"] .fx-arv .fx-n:disabled{background:#ff8a8f;opacity:.7}
+.jg-figurix[data-skin="c"] .fx-arv .fx-num{font:400 48px 'Anton',Impact,sans-serif;grid-column:1/-1;justify-self:end;margin-top:-34px;color:#14602a}
+.jg-figurix .fx-barra{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),1fr);height:56px;margin-top:8px;border:4px solid #1c1330;border-radius:12px;overflow:hidden;background:#fff3c2}
+.jg-figurix .fx-barra i{display:grid;place-items:center;border-right:3px solid #1c1330;padding:2px;min-width:0}.jg-figurix .fx-barra i:last-child{border-right:0}
+.jg-figurix .fx-barra.fina i{border-right:1px solid #1c1330;background:linear-gradient(#ffd34f,#f2a91b)}
+.jg-figurix .fx-barra .fx-fig.xs{width:100%;max-width:30px}.jg-figurix .fx-barra .fx-fig.xs svg{width:100%;height:auto;max-height:44px}
+.jg-figurix .fx-barra{height:76px}.jg-figurix .fx-barra .fx-fig.xs{max-width:44px}.jg-figurix .fx-barra .fx-fig.xs svg{max-height:66px}
+.jg-figurix[data-skin="c"] .fx-arv .fx-num{margin-top:-30px}

@@ -52,7 +52,7 @@ export function mount(host) {
     total ? h('span', { class: 'dn-dots', role: 'img', 'aria-label': `${Math.min(feitas + 1, total)} de ${total}` }, ...Array.from({ length: total }, (_, i) => h('i', { class: i < feitas ? 'on' : i === feitas ? 'now' : '' }))) : null);
   const acerto = (el) => { acertos++; try { FB.win(el); } catch { /* ok */ } };
   const erro = (el) => { erros++; try { FB.lose(el); } catch { /* ok */ } if (el && el.classList) { el.classList.add('no'); } if (jogando && !root.querySelector('.fx-recomeca')) { const hd = root.querySelector('.tr-fasehead'); const b = btnRecomeca(); if (hd) hd.querySelector('button').after(b); else root.prepend(b); } };
-  const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; root.dataset.skin = ['monte', 'memoria', 'caca', 'tetris'].includes(p.tipo) ? 'c' : 'a'; (RUN[p.tipo] || RUN.quiz)(p); };
+  const joga = (n) => { limpa(); fase = n; mundo = mundoDe(n).id; erros = 0; acertos = 0; jogando = true; const p = PHASES[n - 1]; root.dataset.skin = ['monte', 'memoria', 'caca', 'tetris', 'notas'].includes(p.tipo) ? 'c' : 'a'; (RUN[p.tipo] || RUN.quiz)(p); };
   /** Aulinha das 3 primeiras fases: a colinha das figuras, a dica do Paul e o caminho pras aulas nos Estudos (lá vale estrela). */
   const aulinha = (n) => {
     limpa(); jogando = false; root.dataset.skin = 'a'; const p = PHASES[n - 1];
@@ -210,11 +210,14 @@ export function mount(host) {
     /* monte as notas: quantas figuras de cada cabem numa figura-base (as primeiras já vêm certas) */
     notas: (p) => {
       const T = arvore(p.nivel); const feitos = new Set(T.linhas.filter((a) => a.pronto).map((a) => a.id)); const base = nomeFig(T.base);
+      /* a barra mostra a figura-base (ex.: a semibreve) DIVIDIDA nas partes que cabem: dá pra VER a conta (até 8 partes com a nota dentro; 16, 32, 64 viram fatias finas) */
+      const barra = (a) => { const n = Math.min(64, a.cabem); return h('div', { class: `fx-barra${n > 8 ? ' fina' : ''}`, style: `--n:${n}`, 'aria-hidden': 'true' }, ...Array.from({ length: n }, () => h('i', {}, n <= 8 ? fig(a.id, 'fx-fig xs') : null))); };
       const linhas = T.linhas.map((a) => {
         const opts = a.pronto ? null : opcoesCabem(a.cabem);
         const el = h('div', { class: `fx-arv${a.pronto ? ' ok' : ''}`, 'data-id': a.id }, fig(a.id, 'fx-fig sm'), h('span', { class: 'fx-arv-t' }, h('b', {}, nomeFig(a.id)), h('small', {}, `quantas cabem numa ${base}?`)),
-          a.pronto ? h('b', { class: 'fx-num' }, String(a.cabem)) : h('div', { class: 'fx-opts' }, ...opts.map((v) => h('button', { type: 'button', class: 'fx-n', onclick: (e) => {
-            sfx.play('click'); if (v === a.cabem) { feitos.add(a.id); el.classList.add('ok'); el.querySelector('.fx-opts').replaceWith(h('b', { class: 'fx-num' }, String(v))); acerto(el); tocar(FIG_BY[a.id].beats); if (feitos.size === T.linhas.length) S.later(fim, 900); } else { erro(e.currentTarget); e.currentTarget.disabled = true; } } }, String(v)))));
+          a.pronto ? h('b', { class: 'fx-num' }, String(a.cabem)) : h('div', { class: 'fx-opts' }, ...opts.map((v, i) => h('button', { type: 'button', class: `fx-n c${(i % 4) + 1}`, onclick: (e) => {
+            sfx.play('click'); if (v === a.cabem) { feitos.add(a.id); el.classList.add('ok'); el.querySelector('.fx-opts').replaceWith(h('b', { class: 'fx-num' }, String(v))); el.append(barra(a)); acerto(el); tocar(FIG_BY[a.id].beats); if (feitos.size === T.linhas.length) S.later(fim, 900); } else { erro(e.currentTarget); e.currentTarget.disabled = true; } } }, String(v)))));
+        if (a.pronto) el.append(barra(a));
         return el;
       });
       const prontas = T.linhas.filter((a) => a.pronto).map((a) => nomeFig(a.id)); root.replaceChildren(topo(0, 0), h('p', { class: 'fx-q' }, `${prontas.length > 1 ? `a ${prontas.join(' e a ')} já estão certas` : `a ${prontas[0]} já está certa`}. complete as outras!`), h('div', { class: 'fx-arvore' }, ...linhas));
