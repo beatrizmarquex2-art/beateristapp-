@@ -1976,3 +1976,10 @@ body.bv-aberta { overflow: hidden; }
 /* notas caindo (v726, pedido da Bea): a figura cai SEM o quadro branco (como um PNG transparente), clarinha com um brilho */
 .fgq-cai,.fg-wrap:has(.fg-cena) .fgq-cai{background:none!important;box-shadow:none!important;border:0!important;padding:0!important;filter:drop-shadow(0 0 8px #8fb8ff) drop-shadow(0 3px 2px #000a)}
 .fgq-campo.q4 .fgq-cai{width:66px}
+
+/* FIGURAS SEM O QUADRO BRANCO (v731, pedido da Bea: "em qualquer jogo"): a figura/nota que o jogo mostra sozinha (monte a figura, qual é o nome…) aparece direto no fundo, sem retângulo branco em volta */
+.jg-figurix .fx-big,.jg-figurix[data-skin="c"] .fx-big{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+/* montar nota da Fuga (visual do laboratório): sem painel claro; a figura em branco-azulado direto no monitor escuro */
+.fg-wrap:has(.fg-cena) .fgn-cena{background:none!important;border:0!important;box-shadow:none!important}
+.fg-wrap:has(.fg-cena) .fgn-nota [stroke="#1b1818"]{stroke:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#1b1818"]{fill:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#fffdf8"]{fill:none!important}
+.fg-wrap:has(.fg-cena) .fgn-nota{filter:drop-shadow(0 0 8px #8fb8ff)}
