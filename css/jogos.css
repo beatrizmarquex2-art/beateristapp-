@@ -1973,3 +1973,6 @@ body.bv-aberta { overflow: hidden; }
 /* Detetive Note: ícones da Bea no lugar dos emojis (cartas e chips de estilo) */
 .jg-detetive .dn-face .dn-ico{width:46px;height:46px;object-fit:contain;display:block}
 .jg-detetive .dn-estilos button .dn-ico{width:24px;height:24px;object-fit:contain;display:block}
+/* notas caindo (v726, pedido da Bea): a figura cai SEM o quadro branco (como um PNG transparente), clarinha com um brilho */
+.fgq-cai,.fg-wrap:has(.fg-cena) .fgq-cai{background:none!important;box-shadow:none!important;border:0!important;padding:0!important;filter:drop-shadow(0 0 8px #8fb8ff) drop-shadow(0 3px 2px #000a)}
+.fgq-campo.q4 .fgq-cai{width:66px}

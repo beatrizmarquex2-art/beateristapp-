@@ -29,7 +29,7 @@ export const NIVEL_CFG = {
 /** `tr` = a trilha (fuga-trilhas-logic.js trilhaCfg): `assuntos`, `extra` (a infinita sobe um pouco a cada volta: mais palavras, sequências maiores…) e `nivelShift`. Sem `tr` = a Fuga de sempre. */
 export function faseCfg(mundoIdx, n, tr = {}) {
   const nivel = nivelDaFase(n, mundoIdx, tr.nivelShift || 0); const c = NIVEL_CFG[nivel]; const x = tr.extra || 0;
-  return { tipo: tipoDa(n), nivel, perguntas: 5, palavras: Math.min(9, c.palavras + x), cruz: Math.min(7, c.cruz + x), cruzMax: c.cruzMax, grade: Math.min(12, c.grade + (x > 1 ? 1 : 0)), dirs: c.dirs, kinds: c.quiz, extra: x, assuntos: tr.assuntos || null };
+  return { tipo: tipoDa(n), nivel, perguntas: 3, palavras: Math.min(9, c.palavras + x), cruz: Math.min(7, c.cruz + x), cruzMax: c.cruzMax, grade: Math.min(12, c.grade + (x > 1 ? 1 : 0)), dirs: c.dirs, kinds: c.quiz, extra: x, assuntos: tr.assuntos || null };
 }
 /** A config de um jogo de toque (genius, caminho, memória, compasso, intruso) no nível `nivel`, com o `extra` da trilha infinita (tetos pra não quebrar a tela). */
 export function cfgMini(nivel, jogo, extra = 0) {
@@ -66,9 +66,11 @@ export const idPorta = (mundo, n, k) => `${mundo}:${n}:${k}`;
 /** ★ da fase no mapa (1 a 3) = média das ★ das portas, arredondada pra cima na metade, nunca abaixo de 1 se passou por todas. */
 export const estrelasFase = (lista) => { const v = (lista || []).filter((x) => x > 0); if (!v.length) return 0; return Math.max(1, Math.min(3, Math.round(v.reduce((a, b) => a + b, 0) / v.length))); };
 export const MIN_QUIZ = 3;
-/** ★ de uma porta: quiz = 5 certas 3 ★ · 4 certas 2 ★ · 3 certas 1 ★ (se gastou a dica do "desistir das ⭐⭐⭐", no máximo 2 ★); caça = 3 ★ menos 1 por dica (mínimo 1); cruzadinha = 3 ★. */
+/** Quantas certas abrem a porta: quiz de 3 perguntas = 2 de 3; os quizzes maiores (desafios e porta B) seguem pedindo 3. */
+export const minQuiz = (total) => (total <= 3 ? 2 : MIN_QUIZ);
+/** ★ de uma porta: quiz de 3 perguntas: 3 certas = 3 ★ · 2 certas = 2 ★ · cada pulada tira 1 ★ · a dica limita em 2 ★; caça = 3 ★ menos 1 por dica (mínimo 1); cruzadinha = 3 ★. */
 export function estrelasPorta(tipo, s = {}) {
-  if (tipo === 'quiz') { const base = s.found >= 5 ? 3 : s.found === 4 ? 2 : 1; return s.ajuda ? Math.min(base, 2) : base; }
+  if (tipo === 'quiz') { const total = s.total || 3; const base = (s.found | 0) >= total ? 3 : 2; const v = Math.max(1, base - (s.puladas | 0)); return s.ajuda ? Math.min(v, 2) : v; } // 3 de 3 = 3 ★ · 2 de 3 = 2 ★ · cada pergunta pulada tira 1 ★ (mínimo 1 ★ se abriu a porta) · a dica limita em 2 ★
   if (s.estrelas) return Math.max(1, Math.min(3, s.estrelas)); // caça (menos 1 por dica) e os jogos de toque (genius, caminho, memória: pelos erros)
   return 3;
 }

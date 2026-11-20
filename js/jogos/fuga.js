@@ -11,7 +11,7 @@ import { mountProgressionMap } from '../kids/mapa.js';
 import { temaDoMundo } from './mundos-tema.js';
 import { MINI } from './fuga-mini.js';
 import { carregaBanco } from '../banco.js';
-import { MUNDOS, FASES, NOME_TIPO, NOME_NIVEL, MIN_QUIZ, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
+import { MUNDOS, FASES, NOME_TIPO, NOME_NIVEL, MIN_QUIZ, minQuiz, BONUS, portasDaFase, estrelasPorta, estrelasFase, estrelasDesafio, bonusAberto, bonusFeito, estOf, estMundo, faseAberta, mundoLiberado, idFase, idPorta, proximaFase, qtdPortas, DESAFIOS } from './fuga-logic.js';
 import { mountFugaMapa } from './fuga-mapa.js';
 import { trilhaInfo, trilhaCfg, estDaTrilha, paraTrilha, fasesFeitas, FASES_TRILHA, trilhaCompleta, trilhaLiberada, motivoTrilha, reiniciar, pagaPorPorta, estrelasDaTrilha, chavePorta, chaveTrilha, concluirTrilha, filtraAssunto, semVistos, registraVistos } from './fuga-trilhas-logic.js';
 import * as MOLD from '../molduras.js';
@@ -106,7 +106,7 @@ export function mount(host) {
     const comeca = () => {
       const cfg = portas[k]; feito = false; api = null; caixa.replaceChildren(); rel.hidden = !cfg.limite; wrap.replaceChildren(...cab(false), caixa); sfx('laser'); tPorta = Date.now(); paraRelogio();
       if (cfg.limite) { const pinta = () => { const s = (Date.now() - tPorta) / 1000; const resta = Math.max(0, Math.ceil(cfg.limite - s)); rel.textContent = `⏱ ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}`; rel.classList.toggle('pouco', resta <= 10); if (s >= cfg.limite && !feito) falha('o tempo acabou! ⏱ tente de novo, mais rápido.'); }; pinta(); relogio = setInterval(pinta, 250); }
-      usados = []; if (cfg.tipo === 'quiz') { const kinds = cfg.kinds || ['blank', 'continua']; const qs = []; const vistos = new Set(); for (let q = 0; q < 120 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, kinds[q % kinds.length]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } usados = qs.map((q) => q.item.n); api = mod.quiz(caixa, kinds, 'fuga', { qs, fim, ajuda: !cfg.desafio, maxErros: cfg.maxErros }); }
+      usados = []; if (cfg.tipo === 'quiz') { const kinds = cfg.kinds || ['blank', 'continua']; const qs = []; const vistos = new Set(); for (let q = 0; q < 120 && qs.length < Math.min(cfg.perguntas, its.length); q++) { const it = T.question(its, kinds[q % kinds.length]); if (!vistos.has(it.item.n)) { vistos.add(it.item.n); qs.push(it); } } usados = qs.map((q) => q.item.n); api = mod.quiz(caixa, kinds, 'fuga', { qs, fim, ajuda: !cfg.desafio, maxErros: cfg.maxErros, minimo: minQuiz(qs.length) }); }
       else if (cfg.tipo === 'caca') { const pk = T.easyPick(its, cfg.palavras); usados = pk.map((x) => x.n); api = mod.caca(caixa, { pick: pk, mk: () => Math.random, fim, dica: !cfg.desafio, size: cfg.grade, dirs: cfg.dirs }); }
       else if (cfg.tipo === 'cruz') { const pk = T.easyPick(its, cfg.cruz, { min: 4, max: cfg.cruzMax || 8 }); usados = pk.map((x) => x.n); api = mod.cruzadinha(caixa, { pick: pk, mk: () => Math.random, fim }); }
       else if (MINI[cfg.tipo]) api = MINI[cfg.tipo](caixa, { nivel: cfg.nivel, area: cfg.area, fim, extra: cfg.extra || 0, assuntos: cfg.assuntos }); // jogos de toque (genius, caminho 3×3, memória): fuga-mini.js
@@ -114,7 +114,7 @@ export function mount(host) {
     const resolve = () => {
       const cfg = portas[k]; const s = api && api.stats ? api.stats() : {}; const seg1 = (Date.now() - tPorta) / 1000; paraRelogio();
       if (cfg.maxErros != null) { if (s.erros > cfg.maxErros) { falha(cfg.maxErros === 0 ? 'você errou: nesse desafio não pode errar nenhuma! tente de novo.' : `você errou ${s.erros}: aqui só pode errar ${cfg.maxErros}. tente de novo!`); return; } }
-      else if (cfg.tipo === 'quiz' && s.found < MIN_QUIZ) { falha(`só ${s.found} certa${s.found === 1 ? '' : 's'}: a porta precisa de ${MIN_QUIZ}. tenta de novo!`); return; }
+      else if (cfg.tipo === 'quiz' && s.found < minQuiz(s.total)) { falha(s.puladas >= 2 ? `você pulou ${s.puladas} perguntas: a porta precisa de ${minQuiz(s.total)} certas de ${s.total}. sem ★ e a porta não abriu, tente de novo!` : `só ${s.found} certa${s.found === 1 ? '' : 's'}: a porta precisa de ${minQuiz(s.total)} de ${s.total}. tenta de novo!`); return; }
       const ganho = bonusB ? (s.erros === 0 ? 3 : 2) : cfg.limite ? estrelasDesafio(seg1, cfg) : estrelasPorta(cfg.tipo, s); ganhos[k] = ganho;
       const kp = bonusB ? idFase(M.id, 'B') : idPorta(M.id, n, k + 1); const antes = Number(est()[kp]) || 0; const chave = bonusB ? chavePorta(trilha, M.id, 'B') : chavePorta(trilha, M.id, n, k + 1);
       if (usados.length) setGame('fuga', { vistos: registraVistos(getGame('fuga'), trilha, usados).vistos }); // as dicas desta porta não voltam tão cedo nesta trilha

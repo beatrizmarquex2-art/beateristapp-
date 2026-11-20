@@ -110,18 +110,20 @@ export function memoria(box, { nivel = 'facil', fim = () => {}, extra = 0, assun
 }
 
 /* ---------- notas caindo: a figura cai e o Paul vai pro nome certo (o "tetris" do Figurix) · queda4 = 4 faixas ---------- */
+/** A figura que cai vai SEM o quadro branco: o desenho (preto) vira claro pra aparecer no fundo escuro, e a cabeça aberta fica vazada. */
+const clara = (svg) => svg.replace(/#1b1818/gi, '#f4f8ff').replace(/#fffdf8/gi, 'none');
 const NIVEL_QUEDA = { facil: 2, medio: 4, dificil: 5 }; // nível do Figurix: 2 = nome da figura · 4 = quanto vale · 5 = de qual figura é a pausa
 const embaralha = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
-/** Com 4 faixas: cada figura ganha 4 nomes (1 certo + 3 errados, sem repetir o texto) e `ok` vira o número da faixa certa. */
-function itens4(itens, rotulo) {
+/** Cada figura ganha `n` nomes (1 certo + n-1 errados, sem repetir o texto; no mínimo 3 faixas) e `ok` vira o número da faixa certa. */
+function itensN(itens, rotulo, n = 3) {
   return itens.map((it) => {
-    const certo = rotulo(it, it.fig); const outros = embaralha(figIds.filter((f) => f !== it.fig)).map((f) => rotulo(it, f)).filter((t, i, a) => t !== certo && a.indexOf(t) === i).slice(0, 3);
+    const certo = rotulo(it, it.fig); const outros = embaralha(figIds.filter((f) => f !== it.fig)).map((f) => rotulo(it, f)).filter((t, i, a) => t !== certo && a.indexOf(t) === i).slice(0, n - 1);
     const ops = embaralha([certo, ...outros]); return { ...it, ops, ok: ops.indexOf(certo) };
   });
 }
-export function queda(box, { nivel = 'facil', fim = () => {}, faixas = 2 } = {}) {
+export function queda(box, { nivel = 'facil', fim = () => {}, faixas = 3 } = {}) { // sempre 3 ou mais faixas (3 nomes, 1 certo): com 2 era fácil demais
   const T = itensTetrisN(NIVEL_QUEDA[nivel] || 2); const rot = (it, f) => (it.rot === 'valor' ? beatsLabel(FIG_BY[f].beats) : FIG_NAME[f]);
-  const quatro = faixas === 4; const itens = quatro ? itens4(T.itens, rot) : T.itens; const ms = (T.queda + (quatro ? 0.9 : 0)) * 1000; const N = quatro ? 4 : 2;
+  const N = Math.max(3, faixas); const quatro = N >= 4; const itens = itensN(T.itens, rot, N); const ms = (T.queda + (quatro ? 0.9 : 0.5)) * 1000;
   let k = 0; let lado = 0; let t0 = 0; let raf = 0; let erros = 0; let acertos = 0; let acabou = false;
   const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, { nome: 'leve o Paul até o nome certo antes da figura cair!', valor: 'leve o Paul até quanto a figura vale antes dela cair!', pausa: 'essa pausa é de qual figura? leve o Paul até ela!' }[T.jeito]);
   const nomes = Array.from({ length: N }, (_, i) => h('b', { class: 'fgq-nome', style: `left:${(i / N) * 100 + 1.5}%;width:${100 / N - 3}%` }));
@@ -138,8 +140,9 @@ export function queda(box, { nivel = 'facil', fim = () => {}, faixas = 2 } = {})
   const certoDe = (it) => (typeof it.ok === 'number' ? it.ok : it.ok === 'esq' ? 0 : 1);
   const proximo = () => {
     if (k >= itens.length) { para(); pinta(); setTimeout(() => { if (viva(box)) fim(); }, 500); return; }
-    const it = itens[k]; nomes.forEach((n, i) => { n.textContent = quatro ? it.ops[i] : rot(it, i === 0 ? it.esq : it.dir); });
-    cai.replaceChildren(svgEl(it.face === 'pausa' ? restMarkup(it.fig) : figureMarkup(it.fig), 'fgq-fig')); cai.style.top = '0%'; t0 = performance.now(); pinta();
+    const it = itens[k]; nomes.forEach((n, i) => { n.textContent = it.ops[i]; });
+    { const outras = Array.from({ length: N }, (_, i) => i).filter((i) => i !== certoDe(it)); lado = outras[Math.floor(Math.random() * outras.length)]; poe(); } // o Paul NUNCA começa na faixa certa: ele tem que se mexer
+    cai.replaceChildren(svgEl(clara(it.face === 'pausa' ? restMarkup(it.fig) : figureMarkup(it.fig)), 'fgq-fig')); cai.style.top = '0%'; t0 = performance.now(); pinta(); // figura clara, sem fundo (sem o quadro branco em volta)
   };
   const passo = (agora) => {
     if (acabou || !viva(box)) { para(); return; }
@@ -155,7 +158,7 @@ export function queda(box, { nivel = 'facil', fim = () => {}, faixas = 2 } = {})
   document.addEventListener('keydown', onKey);
   const comecar = h('button', { type: 'button', class: 'btn primary wide fgm-go', onclick: () => { comecar.remove(); proximo(); raf = requestAnimationFrame(passo); } }, 'começar ▶');
   poe(); box.replaceChildren(h('section', { class: 'card pad fgm' }, conta, msg, campo, comecar)); pinta();
-  return { stats: () => ({ erros, found: acertos, total: itens.length, estrelas: estrelasPorErros(erros, 1, 3) }), vai: (s) => vai(s), item: () => (itens[k] ? { ...itens[k], ok: certoDe(itens[k]) } : null), seg: ms / 1000 };
+  return { stats: () => ({ erros, found: acertos, total: itens.length, estrelas: estrelasPorErros(erros, 1, 3) }), vai: (s) => vai(s), lado: () => lado, item: () => (itens[k] ? { ...itens[k], ok: certoDe(itens[k]) } : null), seg: ms / 1000 };
 }
 export const queda4 = (box, o = {}) => queda(box, { ...o, faixas: 4 });
 

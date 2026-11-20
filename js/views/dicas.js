@@ -30,18 +30,20 @@ const explain = (it) => h('div', { class: 'card pad dc-explain', role: 'status' 
 const LETRAS = ['A', 'B', 'C', 'D'];
 function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas iguais nos dois celulares, fim() } — sem estrela própria, sem recorde e sem tela final
   const its = D ? [] : items(); const ROUNDS = D ? D.qs.length : Math.min(10, its.length);
-  let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = []; let ajudou = false; // ajudou: gastou o "desistir das minhas ⭐⭐⭐" (só no quiz da Fuga, D.ajuda): tira 2 alternativas erradas e a nota máxima cai pra 2 ★
+  let i = 0; let score = 0; let q = null; let answered = false; let picked = null; let hist = []; let ajudou = false; let puladas = 0; // ajudou: gastou o "desistir das minhas ⭐⭐⭐" (só no quiz da Fuga, D.ajuda): tira 2 alternativas erradas e a nota máxima cai pra 2 ★
   // "desistir das minhas ⭐⭐⭐": antes de pular, o app pergunta "quer uma dica? ou quer mesmo pular?". Dica (1 por quiz) tira 2 alternativas erradas e o quiz passa a valer no máximo 2 ★;
   // pular conta como erro (a resposta certa aparece). Em qualquer dos dois, ainda precisa de 3 acertos pra abrir a porta.
-  const estourou = () => !!(D && D.maxErros != null && hist.filter((x) => !x).length > D.maxErros); // desafio: errou além do limite = acaba na hora
+  const estourou = () => !!((D && D.maxErros != null && hist.filter((x) => !x).length > D.maxErros) || (D && D.minimo != null && hist.filter((x) => !x).length > ROUNDS - D.minimo)); // desafio: errou além do limite · porta: já não dá mais pra chegar no mínimo de acertos (ex.: 2 de 3) = acaba na hora // desafio: errou além do limite = acaba na hora
   const pedeDica = () => { ajudou = true; q.escondidas = q.options.filter((o) => o.id !== q.ans).sort(() => Math.random() - 0.5).slice(0, 2).map((o) => o.id); draw(); };
   const desistir3 = () => {
-    if (answered) return;
-    sheet('quer uma dica?', (close) => h('div', { class: 'sheet-body dc-desistir-sheet' },
-      h('p', { class: 'muted' }, ajudou ? 'a dica desse quiz já foi usada. quer mesmo pular? pular conta como erro: aí não dá mais pra ganhar as ⭐⭐⭐.' : 'ou quer mesmo pular? a dica tira 2 alternativas erradas, mas o quiz passa a valer no máximo 2 ★. pular conta como erro e mostra a resposta.'),
+    if (answered) return; const segunda = puladas >= 1;
+    sheet(segunda ? 'tem certeza? use a dica!' : 'quer uma dica?', (close) => h('div', { class: 'sheet-body dc-desistir-sheet' },
+      h('p', { class: 'muted' }, segunda
+        ? `você já pulou uma pergunta. se pular de novo, fica sem ★ e a porta NÃO abre: precisa acertar ${D && D.minimo ? D.minimo : 2} de ${ROUNDS}. ${ajudou ? 'a dica desse quiz já foi usada.' : 'use a dica: ela tira 2 alternativas erradas.'}`
+        : `pular custa 1 ★ e mostra a resposta. ${ajudou ? 'a dica desse quiz já foi usada.' : 'a dica tira 2 alternativas erradas, mas o quiz passa a valer no máximo 2 ★.'}`),
       h('div', { class: 'dc-desistir-btns' },
         ajudou ? null : h('button', { type: 'button', class: 'btn primary', 'data-acao': 'dica', onclick: () => { close(); pedeDica(); } }, '💡 quero uma dica'),
-        h('button', { type: 'button', class: 'btn', 'data-acao': 'pular', onclick: () => { close(); done(false, null); } }, '⏭️ pular mesmo'),
+        h('button', { type: 'button', class: 'btn', 'data-acao': 'pular', onclick: () => { close(); puladas++; done(false, null); } }, segunda ? '⏭️ pular mesmo (sem ★)' : '⏭️ pular (perde 1 ★)'),
         h('button', { type: 'button', class: 'btn ghost', 'data-acao': 'voltar', onclick: close }, 'voltar'))));
   };
   const next = () => { if (D) q = D.qs[i]; else { const k = kinds[Math.floor(Math.random() * kinds.length)]; q = T.question(its, k); } answered = false; picked = null; draw(); };
@@ -60,7 +62,7 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
     const head = h('p', { class: 'tr-count' }, `pergunta ${i + 1} de ${ROUNDS} · ${score} certas`);
     const ask = q.ask || (q.kind === 'blank' ? 'qual palavra completa a dica?' : null);
     const body = [dots(), head, h('p', { class: 'dc-clue' }, q.prompt), ask ? h('p', { class: 'muted' }, ask) : null,
-      D && D.ajuda && !answered ? h('button', { type: 'button', class: 'btn small ghost dc-desistir', onclick: desistir3 }, '🏳️ desistir das minhas ⭐⭐⭐') : null,
+      D && D.ajuda && !answered ? h('button', { type: 'button', class: 'btn small ghost dc-desistir', onclick: desistir3 }, '⏭️ pular pergunta') : null,
       D && D.ajuda && ajudou ? h('small', { class: 'muted' }, 'você pegou a dica: esse quiz vale no máximo 2 ★') : null,
       h('div', { class: `dc-opts${q.options.some((o) => o.label.length > 18) ? ' long' : ''}` }, ...q.options.filter((o) => !(q.escondidas || []).includes(o.id)).map((o, n) => h('button', { type: 'button', class: `tr-pal dc-opt dc-op${answered ? (o.id === q.ans ? ' ok' : picked === o.id ? ' no' : '') : ''}`, disabled: answered, onclick: (e) => { picked = o.id; done(o.id === q.ans, e.currentTarget); } },
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
@@ -69,7 +71,7 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
       answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS || estourou()) finish(); else next(); } }, i + 1 >= ROUNDS || estourou() ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
   }
   next();
-  return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length, ajuda: ajudou }) };
+  return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length, ajuda: ajudou, puladas }) };
 }
 
 /* ---------- caça-palavras (fácil: grade 9×9, 6 palavras curtas, só → e ↓, palavras à vista e cada uma de uma cor) ---------- */

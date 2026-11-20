@@ -15,13 +15,13 @@ check('rótulos: 1 e 2 → 2 portas · 3 a 5 → 3 · 6 e 7 → desafio · 8 a 1
 check('o contador mostra 0/12 e 0/36', /0\/12/.test(await page.textContent('.fm-head')) && /0\/36/.test(await page.textContent('.fm-head')));
 await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-mapa.png` : '/tmp/fuga-mapa.png' });
 await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
-check('fase 1 tem 2 portas lado a lado no corredor; a porta 1 é o quiz de 5 perguntas', /pergunta 1 de 5/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2/.test(await page.evaluate(() => document.body.innerText)));
-check('o quiz tem "desistir das minhas ⭐⭐⭐"', (await page.locator('.dc-desistir').count()) === 1);
+check('fase 1 tem 2 portas lado a lado no corredor; a porta 1 é o quiz de 3 perguntas', /pergunta 1 de 3/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2/.test(await page.evaluate(() => document.body.innerText)));
+check('o quiz tem o botão "pular pergunta"', (await page.locator('.dc-desistir').count()) === 1);
 await page.locator('.dc-desistir').click(); await sleep(500);
 const bt = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
-check('pergunta "quer uma dica? ou quer mesmo pular?" com 3 botões', /quer uma dica/.test(await page.textContent('.sheet')) && bt.some((t) => /quero uma dica/.test(t)) && bt.some((t) => /pular mesmo/.test(t)) && bt.some((t) => /voltar/.test(t)), bt.join(' | '));
+check('pergunta "quer uma dica? ou quer mesmo pular?" com 3 botões', /quer uma dica/.test(await page.textContent('.sheet')) && bt.some((t) => /quero uma dica/.test(t)) && bt.some((t) => /pular/.test(t)) && bt.some((t) => /voltar/.test(t)), bt.join(' | '));
 await page.evaluate(() => document.querySelector('.sheet button[data-acao="voltar"]').click()); await sleep(300);
-for (let i = 0; i < 5; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
+for (let i = 0; i < 3; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
 await sleep(1500); const txt = await page.evaluate(() => document.body.innerText);
 check('terminou o quiz: abriu a porta (com ★) ou pediu pra tentar de novo (menos de 3 certas)', /porta aberta/.test(txt) || /tentar outra vez/.test(txt));
 if (/porta aberta/.test(txt)) check('abriu a porta 1: aparece "próxima porta" e a porta 2 de 2', /próxima porta/.test(txt) && /porta 2 de 2/.test(txt));

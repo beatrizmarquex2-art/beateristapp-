@@ -58,8 +58,10 @@ await sleep(900);
 check('memória: achar os 4 pares chama fim; 1 erro = 3 ★', (await page.evaluate(() => window.__fim)) === 1 && (await page.evaluate(() => window.__api.stats().estrelas)) === 3 && (await page.locator('.fgm-carta.par').count()) === 8, JSON.stringify(await page.evaluate(() => window.__api.stats())));
 // notas caindo: 8 figuras; levar o Paul pro lado certo em todas = 0 erros, 3 ★, e chama fim
 await page.evaluate(async () => { window.__fim = 0; const m = await import('/js/jogos/fuga-mini.js'); document.body.innerHTML = '<div id="b"></div>'; window.__api = m.queda(document.getElementById('b'), { nivel: 'facil', fim: () => { window.__fim = (window.__fim || 0) + 1; } }); });
-await page.locator('.fgm-go').click();
-for (let i = 0; i < 120 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const it = window.__api.item(); if (it) window.__api.vai(it.ok); }); await sleep(250); }
+await page.locator('.fgm-go').click(); await sleep(300);
+check('notas caindo: sempre 3 faixas (3 nomes diferentes) e a figura cai sem quadro branco em volta', (await page.locator('.fgq-nome').count()) === 3 && (await page.evaluate(() => new Set([...document.querySelectorAll('.fgq-nome')].map((e) => e.textContent)).size)) === 3 && (await page.evaluate(() => { const c = getComputedStyle(document.querySelector('.fgq-cai')); return c.backgroundColor === 'rgba(0, 0, 0, 0)' && c.backgroundImage === 'none'; })));
+check('notas caindo: o Paul NUNCA começa na faixa certa', await page.evaluate(() => window.__api.lado() !== window.__api.item().ok));
+for (let i = 0; i < 170 && !(await page.evaluate(() => window.__fim)); i++) { await page.evaluate(() => { const it = window.__api.item(); if (it) window.__api.vai(it.ok); }); await sleep(250); }
 check('notas caindo: certo nas 8 figuras = 0 erros, 3 ★ e chama fim', (await page.evaluate(() => window.__fim)) === 1 && (await page.evaluate(() => JSON.stringify(window.__api.stats()))) === '{"erros":0,"found":8,"total":8,"estrelas":3}', await page.evaluate(() => JSON.stringify(window.__api.stats())));
 // 4 notas caindo (4 faixas): 4 nomes na tela, Paul na faixa certa em todas = 0 erros
 await page.evaluate(async () => { window.__fim = 0; const m = await import('/js/jogos/fuga-mini.js'); document.body.innerHTML = '<div id="b"></div>'; window.__api = m.queda4(document.getElementById('b'), { nivel: 'facil', fim: () => { window.__fim = (window.__fim || 0) + 1; } }); });
