@@ -1,0 +1,45 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>story do passe</title><link rel="stylesheet" href="../css/fonts.css">
+<style>*{box-sizing:border-box}body{margin:0;background:#e9e2d0;font-family:"Hanken Grotesk",sans-serif;color:#142036;padding:16px 16px 28px}
+h1{font:400 22px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 30px;font-size:13px}.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.c{position:relative;padding-top:26px}.r{position:absolute;top:0;left:0;font:700 12px "Hanken Grotesk";width:300px}
+.st{width:300px;height:533px;border-radius:14px;position:relative;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.foto{flex:none;border-radius:50%;background:#f4d9a8 url(../assets/paul/perfil/paul-3.webp) center/cover}
+.lab{font:700 8px "Hanken Grotesk";letter-spacing:.14em;text-transform:uppercase}
+.fv{display:flex;gap:4px}.fv div{text-align:center;font:700 7px/1.1 "Hanken Grotesk";width:40px}.fv i{display:block;width:34px;height:34px;border-radius:50%;margin:0 auto 2px;background-size:cover;background-position:50% 20%}
+.tags{display:flex;flex-direction:column;gap:5px;align-items:flex-start}.tags span{font:700 9.5px "Hanken Grotesk";padding:4px 10px;border-radius:99px}
+.logo{width:70px}.site{font:800 10px "Hanken Grotesk";letter-spacing:.02em}
+/* A · passe dourado em pé (o mesmo do Início) */
+.A{background:radial-gradient(120% 60% at 50% 20%,#31408a,#162146 55%,#0a0f26);display:flex;flex-direction:column;align-items:center;padding:26px 20px 18px;color:#fff7e6}
+.A .tit{font:700 9px "Hanken Grotesk";letter-spacing:.22em;text-transform:uppercase;color:#f2a91b;margin-bottom:10px}
+.A .passe{width:100%;flex:1;min-height:0;border-radius:22px;background:linear-gradient(135deg,#f9d27a 0,#e0a232 38%,#fbe3a3 55%,#c98a1e 100%);color:#2a1a05;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:7px;box-shadow:0 14px 24px rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.5)}
+.A .foto{width:104px;height:104px;border:4px solid #2a1a05;box-shadow:3px 4px 0 rgba(42,26,5,.45)}
+.A h2{font:400 30px/1 "Anton";text-transform:uppercase;margin:2px 0 0}.A .tags{align-items:center}.A .tags span{background:#2a1a05;color:#fbe3a3}
+.A .fv div{color:#2a1a05}.A .fv i{border:2px solid #2a1a05}
+.A .rod{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px}
+/* B · palco à noite, foto no holofote */
+.B{background:radial-gradient(100% 55% at 50% 22%,#3a4da0,#162146 55%,#070b1e);color:#fff7e6;text-align:center;padding:22px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:9px}
+.B .foto{width:130px;height:130px;border:5px solid #f2a91b;box-shadow:0 0 0 8px rgba(242,169,27,.18),0 0 44px rgba(242,169,27,.55);margin-top:10px}
+.B h2{font:400 38px/1 "Anton";text-transform:uppercase;color:#f2a91b;margin:4px 0 0}.B .tags{flex-direction:row;flex-wrap:wrap;justify-content:center}.B .tags span{border:2px solid #f2a91b;color:#f2a91b}
+.B .lab{color:#f2a91b}.B .fv i{border:2px solid #f2a91b}
+/* C · polaroid creme com fita e carimbo */
+.C{background:#f3ecdc url(../assets/zine/textura-fundo-creme.webp) center/cover;padding:24px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.C .pol{background:#fffdf7;padding:10px 10px 12px;box-shadow:0 6px 14px rgba(0,0,0,.25);transform:rotate(-2deg);text-align:center;width:210px;position:relative}
+.C .pol::before{content:"";position:absolute;top:-12px;left:50%;width:80px;height:22px;margin-left:-40px;background:rgba(214,196,150,.75);transform:rotate(3deg)}
+.C .foto{width:100%;height:120px;border-radius:2px;border:2px solid #142036}.C h2{font:400 30px/1 "Anton";text-transform:uppercase;margin:10px 0 0;color:#c81e2d}
+.C .tags span{background:#fff;border:2px solid #142036;border-radius:8px;box-shadow:2px 3px 0 #142036}
+.C .fv i{border:2px solid #142036}.C .stamp{border:2px solid #c81e2d;color:#c81e2d;font:800 9px "Hanken Grotesk";letter-spacing:.14em;padding:3px 8px;border-radius:4px;transform:rotate(-4deg)}
+</style></head><body><h1>story do meu passe</h1><p class="s">a imagem sai do aparelho só quando a pessoa posta. a foto é a que ela escolheu no Perfil (ou o Paul). 3 desenhos:</p><div class="row" id="r"></div>
+<script>
+const NOMES=['Rita Lee','Michael Jackson','Pitty','Slash','Queen','The Beatles'];
+fetch('../assets/figurinhas/catalogo.json').then(r=>r.json()).then(cat=>{
+ const foto=n=>{const e=cat.find(x=>x.artista_banda===n&&x.secao!=='Beaterista');return e?'../'+e.foto:''};
+ const fv=`<div class="fv">${NOMES.map(n=>`<div><i style="background-image:url(${foto(n)})"></i>${n.replace('The ','').replace('Michael Jackson','M. Jackson')}</div>`).join('')}</div>`;
+ const tags=`<div class="tags"><span>instrumento: bateria</span><span>estilo: rock</span><span>meta: tocar uma música inteira</span></div>`;
+ const rod=`<div class="rod"><img class="logo" src="../assets/paul/colorido/paul-logo.webp" alt=""><div class="site">jogos.beaterista.com.br</div></div>`;
+ r.innerHTML=
+ `<div class="c"><span class="r">A · o passe dourado em pé</span><div class="st A"><div class="tit">beaterista · passe do aluno</div><div class="passe"><div class="foto"></div><h2>Bê</h2>${tags}<div class="lab">bandas e cantores favoritos</div>${fv}${rod}</div></div></div>`+
+ `<div class="c"><span class="r">B · palco à noite</span><div class="st B"><div class="lab">meu passe beaterista</div><div class="foto"></div><h2>Bê</h2>${tags}<div class="lab" style="margin-top:6px">no meu repertório</div>${fv}${rod}</div></div>`+
+ `<div class="c"><span class="r">C · polaroid de fã</span><div class="st C"><div class="pol"><div class="foto"></div><h2>Bê</h2></div>${tags}<div class="lab">meus favoritos</div>${fv}<span class="stamp">PASSE BEATERISTA</span>${rod}</div></div>`;
+ setTimeout(()=>document.body.dataset.ok=1,600);
+});
+</script></body></html>
