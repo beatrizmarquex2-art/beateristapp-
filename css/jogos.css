@@ -1965,3 +1965,4 @@ body.bv-aberta { overflow: hidden; }
 /* as estrelinhas de favorito só aparecem quando a pessoa toca em "☆ escolher favoritos" (antes tapavam o desenho e o nome dos jogos) */
 .jgx-cell .jgx-star { display: none; }
 .jg-cat.jgx-favmode .jgx-star, .jgx-favmode .jgx-star, .jgx-editing .jgx-star { display: block; }
+.jgx-bar { flex-wrap: nowrap; } .jgx-bar .jgx-chip { padding: 0 10px; font-size: 12.5px; white-space: nowrap; } .jgx-bar .jgx-edit { margin-left: auto; }

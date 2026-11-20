@@ -201,7 +201,7 @@ function catalog(host) {
     const keys = list.map(keyOf);
     bar.replaceChildren(
       ...[['todos', 'Todos'], ['fav', `★ Favoritos (${p.fav.filter((k) => keys.includes(k)).length})`]].map(([k, t]) => h('button', { type: 'button', class: `jgx-chip${filtro === k ? ' on' : ''}`, 'aria-pressed': String(filtro === k), onclick: () => { filtro = k; draw(); } }, t)),
-      h('button', { type: 'button', class: `jgx-chip jgx-favmode${favMode ? ' on' : ''}`, 'aria-pressed': String(favMode), onclick: () => { favMode = !favMode; draw(); } }, favMode ? 'pronto' : '☆ escolher favoritos'),
+      h('button', { type: 'button', class: `jgx-chip jgx-favmode${favMode ? ' on' : ''}`, 'aria-pressed': String(favMode), 'aria-label': favMode ? 'terminar de escolher favoritos' : 'escolher favoritos', onclick: () => { favMode = !favMode; draw(); } }, favMode ? 'pronto' : '☆ marcar'),
       aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
     grid.classList.toggle('jgx-editing', editing); grid.classList.toggle('jgx-favmode', favMode);
     grid.replaceChildren(...(shown.length ? shown.map((x) => {
@@ -210,7 +210,7 @@ function catalog(host) {
         h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => { const next = { ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }; if (fav) change(next, 'tirado dos favoritos'); else savePrefs(next); } }, fav ? '★' : '☆'),
         editing ? h('div', { class: 'jgx-ctl' },
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
-    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque em “☆ escolher favoritos” e depois na ☆ de um jogo.')]));
+    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque em “☆ marcar” e depois na ☆ de um jogo.')]));
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica({ compacto: true }), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
