@@ -1941,3 +1941,8 @@ body.bv-aberta { overflow: hidden; }
   .cxp-leg-it { display: flex; gap: 8pt; align-items: flex-start; break-inside: avoid; } .cxp-leg-it b { font-size: 11pt; } .cxp-leg-it p { margin: 1pt 0 0; font-size: 9.5pt; line-height: 1.3; }
   .cxp-leg-ic { flex: none; width: 15mm; height: 20mm; display: flex; align-items: center; justify-content: center; border: .3mm solid #999; border-radius: 2mm; } .cxp-leg-svg { height: 16mm; width: auto; color: #222; }
 }
+@media print {
+  /* ícones dos cantos das cartas impressas: menores, pra não encostarem no oval branco */
+  .cxp .cx-co { width: 1.25em; height: 1.6em; font-size: 1.1em; }
+  .cxp .cx-co.tl { top: .45em; left: .4em; } .cxp .cx-co.br { bottom: .45em; right: .4em; }
+}
