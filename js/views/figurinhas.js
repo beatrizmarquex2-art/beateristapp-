@@ -23,12 +23,12 @@ const ROTULO = { 'Na mão': 'minhas figurinhas', Beaterista: 'exclusivas' }; // 
 const ABA_ANTIGA = { Minhas: 'Na mão' };
 /** O Álbum abre numa LISTA compacta de coleções, cada uma com o seu nível (pedido da Bea, nov/2026). `tab` = qual livro/tela abre ao tocar. */
 const COLECOES = [
-  { tab: 'Beatlemania', nome: 'Beatlemania', nivel: 'Clássico', cor: '#17224a', fg: '#ffd23f', ic: '🪲' },
+  { tab: 'Beatlemania', nome: 'Beatlemania', nivel: 'Clássica', cor: '#17224a', fg: '#ffd23f', ic: '🪲' },
   { tab: 'Bandas', nome: 'Bandas', nivel: 'Comum', cor: '#c4182c', fg: '#fff6e0', ic: '🎸' },
-  { tab: 'Artistas', nome: 'Artistas', nivel: 'Raro', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
-  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusivo', cor: '#2d3d7a', fg: '#ffd23f', ic: '⭐' },
+  { tab: 'Artistas', nome: 'Artistas', nivel: 'Rara', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
+  { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusiva', cor: '#2d3d7a', fg: '#ffd23f', ic: '⭐' },
   { tab: 'Lendárias', nome: 'SUPER PAUL', nivel: 'Lendária', cor: '#0b0b10', fg: '#ffd23f', ic: '⚡' },
-  { tab: 'Na mão', nome: 'Minhas figurinhas', nivel: 'Épico', cor: '#5a2bb8', fg: '#ffffff', ic: '📸' },
+  { tab: 'Na mão', nome: 'Minhas figurinhas', nivel: 'Épica', cor: '#5a2bb8', fg: '#ffffff', ic: '📸' },
 ]; // a aba "criadas por mim" foi pra dentro de "minhas figurinhas"
 const NOTE = { Bandas: 'os grupos: todas comuns, pra encher o álbum rápido', Beatlemania: 'os quatro de Liverpool, a banda que deu nome ao Paul', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Artistas: 'cantores são comuns; os músicos e alguns ídolos são raros (★)' };
 let catalog = null;

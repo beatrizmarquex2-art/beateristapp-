@@ -60,7 +60,7 @@ export function colecao({ titulo = 'minha coleção', vazio = 'ainda não tem ne
   function abrir(it, b) {
     sheet(it.nome || 'cartinha', (close) => {
       const box = h('div', { class: 'fig-detail' }); let share = null;
-      imgDe(b).then(({ i, u }) => { if (!box.isConnected && !alive) return; URL.revokeObjectURL(u); share = shareUI({ cartaPronta: i, modelo2: it.modelo, artista_banda: it.nome, raridade: 'Comum', secao: 'Comum', codigo: '' }, { titulo: 'baixar / postar' }); box.append(share); }).catch(() => box.append(h('p', { class: 'fig-note' }, 'não consegui abrir essa cartinha.')));
+      imgDe(b).then(({ i, u }) => { if (!box.isConnected && !alive) return; URL.revokeObjectURL(u); share = shareUI({ cartaPronta: i, modelo2: it.modelo, artista_banda: it.nome, raridade: 'Épica', secao: 'Comum', codigo: '' }, { titulo: 'baixar / postar' }); box.append(share); }).catch(() => box.append(h('p', { class: 'fig-note' }, 'não consegui abrir essa cartinha.')));
       box.append(h('button', { type: 'button', class: 'btn ghost', onclick: async () => { if (await confirmSheet('apagar a cartinha?', 'ela some da sua coleção neste aparelho.', 'apagar')) { await apagar(it.id); close(); desenha(); toast('cartinha apagada'); } } }, 'apagar da coleção'));
       box.cleanup = () => share && share.cleanup(); return box;
     });
@@ -103,7 +103,7 @@ export function album({ nome = '' } = {}) {
   function abrir(it, b) {
     sheet(it.nome || 'cartinha', (close) => {
       const box = h('div', { class: 'fig-detail' }); let share = null;
-      imgDe(b).then(({ i, u }) => { URL.revokeObjectURL(u); share = shareUI({ cartaPronta: i, modelo2: it.modelo, artista_banda: it.nome, raridade: 'Comum', secao: 'Comum', codigo: '' }, { titulo: 'baixar / postar' }); box.append(share); }).catch(() => box.append(h('p', { class: 'fig-note' }, 'não consegui abrir essa cartinha.')));
+      imgDe(b).then(({ i, u }) => { URL.revokeObjectURL(u); share = shareUI({ cartaPronta: i, modelo2: it.modelo, artista_banda: it.nome, raridade: 'Épica', secao: 'Comum', codigo: '' }, { titulo: 'baixar / postar' }); box.append(share); }).catch(() => box.append(h('p', { class: 'fig-note' }, 'não consegui abrir essa cartinha.')));
       box.append(h('button', { type: 'button', class: 'btn', onclick: async () => { await gravaLista(descolar(await listar(), it.id)); close(); desenha(); toast('descolada: ela voltou pra “pra colar”'); } }, 'descolar do álbum'),
         h('button', { type: 'button', class: 'btn ghost', onclick: async () => { if (await confirmSheet('apagar a cartinha?', 'ela some do seu álbum neste aparelho.', 'apagar')) { await apagar(it.id); close(); desenha(); toast('cartinha apagada'); } } }, 'apagar a cartinha'));
       box.cleanup = () => share && share.cleanup(); return box;

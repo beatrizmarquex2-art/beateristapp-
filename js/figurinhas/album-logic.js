@@ -42,10 +42,12 @@ export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de jogo a Exclusiva não existe: o grupo só tem Comum e Rara) // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA; regra da Bea, nov/2026): Beatlemania = coleção Beatles; Beaterista = exclusivas da Bea e do Paul; Bandas = os grupos; Artistas = as pessoas.
 // A raridade é outra coisa: banda e cantor = Comum; músico/instrumentista e os cantores que a Bea escolheu = Rara; Bea e Paul = Exclusiva; Lendárias = só pela Lojinha (lendarias.js).
-/** Nome que aparece pra cada raridade. Os Beatles NÃO são "comum": o nome deles é Beatlemania. (Os outros nomes podem ser trocados aqui quando a Bea escolher a lista nova.) */
-export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva' };
+/** Nome que aparece pra cada raridade (lista da Bea, nov/2026): Comum = bandas e cantores; Rara = músicos e os que ela escolheu; Exclusiva = Bea e Paul; Clássica = Beatles;
+ *  Épica = as figurinhas que as crianças criam com a própria foto. (Lendária vem só pela Lojinha.) */
+export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva', Classica: 'Clássica', Epica: 'Épica', 'Épica': 'Épica' };
 export const ehBeatles = (e) => !!e && (e.colecao === 'Beatles' || e.secao === 'Beatlemania');
-export const nomeRaridade = (e) => (ehBeatles(e) ? 'Beatlemania' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
+/** Os Beatles são "Clássica" (a única Beatles que a Bea marcou como Rara continua Rara). */
+export const nomeRaridade = (e) => (e && e.raridade === 'Rara' ? 'Rara' : ehBeatles(e) ? 'Clássica' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
 export const SECOES = ['Beatlemania', 'Beaterista', 'Bandas', 'Artistas'];
 export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Bandas', Especial: 'Artistas', Comum: 'Bandas', Raras: 'Artistas' }; // links e abas de antes
 /** Grupo de SORTEIO da figurinha (não é a seção): Beatlemania, Beaterista, Raras (raridade Rara) ou Comum. Os pesos da roleta e dos pacotes usam isto. */
