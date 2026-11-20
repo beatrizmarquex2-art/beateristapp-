@@ -183,7 +183,7 @@ function atalhoContinuar() {
 
 function catalog(host) {
   const aluno = ALUNO();
-  let editing = false; let filtro = 'todos'; // todos | fav
+  let editing = false; let favMode = false; let filtro = 'todos'; // todos | fav
   let pensou = 0;
   const card = (x, edit) => {
     const [id, title, img, , , href] = x; const lk = aluno && AC.trancado(href || `#/jogos/${id}`);
@@ -201,15 +201,16 @@ function catalog(host) {
     const keys = list.map(keyOf);
     bar.replaceChildren(
       ...[['todos', 'Todos'], ['fav', `★ Favoritos (${p.fav.filter((k) => keys.includes(k)).length})`]].map(([k, t]) => h('button', { type: 'button', class: `jgx-chip${filtro === k ? ' on' : ''}`, 'aria-pressed': String(filtro === k), onclick: () => { filtro = k; draw(); } }, t)),
+      h('button', { type: 'button', class: `jgx-chip jgx-favmode${favMode ? ' on' : ''}`, 'aria-pressed': String(favMode), onclick: () => { favMode = !favMode; draw(); } }, favMode ? 'pronto' : '☆ escolher favoritos'),
       aluno ? null : h('button', { type: 'button', class: `jgx-chip jgx-edit${editing ? ' on' : ''}`, onclick: () => { editing = !editing; draw(); } }, editing ? 'pronto' : 'editar'));
-    grid.classList.toggle('jgx-editing', editing);
+    grid.classList.toggle('jgx-editing', editing); grid.classList.toggle('jgx-favmode', favMode);
     grid.replaceChildren(...(shown.length ? shown.map((x) => {
       const k = keyOf(x); const fav = p.fav.includes(k); const off = p.hidden.includes(k);
       return h('div', { class: `jgx-cell${off ? ' off' : ''}`, 'data-key': k }, card(x, editing),
         h('button', { type: 'button', class: `jgx-star${fav ? ' on' : ''}`, 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Tirar dos' : 'Pôr nos'} favoritos: ${x[1]}`, onclick: () => { const next = { ...p, fav: fav ? p.fav.filter((y) => y !== k) : [...p.fav, k] }; if (fav) change(next, 'tirado dos favoritos'); else savePrefs(next); } }, fav ? '★' : '☆'),
         editing ? h('div', { class: 'jgx-ctl' },
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
-    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque na ☆ de um jogo.')]));
+    }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque em “☆ escolher favoritos” e depois na ☆ de um jogo.')]));
   };
   host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica({ compacto: true }), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSala()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();

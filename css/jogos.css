@@ -1962,3 +1962,6 @@ body.bv-aberta { overflow: hidden; }
   .cxp .cx-co { width: 1.25em; height: 1.6em; font-size: 1.1em; }
   .cxp .cx-co.tl { top: .45em; left: .4em; } .cxp .cx-co.br { bottom: .45em; right: .4em; }
 }
+/* as estrelinhas de favorito só aparecem quando a pessoa toca em "☆ escolher favoritos" (antes tapavam o desenho e o nome dos jogos) */
+.jgx-cell .jgx-star { display: none; }
+.jg-cat.jgx-favmode .jgx-star, .jgx-favmode .jgx-star, .jgx-editing .jgx-star { display: block; }
