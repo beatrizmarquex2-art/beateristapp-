@@ -16,7 +16,8 @@ export function ordemDoBaralho() {
 }
 const celula = (c) => { const el = cardEl(c); if (c.color) el.append(h('b', { class: 'cxp-cor' }, COR[c.color])); el.append(h('small', { class: 'cxp-site' }, SITE)); return h('div', { class: 'cxp-cell' }, el); }; // o nome da cor também em texto (ajuda no preto e branco e em quem não distingue as cores)
 /** Verso com a marca: o Robôterista Paul no meio e o endereço do jogo embaixo. */
-const celulaVerso = () => { const v = backEl(); v.classList.add('cxp-verso'); v.replaceChildren(h('b', { class: 'cxp-v-top' }, 'uno musical'), h('span', { class: 'cx-oval' }, h('img', { class: 'cxp-v-logo', src: LOGO, alt: '' })), h('b', { class: 'cxp-v-site' }, SITE)); return h('div', { class: 'cxp-cell' }, v); };
+const LOGO_PB = 'assets/uno/paul-logo-colorir.png'; // o mesmo desenho em contorno, pra pintar
+const celulaVerso = (pintar = false) => { const v = backEl(); v.classList.add('cxp-verso'); if (pintar) v.classList.add('cxp-v-pintar'); v.replaceChildren(h('b', { class: 'cxp-v-top' }, 'uno musical'), h('span', { class: 'cx-oval' }, h('img', { class: 'cxp-v-logo', src: pintar ? LOGO_PB : LOGO, alt: '' })), h('b', { class: 'cxp-v-site' }, SITE)); return h('div', { class: 'cxp-cell' }, v); };
 
 /** Monta o material (manual, legenda e cartas) sem imprimir. `versos`: depois de cada folha de frente vem uma de versos (impressão frente e verso). */
 export function montarBaralho({ color = true, versos = false } = {}) {
@@ -35,7 +36,7 @@ export function montarBaralho({ color = true, versos = false } = {}) {
     h('h2', {}, 'Para imprimir'),
     h('ul', {}, h('li', {}, 'Papel A4, imprimindo em 100% (sem "ajustar à página"). As cartas medem 60 × 87 mm e saem 9 por folha.'),
       h('li', {}, 'Para durar mais: papel mais grosso (180 g ou mais) ou plastifique antes de recortar.'), h('li', {}, 'Com versos: imprima frente e verso, virando pela borda comprida; todos os versos são iguais.'),
-      h('li', {}, 'Recorte pelas linhas pontilhadas.'), color ? null : h('li', {}, 'Versão para pintar: as cartas saem brancas, com o nome da cor escrito em cima. Pinte cada carta com a cor do nome (lápis de cor ou canetinha) e ainda tem uma carta bônus com o Paul para colorir do jeito que quiser.')),
+      h('li', {}, 'Recorte pelas linhas pontilhadas.'), color ? null : h('li', {}, 'Versão para pintar: as cartas saem brancas, com o nome da cor escrito em cima. Pinte cada carta com a cor do nome (lápis de cor ou canetinha). Tem uma carta bônus com o Paul para colorir do jeito que quiser e, na última folha, 9 versos com o Robôterista Paul para pintar, recortar e colar atrás das cartas.')),
     h('p', { class: 'cxp-site-pg' }, `Jogue online, de graça: ${SITE}`)));
   // legenda das figuras (pra quem ensina)
   root.append(page(h('h1', {}, 'As figuras do baralho'), h('p', { class: 'cxp-sub' }, 'o que cada figura quer dizer (pra conversar com a turma durante o jogo)'),
@@ -47,6 +48,7 @@ export function montarBaralho({ color = true, versos = false } = {}) {
     root.append(page(h('div', { class: 'cxp-grid' }, ...lote.map((c) => (c === 'bonus' ? bonus : celula(c))))));
     if (versos) root.append(page(h('div', { class: 'cxp-grid' }, ...lote.map(() => celulaVerso()))));
   }
+  if (!color) root.append(page(h('div', { class: 'cxp-grid' }, ...Array.from({ length: 9 }, () => celulaVerso(true))))); // folha de VERSOS pra pintar e recortar (todos iguais)
   return root;
 }
 
