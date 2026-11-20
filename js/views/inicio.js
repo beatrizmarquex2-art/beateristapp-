@@ -12,6 +12,7 @@ import * as L from '../figurinhas/album-logic.js';
 import * as store from '../store.js';
 import { atualizarAgora } from '../atualizar-btn.js';
 import * as PERF from '../inicio-perfil.js';
+import { toast } from '../ui.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -172,6 +173,20 @@ export function mount(host, { nome = '' } = {}) {
     cod ? h('p', { class: 'in-cod' }, `CÓDIGO ${cod}`) : null,
     h('div', { class: 'in-selos', 'aria-hidden': 'true' }, h('i', {}, '★'), h('i', {}, '♪'), h('i', {}, '●')));
 
+  // compartilhar o passe (post e story): imagem gerada no aparelho, com a foto que a pessoa escolheu no Perfil (ou o Paul)
+  const compartilharPasse = async (formato, bt) => {
+    bt.disabled = true;
+    try {
+      const M = await import('../figurinhas/passe-card.js'); const bl = await D.metaLer('perfil-foto').catch(() => null);
+      const favs = FAV.favoritos().slice(0, 6).map((n) => { const a = todas.get(n); return { nome: n, foto: a ? a.foto : '', rosto: a ? a.rosto : null }; });
+      const r = await M.compartilhar({ nome: nome || '', foto: bl, sobre: PERF.perfil(), favs, formato });
+      if (r === 'baixado') toast('imagem baixada: é só postar!'); else if (r === 'compartilhado') toast('compartilhado!');
+    } catch { toast('não consegui montar a imagem agora.'); }
+    bt.disabled = false;
+  };
+  const dividir = h('div', { class: 'in-share', role: 'group', 'aria-label': 'compartilhar meu passe' }, h('span', {}, 'compartilhar meu passe'),
+    ...[['post', 'post'], ['story', 'story']].map(([f, t]) => h('button', { type: 'button', class: 'in-share-bt', onclick: (e) => compartilharPasse(f, e.currentTarget) }, t)));
+
   const tres = h('div', { class: 'in-tres' },
     h('div', {}, h('b', {}, String(seq)), h('small', {}, seq === 1 ? 'dia seguido' : 'dias seguidos')),
     h('div', {}, h('b', {}, String(estrelas)), h('small', {}, 'estrelas')),
@@ -212,6 +227,6 @@ export function mount(host, { nome = '' } = {}) {
   const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
   const mostraAtu = () => { avisoAtu.hidden = false; };
   try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
-  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, tres, continuar, roleta, novidades, atalhos));
+  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, dividir, tres, continuar, roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }
