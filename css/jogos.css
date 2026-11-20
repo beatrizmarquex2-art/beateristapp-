@@ -2001,3 +2001,7 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .fx-paul.n3,.jg-figurix[data-skin="c"] .fx-paul.n3{left:50%;transform:translateX(-50%);width:92px;z-index:3;transition:left .15s ease}
 .jg-figurix .fx-nome.n3,.jg-figurix[data-skin="c"] .fx-nome.n3{right:auto;bottom:10px;font-size:19px;line-height:1.1;padding:12px 4px;text-align:center;z-index:2;overflow-wrap:anywhere}
 .jg-figurix[data-skin="c"] .fx-campo.n3{background:linear-gradient(#a9dcff,#fff4cc 75%,#ffe7a0)}
+
+/* Figurix · monte a figura: colchetes 0 1 2 3 4 todos na mesma linha, sem estourar (v735, pedido da Bea) */
+.jg-figurix .fx-colch{display:flex;flex-wrap:nowrap;gap:8px}
+.jg-figurix .fx-colch .fx-peca{flex:1 1 0;min-width:0!important;padding:6px 2px;min-height:66px;font-size:26px!important;font-weight:800;line-height:1}

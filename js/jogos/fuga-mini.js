@@ -173,7 +173,7 @@ export function montar(box, { nivel = 'facil', fim = () => {} } = {}) {
     const alvo = figs[r]; const cheio = m.cabeca != null && m.haste != null && m.colchetes != null; pergunta.textContent = `monte a ${FIG_NAME[alvo]}`; pinta();
     cena.replaceChildren(svgEl(noteMarkup({ open: m.cabeca === 'vazia', stem: !!m.haste, flags: m.colchetes || 0 }, 'figura montada'), 'fgn-nota'));
     bancada.replaceChildren(grupo('cabeça', peca('cabeca', 'cheia', 'preenchida', 1), peca('cabeca', 'vazia', 'vazia', 2)), grupo('haste', peca('haste', true, 'com haste', 3), peca('haste', false, 'sem haste', 4)),
-      grupo('colchetes', ...Array.from({ length: cfg.maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, n === 0 ? 'nenhum' : String(n), (n % 4) + 1))), h('button', { type: 'button', class: 'btn primary wide fgn-ok', disabled: !cheio || trava, onclick: confere }, 'conferir ✓'));
+      grupo('colchetes', ...Array.from({ length: cfg.maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, String(n), (n % 4) + 1))), h('button', { type: 'button', class: 'btn primary wide fgn-ok', disabled: !cheio || trava, onclick: confere }, 'conferir ✓'));
   }
   function confere() {
     if (trava) return; const c = confereMonte(figs[r], m); const tudo = c.cabeca && c.haste && c.colchetes;

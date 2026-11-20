@@ -118,14 +118,14 @@ export function mount(host) {
     monte: (p) => {
       const montes = montesDe(p.nivel); const maxC = maxColchetes(p.nivel); let r = 0; const total = montes.length; let m = { cabeca: null, haste: null, colchetes: null }; let marcas = null;
       // cada linha (cabeça, haste, colchetes) tem sempre uma opção; sem colchete e sem haste são botões de verdade
-      const peca = (grupo, valor, texto, cor) => h('button', { type: 'button', class: `fx-peca c${cor}${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': texto, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, texto);
+      const peca = (grupo, valor, texto, cor, aria) => h('button', { type: 'button', 'data-g': grupo, 'data-v': String(valor), class: `fx-peca c${cor}${m[grupo] === valor ? ' on' : ''}${marcas && marcas[grupo] === false && m[grupo] === valor ? ' no' : ''}`, 'aria-label': aria || texto, onclick: () => { m = { ...m, [grupo]: valor }; marcas = null; sfx.play('click'); desenha(); } }, texto);
       const desenha = () => {
         const alvo = montes[r]; const preview = noteMarkup({ open: m.cabeca === 'vazia', stem: !!m.haste, flags: m.colchetes || 0 }, 'figura montada');
         const cheio = m.cabeca != null && m.haste != null && m.colchetes != null;
         root.replaceChildren(topo(r, total), h('p', { class: 'fx-q' }, `monte a ${FIG_NAME[alvo]}`), svgEl(preview, 'fx-big'),
           h('div', { class: 'fx-pecas' }, peca('cabeca', 'cheia', 'preenchida', 1), peca('cabeca', 'vazia', 'não preenchida', 2)),
           h('p', { class: 'fx-lab' }, 'haste'), h('div', { class: 'fx-pecas' }, peca('haste', true, 'com haste', 3), peca('haste', false, 'sem haste', 4)),
-          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, n === 0 ? 'sem colchete' : `${n} colchete${n === 1 ? '' : 's'}`, (n % 4) + 1))),
+          h('p', { class: 'fx-lab' }, 'colchetes'), h('div', { class: 'fx-pecas fx-colch' }, ...Array.from({ length: maxC + 1 }, (_, n) => n).map((n) => peca('colchetes', n, String(n), (n % 4) + 1, n === 0 ? 'sem colchete' : `${n} colchete${n === 1 ? '' : 's'}`))), // só os números 0 1 2 3 4, todos na mesma linha
           h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', disabled: !cheio, onclick: confere }, 'conferir')));
       };
       const confere = () => {
