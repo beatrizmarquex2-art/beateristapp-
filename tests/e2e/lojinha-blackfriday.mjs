@@ -6,6 +6,7 @@ await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-no
 await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1500);
 check('o banner anual é o primeiro e o combo vem logo depois', (await page.locator('.lj > :first-child').getAttribute('data-id')) === 'anual-lancamento' && (await page.locator('.lj > :nth-child(2)').getAttribute('data-id')) === 'combo-bf');
 check('sem aba black friday', (await page.getByRole('tab', { name: 'black friday' }).count()) === 0);
+check('arte do combo e botão continuam', await page.locator('[data-id="combo-bf"] .lj-btn').count() === 1);
 check('3 artes de combo no carrossel', await page.locator('.lj-combo-art').count() === 3);
 await page.screenshot({ path: '/tmp/lojinha-bf.png', fullPage: true });
 check('sem erros', errs.length === 0, errs.join('|'));

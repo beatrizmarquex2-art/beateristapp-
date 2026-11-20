@@ -43,11 +43,18 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
+/** Destaque do combo Black Friday: primeira coisa da Lojinha. */
+function destaqueCombo() {
+  return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
+    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
+}
+
 /** Os 3 combos Robôterista (artes da Bea): carrossel de arrastar; tocar numa arte desce pra lista de materiais. */
 const COMBOS_ARTE = [['ensina', 'Ensina', 'Ritmo e Figuras, Harmonia e Melodia e Na Prática'], ['aprende', 'Aprende Brincando', 'Uno Musical, Jogo da Memória Musical e Paul para colorir'], ['cria', 'Cria e Revisa', 'Cards: Teoria Musical, Instrumentos e Dicionário Musical']];
-function destaqueCombo() {
-  const ir = () => { const alvo = document.querySelector('.lj-esc'); if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-  return h('section', { class: 'lj-combos', 'data-id': COMBO.id, 'aria-label': 'combos Robôterista' },
+function destaqueCombos() {
+  const ir = () => { const alvo = document.querySelector('.lj-secs'); if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  return h('section', { class: 'lj-combos', 'data-id': 'combos-robo', 'aria-label': 'combos Robôterista' },
     h('div', { class: 'lj-combos-fila' }, ...COMBOS_ARTE.map(([k, nome, itens]) =>
       h('button', { type: 'button', class: 'lj-combo-art', 'aria-label': `ver o combo Robôterista ${nome}`, onclick: ir }, h('img', { src: `assets/loja/combo-${k}.webp`, alt: `Combo Robôterista ${nome}: ${itens}`, width: 900, height: 1125 })))),
     h('p', { class: 'lj-combos-dica' }, 'arraste pro lado pra ver os 3 combos →'));
@@ -82,6 +89,7 @@ export function vitrine(secao = '') {
     destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
+    destaqueCombos(),
     h('div', { class: 'lj-secs' }, ...SECOES.map(tile)),
     h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
     PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),

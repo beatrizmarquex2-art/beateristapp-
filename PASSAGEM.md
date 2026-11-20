@@ -1106,3 +1106,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - v739: banner do acesso anual agora é a arte enviada pela Bea (assets/loja/anual.webp, 1600x533), primeira coisa da Lojinha.
 - v740: no lugar do Combo Robôterista (R$ 79,90) entra a arte dos 3 combos (assets/loja/combos.webp); tocar nela desce pra lista de materiais. A constante COMBO continua em loja-config.js (paul-dicas.js usa).
 - v741: os 3 combos Robôterista viram carrossel de 3 artes (assets/loja/combo-ensina|aprende|cria.webp, .lj-combos em lote3.css) no lugar da arte única.
+- v742: combo Robôterista (R$ 79,90) volta logo abaixo do banner anual; o carrossel dos 3 combos fica em "Por onde você quer começar?", acima dos cards.
