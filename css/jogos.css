@@ -1916,52 +1916,6 @@ body.bv-aberta { overflow: hidden; }
 .hj-roleta > span { display: inline-flex; }
 .lj-passe .lj-pm h3 .ic-paul { width: 30px !important; height: 30px !important; max-width: none; margin: 0 8px 0 0; vertical-align: -8px; display: inline-block; }
 
-/* Uno Musical pra imprimir (js/jogos/cartas-print.js): A4, 9 cartas por folha de 60 × 87 mm */
-.cx-print { display: none; }
-@media print {
-  body.cxp-printing > *:not(.cx-print) { display: none !important; }
-  html:has(body.cxp-printing), body.cxp-printing { background: #fff !important; background-image: none !important; }
-  body.cxp-printing::before, body.cxp-printing::after { display: none !important; }
-  body.cxp-printing .cx-print { display: block !important; --cw: 60mm; color: #000; font-family: system-ui, sans-serif; position: static; }
-  .cxp.bw { filter: none; }
-  /* versão pra pintar: tudo branco, só o contorno e o desenho em preto */
-  .cxp.pintar .cx-card { --cb: #fff; --cs: #000; --cc: #000; background: #fff !important; border: .7mm solid #000 !important; border-radius: 3mm; }
-  .cxp.pintar .cx-oval::before { background: #fff; border: .6mm solid #000; width: 76%; height: 64%; }
-  .cxp.pintar .cx-card svg *[fill="currentColor"] { fill: #000 !important; } .cxp.pintar .cx-card svg *[stroke] { stroke: #000 !important; }
-  .cxp.pintar .cx-card svg *[fill^="#"] { fill: #fff !important; stroke: #000 !important; stroke-width: 1.6 !important; } /* cores do curinga: contorno vazio pra a criança pintar */
-  .cxp.pintar .cx-card svg circle[fill^="#"] { stroke-width: 1.4 !important; }
-  .cxp.pintar .cxp-cor, .cxp.pintar .cxp-site { color: #000; opacity: 1; }
-  .cxp.pintar .cx-lbl { background: #fff; border: .3mm solid #000; }
-  .cxp-paul-card { --cb: #fff; width: 60mm; height: 87mm; position: relative; display: block; }
-  .cxp-paul-card .cx-oval::before { display: none; }
-  .cxp-paul-img { position: relative; width: 86%; height: auto; max-height: 68%; object-fit: contain; margin-top: 3mm; }
-  .cxp-paul-card .cxp-v-top { position: absolute; left: 0; right: 0; top: 3.5mm; text-align: center; font: 800 3.4mm/1 system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #000; }
-  .cxp-paul-card .cxp-site { color: #000; }
-  .cxp-page { break-after: page; page-break-after: always; } .cxp-page:last-child { break-after: auto; page-break-after: auto; }
-  .cxp-page h1 { font-size: 22pt; margin: 0 0 6pt; } .cxp-page h2 { font-size: 14pt; margin: 14pt 0 6pt; } .cxp-sub { font-size: 10pt; color: #333; } .cxp-page li { font-size: 11.5pt; margin: 3pt 0; }
-  .cxp-grid { display: grid; grid-template-columns: repeat(3, 60mm); grid-auto-rows: 87mm; justify-content: center; align-content: start; gap: 0; }
-  .cxp-cell { width: 60mm; height: 87mm; box-sizing: border-box; outline: .3mm dashed #888; outline-offset: -.15mm; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .cxp-cell .cx-card { box-shadow: none; }
-  .cxp-cor { position: absolute; left: 2.6em; right: 2.6em; top: .55em; text-align: center; font: 800 .5em/1 system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--cc); }
-  .cxp .cx-lbl { font-size: 3.5mm !important; bottom: 6.2% !important; left: 50% !important; right: auto !important; transform: translateX(-50%); width: max-content; max-width: 88%; background: #fffdf7; color: #14203a; border-radius: 2mm; padding: .6mm 2.4mm; text-shadow: none; }
-  body.cxp-printing .cx-print { background: #fff !important; min-height: 0 !important; height: auto !important; }
-  .cxp-site { position: absolute; left: 0; right: 0; bottom: 1.1mm; text-align: center; font: 700 2.1mm/1 system-ui, sans-serif; letter-spacing: .03em; color: var(--cc); opacity: .9; }
-  .cxp-logo { height: 34mm; width: auto; display: block; margin: 0 0 4mm; } .cxp-site-pg { margin-top: 10pt; font-size: 12pt; font-weight: 700; }
-  .cxp-verso .cxp-v-top { position: absolute; left: 0; right: 0; top: 3.5mm; text-align: center; font: 800 3.2mm/1 system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #F2B01E; z-index: 2; }
-  .cxp-verso .cx-oval { color: inherit; } .cxp-verso .cxp-v-logo { position: relative; width: 74%; height: auto; transform: rotate(0deg); }
-  .cxp-verso .cxp-v-site { position: absolute; left: 50%; bottom: 4mm; transform: translateX(-50%); background: #F2B01E; color: #17365B; border-radius: 2mm; padding: .8mm 3mm; font: 800 3mm/1.1 system-ui, sans-serif; white-space: nowrap; z-index: 2; }
-  .cxp-verso.cxp-v-pintar { --cb: #fff; background: #fff !important; border: .7mm solid #000 !important; border-radius: 3mm; }
-  .cxp-v-pintar .cxp-v-top { color: #000; } .cxp-v-pintar .cx-oval::before { display: none; }
-  .cxp-v-pintar .cxp-v-logo { width: 86%; margin-top: 1mm; } .cxp-v-pintar .cxp-v-site { background: #fff; color: #000; border: .45mm solid #000; }
-  .cxp-leg { display: grid; grid-template-columns: 1fr 1fr; gap: 6pt 14pt; margin-top: 8pt; }
-  .cxp-leg-it { display: flex; gap: 8pt; align-items: flex-start; break-inside: avoid; } .cxp-leg-it b { font-size: 11pt; } .cxp-leg-it p { margin: 1pt 0 0; font-size: 9.5pt; line-height: 1.3; }
-  .cxp-leg-ic { flex: none; width: 15mm; height: 20mm; display: flex; align-items: center; justify-content: center; border: .3mm solid #999; border-radius: 2mm; } .cxp-leg-svg { height: 16mm; width: auto; color: #222; }
-}
-@media print {
-  /* ícones dos cantos das cartas impressas: menores, pra não encostarem no oval branco */
-  .cxp .cx-co { width: 1.25em; height: 1.6em; font-size: 1.1em; }
-  .cxp .cx-co.tl { top: .45em; left: .4em; } .cxp .cx-co.br { bottom: .45em; right: .4em; }
-}
 /* as estrelinhas de favorito só aparecem quando a pessoa toca em "☆ escolher favoritos" (antes tapavam o desenho e o nome dos jogos) */
 .jgx-cell .jgx-star { display: none; }
 .jg-cat.jgx-favmode .jgx-star, .jgx-favmode .jgx-star, .jgx-editing .jgx-star { display: block; }
