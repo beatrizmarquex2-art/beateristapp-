@@ -2,7 +2,7 @@
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
 import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
 import { h, icon, uid } from './util.js';
-import { soundButton, musicButton } from './sound-btn.js';
+import { misturaOption, MISTURA_AJUDA, soundButton, musicButton } from './sound-btn.js';
 import { iconeTopo } from './top-icons.js';
 import { atualizarButton } from './atualizar-btn.js';
 import * as store from './store.js';
@@ -402,6 +402,7 @@ function opcoes(name) {
       h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${CODE.mascarar(code)}`) : h('span', {}, 'ainda sem código')),
       bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
       code ? null : bt('🔑 tenho código', abrirCodigo),
+      misturaOption('btn wide'), h('small', { class: 'muted' }, MISTURA_AJUDA),
       bt('🚪 sair', sairDoApp, 'btn wide ghost'),
       h('small', { class: 'muted al-termo' }, TERMO_DE_USO),
       code ? h('small', { class: 'muted' }, 'o seu nome e o código ficam salvos neste aparelho: da próxima vez você entra direto. por segurança o código nunca aparece inteiro na tela.') : null);

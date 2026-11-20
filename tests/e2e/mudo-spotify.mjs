@@ -18,6 +18,13 @@ check('som ligado: sessão "playback" e áudio de fundo tocando', (await p.evalu
 const pausasAntes = await p.evaluate(() => window.__pauses);
 await p.evaluate(async () => { const A = await import('/js/audio.js'); A.setMuted(true); }); await sleep(300);
 check('silenciar de novo: volta a "ambient" e pausa o áudio de fundo', (await p.evaluate(() => navigator.audioSession.type)) === 'ambient' && (await p.evaluate(() => window.__pauses)) > pausasAntes, await p.evaluate(() => navigator.audioSession.type));
+// "misturar com meu Spotify" (som LIGADO): fica em "ambient" e não segura o áudio; desligar volta ao "playback"
+await p.evaluate(async () => { const A = await import('/js/audio.js'); A.setMuted(false); A.setMistura(true); A.audio(); }); await p.mouse.click(200, 300); await sleep(300);
+const playsMix = await p.evaluate(() => window.__plays);
+check('misturar ligado (com som): sessão "ambient", sem áudio de fundo novo', (await p.evaluate(() => navigator.audioSession.type)) === 'ambient', await p.evaluate(() => navigator.audioSession.type));
+await p.evaluate(async () => { const A = await import('/js/audio.js'); A.setMistura(false); }); await p.mouse.click(200, 300); await sleep(300);
+check('misturar desligado: volta ao "playback"', (await p.evaluate(() => navigator.audioSession.type)) === 'playback' && (await p.evaluate(() => window.__plays)) > playsMix, await p.evaluate(() => navigator.audioSession.type));
+await p.evaluate(async () => { const A = await import('/js/audio.js'); A.setMuted(true); }); await sleep(200);
 // o microfone ainda precisa de "play-and-record"; ao fechar no mudo volta a "ambient"
 await p.evaluate(async () => { const A = await import('/js/audio.js'); A.micSession(true); }); const mic = await p.evaluate(() => navigator.audioSession.type);
 await p.evaluate(async () => { const A = await import('/js/audio.js'); A.micSession(false); }); const fechou = await p.evaluate(() => navigator.audioSession.type);
