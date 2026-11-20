@@ -1,0 +1,23 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>palheta</title><link rel="stylesheet" href="../css/fonts.css">
+<style>*{box-sizing:border-box}body{margin:0;background:#f3ecdc;font-family:"Hanken Grotesk",sans-serif;color:#142036;padding:16px 16px 28px}
+h1{font:400 22px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 30px;font-size:13px}.row{display:flex;gap:18px;flex-wrap:wrap}
+.c{position:relative;padding-top:26px;width:250px}.r{position:absolute;top:0;left:0;font:700 12px "Hanken Grotesk";width:250px}
+.board{background:#17365B;border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;box-shadow:0 6px 0 rgba(20,32,54,.25)}
+.cell{aspect-ratio:1;background:#fffdf7;border:3px solid #142036;border-radius:12px 9px 14px 10px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:3px 4px 0 rgba(20,32,54,.3)}
+.cell svg{width:100%;height:100%}.score{display:flex;justify-content:space-around;align-items:center;margin:10px 0 0;font:800 13px "Hanken Grotesk"}.score svg{width:30px;height:30px;display:block;margin:0 auto 2px}.score div{text-align:center}
+.nome{margin-top:6px;font:600 12px/1.3 "Hanken Grotesk"}
+</style></head><body><h1>palheta do jogo da velha</h1><p class="s">hoje a palheta é uma gota vermelha redonda. 3 jeitos de desenhar (o X das baquetas fica igual):</p><div class="row" id="r"></div>
+<script>
+const X='<path d="M6 6l28 28M34 6L6 34" stroke="#17365B" stroke-width="4" stroke-linecap="round"/><circle cx="6" cy="6" r="3.2" fill="#EBA332"/><circle cx="34" cy="6" r="3.2" fill="#EBA332"/>';
+const ATUAL='<path d="M20 5c9 0 15 3 15 11 0 9-8 19-15 19S5 25 5 16C5 8 11 5 20 5z" fill="#BD1733" stroke="#142036" stroke-width="2.4"/>';
+const PICK='M9 8Q9 4.5 12.5 4.5H27.5Q31 4.5 31 8Q31 21 22.5 34.5Q20 38 17.5 34.5Q9 21 9 8Z';
+// A: palheta clássica vermelha, ponta bem de palheta, com brilho
+const A=`<path d="${PICK}" fill="#BD1733" stroke="#142036" stroke-width="2.6" stroke-linejoin="round"/><path d="M13 9Q13 7.6 14.6 7.6H20Q15.5 11 14.5 20Q13 15 13 9Z" fill="#fff" opacity=".35"/>`;
+// B: palheta Beaterista: amarela com a nota musical em vazado e aro vinho
+const B=`<path d="${PICK}" fill="#F2B01E" stroke="#8E1B2C" stroke-width="2.8" stroke-linejoin="round"/><g fill="#142036"><ellipse cx="18.2" cy="22" rx="3.6" ry="2.7" transform="rotate(-20 18.2 22)"/><path d="M21.3 21.2V10.5l5.2 2.2v2.6l-3-1.2v7.1z"/></g><path d="M12.5 8.4Q12.5 7.5 13.6 7.5H17" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".7"/>`;
+// C: palheta casco de tartaruga (como as de verdade): marrom e âmbar manchado
+const C=`<defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9A93B"/><stop offset=".55" stop-color="#9C4A12"/><stop offset="1" stop-color="#4A210A"/></linearGradient></defs><path d="${PICK}" fill="url(#tg)" stroke="#142036" stroke-width="2.6" stroke-linejoin="round"/><ellipse cx="17" cy="13" rx="3.3" ry="2.2" fill="#3C1A07" opacity=".7"/><ellipse cx="25" cy="17" rx="2.4" ry="3.2" fill="#3C1A07" opacity=".6"/><ellipse cx="20" cy="25" rx="2" ry="3" fill="#F3C768" opacity=".7"/><path d="M12.8 8.4Q12.8 7.4 14 7.4H18" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".55"/>`;
+const ops=[['hoje (a gota redonda)',ATUAL],['A · palheta clássica vermelha',A],['B · palheta Beaterista (amarela, com a nota)',B],['C · casco de tartaruga (como as de verdade)',C]];
+const cell=(i)=>[0,1,2,3,4,5,6,7,8].map(k=>`<div class="cell">${k===0||k===5?`<svg viewBox="0 0 40 40">${X}</svg>`:k===4||k===2||k===6?`<svg viewBox="0 0 40 40">${i}</svg>`:''}</div>`).join('');
+document.getElementById('r').innerHTML=ops.map(([t,s])=>`<div class="c"><span class="r">${t}</span><div class="board">${cell(s)}</div><div class="score"><div><svg viewBox="0 0 40 40">${X}</svg>você</div><div><svg viewBox="0 0 40 40">${s}</svg>Paul</div></div></div>`).join('');
+</script></body></html>
