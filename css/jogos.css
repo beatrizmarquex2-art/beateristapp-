@@ -1983,3 +1983,13 @@ body.bv-aberta { overflow: hidden; }
 .fg-wrap:has(.fg-cena) .fgn-cena{background:none!important;border:0!important;box-shadow:none!important}
 .fg-wrap:has(.fg-cena) .fgn-nota [stroke="#1b1818"]{stroke:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#1b1818"]{fill:#f4f8ff!important}.fg-wrap:has(.fg-cena) .fgn-nota [fill="#fffdf8"]{fill:none!important}
 .fg-wrap:has(.fg-cena) .fgn-nota{filter:drop-shadow(0 0 8px #8fb8ff)}
+
+/* Figurix: LETRAS MAIORES (v732, pedido da Bea: "nem dá pra ler"). Tela "monte as notas" (quantas cabem…) e os textos pequenos do jogo */
+.jg-figurix .fx-arv{grid-template-columns:84px 1fr;gap:6px 12px;padding:12px 14px}
+.jg-figurix .fx-arv .fx-fig.sm{width:84px}.jg-figurix .fx-arv .fx-fig.sm svg{max-height:96px}
+.jg-figurix .fx-arv-t b{font-size:26px;line-height:1.1}
+.jg-figurix .fx-arv-t small{font-size:17px;font-weight:700;opacity:1;color:#3a2f2a;line-height:1.25}
+.jg-figurix .fx-arv .fx-opts{gap:10px}.jg-figurix .fx-arv .fx-n{min-height:64px;min-width:76px;font-size:28px;font-weight:800;padding:4px 12px}
+.jg-figurix .fx-arv .fx-num,.jg-figurix .fx-num{font-size:44px;font-weight:800}
+.jg-figurix .fx-q{font-size:26px!important;line-height:1.15}
+.jg-figurix .fx-lab{font-size:17px!important}.jg-figurix .fx-txt{font-size:17px}.jg-figurix .fx-pal{font-size:17px!important}.jg-figurix .fx-duas{font-size:26px}
