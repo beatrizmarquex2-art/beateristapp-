@@ -56,6 +56,7 @@ export function montarBaralho({ color = true, versos = false } = {}) {
 /** Espera as imagens do material carregarem (o logo), pra não sair em branco. */
 export const esperaImagens = (root) => Promise.all([...root.querySelectorAll('img')].map((i) => (i.complete ? Promise.resolve() : new Promise((ok) => { i.onload = i.onerror = ok; }))));
 export function imprimirBaralho(opts = {}) {
+  if (document.documentElement.classList.contains('aluno-on')) return null; // o baralho pra imprimir é produto da Bea: não sai pelo app dos alunos
   const root = montarBaralho(opts);
   document.body.append(root); document.body.classList.add('cxp-printing'); esperaImagens(root);
   const done = () => { document.body.classList.remove('cxp-printing'); root.remove(); window.removeEventListener('afterprint', done); };

@@ -161,7 +161,7 @@ export function mount(host, opts) {
         h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa.'),
         h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas. com mais gente, o botão UNO! aparece pra todos: quem apertar primeiro vale. se o outro for mais rápido, quem ficou com 1 carta compra 2.'),
         h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.')))]),
-      ...(UN ? [] : [h('p', { class: 'jg-lab jg-lab-peq' }, 'imprimir o baralho (128 cartas, A4, pra recortar)'),
+      ...(UN || document.documentElement.classList.contains('aluno-on') ? [] : [h('p', { class: 'jg-lab jg-lab-peq' }, 'imprimir o baralho (128 cartas, A4, pra recortar)'),
         h('div', { class: 'jg-seg', role: 'group', 'aria-label': 'imprimir o baralho do Uno Musical' }, ...[['colorido', { color: true }], ['preto e branco', { color: false }], ['frente e verso', { color: true, versos: true }]].map(([rot, o]) => h('button', { type: 'button', onclick: () => import('./cartas-print.js').then((m) => m.imprimirBaralho(o)).catch(() => toast('não consegui montar as cartas agora.')) }, `🖨 ${rot}`)))]),
       ...(UN ? [h('details', { class: 'jg-rules', open: true }, h('summary', {}, 'regras do UN🚫'), h('ul', {},
         h('li', {}, 'cartas iguais (mesma cor e mesma figura) podem ser jogadas juntas.'),
