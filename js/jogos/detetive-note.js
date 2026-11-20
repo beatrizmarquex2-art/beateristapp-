@@ -19,7 +19,7 @@ import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasM
 
 const EMOJI_MODO = { figuras: '🎼', comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
 /** Ícones do Detetive Note (desenhados pela Bea): um por palavra das cartas; sem ícone (ex.: pausa "shh") cai no emoji. */
-const ICONES = ['pao', 'bolo', 'chocolate', 'cao', 'pato', 'borboleta', 'mao', 'braco', 'esqueleto', 'ceu', 'bola', 'bicicleta'];
+const ICONES = ['shh', 'shh-som', 'pao', 'bolo', 'chocolate', 'cao', 'pato', 'borboleta', 'mao', 'braco', 'esqueleto', 'ceu', 'bola', 'bicicleta'];
 const ICONE_MODO = { comida: 'pao', parque: 'bicicleta', corpo: 'mao', animal: 'cao' };
 const ico = (id, fallback) => (ICONES.includes(id) ? h('img', { class: 'dn-ico', src: `assets/jogos/detetive/${id}.webp`, alt: '', draggable: 'false', decoding: 'async' }) : h('i', { 'aria-hidden': 'true' }, fallback));
 const NOME = (m) => `mundo ${m.slice(1)}`;
@@ -29,7 +29,7 @@ const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o
 const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { width: 84, count: false, clef: false })); const hd = L.ops.find((o) => o.t === 'head');
   if (temFlam(cell) && hd) L.ops.push({ t: 'grace', x: hd.x - 11, y: hd.y, mx: hd.x, my: hd.y }); return svgEl(N.toSVG(L), 'dn-face-fig'); }; // flam = notinha de ornamento antes da nota
 const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
-  : card.cell === '0010' ? h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
+  : card.cell === '0010' ? h('span', { class: 'dn-face' }, ico('shh-som', '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
   : h('span', { class: 'dn-face' }, ico(card.id, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 /** Cada fase toca num som diferente (caixa, tambor, bumbo, chimbal) pra uma fase não se confundir com a outra. */
 const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
