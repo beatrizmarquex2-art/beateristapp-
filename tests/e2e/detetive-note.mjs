@@ -38,7 +38,7 @@ await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitF
 await abre(4); // fase 5 do mundo 1
 check('mundo 1 tem os chips figuras, comida, parque, corpo e animal dentro do caso', (await page.locator('.dn-estilos button').count()) === 5);
 await page.locator('.dn-estilos button').nth(2).click(); // parque
-check('fase 5 no estilo parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i').count()) === 4);
+check('fase 5 no estilo parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i, .dn-card .dn-ico').count()) === 4);
 
 check('fase 5 toca mais rápido que a fase 1', /\d+ bpm/.test(await page.textContent('.dn-ouvir')) && Number((await page.textContent('.dn-ouvir')).match(/(\d+) bpm/)[1]) > 70);
 await monta(5, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
