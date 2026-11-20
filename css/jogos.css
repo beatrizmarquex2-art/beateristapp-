@@ -2005,3 +2005,8 @@ body.bv-aberta { overflow: hidden; }
 /* Figurix · monte a figura: colchetes 0 1 2 3 4 todos na mesma linha, sem estourar (v735, pedido da Bea) */
 .jg-figurix .fx-colch{display:flex;flex-wrap:nowrap;gap:8px}
 .jg-figurix .fx-colch .fx-peca{flex:1 1 0;min-width:0!important;padding:6px 2px;min-height:66px;font-size:26px!important;font-weight:800;line-height:1}
+
+/* Figurix: botão "conferir" (e os outros do rodapé) GRANDE (v736, pedido da Bea) */
+.jg-figurix .jg-actions{display:flex;gap:10px;margin-top:14px}
+.jg-figurix .jg-actions .btn{flex:1 1 auto;min-height:68px;font-size:26px;font-weight:800;padding:12px 24px;border-radius:16px}
+.jg-figurix .jg-actions .btn.primary:disabled{opacity:.55}
