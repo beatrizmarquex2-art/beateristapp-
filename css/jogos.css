@@ -1993,3 +1993,11 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .fx-arv .fx-num,.jg-figurix .fx-num{font-size:44px;font-weight:800}
 .jg-figurix .fx-q{font-size:26px!important;line-height:1.15}
 .jg-figurix .fx-lab{font-size:17px!important}.jg-figurix .fx-txt{font-size:17px}.jg-figurix .fx-pal{font-size:17px!important}.jg-figurix .fx-duas{font-size:26px}
+
+/* Figurix · tetris (v733, pedido da Bea: "muito feio"): 3 faixas, figura caindo SEM o quadro branco, nomes e Paul maiores */
+.jg-figurix .fx-campo.n3::before{display:none!important}
+.jg-figurix .fx-campo.n3 .fx-div{position:absolute;top:0;bottom:0;border-left:3px dashed #14203666;z-index:1}
+.jg-figurix .fx-campo.n3 .fx-cai,.jg-figurix[data-skin="c"] .fx-campo.n3 .fx-cai{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;width:96px;filter:drop-shadow(0 4px 3px #14203655)}
+.jg-figurix .fx-paul.n3,.jg-figurix[data-skin="c"] .fx-paul.n3{left:50%;transform:translateX(-50%);width:92px;z-index:3;transition:left .15s ease}
+.jg-figurix .fx-nome.n3,.jg-figurix[data-skin="c"] .fx-nome.n3{right:auto;bottom:10px;font-size:19px;line-height:1.1;padding:12px 4px;text-align:center;z-index:2;overflow-wrap:anywhere}
+.jg-figurix[data-skin="c"] .fx-campo.n3{background:linear-gradient(#a9dcff,#fff4cc 75%,#ffe7a0)}
