@@ -1104,3 +1104,4 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 - v738: check-in do dia (giro grátis + 7 dias seguidos) agora conta só de entrar no app (js/checkin-entrada.js, chamado em aluno.js e app.js); banner "acesso anual R$ 49,90 · especial lançamento" (assets/loja/anual.webp, ANUAL em loja-config.js) em cima do combo na Lojinha, só enquanto vale a oferta (passe-preco.js, até 15/dez).
 - v739: banner do acesso anual agora é a arte enviada pela Bea (assets/loja/anual.webp, 1600x533), primeira coisa da Lojinha.
+- v740: no lugar do Combo Robôterista (R$ 79,90) entra a arte dos 3 combos (assets/loja/combos.webp); tocar nela desce pra lista de materiais. A constante COMBO continua em loja-config.js (paul-dicas.js usa).

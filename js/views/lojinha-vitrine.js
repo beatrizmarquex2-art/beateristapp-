@@ -43,11 +43,11 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
-/** Destaque do combo Black Friday: primeira coisa da Lojinha. */
+/** Destaque dos combos Robôterista (arte da Bea): toca e desce pra lista de materiais, onde cada combo se compra. */
 function destaqueCombo() {
+  const ir = () => { const alvo = document.querySelector('.lj-esc'); if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
-    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'ver os combos Robôterista na Lojinha', onclick: ir }, h('img', { class: 'lj-bf-arte', src: 'assets/loja/combos.webp', alt: 'Combos Robôterista: Ensina, Aprende Brincando e Cria e Revisa. Confira os combos na Lojinha', width: 1400, height: 788 })));
 }
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
