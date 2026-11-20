@@ -43,11 +43,14 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
-/** Destaque dos combos Robôterista (arte da Bea): toca e desce pra lista de materiais, onde cada combo se compra. */
+/** Os 3 combos Robôterista (artes da Bea): carrossel de arrastar; tocar numa arte desce pra lista de materiais. */
+const COMBOS_ARTE = [['ensina', 'Ensina', 'Ritmo e Figuras, Harmonia e Melodia e Na Prática'], ['aprende', 'Aprende Brincando', 'Uno Musical, Jogo da Memória Musical e Paul para colorir'], ['cria', 'Cria e Revisa', 'Cards: Teoria Musical, Instrumentos e Dicionário Musical']];
 function destaqueCombo() {
   const ir = () => { const alvo = document.querySelector('.lj-esc'); if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-  return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'ver os combos Robôterista na Lojinha', onclick: ir }, h('img', { class: 'lj-bf-arte', src: 'assets/loja/combos.webp', alt: 'Combos Robôterista: Ensina, Aprende Brincando e Cria e Revisa. Confira os combos na Lojinha', width: 1400, height: 788 })));
+  return h('section', { class: 'lj-combos', 'data-id': COMBO.id, 'aria-label': 'combos Robôterista' },
+    h('div', { class: 'lj-combos-fila' }, ...COMBOS_ARTE.map(([k, nome, itens]) =>
+      h('button', { type: 'button', class: 'lj-combo-art', 'aria-label': `ver o combo Robôterista ${nome}`, onclick: ir }, h('img', { src: `assets/loja/combo-${k}.webp`, alt: `Combo Robôterista ${nome}: ${itens}`, width: 900, height: 1125 })))),
+    h('p', { class: 'lj-combos-dica' }, 'arraste pro lado pra ver os 3 combos →'));
 }
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },

@@ -1139,3 +1139,11 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 /* estudos: aviso da figurinha exclusiva ao terminar um tema */
 .tf-exclusiva { margin: 8px 0 0; padding: 10px 12px; border-radius: 14px !important; background: #fff3c4; border: 2px solid #c81e2d; font-weight: 700; color: #162146; }
 .tf-exclusiva a { color: #c81e2d; }
+/* combos Robôterista: carrossel das 3 artes (Lojinha) */
+.lj-combos{margin:6px 0 10px}
+.lj-combos-fila{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px 2px 12px;scrollbar-width:none}
+.lj-combos-fila::-webkit-scrollbar{display:none}
+.lj-combo-art{flex:0 0 84%;scroll-snap-align:center;padding:0;border:3px solid rgb(var(--ink-rgb));border-radius:18px;background:var(--card);box-shadow:5px 5px 0 rgb(var(--ink-rgb));overflow:hidden;cursor:pointer}
+.lj-combo-art img{display:block;width:100%;height:auto}
+.lj-combos-dica{text-align:center;font:600 13px var(--body);opacity:.7;margin:0}
+@media (min-width: 700px) { .lj-combos { max-width: 760px; margin-left: auto; margin-right: auto; } .lj-combo-art { flex-basis: 46%; } }
