@@ -14,7 +14,7 @@ export function ordemDoBaralho() {
   const deck = C.makeDeck(); const por = (c) => `${c.color ? C.COLORS.indexOf(c.color) : 9}|${c.kind === 'fig' ? String(SYMS.indexOf(c.sym)).padStart(2, '0') : `9${C.ACTIONS.indexOf(c.kind)}${c.kind}`}`;
   return deck.slice().sort((a, b) => (por(a) < por(b) ? -1 : por(a) > por(b) ? 1 : 0));
 }
-const celula = (c) => { const el = cardEl(c); if (c.color) el.append(h('b', { class: 'cxp-cor' }, COR[c.color])); el.append(h('small', { class: 'cxp-site' }, `robôterista paul · ${SITE}`)); return h('div', { class: 'cxp-cell' }, el); }; // o nome da cor também em texto (ajuda no preto e branco e em quem não distingue as cores)
+const celula = (c) => { const el = cardEl(c); if (c.color) el.append(h('b', { class: 'cxp-cor' }, COR[c.color])); el.append(h('small', { class: 'cxp-site' }, SITE)); return h('div', { class: 'cxp-cell' }, el); }; // o nome da cor também em texto (ajuda no preto e branco e em quem não distingue as cores)
 /** Verso com a marca: o Robôterista Paul no meio e o endereço do jogo embaixo. */
 const celulaVerso = () => { const v = backEl(); v.classList.add('cxp-verso'); v.replaceChildren(h('b', { class: 'cxp-v-top' }, 'uno musical'), h('span', { class: 'cx-oval' }, h('img', { class: 'cxp-v-logo', src: LOGO, alt: '' })), h('b', { class: 'cxp-v-site' }, SITE)); return h('div', { class: 'cxp-cell' }, v); };
 
