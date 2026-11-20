@@ -225,6 +225,8 @@ export function mount(host) {
       const rot = (it, f) => (it.rot === 'valor' ? beatsLabel(FIG_BY[f].beats) : nomeFig(f));
       const emb = (arr) => { const r = arr.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
       const itens = T.itens.map((it) => { const certo = rot(it, it.fig); const outros = emb(ids.filter((f) => f !== it.fig)).map((f) => rot(it, f)).filter((t, i, a) => t !== certo && a.indexOf(t) === i).slice(0, N - 1); const ops = emb([certo, ...outros]); return { ...it, ops, ok: ops.indexOf(certo) }; });
+      itens.forEach((it, i) => { if (i > 0 && it.ok === itens[i - 1].ok) { const j = (it.ok + 1 + Math.floor(Math.random() * (N - 1))) % N; [it.ops[it.ok], it.ops[j]] = [it.ops[j], it.ops[it.ok]]; it.ok = j; } }); // a faixa certa NUNCA é a mesma duas vezes seguidas
+      let inicioAnt = -1;
       const paul = h('div', { class: 'fx-paul n3' }, h('img', { src: corSrc('ouvindo'), alt: '', draggable: 'false' })); // o Paul de fone, sem a bateria
       const nomes = Array.from({ length: N }, (_, i) => h('b', { class: 'fx-nome n3', style: `left:${(i / N) * 100 + 1.5}%;width:${100 / N - 3}%` }));
       const queda$ = h('div', { class: 'fx-cai' });
@@ -239,7 +241,7 @@ export function mount(host) {
       const proximo = () => {
         if (k >= itens.length) { pronto(); fim(); return; }
         const it = itens[k]; nomes.forEach((n, i) => { n.textContent = it.ops[i]; }); queda$.replaceChildren(it.face === 'pausa' ? pausa(it.fig, 'fx-fig sm') : fig(it.fig, 'fx-fig sm')); t0 = performance.now();
-        { const outras = Array.from({ length: N }, (_, i) => i).filter((i) => i !== it.ok); lado = outras[Math.floor(Math.random() * outras.length)]; poe(); } // o Paul NUNCA começa na faixa certa
+        { const erradas = Array.from({ length: N }, (_, i) => i).filter((i) => i !== it.ok); const outras = erradas.filter((i) => i !== inicioAnt); const lista = outras.length ? outras : erradas; lado = lista[Math.floor(Math.random() * lista.length)]; inicioAnt = lado; poe(); } // o Paul NUNCA começa na faixa certa nem na mesma de onde começou antes
         window.__figurix.tetris = { item: it, get lado() { return lado; }, vai };
       };
       const passo = (agora) => {

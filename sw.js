@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v733';
+const VERSION = 'beaterista-v734';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js', 'js/boas-vindas.js', 'js/inicio-perfil.js', 'js/jogos/cartas-print.js', 'assets/uno/paul-colorir.png', 'assets/velha/baquetas.webp', 'assets/velha/palheta.webp', 'assets/uno/paul-logo-colorir.png', 'assets/uno/paul-logo-colorir.png', 'js/icone-paul.js', 'js/palavras-bloqueadas.js',
   'js/paulta/mapa.js',
