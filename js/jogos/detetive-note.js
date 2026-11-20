@@ -18,6 +18,10 @@ import { temaDoMundo } from './mundos-tema.js';
 import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { figuras: '🎼', comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
+/** Ícones do Detetive Note (desenhados pela Bea): um por palavra das cartas; sem ícone (ex.: pausa "shh") cai no emoji. */
+const ICONES = ['pao', 'bolo', 'chocolate', 'cao', 'pato', 'borboleta', 'mao', 'braco', 'esqueleto', 'ceu', 'bola', 'bicicleta'];
+const ICONE_MODO = { comida: 'pao', parque: 'bicicleta', corpo: 'mao', animal: 'cao' };
+const ico = (id, fallback) => (ICONES.includes(id) ? h('img', { class: 'dn-ico', src: `assets/jogos/detetive/${id}.webp`, alt: '', draggable: 'false', decoding: 'async' }) : h('i', { 'aria-hidden': 'true' }, fallback));
 const NOME = (m) => `mundo ${m.slice(1)}`;
 
 // figuras SEM pauta: só as notas, hastes, barras e pausas (tira a linha, a clave e o travessão)
@@ -26,7 +30,7 @@ const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { wid
   if (temFlam(cell) && hd) L.ops.push({ t: 'grace', x: hd.x - 11, y: hd.y, mx: hd.x, my: hd.y }); return svgEl(N.toSVG(L), 'dn-face-fig'); }; // flam = notinha de ornamento antes da nota
 const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
   : card.cell === '0010' ? h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
-  : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
+  : h('span', { class: 'dn-face' }, ico(card.id, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 /** Cada fase toca num som diferente (caixa, tambor, bumbo, chimbal) pra uma fase não se confundir com a outra. */
 const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
 const somDaFase = (n) => SONS_FASE[(n - 1) % SONS_FASE.length];
@@ -99,7 +103,7 @@ export function mount(host) {
     const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
       h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
-      modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, h('i', { 'aria-hidden': 'true' }, EMOJI_MODO[e]), h('span', {}, e)))) : null,
+      modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, ico(ICONE_MODO[e], EMOJI_MODO[e]), h('span', {}, e)))) : null,
       modo === 'm1' ? h('button', { type: 'button', class: `dn-rapido${rapido ? ' on' : ''}`, 'aria-pressed': String(rapido), onclick: () => { rapido = !rapido; bpm = bpmFase(modo, fase, rapido); desenha(); } }, h('b', {}, '⚡ 100 bpm'), h('small', {}, rapido ? 'ligado: o mundo 1 já toca rápido' : 'pra adultos: já ouvir no andamento rápido')) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),

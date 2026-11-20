@@ -1919,3 +1919,6 @@ body.bv-aberta { overflow: hidden; }
 .jg-detetive .dn-rapido{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px;padding:7px 10px;border:2px solid #1b1818;border-radius:10px;background:#fffdf7;color:#1b1818;box-shadow:2px 2px 0 #1b1818;text-align:left;cursor:pointer}
 .jg-detetive .dn-rapido b{font:800 13px var(--body,inherit);white-space:nowrap}.jg-detetive .dn-rapido small{font:600 11px var(--body,inherit);opacity:.8}
 .jg-detetive .dn-rapido.on{background:#e3a82f;transform:translate(2px,2px);box-shadow:0 0 0 #1b1818}
+/* Detetive Note: ícones da Bea no lugar dos emojis (cartas e chips de estilo) */
+.jg-detetive .dn-face .dn-ico{width:46px;height:46px;object-fit:contain;display:block}
+.jg-detetive .dn-estilos button .dn-ico{width:24px;height:24px;object-fit:contain;display:block}
