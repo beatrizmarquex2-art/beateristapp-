@@ -19,18 +19,18 @@ import { rufo } from '../figurinhas/roleta-sfx.js';
 
 const LENDARIAS_ON = true; // aba Lendárias liberada (pedido da Bea): por enquanto os espaços ficam trancados até as figurinhas chegarem
 const TABS = ['Na mão', ...L.SECOES, ...(LENDARIAS_ON ? ['Lendárias'] : []), 'Pacotes']; // "minhas figurinhas" é a primeira aba: as da mão (pra colar) e, embaixo, as que a pessoa criou (pedido da Bea: uma aba só, sem repetir)
-const ROTULO = { 'Na mão': 'minhas figurinhas', Beaterista: 'exclusivas' }; // nome na aba (o resto usa o próprio nome)
+const ROTULO = { 'Na mão': 'minhas figurinhas', Beaterista: 'exclusivas', Bandas: 'Cantores e Bandas', Artistas: 'Musicistas e Tops' }; // nome na aba (o resto usa o próprio nome)
 const ABA_ANTIGA = { Minhas: 'Na mão' };
 /** O Álbum abre numa LISTA compacta de coleções, cada uma com o seu nível (pedido da Bea, nov/2026). `tab` = qual livro/tela abre ao tocar. */
 const COLECOES = [
   { tab: 'Beatlemania', nome: 'Beatlemania', nivel: 'Clássica', cor: '#17224a', fg: '#ffd23f', ic: '🪲' },
-  { tab: 'Bandas', nome: 'Bandas', nivel: 'Comum', cor: '#c4182c', fg: '#fff6e0', ic: '🎸' },
-  { tab: 'Artistas', nome: 'Artistas', nivel: 'Rara', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
+  { tab: 'Bandas', nome: 'Cantores e Bandas', nivel: 'Comum', cor: '#c4182c', fg: '#fff6e0', ic: '🎸' },
+  { tab: 'Artistas', nome: 'Musicistas e Tops', nivel: 'Rara', cor: '#e9b824', fg: '#17224a', ic: '🎤' },
   { tab: 'Beaterista', nome: 'Beaterista & Paul', nivel: 'Exclusiva', cor: '#2d3d7a', fg: '#ffd23f', ic: '⭐' },
   { tab: 'Lendárias', nome: 'SUPER PAUL', nivel: 'Lendária', cor: '#0b0b10', fg: '#ffd23f', ic: '⚡' },
   { tab: 'Na mão', nome: 'Minhas figurinhas', nivel: 'Épica', cor: '#5a2bb8', fg: '#ffffff', ic: '📸' },
 ]; // a aba "criadas por mim" foi pra dentro de "minhas figurinhas"
-const NOTE = { Bandas: 'os grupos: todas comuns, pra encher o álbum rápido', Beatlemania: 'os quatro de Liverpool, a banda que deu nome ao Paul', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Artistas: 'cantores são comuns; os músicos e alguns ídolos são raros (★)' };
+const NOTE = { Bandas: 'cantores e bandas: todas comuns, pra encher o álbum rápido', Beatlemania: 'os quatro de Liverpool, a banda que deu nome ao Paul', Beaterista: 'as figurinhas da própria Bea e do Paul — todas exclusivas', Artistas: 'musicistas e tops: todas raras (★)' };
 let catalog = null;
 // catálogo completo = as 125 originais + as figurinhas do Paul (arquivo separado, pra não mexer no catálogo original)
 const loadCatalog = async () => (catalog ||= (await Promise.all([fetch('assets/figurinhas/catalogo.json').then((r) => r.json()), fetch('assets/figurinhas/catalogo-paul.json').then((r) => (r.ok ? r.json() : [])).catch(() => []), fetch('assets/figurinhas/catalogo-bea.json').then((r) => (r.ok ? r.json() : [])).catch(() => [])])).flat());

@@ -32,10 +32,10 @@ export function deco(seed) {
 }
 
 const COVER = {
-  Bandas: { titulo: 'Bandas', sub: 'os grupos que fizeram história', cls: 'cv-geral' },
+  Bandas: { titulo: 'Cantores e Bandas', sub: 'quem fez história cantando e tocando', cls: 'cv-geral' },
   Beatlemania: { titulo: 'Beatlemania', sub: 'os quatro de Liverpool', cls: 'cv-beatles' },
   Beaterista: { titulo: 'Beaterista & Paul', sub: 'da escola pro seu álbum', cls: 'cv-bea' },
-  Artistas: { titulo: 'Artistas', sub: 'cantores e músicos: as raras moram aqui', cls: 'cv-esp' },
+  Artistas: { titulo: 'Musicistas e Tops', sub: 'musicistas e tops: as raras moram aqui', cls: 'cv-esp' },
 };
 
 
@@ -67,9 +67,9 @@ const esc = (s) => String(s).replace(/&/g, '&amp;');
 const titulo = (t, x, y, w, size, fill, st = '') => `<text x="${x}" y="${y}" font-family="'Anton',sans-serif" font-size="${size}" text-anchor="middle" fill="${fill}" ${st} textLength="${w}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text>`;
 const FOTOS = 'assets/figurinhas/fotos/';
 const VINIL = {
-  Bandas: { id: 'ba', nome: 'BANDAS', sub: 'os grupos que fizeram história', cor: RED, tcor: CR, fotos: ['F047'], nomes: ['Queen', 'Nirvana', 'Led Zeppelin', 'Linkin Park'], base: FOTOS },
+  Bandas: { id: 'ba', nome: ['CANTORES', 'E BANDAS'], sub: 'quem fez história cantando e tocando', cor: RED, tcor: CR, fotos: ['F047'], nomes: ['Queen', 'Rita Lee', 'Nirvana', 'Pitty'], base: FOTOS },
   Beaterista: { id: 'be', nome: ['BEATERISTA', '& PAUL'], sub: 'exclusivas · da escola pro seu álbum', cor: RED, tcor: CR, fotos: [], foto: 'assets/figurinhas/capa-beaterista-paul.webp', nomes: ['A Bea e o Paul', 'Paul, o robôterista', 'Carreira Beaterista'], base: FOTOS },
-  Artistas: { id: 'ar', nome: 'ARTISTAS', sub: 'cantores e músicos', cor: YEL, tcor: NAVY, fotos: ['F032'], nomes: ['Rita Lee', 'Michael Jackson', 'Pitty', 'Slash'], base: FOTOS },
+  Artistas: { id: 'ar', nome: ['MUSICISTAS', 'E TOPS'], sub: 'musicistas e tops', cor: YEL, tcor: NAVY, fotos: ['F044'], nomes: ['Michael Jackson', 'Slash', 'Jimi Hendrix', 'Dave Grohl'], base: FOTOS },
 };
 /** Capa "disco de vinil" de Bandas e Artistas (escolha da Bea, nov/2026): o LP sai da capa quadrada com a foto, com a lista das primeiras faixas. */
 function vinilArt(got, total, P) {
@@ -89,14 +89,14 @@ function vinilArt(got, total, P) {
 
 /** Página "a história" da Beatlemania: por que os Beatles abrem o álbum e de onde veio o nome do Paul. */
 const INTRO = {
-  Bandas: `<header class="lv-head"><b>bandas</b><span>nível comum</span></header>
+  Bandas: `<header class="lv-head"><b>cantores e bandas</b><span>nível comum</span></header>
   <div class="lv-intro">
    <h3>música em todo lugar!</h3>
    <p>Tem música no caminho pra escola, na festa, no fone e na aula.</p>
    <p>As cartas <b>comuns</b> lembram a gente de dar valor às bandas e às músicas que já fazem parte da nossa vida.</p>
    <div class="lv-intro-paul"><img src="assets/paul/colorido/paul-ouvindo.webp" alt="" width="120" height="120" loading="lazy"><p><b>colecione todas!</b> Cada banda tem a sua história pra você descobrir.</p></div>
   </div>`,
-  Artistas: `<header class="lv-head"><b>artistas</b><span>nível raro</span></header>
+  Artistas: `<header class="lv-head"><b>musicistas e tops</b><span>nível raro</span></header>
   <div class="lv-intro">
    <h3>olhe a banda toda!</h3>
    <p>Quem está na frente chama a atenção primeiro.</p>
