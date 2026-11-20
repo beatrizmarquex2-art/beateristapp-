@@ -581,6 +581,7 @@ async function start() {
   if (CODE.saved()) { await PROG.puxar(); PROG.iniciar(); } // progresso na nuvem: traz o de outro aparelho ANTES de desenhar as telas (js/progresso-nuvem.js)
   try { if (AC.liberado()) CONTAS.guardarAtual(); } catch { /* ok */ } // quem entrou direto já fica salvo na lista de alunos do aparelho
   shell(name);
+  import('./checkin-entrada.js').then((M) => M.checkinAoEntrar()).catch(() => { /* o Álbum faz depois */ }); // o dia conta só de entrar no app
   if (window.__primeiraVez) { window.__primeiraVez = false; import('./boas-vindas.js').then((M) => M.mostrar({ nome: name, aoCodigo: abrirCodigo })).catch(() => { /* sem boas-vindas */ }); }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });

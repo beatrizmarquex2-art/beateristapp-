@@ -3,7 +3,7 @@
 import { h } from '../util.js';
 import { iconePaul } from '../icone-paul.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, COMBO, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBO, ANUAL, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
 import { precoPasse } from '../passe-preco.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
@@ -33,6 +33,14 @@ function detalhe(p) {
     h('div', { class: 'lj-dbot' }, botao('Adquirir', p)));
   dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+
+/** Banner do acesso anual por R$ 49,90 (especial lançamento): fica em cima do combo enquanto vale a oferta. */
+function destaqueAnual() {
+  if (!precoPasse().oferta) return null;
+  return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o acesso anual por R$ 49,90', onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
+    h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
 /** Destaque do combo Black Friday: primeira coisa da Lojinha. */
@@ -67,6 +75,7 @@ export function vitrine(secao = '') {
       h('a', { class: 'lj-volta lj-volta-b', href: '#/lojinha' }, '‹ ver as outras seções'));
   }
   return h('div', { class: 'lj' },
+    destaqueAnual(),
     destaqueCombo(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
