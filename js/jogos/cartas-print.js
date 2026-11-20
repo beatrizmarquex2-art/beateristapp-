@@ -20,7 +20,7 @@ const celulaVerso = () => { const v = backEl(); v.classList.add('cxp-verso'); v.
 
 /** Monta o material (manual, legenda e cartas) sem imprimir. `versos`: depois de cada folha de frente vem uma de versos (impressão frente e verso). */
 export function montarBaralho({ color = true, versos = false } = {}) {
-  const root = h('div', { class: `cx cx-print cx-names cxp${color ? '' : ' bw'}`, 'aria-hidden': 'true' });
+  const root = h('div', { class: `cx cx-print cx-names cxp${color ? '' : ' bw pintar'}`, 'aria-hidden': 'true' });
   const cartas = ordemDoBaralho();
   root.append(page(h('img', { class: 'cxp-logo', src: LOGO, alt: 'Robôterista Paul' }), h('h1', {}, 'Uno Musical Beaterista'), h('p', { class: 'cxp-sub' }, 'baralho para imprimir e recortar · 2 a 4 jogadores · a partir de 6 anos (valide com a sua turma)'),
     h('h2', {}, `O que tem aqui (${cartas.length} cartas)`),
@@ -35,14 +35,16 @@ export function montarBaralho({ color = true, versos = false } = {}) {
     h('h2', {}, 'Para imprimir'),
     h('ul', {}, h('li', {}, 'Papel A4, imprimindo em 100% (sem "ajustar à página"). As cartas medem 60 × 87 mm e saem 9 por folha.'),
       h('li', {}, 'Para durar mais: papel mais grosso (180 g ou mais) ou plastifique antes de recortar.'), h('li', {}, 'Com versos: imprima frente e verso, virando pela borda comprida; todos os versos são iguais.'),
-      h('li', {}, 'Recorte pelas linhas pontilhadas.')),
+      h('li', {}, 'Recorte pelas linhas pontilhadas.'), color ? null : h('li', {}, 'Versão para pintar: as cartas saem brancas, com o nome da cor escrito em cima. Pinte cada carta com a cor do nome (lápis de cor ou canetinha) e ainda tem uma carta bônus com o Paul para colorir do jeito que quiser.')),
     h('p', { class: 'cxp-site-pg' }, `Jogue online, de graça: ${SITE}`)));
   // legenda das figuras (pra quem ensina)
   root.append(page(h('h1', {}, 'As figuras do baralho'), h('p', { class: 'cxp-sub' }, 'o que cada figura quer dizer (pra conversar com a turma durante o jogo)'),
     h('div', { class: 'cxp-leg' }, ...SYMS.map((id) => h('div', { class: 'cxp-leg-it' }, h('span', { class: 'cxp-leg-ic' }, symbolEl(id, 'cxp-leg-svg')), h('div', {}, h('b', {}, SYM_NAME[id]), h('p', {}, SYM_LEARN[id])))))));
-  for (let i = 0; i < cartas.length; i += 9) {
-    const lote = cartas.slice(i, i + 9);
-    root.append(page(h('div', { class: 'cxp-grid' }, ...lote.map(celula))));
+  const bonus = color ? null : h('div', { class: 'cxp-cell' }, h('span', { class: 'cx-card cxp-paul-card', 'aria-hidden': 'true' }, h('b', { class: 'cxp-v-top' }, 'pinte o paul!'), h('span', { class: 'cx-oval' }, h('img', { class: 'cxp-paul-img', src: 'assets/uno/paul-colorir.png', alt: '' })), h('small', { class: 'cxp-site' }, SITE)));
+  const grupos = []; for (let i = 0; i < cartas.length; i += 9) grupos.push(cartas.slice(i, i + 9));
+  if (bonus) { const ult = grupos[grupos.length - 1]; if (ult.length < 9) ult.push('bonus'); else grupos.push(['bonus']); }
+  for (const lote of grupos) {
+    root.append(page(h('div', { class: 'cxp-grid' }, ...lote.map((c) => (c === 'bonus' ? bonus : celula(c))))));
     if (versos) root.append(page(h('div', { class: 'cxp-grid' }, ...lote.map(() => celulaVerso()))));
   }
   return root;

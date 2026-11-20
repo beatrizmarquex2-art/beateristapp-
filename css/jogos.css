@@ -1923,7 +1923,20 @@ body.bv-aberta { overflow: hidden; }
   html:has(body.cxp-printing), body.cxp-printing { background: #fff !important; background-image: none !important; }
   body.cxp-printing::before, body.cxp-printing::after { display: none !important; }
   body.cxp-printing .cx-print { display: block !important; --cw: 60mm; color: #000; font-family: system-ui, sans-serif; position: static; }
-  .cxp.bw { filter: grayscale(1) contrast(1.2); }
+  .cxp.bw { filter: none; }
+  /* versão pra pintar: tudo branco, só o contorno e o desenho em preto */
+  .cxp.pintar .cx-card { --cb: #fff; --cs: #000; --cc: #000; background: #fff !important; border: .7mm solid #000 !important; border-radius: 3mm; }
+  .cxp.pintar .cx-oval::before { background: #fff; border: .6mm solid #000; width: 76%; height: 64%; }
+  .cxp.pintar .cx-card svg *[fill="currentColor"] { fill: #000 !important; } .cxp.pintar .cx-card svg *[stroke] { stroke: #000 !important; }
+  .cxp.pintar .cx-card svg *[fill^="#"] { fill: #fff !important; stroke: #000 !important; stroke-width: 1.6 !important; } /* cores do curinga: contorno vazio pra a criança pintar */
+  .cxp.pintar .cx-card svg circle[fill^="#"] { stroke-width: 1.4 !important; }
+  .cxp.pintar .cxp-cor, .cxp.pintar .cxp-site { color: #000; opacity: 1; }
+  .cxp.pintar .cx-lbl { background: #fff; border: .3mm solid #000; }
+  .cxp-paul-card { --cb: #fff; width: 60mm; height: 87mm; position: relative; display: block; }
+  .cxp-paul-card .cx-oval::before { display: none; }
+  .cxp-paul-img { position: relative; width: 86%; height: auto; max-height: 68%; object-fit: contain; margin-top: 3mm; }
+  .cxp-paul-card .cxp-v-top { position: absolute; left: 0; right: 0; top: 3.5mm; text-align: center; font: 800 3.4mm/1 system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #000; }
+  .cxp-paul-card .cxp-site { color: #000; }
   .cxp-page { break-after: page; page-break-after: always; } .cxp-page:last-child { break-after: auto; page-break-after: auto; }
   .cxp-page h1 { font-size: 22pt; margin: 0 0 6pt; } .cxp-page h2 { font-size: 14pt; margin: 14pt 0 6pt; } .cxp-sub { font-size: 10pt; color: #333; } .cxp-page li { font-size: 11.5pt; margin: 3pt 0; }
   .cxp-grid { display: grid; grid-template-columns: repeat(3, 60mm); grid-auto-rows: 87mm; justify-content: center; align-content: start; gap: 0; }
