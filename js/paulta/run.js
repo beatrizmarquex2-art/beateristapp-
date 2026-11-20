@@ -8,7 +8,7 @@ import * as P from '../kids/progress.js';
 import * as FB from '../feedback.js';
 import { svgEl } from '../kids/art.js';
 import { makeQuestion, phaseSpec, teachOf, revealOf, WORLDS, drumName, isDrum } from './worlds.js';
-import { DRUM, drumStaff, clefStaff } from './draw.js';
+import { DRUM, drumStaff, clefStaff, kitImage } from './draw.js';
 import { noteName, CLEFS, placeText, sameSpotOther, letterOf, mk } from './music.js';
 import * as sfx from './sfx.js';
 import * as S from './score.js';
@@ -21,7 +21,7 @@ export { soundBtn };
 /** Cartões do que é novo na fase (Paul apresenta). */
 export function teachCards(world, n) {
   const ids = teachOf(world, n); if (!ids.length) return null;
-  if (isDrum(world)) return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-tcard' }, svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where))));
+  if (isDrum(world)) return h('div', { class: 'pl-teach' }, ...ids.map((id) => h('div', { class: 'pl-tcard' }, svgEl(kitImage(id), 'pl-minikit'), svgEl(drumStaff(id), 'pl-mini'), h('b', {}, DRUM[id].name), h('small', {}, DRUM[id].where)))); // a peça pintada na bateria + onde ela mora na pauta
   const clef = world;
   return h('div', { class: 'pl-teach' }, ...ids.map((x) => h('div', { class: 'pl-tcard' }, svgEl(clefStaff(clef, x), 'pl-mini'), h('b', {}, noteName(x)), h('small', {}, placeText(clef, x)))));
 }

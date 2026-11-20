@@ -36,7 +36,8 @@ const POOLS = {
 };
 /** Andamento (BPM) de cada fase, sempre subindo: mundo 1 de 70 a 100, mundo 2 de 90 a 120, mundo 3 de 100 a 140; os modos com desenho de 70 a 120. */
 const FAIXA = { m1: [70, 100], m2: [90, 120], m3: [100, 140] };
-export const bpmFase = (modo, n) => { const [a, b] = FAIXA[modo] || [70, 120]; return Math.round((a + ((b - a) * (Math.min(Math.max(n, 1), FASES) - 1)) / (FASES - 1)) / 5) * 5; };
+/** `rapido` (opção pra adultos): no mundo 1 já toca a 100 bpm desde a fase 1 (o andamento do fim do mundo), pra passar mais rápido. */
+export const bpmFase = (modo, n, rapido = false) => { if (rapido && modo === 'm1') return FAIXA.m1[1]; const [a, b] = FAIXA[modo] || [70, 120]; return Math.round((a + ((b - a) * (Math.min(Math.max(n, 1), FASES) - 1)) / (FASES - 1)) / 5) * 5; };
 /** Células que cada fase usa (a dificuldade sobe e CADA fase muda alguma coisa): 1 só semínima e colcheias; 2 entra a pausa; 3-4 saem as pausas e entram as 4 semicolcheias; 5-6 tudo junto; 7-12 tudo, mais variedade. */
 export const poolFase = (n, modo) => (ehMundo(modo) ? POOLS[modo][n - 1] : n <= 1 ? ['1000', '1010'] : n === 2 ? ['1000', '1010', '0000'] : n <= 4 ? ['1000', '1010', '1111'] : ['1000', '1010', '1111', '0000']);
 /** As cartas de um modo nessa fase (ordem fixa): id da palavra (ou null no modo normal) e a célula rítmica. */

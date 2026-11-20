@@ -68,3 +68,10 @@
 .pl-rev-stars { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 10px 0; }
 .pl-rev-stars .kx-star { font-size: 1.6rem; }
 .pl-packs { margin-top: 10px; }
+
+/* pauLta da bateria: a PEÇA tem que aparecer (v714, pedido da Bea). Nas imagens das opções e nos cartões de apresentação a peça fica grossa, colorida e com brilho; o resto da bateria fica apagado */
+.pl-optimg g.kp[style*="cfc6b6"],.pl-minikit g.kp[style*="cfc6b6"]{opacity:.4}
+.pl-optimg g.kp:not([style*="cfc6b6"]),.pl-minikit g.kp:not([style*="cfc6b6"]){filter:drop-shadow(0 0 4px var(--c))}
+.pl-optimg g.kp:not([style*="cfc6b6"]) path,.pl-optimg g.kp:not([style*="cfc6b6"]) ellipse,.pl-optimg g.kp:not([style*="cfc6b6"]) circle,.pl-minikit g.kp:not([style*="cfc6b6"]) path,.pl-minikit g.kp:not([style*="cfc6b6"]) ellipse,.pl-minikit g.kp:not([style*="cfc6b6"]) circle{stroke-width:9;fill-opacity:.42}
+.pl-opts.img .pl-opt-btn{min-height:118px}.pl-optimg svg{max-height:128px}
+.pl-minikit{display:block;width:100%;max-height:96px;margin:0 auto 4px}.pl-tcard .pl-minikit{max-width:150px}

@@ -11,17 +11,37 @@ export function setMuted(v) {
   muted = !!v;
   try { localStorage.setItem('bt-mute', muted ? '1' : '0'); } catch (e) {}
   if (master) master.gain.value = muted ? 0 : 0.9;
+  if (muted) soltaSessao(); else if (ctx) playbackMode(); // mudo = NÃO segura o áudio do celular (o Spotify de fone continua tocando); som ligado = volta ao "playback"
   window.dispatchEvent(new CustomEvent('bt-mute', { detail: muted }));
+}
+/** "Misturar com outros apps" (Spotify, YouTube, Apple Music, áudio do WhatsApp…): o som do app toca POR CIMA do que já está tocando, sem pausar nada.
+ *  Usa a sessão "ambient" do iPhone (mistura, mas respeita o botão de silencioso). Ligações e o microfone aberto continuam tendo prioridade (o iPhone decide). */
+let mistura = false;
+try { mistura = localStorage.getItem('bt-mistura') === '1'; } catch (e) {}
+export const misturaLigada = () => mistura;
+export function setMistura(v) {
+  mistura = !!v;
+  try { localStorage.setItem('bt-mistura', mistura ? '1' : '0'); } catch (e) {}
+  if (mistura) soltaSessao(); else if (!muted && ctx) playbackMode();
+  window.dispatchEvent(new CustomEvent('bt-mistura', { detail: mistura }));
 }
 let keep = null; let micOn = false;
 /** iPhone/iPad: com a sessão de áudio em "playback" o microfone fica MUDO (o iOS bloqueia a captura). Enquanto o microfone está aberto a sessão vira
  *  "play-and-record" (e o playbackMode abaixo não volta pra "playback" nos toques); ao fechar o microfone, volta ao normal. */
 export function micSession(on) {
   micOn = !!on;
-  try { if (navigator.audioSession) navigator.audioSession.type = micOn ? 'play-and-record' : 'playback'; } catch (e) {}
-  if (micOn) { try { audio(false); } catch (e) {} }
+  try { if (navigator.audioSession) navigator.audioSession.type = micOn ? 'play-and-record' : (muted || mistura) ? 'ambient' : 'playback'; } catch (e) {}
+  if (micOn) { try { audio(false); } catch (e) {} } else if (muted || mistura) soltaSessao();
+}
+/** Modo MUDO (ícone do alto-falante cortado): o app não pede a sessão de áudio do iPhone, então o que estiver tocando de fundo (Spotify, Apple Music…) NÃO pausa.
+ *  "ambient" mistura com os outros apps; o áudio mudo em loop (que segurava o áudio do celular) é parado. */
+function soltaSessao() {
+  clearInterval(watch);
+  try { if (!micOn && navigator.audioSession && navigator.audioSession.type !== 'ambient') navigator.audioSession.type = 'ambient'; } catch (e) {}
+  try { if (keep && !keep.paused) keep.pause(); } catch (e) {}
 }
 function playbackMode() {
+  if ((muted || mistura) && !micOn) { soltaSessao(); return; } // mudo ou "misturar": deixa o Spotify (e os outros apps) em paz
   try { if (!micOn && navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
   try {
     if (!keep) {
@@ -53,7 +73,7 @@ const soundNow = () => {
 };
 const release = () => {
   try { if (keep && !keep.paused) keep.pause(); } catch (e) {}
-  try { if (navigator.audioSession && navigator.audioSession.type !== 'auto') navigator.audioSession.type = 'auto'; } catch (e) {}
+  try { const alvo = (muted || mistura) ? 'ambient' : 'auto'; if (navigator.audioSession && navigator.audioSession.type !== alvo) navigator.audioSession.type = alvo; } catch (e) {}
 };
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
@@ -63,6 +83,8 @@ if (typeof document !== 'undefined') {
     watch = setInterval(() => { if (!soundNow()) { clearInterval(watch); release(); } }, 2000); // parou de tocar em segundo plano: solta
   });
 }
+
+if (typeof document !== 'undefined' && (muted || mistura)) soltaSessao(); // abriu o app já no mudo (ou misturando): nem encosta no áudio do celular
 
 /** Saída final de TUDO que toca no app (efeitos, música de fundo, ambiente, voz do Paul): um limitador antes do alto-falante.
  *  Antes, as várias fontes (efeitos + música + ambiente) somavam direto no destino e passavam de 1.0: o som "estourava" e, no iPhone, a saída ficava

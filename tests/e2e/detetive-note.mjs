@@ -20,6 +20,11 @@ await abre(0);
 check('fase 1: o botão de ouvir diz o som da fase (caixa)', /caixa/.test(await page.textContent('.dn-ouvir')));
 check('fase 1: só 2 cartas e o cabeçalho sem texto de fase (só 3 bolinhas dos ritmos)', (await page.locator('.dn-card').count()) === 2 && !/fase|ritmo/i.test(await page.textContent('.tr-fasehead')) && (await page.locator('.dn-dots i').count()) === 3);
 check('figuras sem pauta: as cartas não têm a linha da pauta', await page.evaluate(() => [...document.querySelectorAll('.dn-card svg')].every((s) => ![...s.querySelectorAll('line')].some((l) => l.getAttribute('y1') === l.getAttribute('y2')))));
+check('mundo 1 tem o botão opcional ⚡ 100 bpm, DESLIGADO ao abrir', (await page.locator('.dn-rapido').count()) === 1 && (await page.getAttribute('.dn-rapido', 'aria-pressed')) === 'false');
+await page.locator('.dn-rapido').click(); await sleep(200);
+check('clicar em ⚡ 100 bpm: a fase 1 passa a tocar a 100 bpm', /100 bpm/.test(await page.textContent('.dn-ouvir')));
+await page.locator('.dn-rapido').click(); await sleep(200);
+check('clicar de novo: volta ao normal (70 bpm)', /70 bpm/.test(await page.textContent('.dn-ouvir')));
 check('fase 1 do mundo 1 toca a 70 bpm, sem escolha de velocidade', /70 bpm/.test(await page.textContent('.dn-ouvir')) && (await page.locator('.dn-bpm').count()) === 0);
 await monta(1, false); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);
 check('errou: mostra o tempo errado em vermelho e deixa tentar de novo', (await page.locator('.dn-slot.no').count()) >= 1 && /quase/.test(await page.textContent('.jg-msg')));
@@ -33,7 +38,7 @@ await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitF
 await abre(4); // fase 5 do mundo 1
 check('mundo 1 tem os chips figuras, comida, parque, corpo e animal dentro do caso', (await page.locator('.dn-estilos button').count()) === 5);
 await page.locator('.dn-estilos button').nth(2).click(); // parque
-check('fase 5 no estilo parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i').count()) === 4);
+check('fase 5 no estilo parque: 4 cartas com desenho', (await page.locator('.dn-card').count()) === 4 && (await page.locator('.dn-card i, .dn-card .dn-ico').count()) === 4);
 
 check('fase 5 toca mais rápido que a fase 1', /\d+ bpm/.test(await page.textContent('.dn-ouvir')) && Number((await page.textContent('.dn-ouvir')).match(/(\d+) bpm/)[1]) > 70);
 await monta(5, true); await page.getByRole('button', { name: 'conferir' }).click(); await sleep(200);

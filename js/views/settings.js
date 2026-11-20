@@ -1,4 +1,5 @@
 import { h } from '../util.js';
+import { misturaOption, MISTURA_AJUDA } from '../sound-btn.js';
 import * as store from '../store.js';
 import * as auth from '../auth.js';
 import * as sync from '../sync.js';
@@ -65,6 +66,7 @@ export function mount(host, { onSignedOut }) {
           toast('Backup gerado. Guarde em lugar seguro: ele contém suas notas.');
         } }, 'baixar backup'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => importInput.click() }, 'restaurar de backup'), importInput)),
+    h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'som junto com outros apps'), h('p', {}, MISTURA_AJUDA), misturaOption()),
     h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'youtube premium e spotify'),
       h('p', {}, 'Os players que ficam dentro do app (YouTube e Spotify) não enxergam o seu login do Premium: por segurança, o navegador isola cada site, então não dá pra vincular as contas por aqui. Por isso o player embutido pode mostrar anúncio (e o Spotify, só prévia).'),
       h('p', { class: 'muted' }, 'Pra ouvir sem anúncio, use o botão ↗ / “abrir no app” ao lado dos vídeos e links: ele abre o YouTube ou o Spotify de verdade, já logado na sua conta Premium.')),

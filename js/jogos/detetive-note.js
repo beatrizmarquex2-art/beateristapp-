@@ -18,6 +18,10 @@ import { temaDoMundo } from './mundos-tema.js';
 import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { figuras: '🎼', comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
+/** Ícones do Detetive Note (desenhados pela Bea): um por palavra das cartas; sem ícone (ex.: pausa "shh") cai no emoji. */
+const ICONES = ['shh', 'shh-som', 'pao', 'bolo', 'chocolate', 'cao', 'pato', 'borboleta', 'mao', 'braco', 'esqueleto', 'ceu', 'bola', 'bicicleta'];
+const ICONE_MODO = { comida: 'pao', parque: 'bicicleta', corpo: 'mao', animal: 'cao' };
+const ico = (id, fallback) => (ICONES.includes(id) ? h('img', { class: 'dn-ico', src: `assets/jogos/detetive/${id}.webp`, alt: '', draggable: 'false', decoding: 'async' }) : h('i', { 'aria-hidden': 'true' }, fallback));
 const NOME = (m) => `mundo ${m.slice(1)}`;
 
 // figuras SEM pauta: só as notas, hastes, barras e pausas (tira a linha, a clave e o travessão)
@@ -25,8 +29,8 @@ const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o
 const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { width: 84, count: false, clef: false })); const hd = L.ops.find((o) => o.t === 'head');
   if (temFlam(cell) && hd) L.ops.push({ t: 'grace', x: hd.x - 11, y: hd.y, mx: hd.x, my: hd.y }); return svgEl(N.toSVG(L), 'dn-face-fig'); }; // flam = notinha de ornamento antes da nota
 const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
-  : card.cell === '0010' ? h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
-  : h('span', { class: 'dn-face' }, h('i', { 'aria-hidden': 'true' }, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
+  : card.cell === '0010' ? h('span', { class: 'dn-face' }, ico('shh-som', '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
+  : h('span', { class: 'dn-face' }, ico(card.id, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 /** Cada fase toca num som diferente (caixa, tambor, bumbo, chimbal) pra uma fase não se confundir com a outra. */
 const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
 const somDaFase = (n) => SONS_FASE[(n - 1) % SONS_FASE.length];
@@ -47,7 +51,7 @@ const MUNDOS_DET = {
 
 export function mount(host) {
   const saved = getGame('detetive'); let modo = MODOS.includes(saved.modo) ? saved.modo : 'm1'; let estiloEsc = ESTILOS.includes(saved.estilo) ? saved.estilo : 'figuras';
-  const estilo = () => estiloDe(modo, estiloEsc); let bpm = bpmFase(modo, 1); // o andamento sobe a cada fase
+  const estilo = () => estiloDe(modo, estiloEsc); let rapido = false; let bpm = bpmFase(modo, 1, rapido); // sempre abre NORMAL (70 → 100 bpm); o ⚡ 100 bpm é um clique opcional e NÃO fica salvo // o andamento sobe a cada fase (ou 100 bpm direto no mundo 1, opção pra adultos)
   const root = h('div', { class: 'jg jg-detetive' }); host.replaceChildren(root);
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
@@ -72,7 +76,7 @@ export function mount(host) {
   };
 
   /* ---------- uma fase: 3 ritmos ---------- */
-  const comeca = (n) => { limpa(); musicaPausa(); fase = n; bpm = bpmFase(modo, n); rodada = 0; primeira = 0; jogando = true; nova(); };
+  const comeca = (n) => { limpa(); musicaPausa(); fase = n; bpm = bpmFase(modo, n, rapido); rodada = 0; primeira = 0; jogando = true; nova(); };
   /* marcador do tempo (só nos modos de desenho): as casas acendem uma de cada vez no tempo do ritmo e os números 1 2 3 4 acompanham (escolha da Bea) */
   const limparTempo = () => { const w = root.querySelector('.dn-wrap'); if (w) w.querySelectorAll('.agora,.conta').forEach((e) => e.classList.remove('agora', 'conta')); };
   const marca = (i, tipo) => {
@@ -99,7 +103,8 @@ export function mount(host) {
     const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
       h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
-      modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, h('i', { 'aria-hidden': 'true' }, EMOJI_MODO[e]), h('span', {}, e)))) : null,
+      modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, ico(ICONE_MODO[e], EMOJI_MODO[e]), h('span', {}, e)))) : null,
+      modo === 'm1' ? h('button', { type: 'button', class: `dn-rapido${rapido ? ' on' : ''}`, 'aria-pressed': String(rapido), onclick: () => { rapido = !rapido; bpm = bpmFase(modo, fase, rapido); desenha(); } }, h('b', {}, '⚡ 100 bpm'), h('small', {}, rapido ? 'ligado: o mundo 1 já toca rápido' : 'pra adultos: já ouvir no andamento rápido')) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, errou ? 'quase! os vermelhos estão errados: ouça de novo e troque.' : 'monte na ordem que você ouviu:'),
       h('div', { class: `dn-wrap${!TEMAS[est] ? ' sem' : ''}` }, !TEMAS[est] ? null : h('div', { class: 'dn-nums', 'aria-hidden': 'true' }, ...[1, 2, 3, 4].map((n) => h('span', {}, String(n)))), h('div', { class: 'dn-slots' }, ...casas)),

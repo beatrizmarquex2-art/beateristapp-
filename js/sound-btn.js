@@ -1,6 +1,6 @@
 // Alto-falante no topo: liga/desliga o som do app inteiro (fica salvo no aparelho).
 import { h, icon } from './util.js';
-import { isMuted, setMuted } from './audio.js';
+import { isMuted, setMuted, misturaLigada, setMistura } from './audio.js';
 import { musicaLigada, setMusica, fixarMusica } from './jogos/musica.js';
 import { iconeTopo } from './top-icons.js';
 
@@ -22,3 +22,12 @@ export function musicButton(cls = 'icon-btn top-snd top-mus', { linha = false } 
   paint(); window.addEventListener('bt-musica', paint); window.addEventListener('bt-mute', paint);
   return b;
 }
+
+/** Opção "misturar com meu Spotify" (ajustes): o som do app toca junto com Spotify, YouTube, Apple Music, áudio do WhatsApp… sem pausar. Fica salvo no aparelho. */
+export function misturaOption(cls = 'btn wide') {
+  const b = h('button', { type: 'button', class: cls, onclick: () => setMistura(!misturaLigada()) });
+  const paint = () => { const on = misturaLigada(); b.replaceChildren(on ? '🎧 misturando com o meu Spotify e outros apps (ligado)' : '🎧 misturar com o meu Spotify e outros apps'); b.setAttribute('aria-pressed', String(on)); b.classList.toggle('primary', on); };
+  paint(); window.addEventListener('bt-mistura', paint);
+  return b;
+}
+export const MISTURA_AJUDA = 'Com isso ligado o som do app toca JUNTO com o que já está tocando no celular (Spotify, YouTube, Apple Music, áudio do WhatsApp…), sem pausar. Atenção: nesse modo o app fica mudo se o botão de silencioso do iPhone estiver ligado. Ligação e microfone aberto continuam passando na frente.';
