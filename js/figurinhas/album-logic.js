@@ -46,8 +46,13 @@ export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de 
  *  Épica = as figurinhas que as crianças criam com a própria foto. (Lendária vem só pela Lojinha.) */
 export const NOME_RARIDADE = { Comum: 'Comum', Rara: 'Rara', Exclusiva: 'Exclusiva', Classica: 'Clássica', Epica: 'Épica', 'Épica': 'Épica' };
 export const ehBeatles = (e) => !!e && (e.colecao === 'Beatles' || e.secao === 'Beatlemania');
+/** Variantes (pedido da Bea): quando um artista tem mais de uma foto no álbum, a 1ª é a normal e as outras são "Variante" (não é repetida: é outra foto). código -> [qual foto, de quantas]. */
+export const VARIANTES = {"F033":[2,2],"F041":[2,2],"F095":[2,3],"F098":[3,3],"F108":[2,2],"F092":[2,2],"F099":[2,3],"F110":[3,3],"F115":[2,2],"F090":[2,2],"F106":[2,2],"F130":[2,2],"F118":[2,2]};
+export const variante = (e) => (e && e.codigo && VARIANTES[e.codigo]) || null;
 /** Os Beatles são "Clássica" (a única Beatles que a Bea marcou como Rara continua Rara). */
-export const nomeRaridade = (e) => (e && e.raridade === 'Rara' ? 'Rara' : ehBeatles(e) ? 'Clássica' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
+const nomeBase = (e) => (e && e.raridade === 'Rara' ? 'Rara' : ehBeatles(e) ? 'Clássica' : NOME_RARIDADE[e && e.raridade] || (e && e.raridade) || '');
+/** "Variante 2/3 · Rara": as fotos extras de um artista dizem que são variantes e mantêm a raridade. */
+export const nomeRaridade = (e) => { const v = variante(e); return v ? `Variante ${v[0]}/${v[1]} · ${nomeBase(e)}` : nomeBase(e); };
 export const SECOES = ['Beatlemania', 'Beaterista', 'Bandas', 'Artistas'];
 export const SECAO_ANTIGA = { Beatles: 'Beatlemania', Geral: 'Bandas', Especial: 'Artistas', Comum: 'Bandas', Raras: 'Artistas' }; // links e abas de antes
 /** Grupo de SORTEIO da figurinha (não é a seção): Beatlemania, Beaterista, Raras (raridade Rara) ou Comum. Os pesos da roleta e dos pacotes usam isto. */
