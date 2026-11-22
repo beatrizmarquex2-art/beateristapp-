@@ -1982,3 +1982,12 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .fx-barra .fx-fig.xs{width:100%;max-width:30px}.jg-figurix .fx-barra .fx-fig.xs svg{width:100%;height:auto;max-height:44px}
 .jg-figurix .fx-barra{height:76px}.jg-figurix .fx-barra .fx-fig.xs{max-width:44px}.jg-figurix .fx-barra .fx-fig.xs svg{max-height:66px}
 .jg-figurix[data-skin="c"] .fx-arv .fx-num{margin-top:-30px}
+/* Jogos de ouvido (3ª ou 5ª, que acorde é, maior ou menor): botões de resposta grandes e legíveis (texto de jogo nunca abaixo de 16px) */
+.vv-opcoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:6px 0}
+.vv-opcao{min-height:64px;padding:8px 12px;font:400 24px/1.1 var(--vv-tit);text-transform:uppercase;border:2.5px solid var(--vv-ink);background:#fff;color:var(--vv-ink);box-shadow:4px 4px 0 var(--vv-navy);cursor:pointer}
+.vv-opcao:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--vv-navy)}
+.vv-opcao:focus-visible{outline:3px solid var(--vv-petro);outline-offset:2px}
+.vv-opcao.ok{background:#d6f0d2;border-color:#1f7a34;box-shadow:4px 4px 0 #1f7a34}
+.vv-opcao.bad{background:#f7d4d4;border-color:var(--vv-vinho);box-shadow:4px 4px 0 var(--vv-vinho)}
+.vv-opcao:disabled{cursor:default}
+.vv-de{justify-self:center;min-height:40px;font-size:16px}
