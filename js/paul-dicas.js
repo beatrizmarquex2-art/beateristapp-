@@ -5,7 +5,7 @@ import { chirp } from './paul-talk.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer', SITE = 'https://beaterista.com.br';
 // vídeo novo do canal: aparece SEMPRE como primeira carta e volta no sorteio. Pra trocar, mude só id e título.
-export const VIDEO_NOVO = { id: '9wW9pxaL7Dk', titulo: 'vídeo novo da Bea' };
+export const VIDEO_NOVO = { id: '9wW9pxaL7Dk', titulo: '' };
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente
@@ -13,7 +13,7 @@ const BOM = { 'p-wave': 'colorido/paul-ouvindo', 'p-selfie': 'colorido/paul-self
 const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * POSES.length)]; return `assets/paul/${BOM[p] || (/^p-/.test(p) ? 'colorido/paul-ouvindo' : p)}.webp`; };
 // [assunto, texto, pose (opcional), link (opcional), rótulo do link]
 export const DICAS = [
-  ['vídeo novo no canal', `saiu vídeo novo no canal da Bea: ${VIDEO_NOVO.titulo}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
+  ['vídeo novo no canal', `saiu vídeo novo no canal da Bea${VIDEO_NOVO.titulo ? `: ${VIDEO_NOVO.titulo}` : ''}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
   // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
   ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
   ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
