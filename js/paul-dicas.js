@@ -5,7 +5,7 @@ import { chirp } from './paul-talk.js';
 
 const IG = 'https://www.instagram.com/beaterista_/', YT = 'https://www.youtube.com/@beateristadrummer', SITE = 'https://beaterista.com.br';
 // vídeo novo do canal: aparece SEMPRE como primeira carta e volta no sorteio. Pra trocar, mude só id e título.
-export const VIDEO_NOVO = { id: 'UvdaoUHo3XU', titulo: 'vlog na sede do TikTok Brasil' };
+export const VIDEO_NOVO = { id: '9wW9pxaL7Dk', titulo: 'vídeo novo da Bea' };
 export const VIDEO_URL = `https://www.youtube.com/watch?v=${VIDEO_NOVO.id}`;
 const POSES = ['n-amp', 'n-walk', 'n-break', 'n-stick', 'n-squat', 'n-skate'];
 // os rabiscos antigos (p-*) são vazados por dentro e ficam feios em cima de cor: cada um aponta pro Paul colorido equivalente

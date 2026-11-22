@@ -1,5 +1,6 @@
 [
-  { "id": "video", "tag": "vídeo novo", "titulo": "vlog na sede do TikTok", "texto": "a Bea no canal do YouTube", "botao": "assistir", "href": "https://www.youtube.com/watch?v=UvdaoUHo3XU", "externo": true, "cor": "azul" },
+  { "id": "video", "tag": "vídeo novo", "titulo": "vídeo novo da Bea", "texto": "a Bea no canal do YouTube", "botao": "assistir", "href": "https://www.youtube.com/watch?v=9wW9pxaL7Dk", "externo": true, "cor": "azul" },
+  { "id": "quebra", "tag": "jogo", "titulo": "Quebra-cabeça até 70 peças", "texto": "agora abre livre, sem tempo, e tem versão difícil", "botao": "montar", "href": "#/jogos/quebra", "cor": "roxo" },
   { "id": "cards", "tag": "pra imprimir", "titulo": "Cards do Robôterista Paul", "texto": "3 baralhos em PDF: imprima, recorte e aprenda brincando", "botao": "ver na lojinha", "href": "#/lojinha", "cor": "vinho" },
   { "id": "baterias", "tag": "no palco", "titulo": "3 baterias novas", "texto": "acústica, eletrônica e cajón, com som de verdade", "botao": "tocar", "href": "#/toque", "cor": "verde" },
   { "id": "caca", "tag": "jogo", "titulo": "Caça Musical com dicas", "texto": "travou numa palavra? o Paul dá uma força", "botao": "jogar", "href": "#/dicas/caca", "cor": "roxo" },
