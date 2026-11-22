@@ -43,7 +43,7 @@ const GROUPS = [
     ['Jogo da velha', 'velha.webp', 'Três em linha, baquetas contra palheta, com variante de desafio musical em que se responde para jogar.',
       ['curiosidades sobre música', 'teoria musical em perguntas rápidas', 'artistas, bandas e muito mais'],
       'A variante com perguntas transforma a jogada em retomada do conteúdo: o aluno só marca a casa se souber a resposta, o que dá motivo real para estudar.'],
-    ['Quebra-cabeça', 'quebra-cabeca.webp', 'Monta a cena do Paul no palco de 6 até 96 peças.',
+    ['Quebra-cabeça', 'quebra-cabeca.webp', 'Monta a cena do Paul no palco de 6 até 70 peças.',
       ['imaginação e percepção visual', 'persistência e resolução de problemas', 'concentração com cenas de música'],
       'Atividade calma que treina foco e paciência, útil para começo de aula ou para alunos agitados. Os níveis permitem progredir sem frustração.'],
     ['Cara a cara', 'cara-a-cara.webp', 'O Paul escolhe um instrumento em segredo; o aluno faz perguntas de sim ou não para descobrir qual é.',

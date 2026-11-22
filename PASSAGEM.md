@@ -1104,8 +1104,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 
 - v738 (publicação parcial): check-in do dia conta ao entrar no app (js/checkin-entrada.js) e banner do acesso anual R$ 49,90 (assets/loja/anual.webp, arte da Bea) em primeiro na Lojinha, acima do Combo Robôterista. O carrossel dos 3 combos NÃO foi junto (ficou na branch claude/vigilant-gauss-cxjgmp, v742) até a Bea criar os links.
 
-## Quebra-cabeça: abre livre + 48 e 96 peças (22/nov/2026, pedido da Bea; na branch, NÃO publicado)
+## Quebra-cabeça: abre livre + 48 e 70 peças (22/nov/2026, pedido da Bea; na branch, NÃO publicado)
 - Agora abre no modo **livre** por padrão (quem já escolheu "com tempo" mantém); os chips ficam "livre · com tempo". `free: saved.free !== false` em `js/jogos/quebra.js`.
-- Tamanhos novos em `DIFFS` (`quebra-logic.js`): **48 (8×6, "difícil")** e **96 (12×8, "insano")**. De 48 pra cima o quadro já abre ampliado (170%; 260% no 96, classe `.mega`) pra dar pra tocar nas casinhas. Vale também no duelo (usa o mesmo `SIZES`). A Aventura segue só com 6/12/24.
-- Testes de node atualizados (17 passando). Falta ver no celular de verdade se o 96 está confortável.
+- Tamanhos novos em `DIFFS` (`quebra-logic.js`): **48 (8×6, "difícil")** e **70 (10×7, "insano")**. De 48 pra cima o quadro já abre ampliado (170%; 260% no 70, classe `.mega`) pra dar pra tocar nas casinhas. Vale também no duelo (usa o mesmo `SIZES`). A Aventura segue só com 6/12/24.
+- Testes de node atualizados (17 passando). Falta ver no celular de verdade se o 70 está confortável.
 - Pendente da Bea: fotos das figurinhas novas; o pedido dos jogos novos (descubra o acorde, ...) veio cortado, perguntar o resto.

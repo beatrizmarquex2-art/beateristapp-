@@ -1,5 +1,5 @@
 // Quebra-cabeça: regras puras. Peça i pertence à posição i (linha = ⌊i/cols⌋, coluna = i % cols).
-export const DIFFS = { 6: { cols: 3, rows: 2 }, 12: { cols: 4, rows: 3 }, 24: { cols: 6, rows: 4 }, 48: { cols: 8, rows: 6 }, 96: { cols: 12, rows: 8 } };
+export const DIFFS = { 6: { cols: 3, rows: 2 }, 12: { cols: 4, rows: 3 }, 24: { cols: 6, rows: 4 }, 48: { cols: 8, rows: 6 }, 70: { cols: 10, rows: 7 } };
 export const shuffle = (list, rnd = Math.random) => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 /** Divisões calculadas a partir do tamanho natural: retângulos que ladrilham a imagem inteira, sem folga nem sobreposição. */

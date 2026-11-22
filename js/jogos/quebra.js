@@ -31,13 +31,13 @@ export const IMAGES = [
   // foto da Bea no estande da Nagano (a Bea mandou, 17/nov/2026). Ao montar, mostra o link da visita dela na fábrica.
   { id: 'nagano', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
 ];
-const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças'], [48, '48 · difícil'], [96, '96 · insano']];
+const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças'], [48, '48 · difícil'], [70, '70 · insano']];
 
 export function mount(host, opts) {
   const M = opts && opts.mission ? opts.mission : null; // Modo Aventura: monta com os params da missão, não lê nem grava nada do modo livre
   let gone = false; let tick = 0; let reported = false;
   const saved = M ? {} : getGame(ID);
-  const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24, 48, 96].includes(saved.diff) ? saved.diff : 6, free: saved.free !== false };
+  const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24, 48, 70].includes(saved.diff) ? saved.diff : 6, free: saved.free !== false };
   const pick = (id) => IMAGES.find((x) => x.id === id) || IMAGES[0];
   // sem código de aluno só as 2 primeiras imagens abrem (pedido da Bea); as outras pedem o código
   const GRATIS_IMAGENS = 2; const travada = (id) => !M && alunoSemCodigo() && IMAGES.findIndex((x) => x.id === id) >= GRATIS_IMAGENS;

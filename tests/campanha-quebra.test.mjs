@@ -62,6 +62,6 @@ test('medalhas: ganhas só pelo progresso real', () => {
   assert.ok(by('quebra-gigante').test(mk({ 7: 1, 8: 1, 9: 1, 10: 1 }))); assert.ok(!by('quebra-gigante').test(mk({ 7: 1 })));
 });
 test('modo livre intacto nas funções puras (grades, melhor tempo)', () => {
-  assert.deepEqual(Object.keys(Q.DIFFS), ['6', '12', '24', '48', '96']); assert.equal(Q.bestKey({ diff: 6, hints: 0 }), '6:sem');
+  assert.deepEqual(Object.keys(Q.DIFFS), ['6', '12', '24', '48', '70']); assert.equal(Q.bestKey({ diff: 6, hints: 0 }), '6:sem');
   assert.equal(Q.newGame({ diff: 6 }).free, false);
 });
