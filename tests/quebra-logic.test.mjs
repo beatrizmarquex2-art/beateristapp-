@@ -12,7 +12,7 @@ test('divisões 3×2, 4×3 e 6×4 ladrilham a imagem inteira (1536×1024 e taman
   }
 });
 test('bandeja: todas as peças, sem duplicar, nunca começa montada', () => {
-  for (const n of [6, 12, 24]) for (let s = 1; s < 60; s++) { const g = Q.newGame({ diff: n, rnd: seeded(s) }); assert.deepEqual([...g.tray].sort((a, b) => a - b), Array.from({ length: n }, (_, i) => i)); assert.ok(!g.tray.every((p, i) => p === i)); assert.ok(Q.validGame(g)); }
+  for (const n of [6, 12, 24, 48, 96]) for (let s = 1; s < 60; s++) { const g = Q.newGame({ diff: n, rnd: seeded(s) }); assert.deepEqual([...g.tray].sort((a, b) => a - b), Array.from({ length: n }, (_, i) => i)); assert.ok(!g.tray.every((p, i) => p === i)); assert.ok(Q.validGame(g)); }
   assert.throws(() => Q.newGame({ diff: 7 }));
 });
 test('peça só encaixa na posição certa; erro mantém tudo na bandeja e conta', () => {
@@ -21,7 +21,7 @@ test('peça só encaixa na posição certa; erro mantém tudo na bandeja e conta
   const o = Q.place(g, p, p); assert.ok(o.ok); assert.equal(o.g.placed[p], true); assert.ok(!o.g.tray.includes(p)); assert.throws(() => Q.place(o.g, p, p));
 });
 test('montar tudo termina; invariante peças = bandeja + fixas durante toda a partida', () => {
-  for (const n of [6, 12, 24]) { let g = Q.newGame({ diff: n, rnd: seeded(n) }); while (!g.over) { assert.ok(Q.validGame(g)); assert.equal(g.tray.length + Q.placedCount(g), n); g = Q.place(g, g.tray[0], g.tray[0]).g; } assert.equal(Q.placedCount(g), n); assert.equal(g.tray.length, 0); assert.throws(() => Q.place(g, 0, 0)); }
+  for (const n of [6, 12, 24, 48, 96]) { let g = Q.newGame({ diff: n, rnd: seeded(n) }); while (!g.over) { assert.ok(Q.validGame(g)); assert.equal(g.tray.length + Q.placedCount(g), n); g = Q.place(g, g.tray[0], g.tray[0]).g; } assert.equal(Q.placedCount(g), n); assert.equal(g.tray.length, 0); assert.throws(() => Q.place(g, 0, 0)); }
 });
 test('melhor tempo: sem dicas e com dicas separados; modo livre não conta; só melhora', () => {
   const win = (o) => ({ ...Q.newGame({ diff: 6 }), over: true, ...o });

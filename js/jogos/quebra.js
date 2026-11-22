@@ -31,13 +31,13 @@ export const IMAGES = [
   // foto da Bea no estande da Nagano (a Bea mandou, 17/nov/2026). Ao montar, mostra o link da visita dela na fábrica.
   { id: 'nagano', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
 ];
-const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças']];
+const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças'], [48, '48 · difícil'], [96, '96 · insano']];
 
 export function mount(host, opts) {
   const M = opts && opts.mission ? opts.mission : null; // Modo Aventura: monta com os params da missão, não lê nem grava nada do modo livre
   let gone = false; let tick = 0; let reported = false;
   const saved = M ? {} : getGame(ID);
-  const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24].includes(saved.diff) ? saved.diff : 6, free: saved.free === true };
+  const prefs = M ? { diff: Q.DIFFS[M.params.diff] ? M.params.diff : 6, free: false } : { diff: [6, 12, 24, 48, 96].includes(saved.diff) ? saved.diff : 6, free: saved.free !== false };
   const pick = (id) => IMAGES.find((x) => x.id === id) || IMAGES[0];
   // sem código de aluno só as 2 primeiras imagens abrem (pedido da Bea); as outras pedem o código
   const GRATIS_IMAGENS = 2; const travada = (id) => !M && alunoSemCodigo() && IMAGES.findIndex((x) => x.id === id) >= GRATIS_IMAGENS;
@@ -79,7 +79,7 @@ export function mount(host, opts) {
       IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
       h('div', { class: 'jo-card' },
         linha('tamanho', chips(SIZES.map(([v, l]) => [v, l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }, 'dificuldade')),
-        linha('tempo', chips([[false, 'com tempo'], [true, 'livre']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo'), ajuda('Regras rápidas', RULES())),
+        linha('tempo', chips([[true, 'livre'], [false, 'com tempo']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo'), ajuda('Regras rápidas', RULES())),
       ),
       bests.length ? h('p', { class: 'jg-p muted' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
       h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
@@ -90,7 +90,7 @@ export function mount(host, opts) {
   /** Duelo em 2 celulares: a mesma imagem e as mesmas peças nos dois; vence quem montar mais rápido (js/jogos/duelo-quebra.js). */
   let offDuelo = null;
   function abrirDuelo() { stopClock(); root.replaceChildren(h('p', { class: 'jg-p muted' }, 'carregando o duelo…')); import('./duelo-quebra.js').then((m) => { if (gone) return; root.replaceChildren(); offDuelo = m.mountDueloQuebra(root, { IMAGES, SIZES, abrir: (opts, el) => mount(el || root, opts), voltar: () => { if (offDuelo) { offDuelo(); offDuelo = null; } intro(); } }); }); }
-  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = false; record = false; persist(); draw(); startClock(); }
+  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = game.diff > 24; record = false; persist(); draw(); startClock(); }
 
   const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };
@@ -111,7 +111,7 @@ export function mount(host, opts) {
         h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(zoom), onclick: () => { zoom = !zoom; draw(); } }, zoom ? 'reduzir quadro' : 'ampliar quadro'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: showRules }, 'regras')),
       h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.over ? '' : msg),
-      h('div', { class: `jg-boardwrap${zoom ? ' zoom' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
+      h('div', { class: `jg-boardwrap${zoom ? ' zoom' : ''}${zoom && n > 48 ? ' mega' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
       g.over ? result() : h('div', { class: 'jg-tray', role: 'group', 'aria-label': 'bandeja de peças, role para os lados' }, ...tray),
       viewing ? h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'imagem de referência' }, h('img', { src: SRC(), alt: NOME() }), h('button', { class: 'btn primary', type: 'button', onclick: () => { viewing = false; draw(); } }, 'fechar')) : null,
     ].filter(Boolean));

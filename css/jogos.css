@@ -114,7 +114,7 @@
 /* quebra-cabeça */
 .jg-qprev{width:100%;max-width:420px;border-radius:12px;border:2px solid var(--jg-navy);display:block;margin:6px 0}
 .jg-chk{display:flex;align-items:center;gap:8px;min-height:44px}.jg-chk input{width:22px;height:22px}
-.jg-boardwrap{margin:8px 0;max-width:100%}.jg-boardwrap.zoom{overflow:auto;border-radius:12px}.jg-boardwrap.zoom .jg-pboard{width:170%}
+.jg-boardwrap{margin:8px 0;max-width:100%}.jg-boardwrap.zoom{overflow:auto;border-radius:12px}.jg-boardwrap.zoom .jg-pboard{width:170%}.jg-boardwrap.zoom.mega .jg-pboard{width:260%}
 .jg-pboard{display:grid;gap:0;width:100%;background:#e6d9bd;border:2px solid var(--jg-navy);border-radius:10px;overflow:hidden;touch-action:manipulation}
 .jg-pz{display:block;background-repeat:no-repeat;border:0;padding:0;min-width:0}
 .jg-pz.slot{background:transparent;outline:1px dashed #14203655;outline-offset:-1px;cursor:pointer}.jg-pz.slot:disabled{cursor:default}.jg-pz.slot.hint{outline:3px solid var(--jg-red);outline-offset:-3px;background:#bd173333;animation:jgpop .5s 2}
