@@ -33,7 +33,7 @@ export function chips(rotulo, opts, atual, onPick) {
  * Teclado na tela. `notas` = teclas brancas que valem (as pretas entre elas aparecem só de enfeite, sem tocar).
  * `nomes` = escreve dó, ré, mi nas teclas. Devolve { el, acende(midi, classe, ms), trava(bool) }.
  */
-export function teclado({ notas, nomes = true, onNota }) {
+export function teclado({ notas, nomes = true, onNota, pretas = false }) {
   const lo = notas[0]; const hi = notas[notas.length - 1]; const brancas = faixa(lo, hi).filter((m) => !ehPreta(m)); const W = 100 / brancas.length;
   const el = h('div', { class: 'vv-teclado' }); el.style.setProperty('--n', String(brancas.length)); const teclas = new Map(); let travado = false;
   brancas.forEach((m) => {
@@ -42,7 +42,14 @@ export function teclado({ notas, nomes = true, onNota }) {
     b.addEventListener('pointerdown', (e) => { e.preventDefault(); if (travado || !vale) return; onNota(m, e); });
     teclas.set(m, b); el.append(b);
   });
-  brancas.forEach((m, i) => { if (i < brancas.length - 1 && ehPreta(m + 1)) el.append(h('i', { class: 'vv-preta', 'aria-hidden': 'true', style: { left: `${(i + 1) * W}%` } })); });
+  if (pretas) el.classList.add('pretas');
+  brancas.forEach((m, i) => {
+    if (i < brancas.length - 1 && ehPreta(m + 1)) {
+      if (!pretas) { el.append(h('i', { class: 'vv-preta', 'aria-hidden': 'true', style: { left: `${(i + 1) * W}%` } })); return; }
+      const vale = notas.includes(m + 1); const b = h('button', { type: 'button', class: `vv-preta tocavel${vale ? '' : ' fora'}`, 'data-midi': String(m + 1), disabled: !vale, 'aria-label': nomeNota(m + 1), style: { left: `${(i + 1) * W}%` } });
+      b.addEventListener('pointerdown', (e) => { e.preventDefault(); if (travado || !vale) return; onNota(m + 1, e); }); teclas.set(m + 1, b); el.append(b);
+    }
+  });
   return {
     el,
     acende(midi, classe = 'on', ms = 320) { const alvo = teclas.get(midi) || [...teclas.entries()].filter(([m]) => (m - midi) % 12 === 0).map(([, b]) => b)[0]; if (!alvo) return; alvo.classList.add(classe); setTimeout(() => alvo.classList.remove(classe), ms); },

@@ -29,7 +29,8 @@ import * as groove from '../jogos/groove.js';
 import * as terca from '../jogos/terca.js';
 import * as acordeOuvido from '../jogos/acorde-ouvido.js';
 import * as maiorMenor from '../jogos/maior-menor.js';
-import * as escala from '../jogos/escala-jogo.js';
+import * as escala from '../jogos/escala.js';
+import * as aulaOuvido from '../jogos/ouvido-aula.js';
 import * as fantasma from '../jogos/fantasma.js';
 import * as paulbox from '../jogos/paulbox.js';
 import * as memart from '../jogos/memoria-artistas.js';
@@ -55,10 +56,11 @@ const GAMES = [
   ['copia', 'Copia Aí', 'copia.svg', copia, 'o Paul toca, você copia · a melodia cresce'],
   ['paultavivo', 'pauLta ao Vivo', 'pauta-vivo.svg', paultavivo, 'leia a nota e toque de verdade'],
   ['groove', 'Eco de Groove', 'groove.svg', groove, 'repita a levada do Paul · bumbo, caixa e chimbal'],
-  ['terca', '3ª ou 5ª?', 'copia.svg', terca, 'escute a nota e diga o grau da escala'],
-  ['acorde-ouvido', 'Que acorde é?', 'copia.svg', acordeOuvido, 'escute e descubra o acorde entre 3 opções'],
-  ['maior-menor', 'Maior ou menor?', 'copia.svg', maiorMenor, 'alegre ou triste? ouça a terça do acorde'],
-  ['escala', 'Escalas', 'pauta-vivo.svg', escala, 'toque a escala em ordem · na tela ou no instrumento'],
+  ['aula-ouvido', 'Aulinha: ouvido e escalas', 'copia.svg', aulaOuvido, 'graus, 3ª e 5ª, acordes, maior x menor e escalas · comece por aqui'],
+  ['terca', '3ª ou 5ª?', 'copia.svg', terca, '12 fases fácil + 12 difícil · ouça e diga o grau'],
+  ['acorde-ouvido', 'Que acorde é?', 'copia.svg', acordeOuvido, '12 fases fácil + 12 difícil · descubra o acorde'],
+  ['maior-menor', 'Maior ou menor?', 'copia.svg', maiorMenor, '12 fases fácil + 12 difícil · alegre ou triste?'],
+  ['escala', 'Escalas', 'pauta-vivo.svg', escala, '12 fases fácil + 12 difícil · escalas coloridas'],
   ['fantasma', 'Clique Fantasma', 'fantasma.svg', fantasma, 'o clique some: você segura o tempo?'],
   ['paulbox', 'PaulBox', 'paulbox.webp', paulbox, 'monte a banda do Paul · 10 instrumentos, 4 ritmos cada'],
   ['cartas', 'Uno Musical', 'cartas.webp', cartas, 'figuras rítmicas · contra o computador ou 2 celulares'],
@@ -73,7 +75,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['terca', 'acorde-ouvido', 'maior-menor', 'escala', 'paulbox', 'copia', 'paultavivo', 'groove', 'fantasma', 'toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['aula-ouvido', 'terca', 'acorde-ouvido', 'maior-menor', 'escala', 'paulbox', 'copia', 'paultavivo', 'groove', 'fantasma', 'toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -97,6 +99,7 @@ const SECTIONS = [
   ]],
   ['Ouvido e escalas', [
     // em obras: aparecem SÓ no app da Bea ('bea') até ela testar. Pra liberar pros alunos, tirar o `, undefined, 'bea'`.
+    [...inner('aula-ouvido'), undefined, 'bea'],
     [...inner('terca'), undefined, 'bea'],
     [...inner('acorde-ouvido'), undefined, 'bea'],
     [...inner('maior-menor'), undefined, 'bea'],

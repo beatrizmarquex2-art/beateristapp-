@@ -1982,8 +1982,8 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .fx-barra .fx-fig.xs{width:100%;max-width:30px}.jg-figurix .fx-barra .fx-fig.xs svg{width:100%;height:auto;max-height:44px}
 .jg-figurix .fx-barra{height:76px}.jg-figurix .fx-barra .fx-fig.xs{max-width:44px}.jg-figurix .fx-barra .fx-fig.xs svg{max-height:66px}
 .jg-figurix[data-skin="c"] .fx-arv .fx-num{margin-top:-30px}
-/* Jogos de ouvido (3ª ou 5ª, que acorde é, maior ou menor): botões de resposta grandes e legíveis (texto de jogo nunca abaixo de 16px) */
-.vv-opcoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:6px 0}
+/* Jogos de ouvido (mundos de 12 fases): botões de resposta grandes e legíveis (texto de jogo nunca abaixo de 16px) */
+.vv-opcoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:6px 0}
 .vv-opcao{min-height:64px;padding:8px 12px;font:400 24px/1.1 var(--vv-tit);text-transform:uppercase;border:2.5px solid var(--vv-ink);background:#fff;color:var(--vv-ink);box-shadow:4px 4px 0 var(--vv-navy);cursor:pointer}
 .vv-opcao:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--vv-navy)}
 .vv-opcao:focus-visible{outline:3px solid var(--vv-petro);outline-offset:2px}
@@ -1991,3 +1991,27 @@ body.bv-aberta { overflow: hidden; }
 .vv-opcao.bad{background:#f7d4d4;border-color:var(--vv-vinho);box-shadow:4px 4px 0 var(--vv-vinho)}
 .vv-opcao:disabled{cursor:default}
 .vv-de{justify-self:center;min-height:40px;font-size:16px}
+.vv-mundo .vv-aulabar{display:flex;justify-content:center;margin:4px 0 8px}
+.vv-mundo .vv-aulabar .btn{display:inline-flex;align-items:center;gap:6px}
+.vv-fasetit{font:400 20px var(--vv-tit,inherit);margin-left:8px}
+/* fileira de opções que arrasta pro lado, com setinhas ‹ › */
+.vv-rol{display:grid;gap:2px}.vv-rol-cx{position:relative;min-width:0}
+.vv-rol-fila{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding:4px 36px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.vv-rol-fila::-webkit-scrollbar{display:none}.vv-rol-fila .vv-chip{flex:none;scroll-snap-align:center}
+.vv-rol-b{position:absolute;top:0;bottom:6px;margin:auto 0;width:32px;height:32px;padding:0 0 3px;border:2px solid #1b1818;border-radius:50%;background:#ffd166;color:#1b1818;font:900 22px/1 system-ui;box-shadow:2px 2px 0 #1b1818;cursor:pointer;z-index:2}
+.vv-rol-b.esq{left:0}.vv-rol-b.dir{right:0}.vv-rol-b[hidden]{display:none}
+/* escalas coloridas: cada nota tem a sua cor (--nc) */
+.vv-colorido .vv-n,.vv-nota-aula{background:var(--nc,#fff);color:#fff;text-shadow:0 1px 2px #0007;border-color:#16233d}
+.vv-colorido .vv-n.vez{outline:4px solid var(--vv-ink);outline-offset:2px;transform:translateY(-4px) scale(1.08)}
+.vv-colorido .vv-n.ok{filter:saturate(.6) brightness(.85);background:var(--nc)}
+.vv-colorido .vv-n.bad{background:var(--vv-vinho)}
+.vv-colorido .vv-tecla[data-midi],.vv-aula .vv-tecla[data-midi]{box-shadow:inset 0 -16px 0 var(--nc),3px 3px 0 var(--vv-navy)}
+.vv-colorido .vv-preta.tocavel,.vv-aula .vv-preta.tocavel{background:var(--nc);border:2px solid #16233d}
+.vv-teclado.pretas .vv-preta.tocavel{pointer-events:auto;cursor:pointer;z-index:2;padding:0}
+.vv-teclado.pretas .vv-preta.tocavel.ok{outline:3px solid #1f7a34}.vv-teclado.pretas .vv-preta.tocavel.certa{outline:3px solid var(--vv-most)}.vv-teclado.pretas .vv-preta.tocavel.bad{outline:3px solid var(--vv-vinho)}
+.vv-aula .vv-tecla.apagada,.vv-colorido .vv-tecla.apagada,.vv-colorido .vv-preta.apagada{opacity:.3}
+.vv-nota-aula{display:inline-flex;flex-direction:column;align-items:center;margin:3px;min-width:46px}.vv-nota-aula small{font:700 13px system-ui}
+.vv-aula .vv-teclado{margin:6px 0}
+.vv-aula,.vv-livre{--vv-ink:#16233d;--vv-navy:#17365b;--vv-vinho:#8e1b2c;--vv-petro:#1f6f78;--vv-most:#d99a2b;--vv-papel:#fffaf0;--vv-line:#16233d2e;--vv-mao:'Gochi Hand','Comic Sans MS',cursive;--vv-maq:'Special Elite','Courier New',monospace;--vv-tit:'Anton',Impact,sans-serif;color:var(--vv-ink)}
+.vv-livre{display:grid;gap:10px}.vv-livre>.vv-ops{display:grid;gap:4px;padding:8px;background:var(--vv-papel);border:2px solid var(--vv-ink);box-shadow:4px 4px 0 var(--vv-navy)}
+.vv-aula .vv-teclado{background:var(--vv-papel);padding:6px;border:2px solid var(--vv-ink)}
