@@ -66,3 +66,4 @@ svg.postura.topo{max-height:104mm}svg.postura.fulcro{max-height:62mm}svg.golpe{w
 svg.golpe{width:44mm}
 
 .fala img[src^='img/']{filter:none}
+.tb-ponta td,.tb-ponta th{padding:.5mm 1.6mm;font-size:11px}.tb-ponta img{max-height:112mm;object-fit:contain}
