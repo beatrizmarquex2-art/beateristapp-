@@ -2004,3 +2004,13 @@ body.bv-aberta { overflow: hidden; }
 /* o botão "canhota" fica dentro da área da bateria, no cantinho de baixo */
 .tk-palco{position:relative}
 .tk-palco .kd-canhota{position:absolute;right:10px;bottom:10px;z-index:3;min-height:28px;padding:3px 11px;font-size:12px}
+/* aula: a música na partitura do app (normal e colorida), com cursor */
+.au-pautas{display:grid;gap:8px}
+.au-nome{margin:0;font:26px/1.05 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;text-align:center;text-wrap:balance}
+.au-info{margin:0;text-align:center;font-size:12px;opacity:.75}
+.au-bloco{display:grid;gap:2px}.au-rotulo{font:11px 'Special Elite','Courier New',monospace;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.au-pauta{position:relative;margin:0;background:#fffdf8;color:#1b1818;border:2px solid #1b1818;border-radius:10px;padding:4px 0;overflow:hidden}.au-pauta svg{display:block}
+.au-cursor{position:absolute;top:0;bottom:0;width:18px;margin-left:-9px;background:#ffd23f66;border-left:2px solid #a31d30;border-right:2px solid #a31d30;pointer-events:none}
+.au-leg{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;font-size:11px}.au-leg span{display:inline-flex;align-items:center;gap:4px}.au-leg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.tk-kit.au-jogando .kd-rolar{display:none}
+.au-jogando-ocultar{display:none}

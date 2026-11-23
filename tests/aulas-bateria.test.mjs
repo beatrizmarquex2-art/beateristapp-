@@ -29,3 +29,12 @@ test('peça do kit vira peça da aula (chimbal aberto = chimbal; tom 1, tom 2 e 
 });
 test('estrelas 60/80/100', () => { assert.deepEqual([0, 59, 60, 79, 80, 99, 100].map(A.estrelas), [0, 0, 1, 1, 2, 2, 3]); });
 test('folga entre 70 e 150 ms em qualquer andamento', () => { for (const a of A.AULAS) for (const b of [50, 100, 180]) { const f = A.folga(a, b); assert.ok(f >= 0.07 && f <= 0.15, `${a.id} ${b}`); } });
+
+test('a aula vira ritmo do Beat Lab (partitura do app): peças nas linhas certas', () => {
+  const w = A.AULAS.find((a) => a.id === 'r10'); const b = A.paraBeat(w);
+  assert.equal(b.steps, 8); assert.equal(b.name, 'We Will Rock You'); assert.deepEqual(b.rows.tt, [1, 1, 0, 0, 1, 1, 0, 0]); assert.deepEqual(b.rows.mt, [1, 1, 0, 0, 1, 1, 0, 0]); assert.deepEqual(b.rows.sn, [0, 0, 1, 0, 0, 0, 1, 0]); assert.ok(b.rows.hh.every((x) => x === 0));
+  for (const a of A.AULAS) { const bb = A.paraBeat(a); assert.ok([8, 16].includes(bb.steps), a.id); assert.equal(Object.values(bb.rows).reduce((s, r) => s + r.reduce((x, y) => x + y, 0), 0), A.batidas(a).length, a.id); }
+});
+test('cursor da partitura: do 1º ao último passo, da esquerda pra direita, dentro da pauta', () => {
+  for (const a of A.AULAS) { let ant = 0; for (let i = 0; i < a.n; i++) { const x = A.xDoPasso(a, i); assert.ok(x > ant && x < 1, `${a.id} ${i}`); ant = x; } }
+});

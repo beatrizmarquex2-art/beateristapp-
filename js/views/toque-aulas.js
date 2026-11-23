@@ -6,12 +6,12 @@ import { audio, click, silence } from '../audio.js';
 import { kitSom, velAt } from '../instruments.js';
 import { getGame, setGame } from '../jogos/base.js';
 import { ganhou } from '../jogos/estrelas-jogo.js';
-import { AULAS, RODADAS, NOMES, ORDEM, PECA_DO_KIT, AULA_DO_KIT, batidas, passoSeg, julga, nota, estrelas } from '../jogos/aulas-bateria.js';
+import * as N from '../notation.js';
+import { AULAS, RODADAS, PECA_DO_KIT, AULA_DO_KIT, batidas, passoSeg, julga, nota, estrelas, paraBeat, xDoPasso } from '../jogos/aulas-bateria.js';
 
 const est = () => getGame('aulabat').est || {};
 const bpmDe = (a) => { const b = (getGame('aulabat').bpm || {})[a.id]; return Number.isFinite(b) && b >= 50 && b <= 180 ? b : a.bpm; };
 const txtEst = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
-const rot = (aula, i) => (aula.n === 8 ? (i % 2 === 0 ? String(i / 2 + 1) : 'e') : (i % 4 === 0 ? String(i / 4 + 1) : ['', 'e', '&', 'a'][i % 4]));
 
 /**
  * `kit` = { modelo(): id do modelo da bateria, luz(idPecaDoKit): acende a peça na tela (e o nome dela),
@@ -25,7 +25,7 @@ export function aulasPainel(kit, { voltar } = {}) {
   const em = (t, fn) => { timers.push(setTimeout(() => { if (!gone && estado === 'play') fn(); }, Math.max(0, (t - audio(false).currentTime) * 1000))); };
 
   function lista() {
-    limpa(); estado = 'lista'; const e = est();
+    limpa(); if (kit.jogando) kit.jogando(false); estado = 'lista'; const e = est();
     el.replaceChildren(
       h('div', { class: 'au-topo' }, h('b', {}, 'aulas da bateria'), voltar ? h('button', { type: 'button', class: 'btn small ghost', onclick: () => { limpa(); voltar(); } }, 'fechar') : null),
       h('p', { class: 'muted au-intro' }, 'o Paul toca um compasso e acende as peças da bateria; no compasso seguinte é a sua vez. escolha uma aula:'),
@@ -34,14 +34,15 @@ export function aulasPainel(kit, { voltar } = {}) {
   }
 
   function aula(a) {
-    limpa(); estado = 'aula'; let bpm = bpmDe(a); const meu = () => est()[a.id] || 0;
-    const grade = h('div', { class: 'au-grade', role: 'img', 'aria-label': `${a.nome}: ${ORDEM.filter((p) => a.p[p].length).map((p) => NOMES[p]).join(', ')}`, });
-    grade.style.setProperty('--n', String(a.n));
-    const celulas = {}; for (const p of ORDEM) celulas[p] = [];
-    grade.append(h('span', {}), ...Array.from({ length: a.n }, (_, i) => h('em', { class: 'au-num' }, rot(a, i))));
-    for (const p of ORDEM) { if (!a.p[p].length) continue; grade.append(h('span', { class: 'au-pl' }, NOMES[p])); for (let i = 0; i < a.n; i++) { const c = h('i', { class: `au-cel ${p}${a.p[p].includes(i) ? ' on' : ''}`, 'data-i': String(i) }); celulas[p][i] = c; grade.append(c); } }
-    const agora = (i) => grade.querySelectorAll('.au-cel').forEach((c) => c.classList.toggle('now', +c.dataset.i === i));
-    const quem = h('b', { class: 'au-quem' }, `${a.nome}`); const msg = h('p', { class: 'au-msg', role: 'status', 'aria-live': 'polite' }, 'toque nas peças da bateria. pra duas peças juntas, use dois dedos.');
+    limpa(); if (kit.jogando) kit.jogando(false); estado = 'aula'; let bpm = bpmDe(a); const meu = () => est()[a.id] || 0;
+    // a música na partitura de verdade (a do app): a normal (preto) e a colorida (cada peça na sua cor), com um cursor que anda
+    const W = 340; const beat = paraBeat(a); const cursores = [];
+    const pauta = (cor, rotulo) => { const f = h('figure', { class: `au-pauta${cor ? ' cor' : ''}` }); f.innerHTML = N.toSVG(N.layout(beat, { width: W, color: cor, full: true })); const c = h('i', { class: 'au-cursor', 'aria-hidden': 'true' }); f.append(c); cursores.push(c); return h('div', { class: 'au-bloco' }, h('span', { class: 'au-rotulo' }, rotulo), f); };
+    const leg = h('div', { class: 'au-leg', 'aria-label': 'Cores das peças' }, ...N.legend(beat).map(([nome, cor]) => h('span', {}, h('i', { style: { background: cor } }), nome)));
+    const grade = h('div', { class: 'au-pautas' }, h('h3', { class: 'au-nome' }, a.nome), h('p', { class: 'au-info' }, `${bpmDe(a)} bpm · 4/4 · ${a.n === 8 ? 'colcheias' : 'semicolcheias'}`), pauta(false, 'partitura'), pauta(true, 'partitura colorida'), leg);
+    const agora = (i) => cursores.forEach((c) => { c.hidden = i < 0; if (i >= 0) c.style.left = `${xDoPasso(a, i, W) * 100}%`; });
+    agora(-1);
+    const quem = h('b', { class: 'au-quem' }, 'pronto?'); const msg = h('p', { class: 'au-msg', role: 'status', 'aria-live': 'polite' }, 'toque nas peças da bateria. pra duas peças juntas, use dois dedos.');
     const res = h('div', { class: 'au-fim' }); const go = h('button', { type: 'button', class: 'btn primary tk-big au-go' }, '▶ jogar');
     const bpmOut = h('output', { class: 'bl-bpm' }, String(bpm));
     const troca = (d) => { bpm = Math.max(50, Math.min(180, bpm + d)); bpmOut.textContent = String(bpm); const m = { ...(getGame('aulabat').bpm || {}) }; m[a.id] = bpm; setGame('aulabat', { bpm: m }); };
@@ -50,9 +51,9 @@ export function aulasPainel(kit, { voltar } = {}) {
     el.replaceChildren(topo, grade, msg, tempo, go, res);
 
     const som = (id, t) => { const s = kitSom(kit.modelo()); if (s[id]) s[id](t, velAt(0.3), 0.3); };
-    const parar = () => { if (estado === 'play') { try { silence(); } catch { /* sem áudio */ } } timers.forEach(clearTimeout); timers = []; kit.aoBater(null); estado = 'aula'; };
+    const parar = () => { if (estado === 'play') { try { silence(); } catch { /* sem áudio */ } } timers.forEach(clearTimeout); timers = []; kit.aoBater(null); if (kit.jogando) kit.jogando(false); estado = 'aula'; };
     const fim = (porBar) => {
-      estado = 'aula'; kit.aoBater(null); agora(-1);
+      estado = 'aula'; kit.aoBater(null); if (kit.jogando) kit.jogando(false); agora(-1);
       const pct = nota(porBar); const n = estrelas(pct); const e = { ...est() }; if (pct > (e[a.id] || 0)) e[a.id] = pct; setGame('aulabat', { est: e });
       if (n > 0) ganhou('aulabat', n, `aulabat:${a.id}`);
       quem.textContent = 'resultado'; quem.className = 'au-quem'; topo.querySelector('.au-est').textContent = txtEst(estrelas(e[a.id] || 0));
@@ -63,7 +64,7 @@ export function aulasPainel(kit, { voltar } = {}) {
       go.textContent = '↻ jogar de novo'; go.hidden = false; tempo.hidden = false; msg.textContent = pct >= 80 ? 'muito bom!' : 'dica: conte 1, 2, 3, 4 em voz alta junto com o Paul.';
     };
     go.addEventListener('click', () => {
-      go.hidden = true; tempo.hidden = true; res.replaceChildren(); taps.length = 0; estado = 'play'; if (kit.ver) kit.ver(); // a bateria fica na tela pra ver as peças acendendo
+      go.hidden = true; tempo.hidden = true; res.replaceChildren(); taps.length = 0; estado = 'play'; if (kit.jogando) kit.jogando(true); if (kit.ver) kit.ver(); // jogando: some a linha de opções e a bateria + a partitura cabem juntas na tela
       const c = audio(); const q = 60 / bpm; const s = passoSeg(a, bpm); const t0 = c.currentTime + 0.4 + 4 * q; const bs = batidas(a, bpm); const vezes = [];
       for (let i = 0; i < 4; i++) { click(t0 - (4 - i) * q, i === 0 ? 2 : 1, 0.5); em(t0 - (4 - i) * q, () => { quem.textContent = `conta: ${i + 1}`; quem.className = 'au-quem'; }); }
       for (let k = 0; k < RODADAS; k++) {
@@ -86,5 +87,5 @@ export function aulasPainel(kit, { voltar } = {}) {
     window.__aulaBat = { aula: a, get estado() { return estado; }, inject: (t, p) => taps.push({ t, p }) }; // só pra teste
   }
   lista();
-  return { el, destroy() { gone = true; if (estado === 'play') { try { silence(); } catch { /* sem áudio */ } } limpa(); delete window.__aulaBat; } };
+  return { el, destroy() { gone = true; if (kit.jogando) kit.jogando(false); if (estado === 'play') { try { silence(); } catch { /* sem áudio */ } } limpa(); delete window.__aulaBat; } };
 }

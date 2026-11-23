@@ -1,3 +1,4 @@
+import { ROWS } from '../beats.js';
 // Aulas da bateria de toque (aba Palco > bateria > "aulas"): o Paul toca 1 compasso acendendo as peças da bateria, o aluno repete tocando nelas.
 // Regra pura (sem tela): os ritmos, a conta dos tempos e a nota. Os 9 ritmos foram marcados pela Bea na grade (nov/2026); os nomes ainda são provisórios.
 // Peças: cr = prato de ataque, rd = prato de ritmo (condução), ch = chimbal, t1 = tom 1, t2 = tom 2, cx = caixa, su = surdo, bu = bumbo. `n` = passos do compasso (8 = colcheias, 16 = semicolcheias); a lista é a posição de cada batida (0 = tempo 1).
@@ -55,3 +56,12 @@ export function julga(aula, taps, bpm = aula.bpm) {
 /** Junta os compassos numa nota de 0 a 100 (acertos sobre o que era esperado mais os toques sobrando). */
 export function nota(res) { const h = res.reduce((s, r) => s + r.hits, 0); const t = res.reduce((s, r) => s + r.esperado + r.extras, 0); return t ? Math.round((h / t) * 100) : 0; }
 export const estrelas = (pct) => (pct >= 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0);
+/** A aula como ritmo do Beat Lab (grade de passos × peças), pra desenhar na partitura do app (js/notation.js), normal e colorida. */
+const ROW_DO_KIT = { cr: 'cr', rd: 'rd', ch: 'hh', t1: 'tt', t2: 'mt', cx: 'sn', su: 'ft', bu: 'bd' };
+export function paraBeat(aula) {
+  const rows = Object.fromEntries(ROWS.map((r) => [r.id, Array.from({ length: aula.n }, () => 0)]));
+  for (const p of ORDEM) for (const i of aula.p[p]) rows[ROW_DO_KIT[p]][i] = 1;
+  return { id: aula.id, name: aula.nome, style: 'Aulas', bpm: aula.bpm, steps: aula.n, kind: 'groove', rows };
+}
+/** Onde o passo `i` cai na largura da partitura (0 a 1), pro cursor andar em cima das notas. Os 52 e 10 são a margem esquerda e direita de notation.js (layout). */
+export const xDoPasso = (aula, i, W = 340) => (52 + i * ((W - 62) / aula.n) + (W - 62) / aula.n / 2) / W;

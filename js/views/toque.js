@@ -71,7 +71,7 @@ export function mount(host) {
   const abreAulas = () => {
     if (aulasCtl) return;
     if (SEM_AULA.includes(modeloAtual)) { toast('as aulas usam a bateria acústica ou a eletrônica'); setConf({ modelo: 'acustica' }).then(() => { drawKit(); abreAulas(); }); return; } // o cajón só tem agudo e grave
-    cancel(); stopAll(); aulasCtl = aulasPainel({ modelo: () => modeloAtual, luz, aoBater: (fn) => { aulaTap = fn; }, ver: () => { try { kit.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } } }, { voltar: fechaAulas }); kit.classList.add('aulas'); drawKit(); drawPanel(); };
+    cancel(); stopAll(); aulasCtl = aulasPainel({ modelo: () => modeloAtual, luz, aoBater: (fn) => { aulaTap = fn; }, ver: () => { try { kit.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } }, jogando: (v) => kit.classList.toggle('au-jogando', !!v) }, { voltar: fechaAulas }); kit.classList.add('aulas'); drawKit(); drawPanel(); };
   const fechaAulas = () => { if (!aulasCtl) return; aulasCtl.destroy(); aulasCtl = null; aulaTap = null; kit.classList.remove('aulas'); drawKit(); drawPanel(); };
   /** Onda que sai do ponto do toque, na cor da peça. */
   const spark = (x, y, el) => {

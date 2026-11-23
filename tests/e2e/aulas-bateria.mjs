@@ -16,13 +16,14 @@ check('abre a lista com 16 aulas', await page.evaluate(() => document.querySelec
 await shot('1-lista');
 
 await page.evaluate(() => [...document.querySelectorAll('.au-item')].find((b) => b.textContent.includes('Ritmo Base')).click()); await sleep(400);
-check('a aula mostra a grade com as 3 peças do ritmo 5', await page.evaluate(() => document.querySelectorAll('.au-pl').length === 3 && document.querySelectorAll('.au-cel.on').length === 8));
+check('a aula mostra o nome da música e a partitura normal e a colorida', await page.evaluate(() => document.querySelector('.au-nome').textContent === 'Ritmo Base' && document.querySelectorAll('.au-pauta svg').length === 2 && document.querySelector('.au-pauta.cor').innerHTML.includes('#d1182e') && !document.querySelector('.au-pauta:not(.cor)').innerHTML.includes('#d1182e') && !document.querySelector('.au-grade')));
 await shot('2-aula');
 await page.evaluate(() => { document.querySelectorAll('.bl-step')[0].click(); }); // 100 -> 95 bpm só pra conferir o controle
 check('o controle de bpm muda o número', await page.evaluate(() => document.querySelector('.au-tempo output').textContent === '95'));
 await page.evaluate(() => document.querySelectorAll('.au-tempo .bl-step')[1].click());
 await page.evaluate(() => document.querySelector('.au-go').click());
 await espera(() => window.__aulaBat && window.__aulaBat.vezes && window.__aulaBat.vezes.length === 3);
+check('o cursor anda na partitura durante o exemplo', await (async () => { let xs = new Set(); for (let i = 0; i < 60; i++) { const v = await page.evaluate(() => { const c = document.querySelector('.au-cursor'); return c && !c.hidden ? c.style.left : ''; }); if (v) xs.add(v); await sleep(120); } return xs.size >= 3; })());
 check('o Paul acende peças da bateria durante o exemplo', await (async () => { let viu = false; for (let i = 0; i < 80 && !viu; i++) { viu = await page.evaluate(() => !!document.querySelector('.tk-art [data-p].au-luz')); await sleep(40); } return viu; })());
 await shot('3-paul');
 // toca certinho nas 3 rodadas (tempo absoluto = vez + passo)
@@ -37,7 +38,7 @@ check('guardou a melhor nota', await page.evaluate(() => { const g = JSON.parse(
 /* ---------- aula com tom e caixa, tocando de verdade nas peças da tela ---------- */
 await page.evaluate(() => [...document.querySelectorAll('.au-topo button')].find((b) => b.textContent.includes('aulas')).click()); await sleep(400);
 await page.evaluate(() => [...document.querySelectorAll('.au-item')].find((b) => b.textContent.includes('We Will Rock You')).click()); await sleep(400);
-check('We Will Rock You mostra tom 1, tom 2 e caixa na grade', await page.evaluate(() => [...document.querySelectorAll('.au-pl')].map((x) => x.textContent).join('|') === 'tom 1|tom 2|caixa'));
+check('We Will Rock You: a legenda da partitura colorida tem caixa, tom 1 e tom 2', await page.evaluate(() => [...document.querySelectorAll('.au-leg span')].map((x) => x.textContent).join('|') === 'Caixa|Tom 1|Tom 2'));
 await page.evaluate(() => document.querySelector('.au-go').click());
 await espera(() => window.__aulaBat && window.__aulaBat.vezes && window.__aulaBat.vezes.length === 3);
 const plano = await page.evaluate(async () => { const m = await import('/js/audio.js'); const c = m.audio(false); const w = window.__aulaBat; return { q: w.q, p: w.aula.p, delta: w.vezes.map((v) => (v - c.currentTime) * 1000) }; });
