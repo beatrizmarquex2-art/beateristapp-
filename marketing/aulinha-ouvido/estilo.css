@@ -62,3 +62,5 @@ svg.ritmo{max-height:14mm}.ex svg.ritmo{max-height:10mm}.ex td{padding:0.8mm 2mm
 svg.ritor{max-height:30mm}.bat svg{max-height:52mm}
 svg.postura{max-height:86mm}
 svg.postura[aria-label^='Bateria']{max-height:112mm}
+svg.postura.topo{max-height:104mm}svg.postura.fulcro{max-height:62mm}svg.golpe{width:40mm}
+svg.golpe{width:44mm}
