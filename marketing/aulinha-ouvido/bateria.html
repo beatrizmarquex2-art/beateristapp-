@@ -9,7 +9,7 @@ import { paginas as pBateria } from './bateria.js';
 
 const { ex, GAB } = criaExercicios();
 const bat = pBateria(ex);
-const SECOES = [['Fundamentos (postura, empunhadura, leitura, contagem)', bat.slice(0, 9)], ['Mãos e técnicas', bat.slice(9, 23)], ['Coordenação, grooves e plano', bat.slice(23)]];
+const SECOES = [['Fundamentos (postura, empunhadura, leitura, contagem)', bat.slice(0, 15)], ['Mãos e técnicas', bat.slice(15, 29)], ['Coordenação, grooves e plano', bat.slice(29)]];
 
 /* páginas da frente */
 const capa = { capa: true, html: `<img src="${LOGO}" style="width:62mm" alt=""><div class="tarja">Robôterista ensina</div><h1>Bateria</h1><div class="sub">intermediário e avançado</div><img class="hero" style="width:100mm" src="${P}paul-bateria.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · pad, grooves e plano de evolução</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };

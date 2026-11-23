@@ -106,27 +106,109 @@ export function kitReal() {
   <text x="300" y="450" text-anchor="middle" font-size="15" font-weight="700" ${F}>visto por quem toca (o banco, nº 1, fica atrás de você)</text></svg>`;
 }
 
-/** Baqueta na mão, com o ponto de apoio (fulcro) a 1/3 do pé: polegar e indicador pinçam, os outros dedos envolvem por baixo. */
+/* ---------- baquetas ---------- */
+const KK = '#000'; const FF = 'font-family="Hanken Grotesk"';
+/** Contorno de uma ponta (do pescoço até o fim), centrada em y, começando em x: tipos round, acorn, barrel, oval, teardrop. Devolve o caminho superior [x,y] e o comprimento usado. */
+function pontaPath(tipo, x, y, d, c) {
+  const h = d / 2; // meia espessura do pescoço (c = comprimento da ponta)
+  const F = { round: [[0, 0.5], [0.12, 0.8], [0.4, 1.35], [0.72, 1.45], [0.93, 1.05], [1, 0]], acorn: [[0, 0.5], [0.12, 0.7], [0.4, 1.2], [0.7, 1.3], [0.9, 0.85], [1, 0]], barrel: [[0, 0.5], [0.1, 1.15], [0.2, 1.4], [0.8, 1.4], [0.92, 1.05], [1, 0]], oval: [[0, 0.5], [0.12, 0.85], [0.45, 1.3], [0.75, 1.25], [0.94, 0.85], [1, 0]], teardrop: [[0, 0.5], [0.15, 0.95], [0.4, 1.4], [0.7, 1.0], [0.92, 0.45], [1, 0]] }[tipo] || [];
+  const pts = F.map(([f, k]) => [x + f * c, k * h]);
+  const up = pts.map(([px, hh]) => `${px.toFixed(1)} ${(y - hh).toFixed(1)}`); const dn = pts.slice().reverse().map(([px, hh]) => `${px.toFixed(1)} ${(y + hh).toFixed(1)}`);
+  return `M${up[0]} ${up.slice(1).map((q) => `L${q}`).join(' ')} ${dn.map((q) => `L${q}`).join(' ')} Z`;
+}
+/** Uma baqueta inteira (pé, haste, ombro, pescoço e ponta) com veios da madeira. `len`/`diam` em px. */
+function baquetaSvg(x0, y, len, diam, tipo = 'oval', { veios = true } = {}) {
+  const r = diam / 2; const xh = x0 + len * 0.74; const xs = x0 + len * 0.905; const xp = x0 + len * 0.935; const c = len - (xp - x0); const hn = r * 0.42;
+  const corpo = `M${x0 + 4} ${y - r} L${xh} ${y - r} C${xh + (xs - xh) * 0.6} ${y - r} ${xs - 6} ${y - hn} ${xp} ${y - hn} L${xp} ${y + hn} C${xs - 6} ${y + hn} ${xh + (xs - xh) * 0.6} ${y + r} ${xh} ${y + r} L${x0 + 4} ${y + r} Q${x0 - 3} ${y + r} ${x0 - 3} ${y} Q${x0 - 3} ${y - r} ${x0 + 4} ${y - r} Z`;
+  const g = veios ? [-0.55, -0.2, 0.25, 0.6].map((k, i) => `<path d="M${x0 + 14 + i * 9} ${y + k * r} L${xh - 20 - i * 14} ${y + k * r}" stroke="#7a7a7a" stroke-width="${i % 2 ? 0.9 : 0.6}" fill="none"/>`).join('') : '';
+  return `<path d="${corpo}" fill="url(#bqg)" stroke="${KK}" stroke-width="2.4" stroke-linejoin="round"/>${g}<path d="${pontaPath(tipo, xp - 0.5, y, hn * 2, c + 0.5)}" fill="url(#bqp)" stroke="${KK}" stroke-width="2.4" stroke-linejoin="round"/>`;
+}
+const DEFS_BQ = `<defs><linearGradient id="bqg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfbfb"/><stop offset=".45" stop-color="#cfcfcf"/><stop offset="1" stop-color="#858585"/></linearGradient><linearGradient id="bqp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#dcdcdc"/><stop offset="1" stop-color="#9a9a9a"/></linearGradient></defs>`;
+
+/** Baqueta com as partes e o ponto de apoio (fulcro) marcado, sem mão. */
 export function baquetaFulcro() {
-  const K = '#000'; const F = 'font-family="Hanken Grotesk"'; const dedo = (x, y, w, h, r = 0) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${Math.min(w, h) / 2}" fill="url(#mao)" stroke="${K}" stroke-width="3" transform="rotate(${r} ${x + w / 2} ${y + h / 2})"/>`;
-  return `<svg class="postura fulcro" viewBox="0 0 600 270" role="img" aria-label="Baqueta na mão com o fulcro"><defs><linearGradient id="bq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f4"/><stop offset=".55" stop-color="#c4c4c4"/><stop offset="1" stop-color="#8a8a8a"/></linearGradient><linearGradient id="mao" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fafafa"/><stop offset="1" stop-color="#d2d2d2"/></linearGradient></defs>
-  <rect x="2" y="2" width="596" height="266" rx="10" fill="#fff" stroke="${K}" stroke-width="2"/>
-  <g transform="rotate(-3 300 130)">
-   ${dedo(236, 124, 26, 62, -8)}${dedo(214, 126, 26, 66, -4)}${dedo(192, 128, 26, 60, 0)}
-   <path d="M20 128 L548 112 Q572 111 580 120 Q572 132 548 133 L20 150 Q10 140 20 128 Z" fill="url(#bq)" stroke="${K}" stroke-width="3"/>
-   <path d="M60 135 L520 120 M60 141 L520 126" stroke="#777" stroke-width="1" fill="none"/><circle cx="573" cy="122" r="2.4" fill="${K}"/>
-   <path d="M20 34 L150 30 Q186 28 204 50 L212 100 Q214 118 200 120 L150 122 L20 122 Z" fill="url(#mao)" stroke="${K}" stroke-width="3"/>
-   <path d="M150 52 Q176 54 190 66 M154 78 Q178 80 192 90" fill="none" stroke="#666" stroke-width="1.8"/>
-   <path d="M150 122 Q168 106 214 108 Q244 110 252 118 Q250 134 214 132 Q176 134 150 122 Z" fill="url(#mao)" stroke="${K}" stroke-width="3"/>
-   <path d="M196 62 Q244 62 258 92 Q264 112 244 118 Q236 100 214 96 Q200 90 196 62 Z" fill="url(#mao)" stroke="${K}" stroke-width="3"/>
-   <circle cx="236" cy="118" r="9" fill="${K}"/></g>
-  <line x1="236" y1="52" x2="236" y2="214" stroke="${K}" stroke-width="2" stroke-dasharray="5 4"/>
-  <text x="236" y="42" text-anchor="middle" font-size="18" font-weight="800" ${F} paint-order="stroke" stroke="#fff" stroke-width="6">FULCRO: polegar + indicador</text>
-  <text x="34" y="104" font-size="14" ${F}>antebraço e punho (soltos)</text>
-  <text x="318" y="92" font-size="15" ${F}>ponta da baqueta</text><path d="M520 94 L546 112" stroke="${K}" stroke-width="1.8" fill="none"/>
-  <text x="290" y="196" font-size="15" ${F}>dedos de baixo (médio, anelar e mínimo)</text><text x="290" y="216" font-size="15" ${F}>envolvem a baqueta, sem apertar</text><path d="M286 190 L254 168" stroke="${K}" stroke-width="1.8" fill="none"/>
-  <path d="M20 252 H236" stroke="${K}" stroke-width="2.4"/><path d="M20 244 V260 M236 244 V260" stroke="${K}" stroke-width="2.4"/><text x="128" y="244" text-anchor="middle" font-size="14" font-weight="700" ${F}>≈ 1/3 do comprimento</text><text x="250" y="258" font-size="13" ${F}>medido a partir do pé (parte de trás)</text>
+  const x0 = 30; const L = 540; const y = 118; const D = 24; const fx = x0 + L * 0.34;
+  return `<svg class="postura fulcro" viewBox="0 0 600 250" role="img" aria-label="Baqueta com o ponto do fulcro">${DEFS_BQ}
+  <rect x="2" y="2" width="596" height="246" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>
+  <rect x="${fx - 24}" y="${y - D / 2 - 14}" width="48" height="${D + 28}" rx="10" fill="#e2e2e2" stroke="${KK}" stroke-width="2" stroke-dasharray="5 4"/>
+  ${baquetaSvg(x0, y, L, D, 'oval')}
+  <circle cx="${fx}" cy="${y}" r="8" fill="${KK}"/><circle cx="${fx}" cy="${y}" r="13" fill="none" stroke="${KK}" stroke-width="2.4"/>
+  <line x1="${fx}" y1="${y - 26}" x2="${fx}" y2="${y - 40}" stroke="${KK}" stroke-width="2.4"/>
+  <text x="${fx}" y="52" text-anchor="middle" font-size="18" font-weight="800" ${FF}>FULCRO: é aqui que se segura</text>
+  <text x="${fx}" y="72" text-anchor="middle" font-size="14" ${FF}>polegar + lateral do indicador, a ≈ 1/3 do pé</text>
+  <text x="${x0 + 40}" y="${y + 56}" text-anchor="middle" font-size="14" font-weight="700" ${FF}>pé</text><text x="${x0 + 40}" y="${y + 73}" text-anchor="middle" font-size="12.5" ${FF}>(parte grossa)</text>
+  <text x="${x0 + L * 0.58}" y="${y + 56}" text-anchor="middle" font-size="14" font-weight="700" ${FF}>haste</text>
+  <text x="${x0 + L * 0.83}" y="${y + 56}" text-anchor="middle" font-size="14" font-weight="700" ${FF}>ombro</text><text x="${x0 + L * 0.92}" y="${y - 46}" text-anchor="middle" font-size="14" font-weight="700" ${FF}>pescoço</text>
+  <text x="${x0 + L * 0.985}" y="${y + 56}" text-anchor="end" font-size="14" font-weight="700" ${FF}>ponta</text>
+  <path d="M${x0} 214 H${fx}" stroke="${KK}" stroke-width="2.4"/><path d="M${x0} 206 V222 M${fx} 206 V222" stroke="${KK}" stroke-width="2.4"/>
+  <text x="${(x0 + fx) / 2}" y="238" text-anchor="middle" font-size="14" font-weight="700" ${FF}>≈ 1/3 do comprimento, medido do pé</text>
   </svg>`;
+}
+/** As 5 baquetas na mesma escala (comprimento real; espessura ampliada) com a medida de cada uma. */
+export function comparaBaquetas() {
+  const kx = 1.12; const ky = 2.6;
+  const S = [['7A', 394, 13.7, 'oval'], ['7B', 394, 14.5, 'oval'], ['5A', 406, 14.0, 'oval'], ['5B', 406, 15.1, 'oval'], ['2B', 413, 16.0, 'oval']];
+  let out = `<svg class="postura" viewBox="0 0 640 330" role="img" aria-label="Comparação das baquetas 7A 7B 5A 5B 2B">${DEFS_BQ}<rect x="2" y="2" width="636" height="326" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>`;
+  S.forEach(([n, l, d, t], i) => { const y = 44 + i * 58; out += `<text x="14" y="${y + 6}" font-size="22" font-weight="800" ${FF}>${n}</text>${baquetaSvg(64, y, l * kx, d * ky, t, { veios: false })}<text x="${64 + l * kx + 10}" y="${y - 4}" font-size="13" font-weight="700" ${FF}>${l} mm</text><text x="${64 + l * kx + 10}" y="${y + 12}" font-size="13" ${FF}>Ø ${d.toFixed(1)} mm</text>`; });
+  return `${out}<text x="320" y="320" text-anchor="middle" font-size="12.5" ${FF}>comprimento na mesma escala · espessura ≈ 2,6× maior pra comparar · medidas aproximadas</text></svg>`;
+}
+/** Os 5 formatos de ponta, com o nome e o som de cada um. */
+export function tiposPonta() {
+  const T = [['round', 'redonda', 'som médio'], ['acorn', 'bolota', 'som quente'], ['barrel', 'barril', 'som cheio'], ['oval', 'oval', 'versátil'], ['teardrop', 'gota', 'fino e claro']];
+  let out = `<svg class="postura" viewBox="0 0 640 220" role="img" aria-label="Tipos de ponta de baqueta">${DEFS_BQ}<rect x="2" y="2" width="636" height="216" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>`;
+  T.forEach(([t, n, d], i) => { const cx = 90 + i * 124; out += `<path d="${pontaPath(t, cx - 24, 90, 22, 70)}" fill="url(#bqp)" stroke="${KK}" stroke-width="3.2"/><path d="M${cx - 50} ${90 - 11} L${cx - 24} ${90 - 11} L${cx - 24} ${90 + 11} L${cx - 50} ${90 + 11}" fill="url(#bqg)" stroke="${KK}" stroke-width="2.6"/><circle cx="${cx + 12}" cy="${90 - 6}" r="3" fill="#fff" opacity=".9"/><text x="${cx - 8}" y="150" text-anchor="middle" font-size="17" font-weight="800" ${FF}>${n}</text><text x="${cx - 8}" y="170" text-anchor="middle" font-size="13" ${FF}>${d}</text>`; });
+  return `${out}<text x="320" y="204" text-anchor="middle" font-size="12.5" ${FF}>a ponta é a parte que bate: muda a definição do som e a sensação</text></svg>`;
+}
+/** Vassourinha: aberta, fechada, e o movimento circular. */
+export function vassourinhas() {
+  const fio = (cx, n, aberto) => Array.from({ length: n }, (_, k) => { const a = ((k / (n - 1)) - 0.5) * (aberto ? 0.95 : 0.1); return `<path d="M${cx} 100 L${(cx + Math.cos(a) * 82).toFixed(1)} ${(100 + Math.sin(a) * 82).toFixed(1)}" stroke="${KK}" stroke-width="1.5" fill="none"/>`; }).join('');
+  return `<svg class="postura" viewBox="0 0 640 250" role="img" aria-label="Vassourinha: aberta e fechada, e movimento circular"><rect x="2" y="2" width="636" height="246" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>
+  <text x="104" y="26" text-anchor="middle" font-size="16" font-weight="800" ${FF}>aberta (som "varrido")</text>
+  <rect x="14" y="94" width="92" height="12" rx="6" fill="url(#bqg)" stroke="${KK}" stroke-width="2.4"/>${fio(106, 15, true).replace(/M106/g, 'M106')}
+  <rect x="104" y="96" width="14" height="8" fill="#bbb" stroke="${KK}" stroke-width="1.6"/>
+  <text x="104" y="190" text-anchor="middle" font-size="13" ${FF}>fios de metal abertos em leque</text>
+  <text x="320" y="26" text-anchor="middle" font-size="16" font-weight="800" ${FF}>fechada (som "tap")</text>
+  <rect x="236" y="94" width="92" height="12" rx="6" fill="url(#bqg)" stroke="${KK}" stroke-width="2.4"/>${fio(328, 15, false)}
+  <rect x="326" y="96" width="14" height="8" fill="#bbb" stroke="${KK}" stroke-width="1.6"/>
+  <text x="332" y="190" text-anchor="middle" font-size="13" ${FF}>fios juntos: toque macio</text>
+  <text x="540" y="26" text-anchor="middle" font-size="16" font-weight="800" ${FF}>o movimento</text>
+  <ellipse cx="540" cy="118" rx="76" ry="38" fill="#e8e8e8" stroke="${KK}" stroke-width="3"/><ellipse cx="540" cy="118" rx="54" ry="24" fill="none" stroke="#777" stroke-width="1.4" stroke-dasharray="4 4"/>
+  <path d="M588 118 C588 96 560 86 540 88 C514 90 492 102 494 118 C496 136 520 146 546 144" fill="none" stroke="${KK}" stroke-width="3" marker-end="url(#setaV)"/>
+  <defs><marker id="setaV" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="${KK}"/></marker></defs>
+  <text x="540" y="186" text-anchor="middle" font-size="12.5" ${FF}>direita: sentido horário</text><text x="540" y="202" text-anchor="middle" font-size="12.5" ${FF}>esquerda: anti-horário</text>
+  <text x="320" y="232" text-anchor="middle" font-size="12.5" ${FF}>a vassourinha "varre" a pele da caixa: som contínuo, sem ataque, de balada e jazz</text></svg>`;
+}
+/** Pad de estudo em corte: camadas, e seta do rebote. */
+export function padCorte() {
+  return `<svg class="postura" viewBox="0 0 640 250" role="img" aria-label="Pad de estudo em corte"><defs><pattern id="gm" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 6 L6 0" stroke="#888" stroke-width="1"/></pattern><marker id="sr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="${KK}"/></marker></defs>
+  <rect x="2" y="2" width="636" height="246" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>
+  <rect x="40" y="150" width="400" height="14" rx="3" fill="#fff" stroke="${KK}" stroke-width="3"/><rect x="40" y="164" width="400" height="38" fill="url(#gm)" stroke="${KK}" stroke-width="3"/><rect x="40" y="202" width="400" height="16" rx="3" fill="#bbb" stroke="${KK}" stroke-width="3"/>
+  <text x="452" y="162" font-size="14" font-weight="700" ${FF}>1  superfície</text><text x="452" y="186" font-size="14" font-weight="700" ${FF}>2  borracha (amortece)</text><text x="452" y="214" font-size="14" font-weight="700" ${FF}>3  base (não desliza)</text>
+  <g transform="rotate(-30 110 140)"><path d="M40 140 L250 128 Q270 128 274 138 Q270 148 250 148 L40 156 Z" fill="url(#bqg)" stroke="${KK}" stroke-width="2.6"/></g>
+  <path d="M200 112 Q236 60 276 112" fill="none" stroke="${KK}" stroke-width="2.6" stroke-dasharray="5 4" marker-end="url(#sr)"/><text x="238" y="56" text-anchor="middle" font-size="14" font-weight="700" ${FF}>rebote</text>
+  <path d="M110 38 L110 112" stroke="${KK}" stroke-width="2.6" marker-end="url(#sr)"/><text x="100" y="32" text-anchor="end" font-size="14" font-weight="700" ${FF}>golpe</text>
+  <text x="320" y="240" text-anchor="middle" font-size="12.5" ${FF}>a baqueta bate na superfície, a borracha devolve parte da energia e a baqueta "volta" (rebote)</text></svg>`;
+}
+/** Rebote: alturas que vão diminuindo até a baqueta parar. */
+export function reboteFig() {
+  const xs = [60, 180, 280, 358, 418, 458, 484]; const hs = [150, 98, 56, 30, 16, 8, 3]; let d = `M${xs[0]} 190`; let arcs = '';
+  for (let i = 0; i < xs.length - 1; i++) { const mx = (xs[i] + xs[i + 1]) / 2; arcs += `<path d="M${xs[i]} 190 Q${mx} ${190 - hs[i] * 1.9} ${xs[i + 1]} 190" fill="none" stroke="${KK}" stroke-width="${i === 0 ? 3.4 : 2.6}" ${i === 0 ? '' : 'stroke-dasharray="5 4"'}/>`; }
+  return `<svg class="postura" viewBox="0 0 640 260" role="img" aria-label="Rebote da baqueta"><rect x="2" y="2" width="636" height="256" rx="10" fill="#fff" stroke="${KK}" stroke-width="2"/>
+  <line x1="30" y1="190" x2="600" y2="190" stroke="${KK}" stroke-width="5"/>${arcs}
+  ${xs.slice(0, -1).map((x, i) => `<circle cx="${x}" cy="190" r="5" fill="${KK}"/><text x="${x}" y="214" text-anchor="middle" font-size="13" font-weight="700" ${FF}>${i === 0 ? 'golpe' : `rebote ${i}`}</text>`).join('')}
+  <text x="440" y="70" font-size="15" font-weight="700" ${FF}>cada rebote é menor</text><text x="440" y="90" font-size="15" font-weight="700" ${FF}>e mais rápido, até</text><text x="440" y="110" font-size="15" font-weight="700" ${FF}>a baqueta parar</text>
+  <text x="320" y="246" text-anchor="middle" font-size="12.5" ${FF}>mão solta = muitos rebotes (rolo) · mão apertada = rebote morre na hora</text></svg>`;
+}
+/** Moeller: 4 quadros do movimento do braço e da baqueta. */
+export function moellerFig() {
+  const quadro = (x, nome, cotovelo, pulso, ponta, sub) => `<g transform="translate(${x} 0)"><rect x="6" y="6" width="150" height="214" rx="8" fill="#fff" stroke="${KK}" stroke-width="2"/><ellipse cx="81" cy="196" rx="56" ry="8" fill="#e6e6e6" stroke="${KK}" stroke-width="2.4"/>
+    <path d="M${cotovelo[0]} ${cotovelo[1]} L${pulso[0]} ${pulso[1]}" stroke="${KK}" stroke-width="12" stroke-linecap="round" fill="none"/><path d="M${cotovelo[0]} ${cotovelo[1]} L${pulso[0]} ${pulso[1]}" stroke="#d8d8d8" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path d="M${pulso[0]} ${pulso[1]} L${ponta[0]} ${ponta[1]}" stroke="${KK}" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="${ponta[0]}" cy="${ponta[1]}" r="4.2" fill="${KK}"/>
+    <circle cx="${cotovelo[0]}" cy="${cotovelo[1]}" r="6.5" fill="#fff" stroke="${KK}" stroke-width="2.4"/><circle cx="${pulso[0]}" cy="${pulso[1]}" r="6.5" fill="#fff" stroke="${KK}" stroke-width="2.4"/>
+    <text x="81" y="30" text-anchor="middle" font-size="15" font-weight="800" ${FF}>${nome}</text><text x="81" y="216" text-anchor="middle" font-size="13" font-weight="700" ${FF}>${sub}</text></g>`;
+  return `<svg class="postura" viewBox="0 0 660 230" role="img" aria-label="Movimento Moeller em 4 quadros">
+  ${quadro(0, '1 · preparo', [30, 120], [74, 70], [128, 56], 'antebraço sobe')}${quadro(164, '2 · chicote', [30, 120], [84, 100], [132, 150], 'braço desce')}
+  ${quadro(328, '3 · golpe', [30, 120], [92, 126], [134, 186], 'baqueta bate')}${quadro(492, '4 · rebote', [30, 120], [86, 104], [128, 120], 'volta sozinha')}</svg>`;
 }
 /** Os 4 golpes: pad com estrutura, baqueta saindo do fulcro; início (tracejada) e fim (cheia) + seta do movimento e altura em cm. */
 export function golpe(inicio, fim, nome) {
