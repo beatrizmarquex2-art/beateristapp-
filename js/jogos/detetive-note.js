@@ -31,9 +31,9 @@ const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { wid
 const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
   : card.cell === '0010' ? h('span', { class: 'dn-face' }, ico('shh-som', '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
   : h('span', { class: 'dn-face' }, ico(card.id, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
-/** Cada fase toca num som diferente (caixa, tambor, bumbo, chimbal) pra uma fase não se confundir com a outra. */
-const SONS_FASE = ['caixa', 'tambor', 'bumbo', 'chimbal'];
-const somDaFase = (n) => SONS_FASE[(n - 1) % SONS_FASE.length];
+/** O ritmo SEMPRE toca na caixa, em todas as fases (pedido da Bea, 23/nov/2026: não tem troca de tambor nem de bumbo). */
+const SOM_DETETIVE = 'caixa';
+const somDaFase = () => SOM_DETETIVE;
 const soa = (cell, bpm, som) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...baseDe(cell)].forEach((x, k) => { if (x === '1') { if (temFlam(cell)) voz(t + (k * q) / 4 - 0.05, 0.4, som); voz(t + (k * q) / 4, 0.85, som); } }); };
 /** Toca o compasso (4 tempos) com o som da fase: conta 4 antes (a 120 BPM começa tocando direto, sem a contagem). */
 function tocaCompasso(cells, bpm, som) {
