@@ -1,5 +1,5 @@
 // Parte 3 do caderno intermediário: HARMONIA (16 páginas) + integração (3 páginas).
-import { pauta, piano, caixa, tabela, fala, lin, cx, acordeBox, braco, grade } from './lib.js';
+import { pauta, piano, caixa, tabela, fala, fala2, lin, cx, acordeBox, braco, grade } from './lib.js';
 import * as T from './teoria.js';
 import { ps, seq } from './melodia.js';
 
@@ -121,7 +121,7 @@ ${ex('H', 'transponha as progressões', tabela(['tom', 'graus', 'acordes'], exP.
   /* 45 violão: acordes com 7ª */
   const BX = [['C7', [-1, 3, 2, 3, 1, 0]], ['D7', [-1, -1, 0, 2, 1, 2]], ['E7', [0, 2, 0, 1, 0, 0]], ['G7', [3, 2, 0, 0, 0, 1]], ['A7', [-1, 0, 2, 0, 2, 0]], ['B7', [-1, 2, 1, 2, 0, 2]], ['Am7', [-1, 0, 2, 0, 1, 0]], ['Dm7', [-1, -1, 0, 2, 1, 1]], ['Em7', [0, 2, 0, 0, 0, 0]], ['Cmaj7', [-1, 3, 2, 0, 0, 0]], ['Fmaj7', [-1, -1, 3, 2, 1, 0]], ['Gmaj7', [3, 2, 0, 0, 0, 2]]];
   const exV = [['A', 'm7'], ['D', 7], ['C', 'maj7']];
-  P.push({ secao: S, titulo: '13 · violão: acordes com 7ª', html: `<h2>Violão: acordes com sétima</h2>${fala('paul-guitarra', 'os acordes com 7ª dão mais "cor" à harmonia. veja as formas abertas mais usadas (● = dedo, ○ = corda solta, × = não toca) e depois toque o ii – V – I em Dó.')}
+  P.push({ secao: S, titulo: '13 · violão: acordes com 7ª', html: `<h2>Violão: acordes com sétima</h2>${fala2('img/paul-violao-sentado', 'os acordes com 7ª dão mais "cor" à harmonia. veja as formas abertas mais usadas (● = dedo, ○ = corda solta, × = não toca) e depois toque o ii – V – I em Dó.')}
 ${caixa('formas abertas', `<div class="tres" style="grid-template-columns:repeat(4,1fr);gap:2mm">${BX.map(([n, c]) => acordeBox(n, c)).join('')}</div>`)}
 ${caixa('treino sugerido (ii – V – I e cadências)', '<p>• <b>Dm7 – G7 – Cmaj7</b> (ii–V–I em Dó)<br>• <b>Am7 – D7 – Gmaj7</b> (ii–V–I em Sol)<br>• <b>Em7 – A7 – Dm7 – G7 – Cmaj7</b> (cadeia de dominantes)<br>• <b>Cmaj7 – Am7 – Dm7 – G7</b> (volta clássica)</p><p class="peq">dica: troque de acorde <b>sem parar o pulso</b>. comece em ♩ = 60 e suba de 10 em 10.</p>')}
 ${ex('H', 'escreva as 4 notas de cada acorde (depois toque no violão e confira cada nota nas cordas)', tabela(['acorde', 'notas'], exV.map(([r, t]) => [`<b>${cif(r, t)}</b>`, ''])), exV.map(([r, t]) => `${cif(r, t)}: ${lst(T.acorde(r, t))}`).join(' · '), 'empilhe terças a partir da fundamental (1ª, 3ª, 5ª, 7ª) e lembre das alterações do tom.')}` });
@@ -130,7 +130,7 @@ ${ex('H', 'escreva as 4 notas de cada acorde (depois toque no violão e confira 
   const pm = [{ s: 6, f: 5, t: 'A', raiz: 1 }, { s: 6, f: 8, t: 'C' }, { s: 5, f: 5, t: 'D' }, { s: 5, f: 7, t: 'E' }, { s: 4, f: 5, t: 'G' }, { s: 4, f: 7, t: 'A', raiz: 1 }, { s: 3, f: 5, t: 'C' }, { s: 3, f: 7, t: 'D' }, { s: 2, f: 5, t: 'E' }, { s: 2, f: 8, t: 'G' }, { s: 1, f: 5, t: 'A', raiz: 1 }, { s: 1, f: 8, t: 'C' }];
   const bl = pm.concat([{ s: 5, f: 6, t: 'E♭' }, { s: 3, f: 8, t: 'E♭' }]);
   const cmA = [{ s: 6, f: 0, t: 'E' }, { s: 6, f: 1, t: 'F' }, { s: 6, f: 3, t: 'G' }, { s: 5, f: 0, t: 'A' }, { s: 5, f: 2, t: 'B' }, { s: 5, f: 3, t: 'C', raiz: 1 }, { s: 4, f: 0, t: 'D' }, { s: 4, f: 2, t: 'E' }, { s: 4, f: 3, t: 'F' }, { s: 3, f: 0, t: 'G' }, { s: 3, f: 2, t: 'A' }, { s: 3, f: 4, t: 'B' }, { s: 2, f: 0, t: 'B' }, { s: 2, f: 1, t: 'C', raiz: 1 }, { s: 2, f: 3, t: 'D' }, { s: 1, f: 0, t: 'E' }, { s: 1, f: 1, t: 'F' }, { s: 1, f: 3, t: 'G' }];
-  P.push({ secao: S, titulo: '14 · violão: escalas', html: `<h2>Escalas no violão</h2>${fala('paul-guitarra', 'o braço é uma "pauta" de 6 cordas: cada casa sobe <b>meio tom</b>. as <b>formas</b> de escala se repetem em qualquer posição: aprenda a forma e mova pelo braço!')}
+  P.push({ secao: S, titulo: '14 · violão: escalas', html: `<h2>Escalas no violão</h2>${fala2('img/paul-guitarra-em-pe', 'o braço é uma "pauta" de 6 cordas: cada casa sobe <b>meio tom</b>. as <b>formas</b> de escala se repetem em qualquer posição: aprenda a forma e mova pelo braço!')}
 ${caixa('pentatônica menor de Lá (forma 1, casas 5–8)', braco({ de: 4, ate: 8, marks: pm }) + '<p class="peq">● preto = a tônica (lá). comece pela corda mais grave e toque as notas em ordem, subindo pelas cordas. a mesma forma na casa 8 vira <b>dó menor</b>.</p>')}
 ${caixa('blues de Lá (pentatônica + ♭5)', braco({ de: 4, ate: 8, marks: bl }) + '<p class="peq">a nota <b>azul</b> (blue note) é o <b>mi♭</b> (♭5), na casa 6 da corda lá e na casa 8 da corda sol. "passe" por ela sem parar: ela dá a cor do blues.</p>')}
 ${caixa('Dó maior em posição aberta (casas 0–4)', braco({ de: 0, ate: 4, marks: cmA }) + '<p class="peq">3 notas por corda, na casa solta e nas casas 1 a 4. os pontos ● pretos são as tônicas (dó).</p>')}

@@ -64,3 +64,5 @@ svg.postura{max-height:86mm}
 svg.postura[aria-label^='Bateria']{max-height:112mm}
 svg.postura.topo{max-height:104mm}svg.postura.fulcro{max-height:62mm}svg.golpe{width:40mm}
 svg.golpe{width:44mm}
+
+.fala img[src^='img/']{filter:none}

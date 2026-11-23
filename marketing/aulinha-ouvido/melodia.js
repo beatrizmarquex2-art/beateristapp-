@@ -1,5 +1,5 @@
 // Parte 2 do caderno intermediário: MELODIA (16 páginas): pauta, claves, acidentes, armaduras, intervalos, escalas menores, modos, melodia, ornamentos, transposição.
-import { pauta, piano, caixa, tabela, fala, lin, cx } from './lib.js';
+import { pauta, piano, caixa, tabela, fala, fala2, lin, cx } from './lib.js';
 import * as T from './teoria.js';
 
 export const ps = (n, o) => `${T.LET[n.l]}${n.a > 0 ? '#'.repeat(n.a) : 'b'.repeat(-n.a)}${o}`;
@@ -17,7 +17,7 @@ export function paginas(ex) {
 
   /* 17 clave de sol */
   const ex1 = [['G4', 'E4', 'C5', 'A4', 'D5', 'B4', 'F4', 'E5'], ['C4', 'F5', 'D4', 'B4', 'G4', 'A5', 'E4', 'C5']];
-  P.push({ secao: S, titulo: '1 · pauta e clave de sol', html: `<h2>Pauta e clave de sol</h2>${fala('paul-lendo-partitura'.replace('paul-lendo-partitura', 'paul-professor'), 'a <b>pauta</b> tem <b>5 linhas</b> e <b>4 espaços</b>, contados de baixo pra cima. a <b>clave de sol</b> (o desenho enrolado) marca a 2ª linha como a nota <b>sol</b>.')}
+  P.push({ secao: S, titulo: '1 · pauta e clave de sol', html: `<h2>Pauta e clave de sol</h2>${fala2('img/paul-aponta-partitura', 'a <b>pauta</b> tem <b>5 linhas</b> e <b>4 espaços</b>, contados de baixo pra cima. a <b>clave de sol</b> (o desenho enrolado) marca a 2ª linha como a nota <b>sol</b>.')}
 ${caixa('as notas de dó a dó (clave de sol)', pauta({ clef: 'sol', notas: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'], rotulos: rot(['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5']), h: 150 }) + '<p class="peq">o <b>dó central</b> (C4) fica numa linha suplementar abaixo da pauta.</p>')}
 <div class="duas">${caixa('nas linhas', pauta({ clef: 'sol', notas: SOLL, rotulos: rot(SOLL), w: 330 }) + '<p class="peq"><b>Mi Sol Si Ré Fá</b> (de baixo pra cima).</p>')}${caixa('nos espaços', pauta({ clef: 'sol', notas: SOLE, rotulos: rot(SOLE), w: 330 }) + '<p class="peq"><b>Fá Lá Dó Mi</b>: formam a palavra "FACE" em inglês (F A C E).</p>')}</div>
 ${ex('M', 'dê o nome das notas (clave de sol)', ex1.map((l) => `${pauta({ clef: 'sol', notas: l, w: 640 })}<div class="linha"></div>`).join(''), ex1.map((l, i) => `pauta ${i + 1}: ${nomes(l)}`).join('<br>'), 'conte as linhas e os espaços de baixo pra cima; use "Mi Sol Si Ré Fá" e "Fá Lá Dó Mi".')}` });
