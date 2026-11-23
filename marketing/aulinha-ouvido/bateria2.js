@@ -109,3 +109,8 @@ export function leituraRitmica() {
   ];
   return L.map((q, n) => ({ secao: 'ritmo', titulo: q.t.toLowerCase().replace(/^leitura rítmica/, 'leitura rítmica'), html: `<h2>${q.t}</h2>${fala(q.f, q.txt)}${q.itens.map((it, i) => `<div class="padrao"><p class="peq"><b>${n + 1}.${i + 1}</b></p>${partitura(it.c, { conta: i === 0 })}</div>`).join('')}<div class="caixa tracejada"><h3>progresso</h3><p class="peq">♩ = 60: ${cx()}${cx()}${cx()}${cx()}${cx()}${cx()} &nbsp; ♩ = 80: ${cx()}${cx()}${cx()}${cx()}${cx()}${cx()} &nbsp; ♩ = 100: ${cx()}${cx()}${cx()}${cx()}${cx()}${cx()}</p></div>` }));
 }
+
+/** Página com a ilustração da Bea sobre empunhadura (fulcro, dedos, mãos simétricas, ângulos). */
+export function empunhaduraPratica(ex) {
+  return { secao: S, titulo: 'empunhadura na prática', html: `<h2>Empunhadura na prática</h2><img src="img/empunhadura-pratica.png" style="width:128mm;display:block;margin:0 auto" alt="Empunhadura: fulcro, dedos, mãos simétricas e ângulos">${caixa('como ler a ilustração', '<p class="peq"><b>quadro de cima:</b> a baqueta apoiada no <b>fulcro</b>, entre o polegar e o indicador · <b>três círculos:</b> polegar e indicador pinçando, os outros dedos envolvendo por baixo e a mão fechada vista de frente · <b>quadros do meio:</b> as duas mãos <b>simétricas</b> (matched grip), com as baquetas em "V" · <b>três quadros de baixo:</b> a mão em ângulos diferentes: o pulso gira e a baqueta acompanha, sempre solta · <b>baquetas cruzadas:</b> cuidado para não bater uma na outra nem apertar demais.</p>')}` };
+}
