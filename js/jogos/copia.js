@@ -8,7 +8,7 @@ import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { NIVEIS_COPIA, MELODIAS, VIDAS, RODADAS_COPIA, sorteioDistinto, tamanhoRodada, estrelasCopia, nomeNota, mesmaNota } from './vivo-logic.js';
-import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt } from './vivo-ui.js';
+import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt, TIMBRES, timbre, setTimbre, INSTRUMENTOS_MIC, instrumentoMic, setInstrumentoMic } from './vivo-ui.js';
 
 const PASSO = 0.56; // s entre as notas do exemplo
 const OITO = [60, 62, 64, 65, 67, 69, 71, 72];
@@ -34,7 +34,9 @@ export function mount(host) {
       chips('jogo', [['sorteio', 'sorteio'], ['melodia', 'música']], c.tipo, (v) => muda({ tipo: v })),
       c.tipo === 'melodia' ? chips('música', MELODIAS.map((m) => [m.id, m.nome]), c.mel, (v) => muda({ mel: v })) : chips('dificuldade', NIVEIS_COPIA.map((n) => [n.id, n.nome]), c.nivel, (v) => muda({ nivel: v })),
       chips('ajuda', [[true, 'com nomes'], [false, 'de ouvido']], c.nomes, (v) => muda({ nomes: v })),
-      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })));
+      chips('som', TIMBRES, timbre(), (v) => { setTimbre(v); tela(); }),
+      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })),
+      c.mic ? chips('instrumento', INSTRUMENTOS_MIC.map(([id, nome]) => [id, nome]), instrumentoMic(), (v) => { setInstrumentoMic(v); tela(); }) : null);
     const placar = h('div', { class: 'vv-placar' }, rodEl, vidasEl, h('span', { class: 'vv-best' }, melhor ? (c.tipo === 'melodia' ? `recorde: ${melhor} notas` : `recorde: ${melhor} de ${RODADAS_COPIA} sequências`) : ''));
     root.replaceChildren(ops, placar, seq, msg, h('div', { class: 'vv-kbwrap' }, kb.el), c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque no violão, na guitarra ou no teclado, uma nota por vez. vale a nota em qualquer oitava.') : null, go, res);
 

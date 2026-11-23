@@ -17,7 +17,7 @@ check('os 4 jogos ainda ficam escondidos dos alunos na aba Jogos (em obras: só 
 /* ---------- Copia Aí ---------- */
 await page.goto(url + '/aluno.html#/jogos/copia'); await sleep(1500);
 check('Copia Aí: abre no fácil com 8 teclas com nome (dó ré mi fá sol lá si dó)', await page.evaluate(() => [...document.querySelectorAll('.vv-tecla:not(.fora)')].map((b) => b.textContent).join(' ') === 'dó ré mi fá sol lá si dó'));
-check('Copia Aí: chips pequenos de jogo, dificuldade, ajuda e como tocar (fácil · médio · difícil)', await page.evaluate(() => document.querySelectorAll('.vv-linha').length === 4 && [...document.querySelectorAll('.vv-chip')].every((c) => c.getBoundingClientRect().height <= 34) && ['fácil · 5 notas', 'médio · 7 notas', 'difícil · 10 notas'].every((t) => [...document.querySelectorAll('.vv-chip')].some((c) => c.textContent === t))));
+check('Copia Aí: chips pequenos de jogo, dificuldade, ajuda e como tocar (fácil · médio · difícil)', await page.evaluate(() => document.querySelectorAll('.vv-linha').length === 5 && [...document.querySelectorAll('.vv-chip')].every((c) => c.getBoundingClientRect().height <= 34) && ['piano', 'violão', 'sinos'].every((t) => [...document.querySelectorAll('.vv-chip')].some((c) => c.textContent === t)) && ['fácil · 5 notas', 'médio · 7 notas', 'difícil · 10 notas'].every((t) => [...document.querySelectorAll('.vv-chip')].some((c) => c.textContent === t))));
 await shot('1-copia-menu');
 await page.evaluate(() => document.querySelector('.vv-go').click());
 await espera(() => window.__vivo.estado === 'vez');
