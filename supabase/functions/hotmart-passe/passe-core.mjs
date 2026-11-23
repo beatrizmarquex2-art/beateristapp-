@@ -6,12 +6,15 @@
 //   RESEND_API_KEY, MAIL_FROM                 envio do e-mail (ex.: "Beaterista <passe@seudominio.com.br>", domínio verificado no Resend)
 //   ADMIN_TOKEN           (opcional) libera POST .../reenviar pra mandar o e-mail de novo
 //   SITE_URL              (opcional) padrão https://jogos.beaterista.com.br
+// Rotas: POST /  (webhook Hotmart, exige hottok) · POST /recuperar  (público: o comprador pede o código de novo pelo e-mail da compra) · POST /reenviar  (ADMIN_TOKEN)
 const EVENTOS_APROVA = new Set(['PURCHASE_APPROVED', 'PURCHASE_COMPLETE']);
-const EVENTOS_REVOGA = { PURCHASE_REFUNDED: 'reembolsada', PURCHASE_CHARGEBACK: 'chargeback' };
+// reembolso, chargeback e cancelamento/expiração da compra desativam o código daquela transação (cancelamento sem compra aprovada não faz nada)
+const EVENTOS_REVOGA = { PURCHASE_REFUNDED: 'reembolsada', PURCHASE_CHARGEBACK: 'chargeback', PURCHASE_CANCELED: 'cancelada', PURCHASE_EXPIRED: 'cancelada' };
+const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type, apikey, authorization, x-client-info' };
 const MAX_BODY = 256 * 1024;
 const EMAIL_RE = /^[^\s@<>"',;]{1,64}@[^\s@<>"',;]{1,190}\.[^\s@<>"',;]{2,24}$/;
 
-const json = (status, obj) => new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+const json = (status, obj, extra = {}) => new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 const log = (o) => { try { console.log(JSON.stringify(o)); } catch { /* ok */ } };
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -32,12 +35,12 @@ export function montarEmail({ nome, code, expiraEm, siteUrl }) {
   const url = siteUrl.replace(/\/+$/, '');
   const assunto = 'Seu código do Passe Beaterista chegou 🎉';
   const texto = [`Oi${primeiro ? `, ${primeiro}` : ''}! Obrigada pela compra do Passe Beaterista.`, '', `Seu código de acesso: ${code}`, '',
-    'Como entrar:', `1. abra ${url}`, '2. escreva seu nome', '3. escolha "código de acesso" e digite o código acima', '',
-    `O passe vale 12 meses${ate ? ` (até ${ate})` : ''} e funciona em até 2 aparelhos.`, 'Guarde este e-mail. Qualquer dúvida, é só responder.', '', 'Professora Bea · Beaterista'].join('\n');
+    'Como entrar:', `1. abra ${url}/?entrar`, '2. escreva seu nome', '3. escolha "já sou aluno" e digite o código acima', '',
+    `O passe vale 12 meses${ate ? ` (até ${ate})` : ''} e funciona em até 2 aparelhos.`, 'Guarde este e-mail. Perdeu o código? Na tela de entrada toque em "perdi meu código" e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.', '', 'Professora Bea · Beaterista'].join('\n');
   const html = `<div style="font-family:system-ui,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1b1818"><p>Oi${primeiro ? `, ${esc(primeiro)}` : ''}! Obrigada pela compra do <b>Passe Beaterista</b>.</p>
 <p style="margin:18px 0 4px">Seu código de acesso:</p><p style="font:700 28px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.12em;background:#fff1c7;border:2px solid #1b1818;border-radius:12px;padding:12px 16px;display:inline-block;margin:0">${esc(code)}</p>
-<p style="margin-top:20px"><b>Como entrar</b></p><ol><li>abra <a href="${esc(url)}">${esc(url.replace(/^https?:\/\//, ''))}</a></li><li>escreva seu nome</li><li>escolha “código de acesso” e digite o código acima</li></ol>
-<p>O passe vale <b>12 meses</b>${ate ? ` (até ${esc(ate)})` : ''} e funciona em até <b>2 aparelhos</b>.</p><p>Guarde este e-mail. Qualquer dúvida, é só responder.</p><p>Professora Bea · Beaterista</p></div>`;
+<p style="margin-top:20px"><b>Como entrar</b></p><ol><li>abra <a href="${esc(url)}/?entrar">${esc(url.replace(/^https?:\/\//, ''))}/?entrar</a></li><li>escreva seu nome</li><li>escolha “já sou aluno” e digite o código acima</li></ol>
+<p>O passe vale <b>12 meses</b>${ate ? ` (até ${esc(ate)})` : ''} e funciona em até <b>2 aparelhos</b>.</p><p>Guarde este e-mail. Perdeu o código? Na tela de entrada toque em “perdi meu código” e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.</p><p>Professora Bea · Beaterista</p></div>`;
   return { assunto, texto, html };
 }
 
@@ -81,11 +84,33 @@ export function criarHandler({ env, fetchImpl = fetch, agora = () => new Date() 
     } catch (e) { await rpc('passe_email_resultado', { p_transacao: transacao, p_ok: false, p_erro: String(e.message) }).catch(() => {}); log({ evento: 'reenvio_falhou', transacao }); return json(502, { erro: 'email falhou, tente de novo' }); }
   }
 
+  /** Público: sempre responde igual (200 {ok:true}), exista ou não compra com esse e-mail, pra ninguém descobrir quem comprou. O código só vai pro e-mail da compra. */
+  async function recuperar(req) {
+    const geral = () => json(200, { ok: true }, CORS);
+    let corpo; try { corpo = JSON.parse((await lerCorpo(req)) || '{}'); } catch { return json(400, { erro: 'json invalido' }, CORS); }
+    const email = String(corpo?.email || '').trim();
+    if (!EMAIL_RE.test(email)) return geral();
+    try {
+      const r = await rpc('passe_recuperar', { p_email: email });
+      if (r?.enviar && r.code && r.email) {
+        try {
+          await enviarEmail({ env, fetchImpl, para: r.email, msg: montarEmail({ nome: r.comprador, code: r.code, expiraEm: r.expira_em, siteUrl }), chave: `passe-${r.transacao}-rec-${agora().getTime()}` });
+          await rpc('passe_email_resultado', { p_transacao: r.transacao, p_ok: true, p_erro: null });
+          log({ evento: 'recuperacao_ok', transacao: r.transacao });
+        } catch (e) { await rpc('passe_email_resultado', { p_transacao: r.transacao, p_ok: false, p_erro: String(e.message) }).catch(() => {}); log({ evento: 'recuperacao_falhou', transacao: r.transacao }); }
+      } else log({ evento: 'recuperacao_sem_envio', limitado: !!r?.limitado });
+    } catch (e) { log({ evento: 'recuperacao_erro', msg: String(e.message).slice(0, 120) }); }
+    return geral();
+  }
+
   return async function handler(req) {
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     if (req.method !== 'POST') return json(405, { erro: 'use POST' });
     if (!configurado()) { log({ evento: 'sem_config' }); return json(500, { erro: 'servidor nao configurado' }); } // falha fechado: nunca libera nada sem segredo/produto configurados
     try {
-      if (new URL(req.url).pathname.replace(/\/+$/, '').endsWith('/reenviar')) return await reenviar(req);
+      const rota = new URL(req.url).pathname.replace(/\/+$/, '');
+      if (rota.endsWith('/reenviar')) return await reenviar(req);
+      if (rota.endsWith('/recuperar')) return await recuperar(req);
       const texto = await lerCorpo(req); if (texto == null) return json(413, { erro: 'corpo grande demais' });
       let b; try { b = JSON.parse(texto); } catch { return json(400, { erro: 'json invalido' }); }
       if (!b || typeof b !== 'object') return json(400, { erro: 'json invalido' });

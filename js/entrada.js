@@ -5,6 +5,7 @@ import { h } from './util.js';
 import { icon } from './util.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
 import { precoPasse } from './passe-preco.js';
+import { CONFIG } from './config.js';
 
 const A = 'assets/entrada/';
 // Passe anual: ainda não existe link de pagamento (Hotmart); até lá o botão chama a equipe no WhatsApp com a mensagem pronta. Quando tiver o link, é só trocar aqui.
@@ -43,12 +44,24 @@ export function entradaNova(p) {
   const nome1 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const nome2 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const cod = h('input', { class: 'en-f en-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de aluno', placeholder: 'código de aluno' });
+  // recuperar o código do passe comprado: manda de novo pro e-mail da compra (a resposta é sempre a mesma, não revela quem comprou)
+  const recMail = h('input', { class: 'en-f', type: 'email', maxlength: 120, autocomplete: 'email', 'aria-label': 'E-mail usado na compra', placeholder: 'e-mail usado na compra' });
+  const recMsg = h('p', { class: 'en-rec-msg', role: 'status' });
+  const recBtn = h('button', { type: 'button', class: 'en-btn y', onclick: async () => {
+    const email = recMail.value.trim(); if (!/^\S+@\S+\.\S{2,}$/.test(email)) { recMsg.textContent = 'confira o e-mail digitado.'; return; }
+    recBtn.disabled = true; recMsg.textContent = 'enviando...';
+    try { const r = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/hotmart-passe/recuperar`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email }) }); recMsg.textContent = r.ok ? 'se existir um passe com esse e-mail, o código chega em instantes (olhe também o spam).' : 'não deu certo agora. tente de novo em alguns minutos ou chame a equipe.'; }
+    catch { recMsg.textContent = 'sem internet. tente de novo quando conectar.'; }
+    setTimeout(() => { recBtn.disabled = false; }, 10000);
+  } }, 'enviar meu código');
+  const recBox = h('div', { class: 'en-rec', hidden: true }, recMail, recBtn, recMsg);
+  const recLink = h('button', { type: 'button', class: 'en-rec-link', onclick: () => { recBox.hidden = !recBox.hidden; if (!recBox.hidden) recMail.focus(); } }, 'comprei o passe e perdi meu código');
   const err1 = h('p', { class: 'en-err', role: 'alert' }); const err2 = h('p', { class: 'en-err', role: 'alert' });
   const exp = h('button', { type: 'button', class: 'en-btn y', onclick: () => p.onExperimentar(nome1.value, err1) }, 'experimentar');
   const ent = h('button', { type: 'button', class: 'en-btn r', onclick: () => p.onEntrar(nome2.value, cod.value, err2) }, 'entrar');
   for (const [c, f] of [[nome1, () => exp.click()], [nome2, () => cod.focus()], [cod, () => ent.click()]]) c.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); f(); } });
   const boxExp = h('section', { class: 'en-box', id: 'en-experimentar' }, h('h2', {}, 'experimentar ', h('span', {}, 'grátis')), nome1, err1, exp);
-  const boxAluno = h('section', { class: 'en-box' }, h('h2', {}, 'já sou ', h('span', {}, 'aluno')), nome2, cod, p.pedido || null, err2, ent);
+  const boxAluno = h('section', { class: 'en-box' }, h('h2', {}, 'já sou ', h('span', {}, 'aluno')), nome2, cod, recLink, recBox, p.pedido || null, err2, ent);
   const modal = h('div', { class: 'en-modal', hidden: true, onclick: () => { modal.hidden = true; } }, h('img', { src: `${A}por-que-paul.jpg`, alt: 'Por que Paul? Meu nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea.' }), h('i', { 'aria-hidden': 'true' }, '×'));
   const irLoja = (e) => { e.preventDefault(); p.onLojinha(); };
   const rol = (cls, ...kids) => h('div', { class: `en-rol ${cls || ''}`.trim() }, ...kids);

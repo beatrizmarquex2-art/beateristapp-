@@ -21,9 +21,16 @@ function mundo({ emailFalha = 0 } = {}) {
     },
     passe_revogar: (a) => {
       const c = compras.get(a.p_transacao);
+      if (!c && a.p_motivo === 'cancelada') return { revogado: false, motivo: 'sem_compra' };
       if (!c) { compras.set(a.p_transacao, { code: null, status: a.p_motivo }); return { revogado: false, motivo: 'sem_compra' }; }
       if (c.status !== 'aprovada') return { revogado: false, motivo: 'ja_revogada' };
       c.status = a.p_motivo; const k = codigos.get(c.code); if (k && k.tipo === 'passe') k.ativo = false; return { revogado: true, code: c.code };
+    },
+    passe_recuperar: (a) => {
+      const e = String(a.p_email).toLowerCase(); const t = [...compras.entries()].find(([, c]) => c.status === 'aprovada' && String(c.email).toLowerCase() === e && codigos.get(c.code)?.ativo);
+      if (!t) return { enviar: false }; const [transacao, c] = t; const agoraMs = Date.now();
+      if (c.rec && agoraMs - c.rec < 600000) return { enviar: false, limitado: true }; c.rec = agoraMs;
+      return { enviar: true, transacao, code: c.code, email: c.email, comprador: c.nome, expira_em: codigos.get(c.code).expira_em };
     },
     passe_email_resultado: (a) => { const c = compras.get(a.p_transacao); if (c && a.p_ok) c.email_enviado = true; return null; },
     passe_dados_envio: (a) => { const c = compras.get(a.p_transacao); return c ? { status: c.status, code: c.code, email: c.email, comprador: c.nome, expira_em: c.code ? codigos.get(c.code).expira_em : null } : null; },
@@ -101,9 +108,36 @@ test('reembolso que chega antes da aprovação: a aprovação tardia não libera
   const w = mundo(); await post(w, evento('PURCHASE_REFUNDED')); const r = await post(w, evento('PURCHASE_APPROVED'));
   assert.equal(r.status, 200); assert.equal((await r.json()).ignorado, 'revogada'); assert.equal(w.emails.length, 0); assert.equal([...w.codigos.keys()].filter((k) => k.startsWith('PNOVO')).length, 0);
 });
-test('outros eventos (cancelada, atrasada) e e-mail inválido', async () => {
-  const w = mundo(); assert.equal((await (await post(w, evento('PURCHASE_CANCELED'))).json()).ignorado, 'evento');
-  const e = evento('PURCHASE_APPROVED'); e.data.buyer.email = 'sem-arroba'; assert.equal((await post(w, e)).status, 400); assert.equal(w.compras.size, 0);
+test('pagamento pendente (boleto/pix gerado, atrasado): ignorado, sem código e sem e-mail', async () => {
+  const w = mundo();
+  for (const ev of ['PURCHASE_BILLET_PRINTED', 'PURCHASE_DELAYED', 'PURCHASE_OUT_OF_SHOPPING_CART', 'PURCHASE_PROTEST']) { const r = await post(w, evento(ev)); assert.equal(r.status, 200); assert.equal((await r.json()).ignorado, 'evento'); }
+  assert.equal(w.compras.size, 0); assert.equal(w.emails.length, 0);
+});
+test('cancelamento/expiração depois da aprovação revoga só aquele código; sem compra aprovada não faz nada nem trava aprovação futura', async () => {
+  const w = mundo(); const r0 = await post(w, evento('PURCHASE_CANCELED')); assert.equal((await r0.json()).revogado, false); assert.equal(w.compras.size, 0);
+  await post(w, evento('PURCHASE_APPROVED')); const code = w.compras.get('HP12345678').code;
+  const r = await post(w, evento('PURCHASE_EXPIRED')); assert.equal((await r.json()).revogado, true);
+  assert.equal(w.codigos.get(code).ativo, false); assert.equal(w.compras.get('HP12345678').status, 'cancelada'); assert.equal(w.codigos.get('TURMA1').ativo, true);
+});
+test('e-mail inválido na aprovação: 400 e nada gravado', async () => {
+  const w = mundo(); const e = evento('PURCHASE_APPROVED'); e.data.buyer.email = 'sem-arroba'; assert.equal((await post(w, e)).status, 400); assert.equal(w.compras.size, 0);
+});
+test('e-mail leva o link ?entrar e explica a recuperação', async () => {
+  const w = mundo(); await post(w, evento('PURCHASE_APPROVED')); const m = w.emails[0];
+  assert.ok(m.text.includes('https://jogos.beaterista.com.br/?entrar')); assert.ok(m.html.includes('href="https://jogos.beaterista.com.br/?entrar"')); assert.ok(m.text.includes('perdi meu código'));
+});
+test('recuperação: comprador recebe o código de novo; resposta igual pra e-mail desconhecido (não vaza quem comprou); limite de reenvio', async () => {
+  const w = mundo(); await post(w, evento('PURCHASE_APPROVED')); const code = w.compras.get('HP12345678').code;
+  const rec = (email) => w.handler(new Request('https://x.supabase.co/functions/v1/hotmart-passe/recuperar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email }) }));
+  const a = await rec('MARIA@exemplo.com'); const b = await rec('ninguem@exemplo.com'); const c = await rec('lixo');
+  for (const r of [a, b, c]) { assert.equal(r.status, 200); assert.deepEqual(await r.json(), { ok: true }); assert.equal(r.headers.get('access-control-allow-origin'), '*'); }
+  assert.equal(w.emails.length, 2); assert.ok(w.emails[1].text.includes(code)); assert.deepEqual(w.emails[1].to, ['maria@exemplo.com']);
+  await rec('maria@exemplo.com'); assert.equal(w.emails.length, 2, 'segundo pedido em 10 min não reenvia');
+  const op = await w.handler(new Request('https://x/y/recuperar', { method: 'OPTIONS' })); assert.equal(op.status, 204);
+});
+test('recuperação não reenvia código de compra reembolsada', async () => {
+  const w = mundo(); await post(w, evento('PURCHASE_APPROVED')); await post(w, evento('PURCHASE_REFUNDED'));
+  await w.handler(new Request('https://x/y/recuperar', { method: 'POST', body: JSON.stringify({ email: 'maria@exemplo.com' }) })); assert.equal(w.emails.length, 1);
 });
 test('só POST; sem configuração o servidor falha fechado', async () => {
   const w = mundo(); assert.equal((await w.handler(new Request('https://x/y', { method: 'GET' }))).status, 405);

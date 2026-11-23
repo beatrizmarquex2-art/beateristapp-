@@ -6,7 +6,7 @@ const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
 const anon = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
 const KEY = 'beaterista-aluno-codigo';
 const OK_KEY = 'beaterista-aluno-codigo-ok'; // última vez que o código foi confirmado (vale offline)
-const OFFLINE_DAYS = 365; // o código fica salvo 1 ano neste aparelho (a Bea desativa quando quiser; vale na próxima vez que ele abrir com internet)
+const OFFLINE_DAYS = 30; // sem internet o código vale até 30 dias desde a última conferência. O código em si fica salvo no aparelho, mas COM internet ele é conferido a cada abertura: reembolso, chargeback ou código vencido/desativado trancam na hora. 30 dias limita o quanto um aparelho que nunca reconecta segue liberado (antes eram 365, o ano inteiro do passe).
 
 export const norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
 /** O código escondido pra mostrar na tela (pedido da Bea, 15/nov/2026: o código não fica inteiro à vista, nem num print): só o 1º e o último caractere. Desde 19/nov/2026 o topo tem um olhinho que mostra o código inteiro por 8 segundos (escolha da Bea). */

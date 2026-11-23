@@ -77,6 +77,16 @@ check('chargeback revoga só aquela compra', (await q('select ativo from alunos_
 // reembolso antes da aprovação
 const t = (await q("select public.passe_revogar($1,'reembolsada') as r", ['HP55555555']))[0].r; const tarde = await reg('HP55555555');
 check('reembolso antes da aprovação: aprovação tardia não cria código', t.revogado === false && tarde.status === 'reembolsada' && !tarde.code && (await q("select count(*)::int n from alunos_codigos where nome like 'Passe %'"))[0].n === 3);
+// cancelamento e recuperação
+const semC = (await q("select public.passe_revogar('HPCANCEL01','cancelada') as r"))[0].r;
+check('cancelamento sem compra aprovada: não cria linha e não trava aprovação futura', semC.revogado === false && (await q("select count(*)::int n from passe_compras where transacao='HPCANCEL01'"))[0].n === 0);
+const cc = await reg('HPCANCEL02'); const rvc = (await q("select public.passe_revogar('HPCANCEL02','cancelada') as r"))[0].r;
+check('cancelamento depois da aprovação desativa só aquele código', rvc.revogado === true && (await q('select ativo from alunos_codigos where code=$1', [cc.code]))[0].ativo === false && (await q("select ativo from alunos_codigos where code='TURMA1'"))[0].ativo === true);
+const rec1 = (await q("select public.passe_recuperar('  MARIA@exemplo.com ') as r"))[0].r;
+check('recuperação acha a compra ativa pelo e-mail (sem diferenciar maiúsculas) e devolve o mesmo código', rec1.enviar === true && /^P[A-HJ-NP-Z2-9]{9}$/.test(rec1.code), JSON.stringify(rec1));
+const rec2 = (await q("select public.passe_recuperar('maria@exemplo.com') as r"))[0].r;
+check('segundo pedido em 10 min é limitado', rec2.enviar === false && rec2.limitado === true);
+check('e-mail sem compra: não envia', (await q("select public.passe_recuperar('ninguem@exemplo.com') as r"))[0].r.enviar === false);
 // 12 meses nunca no futuro
 const fut = await reg('HP44444444', '2099-01-01T00:00:00Z'); check('data de aprovação no futuro é limitada a agora', new Date(fut.expira_em) < new Date('2028-01-01'));
 // aleatoriedade / unicidade
@@ -85,8 +95,8 @@ check('3000 códigos gerados, todos diferentes e no formato', set.size === 3000 
 // permissões: anon/authenticated não chamam nada
 for (const papel of ['anon', 'authenticated']) {
   await db.exec(`set role ${papel}`); let neg = 0;
-  for (const sql of ["select public.passe_registrar_compra('HPXXXXXXXX','a@b.co','x','1',null)", "select public.passe_revogar('HP12345678','chargeback')", "select public.passe_dados_envio('HP12345678')", "select * from passe_compras"]) { try { await db.query(sql); } catch { neg++; } }
-  await db.exec('reset role'); check(`${papel} não consegue chamar as funções nem ler passe_compras (RLS: authenticated só lê se is_allowed)`, papel === 'anon' ? neg === 4 : neg >= 3, String(neg));
+  for (const sql of ["select public.passe_registrar_compra('HPXXXXXXXX','a@b.co','x','1',null)", "select public.passe_revogar('HP12345678','chargeback')", "select public.passe_dados_envio('HP12345678')", "select public.passe_recuperar('maria@exemplo.com')", "select * from passe_compras"]) { try { await db.query(sql); } catch { neg++; } }
+  await db.exec('reset role'); check(`${papel} não consegue chamar as funções nem ler passe_compras (RLS: authenticated só lê se is_allowed)`, papel === 'anon' ? neg === 5 : neg >= 4, String(neg));
 }
 await db.exec('set role service_role'); let okSvc = true; try { await db.query("select public.passe_dados_envio('HP12345678')"); } catch { okSvc = false; } await db.exec('reset role');
 check('service_role (Edge Function) consegue chamar', okSvc);

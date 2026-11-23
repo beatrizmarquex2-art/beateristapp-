@@ -5,6 +5,7 @@
 -- Só a Edge Function `hotmart-passe` (service_role) chama estas funções. Nenhuma vira pública (anon/authenticated sem acesso).
 -- Reembolso/chargeback desativam SÓ o código ligado àquela transação; códigos de turma e de outros passes ficam intactos.
 -- NÃO aplicado ainda: precisa da confirmação da Bea (muda o banco).
+-- Reembolso, chargeback e cancelamento/expiração (Hotmart: PURCHASE_REFUNDED, PURCHASE_CHARGEBACK, PURCHASE_CANCELED, PURCHASE_EXPIRED) desativam o código da transação.
 
 create table if not exists public.passe_compras (
   transacao text primary key check (char_length(transacao) between 4 and 80),
@@ -12,15 +13,17 @@ create table if not exists public.passe_compras (
   produto text not null default '',
   email text not null default '' check (char_length(email) <= 254),
   comprador text not null default '' check (char_length(comprador) <= 120),
-  status text not null default 'aprovada' check (status in ('aprovada', 'reembolsada', 'chargeback')),
+  status text not null default 'aprovada' check (status in ('aprovada', 'reembolsada', 'chargeback', 'cancelada')),
   aprovado_em timestamptz,
   revogado_em timestamptz,
   email_enviado_em timestamptz,
   email_tentativas int not null default 0,
   email_erro text,
+  recuperado_em timestamptz, -- último pedido de "recuperar meu código" (limita reenvios)
   criado_em timestamptz not null default now()
 );
 create index if not exists passe_compras_code_idx on public.passe_compras(code);
+create index if not exists passe_compras_email_idx on public.passe_compras(lower(email));
 alter table public.passe_compras enable row level security;
 revoke all on public.passe_compras from anon, authenticated;
 grant select on public.passe_compras to authenticated;
@@ -72,9 +75,10 @@ returns jsonb language plpgsql security definer set search_path = public as $$
 declare t text := btrim(coalesce(p_transacao, '')); c public.passe_compras%rowtype; n int := 0;
 begin
   if char_length(t) < 4 or char_length(t) > 80 then raise exception 'transacao invalida'; end if;
-  if p_motivo not in ('reembolsada', 'chargeback') then raise exception 'motivo invalido'; end if;
+  if p_motivo not in ('reembolsada', 'chargeback', 'cancelada') then raise exception 'motivo invalido'; end if;
   perform pg_advisory_xact_lock(hashtext('passe:' || t));
   select * into c from public.passe_compras where transacao = t;
+  if not found and p_motivo = 'cancelada' then return jsonb_build_object('revogado', false, 'motivo', 'sem_compra'); end if; -- cancelamento sem compra aprovada: nada a revogar (e não trava uma aprovação futura)
   if not found then -- o aviso de reembolso chegou antes (ou sem) a aprovação: marca a transação, e uma aprovação tardia não libera nada
     insert into public.passe_compras(transacao, status, revogado_em) values (t, p_motivo, now());
     return jsonb_build_object('revogado', false, 'motivo', 'sem_compra');
@@ -102,12 +106,31 @@ returns jsonb language sql stable security definer set search_path = public as $
     from public.passe_compras c left join public.alunos_codigos a on a.code = c.code where c.transacao = btrim(coalesce(p_transacao, ''))), 'null'::jsonb);
 $$;
 
+-- Recuperação de acesso: o comprador pede o código de novo pelo e-mail da compra. A resposta ao público é sempre a mesma
+-- (a função da borda nunca diz se o e-mail existe); o código só vai pro e-mail cadastrado na compra. No máx. 1 envio a cada 10 min por e-mail.
+create or replace function public.passe_recuperar(p_email text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare e text := lower(btrim(coalesce(p_email, ''))); c public.passe_compras%rowtype;
+begin
+  if char_length(e) < 5 or char_length(e) > 254 then return jsonb_build_object('enviar', false); end if;
+  perform pg_advisory_xact_lock(hashtext('passe-rec:' || e));
+  select pc.* into c from public.passe_compras pc join public.alunos_codigos a on a.code = pc.code
+   where lower(pc.email) = e and pc.status = 'aprovada' and a.ativo and (a.expira_em is null or a.expira_em > now())
+   order by pc.aprovado_em desc nulls last limit 1;
+  if not found then return jsonb_build_object('enviar', false); end if;
+  if c.recuperado_em is not null and c.recuperado_em > now() - interval '10 minutes' then return jsonb_build_object('enviar', false, 'limitado', true); end if;
+  update public.passe_compras set recuperado_em = now() where transacao = c.transacao;
+  return public.passe_dados_envio(c.transacao) || jsonb_build_object('enviar', true, 'transacao', c.transacao);
+end $$;
+
 revoke all on function public.passe_gerar_codigo() from public, anon, authenticated;
 revoke all on function public.passe_registrar_compra(text, text, text, text, timestamptz) from public, anon, authenticated;
 revoke all on function public.passe_revogar(text, text) from public, anon, authenticated;
 revoke all on function public.passe_email_resultado(text, boolean, text) from public, anon, authenticated;
 revoke all on function public.passe_dados_envio(text) from public, anon, authenticated;
+revoke all on function public.passe_recuperar(text) from public, anon, authenticated;
 grant execute on function public.passe_registrar_compra(text, text, text, text, timestamptz) to service_role;
 grant execute on function public.passe_revogar(text, text) to service_role;
 grant execute on function public.passe_email_resultado(text, boolean, text) to service_role;
 grant execute on function public.passe_dados_envio(text) to service_role;
+grant execute on function public.passe_recuperar(text) to service_role;
