@@ -54,7 +54,7 @@ const novaPag = (t) => { nPag++; const s = document.createElement('section'); s.
 for (const sec of ['R', 'M', 'H']) {
   let pag = novaPag(`gabarito · ${nomeSec[sec]}`); let cols = pag.querySelector('.gabcols');
   for (const g of GAB.filter((x) => x.sec === sec)) {
-    const d = document.createElement('div'); d.className = 'gi'; d.innerHTML = `<b class="n">${g.num} · ${g.titulo}</b><div>${g.resp}</div>`; cols.appendChild(d);
+    const d = document.createElement('div'); d.className = 'gi'; d.innerHTML = `<b class="n">${g.num} · ${g.titulo}</b><div>${g.resp}</div>${g.porque ? `<div class="porque"><i>por quê:</i> ${g.porque}</div>` : ''}`; cols.appendChild(d);
     if (cols.scrollWidth > cols.clientWidth + 2 || pag.scrollHeight > pag.clientHeight + 2) { cols.removeChild(d); pag = novaPag(`gabarito · ${nomeSec[sec]}`); cols = pag.querySelector('.gabcols'); cols.appendChild(d); }
   }
 }

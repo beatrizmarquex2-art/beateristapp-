@@ -2,6 +2,7 @@
 import { TREBLE, BASS, yn } from '../../js/paulta/draw.js';
 import { diagramaSVG } from '../../js/acordes.js';
 import { LET, SOLFA, cifra } from './teoria.js';
+import { EXPLICA } from './explicacoes.js';
 
 export const P = '../../assets/originals/paul-png/pra-colorir/desenhos/';
 export const LOGO = '../../assets/originals/paul-png/pra-colorir/logos-pb/roboterista-escola-de-musica-pb.png';
@@ -18,7 +19,11 @@ export const vazio = (n = 1) => '&nbsp;'.repeat(n);
 /* ---------- exercícios com gabarito automático ---------- */
 export function criaExercicios() {
   const GAB = []; const cont = {};
-  const ex = (sec, titulo, corpo, resp, dica = '') => { cont[sec] = (cont[sec] || 0) + 1; const num = `${sec}${cont[sec]}`; GAB.push({ sec, num, titulo, resp }); return `<div class="caixa tracejada ex"><h3>exercício ${num}: ${titulo}</h3>${corpo}${dica ? `<p class="peq dica">dica: ${dica}</p>` : ''}</div>`; };
+  const ex = (sec, titulo, corpo, resp, dica = '') => {
+    cont[sec] = (cont[sec] || 0) + 1; const num = `${sec}${cont[sec]}`; const E = EXPLICA[num] || {};
+    GAB.push({ sec, num, titulo, resp, porque: E.porque || '' });
+    return `<div class="caixa tracejada ex"><h3>exercício ${num}: ${titulo}</h3>${E.exemplo ? `<p class="peq exemplo"><b>exemplo resolvido:</b> ${E.exemplo}</p>` : ''}${corpo}${dica ? `<p class="peq dica">dica: ${dica}</p>` : ''}</div>`;
+  };
   return { ex, GAB };
 }
 
