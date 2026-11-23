@@ -156,7 +156,7 @@ export function braco({ de = 0, ate = 5, marks = [], w = 640, pontos = [3, 5, 7,
 export const topo = (secao, t) => `<div class="top"><span>Robôterista ensina · ${secao}</span><span>${t}</span></div>`;
 /** Junta as páginas {sec, titulo, html, capa?} numeradas (a capa não conta como número na pág., mas ocupa a 1ª). */
 export function monta(paginas, rodape = 'Escola Beaterista · Robôterista Paul', secao = 'aula') {
-  return paginas.map((p, i) => (p.capa ? `<section class="pg capa">${p.html}</section>` : `<section class="pg ${p.cls || ''}">${topo(p.secao || secao, p.titulo || '')}${p.html}<div class="rod"><span>${rodape}</span><span>página ${i + 1}</span></div></section>`)).join('');
+  return paginas.map((p, i) => (p.capa ? `<section class="pg capa" data-k="${i}">${p.html}</section>` : `<section class="pg ${p.cls || ''}" data-k="${i}">${topo(p.secao || secao, p.titulo || '')}${p.html}<div class="rod"><span>${rodape}</span><span>página ${i + 1}</span></div></section>`)).join('');
 }
 export async function pronto() { await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))); await document.fonts.ready; }
 export { cifra, SOLFA };

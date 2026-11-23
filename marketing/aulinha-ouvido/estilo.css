@@ -44,3 +44,15 @@ svg.ritmo{max-height:17mm}svg.pauta{max-height:27mm}svg.braco{max-height:34mm}.p
 td,th{padding:1.4mm 2mm;font-size:12px}.linha{height:6.2mm}.caixa{padding:2.4mm 3.4mm}.caixa p{margin:0 0 1mm}
 .mini svg.pauta,.mini3 svg.pauta{max-height:24mm}.caixa h3{margin-bottom:.8mm}
 .acorde.cifra b{text-transform:none}svg.circulo{display:block;width:100%;height:auto;max-height:92mm}
+
+/* ===== impressão (A4, laser/jato preto e branco) ===== */
+@page{size:A4;margin:0}
+.pg{padding:11mm 12mm 10mm 17mm}            /* margem esquerda maior: furar/encadernar sem cortar o texto */
+.pg .top{font-size:11px}.rod{font-size:11px}
+.peq{font-size:12px}.caixa p,.caixa li{font-size:12.8px}
+td,th{font-size:12.5px}th{font-size:11.5px}
+.caixa,.ex,.fala,table,svg{break-inside:avoid}
+.linha{border-bottom-width:1.4px}
+.anot .linha{height:9mm}
+
+svg.ritmo{max-height:14mm}.ex svg.ritmo{max-height:10mm}.ex td{padding:0.8mm 2mm}

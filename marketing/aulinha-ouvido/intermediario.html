@@ -21,11 +21,31 @@ ${caixa('como estudar cada página', `<ol style="margin:0 0 0 5mm;padding:0"><li
 ${caixa('legenda', tabela(['símbolo', 'significa'], [['<span class="cx"></span>', 'caixinha pra marcar quando concluir'], ['quadro tracejado', 'exercício (resposta no gabarito)'], ['quadro com sombra', 'ideia principal da página'], ['♩ = 60', 'andamento: 60 semínimas por minuto'], ['R · M · H', 'exercícios de Ritmo, Melodia e Harmonia']]))}
 <div class="caixa tracejada"><h3>materiais</h3><p class="peq">lápis e borracha · metrônomo (pode ser do celular) · teclado ou violão · o app da Beaterista · uma pessoa pra ajudar nos ditados.</p></div>` };
 const indice = { secao: 'intermediário', titulo: 'índice', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>3 trilhas</b> que se completam. ritmo organiza o <b>tempo</b>, melodia organiza as <b>notas</b> e harmonia organiza os <b>acordes</b>. estude uma página de cada por dia!')}
-<div class="tres" style="grid-template-columns:repeat(3,1fr);align-items:start">${(() => { let n = 4; return SECOES.map(([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td style="width:9mm">${n++}</td></tr>`).join('')}</table></div>`).join(''); })()}</div>
+<div class="tres" style="grid-template-columns:repeat(3,1fr);align-items:start">${(() => { let n = 4; return SECOES.map(([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11.5px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${n}" style="width:10mm">${n++}</td></tr>`).join('')}</table></div>`).join(''); })()}</div>
 <div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, M = melodia, H = harmonia).</p></div>` };
 
 const todas = [capa, comoUsar, indice, ...SECOES.flatMap(([, l]) => l)];
 const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Robôterista Paul · intermediário', 'intermediário');
+await pronto(); // imagens e fontes carregadas ANTES de medir as páginas
+
+/* paginação: se uma página passa da altura, primeiro tenta reduzir um pouco (até 92%); se ainda não couber, passa os últimos blocos pra uma página de continuação (nada fica pequeno demais) */
+const sobra = (pg) => pg.scrollHeight - pg.clientHeight;
+const miolo = (pg) => [...pg.children].filter((c) => !c.classList.contains('top') && !c.classList.contains('rod'));
+const zoom = (pg, f) => miolo(pg).forEach((c) => { c.style.zoom = f === 1 ? '' : f.toFixed(3); });
+const reduzidas = []; const divididas = [];
+function ajusta(pg) {
+  if (sobra(pg) <= 2) return;
+  let f = 1; for (let k = 0; k < 12 && sobra(pg) > 2; k++) { f -= 0.01; zoom(pg, f); }
+  if (sobra(pg) <= 2) { reduzidas.push([pg.dataset.k, Number(f.toFixed(2))]); return; }
+  zoom(pg, 1);
+  const blocos = miolo(pg); if (blocos.length < 3) { for (let k = 0; k < 25 && sobra(pg) > 2; k++) { f -= 0.01; zoom(pg, f); } reduzidas.push([pg.dataset.k, Number(f.toFixed(2))]); return; }
+  const nova = document.createElement('section'); nova.className = pg.className; nova.dataset.k = pg.dataset.k; nova.dataset.cont = '1';
+  const top = pg.querySelector('.top').cloneNode(true); top.lastElementChild.textContent += ' (continuação)'; const rod = pg.querySelector('.rod').cloneNode(true); nova.append(top); const movidos = [];
+  while (sobra(pg) > 2 && miolo(pg).length > 2) { movidos.unshift(miolo(pg).pop()); pg.querySelector('.rod').before(movidos[0]); pg.removeChild(movidos[0]); }
+  movidos.forEach((m) => nova.append(m)); nova.append(rod); pg.after(nova); divididas.push(pg.dataset.k);
+  ajusta(nova);
+}
+[...document.querySelectorAll('.pg:not(.capa)')].forEach(ajusta);
 
 /* gabarito: preenche página por página, medindo o que cabe */
 const nomeSec = { R: 'ritmo', M: 'melodia', H: 'harmonia' };
@@ -39,14 +59,11 @@ for (const sec of ['R', 'M', 'H']) {
   }
 }
 await pronto();
-/* ajuste fino: se uma página passar da altura, reduz o conteúdo (zoom) até caber; páginas que precisariam de menos de 80% vão pro relatório */
-const reduzidas = [];
-document.querySelectorAll('.pg:not(.capa)').forEach((pg, i) => {
-  if (pg.scrollHeight - pg.clientHeight <= 2) return; const filhos = [...pg.children].filter((c) => !c.classList.contains('top') && !c.classList.contains('rod')); let f = 1;
-  for (let k = 0; k < 40 && pg.scrollHeight - pg.clientHeight > 2; k++) { f -= 0.01; filhos.forEach((c) => { c.style.zoom = f.toFixed(3); }); }
-  if (f < 0.999) reduzidas.push([i + 1, Number(f.toFixed(2))]);
-});
+/* número final das páginas (+ página de anotações se o total for ímpar, pra imprimir frente e verso) e índice com os números certos */
+if (document.querySelectorAll('.pg').length % 2) { const a = document.createElement('section'); a.className = 'pg anot'; a.innerHTML = `${topo('anotações', 'espaço livre')}<h2>Anotações</h2><p class="peq">dúvidas, descobertas e ideias de música:</p>${'<div class="linha"></div>'.repeat(24)}<div class="rod"><span>Escola Beaterista · Robôterista Paul · intermediário</span><span></span></div>`; doc.appendChild(a); }
+[...document.querySelectorAll('.pg')].forEach((pg, i) => { const r = pg.querySelector('.rod'); if (r) r.lastElementChild.textContent = `página ${i + 1}`; });
+document.querySelectorAll('td.ind').forEach((td) => { const alvo = document.querySelector(`.pg[data-k="${td.dataset.ref - 1}"]`); if (alvo) td.textContent = [...document.querySelectorAll('.pg')].indexOf(alvo) + 1; });
 const A = window.__avisos || [];
 const estouro = [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2);
-window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__relatorio = { avisos: A, estouro, reduzidas, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
+window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__relatorio = { avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
 </script></body></html>
