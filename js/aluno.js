@@ -267,7 +267,7 @@ function aulasView(view) {
   const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
   view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('img', { class: 'est-logo-paul', src: LOGO_PAUL, alt: 'Robôterista Paul', draggable: 'false', decoding: 'async' }), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
-    h('h2', { class: 'al-sec' }, 'ouvido e escalas · 8 passos'), lk('#/estudos/ouvido', 'ouvido e escalas', 'graus, 3ª e 5ª, acordes, maior e menor, escalas', 'com som', 'figuras', 'ouvindo', null, true),
+    h('h2', { class: 'al-sec' }, 'ouvido e escalas · 10 passos'), lk('#/estudos/ouvido', 'ouvido e escalas', 'graus, 3ª e 5ª, acordes, maior e menor, escalas', 'com som', 'figuras', 'ouvindo', null, true),
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
 }
 /** Aulinha do Paul "ouvido e escalas" dentro do Robôterista ensina (Estudos > aulas; a mesma dos jogos de ouvido): graus, 3ª e 5ª, acordes, maior e menor, escalas. */

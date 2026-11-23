@@ -112,3 +112,4 @@ export function legendHtml() {
   return rows.map((id) => ({ id, name: DRUM[id].name, where: DRUM[id].where, svg: drumStaff(id) }));
 }
 export { noteName };
+export { yn, TREBLE, BASS, U, BOT }; // usados pelos PDFs de aula (marketing/aulinha-ouvido/lib.js)

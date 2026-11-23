@@ -8,6 +8,19 @@ import { toca } from './ouvido-ui.js';
 import { acordeMidis, escalaNotas, corNota, nomeEm } from './ouvido-logic.js';
 
 const nomeC = (m) => nomeEm(m, 0, 'maior');
+/** Braço do violão (SVG simples): marks = [{ s: corda 6..1, f: casa, t: texto, raiz }]. */
+function bracoSVG(marks, de, ate) {
+  const W = 330; const X0 = 28; const nf = ate - de + 1; const dx = (W - X0 - 8) / nf; const Y0 = 14; const dy = 16; let s = `<svg viewBox="0 0 ${W} ${Y0 + dy * 5 + 22}" class="au-braco" role="img" aria-label="braço do violão com as notas da escala">`;
+  for (let c = 0; c <= nf; c++) s += `<line x1="${X0 + c * dx}" y1="${Y0}" x2="${X0 + c * dx}" y2="${Y0 + dy * 5}" stroke="#16233d" stroke-width="${c === 0 && de === 0 ? 4 : 1.4}"/>`;
+  for (let r = 0; r < 6; r++) s += `<line x1="${X0}" y1="${Y0 + r * dy}" x2="${X0 + nf * dx}" y2="${Y0 + r * dy}" stroke="#16233d" stroke-width="${1 + r * 0.2}"/>`;
+  for (let c = 1; c <= nf; c++) s += `<text x="${X0 + (c - 0.5) * dx}" y="${Y0 + dy * 5 + 15}" font-size="11" font-weight="700" text-anchor="middle" fill="#16233d">${de + c}</text>`;
+  ['e', 'B', 'G', 'D', 'A', 'E'].forEach((n, r) => { s += `<text x="10" y="${Y0 + r * dy + 4}" font-size="11" font-weight="800" text-anchor="middle" fill="#16233d">${n}</text>`; });
+  marks.forEach(({ s: cs, f, t = '', raiz = false, azul = false }) => { const r = 6 - cs; const cx = f === 0 ? X0 - 9 : X0 + (f - de - 0.5) * dx; const fill = azul ? '#8e1b2c' : raiz ? '#16233d' : '#fffaf0'; const tx = raiz || azul ? '#fff' : '#16233d';
+    s += `<circle cx="${cx}" cy="${Y0 + r * dy}" r="${f === 0 ? 5 : 7.2}" fill="${fill}" stroke="#16233d" stroke-width="1.6"/>${f ? `<text x="${cx}" y="${Y0 + r * dy + 3.6}" font-size="9.5" font-weight="800" text-anchor="middle" fill="${tx}">${t}</text>` : ''}`; });
+  return `${s}</svg>`;
+}
+const PM_A = [{ s: 6, f: 5, t: 'lá', raiz: 1 }, { s: 6, f: 8, t: 'dó' }, { s: 5, f: 5, t: 'ré' }, { s: 5, f: 7, t: 'mi' }, { s: 4, f: 5, t: 'sol' }, { s: 4, f: 7, t: 'lá', raiz: 1 }, { s: 3, f: 5, t: 'dó' }, { s: 3, f: 7, t: 'ré' }, { s: 2, f: 5, t: 'mi' }, { s: 2, f: 8, t: 'sol' }, { s: 1, f: 5, t: 'lá', raiz: 1 }, { s: 1, f: 8, t: 'dó' }];
+const CROM = Array.from({ length: 13 }, (_, i) => 60 + i); const BLUES_A = [57, 60, 62, 63, 64, 67, 69];
 /** Teclado colorido de dó a dó; `marca` = notas em destaque (as outras ficam claras). */
 function tecladoCores(onNota, marca) {
   const kb = teclado({ notas: faixa(60, 72), nomes: true, onNota: (m, e) => { tocaNota(m); onNota && onNota(m, e); } });
@@ -44,6 +57,10 @@ export function aulaOuvido(host, { onFim, onPular, textoFim = 'bora jogar!' } = 
     { mood: 'cheer', say: 'a pentatônica tem só 5 notas: é a escala do rock e do blues! ela tira a 4ª e a 7ª, as notas que mais "esbarram".', make: () => { const P = escalaNotas(0, 'penta'); const Pm = escalaNotas(9, 'pentamenor'); return h('div', { class: 'au-box' },
       h('p', {}, h('b', {}, 'pentatônica de dó:'), ' dó ré mi sol lá'), tons(P), ouvir('ouvir', P, { passo: 0.38, dur: 0.45 }),
       h('p', {}, h('b', {}, 'pentatônica menor de lá:'), ' lá dó ré mi sol'), tons(Pm), ouvir('ouvir', Pm, { passo: 0.38, dur: 0.45 })); } },
+    { mood: 'idea', say: 'no violão cada casa sobe meio tom, e a forma da escala se repete pelo braço. esta é a pentatônica menor de lá: aprenda a forma e mova pelo braço!', make: () => { const d = h('div', { class: 'au-center' }); d.innerHTML = bracoSVG(PM_A, 4, 8); return h('div', { class: 'au-box' }, d,
+      h('p', {}, 'as bolinhas escuras são o ', h('b', {}, 'lá'), ' (a tônica). a mesma forma na casa 8 vira dó menor.'), h('p', { class: 'muted' }, 'cordas soltas, da grave pra aguda: mi · lá · ré · sol · si · mi.')); } },
+    { mood: 'wow', say: 'a escala cromática tem as 12 notas, de meio em meio tom. e o blues é a pentatônica menor com uma nota extra: a blue note!', make: () => { const d = h('div', { class: 'au-center' }); d.innerHTML = bracoSVG(PM_A.concat([{ s: 5, f: 6, t: 'mi♭', azul: true }, { s: 3, f: 8, t: 'mi♭', azul: true }]), 4, 8);
+      return h('div', { class: 'au-box' }, ouvir('ouvir a cromática (12 notas)', CROM, { passo: 0.22, dur: 0.3 }), h('p', { class: 'muted' }, 'cromática: dó dó♯ ré ré♯ mi fá fá♯ sol sol♯ lá lá♯ si dó'), d, ouvir('ouvir o blues de lá', BLUES_A, { passo: 0.4, dur: 0.5 }), h('p', {}, 'blues de lá: ', h('b', {}, 'lá · dó · ré · mi♭ · mi · sol'), '. as bolinhas vermelhas são a blue note (♭5).')); } },
     { mood: 'cheer', say: 'pronto! nos jogos eu toco e você responde (ou toca a escala). cada fase tem 6 a 12 rodadas: acerte 60% pra abrir a próxima!', make: () => h('div', { class: 'au-box au-center' },
       h('p', {}, 'resumo: escala = escadinha de notas · tônica = 1ª nota · 3ª dá a cor (maior alegre, menor triste) · 5ª é o chão · acorde = 1ª + 3ª + 5ª · pentatônica = 5 notas.'),
       btn(textoFim, () => { silence(); onFim && onFim(); }, 'kd-btn kx-go')) },

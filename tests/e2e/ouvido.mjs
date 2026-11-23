@@ -19,7 +19,7 @@ await page.goto(url + '/aluno.html#/jogos/terca'); await sleep(1500);
 check('1ª vez: abre a aulinha do Paul antes do mapa', await page.evaluate(() => !!document.querySelector('.vv-aula') && /aulinha/i.test(document.body.textContent)));
 await shot('aula-1');
 let passos = 0; while (await page.evaluate(() => [...document.querySelectorAll('.au-nav button')].some((b) => b.textContent.includes('próximo')))) { await page.evaluate(() => [...document.querySelectorAll('.au-nav button')].find((b) => b.textContent.includes('próximo')).click()); passos++; await sleep(120); if (passos === 2) await shot('aula-3'); }
-check('a aulinha tem 8 passos e termina com "bora jogar!"', passos === 7 && await page.evaluate(() => !![...document.querySelectorAll('button')].find((b) => b.textContent.includes('bora jogar'))));
+check('a aulinha tem 10 passos e termina com "bora jogar!"', passos === 9 && await page.evaluate(() => !![...document.querySelectorAll('button')].find((b) => b.textContent.includes('bora jogar'))));
 await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.includes('bora jogar')).click()); await espera(() => document.querySelector('.mp-node'));
 check('depois da aulinha abre o mapa com 12 fases e 2 níveis (fácil e médio · difícil)', (await nodes()) === 12 && (await page.locator('.tm-tabs button').count()) === 2);
 await shot('mapa-terca');

@@ -1,0 +1,46 @@
+@font-face{font-family:'Anton';src:url(../../assets/fonts/Anton-latin.woff2) format('woff2')}
+@font-face{font-family:'Gochi Hand';src:url(../../assets/fonts/GochiHand-latin.woff2) format('woff2')}
+@font-face{font-family:'Hanken Grotesk';src:url(../../assets/fonts/HankenGrotesk-latin.woff2) format('woff2');font-weight:100 900}
+@font-face{font-family:'Special Elite';src:url(../../assets/fonts/SpecialElite-latin.woff2) format('woff2')}
+@page{size:A4;margin:0}
+*{box-sizing:border-box}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;background:#fff;color:#000;font:13.5px/1.45 'Hanken Grotesk',system-ui,sans-serif}
+.pg{width:210mm;height:297mm;padding:13mm 15mm 12mm;position:relative;page-break-after:always;overflow:hidden;display:flex;flex-direction:column;gap:5mm;background:#fff}
+.pg:last-child{page-break-after:auto}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:2.5px solid #000;padding-bottom:2mm;font:11px 'Special Elite',monospace;text-transform:uppercase;letter-spacing:.08em}
+h1{font:400 40px/1 'Anton',Impact,sans-serif;text-transform:uppercase;margin:0;letter-spacing:.01em}
+h2{font:400 27px/1.05 'Anton',Impact,sans-serif;text-transform:uppercase;margin:0}
+h3{font:400 16px 'Special Elite',monospace;margin:0 0 1mm;text-transform:uppercase;letter-spacing:.05em}
+p{margin:0}.mao{font:400 19px/1.25 'Gochi Hand',cursive}.peq{font-size:11.5px}
+.fala{display:flex;gap:4mm;align-items:center}.fala img{width:34mm;flex:none}
+.balao{border:2.5px solid #000;border-radius:8px;padding:3mm 4mm;box-shadow:3px 3px 0 #000;background:#fff}
+.caixa{border:2px solid #000;padding:3mm 4mm;border-radius:4px}.caixa.tracejada{border-style:dashed}
+.sombra{box-shadow:3px 3px 0 #000}
+.regra{background:#000;color:#fff;padding:2.5mm 4mm;border-radius:4px;font-weight:700}
+table{border-collapse:collapse;width:100%}td,th{border:1.6px solid #000;padding:2mm 2.5mm;text-align:center;font-size:13px}th{background:#e6e6e6;font:400 12px 'Special Elite',monospace;text-transform:uppercase}
+.lin{display:inline-block;min-width:22mm;border-bottom:1.6px solid #000;height:5.5mm;vertical-align:bottom}.lin.g{min-width:42mm}.lin.m{min-width:14mm}
+.cx{display:inline-block;width:5mm;height:5mm;border:1.6px solid #000;border-radius:1px;vertical-align:-1mm;margin-right:1.5mm}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+.piano{display:block;width:100%;height:auto}.piano text{font-family:'Hanken Grotesk',sans-serif}
+.acorde{text-align:center}.acorde svg{width:30mm;height:auto;color:#000}.acorde .dedo{fill:#000}.acorde b{font:400 15px 'Anton';display:block;text-transform:uppercase}
+.rod{margin-top:auto;display:flex;justify-content:space-between;font:10.5px 'Special Elite',monospace;border-top:1.6px solid #000;padding-top:1.8mm}
+.capa{align-items:center;text-align:center;justify-content:center;gap:7mm}.capa img.hero{width:118mm;filter:grayscale(1) contrast(1.15)}
+.capa h1{font-size:64px;line-height:.95}.capa .sub{font:400 24px 'Special Elite',monospace}
+.tarja{border:3px solid #000;padding:3mm 6mm;font:400 22px 'Anton';text-transform:uppercase;letter-spacing:.06em;background:#fff;box-shadow:5px 5px 0 #000}
+.pg.gab{gap:2mm}.gab .fala img{width:24mm}.gab h3{margin:1mm 0 0}.gab td,.gab th{font-size:12px;padding:1.4mm 2mm;text-align:left}.gab h3{margin-top:2mm}
+img.pb{filter:grayscale(1) contrast(1.15)}
+.ex h3{text-transform:none;font-size:15px}.dica{margin-top:1.5mm;font-style:italic}
+svg.pauta{display:block;width:100%;height:auto}svg.ritmo{display:block;width:100%;height:auto}svg.braco{display:block;width:100%;height:auto}
+table.grade{width:100%;table-layout:fixed}table.grade th,table.grade td{padding:0;height:7.2mm;font-size:12px;line-height:1}table.grade th.g{background:#fff;font-size:11px}table.grade th.gn{width:24mm;text-align:left;padding-left:2mm;background:#e6e6e6;font:400 11px 'Special Elite',monospace;text-transform:uppercase}td.q,th.q{border-left:3px solid #000}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:3mm}.mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}
+td.l,th.l{text-align:left}.pre{font:12px/1.5 'Special Elite',monospace}
+.rom{font:400 17px 'Anton';letter-spacing:.02em}.gran{font-size:15px}
+.pg.sec{align-items:center;justify-content:center;text-align:center;gap:6mm}.pg.sec h1{font-size:58px}.pg.sec img{width:90mm}
+.linha{border-bottom:1.6px solid #000;height:7mm;margin:1mm 0}
+/* ajustes do caderno intermediário (mais denso) */
+.pg.int-compacto,.pg{padding:11mm 14mm 10mm;gap:3.2mm}
+body{font-size:12.8px}h2{font-size:25px}.fala img{width:24mm}.balao.mao{font-size:17px}
+svg.ritmo{max-height:17mm}svg.pauta{max-height:27mm}svg.braco{max-height:34mm}.piano{max-height:36mm}
+td,th{padding:1.4mm 2mm;font-size:12px}.linha{height:6.2mm}.caixa{padding:2.4mm 3.4mm}.caixa p{margin:0 0 1mm}
+.mini svg.pauta,.mini3 svg.pauta{max-height:24mm}.caixa h3{margin-bottom:.8mm}
+.acorde.cifra b{text-transform:none}svg.circulo{display:block;width:100%;height:auto;max-height:92mm}
