@@ -1174,3 +1174,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Exercícios reescritos onde estavam confusos (exemplos nas instruções, dicas que não entregam a resposta, ditados explicados). `scripts/aulinha-intermediario-pdf.mjs` imprime um relatório (páginas divididas/reduzidas, compassos que não fecham).
 - PDF básico (12 p.): conferido sem corte de conteúdo.
 - **Publicado só no app da Bea** (main) em 23/nov/2026 (v741): jogos de ouvido e escalas, aulinha 10 passos, Copia Aí 5/7/10, som e microfone por instrumento, claves de sol e de fá da Bea, Uno +4 e demais. **Área dos alunos NÃO publicada** (os jogos novos ficam escondidos dos alunos de qualquer forma).
+
+## Publicado no app da Bea (23/nov/2026, sw v742)
+- A pedido da Bea ("pública no meu que eu vou lá jogar"): a branch `claude/peaceful-carson-bb1x8t` foi mesclada com a `main` (v741 de outra sessão: Copia Aí/pauLta ao Vivo com som e microfone por instrumento, PDFs) e subiu pra `main` = **app da Bea** (https://beatrizmarquex2-art.github.io/beateristapp-/). Foi junto: aulas da bateria (16 ritmos, partitura normal e colorida), canhota dentro da bateria (espelha só a bateria), Detetive Note sempre na caixa, aulas de música nas teclas e no xilofone (microfone usa a faixa de `teclado` e `sinos` do `vivo-ui.js`).
+- **NÃO foi pra área dos alunos** (`jogos.beaterista.com.br`): ela só pediu o app dela. Pra publicar lá: ver "Publicar a área dos alunos" no começo deste arquivo.
+- Falta ela conferir de ouvido: Cai cai balão e Atirei o pau no gato (melodias que o Claude chutou) e testar o microfone com instrumento de verdade.
