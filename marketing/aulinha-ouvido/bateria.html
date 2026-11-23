@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><title>Robôterista ensina: bateria (intermediário e avançado · preto e branco)</title>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Beaterista Escola de Música · Next Level · Intermediário · Bateria · Robôterista Explica</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="estilo.css">
 <style>.gabcols{columns:2;column-gap:7mm;flex:1;overflow:hidden}.gi{break-inside:avoid;margin-bottom:2.5mm;border-bottom:1px dotted #000;padding-bottom:1.5mm;font-size:11.5px;line-height:1.35}.gi b.n{font:400 12px 'Special Elite',monospace}.gi svg.ritmo,.gi svg.pauta{max-height:24mm}.gi table.grade th,.gi table.grade td{height:4.8mm;font-size:9px}.gi .gab td,.gi .gab th{font-size:10px;padding:.8mm 1.4mm}.gi table td,.gi table th{font-size:10.5px;padding:.8mm 1.4mm}</style></head>
 <body><div id="doc"></div>
@@ -17,7 +17,7 @@ const nF = iC + 1; const nR = rit.length; const nCoord = iCoord + nR;
 const SECOES = [['Fundamentos (postura, empunhadura, baquetas, leitura, contar)', lista.slice(0, nF)], ['Ritmo (tempo, compasso, leitura rítmica, grooves)', lista.slice(nF, nF + nR)], ['Mãos e técnicas', lista.slice(nF + nR, nCoord)], ['Coordenação, grooves e plano', lista.slice(nCoord)]];
 
 /* páginas da frente */
-const capa = { capa: true, html: `<img src="${LOGO}" style="width:62mm" alt=""><div class="tarja">Robôterista ensina</div><h1>Bateria</h1><div class="sub">intermediário e avançado</div><img class="hero" style="width:158mm" src="img/paul-na-bateria-capa.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · pad, grooves e plano de evolução</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };
+const capa = { capa: true, html: `<img src="../../assets/originals/paul-png/pra-colorir/logos-pb/beaterista-escola-de-musica-pb.png" style="width:74mm" alt="Beaterista Escola de Música"><h1 style="font-size:60px">Next Level</h1><div class="sub" style="font-size:26px">Intermediário · Bateria</div><div class="tarja">Robôterista Explica</div><img class="hero" style="width:158mm" src="img/paul-na-bateria-capa.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · pad, grooves e plano de evolução</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };
 const comoUsar = { secao: 'bateria', titulo: 'como usar', html: `<h2>Como usar este caderno</h2>${fala('paul-bateria', 'este é o caderno de <b>bateria</b> do nível intermediário e avançado. aqui você cuida da <b>postura</b>, aperfeiçoa as <b>mãos</b> (rudimentos, técnicas), ganha <b>coordenação</b> e monta <b>grooves</b> de verdade. ele inclui o capítulo de <b>ritmo</b> (compasso, subdivisão, síncope, tercinas e leitura rítmica), que todo músico precisa dominar.')}
 ${caixa('antes de começar: você já sabe…', `<p>${cx('tocar um rock básico (chimbal, caixa e bumbo)')}<br>${cx('contar 1 2 3 4 em voz alta')}<br>${cx('ler semínimas e colcheias')}<br>${cx('tocar singles (mão a mão) no pad')}</p><p class="peq">se faltou algum, comece pelo método da Beaterista (aulinhas de bateria e Hero Drum no app).</p>`)}
 ${caixa('como ler os exercícios', tabela(['símbolo', 'significa'], [['<b>D</b> · <b>E</b>', 'mão direita · mão esquerda (letra em cima ou embaixo da nota)'], ['<b>B</b>', 'bumbo (pé direito)'], ['<b>MAIÚSCULA</b> · minúscula', 'maiúscula = acento (forte) · minúscula = suave'], ['x na pauta', 'pratos e chimbal'], ['bolinha', 'caixa, toms, surdo e bumbo'], ['losango', 'cúpula do ride'], ['( )', 'nota fantasma'], ['&gt;', 'acento'], ['1 e & a', 'contagem das semicolcheias (a mesma do Beat Lab do app)']]))}
@@ -29,7 +29,7 @@ const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e
 const indice2 = { secao: 'bateria', titulo: 'índice (2/2)', html: `<h2>Índice (continuação)</h2><div class="duas" style="align-items:start">${idx2}</div><div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, B = bateria).</p></div>` };
 
 const todas = [capa, comoUsar, indice, indice2, ...SECOES.flatMap(([, l]) => l)];
-const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Robôterista Paul · bateria', 'bateria');
+const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Next Level · Intermediário · Bateria', 'bateria');
 await pronto(); // imagens e fontes carregadas ANTES de medir as páginas
 
 /* paginação: se uma página passa da altura, primeiro tenta reduzir um pouco (até 92%); se ainda não couber, passa os últimos blocos pra uma página de continuação (nada fica pequeno demais) */
@@ -54,7 +54,7 @@ function ajusta(pg) {
 /* gabarito: preenche página por página, medindo o que cabe */
 const nomeSec = { R: 'ritmo', B: 'bateria' };
 let nPag = todas.length;
-const novaPag = (t) => { nPag++; const s = document.createElement('section'); s.className = 'pg'; s.innerHTML = `${topo('gabarito', t)}<h2>Gabarito</h2><div class="gabcols"></div><div class="rod"><span>Escola Beaterista · Robôterista Paul · bateria</span><span>página ${nPag}</span></div>`; doc.appendChild(s); return s; };
+const novaPag = (t) => { nPag++; const s = document.createElement('section'); s.className = 'pg'; s.innerHTML = `${topo('gabarito', t)}<h2>Gabarito</h2><div class="gabcols"></div><div class="rod"><span>Escola Beaterista · Next Level · Intermediário · Bateria</span><span>página ${nPag}</span></div>`; doc.appendChild(s); return s; };
 for (const sec of ['R', 'B']) {
   let pag = novaPag(`gabarito · ${nomeSec[sec]}`); let cols = pag.querySelector('.gabcols');
   for (const g of GAB.filter((x) => x.sec === sec)) {
@@ -64,7 +64,7 @@ for (const sec of ['R', 'B']) {
 }
 await pronto();
 /* número final das páginas (+ página de anotações se o total for ímpar, pra imprimir frente e verso) e índice com os números certos */
-if (document.querySelectorAll('.pg').length % 2) { const a = document.createElement('section'); a.className = 'pg anot'; a.innerHTML = `${topo('anotações', 'espaço livre')}<h2>Anotações</h2><p class="peq">dúvidas, descobertas e ideias de groove:</p>${'<div class="linha"></div>'.repeat(24)}<div class="rod"><span>Escola Beaterista · Robôterista Paul · bateria</span><span></span></div>`; doc.appendChild(a); }
+if (document.querySelectorAll('.pg').length % 2) { const a = document.createElement('section'); a.className = 'pg anot'; a.innerHTML = `${topo('anotações', 'espaço livre')}<h2>Anotações</h2><p class="peq">dúvidas, descobertas e ideias de groove:</p>${'<div class="linha"></div>'.repeat(24)}<div class="rod"><span>Escola Beaterista · Next Level · Intermediário · Bateria</span><span></span></div>`; doc.appendChild(a); }
 [...document.querySelectorAll('.pg')].forEach((pg, i) => { const r = pg.querySelector('.rod'); if (r) r.lastElementChild.textContent = `página ${i + 1}`; });
 document.querySelectorAll('td.ind').forEach((td) => { const alvo = document.querySelector(`.pg[data-k="${td.dataset.ref - 1}"]`); if (alvo) td.textContent = [...document.querySelectorAll('.pg')].indexOf(alvo) + 1; });
 const A = window.__avisos || [];
