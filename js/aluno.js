@@ -261,13 +261,21 @@ function voltarJogos(on) {
   b.hidden = false;
 }
 function aulasView(view) {
-  const lk = (href, t, sub, tempo, cor, pose, adv) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
-    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
+  const lk = (href, t, sub, tempo, cor, pose, adv, semGratis) => h('a', { class: `al-aula al-aula-${cor}`, href }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), adv ? h('img', { class: 'al-aula-adv', src: stkSrc(adv), alt: '', draggable: 'false' }) : null,
+    h('span', { class: 'al-aula-txt' }, h('b', {}, t), h('small', {}, `${sub} · ${tempo}`), !AC.liberado() && !semGratis ? h('em', {}, 'grátis: a 1ª fase') : null), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶'));
   // Pedido da Bea (15/nov/2026): "teoria" (5 temas × 30 aulinhas) e uma aula de 30 aulinhas pra cada instrumento (bateria, teclado, violão), tudo AQUI.
   const inst = ['bateria', 'teclado', 'violao'].map((id) => { const a = AULAS[id]; const [tem, max] = estrelasTema(sessaoPorId(id)); return lk(`#/estudos/aulas/${id}`, a.titulo, '30 aulinhas · 6 fases', `★ ${tem}/${max}`, a.cor, a.pose, a.adesivos[0]); });
   view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('img', { class: 'est-logo-paul', src: LOGO_PAUL, alt: 'Robôterista Paul', draggable: 'false', decoding: 'async' }), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
+    h('h2', { class: 'al-sec' }, 'ouvido e escalas · 10 passos'), lk('#/estudos/ouvido', 'ouvido e escalas', 'graus, 3ª e 5ª, acordes, maior e menor, escalas', 'com som', 'figuras', 'ouvindo', null, true),
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
+}
+/** Aulinha do Paul "ouvido e escalas" dentro do Robôterista ensina (Estudos > aulas; a mesma dos jogos de ouvido): graus, 3ª e 5ª, acordes, maior e menor, escalas. */
+function ouvidoEstudoView(view) {
+  const box = h('div', { class: 'kd-game' }); let off = null; let dead = false;
+  view.append(banner('Ouvido e escalas', 'robôterista ensina'), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('a', { class: 'jg-link', href: '#/estudos/aulas' }, '‹ robôterista ensina'), box));
+  import('./jogos/ouvido-aula.js').then((m) => { if (!dead) off = m.aulaOuvido(box, { textoFim: 'voltar pras aulas', onFim: () => { try { localStorage.setItem('bt-aula-ouvido', '1'); } catch { /* sem armazenamento */ } location.hash = '#/estudos/aulas'; } }); });
+  return () => { dead = true; if (typeof off === 'function') off(); };
 }
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 /** Pergunta rápida depois de ler a curiosidade: "que instrumento essa pessoa toca?" (1 ★, uma vez por curiosidade). */
@@ -504,6 +512,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? (AULAS[r.parts[1]] ? teoriaBasica.mount(view, [r.parts[1]], { aoFim: () => marcarVisto('aulas') }) : (location.hash = '#/estudos/aulas', null)) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'ouvido') c = ouvidoEstudoView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });

@@ -1,6 +1,7 @@
 // pauLta: desenhos em SVG (texto puro, sem DOM): pautas de bateria e de clave, teclado, bateria com selos, legenda.
 import { kitSvg } from '../kids/icons.js';
 import { CLEFS, posOf, letterOf, mk, noteName } from './music.js';
+import { CLAVE_SOL_D, CLAVE_SOL, CLAVE_FA_D, CLAVE_FA } from './clave.js';
 
 const INK = '#1b1818'; const RED = '#b5162b';
 export const DRUM = {
@@ -53,8 +54,8 @@ export function drumStaff(parts, fig = null) {
 /* ---------- pauta com clave ---------- */
 const BOT = 134; // y da 1ª linha
 const yn = (s) => BOT - s * U;
-const TREBLE = (cx) => `<path d="M${cx + 2} ${yn(2) + 12} C${cx - 16} ${yn(2) + 2} ${cx - 14} ${yn(5)} ${cx + 4} ${yn(8) + 6} C${cx + 16} ${yn(11)} ${cx + 12} ${yn(13)} ${cx + 4} ${yn(13) + 2} C${cx - 2} ${yn(12)} ${cx + 2} ${yn(9)} ${cx + 4} ${yn(7)} L${cx + 6} ${yn(-1) - 2} C${cx + 8} ${yn(-3)} ${cx - 2} ${yn(-4)} ${cx - 8} ${yn(-3)} C${cx - 14} ${yn(-2)} ${cx - 8} ${yn(0) + 4} ${cx - 2} ${yn(-1)}" fill="none" stroke="${INK}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M${cx + 12} ${yn(3)} C${cx + 14} ${yn(0)} ${cx} ${yn(0) - 2} ${cx - 8} ${yn(2)} C${cx - 14} ${yn(4)} ${cx - 8} ${yn(7)} ${cx + 2} ${yn(6)} C${cx + 10} ${yn(5)} ${cx + 9} ${yn(2)} ${cx + 2} ${yn(2)}" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><circle cx="${cx + 5}" cy="${yn(-3) + 2}" r="0" />`;
-const BASS = (cx) => `<circle cx="${cx - 4}" cy="${yn(6)}" r="5.5" fill="${INK}"/><path d="M${cx - 4} ${yn(6) - 5} C${cx + 14} ${yn(6) - 8} ${cx + 22} ${yn(7.5)} ${cx + 20} ${yn(5)} C${cx + 18} ${yn(2)} ${cx + 4} ${yn(0)} ${cx - 8} ${yn(-1)}" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><circle cx="${cx + 30}" cy="${yn(7)}" r="3.2" fill="${INK}"/><circle cx="${cx + 30}" cy="${yn(5)}" r="3.2" fill="${INK}"/>`;
+const TREBLE = (cx) => `<path d="${CLAVE_SOL_D}" transform="translate(${(cx - CLAVE_SOL.cx * CLAVE_SOL.k).toFixed(2)} ${(yn(2) - CLAVE_SOL.gy * CLAVE_SOL.k).toFixed(2)}) scale(${CLAVE_SOL.k})" fill="${INK}" fill-rule="evenodd"/>`; // desenho da Bea (js/paulta/clave.js)
+const BASS = (cx) => `<path d="${CLAVE_FA_D}" transform="translate(${(cx - 10 - CLAVE_FA.x0 * CLAVE_FA.k).toFixed(2)} ${(yn(6) - CLAVE_FA.gy * CLAVE_FA.k).toFixed(2)}) scale(${CLAVE_FA.k})" fill="${INK}" fill-rule="evenodd"/>`; // desenho da Bea (js/paulta/clave.js)
 
 /** Pauta de sol ou de fá com 1 a 3 notas em sequência. */
 export function clefStaff(clef, notes) {
@@ -112,3 +113,4 @@ export function legendHtml() {
   return rows.map((id) => ({ id, name: DRUM[id].name, where: DRUM[id].where, svg: drumStaff(id) }));
 }
 export { noteName };
+export { yn, TREBLE, BASS, U, BOT }; // usados pelos PDFs de aula (marketing/aulinha-ouvido/lib.js)

@@ -16,29 +16,38 @@ check('os 4 jogos ainda ficam escondidos dos alunos na aba Jogos (em obras: só 
 
 /* ---------- Copia Aí ---------- */
 await page.goto(url + '/aluno.html#/jogos/copia'); await sleep(1500);
-check('Copia Aí: 3 teclas com nome (dó ré mi) no nível 3 notas', await page.evaluate(() => [...document.querySelectorAll('.vv-tecla:not(.fora)')].map((b) => b.textContent).join(' ') === 'dó ré mi'));
-check('Copia Aí: chips pequenos de jogo, notas, ajuda e como tocar', await page.evaluate(() => document.querySelectorAll('.vv-linha').length === 4 && [...document.querySelectorAll('.vv-chip')].every((c) => c.getBoundingClientRect().height <= 34)));
+check('Copia Aí: abre no fácil com 8 teclas com nome (dó ré mi fá sol lá si dó)', await page.evaluate(() => [...document.querySelectorAll('.vv-tecla:not(.fora)')].map((b) => b.textContent).join(' ') === 'dó ré mi fá sol lá si dó'));
+check('Copia Aí: chips pequenos de jogo, dificuldade, ajuda e como tocar (fácil · médio · difícil)', await page.evaluate(() => document.querySelectorAll('.vv-linha').length === 5 && [...document.querySelectorAll('.vv-chip')].every((c) => c.getBoundingClientRect().height <= 34) && ['piano', 'violão', 'sinos'].every((t) => [...document.querySelectorAll('.vv-chip')].some((c) => c.textContent === t)) && ['fácil · 5 notas', 'médio · 7 notas', 'difícil · 10 notas'].every((t) => [...document.querySelectorAll('.vv-chip')].some((c) => c.textContent === t))));
 await shot('1-copia-menu');
 await page.evaluate(() => document.querySelector('.vv-go').click());
 await espera(() => window.__vivo.estado === 'vez');
-check('Copia Aí: 1ª rodada tem 2 notas escritas', await page.evaluate(() => { const n = [...document.querySelectorAll('.vv-n')].map((x) => x.textContent); return n.length === 2 && n.every((t) => ['dó', 'ré', 'mi'].includes(t)); }));
+check('Copia Aí fácil: a sequência vem inteira, com 5 notas todas DIFERENTES (não cresce como o Genius)', await page.evaluate(() => { const n = [...document.querySelectorAll('.vv-n')].map((x) => x.textContent); return n.length === 5 && new Set(n).size === 5 && window.__vivo.alvo.length === 5 && new Set(window.__vivo.alvo).size === 5; }));
 await shot('2-copia-vez');
-for (let rodada = 0; rodada < 3; rodada++) { // copia certo 3 rodadas (2, 3 e 4 notas)
+const seqs = [];
+for (let rodada = 0; rodada < 3; rodada++) { // copia certo as 3 sequências (cada uma nova, também de 5 notas)
   await espera(() => window.__vivo.estado === 'vez');
-  const alvo = await page.evaluate(() => window.__vivo.alvo);
+  const alvo = await page.evaluate(() => window.__vivo.alvo); seqs.push(alvo.join(','));
   for (const m of alvo) { await toca(`.vv-tecla[data-midi="${m}"]`); await sleep(120); }
-}
-await espera(() => window.__vivo.estado === 'vez');
-check('Copia Aí: a melodia cresceu pra 5 notas', await page.evaluate(() => window.__vivo.alvo.length === 5 && document.querySelectorAll('.vv-n').length === 5));
-for (let i = 0; i < 3; i++) { // erra 3 vezes: acaba
-  await espera(() => window.__vivo.estado === 'vez');
-  const errada = await page.evaluate(() => [60, 62, 64].find((m) => m !== window.__vivo.alvo[0]));
-  await toca(`.vv-tecla[data-midi="${errada}"]`); await sleep(200);
 }
 await espera(() => window.__vivo.estado === 'fim');
 const tc = await page.evaluate(() => document.querySelector('.vv-res').textContent);
-check('Copia Aí: 4 notas copiadas = 1 estrela', /4 notas/.test(tc) && /★☆☆/.test(tc), tc);
+check('Copia Aí: 3 sequências diferentes de 5 notas, copiadas sem erro = 3 de 3 e 3 estrelas', new Set(seqs).size === 3 && seqs.every((q) => q.split(',').length === 5) && /3 de 3/.test(tc) && /★★★/.test(tc), tc + ' | ' + seqs.join(' / '));
 await shot('3-copia-fim');
+// dificuldades médio e difícil: 7 e 10 notas diferentes
+for (const [id, n] of [['médio · 7 notas', 7], ['difícil · 10 notas', 10]]) {
+  await page.evaluate((t) => [...document.querySelectorAll('.vv-chip')].find((c) => c.textContent === t).click(), id); await sleep(300);
+  await page.evaluate(() => document.querySelector('.vv-go').click()); await espera(() => window.__vivo.estado === 'vez');
+  check(`Copia Aí ${id.split(' ')[0]}: sequência de ${n} notas todas diferentes`, await page.evaluate((k) => window.__vivo.alvo.length === k && new Set(window.__vivo.alvo).size === k, n));
+  if (n === 10) await shot('3b-copia-dificil');
+  for (let i = 0; i < 3; i++) { // erra 3 vezes: acaba sem completar nenhuma sequência
+    await espera(() => window.__vivo.estado === 'vez');
+    const errada = await page.evaluate(() => [60, 62, 64, 65].find((m) => m !== window.__vivo.alvo[0]));
+    await toca(`.vv-tecla[data-midi="${errada}"]`); await sleep(200);
+  }
+  await espera(() => window.__vivo.estado === 'fim');
+  check(`Copia Aí ${id.split(' ')[0]}: errou 3 vezes = 0 de 3 e nenhuma estrela`, await page.evaluate(() => /0 de 3/.test(document.querySelector('.vv-res').textContent) && /☆☆☆/.test(document.querySelector('.vv-res').textContent)));
+  await page.evaluate(() => { const go = document.querySelector('.vv-go'); go.click(); }); await sleep(200); await page.evaluate(() => [...document.querySelectorAll('.vv-go')].forEach((b) => { if (b.textContent.includes('jogar de novo')) { /* volta pro menu */ } })); await page.goto(url + '/aluno.html#/jogos/copia'); await sleep(900);
+}
 // música + de ouvido
 await page.evaluate(() => [...document.querySelectorAll('.vv-chip')].find((c) => c.textContent === 'música').click()); await sleep(300);
 check('Copia Aí: modo música lista as melodias e abre as 8 teclas', await page.evaluate(() => document.querySelectorAll('.vv-tecla:not(.fora)').length === 8 && [...document.querySelectorAll('.vv-chip')].some((c) => /Brilha/.test(c.textContent))));

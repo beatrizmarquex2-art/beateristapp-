@@ -146,6 +146,7 @@ export function mount(host) {
 
   const luz = (m, on, cls = 'au-luz') => { const e = keyEl(m); if (e) e.classList.toggle(cls, !!on); };
   const inst = {
+    mic: 'teclado',
     preparar: () => { FORCA = { octaves: 2, oct: 4 }; drawKb(); drawPanel(); },
     sair: () => { if (FORCA) { FORCA = null; drawKb(); drawPanel(); } },
     luz, aoTocar: (fn) => { aulaTap = fn; },

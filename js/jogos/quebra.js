@@ -90,7 +90,7 @@ export function mount(host, opts) {
   /** Duelo em 2 celulares: a mesma imagem e as mesmas peças nos dois; vence quem montar mais rápido (js/jogos/duelo-quebra.js). */
   let offDuelo = null;
   function abrirDuelo() { stopClock(); root.replaceChildren(h('p', { class: 'jg-p muted' }, 'carregando o duelo…')); import('./duelo-quebra.js').then((m) => { if (gone) return; root.replaceChildren(); offDuelo = m.mountDueloQuebra(root, { IMAGES, SIZES, abrir: (opts, el) => mount(el || root, opts), voltar: () => { if (offDuelo) { offDuelo(); offDuelo = null; } intro(); } }); }); }
-  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = game.diff > 24; record = false; persist(); draw(); startClock(); }
+  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = game.diff > 24 && matchMedia('(max-width:700px)').matches; record = false; persist(); draw(); startClock(); }
 
   const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };

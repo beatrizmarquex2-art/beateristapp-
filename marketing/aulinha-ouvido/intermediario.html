@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Robôterista ensina: harmonia, melodia e ritmo (intermediário · preto e branco)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="estilo.css">
+<style>.gabcols{columns:2;column-gap:7mm;flex:1;overflow:hidden}.gi{break-inside:avoid;margin-bottom:2.5mm;border-bottom:1px dotted #000;padding-bottom:1.5mm;font-size:11.5px;line-height:1.35}.gi b.n{font:400 12px 'Special Elite',monospace}.gi svg.ritmo,.gi svg.pauta{max-height:24mm}.gi table.grade th,.gi table.grade td{height:4.8mm;font-size:9px}.gi .gab td,.gi .gab th{font-size:10px;padding:.8mm 1.4mm}.gi table td,.gi table th{font-size:10.5px;padding:.8mm 1.4mm}</style></head>
+<body><div id="doc"></div>
+<script type="module">
+import { P, LOGO, paul, fala, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo } from './lib.js';
+import { paginas as pRitmo } from './ritmo.js';
+import { paginas as pMelodia } from './melodia.js';
+import { paginas as pHarmonia } from './harmonia.js';
+
+const { ex, GAB } = criaExercicios();
+const ritmoP = pRitmo(ex); const melodiaP = pMelodia(ex); const harmoniaP = pHarmonia(ex);
+const SECOES = [['Ritmo', ritmoP], ['Melodia', melodiaP], ['Harmonia e treino', harmoniaP]];
+
+/* páginas da frente */
+const capa = { capa: true, html: `<img src="${LOGO}" style="width:62mm" alt=""><div class="tarja">Robôterista ensina</div><h1>Harmonia,<br>melodia<br>e ritmo</h1><div class="sub">nível intermediário</div><img class="hero" style="width:96mm" src="${P}paul-ensinando.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · treino com os jogos do app</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };
+const comoUsar = { secao: 'intermediário', titulo: 'como usar', html: `<h2>Como usar este caderno</h2>${fala('paul-professor', 'este é o <b>nível intermediário</b> da Robôterista. aqui a gente vai fundo em <b>ritmo</b>, <b>melodia</b> e <b>harmonia</b>: leitura de partitura, intervalos, modos, acordes com 7ª, progressões e muito mais.')}
+${caixa('antes de começar: você já sabe…', `<p>${cx('o nome das notas e das teclas do piano')}<br>${cx('o que são grau, 3ª e 5ª')}<br>${cx('a diferença entre acorde maior e menor')}<br>${cx('as escalas maior, menor e pentatônica')}<br>${cx('contar um compasso 4/4 com semínimas e colcheias')}</p><p class="peq">se faltou algum, faça antes a aula básica <b>"Ouvido e escalas"</b>, no Robôterista ensina do app.</p>`)}
+${caixa('como estudar cada página', `<ol style="margin:0 0 0 5mm;padding:0"><li><b>leia</b> a explicação com calma (o Paul resume no topo);</li><li><b>toque ou bata palmas</b> cada exemplo: música é fazer, não só ler;</li><li>faça o <b>exercício tracejado</b> a lápis;</li><li>confira no <b>gabarito</b> (final do caderno) e corrija;</li><li>jogue o <b>jogo do app</b> indicado na página.</li></ol>`)}
+${caixa('legenda', tabela(['símbolo', 'significa'], [['<span class="cx"></span>', 'caixinha pra marcar quando concluir'], ['quadro tracejado', 'exercício (resposta no gabarito)'], ['quadro com sombra', 'ideia principal da página'], ['♩ = 60', 'andamento: 60 semínimas por minuto'], ['R · M · H', 'exercícios de Ritmo, Melodia e Harmonia']]))}
+<div class="caixa tracejada"><h3>materiais</h3><p class="peq">lápis e borracha · metrônomo (pode ser do celular) · teclado ou violão · o app da Beaterista · uma pessoa pra ajudar nos ditados.</p></div>` };
+const indice = { secao: 'intermediário', titulo: 'índice', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>3 trilhas</b> que se completam. ritmo organiza o <b>tempo</b>, melodia organiza as <b>notas</b> e harmonia organiza os <b>acordes</b>. estude uma página de cada por dia!')}
+<div class="tres" style="grid-template-columns:repeat(3,1fr);align-items:start">${(() => { let n = 4; return SECOES.map(([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11.5px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${n}" style="width:10mm">${n++}</td></tr>`).join('')}</table></div>`).join(''); })()}</div>
+<div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, M = melodia, H = harmonia).</p></div>` };
+
+const todas = [capa, comoUsar, indice, ...SECOES.flatMap(([, l]) => l)];
+const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Robôterista Paul · intermediário', 'intermediário');
+await pronto(); // imagens e fontes carregadas ANTES de medir as páginas
+
+/* paginação: se uma página passa da altura, primeiro tenta reduzir um pouco (até 92%); se ainda não couber, passa os últimos blocos pra uma página de continuação (nada fica pequeno demais) */
+const sobra = (pg) => pg.scrollHeight - pg.clientHeight;
+const miolo = (pg) => [...pg.children].filter((c) => !c.classList.contains('top') && !c.classList.contains('rod'));
+const zoom = (pg, f) => miolo(pg).forEach((c) => { c.style.zoom = f === 1 ? '' : f.toFixed(3); });
+const reduzidas = []; const divididas = [];
+function ajusta(pg) {
+  if (sobra(pg) <= 2) return;
+  let f = 1; for (let k = 0; k < 12 && sobra(pg) > 2; k++) { f -= 0.01; zoom(pg, f); }
+  if (sobra(pg) <= 2) { reduzidas.push([pg.dataset.k, Number(f.toFixed(2))]); return; }
+  zoom(pg, 1);
+  const blocos = miolo(pg); if (blocos.length < 3) { for (let k = 0; k < 25 && sobra(pg) > 2; k++) { f -= 0.01; zoom(pg, f); } reduzidas.push([pg.dataset.k, Number(f.toFixed(2))]); return; }
+  const nova = document.createElement('section'); nova.className = pg.className; nova.dataset.k = pg.dataset.k; nova.dataset.cont = '1';
+  const top = pg.querySelector('.top').cloneNode(true); top.lastElementChild.textContent += ' (continuação)'; const rod = pg.querySelector('.rod').cloneNode(true); nova.append(top); const movidos = [];
+  while (sobra(pg) > 2 && miolo(pg).length > 2) { movidos.unshift(miolo(pg).pop()); pg.querySelector('.rod').before(movidos[0]); pg.removeChild(movidos[0]); }
+  movidos.forEach((m) => nova.append(m)); nova.append(rod); pg.after(nova); divididas.push(pg.dataset.k);
+  ajusta(nova);
+}
+[...document.querySelectorAll('.pg:not(.capa)')].forEach(ajusta);
+
+/* gabarito: preenche página por página, medindo o que cabe */
+const nomeSec = { R: 'ritmo', M: 'melodia', H: 'harmonia' };
+let nPag = todas.length;
+const novaPag = (t) => { nPag++; const s = document.createElement('section'); s.className = 'pg'; s.innerHTML = `${topo('gabarito', t)}<h2>Gabarito</h2><div class="gabcols"></div><div class="rod"><span>Escola Beaterista · Robôterista Paul · intermediário</span><span>página ${nPag}</span></div>`; doc.appendChild(s); return s; };
+for (const sec of ['R', 'M', 'H']) {
+  let pag = novaPag(`gabarito · ${nomeSec[sec]}`); let cols = pag.querySelector('.gabcols');
+  for (const g of GAB.filter((x) => x.sec === sec)) {
+    const d = document.createElement('div'); d.className = 'gi'; d.innerHTML = `<b class="n">${g.num} · ${g.titulo}</b><div>${g.resp}</div>`; cols.appendChild(d);
+    if (cols.scrollWidth > cols.clientWidth + 2 || pag.scrollHeight > pag.clientHeight + 2) { cols.removeChild(d); pag = novaPag(`gabarito · ${nomeSec[sec]}`); cols = pag.querySelector('.gabcols'); cols.appendChild(d); }
+  }
+}
+await pronto();
+/* número final das páginas (+ página de anotações se o total for ímpar, pra imprimir frente e verso) e índice com os números certos */
+if (document.querySelectorAll('.pg').length % 2) { const a = document.createElement('section'); a.className = 'pg anot'; a.innerHTML = `${topo('anotações', 'espaço livre')}<h2>Anotações</h2><p class="peq">dúvidas, descobertas e ideias de música:</p>${'<div class="linha"></div>'.repeat(24)}<div class="rod"><span>Escola Beaterista · Robôterista Paul · intermediário</span><span></span></div>`; doc.appendChild(a); }
+[...document.querySelectorAll('.pg')].forEach((pg, i) => { const r = pg.querySelector('.rod'); if (r) r.lastElementChild.textContent = `página ${i + 1}`; });
+document.querySelectorAll('td.ind').forEach((td) => { const alvo = document.querySelector(`.pg[data-k="${td.dataset.ref - 1}"]`); if (alvo) td.textContent = [...document.querySelectorAll('.pg')].indexOf(alvo) + 1; });
+const A = window.__avisos || [];
+const estouro = [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2);
+window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__relatorio = { avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
+</script></body></html>

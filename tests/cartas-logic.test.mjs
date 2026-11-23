@@ -43,10 +43,10 @@ test('jogabilidade: mesma cor ou mesma figura; ação só com mesma ação; topo
   // acento e nota fantasma são categorias normais: casam entre si, não com as outras
   assert.ok(C.playable(fig('verde', 'acento'), fig('azul', 'acento'), 'azul')); assert.ok(!C.playable(fig('verde', 'fantasma'), fig('azul', 'acento'), 'azul'));
 });
-test('+4 só vale sem carta da cor ativa na mão e nunca como última carta nem pra ficar com UNO', () => {
+test('+4 só vale sem carta da cor ativa na mão; não como penúltima carta (ficaria com UNO), mas como última pode', () => {
   const w4 = card(null, 'mais4'); const top = fig('vermelho', 'colcheia');
   assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('vermelho', 'fusa'), fig('azul', 'fusa')])); assert.ok(C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa'), fig('azul', 'colcheia')]));
-  assert.ok(!C.playable(w4, top, 'vermelho', [w4]), 'última carta'); assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa')]), 'ficaria com UNO');
+  assert.ok(C.playable(w4, top, 'vermelho', [w4]), 'última carta pode'); assert.ok(!C.playable(w4, top, 'vermelho', [w4, fig('azul', 'fusa')]), 'penúltima: ficaria com UNO');
   const g = base({ hands: [[w4, fig('vermelho', 'fusa'), fig('azul', 'fusa')], padHand(3)] });
   assert.throws(() => C.applyPlay(g, 0, w4.id, 'azul'), /serve/); assert.equal(C.legalCards(g, 0).length, 1);
 });
@@ -157,4 +157,10 @@ test('com quem saiu fora da mesa: pular e +2 usam o próximo que ficou; inverter
   const q = C.applyPlay(mais, 1, 'm2'); assert.equal(q.hands[3].length, antes + 2, '+2 vai pro 3'); assert.equal(q.hands[2].length, 0, 'quem saiu não recebe nada');
   const dupla = C.tirar(C.tirar(C.newGame({ mode: 'online', players: 4, rnd: seeded(6) }), [2]), [3]); dupla.turn = 0; dupla.hands[0] = [{ id: 'i1', color: dupla.color, kind: 'inverter', sym: null }, ...dupla.hands[0]];
   assert.equal(C.applyPlay(dupla, 0, 'i1').turn, 0, 'sobraram 2: inverter vale como pular o outro');
+});
+
+test('+4 como ÚLTIMA carta pode e ganha o jogo; com 2 cartas não', () => {
+  const w4 = card(null, 'mais4'); const g = base({ hands: [[w4], padHand(3)] });
+  assert.equal(C.legalCards(g, 0).length, 1); const r = C.applyPlay(g, 0, w4.id, 'azul'); assert.equal(r.hands[0].length, 0); assert.ok(r.over, 'a mão esvaziou: o jogo acaba');
+  const g2 = base({ hands: [[w4, fig('azul', 'fusa')], padHand(3)] }); assert.throws(() => C.applyPlay(g2, 0, w4.id, 'azul'), /serve/);
 });

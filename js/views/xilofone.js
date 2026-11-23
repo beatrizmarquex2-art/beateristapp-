@@ -77,6 +77,7 @@ export function mount(host) {
   stage.append(xy, pads);
   const luz = (m, on, cls = 'au-luz') => { const e = xy.querySelector(`.ti-bar[data-m="${m}"]`); if (e) e.classList.toggle(cls, !!on); };
   const inst = {
+    mic: 'sinos',
     preparar: (m) => { const [lo, hi] = faixaDe(m); aulaNotas = brancasEntre(lo, hi); drawXy(); },
     sair: () => { if (aulaNotas) { aulaNotas = null; drawXy(); } },
     luz, aoTocar: (fn) => { aulaTap = fn; },

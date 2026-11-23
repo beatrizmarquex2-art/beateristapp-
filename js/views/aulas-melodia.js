@@ -1,7 +1,7 @@
 // "Aulas" de melodia nas abas Teclas e Percussão (xilofone): o Paul toca uma frase de uma música fácil, acendendo as teclas, e o aluno repete.
 // Na tela (toca nas teclas) ou no instrumento de verdade (microfone: piano, teclado, xilofone, violão uma nota por vez; vale em qualquer oitava).
 // Mostra o nome da música e a frase na partitura normal e na colorida (cada nota na cor do app). Regra e nota em js/jogos/aulas-melodia.js.
-// `inst` = { preparar(musica), sair(), luz(midi, ligada, classe?), toca(midi, quando, duracao), aoTocar(fn|null) } (cada instrumento liga as suas teclas).
+// `inst` = { mic: 'teclado'|'sinos' (faixa de notas do microfone), preparar(musica), sair(), luz(midi, ligada, classe?), toca(midi, quando, duracao), aoTocar(fn|null) } (cada instrumento liga as suas teclas).
 import { h } from '../util.js';
 import { audio, silence } from '../audio.js';
 import { getGame, setGame } from '../jogos/base.js';
@@ -96,7 +96,7 @@ export function melodiaPainel(inst, { voltar } = {}) {
     };
     go.addEventListener('click', async () => {
       go.hidden = true; modo.hidden = true; res.replaceChildren(); sess = novaSessao(m, usaMic() ? mesmaNota : (a, b) => a === b); estado = 'paul';
-      if (usaMic()) { msg.textContent = 'abrindo o microfone…'; try { mic = await ouvirNotas((nota) => tap(nota)); } catch (err) { if (gone) return; toast(`${micToast(err)} vou usar a tela`); setGame('aulamel', { entrada: 'tela' }); musica(m); return; } if (gone || estado !== 'paul') { if (mic) { mic.stop(); mic = null; } return; } }
+      if (usaMic()) { msg.textContent = 'abrindo o microfone…'; try { mic = await ouvirNotas((nota) => tap(nota), inst.mic ? { instrumento: inst.mic } : undefined); } catch (err) { if (gone) return; toast(`${micToast(err)} vou usar a tela`); setGame('aulamel', { entrada: 'tela' }); musica(m); return; } if (gone || estado !== 'paul') { if (mic) { mic.stop(); mic = null; } return; } }
       el.classList.add('am-jogando'); if (inst.ver) inst.ver(); paul(0);
     });
     window.__aulaMel = { musica: m, tap: (n) => tap(n), get estado() { return estado; }, get sess() { return sess; } }; // só pra teste

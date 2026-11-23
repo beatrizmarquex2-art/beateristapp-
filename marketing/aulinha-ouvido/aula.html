@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Robôterista ensina: ouvido e escalas (preto e branco)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="estilo.css"></head><body><div id="doc"></div>
+<script type="module">
+import { escalaNotas, acordeMidis, nomeEm, usaBemol, INTS, semitons } from '../../js/jogos/ouvido-logic.js';
+import { acharAcorde, diagramaSVG } from '../../js/acordes.js';
+import { braco } from './lib.js';
+import * as TE from './teoria.js';
+
+const P = '../../assets/originals/paul-png/pra-colorir/desenhos/'; const LOGO = '../../assets/originals/paul-png/pra-colorir/logos-pb/roboterista-escola-de-musica-pb.png';
+const SOLFA = ['dó', 'dó#', 'ré', 'ré#', 'mi', 'fá', 'fá#', 'sol', 'sol#', 'lá', 'lá#', 'si'];
+const PRETA = (m) => [1, 3, 6, 8, 10].includes(((m % 12) + 12) % 12);
+const nome = (m, pc = 0, tipo = 'maior') => nomeEm(m, pc, tipo);
+let n = 1;
+/** Piano de uma ou duas oitavas em preto e branco. marca = { midi: 'ton' | 'dest' | 'bat' }; rotulo(m) = texto embaixo; sup(m) = texto em cima. */
+function piano({ de = 60, ate = 72, marca = {}, rotulo = (m) => nome(m), sup = () => '', h = 95 } = {}) {
+  const brancas = []; for (let m = de; m <= ate; m++) if (!PRETA(m)) brancas.push(m);
+  const W = 100; const w = W; const total = brancas.length * w; const H = h; let s = `<svg class="piano" viewBox="0 0 ${total + 4} ${H + 64}" role="img">`;
+  brancas.forEach((m, i) => { const t = marca[m]; const fill = t === 'ton' ? '#5a5a5a' : t === 'dest' ? '#d2d2d2' : '#fff'; s += `<rect x="${2 + i * w}" y="26" width="${w}" height="${H}" fill="${fill}" stroke="#000" stroke-width="2.4"/>`;
+    const tx = 2 + i * w + w / 2; if (sup(m)) s += `<text x="${tx}" y="19" font-size="21" font-weight="800" text-anchor="middle">${sup(m)}</text>`;
+    s += `<text x="${tx}" y="${H + 20}" font-size="23" font-weight="800" text-anchor="middle" ${t === 'ton' ? 'fill="#fff" y="' + (H + 14) + '"' : ''}>${rotulo(m) || ''}</text>`; });
+  brancas.forEach((m, i) => { const b = m + 1; if (b <= ate && PRETA(b)) { const t = marca[b]; const x = 2 + (i + 1) * w - 24; s += `<rect x="${x}" y="26" width="48" height="${H * 0.6}" fill="#111" stroke="#000" stroke-width="2"/>`;
+    if (t) s += `<circle cx="${x + 24}" cy="${26 + H * 0.6 - 14}" r="9" fill="#fff" stroke="#000" stroke-width="2"/>`; if (sup(b)) s += `<text x="${x + 24}" y="19" font-size="19" font-weight="800" text-anchor="middle">${sup(b)}</text>`; } });
+  return s + '</svg>';
+}
+const topo = (t) => `<div class="top"><span>Robôterista ensina · ouvido e escalas</span><span>${t}</span></div>`;
+const rod = () => `<div class="rod"><span>Escola Beaterista · Robôterista Paul</span><span>página ${++n}</span></div>`;
+const paul = (arq, w = 34) => `<img class="pb" style="width:${w}mm;flex:none" src="${P}${arq}.png" alt="">`;
+const fala = (arq, txt) => `<div class="fala">${paul(arq)}<div class="balao mao">${txt}</div></div>`;
+const lin = (c = '') => `<span class="lin ${c}"></span>`;
+
+const CDUR = escalaNotas(0, 'maior'); const pagina = [];
+
+/* 1 capa */
+pagina.push(`<section class="pg capa"><img src="${LOGO}" style="width:62mm" alt=""><div class="tarja">Robôterista ensina</div><h1>Ouvido<br>e escalas</h1><div class="sub">graus · 3ª e 5ª · acordes · maior e menor · escalas</div><img class="hero" src="${P}paul-ouvindo-musica.png" alt=""><p class="mao">caderno de estudo em preto e branco pra imprimir, ler com o lápis na mão e treinar com os jogos do app.</p><p class="peq">nome: ${lin('g')} &nbsp; data: ${lin('m')}</p></section>`);
+
+/* 2 notas e teclado */
+pagina.push(`<section class="pg">${topo('1 · as notas')}<h2>As notas no teclado</h2>${fala('paul-professor', 'oi, eu sou o Paul! 7 notas se repetem em todo o teclado: dó ré mi fá sol lá si. depois do si, volta o dó, só que mais agudo.')}
+<div class="caixa sombra">${piano({ de: 60, ate: 72, marca: { 60: 'ton', 72: 'ton' } })}</div>
+<div class="duas"><div class="caixa"><h3>teclas pretas</h3><p>as pretas têm 2 nomes: <b>sustenido (#)</b> sobe meio passo e <b>bemol (♭)</b> desce meio passo. ex.: dó# = ré♭.</p></div><div class="caixa"><h3>semitom e tom</h3><p><b>semitom</b> = de uma tecla pra a vizinha (mi→fá, si→dó, dó→dó#).<br><b>tom</b> = 2 semitons (dó→ré).</p></div></div>
+<div class="caixa tracejada"><h3>exercício 1</h3><p>pinte de cinza o <b>fá</b>, o <b>sol</b> e o <b>si</b> no teclado acima. depois escreva: quantos semitons tem de mi até fá? ${lin('m')} e de fá até sol? ${lin('m')}</p></div>
+${rod()}</section>`);
+
+/* 3 escala e graus */
+pagina.push(`<section class="pg">${topo('2 · escala e graus')}<h2>Escala e graus</h2>${fala('paul-estudando', 'uma <b>escala</b> é uma escadinha de notas. cada degrau tem um número: o <b>grau</b>. o 1º degrau é a <b>tônica</b>, a nota que dá nome à escala.')}
+<div class="caixa sombra">${piano({ de: 60, ate: 72, marca: { 60: 'ton', 72: 'ton' }, sup: (m) => { const i = CDUR.indexOf(m); return i >= 0 ? `${i === 7 ? 8 : i + 1}ª` : ''; } })}<p class="peq" style="margin-top:1mm">escala de <b>dó maior</b>: dó ré mi fá sol lá si dó. os números em cima são os graus (o 8º é a tônica de novo, uma oitava acima).</p></div>
+<div class="caixa"><h3>a fórmula da escala maior</h3><table><tr><th>1ª→2ª</th><th>2ª→3ª</th><th>3ª→4ª</th><th>4ª→5ª</th><th>5ª→6ª</th><th>6ª→7ª</th><th>7ª→8ª</th></tr><tr><td>tom</td><td>tom</td><td><b>semitom</b></td><td>tom</td><td>tom</td><td>tom</td><td><b>semitom</b></td></tr></table><p class="peq" style="margin-top:1mm">essa receita (T T S T T T S) funciona a partir de qualquer nota!</p></div>
+<div class="caixa tracejada"><h3>exercício 2: escreva os graus de dó maior</h3><table><tr>${['1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª'].map((g) => `<th>${g}</th>`).join('')}</tr><tr><td>dó</td>${'<td>&nbsp;</td>'.repeat(7)}</tr></table><p class="peq" style="margin-top:2mm">agora, em <b>sol maior</b> (use a fórmula; a 7ª nota precisa de #): <br>${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')}</p></div>
+${rod()}</section>`);
+
+/* 4 terça e quinta */
+const T35 = [[0, 'dó'], [2, 'ré'], [7, 'sol'], [9, 'lá']].map(([pc, t]) => { const r = 60 + pc - (pc > 6 ? 12 : 0); return { t, pc, r, tr: r + 4, qu: r + 7 }; });
+pagina.push(`<section class="pg">${topo('3 · terça e quinta')}<h2>A 3ª e a 5ª</h2>${fala('paul-oculos', 'a 3ª e a 5ª são as notas mais importantes depois da tônica. juntas formam o acorde!')}
+<div class="caixa sombra">${piano({ de: 60, ate: 72, marca: { 60: 'ton', 64: 'dest', 67: 'dest' }, sup: (m) => ({ 60: '1ª', 64: '3ª', 67: '5ª' }[m] || '') })}<p class="peq" style="margin-top:1mm">em <b>dó maior</b>: <b>dó</b> (1ª, cinza escuro) · <b>mi</b> (3ª, cinza) · <b>sol</b> (5ª, cinza).</p></div>
+<div class="duas"><div class="caixa"><h3>como contar</h3><p><b>3ª maior</b> = 4 semitons acima da tônica.<br><b>3ª menor</b> = 3 semitons.<br><b>5ª</b> = 7 semitons.</p></div><div class="caixa"><h3>como soam</h3><p>a <b>3ª</b> dá a cor: maior soa aberta e alegre, menor soa fechada e triste.<br>a <b>5ª</b> soa firme: é o "chão" do acorde.</p></div></div>
+<div class="caixa tracejada"><h3>exercício 3: ache a 3ª e a 5ª (escala maior)</h3><table><tr><th>tônica</th><th>3ª (4 semitons)</th><th>5ª (7 semitons)</th></tr>${T35.map((x) => `<tr><td><b>${x.t}</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>`).join('')}</table><p class="peq" style="margin-top:1.5mm">dica: conte as teclas no teclado da página 1, pretas também!</p></div>
+<div class="caixa"><h3>treino de ouvido</h3><p>no app: jogo <b>"3ª ou 5ª?"</b>. o Paul toca a tônica e depois outra nota. você diz qual grau é. 12 fases no fácil e 12 no difícil.</p></div>
+${rod()}</section>`);
+
+/* 5 acordes */
+const ac = (id) => { const a = acharAcorde(id); return `<div class="acorde"><b>${a.nome} ${a.tipo}</b>${diagramaSVG(a)}</div>`; };
+pagina.push(`<section class="pg">${topo('4 · acordes')}<h2>O que é um acorde</h2>${fala('paul-teclado', 'acorde = <b>1ª + 3ª + 5ª</b> tocadas juntas, empilhadas. é só isso! são 3 notas que combinam.')}
+<div class="caixa sombra"><h3>dó maior no teclado</h3>${piano({ de: 60, ate: 67, marca: { 60: 'ton', 64: 'dest', 67: 'dest' }, sup: (m) => ({ 60: '1ª', 64: '3ª', 67: '5ª' }[m] || '') })}<p class="peq">dó + mi + sol = <b>dó maior</b>. toque as 3 teclas juntas!</p></div>
+<div class="caixa"><h3>no violão (● = dedo · ○ = corda solta · × = não toca)</h3><div class="tres" style="grid-template-columns:repeat(4,1fr)">${ac('0M')}${ac('7M')}${ac('5M')}${ac('2M')}</div></div>
+<div class="caixa tracejada"><h3>exercício 4: monte os acordes (maior)</h3><table><tr><th>acorde</th><th>1ª</th><th>3ª</th><th>5ª</th></tr>${[['ré maior', 2], ['sol maior', 7], ['fá maior', 5]].map(([t]) => `<tr><td><b>${t}</b></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`).join('')}</table></div>
+<div class="caixa"><h3>treino de ouvido</h3><p>no app: <b>"Que acorde é?"</b>. o Paul toca um acorde e você escolhe o nome entre 3 (ou 4) opções.</p></div>
+${rod()}</section>`);
+
+/* 6 maior x menor */
+const SEQ = [[2, 'maior'], [4, 'menor'], [7, 'menor'], [5, 'maior'], [9, 'menor'], [0, 'maior']];
+const nm = (pc, tipo) => acordeMidis(pc, tipo, 48).map((m) => nomeEm(m, pc, tipo)).join(' – ');
+pagina.push(`<section class="pg">${topo('5 · maior ou menor')}<h2>Maior ou menor?</h2>${fala('paul-ensinando', 'só <b>uma nota</b> muda entre o acorde maior e o menor: a <b>3ª</b>! ela desce meio tom e o clima vira.')}
+<div class="duas"><div class="caixa sombra"><h3>dó maior 😄</h3>${piano({ de: 60, ate: 67, marca: { 60: 'ton', 64: 'dest', 67: 'dest' } })}<p class="peq">dó – <b>mi</b> – sol · 3ª = 4 semitons</p></div><div class="caixa sombra"><h3>dó menor 😢</h3>${piano({ de: 60, ate: 67, marca: { 60: 'ton', 63: 'dest', 67: 'dest' } })}<p class="peq">dó – <b>mi♭</b> – sol · 3ª = 3 semitons</p></div></div>
+<div class="regra">regra de ouro: 3ª a 4 semitons da tônica = MAIOR (alegre) · 3ª a 3 semitons = MENOR (triste).</div>
+<div class="caixa tracejada"><h3>exercício 5: maior ou menor? (conte os semitons da 1ª até a 3ª)</h3><table><tr><th>notas</th><th>semitons 1ª→3ª</th><th>maior ou menor?</th></tr>${SEQ.map(([pc, tipo]) => `<tr><td><b>${nm(pc, tipo)}</b></td><td>&nbsp;</td><td><span class="cx"></span>maior &nbsp; <span class="cx"></span>menor</td></tr>`).join('')}</table></div>
+<div class="caixa"><h3>treino de ouvido</h3><p>no app: <b>"Maior ou menor?"</b>. no fácil o Paul toca acordes; no difícil, um pedacinho de escala. diga se soa <b>alegre</b> ou <b>triste</b>.</p></div>
+${rod()}</section>`);
+
+/* 7 escalas maior e menor */
+const AM = escalaNotas(9, 'menor');
+pagina.push(`<section class="pg">${topo('6 · escalas maior e menor')}<h2>Escala maior e escala menor</h2>${fala('paul-guitarra', 'a escala <b>menor</b> tem a 3ª menor (e também a 6ª e a 7ª mais baixas). o jeito mais fácil de ver: <b>lá menor</b> usa só teclas brancas!')}
+<div class="caixa sombra"><h3>lá menor natural: lá si dó ré mi fá sol lá</h3>${piano({ de: 57, ate: 69, marca: { 57: 'ton', 69: 'ton' }, rotulo: (m) => nome(m, 9, 'menor'), sup: (m) => { const i = AM.indexOf(m); return i >= 0 ? `${i === 7 ? 8 : i + 1}ª` : ''; } })}</div>
+<div class="caixa"><h3>a fórmula da escala menor natural</h3><table><tr><th>1ª→2ª</th><th>2ª→3ª</th><th>3ª→4ª</th><th>4ª→5ª</th><th>5ª→6ª</th><th>6ª→7ª</th><th>7ª→8ª</th></tr><tr><td>tom</td><td><b>semitom</b></td><td>tom</td><td>tom</td><td><b>semitom</b></td><td>tom</td><td>tom</td></tr></table></div>
+<div class="duas"><div class="caixa"><h3>maior × menor (mesma tônica)</h3><p>dó maior: dó ré <b>mi</b> fá sol <b>lá si</b> dó<br>dó menor: dó ré <b>mi♭</b> fá sol <b>lá♭ si♭</b> dó</p></div><div class="caixa"><h3>escalas "parentes"</h3><p>dó maior e <b>lá menor</b> usam as mesmas notas! só muda a tônica (por onde a escada começa).</p></div></div>
+<div class="caixa tracejada"><h3>exercício 6</h3><p>escreva as notas da escala de <b>mi menor</b> (T S T T S T T): <br>${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')}</p><p class="peq" style="margin-top:1.5mm">pista: mi menor e sol maior usam as mesmas notas!</p></div>
+${rod()}</section>`);
+
+/* 8 pentatônicas */
+const PD = escalaNotas(0, 'penta'); const PA = escalaNotas(9, 'pentamenor');
+pagina.push(`<section class="pg">${topo('7 · pentatônicas')}<h2>Pentatônicas</h2>${fala('paul-oculos', 'penta = 5! a pentatônica tem só <b>5 notas</b>. é a escala do rock, do blues e de muito solo de guitarra: quase impossível soar errado!')}
+<div class="caixa sombra"><h3>pentatônica de dó: dó ré mi sol lá</h3>${piano({ de: 60, ate: 72, marca: Object.fromEntries(PD.map((m) => [m, m % 12 === 0 ? 'ton' : 'dest'])) })}<p class="peq">cinza = notas da pentatônica. repare: sumiram o <b>fá</b> (4ª) e o <b>si</b> (7ª)!</p></div>
+<div class="caixa sombra"><h3>pentatônica menor de lá: lá dó ré mi sol</h3>${piano({ de: 57, ate: 69, marca: Object.fromEntries(PA.map((m) => [m, m % 12 === 9 ? 'ton' : 'dest'])), rotulo: (m) => nome(m, 9, 'pentamenor') })}<p class="peq">cinza = notas da pentatônica menor (tira a 2ª e a 6ª da escala menor).</p></div>
+<div class="duas"><div class="caixa"><h3>receita</h3><p><b>penta maior</b> = 1ª 2ª 3ª 5ª 6ª<br><b>penta menor</b> = 1ª 3ª 4ª 5ª 7ª<br>(graus da escala maior/menor completa)</p></div><div class="caixa tracejada"><h3>exercício 7</h3><p>escreva a pentatônica de <b>sol</b> (1ª 2ª 3ª 5ª 6ª):<br>${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')}<br><br>e a pentatônica menor de <b>mi</b> (1ª 3ª 4ª 5ª 7ª, da escala de mi menor):<br>${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')} ${lin('m')}</p></div></div>
+${rod()}</section>`);
+
+
+/* 8 escalas no violão */
+const pmA = [{ s: 6, f: 5, t: 'A', raiz: 1 }, { s: 6, f: 8, t: 'C' }, { s: 5, f: 5, t: 'D' }, { s: 5, f: 7, t: 'E' }, { s: 4, f: 5, t: 'G' }, { s: 4, f: 7, t: 'A', raiz: 1 }, { s: 3, f: 5, t: 'C' }, { s: 3, f: 7, t: 'D' }, { s: 2, f: 5, t: 'E' }, { s: 2, f: 8, t: 'G' }, { s: 1, f: 5, t: 'A', raiz: 1 }, { s: 1, f: 8, t: 'C' }];
+const cA = [{ s: 6, f: 0, t: 'E' }, { s: 6, f: 1, t: 'F' }, { s: 6, f: 3, t: 'G' }, { s: 5, f: 0, t: 'A' }, { s: 5, f: 2, t: 'B' }, { s: 5, f: 3, t: 'C', raiz: 1 }, { s: 4, f: 0, t: 'D' }, { s: 4, f: 2, t: 'E' }, { s: 4, f: 3, t: 'F' }, { s: 3, f: 0, t: 'G' }, { s: 3, f: 2, t: 'A' }, { s: 3, f: 4, t: 'B' }, { s: 2, f: 0, t: 'B' }, { s: 2, f: 1, t: 'C', raiz: 1 }, { s: 2, f: 3, t: 'D' }, { s: 1, f: 0, t: 'E' }, { s: 1, f: 1, t: 'F' }, { s: 1, f: 3, t: 'G' }];
+const abertas = [['6ª (mi grave)', 'E'], ['5ª (lá)', 'A'], ['4ª (ré)', 'D'], ['3ª (sol)', 'G'], ['2ª (si)', 'B'], ['1ª (mi agudo)', 'E']];
+const naCasa = (nota, f) => { const n = TE.N(nota); const r = TE.sobe(n, 1, f); const sol = ['dó', 'dó♯', 'ré', 'ré♯', 'mi', 'fá', 'fá♯', 'sol', 'sol♯', 'lá', 'lá♯', 'si']; return sol[r.pc]; };
+pagina.push(`<section class="pg">${topo('8 · escalas no violão')}<h2>Escalas no violão</h2>${fala('paul-guitarra', 'o braço do violão é uma "pauta" de 6 cordas e cada casa sobe <b>meio tom</b>. as <b>formas</b> das escalas se repetem: aprenda uma e mova pelo braço!')}
+<div class="caixa sombra"><h3>Dó maior em posição aberta (casas 0 a 4)</h3>${braco({ de: 0, ate: 4, marks: cA })}<p class="peq">3 notas por corda. os ● pretos são as tônicas (dó). comece na corda mais grave e suba pelas cordas.</p></div>
+<div class="caixa sombra"><h3>pentatônica menor de lá (forma 1, casas 5 a 8)</h3>${braco({ de: 4, ate: 8, marks: pmA })}<p class="peq">● preto = lá (tônica). a mesma forma na casa 8 vira <b>dó menor</b>: mova a forma e a tônica vai junto!</p></div>
+<div class="duas"><div class="caixa"><h3>as 6 cordas soltas</h3><p class="peq">da mais grave pra mais aguda: <b>mi · lá · ré · sol · si · mi</b>. cada casa sobe ½ tom; a 12ª casa é a mesma nota da corda solta, uma oitava acima.</p></div><div class="caixa tracejada"><h3>exercício 8</h3><p class="peq">que nota está na <b>5ª casa</b> de cada corda?</p><table>${abertas.map(([c]) => `<tr><td class="l">${c}</td><td>&nbsp;</td></tr>`).join('')}</table></div></div>
+${rod()}</section>`);
+
+/* 9 cromática e blues */
+const cromat = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => ['dó', 'dó♯', 'ré', 'ré♯', 'mi', 'fá', 'fá♯', 'sol', 'sol♯', 'lá', 'lá♯', 'si', 'dó'][i]);
+const blA = TE.escala('A', 'blues'); const blC = TE.escala('C', 'blues'); const blE = TE.escala('E', 'blues');
+const marcaBl = Object.fromEntries([57, 60, 62, 63, 64, 67, 69].map((m) => [m, m === 57 || m === 69 ? 'ton' : 'dest']));
+pagina.push(`<section class="pg">${topo('9 · cromática e blues')}<h2>Escala cromática e escala de blues</h2>${fala('paul-oculos', 'a <b>cromática</b> usa as 12 notas, de meio em meio tom. a <b>escala de blues</b> é a pentatônica menor com uma nota extra, a <b>blue note</b>!')}
+<div class="caixa sombra"><h3>escala cromática de dó (12 notas, todas as teclas)</h3>${piano({ de: 60, ate: 72, marca: Object.fromEntries(Array.from({ length: 13 }, (_, i) => [60 + i, i === 0 || i === 12 ? 'ton' : 'dest'])), rotulo: (m) => ['dó', '', 'ré', '', 'mi', 'fá', '', 'sol', '', 'lá', '', 'si'][((m % 12) + 12) % 12] || '', sup: (m) => String(m - 59), h: 66 })}<p class="peq">subindo, escreva com <b>sustenidos</b>: ${cromat.join(' ')}. descendo, use <b>bemóis</b>: dó si si♭ lá lá♭ sol sol♭ fá mi mi♭ ré ré♭ dó.</p></div>
+<div class="caixa sombra"><h3>escala de blues de lá: lá · dó · ré · mi♭ · mi · sol</h3>${piano({ de: 57, ate: 69, marca: marcaBl, h: 66, rotulo: (m) => ['dó', 'dó♯', 'ré', 'mi♭', 'mi', 'fá', 'fá♯', 'sol', 'sol♯', 'lá', 'lá♯', 'si'][((m % 12) + 12) % 12] })}<p class="peq">cinza = notas da pentatônica menor · a tecla preta com a bolinha (mi♭, o <b>♭5</b>) é a <b>blue note</b>: aquela nota "suja" que dá o som do blues.</p></div>
+<div class="caixa"><h3>no violão (lá, casas 5 a 8)</h3>${braco({ de: 4, ate: 8, marks: pmA.concat([{ s: 5, f: 6, t: 'E♭' }, { s: 3, f: 8, t: 'E♭' }]) })}<p class="peq">a blue note (E♭) fica na casa 6 da corda lá e na casa 8 da corda sol.</p></div>
+<div class="caixa tracejada"><h3>exercício 9</h3><p class="peq">escreva a escala de blues (fórmula: 1ª, 3ª menor, 4ª, 5ª diminuta, 5ª, 7ª menor) de:<br><b>dó:</b> ${lin('g')} &nbsp; <b>mi:</b> ${lin('g')}<br>e a escala <b>cromática</b> subindo a partir de <b>ré</b> (13 notas): ${lin('g')}</p></div>
+${rod()}</section>`);
+
+/* 10 treino com os jogos */
+const jogo = (nm, o) => `<tr><td style="text-align:left"><b>${nm}</b><br><span class="peq">${o}</span></td><td>${'<span class="cx"></span>'.repeat(6)}<br>${'<span class="cx"></span>'.repeat(6)}</td><td>${'<span class="cx"></span>'.repeat(6)}<br>${'<span class="cx"></span>'.repeat(6)}</td></tr>`;
+pagina.push(`<section class="pg">${topo('10 · treino com os jogos')}<h2>Treine com o app</h2>${fala('paul-ouvindo-musica', 'agora é treinar o ouvido! cada jogo é um mundo com <b>12 fases fáceis</b> e <b>12 difíceis</b>. acertou 60%? a próxima fase abre. marque aqui o que você já passou!')}
+<table><tr><th style="width:56mm">jogo</th><th>fácil e médio (12 fases)</th><th>difícil (12 fases)</th></tr>${jogo('3ª ou 5ª?', 'ouça e diga o grau')}${jogo('Que acorde é?', 'descubra o acorde')}${jogo('Maior ou menor?', 'alegre ou triste?')}${jogo('Escalas', 'toque a escala colorida')}</table>
+<div class="duas"><div class="caixa"><h3>dicas de ouvido</h3><p>• cante a nota antes de responder.<br>• use o "ouvir de novo" sem medo.<br>• 3ª: "doce". 5ª: "firme".<br>• maior: sorriso. menor: carinha de chuva.<br>• errou? leia a explicação, ela ensina.</p></div><div class="caixa"><h3>combine o estudo</h3><p>1. leia a página do tema.<br>2. faça o exercício a lápis.<br>3. jogue 1 fase (5 minutos).<br>4. no outro dia, repita sem olhar.</p></div></div>
+<div class="caixa tracejada"><h3>meu diário de ouvido</h3><table><tr><th>dia</th><th>jogo</th><th>fase</th><th>estrelas</th><th>aprendi…</th></tr>${'<tr><td>&nbsp;</td><td></td><td></td><td>☆ ☆ ☆</td><td></td></tr>'.repeat(5)}</table></div>
+${rod()}</section>`);
+
+/* 10 gabarito */
+const nm3 = (x) => `${nome(x.tr, x.pc, 'maior')} / ${nome(x.qu, x.pc, 'maior')}`;
+const trio = (pc) => acordeMidis(pc, 'maior', 48).map((m) => nomeEm(m, pc, 'maior')).join(' – ');
+const esc = (pc, tipo) => escalaNotas(pc, tipo).map((m) => nomeEm(m, pc, tipo)).join(' ');
+const pen = (pc, tipo) => escalaNotas(pc, tipo).slice(0, 5).map((m) => nomeEm(m, pc, tipo)).join(' ');
+pagina.push(`<section class="pg gab">${topo('gabarito')}<h2>Gabarito</h2>${fala('paul-professor', 'só olhe depois de tentar! errar faz parte: é o erro que mostra o que o cérebro ainda precisa aprender.')}
+<h3>exercício 1</h3><p>mi→fá = 1 semitom · fá→sol = 2 semitons (1 tom).</p>
+<h3>exercício 2</h3><p>dó maior: dó ré mi fá sol lá si dó · sol maior: ${esc(7, 'maior')}</p>
+<h3>exercício 3 (3ª / 5ª)</h3><p>${T35.map((x) => `${x.t}: ${nm3(x)}`).join(' &nbsp;·&nbsp; ')}</p>
+<h3>exercício 4 (1ª – 3ª – 5ª)</h3><p>ré maior: ${trio(2)} &nbsp;·&nbsp; sol maior: ${trio(7)} &nbsp;·&nbsp; fá maior: ${trio(5)}</p>
+<h3>exercício 5</h3><table>${SEQ.map(([pc, tipo]) => `<tr><td>${nm(pc, tipo)}</td><td>${tipo === 'maior' ? 4 : 3} semitons</td><td><b>${tipo}</b></td></tr>`).join('')}</table>
+<h3>exercício 6</h3><p>mi menor: ${esc(4, 'menor')}</p>
+<h3>exercício 7</h3><p>pentatônica de sol: ${pen(7, 'penta')} &nbsp;·&nbsp; pentatônica menor de mi: ${pen(4, 'pentamenor')}</p>
+<h3>exercício 8</h3><p>5ª casa: corda mi grave = lá · lá = ré · ré = sol · sol = dó · si = mi · mi agudo = lá</p>
+<h3>exercício 9</h3><p>blues de dó: ${blC.map((n) => TE.ptmin(n)).join(' ')} · blues de mi: ${blE.map((n) => TE.ptmin(n)).join(' ')} · cromática de ré: ré ré♯ mi fá fá♯ sol sol♯ lá lá♯ si dó dó♯ ré</p>
+
+<div class="caixa tracejada" style="margin-top:3mm"><h3>resumo da aula</h3><p>escala = escadinha de notas · tônica = 1ª nota · 3ª dá a cor (4 semitons = maior, 3 = menor) · 5ª é o chão (7 semitons) · acorde = 1ª + 3ª + 5ª · maior alegre, menor triste · pentatônica = 5 notas (sem a 4ª e a 7ª na maior) · cromática = 12 notas · blues = pentatônica menor + ♭5.</p></div>
+${rod()}</section>`);
+
+document.getElementById('doc').innerHTML = pagina.join('');
+await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))); await document.fonts.ready;
+window.__pronto = `${pagina.length} páginas`;
+</script></body></html>

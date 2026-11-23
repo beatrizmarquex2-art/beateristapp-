@@ -158,7 +158,7 @@ export function mount(host, opts) {
         h('li', {}, 'cada um começa com 7 cartas. jogue uma carta da mesma cor ou da mesma figura da carta da mesa.'),
         h('li', {}, 'tem carta que serve? tem que jogar. não tem? compre uma: se servir, jogue ou passe; se não servir, passa sozinho.'),
         h('li', {}, 'pular: o próximo perde a vez. inverter: muda o sentido (com 2 jogadores, vale como pular). +2: o próximo compra 2 e perde a vez.'),
-        h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa.'),
+        h('li', {}, 'curinga muda a cor. curinga +4: muda a cor e o próximo compra 4 e perde a vez, mas só vale se você não tiver a cor da mesa. não pode ser a penúltima carta (você ficaria com UNO), mas como última carta pode!'),
         h('li', {}, 'ficou com uma carta? aperte UNO! contra o computador, esquecer custa 2 cartas. com mais gente, o botão UNO! aparece pra todos: quem apertar primeiro vale. se o outro for mais rápido, quem ficou com 1 carta compra 2.'),
         h('li', {}, 'dica: segure uma carta (ou deixe o mouse parado nela) pra ver o nome da figura sem jogar.')))]),
       ...(UN ? [h('details', { class: 'jg-rules', open: true }, h('summary', {}, 'regras do UN🚫'), h('ul', {},
@@ -378,7 +378,7 @@ export function mount(host, opts) {
     const legal = C.legalCards(g, g.turn);
     if (!legal.some((x) => x.id === c.id)) {
       snd('bad'); const b = handEl.querySelector(`.cx-hc[data-id="${c.id}"]`); if (b) shake(b.firstElementChild);
-      flash(g.drawn ? 'só a carta que você comprou pode ser jogada' : c.kind === 'mais4' ? 'o +4 só vale se você não tiver a cor da mesa e ainda sobrarem 2 cartas depois dele' : dica() ? `essa não serve: a mesa é ${C.cardName(C.topOf(g))}` : 'essa carta não serve');
+      flash(g.drawn ? 'só a carta que você comprou pode ser jogada' : c.kind === 'mais4' ? (g.hands[g.turn].length === 2 ? 'o +4 não pode ser a penúltima carta (você ficaria com UNO). a última carta pode ser +4!' : 'o +4 só vale se você não tiver a cor da mesa (e não pode ser a penúltima carta; a última pode)') : dica() ? `essa não serve: a mesa é ${C.cardName(C.topOf(g))}` : 'essa carta não serve');
       return;
     }
     if (C.isWild(c)) { picking = c.id; snd('tap'); paint(); return; }

@@ -7,7 +7,7 @@ import { micToast } from '../mic-access.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { clefStaff } from '../paulta/draw.js';
 import { NIVEIS_PAUTA, NOTAS_RODADA, rodadaPauta, diatonica, nomeNota, mesmaNota, estrelasPct } from './vivo-logic.js';
-import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt } from './vivo-ui.js';
+import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt, TIMBRES, timbre, setTimbre, INSTRUMENTOS_MIC, instrumentoMic, setInstrumentoMic } from './vivo-ui.js';
 
 export function mount(host) {
   const root = h('div', { class: 'jg vv vv-pv' }); host.replaceChildren(root);
@@ -20,21 +20,23 @@ export function mount(host) {
   function tela() {
     limpa(); musicaVolta(); estado = 'menu'; const c = cfg(); const nivel = NIVEIS_PAUTA.find((n) => n.id === c.nivel); const best = getGame('paultavivo').best || {};
     const pauta = h('div', { class: 'vv-pauta', 'aria-live': 'polite' }); const msg = h('p', { class: 'vv-msg', role: 'status', 'aria-live': 'polite' }, 'leia a nota na pauta e toque ela.');
-    const conta = h('span', { class: 'vv-rod' }); const res = h('div', { class: 'vv-fim' }); const go = h('button', { type: 'button', class: 'vv-go' }, '▶ jogar');
+    const ouvirBtn = h('button', { type: 'button', class: 'vv-chip vv-de', hidden: true, onclick: () => { if (estado !== 'vez' || seq[i] == null) return; if (mic) mic.surdo(true); tocaNota(seq[i], undefined, 0.9); depois(() => { if (mic) mic.surdo(false); }, 1500); } }, '🔊 ouvir a nota'); const conta = h('span', { class: 'vv-rod' }); const res = h('div', { class: 'vv-fim' }); const go = h('button', { type: 'button', class: 'vv-go' }, '▶ jogar');
     let seq = []; let i = 0; let primeira = 0; let tentativas = 0;
     const kb = teclado({ notas: nivel.notas, nomes: c.nomes, onNota: (m) => { tocaNota(m); nota(m); } });
     const ops = h('div', { class: 'vv-ops' },
       chips('notas', NIVEIS_PAUTA.map((n) => [n.id, `${n.nome}${best[n.id] != null ? ` ${estrelasTxt(estrelasPct(best[n.id]))}` : ''}`]), c.nivel, (v) => muda({ nivel: v })),
       chips('nomes nas teclas', [[true, 'sim'], [false, 'não']], c.nomes, (v) => muda({ nomes: v })),
-      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })));
+      chips('som', TIMBRES, timbre(), (v) => { setTimbre(v); tela(); }),
+      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })),
+      c.mic ? chips('instrumento', INSTRUMENTOS_MIC.map(([id, nome]) => [id, nome]), instrumentoMic(), (v) => { setInstrumentoMic(v); tela(); }) : null);
     const desenha = (m) => { pauta.innerHTML = clefStaff('sol', diatonica(m)); };
     pauta.innerHTML = clefStaff('sol', []);
-    root.replaceChildren(ops, h('div', { class: 'vv-placar' }, conta), pauta, msg, h('div', { class: 'vv-kbwrap' }, kb.el), c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque a nota no violão, na guitarra ou no teclado. vale em qualquer oitava.') : null, go, res);
+    root.replaceChildren(ops, h('div', { class: 'vv-placar' }, conta), pauta, ouvirBtn, msg, h('div', { class: 'vv-kbwrap' }, kb.el), c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque a nota no violão, na guitarra ou no teclado. vale em qualquer oitava.') : null, go, res);
     kb.trava(true);
 
-    const proxima = () => { if (i >= seq.length) return fim(); tentativas = 0; estado = 'vez'; desenha(seq[i]); conta.textContent = `nota ${i + 1} de ${seq.length}`; msg.textContent = c.mic ? 'toque essa nota no instrumento' : 'que nota é essa? toque no teclado'; kb.trava(c.mic); };
+    const proxima = () => { if (i >= seq.length) return fim(); tentativas = 0; estado = 'vez'; ouvirBtn.hidden = false; desenha(seq[i]); conta.textContent = `nota ${i + 1} de ${seq.length}`; msg.textContent = c.mic ? 'toque essa nota no instrumento' : 'que nota é essa? toque no teclado'; kb.trava(c.mic); };
     const fim = () => {
-      estado = 'fim'; kb.trava(true); if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta();
+      estado = 'fim'; ouvirBtn.hidden = true; kb.trava(true); if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta();
       const pct = Math.round((primeira / seq.length) * 100); const est = estrelasPct(pct); const b = { ...(getGame('paultavivo').best || {}) }; if (pct > (b[nivel.id] ?? -1)) b[nivel.id] = pct; setGame('paultavivo', { best: b });
       premiar('paultavivo', est, `pv:${nivel.id}`); conta.textContent = ''; pauta.innerHTML = clefStaff('sol', []);
       res.replaceChildren(quadro(`${pct}%`, est, `${primeira} de ${seq.length} notas de primeira`, h('small', {}, '60% = 1 ★ · 80% = 2 ★ · 100% = 3 ★')));

@@ -7,41 +7,43 @@ import { silence } from '../audio.js';
 import { toast } from '../ui.js';
 import { micToast } from '../mic-access.js';
 import { musicaPausa, musicaVolta } from './musica.js';
-import { NIVEIS_COPIA, MELODIAS, MAX_SORTEIO, VIDAS, sorteio, tamanhoRodada, estrelasCopia, nomeNota, mesmaNota } from './vivo-logic.js';
-import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt } from './vivo-ui.js';
+import { NIVEIS_COPIA, MELODIAS, VIDAS, RODADAS_COPIA, sorteioDistinto, tamanhoRodada, estrelasCopia, nomeNota, mesmaNota } from './vivo-logic.js';
+import { tocaNota, somErro, chips, teclado, ouvirNotas, premiar, quadro, estrelasTxt, TIMBRES, timbre, setTimbre, INSTRUMENTOS_MIC, instrumentoMic, setInstrumentoMic } from './vivo-ui.js';
 
 const PASSO = 0.56; // s entre as notas do exemplo
-const OITO = NIVEIS_COPIA[2].notas;
+const OITO = [60, 62, 64, 65, 67, 69, 71, 72];
 
 export function mount(host) {
   const root = h('div', { class: 'jg vv vv-copia' }); host.replaceChildren(root);
   let gone = false; let mic = null; let timers = []; let estado = 'menu'; let parar = () => {};
   const depois = (fn, ms) => { timers.push(setTimeout(() => { if (!gone) fn(); }, ms)); };
   const limpa = () => { timers.forEach(clearTimeout); timers = []; if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } delete window.__vivo; };
-  const cfg = () => { const s = getGame('copia'); return { tipo: s.tipo === 'melodia' ? 'melodia' : 'sorteio', nivel: NIVEIS_COPIA.some((n) => n.id === s.nivel) ? s.nivel : 'n3', mel: MELODIAS.some((m) => m.id === s.mel) ? s.mel : MELODIAS[0].id, nomes: s.nomes !== false, mic: s.entrada === 'mic' }; };
+  const cfg = () => { const s = getGame('copia'); return { tipo: s.tipo === 'melodia' ? 'melodia' : 'sorteio', nivel: NIVEIS_COPIA.some((n) => n.id === s.nivel) ? s.nivel : 'facil', mel: MELODIAS.some((m) => m.id === s.mel) ? s.mel : MELODIAS[0].id, nomes: s.nomes !== false, mic: s.entrada === 'mic' }; };
   const muda = (patch) => { setGame('copia', patch); tela(); };
 
   function tela() {
     limpa(); musicaVolta(); estado = 'menu'; const c = cfg(); const melodia = MELODIAS.find((m) => m.id === c.mel); const nivel = NIVEIS_COPIA.find((n) => n.id === c.nivel);
     const chave = c.tipo === 'melodia' ? `m:${melodia.id}` : `s:${nivel.id}`; const melhor = (getGame('copia').best || {})[chave] || 0;
     const notasTeclado = c.tipo === 'melodia' ? OITO : nivel.notas;
-    const seq = h('p', { class: 'vv-seq', 'aria-live': 'polite' }); const msg = h('p', { class: 'vv-msg', role: 'status', 'aria-live': 'polite' }, 'o Paul toca, você copia. cada rodada tem mais notas.');
+    const seq = h('p', { class: 'vv-seq', 'aria-live': 'polite' }); const msg = h('p', { class: 'vv-msg', role: 'status', 'aria-live': 'polite' }, (c.tipo === 'melodia' ? 'o Paul toca, você copia. cada rodada tem mais notas.' : `o Paul toca ${nivel.n} notas diferentes de uma vez: copie na mesma ordem. são ${RODADAS_COPIA} sequências.`));
     const vidasEl = h('span', { class: 'vv-vidas' }); const rodEl = h('span', { class: 'vv-rod' });
     const res = h('div', { class: 'vv-fim' }); const go = h('button', { type: 'button', class: 'vv-go' }, '▶ jogar');
-    let alvo = []; let len = 0; let pos = 0; let rodada = 1; let vidas = VIDAS; let erros = 0; let feitas = 0; let spans = [];
+    let alvo = []; let len = 0; let pos = 0; let rodada = 1; let vidas = VIDAS; let erros = 0; let feitas = 0; let seqFeitas = 0; let spans = [];
     const kb = teclado({ notas: notasTeclado, nomes: true, onNota: (m) => { tocaNota(m); nota(m); } });
     const ops = h('div', { class: 'vv-ops' },
       chips('jogo', [['sorteio', 'sorteio'], ['melodia', 'música']], c.tipo, (v) => muda({ tipo: v })),
-      c.tipo === 'melodia' ? chips('música', MELODIAS.map((m) => [m.id, m.nome]), c.mel, (v) => muda({ mel: v })) : chips('notas', NIVEIS_COPIA.map((n) => [n.id, n.nome]), c.nivel, (v) => muda({ nivel: v })),
+      c.tipo === 'melodia' ? chips('música', MELODIAS.map((m) => [m.id, m.nome]), c.mel, (v) => muda({ mel: v })) : chips('dificuldade', NIVEIS_COPIA.map((n) => [n.id, n.nome]), c.nivel, (v) => muda({ nivel: v })),
       chips('ajuda', [[true, 'com nomes'], [false, 'de ouvido']], c.nomes, (v) => muda({ nomes: v })),
-      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })));
-    const placar = h('div', { class: 'vv-placar' }, rodEl, vidasEl, h('span', { class: 'vv-best' }, melhor ? `recorde: ${melhor} notas` : ''));
+      chips('som', TIMBRES, timbre(), (v) => { setTimbre(v); tela(); }),
+      chips('como tocar', [[false, 'na tela'], [true, 'no instrumento']], c.mic, (v) => muda({ entrada: v ? 'mic' : 'tela' })),
+      c.mic ? chips('instrumento', INSTRUMENTOS_MIC.map(([id, nome]) => [id, nome]), instrumentoMic(), (v) => { setInstrumentoMic(v); tela(); }) : null);
+    const placar = h('div', { class: 'vv-placar' }, rodEl, vidasEl, h('span', { class: 'vv-best' }, melhor ? (c.tipo === 'melodia' ? `recorde: ${melhor} notas` : `recorde: ${melhor} de ${RODADAS_COPIA} sequências`) : ''));
     root.replaceChildren(ops, placar, seq, msg, h('div', { class: 'vv-kbwrap' }, kb.el), c.mic ? h('p', { class: 'vv-mic' }, h('b', {}, 'microfone'), ' toque no violão, na guitarra ou no teclado, uma nota por vez. vale a nota em qualquer oitava.') : null, go, res);
 
-    const placarTxt = () => { rodEl.textContent = estado === 'menu' ? '' : `${len} de ${alvo.length} notas`; vidasEl.textContent = estado === 'menu' ? '' : `vidas: ${vidas}`; };
+    const placarTxt = () => { rodEl.textContent = estado === 'menu' ? '' : (c.tipo === 'melodia' ? `${len} de ${alvo.length} notas` : `sequência ${Math.min(seqFeitas + 1, RODADAS_COPIA)} de ${RODADAS_COPIA} · ${len} notas`); vidasEl.textContent = estado === 'menu' ? '' : `vidas: ${vidas}`; };
     const escreve = () => {
       spans = alvo.slice(0, len).map((m) => h('i', { class: 'vv-n' }, c.nomes ? nomeNota(m) : '•'));
-      seq.replaceChildren(...spans); seq.setAttribute('aria-label', c.nomes ? `notas: ${alvo.slice(0, len).map(nomeNota).join(' ')}` : `${len} notas`);
+      seq.classList.toggle('longa', len > 7); seq.replaceChildren(...spans); seq.setAttribute('aria-label', c.nomes ? `notas: ${alvo.slice(0, len).map(nomeNota).join(' ')}` : `${len} notas`);
     };
     const exemplo = () => {
       estado = 'paul'; kb.trava(true); if (mic) mic.surdo(true); pos = 0; escreve(); placarTxt(); msg.textContent = 'escuta o Paul…';
@@ -50,10 +52,10 @@ export function mount(host) {
     };
     const fim = (ganhou) => {
       estado = 'fim'; kb.trava(true); if (mic) { try { mic.stop(); } catch { /* ok */ } mic = null; } musicaVolta();
-      const est = estrelasCopia(c.tipo, feitas, alvo.length, erros); const best = { ...(getGame('copia').best || {}) }; if (feitas > (best[chave] || 0)) best[chave] = feitas; setGame('copia', { best });
+      const medida = c.tipo === 'melodia' ? feitas : seqFeitas; const est = estrelasCopia(c.tipo, medida, c.tipo === 'melodia' ? alvo.length : RODADAS_COPIA, erros); const best = { ...(getGame('copia').best || {}) }; if (medida > (best[chave] || 0)) best[chave] = medida; setGame('copia', { best });
       premiar('copia', est, `copia:${chave}`);
-      res.replaceChildren(quadro(`${feitas} notas`, est, ganhou ? (c.tipo === 'melodia' ? `você tocou ${melodia.nome} inteira!` : 'chegou ao fim: memória de ouro!') : feitas ? 'boa! na próxima vai mais longe.' : 'bora de novo: escuta com calma e canta as notas.',
-        h('small', {}, c.tipo === 'melodia' ? 'metade da música = 1 ★ · inteira = 2 ★ · inteira sem errar = 3 ★' : '4 notas = 1 ★ · 6 = 2 ★ · 8 = 3 ★')));
+      res.replaceChildren(quadro(c.tipo === 'melodia' ? `${feitas} notas` : `${seqFeitas} de ${RODADAS_COPIA}`, est, ganhou ? (c.tipo === 'melodia' ? `você tocou ${melodia.nome} inteira!` : 'copiou as 3 sequências: memória de ouro!') : (c.tipo === 'melodia' ? feitas : seqFeitas) ? 'boa! na próxima vai mais longe.' : 'bora de novo: escuta com calma e canta as notas.',
+        h('small', {}, c.tipo === 'melodia' ? 'metade da música = 1 ★ · inteira = 2 ★ · inteira sem errar = 3 ★' : 'as 3 sequências sem errar = 3 ★ · com erros = 2 ★ · pelo menos 1 sequência = 1 ★')));
       go.textContent = '↻ jogar de novo'; go.hidden = false; msg.textContent = ''; try { res.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { /* sem rolagem */ }
     };
     function nota(m) {
@@ -63,6 +65,10 @@ export function mount(host) {
         if (!c.mic) kb.acende(m, 'ok', 240); spans[pos].classList.remove('vez'); spans[pos].classList.add('ok'); if (!c.nomes) spans[pos].textContent = nomeNota(certa); pos++;
         if (pos < len) { spans[pos].classList.add('vez'); return; }
         feitas = len; estado = 'pausa';
+        if (c.tipo !== 'melodia') { // sorteio: a sequência inteira foi copiada; vem outra, com notas diferentes (não cresce)
+          seqFeitas++; if (seqFeitas >= RODADAS_COPIA) { depois(() => fim(true), 500); return; }
+          alvo = sorteioDistinto(nivel.notas, nivel.n); len = alvo.length; msg.textContent = 'isso! agora uma sequência nova…'; depois(exemplo, 1000); return;
+        }
         if (len >= alvo.length) { depois(() => fim(true), 500); return; }
         rodada++; len = tamanhoRodada(c.tipo, rodada, alvo.length); msg.textContent = 'isso! agora com mais notas…'; depois(exemplo, 900); return;
       }
@@ -73,7 +79,7 @@ export function mount(host) {
     async function comeca() {
       go.hidden = true; res.replaceChildren(); musicaPausa(); ops.hidden = true;
       if (c.mic) { msg.textContent = 'abrindo o microfone…'; try { mic = await ouvirNotas((m) => nota(m)); } catch (e) { if (gone) return; toast(`${micToast(e)} vou usar a tela`); setGame('copia', { entrada: 'tela' }); tela(); return; } if (gone || estado !== 'menu') { if (mic) { mic.stop(); mic = null; } return; } }
-      alvo = c.tipo === 'melodia' ? melodia.notas.slice() : sorteio(nivel.notas, MAX_SORTEIO); rodada = 1; vidas = VIDAS; erros = 0; feitas = 0; len = tamanhoRodada(c.tipo, 1, alvo.length);
+      alvo = c.tipo === 'melodia' ? melodia.notas.slice() : sorteioDistinto(nivel.notas, nivel.n); rodada = 1; vidas = VIDAS; erros = 0; feitas = 0; seqFeitas = 0; len = c.tipo === 'melodia' ? tamanhoRodada(c.tipo, 1, alvo.length) : alvo.length;
       exemplo();
     }
     go.addEventListener('click', comeca);
