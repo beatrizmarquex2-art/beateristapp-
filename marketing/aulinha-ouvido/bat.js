@@ -1,33 +1,27 @@
 // Peças do caderno de bateria: partitura de bateria (o mesmo motor do Beat Lab), grade de passos, linhas de pad e desenhos de postura/empunhadura.
 import { layout, toSVG } from '../../js/notation.js';
+import { pautaBat } from './pauta-bat.js';
 import { ROWS, GRIDS } from '../../js/beats.js';
 
 const IDS = ROWS.map((r) => r.id);
-/** Letras do padrão de cada peça: x = nota normal · a = acento · f = fantasma (caixa) · r = aro (caixa) · o = chimbal aberto · c = cúpula (ride) · p = flam/pivô. '.' ou ' ' = nada. */
-const DET = { a: 'a', f: 'f', r: 'r', o: 'o', c: 'c', p: 'p' };
-/**
- * Monta um compasso de 4/4 pra partitura. `spec` = { hh: 'x.x.x.x.', sn: '....x...', bd: 'x.......' } (um caractere por passo).
- * `steps` = 8 (colcheias), 12 (tercinas) ou 16 (semicolcheias). `maos` = string com D, E ou B por passo (mão direita, esquerda, bumbo) mostrada em cima.
- */
-export function compasso(steps, spec, { maos = '', acentos = '' } = {}) {
-  const rows = {}; const det = {};
-  for (const id of IDS) {
-    const s = (spec[id] || '').replace(/ /g, '').padEnd(steps, '.'); rows[id] = Array.from({ length: steps }, (_, i) => (s[i] && s[i] !== '.' ? 1 : 0));
-    s.split('').forEach((c, i) => { if (DET[c]) { det[id] = det[id] || {}; det[id][i] = DET[c]; } });
-  }
-  const m = maos.replace(/ /g, ''); const a = acentos.replace(/ /g, '');
-  return { id: 'x', name: '', style: '', bpm: 100, steps, kind: 'groove', rows, det, hands: m ? Array.from({ length: steps }, (_, i) => (m[i] && m[i] !== '.' ? m[i] : '')) : undefined, acc: a ? Array.from({ length: steps }, (_, i) => (a[i] === '>' ? 1 : 0)) : undefined };
+const IDS2 = ['cr', 'rd', 'hh', 'tt', 'mt', 'sn', 'ft', 'bd', 'hf'];
+/** Um compasso (spec por peça, 1 caractere por passo). `ho` (chimbal aberto) vira 'o' na linha do chimbal. */
+export function compasso(steps, spec, { maos = '', acentos = '', nopausa = false } = {}) {
+  const rows = {}; for (const id of IDS2) rows[id] = (spec[id] || '').replace(/ /g, '').padEnd(steps, '.').slice(0, steps);
+  if (spec.ho) { const h = (spec.ho || '').replace(/ /g, '').padEnd(steps, '.'); rows.hh = rows.hh.split('').map((c, i) => (h[i] !== '.' ? 'o' : c)).join(''); }
+  if (acentos) { const a = acentos.replace(/ /g, ''); for (const id of ['sn', 'hh', 'rd']) rows[id] = rows[id].split('').map((c, i) => (a[i] === '>' && c === 'x' ? 'a' : c)).join(''); }
+  return { steps, rows, maos: maos.replace(/ /g, ''), nopausa: !!nopausa };
 }
-/** Partitura de um compasso (SVG em preto e branco). */
-export const partitura = (beat, { w = 640, full = true } = {}) => `<div class="bat">${toSVG(layout(beat, { width: w, full }))}</div>`;
+/** Partitura de bateria (notação original: duas vozes, pausas, ligaduras). `beat` = um compasso, ou uma lista de compassos na mesma linha. */
+export const partitura = (beat, { w = 640, conta = false, clave = true } = {}) => `<div class="bat">${pautaBat({ compassos: [].concat(beat), w, conta, clave })}</div>`;
 /** Uma peça só, pra legenda. */
-export const notaSolo = (id, det = '', steps = 8) => partitura(compasso(steps, { [id]: (det || 'x') + '.......' }), { w: 220 });
+export const notaSolo = (id, det = '', steps = 8) => partitura(compasso(steps, { [id]: (det || 'x') + '.......' }, { nopausa: true }), { w: 260, clave: false });
 
-/** Grade de passos (● em cada batida). linhas = [{ nome, x: 'x.x.' }]. */
+const NOME_PECA = { chimbal: 'hh', caixa: 'sn', bumbo: 'bd', 'tom 1': 'tt', 'tom 2': 'mt', surdo: 'ft', crash: 'cr', ride: 'rd', 'chimbal ab.': 'hh', 'chimbal pé': 'hf' };
+/** (antiga grade de bolinhas) agora é uma pauta de bateria com a contagem embaixo; linha sem notas = pauta em branco pra escrever. */
 export function grade(linhas, steps = 16) {
-  const per = GRIDS[steps].perBeat; const sub = per === 2 ? ['e'] : per === 3 ? ['e', 'a'] : ['e', '&', 'a'];
-  const cab = Array.from({ length: steps }, (_, i) => (i % per === 0 ? String(i / per + 1) : sub[(i % per) - 1]));
-  return `<table class="grade"><tr><th class="gn"></th>${cab.map((c, i) => `<th class="g${i % per === 0 ? ' q' : ''}">${c}</th>`).join('')}</tr>${linhas.map((l) => { const s = (l.x || '').replace(/ /g, '').padEnd(steps, '.'); return `<tr><th class="gn">${l.nome}</th>${Array.from({ length: steps }, (_, i) => `<td class="g${i % per === 0 ? ' q' : ''}">${s[i] && s[i] !== '.' ? '●' : ''}</td>`).join('')}</tr>`; }).join('')}</table>`;
+  const spec = {}; linhas.forEach((l) => { const id = NOME_PECA[l.nome] || 'sn'; const x = (l.x || '').replace(/ /g, '').padEnd(steps, '.'); spec[id] = x; if (l.nome === 'chimbal ab.') spec[id] = x.replace(/x/g, 'o'); });
+  return partitura(compasso(steps, spec), { conta: true });
 }
 /** Contagem (como no Beat Lab): 1 e 2 e… (colcheias), 1 e & a… (semicolcheias), 1 e a… (tercinas). */
 export function contagem(steps) { const per = GRIDS[steps].perBeat; const sub = per === 2 ? ['e'] : per === 3 ? ['e', 'a'] : ['e', '&', 'a']; return Array.from({ length: steps }, (_, i) => (i % per === 0 ? String(i / per + 1) : sub[(i % per) - 1])); }

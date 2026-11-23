@@ -67,3 +67,6 @@ svg.golpe{width:44mm}
 
 .fala img[src^='img/']{filter:none}
 .tb-ponta td,.tb-ponta th{padding:.5mm 1.6mm;font-size:11px}.tb-ponta img{max-height:112mm;object-fit:contain}
+
+.bat svg.batsvg{display:block;width:100%;height:auto;max-height:42mm}.bat.peq svg.batsvg{max-height:24mm}.legenda-bat .it .bat{width:52mm}
+.padrao{break-inside:avoid;margin:0 0 .8mm}.padrao .bat svg.batsvg{max-height:34mm;width:auto;max-width:100%;margin:0 auto}.padrao p{margin:0 0 .4mm}

@@ -9,12 +9,23 @@ import { paginas as pBateria } from './bateria.js';
 import { paginas as pRitmo } from './ritmo.js';
 
 const { ex, GAB } = criaExercicios();
-const batP = pBateria(ex); const rit = pRitmo(ex);
-// o capítulo de RITMO (importante pra todos os alunos) entra logo depois de "contar 2"; os títulos são renumerados juntos
-const iC = batP.findIndex((p) => /contar 2/.test(p.titulo)); const iCoord = batP.findIndex((p) => /coordenação: somando/.test(p.titulo));
-const lista = [...batP.slice(0, iC + 1), ...rit, ...batP.slice(iC + 1)]; lista.forEach((p, i) => { p.titulo = p.titulo.replace(/^\d+ ·/, `${i + 1} ·`); });
-const nF = iC + 1; const nR = rit.length; const nCoord = iCoord + nR;
-const SECOES = [['Fundamentos (postura, empunhadura, baquetas, leitura, contar)', lista.slice(0, nF)], ['Ritmo (tempo, compasso, leitura rítmica, grooves)', lista.slice(nF, nF + nR)], ['Mãos e técnicas', lista.slice(nF + nR, nCoord)], ['Coordenação, grooves e plano', lista.slice(nCoord)]];
+import { paginas as pBateria2, leituraRitmica } from './bateria2.js';
+const batP = pBateria(ex); const ritAll = pRitmo(ex); const b2 = pBateria2(ex); const lr = leituraRitmica();
+// ritmo: só a parte conceitual (a leitura e os grooves agora são na pauta de bateria)
+const rit = [...ritAll.filter((p) => !/leitura rítmica|grooves de bateria|claves|polirritmia/.test(p.titulo)), ...lr];
+const por = (re) => batP.filter((p) => re.test(p.titulo)); const sem = (re) => batP.filter((p) => !re.test(p.titulo));
+const fund = [...por(/postura/), ...por(/leitura: /), ...por(/contar/), ...por(/empunhadura/), ...por(/baquetas|hickory|vassourinha|pad de estudo|rebote|Moeller|moeller|pontas/)];
+const usados = new Set(fund); const maos = batP.filter((p) => !usados.has(p) && /diddle|paradiddle|up e down|rimshot|pivô|ghost|acentos|tercinas na bateria|sextinhas|dinâmica/.test(p.titulo));
+maos.forEach((p) => usados.add(p));
+const coord = batP.filter((p) => !usados.has(p) && /coordenação/.test(p.titulo)); coord.forEach((p) => usados.add(p));
+const resto = batP.filter((p) => !usados.has(p) && !/chimbal em semicolcheias|linear/.test(p.titulo));
+const lista = [...fund, ...rit, ...maos, ...coord, ...b2, ...resto]; lista.forEach((p, i) => { p.titulo = p.titulo.replace(/^\d+ ·/, `${i + 1} ·`).replace(/^(?!\d+ ·)/, `${i + 1} · `); });
+// exercícios das páginas que saíram do capítulo de ritmo não entram no gabarito; e a numeração segue a ORDEM DAS PÁGINAS (não a ordem em que foram criados)
+for (let k = GAB.length - 1; k >= 0; k--) if (/monte o groove|ditado rítmico/.test(GAB[k].titulo) && GAB[k].sec === 'R') GAB.splice(k, 1);
+{ const cont = { R: 0, B: 0 }; const mapa = {}; lista.forEach((p) => { p.html = p.html.replace(/exercício ([RB])(\d+):/g, (m, L, n) => { const novo = `${L}${++cont[L]}`; mapa[`${L}${n}`] = novo; return `exercício ${novo}:`; }); });
+  GAB.forEach((g) => { g.num = mapa[g.num] || g.num; }); GAB.sort((a, b) => a.sec.localeCompare(b.sec) || Number(a.num.slice(1)) - Number(b.num.slice(1))); }
+const n1 = fund.length; const n2 = rit.length; const n3 = maos.length; const n4 = coord.length + b2.length + resto.length;
+const SECOES = [['Fundamentos (postura, leitura, contar, empunhadura, baquetas, pad, rebote)', lista.slice(0, n1)], ['Ritmo (tempo, compasso, subdivisão, leitura rítmica)', lista.slice(n1, n1 + n2)], ['Mãos e técnicas', lista.slice(n1 + n2, n1 + n2 + n3)], ['Coordenação, chimbal, bumbo, linear e plano', lista.slice(n1 + n2 + n3)]];
 
 /* páginas da frente */
 const capa = { capa: true, html: `<img src="../../assets/originals/paul-png/pra-colorir/logos-pb/beaterista-escola-de-musica-pb.png" style="width:74mm" alt="Beaterista Escola de Música"><h1 style="font-size:60px">Next Level</h1><div class="sub" style="font-size:26px">Intermediário · Bateria</div><div class="tarja">Robôterista Explica</div><img class="hero" style="width:158mm" src="img/paul-na-bateria-capa.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · pad, grooves e plano de evolução</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };
@@ -23,10 +34,12 @@ ${caixa('antes de começar: você já sabe…', `<p>${cx('tocar um rock básico 
 ${caixa('como ler os exercícios', tabela(['símbolo', 'significa'], [['<b>D</b> · <b>E</b>', 'mão direita · mão esquerda (letra em cima ou embaixo da nota)'], ['<b>B</b>', 'bumbo (pé direito)'], ['<b>MAIÚSCULA</b> · minúscula', 'maiúscula = acento (forte) · minúscula = suave'], ['x na pauta', 'pratos e chimbal'], ['bolinha', 'caixa, toms, surdo e bumbo'], ['losango', 'cúpula do ride'], ['( )', 'nota fantasma'], ['&gt;', 'acento'], ['1 e & a', 'contagem das semicolcheias (a mesma do Beat Lab do app)']]))}
 ${caixa('como estudar', `<ol style="margin:0 0 0 5mm;padding:0"><li><b>leia</b> a explicação e olhe a partitura;</li><li><b>fale a contagem</b> sem tocar, depois tocando;</li><li>comece <b>devagar</b> (♩ = 60) com metrônomo;</li><li>faça o <b>exercício tracejado</b> e confira no gabarito;</li><li>registre o andamento e só suba 5 bpm quando tocar 4 vezes sem errar.</li></ol>`)}
 <div class="caixa tracejada"><h3>materiais</h3><p class="peq">bateria (ou pad de estudo) · baquetas · metrônomo · lápis e borracha · celular pra gravar seu treino.</p></div>` };
-let nIdx = 5; const bloco = ([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11.5px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${nIdx}" style="width:10mm">${nIdx++}</td></tr>`).join('')}</table></div>`;
-const idx1 = SECOES.slice(0, 2).map(bloco).join(''); const idx2 = SECOES.slice(2).map(bloco).join('');
-const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>4 etapas</b> que se completam: o <b>corpo e a leitura</b>, o <b>ritmo</b> (importante pra todo músico), as <b>mãos</b> e a <b>coordenação</b>. estude um tema por dia!')}<div class="duas" style="align-items:start">${idx1}</div>` };
-const indice2 = { secao: 'bateria', titulo: 'índice (2/2)', html: `<h2>Índice (continuação)</h2><div class="duas" style="align-items:start">${idx2}</div><div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, B = bateria).</p></div>` };
+let nIdx = 5; const itens = ([nome, l]) => l.map((p) => `<tr><td class="l" style="font-size:11px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${nIdx}" style="width:10mm">${nIdx++}</td></tr>`);
+const bloco = (nome, linhas) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${linhas.join('')}</table></div>`;
+const L = SECOES.map((sc) => itens(sc)); const meio = Math.ceil(L[3].length / 2);
+const idx1 = [0, 1, 2].map((k) => bloco(SECOES[k][0], L[k])).join('');
+const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>4 etapas</b> que se completam: o <b>corpo e a leitura</b>, o <b>ritmo</b> (importante pra todo músico), as <b>mãos</b> e a <b>coordenação</b>. estude um tema por dia!')}<div class="duas" style="align-items:start"><div>${bloco(SECOES[0][0], L[0])}${bloco(SECOES[1][0], L[1])}</div><div>${bloco(SECOES[2][0], L[2])}</div></div>` };
+const indice2 = { secao: 'bateria', titulo: 'índice (2/2)', html: `<h2>Índice (continuação)</h2><div class="duas" style="align-items:start">${bloco(SECOES[3][0] + ' (1)', L[3].slice(0, meio))}${bloco(SECOES[3][0] + ' (2)', L[3].slice(meio))}</div><div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, B = bateria).</p></div>` };
 
 const todas = [capa, comoUsar, indice, indice2, ...SECOES.flatMap(([, l]) => l)];
 const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Next Level · Intermediário · Bateria', 'bateria');
