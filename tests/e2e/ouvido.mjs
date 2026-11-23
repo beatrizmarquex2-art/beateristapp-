@@ -14,14 +14,16 @@ const mapa = () => page.evaluate(() => [...document.querySelectorAll('button')].
 
 check('os jogos novos ficam escondidos dos alunos (só no app da Bea por enquanto)', await (async () => { await page.goto(url + '/aluno.html#/jogos'); await sleep(1500); return page.evaluate(() => ['terca', 'acorde-ouvido', 'maior-menor', 'escala', 'aula-ouvido'].every((id) => !document.querySelector(`a.jg-card[href="#/jogos/${id}"]`))); })());
 
-/* aulinha: abre sozinha na 1ª vez, em qualquer um dos jogos */
+/* o jogo abre direto no mapa; a aulinha é opcional (botão) */
 await page.goto(url + '/aluno.html#/jogos/terca'); await sleep(1500);
-check('1ª vez: abre a aulinha do Paul antes do mapa', await page.evaluate(() => !!document.querySelector('.vv-aula') && /aulinha/i.test(document.body.textContent)));
+check('abre direto no mapa com 12 fases (sem aulinha na frente)', (await nodes()) === 12 && !(await page.evaluate(() => !!document.querySelector('.vv-aula'))));
+check('o botão da aulinha (opcional) está no topo do mapa', await page.evaluate(() => [...document.querySelectorAll('button')].some((b) => b.textContent.includes('aulinha'))));
+await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.includes('aulinha')).click()); await espera(() => document.querySelector('.vv-aula'));
 await shot('aula-1');
 let passos = 0; while (await page.evaluate(() => [...document.querySelectorAll('.au-nav button')].some((b) => b.textContent.includes('próximo')))) { await page.evaluate(() => [...document.querySelectorAll('.au-nav button')].find((b) => b.textContent.includes('próximo')).click()); passos++; await sleep(120); if (passos === 2) await shot('aula-3'); }
 check('a aulinha tem 10 passos e termina com "bora jogar!"', passos === 9 && await page.evaluate(() => !![...document.querySelectorAll('button')].find((b) => b.textContent.includes('bora jogar'))));
 await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.includes('bora jogar')).click()); await espera(() => document.querySelector('.mp-node'));
-check('depois da aulinha abre o mapa com 12 fases e 2 níveis (fácil e médio · difícil)', (await nodes()) === 12 && (await page.locator('.tm-tabs button').count()) === 2);
+check('depois da aulinha volta pro mapa com 12 fases e 2 níveis (fácil e médio · difícil)', (await nodes()) === 12 && (await page.locator('.tm-tabs button').count()) === 2);
 await shot('mapa-terca');
 
 /* os 3 jogos de escolher resposta: fácil e difícil, 12 fases cada */

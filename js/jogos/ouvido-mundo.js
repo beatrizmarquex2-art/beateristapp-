@@ -43,7 +43,7 @@ export function montaMundo(host, J) {
         onclick: () => { if (!ok) { toast('conclua as 12 fases do fácil e médio pra abrir o difícil', { ms: 3400 }); return; } nivel = id; setGame(J.id, { nivel }); mapa(); } }, `${ok ? '' : '🔒 '}${i + 1} · ${nome}`); }));
     const total = fases.reduce((t, f) => t + estOf(nivel, f.num), 0);
     root.replaceChildren(h('p', { class: 'tm-dica' }, `${J.nome} · ${J.sub}`),
-      h('div', { class: 'vv-aulabar' }, h('button', { type: 'button', class: `btn small${aulaVista() ? ' ghost' : ' primary'}`, onclick: () => aulinha(mapa) }, h('img', { class: 'fx-pergunta-p', src: corSrc('professor'), alt: '', draggable: 'false' }), aulaVista() ? ' rever a aulinha' : ' comece pela aulinha!')), box);
+      h('div', { class: 'vv-aulabar' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => aulinha(mapa) }, h('img', { class: 'fx-pergunta-p', src: corSrc('professor'), alt: '', draggable: 'false' }), ' ver a aulinha (opcional)')), box);
     const nomeNivel = NIVEIS.find((n) => n.id === nivel).nome;
     off = mountProgressionMap(box, { gameId: `${J.id}-${nivel}`, levels, profileId: J.id, unitName: 'Fase', tier: 0, stars: { have: total, max: fases.length * 3 },
       theme: temaDoMundo(J.tema, `${J.nome} · ${nomeNivel}`, J.regioes), starsOf: (id) => estOf(nivel, Number(id.split(':')[1])), unlockedOf: (id) => aberta(nivel, Number(id.split(':')[1])), lockedMsg: 'ganhe 1 estrela na fase anterior (acerte 60%)',
@@ -75,7 +75,7 @@ export function montaMundo(host, J) {
         h('button', { class: `btn${prox ? '' : ' primary'}`, type: 'button', onclick: () => joga(nv, f) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   }
 
-  if (!aulaVista()) aulinha(mapa); else mapa();
+  mapa(); // abre direto no mapa; a aulinha é opcional (botão no topo do mapa)
   return {
     inProgress: () => jogando, restart: () => { if (!gone) mapa(); },
     pause: () => { if (jogando) mapa(); },

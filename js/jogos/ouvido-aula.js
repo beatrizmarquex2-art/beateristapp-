@@ -32,14 +32,14 @@ export function aulaOuvido(host, { onFim, onPular, textoFim = 'bora jogar!' } = 
   const say = h('p', { class: 'au-say', 'aria-live': 'polite' }); const body = h('div', { class: 'au-body' }); const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' });
   const btn = (t, fn, cls = 'kd-btn') => h('button', { type: 'button', class: cls, onclick: fn }, t);
   const ouvir = (txt, midis, o) => btn(`▶ ${txt}`, () => { silence(); toca(midis, o); }, 'kd-btn kd-listen');
-  const tons = (a) => h('div', { class: 'au-center' }, ...a.map((m) => h('i', { class: 'vv-n vv-nota-aula', style: `--nc:${corNota(m)}` }, nomeC(m))));
+  const tons = (a) => h('div', { class: 'vv-notas-row' }, ...a.map((m) => h('i', { class: 'vv-n vv-nota-aula', style: `--nc:${corNota(m)}` }, nomeC(m))));
   const SLIDES = [
     { mood: 'wave', say: 'oi, eu sou o Paul! antes dos jogos de ouvido, vamos entender as notas de perto: graus, acordes e escalas.', make: () => h('div', { class: 'au-box' },
       h('p', {}, 'uma ', h('b', {}, 'escala'), ' é uma escadinha de notas. a primeira é a ', h('b', {}, 'tônica'), ' (a nota que dá nome à escala: em dó maior, é o dó).'),
       tecladoCores((m) => { }, null), h('p', { class: 'muted' }, 'toque nas teclas: cada nota tem a sua cor, igual nos jogos.')) },
     { mood: 'point', say: 'cada nota da escala tem um número, o grau: 1ª, 2ª, 3ª… até a oitava (que é a tônica de novo, mais aguda).', make: () => {
       const notas = escalaNotas(0, 'maior'); const info = h('p', { class: 'au-name' }, 'toque numa nota pra ver o grau');
-      return h('div', { class: 'au-box' }, h('div', { class: 'au-center' }, ...notas.map((m, i) => h('button', { type: 'button', class: 'vv-n vv-nota-aula', style: `--nc:${corNota(m)}`, onclick: () => { silence(); tocaNota(m); info.textContent = i === 7 ? '8ª: a tônica de novo, uma oitava acima' : `${i + 1}ª nota: ${nomeC(m)}`; } }, h('small', {}, `${i + 1}ª`), nomeC(m)))), info, ouvir('ouvir a escala de dó', notas, { passo: 0.42, dur: 0.5 })); } },
+      return h('div', { class: 'au-box' }, h('div', { class: 'vv-notas-row' }, ...notas.map((m, i) => h('button', { type: 'button', class: 'vv-n vv-nota-aula', style: `--nc:${corNota(m)}`, onclick: () => { silence(); tocaNota(m); info.textContent = i === 7 ? '8ª: a tônica de novo, uma oitava acima' : `${i + 1}ª nota: ${nomeC(m)}`; } }, h('small', {}, `${i + 1}ª`), nomeC(m)))), info, ouvir('ouvir a escala de dó', notas, { passo: 0.42, dur: 0.5 })); } },
     { mood: 'cool', say: 'a 3ª e a 5ª são as notas mais importantes depois da tônica: elas formam o acorde!', make: () => h('div', { class: 'au-box' }, tecladoCores(null, [60, 64, 67]),
       h('p', {}, 'em dó: ', h('b', {}, 'dó (1ª)'), ' · ', h('b', {}, 'mi (3ª)'), ' · ', h('b', {}, 'sol (5ª)'), '.'),
       h('div', { class: 'row kd-modes' }, ouvir('dó → mi (3ª)', [60, 64], { passo: 0.9 }), ouvir('dó → sol (5ª)', [60, 67], { passo: 0.9 })),

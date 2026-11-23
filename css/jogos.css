@@ -2016,3 +2016,8 @@ body.bv-aberta { overflow: hidden; }
 .vv-livre{display:grid;gap:10px}.vv-livre>.vv-ops{display:grid;gap:4px;padding:8px;background:var(--vv-papel);border:2px solid var(--vv-ink);box-shadow:4px 4px 0 var(--vv-navy)}
 .vv-aula .vv-teclado{background:var(--vv-papel);padding:6px;border:2px solid var(--vv-ink)}
 .vv-aula svg.au-braco{width:100%;max-width:420px;height:auto;display:block;margin:4px auto}
+/* aulinha de ouvido e escalas: cartão claro que se lê em qualquer tema (inclusive o escuro da Bea) */
+.vv-aula{background:#fffaf0;color:#16233d;border:2.5px solid #16233d;border-radius:14px;padding:12px;box-shadow:4px 4px 0 #17365b}
+.vv-aula .kx-pagetitle{font-size:26px;color:#8e1b2c;text-shadow:none}
+.vv-aula .au-say,.vv-aula .au-box,.vv-aula .au-box p,.vv-aula .au-bubble{color:#16233d}
+.vv-notas-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
