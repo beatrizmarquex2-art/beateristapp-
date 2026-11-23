@@ -51,14 +51,14 @@ export function pauta({ clef = 'sol', notas = [], acordes = null, arm = null, w 
   const cols = (acordes || notas.map((n) => [n])).map((c) => c.map((n) => (typeof n === 'string' ? { p: n, d: 'q' } : { d: 'q', ...n })));
   const ks = arm && arm.n ? (arm.tipo === '♯' ? (clef === 'sol' ? SUST_TREBLE : SUST_BASS) : (clef === 'sol' ? BEM_TREBLE : BEM_BASS)).slice(0, arm.n) : [];
   const chaveAcc = {}; ks.forEach(([l]) => { chaveAcc[l] = arm.tipo === '♯' ? 1 : -1; });
-  let x0 = 84 + ks.length * 13; if (compasso) x0 += 26; x0 += 18;
+  const off = clef === 'fa' ? 20 : 0; let x0 = 84 + off + ks.length * 13; if (compasso) x0 += 26; x0 += 18;
   const n = Math.max(cols.length, 1); const passoX = (w - x0 - 22) / n;
   let s = `<svg class="pauta" viewBox="0 ${Y0} ${w} ${H + 4}" role="img">`;
   for (let i = 0; i < 5; i++) s += `<line x1="14" y1="${yn(i * 2)}" x2="${w - 10}" y2="${yn(i * 2)}" stroke="${INK}" stroke-width="1.8"/>`;
   s += `<line x1="14" y1="${yn(0)}" x2="14" y2="${yn(8)}" stroke="${INK}" stroke-width="2"/><line x1="${w - 10}" y1="${yn(0)}" x2="${w - 10}" y2="${yn(8)}" stroke="${INK}" stroke-width="3.2"/>`;
   s += clef === 'sol' ? TREBLE(46).replace(/#1b1818/g, INK) : BASS(46).replace(/#1b1818/g, INK);
-  ks.forEach(([l, o], i) => { const y = yn(passo(clef, { l, o })); s += `<text x="${78 + i * 13}" y="${y + 9}" font-size="30" font-family="'DejaVu Sans',sans-serif" text-anchor="middle">${arm.tipo}</text>`; });
-  if (compasso) { const [a, b] = compasso.split('/'); const cxp = 80 + ks.length * 13 + 14; s += `<text x="${cxp}" y="${yn(6) + 2}" font-size="34" font-family="Anton,Impact" text-anchor="middle">${a}</text><text x="${cxp}" y="${yn(2) + 2}" font-size="34" font-family="Anton,Impact" text-anchor="middle">${b}</text>`; }
+  ks.forEach(([l, o], i) => { const y = yn(passo(clef, { l, o })); s += `<text x="${78 + off + i * 13}" y="${y + 9}" font-size="30" font-family="'DejaVu Sans',sans-serif" text-anchor="middle">${arm.tipo}</text>`; });
+  if (compasso) { const [a, b] = compasso.split('/'); const cxp = 80 + off + ks.length * 13 + 14; s += `<text x="${cxp}" y="${yn(6) + 2}" font-size="34" font-family="Anton,Impact" text-anchor="middle">${a}</text><text x="${cxp}" y="${yn(2) + 2}" font-size="34" font-family="Anton,Impact" text-anchor="middle">${b}</text>`; }
   cols.forEach((col, i) => {
     const x = x0 + passoX * i + passoX / 2; const sts = []; let prev = null; let desloca = false;
     col.slice().sort((a, b) => passo(clef, parseNota(a.p)) - passo(clef, parseNota(b.p))).forEach((no) => {
