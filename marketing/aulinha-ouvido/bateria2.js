@@ -114,3 +114,8 @@ export function leituraRitmica() {
 export function empunhaduraPratica(ex) {
   return { secao: S, titulo: 'empunhadura na prática', html: `<h2>Empunhadura na prática</h2><img src="img/empunhadura-pratica.png" style="width:128mm;display:block;margin:0 auto" alt="Empunhadura: fulcro, dedos, mãos simétricas e ângulos">${caixa('como ler a ilustração', '<p class="peq"><b>quadro de cima:</b> a baqueta apoiada no <b>fulcro</b>, entre o polegar e o indicador · <b>três círculos:</b> polegar e indicador pinçando, os outros dedos envolvendo por baixo e a mão fechada vista de frente · <b>quadros do meio:</b> as duas mãos <b>simétricas</b> (matched grip), com as baquetas em "V" · <b>três quadros de baixo:</b> a mão em ângulos diferentes: o pulso gira e a baqueta acompanha, sempre solta · <b>baquetas cruzadas:</b> cuidado para não bater uma na outra nem apertar demais.</p>')}` };
 }
+
+/** Página com o infográfico da Bea "Como segurar as baquetas" (pegada relaxada, fulcro, dedos, certo × errado). */
+export function comoSegurar() {
+  return { secao: S, titulo: 'como segurar as baquetas', html: `<h2>Como segurar as baquetas</h2><img src="img/como-segurar-baquetas.png" style="width:152mm;display:block;margin:0 auto;border:2px solid #000" alt="Como segurar as baquetas: pegada relaxada, fulcro, dedos, certo e errado"><p class="peq" style="text-align:center;margin-top:2mm">use esta página como <b>checklist</b> antes de cada estudo: se algum item do "errado" aparecer, solte a mão e recomece mais devagar.</p>` };
+}

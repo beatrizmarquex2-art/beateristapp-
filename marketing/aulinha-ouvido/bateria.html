@@ -9,12 +9,12 @@ import { paginas as pBateria } from './bateria.js';
 import { paginas as pRitmo } from './ritmo.js';
 
 const { ex, GAB } = criaExercicios();
-import { paginas as pBateria2, leituraRitmica, empunhaduraPratica } from './bateria2.js';
+import { paginas as pBateria2, leituraRitmica, empunhaduraPratica, comoSegurar } from './bateria2.js';
 const batP = pBateria(ex); const ritAll = pRitmo(ex); const b2 = pBateria2(ex); const lr = leituraRitmica();
 // ritmo: só a parte conceitual (a leitura e os grooves agora são na pauta de bateria)
 const rit = [...ritAll.filter((p) => !/leitura rítmica|grooves de bateria|claves|polirritmia/.test(p.titulo)), ...lr];
 const por = (re) => batP.filter((p) => re.test(p.titulo)); const sem = (re) => batP.filter((p) => !re.test(p.titulo));
-const fund = [...por(/postura/), ...por(/leitura: /), ...por(/contar/), ...por(/empunhadura/), empunhaduraPratica(ex), ...por(/baquetas|hickory|vassourinha|pad de estudo|rebote|Moeller|moeller|pontas/)];
+const fund = [...por(/postura/), ...por(/leitura: /), ...por(/contar/), ...por(/empunhadura/), comoSegurar(), empunhaduraPratica(ex), ...por(/baquetas|hickory|vassourinha|pad de estudo|rebote|Moeller|moeller|pontas/)];
 const usados = new Set(fund); const maos = batP.filter((p) => !usados.has(p) && /diddle|paradiddle|up e down|rimshot|pivô|ghost|acentos|tercinas na bateria|sextinhas|dinâmica/.test(p.titulo));
 maos.forEach((p) => usados.add(p));
 const coord = batP.filter((p) => !usados.has(p) && /coordenação/.test(p.titulo)); coord.forEach((p) => usados.add(p));
