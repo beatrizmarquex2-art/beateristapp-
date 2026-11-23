@@ -6,23 +6,29 @@
 <script type="module">
 import { P, LOGO, paul, fala, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo } from './lib.js';
 import { paginas as pBateria } from './bateria.js';
+import { paginas as pRitmo } from './ritmo.js';
 
 const { ex, GAB } = criaExercicios();
-const bat = pBateria(ex);
-const SECOES = [['Fundamentos (postura, empunhadura, leitura, contagem)', bat.slice(0, 15)], ['Mãos e técnicas', bat.slice(15, 29)], ['Coordenação, grooves e plano', bat.slice(29)]];
+const batP = pBateria(ex); const rit = pRitmo(ex);
+// o capítulo de RITMO (importante pra todos os alunos) entra logo depois de "contar 2"; os títulos são renumerados juntos
+const iC = batP.findIndex((p) => /contar 2/.test(p.titulo)); const iCoord = batP.findIndex((p) => /coordenação: somando/.test(p.titulo));
+const lista = [...batP.slice(0, iC + 1), ...rit, ...batP.slice(iC + 1)]; lista.forEach((p, i) => { p.titulo = p.titulo.replace(/^\d+ ·/, `${i + 1} ·`); });
+const nF = iC + 1; const nR = rit.length; const nCoord = iCoord + nR;
+const SECOES = [['Fundamentos (postura, empunhadura, baquetas, leitura, contar)', lista.slice(0, nF)], ['Ritmo (tempo, compasso, leitura rítmica, grooves)', lista.slice(nF, nF + nR)], ['Mãos e técnicas', lista.slice(nF + nR, nCoord)], ['Coordenação, grooves e plano', lista.slice(nCoord)]];
 
 /* páginas da frente */
 const capa = { capa: true, html: `<img src="${LOGO}" style="width:62mm" alt=""><div class="tarja">Robôterista ensina</div><h1>Bateria</h1><div class="sub">intermediário e avançado</div><img class="hero" style="width:96mm" src="img/paul-na-bateria.png" alt=""><p class="mao">caderno de estudo em preto e branco · exercícios com gabarito · pad, grooves e plano de evolução</p><p class="peq">nome: ${lin('g')} &nbsp; início: ${lin('m')} &nbsp; fim: ${lin('m')}</p>` };
-const comoUsar = { secao: 'bateria', titulo: 'como usar', html: `<h2>Como usar este caderno</h2>${fala('paul-bateria', 'este é o caderno de <b>bateria</b> do nível intermediário e avançado. aqui você cuida da <b>postura</b>, aperfeiçoa as <b>mãos</b> (rudimentos, técnicas), ganha <b>coordenação</b> e monta <b>grooves</b> de verdade.')}
+const comoUsar = { secao: 'bateria', titulo: 'como usar', html: `<h2>Como usar este caderno</h2>${fala('paul-bateria', 'este é o caderno de <b>bateria</b> do nível intermediário e avançado. aqui você cuida da <b>postura</b>, aperfeiçoa as <b>mãos</b> (rudimentos, técnicas), ganha <b>coordenação</b> e monta <b>grooves</b> de verdade. ele inclui o capítulo de <b>ritmo</b> (compasso, subdivisão, síncope, tercinas e leitura rítmica), que todo músico precisa dominar.')}
 ${caixa('antes de começar: você já sabe…', `<p>${cx('tocar um rock básico (chimbal, caixa e bumbo)')}<br>${cx('contar 1 2 3 4 em voz alta')}<br>${cx('ler semínimas e colcheias')}<br>${cx('tocar singles (mão a mão) no pad')}</p><p class="peq">se faltou algum, comece pelo método da Beaterista (aulinhas de bateria e Hero Drum no app).</p>`)}
 ${caixa('como ler os exercícios', tabela(['símbolo', 'significa'], [['<b>D</b> · <b>E</b>', 'mão direita · mão esquerda (letra em cima ou embaixo da nota)'], ['<b>B</b>', 'bumbo (pé direito)'], ['<b>MAIÚSCULA</b> · minúscula', 'maiúscula = acento (forte) · minúscula = suave'], ['x na pauta', 'pratos e chimbal'], ['bolinha', 'caixa, toms, surdo e bumbo'], ['losango', 'cúpula do ride'], ['( )', 'nota fantasma'], ['&gt;', 'acento'], ['1 e & a', 'contagem das semicolcheias (a mesma do Beat Lab do app)']]))}
 ${caixa('como estudar', `<ol style="margin:0 0 0 5mm;padding:0"><li><b>leia</b> a explicação e olhe a partitura;</li><li><b>fale a contagem</b> sem tocar, depois tocando;</li><li>comece <b>devagar</b> (♩ = 60) com metrônomo;</li><li>faça o <b>exercício tracejado</b> e confira no gabarito;</li><li>registre o andamento e só suba 5 bpm quando tocar 4 vezes sem errar.</li></ol>`)}
 <div class="caixa tracejada"><h3>materiais</h3><p class="peq">bateria (ou pad de estudo) · baquetas · metrônomo · lápis e borracha · celular pra gravar seu treino.</p></div>` };
-const indice = { secao: 'bateria', titulo: 'índice', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>3 etapas</b> que se completam. primeiro o <b>corpo e a leitura</b>, depois as <b>mãos</b> e por fim a <b>coordenação</b>. estude um tema por dia!')}
-<div class="tres" style="grid-template-columns:repeat(3,1fr);align-items:start">${(() => { let n = 4; return SECOES.map(([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11.5px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${n}" style="width:10mm">${n++}</td></tr>`).join('')}</table></div>`).join(''); })()}</div>
-<div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (B1, B2…).</p></div>` };
+let nIdx = 5; const bloco = ([nome, l]) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${l.map((p) => `<tr><td class="l" style="font-size:11.5px">${(p.html.match(/<h2>(.*?)<\/h2>/) || [0, p.titulo])[1].replace(/<[^>]+>/g, '')}</td><td class="ind" data-ref="${nIdx}" style="width:10mm">${nIdx++}</td></tr>`).join('')}</table></div>`;
+const idx1 = SECOES.slice(0, 2).map(bloco).join(''); const idx2 = SECOES.slice(2).map(bloco).join('');
+const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>4 etapas</b> que se completam: o <b>corpo e a leitura</b>, o <b>ritmo</b> (importante pra todo músico), as <b>mãos</b> e a <b>coordenação</b>. estude um tema por dia!')}<div class="duas" style="align-items:start">${idx1}</div>` };
+const indice2 = { secao: 'bateria', titulo: 'índice (2/2)', html: `<h2>Índice (continuação)</h2><div class="duas" style="align-items:start">${idx2}</div><div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, B = bateria).</p></div>` };
 
-const todas = [capa, comoUsar, indice, ...SECOES.flatMap(([, l]) => l)];
+const todas = [capa, comoUsar, indice, indice2, ...SECOES.flatMap(([, l]) => l)];
 const doc = document.getElementById('doc'); doc.innerHTML = monta(todas, 'Escola Beaterista · Robôterista Paul · bateria', 'bateria');
 await pronto(); // imagens e fontes carregadas ANTES de medir as páginas
 
@@ -46,10 +52,10 @@ function ajusta(pg) {
 [...document.querySelectorAll('.pg:not(.capa)')].forEach(ajusta);
 
 /* gabarito: preenche página por página, medindo o que cabe */
-const nomeSec = { B: 'bateria' };
+const nomeSec = { R: 'ritmo', B: 'bateria' };
 let nPag = todas.length;
 const novaPag = (t) => { nPag++; const s = document.createElement('section'); s.className = 'pg'; s.innerHTML = `${topo('gabarito', t)}<h2>Gabarito</h2><div class="gabcols"></div><div class="rod"><span>Escola Beaterista · Robôterista Paul · bateria</span><span>página ${nPag}</span></div>`; doc.appendChild(s); return s; };
-for (const sec of ['B']) {
+for (const sec of ['R', 'B']) {
   let pag = novaPag(`gabarito · ${nomeSec[sec]}`); let cols = pag.querySelector('.gabcols');
   for (const g of GAB.filter((x) => x.sec === sec)) {
     const d = document.createElement('div'); d.className = 'gi'; d.innerHTML = `<b class="n">${g.num} · ${g.titulo}</b><div>${g.resp}</div>${g.porque ? `<div class="porque"><i>por quê:</i> ${g.porque}</div>` : ''}`; cols.appendChild(d);
