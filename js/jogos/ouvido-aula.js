@@ -14,7 +14,7 @@ function tecladoCores(onNota, marca) {
   kb.el.querySelectorAll('[data-midi]').forEach((b) => { const m = Number(b.dataset.midi); b.style.setProperty('--nc', corNota(m)); if (marca && !marca.includes(m)) b.classList.add('apagada'); });
   return kb.el;
 }
-export function aulaOuvido(host, { onFim, onPular } = {}) {
+export function aulaOuvido(host, { onFim, onPular, textoFim = 'bora jogar!' } = {}) {
   let step = 0; const bot = robo({ mood: 'wave', size: 92 });
   const say = h('p', { class: 'au-say', 'aria-live': 'polite' }); const body = h('div', { class: 'au-body' }); const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' });
   const btn = (t, fn, cls = 'kd-btn') => h('button', { type: 'button', class: cls, onclick: fn }, t);
@@ -46,7 +46,7 @@ export function aulaOuvido(host, { onFim, onPular } = {}) {
       h('p', {}, h('b', {}, 'pentatônica menor de lá:'), ' lá dó ré mi sol'), tons(Pm), ouvir('ouvir', Pm, { passo: 0.38, dur: 0.45 })); } },
     { mood: 'cheer', say: 'pronto! nos jogos eu toco e você responde (ou toca a escala). cada fase tem 6 a 12 rodadas: acerte 60% pra abrir a próxima!', make: () => h('div', { class: 'au-box au-center' },
       h('p', {}, 'resumo: escala = escadinha de notas · tônica = 1ª nota · 3ª dá a cor (maior alegre, menor triste) · 5ª é o chão · acorde = 1ª + 3ª + 5ª · pentatônica = 5 notas.'),
-      btn('bora jogar!', () => { silence(); onFim && onFim(); }, 'kd-btn kx-go')) },
+      btn(textoFim, () => { silence(); onFim && onFim(); }, 'kd-btn kx-go')) },
   ];
   const draw = () => {
     silence(); const s = SLIDES[step]; bot.set(s.mood, ''); say.textContent = s.say;

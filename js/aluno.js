@@ -245,7 +245,7 @@ function estudosView(view) {
   const duplo = h('div', { class: 'hj-tile hj-duplo', role: 'group', 'aria-label': 'acordes e ritmos' }, h('img', { class: 'hj-tp', src: corSrc('guitarra'), alt: '', draggable: 'false', decoding: 'async' }), h('b', {}, 'acordes e ritmos'),
     h('span', { class: 'hj-duplo-b' }, h('a', { href: '#/estudos/acordes/violao' }, 'acordes'), h('a', { href: '#/estudos/ritmos' }, 'ritmos')));
   const chips = h('div', { class: 'hj-exp' }, h('h2', {}, 'estude agora'),
-    h('div', { class: 'hj-big' }, tile('#/dicionario', 'lendo-partitura', 'dicionário musical', 'busque um termo', 'dicionario'), tile('#/estudos/aulas', 'professor', 'robôterista ensina', 'teoria, bateria, teclado e violão', 'aulas'), duplo, tile('#/jogos/relatorio', 'oculos', 'jogos ensinam', 'pra que serve cada jogo', 'ensinam')),
+    h('div', { class: 'hj-big' }, tile('#/dicionario', 'lendo-partitura', 'dicionário musical', 'busque um termo', 'dicionario'), tile('#/estudos/aulas', 'professor', 'robôterista ensina', 'teoria, bateria, teclado e violão', 'aulas'), duplo, tile('#/estudos/ouvido', 'ouvindo', 'ouvido e escalas', 'graus, acordes, maior e menor', 'ouvido'), tile('#/jogos/relatorio', 'oculos', 'jogos ensinam', 'pra que serve cada jogo', 'ensinam')),
     h('div', { class: 'hj-chips' }, ...[['#/estudos/dicas', 'todas as dicas'], ['#/estudos/curiosidades', 'todas as curiosidades']].map(([href, nome]) => h('a', { class: `hj-chip${lock(href) ? ' locked' : ''}`, href, 'aria-label': lock(href) ? `${nome}, só pra alunos com código` : nome }, `${nome}${lock(href) ? ' 🔒' : ''}`))));
   const sorte = h('div', { class: 'hj-roleta' }, h('span', { 'aria-hidden': 'true' }, iconePaul('roleta-paul', 34)), h('b', { class: 'hj-rt' }, 'a cada 15 ★ você ganha um giro na roleta'));
   view.append(h('div', { class: 'pad-x hj', style: 'display:grid;gap:11px' }, h('div', { class: 'hj-top' }, h('h1', {}, 'ESTUDOS'), h('span', {}, `${DIAS[new Date().getDay()]}, bora?`)), hero, chips, sorte));
@@ -268,6 +268,13 @@ function aulasView(view) {
   view.append(banner('Robôterista ensina', 'ouça, entenda e toque'), h('img', { class: 'est-logo-paul', src: LOGO_PAUL, alt: 'Robôterista Paul', draggable: 'false', decoding: 'async' }), h('div', { class: 'pad-x', style: 'display:grid;gap:14px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'),
     h('h2', { class: 'al-sec' }, 'teoria · 150 aulinhas'), ...cartoesDosTemas(),
     h('h2', { class: 'al-sec' }, 'instrumentos · 90 aulinhas'), ...inst));
+}
+/** Aulinha do Paul "ouvido e escalas" dentro do Estudos (a mesma dos jogos de ouvido): graus, 3ª e 5ª, acordes, maior e menor, escalas. */
+function ouvidoEstudoView(view) {
+  const box = h('div', { class: 'kd-game' }); let off = null; let dead = false;
+  view.append(banner('Ouvido e escalas', 'graus, acordes e escalas'), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, h('a', { class: 'jg-link', href: '#/estudos' }, '‹ estudos'), box));
+  import('./jogos/ouvido-aula.js').then((m) => { if (!dead) off = m.aulaOuvido(box, { textoFim: 'voltar pro Estudos', onFim: () => { try { localStorage.setItem('bt-aula-ouvido', '1'); } catch { /* sem armazenamento */ } location.hash = '#/estudos'; } }); });
+  return () => { dead = true; if (typeof off === 'function') off(); };
 }
 /** Curiosidades de músicos: uma por vez, com "outra" e "anterior". Conta pra meta do dia. */
 /** Pergunta rápida depois de ler a curiosidade: "que instrumento essa pessoa toca?" (1 ★, uma vez por curiosidade). */
@@ -504,6 +511,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'dicas') c = dicasEstudoView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'aulas') c = r.parts[1] ? (AULAS[r.parts[1]] ? teoriaBasica.mount(view, [r.parts[1]], { aoFim: () => marcarVisto('aulas') }) : (location.hash = '#/estudos/aulas', null)) : aulasView(view);
     else if (r.name === 'estudos' && r.parts[0] === 'curiosidades') curiosidadesView(view);
+    else if (r.name === 'estudos' && r.parts[0] === 'ouvido') c = ouvidoEstudoView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
     else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
