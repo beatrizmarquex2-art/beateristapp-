@@ -4,8 +4,9 @@
 <style>.gabcols{columns:2;column-gap:7mm;flex:1;overflow:hidden}.gi{break-inside:avoid;margin-bottom:2.5mm;border-bottom:1px dotted #000;padding-bottom:1.5mm;font-size:11.5px;line-height:1.35}.gi b.n{font:400 12px 'Special Elite',monospace}.gi svg.ritmo,.gi svg.pauta{max-height:24mm}.gi table.grade th,.gi table.grade td{height:4.8mm;font-size:9px}.gi .gab td,.gi .gab th{font-size:10px;padding:.8mm 1.4mm}.gi table td,.gi table th{font-size:10.5px;padding:.8mm 1.4mm}</style></head>
 <body><div id="doc"></div>
 <script type="module">
-import { P, LOGO, paul, fala, fala2, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo } from './lib.js';
+import { P, LOGO, paul, fala, fala2, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo, medePreenchimento } from './lib.js';
 import { paginas as pRitmo } from './ritmo.js';
+import { preenche } from './preenche.js';
 import { paginas as pMelodia } from './melodia.js';
 import { paginas as pHarmonia } from './harmonia.js';
 
@@ -46,6 +47,7 @@ function ajusta(pg) {
   ajusta(nova);
 }
 [...document.querySelectorAll('.pg:not(.capa)')].forEach(ajusta);
+const preenchidas = preenche(document, { musica: true });
 
 /* gabarito: preenche página por página, medindo o que cabe */
 const nomeSec = { R: 'ritmo', M: 'melodia', H: 'harmonia' };
@@ -65,5 +67,5 @@ if (document.querySelectorAll('.pg').length % 2) { const a = document.createElem
 document.querySelectorAll('td.ind').forEach((td) => { const alvo = document.querySelector(`.pg[data-k="${td.dataset.ref - 1}"]`); if (alvo) td.textContent = [...document.querySelectorAll('.pg')].indexOf(alvo) + 1; });
 const A = window.__avisos || [];
 const estouro = [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2);
-window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__relatorio = { avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
+window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__medeVazio = medePreenchimento; window.__relatorio = { preenchidas, vazias: medePreenchimento(0.6), avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
 </script></body></html>

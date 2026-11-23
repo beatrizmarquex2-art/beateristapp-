@@ -70,3 +70,5 @@ svg.golpe{width:44mm}
 
 .bat svg.batsvg{display:block;width:100%;height:auto;max-height:42mm}.bat.peq svg.batsvg{max-height:24mm}.legenda-bat .it .bat{width:52mm}
 .padrao{break-inside:avoid;margin:0 0 .8mm}.padrao .bat svg.batsvg{max-height:34mm;width:auto;max-width:100%;margin:0 auto}.padrao p{margin:0 0 .4mm}
+
+.extra{break-inside:avoid}.extra .padrao{margin-bottom:1.2mm}table.compacta td{padding:.7mm 0;text-align:center;font-size:10px}table.compacta tr:first-child td{font-weight:700;background:#eee}

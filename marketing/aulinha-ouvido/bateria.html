@@ -4,9 +4,10 @@
 <style>.gabcols{columns:2;column-gap:7mm;flex:1;overflow:hidden}.gi{break-inside:avoid;margin-bottom:2.5mm;border-bottom:1px dotted #000;padding-bottom:1.5mm;font-size:11.5px;line-height:1.35}.gi b.n{font:400 12px 'Special Elite',monospace}.gi svg.ritmo,.gi svg.pauta{max-height:24mm}.gi table.grade th,.gi table.grade td{height:4.8mm;font-size:9px}.gi .gab td,.gi .gab th{font-size:10px;padding:.8mm 1.4mm}.gi table td,.gi table th{font-size:10.5px;padding:.8mm 1.4mm}</style></head>
 <body><div id="doc"></div>
 <script type="module">
-import { P, LOGO, paul, fala, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo } from './lib.js';
+import { P, LOGO, paul, fala, caixa, tabela, lin, cx, monta, criaExercicios, pronto, topo, medePreenchimento } from './lib.js';
 import { paginas as pBateria } from './bateria.js';
 import { paginas as pRitmo } from './ritmo.js';
+import { preenche } from './preenche.js';
 
 const { ex, GAB } = criaExercicios();
 import { paginas as pBateria2, leituraRitmica, empunhaduraPratica, comoSegurar } from './bateria2.js';
@@ -38,7 +39,7 @@ let nIdx = 5; const itens = ([nome, l]) => l.map((p) => `<tr><td class="l" style
 const bloco = (nome, linhas) => `<div class="caixa"><h3>${nome}</h3><table class="gab">${linhas.join('')}</table></div>`;
 const L = SECOES.map((sc) => itens(sc)); const meio = Math.ceil(L[3].length / 2);
 const idx1 = [0, 1, 2].map((k) => bloco(SECOES[k][0], L[k])).join('');
-const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>4 etapas</b> que se completam: o <b>corpo e a leitura</b>, o <b>ritmo</b> (importante pra todo músico), as <b>mãos</b> e a <b>coordenação</b>. estude um tema por dia!')}<div class="duas" style="align-items:start"><div>${bloco(SECOES[0][0], L[0])}${bloco(SECOES[1][0], L[1])}</div><div>${bloco(SECOES[2][0], L[2])}</div></div>` };
+const indice = { secao: 'bateria', titulo: 'índice (1/2)', html: `<h2>Índice e mapa do curso</h2>${fala('paul-estudando', 'são <b>4 etapas</b> que se completam: o <b>corpo e a leitura</b>, o <b>ritmo</b> (importante pra todo músico), as <b>mãos</b> e a <b>coordenação</b>. estude um tema por dia!')}${caixa('a trilha: o que você domina em cada etapa', tabela(['etapa', 'o que você aprende', 'no fim você consegue…'], [['1 · corpo e leitura', 'postura, empunhadura, pauta de bateria, contar', 'sentar certo e ler um compasso de bateria'], ['2 · ritmo', 'compasso, subdivisão, pausas, síncopes, tercinas', 'ler e bater qualquer ritmo falando a contagem'], ['3 · mãos e técnicas', 'diddle, paradiddle, Moeller, ghost, dinâmica', 'tocar limpo e com acento no pad e na caixa'], ['4 · coordenação e grooves', 'chimbal, bumbo, linear, viradas', 'montar e ler grooves de 16 passos']]))}${caixa('rotina de 7 dias (20 min por dia)', tabela(['dia', 'foco', 'tempo'], [['seg', 'postura + empunhadura (espelho)', '20 min'], ['ter', 'leitura: pauta e contagem', '20 min'], ['qua', 'pad: singles, rebote e Moeller', '20 min'], ['qui', 'rudimentos: paradiddle e diddle', '20 min'], ['sex', 'coordenação: bumbo e chimbal', '20 min'], ['sáb', 'groove novo + gravar o treino', '30 min'], ['dom', 'descanso ativo: ouvir e contar músicas', '10 min']]))}<div class="duas" style="align-items:start"><div>${bloco(SECOES[0][0], L[0])}${bloco(SECOES[1][0], L[1])}</div><div>${bloco(SECOES[2][0], L[2])}</div></div>` };
 const indice2 = { secao: 'bateria', titulo: 'índice (2/2)', html: `<h2>Índice (continuação)</h2><div class="duas" style="align-items:start">${bloco(SECOES[3][0] + ' (1)', L[3].slice(0, meio))}${bloco(SECOES[3][0] + ' (2)', L[3].slice(meio))}</div><div class="caixa"><h3>no fim do caderno</h3><p class="peq">gabarito de todos os exercícios (R = ritmo, B = bateria).</p></div>` };
 
 const todas = [capa, comoUsar, indice, indice2, ...SECOES.flatMap(([, l]) => l)];
@@ -63,6 +64,8 @@ function ajusta(pg) {
   ajusta(nova);
 }
 [...document.querySelectorAll('.pg:not(.capa)')].forEach(ajusta);
+/* regra do caderno: página com mais de ~40% em branco recebe treino (ver preenche.js) */
+const preenchidas = preenche(document);
 
 /* gabarito: preenche página por página, medindo o que cabe */
 const nomeSec = { R: 'ritmo', B: 'bateria' };
@@ -82,5 +85,5 @@ if (document.querySelectorAll('.pg').length % 2) { const a = document.createElem
 document.querySelectorAll('td.ind').forEach((td) => { const alvo = document.querySelector(`.pg[data-k="${td.dataset.ref - 1}"]`); if (alvo) td.textContent = [...document.querySelectorAll('.pg')].indexOf(alvo) + 1; });
 const A = window.__avisos || [];
 const estouro = [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2);
-window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__relatorio = { avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
+window.__pronto = `${document.querySelectorAll('.pg').length} páginas`; window.__medeVazio = medePreenchimento; window.__relatorio = { preenchidas, vazias: medePreenchimento(0.6), avisos: A, divididas, reduzidas, total: document.querySelectorAll('.pg').length, aindaEstouram: [...document.querySelectorAll('.pg')].map((p, i) => [i + 1, p.scrollHeight - p.clientHeight]).filter(([, d]) => d > 2) };
 </script></body></html>

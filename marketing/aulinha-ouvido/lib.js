@@ -166,3 +166,18 @@ export function monta(paginas, rodape = 'Escola Beaterista · Robôterista Paul'
 }
 export async function pronto() { await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))); await document.fonts.ready; }
 export { cifra, SOLFA };
+
+/** Mede quanto de cada página está preenchido (0 a 1): do fim do cabeçalho até o rodapé. Páginas de capa, anotações e as marcadas com data-livre não entram. */
+export function medePreenchimento(limite = 0.6) {
+  const out = [];
+  [...document.querySelectorAll('.pg')].forEach((pg, i) => {
+    if (/\b(capa|anot|sec)\b/.test(pg.className) || pg.dataset.livre) return;
+    const rod = pg.querySelector('.rod'); const top = pg.querySelector('.top'); if (!rod || !top) return;
+    const y0 = top.getBoundingClientRect().bottom; const y1 = rod.getBoundingClientRect().top;
+    const filhos = [...pg.children].filter((c) => c !== top && c !== rod); if (!filhos.length) return;
+    const fim = Math.max(...filhos.map((c) => { const r = c.getBoundingClientRect(); return r.height ? r.bottom : 0; }));
+    const f = Math.max(0, Math.min(1, (fim - y0) / (y1 - y0)));
+    if (f < limite) out.push([i + 1, Number(f.toFixed(2)), (pg.querySelector('h2')?.textContent || pg.querySelector('.top span:last-child')?.textContent || '').slice(0, 50)]);
+  });
+  return out;
+}
