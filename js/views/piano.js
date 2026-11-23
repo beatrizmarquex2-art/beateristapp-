@@ -10,12 +10,14 @@ import { tocarTabs } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
+import { melodiaPainel } from './aulas-melodia.js';
 
 const KEY = 'setting-piano';
 const SOUNDS = [['piano', 'piano'], ['epiano', 'elétrico'], ['organ', 'órgão'], ['pad', 'cordas']];
 const conf0 = () => ({ sound: 'piano', labels: 'pt', octaves: innerWidth < 520 ? 1 : 2, oct: innerWidth < 520 ? 4 : 3, pedal: false, ...(store.get(KEY) ? store.get(KEY).data : {}) });
 // sem código só o som de piano (a escolha antiga guardada no aparelho não vale)
-const conf = () => { const c = conf0(); return pago() || GRATIS.teclas.sons.includes(c.sound) ? c : { ...c, sound: 'piano' }; };
+let FORCA = null; // aula aberta: 2 oitavas a partir do dó 4 (as músicas usam do dó ao ré agudo); fecha = volta o que a pessoa tinha
+const conf = () => { const c = conf0(); const ok = pago() || GRATIS.teclas.sons.includes(c.sound) ? c : { ...c, sound: 'piano' }; return FORCA ? { ...ok, ...FORCA } : ok; };
 const setConf = (p) => store.upsert('setting', KEY, p);
 
 /** Toca uma nota. Devolve { off(sustain) }. */
@@ -49,6 +51,7 @@ function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
 }
 
 export function mount(host) {
+  let aulasCtl = null; let aulaTap = null; const aulasHost = h('div');
   const live = new Map(); // id (ponteiro/tecla) -> { midi, v, t0 }
   let take = []; let recording = false; let rt0 = 0; let timers = []; const playing = new Set(); // vozes da gravação em reprodução
   const kb = h('div', { class: 'pn-kb', role: 'group', 'aria-label': 'Teclado do piano' });
@@ -63,6 +66,7 @@ export function mount(host) {
     const el = keyEl(midi); if (el) el.classList.add('on');
     shown.textContent = `${nameOf(midi, 'pt')} · ${nameOf(midi, 'cifra')} · ${Math.round(hzOf(midi))} Hz`;
     if (recording && take.length < 200) take.push({ midi, at: (performance.now() - rt0) / 1000, len: 0.4 });
+    if (aulaTap) aulaTap(midi); // aula: guarda a nota do aluno
   };
   const up = (id) => {
     const n = live.get(id); if (!n) return; live.delete(id);
@@ -140,10 +144,23 @@ export function mount(host) {
         h('button', { class: 'btn ghost', type: 'button', disabled: !take.length, onclick: () => { stopPlay(); take = []; recording = false; drawTake(); drawPanel(); } }, 'limpar'))));
   };
 
-  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), shown, kb, takeBox, panel,
+  const luz = (m, on, cls = 'au-luz') => { const e = keyEl(m); if (e) e.classList.toggle(cls, !!on); };
+  const inst = {
+    preparar: () => { FORCA = { octaves: 2, oct: 4 }; drawKb(); drawPanel(); },
+    sair: () => { if (FORCA) { FORCA = null; drawKb(); drawPanel(); } },
+    luz, aoTocar: (fn) => { aulaTap = fn; },
+    toca: (m, t, d) => { const v = voice(m, conf().sound, t, 0.8); setTimeout(() => v.off(false), Math.max(0, (t - audio().currentTime + d) * 1000)); },
+    apagaTudo: () => kb.querySelectorAll('.au-luz,.au-certa').forEach((e) => e.classList.remove('au-luz', 'au-certa')),
+    ver: () => { try { aulasHost.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } },
+  };
+  const abreAulas = () => { if (aulasCtl) return; stopPlay(); recording = false; aulasCtl = melodiaPainel(inst, { voltar: fechaAulas }); aulasHost.replaceChildren(aulasCtl.el); panel.hidden = true; takeBox.hidden = true; aulasBtn.classList.add('on'); aulasBtn.setAttribute('aria-pressed', 'true'); aulasBtn.firstChild.textContent = 'aulas ✓'; raiz.classList.add('au-ativa'); };
+  const fechaAulas = () => { if (!aulasCtl) return; aulasCtl.destroy(); aulasCtl = null; aulaTap = null; aulasHost.replaceChildren(); panel.hidden = false; takeBox.hidden = false; aulasBtn.classList.remove('on'); aulasBtn.setAttribute('aria-pressed', 'false'); aulasBtn.firstChild.textContent = 'aulas'; raiz.classList.remove('au-ativa'); };
+  const aulasBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${!pago() ? ' travado' : ''}`, 'aria-pressed': 'false', onclick: () => { if (!pago()) { pedir('as aulas de música'); return; } aulasCtl ? fechaAulas() : abreAulas(); } }, h('span', {}, 'aulas'), !pago() ? cadeado() : null);
+  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn);
+  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), rolar(aulasRow), aulasHost, shown, kb, takeBox, panel,
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawModelos(); drawPanel(); drawTake();
   const solta = aoLiberar(() => { drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   const onResize = () => {}; window.addEventListener('resize', onResize);
-  return () => { solta(); stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
+  return () => { solta(); if (aulasCtl) { aulasCtl.destroy(); aulasCtl = null; aulaTap = null; FORCA = null; } stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
 }

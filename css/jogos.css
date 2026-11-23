@@ -2014,3 +2014,17 @@ body.bv-aberta { overflow: hidden; }
 .au-leg{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;font-size:11px}.au-leg span{display:inline-flex;align-items:center;gap:4px}.au-leg i{width:10px;height:10px;border-radius:50%;display:inline-block}
 .tk-kit.au-jogando .kd-rolar{display:none}
 .au-jogando-ocultar{display:none}
+
+/* Aulas de melodia (teclas e xilofone): teclas acesas pelo Paul, a certa em dica, e a frase na pauta com a nota marcada */
+.pn-kb .au-luz{background:#ffd23f!important;box-shadow:inset 0 0 0 3px #a31d30,0 0 14px #ffd23f}
+.pn-kb .au-certa{background:#bfe6e9!important;box-shadow:inset 0 0 0 4px #1f6f78}
+.ti-bar.au-luz{filter:brightness(1.3) drop-shadow(0 0 9px #fff);outline:4px solid #fff;outline-offset:-2px}
+.ti-bar.au-certa{outline:4px dashed #1f6f78;outline-offset:-4px}
+.am-pautas{display:grid;gap:8px}
+.am-pautas .pn-bg{fill:none}.am-pautas .pn.now .pn-bg{fill:#ffd23f99}.am-pautas .pn.ok .pn-bg{fill:#2f9d5733}.am-pautas .pn.esp .pn-bg{fill:#a31d3014;stroke:#a31d30;stroke-width:2;stroke-dasharray:4 3}.am-pautas .pn.bad .pn-bg{fill:#d1182e55}
+.au-linha{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;justify-content:center}.au-lab{font-size:11px;font-weight:700;opacity:.7}
+.am-painel .au-nome{margin:0}
+/* aula aberta: teclado e barras mais baixos e o painel mais enxuto durante o jogo, pra caber a partitura e as teclas juntas no celular */
+.tocar-raiz.au-ativa .pn-kb{height:170px}
+.tocar-raiz.au-ativa .ti-xy{height:170px}
+.am-painel.am-jogando .au-info,.am-painel.am-jogando .au-linha,.am-painel.am-jogando .au-nome{display:none}

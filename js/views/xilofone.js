@@ -2,12 +2,14 @@
 import * as SEG from '../figurinhas/segredos-palco.js';
 import { h } from '../util.js';
 import { audio } from '../audio.js';
-import { banner } from '../ui.js';
+import { banner, toast } from '../ui.js';
 import { mallet, backing, MALLETS, percHit } from '../instruments.js';
 import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
+import { melodiaPainel } from './aulas-melodia.js';
+import { faixaDe, brancasEntre } from '../jogos/aulas-melodia.js';
 
 const nome = (m) => ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'][((m % 12) + 12) % 12];
 // Escalas: começa na dó maior (dó ré mi fá sol lá si dó). As outras ficam numa fileira que arrasta pro lado.
@@ -19,6 +21,7 @@ const XK = 'asdfghjklç';
 
 export function mount(host) {
   let scale = 'maior'; let sound = 'xilofone'; let mode = 'barras'; const live = new Map();
+  let aulasCtl = null; let aulaTap = null; let aulaNotas = null; const aulasHost = h('div'); // aula aberta: as barras são só as notas da música
   const modeRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Tipo de percussão' });
   const pads = h('div', { class: 'ti-perc', role: 'group', 'aria-label': 'Percussão', hidden: true },
     ...PADS_FOTO.map(([id, nome, arq]) => h('button', { type: 'button', class: 'ti-pp ti-pp-foto', 'data-p': id, 'aria-label': nome }, h('img', { src: `assets/memoria/${arq}.webp`, alt: '', draggable: 'false', decoding: 'async' }))));
@@ -38,7 +41,7 @@ export function mount(host) {
   const soundRow = h('div', { class: 'row kd-modes', role: 'radiogroup', 'aria-label': 'Som' });
 
   const drawXy = () => {
-    const ms = SCALES[scale]; const n = ms.length;
+    const ms = aulaNotas || SCALES[scale]; const n = ms.length;
     xy.replaceChildren(...ms.map((m, i) => {
       const pc = ((m % 12) + 12) % 12; const e = h('button', { type: 'button', class: `ti-bar${notaClara(m) ? ' light' : ''}`, 'data-m': m, 'aria-label': `${nome(m)}${Math.floor(m / 12) - 1}` }, h('span', {}, nome(m)));
       e.style.setProperty('--bc', corNota(m)); e.style.height = `${96 - (i / (n - 1)) * 46}%`; return e;
@@ -59,22 +62,36 @@ export function mount(host) {
   const strike = (el, e, glide) => {
     const r = el.getBoundingClientRect(); const cen = 1 - Math.min(1, Math.abs(e.clientY - (r.top + r.height / 2)) / (r.height / 2));
     SEG.nota(+el.dataset.m); mallet(+el.dataset.m, (glide ? 0.7 : 0.8) + cen * 0.25, sound); squish(el); ripple(e.clientX, e.clientY);
+    if (aulaTap && !glide) aulaTap(+el.dataset.m); // aula: guarda a nota do aluno
   };
   xy.addEventListener('pointerdown', (e) => { audio(); e.preventDefault(); try { xy.setPointerCapture(e.pointerId); } catch { /* sem captura */ } const el = at(e); live.set(e.pointerId, el); if (el) strike(el, e, false); });
   xy.addEventListener('pointermove', (e) => { if (!live.has(e.pointerId)) return; const el = at(e); if (el !== live.get(e.pointerId)) { live.set(e.pointerId, el); if (el) strike(el, e, true); } });
   for (const ev of ['pointerup', 'pointercancel']) xy.addEventListener(ev, (e) => live.delete(e.pointerId));
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
-    const i = XK.indexOf(e.key.toLowerCase()); const ms = SCALES[scale]; if (i < 0 || !ms[i]) return;
-    audio(); mallet(ms[i], 0.9, sound); const el = xy.querySelector(`[data-m="${ms[i]}"]`); if (el) squish(el);
+    const i = XK.indexOf(e.key.toLowerCase()); const ms = aulaNotas || SCALES[scale]; if (i < 0 || !ms[i]) return;
+    audio(); mallet(ms[i], 0.9, sound); const el = xy.querySelector(`[data-m="${ms[i]}"]`); if (el) squish(el); if (aulaTap) aulaTap(ms[i]);
   };
   document.addEventListener('keydown', onKey);
 
   stage.append(xy, pads);
-  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), rolar(modeRow), rolar(soundRow), stage,
+  const luz = (m, on, cls = 'au-luz') => { const e = xy.querySelector(`.ti-bar[data-m="${m}"]`); if (e) e.classList.toggle(cls, !!on); };
+  const inst = {
+    preparar: (m) => { const [lo, hi] = faixaDe(m); aulaNotas = brancasEntre(lo, hi); drawXy(); },
+    sair: () => { if (aulaNotas) { aulaNotas = null; drawXy(); } },
+    luz, aoTocar: (fn) => { aulaTap = fn; },
+    toca: (m, t) => mallet(m, 0.85, sound, t),
+    apagaTudo: () => xy.querySelectorAll('.au-luz,.au-certa').forEach((e) => e.classList.remove('au-luz', 'au-certa')),
+    ver: () => { try { aulasHost.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } },
+  };
+  const abreAulas = () => { if (aulasCtl) return; if (mode !== 'barras') { toast('as aulas usam as barras afinadas: volte pra "barras afinadas"'); return; } aulasCtl = melodiaPainel(inst, { voltar: fechaAulas }); aulasHost.replaceChildren(aulasCtl.el); aulasBtn.classList.add('on'); aulasBtn.setAttribute('aria-pressed', 'true'); aulasBtn.firstChild.textContent = 'aulas ✓'; raiz.classList.add('au-ativa'); };
+  const fechaAulas = () => { if (!aulasCtl) return; aulasCtl.destroy(); aulasCtl = null; aulaTap = null; aulaNotas = null; drawXy(); aulasHost.replaceChildren(); aulasBtn.classList.remove('on'); aulasBtn.setAttribute('aria-pressed', 'false'); aulasBtn.firstChild.textContent = 'aulas'; raiz.classList.remove('au-ativa'); };
+  const aulasBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${!pago() ? ' travado' : ''}`, 'aria-pressed': 'false', onclick: () => { if (!pago()) { pedir('as aulas de música'); return; } aulasCtl ? fechaAulas() : abreAulas(); } }, h('span', {}, 'aulas'), !pago() ? cadeado() : null);
+  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn);
+  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Percussão', 'xilofone, vibrafone, congas, pandeiro e mais'), tocarTabs('xilofone'), ...(faixaPlano(GRATIS.xilofone.texto) ? [faixaPlano(GRATIS.xilofone.texto)] : []), rolar(modeRow), rolar(soundRow), rolar(aulasRow), aulasHost, stage,
     h('section', { class: 'card pad ti-panel' }, rolar(scaleRow)),
     h('p', { class: 'pad-x lib-note' }, 'na pentatônica nenhuma nota soa errada: pode deslizar o dedo e inventar melodia. cada nota tem a sua cor em qualquer oitava (dó vermelho, ré laranja, mi amarelo, fá verde, sol azul-claro, lá azul-escuro, si rosa), então dá pra reconhecer a nota pela cor. no computador: A S D F G H J K L Ç tocam as barras. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso.'));
   drawXy(); drawRows(); drawTheme(); drawMode();
   const solta = aoLiberar(() => { drawRows(); drawMode(); drawXy(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
-  return () => { solta(); document.removeEventListener('keydown', onKey); backing.leave(); };
+  return () => { solta(); if (aulasCtl) { aulasCtl.destroy(); aulasCtl = null; aulaTap = null; aulaNotas = null; } document.removeEventListener('keydown', onKey); backing.leave(); };
 }
