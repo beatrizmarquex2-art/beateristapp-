@@ -1982,3 +1982,22 @@ body.bv-aberta { overflow: hidden; }
 .jg-figurix .fx-barra .fx-fig.xs{width:100%;max-width:30px}.jg-figurix .fx-barra .fx-fig.xs svg{width:100%;height:auto;max-height:44px}
 .jg-figurix .fx-barra{height:76px}.jg-figurix .fx-barra .fx-fig.xs{max-width:44px}.jg-figurix .fx-barra .fx-fig.xs svg{max-height:66px}
 .jg-figurix[data-skin="c"] .fx-arv .fx-num{margin-top:-30px}
+
+/* Aulas da bateria de toque (aba Palco > bateria > "aulas"): o Paul acende as peças e o aluno repete. Cores = partitura colorida (bumbo verde, caixa vermelha, chimbal azul, prato dourado). */
+.tk-art [data-p].au-luz{filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 16px var(--c,#ffd23f)) brightness(1.25);transition:filter .06s}
+.au-painel{display:grid;gap:10px}
+.au-topo{display:flex;align-items:center;justify-content:space-between;gap:8px}.au-topo b{font:20px/1 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.au-intro{margin:0;font-size:13px;line-height:1.4}
+.au-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.au-item{display:grid;gap:2px;justify-items:center;padding:8px 6px;min-height:58px}.au-item small{font-size:11px;opacity:.75}.au-item .au-est{font-style:normal;font-size:14px;color:#d4a21b;letter-spacing:1px}
+.au-est{font-size:18px;color:#d4a21b;letter-spacing:1px}
+.au-grade{display:grid;grid-template-columns:62px repeat(var(--n),minmax(0,1fr));gap:3px;align-items:center;overflow:hidden}
+.au-pl{font-size:10px;font-weight:700;opacity:.75}.au-num{font:normal 10px/1 inherit;text-align:center;opacity:.7}
+.au-cel{display:block;height:26px;border-radius:5px;background:#17365b1a;border:1.5px solid #17365b22}
+.au-cel.on.cr{background:#d4a21b}.au-cel.on.ch{background:#2f6fdc}.au-cel.on.cx{background:#d8344a}.au-cel.on.bu{background:#2f9d57}
+.au-cel.now{outline:3px solid #1b1818;outline-offset:-2px}
+.au-quem{font-size:13px;font-weight:700;text-align:center}.au-quem.paul{color:#a31d30}.au-quem.vez{color:#1f6f78}
+.au-msg{margin:0;text-align:center;font:19px/1.15 'Gochi Hand','Comic Sans MS',cursive;min-height:1.2em;color:#a31d30}
+.au-tempo{justify-self:center}.au-go{justify-self:center}
+.au-res{display:grid;gap:4px;justify-items:center;text-align:center}.au-res p{margin:0}.au-res-n{font:34px/1 'Anton',Impact,sans-serif}.au-res-est{font-size:26px;color:#d4a21b;letter-spacing:2px}
+@media (prefers-reduced-motion:reduce){.tk-art [data-p].au-luz{transition:none}}
