@@ -36,12 +36,12 @@ export function shuffle(list, rnd = Math.random) {
 
 /**
  * Pode jogar `card` sobre `top` com a cor ativa `color`?
- * Curinga sempre; curinga +4 só sem carta da cor ativa na mão (`hand`); senão mesma cor, ou mesma figura (carta de figura),
+ * Curinga sempre; curinga +4 só sem carta da cor ativa na mão (`hand`), nunca como penúltima carta (ficaria com UNO) e sempre que for a última; senão mesma cor, ou mesma figura (carta de figura),
  * ou mesma ação (carta de ação). Topo curinga só vale pela cor escolhida.
  */
 export function playable(card, top, color, hand) {
   if (card.kind === 'curinga') return true;
-  if (card.kind === 'mais4') return !hand || (hand.length >= 3 && !hand.some((c) => c.color === color)); // nunca como última carta nem pra ficar com UNO (ganharia na hora)
+  if (card.kind === 'mais4') return !hand || hand.length === 1 || (hand.length >= 3 && !hand.some((c) => c.color === color)); // sem a cor da mesa; NÃO como penúltima carta (ficaria com UNO), mas como ÚLTIMA pode (a Bea, 23/nov)
   if (card.color === color) return true;
   if (isWild(top)) return false;
   return isFig(card) ? isFig(top) && card.sym === top.sym : card.kind === top.kind;
