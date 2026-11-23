@@ -1148,3 +1148,4 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 
 /* logo oficial Beaterista PLAY (box do passe na entrada) */
 .en-play-logo { display: block; width: min(78%, 280px); height: auto; margin: 0 0 8px; }
+.en-play-banner { display: block; width: 100%; height: auto; margin: 0 0 12px; border-radius: 14px; }

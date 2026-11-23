@@ -5,7 +5,7 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY   (o Supabase já injeta nas Edge Functions)
 //   RESEND_API_KEY, MAIL_FROM                 envio do e-mail (ex.: "Beaterista <passe@seudominio.com.br>", domínio verificado no Resend)
 //   ADMIN_TOKEN           (opcional) libera POST .../reenviar pra mandar o e-mail de novo
-//   SITE_URL              (opcional) padrão https://jogos.beaterista.com.br
+//   SITE_URL              (opcional) padrão https://play.beaterista.com.br
 // Rotas: POST /  (webhook Hotmart, exige hottok) · POST /recuperar  (público: o comprador pede o código de novo pelo e-mail da compra) · POST /reenviar  (ADMIN_TOKEN)
 const EVENTOS_APROVA = new Set(['PURCHASE_APPROVED', 'PURCHASE_COMPLETE']);
 // reembolso, chargeback e cancelamento/expiração da compra desativam o código daquela transação (cancelamento sem compra aprovada não faz nada)
@@ -35,11 +35,11 @@ export function montarEmail({ nome, code, expiraEm, siteUrl }) {
   const url = siteUrl.replace(/\/+$/, '');
   const assunto = 'Seu código do Beaterista PLAY chegou 🎉';
   const texto = [`Oi${primeiro ? `, ${primeiro}` : ''}! Obrigada pela compra do Beaterista PLAY - Passe Anual.`, '', `Seu código de acesso: ${code}`, '',
-    'Como entrar:', `1. abra ${url}/?entrar`, '2. escreva seu nome', '3. escolha "já sou aluno" e digite o código acima', '',
+    'Como entrar:', `1. abra ${url}`, '2. escreva seu nome', '3. escolha "já sou aluno" e digite o código acima', '',
     `O passe vale 12 meses${ate ? ` (até ${ate})` : ''} e funciona em até 2 aparelhos.`, 'Guarde este e-mail. Perdeu o código? Na tela de entrada toque em "perdi meu código" e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.', '', 'Professora Bea · Beaterista'].join('\n');
   const html = `<div style="font-family:system-ui,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1b1818"><p>Oi${primeiro ? `, ${esc(primeiro)}` : ''}! Obrigada pela compra do <b>Beaterista PLAY - Passe Anual</b>.</p>
 <p style="margin:18px 0 4px">Seu código de acesso:</p><p style="font:700 28px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.12em;background:#fff1c7;border:2px solid #1b1818;border-radius:12px;padding:12px 16px;display:inline-block;margin:0">${esc(code)}</p>
-<p style="margin-top:20px"><b>Como entrar</b></p><ol><li>abra <a href="${esc(url)}/?entrar">${esc(url.replace(/^https?:\/\//, ''))}/?entrar</a></li><li>escreva seu nome</li><li>escolha “já sou aluno” e digite o código acima</li></ol>
+<p style="margin-top:20px"><b>Como entrar</b></p><ol><li>abra <a href="${esc(url)}/?entrar">${esc(url.replace(/^https?:\/\//, ''))}</a></li><li>escreva seu nome</li><li>escolha “já sou aluno” e digite o código acima</li></ol>
 <p>O passe vale <b>12 meses</b>${ate ? ` (até ${esc(ate)})` : ''} e funciona em até <b>2 aparelhos</b>.</p><p>Guarde este e-mail. Perdeu o código? Na tela de entrada toque em “perdi meu código” e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.</p><p>Professora Bea · Beaterista</p></div>`;
   return { assunto, texto, html };
 }
@@ -60,7 +60,7 @@ export function criarHandler({ env, fetchImpl = fetch, agora = () => new Date() 
     if (!r.ok) throw new Error(`rpc ${nome} ${r.status}`);
     const t = await r.text(); return t ? JSON.parse(t) : null;
   };
-  const siteUrl = env.SITE_URL || 'https://jogos.beaterista.com.br';
+  const siteUrl = env.SITE_URL || 'https://play.beaterista.com.br';
   const configurado = () => !!(env.HOTMART_HOTTOK && env.HOTMART_PRODUCT_IDS && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && env.RESEND_API_KEY && env.MAIL_FROM);
   const produtosOk = () => new Set(String(env.HOTMART_PRODUCT_IDS || '').split(',').map((s) => s.trim()).filter(Boolean));
 

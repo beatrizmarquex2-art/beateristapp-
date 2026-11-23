@@ -68,7 +68,7 @@ test('aprovação: cria código de passe (12 meses da aprovação) e manda o e-m
   assert.equal(r.status, 200); assert.equal(w.emails.length, 1);
   const c = w.compras.get('HP12345678'); const k = w.codigos.get(c.code);
   assert.equal(k.tipo, 'passe'); assert.equal(k.expira_em, '2027-11-12T09:00:00.000Z'); assert.ok(c.email_enviado);
-  const m = w.emails[0]; assert.deepEqual(m.to, ['maria@exemplo.com']); assert.ok(m.text.includes(c.code) && m.html.includes(c.code)); assert.ok(m.text.includes('jogos.beaterista.com.br'));
+  const m = w.emails[0]; assert.deepEqual(m.to, ['maria@exemplo.com']); assert.ok(m.text.includes(c.code) && m.html.includes(c.code)); assert.ok(m.text.includes('https://play.beaterista.com.br'));
   assert.equal(m.from, ENV.MAIL_FROM); assert.equal(m.chave, 'passe-HP12345678');
 });
 test('aviso duplicado: mesmo código, um código só, sem segundo e-mail', async () => {
@@ -122,9 +122,9 @@ test('cancelamento/expiração depois da aprovação revoga só aquele código; 
 test('e-mail inválido na aprovação: 400 e nada gravado', async () => {
   const w = mundo(); const e = evento('PURCHASE_APPROVED'); e.data.buyer.email = 'sem-arroba'; assert.equal((await post(w, e)).status, 400); assert.equal(w.compras.size, 0);
 });
-test('e-mail leva o link ?entrar e explica a recuperação', async () => {
+test('e-mail leva o link do site novo (play.beaterista.com.br, abre direto na entrada) e explica a recuperação', async () => {
   const w = mundo(); await post(w, evento('PURCHASE_APPROVED')); const m = w.emails[0];
-  assert.ok(m.text.includes('https://jogos.beaterista.com.br/?entrar')); assert.ok(m.html.includes('href="https://jogos.beaterista.com.br/?entrar"')); assert.ok(m.text.includes('perdi meu código'));
+  assert.ok(m.text.includes('abra https://play.beaterista.com.br\n')); assert.ok(m.html.includes('href="https://play.beaterista.com.br/?entrar"')); assert.ok(m.html.includes('>play.beaterista.com.br</a>')); assert.ok(m.text.includes('perdi meu código'));
 });
 test('recuperação: comprador recebe o código de novo; resposta igual pra e-mail desconhecido (não vaza quem comprou); limite de reenvio', async () => {
   const w = mundo(); await post(w, evento('PURCHASE_APPROVED')); const code = w.compras.get('HP12345678').code;

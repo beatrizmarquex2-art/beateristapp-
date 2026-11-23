@@ -13,13 +13,16 @@ Ordem importa: **teste primeiro, só depois troque os links de venda.**
 2. **E-mail (Resend)**: criar conta → Domains → verificar o domínio (DNS) → API Keys → criar chave "hotmart-passe".
 3. **Segredos** (Edge Functions → Secrets, ou CLI). Nunca no GitHub nem no site:
    `supabase secrets set HOTMART_HOTTOK=... HOTMART_PRODUCT_IDS=... RESEND_API_KEY=... MAIL_FROM="Beaterista <passe@seudominio.com.br>" ADMIN_TOKEN=<texto longo aleatório> --project-ref fnxgjxatremjdxaqmswu`
-   Opcional `SITE_URL` (padrão https://jogos.beaterista.com.br). `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` o Supabase já injeta. A service role só existe dentro da função.
+   Opcional `SITE_URL` (padrão https://play.beaterista.com.br). `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` o Supabase já injeta. A service role só existe dentro da função.
 4. **Deploy sem JWT** (a Hotmart não manda JWT; quem autentica é o hottok): `supabase functions deploy hotmart-passe --no-verify-jwt --project-ref fnxgjxatremjdxaqmswu`.
+
+### Domínio
+4b. **play.beaterista.com.br** precisa apontar pro mesmo site do app dos alunos (Netlify: Domain management → adicionar o domínio; DNS: CNAME de `play` pro endereço que o Netlify mostrar) e ter HTTPS ativo **antes** de vender: é o link que vai no e-mail.
 
 ### Hotmart
 5. **ID do produto**: Produtos → Passe → o número na URL da página do produto (ex.: `.../products/4567890`) ou "Dados gerais". Vira `HOTMART_PRODUCT_IDS` (vários separados por vírgula; vale também o ucode). Confira que é o produto do **Passe** e não de um ebook. Evento de qualquer outro produto é ignorado com 200.
 6. **Webhook**: Ferramentas → Webhook (API e notificações) → Cadastrar webhook. URL `https://fnxgjxatremjdxaqmswu.supabase.co/functions/v1/hotmart-passe`, **versão 2.0.0**, produto = Passe, eventos: Compra aprovada, Compra completa, Reembolso, Chargeback, Compra cancelada, Compra expirada (pode marcar também Boleto impresso/Atrasada/Protesto: são ignorados com 200). O **hottok** que a Hotmart mostra é o `HOTMART_HOTTOK`.
-7. **Testar antes de vender**: no mesmo painel, "Enviar teste" (o evento de teste traz um produto de exemplo, então vai voltar `ignorado: produto`, o que já prova o hottok) e uma compra real barata/cupom 100% com e-mail seu → conferir: código `P` + 9 caracteres no e-mail, link `…/?entrar` abre o site, o código entra, a linha em `passe_compras` e a validade (12 meses). Depois reembolse essa compra e confirme que o código passa a dar "não achei esse código". Teste também "comprei o passe e perdi meu código" na tela de entrada.
+7. **Testar antes de vender**: no mesmo painel, "Enviar teste" (o evento de teste traz um produto de exemplo, então vai voltar `ignorado: produto`, o que já prova o hottok) e uma compra real barata/cupom 100% com e-mail seu → conferir: código `P` + 9 caracteres no e-mail, link do e-mail (play.beaterista.com.br) abre a tela de entrada, o código entra, a linha em `passe_compras` e a validade (12 meses). Depois reembolse essa compra e confirme que o código passa a dar "não achei esse código". Teste também "comprei o passe e perdi meu código" na tela de entrada.
 8. **Só então** trocar os links: `node scripts/passe-link.mjs https://pay.hotmart.com/<checkout do Passe>` (muda `js/loja-config.js` e `vendas/index.html`, só o Passe), subir o `sw.js` e publicar. `js/entrada.js` (botão "quero meu passe anual") ainda usa o WhatsApp: trocar `PASSE_LINK` lá também quando quiser.
 
 ## Rotas da função
