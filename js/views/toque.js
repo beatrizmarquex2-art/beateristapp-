@@ -24,6 +24,7 @@ import { scheduler } from '../audio.js';
 import { flash, pieceAt } from '../kids/kit-theme.js';
 import { MARCAS } from '../marcas-links.js';
 import { aulasPainel } from './toque-aulas.js';
+import { SEM_AULA } from '../jogos/aulas-bateria.js';
 
 /** O logo da Beaterista e a marca do instrumento ficam na "tela", fora da bateria (PNG sem fundo). */
 const logoFora = (art, modelo) => {
@@ -67,7 +68,10 @@ export function mount(host) {
     const el = kit.querySelector(`[data-p="${id}"]`); flash(el); if (el) { el.classList.add('au-luz'); setTimeout(() => el.classList.remove('au-luz'), 190); }
     nomeEl.textContent = (modeloAtual === 'cajon' && { bd: 'grave', sn: 'agudo' }[id]) || NOME_PECA[id] || ''; nomeEl.style.background = (el && el.style.getPropertyValue('--c')) || '#b5162b'; nomeEl.classList.remove('on'); void nomeEl.offsetWidth; nomeEl.classList.add('on');
   };
-  const abreAulas = () => { if (aulasCtl) return; cancel(); stopAll(); aulasCtl = aulasPainel({ modelo: () => modeloAtual, luz, aoBater: (fn) => { aulaTap = fn; }, ver: () => { try { kit.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } } }, { voltar: fechaAulas }); kit.classList.add('aulas'); drawKit(); drawPanel(); };
+  const abreAulas = () => {
+    if (aulasCtl) return;
+    if (SEM_AULA.includes(modeloAtual)) { toast('as aulas usam a bateria acústica ou a eletrônica'); setConf({ modelo: 'acustica' }).then(() => { drawKit(); abreAulas(); }); return; } // o cajón só tem agudo e grave
+    cancel(); stopAll(); aulasCtl = aulasPainel({ modelo: () => modeloAtual, luz, aoBater: (fn) => { aulaTap = fn; }, ver: () => { try { kit.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } } }, { voltar: fechaAulas }); kit.classList.add('aulas'); drawKit(); drawPanel(); };
   const fechaAulas = () => { if (!aulasCtl) return; aulasCtl.destroy(); aulasCtl = null; aulaTap = null; kit.classList.remove('aulas'); drawKit(); drawPanel(); };
   /** Onda que sai do ponto do toque, na cor da peça. */
   const spark = (x, y, el) => {
@@ -92,7 +96,7 @@ export function mount(host) {
     kit.dataset.kitTheme = 'colagem'; // um fundo só (a Bea não quer escolher tema na bateria de toque)
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e, 58); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
-      ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
+      ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } if (aulasCtl && SEM_AULA.includes(v)) { toast('o cajón não tem tom, surdo nem pratos: feche as aulas pra usar'); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
     // canhota sobe pra cá: logo ao lado do modelo (inverte o lado da bateria)
     const canhota = h('button', { type: 'button', class: `kd-chip kd-canhota${c.left ? ' on' : ''}`, 'aria-pressed': String(!!c.left), onclick: () => setConf({ left: !c.left }).then(() => { drawKit(); drawPanel(); }) }, c.left ? 'canhota ✓' : 'canhota');
     const aulasBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${aulasCtl ? ' on' : ''}${!pago() ? ' travado' : ''}`, 'aria-pressed': String(!!aulasCtl), onclick: () => { if (!pago()) { pedir('as aulas da bateria'); return; } aulasCtl ? fechaAulas() : abreAulas(); } }, aulasCtl ? 'aulas ✓' : 'aulas', !pago() ? cadeado() : null);

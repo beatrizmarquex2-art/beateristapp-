@@ -1989,12 +1989,12 @@ body.bv-aberta { overflow: hidden; }
 .au-topo{display:flex;align-items:center;justify-content:space-between;gap:8px}.au-topo b{font:20px/1 'Anton',Impact,sans-serif;text-transform:uppercase;letter-spacing:.03em}
 .au-intro{margin:0;font-size:13px;line-height:1.4}
 .au-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
-.au-item{display:grid;gap:2px;justify-items:center;padding:8px 6px;min-height:58px}.au-item small{font-size:11px;opacity:.75}.au-item .au-est{font-style:normal;font-size:14px;color:#d4a21b;letter-spacing:1px}
+.au-item{display:grid;gap:2px;justify-items:center;align-content:center;padding:8px 6px;min-height:62px;text-align:center}.au-item span{font-size:12px;line-height:1.15;overflow-wrap:anywhere}.au-item small{font-size:11px;opacity:.75}.au-item .au-est{font-style:normal;font-size:14px;color:#d4a21b;letter-spacing:1px}
 .au-est{font-size:18px;color:#d4a21b;letter-spacing:1px}
-.au-grade{display:grid;grid-template-columns:62px repeat(var(--n),minmax(0,1fr));gap:3px;align-items:center;overflow:hidden}
-.au-pl{font-size:10px;font-weight:700;opacity:.75}.au-num{font:normal 10px/1 inherit;text-align:center;opacity:.7}
+.au-grade{display:grid;grid-template-columns:78px repeat(var(--n),minmax(0,1fr));gap:3px;align-items:center;overflow:hidden}
+.au-pl{font-size:9px;font-weight:700;opacity:.75;line-height:1.1}.au-num{font:normal 10px/1 inherit;text-align:center;opacity:.7}
 .au-cel{display:block;height:26px;border-radius:5px;background:#17365b1a;border:1.5px solid #17365b22}
-.au-cel.on.cr{background:#d4a21b}.au-cel.on.ch{background:#2f6fdc}.au-cel.on.cx{background:#d8344a}.au-cel.on.bu{background:#2f9d57}
+.au-cel.on.cr{background:#d4a21b}.au-cel.on.rd{background:#1c8f9a}.au-cel.on.ch{background:#2f6fdc}.au-cel.on.t1{background:#ec8a2b}.au-cel.on.t2{background:#d9701a}.au-cel.on.cx{background:#d8344a}.au-cel.on.su{background:#7a4cc2}.au-cel.on.bu{background:#2f9d57}
 .au-cel.now{outline:3px solid #1b1818;outline-offset:-2px}
 .au-quem{font-size:13px;font-weight:700;text-align:center}.au-quem.paul{color:#a31d30}.au-quem.vez{color:#1f6f78}
 .au-msg{margin:0;text-align:center;font:19px/1.15 'Gochi Hand','Comic Sans MS',cursive;min-height:1.2em;color:#a31d30}

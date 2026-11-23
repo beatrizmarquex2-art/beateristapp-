@@ -1,24 +1,33 @@
 // Aulas da bateria de toque (aba Palco > bateria > "aulas"): o Paul toca 1 compasso acendendo as peças da bateria, o aluno repete tocando nelas.
 // Regra pura (sem tela): os ritmos, a conta dos tempos e a nota. Os 9 ritmos foram marcados pela Bea na grade (nov/2026); os nomes ainda são provisórios.
-// Peças: cr = prato de ataque, ch = chimbal, cx = caixa, bu = bumbo. `n` = passos do compasso (8 = colcheias, 16 = semicolcheias); a lista é a posição de cada batida (0 = tempo 1).
+// Peças: cr = prato de ataque, rd = prato de ritmo (condução), ch = chimbal, t1 = tom 1, t2 = tom 2, cx = caixa, su = surdo, bu = bumbo. `n` = passos do compasso (8 = colcheias, 16 = semicolcheias); a lista é a posição de cada batida (0 = tempo 1).
+const P = (o) => ({ cr: [], rd: [], ch: [], t1: [], t2: [], cx: [], su: [], bu: [], ...o });
 export const AULAS = [
-  { id: 'r01', nome: 'ritmo 1', bpm: 60, n: 16, p: { cr: [0], ch: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], cx: [2, 6, 10, 14], bu: [0, 4, 8, 12] } },
-  { id: 'r02', nome: 'ritmo 2', bpm: 80, n: 8, p: { cr: [], ch: [0, 1, 2, 4, 5, 6], cx: [2, 6], bu: [0, 1, 4, 5] } },
-  { id: 'r03', nome: 'ritmo 3', bpm: 70, n: 16, p: { cr: [], ch: [0, 2, 4, 6, 8, 10, 12, 14], cx: [4, 7, 9, 12], bu: [0, 2, 10] } },
-  { id: 'r04', nome: 'ritmo 4', bpm: 90, n: 8, p: { cr: [], ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [2, 6], bu: [0, 3] } },
-  { id: 'r05', nome: 'ritmo 5', bpm: 100, n: 8, p: { cr: [], ch: [0, 2, 4, 6], cx: [2, 6], bu: [0, 4] } },
-  { id: 'r06', nome: 'ritmo 6', bpm: 130, n: 8, p: { cr: [], ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [1, 3, 5, 7], bu: [0, 2, 4, 6] } },
-  { id: 'r07', nome: 'ritmo 7', bpm: 100, n: 16, p: { cr: [], ch: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11], cx: [4, 12], bu: [] } },
-  { id: 'r08', nome: 'ritmo 8', bpm: 90, n: 8, p: { cr: [], ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [2, 6], bu: [0, 1, 3, 4] } },
-  { id: 'r09', nome: 'ritmo 9', bpm: 100, n: 8, p: { cr: [], ch: [1, 3, 5, 7], cx: [2, 6], bu: [0, 4] } },
+  { id: 'r01', nome: 'Ritmo 1', bpm: 60, n: 16, p: P({ cr: [0], ch: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], cx: [2, 6, 10, 14], bu: [0, 4, 8, 12] }) },
+  { id: 'r02', nome: 'Ritmo 2', bpm: 80, n: 8, p: P({ ch: [0, 1, 2, 4, 5, 6], cx: [2, 6], bu: [0, 1, 4, 5] }) },
+  { id: 'r03', nome: 'Ritmo com 2 figuras', bpm: 70, n: 16, p: P({ ch: [0, 2, 4, 6, 8, 10, 12, 14], cx: [4, 7, 9, 12], bu: [0, 2, 10] }) },
+  { id: 'r04', nome: 'Ritmo com bumbo adiantado', bpm: 90, n: 8, p: P({ ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [2, 6], bu: [0, 3] }) },
+  { id: 'r05', nome: 'Ritmo Base', bpm: 100, n: 8, p: P({ ch: [0, 2, 4, 6], cx: [2, 6], bu: [0, 4] }) },
+  { id: 'r06', nome: 'Ritmo Country', bpm: 130, n: 8, p: P({ ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [1, 3, 5, 7], bu: [0, 2, 4, 6] }) },
+  { id: 'r07', nome: 'Sunflower', bpm: 100, n: 16, p: P({ ch: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11], cx: [4, 12] }) },
+  { id: 'r08', nome: 'Ritmo com 4 bumbos', bpm: 90, n: 8, p: P({ ch: [0, 1, 2, 3, 4, 5, 6, 7], cx: [2, 6], bu: [0, 1, 3, 4] }) },
+  { id: 'r09', nome: 'Linear simples', bpm: 100, n: 8, p: P({ ch: [1, 3, 5, 7], cx: [2, 6], bu: [0, 4] }) },
+  { id: 'r10', nome: 'We Will Rock You', bpm: 80, n: 8, p: P({ t1: [0, 1, 4, 5], t2: [0, 1, 4, 5], cx: [2, 6] }) },
+  { id: 'r11', nome: 'Tribal 1', bpm: 100, n: 16, p: P({ su: [0, 2, 4, 6, 8, 10, 12, 14], t1: [15], t2: [7, 9], cx: [4, 12] }) },
+  { id: 'r12', nome: 'Tribal 2', bpm: 100, n: 16, p: P({ su: [0, 2, 6, 8, 10, 14], t2: [1, 3, 7, 9, 11], cx: [4, 12] }) },
+  { id: 'r13', nome: 'Pompeii Refrão', bpm: 120, n: 16, p: P({ bu: [0, 2], ch: [0, 2, 4], cx: [4, 12], su: [10, 12], t1: [6, 7], t2: [8, 9] }) },
+  { id: 'r14', nome: 'Heathens', bpm: 100, n: 8, p: P({ bu: [0, 5], ch: [1, 3, 4, 7], cx: [2, 6] }) },
+  { id: 'r15', nome: 'Wake Me Up When September Ends', bpm: 50, n: 16, p: P({ ch: [14], cx: [2, 5, 10, 13], su: [0, 1, 3, 4, 8, 9, 11, 12] }) },
+  { id: 'r16', nome: 'Believer', bpm: 100, n: 16, p: P({ ch: [6], cx: [9], su: [0, 1, 2, 3] }) },
 ];
-export const RODADAS = 3; // o Paul toca e o aluno repete, 3 vezes
-export const NOMES = { cr: 'prato', ch: 'chimbal', cx: 'caixa', bu: 'bumbo' };
-/** Qual peça da bateria (ids de js/kids/kit-modelos.js) vale por cada peça da aula. O chimbal aberto vale como chimbal e a condução como prato. */
-export const PECA_DO_KIT = { cr: ['cr', 'rd'], ch: ['hh', 'ho'], cx: ['sn'], bu: ['bd'] };
-/** Contrário: de uma peça da bateria pra peça da aula (ou null se a aula não usa: toms, surdo). */
+export const RODADAS = 3;
+export const SEM_AULA = ['cajon']; // o cajón só tem agudo e grave: não dá pra tocar tom, surdo e pratos // o Paul toca e o aluno repete, 3 vezes
+export const NOMES = { cr: 'prato de ataque', rd: 'prato de ritmo', ch: 'chimbal', t1: 'tom 1', t2: 'tom 2', cx: 'caixa', su: 'surdo', bu: 'bumbo' };
+/** Qual peça da bateria (ids de js/kids/kit-modelos.js) vale por cada peça da aula. O chimbal aberto vale como chimbal. */
+export const PECA_DO_KIT = { cr: ['cr'], rd: ['rd'], ch: ['hh', 'ho'], t1: ['tt'], t2: ['mt'], cx: ['sn'], su: ['ft'], bu: ['bd'] };
+/** Contrário: de uma peça da bateria pra peça da aula (ou undefined se a peça não existe nas aulas). */
 export const AULA_DO_KIT = Object.fromEntries(Object.entries(PECA_DO_KIT).flatMap(([a, ks]) => ks.map((k) => [k, a])));
-export const ORDEM = ['cr', 'ch', 'cx', 'bu']; // de cima pra baixo, como na bateria
+export const ORDEM = ['cr', 'rd', 'ch', 't1', 't2', 'cx', 'su', 'bu']; // de cima pra baixo, como na bateria
 /** Segundos de cada passo (colcheia no compasso de 8, semicolcheia no de 16). */
 export const passoSeg = (aula, bpm = aula.bpm) => (60 / bpm) / (aula.n === 8 ? 2 : 4);
 /** Todas as batidas do compasso em ordem: [{ i, t, p }] (t em segundos desde o tempo 1). */
