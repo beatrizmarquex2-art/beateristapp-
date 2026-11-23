@@ -35,7 +35,7 @@ export function chips(rotulo, opts, atual, onPick) {
  */
 export function teclado({ notas, nomes = true, onNota, pretas = false }) {
   const lo = notas[0]; const hi = notas[notas.length - 1]; const brancas = faixa(lo, hi).filter((m) => !ehPreta(m)); const W = 100 / brancas.length;
-  const el = h('div', { class: 'vv-teclado' }); el.style.setProperty('--n', String(brancas.length)); const teclas = new Map(); let travado = false;
+  const el = h('div', { class: 'vv-teclado' }); el.style.setProperty('--n', String(brancas.length)); if (brancas.length > 9) el.classList.add('muitas'); const teclas = new Map(); let travado = false;
   brancas.forEach((m) => {
     const vale = notas.includes(m);
     const b = h('button', { type: 'button', class: `vv-tecla${vale ? '' : ' fora'}`, 'data-midi': String(m), disabled: !vale, 'aria-label': nomeNota(m) }, nomes ? h('span', {}, nomeNota(m)) : null);

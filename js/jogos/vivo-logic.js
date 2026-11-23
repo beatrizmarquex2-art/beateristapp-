@@ -18,12 +18,23 @@ export const faixa = (lo, hi) => Array.from({ length: hi - lo + 1 }, (_, i) => l
 export const estrelasPct = (pct) => (pct >= 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0);
 
 /* ---------- Copia Aí ---------- */
-/** Níveis do sorteio: quais notas podem cair. */
+/** Níveis do sorteio: a sequência inteira toca de uma vez (não cresce como no Genius) e tem notas DIFERENTES entre si: fácil 5, médio 7, difícil 10. */
+const BRANCAS_2OIT = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79]; // dó central até o sol agudo (12 teclas brancas)
 export const NIVEIS_COPIA = [
-  { id: 'n3', nome: '3 notas', notas: [60, 62, 64] },
-  { id: 'n5', nome: '5 notas', notas: [60, 62, 64, 65, 67] },
-  { id: 'n8', nome: '8 notas', notas: [60, 62, 64, 65, 67, 69, 71, 72] },
+  { id: 'facil', nome: 'fácil · 5 notas', n: 5, notas: BRANCAS_2OIT.slice(0, 8) },
+  { id: 'medio', nome: 'médio · 7 notas', n: 7, notas: BRANCAS_2OIT.slice(0, 10) },
+  { id: 'dificil', nome: 'difícil · 10 notas', n: 10, notas: BRANCAS_2OIT },
 ];
+/** Quantas sequências novas o sorteio dá por partida. */
+export const RODADAS_COPIA = 3;
+/** Sequência de `n` notas todas diferentes entre si. Prefere nomes diferentes (dó ré mi…): só repete o nome (em outra oitava) quando acabam os 7 nomes. */
+export function sorteioDistinto(notas, n, rnd = Math.random) {
+  const a = notas.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  const usados = new Set(); const out = [];
+  for (const m of a) if (out.length < n && !usados.has(m % 12)) { usados.add(m % 12); out.push(m); }
+  for (const m of a) if (out.length < n && !out.includes(m)) out.push(m);
+  return out.sort(() => rnd() - 0.5);
+}
 const N = { 'dó': 60, 'ré': 62, mi: 64, 'fá': 65, sol: 67, 'lá': 69, si: 71, 'dó2': 72 };
 const M = (txt) => txt.trim().split(/\s+/).map((s) => N[s]);
 /** Melodias de domínio público (tradicionais e clássicas), todas em dó, só teclas brancas. */
@@ -43,10 +54,11 @@ export function sorteio(notas, n, rnd = Math.random) {
 }
 /** Tamanho do trecho em cada rodada (1, 2, 3…): o sorteio começa com 2 notas e ganha 1 por rodada; a melodia começa com 3 e ganha 2. */
 export const tamanhoRodada = (tipo, rodada, total) => Math.min(total, tipo === 'melodia' ? 3 + (rodada - 1) * 2 : 2 + (rodada - 1));
-/** Estrelas do Copia Aí. `feitas` = notas do maior trecho copiado inteiro; `total` = tamanho final; `erros` = vidas perdidas. */
+/** Estrelas do Copia Aí. Música: `feitas` = notas do maior trecho copiado inteiro, `total` = tamanho final. Sorteio: sequências inteiras copiadas. `erros` = vidas perdidas. */
 export function estrelasCopia(tipo, feitas, total, erros) {
   if (tipo === 'melodia') return feitas >= total ? (erros === 0 ? 3 : 2) : feitas >= Math.ceil(total / 2) ? 1 : 0;
-  return feitas >= 8 ? 3 : feitas >= 6 ? 2 : feitas >= 4 ? 1 : 0;
+  // sorteio: `feitas` = sequências copiadas inteiras, `total` = sequências da partida (RODADAS_COPIA)
+  return feitas >= total ? (erros === 0 ? 3 : 2) : feitas >= 1 ? 1 : 0;
 }
 
 /**

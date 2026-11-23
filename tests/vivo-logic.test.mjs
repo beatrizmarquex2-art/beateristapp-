@@ -16,7 +16,6 @@ test('a melodia cresce: sorteio 2, 3, 4…; música 3, 5, 7… até o fim', () =
 });
 test('melodias só com teclas brancas de dó a dó', () => { for (const m of V.MELODIAS) { assert.ok(m.notas.length >= 8, m.id); assert.ok(m.notas.every((x) => V.NIVEIS_COPIA[2].notas.includes(x)), m.id); } });
 test('estrelas do Copia Aí', () => {
-  assert.deepEqual([3, 4, 6, 8, 10].map((n) => V.estrelasCopia('sorteio', n, 10, 0)), [0, 1, 2, 3, 3]);
   assert.equal(V.estrelasCopia('melodia', 14, 14, 0), 3); assert.equal(V.estrelasCopia('melodia', 14, 14, 1), 2); assert.equal(V.estrelasCopia('melodia', 7, 14, 2), 1); assert.equal(V.estrelasCopia('melodia', 5, 14, 3), 0);
 });
 test('rastreador: uma nota por ataque; repetir a mesma nota precisa de silêncio ou novo ataque', () => {
@@ -59,4 +58,11 @@ test('clique fantasma: cravou, correu, atrasou e parou', () => {
 test('clique fantasma: atraso constante (microfone) é descontado pela referência', () => {
   const q = 0.75; const win = V.folgaFantasma(80); const o = Array.from({ length: 12 }, (_, k) => k * q + 0.12);
   const r = V.julgaFantasma(o, { q, mudo: 4, win }); assert.equal(r.pct, 100); assert.equal(r.base, 120); assert.equal(r.veredito, 'cravou');
+});
+
+test('Copia Aí: níveis 5, 7 e 10 notas, sequências com notas todas diferentes (não cresce como Genius)', () => {
+  assert.deepEqual(V.NIVEIS_COPIA.map((n) => n.n), [5, 7, 10]); assert.deepEqual(V.NIVEIS_COPIA.map((n) => n.id), ['facil', 'medio', 'dificil']);
+  for (const n of V.NIVEIS_COPIA) { assert.ok(n.notas.length >= n.n); for (let k = 0; k < 80; k++) { const s = V.sorteioDistinto(n.notas, n.n); assert.equal(s.length, n.n); assert.equal(new Set(s).size, n.n); assert.ok(s.every((m) => n.notas.includes(m))); if (n.n <= 7) assert.equal(new Set(s.map((m) => m % 12)).size, n.n, 'até 7 notas: todos os nomes diferentes'); } }
+  assert.equal(V.RODADAS_COPIA, 3);
+  assert.equal(V.estrelasCopia('sorteio', 3, 3, 0), 3); assert.equal(V.estrelasCopia('sorteio', 3, 3, 2), 2); assert.equal(V.estrelasCopia('sorteio', 1, 3, 3), 1); assert.equal(V.estrelasCopia('sorteio', 0, 3, 3), 0);
 });

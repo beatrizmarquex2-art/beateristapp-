@@ -2021,3 +2021,7 @@ body.bv-aberta { overflow: hidden; }
 .vv-aula .kx-pagetitle{font-size:26px;color:#8e1b2c;text-shadow:none}
 .vv-aula .au-say,.vv-aula .au-box,.vv-aula .au-box p,.vv-aula .au-bubble{color:#16233d}
 .vv-notas-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+/* Copia Aí difícil (10 notas, 12 teclas): tudo cabe na largura do cartão */
+.vv-teclado.muitas{gap:2px}.vv-teclado.muitas .vv-tecla{min-width:0;font-size:14px;padding:0 0 8px;box-shadow:2px 2px 0 var(--vv-navy)}.vv-teclado.muitas .vv-tecla span{font-size:14px}
+.vv-seq.longa{gap:5px}.vv-seq.longa .vv-n{font-size:19px;padding:6px 8px 4px}
+.vv-teclado{max-width:100%}.vv-kbwrap{max-width:100%;overflow:hidden}
