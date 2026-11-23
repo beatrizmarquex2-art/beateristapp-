@@ -1,7 +1,7 @@
 // Caderno de BATERIA (nível intermediário e avançado): postura, empunhadura, leitura, contagem, rudimentos, técnicas, grooves, coordenação,
 // linear, viradas, tribal, ritornelo, pad e plano de evolução. A partitura vem do motor do Beat Lab (js/notation.js).
 import { ritmo, caixa, tabela, fala, lin, cx, paul } from './lib.js';
-import { compasso, partitura, grade, contagem, kitDeCima, baquetaFulcro, golpe, ritornelo, notaSolo } from './bat.js';
+import { compasso, partitura, grade, contagem, kitDeCima, kitReal, baquetaFulcro, golpe, ritornelo, notaSolo } from './bat.js';
 
 const S = 'bateria';
 const ROCK = { hh: 'x.x.x.x.x.x.x.x.', sn: '....x.......x...', bd: 'x.......x.......' };
@@ -30,6 +30,7 @@ export function paginas(ex) {
 
   /* ============ I. FUNDAMENTOS ============ */
   P.push({ secao: S, titulo: '1 · postura: montar o kit', html: `<h2>Postura 1: sentar e montar o kit</h2>${fala('paul-bateria', 'tocar bem começa <b>sentado</b> bem. uma boa postura deixa o corpo relaxado, o som mais limpo e evita dor nas costas, ombros e punhos.')}
+${caixa('a bateria vista por quem toca', kitReal() + '<p class="peq">cada peça tem um número: é a <b>ordem de montagem</b> (o banco é o 1 e fica atrás de você).</p>')}
 ${caixa('ordem de montagem (de cima, quem toca está embaixo)', kitDeCima() + '<p class="peq">você senta no <b>banco (1)</b>, na borda de baixo do desenho, olhando <b>pra frente</b> (a seta). a <b>caixa (2)</b> fica logo à sua frente, entre os joelhos; o <b>bumbo (4)</b> fica mais à frente ainda, e o pé direito chega nele. monte nesta ordem: banco → caixa → chimbal → bumbo → toms, surdo e pratos. para canhotos, espelhe.</p>')}
 ${caixa('o banco', '<p>• altura: com os pés apoiados, as coxas ficam <b>levemente inclinadas pra baixo</b> (joelhos um pouco abaixo do quadril);<br>• sente na <b>metade da frente</b> do banco, costas retas e ombros soltos;<br>• o banco não gira nem balança: aperte bem os parafusos.</p>')}
 ${caixa('a caixa e os toms', '<p>• a pele da caixa fica <b>um pouco acima das coxas</b>, com as baquetas quase <b>paralelas ao chão</b>;<br>• incline a caixa só <b>um pouquinho</b> na sua direção (ou deixe plana);<br>• toms: perto e levemente inclinados, sem precisar esticar o braço; pratos: ao alcance, sem levantar o ombro.</p>')}
