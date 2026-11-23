@@ -33,11 +33,11 @@ export function montarEmail({ nome, code, expiraEm, siteUrl }) {
   const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
   const ate = expiraEm ? dataBR(expiraEm) : '';
   const url = siteUrl.replace(/\/+$/, '');
-  const assunto = 'Seu código do Passe Beaterista chegou 🎉';
-  const texto = [`Oi${primeiro ? `, ${primeiro}` : ''}! Obrigada pela compra do Passe Beaterista.`, '', `Seu código de acesso: ${code}`, '',
+  const assunto = 'Seu código do Beaterista PLAY chegou 🎉';
+  const texto = [`Oi${primeiro ? `, ${primeiro}` : ''}! Obrigada pela compra do Beaterista PLAY - Passe Anual.`, '', `Seu código de acesso: ${code}`, '',
     'Como entrar:', `1. abra ${url}/?entrar`, '2. escreva seu nome', '3. escolha "já sou aluno" e digite o código acima', '',
     `O passe vale 12 meses${ate ? ` (até ${ate})` : ''} e funciona em até 2 aparelhos.`, 'Guarde este e-mail. Perdeu o código? Na tela de entrada toque em "perdi meu código" e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.', '', 'Professora Bea · Beaterista'].join('\n');
-  const html = `<div style="font-family:system-ui,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1b1818"><p>Oi${primeiro ? `, ${esc(primeiro)}` : ''}! Obrigada pela compra do <b>Passe Beaterista</b>.</p>
+  const html = `<div style="font-family:system-ui,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1b1818"><p>Oi${primeiro ? `, ${esc(primeiro)}` : ''}! Obrigada pela compra do <b>Beaterista PLAY - Passe Anual</b>.</p>
 <p style="margin:18px 0 4px">Seu código de acesso:</p><p style="font:700 28px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.12em;background:#fff1c7;border:2px solid #1b1818;border-radius:12px;padding:12px 16px;display:inline-block;margin:0">${esc(code)}</p>
 <p style="margin-top:20px"><b>Como entrar</b></p><ol><li>abra <a href="${esc(url)}/?entrar">${esc(url.replace(/^https?:\/\//, ''))}/?entrar</a></li><li>escreva seu nome</li><li>escolha “já sou aluno” e digite o código acima</li></ol>
 <p>O passe vale <b>12 meses</b>${ate ? ` (até ${esc(ate)})` : ''} e funciona em até <b>2 aparelhos</b>.</p><p>Guarde este e-mail. Perdeu o código? Na tela de entrada toque em “perdi meu código” e informe o e-mail da compra: mandamos de novo. Qualquer dúvida, é só responder.</p><p>Professora Bea · Beaterista</p></div>`;
