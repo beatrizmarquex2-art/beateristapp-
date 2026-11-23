@@ -35,11 +35,13 @@ export function contagem(steps) { const per = GRIDS[steps].perBeat; const sub = 
 /** Desenho de cima do kit (quem toca está embaixo): números = ordem de montagem. */
 export function kitDeCima() {
   const circ = (x, y, r, n, t, dy = null, dash = '') => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#000" stroke-width="2.4" ${dash}/><text x="${x}" y="${y + 6}" text-anchor="middle" font-size="17" font-weight="800" font-family="Hanken Grotesk">${n}</text><text x="${x}" y="${y + (dy ?? r + 16)}" text-anchor="middle" font-size="13" font-family="Hanken Grotesk">${t}</text>`;
-  return `<svg class="postura" viewBox="0 0 470 350" role="img"><rect x="2" y="2" width="466" height="346" rx="10" fill="#fff" stroke="#000" stroke-width="2"/>
-  ${circ(235, 308, 30, '1', 'banco', -38)}
-  ${circ(235, 246, 21, '2', 'caixa', 36)}
-  ${circ(160, 250, 21, '3', 'chimbal', 36)}
-  <ellipse cx="235" cy="172" rx="46" ry="30" fill="#fff" stroke="#000" stroke-width="2.4"/><text x="235" y="178" text-anchor="middle" font-size="17" font-weight="800" font-family="Hanken Grotesk">4</text><text x="235" y="214" text-anchor="middle" font-size="13" font-family="Hanken Grotesk">bumbo</text>
+  return `<svg class="postura" viewBox="0 0 470 356" role="img"><rect x="2" y="2" width="466" height="350" rx="10" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="235" y="344" text-anchor="middle" font-size="13" font-weight="800" font-family="Hanken Grotesk">▲ QUEM TOCA SENTA AQUI, DE COSTAS PARA ESTA BORDA ▲</text>
+  <path d="M430 300 V60" stroke="#000" stroke-width="2.4" fill="none"/><path d="M422 72 L430 56 L438 72" stroke="#000" stroke-width="2.4" fill="none"/><text x="440" y="190" font-size="13" font-weight="800" font-family="Hanken Grotesk" transform="rotate(90 440 190)" text-anchor="middle">FRENTE (pra onde você olha)</text>
+  ${circ(235, 306, 22, '1', 'banco', -30)}
+  ${circ(235, 250, 19, '2', 'caixa', -26)}
+  ${circ(160, 250, 21, '3', 'chimbal', -28)}
+  <ellipse cx="235" cy="160" rx="46" ry="28" fill="#fff" stroke="#000" stroke-width="2.4"/><text x="235" y="166" text-anchor="middle" font-size="17" font-weight="800" font-family="Hanken Grotesk">4</text><text x="235" y="204" text-anchor="middle" font-size="13" font-family="Hanken Grotesk">bumbo</text>
   ${circ(188, 100, 21, '5', 'tom 1', -30)}
   ${circ(282, 100, 21, '6', 'tom 2', -30)}
   ${circ(350, 184, 27, '7', 'surdo', 44)}
