@@ -2001,3 +2001,6 @@ body.bv-aberta { overflow: hidden; }
 .au-tempo{justify-self:center}.au-go{justify-self:center}
 .au-res{display:grid;gap:4px;justify-items:center;text-align:center}.au-res p{margin:0}.au-res-n{font:34px/1 'Anton',Impact,sans-serif}.au-res-est{font-size:26px;color:#d4a21b;letter-spacing:2px}
 @media (prefers-reduced-motion:reduce){.tk-art [data-p].au-luz{transition:none}}
+/* o botão "canhota" fica dentro da área da bateria, no cantinho de baixo */
+.tk-palco{position:relative}
+.tk-palco .kd-canhota{position:absolute;right:10px;bottom:10px;z-index:3;min-height:28px;padding:3px 11px;font-size:12px}

@@ -10,10 +10,11 @@ const shot = (n) => page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/aula
 const espera = (fn, ms = 30000) => page.waitForFunction(fn, null, { timeout: ms });
 
 await page.goto(url + '/aluno.html#/toque'); await sleep(2200);
-check('o botão "aulas" aparece do lado do "canhota"', await page.evaluate(() => !!document.querySelector('.kd-aulas') && !!document.querySelector('.kd-canhota')));
+check('o "canhota" fica dentro da área da bateria e o "aulas" na linha de baixo, em outro lugar', await page.evaluate(() => !!document.querySelector('.tk-palco .kd-canhota') && !!document.querySelector('.kd-aulas') && !document.querySelector('.tk-palco .kd-aulas')));
 await page.evaluate(() => document.querySelector('.kd-aulas').click()); await sleep(500);
 check('abre a lista com 9 aulas', await page.evaluate(() => document.querySelectorAll('.au-item').length === 9));
 await shot('1-lista');
+
 await page.evaluate(() => [...document.querySelectorAll('.au-item')].find((b) => b.textContent.includes('ritmo 5')).click()); await sleep(400);
 check('a aula mostra a grade com as 3 peças do ritmo 5', await page.evaluate(() => document.querySelectorAll('.au-pl').length === 3 && document.querySelectorAll('.au-cel.on').length === 8));
 await shot('2-aula');

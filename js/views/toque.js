@@ -86,7 +86,9 @@ export function mount(host) {
   const drawKit = () => {
     const c = conf(); modeloAtual = c.modelo; warmKit(c.modelo);
     kit.classList.toggle('left', !!c.left);
-    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`); logoFora(art, c.modelo);
+    const art = svgEl(arte(c.modelo), `tk-art modelo-${c.modelo}`);
+    { const svg = art.querySelector('svg'); if (svg) { const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'kit-espelho'); while (svg.firstChild) g.append(svg.firstChild); svg.append(g); } } // a bateria vai num grupo só: a canhota espelha esse grupo e os logos de fora não viram
+    logoFora(art, c.modelo);
     kit.dataset.kitTheme = 'colagem'; // um fundo só (a Bea não quer escolher tema na bateria de toque)
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e, 58); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
@@ -94,7 +96,7 @@ export function mount(host) {
     // canhota sobe pra cá: logo ao lado do modelo (inverte o lado da bateria)
     const canhota = h('button', { type: 'button', class: `kd-chip kd-canhota${c.left ? ' on' : ''}`, 'aria-pressed': String(!!c.left), onclick: () => setConf({ left: !c.left }).then(() => { drawKit(); drawPanel(); }) }, c.left ? 'canhota ✓' : 'canhota');
     const aulasBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${aulasCtl ? ' on' : ''}${!pago() ? ' travado' : ''}`, 'aria-pressed': String(!!aulasCtl), onclick: () => { if (!pago()) { pedir('as aulas da bateria'); return; } aulasCtl ? fechaAulas() : abreAulas(); } }, aulasCtl ? 'aulas ✓' : 'aulas', !pago() ? cadeado() : null);
-    kit.replaceChildren(art, nomeEl, rolar(modelos), rolar(h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'jeito'), canhota, aulasBtn)));
+    kit.replaceChildren(h('div', { class: 'tk-palco' }, art, canhota), nomeEl, rolar(modelos), rolar(h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn)));
   };
   const onKey = (e) => {
     if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
