@@ -71,7 +71,7 @@ export function montaMundo(host, J) {
     const prox = f.num < FASES_POR_NIVEL && r.est >= 1; const todas = fasesDe(J.id, nv);
     root.replaceChildren(h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'), h('b', { class: 'vv-fasetit' }, `fase ${f.num}`)),
       quadro(grande, r.est, frase, h('small', {}, r.total != null ? 'todas certas = 3 ★ · 80% = 2 ★ · 60% = 1 ★ (abre a próxima)' : 'sem erros = 3 ★ · até 2 erros = 2 ★ · concluir = 1 ★')),
-      h('div', { class: 'jg-actions' }, prox ? h('button', { class: 'btn primary', type: 'button', onclick: () => joga(nv, todas[f.num]) }, 'próxima fase ▶') : null,
+      h('div', { class: 'jg-actions' }, prox ? h('button', { class: 'btn primary prox-fixo', type: 'button', onclick: () => joga(nv, todas[f.num]) }, 'próxima fase ▶') : null,
         h('button', { class: `btn${prox ? '' : ' primary'}`, type: 'button', onclick: () => joga(nv, f) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   }
 

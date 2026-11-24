@@ -75,7 +75,7 @@ export function mount(host) {
     if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Figurix', caminho: 'todas as fases', chave: 'figurix', pose: 'estante' })).catch(() => {}), 700); // terminou o caminho: festa + postar
     root.replaceChildren(topo(0, 0), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),
       h('p', { class: 'jg-p' }, erros ? `${acertos} acertos e ${erros} erro${erros > 1 ? 's' : ''}.` : 'sem nenhum erro. perfeito!'),
-      h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,
+      h('div', { class: 'jg-actions' }, fase < FASES && aberto(mundoDe(fase + 1).id) ? h('button', { class: 'btn primary prox-fixo', type: 'button', onclick: () => comeca(fase + 1) }, mundoDe(fase + 1).id !== mundoDe(fase).id ? `próximo mundo ▶ ${mundoDe(fase + 1).curto}` : 'próxima fase ▶') : null,
         fase < FASES && !aberto(mundoDe(fase + 1).id) ? h('p', { class: 'jg-p fx-trava' }, `🔒 pra abrir o próximo mundo: ${motivo(mundoDe(fase + 1).id)}.`) : null, h('button', { class: `btn${est < 3 ? ' fx-recomeca' : ''}`, type: 'button', onclick: () => joga(fase) }, est < 3 ? '↻ recomeçar' : 'jogar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa')));
   };
 

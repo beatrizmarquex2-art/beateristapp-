@@ -1142,3 +1142,6 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 
 /* botão "próxima" dos quizzes: gruda acima do "‹ jogos" (que fica fixo no canto) e nunca fica escondido atrás dele, no iPhone também */
 .dc-next { position: sticky; bottom: calc(72px + var(--safe-b)); z-index: 55; width: 100%; margin-top: 14px; min-height: 52px; }
+/* "próxima fase ▶" nos outros jogos: a fileira de botões gruda acima do "‹ jogos" fixo (mesma ideia do .dc-next) */
+html.em-jogo :is(.jg-actions, div, p, span):has(> .prox-fixo) { position: sticky; bottom: calc(72px + var(--safe-b)); z-index: 55; }
+.prox-fixo { min-height: 48px; }

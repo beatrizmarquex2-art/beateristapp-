@@ -58,7 +58,7 @@ export function mount(host) {
       mostra(f.bars[f.bars.length - 1]); porBar[porBar.length - 1].tempos.forEach((ok, i) => nums[i].classList.add(ok ? 'ok' : 'bad')); quem.textContent = 'resultado';
       const prox = FASES_GROOVE.find((x) => x.n === f.n + 1);
       res.replaceChildren(quadro(`${pct}%`, n, pct >= MIN_GROOVE ? 'você devolveu o groove!' : `precisa de ${MIN_GROOVE}% pra ganhar estrela`, h('small', {}, `certos por compasso: ${porBar.map((r) => `${r.hits}/${r.esperado}`).join(' · ')}${porBar.some((r) => r.extras) ? ` · toques sobrando: ${porBar.reduce((s, r) => s + r.extras, 0)}` : ''}`),
-        pct >= MIN_GROOVE && prox ? h('button', { type: 'button', class: 'btn small', onclick: () => fase(prox) }, 'próxima fase ▶') : null));
+        pct >= MIN_GROOVE && prox ? h('button', { type: 'button', class: 'btn small prox-fixo', onclick: () => fase(prox) }, 'próxima fase ▶') : null));
       go.textContent = '↻ jogar de novo'; go.hidden = false; ops.hidden = false; msg.textContent = pct >= 80 ? 'muito bom!' : 'dica: conte 1, 2, 3, 4 em voz alta junto com o Paul.';
       root.querySelector('.vv-topo .vv-est').textContent = estrelasTxt(estrelasPct(e[f.n] || 0));
     }
