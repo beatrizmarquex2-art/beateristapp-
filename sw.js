@@ -479,7 +479,7 @@ const EXTRA = [
 self.addEventListener('install', (e) => {
   // o essencial entra todo ou nada; as artes dos jogos entram uma a uma (se uma falhar, as outras ficam e o app instala do mesmo jeito)
   e.waitUntil(caches.open(VERSION).then(async (c) => {
-    await c.addAll(SHELL); self.skipWaiting();
+    await c.addAll([...new Set(SHELL)]); self.skipWaiting(); // sem repetidos: um item repetido faz o addAll falhar (InvalidStateError) e o app nunca fica guardado pro uso offline
     await Promise.allSettled(EXTRA.map((u) => c.add(u)));
   }));
 });
