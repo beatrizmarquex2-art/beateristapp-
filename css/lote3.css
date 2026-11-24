@@ -1139,3 +1139,6 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 /* estudos: aviso da figurinha exclusiva ao terminar um tema */
 .tf-exclusiva { margin: 8px 0 0; padding: 10px 12px; border-radius: 14px !important; background: #fff3c4; border: 2px solid #c81e2d; font-weight: 700; color: #162146; }
 .tf-exclusiva a { color: #c81e2d; }
+
+/* botão "próxima" dos quizzes: gruda acima do "‹ jogos" (que fica fixo no canto) e nunca fica escondido atrás dele, no iPhone também */
+.dc-next { position: sticky; bottom: calc(72px + var(--safe-b)); z-index: 55; width: 100%; margin-top: 14px; min-height: 52px; }
