@@ -2,6 +2,7 @@
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
 import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
 import { h, icon, uid } from './util.js';
+import { migrarSeNecessario } from './migrar-dominio.js';
 import { misturaOption, MISTURA_AJUDA, soundButton, musicButton } from './sound-btn.js';
 import { iconeTopo } from './top-icons.js';
 import { atualizarButton } from './atualizar-btn.js';
@@ -597,6 +598,8 @@ async function start() {
 }
 
 (async () => {
+  // mudança de endereço (jogos → play): leva código, nome e aparelho pro endereço novo antes de qualquer coisa ler o armazenamento
+  try { if (migrarSeNecessario({ loc: location, st: localStorage, hist: history })) return; } catch { /* segue */ }
   if ('serviceWorker' in navigator) {
     // Versão nova do app: quando o service worker novo assume, recarrega sozinho (fora de um jogo; dentro de um jogo espera sair), e procura versão nova sempre que o app volta pra tela.
     const tinha = !!navigator.serviceWorker.controller; let recarregar = false;

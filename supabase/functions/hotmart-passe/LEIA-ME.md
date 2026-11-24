@@ -16,8 +16,12 @@ Ordem importa: **teste primeiro, só depois troque os links de venda.**
    Opcional `SITE_URL` (padrão https://play.beaterista.com.br). `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` o Supabase já injeta. A service role só existe dentro da função.
 4. **Deploy sem JWT** (a Hotmart não manda JWT; quem autentica é o hottok): `supabase functions deploy hotmart-passe --no-verify-jwt --project-ref fnxgjxatremjdxaqmswu`.
 
-### Domínio
-4b. **play.beaterista.com.br** precisa apontar pro mesmo site do app dos alunos (Netlify: Domain management → adicionar o domínio; DNS: CNAME de `play` pro endereço que o Netlify mostrar) e ter HTTPS ativo **antes** de vender: é o link que vai no e-mail.
+### Domínio (jogos → play) e a ponte que leva o código dos alunos
+- O `play.beaterista.com.br` precisa abrir o app dos alunos com HTTPS (conferir no celular).
+- **O `jogos.beaterista.com.br` NÃO pode ficar só em redirecionamento (hoje é um "encaminhamento" do GoDaddy, 301).** Enquanto ele só redireciona, o navegador do aluno nunca roda o app antigo e o código, o nome e o id do aparelho ficam presos no endereço velho. Mantenha o `jogos` apontando pro MESMO site do app por 30 a 60 dias: o app (`js/migrar-dominio.js`) detecta o endereço antigo, leva o aluno pro `play` com os dados no #hash (nunca vai pro servidor) e o `play` grava e limpa o endereço. Depois do prazo pode voltar pro redirecionamento.
+- Passos: no Netlify, adicionar `jogos` como alias do mesmo site (sem a opção de redirecionar aliases pro domínio principal) e, no GoDaddy, tirar o encaminhamento do `jogos` e apontar o DNS pro Netlify. Publicar esta branch **antes**, senão o `jogos` abre a versão antiga, sem a ponte.
+- O ícone na tela de início que o aluno criou no `jogos` pode abrir só um atalho do navegador; o banner na aba Início explica como salvar o app de novo pelo `play`.
+- Reserva: `scripts/passe-liberar-aparelhos.sql` libera as vagas de aparelho dos passes, caso algum aluno veja "já está em 2 aparelhos".
 
 ### Hotmart
 5. **ID do produto**: Produtos → Passe → o número na URL da página do produto (ex.: `.../products/4567890`) ou "Dados gerais". Vira `HOTMART_PRODUCT_IDS` (vários separados por vírgula; vale também o ucode). Confira que é o produto do **Passe** e não de um ebook. Evento de qualquer outro produto é ignorado com 200.

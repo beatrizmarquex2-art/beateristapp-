@@ -169,3 +169,8 @@ body:has(.inicio) .atualiza-bar { display: none !important; }
 .in-share > span { flex: 1; opacity: .85; }
 .in-share-bt { border: 2px solid #f2a91b; background: transparent; color: #f2a91b; border-radius: 99px !important; padding: 6px 16px; font: 800 13px "Hanken Grotesk", sans-serif; cursor: pointer; }
 .in-share-bt:disabled { opacity: .5; }
+
+/* aviso: mudamos o endereço (jogos → play) */
+.in-end { position: relative; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 18px rgba(0,0,0,.4); }
+.in-end img { display: block; width: 100%; height: auto; }
+.in-end-x { position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font: 700 20px/1 "Hanken Grotesk", sans-serif; cursor: pointer; }

@@ -227,6 +227,14 @@ export function mount(host, { nome = '' } = {}) {
   const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
   const mostraAtu = () => { avisoAtu.hidden = false; };
   try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
-  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, dividir, tres, continuar, roleta, novidades, atalhos));
+  // aviso da mudança de endereço (jogos → play): fica até o aluno fechar ou até o fim de fev/2027
+  const avisoEnd = (() => {
+    try { if (localStorage.getItem('bt-aviso-endereco-fechado') === '1') return null; } catch { /* ok */ }
+    if (Date.now() > Date.parse('2027-02-28T00:00:00-03:00')) return null;
+    return h('section', { class: 'in-end', role: 'note' },
+      h('img', { src: 'assets/aviso/mudamos-endereco.webp', alt: 'Mudamos o endereço! Agora, sempre que for jogar, digite play.beaterista.com.br. Ou salve como app: abra o site no navegador, toque em compartilhar e escolha Adicionar à Tela de Início.', width: 1600, height: 533, loading: 'lazy' }),
+      h('button', { type: 'button', class: 'in-end-x', 'aria-label': 'fechar aviso', onclick: (ev) => { try { localStorage.setItem('bt-aviso-endereco-fechado', '1'); } catch { /* ok */ } ev.currentTarget.closest('.in-end').remove(); } }, '×'));
+  })();
+  host.append(h('div', { class: 'inicio' }, avisoEnd, avisoAtu, passe, dividir, tres, continuar, roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }
