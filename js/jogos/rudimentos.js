@@ -134,7 +134,7 @@ export function mount(host) {
       extra.replaceChildren();
       if (passou && tempoIdx < TEMPOS.length - 1) extra.append(h('button', { type: 'button', class: 'btn small', onclick: () => jogo(f, { tempo: tempoIdx + 1 }) }, `${TEMPOS[tempoIdx + 1][1]} BPM ▶`));
       else if (passou && figIdx === 0) extra.append(h('button', { type: 'button', class: 'btn small', onclick: () => jogo(f, { fig: 1, tempo: 0 }) }, 'semicolcheias ▶'));
-      const prox = FASE_BY[f.n + 1]; if (passou && prox && liberada(est(), prox.n)) extra.append(h('button', { type: 'button', class: 'btn small', onclick: () => jogo(prox, { tempo: 0, fig: 0 }) }, 'próxima fase ▶'));
+      const prox = FASE_BY[f.n + 1]; if (passou && prox && liberada(est(), prox.n)) extra.append(h('button', { type: 'button', class: 'btn small prox-fixo', onclick: () => jogo(prox, { tempo: 0, fig: 0 }) }, 'próxima fase ▶'));
     };
     const start = () => {
       const c = audio(); chart = buildChart(sq, bpm, por); res.hidden = true; extra.replaceChildren(); pop = null; ultimo = -1; const q = 60 / bpm; const total = chart[chart.length - 1].t + p;

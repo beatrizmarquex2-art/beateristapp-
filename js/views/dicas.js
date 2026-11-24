@@ -68,7 +68,7 @@ function quiz(box, kinds, key, D) { // D (duelo em 2 celulares): { qs: perguntas
         h('span', { class: `dc-bd dc-k${n}` }, answered && o.id === q.ans ? '✓' : answered && picked === o.id ? '✕' : LETRAS[n]), h('span', { class: 'dc-ot' }, o.label))))];
     box.replaceChildren(...[h('section', { class: 'card pad dc-q' }, ...body.filter(Boolean)),
       answered ? explain(q.item) : null,
-      answered ? h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; if (i >= ROUNDS || estourou()) finish(); else next(); } }, i + 1 >= ROUNDS || estourou() ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
+      answered ? h('button', { class: 'btn primary dc-next', type: 'button', onclick: () => { i++; if (i >= ROUNDS || estourou()) finish(); else next(); } }, i + 1 >= ROUNDS || estourou() ? (D ? 'terminar' : 'ver o resultado') : 'próxima') : null].filter(Boolean));
   }
   next();
   return { stats: () => ({ found: score, total: ROUNDS, erros: hist.filter((x) => !x).length, ajuda: ajudou, puladas }) };
