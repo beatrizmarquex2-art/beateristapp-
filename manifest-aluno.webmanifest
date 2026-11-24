@@ -1,8 +1,8 @@
 {
-  "name": "Beaterista · Alunos",
-  "short_name": "Beaterista",
-  "description": "Jogos, Beat Lab e instrumentos da Escola de Música Beaterista.",
-  "start_url": "aluno.html",
+  "name": "Beaterista Play",
+  "short_name": "Beaterista Play",
+  "description": "Jogue, toque e aprenda música com o Robôterista Paul.",
+  "start_url": "./#/inicio",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
