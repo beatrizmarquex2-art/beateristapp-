@@ -1,8 +1,6 @@
-// Preço do passe anual (12 meses, no pix). Oferta Black Friday da Bea: R$ 49,90 até 15/dez/2026 (fim do dia, horário de Brasília); depois volta pro preço normal, R$ 79,90.
-export const PASSE_NORMAL = 79.9; export const PASSE_OFERTA = 49.9; export const OFERTA_ATE = new Date('2026-12-15T23:59:59-03:00');
-const brl = (n) => `R$ ${n.toFixed(2).replace('.', ',')}`;
-/** { oferta, atual, de, ate } no momento `agora`. */
-export function precoPasse(agora = new Date()) {
-  const oferta = agora.getTime() <= OFERTA_ATE.getTime();
-  return { oferta, atual: brl(oferta ? PASSE_OFERTA : PASSE_NORMAL), de: oferta ? brl(PASSE_NORMAL) : '', ate: '15 de dezembro' };
-}
+// Preço do passe anual (12 meses). Valem os preços da oferta oficial (js/oferta.js): R$ 49,90 no Pix (pagamento único) e R$ 79,90 no cartão (Hotmart).
+// A oferta de Black Friday por data saiu; `atual` segue sendo o valor do Pix (usado no texto do painel de códigos, que registra vendas pagas no Pix).
+import { TXT_PIX, TXT_CARTAO } from './oferta.js';
+export const PASSE_NORMAL = 79.9; export const PASSE_OFERTA = 49.9;
+/** { oferta, atual, de, ate, cartao } (sem data de fim). */
+export function precoPasse() { return { oferta: false, atual: TXT_PIX, de: '', ate: '', cartao: TXT_CARTAO }; }

@@ -13,6 +13,7 @@ import * as store from '../store.js';
 import { atualizarAgora } from '../atualizar-btn.js';
 import * as PERF from '../inicio-perfil.js';
 import { toast } from '../ui.js';
+import { cartaoPasse } from '../promo-passe.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -227,6 +228,6 @@ export function mount(host, { nome = '' } = {}) {
   const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
   const mostraAtu = () => { avisoAtu.hidden = false; };
   try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
-  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, dividir, tres, continuar, roleta, novidades, atalhos));
+  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, dividir, tres, continuar, cartaoPasse({ onde: 'inicio' }), roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }

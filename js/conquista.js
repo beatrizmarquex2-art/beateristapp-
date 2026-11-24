@@ -115,7 +115,7 @@ const slug = (t) => limpa(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, 
 export async function postar(dados) {
   const cv = await cartao(dados); const blob = await new Promise((ok) => cv.toBlob(ok, 'image/png')); if (!blob) { toast('não deu pra montar a imagem agora.'); return 'cancelado'; }
   try { window.__conquista = { dados, blob }; } catch { /* só pra teste */ }
-  const r = await compartilharArquivo(blob, `beaterista-${slug(dados.titulo)}.png`, `${limpa(dados.selo || '')} ${limpa(dados.titulo || '')} 🎶 jogue também: https://${LINK} · ${ARROBA}`.trim());
+  const r = await compartilharArquivo(blob, `beaterista-${slug(dados.titulo)}.png`, `${limpa(dados.selo || '')} ${limpa(dados.titulo || '')} 🎶 aprenda música jogando: https://${LINK} · ${ARROBA}`.trim());
   if (r === 'baixado') toast('imagem baixada! poste e marque a escola.'); else if (r === 'compartilhado') toast(`marcou ${ARROBA}? mande o print na aba roleta › resgate e ganhe 5 ★`);
   return r;
 }

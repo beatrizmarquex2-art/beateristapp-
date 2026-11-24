@@ -2,13 +2,12 @@
 // (e manda chamar a professora Bea). Preencher o `link` (pagamento ou WhatsApp) é tudo que falta pra vender.
 // `img` = capa do cartão; `fotos` = imagens maiores que abrem ao tocar no cartão (o que tem dentro).
 // A lojinha só aparece pra turma quando LOJA_ABERTA for true. Enquanto estiver false, a tela mostra só "a lojinha vem em breve" (e as artes nem vão pro site dos alunos).
+import { PASSE_NOME, TXT_CARTAO, URL_CARTAO, BENEFICIOS } from './oferta.js';
 export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
-// Por enquanto o Passe é vendido pelo WhatsApp (mensagem já escrita); a Bea gera o código na aba Códigos e manda. Depois vem a liberação automática pela Hotmart (supabase/functions/hotmart-passe).
-export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 79,90', info: ['12 meses de acesso', 'Pagamento único (pix) pelo WhatsApp'], img: 'assets/loja/passe.webp', link: `https://wa.me/5518991804150?text=${encodeURIComponent('Olá, gostaria de adquirir o passe Anual do site Beaterista')}` };
-// Banner do acesso anual (especial lançamento, R$ 49,90): vai em cima do combo; mesmo link do passe (WhatsApp). Só aparece enquanto vale a oferta (js/passe-preco.js).
-export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', desc: 'especial lançamento: 12 meses de acesso por R$ 49,90', img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link };
+// Passe Anual Robôterista: cartão pela Hotmart (o Pix só entra quando PIX_LIBERADO, em js/oferta.js). Valores e links vêm de js/oferta.js.
+export const PASSE = { nome: PASSE_NOME, preco: TXT_CARTAO, info: BENEFICIOS, img: 'assets/loja/passe.webp', link: URL_CARTAO };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [

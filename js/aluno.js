@@ -81,6 +81,7 @@ import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 import { iconePaul } from './icone-paul.js';
+import { SITE, CHAMADAS, MARCA } from './oferta.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -390,16 +391,26 @@ function trocarAluno() {
 }
 
 /** Compartilhar o jogo (o link da área dos alunos): folha de compartilhar do celular; sem ela, copia o link. Nada do aluno vai junto (nem nome, nem código). */
-const LINK_JOGO = 'https://jogos.beaterista.com.br';
+const LINK_JOGO = SITE; // endereço oficial: js/oferta.js
 async function compartilharJogo() {
-  const texto = 'jogos de música pra aprender brincando, da Beaterista escola de música: bora jogar?';
-  try { if (navigator.share) { await navigator.share({ title: 'Beaterista · jogos de música', text: texto, url: LINK_JOGO }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const texto = `${CHAMADAS.principal} ${CHAMADAS.verbos} ${MARCA}, da Beaterista escola de música: bora jogar?`;
+  try { if (navigator.share) { await navigator.share({ title: `${MARCA} · aprenda música jogando`, text: texto, url: LINK_JOGO }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   try { await navigator.clipboard.writeText(`${texto} ${LINK_JOGO}`); toast('link copiado! cole e mande pra quem você quiser.'); } catch { toast(LINK_JOGO, { ms: 6000 }); }
 }
 /** Sair: este aparelho esquece o nome e o código (a vaga do código é liberada). Dá pra voltar depois pela lista do "trocar aluno". */
 async function sairDoApp() {
   if (!(await confirmSheet('sair?', 'este aparelho esquece o nome e o código. pra voltar é só escolher o seu nome na lista do "trocar aluno" ou digitar o código de novo.', 'sair'))) return;
   CONTAS.semConta(); location.reload();
+}
+/** Como instalar o app na tela inicial (o link é o endereço oficial; nada é gravado). */
+function instalarApp() {
+  sheet('instalar o app', (close) => h('div', { class: 'sheet-body al-instalar' },
+    h('p', {}, `${MARCA} funciona como aplicativo, sem loja: é só colocar na tela inicial.`),
+    h('p', {}, h('b', {}, 'iPhone e iPad: '), 'abra ', h('b', {}, SITE.replace('https://', '')), ' no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.'),
+    h('p', {}, h('b', {}, 'Android: '), 'abra o endereço no Chrome, toque no menu ⋮ e depois em “Instalar app” ou “Adicionar à tela inicial”.'),
+    h('p', {}, h('b', {}, 'Computador: '), 'abra o endereço no Chrome ou no Edge e clique no ícone de instalar, na barra de endereço.'),
+    h('a', { class: 'btn wide primary', href: SITE, onclick: () => close() }, `abrir ${SITE.replace('https://', '')}`),
+    h('button', { type: 'button', class: 'btn wide', onclick: async () => { try { await navigator.clipboard.writeText(SITE); toast('link copiado!'); } catch { toast(SITE, { ms: 6000 }); } } }, '📋 copiar o link')));
 }
 /** Opções do topo: trocar aluno · compartilhar jogo · sair, com o nome e o código de quem está jogando. */
 function opcoes(name) {
@@ -408,7 +419,7 @@ function opcoes(name) {
     const bt = (rot, fn, cls = 'btn wide') => h('button', { type: 'button', class: cls, onclick: () => { close(); fn(); } }, rot);
     return h('div', { class: 'sheet-body al-opcoes' },
       h('p', { class: 'al-quem' }, h('b', {}, name), code ? h('span', {}, `código ${CODE.mascarar(code)}`) : h('span', {}, 'ainda sem código')),
-      bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'),
+      bt('👤 trocar aluno', trocarAluno), bt('↗ compartilhar jogo', compartilharJogo, 'btn wide primary'), bt('📲 instalar o app', instalarApp),
       code ? null : bt('🔑 tenho código', abrirCodigo),
       misturaOption('btn wide'), h('small', { class: 'muted' }, MISTURA_AJUDA),
       bt('🚪 sair', sairDoApp, 'btn wide ghost'),

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Passe Anual Robôterista · propostas visuais</title>
+<style>
+@font-face{font-family:Anton;src:url(../../assets/fonts/Anton-latin.woff2) format('woff2')}
+@font-face{font-family:Marker;src:url(../../assets/fonts/PermanentMarker-latin.woff2) format('woff2')}
+@font-face{font-family:Hanken;src:url(../../assets/fonts/HankenGrotesk-latin.woff2) format('woff2');font-weight:100 900}
+:root{--z:.3;--red:#a8182e;--red2:#b5162b;--cream:#f6ecd9;--ink:#1b1818;--gold:#f2c14e}
+*{box-sizing:border-box;margin:0}
+body{font-family:Hanken,system-ui,sans-serif;background:#e9e1d2;color:var(--ink);padding:24px}
+h1{font:400 38px Anton;text-transform:uppercase;letter-spacing:.02em}h2{font:400 22px Anton;text-transform:uppercase;margin:28px 0 4px}
+.nota{max-width:760px;font-size:15px;line-height:1.45;margin:6px 0 14px}.trava{background:var(--ink);color:var(--cream);padding:10px 14px;border-radius:8px;display:inline-block;font-weight:700;font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.slot{width:calc(var(--w)*var(--z)*1px);height:calc(var(--h)*var(--z)*1px);position:relative;flex:none}
+.slot.pix{outline:4px dashed var(--gold);outline-offset:4px}.slot.pix::after{content:"SÓ COM PIX AUTORIZADO";position:absolute;left:0;top:-22px;font:700 11px Hanken;color:#7a5a00}
+.art{position:absolute;left:0;top:0;width:calc(var(--w)*1px);height:calc(var(--h)*1px);transform:scale(var(--z));transform-origin:0 0;overflow:hidden;background:var(--red);color:var(--cream)}
+/* grão e pontilhado de grafite */
+.art::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,#e0405a55,transparent 62%),radial-gradient(#f2c14e 2.4px,transparent 3px) 0 0/26px 26px;opacity:.35}
+.tag{position:absolute;font:700 26px Hanken;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.tit{position:absolute;font:400 170px/.95 Anton;text-transform:uppercase}.tit em{display:block;font-style:normal;color:var(--gold)}
+.marker{position:absolute;font:400 52px/1.1 Marker;color:var(--cream);transform:rotate(-3deg)}
+.paul{position:absolute;filter:drop-shadow(0 18px 0 #55101a88)}
+.fita{position:absolute;width:210px;height:56px;background:#f6ecd9cc;transform:rotate(-6deg);box-shadow:0 2px 6px #0004}
+.cartao{position:absolute;background:var(--cream);color:var(--ink);border:6px solid var(--ink);border-radius:30px 12px 30px 12px;box-shadow:12px 12px 0 var(--ink);padding:34px 40px}
+.cartao::before{content:"";position:absolute;inset:0 auto 0 0;width:16px;background:repeating-linear-gradient(180deg,var(--red2) 0 30px,var(--ink) 30px 36px)}
+.preco{font:400 120px/1 Anton;color:var(--red2)}.preco small{font:700 30px Hanken;color:#5f5752;display:block;margin-top:6px}
+.btn{position:absolute;background:var(--ink);color:var(--cream);font:700 36px Hanken;padding:22px 40px;border-radius:14px;box-shadow:8px 8px 0 #0006}
+.url{position:absolute;left:0;right:0;text-align:center;font:700 34px Hanken;letter-spacing:.04em}
+.sel{position:absolute;background:var(--gold);color:var(--ink);font:400 38px Anton;text-transform:uppercase;padding:10px 22px;transform:rotate(4deg);box-shadow:6px 6px 0 var(--ink)}
+</style></head><body>
+<h1>Passe Anual Robôterista · Beaterista Play</h1>
+<p class="nota">Propostas de arte (vermelho, creme e grafite; Paul recortado; nada de brilho neon). As peças abaixo são <b>editáveis em HTML</b> e já saem em PNG nesta pasta. Peças com contorno pontilhado dourado mostram o <b>preço do Pix</b>: <span class="trava">só publicar com o Pix validado e autorizado</span></p>
+
+<h2>Story · versão cartão (pode ir já)</h2>
+<div class="row">
+ <div class="slot" style="--w:1080;--h:1920"><div class="art" id="story-cartao">
+  <div class="tag" style="left:70px;top:90px">Beaterista Play</div>
+  <div class="tit" style="left:60px;top:140px;font-size:190px">Aprenda<em>música<br>jogando.</em></div>
+  <img class="paul" src="../../assets/paul/animacoes/web/paul-presente.webp" style="right:-10px;top:660px;width:520px" alt="">
+  <div class="marker" style="left:70px;top:790px;width:470px">jogue, toque,<br>aprenda e evolua.</div>
+  <div class="fita" style="left:60px;top:690px"></div>
+  <div class="cartao" style="left:60px;right:60px;top:1200px"><div class="tag" style="position:static;color:var(--red2);font-size:24px">Passe Anual Robôterista</div><div class="preco">R$ 79,90<small>no cartão · 12 meses · até 2 aparelhos</small></div></div>
+  <div class="btn" style="left:60px;top:1620px">toque no link 👆</div>
+  <div class="url" style="bottom:70px">jogos.beaterista.com.br</div>
+ </div></div>
+ <div class="slot pix" style="--w:1080;--h:1920"><div class="art" id="story-pix">
+  <div class="tag" style="left:70px;top:90px">Beaterista Play · Passe Anual</div>
+  <div class="tit" style="left:60px;top:140px;font-size:150px">Um ano<em>de música<br>por R$ 49,90</em></div>
+  <div class="marker" style="left:70px;top:800px;width:520px">no Pix · pagamento único</div>
+  <img class="paul" src="../../assets/paul/animacoes/web/paul-presente.webp" style="right:-10px;top:740px;width:470px" alt="">
+  <div class="cartao" style="left:60px;right:60px;top:1260px"><div style="font:600 36px/1.3 Hanken">✓ 12 meses de acesso<br>✓ até 2 aparelhos<br>✓ código no seu e-mail na hora</div></div>
+  <div class="sel" style="right:80px;top:1180px">no Pix</div>
+  <div class="btn" style="left:60px;top:1670px">quero o meu 👆</div>
+ </div></div>
+</div>
+
+<h2>Feed 1080×1350 e capa do carrossel</h2>
+<div class="row">
+ <div class="slot" style="--w:1080;--h:1350"><div class="art" id="feed-capa">
+  <div class="tag" style="left:60px;top:60px">Beaterista Play · Robôterista Paul</div>
+  <div class="tit" style="left:60px;top:110px;font-size:180px">Aprenda<em>música<br>jogando.</em></div>
+  <img class="paul" src="../../assets/paul/animacoes/web/paul-presente.webp" style="right:-20px;top:600px;width:560px" alt="">
+  <div class="marker" style="left:70px;top:780px;width:480px">jogue, toque,<br>aprenda e evolua.</div>
+  <div class="btn" style="left:60px;bottom:70px">Passe Anual · jogos.beaterista.com.br</div>
+ </div></div>
+ <div class="slot pix" style="--w:1080;--h:1350"><div class="art" id="feed-pix">
+  <div class="tag" style="left:60px;top:60px">Passe Anual Robôterista</div>
+  <div class="tit" style="left:60px;top:110px;font-size:120px">Um ano inteiro<em>de educação<br>musical</em></div>
+  <div class="cartao" style="left:60px;right:60px;top:640px"><div class="preco">R$ 49,90<small>no Pix · pagamento único · ou R$ 79,90 no cartão</small></div></div>
+  <img class="paul" src="../../assets/paul/animacoes/web/paul-presente.webp" style="right:40px;top:310px;width:300px" alt="">
+  <div class="url" style="bottom:70px">12 meses · até 2 aparelhos · jogos.beaterista.com.br</div>
+ </div></div>
+</div>
+</body></html>

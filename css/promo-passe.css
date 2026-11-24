@@ -1,0 +1,31 @@
+/* Cartão do Passe Anual Robôterista (js/promo-passe.js): street/editorial, vermelho e creme, borda de caderno e sombra dura. Sem animação. */
+.pp{--pp-red:#b5162b;--pp-ink:#1b1818;--pp-cream:#f6ecd9;position:relative;display:grid;grid-template-columns:84px 1fr;gap:6px 12px;align-items:start;margin:0;padding:14px 14px 14px 12px;border:3px solid var(--pp-ink);border-radius:16px 6px 16px 6px;background:var(--pp-cream);color:var(--pp-ink);box-shadow:5px 5px 0 var(--pp-ink);overflow:hidden;font-family:var(--body,"Hanken Grotesk",system-ui,sans-serif)}
+.pp::before{content:"";position:absolute;inset:0 auto 0 0;width:7px;background:repeating-linear-gradient(180deg,var(--pp-red) 0 14px,var(--pp-ink) 14px 17px)}
+.pp-paul{width:84px;height:84px;object-fit:contain;margin-left:6px;align-self:center;pointer-events:none}
+.pp-txt{display:grid;gap:6px;min-width:0}
+.pp-tag{font:800 10.5px/1.2 var(--body,"Hanken Grotesk",sans-serif);letter-spacing:.12em;text-transform:uppercase;color:var(--pp-red)}
+.pp h3{margin:0;font:800 clamp(21px,6vw,27px)/1.02 var(--display,Georgia,serif);font-style:italic;letter-spacing:-.01em;color:var(--pp-ink)}
+.pp-sub{margin:0;font:600 13.5px/1.4 var(--body,sans-serif);color:#3a302f}
+.pp-preco{margin:2px 0 0;font:600 13.5px/1.25 var(--body,sans-serif);display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px}
+.pp-preco b{font:900 26px/1 var(--display,Georgia,serif);color:var(--pp-red)}
+.pp-preco small{flex-basis:100%;font:700 12px/1.3 var(--body,sans-serif);color:#5f5752}
+.pp-lista{margin:0;padding:0;list-style:none;display:grid;gap:2px;font:600 12.5px/1.35 var(--body,sans-serif)}
+.pp-lista li::before{content:"✓ ";color:var(--pp-red);font-weight:900}
+.pp-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pp-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border:3px solid var(--pp-ink);border-radius:999px;font:900 14px/1 var(--body,sans-serif);text-decoration:none;box-shadow:3px 3px 0 var(--pp-ink);flex:1 1 160px}
+.pp-pix{background:var(--pp-red);color:#fff}.pp-alt{background:#fff;color:var(--pp-ink)}
+.pp-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--pp-ink)}
+.pp-btn:focus-visible{outline:3px solid var(--pp-red);outline-offset:3px}
+/* compacto: some a lista e o texto de apoio */
+.pp-c{grid-template-columns:64px 1fr;padding:10px 12px 10px 12px;box-shadow:4px 4px 0 var(--pp-ink)}.pp-c .pp-paul{width:64px;height:64px}.pp-c h3{font-size:20px}.pp-c .pp-preco b{font-size:22px}
+@media (max-width:360px){.pp{grid-template-columns:1fr}.pp-paul{display:none}}
+/* o cartão fica no fluxo da tela (nunca fixo nem por cima de jogo) */
+.pp-inicio,.pp-jogos,.pp-perfil,.pp-lojinha{margin-block:4px}
+@media (prefers-reduced-motion:reduce){.pp-btn{transition:none}.pp-btn:active{transform:none}}
+
+/* entrada (aluno.html): complementos do bloco do passe */
+.en-passe-tag{display:block;margin:0 0 6px;font:800 10.5px/1.2 "Hanken Grotesk",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#f3ab1c}
+.en-box.passe .pr small{color:rgb(255 255 255 / .8)}
+.en-passe-lista{margin:0 0 12px;padding:0;list-style:none;display:grid;gap:3px;font:600 13px/1.35 "Hanken Grotesk",sans-serif;text-align:left;clear:both}
+.en-passe-lista li::before{content:"✓ ";font-weight:900}
+.en-box.passe .en-passe-btn+.en-passe-btn{margin-top:8px}

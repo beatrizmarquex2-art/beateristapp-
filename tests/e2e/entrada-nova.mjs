@@ -6,8 +6,8 @@ let p = await novo(); await p.goto(`${url}/aluno.html`); await p.waitForSelector
 check('a entrada mostra o logo do Paul, os atalhos e a Lojinha amarela clicável', (await p.locator('.en-logo').count()) === 1 && (await p.locator('.en-tile').count()) === 4 && (await p.locator('a.en-tile.am').count()) === 1);
 check('sem pergunta "por onde conheceu"', !/por onde você conheceu/.test(await p.locator('.en').innerText()));
 const PS = await p.locator('.en-box.passe').innerText();
-check('passe anual: oferta Black Friday R$ 49,90 (de R$ 79,90) no pix, sem cartão parcelado, e 12 meses', !/149,90|cartão/i.test(PS) && /R\$ 49,90/.test(PS) && /de R\$ 79,90/.test(PS) && /15 de dezembro/i.test(PS) && /pix/i.test(PS) && /12 meses de acesso/i.test(PS) && /quero meu passe anual/i.test(PS));
-check('o botão do passe chama a equipe no WhatsApp (ainda sem link de pagamento)', /wa\.me\/5518991804150/.test(await p.locator('.en-passe-btn').getAttribute('href')));
+check('passe anual: aprenda música jogando, R$ 79,90 no cartão, 12 meses, 2 aparelhos, e NENHUM Pix à venda (homologação)', /aprenda música jogando/i.test(PS) && /R\$ 79,90/.test(PS) && /12 meses de acesso/i.test(PS) && /até 2 aparelhos/i.test(PS) && /e-mail/i.test(PS) && !/R\$ 49,90/.test(PS) && (await p.locator('.en-passe-btn[data-compra="pix"]').count()) === 0);
+check('o botão do passe abre a Hotmart (cartão), não o WhatsApp', (await p.locator('.en-passe-btn').getAttribute('href')) === 'https://pay.hotmart.com/Y108629105P');
 check('texto da Beatriz Marques e os 15 celulares do "veja por dentro"', /Beatriz Marques/i.test(await p.locator('.en-nome').innerText()) && (await p.locator('.en-jg').count()) === 15);
 check('produtos: 4 apostilas, "imprima, recorte e aprenda brincando" e "adquira já na lojinha"', (await p.locator('.en-prod').count()) === 4 && /aprenda brincando/i.test(await p.locator('.en-ibr').innerText()) && /adquira já na lojinha/i.test(await p.locator('.en-adq').innerText()));
 await p.click('.en-pqp'); check('"por que Paul?" abre a arte', !(await p.locator('.en-modal').evaluate((e) => e.hidden))); await p.click('.en-modal');

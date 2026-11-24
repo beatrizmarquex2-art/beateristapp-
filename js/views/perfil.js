@@ -12,6 +12,7 @@ import * as FN from '../foto-perfil-nuvem.js';
 import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as PROG from '../kids/progress.js';
 import * as PS from '../jogos/perfil-sala.js';
+import { cartaoPasse } from '../promo-passe.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
@@ -91,7 +92,7 @@ export function mount(host) {
   /* ---- a minha figurinha ---- */
   const mc = Minhas.colecao({ titulo: 'minha coleção' });
   cri = criador({ cfg, salvar: salvarCfg, nome: nomeAtual, aoGuardar: async (e) => { try { await Minhas.guardar(e); toast('guardada na sua coleção!'); mc.refresh(); return true; } catch (err) { toast(err.message === 'cheia' ? 'a coleção está cheia (40). apague alguma.' : err.message === 'repetida' ? 'essa figurinha já está na sua coleção. mude a foto, o modelo ou o nome pra criar outra.' : err.message === 'limite2' ? 'só dá pra ter 2 figurinhas da mesma foto no mesmo modelo de card. troque a foto ou o modelo.' : 'não consegui guardar agora.'); return err.message === 'repetida' || err.message === 'limite2'; } } }); const area = cri.el;
-  body.append(topo, area, mc.el);
+  body.append(topo, ...[cartaoPasse({ onde: 'perfil', compacto: true })].filter(Boolean), area, mc.el);
   (async () => { try { const b = await D.metaLer(FOTO); if (b && alive) { fotoBlob = b; fotoImg = await blobImg(b); } } catch { /* ok */ } if (!alive) return; desenhaAvatar(); cri.setFoto(fotoImg, { resetar: false }); })();
   // títulos que ganhou terminando trilhas da Fuga do Estúdio (aparece quando tem algum)
   (async () => { try { const B = await import('../jogos/base.js'); const lista = (B.getGame('fuga').titulos || []); if (!lista.length || !alive) return;

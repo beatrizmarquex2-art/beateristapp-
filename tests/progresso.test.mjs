@@ -14,10 +14,11 @@ test('por jogo, fica o que foi mexido por último; jogo que só existe de um lad
   const m = mesclaJogos(l, r);
   assert.equal(m.quebra.best, 9); assert.equal(m.velha.n, 1); assert.equal(m.stop.n, 3);
 });
-test('passe anual: 49,90 até 15/dez/2026 (fim do dia) e 79,90 depois', async () => {
+test('passe anual: R$ 49,90 no Pix e R$ 79,90 no cartão, sem data de fim e com o Pix escondido até ser liberado', async () => {
   const { precoPasse } = await import('../js/passe-preco.js');
-  assert.deepEqual([precoPasse(new Date('2026-11-18T12:00:00-03:00')).atual, precoPasse(new Date('2026-11-18T12:00:00-03:00')).de], ['R$ 49,90', 'R$ 79,90']);
-  assert.equal(precoPasse(new Date('2026-12-15T23:30:00-03:00')).atual, 'R$ 49,90');
-  assert.equal(precoPasse(new Date('2026-12-16T00:00:01-03:00')).atual, 'R$ 79,90');
-  assert.equal(precoPasse(new Date('2026-12-16T00:00:01-03:00')).oferta, false);
+  const O = await import('../js/oferta.js');
+  const p = precoPasse(new Date('2027-03-01T12:00:00-03:00'));
+  assert.deepEqual([p.atual, p.cartao, p.oferta], ['R$ 49,90', 'R$ 79,90', false]);
+  assert.equal(O.URL_CARTAO, 'https://pay.hotmart.com/Y108629105P'); assert.equal(O.URL_PIX, 'https://jogos.beaterista.com.br/pix/');
+  assert.equal(O.PIX_LIBERADO, false, 'o checkout Pix está em homologação: o botão só aparece depois de autorizado');
 });
