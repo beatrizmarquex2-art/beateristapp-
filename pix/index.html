@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#1b1818">
+  <title>Passe Anual no Pix · Beaterista Play</title>
+  <link rel="icon" type="image/png" href="../assets/icons/icon-192.png">
+  <style>
+    @font-face{font-family:Anton;src:url(../assets/fonts/Anton-latin.woff2) format('woff2');font-display:swap}
+    @font-face{font-family:Marker;src:url(../assets/fonts/PermanentMarker-latin.woff2) format('woff2');font-display:swap}
+    @font-face{font-family:Hanken;src:url(../assets/fonts/HankenGrotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+    :root{--graf:#1b1818;--graf2:#2a2524;--red:#b5162b;--red2:#d42a40;--creme:#f6ecd9;--creme2:#efe2c8;--ouro:#f2c14e;--ok:#1f6b3f;--muted:#5f5752}
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;min-height:100vh;min-height:100dvh;background:var(--graf);color:var(--graf);font:16px/1.5 Hanken,system-ui,-apple-system,"Segoe UI",sans-serif;
+      background-image:radial-gradient(#f2c14e22 2px,transparent 2.5px),radial-gradient(ellipse at 20% 0,#a8182e66,transparent 55%);background-size:26px 26px,100% 100%;
+      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+    main{max-width:560px;margin:0 auto;padding:14px 16px 56px}
+    a{color:var(--red)}
+    .topo{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 14px}
+    .topo .chip{background:var(--creme);border:3px solid var(--graf);border-radius:10px 4px 10px 4px;padding:5px 10px;box-shadow:3px 3px 0 #000a}.topo img{height:26px;width:auto;display:block}
+    .voltar{color:var(--creme);opacity:.8;text-decoration:none;font-size:14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
+    .hero{display:grid;grid-template-columns:1fr 112px;gap:6px 10px;align-items:end;color:var(--creme);margin-bottom:10px}
+    .marca{font:800 11px/1.2 Hanken;letter-spacing:.18em;text-transform:uppercase;color:var(--ouro);margin:0 0 6px}
+    h1{font:400 clamp(38px,11vw,52px)/.98 Anton;text-transform:uppercase;margin:0}
+    h1 em{display:block;font-style:normal;color:var(--ouro)}
+    .hero img.paul{width:112px;height:auto;justify-self:end;filter:drop-shadow(0 8px 0 #0006)}
+    .marker{font:400 22px/1.1 Marker,cursive;color:var(--creme);transform:rotate(-2deg);margin:4px 0 0}
+    /* etapas */
+    .etapas{list-style:none;display:flex;gap:6px;margin:14px 0 6px;padding:0}
+    .etapas li{flex:1;display:grid;gap:5px;justify-items:center;text-align:center;color:#f6ecd99a;font:700 10px/1.15 Hanken;text-transform:uppercase;letter-spacing:.04em}
+    .etapas i{width:30px;height:30px;border-radius:50%;border:3px solid currentColor;display:grid;place-items:center;font:900 13px/1 Hanken;font-style:normal}
+    .etapas li.feito{color:#77d1a1}.etapas li.feito i{background:#77d1a1;border-color:#77d1a1;color:var(--graf)}
+    .etapas li.atual{color:var(--ouro)}.etapas li.atual i{background:var(--ouro);border-color:var(--ouro);color:var(--graf)}
+    .atual-txt{color:var(--creme);text-align:center;font:600 14px/1.3 Hanken;margin:0 0 14px;min-height:1.3em}
+    @media(max-width:420px){.etapas li span{display:none}}
+    /* oferta */
+    .preco{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px 14px;background:var(--red);color:#fff;border:3px solid var(--creme);border-radius:16px 6px 16px 6px;padding:14px 16px;margin-bottom:14px;box-shadow:5px 5px 0 #000a}
+    .preco small{display:block;font:800 11px/1.2 Hanken;letter-spacing:.1em;text-transform:uppercase;color:var(--ouro)}
+    .preco b{font:400 44px/1 Anton;display:block;white-space:nowrap}
+    .preco .eco{white-space:nowrap;font:800 13px/1.2 Hanken;background:var(--ouro);color:var(--graf);border-radius:99px;padding:6px 12px;border:3px solid var(--graf);text-align:center;justify-self:end}
+    .preco .cartao{grid-column:1/-1;font:600 13px/1.3 Hanken;opacity:.95}.preco .cartao a{color:#fff;font-weight:800}
+    .painel{position:relative;background:var(--creme);color:var(--graf);border:3px solid var(--graf);border-radius:16px 6px 16px 6px;padding:22px 20px 20px 26px;box-shadow:5px 5px 0 #000a;margin-bottom:14px}
+    .painel::before{content:"";position:absolute;inset:0 auto 0 0;width:9px;background:repeating-linear-gradient(180deg,var(--red) 0 16px,var(--graf) 16px 19px)}
+    h2{font:400 26px/1 Anton;text-transform:uppercase;margin:0 0 14px}
+    label{display:block;font-weight:800;font-size:14px;margin:14px 0 6px}
+    input,textarea{font:inherit;font-size:16px}
+    input{padding:13px 14px;border-radius:10px;background:#fff;color:var(--graf);width:100%;border:3px solid var(--graf);min-height:50px}
+    input:focus{outline:3px solid var(--ouro);outline-offset:2px;border-color:var(--red)}
+    input[aria-invalid=true]{border-color:var(--red);background:#fff4f2}
+    button,.botao{font:inherit;font-weight:800;border:3px solid var(--graf);border-radius:999px;min-height:52px;padding:12px 18px;cursor:pointer;text-align:center;touch-action:manipulation}
+    button:disabled{opacity:.6;cursor:wait}
+    .principal{background:var(--red);color:#fff;width:100%;margin-top:18px;font-size:17px;box-shadow:4px 4px 0 var(--graf)}
+    .principal:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--graf)}
+    .secundario{background:#fff;color:var(--graf);display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:3px 3px 0 var(--graf)}
+    .ajuda{font-size:12.5px;color:var(--muted);margin:9px 0 0}
+    .erro{color:#7a0f1d;background:#ffe3e0;border:3px solid var(--red);border-radius:10px;padding:12px;margin:14px 0 0;font-weight:700}
+    [hidden]{display:none!important}
+    .qrbox{background:#fff;padding:12px;border:3px solid var(--graf);border-radius:12px;max-width:250px;margin:14px auto;display:flex;justify-content:center}
+    .qrbox img{display:block;width:100%;height:auto}
+    textarea{font:12px/1.5 ui-monospace,Menlo,monospace;font-size:16px;resize:none;width:100%;min-height:92px;border:3px solid var(--graf);border-radius:10px;padding:10px;background:#fff;color:var(--graf);overflow-wrap:anywhere}
+    .acao{display:grid;gap:10px;margin-top:12px}
+    .centro{text-align:center}
+    .status{background:var(--creme2);padding:12px 14px;border-radius:10px;margin:14px 0;font-weight:700;border-left:6px solid var(--ouro)}
+    .status.ok{border-left-color:var(--ok)}
+    .ok-grande{font:400 clamp(30px,9vw,40px)/1 Anton;text-transform:uppercase;color:var(--ok);margin:0 0 10px}
+    .passos-ok{list-style:none;padding:0;margin:14px 0;text-align:left;display:grid;gap:8px;font-weight:600}
+    .passos-ok li::before{content:"✓ ";color:var(--ok);font-weight:900}
+    .rodape{font-size:13px;color:#f6ecd9cc;margin-top:22px;text-align:center}
+    .rodape a{color:var(--ouro)}
+    .confianca{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;color:var(--creme);font:700 12px/1.3 Hanken;margin:0 0 14px;opacity:.9}
+    .confianca span::before{content:"✓ ";color:var(--ouro)}
+    @media(max-width:380px){.painel{padding:18px 14px 16px 22px}.hero{grid-template-columns:1fr 88px}.hero img.paul{width:88px}.preco{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="topo">
+    <span class="chip"><img src="../assets/logo-nome.png" alt="Beaterista, escola de música" width="77" height="26"></span>
+    <a class="voltar" href="https://jogos.beaterista.com.br/?entrar">← voltar ao Robôterista</a>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="marca">Beaterista Play · Passe Anual Robôterista</p>
+      <h1>Seu passe<em>no Pix.</em></h1>
+      <p class="marker">aprenda música jogando</p>
+    </div>
+    <img class="paul" src="../assets/paul/animacoes/web/paul-presente.webp" alt="Robôterista Paul segurando um presente" width="112" height="112">
+  </header>
+
+  <ol class="etapas" id="etapas" aria-label="etapas da compra">
+    <li data-e="1"><i>1</i><span>dados</span></li>
+    <li data-e="2"><i>2</i><span>gerar Pix</span></li>
+    <li data-e="3"><i>3</i><span>pagar</span></li>
+    <li data-e="4"><i>4</i><span>confirmar</span></li>
+    <li data-e="5"><i>5</i><span>e-mail</span></li>
+    <li data-e="6"><i>6</i><span>entrar</span></li>
+  </ol>
+  <p class="atual-txt" id="etapa-txt" role="status" aria-live="polite"></p>
+
+  <div class="preco">
+    <div><small>Pix · pagamento único</small><b>R$ 49,90</b></div>
+    <div class="eco">Economize R$ 30,00</div>
+    <div class="cartao">Prefere cartão? <a href="https://pay.hotmart.com/Y108629105P" target="_blank" rel="noopener">Hotmart · R$ 79,90</a></div>
+  </div>
+  <p class="confianca"><span>12 meses de acesso</span><span>até 2 aparelhos</span><span>código no seu e-mail</span></p>
+
+  <section id="inicio" class="painel" aria-labelledby="cabecalho">
+    <h2 id="cabecalho">1 · seus dados</h2>
+    <form id="form" novalidate>
+      <label for="nome">nome completo</label>
+      <input id="nome" name="nome" autocomplete="name" autocapitalize="words" minlength="2" maxlength="80" required>
+      <label for="email">e-mail que receberá o código</label>
+      <input id="email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="200" required>
+      <label for="cpf">CPF do pagador</label>
+      <input id="cpf" name="cpf" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14" required>
+      <p class="ajuda">o CPF é usado para gerar o pagamento no Mercado Pago e não fica armazenado no nosso cadastro.</p>
+      <button id="gerar" type="submit" class="principal">gerar Pix de R$ 49,90</button>
+    </form>
+    <p id="erro" class="erro" role="alert" hidden></p>
+  </section>
+
+  <section id="pagamento" class="painel" aria-labelledby="cabecalho-pagamento" hidden>
+    <h2 id="cabecalho-pagamento">pague com Pix</h2>
+    <p>use o QR Code ou copie a chave abaixo. o Pix costuma ser válido por até 30 minutos.</p>
+    <div id="qrbox" class="qrbox" hidden><img id="qr" alt="QR Code Pix do Mercado Pago"></div>
+    <div id="copiar-bloco" hidden>
+      <label for="chave">Pix copia e cola</label>
+      <textarea id="chave" readonly></textarea>
+      <div class="acao"><button id="copiar" type="button" class="principal" style="margin-top:0">copiar código Pix</button></div>
+    </div>
+    <p id="status" class="status" role="status" aria-live="polite">aguardando pagamento...</p>
+    <div class="acao">
+      <a id="mp" class="botao secundario" href="#" target="_blank" rel="noopener noreferrer" hidden>abrir Pix no Mercado Pago</a>
+      <button id="conferir" class="botao secundario" type="button">já paguei · conferir pagamento</button>
+      <button id="novo" class="botao secundario" type="button" hidden>gerar um novo Pix</button>
+    </div>
+    <p class="ajuda">a confirmação é automática: esta tela se atualiza sozinha. depois, o código anual chega ao seu e-mail. não é necessário enviar comprovante.</p>
+    <p id="erro2" class="erro" role="alert" hidden></p>
+  </section>
+
+  <section id="sucesso" class="painel centro" hidden>
+    <p class="ok-grande">pagamento confirmado!</p>
+    <ul class="passos-ok" id="passos-ok">
+      <li>Pix confirmado pelo Mercado Pago</li>
+      <li>passe anual ativo: 12 meses, até 2 aparelhos</li>
+      <li id="li-email">código enviado para o e-mail informado</li>
+    </ul>
+    <p id="sucesso-txt" class="ajuda" style="font-size:14px;color:var(--graf)">confira também a caixa de spam. na plataforma, escreva seu nome e digite o código em “já sou aluno”.</p>
+    <a class="botao principal" href="https://jogos.beaterista.com.br/?entrar" style="display:flex;align-items:center;justify-content:center;text-decoration:none">entrar na plataforma</a>
+  </section>
+
+  <p class="rodape">pagamento processado pelo Mercado Pago · acesso enviado pela equipe Beaterista<br>dúvidas? WhatsApp da escola: <a href="https://wa.me/5518991804150">(18) 99180-4150</a></p>
+</main>
+<script>
+(() => {
+  "use strict";
+  // CONTRATO DA API PRESERVADO: POST <função>?acao=criar | status, corpo JSON, mesmos códigos de erro, consulta automática a cada 7 s,
+  // identificador do pedido guardado em sessionStorage para recuperar um Pix pendente. A confirmação do e-mail só vem do servidor (email_enviado).
+  const API = "https://fnxgjxatremjdxaqmswu.supabase.co/functions/v1/mercadopago-passe";
+  const $ = (id) => document.getElementById(id);
+  let pedido = sessionStorage.getItem("beaterista-pix-pedido") || "";
+  let timer = null;
+  let consultando = false;
+  const erro = (el, msg) => { el.hidden = !msg; el.textContent = msg || ""; };
+
+  const TEXTOS = {
+    1: "preencha seus dados para gerar o Pix.", 2: "gerando o seu Pix...", 3: "pague com o QR Code ou o Pix copia e cola.",
+    4: "confirmando o pagamento no Mercado Pago...", 5: "pagamento confirmado. enviando o código ao seu e-mail...", 6: "tudo pronto! entre na plataforma.",
+  };
+  /** Etapa atual (1 a 6): as anteriores ficam "feitas". A etapa 6 só vem depois do servidor confirmar o envio do e-mail. */
+  function etapa(n, txt) {
+    document.querySelectorAll("#etapas li").forEach((li) => {
+      const i = Number(li.dataset.e);
+      li.classList.toggle("feito", i < n || n === 6);
+      li.classList.toggle("atual", i === n && n !== 6);
+      if (i === n && n !== 6) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+    });
+    $("etapa-txt").textContent = txt || TEXTOS[n] || "";
+  }
+
+  const soDigitos = (v) => String(v || "").replace(/\D/g, "");
+  function cpfValido(v) {
+    const c = soDigitos(v);
+    if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
+    for (const t of [9, 10]) {
+      let s = 0;
+      for (let i = 0; i < t; i++) s += Number(c[i]) * (t + 1 - i);
+      if (((s * 10) % 11) % 10 !== Number(c[t])) return false;
+    }
+    return true;
+  }
+  $("cpf").addEventListener("input", (e) => {
+    const d = soDigitos(e.target.value).slice(0, 11);
+    e.target.value = d.replace(/^(\d{3})(\d)/, "$1.$2").replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1-$2");
+    e.target.removeAttribute("aria-invalid");
+  });
+
+  async function chamar(modo, body) {
+    const r = await fetch(API + "?acao=" + modo, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body), cache: "no-store",
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const msgs = {
+        pix_nao_configurado: "o Pix está sendo configurado. por enquanto, utilize o cartão na Hotmart.",
+        email_nao_configurado: "o envio automático está indisponível. tente novamente mais tarde.",
+        verifique_nome_email_cpf: "confira seu nome, e-mail e CPF.",
+        muitas_tentativas_tente_mais_tarde: "muitas tentativas. tente novamente em 15 minutos.",
+        falha_ao_gerar_pix: "não foi possível gerar o Pix. tente novamente.",
+        falha_temporaria_ao_gerar_pix: "não foi possível confirmar a geração do Pix. aguarde e tente novamente.",
+      };
+      throw Error(msgs[data.erro] || "não foi possível concluir agora. tente novamente.");
+    }
+    return data;
+  }
+  function pagamento(data) {
+    $("inicio").hidden = true;
+    $("pagamento").hidden = false;
+    $("sucesso").hidden = true;
+    if (data.qr_code_base64 && /^[a-zA-Z0-9+/=]+$/.test(data.qr_code_base64)) {
+      $("qr").src = "data:image/png;base64," + data.qr_code_base64;
+      $("qrbox").hidden = false;
+    }
+    if (data.qr_code) {
+      $("chave").value = data.qr_code;
+      $("copiar-bloco").hidden = false;
+    }
+    if (data.ticket_url && /^https:\/\//.test(data.ticket_url)) {
+      $("mp").href = data.ticket_url;
+      $("mp").hidden = false;
+    }
+    $("status").textContent = "aguardando confirmação do Pix...";
+    etapa(3);
+    if (!timer) timer = setInterval(conferir, 7000);
+  }
+  function finalizado(enviado) {
+    clearInterval(timer); timer = null;
+    sessionStorage.removeItem("beaterista-pix-pedido"); pedido = "";
+    $("inicio").hidden = true;
+    $("pagamento").hidden = true;
+    $("sucesso").hidden = false;
+    if (!enviado) {
+      $("li-email").textContent = "o e-mail ainda está sendo enviado";
+      $("sucesso-txt").textContent = "seu acesso já foi liberado, mas o e-mail ainda está sendo enviado. aguarde alguns instantes e confira a caixa de spam.";
+      etapa(5);
+    } else etapa(6);
+    window.scrollTo({ top: 0 });
+  }
+  async function conferir() {
+    if (!pedido || consultando || document.hidden) return;
+    consultando = true;
+    try {
+      const data = await chamar("status", { pedido });
+      if (data.status === "aprovada" && data.email_enviado) finalizado(true);
+      else if (data.status === "aprovada") {
+        $("status").textContent = "Pagamento confirmado. Estamos enviando o código ao seu e-mail; não pague novamente.";
+        $("status").className = "status ok";
+        $("qrbox").hidden = true; $("copiar-bloco").hidden = true; $("mp").hidden = true;
+        etapa(5);
+        if (!timer) timer = setInterval(conferir, 7000);
+      }
+      else if (["reembolsada", "chargeback", "cancelada", "falhou"].includes(data.status)) {
+        clearInterval(timer); timer = null;
+        $("status").textContent = "esse pagamento não foi aprovado. volte e gere um novo Pix, se desejar.";
+        $("status").className = "status";
+        $("qrbox").hidden = true; $("copiar-bloco").hidden = true; $("mp").hidden = true; $("conferir").hidden = true; $("novo").hidden = false;
+        sessionStorage.removeItem("beaterista-pix-pedido");
+        pedido = "";
+        etapa(3, "pagamento não aprovado. gere um novo Pix.");
+      } else {
+        $("status").textContent = "Pix pendente. quando o pagamento for aprovado, seu acesso será enviado por e-mail.";
+        if ($("pagamento").hidden) pagamento(data);
+        if (data.ticket_url || data.qr_code || data.qr_code_base64) pagamento(data);
+      }
+      erro($("erro2"), "");
+    } catch (e) {
+      erro($("erro2"), String(e.message || e));
+    } finally {
+      consultando = false;
+    }
+  }
+  $("form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    erro($("erro"), "");
+    for (const id of ["nome", "email", "cpf"]) $(id).removeAttribute("aria-invalid");
+    const nomeOk = $("nome").value.trim().length >= 2, emailOk = $("email").checkValidity() && $("email").value.trim() !== "", cpfOk = cpfValido($("cpf").value);
+    if (!nomeOk || !emailOk || !cpfOk) {
+      if (!nomeOk) $("nome").setAttribute("aria-invalid", "true");
+      if (!emailOk) $("email").setAttribute("aria-invalid", "true");
+      if (!cpfOk) $("cpf").setAttribute("aria-invalid", "true");
+      erro($("erro"), !cpfOk && nomeOk && emailOk ? "esse CPF não parece válido. confira os 11 números." : "confira seu nome, e-mail e CPF.");
+      ($("nome").getAttribute("aria-invalid") ? $("nome") : $("email").getAttribute("aria-invalid") ? $("email") : $("cpf")).focus();
+      return;
+    }
+    $("gerar").disabled = true;
+    $("gerar").textContent = "gerando Pix...";
+    etapa(2);
+    try {
+      const data = await chamar("criar", {
+        nome: $("nome").value, email: $("email").value, cpf: $("cpf").value,
+      });
+      pedido = data.pedido;
+      sessionStorage.setItem("beaterista-pix-pedido", pedido);
+      pagamento(data);
+      await conferir();
+    } catch (e) {
+      erro($("erro"), String(e.message || e));
+      etapa(1);
+    } finally {
+      $("gerar").disabled = false;
+      $("gerar").textContent = "gerar Pix de R$ 49,90";
+    }
+  });
+  $("conferir").addEventListener("click", () => conferir());
+  $("novo").addEventListener("click", () => { location.reload(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) conferir(); }); // voltou do app do banco: confere na hora
+  $("copiar").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText($("chave").value);
+      $("copiar").textContent = "código copiado!";
+    } catch {
+      $("chave").select();
+      $("copiar").textContent = "selecione e copie o código acima";
+    }
+  });
+  etapa(1);
+  if (pedido) {
+    $("inicio").hidden = true;
+    $("pagamento").hidden = false;
+    $("status").textContent = "recuperando seu Pix...";
+    etapa(3, "recuperando o seu Pix...");
+    conferir();
+  }
+})();
+</script>
+</body>
+</html>

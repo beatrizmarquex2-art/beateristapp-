@@ -6,7 +6,7 @@ import { PASSE_NOME, TXT_CARTAO, URL_CARTAO, BENEFICIOS } from './oferta.js';
 export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
-// Passe Anual Robôterista: cartão pela Hotmart (o Pix só entra quando PIX_LIBERADO, em js/oferta.js). Valores e links vêm de js/oferta.js.
+// Passe Anual Robôterista: cartão pela Hotmart (o Pix só entra quando pixAtivo(), js/oferta-flag.js). Valores e links vêm de js/oferta.js.
 export const PASSE = { nome: PASSE_NOME, preco: TXT_CARTAO, info: BENEFICIOS, img: 'assets/loja/passe.webp', link: URL_CARTAO };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };

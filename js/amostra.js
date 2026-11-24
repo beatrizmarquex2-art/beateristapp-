@@ -2,6 +2,8 @@
 // de caça-palavras, 2 cruzadinhas); o resto pede o código. É trava de tela (o conteúdo continua no aplicativo), como o resto do acesso.
 import { h } from './util.js';
 import * as AC from './acesso.js';
+import { pixAtivo } from './oferta.js';
+import { ligarCompra } from './escolha-pagamento.js';
 
 /** Estamos na área dos alunos e ainda sem código? (no app da Bea nada é limitado) */
 export const alunoSemCodigo = () => document.documentElement.classList.contains('aluno-on') && !AC.liberado();
@@ -13,7 +15,7 @@ export const LOJINHA = '#/lojinha';
 
 /** Cartãozinho "isso é pra alunos": cadeado, o que falta e o caminho pra gerar o código (vai direto pra lojinha). */
 export const avisoCodigo = (texto, rotulo = 'gerar meu código') => h('section', { class: 'card pad am-lock', role: 'status' }, h('span', { class: 'am-i', 'aria-hidden': 'true' }, '🔒'),
-  h('p', {}, texto), h('a', { class: 'btn small', href: LOJINHA }, rotulo));
+  h('p', {}, texto), ligarCompra(h('a', { class: 'btn small', href: LOJINHA }, pixAtivo() ? 'adquirir o passe anual' : rotulo), 'bloqueado'));
 
 const KEY = 'beaterista-caca-gratis';
 /** Quantas partidas grátis de caça-palavras já foram começadas neste aparelho. */

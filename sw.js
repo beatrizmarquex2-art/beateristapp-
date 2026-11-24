@@ -1,5 +1,5 @@
 // Service worker: cacheia só o "casco" do app (código + marca). Nenhum dado do usuário passa por aqui.
-const VERSION = 'beaterista-v743';
+const VERSION = 'beaterista-v744';
 const SHELL = [
   'js/paulta/livre.js', 'js/dicas-aluno.js', 'js/boas-vindas.js', 'js/inicio-perfil.js', 'js/figurinhas/passe-card.js', 'assets/velha/baquetas.webp', 'assets/velha/palheta.webp', 'js/icone-paul.js', 'js/palavras-bloqueadas.js',
   'js/paulta/mapa.js',
@@ -493,6 +493,7 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return; // Supabase, YouTube etc.: sempre rede, nunca cache
+  if (url.pathname.startsWith('/pix/')) return; // checkout do Pix: sempre direto da rede (nunca uma cópia velha de uma tela de pagamento)
   if (req.headers.has('range')) return; // áudio/vídeo em pedaços: deixa o navegador cuidar
   // Cópia salva primeiro (abre na hora, mesmo com sinal fraco) e atualiza por trás. A cada versão nova o app baixa tudo de novo (VERSION),
   // então a cópia nunca fica velha por mais de uma abertura.

@@ -4,10 +4,11 @@
 import { h } from './util.js';
 import { icon } from './util.js';
 import { TERMO_DE_USO } from './termo-de-uso.js';
-import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, URL_CARTAO, URL_PIX, PIX_LIBERADO, CHAMADAS, BENEFICIOS } from './oferta.js';
+import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, TXT_ECONOMIA, URL_CARTAO, pixAtivo, CHAMADAS, BENEFICIOS } from './oferta.js';
+import { ligarCompra } from './escolha-pagamento.js';
 
 const A = 'assets/entrada/';
-// Passe anual: cartão pela Hotmart (URL_CARTAO). O Pix só aparece com PIX_LIBERADO (js/oferta.js): o checkout está em homologação.
+// Passe anual: cartão pela Hotmart (URL_CARTAO). O Pix (e a janela de escolha de pagamento) só aparece com pixAtivo() (js/oferta.js).
 const PAULS = [[`${A}paul-meditando.webp`, 'Paul meditando', 170], [`${A}paul-professor.webp`, 'Paul ensinando no quadro', 215], [`${A}paul-guitarra.webp`, 'Paul tocando guitarra', 215]];
 const KEY = 'beaterista-entrada-paul';
 const sorteia = () => { let ult = -1; try { ult = Number(sessionStorage.getItem(KEY) ?? localStorage.getItem(KEY) ?? -1); } catch { /* sem storage */ } let i = Math.floor(Math.random() * PAULS.length); if (i === ult) i = (i + 1) % PAULS.length; try { localStorage.setItem(KEY, String(i)); sessionStorage.setItem(KEY, String(i)); } catch { /* ok */ } return PAULS[i]; };
@@ -37,7 +38,7 @@ const svg = (inner, n = 22) => { const s = document.createElementNS('http://www.
 
 /** Monta a entrada. `p`: { links: [[nome, href]], onExperimentar(nome), onEntrar(nome, codigo), onLojinha(), pedido: elemento (código que a professora ainda vai liberar) }. Devolve { el, foco() }. */
 export function entradaNova(p) {
-  const [pSrc, pAlt, pH] = sorteia();
+  const [pSrc, pAlt, pH] = sorteia(); const PIX = pixAtivo();
   const nome1 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const nome2 = h('input', { class: 'en-f', type: 'text', maxlength: 20, autocomplete: 'username', autocapitalize: 'words', 'aria-label': 'Seu nome', placeholder: 'seu nome' });
   const cod = h('input', { class: 'en-f en-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Código de aluno', placeholder: 'código de aluno' });
@@ -75,11 +76,10 @@ export function entradaNova(p) {
     boxExp, boxAluno,
     h('section', { class: 'en-box passe', id: 'en-passe' }, h('img', { class: 'en-passe-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: '', width: 104, height: 104, draggable: 'false', decoding: 'async' }), h('small', { class: 'en-passe-tag' }, `${MARCA} · ${PASSE_NOME}`), h('h2', {}, 'aprenda música ', h('span', {}, 'jogando.')),
       h('p', { class: 'p1' }, CHAMADAS.verbos, ' Jogos educativos, desafios musicais, figurinhas e aulas com o Robôterista Paul, no seu ritmo.'),
-      h('p', { class: 'p2' }, PIX_LIBERADO ? CHAMADAS.ano : CHAMADAS.anoSemPix),
-      h('div', { class: 'pr solo' }, h('div', {}, h('b', { class: 'pix' }, PIX_LIBERADO ? TXT_PIX : TXT_CARTAO), h('small', {}, PIX_LIBERADO ? `no Pix, pagamento único · ou ${TXT_CARTAO} no cartão` : 'no cartão, pagamento único · Pix em breve'))),
+      h('p', { class: 'p2' }, PIX ? CHAMADAS.ano : CHAMADAS.anoSemPix),
+      h('div', { class: 'pr solo' }, h('div', {}, h('b', { class: 'pix' }, PIX ? TXT_PIX : TXT_CARTAO), h('small', {}, PIX ? `no Pix, pagamento único · economize ${TXT_ECONOMIA} · ou ${TXT_CARTAO} no cartão` : 'no cartão, pagamento único · Pix em breve'))),
       h('ul', { class: 'en-passe-lista' }, ...BENEFICIOS.map((b) => h('li', {}, b))),
-      PIX_LIBERADO ? h('a', { class: 'en-btn y en-passe-btn', href: URL_PIX, target: '_blank', rel: 'noopener noreferrer', 'data-compra': 'pix' }, `🎮 quero no Pix · ${TXT_PIX}`) : null,
-      h('a', { class: `en-btn ${PIX_LIBERADO ? 'r' : 'y'} en-passe-btn`, href: URL_CARTAO, target: '_blank', rel: 'noopener noreferrer', 'data-compra': 'cartao' }, PIX_LIBERADO ? `cartão · ${TXT_CARTAO}` : '🎮 quero meu passe anual'),
+      ligarCompra(h('a', { class: 'en-btn y en-passe-btn', href: URL_CARTAO, target: '_blank', rel: 'noopener noreferrer', 'data-compra': PIX ? 'escolha' : 'cartao' }, '🎮 quero meu passe anual'), 'entrada'),
       h('p', { class: 'p3' }, 'já é aluno da escola Beaterista? seu acesso anual está incluso! ', h('a', { href: '#en-experimentar', onclick: (e) => { e.preventDefault(); boxAluno.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => cod.focus({ preventScroll: true }), 450); } }, 'entre com seu código.'))),
     h('section', { class: 'en-sec' }, h('h3', {}, 'veja ', h('span', {}, 'por dentro')), h('p', { class: 'en-pq' }, 'telas reais do app. cada jogo diz o que desenvolve.'),
       rol('', ...JOGOS.map(([f, n, d]) => h('div', { class: 'en-jg' }, h('div', { class: 'ph' }, h('img', { src: `${A}${f}.jpg`, alt: `Tela: ${n}`, loading: 'lazy' })), h('b', {}, n), h('p', {}, d))))),

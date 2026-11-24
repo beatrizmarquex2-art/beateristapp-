@@ -576,13 +576,11 @@ details{border-width:1px;padding:10px 14px;margin-bottom:7px}
     <h2 class="A">Passe Anual Robôterista</h2>
     <img class="oferta-banner" src="assets/fd0404cadcf02a60.webp" alt="Passe Anual Robôterista, Beaterista Play: jogos musicais, modo online e estudos" width="1450" height="483" loading="lazy">
     <p class="lead">Aprenda música jogando. Jogue, toque, aprenda e evolua: o passe libera as fases, os estudos, a roleta e o álbum de figurinhas por um ano inteiro.</p>
-    <div class="passe-oferta">
-      <p><strong>R$ 79,90</strong> no cartão, pela Hotmart · 12 meses de acesso · até 2 aparelhos</p>
-      <a class="btn" href="https://pay.hotmart.com/Y108629105P?src=vendas">Quero meu passe anual</a>
-      <!-- PIX PREPARADO, NÃO PUBLICAR: o checkout Pix está em homologação. Só descomentar (e trocar o texto acima por "R$ 49,90 no Pix · ou R$ 79,90 no cartão") depois da validação e da autorização da Bea.
-      <a class="btn" href="https://jogos.beaterista.com.br/pix/">Quero no Pix · R$ 49,90</a> -->
+    <div class="passe-oferta" id="passe-oferta">
+      <p id="passe-preco"><strong>R$ 79,90</strong> no cartão, pela Hotmart · 12 meses de acesso · até 2 aparelhos</p>
+      <a class="btn" id="passe-comprar" href="https://pay.hotmart.com/Y108629105P?src=vendas" data-origem="vendas">Quero meu passe anual</a>
     </div>
-    <p class="passe-nota">Pagamento único. Assim que o pagamento é confirmado, o código de acesso chega automaticamente no seu e-mail. Pix em breve.</p>
+    <p class="passe-nota"><span id="passe-nota-txt">Pagamento único. Assim que o pagamento é confirmado, o código de acesso chega automaticamente no seu e-mail. Pix em breve.</span></p>
     <p class="aluno-acesso"><strong>Já é aluno da Beaterista?</strong> Seu passe anual está incluso. <a href="https://jogos.beaterista.com.br/#/album">Entrar com meu código</a></p>
   </div>
 </section>
@@ -616,5 +614,31 @@ details{border-width:1px;padding:10px 14px;margin-bottom:7px}
   </div>
 </footer>
 <div class="sticky"><a class="btn" href="https://jogos.beaterista.com.br/#/jogos/detetive">Jogar agora grátis</a></div>
+<dialog id="ep-v" aria-labelledby="ep-vt" style="width:min(440px,calc(100vw - 24px));padding:16px;border:3px solid #1b1818;border-radius:18px 8px 18px 8px;background:#f6ecd9;color:#1b1818;box-shadow:6px 6px 0 #1b1818">
+  <button type="button" id="ep-vx" aria-label="fechar" style="float:right;min-width:44px;min-height:44px;border:0;background:none;font:900 20px sans-serif;cursor:pointer">✕</button>
+  <p style="font:800 10px/1.2 sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b5162b;margin:0">Beaterista Play · Passe Anual Robôterista</p>
+  <h2 id="ep-vt" style="margin:4px 0 14px;font-size:1.5rem;line-height:1.1">Como você quer pagar?</h2>
+  <a href="https://jogos.beaterista.com.br/pix/" data-compra="pix" data-origem="vendas" style="position:relative;display:grid;gap:4px;margin:0 0 14px;padding:22px 16px 16px;border:3px solid #1b1818;border-radius:14px;background:#b5162b;color:#fff;text-decoration:none;box-shadow:4px 4px 0 #1b1818">
+    <span style="position:absolute;top:-13px;left:14px;padding:4px 10px;border:3px solid #1b1818;border-radius:99px;background:#f2c14e;color:#1b1818;font:900 11px/1 sans-serif;letter-spacing:.08em;text-transform:uppercase">melhor preço</span>
+    <b style="font:800 13px/1 sans-serif;letter-spacing:.14em;text-transform:uppercase">Pix</b><span style="font:900 2.5rem/1 Georgia,serif">R$ 49,90</span><span style="font:900 15px sans-serif;color:#f2c14e">Economize R$ 30,00</span>
+    <span style="font:600 13px/1.35 sans-serif">Pagamento único · o código chega no seu e-mail assim que o Pix é confirmado</span>
+    <span style="display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:6px;border:3px solid #1b1818;border-radius:999px;background:#fff;color:#1b1818;font:900 16px sans-serif">Comprar com Pix</span></a>
+  <a href="https://pay.hotmart.com/Y108629105P?src=vendas" target="_blank" rel="noopener noreferrer" data-compra="cartao" data-origem="vendas" style="display:grid;gap:4px;padding:16px;border:3px solid #1b1818;border-radius:14px;background:#fff;color:#1b1818;text-decoration:none;box-shadow:4px 4px 0 #1b1818">
+    <b style="font:800 13px/1 sans-serif;letter-spacing:.14em;text-transform:uppercase">Cartão de crédito</b><span style="font:900 1.75rem/1 Georgia,serif;color:#b5162b">R$ 79,90</span><span style="font:600 13px sans-serif">Pagamento pela Hotmart</span>
+    <span style="display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:6px;border:3px solid #1b1818;border-radius:999px;background:#f6ecd9;font:900 16px sans-serif">Comprar com cartão</span></a>
+  <p style="margin:12px 0 0;text-align:center;font:600 12px/1.4 sans-serif;color:#5f5752">12 meses de acesso · até 2 aparelhos · código enviado por e-mail após a confirmação do pagamento</p>
+</dialog>
+<script type="module">
+  // mesma chave do app (js/oferta-flag.js): com o Pix ativo, o botão do passe abre a escolha de pagamento; sem ele, vai direto pro cartão
+  import { pixAtivo } from '../js/oferta-flag.js';
+  if (pixAtivo()) {
+    const dlg = document.getElementById('ep-v'), btn = document.getElementById('passe-comprar');
+    document.getElementById('passe-preco').innerHTML = '<strong>R$ 49,90</strong> no Pix, pagamento único · ou R$ 79,90 no cartão · 12 meses · até 2 aparelhos';
+    document.getElementById('passe-nota-txt').textContent = 'Economize R$ 30,00 pagando no Pix. Assim que o pagamento é confirmado, o código de acesso chega automaticamente no seu e-mail.';
+    btn.addEventListener('click', (e) => { e.preventDefault(); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', ''); });
+    document.getElementById('ep-vx').addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  }
+</script>
 </body>
 </html>

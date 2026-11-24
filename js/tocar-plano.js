@@ -3,6 +3,8 @@
 import * as AC from './acesso.js';
 import { h } from './util.js';
 import { toast } from './ui.js';
+import { pixAtivo } from './oferta.js';
+import { ligarCompra, abrirEscolha } from './escolha-pagamento.js';
 
 const doAluno = () => document.documentElement.classList.contains('aluno-on');
 /** Tem tudo liberado? (professora, ou aluno com código completo) */
@@ -16,13 +18,13 @@ export const GRATIS = {
 };
 const abrirCodigo = () => { const b = document.querySelector('.al-tenho'); if (b && !b.hidden) b.click(); else location.hash = '#/lojinha'; };
 /** Aviso curto quando toca numa coisa trancada. */
-export function pedir(oQue) { toast(`🔒 ${oQue} abre com o código de aluno`, { action: 'ver como', onAction: () => { location.hash = '#/lojinha'; }, ms: 4200, id: 'tocar-plano' }); }
+export function pedir(oQue) { toast(`🔒 ${oQue} abre com o código de aluno`, { action: 'ver como', onAction: () => { if (pixAtivo()) abrirEscolha('bloqueado'); else location.hash = '#/lojinha'; }, ms: 4200, id: 'tocar-plano' }); }
 /** Faixa no alto da tela dizendo o que é grátis (só aparece sem código). */
 export function faixaPlano(resumo) {
   if (pago()) return null;
   return h('section', { class: 'tp-faixa', role: 'note' },
     h('p', {}, h('b', {}, '🔒 plano grátis: '), resumo, '. com o código de aluno abre tudo.'),
-    h('div', { class: 'tp-btns' }, h('button', { type: 'button', class: 'kd-chip on', onclick: abrirCodigo }, '🔑 tenho código'), h('a', { class: 'kd-chip', href: '#/lojinha' }, 'ver na lojinha')));
+    h('div', { class: 'tp-btns' }, h('button', { type: 'button', class: 'kd-chip on', onclick: abrirCodigo }, '🔑 tenho código'), ligarCompra(h('a', { class: 'kd-chip', href: '#/lojinha' }, pixAtivo() ? 'adquirir o passe anual' : 'ver na lojinha'), 'bloqueado')));
 }
 /** Ouve a liberação do código (redesenha a tela) e devolve a função que para de ouvir. */
 export function aoLiberar(fn) { const f = () => fn(); document.addEventListener('aluno-acesso', f); return () => document.removeEventListener('aluno-acesso', f); }

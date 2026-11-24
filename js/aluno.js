@@ -81,7 +81,8 @@ import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 import { iconePaul } from './icone-paul.js';
-import { SITE, CHAMADAS, MARCA } from './oferta.js';
+import { SITE, CHAMADAS, MARCA, pixAtivo } from './oferta.js';
+import { ligarCompra, abrirEscolha } from './escolha-pagamento.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -186,9 +187,10 @@ function lockView(view, what, pv) {
     if (!quiet) msg.textContent = 'conferindo…';
     try { if (await CODE.conferirPedido()) return done(); if (!quiet) msg.textContent = 'ainda não liberou. fala o código pra professora Bea.'; } catch { if (!quiet) msg.textContent = 'sem internet agora. tente de novo.'; }
   };
+  const renova = ligarCompra(h('a', { class: 'btn small', href: '#/lojinha', hidden: true }, 'renovar meu passe anual'), 'renovacao'); // aparece só quando o código digitado venceu
   const enter = async () => {
-    msg.textContent = 'conferindo…';
-    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
+    msg.textContent = 'conferindo…'; renova.hidden = true;
+    try { if (await CODE.entrar(inp.value)) return done(); msg.textContent = CODE.msgFalha(); renova.hidden = CODE.motivoFalha() !== 'vencido'; } catch { msg.textContent = 'sem internet agora. tente de novo.'; }
   };
   const box = h('section', { class: 'card pad al-lock' });
   const draw = () => {
@@ -196,8 +198,8 @@ function lockView(view, what, pv) {
     box.replaceChildren(h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🔒'), h('h2', { class: 'hand' }, `${what} é pra alunos da Beaterista`),
       h('p', { class: 'muted' }, 'sem código você joga o modo livre dos jogos e usa a aba Tocar.'),
       ...(pend ? [h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code', role: 'status', 'aria-label': `seu código ${pend.split('').join(' ')}` }, pend), h('p', { class: 'al-lock-t' }, 'informe a professora Bea'), h('p', { class: 'muted' }, 'quando ela cadastrar o seu código, isto libera sozinho.'), h('button', { class: 'btn', type: 'button', onclick: () => check(false) }, 'já liberou? conferir')]
-        : [h('a', { class: 'btn primary wide', href: '#/lojinha' }, 'gerar meu código')]),
-      msg, h('details', { class: 'al-lock-have' }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))));
+        : [ligarCompra(h('a', { class: 'btn primary wide', href: '#/lojinha' }, pixAtivo() ? 'adquirir o passe anual' : 'gerar meu código'), 'bloqueado')]),
+      msg, renova, h('details', { class: 'al-lock-have' }, h('summary', {}, 'já tenho um código'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: enter }, 'liberar'))));
   };
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
@@ -433,10 +435,11 @@ function abrirCodigo() {
   sheet('já tenho meu código', (close) => {
     const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
     const inp = h('input', { class: 'field al-cod', type: 'text', maxlength: 14, autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: 'CÓDIGO DE ACESSO', 'aria-label': 'Código de acesso' });
-    const entrar = async () => { msg.textContent = 'conferindo…'; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else msg.textContent = CODE.msgFalha(); } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
+    const renova = ligarCompra(h('a', { class: 'btn small', href: '#/lojinha', hidden: true, onclick: close }, 'renovar meu passe anual'), 'renovacao');
+    const entrar = async () => { msg.textContent = 'conferindo…'; renova.hidden = true; try { if (await CODE.entrar(inp.value)) { AC.definir(true); msg.textContent = 'liberado! 🎉'; setTimeout(close, 700); } else { msg.textContent = CODE.msgFalha(); renova.hidden = CODE.motivoFalha() !== 'vencido'; } } catch { msg.textContent = 'sem internet agora. tente de novo.'; } };
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
-    return h('div', { class: 'sheet-body' }, h('div', { class: 'ic-passe-topo' }, iconePaul('passe-beaterista', 56)), h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg,
-      h('p', { class: 'muted' }, 'ainda não tem? ', h('a', { href: '#/lojinha', onclick: close }, 'veja a Lojinha')));
+    return h('div', { class: 'sheet-body' }, h('div', { class: 'ic-passe-topo' }, iconePaul('passe-beaterista', 56)), h('p', { class: 'muted' }, 'digite o código que a professora Bea te passou.'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg, renova,
+      h('p', { class: 'muted' }, 'ainda não tem? ', ligarCompra(h('a', { href: '#/lojinha', onclick: close }, pixAtivo() ? 'adquira o passe anual' : 'veja a Lojinha'), 'codigo')));
   });
 }
 

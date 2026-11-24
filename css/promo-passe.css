@@ -29,3 +29,23 @@
 .en-passe-lista{margin:0 0 12px;padding:0;list-style:none;display:grid;gap:3px;font:600 13px/1.35 "Hanken Grotesk",sans-serif;text-align:left;clear:both}
 .en-passe-lista li::before{content:"✓ ";font-weight:900}
 .en-box.passe .en-passe-btn+.en-passe-btn{margin-top:8px}
+
+/* janela "como você quer pagar?" (js/escolha-pagamento.js): Pix em destaque, cartão sempre visível */
+.ep-dlg{--pp-red:#b5162b;--pp-ink:#1b1818;--pp-cream:#f6ecd9;width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;margin:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));border:3px solid var(--pp-ink);border-radius:18px 8px 18px 8px;background:var(--pp-cream);color:var(--pp-ink);box-shadow:6px 6px 0 var(--pp-ink);font-family:var(--body,"Hanken Grotesk",system-ui,sans-serif)}
+.ep-dlg::backdrop{background:rgb(20 6 8 / .72)}
+.ep-topo{display:flex;align-items:center;gap:10px;margin-bottom:12px}.ep-paul{width:64px;height:64px;object-fit:contain;flex:none}
+.ep-topo small{display:block;font:800 10px/1.2 var(--body,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:var(--pp-red)}
+.ep-topo h2{margin:2px 0 0;font:800 24px/1.05 var(--display,Georgia,serif);font-style:italic}
+.ep-x{margin-left:auto;align-self:flex-start;min-width:44px;min-height:44px;border:0;background:none;font:900 20px/1 sans-serif;color:var(--pp-ink);cursor:pointer}
+.ep-op{position:relative;display:grid;gap:4px;margin:0 0 12px;padding:16px;border:3px solid var(--pp-ink);border-radius:14px;text-decoration:none;color:inherit;box-shadow:4px 4px 0 var(--pp-ink)}
+.ep-pix{background:var(--pp-red);color:#fff;padding-top:22px}
+.ep-selo{position:absolute;top:-13px;left:14px;padding:4px 10px;border:3px solid var(--pp-ink);border-radius:99px;background:#f2c14e;color:var(--pp-ink);font:900 11px/1 var(--body,sans-serif);letter-spacing:.08em;text-transform:uppercase}
+.ep-nome{font:800 13px/1 var(--body,sans-serif);letter-spacing:.14em;text-transform:uppercase}
+.ep-preco{font:900 40px/1 var(--display,Georgia,serif)}.ep-cartao .ep-preco{font-size:28px;color:var(--pp-red)}
+.ep-eco{font:900 15px/1.2 var(--body,sans-serif);color:#f2c14e}
+.ep-det{font:600 13px/1.35 var(--body,sans-serif);opacity:.92}
+.ep-btn{display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:6px;border:3px solid var(--pp-ink);border-radius:999px;background:#fff;color:var(--pp-ink);font:900 16px/1 var(--body,sans-serif);box-shadow:3px 3px 0 var(--pp-ink)}
+.ep-cartao{background:#fff}.ep-cartao .ep-btn{background:var(--pp-cream)}
+.ep-op:active .ep-btn{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--pp-ink)}
+.ep-op:focus-visible,.ep-x:focus-visible{outline:3px solid var(--pp-ink);outline-offset:3px}
+.ep-rod{margin:4px 0 0;text-align:center;font:600 12px/1.4 var(--body,sans-serif);color:#5f5752}

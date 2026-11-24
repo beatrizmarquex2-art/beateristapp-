@@ -1,4 +1,6 @@
 // Jogo da memória, só com imagens: escolhe o tema e quantos pares (4, 8 ou 12) e joga. Sem fases: o que vale é achar tudo com poucas tentativas.
+import { pixAtivo } from '../oferta.js';
+import { ligarCompra } from '../escolha-pagamento.js';
 import { h } from '../util.js';
 import { placar, poseDisponivel } from '../jogos/placar.js';
 import * as store from '../store.js';
@@ -82,7 +84,7 @@ export function mountMemoria(host, opts) {
     if (autoSala) { autoSala = false; players = 'sala'; } // veio do atalho "tem um código de sala": abre direto na sala (o lobby entra sozinho)
     stage.replaceChildren(
       ...grupos(list, th),
-      lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', h('a', { href: '#/lojinha' }, 'lojinha'), '.') : null,
+      lockNote && alunoSemCodigo() ? h('p', { class: 'mem-lockmsg', role: 'status' }, 'esse tema é pra alunos da Beaterista. pegue o seu código na ', ligarCompra(h('a', { href: '#/lojinha' }, pixAtivo() ? 'passe anual' : 'lojinha'), 'bloqueado'), '.') : null,
       // opções discretas numa linha só: ícones pra quantos jogam, setinhas pros pares (e um ↻ quando são 2 jogadores)
       h('div', { class: 'mem-opts', role: 'group', 'aria-label': 'Opções do jogo' },
         ...[[1, 'um', '1 jogador'], [2, 'mais', 'pessoas no mesmo celular, uma de cada vez (2 a 4)'], ['bot', 'paul', 'jogar contra o Paul'], ['sala', 'celular', 'sala, 2 a 4 celulares (código)']].map(([n, ic, l]) => { const on = n === 2 ? typeof players === 'number' && players >= 2 : players === n; return h('button', { type: 'button', class: `mem-ic${on ? ' on' : ''}`, 'aria-pressed': String(on), 'aria-label': l, title: l, onclick: () => save({ players: n === 2 && typeof players === 'number' && players >= 2 ? players : n }).then(setup) }, bq(ic)); }),

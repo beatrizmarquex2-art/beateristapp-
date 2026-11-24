@@ -1188,3 +1188,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - `ANUAL` (banner R$ 49,90 por data) saiu de `js/loja-config.js`; `precoPasse()` (passe-preco.js) agora devolve Pix 49,90 e cartão 79,90, sem data de Black Friday.
 - Marketing externo: `marketing/divulgacao-passe/` (TEXTOS.md, propostas-visuais.html e 4 PNGs). Artes antigas em `marketing/` ainda citam a oferta Black Friday e o WhatsApp: não foram reescritas.
 - NÃO tocados: códigos de aluno, localStorage (nenhuma chave nova), tabelas/funções do Supabase, aparelhos, autenticação, `supabase/functions/hotmart-passe`. A branch `pix-mercadopago-passe` não existe neste clone nem no remoto (só `main` e `claude/*`): nada foi mesclado nem sobrescrito.
+
+### Checkout Pix integrado (v744, PREPARADO, NÃO LIBERADO)
+- `pix/index.html` (veio do repo `beaterista-jogos`, main) agora mora no código-fonte, redesenhado (grafite/vermelho/creme, 6 etapas, iPhone). **Contrato da API intocado** (`mercadopago-passe?acao=criar|status`, `sessionStorage beaterista-pix-pedido`, consulta a cada 7 s, recuperação do pedido). O e-mail só é confirmado quando o servidor devolve `email_enviado`. `scripts/build-aluno.sh` agora copia `pix/`; o `sw.js` nunca guarda `/pix/` em cache.
+- **Chave única: `js/oferta-flag.js` (`PIX_LIBERADO`)**. Falsa = nenhuma chamada do Pix em lugar nenhum (cartão direto, como antes). Verdadeira = TODAS as chamadas abrem `js/escolha-pagamento.js` (Pix em destaque R$ 49,90 / cartão R$ 79,90): entrada, Lojinha, Início, Jogos, Perfil, telas bloqueadas, renovação (código vencido), e a página de vendas. Prévia privada pra testar: abrir o app com `?pix-preview`.
+- Teste: `node tests/e2e/pix-passe.mjs` (iPhone emulado, API simulada; nenhum pagamento real).

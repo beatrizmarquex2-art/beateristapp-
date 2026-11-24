@@ -13,13 +13,14 @@ export const PRECO_CARTAO = 79.9;
 const brl = (n) => `R$ ${n.toFixed(2).replace('.', ',')}`;
 export const TXT_PIX = brl(PRECO_PIX);
 export const TXT_CARTAO = brl(PRECO_CARTAO);
+export const TXT_ECONOMIA = brl(PRECO_CARTAO - PRECO_PIX); // R$ 30,00
 
 export const URL_PIX = `${SITE}/pix/`;
 export const URL_CARTAO = 'https://pay.hotmart.com/Y108629105P';
 
-/** CHAVE DE PUBLICAÇÃO DO PIX. O checkout Pix está em homologação: enquanto isto for `false`, NENHUM botão nem preço do Pix aparece no site.
- *  Só vira `true` depois que a integração for validada e a Bea autorizar. */
-export const PIX_LIBERADO = false;
+// A chave do Pix mora em js/oferta-flag.js (sem imports, pra a página de vendas também ler a MESMA chave).
+import { PIX_LIBERADO, pixAtivo } from './oferta-flag.js';
+export { PIX_LIBERADO, pixAtivo };
 
 export const CHAMADAS = {
   principal: 'Aprenda música jogando.',
