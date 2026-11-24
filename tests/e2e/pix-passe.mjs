@@ -19,7 +19,7 @@ const iphone = devices['iPhone 13'];
   await ctx.route(FN, (r) => r.request().method() === 'OPTIONS' ? r.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST' } }) : r.fallback(), { times: 0 });
   await p.goto(`${url}/pix/`); await sleep(500);
   const t0 = await p.locator('body').innerText();
-  check('checkout: R$ 49,90, "Economize R$ 30,00", cartão R$ 79,90 visível, 6 etapas', /R\$ 49,90/.test(t0) && /Economize R\$ 30,00/.test(t0) && /R\$ 79,90/.test(t0) && (await p.locator('#etapas li').count()) === 6);
+  check('checkout: R$ 49,90, "Oferta de lançamento", cartão R$ 79,90 visível, 6 etapas', /R\$ 49,90/.test(t0) && /Oferta de lançamento/.test(t0) && /R\$ 79,90/.test(t0) && (await p.locator('#etapas li').count()) === 6);
   check('checkout: sem aviso de homologação e sem rolagem horizontal no iPhone', !/homologa/i.test(t0) && await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   check('checkout: logo, Paul e fontes carregam', await p.evaluate(() => [...document.images].filter((i) => i.getAttribute('src')).every((i) => i.complete && i.naturalWidth > 0)));
   await p.fill('#nome', 'Maria Souza'); await p.fill('#email', 'maria@exemplo.com'); await p.fill('#cpf', '11111111111'); await p.click('#gerar');
@@ -66,12 +66,12 @@ const modal = async (p) => { await p.waitForSelector('dialog.ep-dlg[open]', { ti
 { // Pix LIGADO (prévia)
   const { ctx, p } = await novo('?pix-preview');
   const t = await p.locator('.en-box.passe').innerText();
-  check('Pix ligado: entrada mostra R$ 49,90 no Pix e Economize R$ 30,00', /R\$ 49,90/.test(t) && /economize R\$ 30,00/i.test(t));
+  check('Pix ligado: entrada mostra R$ 49,90 no Pix e selo "oferta de lançamento"', /R\$ 49,90/.test(t) && /oferta de lançamento/i.test(t));
   await p.click('.en-passe-btn'); const m = await modal(p);
   const bp = await m.pix.boundingBox(), bc = await m.cartao.boundingBox(), vp = p.viewportSize();
   check('janela: Pix em destaque (maior, primeiro) e cartão visível sem esconder', bp.y < bc.y && bp.height > bc.height && bc.y + bc.height <= vp.height + 400 && await m.cartao.isVisible());
   const tm = await p.locator('dialog.ep-dlg').innerText();
-  check('janela: textos pedidos (Pix R$ 49,90, Economize R$ 30,00, Pagamento único, Comprar com Pix; cartão R$ 79,90, Hotmart, Comprar com cartão)', /R\$ 49,90/.test(tm) && /Economize R\$ 30,00/.test(tm) && /Pagamento único/.test(tm) && /Comprar com Pix/.test(tm) && /R\$ 79,90/.test(tm) && /Hotmart/.test(tm) && /Comprar com cartão/.test(tm));
+  check('janela: textos pedidos (Pix R$ 49,90, Oferta de lançamento, Pagamento único, Comprar com Pix; cartão R$ 79,90, Hotmart, Comprar com cartão)', /R\$ 49,90/.test(tm) && /Oferta de lançamento/.test(tm) && /Pagamento único/.test(tm) && /Comprar com Pix/.test(tm) && /R\$ 79,90/.test(tm) && /Hotmart/.test(tm) && /Comprar com cartão/.test(tm));
   check('janela: links certos', (await m.pix.getAttribute('href')) === 'https://jogos.beaterista.com.br/pix/' && (await m.cartao.getAttribute('href')) === 'https://pay.hotmart.com/Y108629105P');
   check('janela cabe na tela do iPhone (sem rolagem horizontal)', await p.evaluate(() => { const d = document.querySelector('dialog.ep-dlg'); return d.scrollWidth <= d.clientWidth + 1 && d.getBoundingClientRect().right <= innerWidth; }));
   await p.keyboard.press('Escape'); await sleep(200); check('Esc fecha a janela', (await p.locator('dialog.ep-dlg').count()) === 0);

@@ -2,7 +2,7 @@
 // Regras: some pra quem já tem o passe (e some na hora se o código for confirmado depois); sem pop-up, sem faixa fixa, sem animação que prende;
 // a janela de pagamento com Pix só existe com pixAtivo() (js/oferta-flag.js). Não grava nada em lugar nenhum.
 import { h } from './util.js';
-import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, TXT_ECONOMIA, URL_CARTAO, pixAtivo, CHAMADAS, BENEFICIOS, jaTemPasse } from './oferta.js';
+import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, TXT_SELO, URL_CARTAO, pixAtivo, CHAMADAS, BENEFICIOS, jaTemPasse } from './oferta.js';
 import { ligarCompra } from './escolha-pagamento.js';
 
 const ABRE = { target: '_blank', rel: 'noopener noreferrer' };
@@ -13,7 +13,7 @@ export function cartaoPasse({ onde = 'inicio', compacto = false } = {}) {
   if (jaTemPasse()) return null;
   const pix = pixAtivo(); // com o Pix ativo todas as chamadas abrem a janela "como você quer pagar?"; sem ele, vão direto pro cartão (Hotmart)
   const preco = pix
-    ? h('p', { class: 'pp-preco' }, h('b', {}, TXT_PIX), ' no Pix, pagamento único', h('small', {}, `economize ${TXT_ECONOMIA} · ou ${TXT_CARTAO} no cartão`))
+    ? h('p', { class: 'pp-preco' }, h('b', {}, TXT_PIX), ' no Pix, pagamento único', h('small', {}, `${TXT_SELO.toLowerCase()} · ou ${TXT_CARTAO} no cartão`))
     : h('p', { class: 'pp-preco' }, h('b', {}, TXT_CARTAO), ' no cartão', h('small', {}, 'Pix em breve'));
   const botoes = h('div', { class: 'pp-btns' },
     ligarCompra(h('a', { class: 'pp-btn pp-pix', href: URL_CARTAO, ...ABRE, 'data-compra': pix ? 'escolha' : 'cartao' }, pix ? `Quero meu passe · ${TXT_PIX} no Pix` : `Quero meu passe · ${TXT_CARTAO}`), onde));

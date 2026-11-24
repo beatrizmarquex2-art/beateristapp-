@@ -13,7 +13,7 @@ export const PRECO_CARTAO = 79.9;
 const brl = (n) => `R$ ${n.toFixed(2).replace('.', ',')}`;
 export const TXT_PIX = brl(PRECO_PIX);
 export const TXT_CARTAO = brl(PRECO_CARTAO);
-export const TXT_ECONOMIA = brl(PRECO_CARTAO - PRECO_PIX); // R$ 30,00
+export const TXT_SELO = 'Oferta de lançamento'; // selo do Pix (troque aqui pra mudar em todo o site)
 
 export const URL_PIX = `${SITE}/pix/`;
 export const URL_CARTAO = 'https://pay.hotmart.com/Y108629105P';

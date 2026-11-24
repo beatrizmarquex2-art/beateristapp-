@@ -620,7 +620,7 @@ details{border-width:1px;padding:10px 14px;margin-bottom:7px}
   <h2 id="ep-vt" style="margin:4px 0 14px;font-size:1.5rem;line-height:1.1">Como você quer pagar?</h2>
   <a href="https://jogos.beaterista.com.br/pix/" data-compra="pix" data-origem="vendas" style="position:relative;display:grid;gap:4px;margin:0 0 14px;padding:22px 16px 16px;border:3px solid #1b1818;border-radius:14px;background:#b5162b;color:#fff;text-decoration:none;box-shadow:4px 4px 0 #1b1818">
     <span style="position:absolute;top:-13px;left:14px;padding:4px 10px;border:3px solid #1b1818;border-radius:99px;background:#f2c14e;color:#1b1818;font:900 11px/1 sans-serif;letter-spacing:.08em;text-transform:uppercase">melhor preço</span>
-    <b style="font:800 13px/1 sans-serif;letter-spacing:.14em;text-transform:uppercase">Pix</b><span style="font:900 2.5rem/1 Georgia,serif">R$ 49,90</span><span style="font:900 15px sans-serif;color:#f2c14e">Economize R$ 30,00</span>
+    <b style="font:800 13px/1 sans-serif;letter-spacing:.14em;text-transform:uppercase">Pix</b><span style="font:900 2.5rem/1 Georgia,serif">R$ 49,90</span><span style="font:900 15px sans-serif;color:#f2c14e">Oferta de lançamento</span>
     <span style="font:600 13px/1.35 sans-serif">Pagamento único · o código chega no seu e-mail assim que o Pix é confirmado</span>
     <span style="display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:6px;border:3px solid #1b1818;border-radius:999px;background:#fff;color:#1b1818;font:900 16px sans-serif">Comprar com Pix</span></a>
   <a href="https://pay.hotmart.com/Y108629105P?src=vendas" target="_blank" rel="noopener noreferrer" data-compra="cartao" data-origem="vendas" style="display:grid;gap:4px;padding:16px;border:3px solid #1b1818;border-radius:14px;background:#fff;color:#1b1818;text-decoration:none;box-shadow:4px 4px 0 #1b1818">
@@ -634,7 +634,7 @@ details{border-width:1px;padding:10px 14px;margin-bottom:7px}
   if (pixAtivo()) {
     const dlg = document.getElementById('ep-v'), btn = document.getElementById('passe-comprar');
     document.getElementById('passe-preco').innerHTML = '<strong>R$ 49,90</strong> no Pix, pagamento único · ou R$ 79,90 no cartão · 12 meses · até 2 aparelhos';
-    document.getElementById('passe-nota-txt').textContent = 'Economize R$ 30,00 pagando no Pix. Assim que o pagamento é confirmado, o código de acesso chega automaticamente no seu e-mail.';
+    document.getElementById('passe-nota-txt').textContent = 'Oferta de lançamento no Pix. Assim que o pagamento é confirmado, o código de acesso chega automaticamente no seu e-mail.';
     btn.addEventListener('click', (e) => { e.preventDefault(); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', ''); });
     document.getElementById('ep-vx').addEventListener('click', () => dlg.close());
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });

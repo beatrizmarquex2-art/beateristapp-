@@ -2,7 +2,7 @@
 // Só abre quando o Pix está à venda (pixAtivo, em js/oferta.js). Enquanto isso as chamadas de compra seguem o caminho de antes (cartão/Lojinha).
 // Não grava nada em lugar nenhum e não toca em código, aparelho nem autenticação.
 import { h } from './util.js';
-import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, TXT_ECONOMIA, URL_PIX, URL_CARTAO, pixAtivo } from './oferta.js';
+import { MARCA, PASSE_NOME, TXT_PIX, TXT_CARTAO, TXT_SELO, URL_PIX, URL_CARTAO, pixAtivo } from './oferta.js';
 
 /** Abre a janela de escolha. `origem` só identifica a tela (data-origem), pra conferir qual botão chamou. */
 export function abrirEscolha(origem = 'site') {
@@ -15,7 +15,7 @@ export function abrirEscolha(origem = 'site') {
       h('span', { class: 'ep-selo' }, 'melhor preço'),
       h('b', { class: 'ep-nome' }, 'Pix'),
       h('span', { class: 'ep-preco' }, TXT_PIX),
-      h('span', { class: 'ep-eco' }, `Economize ${TXT_ECONOMIA}`),
+      h('span', { class: 'ep-eco' }, TXT_SELO),
       h('span', { class: 'ep-det' }, 'Pagamento único · o código chega no seu e-mail assim que o Pix é confirmado'),
       h('span', { class: 'ep-btn' }, 'Comprar com Pix')),
     h('a', { class: 'ep-op ep-cartao', href: URL_CARTAO, target: '_blank', rel: 'noopener noreferrer', 'data-compra': 'cartao', 'data-origem': origem },
