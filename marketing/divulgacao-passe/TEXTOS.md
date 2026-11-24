@@ -135,4 +135,4 @@ Pode testar de graça antes: https://jogos.beaterista.com.br
 - **Tipografia:** Anton (título, caixa-alta), Permanent Marker (grafite/anotação), Hanken Grotesk (texto). Itálico Bodoni só no cartão do app.
 - **Elementos:** borda grossa de tinta com sombra dura, faixa listrada vermelho/preto na lateral, fita adesiva, pontilhado de grafite, papel creme com leve grão. Paul (de presente, de fone, com violão) sempre recortado e com sombra no chão.
 - **Evitar:** degradê roxo/azul, brilho neon, "robô de IA" cromado, ícones de cérebro/circuito.
-- **Logo:** `assets/entrada/logo-paul-branco.png` (Robôterista Paul) e `assets/logo-nome.png` (Beaterista). **Não existe arquivo de logotipo "Beaterista Play" no repositório**: se a Bea tiver, é só trocar nas artes.
+- **Logo oficial Beaterista Play:** `assets/logo-beaterista-play.png` (e `.webp`), recebido da Bea (fundo transparente). Usar sempre ele, sem recolorir. Fundos vermelho, grafite ou creme funcionam.

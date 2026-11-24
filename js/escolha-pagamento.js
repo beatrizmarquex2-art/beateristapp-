@@ -9,8 +9,7 @@ export function abrirEscolha(origem = 'site') {
   document.querySelectorAll('dialog.ep-dlg').forEach((d) => d.remove());
   const dlg = h('dialog', { class: 'ep-dlg', 'aria-labelledby': 'ep-t', 'data-origem': origem },
     h('div', { class: 'ep-topo' },
-      h('img', { class: 'ep-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: '', width: 64, height: 64, draggable: 'false' }),
-      h('div', {}, h('small', {}, `${MARCA} · ${PASSE_NOME}`), h('h2', { id: 'ep-t' }, 'como você quer pagar?')),
+      h('div', {}, h('img', { class: 'ep-logo', src: 'assets/logo-beaterista-play.webp', alt: MARCA, width: 120, height: 40, draggable: 'false' }), h('small', {}, PASSE_NOME), h('h2', { id: 'ep-t' }, 'como você quer pagar?')),
       h('button', { type: 'button', class: 'ep-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
     h('a', { class: 'ep-op ep-pix', href: URL_PIX, 'data-compra': 'pix', 'data-origem': origem },
       h('span', { class: 'ep-selo' }, 'melhor preço'),

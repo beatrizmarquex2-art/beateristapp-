@@ -20,7 +20,7 @@ export function cartaoPasse({ onde = 'inicio', compacto = false } = {}) {
   const el = h('section', { class: `pp pp-${onde}${compacto ? ' pp-c' : ''}`, 'aria-label': `${PASSE_NOME}, ${MARCA}`, 'data-onde': onde },
     h('img', { class: 'pp-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: '', width: 84, height: 84, loading: 'lazy', decoding: 'async', draggable: 'false' }),
     h('div', { class: 'pp-txt' },
-      h('small', { class: 'pp-tag' }, `${MARCA} · ${PASSE_NOME}`),
+      h('img', { class: 'pp-logo', src: 'assets/logo-beaterista-play.webp', alt: MARCA, width: 103, height: 34, loading: 'lazy', draggable: 'false' }), h('small', { class: 'pp-tag' }, PASSE_NOME),
       h('h3', {}, CHAMADAS.principal),
       compacto ? null : h('p', { class: 'pp-sub' }, `${CHAMADAS.verbos} ${pix ? CHAMADAS.ano : CHAMADAS.anoSemPix}`),
       preco,

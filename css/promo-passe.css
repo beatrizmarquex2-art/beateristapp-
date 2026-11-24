@@ -49,3 +49,7 @@
 .ep-op:active .ep-btn{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--pp-ink)}
 .ep-op:focus-visible,.ep-x:focus-visible{outline:3px solid var(--pp-ink);outline-offset:3px}
 .ep-rod{margin:4px 0 0;text-align:center;font:600 12px/1.4 var(--body,sans-serif);color:#5f5752}
+
+.ep-logo{display:block;height:40px;width:auto;margin:0 0 4px}
+.pp-logo{display:block;height:34px;width:auto;margin:0 0 4px}
+.en-passe-logo{display:block;height:44px;width:auto;margin:0 0 8px}
