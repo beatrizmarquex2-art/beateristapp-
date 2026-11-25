@@ -20,13 +20,13 @@ export const LEVEL_NAMES = { 1: 'nível 1 · semínima e colcheia', 2: 'nível 2
 export const TIERS = [{ id: 'ini', name: 'iniciante', lv: 1, about: 'semínima, pausa e colcheias' }, { id: 'int', name: 'intermediário', lv: 2, about: 'semicolcheias' }, { id: 'ava', name: 'avançado', lv: 3, about: 'pontuadas, síncopes e variações' }];
 const BARS = {
   ini: [['1000', '1000', '1000', '1000'], ['1000', '1000', '1000', '0000'], ['1000', '1000', '0000', '1000'], ['1000', '1010', '1000', '1000'], ['1010', '1000', '1010', '1000'], ['1000', '1010', '1010', '1000'],
-    ['1010', '1010', '1000', '0000'], ['1010', '1000', '0000', '1010'], ['1000', '1111', '1010', '1000'], ['1010', '1111', '1010', '1000'], ['1010', '1111', '0000', '1000'], ['1111', '1010', '1010', '1111']],
+    ['1000', '1111', '1000', '1000'], ['1000', '1111', '1000', '1010'], ['1000', '1111', '1010', '1000'], ['1010', '1111', '1010', '1000'], ['1010', '1111', '0000', '1000'], ['1111', '1010', '1010', '1111']],
   int: [['1000', '1111', '1000', '1000'], ['1010', '1111', '1010', '1000'], ['1111', '1000', '1111', '1000'], ['1011', '1000', '1011', '1000'], ['1000', '0010', '1010', '1000'], ['1110', '1000', '1110', '1000'],
     ['1111', '1011', '1110', '1010'], ['1011', '1110', '1011', '1110'], ['1010', '0010', '1111', '1000'], ['1111', '1111', '1000', '1010'], ['1110', '1011', '0010', '1000'], ['1111', '1010', '1111', '1010']],
   ava: [['1001', '1000', '1001', '1000'], ['1100', '1000', '1100', '1000'], ['1101', '1010', '1101', '1000'], ['0111', '1000', '0111', '1000'], ['1001', '1100', '1101', '1000'], ['1101', '0111', '1001', '1100'],
     ['1001', '1001', '1001', '1001'], ['1100', '1100', '1100', '1100'], ['1101', '1011', '1001', '1000'], ['0111', '1101', '0111', '1000'], ['1001', '1111', '1100', '1010'], ['1111', '1101', '0111', '1001']],
 };
-export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar, gen: t.id === 'ini' && i >= 8 ? 2 : t.lv })));
+export const PATH = TIERS.flatMap((t) => BARS[t.id].map((bar, i) => ({ tier: t.id, lv: t.lv, n: i + 1, of: BARS[t.id].length, bar, gen: t.id === 'ini' && i >= 8 ? 2 : t.id === 'ini' && i >= 6 ? 'facil' : t.lv })));
 export const PASS_SCORE = 85; // 85% passa (1 ★); 93% = 2 ★; 100% = 3 ★ (igual à pauLta; no microfone vale mais, ver toca-estrelas.js)
 export const cellsFor = (lv) => CELLS.filter((c) => c.lv <= lv);
 
@@ -40,12 +40,13 @@ export function cellNotes(p) {
 export function rng(seed = Date.now()) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
 
 /** Um compasso de 4 tempos. Garante pelo menos uma célula "nova" do nível e não deixa o compasso vazio. */
-export function genBar(lv, rnd = Math.random, beats = 4) {
-  const pool = cellsFor(lv); const fresh = pool.filter((c) => c.lv === lv);
+export function genBar(lv, rnd = Math.random, beats = 4, facil = false) {
+  // facil: só semínima, pausa, colcheias e a semicolcheia "quatro de uma vez" (fases 7 e 8 da geleira)
+  const pool = facil ? CELLS.filter((c) => c.lv === 1 || c.p === '1111') : cellsFor(lv); const fresh = facil ? pool.filter((c) => c.p === '1111') : pool.filter((c) => c.lv === lv);
   for (;;) {
     const bar = Array.from({ length: beats }, () => pool[Math.floor(rnd() * pool.length)].p);
     if (bar[0] === '0000') continue; // começar com pausa de semínima confunde na contagem: evita
-    if (lv > 1 && !bar.some((p) => fresh.some((c) => c.p === p))) continue;
+    if ((lv > 1 || facil) && !bar.some((p) => fresh.some((c) => c.p === p))) continue;
     if (bar.filter((p) => p === '0000').length > 1) continue;
     return bar;
   }
