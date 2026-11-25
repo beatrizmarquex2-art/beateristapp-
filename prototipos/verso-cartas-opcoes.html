@@ -1,0 +1,28 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>verso das cartas · 3 opções</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e2d0;font-family:"Hanken Grotesk",sans-serif;color:#162146;padding:24px}
+h1{font:400 28px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 22px;font-size:14px}
+.row{display:flex;gap:22px;flex-wrap:wrap}.col{width:330px}.lab{font:700 13px "Hanken Grotesk";margin:0 0 8px}
+.tab{background:#fffdf7;border:3px solid #162146;border-radius:18px;padding:12px;box-shadow:5px 6px 0 rgba(22,33,70,.35)}
+.g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.c{aspect-ratio:3/4;border-radius:14px;position:relative;overflow:hidden;border:3px solid #162146;box-shadow:2px 3px 0 #162146}
+.c.f{background:#fff;display:grid;place-items:center;font:400 17px "Anton";color:#162146;text-align:center}
+/* A · palco vermelho da marca, Paul DJ */
+.A{background:#c81e2d url(../assets/paul/colorido/paul-dj.webp) center 70%/92% no-repeat}
+.A::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#ff5a5f55,transparent 60%),repeating-linear-gradient(135deg,#ffffff14 0 6px,transparent 6px 14px)}
+/* B · papel creme, Paul espiando de baixo */
+.B{background:#fff1c9 url(../assets/paul/colorido/paul-maestro.webp) center 70%/92% no-repeat}
+.B::after{content:"♪ ♫";position:absolute;top:6px;left:0;right:0;text-align:center;font:400 16px "Anton";color:#c81e2d;letter-spacing:.2em}
+/* C · noite com estrelas, Paul ouvindo */
+.C{background:radial-gradient(120% 80% at 50% 0,#31408a,#162146 65%,#0a0f26) }
+.C::before{content:"";position:absolute;inset:0;background:url(../assets/paul/colorido/paul-ouvindo.webp) center 62%/86% no-repeat;filter:drop-shadow(0 2px 0 #0008)}
+.C::after{content:"✦  ✦\A  ✦";white-space:pre;position:absolute;inset:6px;color:#f2a91b;font-size:11px;display:flex;justify-content:space-between}
+</style></head><body>
+<h1>verso das cartas · 3 opções</h1><p class="s">o Paul que fica nas cartas viradas pra baixo (memória do Figurix e dos outros jogos de memória)</p>
+<div class="row">
+<div class="col"><p class="lab">A · palco vermelho (Paul DJ)</p><div class="tab"><div class="g"><div class="c A"></div><div class="c A"></div><div class="c f">1 tempo</div><div class="c A"></div><div class="c A"></div><div class="c A"></div><div class="c A"></div><div class="c f">♩</div></div></div></div>
+<div class="col"><p class="lab">B · creme, Paul maestro</p><div class="tab"><div class="g"><div class="c B"></div><div class="c B"></div><div class="c f">1 tempo</div><div class="c B"></div><div class="c B"></div><div class="c B"></div><div class="c B"></div><div class="c f">♩</div></div></div></div>
+<div class="col"><p class="lab">C · noite, Paul ouvindo</p><div class="tab"><div class="g"><div class="c C"></div><div class="c C"></div><div class="c f">1 tempo</div><div class="c C"></div><div class="c C"></div><div class="c C"></div><div class="c C"></div><div class="c f">♩</div></div></div></div>
+</div></body></html>
