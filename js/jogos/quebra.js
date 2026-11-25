@@ -28,6 +28,12 @@ export const IMAGES = [
   { id: 'show-guitarra', grupo: 'guitarra', src: 'assets/jogos/show-guitarra.webp', nome: 'Paul tocando guitarra no show' },
   { id: 'bateria-palco', grupo: 'bateria', src: 'assets/jogos/bateria-palco.webp', nome: 'Paul tocando bateria no palco' },
   { id: 'terraco', grupo: 'bateria', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
+  // série "Beaterista Play" (palco vermelho, a Bea mandou em 25/nov/2026)
+  { id: 'play-violao', grupo: 'guitarra', src: 'assets/jogos/play-violao.webp', nome: 'Paul tocando violão no palco vermelho' },
+  { id: 'play-guitarra', grupo: 'guitarra', src: 'assets/jogos/play-guitarra.webp', nome: 'Paul tocando guitarra elétrica no palco vermelho' },
+  { id: 'play-baixo', grupo: 'baixo', src: 'assets/jogos/play-baixo.webp', nome: 'Paul tocando baixo no palco vermelho' },
+  { id: 'play-teclado', grupo: 'teclado', src: 'assets/jogos/play-teclado.webp', nome: 'Paul tocando teclado no palco vermelho' },
+  { id: 'play-bateria', grupo: 'bateria', src: 'assets/jogos/play-bateria.webp', nome: 'Paul tocando bateria no palco vermelho' },
   // foto da Bea no estande da Nagano (a Bea mandou, 17/nov/2026). Ao montar, mostra o link da visita dela na fábrica.
   { id: 'nagano', grupo: 'bateria', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
 ];
