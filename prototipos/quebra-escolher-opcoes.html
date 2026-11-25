@@ -1,0 +1,41 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>quebra-cabeça · escolher a imagem · 3 opções</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e2d0;font-family:"Hanken Grotesk",sans-serif;color:#162146;padding:24px}
+h1{font:400 28px "Anton";text-transform:uppercase;margin:0 0 4px}p.s{margin:0 0 26px;font-size:14px}
+.row{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}.col{width:300px}.lab{font:700 13px "Hanken Grotesk";margin:0 0 8px}
+.fone{width:300px;height:600px;border-radius:30px;background:#fff7e6;border:6px solid #162146;position:relative;overflow:hidden;box-shadow:6px 8px 0 rgba(22,33,70,.35);padding:14px}
+h2{font:400 26px "Anton";text-transform:uppercase;margin:4px 0 10px}
+.chip{display:inline-block;border:2px solid #162146;border-radius:8px;padding:3px 8px;font:700 11px "Hanken Grotesk";background:#fff;box-shadow:2px 2px 0 #162146;margin:0 4px 6px 0}.chip.on{background:#f2a91b}
+.btn{display:block;text-align:center;border:3px solid #162146;border-radius:14px;padding:11px;font:400 18px "Anton";text-transform:uppercase;background:#c81e2d;color:#fff;box-shadow:3px 4px 0 #162146;margin-top:10px}
+.im{background-size:cover;background-position:center;border:3px solid #162146;border-radius:12px;box-shadow:2px 3px 0 #162146}
+/* A · galeria em cartões */
+.A .gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.A .gal div{aspect-ratio:3/2;position:relative}.A .gal div.on{outline:4px solid #f2a91b}
+.A .gal small{position:absolute;left:0;right:0;bottom:0;background:#162146cc;color:#fff;font:700 9px "Hanken Grotesk";padding:3px 6px;border-radius:0 0 8px 8px}
+.A .lock::after{content:"🔒";position:absolute;right:6px;top:4px;font-size:14px}
+/* B · capa grande com carrossel */
+.B .capa{aspect-ratio:3/2;margin:0 -2px;position:relative}.B .capa b{position:absolute;left:8px;bottom:8px;background:#fff;border:2px solid #162146;border-radius:8px;padding:3px 8px;font:700 11px "Hanken Grotesk"}
+.B .tira{display:flex;gap:8px;margin:12px -14px 10px;padding:0 14px;overflow:hidden}.B .tira div{flex:0 0 86px;aspect-ratio:3/2}.B .tira .on{outline:4px solid #f2a91b}
+.B .pts{text-align:center;font-size:12px;letter-spacing:.3em;color:#162146}
+/* C · estante por instrumento */
+.C{background:#162146;color:#fff7e6}.C h2{color:#fff7e6}.C .chip{background:#fff7e6;color:#162146}.C .chip.on{background:#f2a91b}
+.C .sec{font:700 11px "Hanken Grotesk";letter-spacing:.14em;text-transform:uppercase;margin:6px 0 6px;color:#f2a91b}
+.C .linha{display:flex;gap:8px;margin-bottom:8px}.C .linha div{flex:1;aspect-ratio:3/2;border-color:#fff7e6;box-shadow:none;position:relative}.C .linha .on{outline:3px solid #f2a91b}
+.C .btn{background:#f2a91b;color:#162146;border-color:#fff7e6;box-shadow:3px 4px 0 #0008}
+</style></head><body>
+<h1>quebra-cabeça · escolher a imagem · 3 opções</h1><p class="s">a tela de antes de começar (o jogo agora começa com o quadro completo e sem arrastar)</p>
+<div class="row">
+<div class="col"><p class="lab">A · galeria em cartões</p><div class="fone A"><h2>quebra-cabeça</h2>
+<div class="gal"><div class="im on" style="background-image:url(../assets/jogos/palco.webp)"><small>no palco</small></div><div class="im" style="background-image:url(../assets/jogos/guitarra.webp)"><small>guitarra</small></div><div class="im" style="background-image:url(../assets/jogos/baixo.webp)"><small>baixo</small></div><div class="im lock" style="background-image:url(../assets/jogos/teclado.webp)"><small>teclado</small></div><div class="im lock" style="background-image:url(../assets/jogos/sax.webp)"><small>sax</small></div><div class="im lock" style="background-image:url(../assets/jogos/praca.webp)"><small>praça</small></div></div>
+<div style="margin-top:12px"><span class="chip on">6 peças</span><span class="chip">12</span><span class="chip">24</span><span class="chip">48</span><span class="chip">70</span></div><div class="btn">iniciar</div></div></div>
+<div class="col"><p class="lab">B · capa grande + carrossel</p><div class="fone B"><h2>quebra-cabeça</h2>
+<div class="capa im" style="background-image:url(../assets/jogos/palco.webp)"><b>Paul no palco</b></div>
+<div class="tira"><div class="im on" style="background-image:url(../assets/jogos/palco.webp)"></div><div class="im" style="background-image:url(../assets/jogos/guitarra.webp)"></div><div class="im" style="background-image:url(../assets/jogos/baixo.webp)"></div><div class="im" style="background-image:url(../assets/jogos/teclado.webp)"></div></div><div class="pts">● ○ ○ ○ ○ ○</div>
+<div style="margin-top:12px"><span class="chip on">6 peças</span><span class="chip">12</span><span class="chip">24</span><span class="chip">48</span><span class="chip">70</span></div><div class="btn">iniciar</div></div></div>
+<div class="col"><p class="lab">C · estante por instrumento (noite)</p><div class="fone C"><h2>quebra-cabeça</h2>
+<div class="sec">guitarra</div><div class="linha"><div class="im on" style="background-image:url(../assets/jogos/guitarra.webp)"></div><div class="im" style="background-image:url(../assets/jogos/garagem.webp)"></div><div class="im" style="background-image:url(../assets/jogos/show-guitarra.webp)"></div></div>
+<div class="sec">teclado</div><div class="linha"><div class="im" style="background-image:url(../assets/jogos/teclado.webp)"></div><div class="im" style="background-image:url(../assets/jogos/estudio.webp)"></div><div class="im" style="background-image:url(../assets/jogos/estudio-paul.webp)"></div></div>
+<div class="sec">baixo e palco</div><div class="linha"><div class="im" style="background-image:url(../assets/jogos/baixo.webp)"></div><div class="im" style="background-image:url(../assets/jogos/parque.webp)"></div><div class="im" style="background-image:url(../assets/jogos/nagano.webp)"></div></div>
+<div style="margin-top:6px"><span class="chip on">6 peças</span><span class="chip">12</span><span class="chip">24</span><span class="chip">48</span><span class="chip">70</span></div><div class="btn">iniciar</div></div></div>
+</div></body></html>

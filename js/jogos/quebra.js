@@ -1,4 +1,4 @@
-// Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Sem drag-and-drop nativo (toque: peça e depois posição; mouse também arrasta).
+// Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Sem arrastar: toca na peça e depois na posição (pedido da Bea).
 import { h } from '../util.js';
 import { placar, poseDisponivel } from './placar.js';
 import { linha, chips, ajuda } from './opcoes.js';
@@ -72,7 +72,7 @@ export function mount(host, opts) {
     stopClock(); g = null; selected = null; hintCell = null;
     if (!M && !autoAbriu && salaAutoPara(ID)) { autoAbriu = true; abrirDuelo(); return; } // veio de "tem um código de sala"
     const resume = Q.validGame(saved.game) && !saved.game.over ? saved.game : null;
-    const RULES = () => h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro, ou arraste a peça até o lugar (no celular: arraste pra cima, ou segure um instante e arraste).'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
+    const RULES = () => h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro.'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
@@ -90,7 +90,7 @@ export function mount(host, opts) {
   /** Duelo em 2 celulares: a mesma imagem e as mesmas peças nos dois; vence quem montar mais rápido (js/jogos/duelo-quebra.js). */
   let offDuelo = null;
   function abrirDuelo() { stopClock(); root.replaceChildren(h('p', { class: 'jg-p muted' }, 'carregando o duelo…')); import('./duelo-quebra.js').then((m) => { if (gone) return; root.replaceChildren(); offDuelo = m.mountDueloQuebra(root, { IMAGES, SIZES, abrir: (opts, el) => mount(el || root, opts), voltar: () => { if (offDuelo) { offDuelo(); offDuelo = null; } intro(); } }); }); }
-  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = game.diff > 24 && matchMedia('(max-width:700px)').matches; record = false; persist(); draw(); startClock(); }
+  function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = false; /* pedido da Bea: sempre começa com o quadro completo na tela */ record = false; persist(); draw(); startClock(); }
 
   const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };
@@ -101,7 +101,7 @@ export function mount(host, opts) {
       ? h('div', { class: 'jg-pz fixed', style: pieceStyle(p), role: 'img', 'aria-label': `peça no lugar: ${posLabel(p)}` })
       : h('button', { type: 'button', class: `jg-pz slot${hintCell === p ? ' hint' : ''}`, 'aria-label': `posição vazia: ${posLabel(p)}${hintCell === p ? ' (dica: aqui)' : ''}`, 'data-pos': p, disabled: g.over || selected == null, onclick: () => put(p) }));
     const tray = g.tray.map((p) => h('button', { type: 'button', class: `jg-pz tp${selected === p ? ' sel' : ''}`, style: pieceStyle(p), 'aria-pressed': String(selected === p), 'aria-label': `peça ${g.tray.indexOf(p) + 1} de ${g.tray.length} na bandeja${selected === p ? ', selecionada' : ''}`, 'data-piece': p,
-      onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); }, onpointerdown: (e) => dragStart(e, p) }));
+      onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); } }));
     timeEl = h('b', {}, g.free ? '—' : Q.fmtTime(g.elapsed));
     root.replaceChildren(...[
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'peças'), h('span', {}, `${Q.placedCount(g)}/${n}`)), h('div', { class: 'jg-who' }, h('b', {}, 'tempo'), h('span', {}, timeEl)), h('div', { class: 'jg-who' }, h('b', {}, 'dicas'), h('span', {}, String(g.hints)))),
@@ -125,7 +125,7 @@ export function mount(host, opts) {
     persist(); draw(); if (g.started && !tick) startClock();
   }
   function hint() { if (selected == null) return; g = Q.useHint(g); hintCell = selected; msg = `dica: a peça escolhida vai na posição ${posLabel(selected)}`; sfx('tap'); persist(); draw(); }
-  function showRules() { pause(true); const el = h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'regras' }, h('p', {}, 'toque numa peça e depois no lugar dela, ou arraste a peça até o lugar. o tempo está pausado.'), h('button', { class: 'btn primary', type: 'button', onclick: () => { el.remove(); pause(false); } }, 'continuar')); root.append(el); el.querySelector('button').focus(); }
+  function showRules() { pause(true); const el = h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'regras' }, h('p', {}, 'toque numa peça e depois no lugar dela. o tempo está pausado.'), h('button', { class: 'btn primary', type: 'button', onclick: () => { el.remove(); pause(false); } }, 'continuar')); root.append(el); el.querySelector('button').focus(); }
   function finish() {
     clock(); stopClock();
     if (M) { sfx('win'); draw(); if (!reported && !gone && opts.onResult) { reported = true; opts.onResult({ won: true, diff: g.diff, img: imgId, errors: g.errors, hints: g.hints, elapsed: Math.round(g.elapsed), moves: g.diff + g.errors }); } return; }
