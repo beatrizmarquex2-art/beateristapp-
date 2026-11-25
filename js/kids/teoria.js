@@ -1,10 +1,10 @@
 // Teoria básica com o Paul: cada sessão tem cartões clicáveis (toque pra virar e ver a explicação) e, no fim, um mini quiz de 3 perguntas.
-// Estrelas: 3 de 3 = 2 ★, 2 de 3 = 1 ★ (1 vez por sessão por dia; limite de 30 ★/dia do jogo "estudos").
+// Estrelas: cada acerto do mini quiz vale 1 ★ (3 de 3 = 3 ★). Cada fase paga só a diferença se melhorar.
 import { h } from '../util.js';
 import { banner, toast } from '../ui.js';
 import { alunoSemCodigo } from '../amostra.js';
 import { robo } from './robo.js';
-import { audio, click } from '../audio.js';
+import { audio, click, silence } from '../audio.js';
 import { symbolEl } from '../jogos/cartas-simbolos.js';
 import { epiano } from '../synth.js';
 import { FASES_FIGURAS, notas } from './teoria-figuras.js';
@@ -44,12 +44,12 @@ export const melhor = (id) => feitas()[id] || 0;
 /** Fases de um tema: os temas antigos (só `cards` + `quiz`) contam como 1 fase. */
 export const fasesDe = (s) => s.fases || [{ nome: s.nome, paul: s.paul, cards: s.cards, quiz: s.quiz }];
 const chaveFase = (id, k) => (k ? `${id}:${k}` : id); // a fase 1 usa a chave antiga (não perde o que a criança já ganhou)
-/** Estrelas que a pessoa já tem num tema (2 por fase) e o máximo. */
-export const estrelasTema = (s) => { const f = fasesDe(s); return [f.reduce((n, _, k) => n + estrelasQuiz(melhor(chaveFase(s.id, k))), 0), f.length * 2]; };
+/** Estrelas que a pessoa já tem num tema (3 por fase) e o máximo. */
+export const estrelasTema = (s) => { const f = fasesDe(s); return [f.reduce((n, _, k) => n + estrelasQuiz(melhor(chaveFase(s.id, k))), 0), f.length * 3]; };
 /** Estrelas de um resultado do mini quiz. */
-export const estrelasQuiz = (certas) => (certas >= 3 ? 2 : certas === 2 ? 1 : 0);
+export const estrelasQuiz = (certas) => Math.max(0, Math.min(3, certas | 0));
 
-async function darEstrelas(id, n) { // cada sessão paga até 2 ★ na vida (só a diferença se melhorar), sem repetir
+async function darEstrelas(id, n) { // cada fase paga até 3 ★ na vida (só a diferença se melhorar), sem repetir
   if (!n) return 0;
   try { const E = await import('../jogos/estrelas-jogo.js'); return await E.ganhou('estudos', n, `teoria|${id.replace(':', '|')}`); } catch { return 0; }
 }
@@ -68,12 +68,12 @@ export function mount(host, parts = [], { aoFim } = {}) {
   const irFase = (k) => { if (trancada(k)) { toast('esta fase é só pra alunos com código. a 1ª é grátis!'); return; } fi = k; fase = 'cards'; vistos = new Set(); desenha(); try { cabeca.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } };
   /** Trilha das fases (só quando o tema tem mais de uma): número, nome e as estrelas já ganhas. */
   const trilha = () => (FS.length < 2 ? null : h('div', { class: 'tf-fases', role: 'tablist', 'aria-label': `fases de ${s.nome}` }, ...FS.map((f, k) => { const e = estrelasQuiz(melhor(chaveFase(s.id, k)));
-    return h('button', { type: 'button', role: 'tab', class: `tf-fase${k === fi ? ' on' : ''}${e ? ' feita' : ''}`, 'aria-selected': String(k === fi), 'aria-label': `fase ${k + 1}: ${f.nome}${e ? `, ${e} de 2 estrelas` : ''}`, onclick: () => irFase(k) }, h('b', {}, String(k + 1)), h('i', {}, trancada(k) ? '🔒' : e ? '★'.repeat(e) : '·')); })));
+    return h('button', { type: 'button', role: 'tab', class: `tf-fase${k === fi ? ' on' : ''}${e ? ' feita' : ''}`, 'aria-selected': String(k === fi), 'aria-label': `fase ${k + 1}: ${f.nome}${e ? `, ${e} de 3 estrelas` : ''}`, onclick: () => irFase(k) }, h('b', {}, String(k + 1)), h('i', {}, trancada(k) ? '🔒' : e ? '★'.repeat(e) : '·')); })));
   function desenha() {
     corpo.style.setProperty('--c', s.cor); const f = F();
     if (fase === 'cards') {
       bot.set('wave', ''); fala.textContent = f.paul || s.paul;
-      const cartoes = f.cards.map((c, k) => { const b = h('button', { type: 'button', class: `tf-card${vistos.has(k) ? ' visto' : ''}`, 'aria-expanded': String(vistos.has(k)), onclick: () => { vistos.add(k); b.classList.add('visto', 'aberto'); b.setAttribute('aria-expanded', 'true'); if (c.som) { try { c.som(); } catch { /* sem som */ } } fala.textContent = c.txt; bot.set('music', ''); atualiza(); } },
+      const cartoes = f.cards.map((c, k) => { const b = h('button', { type: 'button', class: `tf-card${vistos.has(k) ? ' visto' : ''}`, 'aria-expanded': String(vistos.has(k)), onclick: () => { vistos.add(k); b.classList.add('visto', 'aberto'); b.setAttribute('aria-expanded', 'true'); if (c.som) { try { silence(); c.som(); } catch { /* sem som */ } } fala.textContent = c.txt; bot.set('music', ''); atualiza(); } },
         h('span', { class: 'tf-ic' }, c.ic()), h('b', {}, c.t), h('small', {}, ''), h('em', { class: 'tf-toque' }, '👆 toque aqui')); return b; });
       const btn = h('button', { type: 'button', class: 'btn primary wide', disabled: true, onclick: quizOn }, `mini quiz (3 perguntas)`);
       // avisa onde clicar: só o PRÓXIMO cartão fechado pisca com "👆 toque aqui"; os já abertos mostram a explicação e, se tiver som, "🔊 toque pra ouvir de novo"
@@ -94,11 +94,11 @@ export function mount(host, parts = [], { aoFim } = {}) {
   async function fim() {
     fase = 'fim'; const ch = chaveFase(s.id, fi); marca(ch, certas); const est = estrelasQuiz(certas); const ganhou = await darEstrelas(ch, est); if (aoFim) aoFim(s.id);
     // terminou o tema inteiro (todas as fases com o quiz 3 de 3): 1 figurinha exclusiva do Paul, uma vez só por tema (pedido da Bea, 20/nov/2026)
-    const temaCompleto = FS.every((_, k) => estrelasQuiz(melhor(chaveFase(s.id, k))) >= 2); /* 2 ★ = acertou as 3 perguntas do quiz da fase */ let exclusiva = 0;
+    const temaCompleto = FS.every((_, k) => estrelasQuiz(melhor(chaveFase(s.id, k)))   >= 3); /* 3 ★ = acertou as 3 perguntas do quiz da fase */ let exclusiva = 0;
     if (temaCompleto) { try { const R = await import('../figurinhas/rewards.js'); exclusiva = await R.grantPacks([`estudo:${s.id}`]); } catch { /* sem álbum: tenta na próxima */ } }
     bot.set(certas >= 2 ? 'cheer' : 'happy', ''); fala.textContent = certas === 3 ? 'perfeito! você mandou muito bem!' : certas === 2 ? 'muito bom! mais uma e fica perfeito.' : 'bora rever os cartões e tentar de novo!';
     const proxFase = fi + 1 < FS.length && !trancada(fi + 1) ? fi + 1 : -1; const mesmo = SESSOES.filter((x) => (x.grupo || '') === (s.grupo || '')); const prox = fi + 1 < FS.length ? null : mesmo[mesmo.findIndex((x) => x.id === s.id) + 1];
-    corpo.replaceChildren(...[trilha(), h('div', { class: 'jg-result' }, h('h3', { class: 'hand' }, `${certas} de 3`), h('p', { class: 'tf-estrelas' }, '★'.repeat(est) + '☆'.repeat(2 - est)), ganhou ? h('p', {}, `+${ganhou} ★ nas suas estrelas!`) : est ? h('p', { class: 'muted' }, 'as estrelas desta fase você já ganhou.') : null),
+    corpo.replaceChildren(...[trilha(), h('div', { class: 'jg-result' }, h('h3', { class: 'hand' }, `${certas} de 3`), h('p', { class: 'tf-estrelas' }, '★'.repeat(est) + '☆'.repeat(3 - est)), ganhou ? h('p', {}, `+${ganhou} ★ nas suas estrelas!`) : est ? h('p', { class: 'muted' }, 'as estrelas desta fase você já ganhou.') : null),
       exclusiva ? h('p', { class: 'tf-exclusiva' }, '🎁 você acertou tudo e terminou o tema! ganhou uma figurinha exclusiva, ela chegou no baú (Stars).', ' ', h('a', { href: '#/album/Pacotes' }, 'abrir')) : (!temaCompleto ? h('p', { class: 'muted' }, FS.length > 1 ? `acerte as 3 perguntas do quiz das ${FS.length} fases de "${s.nome}" e ganhe uma figurinha exclusiva!` : `acerte as 3 perguntas do quiz de "${s.nome}" e ganhe uma figurinha exclusiva!`) : null),
       h('div', { class: 'jg-actions' }, proxFase >= 0 ? h('button', { class: 'btn primary', type: 'button', onclick: () => irFase(proxFase) }, `próxima fase: ${FS[proxFase].nome} ▶`) : null, h('button', { class: `btn${proxFase >= 0 ? '' : ' primary'}`, type: 'button', onclick: () => { fase = 'cards'; vistos = new Set(); desenha(); } }, 'rever os cartões'), h('button', { class: 'btn', type: 'button', onclick: quizOn }, 'quiz de novo'), proxFase < 0 ? (prox ? h('a', { class: 'btn', href: hrefDe(prox) }, `próxima: ${prox.nome} ▶`) : h('a', { class: 'btn', href: '#/estudos/aulas' }, 'todos os temas')) : null)].filter(Boolean));
   }

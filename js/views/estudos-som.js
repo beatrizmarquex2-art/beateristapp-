@@ -1,6 +1,6 @@
 // Estudos com som: dicionário de acordes (violão/guitarra e teclado) e ritmos de bateria. Tudo sintetizado, nada é baixado.
 import { h } from '../util.js';
-import { audio, out, kick, snare, hihat, tom } from '../audio.js';
+import { audio, out, kick, snare, hihat, tom , silence } from '../audio.js';
 import { pluck } from '../instruments.js';
 import { epiano, rim, bass } from '../synth.js';
 import { banner } from '../ui.js';
@@ -66,7 +66,7 @@ export function acordesView(host, parts = []) {
       h('a', { class: `es-area${aba === 'teclado' ? ' on' : ''}`, href: '#/estudos/acordes/teclado', style: '--c:#17365B;--f:#fff' }, h('span', { class: 'es-ai' }, '🎹'), h('b', {}, 'teclado'))),
     aba === 'violao' ? violaoLista() : tecladoLista()));
 }
-const ouvirBtn = (t, fn, aria) => h('button', { type: 'button', class: 'ac-ouvir', 'aria-label': aria, onclick: fn }, t);
+const ouvirBtn = (t, fn, aria) => h('button', { type: 'button', class: 'ac-ouvir', 'aria-label': aria, onclick: () => { silence(); fn(); } }, t);
 const pegaOutros = (arr, atual, n) => sorteia(arr.filter((x) => x !== atual)).slice(0, n);
 function provaViolao(item) {
   const [cifra, nome, frets] = item; const menor = /m$/.test(cifra);
@@ -165,7 +165,7 @@ export function ritmosView(host) {
   const marca = (i) => celulas.forEach((c) => c.classList.toggle('agora', +c.dataset.i === i));
   const parar = () => { tocando = false; clearInterval(timer); timer = 0; marca(-1); botao.textContent = '▶ ouvir'; };
   const tick = () => { const c = audio(); const sp = 60 / bpm / 4; while (next < c.currentTime + 0.12) { tocaPasso(atual, step, next); const s = step; setTimeout(() => { if (tocando) marca(s); }, Math.max(0, (next - c.currentTime) * 1000)); next += sp; step = (step + 1) % 16; } };
-  const toggle = () => { if (tocando) { parar(); return; } const c = audio(); tocando = true; step = 0; next = c.currentTime + 0.08; botao.textContent = '■ parar'; tick(); timer = setInterval(tick, 25); };
+  const toggle = () => { if (tocando) { parar(); return; } const c = audio(); silence(); tocando = true; step = 0; next = audio().currentTime + 0.08; botao.textContent = '■ parar'; tick(); timer = setInterval(tick, 25); };
   botao.addEventListener('click', toggle);
   const desenha = () => {
     titulo.textContent = atual.nome; bpmOut.textContent = `${bpm} BPM`; celulas = [];
