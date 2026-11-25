@@ -6,7 +6,7 @@ const dias = (n, ini = '2026-11-01') => Array.from({ length: n }, (_, i) => { co
 test('7 dias seguidos completam a semana; entrar de novo no mesmo dia não conta', () => {
   let sem; let feitos = 0; const seq = [];
   for (const d of dias(7)) { const r = checkinSemana(sem, d); sem = r.sem; seq.push(sem.seq); if (r.completou) feitos++; assert.equal(checkinSemana(sem, d).sem.seq, sem.seq, 'mesmo dia'); }
-  assert.deepEqual(seq, [1, 2, 3, 4, 5, 6, 0]); assert.equal(feitos, 1); assert.equal(sem.ciclo, 1); assert.equal(SEMANA_DIAS, 7); assert.equal(SEMANA_ESTRELAS, 10);
+  assert.deepEqual(seq, [1, 2, 3, 4, 5, 6, 0]); assert.equal(feitos, 1); assert.equal(sem.ciclo, 1); assert.equal(SEMANA_DIAS, 7); assert.equal(SEMANA_ESTRELAS, 30);
 });
 test('faltou um dia: recomeça do 1', () => {
   let sem; for (const d of dias(4)) sem = checkinSemana(sem, d).sem; assert.equal(sem.seq, 4);

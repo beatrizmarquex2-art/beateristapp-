@@ -21,6 +21,7 @@ export function motivoDoPacote(id) {
   if (s.startsWith('egg:')) return 'você achou um segredo do Paul!';
   if (s.startsWith('bonus:')) return 'bônus: 5 vitórias seguidas jogando online';
   if (s.startsWith('estudo:')) return 'você terminou um tema inteiro dos estudos com o Paul!';
+  if (s.startsWith('epico:sem')) return 'você entrou 7 dias seguidos: giro épico!';
   if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
@@ -57,9 +58,9 @@ const clone = (s) => ({ ...emptyState(), ...s, inv: { ...(s.inv || {}) }, pasted
 
 /** Check-in: 1 giro grátis da roleta por dia (id fixo por dia: abrir o álbum de novo não entrega outro). */
 export const checkinId = (dateKey) => `roleta:dia:${dateKey}`;
-/** Check-in da semana (pedido da Bea): 7 dias SEGUIDOS entrando no Álbum = pacote com 1 exclusiva da Bea + 10 ★ + festa. Faltou um dia: recomeça.
+/** Check-in da semana (pedido da Bea): 7 dias SEGUIDOS entrando no Álbum = 30 ★ + 1 giro duplo épico + 1 figurinha exclusiva da Bea + festa. Faltou um dia: recomeça.
  *  `sem` = { ult: 'AAAA-MM-DD', seq: dias seguidos (0 a 6), ciclo: semanas completas }. Puro: devolve o novo estado e se completou a semana agora. */
-export const SEMANA_DIAS = 7; export const SEMANA_ESTRELAS = 10;
+export const SEMANA_DIAS = 7; export const SEMANA_ESTRELAS = 30;
 const diaAntes = (k) => { const [y, m, d] = String(k).split('-').map(Number); const t = new Date(Date.UTC(y, m - 1, d - 1)); return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`; };
 export function checkinSemana(sem, dateKey) {
   const s = { ult: '', seq: 0, ciclo: 0, ...(sem || {}) };
@@ -69,6 +70,9 @@ export function checkinSemana(sem, dateKey) {
   return { sem: { ult: dateKey, seq, ciclo: s.ciclo | 0 }, completou: false };
 }
 export const semanaPackId = (ciclo) => `semana:${ciclo}`;
+/** Prêmio da semana fechada: a exclusiva da Bea + o giro duplo épico (2 pacotes `epico:sem<ciclo>:1|2`). Os ids têm o ciclo, então nunca entrega em dobro. */
+export const semanaPacks = (ciclo) => [semanaPackId(ciclo), `epico:sem${ciclo}:1`, `epico:sem${ciclo}:2`];
+export const grantSemana = (state, ciclo) => semanaPacks(ciclo).reduce((st, id) => grantPack(st, id), state);
 
 /** Entrega um pacote (uma vez só por id). */
 export function grantPack(state, id) {
