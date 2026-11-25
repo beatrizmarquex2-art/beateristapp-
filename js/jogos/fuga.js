@@ -82,7 +82,7 @@ export function mount(host) {
     if (M.mapa === 'lab') {
       const fases = Array.from({ length: FASES }, (_, i) => { const n = i + 1; const e = estOf(est(), M.id, n); return { n, portas: qtdPortas(n), desafio: !!DESAFIOS[n], stars: e, state: e > 0 ? 'done' : faseAberta(est(), M.id, n) ? 'open' : 'locked' }; });
       const bonus = { state: bonusFeito(est(), M.id) ? 'done' : bonusAberto(est(), M.id) ? 'open' : 'locked' };
-      mountFugaMapa(box, { titulo: 'Escape Room', subtitulo: M.nome, fases, bonus, lastKey: `beaterista-fuga-paul:${M.id}${trilha > 1 ? `:t${trilha}` : ''}`, onOpen: (n) => joga(M, mi, n), onBonus: () => joga(M, mi, 'B'), onLocked: (n) => toast(n === 'B' ? 'a porta B abre quando você terminar a fase 12' : 'abra a fase anterior primeiro (1 ★ nela)', { ms: 2800 }) });
+      mountFugaMapa(box, { titulo: 'Sala de fuga', subtitulo: M.nome, fases, bonus, lastKey: `beaterista-fuga-paul:${M.id}${trilha > 1 ? `:t${trilha}` : ''}`, onOpen: (n) => joga(M, mi, n), onBonus: () => joga(M, mi, 'B'), onLocked: (n) => toast(n === 'B' ? 'a porta B abre quando você terminar a fase 12' : 'abra a fase anterior primeiro (1 ★ nela)', { ms: 2800 }) });
       return;
     }
     off = mountProgressionMap(box, { gameId: `fuga-${M.id}`, levels, profileId: 'fuga', unitName: 'Fase', tier: 0, stars: { have: estMundo(est(), M.id), max: FASES * 3 }, theme: temaDoMundo(M.tema, M.nome, [['a', M.regioes[0].name, M.regioes[0].sub], ['b', M.regioes[1].name, M.regioes[1].sub]]),

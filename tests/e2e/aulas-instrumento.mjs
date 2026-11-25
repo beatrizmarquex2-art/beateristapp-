@@ -11,7 +11,7 @@ async function abre(codigo) {
 {
   const { browser, p, errs } = await abre(true);
   await p.goto(`${url}/aluno.html#/estudos/aulas`); await sleep(1800);
-  check('lista: 5 temas de teoria e 3 aulas de instrumento, sem "Figuras rítmicas"', (await p.locator('.tf-tema').count()) === 5 && (await p.locator('.al-aula').count()) === 3 && !/Figuras rítmicas/i.test(await p.locator('.al-aula').allInnerTexts().then((t) => t.join(' '))));
+  check('lista: 5 temas de teoria e 3 aulas de instrumento, sem "Figuras rítmicas"', (await p.locator('.tf-tema').count()) === 5 && (await p.locator('.al-aula:not(.tf-tema)').count()) === 3 && !/Figuras rítmicas/i.test(await p.locator('.al-aula:not(.tf-tema)').allInnerTexts().then((t) => t.join(' '))));
   for (const id of ['bateria', 'teclado', 'violao']) {
     await p.goto(`${url}/aluno.html#/estudos/aulas/${id}`); await sleep(1500);
     check(`${id}: 6 fases de 5 cartões`, (await p.locator('.tf-fase').count()) === 6 && (await p.locator('.tf-card').count()) === 5);

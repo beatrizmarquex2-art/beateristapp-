@@ -511,7 +511,7 @@
 .tf-fase.on{background:var(--c,#17365B);color:#fff}.tf-fase.on i{color:#ffd166}
 .tf-fase-t{margin:0;text-align:center;font:800 14px/1.2 var(--body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--c,#17365B)}
 .tf-li{color:#fff;width:60px;height:60px}.tf-li .tf-sym{height:40px;width:auto;max-width:50px}.tf-li-t{font:400 24px/1 "Anton",sans-serif;color:#fff}
-.tf-tema b{font-size:18px}.tf-tema small{font-size:13.5px}.tf-tema-st{color:#EBA332;letter-spacing:1px}
+
 @media(prefers-reduced-motion:reduce){.tf-card.vez .tf-toque,.btn.tf-vez{animation:none}}
 .tf-ic{height:74px}.tf-card .tf-sym{height:72px}
 

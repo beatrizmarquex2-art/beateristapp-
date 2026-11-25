@@ -4,14 +4,14 @@ import { regioesDoTema } from './mundos-tema.js';
 
 export const FASES = 12;
 export const MUNDOS = [
-  { id: 'estudio', tema: 'laser', nome: 'Estúdio do Paul', curto: 'estúdio', sub: 'escape room: ache a saída', mapa: 'lab', regioes: regioesDoTema('laser', [['corredor', 'Corredor dos Lasers', 'cuidado com o vermelho'], ['cabine', 'Cabine Secreta', 'a saída está perto']]) },
+  { id: 'estudio', tema: 'laser', nome: 'Estúdio do Paul', curto: 'estúdio', sub: 'sala de fuga: ache a saída', mapa: 'lab', regioes: regioesDoTema('laser', [['corredor', 'Corredor dos Lasers', 'cuidado com o vermelho'], ['cabine', 'Cabine Secreta', 'a saída está perto']]) },
   { id: 'vulcao', tema: 'laser', nome: 'Camarim do Paul', curto: 'camarim', sub: 'espelho, luzes e frio na barriga', regioes: regioesDoTema('laser', [['espelho', 'Espelho das Luzes', 'ajeita o figurino'], ['coxia', 'Coxia', 'quase na hora de entrar']]) },
   { id: 'espaco', tema: 'laser', nome: 'Palco Principal', curto: 'palco', sub: 'a plateia tá esperando', regioes: regioesDoTema('laser', [['plateia', 'Fosso da Plateia', 'luz nos olhos'], ['solo', 'Solo Final', 'o último refrão']]) },
 ];
 /** Os tipos de porta (registro: pra criar um novo jogo é só pôr aqui o nome, o rótulo e a função em fuga-mini.js). Os 3 principais são quiz, caça-palavras e cruzadinha. */
 export const TIPOS = ['quiz', 'caca', 'cruz', 'genius', 'caminho', 'memoria', 'queda', 'queda4', 'montar', 'compasso', 'intruso'];
 export const PRINCIPAIS = TIPOS.slice(0, 3);
-export const NOME_TIPO = { quiz: 'sala de controle (quiz)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)', genius: 'mesa de som (genius)', caminho: 'corredor de notas (caminho 3×3)', memoria: 'arquivo de discos (memória)', queda: 'palco das figuras (notas caindo)', queda4: 'palco das figuras (4 notas caindo)', montar: 'bancada das notas (montar nota)', compasso: 'mesa de mixagem (feche o compasso)', intruso: 'discoteca (o intruso)' };
+export const NOME_TIPO = { quiz: 'sala de controle (perguntas)', caca: 'cabine de gravação (caça-palavras)', cruz: 'sala de ensaio (cruzadinha)', genius: 'mesa de som (repita os sons)', caminho: 'corredor de notas (caminho 3×3)', memoria: 'arquivo de discos (memória)', queda: 'palco das figuras (notas caindo)', queda4: 'palco das figuras (4 notas caindo)', montar: 'bancada das notas (montar nota)', compasso: 'mesa de mixagem (feche o compasso)', intruso: 'discoteca (o intruso)' };
 export const tipoDa = (n) => PRINCIPAIS[(n - 1) % 3]; // (legado) tipo da 1ª porta da fase
 export const idFase = (mundo, n) => `${mundo}:${n}`;
 /** 3 níveis em todos os jogos das portas: fácil (fases 1-4), médio (5-8) e difícil (9-12). Os mundos 2 e 3 sobem 1 nível (teto: difícil); as fases-desafio são no mínimo médio e a porta B é difícil. */

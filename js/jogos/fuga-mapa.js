@@ -19,7 +19,7 @@ const pt = (p) => `${p.x},${(p.y * VB_H) / 100}`;
 export function mountFugaMapa(host, cfg) {
   const { fases, bonus } = cfg; const feitas = fases.filter((f) => f.state === 'done').length; const estrelas = fases.reduce((t, f) => t + (f.stars || 0), 0);
   let atual = fases.findIndex((f) => f.state === 'open'); if (atual < 0) atual = fases.every((f) => f.state === 'done') ? fases.length - 1 : 0;
-  const head = h('div', { class: 'fm-head' }, h('div', { class: 'fm-tit' }, h('b', {}, cfg.titulo || 'Escape Room'), h('small', {}, cfg.subtitulo || 'Laboratório do Paul')),
+  const head = h('div', { class: 'fm-head' }, h('div', { class: 'fm-tit' }, h('b', {}, cfg.titulo || 'Sala de fuga'), h('small', {}, cfg.subtitulo || 'Laboratório do Paul')),
     h('span', { class: 'fm-chip', title: 'fases concluídas' }, `◉ ${feitas}/${fases.length}`), h('span', { class: 'fm-chip', title: 'estrelas do mundo' }, `★ ${estrelas}/${fases.length * 3}`));
   const sala = h('div', { class: 'fm-sala', style: `aspect-ratio:${IMG.w}/${IMG.h}` });
   // raio laser ligando os discos até a SAÍDA: aceso até o disco da vez, apagadinho depois

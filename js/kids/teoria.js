@@ -4,6 +4,7 @@ import { h } from '../util.js';
 import { banner, toast } from '../ui.js';
 import { alunoSemCodigo } from '../amostra.js';
 import { robo } from './robo.js';
+import { corSrc, stkSrc } from '../paul-cor.js';
 import { audio, click, silence } from '../audio.js';
 import { symbolEl } from '../jogos/cartas-simbolos.js';
 import { epiano } from '../synth.js';
@@ -107,7 +108,10 @@ export function mount(host, parts = [], { aoFim } = {}) {
   return () => {};
 }
 /** Os cartões dos 5 temas (com aulinhas e estrelas), pra aparecerem dentro do "Robôterista ensina". */
-export const cartoesDosTemas = () => SESSOES.filter((s) => s.grupo !== 'instrumento').map((s) => { const [tem, max] = estrelasTema(s); const n = fasesDe(s).reduce((q, f) => q + f.cards.length, 0); return h('a', { class: 'es-modo tf-tema', href: hrefDe(s), style: `--c:${s.cor};--f:#fff` }, h('span', { class: 'es-mi tf-li', 'aria-hidden': 'true' }, s.li ? s.li() : s.ic), h('span', { class: 'es-mt' }, h('b', {}, s.nome), h('small', {}, `${s.sub} · ${n} aulinhas`), h('small', { class: 'tf-tema-st' }, `${'★'.repeat(tem)}${'☆'.repeat(max - tem)}`)), h('span', { class: 'es-go' }, '▶')); });
+const VISUAL = { figuras: ['baquetas-pra-cima', 'nota'], pausas: ['ouvindo', 'fone'], claves: ['professor', 'estrela'], tempo: ['metronomo', 'raio'], leitura: ['lendo-partitura', 'livros'] };
+export const cartoesDosTemas = () => SESSOES.filter((s) => s.grupo !== 'instrumento').map((s) => { const [tem, max] = estrelasTema(s); const n = fasesDe(s).reduce((q, f) => q + f.cards.length, 0); const [pose, adesivo] = VISUAL[s.id] || ['ouvindo', 'nota'];
+  return h('a', { class: `al-aula tf-tema al-aula-t-${s.id}`, href: hrefDe(s) }, h('img', { class: 'al-aula-paul', src: corSrc(pose), alt: '', draggable: 'false' }), h('img', { class: 'al-aula-adv', src: stkSrc(adesivo), alt: '', draggable: 'false' }),
+    h('span', { class: 'al-aula-txt' }, h('b', {}, s.nome), h('small', {}, `${s.sub} · ${n} aulinhas`), h('em', {}, `★ ${tem}/${max}`)), h('i', { class: 'al-aula-go', 'aria-hidden': 'true' }, '▶')); });
 function lista(host) { // endereço antigo (#/estudos/basica): leva pro Robôterista ensina, onde os temas moram agora
   location.replace('#/estudos/aulas'); return () => {};
 }
