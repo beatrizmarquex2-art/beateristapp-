@@ -123,7 +123,7 @@ export function mount(host, opts) {
       h('div', { class: 'jg-actions row' },
         h('button', { class: 'btn small', type: 'button', onclick: () => { viewing = true; draw(); } }, 'ver imagem'),
         h('button', { class: 'btn small', type: 'button', disabled: g.over || selected == null, onclick: hint }, 'dica')),
-      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.over ? '' : msg),
+      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.over ? '' : msg || (selected == null ? 'travou? toque numa peça e depois em “dica”: eu mostro onde ela encaixa.' : 'agora toque em “dica” ou arraste a peça até o lugar dela.')),
       h('div', { class: `jg-boardwrap${zoom ? ' zoom' : ''}${zoom && n > 48 ? ' mega' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
       g.over ? result() : h('div', { class: 'jg-tray', role: 'group', 'aria-label': 'bandeja de peças, role para os lados' }, ...tray),
       viewing ? h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'imagem de referência' }, h('img', { src: SRC(), alt: NOME() }), h('button', { class: 'btn primary', type: 'button', onclick: () => { viewing = false; draw(); } }, 'fechar')) : null,
