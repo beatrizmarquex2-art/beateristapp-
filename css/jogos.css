@@ -1085,7 +1085,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix .ok{background:#dff3e6!important;border-color:#1f7a3f!important}.jg-figurix .no{background:#fde4e4!important;border-color:#a51a28!important}
 .jg-figurix .fx-pecas{display:flex;gap:8px;flex-wrap:wrap}.jg-figurix .fx-peca{min-width:70px;min-height:64px;flex:1}.jg-figurix .fx-peca.on{background:#d99a2b;box-shadow:none}.jg-figurix .fx-ico{width:44px;height:44px;display:block}
 .jg-figurix .fx-ligar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}.jg-figurix .fx-ligar .col{display:grid;gap:8px}.jg-figurix .fx-lig{min-height:72px}.jg-figurix .fx-lig.sel{background:#d99a2b}
-.jg-figurix .fx-mem{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.jg-figurix .fx-card{min-height:92px;background:#1f6f78;color:transparent}.jg-figurix .fx-card svg{opacity:0}.jg-figurix .fx-card.aberta{background:#fffdf7}.jg-figurix .fx-card.aberta svg{opacity:1}
+.jg-figurix .fx-mem{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.jg-figurix .fx-card{min-height:92px;background:#1f6f78;color:transparent}.jg-figurix .fx-card svg{opacity:0}.jg-figurix .fx-card.aberta{background:#fffdf7;color:#142036}.jg-figurix .fx-card.aberta svg{opacity:1}.jg-figurix .fx-card.aberta .fx-txt,.jg-figurix .fx-card.ok .fx-txt,.jg-figurix .fx-card.no .fx-txt{color:#142036}
 .jg-figurix .fx-grade{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:2px;margin:8px auto;max-width:360px}.jg-figurix .fx-c{aspect-ratio:1;border:1.5px solid #142036;border-radius:6px;background:#fffdf7;color:#142036;font:800 15px var(--body,inherit);padding:0}.jg-figurix .fx-c.sel{background:#d99a2b}.jg-figurix .fx-c.ok{background:#bfe5c9}
 .jg-figurix .fx-pals{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.jg-figurix .fx-pal{padding:2px 10px;border:2px solid #142036;border-radius:999px;font-weight:700;font-size:13px;background:#fffdf7}.jg-figurix .fx-pal.feita{background:#dff3e6;text-decoration:line-through}
 .jg-figurix .fx-arvore{display:grid;gap:8px;margin:8px 0}.jg-figurix .fx-arv{display:grid;grid-template-columns:64px 1fr auto;gap:8px;align-items:center;padding:6px 10px;border:2px solid #142036;border-radius:14px;background:#fffdf7;color:#142036}
@@ -1537,7 +1537,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix[data-skin="c"] .fx-big{background:#fff;border-radius:20px;padding:6px;border:4px solid #fff;box-shadow:0 3px 0 #0002}
 /* memória: carta virada mostra o Paul */
 .jg-figurix[data-skin="c"] .fx-card{background:#fff url(../assets/paul/colorido/paul-ouvindo.webp) center/78% no-repeat;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;min-height:88px;color:transparent}
-.jg-figurix[data-skin="c"] .fx-card.aberta{background:#fff}.jg-figurix[data-skin="c"] .fx-card.ok{background:#a8e6b4!important}
+.jg-figurix[data-skin="c"] .fx-card.aberta{background:#fff;color:#142036}.jg-figurix[data-skin="c"] .fx-card.aberta .fx-txt,.jg-figurix[data-skin="c"] .fx-card.ok .fx-txt,.jg-figurix[data-skin="c"] .fx-card.no .fx-txt{color:#142036}.jg-figurix[data-skin="c"] .fx-card.ok{background:#a8e6b4!important}
 /* caça-palavras: letras e palavras em cores fortes, arrastar o dedo */
 .jg-figurix[data-skin="c"] .fx-grade{touch-action:none;user-select:none;background:#fff;padding:6px;border-radius:18px;box-shadow:0 3px 0 #0002;gap:1px}
 .jg-figurix[data-skin="c"] .fx-c{border:0;background:transparent;border-radius:8px;font-weight:800;color:#1c1330;touch-action:none}
