@@ -102,7 +102,7 @@ const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0
 export function leitura(host, opts = {}) {
   let fixedStep = opts.mapa && !opts.livre ? opts.step : undefined; // dentro do mapa a fase vem de fora (nada de escolher aqui)
   let beats = null; let run = null; let lastResult = null; let micBlocked = false; let micErro = null; let passedNow = false;
-  const RODADAS_FASE = 1; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (a nota da fase é a do ÚLTIMO compasso tocado, não a média); no modo livre segue 1 por vez
+  const RODADAS_FASE = 3; let rodada = 0; let notasFase = []; // fase do mapa = 3 compassos seguidos (a nota da fase é a do ÚLTIMO compasso tocado, não a média); no modo livre segue 1 por vez
   const body = h('div');
   const S = session(); // contagem, cliques, fim da rodada: se parou, trocou de compasso ou saiu, S.reset()/dispose() cancela tudo e cala o som
   let testeAtivo = null; // microfone do "testar" (precisa fechar ao sair da tela)
@@ -114,7 +114,7 @@ export function leitura(host, opts = {}) {
     const useMic = c.input === 'mic' && !micBlocked;
     const key = livre ? 'livre' : `p${step}`;
     if (!livre && beats && beats.key !== key) { fresh = true; rodada = 0; notasFase = []; }
-    if (fresh || !beats || beats.length !== nb * 4) { beats = livre ? genBar(c.lv) : (fase3 && rodada > 0 ? genBar(PATH[step].lv) : [...PATH[step].bar]); beats.key = key; lastResult = null; }
+    if (fresh || !beats || beats.length !== nb * 4) { beats = livre ? genBar(c.lv) : (fase3 && rodada > 0 ? genBar(PATH[step].gen || PATH[step].lv) : [...PATH[step].bar]); beats.key = key; lastResult = null; }
     const expected = onsets(beats, c.bpm);
     const marks = lastResult ? lastResult.notes.map((n) => MARK[n.st]) : [];
     const pad = useMic ? h('div', { class: 'tr-pad mic', 'aria-label': 'O microfone escuta o seu pad ou a sua bateria' }, h('span', {}, '🎙 toque no seu pad ou bateria'), h('small', {}, 'o app escuta depois da contagem'))
