@@ -2071,3 +2071,24 @@ body.bv-aberta { overflow: hidden; }
 .vv-teclado.muitas{gap:2px}.vv-teclado.muitas .vv-tecla{min-width:0;font-size:14px;padding:0 0 8px;box-shadow:2px 2px 0 var(--vv-navy)}.vv-teclado.muitas .vv-tecla span{font-size:14px}
 .vv-seq.longa{gap:5px}.vv-seq.longa .vv-n{font-size:19px;padding:6px 8px 4px}
 .vv-teclado{max-width:100%}.vv-kbwrap{max-width:100%;overflow:hidden}
+
+/* quebra-cabeça de encaixe (peças em SVG) e escolha da imagem por instrumento */
+.jg-quebra .jg-pz.tp{width:98px;border:0;border-radius:0;background:none;box-shadow:none}
+.jg-quebra .jg-pz.tp .pzsvg,.jg-quebra .jg-pz.ghost .pzsvg{display:block;width:100%;height:auto;pointer-events:none;overflow:visible}
+.jg-quebra .jg-pz.tp.sel{border:0;box-shadow:none;transform:translateY(-3px)}.jg-quebra .jg-pz.tp.sel .pzsvg{filter:drop-shadow(0 0 3px var(--jg-red)) drop-shadow(0 0 2px var(--jg-red))}
+.jg-quebra .jg-pz.tp.lift{box-shadow:none}.jg-quebra .jg-pz.tp.lift .pzsvg{filter:drop-shadow(0 0 4px var(--jg-red))}
+.jg-quebra .jg-pz.ghost{border:0;border-radius:0;background:none;box-shadow:none}.jg-quebra .jg-pz.ghost .pzsvg,.jg-pz.ghost .pzsvg{display:block;width:100%;height:auto;filter:drop-shadow(0 8px 10px #0007)}
+.jg-pz.ghost{border:0;border-radius:0;background:none;box-shadow:none}
+.jg-quebra .jg-pboard{overflow:hidden}
+.jg-quebra .jg-pboard>.jg-pz{position:relative;overflow:visible}
+.jg-quebra .jg-pboard>.jg-pz.slot{z-index:1;color:#142036;outline:0}.jg-quebra .jg-pboard>.jg-pz.fixed{z-index:2}
+.jg-quebra .jg-pboard>.jg-pz .pzsvg{position:absolute;left:var(--ox);top:var(--oy);width:var(--sw);height:auto;pointer-events:none;overflow:visible}
+.jg-quebra .jg-pz.slot.hint{outline:0;background:none;animation:none}.jg-quebra .jg-pz.slot.hint .pzsvg{color:var(--jg-red);animation:jgpop .5s 2}.jg-quebra .jg-pz.slot.hint .pzsvg path{fill-opacity:.35;stroke-opacity:1}
+.jg-quebra .jg-pz.slot.over{outline:0;background:none}.jg-quebra .jg-pz.slot.over .pzsvg{color:var(--jg-red)}.jg-quebra .jg-pz.slot.over .pzsvg path{fill:#ffd23f;fill-opacity:.55;stroke-opacity:1}
+.jg-estante{background:#162146;color:#fff7e6;border-radius:14px;padding:10px 12px 4px;margin:6px 0;border:2px solid #162146;box-shadow:3px 4px 0 #14203655}
+.jg-estante-t{font:700 11px var(--body,inherit);letter-spacing:.14em;text-transform:uppercase;color:#f2a91b;margin:2px 0 6px}
+.jg-estante-l{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.jg-estante-l button{flex:0 0 auto;position:relative;padding:0;border:2px solid #fff7e6;border-radius:9px;background:none;cursor:pointer;min-height:0}
+.jg-estante-l button img{display:block;width:96px;height:64px;object-fit:cover;border-radius:7px}
+.jg-estante-l button.on{outline:3px solid #f2a91b;outline-offset:1px}
+.jg-estante-l button.locked{opacity:.5}.jg-estante-l button.locked::after{content:"🔒";position:absolute;right:3px;top:2px;font-size:13px}

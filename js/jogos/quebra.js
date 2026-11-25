@@ -1,4 +1,4 @@
-// Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Sem arrastar: toca na peça e depois na posição (pedido da Bea).
+// Quebra-cabeça musical: tela. Peças da cena do Paul no palco; regras em quebra-logic.js. Peças de encaixe (jigsaw em SVG). Arrasta a peça até o lugar ou toca na peça e depois na posição.
 import { h } from '../util.js';
 import { placar, poseDisponivel } from './placar.js';
 import { linha, chips, ajuda } from './opcoes.js';
@@ -15,22 +15,23 @@ import { NAGANO_FABRICA } from '../marcas-links.js';
 const ID = 'quebra';
 // Imagens do quebra-cabeça. Pra pôr mais uma: salve em assets/jogos/ (1536×1024, proporção 3:2), acrescente aqui e em sw.js. Com 2 ou mais, a tela inicial mostra as miniaturas pra escolher.
 export const IMAGES = [
-  { id: 'palco', src: 'assets/jogos/palco.webp', nome: 'Paul no palco' },
-  { id: 'guitarra', src: 'assets/jogos/guitarra.webp', nome: 'Paul tocando guitarra' },
-  { id: 'baixo', src: 'assets/jogos/baixo.webp', nome: 'Paul tocando baixo' },
-  { id: 'teclado', src: 'assets/jogos/teclado.webp', nome: 'Paul tocando teclado' },
-  { id: 'sax', src: 'assets/jogos/sax.webp', nome: 'Paul tocando saxofone' },
-  { id: 'praca', src: 'assets/jogos/praca.webp', nome: 'Paul tocando saxofone numa praça à noite' },
-  { id: 'estudio', src: 'assets/jogos/estudio.webp', nome: 'Paul tocando teclado num estúdio de gravação' },
-  { id: 'parque', src: 'assets/jogos/parque.webp', nome: 'Paul tocando baixo num parque em festa' },
-  { id: 'garagem', src: 'assets/jogos/garagem.webp', nome: 'Paul tocando guitarra numa garagem' },
-  { id: 'estudio-paul', src: 'assets/jogos/estudio-paul.webp', nome: 'Paul tocando teclado no estúdio' },
-  { id: 'show-guitarra', src: 'assets/jogos/show-guitarra.webp', nome: 'Paul tocando guitarra no show' },
-  { id: 'bateria-palco', src: 'assets/jogos/bateria-palco.webp', nome: 'Paul tocando bateria no palco' },
-  { id: 'terraco', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
+  { id: 'palco', grupo: 'bateria', src: 'assets/jogos/palco.webp', nome: 'Paul no palco' },
+  { id: 'guitarra', grupo: 'guitarra', src: 'assets/jogos/guitarra.webp', nome: 'Paul tocando guitarra' },
+  { id: 'baixo', grupo: 'baixo', src: 'assets/jogos/baixo.webp', nome: 'Paul tocando baixo' },
+  { id: 'teclado', grupo: 'teclado', src: 'assets/jogos/teclado.webp', nome: 'Paul tocando teclado' },
+  { id: 'sax', grupo: 'sax', src: 'assets/jogos/sax.webp', nome: 'Paul tocando saxofone' },
+  { id: 'praca', grupo: 'sax', src: 'assets/jogos/praca.webp', nome: 'Paul tocando saxofone numa praça à noite' },
+  { id: 'estudio', grupo: 'teclado', src: 'assets/jogos/estudio.webp', nome: 'Paul tocando teclado num estúdio de gravação' },
+  { id: 'parque', grupo: 'baixo', src: 'assets/jogos/parque.webp', nome: 'Paul tocando baixo num parque em festa' },
+  { id: 'garagem', grupo: 'guitarra', src: 'assets/jogos/garagem.webp', nome: 'Paul tocando guitarra numa garagem' },
+  { id: 'estudio-paul', grupo: 'teclado', src: 'assets/jogos/estudio-paul.webp', nome: 'Paul tocando teclado no estúdio' },
+  { id: 'show-guitarra', grupo: 'guitarra', src: 'assets/jogos/show-guitarra.webp', nome: 'Paul tocando guitarra no show' },
+  { id: 'bateria-palco', grupo: 'bateria', src: 'assets/jogos/bateria-palco.webp', nome: 'Paul tocando bateria no palco' },
+  { id: 'terraco', grupo: 'bateria', src: 'assets/jogos/terraco.webp', nome: 'Paul tocando bateria num terraço ao pôr do sol' },
   // foto da Bea no estande da Nagano (a Bea mandou, 17/nov/2026). Ao montar, mostra o link da visita dela na fábrica.
-  { id: 'nagano', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
+  { id: 'nagano', grupo: 'bateria', src: 'assets/jogos/nagano.webp', nome: 'Nagano Drums & Beaterista: a Bea no estande, com o Paul', link: NAGANO_FABRICA, linkTxt: 'ver a visita da Bea na fábrica da Nagano ›' },
 ];
+const GRUPOS = [['guitarra', 'guitarra'], ['teclado', 'teclado'], ['baixo', 'baixo'], ['bateria', 'bateria'], ['sax', 'saxofone']]; // a escolha da imagem é por instrumento (pedido da Bea)
 const SIZES = [[6, '6 peças'], [12, '12 peças'], [24, '24 peças'], [48, '48 · difícil'], [70, '70 · insano']];
 
 export function mount(host, opts) {
@@ -72,11 +73,11 @@ export function mount(host, opts) {
     stopClock(); g = null; selected = null; hintCell = null;
     if (!M && !autoAbriu && salaAutoPara(ID)) { autoAbriu = true; abrirDuelo(); return; } // veio de "tem um código de sala"
     const resume = Q.validGame(saved.game) && !saved.game.over ? saved.game : null;
-    const RULES = () => h('ul', {}, h('li', {}, 'toque numa peça da bandeja e depois no lugar dela no quadro.'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
+    const RULES = () => h('ul', {}, h('li', {}, 'arraste a peça da bandeja até o lugar dela no quadro (no celular: arraste pra cima, ou segure um instante e arraste) ou toque na peça e depois no lugar. as peças têm encaixe: o dente de uma entra no vazio da vizinha.'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
-      IMAGES.length > 1 ? h('div', { class: 'jg-seg jg-imgs', role: 'radiogroup', 'aria-label': 'imagem' }, ...IMAGES.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 72, height: 48, loading: 'lazy' })))) : null,
+      IMAGES.length > 1 ? h('div', { class: 'jg-estante', role: 'radiogroup', 'aria-label': 'imagem' }, ...GRUPOS.map(([gid, gn]) => { const lista = IMAGES.filter((x) => x.grupo === gid); return lista.length ? h('section', {}, h('h3', { class: 'jg-estante-t' }, gn), h('div', { class: 'jg-estante-l' }, ...lista.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 96, height: 64, loading: 'lazy' }))))) : null; }).filter(Boolean)) : null,
       h('div', { class: 'jo-card' },
         linha('tamanho', chips(SIZES.map(([v, l]) => [v, l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }, 'dificuldade')),
         linha('tempo', chips([[true, 'livre'], [false, 'com tempo']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo'), ajuda('Regras rápidas', RULES())),
@@ -92,16 +93,24 @@ export function mount(host, opts) {
   function abrirDuelo() { stopClock(); root.replaceChildren(h('p', { class: 'jg-p muted' }, 'carregando o duelo…')); import('./duelo-quebra.js').then((m) => { if (gone) return; root.replaceChildren(); offDuelo = m.mountDueloQuebra(root, { IMAGES, SIZES, abrir: (opts, el) => mount(el || root, opts), voltar: () => { if (offDuelo) { offDuelo(); offDuelo = null; } intro(); } }); }); }
   function begin(game) { g = game; selected = null; hintCell = null; msg = ''; paused = false; viewing = false; zoom = false; /* pedido da Bea: sempre começa com o quadro completo na tela */ record = false; persist(); draw(); startClock(); }
 
-  const pieceStyle = (i) => { const { cols, rows } = Q.DIFFS[g.diff]; return `background-image:url(${SRC()});background-size:${cols * 100}% ${rows * 100}%;background-position:${Q.bgPos(i % cols, Math.floor(i / cols), cols, rows)};aspect-ratio:${(img.w / cols) / (img.h / rows)}`; };
+  /** Peças de encaixe: cada peça é um SVG com a imagem recortada no contorno (dente/encaixe nos 4 lados) e uma margem pros dentes. */
+  const geo = () => { const { cols, rows } = Q.DIFFS[g.diff]; const cw = img.w / cols; const ch = img.h / rows; const m = Q.tabDepth(cw, ch) * 1.1; return { cols, rows, cw, ch, m, E: Q.jigsawEdges(cols, rows) }; };
+  const svgNode = (mk) => { const t = document.createElement('template'); t.innerHTML = mk.trim(); return t.content.firstChild; };
+  const pieceSvg = (i, so) => { const { cols, rows, cw, ch, m, E } = geo(); const x0 = (i % cols) * cw; const y0 = Math.floor(i / cols) * ch; const d = Q.piecePath(i, cols, rows, cw, ch, E); const sw = Math.min(cw, ch) * 0.025;
+    const vb = `${(x0 - m).toFixed(1)} ${(y0 - m).toFixed(1)} ${(cw + 2 * m).toFixed(1)} ${(ch + 2 * m).toFixed(1)}`;
+    return svgNode(so ? `<svg class="pzsvg slotsvg" viewBox="${vb}" aria-hidden="true"><path d="${d}" fill="currentColor" fill-opacity=".10" stroke="currentColor" stroke-opacity=".45" stroke-width="${sw}" stroke-dasharray="${sw * 3} ${sw * 2}" stroke-linejoin="round"/></svg>`
+      : `<svg class="pzsvg" viewBox="${vb}" aria-hidden="true"><defs><clipPath id="qc${i}"><path d="${d}"/></clipPath></defs><image href="${SRC()}" width="${img.w}" height="${img.h}" preserveAspectRatio="none" clip-path="url(#qc${i})"/><path d="${d}" fill="none" stroke="#142036" stroke-width="${sw}" stroke-linejoin="round"/></svg>`); };
+  const cellVars = () => { const { cw, ch, m } = geo(); return `--ox:${(-m / cw * 100).toFixed(2)}%;--oy:${(-m / ch * 100).toFixed(2)}%;--sw:${((cw + 2 * m) / cw * 100).toFixed(2)}%`; };
+  const trayAspect = () => { const { cw, ch, m } = geo(); return `aspect-ratio:${(cw + 2 * m) / (ch + 2 * m)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };
 
   function draw() {
     const { cols, rows } = Q.DIFFS[g.diff]; const n = g.diff;
     const cells = Array.from({ length: n }, (_, p) => g.placed[p]
-      ? h('div', { class: 'jg-pz fixed', style: pieceStyle(p), role: 'img', 'aria-label': `peça no lugar: ${posLabel(p)}` })
-      : h('button', { type: 'button', class: `jg-pz slot${hintCell === p ? ' hint' : ''}`, 'aria-label': `posição vazia: ${posLabel(p)}${hintCell === p ? ' (dica: aqui)' : ''}`, 'data-pos': p, disabled: g.over || selected == null, onclick: () => put(p) }));
-    const tray = g.tray.map((p) => h('button', { type: 'button', class: `jg-pz tp${selected === p ? ' sel' : ''}`, style: pieceStyle(p), 'aria-pressed': String(selected === p), 'aria-label': `peça ${g.tray.indexOf(p) + 1} de ${g.tray.length} na bandeja${selected === p ? ', selecionada' : ''}`, 'data-piece': p,
-      onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); } }));
+      ? h('div', { class: 'jg-pz fixed', style: cellVars(), role: 'img', 'aria-label': `peça no lugar: ${posLabel(p)}` }, pieceSvg(p))
+      : h('button', { type: 'button', class: `jg-pz slot${hintCell === p ? ' hint' : ''}`, 'aria-label': `posição vazia: ${posLabel(p)}${hintCell === p ? ' (dica: aqui)' : ''}`, 'data-pos': p, disabled: g.over || selected == null, style: cellVars(), onclick: () => put(p) }, pieceSvg(p, true)));
+    const tray = g.tray.map((p) => h('button', { type: 'button', class: `jg-pz tp${selected === p ? ' sel' : ''}`, style: trayAspect(), 'aria-pressed': String(selected === p), 'aria-label': `peça ${g.tray.indexOf(p) + 1} de ${g.tray.length} na bandeja${selected === p ? ', selecionada' : ''}`, 'data-piece': p,
+      onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); }, onpointerdown: (e) => dragStart(e, p) }, pieceSvg(p)));
     timeEl = h('b', {}, g.free ? '—' : Q.fmtTime(g.elapsed));
     root.replaceChildren(...[
       h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'peças'), h('span', {}, `${Q.placedCount(g)}/${n}`)), h('div', { class: 'jg-who' }, h('b', {}, 'tempo'), h('span', {}, timeEl)), h('div', { class: 'jg-who' }, h('b', {}, 'dicas'), h('span', {}, String(g.hints)))),
@@ -125,7 +134,7 @@ export function mount(host, opts) {
     persist(); draw(); if (g.started && !tick) startClock();
   }
   function hint() { if (selected == null) return; g = Q.useHint(g); hintCell = selected; msg = `dica: a peça escolhida vai na posição ${posLabel(selected)}`; sfx('tap'); persist(); draw(); }
-  function showRules() { pause(true); const el = h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'regras' }, h('p', {}, 'toque numa peça e depois no lugar dela. o tempo está pausado.'), h('button', { class: 'btn primary', type: 'button', onclick: () => { el.remove(); pause(false); } }, 'continuar')); root.append(el); el.querySelector('button').focus(); }
+  function showRules() { pause(true); const el = h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'regras' }, h('p', {}, 'arraste a peça até o lugar dela, ou toque na peça e depois no lugar. o tempo está pausado.'), h('button', { class: 'btn primary', type: 'button', onclick: () => { el.remove(); pause(false); } }, 'continuar')); root.append(el); el.querySelector('button').focus(); }
   function finish() {
     clock(); stopClock();
     if (M) { sfx('win'); draw(); if (!reported && !gone && opts.onResult) { reported = true; opts.onResult({ won: true, diff: g.diff, img: imgId, errors: g.errors, hints: g.hints, elapsed: Math.round(g.elapsed), moves: g.diff + g.errors }); } return; }
@@ -151,7 +160,7 @@ export function mount(host, opts) {
   }
   function dragBegin() {
     drag.on = true; dragMoved = true; clearTimeout(holdT); drag.el.classList.remove('lift'); drag.el.classList.add('picked');
-    ghost = drag.el.cloneNode(false); ghost.className = 'jg-pz ghost'; ghost.style.width = `${drag.el.offsetWidth * (drag.touch ? 1.25 : 1)}px`; document.body.append(ghost);
+    ghost = drag.el.cloneNode(true); ghost.className = 'jg-pz ghost'; ghost.style.width = `${drag.el.offsetWidth * (drag.touch ? 1.25 : 1)}px`; document.body.append(ghost);
   }
   function dragMove(e) {
     if (!drag) return;
