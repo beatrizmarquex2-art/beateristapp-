@@ -1,11 +1,11 @@
 // Estrelas de uma fase do Toca Aqui (regra pura), igual à pauLta: pela % de precisão (média dos 3 compassos).
-//   60% = 1 ★, 80% = 2 ★, 100% = 3 ★; abaixo de 60% = 0 (quase lá, tenta de novo).
+//   85% = 1 ★, 93% = 2 ★, 100% = 3 ★; abaixo de 85% = 0 (quase lá, tenta de novo).
 // Tocando no microfone (de verdade, na bateria ou no pad) vale no mínimo:
 //   iniciante ..... 2 ★ em qualquer velocidade
 //   intermediário . 2 ★ a 80 e 100 BPM, 3 ★ de 120 pra cima
 //   avançado ...... 2 ★ a 80 BPM, 3 ★ de 100 pra cima ("difícil")
-export const PASSA = 60; // % de precisão pra passar a fase
-export const estrelasPct = (score) => (score >= 100 ? 3 : score >= 80 ? 2 : score >= PASSA ? 1 : 0);
+export const PASSA = 85; // % de precisão pra passar a fase
+export const estrelasPct = (score) => (score >= 100 ? 3 : score >= 93 ? 2 : score >= PASSA ? 1 : 0);
 export function estrelasFase({ score, mic, tier, bpm }) {
   if (!(score >= PASSA)) return 0;
   const base = estrelasPct(score);

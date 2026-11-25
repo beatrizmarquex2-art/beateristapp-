@@ -91,7 +91,7 @@ function controls(c, draw, { bars = true, barList = [1, 2], speeds = false, inpu
 
 /** Leitura: passos do caminho (2 por nível). Um passo só abre depois de tirar PASS_SCORE no anterior. */
 const bestOf = (c) => c.pbest || {};
-/** Estrelas de um exercício do caminho na tela: 60% = 1, 80% = 2, 100% = 3 (igual à pauLta). */
+/** Estrelas de um exercício do caminho na tela: 85% = 1, 93% = 2, 100% = 3. */
 export const estrelasToca = (sc) => estrelasPct(sc);
 const unlocked = () => true; // tudo aberto: o aluno escolhe qualquer nível e exercício (as ★ continuam contando por exercício)
 const firstOpen = (c) => { const i = PATH.findIndex((_, k) => (bestOf(c)[k] || 0) < PASS_SCORE); return i < 0 ? PATH.length - 1 : i; };

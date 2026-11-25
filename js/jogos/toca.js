@@ -23,7 +23,7 @@ export function mount(host) {
   let view = 'mapa'; let off = null; let gone = false;
   const root = h('div', { class: 'jg jg-toca' }); host.replaceChildren(root);
   const idxOf = (t, n) => PATH.findIndex((x) => x.tier === t && x.n === n);
-  const starsAt = (pr, i) => (pr.pstars[i] ?? ((pr.pbest[i] || 0) >= 50 ? 1 : 0));
+  const starsAt = (pr, i) => (pr.pstars[i] ?? ((pr.pbest[i] || 0) >= 85 ? 1 : 0));
   const clean = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } };
   const drawMapa = () => {
     clean(); view = 'mapa'; musicaVolta(); const pr = progressoToca(); // a musiquinha só toca no mapa (dentro da fase precisa de silêncio: contagem, clique e microfone)
