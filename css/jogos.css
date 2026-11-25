@@ -1536,7 +1536,7 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .jg-figurix[data-skin="c"] .fx-peca.on.no{background:#ff8a8f}
 .jg-figurix[data-skin="c"] .fx-big{background:#fff;border-radius:20px;padding:6px;border:4px solid #fff;box-shadow:0 3px 0 #0002}
 /* memória: carta virada mostra o Paul */
-.jg-figurix[data-skin="c"] .fx-card{background:#fff url(../assets/paul/colorido/paul-ouvindo.webp) center/78% no-repeat;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;min-height:88px;color:transparent}
+.jg-figurix[data-skin="c"] .fx-card{background:#fff1c9 url(../assets/paul/colorido/paul-maestro.webp) center 70%/92% no-repeat;border:4px solid #fff;border-radius:18px;box-shadow:0 3px 0 #0002,0 0 0 2px #0001;min-height:88px;color:transparent}
 .jg-figurix[data-skin="c"] .fx-card.aberta{background:#fff;color:#142036}.jg-figurix[data-skin="c"] .fx-card.aberta .fx-txt,.jg-figurix[data-skin="c"] .fx-card.ok .fx-txt,.jg-figurix[data-skin="c"] .fx-card.no .fx-txt{color:#142036}.jg-figurix[data-skin="c"] .fx-card.ok{background:#a8e6b4!important}
 /* caça-palavras: letras e palavras em cores fortes, arrastar o dedo */
 .jg-figurix[data-skin="c"] .fx-grade{touch-action:none;user-select:none;background:#fff;padding:6px;border-radius:18px;box-shadow:0 3px 0 #0002;gap:1px}
