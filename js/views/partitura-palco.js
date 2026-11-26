@@ -15,6 +15,25 @@ const lerSalvo = (nome) => { try { const r = store.get(chave(nome)); return r &&
 const nomeAluno = () => { try { return (CONTAS.atual().nome || '').trim(); } catch { return ''; } };
 const hoje = () => new Date().toLocaleDateString('pt-BR');
 
+/** Linha com setinhas ‹ valor ›: toca nas setas, arrasta o dedo (ou o mouse) pro lado, ou usa as setas do teclado. */
+function seta(rotulo, texto, menos, mais, { dis = [false, false] } = {}) {
+  const out = h('output', { class: 'pm-val', 'aria-live': 'polite', tabindex: '0', 'aria-label': `${rotulo}: ${texto}` }, texto);
+  const box = h('div', { class: 'pm-seta', role: 'group', 'aria-label': rotulo },
+    h('button', { type: 'button', class: 'pm-sb', 'aria-label': `${rotulo}: anterior`, disabled: dis[0], onclick: menos }, '‹'), out,
+    h('button', { type: 'button', class: 'pm-sb', 'aria-label': `${rotulo}: próximo`, disabled: dis[1], onclick: mais }, '›'));
+  let x0 = null;
+  box.addEventListener('pointerdown', (e) => { if (!e.target.closest('button')) x0 = e.clientX; });
+  box.addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (dx > 28 && !dis[0]) menos(); else if (dx < -28 && !dis[1]) mais(); });
+  box.addEventListener('pointercancel', () => { x0 = null; });
+  out.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft' && !dis[0]) { e.preventDefault(); menos(); } else if (e.key === 'ArrowRight' && !dis[1]) { e.preventDefault(); mais(); } });
+  return h('div', { class: 'row tk-line pm-linha' }, h('span', { class: 'tp-lab' }, rotulo), box);
+}
+/** Escolha entre poucas opções: as setinhas dão a volta (a última volta pra primeira). */
+const cicla = (rotulo, ops, atual, set) => { const i = Math.max(0, ops.findIndex((o) => o[0] === atual)); const vai = (d) => () => set(ops[(i + d + ops.length) % ops.length][0]); return seta(rotulo, ops[i][1], vai(-1), vai(1)); };
+const FIGS = [[16, false, 'semibreve'], [8, true, 'mínima pontuada'], [8, false, 'mínima'], [4, true, 'semínima pontuada'], [4, false, 'semínima'], [2, true, 'colcheia pontuada'], [2, false, 'colcheia'], [1, false, 'semicolcheia']];
+const nomeDur = (d) => { const f = FIGS.find((x) => (x[1] ? x[0] * 1.5 : x[0]) === d); return f ? f[2] : `${d}/16`; };
+const oit = (m) => Math.floor(m / 12) - 1;
+
 export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
   const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, modo: 'clicar', titulo: '', ...lerSalvo(nome) };
   s.evs = P.normalizar(Array.isArray(s.evs) ? s.evs : []); s.take = Array.isArray(s.take) ? s.take : [];
@@ -63,16 +82,15 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
   const passo = () => Math.max(1, s.grade);
   const barra = () => {
     const e = s.evs[sel]; if (!e) return null;
-    const bt = (txt, fn, lab, dis) => h('button', { type: 'button', class: 'btn small', 'aria-label': lab, ...(dis ? { disabled: true } : {}), onclick: fn }, txt);
+    const reacha = (novo, m, ini) => { sel = novo.findIndex((x) => x.m === m && x.ini === ini); mudou(novo); editado = true; };
+    const mexe = (d) => () => { const novo = P.mover(s.evs, sel, d * passo()); if (novo === s.evs) { toast('já tem uma nota ali', { id: 'pm', ms: 1500 }); return; } hist.push(JSON.stringify(s.evs)); s.evs = novo; sel = novo.findIndex((x) => x.m === e.m && x.ini === Math.max(0, e.ini + d * passo())); salvar(); editado = true; desenha(); };
+    const dura = (d) => () => { const novo = P.alongar(s.evs, sel, d * passo()); mudou(novo); editado = true; sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini); desenha(); };
+    const tom = (d) => () => { const novo = P.subir(s.evs, sel, d); mudou(novo); editado = true; tocaUma(novo[sel]); desenha(); };
     return h('div', { class: 'pm-corrige', role: 'group', 'aria-label': 'Corrigir a nota escolhida' },
-      h('b', {}, `${P.nomeCurto(e.m)} · compasso ${Math.floor(e.ini / 16) + 1}`),
-      bt('◀ cedo', () => { const novo = P.mover(s.evs, sel, -passo()); if (novo === s.evs) { toast('já tem uma nota ali', { id: 'pm', ms: 1500 }); return; } mudou(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === Math.max(0, e.ini - passo())); editado = true; desenha(); }, 'Mover a nota mais cedo', e.ini === 0),
-      bt('tarde ▶', () => { const novo = P.mover(s.evs, sel, passo()); if (novo === s.evs) { toast('já tem uma nota ali', { id: 'pm', ms: 1500 }); return; } mudou(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini + passo()); editado = true; desenha(); }, 'Mover a nota mais tarde'),
-      bt('− curta', () => { const novo = P.alongar(s.evs, sel, -passo()); mudou(novo); editado = true; sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini); desenha(); }, 'Encurtar a nota', e.d <= 1),
-      bt('longa +', () => { const novo = P.alongar(s.evs, sel, passo()); mudou(novo); editado = true; sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini); desenha(); }, 'Alongar a nota'),
-      bt('♭ meio tom', () => { const novo = P.subir(s.evs, sel, -1); mudou(novo); editado = true; tocaUma(novo[sel]); desenha(); }, 'Descer meio tom'),
-      bt('♯ meio tom', () => { const novo = P.subir(s.evs, sel, 1); mudou(novo); editado = true; tocaUma(novo[sel]); desenha(); }, 'Subir meio tom'),
-      bt('apagar', () => { mudou(P.remover(s.evs, sel)); editado = true; sel = -1; cursor = P.fim(s.evs); desenha(); }, 'Apagar a nota'));
+      seta('posição', `compasso ${Math.floor(e.ini / 16) + 1} · tempo ${Math.floor((e.ini % 16) / 4) + 1}`, mexe(-1), mexe(1), { dis: [e.ini === 0, false] }),
+      seta('duração', nomeDur(e.d), dura(-1), dura(1), { dis: [e.d <= 1, false] }),
+      seta('altura', `${P.nomeCurto(e.m)} ${oit(e.m)}`, tom(-1), tom(1)),
+      h('div', { class: 'row tk-line' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => { mudou(P.remover(s.evs, sel)); editado = true; sel = -1; cursor = P.fim(s.evs); desenha(); } }, 'apagar essa nota')));
   };
 
   const pdf = async (b) => {
@@ -91,17 +109,19 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
     const r = P.pauta(s.evs, { clave: s.clave, largura: Math.max(280, Math.min(720, (el.clientWidth || 360) - 32)), cor: s.cor, sel });
     folha.innerHTML = s.evs.length ? r.svg : '<p class="pm-vazio">a partitura aparece aqui. ' + (s.modo === 'clicar' ? 'toque numa tecla do piano: cada tecla vira uma nota.' : 'toque em gravar e toque a melodia.') + '</p>';
     const gravando = !!rec;
-    const modo = linha('montar', chip('clicar', s.modo === 'clicar', () => { rec = null; parar(); s.modo = 'clicar'; salvar(); desenha(); }), chip('tocar', s.modo === 'tocar', () => { parar(); s.modo = 'tocar'; salvar(); desenha(); }));
+    const modo = cicla('montar', [['clicar', 'clicar nas teclas'], ['tocar', 'tocar e gravar']], s.modo, (v) => { rec = null; parar(); s.modo = v; salvar(); desenha(); });
+    const figAtual = FIGS.find((x) => x[0] === s.fig && x[1] === !!s.pont) || FIGS.find((x) => x[0] === s.fig) || FIGS[4];
     const figuras = s.modo === 'clicar'
-      ? [linha('figura', ...P.FIGURAS.map(([n, v]) => chip(n, s.fig === v, () => { s.fig = v; if (v === 1) s.pont = false; salvar(); desenha(); })), chip('pontuada', s.pont, () => { s.pont = !s.pont; salvar(); desenha(); }, { dis: s.fig === 1 })),
-        h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'pausa'), h('button', { type: 'button', class: 'btn small', onclick: () => { cursor += dur(); msg = `pausa de ${P.FIGURAS.find((f) => f[1] === s.fig)[0]}. a próxima nota vem depois dela.`; desenha(); } }, '+ pausa'),
+      ? [seta('figura', figAtual[2], () => { const i = FIGS.indexOf(figAtual); const n = FIGS[(i - 1 + FIGS.length) % FIGS.length]; s.fig = n[0]; s.pont = n[1]; salvar(); desenha(); }, () => { const i = FIGS.indexOf(figAtual); const n = FIGS[(i + 1) % FIGS.length]; s.fig = n[0]; s.pont = n[1]; salvar(); desenha(); }),
+        h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'pausa'), h('button', { type: 'button', class: 'btn small', onclick: () => { cursor += dur(); msg = `pausa de ${figAtual[2]}. a próxima nota vem depois dela.`; desenha(); } }, '+ pausa'),
           h('button', { type: 'button', class: 'btn small ghost', disabled: !hist.length, onclick: () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = P.fim(s.evs); sel = -1; salvar(); desenha(); } }, '↶ desfazer'))]
-      : [h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'andamento'), h('button', { type: 'button', class: 'btn small', 'aria-label': 'Mais devagar', onclick: () => andamento(-5) }, '−'), h('output', { class: 'pn-oct' }, `${s.bpm} bpm`), h('button', { type: 'button', class: 'btn small', 'aria-label': 'Mais rápido', onclick: () => andamento(5) }, '+')),
-        linha('grade', chip('semínima', s.grade === 4, () => grade(4)), chip('colcheia', s.grade === 2, () => grade(2)), chip('semicolcheia', s.grade === 1, () => grade(1))),
+      : [seta('andamento', `${s.bpm} bpm`, () => andamento(-5), () => andamento(5), { dis: [s.bpm <= 50, s.bpm >= 180] }),
+        cicla('grade', [[4, 'semínima'], [2, 'colcheia'], [1, 'semicolcheia']], s.grade, (v) => grade(v)),
         h('div', { class: 'row tk-line' }, h('span', { class: 'tp-lab' }, 'gravar'),
           gravando ? h('button', { type: 'button', class: 'btn primary', onclick: parou }, '■ parar') : h('button', { type: 'button', class: 'btn', onclick: gravar }, '● gravar (conta 4)'),
           h('button', { type: 'button', class: 'btn small ghost', disabled: !s.take.length || gravando, title: 'Refaz a partitura a partir da gravação (as correções manuais se perdem)', onclick: requantizar }, 'alinhar de novo'))];
-    const ver = [linha('clave', chip('automática', s.clave === 'auto', () => { s.clave = 'auto'; salvar(); desenha(); }), chip('sol', s.clave === 'sol', () => { s.clave = 'sol'; salvar(); desenha(); }), chip('fá', s.clave === 'fa', () => { s.clave = 'fa'; salvar(); desenha(); }), chip('colorida', s.cor, () => { s.cor = !s.cor; salvar(); desenha(); }))];
+    const ver = [cicla('clave', [['auto', 'automática'], ['sol', 'clave de sol'], ['fa', 'clave de fá']], s.clave, (v) => { s.clave = v; salvar(); desenha(); }),
+      cicla('notas', [[false, 'pretas'], [true, 'coloridas']], !!s.cor, (v) => { s.cor = v; salvar(); desenha(); })];
     const titulo = h('input', { class: 'field pm-titulo', type: 'text', maxlength: 40, value: s.titulo, placeholder: 'nome da partitura (para o PDF)', 'aria-label': 'Nome da partitura' }); titulo.addEventListener('input', () => { s.titulo = titulo.value; }); titulo.addEventListener('change', salvar);
     el.replaceChildren(
       h('div', { class: 'au-topo' }, h('b', {}, 'partitura'), fechar ? h('button', { type: 'button', class: 'btn small ghost', onclick: () => fechar() }, 'fechar') : null),
@@ -112,7 +132,7 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
         h('button', { type: 'button', class: 'btn ghost', disabled: !s.evs.length || gravando, onclick: () => { hist.push(JSON.stringify(s.evs)); mudou([], { guarda: false }); s.take = []; cursor = 0; sel = -1; editado = false; msg = 'folha limpa. dá pra desfazer.'; salvar(); desenha(); } }, 'limpar')),
       ...ver, titulo,
       h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', disabled: !s.evs.length || gravando, onclick: (e) => pdf(e.currentTarget) }, 'baixar PDF no papel timbrado')),
-      h('p', { class: 'muted pm-nota' }, 'o PDF sai no papel timbrado da escola, com o nome do site. a partitura fica guardada só neste aparelho.'));
+      h('p', { class: 'muted pm-nota' }, 'o PDF sai no papel timbrado, com Beaterista Play e o endereço do site. a partitura fica guardada só neste aparelho.'));
   }
   const aoRedimensionar = () => desenha(); window.addEventListener('resize', aoRedimensionar);
   desenha(); requestAnimationFrame(desenha); // 2º desenho: já com a largura real depois de entrar na tela

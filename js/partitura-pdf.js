@@ -1,4 +1,4 @@
-// PDF da partitura de melodia: A4 no papel timbrado da escola, com título, nome do aluno e o endereço do site.
+// PDF da partitura de melodia: A4 no papel timbrado, com título, nome do aluno, "Beaterista Play" e o endereço do site.
 // Desenha a pauta (SVG de js/partitura-melodica.js) num canvas por página e junta num PDF, igual ao plano do aluno. Nada sai do aparelho.
 import { pauta, GEOM, nomeCurto } from './partitura-melodica.js';
 import { jpegPdf, fileName } from './pdf.js';
@@ -7,7 +7,7 @@ import { toJpeg, savePdf } from './views/plan-pdf.js';
 const W = 1240; const H = 1754; const MM = W / 210; // A4 a 150 dpi
 const FONT = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
 export const SITE = 'jogos.beaterista.com.br';
-export const ESCOLA = 'Escola de Música Beaterista';
+export const MARCA = 'Beaterista Play';
 const loadImg = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
 
 /** SVG em texto → imagem pronta pra desenhar no canvas (tinta preta, no tamanho pedido). */
@@ -39,7 +39,7 @@ export async function paginas(d) {
       g.drawImage(img, 0, sy0, img.width, sy1 - sy0, lado, topo + 70, img.width, sy1 - sy0);
     }
     g.font = `400 20px ${FONT}`; g.fillStyle = '#555'; g.textAlign = 'center';
-    g.fillText(`${ESCOLA}  ·  ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
+    g.fillText(`${MARCA}  ·  ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
     out.push(cv);
   }
   return out;

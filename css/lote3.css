@@ -1151,3 +1151,15 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .pm-titulo { margin: 10px 0 6px; }
 .pm-nota, .pm-dica, .pm-msg { margin: 6px 0 0; font-size: 13px; }
 .pm-painel .tp-lab { min-width: 74px; }
+.pm-seta { display: inline-flex; align-items: center; gap: 4px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.pm-sb { width: 44px; height: 44px; border: 2px solid #1b1818; background: #fffdf8; color: #1b1818; border-radius: 8px; font: 700 26px/1 var(--body); cursor: pointer; box-shadow: 2px 2px 0 #1b1818; }
+.pm-sb:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1b1818; }
+.pm-sb[disabled] { opacity: .3; cursor: default; box-shadow: none; }
+.pm-val { display: inline-block; min-width: 150px; text-align: center; font: 700 15px/1.2 var(--body); padding: 10px 6px; cursor: grab; }
+.pm-val:focus-visible, .pm-sb:focus-visible { outline: 3px solid var(--gold, #e3a82f); outline-offset: 2px; }
+.pm-corrige .pm-linha { margin: 2px 0; }
+.pm-painel .tk-line { flex-wrap: nowrap; gap: 8px; }
+.pm-painel .tk-line .tp-lab { flex: 0 0 78px; min-width: 0; }
+.pm-painel .pm-seta { flex: 1 1 auto; min-width: 0; }
+.pm-painel .pm-val { flex: 1 1 auto; min-width: 0; }
+.pm-painel .pm-acoes { flex-wrap: wrap; }

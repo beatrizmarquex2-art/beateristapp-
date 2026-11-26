@@ -9,6 +9,8 @@ const comoProf = { v: false };
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); if (window.name === 'prof') localStorage.setItem('beaterista-aparelho-prof', '1'); } catch (e) {} });
 const shot = (n) => page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/partitura-palco-${n}.png` });
 const clica = async (m) => { await page.locator(`.pn-w[data-m="${m}"]`).click({ force: true, noWaitAfter: true }); await sleep(120); };
+const para = (rotulo, alvo) => page.evaluate(async ([r, a]) => { const esp = (ms) => new Promise((k) => setTimeout(k, ms)); for (let i = 0; i < 12; i++) { const g = [...document.querySelectorAll('.pm-seta')].find((x) => x.getAttribute('aria-label') === r); if (!g) return false; if (g.querySelector('output').textContent === a) return true; g.querySelectorAll('button')[1].click(); await esp(60); } return false; }, [rotulo, alvo]);
+const saida = (rotulo) => page.evaluate((r) => { const g = [...document.querySelectorAll('.pm-seta')].find((x) => x.getAttribute('aria-label') === r); return g ? g.querySelector('output').textContent : null; }, rotulo);
 const notas = () => page.evaluate(() => document.querySelectorAll('.pm-folha .pm-n').length);
 
 await page.goto(url + '/aluno.html#/piano'); await sleep(2200);
@@ -21,20 +23,19 @@ check('abre o painel com a folha vazia e a clave de sol já desenhada ao montar'
 for (const m of [60, 62, 64, 65]) await clica(m);
 check('4 teclas viram 4 notas na pauta (clave de sol, 4/4 e barra final)', await page.evaluate(() => { const f = document.querySelector('.pm-folha'); return f.querySelectorAll('.pm-n').length === 4 && /Partitura de 4 notas na clave de sol/.test(f.innerHTML); }));
 // figura colcheia: as duas próximas notas saem ligadas por feixe
-await page.evaluate(() => [...document.querySelectorAll('.pm-painel .kd-chip')].find((b) => b.textContent === 'colcheia').click()); await sleep(200);
+check('as setinhas trocam a figura (‹ valor ›), sem fileira de cards', (await para('figura', 'colcheia')) && (await page.evaluate(() => document.querySelectorAll('.pm-painel .kd-chip').length === 0))); await sleep(200);
 await clica(67); await clica(69);
 check('colcheias seguidas no mesmo tempo ganham feixe (uma barra grossa)', await page.evaluate(() => /stroke-width="3.4"/.test(document.querySelector('.pm-folha').innerHTML)));
 check('6 notas na folha', (await notas()) === 6);
 // ---- corrigir: tocar numa nota e apagar / desfazer
 await page.locator('.pm-folha .pm-n').nth(1).click({ force: true }); await sleep(250);
-check('tocar na nota abre a barra de correção com o nome e o compasso', await page.evaluate(() => /ré · compasso 1/.test(document.querySelector('.pm-corrige b').textContent)));
-await page.evaluate(() => [...document.querySelectorAll('.pm-corrige button')].find((b) => b.textContent === 'apagar').click()); await sleep(250);
+check('tocar na nota abre a correção com posição, duração e altura em setinhas', (await saida('posição')) === 'compasso 1 · tempo 2' && (await saida('duração')) === 'semínima' && (await saida('altura')) === 'ré 4');
+await page.evaluate(() => [...document.querySelectorAll('.pm-corrige button')].find((b) => b.textContent === 'apagar essa nota').click()); await sleep(250);
 check('apagar tira a nota (5 na folha)', (await notas()) === 5);
 await page.evaluate(() => [...document.querySelectorAll('.pm-painel button')].find((b) => b.textContent.includes('desfazer')).click()); await sleep(250);
 check('desfazer traz a nota de volta (6)', (await notas()) === 6);
 await page.locator('.pm-folha .pm-n').nth(0).click({ force: true }); await sleep(200);
-await page.evaluate(() => [...document.querySelectorAll('.pm-corrige button')].find((b) => b.textContent.includes('♯')).click()); await sleep(250);
-check('subir meio tom: a nota vira dó♯ (sustenido desenhado)', await page.evaluate(() => /dó♯ · compasso 1/.test(document.querySelector('.pm-corrige b').textContent)));
+check('subir meio tom pela setinha: a nota vira dó♯', (await para('altura', 'dó♯ 4')) && (await saida('altura')) === 'dó♯ 4'); await sleep(250);
 await shot('1-clicar');
 // ---- salvou só neste aparelho
 check('a partitura fica guardada (recarregar mantém as notas)', await (async () => { await page.reload(); await sleep(2200); await page.evaluate(() => [...document.querySelectorAll('.kd-modelos .kd-chip')].find((b) => b.textContent.includes('partitura')).click()); await sleep(600); return (await notas()) === 6; })());
@@ -45,7 +46,7 @@ check('baixa um PDF de verdade (A4, começa com %PDF e tem imagem)', buf.slice(0
 check('o nome do arquivo leva o título e o aluno', /\.pdf$/i.test(dl.suggestedFilename()));
 // ---- tocar: grava com o metrônomo e arruma na grade
 await page.evaluate(() => [...document.querySelectorAll('.pm-painel button')].find((b) => b.textContent === 'limpar').click()); await sleep(250);
-await page.evaluate(() => [...document.querySelectorAll('.pm-painel .kd-chip')].find((b) => b.textContent === 'tocar').click()); await sleep(250);
+await para('montar', 'tocar e gravar'); await sleep(250);
 await page.evaluate(() => [...document.querySelectorAll('.pm-painel button')].find((b) => b.textContent.includes('gravar')).click());
 await sleep(2700); // 4 batidas a 100 bpm = 2,4 s
 check('depois da contagem está gravando', await page.evaluate(() => /gravando/.test(document.querySelector('.pm-msg')?.textContent || '')));
@@ -53,7 +54,7 @@ for (const m of [60, 62, 64, 65]) { await clica(m); await sleep(480); } // ~uma 
 await page.evaluate(() => [...document.querySelectorAll('.pm-painel button')].find((b) => b.textContent.includes('parar')).click()); await sleep(400);
 check('as 4 notas tocadas viram 4 notas na grade', (await notas()) === 4);
 const ini = await page.evaluate(() => document.querySelectorAll('.pm-folha .pm-n').length);
-await page.evaluate(() => [...document.querySelectorAll('.pm-painel .kd-chip')].find((b) => b.textContent === 'semínima').click()); await sleep(300);
+await para('grade', 'semínima'); await sleep(300);
 check('mudar a grade acerta o tempo de novo sem perder as notas', (await notas()) >= 1 && (await notas()) <= ini);
 await shot('2-tocar');
 check('sem erros de script', errs.length === 0 || (console.log(errs), false));
