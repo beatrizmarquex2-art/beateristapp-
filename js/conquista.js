@@ -136,7 +136,7 @@ const reduz = () => { try { return !!(window.matchMedia && matchMedia('(prefers-
  * { jogo: 'pauLta', caminho: 'Mundo da Bateria', chave: 'paulta:drumF', pose } · com `chave`, só aparece na 1ª vez (use { sempre: true } pra repetir).
  * Devolve a função que fecha, ou null se não mostrou.
  */
-export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false, premioChave = '', estilo = '', premio = null, paulSrc = '' } = {}) {
+export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false, premioChave = '', estilo = 'E', premio = null, paulSrc = '' } = {}) {
   if (chave && !sempre && jaFestejou(chave)) return null;
   if (chave) { try { localStorage.setItem(KEY, JSON.stringify([...new Set([...feitos(), String(chave)])].slice(-200))); } catch { /* sem armazenamento */ } }
   const bens = beneficiosDe(jogo); const titulo = caminho && limpa(caminho).toLowerCase() !== limpa(jogo).toLowerCase() ? `${jogo}: ${caminho}` : jogo;
