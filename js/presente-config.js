@@ -3,10 +3,10 @@
 export const FAIXAS = [['4-12', '4 a 12 anos'], ['13-17', '13 a 17 anos'], ['18-29', '18 a 29 anos'], ['30+', '30 anos ou mais']];
 export const INSTRUMENTOS = [['bateria', 'Bateria'], ['guitarra', 'Guitarra'], ['teclado', 'Teclado'], ['violao', 'Violão'], ['outro', 'Outro']];
 export const ICONE_INSTRUMENTO = { bateria: '🥁', guitarra: '🎸', teclado: '🎹', violao: '🪕', outro: '✨' };
-/** 3 brindes diferentes; cada faixa de idade recebe um deles. `arquivos`: [{ nome, arquivo }] */
+/** Os presentes que a pessoa pode ESCOLHER (1 deles). `arquivos`: [{ nome, arquivo, faixas? }]. `faixas` (opcional) = só pra essas idades (ex.: ['4-12']);
+ *  sem `faixas`, vale pra todo mundo. Um presente sem nenhum arquivo não aparece na escolha. */
 export const PRESENTES = {
-  criancas: { titulo: 'Presente do Paul · crianças', arquivos: [] },
-  jovens: { titulo: 'Presente do Paul · jovens', arquivos: [] },
-  adultos: { titulo: 'Presente do Paul · adultos', arquivos: [] },
+  planner: { titulo: 'Planner de estudo', icone: '🗓️', desc: 'organize seus estudos de música', arquivos: [] },
+  wallpaper: { titulo: 'Wallpaper', icone: '📱', desc: 'o Paul no fundo da tela do seu celular', arquivos: [] },
+  colorir: { titulo: 'Para colorir', icone: '🎨', desc: 'desenhos do Paul pra você colorir', arquivos: [] },
 };
-export const PRESENTE_DA_FAIXA = { '4-12': 'criancas', '13-17': 'jovens', '18-29': 'adultos', '30+': 'adultos' };
