@@ -27,3 +27,12 @@ test('desenho da Bea: portas por fase 2·2·3·3·3·1·1·3·3·3·4·4; fases 
   assert.equal(MUNDOS[0].nome, 'Estúdio do Paul');
 });
 test('estrelas da fase = média das portas (1 a 3)', () => { assert.equal(estrelasFase([3, 3, 3]), 3); assert.equal(estrelasFase([3, 2]), 3); assert.equal(estrelasFase([2, 1, 1]), 1); assert.equal(estrelasFase([]), 0); });
+
+test('quiz da fuga: definição do banco pergunta "qual termo" e o nível filtra o banco', async () => {
+  const { question, temTexto } = await import('../js/tips.js'); const { filtraNivelBanco } = await import('../js/jogos/fuga-logic.js');
+  const it = { n: 900001, text: 'os equipamentos que ficam no palco pra banda usar: amplificadores, bateria e teclado.', w: 'BACKLINE', shown: 'backline', banco: true, nivel: 'm', o: ['dueto', 'intro', 'coro'] };
+  const q = question([it], 'blank'); assert.ok(temTexto(q.prompt)); assert.match(q.ask, /termo/); assert.equal(q.options.length, 4);
+  assert.equal(temTexto('_____ .'), false);
+  const lista = Array.from({ length: 20 }, (_, i) => ({ n: i, banco: true, nivel: i < 10 ? 'f' : 'd', text: 'x' }));
+  assert.ok(filtraNivelBanco(lista, 'facil').every((x) => x.nivel === 'f')); assert.equal(filtraNivelBanco(lista, 'dificil').length, 20);
+});

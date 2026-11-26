@@ -138,12 +138,15 @@ export function cutTip(text) {
 }
 const clip = (t, n = 84) => (t.length > n ? `${t.slice(0, n - 1).trim()}…` : t);
 /** Uma pergunta: kind 'blank' (qual palavra completa?), 'match' (qual dica fala disso?) ou 'embaralhada' (desembaralhe). */
+/** A pergunta tem texto de verdade? (tirando as lacunas e a pontuação sobram letras suficientes pra dar pista) */
+export const temTexto = (t) => String(t || '').replace(/_{3,}/g, '').replace(/[^\p{L}]/gu, '').length >= 12;
 export function question(items, kind, rnd = Math.random) {
   // itens do banco verificado (banco: true) já trazem as 3 respostas erradas escolhidas com cuidado; "continua" e "match" (que sorteiam erradas de outras dicas) só usam as dicas do método
   if (kind === 'continua' || kind === 'match') { const nb = items.filter((x) => !x.banco); if (nb.length >= 6) items = nb; else kind = 'blank'; }
   const it = items[Math.floor(rnd() * items.length)]; const others = shuffle(items.filter((x) => x.n !== it.n), rnd);
   if (it.banco && Array.isArray(it.o) && it.o.length >= 3 && (kind === 'blank' || kind === 'match' || kind === 'continua')) {
-    return { kind: 'blank', item: it, prompt: clueOf(it), options: shuffle([{ id: it.w, label: it.shown }, ...it.o.slice(0, 3).map((t) => ({ id: norm(t), label: t }))], rnd), ans: it.w };
+    const prompt = clueOf(it); const lacuna = prompt.includes('_____'); // definição do banco não tem lacuna: pergunta "qual termo é esse?" (antes mostrava só o texto solto)
+    return { kind: 'blank', item: it, prompt: temTexto(prompt) ? prompt : it.text, ...(lacuna ? {} : { ask: 'qual termo combina com essa explicação?' }), options: shuffle([{ id: it.w, label: it.shown }, ...it.o.slice(0, 3).map((t) => ({ id: norm(t), label: t }))], rnd), ans: it.w };
   }
   if (kind === 'match') {
     const wrong = others.filter((x) => !wordsOf(x.text).some((y) => y.w === it.w)).slice(0, 3);
@@ -160,8 +163,8 @@ export function question(items, kind, rnd = Math.random) {
     let letters = shuffle([...it.w], rnd); for (let k = 0; k < 6 && letters.join('') === it.w; k++) letters = shuffle(letters, rnd);
     return { kind, item: it, prompt: 'desembaralhe a palavra da dica:', letters, ans: it.w, clue: clueOf(it) };
   }
-  const wrong = others.slice(0, 3);
-  return { kind: 'blank', item: it, prompt: clueOf(it), options: shuffle([it, ...wrong], rnd).map((x) => ({ id: x.w, label: x.shown })), ans: it.w };
+  const wrong = others.slice(0, 3); const cl = clueOf(it);
+  return { kind: 'blank', item: it, prompt: temTexto(cl) ? cl : clueOf(it, { whole: true }), options: shuffle([it, ...wrong], rnd).map((x) => ({ id: x.w, label: x.shown })), ans: it.w };
 }
 
 /* ---------- dica certa pra cada tela ---------- */

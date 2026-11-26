@@ -82,3 +82,10 @@ export const faseAberta = (est, mundo, n) => n <= 1 || estOf(est, mundo, n - 1) 
 /** O mundo abre quando todas as fases do anterior têm pelo menos 1 ★ (o 1º sempre abre). */
 export function mundoLiberado(est, mundo) { const i = MUNDOS.findIndex((m) => m.id === mundo); return i <= 0 || Array.from({ length: FASES }, (_, k) => estOf(est, MUNDOS[i - 1].id, k + 1)).every((x) => x >= 1); }
 export const proximaFase = (n) => (n < FASES ? n + 1 : 0);
+
+/** Nas portas de quiz, os termos do banco respeitam o nível da fase: fácil só os fáceis, médio até os médios, difícil todos (sobrando poucos, volta tudo). */
+export function filtraNivelBanco(itens, nivel, min = 8) {
+  const ok = { facil: ['f'], medio: ['f', 'm'], dificil: ['f', 'm', 'd'] }[nivel] || ['f', 'm', 'd'];
+  const pool = itens.filter((x) => !x.banco || ok.includes(x.nivel));
+  return pool.length >= min ? pool : itens;
+}
