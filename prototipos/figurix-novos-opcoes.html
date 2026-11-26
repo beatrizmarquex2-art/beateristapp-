@@ -1,0 +1,102 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Figurix: jogos novos</title><link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}
+:root{--ink:#14111a;--creme:#fffdf7;--verm:#d3122f;--azul:#17365B;--ouro:#EBA332;--verde:#2a9d8f}
+body{margin:0;background:#f3ead8;color:var(--ink);font-family:"Hanken Grotesk",sans-serif;padding:18px 14px 40px}
+h1{font:400 26px "Anton";text-transform:uppercase;margin:0 0 2px}
+.sub{margin:0 0 22px;font-size:13px;opacity:.8}
+h2{font:400 20px "Anton";text-transform:uppercase;margin:30px 0 4px;color:var(--verm)}
+h2 small{font:600 12px "Hanken Grotesk";color:var(--ink);text-transform:none;display:block;opacity:.8;margin-top:2px}
+.row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin-top:14px}
+.op{position:relative;padding-top:24px}
+.op>b{position:absolute;top:0;left:0;font:700 12px "Hanken Grotesk"}
+.tela{width:300px;min-height:420px;border:3px solid var(--ink);border-radius:20px;background:var(--creme);box-shadow:5px 5px 0 var(--ink);padding:12px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;font:700 11px "Hanken Grotesk";text-transform:uppercase;letter-spacing:.06em}
+.top i{font-style:normal;background:var(--ink);color:#fff;border-radius:99px;padding:3px 9px}
+.q{font:400 21px/1.05 "Anton";text-transform:uppercase;margin:0}
+.dica{font:600 12px/1.3 "Hanken Grotesk";opacity:.75;margin:0}
+.paul{position:absolute;right:-4px;bottom:-4px;width:64px;opacity:.95;pointer-events:none}.tela{padding-bottom:62px}
+.card{border:3px solid var(--ink);border-radius:14px;background:#fff;box-shadow:3px 3px 0 var(--c,var(--verm));display:grid;place-items:center;font:700 13px "Hanken Grotesk";text-align:center;padding:6px}
+.card svg{width:44px;height:52px}
+.grade{display:grid;gap:8px;min-width:0}.grade>*{min-width:0}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g4 .card{padding:3px;font-size:10px}.g4 .card svg{width:30px;height:38px}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3 .card{font-size:11px}.g3 .card svg{width:34px;height:42px}
+.card.ok{background:#d9f3ea;border-color:var(--verde);box-shadow:3px 3px 0 var(--verde)}
+.card.sel{background:#fff3cf;transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ouro)}
+.card.verso{background:var(--azul);color:#fff;font:400 26px "Anton";box-shadow:3px 3px 0 var(--ouro)}
+.btn{border:3px solid var(--ink);border-radius:12px;background:var(--verm);color:#fff;font:400 15px "Anton";text-transform:uppercase;padding:9px 12px;box-shadow:3px 3px 0 var(--ink);text-align:center}
+.btn.alt{background:var(--ouro);color:var(--ink)}
+.barra{height:9px;border:2px solid var(--ink);border-radius:9px;background:#fff;overflow:hidden}.barra i{display:block;height:100%;background:var(--ouro)}
+.cont{font:400 34px "Anton";color:var(--verm);text-align:center;line-height:1}
+.nota{font:600 12px/1.35 "Hanken Grotesk";background:#fff;border:2px dashed var(--ink);border-radius:10px;padding:7px 9px;margin-top:12px;max-width:300px}
+.pecas{position:relative;border:3px solid var(--ink);border-radius:14px;background:#efe3cc;height:176px}
+.pin{position:absolute;width:26px;height:26px;border-radius:50%;border:3px solid var(--ink);background:var(--ouro);display:grid;place-items:center;font:400 13px "Anton";transform:translate(-50%,-50%);box-shadow:2px 2px 0 var(--ink)}
+.pin.on{background:var(--verm);color:#fff}
+.slot{border:3px dashed var(--ink);border-radius:12px;min-height:56px;display:flex;gap:6px;align-items:center;padding:6px;background:#fff}
+.slot .card{width:52px;height:52px;padding:2px;font-size:8px;box-shadow:2px 2px 0 var(--c,var(--verm))}.slot .card svg{width:30px;height:38px}
+.play{display:flex;align-items:center;gap:10px}
+.play .bola{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:var(--verm);color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:3px 3px 0 var(--ink)}
+.onda{flex:1;height:34px;background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 8px);-webkit-mask:linear-gradient(0deg,transparent,#000 30%,#000 70%,transparent);opacity:.6}
+.pauta{border:2px solid var(--ink);border-radius:10px;background:#fff;padding:6px 4px}
+.pauta svg{width:100%;height:44px}
+.opt{display:flex;gap:8px;align-items:center}
+.opt .l{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:400 13px "Anton";flex:none}
+.opt .box{flex:1}
+</style></head><body>
+<h1>Figurix · jogos novos</h1>
+<p class="sub">3 jeitos pra cada um. É só desenho, ainda nada foi aplicado no app. Me diz a letra que você curtiu (ex.: "1B, 2A, 3C") e eu monto.</p>
+<div id="app"></div>
+<script>
+// notas desenhadas em SVG (sem fonte de música)
+const N=(o,hs,fl)=>`<svg viewBox="0 0 40 56"><ellipse cx="16" cy="42" rx="11" ry="7.5" transform="rotate(-20 16 42)" ${o?'fill="none" stroke="#14111a" stroke-width="4"':'fill="#14111a"'}/>${hs?'<line x1="26" y1="39" x2="26" y2="8" stroke="#14111a" stroke-width="3.4"/>':''}${Array.from({length:fl},(_,i)=>`<path d="M26 ${8+i*8}q12 5 8 17" fill="none" stroke="#14111a" stroke-width="3.4"/>`).join('')}</svg>`;
+const P={seminima:()=>`<svg viewBox="0 0 40 56"><path d="M14 8l12 14-9 10 11 12-8 6" fill="none" stroke="#14111a" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`};
+const FIG={semibreve:N(1,0,0),minima:N(1,1,0),seminima:N(0,1,0),colcheia:N(0,1,1),semicolcheia:N(0,1,2)};
+const NOME={semibreve:'semibreve',minima:'mínima',seminima:'semínima',colcheia:'colcheia',semicolcheia:'semicolcheia'};
+const card=(h,x='',c='')=>`<div class="card ${x}" ${c?`style="--c:${c}"`:''}>${h}</div>`;
+const fig=(id,x='',c='')=>card(FIG[id]+`<span>${NOME[id]}</span>`,x,c);
+const topo=(t,n)=>`<div class="top"><span>${t}</span><i>${n}</i></div>`;
+const tela=(inner,paul='bateria')=>`<div class="tela">${inner}<img class="paul" src="../assets/paul/colorido/paul-${paul}.webp" alt=""></div>`;
+const op=(k,t,inner,paul)=>`<div class="op"><b>${k} · ${t}</b>${tela(inner,paul)}</div>`;
+const sec=(t,s,ops,nota)=>`<h2>${t}<small>${s}</small></h2><div class="row">${ops}</div><div class="nota">${nota}</div>`;
+const fs=['seminima','colcheia','semicolcheia','minima','semibreve','seminima','colcheia','minima'];
+
+// ---------- 1 · no lugar da memória ----------
+const m1A=op('A','toque nos pares (tudo à vista)',
+ topo('fase 6 · pares','2/4')+`<p class="q">toque nas duas iguais</p><p class="dica">sem virar carta: é só achar a figura e o nome dela.</p>
+ <div class="grade g4">${fig('seminima','ok')}${card('<span style="font:400 11px Anton">SEMÍNIMA</span>','ok')}${fig('colcheia','sel')}${card('<span style="font:400 11px Anton">MÍNIMA</span>')}${card('<span style="font:400 10px Anton">COLCHEIA</span>')}${fig('minima')}${fig('semibreve')}${card('<span style="font:400 9px Anton">SEMIBREVE</span>')}</div>
+ <div class="barra"><i style="width:50%"></i></div>`,'estudando');
+const m1B=op('B','olhe 3 segundos e vira',
+ topo('fase 6 · memorize','3s')+`<p class="q">decore onde cada uma está</p><div class="cont">3</div>
+ <div class="grade g4">${['seminima','colcheia','minima','semibreve','colcheia','seminima','semibreve','minima'].map(f=>fig(f)).join('')}</div>
+ <div class="barra"><i style="width:80%"></i></div><p class="dica">depois as cartas viram e você acha os pares, com um empurrãozinho: só 3 segundos de espiada.</p>`,'espiando');
+const m1C=op('C','quem sumiu?',
+ topo('fase 6 · atenção','1/3')+`<p class="q">qual figura sumiu?</p><p class="dica">olhe as 4, o Paul tapa uma e você escolhe qual era.</p>
+ <div class="grade g2">${fig('seminima')}${fig('colcheia')}<div class="card verso">?</div>${fig('semibreve')}</div>
+ <div class="grade g3">${fig('minima','sel')}${fig('semicolcheia')}${fig('minima')}</div>`,'duvida');
+// ---------- 2 · estilo Detetive Note ----------
+const d2A=op('A','ouça e monte (igual ao Detetive)',
+ topo('fase 9 · detetive','1/3')+`<p class="q">ouça e monte o ritmo</p><div class="play"><div class="bola">▶</div><div class="onda"></div></div><p class="dica">palavra-pista: <b>bolo</b></p>
+ <div class="slot">${fig('colcheia','','#2a9d8f')}${fig('colcheia','','#2a9d8f')}<span style="opacity:.4;font:400 22px Anton">· ·</span></div>
+ <div class="grade g4">${fig('seminima')}${fig('colcheia')}${fig('minima')}${fig('semicolcheia')}</div><div class="btn">conferir</div>`,'detetive');
+const d2B=op('B','ouça e escolha entre 3 pautas',
+ topo('fase 9 · detetive','1/3')+`<p class="q">qual ritmo você ouviu?</p><div class="play"><div class="bola">▶</div><div class="onda"></div></div>
+ ${['A','B','C'].map((l,i)=>`<div class="opt"><span class="l">${l}</span><div class="box pauta"><svg viewBox="0 0 200 44"><g stroke="#14111a" stroke-width="1.4">${[8,16,24,32,40].map(y=>`<line x1="4" x2="196" y1="${y}" y2="${y}"/>`).join('')}</g>${[[20,40,60,80],[20,50,80,110],[20,40,80,140]][i].map(x=>`<ellipse cx="${x+10}" cy="30" rx="6" ry="4.4" transform="rotate(-20 ${x+10} 30)" fill="#14111a"/><line x1="${x+15.5}" y1="29" x2="${x+15.5}" y2="6" stroke="#14111a" stroke-width="1.8"/>`).join('')}</svg></div></div>`).join('')}`,'ouvindo');
+const d2C=op('C','pista + palavra (o ritmo é uma palavra)',
+ topo('fase 9 · detetive','1/3')+`<p class="q">que palavra é essa?</p><div class="play"><div class="bola">▶</div><div class="onda"></div></div><p class="dica">toque, conte as sílabas e descubra.</p>
+ <div class="grade g2">${['PÃO','BOLO','CHOCOLATE','BOLA'].map((t,i)=>card(`<span style="font:400 22px Anton">${t}</span><span style="font-size:11px;opacity:.7">${['1 som','2 sons','3 sons','2 sons'][i]}</span>`,i==1?'sel':'')).join('')}</div>`,'microfone');
+// ---------- 3 · quiz de instrumentos ----------
+const bat=`<svg viewBox="0 0 280 170" style="width:100%;height:100%"><ellipse cx="140" cy="132" rx="46" ry="22" fill="#d3122f" stroke="#14111a" stroke-width="4"/><ellipse cx="140" cy="122" rx="46" ry="14" fill="#fff7e6" stroke="#14111a" stroke-width="4"/><ellipse cx="96" cy="62" rx="26" ry="9" fill="#fff7e6" stroke="#14111a" stroke-width="4"/><rect x="88" y="62" width="16" height="30" fill="#EBA332" stroke="#14111a" stroke-width="3"/><ellipse cx="186" cy="60" rx="26" ry="9" fill="#fff7e6" stroke="#14111a" stroke-width="4"/><path d="M28 46h52" stroke="#EBA332" stroke-width="7" stroke-linecap="round"/><path d="M54 48v82" stroke="#14111a" stroke-width="4"/><path d="M226 38h44" stroke="#EBA332" stroke-width="7" stroke-linecap="round"/><path d="M248 40v90" stroke="#14111a" stroke-width="4"/><ellipse cx="60" cy="108" rx="30" ry="10" fill="#17365B" stroke="#14111a" stroke-width="4"/></svg>`;
+const q3A=op('A','toque na peça (desenho)',
+ topo('quiz · bateria','2/6')+`<p class="q">onde fica o <u>pratô de condução</u>?</p><div class="pecas">${bat}<div class="pin" style="left:19%;top:26%">1</div><div class="pin on" style="left:92%;top:25%">2</div><div class="pin" style="left:50%;top:70%">3</div><div class="pin" style="left:22%;top:63%">4</div></div><p class="dica">toque no número da peça certa.</p>`,'bateria');
+const q3B=op('B','qual é o nome? (4 alternativas)',
+ topo('quiz · instrumentos','3/8')+`<div class="pecas" style="height:130px;display:grid;place-items:center"><div style="width:250px;height:118px">${bat}</div></div><p class="q">como se chama essa peça?</p>
+ <div class="grade g2">${['bumbo','caixa','tom-tom','chimbal'].map((t,i)=>card(`<span style="font:400 17px Anton">${t.toUpperCase()}</span>`,i==1?'ok':'')).join('')}</div>`,'baquetas-pra-cima');
+const q3C=op('C','de quem é esse som?',
+ topo('quiz · ouvido','4/8')+`<p class="q">que instrumento é esse?</p><div class="play"><div class="bola">▶</div><div class="onda"></div></div>
+ <div class="grade g2">${[['🥁','bateria'],['🎸','violão'],['🎹','teclado'],['🪘','cajón']].map(([e,t],i)=>card(`<span style="font-size:30px">${e}</span><span style="font:400 15px Anton;text-transform:uppercase">${t}</span>`,i==2?'sel':'')).join('')}</div><p class="dica">vale piano, baixo, guitarra, pandeiro, xilofone e mais.</p>`,'ouvindo');
+
+document.getElementById('app').innerHTML=
+ sec('1 · no lugar da memória','a fase 6 e as parecidas: sem virar carta no escuro, mais rápido e dá pra errar sem ficar horas',m1A+m1B+m1C,'<b>A</b> é o mais fácil (tudo à vista). <b>B</b> mantém a ideia de memória mas com espiada de 3 s. <b>C</b> treina atenção e acaba em 3 perguntinhas. Qualquer um passa pela regra de sempre: 60% = 1 ★, 80% = 2 ★, 100% = 3 ★.')+
+ sec('2 · jogos do Detetive Note dentro do Figurix','a criança ouve e responde, sem microfone',d2A+d2B+d2C,'<b>A</b> é o Detetive de verdade (ouvir e montar com cartas). <b>B</b> é mais leve: escolhe entre 3 pautas. <b>C</b> usa palavras (pão, bolo, chocolate) e conta os sons. Entram nas fases do ciclo, uma a cada 10.')+
+ sec('3 · quiz de instrumentos e peças','nomes de instrumentos, peças da bateria, teclado e violão',q3A+q3B+q3C,'<b>A</b> ensina a localizar a peça no desenho (bateria, depois teclado e violão). <b>B</b> é o quiz clássico com desenho e 4 nomes. <b>C</b> treina o ouvido: som do instrumento, escolha o nome. Os três podem entrar misturados.');
+setTimeout(()=>document.body.dataset.ok=1,400);
+</script></body></html>
