@@ -102,10 +102,14 @@ export function tocaInstr(id) {
   try {
     silence(); const ct = audio(); const t = ct.currentTime + 0.05; const q = 0.28;
     if (id === 'bateria') { const D = DRUM_REAL; const e = 0.25; for (let k = 0; k < 8; k++) { D.hh(t + k * e, k % 2 ? 0.55 : 0.8); } [0, 3, 4, 7].forEach((k) => D.bd(t + k * e, 1)); [2, 6].forEach((k) => D.sn(t + k * e, 1, 0.3)); D.bd(t + 3.5 * e, 0.8); D.tt(t + 8 * e, 0.9); D.mt(t + 8.5 * e, 0.9); D.ft(t + 9 * e, 0.95); D.cr(t + 10 * e, 1); D.bd(t + 10 * e, 1); }
-    else if (id === 'violao') { const acorde = (ms, d, v) => ms.filter((m) => m != null).forEach((m, j) => pluck(m, v, t + d + j * 0.022, 'acoustic')); const C1 = CHORDS[0][1]; const G1 = CHORDS[1][1]; acorde(C1, 0, 0.85); acorde(C1.slice().reverse(), 0.3, 0.55); acorde(C1, 0.5, 0.75); acorde(G1, 0.95, 0.85); acorde(G1.slice().reverse(), 1.25, 0.55); acorde(G1, 1.45, 0.8); }
+    else if (id === 'violao') { // dedilhado: baixo com o polegar e três cordas agudas em arpejo (p-i-m-a-m-i-m-a), dó e depois sol
+    const e = 0.2; [[CHORDS[0][1], 0], [CHORDS[1][1], 8 * e]].forEach(([ch, d0]) => { const cs = ch.filter((m) => m != null); const b = cs[0]; const b2 = cs[1]; const [x, y, z] = cs.slice(-3);
+      [[b, 0.85], [x, 0.6], [y, 0.65], [z, 0.7], [b2, 0.75], [y, 0.6], [z, 0.65], [y, 0.55]].forEach(([m, v], k) => pluck(m, v, t + d0 + k * e, 'acoustic')); });
+    CHORDS[0][1].filter((m) => m != null).forEach((m, j) => pluck(m, 0.7, t + 16 * e + j * 0.03, 'acoustic')); }
     else if (id === 'guitarra') { [[40, 47, 52], [40, 47, 52], [43, 50, 55], [45, 52, 57]].forEach((ch, k) => ch.forEach((m, j) => pluck(m, 1, t + k * 0.38 + j * 0.018, 'rock'))); }
     else if (id === 'piano') { [60, 64, 67].forEach((m, k) => pianoSom(t + k * 0.24, m, 1.6)); pianoSom(t + 0.8, 72, 1.8); pianoSom(t + 0.8, 64, 1.8); pianoSom(t + 0.8, 55, 1.8); }
-    else if (id === 'baixo') { [[36, 0, 0.22], [36, 0.25, 0.2], [43, 0.5, 0.22], [41, 0.75, 0.22], [36, 1, 0.22], [36, 1.25, 0.2], [46, 1.5, 0.22], [43, 1.75, 0.35]].forEach(([m, d, l]) => baixoSom(t + d, m, l, d === 0 || d === 1 ? 1 : 0.85)); }
+    else if (id === 'baixo') { // baixo elétrico de dedo: corda de verdade (Karplus-Strong) + corpo grave, com notas fantasma abafadas
+    [[36, 0, 1, 0], [36, 0.25, 0.5, 1], [43, 0.5, 0.9, 0], [41, 0.75, 0.9, 0], [36, 1, 1, 0], [36, 1.25, 0.5, 1], [46, 1.5, 0.9, 0], [43, 1.75, 1, 0]].forEach(([m, d, v, mudo]) => { pluck(m + 12, v, t + d, 'clean', !!mudo); if (!mudo) baixoSom(t + d, m, 0.28, 0.5 * v); }); }
     else if (id === 'triangulo') { const f = perc('tr'); [0, 0.45, 0.9, 1.2, 1.35].forEach((d, k) => f(t + d, k === 4 ? 0.6 : 0.9)); }
     else if (id === 'recoreco') { const f = perc('rr'); [0, 0.3, 0.6, 0.78, 0.96, 1.4, 1.7].forEach((d, k) => f(t + d, k % 2 ? 2 : 2.8)); }
     else if (id === 'xilofone') { [72, 74, 76, 79, 81, 79, 76, 84].forEach((m, k) => mallet(m, k === 7 ? 1 : 0.85, 'xilofone', t + k * 0.15)); mallet(72, 0.6, 'xilofone', t + 1.5); }
