@@ -169,7 +169,7 @@ export function mount(host) {
     },
     detetive: (p) => NOVOS.detetive({ root, S, sfx, topo, acerto, erro, fim, aoLimpar: (fn) => { extra = fn; } }, p),
     instr: (p) => perguntas('que instrumento é esse?', totalRL(p.nivel), () => { // "de quem é esse som?": toca sozinho e dá pra ouvir de novo
-      const q = quizInstr(p.nivel); const toca = () => NOVOS.tocaInstr(q.ok); extra = NOVOS.paraSom;
+      NOVOS.esquenta(); const q = quizInstr(p.nivel); const toca = () => NOVOS.tocaInstr(q.ok); extra = NOVOS.paraSom;
       return { titulo: 'de quem é esse som?', destaque: h('button', { type: 'button', class: 'btn primary fx-ouvir', onclick: toca }, '🔊 ouvir de novo'), aoMostrar: toca, mais: 5,
         opcoes: q.opcoes.map((id) => ({ face: h('span', { class: 'fx-instr' }, h('i', { 'aria-hidden': 'true' }, INSTR[id].emoji), h('b', {}, INSTR[id].nome)), label: INSTR[id].nome, certo: id === q.ok })) };
     }),
