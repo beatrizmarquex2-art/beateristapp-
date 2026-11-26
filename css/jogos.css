@@ -2092,3 +2092,7 @@ body.bv-aberta { overflow: hidden; }
 .jg-estante-l button img{display:block;width:96px;height:64px;object-fit:cover;border-radius:7px}
 .jg-estante-l button.on{outline:3px solid #f2a91b;outline-offset:1px}
 .jg-estante-l button.locked{opacity:.5}.jg-estante-l button.locked::after{content:"🔒";position:absolute;right:3px;top:2px;font-size:13px}
+
+.cq-premio{display:grid;gap:4px;justify-items:center;text-align:center;margin:6px 0 2px;padding:8px 10px;border:2px dashed #f2a91b;border-radius:12px;background:#f2a91b22}
+.cq-premio[hidden]{display:none}.cq-premio b{font:400 18px/1.1 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;color:#f2a91b}.cq-premio span{font-size:13px}
+.cq-bau,.pf-bau{text-decoration:none;display:inline-block;margin-top:4px}

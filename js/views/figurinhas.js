@@ -98,7 +98,7 @@ export function mount(host, parts = [], opts = {}) {
   }
   async function semanaPremio() {
     try { const me = P.active(); if (me) { const M = await import('../figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } } catch { /* sem perfil: ganha só o pacote */ }
-    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro duplo épico e uma figurinha exclusiva da Bea` }); } catch { /* sem animação */ }
+    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro duplo épico (em Stars › roleta) e uma figurinha exclusiva da Bea, que chegou no baú!`, bau: true }); } catch { /* sem animação */ }
   }
   load();
   async function load() {
