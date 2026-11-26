@@ -24,6 +24,8 @@ export function aparelhoId() {
 }
 const PROF_KEY = 'beaterista-aparelho-prof'; // aparelho da professora (já entrou com código de professora): não ocupa vaga dos alunos
 const aparelhoProf = () => { try { return localStorage.getItem(PROF_KEY) === '1'; } catch { return false; } };
+/** Este aparelho entrou com um código de professor (as ferramentas de montar são só da professora e dos professores; o app da Bea também). */
+export const professor = aparelhoProf;
 let motivo = '';
 /** Por que o último `verificar` disse não: 'codigo' (não existe/desativado), 'vencido' ou 'aparelhos' (já está em 2 aparelhos). */
 export const motivoFalha = () => motivo;

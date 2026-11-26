@@ -1,17 +1,20 @@
-// Partitura no Palco (Teclas): clicar nas teclas monta a folha, dá pra corrigir, gravar tocando (arruma na grade) e baixar o PDF no papel timbrado.
+// Partitura no Palco (Teclas), ferramenta só de professor: clicar nas teclas monta a folha, dá pra corrigir, gravar tocando (arruma na grade) e baixar o PDF no papel timbrado.
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve();
 const { browser, ctx } = await launch();
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
 await ctx.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));
 await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
-await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch (e) {} });
+const comoProf = { v: false };
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); if (window.name === 'prof') localStorage.setItem('beaterista-aparelho-prof', '1'); } catch (e) {} });
 const shot = (n) => page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/partitura-palco-${n}.png` });
 const clica = async (m) => { await page.locator(`.pn-w[data-m="${m}"]`).click({ force: true, noWaitAfter: true }); await sleep(120); };
 const notas = () => page.evaluate(() => document.querySelectorAll('.pm-folha .pm-n').length);
 
 await page.goto(url + '/aluno.html#/piano'); await sleep(2200);
-check('o botão "partitura" aparece na linha "treinar" das teclas', await page.evaluate(() => [...document.querySelectorAll('.kd-modelos .kd-chip')].some((b) => b.textContent.includes('partitura'))));
+check('aluno comum NÃO vê o botão da partitura (ferramenta só de professor)', await page.evaluate(() => ![...document.querySelectorAll('.kd-modelos .kd-chip')].some((b) => b.textContent.includes('partitura'))));
+await page.evaluate(() => { localStorage.setItem('beaterista-aparelho-prof', '1'); }); await page.reload(); await sleep(2200);
+check('professor vê o botão "partitura" na linha "treinar" das teclas', await page.evaluate(() => [...document.querySelectorAll('.kd-modelos .kd-chip')].some((b) => b.textContent.includes('partitura'))));
 await page.evaluate(() => [...document.querySelectorAll('.kd-modelos .kd-chip')].find((b) => b.textContent.includes('partitura')).click()); await sleep(500);
 check('abre o painel com a folha vazia e a clave de sol já desenhada ao montar', await page.evaluate(() => !!document.querySelector('.pm-painel') && !!document.querySelector('.pm-vazio')));
 // ---- clicar: figura padrão semínima

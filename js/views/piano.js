@@ -12,6 +12,7 @@ import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-pl
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
 import { melodiaPainel } from './aulas-melodia.js';
 import { painelPartitura } from './partitura-palco.js';
+import * as CODE from '../codigo.js';
 
 const KEY = 'setting-piano';
 const SOUNDS = [['piano', 'piano'], ['epiano', 'elétrico'], ['organ', 'órgão'], ['pad', 'cordas']];
@@ -163,8 +164,10 @@ export function mount(host) {
   const instPart = { toca: (m, t, d) => inst.toca(m, t, d), aoTocar: (fn) => { partTap = fn; }, aoSoltar: (fn) => { partUp = fn; } };
   const abrePart = () => { if (partCtl) return; if (aulasCtl) fechaAulas(); partCtl = painelPartitura(instPart, { nome: 'teclas', fechar: fechaPart }); partHost.replaceChildren(partCtl.el); partBtn.classList.add('on'); partBtn.setAttribute('aria-pressed', 'true'); partBtn.firstChild.textContent = 'partitura ✓'; try { partHost.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { /* sem rolagem */ } };
   const fechaPart = () => { if (!partCtl) return; partCtl.destroy(); partCtl = null; partTap = null; partUp = null; partHost.replaceChildren(); partBtn.classList.remove('on'); partBtn.setAttribute('aria-pressed', 'false'); partBtn.firstChild.textContent = 'partitura'; };
-  const partBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${!pago() ? ' travado' : ''}`, 'aria-pressed': 'false', onclick: () => { if (!pago()) { pedir('a partitura'); return; } partCtl ? fechaPart() : abrePart(); } }, h('span', {}, 'partitura'), !pago() ? cadeado() : null);
-  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn, partBtn);
+  // ferramenta só de professor: no app da Bea (não é a área dos alunos) ou num aparelho que entrou com código de professor. Aluno nem vê o botão.
+  const podePartitura = !document.documentElement.classList.contains('aluno-on') || CODE.professor();
+  const partBtn = h('button', { type: 'button', class: 'kd-chip kd-aulas', 'aria-pressed': 'false', onclick: () => { partCtl ? fechaPart() : abrePart(); } }, h('span', {}, 'partitura'));
+  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn, ...(podePartitura ? [partBtn] : []));
   const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), rolar(aulasRow), aulasHost, shown, kb, takeBox, panel, partHost,
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawModelos(); drawPanel(); drawTake();
