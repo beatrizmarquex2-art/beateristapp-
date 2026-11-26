@@ -136,9 +136,11 @@ const reduz = () => { try { return !!(window.matchMedia && matchMedia('(prefers-
  * { jogo: 'pauLta', caminho: 'Mundo da Bateria', chave: 'paulta:drumF', pose } · com `chave`, só aparece na 1ª vez (use { sempre: true } pra repetir).
  * Devolve a função que fecha, ou null se não mostrou.
  */
-export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false, premioChave = '', estilo = 'E', premio = null, paulSrc = '' } = {}) {
+export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false, premioChave = '', estilo = '', premio = null, paulSrc = '' } = {}) {
   if (chave && !sempre && jaFestejou(chave)) return null;
   if (chave) { try { localStorage.setItem(KEY, JSON.stringify([...new Set([...feitos(), String(chave)])].slice(-200))); } catch { /* sem armazenamento */ } }
+  // mundos: a festa reveza entre a carta vermelha (E) e a azul (F); os Estudos pedem a vermelha de propósito
+  if (!estilo) { let n = 0; try { n = Number(localStorage.getItem('beaterista-festa-alt')) || 0; localStorage.setItem('beaterista-festa-alt', String(n + 1)); } catch { /* sem armazenamento */ } estilo = n % 2 ? 'F' : 'E'; }
   const bens = beneficiosDe(jogo); const titulo = caminho && limpa(caminho).toLowerCase() !== limpa(jogo).toLowerCase() ? `${jogo}: ${caminho}` : jogo;
   const dados = { selo: 'terminei o caminho', titulo, beneficios: bens, pose };
   const NOTAS = ['♪', '♫', '★', '♬', '✦']; const CORES = ['#00e5ff', '#2d8cff', '#f2a91b', '#ff3d57', '#ffffff'];
