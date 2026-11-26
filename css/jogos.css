@@ -2071,3 +2071,19 @@ body.bv-aberta { overflow: hidden; }
 .vv-teclado.muitas{gap:2px}.vv-teclado.muitas .vv-tecla{min-width:0;font-size:14px;padding:0 0 8px;box-shadow:2px 2px 0 var(--vv-navy)}.vv-teclado.muitas .vv-tecla span{font-size:14px}
 .vv-seq.longa{gap:5px}.vv-seq.longa .vv-n{font-size:19px;padding:6px 8px 4px}
 .vv-teclado{max-width:100%}.vv-kbwrap{max-width:100%;overflow:hidden}
+
+/* Figurix: jogos novos (atenção/memória em 3 formatos, detetive e quiz de instrumentos) */
+.jg-figurix .fx-cont{min-height:38px;text-align:center;font:400 34px/1 "Anton",sans-serif;color:#d3122f}
+.jg-figurix .fx-card.sel{outline:4px solid #EBA332;outline-offset:1px;transform:translateY(-2px)}
+.jg-figurix .fx-card.previa{box-shadow:0 0 0 3px #EBA332}
+.jg-figurix .fx-sumiu{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px;margin:8px 0}
+.jg-figurix .fx-sumiu.n4{grid-template-columns:repeat(2,minmax(0,1fr))}.jg-figurix .fx-sumiu.n5{grid-template-columns:repeat(3,minmax(0,1fr))}
+.jg-figurix .fx-sc{display:grid;place-items:center;gap:2px;min-height:96px;padding:6px;border:3px solid #142036;border-radius:14px;background:#fffdf7;box-shadow:3px 3px 0 #d3122f;color:#142036}
+.jg-figurix .fx-sc small{font:700 11px "Hanken Grotesk",sans-serif}
+.jg-figurix .fx-sc.vazio{background:#17365B;color:#fff;box-shadow:3px 3px 0 #EBA332}
+.jg-figurix .fx-qm{font:400 40px "Anton",sans-serif;color:#fff}
+.jg-figurix .fx-op small{display:block;font:700 11px "Hanken Grotesk",sans-serif;margin-top:2px}
+.jg-figurix .fx-instr{display:grid;place-items:center;gap:2px}.jg-figurix .fx-instr i{font-style:normal;font-size:30px;line-height:1}.jg-figurix .fx-instr b{font:400 16px "Anton",sans-serif;text-transform:uppercase}
+.jg-figurix .fx-ouvir{justify-self:center;margin:2px 0 6px}
+.jg-figurix .fx-det .dn-caderno{display:grid;gap:8px}
+.jg-figurix .fx-card .fx-txt{font-size:clamp(9px,3vw,13px);line-height:1.1;overflow-wrap:anywhere;hyphens:auto}

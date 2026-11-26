@@ -28,15 +28,15 @@ const NOME = (m) => `mundo ${m.slice(1)}`;
 const semPauta = (L) => ({ ...L, ops: L.ops.filter((o) => !(o.t === 'line' && (o.y1 === o.y2 || (o.x1 === o.x2 && o.w === 2)))) });
 const figura = (cell) => { const L = semPauta(layoutRhythm([baseDe(cell)], { width: 84, count: false, clef: false })); const hd = L.ops.find((o) => o.t === 'head');
   if (temFlam(cell) && hd) L.ops.push({ t: 'grace', x: hd.x - 11, y: hd.y, mx: hd.x, my: hd.y }); return svgEl(N.toSVG(L), 'dn-face-fig'); }; // flam = notinha de ornamento antes da nota
-const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
+export const face = (card, estilo) => (!TEMAS[estilo] ? figura(card.cell)
   : card.cell === '0010' ? h('span', { class: 'dn-face' }, ico('shh-som', '🤫'), h('small', {}, `shh-${foodOf(TEMAS[estilo]['1000']).syl.join('-')}`)) // pausa de colcheia + colcheia
   : h('span', { class: 'dn-face' }, ico(card.id, foodOf(card.id).emoji), h('small', {}, foodOf(card.id).syl.join('-'))));
 /** O ritmo SEMPRE toca na caixa, em todas as fases (pedido da Bea, 23/nov/2026: não tem troca de tambor nem de bumbo). */
 const SOM_DETETIVE = 'caixa';
 const somDaFase = () => SOM_DETETIVE;
-const soa = (cell, bpm, som) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...baseDe(cell)].forEach((x, k) => { if (x === '1') { if (temFlam(cell)) voz(t + (k * q) / 4 - 0.05, 0.4, som); voz(t + (k * q) / 4, 0.85, som); } }); };
+export const soa = (cell, bpm, som) => { const c = audio(); const q = 60 / bpm; const t = c.currentTime + 0.03; [...baseDe(cell)].forEach((x, k) => { if (x === '1') { if (temFlam(cell)) voz(t + (k * q) / 4 - 0.05, 0.4, som); voz(t + (k * q) / 4, 0.85, som); } }); };
 /** Toca o compasso (4 tempos) com o som da fase: conta 4 antes (a 120 BPM começa tocando direto, sem a contagem). */
-function tocaCompasso(cells, bpm, som) {
+export function tocaCompasso(cells, bpm, som) {
   const c = audio(); const q = 60 / bpm; const conta = COM_CONTAGEM(bpm); const t0 = c.currentTime + (conta ? 0.25 + 4 * q : 0.15);
   if (conta) for (let i = 0; i < 4; i++) click(t0 - (4 - i) * q, i === 0 ? 2 : 1);
   cells.forEach((cell, b) => [...baseDe(cell)].forEach((x, k) => { if (x === '1') { if (temFlam(cell)) voz(t0 + b * q + (k * q) / 4 - 0.05, 0.4, som); voz(t0 + b * q + (k * q) / 4, 0.85, som); } }));

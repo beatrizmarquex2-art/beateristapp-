@@ -14,12 +14,7 @@ const concluida = async () => { await sleep(1400); return /concluída/.test(awai
 let n = nivel('ligar', 4); await abre(n);
 for (const f of await page.locator('.fx-lig:not(.nome)').evaluateAll((e) => e.map((x) => x.dataset.f))) { await page.locator(`.fx-lig[data-f="${f}"]`).click(); await page.locator(`.fx-lig.nome[data-n="${f}"]`).click(); await sleep(120); }
 check(`fase ${n} (ligar figura ↔ quanto vale): ligou tudo`, await concluida());
-// memória (nível 5 = pausa ↔ nome)
-n = nivel('memoria', 5); await abre(n); await page.waitForSelector('.fx-card');
-await page.waitForFunction(() => document.querySelectorAll('.fx-card.aberta').length === 0, null, { timeout: 9000 });
-const cs = await page.evaluate(() => window.__figurix.cartas);
-for (const id of [...new Set(cs.map((c) => c.par))]) { const [a, b] = cs.filter((c) => c.par === id); await page.locator(`.fx-card[data-k="${a.k}"]`).click(); await page.locator(`.fx-card[data-k="${b.k}"]`).click(); await sleep(150); }
-check(`fase ${n} (memória pausa ↔ nome, ${cs.length / 2} pares): achou todos`, await concluida());
+// (a memória agora tem 3 formatos: veja figurix-jogos-novos.mjs)
 // monte a figura (nível 6: semifusa com 4 colchetes etc.)
 n = nivel('monte', 6); await abre(n); await page.waitForSelector('.fx-peca');
 const alvos = montesDe(6); const NOME = Object.fromEntries(FIGS.map((f) => [f.name, f.id]));

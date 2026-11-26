@@ -43,7 +43,7 @@ check('ligou tudo: fase concluída', /concluída/.test(await page.textContent('.
 await page.getByRole('button', { name: 'ver o mapa' }).click(); await page.waitForSelector('.mp-node');
 // fase 6: memória das pausas (mostra, depois vira; acha os pares)
 await abre(5); await page.waitForSelector('.fx-card');
-check('fase 6: 8 cartas viradas (com o Paul) desde o início', (await page.locator('.fx-card').count()) === 8 && (await page.locator('.fx-card.aberta').count()) === 0);
+check('fase 6: 8 cartas à vista (toque nos pares, formato novo)', (await page.locator('.fx-card').count()) === 8 && (await page.locator('.fx-card.aberta').count()) === 8);
 const cs = await page.evaluate(() => window.__figurix.cartas);
 for (const id of [...new Set(cs.map((c) => c.par))]) { const [a, b] = cs.filter((c) => c.par === id); await page.locator(`.fx-card[data-k="${a.k}"]`).click(); await page.locator(`.fx-card[data-k="${b.k}"]`).click(); await sleep(200); }
 await sleep(1200);
@@ -76,7 +76,7 @@ check('tetris: 3 faixas (3 nomes) e a figura cai sem fundo branco; o Paul nunca 
 for (let i = 0; i < 240; i++) { await page.evaluate(() => { const t = window.__figurix.tetris; if (t) t.vai(t.item.ok); }); await sleep(300); if (/concluída/.test(await page.textContent('.jg-figurix'))) break; } // acompanha o nome certo em todas as figuras
 check('tetris: acompanhou o lado certo e terminou a fase', /concluída/.test(await page.textContent('.jg-figurix')), (await page.textContent('.jg-figurix')).slice(0, 80));
 // as 50 fases novas: abre uma de cada tipo (nível 3 e nível 7) e confere que monta sem erro
-const SEL = { rapida: '.fx-op', lenta: '.fx-op', monte: '.fx-peca', ligar: '.fx-lig', memoria: '.fx-card', quiz: '.fx-op', caca: '.fx-c', notas: '.fx-arv', tetris: '.fx-campo' };
+const SEL = { rapida: '.fx-op', lenta: '.fx-op', monte: '.fx-peca', ligar: '.fx-lig', memoria: '.fx-card, .fx-sc', quiz: '.fx-op, .fx-ouvir', detetive: '.dn-card', caca: '.fx-c', notas: '.fx-arv', tetris: '.fx-campo' };
 const novas = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 33, 44, 53, 54, 55, 56, 57, 58, 59, 60, 61].map((pos) => [pos, SEL[PHASES[pos].tipo]]);
 for (const [pos, sel] of novas) {
   await abreFase(pos + 1); const ok = (await page.locator(sel).count()) > 0; check(`fase ${pos + 1} (${PHASES[pos].tipo}, nível ${PHASES[pos].nivel}) abre`, ok);

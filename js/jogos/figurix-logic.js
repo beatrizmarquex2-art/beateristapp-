@@ -10,7 +10,7 @@ const BASE = [
   { n: 3, tipo: 'monte', nivel: 1, titulo: 'monte a figura' },
   { n: 4, tipo: 'ligar', nivel: 1, k: 3, titulo: 'ligue as 3 figuras' },
   { n: 5, tipo: 'ligar', nivel: 1, k: 5, titulo: 'ligue as 5 figuras' },
-  { n: 6, tipo: 'memoria', nivel: 1, titulo: 'memória das pausas' },
+  { n: 6, tipo: 'memoria', nivel: 1, titulo: 'atenção e memória' },
   { n: 7, tipo: 'quiz', nivel: 1, titulo: 'quiz' },
   { n: 8, tipo: 'caca', nivel: 1, titulo: 'caça-palavras' },
   { n: 9, tipo: 'notas', nivel: 1, titulo: 'monte as notas' },
@@ -18,8 +18,8 @@ const BASE = [
   { n: 11, tipo: 'quiz', nivel: 2, titulo: 'quiz difícil' },
   { n: 12, tipo: 'tetris', nivel: 2, titulo: 'tetris rápido' },
 ];
-export const CICLO = ['rapida', 'lenta', 'monte', 'ligar', 'memoria', 'quiz', 'caca', 'notas', 'tetris', 'quiz'];
-const TITULOS = { rapida: 'qual é a mais rápida?', lenta: 'qual é a mais lenta?', monte: 'monte a figura', ligar: 'ligue', memoria: 'memória', quiz: 'quiz', caca: 'caça-palavras', notas: 'monte as notas', tetris: 'tetris do Roboterista' };
+export const CICLO = ['rapida', 'lenta', 'monte', 'ligar', 'memoria', 'quiz', 'caca', 'notas', 'tetris', 'detetive'];
+const TITULOS = { rapida: 'qual é a mais rápida?', lenta: 'qual é a mais lenta?', monte: 'monte a figura', ligar: 'ligue', memoria: 'atenção e memória', detetive: 'detetive: ouça e monte', quiz: 'quiz', caca: 'caça-palavras', notas: 'monte as notas', tetris: 'tetris do Roboterista' };
 export const PHASES = [...BASE, ...Array.from({ length: 50 }, (_, i) => { const tipo = CICLO[i % 10]; return { n: 13 + i, tipo, nivel: 3 + Math.floor(i / 10), titulo: TITULOS[tipo] }; })];
 export const FASES = PHASES.length; // 62
 export const ids = FIGS.map((f) => f.id);
@@ -172,3 +172,30 @@ export function novoLugar(atual, anterior, n, rnd = Math.random) {
   if (atual < 0 || n < 2 || atual !== anterior) return atual;
   const livres = Array.from({ length: n }, (_, k) => k).filter((k) => k !== anterior); return livres[Math.floor(rnd() * livres.length)];
 }
+
+/* ================= jogos novos (a Bea escolheu): atenção/memória em 3 formatos, Detetive Note e quiz de instrumentos ================= */
+/** As fases de "memória" giram entre 3 jeitos: toque nos pares (tudo à vista), olhe e vire (espiada) e quem sumiu. */
+export const FORMATOS_MEMORIA = ['pares', 'espiada', 'sumiu'];
+export const memoriaDe = (n) => FORMATOS_MEMORIA[n % FORMATOS_MEMORIA.length];
+/** Segundos da espiada (e de "quem sumiu"): cai com o nível. */
+export const previaSeg = (nivel) => (nivel <= 2 ? 5 : nivel <= 4 ? 4 : 3);
+/** "quem sumiu?": mostra N figuras, uma some e a criança escolhe qual era (a certa nunca é a única fora da tela: as erradas saem das que não apareceram, e só completam com as visíveis se faltar). */
+export function sumiuRodada(nivel, rnd = Math.random) {
+  const nMostra = nivel <= 2 ? 4 : 5; const nOp = nivel >= 5 ? 4 : 3;
+  const mostradas = pick(ids, nMostra, rnd); const sumiu = mostradas[Math.floor(rnd() * mostradas.length)];
+  const fora = ids.filter((x) => !mostradas.includes(x)); const erradas = shuffle(fora, rnd).slice(0, nOp - 1);
+  for (const x of shuffle(mostradas.filter((m) => m !== sumiu), rnd)) { if (erradas.length >= nOp - 1) break; erradas.push(x); }
+  return { mostradas, sumiu, opcoes: shuffle([sumiu, ...erradas], rnd) };
+}
+/** Sons do quiz "que instrumento é esse?": do mais conhecido pro menos conhecido (o nível libera mais). */
+export const INSTR = {
+  bateria: { nome: 'bateria', emoji: '🥁' }, violao: { nome: 'violão', emoji: '🪕' }, piano: { nome: 'piano', emoji: '🎹' }, voz: { nome: 'voz', emoji: '🎤' },
+  guitarra: { nome: 'guitarra', emoji: '🎸' }, baixo: { nome: 'baixo', emoji: '🎸' }, pandeiro: { nome: 'pandeiro', emoji: '🪘' }, xilofone: { nome: 'xilofone', emoji: '🎶' },
+};
+export const INSTR_IDS = Object.keys(INSTR);
+export function quizInstr(nivel, rnd = Math.random) {
+  const pool = INSTR_IDS.slice(0, nivel <= 1 ? 4 : nivel <= 3 ? 6 : 8); const ok = pool[Math.floor(rnd() * pool.length)]; const nOp = nivel <= 2 ? 3 : 4;
+  return { ok, opcoes: shuffle([ok, ...shuffle(pool.filter((x) => x !== ok), rnd).slice(0, nOp - 1)], rnd) };
+}
+/** Fase do Detetive Note (mundo 1) que cada nível do Figurix usa: sobe de 2 (pausa de semínima) até 12 (tudo, andamento rápido). */
+export const detFase = (nivel) => [2, 4, 6, 8, 10, 11, 12][Math.min(7, Math.max(1, nivel)) - 1];

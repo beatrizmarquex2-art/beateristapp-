@@ -90,3 +90,11 @@ test('tetris: a mesma figura nunca vem duas vezes seguidas e todas aparecem ante
     const pool = nivel <= 1 ? 4 : ids.length; const primeiros = itens.slice(0, pool).map((x) => x.fig); assert.equal(new Set(primeiros).size, Math.min(pool, itens.length), `nível ${nivel}: sem repetir antes de passar por todas`);
   }
 });
+
+test('jogos novos: memória em 3 formatos, quem sumiu, quiz de instrumentos e fase do detetive', async () => {
+  const L = await import('../js/jogos/figurix-logic.js');
+  assert.deepEqual([6, 17, 27, 37].map(L.memoriaDe), ['pares', 'sumiu', 'pares', 'espiada']);
+  for (const n of [1, 2, 3, 5, 7]) for (let i = 0; i < 60; i++) { const q = L.sumiuRodada(n); assert.ok(q.mostradas.includes(q.sumiu)); assert.ok(q.opcoes.includes(q.sumiu)); assert.equal(new Set(q.opcoes).size, q.opcoes.length); assert.equal(q.opcoes.length, n >= 5 ? 4 : 3); assert.equal(new Set(q.mostradas).size, q.mostradas.length); }
+  for (const n of [1, 3, 6]) for (let i = 0; i < 60; i++) { const q = L.quizInstr(n); assert.ok(q.opcoes.includes(q.ok)); assert.equal(new Set(q.opcoes).size, q.opcoes.length); assert.ok(q.opcoes.every((x) => L.INSTR[x])); }
+  assert.deepEqual([1, 4, 7, 9].map(L.detFase), [2, 8, 12, 12]); assert.ok(L.CICLO.includes('detetive')); assert.ok(L.previaSeg(1) > L.previaSeg(7));
+});
