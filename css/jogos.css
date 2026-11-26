@@ -2096,3 +2096,18 @@ body.bv-aberta { overflow: hidden; }
 .cq-premio{display:grid;gap:4px;justify-items:center;text-align:center;margin:6px 0 2px;padding:8px 10px;border:2px dashed #f2a91b;border-radius:12px;background:#f2a91b22}
 .cq-premio[hidden]{display:none}.cq-premio b{font:400 18px/1.1 "Anton","Arial Black",Impact,sans-serif;text-transform:uppercase;color:#f2a91b}.cq-premio span{font-size:13px}
 .cq-bau,.pf-bau{text-decoration:none;display:inline-block;margin-top:4px}
+
+/* modelos de festa de conclusão (A = neon padrão; B diploma; C zine; E carta exclusiva) */
+.cq-premio b{text-shadow:none!important;animation:none!important;font-size:18px!important}
+.pf.cq.cq-m-b{background:radial-gradient(120% 70% at 50% 0,#3a2a0a,#120c02)}
+.cq-m-b .cq-box{background:#fff7e6;color:#162146;border:4px solid #b8862b;border-radius:18px;box-shadow:inset 0 0 0 5px #fff7e6,inset 0 0 0 7px #b8862b,0 10px 0 #0007;padding-top:30px}
+.cq-m-b .cq-box::before{content:"★";position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,#f9d27a,#c98a1e);border:3px solid #7a5410;display:grid;place-items:center;font:400 26px "Anton";color:#7a5410}
+.cq-m-b .pf-box b.cq-t{color:#162146;text-shadow:none;animation:none}.cq-m-b .cq-selo,.cq-m-b .cq-bens small{color:#7a5410}.cq-m-b .cq-bens{background:#b8862b22;color:#162146}.cq-m-b .cq-dica{color:#162146}.cq-m-b .cq-paul{filter:none}.cq-m-b .cq-premio{border-color:#b8862b;background:#b8862b22}.cq-m-b .cq-premio b{color:#7a5410}
+.pf.cq.cq-m-c{background:#f6d365 url(../assets/zine/textura-fundo-creme.webp) center/cover;background-blend-mode:multiply}
+.cq-m-c .cq-box{background:#fff7e6;color:#162146;border:4px solid #162146;border-radius:14px;box-shadow:6px 8px 0 #162146}
+.cq-m-c .pf-box b.cq-t{background:#162146;color:#fff7e6;text-shadow:none;animation:none;padding:6px 10px;transform:rotate(-2deg)}.cq-m-c .cq-selo,.cq-m-c .cq-bens small{color:#c81e2d}.cq-m-c .cq-bens{background:#f6d36555;color:#162146}.cq-m-c .cq-dica{color:#162146}.cq-m-c .cq-paul{filter:none;transform:rotate(3deg)}.cq-m-c .cq-premio{border:2px solid #162146;border-style:solid;background:#fff}.cq-m-c .cq-premio b{color:#c81e2d}
+.pf.cq.cq-m-e{background:radial-gradient(circle at 50% 30%,#c81e2d,#7a0f1c 75%)}
+.cq-m-e .cq-box{background:transparent;border:0;box-shadow:none;color:#fff}
+.cq-m-e .cq-paul{width:140px;padding:14px;border-radius:12px;border:4px solid #f9d27a;background:linear-gradient(135deg,#f9d27a,#e0a232 40%,#fbe3a3 60%,#c98a1e);transform:rotate(-4deg);box-shadow:0 8px 0 #0005;filter:none}
+.cq-m-e .pf-box b.cq-t{color:#fff;text-shadow:none;animation:none}.cq-m-e .cq-selo{color:#f9d27a}.cq-m-e .cq-bens{background:#ffffff22}.cq-m-e .cq-bens small{color:#f9d27a}.cq-m-e .cq-premio{border-color:#fff;background:#ffffff1a}.cq-m-e .cq-premio b{color:#f9d27a}
+.cq-m-e .cq-paul{margin-bottom:12px}
