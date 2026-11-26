@@ -54,6 +54,7 @@ import * as acessos from './views/acessos.js';
 import * as albumAlunos from './views/album-alunos.js';
 import * as cartinha from './views/cartinha.js';
 import * as codigos from './views/codigos.js';
+import * as professores from './views/professores.js';
 import * as resgates from './views/resgates.js';
 import * as jogosAlunos from './views/jogos-alunos.js';
 import { remember } from './recent.js';
@@ -87,7 +88,7 @@ let started = false;
 
 const NAV = [...NAV_DEFAULT]; // as 4 abas de baixo (a Bea pode trocar: navbar.js)
 const RITMO = ['beatlab', 'toque', 'partitura', 'groovebox'];
-const VISUAL_C = new Set(['codigos', 'beaterista', 'acessos', 'resgates', 'planos', 'album-alunos', 'ata', 'ajustes', 'checklist', 'arquivos', 'notas', 'ideias', 'setlist', 'anotacoes']); // telas com o visual C (css/app.css, no fim)
+const VISUAL_C = new Set(['codigos', 'professores', 'beaterista', 'acessos', 'resgates', 'planos', 'album-alunos', 'ata', 'ajustes', 'checklist', 'arquivos', 'notas', 'ideias', 'setlist', 'anotacoes']); // telas com o visual C (css/app.css, no fim)
 /** A aba de baixo "acesa" pra tela atual: Criar ritmos vale também pro Beat Lab, Bateria de Toque etc. */
 const navOn = (href, r) => {
   if (href === '#/hub/ritmo') return (r.name === 'hub' && r.arg === 'ritmo') || RITMO.includes(r.name);
@@ -326,6 +327,7 @@ function shell() {
       case 'album-alunos': c = albumAlunos.mount(view); break;
       case 'cartinha': c = cartinha.mount(view); break;
       case 'codigos': c = codigos.mount(view); break;
+      case 'professores': c = professores.mount(view); break;
       case 'resgates': c = resgates.mount(view); break;
       case 'jogos-alunos': c = jogosAlunos.mount(view); break;
       case 'kids': c = kids.mount(view, r.parts); break;

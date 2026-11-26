@@ -1163,3 +1163,15 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .pm-painel .pm-seta { flex: 1 1 auto; min-width: 0; }
 .pm-painel .pm-val { flex: 1 1 auto; min-width: 0; }
 .pm-painel .pm-acoes { flex-wrap: wrap; }
+.pm-pasta .pm-lista { margin-top: 10px; }
+.pm-it { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid rgb(27 24 24 / .18); }
+.pm-it-n { flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 6px 0; cursor: pointer; color: inherit; font: inherit; }
+.pm-it-n b { display: block; overflow-wrap: anywhere; }
+.pm-it-n small { display: block; color: var(--muted, #6b6258); }
+.pm-pasta-linha .btn { flex: 0 1 auto; }
+.pm-pasta-linha { flex-wrap: wrap !important; }
+.pr-pasta { margin-top: 14px; }
+.pr-pasta h3.tag { margin: 0 0 4px; }
+.pr-pasta h3 small { font: 600 13px var(--body); color: var(--on-muted, #6b6258); }
+.pr-it { display: block; width: 100%; padding: 10px 0 !important; border-top: 1px solid var(--on-line, rgb(27 24 24 / .18)); color: var(--on-bg, inherit); }
+.pr-it small { color: var(--on-muted, #6b6258); }

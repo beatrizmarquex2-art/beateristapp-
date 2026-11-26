@@ -5,7 +5,8 @@
 import { h } from '../util.js';
 import * as store from '../store.js';
 import { audio, click } from '../audio.js';
-import { toast } from '../ui.js';
+import { toast, sheet, confirmSheet } from '../ui.js';
+import * as NUV from '../partitura-nuvem.js';
 import * as P from '../partitura-melodica.js';
 import { baixarPdf } from '../partitura-pdf.js';
 import * as CONTAS from '../contas.js';
@@ -14,6 +15,7 @@ const chave = (nome) => `setting-partitura-${nome}`;
 const lerSalvo = (nome) => { try { const r = store.get(chave(nome)); return r && r.data ? r.data : {}; } catch { return {}; } };
 const nomeAluno = () => { try { return (CONTAS.atual().nome || '').trim(); } catch { return ''; } };
 const hoje = () => new Date().toLocaleDateString('pt-BR');
+const quando = (t) => { try { return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)); } catch { return ''; } };
 
 /** Linha com setinhas ‹ valor ›: toca nas setas, arrasta o dedo (ou o mouse) pro lado, ou usa as setas do teclado. */
 function seta(rotulo, texto, menos, mais, { dis = [false, false] } = {}) {
@@ -39,7 +41,7 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
   s.evs = P.normalizar(Array.isArray(s.evs) ? s.evs : []); s.take = Array.isArray(s.take) ? s.take : [];
   let cursor = P.fim(s.evs); let sel = -1; let hist = []; let editado = s.evs.length > 0 && !s.take.length; let timers = []; let rec = null; let tocando = false; let gone = false; let msg = '';
   const el = h('section', { class: 'card pad tk-panel bmr pm-painel', 'aria-label': 'Partitura' });
-  const salvar = () => { store.upsert('setting', chave(nome), { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: s.modo, titulo: s.titulo }).catch(() => {}); };
+  const salvar = () => { store.upsert('setting', chave(nome), { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: s.modo, titulo: s.titulo, nuvemId: s.nuvemId || null }).catch(() => {}); };
   const mudou = (novo, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novo; salvar(); };
   const chip = (txt, on, fn, extra = {}) => h('button', { type: 'button', class: `kd-chip${on ? ' on' : ''}`, 'aria-pressed': String(!!on), ...(extra.dis ? { disabled: true } : {}), ...(extra.lab ? { 'aria-label': extra.lab } : {}), onclick: fn }, txt);
   const linha = (rotulo, ...kids) => h('div', { class: 'row tk-line pm-linha' }, h('span', { class: 'tp-lab' }, rotulo), h('div', { class: 'pn-chips' }, ...kids));
@@ -101,6 +103,38 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
     b.disabled = false; b.textContent = t;
   };
 
+
+  /* ---- pasta online ---- */
+  const dadosNuvem = () => ({ versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, titulo: s.titulo });
+  const carrega = (row) => {
+    const d = row.dados || {}; s.evs = P.normalizar(Array.isArray(d.evs) ? d.evs : []); s.bpm = d.bpm || 100; s.grade = d.grade || 2; s.clave = d.clave || 'auto'; s.cor = !!d.cor; s.take = [];
+    s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = P.fim(s.evs); sel = -1; editado = true; msg = `aberta da pasta online: ${row.nome}. dá pra editar e guardar de novo.`; salvar(); desenha();
+  };
+  const guardarOnline = async (b, comoNova) => {
+    const t = (s.titulo || '').trim(); if (!t) { toast('escreva o nome da partitura no campo abaixo para guardar na pasta', { id: 'pm', ms: 2600 }); return; }
+    if (!s.evs.length) { toast('monte alguma nota primeiro', { id: 'pm', ms: 1800 }); return; }
+    b.disabled = true;
+    try { const r = await NUV.salvar({ id: comoNova ? null : s.nuvemId, nome: t, instrumento: nome, dados: dadosNuvem() }); s.nuvemId = r.id; salvar(); msg = `guardada na pasta online: ${r.nome} (${quando(r.atualizado_em)})`; }
+    catch (e) { toast(NUV.textoErro(e), { id: 'pm', ms: 3200 }); }
+    b.disabled = false; desenha();
+  };
+  const abrirOnline = () => sheet('pasta online', (close) => {
+    const busca = h('input', { class: 'field', type: 'search', placeholder: 'procurar pelo nome', autocomplete: 'off', 'aria-label': 'Procurar partitura pelo nome' });
+    const lista = h('div', { class: 'pm-lista', 'aria-live': 'polite' }); let todos = [];
+    const abre = (id) => NUV.abrir(id).then((row) => { carrega(row); close(); }).catch((e) => toast(NUV.textoErro(e), { id: 'pm', ms: 3200 }));
+    const pinta = () => {
+      const v = NUV.filtrar(todos, busca.value);
+      lista.replaceChildren(...(v.length ? v.map((x) => h('div', { class: 'pm-it' },
+        h('button', { type: 'button', class: 'pm-it-n', onclick: () => abre(x.id) }, h('b', {}, x.nome), h('small', {}, `${x.dono_nome ? `${x.dono_nome} · ` : ''}${quando(x.atualizado_em)}`)),
+        h('button', { type: 'button', class: 'btn small ghost', 'aria-label': `Apagar ${x.nome}`, onclick: async () => { if (await confirmSheet('Apagar essa partitura?', `${x.nome} some da pasta online.`, 'Apagar')) { try { await NUV.apagar(x.id); if (s.nuvemId === x.id) { s.nuvemId = null; salvar(); } todos = todos.filter((y) => y.id !== x.id); pinta(); desenha(); } catch (e) { toast(NUV.textoErro(e), { id: 'pm', ms: 3200 }); } } } }, 'apagar')))
+        : [h('p', { class: 'muted' }, todos.length ? 'nenhuma partitura com esse nome.' : 'a pasta ainda está vazia. guarde a primeira partitura.')]));
+    };
+    busca.addEventListener('input', pinta);
+    lista.replaceChildren(h('p', { class: 'muted' }, 'abrindo a pasta…'));
+    NUV.listar().then((l) => { todos = l; pinta(); }).catch((e) => lista.replaceChildren(h('p', { class: 'muted' }, NUV.textoErro(e))));
+    return h('div', { class: 'sheet-body pm-pasta' }, busca, lista);
+  });
+
   const folha = h('div', { class: 'pm-folha', role: 'group', 'aria-label': 'Partitura. Toque numa nota para corrigir.' });
   folha.addEventListener('click', (e) => { const n = e.target.closest && e.target.closest('.pm-n'); const i = n ? +n.dataset.ev : -1; if (i >= 0 && s.evs[i]) { sel = sel === i ? -1 : i; if (sel >= 0) tocaUma(s.evs[sel]); } else sel = -1; desenha(); });
 
@@ -131,10 +165,14 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
         tocando ? h('button', { type: 'button', class: 'btn primary', onclick: () => { parar(); desenha(); } }, '■ parar') : h('button', { type: 'button', class: 'btn', disabled: !s.evs.length || gravando, onclick: ouvir }, '▶ ouvir'),
         h('button', { type: 'button', class: 'btn ghost', disabled: !s.evs.length || gravando, onclick: () => { hist.push(JSON.stringify(s.evs)); mudou([], { guarda: false }); s.take = []; cursor = 0; sel = -1; editado = false; msg = 'folha limpa. dá pra desfazer.'; salvar(); desenha(); } }, 'limpar')),
       ...ver, titulo,
+      h('div', { class: 'row tk-line pm-pasta-linha' }, h('span', { class: 'tp-lab' }, 'pasta online'),
+        h('button', { type: 'button', class: 'btn small', disabled: !s.evs.length || gravando, onclick: (e) => guardarOnline(e.currentTarget, false) }, s.nuvemId ? 'guardar de novo' : 'guardar na pasta'),
+        s.nuvemId ? h('button', { type: 'button', class: 'btn small ghost', disabled: gravando, onclick: (e) => guardarOnline(e.currentTarget, true) }, 'guardar como nova') : null,
+        h('button', { type: 'button', class: 'btn small ghost', disabled: gravando, onclick: abrirOnline }, 'abrir da pasta')),
       h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', disabled: !s.evs.length || gravando, onclick: (e) => pdf(e.currentTarget) }, 'baixar PDF no papel timbrado')),
-      h('p', { class: 'muted pm-nota' }, 'o PDF sai no papel timbrado, com Beaterista Play e o endereço do site. a partitura fica guardada só neste aparelho.'));
+      h('p', { class: 'muted pm-nota' }, 'o PDF sai no papel timbrado, com Beaterista Play e o endereço do site. a pasta online guarda a partitura pra abrir e editar de novo em qualquer aparelho.'));
   }
   const aoRedimensionar = () => desenha(); window.addEventListener('resize', aoRedimensionar);
   desenha(); requestAnimationFrame(desenha); // 2º desenho: já com a largura real depois de entrar na tela
-  return { el, destroy() { gone = true; rec = null; parar(); window.removeEventListener('resize', aoRedimensionar); inst.aoTocar(null); if (inst.aoSoltar) inst.aoSoltar(null); } };
+  return { el, abrirDaNuvem: (id) => NUV.abrir(id).then(carrega).catch((e) => toast(NUV.textoErro(e), { id: 'pm', ms: 3200 })), destroy() { gone = true; rec = null; parar(); window.removeEventListener('resize', aoRedimensionar); inst.aoTocar(null); if (inst.aoSoltar) inst.aoSoltar(null); } };
 }
