@@ -8,7 +8,7 @@ import * as D from './figurinhas/dono.js';
 export function aplicar(state, hoje) {
   let s = L.grantPack(state, L.checkinId(hoje)); let completou = false;
   const r = L.checkinSemana(s.sem, hoje);
-  if (JSON.stringify(r.sem) !== JSON.stringify(s.sem)) { s = { ...s, sem: r.sem }; if (r.completou) { s = L.grantPack(s, L.semanaPackId(r.sem.ciclo)); completou = true; } }
+  if (JSON.stringify(r.sem) !== JSON.stringify(s.sem)) { s = { ...s, sem: r.sem }; if (r.completou) { s = L.grantSemana(s, r.sem.ciclo); completou = true; } }
   return { state: s, completou };
 }
 
@@ -20,7 +20,7 @@ export async function checkinAoEntrar() {
     store.upsert('figurinhas', ID, r.state);
     if (r.completou) {
       try { const M = await import('./figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } catch { /* sem perfil: ganha só o pacote */ }
-      try { const F = await import('./paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★ e um pacote com uma figurinha exclusiva da Bea` }); } catch { /* sem animação */ }
+      try { const F = await import('./paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro duplo épico (em Stars › roleta) e uma figurinha exclusiva da Bea, que chegou no baú!`, bau: true }); } catch { /* sem animação */ }
     }
   } catch { /* sem armazenamento: o Álbum ainda faz o check-in quando abrir */ }
 }

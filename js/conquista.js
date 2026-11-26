@@ -136,21 +136,29 @@ const reduz = () => { try { return !!(window.matchMedia && matchMedia('(prefers-
  * { jogo: 'pauLta', caminho: 'Mundo da Bateria', chave: 'paulta:drumF', pose } · com `chave`, só aparece na 1ª vez (use { sempre: true } pra repetir).
  * Devolve a função que fecha, ou null se não mostrou.
  */
-export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false } = {}) {
+export function festaCaminho({ jogo = '', caminho = '', chave = '', pose = 'baquetas-pra-cima', sempre = false, premioChave = '', estilo = '', premio = null, paulSrc = '' } = {}) {
   if (chave && !sempre && jaFestejou(chave)) return null;
   if (chave) { try { localStorage.setItem(KEY, JSON.stringify([...new Set([...feitos(), String(chave)])].slice(-200))); } catch { /* sem armazenamento */ } }
+  // mundos: a festa reveza entre a carta vermelha (E) e a azul (F); os Estudos pedem a vermelha de propósito
+  if (!estilo) { let n = 0; try { n = Number(localStorage.getItem('beaterista-festa-alt')) || 0; localStorage.setItem('beaterista-festa-alt', String(n + 1)); } catch { /* sem armazenamento */ } estilo = n % 2 ? 'F' : 'E'; }
   const bens = beneficiosDe(jogo); const titulo = caminho && limpa(caminho).toLowerCase() !== limpa(jogo).toLowerCase() ? `${jogo}: ${caminho}` : jogo;
   const dados = { selo: 'terminei o caminho', titulo, beneficios: bens, pose };
   const NOTAS = ['♪', '♫', '★', '♬', '✦']; const CORES = ['#00e5ff', '#2d8cff', '#f2a91b', '#ff3d57', '#ffffff'];
   const parts = reduz() ? [] : Array.from({ length: 48 }, (_, i) => h('i', { class: 'pf-p', 'aria-hidden': 'true', style: `--x:${Math.round(Math.random() * 100)}%;--d:${(2.4 + Math.random() * 2.4).toFixed(2)}s;--w:${(Math.random() * 1.6).toFixed(2)}s;--s:${Math.round(18 + Math.random() * 26)}px;--c:${CORES[i % CORES.length]};--r:${Math.round(Math.random() * 360)}deg` }, NOTAS[i % NOTAS.length]));
-  const img = h('img', { class: 'cq-paul', src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: '', draggable: 'false' });
+  const img = h('img', { class: 'cq-paul', src: paulSrc || 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: '', draggable: 'false' });
   const fecha = () => { el.remove(); };
+  const premioEl = h('div', { class: 'cq-premio', hidden: true });
   const caixa = h('div', { class: 'pf-box cq-box', role: 'dialog', 'aria-label': `terminei o caminho: ${titulo}` }, img,
     h('small', { class: 'cq-selo' }, 'terminei o caminho'), h('b', { class: 'cq-t' }, titulo),
+    premioEl,
     h('div', { class: 'cq-bens' }, h('small', {}, 'o que você treinou aqui'), ...bens.map((b) => h('span', {}, `✓ ${b}`))),
     h('div', { class: 'cq-acoes' }, botaoPostar(dados, { rotulo: '↗ postar minha conquista', classe: 'kd-btn cq-postar' }), h('button', { type: 'button', class: 'kd-chip', onclick: fecha }, 'valeu!')),
     h('small', { class: 'cq-dica' }, `postou e marcou ${ARROBA}? mande o print na aba roleta › resgate e ganhe 5 ★`));
-  const el = h('div', { class: 'pf cq' }, ...parts, caixa); document.body.append(el);
+  const el = h('div', { class: `pf cq${estilo ? ` cq-m-${String(estilo).toLowerCase()}` : ''}` }, ...parts, caixa); document.body.append(el);
+  // ganhou figurinhas por concluir o mundo? mostra aqui e leva pro baú (Stars)
+  const mostraPremio = (t, x) => { premioEl.replaceChildren(h('b', {}, t), h('span', {}, x), h('a', { class: 'kd-btn cq-bau', href: '#/album/Pacotes', onclick: fecha }, 'abrir o baú ▶')); premioEl.hidden = false; };
+  if (premio) mostraPremio(premio.titulo, premio.texto);
+  else if (premioChave) import('./figurinhas/mundos-premio.js').then((X) => X.premioDe(premioChave)).then((n) => { if (n) mostraPremio('🎁 você ganhou figurinhas!', 'um pacote de bandas e artistas chegou no seu baú, em Stars.'); }).catch(() => {});
   import('./paulta/festa.js').then((F) => F.musicaDaFesta()).catch(() => {});
   return fecha;
 }

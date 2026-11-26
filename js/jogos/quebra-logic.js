@@ -49,3 +49,27 @@ export function validGame(g) {
   } catch { return false; }
 }
 export const fmtTime = (ms) => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+/* ================= peças de encaixe (jigsaw) ================= */
+/** Profundidade do "dente" de encaixe e margem extra do desenho da peça (em pixels da imagem). */
+export const tabDepth = (cw, ch) => Math.min(cw, ch) * 0.22;
+/** Sinais dos encaixes, sempre os mesmos pra mesma grade (os dois celulares do duelo veem as mesmas peças). h[r][c] (r≥1): fronteira entre a linha r-1 e r; v[r][c] (c≥1): entre a coluna c-1 e c. +1 = o dente sai da peça (r,c) pra cima/esquerda. */
+export function jigsawEdges(cols, rows) {
+  let a = (cols * 7919 + rows * 104729) >>> 0 || 1; const rnd = () => { a ^= a << 13; a >>>= 0; a ^= a >> 17; a ^= a << 5; a >>>= 0; return a / 4294967296; };
+  const sg = () => (rnd() < 0.5 ? -1 : 1);
+  const h = Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, () => (r > 0 ? sg() : 0)));
+  const v = Array.from({ length: rows }, () => Array.from({ length: cols }, (_, c) => (c > 0 ? sg() : 0)));
+  return { h, v };
+}
+function edge(px, py, qx, qy, s, D) {
+  if (!s) return `L${qx.toFixed(1)} ${qy.toFixed(1)}`;
+  const dx = qx - px; const dy = qy - py; const L = Math.hypot(dx, dy); const ux = dx / L; const uy = dy / L; const nx = uy; const ny = -ux;
+  const P = (t, k) => `${(px + ux * t * L + nx * k * s * D).toFixed(1)} ${(py + uy * t * L + ny * k * s * D).toFixed(1)}`;
+  return `L${P(0.37, 0)}C${P(0.42, 0)} ${P(0.40, 0.30)} ${P(0.34, 0.45)}C${P(0.28, 0.62)} ${P(0.30, 1)} ${P(0.5, 1)}C${P(0.70, 1)} ${P(0.72, 0.62)} ${P(0.66, 0.45)}C${P(0.60, 0.30)} ${P(0.58, 0)} ${P(0.63, 0)}L${qx.toFixed(1)} ${qy.toFixed(1)}`;
+}
+/** Contorno SVG da peça i (em coordenadas da imagem): 4 lados, cada um reto (borda do quadro), com dente ou com encaixe. */
+export function piecePath(i, cols, rows, cw, ch, E) {
+  const r = Math.floor(i / cols); const c = i % cols; const x0 = c * cw; const y0 = r * ch; const x1 = x0 + cw; const y1 = y0 + ch; const D = tabDepth(cw, ch);
+  const top = r > 0 ? E.h[r][c] : 0; const right = c < cols - 1 ? -E.v[r][c + 1] : 0; const bottom = r < rows - 1 ? -E.h[r + 1][c] : 0; const left = c > 0 ? E.v[r][c] : 0;
+  return `M${x0.toFixed(1)} ${y0.toFixed(1)}${edge(x0, y0, x1, y0, top, D)}${edge(x1, y0, x1, y1, right, D)}${edge(x1, y1, x0, y1, bottom, D)}${edge(x0, y1, x0, y0, left, D)}Z`;
+}

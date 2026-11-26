@@ -65,7 +65,7 @@ export function montaMundo(host, J) {
     if (gone) return; const antes = estOf(nv, f.num); const novo = Math.max(antes, r.est);
     if (novo !== antes) setGame(J.id, { est: { ...est(), [`${nv}:${f.num}`]: novo } });
     premiar(J.id, r.est, `${J.id}:${nv}:${f.num}`);
-    if (r.est >= 1 && concluido(nv)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`${J.id}:${nv}`)).catch(() => { /* sem prêmio */ });
+    if (r.est >= 1 && concluido(nv)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`${J.id}:${nv}`)).catch(() => { /* sem prêmio */ }); if (r.est >= 1 && concluido(nv)) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: J.nome, caminho: NIVEIS.find((n) => n.id === nv).nome, chave: `${J.id}:${nv}`, pose: 'ouvindo', premioChave: `${J.id}:${nv}` })).catch(() => {}), 700); // festa ao acabar o mundo
     const grande = r.total != null ? `${r.certas} de ${r.total}` : (r.erros ? `${r.erros} ${r.erros === 1 ? 'erro' : 'erros'}` : 'sem erros!');
     const frase = r.est === 3 ? 'perfeito! 🤘' : r.est >= 1 ? 'passou! boa.' : (r.total != null ? 'ainda não passou: acerte 60% pra abrir a próxima.' : 'tenta de novo: dá pra errar menos.');
     const prox = f.num < FASES_POR_NIVEL && r.est >= 1; const todas = fasesDe(J.id, nv);

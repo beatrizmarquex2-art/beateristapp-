@@ -7,7 +7,11 @@ import { toast } from '../ui.js';
 
 const livre = () => { try { return document.documentElement.classList.contains('aluno-on') && !AC.liberado(); } catch { return true; } };
 /** `chave` = jogo:mundo (ex.: `figurix:floresta`, `detetive:comida`, `toca:ini`). Devolve 1 se entregou agora. */
-export async function premiarMundo(chave) {
+const feitos = new Map();
+/** Promessa do prêmio daquele mundo (n entregues agora), pra festa poder avisar que chegou no baú. */
+export const premioDe = (chave) => feitos.get(chave) || Promise.resolve(0);
+export function premiarMundo(chave) { const p = premiar(chave); feitos.set(chave, p); return p; }
+async function premiar(chave) {
   try {
     if (livre()) return 0; const me = P.active(); if (!me) return 0;
     const E = await import('./estrelas.js'); const n = await E.premioJogo(me.id, `mundo-${chave}`);
