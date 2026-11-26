@@ -4,7 +4,7 @@
 import { h } from '../util.js';
 import { audio, out, noise, kick, snare, hihat, silence } from '../audio.js';
 import { bass } from '../synth.js';
-import { pluck, mallet } from '../instruments.js';
+import { pluck, mallet, wake, PERC, PERC_VAR } from '../instruments.js';
 import * as FB from '../feedback.js';
 import { FIG_BY } from '../kids/figs.js';
 import { ouvidasMax, bpmFase, cartas, sortear, conferir, acertou } from './detetive-logic.js';
@@ -80,7 +80,7 @@ export function detetive(c, p) {
 }
 
 
-/* ---------- sons do quiz (sintetizados aqui: parciais com leve desafinação, martelo, formantes de voz, platinelas) ---------- */
+/* ---------- sons do quiz (sintetizados aqui: só o piano: parciais com leve desafinação e toque do martelo) ---------- */
 const hz = (m) => 440 * 2 ** ((m - 69) / 12);
 const ramp = (g, t, pico, a, fim) => { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, pico), t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + fim); };
 /** Piano: 8 parciais um pouco esticados (como corda de verdade), cada um com seu decaimento, dois "coros" levemente desafinados e o toque do martelo. */
@@ -89,26 +89,8 @@ function pianoSom(t, midi, len = 1.7, v = 1) {
   for (let k = 1; k <= 8; k++) for (const cents of [-1.6, 1.6]) { const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f * k * Math.sqrt(1 + 0.0004 * k * k); o.detune.value = cents; const g = c.createGain(); ramp(g, t, 0.55 / k ** 1.1, 0.004, Math.max(0.25, len / (0.9 + k * 0.55))); o.connect(g).connect(mix); o.start(t); o.stop(t + len + 0.1); }
   const n = c.createBufferSource(); n.buffer = noise(); const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = Math.min(5000, f * 3); bp.Q.value = 0.8; const ng = c.createGain(); ramp(ng, t, 0.22 * v, 0.002, 0.05); n.connect(bp).connect(ng).connect(out()); n.start(t, Math.random() * 0.2); n.stop(t + 0.08);
 }
-/** Voz "ahh": serra com vibrato passando por filtros de vogal (formantes do "a") e um sopro de ar. */
-function vozSom(t, midi, len = 0.9, v = 1) {
-  const c = audio(); const f = hz(midi); const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9 * v, t + 0.12); g.gain.setValueAtTime(0.9 * v, t + len * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + len); g.connect(out());
-  const lfo = c.createOscillator(); lfo.frequency.value = 5.4; const lg = c.createGain(); lg.gain.value = f * 0.011; lfo.connect(lg); lfo.start(t); lfo.stop(t + len + 0.1);
-  for (const cents of [-9, 0, 9]) { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = cents; lg.connect(o.frequency);
-    for (const [fr, q, ga] of [[800, 8, 1], [1150, 10, 0.55], [2900, 12, 0.3], [3500, 12, 0.18]]) { const b = c.createBiquadFilter(); b.type = 'bandpass'; b.frequency.value = fr; b.Q.value = q; const x = c.createGain(); x.gain.value = ga * 0.5; o.connect(b).connect(x).connect(g); }
-    o.start(t); o.stop(t + len + 0.1); }
-  const n = c.createBufferSource(); n.buffer = noise(); const nb = c.createBiquadFilter(); nb.type = 'bandpass'; nb.frequency.value = 1800; nb.Q.value = 0.7; const ng = c.createGain(); ng.gain.value = 0.05 * v; n.connect(nb).connect(ng).connect(g); n.start(t, Math.random() * 0.3); n.stop(t + len);
-}
-/** Pandeiro: "tum" (couro grave), "tá" (couro agudo) e "tchi" (só as platinelas). As platinelas soam junto em todas as batidas. */
-function pandeiroSom(t, tipo, v = 1) {
-  const c = audio();
-  if (tipo !== 'tchi') { const o = c.createOscillator(); o.type = 'sine'; const grave = tipo === 'tum'; o.frequency.setValueAtTime(grave ? 210 : 360, t); o.frequency.exponentialRampToValueAtTime(grave ? 120 : 250, t + 0.1); const g = c.createGain(); ramp(g, t, (grave ? 0.8 : 0.55) * v, 0.003, grave ? 0.26 : 0.13); o.connect(g).connect(out()); o.start(t); o.stop(t + 0.3);
-    const n = c.createBufferSource(); n.buffer = noise(); const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = grave ? 900 : 2400; bp.Q.value = 1; const ng = c.createGain(); ramp(ng, t, 0.3 * v, 0.002, 0.05); n.connect(bp).connect(ng).connect(out()); n.start(t, Math.random() * 0.2); n.stop(t + 0.08); }
-  const plat = tipo === 'tchi' ? 1 : 0.55;
-  for (const [fr, d] of [[6200, 0.2], [7600, 0.17], [9100, 0.15], [10800, 0.12]]) { const o = c.createOscillator(); o.type = 'square'; o.frequency.value = fr * (1 + Math.random() * 0.02); const hp = c.createBiquadFilter(); hp.type = 'bandpass'; hp.frequency.value = fr; hp.Q.value = 9; const g = c.createGain(); ramp(g, t + Math.random() * 0.012, 0.09 * v * plat, 0.001, d); o.connect(hp).connect(g).connect(out()); o.start(t); o.stop(t + d + 0.05); }
-  const n2 = c.createBufferSource(); n2.buffer = noise(); const hp2 = c.createBiquadFilter(); hp2.type = 'highpass'; hp2.frequency.value = 6500; const g2 = c.createGain(); ramp(g2, t, 0.22 * v * plat, 0.001, 0.14); n2.connect(hp2).connect(g2).connect(out()); n2.start(t, Math.random() * 0.2); n2.stop(t + 0.18);
-}
-
 /* ---------- 3: de quem é esse som? ---------- */
+const perc = (id) => { wake(); return (PERC_VAR[id] && PERC_VAR[id][0]) || PERC.find((x) => x[0] === id)[2]; }; // percussão do app, agendada no relógio do áudio
 /** Toca um trechinho curto de cada instrumento (tudo sintetizado no próprio app). */
 export function tocaInstr(id) {
   try {
@@ -118,8 +100,8 @@ export function tocaInstr(id) {
     else if (id === 'guitarra') { [[40, 47, 52], [40, 47, 52], [43, 50, 55], [45, 52, 57]].forEach((ch, k) => ch.forEach((m, j) => pluck(m, 1, t + k * 0.38 + j * 0.018, 'rock'))); }
     else if (id === 'piano') { [60, 64, 67].forEach((m, k) => pianoSom(t + k * 0.24, m, 1.6)); pianoSom(t + 0.8, 72, 1.8); pianoSom(t + 0.8, 64, 1.8); pianoSom(t + 0.8, 55, 1.8); }
     else if (id === 'baixo') { [36, 36, 43, 41].forEach((m, k) => bass(t + k * 0.28, m, 0.26, 1)); }
-    else if (id === 'voz') { [[67, 0], [69, 0.55], [71, 1.1]].forEach(([m, d]) => vozSom(t + d, m, 0.7)); }
-    else if (id === 'pandeiro') { ['tum', 'tchi', 'ta', 'tchi', 'tum', 'tchi', 'ta', 'ta'].forEach((x, k) => pandeiroSom(t + k * 0.16, x, k % 4 === 0 ? 0.7 : 0.56)); }
+    else if (id === 'triangulo') { const f = perc('tr'); [0, 0.45, 0.9, 1.2, 1.35].forEach((d, k) => f(t + d, k === 4 ? 0.6 : 0.9)); }
+    else if (id === 'recoreco') { const f = perc('rr'); [0, 0.3, 0.6, 0.78, 0.96, 1.4, 1.7].forEach((d, k) => f(t + d, k % 2 ? 2 : 2.8)); }
     else if (id === 'xilofone') { [72, 76, 79, 84].forEach((m, k) => mallet(m, 0.9, 'xilofone', t + k * 0.18)); }
   } catch { /* sem áudio */ }
 }
