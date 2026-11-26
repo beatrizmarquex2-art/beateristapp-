@@ -4,7 +4,7 @@
 import { h } from '../util.js';
 import { audio, kick, snare, hihat, silence } from '../audio.js';
 import { bass, epiano, guitar, voice } from '../synth.js';
-import { pluck, mallet, percHit } from '../instruments.js';
+import { pluck, mallet, wake, PERC, PERC_VAR } from '../instruments.js';
 import * as FB from '../feedback.js';
 import { FIG_BY } from '../kids/figs.js';
 import { ouvidasMax, bpmFase, cartas, sortear, conferir, acertou } from './detetive-logic.js';
@@ -90,7 +90,7 @@ export function tocaInstr(id) {
     else if (id === 'piano') { [60, 64, 67, 72].forEach((m, k) => epiano(t + k * 0.22, [m], 0.7, 1)); }
     else if (id === 'baixo') { [36, 36, 43, 41].forEach((m, k) => bass(t + k * 0.28, m, 0.26, 1)); }
     else if (id === 'voz') { [60, 64, 67].forEach((m, k) => voice(t + k * 0.4, m, 0.5, 1)); }
-    else if (id === 'pandeiro') { for (let k = 0; k < 6; k++) setTimeout(() => percHit('pd', k % 2 ? 0.55 : 0.9), k * 140); }
+    else if (id === 'pandeiro') { { wake(); const bate = (PERC_VAR.pd && PERC_VAR.pd[0]) || PERC.find((x) => x[0] === 'pd')[2]; for (let k = 0; k < 6; k++) bate(t + k * 0.14, k % 2 ? 0.55 : 0.9); } }
     else if (id === 'xilofone') { [72, 76, 79, 84].forEach((m, k) => mallet(m, 0.9, 'xilofone', t + k * 0.18)); }
   } catch { /* sem áudio */ }
 }
