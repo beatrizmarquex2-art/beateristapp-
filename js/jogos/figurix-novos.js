@@ -3,7 +3,7 @@
 // { root, S, sfx, topo, acerto, erro, fim, fig, pausa, nomeFig, beatsLabel, aoLimpar }. As regras puras estão em figurix-logic.js (testadas).
 import { h } from '../util.js';
 import { audio, out, noise, silence } from '../audio.js';
-import { pluck, mallet, wake, warmKit, DRUM_REAL, CHORDS, PERC, PERC_VAR } from '../instruments.js';
+import { pluck, mallet, wake, warmKit, DRUM_REAL, DRUM_CAJON_REAL, CHORDS, PERC, PERC_VAR } from '../instruments.js';
 import * as FB from '../feedback.js';
 import { FIG_BY } from '../kids/figs.js';
 import { ouvidasMax, bpmFase, cartas, sortear, conferir, acertou } from './detetive-logic.js';
@@ -88,13 +88,6 @@ function pianoSom(t, midi, len = 1.7, v = 1) {
   for (let k = 1; k <= 8; k++) for (const cents of [-1.6, 1.6]) { const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f * k * Math.sqrt(1 + 0.0004 * k * k); o.detune.value = cents; const g = c.createGain(); ramp(g, t, 0.55 / k ** 1.1, 0.004, Math.max(0.25, len / (0.9 + k * 0.55))); o.connect(g).connect(mix); o.start(t); o.stop(t + len + 0.1); }
   const n = c.createBufferSource(); n.buffer = noise(); const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = Math.min(5000, f * 3); bp.Q.value = 0.8; const ng = c.createGain(); ramp(ng, t, 0.22 * v, 0.002, 0.05); n.connect(bp).connect(ng).connect(out()); n.start(t, Math.random() * 0.2); n.stop(t + 0.08);
 }
-/** Baixo de dedo: fundamental limpa (seno + triângulo), um "plec" filtrado no ataque e o ruído leve da corda. */
-function baixoSom(t, midi, len = 0.3, v = 1) {
-  const c = audio(); const f = hz(midi); const g = c.createGain(); ramp(g, t, 0.75 * v, 0.006, len); g.connect(out());
-  for (const [tipo, mul, ga] of [['sine', 1, 1], ['triangle', 1, 0.5], ['sine', 2, 0.18]]) { const o = c.createOscillator(); o.type = tipo; o.frequency.value = f * mul; const x = c.createGain(); x.gain.value = ga; o.connect(x).connect(g); o.start(t); o.stop(t + len + 0.05); }
-  const sw = c.createOscillator(); sw.type = 'sawtooth'; sw.frequency.value = f; const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 3; lp.frequency.setValueAtTime(1500, t); lp.frequency.exponentialRampToValueAtTime(220, t + 0.14); const sg = c.createGain(); ramp(sg, t, 0.3 * v, 0.003, Math.min(0.22, len)); sw.connect(lp).connect(sg).connect(out()); sw.start(t); sw.stop(t + 0.3);
-}
-
 /* ---------- 3: de quem é esse som? ---------- */
 const perc = (id) => { wake(); return (PERC_VAR[id] && PERC_VAR[id][0]) || PERC.find((x) => x[0] === id)[2]; }; // percussão do app, agendada no relógio do áudio
 /** Toca um trechinho curto de cada instrumento (tudo sintetizado no próprio app). */
@@ -108,8 +101,7 @@ export function tocaInstr(id) {
     CHORDS[0][1].filter((m) => m != null).forEach((m, j) => pluck(m, 0.7, t + 16 * e + j * 0.03, 'acoustic')); }
     else if (id === 'guitarra') { [[40, 47, 52], [40, 47, 52], [43, 50, 55], [45, 52, 57]].forEach((ch, k) => ch.forEach((m, j) => pluck(m, 1, t + k * 0.38 + j * 0.018, 'rock'))); }
     else if (id === 'piano') { [60, 64, 67].forEach((m, k) => pianoSom(t + k * 0.24, m, 1.6)); pianoSom(t + 0.8, 72, 1.8); pianoSom(t + 0.8, 64, 1.8); pianoSom(t + 0.8, 55, 1.8); }
-    else if (id === 'baixo') { // baixo elétrico de dedo: corda de verdade (Karplus-Strong) + corpo grave, com notas fantasma abafadas
-    [[36, 0, 1, 0], [36, 0.25, 0.5, 1], [43, 0.5, 0.9, 0], [41, 0.75, 0.9, 0], [36, 1, 1, 0], [36, 1.25, 0.5, 1], [46, 1.5, 0.9, 0], [43, 1.75, 1, 0]].forEach(([m, d, v, mudo]) => { pluck(m + 12, v, t + d, 'clean', !!mudo); if (!mudo) baixoSom(t + d, m, 0.28, 0.5 * v); }); }
+    else if (id === 'cajon') { const D = DRUM_CAJON_REAL; const e = 0.22; [0, 3, 4, 5].forEach((k) => D.bd(t + k * e, 1)); [2, 6].forEach((k) => D.sn(t + k * e, 1)); [1, 3.5, 5.5, 7].forEach((k, j) => D.sn(t + k * e, 0.45 + (j % 2) * 0.1)); [8, 8.5, 9].forEach((k) => D.sn(t + k * e, 0.8)); D.bd(t + 10 * e, 1); D.sn(t + 10 * e, 1); } // cajón de verdade (amostras CC0 do app): grave no centro, estalo na borda
     else if (id === 'triangulo') { const f = perc('tr'); [0, 0.45, 0.9, 1.2, 1.35].forEach((d, k) => f(t + d, k === 4 ? 0.6 : 0.9)); }
     else if (id === 'recoreco') { const f = perc('rr'); [0, 0.3, 0.6, 0.78, 0.96, 1.4, 1.7].forEach((d, k) => f(t + d, k % 2 ? 2 : 2.8)); }
     else if (id === 'xilofone') { [72, 74, 76, 79, 81, 79, 76, 84].forEach((m, k) => mallet(m, k === 7 ? 1 : 0.85, 'xilofone', t + k * 0.15)); mallet(72, 0.6, 'xilofone', t + 1.5); }
@@ -118,5 +110,5 @@ export function tocaInstr(id) {
 
 
 /** Esquenta as amostras de bateria de verdade (CC0) antes do 1º som; sem internet cai no sintético. */
-export const esquenta = () => { try { warmKit('acustica'); } catch { /* sem áudio */ } };
+export const esquenta = () => { try { warmKit('acustica'); warmKit('cajon'); } catch { /* sem áudio */ } };
 export const paraSom = () => { try { silence(); } catch { /* sem áudio */ } };

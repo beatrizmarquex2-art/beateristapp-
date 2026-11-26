@@ -190,7 +190,7 @@ export function sumiuRodada(nivel, rnd = Math.random) {
 /** Sons do quiz "que instrumento é esse?": do mais conhecido pro menos conhecido (o nível libera mais). */
 export const INSTR = {
   bateria: { nome: 'bateria', emoji: '🥁' }, violao: { nome: 'violão', emoji: '🪕' }, piano: { nome: 'piano', emoji: '🎹' }, triangulo: { nome: 'triângulo', emoji: '🔺' },
-  guitarra: { nome: 'guitarra', emoji: '🎸' }, baixo: { nome: 'baixo', emoji: '🎸' }, recoreco: { nome: 'reco-reco', emoji: '🪵' }, xilofone: { nome: 'xilofone', emoji: '🎶' },
+  guitarra: { nome: 'guitarra', emoji: '🎸' }, cajon: { nome: 'cajón', emoji: '🪘' }, recoreco: { nome: 'reco-reco', emoji: '🪵' }, xilofone: { nome: 'xilofone', emoji: '🎶' },
 };
 export const INSTR_IDS = Object.keys(INSTR);
 export function quizInstr(nivel, rnd = Math.random) {
