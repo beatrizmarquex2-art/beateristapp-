@@ -11,6 +11,7 @@ import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
 import { layout, isBlack, nameOf, hzOf, keyToMidi, clampOct } from '../piano-logic.js';
 import { melodiaPainel } from './aulas-melodia.js';
+import { painelPartitura } from './partitura-palco.js';
 
 const KEY = 'setting-piano';
 const SOUNDS = [['piano', 'piano'], ['epiano', 'elétrico'], ['organ', 'órgão'], ['pad', 'cordas']];
@@ -52,6 +53,7 @@ function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
 
 export function mount(host) {
   let aulasCtl = null; let aulaTap = null; const aulasHost = h('div');
+  let partCtl = null; let partTap = null; let partUp = null; const partHost = h('div', { class: 'pm-host' }); // partitura: a nota tocada vira nota na folha
   const live = new Map(); // id (ponteiro/tecla) -> { midi, v, t0 }
   let take = []; let recording = false; let rt0 = 0; let timers = []; const playing = new Set(); // vozes da gravação em reprodução
   const kb = h('div', { class: 'pn-kb', role: 'group', 'aria-label': 'Teclado do piano' });
@@ -67,10 +69,11 @@ export function mount(host) {
     shown.textContent = `${nameOf(midi, 'pt')} · ${nameOf(midi, 'cifra')} · ${Math.round(hzOf(midi))} Hz`;
     if (recording && take.length < 200) take.push({ midi, at: (performance.now() - rt0) / 1000, len: 0.4 });
     if (aulaTap) aulaTap(midi); // aula: guarda a nota do aluno
+    if (partTap) partTap(midi); // partitura: a tecla vira nota
   };
   const up = (id) => {
     const n = live.get(id); if (!n) return; live.delete(id);
-    n.v.off(conf().pedal); const el = keyEl(n.midi); if (el && ![...live.values()].some((x) => x.midi === n.midi)) el.classList.remove('on');
+    n.v.off(conf().pedal); if (partUp) partUp(n.midi); const el = keyEl(n.midi); if (el && ![...live.values()].some((x) => x.midi === n.midi)) el.classList.remove('on');
     if (recording) { const last = [...take].reverse().find((x) => x.midi === n.midi); if (last) last.len = Math.max(0.12, (performance.now() - rt0) / 1000 - last.at); }
   };
 
@@ -154,14 +157,18 @@ export function mount(host) {
     apagaTudo: () => kb.querySelectorAll('.au-luz,.au-certa').forEach((e) => e.classList.remove('au-luz', 'au-certa')),
     ver: () => { try { aulasHost.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* sem rolagem */ } },
   };
-  const abreAulas = () => { if (aulasCtl) return; stopPlay(); recording = false; aulasCtl = melodiaPainel(inst, { voltar: fechaAulas }); aulasHost.replaceChildren(aulasCtl.el); panel.hidden = true; takeBox.hidden = true; aulasBtn.classList.add('on'); aulasBtn.setAttribute('aria-pressed', 'true'); aulasBtn.firstChild.textContent = 'aulas ✓'; raiz.classList.add('au-ativa'); };
+  const abreAulas = () => { if (aulasCtl) return; if (partCtl) fechaPart(); stopPlay(); recording = false; aulasCtl = melodiaPainel(inst, { voltar: fechaAulas }); aulasHost.replaceChildren(aulasCtl.el); panel.hidden = true; takeBox.hidden = true; aulasBtn.classList.add('on'); aulasBtn.setAttribute('aria-pressed', 'true'); aulasBtn.firstChild.textContent = 'aulas ✓'; raiz.classList.add('au-ativa'); };
   const fechaAulas = () => { if (!aulasCtl) return; aulasCtl.destroy(); aulasCtl = null; aulaTap = null; aulasHost.replaceChildren(); panel.hidden = false; takeBox.hidden = false; aulasBtn.classList.remove('on'); aulasBtn.setAttribute('aria-pressed', 'false'); aulasBtn.firstChild.textContent = 'aulas'; raiz.classList.remove('au-ativa'); };
   const aulasBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${!pago() ? ' travado' : ''}`, 'aria-pressed': 'false', onclick: () => { if (!pago()) { pedir('as aulas de música'); return; } aulasCtl ? fechaAulas() : abreAulas(); } }, h('span', {}, 'aulas'), !pago() ? cadeado() : null);
-  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn);
-  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), rolar(aulasRow), aulasHost, shown, kb, takeBox, panel,
+  const instPart = { toca: (m, t, d) => inst.toca(m, t, d), aoTocar: (fn) => { partTap = fn; }, aoSoltar: (fn) => { partUp = fn; } };
+  const abrePart = () => { if (partCtl) return; if (aulasCtl) fechaAulas(); partCtl = painelPartitura(instPart, { nome: 'teclas', fechar: fechaPart }); partHost.replaceChildren(partCtl.el); partBtn.classList.add('on'); partBtn.setAttribute('aria-pressed', 'true'); partBtn.firstChild.textContent = 'partitura ✓'; try { partHost.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { /* sem rolagem */ } };
+  const fechaPart = () => { if (!partCtl) return; partCtl.destroy(); partCtl = null; partTap = null; partUp = null; partHost.replaceChildren(); partBtn.classList.remove('on'); partBtn.setAttribute('aria-pressed', 'false'); partBtn.firstChild.textContent = 'partitura'; };
+  const partBtn = h('button', { type: 'button', class: `kd-chip kd-aulas${!pago() ? ' travado' : ''}`, 'aria-pressed': 'false', onclick: () => { if (!pago()) { pedir('a partitura'); return; } partCtl ? fechaPart() : abrePart(); } }, h('span', {}, 'partitura'), !pago() ? cadeado() : null);
+  const aulasRow = h('div', { class: 'row kd-modes kd-modelos' }, h('small', {}, 'treinar'), aulasBtn, partBtn);
+  const raiz = host.appendChild(h('div', { class: 'bmr tocar-raiz', 'data-skin': (() => { try { return localStorage.getItem('beaterista-palco-skin') || 'c'; } catch { return 'c'; } })() })); raiz.append(banner('Teclas', 'piano, elétrico, órgão e cordas: tire melodia e confira a nota'), tocarTabs('piano'), ...(faixaPlano(GRATIS.teclas.texto) ? [faixaPlano(GRATIS.teclas.texto)] : []), rolar(modelos), rolar(aulasRow), aulasHost, shown, kb, takeBox, panel, partHost,
     h('p', { class: 'pad-x lib-note' }, 'toca com vários dedos ao mesmo tempo e dá pra deslizar o dedo pelas teclas. no computador: fileira A S D F G H J K L = teclas brancas, W E T Y U O P = pretas; Z e X mudam a oitava. o som é gerado no aparelho; no iPhone pode ter um pequeno atraso. vire o aparelho de lado pra ter mais teclas.'));
   drawKb(); drawModelos(); drawPanel(); drawTake();
   const solta = aoLiberar(() => { drawPanel(); document.querySelectorAll('.tp-faixa').forEach((x) => x.remove()); });
   const onResize = () => {}; window.addEventListener('resize', onResize);
-  return () => { solta(); if (aulasCtl) { aulasCtl.destroy(); aulasCtl = null; aulaTap = null; FORCA = null; } stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
+  return () => { solta(); if (partCtl) { partCtl.destroy(); partCtl = null; partTap = null; partUp = null; } if (aulasCtl) { aulasCtl.destroy(); aulasCtl = null; aulaTap = null; FORCA = null; } stopPlay(); releaseAll(); document.removeEventListener('visibilitychange', onHide); window.removeEventListener('blur', releaseAll); document.removeEventListener('keydown', onKey); document.removeEventListener('keyup', onKeyUp); window.removeEventListener('resize', onResize); backing.leave(); };
 }
