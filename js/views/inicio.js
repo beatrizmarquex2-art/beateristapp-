@@ -148,10 +148,12 @@ export function mount(host, { nome = '' } = {}) {
     sheet('sua foto', (close) => {
       const feito = (msg) => { close(); toast(msg); };
       const falha = () => toast('não consegui trocar a foto agora');
-      const arquivo = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return; try { await FO.usarArquivo(f); feito('foto salva neste aparelho'); } catch { falha(); } } });
+      const pega = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return; try { await FO.usarArquivo(f); feito('foto salva neste aparelho'); } catch { falha(); } };
+      const arquivo = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: pega });
+      const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: pega });
       return h('div', { class: 'in-foto-op' }, h('p', { class: 'in-sobre-t' }, 'escolha um personagem ou ponha a sua foto:'),
         h('div', { class: 'in-foto-lista', role: 'group', 'aria-label': 'personagens' }, ...FO.ARTES.map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { await FO.usarArte(src); feito(`${nomeArte} é a sua foto agora`); } catch { falha(); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))),
-        h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, '📷 usar a minha foto'), h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('voltou o Paul na bateria'); } catch { falha(); } } }, 'Paul na bateria'), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo);
+        h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, 'escolher foto'), h('button', { type: 'button', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('voltou o Paul na bateria'); } catch { falha(); } } }, 'Paul na bateria'), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo, selfie);
     });
   });
   // "sobre mim": instrumento, estilo e meta em etiquetas; tocar numa abre as opções em chips
