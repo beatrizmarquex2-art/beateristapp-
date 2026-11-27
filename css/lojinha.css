@@ -180,3 +180,18 @@ body:has(#view.lj-escura) { background: #070b19; }
 .pm-sem-itens { display: flex; gap: 8px; align-items: flex-start; }
 .pm-sem .pm-w { flex: none; width: 52px; border-color: rgb(var(--ink-rgb) / .35); } .pm-sem .pm-sem-cl { width: 56px; background: #fff; }
 .pm-sem-vazio { margin: 6px 0 0; }
+
+/* Stars › resgatar: visual compacto e escuro (desafio, post por jogo e missões em linhas curtas) */
+.fig-pack-card.rs { display: grid; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
+.rs-card { display: grid; gap: 6px; padding: 10px 12px; border-radius: 14px; background: rgb(255 255 255 / .07); border: 1px solid rgb(255 255 255 / .16); color: #f4f6ff; text-align: left; }
+.rs-desafio { background: linear-gradient(100deg, rgb(226 58 78 / .35), rgb(255 255 255 / .06)); }
+.rs-t, .rs-m-t { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rs-t b { font: 400 17px/1.1 'Anton', var(--body); text-transform: uppercase; letter-spacing: .02em; } .rs-m-t b { font: 700 13px/1.2 var(--body); }
+.rs-card em { font: 800 11px var(--body); font-style: normal; padding: 2px 8px; border-radius: 999px; background: #f6c93b; color: #070b19; white-space: nowrap; } .rs-card em.ok { background: #55c985; }
+.rs-card p { margin: 0; font: 600 12.5px/1.35 var(--body); } .rs-card small, .rs-nota { font: 600 11px/1.3 var(--body); color: #aab4d4; }
+.rs-linha { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; } .rs-linha select { flex: 1; min-width: 120px; min-height: 36px; border-radius: 10px; font: 700 13px var(--body); }
+.rs-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 6px 14px; border: 0; border-radius: 10px; background: #f6c93b; color: #070b19; font: 800 13px var(--body); text-decoration: none; cursor: pointer; width: auto; }
+.rs-btn.ghost { background: transparent; color: #f4f6ff; border: 1px solid rgb(255 255 255 / .35); } .rs-btn:disabled { opacity: .45; }
+.rs-missao { display: grid; gap: 5px; padding-top: 6px; border-top: 1px solid rgb(255 255 255 / .12); } .rs-missao:first-of-type { border-top: 0; }
+.rs-st { background: transparent !important; color: #f6c93b !important; padding: 0 !important; }
+.rs-card .rs-btn { justify-self: start; }
