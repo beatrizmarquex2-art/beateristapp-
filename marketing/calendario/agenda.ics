@@ -1,0 +1,1383 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Beaterista//Agenda de posts//PT
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Posts da Beaterista
+X-WR-TIMEZONE:America/Sao_Paulo
+BEGIN:VEVENT
+UID:post-0@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T090000
+DTEND;TZID=America/Sao_Paulo:20261128T091500
+SUMMARY:tarefa · Criar os destaques do Instagram
+DESCRIPTION:Criar os destaques do Instagram\nrede: tarefa\n\nATENÇÃO: use as capas de marketing/prontos/destaques/ (o que é\, jogos\, pais\, profs\, álbum\, lojinha\, curso). Não criar o do gibi.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-1@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T110000
+DTEND;TZID=America/Sao_Paulo:20261128T111500
+SUMMARY:@jogos.beaterista · Oi\, eu sou o Paul
+DESCRIPTION:Oi\, eu sou o Paul\nrede: @jogos.beaterista\narquivo: marketing/prontos/(Drive)\n\nLEGENDA:\noi\, eu sou o paul 🥁 o robô baterista da beaterista. aqui a gente joga\, aprende música e toca de verdade. começa grátis: jogos.beaterista.com.br\n\n#beaterista #escoladeMusica #araçatuba #aprendermusica #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-2@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T111000
+DTEND;TZID=America/Sao_Paulo:20261128T112500
+SUMMARY:story · Story: apresentação do Paul
+DESCRIPTION:Story: apresentação do Paul\nrede: story\narquivo: marketing/prontos/stories-semanas/semana_01.jpg\n\nLEGENDA:\n\n\nATENÇÃO: story de apresentação do Paul.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-3@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T160000
+DTEND;TZID=America/Sao_Paulo:20261128T161500
+SUMMARY:@beaterista_ · Apostila Bateria Start pela metade do preço
+DESCRIPTION:Apostila Bateria Start pela metade do preço\nrede: @beaterista_\narquivo: marketing/prontos/reels/21_apostila_bateria_start.mp4\n\nLEGENDA:\na apostila do meu curso de bateria pela metade do preço: R$ 14\,90\, só até 30 de novembro. 44 páginas pra começar do zero. link na bio.\n\n#bateria #baterista #aulademusica #aprendermusica #cursodebateria\n\nATENÇÃO: tem prazo: só vale até 30/nov. postar nos dois perfis.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-4@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T161000
+DTEND;TZID=America/Sao_Paulo:20261128T162500
+SUMMARY:story · Story: apostila só até 30/nov
+DESCRIPTION:Story: apostila só até 30/nov\nrede: story\narquivo: marketing/prontos/stories/story_apostila_prazo.jpg\n\nLEGENDA:\n\n\nATENÇÃO: figurinha de link pra apostila na lojinha.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-5@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261128T203000
+DTEND;TZID=America/Sao_Paulo:20261128T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-6@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261129T100000
+DTEND;TZID=America/Sao_Paulo:20261129T101500
+SUMMARY:@jogos.beaterista · O que é a Beaterista
+DESCRIPTION:O que é a Beaterista\nrede: @jogos.beaterista\narquivo: marketing/prontos/(Drive)\n\nLEGENDA:\na beaterista é uma escola de música em araçatuba\, sp. aqui a música acontece na sala de aula e no palco\, e agora também na tela: jogos e materiais pra estudar em casa. jogos.beaterista.com.br\n\n#beaterista #escoladeMusica #araçatuba #aprendermusica #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-7@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261129T120000
+DTEND;TZID=America/Sao_Paulo:20261129T121500
+SUMMARY:story · Story: apostila só até 30/nov
+DESCRIPTION:Story: apostila só até 30/nov\nrede: story\narquivo: marketing/prontos/stories/story_apostila_prazo.jpg\n\nLEGENDA:\n\n\nATENÇÃO: lembrete: faltam 2 dias.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-8@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261129T203000
+DTEND;TZID=America/Sao_Paulo:20261129T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-9@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261129T210000
+DTEND;TZID=America/Sao_Paulo:20261129T211500
+SUMMARY:tarefa · Olhar os Insights da semana
+DESCRIPTION:Olhar os Insights da semana\nrede: tarefa\n\nATENÇÃO: veja em que horas os seguidores estão online e ajuste os horários da semana que vem.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:marco-10@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;VALUE=DATE:20261130
+DTEND;VALUE=DATE:20261201
+SUMMARY:📌 Último dia da apostila a R$ 14\,90
+DESCRIPTION:tirar o story da apostila dos destaques em 01/12.
+END:VEVENT
+BEGIN:VEVENT
+UID:post-11@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261130T100000
+DTEND;TZID=America/Sao_Paulo:20261130T101500
+SUMMARY:story · Story: apostila só até 30/nov
+DESCRIPTION:Story: apostila só até 30/nov\nrede: story\narquivo: marketing/prontos/stories/story_apostila_prazo.jpg\n\nLEGENDA:\n\n\nATENÇÃO: último dia.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-12@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261130T190000
+DTEND;TZID=America/Sao_Paulo:20261130T191500
+SUMMARY:@jogos.beaterista · Apostila Bateria Start pela metade do preço
+DESCRIPTION:Apostila Bateria Start pela metade do preço\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/21_apostila_bateria_start.mp4\n\nLEGENDA:\na apostila do meu curso de bateria pela metade do preço: R$ 14\,90\, só até 30 de novembro. 44 páginas pra começar do zero. link na bio.\n\n#bateria #baterista #aulademusica #aprendermusica #cursodebateria\n\nATENÇÃO: tem prazo: só vale até 30/nov. postar nos dois perfis.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-13@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261130T203000
+DTEND;TZID=America/Sao_Paulo:20261130T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-14@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261201T090000
+DTEND;TZID=America/Sao_Paulo:20261201T091500
+SUMMARY:tarefa · Tirar a apostila dos destaques
+DESCRIPTION:Tirar a apostila dos destaques\nrede: tarefa\n\nATENÇÃO: o prazo de R$ 14\,90 acabou em 30/nov.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-15@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261201T120000
+DTEND;TZID=America/Sao_Paulo:20261201T121500
+SUMMARY:@jogos.beaterista · tum tá tum tum tá!
+DESCRIPTION:tum tá tum tum tá!\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-01-bateria.jpg\n\nLEGENDA:\ncanta o ritmo antes de tocar: a mão aprende mais rápido. bora treinar no app? link na bio\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-16@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261201T200000
+DTEND;TZID=America/Sao_Paulo:20261201T201500
+SUMMARY:@beaterista_ · Oi\, eu sou a Bea
+DESCRIPTION:Oi\, eu sou a Bea\nrede: @beaterista_\narquivo: marketing/prontos/(Drive)\n\nLEGENDA:\noi\, eu sou a bea\, professora de bateria e fundadora da beaterista. quando um aluno trava\, eu penso: como transformar isso num desafio que ele queira tentar de novo? foi assim que nasceram os jogos.\n\n#beaterista #escoladeMusica #araçatuba #aprendermusica #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-17@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261201T203000
+DTEND;TZID=America/Sao_Paulo:20261201T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-18@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261202T190000
+DTEND;TZID=America/Sao_Paulo:20261202T191500
+SUMMARY:@jogos.beaterista · Parece só joguinho
+DESCRIPTION:Parece só joguinho\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/04_pais_parece_so_joguinho.mp4\n\nLEGENDA:\nparece só joguinho. mas ele tá treinando ritmo\, coordenação e escuta\, e depois vai pra baqueta. começa grátis\, link na bio.\n\n#musicalizacaoinfantil #educacaomusical #aprendermusica #jogosmusicais #maternidade\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-19@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261202T191000
+DTEND;TZID=America/Sao_Paulo:20261202T192500
+SUMMARY:story · Story: enquete
+DESCRIPTION:Story: enquete\nrede: story\narquivo: marketing/prontos/stories/story_enquete_1.jpg\n\nLEGENDA:\n\n\nATENÇÃO: figurinha de enquete: "sim" / "ainda não".
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-20@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261202T203000
+DTEND;TZID=America/Sao_Paulo:20261202T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-21@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261203T120000
+DTEND;TZID=America/Sao_Paulo:20261203T121500
+SUMMARY:@jogos.beaterista · O que tem dentro do passe
+DESCRIPTION:O que tem dentro do passe\nrede: @jogos.beaterista\narquivo: marketing/prontos/carrosseis/passe_carrossel_1.jpg\n\nLEGENDA:\no que tem dentro do passe beaterista? arrasta pra ver. R$ 49\,90 por 12 meses\, link na bio.\n\n#aulademusica #educacaomusical #bateria #musicalizacaoinfantil #aprendermusica\n\nATENÇÃO: tem preço R$ 49\,90: confirmar com a Bea se segue valendo depois de 31/12.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-22@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261203T121000
+DTEND;TZID=America/Sao_Paulo:20261203T122500
+SUMMARY:story · Story: passe
+DESCRIPTION:Story: passe\nrede: story\narquivo: marketing/prontos/stories/story_passe.jpg\n\nLEGENDA:\n\n\nATENÇÃO: figurinha de link pro app.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-23@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261203T203000
+DTEND;TZID=America/Sao_Paulo:20261203T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-24@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261203T210000
+DTEND;TZID=America/Sao_Paulo:20261203T211500
+SUMMARY:TikTok @beaterista · Parece só joguinho
+DESCRIPTION:Parece só joguinho\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/04_pais_parece_so_joguinho.mp4\n\nLEGENDA:\nparece só joguinho. mas ele tá treinando ritmo\, coordenação e escuta\, e depois vai pra baqueta. começa grátis\, link na bio.\n\n#musicalizacaoinfantil #educacaomusical #aprendermusica #jogosmusicais #maternidade\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-25@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261204T180000
+DTEND;TZID=America/Sao_Paulo:20261204T181500
+SUMMARY:@jogos.beaterista · O jogo foi pra bateria
+DESCRIPTION:O jogo foi pra bateria\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/23_o_jogo_foi_pra_bateria.mp4\n\nLEGENDA:\no jogo saiu do sofá e foi pra bateria 🥁 o tablet mostra\, o aluno toca. da tela pro instrumento\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-26@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261204T203000
+DTEND;TZID=America/Sao_Paulo:20261204T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-27@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T110000
+DTEND;TZID=America/Sao_Paulo:20261205T111500
+SUMMARY:@jogos.beaterista · Roleta de figurinhas
+DESCRIPTION:Roleta de figurinhas\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/20_roleta_de_figurinhas.mp4\n\nLEGENDA:\nsua foto vira figurinha 🤘 terminou o jogo\, gira a roleta e cola no álbum. link na bio.\n\n#musicalizacaoinfantil #jogosmusicais #aprendermusica #educacaomusical #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-28@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T160000
+DTEND;TZID=America/Sao_Paulo:20261205T161500
+SUMMARY:@beaterista_ · Beaterista Mood
+DESCRIPTION:Beaterista Mood\nrede: @beaterista_\narquivo: marketing/prontos/reels/16_beaterista_mood.mp4\n\nLEGENDA:\nos exercícios que eu estudo e levo pro palco\, em 55 páginas + 20 de bônus. beaterista mood\, link na bio.\n\n#bateria #baterista #aulademusica #aprendermusica #cursodebateria\n\nATENÇÃO: perfil da Bea.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-29@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T203000
+DTEND;TZID=America/Sao_Paulo:20261205T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-30@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261205T210000
+DTEND;TZID=America/Sao_Paulo:20261205T211500
+SUMMARY:TikTok @beaterista · O jogo foi pra bateria
+DESCRIPTION:O jogo foi pra bateria\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/23_o_jogo_foi_pra_bateria.mp4\n\nLEGENDA:\no jogo saiu do sofá e foi pra bateria 🥁 o tablet mostra\, o aluno toca. da tela pro instrumento\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-31@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261206T100000
+DTEND;TZID=America/Sao_Paulo:20261206T101500
+SUMMARY:@jogos.beaterista · hoje tem aula com o Paul.
+DESCRIPTION:hoje tem aula com o Paul.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-02-professor.jpg\n\nLEGENDA:\nbateria\, teclado e violão\, passo a passo\, com o Paul. a aulinha tá no app. link na bio\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-32@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261206T203000
+DTEND;TZID=America/Sao_Paulo:20261206T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-33@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261206T210000
+DTEND;TZID=America/Sao_Paulo:20261206T211500
+SUMMARY:TikTok @beaterista · Roleta de figurinhas
+DESCRIPTION:Roleta de figurinhas\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/20_roleta_de_figurinhas.mp4\n\nLEGENDA:\nsua foto vira figurinha 🤘 terminou o jogo\, gira a roleta e cola no álbum. link na bio.\n\n#musicalizacaoinfantil #jogosmusicais #aprendermusica #educacaomusical #bateria\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-34@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261206T210000
+DTEND;TZID=America/Sao_Paulo:20261206T211500
+SUMMARY:tarefa · Olhar os Insights da semana
+DESCRIPTION:Olhar os Insights da semana\nrede: tarefa\n\nATENÇÃO: veja em que horas os seguidores estão online e ajuste os horários da semana que vem.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-35@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261207T190000
+DTEND;TZID=America/Sao_Paulo:20261207T191500
+SUMMARY:@jogos.beaterista · Achar na pauta
+DESCRIPTION:Achar na pauta\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/12_achar_na_pauta.mp4\n\nLEGENDA:\nseu filho lendo partitura. e achando que é jogo 🎼 começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-36@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261207T203000
+DTEND;TZID=America/Sao_Paulo:20261207T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-37@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T120000
+DTEND;TZID=America/Sao_Paulo:20261208T121500
+SUMMARY:@jogos.beaterista · estudou? então brilha.
+DESCRIPTION:estudou? então brilha.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-03-oculos.jpg\n\nLEGENDA:\ncada jogo dá estrela\, e estrela vira cartinha pro álbum. joga hoje? link na bio\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-38@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T200000
+DTEND;TZID=America/Sao_Paulo:20261208T201500
+SUMMARY:@beaterista_ · Depoimentos dos alunos
+DESCRIPTION:Depoimentos dos alunos\nrede: @beaterista_\narquivo: marketing/prontos/carrosseis/depoimentos_1.jpg\n\nLEGENDA:\no que diz quem já estuda comigo. 6 mensagens\, do jeito que chegaram. link na bio.\n\n#bateria #aulademusica #educacaomusical #aprendermusica #baterista\n\nATENÇÃO: mensagens reais dos alunos do Bateria Start\, copiadas fielmente.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-39@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T203000
+DTEND;TZID=America/Sao_Paulo:20261208T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-40@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261208T210000
+DTEND;TZID=America/Sao_Paulo:20261208T211500
+SUMMARY:TikTok @beaterista · Achar na pauta
+DESCRIPTION:Achar na pauta\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/12_achar_na_pauta.mp4\n\nLEGENDA:\nseu filho lendo partitura. e achando que é jogo 🎼 começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-41@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261209T190000
+DTEND;TZID=America/Sao_Paulo:20261209T191500
+SUMMARY:@jogos.beaterista · Ouve\, lê\, toca
+DESCRIPTION:Ouve\, lê\, toca\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/05_prova_ouve_le_toca.mp4\n\nLEGENDA:\né assim que meus alunos estudam ritmo: ouvem\, leem a partitura e tocam de verdade. da tela pro instrumento. link na bio.\n\n#bateria #aulademusica #educacaomusical #aprendermusica #baterista\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-42@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261209T203000
+DTEND;TZID=America/Sao_Paulo:20261209T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-43@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261210T120000
+DTEND;TZID=America/Sao_Paulo:20261210T121500
+SUMMARY:@jogos.beaterista · Jogos ensinam: o que seu filho treina
+DESCRIPTION:Jogos ensinam: o que seu filho treina\nrede: @jogos.beaterista\narquivo: marketing/prontos/carrosseis/jogos_ensinam_1.jpg\n\nLEGENDA:\nseu filho joga. olha o que ele treina: coordenação\, frações\, escuta\, atenção e planejamento. arrasta pro lado. link na bio.\n\n#musicalizacaoinfantil #educacaomusical #aprendermusica #jogosmusicais #maternidade\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-44@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261210T203000
+DTEND;TZID=America/Sao_Paulo:20261210T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-45@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261210T210000
+DTEND;TZID=America/Sao_Paulo:20261210T211500
+SUMMARY:TikTok @beaterista · Ouve\, lê\, toca
+DESCRIPTION:Ouve\, lê\, toca\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/05_prova_ouve_le_toca.mp4\n\nLEGENDA:\né assim que meus alunos estudam ritmo: ouvem\, leem a partitura e tocam de verdade. da tela pro instrumento. link na bio.\n\n#bateria #aulademusica #educacaomusical #aprendermusica #baterista\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-46@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261211T180000
+DTEND;TZID=America/Sao_Paulo:20261211T181500
+SUMMARY:@jogos.beaterista · Passe anual
+DESCRIPTION:Passe anual\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/03_passe_anual.mp4\n\nLEGENDA:\nmais de 15 jogos e estudos de música por R$ 49\,90 no ano inteiro\, pagamento único. começa grátis e libera tudo quando quiser\, link na bio.\n\n#aulademusica #educacaomusical #bateria #musicalizacaoinfantil #aprendermusica\n\nATENÇÃO: tem preço R$ 49\,90: confirmar com a Bea se segue valendo depois de 31/12 (a planilha de cupons muda o valor em 01/01).
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-47@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261211T203000
+DTEND;TZID=America/Sao_Paulo:20261211T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-48@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261212T110000
+DTEND;TZID=America/Sao_Paulo:20261212T111500
+SUMMARY:@jogos.beaterista · Beat Hero
+DESCRIPTION:Beat Hero\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/17_beat_hero.mp4\n\nLEGENDA:\nparece videogame. é aula de ritmo 🥁 cada cor é uma peça da bateria. joga grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-49@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261212T160000
+DTEND;TZID=America/Sao_Paulo:20261212T161500
+SUMMARY:@beaterista_ · O que tem no Bateria Start
+DESCRIPTION:O que tem no Bateria Start\nrede: @beaterista_\narquivo: marketing/prontos/carrosseis/curso_start_1.jpg\n\nLEGENDA:\no que tem dentro do bateria start: módulos\, aulas curtas\, bônus e apostila. do zero à sua primeira música por R$ 79\,90. link na bio.\n\n#bateria #baterista #aulademusica #aprendermusica #cursodebateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-50@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261212T203000
+DTEND;TZID=America/Sao_Paulo:20261212T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-51@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261213T100000
+DTEND;TZID=America/Sao_Paulo:20261213T101500
+SUMMARY:@jogos.beaterista · toda caixa vira banda.
+DESCRIPTION:toda caixa vira banda.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-04-cajon.jpg\n\nLEGENDA:\ncajón: grave no meio\, agudo perto da borda. conhece outro instrumento assim? conta aqui\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-52@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261213T203000
+DTEND;TZID=America/Sao_Paulo:20261213T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-53@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261213T210000
+DTEND;TZID=America/Sao_Paulo:20261213T211500
+SUMMARY:TikTok @beaterista · Beat Hero
+DESCRIPTION:Beat Hero\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/17_beat_hero.mp4\n\nLEGENDA:\nparece videogame. é aula de ritmo 🥁 cada cor é uma peça da bateria. joga grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-54@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261213T210000
+DTEND;TZID=America/Sao_Paulo:20261213T211500
+SUMMARY:tarefa · Olhar os Insights da semana
+DESCRIPTION:Olhar os Insights da semana\nrede: tarefa\n\nATENÇÃO: veja em que horas os seguidores estão online e ajuste os horários da semana que vem.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-55@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261214T190000
+DTEND;TZID=America/Sao_Paulo:20261214T191500
+SUMMARY:@jogos.beaterista · Rudimentix na caixa
+DESCRIPTION:Rudimentix na caixa\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/24_rudimentix_na_caixa.mp4\n\nLEGENDA:\nrudimentix: primeiro na tela\, depois na caixa. mão esquerda\, mão direita\, no tempo. joga grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-56@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261214T203000
+DTEND;TZID=America/Sao_Paulo:20261214T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:marco-57@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;VALUE=DATE:20261215
+DTEND;VALUE=DATE:20261216
+SUMMARY:📌 Termina a campanha de lançamento
+DESCRIPTION:fonte: planilha de cupons.
+END:VEVENT
+BEGIN:VEVENT
+UID:post-58@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261215T120000
+DTEND;TZID=America/Sao_Paulo:20261215T121500
+SUMMARY:@jogos.beaterista · solta a voz\, o ritmo vem.
+DESCRIPTION:solta a voz\, o ritmo vem.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-05-microfone.jpg\n\nLEGENDA:\ncantar o ritmo também é estudar música. experimenta no próximo treino\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-59@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261215T200000
+DTEND;TZID=America/Sao_Paulo:20261215T201500
+SUMMARY:@beaterista_ · Quiz do chimbal
+DESCRIPTION:Quiz do chimbal\nrede: @beaterista_\narquivo: marketing/prontos/carrosseis/quiz_chimbal_1.jpg\n\nLEGENDA:\nqual equipamento abre e fecha os pratos do chimbal? comenta tua resposta 👇\n\n#bateria #quizmusical #aprendermusica #baterista #aulademusica\n\nATENÇÃO: pergunta pra gerar comentário\; responder nos comentários no dia seguinte.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-60@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261215T203000
+DTEND;TZID=America/Sao_Paulo:20261215T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-61@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261215T210000
+DTEND;TZID=America/Sao_Paulo:20261215T211500
+SUMMARY:TikTok @beaterista · Rudimentix na caixa
+DESCRIPTION:Rudimentix na caixa\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/24_rudimentix_na_caixa.mp4\n\nLEGENDA:\nrudimentix: primeiro na tela\, depois na caixa. mão esquerda\, mão direita\, no tempo. joga grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:marco-62@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;VALUE=DATE:20261216
+DTEND;VALUE=DATE:20261217
+SUMMARY:📌 Começa a campanha de Natal
+DESCRIPTION:fonte: planilha de cupons. Não há arte de Natal pronta: ver 'peças que faltam'.
+END:VEVENT
+BEGIN:VEVENT
+UID:post-63@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261216T190000
+DTEND;TZID=America/Sao_Paulo:20261216T191500
+SUMMARY:@jogos.beaterista · Tempo de tela que vira aula
+DESCRIPTION:Tempo de tela que vira aula\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/01_pais.mp4\n\nLEGENDA:\ntempo de tela que vira aula de música 🥁 seu filho joga\, aprende ritmo e depois vai pro instrumento. dá pra começar grátis hoje\, link na bio.\n\n#musicalizacaoinfantil #educacaomusical #aprendermusica #jogosmusicais #maternidade\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-64@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261216T191000
+DTEND;TZID=America/Sao_Paulo:20261216T192500
+SUMMARY:story · Story: caixinha de perguntas
+DESCRIPTION:Story: caixinha de perguntas\nrede: story\narquivo: marketing/prontos/stories/story_enquete_2.jpg\n\nLEGENDA:\n\n\nATENÇÃO: figurinha de caixinha de perguntas. Conferir o texto da arte antes de postar.\n(precisa do ok da Bea antes de postar)
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-65@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261216T203000
+DTEND;TZID=America/Sao_Paulo:20261216T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-66@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261217T120000
+DTEND;TZID=America/Sao_Paulo:20261217T121500
+SUMMARY:@jogos.beaterista · Bateria Kids
+DESCRIPTION:Bateria Kids\nrede: @jogos.beaterista\narquivo: marketing/prontos/carrosseis/kids_carrossel_1.jpg\n\nLEGENDA:\nseu filho já fala em ritmo\, só falta escrever. bateria kids\, 36 páginas pra imprimir. link na bio.\n\n#aulademusica #educacaomusical #bateria #musicalizacaoinfantil #aprendermusica\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-67@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261217T203000
+DTEND;TZID=America/Sao_Paulo:20261217T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-68@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261218T180000
+DTEND;TZID=America/Sao_Paulo:20261218T181500
+SUMMARY:@jogos.beaterista · Não é só bateria
+DESCRIPTION:Não é só bateria\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/19_nao_e_so_bateria.mp4\n\nLEGENDA:\nnão é só bateria: acordes de violão\, guitarra\, baixo e teclado\, pra ver\, ouvir e tocar na tela. link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-69@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261218T203000
+DTEND;TZID=America/Sao_Paulo:20261218T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-70@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261219T110000
+DTEND;TZID=America/Sao_Paulo:20261219T111500
+SUMMARY:@jogos.beaterista · Álbum de figurinhas
+DESCRIPTION:Álbum de figurinhas\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/06_album_figurinhas.mp4\n\nLEGENDA:\naqui aluno estuda pra ganhar figurinha. terminou o jogo\, gira a roleta\, e ainda dá pra criar a própria. link na bio.\n\n#musicalizacaoinfantil #jogosmusicais #aprendermusica #educacaomusical #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-71@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261219T160000
+DTEND;TZID=America/Sao_Paulo:20261219T161500
+SUMMARY:@beaterista_ · Falta peça pra este horário
+DESCRIPTION:Falta peça pra este horário\nrede: @beaterista_\n\nATENÇÃO: acabaram as peças prontas pra este perfil. Criar uma nova (curso\, depoimento ou bastidor) ou pular o dia.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-72@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261219T203000
+DTEND;TZID=America/Sao_Paulo:20261219T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-73@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261219T210000
+DTEND;TZID=America/Sao_Paulo:20261219T211500
+SUMMARY:TikTok @beaterista · Não é só bateria
+DESCRIPTION:Não é só bateria\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/19_nao_e_so_bateria.mp4\n\nLEGENDA:\nnão é só bateria: acordes de violão\, guitarra\, baixo e teclado\, pra ver\, ouvir e tocar na tela. link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-74@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261220T100000
+DTEND;TZID=America/Sao_Paulo:20261220T101500
+SUMMARY:@jogos.beaterista · 10 minutinhos todo dia.
+DESCRIPTION:10 minutinhos todo dia.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-06-estudando.jpg\n\nLEGENDA:\nvalem mais que 1 hora só no sábado. marca quem precisa ler isso\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-75@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261220T203000
+DTEND;TZID=America/Sao_Paulo:20261220T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-76@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261220T210000
+DTEND;TZID=America/Sao_Paulo:20261220T211500
+SUMMARY:TikTok @beaterista · Álbum de figurinhas
+DESCRIPTION:Álbum de figurinhas\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/06_album_figurinhas.mp4\n\nLEGENDA:\naqui aluno estuda pra ganhar figurinha. terminou o jogo\, gira a roleta\, e ainda dá pra criar a própria. link na bio.\n\n#musicalizacaoinfantil #jogosmusicais #aprendermusica #educacaomusical #bateria\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-77@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261220T210000
+DTEND;TZID=America/Sao_Paulo:20261220T211500
+SUMMARY:tarefa · Olhar os Insights da semana
+DESCRIPTION:Olhar os Insights da semana\nrede: tarefa\n\nATENÇÃO: veja em que horas os seguidores estão online e ajuste os horários da semana que vem.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-78@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261221T190000
+DTEND;TZID=America/Sao_Paulo:20261221T191500
+SUMMARY:@jogos.beaterista · Tour dos 5 jogos
+DESCRIPTION:Tour dos 5 jogos\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/11_tour_5_jogos.mp4\n\nLEGENDA:\n5 jogos que ensinam música de verdade. qual você jogaria primeiro? começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-79@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261221T203000
+DTEND;TZID=America/Sao_Paulo:20261221T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-80@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261222T120000
+DTEND;TZID=America/Sao_Paulo:20261222T121500
+SUMMARY:@jogos.beaterista · aumenta o som. bora tocar!
+DESCRIPTION:aumenta o som. bora tocar!\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-07-guitarra.jpg\n\nLEGENDA:\ndevagar e certo hoje\, rápido amanhã. qual música você quer aprender?\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-81@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261222T200000
+DTEND;TZID=America/Sao_Paulo:20261222T201500
+SUMMARY:@beaterista_ · Falta peça pra este horário
+DESCRIPTION:Falta peça pra este horário\nrede: @beaterista_\n\nATENÇÃO: acabaram as peças prontas pra este perfil. Criar uma nova (curso\, depoimento ou bastidor) ou pular o dia.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-82@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261222T203000
+DTEND;TZID=America/Sao_Paulo:20261222T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-83@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261222T210000
+DTEND;TZID=America/Sao_Paulo:20261222T211500
+SUMMARY:TikTok @beaterista · Tour dos 5 jogos
+DESCRIPTION:Tour dos 5 jogos\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/11_tour_5_jogos.mp4\n\nLEGENDA:\n5 jogos que ensinam música de verdade. qual você jogaria primeiro? começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-84@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261223T190000
+DTEND;TZID=America/Sao_Paulo:20261223T191500
+SUMMARY:@jogos.beaterista · O tempo de tela que eu deixo
+DESCRIPTION:O tempo de tela que eu deixo\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/08_loop_tempo_de_tela.mp4\n\nLEGENDA:\no tempo de tela que eu deixo 🥁 jogos de música\, link na bio.\n\n#musicalizacaoinfantil #educacaomusical #aprendermusica #jogosmusicais #maternidade\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-85@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261223T203000
+DTEND;TZID=America/Sao_Paulo:20261223T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-86@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261224T120000
+DTEND;TZID=America/Sao_Paulo:20261224T121500
+SUMMARY:@jogos.beaterista · Sem post pronto de data comemorativa
+DESCRIPTION:Sem post pronto de data comemorativa\nrede: @jogos.beaterista\n\nATENÇÃO: véspera de Natal: não há arte de Natal pronta. Criar uma arte (ou deixar o perfil descansar).
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-87@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261224T203000
+DTEND;TZID=America/Sao_Paulo:20261224T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-88@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261225T180000
+DTEND;TZID=America/Sao_Paulo:20261225T181500
+SUMMARY:@jogos.beaterista · Sem post pronto de data comemorativa
+DESCRIPTION:Sem post pronto de data comemorativa\nrede: @jogos.beaterista\n\nATENÇÃO: Natal: não há arte de Natal pronta. Criar uma arte (ou deixar o perfil descansar).
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-89@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261225T203000
+DTEND;TZID=America/Sao_Paulo:20261225T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-90@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261226T110000
+DTEND;TZID=America/Sao_Paulo:20261226T111500
+SUMMARY:@jogos.beaterista · Toca na tela
+DESCRIPTION:Toca na tela\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/18_toca_na_tela.mp4\n\nLEGENDA:\nsem instrumento em casa? toca na tela: bateria\, cordas\, teclas e percussão\, e ainda tem aula com o paul. link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-91@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261226T160000
+DTEND;TZID=America/Sao_Paulo:20261226T161500
+SUMMARY:@beaterista_ · Falta peça pra este horário
+DESCRIPTION:Falta peça pra este horário\nrede: @beaterista_\n\nATENÇÃO: acabaram as peças prontas pra este perfil. Criar uma nova (curso\, depoimento ou bastidor) ou pular o dia.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-92@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261226T203000
+DTEND;TZID=America/Sao_Paulo:20261226T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-93@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261227T100000
+DTEND;TZID=America/Sao_Paulo:20261227T101500
+SUMMARY:@jogos.beaterista · pausa também é treino.
+DESCRIPTION:pausa também é treino.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-08-agua.jpg\n\nLEGENDA:\nbebe uma água\, respira e volta: o cérebro guarda o que você tocou enquanto descansa\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-94@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261227T203000
+DTEND;TZID=America/Sao_Paulo:20261227T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-95@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261227T210000
+DTEND;TZID=America/Sao_Paulo:20261227T211500
+SUMMARY:TikTok @beaterista · Toca na tela
+DESCRIPTION:Toca na tela\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/18_toca_na_tela.mp4\n\nLEGENDA:\nsem instrumento em casa? toca na tela: bateria\, cordas\, teclas e percussão\, e ainda tem aula com o paul. link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-96@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261227T210000
+DTEND;TZID=America/Sao_Paulo:20261227T211500
+SUMMARY:tarefa · Olhar os Insights da semana
+DESCRIPTION:Olhar os Insights da semana\nrede: tarefa\n\nATENÇÃO: veja em que horas os seguidores estão online e ajuste os horários da semana que vem.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-97@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261228T190000
+DTEND;TZID=America/Sao_Paulo:20261228T191500
+SUMMARY:@jogos.beaterista · Explorar a bateria
+DESCRIPTION:Explorar a bateria\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/13_explorar_a_bateria.mp4\n\nLEGENDA:\na primeira bateria cabe no tablet: toca na peça e aprende o nome. começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-98@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261228T203000
+DTEND;TZID=America/Sao_Paulo:20261228T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-99@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261229T120000
+DTEND;TZID=America/Sao_Paulo:20261229T121500
+SUMMARY:@jogos.beaterista · tecla por tecla vira música.
+DESCRIPTION:tecla por tecla vira música.\nrede: @jogos.beaterista\narquivo: marketing/prontos/cartazes-paul/paul-09-teclado.jpg\n\nLEGENDA:\ndó ré mi fá sol lá si: começa pelas brancas. tem teclado pra tocar no app. link na bio\n\n#robôteristapaul #beaterista #aprendermusica #musicalizacaoinfantil #bateria\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-100@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261229T200000
+DTEND;TZID=America/Sao_Paulo:20261229T201500
+SUMMARY:@beaterista_ · Falta peça pra este horário
+DESCRIPTION:Falta peça pra este horário\nrede: @beaterista_\n\nATENÇÃO: acabaram as peças prontas pra este perfil. Criar uma nova (curso\, depoimento ou bastidor) ou pular o dia.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-101@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261229T203000
+DTEND;TZID=America/Sao_Paulo:20261229T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-102@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261229T210000
+DTEND;TZID=America/Sao_Paulo:20261229T211500
+SUMMARY:TikTok @beaterista · Explorar a bateria
+DESCRIPTION:Explorar a bateria\nrede: TikTok @beaterista\narquivo: marketing/prontos/reels/13_explorar_a_bateria.mp4\n\nLEGENDA:\na primeira bateria cabe no tablet: toca na peça e aprende o nome. começa grátis\, link na bio.\n\n#jogosmusicais #aprendermusica #educacaomusical #bateria #musicalizacaoinfantil\n\nATENÇÃO: mesmo vídeo do reel\, no TikTok. 
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-103@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261230T190000
+DTEND;TZID=America/Sao_Paulo:20261230T191500
+SUMMARY:@jogos.beaterista · 3 atividades pra aula de amanhã
+DESCRIPTION:3 atividades pra aula de amanhã\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/07_prof_3_atividades.mp4\n\nLEGENDA:\nprof\, 3 atividades prontas pra sua aula de amanhã: ritmo no tempo certo\, caça-palavras musical e ouvir e tocar. testa grátis\, link na bio.\n\n#professordemusica #educacaomusical #aulademusica #jogosmusicais #aprendermusica\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-104@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261230T203000
+DTEND;TZID=America/Sao_Paulo:20261230T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-105@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261231T120000
+DTEND;TZID=America/Sao_Paulo:20261231T121500
+SUMMARY:@jogos.beaterista · Combo das 4 apostilas
+DESCRIPTION:Combo das 4 apostilas\nrede: @jogos.beaterista\narquivo: marketing/prontos/reels/14_combo_4_apostilas.mp4\n\nLEGENDA:\n4 apostilas pra aprender música brincando: ritmo\, harmonia\, 48 atividades e jogo da memória. combo por R$ 79\,90\, link na bio.\n\n#aulademusica #educacaomusical #bateria #musicalizacaoinfantil #aprendermusica\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-106@beaterista
+DTSTAMP:20261127T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261231T203000
+DTEND;TZID=America/Sao_Paulo:20261231T204500
+SUMMARY:story · Compartilhar o post do dia nos stories
+DESCRIPTION:Compartilhar o post do dia nos stories\nrede: story\n\nATENÇÃO: reposte o post de hoje nos stories com figurinha de link/enquete e responda os comentários.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Hora de postar
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
