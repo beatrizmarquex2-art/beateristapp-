@@ -50,10 +50,12 @@ check('a aba Professores mostra a pasta de cada professor com a contagem', /leo/
 await page.fill('.pad-x input[type=search]', 'melodia'); await sleep(300);
 check('procurar por nome na aba Professores', await page.evaluate(() => document.querySelectorAll('.pr-it').length === 1));
 await page.locator('.pr-it').first().click(); await sleep(800);
-check('ver mostra a partitura desenhada e as ações (editar, PDF, apagar)', await page.evaluate(() => !!document.querySelector('.sheet .pm-folha svg') && ['editar no Teclas', 'baixar PDF', 'apagar'].every((t) => [...document.querySelectorAll('.sheet button')].some((b) => b.textContent === t))));
-await botao('editar no Teclas'); await sleep(2500);
-check('"editar no Teclas" abre o Teclas já com a partitura aberta', await page.evaluate(() => location.hash === '#/piano' && !!document.querySelector('.pm-painel') && document.querySelector('.pm-titulo').value === 'Melodia do Pôr do Sol'));
-// ---- apagar
+check('ver mostra a partitura desenhada e as ações (editar, PDF, apagar)', await page.evaluate(() => !!document.querySelector('.sheet .pm-folha svg') && ['editar a partitura', 'baixar PDF', 'apagar'].every((t) => [...document.querySelectorAll('.sheet button')].some((b) => b.textContent === t))));
+await botao('editar a partitura'); await sleep(2500);
+check('"editar a partitura" abre o editor já com a partitura aberta', await page.evaluate(() => location.hash === '#/editor' && !!document.querySelector('.ep-folha') && document.querySelector('.ep-nm').value === 'Melodia do Pôr do Sol'));
+// ---- apagar (de volta ao painel das Teclas)
+await page.evaluate(() => { location.hash = '#/piano'; }); await sleep(2400);
+await page.evaluate(() => [...document.querySelectorAll('.kd-modelos .kd-chip')].find((b) => b.textContent.includes('partitura')).click()); await sleep(500);
 await botao('abrir da pasta'); await sleep(600);
 await page.locator('.pm-pasta .pm-it', { hasText: 'Minha primeira' }).getByRole('button', { name: /Apagar/ }).click(); await sleep(400);
 await page.evaluate(() => [...document.querySelectorAll('.sheet button')].filter((b) => b.textContent.trim() === 'Apagar').pop().click()); await sleep(500);

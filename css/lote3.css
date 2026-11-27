@@ -1175,3 +1175,39 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .pr-pasta h3 small { font: 600 13px var(--body); color: var(--on-muted, #6b6258); }
 .pr-it { display: block; width: 100%; padding: 10px 0 !important; border-top: 1px solid var(--on-line, rgb(27 24 24 / .18)); color: var(--on-bg, inherit); }
 .pr-it small { color: var(--on-muted, #6b6258); }
+
+/* ---- editor de partitura (#/editor) e Pedaleira dos professores (#/ferramentas-prof) ---- */
+.ep{max-width:1100px;margin:0 auto;padding:8px 12px 24px;color:var(--text,#1a1a1a)}
+.ep-bar{display:flex;gap:6px;align-items:center;position:sticky;top:0;z-index:5;padding:6px 0;background:var(--bg,#fff)}
+.ep-nm{flex:1;min-width:0;font:600 16px/1.2 inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit}
+.ep-ib{width:44px;height:44px;border-radius:50%;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;display:grid;place-items:center;padding:0;flex:none}
+.ep-ib svg{width:22px;height:22px}.ep-ib.on{background:#e0262f;color:#fff}.ep-ib:disabled{opacity:.35}
+.ep-corpo{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:900px){.ep-corpo{grid-template-columns:1.2fr 1fr;align-items:start}}
+.ep-folha{background:#fff;color:#111;border:1px solid var(--line,#d9d9d9);border-radius:14px;padding:10px;min-height:150px;overflow-x:auto}
+.ep-folha svg{max-width:100%;height:auto}
+.ep-vazio{margin:40px 8px;text-align:center;color:#777}
+.ep-pal{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
+.ep-pb{width:46px;height:46px;border-radius:12px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;display:grid;place-items:center;padding:0}
+.ep-pb svg{width:26px;height:28px}.ep-pb[aria-pressed=true]{background:#e0262f;color:#fff;border-color:#e0262f}
+.ep-t{font-size:22px;line-height:1}.ep-sep{width:1px;height:28px;background:var(--line,#d9d9d9);margin:0 4px}
+.ep-dica{color:#777;font-size:14px;margin:6px 2px}
+.ep-corrige{display:grid;gap:8px;padding:10px;border:1px dashed #e0262f;border-radius:14px}
+.ep-modo{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.ep-modo button{padding:12px 8px;border-radius:12px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;font-weight:600}
+.ep-modo button[aria-pressed=true]{background:#e0262f;color:#fff;border-color:#e0262f}
+.ep-kb{position:relative;display:flex;height:170px;margin-top:8px;border-radius:0 0 12px 12px;overflow:hidden;touch-action:none;user-select:none}
+.ep-w{flex:1;border:1px solid #bbb;background:#fff;color:#555;font-size:11px;display:flex;align-items:flex-end;justify-content:center;padding:0 0 6px;border-radius:0 0 8px 8px}
+.ep-w.on{background:#fbd0d2}
+.ep-b{position:absolute;top:0;height:60%;background:#161616;border:0;border-radius:0 0 6px 6px;z-index:2}
+.ep-b.on{background:#e0262f}
+.fp{max-width:560px;margin:0 auto;padding:12px 14px 28px}
+.fp-t{font-size:26px;margin:6px 0 16px}
+.fp-botoes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.fp-b{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:inherit;font-size:12px;font-weight:600;padding:0}
+.fp-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--card,#fff);border:1px solid var(--line,#d9d9d9);box-shadow:0 3px 8px rgba(0,0,0,.12)}
+.fp-ic svg{width:28px;height:28px}.fp-b.on .fp-ic{background:#e0262f;color:#fff;border-color:#e0262f}
+.fp-painel{margin-top:18px;display:grid;gap:10px}
+.fp-nova{padding:14px;font-size:16px}
+.fp-rec{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fp-r{width:100%;display:flex;justify-content:space-between;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;text-align:left}

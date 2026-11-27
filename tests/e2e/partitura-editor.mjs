@@ -1,0 +1,31 @@
+// Editor de partitura (#/editor) e Pedaleira dos professores (#/ferramentas-prof).
+import { serve, launch, sleep, check, done, fakeLogin } from './harness.mjs';
+const { srv, url } = await serve();
+const { browser, ctx } = await launch();
+const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await fakeLogin(ctx, page, url);
+await ctx.route('**/rest/v1/partituras**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+const notas = () => page.evaluate(() => document.querySelectorAll('.ep-folha .pm-n').length);
+const tecla = async (m) => { await page.locator(`.ep-w[data-m="${m}"]`).dispatchEvent('pointerdown', { pointerId: 1 }); await page.locator(`.ep-w[data-m="${m}"]`).dispatchEvent('pointerup', { pointerId: 1 }); await sleep(100); };
+
+await page.goto(url + '/index.html#/ferramentas-prof'); await sleep(2200);
+check('pedaleira tem 4 botões redondos', await page.locator('.fp-b').count() === 4);
+await page.locator('.fp-b[data-k="partitura"]').click(); await sleep(200);
+check('painel da partitura mostra "+ Nova partitura"', await page.locator('.fp-nova').count() === 1);
+await page.locator('.fp-nova').click(); await sleep(1200);
+check('abriu o editor', page.url().includes('#/editor') && await page.locator('.ep-kb').count() === 1);
+const ms = await page.evaluate(() => [...document.querySelectorAll('.ep-w')].map((b) => +b.dataset.m));
+await tecla(ms[0]); await tecla(ms[1]); await tecla(ms[2]);
+check('3 toques = 3 notas na folha', await notas() === 3);
+await page.locator('.ep-pb[aria-label="colcheia"]').click(); await tecla(ms[3]);
+check('4ª nota com outra duração', await notas() === 4);
+await page.locator('.ep-ib[aria-label="Desfazer"]').click(); await sleep(150);
+check('desfazer tira a última', await notas() === 3);
+await page.locator('.ep-folha .pm-n').first().click(); await sleep(150);
+check('tocar na nota abre a correção', await page.locator('.ep-corrige').count() === 1);
+await page.locator('.ep-corrige .btn').click(); await sleep(150);
+check('apagar remove a nota', await notas() === 2);
+await page.locator('.ep-modo button').nth(1).click(); await sleep(300);
+check('modo microfone não quebra (sem mic volta ao toque)', errs.length === 0);
+console.log(errs.join('\n'));
+await browser.close(); srv.close(); done();

@@ -16,10 +16,10 @@ const chave = (nome) => `setting-partitura-${nome}`;
 const lerSalvo = (nome) => { try { const r = store.get(chave(nome)); return r && r.data ? r.data : {}; } catch { return {}; } };
 const nomeAluno = () => { try { return (CONTAS.atual().nome || '').trim(); } catch { return ''; } };
 const hoje = () => new Date().toLocaleDateString('pt-BR');
-const quando = (t) => { try { return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)); } catch { return ''; } };
+export const quando = (t) => { try { return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)); } catch { return ''; } };
 
 /** Linha com setinhas ‹ valor ›: toca nas setas, arrasta o dedo (ou o mouse) pro lado, ou usa as setas do teclado. */
-function seta(rotulo, texto, menos, mais, { dis = [false, false] } = {}) {
+export function seta(rotulo, texto, menos, mais, { dis = [false, false] } = {}) {
   const out = h('output', { class: 'pm-val', 'aria-live': 'polite', tabindex: '0', 'aria-label': `${rotulo}: ${texto}` }, texto);
   const box = h('div', { class: 'pm-seta', role: 'group', 'aria-label': rotulo },
     h('button', { type: 'button', class: 'pm-sb', 'aria-label': `${rotulo}: anterior`, disabled: dis[0], onclick: menos }, '‹'), out,
@@ -32,10 +32,10 @@ function seta(rotulo, texto, menos, mais, { dis = [false, false] } = {}) {
   return h('div', { class: 'row tk-line pm-linha' }, h('span', { class: 'tp-lab' }, rotulo), box);
 }
 /** Escolha entre poucas opções: as setinhas dão a volta (a última volta pra primeira). */
-const cicla = (rotulo, ops, atual, set) => { const i = Math.max(0, ops.findIndex((o) => o[0] === atual)); const vai = (d) => () => set(ops[(i + d + ops.length) % ops.length][0]); return seta(rotulo, ops[i][1], vai(-1), vai(1)); };
-const FIGS = [[16, false, 'semibreve'], [8, true, 'mínima pontuada'], [8, false, 'mínima'], [4, true, 'semínima pontuada'], [4, false, 'semínima'], [2, true, 'colcheia pontuada'], [2, false, 'colcheia'], [1, false, 'semicolcheia']];
-const nomeDur = (d) => { const f = FIGS.find((x) => (x[1] ? x[0] * 1.5 : x[0]) === d); return f ? f[2] : `${d}/16`; };
-const oit = (m) => Math.floor(m / 12) - 1;
+export const cicla = (rotulo, ops, atual, set) => { const i = Math.max(0, ops.findIndex((o) => o[0] === atual)); const vai = (d) => () => set(ops[(i + d + ops.length) % ops.length][0]); return seta(rotulo, ops[i][1], vai(-1), vai(1)); };
+export const FIGS = [[16, false, 'semibreve'], [8, true, 'mínima pontuada'], [8, false, 'mínima'], [4, true, 'semínima pontuada'], [4, false, 'semínima'], [2, true, 'colcheia pontuada'], [2, false, 'colcheia'], [1, false, 'semicolcheia']];
+export const nomeDur = (d) => { const f = FIGS.find((x) => (x[1] ? x[0] * 1.5 : x[0]) === d); return f ? f[2] : `${d}/16`; };
+export const oit = (m) => Math.floor(m / 12) - 1;
 
 export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
   const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, modo: 'clicar', titulo: '', ...lerSalvo(nome) };

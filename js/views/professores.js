@@ -21,7 +21,7 @@ export function mount(host) {
     return h('div', { class: 'sheet-body' },
       h('p', { class: 'muted' }, `${row.dono_nome || 'sem nome'} · ${INST[row.instrumento] || row.instrumento} · ♩ = ${d.bpm || 100} · atualizada ${quando(row.atualizado_em)}`), folha,
       h('div', { class: 'row' },
-        h('button', { type: 'button', class: 'btn primary', onclick: () => { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* sem sessionStorage */ } close(); location.hash = '#/piano'; } }, 'editar no Teclas'),
+        h('button', { type: 'button', class: 'btn primary', onclick: () => { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* sem sessionStorage */ } close(); location.hash = '#/editor'; } }, 'editar a partitura'),
         h('button', { type: 'button', class: 'btn', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; try { await baixarPdf({ evs: P.normalizar(d.evs || []), clave: d.clave || 'auto', cor: !!d.cor, titulo: row.nome, aluno: row.dono_nome || '', bpm: d.bpm || 100, data: new Date().toLocaleDateString('pt-BR') }); } catch { toast('não consegui gerar o PDF agora', { id: 'pr', ms: 2600 }); } b.disabled = false; } }, 'baixar PDF'),
         h('button', { type: 'button', class: 'btn ghost', onclick: async () => { if (await confirmSheet('Apagar essa partitura?', `${row.nome}, de ${row.dono_nome || 'sem nome'}, some da pasta.`, 'Apagar')) { try { await NUV.apagar(row.id); todos = todos.filter((y) => y.id !== row.id); close(); pinta(); } catch (er) { toast(NUV.textoErro(er), { id: 'pr', ms: 3200 }); } } } }, 'apagar')));
   })).catch((e) => toast(NUV.textoErro(e), { id: 'pr', ms: 3200 }));

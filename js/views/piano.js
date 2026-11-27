@@ -23,7 +23,7 @@ const conf = () => { const c = conf0(); const ok = pago() || GRATIS.teclas.sons.
 const setConf = (p) => store.upsert('setting', KEY, p);
 
 /** Toca uma nota. Devolve { off(sustain) }. */
-function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
+export function voice(midi, kind, t = audio().currentTime, vel = 0.85) {
   const c = audio(); const f = hzOf(midi); const g = c.createGain(); const nodes = []; const hi = Math.max(0, (midi - 60) / 36);
   const add = (type, freq, gain, detune = 0) => { const o = c.createOscillator(); const og = c.createGain(); o.type = type; o.frequency.value = freq; o.detune.value = detune; og.gain.value = gain; o.connect(og).connect(g); o.start(t); nodes.push(o); return o; };
   const lp = c.createBiquadFilter(); lp.type = 'lowpass'; g.connect(lp).connect(out());
