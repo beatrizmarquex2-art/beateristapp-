@@ -82,7 +82,7 @@ html, body { max-width: 100%; overflow-x: clip; } /* clip não cria área de rol
 
 /* ---------- títulos ---------- */
 .banner-wrap { padding: 14px 20px 6px; position: relative; }
-.banner { margin: 0; font: var(--dstyle) var(--dw) clamp(36px, 11vw, 46px)/1.02 var(--display); letter-spacing: -.012em; color: var(--on-bg); overflow-wrap: anywhere; }
+.banner { margin: 0; font: var(--dstyle) var(--dw) clamp(28px, 8.6vw, 46px)/1.02 var(--display); letter-spacing: -.012em; color: var(--on-bg); overflow-wrap: break-word; word-break: normal; hyphens: manual; } /* o título nunca quebra palavra no meio: encolhe a letra em tela estreita */
 .banner-sub { margin: 8px 0 0; font-size: 14.5px; color: var(--on-muted); }
 .banner-wrap::after { content: ""; display: block; width: 74px; height: 12px; margin-top: 12px; background: var(--gold); -webkit-mask: var(--orn) left center / auto 12px repeat-x; mask: var(--orn) left center / auto 12px repeat-x; }
 .hand { font-family: var(--hand); }

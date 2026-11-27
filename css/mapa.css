@@ -10,7 +10,7 @@
 .mp-back, .mp-snd { min-width: 44px; min-height: 44px; border: 3px solid var(--mp-cream); background: var(--mp-deep); color: var(--mp-cream); font: 700 12px var(--mp-pix); box-shadow: 3px 3px 0 var(--mp-pink); cursor: pointer; }
 .mp-back:active, .mp-snd:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mp-pink); }
 .mp-snd { margin-left: auto; font-size: 18px; } .mp-snd[aria-pressed="true"] { opacity: .65; }
-.mp-reg { display: grid; line-height: 1.1; min-width: 0; flex: 1; } .mp-reg b { font: 400 13px var(--mp-pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); letter-spacing: .02em; overflow-wrap: anywhere; } .mp-reg small { font: 400 9px var(--mp-pix); color: var(--mp-cyan); opacity: .9; }
+.mp-reg { display: grid; line-height: 1.1; min-width: 0; flex: 1; } .mp-reg b { font: 400 13px var(--mp-pix); color: var(--mp-yellow); text-shadow: 2px 2px 0 var(--mp-wine); letter-spacing: .02em; overflow-wrap: break-word; word-break: normal; hyphens: manual; } .mp-reg small { font: 400 9px var(--mp-pix); color: var(--mp-cyan); opacity: .9; }
 .mp-prog { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 2px solid var(--mp-purple); background: var(--mp-deep); font: 400 10px var(--mp-pix); white-space: nowrap; } .mp-prog.star { color: var(--mp-yellow); }
 .mp-vinyl-ico { width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle, var(--mp-pink) 0 22%, var(--mp-night) 24% 100%); border: 1px solid var(--mp-cream); }
 .mp-reg.flip b { animation: mp-reveal .45s steps(7, end); }
@@ -138,3 +138,6 @@ html.lite .mp-stk { animation: none; }
 .mp-gsec { margin: 12px 0 4px; padding: 4px 10px 12px; border: 3px solid var(--mp-purple); border-top: 3px solid var(--mp-yellow); background: linear-gradient(180deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, .08)); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
 .mp-gsec .mp-grg { margin-top: 10px; text-transform: none; letter-spacing: .04em; font-size: 13px; }
 .mp-gt { font-size: 11px; font-weight: 700; }
+
+/* o título da região NUNCA é espremido a ponto de quebrar palavra no meio (ex.: "Figura-s"): o cabeçalho quebra de linha e o título ganha uma linha só pra ele */
+.mp-head{flex-wrap:wrap}.mp-head .mp-reg{flex:1 1 150px;min-width:150px}.mp-reg b{overflow-wrap:break-word;word-break:normal;hyphens:manual}
