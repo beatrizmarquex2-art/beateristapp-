@@ -108,7 +108,7 @@ export function mount(host) {
       usados = [];
       if (cfg.tipo === 'caca') { const pk = T.easyPick(its, cfg.palavras); usados = pk.map((x) => x.n); api = mod.caca(caixa, { pick: pk, mk: () => Math.random, fim, dica: !cfg.desafio, size: cfg.grade, dirs: cfg.dirs }); }
       else if (cfg.tipo === 'cruz') { const pk = T.easyPick(its, cfg.cruz, { min: 4, max: cfg.cruzMax || 8 }); usados = pk.map((x) => x.n); api = mod.cruzadinha(caixa, { pick: pk, mk: () => Math.random, fim }); }
-      else if (MINI[cfg.tipo]) api = MINI[cfg.tipo](caixa, { nivel: cfg.nivel, area: cfg.area, fim, extra: cfg.extra || 0, assuntos: cfg.assuntos }); // jogos de toque (genius, caminho 3×3, memória): fuga-mini.js
+      else if (MINI[cfg.tipo]) api = MINI[cfg.tipo](caixa, { nivel: cfg.nivel, area: cfg.area, fim, extra: cfg.extra || 0, assuntos: cfg.assuntos, rodadas: cfg.rodadas || 0 }); // jogos de toque (genius, caminho 3×3, memória): fuga-mini.js
     };
     const resolve = () => {
       const cfg = portas[k]; const s = api && api.stats ? api.stats() : {}; const seg1 = (Date.now() - tPorta) / 1000; paraRelogio();

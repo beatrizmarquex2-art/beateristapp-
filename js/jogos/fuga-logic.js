@@ -49,7 +49,7 @@ export const DESAFIOS = {
   7: { tipo: 'caca', limite: 120, ouro: 50, prata: 85, titulo: 'desafio contra o relógio: ache todas as palavras, sem dica' },
 };
 /** Porta bônus "B" (a SAÍDA): mesa de som difícil (genius), no máximo 1 erro. Abre depois da fase 12 e dá a moldura do perfil. (Antes era um quiz de 7 perguntas; quiz agora só na aba Estudos.) */
-export const BONUS = { tipo: 'genius', nivel: 'dificil', maxErros: 1, titulo: 'porta bônus: a mesa de som difícil, no máximo 1 erro', moldura: 'lab' };
+export const BONUS = { tipo: 'genius', nivel: 'dificil', rodadas: 10, maxErros: 1, titulo: 'porta bônus: a mesa de som difícil, no máximo 1 erro', moldura: 'lab' };
 export const estrelasDesafio = (seg, d) => (seg <= d.ouro ? 3 : seg <= d.prata ? 2 : 1);
 export const bonusAberto = (est, mundo) => estOf(est, mundo, FASES) >= 1;
 export const bonusFeito = (est, mundo) => (Number((est || {})[idFase(mundo, 'B')]) || 0) > 0;
@@ -60,8 +60,15 @@ export const TIPOS_FASE = [
   ['intruso', 'queda', 'caca', 'cruz'], ['memoria', 'caminho', 'queda4', 'cruz'],
 ];
 /** As portas da fase, em ordem: cada uma é um dos jogos de TIPOS_FASE, com o nível da fase e do mundo; as fases-desafio têm 1 porta com regra própria. A "área" do genius alterna entre notas e bateria. */
-export const portasDaFase = (mundoIdx, n, tr = {}) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n, tr), ...DESAFIOS[n], desafio: true }]
-  : TIPOS_FASE[n - 1].map((tipo, k) => ({ ...faseCfg(mundoIdx, n, tr), tipo: (tr.subst && tr.subst[tipo]) || tipo, area: tr.area || ((n + k + mundoIdx) % 2 ? 'bateria' : 'notas') })));
+/** Genius: a cada vez que ele aparece no caminho a sequência tem 1 nota a MAIS (4, 5, 6, 7…; cada mundo começa 2 notas acima do anterior; teto 10). `ordem` = quantas mesas de som já apareceram (esta incluída). */
+export const GENIUS_BASE = 3; export const GENIUS_TETO = 10;
+export const rodadasGenius = (ordem, mundoIdx = 0) => Math.min(GENIUS_TETO, GENIUS_BASE + Math.max(1, ordem) + 2 * mundoIdx);
+function ordemGenius(n, k, tr) { // conta as mesas de som da fase 1 até a porta k da fase n (com as trocas da trilha), incluindo o desafio
+  let c = 0; for (let f = 1; f <= n; f++) { const tipos = DESAFIOS[f] ? [DESAFIOS[f].tipo] : TIPOS_FASE[f - 1].map((t) => (tr.subst && tr.subst[t]) || t); tipos.forEach((t, i) => { if (t === 'genius' && (f < n || i <= k)) c++; }); }
+  return c;
+}
+export const portasDaFase = (mundoIdx, n, tr = {}) => (DESAFIOS[n] ? [{ ...faseCfg(mundoIdx, n, tr), ...DESAFIOS[n], desafio: true, ...(DESAFIOS[n].tipo === 'genius' ? { rodadas: rodadasGenius(ordemGenius(n, 0, tr), mundoIdx) } : {}) }]
+  : TIPOS_FASE[n - 1].map((tipo, k) => { const t = (tr.subst && tr.subst[tipo]) || tipo; return { ...faseCfg(mundoIdx, n, tr), tipo: t, area: tr.area || ((n + k + mundoIdx) % 2 ? 'bateria' : 'notas'), ...(t === 'genius' ? { rodadas: rodadasGenius(ordemGenius(n, k, tr), mundoIdx) } : {}) }; }));
 export const idPorta = (mundo, n, k) => `${mundo}:${n}:${k}`;
 /** ★ da fase no mapa (1 a 3) = média das ★ das portas, arredondada pra cima na metade, nunca abaixo de 1 se passou por todas. */
 export const estrelasFase = (lista) => { const v = (lista || []).filter((x) => x > 0); if (!v.length) return 0; return Math.max(1, Math.min(3, Math.round(v.reduce((a, b) => a + b, 0) / v.length))); };

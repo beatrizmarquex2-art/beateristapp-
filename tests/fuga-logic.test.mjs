@@ -34,3 +34,10 @@ test('Fuga sem quiz: nenhuma porta (nem o desafio nem a porta B) é quiz; os qui
   assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']);
 });
 
+test('Genius: a cada aparição a sequência tem 1 nota a mais (4, 5, 6, 7), cada mundo começa 2 acima, teto 10, porta B com 10', async () => {
+  const { rodadasGenius, GENIUS_TETO } = await import('../js/jogos/fuga-logic.js');
+  const seq = (mi, tr) => { const o = []; for (let n = 1; n <= 12; n++) portasDaFase(mi, n, tr).forEach((p) => { if (p.tipo === 'genius') o.push(p.rodadas); }); return o; };
+  assert.deepEqual(seq(0, {}), [4, 5, 6, 7]); assert.deepEqual(seq(1, {}), [6, 7, 8, 9]); assert.deepEqual(seq(2, {}), [8, 9, 10, 10]);
+  assert.equal(BONUS.rodadas, 10); assert.equal(rodadasGenius(99, 2), GENIUS_TETO);
+  for (const mi of [0, 1, 2]) { const v = seq(mi, {}); assert.deepEqual(v, [...v].sort((a, b) => a - b), 'nunca diminui'); }
+});
