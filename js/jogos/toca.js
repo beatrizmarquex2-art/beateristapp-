@@ -1,5 +1,5 @@
 // Toca Aqui: ler a figura na pauta e tocar no tempo. Abre direto no CAMINHO (mapa de 12 fases por modo: iniciante, intermediário, avançado),
-// igual ao pauLta; o "aleatório" fica ao lado do mapa. Toca na tela (com as duas mãos) ou no microfone (vale mais estrelas).
+// igual ao pauLta; o "treino" (compassos novos sem parar, sem estrela) é o botão grande logo abaixo do título. Toca na tela (com as duas mãos) ou no microfone (vale mais estrelas).
 // Os outros jogos que moravam aqui agora são separados: Detetive Note (adivinhar o ritmo), Figurix (figuras rítmicas) e, em breve, o de rudimentos (taiko).
 import { h } from '../util.js';
 import { getGame, setGame } from './base.js';
@@ -9,6 +9,7 @@ import { PATH, TIERS } from '../reading.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
 import { toast } from '../ui.js';
+import { botaoTreino } from './treino-ui.js';
 
 /** Os 3 modos viram 3 mundos, cada um com o seu cenário (o id do modo continua o mesmo: ini, int, ava). */
 const MUNDOS = {
@@ -32,8 +33,9 @@ export function mount(host) {
     const have = PATH.reduce((s, x, i) => s + (x.tier === tier ? starsAt(pr, i) : 0), 0);
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Modo' }, ...TIERS.map((t) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(tier === t.id), class: tier === t.id ? 'on' : '',
       onclick: () => { tier = t.id; setGame('toca', { ...getGame('toca'), tier }); drawMapa(); } }, `${TIERS.indexOf(t) + 1} · ${MUNDOS[t.id].curto}`)));
-    const bar = h('div', { class: 'tm-bar' }, tabs, h('button', { type: 'button', class: 'tm-rand', onclick: () => jogar(null) }, h('span', { 'aria-hidden': 'true' }, '↻'), ' aleatório'));
-    root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS[tier].nome} · toque as figuras da pauta no tempo: na tela, com as duas mãos, ou no microfone (vale mais estrelas).`), mapBox);
+    const bar = h('div', { class: 'tm-bar' }, tabs);
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS[tier].nome} · toque as figuras da pauta no tempo: na tela, com as duas mãos, ou no microfone (vale mais estrelas).`),
+      botaoTreino(() => jogar(null), `${TIERS.find((t) => t.id === tier).name} · compassos novos sem parar, sem estrelas`), mapBox);
     off = mountProgressionMap(mapBox, {
       gameId: `toca-${tier}`, levels, profileId: 'toca', unitName: 'Fase', tier: 0, stars: { have, max: 36 },
       theme: temaDoMundo(MUNDOS[tier].tema, MUNDOS[tier].nome, MUNDOS[tier].regioes),
@@ -41,7 +43,7 @@ export function mount(host) {
       unlockedOf: () => true, lockedMsg: '',
       onOpen: (lv) => jogar(lv.index),
     });
-    const hd = mapBox.querySelector('.mp-head'); if (hd) hd.append(bar); else mapBox.prepend(bar); // o modo e o aleatório ficam no cabeçalho fixo do mapa
+    const hd = mapBox.querySelector('.mp-head'); if (hd) hd.append(bar); else mapBox.prepend(bar); // o modo fica no cabeçalho fixo do mapa
   };
   const jogar = (n) => {
     clean(); view = 'jogo'; musicaPausa(); const stage = h('div', { class: 'jg-toca-stage' }); root.replaceChildren(stage);

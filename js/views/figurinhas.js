@@ -245,9 +245,9 @@ export function mount(host, parts = [], opts = {}) {
       corpo = h('div', { class: 'fig-pack-card' },
         h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '🎡'), h('span', {}, '1 a 3 figurinhas por giro')),
         resumo,
-        h('p', { class: 'fig-note' }, `${prog}. você também ganha 1 giro grátis por dia (check-in) e 1 giro a cada 4 fases concluídas.`),
+        h('p', { class: 'fig-note' }, `${prog}. você também ganha 1 giro grátis por dia (check-in).`),
         h('button', { type: 'button', class: 'btn primary wide', disabled: giros.length ? null : true, onclick: () => openIt(giros[0]) }, giros.length && L.packKind(giros[0]) === 'epico' ? (L.epicoPack(giros[0]).n === 1 ? 'girar · 3 figurinhas garantidas' : 'girar · de 1 a 5 figurinhas') : 'girar a roleta'),
-        giros.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(giros)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar giros'), h('small', {}, `junte ${L.ESTRELAS_POR_ROLETA} ★ jogando, conclua 4 fases ou entre no app todo dia.`)),
+        giros.length ? h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'por que você ganhou'), porque(giros)) : h('div', { class: 'fig-mais fig-explica' }, h('b', {}, 'como ganhar giros'), h('small', {}, `junte ${L.ESTRELAS_POR_ROLETA} ★ jogando (3 ★ por fase) ou entre no app todo dia.`)),
         semana);
     } else if (qual === 'bau') {
       const prox = bau[0]; const k = prox ? L.packKind(prox) : null;

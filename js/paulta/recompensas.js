@@ -6,7 +6,7 @@ import * as S from './score.js';
 const FIM = [{ k: 'a', n: 2, bea: 0 }, { k: 'b', n: 2, bea: 0 }, { k: 'c', n: 2, bea: 0 }];
 export const TABELA = {
   // Ao concluir os 12 níveis de um modo: festa e 3 pacotinhos de 2 cartas = 2 Beatles + 3 comuns + 1 especial (fácil: rara · médio: do robô Paul · difícil: exclusiva da Bea). Ver `plfPack` em album-logic.js.
-  // fácil: 1 carta a cada 3 fases concluídas
+  // fácil: 1 carta a cada 3 fases concluídas COM 3 ★ (regra da Bea, nov/2026: tudo só com 3 ★; 3 ★ = 90%)
   drumF: { meio: { cada: 3, n: 1, bea: 0 }, fim: FIM },
   // intermediário: 2 cartas a cada 5 fases (exclusivas também no meio); no fim 3 pacotinhos somando 7 cartas
   drumI: { meio: { cada: 5, n: 2, bea: 10 }, fim: FIM },
@@ -21,7 +21,8 @@ export function merecidos(p, pid) {
   const out = [];
   for (const w of S.DRUMS) {
     const t = TABELA[w]; const lv = w.slice(-1); const done = (k) => !!p.done[`${w}:${k}`];
-    if (t.meio) for (let k = t.meio.cada; k <= 12; k += t.meio.cada) if (done(k)) out.push({ id: id(t.meio.n, t.meio.bea, pid, lv, 'm', k), n: t.meio.n, bea: t.meio.bea, onde: `fase ${k} (${w})` });
+    const tresW = Array.from({ length: 12 }, (_, i) => i + 1).filter((k) => done(k) && Math.max(...['nomes', 'imagens'].map((m) => (p.ph[S.phKey(w, k, m)] || {}).s || 0)) >= 3).length; // fases com 3 ★
+    if (t.meio) for (let k = t.meio.cada; k <= 12; k += t.meio.cada) if (tresW >= k) out.push({ id: id(t.meio.n, t.meio.bea, pid, lv, 'm', k), n: t.meio.n, bea: t.meio.bea, onde: `fase ${k} (${w})` });
     if (t.meio3) {
       let tres = 0; for (let k = 1; k <= 12; k++) if (done(k) && Math.max(...['nomes', 'imagens'].map((m) => (p.ph[S.phKey(w, k, m)] || {}).s || 0)) >= 3) tres++;
       for (let m = 1; m <= Math.floor(tres / t.meio3.cada); m++) out.push({ id: id(t.meio3.n, t.meio3.bea, pid, lv, 'm3', m), n: t.meio3.n, bea: t.meio3.bea, onde: `${m * t.meio3.cada} fases com 3 estrelas` });

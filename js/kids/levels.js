@@ -23,5 +23,5 @@ export function levelTag(spec) {
   if (spec.sudden) return '💥 sem errar';
   return `${spec.rounds} perguntas`;
 }
-export const starsFor = (right, total) => { const p = total ? right / total : 0; return p >= 1 ? 3 : p >= 0.8 ? 2 : p >= 0.6 ? 1 : 0; };
+export const starsFor = (right, total) => { const p = total ? right / total : 0; return p >= 0.9 ? 3 : p >= 0.8 ? 2 : p >= 0.6 ? 1 : 0; };
 export const pctOf = (right, total) => (total ? Math.round((right / total) * 100) : 0);

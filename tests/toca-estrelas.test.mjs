@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { estrelasFase, ganhoEstrelas } from '../js/toca-estrelas.js';
 
-test('na tela (mão): igual à pauLta, 85% = 1 ★, 93% = 2 ★, 100% = 3 ★ e abaixo de 85% nenhuma', () => {
+test('na tela (mão): igual à pauLta, 85% = 1 ★, 90% = 2 ★, 93% = 3 ★ (não precisa de 100%) e abaixo de 85% nenhuma', () => {
   for (const tier of ['ini', 'int', 'ava']) for (const bpm of [80, 160]) {
-    assert.deepEqual([84, 85, 92, 93, 99, 100].map((score) => estrelasFase({ score, mic: false, tier, bpm })), [0, 1, 1, 2, 2, 3]);
+    assert.deepEqual([84, 85, 89, 90, 92, 93, 100].map((score) => estrelasFase({ score, mic: false, tier, bpm })), [0, 1, 1, 2, 2, 3, 3]);
   }
   assert.equal(estrelasFase({ score: 84, mic: true, tier: 'ini', bpm: 100 }), 0);
 });

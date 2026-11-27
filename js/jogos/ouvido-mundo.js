@@ -19,7 +19,7 @@ export function montaMundo(host, J) {
   const REGRA = document.documentElement.classList.contains('aluno-on'); // alunos: o difícil só abre com o fácil concluído; no app da Bea fica tudo aberto
   const est = () => getGame(J.id).est || {};
   const estOf = (nv, n) => est()[`${nv}:${n}`] || 0;
-  const concluido = (nv) => Array.from({ length: FASES_POR_NIVEL }, (_, i) => i + 1).every((n) => estOf(nv, n) >= 1);
+  const concluido = (nv) => Array.from({ length: FASES_POR_NIVEL }, (_, i) => i + 1).every((n) => estOf(nv, n) >= 3); // pacote do mundo só com 3 ★ em todas as fases
   const nivelAberto = (nv) => !REGRA || nv === 'facil' || concluido('facil');
   const aberta = (nv, n) => n === 1 || estOf(nv, n - 1) >= 1;
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } if (ativo) { try { ativo.destroy(); } catch { /* ok */ } ativo = null; } };
@@ -65,7 +65,7 @@ export function montaMundo(host, J) {
     if (gone) return; const antes = estOf(nv, f.num); const novo = Math.max(antes, r.est);
     if (novo !== antes) setGame(J.id, { est: { ...est(), [`${nv}:${f.num}`]: novo } });
     premiar(J.id, r.est, `${J.id}:${nv}:${f.num}`);
-    if (r.est >= 1 && concluido(nv)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`${J.id}:${nv}`)).catch(() => { /* sem prêmio */ }); if (r.est >= 1 && concluido(nv)) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: J.nome, caminho: NIVEIS.find((n) => n.id === nv).nome, chave: `${J.id}:${nv}`, pose: 'ouvindo', premioChave: `${J.id}:${nv}` })).catch(() => {}), 700); // festa ao acabar o mundo
+    if (r.est >= 3 && concluido(nv)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`${J.id}:${nv}`)).catch(() => { /* sem prêmio */ }); if (r.est >= 1 && concluido(nv)) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: J.nome, caminho: NIVEIS.find((n) => n.id === nv).nome, chave: `${J.id}:${nv}`, pose: 'ouvindo', premioChave: `${J.id}:${nv}` })).catch(() => {}), 700); // festa ao acabar o mundo
     const grande = r.total != null ? `${r.certas} de ${r.total}` : (r.erros ? `${r.erros} ${r.erros === 1 ? 'erro' : 'erros'}` : 'sem erros!');
     const frase = r.est === 3 ? 'perfeito! 🤘' : r.est >= 1 ? 'passou! boa.' : (r.total != null ? 'ainda não passou: acerte 60% pra abrir a próxima.' : 'tenta de novo: dá pra errar menos.');
     const prox = f.num < FASES_POR_NIVEL && r.est >= 1; const todas = fasesDe(J.id, nv);

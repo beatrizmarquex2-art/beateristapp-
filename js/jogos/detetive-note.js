@@ -15,6 +15,7 @@ import * as FB from '../feedback.js';
 import { mountProgressionMap } from '../kids/mapa.js';
 import { musicaPausa, musicaVolta } from './musica.js';
 import { temaDoMundo } from './mundos-tema.js';
+import { botaoTreino, telaTreino } from './treino-ui.js';
 import { TEMAS, MODOS, ESTILOS, estiloDe, FASES, RODADAS, COM_CONTAGEM, ouvidasMax, bpmFase, baseDe, temFlam, cartas, sortear, conferir, acertou, estrelas } from './detetive-logic.js';
 
 const EMOJI_MODO = { figuras: '🎼', comida: '🍞', parque: '🚲', corpo: '✋', animal: '🐶' };
@@ -56,18 +57,19 @@ export function mount(host) {
   // S = tempos da tela (próxima rodada); Au = só o som (ouvir de novo não cancela nada da tela)
   const S = session(); const Au = session(); const sfx = mapSfx(); let off = null; let ultimo = null; // ultimo = o compasso anterior (o novo nunca repete)
   let fase = 1; let secreto = null; let slots = []; let rodada = 0; let primeira = 0; let errou = false; let gone = false; let jogando = false; let marcas = null; let ouvidas = 0;
+  let treino = false; let tNivel = Math.min(FASES, Math.max(1, Number(saved.tNivel) || 1)); let acertosT = 0; // modo treino: sem estrelas, sem figurinha, sem salvar progresso
   const estOf = (m, n) => ((getGame('detetive').est || {})[`${m}:${n}`] || 0);
   const guardaEst = (m, n, v) => { const g = getGame('detetive'); setGame('detetive', { ...g, est: { ...(g.est || {}), [`${m}:${n}`]: v } }); };
   const limpa = () => { if (off) { try { off(); } catch { /* ok */ } off = null; } S.reset(); Au.reset(); };
 
   /* ---------- mapa (abre aqui) ---------- */
   const mapa = () => {
-    limpa(); jogando = false; musicaVolta(); // música só no mapa; nas fases precisa ouvir o ritmo
+    limpa(); jogando = false; treino = false; musicaVolta(); // música só no mapa; nas fases precisa ouvir o ritmo
     const box = h('div', { class: 'tm-map' });
     const levels = Array.from({ length: FASES }, (_, i) => ({ id: `det:${modo}:${i + 1}`, index: i + 1, label: String(i + 1), tag: '', boss: i === FASES - 1 }));
     const have = levels.reduce((s, l) => s + estOf(modo, l.index), 0);
     const tabs = h('div', { class: 'tm-tabs', role: 'radiogroup', 'aria-label': 'Modo' }, ...MODOS.map((m) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(modo === m), class: modo === m ? 'on' : '', onclick: () => { modo = m; setGame('detetive', { ...getGame('detetive'), modo }); mapa(); } }, NOME(m))));
-    root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS_DET[modo].nome} · escute o ritmo e monte ele com as cartas, na ordem certa.`), box);
+    root.replaceChildren(h('p', { class: 'tm-dica' }, `${MUNDOS_DET[modo].nome} · escute o ritmo e monte ele com as cartas, na ordem certa.`), botaoTreino(telaT, `${MUNDOS_DET[modo].nome} · ritmos novos sem parar, sem estrelas`), box);
     off = mountProgressionMap(box, {
       gameId: `detetive-${modo}`, levels, profileId: 'detetive', unitName: 'Fase', tier: 0, stars: { have, max: FASES * 3 }, theme: temaDoMundo(MUNDOS_DET[modo].tema, MUNDOS_DET[modo].nome, MUNDOS_DET[modo].regioes),
       starsOf: (id) => estOf(modo, Number(id.split(':')[2])), unlockedOf: () => true, lockedMsg: '', onOpen: (lv) => comeca(lv.index),
@@ -76,7 +78,15 @@ export function mount(host) {
   };
 
   /* ---------- uma fase: 3 ritmos ---------- */
-  const comeca = (n) => { limpa(); musicaPausa(); fase = n; bpm = bpmFase(modo, n, rapido); rodada = 0; primeira = 0; jogando = true; nova(); };
+  /* ---------- modo treino: escolhe o mundo e o nível (1 a 12 = as 12 fases) e joga ritmos novos sem parar; nada é salvo ---------- */
+  const telaT = () => {
+    limpa(); jogando = false; treino = false; musicaPausa();
+    telaTreino(root, { titulo: 'treino do detetive note', onBack: mapa, onStart: comecaT, grupos: [
+      { rotulo: 'mundo', atual: modo, itens: MODOS.map((m) => [m, `${m.slice(1)} · ${MUNDOS_DET[m].nome}`]), onPick: (v) => { modo = v; setGame('detetive', { ...getGame('detetive'), modo }); telaT(); } },
+      { rotulo: 'nível', atual: tNivel, itens: Array.from({ length: FASES }, (_, i) => [i + 1, String(i + 1)]), ajuda: `nível ${tNivel} = os ritmos da fase ${tNivel} do mundo (quanto maior, mais difícil, com menos vezes pra ouvir).`, onPick: (v) => { tNivel = v; setGame('detetive', { ...getGame('detetive'), tNivel }); telaT(); } }] });
+  };
+  const comecaT = () => { limpa(); musicaPausa(); treino = true; fase = tNivel; bpm = bpmFase(modo, fase, rapido); rodada = 0; primeira = 0; acertosT = 0; jogando = true; nova(); };
+  const comeca = (n) => { limpa(); musicaPausa(); treino = false; fase = n; bpm = bpmFase(modo, n, rapido); rodada = 0; primeira = 0; jogando = true; nova(); };
   /* marcador do tempo (só nos modos de desenho): as casas acendem uma de cada vez no tempo do ritmo e os números 1 2 3 4 acompanham (escolha da Bea) */
   const limparTempo = () => { const w = root.querySelector('.dn-wrap'); if (w) w.querySelectorAll('.agora,.conta').forEach((e) => e.classList.remove('agora', 'conta')); };
   const marca = (i, tipo) => {
@@ -92,8 +102,8 @@ export function mount(host) {
   const restam = () => ouvidasMax(fase) - ouvidas;
   const ouvir = () => { if (restam() <= 0) return; ouvidas++; Au.reset(); limparTempo(); audio(); const q = 60 / bpm; const t0 = tocaCompasso(secreto, bpm, somDaFase(fase)); anima(t0, q, COM_CONTAGEM(bpm)); };
   const nova = () => { S.reset(); secreto = sortear(fase, Math.random, ultimo, modo); ultimo = secreto; slots = []; errou = false; marcas = null; ouvidas = 0; desenha(); Au.later(() => { ouvir(); desenha(); }, 400); };
-  const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: mapa }, '‹ mapa'),
-    h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
+  const topo = () => h('div', { class: 'tr-fasehead' }, h('button', { class: 'btn small ghost', type: 'button', onclick: treino ? telaT : mapa }, treino ? '‹ treino' : '‹ mapa'),
+    treino ? h('span', { class: 'tm-treino-placar', 'aria-live': 'polite' }, `🎯 ${acertosT} ${acertosT === 1 ? 'ritmo certo' : 'ritmos certos'}`) : h('span', { class: 'dn-dots', role: 'img', 'aria-label': `ritmo ${Math.min(rodada + 1, RODADAS)} de ${RODADAS}` }, ...Array.from({ length: RODADAS }, (_, i) => h('i', { class: i < rodada ? 'on' : i === rodada && jogando ? 'now' : '' }))));
   const desenha = () => {
     const cs = cartas(modo, fase, estilo()); const est = estilo(); const cheio = slots.length === 4;
     const casas = Array.from({ length: 4 }, (_, i) => { const c = slots[i] != null ? cs.find((x) => x.cell === slots[i]) : null; const m = marcas ? marcas[i] : null;
@@ -102,7 +112,7 @@ export function mount(host) {
     const baralho = cs.map((c) => h('button', { type: 'button', class: 'dn-card', disabled: cheio, 'aria-label': c.cell === '0000' ? 'pausa' : c.cell === '0010' ? 'pausa de colcheia e colcheia' : c.id ? foodOf(c.id).word : temFlam(c.cell) ? `${baseDe(c.cell)} com flam` : c.cell, onclick: () => { if (slots.length < 4) { soa(c.cell, bpm, somDaFase(fase)); slots = [...slots, c.cell]; marcas = null; desenha(); } } }, face(c, est)));
     const rest = restam(); const vezes = rest === Infinity ? '' : rest > 0 ? ` · ${rest} ${rest === 1 ? 'vez' : 'vezes'}` : ' · acabou, confie no ouvido!';
     root.replaceChildren(h('div', { class: 'dn-caderno' }, topo(),
-      h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
+      h('h2', { class: 'dn-caso' }, 'caso ', h('em', {}, String(fase).padStart(2, '0'))), h('p', { class: 'dn-sub' }, treino ? `treino · ${MUNDOS_DET[modo].nome} · nível ${fase}` : `${MUNDOS_DET[modo].nome} · fase ${fase} de ${FASES}`),
       modo === 'm1' ? h('div', { class: 'dn-estilos', role: 'radiogroup', 'aria-label': 'Cartas' }, ...ESTILOS.map((e) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(est === e), class: est === e ? 'on' : '', onclick: () => { estiloEsc = e; setGame('detetive', { ...getGame('detetive'), estilo: e }); desenha(); } }, ico(ICONE_MODO[e], EMOJI_MODO[e]), h('span', {}, e)))) : null,
       modo === 'm1' ? h('button', { type: 'button', class: `dn-rapido${rapido ? ' on' : ''}`, 'aria-pressed': String(rapido), onclick: () => { rapido = !rapido; bpm = bpmFase(modo, fase, rapido); desenha(); } }, h('b', {}, '⚡ 100 bpm'), h('small', {}, rapido ? 'ligado: o mundo 1 já toca rápido' : 'pra adultos: já ouvir no andamento rápido')) : null,
       h('button', { class: 'dn-ouvir', type: 'button', disabled: rest <= 0, onclick: () => { ouvir(); desenha(); } }, h('span', { class: 'dn-vinil', 'aria-hidden': 'true' }), h('span', { class: 'dn-ouvir-t' }, 'ouvir a pista', h('small', {}, `${somDaFase(fase)} · ${bpm} bpm${vezes}`))),
@@ -115,7 +125,7 @@ export function mount(host) {
   const confere = () => {
     if (acertou(slots, secreto)) {
       if (!errou) primeira++; marcas = secreto.map(() => true); desenha(); FB.win(root.querySelector('.dn-slots')); Au.reset();
-      S.later(() => { rodada++; if (rodada >= RODADAS) fim(); else nova(); }, 1200);
+      S.later(() => { if (treino) { acertosT++; nova(); return; } rodada++; if (rodada >= RODADAS) fim(); else nova(); }, 1200);
     } else { errou = true; marcas = conferir(slots, secreto); desenha(); FB.lose(root.querySelector('.dn-slots')); }
   };
   const fim = () => {
@@ -125,7 +135,7 @@ export function mount(host) {
         h('div', { class: 'jg-actions' }, h('button', { class: 'btn primary', type: 'button', onclick: () => comeca(fase) }, 'tentar de novo'), h('button', { class: 'btn ghost', type: 'button', onclick: mapa }, 'ver o mapa'))); return;
     }
     sfx.play('win'); S.later(() => sfx.play('star'), 450); if (est === 3) S.later(() => sfx.play('medal'), 950); // som de fase concluída (mais festa com 3 estrelas)
-    if (fase === FASES) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`detetive:${modo}`)).catch(() => {}); // mundo concluído = pacote de bandas e artistas
+    if (Array.from({ length: FASES }, (_, i) => i + 1).every((k) => (k === fase ? Math.max(est, antes) : estOf(modo, k)) >= 3)) import('../figurinhas/mundos-premio.js').then((X) => X.premiarMundo(`detetive:${modo}`)).catch(() => {}); // mundo com 3 ★ em TODAS as fases = pacote de bandas e artistas
     if (fase === FASES) setTimeout(() => import('../conquista.js').then((C) => C.festaCaminho({ jogo: 'Detetive Note', caminho: MUNDOS_DET[modo] ? MUNDOS_DET[modo].nome : 'todas as fases', chave: `detetive:${modo}`, pose: 'ouvindo', premioChave: `detetive:${modo}` })).catch(() => {}), 700); // terminou o caminho: festa + postar
     if (est > antes) { guardaEst(modo, fase, est); import('../figurinhas/mesa.js').then((M) => M.vitoria('detetive', est - antes)).catch(() => {}); } // só ganha a diferença sobre o melhor da fase
     root.replaceChildren(topo(), h('h2', { class: 'jg-h hand' }, `fase ${fase} concluída!`), h('p', { class: 'dn-estrelas', 'aria-label': `${est} de 3 estrelas` }, '★'.repeat(est), '☆'.repeat(3 - est)),

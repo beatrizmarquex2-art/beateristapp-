@@ -1042,12 +1042,20 @@ button.dc-chip{cursor:pointer;min-height:36px}
 .cm-root .jg-seg button.jg-ic.on{background:#fffdf8;color:#17365B}.cm-root .jg-seg button.jg-ic.on .ic-bq .ac{stroke:#d3122f}.cm-root .jg-seg button.jg-ic.on .ic-bq .fa{fill:#d3122f}
 .jg-seg button.jg-ic,button.mem-ic,.bv-modo.bv-ic{border-radius:50% !important}
 
-/* Toca Aqui: abas do modo + aleatório em cima do mapa */
+/* Modo TREINO: botão grande logo abaixo do título do mapa + tela de escolha do nível */
+.tm-treino{display:flex;align-items:center;gap:12px;width:100%;margin:2px 0 10px;padding:10px 14px;min-height:56px;border:3px solid #fbf7ee;border-radius:16px;background:#1f6f78;color:#fbf7ee;text-align:left;box-shadow:3px 3px 0 #2a0710;cursor:pointer;font:inherit}
+.tm-treino:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #2a0710}
+.tm-treino-ico{font-size:28px;line-height:1}
+.tm-treino-t{display:flex;flex-direction:column;flex:1;min-width:0}.tm-treino-t b{font:800 18px var(--display,inherit)}.tm-treino-t small{font:600 12.5px var(--body,inherit);opacity:.92}
+.tm-treino-go{font-size:20px;color:#ffd23f}
+.tm-treino-tela{color:#fbf7ee}.tm-treino-grupo{margin:10px 0}.tm-treino-grupo .tm-tabs button{min-width:44px}.tm-treino-ajuda{margin:4px 0 0;font-size:12.5px}
+.tm-treino-start{min-height:52px;font-size:17px}
+.tm-treino-placar{margin-left:auto;font:700 13px var(--body,inherit);color:#ffd23f}
+/* Toca Aqui: abas do modo em cima do mapa */
 .tm-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 6px}
 .tm-tabs{display:flex;gap:5px;flex-wrap:wrap}
-.tm-tabs button,.tm-rand{min-height:34px;padding:3px 12px;border:2px solid #fbf7ee;border-radius:999px;background:#8a1a30;color:#fbf7ee;font:700 13px var(--body,inherit);box-shadow:2px 2px 0 #2a0710;cursor:pointer}
+.tm-tabs button{min-height:34px;padding:3px 12px;border:2px solid #fbf7ee;border-radius:999px;background:#8a1a30;color:#fbf7ee;font:700 13px var(--body,inherit);box-shadow:2px 2px 0 #2a0710;cursor:pointer}
 .tm-tabs button.on{background:#d99a2b;color:#2a0710}
-.tm-rand{margin-left:auto;background:#1f6f78}
 .tm-dica{margin:0 0 6px;font-size:13px;color:#fbf7ee}
 .tr-fasehead{display:flex;align-items:center;gap:10px;margin:0 0 8px;color:#fbf7ee}.tr-fasehead b{font-family:var(--display,inherit);font-size:16px}
 .tm-map .mp-head{flex-wrap:wrap}.tm-map .tm-bar{flex:1 1 100%;margin:2px 0 0}

@@ -1,4 +1,4 @@
-// Toca Aqui abre direto no caminho (mapa de 12 fases por modo), com aleatório; dentro da fase só tem o que importa (sem escolher nível/fase).
+// Toca Aqui abre direto no caminho (mapa de 12 fases por modo), com treino; dentro da fase só tem o que importa (sem escolher nível/fase).
 import { serve, launch, sleep, check, done, alunoComCodigo } from './harness.mjs';
 const { srv, url } = await serve();
 const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } });
@@ -7,7 +7,7 @@ const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => e
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); } catch (e) {} });
 await page.goto(url + '/aluno.html#/jogos/toca'); await page.waitForSelector('.mp-node', { timeout: 15000 });
 check('abre direto no mapa com 12 fases', (await page.locator('.mp-node').count()) === 12);
-check('3 mundos (vila, cidade, palco) e botão aleatório', (await page.locator('.tm-tabs button').count()) === 3 && (await page.locator('.tm-rand').count()) === 1);
+check('3 mundos (vila, cidade, palco) e botão de treino', (await page.locator('.tm-tabs button').count()) === 3 && (await page.locator('.tm-treino').count()) === 1);
 check('sem as outras versões (imagens, figuras, taiko, duelo, aula)', !/duelo|aula ao vivo|com imagens|taiko/i.test(await page.textContent('.jg-toca')));
 check('texto fala das duas mãos', /duas mãos/.test(await page.textContent('.jg-toca')));
 await page.locator('.tm-tabs button').nth(1).click(); await sleep(400);
@@ -33,7 +33,7 @@ check('passou de fase: NÃO tem "próxima fase" direto; o botão avisa que andou
 await page.getByRole('button', { name: /andou no mundinho/ }).click(); await page.waitForSelector('.mp-node');
 check('o botão leva ao mapa e o aviso diz que a fase 2 abriu', (await page.locator('.mp-node').count()) === 12 && /fase 1 concluída, a fase 2 abriu/.test(await page.evaluate(() => (document.getElementById('toasts') || document.body).textContent)));
 await page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/toca-andou.png` });
-await page.locator('.tm-rand').click(); await page.waitForSelector('.tr-fasehead');
-check('aleatório abre uma fase', (await page.locator('.tr-pad').count()) === 1);
+await page.locator('.tm-treino').click(); await page.waitForSelector('.tr-fasehead');
+check('treino abre compassos novos (sem estrela)', (await page.locator('.tr-pad').count()) === 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

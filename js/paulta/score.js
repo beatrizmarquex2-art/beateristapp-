@@ -13,7 +13,7 @@ export const TITLES = [
 export const blank = () => ({ started: 0, ph: {}, done: {}, wdone: {}, titles: {}, miss: {}, log: [], mig: {}, rank: { on: false, nick: '' }, lessons: {} });
 export const norm = (p) => ({ ...blank(), ...(p || {}), rank: { ...blank().rank, ...((p || {}).rank || {}) } });
 export const phKey = (w, n, m) => `${w}:${n}:${m}`;
-export const starsFor = (right, total) => { const p = total ? right / total : 0; return p >= 1 ? 3 : p >= 0.8 ? 2 : p >= 0.6 ? 1 : 0; };
+export const starsFor = (right, total) => { const p = total ? right / total : 0; return p >= 0.9 ? 3 : p >= 0.8 ? 2 : p >= 0.6 ? 1 : 0; };
 
 export const doneCount = (p) => Object.keys(p.done).length;
 export const worldDone = (p, w) => (w === 'drum' ? DRUMS.some((d) => worldDone(p, d)) : Array.from({ length: COUNT[w] }, (_, i) => `${w}:${i + 1}`).every((k) => p.done[k]));

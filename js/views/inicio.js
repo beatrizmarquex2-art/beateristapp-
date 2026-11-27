@@ -76,7 +76,7 @@ function abrirComoGanhar(faltam) {
       ['🥁', 'Hero Drum, Piano Hero e Beat Hero', 'termine a fase com 80% ou mais: fácil dá 1 ★, médio 2 ★ e difícil 3 ★.', '#/jogos', 'jogar'],
       ['🎼', 'Toca Aqui, Figurix e pauLta', 'cada fase concluída vale estrela, e quanto mais você acerta, mais estrelas.', '#/jogos', 'ver os jogos'],
       ['🕵️', 'Detetive, quiz e os outros', 'quem ganha leva até 3 ★ (e participar já vale 1 ★ nos duelos).', '#/jogos', 'ver os jogos'],
-      ['🎁', 'bônus', 'a cada 4 fases concluídas você ganha mais 1 giro de presente.', '#/jogos', 'jogar']] },
+      ['🎁', 'bônus', 'conclua um mundo com 3 ★ em todas as fases e ganhe um pacote de figurinhas.', '#/jogos', 'jogar']] },
     estudos: { ic: '📚', t: 'estudos', sub: 'aulas com o Paul', itens: [
       ['❓', 'mini quiz de cada fase', 'no fim de cada fase tem 3 perguntas: 3 acertos dão 2 ★ e 2 acertos dão 1 ★ (até 30 ★ por dia nos estudos).', '#/estudos/aulas', 'estudar'],
       ['🎁', 'tema completo', 'acertou as 3 perguntas em todas as fases de um tema? ganha também uma figurinha exclusiva!', '#/estudos/aulas', 'ver os temas'],
