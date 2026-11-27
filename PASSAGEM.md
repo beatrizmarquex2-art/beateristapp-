@@ -1202,3 +1202,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Tudo guardado na tabela `partituras` (instrumento violao/guitarra/baixo/bateria, dados.versao 2). O PDF usa `d.render` em `js/partitura-pdf.js`.
 - Ainda não: pauta comum para violão, figuras rítmicas sem pauta, microfone na bateria, ligaduras e quiálteras.
 - Testes: `tests/pro-ritmo.test.mjs`, `tests/e2e/pro-ritmico.mjs`.
+
+### PRO: som do jogo, desempenho e todos os aparelhos (27/nov/2026)
+- Som: `js/pro/som.js` usa os MESMOS sons do jogo (`js/instruments.js`): corda dedilhada (violão, guitarra limpa/distorcida, baixo) e bateria gravada (acústica, eletrônica, cajón). Reprodução pelo relógio do áudio (`scheduler`), sem setTimeout; o microfone fica surdo enquanto o app toca.
+- Toque: `js/pro/editor-ui.js` → `toque()` dispara no pointerdown (sem esperar soltar), não duplica com o click e atende Enter/Espaço. Braço, pads e teclado têm `touch-action:none` (sem zoom nem rolagem por engano).
+- Desempenho: o instrumento desenhado é montado uma vez; um toque só atualiza a folha (antes refazia a tela toda). Redimensionar usa ResizeObserver com espera.
+- Layout: celular/tablet em pé = folha fixa no alto; deitado = 2 colunas; ≥900 px = 2 colunas com instrumento fixo. `dvh`, áreas seguras, `scrollbar-gutter`, barras de rolagem finas, campos de 16 px (sem zoom do iPhone).
+- NÃO testado em Safari/iOS de verdade (só Chromium em vários tamanhos): testar iPhone, iPad e MacBook no aparelho.

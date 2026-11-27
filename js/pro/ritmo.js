@@ -36,14 +36,14 @@ export function posicaoDe(cordas, midi, maxCasa = 12) {
 /* ---------- bateria ---------- */
 // pos = meia-linha a partir da linha de cima da pauta (0 = 1ª linha, 2 = 2ª...), 'x' = cabeça em X
 export const PECAS = {
-  hh: { nome: 'chimbal', pos: -1, x: true, cor: '#f6d11e' }, sn: { nome: 'caixa', pos: 3, cor: '#e0262f' }, bd: { nome: 'bumbo', pos: 7, pe: true, cor: '#1b1818' },
+  hh: { nome: 'chimbal', pos: -1, x: true, cor: '#f6d11e' }, ho: { nome: 'chimbal aberto', pos: -1, x: true, aberto: true, cor: '#f6d11e' }, sn: { nome: 'caixa', pos: 3, cor: '#e0262f' }, bd: { nome: 'bumbo', pos: 7, pe: true, cor: '#1b1818' },
   tt: { nome: 'tom 1', pos: 1, cor: '#5ec1ee' }, mt: { nome: 'tom 2', pos: 2, cor: '#2a4aa8' }, ft: { nome: 'surdo', pos: 5, cor: '#3fae5a' },
   cr: { nome: 'prato', pos: -3, x: true, cor: '#f28c1e' }, rd: { nome: 'condução', pos: 0, x: true, cor: '#f28c1e' }, hf: { nome: 'chimbal pé', pos: 9, x: true, pe: true, cor: '#f06fae' },
 };
 export const KITS = [
   ['simples', 'simples: chimbal, caixa e bumbo', ['hh', 'sn', 'bd']],
   ['medio', 'médio: + tom, surdo e prato', ['hh', 'sn', 'bd', 'tt', 'ft', 'cr']],
-  ['completo', 'completo: todas as peças', ['hh', 'sn', 'bd', 'tt', 'mt', 'ft', 'cr', 'rd', 'hf']],
+  ['completo', 'completo: todas as peças', ['hh', 'ho', 'sn', 'bd', 'tt', 'mt', 'ft', 'cr', 'rd', 'hf']],
 ];
 export const pecasDoKit = (k) => (KITS.find((x) => x[0] === k) || KITS[0])[2];
 export const nomePeca = (p) => (PECAS[p] || { nome: p }).nome;
@@ -154,6 +154,7 @@ export function bateria(evs, { largura = 360, cor = false, sel = -1 } = {}) {
           let cab = '';
           if (e.p === 'cr') cab += `<line x1="${x - 9}" x2="${x + 9}" y1="${y0 - G}" y2="${y0 - G}" stroke="${INK}"/>`;
           cab += pc.x ? `<path d="M${x - 4.5} ${y - 4.5}l9 9M${x + 4.5} ${y - 4.5}l-9 9" stroke="${c}" stroke-width="2.3"/>` : `<ellipse cx="${x}" cy="${y}" rx="5.6" ry="4.1" transform="rotate(-20 ${x} ${y})" fill="${c}" stroke="${cor ? INK : 'none'}" stroke-width="1"/>`;
+          if (pc.aberto) cab += `<circle cx="${x}" cy="${y - 9}" r="2.6" fill="none" stroke="${INK}" stroke-width="1.2"/>`;
           if (e.fan) cab += `<text x="${x - 12}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">(</text><text x="${x + 12}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">)</text>`;
           if (e.acc) cab += `<path d="M${x - 5} ${pc.pe ? y + 12 : y - 11}l10 3-10 3" stroke="${INK}" stroke-width="1.6" fill="none"/>`;
           gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(x - 11, y - 10, 22, 20)}${i === sel ? `<circle cx="${x}" cy="${y}" r="10" fill="rgba(184,145,63,.28)"/>` : ''}${cab}</g>`;

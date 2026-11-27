@@ -23,7 +23,7 @@ await page.locator('.ep-ib[aria-label="Desfazer"]').click(); await sleep(150);
 check('desfazer tira a última', await notas() === 3);
 await page.locator('.ep-folha .pm-n').first().click(); await sleep(150);
 check('tocar na nota abre a correção', await page.locator('.ep-corrige').count() === 1);
-await page.locator('.ep-corrige .btn').click(); await sleep(150);
+await page.locator('.ep-corrige .er-tg.perigo').click(); await sleep(150);
 check('apagar remove a nota', await notas() === 2);
 await page.locator('.ep-modo button').nth(1).click(); await sleep(300);
 check('modo microfone não quebra (sem mic volta ao toque)', errs.length === 0);

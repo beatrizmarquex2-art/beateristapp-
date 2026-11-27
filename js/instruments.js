@@ -346,9 +346,9 @@ export const CHORDS = [['C', [null, 48, 52, 55, 60, 64]], ['G', [43, 47, 50, 55,
   ['D', [null, null, 50, 57, 62, 66]], ['Em', [40, 47, 52, 55, 59, 64]], ['A', [null, 45, 52, 57, 61, 64]], ['E', [40, 47, 52, 56, 59, 64]]];
 /** Calcula as cordas num intervalo livre pra o primeiro toque não engasgar. */
 export function warmGuitar() { warmNotes(CHORDS.flatMap(([, ms]) => ms)); }
-export function warmNotes(list) {
+export function warmNotes(list, kinds = ['a', 'e']) { // kinds: só o timbre que vai ser usado (cada nota calculada pesa ~0,4 MB)
   C = init(); const todo = [];
-  for (const k of ['a', 'e']) for (const m of new Set(list)) if (m != null && !ks.has(k + m)) todo.push([m, k]);
+  for (const k of kinds) for (const m of new Set(list)) if (m != null && !ks.has(k + m)) todo.push([m, k]);
   const step = () => { for (let i = 0; i < 4 && todo.length; i++) { const [m, k] = todo.shift(); try { ksBuf(m, k); } catch { return; } } if (todo.length) setTimeout(step, 0); };
   setTimeout(step, 300);
 }

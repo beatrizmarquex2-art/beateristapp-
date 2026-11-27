@@ -4,7 +4,7 @@ import { audio, click } from '../audio.js';
 import { limitaBpm, tapBpm } from './ferr-logic.js';
 
 export function mount(host) {
-  let bpm = 100; let comp = 4; let rodando = false; let timer = 0; let prox = 0; let nota = 0; let toques = []; let gone = false;
+  let bpm = 100; let comp = 4; let rodando = false; let timer = 0; let prox = 0; let nota = 0; let toques = []; let gone = false; let fila = []; let raf = 0;
   try { const s = JSON.parse(localStorage.getItem('pro-metro') || '{}'); bpm = limitaBpm(s.bpm || 100); comp = [2, 3, 4, 5, 6, 7].includes(s.comp) ? s.comp : 4; } catch { /* sem storage */ }
   const guarda = () => { try { localStorage.setItem('pro-metro', JSON.stringify({ bpm, comp })); } catch { /* ok */ } };
   const num = h('output', { class: 'pm2-bpm', 'aria-live': 'off' }); const dots = h('div', { class: 'pm2-dots', 'aria-hidden': 'true' });
@@ -13,9 +13,13 @@ export function mount(host) {
   const pinta = () => { num.textContent = bpm; slider.value = bpm; ir.textContent = rodando ? 'parar' : 'tocar'; ir.setAttribute('aria-pressed', String(rodando)); ir.classList.toggle('on', rodando);
     dots.replaceChildren(...Array.from({ length: comp }, (_, i) => h('i', { class: i === 0 ? 'ac' : '' }))); };
   const muda = (n) => { bpm = limitaBpm(n); guarda(); pinta(); };
-  const agenda = () => { const c = audio(); while (prox < c.currentTime + 0.12) { click(prox, nota % comp === 0 ? 2 : 1); const i = nota % comp; const quando = Math.max(0, (prox - c.currentTime) * 1000); setTimeout(() => { if (!gone && rodando) dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('x', k === i)); }, quando); prox += 60 / bpm; nota++; } };
-  const para = () => { rodando = false; clearInterval(timer); pinta(); dots.querySelectorAll('i').forEach((d) => d.classList.remove('x')); };
-  const toca = () => { if (rodando) { para(); return; } const c = audio(); if (c.state === 'suspended') c.resume(); rodando = true; nota = 0; prox = c.currentTime + 0.06; agenda(); timer = setInterval(agenda, 25); pinta(); };
+  // o clique é agendado no relógio do áudio (exato); a bolinha acende quando o relógio chega nele (sem setTimeout, que atrasa e acumula)
+  const agenda = () => { const c = audio(); while (prox < c.currentTime + 0.12) { click(prox, nota % comp === 0 ? 2 : 1); fila.push([prox, nota % comp]); prox += 60 / bpm; nota++; } };
+  const luz = () => { if (gone || !rodando) return; const c = audio(); while (fila.length && fila[0][0] <= c.currentTime) { const [, i] = fila.shift(); dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('x', k === i)); } raf = requestAnimationFrame(luz); };
+  const para = () => { rodando = false; clearInterval(timer); cancelAnimationFrame(raf); fila = []; pinta(); dots.querySelectorAll('i').forEach((d) => d.classList.remove('x')); };
+  const toca = () => { if (rodando) { para(); return; } const c = audio(); if (c.state === 'suspended') c.resume(); rodando = true; nota = 0; fila = []; prox = c.currentTime + 0.06; agenda(); timer = setInterval(agenda, 25); raf = requestAnimationFrame(luz); pinta(); };
+  const escondeu = () => { if (document.hidden && rodando) para(); }; // tela apagada/aba escondida: o navegador segura o relógio e depois solta tudo de uma vez
+  document.addEventListener('visibilitychange', escondeu);
   ir.addEventListener('click', toca);
   slider.addEventListener('input', () => muda(slider.value));
   tap.addEventListener('pointerdown', (e) => { e.preventDefault(); const t = Date.now(); toques = [...toques, t].slice(-8); const b = tapBpm(toques); if (b) { muda(b); dica.textContent = `${b} bpm — continue tocando para refinar`; } else dica.textContent = 'toque de novo…'; tap.classList.add('x'); setTimeout(() => tap.classList.remove('x'), 90); });
@@ -25,5 +29,5 @@ export function mount(host) {
   host.append(h('div', { class: 'pt pm2' }, h('header', { class: 'pt-top' }, h('div', {}, h('p', { class: 'pt-ov' }, 'Pedaleira'), h('h1', {}, 'Metrônomo'))),
     h('div', { class: 'pm2-vis' }, h('div', { class: 'pm2-lin' }, bt('−5', -5), bt('−1', -1), h('div', { class: 'pm2-c' }, num, h('small', {}, 'bpm')), bt('+1', 1), bt('+5', 5)), slider, dots),
     compEl, ir, h('div', { class: 'pm2-tapbox' }, tap, dica)));
-  pinta(); return () => { gone = true; para(); };
+  pinta(); return () => { gone = true; para(); document.removeEventListener('visibilitychange', escondeu); };
 }

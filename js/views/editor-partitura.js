@@ -14,6 +14,8 @@ import { layout, nameOf } from '../piano-logic.js';
 import { voice } from './piano.js';
 import { ouvirNotas } from '../jogos/vivo-ui.js';
 import { seta, FIGS, nomeDur, oit, quando } from './partitura-palco.js';
+import { aoMudarLargura, iconeBtn, acaoBtn, ajustes, painelCorrige } from '../pro/editor-ui.js';
+import { scheduler, silence } from '../audio.js';
 
 const CHAVE = 'setting-partitura-teclas'; // a mesma do painel das Teclas: o que se monta num aparece no outro
 const lerSalvo = () => { try { const r = store.get(CHAVE); return r && r.data ? r.data : {}; } catch { return {}; } };
@@ -45,119 +47,129 @@ export function mount(host, opts = {}) {
   s.evs = P.normalizar(Array.isArray(s.evs) ? s.evs : []); s.take = Array.isArray(s.take) ? s.take : [];
   if (novo) { s.evs = []; s.take = []; s.titulo = ''; s.nuvemId = null; }
   let sel = -1; let hist = []; let cursor = P.fim(s.evs); let oct = s.oct || (innerWidth < 640 ? 4 : 3); const octaves = innerWidth < 640 ? 1 : 2;
-  let modo = 'toque'; let mic = null; let tocando = false; let timers = []; let msg = ''; let gone = false;
+  let modo = 'toque'; let mic = null; let run = null; let msg = ''; let gone = false;
   const live = new Map();
   const salvar = () => store.upsert('setting', CHAVE, { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: 'clicar', titulo: s.titulo, nuvemId: s.nuvemId || null, oct }).catch(() => {});
   const muda = (novas, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novas; cursor = P.fim(novas); salvar(); };
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
-  const parar = () => { timers.forEach(clearTimeout); timers = []; tocando = false; };
+  const parar = () => { if (run) { run.stop(); run = null; } silence(); if (mic) mic.surdo(false); };
 
   /* ---------- a partitura ---------- */
   const folha = h('div', { class: 'ep-folha', role: 'group', 'aria-label': 'Partitura. Toque numa nota para corrigir.' });
-  folha.addEventListener('click', (e) => { const n = e.target.closest && e.target.closest('.pm-n'); const i = n ? +n.dataset.ev : -1; if (i >= 0 && s.evs[i]) { sel = sel === i ? -1 : i; if (sel >= 0) toca(s.evs[sel].m, 0.4); } else sel = -1; desenha(); });
+  folha.addEventListener('click', (e) => { const n = e.target.closest && e.target.closest('.pm-n'); const i = n ? +n.dataset.ev : -1; if (i >= 0 && s.evs[i]) { sel = sel === i ? -1 : i; if (sel >= 0) toca(s.evs[sel].m, 0.4); } else sel = -1; atualiza(); });
   const toca = (m, d = 0.35) => { const v = voice(m, 'piano'); setTimeout(() => v.off(false), d * 1000); };
-  const nota = (m) => { if (gone) return; const ev = P.anexarEm(s.evs, m, cursor, dur()); muda(ev); sel = ev.findIndex((x) => x.m === m && x.ini + x.d === cursor); msg = ''; desenha(); };
+  const nota = (m) => { if (gone) return; if (run) parar(); const ev = P.anexarEm(s.evs, m, cursor, dur()); muda(ev); sel = -1; msg = ''; atualiza(); };
 
-  /* ---------- o teclado desenhado ---------- */
+  /* ---------- o teclado desenhado (montado uma vez; um toque não refaz ele) ---------- */
   const kbWrap = h('div', { class: 'ep-kb', role: 'group', 'aria-label': 'Teclado' });
   const desenhaKb = () => {
+    for (const v of live.values()) { try { v.off(false); } catch { /* ok */ } } live.clear();
     const L = layout(oct, octaves); const w = 100 / L.whites.length;
     kbWrap.replaceChildren(
       ...L.whites.map((m) => h('button', { type: 'button', class: 'ep-w', 'data-m': m, 'aria-label': nameOf(m, 'pt') }, h('span', {}, m % 12 === 0 ? nameOf(m, 'pt') : nameOf(m, 'pt').replace(/\d+$/, '')))),
       ...L.blacks.map((b) => { const el = h('button', { type: 'button', class: 'ep-b', 'data-m': b.midi, 'aria-label': nameOf(b.midi, 'pt') }); el.style.left = `${b.at * w - w * 0.3}%`; el.style.width = `${w * 0.6}%`; return el; }));
     for (const el of kbWrap.querySelectorAll('[data-m]')) {
-      const m = +el.dataset.m;
-      el.addEventListener('pointerdown', (e) => { e.preventDefault(); const v = voice(m, 'piano'); live.set(e.pointerId, v); el.classList.add('on'); nota(m); });
-      for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(ev, (e) => { const v = live.get(e.pointerId); if (v) { v.off(false); live.delete(e.pointerId); } el.classList.remove('on'); });
+      const m = +el.dataset.m; let tocouEm = 0;
+      el.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); tocouEm = performance.now(); try { el.setPointerCapture(e.pointerId); } catch { /* ok */ } const v = voice(m, 'piano'); live.set(e.pointerId, v); el.classList.add('on'); nota(m); });
+      for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(ev, (e) => { const v = live.get(e.pointerId); if (v) { v.off(false); live.delete(e.pointerId); } el.classList.remove('on'); });
+      el.addEventListener('contextmenu', (e) => e.preventDefault());
+      el.addEventListener('click', (e) => { if (e.detail > 0 || performance.now() - tocouEm < 700) return; const v = voice(m, 'piano'); nota(m); setTimeout(() => v.off(false), 350); }); // teclado do computador / leitor de tela
     }
   };
 
   /* ---------- microfone: escuta e escreve ---------- */
   const ligaMic = async () => {
-    try { mic = await ouvirNotas((m) => { if (!gone && modo === 'mic') { nota(m); msg = `o microfone ouviu ${P.nomeCurto(m)} ${oit(m)}`; desenha(); } }, { instrumento: 'teclado' }); msg = 'ouvindo… toque uma nota no seu instrumento'; }
+    try { mic = await ouvirNotas((m) => { if (!gone && modo === 'mic') { nota(m); msg = `o microfone ouviu ${P.nomeCurto(m)} ${oit(m)}`; atualiza(); } }, { instrumento: 'teclado' }); msg = 'ouvindo… toque uma nota no seu instrumento'; }
     catch { mic = null; modo = 'toque'; msg = ''; toast('não consegui abrir o microfone. veja se o navegador deixou usar.', { id: 'ep', ms: 3600 }); }
-    desenha();
+    atualiza(); desenhaDir();
   };
   const desligaMic = () => { if (mic) { try { mic.stop(); } catch { /* já parou */ } mic = null; } };
-  const trocaModo = (m) => { if (modo === m) return; modo = m; if (m === 'mic') ligaMic(); else { desligaMic(); msg = ''; } desenha(); };
+  const trocaModo = (m) => { if (modo === m) return; modo = m; if (m === 'mic') ligaMic(); else { desligaMic(); msg = ''; } atualiza(); desenhaDir(); };
 
-  /* ---------- ouvir, PDF, pasta online ---------- */
+  /* ---------- ouvir (relógio do áudio), PDF, pasta online ---------- */
   const ouvir = () => {
-    parar(); if (!s.evs.length) return; tocando = true; const sx = P.semicolcheia(s.bpm) * 1000;
-    s.evs.forEach((e) => timers.push(setTimeout(() => { const v = voice(e.m, 'piano'); setTimeout(() => v.off(false), Math.max(150, e.d * sx * 0.9)); }, e.ini * sx)));
-    timers.push(setTimeout(() => { tocando = false; desenha(); }, P.fim(s.evs) * sx + 300)); desenha();
+    if (run) { parar(); desenhaTopo(); return; } if (!s.evs.length) return; if (mic) mic.surdo(true); const sx = P.semicolcheia(s.bpm); const evs = [...s.evs].sort((a, b) => a.ini - b.ini);
+    run = scheduler((i) => { if (i < evs.length) { const e = evs[i]; return { at: e.ini * sx, play: (t) => { const v = voice(e.m, 'piano', t); setTimeout(() => v.off(false), Math.max(120, (e.d * sx * 0.9 - (t - audio().currentTime)) * 1000)); } }; } return i === evs.length ? { at: P.fim(evs) * sx + 0.3, play: () => {} } : null; },
+      { onEnd: () => { run = null; if (mic) mic.surdo(false); if (!gone) desenhaTopo(); } }); desenhaTopo();
   };
   const pdf = async (b) => {
     b.disabled = true;
-    try { const r = await baixarPdf({ evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, semPapel: !!opts.semPapel }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
+    try { const r = await baixarPdf({ evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, semPapel: !!opts.semPapel, perfil: opts.perfil }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
     catch { toast('não consegui gerar o PDF agora', { id: 'ep', ms: 2600 }); }
     b.disabled = false;
   };
   const carrega = (row) => {
     const d = row.dados || {}; s.evs = P.normalizar(Array.isArray(d.evs) ? d.evs : []); s.bpm = d.bpm || 100; s.grade = d.grade || 2; s.clave = d.clave || 'auto'; s.cor = !!d.cor; s.take = [];
-    s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = P.fim(s.evs); sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); desenha();
+    s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = P.fim(s.evs); sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir();
   };
   const guardaOnline = async (b) => {
     const t = (s.titulo || '').trim(); if (!t) { toast('dê um nome para a partitura (no alto da tela) antes de guardar', { id: 'ep', ms: 2600 }); return; }
     b.disabled = true;
     try { const r = await NUV.salvar({ id: s.nuvemId, nome: t, instrumento: 'teclas', dados: { versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, titulo: s.titulo } }); s.nuvemId = r.id; salvar(); msg = `guardada na pasta online: ${r.nome} (${quando(r.atualizado_em)})`; }
     catch (e) { toast(NUV.textoErro(e), { id: 'ep', ms: 3200 }); }
-    b.disabled = false; desenha();
+    b.disabled = false; atualiza();
   };
 
   /* ---------- as peças da tela ---------- */
-  const barra = h('div', { class: 'ep-bar' });
-  const esq = h('div', { class: 'ep-esq' }); const dir = h('div', { class: 'ep-dir' });
-  const ib = (ico, lab, fn, { on = false, dis = false } = {}) => { const b = h('button', { type: 'button', class: `ep-ib${on ? ' on' : ''}`, 'aria-label': lab, disabled: dis }); b.innerHTML = ico; b.addEventListener('click', (e) => fn(e.currentTarget)); return b; };
+  const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const meio = h('div', { class: 'ep-meio' });
+  const esq = h('div', { class: 'ep-esq' }); const dir = h('div', { class: 'ep-dir' }); const modoEl = h('div', {}); const ajEl = h('div', {}); const kbEl = h('div', {});
+  dir.append(modoEl, ajEl, kbEl);
   const passo = () => Math.max(1, s.grade);
   const correcao = () => {
     const e = s.evs[sel]; if (!e) return null;
-    const mexe = (d) => () => { const novo = P.mover(s.evs, sel, d * passo()); if (novo === s.evs) { toast('já tem uma nota ali', { id: 'ep', ms: 1500 }); return; } muda(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === Math.max(0, e.ini + d * passo())); desenha(); };
-    const dura = (d) => () => { const novo = P.alongar(s.evs, sel, d * passo()); muda(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini); desenha(); };
-    const tom = (d) => () => { const novo = P.subir(s.evs, sel, d); muda(novo); toca(novo[sel].m, 0.3); desenha(); };
-    return h('div', { class: 'ep-corrige', role: 'group', 'aria-label': 'Corrigir a nota escolhida' },
-      h('b', {}, `nota escolhida: ${P.nomeCurto(e.m)} ${oit(e.m)}`),
-      seta('posição', `compasso ${Math.floor(e.ini / 16) + 1} · tempo ${Math.floor((e.ini % 16) / 4) + 1}`, mexe(-1), mexe(1), { dis: [e.ini === 0, false] }),
-      seta('duração', nomeDur(e.d), dura(-1), dura(1), { dis: [e.d <= 1, false] }),
-      seta('altura', `${P.nomeCurto(e.m)} ${oit(e.m)}`, tom(-1), tom(1)),
-      h('button', { type: 'button', class: 'btn small ghost', onclick: () => { muda(P.remover(s.evs, sel)); sel = -1; desenha(); } }, 'apagar essa nota'));
+    const mexe = (d) => () => { const novo = P.mover(s.evs, sel, d * passo()); if (novo === s.evs) { toast('já tem uma nota ali', { id: 'ep', ms: 1500 }); return; } muda(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === Math.max(0, e.ini + d * passo())); atualiza(); };
+    const dura = (d) => () => { const novo = P.alongar(s.evs, sel, d * passo()); muda(novo); sel = novo.findIndex((x) => x.m === e.m && x.ini === e.ini); atualiza(); };
+    const tom = (d) => () => { const novo = P.subir(s.evs, sel, d); muda(novo); toca(novo[sel].m, 0.3); atualiza(); };
+    return painelCorrige(`corrigir: ${P.nomeCurto(e.m)} ${oit(e.m)}`, () => { sel = -1; atualiza(); },
+      [seta('posição', `compasso ${Math.floor(e.ini / 16) + 1} · tempo ${Math.floor((e.ini % 16) / 4) + 1}`, mexe(-1), mexe(1), { dis: [e.ini === 0, false] }), seta('duração', nomeDur(e.d), dura(-1), dura(1), { dis: [e.d <= 1, false] }), seta('altura', `${P.nomeCurto(e.m)} ${oit(e.m)}`, tom(-1), tom(1))],
+      [h('button', { type: 'button', class: 'er-tg perigo', onclick: () => { muda(P.remover(s.evs, sel)); sel = -1; atualiza(); } }, 'apagar nota')]);
   };
   const palette = () => {
-    const bt = (ico, lab, on, fn, dis = false) => { const b = h('button', { type: 'button', class: 'ep-pb', 'aria-pressed': String(!!on), 'aria-label': lab, disabled: dis }); b.innerHTML = ico; b.addEventListener('click', fn); return b; };
-    return h('div', { class: 'ep-pal', role: 'group', 'aria-label': 'Duração da nota' },
-      ...DURS.map(([d, n]) => bt(noteIcon(d), n, s.fig === d && !s.pont || s.fig === d && s.pont, () => { s.fig = d; if (d === 1) s.pont = false; salvar(); desenha(); })),
-      bt('<span class="ep-t">•</span>', 'pontuada', s.pont, () => { s.pont = !s.pont; salvar(); desenha(); }, s.fig === 1),
+    const bt = (ico, lab, on, fn, dis = false) => { const b = h('button', { type: 'button', class: 'ep-pb', 'aria-pressed': String(!!on), 'aria-label': lab, title: lab, disabled: dis }); b.innerHTML = ico; b.addEventListener('click', fn); return b; };
+    return h('div', { class: 'ep-pal', role: 'group', 'aria-label': 'Duração da próxima nota' },
+      ...DURS.map(([d, n]) => bt(noteIcon(d), n, s.fig === d, () => { s.fig = d; if (d === 1) s.pont = false; salvar(); atualiza(); })),
+      bt('<span class="ep-t">•</span>', 'pontuada', s.pont, () => { s.pont = !s.pont; salvar(); atualiza(); }, s.fig === 1),
       h('span', { class: 'ep-sep' }),
-      bt(RESTIC, 'pausa', false, () => { const ev = P.anexarEm(s.evs, 60, cursor, dur()); /* a pausa só adianta o cursor */ cursor += dur(); msg = `pausa de ${nomeDur(dur())}. a próxima nota vem depois dela.`; desenha(); void ev; }),
-      bt(`<span class="ep-t" style="color:${s.cor ? '#fff' : '#e0262f'}">●</span>`, 'notas coloridas', s.cor, () => { s.cor = !s.cor; salvar(); desenha(); }));
+      bt(RESTIC, 'pausa (pula um tempo)', false, () => { cursor += dur(); msg = `pausa de ${nomeDur(dur())}. a próxima nota vem depois dela.`; atualiza(); }),
+      bt(`<span class="ep-t" style="color:${s.cor ? '#fff' : '#e0262f'}">●</span>`, 'notas coloridas', s.cor, () => { s.cor = !s.cor; salvar(); atualiza(); }));
   };
 
-  function desenha() {
+  let nomeInput = null;
+  function desenhaTopo() {
     if (gone) return;
-    const r = P.pauta(s.evs, { clave: s.clave, largura: Math.max(300, Math.min(760, (host.clientWidth || 380) - 56)), cor: s.cor, sel });
+    if (!nomeInput) { nomeInput = h('input', { class: 'ep-nm', type: 'text', maxlength: 40, value: s.titulo, placeholder: 'nome da partitura', 'aria-label': 'Nome da partitura', enterkeyhint: 'done', autocomplete: 'off' }); nomeInput.addEventListener('input', () => { s.titulo = nomeInput.value; }); nomeInput.addEventListener('change', salvar); }
+    else if (document.activeElement !== nomeInput) nomeInput.value = s.titulo;
+    topo.replaceChildren(iconeBtn(IC.volta, 'Voltar', () => { parar(); location.hash = VOLTA; }), nomeInput,
+      iconeBtn(IC.undo, 'Desfazer', () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = P.fim(s.evs); sel = -1; salvar(); atualiza(); }, { dis: !hist.length }),
+      run ? iconeBtn(IC.stop, 'Parar', () => { parar(); desenhaTopo(); }, { on: true }) : iconeBtn(IC.play, 'Ouvir a partitura', ouvir, { dis: !s.evs.length }));
+    acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }));
+  }
+  function desenhaFolha() {
+    const larg = Math.max(300, Math.min(760, (folha.clientWidth || host.clientWidth || 380) - 22)); const r = P.pauta(s.evs, { clave: s.clave, largura: larg, cor: s.cor, sel });
     folha.innerHTML = s.evs.length ? r.svg : `<p class="ep-vazio">a partitura aparece aqui, nota por nota, enquanto você ${modo === 'mic' ? 'toca no seu instrumento' : 'toca no teclado aí embaixo'}.</p>`;
-    const nome = h('input', { class: 'ep-nm', type: 'text', maxlength: 40, value: s.titulo, placeholder: 'nome da partitura', 'aria-label': 'Nome da partitura' });
-    nome.addEventListener('input', () => { s.titulo = nome.value; }); nome.addEventListener('change', salvar);
-    barra.replaceChildren(
-      ib(IC.volta, 'Voltar para as ferramentas', () => { location.hash = VOLTA; }), nome,
-      ib(IC.undo, 'Desfazer', () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = P.fim(s.evs); sel = -1; salvar(); desenha(); }, { dis: !hist.length }),
-      tocando ? ib(IC.stop, 'Parar', () => { parar(); desenha(); }, { on: true }) : ib(IC.play, 'Ouvir', ouvir, { dis: !s.evs.length }),
-      ib(IC.pdf, 'Baixar PDF no papel timbrado', pdf, { dis: !s.evs.length }),
-      ib(IC.save, s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online', guardaOnline, { dis: !s.evs.length }));
-    esq.replaceChildren(folha, palette(), correcao() || h('p', { class: 'ep-dica' }, s.evs.length ? 'toque numa nota da folha para corrigir.' : ''), msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
-    const mic$ = h('div', { class: 'ep-mic' }, h('p', { class: 'ep-dica' }, mic ? 'ouvindo o microfone… toque a nota no instrumento de verdade e ela aparece na partitura.' : 'abrindo o microfone…'));
-    dir.replaceChildren(
-      h('div', { class: 'ep-modo', role: 'group', 'aria-label': 'Como montar' },
-        h('button', { type: 'button', 'aria-pressed': String(modo === 'toque'), onclick: () => trocaModo('toque') }, 'tocar no desenho'),
-        h('button', { type: 'button', 'aria-pressed': String(modo === 'mic'), onclick: () => trocaModo('mic') }, 'tocar de verdade (microfone)')),
-      seta('clave', { auto: 'automática', sol: 'clave de sol', fa: 'clave de fá' }[s.clave], () => { const o = ['auto', 'sol', 'fa']; s.clave = o[(o.indexOf(s.clave) + 2) % 3]; salvar(); desenha(); }, () => { const o = ['auto', 'sol', 'fa']; s.clave = o[(o.indexOf(s.clave) + 1) % 3]; salvar(); desenha(); }),
-      modo === 'mic' ? mic$ : h('div', {}, seta('oitava', `${nameOf((oct + 1) * 12, 'pt')} em diante`, () => { oct = Math.max(1, oct - 1); desenhaKb(); salvar(); desenha(); }, () => { oct = Math.min(7 - octaves, oct + 1); desenhaKb(); salvar(); desenha(); }, { dis: [oct <= 1, oct >= 7 - octaves] }), kbWrap));
+  }
+  function atualiza() {
+    if (gone) return; desenhaFolha(); desenhaTopo(); const c = correcao();
+    meio.replaceChildren(...(c ? [c] : [palette()]), s.evs.length && !c ? h('p', { class: 'ep-dica' }, 'toque numa nota da folha para corrigir.') : null, msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
+  }
+  function desenhaDir() {
+    if (gone) return;
+    modoEl.replaceChildren(h('div', { class: 'ep-modo', role: 'group', 'aria-label': 'Como montar' },
+      h('button', { type: 'button', 'aria-pressed': String(modo === 'toque'), onclick: () => trocaModo('toque') }, 'tocar no desenho'),
+      h('button', { type: 'button', 'aria-pressed': String(modo === 'mic'), onclick: () => trocaModo('mic') }, 'tocar de verdade (microfone)')));
+    const O = ['auto', 'sol', 'fa']; const nomeClave = { auto: 'automática', sol: 'clave de sol', fa: 'clave de fá' };
+    const abertos = ajEl.querySelector('details') ? ajEl.querySelector('details').open : false;
+    const d = ajustes(`${nomeClave[s.clave]} · ${s.bpm} bpm`, seta('clave', nomeClave[s.clave], () => { s.clave = O[(O.indexOf(s.clave) + 2) % 3]; salvar(); atualiza(); desenhaDir(); }, () => { s.clave = O[(O.indexOf(s.clave) + 1) % 3]; salvar(); atualiza(); desenhaDir(); }),
+      seta('andamento', `${s.bpm} bpm`, () => { s.bpm = Math.max(40, s.bpm - 5); salvar(); desenhaDir(); }, () => { s.bpm = Math.min(220, s.bpm + 5); salvar(); desenhaDir(); })); d.open = abertos; ajEl.replaceChildren(d);
+    kbEl.replaceChildren(...(modo === 'mic' ? [h('p', { class: 'ep-dica' }, mic ? 'ouvindo o microfone… toque a nota no instrumento de verdade e ela aparece na partitura.' : 'abrindo o microfone…')]
+      : [seta('oitava', `${nameOf((oct + 1) * 12, 'pt')} em diante`, () => { oct = Math.max(1, oct - 1); desenhaKb(); salvar(); desenhaDir(); }, () => { oct = Math.min(7 - octaves, oct + 1); desenhaKb(); salvar(); desenhaDir(); }, { dis: [oct <= 1, oct >= 7 - octaves] }), kbWrap]));
   }
 
-  const raiz = h('div', { class: 'ep bmr' }, barra, h('div', { class: 'ep-corpo' }, esq, dir));
-  host.append(raiz); desenhaKb(); desenha(); requestAnimationFrame(desenha);
-  const aoRedimensionar = () => desenha(); window.addEventListener('resize', aoRedimensionar);
+  const raiz = h('div', { class: 'ep bmr' }, topo, acoes, h('div', { class: 'ep-corpo' }, h('div', { class: 'ep-esq' }, folha, meio), dir)); void esq;
+  host.append(raiz); desenhaKb(); desenhaDir(); atualiza(); requestAnimationFrame(desenhaFolha);
+  const parou = aoMudarLargura(folha, () => { if (!gone) desenhaFolha(); });
+  const destrava = () => { try { audio(); } catch { /* sem áudio */ } raiz.removeEventListener('pointerdown', destrava, true); }; raiz.addEventListener('pointerdown', destrava, true);
   // veio da aba Professores (ou da pasta online): abre a partitura que a pessoa escolheu
   try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then((row) => { if (row.instrumento && row.instrumento !== 'teclas') { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* ok */ } location.hash = `#/editor/${row.instrumento}`; return; } carrega(row); }).catch((e) => toast(NUV.textoErro(e), { id: 'ep', ms: 3200 })); } } catch { /* sem sessionStorage */ }
-  return () => { gone = true; parar(); desligaMic(); for (const v of live.values()) { try { v.off(false); } catch { /* ok */ } } window.removeEventListener('resize', aoRedimensionar); };
+  return () => { gone = true; parar(); desligaMic(); for (const v of live.values()) { try { v.off(false); } catch { /* ok */ } } parou(); };
 }

@@ -52,13 +52,13 @@ async function rota() {
   let r;
   if (k === 'conta') r = conta.mount(main, ctx, partes, { primeira: !ctx.perfil.nome });
   else if (k === 'editor') {
-    const op = { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true };
+    const op = { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true, perfil: ctx.perfil };
     if (['violao', 'guitarra', 'baixo', 'bateria'].includes(partes[1])) r = editorRitmico.mount(main, { ...op, inst: partes[1] });
     else { const m = await import('../views/editor-partitura.js'); r = m.mount(main, op); }
   }
   else r = (TELAS[k] || inicio).mount(main, ctx, partes);
   document.documentElement.dataset.tela = k;
-  const f = await r; if (typeof f === 'function') limpa = f; main.scrollTo?.(0, 0);
+  const f = await r; if (typeof f === 'function') limpa = f; window.scrollTo(0, 0);
 }
 
 async function entra() {
@@ -67,6 +67,7 @@ async function entra() {
   casca(); rota();
 }
 window.addEventListener('hashchange', rota);
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelector('.psh.aberto')?.classList.remove('aberto'); });
 (async () => {
   await auth.loadSession(); if (auth.getSession()) { await auth.refresh(); }
   if (auth.getSession()) entra(); else { app.replaceChildren(); entrada.mount(app, { aoEntrar: async (nome) => { if (nome) { try { await D.perfil(); await D.gravarPerfil({ nome }); } catch { /* a tela de perfil pede o nome */ } } entra(); } }); }

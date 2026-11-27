@@ -1211,3 +1211,23 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .fp-nova{padding:14px;font-size:16px}
 .fp-rec{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .fp-r{width:100%;display:flex;justify-content:space-between;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;text-align:left}
+
+/* ---- editores: barra de ações, ajustes recolhidos e painel de correção compacto (vale pro #/editor do app e pro PRO) ---- */
+.ep-acoes{display:flex;gap:8px;margin:2px 0 8px;flex-wrap:wrap}
+.ep-ac{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line,#d9d9d9);background:var(--card,#fff);color:inherit;font:600 14px/1 inherit;cursor:pointer;touch-action:manipulation}
+.ep-ac svg{width:20px;height:20px;flex:none}.ep-ac:disabled{opacity:.4}
+.ep-meio{display:grid;gap:8px}
+.ep-aj{margin:6px 0 10px;border:1px solid var(--line,#d9d9d9);border-radius:14px;background:var(--card,#fff)}
+.ep-aj>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;min-height:48px;cursor:pointer;font:600 14px/1.2 inherit}
+.ep-aj>summary::-webkit-details-marker{display:none}.ep-aj-t{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.7}.ep-aj-r{opacity:.75;font-weight:500;text-align:right}
+.ep-aj>summary::after{content:'›';margin-left:6px;transition:transform .2s;font-size:20px;line-height:1}.ep-aj[open]>summary::after{transform:rotate(90deg)}
+.ep-aj-c{padding:0 14px 12px;display:grid;gap:6px}
+.ep-corrige{display:grid;gap:8px;padding:12px;border:1px dashed var(--ouro,#e0262f);border-radius:14px;background:var(--card,#fff)}
+.ep-cor-t{display:flex;justify-content:space-between;align-items:center;gap:8px}.ep-cor-t b{font-size:15px}
+.ep-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line,#d9d9d9);background:transparent;color:inherit;font-size:22px;line-height:1;cursor:pointer}
+.ep-cor-g{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.ep-cor-g .pm-linha{display:grid;gap:4px;margin:0}.ep-cor-g .tp-lab{min-width:0;flex:none}
+.ep-cor-b{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:420px){.ep-cor-g{grid-template-columns:1fr}}
+.ep-folha{overflow-x:hidden;overscroll-behavior:contain}
+.ep-bar{touch-action:manipulation}.ep-nm{font-size:16px;min-width:0}

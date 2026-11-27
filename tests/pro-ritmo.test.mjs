@@ -26,7 +26,7 @@ test('bateria: acento, fantasma e mãos aparecem no desenho', () => {
   const evs = [{ p: 'hh', ini: 0, d: 2, mao: 'D' }, { p: 'sn', ini: 4, d: 2, mao: 'E', acc: true }, { p: 'sn', ini: 6, d: 2, fan: true }, { p: 'bd', ini: 0, d: 2 }];
   const r = R.bateria(evs, { largura: 420 }); assert.match(r.svg, />DB</); assert.match(r.svg, />E</); assert.match(r.svg, /\(</); assert.equal((r.svg.match(/data-ev=/g) || []).length, 4);
 });
-test('bateria: kits têm 3, 6 e 9 peças e todas existem', () => { assert.deepEqual(R.KITS.map((k) => k[2].length), [3, 6, 9]); for (const k of R.KITS) for (const p of k[2]) assert.ok(R.PECAS[p]); });
+test('bateria: kits têm 3, 6 e 10 peças e todas existem', () => { assert.deepEqual(R.KITS.map((k) => k[2].length), [3, 6, 10]); for (const k of R.KITS) for (const p of k[2]) assert.ok(R.PECAS[p]); });
 test('normaliza descarta lixo', () => assert.equal(R.normaliza([null, { ini: 'x', d: 1 }, { ini: 0, d: 1 }]).length, 1));
 
 test('remapeia: baixo 5 → 6 cordas (entra o Dó em cima) mantém cada nota na mesma corda', () => {

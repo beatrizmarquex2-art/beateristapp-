@@ -163,12 +163,48 @@
 .er-casa.solta{background:linear-gradient(180deg,#d9b45f,#b8913f)}.er-casa:active{transform:translateY(2px);box-shadow:0 0 0 #8c7a52;background:var(--ouro)}
 .er-pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .er-pad{min-height:76px;border-radius:50%/42%;border:1px solid #2a2a2a;background:radial-gradient(circle at 50% 30%,#3b3d41,#1b1c1e);color:var(--creme);display:grid;place-content:center;gap:2px;padding:6px;cursor:pointer;touch-action:manipulation;font:inherit;transition:transform .08s,box-shadow .08s}
-.er-pad b{font:700 14px var(--body)}.er-pad small{font-size:10px;color:#9f9886;letter-spacing:.06em}.er-pad:active{transform:scale(.94);background:radial-gradient(circle,#d9b45f,#8c6d2c);color:var(--preto)}.er-pad.pe{border-radius:14px;background:linear-gradient(180deg,#4a3b34,#2a211c)}
+.er-pad b{font:700 14px var(--body)}.er-pad small{font-size:10px;color:#9f9886;letter-spacing:.06em}.er-pad:active{transform:scale(.94);background:radial-gradient(circle,#d9b45f,#8c6d2c);color:var(--preto)}.er-pad.pedal{border-radius:14px;background:linear-gradient(180deg,#4a3b34,#2a211c)}
 @media (max-width:420px){.er-pad{min-height:70px}.er-casa{height:44px}}
-/* celular: a folha fica fixa no alto enquanto você toca no instrumento lá embaixo */
+/* ---------- todos os aparelhos: iPhone, iPad, Samsung/Android, Windows, MacBook (Safari, Chrome, Edge) ---------- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-gutter:stable;background:var(--grafite,#1b1c1e)}
+.pro-body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;min-width:320px}
+.pro-body button,.pro-body a,.pro-body summary,.pro-body select,.pro-body input{touch-action:manipulation} /* sem zoom de duplo toque e sem espera de 300 ms */
+.pro-body .er-braco,.pro-body .er-pads,.pro-body .ep-kb,.pro-body .pm2-tap{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.pro-body .pm-seta{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.pro-body input,.pro-body select,.pro-body textarea{font-size:16px} /* abaixo de 16px o iPhone dá zoom sozinho ao focar */
+.pro-body *{scrollbar-width:thin;scrollbar-color:rgb(184 145 63/.55) transparent}
+.pro-body ::-webkit-scrollbar{width:8px;height:8px}.pro-body ::-webkit-scrollbar-thumb{background:rgb(184 145 63/.5);border-radius:8px}.pro-body ::-webkit-scrollbar-track{background:transparent}
+.pt-abas,.pt-pastas{scrollbar-width:none}.pt-abas::-webkit-scrollbar,.pt-pastas::-webkit-scrollbar{display:none}
+.psh{min-height:100vh;min-height:100dvh}.ps{height:100vh;height:100dvh}.pe{min-height:100vh;min-height:100dvh}
+.pc{padding-left:max(clamp(16px,4vw,56px),env(safe-area-inset-left));padding-right:max(clamp(16px,4vw,56px),env(safe-area-inset-right))}
+.pro-body .ep-dir{max-width:680px;width:100%;margin-inline:auto}
+.pro-body .ep-bar{display:flex;gap:6px;align-items:center;padding:6px 0;background:var(--creme)}
+.pro-body .ep-ac{background:var(--papel);border-color:var(--linha)}.pro-body .ep-aj,.pro-body .ep-corrige{background:var(--papel);border-color:var(--linha)}.pro-body .ep-corrige{border-color:var(--ouro)}
+.pro-body .er-tg.perigo{border-color:var(--erro);color:var(--erro);background:transparent}
+.pro-body .ep-x{border-color:var(--linha)}
+
+/* celular e tablet em pé: a folha fica fixa no alto enquanto você toca no instrumento lá embaixo */
 @media (max-width:899px){
   .pro-body .ep-esq{display:contents}
   .pro-body .ep-corpo{display:flex;flex-direction:column;gap:10px}
-  .pro-body .ep-folha{position:sticky;top:calc(106px + env(safe-area-inset-top));z-index:4;max-height:34vh;overflow:auto;box-shadow:0 10px 16px -12px rgb(0 0 0/.4)}
-  .pro-body .ep-bar{z-index:6}
+  .pro-body .ep-bar{position:sticky;top:calc(52px + env(safe-area-inset-top));z-index:6}
+  .pro-body .ep-folha{position:sticky;top:calc(106px + env(safe-area-inset-top));z-index:5;max-height:34vh;max-height:34dvh;overflow-y:auto;box-shadow:0 10px 16px -12px rgb(0 0 0/.4)}
+  .pro-body .ep-acoes{margin-top:0}
+}
+/* celular deitado e tablet deitado: duas colunas (folha de um lado, instrumento do outro) */
+@media (min-width:640px) and (max-width:899px) and (orientation:landscape){
+  .pro-body .ep-corpo{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+  .pro-body .ep-esq{display:grid;gap:8px;align-content:start;position:sticky;top:calc(106px + env(safe-area-inset-top))}
+  .pro-body .ep-folha{position:static;max-height:46vh;max-height:46dvh}
+}
+@media (max-height:480px) and (max-width:899px){
+  .pbar a span,.pbar-mais span{display:none}.pbar a,.pbar-mais{min-height:44px}.pbar a.central svg{margin-top:-8px}
+  .pc{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .pro-body .ep-folha{max-height:38vh;max-height:38dvh}
+}
+@media (min-width:900px){
+  .pro-body .ep-corpo{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+  .pro-body .ep-esq{display:grid;gap:8px;align-content:start}
+  .pro-body .ep-dir{position:sticky;top:76px}
+  .pro-body .ep-bar{position:sticky;top:0;z-index:6}
 }

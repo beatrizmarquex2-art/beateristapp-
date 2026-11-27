@@ -21,6 +21,7 @@ export async function svgImagem(svg, w, h) {
 export async function paginas(d) {
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   const papel = d.semPapel ? null : await loadImg('assets/papel-timbrado.png');
+  const logo = d.semPapel && d.perfil && d.perfil.logo ? await loadImg(d.perfil.logo) : null; // PRO: o logotipo do próprio professor
   const lado = Math.round(16 * MM); const topo = Math.round(40 * MM); const base = H - Math.round(36 * MM);
   const largU = 700; const escala = (W - lado * 2) / largU; // unidades da pauta → pixels da página
   // `d.render(largura)` (tablatura e bateria do PRO) devolve { svg, w, h, sistema, topo, n }; sem ele é a pauta de melodia
@@ -32,6 +33,11 @@ export async function paginas(d) {
   for (let p = 0; p < pags; p++) {
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
     g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); if (papel) g.drawImage(papel, 0, 0, W, H);
+    if (d.semPapel) { // PRO: cabeçalho creme com o nome da escola/professor e o logotipo dele
+      g.fillStyle = '#f7f2e7'; g.fillRect(0, 0, W, H); g.fillStyle = '#b8913f'; g.fillRect(lado, 70, W - lado * 2, 3);
+      const pf = d.perfil || {}; g.fillStyle = '#1b1c1e'; g.font = `700 30px ${FONT}`; g.fillText((pf.escola || pf.nome || '').toUpperCase().slice(0, 40), lado, 126); if (pf.escola && pf.nome) { g.font = `400 22px ${FONT}`; g.fillStyle = '#6b6558'; g.fillText(pf.nome, lado, 160); }
+      if (logo) { const k = Math.min(130 / logo.height, 300 / logo.width); g.drawImage(logo, W - lado - logo.width * k, 88, logo.width * k, logo.height * k); }
+    }
     g.fillStyle = '#111'; g.font = `700 46px ${FONT}`; g.fillText(d.titulo || 'Minha partitura', lado, topo);
     g.font = `400 24px ${FONT}`; g.fillStyle = '#444';
     g.fillText([d.aluno, `♩ = ${d.bpm || 100}`, d.data, pags > 1 ? `página ${p + 1} de ${pags}` : ''].filter(Boolean).join('  ·  '), lado, topo + 40);
