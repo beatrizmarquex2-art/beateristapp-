@@ -1216,3 +1216,9 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - `js/pro/mic-bateria.js`: grava com o microfone (conta 4, onset + espectro: grave = bumbo, médio = caixa, agudo = chimbal) e quantiza na grade. EXPERIMENTAL: testado só com sinais sintéticos; precisa de teste com bateria de verdade.
 - Celular: folha + barra de durações ficam fixas no alto (ep-fixo); em telas baixinhas (≤720 px) só a folha fica fixa.
 - Testes: `tests/pro-escrita.test.mjs`, `tests/pro-mic-bateria.test.mjs`, `tests/e2e/pro-ritmico.mjs` (51 checagens).
+
+### PRO: violão e teclado "como no jogo" + ferramentas (27/nov/2026)
+- Violão/guitarra: seletor **Acordes | Notas**. Acordes = as 8 cartas do jogo (`js/acordes.js`, 24 acordes, "trocar"), tocar a carta escreve o acorde (todas as cordas, rasgueado) com a CIFRA em cima; as cordas desenhadas aceitam passar o dedo (escreve só as cordas tocadas). Notas = braço com a cor de cada nota, "destacar" escala + tônica. Baixo só tem Notas.
+- Teclado: seletor **Teclado | Barras**. Teclado com os sons do jogo (piano, elétrico, órgão, cordas); Barras = xilofone colorido do jogo com as escalas e modelos (xilofone, marimba, vibrafone...). Destaque de escala também nas teclas.
+- Ferramentas (nos dois): metrônomo junto, repetir (loop), transpor ±1 semitom e ±1 oitava (`js/pro/teoria.js`), limpar tudo (com confirmação). Cifra do acorde na tablatura e na pauta.
+- Testes: `tests/pro-teoria.test.mjs`, `tests/e2e/pro-ritmico.mjs` (72 checagens).

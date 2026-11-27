@@ -29,3 +29,7 @@ test('ritmo sem pauta: uma linha, contagem "&", acento e fantasma, e a coluna vi
 });
 test('ritmo: clicar de novo na mesma coluna passa pro próximo evento dela', () => { const evs = [{ p: 'hh', ini: 0, d: 2 }, { p: 'bd', ini: 0, d: 2 }]; assert.match(E.ritmo(evs, { largura: 380, sel: 0 }).svg, /data-ev="1"/); });
 test('ritmo vazio desenha a linha e a fórmula de compasso', () => { const r = E.ritmo([], { largura: 380 }); assert.equal(r.n, 1); assert.ok(r.svg.includes('<line')); });
+test('cifra do acorde aparece em cima da tablatura e da pauta', () => {
+  const ev = [{ c: 0, f: 0, ini: 0, d: 4, cif: 'Mim' }, { c: 1, f: 0, ini: 0, d: 4 }];
+  assert.match(R.tablatura(ev, { cordas: V, largura: 380 }).svg, />Mim</); assert.match(E.cordas(ev, { cordas: V, escrita: 'pauta', largura: 380 }).svg, />Mim</);
+});

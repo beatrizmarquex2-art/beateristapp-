@@ -240,3 +240,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-gutter:stable
   .pro-body .ep-folha{position:sticky;top:calc(106px + env(safe-area-inset-top));z-index:5;max-height:24vh;max-height:24dvh;box-shadow:0 10px 16px -12px rgb(0 0 0/.4)}
 }
 @media (min-width:640px) and (max-width:899px) and (orientation:landscape){.pro-body .ep-fixo{display:block}.pro-body .ep-folha{position:static}}
+
+/* ---------- violão: acordes como no jogo (cartas, cordas pra passar o dedo) ---------- */
+.er-visual.dois{grid-template-columns:1fr 1fr}
+.er-cartas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.er-carta{display:grid;justify-items:center;gap:0;padding:8px 4px 6px;border-radius:14px;border:1px solid var(--linha);background:var(--papel);color:var(--tinta);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;font:inherit;transition:transform .08s,box-shadow .08s}
+.er-carta b{font:800 17px/1.1 var(--serif)}.er-carta em{font:600 10px/1 var(--body);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--ouro);margin:2px 0 2px}
+.er-mao{display:block;width:100%;max-width:64px}.er-mao svg{display:block;width:100%;height:auto;color:var(--grafite)}.er-mao .dedo{fill:var(--grafite)}
+.er-carta:active{transform:scale(.96)}.er-carta.on{background:var(--grafite);color:var(--creme);border-color:var(--grafite)}.er-carta.on em{color:var(--ouro-claro)}.er-carta.on .er-mao svg{color:var(--creme)}.er-carta.on .er-mao .dedo{fill:var(--ouro-claro)}
+.er-bandeja{display:grid;gap:8px;margin:6px 0;padding:10px;border:1px dashed var(--ouro);border-radius:14px;background:var(--papel)}.er-bgrade{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.er-bsec small,.er-bandeja>small{color:var(--suave)}
+.er-peq{min-height:44px;border-radius:10px;border:1px solid var(--linha);background:#fff;font:700 14px var(--body);cursor:pointer;touch-action:none}.er-peq.atual{background:var(--grafite);color:var(--ouro-claro);border-color:var(--grafite)}
+.er-strum{margin-top:8px;padding:14px 10px;border-radius:14px;background:linear-gradient(180deg,#3a2f26,#2a211a);display:grid;gap:12px;touch-action:none;user-select:none;-webkit-user-select:none}
+.er-str{height:20px;display:grid;align-items:center}.er-str i{display:block;height:var(--w);border-radius:3px;background:linear-gradient(180deg,#f3e9d2,#b9a67a)}.er-str.grave i{background:repeating-linear-gradient(90deg,#d9b45f 0 3px,#b8913f 3px 5px)}
+/* braço: cada casa leva a cor da nota (as cores do jogo) numa faixa embaixo; fora da escala fica apagada; a tônica ganha um anel */
+.er-casa{border-bottom:4px solid var(--nc,transparent)}.er-casa.fora{opacity:.28}.er-casa.raiz{box-shadow:0 0 0 2px var(--ouro-claro),0 2px 0 #8c7a52}
+@media (max-width:360px){.er-cartas{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- teclado: barras do xilofone e escala destacada nas teclas ---------- */
+.er-barras{display:flex;align-items:flex-end;gap:6px;height:190px;padding:10px;border-radius:14px;background:linear-gradient(180deg,#3a2f26,#2a211a);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.er-barra{flex:1;min-width:0;border:0;border-radius:10px 10px 8px 8px;background:var(--bc);color:#fff;font:800 13px var(--body);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;cursor:pointer;box-shadow:inset 0 -5px 0 rgb(0 0 0/.22),0 2px 0 rgb(0 0 0/.4);transition:transform .08s,filter .08s;touch-action:none}
+.er-barra.clara{color:#1b1818}.er-barra:active,.er-barra.hit{transform:translateY(3px) scale(.97);filter:brightness(1.2)}
+.pro-body .ep-w.fora{opacity:.5}.pro-body .ep-b.fora{opacity:.35}.pro-body .ep-w.raiz{box-shadow:inset 0 -8px 0 var(--ouro-claro)}.pro-body .ep-b.raiz{box-shadow:0 0 0 2px var(--ouro-claro)}

@@ -121,7 +121,8 @@ export function tabBloco(L, s, y0, { evs, cordas, largura, cor, sel, ultimo = fa
     o += fim ? `<line x1="${b.x1 - 4}" x2="${b.x1 - 4}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/><rect x="${b.x1 - 1}" y="${y0}" width="3.4" height="${yb - y0}" fill="${INK}"/>` : `<line x1="${b.x1}" x2="${b.x1}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/>`;
     b.itens.forEach((it) => {
       if (it.rest) { o += pausa(it.d, it.x, meio); return; }
-      const g = L.grupos[it.g]; let gg = '';
+      const g = L.grupos[it.g]; let gg = ''; const cif = g.idx.map((i) => evs[i].cif).find(Boolean);
+      if (cif) gg += `<text x="${it.x}" y="${y0 - 8}" text-anchor="middle" font-size="12" font-weight="800" font-family="${FONT}" fill="#b5162b">${esc(cif)}</text>`;
       g.idx.forEach((i) => { const e = evs[i]; const y = y0 + e.c * gt; const m = midiDe(cordas, e.c, e.f);
         gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(it.x - 10, y - 8, 20, 16)}${i === sel ? `<rect x="${it.x - 9}" y="${y - 8}" width="18" height="16" rx="4" fill="rgba(184,145,63,.28)"/>` : ''}<rect x="${it.x - 7}" y="${y - 7}" width="14" height="13" fill="${i === sel ? 'none' : '#fbf8f1'}"/><text x="${it.x}" y="${y + 5}" text-anchor="middle" font-size="${e.f > 9 ? 12 : 14}" font-weight="800" font-family="${FONT}" fill="${cNota(m)}">${e.f}</text></g>`; });
       const d = g.d; if (d < 16) { const ys = yb + 12; gg += `<line x1="${it.x}" x2="${it.x}" y1="${ys}" y2="${ys + 22}" stroke="${INK}" stroke-width="1.3"/>${bandeiras(d, it.x, ys + 22, false)}${ponto(d, it.x + 6, ys + 16)}`; }

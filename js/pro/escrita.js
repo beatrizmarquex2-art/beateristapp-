@@ -44,6 +44,7 @@ export function pautaBloco(L, s, y0, { evs, cordas, clave, largura, cor, sel, ul
     const grupos = feixes(qs); grupos.forEach((gr) => { const baixo = gr.reduce((n, q) => n + (q.baixo ? 1 : -1), 0) > 0; gr.forEach((q) => { q.grupo = gr; q.baixo = baixo; }); gr.baixoG = baixo; });
     qs.forEach((q) => {
       if (q.rest) { out.push(R.pausa(q.d, q.x, meio)); return; }
+      const cif = q.ns.map((n) => evs[n.i].cif).find(Boolean); if (cif) out.push(`<text x="${q.x}" y="${y0 - 30}" text-anchor="middle" font-size="12" font-weight="800" font-family="${FONT}" fill="#b5162b">${R.esc(cif)}</text>`);
       const nx = q.x; const ys = q.ns.map((n) => yp(n.p)); const yAlto = Math.min(...ys); const yBaixo = Math.max(...ys);
       // segunda (notas vizinhas) no acorde: a de fora vai pro outro lado da haste
       const desl = new Set(); if (q.ns.length > 1) { const ord = q.baixo ? [...q.ns].reverse() : q.ns; let ant = null; ord.forEach((n) => { if (ant && Math.abs(n.p - ant.p) === 1 && !desl.has(ant)) desl.add(n); ant = n; }); }

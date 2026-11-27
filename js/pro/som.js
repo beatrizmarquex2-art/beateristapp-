@@ -1,6 +1,6 @@
 // Sons do PRO: os MESMOS do jogo (js/instruments.js): corda dedilhada calculada nota a nota (violão, guitarra limpa/distorcida, baixo) e bateria com
 // gravações de verdade (acústica, eletrônica, cajón). Aqui só ficam o mapa das peças, o aquecimento e a reprodução da partitura com o relógio do áudio.
-import { audio, scheduler, silence } from '../audio.js';
+import { audio, scheduler, silence, click } from '../audio.js';
 import { pluck, kitSom, warmKit, warmNotes, wake, MODELOS_BATERIA } from '../instruments.js';
 import * as R from './ritmo.js';
 
@@ -26,13 +26,21 @@ export function aquece({ bat, modelo, kind, midis }) {
   try { if (bat) warmKit(modelo); else if (midis && midis.length) warmNotes(midis, TIM_BUF(kind)); } catch { /* sem áudio */ }
 }
 
-/** Toca a partitura inteira com o relógio do áudio (nada de setTimeout: não atrasa nem acumula). Devolve { stop }.
-    ctxCfg: { evs, bpm, bat, modelo, kind, cordas, onFim } */
-export function tocaTudo({ evs, bpm, bat, modelo, kind, cordas, onFim }) {
-  const gs = R.grupos(evs); const sx = 60 / bpm / 4; const fimT = R.fim(evs) * sx;
-  const h = scheduler((i) => {
-    if (i < gs.length) { const g = gs[i]; return { at: g.ini * sx, play: (t) => g.idx.forEach((k) => { const e = evs[k]; if (bat) somBateria(modelo, e.p, velDe(e), t); else somCorda(kind, R.midiDe(cordas, e.c, e.f), velDe(e), t); }) }; }
-    return i === gs.length ? { at: fimT + 0.25, play: () => {} } : null; // um evento final deixa a última nota soar antes de avisar que acabou
+/** Toca uma lista de eventos { at (s), play(t) } com o relógio do áudio. `fim` = último instante em semicolcheias (o ciclo fecha no último compasso inteiro).
+    clique = metrônomo junto (1 mais forte); repetir = em loop até parar. Devolve { stop }. */
+export function tocaEventos({ eventos, fim, bpm, clique = false, repetir = false, onFim }) {
+  const sx = 60 / bpm / 4; const comp = Math.max(1, Math.ceil(fim / 16)) * 16 * sx; const lista = [...eventos];
+  if (clique) for (let b = 0; b * 4 * sx < comp - 1e-6; b++) lista.push({ at: b * 4 * sx, play: (t) => click(t, b % 4 === 0 ? 2 : 1, 0.5) });
+  lista.sort((a, b) => a.at - b.at); const n = lista.length;
+  return scheduler((i) => {
+    if (!n) return null;
+    if (repetir) return { at: Math.floor(i / n) * comp + lista[i % n].at, play: lista[i % n].play };
+    if (i < n) return lista[i]; return i === n ? { at: comp + 0.1, play: () => {} } : null; // um evento final deixa a última nota soar antes de avisar que acabou
   }, { onEnd: onFim });
-  return h;
+}
+/** Toca a partitura de cordas/bateria inteira. cfg: { evs, bpm, bat, modelo, kind, cordas, clique, repetir, onFim } */
+export function tocaTudo({ evs, bpm, bat, modelo, kind, cordas, clique, repetir, onFim }) {
+  const sx = 60 / bpm / 4;
+  const eventos = R.grupos(evs).map((g) => ({ at: g.ini * sx, play: (t) => (bat ? g.idx : [...g.idx].sort((a, b) => evs[b].c - evs[a].c)).forEach((k, j) => { const e = evs[k]; if (bat) somBateria(modelo, e.p, velDe(e), t); else somCorda(kind, R.midiDe(cordas, e.c, e.f), velDe(e), t + j * 0.011); }) })); // acorde: cordas uma depois da outra (rasgueado)
+  return tocaEventos({ eventos, fim: R.fim(evs), bpm, clique, repetir, onFim });
 }
