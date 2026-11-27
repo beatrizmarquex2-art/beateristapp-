@@ -1,0 +1,44 @@
+// Vitrine nova da Lojinha: ordem das seções, carrosséis, painel de produto com páginas, banca, combos com economia, grátis, navegação sem código e confirmação de adulto.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch({ codigo: false }); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'visitante'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
+await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1800);
+const ids = await page.locator('.ljv > section').evaluateAll((es) => es.map((e) => e.id).filter(Boolean));
+check('seções na ordem pedida (passe, apostilas, banca, combos, músicos, grátis)', ids.join() === 'lj-passe,lj-universo,lj-banca,lj-combos,lj-musicos,lj-gratis', ids.join());
+check('o carrossel de banners vem antes do passe', await page.evaluate(() => { const v = document.querySelector('.ljv'); const b = v.querySelector('.ljv-banners'); const p = v.querySelector('#lj-passe'); return !!b && !!(b.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING); }));
+check('os banners mostram a arte inteira (contain, sem corte)', await page.locator('.ljv-banner img').first().evaluate((i) => getComputedStyle(i).objectFit !== 'cover' && i.naturalWidth > 0));
+check('setas do carrossel de banners funcionam', await (async () => { const t = page.locator('.ljv-banners .ljv-trilho'); const a = await t.evaluate((e) => e.scrollLeft); await page.locator('.ljv-banners .ljv-seta.prox').click(); await sleep(700); return (await t.evaluate((e) => e.scrollLeft)) > a; })());
+check('passe: 12 meses e pagamento único', /12\s*meses de acesso/.test(await page.locator('.ljv-doze').textContent()) && /pagamento único/.test(await page.locator('.ljv-passe-info').textContent()));
+check('passe mostra telas reais do app', (await page.locator('.ljv-tela').count()) >= 8);
+check('Universo: 3 apostilas com capa grande', await page.locator('#lj-universo .ljv-cap').evaluateAll((es) => es.map((e) => e.dataset.id).join()) === 'ritmo,harmonia,pratica');
+await page.locator('#lj-universo .ljv-cap[data-id="harmonia"]').click(); await sleep(300);
+check('tocar na capa troca o painel e mostra prévia das páginas', /Harmonia/.test(await page.locator('#lj-universo .ljv-painel h3').textContent()) && (await page.locator('#lj-universo .ljv-pag').count()) >= 1);
+await page.locator('#lj-universo .ljv-cap[data-id="ritmo"]').click(); await sleep(300);
+await sleep(500);
+check('Ritmo e Figuras mostra 3 páginas de prévia, todas carregadas', (await page.locator('#lj-universo .ljv-pag').count()) === 3 && await page.locator('#lj-universo .ljv-pag img').evaluateAll((is) => is.every((i) => i.complete && i.naturalWidth > 0)));
+check('banca do Paul: 6 produtos e 4 prateleiras', (await page.locator('#lj-banca .ljv-cap').count()) === 6 && (await page.locator('#lj-banca .ljv-cat').count()) === 4);
+await page.locator('#lj-banca .ljv-cat', { hasText: 'cartas' }).click(); await sleep(300);
+check('prateleira "cartas" mostra os 3 baralhos', (await page.locator('#lj-banca .ljv-cap').count()) === 3);
+const eco = await page.locator('#lj-combos .ljv-eco').allTextContents();
+check('3 combos; só mostra economia onde ela existe de verdade (baralhos: R$ 9,80; o das apostilas custa o mesmo que soltas)', (await page.locator('#lj-combos .ljv-combo').count()) === 3 && eco.join('|') === 'economia de R$ 9,80', eco.join('|'));
+check('Para músicos: Start, Mood e Violão', await page.locator('#lj-musicos .ljv-cap').evaluateAll((es) => es.map((e) => e.dataset.id).join()) === 'start,mood,violao');
+check('experimente grátis tem 4 caminhos', (await page.locator('#lj-gratis .ljv-gratis').count()) === 4);
+check('voltar ao início e já tenho um código existem', (await page.locator('.ljv-link', { hasText: 'voltar ao início' }).getAttribute('href')) === '#/inicio' && (await page.locator('.ljv-link', { hasText: 'já tenho um código' }).count()) === 1);
+check('a barra de baixo continua', (await page.locator('nav a[href="#/lojinha"], .tabbar a[href="#/lojinha"], a[href="#/lojinha"]').count()) >= 1);
+// compra: pede confirmação de um adulto antes de abrir o pagamento
+await page.evaluate(() => { window.__aberto = ''; window.open = (u) => { window.__aberto = u; return {}; }; });
+await page.locator('#lj-universo .ljv-compra .lj-btn').click(); await sleep(300);
+check('antes de pagar aparece "a compra é com um adulto" e nada abre ainda', (await page.locator('.ljv-adulto[open]').count()) === 1 && (await page.evaluate(() => window.__aberto)) === '');
+await page.locator('.ljv-adulto .lj-btn').click(); await sleep(300);
+check('depois de confirmar, abre o link da Hotmart original', /pay\.hotmart\.com\//.test(await page.evaluate(() => window.__aberto)));
+// rota antiga abre a seção certa sem quebrar
+await page.goto(`${url}/aluno.html#/lojinha/evoluir`); await sleep(1800);
+check('#/lojinha/evoluir ainda funciona (rola até Para músicos)', (await page.locator('#lj-musicos').count()) === 1);
+const sw = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+check('sem rolagem lateral no celular', sw <= 1, String(sw));
+await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1500);
+await page.screenshot({ path: '/tmp/lojinha-nova.png', fullPage: true });
+check('sem erros', errs.length === 0, errs.join('|'));
+await browser.close(); srv.close(); done();

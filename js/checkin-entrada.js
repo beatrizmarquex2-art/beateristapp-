@@ -3,6 +3,7 @@ import { todayKey } from './util.js';
 import * as store from './store.js';
 import * as L from './figurinhas/album-logic.js';
 import * as D from './figurinhas/dono.js';
+import { premioDaSemana } from './premios-config.js';
 
 /** Aplica o check-in de hoje no álbum guardado neste aparelho. Devolve true se a semana fechou (7 dias). */
 export function aplicar(state, hoje) {
@@ -20,7 +21,7 @@ export async function checkinAoEntrar() {
     store.upsert('figurinhas', ID, r.state);
     if (r.completou) {
       try { const M = await import('./figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } catch { /* sem perfil: ganha só o pacote */ }
-      try { const F = await import('./paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro duplo épico (em Stars › roleta) e uma figurinha exclusiva da Bea, que chegou no baú!`, bau: true }); } catch { /* sem animação */ }
+      try { const F = await import('./paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro épico (em Stars › roleta), o wallpaper “${premioDaSemana(r.state.sem.ciclo || 1).wallpaper.nome}” e 2 folhas de colorir (em Stars › check-in da semana)!`, bau: true }); } catch { /* sem animação */ }
     }
   } catch { /* sem armazenamento: o Álbum ainda faz o check-in quando abrir */ }
 }

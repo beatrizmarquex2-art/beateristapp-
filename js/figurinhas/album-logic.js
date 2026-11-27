@@ -22,7 +22,8 @@ export function motivoDoPacote(id) {
   if (s.startsWith('bonus:')) return 'bônus: 5 vitórias seguidas jogando online';
   if (s.startsWith('estudo:')) return 'você terminou um tema inteiro dos estudos com o Paul!';
   if (s.startsWith('epico:sem')) return 'você entrou 7 dias seguidos: giro épico!';
-  if (s.startsWith('epico:')) return 'você aceitou o Desafio do Paul: giro épico!';
+  if (s.startsWith('epico:')) return 'a Bea aprovou o seu print: giro épico!';
+  if (s.startsWith('dado:') && s.endsWith(':passe')) return 'prêmio do passe: 3 figurinhas exclusivas!';
   if (s.startsWith('roleta:dia:')) return 'presente de hoje por entrar no app (check-in)';
   if (s.startsWith('roleta:fases')) return 'você concluiu 4 fases nos jogos';
   if (s.startsWith('roleta:')) return `você juntou ${ESTRELAS_POR_ROLETA} ★ nos jogos`;
@@ -38,7 +39,9 @@ export const packKind = (id) => (String(id).startsWith('roleta:') ? 'roleta' : S
 /** GIRO ÉPICO (Desafio do Paul aprovado pela Bea): `epico:<id do resgate>:<1|2>`. O 1º giro dá SEMPRE 3 figurinhas; o 2º sorteia de 1 a 5 e, se vier só 1, ela é exclusiva (Beaterista e Paul). */
 export const EPICO_QTD = [[1, 15], [2, 20], [3, 30], [4, 20], [5, 15]];
 export const EPICO_PESOS = [['Comum', 60], ['Raras', 32], ['Beatlemania', 5], ['Beaterista', 3]]; // 2º giro épico: prioriza comuns e raras
-export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(id)); return m ? { n: Number(m[1]) } : null; };
+/** REGRA NOVA (nov/2026, pedido da Bea): UM giro épico, de 1 a 5 figurinhas e uma EXCLUSIVA (Beaterista e Paul) sempre garantida. Id `epico:<origem>` (sem `:1|2`). Os ids antigos `epico:<origem>:1|2` (giro duplo) ainda abrem como antes. */
+export const epicoUnico = (id) => /^epico:[^:]+$/.test(String(id));
+export const epicoPack = (id) => { const m = /^epico:[^:]+:([12])$/.exec(String(id)); return m ? { n: Number(m[1]) } : epicoUnico(id) ? { n: 0, unico: true } : null; };
 /** Pacote do giro épico: sem o 1º giro de 3, o 2º tem de 1 a 5. */
 export const WEIGHTS = { Comum: 80, Rara: 17, Exclusiva: 3 }; // (no prêmio de jogo a Exclusiva não existe: o grupo só tem Comum e Rara) // chance de cada figurinha do pacote ser dessa raridade
 // Seções do álbum (cada figurinha está em UMA; regra da Bea, nov/2026): Beatlemania = coleção Beatles; Beaterista = exclusivas da Bea e do Paul; Bandas = os grupos; Artistas = as pessoas.
@@ -58,7 +61,7 @@ const clone = (s) => ({ ...emptyState(), ...s, inv: { ...(s.inv || {}) }, pasted
 
 /** Check-in: 1 giro grátis da roleta por dia (id fixo por dia: abrir o álbum de novo não entrega outro). */
 export const checkinId = (dateKey) => `roleta:dia:${dateKey}`;
-/** Check-in da semana (pedido da Bea): 7 dias SEGUIDOS entrando no Álbum = 30 ★ + 1 giro duplo épico + 1 figurinha exclusiva da Bea + festa. Faltou um dia: recomeça.
+/** Check-in da semana (pedido da Bea): 7 dias SEGUIDOS entrando no Álbum = 30 ★ + 1 giro épico + 1 wallpaper + 2 folhas de colorir + festa. Faltou um dia: recomeça.
  *  `sem` = { ult: 'AAAA-MM-DD', seq: dias seguidos (0 a 6), ciclo: semanas completas }. Puro: devolve o novo estado e se completou a semana agora. */
 export const SEMANA_DIAS = 7; export const SEMANA_ESTRELAS = 30;
 const diaAntes = (k) => { const [y, m, d] = String(k).split('-').map(Number); const t = new Date(Date.UTC(y, m - 1, d - 1)); return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`; };
@@ -70,8 +73,8 @@ export function checkinSemana(sem, dateKey) {
   return { sem: { ult: dateKey, seq, ciclo: s.ciclo | 0 }, completou: false };
 }
 export const semanaPackId = (ciclo) => `semana:${ciclo}`;
-/** Prêmio da semana fechada: a exclusiva da Bea + o giro duplo épico (2 pacotes `epico:sem<ciclo>:1|2`). Os ids têm o ciclo, então nunca entrega em dobro. */
-export const semanaPacks = (ciclo) => [semanaPackId(ciclo), `epico:sem${ciclo}:1`, `epico:sem${ciclo}:2`];
+/** Prêmio da semana fechada (regra da Bea, 27/nov): 30 ★ + 1 giro épico (`epico:sem<ciclo>`) + 1 wallpaper + 2 folhas de colorir. Os ids têm o ciclo, então nunca entrega em dobro. */
+export const semanaPacks = (ciclo) => [`epico:sem${ciclo}`]; // UM giro épico (já traz 1 exclusiva garantida); wallpaper e colorir vêm de `premioDaSemana` (js/premios-config.js)
 export const grantSemana = (state, ciclo) => semanaPacks(ciclo).reduce((st, id) => grantPack(st, id), state);
 
 /** Entrega um pacote (uma vez só por id). */
@@ -95,6 +98,11 @@ export function drawPack(catalog, packId, size = PACK_SIZE, salt = '') {
   const ep = epicoPack(packId);
   if (ep) { // giro épico (Desafio do Paul): 1º = 3 figurinhas sempre; 2º = 1 a 5, e se for só 1 vem uma exclusiva
     const grp = (g) => catalog.filter((c) => grupo(c) === g).map((c) => c.codigo); const um = (g) => { const l = grp(g); return l.length ? l[Math.floor(r() * l.length)] : null; };
+    if (ep.unico) { // giro épico único: de 1 a 5 figurinhas, a exclusiva garantida vem por último (suspense)
+      const excl = um('Beaterista'); const qtd = pickWeighted(r, EPICO_QTD);
+      const outras = qtd > 1 ? drawBySection(catalog, r, qtd - 1, EPICO_PESOS.filter(([g]) => g !== 'Beaterista')) : [];
+      return [...outras.filter((c) => c !== excl), excl].filter(Boolean);
+    }
     if (ep.n === 1) return ['Beatlemania', 'Beaterista', 'Raras'].map(um).filter(Boolean); // 1º giro: SEMPRE 3 = 1 clássica (Beatlemania) + 1 exclusiva + 1 rara
     const qtd = pickWeighted(r, EPICO_QTD);
     if (qtd === 1) { const e1 = um('Beaterista'); return e1 ? [e1] : []; }

@@ -14,9 +14,9 @@ await page.goto(url + '/aluno.html#/album'); await sleep(3000);
 await page.evaluate(() => [...document.querySelectorAll('.fig-tabs button, [role=tab]')].find((b) => /pacotes/i.test(b.textContent)).click()); await sleep(600);
 check('a aba roleta tem 3 áreas: roleta, baú e resgate', await page.evaluate(() => [...document.querySelectorAll('.fig-area')].map((b) => b.textContent.replace(/\d+$/, '').trim()).join('|') === '🎡 roleta|🎁 baú|★ resgate'));
 await page.evaluate(() => [...document.querySelectorAll('.fig-area')].find((b) => /resgate/.test(b.textContent)).click()); await sleep(400);
-check('resgate: missão de postar com a lista de jogos e botão de enviar o print', await page.evaluate(() => document.querySelectorAll('.fig-post-sel option').length >= 10 && /enviar print do post/.test(document.querySelector('.fig-post').textContent)));
-check('a tela Pacotes mostra as 3 missões com print', await page.evaluate(() => document.querySelectorAll('.fig-missao').length === 3));
-const [fc] = await Promise.all([page.waitForEvent('filechooser'), page.evaluate(() => document.querySelector('.fig-missao .btn:not(.ghost)').click())]);
+check('resgate: missão de postar com a lista de jogos e botão de enviar o print', await page.evaluate(() => document.querySelectorAll('.fig-post-sel option').length >= 10 && /mandar print/.test(document.querySelector('.rs-card').parentElement.textContent)));
+check('a tela Pacotes mostra as 3 missões com print', await page.evaluate(() => document.querySelectorAll('.rs-missao').length === 3));
+const [fc] = await Promise.all([page.waitForEvent('filechooser'), page.evaluate(() => document.querySelector('.rs-missao .rs-btn:not(.ghost)').click())]);
 await fc.setFiles('/tmp/print-teste.png'); await sleep(1500);
 check('o print foi enviado com tipo, código e imagem', enviados.length === 1 && enviados[0].p_tipo === 'google' && !!enviados[0].p_code && (enviados[0].p_print || '').length > 100, JSON.stringify(Object.keys(enviados[0] || {})));
 // a Bea aprovou: entrega +5 ★ (missão) e 1 lendária

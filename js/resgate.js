@@ -16,11 +16,22 @@ export const ARROBA = '@beaterista_';
 export const JOGOS_POST = [['paulbox', 'PaulBox'], ['uno', 'Uno Musical'], ['velha', 'Jogo da velha'], ['quebra', 'Quebra-cabeça'], ['cara', 'Cara a cara'], ['stop', 'Stop'], ['memoria', 'Jogo da memória'], ['bingo', 'Bingo'],
   ['paulta', 'pauLta'], ['figurix', 'Figurix'], ['detetive', 'Detetive Note'], ['rudimentix', 'Rudimentix'], ['toca', 'Toca Aqui'], ['beathero', 'Beat Hero'], ['figurinha', 'figurinha do álbum'], ['outro', 'outro jogo']];
 export const tipoPost = (jogo) => `post:${jogo}`;
-/** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. Aprovado pela Bea = GIRO DUPLO ÉPICO (2 giros). O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
+/** Regra nova (nov/2026): o print de POSTAR (qualquer `post:<jogo>`, inclusive o Desafio do Paul), de SEGUIR nas redes e de AVALIAR a escola, aprovado pela Bea, vale UM giro épico (de 1 a 5 figurinhas + uma exclusiva garantida). Mandar pra um amigo continua valendo estrelas. */
+export const DA_GIRO_EPICO = (tipo) => tipo === 'google' || tipo === 'youtube' || /^post:/.test(String(tipo)); // (antiga regra; agora TODA missão aprovada vale 1 giro da roleta maluca, menos 'lendaria')
+/** Cada missão aprovada vale 1 giro da ROLETA MALUCA (js/figurinhas/roleta-maluca.js). Só o resgate de lendária fica de fora. */
+export const VALE_GIRO = (tipo) => tipo !== 'lendaria';
+/** Redes sociais: 1 giro cada. `youtube` já existia no banco; Instagram e TikTok usam 'post:rede-…' (o banco aceita sem mudar nada). */
+export const REDES = [['youtube', 'YouTube', 'https://www.youtube.com/@beateristadrummer'], ['post:rede-instagram', 'Instagram', 'https://www.instagram.com/beaterista_/'], ['post:rede-tiktok', 'TikTok', 'https://www.tiktok.com/@beaterista']];
+/** Próximo tipo livre pra repetir uma missão (cada amigo, cada postagem nova): base, base-2, base-3… O banco só aceita 1 por tipo. `ocupado(tipo)` diz se já tem. */
+export function tipoLivre(base, ocupado) {
+  if (!ocupado(base)) return base; const raiz = base === 'amigo' ? 'post:amigo' : base;
+  for (let n = 2; n < 100; n++) { const t = `${raiz}-${n}`; if (t.length <= 29 && !ocupado(t)) return t; } return null;
+}
+/** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
 export const TIPO_DESAFIO = 'post:desafio';
 /** Nome legível de qualquer tipo de resgate (inclui `post:<jogo>`). */
-export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro duplo épico)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
-export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
+export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'postou e marcou a escola (1 giro)'; if (/^rede-/.test(m[1])) return `seguiu no ${m[1].slice(5)}`; if (/^amigo-/.test(m[1])) return 'mandou pra mais um amigo'; if (/^indicou/.test(m[1])) return 'indicou um amigo pelo nome (o amigo entrou)'; if (/^depoimento/.test(m[1])) return 'mandou um depoimento (precisa de autorização dos pais)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
+export const TIPO_NOME = { google: 'avaliou a escola (giro épico)', youtube: 'seguiu nas redes (giro épico)', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 
 /** Reduz o print (lado maior 900 px, JPEG) e devolve o base64 puro. Fica bem abaixo do limite do banco (900 mil caracteres). */

@@ -23,7 +23,7 @@ import { cartoesDosTemas, sessaoPorId, estrelasTema } from './kids/teoria.js';
 import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
-/** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
+/** Rodapé do Início (antes ficava no Perfil): mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
 function versaoApp() {
   const v = h('b', {}, '…'); const msg = h('p', { class: 'muted', role: 'status' });
   try { caches.keys().then((ks) => { const k = ks.filter((x) => /^beaterista-v\d+/.test(x)).sort().pop(); v.textContent = k ? k.replace('beaterista-', '') : 'sem cópia'; }); } catch { v.textContent = '?'; }
@@ -82,6 +82,7 @@ import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 import { iconePaul } from './icone-paul.js';
+import { iniciar as iconesDosEmojis } from './icones-emoji.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -95,6 +96,7 @@ const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
+try { iconesDosEmojis(); } catch { /* sem ícones: ficam os emojis */ }
 
 const ID_KEY = 'beaterista-aluno-id';
 const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = uid(); localStorage.setItem(ID_KEY, v); } return v; } catch { return uid(); } };
@@ -320,7 +322,7 @@ function dicasEstudoView(view) {
 function lojinhaView(view, parts = []) {
   // os depoimentos (só texto) aparecem com a lojinha aberta (LOJA_ABERTA em js/loja-config.js)
   const aba = LOJA_ABERTA && parts[0] === 'depoimentos' ? parts[0] : 'loja';
-  const secaoLoja = ['cards', 'ensina', 'evoluir'].includes(parts[0]) ? parts[0] : ''; // `#/lojinha/<seção>` abre os produtos daquela seção
+  const secaoLoja = ['cards', 'ensina', 'evoluir', 'passe', 'universo', 'banca', 'combos', 'musicos', 'gratis'].includes(parts[0]) ? parts[0] : ''; // `#/lojinha/<seção>` abre os produtos daquela seção
   const abas = h('div', { class: 'al-subnav lj-abas', role: 'tablist', 'aria-label': 'Lojinha' }, ...[['loja', '#/lojinha', 'lojinha'], ['depoimentos', '#/lojinha/depoimentos', 'depoimentos']].map(([k, href, t]) => h('a', { href, role: 'tab', 'aria-selected': String(aba === k), class: `chip-btn${aba === k ? ' on' : ''}` }, t)));
   if (aba !== 'loja') { const box = h('div', { class: 'pad-x' }); view.append(banner('Lojinha', 'quem já estuda com a Beaterista'), abas, box); import('./views/lojinha-prova.js').then((m) => box.replaceChildren(m.depoimentos())); return () => {}; }
   let gone = false; const msg = h('p', { class: 'al-lock-msg', role: 'status', 'aria-live': 'polite' });
@@ -332,14 +334,15 @@ function lojinhaView(view, parts = []) {
   const drawPedido = () => { const c = CODE.pendente(); pedido.replaceChildren(c ? h('div', {}, h('p', { class: 'al-lock-l' }, 'seu código'), h('div', { class: 'al-lock-code' }, c), h('p', { class: 'al-lock-t' }, 'informe a professora Bea')) : h('button', { class: 'btn small ghost', type: 'button', onclick: () => { CODE.pedir(); drawPedido(); } }, 'pedir o código pra professora Bea')); };
   drawPedido();
   const vitrineBox = h('div');
-  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine(secaoLoja)); });
+  if (LOJA_ABERTA) view.classList.add('lj-escura'); // a vitrine é escura (css/lojinha.css); a classe sai quando a pessoa deixa a Lojinha
+  if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine(secaoLoja, { abrirCodigo, inicio: `#/${HOME}` })); });
   view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
     LOJA_ABERTA ? null : arteDoPaul('arte-por-que-paul', 'por que Paul?', 'a homenagem do nome do robozinho', 'por que Paul? o nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea'),
     h('section', { class: 'card pad' }, h('b', {}, 'já tem um código?'), h('div', { class: 'al-lock-row' }, inp, h('button', { class: 'btn primary', type: 'button', onclick: entrar }, 'liberar')), msg),
     h('section', { class: 'card pad' }, h('b', {}, 'ou peça pra professora Bea'), pedido)));
-  return () => { gone = true; };
+  return () => { gone = true; view.classList.remove('lj-escura'); };
 }
 
 /** "5 erros": PDF da professora (aberto, sem código). Enquanto o arquivo não existe, avisa que vem aí. */
@@ -496,7 +499,7 @@ function shell(name) {
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
-    else if (r.name === 'perfil') { c = perfil.mount(view); view.append(versaoApp()); }
+    else if (r.name === 'perfil') c = perfil.mount(view);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
@@ -516,7 +519,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'ouvido') c = ouvidoEstudoView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
-    else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
+    else if (r.name === 'inicio' && INICIO_ON) { c = inicio.mount(view, { nome: getName() }); view.append(versaoApp()); } // a versão do app e o botão "atualizar agora" moraram no Perfil; agora ficam no fim do Início
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = `#/${HOME}`; return; }
