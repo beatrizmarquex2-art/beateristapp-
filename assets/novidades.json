@@ -11,10 +11,10 @@
   {
     "id": "video",
     "tag": "vídeo novo",
-    "titulo": "vídeo novo da Bea",
-    "texto": "a Bea no canal do YouTube",
+    "titulo": "unboxing Tagima",
+    "texto": "a Bea abriu a caixa da camiseta da Tagima",
     "botao": "assistir",
-    "href": "https://www.youtube.com/watch?v=9wW9pxaL7Dk",
+    "href": "https://youtu.be/9wW9pxaL7Dk",
     "externo": true,
     "cor": "azul"
   },
