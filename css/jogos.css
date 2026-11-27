@@ -2282,3 +2282,42 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
   .cm-fluido .qz-b .qz-i { padding: 11px; } .cm-fluido .qz-main .qz-i { padding: 13px; } .cm-fluido .qz-b { gap: 4px; }
   .cm-fluido .qz-st { padding: 4px 10px; }
 }
+
+/* ===== aulas da bateria: mais claras e maiores (nov/2026) ===== */
+.kd-aulas-linha { margin: 6px 0 2px; }
+.kd-aulas-big { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 68px; padding: 10px 16px; border: 3px solid #1b1818; border-radius: 18px; background: linear-gradient(180deg, #ffe58a, #f7b733); color: #1b1818; text-align: left; font: inherit; cursor: pointer; box-shadow: 4px 5px 0 #1b1818; }
+.kd-aulas-big:active { transform: translate(2px, 3px); box-shadow: 2px 2px 0 #1b1818; }
+.kd-aulas-big.on { background: linear-gradient(180deg, #bfe6e9, #7cc7ce); }
+.kd-aulas-big .kab-ic { font-size: 32px; line-height: 1; }
+.kd-aulas-big .kab-t { display: flex; flex-direction: column; flex: 1; min-width: 0; } .kd-aulas-big .kab-t b { font: 22px/1.05 'Anton', Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; } .kd-aulas-big .kab-t small { font-size: 13px; font-weight: 700; opacity: .8; }
+.kd-aulas-big .kab-go { font-size: 22px; font-weight: 900; }
+.tk-kit.au-jogando .kd-aulas-linha { display: none; }
+.kd-mao { margin: 2px 0; } .kd-mao .kd-chip { min-height: 40px; padding: 0 16px; }
+
+.au-como { display: grid; gap: 6px; padding: 12px; border: 2px dashed #1b1818; border-radius: 14px; background: #fffdf3; }
+.au-como-t { font: 18px/1 'Anton', Impact, sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+.au-passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.au-passos li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.3; }
+.au-passos li i { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #1b1818; color: #fff; font: 800 15px/1 var(--body, inherit); font-style: normal; }
+.au-passos li.paul i { background: #a31d30; } .au-passos li.vez i { background: #1f6f78; }
+.au-como-r { margin: 0; font-size: 13.5px; line-height: 1.35; }
+.au-escolha { margin: 4px 0 0; font: 700 15px var(--body, inherit); }
+.au-lista { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.au-item { min-height: 82px; padding: 10px 8px; } .au-item span { font-size: 15px; font-weight: 700; } .au-item small { font-size: 12.5px; } .au-item .au-est { font-size: 20px; }
+
+.au-banner { display: grid; gap: 8px; justify-items: center; padding: 10px; border-radius: 16px; background: #f2ede0; border: 2px solid #1b1818; }
+.au-banner .au-quem { display: block; width: 100%; padding: 12px 10px; border-radius: 12px; background: #e3ddcd; font: 24px/1.1 'Anton', Impact, sans-serif; text-transform: uppercase; letter-spacing: .03em; text-align: center; color: #1b1818; }
+.au-banner .au-quem.paul { background: #a31d30; color: #fff; } .au-banner .au-quem.vez { background: #1f6f78; color: #fff; animation: auPulso .7s ease-in-out infinite alternate; } .au-banner .au-quem.conta { background: #ffd23f; color: #1b1818; }
+@keyframes auPulso { from { transform: scale(1); } to { transform: scale(1.03); } }
+.au-dots { display: flex; gap: 10px; }
+.au-dot { display: flex; gap: 2px; padding: 3px; border-radius: 99px; border: 2px solid transparent; opacity: .55; }
+.au-dot.on { opacity: 1; border-color: #1b1818; background: #fffdf3; } .au-dot.feito { opacity: .9; }
+.au-dot i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: 800 12px/1 var(--body, inherit); font-style: normal; color: #fff; background: #bbb; }
+.au-dot.feito i.ouvir, .au-dot.on i.ouvir { background: #a31d30; } .au-dot.feito i.tocar, .au-dot.on i.tocar { background: #1f6f78; } .au-dot.feito i.conta, .au-dot.on i.conta { background: #d4a21b; color: #1b1818; }
+.au-dots-leg { font-size: 11px; opacity: .7; margin-top: -4px; } .au-passos li.cont i { background: #d4a21b; color: #1b1818; }
+.au-dot i.agora { outline: 3px solid #ffd23f; outline-offset: 1px; transform: scale(1.15); }
+.au-conta { display: flex; gap: 8px; } .au-conta i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: #e3ddcd; font: 800 18px/1 var(--body, inherit); font-style: normal; color: #6b6558; } .au-conta i.on { background: #1b1818; color: #ffd23f; transform: scale(1.1); }
+.au-msg { font-size: 21px; padding: 4px 6px; }
+.au-acoes { display: grid; gap: 8px; justify-items: stretch; } .au-acoes .btn { min-height: 52px; font-size: 16px; } .au-acoes .au-go { font-size: 19px; }
+.au-pauta svg { width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) { .au-banner .au-quem.vez { animation: none; } }

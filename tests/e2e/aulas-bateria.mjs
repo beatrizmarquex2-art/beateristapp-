@@ -10,7 +10,7 @@ const shot = (n) => page.screenshot({ path: `${process.env.SHOTS || '/tmp'}/aula
 const espera = (fn, ms = 30000) => page.waitForFunction(fn, null, { timeout: ms });
 
 await page.goto(url + '/aluno.html#/toque'); await sleep(2200);
-check('o "canhota" fica dentro da área da bateria e o "aulas" na linha de baixo, em outro lugar', await page.evaluate(() => !!document.querySelector('.tk-palco .kd-canhota') && !!document.querySelector('.kd-aulas') && !document.querySelector('.tk-palco .kd-aulas')));
+check('o "canhota" é uma linha própria (mão: destro/canhota) e o "aulas" é o botão grande embaixo', await page.evaluate(() => !!document.querySelector('.kd-mao .kd-canhota') && !document.querySelector('.tk-palco .kd-canhota') && !!document.querySelector('.kd-aulas-big') && !document.querySelector('.tk-palco .kd-aulas')));
 await page.evaluate(() => document.querySelector('.kd-aulas').click()); await sleep(500);
 check('abre a lista com 16 aulas', await page.evaluate(() => document.querySelectorAll('.au-item').length === 16));
 await shot('1-lista');
