@@ -11,7 +11,11 @@ import { precoPasse } from './passe-preco.js';
 export const URL_PASSE = 'https://jogos.beaterista.com.br/pix/';
 export const PASSE = { nome: 'Passe Anual Robôterista', preco: precoPasse().atual, info: ['12 meses de acesso', 'Até 2 aparelhos', 'Pix ou cartão · o código chega no seu e-mail'], img: 'assets/loja/passe.webp', link: URL_PASSE };
 // Banner do acesso anual (promoção de Natal): vai em cima do combo; mesmo link do passe. Só aparece enquanto vale a oferta (js/passe-preco.js).
-export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', desc: `oferta ${precoPasse().nome}: 12 meses de acesso por ${precoPasse().atual} até ${precoPasse().ate}`, img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link };
+// A partir de 16/12 (oferta de Natal) o banner vira a arte do Paul Noel (quadrada, como a do combo); antes, o banner de sempre.
+const _PP = precoPasse();
+export const ANUAL = _PP.bf
+  ? { id: 'anual-lancamento', nome: 'Acesso anual', desc: `oferta ${_PP.nome}: 12 meses de acesso por ${_PP.atual} até ${_PP.ate}`, img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link }
+  : { id: 'anual-lancamento', nome: 'Acesso anual', desc: `Paul Noel, presente do Robôterista: promoção de lançamento estendida até 31 de dezembro, ${_PP.atual}`, img: 'assets/loja/anual-natal.webp', w: 1254, h: 1254, link: PASSE.link };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [
