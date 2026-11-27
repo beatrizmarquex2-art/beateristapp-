@@ -14,6 +14,7 @@ import * as conta from './conta.js';
 import * as pedaleira from './pedaleira.js';
 import * as afinador from './afinador.js';
 import * as metronomo from './metronomo.js';
+import * as editorRitmico from './editor-ritmico.js';
 
 const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
 const TELAS = { inicio, pedaleira, afinador, metronomo, aulas, estudio, biblioteca, alunos, agenda, assistente };
@@ -50,7 +51,11 @@ async function rota() {
   if (!ctx.perfil.nome && k !== 'conta') { location.hash = '#/conta'; return; }
   let r;
   if (k === 'conta') r = conta.mount(main, ctx, partes, { primeira: !ctx.perfil.nome });
-  else if (k === 'editor') { const m = await import('../views/editor-partitura.js'); r = m.mount(main, { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true }); }
+  else if (k === 'editor') {
+    const op = { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true };
+    if (['violao', 'guitarra', 'baixo', 'bateria'].includes(partes[1])) r = editorRitmico.mount(main, { ...op, inst: partes[1] });
+    else { const m = await import('../views/editor-partitura.js'); r = m.mount(main, op); }
+  }
   else r = (TELAS[k] || inicio).mount(main, ctx, partes);
   document.documentElement.dataset.tela = k;
   const f = await r; if (typeof f === 'function') limpa = f; main.scrollTo?.(0, 0);

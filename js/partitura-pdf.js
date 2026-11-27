@@ -23,8 +23,9 @@ export async function paginas(d) {
   const papel = d.semPapel ? null : await loadImg('assets/papel-timbrado.png');
   const lado = Math.round(16 * MM); const topo = Math.round(40 * MM); const base = H - Math.round(36 * MM);
   const largU = 700; const escala = (W - lado * 2) / largU; // unidades da pauta → pixels da página
-  const r = pauta(d.evs, { clave: d.clave || 'auto', largura: largU, cor: !!d.cor });
-  const geo = GEOM; const topoU = geo.topo(!!d.cor); const nSis = Math.max(1, Math.round((r.h - topoU - 4) / geo.sistema));
+  // `d.render(largura)` (tablatura e bateria do PRO) devolve { svg, w, h, sistema, topo, n }; sem ele é a pauta de melodia
+  const r = d.render ? d.render(largU) : pauta(d.evs, { clave: d.clave || 'auto', largura: largU, cor: !!d.cor });
+  const geo = d.render ? { sistema: r.sistema, topo: () => r.topo } : GEOM; const topoU = geo.topo(!!d.cor); const nSis = d.render ? r.n : Math.max(1, Math.round((r.h - topoU - 4) / geo.sistema));
   const area = base - (topo + 90); const porPag = Math.max(1, Math.floor(area / (geo.sistema * escala)));
   const img = await svgImagem(r.svg, Math.round(largU * escala), Math.round(r.h * escala));
   const pags = Math.ceil(nSis / porPag); const out = [];

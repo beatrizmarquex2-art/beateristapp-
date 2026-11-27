@@ -20,22 +20,22 @@ const lerSalvo = () => { try { const r = store.get(CHAVE); return r && r.data ? 
 const nomeAluno = () => { try { return (CONTAS.atual().nome || '').trim(); } catch { return ''; } };
 const svg = (inner, vb = '0 0 24 26') => `<svg viewBox="${vb}" aria-hidden="true" focusable="false">${inner}</svg>`;
 const ICO = (inner) => svg(inner, '0 0 24 24');
-const IC = {
+export const IC = {
   volta: ICO('<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   undo: ICO('<path d="M9 7 4 12l5 5M4 12h10a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   play: ICO('<path d="M7 4v16l13-8z" fill="currentColor"/>'), stop: ICO('<rect x="6" y="6" width="12" height="12" fill="currentColor"/>'),
   pdf: ICO('<path d="M7 3h7l4 4v14H7zM14 3v4h4M10 13h5M10 17h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'),
   save: ICO('<path d="M5 4h12l2 2v14H5zM8 4v5h7V4M8 20v-6h8v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'),
 };
-const noteIcon = (d) => {
+export const noteIcon = (d) => {
   let o = `<ellipse cx="9" cy="19" rx="5.2" ry="3.8" transform="rotate(-20 9 19)" ${d >= 8 ? 'fill="none" stroke="currentColor" stroke-width="2"' : 'fill="currentColor"'}/>`;
   if (d < 16) o += '<line x1="13.6" y1="18" x2="13.6" y2="4" stroke="currentColor" stroke-width="2"/>';
   if (d <= 2) o += '<path d="M13.6 4c2 3 6 3.5 5 9" stroke="currentColor" stroke-width="2" fill="none"/>';
   if (d === 1) o += '<path d="M13.6 9c2 3 6 3.5 5 9" stroke="currentColor" stroke-width="2" fill="none"/>';
   return svg(o);
 };
-const RESTIC = svg('<path d="M10 3l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>');
-const DURS = [[16, 'semibreve'], [8, 'mínima'], [4, 'semínima'], [2, 'colcheia'], [1, 'semicolcheia']];
+export const RESTIC = svg('<path d="M10 3l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>');
+export const DURS = [[16, 'semibreve'], [8, 'mínima'], [4, 'semínima'], [2, 'colcheia'], [1, 'semicolcheia']];
 
 export function mount(host, opts = {}) {
   const VOLTA = opts.voltar || '#/ferramentas-prof';
@@ -158,6 +158,6 @@ export function mount(host, opts = {}) {
   host.append(raiz); desenhaKb(); desenha(); requestAnimationFrame(desenha);
   const aoRedimensionar = () => desenha(); window.addEventListener('resize', aoRedimensionar);
   // veio da aba Professores (ou da pasta online): abre a partitura que a pessoa escolheu
-  try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then(carrega).catch((e) => toast(NUV.textoErro(e), { id: 'ep', ms: 3200 })); } } catch { /* sem sessionStorage */ }
+  try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then((row) => { if (row.instrumento && row.instrumento !== 'teclas') { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* ok */ } location.hash = `#/editor/${row.instrumento}`; return; } carrega(row); }).catch((e) => toast(NUV.textoErro(e), { id: 'ep', ms: 3200 })); } } catch { /* sem sessionStorage */ }
   return () => { gone = true; parar(); desligaMic(); for (const v of live.values()) { try { v.off(false); } catch { /* ok */ } } window.removeEventListener('resize', aoRedimensionar); };
 }

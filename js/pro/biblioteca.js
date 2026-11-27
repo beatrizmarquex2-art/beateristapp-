@@ -2,6 +2,7 @@
 import { h, entrada, aviso, vazio, quandoTxt } from './ui.js';
 import * as D from './dados.js';
 import * as NUV from '../partitura-nuvem.js';
+import { rotaDe } from './editor-ritmico.js';
 
 export async function mount(host) {
   let gone = false; let aulas = []; let part = []; let aba = 'aulas'; let pasta = ''; let busca = ''; let partOk = true;
@@ -16,7 +17,7 @@ export async function mount(host) {
     let corpo;
     if (aba === 'part') {
       const l = D.filtrar(part, busca);
-      corpo = !partOk ? vazio('Partituras indisponíveis', 'A pasta online de partituras ainda não está ligada no servidor.') : l.length ? h('ul', { class: 'pt-lista' }, ...l.map((p) => h('li', {}, h('a', { href: '#/editor', onclick: () => { try { sessionStorage.setItem('pm-abrir', p.id); } catch { /* sem sessionStorage */ } } }, h('b', {}, p.nome), h('span', {}, p.instrumento), h('em', {}, quandoTxt(p.atualizado_em)))))) : vazio('Nenhuma partitura guardada', 'Monte uma no Estúdio e guarde na pasta online.', h('a', { class: 'pb ouro', href: '#/editor' }, 'Abrir o editor'));
+      corpo = !partOk ? vazio('Partituras indisponíveis', 'A pasta online de partituras ainda não está ligada no servidor.') : l.length ? h('ul', { class: 'pt-lista' }, ...l.map((p) => h('li', {}, h('a', { href: rotaDe(p.instrumento), onclick: () => { try { sessionStorage.setItem('pm-abrir', p.id); } catch { /* sem sessionStorage */ } } }, h('b', {}, p.nome), h('span', {}, p.instrumento), h('em', {}, quandoTxt(p.atualizado_em)))))) : vazio('Nenhuma partitura guardada', 'Monte uma no Estúdio e guarde na pasta online.', h('a', { class: 'pb ouro', href: '#/editor' }, 'Abrir o editor'));
     } else {
       let l = aulas.filter((a) => (aba === 'modelos' ? a.modelo : aba === 'fav' ? a.favorito : !a.modelo)); if (pasta) l = l.filter((a) => a.pasta === pasta); l = D.filtrar(l, busca, ['titulo', 'instrumento', 'pasta']);
       corpo = l.length ? h('ul', { class: 'pt-lista' }, ...l.map((a) => h('li', {}, h('a', { href: `#/aulas/${a.id}` }, h('b', {}, a.titulo), h('span', {}, [a.pasta, a.instrumento, D.nomeNivel(a.nivel), `${a.duracao_min} min`].filter(Boolean).join(' · '))), h('button', { type: 'button', class: `pb-i${a.favorito ? ' on' : ''}`, 'aria-pressed': String(!!a.favorito), 'aria-label': a.favorito ? 'Tirar dos favoritos' : 'Favoritar', onclick: () => alterna(a) }, a.favorito ? '★' : '☆')))) : vazio(aulas.length ? 'Nada por aqui' : 'Biblioteca vazia', aulas.length ? 'Nenhum item neste filtro.' : 'As aulas que você criar aparecem aqui, organizadas por pasta.', aulas.length ? null : h('a', { class: 'pb ouro', href: '#/aulas/nova' }, 'Criar aula'));

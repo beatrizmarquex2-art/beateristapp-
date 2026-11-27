@@ -1194,3 +1194,11 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Quem cria conta sem estar liberado vê "seu acesso ainda não foi liberado" e não grava nada (testado: dois professores não se enxergam, anon e não-liberado bloqueados).
 - Falta: ligar "proteção contra senhas vazadas" no Auth do Supabase, DNS do pro.beaterista.com.br, violão/bateria no editor, apostilas/jogos/flashcards, turmas, assistente com IA (precisa de função no servidor), integração com o PLAY (envio de tarefas).
 - Testes: `node tests/e2e/pro.mjs` (servidor simulado), `tests/pro-dados.test.mjs`, `tests/pro-ferr.test.mjs`.
+
+### PRO: violão, guitarra, baixo e bateria (27/nov/2026)
+- `js/pro/ritmo.js` (modelo + layout + SVG da tablatura e da pauta de bateria, com acordes e batidas simultâneas), `js/pro/editor-ritmico.js` (tela), rotas `#/editor/violao|guitarra|baixo|bateria` (teclado continua `#/editor`).
+- Tablatura: violão 6 cordas, guitarra 6/7/8, baixo 4/5/6 (trocar de cordas remapeia as notas pela corda real). Microfone escreve a casa (violão/guitarra; baixo fica de fora: a faixa do detector começa em 75 Hz).
+- Bateria: kits simples (3), médio (6) e completo (9 peças); mão D/E, acento, fantasma, "juntar" (ao mesmo tempo); `B` marca o bumbo.
+- Tudo guardado na tabela `partituras` (instrumento violao/guitarra/baixo/bateria, dados.versao 2). O PDF usa `d.render` em `js/partitura-pdf.js`.
+- Ainda não: pauta comum para violão, figuras rítmicas sem pauta, microfone na bateria, ligaduras e quiálteras.
+- Testes: `tests/pro-ritmo.test.mjs`, `tests/e2e/pro-ritmico.mjs`.
