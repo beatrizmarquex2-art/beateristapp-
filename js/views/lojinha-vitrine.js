@@ -43,14 +43,14 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
-/** Os 3 combos (Ensina, Aprende Brincando, Cria e Revisa): banner larga + um cartão por combo. Sem link, o botão diz "em breve". */
-const cartaoCombo = (c) => h('article', { class: `lj-combo lj-combo-${c.cor}${c.link ? '' : ' breve'}`, 'data-id': c.id },
-  c.img
-    ? h('button', { type: 'button', class: 'lj-combo-capa', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h }))
-    : h('div', { class: 'lj-combo-capa vazia', role: 'img', 'aria-label': `${c.nome}: a arte chega em breve` }, h('b', {}, 'Aprende Brincando'), h('small', {}, 'a capa chega em breve')),
-  h('h3', {}, c.nome), h('p', {}, c.desc), h('ul', { class: 'lj-combo-itens' }, ...c.itens.map((x) => h('li', {}, x))),
-  c.preco ? h('b', { class: 'lj-preco lj-preco-card' }, c.precoDe ? [h('s', { class: 'lj-de', 'aria-label': `de ${c.precoDe}` }, c.precoDe), ' por '] : null, c.preco) : null,
-  botao('Adquirir o combo', c, 'amarelo'));
+/** Combos: cada um é um banner de arte (como o combo antigo) com preço e botão; sem link, um bloco vermelho "em breve" com a lista do que vai dentro. */
+const heroCombo = (c) => (c.img
+  ? h('article', { class: 'lj-bf lj-bf-topo lj-combo-hero', 'data-id': c.id },
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { class: 'lj-bf-arte', src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h })),
+    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, c.precoDe ? 'combo · economize' : 'combo'), h('b', { class: 'lj-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', c.preco] : c.preco), botao('Adquirir o combo', c, 'amarelo')))
+  : h('article', { class: 'lj-combo-vazio', 'data-id': c.id },
+    h('span', { class: 'lj-selo' }, 'em breve'), h('h3', {}, c.nome), h('ul', {}, ...c.itens.map((x) => h('li', {}, x))),
+    h('img', { src: 'assets/paul/colorido/paul-presente.webp', alt: '', loading: 'lazy', draggable: 'false' })));
 /** Os preferidos da turma: colorir, atividades e jogo da memória (à venda) + o UNO Musical (jogo do app: leva pro jogo, não vende). */
 const unoApp = () => h('article', { class: 'lj-card lj-uno', 'data-id': 'uno-app' },
   h('a', { class: 'lj-capa', href: '#/jogos/cartas', 'aria-label': 'jogar o Uno Musical no app' }, h('img', { src: 'assets/jogos/icones/cartas.webp', alt: 'Uno Musical', loading: 'lazy', width: 640, height: 640 })),
@@ -59,14 +59,14 @@ const unoApp = () => h('article', { class: 'lj-card lj-uno', 'data-id': 'uno-app
 function amados() {
   const itens = AMADOS.map((id) => PRODUTOS.find((p) => p.id === id)).filter(Boolean);
   return h('section', { class: 'lj-amados', 'aria-labelledby': 'lj-amados-t' },
-    h('h2', { class: 'lj-esc', id: 'lj-amados-t' }, h('span', {}, 'Os preferidos da turma')),
-    h('div', { class: 'lj-grid' }, ...itens.map(cartao), unoApp()));
+    h('div', { class: 'lj-amados-top' }, h('i', { 'aria-hidden': 'true' }, '⭐'), h('h2', { id: 'lj-amados-t' }, 'Os preferidos da turma', h('small', {}, 'o que a galera mais ama: colorir, atividades e jogos'))),
+    h('div', { class: 'lj-amados-faixa' }, ...itens.map(cartao), unoApp()),
+    h('p', { class: 'lj-amados-dica', 'aria-hidden': 'true' }, 'deslize pro lado ›'));
 }
 function combos() {
-  return h('section', { class: 'lj-combos', 'aria-labelledby': 'lj-combos-t' },
+  return h('section', { class: 'lj-combos', 'aria-label': 'Combos especiais' },
     h('img', { class: 'lj-combos-banner', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h }),
-    h('h2', { class: 'lj-esc', id: 'lj-combos-t' }, h('span', {}, 'Combos especiais')),
-    h('div', { class: 'lj-combos-grid' }, ...COMBOS.slice().sort((a, b) => Number(!!b.link) - Number(!!a.link)).map(cartaoCombo))); // os combos com link primeiro; "em breve" por último
+    ...COMBOS.slice().sort((a, b) => Number(!!b.link) - Number(!!a.link)).map(heroCombo)); // os combos com link primeiro; "em breve" por último
 }
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
