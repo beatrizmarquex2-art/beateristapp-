@@ -1765,3 +1765,7 @@ html.kb-open .bottom-nav, html.kb-open .to-top, html.kb-open .scroll-track, html
 .cod-nome-bt { background: none; border: 0; padding: 0; margin: 0; font: inherit; font-weight: 700; color: inherit; text-align: left; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
 .cod-nome-bt i { font-style: normal; opacity: .55; }
 .cod-edit { display: grid; gap: 14px; }
+
+/* Tela de carregamento sazonal (js/sazonal-boot.js): mantém a proporção da arte, cabe em celular e computador; sem a classe, vale o Paul de sempre */
+html[data-sazonal] .boot { padding-top: 0; min-height: 100dvh; display: grid; place-content: center; font-size: 0; color: transparent; }
+html[data-sazonal] .boot::before { width: min(78vw, 460px, 78dvh * var(--saz-w, 1)); height: auto; aspect-ratio: var(--saz-ar, 1 / 1); max-height: 78dvh; margin: 0; background: var(--saz-img) center / contain no-repeat; mix-blend-mode: normal; }
