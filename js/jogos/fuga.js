@@ -1,5 +1,6 @@
 // A Fuga do Estúdio: um mapa de mundos (como Figurix e Toca Aqui). Cada fase é uma PORTA trancada com lasers; o aluno abre resolvendo jogos (mesa de som, memória, caça-palavras, cruzadinha…; quiz só na aba Estudos).
 // 3 mundos (Estúdio dos Lasers · Vulcão · Estação Espacial) × 12 fases × 3 ★ = 36 ★ por mundo. Regras e números em fuga-logic.js. Reaproveita os 3 jogos de palavras (modo "D": sem estrela própria).
+import { PLANO_SFX } from './fuga-som.js';
 import { h } from '../util.js';
 import { banner, toast } from '../ui.js';
 import * as FB from '../feedback.js';
@@ -17,15 +18,13 @@ import { trilhaInfo, trilhaCfg, estDaTrilha, paraTrilha, fasesFeitas, FASES_TRIL
 import * as MOLD from '../molduras.js';
 export { estrelasPorta };
 
-/** Efeitos sintetizados na hora (sem arquivo): laser, alarme, porta abrindo e fanfarra de vitória. Respeitam o botão de som do app. */
+/** Efeitos sintetizados na hora (sem arquivo): começar a porta, alarme de erro, porta abrindo (acerto) e fanfarra de vitória. Respeitam o botão de som do app. */
+export { PLANO_SFX };
 export function sfx(tipo) {
   try {
     const c = audio(); const o = out(); const t = c.currentTime + 0.02;
     const voz = (tp, f0, f1, ini, dur, vol, filtro) => { const x = c.createOscillator(); const g = c.createGain(); x.type = tp; x.frequency.setValueAtTime(f0, t + ini); x.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + ini + dur); g.gain.setValueAtTime(0.0001, t + ini); g.gain.exponentialRampToValueAtTime(vol, t + ini + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + ini + dur); let n = x; if (filtro) { const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = filtro; x.connect(f); n = f; } n.connect(g); g.connect(o); x.start(t + ini); x.stop(t + ini + dur + 0.05); };
-    if (tipo === 'laser') { voz('sawtooth', 1500, 180, 0, 0.22, 0.12, 4000); voz('square', 3000, 400, 0.02, 0.15, 0.04); }
-    else if (tipo === 'alarme') { for (let k = 0; k < 4; k++) voz('square', k % 2 ? 520 : 780, k % 2 ? 500 : 760, k * 0.16, 0.15, 0.1, 2500); }
-    else if (tipo === 'porta') { voz('sawtooth', 110, 55, 0, 0.55, 0.16, 500); voz('triangle', 70, 40, 0.05, 0.5, 0.2); [659, 880, 1319].forEach((f, k) => voz('sine', f, f, 0.5 + k * 0.1, 0.35, 0.12)); }
-    else if (tipo === 'vitoria') { [523, 659, 784, 1047, 1319].forEach((f, k) => { voz('triangle', f, f, k * 0.11, 0.45, 0.14); voz('sine', f * 2, f * 2, k * 0.11, 0.3, 0.04); }); }
+    (PLANO_SFX[tipo] || []).forEach((a) => voz(...a));
   } catch { /* sem áudio */ }
 }
 
