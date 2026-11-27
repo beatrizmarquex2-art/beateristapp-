@@ -5,10 +5,13 @@
 export const LOJA_ABERTA = true;
 // O Passe fica escondido da vitrine enquanto não tiver `link` (hoje a loja vende só os ebooks).
 export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra estudar na tela do celular ou do computador e imprimir pra treinar no papel.';
-// Por enquanto o Passe é vendido pelo WhatsApp (mensagem já escrita); a Bea gera o código na aba Códigos e manda. Depois vem a liberação automática pela Hotmart (supabase/functions/hotmart-passe).
-export const PASSE = { nome: 'Passe Beaterista', preco: 'R$ 79,90', info: ['12 meses de acesso', 'Pagamento único (pix) pelo WhatsApp'], img: 'assets/loja/passe.webp', link: `https://wa.me/5518991804150?text=${encodeURIComponent('Olá, gostaria de adquirir o passe Anual do site Beaterista')}` };
-// Banner do acesso anual (especial lançamento, R$ 49,90): vai em cima do combo; mesmo link do passe (WhatsApp). Só aparece enquanto vale a oferta (js/passe-preco.js).
-export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', desc: 'especial lançamento: 12 meses de acesso por R$ 49,90', img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link };
+// O Passe vai DIRETO pra página de pagamento (Pix com QR Code e código automático por e-mail; lá também tem o link do cartão na Hotmart). Sem WhatsApp no meio.
+// O preço segue a data (js/passe-preco.js): promoção de Natal até 31/12/2026, depois o normal.
+import { precoPasse } from './passe-preco.js';
+export const URL_PASSE = 'https://jogos.beaterista.com.br/pix/';
+export const PASSE = { nome: 'Passe Anual Robôterista', preco: precoPasse().atual, info: ['12 meses de acesso', 'Até 2 aparelhos', 'Pix ou cartão · o código chega no seu e-mail'], img: 'assets/loja/passe.webp', link: URL_PASSE };
+// Banner do acesso anual (promoção de Natal): vai em cima do combo; mesmo link do passe. Só aparece enquanto vale a oferta (js/passe-preco.js).
+export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', desc: `promoção de Natal: 12 meses de acesso por ${precoPasse().atual} até 31/12`, img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link };
 // Combo Black Friday (aba "black friday" da Lojinha): 4 apostilas por R$ 79,90.
 export const COMBO = { id: 'combo-bf', nome: 'Combo Robôterista', desc: '4 apostilas completas: Ritmo e Figuras, Harmonia e Melodia, Na Prática e Jogo da Memória Musical', preco: 'R$ 79,90', img: 'assets/loja/combo-black-friday.webp', w: 1254, h: 1254, link: 'https://pay.hotmart.com/K108463375K' };
 export const PRODUTOS = [

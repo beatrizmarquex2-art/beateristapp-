@@ -35,11 +35,11 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
-/** Banner do acesso anual por R$ 49,90 (especial lançamento): fica em cima do combo enquanto vale a oferta. */
+/** Banner do acesso anual (promoção de Natal): fica em cima do combo enquanto vale a oferta. */
 function destaqueAnual() {
   if (!precoPasse().oferta) return null;
   return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o acesso anual por R$ 49,90', onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `comprar o acesso anual por ${precoPasse().atual}`, onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
