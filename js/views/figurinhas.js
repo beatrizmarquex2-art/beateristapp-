@@ -95,8 +95,9 @@ export function mount(host, parts = [], opts = {}) {
     inp.addEventListener('change', async () => {
       const f = inp.files && inp.files[0]; inp.remove(); if (!f) return;
       if (!CODE.saved()) { toast('precisa do código de aluno pra mandar o print.'); return; }
+      if (!RM.podeMandarPrint(RM.rmDe(state), todayKey())) { toast('já mandou 3 prints hoje. volte amanhã!'); return; }
       toast('enviando o print…', { id: 'rs-env', ms: 1500 });
-      try { const r = await RS.enviar(tipo, f, (P.active() || {}).name || ''); toast(r === 'ok' ? 'print enviado! a Bea vai conferir.' : r === 'ja_enviado' ? 'esse resgate já foi enviado.' : r === 'codigo' ? 'seu código não está ativo.' : 'não consegui enviar esse print.'); if (r === 'ok') { try { rsLista = await RS.minhas(); } catch { /* ok */ } draw(); } } catch { toast('sem internet agora. tente de novo.'); }
+      try { const r = await RS.enviar(tipo, f, (P.active() || {}).name || ''); if (r === 'ok') save(RM.contarPrint(state, todayKey())); toast(r === 'ok' ? 'print enviado! a Bea vai conferir.' : r === 'ja_enviado' ? 'esse resgate já foi enviado.' : r === 'codigo' ? 'seu código não está ativo.' : 'não consegui enviar esse print.'); if (r === 'ok') { try { rsLista = await RS.minhas(); } catch { /* ok */ } draw(); } } catch { toast('sem internet agora. tente de novo.'); }
     });
     inp.click();
   }
@@ -221,9 +222,10 @@ export function mount(host, parts = [], opts = {}) {
   }
   function resgatarView() {
     const hoje = todayKey(); const rm = RM.rmDe(state); const resta = RM.restantesHoje(rm, hoje); const pode = RM.podeGirar(rm, hoje);
+    const faltaPrint = !RM.podeMandarPrint(rm, hoje);
     const roleta = h('section', { class: 'rs-card rs-maluca' },
       h('div', { class: 'rs-t' }, h('b', {}, ico('roleta-maluca', 30), ' Roleta maluca'), h('em', {}, `${rm.t} giro${rm.t === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
-      h('small', {}, 'cada missão aprovada = 1 giro. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros'),
+      h('small', {}, `cada missão aprovada = 1 giro. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros. máximo ${RM.PRINTS_DIA} prints por dia${faltaPrint ? ' (hoje já foram 3: volte amanhã)' : ` (hoje ${RM.printsHoje(rm, hoje)}/${RM.PRINTS_DIA})`}`),
       h('button', { type: 'button', class: 'rs-btn', disabled: pode ? null : true, onclick: abrirRoleta }, pode ? 'girar' : rm.t > 0 && !resta ? 'volte amanhã' : 'sem giros'));
     const ic = (tipo, rotulo) => (statusRs(tipo) ? h('span', { class: 'rs-st' }, statusRs(tipo) === 'aprovado' ? '✓' : '⏳') : h('button', { type: 'button', class: 'rs-ic', 'aria-label': `mandar print: ${rotulo}`, title: 'mandar print', onclick: () => enviarPrint(tipo) }, ico('acao-print', 24, true)));
     const link = (url, rotulo) => h('a', { class: 'rs-ic', href: url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `abrir ${rotulo}`, title: 'abrir' }, ico('acao-abrir', 24, true));

@@ -27,3 +27,7 @@ test('surpresa não repete e, sem nada novo, vira estrelas', () => {
   for (let i = 0; i < 3; i++) { s = R.ganharGiro(s, 'g' + i); const r = R.girar(s, 'dia' + i, rngS, sur); assert.equal(r.premio.tipo, 'surpresa'); assert.ok(!vistos.has(r.premio.item.chave)); vistos.add(r.premio.item.chave); s = r.state; }
   s = R.ganharGiro(s, 'z'); const r = R.girar(s, 'dia9', rngS, sur); assert.equal(r.premio.tipo, 'estrelas');
 });
+test('máximo de 3 prints por dia, não acumula', () => {
+  let s = L.emptyState(); for (let i = 0; i < 3; i++) { assert.ok(R.podeMandarPrint(R.rmDe(s), 'd1')); s = R.contarPrint(s, 'd1'); }
+  assert.equal(R.podeMandarPrint(R.rmDe(s), 'd1'), false); assert.equal(R.podeMandarPrint(R.rmDe(s), 'd2'), true); s = R.contarPrint(s, 'd2'); assert.equal(R.printsHoje(R.rmDe(s), 'd2'), 1);
+});

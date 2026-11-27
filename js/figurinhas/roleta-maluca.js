@@ -10,6 +10,11 @@ export const PREMIOS = [['epico', 12], ['estrelas', 30], ['surpresa', 30], ['exc
 export const NOME = { epico: 'giro épico', estrelas: `${ESTRELAS} estrelas`, surpresa: 'prêmio surpresa', exclusiva: 'figurinha exclusiva', giros: `+${GIROS_BONUS} giros grátis` };
 export const rmDe = (state) => ({ t: 0, ids: [], dia: '', n: 0, g: 0, sur: [], ...((state && state.rm) || {}) });
 export const restantesHoje = (rm, hoje) => (rm.dia === hoje ? Math.max(0, LIMITE_DIA - (rm.n | 0)) : LIMITE_DIA);
+export const PRINTS_DIA = 3; // máximo de prints por dia; não acumula (amanhã volta a ser 3)
+export const printsHoje = (rm, hoje) => (rm.pd && rm.pd.dia === hoje ? rm.pd.n | 0 : 0);
+export const podeMandarPrint = (rm, hoje) => printsHoje(rm, hoje) < PRINTS_DIA;
+/** Conta 1 print enviado hoje. */
+export const contarPrint = (state, hoje) => { const rm = rmDe(state); return { ...state, rm: { ...rm, pd: { dia: hoje, n: printsHoje(rm, hoje) + 1 } } }; };
 export const podeGirar = (rm, hoje) => (rm.t | 0) > 0 && restantesHoje(rm, hoje) > 0;
 
 /** Missão aprovada vira 1 giro (uma vez só por resgate). Devolve o mesmo `state` se já tinha contado. */
