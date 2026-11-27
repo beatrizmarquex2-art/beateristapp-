@@ -136,7 +136,7 @@ export function mount(host, { nome = '' } = {}) {
   figurinhasGanhas().then((r) => { ganhas = r.ganhas; todas = r.todas; fav = FAV.favoritos(); desenhaFav(); }).catch(() => { /* fica sem figurinhas */ });
 
   // foto do passe (opção C, escolha da Bea): quadro redondo com aro; mostra a foto de perfil (ou o Paul que a pessoa escolheu); sem nada escolhido, o Paul na bateria. Toca e abre o Perfil.
-  const paulBateria = 'assets/paul/sprites/bateria-idle_02.webp';
+  const paulBateria = (FO.epoca() && FO.epoca().rosto) || 'assets/paul/sprites/bateria-idle_02.webp'; // sem foto escolhida: na época aparece o Paul da época; no resto do ano, o Paul na bateria
   const imgPasse = h('img', { src: paulBateria, alt: '' });
   const fotoPasse = h('a', { class: 'in-foto in-foto-redonda', href: '#/perfil', 'aria-label': 'sua foto do perfil. toque pra mudar' }, imgPasse);
   let urlFoto = '';
@@ -153,7 +153,7 @@ export function mount(host, { nome = '' } = {}) {
       const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: pega });
       return h('div', { class: 'in-foto-op' }, h('p', { class: 'in-sobre-t' }, 'escolha um personagem ou ponha a sua foto:'),
         h('div', { class: 'in-foto-lista', role: 'group', 'aria-label': 'personagens' }, ...FO.artesAgora().map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { await FO.usarArte(src); feito(`${nomeArte} é a sua foto agora`); } catch { falha(); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))),
-        h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, 'escolher foto'), h('button', { type: 'button', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('voltou o Paul na bateria'); } catch { falha(); } } }, 'Paul na bateria'), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo, selfie);
+        h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, 'escolher foto'), h('button', { type: 'button', onclick: () => selfie.click() }, 'tirar selfie'), (FO.epoca() ? h('button', { type: 'button', onclick: async () => { try { await FO.usarArte(FO.epoca().rosto); feito('Paul da época é a sua foto agora'); } catch { falha(); } } }, 'Paul da época') : h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('foto tirada'); } catch { falha(); } } }, 'tirar a foto')), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo, selfie);
     });
   });
   // "sobre mim": instrumento, estilo e meta em etiquetas; tocar numa abre as opções em chips
