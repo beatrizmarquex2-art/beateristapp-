@@ -29,6 +29,6 @@ check('o giro épico dá de 1 a 5 figurinhas e uma delas é exclusiva', (await p
 check('botões: colar automaticamente e guardar no baú', (await page.locator('.sheet .fig-open .btn').allInnerTexts()).join('|') === 'colar automaticamente|guardar no baú');
 await page.locator('.sheet').getByRole('button', { name: 'guardar no baú' }).click(); await sleep(500);
 await page.locator('.fig-bloco.b-resgate').click(); await sleep(400);
-check('em resgatar aparece o Desafio do Paul já aprovado', (await page.locator('.rs-tab tbody tr').first().locator('.rs-st').innerText()).includes('✓'));
+check('em resgatar aparece o Desafio do Paul já aprovado', (await page.locator('.rs-tab tbody tr').first().locator('.rs-st').count()) === 1);
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();

@@ -11,7 +11,7 @@ check('na aba liberada (Estudos) o dicionário abre todos os termos, sem cadeado
 await p.goto(`${url}/aluno.html#/estudos/aulas/bateria`); await sleep(1500); await p.evaluate(async () => { (await import('/js/acesso.js')).definir(true); }); await sleep(600);
 check('as aulas do Estudos abrem todas as fases (nenhuma trancada)', (await p.locator('.tf-fases .locked, .tf-fases [class*=lock]').count()) === 0);
 await p.evaluate(() => { location.hash = '#/jogos/figurix'; }); await sleep(900);
-check('fora das abas liberadas (Jogos) segue como quem entra sem acesso: Figurix com fases trancadas e "sem código"', /SEM CÓDIGO/i.test(await p.locator('body').innerText()) && /🔒/.test(await p.locator('body').innerText()));
+check('fora das abas liberadas (Jogos) segue como quem entra sem acesso: Figurix com fases trancadas e "sem código"', /SEM CÓDIGO/i.test(await p.locator('body').innerText()) && (/🔒/.test(await p.locator('body').innerText()) || (await p.locator('img.ic-emoji[alt="🔒"]').count()) > 0)); // o 🔒 agora é um ícone (alt = o emoji)
 await p.evaluate(() => { location.hash = '#/lojinha'; }); await sleep(900);
 check('a Lojinha é sempre livre', (await p.locator('.ljv').count()) > 0);
 check('sem erros de JS', errs.length === 0, errs.join('|'));
