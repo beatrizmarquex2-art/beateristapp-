@@ -1209,3 +1209,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Desempenho: o instrumento desenhado é montado uma vez; um toque só atualiza a folha (antes refazia a tela toda). Redimensionar usa ResizeObserver com espera.
 - Layout: celular/tablet em pé = folha fixa no alto; deitado = 2 colunas; ≥900 px = 2 colunas com instrumento fixo. `dvh`, áreas seguras, `scrollbar-gutter`, barras de rolagem finas, campos de 16 px (sem zoom do iPhone).
 - NÃO testado em Safari/iOS de verdade (só Chromium em vários tamanhos): testar iPhone, iPad e MacBook no aparelho.
+
+### PRO: pauta comum, figuras rítmicas, 3 visuais de bateria e microfone na bateria (27/nov/2026)
+- `js/pro/escrita.js`: pauta comum de cordas (clave de sol; fá no baixo; lê-se 8 abaixo), pauta + tablatura alinhadas (mesmo `layout()`), e figuras rítmicas sem pauta com a contagem "1 e & a". Acordes: cabeças empilhadas, haste única, segunda deslocada, sustenidos, feixes e ligaduras.
+- Bateria: seta "Kit / Grade / Pads". Kit = o desenho ilustrado do jogo (Toque: `js/kids/kit-modelos.js`, 3 modelos), Grade = estilo Beat Lab (peças × tempos, 8 ou 16 passos, copiar compasso), Pads = botões. Peças fora do kit escolhido ficam apagadas.
+- `js/pro/mic-bateria.js`: grava com o microfone (conta 4, onset + espectro: grave = bumbo, médio = caixa, agudo = chimbal) e quantiza na grade. EXPERIMENTAL: testado só com sinais sintéticos; precisa de teste com bateria de verdade.
+- Celular: folha + barra de durações ficam fixas no alto (ep-fixo); em telas baixinhas (≤720 px) só a folha fica fixa.
+- Testes: `tests/pro-escrita.test.mjs`, `tests/pro-mic-bateria.test.mjs`, `tests/e2e/pro-ritmico.mjs` (51 checagens).

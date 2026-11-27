@@ -12,6 +12,11 @@ import { ouvirNotas } from '../jogos/vivo-ui.js';
 import * as CONTAS from '../contas.js';
 import * as R from './ritmo.js';
 import * as Som from './som.js';
+import * as E from './escrita.js';
+import * as MB from './mic-bateria.js';
+import { arte } from '../kids/kit-modelos.js';
+import { svgEl } from '../kids/art.js';
+import { pieceAt, flash } from '../kids/kit-theme.js';
 import { toque, aoMudarLargura, iconeBtn, acaoBtn, ajustes, painelCorrige } from './editor-ui.js';
 import { seta, cicla, nomeDur, quando } from '../views/partitura-palco.js';
 import { IC, noteIcon, RESTIC, DURS } from '../views/editor-partitura.js';
@@ -28,17 +33,21 @@ export function mount(host, opts = {}) {
   const CHAVE = `setting-pro-${bat ? 'bateria' : 'cordas'}`; const padrao = inst === 'baixo' ? 4 : 6;
   const lerSalvo = () => { try { const r = store.get(CHAVE); return r && r.data && r.data.inst === inst ? r.data : {}; } catch { return {}; } };
   let novo = false; let nc = 0; try { novo = !!sessionStorage.getItem('pm-novo'); sessionStorage.removeItem('pm-novo'); nc = +sessionStorage.getItem('pm-cordas') || 0; sessionStorage.removeItem('pm-cordas'); } catch { /* sem sessionStorage */ }
-  const s = { evs: [], bpm: 100, cor: false, fig: 2, pont: false, titulo: '', nuvemId: null, ncord: padrao, kit: 'medio', modelo: 'acustica', timbre: Som.timbrePadrao(inst), mao: '', acc: false, fan: false, juntar: false, ...(novo ? {} : lerSalvo()) };
+  const s = { evs: [], bpm: 100, cor: false, fig: 2, pont: false, titulo: '', nuvemId: null, ncord: padrao, kit: 'medio', modelo: 'acustica', timbre: Som.timbrePadrao(inst), mao: '', acc: false, fan: false, juntar: false, escrita: bat ? 'pauta' : 'tab', visual: 'kit', canhota: false, res: 2,  ...(novo ? {} : lerSalvo()) };
   s.evs = R.normaliza(s.evs); if (novo) { s.evs = []; s.titulo = ''; s.nuvemId = null; }
   if (!bat) { if (nc && R.INSTRUMENTOS[inst].opcoes[nc]) s.ncord = nc; if (!R.INSTRUMENTOS[inst].opcoes[s.ncord]) s.ncord = padrao; if (!Som.TIMBRES[inst].some((t) => t[0] === s.timbre)) s.timbre = Som.timbrePadrao(inst); }
   if (!Som.MODELOS_BATERIA.some((m) => m[0] === s.modelo)) s.modelo = 'acustica';
-  let sel = -1; let hist = []; let cursor = R.fim(s.evs); let ultimo = null; let casa0 = 0; let modo = 'toque'; let mic = null; let run = null; let msg = ''; let gone = false;
+  if (!E.ESCRITAS[bat ? 'bateria' : 'cordas'].some((x) => x[0] === s.escrita)) s.escrita = bat ? 'pauta' : 'tab';
+  if (!['kit', 'grade', 'pads'].includes(s.visual)) s.visual = 'kit'; if (![1, 2, 4].includes(s.res)) s.res = 2;
+  let sel = -1; let hist = []; let cursor = R.fim(s.evs); let ultimo = null; let casa0 = 0; let modo = 'toque'; let mic = null; let grav = null; let nGrav = 0; let barra = 0; let run = null; let msg = ''; let gone = false;
   const cordas = () => R.cordasDe(inst, s.ncord);
-  const salvar = () => store.upsert('setting', CHAVE, { inst, evs: s.evs, bpm: s.bpm, cor: s.cor, fig: s.fig, pont: s.pont, titulo: s.titulo, nuvemId: s.nuvemId || null, ncord: s.ncord, kit: s.kit, modelo: s.modelo, timbre: s.timbre, mao: s.mao }).catch(() => {});
+  const salvar = () => store.upsert('setting', CHAVE, { inst, evs: s.evs, bpm: s.bpm, cor: s.cor, fig: s.fig, pont: s.pont, titulo: s.titulo, nuvemId: s.nuvemId || null, ncord: s.ncord, kit: s.kit, modelo: s.modelo, timbre: s.timbre, mao: s.mao, escrita: s.escrita, visual: s.visual, canhota: s.canhota, res: s.res }).catch(() => {});
   const muda = (novas, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novas; salvar(); };
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
   const passo = () => 2;
-  const rend = (largura, cor = s.cor, selecao = -1) => (bat ? R.bateria(s.evs, { largura, cor, sel: selecao }) : R.tablatura(s.evs, { cordas: cordas(), largura, cor, sel: selecao }));
+  const rend = (largura, cor = s.cor, selecao = -1) => (bat
+    ? (s.escrita === 'ritmo' ? E.ritmo(s.evs, { largura, sel: selecao, bateria: true }) : R.bateria(s.evs, { largura, cor, sel: selecao }))
+    : E.cordas(s.evs, { cordas: cordas(), inst, escrita: s.escrita, largura, cor, sel: selecao }));
 
   /* ---------- som (o do jogo) ---------- */
   const tocaAgora = (e) => { if (bat) Som.somBateria(s.modelo, e.p, Som.velDe(e)); else Som.somCorda(s.timbre, R.midiDe(cordas(), e.c, e.f), 0.85); };
@@ -64,7 +73,18 @@ export function mount(host, opts = {}) {
     atualiza(); desenhaDir();
   };
   const desligaMic = () => { if (mic) { try { mic.stop(); } catch { /* já parou */ } mic = null; } };
-  const trocaModo = (m) => { if (modo === m) return; modo = m; if (m === 'mic') ligaMic(); else { desligaMic(); msg = ''; } atualiza(); desenhaDir(); };
+  const pararGrav = () => { if (grav) { try { grav.stop(); } catch { /* ok */ } grav = null; cursor = R.fim(s.evs); msg = nGrav ? `gravei ${nGrav} batida${nGrav > 1 ? 's' : ''}. confira e corrija tocando na nota.` : 'não ouvi nenhuma batida. chegue mais perto do microfone.'; atualiza(); desenhaDir(); } };
+  /** Bateria + microfone: conta 4, e cada batida entra com a peça adivinhada pelo som (grave = bumbo, médio = caixa, agudo = chimbal). */
+  const gravaBat = async () => {
+    if (grav) { pararGrav(); return; } if (run) parar(); Som.acorda(); nGrav = 0; const base0 = Math.ceil(cursor / 16) * 16;
+    try {
+      hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift();
+      grav = await MB.gravar({ bpm: s.bpm, grade: s.res, onConta: (i) => { msg = `conta ${i}… toque depois do 4`; atualiza(); },
+        onBatida: ({ p, ini }) => { if (gone || !grav) return; nGrav++; s.evs = R.poe(s.evs, { p, ini: base0 + ini, d: s.res, mao: '', acc: false, fan: false }).evs; msg = `gravando… ${nGrav} batida${nGrav > 1 ? 's' : ''}`; salvar(); atualiza(); } });
+      msg = `contando… (${s.bpm} bpm)`; atualiza(); desenhaDir();
+    } catch { grav = null; toast('não consegui abrir o microfone. veja se o navegador deixou usar.', { id: 'er', ms: 3600 }); desenhaDir(); }
+  };
+  const trocaModo = (m) => { if (modo === m) return; if (grav) pararGrav(); modo = m; if (m === 'mic' && !bat) ligaMic(); else { desligaMic(); msg = ''; } atualiza(); desenhaDir(); };
 
   /* ---------- pasta online e PDF ---------- */
   const pdf = async (b) => {
@@ -73,10 +93,10 @@ export function mount(host, opts = {}) {
     catch { toast('não consegui gerar o PDF agora', { id: 'er', ms: 2600 }); }
     b.disabled = false;
   };
-  const dadosNuvem = () => ({ versao: 2, tipo: bat ? 'bateria' : 'tab', inst, ncord: s.ncord, kit: s.kit, evs: s.evs, bpm: s.bpm, cor: s.cor, titulo: s.titulo });
+  const dadosNuvem = () => ({ versao: 2, tipo: bat ? 'bateria' : 'tab', inst, escrita: s.escrita, ncord: s.ncord, kit: s.kit, evs: s.evs, bpm: s.bpm, cor: s.cor, titulo: s.titulo });
   const carrega = (row) => {
     const d = row.dados || {}; if (row.instrumento !== inst) { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* ok */ } location.hash = rotaDe(row.instrumento); return; }
-    s.evs = R.normaliza(d.evs); s.bpm = d.bpm || 100; s.cor = !!d.cor; if (!bat && R.INSTRUMENTOS[inst].opcoes[d.ncord]) s.ncord = d.ncord; if (bat && d.kit) s.kit = d.kit;
+    s.evs = R.normaliza(d.evs); s.bpm = d.bpm || 100; s.cor = !!d.cor; if (!bat && R.INSTRUMENTOS[inst].opcoes[d.ncord]) s.ncord = d.ncord; if (bat && d.kit) s.kit = d.kit; if (d.escrita && E.ESCRITAS[bat ? 'bateria' : 'cordas'].some((x) => x[0] === d.escrita)) s.escrita = d.escrita;
     s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = R.fim(s.evs); ultimo = null; sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir(); desenhaTopo();
   };
   const guardaOnline = async (b) => {
@@ -90,7 +110,7 @@ export function mount(host, opts = {}) {
   /* ---------- peças fixas da tela ---------- */
   const folha = h('div', { class: 'ep-folha er-folha', role: 'group', 'aria-label': 'Partitura. Toque numa nota para corrigir.' });
   folha.addEventListener('click', (e) => { const n = e.target.closest && e.target.closest('.pm-n'); const i = n ? +n.dataset.ev : -1; if (i >= 0 && s.evs[i]) { sel = sel === i ? -1 : i; if (sel >= 0) tocaAgora(s.evs[sel]); } else sel = -1; atualiza(); });
-  const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const meio = h('div', { class: 'ep-meio' }); const dir = h('div', { class: 'ep-dir' });
+  const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const barraEl = h('div', { class: 'ep-barra' }); const meio = h('div', { class: 'ep-meio' }); const dir = h('div', { class: 'ep-dir' });
   const modoEl = h('div', {}); const ajEl = h('div', {}); const instEl = h('div', {});
   dir.append(modoEl, ajEl, instEl);
   const tg = (rot, on, fn, dis = false) => h('button', { type: 'button', class: 'er-tg', 'aria-pressed': String(!!on), disabled: dis, onclick: fn }, rot);
@@ -127,26 +147,70 @@ export function mount(host, opts = {}) {
   /* ---------- o instrumento desenhado (montado só quando as opções mudam) ---------- */
   const braco = () => {
     const cs = cordas(); const n = 6; const cab = ['', ...Array.from({ length: n }, (_, k) => (casa0 + k === 0 ? 'solta' : `${casa0 + k}ª`))];
-    const g = h('div', { class: 'er-braco', role: 'group', 'aria-label': 'Braço do instrumento', style: { '--n': n } }, ...cab.map((t) => h('span', { class: 'er-fr' }, t)));
+    const g = h('div', { class: 'er-braco', role: 'group', 'aria-label': 'Braço do instrumento', style: `--n:${n}` }, ...cab.map((t) => h('span', { class: 'er-fr' }, t)));
     cs.forEach(([nome], c) => { g.append(h('span', { class: 'er-cd' }, nome)); for (let k = 0; k < n; k++) { const f = casa0 + k; g.append(toque(h('button', { type: 'button', class: `er-casa${f === 0 ? ' solta' : ''}`, 'aria-label': `corda ${nome}, casa ${f}` }, f), () => casaTap(c, f))); } });
     return g;
   };
   const pads = () => h('div', { class: 'er-pads', role: 'group', 'aria-label': 'Peças da bateria' }, ...R.pecasDoKit(s.kit).map((p) => toque(h('button', { type: 'button', class: `er-pad${R.PECAS[p].pe ? ' pedal' : ''}`, 'data-p': p }, h('b', {}, R.nomePeca(p)), h('small', {}, R.PECAS[p].pe ? 'pé' : R.PECAS[p].x ? 'cabeça X' : 'cabeça normal')), () => padTap(p))));
+  /** O kit ilustrado do jogo (Toque): cada peça é um toque. Peças fora do kit escolhido ficam apagadas. */
+  const kitArt = () => {
+    const wrap = h('div', { class: `er-kit${s.canhota ? ' canhota' : ''}` }); const art = svgEl(arte(s.modelo), `er-art modelo-${s.modelo}`);
+    const ok = s.modelo === 'cajon' ? ['bd', 'sn'] : R.pecasDoKit(s.kit);
+    art.querySelectorAll('.kp').forEach((g) => { if (!ok.includes(g.dataset.p)) g.classList.add('apagada'); });
+    art.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; const g = pieceAt(art, e, 36); if (!g || g.classList.contains('apagada')) return; e.preventDefault(); flash(g); padTap(g.dataset.p); });
+    art.addEventListener('contextmenu', (e) => e.preventDefault());
+    wrap.append(art);
+    const extras = ['ho', 'hf'].filter((p) => ok.includes(p) && s.modelo !== 'cajon');
+    if (extras.length) wrap.append(h('div', { class: 'er-extras' }, ...extras.map((p) => toque(h('button', { type: 'button', class: 'er-mini', 'data-p': p }, R.nomePeca(p)), () => padTap(p)))));
+    return wrap;
+  };
+  /** Grade como o Beat Lab: linhas = peças, colunas = tempos do compasso; tocar numa casa liga/desliga a batida. */
+  const gradeBeat = () => {
+    const pecas = s.modelo === 'cajon' ? ['sn', 'bd'] : R.pecasDoKit(s.kit); const passos = 16 / s.res; const nBars = R.nCompassos(s.evs); if (barra > nBars) barra = nBars; const base = barra * 16;
+    const g = h('div', { class: 'er-grade', role: 'group', 'aria-label': `Grade do compasso ${barra + 1}`, style: `--n:${passos}` }, h('span', {}), ...Array.from({ length: passos }, (_, k) => h('span', { class: `er-gh${(k * s.res) % 4 === 0 ? ' t' : ''}` }, E.contagem(k * s.res))));
+    pecas.forEach((p) => {
+      g.append(h('span', { class: 'er-gl', style: `--c:${R.PECAS[p].cor}` }, R.nomePeca(p)));
+      for (let k = 0; k < passos; k++) {
+        const ini = base + k * s.res; const ach = () => s.evs.findIndex((e) => e.p === p && e.ini === ini); const b = h('button', { type: 'button', class: `er-gc${(k * s.res) % 4 === 0 ? ' t' : ''}`, 'aria-label': `${R.nomePeca(p)}, ${E.contagem(k * s.res)}`, 'aria-pressed': String(ach() >= 0), style: `--c:${R.PECAS[p].cor}` });
+        toque(b, () => { if (run) parar(); const i = ach();
+          if (i >= 0) { muda(R.remover(s.evs, i)); b.setAttribute('aria-pressed', 'false'); }
+          else { const ev = { p, ini, d: s.res, mao: R.PECAS[p].pe ? '' : s.mao, acc: s.acc, fan: s.fan }; tocaAgora(ev); muda(R.poe(s.evs, ev).evs); b.setAttribute('aria-pressed', 'true'); }
+          sel = -1; cursor = R.fim(s.evs); ultimo = null; msg = ''; atualiza(); });
+        g.append(b);
+      }
+    });
+    const ctl = h('div', { class: 'er-gctl' }, seta('compasso', `${barra + 1} de ${Math.max(nBars, barra + 1)}`, () => { barra = Math.max(0, barra - 1); desenhaDir(); }, () => { barra = Math.min(nBars, barra + 1); desenhaDir(); }, { dis: [barra <= 0, barra >= nBars] }),
+      cicla('passos', [[2, 'colcheias (8)'], [1, 'semicolcheias (16)']], s.res === 4 ? 2 : s.res, (r) => { s.res = r; salvar(); desenhaDir(); }),
+      barra > 0 ? h('button', { type: 'button', class: 'er-tg', onclick: () => { const ant = s.evs.filter((e) => e.ini >= (barra - 1) * 16 && e.ini < barra * 16).map((e) => ({ ...e, ini: e.ini + 16 })); if (!ant.length) { toast('o compasso anterior está vazio', { id: 'er', ms: 1800 }); return; } let l = s.evs.filter((e) => !(e.ini >= base && e.ini < base + 16)); ant.forEach((e) => { l = R.poe(l, e).evs; }); muda(l); cursor = R.fim(s.evs); atualiza(); desenhaDir(); } }, 'copiar o compasso anterior pra este') : null);
+    return h('div', { class: 'er-gwrap' }, ctl, g);
+  };
+  const instrumentoBat = () => {
+    const op = [['kit', 'Kit'], ['grade', 'Grade'], ['pads', 'Pads']];
+    return [h('div', { class: 'er-visual', role: 'group', 'aria-label': 'Como mostrar a bateria' }, ...op.map(([v, t]) => h('button', { type: 'button', 'aria-pressed': String(s.visual === v), onclick: () => { s.visual = v; salvar(); desenhaDir(); } }, t))), s.visual === 'kit' ? kitArt() : s.visual === 'grade' ? gradeBeat() : pads()];
+  };
+  const painelGravar = () => [seta('precisão', { 4: 'semínima', 2: 'colcheia', 1: 'semicolcheia' }[s.res], () => { s.res = s.res === 1 ? 1 : s.res === 2 ? 1 : 2; salvar(); desenhaDir(); }, () => { s.res = s.res === 4 ? 4 : s.res === 2 ? 4 : 2; salvar(); desenhaDir(); }, { dis: [s.res === 1 || !!grav, s.res === 4 || !!grav] }),
+    h('button', { type: 'button', class: `pm2-go${grav ? ' on' : ''}`, onclick: gravaBat }, grav ? '■ parar de gravar' : '● gravar (conta 4)'),
+    h('p', { class: 'ep-dica' }, 'bata na bateria, na mesa ou em um pad: o microfone separa pelo som (grave = bumbo, médio = caixa, agudo = chimbal). Tem que conferir e corrigir depois. Use fone na conta pra o clique não entrar.')];
   const aquecer = () => Som.aquece({ bat, modelo: s.modelo, kind: s.timbre, midis: bat ? [] : cordas().flatMap(([, base]) => Array.from({ length: 6 }, (_, k) => base + casa0 + k)) });
 
   function desenhaDir() {
-    if (gone) return; const micOk = !bat && inst !== 'baixo'; const opcoesCordas = bat ? null : Object.keys(R.INSTRUMENTOS[inst].opcoes).map(Number);
-    modoEl.replaceChildren(micOk ? h('div', { class: 'ep-modo', role: 'group', 'aria-label': 'Como montar' }, h('button', { type: 'button', 'aria-pressed': String(modo === 'toque'), onclick: () => trocaModo('toque') }, 'tocar no desenho'), h('button', { type: 'button', 'aria-pressed': String(modo === 'mic'), onclick: () => trocaModo('mic') }, 'tocar de verdade (microfone)')) : '');
-    const aj = [];
+    if (gone) return; const micOk = bat || inst !== 'baixo'; const opcoesCordas = bat ? null : Object.keys(R.INSTRUMENTOS[inst].opcoes).map(Number);
+    modoEl.replaceChildren(micOk ? h('div', { class: 'ep-modo', role: 'group', 'aria-label': 'Como montar' }, h('button', { type: 'button', 'aria-pressed': String(modo === 'toque'), onclick: () => trocaModo('toque') }, 'tocar no desenho'), h('button', { type: 'button', 'aria-pressed': String(modo === 'mic'), onclick: () => trocaModo('mic') }, bat ? 'gravar com o microfone' : 'tocar de verdade (microfone)')) : '');
+    const aj = [cicla('escrita', E.ESCRITAS[bat ? 'bateria' : 'cordas'], s.escrita, (e) => { s.escrita = e; sel = -1; salvar(); atualiza(); desenhaDir(); })];
     if (!bat) {
       if (opcoesCordas.length > 1) aj.push(cicla('cordas', opcoesCordas.map((n) => [n, `${n} cordas`]), s.ncord, (n) => { const de = cordas(); s.ncord = n; const evs2 = R.remapeia(s.evs, de, cordas()); const perdeu = s.evs.length - evs2.length; muda(evs2); sel = -1; msg = perdeu ? `${perdeu} nota${perdeu > 1 ? 's' : ''} ficou fora das cordas novas e saiu` : ''; atualiza(); desenhaDir(); aquecer(); }));
       if (Som.TIMBRES[inst].length > 1) aj.push(cicla('som', Som.TIMBRES[inst], s.timbre, (t) => { s.timbre = t; salvar(); desenhaDir(); aquecer(); }));
-    } else aj.push(cicla('kit', R.KITS.map((k) => [k[0], k[1]]), s.kit, (k) => { s.kit = k; salvar(); desenhaDir(); }), cicla('som do kit', Som.MODELOS_BATERIA, s.modelo, (m) => { s.modelo = m; salvar(); desenhaDir(); aquecer(); }));
-    aj.push(seta('andamento', `${s.bpm} bpm`, () => { s.bpm = Math.max(40, s.bpm - 5); salvar(); desenhaDir(); }, () => { s.bpm = Math.min(220, s.bpm + 5); salvar(); desenhaDir(); }));
-    const resumo = bat ? `${(R.KITS.find((k) => k[0] === s.kit) || R.KITS[1])[0]} · ${s.bpm} bpm` : `${s.ncord} cordas · ${s.bpm} bpm`;
+    } else {
+      aj.push(cicla('kit', R.KITS.map((k) => [k[0], k[1]]), s.kit, (k) => { s.kit = k; salvar(); atualiza(); desenhaDir(); }), cicla('som do kit', Som.MODELOS_BATERIA, s.modelo, (m) => { s.modelo = m; salvar(); desenhaDir(); aquecer(); }));
+      if (s.visual === 'kit') aj.push(tg(s.canhota ? 'canhota ✓' : 'canhota', s.canhota, () => { s.canhota = !s.canhota; salvar(); desenhaDir(); }));
+    }
+    aj.push(seta('andamento', `${s.bpm} bpm`, () => { s.bpm = Math.max(40, s.bpm - 5); salvar(); desenhaDir(); }, () => { s.bpm = Math.min(220, s.bpm + 5); salvar(); desenhaDir(); }, { dis: [!!grav, !!grav] }));
+    const nomeEsc = (E.ESCRITAS[bat ? 'bateria' : 'cordas'].find((x) => x[0] === s.escrita) || [, ''])[1];
+    const resumo = bat ? `${nomeEsc} · ${s.bpm} bpm` : `${nomeEsc} · ${s.ncord} cordas`;
     const abertos = ajEl.querySelector('details') ? ajEl.querySelector('details').open : false; const d = ajustes(resumo, ...aj); d.open = abertos; ajEl.replaceChildren(d);
     const faixa = bat ? cicla('mão', MAOS, s.mao, (m) => { s.mao = m; salvar(); desenhaDir(); }) : seta('casas', `${casa0 === 0 ? 'solta' : casa0} a ${casa0 + 5}`, () => { casa0 = Math.max(0, casa0 - 6); desenhaDir(); aquecer(); }, () => { casa0 = Math.min(18, casa0 + 6); desenhaDir(); aquecer(); }, { dis: [casa0 <= 0, casa0 >= 18] });
-    instEl.replaceChildren(...(modo === 'mic' && micOk ? [h('p', { class: 'ep-dica' }, mic ? 'ouvindo o microfone… toque uma nota por vez e ela aparece na tablatura.' : 'abrindo o microfone…')] : [faixa, bat ? pads() : braco()]));
+    if (modo === 'mic' && micOk) instEl.replaceChildren(...(bat ? painelGravar() : [h('p', { class: 'ep-dica' }, mic ? 'ouvindo o microfone… toque uma nota por vez e ela aparece na tablatura.' : 'abrindo o microfone…')]));
+    else instEl.replaceChildren(...(bat ? [faixa, ...instrumentoBat()] : [faixa, braco()]));
   }
 
   /* ---------- redesenhos pequenos ---------- */
@@ -166,15 +230,16 @@ export function mount(host, opts = {}) {
   }
   function atualiza() {
     if (gone) return; desenhaFolha(); desenhaTopo();
-    const c = correcao();
-    meio.replaceChildren(...(c ? [c] : [palette(), extras()]), s.evs.length && !c ? h('p', { class: 'ep-dica' }, 'toque numa nota da folha para corrigir.') : null, msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
+    const c = correcao(); // com a correção aberta a barra de durações some (ela é pra próxima nota, não pra esta)
+    barraEl.replaceChildren(...(c ? [] : [palette(), extras()]));
+    meio.replaceChildren(...(c ? [c] : []), s.evs.length && !c ? h('p', { class: 'ep-dica' }, 'toque numa nota da folha para corrigir.') : null, msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
   }
 
-  const raiz = h('div', { class: 'ep bmr er' }, topo, acoes, h('div', { class: 'ep-corpo' }, h('div', { class: 'ep-esq' }, folha, meio), dir)); host.append(raiz);
+  const raiz = h('div', { class: 'ep bmr er' }, topo, acoes, h('div', { class: 'ep-corpo' }, h('div', { class: 'ep-esq' }, h('div', { class: 'ep-fixo' }, folha, barraEl), meio), dir)); host.append(raiz);
   desenhaDir(); atualiza(); aquecer(); requestAnimationFrame(() => { desenhaFolha(); });
   const parou = aoMudarLargura(folha, () => { if (!gone) desenhaFolha(); });
   // 1º toque na tela destrava o áudio (iPhone/iPad/Safari só deixam dentro de um toque)
   const destrava = () => { Som.acorda(); raiz.removeEventListener('pointerdown', destrava, true); }; raiz.addEventListener('pointerdown', destrava, true);
   try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then(carrega).catch((e) => toast(NUV.textoErro(e), { id: 'er', ms: 3200 })); } } catch { /* sem sessionStorage */ }
-  return () => { gone = true; parar(); desligaMic(); parou(); };
+  return () => { gone = true; parar(); desligaMic(); if (grav) { try { grav.stop(); } catch { /* ok */ } grav = null; } parou(); };
 }

@@ -51,6 +51,15 @@ check('PDF da tablatura é baixado', !!d && /\.pdf$/i.test(d.suggestedFilename()
 await page.locator('.ep-nm').fill('Pestana'); await page.locator('.ep-nm').blur(); await page.locator('.ep-ac[aria-label^="Guardar"]').click(); await sleep(900);
 check('guarda na pasta online como violão', DB.partituras.length === 1 && DB.partituras[0].instrumento === 'violao' && DB.partituras[0].dados.evs.length === 5 && DB.partituras[0].dados.tipo === 'tab');
 
+// ---- violão: pauta comum e pauta + tablatura
+await abreAjustes(); await setaPara('escrita', 'próximo'); await sleep(200);
+check('violão: pauta comum (sem T A B) com as notas selecionáveis', !/>T</.test(await page.locator('.er-folha').innerHTML()) && await evs() >= 5);
+await setaPara('escrita', 'próximo'); await sleep(200);
+check('violão: pauta + tablatura (T A B e a pauta juntas)', />T</.test(await page.locator('.er-folha').innerHTML()) && (await page.locator('.er-folha svg line').count()) > 20);
+await setaPara('escrita', 'próximo'); await sleep(200);
+check('violão: figuras rítmicas sem pauta', /&/.test(await page.locator('.er-folha').innerHTML()));
+await setaPara('escrita', 'próximo'); await sleep(200);
+check('violão: volta pra tablatura', />T</.test(await page.locator('.er-folha').innerHTML()));
 // ---- guitarra 8 cordas e baixo
 await page.evaluate(() => { sessionStorage.setItem('pm-novo', '1'); location.hash = '#/editor/guitarra'; }); await sleep(1000);
 check('guitarra começa com 6 cordas', await page.locator('.er-casa').count() === 36);
@@ -65,6 +74,8 @@ check('trocar 5→6 cordas mantém a nota na mesma corda', await evs() === 1 && 
 
 // ---- bateria
 await page.evaluate(() => { sessionStorage.setItem('pm-novo', '1'); location.hash = '#/editor/bateria'; }); await sleep(1000);
+check('bateria abre no kit ilustrado do jogo', await page.locator('.er-kit .kp').count() >= 8);
+await page.locator('.er-visual button', { hasText: 'Pads' }).click(); await sleep(150);
 check('bateria: kit médio tem 6 peças', await page.locator('.er-pad').count() === 6);
 await abreAjustes(); await setaPara('kit', 'próximo'); await sleep(150);
 check('kit completo tem 10 peças (com o chimbal aberto)', await page.locator('.er-pad').count() === 10);
@@ -83,14 +94,40 @@ check('bateria: 4 batidas, mão D, bumbo B, acento e fantasma desenhados', await
 await page.locator('.er-folha .pm-n').nth(2).click(); await sleep(150);
 check('correção da bateria mostra peça, mão, acento e fantasma', await page.locator('.ep-corrige .er-tg').count() >= 2 && await page.locator('.pm-seta[aria-label="peça"]').count() === 1);
 await setaPara('duração', 'anterior'); await sleep(100);
+// kit ilustrado: tocar numa peça desenhada
+await page.locator('.er-visual button', { hasText: 'Kit' }).click(); await sleep(200);
+const k0 = await bufs(); await page.locator('.er-kit .kp[data-p="sn"]').dispatchEvent('pointerdown'); await sleep(200);
+check('tocar na caixa do kit desenhado escreve e soa (bateria gravada do jogo)', await evs() === 5 && (await bufs()) > k0);
+check('peças fora do kit escolhido ficam apagadas', await page.locator('.er-kit .kp.apagada').count() >= 3);
+await page.locator('.er-kit .kp.apagada').first().dispatchEvent('pointerdown'); await sleep(100);
+check('peça apagada não escreve', await evs() === 5);
+// grade do Beat Lab
+await page.locator('.er-visual button', { hasText: 'Grade' }).click(); await sleep(200);
+await setaPara('compasso', 'próximo'); await sleep(150);
+check('seta de compasso muda a grade para o compasso seguinte', /2 de/.test(await saida('compasso')));
+const antesG = await evs(); await page.locator('.er-gc').first().click(); await page.locator('.er-gc').nth(3).click(); await sleep(150);
+check('grade liga batidas (2 casas = +2)', await evs() === antesG + 2 && await page.locator('.er-gc[aria-pressed="true"]').count() === 2);
+await page.locator('.er-gc[aria-pressed="true"]').first().click(); await sleep(100);
+check('tocar de novo na casa desliga a batida', await evs() === antesG + 1);
+await page.getByRole('button', { name: /copiar o compasso anterior/ }).click(); await sleep(150);
+check('copiar o compasso anterior traz as batidas dele', await evs() > antesG + 1);
+// figuras rítmicas sem pauta (bateria) e voltar
+await abreAjustes(); await setaPara('escrita', 'próximo'); await sleep(200);
+check('figuras rítmicas: uma linha com a contagem 1 e & a', /&/.test(await page.locator('.er-folha').innerHTML()) && !/<text[^>]*>4<\/text>.*<text[^>]*>4<\/text>.*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line/.test(await page.locator('.er-folha').innerHTML()));
+await shot('ritmo');
+await setaPara('escrita', 'próximo'); await sleep(200);
+// microfone na bateria: painel de gravar
+await page.getByRole('button', { name: 'gravar com o microfone' }).click(); await sleep(300);
+check('bateria: modo microfone mostra o botão de gravar e o aviso de conferir', await page.getByRole('button', { name: /gravar \(conta 4\)/ }).count() === 1 && /conferir/.test(await page.locator('.ep-dir .ep-dica').first().innerText()));
+await page.getByRole('button', { name: 'tocar no desenho' }).click(); await sleep(200);
 // ouvir: toca pelo relógio do áudio e volta sozinho
 await page.locator('.ep-ib[aria-label^="Ouvir"]').click(); await sleep(300);
 check('ouvir vira "parar" enquanto toca', await page.locator('.ep-ib[aria-label="Parar"]').count() === 1);
-await sleep(3500);
+await page.locator('.ep-ib[aria-label^="Ouvir"]').waitFor({ timeout: 15000 }).catch(() => {});
 check('e volta sozinho ao terminar', await page.locator('.ep-ib[aria-label^="Ouvir"]').count() === 1);
 // teclado do computador: Enter no pad adiciona 1 nota só (sem duplicar)
 await page.evaluate(() => { location.hash = '#/pedaleira'; }); await sleep(400); await page.evaluate(() => { sessionStorage.setItem('pm-novo', '1'); location.hash = '#/editor/bateria'; }); await sleep(900);
-await page.locator('.er-pad[data-p="sn"]').focus(); await page.keyboard.press('Enter'); await sleep(150);
+await page.locator('.er-visual button', { hasText: 'Pads' }).click(); await sleep(100); await page.locator('.er-pad[data-p="sn"]').focus(); await page.keyboard.press('Enter'); await sleep(150);
 const nEnter = await evs(); check(`Enter no pad adiciona exatamente 1 batida (achou ${nEnter})`, nEnter === 1);
 check('sem erros de script', errs.length === 0 || (console.log(errs), false));
 // recentes da Pedaleira abre o editor certo
@@ -108,7 +145,7 @@ for (const [w, h2, nm] of [[320, 640, 'iPhone SE'], [390, 844, 'iPhone'], [412, 
 }
 await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { location.hash = '#/editor/violao'; }); await sleep(500);
 await page.evaluate(() => window.scrollTo(0, 500)); await sleep(150);
-check('celular: a folha fica visível mesmo rolando até o braço', await page.evaluate(() => { const r = document.querySelector('.ep-folha').getBoundingClientRect(); return r.top >= 0 && r.top < 200 && r.height > 60; }));
+check('celular: a folha e as durações ficam visíveis mesmo rolando até o braço', await page.evaluate(() => { const r = document.querySelector('.ep-folha').getBoundingClientRect(); const p = document.querySelector('.ep-pal').getBoundingClientRect(); return r.top >= 0 && r.top < 200 && r.height > 60 && p.top > r.bottom - 2 && p.bottom < 520; }));
 await page.setViewportSize({ width: 844, height: 390 }); await sleep(500);
 check('celular deitado: duas colunas', await page.evaluate(() => getComputedStyle(document.querySelector('.ep-corpo')).gridTemplateColumns.trim().split(/\s+/).length === 2));
 await page.setViewportSize({ width: 390, height: 844 }); await sleep(300);

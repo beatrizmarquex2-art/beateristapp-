@@ -5,9 +5,9 @@ import * as P from '../partitura-melodica.js';
 import { corNota } from '../cores-notas.js';
 
 export const COMPASSO = P.COMPASSO;
-const INK = '#1b1818'; const FONT = 'Hanken Grotesk, Helvetica, Arial, sans-serif';
+export const INK = '#1b1818'; export const FONT = 'Hanken Grotesk, Helvetica, Arial, sans-serif';
 const LARG = { 1: 20, 2: 28, 3: 34, 4: 40, 6: 50, 8: 58, 12: 74, 16: 90 };
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* ---------- afinações (de cima, a corda mais aguda, pra baixo) ---------- */
 export const INSTRUMENTOS = {
@@ -84,13 +84,13 @@ export function layout(evs, { largura = 360, x0 = 58 } = {}) {
   if (at.length) sis.push(at);
   const out = sis.map((idxs) => {
     const soma = idxs.reduce((s, i) => s + larg[i], 0); const f = disp / soma; let x = x0;
-    return idxs.map((bi) => { const bw = larg[bi] * f; let cx = x + 8 * f; const itens = bars[bi].map((it) => { const w2 = (LARG[it.d] || 40) * fat * f; const o = { x: cx + w2 * 0.42, d: it.d, g: it.m === null ? -1 : it.m, rest: it.m === null, pos: it.pos }; cx += w2; return o; }); const b = { x0: x, x1: x + bw, itens }; x += bw; return b; });
+    return idxs.map((bi) => { const bw = larg[bi] * f; let cx = x + 8 * f; const itens = bars[bi].map((it) => { const w2 = (LARG[it.d] || 40) * fat * f; const o = { x: cx + w2 * 0.42, d: it.d, g: it.m === null ? -1 : it.m, rest: it.m === null, pos: it.pos, lig: !!it.lig }; cx += w2; return o; }); const b = { x0: x, x1: x + bw, itens }; x += bw; return b; });
   });
   return { sistemas: out, grupos: gs };
 }
 
 /* ---------- pausas e hastes ---------- */
-function pausa(d, x, y) {
+export function pausa(d, x, y) {
   const b = d >= 16 ? 16 : d >= 8 ? 8 : d >= 4 ? 4 : d >= 2 ? 2 : 1;
   if (b === 16) return `<rect x="${x - 5}" y="${y - 10}" width="10" height="5" fill="${INK}"/>`;
   if (b === 8) return `<rect x="${x - 5}" y="${y - 5}" width="10" height="5" fill="${INK}"/>`;
@@ -99,41 +99,46 @@ function pausa(d, x, y) {
   return `<g transform="translate(${x} ${y})"><circle cx="-2" cy="-6" r="2.4" fill="${INK}"/><circle cx="-4" cy="1" r="2.4" fill="${INK}"/><path d="M-2 -4q4 1 6-3M-4 3q4 1 6-3M4 -7l-7 18" stroke="${INK}" stroke-width="1.5" fill="none"/></g>`;
 }
 /** Bandeirolas (colcheia = 1, semicolcheia = 2) numa haste que sai de (x, y1) e termina em y2; `cima` = haste pra cima. */
-function bandeiras(d, x, y2, cima) {
+export function bandeiras(d, x, y2, cima) {
   const n = d === 1 ? 2 : d <= 3 && d >= 2 ? 1 : 0; let o = ''; const dir = cima ? 1 : -1;
   for (let j = 0; j < n; j++) { const yy = y2 + (cima ? j * 6 : -j * 6); o += `<path d="M${x} ${yy}c2 ${5 * dir} 9 ${6 * dir} 7 ${14 * dir}" stroke="${INK}" stroke-width="1.8" fill="none"/>`; }
   return o;
 }
-const ponto = (d, x, y) => (d === 3 || d === 6 || d === 12 ? `<circle cx="${x}" cy="${y}" r="1.8" fill="${INK}"/>` : '');
-const quadro = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="transparent"/>`;
+export const ponto = (d, x, y) => (d === 3 || d === 6 || d === 12 ? `<circle cx="${x}" cy="${y}" r="1.8" fill="${INK}"/>` : '');
+export const quadro = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="transparent"/>`;
 
 /* ---------- tablatura ---------- */
-/** Desenha a tablatura. opts: { cordas (lista de [nome, midi]), largura, cor, sel (índice do evento) }. Devolve { svg, w, h, sistema, topo, n }. */
-export function tablatura(evs, { cordas, largura = 360, cor = false, sel = -1 } = {}) {
-  const gt = 13; const nc = cordas.length; const L = layout(evs, { largura, x0: 36 }); const y0s = 22; const lh = y0s + (nc - 1) * gt + 52; let o = '';
+/** Um sistema da tablatura (as linhas das cordas, as casas e as hastes de ritmo), com o topo em y0. Devolve o SVG em texto.
+    `x0` é onde as linhas começam (24 = só a tablatura; mais à direita quando ela vem embaixo de uma pauta). */
+export function tabBloco(L, s, y0, { evs, cordas, largura, cor, sel, ultimo = false }) {
+  const gt = 13; const nc = cordas.length; const yb = y0 + (nc - 1) * gt; const meio = y0 + ((nc - 1) * gt) / 2; let o = ''; const bars = L.sistemas[s];
   const cNota = (m) => (cor ? corNota(m) : INK);
-  L.sistemas.forEach((bars, s) => {
-    const y0 = y0s + s * lh; const yb = y0 + (nc - 1) * gt;
-    const meio = y0 + ((nc - 1) * gt) / 2;
-    o += ['T', 'A', 'B'].map((t, k) => `<text x="8" y="${meio - 14 + k * 15}" font-size="13" font-weight="800" fill="#b5162b" font-family="${FONT}">${t}</text>`).join('');
-    for (let k = 0; k < nc; k++) o += `<line x1="24" x2="${largura - 4}" y1="${y0 + k * gt}" y2="${y0 + k * gt}" stroke="${INK}" stroke-width="1.1"/>`;
-    o += `<line x1="24" x2="24" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.4"/>`;
-    bars.forEach((b) => {
-      o += `<line x1="${b.x1}" x2="${b.x1}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/>`;
-      b.itens.forEach((it) => {
-        if (it.rest) { o += pausa(it.d, it.x, meio); return; }
-        const g = L.grupos[it.g]; let gg = '';
-        g.idx.forEach((i) => { const e = evs[i]; const y = y0 + e.c * gt; const m = midiDe(cordas, e.c, e.f);
-          gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(it.x - 10, y - 8, 20, 16)}${i === sel ? `<rect x="${it.x - 9}" y="${y - 8}" width="18" height="16" rx="4" fill="rgba(184,145,63,.28)"/>` : ''}<rect x="${it.x - 7}" y="${y - 7}" width="14" height="13" fill="${i === sel ? 'none' : '#fbf8f1'}"/><text x="${it.x}" y="${y + 5}" text-anchor="middle" font-size="${e.f > 9 ? 12 : 14}" font-weight="800" font-family="${FONT}" fill="${cNota(m)}">${e.f}</text></g>`; });
-        // ritmo: haste embaixo da tablatura
-        const d = g.d; if (d < 16) { const ys = yb + 12; gg += `<line x1="${it.x}" x2="${it.x}" y1="${ys}" y2="${ys + 22}" stroke="${INK}" stroke-width="1.3"/>${bandeiras(d, it.x, ys + 22, false)}${ponto(d, it.x + 6, ys + 16)}`; }
-        else gg += `<line x1="${it.x - 5}" x2="${it.x + 5}" y1="${yb + 22}" y2="${yb + 22}" stroke="${INK}" stroke-width="1.6"/>`;
-        o += gg;
-      });
+  o += ['T', 'A', 'B'].map((t, k) => `<text x="8" y="${meio - 14 + k * 15}" font-size="13" font-weight="800" fill="#b5162b" font-family="${FONT}">${t}</text>`).join('');
+  for (let k = 0; k < nc; k++) o += `<line x1="24" x2="${largura - 4}" y1="${y0 + k * gt}" y2="${y0 + k * gt}" stroke="${INK}" stroke-width="1.1"/>`;
+  o += `<line x1="24" x2="24" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.4"/>`;
+  bars.forEach((b, bi) => {
+    const fim = ultimo && bi === bars.length - 1;
+    o += fim ? `<line x1="${b.x1 - 4}" x2="${b.x1 - 4}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/><rect x="${b.x1 - 1}" y="${y0}" width="3.4" height="${yb - y0}" fill="${INK}"/>` : `<line x1="${b.x1}" x2="${b.x1}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/>`;
+    b.itens.forEach((it) => {
+      if (it.rest) { o += pausa(it.d, it.x, meio); return; }
+      const g = L.grupos[it.g]; let gg = '';
+      g.idx.forEach((i) => { const e = evs[i]; const y = y0 + e.c * gt; const m = midiDe(cordas, e.c, e.f);
+        gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(it.x - 10, y - 8, 20, 16)}${i === sel ? `<rect x="${it.x - 9}" y="${y - 8}" width="18" height="16" rx="4" fill="rgba(184,145,63,.28)"/>` : ''}<rect x="${it.x - 7}" y="${y - 7}" width="14" height="13" fill="${i === sel ? 'none' : '#fbf8f1'}"/><text x="${it.x}" y="${y + 5}" text-anchor="middle" font-size="${e.f > 9 ? 12 : 14}" font-weight="800" font-family="${FONT}" fill="${cNota(m)}">${e.f}</text></g>`; });
+      const d = g.d; if (d < 16) { const ys = yb + 12; gg += `<line x1="${it.x}" x2="${it.x}" y1="${ys}" y2="${ys + 22}" stroke="${INK}" stroke-width="1.3"/>${bandeiras(d, it.x, ys + 22, false)}${ponto(d, it.x + 6, ys + 16)}`; }
+      else gg += `<line x1="${it.x - 5}" x2="${it.x + 5}" y1="${yb + 22}" y2="${yb + 22}" stroke="${INK}" stroke-width="1.6"/>`;
+      o += gg;
     });
   });
-  const h = Math.max(1, L.sistemas.length) * lh + 4;
-  return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="Tablatura com ${evs.length} nota${evs.length === 1 ? '' : 's'}">${o}</svg>`, w: largura, h, sistema: lh, topo: 0, n: Math.max(1, L.sistemas.length) };
+  return o;
+}
+/** Altura de um sistema de tablatura com `nc` cordas (inclui as hastes de ritmo embaixo). */
+export const alturaTab = (nc) => 22 + (nc - 1) * 13 + 52;
+/** Desenha a tablatura. opts: { cordas (lista de [nome, midi]), largura, cor, sel (índice do evento) }. Devolve { svg, w, h, sistema, topo, n }. */
+export function tablatura(evs, { cordas, largura = 360, cor = false, sel = -1 } = {}) {
+  const L = layout(evs, { largura, x0: 36 }); const lh = alturaTab(cordas.length); let o = '';
+  L.sistemas.forEach((_, s) => { o += tabBloco(L, s, 22 + s * lh, { evs, cordas, largura, cor, sel, ultimo: s === L.sistemas.length - 1 }); });
+  const n = Math.max(1, L.sistemas.length); const h = n * lh + 4;
+  return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="Tablatura com ${evs.length} nota${evs.length === 1 ? '' : 's'}">${o}</svg>`, w: largura, h, sistema: lh, topo: 0, n };
 }
 
 /* ---------- pauta de bateria ---------- */

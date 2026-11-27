@@ -111,7 +111,7 @@ export function mount(host, opts = {}) {
   };
 
   /* ---------- as peças da tela ---------- */
-  const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const meio = h('div', { class: 'ep-meio' });
+  const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const barraEl = h('div', { class: 'ep-barra' }); const meio = h('div', { class: 'ep-meio' });
   const esq = h('div', { class: 'ep-esq' }); const dir = h('div', { class: 'ep-dir' }); const modoEl = h('div', {}); const ajEl = h('div', {}); const kbEl = h('div', {});
   dir.append(modoEl, ajEl, kbEl);
   const passo = () => Math.max(1, s.grade);
@@ -150,7 +150,8 @@ export function mount(host, opts = {}) {
   }
   function atualiza() {
     if (gone) return; desenhaFolha(); desenhaTopo(); const c = correcao();
-    meio.replaceChildren(...(c ? [c] : [palette()]), s.evs.length && !c ? h('p', { class: 'ep-dica' }, 'toque numa nota da folha para corrigir.') : null, msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
+    barraEl.replaceChildren(...(c ? [] : [palette()]));
+    meio.replaceChildren(...(c ? [c] : []), s.evs.length && !c ? h('p', { class: 'ep-dica' }, 'toque numa nota da folha para corrigir.') : null, msg ? h('p', { class: 'ep-dica', role: 'status' }, msg) : null);
   }
   function desenhaDir() {
     if (gone) return;
@@ -165,7 +166,7 @@ export function mount(host, opts = {}) {
       : [seta('oitava', `${nameOf((oct + 1) * 12, 'pt')} em diante`, () => { oct = Math.max(1, oct - 1); desenhaKb(); salvar(); desenhaDir(); }, () => { oct = Math.min(7 - octaves, oct + 1); desenhaKb(); salvar(); desenhaDir(); }, { dis: [oct <= 1, oct >= 7 - octaves] }), kbWrap]));
   }
 
-  const raiz = h('div', { class: 'ep bmr' }, topo, acoes, h('div', { class: 'ep-corpo' }, h('div', { class: 'ep-esq' }, folha, meio), dir)); void esq;
+  const raiz = h('div', { class: 'ep bmr' }, topo, acoes, h('div', { class: 'ep-corpo' }, h('div', { class: 'ep-esq' }, h('div', { class: 'ep-fixo' }, folha, barraEl), meio), dir)); void esq;
   host.append(raiz); desenhaKb(); desenhaDir(); atualiza(); requestAnimationFrame(desenhaFolha);
   const parou = aoMudarLargura(folha, () => { if (!gone) desenhaFolha(); });
   const destrava = () => { try { audio(); } catch { /* sem áudio */ } raiz.removeEventListener('pointerdown', destrava, true); }; raiz.addEventListener('pointerdown', destrava, true);
