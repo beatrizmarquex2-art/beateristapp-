@@ -14,6 +14,7 @@ import * as CONTAS from '../contas.js';
 import * as R from './ritmo.js';
 import * as Som from './som.js';
 import * as E from './escrita.js';
+import { icones } from './icones-kit.js';
 import * as MB from './mic-bateria.js';
 import * as T from './teoria.js';
 import { diagramaSVG } from '../acordes.js';
@@ -55,7 +56,7 @@ export function mount(host, opts = {}) {
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
   const passo = () => 2;
   const rend = (largura, cor = s.cor, selecao = -1) => (bat
-    ? (s.escrita === 'ritmo' ? E.ritmo(s.evs, { largura, sel: selecao, bateria: true }) : R.bateria(s.evs, { largura, cor, sel: selecao }))
+    ? E.bateriaEscrita(s.evs, { escrita: s.escrita, largura, cor, sel: selecao, icones: icones(s.modelo), pecas: s.modelo === 'cajon' ? ['sn', 'bd'] : R.pecasDoKit(s.kit) })
     : E.cordas(s.evs, { cordas: cordas(), inst, escrita: s.escrita, largura, cor, sel: selecao }));
 
   /* ---------- som (o do jogo) ---------- */
@@ -270,7 +271,7 @@ export function mount(host, opts = {}) {
       if (opcoesCordas.length > 1) aj.push(cicla('cordas', opcoesCordas.map((n) => [n, `${n} cordas`]), s.ncord, (n) => { const de = cordas(); s.ncord = n; const evs2 = R.remapeia(s.evs, de, cordas()); const perdeu = s.evs.length - evs2.length; muda(evs2); sel = -1; msg = perdeu ? `${perdeu} nota${perdeu > 1 ? 's' : ''} ficou fora das cordas novas e saiu` : ''; atualiza(); desenhaDir(); aquecer(); }));
       if (Som.TIMBRES[inst].length > 1) aj.push(cicla('som', Som.TIMBRES[inst], s.timbre, (t) => { s.timbre = t; salvar(); desenhaDir(); aquecer(); }));
     } else {
-      aj.push(cicla('kit', R.KITS.map((k) => [k[0], k[1]]), s.kit, (k) => { s.kit = k; salvar(); atualiza(); desenhaDir(); }), cicla('som do kit', Som.MODELOS_BATERIA, s.modelo, (m) => { s.modelo = m; salvar(); desenhaDir(); aquecer(); }));
+      aj.push(cicla('kit', R.KITS.map((k) => [k[0], k[1]]), s.kit, (k) => { s.kit = k; salvar(); atualiza(); desenhaDir(); }), cicla('som do kit', Som.MODELOS_BATERIA, s.modelo, (m) => { s.modelo = m; salvar(); atualiza(); desenhaDir(); aquecer(); }));
       if (s.visual === 'kit') aj.push(tg(s.canhota ? 'canhota ✓' : 'canhota', s.canhota, () => { s.canhota = !s.canhota; salvar(); desenhaDir(); }));
     }
     aj.push(...ferr);

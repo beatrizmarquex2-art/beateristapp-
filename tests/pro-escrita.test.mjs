@@ -40,3 +40,25 @@ test('seta de direção (↓/↑) aparece em cima do acorde; abafada vira × na 
   const mudo = [{ c: 0, f: 2, ini: 0, d: 4, mudo: true }]; assert.match(R.tablatura(mudo, { cordas: V, largura: 380 }).svg, />×</); assert.ok(E.cordas(mudo, { cordas: V, escrita: 'pauta', largura: 380 }).svg.includes('stroke-width="2.2"'));
   assert.ok(E.cordas(b, { cordas: V, escrita: 'pauta', largura: 380 }).svg.includes('seta-r'));
 });
+// ---- bateria desenhada (com um kit de mentira, já que o de verdade precisa do navegador)
+const ic = { defs: '<defs id="d"/>', art: { x: 0, y: 0, w: 300, h: 200 }, pecas: { hh: { x: 20, y: 20, w: 60, h: 20, cx: 50, cy: 30 }, sn: { x: 90, y: 110, w: 70, h: 40, cx: 125, cy: 130 }, bd: { x: 170, y: 100, w: 90, h: 90, cx: 215, cy: 145 } }, tem(p) { return !!this.pecas[p]; }, usa: (p) => (['hh', 'sn', 'bd'].includes(p) ? p : 'sn'), icone: (p, cx, cy, l) => `<g class="ic" data-i="${p}" data-x="${cx.toFixed(0)}"/>` };
+const groove = [...Array.from({ length: 8 }, (_, k) => ({ p: 'hh', ini: k * 2, d: 2 })), { p: 'bd', ini: 0, d: 2 }, { p: 'bd', ini: 8, d: 2 }, { p: 'sn', ini: 4, d: 2 }, { p: 'sn', ini: 12, d: 2 }];
+test('bateria "desenho": uma peça desenhada por batida no lugar das cabeças, selecionáveis', () => {
+  const r = E.bateriaEscrita(groove, { escrita: 'desenho', largura: 460, icones: ic }); assert.equal((r.svg.match(/class="ic"/g) || []).length, 12); assert.equal((r.svg.match(/data-ev=/g) || []).length, 12); assert.ok(r.svg.includes('<defs id="d"/>'));
+});
+test('bateria "faixa": pauta normal em cima e a faixa de peças alinhada embaixo, mais alta que a pauta sozinha', () => {
+  const f = E.bateriaEscrita(groove, { escrita: 'faixa', largura: 460, icones: ic }); const p = E.bateriaEscrita(groove, { escrita: 'pauta', largura: 460, icones: ic });
+  assert.ok(f.h > p.h); assert.equal((f.svg.match(/data-peca=/g) || []).length, 12); assert.match(f.svg, />&</);
+  assert.equal([...f.svg.matchAll(/data-peca="bd"><g class="ic" data-i="bd" data-x="(\d+)"/g)].length, 2);
+});
+test('bateria "quadros": 8 quadros por compasso (colcheias), com peças acesas, contagem e o número do compasso', () => {
+  const r = E.bateriaEscrita(groove, { escrita: 'quadros', largura: 460, icones: ic, pecas: ['hh', 'sn', 'bd'] }); assert.equal(r.n, 1); assert.match(r.svg, /COMPASSO 1/); assert.equal((r.svg.match(/stroke-width="3"/g) || []).length, 12); assert.equal((r.svg.match(/opacity="0.14"/g) || []).length, 8 * 3 - 12);
+  assert.equal((r.svg.match(/data-ev=/g) || []).length, 8); assert.match(r.svg, />&</);
+});
+test('quadros: acento engrossa o anel e fantasma é tracejado; 2 compassos viram 2 "sistemas"', () => {
+  const r = E.bateriaEscrita([{ p: 'sn', ini: 0, d: 2, acc: true }, { p: 'sn', ini: 2, d: 2, fan: true }, { p: 'bd', ini: 16, d: 2 }], { escrita: 'quadros', largura: 460, icones: ic, pecas: ['hh', 'sn', 'bd'] });
+  assert.match(r.svg, /stroke-width="4.5"/); assert.match(r.svg, /stroke-dasharray="3 3"/); assert.equal(r.n, 2); assert.match(r.svg, /COMPASSO 2/);
+});
+test('quadros: com a seleção, clicar de novo passa pro próximo evento do mesmo quadro', () => { const evs = [{ p: 'hh', ini: 0, d: 2 }, { p: 'bd', ini: 0, d: 2 }]; assert.match(E.bateriaEscrita(evs, { escrita: 'quadros', largura: 460, icones: ic, sel: 0 }).svg, /data-ev="1"/); });
+test('sem o kit ilustrado (sem DOM) as escritas desenhadas caem na pauta comum', () => { assert.equal(E.bateriaEscrita(groove, { escrita: 'desenho', largura: 460, icones: null }).svg, R.bateria(groove, { largura: 460 }).svg); });
+test('feixe: 8 colcheias de chimbal ficam ligadas de 2 em 2 (uma barra por tempo, sem 8 bandeirolas)', () => { const r = R.bateria(groove, { largura: 460 }); assert.equal((r.svg.match(/stroke-width="3.4"/g) || []).length, 4); });

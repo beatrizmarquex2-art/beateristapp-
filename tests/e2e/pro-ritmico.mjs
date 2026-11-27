@@ -189,8 +189,21 @@ await page.locator('.er-gc[aria-pressed="true"]').first().click(); await sleep(1
 check('tocar de novo na casa desliga a batida', await evs() === antesG + 1);
 await page.getByRole('button', { name: /copiar o compasso anterior/ }).click(); await sleep(150);
 check('copiar o compasso anterior traz as batidas dele', await evs() > antesG + 1);
+// escritas desenhadas da bateria (kit ilustrado do jogo)
+await abreAjustes(); await setaPara('escrita', 'próximo'); await sleep(250);
+check('escrita A "pauta com peças desenhadas": peças do kit no lugar das cabeças', /pauta com peças desenhadas/.test(await saida('escrita')) && await page.locator('.er-folha svg svg').count() >= 4);
+await shot('escrita-A');
+await setaPara('escrita', 'próximo'); await sleep(250);
+check('escrita C "quadros do kit": um mini kit por batida, com a contagem', /quadros do kit/.test(await saida('escrita')) && /COMPASSO 1/.test(await page.locator('.er-folha').innerHTML()) && await page.locator('.er-folha svg svg').count() >= 8);
+await shot('escrita-C');
+await page.locator('.er-folha .pm-n').first().click(); await sleep(150);
+check('clicar num quadro seleciona a batida e abre a correção', await page.locator('.ep-corrige').count() === 1);
+await page.locator('.ep-corrige .ep-x').click(); await sleep(100);
+await setaPara('escrita', 'próximo'); await sleep(250);
+check('escrita D "pauta + faixa de peças": faixa de peças alinhada embaixo', /faixa de peças/.test(await saida('escrita')) && await page.locator('.er-folha [data-peca]').count() >= 4);
+await shot('escrita-D');
+await setaPara('escrita', 'próximo'); await sleep(200);
 // figuras rítmicas sem pauta (bateria) e voltar
-await abreAjustes(); await setaPara('escrita', 'próximo'); await sleep(200);
 check('figuras rítmicas: uma linha com a contagem 1 e & a', /&/.test(await page.locator('.er-folha').innerHTML()) && !/<text[^>]*>4<\/text>.*<text[^>]*>4<\/text>.*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line[^>]*stroke-width="1.2"\/><line/.test(await page.locator('.er-folha').innerHTML()));
 await shot('ritmo');
 await setaPara('escrita', 'próximo'); await sleep(200);

@@ -7,7 +7,7 @@ import { corNota } from '../cores-notas.js';
 
 const { INK, FONT } = R; const G = 10;
 const SUST = 'M-2 -7V7M2 -8V6M-4.5 -2.5L4.5 -4.5M-4.5 3.5L4.5 1.5';
-export const ESCRITAS = { cordas: [['tab', 'tablatura'], ['pauta', 'pauta comum'], ['ambas', 'pauta + tablatura'], ['ritmo', 'figuras rítmicas (sem pauta)']], bateria: [['pauta', 'pauta de bateria'], ['ritmo', 'figuras rítmicas (sem pauta)']] };
+export const ESCRITAS = { cordas: [['tab', 'tablatura'], ['pauta', 'pauta comum'], ['ambas', 'pauta + tablatura'], ['ritmo', 'figuras rítmicas (sem pauta)']], bateria: [['pauta', 'pauta de bateria'], ['desenho', 'pauta com peças desenhadas'], ['quadros', 'quadros do kit'], ['faixa', 'pauta + faixa de peças'], ['ritmo', 'figuras rítmicas (sem pauta)']] };
 /** Violão e guitarra escrevem uma oitava acima do que soa; baixo também (clave de fá). */
 export const escrito = (m) => m + 12;
 export const claveDe = (inst) => (inst === 'baixo' ? 'fa' : 'sol');
@@ -134,4 +134,53 @@ export function ritmo(evs, { largura = 360, sel = -1, bateria = false, mostrarCo
     });
   });
   void bateria; return finaliza(o, largura, n, alt, `Figuras rítmicas com ${evs.length} batida${evs.length === 1 ? '' : 's'}`);
+}
+
+/* ---------- bateria desenhada: as peças do kit ilustrado do jogo ---------- */
+const ORDEM_FAIXA = ['hh', 'ho', 'hf', 'cr', 'rd', 'sn', 'tt', 'mt', 'ft', 'bd'];
+/** Faixa de peças embaixo de cada sistema da pauta: o desenho de cada peça que toca naquele instante, alinhado à coluna, com a contagem. */
+export function faixaDePecas(icones, largura, evsAlt = 58) {
+  return (L, s, yTopo, evs) => {
+    let o = `<rect x="8" y="${yTopo}" width="${largura - 16}" height="${evsAlt - 10}" rx="12" fill="#f4efe4"/>`; const itens = L.sistemas[s].flatMap((b) => b.itens).filter((it) => !it.rest);
+    const esp = itens.length > 1 ? Math.min(...itens.slice(1).map((it, k) => it.x - itens[k].x).filter((d) => d > 0.5)) : 60;
+    itens.forEach((it) => {
+      const g = L.grupos[it.g]; const ps = ORDEM_FAIXA.filter((p) => g.idx.some((i) => evs[i].p === p)); const n = Math.max(1, ps.length); const larg = Math.max(13, Math.min(28, (esp - 2) / n)); const cy = yTopo + 19;
+      ps.forEach((p, k) => { o += `<g data-peca="${p}">${icones.icone(p, it.x + (k - (n - 1) / 2) * larg, cy, larg)}</g>`; });
+      const forte = it.pos % 4 === 0; o += `<text x="${it.x}" y="${yTopo + evsAlt - 18}" text-anchor="middle" font-size="${forte ? 13 : 10}" font-weight="${forte ? 800 : 500}" font-family="${FONT}" fill="${forte ? INK : '#8a8372'}">${contagem(it.pos)}</text>`;
+    });
+    return o;
+  };
+}
+/** Quadros do kit: um mini kit por tempo, com as peças que tocam acesas (anel na cor da peça) e as outras apagadas. Cada compasso é um "sistema". */
+export function quadros(evs, { largura = 360, sel = -1, icones, pecas = ['hh', 'sn', 'bd'] } = {}) {
+  const nBars = R.nCompassos(evs); const res = evs.every((e) => e.ini % 4 === 0) ? 4 : evs.every((e) => e.ini % 2 === 0) ? 2 : 1; const porBar = 16 / res; const perRow = Math.min(porBar, largura < 480 ? 4 : 8); // celular: 4 quadros por linha (quadros maiores, dá pra enxergar as peças)
+  const linhas = Math.ceil(porBar / perRow); const gap = 6; const fw = Math.max(40, (largura - 12 - (perRow - 1) * gap) / perRow); const fh = Math.round(fw * 0.98) + 22; const cab = 18; const barH = cab + linhas * (fh + gap) + 8;
+  const usadas = pecas.filter((p) => icones.tem(icones.usa(p)) && icones.pecas[icones.usa(p)]).map((p) => ({ p, b: icones.pecas[icones.usa(p)] }));
+  const bx0 = Math.min(...usadas.map((u) => u.b.x)); const by0 = Math.min(...usadas.map((u) => u.b.y)); const bx1 = Math.max(...usadas.map((u) => u.b.x + u.b.w)); const by1 = Math.max(...usadas.map((u) => u.b.y + u.b.h));
+  const kw = fw - 10; const kh = fh - 26; const k = Math.min(kw / (bx1 - bx0), kh / (by1 - by0)); const ox = (fw - (bx1 - bx0) * k) / 2; const oy = 4 + (kh - (by1 - by0) * k) / 2;
+  let o = icones.defs || '';
+  for (let b = 0; b < nBars; b++) {
+    const yb = b * barH; o += `<text x="8" y="${yb + 12}" font-size="11" font-weight="800" letter-spacing=".08em" fill="#8a8372" font-family="${FONT}">COMPASSO ${b + 1}</text>`;
+    for (let f = 0; f < porBar; f++) {
+      const ini = b * 16 + f * res; const r = Math.floor(f / perRow); const c = f % perRow; const fx = 6 + c * (fw + gap); const fy = yb + cab + r * (fh + gap);
+      const idx = evs.map((e, i) => (e.ini >= ini && e.ini < ini + res ? i : -1)).filter((i) => i >= 0); const lit = new Set(idx.map((i) => evs[i].p)); const selecionado = idx.includes(sel);
+      const alvo = idx.includes(sel) ? idx[(idx.indexOf(sel) + 1) % idx.length] : idx[0];
+      o += `<g${idx.length ? ` class="pm-n${selecionado ? ' sel' : ''}" data-ev="${alvo}"` : ''}><rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" rx="12" fill="#fff" stroke="${selecionado ? '#b8913f' : '#ddd5c3'}" stroke-width="${selecionado ? 3 : 1.2}"/>`;
+      usadas.forEach(({ p, b: bb }) => { const on = lit.has(p); const cx = fx + ox + (bb.x + bb.w / 2 - bx0) * k; const cy = fy + oy + (bb.y + bb.h / 2 - by0) * k; const w = Math.max(10, bb.w * k);
+        o += `<g opacity="${on ? 1 : 0.14}">${icones.icone(p, cx, cy, w)}</g>`;
+        if (on) { const e = evs[idx.find((i) => evs[i].p === p)]; const rr = Math.max(w * 0.62, 9); o += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rr.toFixed(1)}" fill="none" stroke="${(R.PECAS[p] || {}).cor || INK}" stroke-width="${e.acc ? 4.5 : 3}"${e.fan ? ' stroke-dasharray="3 3"' : ''}/>${e.acc ? `<path d="M${(cx - 4).toFixed(1)} ${(cy - rr - 6).toFixed(1)}l8 2.5-8 2.5" stroke="${INK}" stroke-width="1.6" fill="none"/>` : ''}`; } });
+      const forte = ini % 4 === 0; const maos = [...new Set(idx.map((i) => (evs[i].p === 'bd' ? 'B' : evs[i].mao)).filter(Boolean))].join('');
+      o += `<text x="${fx + fw / 2}" y="${fy + fh - 6}" text-anchor="middle" font-size="${forte ? 15 : 12}" font-weight="${forte ? 800 : 600}" font-family="${FONT}" fill="${forte ? INK : '#8a8372'}">${contagem(ini % 16)}</text>${maos ? `<text x="${fx + fw - 6}" y="${fy + fh - 6}" text-anchor="end" font-size="9" font-weight="800" font-family="${FONT}" fill="#6b6558">${R.esc(maos)}</text>` : ''}</g>`;
+    }
+  }
+  const h = nBars * barH + 4; return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="Quadros do kit com ${evs.length} batida${evs.length === 1 ? '' : 's'}">${o}</svg>`, w: largura, h, sistema: barH, topo: 0, n: nBars };
+}
+/** A escrita da bateria pelo nome: 'pauta', 'desenho' (peças no lugar das cabeças), 'quadros', 'faixa' (pauta + peças embaixo) ou 'ritmo'. Sem o kit ilustrado (sem DOM) cai na pauta comum. */
+export function bateriaEscrita(evs, { escrita = 'pauta', largura = 360, cor = false, sel = -1, icones = null, pecas } = {}) {
+  if (escrita === 'ritmo') return ritmo(evs, { largura, sel, bateria: true });
+  if (!icones) return R.bateria(evs, { largura, cor, sel });
+  if (escrita === 'desenho') return R.bateria(evs, { largura, cor, sel, icones });
+  if (escrita === 'faixa') return R.bateria(evs, { largura, cor, sel, faixa: faixaDePecas(icones, largura), altFaixa: 58 });
+  if (escrita === 'quadros') return quadros(evs, { largura, sel, icones, pecas });
+  return R.bateria(evs, { largura, cor, sel });
 }

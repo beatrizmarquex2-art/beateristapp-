@@ -150,37 +150,54 @@ export function tablatura(evs, { cordas, largura = 360, cor = false, sel = -1 } 
 }
 
 /* ---------- pauta de bateria ---------- */
-/** Desenha a pauta de bateria. opts: { largura, cor, sel }. Devolve { svg, w, h, sistema, topo, n }. */
-export function bateria(evs, { largura = 360, cor = false, sel = -1 } = {}) {
-  const G = 10; const L = layout(evs, { largura, x0: 62 }); const lh = 128; const y0s = 56; let o = '';
+/** Tamanho (largura em px) de cada peça desenhada quando a pauta usa o kit ilustrado no lugar das cabeças. */
+const TAM_ICONE = { hh: 32, ho: 32, hf: 26, sn: 30, bd: 32, tt: 30, mt: 30, ft: 30, cr: 32, rd: 32 };
+/** Desenha a pauta de bateria. opts: { largura, cor, sel, icones, faixa, altFaixa }.
+    icones = provider do kit ilustrado (js/pro/icones-kit.js): no lugar de cada cabeça entra a peça desenhada.
+    faixa(L, s, yTopo, evs) = devolve SVG extra pra pôr embaixo de cada sistema (ocupa `altFaixa` px). Devolve { svg, w, h, sistema, topo, n }. */
+export function bateria(evs, { largura = 360, cor = false, sel = -1, icones = null, faixa = null, altFaixa = 0 } = {}) {
+  const G = 10; const L = layout(evs, { largura, x0: icones ? 70 : 62 }); const lh = 128 + altFaixa; const y0s = 56; const off = icones ? 14 : 5.3; let o = icones && icones.defs ? icones.defs : '';
   L.sistemas.forEach((bars, s) => {
-    const y0 = y0s + s * lh; const yb = y0 + 4 * G;
+    const y0 = y0s + s * lh; const yb = y0 + 4 * G; const topo = y0 - 26;
     for (let k = 0; k < 5; k++) o += `<line x1="4" x2="${largura - 4}" y1="${y0 + k * G}" y2="${y0 + k * G}" stroke="${INK}" stroke-width="1.2"/>`;
     o += `<rect x="10" y="${y0 + G}" width="3.5" height="${2 * G}" fill="${INK}"/><rect x="16" y="${y0 + G}" width="3.5" height="${2 * G}" fill="${INK}"/>`;
     if (s === 0) o += `<text x="40" y="${y0 + 19}" text-anchor="middle" font-size="17" font-weight="800" font-family="${FONT}">4</text><text x="40" y="${y0 + 39}" text-anchor="middle" font-size="17" font-weight="800" font-family="${FONT}">4</text>`;
     bars.forEach((b) => {
       o += `<line x1="${b.x1}" x2="${b.x1}" y1="${y0}" y2="${yb}" stroke="${INK}" stroke-width="1.3"/>`;
-      b.itens.forEach((it) => {
-        if (it.rest) { o += pausa(it.d, it.x, y0 + 2 * G); return; }
-        const g = L.grupos[it.g]; const x = it.x; let gg = ''; let maoTxt = []; let altoMao = null; let baixoPe = null;
-        g.idx.forEach((i) => { const e = evs[i]; const pc = PECAS[e.p] || PECAS.sn; const y = y0 + (pc.pos * G) / 2; const c = cor ? pc.cor : INK;
+      // 1º passo: o que cada coluna tem (mãos em cima, pés embaixo) e quais colunas de mão se ligam por feixe (colcheias/semicolcheias do mesmo tempo)
+      const cols = b.itens.map((it) => { if (it.rest) return { it, rest: true }; const g = L.grupos[it.g]; let alto = null; let baixo = null;
+        g.idx.forEach((i) => { const pc = PECAS[evs[i].p] || PECAS.sn; const y = y0 + (pc.pos * G) / 2; if (pc.pe) baixo = Math.min(baixo === null ? y : baixo, y); else alto = Math.max(alto === null ? y : alto, y); });
+        return { it, g, alto, baixo, d: g.d, pos: it.pos, x: it.x }; });
+      const feixes = []; let cur = []; const fecha = () => { if (cur.length > 1) feixes.push(cur); cur = []; };
+      cols.forEach((c) => { if (c.rest || c.alto === null || c.d > 2) { fecha(); return; } if (cur.length && (cur[0].pos >> 2) !== (c.pos >> 2)) fecha(); cur.push(c); }); fecha();
+      const emFeixe = new Set(feixes.flat());
+      cols.forEach((c) => {
+        const it = c.it; if (c.rest) { o += pausa(it.d, it.x, y0 + 2 * G); return; }
+        const g = c.g; const x = it.x; let gg = ''; const maoTxt = [];
+        g.idx.forEach((i) => { const e = evs[i]; const pc = PECAS[e.p] || PECAS.sn; const y = y0 + (pc.pos * G) / 2; const col = cor ? pc.cor : INK;
           let cab = '';
           if (e.p === 'cr') cab += `<line x1="${x - 9}" x2="${x + 9}" y1="${y0 - G}" y2="${y0 - G}" stroke="${INK}"/>`;
-          cab += pc.x ? `<path d="M${x - 4.5} ${y - 4.5}l9 9M${x + 4.5} ${y - 4.5}l-9 9" stroke="${c}" stroke-width="2.3"/>` : `<ellipse cx="${x}" cy="${y}" rx="5.6" ry="4.1" transform="rotate(-20 ${x} ${y})" fill="${c}" stroke="${cor ? INK : 'none'}" stroke-width="1"/>`;
-          if (pc.aberto) cab += `<circle cx="${x}" cy="${y - 9}" r="2.6" fill="none" stroke="${INK}" stroke-width="1.2"/>`;
-          if (e.fan) cab += `<text x="${x - 12}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">(</text><text x="${x + 12}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">)</text>`;
-          if (e.acc) cab += `<path d="M${x - 5} ${pc.pe ? y + 12 : y - 11}l10 3-10 3" stroke="${INK}" stroke-width="1.6" fill="none"/>`;
-          gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(x - 11, y - 10, 22, 20)}${i === sel ? `<circle cx="${x}" cy="${y}" r="10" fill="rgba(184,145,63,.28)"/>` : ''}${cab}</g>`;
-          if (pc.pe) { baixoPe = Math.min(baixoPe === null ? y : baixoPe, y); if (e.p === 'bd') maoTxt.push('B'); } else { altoMao = Math.max(altoMao === null ? y : altoMao, y); if (e.mao) maoTxt.push(e.mao); }
+          if (icones) cab += icones.icone(e.p, x, y, TAM_ICONE[e.p] || 30);
+          else cab += pc.x ? `<path d="M${x - 4.5} ${y - 4.5}l9 9M${x + 4.5} ${y - 4.5}l-9 9" stroke="${col}" stroke-width="2.3"/>` : `<ellipse cx="${x}" cy="${y}" rx="5.6" ry="4.1" transform="rotate(-20 ${x} ${y})" fill="${col}" stroke="${cor ? INK : 'none'}" stroke-width="1"/>`;
+          if (pc.aberto) cab += `<circle cx="${x}" cy="${y - (icones ? 12 : 9)}" r="2.6" fill="none" stroke="${INK}" stroke-width="1.2"/>`;
+          if (e.fan) cab += `<text x="${x - (icones ? 19 : 12)}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">(</text><text x="${x + (icones ? 19 : 12)}" y="${y + 5}" font-size="14" font-family="${FONT}" fill="${INK}" text-anchor="middle">)</text>`;
+          if (e.acc) cab += `<path d="M${x - 5} ${pc.pe ? y + (icones ? 18 : 12) : y - (icones ? 17 : 11)}l10 3-10 3" stroke="${INK}" stroke-width="1.6" fill="none"/>`;
+          gg += `<g class="pm-n${i === sel ? ' sel' : ''}" data-ev="${i}">${quadro(x - 15, y - 14, 30, 28)}${i === sel ? `<circle cx="${x}" cy="${y}" r="${icones ? 17 : 10}" fill="rgba(184,145,63,.28)"/>` : ''}${cab}</g>`;
+          if (pc.pe) { if (e.p === 'bd') maoTxt.push('B'); } else if (e.mao) maoTxt.push(e.mao);
         });
         const d = g.d;
         // hastes: mãos pra cima (da cabeça mais baixa até acima da pauta), pés pra baixo
-        if (altoMao !== null && d < 16) { const sx = x + 5.3; const topo = y0 - 26; gg += `<line x1="${sx}" x2="${sx}" y1="${altoMao}" y2="${topo}" stroke="${INK}" stroke-width="1.3"/>${bandeiras(d, sx, topo, true)}`; }
-        if (baixoPe !== null && d < 16) { const sx = x - 5.3; const fundo = yb + 26; gg += `<line x1="${sx}" x2="${sx}" y1="${baixoPe}" y2="${fundo}" stroke="${INK}" stroke-width="1.3"/>${altoMao === null ? bandeiras(d, sx, fundo, false) : ''}`; }
+        if (c.alto !== null && d < 16) { const sx = x + off; gg += `<line x1="${sx}" x2="${sx}" y1="${c.alto}" y2="${topo}" stroke="${INK}" stroke-width="1.3"/>${emFeixe.has(c) ? '' : bandeiras(d, sx, topo, true)}`; }
+        if (c.baixo !== null && d < 16) { const sx = x - off; const fundo = yb + 26; gg += `<line x1="${sx}" x2="${sx}" y1="${c.baixo}" y2="${fundo}" stroke="${INK}" stroke-width="1.3"/>${c.alto === null ? bandeiras(d, sx, fundo, false) : ''}`; }
         if (maoTxt.length) gg += `<text x="${x}" y="${y0 - 36}" text-anchor="middle" font-size="11" font-weight="800" font-family="${FONT}" fill="#6b6558">${esc([...new Set(maoTxt)].join(''))}</text>`;
         o += gg;
       });
+      feixes.forEach((fx) => { const x1 = fx[0].x + off; const x2 = fx[fx.length - 1].x + off; o += `<line x1="${x1}" y1="${topo}" x2="${x2}" y2="${topo}" stroke="${INK}" stroke-width="3.4"/>`; const y2 = topo + 5;
+        fx.forEach((c, i) => { if (c.d !== 1) return; const prox = fx[i + 1]; const ant = fx[i - 1]; const xs = c.x + off;
+          if (prox && prox.d === 1) o += `<line x1="${xs}" y1="${y2}" x2="${prox.x + off}" y2="${y2}" stroke="${INK}" stroke-width="3.4"/>`;
+          else if (!(ant && ant.d === 1)) { const lado = prox ? 1 : -1; o += `<line x1="${xs}" y1="${y2}" x2="${xs + lado * 8}" y2="${y2}" stroke="${INK}" stroke-width="3.4"/>`; } }); });
     });
+    if (faixa) o += faixa(L, s, yb + 34, evs);
   });
   const h = Math.max(1, L.sistemas.length) * lh + 8;
   return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="Pauta de bateria com ${evs.length} batida${evs.length === 1 ? '' : 's'}">${o}</svg>`, w: largura, h, sistema: lh, topo: 0, n: Math.max(1, L.sistemas.length) };

@@ -1227,3 +1227,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Eventos de acorde guardam `dir` ('b' = ↓, 'c' = ↑) e `mudo` (✕). A seta aparece em cima do acorde (tablatura e pauta); abafada vira × . Passar o dedo pra baixo/cima nas cordas desenhadas grava a direção; ao ouvir, ↓ sai da corda grave pra aguda e ↑ da aguda pra grave, mais suave.
 - Batida: "escrever o compasso inteiro com a batida" + 6 batidas prontas (pop, só pra baixo, baixo e cima, balada, reggae, funk abafado) e "minha batida" (clicar nos quadradinhos: vazio → ↓ → ↑ → ✕), 8 ou 16 passos. Tocar numa carta escreve o compasso e toca. ↑ usa só as 4 cordas agudas.
 - Nota longa ligada (atravessa o tempo): a 2ª parte aparece como (n) na tablatura e não duplica a seleção.
+
+### PRO: bateria desenhada (A, C, D) (27/nov/2026)
+- `js/pro/icones-kit.js` recorta cada peça do kit ilustrado do jogo (`js/kids/kit-modelos.js`, 3 modelos) com getBBox. `js/pro/escrita.js` → `bateriaEscrita`: **desenho** (peças no lugar das cabeças na pauta), **quadros** (um mini kit por tempo, peças acesas com anel; 4 por linha no celular), **faixa** (pauta + faixa de peças alinhada embaixo). Menu "escrita" da bateria: pauta · pauta com peças desenhadas · quadros do kit · pauta + faixa de peças · figuras rítmicas.
+- A pauta de bateria agora liga colcheias/semicolcheias do mesmo tempo com feixe (antes: uma bandeirola por nota).
+- Sem DOM (testes de lógica) as escritas desenhadas caem na pauta comum.
