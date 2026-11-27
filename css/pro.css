@@ -1,7 +1,7 @@
-/* Beaterista PRO — grafite, preto, creme e ouro. Editorial (Bodoni Moda + Hanken Grotesk), com um traço street (Anton / Permanent Marker) só nos detalhes. */
+/* Beaterista PRO — grafite, preto, creme e ouro. Editorial limpo (Hanken Grotesk, títulos pesados e apertados), com um traço street (Anton / Permanent Marker) só nos detalhes. */
 .pro-body{
   --grafite:#1b1c1e; --preto:#0e0e0f; --creme:#f4efe4; --papel:#fbf8f1; --tinta:#1b1c1e; --suave:#6b6558; --linha:#ddd5c3; --ouro:#b8913f; --ouro-claro:#d9b45f; --erro:#a3302a;
-  --bg:var(--creme); --card:var(--papel); --line:var(--linha); --text:var(--tinta); --ink:var(--tinta); --body:'Hanken Grotesk',system-ui,sans-serif; --serif:'Bodoni Moda',Georgia,serif;
+  --bg:var(--creme); --card:var(--papel); --line:var(--linha); --text:var(--tinta); --ink:var(--tinta); --body:'Hanken Grotesk',system-ui,sans-serif; --serif:'Hanken Grotesk',system-ui,sans-serif;
   margin:0;background:var(--creme);color:var(--tinta);font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased;
 }
 .pro-body *{box-sizing:border-box}
@@ -104,3 +104,7 @@
 .pro-body .pm-seta{flex:1;display:flex;align-items:center;gap:6px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);padding:3px}
 .pro-body .pm-sb{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:var(--tinta);box-shadow:none;font:500 22px/1 var(--body)}.pro-body .pm-sb:hover{background:var(--grafite);color:var(--ouro-claro)}.pro-body .pm-sb:active{transform:none}
 .pro-body .pm-val{flex:1;min-width:0;font:600 14px/1.2 var(--body);padding:8px 4px}
+
+/* títulos: Hanken pesado e justo (a Bodoni só existe em itálico fino aqui, e cansa a leitura) */
+.pe-h,.pt-top h1,.pt-cab h1,.pd-t h2,.pi-n b,.pt-lista b,.pv-t,.pa-d h2 b,.pa-c b,.pa-n,.pi-comeco a,.pe-lema{font-style:normal;letter-spacing:-.025em}
+.pe-h,.pt-top h1,.pt-cab h1{font-weight:800}.pi-n b{font-weight:700;letter-spacing:-.04em}.pt-lista b,.pd-t h2{font-weight:700}.pe-lema{font-weight:500;letter-spacing:-.01em;color:#cfc6b2}.pv-t{font-weight:600}

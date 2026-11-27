@@ -4,7 +4,7 @@ import { toJpeg, savePdf } from '../views/plan-pdf.js';
 import { ETAPAS, nomeNivel, minutos } from './dados.js';
 
 const W = 1240; const H = 1754; const M = 96;
-const SERIF = '"Bodoni Moda", Georgia, serif'; const SANS = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
+const SERIF = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif'; const SANS = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
 const nomeEtapa = (t) => (ETAPAS.find((e) => e[0] === t) || [, t])[1];
 const loadImg = (src) => new Promise((ok) => { if (!src) return ok(null); const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
 
@@ -34,7 +34,7 @@ export async function paginas(aula, perfil = {}, aluno = '') {
   };
   const garante = (h) => { if (y + h > H - 120) { nova(); } };
   nova();
-  g.fillStyle = '#1b1c1e'; g.font = `700 60px ${SERIF}`; for (const l of quebra(g, aula.titulo, W - M * 2)) { garante(70); g.fillText(l, M, y); y += 70; }
+  g.fillStyle = '#1b1c1e'; g.font = `800 58px ${SERIF}`; for (const l of quebra(g, aula.titulo, W - M * 2)) { garante(70); g.fillText(l, M, y); y += 70; }
   g.font = `400 24px ${SANS}`; g.fillStyle = '#6b6558';
   g.fillText([aula.instrumento, nomeNivel(aula.nivel), aula.idade && `${aula.idade}`, `${aula.duracao_min} min`, aluno && `para ${aluno}`].filter(Boolean).join('  ·  '), M, y); y += 56;
   const bloco = (rotulo, texto) => {
