@@ -2195,24 +2195,23 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
   html.jg-fit .jg-game > .jg-top > .jg-title { font-size: 15px; padding: 4px 10px 7px 9px; }
 }
 
-/* ===== quebra-cabeça: placar e barra de ações premium (vidro, ícones próprios, dica dourada) ===== */
-.jg-quebra .qz-stats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 9px 6px 12px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, rgb(255 255 255 / .14), rgb(255 255 255 / .05)); border: 1px solid rgb(255 255 255 / .18); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12); }
-.jg-quebra .qz-st { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
-.jg-quebra .qz-st + .qz-st { border-left: 1px solid rgb(255 255 255 / .12); }
+/* ===== quebra-cabeça: placar em pílulas e botões REDONDOS (escolha da Bea: opção 2) ===== */
+.jg-quebra .qz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 0 10px; margin: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; position: relative; }
+.jg-quebra .qz-st { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 6px 12px; border-radius: 999px; background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); }
 .jg-quebra .qz-i { width: 20px; height: 20px; flex: none; fill: none; stroke: #ffd23f; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .jg-quebra .qz-st b { display: block; font: 800 17px/1.05 var(--body, inherit); color: #fff; font-variant-numeric: tabular-nums; }
-.jg-quebra .qz-st small { display: block; margin-top: 2px; font: 700 9.5px/1 var(--body, inherit); text-transform: uppercase; letter-spacing: .1em; color: rgb(255 255 255 / .65); }
-.jg-quebra .qz-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgb(255 255 255 / .12); }
-.jg-quebra .qz-prog i { display: block; height: 100%; background: linear-gradient(90deg, #ffd23f, #ff9f1c); border-radius: 0 4px 4px 0; box-shadow: 0 0 10px rgb(255 190 60 / .7); transition: width .45s cubic-bezier(.2, .8, .2, 1); }
+.jg-quebra .qz-st small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* o nome fica só pra leitor de tela; o ícone já diz o que é */
+.jg-quebra .qz-prog { display: none; }
 .jg-quebra .qz-msg { text-align: center; color: #ffe08a; font-weight: 600; letter-spacing: .01em; }
-.jg-quebra .qz-dock { flex: none; display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; padding: 7px; margin: 0; border-radius: 22px; background: rgb(255 255 255 / .07); border: 1px solid rgb(255 255 255 / .15); box-shadow: 0 -6px 24px rgb(0 0 0 / .25), inset 0 1px 0 rgb(255 255 255 / .1); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.jg-quebra .qz-b { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 58px; padding: 6px 8px; border: 1px solid rgb(255 255 255 / .2); border-radius: 15px; background: linear-gradient(180deg, rgb(255 255 255 / .17), rgb(255 255 255 / .06)); color: #fff; font: 700 12px/1 var(--body, inherit); letter-spacing: .03em; box-shadow: none; cursor: pointer; transition: transform .12s ease, background .2s ease, box-shadow .2s ease; -webkit-tap-highlight-color: transparent; }
-.jg-quebra .qz-b .qz-i { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; }
-.jg-quebra .qz-b:hover { background: linear-gradient(180deg, rgb(255 255 255 / .24), rgb(255 255 255 / .1)); }
-.jg-quebra .qz-b:active { transform: scale(.96); }
-.jg-quebra .qz-b:focus-visible { outline: 3px solid #ffd23f; outline-offset: 2px; }
-.jg-quebra .qz-main { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #fff3bf; box-shadow: 0 6px 18px rgb(247 183 51 / .38), inset 0 1px 0 rgb(255 255 255 / .75); }
-.jg-quebra .qz-main:hover { background: linear-gradient(180deg, #ffeaa0, #fbbf3c); }
-.jg-quebra .qz-main:disabled { background: rgb(255 255 255 / .05); color: rgb(255 255 255 / .45); border: 1px dashed rgb(255 255 255 / .28); box-shadow: none; cursor: not-allowed; }
-@media (max-height: 640px) { .jg-quebra .qz-b { min-height: 48px; flex-direction: row; gap: 7px; } .jg-quebra .qz-b .qz-i { width: 20px; height: 20px; } }
-@media (prefers-reduced-motion: reduce) { .jg-quebra .qz-b, .jg-quebra .qz-prog i { transition: none; } }
+.jg-quebra .qz-dock { flex: none; display: flex; justify-content: space-around; align-items: flex-end; gap: 6px; padding: 0 6px 4px; margin: 0; background: transparent; border: 0; box-shadow: none; }
+.jg-quebra .qz-b { flex: none; width: 66px; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #dbe6ff; font: 700 11.5px/1 var(--body, inherit); letter-spacing: .03em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.jg-quebra .qz-b .qz-i { box-sizing: content-box; width: 26px; height: 26px; padding: 15px; clip-path: circle(50%); border-radius: 50%; stroke: currentColor; stroke-width: 1.8; background: rgb(255 255 255 / .14); border: 2px solid rgb(255 255 255 / .55); box-shadow: 0 4px 0 rgb(0 0 0 / .3); transition: transform .12s ease, box-shadow .12s ease, background .2s ease; }
+.jg-quebra .qz-b:hover .qz-i { background: rgb(255 255 255 / .22); }
+.jg-quebra .qz-b:active .qz-i { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .3); }
+.jg-quebra .qz-b:focus-visible { outline: 3px solid #ffd23f; outline-offset: 4px; border-radius: 16px; }
+.jg-quebra .qz-main { width: 80px; color: #ffe08a; }
+.jg-quebra .qz-main .qz-i { width: 32px; height: 32px; padding: 17px; stroke: #142036; background: linear-gradient(180deg, #ffe58a, #f7b733); border-color: #fff4c2; box-shadow: 0 5px 0 #b27a12, 0 0 22px rgb(255 200 60 / .55); }
+.jg-quebra .qz-main:disabled { color: rgb(255 255 255 / .4); cursor: not-allowed; }
+.jg-quebra .qz-main:disabled .qz-i { background: rgb(255 255 255 / .06); border-style: dashed; border-color: rgb(255 255 255 / .3); box-shadow: none; stroke: rgb(255 255 255 / .45); }
+@media (max-height: 640px) { .jg-quebra .qz-b .qz-i { padding: 11px; } .jg-quebra .qz-main .qz-i { padding: 13px; } .jg-quebra .qz-b { width: 58px; font-size: 10.5px; gap: 4px; } .jg-quebra .qz-main { width: 70px; } }
+@media (prefers-reduced-motion: reduce) { .jg-quebra .qz-b .qz-i { transition: none; } }
