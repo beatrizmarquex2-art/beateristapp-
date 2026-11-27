@@ -36,7 +36,7 @@ const pickTema = async (p) => { await livre(p); await sleep(300); };
   // palpites: erra 2 vezes escolhendo cartas vivas até acabar
   for (let i = 0; i < 3; i++) {
     if (await p.locator('.cm-ficha').count()) break;
-    await p.locator('button:has-text("Adivinhar!")').click(); await sleep(200);
+    await p.locator('button[aria-label="Adivinhar!"]').click(); await sleep(200);
     await p.locator('.cm-cell:not(.out) .cm-card').nth(i % 2).click(); await sleep(200);
     await p.locator('button:has-text("sim, adivinhar!")').click(); await sleep(1400);
   }

@@ -15,6 +15,7 @@ import * as CR from './corrida.js';
 import * as O from './online-regras.js';
 import { mountOnline, ULTIMA } from './online-tela.js';
 import * as Contestar from './contestar.js';
+import { ico as fico } from '../fluido-ui.js';
 
 const GID = 'cara';
 import { mini, grande, loadCat, enquadreFoto, nomeCls } from './midia.js';
@@ -29,6 +30,8 @@ export function mountMusical(host, { onTema } = {}) {
   const salvar = () => setGame(GID, { musical: { ...cfg } });
   let st = null; // partida
   const root = h('div', { class: 'jg jg-cara cm-root' }); host.replaceChildren(root);
+  { const rc = root.replaceChildren.bind(root); root.replaceChildren = (...a) => { root.classList.remove('jg-fluido-root', 'cm-fluido'); rc(...a); }; } // só a mesa da partida é "fluida" (se redistribui sozinha); as outras telas seguem normais
+  let roCm = null;
   const tamanhoPadrao = () => (cfg.modo === 'kids' ? 12 : 20); // kids = 12 cartas, tirando sozinho · clássico = 20 cartas, você vira à mão
   const nomeJ = (i) => (cfg.jogo === 'dupla' ? `Jogador ${i + 1}` : i === 0 ? 'você' : 'Paul');
 
@@ -225,8 +228,8 @@ export function mountMusical(host, { onTema } = {}) {
 
   /* ---------------- mesa ---------------- */
   const classeG = () => `cm-grade ${st.mesa.cartas.length <= 6 ? 'cm-g3' : 'cm-g4'}`;
-  function grade(ids, { aoToque, fora = [], selecionada = null, manual = null } = {}) {
-    return h('div', { class: ids.length <= 6 ? 'cm-grade cm-g3' : 'cm-grade cm-g4', role: 'group', 'aria-label': 'cartas' }, ...ids.map((id) => {
+  function grade(ids, { aoToque, fora = [], selecionada = null, manual = null, fit = false } = {}) {
+    return h('div', { class: fit ? 'cm-grade cm-fit' : ids.length <= 6 ? 'cm-grade cm-g3' : 'cm-grade cm-g4', role: 'group', 'aria-label': 'cartas' }, ...ids.map((id) => {
       const c = (st ? st.mesa : { cartas: [] }).cartas.find((x) => x.id === id) || { id, foto: BY_ID[id].fotos[0] }; const e = BY_ID[id]; const out = fora.includes(id);
       return h('div', { class: `cm-cell${out ? ' out' : ''}${selecionada === id ? ' sel' : ''}` },
         h('button', { type: 'button', class: 'cm-card', 'aria-pressed': String(selecionada === id), 'aria-label': `${e.curto}${out ? ', virada' : ''}`, onclick: () => aoToque(id) },
@@ -246,23 +249,46 @@ export function mountMusical(host, { onTema } = {}) {
     const placar = st.serie ? h('div', { class: 'cm-placar', 'aria-label': 'placar' }, h('b', {}, `${nomeJ(0)} ${st.serie.vitorias[0]} × ${st.serie.vitorias[1]} ${nomeJ(1)}`), st.serie.empates ? h('small', {}, `${st.serie.empates} empate${st.serie.empates > 1 ? 's' : ''}`) : null, h('small', {}, 'melhor de 3')) : null;
     const quem = cfg.jogo === 'dupla' ? h('p', { class: 'cm-vez' }, `vez de ${nomeJ(st.turno)}`) : null;
     if (corrida) pintaBar();
+    const ST = (k, v, t, extra = {}) => h('div', { class: 'qz-st', ...extra }, fico(k), h('div', {}, h('b', {}, v), h('small', {}, t)));
+    const abrirHist = () => sheet(`perguntas feitas (${lado.perguntas.length})`, (close) => h('div', { class: 'sheet-body cm-contesta-sheet' }, h('ol', { class: 'cm-contesta-lista', reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => { close(); contestar(BY_Q[a.id], a, lado.segredo); } }, '⚑ contestar'))))));
+    const pPerg = h('button', { class: 'qz-st cm-hist', type: 'button', 'aria-label': 'ver as perguntas feitas', disabled: !lado.perguntas.length, onclick: abrirHist }, fico('pergunta'), h('div', {}, h('b', {}, String(lado.perguntas.length)), h('small', {}, 'perguntas')));
+    const stats = h('div', { class: 'qz-stats cm-stats', role: 'group', 'aria-label': 'placar' }, pPerg, ST('coracao', '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)), 'palpites', { 'aria-label': `${lado.palpites} palpites restantes` }), ST('cartas', String(cand.length), 'cartas'));
+    const livre = st.aguardaVirar == null && !emPalpite && !lado.terminou;
+    const botao = (k, rot, fn, extra = {}) => h('button', { class: `qz-b${extra.main ? ' qz-main' : ''}`, type: 'button', 'aria-label': extra.aria || rot, 'aria-pressed': extra.pressed, disabled: extra.disabled || null, onclick: fn }, fico(k), h('span', {}, rot));
+    const dock = h('div', { class: 'qz-dock cm-dock', role: 'group', 'aria-label': 'ações' },
+      livre ? botao('alvo', 'adivinhar', () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); }, { main: true, aria: 'Adivinhar!' }) : null,
+      livre ? botao('olho', st.descartadas ? 'esconder' : 'descartadas', () => { st.descartadas = !st.descartadas; jogo(); }, { pressed: String(st.descartadas), aria: st.descartadas ? 'esconder descartadas' : 'ver descartadas' }) : null,
+      livre && !kids() && !cfg.auto ? botao('desfazer', 'desfazer', () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); }, { disabled: !lado.fora.length, aria: 'desfazer última virada' }) : null,
+      corrida ? null : botao('recomecar', 'recomeçar', async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); }, { aria: 'Recomeçar' }),
+      botao('sair', corrida ? 'sair da sala' : 'sair', async () => { if (await confirmSheet(corrida ? 'sair da sala?' : 'sair da partida?', 'a partida atual será perdida.', 'sair')) { if (corrida) sairCorrida(); else menu(); } }, { aria: corrida ? 'Sair da sala' : 'Sair' }));
+    const mesaGrade = grade(ids, { fit: true, fora: st.descartadas ? [] : [...lado.fora, ...lado.erros], selecionada: st.sel, aoToque: (id) => tocar(id), manual: !kids() && !cfg.auto && !lado.terminou && !emPalpite ? (id) => { st.lados[st.turno === undefined ? 0 : (cfg.jogo === 'solo' ? 0 : st.turno)] = R.virar(lado, id); sfx('tap'); jogo(); } : null });
     root.replaceChildren(...[
       placar, quem, corrida ? corrida.bar : null, corrida && corrida.conn.avisoSaida ? corrida.conn.avisoSaida() : null,
-      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'perguntas'), h('span', {}, String(lado.perguntas.length))), h('div', { class: 'jg-who' }, h('b', {}, 'palpites'), h('span', { 'aria-label': `${lado.palpites} restantes` }, '♥'.repeat(lado.palpites) + '♡'.repeat(Math.max(0, st.palpites - lado.palpites)))), h('div', { class: 'jg-who' }, h('b', {}, 'cartas'), h('span', {}, String(cand.length)))),
+      stats,
       meu ? h('p', { class: 'cm-minha' }, h('img', { src: mini(st.mesa.cartas.find((c) => c.id === meu).foto), alt: '' }), h('span', {}, `sua carta secreta: ${BY_ID[meu].curto}`)) : null,
-      paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,
-      st.aguardaVirar != null && !emPalpite ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { const i = st.aguardaVirar; st.aguardaVirar = null; sfx('tap'); fimDeAcao(i); } }, cfg.jogo === 'paul' ? 'pronto, já virei! ▶' : 'pronto, já virei! passar a vez ▶')) : null,
-      st.aguardaVirar == null && !emPalpite && !lado.terminou ? perguntasUI(lado, sug, todas, semPergunta) : null,
-      grade(ids, { fora: st.descartadas ? [] : [...lado.fora, ...lado.erros], selecionada: st.sel, aoToque: (id) => tocar(id), manual: !kids() && !cfg.auto && !lado.terminou && !emPalpite ? (id) => { st.lados[st.turno === undefined ? 0 : (cfg.jogo === 'solo' ? 0 : st.turno)] = R.virar(lado, id); sfx('tap'); jogo(); } : null }),
-      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, st.msg),
-      emPalpite ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar palpite' }, st.sel ? h('b', {}, `é ${BY_ID[st.sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), st.sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => palpitar(st.sel) }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.palpitando = false; st.sel = null; jogo(); } }, 'voltar às perguntas')) : null,
-      st.aguardaVirar == null && !emPalpite && !lado.terminou ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { st.palpitando = true; st.sel = null; sfx('tap'); jogo(); } }, 'Adivinhar!'),
-        h('button', { class: 'btn small ghost', type: 'button', 'aria-pressed': String(st.descartadas), onclick: () => { st.descartadas = !st.descartadas; jogo(); } }, st.descartadas ? 'esconder descartadas' : 'ver descartadas'),
-        !kids() && !cfg.auto ? h('button', { class: 'btn small ghost', type: 'button', disabled: !lado.fora.length, onclick: () => { st.lados[cfg.jogo === 'solo' ? 0 : st.turno] = R.desfazerUltimaVirada(lado); jogo(); } }, 'desfazer última virada') : null) : null,
-      h('div', { class: 'cm-acoes' }, corrida ? null : h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet('recomeçar?', 'a rodada atual será perdida.', 'recomeçar')) iniciar(); } }, 'Recomeçar'), h('button', { class: 'btn small ghost', type: 'button', onclick: async () => { if (await confirmSheet(corrida ? 'sair da sala?' : 'sair da partida?', 'a partida atual será perdida.', 'sair')) { if (corrida) sairCorrida(); else menu(); } } }, corrida ? 'Sair da sala' : 'Sair')),
-      lado.perguntas.length ? h('div', { class: 'jg-hist2', 'aria-label': 'histórico' }, h('b', {}, 'perguntas feitas'), h('ol', { reversed: true }, ...lado.perguntas.slice().reverse().map((a) => h('li', {}, h('b', {}, a.sim ? 'SIM' : 'NÃO'), ` · ${textoDe(BY_Q[a.id], cfg.modo)} `, h('button', { class: 'cm-contesta', type: 'button', 'aria-label': `contestar a resposta de: ${textoDe(BY_Q[a.id], cfg.modo)}`, onclick: () => contestar(BY_Q[a.id], a, lado.segredo) }, '⚑ contestar'))))) : null,
+      h('div', { class: 'cm-stage' },
+        h('div', { class: 'cm-lado' },
+          paulFala(st.fala), st.dica ? h('p', { class: 'cm-dica', role: 'status' }, st.dica) : null,
+          st.aguardaVirar != null && !emPalpite ? h('div', { class: 'cm-acoes' }, h('button', { class: 'btn primary big', type: 'button', onclick: () => { const i = st.aguardaVirar; st.aguardaVirar = null; sfx('tap'); fimDeAcao(i); } }, cfg.jogo === 'paul' ? 'pronto, já virei! ▶' : 'pronto, já virei! passar a vez ▶')) : null,
+          livre ? perguntasUI(lado, sug, todas, semPergunta) : null,
+          st.msg ? h('p', { class: 'jg-msg', 'aria-live': 'polite' }, st.msg) : h('p', { class: 'jg-msg', 'aria-live': 'polite', hidden: true }),
+          emPalpite ? h('div', { class: 'jg-pick', role: 'group', 'aria-label': 'confirmar palpite' }, st.sel ? h('b', {}, `é ${BY_ID[st.sel].curto}?`) : h('b', {}, 'toque na carta que você acha que é'), st.sel ? h('button', { class: 'btn small primary', type: 'button', onclick: () => palpitar(st.sel) }, 'sim, adivinhar!') : null, h('button', { class: 'btn small ghost', type: 'button', onclick: () => { st.palpitando = false; st.sel = null; jogo(); } }, 'voltar às perguntas')) : null),
+        h('div', { class: 'cm-mesa' }, mesaGrade)),
+      dock,
     ].filter(Boolean));
+    root.classList.add('jg-fluido-root', 'cm-fluido'); ajustaCm();
   }
+  /** Escolhe quantas colunas e que tamanho de carta ocupam melhor o espaço da mesa (celular em pé: perguntas em cima e cartas embaixo; tela larga: cartas à esquerda e perguntas à direita). */
+  function ajustaCm() {
+    const stg = root.querySelector('.cm-stage'); const mesa = root.querySelector('.cm-mesa'); const g = mesa && mesa.querySelector('.cm-grade'); if (!stg || !g) return;
+    stg.classList.toggle('lado', stg.clientWidth / Math.max(1, stg.clientHeight) > 1.25);
+    const W = mesa.clientWidth; const H = mesa.clientHeight; if (W < 60 || H < 60) return;
+    const n = g.children.length; const gap = 6; const lab = 38; const extra = g.querySelector('.jg-flip') ? 30 : 0; let melhor = { cw: 0, c: 3 };
+    for (let c = 2; c <= Math.min(n, 8); c++) { const r = Math.ceil(n / c); const cw = Math.min((W - gap * (c - 1)) / c, (H - gap * (r - 1) - r * (lab + extra)) / r); if (cw > melhor.cw) melhor = { cw, c }; }
+    let cw = Math.max(44, Math.floor(melhor.cw)); g.style.setProperty('--cols', String(melhor.c)); g.style.setProperty('--cw', `${cw}px`);
+    for (let k = 0; k < 8 && cw > 44 && g.getBoundingClientRect().height > H + 1; k++) { cw = Math.floor(cw * 0.94); g.style.setProperty('--cw', `${cw}px`); } // as legendas variam: se passou, encolhe um pouco até caber
+  }
+  if (typeof ResizeObserver === 'function') { roCm = new ResizeObserver(() => { if (st && root.classList.contains('cm-fluido')) ajustaCm(); }); roCm.observe(root); }
   /** Perguntas em cima, num carrossel: arrasta pro lado e aparecem umas 3 por vez (ícone grande + texto curto). */
   function perguntasUI(lado, sug, todas, semPergunta) {
     if (semPergunta) return h('p', { class: 'jg-msg' }, fala('semPergunta'));
@@ -346,6 +372,6 @@ export function mountMusical(host, { onTema } = {}) {
   return {
     inProgress: () => !!(st && st.lados && st.lados.some((l) => l.perguntas.length || l.erros.length) && !st.lados.every((l) => l.terminou)),
     restart: async () => { if (st && st.lados && st.lados.some((l) => l.perguntas.length) && !(await confirmSheet('começar de novo?', 'a partida atual será perdida.', 'recomeçar'))) return; menu(); },
-    destroy() { gone = true; if (corrida) { try { corrida.conn.close(); } catch { /* ok */ } corrida = null; } if (online) online.destroy(); for (const t of timers) clearTimeout(t); timers.clear(); },
+    destroy() { gone = true; if (roCm) roCm.disconnect(); if (corrida) { try { corrida.conn.close(); } catch { /* ok */ } corrida = null; } if (online) online.destroy(); for (const t of timers) clearTimeout(t); timers.clear(); },
   };
 }

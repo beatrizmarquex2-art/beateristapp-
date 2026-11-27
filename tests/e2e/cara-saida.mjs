@@ -50,7 +50,7 @@ check('com a maioria (2 de 2) o estado marca a Cris como "saiu" e a faixa mostra
 check('a Cris ficou como "terminou sem acertar" (não é esperada)', sala().prog[2].fim === true && sala().prog[2].ok === false && sala().prog[2].saiu === true, JSON.stringify(sala().prog[2]));
 const idx = sala().mesa.cartas.findIndex((c) => c.id === sala().segredo);
 const perguntar = async (p, k) => { for (let i = 0; i < k; i++) { await p.locator('.cm-qc').first().click(); await sleep(350); } };
-const palpitar = async (p, i) => { await p.locator('button:has-text("Adivinhar!")').click(); await sleep(250); await p.locator('.cm-card').nth(i).click(); await sleep(250); await p.locator('button:has-text("sim, adivinhar!")').click(); await sleep(500); };
+const palpitar = async (p, i) => { await p.locator('button[aria-label="Adivinhar!"]').click(); await sleep(250); await p.locator('.cm-card').nth(i).click(); await sleep(250); await p.locator('button:has-text("sim, adivinhar!")').click(); await sleep(500); };
 await perguntar(A, 2); await palpitar(A, idx); await sleep(900);
 check('a Ana terminou e vê "esperando os outros (1 de 2)": a Cris não conta', /esperando os outros \(1 de 2 terminaram\)/i.test(await A.locator('.cm-root').innerText()), (await A.locator('.cm-root').innerText()).slice(0, 200));
 await perguntar(B, 1); await palpitar(B, idx);

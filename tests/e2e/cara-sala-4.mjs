@@ -43,7 +43,7 @@ check('a faixa lista os 4 nomes e marca o próprio celular com "(você)"', (awai
 const nCartas = await A.locator('.cm-card').count(); check('os 4 veem a mesma mesa (mesmo número de cartas)', (await Promise.all(ph.map((p) => p.locator('.cm-card').count()))).every((n) => n === nCartas) && nCartas >= 6, String(nCartas));
 const idx = sala().mesa.cartas.findIndex((c) => c.id === sala().segredo);
 const perguntar = async (p, k) => { for (let i = 0; i < k; i++) { await p.locator('.cm-qc').first().click(); await sleep(350); } };
-const palpitar = async (p, i) => { await p.locator('button:has-text("Adivinhar!")').click(); await sleep(250); await p.locator('.cm-card').nth(i).click(); await sleep(250); await p.locator('button:has-text("sim, adivinhar!")').click(); await sleep(500); };
+const palpitar = async (p, i) => { await p.locator('button[aria-label="Adivinhar!"]').click(); await sleep(250); await p.locator('.cm-card').nth(i).click(); await sleep(250); await p.locator('button:has-text("sim, adivinhar!")').click(); await sleep(500); };
 const errada = idx === 0 ? 1 : 0; const errada2 = idx <= 1 ? 2 : 1;
 // Ana: 3 perguntas e acerta. Bia: 1 pergunta e acerta (vence). Cris: erra os 2 palpites. Duda: 3 perguntas e acerta (empata com Ana em perguntas, termina depois)
 await perguntar(B, 1); await sleep(600);

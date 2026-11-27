@@ -2195,26 +2195,26 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
   html.jg-fit .jg-game > .jg-top > .jg-title { font-size: 15px; padding: 4px 10px 7px 9px; }
 }
 
-/* ===== quebra-cabeça: placar em pílulas e botões REDONDOS (escolha da Bea: opção 2) ===== */
-.jg-quebra .qz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 0 10px; margin: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; position: relative; }
-.jg-quebra .qz-st { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 6px 12px; border-radius: 999px; background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); }
-.jg-quebra .qz-i { width: 20px; height: 20px; flex: none; fill: none; stroke: #ffd23f; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.jg-quebra .qz-st b { display: block; font: 800 17px/1.05 var(--body, inherit); color: #fff; font-variant-numeric: tabular-nums; }
-.jg-quebra .qz-st small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* o nome fica só pra leitor de tela; o ícone já diz o que é */
-.jg-quebra .qz-prog { display: none; }
-.jg-quebra .qz-msg { text-align: center; color: #ffe08a; font-weight: 600; letter-spacing: .01em; }
-.jg-quebra .qz-dock { flex: none; display: flex; justify-content: space-around; align-items: flex-end; gap: 6px; padding: 0 6px 4px; margin: 0; background: transparent; border: 0; box-shadow: none; }
-.jg-quebra .qz-b { flex: none; width: 66px; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #dbe6ff; font: 700 11.5px/1 var(--body, inherit); letter-spacing: .03em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.jg-quebra .qz-b .qz-i { box-sizing: content-box; width: 26px; height: 26px; padding: 15px; clip-path: circle(50%); border-radius: 50%; stroke: currentColor; stroke-width: 1.8; background: rgb(255 255 255 / .14); border: 2px solid rgb(255 255 255 / .55); box-shadow: 0 4px 0 rgb(0 0 0 / .3); transition: transform .12s ease, box-shadow .12s ease, background .2s ease; }
-.jg-quebra .qz-b:hover .qz-i { background: rgb(255 255 255 / .22); }
-.jg-quebra .qz-b:active .qz-i { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .3); }
-.jg-quebra .qz-b:focus-visible { outline: 3px solid #ffd23f; outline-offset: 4px; border-radius: 16px; }
-.jg-quebra .qz-main { width: 80px; color: #ffe08a; }
-.jg-quebra .qz-main .qz-i { width: 32px; height: 32px; padding: 17px; stroke: #142036; background: linear-gradient(180deg, #ffe58a, #f7b733); border-color: #fff4c2; box-shadow: 0 5px 0 #b27a12, 0 0 22px rgb(255 200 60 / .55); }
-.jg-quebra .qz-main:disabled { color: rgb(255 255 255 / .4); cursor: not-allowed; }
-.jg-quebra .qz-main:disabled .qz-i { background: rgb(255 255 255 / .06); border-style: dashed; border-color: rgb(255 255 255 / .3); box-shadow: none; stroke: rgb(255 255 255 / .45); }
-@media (max-height: 640px) { .jg-quebra .qz-b .qz-i { padding: 11px; } .jg-quebra .qz-main .qz-i { padding: 13px; } .jg-quebra .qz-b { width: 58px; font-size: 10.5px; gap: 4px; } .jg-quebra .qz-main { width: 70px; } }
-@media (prefers-reduced-motion: reduce) { .jg-quebra .qz-b .qz-i { transition: none; } }
+/* ===== placar em pílulas e botões REDONDOS (escolha da Bea: opção 2); vale pro quebra-cabeça e pro cara a cara ===== */
+:is(.jg-quebra, .cm-fluido) .qz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 0 10px; margin: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; position: relative; }
+:is(.jg-quebra, .cm-fluido) .qz-st { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 6px 12px; border-radius: 999px; background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); }
+:is(.jg-quebra, .cm-fluido) .qz-i { width: 20px; height: 20px; flex: none; fill: none; stroke: #ffd23f; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+:is(.jg-quebra, .cm-fluido) .qz-st b { display: block; font: 800 17px/1.05 var(--body, inherit); color: #fff; font-variant-numeric: tabular-nums; }
+:is(.jg-quebra, .cm-fluido) .qz-st small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* o nome fica só pra leitor de tela; o ícone já diz o que é */
+:is(.jg-quebra, .cm-fluido) .qz-prog { display: none; }
+:is(.jg-quebra, .cm-fluido) .qz-msg { text-align: center; color: #ffe08a; font-weight: 600; letter-spacing: .01em; }
+:is(.jg-quebra, .cm-fluido) .qz-dock { flex: none; display: flex; justify-content: space-around; align-items: flex-end; gap: 6px; padding: 0 6px 4px; margin: 0; background: transparent; border: 0; box-shadow: none; }
+:is(.jg-quebra, .cm-fluido) .qz-b { flex: none; width: 66px; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #dbe6ff; font: 700 11.5px/1 var(--body, inherit); letter-spacing: .03em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:is(.jg-quebra, .cm-fluido) .qz-b .qz-i { box-sizing: content-box; width: 26px; height: 26px; padding: 15px; clip-path: circle(50%); border-radius: 50%; stroke: currentColor; stroke-width: 1.8; background: rgb(255 255 255 / .14); border: 2px solid rgb(255 255 255 / .55); box-shadow: 0 4px 0 rgb(0 0 0 / .3); transition: transform .12s ease, box-shadow .12s ease, background .2s ease; }
+:is(.jg-quebra, .cm-fluido) .qz-b:hover .qz-i { background: rgb(255 255 255 / .22); }
+:is(.jg-quebra, .cm-fluido) .qz-b:active .qz-i { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .3); }
+:is(.jg-quebra, .cm-fluido) .qz-b:focus-visible { outline: 3px solid #ffd23f; outline-offset: 4px; border-radius: 16px; }
+:is(.jg-quebra, .cm-fluido) .qz-main { width: 80px; color: #ffe08a; }
+:is(.jg-quebra, .cm-fluido) .qz-main .qz-i { width: 32px; height: 32px; padding: 17px; stroke: #142036; background: linear-gradient(180deg, #ffe58a, #f7b733); border-color: #fff4c2; box-shadow: 0 5px 0 #b27a12, 0 0 22px rgb(255 200 60 / .55); }
+:is(.jg-quebra, .cm-fluido) .qz-main:disabled { color: rgb(255 255 255 / .4); cursor: not-allowed; }
+:is(.jg-quebra, .cm-fluido) .qz-main:disabled .qz-i { background: rgb(255 255 255 / .06); border-style: dashed; border-color: rgb(255 255 255 / .3); box-shadow: none; stroke: rgb(255 255 255 / .45); }
+@media (max-height: 640px) { :is(.jg-quebra, .cm-fluido) .qz-b .qz-i { padding: 11px; } :is(.jg-quebra, .cm-fluido) .qz-main .qz-i { padding: 13px; } :is(.jg-quebra, .cm-fluido) .qz-b { width: 58px; font-size: 10.5px; gap: 4px; } :is(.jg-quebra, .cm-fluido) .qz-main { width: 70px; } }
+@media (prefers-reduced-motion: reduce) { :is(.jg-quebra, .cm-fluido) .qz-b .qz-i { transition: none; } }
 
 /* ===== quebra-cabeça: tela de escolher a imagem (cabe sem rolar: a prévia ocupa o que sobrar, o resto fica compacto) ===== */
 .jg-quebra .qz-prev { flex: 1 1 0; min-height: 84px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -2241,4 +2241,44 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
   .jg-quebra.qz-lobby > :not(.qz-prev) { grid-column: 2; }
   .jg-quebra.qz-lobby .qz-grupos button, .jg-quebra.qz-lobby .qz-seg button { min-height: 34px; }
   .jg-quebra.qz-lobby .qz-go .btn { min-height: 42px; }
+}
+
+/* ===== cara a cara FLUIDO: celular em pé = perguntas em cima, cartas embaixo; tela larga = cartas à esquerda, perguntas à direita ===== */
+.cm-fluido .cm-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.cm-fluido .cm-lado { flex: none; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cm-fluido .cm-mesa { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.cm-fluido .cm-stage.lado { flex-direction: row; align-items: stretch; gap: 14px; }
+.cm-fluido .cm-stage.lado .cm-lado { flex: 0 0 clamp(250px, 34%, 400px); overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+.cm-fluido .cm-stage.lado .cm-mesa { flex: 1; min-width: 0; }
+.cm-root .cm-grade.cm-fit { display: grid; grid-template-columns: repeat(var(--cols, 4), var(--cw, 80px)); gap: 6px; margin: 0; justify-content: center; align-content: center; }
+.cm-root .cm-grade.cm-fit .cm-card small { font-size: clamp(9px, calc(var(--cw, 80px) * .165), 15px); min-height: 2.3em; padding: 3px 2px 4px; }
+.cm-root .cm-grade.cm-fit .cm-card small.long { font-size: clamp(8.5px, calc(var(--cw, 80px) * .14), 13px); } .cm-root .cm-grade.cm-fit .cm-card small.xs { font-size: clamp(8px, calc(var(--cw, 80px) * .12), 11px); }
+.cm-fluido .cm-paul { margin: 0; padding: 6px 10px; border-radius: 14px; } .cm-fluido .cm-paul img { width: 38px; } .cm-fluido .cm-paul p { font-size: 15px; line-height: 1.2; }
+.cm-fluido .cm-dica { margin: 0; padding: 6px 10px; font-size: 13px; }
+.cm-fluido .cm-qbox { margin: 0; gap: 4px; } .cm-fluido .cm-qbox > b { font-size: 12px; opacity: .85; }
+.cm-fluido .cm-stage.lado .cm-carro { flex-wrap: wrap; overflow-x: visible; scroll-snap-type: none; padding: 0; }
+.cm-fluido .cm-stage.lado .cm-qc { flex: 1 1 calc(50% - 8px); }
+.cm-fluido .jg-msg { margin: 0; font-size: 12.5px; line-height: 1.3; min-height: 0; } .cm-fluido .jg-msg[hidden] { display: none; }
+.cm-fluido .jg-pick { margin: 0; }
+.cm-fluido .cm-minha { margin: 0; font-size: 12.5px; } .cm-fluido .cm-minha img { width: 28px; height: 28px; }
+.cm-fluido .cm-placar, .cm-fluido .cm-corrida { margin: 0; flex: none; } .cm-fluido .cm-vez { margin: 0; }
+.cm-fluido .cm-acoes { margin: 0; }
+.cm-fluido .qz-stats { flex: none; } .cm-fluido .qz-dock { flex: none; }
+.cm-fluido .qz-st.cm-hist { font: inherit; color: inherit; cursor: pointer; text-align: left; } .cm-fluido .qz-st.cm-hist:disabled { cursor: default; opacity: .85; }
+.cm-fluido .qz-b { width: 60px; font-size: 10.5px; } .cm-fluido .qz-main { width: 78px; }
+.cm-fluido .qz-dock { gap: 4px; padding: 0 2px 4px; }
+@media (min-width: 700px) { .cm-fluido .qz-dock { justify-content: center; gap: 26px; } .cm-fluido .qz-b { width: 72px; font-size: 11.5px; } .cm-fluido .qz-main { width: 90px; } }
+@media (max-height: 640px) { .cm-fluido .qz-b { width: 54px; } .cm-fluido .qz-main { width: 70px; } }
+.cm-fluido .jg-msg { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; } .cm-fluido .jg-msg[hidden] { display: none; }
+@media (max-height: 720px) { .cm-fluido .jg-msg { -webkit-line-clamp: 1; } .cm-fluido .cm-root .cm-qc, .cm-root.cm-fluido .cm-qc { min-height: 38px; padding: 4px 8px; } .cm-fluido .qz-stats { padding-bottom: 6px; } }
+@media (max-height: 520px) { /* celular deitado: ações só com ícone, placar mais baixo */
+  .cm-fluido .qz-b span { display: none; } .cm-fluido .qz-b, .cm-fluido .qz-main { width: auto; }
+  .cm-fluido .qz-b .qz-i { width: 20px; height: 20px; padding: 9px; } .cm-fluido .qz-main .qz-i { width: 24px; height: 24px; padding: 11px; }
+  .cm-fluido .qz-dock { gap: 22px; padding: 0 0 2px; } .cm-fluido .qz-st { padding: 3px 12px; } .cm-fluido .qz-stats { padding-bottom: 4px; }
+}
+@media (max-height: 720px) { /* celular pequeno em pé (iPhone SE): tira o que sobra pra as cartas ficarem grandes */
+  .cm-fluido .cm-qbox > b { display: none; }
+  .cm-fluido .cm-paul { padding: 4px 8px; } .cm-fluido .cm-paul img { width: 28px; } .cm-fluido .cm-paul p { font-size: 13px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .cm-fluido .qz-b .qz-i { padding: 11px; } .cm-fluido .qz-main .qz-i { padding: 13px; } .cm-fluido .qz-b { gap: 4px; }
+  .cm-fluido .qz-st { padding: 4px 10px; }
 }
