@@ -37,7 +37,8 @@ const noteIcon = (d) => {
 const RESTIC = svg('<path d="M10 3l6 7-5 5 6 8c-5-3-8 0-4 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>');
 const DURS = [[16, 'semibreve'], [8, 'mínima'], [4, 'semínima'], [2, 'colcheia'], [1, 'semicolcheia']];
 
-export function mount(host) {
+export function mount(host, opts = {}) {
+  const VOLTA = opts.voltar || '#/ferramentas-prof';
   const novo = (() => { try { const v = sessionStorage.getItem('pm-novo'); sessionStorage.removeItem('pm-novo'); return !!v; } catch { return false; } })();
   const salvoLocal = novo ? {} : lerSalvo();
   const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, titulo: '', nuvemId: null, ...salvoLocal };
@@ -88,7 +89,7 @@ export function mount(host) {
   };
   const pdf = async (b) => {
     b.disabled = true;
-    try { const r = await baixarPdf({ evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR') }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
+    try { const r = await baixarPdf({ evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, semPapel: !!opts.semPapel }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
     catch { toast('não consegui gerar o PDF agora', { id: 'ep', ms: 2600 }); }
     b.disabled = false;
   };
@@ -138,7 +139,7 @@ export function mount(host) {
     const nome = h('input', { class: 'ep-nm', type: 'text', maxlength: 40, value: s.titulo, placeholder: 'nome da partitura', 'aria-label': 'Nome da partitura' });
     nome.addEventListener('input', () => { s.titulo = nome.value; }); nome.addEventListener('change', salvar);
     barra.replaceChildren(
-      ib(IC.volta, 'Voltar para as ferramentas', () => { location.hash = '#/ferramentas-prof'; }), nome,
+      ib(IC.volta, 'Voltar para as ferramentas', () => { location.hash = VOLTA; }), nome,
       ib(IC.undo, 'Desfazer', () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = P.fim(s.evs); sel = -1; salvar(); desenha(); }, { dis: !hist.length }),
       tocando ? ib(IC.stop, 'Parar', () => { parar(); desenha(); }, { on: true }) : ib(IC.play, 'Ouvir', ouvir, { dis: !s.evs.length }),
       ib(IC.pdf, 'Baixar PDF no papel timbrado', pdf, { dis: !s.evs.length }),

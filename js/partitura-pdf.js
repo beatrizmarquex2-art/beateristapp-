@@ -20,7 +20,7 @@ export async function svgImagem(svg, w, h) {
 /** Desenha as páginas e devolve os canvases. `d` = { evs, clave, cor, titulo, aluno, bpm, data }. */
 export async function paginas(d) {
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
-  const papel = await loadImg('assets/papel-timbrado.png');
+  const papel = d.semPapel ? null : await loadImg('assets/papel-timbrado.png');
   const lado = Math.round(16 * MM); const topo = Math.round(40 * MM); const base = H - Math.round(36 * MM);
   const largU = 700; const escala = (W - lado * 2) / largU; // unidades da pauta → pixels da página
   const r = pauta(d.evs, { clave: d.clave || 'auto', largura: largU, cor: !!d.cor });
@@ -40,7 +40,7 @@ export async function paginas(d) {
       g.drawImage(img, 0, sy0, img.width, sy1 - sy0, lado, topo + 70, img.width, sy1 - sy0);
     }
     g.font = `400 20px ${FONT}`; g.fillStyle = '#555'; g.textAlign = 'center';
-    g.fillText(`${MARCA} | ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
+    g.fillText(d.rodape || `${MARCA} | ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
     out.push(cv);
   }
   return out;

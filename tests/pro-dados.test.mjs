@@ -1,0 +1,10 @@
+import test from 'node:test'; import assert from 'node:assert/strict';
+import * as D from '../js/pro/dados.js';
+test('minutos soma só números válidos', () => assert.equal(D.minutos([{ min: '10' }, { min: 5 }, { min: 'x' }, { min: -3 }]), 15));
+test('filtrar ignora acento e caixa', () => assert.equal(D.filtrar([{ nome: 'João' }, { nome: 'Ana' }], 'joao').length, 1));
+test('inicioSemana cai na segunda', () => { const s = D.inicioSemana(new Date(2026, 10, 29)); assert.equal(s.getDay(), 1); assert.equal(s.getDate(), 23); });
+test('juntaDataHora e dataInput/horaInput fecham o ciclo', () => { const iso = D.juntaDataHora('2026-11-30', '14:30'); assert.equal(D.dataInput(iso), '2026-11-30'); assert.equal(D.horaInput(iso), '14:30'); });
+test('doDia ordena por horário', () => { const l = D.doDia([{ inicio: new Date(2026, 10, 30, 15).toISOString() }, { inicio: new Date(2026, 10, 30, 9).toISOString() }, { inicio: new Date(2026, 10, 29, 9).toISOString() }], new Date(2026, 10, 30)); assert.equal(l.length, 2); assert.ok(new Date(l[0].inicio) < new Date(l[1].inicio)); });
+test('historico só aulas dadas do aluno', () => assert.equal(D.historico([{ aluno_id: 'a', status: 'dada', inicio: '2026-01-01' }, { aluno_id: 'a', status: 'marcada', inicio: '2026-01-02' }, { aluno_id: 'b', status: 'dada', inicio: '2026-01-03' }], 'a').length, 1));
+test('progressoMetas', () => { assert.equal(D.progressoMetas([{ feita: true }, { feita: false }]), 0.5); assert.equal(D.progressoMetas(null), 0); });
+test('pastasDeAulas únicas e ordenadas', () => assert.deepEqual(D.pastasDeAulas([{ pasta: 'b' }, { pasta: 'a' }, { pasta: 'b' }, { pasta: '' }]), ['a', 'b']));
