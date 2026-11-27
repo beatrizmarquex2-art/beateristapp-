@@ -2321,3 +2321,4 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .au-acoes { display: grid; gap: 8px; justify-items: stretch; } .au-acoes .btn { min-height: 52px; font-size: 16px; } .au-acoes .au-go { font-size: 19px; }
 .au-pauta svg { width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) { .au-banner .au-quem.vez { animation: none; } }
+.jg-figurix .fx-op.fx-op-txt { min-height: 54px; padding: 8px 10px; } .jg-figurix .fx-op.fx-op-txt b { font: 700 14px/1.2 var(--body, inherit); text-align: center; text-transform: none; }

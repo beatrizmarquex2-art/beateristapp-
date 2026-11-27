@@ -109,7 +109,9 @@ export function mount(host) {
     let i = 0; let lugar = -1; const usadas = new Set(); const nivel = (PHASES[fase - 1] || {}).nivel || 1;
     const chaveDe = (q) => `${q.titulo || ''}|${(q.opcoes.find((o) => o.certo) || {}).label}|${q.opcoes.map((o) => o.label).sort().join(',')}`;
     const mostra = () => {
-      let q = fazer(i); for (let t = 0; t < 12 && usadas.has(chaveDe(q)); t++) q = fazer(i); usadas.add(chaveDe(q)); S.reset();
+      const rec = new Set(Array.isArray(getGame('figurix').recentes) ? getGame('figurix').recentes : []); // as últimas perguntas (de qualquer fase) também não voltam logo
+      let q = fazer(i); for (let t = 0; t < 40 && (usadas.has(chaveDe(q)) || rec.has(chaveDe(q))); t++) q = fazer(i); usadas.add(chaveDe(q)); S.reset();
+      { const r = (Array.isArray(getGame('figurix').recentes) ? getGame('figurix').recentes : []).filter((x) => x !== chaveDe(q)); r.push(chaveDe(q)); setGame('figurix', { ...getGame('figurix'), recentes: r.slice(-80) }); }
       const ops = q.opcoes.slice(); const onde = novoLugar(ops.findIndex((o) => o.certo), lugar, ops.length); { const c = ops.findIndex((o) => o.certo); if (c >= 0 && onde !== c) { const tmp = ops[onde]; ops[onde] = ops[c]; ops[c] = tmp; } } lugar = onde;
       window.__figurix.certa = (ops.find((o) => o.certo) || {}).label; window.__figurix.lugar = lugar; // só pros testes
       const vez = i; let fechada = false; const seg = tempoPergunta(i, nivel) + (q.mais || 0); window.__figurix.seg = seg;
@@ -130,6 +132,13 @@ export function mount(host) {
     lenta: (p) => perguntas(p.titulo, totalRL(p.nivel), (i) => { const q = rapidaLentaN('lenta', i, p.nivel); return { opcoes: q.figs.map((f) => ({ face: fig(f), label: nomeFig(f), certo: f === q.ok })) }; }),
     quiz: (p) => (p.n === 11 || (p.n >= 13 && Math.floor((p.n - 13) / 10) % 2 === 1) ? RUN.instr(p) : perguntas(p.titulo, totalQuiz(p.nivel), () => {
       const q = quizN(p.nivel); const nomes = (lista) => lista.map((f) => ({ face: h('b', {}, nomeFig(f)), label: nomeFig(f), certo: f === q.ok }));
+      if (q.tipo === 'compare') return { titulo: `qual dura ${q.mais ? 'mais' : 'menos'}?`, opcoes: q.opcoes.map((f) => ({ face: fig(f), label: nomeFig(f), certo: f === q.ok })) };
+      if (q.tipo === 'soma') return { titulo: 'quantos tempos valem essas figuras juntas?', destaque: h('div', { class: 'fx-duas' }, ...q.figs.flatMap((f, k) => (k ? [h('span', {}, '+'), fig(f, 'fx-fig sm')] : [fig(f, 'fx-fig sm')]))), opcoes: q.opcoes.map((v) => ({ face: h('b', {}, beatsLabel(v)), label: beatsLabel(v), certo: v === q.ok })) };
+      if (q.tipo === 'completa') return { titulo: 'completa o compasso de 4 tempos: qual figura falta?', destaque: h('div', { class: 'fx-duas' }, ...q.figs.flatMap((f) => [fig(f, 'fx-fig sm'), h('span', {}, '+')]), h('b', {}, '?'), h('span', {}, '= 4 tempos')), opcoes: nomes(q.opcoes) };
+      if (q.tipo === 'vf') return { titulo: `verdade ou mentira? a ${nomeFig(q.fig)} vale ${beatsLabel(q.dito)}.`, destaque: fig(q.fig, 'fx-big'), opcoes: q.opcoes.map((o) => ({ face: h('b', {}, o), label: o, certo: o === q.ok })) };
+      if (q.tipo === 'pausaValor') return { titulo: 'essa pausa dura quanto?', destaque: pausa(q.fig, 'fx-big'), opcoes: q.opcoes.map((v) => ({ face: h('b', {}, beatsLabel(v)), label: beatsLabel(v), certo: v === q.ok })) };
+      if (q.tipo === 'dobro') return { titulo: `qual figura vale o dobro da ${nomeFig(q.fig)}?`, destaque: fig(q.fig, 'fx-big'), opcoes: nomes(q.opcoes) };
+      if (q.tipo === 'texto') return { titulo: q.pergunta, mais: 5, opcoes: q.opcoes.map((o) => ({ face: h('b', {}, o), label: o, certo: o === q.ok, cls: 'fx-op-txt' })) };
       if (q.tipo === 'valor') return { titulo: `quanto vale a ${nomeFig(q.fig)}?`, destaque: fig(q.fig, 'fx-big'), opcoes: q.opcoes.map((v) => ({ face: h('b', {}, beatsLabel(v)), label: beatsLabel(v), certo: v === q.ok })) };
       if (q.tipo === 'nome') return { titulo: 'qual é o nome dessa figura?', destaque: fig(q.fig, 'fx-big'), opcoes: nomes(q.opcoes) };
       if (q.tipo === 'metade') return { titulo: `qual figura vale a metade da ${nomeFig(q.fig)}?`, destaque: fig(q.fig, 'fx-big'), opcoes: nomes(q.opcoes) };

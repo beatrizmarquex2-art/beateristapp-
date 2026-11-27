@@ -2,6 +2,7 @@
 import { FIGS, FIG_BY } from '../kids/figs.js';
 import { starsFor } from '../kids/levels.js';
 import { regioesDoTema } from './mundos-tema.js';
+import { quizVariado, chaveQuiz } from './figurix-perguntas.js';
 
 /** As 12 primeiras fases (a ordem é a da lista de ideias da Bea) e mais 50 no mesmo estilo, com a dificuldade (`nivel`) subindo de 10 em 10. */
 const BASE = [
@@ -106,7 +107,7 @@ export function paresMem(k, modo, rnd = Math.random) {
 }
 export const mesmoParN = (a, b) => a.k !== b.k && a.par === b.par && a.lado !== b.lado;
 /** Quiz por nível: nível 3 inclui "metade", nível 4+ inclui "quantas cabem", nível 6 tem 4 opções. */
-export function quizN(nivel, rnd = Math.random) {
+export function quizClassico(nivel, rnd = Math.random) {
   if (nivel <= 2) return quizQ(nivel, rnd);
   const tipos = ['valor', 'nome', 'pausa', 'metade', ...(nivel >= 4 ? ['cabem'] : [])]; const tipo = pick(tipos, 1, rnd)[0]; const no = nivel >= 6 ? 4 : 3;
   if (tipo === 'metade') { const i = 1 + Math.floor(rnd() * (ids.length - 1)); const base = ids[i - 1]; const ok = ids[i]; return { tipo, fig: base, opcoes: shuffle([ok, ...pick(ids.filter((x) => x !== ok), no - 1, rnd)], rnd), ok }; }
@@ -114,6 +115,9 @@ export function quizN(nivel, rnd = Math.random) {
   const q = quizQ(2, rnd); if (no === 4 && q.opcoes.length === 3) { const extra = tipo === 'valor' ? pick([...new Set(ids.map((x) => FIG_BY[x].beats))].filter((v) => !q.opcoes.includes(v)), 1, rnd)[0] : pick(ids.filter((x) => !q.opcoes.includes(x)), 1, rnd)[0]; if (extra != null) q.opcoes = shuffle([...q.opcoes, extra], rnd); }
   return q;
 }
+/** Quiz do Figurix: mistura as perguntas de sempre com as novas (comparar, somar, completar o compasso, verdade ou mentira, pausas, dobro e perguntas escritas). */
+export const quizN = (nivel, rnd = Math.random) => quizVariado(nivel, quizClassico, rnd);
+export { chaveQuiz };
 /** Caça-palavras: uma lista de 6 palavras por nível, grade maior e (a partir do nível 3) também na diagonal. */
 export const LISTAS = {
   1: PALAVRAS_BASE(), 2: ['colcheia', 'semibreve', 'seminima', 'tempo', 'pulso', 'compasso'], 3: ['ritmo', 'batida', 'bateria', 'caixa', 'bumbo', 'chimbal'],
