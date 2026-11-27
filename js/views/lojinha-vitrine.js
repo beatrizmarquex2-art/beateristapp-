@@ -3,7 +3,7 @@
 import { h } from '../util.js';
 import { iconePaul } from '../icone-paul.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, COMBO, ANUAL, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
+import { PASSE, PRODUTOS, COMBOS, AMADOS, BANNER_COMBOS, ANUAL, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
 import { precoPasse } from '../passe-preco.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
@@ -22,7 +22,7 @@ function detalhe(p) {
   const info = h('div', { class: 'lj-dinfo' },
     p.tag ? h('span', { class: 'lj-selo' }, p.tag) : null,
     h('p', { class: 'lj-ddesc' }, p.desc || ''),
-    (DENTRO[p.id] || []).length ? h('div', { class: 'lj-dentro' }, h('b', {}, 'o que tem dentro'), h('ul', {}, ...DENTRO[p.id].map((x) => h('li', {}, x)))) : null,
+    (DENTRO[p.id] || p.itens || []).length ? h('div', { class: 'lj-dentro' }, h('b', {}, 'o que tem dentro'), h('ul', {}, ...(DENTRO[p.id] || p.itens).map((x) => h('li', {}, x)))) : null,
     p.preco ? h('b', { class: 'lj-preco lj-preco-card' }, p.precoDe ? [h('s', { class: 'lj-de', 'aria-label': `de ${p.precoDe}` }, p.precoDe), ' por '] : null, p.preco) : null,
     h('p', { class: 'lj-ddig' }, 'material digital (PDF): você baixa depois da compra, imprime e usa.'));
   const dlg = h('dialog', { class: 'lj-dlg', 'aria-label': p.nome },
@@ -35,7 +35,7 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
-/** Banner do acesso anual (promoção de Natal): fica em cima do combo enquanto vale a oferta. */
+/** Banner do acesso anual (oferta Black Friday / Natal): fica em cima dos combos enquanto vale a oferta. */
 function destaqueAnual() {
   if (!precoPasse().oferta) return null;
   return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
@@ -43,13 +43,31 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
-/** Destaque do combo Black Friday: primeira coisa da Lojinha. */
-function destaqueCombo() {
-  return h('article', { class: 'lj-bf lj-bf-topo', 'data-id': COMBO.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': 'comprar o combo Robôterista', onclick: comprar(COMBO) }, h('img', { class: 'lj-bf-arte', src: COMBO.img, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, width: COMBO.w, height: COMBO.h })),
-    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, 'promoção black friday'), h('b', { class: 'lj-preco' }, COMBO.preco), botao('Adquirir o combo', COMBO, 'amarelo')));
+/** Os 3 combos (Ensina, Aprende Brincando, Cria e Revisa): banner larga + um cartão por combo. Sem link, o botão diz "em breve". */
+const cartaoCombo = (c) => h('article', { class: `lj-combo lj-combo-${c.cor}${c.link ? '' : ' breve'}`, 'data-id': c.id },
+  c.img
+    ? h('button', { type: 'button', class: 'lj-combo-capa', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h }))
+    : h('div', { class: 'lj-combo-capa vazia', role: 'img', 'aria-label': `${c.nome}: a arte chega em breve` }, h('b', {}, 'Aprende Brincando'), h('small', {}, 'a capa chega em breve')),
+  h('h3', {}, c.nome), h('p', {}, c.desc), h('ul', { class: 'lj-combo-itens' }, ...c.itens.map((x) => h('li', {}, x))),
+  c.preco ? h('b', { class: 'lj-preco lj-preco-card' }, c.precoDe ? [h('s', { class: 'lj-de', 'aria-label': `de ${c.precoDe}` }, c.precoDe), ' por '] : null, c.preco) : null,
+  botao('Adquirir o combo', c, 'amarelo'));
+/** Os preferidos da turma: colorir, atividades e jogo da memória (à venda) + o UNO Musical (jogo do app: leva pro jogo, não vende). */
+const unoApp = () => h('article', { class: 'lj-card lj-uno', 'data-id': 'uno-app' },
+  h('a', { class: 'lj-capa', href: '#/jogos/cartas', 'aria-label': 'jogar o Uno Musical no app' }, h('img', { src: 'assets/jogos/icones/cartas.webp', alt: 'Uno Musical', loading: 'lazy', width: 640, height: 640 })),
+  h('h3', {}, 'Uno Musical'), h('p', {}, 'o jogo de cartas das figuras rítmicas, contra o robô ou com um amigo'), h('span', { class: 'lj-selo' }, 'jogo do app · já é seu'),
+  h('a', { class: 'lj-btn amarelo', href: '#/jogos/cartas' }, 'Jogar agora', h('b', { 'aria-hidden': 'true' }, '›')));
+function amados() {
+  const itens = AMADOS.map((id) => PRODUTOS.find((p) => p.id === id)).filter(Boolean);
+  return h('section', { class: 'lj-amados', 'aria-labelledby': 'lj-amados-t' },
+    h('h2', { class: 'lj-esc', id: 'lj-amados-t' }, h('span', {}, 'Os preferidos da turma')),
+    h('div', { class: 'lj-grid' }, ...itens.map(cartao), unoApp()));
 }
-
+function combos() {
+  return h('section', { class: 'lj-combos', 'aria-labelledby': 'lj-combos-t' },
+    h('img', { class: 'lj-combos-banner', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h }),
+    h('h2', { class: 'lj-esc', id: 'lj-combos-t' }, h('span', {}, 'Combos especiais')),
+    h('div', { class: 'lj-combos-grid' }, ...COMBOS.slice().sort((a, b) => Number(!!b.link) - Number(!!a.link)).map(cartaoCombo))); // os combos com link primeiro; "em breve" por último
+}
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
   h('button', { type: 'button', class: 'lj-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),
@@ -77,7 +95,8 @@ export function vitrine(secao = '') {
   }
   return h('div', { class: 'lj' },
     destaqueAnual(),
-    destaqueCombo(),
+    amados(),
+    combos(),
     h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
     h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
     h('div', { class: 'lj-secs' }, ...SECOES.map(tile)),

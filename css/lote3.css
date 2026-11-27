@@ -1142,3 +1142,15 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .tf-exclusiva a { color: #c81e2d; }
 .tf-tema .al-aula-adv { top: auto; bottom: 6px; right: 46px; width: 30px; }
 .tf-tema .al-aula-txt b { font-size: 24px; }
+
+/* Lojinha: seção de combos (3 combos: Ensina, Aprende Brincando, Cria e Revisa) */
+.lj-combos{display:grid;gap:12px;margin:8px 0 18px}
+.lj-combos-banner{display:block;width:100%;height:auto;border:3px solid rgb(var(--ink-rgb));border-radius:16px;box-shadow:5px 5px 0 rgb(var(--ink-rgb))}
+.lj-combos-grid{display:grid;gap:16px}
+.lj-combo{--cc:#17356b;display:grid;gap:8px;padding:12px;border:3px solid rgb(var(--ink-rgb));border-top:12px solid var(--cc);border-radius:18px;background:var(--card);box-shadow:5px 5px 0 rgb(var(--ink-rgb))}
+.lj-combo-vermelho{--cc:#b5162b}.lj-combo-amarelo{--cc:#e0a232}
+.lj-combo h3{margin:2px 0 0;font:400 22px/1.05 'Anton',sans-serif;text-transform:uppercase}.lj-combo p{margin:0;font-size:14px}
+.lj-combo-capa{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;border-radius:12px;overflow:hidden}.lj-combo-capa img{display:block;width:100%;height:auto}
+.lj-combo-capa.vazia{aspect-ratio:1/1;display:grid;place-content:center;gap:4px;text-align:center;background:var(--cc);color:#fff;cursor:default;padding:14px}.lj-combo-capa.vazia b{font:400 30px/1 'Anton',sans-serif;text-transform:uppercase}.lj-combo-capa.vazia small{font-weight:700;opacity:.9}
+.lj-combo-itens{margin:0;padding:0;list-style:none;display:grid;gap:3px;font-size:13.5px}.lj-combo-itens li:before{content:'✓ ';font-weight:900;color:var(--cc)}
+@media (min-width:700px){.lj-combos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lj-combos{max-width:980px;margin-left:auto;margin-right:auto}}
