@@ -232,3 +232,6 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rs-ic:active { background: #f6c93b !important; }
 .rs-ic { border-radius: 50% !important; width: 38px !important; height: 38px !important; padding: 0 !important; overflow: hidden; }
 .rs-ic .ic-loja { width: 24px !important; height: 24px !important; }
+.rs-ic { width: 30px !important; height: 30px !important; background: #f6c93b !important; border: 2px solid #fbf3e0 !important; margin-left: 5px; }
+.rs-ic .ic-loja { width: 19px !important; height: 19px !important; }
+.rs-ic:active { background: #fbf3e0 !important; }
