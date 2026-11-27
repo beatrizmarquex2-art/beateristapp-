@@ -13,7 +13,7 @@ const BOTOES = [
   ['metronomo', 'Metrônomo', ic('M8 21h8l-2-17h-4zM12 14l5-6')],
   ['codigos', 'Códigos', ic('M5 11h14v9H5zM8 11V8a4 4 0 0 1 8 0v3')],
 ];
-const ROTA = { afinador: '#/ouvido', metronomo: '#/metronomo', codigos: '#/codigos' };
+const ROTA = { afinador: '#/ouvido', metronomo: '#/metronomo', codigos: '#/balcao' };
 
 export function mount(host) {
   let aberto = ''; let inst = 0; let gone = false; let recentes = [];
