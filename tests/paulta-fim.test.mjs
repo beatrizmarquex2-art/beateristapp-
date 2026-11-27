@@ -15,7 +15,7 @@ test('o mesmo pacote com a mesma semente dá as mesmas cartas; a tabela soma 6 c
   assert.deepEqual(drawPack(cat, 'plf:drumD:c:p1', 3, 'x'), drawPack(cat, 'plf:drumD:c:p1', 3, 'x'));
   for (const w of ['drumF', 'drumI', 'drumD']) assert.equal(totalDoModo(w).fim, 6);
 });
-test('concluir o modo entrega os 3 pacotinhos de fim (ids plf) e só isso no fim', () => {
-  const p = { done: {}, ph: {} }; for (let k = 1; k <= 12; k++) p.done[`drumD:${k}`] = true;
+test('concluir o modo COM 3 ★ em todas as fases entrega os 3 pacotinhos de fim (ids plf) e só isso no fim', () => {
+  const p = { done: {}, ph: {} }; for (let k = 1; k <= 12; k++) { p.done[`drumD:${k}`] = true; p.ph[`drumD:${k}:nomes`] = { s: 3 }; }
   const fim = merecidos(p, 'p1').filter((x) => x.fim); assert.deepEqual(fim.map((x) => x.id), ['plf:drumD:a:p1', 'plf:drumD:b:p1', 'plf:drumD:c:p1']);
 });

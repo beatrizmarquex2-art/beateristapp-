@@ -22,3 +22,11 @@ test('pauLta: cartas do meio só contam fases com 3 ★ (fácil: 1 a cada 3 fase
   assert.equal(meioF(mk([2, 2, 2, 2, 2, 2])), 0, 'concluir com 2★ não rende carta do meio');
   void fase;
 });
+test('pauLta: os pacotes do FIM só saem com 3 ★ em todas as 12 fases do modo', async () => {
+  const S = await import('../js/paulta/score.js');
+  const mk = (estrelas) => { const done = {}; const ph = {}; estrelas.forEach((s, i) => { const k = i + 1; done[`drumF:${k}`] = true; ph[S.phKey('drumF', k, 'nomes')] = { s }; }); return { done, ph }; };
+  const fim = (p) => merecidos(p, 'x').filter((m) => m.fim).length;
+  assert.equal(fim(mk(Array(12).fill(2))), 0, 'concluiu com 2 ★: sem pacote do fim');
+  assert.equal(fim(mk([...Array(11).fill(3), 2])), 0, 'uma fase com 2 ★ já segura');
+  assert.equal(fim(mk(Array(12).fill(3))), 3, 'todas com 3 ★: os 3 pacotinhos');
+});

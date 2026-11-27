@@ -27,7 +27,7 @@ export function merecidos(p, pid) {
       let tres = 0; for (let k = 1; k <= 12; k++) if (done(k) && Math.max(...['nomes', 'imagens'].map((m) => (p.ph[S.phKey(w, k, m)] || {}).s || 0)) >= 3) tres++;
       for (let m = 1; m <= Math.floor(tres / t.meio3.cada); m++) out.push({ id: id(t.meio3.n, t.meio3.bea, pid, lv, 'm3', m), n: t.meio3.n, bea: t.meio3.bea, onde: `${m * t.meio3.cada} fases com 3 estrelas` });
     }
-    if (S.worldDone(p, w)) for (const f of t.fim) out.push({ id: `plf:${w}:${f.k}:${pid}`, n: f.n, bea: 0, onde: 'modo concluído', fim: true });
+    if (S.worldDone(p, w) && S.faltam3(p, w) === 0) for (const f of t.fim) out.push({ id: `plf:${w}:${f.k}:${pid}`, n: f.n, bea: 0, onde: 'modo concluído com 3 estrelas', fim: true });
   }
   return out;
 }
