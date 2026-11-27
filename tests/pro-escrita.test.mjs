@@ -62,3 +62,36 @@ test('quadros: acento engrossa o anel e fantasma é tracejado; 2 compassos viram
 test('quadros: com a seleção, clicar de novo passa pro próximo evento do mesmo quadro', () => { const evs = [{ p: 'hh', ini: 0, d: 2 }, { p: 'bd', ini: 0, d: 2 }]; assert.match(E.bateriaEscrita(evs, { escrita: 'quadros', largura: 460, icones: ic, sel: 0 }).svg, /data-ev="1"/); });
 test('sem o kit ilustrado (sem DOM) as escritas desenhadas caem na pauta comum', () => { assert.equal(E.bateriaEscrita(groove, { escrita: 'desenho', largura: 460, icones: null }).svg, R.bateria(groove, { largura: 460 }).svg); });
 test('feixe: 8 colcheias de chimbal ficam ligadas de 2 em 2 (uma barra por tempo, sem 8 bandeirolas)', () => { const r = R.bateria(groove, { largura: 460 }); assert.equal((r.svg.match(/stroke-width="3.4"/g) || []).length, 4); });
+// ---- visuais: cordas (faixa de braços, mapa) e teclado (faixa de teclados, quadros)
+import * as X from '../js/pro/escrita-visual.js'; import * as Pm from '../js/partitura-melodica.js';
+const dó = [{ c: 1, f: 1, ini: 0, d: 8, cif: 'Dó', dir: 'b' }, { c: 2, f: 0, ini: 0, d: 8, dir: 'b' }, { c: 3, f: 2, ini: 0, d: 8, dir: 'b' }, { c: 4, f: 3, ini: 0, d: 8, dir: 'b' }, { c: 0, f: 0, ini: 8, d: 4 }, { c: 0, f: 3, ini: 12, d: 4 }];
+test('tablatura + faixa de braços: um mini braço por coluna, mais alta que a tablatura sozinha, bolinhas na cor da nota', () => {
+  const r = X.tablaturaFaixa(dó, { cordas: V, largura: 460 }); const t = R.tablatura(dó, { cordas: V, largura: 460 });
+  assert.equal((r.svg.match(/data-peca=/g) || []).length, 3); assert.ok(r.h > t.h); assert.match(r.svg, /fill="#e0262f"/); assert.equal((r.svg.match(/data-ev=/g) || []).length, 6); assert.ok(r.n >= 1);
+});
+test('mini braço: casa 1 de uma corda aperta a 1ª casa; corda solta vira anel; casa alta mostra o número da casa', () => {
+  const a = X.miniBraco(30, 10, 40, [{ c: 1, f: 1 }, { c: 2, f: 0 }], V); assert.match(a.o, /fill="#e0262f"/); assert.match(a.o, /fill="none"/);
+  assert.match(X.miniBraco(30, 10, 40, [{ c: 1, f: 7 }, { c: 2, f: 8 }], V).o, />7ª</);
+});
+test('mapa no braço: um braço por compasso, bolinhas numeradas na ordem, mesmo número no acorde', () => {
+  const r = X.mapaBraco(dó, { cordas: V, largura: 460 }); assert.equal(r.n, 1); assert.match(r.svg, /COMPASSO 1/); assert.equal((r.svg.match(/data-ev=/g) || []).length, 6);
+  const nums = [...r.svg.matchAll(/font-size="11" font-weight="800" fill="(?!#d9b45f)[^"]+" font-family="[^"]*">(\d)<\/text>/g)].map((m) => m[1]); assert.deepEqual([...new Set(nums)], ['1', '2', '3']);
+  assert.equal(X.mapaBraco([{ c: 0, f: 2, ini: 0, d: 4 }, { c: 0, f: 5, ini: 16, d: 4 }], { cordas: V, largura: 460 }).n, 2);
+});
+test('mapa: notas acima da 12ª casa ampliam o braço', () => { const curto = X.mapaBraco([{ c: 0, f: 5, ini: 0, d: 4 }], { cordas: V, largura: 460 }).svg; const longo = X.mapaBraco([{ c: 0, f: 20, ini: 0, d: 4 }], { cordas: V, largura: 460 }).svg; assert.ok(longo.match(/<line/g).length > curto.match(/<line/g).length); });
+test('E.cordas escolhe as novas escritas pelo nome', () => { assert.equal(E.cordas(dó, { cordas: V, escrita: 'faixa', largura: 460 }).svg, X.tablaturaFaixa(dó, { cordas: V, largura: 460 }).svg); assert.match(E.cordas(dó, { cordas: V, escrita: 'mapa', largura: 460 }).svg, /COMPASSO/); });
+const ode = [64, 64, 65, 67, 67, 65, 64, 62].map((m, i) => ({ m, ini: i * 4, d: 4 }));
+test('mini teclado acende só a tecla da nota, na cor dela (mi = amarelo)', () => { const s = X.miniTeclado(0, 0, 60, 40, [64]); assert.ok(s.includes('fill="#f6d11e"')); assert.ok(!s.includes('fill="#e0262f"')); assert.ok(X.miniTeclado(0, 0, 60, 40, [61]).includes('fill="#f28c1e"') === false); });
+test('teclado "faixa": a pauta + um mini teclado por nota, com o nome; mais alta que só a pauta', () => {
+  const f = X.tecladoEscrita(ode, { escrita: 'faixa', clave: 'sol', largura: 460 }); const p = X.tecladoEscrita(ode, { escrita: 'pauta', clave: 'sol', largura: 460 });
+  assert.equal((f.svg.match(/data-peca=/g) || []).length, 8); assert.ok(f.h > p.h); assert.match(f.svg, />Mi</); assert.match(f.svg, />Sol</); assert.equal((f.svg.match(/data-ev=/g) || []).length, 8);
+});
+test('teclado "pauta" não mudou: igual a P.pauta', () => assert.equal(X.tecladoEscrita(ode, { escrita: 'pauta', clave: 'sol', largura: 460 }).svg, Pm.pauta(ode, { clave: 'sol', largura: 460 }).svg));
+test('teclado "quadros": 8 quadros acesos (colcheia por quadro? semínimas = 4 por compasso), nome grande e contagem', () => {
+  const q = X.tecladoEscrita(ode, { escrita: 'quadros', largura: 460 }); assert.equal(q.n, 2); assert.match(q.svg, /COMPASSO 2/); assert.equal((q.svg.match(/data-ev=/g) || []).length, 8); assert.match(q.svg, />Fá</);
+});
+test('quadros do teclado: nota longa continua nos quadros seguintes mais clarinha (‿) e o quadro seleciona a nota', () => {
+  const q = X.tecladoEscrita([{ m: 60, ini: 0, d: 8 }], { escrita: 'quadros', largura: 460 }); assert.match(q.svg, /fill-opacity=".38"/); assert.match(q.svg, /‿/);
+  assert.equal((q.svg.match(/data-ev="0"/g) || []).length, 2);
+});
+test('quadros do teclado: quadro vazio nunca aparece como selecionado (sem seleção = -1)', () => { const q = X.tecladoEscrita([{ m: 60, ini: 0, d: 4 }], { escrita: 'quadros', largura: 460, sel: -1 }); assert.equal((q.svg.match(/stroke="#b8913f"/g) || []).length, 0); });

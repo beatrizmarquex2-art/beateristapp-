@@ -4,10 +4,12 @@ import * as R from './ritmo.js';
 import * as P from '../partitura-melodica.js';
 import { CLAVE_SOL_D, CLAVE_SOL, CLAVE_FA_D, CLAVE_FA } from '../paulta/clave.js';
 import { corNota } from '../cores-notas.js';
+import * as V from './escrita-visual.js';
+export { tecladoEscrita } from './escrita-visual.js';
 
 const { INK, FONT } = R; const G = 10;
 const SUST = 'M-2 -7V7M2 -8V6M-4.5 -2.5L4.5 -4.5M-4.5 3.5L4.5 1.5';
-export const ESCRITAS = { cordas: [['tab', 'tablatura'], ['pauta', 'pauta comum'], ['ambas', 'pauta + tablatura'], ['ritmo', 'figuras rítmicas (sem pauta)']], bateria: [['pauta', 'pauta de bateria'], ['desenho', 'pauta com peças desenhadas'], ['quadros', 'quadros do kit'], ['faixa', 'pauta + faixa de peças'], ['ritmo', 'figuras rítmicas (sem pauta)']] };
+export const ESCRITAS = { cordas: [['tab', 'tablatura'], ['pauta', 'pauta comum'], ['ambas', 'pauta + tablatura'], ['faixa', 'tablatura + faixa de braços'], ['mapa', 'mapa no braço'], ['ritmo', 'figuras rítmicas (sem pauta)']], teclado: [['pauta', 'pauta'], ['faixa', 'pauta + faixa de teclados'], ['quadros', 'quadros do teclado']], bateria: [['pauta', 'pauta de bateria'], ['desenho', 'pauta com peças desenhadas'], ['quadros', 'quadros do kit'], ['faixa', 'pauta + faixa de peças'], ['ritmo', 'figuras rítmicas (sem pauta)']] };
 /** Violão e guitarra escrevem uma oitava acima do que soa; baixo também (clave de fá). */
 export const escrito = (m) => m + 12;
 export const claveDe = (inst) => (inst === 'baixo' ? 'fa' : 'sol');
@@ -91,6 +93,8 @@ const finaliza = (o, largura, n, alt, rotulo) => { const h = n * alt + 6; return
 export function cordas(evs, { cordas: cs, inst = 'violao', escrita = 'tab', largura = 360, cor = false, sel = -1 } = {}) {
   if (escrita === 'tab') return R.tablatura(evs, { cordas: cs, largura, cor, sel });
   if (escrita === 'ritmo') return ritmo(evs, { largura, sel, bateria: false });
+  if (escrita === 'faixa') return V.tablaturaFaixa(evs, { cordas: cs, largura, cor, sel });
+  if (escrita === 'mapa') return V.mapaBraco(evs, { cordas: cs, largura, cor: true, sel });
   const clave = claveDe(inst); const L = R.layout(evs, { largura, x0: 74 }); const n = Math.max(1, L.sistemas.length); const ambas = escrita === 'ambas'; const altTab = R.alturaTab(cs.length);
   const alt = ambas ? ALT_PAUTA + 22 + altTab : ALT_PAUTA; let o = '';
   L.sistemas.forEach((_, s) => {

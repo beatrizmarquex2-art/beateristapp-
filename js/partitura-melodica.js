@@ -105,7 +105,7 @@ const SUST = 'M-2 -7V7M2 -8V6M-4.5 -2.5L4.5 -4.5M-4.5 3.5L4.5 1.5';
 const BEQ = 'M-2.5 -7V3M2.5 -3V7M-2.5 -2L2.5 -3M-2.5 3L2.5 2';
 
 /** Desenha. Devolve { w, h, svg, notas: [{ ev, x, y }], compassos } (notas = onde cada evento caiu, pra tocar nele). */
-export function pauta(evs, { clave = 'auto', largura = 360, cor = false, sel = -1, tinta = 'currentColor' } = {}) {
+export function pauta(evs, { clave = 'auto', largura = 360, cor = false, sel = -1, tinta = 'currentColor', faixa = null, altFaixa = 0 } = {}) {
   const e = normalizar(evs); const cl = clave === 'auto' ? claveAuto(e) : clave; const bars = compassos(e);
   const esq = 54; const dir = 10; const disp = largura - esq - dir; const sw = 28; // espaço da fórmula de compasso (só no 1º sistema)
   const fat = largura < 480 ? 0.72 : 1; // celular: notas mais juntas pra caber 2 compassos por linha
@@ -114,7 +114,7 @@ export function pauta(evs, { clave = 'auto', largura = 360, cor = false, sel = -
   const sis = []; let at = []; let w = 0;
   larguras.forEach((lw, i) => { const livre = disp - (sis.length === 0 ? sw : 0); if (at.length && w + lw > livre) { sis.push(at); at = []; w = 0; } at.push(i); w += lw; });
   if (at.length) sis.push(at);
-  const SIS_H = 118; const topPad = cor ? 30 : 26; const out = []; const notas = [];
+  const SIS_H = 118 + altFaixa; const topPad = cor ? 30 : 26; const out = []; const notas = [];
   const ink = tinta; const linhas = (y0, x1, x2) => Array.from({ length: 5 }, (_, i) => `<line x1="${x1}" y1="${y0 + i * G}" x2="${x2}" y2="${y0 + i * G}" stroke="${ink}" stroke-width="1.2"/>`).join('');
   sis.forEach((idxs, si) => {
     const y0 = topPad + si * SIS_H + 34; const yBase = y0 + 4 * G; // yBase = 1ª linha (de baixo)
@@ -183,6 +183,7 @@ export function pauta(evs, { clave = 'auto', largura = 360, cor = false, sel = -
       const fimDoc = ultimo && bi === bars.length - 1;
       out.push(fimDoc ? `<line x1="${x - 4}" y1="${y0}" x2="${x - 4}" y2="${yBase}" stroke="${ink}" stroke-width="1.3"/><rect x="${x - 1}" y="${y0}" width="3.4" height="${4 * G}" fill="${ink}"/>` : `<line x1="${x - 2}" y1="${y0}" x2="${x - 2}" y2="${yBase}" stroke="${ink}" stroke-width="1.3"/>`);
     });
+    if (faixa) out.push(faixa(notas.filter((n) => n.sistema === si), si, yBase + 44, e));
   });
   const h = topPad + sis.length * SIS_H + 4;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="Partitura de ${e.length} nota${e.length === 1 ? '' : 's'} na ${cl === 'sol' ? 'clave de sol' : 'clave de fá'}">${out.join('')}</svg>`;

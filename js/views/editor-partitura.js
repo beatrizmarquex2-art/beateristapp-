@@ -19,6 +19,7 @@ import { scheduler, silence } from '../audio.js';
 import { mallet, MALLETS } from '../instruments.js';
 import { tocaEventos } from '../pro/som.js';
 import * as T from '../pro/teoria.js';
+import * as E from '../pro/escrita.js';
 import { corNota, notaClara } from '../cores-notas.js';
 import { confirma } from '../pro/ui.js';
 
@@ -50,14 +51,14 @@ export function mount(host, opts = {}) {
   const VOLTA = opts.voltar || '#/ferramentas-prof';
   const novo = (() => { try { const v = sessionStorage.getItem('pm-novo'); sessionStorage.removeItem('pm-novo'); return !!v; } catch { return false; } })();
   const salvoLocal = novo ? {} : lerSalvo();
-  const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, titulo: '', nuvemId: null, visual: 'teclado', timbre: 'piano', mallet: 'xilofone', barras: 'maior', escala: 'todas', tonica: 0, clique: false, repetir: false, ...salvoLocal };
-  if (!['teclado', 'barras'].includes(s.visual)) s.visual = 'teclado'; if (!TIMBRES.some((t) => t[0] === s.timbre)) s.timbre = 'piano'; if (!MALLETS.some((m) => m[0] === s.mallet)) s.mallet = 'xilofone'; if (!T.BARRAS.some((b) => b[0] === s.barras)) s.barras = 'maior'; if (!T.ESCALAS.some((e) => e[0] === s.escala)) s.escala = 'todas'; if (!(s.tonica >= 0 && s.tonica < 12)) s.tonica = 0;
+  const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, titulo: '', nuvemId: null, visual: 'teclado', escrita: 'pauta', timbre: 'piano', mallet: 'xilofone', barras: 'maior', escala: 'todas', tonica: 0, clique: false, repetir: false, ...salvoLocal };
+  if (!['teclado', 'barras'].includes(s.visual)) s.visual = 'teclado'; if (!E.ESCRITAS.teclado.some((x) => x[0] === s.escrita)) s.escrita = 'pauta'; if (!TIMBRES.some((t) => t[0] === s.timbre)) s.timbre = 'piano'; if (!MALLETS.some((m) => m[0] === s.mallet)) s.mallet = 'xilofone'; if (!T.BARRAS.some((b) => b[0] === s.barras)) s.barras = 'maior'; if (!T.ESCALAS.some((e) => e[0] === s.escala)) s.escala = 'todas'; if (!(s.tonica >= 0 && s.tonica < 12)) s.tonica = 0;
   s.evs = P.normalizar(Array.isArray(s.evs) ? s.evs : []); s.take = Array.isArray(s.take) ? s.take : [];
   if (novo) { s.evs = []; s.take = []; s.titulo = ''; s.nuvemId = null; }
   let sel = -1; let hist = []; let cursor = P.fim(s.evs); let oct = s.oct || (innerWidth < 640 ? 4 : 3); const octaves = innerWidth < 640 ? 1 : 2;
   let modo = 'toque'; let mic = null; let run = null; let msg = ''; let gone = false;
   const live = new Map();
-  const salvar = () => store.upsert('setting', CHAVE, { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: 'clicar', titulo: s.titulo, nuvemId: s.nuvemId || null, oct, visual: s.visual, timbre: s.timbre, mallet: s.mallet, barras: s.barras, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir }).catch(() => {});
+  const salvar = () => store.upsert('setting', CHAVE, { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: 'clicar', titulo: s.titulo, nuvemId: s.nuvemId || null, oct, visual: s.visual, escrita: s.escrita, timbre: s.timbre, mallet: s.mallet, barras: s.barras, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir }).catch(() => {});
   const muda = (novas, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novas; cursor = P.fim(novas); salvar(); };
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
   const parar = () => { if (run) { run.stop(); run = null; } silence(); if (mic) mic.surdo(false); };
@@ -105,7 +106,7 @@ export function mount(host, opts = {}) {
   };
   const pdf = async (b) => {
     b.disabled = true;
-    try { const r = await baixarPdf({ evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, semPapel: !!opts.semPapel, perfil: opts.perfil }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
+    try { const r = await baixarPdf({ ...(s.escrita !== 'pauta' ? { render: (larg) => rendT(larg, s.cor, -1) } : {}), evs: s.evs, clave: s.clave, cor: s.cor, titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: nomeAluno(), bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, semPapel: !!opts.semPapel, perfil: opts.perfil }); toast(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`, { id: 'ep', ms: 2600 }); }
     catch { toast('não consegui gerar o PDF agora', { id: 'ep', ms: 2600 }); }
     b.disabled = false;
   };
@@ -155,8 +156,9 @@ export function mount(host, opts = {}) {
       run ? iconeBtn(IC.stop, 'Parar', () => { parar(); desenhaTopo(); }, { on: true }) : iconeBtn(IC.play, 'Ouvir a partitura', ouvir, { dis: !s.evs.length }));
     acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }));
   }
+  const rendT = (largura, cor = s.cor, selecao = -1) => E.tecladoEscrita(s.evs, { escrita: s.escrita, clave: s.clave, largura, cor, sel: selecao });
   function desenhaFolha() {
-    const larg = Math.max(300, Math.min(760, (folha.clientWidth || host.clientWidth || 380) - 22)); const r = P.pauta(s.evs, { clave: s.clave, largura: larg, cor: s.cor, sel });
+    const larg = Math.max(300, Math.min(760, (folha.clientWidth || host.clientWidth || 380) - 22)); const r = rendT(larg, s.cor, sel);
     folha.innerHTML = s.evs.length ? r.svg : `<p class="ep-vazio">a partitura aparece aqui, nota por nota, enquanto você ${modo === 'mic' ? 'toca no seu instrumento' : 'toca no teclado aí embaixo'}.</p>`;
   }
   function atualiza() {
@@ -183,13 +185,13 @@ export function mount(host, opts = {}) {
       h('button', { type: 'button', 'aria-pressed': String(modo === 'mic'), onclick: () => trocaModo('mic') }, 'tocar de verdade (microfone)')));
     const O = ['auto', 'sol', 'fa']; const nomeClave = { auto: 'automática', sol: 'clave de sol', fa: 'clave de fá' };
     const abertos = ajEl.querySelector('details') ? ajEl.querySelector('details').open : false;
-    const aj = [seta('clave', nomeClave[s.clave], () => { s.clave = O[(O.indexOf(s.clave) + 2) % 3]; salvar(); atualiza(); desenhaDir(); }, () => { s.clave = O[(O.indexOf(s.clave) + 1) % 3]; salvar(); atualiza(); desenhaDir(); }),
+    const aj = [cicla('escrita', E.ESCRITAS.teclado, s.escrita, (e) => { s.escrita = e; sel = -1; salvar(); atualiza(); desenhaDir(); }), seta('clave', nomeClave[s.clave], () => { s.clave = O[(O.indexOf(s.clave) + 2) % 3]; salvar(); atualiza(); desenhaDir(); }, () => { s.clave = O[(O.indexOf(s.clave) + 1) % 3]; salvar(); atualiza(); desenhaDir(); }),
       s.visual === 'barras' ? cicla('modelo', MALLETS.map((m) => [m[0], m[1]]), s.mallet, (m) => { s.mallet = m; salvar(); desenhaDir(); }) : cicla('som', TIMBRES, s.timbre, (t) => { s.timbre = t; salvar(); desenhaDir(); }),
       h('div', { class: 'er-tgs' }, tg('metrônomo junto', s.clique, () => { s.clique = !s.clique; salvar(); desenhaDir(); }), tg('repetir (loop)', s.repetir, () => { s.repetir = !s.repetir; salvar(); desenhaDir(); })),
       seta('transpor', `${trans > 0 ? '+' : ''}${trans} semitons`, () => transpor(-1), () => transpor(1)), seta('transpor oitava', `${trans12 > 0 ? '+' : ''}${trans12} oitava${Math.abs(trans12) === 1 ? '' : 's'}`, () => transpor(-12), () => transpor(12)),
       h('button', { type: 'button', class: 'er-tg perigo', onclick: async () => { if (!s.evs.length) return; if (await confirma('Limpar tudo?', 'Todas as notas somem desta partitura. Dá para desfazer logo depois.', 'Limpar')) { muda([]); sel = -1; msg = ''; atualiza(); desenhaDir(); } } }, 'limpar tudo'),
       seta('andamento', `${s.bpm} bpm`, () => { s.bpm = Math.max(40, s.bpm - 5); salvar(); desenhaDir(); }, () => { s.bpm = Math.min(220, s.bpm + 5); salvar(); desenhaDir(); })];
-    const d = ajustes(`${nomeClave[s.clave]} · ${s.bpm} bpm`, ...aj); d.open = abertos; ajEl.replaceChildren(d);
+    const nomeEsc = (E.ESCRITAS.teclado.find((x) => x[0] === s.escrita) || [, ''])[1]; const d = ajustes(`${nomeEsc} · ${s.bpm} bpm`, ...aj); d.open = abertos; ajEl.replaceChildren(d);
     const seg = h('div', { class: 'er-visual dois', role: 'group', 'aria-label': 'Como mostrar o instrumento' }, ...[['teclado', 'Teclado'], ['barras', 'Barras']].map(([v, t]) => h('button', { type: 'button', 'aria-pressed': String(s.visual === v), onclick: () => { s.visual = v; salvar(); desenhaKb(); desenhaDir(); } }, t)));
     let corpo;
     if (modo === 'mic') corpo = [h('p', { class: 'ep-dica' }, mic ? 'ouvindo o microfone… toque a nota no instrumento de verdade e ela aparece na partitura.' : 'abrindo o microfone…')];

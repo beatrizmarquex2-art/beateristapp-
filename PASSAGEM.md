@@ -1232,3 +1232,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - `js/pro/icones-kit.js` recorta cada peça do kit ilustrado do jogo (`js/kids/kit-modelos.js`, 3 modelos) com getBBox. `js/pro/escrita.js` → `bateriaEscrita`: **desenho** (peças no lugar das cabeças na pauta), **quadros** (um mini kit por tempo, peças acesas com anel; 4 por linha no celular), **faixa** (pauta + faixa de peças alinhada embaixo). Menu "escrita" da bateria: pauta · pauta com peças desenhadas · quadros do kit · pauta + faixa de peças · figuras rítmicas.
 - A pauta de bateria agora liga colcheias/semicolcheias do mesmo tempo com feixe (antes: uma bandeirola por nota).
 - Sem DOM (testes de lógica) as escritas desenhadas caem na pauta comum.
+
+### PRO: escritas visuais do violão e do teclado (27/nov/2026)
+- `js/pro/escrita-visual.js`. Cordas (menu "escrita"): **tablatura + faixa de braços** (mini braço por coluna, bolinhas na cor da nota) e **mapa no braço** (braço deitado por compasso, bolinhas numeradas na ordem). Teclado: **pauta + faixa de teclados** (hook `faixa` em `P.pauta`) e **quadros do teclado** (uma tecla acesa por quadro; nota longa continua mais clara).
+- PDF: o teclado usa `render` quando a escrita não é a pauta comum.
+- Testes: `tests/pro-escrita.test.mjs` (visuais), `tests/e2e/pro-ritmico.mjs` (90 checagens).
