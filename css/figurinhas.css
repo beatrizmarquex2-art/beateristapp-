@@ -661,5 +661,3 @@
 .pf-av-wrap{position:relative;width:96px;height:96px}.pf-mold{position:absolute;inset:-14px;width:124px;height:124px;max-width:none;pointer-events:none}
 .pf-molduras{display:grid;gap:8px}.pf-mold-btn{display:flex;align-items:center;gap:12px;border:2px solid rgb(0 0 0 / .2);border-radius:14px;background:#fff;padding:8px 12px;cursor:pointer;font:800 14px var(--body,system-ui);text-align:left}
 .pf-mold-btn.on{border-color:#ffd23f;box-shadow:0 0 0 2px #ffd23f66}.pf-mold-btn img{background:#0c1020;border-radius:50%}
-/* missões com ícone (Drive 27/nov/2026) */
-.fig-missao-tx{display:flex;align-items:center;gap:8px}.fig-missao-tx>span{display:block}.fig-missao-ic{flex:none;width:40px;height:40px;object-fit:contain;vertical-align:middle;margin-right:6px}.fig-missao-tx .fig-missao-ic{margin-right:0}

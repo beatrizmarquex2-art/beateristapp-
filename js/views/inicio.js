@@ -201,7 +201,7 @@ export function mount(host, { nome = '' } = {}) {
   const st = { ...L.emptyState(), ...D.albumDados() }; const idDia = L.checkinId(todayKey());
   const girou = !!(st.opened && st.opened[idDia]); const esperando = !!(st.granted || []).includes(idDia) && !girou;
   const roleta = h('section', { class: `in-roleta${girou ? ' feito' : ''}` },
-    h('img', { class: 'in-roleta-ic', src: 'assets/icones-novos/estado-jogo-musica/jogo-roleta.png', alt: '', 'aria-hidden': 'true', onerror: (e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'assets/icons/tambor-96.png'; } }), // ícone da roleta: a roleta colorida da Bea (jogo-roleta, Drive 27/nov/2026); a "roleta maluca" é a roleta de prêmios (aba roleta do Stars)
+    h('img', { class: 'in-roleta-ic', src: 'assets/inicio/roleta.png', alt: '', 'aria-hidden': 'true', onerror: (e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'assets/icons/tambor-96.png'; } }), // ícone da roleta: a Bea vai gerar um (assets/inicio/roleta.png); até lá, o tambor
     h('span', { class: 'in-card-tx' }, h('small', {}, 'roleta grátis diária'),
       h('b', {}, girou ? 'você já girou hoje!' : esperando ? 'seu giro de hoje está esperando!' : 'seu giro grátis de hoje'),
       h('em', {}, girou ? 'volte amanhã pra mais um giro, ou junte estrelas pra girar de novo' : 'todo dia tem um giro de presente')),
