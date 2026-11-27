@@ -1,15 +1,13 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { minQuiz, MUNDOS, FASES, tipoDa, faseCfg, qtdPortas, portasDaFase, estrelasFase, PORTAS_FASE, DESAFIOS, BONUS, estrelasDesafio, bonusAberto, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
-test('3 mundos de 12 fases, 36 ★ cada; as fases giram quiz → caça → cruzadinha', () => {
+import { MUNDOS, FASES, tipoDa, faseCfg, qtdPortas, portasDaFase, estrelasFase, PORTAS_FASE, DESAFIOS, BONUS, estrelasDesafio, bonusAberto, estrelasPorta, estOf, estMundo, faseAberta, mundoLiberado, idFase } from '../js/jogos/fuga-logic.js';
+test('3 mundos de 12 fases, 36 ★ cada; o legado tipoDa gira caça → cruzadinha → mesa de som (sem quiz)', () => {
   assert.deepEqual(MUNDOS.map((m) => m.id), ['estudio', 'vulcao', 'espaco']); assert.equal(FASES * 3, 36);
-  assert.deepEqual([1, 2, 3, 4, 5, 6].map(tipoDa), ['quiz', 'caca', 'cruz', 'quiz', 'caca', 'cruz']);
+  assert.deepEqual([1, 2, 3, 4, 5, 6].map(tipoDa), ['caca', 'cruz', 'genius', 'caca', 'cruz', 'genius']);
 });
 test('dificuldade sobe com a fase e o mundo, com teto', () => {
-  assert.equal(faseCfg(0, 1).palavras, 4); assert.equal(faseCfg(0, 12).palavras, 8); assert.equal(faseCfg(1, 1).palavras, 6); assert.equal(faseCfg(2, 12).cruz, 6); assert.equal(faseCfg(0, 1).perguntas, 3);
+  assert.equal(faseCfg(0, 1).palavras, 4); assert.equal(faseCfg(0, 12).palavras, 8); assert.equal(faseCfg(1, 1).palavras, 6); assert.equal(faseCfg(2, 12).cruz, 6);
 });
-test('estrelas: quiz de 3 perguntas (3 certas = 3 ★, 2 = 2 ★, cada pulada tira 1 ★, a dica limita em 2); caça = 3 - dicas; cruzadinha 3', () => {
-  assert.deepEqual([3, 2].map((f) => estrelasPorta('quiz', { found: f, total: 3 })), [3, 2]); assert.equal(estrelasPorta('quiz', { found: 3, total: 3, ajuda: true }), 2); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, puladas: 1 }), 1); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, puladas: 1, ajuda: true }), 1); assert.equal(estrelasPorta('quiz', { found: 2, total: 3, ajuda: true }), 2);
-  assert.equal(minQuiz(3), 2); assert.equal(minQuiz(7), 3); assert.equal(faseCfg(0, 1).perguntas, 3);
+test('estrelas: caça = 3 - dicas (mínimo 1); cruzadinha 3; jogos de toque pelas estrelas dos erros', () => {
   assert.deepEqual([3, 2, 1].map((e) => estrelasPorta('caca', { estrelas: e })), [3, 2, 1]); assert.equal(estrelasPorta('cruz', {}), 3);
 });
 test('progresso: 1ª fase aberta, as outras só depois de 1 ★; mundo 2 só com o 1 completo', () => {
@@ -28,14 +26,6 @@ test('desenho da Bea: portas por fase 2·2·3·3·3·1·1·3·3·3·4·4; fases 
 });
 test('estrelas da fase = média das portas (1 a 3)', () => { assert.equal(estrelasFase([3, 3, 3]), 3); assert.equal(estrelasFase([3, 2]), 3); assert.equal(estrelasFase([2, 1, 1]), 1); assert.equal(estrelasFase([]), 0); });
 
-test('quiz da fuga: definição do banco pergunta "qual termo" e o nível filtra o banco', async () => {
-  const { question, temTexto } = await import('../js/tips.js'); const { filtraNivelBanco } = await import('../js/jogos/fuga-logic.js');
-  const it = { n: 900001, text: 'os equipamentos que ficam no palco pra banda usar: amplificadores, bateria e teclado.', w: 'BACKLINE', shown: 'backline', banco: true, nivel: 'm', o: ['dueto', 'intro', 'coro'] };
-  const q = question([it], 'blank'); assert.ok(temTexto(q.prompt)); assert.match(q.ask, /termo/); assert.equal(q.options.length, 4);
-  assert.equal(temTexto('_____ .'), false);
-  const lista = Array.from({ length: 20 }, (_, i) => ({ n: i, banco: true, nivel: i < 10 ? 'f' : 'd', text: 'x' }));
-  assert.ok(filtraNivelBanco(lista, 'facil').every((x) => x.nivel === 'f')); assert.equal(filtraNivelBanco(lista, 'dificil').length, 20);
-});
 
 test('Fuga sem quiz: nenhuma porta (nem o desafio nem a porta B) é quiz; os quizzes ficam só na aba Estudos', () => {
   const { TIPOS_FASE } = { TIPOS_FASE: Array.from({ length: 12 }, (_, i) => portasDaFase(0, i + 1).map((p) => p.tipo)) };
@@ -43,3 +33,4 @@ test('Fuga sem quiz: nenhuma porta (nem o desafio nem a porta B) é quiz; os qui
   for (let m = 0; m < 3; m++) for (let n = 1; n <= 12; n++) assert.ok(!portasDaFase(m, n).some((p) => p.tipo === 'quiz'), `mundo ${m} fase ${n}`);
   assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']);
 });
+
