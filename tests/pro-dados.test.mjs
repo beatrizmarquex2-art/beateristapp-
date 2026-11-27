@@ -8,3 +8,7 @@ test('doDia ordena por horário', () => { const l = D.doDia([{ inicio: new Date(
 test('historico só aulas dadas do aluno', () => assert.equal(D.historico([{ aluno_id: 'a', status: 'dada', inicio: '2026-01-01' }, { aluno_id: 'a', status: 'marcada', inicio: '2026-01-02' }, { aluno_id: 'b', status: 'dada', inicio: '2026-01-03' }], 'a').length, 1));
 test('progressoMetas', () => { assert.equal(D.progressoMetas([{ feita: true }, { feita: false }]), 0.5); assert.equal(D.progressoMetas(null), 0); });
 test('pastasDeAulas únicas e ordenadas', () => assert.deepEqual(D.pastasDeAulas([{ pasta: 'b' }, { pasta: 'a' }, { pasta: 'b' }, { pasta: '' }]), ['a', 'b']));
+test('403 do servidor vira "acesso ainda não liberado"', async () => {
+  const antes = globalThis.fetch; globalThis.__proToken = 't'; globalThis.fetch = async () => ({ ok: false, status: 403, json: async () => ({}) });
+  try { await D.listar('pro_alunos'); assert.fail('devia falhar'); } catch (e) { assert.match(D.textoErro(e), /ainda não foi liberado/); } finally { globalThis.fetch = antes; delete globalThis.__proToken; }
+});

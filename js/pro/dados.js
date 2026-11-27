@@ -5,8 +5,8 @@ import { CONFIG } from '../config.js';
 const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
 const token = async () => { if (globalThis.__proToken) return globalThis.__proToken; const a = await import('../auth.js'); return a.accessToken(); }; // __proToken: só pros testes
 async function head(extra = {}) { const t = await token(); if (!t) throw new Error('entre'); return { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${t}`, 'Content-Type': 'application/json', ...extra }; }
-const falha = (r) => new Error(r.status === 404 ? 'tabela' : r.status === 401 || r.status === 403 ? 'entre' : String(r.status));
-export const textoErro = (e) => (e && e.message === 'entre' ? 'sua sessão expirou: entre de novo' : e && e.message === 'tabela' ? 'o banco do PRO ainda não foi ligado no servidor' : 'não consegui falar com o servidor agora. tente de novo');
+const falha = (r) => new Error(r.status === 404 ? 'tabela' : r.status === 401 ? 'entre' : r.status === 403 ? 'acesso' : String(r.status)); // 403 = conta existe mas ainda não foi liberada pro PRO
+export const textoErro = (e) => (e && e.message === 'acesso' ? 'seu acesso ao Beaterista PRO ainda não foi liberado. assim que for, é só entrar de novo.' : e && e.message === 'entre' ? 'sua sessão expirou: entre de novo' : e && e.message === 'tabela' ? 'o banco do PRO ainda não foi ligado no servidor' : 'não consegui falar com o servidor agora. tente de novo');
 
 export const TABELAS = ['pro_perfil', 'pro_alunos', 'pro_aulas', 'pro_eventos'];
 /** Lista as linhas de uma tabela. `ordem` ex.: 'inicio.asc'. `filtros` ex.: { aluno_id: 'eq.123' }. */
@@ -19,7 +19,7 @@ export async function gravar(tabela, corpo, id = '') {
   const r = id
     ? await fetch(`${base}/${tabela}?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify(corpo) })
     : await fetch(`${base}/${tabela}`, { method: 'POST', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify(corpo) });
-  if (!r.ok) throw falha(r); const l = await r.json(); if (!l.length) throw new Error('entre'); return l[0];
+  if (!r.ok) throw falha(r); const l = await r.json(); if (!l.length) throw new Error('acesso'); return l[0];
 }
 export async function apagar(tabela, id) {
   const r = await fetch(`${base}/${tabela}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: await head({ Prefer: 'return=minimal' }) }); if (!r.ok) throw falha(r);

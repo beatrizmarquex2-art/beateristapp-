@@ -1185,3 +1185,12 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Pedido da Bea: "quando eu pedir, trocar o escrito pra `play.beaterista.com.br`"** → `node scripts/trocar-endereco.mjs play` (troca só o ESCRITO e sobe o `sw.js`); `node scripts/trocar-endereco.mjs jogos` volta. Só troque os LINKS (`--links`) depois que `play.beaterista.com.br` abrir de verdade (DNS/CNAME do GitHub Pages, CSP em `index.html` e `_headers`).
 - O script NÃO mexe no domínio, em DNS/CSP/`_headers`, na função da Hotmart (`supabase/functions/hotmart-passe`, `SITE_URL`) nem nas artes em imagem (`assets/loja/previa`, `assets/originals`, `vendas/index.html`): isso é manual.
 - Teste: `tests/site.test.mjs` (nenhum `.js` do app escreve o endereço direto; o script troca e volta).
+
+
+## Beaterista PRO (pro.html, js/pro/, css/pro.css) — 27/nov/2026
+- App dos professores, no mesmo repositório e no mesmo Supabase, entrada própria `pro.html` (domínio futuro: pro.beaterista.com.br). O PLAY não foi alterado.
+- Banco: `supabase/023_pro.sql` APLICADA. Tabelas `pro_perfil`, `pro_alunos`, `pro_aulas`, `pro_eventos` (RLS: cada professor só vê o que é dele) e `pro_liberados`.
+- ACESSO FECHADO: só quem passa em `public.pro_liberado()` (hoje: a Bea, via `is_allowed()`) lê e grava. Liberar um professor: `insert into public.pro_liberados (email) values ('email@dele.com');` (e-mail em minúsculas).
+- Quem cria conta sem estar liberado vê "seu acesso ainda não foi liberado" e não grava nada (testado: dois professores não se enxergam, anon e não-liberado bloqueados).
+- Falta: ligar "proteção contra senhas vazadas" no Auth do Supabase, DNS do pro.beaterista.com.br, violão/bateria no editor, apostilas/jogos/flashcards, turmas, assistente com IA (precisa de função no servidor), integração com o PLAY (envio de tarefas).
+- Testes: `node tests/e2e/pro.mjs` (servidor simulado), `tests/pro-dados.test.mjs`, `tests/pro-ferr.test.mjs`.

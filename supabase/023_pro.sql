@@ -1,8 +1,18 @@
 -- Beaterista PRO (pro.beaterista.com.br): dados de cada professor. SÓ ADICIONA tabelas novas (prefixo pro_); não mexe em nada do PLAY.
--- NÃO APLICADA ainda: aguardando o ok da Bea. Seguro rodar de novo.
+-- APLICADA no projeto beaterista-app em 27/nov/2026 (a Bea aprovou). Seguro rodar de novo.
+-- ACESSO FECHADO: por enquanto só a Bea (public.is_allowed()) usa o PRO. Pra liberar um professor depois:  insert into public.pro_liberados (email) values ('professor@exemplo.com');
+-- (qualquer pessoa consegue criar conta no login, mas sem estar liberada não lê nem grava nada.)
 -- Regra de ouro: cada professor lê e escreve EXCLUSIVAMENTE o que é dele (dono = auth.uid()). Nem a Bea nem outro professor enxergam os alunos e materiais de alguém
 -- (dados de alunos de terceiros: LGPD). Quem entra só com código (anon) não tem acesso nenhum.
 -- As partituras do PRO usam a tabela `partituras` que já existe (022): já é por dono.
+
+create table if not exists public.pro_liberados (email text primary key check (email = lower(email)));
+alter table public.pro_liberados enable row level security;
+revoke all on public.pro_liberados from anon, authenticated; -- ninguém pelo app: só o painel do Supabase / SQL
+create or replace function public.pro_liberado() returns boolean language sql stable security definer set search_path = public as $$
+  select public.is_allowed() or exists (select 1 from public.pro_liberados where email = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;
+revoke all on function public.pro_liberado() from public, anon; grant execute on function public.pro_liberado() to authenticated;
 
 create table if not exists public.pro_perfil (
   dono uuid primary key default auth.uid() references auth.users (id) on delete cascade,
@@ -64,9 +74,9 @@ create index if not exists pro_eventos_dono_idx on public.pro_eventos (dono, ini
 create index if not exists pro_eventos_aluno_idx on public.pro_eventos (aluno_id, inicio desc);
 
 -- o dono e a data de criação nunca mudam; o aluno/aula ligados a um evento têm que ser do mesmo professor
-create or replace function public.pro_toque() returns trigger language plpgsql as $$
+create or replace function public.pro_toque() returns trigger language plpgsql set search_path = public as $$
 begin new.atualizado_em := now(); new.dono := old.dono; new.criado_em := old.criado_em; return new; end $$;
-create or replace function public.pro_evento_confere() returns trigger language plpgsql as $$
+create or replace function public.pro_evento_confere() returns trigger language plpgsql set search_path = public as $$
 begin
   if new.aluno_id is not null and not exists (select 1 from public.pro_alunos a where a.id = new.aluno_id and a.dono = new.dono) then raise exception 'aluno de outro professor'; end if;
   if new.aula_id is not null and not exists (select 1 from public.pro_aulas a where a.id = new.aula_id and a.dono = new.dono) then raise exception 'aula de outro professor'; end if;
@@ -83,6 +93,10 @@ do $$ declare t text; begin
     execute format('revoke all on public.%I from anon', t);
     execute format('grant select, insert, update, delete on public.%I to authenticated', t);
     execute format('drop policy if exists %I_dono on public.%I', t, t);
-    execute format('create policy %I_dono on public.%I for all to authenticated using (dono = auth.uid()) with check (dono = auth.uid())', t, t);
+    execute format('create policy %I_dono on public.%I for all to authenticated using (dono = auth.uid() and public.pro_liberado()) with check (dono = auth.uid() and public.pro_liberado())', t, t);
   end loop;
 end $$;
+
+-- as partituras (022) também só gravam quem está liberado
+drop policy if exists part_inserir on public.partituras;
+create policy part_inserir on public.partituras for insert to authenticated with check (dono = auth.uid() and public.pro_liberado());
