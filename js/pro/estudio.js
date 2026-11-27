@@ -5,6 +5,7 @@ const PRONTO = [
   ['#/editor/violao', 'Tablatura de violão', 'Braço desenhado, acordes, microfone que escreve a casa que você toca.', 'violão'],
   ['#/editor/guitarra', 'Tablatura de guitarra', '6, 7 ou 8 cordas.', 'guitarra'],
   ['#/editor/baixo', 'Tablatura de baixo', '4, 5 ou 6 cordas.', 'baixo'],
+  ['#/transcrever', 'Áudio → partitura', 'Suba um áudio ou vídeo: o app sugere a bateria, a melodia ou os acordes e abre no editor pra você corrigir.', 'novo'],
   ['#/editor/bateria', 'Pauta de bateria', 'Três kits, mão D/E, acento, nota fantasma e peças ao mesmo tempo.', 'bateria'],
 ];
 const DEPOIS = [['Figuras rítmicas sem pauta', 'próximo'], ['Pauta comum e cifras para violão', 'próximo'], ['Gerador de apostilas', 'em construção'], ['Jogos musicais personalizados', 'em construção'], ['Flashcards e avaliações', 'em construção'], ['Atividades para colorir', 'em construção']];

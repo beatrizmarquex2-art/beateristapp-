@@ -334,6 +334,8 @@ export function mount(host, opts = {}) {
   const parou = aoMudarLargura(folha, () => { if (!gone) desenhaFolha(); });
   // 1º toque na tela destrava o áudio (iPhone/iPad/Safari só deixam dentro de um toque)
   const destrava = () => { Som.acorda(); raiz.removeEventListener('pointerdown', destrava, true); }; raiz.addEventListener('pointerdown', destrava, true);
+  // veio do "Áudio → partitura": abre a sugestão como rascunho (ainda não guardada), pra professora corrigir
+  try { const imp = sessionStorage.getItem('pm-importar'); if (imp) { sessionStorage.removeItem('pm-importar'); const row = JSON.parse(imp); if (row && row.instrumento === inst) { carrega({ ...row, id: null, pasta: '' }); msg = 'sugestão do áudio — confira e corrija as notas'; atualiza(); } } } catch { /* sem sessionStorage */ }
   try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then(carrega).catch((e) => toast(NUV.textoErro(e), { id: 'er', ms: 3200 })); } } catch { /* sem sessionStorage */ }
   return () => { gone = true; parar(); desligaMic(); if (grav) { try { grav.stop(); } catch { /* ok */ } grav = null; } parou(); };
 }

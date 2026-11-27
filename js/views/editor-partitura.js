@@ -228,6 +228,8 @@ export function mount(host, opts = {}) {
   host.append(raiz); desenhaKb(); desenhaDir(); atualiza(); requestAnimationFrame(desenhaFolha);
   const parou = aoMudarLargura(folha, () => { if (!gone) desenhaFolha(); });
   const destrava = () => { try { audio(); } catch { /* sem áudio */ } raiz.removeEventListener('pointerdown', destrava, true); }; raiz.addEventListener('pointerdown', destrava, true);
+  // veio do "Áudio → partitura": abre a sugestão como rascunho (ainda não guardada)
+  try { const imp = sessionStorage.getItem('pm-importar'); if (imp) { sessionStorage.removeItem('pm-importar'); const row = JSON.parse(imp); if (row && (!row.instrumento || row.instrumento === 'teclas')) carrega({ ...row, id: null, pasta: '' }); } } catch { /* sem sessionStorage */ }
   // veio da aba Professores (ou da pasta online): abre a partitura que a pessoa escolheu
   try { const id = sessionStorage.getItem('pm-abrir'); if (id) { sessionStorage.removeItem('pm-abrir'); NUV.abrir(id).then((row) => { if (row.instrumento && row.instrumento !== 'teclas') { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* ok */ } location.hash = `#/editor/${row.instrumento}`; return; } carrega(row); }).catch((e) => toast(NUV.textoErro(e), { id: 'ep', ms: 3200 })); } } catch { /* sem sessionStorage */ }
   return () => { gone = true; parar(); desligaMic(); for (const v of live.values()) { try { v.off(false); } catch { /* ok */ } } parou(); };
