@@ -81,6 +81,7 @@ import * as PROG from './progresso-nuvem.js';
 import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 import { iconePaul } from './icone-paul.js';
+import { iniciar as iconesDosEmojis } from './icones-emoji.js';
 
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
@@ -94,6 +95,7 @@ const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
 document.documentElement.classList.add('aluno-on');
+try { iconesDosEmojis(); } catch { /* sem ícones: ficam os emojis */ }
 
 const ID_KEY = 'beaterista-aluno-id';
 const visitorId = () => { try { let v = localStorage.getItem(ID_KEY); if (!v) { v = uid(); localStorage.setItem(ID_KEY, v); } return v; } catch { return uid(); } };

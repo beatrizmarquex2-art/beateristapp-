@@ -224,3 +224,6 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rs-n { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; } .rs-t b .ic-loja { margin-right: 2px; }
 .rm-seg .ic-loja { width: 34px; height: 34px; } .rm-res .ic-loja { margin-bottom: 2px; }
 .rs-ic .ic-loja { width: 24px; height: 24px; } .rs-ic { width: 36px; height: 36px; }
+
+/* emojis trocados pelos ícones da Bea (js/icones-emoji.js): do tamanho do texto */
+.ic-emoji { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.28em; object-fit: contain; background: none; pointer-events: none; user-select: none; }
