@@ -17,6 +17,6 @@ test('Páscoa: semana até o domingo; depois volta ao normal', () => {
 });
 test('datas fixas e fora de época = tela original', () => {
   assert.equal(id(2026, 12, 25), 'natal'); assert.equal(id(2026, 12, 31), 'anonovo'); assert.equal(id(2027, 1, 2), 'anonovo'); assert.equal(id(2027, 1, 3), null);
-  assert.equal(id(2026, 6, 15), 'junina'); assert.equal(id(2026, 10, 12), 'criancas'); assert.equal(id(2026, 5, 10), 'maes'); assert.equal(id(2026, 8, 9), 'pais');
+  assert.equal(id(2026, 6, 15), 'junina'); assert.equal(id(2026, 10, 31), 'halloween'); assert.equal(id(2026, 10, 23), null); assert.equal(id(2026, 10, 12), null); assert.equal(id(2026, 5, 10), null);
   assert.equal(id(2026, 9, 20), null); assert.equal(id(2026, 11, 15), null);
 });
