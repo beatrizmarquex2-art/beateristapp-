@@ -42,30 +42,60 @@ function destaqueAnual() {
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
 }
 
-/** Combos: cada um é um banner de arte (como o combo antigo) com preço e botão; sem link, um bloco vermelho "em breve" com a lista do que vai dentro. */
-const heroCombo = (c) => (c.img
-  ? h('article', { class: 'lj-bf lj-bf-topo lj-combo-hero', 'data-id': c.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { class: 'lj-bf-arte', src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h })),
-    h('div', { class: 'lj-bf-cta' }, h('span', { class: 'lj-selo' }, c.precoDe ? 'combo · economize' : 'combo'), h('b', { class: 'lj-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', c.preco] : c.preco), botao('Adquirir o combo', c, 'amarelo')))
-  : h('article', { class: 'lj-combo-vazio', 'data-id': c.id },
-    h('span', { class: 'lj-selo' }, 'em breve'), h('h3', {}, c.nome), h('ul', {}, ...c.itens.map((x) => h('li', {}, x))),
-    h('img', { src: 'assets/paul/colorido/paul-presente.webp', alt: '', loading: 'lazy', draggable: 'false' })));
-/** Os preferidos da turma: colorir, atividades e jogo da memória (à venda) + o UNO Musical (jogo do app: leva pro jogo, não vende). */
-const unoApp = () => h('article', { class: 'lj-card lj-uno', 'data-id': 'uno-app' },
-  h('a', { class: 'lj-capa', href: '#/jogos/cartas', 'aria-label': 'jogar o Uno Musical no app' }, h('img', { src: 'assets/jogos/icones/cartas.webp', alt: 'Uno Musical', loading: 'lazy', width: 640, height: 640 })),
-  h('h3', {}, 'Uno Musical'), h('p', {}, 'o jogo de cartas das figuras rítmicas, contra o robô ou com um amigo'), h('span', { class: 'lj-selo' }, 'jogo do app · já é seu'),
-  h('a', { class: 'lj-btn amarelo', href: '#/jogos/cartas' }, 'Jogar agora', h('b', { 'aria-hidden': 'true' }, '›')));
+/** Carrossel: faixa que desliza (snap) + setas ‹ › + bolinhas + teclado ← →. `auto` (ms) avança sozinho e pára quando a pessoa mexe. */
+function carrossel(filhos, { cls = '', label = '', auto = 0 } = {}) {
+  const faixa = h('div', { class: 'lj-car-faixa', tabindex: '0', role: 'group', 'aria-label': label }, ...filhos);
+  const passo = () => { const f = faixa.children[0]; if (!f) return 200; const g = parseFloat(getComputedStyle(faixa).columnGap || getComputedStyle(faixa).gap) || 0; return f.getBoundingClientRect().width + g; };
+  const irPara = (i) => faixa.scrollTo({ left: i * passo(), behavior: 'smooth' });
+  const ant = h('button', { type: 'button', class: 'lj-car-seta ant', 'aria-label': 'anterior', onclick: () => { parou = true; faixa.scrollBy({ left: -passo(), behavior: 'smooth' }); } }, '‹');
+  const prox = h('button', { type: 'button', class: 'lj-car-seta prox', 'aria-label': 'próximo', onclick: () => { parou = true; faixa.scrollBy({ left: passo(), behavior: 'smooth' }); } }, '›');
+  const pontos = h('div', { class: 'lj-car-pontos', role: 'tablist', 'aria-label': `${label}: ir para` }, ...filhos.map((_, i) => h('button', { type: 'button', role: 'tab', 'aria-label': `item ${i + 1} de ${filhos.length}`, onclick: () => { parou = true; irPara(i); } })));
+  let parou = false;
+  const atualiza = () => {
+    const max = faixa.scrollWidth - faixa.clientWidth; const x = faixa.scrollLeft; const i = Math.min(filhos.length - 1, Math.round(x / passo()));
+    ant.hidden = x <= 4; prox.hidden = x >= max - 4;
+    [...pontos.children].forEach((d, k) => d.classList.toggle('on', k === i));
+  };
+  faixa.addEventListener('scroll', () => requestAnimationFrame(atualiza), { passive: true });
+  faixa.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); prox.click(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); ant.click(); } });
+  ['pointerdown', 'wheel', 'focusin'].forEach((ev) => faixa.addEventListener(ev, () => { parou = true; }, { passive: true }));
+  setTimeout(atualiza, 60); setTimeout(atualiza, 600); // depois das imagens/layout
+  if (auto) { const t = setInterval(() => { const raiz = faixa.isConnected; if (!raiz) { clearInterval(t); return; } if (parou || document.hidden) return; const max = faixa.scrollWidth - faixa.clientWidth; if (faixa.scrollLeft >= max - 4) irPara(0); else faixa.scrollBy({ left: passo(), behavior: 'smooth' }); }, auto); }
+  return h('div', { class: `lj-car ${cls}`.trim() }, faixa, ant, prox, pontos);
+}
+
+/** Um combo = um slide: a arte (toque abre os detalhes) + uma linha com preço e botão. Sem link, bloco vermelho "em breve". */
+const slideCombo = (c) => (c.img
+  ? h('article', { class: 'lj-slide', 'data-id': c.id },
+    h('button', { type: 'button', class: 'lj-slide-arte', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h })),
+    h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', c.preco] : c.preco), botao('Quero', c, 'amarelo')))
+  : h('article', { class: 'lj-slide lj-slide-breve', 'data-id': c.id },
+    h('div', { class: 'lj-slide-arte vazia' }, h('span', { class: 'lj-selo' }, 'em breve'), h('h3', {}, c.nome), h('ul', {}, ...c.itens.map((x) => h('li', {}, x))), h('img', { src: 'assets/paul/colorido/paul-presente.webp', alt: '', loading: 'lazy', draggable: 'false' })),
+    h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, 'chegando'), botao('Quero', c, 'amarelo'))));
+
+/** Os preferidos da turma (colorir, atividades, memória) + o Uno Musical (jogo do app, não vende): minicartões num carrossel. */
+const mini = (p) => h('article', { class: 'lj-mini', 'data-id': p.id },
+  h('button', { type: 'button', class: 'lj-mini-capa', 'aria-label': `ver ${p.nome}`, onclick: () => detalhe(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', width: p.w || 640, height: p.h || 800 })),
+  h('b', { class: 'lj-mini-nome' }, p.nome), h('span', { class: 'lj-mini-preco' }, p.preco), botao('Quero', p, 'amarelo'));
+const unoMini = () => h('article', { class: 'lj-mini lj-uno', 'data-id': 'uno-app' },
+  h('a', { class: 'lj-mini-capa', href: '#/jogos/cartas', 'aria-label': 'jogar o Uno Musical no app' }, h('img', { src: 'assets/jogos/icones/cartas.webp', alt: 'Uno Musical', loading: 'lazy', width: 640, height: 640 })),
+  h('b', { class: 'lj-mini-nome' }, 'Uno Musical'), h('span', { class: 'lj-mini-preco' }, 'jogo do app'), h('a', { class: 'lj-btn amarelo', href: '#/jogos/cartas' }, 'Jogar', h('b', { 'aria-hidden': 'true' }, '›')));
 function amados() {
   const itens = AMADOS.map((id) => PRODUTOS.find((p) => p.id === id)).filter(Boolean);
   return h('section', { class: 'lj-amados', 'aria-labelledby': 'lj-amados-t' },
-    h('div', { class: 'lj-amados-top' }, h('i', { 'aria-hidden': 'true' }, '⭐'), h('h2', { id: 'lj-amados-t' }, 'Os preferidos da turma', h('small', {}, 'o que a galera mais ama: colorir, atividades e jogos'))),
-    h('div', { class: 'lj-amados-faixa' }, ...itens.map(cartao), unoApp()),
-    h('p', { class: 'lj-amados-dica', 'aria-hidden': 'true' }, 'deslize pro lado ›'));
+    h('div', { class: 'lj-amados-top' }, h('i', { 'aria-hidden': 'true' }, '⭐'), h('h2', { id: 'lj-amados-t' }, 'Os preferidos da turma')),
+    carrossel([...itens.map(mini), unoMini()], { cls: 'lj-car-mini', label: 'preferidos da turma' }));
 }
 function combos() {
-  return h('section', { class: 'lj-combos', 'aria-label': 'Combos especiais' },
-    h('img', { class: 'lj-combos-banner', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h }),
-    ...COMBOS.slice().sort((a, b) => Number(!!b.link) - Number(!!a.link)).map(heroCombo)); // os combos com link primeiro; "em breve" por último
+  const lista = COMBOS.slice().sort((a, b) => Number(!!b.link) - Number(!!a.link)); // os com link primeiro; "em breve" por último
+  return h('section', { class: 'lj-combos', 'aria-labelledby': 'lj-combos-t' },
+    h('h2', { class: 'lj-combos-t', id: 'lj-combos-t' }, 'Combos', h('small', {}, 'mais barato levando junto')),
+    carrossel(lista.map(slideCombo), { cls: 'lj-car-combos', label: 'combos', auto: 6500 }));
+}
+function secoes() {
+  return h('section', { class: 'lj-secs-bloco', 'aria-labelledby': 'lj-secs-t' },
+    h('h2', { class: 'lj-combos-t', id: 'lj-secs-t' }, 'Explore por assunto'),
+    carrossel(SECOES.map(tile), { cls: 'lj-car-secs', label: 'seções da lojinha' }));
 }
 
 const cartao = (p) => h('article', { class: 'lj-card', 'data-id': p.id },
@@ -92,15 +122,10 @@ export function vitrine(secao = '') {
       h('div', { class: 'lj-grid' }, ...PRODUTOS.filter((p) => p.secao === S.id).map(cartao)),
       h('a', { class: 'lj-volta lj-volta-b', href: '#/lojinha' }, '‹ ver as outras seções'));
   }
-  return h('div', { class: 'lj' },
+  return h('div', { class: 'lj lj-compacta' },
     destaqueAnual(),
     amados(),
     combos(),
-    h('img', { class: 'lj-topo', src: 'assets/loja/topo.webp', alt: 'Lojinha Beaterista', width: 610, height: 230 }),
-    h('h2', { class: 'lj-esc' }, h('span', {}, 'Por onde você quer começar?')),
-    h('div', { class: 'lj-secs' }, ...SECOES.map(tile)),
-    h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL),
-    PASSE.link ? h('article', { class: 'lj-passe' }, h('img', { src: PASSE.img, alt: '', loading: 'lazy' }),
-      h('div', { class: 'lj-pm' }, h('h3', {}, iconePaul('passe-beaterista', 30), PASSE.nome), h('ul', {}, ...PASSE.info.map((x) => h('li', {}, x)))),
-      h('div', { class: 'lj-pp' }, h('span', { class: 'lj-preco' }, precoPasse().atual), precoPasse().oferta ? h('small', { class: 'lj-de' }, `de ${precoPasse().de} · oferta até ${precoPasse().ate}`) : null, botao('Adquirir passe', PASSE, 'amarelo'))) : null);
+    secoes(),
+    h('p', { class: 'lj-digital' }, h('b', {}, '📄 materiais digitais. '), AVISO_DIGITAL));
 }
