@@ -32,3 +32,6 @@ export function premioDaSemana(n) {
   const i = Math.max(1, n | 0) - 1;
   return { wallpaper: WALLPAPERS[i % WALLPAPERS.length], colorir: [COLORIR_PAGINAS[(2 * i) % COLORIR_PAGINAS.length], COLORIR_PAGINAS[(2 * i + 1) % COLORIR_PAGINAS.length]] };
 }
+
+// 14 folhas novas (nov/2026, com frases do Paul): entram no fim da lista, então as semanas já entregues não mudam.
+COLORIR_PAGINAS.push(...['a-musica-acompanha', 'brincar-e-aprender', 'oi-sou-o-paul-balao', 'a-musica-desenvolve', 'crie-sem-medo', 'foco-no-ritmo', 'sobe-o-som', 'aqui-e-beaterista', 'musica-e-atitude', 'vamos-praticar', 'hora-de-pintar', 'paul-de-skate', 'escola-beaterista', 'oi-sou-o-paul'].map((s, i) => cl(35 + i, s)));

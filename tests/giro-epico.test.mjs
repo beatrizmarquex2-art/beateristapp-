@@ -19,7 +19,7 @@ test('epico único: de 1 a 5 figurinhas, sem repetir, e sempre uma exclusiva', (
 test('check-in da semana: UM giro épico (que já traz a exclusiva); wallpaper e 2 folhas de colorir por semana, na ordem', async () => {
   assert.deepEqual(L.semanaPacks(4), ['epico:sem4']);
   const { premioDaSemana, WALLPAPERS, COLORIR_PAGINAS } = await import('../js/premios-config.js');
-  assert.equal(COLORIR_PAGINAS.length, 34); const a = premioDaSemana(1), b = premioDaSemana(2);
+  assert.equal(COLORIR_PAGINAS.length, 48); const a = premioDaSemana(1), b = premioDaSemana(2);
   assert.equal(a.wallpaper, WALLPAPERS[0]); assert.deepEqual(a.colorir.map((c) => c.arquivo.slice(-20)), [COLORIR_PAGINAS[0], COLORIR_PAGINAS[1]].map((c) => c.arquivo.slice(-20)));
   assert.notEqual(a.wallpaper, b.wallpaper); assert.notEqual(a.colorir[0], b.colorir[0]); assert.equal(premioDaSemana(13).wallpaper, WALLPAPERS[0]);
 });
