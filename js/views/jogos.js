@@ -1,4 +1,5 @@
 // Jogos musicais: catálogo (3 por fileira) e cada jogo dentro da mesma moldura (voltar, som, nova partida).
+import { cabeNaTela } from '../jogos/cabe.js';
 import { h } from '../util.js';
 import { banner, toast, confirmSheet } from '../ui.js';
 import { paulDica } from '../paul-dicas.js';
@@ -299,8 +300,9 @@ function game(host, entry) {
       btnPausa, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd, musicButton('icon-btn jg-mus')),
     faixa, body);
   host.replaceChildren(wrap); desenhaFaixa();
+  const offCabe = cabeNaTela(wrap, body); // o jogo cabe inteiro na tela (sem rolagem da página): reduz na proporção certa se precisar
   const offFesta = attachFesta(wrap);
-  return () => { document.removeEventListener('bt-perfis-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', aoPausaSala); document.removeEventListener('bt-pausa-abrir', aoPedir); musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  return () => { offCabe(); document.removeEventListener('bt-perfis-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', aoPausaSala); document.removeEventListener('bt-pausa-abrir', aoPedir); musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */

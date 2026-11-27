@@ -6,5 +6,6 @@ await p.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome'
 const R=['jogos/velha','jogos/cartas','jogos/stop','jogos/memart','jogos/quebra','jogos/cara','jogos/bingo','dicas/caca','kids/ritmo','paulta','jogos/toca','ritmo'];
 for (const r of R){ await p.goto(`${url}/aluno.html#/${r}`); await sleep(1800); const v=await p.evaluate(()=>{const b=document.getElementById('voltar-jogos'); if(!b) return 'nao existe'; const r=b.getBoundingClientRect(); return getComputedStyle(b).display!=='none' && r.bottom<=innerHeight && r.width>0 ? 'visivel' : 'escondido'}); console.log(r, v); }
 await p.goto(`${url}/aluno.html#/jogos/velha`); await sleep(1500); await p.screenshot({path:'/tmp/voltar-jogos.png'});
-await p.click('#voltar-jogos'); await sleep(800); check('volta pra lista de jogos', (await p.evaluate(()=>location.hash))==='#/jogos'); check('botão some na lista', !(await p.locator('#voltar-jogos').isVisible()));
+await p.click('.jg-game .jg-link, #voltar-jogos'); await sleep(800); // jogos que cabem na tela têm o "‹ jogos" do próprio cabeçalho sempre à vista (o flutuante some pra não cobrir o jogo)
+ check('volta pra lista de jogos', (await p.evaluate(()=>location.hash))==='#/jogos'); check('botão some na lista', !(await p.locator('#voltar-jogos').isVisible()));
 check('sem erros', errs.length===0, errs.join('|')); await browser.close(); srv.close(); done();

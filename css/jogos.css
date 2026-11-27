@@ -2144,3 +2144,26 @@ body.bv-aberta { overflow: hidden; }
 /* botão "abrir o baú" nos modelos E e F: dourado, combina com a carta (antes era azul-roxo) */
 .pf.cq.cq-m-e .cq-premio .kd-btn,.pf.cq.cq-m-f .cq-premio .kd-btn{background:#f9d27a;color:#162146;border:3px solid #fff7e6;box-shadow:0 4px 0 #7a5410;text-shadow:none;font-weight:800}
 .cq-m-f .cq-premio{border-color:#f9d27a}
+
+/* ===== CABE NA TELA (nov/2026): o jogo não vira rolagem. js/jogos/cabe.js trava a página e reduz o jogo na proporção certa até caber entre o topo e o menu de baixo ===== */
+html.jg-fit, html.jg-fit body { overflow: hidden; height: 100dvh; overscroll-behavior: none; }
+html.jg-fit #app { min-height: 0; height: 100dvh; padding-bottom: 0; overflow: hidden; }
+html.jg-fit .jg-game.jg-fitted { margin-top: 6px; margin-bottom: 0; }
+html.jg-fit .jg-game .jg-top { padding: 8px 16px 2px 16px; row-gap: 3px; }
+html.jg-fit .jg-game .jg-title { font-size: 17px; padding: 4px 14px 7px 11px; }
+html.jg-fit .jg-game .jg-body { padding: 0 14px 8px; }
+html.jg-fit .jg-game.jg-fit-reduzido .jg-body { will-change: transform; }
+html.jg-fit .jg-game.jg-fit-rola .jg-body { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+@media (min-height: 760px) { html.jg-fit .jg-game.jg-fitted { margin-top: 34px; } } /* sobra altura: deixa o Paul espiando por cima do quadro */
+@media (max-height: 520px) { /* celular deitado: o jogo ganha a tela inteira (tem o "‹ jogos" próprio) */
+  html.jg-fit .bottom-nav, html.jg-fit .topwrap { display: none !important; }
+  html.jg-fit .jg-game.jg-fitted { margin-top: 2px; }
+}
+@media (pointer: coarse) { /* dedo: alvos de toque de pelo menos 40px nos jogos */
+  .jg-game .jg-seg button, .jg-game .jg-pil, .jg-game .btn.small, .jg-game .jg-tiny, .jg-game .jg-actions .btn { min-height: 40px; }
+}
+html.jg-fit .voltar-jogos { display: none !important; } /* sem rolagem, o "‹ jogos" do cabeçalho do jogo está sempre à vista (o botão flutuante cobria o canto de baixo do jogo) */
+@media (min-width: 540px) { /* tela larga: voltar, título e botões na MESMA linha (menos altura gasta, nada colado um no outro) */
+  html.jg-fit .jg-game .jg-top { flex-wrap: nowrap; column-gap: 8px; }
+  html.jg-fit .jg-game .jg-title { flex: 1 1 auto; margin-right: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
