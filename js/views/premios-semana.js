@@ -9,6 +9,6 @@ export function premiosDasSemanas(ciclo) {
   const n = Math.max(0, ciclo | 0);
   if (!n) return h('p', { class: 'fig-note pm-sem-vazio' }, 'fechou 7 dias seguidos? você ganha 1 wallpaper e 2 folhas de colorir.');
   const semanas = Array.from({ length: n }, (_, k) => n - k).map((s) => { const p = premioDaSemana(s);
-    return h('div', { class: 'pm-sem-linha' }, h('b', {}, `semana ${s}`), h('div', { class: 'pm-sem-itens' }, baixar(p.wallpaper, 'pm-sem-wp'), ...p.colorir.map((c) => baixar(c, 'pm-sem-cl')))); });
+    return h('div', { class: 'pm-sem-linha' }, h('b', {}, `semana ${s}`, h('small', {}, ` · wallpaper: ${p.wallpaper.nome}`)), h('div', { class: 'pm-sem-itens' }, baixar(p.wallpaper, 'pm-sem-wp'), ...p.colorir.map((c) => baixar(c, 'pm-sem-cl')))); });
   return h('details', { class: 'pm-sem', open: n <= 2 ? '' : null }, h('summary', {}, `meus prêmios das semanas (${n})`), ...semanas);
 }

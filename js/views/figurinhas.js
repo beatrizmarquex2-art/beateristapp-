@@ -1,6 +1,7 @@
 // Álbum de figurinhas da Beaterista: coleções, espaços numerados, pacotes, colar, detalhe com zoom.
 // Progresso salvo no registro 'figurinhas-album' do app (IndexedDB; sincroniza pela conta como o resto, quando há login).
 import { premiosDasSemanas } from './premios-semana.js';
+import { premioDaSemana } from '../premios-config.js';
 import { ultimoJogo } from '../ultimo-jogo.js';
 import { h, todayKey } from '../util.js';
 import { banner, sheet, toast } from '../ui.js';
@@ -99,7 +100,7 @@ export function mount(host, parts = [], opts = {}) {
   }
   async function semanaPremio() {
     try { const me = P.active(); if (me) { const M = await import('../figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } } catch { /* sem perfil: ganha só o pacote */ }
-    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro épico (em Stars › roleta), 1 wallpaper e 2 folhas de colorir (em Stars › check-in da semana)!`, bau: true }); } catch { /* sem animação */ }
+    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro épico (em Stars › roleta), o wallpaper “${premioDaSemana((state.sem && state.sem.ciclo) || 1).wallpaper.nome}” e 2 folhas de colorir (em Stars › check-in da semana)!`, bau: true }); } catch { /* sem animação */ }
   }
   load();
   async function load() {
