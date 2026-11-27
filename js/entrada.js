@@ -78,7 +78,7 @@ export function entradaNova(p) {
     h('section', { class: 'en-box passe', id: 'en-passe' }, h('img', { class: 'en-passe-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: '', width: 104, height: 104, draggable: 'false', decoding: 'async' }), h('h2', {}, 'um ano inteiro de ', h('span', {}, 'música, jogos e descobertas!')),
       h('p', { class: 'p1' }, 'aprenda brincando com o Robôterista Paul! explore jogos educativos, desafios musicais, colecione figurinhas e aprenda no seu ritmo.'),
       h('p', { class: 'p2' }, 'um único pagamento. 12 meses de acesso.'),
-      h('div', { class: 'pr solo' }, h('div', {}, PP.oferta ? h('span', { class: 'bf' }, 'oferta de Natal · até ', PP.ate) : null, PP.oferta ? h('s', {}, `de ${PP.de}`) : null, h('b', { class: 'pix' }, PP.atual), h('small', {}, 'à vista no pix'))),
+      h('div', { class: 'pr solo' }, h('div', {}, PP.oferta ? h('span', { class: 'bf' }, `oferta ${PP.nome} · até `, PP.ate) : null, PP.oferta ? h('s', {}, `de ${PP.de}`) : null, h('b', { class: 'pix' }, PP.atual), h('small', {}, 'à vista no pix'))),
       h('a', { class: 'en-btn y en-passe-btn', href: PASSE_LINK(PP.atual), target: '_blank', rel: 'noopener noreferrer' }, '🎮 quero meu passe anual'),
       h('p', { class: 'p3' }, 'já é aluno da escola Beaterista? seu acesso anual está incluso! ', h('a', { href: '#en-experimentar', onclick: (e) => { e.preventDefault(); boxAluno.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => cod.focus({ preventScroll: true }), 450); } }, 'entre com seu código.'))),
     h('section', { class: 'en-sec' }, h('h3', {}, 'veja ', h('span', {}, 'por dentro')), h('p', { class: 'en-pq' }, 'telas reais do app. cada jogo diz o que desenvolve.'),
