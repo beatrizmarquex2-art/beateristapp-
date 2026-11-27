@@ -1183,3 +1183,12 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .lj-slide-cta .lj-preco{display:inline-block;padding:0;margin:0;background:none;border:0;box-shadow:none;color:#b5162b;font:400 20px/1 'Anton',sans-serif;white-space:nowrap}
 .lj-slide-cta .lj-preco s{color:#777;font:700 12px var(--body,sans-serif)}
 .lj-slide-cta .lj-btn{flex:1 1 auto;min-width:0;padding:4px 8px;font-size:16px}.lj-slide-cta .lj-preco{flex:0 0 auto}
+
+/* janela Pix ou cartão da Lojinha */
+.lj-pay{width:min(420px,calc(100vw - 24px))}
+.lj-pay-op{display:grid;gap:3px;width:calc(100% - 24px);margin:10px 12px 0;padding:14px;text-align:left;border:3px solid rgb(var(--ink-rgb));border-radius:16px;background:#fffdf7;color:rgb(var(--ink-rgb));cursor:pointer;box-shadow:4px 4px 0 rgb(var(--ink-rgb));font:inherit}
+.lj-pay-op.pix{background:#b5162b;color:#fff}.lj-pay-op b{font:400 20px/1 'Anton',sans-serif;text-transform:uppercase}.lj-pay-op strong{font:400 34px/1 'Anton',sans-serif}
+.lj-pay-op.pix strong{color:#f6c44f}.lj-pay-op small{font-weight:800}.lj-pay-op em{font-style:normal;font-size:13px;opacity:.95}
+.lj-pay-op i{justify-self:stretch;margin-top:6px;padding:10px;text-align:center;font:400 17px 'Anton',sans-serif;font-style:normal;text-transform:uppercase;border:3px solid rgb(var(--ink-rgb));border-radius:12px;background:#fffdf7;color:rgb(var(--ink-rgb))}
+.lj-pay-op .lj-selo{justify-self:start}
+.lj-pay-op.pix small,.lj-pay-op.pix em{color:#fff}.lj-pay-op.pix small{color:#f6c44f}

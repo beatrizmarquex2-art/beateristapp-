@@ -21,7 +21,9 @@ export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', ..._ARTE, l
 // O combo "Aprende Brincando" NÃO leva o UNO Musical (marca da Mattel; o UNO fica só como jogo dentro do app, nunca à venda).
 export const COMBOS = [
   { id: 'combo-ensina', cor: 'azul', nome: 'Combo Robôterista Ensina', desc: '3 apostilas completas pra aprender teoria, praticar e evoluir', itens: ['Melodia e Harmonia · 102 páginas', 'Figuras e Ritmos · 100 páginas', 'Na Prática · 48 atividades'], preco: 'R$ 79,90', img: 'assets/loja/combo-ensina.webp', w: 1199, h: 1312, link: 'https://pay.hotmart.com/K108463375K' },
-  { id: 'combo-brincando', cor: 'vermelho', nome: 'Combo Robôterista Aprende Brincando', desc: 'jogo e colorir pra aprender música brincando', itens: ['Jogo da Memória Musical · 61 pares', 'Robôterista Paul para colorir · 50 páginas'], preco: '', img: '', w: 0, h: 0, link: '' },
+  { id: 'combo-brincando', cor: 'vermelho', nome: 'Combo Robôterista Aprende Brincando', desc: 'jogo e colorir pra aprender música brincando', itens: ['Jogo da Memória Musical · 61 pares', 'Robôterista Paul para colorir · 50 páginas'], preco: '', img: '', w: 0, h: 0, link: '',
+    // enquanto o combo não existe na Hotmart (a Bea pediu 27/nov): o botão leva pro Jogo da Memória Musical solto. Quando tiver o link do combo, é só preencher `link` (e apagar `provisorio`).
+    provisorio: { nome: 'Jogo da Memória Musical', preco: 'R$ 19,90', link: 'https://pay.hotmart.com/T108261878K' } },
   { id: 'combo-cards', cor: 'amarelo', nome: 'Combo Robôterista Cria e Revisa', desc: 'os 3 baralhos de cards pra imprimir, recortar e revisar', itens: ['Cards: Teoria Musical · 150 cartas', 'Cards: Instrumentos · 90 cartas', 'Cards: Dicionário Musical · 120 termos'], preco: 'R$ 49,90', precoDe: 'R$ 59,70', img: 'assets/loja/cards-combo.webp', w: 800, h: 800, link: 'https://pay.hotmart.com/F108547827R' },
 ];
 // Banner larga "Combos especiais" (arte da Bea): abre a seção de combos da Lojinha.

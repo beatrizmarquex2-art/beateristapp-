@@ -4,7 +4,7 @@ import { h } from '../util.js';
 import { iconePaul } from '../icone-paul.js';
 import { toast } from '../ui.js';
 import { PASSE, PRODUTOS, COMBOS, AMADOS, BANNER_COMBOS, ANUAL, SECOES, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
-import { precoPasse } from '../passe-preco.js';
+import { precoPasse, URL_CARTAO } from '../passe-preco.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
 const comprar = (item) => () => {
@@ -35,11 +35,22 @@ function detalhe(p) {
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 
-/** Banner do acesso anual (oferta Black Friday / Natal): fica em cima dos combos enquanto vale a oferta. */
+/** Janela "como você quer pagar?": Pix (página de pagamento, código por e-mail) ou cartão (Hotmart). Os dois sempre visíveis. */
+function escolhaPasse() {
+  const P = precoPasse(); const ir = (url) => { const w = window.open(url, '_blank', 'noopener'); if (!w) location.href = url; };
+  const dlg = h('dialog', { class: 'lj-dlg lj-pay', 'aria-label': 'como você quer pagar?' },
+    h('div', { class: 'lj-dtop' }, h('b', {}, 'como você quer pagar?'), h('button', { type: 'button', class: 'lj-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
+    h('button', { type: 'button', class: 'lj-pay-op pix', onclick: () => ir(PASSE.link) }, h('span', { class: 'lj-selo' }, 'melhor preço'), h('b', {}, 'Pix'), h('strong', {}, P.atual), h('small', {}, P.oferta ? `oferta ${P.nome} · até ${P.ate}` : 'pagamento único'), h('em', {}, 'o código chega no seu e-mail assim que o Pix é confirmado'), h('i', {}, 'Comprar com Pix ›')),
+    h('button', { type: 'button', class: 'lj-pay-op cartao', onclick: () => ir(URL_CARTAO) }, h('b', {}, 'Cartão de crédito'), h('strong', {}, P.cartao), h('small', {}, 'pagamento pela Hotmart'), h('i', {}, 'Comprar com cartão ›')),
+    h('p', { class: 'lj-ddig' }, '12 meses de acesso · até 2 aparelhos'));
+  dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+/** Banner do acesso anual (arte da Bea; muda por data): fica no topo; o toque abre a escolha Pix ou cartão. */
 function destaqueAnual() {
   return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
-    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `comprar o acesso anual por ${precoPasse().atual}`, onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
-    h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
+    h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `comprar o acesso anual por ${precoPasse().atual}`, onclick: escolhaPasse }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
+    h('div', { class: 'lj-bf-cta' }, h('button', { type: 'button', class: 'lj-btn amarelo', 'data-id': ANUAL.id, onclick: escolhaPasse }, 'Quero o acesso anual', h('b', { 'aria-hidden': 'true' }, '›'))));
 }
 
 /** Carrossel: faixa que desliza (snap) + setas ‹ › + bolinhas + teclado ← →. `auto` (ms) avança sozinho e pára quando a pessoa mexe. */
@@ -70,8 +81,10 @@ const slideCombo = (c) => (c.img
     h('button', { type: 'button', class: 'lj-slide-arte', 'aria-label': `ver ${c.nome}`, onclick: () => detalhe({ ...c, fotos: [c.img], tag: 'combo' }) }, h('img', { src: c.img, alt: `${c.nome}: ${c.desc}`, loading: 'lazy', width: c.w, height: c.h })),
     h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', c.preco] : c.preco), botao('Quero', c, 'amarelo')))
   : h('article', { class: 'lj-slide lj-slide-breve', 'data-id': c.id },
-    h('div', { class: 'lj-slide-arte vazia' }, h('span', { class: 'lj-selo' }, 'em breve'), h('h3', {}, c.nome), h('ul', {}, ...c.itens.map((x) => h('li', {}, x))), h('img', { src: 'assets/paul/colorido/paul-presente.webp', alt: '', loading: 'lazy', draggable: 'false' })),
-    h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, 'chegando'), botao('Quero', c, 'amarelo'))));
+    h('div', { class: 'lj-slide-arte vazia' }, h('span', { class: 'lj-selo' }, c.provisorio ? 'combo chegando' : 'em breve'), h('h3', {}, c.nome), h('ul', {}, ...c.itens.map((x) => h('li', {}, x))), h('img', { src: 'assets/paul/colorido/paul-presente.webp', alt: '', loading: 'lazy', draggable: 'false' })),
+    c.provisorio
+      ? h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, c.provisorio.preco), botao('Levar o jogo', { id: c.id, link: c.provisorio.link }, 'amarelo'))
+      : h('div', { class: 'lj-slide-cta' }, h('b', { class: 'lj-preco' }, 'chegando'), botao('Quero', c, 'amarelo'))));
 
 /** Os preferidos da turma (colorir, atividades, memória) + o Uno Musical (jogo do app, não vende): minicartões num carrossel. */
 const mini = (p) => h('article', { class: 'lj-mini', 'data-id': p.id },
