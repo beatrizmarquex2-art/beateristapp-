@@ -15,12 +15,14 @@ export const printsHoje = (rm, hoje) => (rm.pd && rm.pd.dia === hoje ? rm.pd.n |
 export const podeMandarPrint = (rm, hoje) => printsHoje(rm, hoje) < PRINTS_DIA;
 /** Conta 1 print enviado hoje. */
 export const contarPrint = (state, hoje) => { const rm = rmDe(state); return { ...state, rm: { ...rm, pd: { dia: hoje, n: printsHoje(rm, hoje) + 1 } } }; };
-export const podeGirar = (rm, hoje) => (rm.t | 0) > 0 && restantesHoje(rm, hoje) > 0;
+/** Giros VENCEM no fim do dia: o saldo só vale no dia em que foi ganho (`td`). Sem `td` (saldo antigo) vale. */
+export const giros = (rm, hoje) => (rm.td == null || !hoje || rm.td === hoje ? rm.t | 0 : 0);
+export const podeGirar = (rm, hoje) => giros(rm, hoje) > 0 && restantesHoje(rm, hoje) > 0;
 
 /** Missão aprovada vira 1 giro (uma vez só por resgate). Devolve o mesmo `state` se já tinha contado. */
-export function ganharGiro(state, idResgate) {
+export function ganharGiro(state, idResgate, hoje) {
   const rm = rmDe(state); if (rm.ids.includes(idResgate)) return state;
-  return { ...state, rm: { ...rm, t: (rm.t | 0) + 1, ids: [...rm.ids, idResgate] } };
+  return { ...state, rm: { ...rm, t: giros(rm, hoje) + 1, td: hoje == null ? rm.td : hoje, ids: [...rm.ids, idResgate] } };
 }
 const sorteio = (rng, pesos) => { const total = pesos.reduce((a, [, w]) => a + w, 0); let x = rng() * total; for (const [k, w] of pesos) { if (x < w) return k; x -= w; } return pesos[0][0]; };
 
@@ -28,7 +30,7 @@ const sorteio = (rng, pesos) => { const total = pesos.reduce((a, [, w]) => a + w
 export function girar(state, hoje, rng = Math.random, surpresas = []) {
   const rm = rmDe(state); if (!podeGirar(rm, hoje)) return null;
   const g = (rm.g | 0) + 1; const dia = rm.dia === hoje ? rm.dia : hoje; const n = rm.dia === hoje ? (rm.n | 0) + 1 : 1;
-  let novo = { ...rm, t: rm.t - 1, g, dia, n }; let st = state; let premio;
+  let novo = { ...rm, t: giros(rm, hoje) - 1, td: hoje, g, dia, n }; let st = state; let premio;
   let tipo = sorteio(rng, PREMIOS);
   if (tipo === 'surpresa') {
     const livres = surpresas.filter((s) => !rm.sur.includes(s.chave));

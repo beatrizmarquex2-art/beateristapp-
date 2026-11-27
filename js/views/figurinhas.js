@@ -74,8 +74,8 @@ export function mount(host, parts = [], opts = {}) {
       if (r.status !== 'aprovado' || r.entregue) continue;
       let ok = false; try { ok = await RS.entregar(r.id); } catch { /* tenta na próxima */ } if (!ok) continue; r.entregue = true;
       if (RS.VALE_GIRO(r.tipo)) { // missão aprovada: 1 giro da ROLETA MALUCA (o id do resgate garante que só conta uma vez)
-        const s2 = RM.ganharGiro(state, r.id); if (s2 !== state) save(s2);
-        toast('a Bea aprovou o seu print: +1 giro na roleta maluca!', { ms: 5000 }); continue;
+        const s2 = RM.ganharGiro(state, r.id, todayKey()); if (s2 !== state) save(s2);
+        toast('a Bea aprovou o seu print: +1 giro na roleta maluca (vale só hoje)!', { ms: 5000 }); continue;
       }
       if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (cada produto = 1 · combo = todas)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
@@ -212,7 +212,7 @@ export function mount(host, parts = [], opts = {}) {
         else if (premio.tipo === 'surpresa') caixa.append(ico(`tipo-${premio.item.k}`, 56), h('p', {}, `${({ planner: 'planner', colorir: 'folha de colorir', wallpaper: 'wallpaper' })[premio.item.k]}: ${premio.item.nome}`), h('a', { class: 'rs-btn', href: premio.item.arquivo, download: '', target: '_blank', rel: 'noopener' }, 'baixar agora'));
         else if (premio.tipo === 'giros') caixa.append(h('p', {}, `você ganhou +${premio.giros} giros pra usar (até 3 por dia)`));
         else caixa.append(h('p', {}, premio.tipo === 'epico' ? 'o giro épico está no seu baú: abra na roleta' : 'a figurinha exclusiva chegou no seu baú'));
-        const resta = RM.restantesHoje(RM.rmDe(state), todayKey()); const tem = RM.rmDe(state).t;
+        const resta = RM.restantesHoje(RM.rmDe(state), todayKey()); const tem = RM.giros(RM.rmDe(state), todayKey());
         caixa.append(h('div', { class: 'rm-bt' }, tem > 0 && resta > 0 ? h('button', { type: 'button', class: 'rs-btn', onclick: () => { close(); setTimeout(abrirRoleta, 250); } }, `girar de novo (${resta} hoje)`) : null, h('button', { type: 'button', class: 'rs-btn ghost', onclick: close }, 'fechar')));
       };
       requestAnimationFrame(() => requestAnimationFrame(() => { roda.style.transform = `rotate(${-(360 * 5 + idx * ang + ang / 2)}deg)`; }));
@@ -224,9 +224,9 @@ export function mount(host, parts = [], opts = {}) {
     const hoje = todayKey(); const rm = RM.rmDe(state); const resta = RM.restantesHoje(rm, hoje); const pode = RM.podeGirar(rm, hoje);
     const faltaPrint = !RM.podeMandarPrint(rm, hoje);
     const roleta = h('section', { class: 'rs-card rs-maluca' },
-      h('div', { class: 'rs-t' }, h('b', {}, ico('roleta-maluca', 30), ' Roleta maluca'), h('em', {}, `${rm.t} giro${rm.t === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
-      h('small', {}, `cada missão aprovada = 1 giro. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros. máximo ${RM.PRINTS_DIA} prints por dia${faltaPrint ? ' (hoje já foram 3: volte amanhã)' : ` (hoje ${RM.printsHoje(rm, hoje)}/${RM.PRINTS_DIA})`}`),
-      h('button', { type: 'button', class: 'rs-btn', disabled: pode ? null : true, onclick: abrirRoleta }, pode ? 'girar' : rm.t > 0 && !resta ? 'volte amanhã' : 'sem giros'));
+      h('div', { class: 'rs-t' }, h('b', {}, ico('roleta-maluca', 30), ' Roleta maluca'), h('em', {}, `${RM.giros(rm, hoje)} giro${RM.giros(rm, hoje) === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
+      h('small', {}, `cada missão aprovada = 1 giro, que vale só no dia. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros. máximo ${RM.PRINTS_DIA} prints por dia${faltaPrint ? ' (hoje já foram 3: volte amanhã)' : ` (hoje ${RM.printsHoje(rm, hoje)}/${RM.PRINTS_DIA})`}`),
+      h('button', { type: 'button', class: 'rs-btn', disabled: pode ? null : true, onclick: abrirRoleta }, pode ? 'girar' : RM.giros(rm, hoje) > 0 && !resta ? 'volte amanhã' : 'sem giros'));
     const ic = (tipo, rotulo) => (statusRs(tipo) ? h('span', { class: 'rs-st' }, statusRs(tipo) === 'aprovado' ? '✓' : '⏳') : h('button', { type: 'button', class: 'rs-ic', 'aria-label': `mandar print: ${rotulo}`, title: 'mandar print', onclick: () => enviarPrint(tipo) }, ico('acao-print', 24, true)));
     const link = (url, rotulo) => h('a', { class: 'rs-ic', href: url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `abrir ${rotulo}`, title: 'abrir' }, ico('acao-abrir', 24, true));
     const linha = (nome, vale, ...acoes) => h('tr', {}, h('td', {}, nome), h('td', { class: 'rs-v' }, vale), h('td', { class: 'rs-a' }, ...acoes));

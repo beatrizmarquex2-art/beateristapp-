@@ -18,16 +18,21 @@ test('cada resultado entrega o que diz', () => {
   let r = R.girar(base(), 'd', rngPara('epico'), sur); assert.equal(r.premio.tipo, 'epico'); assert.ok(r.state.granted.includes(r.premio.pacote)); assert.equal(L.packKind(r.premio.pacote), 'epico');
   r = R.girar(base(), 'd', rngPara('exclusiva'), sur); assert.equal(r.premio.tipo, 'exclusiva'); assert.ok(r.state.granted.includes(r.premio.pacote));
   r = R.girar(base(), 'd', rngPara('estrelas'), sur); assert.equal(r.premio.tipo, 'estrelas'); assert.equal(r.premio.estrelas, 30);
-  r = R.girar(base(), 'd', rngPara('giros'), sur); assert.equal(r.premio.tipo, 'giros'); assert.equal(R.rmDe(r.state).t, 3);
+  r = R.girar(base(), 'd', rngPara('giros'), sur); assert.equal(r.premio.tipo, 'giros'); assert.equal(R.giros(R.rmDe(r.state), 'd'), 3);
   r = R.girar(base(), 'd', rngPara('surpresa'), sur); assert.equal(r.premio.tipo, 'surpresa'); assert.equal(R.rmDe(r.state).sur.length, 1);
 });
 test('surpresa não repete e, sem nada novo, vira estrelas', () => {
   const rngS = (() => { const alvo = R.PREMIOS.findIndex(([t]) => t === 'surpresa'); let acc = 0; for (let i = 0; i < alvo; i++) acc += R.PREMIOS[i][1]; return () => (acc + 1) / 100; })();
   let s = L.emptyState(); const vistos = new Set();
-  for (let i = 0; i < 3; i++) { s = R.ganharGiro(s, 'g' + i); const r = R.girar(s, 'dia' + i, rngS, sur); assert.equal(r.premio.tipo, 'surpresa'); assert.ok(!vistos.has(r.premio.item.chave)); vistos.add(r.premio.item.chave); s = r.state; }
-  s = R.ganharGiro(s, 'z'); const r = R.girar(s, 'dia9', rngS, sur); assert.equal(r.premio.tipo, 'estrelas');
+  for (let i = 0; i < 3; i++) { s = R.ganharGiro(s, 'g' + i, 'dia' + i); const r = R.girar(s, 'dia' + i, rngS, sur); assert.equal(r.premio.tipo, 'surpresa'); assert.ok(!vistos.has(r.premio.item.chave)); vistos.add(r.premio.item.chave); s = r.state; }
+  s = R.ganharGiro(s, 'z', 'dia9'); const r = R.girar(s, 'dia9', rngS, sur); assert.equal(r.premio.tipo, 'estrelas');
 });
 test('máximo de 3 prints por dia, não acumula', () => {
   let s = L.emptyState(); for (let i = 0; i < 3; i++) { assert.ok(R.podeMandarPrint(R.rmDe(s), 'd1')); s = R.contarPrint(s, 'd1'); }
   assert.equal(R.podeMandarPrint(R.rmDe(s), 'd1'), false); assert.equal(R.podeMandarPrint(R.rmDe(s), 'd2'), true); s = R.contarPrint(s, 'd2'); assert.equal(R.printsHoje(R.rmDe(s), 'd2'), 1);
+});
+test('giros vencem no fim do dia', () => {
+  let s = R.ganharGiro(L.emptyState(), 'a', 'd1'); s = R.ganharGiro(s, 'b', 'd1'); assert.equal(R.giros(R.rmDe(s), 'd1'), 2);
+  assert.equal(R.giros(R.rmDe(s), 'd2'), 0); assert.equal(R.podeGirar(R.rmDe(s), 'd2'), false); assert.equal(R.girar(s, 'd2'), null);
+  s = R.ganharGiro(s, 'c', 'd2'); assert.equal(R.giros(R.rmDe(s), 'd2'), 1);
 });
