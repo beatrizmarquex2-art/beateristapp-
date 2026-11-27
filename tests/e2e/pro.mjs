@@ -20,7 +20,7 @@ await ctx.route('**/rest/v1/pro_*', async (r) => {
 const shot = async (n) => { if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/pro-${n}.png` }); };
 await page.setViewportSize({ width: 1280, height: 800 });
 await page.goto(url + '/pro.html'); await sleep(1500);
-check('sem login aparece a entrada do PRO', await page.locator('.pe-h').count() === 1 && /PRO/.test(await page.locator('.pe-marca').innerText()));
+check('sem login aparece a entrada do PRO', await page.locator('.pe-h').count() === 1 && await page.locator('.pe-logo').count() === 1);
 await shot('1-entrada');
 await page.locator('.pe-link').first().click();
 await page.locator('input[name=nome]').fill('Bia Souza'); await page.locator('input[name=email]').fill('a@b.com'); await page.locator('input[name=senha]').fill('senha-forte-1');
@@ -28,7 +28,7 @@ await page.locator('.pe-form .pb').click(); await sleep(1800);
 check('criar conta chama o servidor e já entra', signups === 1 && await page.locator('.psh').count() === 1);
 check('o nome da conta vira o perfil e o início cumprimenta', DB.pro_perfil[0] && DB.pro_perfil[0].nome === 'Bia Souza' && /Bia/.test(await page.locator('.pt-top h1').innerText()));
 await shot('2-inicio');
-check('menu lateral com as 7 áreas', await page.locator('.ps-nav a').count() === 7);
+check('menu lateral com as 8 áreas', await page.locator('.ps-nav a').count() === 8);
 await page.locator('.ps-rec').click(); await sleep(300);
 check('menu recolhe e lembra', await page.locator('.psh.mini').count() === 1);
 await page.locator('.ps-rec').click();
@@ -85,11 +85,35 @@ await page.locator('.ep-ib[aria-label^="Voltar"]').click(); await sleep(500);
 check('voltar do editor leva ao Estúdio', page.url().endsWith('#/estudio'));
 await page.evaluate(() => { location.hash = '#/assistente'; }); await sleep(400);
 check('assistente é honesto: sem caixa de texto de enfeite', await page.locator('.pas textarea, .pas input').count() === 0 && /ainda não está ligado/.test(await page.locator('.pas').innerText()));
+// pedaleira (computador)
+await page.evaluate(() => { location.hash = '#/pedaleira'; }); await sleep(600);
+check('pedaleira tem os 4 botões redondos', await page.locator('.pp-b').count() === 4);
+await page.locator('.pp-b[data-k="partitura"]').click(); await sleep(200);
+check('painel da partitura tem "Nova partitura"', await page.locator('.pp-nova').count() === 1);
+await page.locator('.pp-b[data-k="codigos"]').click(); await sleep(200);
+check('Códigos diz com clareza que a ligação com o PLAY não está ativa', /ainda não está ativa/.test(await page.locator('.pp-painel').innerText()));
+await page.locator('.pp-b[data-k="metronomo"]').click(); await sleep(600);
+check('abre o metrônomo', await page.locator('.pm2-bpm').count() === 1);
+for (const t of [0, 1, 2]) { await page.locator('.pm2-tap').dispatchEvent('pointerdown'); await sleep(500); }
+const bpm = +(await page.locator('.pm2-bpm').innerText());
+check('tap tempo ajusta o andamento (~120)', bpm >= 105 && bpm <= 135);
+await page.locator('.pm2-pass').nth(2).click(); await sleep(100);
+check('+1 aumenta o andamento', +(await page.locator('.pm2-bpm').innerText()) === bpm + 1);
+await page.locator('.pm2-go').click(); await sleep(900);
+check('metrônomo toca e o botão vira "parar"', /parar/.test(await page.locator('.pm2-go').innerText()));
+await page.locator('.pm2-go').click();
+await page.evaluate(() => { location.hash = '#/afinador'; }); await sleep(600);
+check('afinador abre com as afinações e as cordas do violão', await page.locator('.pa2-afs button').count() === 6 && await page.locator('.pa2-cordas span').count() === 6);
 // celular
-await page.setViewportSize({ width: 390, height: 800 }); await sleep(400);
-check('no celular o menu vira gaveta', await page.locator('.pm').isVisible() && !(await page.locator('.ps').boundingBox()).x > -1);
-await page.locator('.pm-b').click(); await sleep(400);
+await page.setViewportSize({ width: 390, height: 800 }); await page.evaluate(() => { location.hash = '#/pedaleira'; }); await sleep(600);
 await shot('7-celular');
-check('gaveta abre', await page.locator('.psh.aberto').count() === 1);
+check('no celular aparece a barra de baixo com Pedaleira no centro', await page.locator('.pbar').isVisible() && await page.locator('.pbar a.central').count() === 1);
+check('no celular o menu lateral some', !(await page.locator('.ps').boundingBox()).x > -1);
+check('sem rolagem horizontal no celular', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+await page.locator('.pbar-mais').click(); await sleep(400);
+check('"Mais" abre a gaveta', await page.locator('.psh.aberto').count() === 1);
+await page.evaluate(() => document.querySelector('.ps-vel').click()); await sleep(300);
+for (const r of ['#/inicio', '#/alunos', '#/agenda', '#/aulas', '#/biblioteca', '#/afinador', '#/metronomo']) { await page.evaluate((x) => { location.hash = x; }, r); await sleep(500); const ov = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1); if (ov) check(`sem estouro lateral no celular em ${r}`, false); }
+await shot('8-celular-metronomo');
 check('sem erros de script', errs.length === 0 || (console.log(errs), false));
 await browser.close(); srv.close(); done();

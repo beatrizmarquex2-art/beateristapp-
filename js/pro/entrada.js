@@ -40,7 +40,7 @@ export function mount(host, { aoEntrar }) {
     } catch (er) { msg.textContent = er.message; } ok.disabled = false;
   });
   host.append(h('main', { class: 'pe' },
-    h('div', { class: 'pe-marca' }, h('span', { class: 'pe-b' }, 'BEATERISTA'), h('span', { class: 'pe-pro' }, 'PRO'), h('p', { class: 'pe-lema' }, 'Crie. Ensine. Transforme.')),
+    h('div', { class: 'pe-marca' }, h('img', { class: 'pe-logo', src: 'assets/pro/logo-pro-claro.png', alt: 'Beaterista PRO', width: 520, height: 292 }), h('p', { class: 'pe-lema' }, 'Crie. Ensine. Transforme.')),
     h('section', { class: 'pe-cx' }, titulo, sub, forma)));
   pinta(); return () => {};
 }

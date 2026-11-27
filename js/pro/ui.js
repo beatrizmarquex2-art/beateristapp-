@@ -10,6 +10,8 @@ export const ICONE = {
   biblioteca: tr('M5 4v16M10 4v16M15 6l4 14M3 20h18'),
   alunos: tr('M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.5-7 8-7s8 3 8 7'),
   assistente: tr('M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'),
+  pedaleira: tr('M5 7h14v10H5zM8.5 12a1.5 1.5 0 1 0 0 .01M15.5 12a1.5 1.5 0 1 0 0 .01M12 9v6'),
+  mais2: tr('M5 12h.01M12 12h.01M19 12h.01'),
   agenda: tr('M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'),
   menu: tr('M4 7h16M4 12h16M4 17h16'),
   sair: tr('M10 5H5v14h5M15 8l4 4-4 4M19 12H9'),
