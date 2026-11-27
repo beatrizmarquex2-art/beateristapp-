@@ -2322,3 +2322,7 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .au-pauta svg { width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) { .au-banner .au-quem.vez { animation: none; } }
 .jg-figurix .fx-op.fx-op-txt { min-height: 54px; padding: 8px 10px; } .jg-figurix .fx-op.fx-op-txt b { font: 700 14px/1.2 var(--body, inherit); text-align: center; text-transform: none; }
+
+/* troca de foto no passe do Início (sheet): mesmas bolinhas do Perfil, em linha que quebra */
+.in-foto-lista { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0 12px; }
+.in-foto-lista .pf-paul-op { width: 56px; height: 56px; flex: none; }

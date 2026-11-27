@@ -13,6 +13,7 @@ import * as store from '../store.js';
 import { atualizarAgora } from '../atualizar-btn.js';
 import * as PERF from '../inicio-perfil.js';
 import { toast } from '../ui.js';
+import * as FO from '../foto-opcoes.js';
 
 const DIAS_KEY = 'bt-inicio-dias'; const LUGAR_KEY = 'bt-inicio-lugar';
 const dia = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -141,6 +142,18 @@ export function mount(host, { nome = '' } = {}) {
   let urlFoto = '';
   const carregaFoto = async () => { try { const bl = await D.metaLer('perfil-foto'); if (urlFoto) URL.revokeObjectURL(urlFoto); urlFoto = bl ? URL.createObjectURL(bl) : ''; imgPasse.src = urlFoto || paulBateria; fotoPasse.classList.toggle('com-foto', !!urlFoto); } catch { /* fica o Paul */ } };
   carregaFoto(); window.addEventListener('bt-foto-perfil', carregaFoto);
+  // tocar na foto abre as opções ali mesmo (Pauls, Billie, a foto da própria pessoa ou voltar pro Paul na bateria); o perfil completo continua a um toque
+  fotoPasse.addEventListener('click', (e) => {
+    e.preventDefault();
+    sheet('sua foto', (close) => {
+      const feito = (msg) => { close(); toast(msg); };
+      const falha = () => toast('não consegui trocar a foto agora');
+      const arquivo = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return; try { await FO.usarArquivo(f); feito('foto salva neste aparelho'); } catch { falha(); } } });
+      return h('div', { class: 'in-foto-op' }, h('p', { class: 'in-sobre-t' }, 'escolha um personagem ou ponha a sua foto:'),
+        h('div', { class: 'in-foto-lista', role: 'group', 'aria-label': 'personagens' }, ...FO.ARTES.map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { await FO.usarArte(src); feito(`${nomeArte} é a sua foto agora`); } catch { falha(); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))),
+        h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, '📷 usar a minha foto'), h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('voltou o Paul na bateria'); } catch { falha(); } } }, 'Paul na bateria'), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo);
+    });
+  });
   // "sobre mim": instrumento, estilo e meta em etiquetas; tocar numa abre as opções em chips
   const pills = h('div', { class: 'in-pills', role: 'group', 'aria-label': 'sobre mim: instrumento, estilo e meta' });
   const escolherCampo = (c) => sheet(c.nome, (close) => {
