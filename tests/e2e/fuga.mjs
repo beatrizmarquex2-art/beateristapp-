@@ -15,7 +15,12 @@ check('rótulos: 1 e 2 → 2 portas · 3 a 5 → 3 · 6 e 7 → desafio · 8 a 1
 check('o contador mostra 0/12 e 0/36', /0\/12/.test(await page.textContent('.fm-head')) && /0\/36/.test(await page.textContent('.fm-head')));
 await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-mapa.png` : '/tmp/fuga-mapa.png' });
 await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
-check('fase 1 tem 2 portas lado a lado no corredor; a porta 1 é o quiz de 3 perguntas', /pergunta 1 de 3/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2/.test(await page.evaluate(() => document.body.innerText)));
+check('fase 1 tem 2 portas e começa num jogo de tocar (mesa de som), NÃO no quiz', /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2 · mesa de som/.test(await page.evaluate(() => document.body.innerText)) && !/pergunta 1 de/i.test(await page.evaluate(() => document.body.innerText)));
+// o 1º quiz vem na fase 5, por último (porta 3 de 3): o gancho de teste começa direto nela
+await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 5; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { window.__fugaPortaInicial = 2; location.hash = '#/dicas/fuga'; }); await sleep(2500);
+await page.evaluate(() => document.querySelectorAll('.fm-no')[4].click()); await sleep(1500);
+check('fase 5 tem 3 portas e a porta 3 é o quiz de 3 perguntas', /pergunta 1 de 3/i.test(await page.evaluate(() => document.body.innerText)) && /0 de 3 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 3 de 3/.test(await page.evaluate(() => document.body.innerText)));
 check('o quiz tem o botão "pular pergunta"', (await page.locator('.dc-desistir').count()) === 1);
 await page.locator('.dc-desistir').click(); await sleep(500);
 const bt = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
@@ -24,7 +29,8 @@ await page.evaluate(() => document.querySelector('.sheet button[data-acao="volta
 for (let i = 0; i < 3; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
 await sleep(1500); const txt = await page.evaluate(() => document.body.innerText);
 check('terminou o quiz: abriu a porta (com ★) ou pediu pra tentar de novo (menos de 3 certas)', /porta aberta/.test(txt) || /tentar outra vez/.test(txt));
-if (/porta aberta/.test(txt)) check('abriu a porta 1: aparece "próxima porta" e a porta 2 de 2', /próxima porta/.test(txt) && /porta 2 de 2/.test(txt));
+if (/porta aberta/.test(txt)) check('abriu a última porta da fase 5: a fase fecha (sem "próxima porta")', !/próxima porta/.test(txt));
+await page.evaluate(() => { window.__fugaPortaInicial = 0; });
 // mais portas nas fases seguintes (progresso simulado): fase 3 = 3 portas, fase 11 = 4 portas
 for (const [fase, portas] of [[3, 3], [11, 4]]) {
   await page.evaluate(async (f) => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < f; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); }, fase);

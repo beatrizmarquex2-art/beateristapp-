@@ -28,7 +28,7 @@ check('trilha 2 (ritmo): cabeçalho 0/36, mapa começa do zero', /trilha 2 · ri
 await page.evaluate(() => document.querySelector('.fg-trilhas').scrollIntoView({ block: 'start' })); await page.evaluate(() => window.scrollBy(0, -90)); await sleep(300); await page.screenshot({ path: `${SHOTS}/trilhas-ritmo.png` });
 await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
 const txt = await page.evaluate(() => document.body.innerText);
-check('abre a fase 1 da trilha 2 com 2 portas (quiz do assunto)', /fase 1 · porta 1 de 2/.test(txt) && /pergunta 1 de 3/i.test(txt));
+check('abre a fase 1 da trilha 2 com 2 portas (começa num jogo de tocar, não no quiz)', /fase 1 · porta 1 de 2/.test(txt) && !/pergunta 1 de 3/i.test(txt));
 await page.screenshot({ path: `${SHOTS}/trilhas-jogo.png` });
 // recomeçar a trilha 2 não mexe na 1
 await abre(); await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const g = B.getGame('fuga'); B.setGame('fuga', { trilha: 2, est: { ...g.est, 't2:estudio:1': 2, 't2:estudio:2': 1 } }); }); await abre();

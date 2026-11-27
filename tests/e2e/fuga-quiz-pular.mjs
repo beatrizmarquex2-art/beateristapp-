@@ -7,8 +7,9 @@ await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(2000);
 await page.evaluate(async () => { const S = await import('/js/store.js'); const T = ['bumbo', 'caixa', 'chimbal', 'pratos', 'baqueta', 'compasso', 'pulsação', 'andamento', 'ritmo', 'melodia', 'harmonia', 'acorde', 'tempo', 'ensaio', 'palco']; for (let i = 0; i < 30; i++) await S.upsert('tip', `tip-${i}`, { n: i + 1, text: `dica ${i + 1}: treine com calma o ${T[i % T.length]} e o ${T[(i + 3) % T.length]} todos os dias para soltar a mão.` }); });
-await page.goto(`${url}/aluno.html#/dicas/fuga`); await sleep(2800);
-await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
+await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 5; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); window.__fugaPortaInicial = 2; }); // o quiz agora é a porta 3 da fase 5
+await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2800);
+await page.evaluate(() => document.querySelectorAll('.fm-no')[4].click()); await sleep(1500);
 const txt = () => page.evaluate(() => document.body.innerText);
 check('o quiz da porta tem 3 perguntas e o botão "pular pergunta"', /pergunta 1 de 3/i.test(await txt()) && (await page.locator('.dc-desistir').count()) === 1 && /pular pergunta/.test(await page.textContent('.dc-desistir')));
 // 1ª pulada: avisa que custa 1 ★ e oferece a dica

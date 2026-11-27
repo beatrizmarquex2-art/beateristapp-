@@ -94,7 +94,7 @@ export function mount(host) {
   async function joga(M, mi, n) {
     limpa(); if (gone) return; const bonusB = n === 'B'; const portas = bonusB ? [{ ...BONUS, desafio: true, assuntos: TR.assuntos, extra: TR.extra }] : portasDaFase(mi, n, TR); const N = portas.length;
     const mod = (await import('../views/dicas.js'))._duelo; const T = await import('../tips.js'); if (gone) return;
-    await carregaBanco(); if (gone) return; const todasDicas = mod.items(); const fa = filtraAssunto(todasDicas, TR.assuntos); const vistosG = (getGame('fuga').vistos || {})[trilha] || []; const its = semVistos(fa.itens, vistosG); let usados = []; const caixa = h('div', { class: 'dc-box' }); let k = 0; let api = null; let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = []; let tPorta = 0;
+    await carregaBanco(); if (gone) return; const todasDicas = mod.items(); const fa = filtraAssunto(todasDicas, TR.assuntos); const vistosG = (getGame('fuga').vistos || {})[trilha] || []; const its = semVistos(fa.itens, vistosG); let usados = []; const caixa = h('div', { class: 'dc-box' }); let k = Math.min(N - 1, Math.max(0, Number(window.__fugaPortaInicial) || 0)); let api = null; /* o gancho __fugaPortaInicial é só pros testes */ let feito = false; const t0 = Date.now(); let tentativas = 0; const ganhos = []; let tPorta = 0;
     const rel = h('p', { class: 'fg-rel', role: 'timer', hidden: true });
     const paraRelogio = () => { clearInterval(relogio); relogio = 0; };
     const sair = () => { paraRelogio(); mapa(); };
