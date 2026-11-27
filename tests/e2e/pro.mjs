@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch();
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-const DB = { pro_perfil: [], pro_alunos: [], pro_aulas: [], pro_eventos: [] }; let n = 0; let signups = 0;
+const DB = { pro_perfil: [], pro_alunos: [], pro_aulas: [], pro_eventos: [], pro_favoritos: [] }; let n = 0; let signups = 0;
 const DEF = { pro_alunos: { instrumento: '', nivel: 'iniciante', idade: null, contato: '', metas: [], notas: '', ativo: true }, pro_aulas: { instrumento: '', idade: '', nivel: 'iniciante', duracao_min: 50, modelo: false, favorito: false, pasta: '', dados: {} }, pro_eventos: { aluno_id: null, aula_id: null, titulo: '', duracao_min: 50, status: 'marcada', nota: '' }, pro_perfil: { nome: '', escola: '', instrumentos: [], logo: null } };
 const json = (r, b, s = 200) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
 await ctx.route('**/auth/v1/signup', (r) => { signups++; json(r, { access_token: 'tok', user: { id: 'u1', email: 'a@b.com' } }); });
@@ -28,7 +28,7 @@ await page.locator('.pe-form .pb').click(); await sleep(1800);
 check('criar conta chama o servidor e já entra', signups === 1 && await page.locator('.psh').count() === 1);
 check('o nome da conta vira o perfil e o início cumprimenta', DB.pro_perfil[0] && DB.pro_perfil[0].nome === 'Bia Souza' && /Bia/.test(await page.locator('.pt-top h1').innerText()));
 await shot('2-inicio');
-check('menu lateral com as 10 áreas', await page.locator('.ps-nav a').count() === 10);
+check('menu lateral com as 8 áreas', await page.locator('.ps-nav a').count() === 8);
 await page.locator('.ps-rec').click(); await sleep(300);
 check('menu recolhe e lembra', await page.locator('.psh.mini').count() === 1);
 await page.locator('.ps-rec').click();

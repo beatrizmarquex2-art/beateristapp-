@@ -2,7 +2,7 @@
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch();
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-const DB = { pro_perfil: [{ dono: 'u1', nome: 'Bia', escola: '', instrumentos: [], logo: null }], pro_alunos: [], pro_aulas: [], pro_eventos: [], partituras: [] }; let n = 0;
+const DB = { pro_perfil: [{ dono: 'u1', nome: 'Bia', escola: '', instrumentos: [], logo: null }], pro_alunos: [], pro_aulas: [], pro_eventos: [], pro_favoritos: [], partituras: [] }; let n = 0;
 const json = (r, b, s = 200) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
 await ctx.route('**/auth/v1/token**', (r) => json(r, { access_token: 'tok', refresh_token: 'r', expires_in: 3600, user: { id: 'u1', email: 'prof@exemplo.com' } }));
 await ctx.route(/\/rest\/v1\/(pro_\w+|partituras)/, async (r) => {

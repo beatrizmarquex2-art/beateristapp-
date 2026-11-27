@@ -6,6 +6,7 @@ import * as NUV from '../partitura-nuvem.js';
 import { rotaDe } from './editor-ritmico.js';
 import { desenhoDe, exportarPdf, exportarImagem } from './exportar.js';
 import { exerciciosIniciais, repertorioInicial } from './banco-seed.js';
+import * as PA from './pastas.js';
 
 const PASTA_BANCO = 'Banco de exercícios';
 const temPartitura = (e) => e.instrumento !== 'geral' && e.dados && Array.isArray(e.dados.evs) && e.dados.evs.length > 0;
@@ -42,6 +43,11 @@ export async function mount(host, ctx, _partes, { tipo = 'exercicio' } = {}) {
   const raiz = h('div', { class: 'pt' }); host.append(raiz);
   const carrega = async () => { try { lista = await D.listar('pro_exercicios', { ordem: 'instrumento.asc,categoria.asc,ordem.asc,titulo.asc', limite: 2000, filtros: { tipo: `eq.${tipo}` } }); return true; } catch (e) { raiz.replaceChildren(vazio('Não deu para carregar', D.textoErro(e))); return false; } };
   if (!(await carrega()) || gone) return () => {};
+  let favs = []; let favOk = true; let partPastas = [];
+  const carregaFavs = async () => { try { favs = await PA.listarFavoritos(); favOk = true; } catch { favs = []; favOk = false; } }; await carregaFavs();
+  try { partPastas = await NUV.listar(); } catch { /* sem pasta online: só as pastas dos favoritos */ }
+  const favDe = (e) => favs.find((f) => f.exercicio_id === e.id) || null;
+  const guardarPasta = async (e) => { const atual = favDe(e); const pasta = await PA.escolhePasta({ titulo: atual ? 'Mudar de pasta' : 'Salvar numa pasta', atual: atual ? atual.pasta : '', pastas: PA.todasPastas(partPastas, favs) }); if (pasta === null) return false; await PA.favoritar(e.id, pasta, atual); if (pasta) PA.gravaVazias(PA.lerVazias().filter((x) => x !== pasta)); await carregaFavs(); aviso(pasta ? `salvo na pasta "${pasta}"` : 'salvo nos seus favoritos (sem pasta)'); return true; };
 
   const copiaPraMim = async (e) => { const r = await NUV.salvar({ nome: e.titulo.slice(0, 60), instrumento: e.instrumento, dados: rowDe(e).dados, pasta: PASTA_BANCO }); return r; };
   const usarNaAula = async (e) => { const dados = { objetivos: '', etapas: [{ tipo: 'pratica', titulo: e.titulo, min: 10, texto: e.descricao || '' }], repertorio: rep ? `${e.titulo} — ${e.artista}` : '', materiais: temPartitura(e) ? `Exercício do banco: ${e.titulo}${e.bpm ? ` (${e.bpm} bpm)` : ''}` : '', tarefa: '' };
@@ -52,6 +58,7 @@ export async function mount(host, ctx, _partes, { tipo = 'exercicio' } = {}) {
     corpo.append(h('p', { class: 'pb-desc' }, e.descricao || 'Sem descrição.'));
     const acoes = h('div', { class: 'pm-acoes' });
     const bt = (t, fn, cls = 'pb') => acoes.append(h('button', { type: 'button', class: `${cls} pm-item`, onclick: async (ev) => { const b = ev.currentTarget; b.disabled = true; try { await fn(); } catch (er) { aviso(NUV.textoErro ? D.textoErro(er) : 'erro'); } b.disabled = false; } }, t));
+    if (favOk) { const f0 = favDe(e); bt(f0 ? `★ Na pasta: ${f0.pasta || 'sem pasta'} · mudar` : '★ Salvar numa pasta', async () => { if (await guardarPasta(e)) { fechar(); desenha(); } }, 'pb ouro'); if (f0) bt('Tirar dos favoritos', async () => { await PA.desfavoritar(f0.id); await carregaFavs(); fechar(); desenha(); aviso('tirado dos favoritos'); }); }
     if (temPartitura(e)) { bt('Abrir no editor (uma cópia sua)', async () => { const r = await copiaPraMim(e); try { sessionStorage.setItem('pm-abrir', r.id); } catch { /* ok */ } fechar(); location.hash = rotaDe(e.instrumento); }, 'pb ouro');
       bt('Guardar na minha biblioteca', async () => { await copiaPraMim(e); aviso(`guardado na pasta "${PASTA_BANCO}" da sua biblioteca`); });
       bt('Baixar PDF', async () => { const r = await exportarPdf(rowDe(e), ctx.perfil); aviso(r.shared ? 'pronto! escolha onde salvar' : `PDF salvo: ${r.name}`); });
@@ -78,8 +85,10 @@ export async function mount(host, ctx, _partes, { tipo = 'exercicio' } = {}) {
         admin ? h('div', { class: 'pt-acoes' }, h('button', { type: 'button', class: 'pb ouro', onclick: async () => { const part = await NUV.listar().catch(() => []); const r = await formExercicio({ tipo }, { partituras: part, tipo }); if (r) { await carrega(); desenha(); } } }, NOME.novo), h('button', { type: 'button', class: 'pb', onclick: (e) => carregaIniciais(e.currentTarget) }, NOME.iniciais)) : null),
       h('div', { class: 'pt-barra-b' }, b, h('span', { class: 'pt-mudo pt-cont' }, `${l.length} de ${lista.length}`)), instrChips, chips(fNivel, D.NIVEIS, (v) => { fNivel = v; fCat = ''; }, 'todos os níveis'),
       cats.length > 1 ? chips(fCat, cats.map((c) => [c, c]), (v) => { fCat = v; }, rep ? 'todos os gêneros' : 'todas as categorias') : null,
-      grupos.length ? h('div', {}, ...grupos.map((g) => h('section', {}, h('h2', { class: 'pt-s' }, `${g.categoria} · ${g.itens.length}`), h('ul', { class: 'pt-lista' }, ...g.itens.map((e) => h('li', {}, h('button', { type: 'button', class: 'pb-li', onclick: () => ver(e) }, h('b', {}, e.titulo), h('span', {}, [rep ? e.artista : D.NOME_INSTRUMENTO[e.instrumento], D.nomeNivel(e.nivel), e.bpm ? `${e.bpm} bpm` : '', !rep ? (temPartitura(e) ? 'com partitura' : 'texto') : ''].filter(Boolean).join(' · ')), !e.publicado ? h('em', {}, 'rascunho') : null)))))))
+      grupos.length ? h('div', {}, ...grupos.map((g) => h('section', {}, h('h2', { class: 'pt-s' }, `${g.categoria} · ${g.itens.length}`), h('ul', { class: 'pt-lista' }, ...g.itens.map((e) => h('li', {}, h('button', { type: 'button', class: 'pb-li', onclick: () => ver(e) }, h('b', {}, `${favDe(e) ? '★ ' : ''}${e.titulo}`), h('span', {}, [rep ? e.artista : D.NOME_INSTRUMENTO[e.instrumento], D.nomeNivel(e.nivel), e.bpm ? `${e.bpm} bpm` : '', !rep ? (temPartitura(e) ? 'com partitura' : 'texto') : ''].filter(Boolean).join(' · ')), !e.publicado ? h('em', {}, 'rascunho') : null)))))))
         : vazio(lista.length ? 'Nada com esse filtro' : NOME.vazioT, admin ? NOME.vazioA : NOME.vazioP));
   }
-  desenha(); return () => { gone = true; };
+  desenha();
+  try { const id = sessionStorage.getItem('pro-abrir-ex'); if (id) { sessionStorage.removeItem('pro-abrir-ex'); const e = lista.find((x) => x.id === id); if (e) ver(e); } } catch { /* sem sessionStorage */ }
+  return () => { gone = true; };
 }

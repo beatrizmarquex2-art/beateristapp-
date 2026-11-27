@@ -18,7 +18,7 @@ import * as editorRitmico from './editor-ritmico.js';
 import * as banco from './banco.js';
 import * as transcrever from './transcricao.js';
 
-const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['arsenal', 'Arsenal'], ['repertorio', 'Repertório'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
+const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['arsenal', 'Arsenal'], ['repertorio', 'Repertório'], ['biblioteca', 'Minhas pastas'], ['assistente', 'Assistente']];
 const TELAS = { inicio, arsenal: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'exercicio' }) }, banco: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'exercicio' }) }, repertorio: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'repertorio' }) }, pedaleira, afinador, metronomo, aulas, estudio, transcrever, biblioteca, alunos, agenda, assistente };
 const app = document.getElementById('pro');
 const lembra = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { /* sem storage */ } return null; };
@@ -32,7 +32,7 @@ function casca() {
   const topo = h('header', { class: 'pm' }, h('button', { type: 'button', class: 'pm-b', 'aria-label': 'Abrir o menu' }), h('a', { class: 'ps-logo peq', href: '#/inicio', 'aria-label': 'Beaterista PRO' }, h('img', { class: 'lg-g', src: 'assets/pro/logo-pro-claro.png', alt: 'Beaterista PRO', width: 120, height: 67 })));
   topo.firstChild.innerHTML = ICONE.menu;
   const main = h('main', { class: 'pc', id: 'pro-main', tabindex: -1 });
-  const TAB = [['inicio', 'Início'], ['aulas', 'Aulas'], ['pedaleira', 'Pedaleira'], ['alunos', 'Alunos'], ['agenda', 'Agenda']];
+  const TAB = [['inicio', 'Início'], ['arsenal', 'Arsenal'], ['pedaleira', 'Pedaleira'], ['biblioteca', 'Pastas'], ['aulas', 'Aulas']];
   const barra = h('nav', { class: 'pbar', 'aria-label': 'Atalhos' }, ...TAB.map(([k, t]) => { const a = h('a', { href: `#/${k}`, 'data-k': k, class: k === 'pedaleira' ? 'central' : '' }); a.innerHTML = `${ICONE[k]}<span>${t}</span>`; return a; }));
   const mais = h('button', { type: 'button', class: 'pbar-mais', 'aria-label': 'Mais opções' }); mais.innerHTML = `${ICONE.mais2}<span>Mais</span>`; barra.append(mais);
   const ap = h('div', { class: 'psh' }, side, topo, main, barra, h('div', { class: 'ps-vel' }));

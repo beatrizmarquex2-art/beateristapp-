@@ -5,7 +5,7 @@ import { exerciciosIniciais, repertorioInicial } from '../../js/pro/banco-seed.j
 const NEX = exerciciosIniciais().length; const NBAT = exerciciosIniciais().filter((e) => e.instrumento === 'bateria').length; const NREP = repertorioInicial().length;
 const { srv, url } = await serve(); const { browser, ctx } = await launch();
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
-const DB = { pro_perfil: [{ dono: 'u1', nome: 'Bia', escola: 'Escola Teste', instrumentos: [], logo: null }], pro_alunos: [], pro_aulas: [], pro_eventos: [], pro_exercicios: [], partituras: [] }; let n = 0; let admin = true;
+const DB = { pro_perfil: [{ dono: 'u1', nome: 'Bia', escola: 'Escola Teste', instrumentos: [], logo: null }], pro_alunos: [], pro_aulas: [], pro_eventos: [], pro_favoritos: [], pro_exercicios: [], partituras: [] }; let n = 0; let admin = true;
 const json = (r, b, s = 200) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(b) });
 await ctx.route('**/auth/v1/token**', (r) => json(r, { access_token: 'tok', refresh_token: 'r', expires_in: 3600, user: { id: 'u1', email: 'bea@exemplo.com' } }));
 await ctx.route('**/rest/v1/rpc/is_allowed', (r) => json(r, admin));
@@ -77,9 +77,32 @@ check('usar numa aula coloca a música no campo repertório', DB.pro_aulas.some(
 await page.evaluate(() => { location.hash = '#/arsenal'; }); await sleep(900);
 check('o arsenal continua só com exercícios (sem as músicas)', await page.locator('.pb-li').count() === NEX);
 
+// ---- favoritos do arsenal em pastas do professor
+await page.locator('.pb-li').first().click(); await sleep(400);
+await page.getByRole('button', { name: /Salvar numa pasta/ }).click(); await sleep(300);
+await page.locator('dialog input[aria-label="Nome da pasta"]').fill('Escalas da turma'); await page.locator('dialog button[type=submit]').click(); await sleep(800);
+check('salvar um exercício numa pasta grava o favorito (só no nome do professor)', DB.pro_favoritos.length === 1 && DB.pro_favoritos[0].pasta === 'Escalas da turma');
+await page.keyboard.press('Escape'); await sleep(300);
+check('o exercício favorito aparece com ★ no arsenal', await page.locator('.pb-li b', { hasText: '★' }).count() === 1);
+await page.evaluate(() => { location.hash = '#/biblioteca'; }); await sleep(900);
+await page.getByRole('tab', { name: /Pastas/ }).click(); await sleep(200);
+check('a pasta criada pelo favorito aparece como chip na biblioteca', await page.locator('.pt-pastas button', { hasText: 'Escalas da turma' }).count() === 1);
+await page.locator('.pt-pastas button', { hasText: 'Escalas da turma' }).click(); await sleep(200);
+check('dentro da pasta está o exercício favorito', await page.locator('.pt-lista li').count() === 1 && /★/.test(await page.locator('.pt-lista li').first().innerText()));
+await page.locator('.pt-lista .pb-i').first().click(); await sleep(300); await page.getByRole('button', { name: 'Mover para pasta…' }).click(); await sleep(300);
+await page.locator('dialog input[aria-label="Nome da pasta"]').fill('Iniciantes'); await page.locator('dialog button[type=submit]').click(); await sleep(700);
+check('mover o favorito de pasta', DB.pro_favoritos[0].pasta === 'Iniciantes');
+await page.locator('.pt-pastas button', { hasText: 'todas' }).click(); await sleep(200);
+await page.locator('.pt-lista li', { hasText: '★' }).locator('.pb-i').click(); await sleep(300); await page.getByRole('button', { name: 'Abrir', exact: true }).click(); await sleep(1200);
+check('abrir o favorito leva ao arsenal já com o exercício aberto', page.url().endsWith('#/arsenal') && await page.locator('dialog .pb-ex').count() === 1);
+await page.getByRole('button', { name: 'Tirar dos favoritos' }).click(); await sleep(700);
+check('tirar dos favoritos apaga o favorito', DB.pro_favoritos.length === 0);
+await page.evaluate(() => { location.hash = '#/inicio'; }); await sleep(800);
+check('o início não fala mais de alunos nem de agenda', !/alunos ativos|aula hoje|aulas hoje|agenda/i.test(await page.locator('.pt').innerText()));
+
 // ---- biblioteca: pastas, duplicar, PDF, imagem, apagar
 await page.evaluate(() => { location.hash = '#/biblioteca'; }); await sleep(700);
-await page.getByRole('tab', { name: /Partituras/ }).click(); await sleep(200);
+await page.getByRole('tab', { name: /Pastas/ }).click(); await sleep(200);
 check('a partitura do banco está na pasta "Banco de exercícios" (chip de pasta)', await page.locator('.pt-pastas button', { hasText: 'Banco de exercícios' }).count() === 1);
 await page.getByRole('button', { name: '+ nova pasta' }).click(); await sleep(200); await page.locator('dialog input').fill('Turma das 14h'); await page.locator('dialog button[type=submit]').click(); await sleep(300);
 check('criar pasta nova (aparece como chip e ficou lembrada)', await page.locator('.pt-pastas button.on', { hasText: 'Turma das 14h' }).count() === 1);
@@ -102,7 +125,7 @@ check('apagar partitura (com confirmação)', DB.partituras.length === 1);
 // ---- PDF de várias páginas (24 compassos de quadros da bateria)
 const evsGrande = []; for (let b = 0; b < 24; b++) for (let k = 0; k < 8; k++) { evsGrande.push({ p: 'hh', ini: b * 16 + k * 2, d: 2 }); if (k === 2 || k === 6) evsGrande.push({ p: 'sn', ini: b * 16 + k * 2, d: 2 }); if (k === 0 || k === 4) evsGrande.push({ p: 'bd', ini: b * 16 + k * 2, d: 2 }); }
 DB.partituras.push({ id: 'grande', dono: 'u1', nome: 'Groove longo', instrumento: 'bateria', pasta: '', dados: { versao: 2, tipo: 'bateria', inst: 'bateria', escrita: 'quadros', kit: 'medio', modelo: 'acustica', evs: evsGrande, bpm: 90 }, atualizado_em: new Date().toISOString() });
-await page.evaluate(() => { location.hash = '#/estudio'; }); await sleep(300); await page.evaluate(() => { location.hash = '#/biblioteca'; }); await sleep(700); await page.getByRole('tab', { name: /Partituras/ }).click(); await sleep(200);
+await page.evaluate(() => { location.hash = '#/estudio'; }); await sleep(300); await page.evaluate(() => { location.hash = '#/biblioteca'; }); await sleep(700); await page.getByRole('tab', { name: /Pastas/ }).click(); await sleep(200);
 await page.locator('.pt-pastas button', { hasText: 'todas' }).click(); await sleep(150);
 dl = await baixa(async () => { await page.locator('.pt-lista li', { hasText: 'Groove longo' }).locator('.pb-i').click(); await sleep(300); await page.getByRole('button', { name: 'Baixar PDF' }).click(); });
 const pdf = dl ? readFileSync(await dl.path()).toString('latin1') : '';
