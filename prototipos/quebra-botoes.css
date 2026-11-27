@@ -1,0 +1,51 @@
+/* 4 jeitos de fazer SÓ os quadradinhos com nome do quebra-cabeça (placar peças/tempo/dicas e botões imagem/dica/misturar). Ativa com <html data-qb="1|2|3|4"> */
+
+/* ===== 1 · ETIQUETAS DE PAPEL: cartõezinhos creme com contorno de caneta e sombra dura ===== */
+html[data-qb="1"] .jg-quebra .qz-stats { background: transparent; border: 0; box-shadow: none; gap: 8px; padding: 0 0 10px; overflow: visible; }
+html[data-qb="1"] .jg-quebra .qz-st { background: #fffdf7; border: 2.5px solid #142036; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; box-shadow: 3px 3px 0 #ffd23f; padding: 6px 8px; }
+html[data-qb="1"] .jg-quebra .qz-st + .qz-st { border-left: 2.5px solid #142036; }
+html[data-qb="1"] .jg-quebra .qz-st:nth-child(1) { transform: rotate(-1deg); } html[data-qb="1"] .jg-quebra .qz-st:nth-child(3) { transform: rotate(1deg); }
+html[data-qb="1"] .jg-quebra .qz-st b { color: #142036; } html[data-qb="1"] .jg-quebra .qz-st small { color: #142036; opacity: .6; } html[data-qb="1"] .jg-quebra .qz-i { stroke: #bd1733; }
+html[data-qb="1"] .jg-quebra .qz-prog { display: none; }
+html[data-qb="1"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; padding: 2px 2px 6px; backdrop-filter: none; gap: 10px; }
+html[data-qb="1"] .jg-quebra .qz-b { background: #fffdf7; color: #142036; border: 3px solid #fff; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; box-shadow: 3px 4px 0 #ffd23f; min-height: 58px; }
+html[data-qb="1"] .jg-quebra .qz-b:active { transform: translate(2px, 3px); box-shadow: 1px 1px 0 #ffd23f; }
+html[data-qb="1"] .jg-quebra .qz-main { background: #ffd23f; border-color: #fff; box-shadow: 3px 4px 0 #bd1733; }
+html[data-qb="1"] .jg-quebra .qz-main:disabled { background: rgb(255 253 247 / .12); color: rgb(255 255 255 / .5); border: 2px dashed rgb(255 255 255 / .4); box-shadow: none; }
+
+/* ===== 2 · BOTÕES REDONDOS: círculo grande com ícone, nome pequeno embaixo (jeito de controle de jogo) ===== */
+html[data-qb="2"] .jg-quebra .qz-stats { background: transparent; border: 0; box-shadow: none; gap: 8px; padding: 0 0 10px; overflow: visible; }
+html[data-qb="2"] .jg-quebra .qz-st { background: rgb(255 255 255 / .1); border-radius: 999px; padding: 6px 12px; justify-content: flex-start; gap: 8px; border: 1px solid rgb(255 255 255 / .2); }
+html[data-qb="2"] .jg-quebra .qz-st + .qz-st { border-left: 1px solid rgb(255 255 255 / .2); }
+html[data-qb="2"] .jg-quebra .qz-st small { display: none; } html[data-qb="2"] .jg-quebra .qz-st b { font-size: 17px; }
+html[data-qb="2"] .jg-quebra .qz-prog { display: none; }
+html[data-qb="2"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; display: flex; justify-content: space-around; align-items: flex-end; padding: 0 6px 4px; }
+html[data-qb="2"] .jg-quebra .qz-b { flex: none; width: 64px; min-height: 0; padding: 0; border: 0; background: transparent; box-shadow: none; gap: 6px; font-size: 11px; color: #dbe6ff; }
+html[data-qb="2"] .jg-quebra .qz-b .qz-i { clip-path: circle(50%); box-sizing: content-box; width: 26px; height: 26px; padding: 15px; border-radius: 50%; background: rgb(255 255 255 / .14); border: 2px solid rgb(255 255 255 / .55); box-shadow: 0 4px 0 rgb(0 0 0 / .3); }
+html[data-qb="2"] .jg-quebra .qz-main { width: 78px; }
+html[data-qb="2"] .jg-quebra .qz-main .qz-i { width: 32px; height: 32px; padding: 17px; background: linear-gradient(180deg, #ffe58a, #f7b733); border-color: #fff4c2; stroke: #142036; box-shadow: 0 5px 0 #b27a12, 0 0 22px rgb(255 200 60 / .55); }
+html[data-qb="2"] .jg-quebra .qz-main:disabled { color: rgb(255 255 255 / .4); } html[data-qb="2"] .jg-quebra .qz-main:disabled .qz-i { background: rgb(255 255 255 / .06); border-style: dashed; border-color: rgb(255 255 255 / .3); box-shadow: none; stroke: rgb(255 255 255 / .45); }
+html[data-qb="2"] .jg-quebra .qz-b:active .qz-i { transform: translateY(3px); box-shadow: 0 1px 0 rgb(0 0 0 / .3); }
+
+/* ===== 3 · COLORIDOS CHAPADOS: cada botão com a sua cor sólida, cantos bem redondos (visual de app de criança) ===== */
+html[data-qb="3"] .jg-quebra .qz-stats { background: transparent; border: 0; box-shadow: none; gap: 8px; padding: 0 0 10px; overflow: visible; }
+html[data-qb="3"] .jg-quebra .qz-st { border-radius: 16px; padding: 7px 8px; border: 0; }
+html[data-qb="3"] .jg-quebra .qz-st:nth-child(1) { background: #2f6fed; } html[data-qb="3"] .jg-quebra .qz-st:nth-child(2) { background: #18a98a; } html[data-qb="3"] .jg-quebra .qz-st:nth-child(3) { background: #ef7d1a; }
+html[data-qb="3"] .jg-quebra .qz-st + .qz-st { border-left: 0; } html[data-qb="3"] .jg-quebra .qz-i { stroke: #fff; } html[data-qb="3"] .jg-quebra .qz-st small { color: rgb(255 255 255 / .85); }
+html[data-qb="3"] .jg-quebra .qz-prog { display: none; }
+html[data-qb="3"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; padding: 0 0 6px; gap: 10px; }
+html[data-qb="3"] .jg-quebra .qz-b { border: 0; border-radius: 18px; min-height: 60px; color: #fff; box-shadow: 0 5px 0 rgb(0 0 0 / .28); }
+html[data-qb="3"] .jg-quebra .qz-b:nth-child(1) { background: #2f6fed; } html[data-qb="3"] .jg-quebra .qz-b:nth-child(3) { background: #18a98a; }
+html[data-qb="3"] .jg-quebra .qz-main { background: #ffc21a; color: #142036; box-shadow: 0 5px 0 #b9860a; }
+html[data-qb="3"] .jg-quebra .qz-b:active { transform: translateY(4px); box-shadow: 0 1px 0 rgb(0 0 0 / .28); }
+html[data-qb="3"] .jg-quebra .qz-main:disabled { background: rgb(255 255 255 / .1); color: rgb(255 255 255 / .45); box-shadow: none; border: 2px dashed rgb(255 255 255 / .3); }
+
+/* ===== 4 · CONTORNO FINO: nada de caixa cheia, só linha branca fina e texto (clean) ===== */
+html[data-qb="4"] .jg-quebra .qz-stats { background: transparent; border: 0; border-bottom: 1px solid rgb(255 255 255 / .2); border-radius: 0; box-shadow: none; padding: 2px 0 10px; overflow: visible; }
+html[data-qb="4"] .jg-quebra .qz-st { flex-direction: column; gap: 2px; } html[data-qb="4"] .jg-quebra .qz-st .qz-i { display: none; }
+html[data-qb="4"] .jg-quebra .qz-st > div { text-align: center; } html[data-qb="4"] .jg-quebra .qz-st b { font-size: 22px; font-weight: 700; } html[data-qb="4"] .jg-quebra .qz-st small { letter-spacing: .14em; margin-top: 3px; }
+html[data-qb="4"] .jg-quebra .qz-prog { height: 2px; background: rgb(255 255 255 / .15); } html[data-qb="4"] .jg-quebra .qz-prog i { background: #ffd23f; box-shadow: none; border-radius: 0; }
+html[data-qb="4"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; gap: 10px; padding: 0 0 6px; }
+html[data-qb="4"] .jg-quebra .qz-b { background: transparent; border: 1.5px solid rgb(255 255 255 / .7); border-radius: 999px; flex-direction: row; gap: 8px; min-height: 52px; box-shadow: none; font-size: 13px; }
+html[data-qb="4"] .jg-quebra .qz-main { background: #fff; color: #142036; border-color: #fff; }
+html[data-qb="4"] .jg-quebra .qz-main:disabled { background: transparent; color: rgb(255 255 255 / .4); border: 1.5px dashed rgb(255 255 255 / .35); }
