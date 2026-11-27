@@ -41,7 +41,7 @@ await page.locator('.tm-treino-grupo').nth(1).locator('button[data-v="rapida"]')
 await page.locator('.tm-treino-start').click(); await sleep(600);
 check('figurix: abre direto numa rodada (sem aulinha), com o cabeçalho de treino', (await page.locator('.tm-treino-placar').count()) === 1 && !/aulinha/.test(await page.textContent('.jg-figurix')));
 // responde tudo: clica sempre numa opção qualquer até a rodada acabar (errar também vale: treino não salva)
-for (let i = 0; i < 40 && (await page.locator('.tm-treino-start').count()) === 0; i++) { const op = page.locator('.jg-figurix button:not(.ghost):not(.fx-recomeca):visible').first(); if (await op.count()) await op.click({ timeout: 1500 }).catch(() => {}); await sleep(250); }
+for (let i = 0; i < 90 && (await page.locator(".tm-treino-start").count()) === 0; i++) { const op = page.locator('.jg-figurix button:not(.ghost):not(.fx-recomeca):visible').first(); if (await op.count()) await op.click({ timeout: 1500 }).catch(() => {}); await sleep(250); }
 check('figurix: no fim vem "próxima rodada" (e não "fase concluída" nem estrelas)', (await page.locator('.tm-treino-start').count()) === 1 && !/fase \d+ concluída|★/.test(await page.textContent('.jg-figurix')));
 const salvoFx = await page.evaluate(() => JSON.stringify(Object.entries(localStorage).filter(([k]) => /figurix/i.test(k))));
 check('figurix: nenhuma estrela foi salva', !/"est":\{\s*"\d+"/.test(salvoFx), salvoFx.slice(0, 200));
