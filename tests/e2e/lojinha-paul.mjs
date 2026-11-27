@@ -9,7 +9,7 @@ check('a vitrine abre por 3 seções (Cards, Robôterista ensina, Para evoluir) 
 const lista = async (sec) => { await page.goto(`${url}/aluno.html#/lojinha/${sec}`); await sleep(1500); return page.locator('.lj-card').evaluateAll((es) => es.map((e) => `${e.querySelector('h3').textContent}=${(e.querySelector('.lj-preco-card') || {}).textContent || ''}`)); };
 const pe = await lista('ensina'), pv = await lista('evoluir'), pc = await lista('cards');
 check('Robôterista ensina: 6 produtos com preço', pe.length === 6 && pe.every((x) => /R\$/.test(x)), pe.join(' | '));
-check('Para evoluir: Bateria Start, Beaterista Mood e Violão do Zero (adultos)', pv.length === 3 && /Start/.test(pv[0]) && /Mood/.test(pv[1]) && /Violão/.test(pv[2]), pv.join(' | '));
+check('Para evoluir: Bateria Start, Beaterista Mood e Violão Start (adultos)', pv.length === 3 && /Start/.test(pv[0]) && /Mood/.test(pv[1]) && /Violão/.test(pv[2]), pv.join(' | '));
 check('Cards: 4 baralhos com preço', pc.length === 4 && pc.every((x) => /R\$/.test(x)), pc.join(' | '));
 await page.goto(`${url}/aluno.html#/lojinha/evoluir`); await sleep(1500);
 const start = page.locator('.lj-card[data-id="start"]');
