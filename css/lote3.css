@@ -1142,3 +1142,53 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .tf-exclusiva a { color: #c81e2d; }
 .tf-tema .al-aula-adv { top: auto; bottom: 6px; right: 46px; width: 30px; }
 .tf-tema .al-aula-txt b { font-size: 24px; }
+
+/* Lojinha COMPACTA: carrosséis com setas, bolinhas e deslize (menos rolagem pra baixo) */
+.lj-compacta{display:grid;gap:14px}
+.lj-compacta .lj-bf-topo{margin:0;padding:8px}
+.lj-compacta .lj-anual .lj-bf-arte{width:100%;height:auto;max-height:240px;object-fit:contain;background:#0e0e12}
+.lj-compacta .lj-anual .lj-bf-cta{margin-top:6px}.lj-compacta .lj-anual .lj-btn{min-height:42px;padding-block:6px}
+.lj-car{position:relative}
+.lj-car-faixa{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:3px 3px 10px;outline:none}.lj-car-faixa::-webkit-scrollbar{display:none}
+.lj-car-faixa:focus-visible{box-shadow:0 0 0 3px #f6c44f;border-radius:14px}
+.lj-car-seta{position:absolute;top:38%;z-index:3;width:38px;height:38px;display:grid;place-items:center;padding:0 0 3px;border:3px solid rgb(var(--ink-rgb));border-radius:50%;background:#f6c44f;color:rgb(var(--ink-rgb));font:400 26px/1 'Anton',sans-serif;box-shadow:3px 3px 0 rgb(var(--ink-rgb));cursor:pointer;transition:transform .12s}
+.lj-car-seta:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgb(var(--ink-rgb))}.lj-car-seta[hidden]{display:none}
+.lj-car-seta.ant{left:-6px}.lj-car-seta.prox{right:-6px}
+.lj-car-pontos{display:flex;justify-content:center;gap:7px;margin-top:-2px}
+.lj-car-pontos button{width:9px;height:9px;padding:0;border:2px solid rgb(var(--ink-rgb));border-radius:50%;background:#fff;cursor:pointer;transition:width .2s,background .2s}.lj-car-pontos button.on{width:24px;border-radius:9px;background:#b5162b}
+.lj-combos-t{margin:0 0 6px;font:400 22px/1 'Anton',sans-serif;text-transform:uppercase;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.lj-combos-t small{font:700 12px var(--body,sans-serif);text-transform:none;opacity:.7}
+/* preferidos da turma: painel azul compacto */
+.lj-amados{position:relative;padding:12px 12px 8px;border:3px solid rgb(var(--ink-rgb));border-radius:20px;background:radial-gradient(circle at 85% 0%,#2a52b5 0,#17356b 38%,#0e2347 80%);box-shadow:5px 5px 0 rgb(var(--ink-rgb))}
+.lj-amados-top{display:flex;align-items:center;gap:8px;margin:0 0 8px}.lj-amados-top i{font-style:normal;font-size:22px}
+.lj-amados-top h2{margin:0;font:400 22px/1 'Anton',sans-serif;text-transform:uppercase;color:#f6c44f;text-shadow:2px 2px 0 #b5162b}
+.lj-car-mini .lj-car-pontos button{border-color:#fff}
+.lj-mini{flex:0 0 38%;scroll-snap-align:start;display:grid;gap:5px;padding:8px;border:3px solid rgb(var(--ink-rgb));border-radius:14px;background:#fffdf7;text-align:center;align-content:start}
+.lj-mini:first-child{position:relative}.lj-mini:first-child:after{content:"mais amado";position:absolute;top:-3px;right:-3px;padding:2px 7px;background:#b5162b;color:#fff;font:400 10px 'Anton',sans-serif;text-transform:uppercase;border:2px solid rgb(var(--ink-rgb));border-radius:0 10px 0 8px}
+.lj-mini-capa{display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;background:#fff;border-radius:8px;overflow:hidden;cursor:pointer}.lj-mini-capa img{display:block;width:100%;height:100%;object-fit:contain}
+.lj-mini-nome{font:400 14px/1.05 'Anton',sans-serif;text-transform:uppercase;min-height:2.1em;display:grid;place-items:center}
+.lj-mini-preco{font:800 14px var(--body,sans-serif);color:#b5162b}
+.lj-mini .lj-btn{min-height:36px;padding:4px 8px;font-size:15px}
+/* combos: slides com a arte + linha de preço e botão */
+.lj-slide{flex:0 0 66%;scroll-snap-align:center;display:grid;gap:6px;padding:8px;border:3px solid rgb(var(--ink-rgb));border-radius:16px;background:var(--card);box-shadow:4px 4px 0 rgb(var(--ink-rgb))}
+.lj-slide-arte{display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer}.lj-slide-arte img{display:block;width:100%;height:100%;object-fit:contain}
+.lj-slide-arte.vazia{position:relative;display:grid;align-content:center;gap:6px;padding:12px;background:linear-gradient(135deg,#b5162b,#7a0f20);color:#fff;cursor:default;text-align:left}
+.lj-slide-arte.vazia h3{margin:0;max-width:64%;font:400 21px/1 'Anton',sans-serif;text-transform:uppercase}.lj-slide-arte.vazia ul{margin:0;padding:0;list-style:none;max-width:64%;font-size:12px;font-weight:700;display:grid;gap:2px}.lj-slide-arte.vazia li:before{content:'✓ ';color:#f6c44f}
+.lj-slide-arte.vazia img{position:absolute;right:-4px;bottom:-4px;height:48%;width:auto;object-fit:contain}.lj-slide-arte.vazia .lj-selo{justify-self:start}
+.lj-slide-cta{display:flex;align-items:center;justify-content:space-between;gap:8px}.lj-slide-cta .lj-preco{font:400 20px/1 'Anton',sans-serif;color:#b5162b}.lj-slide-cta .lj-de{font-size:12px;margin-right:4px}.lj-slide-cta .lj-btn{flex:0 0 auto;min-height:38px;padding:4px 14px}
+/* seções: tiles num carrossel */
+.lj-car-secs .lj-sec{flex:0 0 82%;scroll-snap-align:center;margin:0}
+@media (min-width:700px){.lj-compacta{max-width:760px;margin-inline:auto}.lj-slide{flex-basis:300px}.lj-mini{flex-basis:170px}.lj-car-secs .lj-sec{flex-basis:340px}}
+.lj-compacta{min-width:0;max-width:100%;overflow-x:clip}.lj-compacta>*{min-width:0;max-width:100%}.lj-car{min-width:0;max-width:100%}.lj-car-faixa{min-width:0;max-width:100%}
+.lj-compacta .lj-anual .lj-bf-link{display:block;width:100%}
+.lj-slide-cta .lj-preco{display:inline-block;padding:0;margin:0;background:none;border:0;box-shadow:none;color:#b5162b;font:400 20px/1 'Anton',sans-serif;white-space:nowrap}
+.lj-slide-cta .lj-preco s{color:#777;font:700 12px var(--body,sans-serif)}
+.lj-slide-cta .lj-btn{flex:1 1 auto;min-width:0;padding:4px 8px;font-size:16px}.lj-slide-cta .lj-preco{flex:0 0 auto}
+
+/* janela Pix ou cartão da Lojinha */
+.lj-pay{width:min(420px,calc(100vw - 24px))}
+.lj-pay-op{display:grid;gap:3px;width:calc(100% - 24px);margin:10px 12px 0;padding:14px;text-align:left;border:3px solid rgb(var(--ink-rgb));border-radius:16px;background:#fffdf7;color:rgb(var(--ink-rgb));cursor:pointer;box-shadow:4px 4px 0 rgb(var(--ink-rgb));font:inherit}
+.lj-pay-op.pix{background:#b5162b;color:#fff}.lj-pay-op b{font:400 20px/1 'Anton',sans-serif;text-transform:uppercase}.lj-pay-op strong{font:400 34px/1 'Anton',sans-serif}
+.lj-pay-op.pix strong{color:#f6c44f}.lj-pay-op small{font-weight:800}.lj-pay-op em{font-style:normal;font-size:13px;opacity:.95}
+.lj-pay-op i{justify-self:stretch;margin-top:6px;padding:10px;text-align:center;font:400 17px 'Anton',sans-serif;font-style:normal;text-transform:uppercase;border:3px solid rgb(var(--ink-rgb));border-radius:12px;background:#fffdf7;color:rgb(var(--ink-rgb))}
+.lj-pay-op .lj-selo{justify-self:start}
+.lj-pay-op.pix small,.lj-pay-op.pix em{color:#fff}.lj-pay-op.pix small{color:#f6c44f}

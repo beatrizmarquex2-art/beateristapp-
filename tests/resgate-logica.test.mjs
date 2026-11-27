@@ -10,7 +10,7 @@ test('as 3 missões e a recompensa', () => { assert.deepEqual(MISSOES.map((m) =>
 
 test('lendárias: cada produto = 1, combo = todas', () => {
   assert.equal(totalPorProdutos(0), 0); assert.equal(totalPorProdutos(1), 1); assert.equal(totalPorProdutos(2), 2); assert.equal(totalPorProdutos(6), 6); assert.equal(totalPorProdutos(9), 6);
-  assert.equal(produtosDoResgate('compras:2'), 2); assert.equal(produtosDoResgate('produtos:2'), 2); assert.equal(produtosDoResgate('combo'), 6); assert.equal(produtosDoResgate(''), 1); assert.equal(produtosDoResgate(null), 1); assert.equal(produtosDoResgate('compras:99'), 6);
+  assert.equal(produtosDoResgate('compras:2'), 0); assert.equal(produtosDoResgate('produtos:2'), 0); assert.equal(produtosDoResgate('combo'), 6); assert.equal(produtosDoResgate(''), 0); assert.equal(produtosDoResgate(null), 0); assert.equal(produtosDoResgate('compras:99'), 0); // regra nova: só com 1 combo
 });
 test('completar lendárias: sobe de faixa sem repetir e nunca tira', () => {
   let r = completarLendarias({}, 1); assert.deepEqual(r.novas, ['L01']); assert.deepEqual(r.state.lend, ['L01']);
@@ -25,7 +25,7 @@ test('missão de postar: tipo por jogo e nome legível pra Bea', async () => {
   assert.equal(R.tipoPost('uno'), 'post:uno'); assert.match(R.tipoPost('paulbox'), /^post:[a-z0-9-]{1,24}$/);
   assert.ok(R.JOGOS_POST.every(([id]) => /^[a-z0-9-]{1,24}$/.test(id)), 'todo id de jogo passa na regra do banco (017)');
   assert.equal(new Set(R.JOGOS_POST.map((x) => x[0])).size, R.JOGOS_POST.length);
-  assert.equal(R.nomeTipo('post:uno'), 'postou e marcou a escola: Uno Musical'); assert.equal(R.nomeTipo('google'), 'avaliou no Google');
+  assert.equal(R.nomeTipo('post:uno'), 'postou e marcou a escola: Uno Musical'); assert.equal(R.nomeTipo('google'), 'avaliou a escola (giro épico)'); assert.equal(R.tipoLivre('post:uno', (t) => t === 'post:uno'), 'post:uno-2'); assert.equal(R.tipoLivre('amigo', (t) => t === 'amigo'), 'post:amigo-2');
 });
 test('baú e roleta explicam por que a pessoa ganhou', async () => {
   const L = await import('../js/figurinhas/album-logic.js');

@@ -10,11 +10,11 @@ test('entrar no app conta o dia e dá o giro do dia', { skip: !aplicar }, () => 
 test('sétimo dia seguido fecha a semana e entrega o pacote', { skip: !aplicar }, () => {
   let s = L.emptyState(); let ult;
   for (let d = 14; d <= 20; d++) { ult = aplicar(s, `2026-11-${d}`); s = ult.state; }
-  assert.equal(ult.completou, true); assert.ok(s.granted.includes(L.semanaPackId(1)));
+  assert.equal(ult.completou, true); assert.ok(s.granted.includes('epico:sem1'), 'o giro épico da semana 1 foi entregue');
 });
 
 import { grantSemana, semanaPacks, epicoPack, packKind } from '../js/figurinhas/album-logic.js';
-test('semana fechada: 1 exclusiva + giro duplo épico (2 pacotes), sem entregar em dobro', () => {
+test('semana fechada: UM giro épico (a exclusiva vem dentro dele), sem entregar em dobro', () => {
   const s = grantSemana({ ...L.emptyState() }, 3); assert.deepEqual(semanaPacks(3).filter((id) => s.granted.includes(id)), semanaPacks(3));
   assert.equal(epicoPack('epico:sem3:1').n, 1); assert.equal(epicoPack('epico:sem3:2').n, 2); assert.equal(packKind('epico:sem3:1'), 'epico');
   assert.equal(grantSemana(s, 3), s);
