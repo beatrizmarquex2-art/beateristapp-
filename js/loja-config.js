@@ -10,12 +10,13 @@ export const AVISO_DIGITAL = 'todos os materiais são digitais (PDF): dá pra es
 import { precoPasse } from './passe-preco.js';
 export const URL_PASSE = 'https://jogos.beaterista.com.br/pix/';
 export const PASSE = { nome: 'Passe Anual Robôterista', preco: precoPasse().atual, info: ['12 meses de acesso', 'Até 2 aparelhos', 'Pix ou cartão · o código chega no seu e-mail'], img: 'assets/loja/passe.webp', link: URL_PASSE };
-// Banner do acesso anual (promoção de Natal): vai em cima do combo; mesmo link do passe. Só aparece enquanto vale a oferta (js/passe-preco.js).
-// A partir de 16/12 (oferta de Natal) o banner vira a arte do Paul Noel (quadrada, como a do combo); antes, o banner de sempre.
+// Banner do acesso anual (arte da Bea, SEM WhatsApp): até 15/12 a arte "oferta até 31/12" (R$ 49,90); de 16/12 a 31/12 a arte do Paul Noel (mesma oferta, "promoção de lançamento estendida");
+// a partir de 01/01/2027 a arte do preço novo (R$ 99,90 no Pix). Mesmo link do passe (página de pagamento).
 const _PP = precoPasse();
-export const ANUAL = _PP.bf
-  ? { id: 'anual-lancamento', nome: 'Acesso anual', desc: `oferta ${_PP.nome}: 12 meses de acesso por ${_PP.atual} até ${_PP.ate}`, img: 'assets/loja/anual.webp', w: 1600, h: 533, link: PASSE.link }
-  : { id: 'anual-lancamento', nome: 'Acesso anual', desc: `Paul Noel, presente do Robôterista: promoção de lançamento estendida até 31 de dezembro, ${_PP.atual}`, img: 'assets/loja/anual-natal.webp', w: 1254, h: 1254, link: PASSE.link };
+const _ARTE = !_PP.oferta ? { img: 'assets/loja/anual-2027.webp', w: 1600, h: 600, desc: `Passe Anual Beaterista Play a partir de 01/01/2027: ${_PP.atual} no Pix` }
+  : _PP.bf ? { img: 'assets/loja/anual-bf.webp', w: 1600, h: 600, desc: `Passe Anual Beaterista Play: oferta até 31/12/2026 por ${_PP.atual} no Pix` }
+    : { img: 'assets/loja/anual-natal.webp', w: 1254, h: 1254, desc: `Paul Noel, presente do Robôterista: promoção de lançamento estendida até 31 de dezembro, ${_PP.atual}` };
+export const ANUAL = { id: 'anual-lancamento', nome: 'Acesso anual', ..._ARTE, link: PASSE.link };
 // COMBOS (a Bea refez em 27/nov/2026; o combo antigo de 4 apostilas saiu). Cada combo é um produto na Hotmart: o `link` vazio mostra "em breve".
 // O combo "Aprende Brincando" NÃO leva o UNO Musical (marca da Mattel; o UNO fica só como jogo dentro do app, nunca à venda).
 export const COMBOS = [

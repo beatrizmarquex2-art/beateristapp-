@@ -37,7 +37,6 @@ function detalhe(p) {
 
 /** Banner do acesso anual (oferta Black Friday / Natal): fica em cima dos combos enquanto vale a oferta. */
 function destaqueAnual() {
-  if (!precoPasse().oferta) return null;
   return h('article', { class: 'lj-bf lj-bf-topo lj-anual', 'data-id': ANUAL.id },
     h('button', { type: 'button', class: 'lj-bf-link', 'aria-label': `comprar o acesso anual por ${precoPasse().atual}`, onclick: comprar(ANUAL) }, h('img', { class: 'lj-bf-arte', src: ANUAL.img, alt: ANUAL.desc, width: ANUAL.w, height: ANUAL.h })),
     h('div', { class: 'lj-bf-cta' }, botao('Quero o acesso anual', ANUAL, 'amarelo')));
