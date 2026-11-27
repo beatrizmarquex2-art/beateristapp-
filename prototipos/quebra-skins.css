@@ -1,0 +1,87 @@
+/* 4 visuais para o quebra-cabeça (só protótipo; escolha da Bea). Ativa com <html data-qz="a|b|c|d"> */
+
+/* ============ A · PAPEL & TINTA (zine da escola: papel creme, contorno de caneta, sombra dura, marca-texto) ============ */
+html[data-qz="a"] .jg-game::before { background: #fbf1da url(../assets/zine/textura-fundo-creme.webp) center/cover; clip-path: none; border-radius: 14px; border: 3px solid #142036; inset: 0; }
+html[data-qz="a"] .jg-game::after { clip-path: none; border-radius: 14px; background: #142036; transform: translate(6px, 7px); opacity: 1; }
+html[data-qz="a"] .jg-game { color: #142036; }
+html[data-qz="a"] .jg-quebra, html[data-qz="a"] .jg-quebra * { --qz-ink: #142036; }
+html[data-qz="a"] .jg-game .jg-title { color: #fff !important; }
+html[data-qz="a"] .jg-quebra .qz-stats { background: transparent; border: 0; box-shadow: none; gap: 8px; padding: 0 0 10px; overflow: visible; }
+html[data-qz="a"] .jg-quebra .qz-st { background: #fffdf7; border: 2.5px solid #142036; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; box-shadow: 3px 3px 0 #142036; padding: 6px 8px; border-left-width: 2.5px; }
+html[data-qz="a"] .jg-quebra .qz-st:nth-child(1) { transform: rotate(-1deg); } html[data-qz="a"] .jg-quebra .qz-st:nth-child(3) { transform: rotate(1deg); }
+html[data-qz="a"] .jg-quebra .qz-st + .qz-st { border-left: 2.5px solid #142036; }
+html[data-qz="a"] .jg-quebra .qz-st b { color: #142036; } html[data-qz="a"] .jg-quebra .qz-st small { color: #142036; opacity: .65; }
+html[data-qz="a"] .jg-quebra .qz-i { stroke: #bd1733; }
+html[data-qz="a"] .jg-quebra .qz-prog { left: 6px; right: 6px; bottom: 0; height: 9px; background: rgb(20 32 54 / .12); border-radius: 6px; transform: translateY(2px); }
+html[data-qz="a"] .jg-quebra .qz-prog i { background: #ffd23f; border-radius: 6px; box-shadow: none; mix-blend-mode: multiply; }
+html[data-qz="a"] .jg-quebra .qz-msg { color: #142036; font-weight: 700; }
+html[data-qz="a"] .jg-quebra .jg-pboard { background: #d9b98a; border: 3px solid #142036; border-radius: 6px; box-shadow: 4px 5px 0 #142036; }
+html[data-qz="a"] .jg-quebra .qz-tray { background: #b3182f url(../assets/zine/textura-fundo-creme.webp) center/cover; background-blend-mode: multiply; border: 3px solid #142036; border-radius: 6px; box-shadow: 4px 5px 0 #142036; }
+html[data-qz="a"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; padding: 2px 2px 6px; backdrop-filter: none; gap: 10px; }
+html[data-qz="a"] .jg-quebra .qz-b { background: #fffdf7; color: #142036; border: 3px solid #142036; border-radius: 12px 16px 10px 15px / 15px 10px 16px 12px; box-shadow: 3px 4px 0 #142036; min-height: 58px; }
+html[data-qz="a"] .jg-quebra .qz-b:active { transform: translate(2px, 3px); box-shadow: 1px 1px 0 #142036; }
+html[data-qz="a"] .jg-quebra .qz-main { background: #ffd23f; border-color: #142036; box-shadow: 3px 4px 0 #bd1733; }
+html[data-qz="a"] .jg-quebra .qz-main:disabled { background: #efe6d2; color: rgb(20 32 54 / .45); border-style: dashed; box-shadow: none; }
+
+/* ============ B · NEON PALCO (escuro, vidro, brilho ciano e dourado) ============ */
+html[data-qz="b"] body, html[data-qz="b"] { background: #050a1c; }
+html[data-qz="b"] .jg-game::before { background: radial-gradient(120% 60% at 50% 0, #123a6b 0, #0a1a3a 45%, #050a1c 100%); clip-path: none; border-radius: 22px; border: 1px solid rgb(90 220 255 / .55); box-shadow: 0 0 0 1px rgb(90 220 255 / .15), 0 0 38px rgb(60 200 255 / .28), inset 0 0 40px rgb(60 160 255 / .12); inset: 0; }
+html[data-qz="b"] .jg-game::after { display: none; }
+html[data-qz="b"] .jg-game .jg-title { background: none; color: #7ff0ff !important; text-shadow: 0 0 12px rgb(90 230 255 / .9); letter-spacing: .12em; transform: none; font-size: 15px; }
+html[data-qz="b"] .jg-game .jg-link, html[data-qz="b"] .jg-game .jg-top .btn { background: rgb(255 255 255 / .06); color: #cfeeff; border: 1px solid rgb(120 220 255 / .5); box-shadow: 0 0 14px rgb(60 200 255 / .25); border-radius: 12px; transform: none; }
+html[data-qz="b"] .jg-quebra .qz-stats { background: linear-gradient(180deg, rgb(60 200 255 / .1), rgb(60 200 255 / .02)); border: 1px solid rgb(120 220 255 / .4); box-shadow: 0 0 20px rgb(60 200 255 / .18), inset 0 0 18px rgb(60 200 255 / .08); }
+html[data-qz="b"] .jg-quebra .qz-i { stroke: #7ff0ff; filter: drop-shadow(0 0 5px rgb(90 230 255 / .9)); }
+html[data-qz="b"] .jg-quebra .qz-st b { color: #fff; text-shadow: 0 0 10px rgb(90 230 255 / .8); }
+html[data-qz="b"] .jg-quebra .qz-prog { background: rgb(120 220 255 / .15); } html[data-qz="b"] .jg-quebra .qz-prog i { background: linear-gradient(90deg, #00e5ff, #ffd23f); box-shadow: 0 0 14px #00e5ff; }
+html[data-qz="b"] .jg-quebra .qz-msg { color: #9be8ff; }
+html[data-qz="b"] .jg-quebra .jg-pboard { background: rgb(5 15 40 / .75); border: 1px solid rgb(120 220 255 / .55); box-shadow: 0 0 26px rgb(60 200 255 / .25), inset 0 0 30px rgb(0 0 0 / .5); border-radius: 12px; }
+html[data-qz="b"] .jg-quebra .jg-pz.slot { color: #5fe6ff; }
+html[data-qz="b"] .jg-quebra .qz-tray { background: rgb(8 24 56 / .85); border: 1px solid rgb(120 220 255 / .35); box-shadow: inset 0 0 26px rgb(0 0 0 / .45); border-radius: 16px; }
+html[data-qz="b"] .jg-quebra .jg-pz.tp .pzsvg { filter: drop-shadow(0 0 5px rgb(90 220 255 / .45)); }
+html[data-qz="b"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; gap: 12px; padding: 4px; }
+html[data-qz="b"] .jg-quebra .qz-b { border-radius: 999px; min-height: 56px; flex-direction: row; gap: 8px; background: rgb(255 255 255 / .05); border: 1px solid rgb(120 220 255 / .6); color: #bfefff; box-shadow: 0 0 16px rgb(60 200 255 / .3), inset 0 0 12px rgb(60 200 255 / .12); }
+html[data-qz="b"] .jg-quebra .qz-main { background: rgb(255 210 63 / .14); border-color: #ffd23f; color: #ffe27a; box-shadow: 0 0 22px rgb(255 210 63 / .55), inset 0 0 14px rgb(255 210 63 / .2); }
+html[data-qz="b"] .jg-quebra .qz-main:disabled { box-shadow: none; border-color: rgb(255 255 255 / .2); color: rgb(255 255 255 / .35); background: transparent; }
+
+/* ============ C · CLARO MINIMAL (limpo, branco quente, sombras suaves, ação em pílula) ============ */
+html[data-qz="c"] .jg-game::before { background: #fffdf9; clip-path: none; border-radius: 26px; border: 1px solid rgb(20 32 54 / .08); inset: 0; }
+html[data-qz="c"] .jg-game::after { clip-path: none; border-radius: 26px; background: rgb(20 32 54 / .14); filter: blur(22px); transform: translate(0, 14px); opacity: .8; }
+html[data-qz="c"] .jg-game .jg-title { background: none; color: #142036 !important; text-shadow: none; transform: none; font: 800 15px/1 var(--body, inherit); letter-spacing: .02em; text-transform: none; padding: 0; }
+html[data-qz="c"] .jg-game .jg-link, html[data-qz="c"] .jg-game .jg-top .btn { background: #f2efe8; color: #142036; border: 0; box-shadow: none; border-radius: 14px; transform: none; }
+html[data-qz="c"] .jg-quebra .qz-stats { background: transparent; border: 0; box-shadow: none; padding: 4px 0 12px; overflow: visible; }
+html[data-qz="c"] .jg-quebra .qz-st + .qz-st { border-left: 1px solid rgb(20 32 54 / .1); }
+html[data-qz="c"] .jg-quebra .qz-st b { color: #142036; font-size: 18px; } html[data-qz="c"] .jg-quebra .qz-st small { color: #7b8497; }
+html[data-qz="c"] .jg-quebra .qz-i { stroke: #142036; opacity: .75; }
+html[data-qz="c"] .jg-quebra .qz-prog { left: 0; right: 0; height: 5px; background: #ece7db; border-radius: 3px; } html[data-qz="c"] .jg-quebra .qz-prog i { background: #142036; border-radius: 3px; box-shadow: none; }
+html[data-qz="c"] .jg-quebra .qz-msg { color: #7b8497; font-weight: 500; }
+html[data-qz="c"] .jg-quebra .jg-pboard { background: #f1ebde; border: 1px solid rgb(20 32 54 / .12); border-radius: 14px; box-shadow: 0 8px 24px rgb(20 32 54 / .08); }
+html[data-qz="c"] .jg-quebra .jg-pz.slot { color: #142036; }
+html[data-qz="c"] .jg-quebra .qz-tray { background: #eef1f6; border: 0; border-radius: 18px; box-shadow: inset 0 2px 8px rgb(20 32 54 / .06); }
+html[data-qz="c"] .jg-quebra .jg-pz.tp .pzsvg { filter: drop-shadow(0 3px 5px rgb(20 32 54 / .22)); }
+html[data-qz="c"] .jg-quebra .qz-dock { background: #fff; border: 1px solid rgb(20 32 54 / .08); border-radius: 999px; box-shadow: 0 10px 30px rgb(20 32 54 / .14); backdrop-filter: none; padding: 6px; gap: 6px; }
+html[data-qz="c"] .jg-quebra .qz-b { background: transparent; border: 0; color: #4b566d; border-radius: 999px; min-height: 54px; box-shadow: none; }
+html[data-qz="c"] .jg-quebra .qz-b:hover { background: #f3f1ec; }
+html[data-qz="c"] .jg-quebra .qz-main { background: #142036; color: #fff; box-shadow: 0 8px 18px rgb(20 32 54 / .35); }
+html[data-qz="c"] .jg-quebra .qz-main:hover { background: #1d3050; }
+html[data-qz="c"] .jg-quebra .qz-main:disabled { background: #eceae4; color: #aab0bd; box-shadow: none; border: 0; }
+
+/* ============ D · MESA DE MADEIRA (tátil: madeira, feltro verde, bandeja de couro, placas de latão) ============ */
+html[data-qz="d"] .jg-game::before { background: repeating-linear-gradient(92deg, rgb(0 0 0 / .06) 0 2px, rgb(255 255 255 / .03) 2px 5px), linear-gradient(180deg, #8a5a33, #6b4223 60%, #5a361b); clip-path: none; border-radius: 18px; border: 3px solid #3b2210; inset: 0; box-shadow: inset 0 0 40px rgb(0 0 0 / .45); }
+html[data-qz="d"] .jg-game::after { clip-path: none; border-radius: 18px; background: rgb(0 0 0 / .4); transform: translate(4px, 8px); filter: blur(6px); }
+html[data-qz="d"] .jg-game .jg-title { background: linear-gradient(180deg, #e9c46a, #b98a2c); color: #3b2210 !important; text-shadow: 0 1px 0 rgb(255 255 255 / .4); transform: none; border-radius: 6px; box-shadow: 0 2px 0 #6b4a12, inset 0 1px 0 rgb(255 255 255 / .5); font-size: 14px; letter-spacing: .08em; }
+html[data-qz="d"] .jg-game .jg-link, html[data-qz="d"] .jg-game .jg-top .btn { background: linear-gradient(180deg, #e9c46a, #b98a2c); color: #3b2210; border: 1px solid #6b4a12; box-shadow: 0 2px 0 #6b4a12, inset 0 1px 0 rgb(255 255 255 / .5); border-radius: 8px; transform: none; }
+html[data-qz="d"] .jg-quebra .qz-stats { background: linear-gradient(180deg, #4d2f17, #3b2210); border: 2px solid #2a170a; box-shadow: inset 0 2px 8px rgb(0 0 0 / .6), 0 1px 0 rgb(255 255 255 / .12); border-radius: 10px; }
+html[data-qz="d"] .jg-quebra .qz-st b { color: #f4d98a; text-shadow: 0 -1px 0 rgb(0 0 0 / .5); } html[data-qz="d"] .jg-quebra .qz-st small { color: #c9a465; }
+html[data-qz="d"] .jg-quebra .qz-i { stroke: #e9c46a; }
+html[data-qz="d"] .jg-quebra .qz-st + .qz-st { border-left-color: rgb(233 196 106 / .25); }
+html[data-qz="d"] .jg-quebra .qz-prog { background: rgb(0 0 0 / .4); } html[data-qz="d"] .jg-quebra .qz-prog i { background: linear-gradient(90deg, #e9c46a, #f4a261); box-shadow: none; }
+html[data-qz="d"] .jg-quebra .qz-msg { color: #f1dcab; }
+html[data-qz="d"] .jg-quebra .jg-pboard { background: #2f6b50 radial-gradient(120% 120% at 50% 40%, #3a8061, #245a42); border: 5px solid #3b2210; border-radius: 6px; box-shadow: inset 0 0 22px rgb(0 0 0 / .45), 0 6px 0 rgb(0 0 0 / .25); }
+html[data-qz="d"] .jg-quebra .jg-pz.slot { color: #cfe9d9; }
+html[data-qz="d"] .jg-quebra .qz-tray { background: linear-gradient(180deg, #3a2412, #2b1a0d); border: 3px solid #1d1008; border-radius: 10px; box-shadow: inset 0 4px 14px rgb(0 0 0 / .6); }
+html[data-qz="d"] .jg-quebra .jg-pz.tp .pzsvg { filter: drop-shadow(1px 4px 3px rgb(0 0 0 / .55)); }
+html[data-qz="d"] .jg-quebra .qz-dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; padding: 2px; gap: 10px; }
+html[data-qz="d"] .jg-quebra .qz-b { background: linear-gradient(180deg, #e9c46a, #b98a2c); color: #3b2210; border: 1px solid #6b4a12; border-radius: 10px; box-shadow: 0 4px 0 #6b4a12, inset 0 1px 0 rgb(255 255 255 / .55); min-height: 58px; }
+html[data-qz="d"] .jg-quebra .qz-b:active { transform: translateY(3px); box-shadow: 0 1px 0 #6b4a12, inset 0 1px 0 rgb(255 255 255 / .55); }
+html[data-qz="d"] .jg-quebra .qz-main { background: linear-gradient(180deg, #ff8a5c, #d9482b); color: #fff; border-color: #7d2512; box-shadow: 0 4px 0 #7d2512, inset 0 1px 0 rgb(255 255 255 / .45); }
+html[data-qz="d"] .jg-quebra .qz-main:disabled { background: linear-gradient(180deg, #5a4430, #4a3626); color: #a38a68; border-color: #2a170a; box-shadow: 0 3px 0 #2a170a; }
