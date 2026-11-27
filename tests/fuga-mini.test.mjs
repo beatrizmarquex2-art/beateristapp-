@@ -40,9 +40,9 @@ test('níveis: fases 1-4 fácil, 5-8 médio, 9-12 difícil; mundos 2 e 3 sobem 1
 test('desenho das portas: tipos por fase batem com PORTAS_FASE, tipos conhecidos, nada de quiz repetido nas fases de 4 portas', () => {
   assert.equal(TIPOS_FASE.length, FASES); TIPOS_FASE.forEach((t, i) => { assert.equal(t.length, PORTAS_FASE[i]); t.forEach((x) => assert.ok(TIPOS.includes(x) && NOME_TIPO[x], x)); });
   assert.deepEqual([11, 12].map((n) => new Set(TIPOS_FASE[n - 1]).size), [4, 4]);
-  const todos = TIPOS_FASE.flat(); assert.equal(todos.length, 32); for (const t of TIPOS.filter((x) => !['pesca', 'mira'].includes(x))) assert.ok(todos.includes(t), `falta ${t}`); // pesca e mira só aparecem nas trilhas de teoria e cordas (SUBST)
-  const por = (t) => todos.filter((x) => x === t).length; assert.ok(por('quiz') >= 4 && por('caca') >= 6 && por('cruz') >= 4, 'quiz, caça e cruzadinha continuam sendo os principais (o quiz perdeu as fases 1 a 3 no início refeito)');
-  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']); assert.deepEqual(portasDaFase(0, 8).map((p) => p.tipo), ['intruso', 'quiz', 'caca']);
+  const todos = TIPOS_FASE.flat(); assert.equal(todos.length, 32); for (const t of TIPOS.filter((x) => !['pesca', 'mira', 'quiz'].includes(x))) assert.ok(todos.includes(t), `falta ${t}`); // pesca e mira só aparecem nas trilhas de teoria e cordas (SUBST)
+  const por = (t) => todos.filter((x) => x === t).length; assert.equal(por('quiz'), 0, 'a Fuga não tem quiz (fica só na aba Estudos)'); assert.ok(por('caca') >= 6 && por('cruz') >= 4, 'caça e cruzadinha continuam sendo principais');
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']); assert.deepEqual(portasDaFase(0, 8).map((p) => p.tipo), ['intruso', 'montar', 'caca']);
   assert.ok(portasDaFase(0, 3).every((p) => p.nivel === 'facil') && portasDaFase(0, 10).every((p) => p.nivel === 'dificil'));
   assert.ok(portasDaFase(0, 3).filter((p) => p.tipo === 'genius').every((p) => ['notas', 'bateria'].includes(p.area)));
 });
@@ -76,7 +76,7 @@ test('montar: nível pede figuras do Figurix (3, 4 e 4 figuras) e até 4 colchet
 });
 test('montar, compasso e intruso nas fases certas; pesca e mira saíram da Fuga e fases 11/12 sem repetir jogo', () => {
   const quais = (t) => TIPOS_FASE.flatMap((f, i) => (f.includes(t) ? [i + 1] : []));
-  assert.deepEqual(quais('montar'), [2, 4]); assert.ok(!TIPOS.includes('pesca') && !TIPOS.includes('mira') && !NIVEL_CFG.facil.pesca && !NIVEL_CFG.facil.mira); assert.deepEqual(quais('compasso'), [9, 10]); assert.ok([3, 5, 8, 9, 11].every((n) => quais('intruso').includes(n)));
+  assert.deepEqual(quais('montar'), [2, 4, 8]); assert.ok(!TIPOS.includes('pesca') && !TIPOS.includes('mira') && !NIVEL_CFG.facil.pesca && !NIVEL_CFG.facil.mira); assert.deepEqual(quais('compasso'), [9, 10]); assert.ok([3, 5, 8, 9, 11].every((n) => quais('intruso').includes(n)));
   for (const t of ['montar', 'compasso', 'intruso']) for (const nv of ['facil', 'medio', 'dificil']) assert.ok(NIVEL_CFG[nv][t], `${t}/${nv}`);
 });
 test('portas curtas: compasso e intruso têm 3 rodadas no fácil e no médio, 4 no difícil (nunca mais que 5)', () => {

@@ -45,18 +45,18 @@ export const PORTAS_FASE = [2, 2, 3, 3, 3, 1, 1, 3, 3, 3, 4, 4];
 export const qtdPortas = (n) => PORTAS_FASE[n - 1] || 3;
 /** Fases-desafio (1 porta mais difícil): relâmpago do quiz sem errar nenhuma, e caça-palavras contra o relógio. ★ pelo tempo: até `ouro` s = 3 ★, até `prata` s = 2 ★, depois 1 ★. */
 export const DESAFIOS = {
-  6: { tipo: 'quiz', maxErros: 1, limite: 120, ouro: 55, prata: 85, titulo: 'desafio relâmpago: acerte as 5, pode errar só 1' },
+  6: { tipo: 'genius', maxErros: 2, limite: 150, ouro: 70, prata: 110, titulo: 'desafio da mesa de som: repita as sequências, pode errar só 2' },
   7: { tipo: 'caca', limite: 120, ouro: 50, prata: 85, titulo: 'desafio contra o relógio: ache todas as palavras, sem dica' },
 };
-/** Porta bônus "B" (a SAÍDA): quiz de 7 perguntas, no máximo 1 erro. Abre depois da fase 12 e dá a moldura do perfil. */
-export const BONUS = { tipo: 'quiz', nivel: 'dificil', kinds: NIVEL_CFG.dificil.quiz, perguntas: 7, maxErros: 1, titulo: 'porta bônus: 7 perguntas, no máximo 1 erro', moldura: 'lab' };
+/** Porta bônus "B" (a SAÍDA): mesa de som difícil (genius), no máximo 1 erro. Abre depois da fase 12 e dá a moldura do perfil. (Antes era um quiz de 7 perguntas; quiz agora só na aba Estudos.) */
+export const BONUS = { tipo: 'genius', nivel: 'dificil', maxErros: 1, titulo: 'porta bônus: a mesa de som difícil, no máximo 1 erro', moldura: 'lab' };
 export const estrelasDesafio = (seg, d) => (seg <= d.ouro ? 3 : seg <= d.prata ? 2 : 1);
 export const bonusAberto = (est, mundo) => estOf(est, mundo, FASES) >= 1;
 export const bonusFeito = (est, mundo) => (Number((est || {})[idFase(mundo, 'B')]) || 0) > 0;
 /** Que jogo é cada porta (desenho fechado: nada de 2 quizzes seguidos na fase 11/12; fases 6 e 7 são os desafios). Cada fase tem a quantidade de PORTAS_FASE. */
 export const TIPOS_FASE = [
-  ['genius', 'memoria'], ['montar', 'caca'], ['intruso', 'caca', 'genius'], ['memoria', 'montar', 'cruz'], ['caca', 'intruso', 'quiz'], // início refeito (Bea, nov/2026): começa nos jogos de tocar e ver; o 1º quiz só aparece na fase 5, por último e fácil
-  ['quiz'], ['caca'], ['intruso', 'quiz', 'caca'], ['compasso', 'intruso', 'genius'], ['quiz', 'compasso', 'cruz'],
+  ['genius', 'memoria'], ['montar', 'caca'], ['intruso', 'caca', 'genius'], ['memoria', 'montar', 'cruz'], ['caca', 'intruso', 'caminho'], // Fuga SEM QUIZ (Bea, nov/2026): os quizzes ficam só na aba Estudos; a Fuga é só de jogos legais, desde a fase 1
+  ['genius'], ['caca'], ['intruso', 'montar', 'caca'], ['compasso', 'intruso', 'genius'], ['memoria', 'compasso', 'cruz'],
   ['intruso', 'queda', 'caca', 'cruz'], ['memoria', 'caminho', 'queda4', 'cruz'],
 ];
 /** As portas da fase, em ordem: cada uma é um dos jogos de TIPOS_FASE, com o nível da fase e do mundo; as fases-desafio têm 1 porta com regra própria. A "área" do genius alterna entre notas e bateria. */

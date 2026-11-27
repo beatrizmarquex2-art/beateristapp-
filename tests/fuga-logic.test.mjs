@@ -20,10 +20,10 @@ test('progresso: 1ª fase aberta, as outras só depois de 1 ★; mundo 2 só com
 });
 test('desenho da Bea: portas por fase 2·2·3·3·3·1·1·3·3·3·4·4; fases 6 e 7 são desafios de 1 porta; porta B só depois da fase 12', () => {
   assert.deepEqual(PORTAS_FASE, [2, 2, 3, 3, 3, 1, 1, 3, 3, 3, 4, 4]); assert.deepEqual([1, 2, 3, 6, 7, 8, 11, 12].map(qtdPortas), [2, 2, 3, 1, 1, 3, 4, 4]);
-  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']); assert.deepEqual(portasDaFase(0, 5).map((p) => p.tipo), ['caca', 'intruso', 'quiz']); assert.deepEqual(portasDaFase(0, 11).map((p) => p.tipo), ['intruso', 'queda', 'caca', 'cruz']);
-  const f6 = portasDaFase(0, 6); assert.equal(f6.length, 1); assert.equal(f6[0].maxErros, 1); assert.ok(f6[0].desafio && f6[0].limite === 120); assert.equal(portasDaFase(0, 7)[0].tipo, 'caca');
-  assert.deepEqual([30, 55, 56, 85, 86, 200].map((t) => estrelasDesafio(t, DESAFIOS[6])), [3, 3, 2, 2, 1, 1]);
-  assert.equal(BONUS.maxErros, 1); assert.equal(BONUS.perguntas, 7); assert.equal(bonusAberto({}, 'estudio'), false); assert.equal(bonusAberto({ 'estudio:12': 1 }, 'estudio'), true);
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']); assert.deepEqual(portasDaFase(0, 5).map((p) => p.tipo), ['caca', 'intruso', 'caminho']); assert.deepEqual(portasDaFase(0, 11).map((p) => p.tipo), ['intruso', 'queda', 'caca', 'cruz']);
+  const f6 = portasDaFase(0, 6); assert.equal(f6.length, 1); assert.equal(f6[0].tipo, 'genius'); assert.equal(f6[0].maxErros, 2); assert.ok(f6[0].desafio && f6[0].limite === 150); assert.equal(portasDaFase(0, 7)[0].tipo, 'caca');
+  assert.deepEqual([30, 70, 71, 110, 111, 200].map((t) => estrelasDesafio(t, DESAFIOS[6])), [3, 3, 2, 2, 1, 1]);
+  assert.equal(BONUS.maxErros, 1); assert.equal(BONUS.tipo, 'genius'); assert.equal(bonusAberto({}, 'estudio'), false); assert.equal(bonusAberto({ 'estudio:12': 1 }, 'estudio'), true);
   assert.equal(MUNDOS[0].nome, 'Estúdio do Paul');
 });
 test('estrelas da fase = média das portas (1 a 3)', () => { assert.equal(estrelasFase([3, 3, 3]), 3); assert.equal(estrelasFase([3, 2]), 3); assert.equal(estrelasFase([2, 1, 1]), 1); assert.equal(estrelasFase([]), 0); });
@@ -37,9 +37,9 @@ test('quiz da fuga: definição do banco pergunta "qual termo" e o nível filtra
   assert.ok(filtraNivelBanco(lista, 'facil').every((x) => x.nivel === 'f')); assert.equal(filtraNivelBanco(lista, 'dificil').length, 20);
 });
 
-test('início da Fuga refeito: as fases 1 a 4 não têm quiz (jogos de tocar e ver primeiro) e o 1º quiz vem por último, fácil e sem "em inglês"', async () => {
-  for (let n = 1; n <= 4; n++) assert.ok(!portasDaFase(0, n).some((p) => p.tipo === 'quiz'), `fase ${n} sem quiz`);
-  const q5 = portasDaFase(0, 5).map((p) => p.tipo); assert.equal(q5[q5.length - 1], 'quiz');
-  const lista = [...Array.from({ length: 12 }, (_, i) => ({ n: i, banco: true, nivel: 'f', text: 'como se diz “síncope” em inglês?' })), ...Array.from({ length: 12 }, (_, i) => ({ n: 100 + i, banco: true, nivel: 'f', text: 'a semínima dura 1 tempo' })), { n: 999, text: 'curiosidade solta' }];
-  const { filtraNivelBanco } = await import('../js/jogos/fuga-logic.js'); const f = filtraNivelBanco(lista, 'facil'); assert.ok(f.every((x) => x.banco && !/inglês/.test(x.text)) && f.length === 12);
+test('Fuga sem quiz: nenhuma porta (nem o desafio nem a porta B) é quiz; os quizzes ficam só na aba Estudos', () => {
+  const { TIPOS_FASE } = { TIPOS_FASE: Array.from({ length: 12 }, (_, i) => portasDaFase(0, i + 1).map((p) => p.tipo)) };
+  assert.ok(!TIPOS_FASE.flat().includes('quiz')); assert.notEqual(BONUS.tipo, 'quiz');
+  for (let m = 0; m < 3; m++) for (let n = 1; n <= 12; n++) assert.ok(!portasDaFase(m, n).some((p) => p.tipo === 'quiz'), `mundo ${m} fase ${n}`);
+  assert.deepEqual(portasDaFase(0, 1).map((p) => p.tipo), ['genius', 'memoria']);
 });

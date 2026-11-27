@@ -1,4 +1,4 @@
-// A Fuga do Estúdio em mapa: 3 mundos, 12 portas por mundo; abre uma porta (quiz), ganha ★ e libera a próxima.
+// A Fuga do Estúdio em mapa: 3 mundos, 12 fases por mundo; cada fase tem portas de jogos (sem quiz).
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
 const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
@@ -16,20 +16,11 @@ check('o contador mostra 0/12 e 0/36', /0\/12/.test(await page.textContent('.fm-
 await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/fuga-mapa.png` : '/tmp/fuga-mapa.png' });
 await page.evaluate(() => document.querySelector('.fm-no.st-open').click()); await sleep(1500);
 check('fase 1 tem 2 portas e começa num jogo de tocar (mesa de som), NÃO no quiz', /0 de 2 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 2 · mesa de som/.test(await page.evaluate(() => document.body.innerText)) && !/pergunta 1 de/i.test(await page.evaluate(() => document.body.innerText)));
-// o 1º quiz vem na fase 5, por último (porta 3 de 3): o gancho de teste começa direto nela
+// fase 5: 3 portas, nenhuma é quiz (a Fuga não tem quiz: ficam só na aba Estudos)
 await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 5; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
-await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { window.__fugaPortaInicial = 2; location.hash = '#/dicas/fuga'; }); await sleep(2500);
+await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
 await page.evaluate(() => document.querySelectorAll('.fm-no')[4].click()); await sleep(1500);
-check('fase 5 tem 3 portas e a porta 3 é o quiz de 3 perguntas', /pergunta 1 de 3/i.test(await page.evaluate(() => document.body.innerText)) && /\d de 3 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 3 de 3/.test(await page.evaluate(() => document.body.innerText)));
-check('o quiz tem o botão "pular pergunta"', (await page.locator('.dc-desistir').count()) === 1);
-await page.locator('.dc-desistir').click(); await sleep(500);
-const bt = await page.evaluate(() => [...document.querySelectorAll('.sheet button')].map((b) => b.textContent.trim()));
-check('pergunta "quer uma dica? ou quer mesmo pular?" com 3 botões', /quer uma dica/.test(await page.textContent('.sheet')) && bt.some((t) => /quero uma dica/.test(t)) && bt.some((t) => /pular/.test(t)) && bt.some((t) => /voltar/.test(t)), bt.join(' | '));
-await page.evaluate(() => document.querySelector('.sheet button[data-acao="voltar"]').click()); await sleep(300);
-for (let i = 0; i < 3; i++) { await page.evaluate(() => { const o = document.querySelector('.dc-opt:not([disabled])'); if (o) o.click(); }); await sleep(300); await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /próxima|ver o resultado|terminar/.test(x.textContent)); if (b) b.click(); }); await sleep(400); }
-await sleep(1500); const txt = await page.evaluate(() => document.body.innerText);
-check('terminou o quiz: abriu a porta (com ★) ou pediu pra tentar de novo (menos de 3 certas)', /porta aberta/.test(txt) || /tentar outra vez/.test(txt));
-if (/porta aberta/.test(txt)) check('abriu a última porta da fase 5: a fase fecha (sem "próxima porta")', !/próxima porta/.test(txt));
+check('fase 5 tem 3 portas e a porta 1 é a caça-palavras (sem quiz)', /0 de 3 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /porta 1 de 3 · cabine de gravação/.test(await page.evaluate(() => document.body.innerText)) && !/pergunta 1 de/i.test(await page.evaluate(() => document.body.innerText)) && (await page.locator('.dc-desistir').count()) === 0);
 await page.evaluate(() => { window.__fugaPortaInicial = 0; });
 // mais portas nas fases seguintes (progresso simulado): fase 3 = 3 portas, fase 11 = 4 portas
 for (const [fase, portas] of [[3, 3], [11, 4]]) {
@@ -42,11 +33,11 @@ for (const [fase, portas] of [[3, 3], [11, 4]]) {
 await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 6; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
 await page.evaluate(() => document.querySelectorAll('.fm-no')[5].click()); await sleep(1500);
-check('fase 6 = desafio: 1 porta, relógio na tela, quiz sem "desistir"', /0 de 1 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /⏱ [012]:\d\d/.test(await page.textContent('.fg-rel')) && (await page.locator('.dc-desistir').count()) === 0 && /pode errar só 1/.test(await page.evaluate(() => document.body.innerText)));
+check('fase 6 = desafio: 1 porta, relógio na tela, mesa de som sem quiz', /0 de 1 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /[012]:\d\d/.test(await page.textContent('.fg-rel')) && (await page.locator('.dc-desistir').count()) === 0 && /pode errar só 2/.test(await page.evaluate(() => document.body.innerText)));
 await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i <= 12; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
 check('depois da fase 12 a SAÍDA (porta B) fica liberada', await page.evaluate(() => document.querySelector('.fm-saida').classList.contains('st-open')));
 await page.evaluate(() => document.querySelector('.fm-saida').click()); await sleep(1500);
-check('porta B = quiz de 7 perguntas, no máximo 1 erro', /pergunta 1 de 7/i.test(await page.evaluate(() => document.body.innerText)) && /no máximo 1 erro/.test(await page.evaluate(() => document.body.innerText)));
+check('porta B = mesa de som difícil, no máximo 1 erro (sem quiz)', !/pergunta 1 de/i.test(await page.evaluate(() => document.body.innerText)) && /no máximo 1 erro/.test(await page.evaluate(() => document.body.innerText)));
 check('sem erro na página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
