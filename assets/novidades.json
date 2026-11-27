@@ -16,7 +16,50 @@
     "botao": "assistir",
     "href": "https://youtu.be/9wW9pxaL7Dk",
     "externo": true,
-    "cor": "azul"
+    "cor": "azul",
+    "rodizio": [
+      {
+        "titulo": "unboxing Tagima",
+        "texto": "a Bea abriu a caixa da camiseta da Tagima",
+        "href": "https://youtu.be/9wW9pxaL7Dk"
+      },
+      {
+        "titulo": "vlog TikTok",
+        "texto": "um vlog da Bea no canal",
+        "href": "https://youtu.be/UvdaoUHo3XU"
+      },
+      {
+        "titulo": "Bea e aluno: Like a Stone",
+        "texto": "a Bea tocando com um aluno",
+        "href": "https://youtu.be/3km01eQ4Sn8"
+      },
+      {
+        "titulo": "aula: Jota Quest",
+        "texto": "aula da Bea no canal",
+        "href": "https://youtu.be/J0Y5j8daA4s"
+      },
+      {
+        "titulo": "aula: Tim Maia",
+        "texto": "aula da Bea no canal",
+        "href": "https://youtu.be/XR0tyCVex-4"
+      },
+      {
+        "titulo": "curso online da Bea",
+        "texto": "de R$ 299 por R$ 79,90 na promoção",
+        "href": "https://youtu.be/26CxIe6nt-E",
+        "ate": "2026-12-15"
+      },
+      {
+        "titulo": "Bea tocando Metallica",
+        "texto": "a Bea no palco da bateria",
+        "href": "https://youtu.be/YIHRPoBsIX8"
+      },
+      {
+        "titulo": "Bea no SESC",
+        "texto": "a Bea ao vivo",
+        "href": "https://youtu.be/KVdYE35tK1Y"
+      }
+    ]
   },
   {
     "id": "quebra",
