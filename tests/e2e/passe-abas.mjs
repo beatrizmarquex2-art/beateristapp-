@@ -13,6 +13,6 @@ check('as aulas do Estudos abrem todas as fases (nenhuma trancada)', (await p.lo
 await p.evaluate(() => { location.hash = '#/jogos/figurix'; }); await sleep(900);
 check('fora das abas liberadas (Jogos) segue como quem entra sem acesso: Figurix com fases trancadas e "sem código"', /SEM CÓDIGO/i.test(await p.locator('body').innerText()) && /🔒/.test(await p.locator('body').innerText()));
 await p.evaluate(() => { location.hash = '#/lojinha'; }); await sleep(900);
-check('a Lojinha é sempre livre', (await p.locator('.lj').count()) > 0);
+check('a Lojinha é sempre livre', (await p.locator('.ljv').count()) > 0);
 check('sem erros de JS', errs.length === 0, errs.join('|'));
 await browser.close(); srv.close(); done();

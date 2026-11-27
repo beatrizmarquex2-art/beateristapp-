@@ -1,0 +1,157 @@
+/* Lojinha (vitrine "ljv"): escura, compacta e leve. Imagens sem fundo atrás, sem caixas pesadas. O resto (.lj-btn, .lj-dlg, .lj-selo, .lj-de) vem de figurinhas.css e lote3.css. */
+.ljv { --navy: #0d1530; --ink: #070b19; --red: #e23a4e; --gold: #f6c93b; --glass: rgb(255 255 255 / .07); --line: rgb(255 255 255 / .14); --txt: #f4f6ff; --mut: #aab4d4;
+  display: grid; gap: 14px; max-width: 760px; margin: 0 auto; padding: 12px 12px 16px; border-radius: 22px; color: var(--txt); font-family: var(--body);
+  background: radial-gradient(120% 60% at 85% 0%, #3a1230 0%, transparent 60%), linear-gradient(180deg, var(--navy), var(--ink)); }
+.ljv * { box-sizing: border-box; }
+.ljv > *, .ljv-s > *, .ljv-prods, .ljv-prods > *, .ljv-painel > *, .ljv-combo > * { min-width: 0; }
+.ljv button { font-family: inherit; }
+.ljv :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.ljv .lj-btn { margin: 0; }
+
+/* topo */
+.ljv-topo { display: grid; gap: 8px; }
+.ljv-topo-l { display: flex; justify-content: space-between; gap: 10px; }
+.ljv-link { background: none; border: 0; padding: 4px 2px; color: var(--txt); font: 700 13px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 32px; }
+.ljv-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.ljv-nav::-webkit-scrollbar { display: none; }
+.ljv-nav button { flex: none; border: 1px solid var(--line); background: var(--glass); color: var(--txt); border-radius: 999px; padding: 5px 12px; font: 700 12px var(--body); cursor: pointer; min-height: 32px; }
+.ljv-nav button:active { background: var(--gold); color: var(--ink); }
+
+/* carrossel */
+.ljv-car { position: relative; max-width: 100%; }
+.ljv-trilho { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; padding: 2px; }
+.ljv-trilho::-webkit-scrollbar { display: none; }
+.ljv-trilho > * { flex: none; scroll-snap-align: start; }
+.ljv-seta { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: rgb(7 11 25 / .78); color: var(--txt); font: 900 20px/1 var(--body); display: grid; place-items: center; padding: 0 0 2px; cursor: pointer; z-index: 2; backdrop-filter: blur(4px); }
+.ljv-seta.ant { left: 2px; } .ljv-seta.prox { right: 2px; }
+.ljv-seta:disabled { opacity: .3; cursor: default; } .ljv-seta[hidden] { display: none; }
+.ljv-pts { display: flex; justify-content: center; gap: 5px; padding-top: 6px; }
+.ljv-pts i { width: 6px; height: 6px; border-radius: 50%; background: rgb(255 255 255 / .3); transition: width .2s, background .2s; }
+.ljv-pts i.on { width: 16px; border-radius: 4px; background: var(--gold); }
+
+/* banners: tamanho de banner (3:1). A arte oficial inteira, ou uma faixa fina com a capa oficial */
+.ljv-banners .ljv-trilho > * { scroll-snap-align: center; }
+.ljv-banner { flex: 0 0 100%; aspect-ratio: 3 / 1; padding: 0; border: 0; background: none; border-radius: 14px; overflow: hidden; cursor: pointer; display: block; -webkit-tap-highlight-color: transparent; }
+.ljv-banner.arte img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ljv-banner.faixa { display: flex; align-items: center; gap: 12px; padding: 0 14px 0 10px; text-align: left; color: #fff; background: linear-gradient(100deg, #7d1428, #c32443 60%, #e23a4e); }
+.ljv-banner.faixa.f-cards-combo { background: linear-gradient(100deg, #1b2a6b, #3b3fb0 60%, #6a4fd8); }
+.ljv-banner.faixa img { height: 82%; width: auto; aspect-ratio: 1; object-fit: contain; border-radius: 8px; flex: none; }
+.ljv-faixa-t { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.ljv-faixa-t small { font: 800 10px var(--body); letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+.ljv-faixa-t b { font: 400 clamp(17px, 5vw, 22px)/1.05 'Anton', var(--body); text-transform: uppercase; }
+.ljv-faixa-t em { font: 900 15px var(--body); font-style: normal; color: var(--gold); }
+.ljv-banner.faixa > i { font: 900 26px var(--body); font-style: normal; opacity: .9; }
+.ljv-banners .ljv-seta { width: 28px; height: 28px; font-size: 18px; }
+
+/* seções: sem caixa, só um título e o conteúdo */
+.ljv-s { display: grid; gap: 8px; padding-top: 4px; scroll-margin-top: 8px; }
+.ljv-s-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ljv-s-top h2 { margin: 0; font: 400 clamp(20px, 6vw, 25px)/1.05 'Anton', var(--body); text-transform: uppercase; letter-spacing: .03em; }
+.ljv-s-top p { margin: 3px 0 0; font: 600 12.5px/1.3 var(--body); color: var(--mut); max-width: 44ch; }
+.ljv-host { flex: none; width: 56px; height: 56px; object-fit: contain; background: none; animation: ljv-bob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes ljv-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(3deg); } }
+.ljv-preco { font: 900 17px var(--body); color: var(--txt); } .ljv-preco.grande { font-size: 26px; line-height: 1; color: var(--gold); }
+.ljv .lj-de { color: var(--mut); }
+.ljv-selo { display: inline-block; padding: 2px 8px; border-radius: 6px; background: var(--red); color: #fff; font: 800 10px/1.3 var(--body); letter-spacing: .04em; }
+.ljv .lj-selo { background: rgb(255 255 255 / .14); color: var(--txt); }
+
+/* passe */
+.ljv-tela { margin: 0; flex: 0 0 92px; display: grid; gap: 4px; }
+.ljv-tela img { display: block; width: 100%; height: auto; border-radius: 12px; border: 2px solid rgb(255 255 255 / .85); background: none; }
+.ljv-tela figcaption { font: 700 10.5px/1.15 var(--body); text-align: center; color: var(--mut); }
+.ljv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ljv-chip { padding: 3px 10px; border-radius: 999px; font: 800 11px var(--body); letter-spacing: .03em; color: var(--ink); background: var(--gold); }
+.ljv-chip.k-instrumento { background: #8fd3ff; } .ljv-chip.k-desafio { background: #ff9d90; } .ljv-chip.k-figurinha { background: #b6ec9f; }
+.ljv-passe { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 12px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); }
+.ljv-doze { display: flex; align-items: baseline; gap: 6px; font: 800 14px var(--body); white-space: nowrap; }
+.ljv-doze span { font: 400 38px/0.9 'Anton', var(--body); color: var(--gold); }
+.ljv-passe-info p { margin: 1px 0 0; font: 600 12px var(--body); color: var(--mut); }
+.ljv-passe-preco { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; }
+.ljv-passe .lj-btn { padding: 11px; }
+
+/* produtos: capas pequenas lado a lado + painel enxuto */
+.ljv-prods { display: grid; gap: 8px; }
+.ljv-capas .ljv-trilho { gap: 10px; padding: 8px 2px 6px; }
+.ljv-cap { flex: 0 0 clamp(92px, 27vw, 126px); padding: 0; border: 0; background: none; cursor: pointer; transition: transform .25s cubic-bezier(.3, 1.5, .5, 1), opacity .2s; opacity: .72; -webkit-tap-highlight-color: transparent; }
+.ljv-cap img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 14px rgb(0 0 0 / .45); transition: box-shadow .2s; }
+.ljv-cap.on { transform: translateY(-5px) scale(1.05); opacity: 1; }
+.ljv-cap.on img { box-shadow: 0 10px 18px rgb(0 0 0 / .55), 0 0 0 2px var(--gold); }
+.ljv-cap.toque { animation: ljv-toque .4s ease; }
+@keyframes ljv-toque { 0% { transform: scale(1); } 40% { transform: translateY(-9px) scale(1.1) rotate(2deg); } 100% { transform: translateY(-5px) scale(1.05); } }
+.ljv-painel { display: grid; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); }
+.ljv-painel.pop { animation: ljv-sobe .28s ease-out; }
+@keyframes ljv-sobe { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.ljv-p-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ljv-p-top h3 { margin: 0; font: 400 17px/1.1 'Anton', var(--body); text-transform: uppercase; letter-spacing: .02em; }
+.ljv-paginas .ljv-trilho { gap: 8px; padding: 2px; }
+.ljv-pag { position: relative; flex: 0 0 74px; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #fff; cursor: zoom-in; -webkit-touch-callout: none; user-select: none; }
+.ljv-pag img { display: block; width: 100%; height: auto; pointer-events: none; }
+.ljv-pag.marca::after { content: "prévia"; position: absolute; inset: 0; display: grid; place-items: center; font: 800 11px var(--body); color: rgb(0 0 0 / .22); transform: rotate(-28deg); pointer-events: none; }
+.ljv-paginas .ljv-seta { display: none; }
+.ljv-compra { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ljv-compra .lj-btn { width: auto; flex: 1; min-width: 130px; padding: 10px 12px; font-size: 15px; }
+
+/* banca do Paul: prateleirinha */
+.ljv-cats { display: flex; gap: 6px; flex-wrap: wrap; }
+.ljv-cat { border: 1px solid var(--line); background: var(--glass); color: var(--txt); border-radius: 999px; padding: 5px 12px; font: 700 12px var(--body); cursor: pointer; min-height: 32px; }
+.ljv-cat.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.ljv-banca-prods .ljv-capas { padding-bottom: 8px; }
+.ljv-banca-prods .ljv-capas::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px; border-radius: 4px; background: linear-gradient(180deg, #a06a30, #6c431b); box-shadow: 0 3px 8px rgb(0 0 0 / .5); pointer-events: none; }
+.ljv-banca-prods .ljv-cap:nth-child(odd):not(.on) { transform: rotate(-2deg); } .ljv-banca-prods .ljv-cap:nth-child(even):not(.on) { transform: rotate(1.5deg); }
+.ljv-banca-prods .ljv-capas .ljv-seta { top: 45%; }
+
+/* combos: uma linha por combo */
+.ljv-combo { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 8px 12px; padding: 10px 12px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); }
+.ljv-combo-itens { display: flex; }
+.ljv-mini { width: 46px; margin-left: -14px; padding: 0; border: 0; background: none; cursor: pointer; transition: transform .2s; }
+.ljv-mini:first-child { margin-left: 0; }
+.ljv-mini img { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: 0 3px 8px rgb(0 0 0 / .5); }
+.ljv-mini:hover, .ljv-mini:active { transform: translateY(-4px) rotate(-3deg); z-index: 2; }
+.ljv-combo-fim { display: grid; gap: 3px; min-width: 0; }
+.ljv-combo-nome { display: grid; }
+.ljv-combo-nome b { font: 400 16px/1.1 'Anton', var(--body); text-transform: uppercase; }
+.ljv-combo-nome small { font: 600 11.5px var(--body); color: var(--mut); }
+.ljv-combo-preco { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ljv-eco { background: var(--gold); color: var(--ink); border-radius: 6px; padding: 2px 8px; font: 900 11.5px var(--body); }
+.ljv-combo .lj-btn { grid-column: 1 / -1; padding: 10px; font-size: 15px; }
+
+/* músicos: dourado discreto */
+.ljv-s-musicos .ljv-cap.on img { box-shadow: 0 10px 18px rgb(0 0 0 / .55), 0 0 0 2px #c9a24a; }
+.ljv-s-musicos .lj-btn.amarelo { background: #c9a24a; color: #0b0f1c; box-shadow: none; }
+
+/* grátis */
+.ljv-gratis-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ljv-gratis { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: var(--glass); border: 1px solid var(--line); color: var(--txt); text-decoration: none; min-width: 0; }
+.ljv-gratis img { flex: none; width: 36px; height: 48px; object-fit: cover; object-position: top; border-radius: 6px; }
+.ljv-gratis span { display: grid; min-width: 0; } .ljv-gratis b { font: 800 12.5px/1.15 var(--body); } .ljv-gratis small { font: 600 10.5px/1.2 var(--body); color: var(--mut); }
+.ljv-gratis:active { background: rgb(255 255 255 / .14); }
+
+/* responsáveis: recolhido */
+.ljv-resp { border: 1px dashed var(--line); border-radius: 12px; padding: 8px 12px; font: 600 13px/1.4 var(--body); color: var(--mut); }
+.ljv-resp summary { cursor: pointer; font: 700 13px var(--body); color: var(--txt); list-style: none; } .ljv-resp summary::-webkit-details-marker { display: none; } .ljv-resp summary::after { content: " ▾"; }
+.ljv-resp ul { margin: 8px 0; padding-left: 18px; display: grid; gap: 4px; }
+.ljv-resp .ljv-link { color: var(--gold); }
+
+/* janela "adulto" e janela de fotos (as classes .lj-dlg vêm do tema antigo) */
+.ljv-adulto { width: min(92vw, 360px); }
+.ljv-adulto-i { display: grid; gap: 8px; justify-items: center; text-align: center; padding: 16px; }
+.ljv-adulto-i img { width: 72px; height: 72px; object-fit: contain; }
+.ljv-adulto-i h3 { margin: 0; font: 400 22px 'Anton', var(--body); text-transform: uppercase; }
+.ljv-adulto-i p { margin: 0; font: 600 13.5px/1.4 var(--body); }
+.ljv-sec { background: none; border: 0; padding: 6px; font: 800 13px var(--body); color: inherit; text-decoration: underline; cursor: pointer; }
+.lj-dlg .ljv-dentro { margin: 0; padding: 4px 14px 0 30px; display: grid; gap: 2px; font: 600 13px/1.35 var(--body); }
+
+@media (min-width: 700px) {
+  .ljv-cap { flex-basis: 128px; } .ljv-tela { flex-basis: 108px; } .ljv-pag { flex-basis: 86px; }
+  .ljv-gratis-grade { grid-template-columns: repeat(4, 1fr); }
+  .ljv-passe { grid-template-columns: 1fr auto auto; align-items: center; gap: 6px 16px; } .ljv-passe .lj-btn { width: auto; }
+  .ljv-combo { grid-template-columns: auto 1fr auto; } .ljv-combo .lj-btn { grid-column: auto; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .ljv-host, .ljv-cap.toque, .ljv-painel.pop { animation: none; } .ljv-cap { transition: none; } }
+
+/* página escura: o fundo bege do tema some só nesta tela, e os cartões de código acompanham */
+#view.lj-escura { background: #070b19; color: #f4f6ff; }
+#view.lj-escura .card { background: rgb(255 255 255 / .07); color: #f4f6ff; border: 1px solid rgb(255 255 255 / .14); box-shadow: none; border-radius: 14px; }
+#view.lj-escura .card .muted, #view.lj-escura .card .al-lock-t { color: #aab4d4; }
+#view.lj-escura .banner-sub { color: #f4f6ff; }
+body:has(#view.lj-escura) { background: #070b19; }
