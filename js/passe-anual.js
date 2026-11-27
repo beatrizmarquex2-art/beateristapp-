@@ -1,4 +1,4 @@
-// Passe Beaterista anual (R$ 79,90, ou R$ 49,90 na oferta Black Friday até 15/dez/2026 — js/passe-preco.js —, 12 meses, 2 aparelhos) vendido por PIX/WhatsApp: gera o código e a mensagem pro comprador.
+// Passe Beaterista anual (R$ 99,90, ou R$ 49,90 na promoção de Natal até 31/dez/2026 — js/passe-preco.js —, 12 meses, 2 aparelhos) vendido por PIX/WhatsApp: gera o código e a mensagem pro comprador.
 // Mesmo formato do passe automático da Hotmart (supabase/015_passe_hotmart.sql): código "P" + 9 letras/números, tipo 'passe', vence 12 meses depois de HOJE.
 // Não usa a coluna `jogos` (que ainda não existe no banco), então funciona já.
 const ALFA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 letras/números sem I, O, 0, 1 (256 % 32 = 0: sem viés)
