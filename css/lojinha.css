@@ -218,3 +218,9 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rm-seg { transform-origin: center; }
 .rm-box { padding-top: 14px; } .rm-seta { margin-bottom: -8px; }
 .rm-msg, .rm-res { color: #14111a; position: relative; z-index: 1; }
+
+/* ícones da Bea (assets/icones-loja) */
+.ic-loja { display: inline-block; object-fit: contain; vertical-align: middle; background: none; }
+.rs-n { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; } .rs-t b .ic-loja { margin-right: 2px; }
+.rm-seg .ic-loja { width: 34px; height: 34px; } .rm-res .ic-loja { margin-bottom: 2px; }
+.rs-ic .ic-loja { width: 24px; height: 24px; } .rs-ic { width: 36px; height: 36px; }

@@ -192,6 +192,7 @@ export function mount(host, parts = [], opts = {}) {
 
   /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */
   // ---------- ROLETA MALUCA + tabela de missões (Stars › resgatar) ----------
+  const ico = (nome, px = 22, pq = false) => h('img', { class: 'ic-loja', src: `assets/icones-loja/${nome}${pq ? '-32' : ''}.png`, alt: '', width: px, height: px, draggable: 'false' });
   const SURPRESAS = [...PLANNERS.map((x, i) => ({ chave: `planner:${i}`, k: 'planner', ...x })), ...COLORIR_PAGINAS.map((x, i) => ({ chave: `colorir:${i}`, k: 'colorir', ...x })), ...WALLPAPERS.map((x, i) => ({ chave: `wallpaper:${i}`, k: 'wallpaper', ...x }))];
   const rngSeguro = () => { try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch { return Math.random(); } };
   const ocupado = (t) => rsLista.some((x) => x.tipo === t && x.status !== 'recusado');
@@ -199,13 +200,13 @@ export function mount(host, parts = [], opts = {}) {
   function abrirRoleta() {
     const hoje = todayKey(); const res = RM.girar(state, hoje, rngSeguro, SURPRESAS); if (!res) { toast(RM.restantesHoje(RM.rmDe(state), hoje) ? 'sem giros: cumpra uma missão e mande o print.' : 'já girou 3 vezes hoje. volte amanhã!'); return; }
     save(res.state); const premio = res.premio; const idx = RM.PREMIOS.findIndex(([t]) => t === premio.tipo); const n = RM.PREMIOS.length; const ang = 360 / n;
-    sheet('🎰 roleta maluca', (close) => {
-      const rotulos = { epico: '⚡', estrelas: '⭐', surpresa: '🎁', exclusiva: '✨', giros: '🎟' };
-      const roda = h('div', { class: 'rm-roda', 'aria-hidden': 'true' }, ...RM.PREMIOS.map(([t], i) => h('span', { class: `rm-seg s${i}`, style: `transform: rotate(${i * ang + ang / 2}deg) translateY(-58px) rotate(${-(i * ang + ang / 2)}deg)` }, rotulos[t])));
+    sheet('roleta maluca', (close) => {
+      const rotulos = { epico: 'premio-giro-epico', estrelas: 'premio-estrelas', surpresa: 'premio-surpresa', exclusiva: 'premio-exclusiva', giros: 'premio-giros' };
+      const roda = h('div', { class: 'rm-roda', 'aria-hidden': 'true' }, ...RM.PREMIOS.map(([t], i) => h('span', { class: `rm-seg s${i}`, style: `transform: rotate(${i * ang + ang / 2}deg) translateY(-58px) rotate(${-(i * ang + ang / 2)}deg)` }, ico(rotulos[t], 34))));
       const msg = h('p', { class: 'rm-msg', role: 'status', 'aria-live': 'polite' }, 'girando…'); const caixa = h('div', { class: 'rm-res' });
       const box = h('div', { class: 'rm-box' }, h('div', { class: 'rm-seta', 'aria-hidden': 'true' }, '▼'), roda, msg, caixa);
       const fim = async () => {
-        msg.textContent = `deu: ${RM.NOME[premio.tipo]}!`; caixa.replaceChildren();
+        msg.textContent = `deu: ${RM.NOME[premio.tipo]}!`; caixa.replaceChildren(ico(rotulos[premio.tipo], 64));
         if (premio.tipo === 'estrelas') { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', premio.estrelas); } catch { /* sem perfil */ } caixa.append(h('p', {}, `+${premio.estrelas} ★ na sua conta`)); }
         else if (premio.tipo === 'surpresa') caixa.append(h('p', {}, `${({ planner: 'planner', colorir: 'folha de colorir', wallpaper: 'wallpaper' })[premio.item.k]}: ${premio.item.nome}`), h('a', { class: 'rs-btn', href: premio.item.arquivo, download: '', target: '_blank', rel: 'noopener' }, 'baixar agora'));
         else if (premio.tipo === 'giros') caixa.append(h('p', {}, `você ganhou +${premio.giros} giros pra usar (até 3 por dia)`));
@@ -221,25 +222,25 @@ export function mount(host, parts = [], opts = {}) {
   function resgatarView() {
     const hoje = todayKey(); const rm = RM.rmDe(state); const resta = RM.restantesHoje(rm, hoje); const pode = RM.podeGirar(rm, hoje);
     const roleta = h('section', { class: 'rs-card rs-maluca' },
-      h('div', { class: 'rs-t' }, h('b', {}, '🎰 Roleta maluca'), h('em', {}, `${rm.t} giro${rm.t === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
+      h('div', { class: 'rs-t' }, h('b', {}, ico('roleta-maluca', 30), ' Roleta maluca'), h('em', {}, `${rm.t} giro${rm.t === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
       h('small', {}, 'cada missão aprovada = 1 giro. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros'),
       h('button', { type: 'button', class: 'rs-btn', disabled: pode ? null : true, onclick: abrirRoleta }, pode ? 'girar' : rm.t > 0 && !resta ? 'volte amanhã' : 'sem giros'));
-    const ic = (tipo, rotulo) => (statusRs(tipo) ? h('span', { class: 'rs-st' }, statusRs(tipo) === 'aprovado' ? '✓' : '⏳') : h('button', { type: 'button', class: 'rs-ic', 'aria-label': `mandar print: ${rotulo}`, title: 'mandar print', onclick: () => enviarPrint(tipo) }, '📷'));
-    const link = (url, rotulo) => h('a', { class: 'rs-ic', href: url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `abrir ${rotulo}`, title: 'abrir' }, '↗');
+    const ic = (tipo, rotulo) => (statusRs(tipo) ? h('span', { class: 'rs-st' }, statusRs(tipo) === 'aprovado' ? '✓' : '⏳') : h('button', { type: 'button', class: 'rs-ic', 'aria-label': `mandar print: ${rotulo}`, title: 'mandar print', onclick: () => enviarPrint(tipo) }, ico('acao-print', 24, true)));
+    const link = (url, rotulo) => h('a', { class: 'rs-ic', href: url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `abrir ${rotulo}`, title: 'abrir' }, ico('acao-abrir', 24, true));
     const linha = (nome, vale, ...acoes) => h('tr', {}, h('td', {}, nome), h('td', { class: 'rs-v' }, vale), h('td', { class: 'rs-a' }, ...acoes));
     const google = RS.MISSOES.find((m) => m.tipo === 'google'); const amigo = RS.MISSOES.find((m) => m.tipo === 'amigo');
     const sel = h('select', { class: 'fig-post-sel', 'aria-label': 'qual jogo você postou' }, ...RS.JOGOS_POST.map(([id, nome]) => h('option', { value: id }, nome)));
     const nAmigos = quantos('amigo'); const nPosts = rsLista.filter((x) => x.status !== 'recusado' && x.tipo.startsWith('post:') && !/^post:(desafio|rede-|amigo|indicou|depoimento)/.test(x.tipo)).length;
     const tabela = h('table', { class: 'rs-tab' }, h('thead', {}, h('tr', {}, h('th', {}, 'missão'), h('th', {}, 'vale'), h('th', {}, ''))), h('tbody', {},
-      linha('⚡ Desafio do Paul', '1 giro', ic(RS.TIPO_DESAFIO, 'Desafio do Paul')),
-      linha('⭐ avaliar no Google', '1 giro', link(google.link, 'Google'), ic('google', 'avaliar a escola')),
-      ...RS.REDES.map(([tipo, nome, url]) => linha(`seguir no ${nome}`, '1 giro', link(url, nome), ic(tipo, nome))),
-      linha(h('span', {}, '📝 postagem nova ', sel), h('span', {}, '1 giro cada', h('small', {}, ` (${nPosts})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da postagem', title: 'mandar print', onclick: () => { const t = RS.tipoLivre(RS.tipoPost(sel.value), ocupado); if (!t) { toast('esse jogo já tem muitos prints.'); return; } enviarPrint(t); } }, '📷')),
-      linha('🤝 indicar um amigo', h('span', {}, '1 giro cada', h('small', {}, ` (${quantos('post:indicou')})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar o print: o amigo entrou e disse seu nome', title: 'o amigo entrou e disse seu nome: mande o print da conversa', onclick: () => { const t = RS.tipoLivre('post:indicou', ocupado); if (!t) { toast('muitas indicações! fale com a Bea.'); return; } enviarPrint(t); } }, '📷')),
-      linha('💬 depoimento', h('span', {}, '1 giro cada', h('small', {}, ` (${quantos('post:depoimento')})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar o print do depoimento (com autorização dos pais)', title: 'depoimento sobre a escola: com autorização dos pais', onclick: () => { const t = RS.tipoLivre('post:depoimento', ocupado); if (!t) { toast('muitos depoimentos! fale com a Bea.'); return; } enviarPrint(t); } }, '📷')),
-      linha(h('span', {}, '👫 amigo novo'), h('span', {}, '1 giro cada', h('small', {}, ` (${nAmigos})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'copiar o link do app', title: 'copiar o link', onclick: async () => { try { await navigator.clipboard.writeText(amigo.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(amigo.link); } } }, '🔗'), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da conversa', title: 'mandar print', onclick: () => { const t = RS.tipoLivre('amigo', ocupado); if (!t) { toast('muitos amigos! fale com a Bea.'); return; } enviarPrint(t); } }, '📷'))));
+      linha(h('span', { class: 'rs-n' }, ico('missao-desafio-paul'), 'Desafio do Paul'), '1 giro', ic(RS.TIPO_DESAFIO, 'Desafio do Paul')),
+      linha(h('span', { class: 'rs-n' }, ico('missao-google'), 'avaliar no Google'), '1 giro', link(google.link, 'Google'), ic('google', 'avaliar a escola')),
+      ...RS.REDES.map(([tipo, nome, url]) => linha(h('span', { class: 'rs-n' }, ico(`missao-${nome.toLowerCase()}`), `seguir no ${nome}`), '1 giro', link(url, nome), ic(tipo, nome))),
+      linha(h('span', { class: 'rs-n' }, ico('missao-postagem'), 'postagem nova ', sel), h('span', {}, '1 giro cada', h('small', {}, ` (${nPosts})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da postagem', title: 'mandar print', onclick: () => { const t = RS.tipoLivre(RS.tipoPost(sel.value), ocupado); if (!t) { toast('esse jogo já tem muitos prints.'); return; } enviarPrint(t); } }, ico('acao-print', 24, true))),
+      linha(h('span', { class: 'rs-n' }, ico('missao-indicar'), 'indicar um amigo'), h('span', {}, '1 giro cada', h('small', {}, ` (${quantos('post:indicou')})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar o print: o amigo entrou e disse seu nome', title: 'o amigo entrou e disse seu nome: mande o print da conversa', onclick: () => { const t = RS.tipoLivre('post:indicou', ocupado); if (!t) { toast('muitas indicações! fale com a Bea.'); return; } enviarPrint(t); } }, ico('acao-print', 24, true))),
+      linha(h('span', { class: 'rs-n' }, ico('missao-depoimento'), 'depoimento'), h('span', {}, '1 giro cada', h('small', {}, ` (${quantos('post:depoimento')})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar o print do depoimento (com autorização dos pais)', title: 'depoimento sobre a escola: com autorização dos pais', onclick: () => { const t = RS.tipoLivre('post:depoimento', ocupado); if (!t) { toast('muitos depoimentos! fale com a Bea.'); return; } enviarPrint(t); } }, ico('acao-print', 24, true))),
+      linha(h('span', { class: 'rs-n' }, ico('missao-amigo'), 'amigo novo'), h('span', {}, '1 giro cada', h('small', {}, ` (${nAmigos})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'copiar o link do app', title: 'copiar o link', onclick: async () => { try { await navigator.clipboard.writeText(amigo.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(amigo.link); } } }, ico('acao-copiar-link', 24, true)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da conversa', title: 'mandar print', onclick: () => { const t = RS.tipoLivre('amigo', ocupado); if (!t) { toast('muitos amigos! fale com a Bea.'); return; } enviarPrint(t); } }, ico('acao-print', 24, true)))));
     const sur = rm.sur.map((c) => SURPRESAS.find((x) => x.chave === c)).filter(Boolean);
-    const meus = sur.length ? h('section', { class: 'rs-card' }, h('div', { class: 'rs-t' }, h('b', {}, `meus prêmios surpresa (${sur.length})`)), h('div', { class: 'rs-surp' }, ...sur.map((x) => h('a', { class: 'pm-w', href: x.arquivo, download: '', target: '_blank', rel: 'noopener', 'aria-label': `baixar ${x.nome}` }, h('img', { src: x.mini, alt: x.nome, loading: 'lazy', draggable: 'false' }))))) : null;
+    const meus = sur.length ? h('section', { class: 'rs-card' }, h('div', { class: 'rs-t' }, h('b', {}, ico('premio-surpresa', 22), ` meus prêmios surpresa (${sur.length})`)), h('div', { class: 'rs-surp' }, ...sur.map((x) => h('a', { class: 'pm-w', href: x.arquivo, download: '', target: '_blank', rel: 'noopener', 'aria-label': `baixar ${x.nome}` }, h('img', { src: x.mini, alt: x.nome, loading: 'lazy', draggable: 'false' }))))) : null;
     return h('div', { class: 'fig-pack-card fig-resgate rs' }, roleta, h('section', { class: 'rs-card' }, tabela), meus, h('small', { class: 'rs-nota' }, 'o 📷 manda o print; a professora Bea confere e o giro chega aqui. precisa do código de aluno.'));
   }
   const LIMITE_USADOS = (rm, hoje) => (rm.dia === hoje ? Math.min(RM.LIMITE_DIA, rm.n | 0) : 0);
