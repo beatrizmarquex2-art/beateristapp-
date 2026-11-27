@@ -27,7 +27,7 @@ async function abrir(codigo, hash) {
   await page.evaluate(async () => { const S = await import('/js/store.js'); const D = await import('/js/figurinhas/dono.js'); const L = await import('/js/figurinhas/album-logic.js'); await S.upsert('figurinhas', D.albumId(), { ...L.emptyState(), ...D.albumDados(), rm: { t: 5, ids: [], dia: '', n: 0, g: 0, sur: [] } }); });
   await page.goto(`${url}/aluno.html#/jogos`); await sleep(400); await page.goto(`${url}/aluno.html#/album/Pacotes`); await sleep(1800);
   await page.getByRole('tab', { name: /resgatar/i }).click(); await sleep(600);
-  check('resgatar: roleta maluca + tabela com Desafio, Google, 3 redes, postagem e amigo', (await page.locator('.rs-maluca').count()) === 1 && (await page.locator('.rs-tab tbody tr').count()) === 7);
+  check('resgatar: roleta maluca + tabela com Desafio, Google, 3 redes, postagem e amigo', (await page.locator('.rs-maluca').count()) === 1 && (await page.locator('.rs-tab tbody tr').count()) === 9);
   for (let i = 0; i < 3; i++) { await page.getByRole('button', { name: 'girar', exact: true }).click(); await sleep(i === 2 ? 4200 : 600); await page.keyboard.press('Escape'); await sleep(300); }
   const rm = await page.evaluate(async () => { const D = await import('/js/figurinhas/dono.js'); return D.albumDados().rm; });
   check('3 giros no dia e o limite trava o 4º', rm.n === 3 && (rm.t === 2 || rm.t > 2) && (await page.getByRole('button', { name: /volte amanhã/ }).count()) === 1, JSON.stringify(rm));

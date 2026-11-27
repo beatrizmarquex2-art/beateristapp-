@@ -6,7 +6,7 @@ import { grantPack } from './album-logic.js';
 export const LIMITE_DIA = 3;
 export const ESTRELAS = 30;
 export const GIROS_BONUS = 3;
-export const PREMIOS = [['epico', 25], ['estrelas', 25], ['surpresa', 20], ['exclusiva', 20], ['giros', 10]];
+export const PREMIOS = [['epico', 12], ['estrelas', 30], ['surpresa', 30], ['exclusiva', 10], ['giros', 18]]; // épico e exclusiva mais raros (pedido da Bea)
 export const NOME = { epico: 'giro épico', estrelas: `${ESTRELAS} estrelas`, surpresa: 'prêmio surpresa', exclusiva: 'figurinha exclusiva', giros: `+${GIROS_BONUS} giros grátis` };
 export const rmDe = (state) => ({ t: 0, ids: [], dia: '', n: 0, g: 0, sur: [], ...((state && state.rm) || {}) });
 export const restantesHoje = (rm, hoje) => (rm.dia === hoje ? Math.max(0, LIMITE_DIA - (rm.n | 0)) : LIMITE_DIA);

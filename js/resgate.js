@@ -30,7 +30,7 @@ export function tipoLivre(base, ocupado) {
 /** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
 export const TIPO_DESAFIO = 'post:desafio';
 /** Nome legível de qualquer tipo de resgate (inclui `post:<jogo>`). */
-export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro épico)'; if (/^rede-/.test(m[1])) return `seguiu no ${m[1].slice(5)}`; if (/^amigo-/.test(m[1])) return 'mandou pra mais um amigo'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
+export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro épico)'; if (/^rede-/.test(m[1])) return `seguiu no ${m[1].slice(5)}`; if (/^amigo-/.test(m[1])) return 'mandou pra mais um amigo'; if (/^indicou/.test(m[1])) return 'indicou um amigo pelo nome (o amigo entrou)'; if (/^depoimento/.test(m[1])) return 'mandou um depoimento (precisa de autorização dos pais)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
 export const TIPO_NOME = { google: 'avaliou a escola (giro épico)', youtube: 'seguiu nas redes (giro épico)', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 
