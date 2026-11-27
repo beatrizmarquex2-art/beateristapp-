@@ -5,6 +5,8 @@ import { toast } from '../ui.js';
 import { PASSE, PRODUTOS, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
 import { precoPasse } from '../passe-preco.js';
 import { GRATIS } from '../amostra.js';
+import * as AC from '../acesso.js';
+import { premios } from './premios.js';
 import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, COMBOS, GRATIS_ITENS } from '../loja-vitrine-config.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
@@ -117,7 +119,7 @@ const secao = (id, titulo, sub, paul, ...filhos) => h('section', { class: `ljv-s
 
 function banners() {
   const oferta = precoPasse().oferta;
-  const lista = BANNERS.filter((b) => b.so !== 'oferta-passe' || oferta);
+  const lista = BANNERS.filter((b) => b.so !== 'oferta-passe' || (oferta && !AC.liberado())); // quem já tem o passe não precisa da oferta
   const acao = (b) => (b.tipo === 'compra' ? comAdulto(b.item) : (() => { const p = prod(b.produto); if (p) ampliar(p); })());
   const slides = lista.map((b) => (b.arte
     ? h('button', { type: 'button', class: 'ljv-banner arte', 'aria-label': b.alt, 'data-id': b.id, onclick: () => acao(b) }, h('img', { src: b.img, alt: b.alt, width: b.w, height: b.h, draggable: 'false' }))
@@ -177,11 +179,12 @@ export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) 
     h('summary', {}, 'para os responsáveis: pagamento e informações'),
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
     h('a', { class: 'ljv-link', href: '#/jogos/relatorio' }, 'ver o que cada jogo desenvolve ›'));
-  const nav = [['passe', 'Passe'], ['universo', 'Apostilas'], ['banca', 'Banca do Paul'], ['combos', 'Combos'], ['musicos', 'Músicos'], ['gratis', 'Grátis']];
+  const prem = premios(); // só quem tem o passe (código válido) vê os prêmios; quem não tem vê o Passe à venda
+  const nav = [prem ? ['premios', 'Prêmios'] : ['passe', 'Passe'], ['universo', 'Apostilas'], ['banca', 'Banca do Paul'], ['combos', 'Combos'], ['musicos', 'Músicos'], ['gratis', 'Grátis']];
   const topo = h('div', { class: 'ljv-topo' },
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
-  const raiz = h('div', { class: 'ljv' }, topo, banners(), passe(), universo, banca(), combos, musicos, gratis(), resp);
+  const raiz = h('div', { class: 'ljv' }, topo, banners(), prem || passe(), universo, banca(), combos, musicos, gratis(), resp);
   const alvo = ALVO[secao_] || (secao_ && document.getElementById ? secao_ : '');
   if (alvo) setTimeout(() => rolar(raiz.querySelector(`#lj-${alvo}`)), 350);
   return raiz;

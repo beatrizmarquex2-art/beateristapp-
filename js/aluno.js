@@ -22,7 +22,7 @@ import { cartoesDosTemas, sessaoPorId, estrelasTema } from './kids/teoria.js';
 import { acordesView, ritmosView } from './views/estudos-som.js';
 import { ganhou as ganhouEstrela } from './jogos/estrelas-jogo.js';
 /** Meta do dia dos Estudos: cada meta nova vale 1 ★ e fechar as 3 do dia vale +3 ★ (limite de 30 ★ por dia no jogo "estudos"; só com código). */
-/** Rodapé do Perfil: mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
+/** Rodapé do Início (antes ficava no Perfil): mostra a versão do app e tem o botão "atualizar agora" (apaga a cópia guardada e baixa de novo; o código do aluno e o progresso ficam). */
 function versaoApp() {
   const v = h('b', {}, '…'); const msg = h('p', { class: 'muted', role: 'status' });
   try { caches.keys().then((ks) => { const k = ks.filter((x) => /^beaterista-v\d+/.test(x)).sort().pop(); v.textContent = k ? k.replace('beaterista-', '') : 'sem cópia'; }); } catch { v.textContent = '?'; }
@@ -496,7 +496,7 @@ function shell(name) {
     else if (r.name === 'ranking') c = rankingView(view);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
-    else if (r.name === 'perfil') { c = perfil.mount(view); view.append(versaoApp()); }
+    else if (r.name === 'perfil') c = perfil.mount(view);
     else if (r.name === 'toque') c = toque.mount(view);
     else if (r.name === 'piano') c = piano.mount(view);
     else if (r.name === 'violao') c = violao.mount(view);
@@ -516,7 +516,7 @@ function shell(name) {
     else if (r.name === 'estudos' && r.parts[0] === 'ouvido') c = ouvidoEstudoView(view);
     else if (r.name === 'estudos') { estudosView.reabrir = () => { view.replaceChildren(); estudosView(view); }; estudosView(view); }
     else if (r.name === 'erros') c = errosView(view);
-    else if (r.name === 'inicio' && INICIO_ON) c = inicio.mount(view, { nome: getName() });
+    else if (r.name === 'inicio' && INICIO_ON) { c = inicio.mount(view, { nome: getName() }); view.append(versaoApp()); } // a versão do app e o botão "atualizar agora" moraram no Perfil; agora ficam no fim do Início
     else if (r.name === 'lojinha') c = lojinhaView(view, r.parts);
     else if (r.name === 'ritmo') c = ritmo.mount(view, { student: true, name: getName, parts: r.parts });
     else { location.hash = `#/${HOME}`; return; }

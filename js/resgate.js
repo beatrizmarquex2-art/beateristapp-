@@ -16,11 +16,13 @@ export const ARROBA = '@beaterista_';
 export const JOGOS_POST = [['paulbox', 'PaulBox'], ['uno', 'Uno Musical'], ['velha', 'Jogo da velha'], ['quebra', 'Quebra-cabeça'], ['cara', 'Cara a cara'], ['stop', 'Stop'], ['memoria', 'Jogo da memória'], ['bingo', 'Bingo'],
   ['paulta', 'pauLta'], ['figurix', 'Figurix'], ['detetive', 'Detetive Note'], ['rudimentix', 'Rudimentix'], ['toca', 'Toca Aqui'], ['beathero', 'Beat Hero'], ['figurinha', 'figurinha do álbum'], ['outro', 'outro jogo']];
 export const tipoPost = (jogo) => `post:${jogo}`;
-/** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. Aprovado pela Bea = GIRO DUPLO ÉPICO (2 giros). O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
+/** Regra nova (nov/2026): o print de POSTAR (qualquer `post:<jogo>`, inclusive o Desafio do Paul), de SEGUIR nas redes e de AVALIAR a escola, aprovado pela Bea, vale UM giro épico (de 1 a 5 figurinhas + uma exclusiva garantida). Mandar pra um amigo continua valendo estrelas. */
+export const DA_GIRO_EPICO = (tipo) => tipo === 'google' || tipo === 'youtube' || /^post:/.test(String(tipo));
+/** Desafio do Paul: cole sua figurinha, poste, marque a escola e mande o print. O banco já aceita o tipo `post:desafio` (vale 1 vez por aluno). */
 export const TIPO_DESAFIO = 'post:desafio';
 /** Nome legível de qualquer tipo de resgate (inclui `post:<jogo>`). */
-export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro duplo épico)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
-export const TIPO_NOME = { google: 'avaliou no Google', youtube: 'seguiu no YouTube ou nas redes', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
+export function nomeTipo(tipo) { const m = /^post:(.+)$/.exec(String(tipo)); if (!m) return TIPO_NOME[tipo] || String(tipo); if (m[1] === 'desafio') return 'Desafio do Paul (giro épico)'; const j = JOGOS_POST.find((x) => x[0] === m[1]); return `postou e marcou a escola: ${j ? j[1] : m[1]}`; }
+export const TIPO_NOME = { google: 'avaliou a escola (giro épico)', youtube: 'seguiu nas redes (giro épico)', amigo: 'mandou pra um amigo', lendaria: 'lendária (compra de produtos da Lojinha)' };
 const rpc = async (nome, corpo) => { const r = await fetch(`${base}/rpc/${nome}`, { method: 'POST', headers: anon, body: JSON.stringify(corpo) }); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 
 /** Reduz o print (lado maior 900 px, JPEG) e devolve o base64 puro. Fica bem abaixo do limite do banco (900 mil caracteres). */

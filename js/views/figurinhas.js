@@ -69,9 +69,9 @@ export function mount(host, parts = [], opts = {}) {
     for (const r of rsLista) {
       if (r.status !== 'aprovado' || r.entregue) continue;
       let ok = false; try { ok = await RS.entregar(r.id); } catch { /* tenta na próxima */ } if (!ok) continue; r.entregue = true;
-      if (r.tipo === RS.TIPO_DESAFIO) { // Desafio do Paul aprovado: 2 giros ÉPICOS (ids do resgate, então nunca entrega em dobro)
-        const s2 = L.grantPack(L.grantPack(state, `epico:${r.id}:1`), `epico:${r.id}:2`); if (s2 !== state) save(s2);
-        toast('a Bea aprovou o Desafio do Paul: GIRO DUPLO ÉPICO liberado!', { ms: 5000 }); import('../paulta/festa.js').then((F) => F.festa({ titulo: 'giro duplo épico!', sub: 'você ganhou 2 giros especiais. olha em Stars › roleta' })).catch(() => {}); continue;
+      if (RS.DA_GIRO_EPICO(r.tipo)) { // print de postar, seguir nas redes ou avaliar a escola aprovado: UM giro épico (até 5 figurinhas + 1 exclusiva garantida). O id é o do resgate, então nunca entrega em dobro.
+        const s2 = L.grantPack(state, `epico:${r.id}`); if (s2 !== state) save(s2);
+        toast('a Bea aprovou o seu print: GIRO ÉPICO liberado!', { ms: 5000 }); import('../paulta/festa.js').then((F) => F.festa({ titulo: 'giro épico!', sub: 'até 5 figurinhas e uma exclusiva garantida. olha em Stars › roleta' })).catch(() => {}); continue;
       }
       if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (cada produto = 1 · combo = todas)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
@@ -98,7 +98,7 @@ export function mount(host, parts = [], opts = {}) {
   }
   async function semanaPremio() {
     try { const me = P.active(); if (me) { const M = await import('../figurinhas/mesa.js'); await M.vitoria('checkin', L.SEMANA_ESTRELAS); } } catch { /* sem perfil: ganha só o pacote */ }
-    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro duplo épico (em Stars › roleta) e uma figurinha exclusiva da Bea, que chegou no baú!`, bau: true }); } catch { /* sem animação */ }
+    try { const F = await import('../paulta/festa.js'); F.festa({ titulo: '7 dias seguidos!', sub: `você ganhou ${L.SEMANA_ESTRELAS} ★, um giro épico (em Stars › roleta) e uma figurinha exclusiva da Bea, que chegou no baú!`, bau: true }); } catch { /* sem animação */ }
   }
   load();
   async function load() {
@@ -109,7 +109,7 @@ export function mount(host, parts = [], opts = {}) {
     { const t = L.trocarRepetidas(state, catalog); if (t.trocadas) { state = t.state; store.upsert('figurinhas', ID, state); guardarNaNuvem(); toast(`suas ${t.trocadas} repetida${t.trocadas === 1 ? ' virou carta nova' : 's viraram cartas novas'}! olha em minhas figurinhas`, { ms: 5000 }); } } // as repetidas de antes viram cartas que faltam
     let s = L.grantPack(state, L.checkinId(todayKey()));
     if (s !== state) { state = s; store.upsert('figurinhas', ID, state); }
-    // check-in de 7 dias seguidos: 30 ★ + giro duplo épico + 1 exclusiva da Bea + festa (só 1x por dia entra na conta)
+    // check-in de 7 dias seguidos: 30 ★ + giro épico + 1 exclusiva da Bea + festa (só 1x por dia entra na conta)
     { const r = L.checkinSemana(state.sem, todayKey()); if (r.sem !== state.sem && JSON.stringify(r.sem) !== JSON.stringify(state.sem)) { state = { ...state, sem: r.sem }; if (r.completou) { state = L.grantSemana(state, r.sem.ciclo); semanaFesta = true; } store.upsert('figurinhas', ID, state); } }
     if (nuvem && (!opts.estado || !L.sameProgress(state, opts.estado))) guardarNaNuvem(); // o aparelho tinha coisa que o servidor ainda não tem
     if (semanaFesta) { semanaFesta = false; semanaPremio(); }
@@ -239,7 +239,7 @@ export function mount(host, parts = [], opts = {}) {
     const chip = (id, txt, qtd) => h('button', { type: 'button', role: 'tab', class: `fig-area${qual === id ? ' on' : ''}`, 'aria-selected': String(qual === id), onclick: () => { area = id; draw(); } }, txt, qtd ? h('i', {}, String(qtd)) : null);
     const resumo = h('p', {}, partes.length ? `${partes.join(' · ')} pra abrir` : 'nada pra abrir agora.');
     const porque = (lista) => (lista.length ? h('ul', { class: 'fig-porque' }, ...lista.slice(0, 6).map((id) => h('li', {}, h('b', {}, L.packKind(id) === 'epico' ? '⚡ giro épico' : L.packKind(id) === 'roleta' ? '🎡 giro' : L.packKind(id) === 'jogo' ? '🏆 prêmio' : '🎁 pacotinho'), ` ${L.motivoDoPacote(id)}`)), lista.length > 6 ? h('li', {}, `e mais ${lista.length - 6}…`) : null) : null);
-    const semana = h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 giro duplo épico + 1 figurinha exclusiva da Bea`));
+    const semana = h('div', { class: 'fig-semana', 'aria-label': `check-in: ${(state.sem && state.sem.seq) || 0} de 7 dias seguidos` }, h('b', {}, 'check-in da semana'), h('span', { class: 'fig-semana-dias' }, ...Array.from({ length: L.SEMANA_DIAS }, (_, k) => h('i', { class: k < ((state.sem && state.sem.seq) || 0) ? 'on' : k === L.SEMANA_DIAS - 1 ? 'premio' : '' }, k === L.SEMANA_DIAS - 1 ? '🎁' : String(k + 1)))), h('small', {}, `entre 7 dias seguidos e ganhe ${L.SEMANA_ESTRELAS} ★ + 1 giro épico + 1 figurinha exclusiva da Bea`));
     let corpo;
     if (qual === 'roleta') {
       corpo = h('div', { class: 'fig-pack-card' },
@@ -271,17 +271,17 @@ export function mount(host, parts = [], opts = {}) {
         h('p', {}, 'Cole sua figurinha no álbum e escolha se aceita o Desafio do Paul!'),
         h('p', { class: 'fig-note' }, 'Vale uma nova carta de perfil colada, uma pontuação recorde, um selo por completar um mundo musical ou um Estudo do Paul.'),
         h('p', { class: 'fig-note' }, `Poste sua conquista e marque @beaterista.escolademusica, ${RS.ARROBA} ou @jogos.beaterista. Depois toque em “importar foto” e mande o print pra professora aprovar.`),
-        h('p', {}, h('b', {}, 'Depois de aprovado: GIRO DUPLO ÉPICO!'), ' São 2 giros especiais: o primeiro dá 3 figurinhas garantidas e o segundo pode liberar até 5. Boa sorte! Aceita o desafio?'),
-        jaGanhou ? h('p', { class: 'fig-desafio-st ok' }, '✓ aprovado · giro duplo épico liberado (olha na roleta)') : stD ? h('p', { class: 'fig-desafio-st' }, `⏳ ${stD}`) : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint(RS.TIPO_DESAFIO) }, '📷 importar foto e aceitar o desafio'));
+        h('p', {}, h('b', {}, 'Depois de aprovado: GIRO ÉPICO!'), ' Um giro especial com até 5 figurinhas e uma exclusiva garantida. Boa sorte! Aceita o desafio?'),
+        jaGanhou ? h('p', { class: 'fig-desafio-st ok' }, '✓ aprovado · giro épico liberado (olha na roleta)') : stD ? h('p', { class: 'fig-desafio-st' }, `⏳ ${stD}`) : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint(RS.TIPO_DESAFIO) }, '📷 importar foto e aceitar o desafio'));
       corpo = h('div', { class: 'fig-pack-card fig-resgate' }, desafio,
-        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '★'), h('span', {}, `+${RS.ESTRELAS_MISSAO} ★ por print`)),
-        h('p', {}, h('b', {}, 'resgate estrelas com print')),
-        h('p', { class: 'fig-note' }, 'faça a missão, tire um print e envie. a professora Bea confere e as estrelas chegam aqui. precisa do código de aluno.'),
-        h('div', { class: 'fig-post' }, h('b', {}, `postei meu jogo e marquei a escola: +${RS.ESTRELAS_MISSAO} ★ por jogo`),
+        h('div', { class: 'fig-pack-art', 'aria-hidden': 'true' }, h('b', {}, '⚡'), h('span', {}, 'giro épico por print')),
+        h('p', {}, h('b', {}, 'resgate um giro épico com print')),
+        h('p', { class: 'fig-note' }, 'postar, seguir nas redes e avaliar a escola valem um giro épico cada: até 5 figurinhas e uma exclusiva garantida. tire um print e envie; a professora Bea confere e o giro chega aqui. precisa do código de aluno.'),
+        h('div', { class: 'fig-post' }, h('b', {}, 'postei meu jogo e marquei a escola: um giro épico por jogo'),
           h('small', {}, `no fim de cada jogo tem o botão "compartilhar". poste nos stories ou no feed, marque ${RS.ARROBA} e mande aqui o print do post. vale 1 vez por jogo.`),
           h('div', { class: 'fig-post-linha' }, sel, h('button', { type: 'button', class: 'btn small', disabled: primeiro ? null : true, onclick: () => enviarPrint(RS.tipoPost(sel.value)) }, 'enviar print do post')),
           postados.length ? h('small', { class: 'fig-post-st' }, postados.map(([id, nome]) => `${nome}: ${statusRs(RS.tipoPost(id))}`).join(' · ')) : null),
-        h('div', { class: 'fig-missoes' }, h('b', {}, `outras missões: +${RS.ESTRELAS_MISSAO} ★ cada`),
+        h('div', { class: 'fig-missoes' }, h('b', {}, `seguir e avaliar: um giro épico cada · mandar pra um amigo: +${RS.ESTRELAS_MISSAO} ★`),
           ...RS.MISSOES.map((m) => h('div', { class: 'fig-missao' }, h('span', {}, h('b', {}, m.titulo), h('small', {}, m.dica)),
             h('span', { class: 'fig-missao-bt' }, m.tipo === 'amigo' ? h('button', { type: 'button', class: 'btn small ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, m.rotulo) : h('a', { class: 'btn small ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo), ...(m.extras || []).map(([t, u]) => h('a', { class: 'btn small ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
               statusRs(m.tipo) ? h('em', { class: 'fig-missao-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'btn small', onclick: () => enviarPrint(m.tipo) }, 'enviar print'))))));
@@ -347,7 +347,7 @@ export function mount(host, parts = [], opts = {}) {
       if (kind === 'epico') { // caça-níquel: um rolo por figurinha (1º giro: 3 = clássica + exclusiva + rara · 2º giro: de 1 a 5, mais comuns e raras)
         const r = L.openPack(state, catalog, packId); if (!r.fresh) { setTimeout(close, 0); return box; }
         save(r.state); const mostra = () => box.replaceChildren(revealUI(r.codes, close, true));
-        box.append(h('p', { class: 'fig-note' }, ep.n === 1 ? 'giro épico 1 de 2: sempre 3 figurinhas, uma clássica, uma exclusiva e uma rara!' : `giro épico 2 de 2: ${r.codes.length} figurinha${r.codes.length > 1 ? 's' : ''}!${r.codes.length === 1 ? ' (uma só, então é exclusiva)' : ''}`));
+        box.append(h('p', { class: 'fig-note' }, ep.unico ? `giro épico: ${r.codes.length} figurinha${r.codes.length > 1 ? 's' : ''}, e uma delas é exclusiva!` : ep.n === 1 ? 'giro épico 1 de 2: sempre 3 figurinhas, uma clássica, uma exclusiva e uma rara!' : `giro épico 2 de 2: ${r.codes.length} figurinha${r.codes.length > 1 ? 's' : ''}!${r.codes.length === 1 ? ' (uma só, então é exclusiva)' : ''}`));
         if (wantsLess(state)) { setTimeout(mostra, 0); return box; }
         const maq = maquinaEpica(r.codes.length); box.append(maq.el); rufo(3.4); setTimeout(() => { if (box.isConnected) maq.girar(mostra); }, 450); // um toque só: abre e já gira
         return box;
@@ -377,7 +377,7 @@ export function mount(host, parts = [], opts = {}) {
         disc.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`; disc.classList.add('spin'); rufo(3.2); setTimeout(mostra, 3300);
       } }, roleta ? 'girando…' : 'abrir o prêmio');
       if (roleta) setTimeout(() => { if (go.isConnected && !go.disabled) go.click(); }, 450); // um toque só: abre e já gira
-      box.append(h('p', { class: 'fig-note' }, kind === 'epico' ? (ep.n === 1 ? 'giro épico 1 de 2: 3 figurinhas garantidas!' : 'giro épico 2 de 2: de 1 a 5 figurinhas. se vier só uma, é exclusiva!') : roleta ? 'de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
+      box.append(h('p', { class: 'fig-note' }, kind === 'epico' ? (ep.unico ? 'giro épico: de 1 a 5 figurinhas e uma exclusiva garantida!' : ep.n === 1 ? 'giro épico 1 de 2: 3 figurinhas garantidas!' : 'giro épico 2 de 2: de 1 a 5 figurinhas. se vier só uma, é exclusiva!') : roleta ? 'de 1 a 3 figurinhas. com sorte, vem uma rara, uma dos Beatles… ou uma exclusiva!' : 'você terminou um jogo inteiro! é um pacote de 3 com uma rara garantida.'), h('div', { class: 'fig-wheel' }, disc, ...extras, h('i', { class: 'fig-wheel-pin', 'aria-hidden': 'true' })), go);
       return box;
     });
   }

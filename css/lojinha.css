@@ -155,3 +155,21 @@
 #view.lj-escura .card .muted, #view.lj-escura .card .al-lock-t { color: #aab4d4; }
 #view.lj-escura .banner-sub { color: #f4f6ff; }
 body:has(#view.lj-escura) { background: #070b19; }
+
+/* prêmios do passe */
+.pm-t { margin: 4px 0 0; font: 800 12px var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--mut); }
+.pm-wp { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px; }
+.pm-wp::-webkit-scrollbar { display: none; }
+.pm-w { flex: 0 0 82px; scroll-snap-align: start; border-radius: 10px; overflow: hidden; border: 2px solid rgb(255 255 255 / .8); line-height: 0; }
+.pm-w img { width: 100%; height: auto; display: block; }
+.pm-dois { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pm-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: var(--glass); border: 1px solid var(--line); color: var(--txt); text-decoration: none; min-width: 0; }
+.pm-item img { flex: none; width: 56px; height: 40px; object-fit: cover; border-radius: 6px; }
+.pm-item span { display: grid; font: 800 12.5px/1.15 var(--body); min-width: 0; } .pm-item small { font: 600 10.5px var(--body); color: var(--mut); }
+.pm-figs { display: flex; gap: 8px; } .pm-figs img { width: 30%; max-width: 110px; height: auto; border-radius: 8px; box-shadow: 0 5px 12px rgb(0 0 0 / .5); }
+.pm-fig-st { margin: 0; font: 700 12.5px var(--body); color: var(--gold); }
+.pm-faixa { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px; } .pm-faixa::-webkit-scrollbar { display: none; }
+.pm-b { flex: 0 0 150px; scroll-snap-align: start; padding: 6px; border-radius: 12px; background: repeating-conic-gradient(rgb(255 255 255 / .1) 0 25%, rgb(255 255 255 / .04) 0 50%) 0 0 / 14px 14px; border: 1px solid var(--line); line-height: 0; }
+.pm-b img { width: 100%; height: auto; display: block; }
+.pm-p { flex-basis: 96px; }
+.pm-dois { grid-template-columns: 1fr; }
