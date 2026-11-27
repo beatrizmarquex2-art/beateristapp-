@@ -173,3 +173,10 @@ body:has(#view.lj-escura) { background: #070b19; }
 .pm-b img { width: 100%; height: auto; display: block; }
 .pm-p { flex-basis: 96px; }
 .pm-dois { grid-template-columns: 1fr; }
+
+/* prêmios das semanas (dentro do Álbum › check-in) */
+.pm-sem { margin-top: 8px; border: 1px solid rgb(var(--ink-rgb) / .2); border-radius: 12px; padding: 6px 10px; } .pm-sem summary { cursor: pointer; font: 800 13px var(--body); }
+.pm-sem-linha { display: grid; gap: 4px; padding: 6px 0; border-top: 1px solid rgb(var(--ink-rgb) / .12); } .pm-sem-linha b { font: 800 12px var(--body); }
+.pm-sem-itens { display: flex; gap: 8px; align-items: flex-start; }
+.pm-sem .pm-w { flex: none; width: 52px; border-color: rgb(var(--ink-rgb) / .35); } .pm-sem .pm-sem-cl { width: 56px; background: #fff; }
+.pm-sem-vazio { margin: 6px 0 0; }

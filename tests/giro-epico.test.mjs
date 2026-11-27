@@ -16,7 +16,13 @@ test('epico único: de 1 a 5 figurinhas, sem repetir, e sempre uma exclusiva', (
   }
   assert.ok(vistos.has(1) && vistos.has(5), [...vistos].join());
 });
-test('check-in da semana: exclusiva da Bea + UM giro épico', () => { assert.deepEqual(L.semanaPacks(4), ['semana:4', 'epico:sem4']); });
+test('check-in da semana: UM giro épico (que já traz a exclusiva); wallpaper e 2 folhas de colorir por semana, na ordem', async () => {
+  assert.deepEqual(L.semanaPacks(4), ['epico:sem4']);
+  const { premioDaSemana, WALLPAPERS, COLORIR_PAGINAS } = await import('../js/premios-config.js');
+  assert.equal(COLORIR_PAGINAS.length, 34); const a = premioDaSemana(1), b = premioDaSemana(2);
+  assert.equal(a.wallpaper, WALLPAPERS[0]); assert.deepEqual(a.colorir.map((c) => c.arquivo.slice(-20)), [COLORIR_PAGINAS[0], COLORIR_PAGINAS[1]].map((c) => c.arquivo.slice(-20)));
+  assert.notEqual(a.wallpaper, b.wallpaper); assert.notEqual(a.colorir[0], b.colorir[0]); assert.equal(premioDaSemana(13).wallpaper, WALLPAPERS[0]);
+});
 test('abrir o giro épico guarda as figurinhas e não abre de novo', () => {
   let s = L.grantPack(L.emptyState(), 'epico:x1'); const r = L.openPack(s, cat, 'epico:x1'); assert.ok(r.fresh && r.codes.length >= 1); assert.equal(L.openPack(r.state, cat, 'epico:x1').fresh, false);
 });

@@ -20,6 +20,10 @@ async function abrir(codigo, hash) {
   await page.reload(); await sleep(2200);
   const g2 = await page.evaluate(async () => { const R = await import('/js/figurinhas/rewards.js'); return R.stateOf().granted.filter((id) => id.endsWith(':passe')).length; });
   check('abrir de novo não entrega em dobro', g2 === 1, String(g2));
+  check('as 34 folhas de colorir da semana existem (nenhum 404)', await page.evaluate(async () => { const m = await import('/js/premios-config.js'); const r = await Promise.all(m.COLORIR_PAGINAS.flatMap((c) => [c.arquivo, c.mini]).map((u) => fetch(u, { method: 'HEAD' }).then((x) => x.ok))); return m.COLORIR_PAGINAS.length === 34 && r.every(Boolean); }));
+  await page.evaluate(async () => { const S = await import('/js/store.js'); const D = await import('/js/figurinhas/dono.js'); const L = await import('/js/figurinhas/album-logic.js'); await S.upsert('figurinhas', D.albumId(), { ...L.emptyState(), ...D.albumDados(), sem: { ult: '2026-11-20', seq: 3, ciclo: 2 } }); });
+  await page.goto(`${url}/aluno.html#/album/Pacotes`); await sleep(2200);
+  check('no check-in da semana aparecem os prêmios das 2 semanas fechadas: 1 wallpaper + 2 folhas de colorir cada', (await page.locator('.pm-sem .pm-sem-linha').count()) === 2 && (await page.locator('.pm-sem .pm-sem-wp').count()) === 2 && (await page.locator('.pm-sem .pm-sem-cl').count()) === 4 && /1 wallpaper \+ 2 folhas/.test(await page.locator('.fig-semana').textContent()));
   await page.goto(`${url}/aluno.html#/inicio`); await sleep(1800);
   check('o botão "atualizar agora" e a versão estão no Início', (await page.locator('.al-versao .btn', { hasText: 'atualizar agora' }).count()) === 1);
   await page.goto(`${url}/aluno.html#/perfil`); await sleep(1800);

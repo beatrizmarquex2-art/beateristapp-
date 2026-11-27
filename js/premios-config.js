@@ -23,3 +23,12 @@ export const PLANNERS = [
 export const COLORIR = { nome: 'Folhas de colorir', dica: '3 folhas A4 em PDF', arquivo: `${P}colorir-paul-3-folhas.pdf`, mini: `${P}colorir-paul-mini.jpg` };
 // 3 exclusivas (catálogo): P03 Paul no breakdance, P10 Paul professor, F010 retrato da Bea. Mudar os códigos muda o prêmio de quem ainda não pegou.
 export const FIGURINHAS = { id: 'dado:P03,P10,F010:passe', codigos: ['P03', 'P10', 'F010'] };
+
+// Páginas de colorir soltas (34 folhas A4 do livro de colorir): o check-in de 7 dias libera 2 por semana, na ordem.
+const cl = (n, slug) => ({ nome: slug.replace(/-/g, ' '), arquivo: `${P}colorir/colorir-${String(n).padStart(2, '0')}-${slug}.jpg`, mini: `${P}colorir/colorir-${String(n).padStart(2, '0')}-mini.jpg`, dica: 'folha A4' });
+export const COLORIR_PAGINAS = ['acordeon', 'amplificador', 'baixo', 'baqueta', 'bastidores', 'bateria', 'breakdance', 'cajon-dupla', 'cajon-palco', 'cajon', 'case', 'colorindo', 'congas', 'ensinando', 'estudando', 'guitarra', 'meditando', 'metronomo', 'microfone', 'oculos', 'ouvindo-musica', 'pad-metronomo', 'pad-treino', 'pandeiro', 'professor', 'sax', 'selfie', 'sonhando', 'teclado-dupla', 'teclado', 'trompete', 'ukulele', 'violino', 'xilofone'].map((s, i) => cl(i + 1, s));
+/** Prêmio fixo da semana de número `n` (1 = a primeira semana fechada): 1 wallpaper e 2 folhas de colorir; passa de 12 / 34 e recomeça. */
+export function premioDaSemana(n) {
+  const i = Math.max(1, n | 0) - 1;
+  return { wallpaper: WALLPAPERS[i % WALLPAPERS.length], colorir: [COLORIR_PAGINAS[(2 * i) % COLORIR_PAGINAS.length], COLORIR_PAGINAS[(2 * i + 1) % COLORIR_PAGINAS.length]] };
+}
