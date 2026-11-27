@@ -15,6 +15,8 @@ import { shareUI } from '../figurinhas/share-ui.js';
 import * as Minhas from '../figurinhas/minhas.js';
 import * as LEND from '../figurinhas/lendarias.js';
 import * as RS from '../resgate.js';
+import * as RM from '../figurinhas/roleta-maluca.js';
+import { WALLPAPERS, PLANNERS, COLORIR_PAGINAS } from '../premios-config.js';
 import * as CODE from '../codigo.js';
 import * as D from '../figurinhas/dono.js';
 import { rufo } from '../figurinhas/roleta-sfx.js';
@@ -71,9 +73,9 @@ export function mount(host, parts = [], opts = {}) {
     for (const r of rsLista) {
       if (r.status !== 'aprovado' || r.entregue) continue;
       let ok = false; try { ok = await RS.entregar(r.id); } catch { /* tenta na próxima */ } if (!ok) continue; r.entregue = true;
-      if (RS.DA_GIRO_EPICO(r.tipo)) { // print de postar, seguir nas redes ou avaliar a escola aprovado: UM giro épico (até 5 figurinhas + 1 exclusiva garantida). O id é o do resgate, então nunca entrega em dobro.
-        const s2 = L.grantPack(state, `epico:${r.id}`); if (s2 !== state) save(s2);
-        toast('a Bea aprovou o seu print: GIRO ÉPICO liberado!', { ms: 5000 }); import('../paulta/festa.js').then((F) => F.festa({ titulo: 'giro épico!', sub: 'até 5 figurinhas e uma exclusiva garantida. olha em Stars › roleta' })).catch(() => {}); continue;
+      if (RS.VALE_GIRO(r.tipo)) { // missão aprovada: 1 giro da ROLETA MALUCA (o id do resgate garante que só conta uma vez)
+        const s2 = RM.ganharGiro(state, r.id); if (s2 !== state) save(s2);
+        toast('a Bea aprovou o seu print: +1 giro na roleta maluca!', { ms: 5000 }); continue;
       }
       if (r.tipo === 'lendaria') continue; // a entrega das lendárias é o "completar" logo abaixo (cada produto = 1 · combo = todas)
       else { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', RS.ESTRELAS_MISSAO); } catch { /* sem perfil */ } toast(`a Bea aprovou: +${RS.ESTRELAS_MISSAO} ★ pela missão!`); }
@@ -189,6 +191,56 @@ export function mount(host, parts = [], opts = {}) {
   }
 
   /* ---------- lendárias: exclusivas de quem compra na Lojinha (as figurinhas chegam depois; por enquanto os espaços ficam trancados) ---------- */
+  // ---------- ROLETA MALUCA + tabela de missões (Stars › resgatar) ----------
+  const SURPRESAS = [...PLANNERS.map((x, i) => ({ chave: `planner:${i}`, k: 'planner', ...x })), ...COLORIR_PAGINAS.map((x, i) => ({ chave: `colorir:${i}`, k: 'colorir', ...x })), ...WALLPAPERS.map((x, i) => ({ chave: `wallpaper:${i}`, k: 'wallpaper', ...x }))];
+  const rngSeguro = () => { try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch { return Math.random(); } };
+  const ocupado = (t) => rsLista.some((x) => x.tipo === t && x.status !== 'recusado');
+  const quantos = (pref) => rsLista.filter((x) => x.status !== 'recusado' && (x.tipo === pref || x.tipo.startsWith(`${pref}-`) || (pref === 'amigo' && x.tipo.startsWith('post:amigo-')))).length;
+  function abrirRoleta() {
+    const hoje = todayKey(); const res = RM.girar(state, hoje, rngSeguro, SURPRESAS); if (!res) { toast(RM.restantesHoje(RM.rmDe(state), hoje) ? 'sem giros: cumpra uma missão e mande o print.' : 'já girou 3 vezes hoje. volte amanhã!'); return; }
+    save(res.state); const premio = res.premio; const idx = RM.PREMIOS.findIndex(([t]) => t === premio.tipo); const n = RM.PREMIOS.length; const ang = 360 / n;
+    sheet('🎰 roleta maluca', (close) => {
+      const rotulos = { epico: '⚡', estrelas: '⭐', surpresa: '🎁', exclusiva: '✨', giros: '🎟' };
+      const roda = h('div', { class: 'rm-roda', 'aria-hidden': 'true' }, ...RM.PREMIOS.map(([t], i) => h('span', { class: `rm-seg s${i}`, style: `transform: rotate(${i * ang + ang / 2}deg) translateY(-58px) rotate(${-(i * ang + ang / 2)}deg)` }, rotulos[t])));
+      const msg = h('p', { class: 'rm-msg', role: 'status', 'aria-live': 'polite' }, 'girando…'); const caixa = h('div', { class: 'rm-res' });
+      const box = h('div', { class: 'rm-box' }, h('div', { class: 'rm-seta', 'aria-hidden': 'true' }, '▼'), roda, msg, caixa);
+      const fim = async () => {
+        msg.textContent = `deu: ${RM.NOME[premio.tipo]}!`; caixa.replaceChildren();
+        if (premio.tipo === 'estrelas') { try { const M = await import('../figurinhas/mesa.js'); await M.vitoria('missao', premio.estrelas); } catch { /* sem perfil */ } caixa.append(h('p', {}, `+${premio.estrelas} ★ na sua conta`)); }
+        else if (premio.tipo === 'surpresa') caixa.append(h('p', {}, `${({ planner: 'planner', colorir: 'folha de colorir', wallpaper: 'wallpaper' })[premio.item.k]}: ${premio.item.nome}`), h('a', { class: 'rs-btn', href: premio.item.arquivo, download: '', target: '_blank', rel: 'noopener' }, 'baixar agora'));
+        else if (premio.tipo === 'giros') caixa.append(h('p', {}, `você ganhou +${premio.giros} giros pra usar (até 3 por dia)`));
+        else caixa.append(h('p', {}, premio.tipo === 'epico' ? 'o giro épico está no seu baú: abra na roleta' : 'a figurinha exclusiva chegou no seu baú'));
+        const resta = RM.restantesHoje(RM.rmDe(state), todayKey()); const tem = RM.rmDe(state).t;
+        caixa.append(h('div', { class: 'rm-bt' }, tem > 0 && resta > 0 ? h('button', { type: 'button', class: 'rs-btn', onclick: () => { close(); setTimeout(abrirRoleta, 250); } }, `girar de novo (${resta} hoje)`) : null, h('button', { type: 'button', class: 'rs-btn ghost', onclick: close }, 'fechar')));
+      };
+      requestAnimationFrame(() => requestAnimationFrame(() => { roda.style.transform = `rotate(${-(360 * 5 + idx * ang + ang / 2)}deg)`; }));
+      setTimeout(fim, wantsLess(state) ? 200 : 3600);
+      return box;
+    });
+  }
+  function resgatarView() {
+    const hoje = todayKey(); const rm = RM.rmDe(state); const resta = RM.restantesHoje(rm, hoje); const pode = RM.podeGirar(rm, hoje);
+    const roleta = h('section', { class: 'rs-card rs-maluca' },
+      h('div', { class: 'rs-t' }, h('b', {}, '🎰 Roleta maluca'), h('em', {}, `${rm.t} giro${rm.t === 1 ? '' : 's'} · hoje ${LIMITE_USADOS(rm, hoje)}/3`)),
+      h('small', {}, 'cada missão aprovada = 1 giro. pode cair: giro épico · 30 ★ · prêmio surpresa · figurinha exclusiva · +3 giros'),
+      h('button', { type: 'button', class: 'rs-btn', disabled: pode ? null : true, onclick: abrirRoleta }, pode ? 'girar' : rm.t > 0 && !resta ? 'volte amanhã' : 'sem giros'));
+    const ic = (tipo, rotulo) => (statusRs(tipo) ? h('span', { class: 'rs-st' }, statusRs(tipo) === 'aprovado' ? '✓' : '⏳') : h('button', { type: 'button', class: 'rs-ic', 'aria-label': `mandar print: ${rotulo}`, title: 'mandar print', onclick: () => enviarPrint(tipo) }, '📷'));
+    const link = (url, rotulo) => h('a', { class: 'rs-ic', href: url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `abrir ${rotulo}`, title: 'abrir' }, '↗');
+    const linha = (nome, vale, ...acoes) => h('tr', {}, h('td', {}, nome), h('td', { class: 'rs-v' }, vale), h('td', { class: 'rs-a' }, ...acoes));
+    const google = RS.MISSOES.find((m) => m.tipo === 'google'); const amigo = RS.MISSOES.find((m) => m.tipo === 'amigo');
+    const sel = h('select', { class: 'fig-post-sel', 'aria-label': 'qual jogo você postou' }, ...RS.JOGOS_POST.map(([id, nome]) => h('option', { value: id }, nome)));
+    const nAmigos = quantos('amigo'); const nPosts = rsLista.filter((x) => x.status !== 'recusado' && x.tipo.startsWith('post:') && !/^post:(desafio|rede-|amigo)/.test(x.tipo)).length;
+    const tabela = h('table', { class: 'rs-tab' }, h('thead', {}, h('tr', {}, h('th', {}, 'missão'), h('th', {}, 'vale'), h('th', {}, ''))), h('tbody', {},
+      linha('⚡ Desafio do Paul', '1 giro', ic(RS.TIPO_DESAFIO, 'Desafio do Paul')),
+      linha('⭐ avaliar no Google', '1 giro', link(google.link, 'Google'), ic('google', 'avaliar a escola')),
+      ...RS.REDES.map(([tipo, nome, url]) => linha(`seguir no ${nome}`, '1 giro', link(url, nome), ic(tipo, nome))),
+      linha(h('span', {}, '📝 postagem nova ', sel), h('span', {}, '1 giro cada', h('small', {}, ` (${nPosts})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da postagem', title: 'mandar print', onclick: () => { const t = RS.tipoLivre(RS.tipoPost(sel.value), ocupado); if (!t) { toast('esse jogo já tem muitos prints.'); return; } enviarPrint(t); } }, '📷')),
+      linha(h('span', {}, '👫 amigo novo'), h('span', {}, '1 giro cada', h('small', {}, ` (${nAmigos})`)), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'copiar o link do app', title: 'copiar o link', onclick: async () => { try { await navigator.clipboard.writeText(amigo.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(amigo.link); } } }, '🔗'), h('button', { type: 'button', class: 'rs-ic', 'aria-label': 'mandar print da conversa', title: 'mandar print', onclick: () => { const t = RS.tipoLivre('amigo', ocupado); if (!t) { toast('muitos amigos! fale com a Bea.'); return; } enviarPrint(t); } }, '📷'))));
+    const sur = rm.sur.map((c) => SURPRESAS.find((x) => x.chave === c)).filter(Boolean);
+    const meus = sur.length ? h('section', { class: 'rs-card' }, h('div', { class: 'rs-t' }, h('b', {}, `meus prêmios surpresa (${sur.length})`)), h('div', { class: 'rs-surp' }, ...sur.map((x) => h('a', { class: 'pm-w', href: x.arquivo, download: '', target: '_blank', rel: 'noopener', 'aria-label': `baixar ${x.nome}` }, h('img', { src: x.mini, alt: x.nome, loading: 'lazy', draggable: 'false' }))))) : null;
+    return h('div', { class: 'fig-pack-card fig-resgate rs' }, roleta, h('section', { class: 'rs-card' }, tabela), meus, h('small', { class: 'rs-nota' }, 'o 📷 manda o print; a professora Bea confere e o giro chega aqui. precisa do código de aluno.'));
+  }
+  const LIMITE_USADOS = (rm, hoje) => (rm.dia === hoje ? Math.min(RM.LIMITE_DIA, rm.n | 0) : 0);
   function lendariasView() {
     const tem = (c) => LEND.temLendaria(state, c.codigo);
     const slot = (c) => h('button', { type: 'button', class: `ld-slot ld-card${tem(c) ? ' on' : ''}`, 'aria-label': `${c.nome}, lendária${tem(c) ? '' : ', trancada'}`, onclick: () => verLendaria(c) },
@@ -196,11 +248,11 @@ export function mount(host, parts = [], opts = {}) {
     const n = LEND.LENDARIAS.filter(tem).length;
     return h('section', { class: 'fig-col ld' },
       h('h2', { class: 'tag' }, '⚡ SUPER PAUL · lendária'),
-      h('p', { class: 'muted' }, `a coleção mais rara: figurinhas lendárias de quem compra na Lojinha da Beaterista. não saem na roleta. você tem ${n} de ${LEND.LENDARIAS.length}.`),
+      h('p', { class: 'muted' }, `a coleção mais rara: figurinhas lendárias de quem compra um combo na Lojinha da Beaterista. não saem na roleta. você tem ${n} de ${LEND.LENDARIAS.length}.`),
       h('div', { class: 'ld-grid' }, ...LEND.LENDARIAS.map(slot)),
-      h('p', { class: 'fig-note' }, `cada produto da Lojinha libera 1 lendária · o combo libera todas as ${LEND.LENDARIAS.length}.`),
+      h('p', { class: 'fig-note' }, `pra liberar as lendárias é preciso comprar pelo menos 1 combo da Lojinha: o combo libera todas as ${LEND.LENDARIAS.length}.`),
       rsLista.some((x) => x.tipo === 'lendaria' && x.status === 'pendente') ? h('p', { class: 'fig-note' }, 'seu resgate: esperando a Bea') : n >= LEND.LENDARIAS.length ? h('p', { class: 'fig-note' }, 'você já tem todas as lendárias! 🎉')
-        : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint('lendaria') }, n ? 'comprei mais produtos (mandar outro print)' : 'resgatar por print (mostre suas compras)'),
+        : h('button', { type: 'button', class: 'btn primary wide', onclick: () => enviarPrint('lendaria') }, n ? 'comprei outro combo (mandar o print)' : 'comprei um combo: mandar o print'),
       h('a', { class: 'btn wide', href: '#/lojinha' }, 'ver a Lojinha'));
   }
   function verLendaria(c) {
@@ -265,28 +317,7 @@ export function mount(host, parts = [], opts = {}) {
         pastable.length ? h('button', { type: 'button', class: 'btn primary', onclick: () => { save(L.pasteAll(state)); toast('tudo colado!'); } }, `colar tudo (${pastable.length})`) : null,
         h('div', { class: 'fig-hand-list' }, hand.map((e) => h('button', { type: 'button', class: 'fig-chip', onclick: () => (L.canPaste(state, e.codigo) ? doPaste(e) : detail(e)) }, h('b', {}, e.codigo), ` ${e.artista_banda}`, h('em', {}, state.pasted[e.codigo] ? ' · repetida' : ' · colar'))))));
     } else {
-      const sel = h('select', { class: 'fig-post-sel', 'aria-label': 'qual jogo você postou' }, ...RS.JOGOS_POST.map(([id, nome]) => h('option', { value: id, disabled: statusRs(RS.tipoPost(id)) ? true : null }, statusRs(RS.tipoPost(id)) ? `${nome} (${statusRs(RS.tipoPost(id))})` : nome)));
-      const primeiro = RS.JOGOS_POST.find(([id]) => !statusRs(RS.tipoPost(id))); if (primeiro) sel.value = primeiro[0];
-      const postados = RS.JOGOS_POST.filter(([id]) => statusRs(RS.tipoPost(id)));
-      const stD = statusRs(RS.TIPO_DESAFIO); const jaGanhou = rsLista.some((x) => x.tipo === RS.TIPO_DESAFIO && x.status === 'aprovado');
-      // Resgatar (visual compacto, nov/2026): desafio, post por jogo e missões em linhas curtas, no mesmo escuro da Lojinha
-      const desafio = h('section', { class: 'rs-card rs-desafio' },
-        h('div', { class: 'rs-t' }, h('b', {}, '⚡ Desafio do Paul'), jaGanhou ? h('em', { class: 'ok' }, '✓ aprovado') : stD ? h('em', {}, `⏳ ${stD}`) : null),
-        h('p', {}, 'cole sua figurinha, poste e marque a escola. print aprovado = ', h('b', {}, 'giro épico'), ' (até 5 figurinhas e 1 exclusiva).'),
-        h('small', {}, `marque ${RS.ARROBA} ou @jogos.beaterista`),
-        jaGanhou || stD ? null : h('button', { type: 'button', class: 'rs-btn', onclick: () => enviarPrint(RS.TIPO_DESAFIO) }, '📷 mandar print'));
-      const postar = h('section', { class: 'rs-card' },
-        h('div', { class: 'rs-t' }, h('b', {}, 'postei um jogo'), h('em', {}, 'giro épico por jogo')),
-        h('div', { class: 'rs-linha' }, sel, h('button', { type: 'button', class: 'rs-btn', disabled: primeiro ? null : true, onclick: () => enviarPrint(RS.tipoPost(sel.value)) }, 'mandar print')),
-        postados.length ? h('small', {}, postados.map(([id, nome]) => `${nome}: ${statusRs(RS.tipoPost(id))}`).join(' · ')) : null);
-      const missao = (m) => h('div', { class: 'rs-missao' },
-        h('div', { class: 'rs-m-t' }, h('b', {}, m.titulo), h('em', {}, m.tipo === 'amigo' ? `+${RS.ESTRELAS_MISSAO} ★` : 'giro épico')),
-        h('div', { class: 'rs-linha' },
-          m.tipo === 'amigo' ? h('button', { type: 'button', class: 'rs-btn ghost', onclick: async () => { try { await navigator.clipboard.writeText(m.link); toast('link copiado: cole e mande pro amigo!'); } catch { toast(m.link); } } }, 'copiar link') : h('a', { class: 'rs-btn ghost', href: m.link, target: '_blank', rel: 'noopener noreferrer' }, m.rotulo),
-          ...(m.extras || []).map(([t, u]) => h('a', { class: 'rs-btn ghost', href: u, target: '_blank', rel: 'noopener noreferrer' }, t)),
-          statusRs(m.tipo) ? h('em', { class: 'rs-st' }, statusRs(m.tipo)) : h('button', { type: 'button', class: 'rs-btn', onclick: () => enviarPrint(m.tipo) }, 'mandar print')));
-      corpo = h('div', { class: 'fig-pack-card fig-resgate rs' }, desafio, postar, h('section', { class: 'rs-card' }, h('div', { class: 'rs-t' }, h('b', {}, 'seguir e avaliar')), ...RS.MISSOES.map(missao)),
-        h('small', { class: 'rs-nota' }, 'a professora Bea confere o print e o prêmio chega aqui. precisa do código de aluno.'));
+      corpo = resgatarView();
     }
     const ico = { roleta: '<svg viewBox="0 0 64 64"><defs><linearGradient id="irc" x1="0" x2="1"><stop offset="0" stop-color="#7d0c1e"/><stop offset=".5" stop-color="#e53950"/><stop offset="1" stop-color="#7d0c1e"/></linearGradient><linearGradient id="irm" x1="0" x2="1"><stop offset="0" stop-color="#9aa0ad"/><stop offset=".5" stop-color="#f4f6fa"/><stop offset="1" stop-color="#8a909e"/></linearGradient></defs><path d="M12 7l18 16M52 7L34 23" stroke="#14111a" stroke-width="7" stroke-linecap="round"/><path d="M12 7l18 16M52 7L34 23" stroke="#fff6e0" stroke-width="3.4" stroke-linecap="round"/><circle cx="11" cy="6" r="3.8" fill="#fff6e0" stroke="#14111a" stroke-width="2"/><circle cx="53" cy="6" r="3.8" fill="#fff6e0" stroke="#14111a" stroke-width="2"/><path d="M7 28v20c0 5.5 11 9.5 25 9.5s25-4 25-9.5V28" fill="url(#irc)" stroke="#14111a" stroke-width="3"/><path d="M10 33l8 17M22 36l5 18M42 36l-5 18M54 33l-8 17" stroke="#ffd23f" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="32" cy="28" rx="25" ry="9.5" fill="url(#irm)" stroke="#14111a" stroke-width="3"/><ellipse cx="32" cy="28" rx="20" ry="6.8" fill="#fff6e0" stroke="#14111a" stroke-width="1.6"/><ellipse cx="24" cy="26" rx="8" ry="2" fill="#fff" opacity=".8"/></svg>', bau: '<svg viewBox="0 0 64 64"><defs><linearGradient id="ibw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e09a45"/><stop offset="1" stop-color="#8a4a17"/></linearGradient><linearGradient id="ibg" x1="0" x2="1"><stop offset="0" stop-color="#fff0a0"/><stop offset="1" stop-color="#d99a14"/></linearGradient></defs><path d="M52 3l1.7 4.3 4.3 1.7-4.3 1.7L52 15l-1.7-4.3-4.3-1.7 4.3-1.7zM11 8l1.2 3 3 1.2-3 1.2L11 16.4l-1.2-3-3-1.2 3-1.2z" fill="#ffe27a" stroke="#14111a" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 32C6 19 17 13 32 13s26 6 26 19z" fill="url(#ibw)" stroke="#14111a" stroke-width="3"/><rect x="6" y="32" width="52" height="24" rx="3" fill="url(#ibw)" stroke="#14111a" stroke-width="3"/><path d="M6 43h52" stroke="#14111a" stroke-width="2" opacity=".45"/><path d="M17 14v42M47 14v42" stroke="#14111a" stroke-width="7.5"/><path d="M17 14v42M47 14v42" stroke="url(#ibg)" stroke-width="4.4"/><rect x="25" y="28" width="14" height="17" rx="3" fill="url(#ibg)" stroke="#14111a" stroke-width="2.6"/><circle cx="32" cy="35.5" r="2.6" fill="#14111a"/><path d="M32 36v5" stroke="#14111a" stroke-width="2.6" stroke-linecap="round"/></svg>', resgate: '<svg viewBox="0 0 64 64"><defs><radialGradient id="irg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff4b0"/><stop offset=".6" stop-color="#f6c93b"/><stop offset="1" stop-color="#c88a0b"/></radialGradient></defs><path d="M19 36l-9 22 10-4 5 8 6-24z" fill="#c4182c" stroke="#14111a" stroke-width="2.6" stroke-linejoin="round"/><path d="M45 36l9 22-10-4-5 8-6-24z" fill="#17224a" stroke="#14111a" stroke-width="2.6" stroke-linejoin="round"/><circle cx="32" cy="26" r="21" fill="url(#irg)" stroke="#14111a" stroke-width="3.2"/><circle cx="32" cy="26" r="15.5" fill="none" stroke="#14111a" stroke-width="1.6" stroke-dasharray="2.4 3"/><polygon points="32.0,15.5 34.7,22.8 42.5,23.1 36.4,27.9 38.5,35.4 32.0,31.1 25.5,35.4 27.6,27.9 21.5,23.1 29.3,22.8" fill="#fff6e0" stroke="#14111a" stroke-width="2.4" stroke-linejoin="round"/><circle cx="52" cy="11" r="9.5" fill="#c4182c" stroke="#14111a" stroke-width="2.6"/><path d="M53.5 5l-6 7.5h4l-1.5 6 6.5-8h-4.2z" fill="#ffe27a" stroke="#14111a" stroke-width="1.3" stroke-linejoin="round"/></svg>' };
     const bloco = (id, titulo, sub, qtd) => { const b = h('button', { type: 'button', role: 'tab', class: `fig-bloco b-${id}${qual === id ? ' on' : ''}`, 'aria-selected': String(qual === id), onclick: () => { area = id; draw(); } }, h('span', { class: 'fig-bloco-ic', 'aria-hidden': 'true' }), h('b', {}, titulo), h('small', {}, sub), qtd ? h('i', {}, String(qtd)) : null); b.querySelector('.fig-bloco-ic').innerHTML = ico[id]; return b; };

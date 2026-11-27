@@ -195,3 +195,26 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rs-missao { display: grid; gap: 5px; padding-top: 6px; border-top: 1px solid rgb(255 255 255 / .12); } .rs-missao:first-of-type { border-top: 0; }
 .rs-st { background: transparent !important; color: #f6c93b !important; padding: 0 !important; }
 .rs-card .rs-btn { justify-self: start; }
+
+/* roleta maluca + tabela de missões */
+.rs-maluca { background: linear-gradient(110deg, rgb(246 201 59 / .28), rgb(226 58 78 / .3) 60%, rgb(255 255 255 / .06)); }
+.rs-tab { width: 100%; border-collapse: collapse; font: 600 12.5px/1.25 var(--body); color: #f4f6ff; }
+.rs-tab th { text-align: left; font: 800 10.5px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #aab4d4; padding: 0 4px 4px; }
+.rs-tab td { padding: 5px 4px; border-top: 1px solid rgb(255 255 255 / .12); vertical-align: middle; }
+.rs-tab .rs-v { white-space: nowrap; color: #f6c93b; font-weight: 800; } .rs-tab .rs-v small { color: #aab4d4; font-weight: 600; }
+.rs-tab .rs-a { text-align: right; white-space: nowrap; } .rs-tab select { margin-left: 2px; max-width: 120px; min-height: 28px; border-radius: 8px; font: 700 12px var(--body); }
+.rs-ic { display: inline-grid; place-items: center; width: 32px; height: 32px; margin-left: 4px; padding: 0; border-radius: 50%; border: 1px solid rgb(255 255 255 / .35); background: rgb(255 255 255 / .08); color: #f4f6ff; font-size: 14px; text-decoration: none; cursor: pointer; }
+.rs-ic:active { background: #f6c93b; color: #070b19; }
+.rs-surp { display: flex; gap: 6px; overflow-x: auto; } .rs-surp .pm-w { flex: 0 0 48px; }
+/* a roda */
+.rm-box { display: grid; justify-items: center; gap: 10px; padding: 8px 0 4px; text-align: center; }
+.rm-seta { font-size: 22px; line-height: 1; color: #e23a4e; margin-bottom: -14px; z-index: 2; }
+.rm-roda { position: relative; width: 210px; height: 210px; border-radius: 50%; border: 4px solid #14111a; background: conic-gradient(#f6c93b 0 72deg, #e23a4e 72deg 144deg, #3b3fb0 144deg 216deg, #55c985 216deg 288deg, #ff8a3d 288deg 360deg); transition: transform 3.4s cubic-bezier(.12, .7, .1, 1); box-shadow: 0 6px 18px rgb(0 0 0 / .35); }
+.rm-seg { position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px 0 0 -18px; display: grid; place-items: center; font-size: 26px; }
+.rm-msg { margin: 0; font: 800 15px var(--body); } .rm-res { display: grid; gap: 6px; justify-items: center; font: 600 13px var(--body); } .rm-res p { margin: 0; } .rm-bt { display: flex; gap: 8px; }
+.rm-box .rs-btn, .rm-res .rs-btn { background: #f6c93b; color: #070b19; } .rm-box .rs-btn.ghost { background: transparent; color: inherit; border: 1px solid currentColor; }
+@media (prefers-reduced-motion: reduce) { .rm-roda { transition: none; } }
+.rm-roda { width: 168px !important; height: 168px !important; border-radius: 50% !important; overflow: hidden; flex: none; }
+.rm-seg { transform-origin: center; }
+.rm-box { padding-top: 14px; } .rm-seta { margin-bottom: -8px; }
+.rm-msg, .rm-res { color: #14111a; position: relative; z-index: 1; }
