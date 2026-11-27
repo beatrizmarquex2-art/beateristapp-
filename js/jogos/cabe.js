@@ -1,10 +1,10 @@
 // "CABE NA TELA" dos jogos (pedido da Bea, nov/2026): o jogo NÃO vira rolagem. A página trava, o quadro do jogo ocupa o espaço entre o topo e o menu de baixo
 // e, se o conteúdo for mais alto que isso, ele é reduzido na proporção certa (transform: scale) até caber inteiro, em qualquer tela:
 // celular em pé/deitado, iPad, MacBook, notebook Windows (com zoom 125%/150%), monitor grande.
-//  * Reduz só até MIN (0.62). Telas de configuração muito compridas (que não são "jogo") ficam no tamanho normal e rolam DENTRO do quadro (uma rolagem só, nunca barra dentro de barra).
+//  * Reduz só até MIN (0.8). Telas de configuração muito compridas (que não são "jogo") ficam no tamanho normal e rolam DENTRO do quadro (uma rolagem só, nunca barra dentro de barra).
 //  * Recalcula sozinho quando o jogo troca de tela, a imagem carrega, a janela muda ou o aparelho gira.
 //  * Em celular deitado (altura < 520px) o menu de baixo e o topo do app saem de cena enquanto o jogo está aberto (css: html.jg-fit).
-const MIN = 0.62;
+const MIN = 0.8; // reduz no máximo 20% (botões continuam do tamanho de dedo); se precisar mais, rola só dentro do quadro
 
 export function cabeNaTela(wrap, body) {
   const de = document.documentElement; de.classList.add('jg-fit'); wrap.classList.add('jg-fitted');

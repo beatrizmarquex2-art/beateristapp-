@@ -52,7 +52,7 @@ while (guard++ < 60) {
   if (await a.locator('.cm-ficha').count() && await b.locator('.cm-ficha').count()) break;
   const [v] = await quem(); if (!v) { await sleep(500); continue; }
   const sobra = parseInt(await v.locator('.jg-who').nth(2).locator('span').innerText(), 10);
-  if (sobra === 1) { await v.locator('button[aria-label="Adivinhar!"]').click(); await sleep(200); await v.locator('.cm-cell:not(.out) .cm-card').first().click(); await sleep(200); await v.locator('button:has-text("sim, adivinhar!")').click(); }
+  if (sobra === 1) { await v.locator('button:has-text("Adivinhar!")').click(); await sleep(200); await v.locator('.cm-cell:not(.out) .cm-card').first().click(); await sleep(200); await v.locator('button:has-text("sim, adivinhar!")').click(); }
   else await v.locator('.cm-carro .cm-qc').first().click();
   await sleep(2800);
 }
