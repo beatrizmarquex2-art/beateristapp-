@@ -13,11 +13,14 @@ check('a aba se chama stars (⭐) e está acesa', (await page.locator('.al-subna
 check('o contador de estrelas aparece no topo', (await page.locator('.fig-stars').count()) === 1);
 check('3 blocos: roleta, baú e resgatar', (await page.locator('.fig-bloco').count()) === 3 && /roleta/i.test(await page.locator('.fig-bloco.b-roleta').innerText()) && /baú/i.test(await page.locator('.fig-bloco.b-bau').innerText()) && /resgatar/i.test(await page.locator('.fig-bloco.b-resgate').innerText()));
 check('sem a fileira de coleções do álbum nesta tela', (await page.locator('.fig-tabs').count()) === 0);
-const pk = await page.evaluate(async () => { const R = await import('/js/figurinhas/rewards.js'); return R.stateOf().granted.filter((i) => i.startsWith('epico:')); });
-check('Desafio aprovado entrega UM giro épico, uma vez só', pk.length === 1 && entregas === 1, JSON.stringify(pk) + ' entregas=' + entregas);
+const rmT = async () => page.evaluate(async () => { const D = await import('/js/figurinhas/dono.js'); const r = D.albumDados().rm; return r ? { t: r.t, ids: r.ids.length } : { t: 0, ids: 0 }; });
+const g1 = await rmT();
+check('Desafio aprovado vale 1 giro da roleta maluca, uma vez só', g1.t === 1 && g1.ids === 1 && entregas === 1, JSON.stringify(g1) + ' entregas=' + entregas);
 await page.reload(); await page.waitForSelector('.fig-blocos', { timeout: 20000 }); await sleep(2000);
-const pk2 = await page.evaluate(async () => { const R = await import('/js/figurinhas/rewards.js'); return R.stateOf().granted.filter((i) => i.startsWith('epico:')).length; });
-check('abrir de novo não entrega em dobro', pk2 === 1, String(pk2));
+const g2 = await rmT();
+check('abrir de novo não entrega em dobro', g2.t === 1 && g2.ids === 1, JSON.stringify(g2));
+await page.evaluate(async () => { const R = await import('/js/figurinhas/rewards.js'); await R.grantPacks(['epico:teste1']); });
+await page.reload(); await page.waitForSelector('.fig-blocos', { timeout: 20000 }); await sleep(2000);
 check('o botão mostra o ganho do giro épico', /até 5 figurinhas e 1 exclusiva/.test(await page.locator('.fig-pack-card .btn.primary').first().innerText()));
 await page.locator('.fig-pack-card .btn.primary').first().click(); await page.waitForSelector('.sl-maq', { timeout: 5000 });
 check('um toque só: o giro épico abre a máquina caça-níquel e gira sozinha', (await page.locator('.sheet .sl-rolos .sl-janela').count()) >= 1 && (await page.locator('.sheet .sl-rolos .sl-janela').count()) <= 5 && (await page.locator('.sheet').getByRole('button', { name: 'girar!' }).count()) === 0);
@@ -26,6 +29,6 @@ check('o giro épico dá de 1 a 5 figurinhas e uma delas é exclusiva', (await p
 check('botões: colar automaticamente e guardar no baú', (await page.locator('.sheet .fig-open .btn').allInnerTexts()).join('|') === 'colar automaticamente|guardar no baú');
 await page.locator('.sheet').getByRole('button', { name: 'guardar no baú' }).click(); await sleep(500);
 await page.locator('.fig-bloco.b-resgate').click(); await sleep(400);
-check('em resgatar aparece o Desafio do Paul já aprovado', /aprovado/.test(await page.locator('.rs-desafio em.ok').innerText()));
+check('em resgatar aparece o Desafio do Paul já aprovado', (await page.locator('.rs-tab tbody tr').first().locator('.rs-st').innerText()).includes('✓'));
 check('sem erros de página', errs.length === 0, errs.join(' | '));
 await browser.close(); srv.close(); done();
