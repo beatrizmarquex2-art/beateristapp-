@@ -28,7 +28,7 @@ await page.locator('.pe-form .pb').click(); await sleep(1800);
 check('criar conta chama o servidor e já entra', signups === 1 && await page.locator('.psh').count() === 1);
 check('o nome da conta vira o perfil e o início cumprimenta', DB.pro_perfil[0] && DB.pro_perfil[0].nome === 'Bia Souza' && /Bia/.test(await page.locator('.pt-top h1').innerText()));
 await shot('2-inicio');
-check('menu lateral com as 8 áreas', await page.locator('.ps-nav a').count() === 8);
+check('menu lateral com as 9 áreas', await page.locator('.ps-nav a').count() === 9);
 await page.locator('.ps-rec').click(); await sleep(300);
 check('menu recolhe e lembra', await page.locator('.psh.mini').count() === 1);
 await page.locator('.ps-rec').click();

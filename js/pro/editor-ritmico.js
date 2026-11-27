@@ -24,6 +24,8 @@ import { svgEl } from '../kids/art.js';
 import { pieceAt, flash } from '../kids/kit-theme.js';
 import { toque, aoMudarLargura, iconeBtn, acaoBtn, ajustes, painelCorrige } from './editor-ui.js';
 import { confirma } from './ui.js';
+import { pedeDestino } from './guardar.js';
+import { imagemDoEditor } from './exportar.js';
 import { seta, cicla, nomeDur, quando } from '../views/partitura-palco.js';
 import { IC, noteIcon, RESTIC, DURS } from '../views/editor-partitura.js';
 
@@ -39,7 +41,7 @@ export function mount(host, opts = {}) {
   const CHAVE = `setting-pro-${bat ? 'bateria' : 'cordas'}`; const padrao = inst === 'baixo' ? 4 : 6;
   const lerSalvo = () => { try { const r = store.get(CHAVE); return r && r.data && r.data.inst === inst ? r.data : {}; } catch { return {}; } };
   let novo = false; let nc = 0; try { novo = !!sessionStorage.getItem('pm-novo'); sessionStorage.removeItem('pm-novo'); nc = +sessionStorage.getItem('pm-cordas') || 0; sessionStorage.removeItem('pm-cordas'); } catch { /* sem sessionStorage */ }
-  const s = { evs: [], bpm: 100, cor: false, fig: 2, pont: false, titulo: '', nuvemId: null, ncord: padrao, kit: 'medio', modelo: 'acustica', timbre: Som.timbrePadrao(inst), mao: '', acc: false, fan: false, juntar: false, escrita: bat ? 'pauta' : 'tab', visual: bat ? 'kit' : (inst === 'baixo' ? 'notas' : 'acordes'), canhota: false, res: 2, escala: 'todas', tonica: 0, clique: false, repetir: false, batidaOn: false, batidaId: 'pop', batida: null, ...(novo ? {} : lerSalvo()) };
+  const s = { evs: [], bpm: 100, cor: false, fig: 2, pont: false, titulo: '', nuvemId: null, ncord: padrao, kit: 'medio', modelo: 'acustica', timbre: Som.timbrePadrao(inst), mao: '', acc: false, fan: false, juntar: false, pasta: '', escrita: bat ? 'pauta' : 'tab', visual: bat ? 'kit' : (inst === 'baixo' ? 'notas' : 'acordes'), canhota: false, res: 2, escala: 'todas', tonica: 0, clique: false, repetir: false, batidaOn: false, batidaId: 'pop', batida: null, ...(novo ? {} : lerSalvo()) };
   s.evs = R.normaliza(s.evs); if (novo) { s.evs = []; s.titulo = ''; s.nuvemId = null; }
   if (!bat) { if (nc && R.INSTRUMENTOS[inst].opcoes[nc]) s.ncord = nc; if (!R.INSTRUMENTOS[inst].opcoes[s.ncord]) s.ncord = padrao; if (!Som.TIMBRES[inst].some((t) => t[0] === s.timbre)) s.timbre = Som.timbrePadrao(inst); }
   if (!Som.MODELOS_BATERIA.some((m) => m[0] === s.modelo)) s.modelo = 'acustica';
@@ -51,7 +53,7 @@ export function mount(host, opts = {}) {
   let slots = (() => { const a = LS('pro-acordes', null); return Array.isArray(a) && a.length === 8 && a.every((id) => T.acharAcorde(id)) ? a.map(T.acharAcorde) : T.PADRAO.map(T.acharAcorde); })(); let editando = false; let selSlot = 0; let acorde = 0; let strum = null;
   let sel = -1; let hist = []; let cursor = R.fim(s.evs); let ultimo = null; let casa0 = 0; let modo = 'toque'; let mic = null; let grav = null; let nGrav = 0; let barra = 0; let run = null; let msg = ''; let gone = false;
   const cordas = () => R.cordasDe(inst, s.ncord);
-  const salvar = () => store.upsert('setting', CHAVE, { inst, evs: s.evs, bpm: s.bpm, cor: s.cor, fig: s.fig, pont: s.pont, titulo: s.titulo, nuvemId: s.nuvemId || null, ncord: s.ncord, kit: s.kit, modelo: s.modelo, timbre: s.timbre, mao: s.mao, escrita: s.escrita, visual: s.visual, canhota: s.canhota, res: s.res, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir, batidaOn: s.batidaOn, batidaId: s.batidaId, batida: s.batida }).catch(() => {});
+  const salvar = () => store.upsert('setting', CHAVE, { inst, evs: s.evs, bpm: s.bpm, cor: s.cor, fig: s.fig, pont: s.pont, titulo: s.titulo, pasta: s.pasta || '', nuvemId: s.nuvemId || null, ncord: s.ncord, kit: s.kit, modelo: s.modelo, timbre: s.timbre, mao: s.mao, escrita: s.escrita, visual: s.visual, canhota: s.canhota, res: s.res, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir, batidaOn: s.batidaOn, batidaId: s.batidaId, batida: s.batida }).catch(() => {});
   const muda = (novas, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novas; salvar(); };
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
   const passo = () => 2;
@@ -120,19 +122,34 @@ export function mount(host, opts = {}) {
     catch { toast('não consegui gerar o PDF agora', { id: 'er', ms: 2600 }); }
     b.disabled = false;
   };
-  const dadosNuvem = () => ({ versao: 2, tipo: bat ? 'bateria' : 'tab', inst, escrita: s.escrita, ncord: s.ncord, kit: s.kit, evs: s.evs, bpm: s.bpm, cor: s.cor, titulo: s.titulo });
+  const dadosNuvem = () => ({ versao: 2, tipo: bat ? 'bateria' : 'tab', inst, escrita: s.escrita, modelo: s.modelo, cor: s.cor, ncord: s.ncord, kit: s.kit, evs: s.evs, bpm: s.bpm, cor: s.cor, titulo: s.titulo });
   const carrega = (row) => {
     const d = row.dados || {}; if (row.instrumento !== inst) { try { sessionStorage.setItem('pm-abrir', row.id); } catch { /* ok */ } location.hash = rotaDe(row.instrumento); return; }
     s.evs = R.normaliza(d.evs); s.bpm = d.bpm || 100; s.cor = !!d.cor; if (!bat && R.INSTRUMENTOS[inst].opcoes[d.ncord]) s.ncord = d.ncord; if (bat && d.kit) s.kit = d.kit; if (d.escrita && E.ESCRITAS[bat ? 'bateria' : 'cordas'].some((x) => x[0] === d.escrita)) s.escrita = d.escrita;
-    s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = R.fim(s.evs); ultimo = null; sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir(); desenhaTopo();
+    s.titulo = row.nome; s.pasta = row.pasta || ''; s.nuvemId = row.id; hist = []; cursor = R.fim(s.evs); ultimo = null; sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir(); desenhaTopo();
   };
+  const pastasNuvem = async () => { try { return NUV.pastasDe(await NUV.listar()); } catch { return []; } };
   const guardaOnline = async (b) => {
-    const t = (s.titulo || '').trim(); if (!t) { toast('dê um nome para a partitura (no alto da tela) antes de guardar', { id: 'er', ms: 2600 }); return; }
-    b.disabled = true;
-    try { const r = await NUV.salvar({ id: s.nuvemId, nome: t, instrumento: inst, dados: dadosNuvem() }); s.nuvemId = r.id; salvar(); msg = `guardada na pasta online: ${r.nome} (${quando(r.atualizado_em)})`; }
+    const dest = await pedeDestino({ nome: s.titulo, pasta: s.pasta || '', jaGuardada: !!s.nuvemId, pastas: await pastasNuvem() }); if (!dest) return;
+    s.titulo = dest.nome; s.pasta = dest.pasta; if (nomeInput) nomeInput.value = s.titulo; b.disabled = true;
+    try { const r = await NUV.salvar({ id: dest.copia ? null : s.nuvemId, nome: dest.nome, instrumento: inst, dados: dadosNuvem(), pasta: dest.pasta }); s.nuvemId = r.id; salvar(); msg = `${dest.copia ? 'cópia ' : ''}guardada na pasta online${dest.pasta ? ` (pasta ${dest.pasta})` : ''}: ${r.nome} (${quando(r.atualizado_em)})`; }
     catch (e) { toast(NUV.textoErro(e), { id: 'er', ms: 3200 }); }
     b.disabled = false; atualiza(); desenhaTopo();
   };
+  /** Duplicar: guarda uma cópia nova (nome "… (cópia)", mesma pasta) e passa a editar a cópia. */
+  const duplicar = async (b) => {
+    const nome = `${(s.titulo || 'Minha partitura').trim()} (cópia)`.slice(0, 60); b.disabled = true;
+    try { const r = await NUV.salvar({ id: null, nome, instrumento: inst, dados: dadosNuvem(), pasta: s.pasta || '' }); s.nuvemId = r.id; s.titulo = r.nome; if (nomeInput) nomeInput.value = s.titulo; salvar(); msg = `cópia criada: ${r.nome}. você está editando a cópia.`; }
+    catch (e) { toast(NUV.textoErro(e), { id: 'er', ms: 3200 }); }
+    b.disabled = false; atualiza(); desenhaTopo();
+  };
+  const imagem = async (b) => {
+    b.disabled = true;
+    try { const r = await imagemDoEditor((larg) => rend(larg, s.cor, -1), { titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: '', bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, perfil: opts.perfil }); toast(r.shared ? 'pronto! escolha onde salvar' : `imagem salva: ${r.name}${r.paginas > 1 ? ` (+${r.paginas - 1} página${r.paginas > 2 ? 's' : ''})` : ''}`, { id: 'er', ms: 2800 }); }
+    catch { toast('não consegui gerar a imagem agora', { id: 'er', ms: 2600 }); }
+    b.disabled = false;
+  };
+  const publicarBanco = () => opts.publicar && opts.publicar({ titulo: (s.titulo || '').trim(), instrumento: inst, dados: dadosNuvem(), bpm: s.bpm });
 
   /* ---------- peças fixas da tela ---------- */
   const folha = h('div', { class: 'ep-folha er-folha', role: 'group', 'aria-label': 'Partitura. Toque numa nota para corrigir.' });
@@ -299,7 +316,7 @@ export function mount(host, opts = {}) {
     topo.replaceChildren(iconeBtn(IC.volta, 'Voltar', () => { parar(); location.hash = VOLTA; }), nomeInput,
       iconeBtn(IC.undo, 'Desfazer', () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = R.fim(s.evs); ultimo = null; sel = -1; salvar(); atualiza(); }, { dis: !hist.length }),
       run ? iconeBtn(IC.stop, 'Parar', () => { parar(); desenhaTopo(); }, { on: true }) : iconeBtn(IC.play, 'Ouvir a partitura', ouvir, { dis: !s.evs.length }));
-    acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }));
+    acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.img, 'Salvar imagem', imagem, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }), acaoBtn(IC.copia, 'Duplicar', duplicar, { dis: !s.evs.length }), ...(opts.publicar ? [acaoBtn(IC.banco, 'Publicar no banco', publicarBanco, { dis: !s.evs.length || !(s.titulo || '').trim() })] : []));
   }
   function desenhaFolha() {
     const larg = Math.max(300, Math.min(760, (folha.clientWidth || host.clientWidth || 380) - 22)); const r = rend(larg, s.cor, sel);

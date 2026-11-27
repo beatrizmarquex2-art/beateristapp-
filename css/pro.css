@@ -270,3 +270,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-gutter:stable
 .er-btc i{font:800 20px/1.1 var(--body);font-style:normal;height:24px}.er-btc small{font:600 10px var(--body);color:var(--suave)}.er-btc.t{background:#f7f2e7}
 .er-btc.on{background:var(--grafite);color:var(--ouro-claro);border-color:var(--grafite)}.er-btc.on small{color:#cdbf9e}
 @media (max-width:420px){.er-btc i{font-size:17px}}
+
+/* ---------- biblioteca: menu ⋯ e nova pasta ---------- */
+.pt-nova{border-style:dashed!important;color:var(--ouro)!important}
+.pm-acoes{display:grid;gap:8px}.pm-item{justify-content:flex-start;width:100%}.pm-item.perigo{margin-top:6px}
+.pt-lista li .pb-i{margin-right:4px;flex:none;font-size:22px;line-height:1}
+.pb-li{flex:1;display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:16px 4px;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer;min-width:0}.pb-li b{font:700 20px/1.2 var(--serif)}.pb-li span{color:var(--suave);font-size:14px}.pb-li em{font-style:normal;color:var(--erro);font-size:12px;letter-spacing:.1em;text-transform:uppercase;grid-row:1;grid-column:2}.pb-li:hover{background:rgb(184 145 63/.08)}
+.pb-ex .pb-folha{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:8px;margin:8px 0;overflow:auto}.pb-desc{white-space:pre-wrap;margin:10px 0 14px}.pm-hr{border:0;border-top:1px solid var(--linha);margin:8px 0}

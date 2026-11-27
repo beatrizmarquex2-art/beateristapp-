@@ -15,9 +15,10 @@ import * as pedaleira from './pedaleira.js';
 import * as afinador from './afinador.js';
 import * as metronomo from './metronomo.js';
 import * as editorRitmico from './editor-ritmico.js';
+import * as banco from './banco.js';
 
-const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
-const TELAS = { inicio, pedaleira, afinador, metronomo, aulas, estudio, biblioteca, alunos, agenda, assistente };
+const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['banco', 'Banco de exercícios'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
+const TELAS = { inicio, banco, pedaleira, afinador, metronomo, aulas, estudio, biblioteca, alunos, agenda, assistente };
 const app = document.getElementById('pro');
 const lembra = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { /* sem storage */ } return null; };
 let limpa = () => {}; let ctx = null;
@@ -52,7 +53,7 @@ async function rota() {
   let r;
   if (k === 'conta') r = conta.mount(main, ctx, partes, { primeira: !ctx.perfil.nome });
   else if (k === 'editor') {
-    const op = { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true, perfil: ctx.perfil };
+    const op = { voltar: '#/estudio', rodape: `Beaterista PRO${ctx.perfil.escola ? ` · ${ctx.perfil.escola}` : ''}`, semPapel: true, perfil: ctx.perfil, publicar: ctx.admin ? banco.publicarDoEditor : null };
     if (['violao', 'guitarra', 'baixo', 'bateria'].includes(partes[1])) r = editorRitmico.mount(main, { ...op, inst: partes[1] });
     else { const m = await import('../views/editor-partitura.js'); r = m.mount(main, op); }
   }
@@ -62,7 +63,7 @@ async function rota() {
 }
 
 async function entra() {
-  try { const perfil = await D.perfil(); ctx = { perfil }; }
+  try { const perfil = await D.perfil(); ctx = { perfil, admin: await D.souAdmin() }; }
   catch (e) { app.replaceChildren(h('main', { class: 'pe' }, h('section', { class: 'pe-cx' }, h('h1', { class: 'pe-h' }, 'Quase lá'), h('p', { class: 'pe-sub' }, D.textoErro(e)), h('button', { class: 'pb', onclick: async () => { await auth.signOut(); location.reload(); } }, 'Sair')))); return; }
   casca(); rota();
 }

@@ -64,3 +64,11 @@ export function esqueleto(duracao) {
   let usado = 0; const etapas = pesos.map(([tipo, p], i) => { const min = i === pesos.length - 1 ? total - usado : Math.max(2, Math.round(total * p)); usado += min; return { tipo, titulo: '', min, texto: '' }; });
   return etapas;
 }
+/** A conta atual é a administradora (Bea)? Pergunta pro servidor (a regra de verdade está no banco; isto só decide o que mostrar na tela). */
+export async function souAdmin() {
+  try { const r = await fetch(`${base}/rpc/is_allowed`, { method: 'POST', headers: await head(), body: '{}' }); if (!r.ok) return false; return (await r.json()) === true; } catch { return false; }
+}
+export const NOME_INSTRUMENTO = { teclas: 'teclado', violao: 'violão', guitarra: 'guitarra', baixo: 'baixo', bateria: 'bateria', geral: 'geral' };
+export const INSTRUMENTOS_BANCO = [['teclas', 'teclado'], ['violao', 'violão'], ['guitarra', 'guitarra'], ['baixo', 'baixo'], ['bateria', 'bateria'], ['geral', 'geral (sem partitura)']];
+/** Agrupa exercícios por categoria (ordem do banco). */
+export function porCategoria(lista) { const m = new Map(); for (const e of lista) { const k = e.categoria || 'Sem categoria'; if (!m.has(k)) m.set(k, []); m.get(k).push(e); } return [...m.entries()].map(([categoria, itens]) => ({ categoria, itens })); }

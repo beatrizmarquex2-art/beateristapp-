@@ -1237,3 +1237,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - `js/pro/escrita-visual.js`. Cordas (menu "escrita"): **tablatura + faixa de braços** (mini braço por coluna, bolinhas na cor da nota) e **mapa no braço** (braço deitado por compasso, bolinhas numeradas na ordem). Teclado: **pauta + faixa de teclados** (hook `faixa` em `P.pauta`) e **quadros do teclado** (uma tecla acesa por quadro; nota longa continua mais clara).
 - PDF: o teclado usa `render` quando a escrita não é a pauta comum.
 - Testes: `tests/pro-escrita.test.mjs` (visuais), `tests/e2e/pro-ritmico.mjs` (90 checagens).
+
+### PRO: pastas, duplicar, imagem e banco de exercícios (27/nov/2026)
+- `supabase/024_pro_banco.sql` APLICADA: coluna `partituras.pasta` e tabela `pro_exercicios` (professores liberados leem os publicados; só a Bea escreve). RLS testada (professor não escreve, não liberado não lê, anon bloqueado).
+- Editores: "Guardar" abre janela com nome + pasta (nova ou existente) e "guardar como cópia"; botões Baixar PDF, Salvar imagem (PNG por página), Guardar, Duplicar e (só a Bea) Publicar no banco. `js/pro/exportar.js` exporta uma partitura guardada sem abrir o editor.
+- Biblioteca > Partituras: pastas (criar, filtrar, mover), menu ⋯ (abrir, duplicar, mover, PDF, imagem, apagar). Pastas vazias ficam só neste aparelho até receberem uma partitura.
+- Banco de exercícios (`#/banco`): professores veem, abrem uma cópia no editor (pasta "Banco de exercícios"), baixam PDF/imagem ou levam pra uma aula. Painel da Bea (detectada por `rpc/is_allowed`): criar, editar, despublicar, apagar e "Carregar exercícios iniciais" (16, em `js/pro/banco-seed.js`, revisar o conteúdo pedagógico!).
+- Testes: `tests/pro-banco.test.mjs`, `tests/e2e/pro-banco.mjs` (24), inclui PDF de 24 compassos em várias páginas.

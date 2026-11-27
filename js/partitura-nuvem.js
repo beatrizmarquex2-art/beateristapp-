@@ -10,7 +10,7 @@ const quem = async () => { try { const a = await import('./auth.js'); return (a.
 
 /** Mensagem pra mostrar quando algo não deu. */
 export const textoErro = (e) => (e.message === 'entre no app' ? 'entre no app pra usar a pasta online' : e.message === '404' ? 'a pasta online ainda não foi ligada no servidor' : `a pasta online não respondeu (${e.message})`);
-export const COLUNAS = 'id,nome,instrumento,dono,dono_nome,atualizado_em';
+export const COLUNAS = 'id,nome,instrumento,pasta,dono,dono_nome,atualizado_em';
 
 /** Lista as partituras (as mais recentes primeiro). A busca por nome o painel faz na tela (sem se importar com acento). */
 export async function listar({ dono = '', limite = 300 } = {}) {
@@ -22,8 +22,8 @@ export async function abrir(id) {
   const l = await r.json(); if (!l.length) throw new Error('404'); return l[0];
 }
 /** Cria (sem id) ou atualiza (com id). Devolve a linha. */
-export async function salvar({ id, nome, instrumento = 'teclas', dados }) {
-  const corpo = { nome: String(nome).trim().slice(0, 60), instrumento, dados };
+export async function salvar({ id, nome, instrumento = 'teclas', dados, pasta }) {
+  const corpo = { nome: String(nome).trim().slice(0, 60), instrumento, dados, ...(pasta !== undefined ? { pasta: String(pasta).trim().slice(0, 60) } : {}) };
   const r = id
     ? await fetch(`${base}/partituras?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify(corpo) })
     : await fetch(`${base}/partituras`, { method: 'POST', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify({ ...corpo, dono_nome: await quem() }) });
@@ -41,3 +41,13 @@ export function pastas(lista) {
   const m = new Map(); for (const x of lista) { const k = x.dono; if (!m.has(k)) m.set(k, { dono: k, nome: x.dono_nome || 'sem nome', itens: [] }); m.get(k).itens.push(x); }
   return [...m.values()];
 }
+
+/** Faz uma cópia da partitura `id` (nome "… (cópia)", mesma pasta). Devolve a linha nova. */
+export async function duplicar(id) { const o = await abrir(id); return salvar({ nome: `${o.nome} (cópia)`.slice(0, 60), instrumento: o.instrumento, dados: o.dados, pasta: o.pasta || '' }); }
+/** Muda a pasta de uma partitura ('' = sem pasta). */
+export async function mover(id, pasta) {
+  const r = await fetch(`${base}/partituras?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify({ pasta: String(pasta || '').trim().slice(0, 60) }) });
+  if (!r.ok) throw falha(r); const l = await r.json(); if (!l.length) throw new Error('403'); return l[0];
+}
+/** Pastas que existem numa lista (ordem alfabética, sem repetir). */
+export const pastasDe = (lista) => [...new Set(lista.map((x) => x.pasta).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));

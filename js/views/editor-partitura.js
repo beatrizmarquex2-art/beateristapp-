@@ -22,6 +22,8 @@ import * as T from '../pro/teoria.js';
 import * as E from '../pro/escrita.js';
 import { corNota, notaClara } from '../cores-notas.js';
 import { confirma } from '../pro/ui.js';
+import { pedeDestino } from '../pro/guardar.js';
+import { imagemDoEditor } from '../pro/exportar.js';
 
 const TIMBRES = [['piano', 'piano'], ['epiano', 'elétrico'], ['organ', 'órgão'], ['pad', 'cordas']]; // os mesmos sons da aba Teclas do jogo
 
@@ -33,6 +35,9 @@ const ICO = (inner) => svg(inner, '0 0 24 24');
 export const IC = {
   volta: ICO('<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   undo: ICO('<path d="M9 7 4 12l5 5M4 12h10a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
+  img: ICO('<rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 17l4-4 3 3 3-3 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'),
+  copia: ICO('<rect x="8" y="8" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15V6a1 1 0 0 1 1-1h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
+  banco: ICO('<path d="M12 3l2.2 5 5.3.5-4 3.6 1.2 5.2L12 14.6 7.3 17.3l1.2-5.2-4-3.6 5.3-.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'),
   play: ICO('<path d="M7 4v16l13-8z" fill="currentColor"/>'), stop: ICO('<rect x="6" y="6" width="12" height="12" fill="currentColor"/>'),
   pdf: ICO('<path d="M7 3h7l4 4v14H7zM14 3v4h4M10 13h5M10 17h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'),
   save: ICO('<path d="M5 4h12l2 2v14H5zM8 4v5h7V4M8 20v-6h8v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'),
@@ -51,14 +56,14 @@ export function mount(host, opts = {}) {
   const VOLTA = opts.voltar || '#/ferramentas-prof';
   const novo = (() => { try { const v = sessionStorage.getItem('pm-novo'); sessionStorage.removeItem('pm-novo'); return !!v; } catch { return false; } })();
   const salvoLocal = novo ? {} : lerSalvo();
-  const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, titulo: '', nuvemId: null, visual: 'teclado', escrita: 'pauta', timbre: 'piano', mallet: 'xilofone', barras: 'maior', escala: 'todas', tonica: 0, clique: false, repetir: false, ...salvoLocal };
+  const s = { evs: [], take: [], bpm: 100, grade: 2, clave: 'auto', cor: false, fig: 4, pont: false, titulo: '', nuvemId: null, visual: 'teclado', pasta: '', escrita: 'pauta', timbre: 'piano', mallet: 'xilofone', barras: 'maior', escala: 'todas', tonica: 0, clique: false, repetir: false, ...salvoLocal };
   if (!['teclado', 'barras'].includes(s.visual)) s.visual = 'teclado'; if (!E.ESCRITAS.teclado.some((x) => x[0] === s.escrita)) s.escrita = 'pauta'; if (!TIMBRES.some((t) => t[0] === s.timbre)) s.timbre = 'piano'; if (!MALLETS.some((m) => m[0] === s.mallet)) s.mallet = 'xilofone'; if (!T.BARRAS.some((b) => b[0] === s.barras)) s.barras = 'maior'; if (!T.ESCALAS.some((e) => e[0] === s.escala)) s.escala = 'todas'; if (!(s.tonica >= 0 && s.tonica < 12)) s.tonica = 0;
   s.evs = P.normalizar(Array.isArray(s.evs) ? s.evs : []); s.take = Array.isArray(s.take) ? s.take : [];
   if (novo) { s.evs = []; s.take = []; s.titulo = ''; s.nuvemId = null; }
   let sel = -1; let hist = []; let cursor = P.fim(s.evs); let oct = s.oct || (innerWidth < 640 ? 4 : 3); const octaves = innerWidth < 640 ? 1 : 2;
   let modo = 'toque'; let mic = null; let run = null; let msg = ''; let gone = false;
   const live = new Map();
-  const salvar = () => store.upsert('setting', CHAVE, { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: 'clicar', titulo: s.titulo, nuvemId: s.nuvemId || null, oct, visual: s.visual, escrita: s.escrita, timbre: s.timbre, mallet: s.mallet, barras: s.barras, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir }).catch(() => {});
+  const salvar = () => store.upsert('setting', CHAVE, { evs: s.evs, take: s.take.slice(0, 300), bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, fig: s.fig, pont: s.pont, modo: 'clicar', titulo: s.titulo, pasta: s.pasta || '', nuvemId: s.nuvemId || null, oct, visual: s.visual, escrita: s.escrita, timbre: s.timbre, mallet: s.mallet, barras: s.barras, escala: s.escala, tonica: s.tonica, clique: s.clique, repetir: s.repetir }).catch(() => {});
   const muda = (novas, { guarda = true } = {}) => { if (guarda) { hist.push(JSON.stringify(s.evs)); if (hist.length > 40) hist.shift(); } s.evs = novas; cursor = P.fim(novas); salvar(); };
   const dur = () => s.fig * (s.pont && s.fig >= 2 ? 1.5 : 1);
   const parar = () => { if (run) { run.stop(); run = null; } silence(); if (mic) mic.surdo(false); };
@@ -112,15 +117,30 @@ export function mount(host, opts = {}) {
   };
   const carrega = (row) => {
     const d = row.dados || {}; s.evs = P.normalizar(Array.isArray(d.evs) ? d.evs : []); s.bpm = d.bpm || 100; s.grade = d.grade || 2; s.clave = d.clave || 'auto'; s.cor = !!d.cor; s.take = [];
-    s.titulo = row.nome; s.nuvemId = row.id; hist = []; cursor = P.fim(s.evs); sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir();
+    s.titulo = row.nome; s.pasta = row.pasta || ''; s.nuvemId = row.id; hist = []; cursor = P.fim(s.evs); sel = -1; msg = `aberta da pasta online: ${row.nome}`; salvar(); atualiza(); desenhaDir();
   };
+  const pastasNuvem = async () => { try { return NUV.pastasDe(await NUV.listar()); } catch { return []; } };
   const guardaOnline = async (b) => {
-    const t = (s.titulo || '').trim(); if (!t) { toast('dê um nome para a partitura (no alto da tela) antes de guardar', { id: 'ep', ms: 2600 }); return; }
-    b.disabled = true;
-    try { const r = await NUV.salvar({ id: s.nuvemId, nome: t, instrumento: 'teclas', dados: { versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, titulo: s.titulo } }); s.nuvemId = r.id; salvar(); msg = `guardada na pasta online: ${r.nome} (${quando(r.atualizado_em)})`; }
+    const dest = await pedeDestino({ nome: s.titulo, pasta: s.pasta || '', jaGuardada: !!s.nuvemId, pastas: await pastasNuvem() }); if (!dest) return;
+    s.titulo = dest.nome; s.pasta = dest.pasta; if (nomeInput) nomeInput.value = s.titulo; b.disabled = true;
+    try { const r = await NUV.salvar({ id: dest.copia ? null : s.nuvemId, nome: dest.nome, instrumento: 'teclas', dados: { versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, escrita: s.escrita, titulo: s.titulo }, pasta: dest.pasta }); s.nuvemId = r.id; salvar(); msg = `${dest.copia ? 'cópia ' : ''}guardada na pasta online${dest.pasta ? ` (pasta ${dest.pasta})` : ''}: ${r.nome} (${quando(r.atualizado_em)})`; }
     catch (e) { toast(NUV.textoErro(e), { id: 'ep', ms: 3200 }); }
-    b.disabled = false; atualiza();
+    b.disabled = false; atualiza(); desenhaTopo();
   };
+  /** Duplicar: guarda uma cópia nova (nome "… (cópia)", mesma pasta) e passa a editar a cópia. */
+  const duplicar = async (b) => {
+    const nome = `${(s.titulo || 'Minha partitura').trim()} (cópia)`.slice(0, 60); b.disabled = true;
+    try { const r = await NUV.salvar({ id: null, nome, instrumento: 'teclas', dados: { versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, escrita: s.escrita, titulo: s.titulo }, pasta: s.pasta || '' }); s.nuvemId = r.id; s.titulo = r.nome; if (nomeInput) nomeInput.value = s.titulo; salvar(); msg = `cópia criada: ${r.nome}. você está editando a cópia.`; }
+    catch (e) { toast(NUV.textoErro(e), { id: 'ep', ms: 3200 }); }
+    b.disabled = false; atualiza(); desenhaTopo();
+  };
+  const imagem = async (b) => {
+    b.disabled = true;
+    try { const r = await imagemDoEditor((larg) => rendT(larg, s.cor, -1), { titulo: (s.titulo || '').trim() || 'Minha partitura', aluno: '', bpm: s.bpm, data: new Date().toLocaleDateString('pt-BR'), rodape: opts.rodape, perfil: opts.perfil }); toast(r.shared ? 'pronto! escolha onde salvar' : `imagem salva: ${r.name}${r.paginas > 1 ? ` (+${r.paginas - 1} página${r.paginas > 2 ? 's' : ''})` : ''}`, { id: 'ep', ms: 2800 }); }
+    catch { toast('não consegui gerar a imagem agora', { id: 'ep', ms: 2600 }); }
+    b.disabled = false;
+  };
+  const publicarBanco = () => opts.publicar && opts.publicar({ titulo: (s.titulo || '').trim(), instrumento: 'teclas', dados: { versao: 1, evs: s.evs, bpm: s.bpm, grade: s.grade, clave: s.clave, cor: s.cor, escrita: s.escrita, titulo: s.titulo }, bpm: s.bpm });
 
   /* ---------- as peças da tela ---------- */
   const topo = h('div', { class: 'ep-bar' }); const acoes = h('div', { class: 'ep-acoes' }); const barraEl = h('div', { class: 'ep-barra' }); const meio = h('div', { class: 'ep-meio' });
@@ -154,7 +174,7 @@ export function mount(host, opts = {}) {
     topo.replaceChildren(iconeBtn(IC.volta, 'Voltar', () => { parar(); location.hash = VOLTA; }), nomeInput,
       iconeBtn(IC.undo, 'Desfazer', () => { if (!hist.length) return; s.evs = JSON.parse(hist.pop()); cursor = P.fim(s.evs); sel = -1; salvar(); atualiza(); }, { dis: !hist.length }),
       run ? iconeBtn(IC.stop, 'Parar', () => { parar(); desenhaTopo(); }, { on: true }) : iconeBtn(IC.play, 'Ouvir a partitura', ouvir, { dis: !s.evs.length }));
-    acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }));
+    acoes.replaceChildren(acaoBtn(IC.pdf, 'Baixar PDF', pdf, { dis: !s.evs.length }), acaoBtn(IC.img, 'Salvar imagem', imagem, { dis: !s.evs.length }), acaoBtn(IC.save, s.nuvemId ? 'Guardar de novo' : 'Guardar online', guardaOnline, { dis: !s.evs.length, rotulo: s.nuvemId ? 'Guardar de novo na pasta online' : 'Guardar na pasta online' }), acaoBtn(IC.copia, 'Duplicar', duplicar, { dis: !s.evs.length }), ...(opts.publicar ? [acaoBtn(IC.banco, 'Publicar no banco', publicarBanco, { dis: !s.evs.length || !(s.titulo || '').trim() })] : []));
   }
   const rendT = (largura, cor = s.cor, selecao = -1) => E.tecladoEscrita(s.evs, { escrita: s.escrita, clave: s.clave, largura, cor, sel: selecao });
   function desenhaFolha() {

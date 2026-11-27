@@ -61,8 +61,10 @@ await setaPara('casas', 'próximo'); await sleep(150);
 check('seta de casas mostra o próximo trecho do braço', /6|7/.test(await page.locator('.er-fr').nth(1).innerText()));
 const dl = page.waitForEvent('download', { timeout: 9000 }).catch(() => null); await page.locator('.ep-ac[aria-label="Baixar PDF"]').click(); const d = await dl; await sleep(500);
 check('PDF da tablatura é baixado', !!d && /\.pdf$/i.test(d.suggestedFilename()));
-await page.locator('.ep-nm').fill('Pestana'); await page.locator('.ep-nm').blur(); await page.locator('.ep-ac[aria-label^="Guardar"]').click(); await sleep(900);
-check('guarda na pasta online como violão', DB.partituras.length === 1 && DB.partituras[0].instrumento === 'violao' && DB.partituras[0].dados.evs.length === 5 && DB.partituras[0].dados.tipo === 'tab');
+await page.locator('.ep-nm').fill('Pestana'); await page.locator('.ep-nm').blur(); await page.locator('.ep-ac[aria-label^="Guardar"]').click(); await sleep(300);
+check('guardar abre a janela com nome e pasta', await page.locator('dialog input[aria-label="Nome da partitura"]').inputValue() === 'Pestana' && await page.locator('dialog input[aria-label="Pasta"]').count() === 1);
+await page.locator('dialog input[aria-label="Pasta"]').fill('Iniciantes'); await page.locator('dialog button[type=submit]').click(); await sleep(900);
+check('guarda na pasta online como violão', DB.partituras.length === 1 && DB.partituras[0].instrumento === 'violao' && DB.partituras[0].dados.evs.length === 5 && DB.partituras[0].dados.tipo === 'tab' && DB.partituras[0].pasta === 'Iniciantes');
 
 // ---- violão: pauta comum e pauta + tablatura
 await abreAjustes(); await setaPara('escrita', 'próximo'); await sleep(200);

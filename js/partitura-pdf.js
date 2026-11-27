@@ -60,4 +60,15 @@ export async function baixarPdf(d) {
   const nome = fileName(d.titulo || 'Partitura', d.aluno, (d.data || '').replace(/\//g, '-'));
   return { ...(await savePdf(pdf, nome)), paginas: cvs.length };
 }
+/** Salva a partitura como imagem PNG (uma por página A4). No celular abre o compartilhar (WhatsApp, Fotos); no computador baixa. */
+export async function baixarImagem(d) {
+  const cvs = await paginas(d); const base = fileName(d.titulo || 'Partitura', d.aluno, (d.data || '').replace(/\//g, '-')).replace(/\.pdf$/, '');
+  const blobs = await Promise.all(cvs.map((c) => new Promise((ok) => c.toBlob(ok, 'image/png'))));
+  const arquivos = blobs.map((b, i) => new File([b], blobs.length > 1 ? `${base} - pagina ${i + 1}.png` : `${base}.png`, { type: 'image/png' }));
+  if (navigator.canShare && navigator.canShare({ files: arquivos }) && matchMedia('(pointer: coarse)').matches) {
+    try { await navigator.share({ files: arquivos, title: d.titulo || 'Partitura' }); return { name: arquivos[0].name, shared: true, paginas: arquivos.length }; } catch { /* cancelou: cai no download */ }
+  }
+  for (const f of arquivos) { const url = URL.createObjectURL(f); const a = document.createElement('a'); a.href = url; a.download = f.name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000); }
+  return { name: arquivos[0].name, paginas: arquivos.length };
+}
 export { nomeCurto };
