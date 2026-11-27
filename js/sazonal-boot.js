@@ -14,19 +14,23 @@
   /** n-ésimo domingo do mês (Dia das Mães = 2º de maio, Dia dos Pais = 2º de agosto). */
   function domingoN(ano, mes, n) { var p = new Date(utc(ano, mes, 1)).getUTCDay(); return utc(ano, mes, 1 + ((7 - p) % 7) + (n - 1) * 7); }
   // cada época: [de, até] em ms UTC (inclusive). Ordem = prioridade (a primeira que bater vence).
+  // `carrega` = tem tela de carregamento própria (assets/sazonal/<id>.webp). `oi` = o recado que acompanha o Paul da época (assets/sazonal/paul-<id>.webp e rosto-<id>.webp).
   var ESTACOES = [
-    { id: 'carnaval', rotulo: 'Carnaval', de: function (a) { return pascoa(a) - 51 * DIA; }, ate: function (a) { return pascoa(a) - 46 * DIA; } }, // sexta antes até a quarta de cinzas (a Páscoa − 47 é a terça de Carnaval)
-    { id: 'pascoa', rotulo: 'Páscoa', de: function (a) { return pascoa(a) - 7 * DIA; }, ate: function (a) { return pascoa(a); } }, // semana da Páscoa
-    { id: 'junina', rotulo: 'Festa Junina', de: function (a) { return utc(a, 6, 1); }, ate: function (a) { return utc(a, 6, 30); } },
-    { id: 'halloween', rotulo: 'Halloween', de: function (a) { return utc(a, 10, 24); }, ate: function (a) { return utc(a, 10, 31); } },
-    { id: 'natal', rotulo: 'Natal', de: function (a) { return utc(a, 12, 1); }, ate: function (a) { return utc(a, 12, 26); } },
-    { id: 'anonovo', rotulo: 'Ano Novo', de: function (a) { return utc(a, 12, 27); }, ate: function (a) { return utc(a + 1, 1, 2); } },
-    { id: 'anonovo', rotulo: 'Ano Novo', de: function (a) { return utc(a - 1, 12, 27); }, ate: function (a) { return utc(a, 1, 2); } },
+    { id: 'carnaval', rotulo: 'Carnaval', oi: 'bom Carnaval! 🎭', carrega: true, de: function (a) { return pascoa(a) - 51 * DIA; }, ate: function (a) { return pascoa(a) - 46 * DIA; } }, // sexta antes até a quarta de cinzas (a Páscoa − 47 é a terça de Carnaval)
+    { id: 'pascoa', rotulo: 'Páscoa', oi: 'feliz Páscoa! 🐰', carrega: true, de: function (a) { return pascoa(a) - 7 * DIA; }, ate: function (a) { return pascoa(a); } }, // semana da Páscoa
+    { id: 'maes', rotulo: 'Dia das Mães', oi: 'feliz Dia das Mães! 💐', carrega: false, de: function (a) { return domingoN(a, 5, 2) - 6 * DIA; }, ate: function (a) { return domingoN(a, 5, 2); } },
+    { id: 'junina', rotulo: 'Festa Junina', oi: 'bora pra festa junina! 🌽', carrega: true, de: function (a) { return utc(a, 6, 1); }, ate: function (a) { return utc(a, 6, 30); } },
+    { id: 'pais', rotulo: 'Dia dos Pais', oi: 'feliz Dia dos Pais! 🎁', carrega: false, de: function (a) { return domingoN(a, 8, 2) - 6 * DIA; }, ate: function (a) { return domingoN(a, 8, 2); } },
+    { id: 'criancas', rotulo: 'Dia das Crianças', oi: 'feliz Dia das Crianças! 🎈', carrega: false, de: function (a) { return utc(a, 10, 5); }, ate: function (a) { return utc(a, 10, 12); } },
+    { id: 'halloween', rotulo: 'Halloween', oi: 'feliz Halloween! 🎃', carrega: true, de: function (a) { return utc(a, 10, 24); }, ate: function (a) { return utc(a, 10, 31); } },
+    { id: 'natal', rotulo: 'Natal', oi: 'feliz Natal! 🎄', carrega: true, de: function (a) { return utc(a, 12, 1); }, ate: function (a) { return utc(a, 12, 26); } },
+    { id: 'anonovo', rotulo: 'Ano Novo', oi: 'feliz Ano Novo! 🎆', carrega: true, de: function (a) { return utc(a, 12, 27); }, ate: function (a) { return utc(a + 1, 1, 2); } },
+    { id: 'anonovo', rotulo: 'Ano Novo', oi: 'feliz Ano Novo! 🎆', carrega: true, de: function (a) { return utc(a - 1, 12, 27); }, ate: function (a) { return utc(a, 1, 2); } },
   ];
   /** A época de uma data (Date local: usa o dia do calendário do aparelho). Devolve { id, rotulo } ou null (tela original). */
   function estacaoDe(data) {
     var t = utc(data.getFullYear(), data.getMonth() + 1, data.getDate());
-    for (var i = 0; i < ESTACOES.length; i++) { var e = ESTACOES[i]; if (t >= e.de(data.getFullYear()) && t <= e.ate(data.getFullYear())) return { id: e.id, rotulo: e.rotulo }; }
+    for (var i = 0; i < ESTACOES.length; i++) { var e = ESTACOES[i]; if (t >= e.de(data.getFullYear()) && t <= e.ate(data.getFullYear())) return { id: e.id, rotulo: e.rotulo, oi: e.oi, carrega: e.carrega }; }
     return null;
   }
   var api = { pascoa: pascoa, estacaoDe: estacaoDe, ESTACOES: ESTACOES };
@@ -34,7 +38,7 @@
   if (!raiz || !raiz.document) return;
   raiz.BtSazonal = api;
   try {
-    var est = estacaoDe(new Date()); if (!est) return; var q = /[?&]sazonal=(\w+)/.exec(raiz.location.search); if (q && q[1] === 'off') return;
+    var est = estacaoDe(new Date()); if (!est || !est.carrega) return; var q = /[?&]sazonal=(\w+)/.exec(raiz.location.search); if (q && q[1] === 'off') return;
     var img = new Image(); // só troca se a arte existir (arquivo ausente = fica a tela original, sem buraco)
     img.onload = function () {
       var d = raiz.document.documentElement; d.setAttribute('data-sazonal', est.id);

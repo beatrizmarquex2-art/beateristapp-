@@ -152,7 +152,7 @@ export function mount(host, { nome = '' } = {}) {
       const arquivo = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: pega });
       const selfie = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true, onchange: pega });
       return h('div', { class: 'in-foto-op' }, h('p', { class: 'in-sobre-t' }, 'escolha um personagem ou ponha a sua foto:'),
-        h('div', { class: 'in-foto-lista', role: 'group', 'aria-label': 'personagens' }, ...FO.ARTES.map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { await FO.usarArte(src); feito(`${nomeArte} é a sua foto agora`); } catch { falha(); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))),
+        h('div', { class: 'in-foto-lista', role: 'group', 'aria-label': 'personagens' }, ...FO.artesAgora().map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { await FO.usarArte(src); feito(`${nomeArte} é a sua foto agora`); } catch { falha(); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))),
         h('div', { class: 'jg-seg in-sobre-chips' }, h('button', { type: 'button', onclick: () => arquivo.click() }, 'escolher foto'), h('button', { type: 'button', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', onclick: async () => { try { await FO.voltarPadrao(); feito('voltou o Paul na bateria'); } catch { falha(); } } }, 'Paul na bateria'), h('a', { class: 'btn small ghost', href: '#/perfil', onclick: () => close() }, 'perfil completo')), arquivo, selfie);
     });
   });
@@ -245,6 +245,16 @@ export function mount(host, { nome = '' } = {}) {
   const avisoAtu = h('section', { class: 'in-atu', role: 'status', 'aria-live': 'polite', hidden: true }, h('span', { 'aria-hidden': 'true' }, '✨'), h('p', {}, h('b', {}, 'tem coisa nova no app!'), h('small', {}, 'toque pra atualizar e ver as novidades')), botAtu);
   const mostraAtu = () => { avisoAtu.hidden = false; };
   try { if (document.querySelector('.atualiza-bar, .top-atu.tem-novo')) mostraAtu(); const tinha = !!navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) mostraAtu(); }); } catch { /* sem service worker */ }
-  host.append(h('div', { class: 'inicio' }, avisoAtu, passe, dividir, tres, continuar, roleta, novidades, atalhos));
+  // Paul da época (pedido da Bea): aparece só no período (Natal, Páscoa, Dia das Mães…), pode ser fechado e volta no ano seguinte
+  const festa = (() => {
+    const e = FO.epoca(); if (!e) return null; const marca = `${e.id}-${new Date().getFullYear()}`; const KF = 'bt-festa-fechada';
+    try { if (localStorage.getItem(KF) === marca) return null; } catch { /* sem armazenamento: mostra */ }
+    const card = h('section', { class: `in-festa in-festa-${e.id}`, 'aria-label': e.rotulo },
+      h('img', { class: 'in-festa-paul', src: e.corpo, alt: '', decoding: 'async', onerror: () => card.remove() }),
+      h('div', { class: 'in-festa-tx' }, h('small', {}, e.rotulo), h('b', {}, e.oi), h('em', {}, 'toque na sua foto pra usar o Paul da época')),
+      h('button', { type: 'button', class: 'in-festa-x', 'aria-label': 'fechar', onclick: () => { try { localStorage.setItem(KF, marca); } catch { /* ok */ } card.remove(); } }, '×'));
+    return card;
+  })();
+  host.append(h('div', { class: 'inicio' }, avisoAtu, festa, passe, dividir, tres, continuar, roleta, novidades, atalhos));
   return () => { window.removeEventListener('bt-foto-perfil', carregaFoto); if (urlFoto) URL.revokeObjectURL(urlFoto); };
 }

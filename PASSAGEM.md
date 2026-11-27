@@ -1248,3 +1248,11 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Defeito achado**: o `index.html` dos alunos estava sem `promo-passe.css` e `meu-passe.css` (era diferente do `aluno.html`): a janela de pagamento aparecia sem estilo. Agora `index.html` = cópia do `aluno.html` (como manda o `build-aluno.sh`).
 - **Hotmart**: capa 800x800 e banner 1600x533 gerados no GPT em `prototipos/hotmart-final/` (a Bea sobe no painel). Prompts e referências em `prototipos/hotmart-referencias/`.
 - **Calendário de posts é SÓ DA BEA** (27/nov): saiu do repositório público (era servido pelo Pages). Backup leve (código do agente, catálogo, .ics, .csv) no Drive: 'Beaterista · Banco de Artes' > calendario-e-agente-de-posts (só da Bea).tgz; versão visual é o Artifact privado dela. Pra recriar: extrair o .tgz na raiz do repo (NÃO commitar).
+
+## Épocas do ano: carregamento sazonal + Paul da época (nov/2026, ainda NÃO publicado, branch claude/modest-maxwell-r337vx)
+- `js/sazonal-boot.js` (script comum, roda antes da 1ª pintura; também usado pelos testes): calendário brasileiro com **Carnaval e Páscoa móveis** (Meeus). Épocas: carnaval (sex antes → quarta de cinzas), páscoa (semana até o domingo), Dia das Mães (2º dom. de maio, 7 dias), junina (junho), Dia dos Pais (2º dom. de agosto, 7 dias), Dia das Crianças (5–12/out), Halloween (24–31/out), Natal (1–26/dez), Ano Novo (27/dez–2/jan). Fora delas tudo igual a antes.
+- **Carregamento**: só as épocas com `carrega: true` (carnaval, páscoa, junina, halloween, natal, anonovo) têm tela própria `assets/sazonal/<id>.webp` (720×1280, ~50 KB, só baixa na época; sem o arquivo fica a tela original). CSS no fim de `css/app.css` (`html[data-sazonal] .boot`). Teste de tela: `?sazonal=off` desliga.
+- **Paul da época** (`assets/sazonal/paul-<id>.webp` corpo e `rosto-<id>.webp` bolinha): cartão "feliz Natal!" no Início (fecha, volta no ano seguinte; chave `bt-festa-fechada`) e primeira opção na troca de foto (Início e Perfil). `js/foto-opcoes.js` (`epoca()`, `artesAgora()`).
+- Troca de foto no passe do Início: Pauls, **Billie** (`assets/paul/perfil/billie-1.webp`), escolher foto, tirar selfie, Paul na bateria.
+- Artes originais (PNG grandes) ficam no Drive "Paul sazonal - personagens"; sempre recortar o fundo antes de usar.
+- `tests/sazonal.test.mjs` (datas móveis e fixas).

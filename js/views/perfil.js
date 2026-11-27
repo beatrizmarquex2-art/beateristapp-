@@ -12,7 +12,7 @@ import * as FN from '../foto-perfil-nuvem.js';
 import * as EstCard from '../figurinhas/estrelas-card.js';
 import * as PROG from '../kids/progress.js';
 import * as PS from '../jogos/perfil-sala.js';
-import { ARTES } from '../foto-opcoes.js';
+import { artesAgora } from '../foto-opcoes.js';
 
 const NOME_ALUNO = 'beaterista-aluno-nome', CFG = 'beaterista-perfil-cfg', FOTO = 'perfil-foto';
 const ls = (k) => (k === NOME_ALUNO ? (() => { try { return localStorage.getItem(k) || ''; } catch { return ''; } })() : D.lsLer(k)); // foto e configuração são de quem está com o nome agora
@@ -82,7 +82,7 @@ export function mount(host) {
   const salaOpt = h('label', { class: 'pf-todos pf-sala' }, salaChk, h('span', {}, 'mostrar meu perfil na sala', h('small', {}, 'foto pequena e 3 favoritos aparecem pra quem joga com você por código. desligado por padrão')));
   // sem querer pôr a própria foto? escolhe um Paul: ele vira a foto do perfil (topo, figurinha e sala)
   const paules = h('div', { class: 'pf-paules', role: 'group', 'aria-label': 'ou escolha um Paul ou a Billie' }, h('p', { class: 'muted' }, 'ou escolha um Paul ou a Billie'),
-    h('div', { class: 'pf-paules-lista' }, ...ARTES.map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { const blob = await (await fetch(src)).blob(); await escolher(new File([blob], `${id}.webp`, { type: 'image/webp' }), { value: '' }); } catch { toast('não consegui abrir essa foto agora'); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))));
+    h('div', { class: 'pf-paules-lista' }, ...artesAgora().map(([id, nomeArte, src]) => h('button', { type: 'button', class: 'pf-paul-op', 'aria-label': nomeArte, onclick: async () => { try { const blob = await (await fetch(src)).blob(); await escolher(new File([blob], `${id}.webp`, { type: 'image/webp' }), { value: '' }); } catch { toast('não consegui abrir essa foto agora'); } } }, h('img', { src, alt: '', width: 52, height: 52, loading: 'lazy' })))));
   const topo = h('section', { class: 'card pad pf-top' }, h('div', { class: 'pf-left' }, avatarWrap, codBox, paules),
     h('div', { class: 'pf-info' }, h('label', { class: 'muted', for: 'pf-nome' }, 'nome na figurinha'), nome,
       h('div', { class: 'pf-btns' }, h('button', { type: 'button', class: 'btn small', onclick: () => fotoInput.click() }, 'escolher foto'), h('button', { type: 'button', class: 'btn small', onclick: () => selfie.click() }, 'tirar selfie'), h('button', { type: 'button', class: 'btn small ghost', onclick: remover }, 'tirar foto')),

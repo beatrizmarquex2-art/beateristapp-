@@ -4,6 +4,10 @@ import * as D from './figurinhas/dono.js';
 const FOTO = 'perfil-foto';
 /** [id, texto do aria-label, arquivo] das artes prontas, na ordem de exibição. */
 export const ARTES = [...[1, 2, 3, 4, 5, 6].map((n) => [`paul-${n}`, `Paul ${n}`, `assets/paul/perfil/paul-${n}.webp`]), ['billie-1', 'Billie', 'assets/paul/perfil/billie-1.webp']];
+/** Paul da época (Natal, Páscoa, Dia das Mães…): vem primeiro na lista durante o período. Fora dele não existe. */
+export const epoca = () => { try { const e = window.BtSazonal && window.BtSazonal.estacaoDe(new Date()); return e ? { id: e.id, rotulo: e.rotulo, oi: e.oi, rosto: `assets/sazonal/rosto-${e.id}.webp`, corpo: `assets/sazonal/paul-${e.id}.webp` } : null; } catch { return null; } };
+/** Artes pra escolher agora: a da época (se houver) + as de sempre. */
+export const artesAgora = () => { const e = epoca(); return e ? [[`epoca-${e.id}`, `Paul de ${e.rotulo}`, e.rosto], ...ARTES] : ARTES; };
 const avisa = (blob) => { window.dispatchEvent(new Event('bt-foto-perfil')); import('./foto-perfil-nuvem.js').then((m) => m.guardou(blob)).catch(() => {}); };
 /** Usa uma das artes prontas como foto. */
 export async function usarArte(src) { const blob = await (await fetch(src)).blob(); await D.metaGravar(FOTO, blob); avisa(blob); }
