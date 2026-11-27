@@ -42,7 +42,7 @@ for (const [fase, portas] of [[3, 3], [11, 4]]) {
 await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i < 6; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
 await page.evaluate(() => document.querySelectorAll('.fm-no')[5].click()); await sleep(1500);
-check('fase 6 = desafio: 1 porta, relógio na tela, quiz sem "desistir"', /0 de 1 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /⏱ [012]:\d\d/.test(await page.textContent('.fg-rel')) && (await page.locator('.dc-desistir').count()) === 0 && /sem errar/.test(await page.evaluate(() => document.body.innerText)));
+check('fase 6 = desafio: 1 porta, relógio na tela, quiz sem "desistir"', /0 de 1 portas abertas/.test(await page.getAttribute('.fg-cena', 'aria-label')) && /⏱ [012]:\d\d/.test(await page.textContent('.fg-rel')) && (await page.locator('.dc-desistir').count()) === 0 && /pode errar só 1/.test(await page.evaluate(() => document.body.innerText)));
 await page.evaluate(async () => { const B = await import('/js/jogos/base.js'); const est = {}; for (let i = 1; i <= 12; i++) est[`estudio:${i}`] = 1; B.setGame('fuga', { est }); });
 await page.goto(`${url}/aluno.html#/jogos`); await sleep(500); await page.evaluate(() => { location.hash = '#/dicas/fuga'; }); await sleep(2500);
 check('depois da fase 12 a SAÍDA (porta B) fica liberada', await page.evaluate(() => document.querySelector('.fm-saida').classList.contains('st-open')));
