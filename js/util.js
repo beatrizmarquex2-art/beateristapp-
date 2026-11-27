@@ -1,3 +1,4 @@
+import './site.js'; // põe o endereço escrito numa variável do CSS (--site-texto)
 export const TZ = 'America/Sao_Paulo';
 
 export function uid() {

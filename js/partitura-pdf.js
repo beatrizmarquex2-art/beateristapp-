@@ -4,9 +4,10 @@ import { pauta, GEOM, nomeCurto } from './partitura-melodica.js';
 import { jpegPdf, fileName } from './pdf.js';
 import { toJpeg, savePdf } from './views/plan-pdf.js';
 
+import { SITE_TEXTO } from './site.js';
 const W = 1240; const H = 1754; const MM = W / 210; // A4 a 150 dpi
 const FONT = '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif';
-export const SITE = 'jogos.beaterista.com.br';
+export const SITE = SITE_TEXTO;
 export const MARCA = 'Beaterista Play';
 const loadImg = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
 

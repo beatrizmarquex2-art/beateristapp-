@@ -6,7 +6,8 @@ import { h } from './util.js';
 import { corSrc } from './paul-cor.js';
 import { toast } from './ui.js';
 
-export const LINK = 'jogos.beaterista.com.br';
+import { SITE_TEXTO } from './site.js';
+export const LINK = SITE_TEXTO;
 export const ARROBA = '@beaterista_';
 const W = 1080; const H = 1920;
 const ANTON = '"Anton","Arial Black",Impact,sans-serif'; const HANKEN = '"Hanken Grotesk",system-ui,sans-serif';

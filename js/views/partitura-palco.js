@@ -11,6 +11,7 @@ import * as P from '../partitura-melodica.js';
 import { baixarPdf } from '../partitura-pdf.js';
 import * as CONTAS from '../contas.js';
 
+import { SITE_TEXTO } from '../site.js';
 const chave = (nome) => `setting-partitura-${nome}`;
 const lerSalvo = (nome) => { try { const r = store.get(chave(nome)); return r && r.data ? r.data : {}; } catch { return {}; } };
 const nomeAluno = () => { try { return (CONTAS.atual().nome || '').trim(); } catch { return ''; } };
@@ -170,7 +171,7 @@ export function painelPartitura(inst, { nome = 'teclas', fechar } = {}) {
         s.nuvemId ? h('button', { type: 'button', class: 'btn small ghost', disabled: gravando, onclick: (e) => guardarOnline(e.currentTarget, true) }, 'guardar como nova') : null,
         h('button', { type: 'button', class: 'btn small ghost', disabled: gravando, onclick: abrirOnline }, 'abrir da pasta')),
       h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', disabled: !s.evs.length || gravando, onclick: (e) => pdf(e.currentTarget) }, 'baixar PDF no papel timbrado')),
-      h('p', { class: 'muted pm-nota' }, 'o PDF sai no papel timbrado da Beaterista, com "Beaterista Play | jogos.beaterista.com.br". a pasta online guarda a partitura pra abrir e editar de novo em qualquer aparelho.'));
+      h('p', { class: 'muted pm-nota' }, `o PDF sai no papel timbrado da Beaterista, com "Beaterista Play | ${SITE_TEXTO}". a pasta online guarda a partitura pra abrir e editar de novo em qualquer aparelho.`));
   }
   const aoRedimensionar = () => desenha(); window.addEventListener('resize', aoRedimensionar);
   desenha(); requestAnimationFrame(desenha); // 2º desenho: já com a largura real depois de entrar na tela

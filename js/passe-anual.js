@@ -1,6 +1,7 @@
 // Passe Beaterista anual (R$ 79,90, ou R$ 49,90 na oferta Black Friday até 15/dez/2026 — js/passe-preco.js —, 12 meses, 2 aparelhos) vendido por PIX/WhatsApp: gera o código e a mensagem pro comprador.
 // Mesmo formato do passe automático da Hotmart (supabase/015_passe_hotmart.sql): código "P" + 9 letras/números, tipo 'passe', vence 12 meses depois de HOJE.
 // Não usa a coluna `jogos` (que ainda não existe no banco), então funciona já.
+import { SITE_URL } from './site.js';
 const ALFA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 letras/números sem I, O, 0, 1 (256 % 32 = 0: sem viés)
 export function gerarCodigoPasse(rand = (n) => crypto.getRandomValues(new Uint8Array(n))) {
   return `P${[...rand(9)].map((x) => ALFA[x % 32]).join('')}`;
@@ -12,7 +13,7 @@ export function daquiA12Meses(de = new Date()) {
 }
 export const linhaPasse = (nome, code, expira) => ({ code, nome: `Passe ${String(nome || '').trim()}`.trim().slice(0, 60), tipo: 'passe', dias: 365, max_aparelhos: 2, expira_em: expira.toISOString(), ativo: true });
 const dataBR = (d) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
-export function mensagemPasse({ nome, code, expira, site = 'https://jogos.beaterista.com.br' }) {
+export function mensagemPasse({ nome, code, expira, site = SITE_URL }) {
   const p = String(nome || '').trim().split(/\s+/)[0];
   return `oi${p ? `, ${p}` : ''}! pagamento confirmado 🎉 aqui está o seu Passe Beaterista: ${code}\nvale 12 meses (até ${dataBR(expira)}) e funciona em até 2 aparelhos.\nentre em ${site}, escreva seu nome e digite o código em "código de acesso".`;
 }

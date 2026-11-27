@@ -15,11 +15,12 @@ async function rpc(fn, body) {
 }
 import { TOTAL_FIGURINHAS as TOTAL } from '../figurinhas/album-logic.js';
 
+import { SITE_DOMINIO } from '../site.js';
 export function mount(host) {
   const body = h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, h('p', { class: 'muted' }, 'carregando…'));
   host.append(banner('Álbum dos alunos', 'quem entrou, código e de onde veio'), body);
   let gone = false;
-  const msgPara = (nome, code) => `Oi${nome ? `, ${nome}` : ''}! Seu código do álbum de figurinhas da Beaterista: ${code}. Entre em jogos.beaterista.com.br, toque na aba Álbum e digite o código (ele também abre o Beat Hero). Bom jogo! 🥁`;
+  const msgPara = (nome, code) => `Oi${nome ? `, ${nome}` : ''}! Seu código do álbum de figurinhas da Beaterista: ${code}. Entre em ${SITE_DOMINIO}, toque na aba Álbum e digite o código (ele também abre o Beat Hero). Bom jogo! 🥁`;
   const copiar = async (t) => { try { await navigator.clipboard.writeText(t); toast('mensagem copiada'); } catch { toast(t, { ms: 12000 }); } };
   async function novo() {
     const nome = prompt('Nome do aluno:'); if (nome === null) return;

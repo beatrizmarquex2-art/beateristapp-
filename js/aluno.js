@@ -82,6 +82,7 @@ import { corSrc, stkSrc, LOGO_PAUL } from './paul-cor.js';
 import { arteDoPaul } from './paul-dicas.js';
 import { iconePaul } from './icone-paul.js';
 
+import { SITE_URL } from './site.js';
 const app = document.getElementById('app');
 const NAME_KEY = 'beaterista-aluno-nome';
 // aba INÍCIO: liga pra todos (publicada em nov/2026). `?inicio=0` desliga neste aparelho (pra teste); `?inicio=1` volta a ligar.
@@ -390,7 +391,7 @@ function trocarAluno() {
 }
 
 /** Compartilhar o jogo (o link da área dos alunos): folha de compartilhar do celular; sem ela, copia o link. Nada do aluno vai junto (nem nome, nem código). */
-const LINK_JOGO = 'https://jogos.beaterista.com.br';
+const LINK_JOGO = SITE_URL;
 async function compartilharJogo() {
   const texto = 'jogos de música pra aprender brincando, da Beaterista escola de música: bora jogar?';
   try { if (navigator.share) { await navigator.share({ title: 'Beaterista · jogos de música', text: texto, url: LINK_JOGO }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }

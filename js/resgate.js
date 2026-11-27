@@ -3,13 +3,14 @@
 import { CONFIG } from './config.js';
 import * as CODE from './codigo.js';
 
+import { SITE_URL } from './site.js';
 const base = `${CONFIG.SUPABASE_URL}/rest/v1`;
 const anon = { apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' };
 export const ESTRELAS_MISSAO = 5;
 export const MISSOES = [
   { tipo: 'google', titulo: 'avaliou a escola no Google', dica: 'avalie a escola e tire um print da sua avaliação publicada', link: 'https://g.page/r/CS34GVfs3jjqEAE/review', rotulo: 'avaliar no Google' },
   { tipo: 'youtube', titulo: 'seguiu no YouTube ou nas redes', dica: 'siga a Bea no YouTube, no Instagram ou no TikTok e tire um print mostrando que você segue', link: 'https://www.youtube.com/@beateristadrummer', rotulo: 'YouTube', extras: [['Instagram', 'https://www.instagram.com/beaterista_/'], ['TikTok', 'https://www.tiktok.com/@beaterista']] },
-  { tipo: 'amigo', titulo: 'mandou pra um amigo', dica: 'mande o app pra um amigo e tire um print da conversa', link: 'https://jogos.beaterista.com.br', rotulo: 'copiar o link do app' },
+  { tipo: 'amigo', titulo: 'mandou pra um amigo', dica: 'mande o app pra um amigo e tire um print da conversa', link: SITE_URL, rotulo: 'copiar o link do app' },
 ];
 /** Missão de postar (pedido da Bea, 15/nov/2026): postou um jogo, marcou a escola, mandou o print = 5 ★. Vale 1 vez POR JOGO (o tipo vai como `post:<jogo>`). */
 export const ARROBA = '@beaterista_';

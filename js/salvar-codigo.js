@@ -4,6 +4,7 @@ import { h } from './util.js';
 import { sheet, toast } from './ui.js';
 import * as CODE from './codigo.js';
 
+import { SITE_URL } from './site.js';
 const ASK_KEY = 'beaterista-codigo-pergunta'; // { entrada: código, instalado: código } = já perguntamos
 const lerAsk = () => { try { return JSON.parse(localStorage.getItem(ASK_KEY) || '{}') || {}; } catch { return {}; } };
 const gravaAsk = (o) => { try { localStorage.setItem(ASK_KEY, JSON.stringify(o)); } catch { /* sem armazenamento: pergunta de novo na próxima */ } };
@@ -18,7 +19,7 @@ export async function guardarNoGerenciador(nome, code) {
   try { if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) { await navigator.credentials.store(new window.PasswordCredential({ id: String(nome || 'aluno'), name: String(nome || 'aluno'), password: code })); feito = true; } } catch { /* navegador sem suporte */ }
   return feito;
 }
-const texto = (code) => `meu código de aluno da Beaterista: ${code}\nsite: https://jogos.beaterista.com.br`;
+const texto = (code) => `meu código de aluno da Beaterista: ${code}\nsite: ${SITE_URL}`;
 async function copiar(code) { try { await navigator.clipboard.writeText(code); toast('código copiado!', { ms: 2200 }); return true; } catch { toast('não consegui copiar. anote o código na tela.', { ms: 3200 }); return false; } }
 async function compartilhar(code) {
   if (navigator.share) { try { await navigator.share({ title: 'meu código Beaterista', text: texto(code) }); return true; } catch { return false; } }

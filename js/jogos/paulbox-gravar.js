@@ -1,6 +1,7 @@
 // PaulBox: grava um trecho da banda (vídeo em pé 720×1280 com o som que está tocando) pra postar ou baixar.
 // O vídeo é desenhado num canvas próprio (não é a tela do app): logo da Beaterista em cima, os 10 Pauls no palco e o link embaixo.
-export const LINK = 'jogos.beaterista.com.br';
+import { SITE_TEXTO } from '../site.js';
+export const LINK = SITE_TEXTO;
 const W = 720; const H = 1280;
 // mp4 de verdade (H.264 + AAC, o que as redes aceitam) primeiro; sem ele, webm; o mp4 genérico fica por último (é o do iPhone)
 const TIPOS = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1.42E01E', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];

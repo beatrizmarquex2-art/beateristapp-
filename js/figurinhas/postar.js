@@ -10,7 +10,8 @@ import * as O from './ornaments.js';
 import { MODELOS2 } from './modelos2-data.js';
 import { planoFoto, fitLabel, janelaLocal, W2, H2 } from './card2.js';
 
-export const SITE = 'jogos.beaterista.com.br', ESCOLA = 'beaterista escola de música', SITE_ESCOLA = 'beaterista.com.br';
+import { SITE_TEXTO } from '../site.js';
+export const SITE = SITE_TEXTO, ESCOLA = 'beaterista escola de música', SITE_ESCOLA = 'beaterista.com.br';
 const ESCOLA_LINHA = `${ESCOLA} · ${SITE_ESCOLA}`;
 // redes da Beaterista (as mesmas dos links do app): Instagram, TikTok e YouTube
 export const REDES = [['ig', '@beaterista_'], ['tt', '@beaterista'], ['yt', '@beateristadrummer']];

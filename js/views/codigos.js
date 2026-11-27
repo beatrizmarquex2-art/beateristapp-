@@ -6,6 +6,7 @@ import { banner, toast, confirmSheet, sheet } from '../ui.js';
 import * as CODE from '../codigo.js';
 import { precoPasse } from '../passe-preco.js';
 
+import { SITE_URL } from '../site.js';
 const when = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)) : 'nunca');
 const dia = (t) => (t ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(t)) : '—');
 const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt); toast(ok, { id: 'cod-copy', ms: 2200 }); } catch { toast('não deu pra copiar, selecione a tabela', { id: 'cod-copy', ms: 3000 }); } };
@@ -20,7 +21,7 @@ const ABAS = [
 ];
 const rotasDe = (ids) => ABAS.filter((x) => ids.includes(x[0])).flatMap((x) => x[2]);
 const abasDe = (jogos) => (Array.isArray(jogos) ? ABAS.filter((x) => jogos.includes(x[2][0])).map((x) => x[0]) : ABAS.map((x) => x[0]));
-const SITE = 'https://jogos.beaterista.com.br';
+const SITE = SITE_URL;
 
 export function montarLegado(host, { semBanner = false } = {}) {
   let list = []; let busy = false; let gone = false; let last = null; // last = linhas da última importação/geração (pra mostrar só elas)
