@@ -74,22 +74,28 @@ export function mount(host, opts) {
     im.src = SRC();
   }
 
-  let autoAbriu = false;
+  let autoAbriu = false; let grupoSel = null;
   function intro() {
     stopClock(); g = null; selected = null; hintCell = null;
     if (!M && !autoAbriu && salaAutoPara(ID)) { autoAbriu = true; abrirDuelo(); return; } // veio de "tem um código de sala"
     const resume = Q.validGame(saved.game) && !saved.game.over ? saved.game : null;
     const RULES = () => h('ul', {}, h('li', {}, 'arraste a peça da bandeja até o lugar dela no quadro (no celular: arraste pra cima, ou segure um instante e arraste) ou toque na peça e depois no lugar. as peças têm encaixe: o dente de uma entra no vazio da vizinha.'), h('li', {}, 'só encaixa no lugar certo; errou, ela volta para a bandeja.'), h('li', {}, '“dica” mostra o lugar da peça escolhida. “ver imagem” mostra a figura pronta.'), h('li', {}, 'o tempo começa na primeira jogada e para quando a aba fica oculta.'));
     const bests = SIZES.map(([d]) => [d, best[`${d}:sem`], best[`${d}:com`]]).filter((b) => b[1] != null || b[2] != null);
+    root.classList.add('qz-lobby');
+    const grupoAtual = GRUPOS.some(([gid]) => gid === grupoSel) ? grupoSel : pick(imgId).grupo;
+    const lista = IMAGES.filter((x) => x.grupo === grupoAtual);
+    const seg = (rot, itens, atual, onPick) => h('div', { class: 'qz-linha' }, h('span', { class: 'qz-rot' }, rot), h('div', { class: 'qz-seg', role: 'radiogroup', 'aria-label': rot }, ...itens.map(([v, txt, full]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(v === atual), 'aria-label': full || txt, class: v === atual ? 'on' : '', onclick: () => onPick(v) }, txt))));
+    const tamanho = SIZES.find(([d]) => d === prefs.diff);
     root.replaceChildren(...[
-      h('h2', { class: 'jg-h hand' }, 'quebra-cabeça'), h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }),
-      IMAGES.length > 1 ? h('div', { class: 'jg-estante', role: 'radiogroup', 'aria-label': 'imagem' }, ...GRUPOS.map(([gid, gn]) => { const lista = IMAGES.filter((x) => x.grupo === gid); return lista.length ? h('section', {}, h('h3', { class: 'jg-estante-t' }, gn), h('div', { class: 'jg-estante-l' }, ...lista.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 96, height: 64, loading: 'lazy' }))))) : null; }).filter(Boolean)) : null,
-      h('div', { class: 'jo-card' },
-        linha('tamanho', chips(SIZES.map(([v, l]) => [v, l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }, 'dificuldade')),
-        linha('tempo', chips([[true, 'livre'], [false, 'com tempo']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); }, 'modo')),
-      ),
-      bests.length ? h('p', { class: 'jg-p muted' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
-      h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
+      h('div', { class: 'qz-prev' }, h('img', { class: 'jg-qprev', src: SRC(), alt: `${NOME()}, a imagem que você vai montar` }), h('span', { class: 'qz-prev-nome' }, NOME())),
+      IMAGES.length > 1 ? h('div', { class: 'qz-grupos', role: 'radiogroup', 'aria-label': 'instrumento' }, ...GRUPOS.map(([gid, gn]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(gid === grupoAtual), class: gid === grupoAtual ? 'on' : '', onclick: () => { grupoSel = gid; intro(); } }, gn))) : null,
+      IMAGES.length > 1 ? h('div', { class: 'jg-estante-l qz-thumbs', role: 'radiogroup', 'aria-label': 'imagem' }, ...lista.map((im) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(imgId === im.id), 'aria-label': im.nome, title: im.nome, class: `${imgId === im.id ? 'on' : ''}${travada(im.id) ? ' locked' : ''}`, onclick: () => { if (travada(im.id)) { toast('essa imagem é pra alunos com código. as 2 primeiras são grátis.', { id: 'qc-trava', ms: 2500 }); return; } imgId = im.id; grupoSel = im.grupo; setGame(ID, { img: imgId }); intro(); } }, h('img', { src: im.src, alt: '', width: 96, height: 64, loading: 'lazy' })))) : null,
+      h('div', { class: 'qz-opts' },
+        seg('peças', SIZES.map(([v, l]) => [v, String(v), l]), prefs.diff, (v) => { prefs.diff = v; setGame(ID, { diff: v }); intro(); }),
+        h('p', { class: 'qz-tam', 'aria-live': 'polite' }, tamanho ? tamanho[1] : ''),
+        seg('tempo', [[true, 'livre'], [false, 'com tempo']], !!prefs.free, (v) => { prefs.free = v; setGame(ID, { free: v }); intro(); })),
+      bests.length ? h('p', { class: 'qz-bests' }, 'melhores: ', bests.map(([d, s, c]) => `${d} peças ${s != null ? `sem dicas ${Q.fmtTime(s)}` : ''}${s != null && c != null ? ' · ' : ''}${c != null ? `com dicas ${Q.fmtTime(c)}` : ''}`).join(' | ')) : null,
+      h('div', { class: 'jg-actions qz-go' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => { imgId = pick(saved.gameImg).id; load(() => begin(resume)); } }, 'continuar partida') : null,
         h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => load(() => begin(Q.newGame(prefs))) }, resume ? 'nova partida' : 'iniciar'),
         h('button', { class: 'btn', type: 'button', onclick: abrirDuelo }, '⚔ duelo · 2 celulares')),
     ].filter(Boolean));
@@ -126,6 +132,7 @@ export function mount(host, opts) {
       : h('button', { type: 'button', class: `jg-pz slot${hintCell === p ? ' hint' : ''}`, 'aria-label': `posição vazia: ${posLabel(p)}${hintCell === p ? ' (dica: aqui)' : ''}`, 'data-pos': p, disabled: g.over || selected == null, style: cellVars(), onclick: () => put(p) }, pieceSvg(p, true)));
     const tray = g.tray.map((p) => h('button', { type: 'button', class: `jg-pz tp${selected === p ? ' sel' : ''}`, style: trayAspect(), 'aria-pressed': String(selected === p), 'aria-label': `peça ${g.tray.indexOf(p) + 1} de ${g.tray.length} na bandeja${selected === p ? ', selecionada' : ''}`, 'data-piece': p,
       onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); }, onpointerdown: (e) => dragStart(e, p) }, pieceSvg(p)));
+    root.classList.remove('qz-lobby');
     timeEl = h('b', {}, g.free ? '—' : Q.fmtTime(g.elapsed));
     const st = (k, v, t) => h('div', { class: 'qz-st' }, ico(k), h('div', {}, h('b', {}, v), h('small', {}, t)));
     const pct = Math.round((Q.placedCount(g) / n) * 100);

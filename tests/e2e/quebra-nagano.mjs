@@ -9,9 +9,9 @@ await page.evaluate(async () => { (await import('/js/acesso.js')).definir(true);
 await page.getByRole('button', { name: 'agora não' }).click({ timeout: 2000 }).catch(() => {});
 const nomes = await page.evaluate(async () => (await import('/js/jogos/quebra.js')).IMAGES.map((x) => x.id));
 check('a imagem da Nagano está na lista', nomes.includes('nagano'), nomes.join(','));
-await page.locator('.jg-imgs button').last().click(); await sleep(300);
-check('a última miniatura é a da Nagano', /Nagano/.test(await page.locator('.jg-imgs button[aria-checked="true"], .jg-imgs button.on').first().getAttribute('aria-label').catch(() => '') || 'Nagano') || true);
-await page.click('button:has-text("iniciar")'); await page.waitForSelector('.jg-pz.tp', { timeout: 10000 }); await sleep(500);
+await page.locator('.qz-grupos button', { hasText: 'bateria' }).click(); await sleep(250); await page.locator('.qz-thumbs button').last().click(); await sleep(300);
+check('a última miniatura da bateria é a da Nagano', /Nagano/.test(await page.locator('.qz-prev-nome').textContent()));
+await page.locator('.qz-go .btn.primary').click(); await page.waitForSelector('.jg-pz.tp', { timeout: 10000 }); await sleep(500);
 for (let i = 0; i < 6; i++) { const pc = page.locator('.jg-pz.tp').first(); const id = await pc.getAttribute('data-piece'); await pc.click(); await page.locator(`.jg-pz.slot[data-pos="${id}"]`).click(); await sleep(250); }
 await page.waitForSelector('.jg-result', { timeout: 8000 }).catch(() => {});
 const link = page.locator('a.qb-link');
