@@ -1,6 +1,7 @@
 // Área do aluno (aluno.html): sem login. O aluno escolhe um nome, joga os Jogos de ritmo e o Kids e aparece no ranking que todos veem.
 // Tudo que ele faz fica só no aparelho dele (armazenamento separado do app da Bea); só o nome e as pontuações vão pro ranking.
 import './polyfills.js'; // iPhones antigos (sem crypto.randomUUID, .at etc.): tem que ser o PRIMEIRO import
+import './icones-emoji.js'; // emojis → ícones novos da Bea (cadeado, troféu, bateria…)
 import { h, icon, uid } from './util.js';
 import { misturaOption, MISTURA_AJUDA, soundButton, musicButton } from './sound-btn.js';
 import { iconeTopo } from './top-icons.js';

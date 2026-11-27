@@ -18,7 +18,7 @@ check('aviso de materiais digitais (estudar e imprimir)', /digitais/.test(await 
 await page.goto(`${url}/aluno.html#/lojinha/cards`); await sleep(1500);
 check('os 4 baralhos (Cards) já têm link da Hotmart (nenhum "em breve")', (await page.locator('.lj-btn.breve').count()) === 0 && (await page.locator('.lj-card[data-id^="cards-"]').count()) === 4);
 await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1500);
-check('o Passe aparece na vitrine e abre o WhatsApp da escola com a mensagem pronta', (await page.locator('.lj-passe').count()) === 1 && await page.evaluate(async () => { const { PASSE } = await import('/js/loja-config.js'); const u = new URL(PASSE.link); return u.origin + u.pathname === 'https://wa.me/5518991804150' && u.searchParams.get('text') === 'Olá, gostaria de adquirir o passe Anual do site Beaterista'; }));
+check('o banner do passe aparece na Lojinha, abre a janela Pix ou cartão e não tem WhatsApp', await (async () => { if ((await page.locator('.lj-anual').count()) !== 1) return false; await page.locator('.lj-anual .lj-btn').click(); await sleep(300); const t = await page.evaluate(() => (document.querySelector('dialog.lj-pay[open]') || {}).innerText || ''); const wa = await page.evaluate(() => /wa\.me/i.test(document.body.innerHTML)); await page.evaluate(() => { const d = document.querySelector('dialog.lj-pay'); if (d) d.close(); }); return /Pix/i.test(t) && /Cartão/i.test(t) && !wa; })());
 await page.goto(`${url}/aluno.html#/lojinha/ensina`); await sleep(1500);
 check('os materiais de Robôterista ensina têm link (nenhum "em breve")', (await page.locator('.lj-btn.breve').count()) === 0);
 // pensamentos do Paul

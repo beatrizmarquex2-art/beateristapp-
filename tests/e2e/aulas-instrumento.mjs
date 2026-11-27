@@ -23,7 +23,7 @@ async function abre(codigo) {
 {
   const { browser, p, errs } = await abre(false);
   await p.goto(`${url}/aluno.html#/estudos/aulas/bateria`); await sleep(1500);
-  check('sem código: as fases 2 a 6 mostram o cadeado', (await p.locator('.tf-fase i', { hasText: '🔒' }).count()) === 5);
+  check('sem código: as fases 2 a 6 mostram o cadeado', (await p.locator('.tf-fase i img.emo[alt="🔒"], .tf-fase i:has-text("🔒")').count()) === 5);
   await p.locator('.tf-fase').nth(1).click(); await sleep(300);
   check('sem código: tocar na fase 2 não abre', /fase 1 de 6/i.test(await p.locator('.tf-fase-t').innerText()));
   check('sem erros de página (sem código)', errs.length === 0, errs.join(' | ')); await browser.close();
