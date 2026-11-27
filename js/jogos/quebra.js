@@ -52,7 +52,7 @@ export function mount(host, opts) {
   let best = saved.best && typeof saved.best === 'object' ? saved.best : {};
   let g = null; let selected = null; let hintCell = null; let msg = ''; let img = null; let paused = false; let viewing = false; let zoom = false; let last = 0; let record = false;
   let timeEl = null;
-  const root = h('div', { class: 'jg jg-quebra' }); host.replaceChildren(root);
+  const root = h('div', { class: 'jg jg-quebra jg-fluido-root' }); host.replaceChildren(root);
   const persist = () => M || setGame(ID, { ...prefs, img: imgId, best, game: g && !g.over ? g : null, gameImg: g && !g.over ? imgId : null });
   const running = () => g && !g.free && g.started && !g.over && !document.hidden && !paused;
 
@@ -110,6 +110,15 @@ export function mount(host, opts) {
   const trayAspect = () => { const { cw, ch, m } = geo(); return `aspect-ratio:${(cw + 2 * m) / (ch + 2 * m)}`; };
   const posLabel = (p) => { const { cols } = Q.DIFFS[g.diff]; return `linha ${Math.floor(p / cols) + 1}, coluna ${(p % cols) + 1}`; };
 
+  const ICO = {
+    puzzle: '<path d="M10 4.5a2 2 0 1 1 4 0V6h3.5A1.5 1.5 0 0 1 19 7.5V11h-1.5a2 2 0 1 0 0 4H19v3.5a1.5 1.5 0 0 1-1.5 1.5H14v-1.5a2 2 0 1 0-4 0V20H6.5A1.5 1.5 0 0 1 5 18.5V15h1.5a2 2 0 1 0 0-4H5V7.5A1.5 1.5 0 0 1 6.5 6H10V4.5z"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    bulb: '<path d="M9.5 17.5h5M10 20.5h4M12 3.5a6 6 0 0 0-3.7 10.7c.6.5 1 1.2 1 2v.3h5.4v-.3c0-.8.4-1.5 1-2A6 6 0 0 0 12 3.5z"/>',
+    image: '<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17.5l5-4.5 3.5 3 3-2.5 4.5 4"/>',
+    shuffle: '<path d="M3.5 7.5H7c1.6 0 3 .8 3.9 2.1l2.2 3.3c.9 1.3 2.300 2.100 3.900 2.100h3.500M3.500 16.500H7c1.200 0 2.300-.5 3.100-1.300M13 8.500c.800-.600 1.800-1 2.900-1h3.600M17.500 4.500l3 3-3 3M17.500 13.500l3 3-3 3"/>',
+  };
+  const ico = (k) => svgNode(`<svg class="qz-i" viewBox="0 0 24 24" aria-hidden="true">${ICO[k]}</svg>`);
+
   function draw() {
     const { cols, rows } = Q.DIFFS[g.diff]; const n = g.diff;
     const cells = Array.from({ length: n }, (_, p) => g.placed[p]
@@ -118,17 +127,34 @@ export function mount(host, opts) {
     const tray = g.tray.map((p) => h('button', { type: 'button', class: `jg-pz tp${selected === p ? ' sel' : ''}`, style: trayAspect(), 'aria-pressed': String(selected === p), 'aria-label': `peça ${g.tray.indexOf(p) + 1} de ${g.tray.length} na bandeja${selected === p ? ', selecionada' : ''}`, 'data-piece': p,
       onclick: () => { if (dragMoved) return; selected = selected === p ? null : p; hintCell = null; sfx('tap'); draw(); }, onpointerdown: (e) => dragStart(e, p) }, pieceSvg(p)));
     timeEl = h('b', {}, g.free ? '—' : Q.fmtTime(g.elapsed));
+    const st = (k, v, t) => h('div', { class: 'qz-st' }, ico(k), h('div', {}, h('b', {}, v), h('small', {}, t)));
+    const pct = Math.round((Q.placedCount(g) / n) * 100);
+    const dica = g.over ? '' : msg || (selected == null ? 'toque numa peça (ou segure e arraste) até o lugar dela.' : 'agora toque no lugar dela no quadro, ou em “dica”.');
     root.replaceChildren(...[
-      h('div', { class: 'jg-bar' }, h('div', { class: 'jg-who' }, h('b', {}, 'peças'), h('span', {}, `${Q.placedCount(g)}/${n}`)), h('div', { class: 'jg-who' }, h('b', {}, 'tempo'), h('span', {}, timeEl)), h('div', { class: 'jg-who' }, h('b', {}, 'dicas'), h('span', {}, String(g.hints)))),
-      h('div', { class: 'jg-actions row' },
-        h('button', { class: 'btn small', type: 'button', onclick: () => { viewing = true; draw(); } }, 'ver imagem'),
-        h('button', { class: 'btn small', type: 'button', disabled: g.over || selected == null, onclick: hint }, 'dica')),
-      h('p', { class: 'jg-msg', 'aria-live': 'polite' }, g.over ? '' : msg || (selected == null ? 'travou? toque numa peça e depois em “dica”: eu mostro onde ela encaixa.' : 'agora toque em “dica” ou arraste a peça até o lugar dela.')),
-      h('div', { class: `jg-boardwrap${zoom ? ' zoom' : ''}${zoom && n > 48 ? ' mega' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
-      g.over ? result() : h('div', { class: 'jg-tray', role: 'group', 'aria-label': 'bandeja de peças, role para os lados' }, ...tray),
+      h('div', { class: 'qz-stats', role: 'group', 'aria-label': 'placar' }, st('puzzle', `${Q.placedCount(g)}/${n}`, 'peças'), st('clock', timeEl, 'tempo'), st('bulb', String(g.hints), 'dicas'), h('span', { class: 'qz-prog', 'aria-hidden': 'true' }, h('i', { style: `width:${pct}%` }))),
+      h('p', { class: 'jg-msg qz-msg', 'aria-live': 'polite' }, dica),
+      h('div', { class: 'qz-stage' },
+        h('div', { class: `jg-boardwrap qz-boardwrap${zoom ? ' zoom' : ''}` }, h('div', { class: 'jg-pboard', role: 'group', 'aria-label': `quadro ${cols} colunas por ${rows} linhas`, style: `grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${img.w}/${img.h}` }, ...cells)),
+        g.over ? result() : h('div', { class: 'jg-tray qz-tray', role: 'group', 'aria-label': 'bandeja de peças' }, ...tray)),
+      g.over ? null : h('div', { class: 'qz-dock', role: 'group', 'aria-label': 'ações' },
+        h('button', { class: 'qz-b', type: 'button', 'aria-label': 'ver imagem', onclick: () => { viewing = true; draw(); } }, ico('image'), h('span', {}, 'imagem')),
+        h('button', { class: 'qz-b qz-main', type: 'button', disabled: selected == null, title: selected == null ? 'escolha uma peça primeiro' : 'mostrar onde a peça encaixa', onclick: hint }, ico('bulb'), h('span', {}, 'dica')),
+        h('button', { class: 'qz-b', type: 'button', 'aria-label': 'misturar as peças', onclick: misturar }, ico('shuffle'), h('span', {}, 'misturar'))),
       viewing ? h('div', { class: 'jg-over', role: 'dialog', 'aria-label': 'imagem de referência' }, h('img', { src: SRC(), alt: NOME() }), h('button', { class: 'btn primary', type: 'button', onclick: () => { viewing = false; draw(); } }, 'fechar')) : null,
     ].filter(Boolean));
+    fit();
   }
+  /** Embaralha de novo as peças que ainda estão na bandeja (só a ordem na tela; não conta erro nem dica). */
+  function misturar() { if (!g || g.over) return; const t = g.tray.slice(); for (let k = t.length - 1; k > 0; k--) { const r = Math.floor(Math.random() * (k + 1)); [t[k], t[r]] = [t[r], t[k]]; } g = { ...g, tray: t }; selected = null; hintCell = null; sfx('draw'); persist(); draw(); }
+  /** Tamanho do quadro e da bandeja conforme o espaço que o jogo recebeu (celular em pé: quadro em cima e bandeja em grade embaixo; tela larga: quadro à esquerda e bandeja em coluna). */
+  function fit() {
+    const st = root.querySelector('.qz-stage'); if (!st || !img) return; const W = st.clientWidth; const H = st.clientHeight; if (W < 40 || H < 40) return;
+    const ratio = img.w / img.h; const lado = W / H > 1.3; const gap = 10; const bwMax = lado ? Math.min(W - 200 - gap, H * ratio) : Math.min(W, (H - 150) * ratio);
+    const bw = Math.max(140, Math.floor(bwMax)); st.style.setProperty('--bw', `${bw}px`); st.classList.toggle('lado', lado);
+    const { cols } = Q.DIFFS[g.diff]; const cell = bw / cols; const pw = Math.max(66, Math.min(92, Math.round(cell * 1.5))); st.style.setProperty('--pw', `${pw}px`);
+    requestAnimationFrame(() => { const tr = root.querySelector('.qz-tray'); if (tr) tr.classList.toggle('cabe', tr.scrollHeight <= tr.clientHeight + 1); }); // bandeja sem rolagem: arrastar com o dedo direto
+  }
+  let roFit = null; if (typeof ResizeObserver === 'function') { roFit = new ResizeObserver(() => { if (g && !gone) fit(); }); roFit.observe(root); }
 
   function put(pos) {
     if (selected == null || g.over) return;
@@ -172,8 +198,9 @@ export function mount(host, opts) {
       const dx = e.clientX - drag.x; const dy = e.clientY - drag.y; const d = Math.hypot(dx, dy);
       if (!drag.touch) { if (d < 6) return; dragBegin(); }
       else if (drag.hold) { if (d < 4) return; dragBegin(); }
-      else if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx) * 0.6) dragBegin(); // pra cima/baixo (ou diagonal subindo): é arrastar a peça; quase na horizontal rola a bandeja
-      else { if (Math.abs(dx) > 10) { clearTimeout(holdT); } return; } // pro lado: o navegador rola a bandeja
+      else if (drag.el.closest('.qz-tray.cabe') && d > 6) dragBegin(); // bandeja sem rolagem: o dedo arrasta a peça na hora
+      else if (!drag.el.closest('.qz-tray') && Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx) * 0.6) dragBegin(); // (modo antigo, bandeja em linha)
+      else { if (d > 10) clearTimeout(holdT); return; } // bandeja que rola: mexer sem segurar rola a bandeja; segurando um instante a peça levanta e dá pra arrastar
     }
     const up = drag.touch ? ghost.offsetHeight * 0.9 : 0; // no dedo, a peça fica um pouco acima pra não ser coberta
     const cx = e.clientX; const cy = e.clientY - up;
@@ -195,6 +222,6 @@ export function mount(host, opts) {
   return {
     inProgress: () => !!(g && !g.over && g.started),
     restart: async () => { if (g && !g.over && g.started && !(await confirmSheet('começar nova partida?', 'a partida atual será perdida.', 'nova partida'))) return; intro(); },
-    destroy() { gone = true; if (offDuelo) { offDuelo(); offDuelo = null; } stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd); void reduced; },
+    destroy() { gone = true; if (roFit) roFit.disconnect(); if (offDuelo) { offDuelo(); offDuelo = null; } stopClock(); if (g) persist(); if (ghost) ghost.remove(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd); void reduced; },
   };
 }

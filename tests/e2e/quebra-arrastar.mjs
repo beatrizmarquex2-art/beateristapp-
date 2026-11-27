@@ -1,4 +1,4 @@
-// Quebra-cabeça: arrastar a peça (dedo e mouse) além de tocar. Dedo: arrastar pra cima, ou segurar e arrastar; pro lado continua rolando a bandeja.
+// Quebra-cabeça: arrastar a peça (dedo e mouse) além de tocar. Bandeja em GRADE: se cabe inteira o dedo arrasta na hora; se rola (muitas peças) o dedo rola a bandeja e SEGURAR um instante levanta a peça.
 import { serve, launch, sleep, check, done } from './harness.mjs';
 const { srv, url } = await serve(); const { browser, ctx } = await launch({ viewport: { width: 390, height: 844 } });
 const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
@@ -14,7 +14,7 @@ async function scrollToBoth() { await page.evaluate(() => { const b = document.q
 async function dragTouch(p, slot, { hold = 0, steps = 12 } = {}) {
   await scrollToBoth(); const a = center(await box(`.jg-pz.tp[data-piece="${p}"]`)); const t = await box(`.jg-pz.slot[data-pos="${slot}"]`);
   await touch('touchStart', a.x, a.y); if (hold) await sleep(hold);
-  const tx = t.x + t.width / 2, ty = t.y + t.height / 2 + 0.9 * 84 * 1.25 * (t.height / t.width); // o dedo fica ~0,9 da altura da peça abaixo dela (ela sobe pra não ser coberta)
+  const pb = await box(`.jg-pz.tp[data-piece="${p}"]`); const tx = t.x + t.width / 2, ty = t.y + t.height / 2 + 0.9 * 1.25 * pb.height; // o dedo fica ~0,9 da altura da peça abaixo dela (ela sobe pra não ser coberta)
   if (!hold) for (let i = 1; i <= 4; i++) { await touch('touchMove', a.x, a.y - i * 12); await sleep(16); } // como na vida real: o dedo sobe da bandeja e depois vai até o lugar
   const sx = hold ? a.x : a.x, sy = hold ? a.y : a.y - 48;
   for (let i = 1; i <= steps; i++) { await touch('touchMove', sx + (tx - sx) * i / steps, sy + (ty - sy) * i / steps); await sleep(16); }
@@ -35,11 +35,19 @@ const third = await page.evaluate(() => Number(document.querySelector('.jg-pz.tp
 const wrong = await page.evaluate((p) => Number([...document.querySelectorAll('.jg-pz.slot')].map((e) => Number(e.dataset.pos)).find((x) => x !== p)), third);
 const before = await placed(); await dragTouch(third, wrong);
 check('dedo: soltar no lugar errado não encaixa e avisa', (await placed()) === before && /ainda não/.test(await msg()), `placed ${before}→${await placed()}, msg=${JSON.stringify(await msg())}, peça ${third} → lugar ${wrong}`);
-// 4. arrastar pro lado rola a bandeja e NÃO move peça
-await scrollToBoth(); const tray = await box('.jg-tray'); const sl0 = await page.evaluate(() => document.querySelector('.jg-tray').scrollLeft); const b4 = await placed();
-await touch('touchStart', tray.x + tray.width - 40, tray.y + tray.height / 2); for (let i = 1; i <= 10; i++) { await touch('touchMove', tray.x + tray.width - 40 - i * 18, tray.y + tray.height / 2); await sleep(16); } await touch('touchEnd'); await sleep(400);
-const sl1 = await page.evaluate(() => document.querySelector('.jg-tray').scrollLeft);
-check('dedo: arrastar pro lado rola a bandeja (e não solta peça)', sl1 > sl0 && (await placed()) === b4, `${sl0} → ${sl1}`);
+// 4. bandeja que rola (48 peças): arrastar o dedo pra cima/baixo rola a bandeja e NÃO solta peça
+await page.goto(url + '/aluno.html#/jogos'); await sleep(500); await page.goto(url + '/aluno.html#/jogos/quebra/livre'); await page.reload(); await sleep(900); await page.locator('[role=radio], button').filter({ hasText: /^48/ }).first().click(); await sleep(200); await page.locator('.jg-quebra .jg-actions .btn').filter({ hasText: /iniciar|nova partida/ }).first().click(); await page.waitForSelector('.jg-pz.tp'); await sleep(600);
+const tray = await box('.qz-tray'); const sl0 = await page.evaluate(() => document.querySelector('.qz-tray').scrollTop); const b4 = await placed();
+await touch('touchStart', tray.x + tray.width / 2, tray.y + tray.height - 30); for (let i = 1; i <= 10; i++) { await touch('touchMove', tray.x + tray.width / 2, tray.y + tray.height - 30 - i * 18); await sleep(16); } await touch('touchEnd'); await sleep(400);
+const sl1 = await page.evaluate(() => document.querySelector('.qz-tray').scrollTop);
+check('dedo: arrastar na bandeja que rola (48 peças) rola a bandeja e não solta peça', sl1 > sl0 && (await placed()) === b4, `${sl0} → ${sl1}`);
+// 4b. segurar um instante e arrastar levanta a peça (48 peças) e encaixa
+await page.evaluate(() => { document.querySelector('.qz-tray').scrollTop = 0; }); await sleep(200);
+const hp = await page.evaluate(() => Number(document.querySelector('.jg-pz.tp').dataset.piece)); const bh = await placed();
+{ const a = center(await box(`.jg-pz.tp[data-piece="${hp}"]`)); const t = await box(`.jg-pz.slot[data-pos="${hp}"]`); const pb = await box(`.jg-pz.tp[data-piece="${hp}"]`);
+  await touch('touchStart', a.x, a.y); await sleep(420); const tx = t.x + t.width / 2, ty = t.y + t.height / 2 + 0.9 * 1.25 * pb.height;
+  for (let i = 1; i <= 14; i++) { await touch('touchMove', a.x + (tx - a.x) * i / 14, a.y + (ty - a.y) * i / 14); await sleep(16); } await touch('touchEnd'); await sleep(400); }
+check('dedo: segurar e arrastar (48 peças) encaixa a peça', (await placed()) === bh + 1, `${bh} → ${await placed()}`);
 // 5. toque simples (selecionar e tocar no lugar) continua funcionando
 const tp = await page.evaluate(() => Number(document.querySelector('.jg-pz.tp').dataset.piece)); const b5 = await placed();
 await scrollToBoth(); await page.click(`.jg-pz.tp[data-piece="${tp}"]`); await sleep(150); await page.locator(`.jg-pz.slot[data-pos="${tp}"]`).click(); await sleep(300);

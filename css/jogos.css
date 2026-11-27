@@ -2163,7 +2163,56 @@ html.jg-fit .jg-game.jg-fit-rola .jg-body { -webkit-overflow-scrolling: touch; o
   .jg-game .jg-seg button, .jg-game .jg-pil, .jg-game .btn.small, .jg-game .jg-tiny, .jg-game .jg-actions .btn { min-height: 40px; }
 }
 html.jg-fit .voltar-jogos { display: none !important; } /* sem rolagem, o "‹ jogos" do cabeçalho do jogo está sempre à vista (o botão flutuante cobria o canto de baixo do jogo) */
-@media (min-width: 540px) { /* tela larga: voltar, título e botões na MESMA linha (menos altura gasta, nada colado um no outro) */
-  html.jg-fit .jg-game .jg-top { flex-wrap: nowrap; column-gap: 8px; }
-  html.jg-fit .jg-game .jg-title { flex: 1 1 auto; margin-right: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== jogo FLUIDO (quebra-cabeça): ocupa exatamente o espaço que sobra e se redistribui (celular em pé: quadro em cima + bandeja em grade; tela larga: quadro à esquerda + bandeja em coluna) ===== */
+.jg-game.jg-fluido .jg-body { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 8px; }
+.jg-fluido-root { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+.qz-stats { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0; padding: 5px 12px; border-radius: 10px; background: rgb(255 255 255 / .09); }
+.qz-stats .jg-who { display: flex; align-items: baseline; gap: 6px; } .qz-stats .jg-who b { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; opacity: .75; } .qz-stats .jg-who span, .qz-stats .jg-who b + span b { font: 800 16px var(--body, inherit); }
+.qz-msg { flex: none; margin: 0; font-size: 12.5px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; }
+.qz-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; --bw: 320px; --pw: 80px; }
+.qz-stage .qz-boardwrap { flex: none; width: var(--bw); margin: 0; }
+.qz-stage .qz-tray { flex: 1; min-height: 0; width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--pw), 1fr)); gap: 8px 6px; align-content: start; justify-items: center; overflow-y: auto; overflow-x: hidden; padding: 12px 10px; margin: 0; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.qz-stage .qz-tray .jg-pz.tp, .jg-quebra .qz-tray .jg-pz.tp { width: 100%; max-width: 120px; }
+.qz-stage .qz-tray .jg-pz.tp { touch-action: pan-y; } /* bandeja que rola na vertical: mexer rola; segurar um instante levanta a peça */
+.qz-stage .qz-tray.cabe .jg-pz.tp { touch-action: none; } /* bandeja que cabe inteira: o dedo arrasta a peça na hora */
+.qz-stage.lado { flex-direction: row; align-items: flex-start; gap: 12px; }
+.qz-stage.lado .qz-tray { flex: 1; min-width: 150px; height: 100%; width: auto; grid-template-columns: repeat(auto-fill, minmax(min(var(--pw), 82px), 1fr)); }
+.qz-dock { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+.qz-dock .btn { min-height: 46px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.jg-quebra .jg-over { position: absolute; inset: 0; z-index: 5; }
+@media (max-width: 480px) { .jg-top .jg-lbl { display: none; } .jg-game .jg-top .btn.small { min-width: 38px; padding: 0 8px; } }
+.qz-dock .btn { white-space: nowrap; }
+
+/* cabeçalho do jogo (grid com áreas): UMA linha só. Tela larga: ‹ jogos · título · pausa · nova partida · som · música. Celular em pé: o som e a música já estão na barra de cima do app */
+html.jg-fit .jg-game > .jg-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto auto; grid-template-areas: "voltar titulo pausa nova snd mus"; gap: 6px 8px; align-items: center; padding: 8px 14px 2px; }
+html.jg-fit .jg-game > .jg-top > .jg-title { grid-area: titulo; justify-self: start; margin: 0; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 17px; padding: 4px 14px 7px 11px; }
+html.jg-fit .jg-game > .jg-top > .jg-snd { position: static; grid-area: snd; margin: 0; } html.jg-fit .jg-game > .jg-top > .jg-mus { position: static; grid-area: mus; margin: 0; }
+html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg-game > .jg-top > .jg-pausa-btn { grid-area: pausa; } html.jg-fit .jg-game > .jg-top > .jg-nova-btn { grid-area: nova; }
+@media (max-width: 540px) and (min-height: 521px) {
+  html.jg-fit .jg-game > .jg-top { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "voltar titulo pausa nova"; gap: 6px; padding: 8px 12px 2px; }
+  html.jg-fit .jg-game > .jg-top > .jg-snd, html.jg-fit .jg-game > .jg-top > .jg-mus { display: none; }
+  html.jg-fit .jg-game > .jg-top > .jg-title { font-size: 15px; padding: 4px 10px 7px 9px; }
 }
+
+/* ===== quebra-cabeça: placar e barra de ações premium (vidro, ícones próprios, dica dourada) ===== */
+.jg-quebra .qz-stats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 9px 6px 12px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, rgb(255 255 255 / .14), rgb(255 255 255 / .05)); border: 1px solid rgb(255 255 255 / .18); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12); }
+.jg-quebra .qz-st { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+.jg-quebra .qz-st + .qz-st { border-left: 1px solid rgb(255 255 255 / .12); }
+.jg-quebra .qz-i { width: 20px; height: 20px; flex: none; fill: none; stroke: #ffd23f; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.jg-quebra .qz-st b { display: block; font: 800 17px/1.05 var(--body, inherit); color: #fff; font-variant-numeric: tabular-nums; }
+.jg-quebra .qz-st small { display: block; margin-top: 2px; font: 700 9.5px/1 var(--body, inherit); text-transform: uppercase; letter-spacing: .1em; color: rgb(255 255 255 / .65); }
+.jg-quebra .qz-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgb(255 255 255 / .12); }
+.jg-quebra .qz-prog i { display: block; height: 100%; background: linear-gradient(90deg, #ffd23f, #ff9f1c); border-radius: 0 4px 4px 0; box-shadow: 0 0 10px rgb(255 190 60 / .7); transition: width .45s cubic-bezier(.2, .8, .2, 1); }
+.jg-quebra .qz-msg { text-align: center; color: #ffe08a; font-weight: 600; letter-spacing: .01em; }
+.jg-quebra .qz-dock { flex: none; display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; padding: 7px; margin: 0; border-radius: 22px; background: rgb(255 255 255 / .07); border: 1px solid rgb(255 255 255 / .15); box-shadow: 0 -6px 24px rgb(0 0 0 / .25), inset 0 1px 0 rgb(255 255 255 / .1); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.jg-quebra .qz-b { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 58px; padding: 6px 8px; border: 1px solid rgb(255 255 255 / .2); border-radius: 15px; background: linear-gradient(180deg, rgb(255 255 255 / .17), rgb(255 255 255 / .06)); color: #fff; font: 700 12px/1 var(--body, inherit); letter-spacing: .03em; box-shadow: none; cursor: pointer; transition: transform .12s ease, background .2s ease, box-shadow .2s ease; -webkit-tap-highlight-color: transparent; }
+.jg-quebra .qz-b .qz-i { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; }
+.jg-quebra .qz-b:hover { background: linear-gradient(180deg, rgb(255 255 255 / .24), rgb(255 255 255 / .1)); }
+.jg-quebra .qz-b:active { transform: scale(.96); }
+.jg-quebra .qz-b:focus-visible { outline: 3px solid #ffd23f; outline-offset: 2px; }
+.jg-quebra .qz-main { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #fff3bf; box-shadow: 0 6px 18px rgb(247 183 51 / .38), inset 0 1px 0 rgb(255 255 255 / .75); }
+.jg-quebra .qz-main:hover { background: linear-gradient(180deg, #ffeaa0, #fbbf3c); }
+.jg-quebra .qz-main:disabled { background: rgb(255 255 255 / .05); color: rgb(255 255 255 / .45); border: 1px dashed rgb(255 255 255 / .28); box-shadow: none; cursor: not-allowed; }
+@media (max-height: 640px) { .jg-quebra .qz-b { min-height: 48px; flex-direction: row; gap: 7px; } .jg-quebra .qz-b .qz-i { width: 20px; height: 20px; } }
+@media (prefers-reduced-motion: reduce) { .jg-quebra .qz-b, .jg-quebra .qz-prog i { transition: none; } }
