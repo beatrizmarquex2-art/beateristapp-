@@ -1222,3 +1222,8 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Teclado: seletor **Teclado | Barras**. Teclado com os sons do jogo (piano, elétrico, órgão, cordas); Barras = xilofone colorido do jogo com as escalas e modelos (xilofone, marimba, vibrafone...). Destaque de escala também nas teclas.
 - Ferramentas (nos dois): metrônomo junto, repetir (loop), transpor ±1 semitom e ±1 oitava (`js/pro/teoria.js`), limpar tudo (com confirmação). Cifra do acorde na tablatura e na pauta.
 - Testes: `tests/pro-teoria.test.mjs`, `tests/e2e/pro-ritmico.mjs` (72 checagens).
+
+### PRO: direção do rasgueado e batida do violão (27/nov/2026)
+- Eventos de acorde guardam `dir` ('b' = ↓, 'c' = ↑) e `mudo` (✕). A seta aparece em cima do acorde (tablatura e pauta); abafada vira × . Passar o dedo pra baixo/cima nas cordas desenhadas grava a direção; ao ouvir, ↓ sai da corda grave pra aguda e ↑ da aguda pra grave, mais suave.
+- Batida: "escrever o compasso inteiro com a batida" + 6 batidas prontas (pop, só pra baixo, baixo e cima, balada, reggae, funk abafado) e "minha batida" (clicar nos quadradinhos: vazio → ↓ → ↑ → ✕), 8 ou 16 passos. Tocar numa carta escreve o compasso e toca. ↑ usa só as 4 cordas agudas.
+- Nota longa ligada (atravessa o tempo): a 2ª parte aparece como (n) na tablatura e não duplica a seleção.

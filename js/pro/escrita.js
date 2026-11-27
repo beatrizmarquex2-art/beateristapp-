@@ -39,12 +39,13 @@ export function pautaBloco(L, s, y0, { evs, cordas, clave, largura, cor, sel, ul
     const qs = b.itens.map((it) => {
       if (it.rest) return { it, x: it.x, d: it.d, pos: it.pos, rest: true };
       const g = L.grupos[it.g]; const ns = g.idx.map((i) => { const m = R.midiDe(cordas, evs[i].c, evs[i].f); const w = escrito(m); return { i, m, w, p: P.posNaPauta(w, clave) }; }).sort((a, c) => a.p - c.p);
-      const medio = ns.reduce((t, n) => t + n.p, 0) / ns.length; return { it, x: it.x, d: it.d, pos: it.pos, ns, baixo: medio >= 4, lig: it.lig };
+      const medio = ns.reduce((t, n) => t + n.p, 0) / ns.length; return { it, x: it.x, d: it.d, pos: it.pos, ns, baixo: medio >= 4, lig: it.lig, cont: it.cont };
     });
     const grupos = feixes(qs); grupos.forEach((gr) => { const baixo = gr.reduce((n, q) => n + (q.baixo ? 1 : -1), 0) > 0; gr.forEach((q) => { q.grupo = gr; q.baixo = baixo; }); gr.baixoG = baixo; });
     qs.forEach((q) => {
       if (q.rest) { out.push(R.pausa(q.d, q.x, meio)); return; }
-      const cif = q.ns.map((n) => evs[n.i].cif).find(Boolean); if (cif) out.push(`<text x="${q.x}" y="${y0 - 30}" text-anchor="middle" font-size="12" font-weight="800" font-family="${FONT}" fill="#b5162b">${R.esc(cif)}</text>`);
+      const cif = q.cont ? null : q.ns.map((n) => evs[n.i].cif).find(Boolean); if (cif) out.push(`<text x="${q.x}" y="${y0 - 28}" text-anchor="middle" font-size="12" font-weight="800" font-family="${FONT}" fill="#b5162b">${R.esc(cif)}</text>`);
+      const dirQ = q.ns.map((n) => evs[n.i].dir).find(Boolean); if (dirQ && q.ns.length > 1 && !q.cont) out.push(R.seta(dirQ, q.x, y0 - 54, y0 - 40));
       const nx = q.x; const ys = q.ns.map((n) => yp(n.p)); const yAlto = Math.min(...ys); const yBaixo = Math.max(...ys);
       // segunda (notas vizinhas) no acorde: a de fora vai pro outro lado da haste
       const desl = new Set(); if (q.ns.length > 1) { const ord = q.baixo ? [...q.ns].reverse() : q.ns; let ant = null; ord.forEach((n) => { if (ant && Math.abs(n.p - ant.p) === 1 && !desl.has(ant)) desl.add(n); ant = n; }); }
@@ -55,7 +56,8 @@ export function pautaBloco(L, s, y0, { evs, cordas, clave, largura, cor, sel, ul
         const chave = `${P.diat(n.w)}`; const quer = P.ehPreta(n.w) ? 1 : 0; const tem = alt[chave] || 0;
         if (quer !== tem) { out.push(`<path d="${SUST}" transform="translate(${nx - 13 - (ni % 2) * 8} ${y})" stroke="${INK}" stroke-width="1.3" fill="none"/>`); alt[chave] = quer; }
         const aberta = q.d >= 8;
-        out.push(`<g class="pm-n${n.i === sel ? ' sel' : ''}" data-ev="${n.i}"><rect x="${x - 12}" y="${y - 9}" width="24" height="18" fill="transparent"/>${n.i === sel ? `<circle cx="${x}" cy="${y}" r="10" fill="rgba(184,145,63,.3)"/>` : ''}<ellipse cx="${x}" cy="${y}" rx="${q.d === 16 ? 6.4 : 5.6}" ry="4.1" transform="rotate(-20 ${x} ${y})" ${aberta ? `fill="none" stroke="${c}" stroke-width="1.7"` : `fill="${c}" stroke="${cor ? INK : 'none'}" stroke-width="1"`}/></g>`);
+        const cabeca = evs[n.i].mudo ? `<path d="M${x - 4.5} ${y - 4.5}l9 9M${x + 4.5} ${y - 4.5}l-9 9" stroke="${c}" stroke-width="2.2"/>` : null;
+        out.push(`<g${q.cont ? '' : ` class="pm-n${n.i === sel ? ' sel' : ''}" data-ev="${n.i}"`}><rect x="${x - 12}" y="${y - 9}" width="24" height="18" fill="transparent"/>${n.i === sel ? `<circle cx="${x}" cy="${y}" r="10" fill="rgba(184,145,63,.3)"/>` : ''}${cabeca || `<ellipse cx="${x}" cy="${y}" rx="${q.d === 16 ? 6.4 : 5.6}" ry="4.1" transform="rotate(-20 ${x} ${y})" ${aberta ? `fill="none" stroke="${c}" stroke-width="1.7"` : `fill="${c}" stroke="${cor ? INK : 'none'}" stroke-width="1"`}/>`}</g>`);
         if (q.d === 3 || q.d === 6 || q.d === 12) out.push(`<circle cx="${x + 10}" cy="${y - (n.p % 2 === 0 ? 3.5 : 0)}" r="1.8" fill="${INK}"/>`);
       });
       q.sx = q.baixo ? nx - 5.4 : nx + 5.4; q.yIni = q.baixo ? yAlto : yBaixo; q.yFim = q.baixo ? Math.max(yBaixo + 3.5 * G, meio) : Math.min(yAlto - 3.5 * G, meio);
@@ -81,7 +83,8 @@ export function pautaBloco(L, s, y0, { evs, cordas, clave, largura, cor, sel, ul
   return out.join('');
 }
 
-const ALT_PAUTA = 118; // topo (hastes e linhas suplementares) + pauta + o que desce
+const ALT_PAUTA = 130; // topo (seta, cifra, hastes e linhas suplementares) + pauta + o que desce
+const Y_PAUTA = 52; // onde começa a 1ª linha da pauta dentro do sistema
 const finaliza = (o, largura, n, alt, rotulo) => { const h = n * alt + 6; return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largura} ${h}" width="100%" role="img" aria-label="${rotulo}">${o}</svg>`, w: largura, h, sistema: alt, topo: 0, n }; };
 
 /** Pauta comum, tablatura, as duas juntas ou figuras rítmicas, conforme `escrita`. Devolve { svg, w, h, sistema, topo, n }. */
@@ -89,12 +92,12 @@ export function cordas(evs, { cordas: cs, inst = 'violao', escrita = 'tab', larg
   if (escrita === 'tab') return R.tablatura(evs, { cordas: cs, largura, cor, sel });
   if (escrita === 'ritmo') return ritmo(evs, { largura, sel, bateria: false });
   const clave = claveDe(inst); const L = R.layout(evs, { largura, x0: 74 }); const n = Math.max(1, L.sistemas.length); const ambas = escrita === 'ambas'; const altTab = R.alturaTab(cs.length);
-  const alt = ambas ? ALT_PAUTA + altTab - 14 : ALT_PAUTA; let o = '';
+  const alt = ambas ? ALT_PAUTA + 22 + altTab : ALT_PAUTA; let o = '';
   L.sistemas.forEach((_, s) => {
-    const base = s * alt; const ultimo = s === n - 1; o += pautaBloco(L, s, base + 40, { evs, cordas: cs, clave, largura, cor, sel, ultimo, inst });
-    if (ambas) o += R.tabBloco(L, s, base + ALT_PAUTA - 6 + 22, { evs, cordas: cs, largura, cor, sel, ultimo });
+    const base = s * alt; const ultimo = s === n - 1; o += pautaBloco(L, s, base + Y_PAUTA, { evs, cordas: cs, clave, largura, cor, sel, ultimo, inst });
+    if (ambas) o += R.tabBloco(L, s, base + ALT_PAUTA + 22, { evs, cordas: cs, largura, cor, sel, ultimo });
   });
-  if (!L.sistemas.length) o += pautaBloco(L, 0, 40, { evs, cordas: cs, clave, largura, cor, sel, ultimo: true, inst });
+  if (!L.sistemas.length) o += pautaBloco(L, 0, Y_PAUTA, { evs, cordas: cs, clave, largura, cor, sel, ultimo: true, inst });
   return finaliza(o, largura, n, alt, `${ambas ? 'Pauta e tablatura' : 'Pauta'} com ${evs.length} nota${evs.length === 1 ? '' : 's'}`);
 }
 

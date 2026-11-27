@@ -262,3 +262,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-gutter:stable
 .er-barra{flex:1;min-width:0;border:0;border-radius:10px 10px 8px 8px;background:var(--bc);color:#fff;font:800 13px var(--body);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;cursor:pointer;box-shadow:inset 0 -5px 0 rgb(0 0 0/.22),0 2px 0 rgb(0 0 0/.4);transition:transform .08s,filter .08s;touch-action:none}
 .er-barra.clara{color:#1b1818}.er-barra:active,.er-barra.hit{transform:translateY(3px) scale(.97);filter:brightness(1.2)}
 .pro-body .ep-w.fora{opacity:.5}.pro-body .ep-b.fora{opacity:.35}.pro-body .ep-w.raiz{box-shadow:inset 0 -8px 0 var(--ouro-claro)}.pro-body .ep-b.raiz{box-shadow:0 0 0 2px var(--ouro-claro)}
+
+/* ---------- batida do violão: quadradinhos ↓ ↑ ✕ ---------- */
+.er-batida{display:grid;gap:8px;margin:8px 0}
+.er-bt{display:grid;grid-template-columns:repeat(var(--n,8),1fr);gap:4px;padding:8px;border-radius:14px;background:var(--papel);border:1px solid var(--linha);touch-action:none;user-select:none;-webkit-user-select:none}
+.er-btc{display:grid;justify-items:center;gap:0;min-width:0;padding:6px 0 4px;border-radius:10px;border:1px solid var(--linha);background:#fff;cursor:pointer;color:var(--tinta);font:inherit;touch-action:none}
+.er-btc i{font:800 20px/1.1 var(--body);font-style:normal;height:24px}.er-btc small{font:600 10px var(--body);color:var(--suave)}.er-btc.t{background:#f7f2e7}
+.er-btc.on{background:var(--grafite);color:var(--ouro-claro);border-color:var(--grafite)}.er-btc.on small{color:#cdbf9e}
+@media (max-width:420px){.er-btc i{font-size:17px}}

@@ -17,3 +17,18 @@ test('acorde de Dó maior vira 5 notas (corda grave não toca) com a cifra na 1�
 });
 test('acorde em guitarra de 8 cordas usa as mesmas cordas de cima', () => { const ev = T.acordeEmEventos(T.acharAcorde('4m'), 0, 4, 8); assert.equal(ev.length, 6); assert.ok(ev.every((e) => e.c <= 5)); });
 test('cifra de menor leva "m"', () => assert.equal(T.cifraDe(T.acharAcorde('9m')), 'Lám'));
+const C = T.acharAcorde('0M');
+test('batida pop: 6 rasgueados no compasso, durando até o próximo; o último vai até o fim', () => {
+  const ev = T.batidaEmEventos(C, T.BATIDAS[0][2], 16, 2, 6); const ini = [...new Set(ev.map((e) => e.ini))]; assert.deepEqual(ini, [16, 20, 22, 26, 28, 30]);
+  const dur = (i) => ev.find((e) => e.ini === i).d; assert.equal(dur(16), 4); assert.equal(dur(20), 2); assert.equal(dur(30), 2);
+});
+test('batida: pra baixo = acorde todo (5 cordas no Dó); pra cima = só as 4 mais agudas; direção guardada', () => {
+  const ev = T.batidaEmEventos(C, ['b', 'c'], 0, 8, 6); const b = ev.filter((e) => e.ini === 0); const c = ev.filter((e) => e.ini === 8);
+  assert.equal(b.length, 5); assert.ok(b.every((e) => e.dir === 'b')); assert.equal(c.length, 4); assert.ok(c.every((e) => e.dir === 'c')); assert.ok(c.every((e) => e.c <= 3));
+});
+test('batida abafada leva "mudo" e a cifra só vai no 1º rasgueado', () => {
+  const ev = T.batidaEmEventos(C, ['', 'x', '', 'b'], 0, 4, 6); assert.ok(ev.filter((e) => e.ini === 4).every((e) => e.mudo)); assert.ok(ev.filter((e) => e.ini === 12).every((e) => !e.mudo));
+  assert.equal(ev.filter((e) => e.cif).length, 1); assert.equal(ev.find((e) => e.cif).ini, 4);
+});
+test('batida vazia não escreve nada; símbolo gira ↓ → ↑ → ✕ → vazio', () => { assert.equal(T.batidaEmEventos(C, ['', '', '', ''], 0, 4, 6).length, 0); assert.deepEqual(['', 'b', 'c', 'x'].map(T.proximoSimbolo), ['b', 'c', 'x', '']); });
+test('presets: 8 passos e só símbolos válidos', () => { for (const [, , p] of T.BATIDAS) { assert.equal(p.length, 8); assert.ok(p.every((v) => ['', 'b', 'c', 'x'].includes(v))); } });

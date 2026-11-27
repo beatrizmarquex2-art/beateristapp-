@@ -14,8 +14,8 @@ export const velDe = (e) => (e.fan ? 0.32 : e.acc ? 1.05 : 0.78);
 /** Destrava o áudio (iPhone/iPad/Safari só deixam dentro de um toque). Chamar no 1º toque. */
 export const acorda = () => { try { wake(); audio(); } catch { /* sem áudio */ } };
 /** Uma corda agora (ou em t). */
-export function somCorda(kind, midi, vel = 0.85, t) {
-  try { const c = audio(); pluck(midi, vel, t === undefined ? c.currentTime + 0.005 : t, kind); } catch { /* sem áudio */ }
+export function somCorda(kind, midi, vel = 0.85, t, mudo = false) {
+  try { const c = audio(); pluck(midi, vel, t === undefined ? c.currentTime + 0.005 : t, kind, mudo); } catch { /* sem áudio */ }
 }
 /** Uma peça da bateria agora (ou em t). Mapa: hh chimbal, hf chimbal de pé, ho aberto, sn caixa, bd bumbo, tt/mt/ft toms e surdo, cr prato, rd condução. */
 export function somBateria(modelo, p, vel = 0.78, t, dr = 0.3) {
@@ -41,6 +41,11 @@ export function tocaEventos({ eventos, fim, bpm, clique = false, repetir = false
 /** Toca a partitura de cordas/bateria inteira. cfg: { evs, bpm, bat, modelo, kind, cordas, clique, repetir, onFim } */
 export function tocaTudo({ evs, bpm, bat, modelo, kind, cordas, clique, repetir, onFim }) {
   const sx = 60 / bpm / 4;
-  const eventos = R.grupos(evs).map((g) => ({ at: g.ini * sx, play: (t) => (bat ? g.idx : [...g.idx].sort((a, b) => evs[b].c - evs[a].c)).forEach((k, j) => { const e = evs[k]; if (bat) somBateria(modelo, e.p, velDe(e), t); else somCorda(kind, R.midiDe(cordas, e.c, e.f), velDe(e), t + j * 0.011); }) })); // acorde: cordas uma depois da outra (rasgueado)
+  // acorde: as cordas saem uma depois da outra. pra baixo (↓) da grave pra aguda; pra cima (↑) da aguda pra grave, um pouco mais suave; abafada (✕) é seca e curta
+  const eventos = R.grupos(evs).map((g) => ({ at: g.ini * sx, play: (t) => {
+    if (bat) { g.idx.forEach((k) => { const e = evs[k]; somBateria(modelo, e.p, velDe(e), t); }); return; }
+    const sobe = g.idx.some((k) => evs[k].dir === 'c'); const ordem = [...g.idx].sort((a, b) => (sobe ? evs[a].c - evs[b].c : evs[b].c - evs[a].c));
+    ordem.forEach((k, j) => { const e = evs[k]; somCorda(kind, R.midiDe(cordas, e.c, e.f), (sobe ? 0.7 : 0.85) * (e.mudo ? 0.8 : 1), t + j * 0.011, !!e.mudo); });
+  } }));
   return tocaEventos({ eventos, fim: R.fim(evs), bpm, clique, repetir, onFim });
 }

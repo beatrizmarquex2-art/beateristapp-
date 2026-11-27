@@ -33,3 +33,10 @@ test('cifra do acorde aparece em cima da tablatura e da pauta', () => {
   const ev = [{ c: 0, f: 0, ini: 0, d: 4, cif: 'Mim' }, { c: 1, f: 0, ini: 0, d: 4 }];
   assert.match(R.tablatura(ev, { cordas: V, largura: 380 }).svg, />Mim</); assert.match(E.cordas(ev, { cordas: V, escrita: 'pauta', largura: 380 }).svg, />Mim</);
 });
+test('seta de direção (↓/↑) aparece em cima do acorde; abafada vira × na tablatura e na pauta', () => {
+  const b = [{ c: 0, f: 0, ini: 0, d: 4, dir: 'b' }, { c: 1, f: 1, ini: 0, d: 4, dir: 'b' }]; const c = b.map((e) => ({ ...e, dir: 'c' }));
+  const sb = R.tablatura(b, { cordas: V, largura: 380 }).svg; const sc = R.tablatura(c, { cordas: V, largura: 380 }).svg; assert.ok(sb.includes('seta-r') && sc.includes('seta-r') && sb !== sc);
+  assert.ok(!R.tablatura([{ c: 0, f: 0, ini: 0, d: 4 }], { cordas: V, largura: 380 }).svg.includes('seta-r'));
+  const mudo = [{ c: 0, f: 2, ini: 0, d: 4, mudo: true }]; assert.match(R.tablatura(mudo, { cordas: V, largura: 380 }).svg, />×</); assert.ok(E.cordas(mudo, { cordas: V, escrita: 'pauta', largura: 380 }).svg.includes('stroke-width="2.2"'));
+  assert.ok(E.cordas(b, { cordas: V, escrita: 'pauta', largura: 380 }).svg.includes('seta-r'));
+});

@@ -34,3 +34,7 @@ test('remapeia: baixo 5 → 6 cordas (entra o Dó em cima) mantém cada nota na 
   const r = R.remapeia(evs, b5, b6); assert.equal(b6[r[0].c][0], 'G'); assert.equal(b6[r[1].c][0], 'B'); assert.equal(r.length, 2);
 });
 test('remapeia: sem corda equivalente a nota sai', () => assert.equal(R.remapeia([{ c: 4, f: 0, ini: 0, d: 4 }], R.cordasDe('baixo', 5), R.cordasDe('baixo', 4)).length, 0));
+test('nota longa que atravessa o tempo é ligada: a 2ª parte aparece entre parênteses e não duplica a seleção', () => {
+  const r = R.tablatura([{ c: 0, f: 3, ini: 6, d: 4 }], { cordas: R.cordasDe('violao', 6), largura: 420 });
+  assert.match(r.svg, />\(3\)</); assert.equal((r.svg.match(/data-ev=/g) || []).length, 1);
+});
