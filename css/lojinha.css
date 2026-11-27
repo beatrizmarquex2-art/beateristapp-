@@ -227,3 +227,6 @@ body:has(#view.lj-escura) { background: #070b19; }
 
 /* emojis trocados pelos ícones da Bea (js/icones-emoji.js): do tamanho do texto */
 .ic-emoji { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.28em; object-fit: contain; background: none; pointer-events: none; user-select: none; }
+/* botões de ícone (câmera, link, abrir): fundo claro pra o ícone da Bea aparecer */
+.rs-ic { background: #fbf3e0 !important; border: 2px solid #f6c93b !important; }
+.rs-ic:active { background: #f6c93b !important; }
