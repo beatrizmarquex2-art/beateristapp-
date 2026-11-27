@@ -1,13 +1,13 @@
 // Vitrine nova da Lojinha: só ARRUMA o que já existe em js/loja-config.js (produtos, preços e links não mudam aqui).
 // Nada de produto, preço ou promoção novos: cada item aponta pro `id` de um produto existente ou pra uma arte oficial que já está em assets/.
-import { PASSE, ANUAL, COMBO } from './loja-config.js';
+import { PASSE, ANUAL, COMBOS as COMBOS_LOJA, BANNER_COMBOS } from './loja-config.js';
 
 /** Banners da vitrine principal. `tipo: 'compra'` abre o pagamento (com a confirmação de adulto); `tipo: 'produto'` abre o material.
  *  Cada banner mostra a arte INTEIRA (sem corte): o tamanho (w × h) é o da arte original. `so` = só aparece enquanto vale. */
 export const BANNERS = [
-  { id: 'anual', so: 'oferta-passe', arte: true, img: ANUAL.img, w: ANUAL.w, h: ANUAL.h, alt: ANUAL.desc, tipo: 'compra', item: ANUAL },
-  { id: 'combo-robo', img: COMBO.img, w: COMBO.w, h: COMBO.h, titulo: COMBO.nome, preco: COMBO.preco, alt: `${COMBO.nome}: ${COMBO.desc}, por ${COMBO.preco}`, tipo: 'compra', item: COMBO },
-  { id: 'cards-combo', img: 'assets/loja/cards-combo.webp', w: 800, h: 800, titulo: 'Combo dos 3 Baralhos', preco: 'R$ 49,90', alt: 'Combo dos 3 baralhos do Robôterista Paul: Teoria, Instrumentos e Dicionário', tipo: 'produto', produto: 'cards-combo' },
+  // arte do acesso anual (muda por data em loja-config.js); toque abre "Pix ou cartão". Arte quase quadrada vira faixa fina.
+  { id: 'anual', arte: ANUAL.w / ANUAL.h >= 2, img: ANUAL.img, w: ANUAL.w, h: ANUAL.h, alt: ANUAL.desc, tipo: 'passe', titulo: 'Passe Anual', rotulo: 'acesso de 12 meses' },
+  { id: 'combos', arte: false, img: BANNER_COMBOS.img, w: BANNER_COMBOS.w, h: BANNER_COMBOS.h, alt: BANNER_COMBOS.alt, tipo: 'ir', alvo: 'combos', titulo: 'Combos especiais', rotulo: 'levando junto fica mais em conta' },
 ];
 
 /** Telas reais do app (as mesmas da entrada). `k` = o que a tela mostra: jogo, instrumento, desafio ou figurinha. */
@@ -39,11 +39,9 @@ export const BANCA = [
 ];
 export const MUSICOS = ['start', 'mood', 'violao'];
 
-// Combos: o que vem dentro (ids) e o produto/link do combo. A economia é CALCULADA (soma dos preços dos itens − preço do combo).
-export const COMBOS = [
-  { id: 'combo-bf', nome: COMBO.nome, itens: ['ritmo', 'harmonia', 'pratica', 'memoria'], preco: COMBO.preco, img: COMBO.img, item: COMBO },
-  { id: 'cards-combo', nome: 'Combo dos 3 Baralhos', itens: ['cards-teoria', 'cards-instrumentos', 'cards-dicionario'], produto: 'cards-combo' },
-];
+// Combos (config nova da Bea em loja-config.js): aqui só dizemos quais produtos soltos cada um reúne, pra mostrar o que vem dentro e calcular a economia real.
+export const COMBO_ITENS = { 'combo-ensina': ['ritmo', 'harmonia', 'pratica'], 'combo-brincando': ['memoria', 'colorir'], 'combo-cards': ['cards-teoria', 'cards-instrumentos', 'cards-dicionario'] };
+export const COMBOS = COMBOS_LOJA.slice().sort((a, b) => Number(!!(b.link || (b.provisorio && b.provisorio.link))) - Number(!!(a.link || (a.provisorio && a.provisorio.link))));
 
 // Experimente grátis: só o que o app já deixa ver sem código (limites em js/amostra.js).
 export const GRATIS_ITENS = [

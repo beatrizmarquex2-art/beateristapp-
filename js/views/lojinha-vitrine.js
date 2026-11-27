@@ -3,11 +3,11 @@
 import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { PASSE, PRODUTOS, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
-import { precoPasse } from '../passe-preco.js';
+import { precoPasse, URL_CARTAO } from '../passe-preco.js';
 import { GRATIS } from '../amostra.js';
 import * as AC from '../acesso.js';
 import { premios } from './premios.js';
-import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, COMBOS, GRATIS_ITENS } from '../loja-vitrine-config.js';
+import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, COMBOS, COMBO_ITENS, GRATIS_ITENS } from '../loja-vitrine-config.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
 const prod = (id) => PRODUTOS.find((p) => p.id === id);
@@ -34,6 +34,18 @@ function comAdulto(item) {
   dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
   document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
+/** Janela "como você quer pagar?": Pix (página de pagamento, código por e-mail) ou cartão (Hotmart). */
+function escolhaPasse() {
+  const P = precoPasse(); const ir = (url) => { const w = window.open(url, '_blank', 'noopener'); if (!w) location.href = url; };
+  const dlg = h('dialog', { class: 'lj-dlg lj-pay', 'aria-label': 'como você quer pagar?' },
+    h('div', { class: 'lj-dtop' }, h('b', {}, 'como você quer pagar?'), h('button', { type: 'button', class: 'lj-x', 'aria-label': 'fechar', onclick: () => dlg.close() }, '✕')),
+    h('button', { type: 'button', class: 'lj-pay-op pix', onclick: () => ir(PASSE.link) }, h('span', { class: 'lj-selo' }, 'melhor preço'), h('b', {}, 'Pix'), h('strong', {}, P.atual), h('small', {}, P.oferta ? `oferta ${P.nome} · até ${P.ate}` : 'pagamento único'), h('em', {}, 'o código chega no seu e-mail assim que o Pix é confirmado'), h('i', {}, 'Comprar com Pix ›')),
+    h('button', { type: 'button', class: 'lj-pay-op cartao', onclick: () => ir(URL_CARTAO) }, h('b', {}, 'Cartão de crédito'), h('strong', {}, P.cartao), h('small', {}, 'pagamento pela Hotmart'), h('i', {}, 'Comprar com cartão ›')),
+    h('p', { class: 'lj-ddig' }, '12 meses de acesso · até 2 aparelhos'));
+  dlg.addEventListener('close', () => dlg.remove()); dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  document.body.append(dlg); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+
 const botao = (txt, item, cls = '') => (item.link
   ? h('button', { type: 'button', class: `lj-btn ${cls}`.trim(), onclick: () => comAdulto(item), 'data-id': item.id || 'passe' }, txt, h('b', { 'aria-hidden': 'true' }, '›'))
   : h('button', { type: 'button', class: `lj-btn breve ${cls}`.trim(), onclick: () => abrirPagamento(item), 'data-id': item.id || 'passe' }, 'em breve'));
@@ -118,14 +130,12 @@ const secao = (id, titulo, sub, paul, ...filhos) => h('section', { class: `ljv-s
   h('header', { class: 'ljv-s-top' }, h('div', {}, h('h2', { id: `lj-${id}-t` }, titulo), sub ? h('p', {}, sub) : null), paul ? h('img', { class: 'ljv-host', src: paul.src, alt: paul.alt || '', width: 64, height: 64, loading: 'lazy' }) : null), ...filhos);
 
 function banners() {
-  const oferta = precoPasse().oferta;
-  const lista = BANNERS.filter((b) => b.so !== 'oferta-passe' || (oferta && !AC.liberado())); // quem já tem o passe não precisa da oferta
-  const acao = (b) => (b.tipo === 'compra' ? comAdulto(b.item) : (() => { const p = prod(b.produto); if (p) ampliar(p); })());
-  const slides = lista.map((b) => (b.arte
+  const acao = (b) => (b.tipo === 'passe' ? escolhaPasse() : rolar(document.getElementById(`lj-${b.alvo}`)));
+  const slides = BANNERS.filter((b) => b.tipo !== 'passe' || !AC.liberado()).map((b) => (b.arte
     ? h('button', { type: 'button', class: 'ljv-banner arte', 'aria-label': b.alt, 'data-id': b.id, onclick: () => acao(b) }, h('img', { src: b.img, alt: b.alt, width: b.w, height: b.h, draggable: 'false' }))
     : h('button', { type: 'button', class: `ljv-banner faixa f-${b.id}`, 'aria-label': b.alt, 'data-id': b.id, onclick: () => acao(b) },
       h('img', { src: b.img, alt: '', width: 96, height: 96, draggable: 'false' }),
-      h('span', { class: 'ljv-faixa-t' }, h('small', {}, 'combo'), h('b', {}, b.titulo), h('em', {}, b.preco)), h('i', { 'aria-hidden': 'true' }, '›'))));
+      h('span', { class: 'ljv-faixa-t' }, h('small', {}, b.rotulo), h('b', {}, b.titulo), b.tipo === 'passe' ? h('em', {}, precoPasse().atual) : null), h('i', { 'aria-hidden': 'true' }, '›'))));
   return carrossel(slides, { rotulo: 'destaques da lojinha', cls: 'ljv-banners' });
 }
 
@@ -138,19 +148,20 @@ function passe() {
     h('div', { class: 'ljv-passe' },
       h('div', { class: 'ljv-passe-info' }, h('b', { class: 'ljv-doze' }, h('span', {}, '12'), ' meses de acesso'), h('p', {}, 'pagamento único, sem mensalidade')),
       h('div', { class: 'ljv-passe-preco' }, h('b', { class: 'ljv-preco grande' }, pr.atual), pr.oferta ? h('small', { class: 'lj-de' }, `de ${pr.de} · até ${pr.ate}`) : null),
-      botao('Adquirir o passe', PASSE, 'amarelo')));
+      h('button', { type: 'button', class: 'lj-btn amarelo', 'data-id': 'passe', onclick: escolhaPasse }, 'Adquirir o passe', h('b', { 'aria-hidden': 'true' }, '›'))));
 }
 
 function combo(c) {
-  const itens = c.itens.map(prod).filter(Boolean);
-  const alvo = c.produto ? prod(c.produto) : c.item;
-  const soma = itens.reduce((s, p) => s + num(p.preco), 0), paga = num(alvo.preco), eco = soma - paga;
+  const itens = (COMBO_ITENS[c.id] || []).map(prod).filter(Boolean);
+  const alvo = c.link ? c : c.provisorio ? { id: c.id, nome: c.provisorio.nome, preco: c.provisorio.preco, link: c.provisorio.link } : c;
+  const paga = num(alvo.preco); const soma = itens.reduce((t, p) => t + num(p.preco), 0); const eco = c.link && paga ? soma - paga : 0; // só mostra economia quando o combo tem preço próprio e a conta fecha a favor
+  const breve = !alvo.link;
   return h('article', { class: 'ljv-combo', 'data-id': c.id },
     h('div', { class: 'ljv-combo-itens', style: `--n:${itens.length}`, 'aria-label': 'o que vem no combo' }, ...itens.map((p) => h('button', { type: 'button', class: 'ljv-mini', 'aria-label': `ver ${p.nome}`, onclick: () => ampliar(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', draggable: 'false' })))),
     h('div', { class: 'ljv-combo-fim' },
-      h('div', { class: 'ljv-combo-nome' }, h('b', {}, alvo.nome || c.nome), h('small', {}, `${itens.length} materiais · ${brl(soma)} separados`)),
-      h('div', { class: 'ljv-combo-preco' }, h('b', { class: 'ljv-preco' }, alvo.preco), eco > 0.004 ? h('span', { class: 'ljv-eco' }, `economia de ${brl(eco)}`) : null)),
-    botao('Adquirir', alvo, 'amarelo'));
+      h('div', { class: 'ljv-combo-nome' }, h('b', {}, c.nome), h('small', {}, c.provisorio && !c.link ? 'combo chegando · por enquanto leve o jogo da memória' : `${itens.length || c.itens.length} materiais${soma ? ` · ${brl(soma)} se comprados separados` : ''}`)),
+      h('div', { class: 'ljv-combo-preco' }, alvo.preco ? h('b', { class: 'ljv-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', alvo.preco] : alvo.preco) : null, eco > 0.004 ? h('span', { class: 'ljv-eco' }, `economia de ${brl(eco)}`) : null)),
+    breve ? h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve') : botao(c.link ? 'Adquirir' : 'Levar o jogo', alvo, 'amarelo'));
 }
 
 function banca() {

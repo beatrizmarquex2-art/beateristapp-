@@ -14,10 +14,13 @@ test('por jogo, fica o que foi mexido por último; jogo que só existe de um lad
   const m = mesclaJogos(l, r);
   assert.equal(m.quebra.best, 9); assert.equal(m.velha.n, 1); assert.equal(m.stop.n, 3);
 });
-test('passe anual: 49,90 até 15/dez/2026 (fim do dia) e 79,90 depois', async () => {
+test('passe anual: promoção de Natal 49,90 até 31/dez/2026 (fim do dia) e 99,90 a partir de 01/01/2027', async () => {
   const { precoPasse } = await import('../js/passe-preco.js');
-  assert.deepEqual([precoPasse(new Date('2026-11-18T12:00:00-03:00')).atual, precoPasse(new Date('2026-11-18T12:00:00-03:00')).de], ['R$ 49,90', 'R$ 79,90']);
-  assert.equal(precoPasse(new Date('2026-12-15T23:30:00-03:00')).atual, 'R$ 49,90');
-  assert.equal(precoPasse(new Date('2026-12-16T00:00:01-03:00')).atual, 'R$ 79,90');
-  assert.equal(precoPasse(new Date('2026-12-16T00:00:01-03:00')).oferta, false);
+  assert.deepEqual([precoPasse(new Date('2026-11-27T12:00:00-03:00')).atual, precoPasse(new Date('2026-11-27T12:00:00-03:00')).de], ['R$ 49,90', 'R$ 99,90']);
+  assert.equal(precoPasse(new Date('2026-12-16T10:00:00-03:00')).atual, 'R$ 49,90'); // o preço não muda dia 16: só o nome da oferta
+  assert.deepEqual([precoPasse(new Date('2026-12-15T23:30:00-03:00')).nome, precoPasse(new Date('2026-12-15T23:30:00-03:00')).ate], ['Black Friday', '15 de dezembro']);
+  assert.deepEqual([precoPasse(new Date('2026-12-16T00:10:00-03:00')).nome, precoPasse(new Date('2026-12-16T00:10:00-03:00')).ate], ['de Natal', '31 de dezembro']);
+  assert.equal(precoPasse(new Date('2026-12-31T23:30:00-03:00')).atual, 'R$ 49,90');
+  assert.equal(precoPasse(new Date('2027-01-01T00:00:01-03:00')).atual, 'R$ 99,90');
+  assert.equal(precoPasse(new Date('2027-01-01T00:00:01-03:00')).oferta, false);
 });

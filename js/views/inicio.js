@@ -212,6 +212,9 @@ export function mount(host, { nome = '' } = {}) {
   const novidades = h('section', { class: 'in-nov', hidden: '' }, h('h3', {}, 'novidades do Paul', h('span', {}, 'deslize →')), rail);
   fetch('assets/novidades.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : [])).then((l) => {
     if (!Array.isArray(l) || !l.length) return;
+    // um item pode ter `rodizio` (lista): mostra um por dia, em ordem (vídeos da Bea); entradas com `ate` saem do rodízio depois dessa data e as com `desde` só entram a partir dela (AAAA-MM-DD). Versões antigas só mostram os campos de cima.
+    const hoje = new Date(); const dia = Math.floor(Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) / 86400000);
+    l = l.map((n) => { if (!Array.isArray(n.rodizio)) return n; const ok = n.rodizio.filter((v) => (!v.desde || hoje.getTime() >= Date.parse(`${v.desde}T00:00:00-03:00`)) && (!v.ate || hoje.getTime() <= Date.parse(`${v.ate}T23:59:59-03:00`))); return ok.length ? { ...n, ...ok[dia % ok.length] } : n; });
     rail.replaceChildren(...l.map((n) => h('a', { class: `in-nv c-${n.cor || 'azul'}`, role: 'listitem', href: n.href, target: n.externo ? '_blank' : null, rel: n.externo ? 'noopener' : null },
       h('small', {}, n.tag), h('b', {}, n.titulo), h('p', {}, n.texto), h('span', { class: 'in-nv-bt' }, n.botao || 'ver')))); novidades.hidden = false;
   }).catch(() => { /* sem internet: a seção fica escondida */ });

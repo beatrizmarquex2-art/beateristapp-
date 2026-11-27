@@ -1,0 +1,84 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hotmart: 3 opções</title><link rel="stylesheet" href="../css/fonts.css">
+<style>
+*{box-sizing:border-box}
+:root{--navy:#0e2347;--azul:#17356b;--verm:#b5162b;--ouro:#f6c44f;--creme:#f6eee2;--ink:#14111a}
+body{margin:0;background:#e9e1d2;color:var(--ink);font-family:"Hanken Grotesk",sans-serif;padding:18px 14px 50px}
+h1{font:400 26px "Anton";text-transform:uppercase;margin:0 0 4px}.sub{margin:0 0 20px;font-size:13px;opacity:.8;max-width:760px}
+.op{margin:0 0 44px}.op>h2{font:400 21px "Anton";text-transform:uppercase;color:var(--verm);margin:0 0 4px}.op>p{margin:0 0 12px;font-size:13px;max-width:760px}
+.fila{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.esc{transform-origin:top left}
+.cx{border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);overflow:hidden;position:relative}
+.lab{font:700 11px "Hanken Grotesk";letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px;opacity:.7}
+.desc{width:340px;border:3px solid var(--ink);border-radius:14px;background:#fff;padding:14px;box-shadow:5px 5px 0 var(--ink);font-size:13.5px;line-height:1.45}
+.desc b{display:block;font:400 19px/1.05 "Anton";text-transform:uppercase;margin-bottom:6px}
+.desc ul{margin:8px 0;padding-left:18px}.desc small{display:block;margin-top:8px;opacity:.75}
+/* tamanhos reais: banner 1600x400, capa 800x800 */
+.banner{width:1600px;height:400px;position:relative;overflow:hidden}
+.capa{width:800px;height:800px;position:relative;overflow:hidden}
+.banner *,.capa *{position:absolute}
+.t span{position:static}.t{font-family:"Anton",sans-serif;text-transform:uppercase;line-height:.95;margin:0}
+.mk{font-family:"Permanent Marker","Anton",cursive;margin:0}
+.png{image-rendering:auto}
+/* A · palco azul */
+.A .banner,.A .capa{background:radial-gradient(circle at 78% 30%,#2a52b5 0,#17356b 38%,#0e2347 75%)}
+.A .rays{inset:0;background:repeating-conic-gradient(from 0deg at 78% 55%,rgba(246,196,79,.13) 0 6deg,transparent 6deg 16deg)}
+.A .rays2{inset:0;background:repeating-conic-gradient(from 0deg at 50% 62%,rgba(246,196,79,.13) 0 6deg,transparent 6deg 16deg)}
+.A .b-paul{height:470px;right:90px;bottom:-30px;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.35))}
+.A .b-logo{height:130px;left:70px;top:48px}
+.A .b-t{left:70px;top:200px;font-size:104px;color:#fff;text-shadow:6px 6px 0 var(--verm)}
+.A .b-fita{left:70px;top:318px;background:var(--ouro);color:var(--navy);font:400 36px "Anton";text-transform:uppercase;padding:8px 22px;border:4px solid var(--ink);transform:rotate(-2deg);box-shadow:5px 5px 0 var(--ink)}
+.A .c-logo{height:150px;left:50%;top:50px;transform:translateX(-50%)}
+.A .c-paul{height:520px;left:50%;bottom:-20px;transform:translateX(-50%);filter:drop-shadow(8px 10px 0 rgba(0,0,0,.35))}
+.A .c-t{left:0;right:0;top:215px;text-align:center;font-size:120px;color:#fff;text-shadow:7px 7px 0 var(--verm)}
+.A .c-fita{left:50%;bottom:46px;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;background:var(--ouro);color:var(--navy);font:400 44px "Anton";text-transform:uppercase;padding:10px 28px;border:5px solid var(--ink);box-shadow:6px 6px 0 var(--ink)}
+/* B · zine creme */
+.B .banner,.B .capa{background:var(--creme);background-image:radial-gradient(rgba(14,35,71,.12) 2px,transparent 2px);background-size:22px 22px}
+.B .tira{left:0;right:0;top:0;height:70px;background:var(--navy)}
+.B .b-logo{height:62px;left:50px;top:4px}
+.B .b-t{left:60px;top:116px;font-size:112px;color:var(--navy)}
+.B .b-t span{color:var(--verm)}
+.B .b-mk{left:66px;top:252px;font-size:44px;color:var(--verm);transform:rotate(-2deg)}
+.B .b-sel{right:420px;top:150px;width:200px;height:200px;border-radius:50%;background:var(--ouro);border:5px solid var(--ink);box-shadow:5px 5px 0 var(--ink);display:grid;place-items:center;text-align:center;transform:rotate(8deg)}
+.B .b-sel *{position:static}.B .b-sel b{font:400 70px/.9 "Anton"}.B .b-sel i{font:700 17px "Hanken Grotesk";font-style:normal;text-transform:uppercase}
+.B .b-paul{height:400px;right:60px;bottom:-14px;filter:drop-shadow(6px 8px 0 rgba(14,35,71,.25))}
+.B .c-tira{left:0;right:0;top:0;height:96px;background:var(--navy)}
+.B .c-logo{height:84px;left:50%;top:6px;transform:translateX(-50%)}
+.B .c-t{left:0;right:0;top:132px;text-align:center;font-size:118px;color:var(--navy)}
+.B .c-t span{color:var(--verm)}
+.B .c-paul{height:460px;left:50%;bottom:-10px;transform:translateX(-50%);filter:drop-shadow(6px 8px 0 rgba(14,35,71,.25))}
+.B .c-mk{left:44px;bottom:60px;font-size:50px;color:var(--verm);transform:rotate(-6deg);width:250px;line-height:1}
+.B .c-sel{right:40px;bottom:70px;width:210px;height:210px;border-radius:50%;background:var(--ouro);border:6px solid var(--ink);box-shadow:6px 6px 0 var(--ink);display:grid;place-items:center;text-align:center;transform:rotate(8deg)}
+.B .c-sel *{position:static}.B .c-sel b{font:400 82px/.9 "Anton"}.B .c-sel i{font:700 20px "Hanken Grotesk";font-style:normal;text-transform:uppercase}
+/* C · figurinhas e cartas */
+.C .banner,.C .capa{background:linear-gradient(135deg,#f6c44f,#e8a720)}
+.C .b-navy{left:0;top:0;bottom:0;width:860px;background:var(--navy);clip-path:polygon(0 0,100% 0,88% 100%,0 100%)}
+.C .b-logo{height:100px;left:60px;top:36px}
+.C .b-t{left:60px;top:160px;font-size:112px;color:#fff;text-shadow:5px 5px 0 var(--verm)}
+.C .b-f{left:60px;top:300px;color:var(--ouro);font:400 40px "Anton";text-transform:uppercase;white-space:nowrap}.C .b-f em{color:#fff;font-style:normal}
+.C .k{height:330px;border-radius:14px;box-shadow:6px 8px 0 rgba(0,0,0,.35)}
+.C .b-k1{left:880px;top:50px;transform:rotate(-8deg)}.C .b-k2{left:1050px;top:36px;transform:rotate(2deg);z-index:2}.C .b-k3{left:1220px;top:54px;transform:rotate(9deg)}
+.C .c-navy{left:0;right:0;top:0;height:120px;background:var(--navy)}
+.C .c-logo{height:84px;left:50%;top:18px;transform:translateX(-50%)}
+.C .ck{height:440px;border-radius:18px;box-shadow:8px 10px 0 rgba(0,0,0,.35)}
+.C .c-k1{left:40px;top:160px;transform:rotate(-9deg)}.C .c-k2{left:233px;top:142px;transform:rotate(1deg);z-index:2}.C .c-k3{left:427px;top:166px;transform:rotate(10deg)}
+.C .c-f{left:0;right:0;bottom:0;height:170px;background:var(--navy);z-index:3}
+.C .c-t{left:0;right:0;bottom:84px;text-align:center;font-size:84px;color:#fff;text-shadow:5px 5px 0 var(--verm);z-index:4}
+.C .c-s{left:0;right:0;bottom:22px;text-align:center;font:400 40px "Anton";text-transform:uppercase;color:var(--ouro);z-index:4}
+</style></head><body>
+<h1>Hotmart · página de pagamento</h1>
+<p class="sub">3 jeitos de capa + banner. Sem preço na imagem (serve na promoção de R$ 49,90 e depois). Os tamanhos abaixo são os que usei (capa 800×800 e banner 1600×400); no painel da Hotmart a gente confere o tamanho certo e eu refaço se precisar.</p>
+<div id="app"></div>
+<script>
+const P='../assets/paul/colorido/paul-presente.webp', LOGO='../assets/entrada/logo-paul-branco.png', K1='../assets/figurinhas/lendarias/L01.webp',K2='../assets/figurinhas/lendarias/L04.webp',K3='../assets/figurinhas/lendarias/L03.webp';
+const DESC=`<b>Um ano inteiro de música, jogos e descobertas!</b>Aprenda brincando com o Robôterista Paul no <u>Beaterista PLAY</u>:<ul><li>jogos educativos e desafios musicais</li><li>aulas de teoria, bateria, teclado e violão</li><li>figurinhas pra colecionar</li><li>no seu ritmo, no celular, tablet ou computador</li></ul><b style="font-size:15px">Um único pagamento · 12 meses de acesso</b><small>já é aluno da escola Beaterista? seu acesso anual já está incluso: entre com o seu código.</small>`;
+const A=`<div class="A"><p class="lab">banner 1600×400</p><div class="esc" data-w="1600" data-h="400" data-s=".26"><div class="cx banner"><div class="rays"></div><img class="b-logo" src="${LOGO}" alt=""><h2 class="t b-t">Passe Anual</h2><div class="b-fita">12 meses de jogos e aulas</div><img class="b-paul" src="${P}" alt=""></div></div>
+<p class="lab" style="margin-top:14px">capa 800×800</p><div class="esc" data-w="800" data-h="800" data-s=".4"><div class="cx capa"><div class="rays2"></div><img class="c-logo" src="${LOGO}" alt=""><h2 class="t c-t">Passe Anual</h2><img class="c-paul" src="${P}" alt=""><div class="c-fita">12 meses de acesso</div></div></div></div>`;
+const B=`<div class="B"><p class="lab">banner 1600×400</p><div class="esc" data-w="1600" data-h="400" data-s=".26"><div class="cx banner"><div class="tira"></div><img class="b-logo" src="${LOGO}" alt=""><h2 class="t b-t">Passe <span>Anual</span></h2><p class="mk b-mk">aprenda brincando!</p><div class="b-sel"><div><b>12</b><br><i>meses de<br>acesso</i></div></div><img class="b-paul" src="${P}" alt=""></div></div>
+<p class="lab" style="margin-top:14px">capa 800×800</p><div class="esc" data-w="800" data-h="800" data-s=".4"><div class="cx capa"><div class="c-tira"></div><img class="c-logo" src="${LOGO}" alt=""><h2 class="t c-t">Passe <span>Anual</span></h2><img class="c-paul" src="${P}" alt=""><p class="mk c-mk">aprenda brincando!</p><div class="c-sel"><div><b>12</b><br><i>meses de<br>acesso</i></div></div></div></div></div>`;
+const C=`<div class="C"><p class="lab">banner 1600×400</p><div class="esc" data-w="1600" data-h="400" data-s=".26"><div class="cx banner"><div class="b-navy"></div><img class="b-logo" src="${LOGO}" alt=""><h2 class="t b-t">Passe Anual</h2><div class="b-f">12 meses de jogos, aulas e <em>figurinhas</em></div><img class="k b-k1" src="${K1}" alt=""><img class="k b-k3" src="${K3}" alt=""><img class="k b-k2" src="${K2}" alt=""></div></div>
+<p class="lab" style="margin-top:14px">capa 800×800</p><div class="esc" data-w="800" data-h="800" data-s=".4"><div class="cx capa"><div class="c-navy"></div><img class="c-logo" src="${LOGO}" alt=""><img class="ck c-k1" src="${K1}" alt=""><img class="ck c-k3" src="${K3}" alt=""><img class="ck c-k2" src="${K2}" alt=""><div class="c-f"></div><h2 class="t c-t">Passe Anual</h2><div class="c-s">12 meses de acesso</div></div></div></div>`;
+const op=(k,t,d,html)=>`<section class="op"><h2>${k} · ${t}</h2><p>${d}</p><div class="fila"><div>${html}</div><div><p class="lab">texto da descrição</p><div class="desc">${DESC}</div></div></div></section>`;
+app.innerHTML=op('A','palco azul','o azul e amarelo da página de venda, com raios de luz, o Paul com o presente e a faixa amarela.',A)+op('B','zine creme','papel creme com bolinhas, selo "12 meses" e letra de marcador, o jeito da loja e do Instagram.',B)+op('C','cartas e figurinhas','fundo amarelo com as cartas lendárias do Paul (arte própria): quem vê já entende que tem figurinha pra colecionar.',C);
+document.querySelectorAll('.esc').forEach(e=>{const s=+e.dataset.s;e.style.transform=`scale(${s})`;e.style.width=e.dataset.w+'px';e.style.height=e.dataset.h+'px';const w=document.createElement('div');w.style.width=(e.dataset.w*s)+'px';w.style.height=(e.dataset.h*s)+'px';e.parentNode.insertBefore(w,e);w.appendChild(e);});
+setTimeout(()=>document.body.dataset.ok=1,900);
+</script></body></html>

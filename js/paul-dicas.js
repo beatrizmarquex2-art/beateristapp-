@@ -15,7 +15,7 @@ const poseSrc = (pose) => { const p = pose || POSES[Math.floor(Math.random() * P
 export const DICAS = [
   ['vídeo novo no canal', `saiu vídeo novo no canal da Bea${VIDEO_NOVO.titulo ? `: ${VIDEO_NOVO.titulo}` : ''}! corre lá pra assistir e deixa o like 🎬`, 'n-walk', VIDEO_URL, 'assistir no youtube'],
   // convites pras telas do app (só na área dos alunos; a aba Jogos mostra uma diferente a cada volta)
-  ['combo Beaterista', 'o COMBO ROBÔTERISTA chegou na Lojinha: 4 apostilas pra imprimir por R$ 79,90. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
+  ['combo Beaterista', 'os COMBOS ROBÔTERISTA chegaram na Lojinha: Ensina, Aprende Brincando e Cria e Revisa, em PDF pra imprimir. dá uma olhada!', 'p-wave', '#/lojinha', 'ver o combo', 'aluno'],
   ['avaliação no Google', 'curte a Beaterista? avalia a escola no Google e manda o print: vale ★ pra roleta!', 'p-selfie', 'https://g.page/r/CS34GVfs3jjqEAE/review', 'avaliar no Google', 'aluno'],
   ['atividades extra', 'seguir a Bea, chamar um amigo e avaliar no Google são atividades extra que dão ★ pra girar a roleta.', 'p-point', '#/album', 'ver no álbum', 'aluno'],
   ['cartinhas', 'jogou, ganhou ★. juntou 15 ★? gira a roleta e pega cartinha nova pro seu álbum!', 'p-cool', '#/album', 'abrir o álbum', 'aluno'],
