@@ -39,7 +39,7 @@ export async function paginas(d) {
       g.drawImage(img, 0, sy0, img.width, sy1 - sy0, lado, topo + 70, img.width, sy1 - sy0);
     }
     g.font = `400 20px ${FONT}`; g.fillStyle = '#555'; g.textAlign = 'center';
-    g.fillText(`${MARCA}  ·  ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
+    g.fillText(`${MARCA} | ${SITE}`, W / 2, H - Math.round(36 * MM) + 40); g.textAlign = 'left';
     out.push(cv);
   }
   return out;

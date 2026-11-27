@@ -1,5 +1,5 @@
 -- Pasta online de partituras (ferramenta de montar partitura dos professores, aba Palco > Teclas).
--- NÃO APLICADA: escrita em 26/nov/2026 pra Bea aprovar antes de rodar no projeto beaterista-app. Só ADICIONA uma tabela; não mexe em nada que já existe. Seguro rodar de novo.
+-- APLICADA no projeto beaterista-app em 27/nov/2026 (a Bea aprovou). Só ADICIONA uma tabela; não mexe em nada que já existe. Seguro rodar de novo.
 -- Quem vê o quê:
 --   · cada pessoa com login (a Bea, e depois cada professor) lê, cria, edita e apaga SÓ as próprias partituras (pasta pessoal);
 --   · a Bea (is_allowed) lê, edita e apaga a pasta de TODOS os professores;
