@@ -21,6 +21,11 @@ export async function gravar(tabela, corpo, id = '') {
     : await fetch(`${base}/${tabela}`, { method: 'POST', headers: await head({ Prefer: 'return=representation' }), body: JSON.stringify(corpo) });
   if (!r.ok) throw falha(r); const l = await r.json(); if (!l.length) throw new Error('acesso'); return l[0];
 }
+/** Grava várias linhas de uma vez (em pedaços), devolvendo quantas entraram. */
+export async function gravarLote(tabela, linhas, tam = 20) {
+  let n = 0; for (let i = 0; i < linhas.length; i += tam) { const parte = linhas.slice(i, i + tam); const r = await fetch(`${base}/${tabela}`, { method: 'POST', headers: await head({ Prefer: 'return=minimal' }), body: JSON.stringify(parte) }); if (!r.ok) throw falha(r); n += parte.length; }
+  return n;
+}
 export async function apagar(tabela, id) {
   const r = await fetch(`${base}/${tabela}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: await head({ Prefer: 'return=minimal' }) }); if (!r.ok) throw falha(r);
 }

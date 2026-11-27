@@ -32,3 +32,8 @@ drop policy if exists pro_ex_ler on public.pro_exercicios;
 create policy pro_ex_ler on public.pro_exercicios for select to authenticated using (public.pro_liberado() and (publicado or public.is_allowed()));
 drop policy if exists pro_ex_escrever on public.pro_exercicios;
 create policy pro_ex_escrever on public.pro_exercicios for all to authenticated using (public.is_allowed()) with check (public.is_allowed());
+
+-- 025 (27/nov/2026, APLICADA): a mesma tabela guarda o Arsenal (tipo 'exercicio') e o Repertório (tipo 'repertorio', com o artista).
+alter table public.pro_exercicios add column if not exists tipo text not null default 'exercicio' check (tipo in ('exercicio', 'repertorio'));
+alter table public.pro_exercicios add column if not exists artista text not null default '' check (char_length(artista) <= 100);
+create index if not exists pro_exercicios_tipo_idx on public.pro_exercicios (tipo, instrumento, categoria, ordem);

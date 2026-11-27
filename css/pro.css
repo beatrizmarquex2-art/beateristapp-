@@ -277,3 +277,4 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-gutter:stable
 .pt-lista li .pb-i{margin-right:4px;flex:none;font-size:22px;line-height:1}
 .pb-li{flex:1;display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:16px 4px;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer;min-width:0}.pb-li b{font:700 20px/1.2 var(--serif)}.pb-li span{color:var(--suave);font-size:14px}.pb-li em{font-style:normal;color:var(--erro);font-size:12px;letter-spacing:.1em;text-transform:uppercase;grid-row:1;grid-column:2}.pb-li:hover{background:rgb(184 145 63/.08)}
 .pb-ex .pb-folha{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:8px;margin:8px 0;overflow:auto}.pb-desc{white-space:pre-wrap;margin:10px 0 14px}.pm-hr{border:0;border-top:1px solid var(--linha);margin:8px 0}
+.pt-cont{margin-left:auto;font-size:13px}

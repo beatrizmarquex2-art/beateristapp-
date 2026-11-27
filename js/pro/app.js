@@ -17,8 +17,8 @@ import * as metronomo from './metronomo.js';
 import * as editorRitmico from './editor-ritmico.js';
 import * as banco from './banco.js';
 
-const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['banco', 'Banco de exercícios'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
-const TELAS = { inicio, banco, pedaleira, afinador, metronomo, aulas, estudio, biblioteca, alunos, agenda, assistente };
+const NAV = [['inicio', 'Início'], ['pedaleira', 'Pedaleira'], ['aulas', 'Criador de aulas'], ['estudio', 'Estúdio'], ['arsenal', 'Arsenal'], ['repertorio', 'Repertório'], ['biblioteca', 'Biblioteca'], ['alunos', 'Alunos'], ['agenda', 'Agenda'], ['assistente', 'Assistente']];
+const TELAS = { inicio, arsenal: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'exercicio' }) }, banco: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'exercicio' }) }, repertorio: { mount: (m, c, p) => banco.mount(m, c, p, { tipo: 'repertorio' }) }, pedaleira, afinador, metronomo, aulas, estudio, biblioteca, alunos, agenda, assistente };
 const app = document.getElementById('pro');
 const lembra = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { /* sem storage */ } return null; };
 let limpa = () => {}; let ctx = null;
