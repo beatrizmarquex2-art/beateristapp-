@@ -9,6 +9,7 @@ import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
 import * as rankTela from './views/ranking-tela.js';
+import * as premium from './views/premium.js';
 import * as RKV from './ranking-envio.js';
 import * as ESTRELAS from './figurinhas/estrelas.js';
 import * as CODE from './codigo.js';
@@ -92,7 +93,7 @@ const INICIO_ON = (() => { try { if (/[?&]inicio=0\b/.test(location.search)) loc
 // aba em que o app abre (e pra onde volta numa rota desconhecida): o Início (pedido da Bea); com ?inicio=0 fica Jogos
 const HOME = INICIO_ON ? 'inicio' : 'jogos';
 const NAV = [...(INICIO_ON ? [['#/inicio', 'home', 'Início']] : []), ['#/jogos', 'bulb', 'Jogos'], ['#/estudos', 'study', 'Estudos'], ['#/tocar', 'nota', 'Palco'], ['#/album', 'gallery', 'Álbum'], ['#/lojinha', 'bag', 'Lojinha']]; // lâmpada, livro, nota musical, galeria e sacola (o Perfil mora junto do Álbum)
-const TAB_OF = { nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
+const TAB_OF = { premium: 'jogos', nagano: 'tocar', perfil: 'album', toque: 'tocar', piano: 'tocar', violao: 'tocar', xilofone: 'tocar', roleta: 'tocar', metronomo: 'tocar', ouvido: 'tocar', foco: 'tocar', kids: 'jogos', ritmo: 'jogos', dicionario: 'estudos', paulta: 'jogos', dicas: 'estudos', erros: 'estudos' };
 /** Aba que acende pra tela atual: a aulinha do Paul e o relatório "Jogos Ensinam" moram em Estudos. */
 const tabOf = (r) => ((r.name === 'kids' && r.parts[0] === 'figuras' && r.parts[1] === 'aula') || (r.name === 'jogos' && r.parts[0] === 'relatorio') ? 'estudos' : (TAB_OF[r.name] || r.name)); // telas que acendem outra aba (todos os jogos moram na aba Jogos)
 let cleanup = null;
@@ -194,7 +195,7 @@ function lockView(view, what, pv) {
   const start = () => { clearInterval(timer); if (CODE.pendente()) timer = setInterval(() => { if (!gone && !document.hidden) check(true); }, 8000); };
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
   draw(); start();
-  view.append(banner(pv ? tituloDaPrevia(pv) : 'Só pra alunos', pv ? 'dá uma olhada antes de jogar' : 'libere com o seu código de acesso'), pv ? previa(pv) : null, h('div', { class: 'pad-x' }, box));
+  view.append(banner(pv ? tituloDaPrevia(pv) : 'Só pra alunos', pv ? 'dá uma olhada antes de jogar' : 'libere com o seu código de acesso'), pv ? previa(pv) : null, h('div', { class: 'pad-x' }, box, pv ? h('a', { class: 'btn small ghost pm-ver', href: '#/premium' }, 'ver todos os jogos que ensinam') : null));
   return () => { gone = true; clearInterval(timer); };
 }
 const NOMES_TELA = { ritmo: 'o Beat Hero', ranking: 'o Ranking', album: 'o Álbum', kids: 'o modo aventura (fases e estrelas)', paulta: 'a pauLta' };
@@ -476,7 +477,7 @@ function shell(name) {
     { const emJogo = /^#\/(jogos\/[^/?]+|ritmo|paulta|kids\/[^/?]+|dicas\/[^/?]+)/.test(location.hash) && !/^#\/jogos\/?(\?|$)/.test(location.hash); document.documentElement.classList.toggle('em-jogo', emJogo); voltarJogos(emJogo); }
     nav.replaceChildren(...NAV.map(([href, ic, label]) => { const lk = AC.trancado(href); return h('a', { href, class: `nav-item${('#/' + tabOf(r)) === href ? ' on' : ''}${lk ? ' locked' : ''}`, 'aria-current': ('#/' + tabOf(r)) === href ? 'page' : null, 'aria-label': lk ? `${label} (com código)` : null }, icon(ic, 24), h('span', {}, label), lk ? h('i', { class: 'nav-lock', 'aria-hidden': 'true' }, '🔒') : null); }));
     let c;
-    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/cartas/.test(location.hash) ? 'o Uno Musical' : 'esta parte'), previaDaRota(r));
+    if (AC.trancado(location.hash)) c = lockView(view, NOMES_TELA[r.name] || (/^#\/estudos\/dicas/.test(location.hash) ? 'as dicas do método' : /^#\/jogos\/toca/.test(location.hash) ? 'o Toca Aqui' : /^#\/jogos\/detetive/.test(location.hash) ? 'o Detetive Note' : /^#\/jogos\/figurix/.test(location.hash) ? 'o Figurix' : /^#\/jogos\/rudimentos/.test(location.hash) ? 'o Rudimentix' : /^#\/jogos\/treino/.test(location.hash) ? 'o Treino livre' : 'esta parte'), previaDaRota(r));
     else if (r.name === 'dicionario') c = dicionario.mount(view, r.parts);
     else if (r.name === 'dicas') { // Letras: baixa as 30 dicas (só com código) e abre
       const box = h('div'); view.append(box); let inner = null; let dead = false;
@@ -487,6 +488,7 @@ function shell(name) {
     else if (r.name === 'kids') c = kids.mount(view, r.parts);
     else if (r.name === 'paulta') c = paulta.mount(view, r.parts);
     else if (r.name === 'ranking') c = rankingView(view);
+    else if (r.name === 'premium') c = premium.mount(view, r.parts);
     else if (r.name === 'jogos') c = jogos.mount(view, r.parts);
     else if (r.name === 'album') c = album.mount(view, r.parts);
     else if (r.name === 'perfil') c = perfil.mount(view);

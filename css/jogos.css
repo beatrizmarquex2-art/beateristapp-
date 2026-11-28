@@ -2448,3 +2448,17 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 /* plano grátis: opção trancada (cadeado) e aviso das partidas que restam */
 .jg-trav { position: relative; opacity: .55; } .jg-trav::after { content: "🔒"; position: absolute; top: -6px; right: -4px; font-size: 13px; line-height: 1; }
 .am-resta { font-size: 13px; opacity: .9; margin: 4px 0 8px; }
+
+/* ---------- Vitrine dos jogos que ensinam (#/premium) e atalho na aba Jogos ---------- */
+.pm-vol { display: grid; gap: 12px; }
+.pm-intro p { margin: 0 0 6px; } .pm-intro p:last-child { margin: 0; }
+.pm-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pm-card { display: grid; grid-template-rows: 150px auto; gap: 0; border-radius: 14px; overflow: hidden; background: #142036; color: #fff7e6; text-decoration: none; border: 2px solid #142036; box-shadow: 0 4px 0 rgb(20 32 54 / .35); }
+.pm-card img { width: 100%; height: 150px; object-fit: cover; object-position: top; display: block; }
+.pm-card .pm-tx { display: grid; gap: 2px; padding: 8px 10px 10px; } .pm-card b { font-size: 15px; color: #ffe08a; } .pm-card small { font-size: 11.5px; opacity: .85; line-height: 1.25; } .pm-card em { font-style: normal; font-size: 12px; font-weight: 800; color: #f7b733; margin-top: 4px; }
+.pm-cta { text-align: center; display: grid; gap: 8px; } .pm-cta p { margin: 0; }
+.pm-atalho { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; text-decoration: none; background: linear-gradient(135deg, #142036, #24406b); color: #fff7e6; border: 2px solid #f7b733; } .pm-atalho .pm-ic { font-size: 28px; text-align: center; } .pm-atalho b { display: block; font-size: 15px; color: #ffe08a; } .pm-atalho small { font-size: 12px; opacity: .85; }
+.pv-video { margin: 0 0 10px; } .pv-video video { width: 100%; max-height: 70vh; border-radius: 14px; background: #000; display: block; }
+.pm-ver { justify-self: center; margin-top: 8px; }
+a.card.pm-atalho { background: linear-gradient(135deg, #142036, #24406b); color: #fff7e6; }
+a.card.pm-atalho b { color: #ffe08a; } a.card.pm-atalho small { color: #dbe6ff; opacity: 1; }

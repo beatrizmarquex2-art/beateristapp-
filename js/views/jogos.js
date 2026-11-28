@@ -156,6 +156,13 @@ function atalhoCodigoAluno() {
   return box;
 }
 
+/** Só na área dos alunos e sem código: cartão que leva à vitrine dos jogos que ensinam (ver por dentro, sem jogar). */
+function atalhoVitrine() {
+  if (!ALUNO() || AC.liberado()) return null;
+  const c = h('a', { class: 'card pad pm-atalho', href: '#/premium' }, h('span', { class: 'pm-ic', 'aria-hidden': 'true' }, '🎓'), h('span', { class: 'pm-tx' }, h('b', {}, 'jogos que ensinam de verdade'), h('small', {}, 'Toca Aqui, Detetive, Figurix, Rudimentix, pauLta e Treino livre: veja por dentro')), h('span', { 'aria-hidden': 'true' }, '▶'));
+  document.addEventListener('aluno-acesso', () => c.remove(), { once: true });
+  return c;
+}
 /** Sem código de aluno não tem sala nem jogo com amigos: aparece só um aviso (some e vira o atalho de sala quando o código é liberado). */
 function atalhoSalaOuTrava() {
   if (!ALUNO() || AC.liberado()) return atalhoSala();
@@ -244,7 +251,7 @@ function catalog(host) {
           h('button', { type: 'button', 'aria-label': `${off ? 'Mostrar' : 'Esconder'} ${x[1]}`, onclick: () => (off ? savePrefs({ ...p, hidden: p.hidden.filter((y) => y !== k) }) : change({ ...p, hidden: [...p.hidden, k] }, `${x[1]} escondido`)) }, off ? '↺' : '✕')) : null);
     }) : [h('p', { class: 'jg-p', style: { gridColumn: '1 / -1' } }, 'Nenhum favorito ainda. Toque em “☆ marcar” e depois na ☆ de um jogo.')]));
   };
-  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica({ compacto: true }), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoContinuar(), atalhoSalaOuTrava()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
+  host.replaceChildren(banner('Jogos', 'todos os jogos num lugar só'), paulDica({ compacto: true }), h('div', { class: 'pad-x', style: 'display:grid;gap:10px' }, atalhoCodigoAluno(), atalhoVitrine(), atalhoContinuar(), atalhoSalaOuTrava()), catWrap = h('div', { class: `jg jg-wrap jg-cat${darkOn('') ? ' jg-dark' : ''}` }, bar, grid));
   draw();
   // (o Paul já fala pelo cartão azul do topo, que muda a cada volta; o balão solto não aparece mais em cima dele)
   // arrastar o próprio jogo (no modo editar; no dedo, segurando um instante): a nova ordem dos que estão na tela entra no lugar deles na ordem completa
