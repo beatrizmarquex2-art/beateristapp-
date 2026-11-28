@@ -11,15 +11,16 @@ await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-no
 await page.goto(`${url}/aluno.html#/ranking`); await sleep(2500);
 const SH = (n) => (process.env.SHOTS ? `${process.env.SHOTS}/${n}.png` : `/tmp/${n}.png`);
 const tit = async () => (await page.textContent('.rk-tit b')).trim();
-check('abre no 1º quadro (Mundos terminados) com setinhas e 5 pontinhos', (await tit()) === 'Mundos terminados' && (await page.locator('.rk-seta').count()) === 2 && (await page.locator('.rk-pts button').count()) === 5);
+check('abre no 1º quadro (Mundos terminados) com setinhas e 5 pontinhos', (await tit()) === 'Mundos terminados' && (await page.locator('.rk-seta').count()) === 2 && (await page.locator('.rk-pts button').count()) === 7);
 check('pódio mostra 1º, 2º e 3º com medalha e nome', (await page.locator('.rk-lugar').count()) === 3 && /Ana C\./.test(await page.textContent('.rk-lugar.l1')) && /Beto S\./.test(await page.textContent('.rk-lugar.l2')) && /Caio M\./.test(await page.textContent('.rk-lugar.l3')) && (await page.locator('.rk-lugar.l1 svg.rk-i-med').count()) === 1 && (await page.locator('.rk-lugar svg.rk-i-med').count()) === 3);
 check('mundos só tem "de sempre"', (await page.locator('.rk-abas button').count()) === 1);
 await page.screenshot({ path: SH('rank-mundos') });
 await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(300); check('seta › vai pra "Chegou mais longe"', (await tit()) === 'Chegou mais longe');
+await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(300); check('depois "Mais estrelas" (com este mês e de sempre)', (await tit()) === 'Mais estrelas' && (await page.locator('.rk-abas button').count()) === 2);
 await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(1200); check('depois "Mais figurinhas", com este mês e de sempre', (await tit()) === 'Mais figurinhas' && (await page.locator('.rk-abas button').count()) === 2);
 check('figurinhas do mês: 1º Duda, lista do 4º (Fabi) e o aluno destacado', /Duda L\./.test(await page.textContent('.rk-lugar.l1')) && /4º/.test(await page.textContent('.rk-lista')) && (await page.locator('.rk-lugar.eu').count()) === 1);
 await page.screenshot({ path: SH('rank-figurinhas') });
-await page.click('.rk-seta[aria-label="quadro anterior"]'); await page.click('.rk-seta[aria-label="quadro anterior"]'); await page.click('.rk-seta[aria-label="quadro anterior"]'); await sleep(900);
+for (let k = 0; k < 4; k++) await page.click('.rk-seta[aria-label="quadro anterior"]'); await sleep(900);
 check('seta ‹ volta e dá a volta até "Eco do Paul"', (await tit()) === 'Eco do Paul');
 check('quadro vazio convida: "seja o primeiro"', /seja o primeiro/.test(await page.textContent('.rk-corpo')));
 await page.screenshot({ path: SH('rank-eco') });

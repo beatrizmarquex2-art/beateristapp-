@@ -6,8 +6,10 @@
 export const CATEGORIAS = [
   { id: 'mundos', titulo: 'Mundos terminados', sub: 'quem já fechou mundos inteiros', emoji: '🌎', unidade: ['mundo', 'mundos'], mensal: false },
   { id: 'longe', titulo: 'Chegou mais longe', sub: 'fases vencidas nos jogos de mapa', emoji: '🚀', unidade: ['fase', 'fases'], mensal: false },
+  { id: 'estrelas', titulo: 'Mais estrelas', sub: 'estrelas ganhas nos jogos e nas fases', emoji: '', unidade: ['estrela', 'estrelas'], mensal: true },
   { id: 'figurinhas', titulo: 'Mais figurinhas', sub: 'quem tem mais figurinhas no álbum', emoji: '🃏', unidade: ['figurinha', 'figurinhas'], mensal: true },
   { id: 'estudos', titulo: 'Quem mais estudou', sub: 'aulas, dicas e caminhos de estudo feitos', emoji: '📚', unidade: ['estudo', 'estudos'], mensal: true },
+  { id: 'dias', titulo: 'Dias seguidos', sub: 'maior sequência de dias treinando', emoji: '', unidade: ['dia', 'dias'], mensal: false },
   { id: 'eco', titulo: 'Eco do Paul', sub: 'mais notas decoradas de uma vez', emoji: '🥁', unidade: ['nota', 'notas'], mensal: false },
 ];
 export const categoriaPorId = (id) => CATEGORIAS.find((c) => c.id === id) || CATEGORIAS[0];
@@ -42,10 +44,17 @@ export function progressoDeJogos(games, fasesPorMundo = 12) {
 export function contaEstudos(valores) {
   return (valores || []).reduce((t, v) => t + (Array.isArray(v) ? v.length : v && typeof v === 'object' ? Object.keys(v).length : Number(v) > 0 ? Math.floor(Number(v)) : 0), 0);
 }
-/** Ponto de partida do mês: guarda a contagem de quando o mês começou a ser visto; "este mês" = agora − essa contagem (nunca negativo). */
+/** Dias seguidos até hoje (se hoje ainda não entrou, conta até ontem). `dias` = lista "AAAA-MM-DD" dos dias de uso. */
+export function sequenciaDeDias(dias, hoje = new Date()) {
+  const f = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const set = new Set(Array.isArray(dias) ? dias : []); const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()); let n = 0; if (!set.has(f(d))) d.setDate(d.getDate() - 1);
+  while (set.has(f(d))) { n++; d.setDate(d.getDate() - 1); } return n;
+}
+/** Ponto de partida do mês: guarda as contagens de quando o mês começou a ser visto; "este mês" = agora − essa contagem (nunca negativo). `atual` = { figurinhas, estudos, estrelas }. */
 export function baseDoMes(base, mes, atual) {
-  const b = base && base.mes === mes ? base : { mes, figurinhas: atual.figurinhas, estudos: atual.estudos };
-  return { base: b, mes: { figurinhas: Math.max(0, atual.figurinhas - b.figurinhas), estudos: Math.max(0, atual.estudos - b.estudos) } };
+  const chaves = Object.keys(atual); const b = base && base.mes === mes ? { ...atual, ...base } : { mes, ...atual };
+  const feito = {}; for (const k of chaves) feito[k] = Math.max(0, (Number(atual[k]) || 0) - (Number(b[k]) || 0));
+  return { base: b, mes: feito };
 }
 /** Pódio: 1º, 2º, 3º (com medalha) e o resto 4º a 10º. */
 export const MEDALHAS = ['🥇', '🥈', '🥉'];

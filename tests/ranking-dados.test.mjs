@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CATEGORIAS, nomePublico, quadro, mesDe, progressoDeJogos, contaEstudos, baseDoMes, podio, anda, textoUnidade, categoriaPorId } from '../js/ranking-dados.js';
+import { CATEGORIAS, nomePublico, quadro, mesDe, progressoDeJogos, contaEstudos, baseDoMes, podio, anda, textoUnidade, categoriaPorId, sequenciaDeDias } from '../js/ranking-dados.js';
 
 test('nome público: primeiro nome + inicial; nunca o nome inteiro', () => {
   assert.equal(nomePublico('maria clara SOUZA'), 'Maria S.'); assert.equal(nomePublico('Ana'), 'Ana'); assert.equal(nomePublico('  joão  pedro  '), 'João P.'); assert.equal(nomePublico(''), ''); assert.equal(nomePublico('Ana <b>x</b> Lima'), 'Ana L.');
@@ -16,9 +16,9 @@ test('mundos terminados e fases vencidas', () => {
 });
 test('estudos feitos', () => { assert.equal(contaEstudos([['a', 'b'], { x: 1, y: 2, z: 3 }, 4, null, undefined, 'x']), 9); assert.equal(contaEstudos(), 0); });
 test('ranking do mês parte da contagem do início do mês', () => {
-  let r = baseDoMes(null, '2026-11', { figurinhas: 40, estudos: 10 }); assert.deepEqual(r.mes, { figurinhas: 0, estudos: 0 });
-  r = baseDoMes(r.base, '2026-11', { figurinhas: 47, estudos: 12 }); assert.deepEqual(r.mes, { figurinhas: 7, estudos: 2 });
-  r = baseDoMes(r.base, '2026-12', { figurinhas: 50, estudos: 12 }); assert.deepEqual(r.mes, { figurinhas: 0, estudos: 0 }); assert.equal(r.base.mes, '2026-12');
+  let r = baseDoMes(null, '2026-11', { figurinhas: 40, estudos: 10, estrelas: 20 }); assert.deepEqual(r.mes, { figurinhas: 0, estudos: 0, estrelas: 0 });
+  r = baseDoMes(r.base, '2026-11', { figurinhas: 47, estudos: 12, estrelas: 31 }); assert.deepEqual(r.mes, { figurinhas: 7, estudos: 2, estrelas: 11 });
+  r = baseDoMes(r.base, '2026-12', { figurinhas: 50, estudos: 12, estrelas: 31 }); assert.deepEqual(r.mes, { figurinhas: 0, estudos: 0, estrelas: 0 }); assert.equal(r.base.mes, '2026-12');
   assert.equal(baseDoMes({ mes: '2026-11', figurinhas: 50, estudos: 5 }, '2026-11', { figurinhas: 40, estudos: 5 }).mes.figurinhas, 0);
 });
 test('pódio com 1º 2º 3º e o resto', () => {
@@ -27,5 +27,9 @@ test('pódio com 1º 2º 3º e o resto', () => {
 });
 test('setinhas dão a volta; categorias e unidades', () => {
   assert.equal(anda(0, -1), CATEGORIAS.length - 1); assert.equal(anda(CATEGORIAS.length - 1, 1), 0); assert.equal(textoUnidade(categoriaPorId('mundos'), 1), '1 mundo'); assert.equal(textoUnidade(categoriaPorId('mundos'), 3), '3 mundos'); assert.equal(categoriaPorId('x').id, 'mundos');
-  assert.deepEqual(CATEGORIAS.filter((c) => c.mensal).map((c) => c.id), ['figurinhas', 'estudos']);
+  assert.deepEqual(CATEGORIAS.filter((c) => c.mensal).map((c) => c.id), ['estrelas', 'figurinhas', 'estudos']); assert.equal(CATEGORIAS.length, 7);
+});
+test('dias seguidos: conta até hoje (ou até ontem se hoje ainda não entrou)', () => {
+  const h = new Date(2026, 10, 28); assert.equal(sequenciaDeDias(['2026-11-26', '2026-11-27', '2026-11-28'], h), 3); assert.equal(sequenciaDeDias(['2026-11-26', '2026-11-27'], h), 2);
+  assert.equal(sequenciaDeDias(['2026-11-25', '2026-11-27', '2026-11-28'], h), 2); assert.equal(sequenciaDeDias(['2026-11-20'], h), 0); assert.equal(sequenciaDeDias(null, h), 0); assert.equal(sequenciaDeDias(['2026-12-31', '2027-01-01'], new Date(2027, 0, 1)), 2);
 });

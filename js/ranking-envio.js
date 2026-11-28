@@ -4,7 +4,9 @@ import * as RK from './ranking.js';
 import * as CODE from './codigo.js';
 import * as D from './figurinhas/dono.js';
 import { jogosParaNuvem } from './jogos/base.js';
-import { nomePublico, mesDe, quadro, progressoDeJogos, contaEstudos, baseDoMes, CATEGORIAS } from './ranking-dados.js';
+import * as P from './kids/progress.js';
+import * as ESTRELAS from './figurinhas/estrelas.js';
+import { nomePublico, mesDe, quadro, progressoDeJogos, contaEstudos, baseDoMes, sequenciaDeDias, CATEGORIAS } from './ranking-dados.js';
 
 const K_NOME = 'beaterista-aluno-nome'; const K_ON = 'bt-rank-aparecer'; const K_BASE = 'bt-rank-base';
 const ls = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -16,14 +18,16 @@ export const aparecer = () => ls(K_ON) !== '0';
 export const ligarAparecer = (on) => { lsSet(K_ON, on ? '1' : '0'); if (on) agendar(0); };
 export const nomeDoAluno = () => nomePublico(ls(K_NOME) || window.__alunoNome || '');
 
-/** Os números de agora: { mundos, longe, figurinhas, estudos, eco, mes: { figurinhas, estudos } }. */
+/** Os números de agora: { mundos, longe, figurinhas, estudos, estrelas, dias, eco, mes: { figurinhas, estudos, estrelas } }. */
 export function coletar(agora = new Date()) {
   const jogos = jogosParaNuvem().games || {}; const pj = progressoDeJogos(jogos);
   let figurinhas = 0; try { const st = D.albumDados(); figurinhas = new Set([...Object.keys(st.pasted || {}), ...Object.keys(st.inv || {}).filter((c) => st.inv[c] > 0)]).size; } catch { /* sem álbum */ }
   const estudos = contaEstudos(['beaterista-teoria-feitas', 'beaterista-estudos-vistos', 'beaterista-caminhos-feitos'].map(json));
   const recs = (jogos.genius && jogos.genius.recs) || {}; const eco = Math.max(0, ...Object.values(recs).map(Number).filter(Number.isFinite));
-  const m = baseDoMes(json(K_BASE), mesDe(agora), { figurinhas, estudos }); lsSet(K_BASE, JSON.stringify(m.base));
-  return { mundos: pj.mundos, longe: pj.fases, figurinhas, estudos, eco, mes: m.mes };
+  let estrelas = 0; try { const me = P.active(); if (me) estrelas = ESTRELAS.estrelasTotais(me.id) || 0; } catch { /* sem perfil */ }
+  const dias = sequenciaDeDias(json('bt-inicio-dias'), agora);
+  const m = baseDoMes(json(K_BASE), mesDe(agora), { figurinhas, estudos, estrelas }); lsSet(K_BASE, JSON.stringify(m.base));
+  return { mundos: pj.mundos, longe: pj.fases, figurinhas, estudos, estrelas, dias, eco, mes: m.mes };
 }
 /** Valor do aluno em cada quadro (pra mostrar "você: 7"). */
 export const meu = (n, catId, periodo) => (periodo === 'mes' ? (n.mes[catId] ?? 0) : (n[catId] ?? 0));
