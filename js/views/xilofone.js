@@ -8,6 +8,7 @@ import { PADS_FOTO, PAD_ANIM, PERC_ANIM } from './tocar-art.js';
 import { tocarTabs } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
+import { demoMallet } from '../palco-demo.js';
 import { melodiaPainel } from './aulas-melodia.js';
 import { faixaDe, brancasEntre } from '../jogos/aulas-melodia.js';
 
@@ -50,7 +51,7 @@ export function mount(host) {
   const drawMode = () => { modeRow.replaceChildren(h('small', {}, 'tipo'), ...[['barras', 'barras afinadas'], ['pads', 'Percussão']].map(([v, l]) => h('button', { type: 'button', class: `kd-chip${mode === v ? ' on' : ''}${v === 'pads' && !pago() ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(mode === v), onclick: () => { if (v === 'pads' && !pago()) { pedir('a percussão'); return; } mode = v; xy.hidden = mode !== 'barras'; pads.hidden = mode !== 'pads'; scaleRow.hidden = soundRow.hidden = mode !== 'barras'; drawMode(); } }, l))); };
   const drawRows = () => {
     scaleRow.replaceChildren(h('small', {}, 'escala'), ...ESCALAS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${scale === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.escalas.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(scale === v), onclick: () => { if (!pago() && !GRATIS.xilofone.escalas.includes(v)) { pedir('as outras escalas'); return; } scale = v; drawXy(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.escalas.includes(v) ? cadeado() : null)));
-    soundRow.replaceChildren(h('small', {}, 'modelo'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { pedir('os outros sons'); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
+    soundRow.replaceChildren(h('small', {}, 'modelo'), ...SOUNDS.map(([v, l]) => h('button', { type: 'button', class: `kd-chip${sound === v ? ' on' : ''}${!pago() && !GRATIS.xilofone.sons.includes(v) ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(sound === v), onclick: () => { if (!pago() && !GRATIS.xilofone.sons.includes(v)) { demoMallet(v); pedir(`o som ${l} (você está ouvindo uma demonstração)`); return; } sound = v; audio(); drawRows(); } }, l, !pago() && !GRATIS.xilofone.sons.includes(v) ? cadeado() : null)));
   };
   const drawTheme = () => { stage.dataset.kitTheme = 'colagem'; }; // um fundo só
   const ripple = (x, y) => {

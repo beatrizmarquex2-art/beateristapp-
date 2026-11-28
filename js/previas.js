@@ -44,6 +44,16 @@ const PREVIAS = {
     faz: ['escolha o jogo e o nível (fácil, médio ou difícil)', 'jogue quantas rodadas quiser, sempre novas', 'sem trilha e sem estrela: só treinar'],
     desenvolve: ['leitura de figuras e de compasso', 'ouvido e memória musical', 'vocabulário musical (palavras e cruzadinha)'],
     imgs: [['treino-1', 'os 10 jogos'], ['treino-2', 'uma rodada: caça-palavras']], video: 'treino' },
+  album: { titulo: 'Álbum de figurinhas', frase: 'colecione bandas e artistas de verdade',
+    sobre: 'Um álbum com figurinhas de bandas, cantores e bateristas. Você ganha estrelas jogando e estudando, gira a roleta, abre pacotes e cola as figurinhas no álbum. Dá pra trocar o Paul da foto e montar a sua figurinha.',
+    faz: ['junte estrelas nos jogos e nos estudos', 'gire a roleta e abra os pacotinhos', 'cole as figurinhas e complete as coleções'],
+    desenvolve: ['cultura musical: bandas, cantores e bateristas', 'constância: um pouquinho todo dia', 'o prazer de completar uma coleção'],
+    imgs: [['album-1', 'o álbum e as coleções'], ['album-2', 'estrelas, roleta e baú']] },
+  ranking: { titulo: 'Ranking', frase: 'veja quem terminou mundos e quem treina mais',
+    sobre: 'Quadros com setinhas: mundos terminados, quem chegou mais longe, mais estrelas, mais figurinhas, quem mais estudou, Eco do Paul e dias em sequência. Pódio com 1º, 2º e 3º lugar. Só aparece o primeiro nome e a inicial.',
+    faz: ['passe pelos quadros com as setinhas', 'veja o pódio de cada um, do mês e de sempre', 'suba de posição estudando e jogando'],
+    desenvolve: ['motivação e meta pessoal', 'constância nos estudos', 'brincar com os colegas, sem expor ninguém'],
+    imgs: [['ranking-1', 'quadros e setinhas'], ['ranking-2', 'o pódio com 1º, 2º e 3º']] },
 };
 
 /** Qual prévia vale pra esta rota (ou null). */
@@ -51,6 +61,8 @@ export function previaDaRota(r) {
   if (r.name === 'ritmo') return 'ritmo';
   if (r.name === 'paulta') return 'paulta';
   if (r.name === 'jogos' && r.parts[0] === 'toca') return 'toca';
+  if (r.name === 'album') return 'album';
+  if (r.name === 'ranking') return 'ranking';
   if (r.name === 'jogos' && r.parts[0] === 'un') return 'cartas'; // (o Uno Musical agora abre: 2 partidas grátis contra o robô)
   if (r.name === 'jogos' && ['detetive', 'figurix', 'treino'].includes(r.parts[0])) return r.parts[0];
   if (r.name === 'jogos' && r.parts[0] === 'rudimentos') return 'rudimentos';
@@ -58,7 +70,7 @@ export function previaDaRota(r) {
 }
 export const tituloDaPrevia = (k) => (PREVIAS[k] ? PREVIAS[k].titulo : '');
 /** Os jogos que ensinam de verdade, na ordem da vitrine (#/premium). */
-export const PREMIUM = ['toca', 'detetive', 'figurix', 'rudimentos', 'paulta', 'treino'];
+export const PREMIUM = ['toca', 'detetive', 'figurix', 'rudimentos', 'paulta', 'treino', 'album', 'ranking'];
 export const dadosDaPrevia = (k) => PREVIAS[k] || null;
 /** Quando a Bea grava a tela do jogo funcionando: salvar em assets/previa/video-<id>.mp4 (sem som ou com; 9:16, até ~20 s) e a vitrine mostra sozinha. */
 export const urlDoVideo = (k) => `${IMG}video-${PREVIAS[k] && PREVIAS[k].video ? PREVIAS[k].video : k}.mp4`;

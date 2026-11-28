@@ -5,6 +5,8 @@ import { pluck } from '../instruments.js';
 import { epiano, rim, bass } from '../synth.js';
 import { banner } from '../ui.js';
 import { abrirProva, botaoProva, sorteia } from './estudos-prova.js';
+import { alunoSemCodigo, avisoCodigo } from '../amostra.js';
+import { toast } from '../ui.js';
 
 const NOMES = ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si'];
 const CIFRA = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
@@ -59,11 +61,13 @@ function tecladoSVG(notas) {
 const acorde = (raiz, tipo) => TIPOS[tipo][1].map((n) => 60 + raiz + n);
 
 export function acordesView(host, parts = []) {
-  const aba = parts[0] === 'teclado' ? 'teclado' : 'violao';
+  const sem = alunoSemCodigo(); // plano grátis: só a 1ª aba (violão e guitarra); o teclado abre com o código
+  const aba = parts[0] === 'teclado' && !sem ? 'teclado' : 'violao';
   host.append(banner('Dicionário de acordes', 'veja, ouça e toque'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, voltar('#/estudos/melodia', '‹ estudos'),
     h('div', { class: 'es-areas', style: 'grid-template-columns:1fr 1fr' },
       h('a', { class: `es-area${aba === 'violao' ? ' on' : ''}`, href: '#/estudos/acordes/violao', style: '--c:#17365B;--f:#fff' }, h('span', { class: 'es-ai' }, '🎸'), h('b', {}, 'violão e guitarra')),
-      h('a', { class: `es-area${aba === 'teclado' ? ' on' : ''}`, href: '#/estudos/acordes/teclado', style: '--c:#17365B;--f:#fff' }, h('span', { class: 'es-ai' }, '🎹'), h('b', {}, 'teclado'))),
+      h('a', { class: `es-area${aba === 'teclado' ? ' on' : ''}${sem ? ' trav' : ''}`, href: sem ? '#/estudos/acordes/violao' : '#/estudos/acordes/teclado', style: '--c:#17365B;--f:#fff', onclick: sem ? () => toast('🔒 os acordes de teclado abrem com o código de aluno') : null }, h('span', { class: 'es-ai' }, '🎹'), h('b', {}, sem ? 'teclado 🔒' : 'teclado'))),
+    sem ? avisoCodigo('plano grátis: a 1ª aba, violão e guitarra. com o código de aluno abre também o teclado.') : null,
     aba === 'violao' ? violaoLista() : tecladoLista()));
 }
 const ouvirBtn = (t, fn, aria) => h('button', { type: 'button', class: 'ac-ouvir', 'aria-label': aria, onclick: () => { silence(); fn(); } }, t);
@@ -175,9 +179,10 @@ export function ritmosView(host) {
       ...linhas.map(([k, nome, cor]) => h('div', { class: 'rt-linha', style: `--c:${cor}` }, h('span', { class: 'rt-n' }, nome), ...CONTA.map((_, i) => { const c = h('i', { class: (atual[k] || []).includes(i) ? 'on' : '', 'data-i': String(i) }); celulas.push(c); return c; }))));
     const pt = partitura(atual); pt.querySelectorAll('rect.pc').forEach((r) => celulas.push(r)); pauta.replaceChildren(pt);
   };
-  const vai = (d) => { parar(); idx = (idx + d + RITMOS.length) % RITMOS.length; atual = RITMOS[idx]; bpm = atual.bpm; desenha(); };
+  const vai = (d) => { const novo = (idx + d + RITMOS.length) % RITMOS.length; if (alunoSemCodigo() && novo !== 0) { toast('🔒 os outros ritmos abrem com o código de aluno. o 1º é grátis!'); return; } parar(); idx = novo; atual = RITMOS[idx]; bpm = atual.bpm; desenha(); }; // plano grátis: só o 1º ritmo
   const seta = (d, t, rot) => h('button', { type: 'button', class: 'rt-seta', 'aria-label': rot, onclick: () => vai(d) }, t);
   host.append(banner('Ritmos de bateria', 'veja o desenho e ouça'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, voltar('#/estudos/ritmo', '‹ estudos'),
+    alunoSemCodigo() ? avisoCodigo('plano grátis: o 1º ritmo. com o código de aluno você ouve todos os ritmos de bateria.') : null,
     h('section', { class: 'card pad rt-box' },
       h('div', { class: 'rt-nav' }, seta(-1, '‹', 'ritmo anterior'), h('div', { class: 'rt-cur' }, titulo, pontos), seta(1, '›', 'próximo ritmo')),
       grade, pauta,

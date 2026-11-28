@@ -13,6 +13,7 @@ import { banner, toast, stars } from '../ui.js';
 import { kitSom, warmKit, MODELOS_BATERIA, velAt, backing } from '../instruments.js';
 import { arte, NOME_PECA } from '../kids/kit-modelos.js';
 import { pago, GRATIS, pedir, faixaPlano, aoLiberar, cadeado } from '../tocar-plano.js';
+import { demoBateria } from '../palco-demo.js';
 import { tocarTabs } from './tocar-nav.js';
 import { rolar } from './rolar-opcoes.js';
 import { playDoc, stopAll } from './partitura.js';
@@ -96,7 +97,7 @@ export function mount(host) {
     kit.dataset.kitTheme = 'colagem'; // um fundo só (a Bea não quer escolher tema na bateria de toque)
     art.addEventListener('pointerdown', (e) => { const g = pieceAt(art, e, 58); if (!g) return; e.preventDefault(); hit(g.dataset.p, e.timeStamp || performance.now(), drOf(g, e), { x: e.clientX, y: e.clientY }); });
     const modelos = h('div', { class: 'row kd-modes kd-modelos', role: 'radiogroup', 'aria-label': 'Modelo da bateria' }, h('small', {}, 'modelo'),
-      ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { pedir(`a bateria ${l}`); return; } if (aulasCtl && SEM_AULA.includes(v)) { toast('o cajón não tem tom, surdo nem pratos: feche as aulas pra usar'); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
+      ...MODELOS_BATERIA.map(([v, l]) => { const trav = !pago() && !GRATIS.bateria.modelos.includes(v); return h('button', { type: 'button', class: `kd-chip${c.modelo === v ? ' on' : ''}${trav ? ' travado' : ''}`, role: 'radio', 'aria-checked': String(c.modelo === v), onclick: () => { if (trav) { demoBateria(v); pedir(`a bateria ${l} (você está ouvindo uma demonstração)`); return; } if (aulasCtl && SEM_AULA.includes(v)) { toast('o cajón não tem tom, surdo nem pratos: feche as aulas pra usar'); return; } setConf({ modelo: v }).then(() => { drawKit(); drawPanel(); }); } }, l, trav ? cadeado() : null); }));
     // mão: destro ou canhota (inverte o lado da bateria). Fica numa linha com nome, não mais em cima do desenho
     const maoRow = h('div', { class: 'row kd-modes kd-mao', role: 'radiogroup', 'aria-label': 'Mão' }, h('small', {}, 'mão'),
       ...[[false, 'destro'], [true, 'canhota']].map(([v, l]) => h('button', { type: 'button', role: 'radio', class: `kd-chip${!!c.left === v ? ' on' : ''}${v ? ' kd-canhota' : ''}`, 'aria-checked': String(!!c.left === v), 'aria-pressed': String(!!c.left === v), onclick: () => { if (!!c.left === v) return; setConf({ left: v }).then(() => { drawKit(); drawPanel(); }); } }, l)));

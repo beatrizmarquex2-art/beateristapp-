@@ -37,6 +37,24 @@ check('cara a cara abre no tema instrumentos (artistas trancado)', /cara a cara/
 await ir('#/jogos/genius');
 check('Eco do Paul: só o xilofone livre (3 instrumentos com cadeado)', (await page.locator('.gn-tab.jg-trav').count()) === 3 && (await page.locator('.gn-tab.on').textContent()) === 'xilofone');
 await page.locator('.gn-tab[data-i="piano"]').click(); await sleep(300); check('tocar no piano não troca (mostra aviso)', (await page.locator('.gn-tab.on').textContent()) === 'xilofone');
+// Palco e Estudos (plano grátis)
+await ir('#/violao'); await page.getByRole('radio', { name: /notas/ }).first().click().catch(() => {}); await page.locator('.kd-chip:has-text("notas")').first().click().catch(() => {}); await sleep(600);
+check('violão: modo notas abre, só a corda Mi livre (5 cordas com cadeado)', (await page.locator('.ti-fc').count()) > 0 && (await page.locator('.ti-fc[data-trav="1"]').count()) === 5 * 6 && (await page.locator('.ti-fc:not([data-trav])').count()) === 6);
+await ir('#/xilofone');
+check('xilofone: os outros sons têm cadeado e dá pra tocar neles pra ouvir a demonstração', (await page.locator('.kd-chip.travado').count()) >= 3);
+await page.locator('.kd-chip.travado:has-text("marimba"), .kd-chip.travado:has-text("vibrafone")').first().click(); await sleep(500); check('tocar no som trancado avisa que é demonstração', /demonstração/.test(await page.textContent('body')));
+await ir('#/toque');
+check('bateria: eletrônica e cajón com cadeado', (await page.locator('.kd-chip.travado').count()) >= 2);
+await page.locator('.kd-chip.travado').first().click(); await sleep(500); check('bateria: tocar na trancada avisa demonstração', /demonstração/.test(await page.textContent('body')));
+await ir('#/estudos/ritmos');
+check('ritmos: avisa plano grátis e a seta não passa do 1º', /plano grátis: o 1º ritmo/.test(await page.textContent('body')));
+const t0 = await page.textContent('.rt-t'); await page.locator('.rt-seta').last().click(); await sleep(300); check('ritmos: próximo fica trancado', (await page.textContent('.rt-t')) === t0);
+await ir('#/estudos/acordes/violao');
+check('acordes: só a 1ª aba (teclado com cadeado)', /plano grátis: a 1ª aba/.test(await page.textContent('body')) && (await page.locator('a.es-area.trav').count()) === 1);
+await ir('#/album'); check('álbum trancado mostra a prévia', (await page.locator('.pv').count()) === 1 && /Álbum de figurinhas/.test(await page.textContent('body')));
+await ir('#/ranking'); check('ranking trancado mostra a prévia', (await page.locator('.pv').count()) === 1);
+await ir('#/estudos/curiosidades'); check('curiosidades livres', (await page.locator('.al-lock').count()) === 0);
+await ir('#/dicionario'); check('dicionário visível (termos extras trancados)', (await page.locator('.dc-term.locked').count()) > 0 && (await page.locator('.dc-term').count()) > 3);
 // com código tudo abre
 const p2 = await ctx.newPage(); await p2.setViewportSize({ width: 390, height: 844 });
 await p2.route('**/rest/v1/rpc/aluno_acesso', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true,"tipo":"aluno"}' }));

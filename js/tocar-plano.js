@@ -9,10 +9,10 @@ const doAluno = () => document.documentElement.classList.contains('aluno-on');
 export const pago = () => !doAluno() || AC.liberado();
 /** O que vale de graça em cada instrumento (um lugar só, pra mudar fácil). */
 export const GRATIS = {
-  violao: { acordes: 4, texto: 'violão com 4 acordes (dó, sol, lá menor, fá)' },
+  violao: { acordes: 4, texto: 'violão com 4 acordes (dó, sol, lá menor, fá) e a corda mi nas notas' },
   teclas: { sons: ['piano'], texto: 'teclado com 1 som (piano)' },
-  xilofone: { sons: ['xilofone'], escalas: ['maior'], texto: 'xilofone normal (dó maior)' },
-  bateria: { modelos: ['acustica'], texto: 'bateria acústica, sem gravar' },
+  xilofone: { sons: ['xilofone'], escalas: ['maior'], texto: 'xilofone normal (dó maior). toque nos cadeados pra ouvir os outros sons' },
+  bateria: { modelos: ['acustica'], texto: 'bateria acústica, sem gravar. toque na eletrônica e no cajón pra ouvir como soam' },
 };
 const abrirCodigo = () => { const b = document.querySelector('.al-tenho'); if (b && !b.hidden) b.click(); else location.hash = '#/lojinha'; };
 /** Aviso curto quando toca numa coisa trancada. */
