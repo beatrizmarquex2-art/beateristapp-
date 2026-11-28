@@ -118,3 +118,15 @@
 .pl-run .pl-redo { padding: 8px 12px; font-size: 16px; line-height: 1; }
 @media (min-height: 780px) { .pl-run .pl-opts.img .pl-optimg { aspect-ratio: 1 / 1; } .pl-run .pl-prompt svg { max-height: 175px; } }
 .pl-run .pl-opts.img.n4 .pl-optimg { aspect-ratio: 5 / 3; } .pl-run .pl-opts.img .pl-optimg svg[aria-label^="Teclado"] { padding: 4px; }
+
+/* ===== visual MINIMALISTA do pauLta (escolha nos Ajustes ou no 🎨): cinza-grafite, sem brilho, sem sombra colorida, pouco enfeite ===== */
+.pl-run[data-tema="minimal"] { --pt-bg: #15181d; --pt-ink: #e9ebee; --pt-dot: #2a2f37; --pt-dot-on: #c9a24a; --pt-chip: #20252c; --pt-chip-ink: #c9ced6; --pt-chip-on: #e9ebee; --pt-chip-on-ink: #15181d;
+  --pt-prompt-shadow: 0 0 0 1px #2d333b; --pt-card: #1d2127; --pt-card-ink: #e9ebee; --pt-card-border: 1px solid #2f353d; --pt-card-shadow: none; --pt-img: #fff; --pt-name: #262b33; --pt-name-ink: #e9ebee; border-radius: 16px; }
+.pl-run[data-tema="minimal"] .pl-prompt { border-radius: 12px; }
+.pl-run[data-tema="minimal"] .pl-opt-btn { border-radius: 12px; font-weight: 700; } .pl-run[data-tema="minimal"] .pl-optimg { border-radius: 8px; }
+.pl-run[data-tema="minimal"] .pl-optname { font-weight: 800; letter-spacing: .06em; border-radius: 8px; }
+.pl-run[data-tema="minimal"] .pl-opt-btn.right { outline: 2px solid #c9a24a; background: #1d2127; }
+.pl-run[data-tema="minimal"] .kd-chip, .pl-run[data-tema="minimal"] .kx-head .btn { border-radius: 8px; letter-spacing: .04em; }
+.pl-run[data-tema="minimal"] .kx-botrow { opacity: .85; transform: scale(.82); transform-origin: left center; margin-bottom: -8px; }
+.pl-run[data-tema="minimal"] .kd-btn.kx-go, .pl-run[data-tema="minimal"] .pl-continue { background: #e9ebee; color: #15181d; border: 0; border-radius: 12px; box-shadow: none; }
+.pl-run[data-tema="minimal"] .pl-tcard { background: #1d2127; border: 1px solid #2f353d; border-radius: 12px; } .pl-run[data-tema="minimal"] .pl-tcard b, .pl-run[data-tema="minimal"] .pl-tcard small { color: #e9ebee; }

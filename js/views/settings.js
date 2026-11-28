@@ -5,6 +5,14 @@ import * as auth from '../auth.js';
 import * as sync from '../sync.js';
 import * as photos from '../photos-sync.js';
 import { banner, toast, confirmSheet } from '../ui.js';
+import { getEstilo, applyEstilo } from '../campanha/tema.js';
+
+/** Visual dos jogos: Normal (colorido, com o Paul e os adesivos) ou Minimalista (sério, sem enfeites). Todo mundo começa no Normal; a escolha fica no aparelho. */
+function visualOption() {
+  const box = h('div', { class: 'row', role: 'group', 'aria-label': 'visual dos jogos', style: 'gap:8px;flex-wrap:wrap' });
+  const paint = () => box.replaceChildren(...[['divertido', 'Normal'], ['serio', 'Minimalista']].map(([k, t]) => h('button', { type: 'button', class: `btn small${getEstilo() === k ? ' primary' : ' ghost'}`, 'aria-pressed': String(getEstilo() === k), onclick: () => { try { localStorage.setItem('beaterista-av-estilo', k); } catch { /* vale só agora */ } applyEstilo(k); try { window.dispatchEvent(new Event('estilo-mudou')); } catch { /* ok */ } paint(); toast(k === 'serio' ? 'visual minimalista ligado' : 'visual normal ligado', { id: 'visual', ms: 1800 }); } }, t)));
+  paint(); return box;
+}
 
 export const APP_VERSION = '1.0.0-fase1';
 
@@ -66,6 +74,7 @@ export function mount(host, { onSignedOut }) {
           toast('Backup gerado. Guarde em lugar seguro: ele contém suas notas.');
         } }, 'baixar backup'),
         h('button', { class: 'btn small ghost', type: 'button', onclick: () => importInput.click() }, 'restaurar de backup'), importInput)),
+    h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'visual dos jogos'), h('p', {}, 'Normal: colorido, com o Paul e os adesivos. Minimalista: mais sério e limpo, sem enfeites (mapas e pauLta).'), visualOption()),
     h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'som junto com outros apps'), h('p', {}, MISTURA_AJUDA), misturaOption()),
     h('div', { class: 'card pad' }, h('h2', { class: 'tag' }, 'youtube premium e spotify'),
       h('p', {}, 'Os players que ficam dentro do app (YouTube e Spotify) não enxergam o seu login do Premium: por segurança, o navegador isola cada site, então não dá pra vincular as contas por aqui. Por isso o player embutido pode mostrar anúncio (e o Spotify, só prévia).'),

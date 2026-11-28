@@ -1,0 +1,15 @@
+import { serve, launch, sleep, check, done, fakeLogin } from '/home/user/beateristapp-/tests/e2e/harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage(); await page.setViewportSize({ width: 390, height: 844 });
+const errs = []; page.on('pageerror', (e) => errs.push(String(e).slice(0, 200)));
+await fakeLogin(ctx, page, url);
+await page.evaluate(() => { location.hash = '#/ajustes'; }); await sleep(1800);
+check('card "visual dos jogos" aparece com Normal e Minimalista', await page.evaluate(() => [...document.querySelectorAll('[aria-label="visual dos jogos"] button')].map((b) => b.textContent).join() === 'Normal,Minimalista'));
+check('começa no Normal (sem data-estilo)', await page.evaluate(() => !document.documentElement.dataset.estilo));
+await page.evaluate(() => document.querySelectorAll('[aria-label="visual dos jogos"] button')[1].click()); await sleep(300);
+check('Minimalista liga, fica lembrado e o pauLta acompanha', await page.evaluate(async () => document.documentElement.dataset.estilo === 'serio' && localStorage.getItem('beaterista-av-estilo') === 'serio' && (await import('/js/paulta/run.js')).getTema() === 'minimal'));
+await page.evaluate(() => document.querySelector('[aria-label="visual dos jogos"]').scrollIntoView({ block: 'center' })); await sleep(300);
+await page.screenshot({ path: '/tmp/ajustes-visual.png' });
+await page.evaluate(() => document.querySelectorAll('[aria-label="visual dos jogos"] button')[0].click()); await sleep(200);
+check('volta pro Normal', await page.evaluate(() => !document.documentElement.dataset.estilo && localStorage.getItem('beaterista-av-estilo') === 'divertido'));
+check('sem erros de script', errs.length === 0); console.log(errs);
+await browser.close(); srv.close?.(); done();

@@ -16,8 +16,9 @@ import * as V from './save.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TEMA_KEY = 'beaterista-paulta-tema';
-export const TEMAS = [['palco', '🌙 palco'], ['limpo', '☀️ limpo'], ['arcade', '🔥 arcade']];
-export const getTema = () => { try { const t = localStorage.getItem(TEMA_KEY); return TEMAS.some((x) => x[0] === t) ? t : 'palco'; } catch { return 'palco'; } };
+export const TEMAS = [['palco', '🌙 palco'], ['limpo', '☀️ limpo'], ['arcade', '🔥 arcade'], ['minimal', '◐ minimal']];
+// sem escolha própria no 🎨, o pauLta acompanha o visual escolhido nos Ajustes (Normal = palco, Minimalista = minimal)
+export const getTema = () => { try { const t = localStorage.getItem(TEMA_KEY); if (TEMAS.some((x) => x[0] === t)) return t; } catch { /* ok */ } return document.documentElement.dataset.estilo === 'serio' ? 'minimal' : 'palco'; };
 const soundBtn = () => { const b = h('button', { type: 'button', class: 'btn small ghost pl-snd', onclick: () => { sfx.setMute(!sfx.muted()); paint(); } }); const paint = () => { b.textContent = sfx.muted() ? '🔇 sem som' : '🔊 som'; b.setAttribute('aria-pressed', String(!sfx.muted())); }; paint(); return b; };
 export { soundBtn };
 
