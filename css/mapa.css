@@ -210,3 +210,5 @@ html .mp-head, html .mp-head.mp-longo { flex-wrap: wrap; row-gap: 3px; }
 html .mp-head .mp-back { order: 0; } html .mp-head .mp-reg, html .mp-head.mp-longo .mp-reg { order: 1; flex: 1 1 170px; }
 html .mp-head .mp-gradebtn, html .mp-head .av-tema, html .mp-head .av-estilo, html .mp-head .mp-snd { order: 2; }
 html .mp-head .mp-prog { order: 3; }
+/* o cabeçalho do mapa NÃO fica mais grudado: fica no começo do mapa e some ao rolar (antes boiava no meio da tela) */
+html .mp-head { position: relative !important; top: auto !important; z-index: 2; }
