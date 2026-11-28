@@ -160,7 +160,7 @@ function combo(c) {
   return h('article', { class: 'ljv-combo', 'data-id': c.id },
     h('div', { class: 'ljv-combo-itens', style: `--n:${itens.length}`, 'aria-label': 'o que vem no combo' }, ...itens.map((p) => h('button', { type: 'button', class: 'ljv-mini', 'aria-label': `ver ${p.nome}`, onclick: () => ampliar(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', draggable: 'false' })))),
     h('div', { class: 'ljv-combo-fim' },
-      h('div', { class: 'ljv-combo-nome' }, h('b', {}, c.nome), h('small', {}, c.provisorio && !c.link ? 'combo chegando · por enquanto leve o jogo da memória' : `${itens.length || c.itens.length} materiais${soma ? ` · ${brl(soma)} se comprados separados` : ''}`)),
+      h('div', { class: 'ljv-combo-nome' }, h('b', {}, c.nome), h('small', {}, c.provisorio && !c.link ? 'combo chegando · por enquanto leve o jogo da memória' : `${c.itens.length || itens.length} materiais${soma && itens.length === c.itens.length ? ` · ${brl(soma)} se comprados separados` : ''}`)),
       h('div', { class: 'ljv-combo-preco' }, alvo.preco ? h('b', { class: 'ljv-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', alvo.preco] : alvo.preco) : null, eco > 0.004 ? h('span', { class: 'ljv-eco' }, `economia de ${brl(eco)}`) : null)),
     breve ? h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve') : botao(c.link ? 'Adquirir' : 'Levar o jogo', alvo, 'amarelo'));
 }
