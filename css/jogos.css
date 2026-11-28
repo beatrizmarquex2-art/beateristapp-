@@ -2430,7 +2430,7 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .rk-corpo { min-height: 240px; display: grid; gap: 10px; align-content: start; } .rk-vazio { text-align: center; opacity: .85; padding: 40px 10px; margin: 0; }
 .rk-podio { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 8px; padding-top: 8px; }
 .rk-lugar { display: grid; justify-items: center; gap: 2px; text-align: center; min-width: 0; } .rk-lugar.vazio { visibility: hidden; }
-.rk-i-med { width: 46px; height: 46px; filter: drop-shadow(0 3px 0 rgb(0 0 0 / .3)); } .rk-lugar.l1 .rk-i-med { width: 64px; height: 64px; }
+.rk-i-med { width: 62px; height: 62px; filter: drop-shadow(0 3px 0 rgb(0 0 0 / .3)); } .rk-lugar.l1 .rk-i-med { width: 84px; height: 84px; }
 .rk-nome { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 800; } .rk-lugar.l1 .rk-nome { font-size: 17px; color: var(--rk-ac); } .rk-lugar small { font-size: 12px; opacity: .85; }
 .rk-base { width: 100%; font: 400 28px/1 var(--rk-t); font-style: normal; padding: 10px 0 6px; border-radius: 10px 10px 0 0; color: #142036; margin-top: 4px; }
 .rk-lugar.l1 .rk-base { background: linear-gradient(180deg, #ffe58a, #f7b733); padding-top: 28px; } .rk-lugar.l2 .rk-base { background: linear-gradient(180deg, #eef1f6, #b9c2d3); padding-top: 18px; } .rk-lugar.l3 .rk-base { background: linear-gradient(180deg, #f0b27a, #c07c3f); padding-top: 8px; }

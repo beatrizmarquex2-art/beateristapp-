@@ -6,6 +6,8 @@ import * as RK from '../ranking.js';
 import { CATEGORIAS, anda, podio, quadro, textoUnidade, MEDALHAS } from '../ranking-dados.js';
 import * as EV from '../ranking-envio.js';
 import { icone } from '../ranking-icones.js';
+// medalhas do pódio: arte da Bea (assets/ranking/podio-*.svg)
+const MEDALHA_IMG = { 1: 'assets/ranking/podio-1-ouro.svg', 2: 'assets/ranking/podio-2-prata.svg', 3: 'assets/ranking/podio-3-bronze.svg' };
 
 export function mount(view) {
   let i = 0; let periodo = 'mes'; let gone = false; let nums = null; let req = 0;
@@ -29,7 +31,7 @@ export function mount(view) {
     const p = podio(rows); const meuNome = EV.nomeDoAluno().toLowerCase();
     if (!p.top3.length) { corpo.replaceChildren(h('p', { class: 'rk-vazio' }, per() === 'mes' ? 'ninguém pontuou neste mês ainda. seja o primeiro!' : 'ninguém ainda. seja o primeiro!')); return; }
     const ordem = [p.top3[1], p.top3[0], p.top3[2]]; // 2º à esquerda, 1º no meio, 3º à direita
-    const pod = h('div', { class: 'rk-podio' }, ...ordem.map((x) => (x ? h('div', { class: `rk-lugar l${x.pos}${x.nome.toLowerCase() === meuNome ? ' eu' : ''}` }, h('span', { class: 'rk-med', 'aria-hidden': 'true' }, icone(`medalha${x.pos}`, 'rk-i rk-i-med')), h('b', { class: 'rk-nome' }, x.nome), h('small', {}, textoUnidade(c, x.pontos)), h('i', { class: 'rk-base' }, String(x.pos))) : h('div', { class: 'rk-lugar vazio' }))));
+    const pod = h('div', { class: 'rk-podio' }, ...ordem.map((x) => (x ? h('div', { class: `rk-lugar l${x.pos}${x.nome.toLowerCase() === meuNome ? ' eu' : ''}` }, h('span', { class: 'rk-med', 'aria-hidden': 'true' }, h('img', { class: 'rk-i rk-i-med', src: MEDALHA_IMG[x.pos], alt: '', width: 84, height: 84, decoding: 'async' })), h('b', { class: 'rk-nome' }, x.nome), h('small', {}, textoUnidade(c, x.pontos)), h('i', { class: 'rk-base' }, String(x.pos))) : h('div', { class: 'rk-lugar vazio' }))));
     const lista = p.resto.length ? h('ol', { class: 'rk-lista', start: 4 }, ...p.resto.map((x) => h('li', { class: x.nome.toLowerCase() === meuNome ? 'eu' : '' }, h('span', { class: 'rk-pos' }, `${x.pos}º`), h('span', { class: 'rk-nm' }, x.nome), h('b', {}, textoUnidade(c, x.pontos))))) : null;
     const dentro = [...p.top3, ...p.resto].some((x) => x.nome.toLowerCase() === meuNome);
     corpo.replaceChildren(pod, lista, !dentro && eu > 0 && EV.aparecer() ? h('p', { class: 'rk-fora' }, 'você ainda não está entre os 10. continua que chega lá!') : null);
